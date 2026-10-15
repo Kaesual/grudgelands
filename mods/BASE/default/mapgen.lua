@@ -2491,6 +2491,8 @@ if mg_name == "v6" then
 end
 -- GRUG PATCH: game.conf forces v7, while WP40 R7 owns the named-zone world
 -- through one VoxelManip transaction. It deliberately registers zero Lua
--- biomes/decorations and only its six-record native ore allowlist, so the
--- upstream register_* calls remain removed. Unresolved biome names would make
--- the old ore/decoration definitions world-wide. (See VENDOR.md.)
+-- biomes and only its own closed native allowlist (wp40/r7_native.lua: the
+-- strata, nests and scatter ores and, since Round 49, two biome-less cave
+-- decorations), so the upstream register_* calls remain removed. Unresolved
+-- biome names would make the old ore/decoration definitions world-wide.
+-- (See VENDOR.md.)
