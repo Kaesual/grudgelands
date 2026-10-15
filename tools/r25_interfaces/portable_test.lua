@@ -2,7 +2,8 @@
 -- Steward (Housing Manager before Round 26) and the Character-page status
 -- (rulings 13-14). Round 26 (rulings 8-11): the draft form with the
 -- activation button, the pick-up lock line, the draft status and the Steward
--- wording.
+-- wording. Round 49 (ruling 4): the Steward's button only when the player can
+-- receive a stone, else the reason in its place.
 --
 -- Loads the REAL grug_housing api.lua (claim-change callbacks, fuel items,
 -- LUMP_SECONDS and FUEL_MAX, over an empty in-memory registry),
@@ -247,6 +248,7 @@ local calls = {add_fuel = {}, set_permission = {}, pick_up = {}, issue = {},
 local pick_up_result = {false, "Your Claim Stone stays in place for another 5 h 00 min."}
 local activate_result = {true, "Claim Stone activated: your home is protected."}
 local issue_result = {true, "Here is your Claim Stone."}
+local receive_result = {true}
 
 function H.player_claim(name) return claims[name], states[name] or "never" end
 function H.is_draft(claim) return claim.activated_at == 0 end
@@ -310,6 +312,10 @@ end
 function H.issue_stone(player)
 	calls.issue[#calls.issue + 1] = player:get_player_name()
 	return issue_result[1], issue_result[2]
+end
+-- Round 49 ruling 4: the Steward draws its button from this.
+function H.can_receive_stone()
+	return receive_result[1], receive_result[2]
 end
 
 dofile("mods/PLAYER/grug_housing/interface.lua")
@@ -749,13 +755,30 @@ has(fs, "Activate it within 5 minutes with 5 coal lumps or charcoal", "activatio
 has(fs, "stays in place for 12 hours", "pick-up lock line")
 has(fs, "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]", "receive button")
 
+-- A successful hand-out: the window then shows the reason in place of the
+-- button (Round 49 ruling 4).
+receive_result = {false, "You already carry a Claim Stone."}
 submit(visitor, "grug_housing:manager", {receive = ""})
 eq(calls.issue[1], "visitor", "receive calls issue_stone")
-has(last_shown("visitor").fs, "\27(c@#8fdc7a)Here is your Claim Stone.", "issue ok in green")
-issue_result = {false, "You need level 20 for a Claim Stone."}
+fs = last_shown("visitor").fs
+has(fs, "\27(c@#8fdc7a)Here is your Claim Stone.", "issue ok in green")
+lacks(fs, "Receive Claim Stone", "after the hand-out: no button")
+has(fs, "label[0.4,5.9;You already carry a Claim Stone.]", "after the hand-out: the reason")
+-- A full inventory keeps the button and refuses on the click, in red.
+receive_result = {true}
+issue_result = {false, "Make room in your inventory for the Claim Stone."}
 submit(visitor, "grug_housing:manager", {receive = ""})
-has(last_shown("visitor").fs, "\27(c@#ff6060)You need level 20 for a Claim Stone.",
+fs = last_shown("visitor").fs
+has(fs, "\27(c@#ff6060)Make room in your inventory for the Claim Stone.",
 	"issue refusal in red")
+has(fs, "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]", "a full inventory keeps the button")
+-- Opened while the player cannot receive one: the reason, no button.
+receive_result = {false, "You need level 20 to receive a Claim Stone."}
+check(H.open_manager(visitor, manager), "Steward opens below level 20")
+fs = last_shown("visitor").fs
+lacks(fs, "Receive Claim Stone", "below level 20: no button")
+has(fs, "label[0.4,5.9;You need level 20 to receive a Claim Stone.]", "below level 20: the reason")
+receive_result = {true}
 
 factions.visitor = "throng"
 check(not H.open_manager(visitor, manager), "other faction refused")

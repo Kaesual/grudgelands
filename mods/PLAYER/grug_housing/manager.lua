@@ -99,7 +99,10 @@ local LINES = {
 		grug_housing.PICKUP_LOCK_SECONDS / 3600),
 }
 
-local function formspec(session)
+-- The button only when the player can receive a stone (Round 49 ruling 4),
+-- else the reason in its place: below level 20, a stone placed or carried.
+-- A full inventory keeps the button; the click then says so in red.
+local function formspec(session, player)
 	local fs = {"formspec_version[4]size[10.5,6.8]",
 		"label[0.4,0.5;Housing Steward]"}
 	for index, line in ipairs(LINES) do
@@ -109,7 +112,12 @@ local function formspec(session)
 		fs[#fs + 1] = ("label[0.4,4.75;%s]"):format(ui.text(session.message,
 			session.message_color))
 	end
-	fs[#fs + 1] = "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]"
+	local ok, reason = grug_housing.can_receive_stone(player)
+	if ok then
+		fs[#fs + 1] = "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]"
+	else
+		fs[#fs + 1] = ("label[0.4,5.9;%s]"):format(ui.esc(reason))
+	end
 	fs[#fs + 1] = "button_exit[6.9,5.5;3.2,0.8;close;Close]"
 	return table.concat(fs)
 end
@@ -120,7 +128,7 @@ function grug_housing.open_manager(player, entity)
 	local session = {entity = entity}
 	sessions[name] = session
 	grug_sounds.play("npc_steward", player)
-	core.show_formspec(name, FORMNAME, formspec(session))
+	core.show_formspec(name, FORMNAME, formspec(session, player))
 	return true
 end
 
@@ -139,7 +147,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		session.message = message or (ok and "Here is your Claim Stone." or
 			"You cannot receive a Claim Stone now.")
 		session.message_color = ok and ui.GREEN or ui.RED
-		core.show_formspec(name, FORMNAME, formspec(session))
+		core.show_formspec(name, FORMNAME, formspec(session, player))
 		ui.refresh_character(player)
 	end
 	return true
