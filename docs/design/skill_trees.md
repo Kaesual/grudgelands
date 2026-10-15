@@ -658,7 +658,7 @@ lives.
 
 ### 3.4 Granting a new skill, and replacing an existing one
 
-A newly ranked active-skill talent adds its ability to the skill catalogue and puts it on the first free hotbar slot; with a full hotbar it waits in the catalogue (Round 44: skills live on the hotbar only, `inventory_equipment.md` §6). The message feed says which. Full respec removes representations that are no longer unlocked. Re-ranking grants the ability the same way. Passive and replacement talents remain read-only information and never create dummy items.
+A newly ranked active-skill talent adds its ability to the skill catalogue and puts it on the first free hotbar slot; on a full hotbar the rightmost non-skill item the inventory can take moves into it and the skill takes that slot (Round 49 ruling 10), with no room anywhere it waits in the catalogue (Round 44: skills live on the hotbar only, `inventory_equipment.md` §6). The message feed says which. Full respec removes representations that are no longer unlocked. Re-ranking grants the ability the same way. Passive and replacement talents remain read-only information and never create dummy items.
 
 **Two mechanisms, and ruling 13 makes the second one carry most of the
 design.**

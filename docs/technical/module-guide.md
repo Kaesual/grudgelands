@@ -1613,7 +1613,7 @@ tools](#player-meta-read-by-external-tools).
   (`grug_inventory.carried_lists`), so selling, crafting, the sort and the
   migrations never touch it, and no detached inventory is involved (a
   disconnect loses nothing). The existing allow callbacks refuse what must
-  not go there: `grug_housing/soulbound.lua` (only `main`) and
+  not go there: `grug_housing/soulbound.lua` (only `main` and the bags) and
   `grug_skills/bound_items.lua` (skills only on the hotbar, mount items only
   in `main` and the bags); the fixture runs both. The Write tab rings
   `grug_mail_out` → the shift-click inbox → `main`, and each bag into the
@@ -1698,7 +1698,8 @@ tools](#player-meta-read-by-external-tools).
     `remaining_seconds`, `permission(claim, name)` →
     `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)` → claim
     plus state `never`/`carried`/`placed`/`destroyed`/`removed`/`needs_stone`,
-    `issue_stone`, `activate`, `add_fuel(claim, count, itemname)` (per-item
+    `issue_stone`, `can_receive_stone(player)` (ok, or false and the
+    reason the Steward shows in place of its button, Round 49), `activate`, `add_fuel(claim, count, itemname)` (per-item
     seconds `FUEL_ITEMS`, cap `FUEL_CAP_SECONDS`, Round 47),
     `fuel_seconds`, `fuel_room_seconds`, `pick_up`, `set_permission`,
     `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,

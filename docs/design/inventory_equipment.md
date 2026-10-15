@@ -326,7 +326,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     weapon follow exactly as they do for a manual equip. It obeys the
     two-handed rule below rather than bypassing it, and falls back to `main`
     (with a message-feed line saying so) if the slot cannot take the item. The starter
-    torch stays in `main`; torches are not offhand items (no carried light,
+    torches stay in `main` (hotbar slot 8, the apples on 7, Round 49 ruling
+    10); torches are not offhand items (no carried light,
     `combat_stats.md` §7).
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
     Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger. The
@@ -453,7 +454,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   a Scout's quiver first, then partial stacks of the same item anywhere,
   then the empty slots of `main[9..]`, the bags in slot order and the
   hotbar last, so a hotbar slot freed for a skill stays free. A soulbound
-  item (the Claim Stone) sits in `main` only. `grug_inventory.fits` answers
+  item (the Claim Stone) follows the same order (Round 49 ruling 3: it may
+  lie in `main` and every bag, nowhere else). `grug_inventory.fits` answers
   the same question without changing anything; a source that refuses
   instead of dropping (purchases, the Claim Stone, station results) says
   the inventory is full only when the whole inventory is.
@@ -486,11 +488,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   higher tier first (gear bracket, food tier, else the item level's tier),
   then the name, then the higher quality. Stacks merge only when name, wear
   and metadata are identical; free slots end up contiguous at the end; a
-  soulbound item stays in `main`. The same sort can lay everything out into
-  smaller target bag sizes (`grug_inventory.sort(player, sizes)`, Round 48):
-  what does not fit is the end of the order and is handed back to the
-  caller, never a soulbound or bound item; only the migration step 0.48.0
-  uses it.
+  soulbound item is sorted like any other (Round 49). The same sort can lay
+  everything out into smaller target bag sizes
+  (`grug_inventory.sort(player, sizes)`, Round 48): what does not fit is the
+  end of the order and is handed back to the caller, never a soulbound or
+  bound item; only the migration step 0.48.0 uses it.
 - **The bag change of 0.48.0** (Round 48, the migration step 0.48.0,
   [upgrade contract](../technical/upgrade-contract.md) §5.8): at each
   existing character's first join, `main[9..]` and the bags were sorted
@@ -738,10 +740,14 @@ take a skill only onto a hotbar slot (a swap that would push one off the
 hotbar is refused), and a put from the catalog lands only on a hotbar slot
 and only while the player carries no other copy in `main`, `craft` or an
 owned bag. Bags, `main[9..]`, the potion belt, crafting, equipment and the
-quiver refuse skills. A grant goes onto a free hotbar slot or, with a full
-hotbar, waits in the catalog, never into `main[9..]` or a bag: the base kit
-at character creation (in kit order) and after a class change (its kit slot,
-else the first free one), and a talent unlock (`skill_trees.md` §3.4). A
+quiver refuse skills. A grant goes onto a free hotbar slot, never into
+`main[9..]` or a bag: the base kit at character creation (in kit order) and
+after a class change (its kit slot, else the first free one), and a talent
+unlock (`skill_trees.md` §3.4). With no free hotbar slot a non-skill item
+makes room (Round 49 ruling 10): the rightmost one the rest of the
+inventory can take moves there through the give helper and the skill takes
+its slot; a skill never moves. With no room anywhere the skill waits in the
+catalog. A
 stray skill from before Round 44 outside the hotbar may still be moved onto
 the hotbar or back onto its icon; removing the others is the 0.44.0
 migration step, not the login.

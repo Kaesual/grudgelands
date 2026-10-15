@@ -10,8 +10,8 @@ local M, S = grug_mail.model, grug_mail.store
 -- join. Not a carried list (grug_inventory.carried_lists stays `main` plus
 -- the bags), so selling, crafting, the sort and migrations never touch it.
 -- The existing guards keep soulbound items (grug_housing/soulbound.lua: only
--- `main`), skills (grug_skills/bound_items.lua: only the hotbar) and mount
--- items (only `main` and the bags) out of it.
+-- `main` and the bags), skills (grug_skills/bound_items.lua: only the hotbar)
+-- and mount items (only `main` and the bags) out of it.
 grug_mail.ATTACH_LIST = "grug_mail_out"
 local ATTACH = grug_mail.ATTACH_LIST
 
