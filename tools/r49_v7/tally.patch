@@ -1,0 +1,92 @@
+--- a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+@@ -1121,6 +1121,77 @@
+ 			return nil
+ 		end
+ 
++		-- V7 (Round 49 lane V7, throwaway): where the planned voxels of one
++		-- chunk go, read from v7's input before the pass, so the hot pass itself
++		-- is unchanged. Counters (GRUG_MGPROF c.*): planned voxels per policy;
++		-- cut_natural voxels holding non-air (cleared: v7 rock above our
++		-- surface); fill_void voxels holding air/liquid/vegetation, split into
++		-- the native cave content the run keeps (preserved_native_cave: under
++		-- v7's heightmap) and the rest the writer fills.
++		local V7_POLICY = {"cut_natural", "deep_exact_host", "fill_void",
++			"open_engineered", "seal_void", "surface_exact", "write_water"}
++		local V7_CLASS = {"air", "foreign", "ignore", "liquid", "native_ore",
++			"natural_host", "natural_surface", "natural_vegetation", "unknown",
++			"wp43_resource", "wp43_stratum"}
++		local function v7_tally_pass(mgp, plan, column_count, minp, x_count, heightmap,
++				data, param2, emerged_min, y_stride, z_stride)
++			local class_of = {}
++			local tally = {}
++			for index = 1, 200 do tally[index] = 0 end
++			for column = 1, column_count do
++				local x = minp.x + (column - 1) % x_count
++				local z = minp.z + math.floor((column - 1) / x_count)
++				local hm = heightmap[column]
++				for run = plan.column_start[column], plan.column_start[column + 1] - 1 do
++					local base = (run - 1) * RUN_STRIDE
++					local policy = plan.run_values[base + R_POLICY]
++					local opcode = plan.run_values[base + R_OPCODE]
++					local feature_ref = plan.run_values[base + R_FEATURE]
++					local feature_id = feature_ref ~= 0 and plan.stable_refs[feature_ref] or nil
++					for y = plan.run_values[base + R_Y_MIN], plan.run_values[base + R_Y_MAX] do
++						local index = (z - emerged_min.z) * z_stride +
++							(y - emerged_min.y) * y_stride + (x - emerged_min.x) + 1
++						local cid = data[index]
++						local class_id = class_of[cid]
++						if class_id == nil then
++							class_id = classify(cid, param2[index], "fail_old_class")
++							class_of[cid] = class_id
++						end
++						tally[policy] = tally[policy] + 1
++						if policy == 1 and class_id ~= 1 then
++							tally[20 + class_id] = tally[20 + class_id] + 1
++						elseif policy == 3 and (class_id == 1 or class_id == 4 or
++								class_id == 8) then
++							if preserved_native_cave(opcode, policy, class_id, hm, y, feature_id) then
++								tally[40 + class_id] = tally[40 + class_id] + 1
++							else
++								tally[60 + class_id] = tally[60 + class_id] + 1
++							end
++						end
++					end
++				end
++			end
++			for policy = 1, 7 do
++				if tally[policy] > 0 then mgp.count("v7_plan_" .. V7_POLICY[policy], tally[policy]) end
++			end
++			for class_id = 1, 11 do
++				if tally[20 + class_id] > 0 then
++					mgp.count("v7_clear_" .. V7_CLASS[class_id], tally[20 + class_id])
++				end
++				if tally[40 + class_id] > 0 then
++					mgp.count("v7_keep_cave_" .. V7_CLASS[class_id], tally[40 + class_id])
++				end
++				if tally[60 + class_id] > 0 then
++					mgp.count("v7_fill_" .. V7_CLASS[class_id], tally[60 + class_id])
++				end
++			end
++			local v7_columns = 0
++			for column = 1, column_count do
++				if heightmap[column] ~= -31007 then v7_columns = v7_columns + 1 end
++			end
++			mgp.count("v7_heightmap_columns_in_chunk", v7_columns)
++		end
++
+ 		local function metric_add(index, value)
+ 			metric_values[index] = metric_values[index] + value
+ 		end
+@@ -1273,6 +1344,11 @@
+ 					resolved[RESOLVED_FINAL + 3]
+ 			end
+ 
++			if mgp then
++				v7_tally_pass(mgp, plan, column_count, minp, x_count, heightmap, data_buffer,
++					param2_buffer, emerged_min, y_stride, z_stride)
++				mgp.mark("v7_tally")
++			end
+ 			-- One pass validates, resolves and writes (Round 49 lane JIT; it was
+ 			-- a validating pass and a replay). A changed voxel's write waits in
+ 			-- `pending` until the next row of columns is done: until then the

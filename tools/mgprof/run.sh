@@ -16,7 +16,10 @@
 #   ROOT    a run directory a previous boot kept: its world keeps the finished
 #           preparation and caches; reset_columns.py first deletes the
 #           measured chunk columns so they generate fresh.
-# Environment: TIMEOUT (default 330 s); MGPROF_QUEUE=<script> runs the boot
+# Environment: EXTRA_PATCHES="<file> ..." appends more disposable patches to
+#   the staged stage patch (lane V7: tools/r49_v7); PROBE_EXTRA=<file> adds Lua
+#   lines that set fields of the probe's `config` table (e.g. config.extra);
+#   TIMEOUT (default 330 s); MGPROF_QUEUE=<script> runs the boot
 #   through a queue wrapper that takes the launcher's arguments (the lane used
 #   ~/projects/grudgelands-orchestration/r45/engine_run.sh <label>); CLEAN=1
 #   removes the run directory afterwards.
@@ -32,8 +35,11 @@ mkdir -p "$out"
 probe_dir="$(mktemp -d /tmp/mgprof-probe.XXXXXX)"
 trap 'rm -rf "$probe_dir"' EXIT
 cp -a "$here/grug_probe_mgprof" "$probe_dir/"
-printf 'return {totals_only = %s}\n' "$([[ $mode == totals ]] && echo true || echo false)" \
-	>"$probe_dir/grug_probe_mgprof/config.lua"
+{
+	printf 'local config = {totals_only = %s}\n' "$([[ $mode == totals ]] && echo true || echo false)"
+	if [[ -n "${PROBE_EXTRA:-}" ]]; then cat "$PROBE_EXTRA"; fi
+	printf 'return config\n'
+} >"$probe_dir/grug_probe_mgprof/config.lua"
 if [[ -n "$root" ]]; then
 	python3 "$here/reset_columns.py" "$root" | tee "$out/reset.txt"
 fi
@@ -47,6 +53,11 @@ game_patch="$here/stages.patch"
 if [[ "${INSECURE:-0}" == 1 ]]; then
 	game_patch="$probe_dir/stages-insecure.patch"
 	cat "$here/stages.patch" "$here/insecure.patch" >"$game_patch"
+fi
+if [[ -n "${EXTRA_PATCHES:-}" ]]; then
+	# shellcheck disable=SC2086 # a space-separated list of patch files
+	cat "$game_patch" $EXTRA_PATCHES >"$probe_dir/stages-extra.patch"
+	game_patch="$probe_dir/stages-extra.patch"
 fi
 start=$(date +%s)
 set +e

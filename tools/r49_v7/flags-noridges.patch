@@ -1,0 +1,28 @@
+diff -ruN a/minetest.conf b/minetest.conf
+--- a/minetest.conf
++++ b/minetest.conf
+@@ -27,7 +27,7 @@
+ chunksize = 5
+ num_emerge_threads = 1
+ mg_flags = biomes,caves,decorations,dungeons,light,ores
+-mgv7_spflags = mountains,ridges,caverns,nofloatlands
++mgv7_spflags = mountains,noridges,caverns,nofloatlands
+ mgv7_dungeon_ymin = -31000
+ mgv7_dungeon_ymax = -193
+ 
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua
+@@ -97,9 +97,10 @@
+ 		exact_integer_setting("mgv7_dungeon_ymax", -193)
+ 		flag_set("mg_flags", {biomes = true, caves = true, decorations = true,
+ 			dungeons = true, light = true, ores = true})
+-		flag_set("mgv7_spflags", {mountains = true, ridges = true,
++		-- V7 (Round 49 lane V7, throwaway measuring copy only): mountains, noridges
++		flag_set("mgv7_spflags", {mountains = true, noridges = true,
+ 			caverns = true, nofloatlands = true},
+-			"mountains, ridges, nofloatlands, caverns")
++			"mountains, noridges, nofloatlands, caverns")
+ 		local settings_kind = type(core_api.settings)
+ 		if settings_kind ~= "table" and settings_kind ~= "userdata" then
+ 			fail("global settings object differs")
