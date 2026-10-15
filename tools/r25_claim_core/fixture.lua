@@ -20,9 +20,9 @@
 --      a buildable_to node (snow) in the arrival cube;
 --   4. Round 26: the draft lifetime, the 12 h pick-up lock after activation,
 --      no placing lock, and every state transition;
---   5. soulbound refusals (player lists, node inventories, detached
---      inventories) and the stone's drop, dig (no drop, ruling 21) and
---      pick-capability rules;
+--   5. soulbound refusals (player lists but `main` and the bags, node
+--      inventories, detached inventories) and the stone's drop, dig (no
+--      drop, ruling 21) and pick-capability rules;
 --   6. persistence: a second model over the same storage reads back the
 --      same claims and records;
 --   7. (unless "none") the real world of one seed (tools/r25_road_poi/
@@ -655,7 +655,15 @@ local main_inv = {get_stack = function(_, list, index)
 end}
 check(player_action("move", {from_list = "main", from_index = 1, to_list = "main",
 	to_index = 5}, main_inv) == nil, "stone moves within main")
-for _, list in ipairs({"craft", "grug_bag1_content", "grug_bag1", "grug_equip_offhand"}) do
+-- Round 49 ruling 3: every carried list takes it, `main` and the bags.
+for _, list in ipairs({"grug_bag1_content", "grug_bag4_content"}) do
+	check(player_action("move", {from_list = "main", from_index = 1, to_list = list,
+		to_index = 1}, main_inv) == nil, "stone moves into " .. list)
+	check(player_action("put", {listname = list, stack = stone}, main_inv) == nil,
+		"stone put into " .. list)
+end
+for _, list in ipairs({"craft", "grug_bag1", "grug_equip_offhand", "grug_mail_out",
+		"grug_potion_belt", "grug_quiver_content", "grug_inbox"}) do
 	check(player_action("move", {from_list = "main", from_index = 1, to_list = list,
 		to_index = 1}, main_inv) == 0, "stone refused moving to " .. list)
 	check(player_action("put", {listname = list, stack = stone}, main_inv) == 0,
