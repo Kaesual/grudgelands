@@ -1,0 +1,31 @@
+ACTION[Server]: [v7pick] spflags=mountains, ridges, nofloatlands, caverns water_level=1 mount_zero_level=0
+ACTION[Server]: [v7pick] np base offset=14 scale=70 spread=600,600,600 seed=82341 octaves=5 persist=0.60000002384186 flags=defaults
+ACTION[Server]: [v7pick] np alt offset=10 scale=25 spread=600,600,600 seed=5934 octaves=5 persist=0.60000002384186 flags=defaults
+ACTION[Server]: [v7pick] np persist offset=0.60000002384186 scale=0.10000000149012 spread=2000,2000,2000 seed=539 octaves=3 persist=0.60000002384186 flags=defaults
+ACTION[Server]: [v7pick] np select offset=-8 scale=16 spread=500,500,500 seed=4213 octaves=6 persist=0.69999998807907 flags=defaults
+ACTION[Server]: [v7pick] np mount_height offset=256 scale=112 spread=1000,1000,1000 seed=72449 octaves=3 persist=0.60000002384186 flags=defaults
+ACTION[Server]: [v7pick] np uwater offset=0 scale=1 spread=1000,1000,1000 seed=85039 octaves=5 persist=0.60000002384186 flags=defaults
+ACTION[Server]: [v7pick] np mountain offset=-0.60000002384186 scale=1 spread=250,350,250 seed=5333 octaves=5 persist=0.62999999523163 flags=defaults
+ACTION[Server]: [v7pick] np ridge offset=0 scale=1 spread=100,100,100 seed=6467 octaves=4 persist=0.75 flags=defaults
+ACTION[Server]: [v7pick] stage 1: 2901 land chunk columns sampled in 2.0 s
+ACTION[Server]: [v7pick] mountain rank 1 x -1792..-1713 z 2368..2447 zone kragmar_stillgrave_hollow biome grug_blight: our terrain 35..50, v7 base 14..22, mountain top 201, mnt_above 610600, mnt_below 157600, ridge_below 0 NOT ordinary
+ACTION[Server]: [v7pick] mountain rank 2 x -32..47 z -1792..-1713 zone elandor_highcourt biome grug_meadows: our terrain 41..46, v7 base 16..19, mountain top 160, mnt_above 415400, mnt_below 146000, ridge_below 500 NOT ordinary
+ACTION[Server]: [v7pick] mountain rank 3 x -1872..-1793 z 2368..2447 zone kragmar_stillgrave_hollow biome grug_blight: our terrain 23..36, v7 base 17..22, mountain top 164, mnt_above 382000, mnt_below 56600, ridge_below 0 NOT ordinary
+ACTION[Server]: [v7pick] mountain rank 4 x -1872..-1793 z 2288..2367 zone kragmar_stillgrave_hollow biome grug_blight: our terrain 22..33, v7 base 13..21, mountain top 153, mnt_above 376000, mnt_below 56400, ridge_below 0 ordinary, full terrain 21..35
+ACTION[Server]: [v7pick] mountain rank 5 x -272..-193 z -2752..-2673 zone elandor_dawnmere_fields biome grug_meadows: our terrain 2..41, v7 base 10..18, mountain top 174, mnt_above 374600, mnt_below 77200, ridge_below 0 ordinary, full terrain 2..42
+ACTION[Server]: [v7pick] mountain rank 6 x 1088..1167 z -1792..-1713 zone elandor_lorindor biome grug_elf_forest: our terrain 57..119, v7 base -6..38, mountain top 220, mnt_above 259600, mnt_below 345200, ridge_below 0 ordinary, full terrain 50..124
+ACTION[Server]: [v7pick] mountain rank 7 x -1872..-1793 z 2768..2847 zone kragmar_stillgrave_hollow biome grug_swamp: our terrain 2..19, v7 base 20..26, mountain top 98, mnt_above 321600, mnt_below 0, ridge_below 0 ordinary, full terrain 2..20
+ACTION[Server]: [v7pick] mountain rank 8 x -992..-913 z 208..287 zone front_broken_causeway biome grug_swamp: our terrain 23..29, v7 base 5..16, mountain top 99, mnt_above 225800, mnt_below 102000, ridge_below 0 ordinary, full terrain 22..30
+ACTION[Server]: [v7pick] ridge rank 1 x 528..607 z -1552..-1473 zone elandor_lorindor biome grug_elf_forest: our terrain 57..110, v7 base 26..75, mountain top none, mnt_above 0, mnt_below 0, ridge_below 362700 ordinary, full terrain 52..111
+ACTION[Server]: [v7pick] ridge rank 2 x 528..607 z -1632..-1553 zone elandor_lorindor biome grug_elf_forest: our terrain 46..102, v7 base 66..82, mountain top none, mnt_above 0, mnt_below 0, ridge_below 258000 NOT ordinary
+ACTION[Server]: [v7pick] ridge rank 3 x 1328..1407 z -1312..-1233 zone elandor_lethariel biome grug_deep_forest: our terrain 61..99, v7 base -11..73, mountain top none, mnt_above 0, mnt_below 2800, ridge_below 262700 NOT ordinary
+ACTION[Server]: [v7pick] ridge rank 4 x -112..-33 z 1728..1807 zone kragmar_gor_drazhak biome grug_badlands: our terrain 65..70, v7 base 39..65, mountain top none, mnt_above 0, mnt_below 0, ridge_below 246500 ordinary, full terrain 65..70
+ACTION[Server]: [v7pick] ridge rank 5 x 1808..1887 z -672..-593 zone elandor_glassroot_wilds biome grug_deep_forest: our terrain 121..200, v7 base 37..44, mountain top none, mnt_above 0, mnt_below 0, ridge_below 230000 ordinary, full terrain 121..206
+ACTION[Server]: [v7pick] ridge rank 6 x 848..927 z 688..767 zone kragmar_bannerbreak_mesa biome grug_swamp: our terrain 100..134, v7 base 32..37, mountain top none, mnt_above 0, mnt_below 0, ridge_below 218400 ordinary, full terrain 99..143
+ACTION[Server]: [v7pick] ridge rank 7 x -32..47 z 1728..1807 zone kragmar_gor_drazhak biome grug_badlands: our terrain 65..77, v7 base 44..62, mountain top none, mnt_above 0, mnt_below 0, ridge_below 195400 ordinary, full terrain 65..78
+ACTION[Server]: [v7pick] ridge rank 8 x 528..607 z 1488..1567 zone kragmar_whispering_reedlands biome grug_deep_jungle: our terrain 18..44, v7 base 25..35, mountain top none, mnt_above 0, mnt_below 0, ridge_below 192600 ordinary, full terrain 17..48
+ACTION[Server]: [v7pick] corpus A x 368..447 z -2352..-2273 zone elandor_goldmead_vale biome grug_meadows: our terrain 34..62, v7 base 10..28, mountain top none, mnt_above 0, mnt_below 0, ridge_below 0
+ACTION[Server]: [v7pick] corpus B x 528..607 z -2192..-2113 zone elandor_goldmead_vale biome grug_deep_forest: our terrain 57..83, v7 base 17..26, mountain top none, mnt_above 0, mnt_below 0, ridge_below 14100
+ACTION[Server]: [v7pick] PICK MOUNTAIN x0=-1872 z0=2288 terrain 21..35 mountain top 153
+ACTION[Server]: [v7pick] PICK RIDGE x0=528 z0=-1552 terrain 52..111 mountain top -inf
+ACTION[Server]: [v7pick] done in 2.6 s
