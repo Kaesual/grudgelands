@@ -1,4 +1,4 @@
-# tools/seed_fleet/run.sh quick on r49-hash (100 of 100 seeds build): seed, roster sha256, chunks, tree roll-up.
+# tools/seed_fleet/run.sh quick on r49-hash after the cube-round mix and the merge of main 5c32c47e (100 of 100 seeds build): seed, roster sha256, chunks, tree roll-up.
 # Identical to the OK lines of tools/r49_jit/evidence/digest/branch_quick.txt (main e43c886b): roster and trees unchanged.
 1025459794451513 04432a1af6206f07b00356a86a75a6c465b2d5e58dd830395b08a92b9da3ec77 chunks=5 trees=8261a0e0ec5a37de
 1044486602088043433 68bc0db6d07cb0716d20eddf7416365c96aa9a900003490c678c7dd8668173df chunks=5 trees=11ea99c405723e06
