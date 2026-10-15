@@ -185,7 +185,10 @@ do
 	cell(1, 2, 3, "default:leaves", 0)
 	local hash = {digest = function() return "" end, digest_count = function() return "" end,
 		sha256_bytes = function(text) return text end, frame = tostring,
-		hex = function() return "probe" end}
+		hex = function() return "probe" end,
+		placement = function()
+			return function() return 0 end, function() return 0 end
+		end}
 	local content = {
 		content_contract = function()
 			return {content_kind_masks = setmetatable({}, {__index = function() return 8 end}),

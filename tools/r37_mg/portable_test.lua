@@ -22,7 +22,7 @@ end
 
 local R = dofile(repo .. "/tools/seed_fleet/runtime.lua")(repo, "1")
 local session, writer = R.built.session, R.built.writer
-local STRIDE = 14
+local STRIDE = 7
 
 -- The rows of every cell of a plan, by "cx,cz", copied.
 local function cell_rows(plan)

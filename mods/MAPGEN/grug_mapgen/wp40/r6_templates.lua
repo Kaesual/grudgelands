@@ -84,7 +84,7 @@ return function(hash, content, template_source, generated)
 		return result
 	end
 
-	if type(hash) ~= "table" or type(hash.digest) ~= "function" or
+	if type(hash) ~= "table" or type(hash.placement) ~= "function" or
 			type(hash.digest_count) ~= "function" or
 			type(hash.sha256_bytes) ~= "function" or type(hash.frame) ~= "function" or
 			type(content) ~= "table" or type(content.decorations) ~= "function" or
@@ -492,31 +492,51 @@ return function(hash, content, template_source, generated)
 		end
 	end
 
-	local probability_fields = {}
+	-- The placement hash of a world seed (r6_hash.lua `placement`), with the
+	-- salts of its rows' streams, built once per seed.
+	local placements = {}
+	local function stream(full_seed, domain, definition_id)
+		local world = placements[full_seed]
+		if not world then
+			local mix, salt = hash.placement(full_seed)
+			world = {mix = mix, salt = salt, salts = {}}
+			placements[full_seed] = world
+		end
+		local salts = world.salts[domain]
+		if not salts then
+			salts = {}
+			world.salts[domain] = salts
+		end
+		local value = salts[definition_id]
+		if not value then
+			value = world.salt(domain, definition_id)
+			salts[definition_id] = value
+		end
+		return world.mix, value
+	end
+
+	-- A template's probability trial: the low byte of a draw below the
+	-- slice's or node's probability (0..254 of 256). The draw chains the
+	-- row's stream at the root into the local slice y or node x/y/z. The
+	-- rotation is the root's own (decoration_rotation), so it adds nothing.
 	local function probability_include(full_seed, definition_id, root_x, root_y,
 			root_z, rotation, trial_kind, x, y, z, probability)
 		integer(probability, "template probability", 0, 254)
 		if probability == 0 then return false end
 		if probability == 254 then return true end
-		probability_fields[1], probability_fields[2], probability_fields[3] =
-			definition_id, root_x, root_y
-		probability_fields[4], probability_fields[5], probability_fields[6] =
-			root_z, rotation, trial_kind
-		local count
+		local mix, salt = stream(full_seed, "template_probability", definition_id)
+		local root = mix(root_x, root_y, root_z, salt)
+		local draw
 		if trial_kind == "slice" then
-			probability_fields[7] = integer(y, "template slice y", 0, 63)
-			count = 7
+			draw = mix(-1, integer(y, "template slice y", 0, 63), -1, root)
 		elseif trial_kind == "node" then
-			probability_fields[7] = integer(x, "template node x", 0, 15)
-			probability_fields[8] = integer(y, "template node y", 0, 63)
-			probability_fields[9] = integer(z, "template node z", 0, 15)
-			count = 9
+			draw = mix(integer(x, "template node x", 0, 15),
+				integer(y, "template node y", 0, 63),
+				integer(z, "template node z", 0, 15), root)
 		else
 			fail("template probability trial kind differs")
 		end
-		local digest = hash.digest_count("template_probability_v1", full_seed,
-			probability_fields, count)
-		return string.byte(digest, 1) < probability
+		return draw % 256 < probability
 	end
 
 	-- A generated record's copy: its own rotations, the variants shared
@@ -570,15 +590,14 @@ return function(hash, content, template_source, generated)
 		local record = by_id[definition_id]
 		return record and copy(record.rotations[rotation + 1]) or nil
 	end
-	-- The variant (1-based) a generated row's candidate at a root takes: a
-	-- digest of the row and the root, independent of its rotation's.
+	-- The variant (1-based) a generated row's candidate at a root takes: the
+	-- row's own stream of the placement hash at the root, independent of its
+	-- rotation's.
 	function module.variant_index(full_seed, definition_id, root_x, root_y, root_z)
 		local record = by_id[definition_id]
 		if not record or not record.generated then fail("not a generated template") end
-		local digest = hash.digest_count("decoration_variant_v1", full_seed,
-			{definition_id, root_x, root_y, root_z}, 4)
-		local a, b = string.byte(digest, 1, 2)
-		return (a * 256 + b) % #record.variants + 1
+		local mix, salt = stream(full_seed, "decoration_variant", definition_id)
+		return mix(root_x, root_y, root_z, salt) % #record.variants + 1
 	end
 	-- Which root runs a placed tree keeps (handoff §5): a run whose every
 	-- cell passes the writer's test `cell_ok(cell)` (ground right under the

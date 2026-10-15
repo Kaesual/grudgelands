@@ -6,7 +6,6 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		type(habitat.initial_denominator) == "function")
 	local MAX_SAFE = 9007199254740991
 	local MAX_CANDIDATES = 4096
-	local HASH_PREFIX = "grug_wp40_r6_hash_v1"
 	local REASONS = {
 		"clipped_owner", "fixed_or_protected", "route_or_water",
 		"content_ignore", "wrong_zone", "wrong_biome",
@@ -70,21 +69,6 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			if a ~= b then return a < b end
 		end
 		return #left < #right
-	end
-
-	local function frame(value)
-		local bytes = type(value) == "number" and string.format("%.0f", value) or value
-		if type(bytes) ~= "string" then fail("hash field is not bytes or integer") end
-		return tostring(#bytes) .. ":" .. bytes
-	end
-
-	local function digest(domain, full_seed, ...)
-		local parts = {frame(HASH_PREFIX), frame(domain), frame(full_seed)}
-		local count = select("#", ...)
-		for index = 1, count do parts[#parts + 1] = frame(select(index, ...)) end
-		local value = raw_sha256(table.concat(parts))
-		if type(value) ~= "string" or #value ~= 32 then fail("SHA-256 seam differs") end
-		return value
 	end
 
 	local function hex(bytes)
@@ -180,9 +164,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		while root * 2 <= finish do
 			local child = root * 2
 			local function before(left, right)
-				if left.digest ~= right.digest then
-					return less_bytes(left.digest, right.digest)
-				end
+				if left.rank ~= right.rank then return left.rank < right.rank end
 				if left.z ~= right.z then return left.z < right.z end
 				return left.x < right.x
 			end
@@ -219,7 +201,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		end
 		local emit_ledger = not dependencies.runtime_mode
 		if type(full_seed) ~= "string" or full_seed == "" or type(hash) ~= "table" or
-				type(hash.budget) ~= "function" or
+				type(hash.budget) ~= "function" or type(hash.placement) ~= "function" or
 				type(dependencies.zones_session) ~= "table" or
 				type(dependencies.zones_session.surface_mob_level_at) ~= "function" or
 				type(production) ~= "table" or
@@ -232,14 +214,23 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			fail("successor air authority differs")
 		end
 
+		-- The rank and budget-remainder streams of each row (r6_hash.lua
+		-- `placement`).
+		local mix, placement_salt = hash.placement(full_seed)
+		local rank_salt, remainder_salt = {}, {}
+		for index = 1, #rows do
+			rank_salt[index] = placement_salt("gathering_candidate_rank", rows[index].id)
+			remainder_salt[index] = placement_salt("gathering_budget_remainder",
+				rows[index].id)
+		end
 		local rank_scratch = {}
 		for index = 1, 256 do
-			rank_scratch[index] = {x = 0, y = 0, z = 0, digest = false}
+			rank_scratch[index] = {x = 0, y = 0, z = 0, rank = 0}
 		end
 		local candidate_scratch = {}
 		for index = 1, MAX_CANDIDATES do
 			candidate_scratch[index] = {catalog = 0, x = 0, y = 0, z = 0,
-				cell_x = 0, cell_z = 0, digest = false}
+				cell_x = 0, cell_z = 0, rank = 0}
 		end
 		local bound_plan, bound_generation, bound_vertical_active = false, 0, false
 		local evidence_generation = 1000000000
@@ -502,9 +493,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 										end
 										local ranked = rank_scratch[eligible]
 										ranked.x, ranked.y, ranked.z = x, surface_y + 1, z
-										ranked.digest = digest("gathering_candidate_rank_v1",
-											full_seed, row.id, cell_x, cell_z, x,
-											surface_y + 1, z)
+										ranked.rank = mix(x, surface_y + 1, z,
+											rank_salt[catalog_index])
 									end
 								end
 							end
@@ -514,9 +504,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 						end
 						local density = habitat.initial_denominator(row.key,
 							row.fill_denominator)
-						local remainder = digest("gathering_budget_remainder_v1", full_seed,
-							row.id, cell_x, cell_z, row.fill_numerator,
-							density)
+						local remainder = mix(cell_x, density, cell_z,
+							remainder_salt[catalog_index])
 						local budget = hash.budget(eligible, row.fill_numerator,
 							density, 1, 1, remainder)
 						sort_prefix(rank_scratch, eligible)
@@ -544,8 +533,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 								local candidate = candidate_scratch[candidate_count]
 								candidate.catalog, candidate.x, candidate.y, candidate.z =
 									catalog_index, ranked.x, ranked.y, ranked.z
-								candidate.cell_x, candidate.cell_z, candidate.digest =
-									cell_x, cell_z, ranked.digest
+								candidate.cell_x, candidate.cell_z, candidate.rank =
+									cell_x, cell_z, ranked.rank
 								local population_row
 								if emit_ledger then
 									population_row = population(catalog_index,
@@ -591,7 +580,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 										cell_z = candidate.cell_z, root_x = candidate.x,
 										root_y = candidate.y, root_z = candidate.z,
 										zone_id = zone_id, biome = biome, faction = faction,
-										bracket = bracket, candidate_sha256 = hex(candidate.digest),
+										bracket = bracket, candidate_rank = candidate.rank,
 										original_cid = decision.original_cid,
 										original_param2 = decision.original_param2,
 										prior_cid = decision.prior_cid,

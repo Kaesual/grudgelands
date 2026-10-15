@@ -2,23 +2,12 @@
 
 return function(raw_sha256)
 	local MAX_SAFE = 9007199254740991
-	local UINT32 = 4294967296
 	local PREFIX = "grug_wp40_r6_hash_v1"
+	-- The SHA-256 domains still in use: since Round 49 (lane HASH) only the
+	-- seeded trees' template seeds (tree_templates.lua), a handful per world at
+	-- construction. Every placement draw uses the integer placement hash below.
 	local DOMAIN_VALUES = {
-		"decoration_budget_remainder_v1",
-		"decoration_candidate_rank_v1",
-		"decoration_rotation_v1",
-		"decoration_simple_height_v1",
-		"evidence_cell_rank_v1",
-		"evidence_substrate_v1",
-		"resource_budget_remainder_v1",
-		"resource_frontier_rank_v1",
-		"resource_root_shuffle_v1",
-		"template_probability_v1",
-		-- Round 47 lane TC: the seeded trees (tree_templates.lua): a world's
-		-- template seeds and the variant a tree candidate takes.
 		"tree_template_seed_v1",
-		"decoration_variant_v1",
 	}
 	local DOMAIN_SET = {}
 	for index = 1, #DOMAIN_VALUES do
@@ -118,42 +107,78 @@ return function(raw_sha256)
 		end))
 	end
 
-	local function words(digest)
-		if type(digest) ~= "string" or #digest ~= 32 then
-			fail("word input is not a SHA-256 digest")
+	-- The integer placement hash (Round 49 lane HASH, mapgen-native-plan.md
+	-- §4.5): the draws of the decoration candidates (rank, thinning, budget
+	-- remainder), rotations, heights, variants and template probabilities
+	-- (P9), the gathering sources (P9G) and the fill ores (P8), instead of a
+	-- framed SHA-256 digest each (about 0.95 us against 0.01 us).
+	--
+	-- `mix(a, b, c, salt)`: a linear lattice term of three integers and the
+	-- world's phase, then two squarings modulo the prime 2^24 - 3 for mixing.
+	-- Every product stays below 2^53 (|a|, |b|, |c| up to about 10^8, the
+	-- salt below 2^31), there is no `bit` library, and `%` on negative values
+	-- floors in both interpreters, so LuaJIT and plain Lua 5.1 agree exactly.
+	-- The result is an integer in [0, PLACEMENT_PRIME); consumers take `% n`
+	-- (n at most 65536, so the bias stays below 0.4 %). This is the fill-ore
+	-- hash Round 49 lane ORE introduced, moved here unchanged so there is one.
+	-- `salt(domain, id)`: the salt of one stream, a byte hash of the domain,
+	-- the row id and the full seed, so different purposes, rows and worlds
+	-- draw independently (tools/r49_hash checks uniformity, neighbour and
+	-- salt independence, and LuaJIT against plain Lua 5.1). A world's fill
+	-- ores salt by resource index alone (r6_settlement.lua r49_fill_ores_new).
+	-- More than three inputs chain: `mix(d, e, f, mix(a, b, c, salt))`.
+	local PLACEMENT_PRIME = 16777213
+	local PLACEMENT_DOMAINS = {
+		"decoration_budget_remainder", "decoration_candidate_rank",
+		"decoration_candidate_thin", "decoration_rotation",
+		"decoration_simple_height", "decoration_variant",
+		"gathering_budget_remainder", "gathering_candidate_rank",
+		"template_probability",
+	}
+	local PLACEMENT_DOMAIN_SET = {}
+	for index = 1, #PLACEMENT_DOMAINS do
+		PLACEMENT_DOMAIN_SET[PLACEMENT_DOMAINS[index]] = true
+	end
+	local function placement(full_seed_string)
+		if type(full_seed_string) ~= "string" or full_seed_string == "" then
+			fail("placement full seed is not bytes")
 		end
-		local result = {}
-		for word = 1, 8 do
-			local offset = (word - 1) * 4
-			local value = 0
-			for byte = 1, 4 do
-				value = value * 256 + string.byte(digest, offset + byte)
+		local phase = 0
+		for index = 1, #full_seed_string do
+			phase = (phase * 131 + string.byte(full_seed_string, index)) % 65521
+		end
+		local function mix(a, b, c, salt)
+			local value = (a * 374761 + b * 668265 + c * 972663 + phase * 69069 +
+				salt) % 16777213
+			value = (value * value + salt) % 16777213
+			value = (value * 48271 + 1) % 16777213
+			return (value * value) % 16777213
+		end
+		local function salt(domain, id)
+			if not PLACEMENT_DOMAIN_SET[domain] then
+				fail("unlisted placement domain " .. tostring(domain))
 			end
-			result[word] = value
+			if type(id) ~= "string" then fail("placement stream id is not bytes") end
+			local bytes = domain .. "\0" .. id .. "\0" .. full_seed_string
+			local value = 0
+			for index = 1, #bytes do
+				value = (value * 257 + string.byte(bytes, index)) % 2147483647
+			end
+			return value
 		end
-		return result
+		return mix, salt
 	end
 
-	local function reduce_words(hi, lo, denominator)
-		bound_integer(hi, "high digest word", 0, UINT32 - 1)
-		bound_integer(lo, "low digest word", 0, UINT32 - 1)
-		bound_integer(denominator, "modular denominator", 1, 48000)
-		local power = UINT32 % denominator
-		return ((hi % denominator) * power + (lo % denominator)) % denominator
-	end
-
-	local function reduce_digest(digest, denominator)
-		local digest_words = words(digest)
-		return reduce_words(digest_words[1], digest_words[2], denominator)
-	end
-
+	-- A cell budget: the expected count's integer part, plus one when the
+	-- stream's `draw` (a placement hash value) falls below the remainder.
 	local function budget(eligible, numerator_factor, density_denominator,
-			multiplier_numerator, multiplier_denominator, digest)
+			multiplier_numerator, multiplier_denominator, draw)
 		bound_integer(eligible, "eligible count", 0, 4096)
 		bound_integer(numerator_factor, "density numerator", 1, 3)
 		bound_integer(density_denominator, "density denominator", 1, 12000)
 		bound_integer(multiplier_numerator, "multiplier numerator", 1, 5)
 		bound_integer(multiplier_denominator, "multiplier denominator", 1, 4)
+		bound_integer(draw, "budget draw", 0, PLACEMENT_PRIME - 1)
 		local numerator = eligible * numerator_factor * multiplier_numerator
 		local denominator = density_denominator * multiplier_denominator
 		if numerator > MAX_SAFE or denominator > 48000 then
@@ -161,7 +186,7 @@ return function(raw_sha256)
 		end
 		local base = math.floor(numerator / denominator)
 		local remainder = numerator - base * denominator
-		local trial = remainder > 0 and reduce_digest(digest, denominator) < remainder
+		local trial = remainder > 0 and draw % denominator < remainder
 		local value = base + (trial and 1 or 0)
 		if value < 0 or value > eligible then
 			error("fail_bound: R6 budget is outside eligible population", 0)
@@ -182,28 +207,6 @@ return function(raw_sha256)
 	function module.digest_count(domain, full_seed_string, fields, count)
 		return raw_digest_count(domain, full_seed_string, fields, count, false)
 	end
-	-- A cell-local draw stream for lazy Fisher-Yates root selection.
-	-- Park-Miller arithmetic stays exact in both Lua 5.1 number implementations:
-	-- (2147483646 * 16807) < 2^46. Rejection avoids additional draw-modulo bias.
-	function module.prepare_root_draw(full_seed_string, fields, count)
-		local digest = raw_digest_count("resource_root_shuffle_v1", full_seed_string,
-			fields, count, false)
-		local state = 0
-		for index = 1, 4 do state = state * 256 + string.byte(digest, index) end
-		-- The 32-bit reduction gives the first four states one extra preimage;
-		-- this sampler uses a reproducible PRNG, not a uniform cryptographic stream.
-		state = state % 2147483646 + 1
-		return function(remaining)
-			bound_integer(remaining, "remaining root population", 1, 4096)
-			local limit = math.floor(2147483646 / remaining) * remaining
-			local value
-			repeat
-				state = (state * 16807) % 2147483647
-				value = state - 1
-			until value < limit
-			return value % remaining + 1
-		end
-	end
 	function module.digest_hex(domain, full_seed_string, fields)
 		return hex(raw_digest(domain, full_seed_string, fields))
 	end
@@ -217,17 +220,17 @@ return function(raw_sha256)
 		end
 		return digest
 	end
-	function module.words(digest) return words(digest) end
-	function module.reduce_words(hi, lo, denominator)
-		return reduce_words(hi, lo, denominator)
+	module.PLACEMENT_PRIME = PLACEMENT_PRIME
+	function module.placement_domains()
+		local copy = {}
+		for index = 1, #PLACEMENT_DOMAINS do copy[index] = PLACEMENT_DOMAINS[index] end
+		return copy
 	end
-	function module.reduce_digest(digest, denominator)
-		return reduce_digest(digest, denominator)
-	end
+	function module.placement(full_seed_string) return placement(full_seed_string) end
 	function module.budget(eligible, numerator_factor, density_denominator,
-			multiplier_numerator, multiplier_denominator, digest)
+			multiplier_numerator, multiplier_denominator, draw)
 		return budget(eligible, numerator_factor, density_denominator,
-			multiplier_numerator, multiplier_denominator, digest)
+			multiplier_numerator, multiplier_denominator, draw)
 	end
 	return module
 end

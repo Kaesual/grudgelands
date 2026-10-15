@@ -7,7 +7,7 @@ local function settlement_factory()
 	local RUN_STRIDE = 9
 	local COLUMN_STRIDE = 12
 	local CELL_STRIDE = 4
-	local CANDIDATE_STRIDE = 14
+	local CANDIDATE_STRIDE = 7
 	local CLASS_AIR, CLASS_FOREIGN, CLASS_IGNORE, CLASS_LIQUID = 1, 2, 3, 4
 	local CLASS_NATIVE_ORE, CLASS_NATURAL_HOST, CLASS_NATURAL_SURFACE = 5, 6, 7
 	local CLASS_NATURAL_VEGETATION, CLASS_UNKNOWN = 8, 9
@@ -275,11 +275,11 @@ local function settlement_factory()
 	-- ores per cluster), and in a cluster each voxel is an ore with
 	-- probability ores per cluster / volume, so the rate per host is
 	-- 1 / denominator. The first resource in table order takes a voxel two
-	-- would claim. The hash is exact double arithmetic (every product below
-	-- 2^53, no `bit` library), so LuaJIT and plain Lua 5.1 agree: a linear
-	-- lattice term, then two squarings for mixing.
+	-- would claim. `mix` is the world's placement hash (r6_hash.lua
+	-- `placement`: exact double arithmetic, LuaJIT and plain Lua 5.1 agree);
+	-- a row salts it by its resource index.
 	local R49_CLUSTER_BY_CAP = {[8] = {3, 8}, [4] = {2, 4}, [2] = {2, 1}}
-	local function r49_fill_ores_new(resources, tier, full_seed)
+	local function r49_fill_ores_new(resources, tier, mix)
 		local floor = math.floor
 		local y_min, lower_max = tier.y_min, tier.lower_half_y_max
 		-- A row: {resource index, cube size, cube volume, ores per cluster,
@@ -298,17 +298,6 @@ local function settlement_factory()
 				if resource.lower_half_of ~= 1 then upper[#upper + 1] = row end
 				lower[#lower + 1] = row
 			end
-		end
-		local phase = 0
-		for index = 1, #full_seed do
-			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
-		end
-		local function mix(a, b, c, salt)
-			local value = (a * 374761 + b * 668265 + c * 972663 + phase * 69069 +
-				salt) % 16777213
-			value = (value * value + salt) % 16777213
-			value = (value * 48271 + 1) % 16777213
-			return (value * value) % 16777213
 		end
 		return function(x, y, z)
 			if y < y_min then return nil end
@@ -1069,7 +1058,7 @@ local function settlement_factory()
 		if type(full_seed) ~= "string" or full_seed == "" or
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
-				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
+				type(hash) ~= "table" or type(hash.placement) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or
 				type(planner_source.column_values_at) ~= "function" or
@@ -1087,7 +1076,6 @@ local function settlement_factory()
 					type(successor_tail.settle) ~= "function")) then
 			fail("fail_settlement", "construction seams differ")
 		end
-		local digest_fields = {}
 		exact_fields(allocator, {new_array = true, new_map = true, grow = true,
 			map_put = true, seal_construction = true, enter_hotpath = true,
 			leave_hotpath = true, metrics = true}, "settlement counting allocator",
@@ -1573,8 +1561,11 @@ local function settlement_factory()
 			return cid, value
 		end
 
+		-- The world's placement hash (r6_hash.lua, Round 49): P8's fill ores
+		-- and the P9 draws below.
+		local placement_mix, placement_salt = hash.placement(full_seed)
 		-- P8 (Round 49): the fill-ore choice of this world.
-		local fill_ore_at = r49_fill_ores_new(resources, tier_by_y[1], full_seed)
+		local fill_ore_at = r49_fill_ores_new(resources, tier_by_y[1], placement_mix)
 
 		-- The planner's river/lake bed and bank seal (planner.lua) as a y range,
 		-- or nil. A wet sealed column seals its bed; a column beside such water
@@ -1911,10 +1902,8 @@ local function settlement_factory()
 							fail("fail_ledger", "generated trees have no evidence path")
 						elseif row.kind == "template" then
 							interface_ref = feature_ref
-							local rotation_digest = helpers.digest4(
-								"decoration_rotation_v1",
-								row.id, candidate.x, candidate.y, candidate.z)
-							local rotation = math.floor(string.byte(rotation_digest, 1) / 64)
+							local rotation = helpers.rotation_at(row.id, candidate.x,
+								candidate.y, candidate.z)
 							local template = helpers.template_rotation(row.id, rotation)
 							min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = template.min_x,
 								template.max_x, template.min_y, template.max_y,
@@ -1952,10 +1941,8 @@ local function settlement_factory()
 						else
 							local height = 1
 							if row.settlement_class == 3 then
-								local digest = helpers.digest4(
-									"decoration_simple_height_v1",
-									row.id, candidate.x, candidate.y, candidate.z)
-								height = 2 + string.byte(digest, 1) % 3
+								height = helpers.simple_height_at(row.id, candidate.x,
+									candidate.y, candidate.z)
 							end
 							max_fy = height - 1
 							for y = 0, height - 1 do
@@ -2179,10 +2166,20 @@ local function settlement_factory()
 			template_rotation = runtime_mode and (templates.rotation_runtime or
 				templates.rotation) or
 				templates.rotation}
-		function helpers.digest4(domain, a, b, c, d)
-			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
-				a, b, c, d
-			return hash.digest_count(domain, full_seed, digest_fields, 4)
+		-- The P9 draws of a decoration root, each its row's stream of the
+		-- placement hash (r6_hash.lua): a template's quarter turn (0..3) and a
+		-- simple class-3 decoration's height (2..4).
+		local rotation_salt, height_salt = {}, {}
+		for index = 1, #decorations do
+			local id = decorations[index].id
+			rotation_salt[id] = placement_salt("decoration_rotation", id)
+			height_salt[id] = placement_salt("decoration_simple_height", id)
+		end
+		function helpers.rotation_at(id, x, y, z)
+			return placement_mix(x, y, z, rotation_salt[id]) % 4
+		end
+		function helpers.simple_height_at(id, x, y, z)
+			return 2 + placement_mix(x, y, z, height_salt[id]) % 3
 		end
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
@@ -2718,10 +2715,8 @@ local function settlement_factory()
 								-- A generated tree (Round 47): this world's variant by a
 								-- digest of the root, turned like every template; its
 								-- roots are optional runs (below, after acceptance).
-								local rotation_digest = helpers.digest4(
-									"decoration_rotation_v1",
-									row.id, root_x, root_y, root_z)
-								local rotation = math.floor(string.byte(rotation_digest, 1) / 64)
+								local rotation = helpers.rotation_at(row.id, root_x, root_y,
+									root_z)
 								local variant = helpers.r8_templates.variant_index(
 									helpers.r8_full_seed, row.id, root_x, root_y, root_z)
 								local bounds
@@ -2732,10 +2727,8 @@ local function settlement_factory()
 									bounds.max_x, bounds.min_y, bounds.max_y,
 									bounds.min_z, bounds.max_z
 							elseif row.kind == "template" then
-								local rotation_digest = helpers.digest4(
-									"decoration_rotation_v1",
-									row.id, root_x, root_y, root_z)
-								local rotation = math.floor(string.byte(rotation_digest, 1) / 64)
+								local rotation = helpers.rotation_at(row.id, root_x, root_y,
+									root_z)
 								local template = helpers.template_rotation(row.id, rotation)
 								template_ref = stable_state.decoration[catalog]
 								min_fx, max_fx, min_fy, max_fy, min_fz, max_fz = template.min_x,
@@ -2775,10 +2768,8 @@ local function settlement_factory()
 							else
 								local height = 1
 								if row.settlement_class == 3 then
-									local digest = helpers.digest4(
-										"decoration_simple_height_v1",
-										row.id, root_x, root_y, root_z)
-									height = 2 + (string.byte(digest, 1) % 3)
+									height = helpers.simple_height_at(row.id, root_x, root_y,
+										root_z)
 								end
 								max_fy = height - 1
 								for y = 0, height - 1 do
