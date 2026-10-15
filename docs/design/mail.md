@@ -76,8 +76,8 @@ letters (lane QUEST). Seams and storage: the
   no money sent as a number.
 - **Attachments** go into four attachment slots of the player's own
   inventory (the list `grug_mail_out`), dragged in on the Write tab like any
-  slot. Soulbound items (the Claim Stone), skills and mount items do not
-  fit. Item meta (quality, enchants, the crown, wear) travels with the item.
+  slot. Soulbound items (the Claim Stone, which lies only in `main` and
+  the bags), skills and mount items do not fit. Item meta (quality, enchants, the crown, wear) travels with the item.
 - **Send** takes the postage and the four slots in one transaction. The
   Write tab shows the rule, never a computed figure: "Postage: 5c per
   letter + 30c per filled slot". Send charges the slots as they are at the

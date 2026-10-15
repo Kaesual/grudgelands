@@ -98,9 +98,12 @@ or guild land.
 - **One stone per player** (ruling 7). The **Housing Steward** in every
   capital hands it out free from level 20, only while the player has none,
   neither carried nor placed.
-- **Soulbound** (ruling 8): it cannot go into chests, bags, trades or mail,
-  and it stays in the inventory on death. Dropping it destroys it; a new one
-  comes from the Housing Steward.
+- **Soulbound** (ruling 8): it lies anywhere an ordinary item may lie in
+  the carried inventory, the hotbar, `main` and every bag (Round 49 ruling
+  3), and nowhere else: not in chests, stations, equipment slots, trades,
+  the trash or mail. The give helper and the sort treat it like any other
+  item. It stays in the inventory on death. Dropping it destroys it; a new
+  one comes from the Housing Steward.
 - **Map reset** (Round 41 ruling 9, the
   [upgrade contract](../technical/upgrade-contract.md) §3): every claim goes
   with the old map. A placed stone does not come back into the inventory; its
@@ -260,6 +263,15 @@ the capital's tailor service plot (`settlements.md`). It serves only its
 capital's faction, hands out the stone (§3), and its dialog briefly explains
 the upkeep, the 5-minute activation with 5 lumps and the 12-hour lock. The
 map shows it with a "+" marker.
+
+The dialog shows **Receive Claim Stone** only when the player can receive
+one (Round 49 ruling 4); otherwise the reason stands in its place: "You
+need level 20 to receive a Claim Stone.", "Your Claim Stone is already
+placed." or "You already carry a Claim Stone." (in any list, a bag
+included). A full inventory keeps the button: the click then refuses with
+"Make room in your inventory for the Claim Stone." in red. After a
+hand-out the dialog shows the green line and "You already carry a Claim
+Stone." in place of the button.
 
 ### 7.3 Character page status
 

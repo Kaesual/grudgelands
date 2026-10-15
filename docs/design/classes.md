@@ -611,17 +611,19 @@ it, including one that has not picked a class yet.
 A character permanently sees every currently unlocked active ability in the
 Talents & Skills catalogue. Initial class creation grants the universal and
 base-class starter kit once. A later talent unlock puts its ability on a
-free hotbar slot, or leaves it in the catalogue when the hotbar is full;
-talent changes, joins and equipment changes never recreate a deleted
-representation. Losing a talent removes its representation.
+free hotbar slot; on a full hotbar the rightmost non-skill item the
+inventory can take moves into it and the ability takes that slot (Round 49
+ruling 10), else the ability waits in the catalogue. Talent changes, joins
+and equipment changes never recreate a deleted representation. Losing a
+talent removes its representation.
 
 At initial character creation, the base abilities occupy the first hotbar
 slots in kit order: Strike on key 1, then the remaining class abilities; the
-starter supplies go to the inventory rows first. Existing carried items are
-preserved. This startup arrangement does not reorder the player's inventory
-on joins or talent changes. A later class change puts each missing base
-ability on its kit slot when that is free, else on the first free hotbar
-slot, else leaves it in the catalogue.
+starter supplies lie on hotbar slots 7 (apples) and 8 (torches), Round 49
+ruling 10. Existing carried items are preserved. This startup arrangement
+does not reorder the player's inventory on joins or talent changes. A later
+class change puts each missing base ability on its kit slot when that is
+free, else where a talent unlock would put it.
 
 Ability items live on the hotbar only (`main[1..8]`, Round 44,
 `inventory_equipment.md` §6). `main[9..]`, the bags, the potion belt,

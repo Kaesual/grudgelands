@@ -1141,3 +1141,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   third-person hand front and back, dirt in first person, the wild and field
   onions; the r48_hud method, `SUFFIX=`), one queue run of one slot; the
   onion art is `r48_artp/generate.py`.
+- **Round 49 lane INV** (`r49_inv`): the Claim Stone in the carried
+  lists, the Housing Steward's button, the starter kit and a granted skill
+  making room (`portable_test.lua`: the real `grug_inventory/storage.lua`,
+  `grug_housing` api.lua and soulbound.lua, the starter kit cut from
+  `grug_factions/init.lua` and `place_on_hotbar` from
+  `grug_abilities/init.lua`: the stone into `main` and every bag and refused
+  elsewhere, the give helper and the sort, `can_receive_stone` per case and
+  `issue_stone` on a full inventory, apples on hotbar 7 and torches on 8,
+  the rightmost non-skill item making room and the no-room case);
+  `capture.sh OUT_DIR` with `grug_probe_r49_inv` the engine screenshots of
+  the starter hotbar, the Inventory tab with the stone in a bag and the
+  Steward's window in each state (the r48_mail method).

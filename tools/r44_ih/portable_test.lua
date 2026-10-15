@@ -7,7 +7,8 @@
 -- then the take and the action callback):
 --   A. the give helper's order: the quiver, main[9..], the bags in slot
 --      order, the hotbar last, partial stacks first, the leftover; soulbound
---      items only in `main`; the weapon-tooltip setup; pickup and dug drops;
+--      items like any other (Round 49); the weapon-tooltip setup; pickup
+--      and dug drops;
 --   B. the fit check: in the helper's order, partial stacks and the quiver
 --      counted, several stacks together, nothing changed;
 --   C. bag swaps: to a larger bag (contents stay), to a smaller one with room
@@ -19,7 +20,7 @@
 --   E. a bag inside a bag, never into its own list;
 --   F. the sort: categories, tier, name, quality, merging of identical
 --      stacks only, free slots at the end, the hotbar untouched, soulbound
---      kept in `main`;
+--      sorted like any other item (Round 49);
 --   G. the potion belt's allow rule and its creation at join;
 --   H. ammo from a bag (count, shot, refund).
 -- Every operation checks that no item is lost or duplicated.
@@ -394,15 +395,16 @@ do
 	put(p, "main", 5, "t:dirt 99")
 	eq(I.give(p, "t:apple 4"):get_count(), 4, "give: a full inventory returns the leftover")
 
-	-- Soulbound: main only, a free bag cell does not count.
+	-- Soulbound: like any other item since Round 49 (ruling 3), a free bag
+	-- cell before the hotbar.
 	local s = new_player("a2", "warrior")
 	equip_bag(s, 1, BAG.small)
 	fill_list(s, "main", 9, 32, "t:stone 99")
 	I.give(s, "t:claim")
-	check(s.inv:is_empty(I.content_list(1)), "give: soulbound skips the bags")
-	eq(name_at(s, "main", 1), "t:claim", "give: soulbound into the hotbar")
-	check(not I.fits(s, {"t:claim", "t:claim", "t:claim", "t:claim", "t:claim",
-		"t:claim", "t:claim", "t:claim"}), "fits: soulbound counts main only")
+	eq(name_at(s, I.content_list(1), 1), "t:claim", "give: soulbound into the bag")
+	eq(name_at(s, "main", 1), "", "give: the hotbar stays free")
+	check(I.fits(s, {"t:claim", "t:claim", "t:claim", "t:claim", "t:claim",
+		"t:claim", "t:claim", "t:claim"}), "fits: soulbound counts the bag and the hotbar")
 
 	-- Arrows: a Scout's quiver first, everyone else main[9..].
 	local scout = new_player("a3", "scout")
@@ -670,15 +672,16 @@ do
 	same_census(before, census(p), "sort")
 	check(not I.sort(p), "sort: a sorted inventory does not change")
 
-	-- Soulbound beyond main: pinned into the last main slot.
+	-- Soulbound in a bag: sorted like any other item since Round 49 (ruling
+	-- 3), so it stays in the bag after the weapons.
 	local s = new_player("f2", "warrior")
 	equip_bag(s, 1, BAG.small)
 	fill_list(s, "main", 9, 32, "t:sword_t1")
 	put(s, I.content_list(1), 1, "t:claim")
 	before = census(s)
 	I.sort(s)
-	eq(name_at(s, "main", 32), "t:claim", "sort: soulbound stays in main")
-	eq(name_at(s, I.content_list(1), 1), "t:sword_t1", "sort: a weapon moved into the bag")
+	eq(name_at(s, "main", 32), "t:sword_t1", "sort: the weapons fill main")
+	eq(name_at(s, I.content_list(1), 1), "t:claim", "sort: soulbound stays in the bag")
 	same_census(before, census(s), "sort with a soulbound item")
 end
 

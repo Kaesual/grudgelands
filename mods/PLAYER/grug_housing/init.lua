@@ -5,7 +5,7 @@
 --   registry.lua     the pure claim model (Lane A)
 --   api.lua          claim core and the interface contract (Lane A)
 --   stone.lua        the stone item and nodes, draft and fuel expiry (Lane A)
---   soulbound.lua    main-inventory-only items (Lane A)
+--   soulbound.lua    carried-inventory-only items (Lane A; Round 49)
 --   protection.lua   is_protected, arrival cube, renewal guard (Lane A)
 --   interaction.lua  right-click and node-inventory guard (Lane B)
 --   interface.lua    stone formspec, Housing Steward, character status (Lane C)
