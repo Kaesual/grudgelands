@@ -23,9 +23,11 @@
 --    carve; the native ores replace stone; the game registers no Lua biomes
 --    (default/mapgen.lua GRUG PATCH) and its only decorations, the native
 --    cave plants (Round 49), lie far below water level. So the owner holds
---    only air. The heightmap is the one exact proof of that: v7's mountains
---    can rise far above our surface (round23-full-column-preparation.md),
---    which the writer would clear, so no envelope of ours can replace it.
+--    only air. The heightmap is the one exact proof of that: v7's own
+--    terrain can rise above our surface where our land lies lower (since
+--    Round 49 `nomountains` only its 2-D base height, still a separate noise
+--    from ours), which the writer would clear, so no envelope of ours can
+--    replace it.
 -- 2. The chunk lies more than MARGIN nodes above everything the writer can
 --    place there: the preparation surface/content envelope of the owner
 --    columns and their decoded content reach (terrain, water, functional

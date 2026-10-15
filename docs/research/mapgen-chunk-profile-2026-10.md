@@ -604,6 +604,9 @@ python3 -I tools/mgprof/summarize.py --first-start tools/mgprof/evidence/meas2-f
 
 ## Addendum: v7 flags, Round 49 (lane V7)
 
+**Adopted: `nomountains` (ridges stay on), Round 49 lane V7A, by the user's
+decision of 2026-10-15; `noridges` not adopted.**
+
 The v7 flags `nomountains` and `noridges`, each on its own, against main
 `e43c886b` (ORE, PROT, SKIP and JIT merged). Measurement only: the flags were
 set in the staged throwaway game copy, nothing under `mods/` changed. The

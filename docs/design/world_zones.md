@@ -1861,7 +1861,11 @@ one-cell settlement checks are unchanged.
   other engine decoration are absent. The six existing v7 terrain/climate
   NoiseParams remain the exact authenticated native baseline in both main and
   emerge environments; they are inputs to the authored evaluator, never a
-  competing biome authority.
+  competing biome authority. The v7 flags are pinned with them
+  (`mgv7_spflags = nomountains, ridges, nofloatlands, caverns`, Round 49):
+  native terrain is v7's 2-D base height, cut by its ridge channels, without
+  v7 mountains, so where the final surface lies above it the terrain fill
+  (§7.6) builds the relief. A world with other flags is refused at load.
 - The pure horizontal module exposes at least
   `macro_region_at(x,z)`, `land_at(x,z)`, `id_at(x,z)`,
   `water_class_at(x,z)`, `neighbors(id)` and

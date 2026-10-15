@@ -1197,3 +1197,6 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   check of `r7_runtime.lua`); `summarize.py [--compact] NAME=OUT ...` the
   side-by-side tables; `evidence/` the picker log and the five boots
   (`baseline`, `baseline2`, `nomountains`, `nomountains2`, `noridges`).
+  Since lane V7A adopted `nomountains` (Round 49) `baseline` runs the game's
+  own flags, `nomountains, ridges`, and the two flag patches no longer
+  apply; `evidence/v7a` is V7A's boot of the adopted flag.

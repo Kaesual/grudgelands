@@ -490,7 +490,7 @@ local function planner_factory(allocator_factory)
 				validated_manifest.engine_emerge_setting ~= "num_emerge_threads" or
 				validated_manifest.mg_flags ~=
 					"biomes,caves,decorations,dungeons,light,ores" or
-				validated_manifest.mgv7_spflags ~= "caverns,mountains,ridges" or
+				validated_manifest.mgv7_spflags ~= "caverns,ridges" or
 				validated_manifest.mgv7_dungeon_ymin ~= -31000 or
 				validated_manifest.mgv7_dungeon_ymax ~= -193 or
 				validated_manifest.authored_floor ~= AUTHORED_FLOOR or
