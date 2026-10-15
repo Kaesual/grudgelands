@@ -63,7 +63,7 @@ SUBS = [("  of which P8 host scan", "p8_host_scan"),
         ("  of which R5 shadow copies", "r5_shadow_copy"),
         ("  of which P9G scan + rank digests", "p9g_scan_and_rank_digests"),
         ("  of which P9G budget + sort", "p9g_budget_and_sort")]
-COUNTS = ["r5_runs", "candidates", "p8_active_resources", "p8_host_eligible_calls",
+COUNTS = ["r5_runs", "candidates", "p8_fill_hosts", "p8_active_resources", "p8_host_eligible_calls",
           "p8_eligible_hosts", "p8_placed_nodes", "p8_veins", "p8_frontier_host_calls",
           "p8_rank_digests", "p8_root_draws", "p8_frontier_candidates", "modified_voxels",
           "light_columns", "liquid_columns", "succ_write_road", "succ_write_p9g",
