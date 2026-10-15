@@ -1107,3 +1107,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `insecure.patch` to the staged game, so only that run's throwaway
   server config disables mod security and the timer logs LuaJIT trace
   aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
+- **Round 49** (`r49_<lane>`): `r49_ui` lane UI's engine screenshots, no
+  fixture (its checks are in `r48_mail` and `r48_sell`): `capture.sh
+  OUT_DIR` with `grug_probe_r49_ui` shows the mailbox Write tab with the
+  postage rule, the result line of a Send and the vendor's Sell tab with a
+  row's tooltip (the r48_mail method; `warp_pointer.py` moves the Xvfb
+  pointer onto a form position with ctypes and libX11, so the tooltip
+  shows), one queue run of one slot.
