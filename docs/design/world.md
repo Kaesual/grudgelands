@@ -164,7 +164,15 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   enclosed or flooded start cannot generate.
   - **Shape of a hard-protected world volume** (Round 24 ruling 30): its
     authored x/z footprint is exact and protection runs upward without limit
-    and downward through its **placement height − 100** inclusive. The
+    and downward through its **placement height − 80** inclusive (the one
+    constant `source.protection_depth_below_placement`; 100 until Round 49).
+    The depth is the name-tag hide distance 30 (`combat_stats.md` §6) plus
+    the deepest place a player stands in a town below its placement height
+    (34: a river or lake bed inside a capital's city, measured over the
+    quick seed fleet; start towns at most 3) plus a margin, so a town's
+    ground cannot be dug through from inside and no name tag under a town
+    shows inside it (Round 49, ruling 6 of the
+    [native-first plan](../planning/mapgen-native-plan.md)). The
     placement height is the final surface y at the footprint's centre column:
     the anchor for a capital's protected city or a start town, the anchor's
     fitted surface for an outpost or bandit-camp functional column. Below that floor the position follows the
@@ -319,7 +327,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   y = −501..−700, T5 y = −701..−1000 and T6 y = −1001..−31000. On every
   non-ocean land column, both factions may dig and place at y = −501 and below,
   even beneath a road or active claim. Hard-protected capitals, start towns
-  and functional anchors end 100 nodes below their placement height (§2 R1,
+  and functional anchors end 80 nodes below their placement height (§2 R1,
   Round 24 ruling 30), well above this boundary. Deep ocean and immutable
   dragon channels remain full-column exceptions.
 
@@ -438,7 +446,7 @@ wall faces) that carries no trees, so players see where the protection ends;
 beyond the edge's reach (9 nodes from the wall line) a seeded share of its
 columns grows the zone's one-node ground cover, rising from a third to all
 toward its outer edge (Round 22, D76; Round 36 W3; `world_zones.md` §12). It runs upward without limit and downward through the
-capital anchor's placement height − 100 (Round 24 ruling 30); below that the
+capital anchor's placement height − 80 (Round 24 ruling 30, Round 49); below that the
 capital zone's ordinary territory rule applies, and the contested deep rule
 from y = −501.
 
@@ -506,7 +514,7 @@ visible:
 - The T3 positional guard base is `nil` in every exterior class, including
   editable shelf, where no guard post may exist. It is exactly level 60 inside
   a capital's protected city (§3) only inside its protected volume (from the
-  capital anchor's placement height − 100 upward, Round 24 ruling 30).
+  capital anchor's placement height − 80 upward, Round 24 ruling 30).
   Below that floor and everywhere else on non-exterior columns it is
   `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that non-nil
   generic base outside the shallow capital hard volume, capped at 70, but may

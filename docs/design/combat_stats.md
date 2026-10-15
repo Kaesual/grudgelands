@@ -705,7 +705,7 @@ Normal tier at level L:
   automatically**. Its T3 positional base is `nil` in every exterior class,
   including shelf. Inside a capital's protected city (its hard-protection x/z
   mask, `world_zones.md` §12) it is exactly 60 only inside the capital's
-  protected volume (from the capital anchor's placement height − 100 upward,
+  protected volume (from the capital anchor's placement height − 80 upward,
   Round 24 ruling 30); below that floor and at all other non-exterior
   positions it is
   `min(70, max(20, surface_level_at(pos)))`. It does not apply the mob depth

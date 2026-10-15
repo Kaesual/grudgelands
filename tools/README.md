@@ -1153,3 +1153,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `capture.sh OUT_DIR` with `grug_probe_r49_inv` the engine screenshots of
   the starter hotbar, the Inventory tab with the stone in a bag and the
   Steward's window in each state (the r48_mail method).
+- **Round 49 lane PROT** (`r49_prot`): the protection depth under towns
+  and the preparation bottom (`portable_test.lua`: the one depth constant in
+  every consumer of one world, the fill-floor bottom of a high, an ordinary
+  and a boundary tile); `measure_depth.lua REPO [seed ...]` the deepest
+  place a player stands in a town below its placement height and the city
+  edge's reach (what the depth is sized from; about 40 s per seed);
+  `count_tiles.lua REPO [seed ...]` the full-preparation tiles and extra
+  chunks the fill-floor bottom changes, from the real preparation authority
+  without generating (about 75 s per seed).

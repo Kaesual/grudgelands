@@ -526,8 +526,17 @@ source.anchor_profiles = {
 -- an upper limit. The placement height is the final surface y at the
 -- footprint's centre column (the anchor of the capital or start town);
 -- `height.lua` publishes it as `surface_y` and the resulting `y_min` with each
--- hard record.
-source.protection_depth_below_placement = 100
+-- hard record. The depth (Round 49, mapgen-native-plan.md ruling 6; 100
+-- before) is the name-tag hide distance 30 (grug_core/tag_carrier.lua) plus
+-- the deepest place a player stands in a town below its placement height
+-- (34: a river or lake bed in a capital; tools/r49_prot/measure_depth.lua over
+-- the quick seed fleet's 100 seeds) plus a margin of 16 for other seeds, so
+-- the town's ground cannot be dug through and no name tag under a town shows
+-- inside it. (A capital's city edge reaches at most 45 below, inside it.) Every floor
+-- (territory and PvP, start-town spawn refusal, capital guard level, the
+-- anchor envelopes' cave and surface floors, the functional outpost and
+-- bandit columns) derives from this one value.
+source.protection_depth_below_placement = 80
 source.hard_protection_recipes = {
 	{id="hard_capital_city_v1",shape="capital_city_outline",footprint_policy_id="capital_city_outline_v1",bound_width=532,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},
 	{id="hard_start_town_v1",shape="start_town_outline",footprint_policy_id="start_town_outline_v1",pad_width=128,band=12,bound_width=152,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},

@@ -201,7 +201,7 @@ rule `r6_settlement.lua` `r30_cave_limit` (the generator's own until Round
 49; the generator now places them natively everywhere, mapgen plan answer
 3): they stay
 out of occupied ground and of planned-water and coast shapes, and below a
-town's or POI's protected floor (placement height − 100, Round 24 ruling
+town's or POI's protected floor (placement height − 80, Round 24 ruling
 30) the cave is ordinary ground. A surface resource plant on
 ground below such a floor ignores the envelope's claim exclusion, as the
 writers do. At the planned surface renewal follows the generator's own

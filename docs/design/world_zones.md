@@ -981,7 +981,7 @@ Mobs are not part of this catalog: each zone's spawn recipe places its
 surface mobs ([spawn_regions.md](spawn_regions.md)), and
 [zone_mobs.md](zone_mobs.md) is the table generated from the recipes, per
 zone and per family. The start towns (pad and band, §12) refuse hostile
-spawns from the town's protected floor upward (its placement height − 100,
+spawns from the town's protected floor upward (its placement height − 80,
 Round 24 ruling 30); caves deeper under a start town keep their ordinary
 population. A capital city refuses every ambient non-critter spawn (§3).
 
@@ -1508,8 +1508,9 @@ code, not by this document.
   bands and the near-surface nests and cliff layers per voxel. This matters
   for POI envelopes on steep ground: an envelope 112 nodes wide can reach
   shore or valley ground 100–300 nodes below its anchor. Start towns and
-  capitals never do (their lowest ground lies 79–100 nodes above the
-  floor). Non-protection exclusions keep applying at every depth to the
+  capitals never do (their lowest ground, a river or lake bed in a capital,
+  lies at most 35 nodes below the placement height over the quick seed
+  fleet, so at least 45 above the floor; Round 49). Non-protection exclusions keep applying at every depth to the
   writers they bind today: planned-water and coast shapes (the cave rule
   and every surface writer; P9G excepted on the dry islands), the overlay
   exclusions (road corridors, inland water, water banks) for the surface
@@ -1936,14 +1937,14 @@ numeric-truncated seed.
 - `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
   protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 inside the capital's protected volume (from the capital anchor's
-  placement height − 100 upward, Round 24 ruling 30). Below that floor and
+  placement height − 80 upward, Round 24 ruling 30). Below that floor and
   everywhere else on non-exterior land it returns the existing generic base
   `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
   remains outside this resolver.
 - `faction_at` returns `accord`, `throng` or nil and never derives
   construction rights from `race_region`. `territory_rule_at` and
   `pvp_rule_at` apply full 3D precedence: bounded hard protection (each
-  footprint from its placement height − 100 upward), immutable
+  footprint from its placement height − 80 upward), immutable
   deep ocean/channels, planned-water/shelf inheritance,
   ordinary land and the y = -501 contested-depth override.
 - Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,
@@ -2197,8 +2198,8 @@ renewable sources, `habitat_registry.lua`), so about one plant per 1536
 guard: they may also grow in caves under planned water and inside town
 protection. Runtime renewal keeps the purpose-specific guards: under a
 town, POI core, anchor grade or hard foundation they end at the column's
-protected floor (Round 24 ruling 30), below which cave sources regrow
-normally. Every other candidate rejection does not move, retry or refill
+protected floor (placement height − 80, Round 24 ruling 30), below which
+cave sources regrow normally. Every other candidate rejection does not move, retry or refill
 it.
 
 The accepted Mushroom set additionally includes `kragmar_speargrass_reach` on

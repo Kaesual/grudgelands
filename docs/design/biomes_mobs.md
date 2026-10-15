@@ -796,7 +796,7 @@ y −2 down, and the policy's underground domain is node y < −1; surface rows
 begin at 0, and only the node layer y = −1 between them stays closed (the
 band −1 … −40 spawned nothing before). Near the surface the level is the
 surface field's (`max(surface, depth)`, depth level 1–2 down to −40); the
-start footprint (down to its floor, 100 below the town) refuses every
+start footprint (down to its floor, 80 below the town) refuses every
 hostile as on the surface. Every underground row spawns up to **light 7**
 (5 before; the golems keep any light), with no clock: a torch (light 12)
 keeps the nodes within 4 steps clear and a mob may stand from the fifth
