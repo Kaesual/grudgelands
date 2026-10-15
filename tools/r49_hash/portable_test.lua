@@ -24,6 +24,12 @@
 --      or +-320 / +-32 / +-320 (x, y, z) leave the stream changed; the
 --      review's mirror centre and every centre of a 4096 x 4096 box are
 --      no point mirrors.
+--   J. The fill-ore choice (r6_settlement.lua r49_fill_ores_new) with its
+--      per-chunk cube decisions gives, voxel for voxel, what a reference
+--      without any memo gives (every row's cube and voxel draw, in table
+--      order), in the pass's z/x/y order and in a shuffled order, over three
+--      chunks across T1's lower half and the fill band; and the same as
+--      without the chunk call.
 -- An optional second argument names another r6_hash.lua to test (e.g. the
 -- 54a0177d one, which fails I).
 -- The chi-square bounds are the 0.1 % critical values; the sample is fixed,
@@ -400,6 +406,65 @@ do
 	print("I periods x/z " .. periods_xz .. ", x/y/z " .. periods_xyz .. ", mirrors " ..
 		mirrors .. (#found > 0 and (": " .. table.concat(found, "; ")) or ""))
 	check(#found == 0, "no lattice period and no point mirror: " .. table.concat(found, "; "))
+end
+
+-- J. The fill ores' chunk memo ---------------------------------------------------------
+do
+	local resources = dofile(wp40 .. "/r7_r6_manifest.lua")().resources
+	local tier = {y_min = -100, lower_half_y_max = -50}
+	local SHAPE = {[8] = {3, 8}, [4] = {2, 4}, [2] = {2, 1}}
+	-- the reference: every draw taken afresh
+	local function reference(x, y, z)
+		if y < tier.y_min then return nil end
+		for index = 1, #resources do
+			local resource = resources[index]
+			local denominator = resource.denominators[1]
+			if denominator and (y <= tier.lower_half_y_max or resource.lower_half_of ~= 1) then
+				local shape = SHAPE[resource.max_nodes_per_vein]
+				local size, volume = shape[1], shape[1] * shape[1] * shape[1]
+				if mix(floor(x / size), floor(y / size), floor(z / size), index * 7919) %
+						(denominator * shape[2]) < volume and
+						mix(x, y, z, index * 7919 + 1) % volume < shape[2] then
+					return index
+				end
+			end
+		end
+		return nil
+	end
+	local settlement = dofile(wp40 .. "/r6_settlement.lua")
+	local choice, chunk = settlement.r49_fill_ores_new(resources, tier, mix)
+	local plain = settlement.r49_fill_ores_new(resources, tier, mix)
+	local ores, differ, voxels = 0, 0, 0
+	for _, corner in ipairs({{368, -112, -2352}, {-1072, -32, -2032}, {2448, -112, 48}}) do
+		local x0, y0, z0 = corner[1], corner[2], corner[3]
+		chunk(x0, y0, z0)
+		for z = z0, z0 + 79 do
+			for x = x0, x0 + 79 do
+				for y = y0, y0 + 79 do
+					local expected = reference(x, y, z)
+					voxels = voxels + 1
+					if expected then ores = ores + 1 end
+					if choice(x, y, z) ~= expected or plain(x, y, z) ~= expected then
+						differ = differ + 1
+					end
+				end
+			end
+		end
+		-- the same chunk again in a shuffled order, its decisions fresh
+		chunk(x0, y0, z0)
+		local state = 12345
+		for _ = 1, 100000 do
+			state = (state * 48271) % 2147483647
+			local x, y = x0 + state % 80, y0 + floor(state / 80) % 80
+			local z = z0 + floor(state / 6400) % 80
+			voxels = voxels + 1
+			if choice(x, y, z) ~= reference(x, y, z) then differ = differ + 1 end
+		end
+		chunk(nil)
+	end
+	print(("J fill ores: %d voxels compared, %d ores, %d differ from the reference"):format(
+		voxels, ores, differ))
+	check(differ == 0 and ores > 0, "the fill-ore chunk memo keeps every voxel's choice")
 end
 
 print("R49 HASH PORTABLE PASS checks=" .. checks)

@@ -278,6 +278,12 @@ local function settlement_factory()
 	-- would claim. `mix` is the world's placement hash (r6_hash.lua
 	-- `placement`: exact double arithmetic, LuaJIT and plain Lua 5.1 agree);
 	-- a row salts it by its resource index.
+	-- Returns the choice and `chunk(min_x, min_y, min_z)`: from that call on,
+	-- each row keeps its cube decisions for the 80^3 chunk at that corner in
+	-- a dense array (allocated at the row's first cube, at most 41^3
+	-- entries), so the voxels of one cube draw its hash once in any order;
+	-- `chunk(nil)` drops the arrays. Every voxel the choice is asked for
+	-- then lies inside that chunk. The result is the same with or without.
 	local R49_CLUSTER_BY_CAP = {[8] = {3, 8}, [4] = {2, 4}, [2] = {2, 1}}
 	local function r49_fill_ores_new(resources, tier, mix)
 		local floor = math.floor
@@ -294,14 +300,18 @@ local function settlement_factory()
 					error("fail_resource_manifest: resource vein cap differs", 0)
 				end
 				-- (fields 7-10: the last cube this row tested and whether it is a
-				-- cluster, so the voxels of one cube draw its hash once)
+				-- cluster; 11: the chunk's decisions, 0 unknown, 1 none, 2 a
+				-- cluster; 12: their edge in cubes; 13-15: the chunk's first cube)
+				local edge = floor(79 / shape[1]) + 2
 				local row = {index, shape[1], shape[1] * shape[1] * shape[1], shape[2],
-					denominator * shape[2], index * 7919, false, false, false, false}
+					denominator * shape[2], index * 7919, false, false, false, false,
+					false, edge, 0, 0, 0}
 				if resource.lower_half_of ~= 1 then upper[#upper + 1] = row end
 				lower[#lower + 1] = row
 			end
 		end
-		return function(x, y, z)
+		local chunk_x, chunk_y, chunk_z = false, false, false
+		local function choice(x, y, z)
 			if y < y_min then return nil end
 			local rows = y > lower_max and upper or lower
 			for index = 1, #rows do
@@ -310,7 +320,28 @@ local function settlement_factory()
 				local cx, cy, cz = floor(x / size), floor(y / size), floor(z / size)
 				local cluster = row[10]
 				if cx ~= row[7] or cy ~= row[8] or cz ~= row[9] then
-					cluster = mix(cx, cy, cz, row[6]) % row[5] < row[3]
+					local decisions = row[11]
+					if chunk_x and not decisions then
+						decisions = {}
+						for cell = 1, row[12] * row[12] * row[12] do decisions[cell] = 0 end
+						row[11] = decisions
+						row[13], row[14], row[15] = floor(chunk_x / size),
+							floor(chunk_y / size), floor(chunk_z / size)
+					end
+					if decisions then
+						local edge = row[12]
+						local cell = ((cz - row[15]) * edge + (cx - row[13])) * edge +
+							(cy - row[14]) + 1
+						local known = decisions[cell]
+						if known == 0 then
+							cluster = mix(cx, cy, cz, row[6]) % row[5] < row[3]
+							decisions[cell] = cluster and 2 or 1
+						else
+							cluster = known == 2
+						end
+					else
+						cluster = mix(cx, cy, cz, row[6]) % row[5] < row[3]
+					end
 					row[7], row[8], row[9], row[10] = cx, cy, cz, cluster
 				end
 				if cluster and mix(x, y, z, row[6] + 1) % row[3] < row[4] then
@@ -319,6 +350,11 @@ local function settlement_factory()
 			end
 			return nil
 		end
+		local function chunk(min_x, min_y, min_z)
+			chunk_x, chunk_y, chunk_z = min_x or false, min_y or false, min_z or false
+			for index = 1, #lower do lower[index][11] = false end
+		end
+		return choice, chunk
 	end
 
 	-- Ruling 30 addendum: the cave-content rule of one column, read by runtime
@@ -1572,7 +1608,8 @@ local function settlement_factory()
 		-- and the P9 draws below.
 		local placement_mix, placement_salt = hash.placement(full_seed)
 		-- P8 (Round 49): the fill-ore choice of this world.
-		local fill_ore_at = r49_fill_ores_new(resources, tier_by_y[1], placement_mix)
+		local fill_ore_at, fill_ore_chunk = r49_fill_ores_new(resources, tier_by_y[1],
+			placement_mix)
 
 		-- The planner's river/lake bed and bank seal (planner.lua) as a y range,
 		-- or nil. A wet sealed column seals its bed; a column beside such water
@@ -2672,6 +2709,7 @@ local function settlement_factory()
 			-- whole-chunk scan, no per-cell budget, no SHA.
 			local r5_plan = plan.r5_plan
 			local fill_placed = ledger and {} or nil
+			fill_ore_chunk(min_x, min_y, min_z)
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
@@ -2698,6 +2736,7 @@ local function settlement_factory()
 					end
 				end
 			end
+			fill_ore_chunk(nil)
 			if ledger then ledger.resources = fill_placed end
 
 			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
