@@ -27,6 +27,12 @@ M.bounds = {x_min = -3600 - OCEAN_MARGIN, x_max = 3600 + OCEAN_MARGIN,
 M.FLIGHT_HEADROOM = 8
 -- Standing: feet one node above the highest solid node plus a 1.25-node jump.
 M.STAND_HEADROOM = 3
+-- The terrain fill floor (Round 49, ruling 8 of mapgen-native-plan.md): where
+-- our surface lies above v7's, the mapgen's own Lua fills the terrain down to
+-- y -37 (`authored_floor`, wp40/mapgen_manifest.lua). A tile's bottom reaches
+-- at least that far, so the chunk holding it (-112..-33) is always prepared
+-- and everything below a high massif's bottom is plain v7 work.
+M.FILL_FLOOR = -37
 local horizontal = {"x", "z"}
 local axes = {"x", "y", "z"}
 local function key(p) return p.x .. ":" .. p.y .. ":" .. p.z end
@@ -186,7 +192,8 @@ function M.scan(plan, scanner, source, budget)
 	end
 end
 -- Resolve the next tile's Y range once its whole window has been scanned.
--- Bottom: the window's lowest surface minus the reach. Top: the higher of the
+-- Bottom: the window's lowest surface minus the reach, at most the fill
+-- floor. Top: the higher of the
 -- flight ceiling and the window's highest content (plus standing headroom),
 -- plus the reach. Start readiness envelopes over the tile still apply.
 function M.select(plan, scanner)
@@ -209,7 +216,7 @@ function M.select(plan, scanner)
 		for column = 0, nx - 1 do scanner.stats[scanner.kept_row * nx + column + 1] = nil end
 		scanner.kept_row = scanner.kept_row + 1
 	end
-	local bottom = low - plan.reach
+	local bottom = math.min(low - plan.reach, M.FILL_FLOOR)
 	local top = math.max(high + M.STAND_HEADROOM, plan.air_top) + plan.reach
 	local x_max, z_max = x + plan.geometry.x*16 - 1, z + plan.geometry.z*16 - 1
 	for _, row in ipairs(plan.starts) do

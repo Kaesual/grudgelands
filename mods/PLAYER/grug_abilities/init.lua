@@ -1985,12 +1985,13 @@ end
 
 local META_INITIAL_KIT = "grug_abilities:initial_kit_given"
 
--- Character creation runs after the faction starter supplies were added to
--- main. Insert each base ability at its kit position and shift those supplies
--- right, preserving every carried stack. Later class changes put a missing
--- base ability on its kit slot when that is free, else on the first free
--- hotbar slot, else leave it in the catalog (place_on_hotbar below), and never
--- rearrange an established inventory.
+-- Character creation runs after the faction starter supplies were put on
+-- hotbar slots 7 and 8 (grug_factions, Round 49 ruling 10). Insert each base
+-- ability at its kit position, shifting a stack in its way right (none while
+-- a class has at most six base abilities), preserving every carried stack.
+-- Later class changes put a missing base ability on its kit slot when that
+-- is free, else where place_on_hotbar below puts it, and never reorder an
+-- established inventory beyond that.
 local function insert_initial_ability(inv, index, stack)
 	local size = inv:get_size("main")
 	local empty
@@ -2033,14 +2034,33 @@ function grug_abilities.normalize_kit(player)
 end
 
 -- Skills live on the hotbar only (Round 44, spec ui-crafting-rework-plan.md
--- ruling 8): a grant puts a skill on the first free hotbar slot, or nowhere
--- -- it then waits in the Talents & Skills catalog. Never main[9..] or a
+-- ruling 8): a grant puts a skill on the first free hotbar slot. With none
+-- free, a non-skill item makes room (Round 49 ruling 10): the rightmost one
+-- the rest of the inventory can take moves there through the give helper,
+-- and the skill takes its slot; a skill never moves. With no room anywhere
+-- the skill waits in the Talents & Skills catalog. Never main[9..] or a
 -- bag. Returns the slot or nil.
-local function place_on_hotbar(inv, stack)
-	for slot = 1, grug_inventory.HOTBAR_SIZE do
+local function place_on_hotbar(player, inv, stack)
+	local hotbar = grug_inventory.HOTBAR_SIZE
+	for slot = 1, hotbar do
 		if inv:get_stack("main", slot):is_empty() then
 			inv:set_stack("main", slot, stack)
 			return slot
+		end
+	end
+	-- The fit check sees the skill already on the slot, so the item cannot
+	-- count its own slot as room.
+	local main = inv:get_list("main")
+	for slot = hotbar, 1, -1 do
+		local item = main[slot]
+		if core.get_item_group(item:get_name(), "grug_ability") == 0 then
+			main[slot] = stack
+			if grug_inventory.fits(player, {item}, {main = main}) then
+				inv:set_stack("main", slot, stack)
+				grug_inventory.give(player, item)
+				return slot
+			end
+			main[slot] = item
 		end
 	end
 	return nil
@@ -2053,15 +2073,16 @@ local function carries(inv, ability_id)
 	return false
 end
 
--- The talent-unlock grant (grug_skills): the ability onto a free hotbar
--- slot unless the player already carries it. Returns the slot, or nil and
--- why not: "locked", "carried" or "full".
+-- The talent-unlock grant (grug_skills): the ability onto the hotbar
+-- (place_on_hotbar) unless the player already carries it. Returns the slot,
+-- or nil and why not: "locked", "carried" or "full" (no room on the hotbar
+-- and none in the inventory for the item that would make room).
 function grug_abilities.grant_to_hotbar(player, ability_id)
 	local inv = player:get_inventory()
 	local stack = grug_abilities.stack_for(player, ability_id)
 	if not stack then return nil, "locked" end
 	if carries(inv, ability_id) then return nil, "carried" end
-	local slot = place_on_hotbar(inv, stack)
+	local slot = place_on_hotbar(player, inv, stack)
 	if not slot then return nil, "full" end
 	return slot
 end
@@ -2088,7 +2109,7 @@ local function grant_initial_kit(player)
 			end
 		end
 	end
-	for _, stack in ipairs(pending) do place_on_hotbar(inv, stack) end
+	for _, stack in ipairs(pending) do place_on_hotbar(player, inv, stack) end
 	if arrange_initial and complete then meta:set_int(META_INITIAL_KIT, 1) end
 end
 

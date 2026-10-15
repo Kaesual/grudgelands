@@ -1,0 +1,221 @@
+# Round 49 NAV probe summary
+
+Seed 12345, navigation {"CLOSE": 16, "GIVE_UP_AFTER": 3, "LOCKOUT": 1, "PADDING": 6, "PADDING_STEPS": [6, 12, 16], "STUCK_RATIO": 0.3, "WINDOW": 0.5}, probe CPU 29.26 s.
+
+| mover | entity | width | height | run | reach | step | attack |
+|---|---|---|---|---|---|---|---|
+| archer | grug_mobs:skeleton_archer | 0.6 | 1.99 | 4 | 3 | 1.100000023841858 | dogshoot |
+| rat | grug_mobs:giant_rat | 1.28 | 0.97 | 4.6 | 3 | 1.100000023841858 | dogfight |
+| zombie | grug_mobs:zombie | 0.6 | 1.9 | 4.6 | 3 | 1.100000023841858 | dogfight |
+
+- batch lanes_zombie: 20.03 s, CPU 20.29 s, searches 4 (found 4), largest so far 45 us
+- batch lanes_rat: 20.02 s, CPU 5.07 s, searches 28 (found 16), largest so far 438 us
+- batch lanes_archer: 12.05 s, CPU 0.09 s, searches 13 (found 6), largest so far 438 us
+- batch real_zombie: 20.09 s, CPU 0.39 s, searches 59 (found 59), largest so far 438 us
+- batch real_rat: 20.08 s, CPU 0.28 s, searches 36 (found 36), largest so far 438 us
+- batch real_archer: 12.05 s, CPU 0.17 s, searches 53 (found 53), largest so far 438 us
+
+## zombie
+
+| scene | target u,v,h | result | t hit | hit at u,v,h | min d | line0 | p6 | p12 | windows stuck/free | searches/found | fails | sequence |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| trunk_d5_strafe | 5,0,1 | reached | 1 | 3.59,1.06,1.01 | 0.08 | False | 8 | 8 | 0/1 (free<0.6: 0) | 0/0 | stop_attack=1 | hit@1 stop_attack@15.14 re_engage@16.22 |
+| t1_bush_d5_strafe | 5,0,2 | reached (from below) after stuck | 1.54 | 2.64,2.39,1.01 | 0.11 | False | 10 | 10 | 1/1 (free<0.6: 0) | 1/1 | stop_attack=1 | stuck@0.54 found@0.54 leave_line@1.09 hit@1.54 stop_attack@15.14 re_engage@16.22 |
+| t2_bush_d5_strafe | 5,0,3 | reached (from below) after stuck | 1.54 | 2.5,3.61,2.01 | 0.02 | False | 14 | 14 | 1/1 (free<0.6: 0) | 1/1 | stop_attack=1 | stuck@0.54 found@0.54 hit@1.54 stop_attack@15.14 re_engage@16.22 |
+| bushtop_d3 | 3,0,3 | reached (from below) | 1 | 1.2,0,1.01 | 1.8 | False | 0 | 0 | 0/0 (free<0.6: 0) | 0/0 | - | hit@1 |
+| bluetop_d3 | 3,0,2 | reached | 1 | 1.25,0,2.01 | 1.75 | True | 4 | 4 | 0/0 (free<0.6: 0) | 0/0 | - | hit@1 |
+| grove_d7 | 7,0,1 | reached after stuck | 1.9 | 4.2,0.25,1.01 | 1.55 | False | 10 | 10 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.09 found@1.09 hit@1.9 |
+| trunk_root_d5 | 5,0,1 | reached after stuck | 1.63 | 4.45,0.98,2.01 | 1.12 | False | 10 | 10 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.09 found@1.09 hit@1.63 |
+| meadows_bush1 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 2.98 | 1.99,-3.27,3.01 | 0.94 | False | 10 | 10 | 2/3 (free<0.6: 2) | 2/2 | path_stuck=1 | stuck@1.08 found@1.08 leave_stuck@2.17 path_stuck@2.17 found@2.26 hit@2.98 |
+| meadows_bush2 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.35 | 4.52,1.99,2.01 | 1.39 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@2.35 |
+| meadows_bush3 (bush_stem, d 5, dh 1) | 5,0,2 | reached | 0.99 | 3.74,0,3.01 | 1.26 | True | 6 | 6 | 0/0 (free<0.6: 0) | 0/0 | - | hit@0.99 |
+| meadows_bush4 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.26 | 4.15,1.99,2.62 | 1.4 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@2.26 |
+| meadows_bush5 (bush_stem, d 5, dh 1) | 5,0,2 | reached | 0.99 | 4.16,0,4.01 | 0.84 | True | 6 | 6 | 0/1 (free<0.6: 0) | 0/0 | - | hit@0.99 |
+| meadows_bush6 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 1.36 | 2.35,-0.17,3.01 | 1.41 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@0.54 found@0.54 hit@1.36 |
+| meadows_trunk1 (tree, d 5, dh 0) | 5,0,1 | reached after stuck | 1.54 | 4.27,0.98,1.01 | 1.22 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| meadows_trunk2 (aspen_tree, d 5, dh 0) | 5,0,1 | reached after stuck | 1.54 | 4.27,0.98,1.01 | 1.22 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| meadows_trunk3 (tree, d 5.66, dh 1) | 4,4,2 | reached | 1.08 | 3.01,1.58,2.01 | 1.78 | False | 9 | 9 | 0/2 (free<0.6: 1) | 0/0 | - | hit@1.08 |
+| meadows_trunk4 (aspen_tree, d 5, dh 0) | 0,5,1 | reached after stuck | 1.54 | -0.98,4.27,1.01 | 1.22 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| meadows_trunk5 (tree, d 4.24, dh 0) | 3,-3,1 | reached | 0.99 | 2.06,-2.06,1.01 | 1.33 | False | 7 | 7 | 0/1 (free<0.6: 0) | 0/0 | - | hit@0.99 |
+| deep_forest_trunk1 (apple_quarter, d 5, dh 0) | 0,5,1 | stuck on path -> give up |  |  | 3.8 | False | 8 | 8 | 23/1 (free<0.6: 1) | 14/14 | path_stuck=13 give_up=4 stop_attack=4 | stuck@1.08 repaired@1.08 found@1.08 leave_stuck@1.63 path_stuck@1.63 repaired@2.17 found@2.17 leave_stuck@2.71 path_stuck@2.71 repaired@3.25 found@3.25 leave_stuck@3.8 give_up@3.8 path_stuck@3.8 stop_attack@3.8 re_engage@4.89 stuck@5.43 repaired@5.43 found@5.43 leave_stuck@5.97 path_stuck@5.97 repaired@6.52 found@6.52 leave_stuck@7.06 path_stuck@7.06 repaired@7.6 found@7.6 leave_stuck@8.15 give_up@8.15 path_stuck@8.15 stop_attack@8.15 re_engage@9.23 stuck@9.77 repaired@9.77 found@9.77 leave_stuck@10.31 path_stuck@10.31 repaired@10.86 found@10.86 leave_stuck@11.4 path_stuck@11.4 repaired@11.94 found@11.94 leave_stuck@12.49 give_up@12.49 path_stuck@12.49 stop_attack@12.49 re_engage@13.57 stuck@14.12 repaired@14.12 found@14.12 leave_stuck@14.66 path_stuck@14.66 repaired@15.21 found@15.21 leave_stuck@15.75 path_stuck@15.75 repaired@16.29 found@16.29 leave_stuck@16.83 give_up@16.83 path_stuck@16.83 stop_attack@16.83 re_engage@17.92 stuck@18.46 repaired@18.46 found@18.46 leave_stuck@19 path_stuck@19 repaired@19.55 found@19.55 |
+| deep_forest_trunk2 (aspen_tree, d 5, dh 0) | 0,5,1 | reached after stuck | 1.54 | -0.98,4.27,1.01 | 1.22 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| deep_forest_trunk3 (tree, d 5, dh 1) | 5,0,2 | reached after stuck | 1.54 | 4.2,0.98,2.01 | 1.27 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| deep_forest_trunk4 (tree, d 5, dh 0) | 0,5,1 | reached after stuck | 1.54 | -0.98,4.27,1.01 | 1.22 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| deep_forest_trunk5 (tree, d 5, dh 0) | 0,-5,1 | reached | 0.99 | 0,-4.19,2.14 | 0.81 | True | 6 | 6 | 0/1 (free<0.6: 0) | 0/0 | - | hit@0.99 |
+| deep_forest_trunk6 (tree, d 5, dh 2) | 5,0,3 | reached after stuck | 1.54 | 4.27,0.98,3.01 | 1.22 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| pine_hills_bush1 (pine_bush_stem, d 5, dh 2) | 0,5,3 | stuck -> no path -> give up |  |  | 2.8 | False | 8 | 8 | 23/2 (free<0.6: 2) | 12/12 | search_fail=12 give_up=4 stop_attack=4 | stuck@1.08 rejected@1.08 search_fail@1.08 rejected@2.17 search_fail@2.17 rejected@4.25 give_up@4.25 search_fail@4.25 stop_attack@4.25 re_engage@5.34 stuck@5.88 rejected@5.88 search_fail@5.88 rejected@6.97 search_fail@6.97 rejected@9.05 give_up@9.05 search_fail@9.05 stop_attack@9.05 re_engage@10.13 stuck@10.68 rejected@10.68 search_fail@10.68 rejected@11.76 search_fail@11.76 rejected@13.85 give_up@13.85 search_fail@13.85 stop_attack@13.85 re_engage@14.93 stuck@15.48 rejected@15.48 search_fail@15.48 rejected@16.56 search_fail@16.56 rejected@18.64 give_up@18.64 search_fail@18.64 stop_attack@18.64 re_engage@19.73 |
+| pine_hills_bush2 (bush_stem, d 5, dh 1) | 0,5,2 | reached (from below) after stuck | 2.44 | -1.8,4.6,1.01 | 1.39 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@2.44 |
+| pine_hills_bush3 (pine_bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 1.9 | 3.94,-0.98,3.01 | 1.44 | False | 8 | 8 | 1/2 (free<0.6: 1) | 1/1 | - | stuck@1.08 found@1.08 hit@1.9 |
+| pine_hills_bush4 (pine_bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 6.52 | 1.97,-2.44,4.01 | 1.49 | False | 10 rej | 10 rej | 7/2 (free<0.6: 1) | 4/4 | search_fail=3 give_up=1 stop_attack=1 | stuck@1.08 rejected@1.08 search_fail@1.08 rejected@2.17 search_fail@2.17 rejected@4.25 give_up@4.25 search_fail@4.25 stop_attack@4.25 re_engage@5.34 stuck@5.88 repaired@5.88 found@5.88 hit@6.52 |
+| pine_hills_bush5 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 1.72 | 1.09,-2.59,4.01 | 1.4 | False | 10 | 10 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@0.54 found@0.54 hit@1.72 |
+| pine_hills_bush6 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 1.54 | -0.89,-2.28,3.01 | 1.2 | False | 8 | 8 | 1/1 (free<0.6: 1) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| pine_hills_blue1 (blueberry_bush_leaves_with_berries, d 5, dh 2) | 0,5,3 | stuck -> no path -> give up |  |  | 3.8 | False | 10 rej | 10 rej | 24/1 (free<0.6: 1) | 12/12 | search_fail=12 give_up=4 stop_attack=4 | stuck@1.08 rejected@1.08 search_fail@1.08 rejected@2.17 search_fail@2.17 rejected@4.25 give_up@4.25 search_fail@4.25 stop_attack@4.25 re_engage@5.34 stuck@5.88 rejected@5.88 search_fail@5.88 rejected@6.97 search_fail@6.97 rejected@9.05 give_up@9.05 search_fail@9.05 stop_attack@9.05 re_engage@10.13 stuck@10.68 rejected@10.68 search_fail@10.68 rejected@11.76 search_fail@11.76 rejected@13.85 give_up@13.85 search_fail@13.85 stop_attack@13.85 re_engage@14.93 stuck@15.48 rejected@15.48 search_fail@15.48 rejected@16.56 search_fail@16.56 rejected@18.64 give_up@18.64 search_fail@18.64 stop_attack@18.64 re_engage@19.73 |
+| pine_hills_trunk1 (tree, d 5.66, dh 0) | 4,4,1 | reached | 1.17 | 2.2,3.44,0.57 | 1.39 | False | 9 | 9 | 0/2 (free<0.6: 0) | 0/0 | - | hit@1.17 |
+| pine_hills_trunk2 (pine_tree, d 5.66, dh 0) | -4,4,1 | reached | 1.17 | -2.2,3.45,2.11 | 1.39 | False | 9 | 9 | 0/2 (free<0.6: 0) | 0/0 | - | hit@1.17 |
+| pine_hills_trunk3 (apple_quarter, d 5.66, dh 0) | 4,-4,1 | reached | 1.17 | 2.2,-3.44,1.01 | 1.39 | False | 9 | 9 | 0/2 (free<0.6: 0) | 0/0 | - | hit@1.17 |
+| pine_hills_trunk4 (apple_quarter, d 5, dh 2) | -5,0,3 | reached (from below) after stuck | 1.81 | -4.28,-0.96,2.01 | 1.2 | False | 8 | 8 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.81 |
+
+**Totals extra:** 7 trials, reached 7, reached without a give-up 7, with a give-up 0, searches 4 (found 4), largest search 46 us.
+
+**Totals real:** 28 trials, reached 25, reached without a give-up 24, with a give-up 4, searches 59 (found 59), largest search 84 us.
+
+## rat
+
+| scene | target u,v,h | result | t hit | hit at u,v,h | min d | line0 | p6 | p12 | windows stuck/free | searches/found | fails | sequence |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| trunk_d5_strafe | 5,0,1 | reached after stuck | 1 | 2.86,1,1.01 | 0.26 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | stop_attack=1 | hit@1 stuck@4.71 found@4.71 stop_attack@15.13 re_engage@16.21 |
+| t1_bush_d5_strafe | 5,0,2 | reached (from below) after stuck | 1.63 | 2.41,2.64,1.01 | 0.04 | False | 10 | 10 | 1/2 (free<0.6: 0) | 1/1 | stop_attack=1 | stuck@0.54 found@0.54 leave_line@1.09 hit@1.63 stop_attack@15.13 re_engage@16.21 |
+| t2_bush_d5_strafe | 5,0,3 | reached (from below) after stuck | 1.63 | 2.23,3.4,2.01 | 0.04 | False | 14 | 14 | 1/2 (free<0.6: 0) | 1/1 | stop_attack=1 | stuck@0.54 found@0.54 hit@1.63 stop_attack@15.13 re_engage@16.21 |
+| bushtop_d3 | 3,0,3 | stuck -> no path -> give up |  |  | 2.14 | False | 0 | 0 | 24/1 (free<0.6: 1) | 12/0 | search_fail=12 give_up=4 stop_attack=4 | stuck@1.09 no_path@1.09 search_fail@1.09 no_path@2.17 search_fail@2.17 no_path@4.26 give_up@4.26 search_fail@4.26 stop_attack@4.26 re_engage@5.34 stuck@5.89 no_path@5.89 search_fail@5.89 no_path@6.97 search_fail@6.97 no_path@9.06 give_up@9.06 search_fail@9.06 stop_attack@9.06 re_engage@10.14 stuck@10.69 no_path@10.69 search_fail@10.69 no_path@11.78 search_fail@11.78 no_path@13.86 give_up@13.86 search_fail@13.86 stop_attack@13.86 re_engage@14.95 stuck@15.49 no_path@15.49 search_fail@15.49 no_path@16.58 search_fail@16.58 no_path@18.66 give_up@18.66 search_fail@18.66 stop_attack@18.66 re_engage@19.75 |
+| bluetop_d3 | 3,0,2 | reached | 1 | 1.25,0,2.01 | 1.75 | True | 4 | 4 | 0/0 (free<0.6: 0) | 0/0 | - | hit@1 |
+| grove_d7 | 7,0,1 | stuck -> no path -> give up |  |  | 5.14 | False | 10 rej | 10 rej | 24/2 (free<0.6: 1) | 12/12 | search_fail=12 give_up=4 stop_attack=4 | stuck@1.09 rejected@1.09 search_fail@1.09 rejected@2.17 search_fail@2.17 rejected@4.26 give_up@4.26 search_fail@4.26 stop_attack@4.26 re_engage@5.34 stuck@5.89 rejected@5.89 search_fail@5.89 rejected@6.97 search_fail@6.97 rejected@9.06 give_up@9.06 search_fail@9.06 stop_attack@9.06 re_engage@10.14 stuck@10.69 rejected@10.69 search_fail@10.69 rejected@11.78 search_fail@11.78 rejected@13.86 give_up@13.86 search_fail@13.86 stop_attack@13.86 re_engage@14.95 stuck@16.03 rejected@16.03 search_fail@16.03 rejected@17.12 search_fail@17.12 rejected@19.2 give_up@19.2 search_fail@19.2 stop_attack@19.21 |
+| trunk_root_d5 | 5,0,1 | reached after stuck | 1.63 | 3.68,1.45,2.01 | 1.37 | False | 10 | 10 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.09 found@1.09 hit@1.63 |
+| meadows_bush1 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 2.17 | 2.46,-3.36,3.01 | 1.3 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.08 found@1.08 hit@2.17 |
+| meadows_bush2 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.26 | 4.31,2.27,2.01 | 2.14 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.08 found@1.08 hit@2.26 |
+| meadows_bush3 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 1.54 | 2.48,-0.35,3.01 | 1.3 | False | 6 | 6 | 1/1 (free<0.6: 1) | 1/1 | - | stuck@1.08 found@1.08 hit@1.54 |
+| meadows_bush4 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.44 | 4.64,1.44,2.01 | 1.49 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.08 found@1.08 hit@2.44 |
+| meadows_bush5 (bush_stem, d 5, dh 1) | 5,0,2 | reached | 0.99 | 3.74,0,4.01 | 1.26 | True | 6 | 6 | 0/1 (free<0.6: 0) | 0/0 | - | hit@0.99 |
+| meadows_bush6 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 1.54 | 2.74,-1.49,3.01 | 1.46 | False | 8 | 8 | 1/1 (free<0.6: 0) | 1/1 | - | stuck@0.54 repaired@0.54 found@0.54 hit@1.54 |
+| meadows_trunk1 (tree, d 5, dh 0) | 5,0,1 | reached after stuck | 1.63 | 3.74,1.46,1.01 | 1.51 | False | 8 rej | 8 rej | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.63 |
+| meadows_trunk2 (aspen_tree, d 5, dh 0) | 5,0,1 | reached after stuck | 1.63 | 3.67,1.45,1.01 | 1.55 | False | 8 | 8 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.63 |
+| meadows_trunk3 (tree, d 5.66, dh 1) | 4,4,2 | reached (from below) | 1.45 | 1.67,3.38,1.01 | 1.58 | False | 9 | 9 | 0/2 (free<0.6: 1) | 0/0 | - | hit@1.45 |
+| meadows_trunk4 (aspen_tree, d 5, dh 0) | 0,5,1 | reached after stuck | 1.63 | -1.46,3.74,1.01 | 1.51 | False | 8 | 8 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.63 |
+| meadows_trunk5 (tree, d 4.24, dh 0) | 3,-3,1 | reached | 0.99 | 0.86,-2.51,1.01 | 2.14 | False | 7 | 7 | 0/1 (free<0.6: 0) | 0/0 | - | hit@0.99 |
+| deep_forest_trunk1 (apple_quarter, d 5, dh 0) | 0,5,1 | reached after stuck | 2.17 | -1.38,2.77,2.01 | 1.45 | False | 8 | 8 | 1/3 (free<0.6: 2) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@2.17 |
+| deep_forest_trunk2 (aspen_tree, d 5, dh 0) | 0,5,1 | reached after stuck | 1.63 | -1.46,3.74,1.01 | 1.51 | False | 8 rej | 8 rej | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 found@1.08 hit@1.63 |
+| deep_forest_trunk3 (tree, d 5, dh 1) | 5,0,2 | reached after stuck | 1.63 | 3.67,1.44,2.01 | 1.37 | False | 8 | 8 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@1.63 |
+| deep_forest_trunk4 (tree, d 5, dh 0) | 0,5,1 | reached after stuck | 1.63 | -1.31,3.77,1.01 | 1.79 | False | 8 | 8 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@1.63 |
+| deep_forest_trunk5 (tree, d 5, dh 0) | 0,-5,1 | reached | 0.99 | 0,-3.78,2.14 | 1.22 | True | 6 | 6 | 0/1 (free<0.6: 0) | 0/0 | - | hit@0.99 |
+| deep_forest_trunk6 (tree, d 5, dh 2) | 5,0,3 | reached after stuck | 1.63 | 3.78,1.47,3.01 | 1.5 | False | 8 | 8 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@1.63 |
+| pine_hills_bush1 (pine_bush_stem, d 5, dh 2) | 0,5,3 | reached (from below) after stuck | 4.43 | -2.17,4.59,1.01 | 1.63 | False | 8 | 8 | 3/5 (free<0.6: 4) | 3/3 | path_stuck=2 | stuck@1.08 found@1.08 leave_stuck@1.63 path_stuck@1.63 found@2.17 leave_stuck@3.8 path_stuck@3.8 found@3.89 hit@4.43 |
+| pine_hills_bush2 (bush_stem, d 5, dh 1) | 0,5,2 | reached (from below) after stuck | 2.44 | -1.24,4.5,1.01 | 1.34 | False | 8 | 8 | 1/3 (free<0.6: 2) | 1/1 | - | stuck@1.08 found@1.08 hit@2.44 |
+| pine_hills_bush3 (pine_bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.44 | 3.74,-1.49,3.01 | 1.12 | False | 8 | 8 | 1/3 (free<0.6: 2) | 1/1 | - | stuck@1.08 found@1.08 hit@2.44 |
+| pine_hills_bush4 (pine_bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 2.35 | -2.24,-4.38,3.01 | 1.31 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@2.35 |
+| pine_hills_bush5 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 1.81 | 1.26,-2.47,4.01 | 1.16 | False | 10 | 10 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@0.54 found@0.54 hit@1.81 |
+| pine_hills_bush6 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 1.81 | -1.48,-2.49,3.01 | 1.25 | False | 8 | 8 | 1/2 (free<0.6: 1) | 1/1 | - | stuck@1.08 repaired@1.08 found@1.08 hit@1.81 |
+| pine_hills_blue1 (blueberry_bush_leaves_with_berries, d 5, dh 2) | 0,5,3 | stuck on path -> give up |  |  | 2.14 | False | 10 | 10 | 22/2 (free<0.6: 1) | 14/14 | path_stuck=13 give_up=4 stop_attack=4 | stuck@0.54 found@0.54 leave_stuck@2.17 path_stuck@2.17 found@2.26 leave_stuck@2.71 path_stuck@2.71 found@3.34 leave_stuck@3.8 give_up@3.8 path_stuck@3.8 stop_attack@3.8 re_engage@4.88 stuck@5.42 found@5.42 leave_stuck@5.96 path_stuck@5.96 found@6.51 leave_stuck@7.05 path_stuck@7.05 found@7.59 leave_stuck@8.14 give_up@8.14 path_stuck@8.14 stop_attack@8.14 re_engage@9.22 stuck@9.76 found@9.76 leave_stuck@10.31 path_stuck@10.31 found@10.85 leave_stuck@11.39 path_stuck@11.39 found@11.93 leave_stuck@12.48 give_up@12.48 path_stuck@12.48 stop_attack@12.48 re_engage@13.56 stuck@14.11 found@14.11 leave_stuck@14.65 path_stuck@14.65 found@15.19 leave_stuck@15.74 path_stuck@15.74 found@16.28 leave_stuck@16.82 give_up@16.82 path_stuck@16.82 stop_attack@16.82 re_engage@17.91 stuck@18.45 found@18.45 leave_stuck@19 path_stuck@19 found@19.54 |
+| pine_hills_trunk1 (tree, d 5.66, dh 0) | 4,4,1 | reached | 1.17 | 1.86,3.34,1.01 | 2.14 | False | 9 rej | 9 rej | 0/2 (free<0.6: 1) | 0/0 | - | hit@1.17 |
+| pine_hills_trunk2 (pine_tree, d 5.66, dh 0) | -4,4,1 | reached | 1.17 | -1.86,3.35,2.01 | 2.14 | False | 9 | 9 | 0/2 (free<0.6: 1) | 0/0 | - | hit@1.17 |
+| pine_hills_trunk3 (apple_quarter, d 5.66, dh 0) | 4,-4,1 | reached | 1.17 | 1.86,-3.34,1.01 | 2.14 | False | 9 | 9 | 0/2 (free<0.6: 1) | 0/0 | - | hit@1.17 |
+| pine_hills_trunk4 (apple_quarter, d 5, dh 2) | -5,0,3 | reached (from below) after stuck | 2.44 | -3.93,-1.45,2.01 | 1.41 | False | 8 | 8 | 2/2 (free<0.6: 0) | 1/1 | - | stuck@1.08 cap_wait@1.08 found@1.63 hit@2.44 |
+
+**Totals extra:** 7 trials, reached 5, reached without a give-up 5, with a give-up 2, searches 28 (found 16), largest search 443 us.
+
+**Totals real:** 28 trials, reached 27, reached without a give-up 27, with a give-up 1, searches 36 (found 36), largest search 67 us.
+
+## archer
+
+| scene | target u,v,h | result | t hit | hit at u,v,h | min d | line0 | p6 | p12 | windows stuck/free | searches/found | fails | sequence |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| trunk_d5_strafe | 5,0,1 | reached | 3.62 | 3.2,-0.46,1.01 | 0.08 | False | 8 | 8 | 0/1 (free<0.6: 0) | 0/0 | - | shot@1.36 hit@3.62 |
+| t1_bush_d5_strafe | 5,0,2 | reached after stuck | 5.89 | 3.49,1.99,2.01 | 0.16 | False | 10 | 10 | 2/2 (free<0.6: 1) | 2/2 | - | stuck@0.54 found@0.54 shot@1.36 stuck@3.08 found@3.08 shot@4.17 hit@5.89 |
+| t2_bush_d5_strafe | 5,0,3 | reached (from below) after stuck | 1.72 | 2.61,3.7,2.25 | 0.01 | False | 14 | 14 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@0.54 found@0.54 hit@1.72 |
+| bushtop_d3 | 3,0,3 | stuck -> no path -> give up |  |  | 1.8 | False | 0 | 0 | 14/2 (free<0.6: 2) | 7/0 | search_fail=7 give_up=2 stop_attack=2 | stuck@1.09 no_path@1.09 search_fail@1.09 no_path@2.17 search_fail@2.17 no_path@4.26 give_up@4.26 search_fail@4.26 stop_attack@4.26 re_engage@5.34 stuck@5.89 no_path@5.89 search_fail@5.89 no_path@6.98 search_fail@6.98 no_path@9.06 give_up@9.06 search_fail@9.06 stop_attack@9.06 re_engage@10.15 stuck@11.23 no_path@11.23 search_fail@11.23 |
+| bluetop_d3 | 3,0,2 | reached | 10.96 | 1.45,0,2.01 | 1.55 | True | 4 | 4 | 0/0 (free<0.6: 0) | 0/0 | - | shot@1.36x4 hit@10.96 |
+| grove_d7 | 7,0,1 | reached after stuck | 11.33 | 4.2,0.31,1.01 | 2.08 | False | 10 | 10 | 2/2 (free<0.6: 0) | 2/2 | - | stuck@1.09 found@1.09 shot@1.36x4 stuck@10.51 found@10.51 hit@11.33 |
+| trunk_root_d5 | 5,0,1 | reached after stuck | 2.17 | 4.28,0.95,2.01 | 1.19 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.63 found@1.63 hit@2.17 |
+| meadows_bush1 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 2.27 | 1.98,-3.37,3.01 | 1.48 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.09 found@1.09 hit@2.27 |
+| meadows_bush2 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.54 | 4.45,1.99,2.01 | 1.45 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.09 repaired@1.09 found@1.09 hit@2.54 |
+| meadows_bush3 (bush_stem, d 5, dh 1) | 5,0,2 | reached | 1 | 3.63,0,3.01 | 1.37 | True | 6 | 6 | 0/1 (free<0.6: 0) | 0/0 | - | hit@1 |
+| meadows_bush4 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.81 | 4.47,1.8,2.01 | 1.45 | False | 10 | 10 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.09 repaired@1.09 found@1.09 hit@2.81 |
+| meadows_bush5 (bush_stem, d 5, dh 1) | 5,0,2 | reached | 1.09 | 4.35,0,4.01 | 0.08 | True | 6 | 6 | 0/2 (free<0.6: 0) | 0/0 | - | hit@1.09 |
+| meadows_bush6 (bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.54 | 2.25,-0.26,3.01 | 1.32 | False | 8 | 8 | 3/1 (free<0.6: 0) | 2/2 | path_stuck=1 | stuck@0.54 found@0.54 leave_stuck@1.09 path_stuck@1.09 found@1.63 hit@2.54 |
+| meadows_trunk1 (tree, d 5, dh 0) | 5,0,1 | reached after stuck | 2.18 | 4.27,0.95,1.01 | 1.19 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.63 found@1.63 hit@2.18 |
+| meadows_trunk2 (aspen_tree, d 5, dh 0) | 5,0,1 | reached after stuck | 2.18 | 4.27,0.95,1.01 | 1.19 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.63 found@1.63 hit@2.18 |
+| meadows_trunk3 (tree, d 5.66, dh 1) | 4,4,2 | reached | 1.45 | 2.21,3.3,2.01 | 1.56 | False | 9 | 9 | 0/2 (free<0.6: 1) | 0/0 | - | hit@1.45 |
+| meadows_trunk4 (aspen_tree, d 5, dh 0) | 0,5,1 | reached after stuck | 2.18 | -0.95,4.27,1.01 | 1.19 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.63 found@1.63 hit@2.18 |
+| meadows_trunk5 (tree, d 4.24, dh 0) | 3,-3,1 | reached | 1 | 1.2,-2.44,1.01 | 1.45 | False | 7 | 7 | 0/1 (free<0.6: 0) | 0/0 | - | hit@1 |
+| deep_forest_trunk1 (apple_quarter, d 5, dh 0) | 0,5,1 | stuck on path -> give up |  |  | 3.8 | False | 8 | 8 | 15/1 (free<0.6: 1) | 9/9 | path_stuck=8 give_up=2 stop_attack=2 | stuck@1.09 repaired@1.09 found@1.09 leave_stuck@1.63 path_stuck@1.63 repaired@2.18 found@2.18 leave_stuck@2.72 path_stuck@2.72 repaired@3.26 found@3.26 leave_stuck@3.81 give_up@3.81 path_stuck@3.81 stop_attack@3.81 re_engage@4.89 stuck@5.44 repaired@5.44 found@5.44 leave_stuck@5.98 path_stuck@5.98 repaired@6.52 found@6.52 leave_stuck@7.07 path_stuck@7.07 repaired@7.61 found@7.61 leave_stuck@8.15 give_up@8.15 path_stuck@8.15 stop_attack@8.15 re_engage@9.24 stuck@9.79 repaired@9.79 found@9.79 leave_stuck@10.33 path_stuck@10.33 repaired@10.87 found@10.87 leave_stuck@11.41 path_stuck@11.41 repaired@11.96 found@11.96 |
+| deep_forest_trunk2 (aspen_tree, d 5, dh 0) | 0,5,1 | reached after stuck | 2.18 | -0.95,4.27,1.01 | 1.19 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.63 found@1.63 hit@2.18 |
+| deep_forest_trunk3 (tree, d 5, dh 1) | 5,0,2 | stuck on path -> give up |  |  | 0.8 | False | 8 | 8 | 13/3 (free<0.6: 1) | 8/8 | path_stuck=8 give_up=2 stop_attack=2 | stuck@1.63 found@1.63 leave_stuck@2.72 path_stuck@2.72 found@2.81 leave_stuck@3.26 path_stuck@3.26 found@3.9 leave_stuck@4.35 give_up@4.35 path_stuck@4.35 stop_attack@4.35 re_engage@5.44 stuck@5.98 found@5.98 leave_stuck@6.52 path_stuck@6.52 found@7.07 leave_stuck@7.61 path_stuck@7.61 found@8.15 leave_stuck@8.7 give_up@8.7 path_stuck@8.7 stop_attack@8.7 re_engage@9.78 stuck@10.33 found@10.33 leave_stuck@10.87 path_stuck@10.87 found@11.41 leave_stuck@11.96 path_stuck@11.96 |
+| deep_forest_trunk4 (tree, d 5, dh 0) | 0,5,1 | reached after stuck | 2.18 | -0.95,4.27,1.01 | 1.19 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.63 found@1.63 hit@2.18 |
+| deep_forest_trunk5 (tree, d 5, dh 0) | 0,-5,1 | reached | 1 | 0,-4.02,2.01 | 0.98 | True | 6 | 6 | 0/1 (free<0.6: 0) | 0/0 | - | hit@1 |
+| deep_forest_trunk6 (tree, d 5, dh 2) | 5,0,3 | reached after stuck | 2.18 | 4.27,0.95,3.01 | 1.19 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.63 found@1.63 hit@2.18 |
+| pine_hills_bush1 (pine_bush_stem, d 5, dh 2) | 0,5,3 | stuck -> no path -> give up |  |  | 2.8 | False | 8 | 8 | 14/2 (free<0.6: 2) | 8/8 | search_fail=8 give_up=2 stop_attack=2 | stuck@1.09 rejected@1.09 search_fail@1.09 rejected@2.18 search_fail@2.18 rejected@4.26 give_up@4.26 search_fail@4.26 stop_attack@4.26 re_engage@5.35 stuck@5.89 rejected@5.89 search_fail@5.89 rejected@6.97 search_fail@6.97 rejected@8.06 give_up@8.06 search_fail@8.06 stop_attack@8.06 re_engage@9.15 stuck@9.69 rejected@9.69 search_fail@9.69 rejected@10.78 search_fail@10.78 |
+| pine_hills_bush2 (bush_stem, d 5, dh 1) | 0,5,2 | reached (from below) after stuck | 2.81 | -1.8,4.43,1.09 | 1.45 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.09 repaired@1.09 found@1.09 hit@2.81 |
+| pine_hills_bush3 (pine_bush_stem, d 5, dh 1) | 5,0,2 | reached after stuck | 2.09 | 4.09,-0.97,3.01 | 1.33 | False | 8 | 8 | 1/2 (free<0.6: 1) | 1/1 | - | stuck@1.09 found@1.09 hit@2.09 |
+| pine_hills_bush4 (pine_bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 6.7 | 1.97,-2.28,4.01 | 1.44 | False | 10 rej | 10 rej | 7/2 (free<0.6: 1) | 4/4 | search_fail=3 give_up=1 stop_attack=1 | stuck@1.09 rejected@1.09 search_fail@1.09 rejected@2.18 search_fail@2.18 rejected@4.26 give_up@4.26 search_fail@4.26 stop_attack@4.26 re_engage@5.35 stuck@5.89 repaired@5.89 found@5.89 hit@6.7 |
+| pine_hills_bush5 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 2.36 | 1.01,-4.48,4.01 | 1.14 | False | 10 | 10 | 1/3 (free<0.6: 0) | 1/1 | - | stuck@0.54 found@0.54 hit@2.36 |
+| pine_hills_bush6 (bush_stem, d 5, dh 2) | 0,-5,3 | reached after stuck | 2.27 | -0.2,-4.27,4.01 | 0.76 | False | 8 | 8 | 1/3 (free<0.6: 1) | 1/1 | - | stuck@1.09 found@1.09 leave_line@2.18 hit@2.27 |
+| pine_hills_blue1 (blueberry_bush_leaves_with_berries, d 5, dh 2) | 0,5,3 | stuck -> no path -> give up |  |  | 3.8 | False | 10 rej | 10 rej | 15/1 (free<0.6: 1) | 8/8 | search_fail=8 give_up=2 stop_attack=2 | stuck@1.09 rejected@1.09 search_fail@1.09 rejected@2.18 search_fail@2.18 rejected@4.26 give_up@4.26 search_fail@4.26 stop_attack@4.26 re_engage@5.35 stuck@5.89 rejected@5.89 search_fail@5.89 rejected@6.97 search_fail@6.97 rejected@9.06 give_up@9.06 search_fail@9.06 stop_attack@9.06 re_engage@10.15 stuck@10.69 rejected@10.69 search_fail@10.69 rejected@11.78 search_fail@11.78 |
+| pine_hills_trunk1 (tree, d 5.66, dh 0) | 4,4,1 | reached (from below) | 1.36 | 2.2,3.44,0.04 | 1.45 | False | 9 | 9 | 0/2 (free<0.6: 0) | 0/0 | - | hit@1.36 |
+| pine_hills_trunk2 (pine_tree, d 5.66, dh 0) | -4,4,1 | reached | 2.09 | -3.28,3.93,2.01 | 0.72 | False | 9 | 9 | 0/3 (free<0.6: 1) | 0/0 | - | hit@2.09 |
+| pine_hills_trunk3 (apple_quarter, d 5.66, dh 0) | 4,-4,1 | reached | 1.36 | 2.2,-3.45,1.01 | 1.45 | False | 9 | 9 | 0/2 (free<0.6: 0) | 0/0 | - | hit@1.36 |
+| pine_hills_trunk4 (apple_quarter, d 5, dh 2) | -5,0,3 | reached (from below) after stuck | 1.99 | -4.73,-0.99,2.01 | 1.03 | False | 8 | 8 | 1/2 (free<0.6: 0) | 1/1 | - | stuck@1.09 found@1.09 hit@1.99 |
+
+**Totals extra:** 7 trials, reached 6, reached without a give-up 6, with a give-up 1, searches 13 (found 6), largest search 408 us, trials with a seeing shot 4, blind shots 0.
+
+**Totals real:** 28 trials, reached 24, reached without a give-up 23, with a give-up 5, searches 53 (found 53), largest search 51 us.
+
+## Registered dogshoot mobs
+
+- `grug_mobs:ash_writ_bowman`: ground, pathfinding 1
+- `grug_mobs:bandit_archer`: ground, pathfinding 1
+- `grug_mobs:barrow_skeleton_archer`: ground, pathfinding 1
+- `grug_mobs:basket_poacher_thorn`: ground, pathfinding 1
+- `grug_mobs:bog_witch`: ground, pathfinding 1
+- `grug_mobs:bottle_keeper_zek`: ground, pathfinding 1
+- `grug_mobs:bough_counter_rusk`: ground, pathfinding 1
+- `grug_mobs:brandbound_collector`: ground, pathfinding 1
+- `grug_mobs:causeway_aqueduct_bowman`: ground, pathfinding 1
+- `grug_mobs:causeway_toll_skeleton`: ground, pathfinding 1
+- `grug_mobs:crown_frost_stray`: ground, pathfinding 1
+- `grug_mobs:crown_stone_golem`: ground, pathfinding 1
+- `grug_mobs:crystal_shard`: ground, pathfinding 1
+- `grug_mobs:dungeon_master`: ground, pathfinding 1
+- `grug_mobs:ember_wisp`: flier, pathfinding False
+- `grug_mobs:entrenched_bandit_archer`: ground, pathfinding 1
+- `grug_mobs:frost_stray`: ground, pathfinding 1
+- `grug_mobs:furtive_poacher`: ground, pathfinding 1
+- `grug_mobs:goblin_miner_slinger`: ground, pathfinding 1
+- `grug_mobs:goblin_slinger`: ground, pathfinding 1
+- `grug_mobs:kiln_whisper_hexer`: ground, pathfinding 1
+- `grug_mobs:king_elf`: ground, pathfinding 1
+- `grug_mobs:king_troll`: ground, pathfinding 1
+- `grug_mobs:king_undead`: ground, pathfinding 1
+- `grug_mobs:last_pay_archer`: ground, pathfinding 1
+- `grug_mobs:last_watch_skeleton_raider`: ground, pathfinding 1
+- `grug_mobs:march_skeleton_raider`: ground, pathfinding 1
+- `grug_mobs:marrow_archivist`: ground, pathfinding 1
+- `grug_mobs:mesa_golem`: ground, pathfinding 1
+- `grug_mobs:misguided_poacher_chief`: ground, pathfinding 1
+- `grug_mobs:ore_factor_brakk`: ground, pathfinding 1
+- `grug_mobs:poacher`: ground, pathfinding 1
+- `grug_mobs:powder_counter_nib`: ground, pathfinding 1
+- `grug_mobs:red_receipt_marshal`: ground, pathfinding 1
+- `grug_mobs:reed_hex_witch`: ground, pathfinding 1
+- `grug_mobs:rift_boss`: ground, pathfinding 1
+- `grug_mobs:rime_bell_warden`: ground, pathfinding 1
+- `grug_mobs:rime_skeleton_stray`: ground, pathfinding 1
+- `grug_mobs:rubble_goblin_slinger`: ground, pathfinding 1
+- `grug_mobs:salt_counter_witch`: ground, pathfinding 1
+- `grug_mobs:salt_hex_witch`: ground, pathfinding 1
+- `grug_mobs:seam_mesa_golem`: ground, pathfinding 1
+- `grug_mobs:seam_stone_golem`: ground, pathfinding 1
+- `grug_mobs:siege_deserter_archer`: ground, pathfinding 1
+- `grug_mobs:siege_goblin_slinger`: ground, pathfinding 1
+- `grug_mobs:siege_skeleton_raider`: ground, pathfinding 1
+- `grug_mobs:skeleton_archer`: ground, pathfinding 1
+- `grug_mobs:skeleton_raider`: ground, pathfinding 1
+- `grug_mobs:snarekeeper_vetch`: ground, pathfinding 1
+- `grug_mobs:snarewarden_bracken`: ground, pathfinding 1
+- `grug_mobs:snaring_poacher`: ground, pathfinding 1
+- `grug_mobs:split_seam_warden`: ground, pathfinding 1
+- `grug_mobs:standard_bearer_ninepins`: ground, pathfinding 1
+- `grug_mobs:stone_golem`: ground, pathfinding 1
+- `grug_mobs:storm_bottle_witch`: ground, pathfinding 1
+- `grug_mobs:toll_bandit_archer`: ground, pathfinding 1
+- `grug_mobs:unlicensed_poacher`: ground, pathfinding 1
+- `grug_mobs:vigilant_bandit_archer`: ground, pathfinding 1
+- `grug_mobs:wartrail_poacher`: ground, pathfinding 1
+- `grug_mobs:watch_captain_huskell`: ground, pathfinding 1
+
+## Scenes
+
+- `trunk_d5_strafe`: a trunk at u 4, the target behind it strafing v -2..2 every 6 s
+- `t1_bush_d5_strafe`: as t1_bush_d5, the target strafing v -3..3 every 6 s
+- `t2_bush_d5_strafe`: as t2_bush_d5, the target strafing v -3..3 every 6 s
+- `bushtop_d3`: the target on top of a 2-high bush (u 2..4) on flat ground
+- `bluetop_d3`: the target on top of a blueberry bush (u 2..4) on flat ground
+- `grove_d7`: a grove: trunks at u 3 (v -4,-2,0,2,4) and u 5 (v -3,-1,1,3), target at u 7
+- `trunk_root_d5`: a trunk at u 4 with 1-high stubs (roots) at u 3 and v +-1 round it

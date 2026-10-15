@@ -374,7 +374,8 @@ end
 -- The writer's geographic predicate for one candidate site. `values`:
 --   mode      "surface" (open ground at the planned surface or on
 --             player-made ground) or "cave" (at least two below the planned
---             terrain surface, world_content.lua cave rows);
+--             terrain surface, the catalog's cave rows, native
+--             decorations at generation since Round 49);
 --   y         the plant position; level the zone's surface mob level
 --             (surface rows band by level, world_content.lua), zone, biome
 --             (the planner's logical biome) and support (node name below).

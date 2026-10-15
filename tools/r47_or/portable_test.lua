@@ -19,11 +19,9 @@
 --      `lower_half_of` (T1, T3, T4, T5), nothing else does; the real R6
 --      content module accepts them and refuses a row without, a row with an
 --      extra one and a band without its half boundary.
---   5. The real writer (tools/seed_fleet/runtime.lua, seed 12345, the open
---      land column of tools/r46_or): the chunks across the four half
---      boundaries, their native stone laid out in the tier rocks, hold no
---      lower-half ore above its band's half and some below it, while the
---      ores of the whole band stay on both sides.
+--   5. The generator (Round 49): the native scatter rows of a lower-half
+--      resource end at their band's half, a whole-band ore spans the band,
+--      and the writer's fill ores put T1 Iron only below T1's half.
 -- Prints "R47 OR PORTABLE PASS checks=<n>" or raises.
 
 local repo = assert(arg and arg[1], "usage: luajit portable_test.lua REPO")
@@ -228,76 +226,61 @@ refused(function() B.projection.tiers[1].lower_half_y_max = 0 end,
 	"a half boundary at the band's top is refused")
 check(pcall(B.content), "R6 content accepts the restored rows")
 
--- 5. The real writer across the half boundaries --------------------------------
-local R = dofile(repo .. "/tools/seed_fleet/runtime.lua")(repo, "12345")
-local fake = R.fake
-local X0, Z0 = 368, -2352
-local tier_cid = {}
-for tier = 1, 6 do tier_cid[tier] = fake.get_content_id(M.TIERS[tier].node) end
-local stone = tier_cid[1]
-local ore_key = {}
-for _, resource in ipairs(M.RESOURCES) do
-	ore_key[fake.get_content_id(resource.natural_node)] = resource.key
+-- 5. The half boundaries in the generator ---------------------------------------
+-- Round 49 (lane ORE): native v7 places the ores of native rock, so the rule
+-- lives in the native scatter rows (r7_native.lua): a lower-half row ends at
+-- its band's half, a whole-band row spans the band; the writer's fill ores
+-- (r6_settlement.lua r49_fill_ores_new, T1 only) keep T1's half too. (Until
+-- Round 49 this section ran the writer across the four half chunks.)
+local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+local common = dofile(repo .. "/tools/wp40/r6/common.lua")
+local sha = common.new_sha256()
+local saved_core = rawget(_G, "core")
+_G.core = {sha256 = function(bytes) return common.hex(sha(bytes)) end}
+local rows = dofile(wp40 .. "/r7_native.lua").population(wp40,
+	dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp43_handoff.lua").project(M))
+_G.core = saved_core
+local function band_rows(key, tier)
+	local node, found = M.RESOURCE_BY_KEY[key].natural_node, {}
+	for _, row in ipairs(rows) do
+		if row.ore == node and row.wherein == M.TIERS[tier].node then
+			found[#found + 1] = row
+		end
+	end
+	return found
 end
--- The four chunks (80 nodes from y -32 + 80k) that hold a half boundary.
-local CHUNKS = {{tier = 1, y = -112}, {tier = 3, y = -432}, {tier = 4, y = -672},
-	{tier = 5, y = -912}}
-local function count_ores(minp)
-	local vm = R.new_vm(minp)
-	local data = vm.native.data
-	local eminx, eminy, eminz = minp.x - 16, minp.y - 16, minp.z - 16
-	-- v7's native stratum ores: the stone of each y band becomes its tier rock.
-	for z = eminz, eminz + 111 do
-		for y = eminy, eminy + 111 do
-			local cid = tier_cid[M.tier_at(y)]
-			for x = eminx, eminx + 111 do
-				local index = (z - eminz) * 12544 + (y - eminy) * 112 + (x - eminx) + 1
-				if data[index] == stone then data[index] = cid end
+local WHOLE = {[1] = "copper", [2] = "gold", [3] = "gold", [4] = "gold", [5] = "silver"}
+for key, tier in pairs(HALF) do
+	local found = band_rows(key, tier)
+	check(#found == 1 and found[1].y_max == M.TIERS[tier].lower_half_y_max and
+		found[1].y_min == M.TIERS[tier].y_min, key .. " only in the T" .. tier .. " lower half")
+	local whole = band_rows(WHOLE[tier], tier)
+	check(#whole == 1 and whole[1].y_min == M.TIERS[tier].y_min and
+		whole[1].y_max == M.TIERS[tier].y_max, WHOLE[tier] .. " spans T" .. tier)
+end
+local fill_ore_at = dofile(wp40 .. "/r6_settlement.lua").r49_fill_ores_new(
+	manifest.resources, M.TIERS[1], "12345")
+local iron_index
+for index, row in ipairs(manifest.resources) do
+	if row.key == "iron" then iron_index = index end
+end
+local iron_upper, iron_lower, copper_upper = 0, 0, 0
+for x = 0, 63 do
+	for z = 0, 63 do
+		for y = -100, -1 do
+			local index = fill_ore_at(x, y, z)
+			if index == iron_index then
+				if y > M.TIERS[1].lower_half_y_max then iron_upper = iron_upper + 1
+				else iron_lower = iron_lower + 1 end
+			elseif index and manifest.resources[index].key == "copper" and y > -50 then
+				copper_upper = copper_upper + 1
 			end
 		end
 	end
-	local maxp = {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
-	local plan, generation = R.built.session.plan_slice(minp, maxp)
-	R.built.writer.apply(vm, minp, maxp, plan, generation)
-	local written = assert(vm.written.data, "the writer wrote the chunk")
-	local counts = {}
-	for z = minp.z, maxp.z do
-		for y = minp.y, maxp.y do
-			for x = minp.x, maxp.x do
-				local key = ore_key[written[(z - eminz) * 12544 + (y - eminy) * 112 +
-					(x - eminx) + 1]]
-				if key then
-					local tier = M.tier_at(y)
-					local half = M.TIERS[tier].lower_half_y_max
-					local side = half and y <= half and "lower" or "upper"
-					local slot = key .. ":" .. tier .. ":" .. side
-					counts[slot] = (counts[slot] or 0) + 1
-				end
-			end
-		end
-	end
-	return counts
 end
--- A whole-band ore of each chunk's band, present on both sides.
-local WHOLE = {[1] = "copper", [3] = "gold", [4] = "gold", [5] = "silver"}
-for _, chunk in ipairs(CHUNKS) do
-	local counts = count_ores({x = X0, y = chunk.y, z = Z0})
-	local tier = chunk.tier
-	for key, band in pairs(HALF) do
-		if band == tier then
-			local upper = counts[key .. ":" .. tier .. ":upper"] or 0
-			local lower = counts[key .. ":" .. tier .. ":lower"] or 0
-			print(("T%d chunk y %d: %s upper %d lower %d"):format(tier, chunk.y, key,
-				upper, lower))
-			check(upper == 0, key .. " absent above the T" .. tier .. " half")
-			check(lower > 0, key .. " present below the T" .. tier .. " half")
-		end
-	end
-	local whole = WHOLE[tier]
-	local upper = counts[whole .. ":" .. tier .. ":upper"] or 0
-	local lower = counts[whole .. ":" .. tier .. ":lower"] or 0
-	print(("T%d chunk y %d: %s upper %d lower %d"):format(tier, chunk.y, whole, upper, lower))
-	check(upper > 0 and lower > 0, whole .. " on both sides of the T" .. tier .. " half")
-end
+print(("fill ores T1: iron upper %d lower %d, copper upper %d"):format(iron_upper,
+	iron_lower, copper_upper))
+check(iron_upper == 0 and iron_lower > 0, "fill iron only in the T1 lower half")
+check(copper_upper > 0, "fill copper above the T1 half")
 
 print("R47 OR PORTABLE PASS checks=" .. checks)

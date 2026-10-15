@@ -229,7 +229,8 @@ local START_BAND = 12
 local start_pads
 
 -- Round 24 ruling 30: a start town is hard-protected only from its floor
--- (placement height - 100, owned by the zone authority) upward, so the
+-- (placement height minus the protection depth, owned by the zone authority:
+-- `source.protection_depth_below_placement`) upward, so the
 -- hostile refusal ends there too; caves below keep their ordinary
 -- population. The authority's public query answers "town" exactly at and
 -- above that floor in the anchor column, so the floor is found once per

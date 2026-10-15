@@ -168,20 +168,30 @@ local function player_level(player)
 	return xp and xp.get_level(player) or 0
 end
 
+-- Whether the Housing Steward may hand the player a stone (ruling 7): level
+-- 20+, no stone placed, none carried in any list. Returns ok, or false and
+-- the reason the Steward's window shows in place of its button (Round 49
+-- ruling 4). Room in the inventory is not asked: a full inventory keeps the
+-- button, and issue_stone refuses on the click.
+function grug_housing.can_receive_stone(player)
+	if not player or not player:is_player() then return false, "No player." end
+	return model.can_issue(player:get_player_name(), player_level(player),
+		grug_housing.holds_stone(player))
+end
+
 -- Housing Steward hand-out (ruling 7): gives the stone when the player is
 -- level 20+ and has none; returns ok, message.
 function grug_housing.issue_stone(player)
-	if not player or not player:is_player() then return false, "No player." end
-	local name, level = player:get_player_name(), player_level(player)
-	local holds = grug_housing.holds_stone(player)
-	local ok, message = model.can_issue(name, level, holds)
+	local ok, message = grug_housing.can_receive_stone(player)
 	if not ok then return false, message end
-	-- The stone is soulbound: the give helper puts it into `main` only.
+	local name, level = player:get_player_name(), player_level(player)
+	-- The give helper treats the stone like any other item (Round 49 ruling
+	-- 3): main[9..], the bags, the hotbar last.
 	local stone = ItemStack(grug_housing.STONE_ITEM)
 	if not grug_inventory.fits(player, {stone}) then
 		return false, "Make room in your inventory for the Claim Stone."
 	end
-	ok, message = model.issue(name, level, holds)
+	ok, message = model.issue(name, level, false) -- none carried (checked above)
 	if not ok then return false, message end
 	grug_inventory.give(player, stone)
 	return true, message
@@ -287,7 +297,7 @@ function grug_housing.add_fuel(claim, count, itemname)
 end
 
 -- Owner pick-up through the stone interface; returns ok, message. The stone
--- goes back into the main inventory together with the unburnt whole lumps
+-- goes back into the inventory (the give helper) together with the unburnt whole lumps
 -- (dropped at the player when they do not fit). A draft comes back at any
 -- time; an activated stone only 12 h after activation (R26 ruling 10).
 function grug_housing.pick_up(player)

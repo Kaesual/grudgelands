@@ -35,7 +35,16 @@
 --     the body's width at every waypoint; a body wider than one node is
 --     steered through the 2x2 block it fits in (2 nodes) or needs every
 --     cell round the waypoint (wider). Unknown and unloaded nodes are
---     blocked. A rejected path is a failed search (ruling 19).
+--     blocked. A waypoint that fails is repaired (Round 49 NAV2, the user
+--     2026-10-15, replacing ruling 19's "no extra mechanism"): one of the 8
+--     cells round it, on its level or one up or down, where the body fits
+--     on ground, one step from the previous waypoint and near the next (one
+--     step, or two nodes a straight walk covers); a waypoint whose two
+--     neighbours are one step apart is left out instead. A path with a
+--     waypoint that has none of these is rejected: a failed search.
+--   * Padding (Round 49 NAV2, ruling 18's value): the 1st search of a
+--     stuck episode pads its box by 6, the 2nd by 12, every later one by 16
+--     (PADDING_STEPS); progress starts the next episode at 6 again.
 --   * Smoothing and the walkable line (ruling 7): at each waypoint the mob
 --     steers at the furthest of the next LOOKAHEAD waypoints it can walk to
 --     straight. A straight walk samples every half node: feet to head free
@@ -57,6 +66,9 @@ local nav = {
 	ANGLES = {0, 20, -20, 40, -40}, -- degrees off the target's direction
 	BAND = 3, -- nodes up and down for a standable candidate
 	PADDING = 6, -- the search box's padding (searchdistance)
+	-- Round 49 NAV2: the padding of a stuck episode's 1st, 2nd and later
+	-- searches (6, then 12, capped at 16).
+	PADDING_STEPS = {6, 12, 16},
 	-- Never below 2: core.find_path aborts the server on a smaller box
 	-- (docs/technical/upstream-workarounds.md §5). The box is exclusive on
 	-- its positive edge, so padding p reaches p - 1 nodes on that side.
@@ -326,20 +338,97 @@ local function fit(body, x, y, z, prev_sx, prev_sz)
 	return 0, 0
 end
 
--- The engine's path as steer points for `body`, or nil when any waypoint
--- lacks the head room or the width. The first point is where the mob
--- stands already.
+-- The repair (Round 49 NAV2). A move from cell a to cell b is one step when
+-- b is one of the 8 columns round a, at most the step (or jump) height up
+-- and the drop down; a diagonal one needs one of its two corner columns
+-- open at the higher level. nil: no step; 0 straight, 1 diagonal.
+local AROUND = {{1, 0}, {-1, 0}, {0, 1}, {0, -1},
+	{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
+local LEVELS = {0, 1, -1}
+
+local function step_cost(body, a, b)
+	local dx, dz = abs(b.x - a.x), abs(b.z - a.z)
+	if dx > 1 or dz > 1 or dx + dz == 0 then return nil end
+	local dy = b.y - a.y
+	local up = body.jump > body.step and body.jump or body.step
+	if dy > up or -dy > body.drop then return nil end
+	if dx + dz == 1 then return 0 end
+	local y = dy > 0 and b.y or a.y
+	if open_column(body, a.x, y, b.z) or open_column(body, b.x, y, a.z) then
+		return 1
+	end
+	return nil
+end
+
+-- From cell c on to the next waypoint: a step (0, 1), or 2 for a waypoint
+-- two nodes away (and at most two up or down) that a straight walk reaches.
+local C_FEET = {x = 0, y = 0, z = 0}
+local function cost_on(body, c, nxt)
+	local cost = step_cost(body, c, nxt)
+	if cost then return cost end
+	if abs(c.x - nxt.x) > 2 or abs(c.z - nxt.z) > 2 or abs(c.y - nxt.y) > 2 then
+		return nil
+	end
+	C_FEET.x, C_FEET.y, C_FEET.z = c.x, c.y - 0.5, c.z
+	return nav.line_walkable(body, C_FEET, nxt) and 2 or nil
+end
+
+-- What becomes of waypoint `p` (between `prev`, already kept, and `nxt`,
+-- nil at the path's end): the cell that replaces it and its fit offset;
+-- false when it is left out (the previous waypoint is one step from the
+-- next: the previous one itself replaces it); nil when nothing fits. The
+-- cheapest way wins (a straight step 0, a diagonal 1, a two-node walk 2).
+local function repair(body, prev, p, nxt, psx, psz)
+	local best, bx, bz
+	local best_cost = nxt and step_cost(body, prev, nxt)
+	local skip = best_cost ~= nil
+	local c = {}
+	for k = 1, #AROUND do
+		for l = 1, #LEVELS do
+			c.x, c.y, c.z = p.x + AROUND[k][1], p.y + LEVELS[l], p.z + AROUND[k][2]
+			local cost = step_cost(body, prev, c)
+			if cost and nxt and (not best_cost or cost < best_cost) then
+				local after = cost_on(body, c, nxt)
+				cost = after and cost + after
+			end
+			if cost and (not best_cost or cost < best_cost) then
+				local _, ground = cell(body, c.x, c.y - 1, c.z)
+				local ox, oz
+				if ground then ox, oz = fit(body, c.x, c.y, c.z, psx, psz) end
+				if ox then
+					best, bx, bz, best_cost = {x = c.x, y = c.y, z = c.z}, ox, oz, cost
+					skip = false
+				end
+			end
+		end
+	end
+	if skip then return false end
+	return best, bx, bz
+end
+
+-- The engine's path as steer points for `body`, or nil when a waypoint
+-- lacks the head room or the width and cannot be repaired; the second value
+-- counts the repaired waypoints. The first point is where the mob stands
+-- already.
 function nav.check_path(body, path)
 	local out = {path[1]}
 	local psx, psz
+	local prev, repaired = path[1], 0
 	for i = 2, #path do
 		local p = path[i]
 		local ox, oz = fit(body, p.x, p.y, p.z, psx, psz)
-		if not ox then return nil end
-		if ox ~= 0 then psx, psz = ox * 2, oz * 2 end
-		out[i] = {x = p.x + ox, y = p.y, z = p.z + oz}
+		if not ox then
+			p, ox, oz = repair(body, prev, p, path[i + 1], psx, psz)
+			if p == nil then return nil end
+			repaired = repaired + 1
+		end
+		if p then
+			if ox ~= 0 then psx, psz = ox * 2, oz * 2 end
+			out[#out + 1] = {x = p.x + ox, y = p.y, z = p.z + oz}
+			prev = p
+		end
 	end
-	return out
+	return out, repaired
 end
 
 --
@@ -468,10 +557,11 @@ function nav.forget(temp)
 	if obstacle then obstacle.cancel_path_request(temp) end
 end
 
--- End a stuck episode: the count, the wish to search, the candidates.
+-- End a stuck episode: the count, the wish to search, the candidates, the
+-- padding step.
 local function progress(self, nst)
 	nst.fails, nst.want, nst.ring, nst.angle, nst.point = 0, nil, nil, nil, nil
-	nst.line_left = nil
+	nst.line_left, nst.searches = nil, nil
 	obstacle.cancel_path_request(self.temp)
 end
 
@@ -655,13 +745,19 @@ local function attempt(self, nst, pos, goal_pos, key, mode, close, target, opts)
 	cap_take()
 	nst.capped, nst.point = nil, nil
 	nst.lock = t + nav.LOCKOUT[mode]
-	local path = nav.search(from, goal, nav.PADDING, body.jump, body.drop)
-	local steer = path and nav.check_path(body, path)
+	-- The episode's padding step (Round 49 NAV2).
+	local steps = nav.PADDING_STEPS
+	nst.searches = (nst.searches or 0) + 1
+	local path = nav.search(from, goal, steps[nst.searches] or steps[#steps],
+		body.jump, body.drop)
+	local steer, repaired
+	if path then steer, repaired = nav.check_path(body, path) end
 	obstacle.note_search_result(self.temp, t, key, from, goal, steer ~= nil)
 	if not steer then
 		emit(self, path and "rejected" or "no_path")
 		return "failed"
 	end
+	if repaired > 0 then emit(self, "repaired") end
 	emit(self, "found")
 	take_path(nst, body, pos, steer)
 	return "found"

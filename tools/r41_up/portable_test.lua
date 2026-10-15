@@ -426,7 +426,12 @@ local function make_player(name)
 end
 function Player:get_player_name() return self.name end
 function Player:get_meta() return self.meta end
-function Player:get_inventory() return {add_item = noop} end
+-- Round 49: the starter kit goes onto hotbar slots 7 and 8 (grug_factions):
+-- every slot reads empty, nothing is kept.
+local empty_slot = {is_empty = function() return true end}
+function Player:get_inventory()
+	return {add_item = noop, set_stack = noop, get_stack = function() return empty_slot end}
+end
 function Player:get_armor_groups() return deep_copy(self.armor) end
 function Player:set_armor_groups(g) self.armor = g end
 function Player:set_inventory_formspec(fs) self.inventory_formspec = fs end

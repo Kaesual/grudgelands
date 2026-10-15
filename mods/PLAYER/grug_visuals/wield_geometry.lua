@@ -205,9 +205,10 @@
 --
 -- The printed check was the WP13 wield-transform KAT (retired in Round 22).
 --
--- THE TWO TASTE VALUES, both in this file and nowhere else: `SIZE` (how big
--- the weapon is) and `TILT_UP` (how far above level the blade rides, 0 = the
--- ruling's "straight forward, 90 degrees to the arm"). `GRIP` is measurement,
+-- THE THREE TASTE VALUES, all in this file and nowhere else: `SIZE` (how big
+-- the weapon is), `NODE_BLOCK_SCALE` (how much smaller a held block is, Round
+-- 49) and `TILT_UP` (how far above level the blade rides, 0 = the ruling's
+-- "straight forward, 90 degrees to the arm"). `GRIP` is measurement,
 -- not taste, and moves only if the sprite convention moves.
 --
 
@@ -220,6 +221,13 @@ local BONE = "Arm_Right"
 -- the anti-diagonal of the sprite -- reads about 8 units long against a 6.3
 -- unit arm.
 local SIZE = 0.32
+
+-- A node item the engine draws as a BLOCK (a cube, a nodebox or a mesh: dirt,
+-- stone, slabs, stairs) is held at this fraction of SIZE (Round 49 ruling 8:
+-- at full size a held dirt block read as big as the head). A sprite is a flat
+-- 16 px square whose painted part is mostly smaller; a block fills its whole
+-- edge in three dimensions. Flat-drawn items keep SIZE.
+local NODE_BLOCK_SCALE = 0.7
 
 -- Degrees the blade rides above level. 0 = straight forward, at a right angle
 -- to the hanging arm (playtest round 2).
@@ -309,6 +317,36 @@ function grug_visuals.pose_for(itemname, group_value, explicit)
 	return POSE.forward
 end
 
+-- WHICH ITEMS THE ENGINE DRAWS AS A BLOCK in a `wielditem` entity -- the
+-- engine's rule, read off `WieldMeshSceneNode::setItem`
+-- (src/client/wieldmesh.cpp): a wield image (the definition's, or the stack's
+-- `wield_image` meta) always wins and is extruded flat; without one, a node of
+-- one of these drawtypes is extruded from its tile, and every other node is
+-- built as its own 3D mesh. Tools and craftitems are always flat.
+local FLAT_DRAWTYPE = {
+	airlike = true, signlike = true, torchlike = true, raillike = true,
+	plantlike = true, flowingliquid = true, plantlike_rooted = true,
+}
+grug_visuals.FLAT_DRAWTYPE = FLAT_DRAWTYPE
+
+local function has_image(image)
+	return image ~= nil and image ~= ""
+end
+
+-- The size factor for an item held in the third-person hand: NODE_BLOCK_SCALE
+-- for a block, 1 for anything drawn flat. `def` is the item definition and
+-- `stack_image` the stack's `wield_image` meta ("" or nil for none). An item's
+-- `_grug_world_wield_image` counts as a wield image: `wield_appearance` (apply.lua)
+-- hands it to this entity as one.
+function grug_visuals.wield_item_scale(def, stack_image)
+	if type(def) ~= "table" or def.type ~= "node" or has_image(stack_image) or
+			has_image(def._grug_world_wield_image) or has_image(def.wield_image) or
+			FLAT_DRAWTYPE[def.drawtype or "normal"] then
+		return 1
+	end
+	return NODE_BLOCK_SCALE
+end
+
 -- The attachment for a parent whose (uniform) stature scale is `stature`.
 -- nil / 0 means "do not compensate" -- the weapon then scales with its wielder.
 --
@@ -334,12 +372,21 @@ end
 -- the tool pose, which is the reassuring part: only the sprite's own built-in
 -- angle differs. The generic forward profile changes y to 0, rotating image
 -- up toward model +z (forward) by 90 degrees around the same centered grip.
-function grug_visuals.wield_transform(stature, pose)
+--
+-- `item_scale` is `wield_item_scale`'s factor (nil = 1). It scales the sprite
+-- edge before anything is derived from it, so every pose keeps its anchor in
+-- the fist: a centred icon's centre IS the hand, and the diagonal poses
+-- recompute their grip offset from the smaller edge.
+function grug_visuals.wield_transform(stature, pose, item_scale)
 	local k = tonumber(stature)
 	if not k or k <= 0 then
 		k = 1
 	end
-	local size = SIZE / k
+	local scale = tonumber(item_scale)
+	if not scale or scale <= 0 then
+		scale = 1
+	end
+	local size = SIZE * scale / k
 	local sprite_edge = 40 * size / 2
 	-- LOUD, not lenient. The second argument was a BOOLEAN before playtest
 	-- round 5 (`true` meant upright), and a stale `true` coerced to the default
@@ -362,6 +409,7 @@ function grug_visuals.wield_transform(stature, pose)
 			pose = pose,
 			stature = k,
 			base_size = SIZE,
+			item_scale = scale,
 			tilt_up = TILT_UP,
 			hand = HAND,
 			sprite_edge = sprite_edge,
@@ -381,7 +429,8 @@ function grug_visuals.wield_transform(stature, pose)
 			pos = {x = HAND.x, y = HAND.y, z = HAND.z},
 			rot = {x = 90, y = 45, z = -90},
 			size = {x = size, y = size},
-			pose = pose, stature = k, base_size = SIZE, tilt_up = TILT_UP,
+			pose = pose, stature = k, base_size = SIZE, item_scale = scale,
+			tilt_up = TILT_UP,
 			hand = HAND, sprite_edge = sprite_edge,
 			grip_fraction_x = 0, grip_fraction_y = 0,
 		}
@@ -439,6 +488,7 @@ function grug_visuals.wield_transform(stature, pose)
 		-- eyeballing: change one of these, not the results above.
 		stature = k,
 		base_size = SIZE,
+		item_scale = scale,
 		tilt_up = TILT_UP,
 		hand = HAND,
 		sprite_edge = sprite_edge,

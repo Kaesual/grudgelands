@@ -205,8 +205,12 @@ local function make_player(name)
 end
 function Player:get_player_name() return self.name end
 function Player:get_meta() return self.meta end
+-- Round 49: the starter kit goes onto hotbar slots 7 and 8 (grug_factions):
+-- every slot reads empty, and a set_stack counts as a grant too.
+local empty_slot = {is_empty = function() return true end}
 function Player:get_inventory()
-	return {add_item = function() inventory_adds = inventory_adds + 1 end}
+	local function add() inventory_adds = inventory_adds + 1 end
+	return {add_item = add, set_stack = add, get_stack = function() return empty_slot end}
 end
 function Player:get_armor_groups()
 	local c = {}

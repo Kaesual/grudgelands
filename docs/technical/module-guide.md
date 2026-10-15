@@ -881,8 +881,12 @@ tools](#player-meta-read-by-external-tools).
     navigates through `mobs/grug_nav.lua` (`mobs.grug_nav`, Round 42: the
     stuck detector, the local search, the follower and the give-up rule of
     `combat_stats.md` "Navigation" and "Unreachable targets are given up",
-    `grug_mobs.give_up_target` in `aggro.lua`); `nav.fixed_step` is the
-    fixed-walk interface. A walk to a fixed goal (a patrol, a post or seat,
+    `grug_mobs.give_up_target` in `aggro.lua`; Round 49 NAV2: `check_path`
+    repairs a waypoint without head room or width from the cells round it,
+    a stuck episode's searches pad 6, 12, then 16 (`PADDING_STEPS`), and
+    ground `dogshoot` mobs with a ranged phase navigate too, to regain sight
+    of their target); `nav.fixed_step` is the fixed-walk interface. A walk
+    to a fixed goal (a patrol, a post or seat,
     the evade, the rift boss's way home) goes through `patrol.lua`
     `grug_mobs.walk_fixed` from its owner's 1 Hz tick and
     `grug_mobs.walk_follow` on every other step (the per-step steer while
@@ -1565,13 +1569,13 @@ tools](#player-meta-read-by-external-tools).
   meta survives; a future item-removal step scans them and the list
   `grug_mail_out` (upgrade contract §1).
 - **The API** (the contract lanes ADMIN, QUEST and BAGS build on):
-  - `send_letter(player, to_name, subject, body[, quoted])` — player mail:
-    a created character of the sender's faction (the index), never the
+  - `send_letter(player, to_name, subject, body)` — player mail: a
+    created character of the sender's faction (the index), never the
     sender, not into a mailbox at 50 player letters; postage `5 + 30 ×
-    stacks` and the four `grug_mail_out` slots leave in one
-    `grug_money.take_with_inventory` call. `quoted` is the slot stacks the
-    window showed the postage for: a slot that differs refuses before
-    anything is taken. Returns ok, message.
+    stacks` for the four `grug_mail_out` slots as they are at the call,
+    and the slots leave with it in one `grug_money.take_with_inventory`
+    call (Round 49: no quote). Returns ok, message ("Letter sent to X.
+    Postage paid: 65c.").
   - `send_system(to_name, kind, from_label, subject, body[, stacks])` —
     `kind` "admin" (always shown from "Server Admin", whatever the label) or
     "npc"; always delivered (no limit, faction or postage), to an indexed
@@ -1613,7 +1617,7 @@ tools](#player-meta-read-by-external-tools).
   (`grug_inventory.carried_lists`), so selling, crafting, the sort and the
   migrations never touch it, and no detached inventory is involved (a
   disconnect loses nothing). The existing allow callbacks refuse what must
-  not go there: `grug_housing/soulbound.lua` (only `main`) and
+  not go there: `grug_housing/soulbound.lua` (only `main` and the bags) and
   `grug_skills/bound_items.lua` (skills only on the hotbar, mount items only
   in `main` and the bags); the fixture runs both. The Write tab rings
   `grug_mail_out` → the shift-click inbox → `main`, and each bag into the
@@ -1645,10 +1649,10 @@ tools](#player-meta-read-by-external-tools).
   nodes, else the window closes and the slots go back. Typed text is kept
   from every event and written back as the fields' defaults; the window is
   never resent on an inventory move (a resend drops unsent text), which is
-  why Send compares the slots with the quote of the last draw. The two Send
-  buttons carry the draw's serial (`write_send_<n>`, `admin_send_<n>`): a
-  click from a form already replaced (a double click, or a second click
-  after a refusal that showed new postage) acts on nothing and only redraws.
+  why the Write tab shows the postage rule, not a figure, and Send charges
+  the slots as they are at the click (Round 49). The two Send buttons carry
+  the draw's serial (`write_send_<n>`, `admin_send_<n>`): a click from a
+  form already replaced (a double click) acts on nothing and only redraws.
   The Write tab's rings put `grug_mail_out` right after `main` and after
   each bag (the engine follows the first entry naming the source list). The focus
   sits on an invisible button at every send ("UI and formspecs").
@@ -1698,7 +1702,8 @@ tools](#player-meta-read-by-external-tools).
     `remaining_seconds`, `permission(claim, name)` →
     `"owner"`/`"everything"`/`"interact"`/nil, `player_claim(name)` → claim
     plus state `never`/`carried`/`placed`/`destroyed`/`removed`/`needs_stone`,
-    `issue_stone`, `activate`, `add_fuel(claim, count, itemname)` (per-item
+    `issue_stone`, `can_receive_stone(player)` (ok, or false and the
+    reason the Steward shows in place of its button, Round 49), `activate`, `add_fuel(claim, count, itemname)` (per-item
     seconds `FUEL_ITEMS`, cap `FUEL_CAP_SECONDS`, Round 47),
     `fuel_seconds`, `fuel_room_seconds`, `pick_up`, `set_permission`,
     `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,
@@ -1945,10 +1950,13 @@ tools](#player-meta-read-by-external-tools).
   `docs/research/wp40-completion.md` are the current contract, and
   `docs/design/biomes_mobs.md` §1/§4 keep the retired WP18/WP36 tables as a
   labelled historical record only.
-  What R7 registers, and what that costs you: **zero Lua biomes and zero Lua
-  decorations**. One mapgen script (`core.register_mapgen_script`,
-  `wp40/r7_mapgen.lua`), one `register_on_generated` VM transaction, and a
-  six-record native ore allowlist in `wp40/r7_native.lua`. `game.conf` pins
+  What R7 registers, and what that costs you: **zero Lua biomes**. One
+  mapgen script (`core.register_mapgen_script`, `wp40/r7_mapgen.lua`), one
+  `register_on_generated` VM transaction, and the closed native allowlist in
+  `wp40/r7_native.lua`: the gravel blob, five strata, three decorative nests
+  and (Round 49) one scatter row per resource, tier band and deep band plus
+  two biome-less `all_floors` cave decorations (Cave Cap, Ember Moss), all
+  derived from the resource table and pinned by `NATIVE_DIGEST`. `game.conf` pins
   `allowed_mapgens = v7`; `default`'s own `register_biomes/ores/decorations`
   stay uncalled (GRUG PATCH at the tail of `mods/BASE/default/mapgen.lua`),
   because an ore or decoration whose `biomes` names do not resolve is silently
@@ -1965,7 +1973,8 @@ tools](#player-meta-read-by-external-tools).
   take exactly the nodes no other ore claimed, and — running after the caves —
   they convert the already-carved cave walls too, so those inherit their
   stratum for free. (Dungeons run after the ores, so dungeon walls are *not*
-  stratum rock — accepted.)
+  stratum rock — accepted.) The scatter ores are registered after the strata
+  and nests, so each lands in its band's tier rock.
   **Landmine since WP25: `default:stone` no longer exists below −100.**
   Every node whitelist, every `wherein`/`place_on` and every mob spawn
   `nodes` list that means "underground rock" has to carry

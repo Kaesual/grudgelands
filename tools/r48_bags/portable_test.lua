@@ -13,8 +13,8 @@
 --      over, a sorted inventory unchanged;
 --   C. the sort into target sizes: the order kept, identical stacks merged,
 --      leftovers from the end of the order in the cells beyond the targets
---      and returned, soulbound and bound items never left over (a soulbound
---      one in main), the hotbar untouched, nothing lost or duplicated;
+--      and returned, soulbound and bound items never left over (both keep a
+--      target cell), the hotbar untouched, nothing lost or duplicated;
 --   D. the handler: four full 32-slot bags and a full main[9..] -> main
 --      and 4 x 16 bag cells filled, 64 stacks in 16 letters of four, kind
 --      "npc" from "Lost and Found", the lists shrunk, one feed line after
@@ -379,7 +379,9 @@ do
 			if name == "t:skill" then skill_at = {list, index} end
 		end
 	end
-	eq(claim_at, "main32", "C the Claim Stone keeps a main cell")
+	-- Round 49 ruling 3: the stone may lie in a bag, so it keeps any target
+	-- cell (the last one, by its name), no longer main's last.
+	eq(claim_at, bag .. "4", "C the Claim Stone keeps a target cell")
 	check(skill_at and (skill_at[1] == "main" or skill_at[2] <= 4),
 		"C the bound skill keeps a target cell")
 	for _, cell in ipairs(left) do

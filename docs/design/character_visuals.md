@@ -207,6 +207,14 @@ a troll's sword are the same object. A humanoid *mob* is deliberately not
 compensated: its scale is its real size, and a giant's weapon should be a
 giant's weapon.
 
+**A held block is smaller** (Round 49): a node item the engine draws as a 3D
+block in the hand (a cube, nodebox or mesh node without a wield image: dirt,
+stone, slabs, stairs) is held at **70 %** of the hand size, centred in the
+fist as before. Flat-drawn items (plantlike, torchlike and signlike nodes,
+nodes with a wield image, tools, craftitems) keep the full size. The rule
+mirrors the engine's own wielditem choice (`wield_geometry.lua`) and holds for
+NPCs too; the first-person hand is the engine's and is unchanged.
+
 One entity per character, never more. The **offhand is not drawn beside the
 weapon**; only a Scout's Melee skill puts the offhand blade into the hand
 (case 1 above).

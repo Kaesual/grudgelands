@@ -23,30 +23,31 @@ function grug_xp.mob_xp(level)
 	return 25 + 5 * level
 end
 
--- Kill XP by level difference (Round 46 ruling 5). d = mob level - player
--- level; the gray line is d <= -GRAY_GAP (no XP, the target frame's gray).
-grug_xp.GRAY_GAP = 7
+-- Kill XP by level difference (Round 46 ruling 5, below the player Round 49
+-- ruling 5). d = mob level - player level; the gray line is d <= -GRAY_GAP
+-- (no XP, the target frame's gray).
+grug_xp.GRAY_GAP = 10
 
 function grug_xp.is_gray(mob_level, player_level)
 	return mob_level - player_level <= -grug_xp.GRAY_GAP
 end
 
 -- The factor of d in whole percent (integers, so the game and the ledger
--- round alike): 0 at d <= -7, 100 - 15|d| for -6..-1, 100 at 0,
+-- round alike): 0 at d <= -10, 100 - 10|d| for -9..-1, 100 at 0,
 -- 100 + 10d for +1..+5 and 150 above +5.
 function grug_xp.kill_percent(mob_level, player_level)
 	local d = mob_level - player_level
 	if d <= -grug_xp.GRAY_GAP then
 		return 0
 	elseif d < 0 then
-		return 100 + 15 * d
+		return 100 + 10 * d
 	end
 	return 100 + 10 * math.min(d, 5)
 end
 
 -- One recipient's kill XP before the split: the own-level kill equivalent of
 -- the PLAYER's level, times the level-difference factor and the tier
--- multiplier (elite 4, rare 6). Not rounded: the split floors once.
+-- multiplier (elite 4, rare 2). Not rounded: the split floors once.
 function grug_xp.kill_xp(mob_level, player_level, tier_mult)
 	return grug_xp.mob_xp(player_level)
 		* grug_xp.kill_percent(mob_level, player_level) * (tier_mult or 1) / 100

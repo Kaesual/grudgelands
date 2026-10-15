@@ -14,12 +14,6 @@ grug_inventory.POTION_BELT = "grug_potion_belt"
 grug_inventory.POTION_BELT_SIZE = 4
 local BELT = grug_inventory.POTION_BELT
 
--- A soulbound item (the Claim Stone, grug_housing/soulbound.lua) may sit
--- nowhere but `main`; every other item may sit in any list of the order.
-local function soulbound(stack)
-	return core.get_item_group(stack:get_name(), "grug_soulbound") > 0
-end
-
 -- The lists a player keeps items in: `main` and each equipped bag's content
 -- list, in bag slot order. Readers that count or take items walk these.
 -- The quiver, the potion belt and the equipment slots are not among them.
@@ -87,12 +81,10 @@ end
 -- whole order, hotbar included: merging takes no free slot), then empty
 -- cells in order. Returns the leftover; touched cells are marked.
 local function fill(cells, stack)
-	local main_only = soulbound(stack)
 	for pass = 1, 2 do
 		for _, cell in ipairs(cells) do
 			if stack:is_empty() then return stack end
-			if cell.stack:is_empty() == (pass == 2) and
-					(not main_only or cell.list == "main") then
+			if cell.stack:is_empty() == (pass == 2) then
 				local before = cell.stack:get_count()
 				stack = cell.stack:add_item(stack)
 				if cell.stack:get_count() ~= before then cell.changed = true end
@@ -304,7 +296,9 @@ end
 -- Soulbound and bound items (the Claim Stone, skill and mount items) are
 -- never left over by a sort into smaller sizes: the mail cannot carry them.
 local function guarded(stack)
-	return soulbound(stack) or core.get_item_group(stack:get_name(), "grug_bound_skill") > 0
+	local name = stack:get_name()
+	return core.get_item_group(name, "grug_soulbound") > 0 or
+		core.get_item_group(name, "grug_bound_skill") > 0
 end
 
 -- Sort the player's main[9..] and bags; true when any slot changed. Writes
@@ -373,16 +367,6 @@ function grug_inventory.sort(player, sizes)
 	-- smallest size: main[9..] alone has 24 cells): they stay beyond too.
 	while #merged > #cells do
 		table.insert(leftovers, 1, table.remove(merged))
-	end
-	-- A soulbound stack the order would put into a bag takes the last
-	-- main slot instead; the stacks after it shift by one.
-	local main_slots = math.max(0, inv:get_size("main") - HOTBAR)
-	for index = main_slots + 1, #merged do
-		local entry = merged[index]
-		if soulbound(entry.stack) and main_slots > 0 then
-			table.remove(merged, index)
-			table.insert(merged, main_slots, entry)
-		end
 	end
 	local changed, left = false, {}
 	local function place(cell, wanted)

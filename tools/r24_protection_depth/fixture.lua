@@ -8,20 +8,15 @@
 -- plus the R7 anchor roster and functional-anchor overlay, then checks:
 --   1. every hard footprint type -- start town (centre and band), capital,
 --      outpost column, bandit column -- is protected at
---      its bound (placement height - 100) and at bound + 1, and not at
+--      its bound (placement height - the source's depth) and at bound + 1, and not at
 --      bound - 1, through territory_rule_at, hard_protection_kind_at and
 --      world_protected_for_faction for both factions; protection stays
 --      unbounded upward; below the bound the zone's own territory rule
 --      answers, and the contested deep starts at y = -501 (Round 31);
 --   2. the capital guard level is 60 inside the capital's volume only;
---   3. mapgen: the P8 resource floor planner_source.ore_floor_at (user
---      ruling 2026-10-07: ore, coal and gems stay out of a hard-protected
---      volume only) agrees column by column with the session's hard
---      protection around every start town and capital, and is absent at
---      every other anchor's centre and in the blend envelope beyond the
---      footprint; the cave/surface floor protected_floor_at of overlapping
---      envelopes; and the P8 column predicate r30_resource_column_open
---      (production code of r6_settlement.lua) above, at and below a floor;
+--   3. mapgen: the cave/surface floor protected_floor_at of overlapping
+--      envelopes (Round 49 dropped the P8 resource floor, mapgen plan
+--      ruling 5: ores lie under towns too);
 --   4. ruling 30 addendum (below the floor everything is ordinary ground):
 --      the shared cave rule r30_cave_limit; the strata and layer passes on a
 --      synthetic owner with protection-only, non-protection and unexcluded
@@ -45,7 +40,6 @@ local seeds = {}
 for index = 2, #arg do seeds[#seeds + 1] = arg[index] end
 if #seeds == 0 then seeds = {"4242424242", "10536739806879207652"} end
 
-local DEPTH = 100
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1
@@ -53,6 +47,10 @@ local function check(ok, label)
 end
 
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+-- The source's one protection depth (100 until Round 49, which sized it from
+-- the deepest town ground; tools/r49_prot).
+_G.core = _G.core or {}
+local DEPTH = dofile(dir .. "/source/simple_map.lua").protection_depth_below_placement
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
 local settlement = dofile(dir .. "/r6_settlement.lua")
@@ -258,78 +256,12 @@ local function contested_depth_checks(W)
 end
 
 -- ---------------------------------------------------------------------------
--- 3. Mapgen: the P8 resource floor (hard-protected volumes only), the
--- cave/surface floor of overlapping envelopes, and the column predicate
+-- 3. Mapgen: the cave/surface floor of overlapping envelopes
 -- ---------------------------------------------------------------------------
 local function mapgen_checks(W)
 	local S, P, source = W.session, W.planner_source, W.source
 	local anchor_by_id = {}
 	for _, a in ipairs(source.anchors) do anchor_by_id[a.id] = a end
-	-- The P8 resource floor is the session's hard protection, column by
-	-- column: a column has a floor exactly when the session protects it, the
-	-- volume starts at that floor, and the blend envelope beyond the
-	-- footprint carries none. (The 36 functional outpost/bandit columns of
-	-- the R7 overlay are protected but keep their ore, a ruled exception.)
-	local ring_columns, ring_open = 0, 0
-	for index = 1, 12 do
-		local a = source.anchors[index]
-		local record = S.anchor(source.zones[a.zone_numeric_id].id, a.slot_id)
-		local bound = record.y - DEPTH
-		check(P.ore_floor_at(a.position.x, a.position.z) == bound,
-			a.id .. " P8 floor at the centre")
-		-- the whole blend envelope (704 capital, 256 start), every 4th column,
-		-- plus the axis columns from the pad's edge out to the envelope's
-		local half = a.slot_id == "capital" and 352 or 128
-		local columns = {}
-		for dx = -half, half - 1, 4 do
-			for dz = -half, half - 1, 4 do columns[#columns + 1] = {dx, dz} end
-		end
-		for d = 60, half - 1 do
-			columns[#columns + 1] = {d, 0}
-			columns[#columns + 1] = {-d, 0}
-			columns[#columns + 1] = {0, d}
-			columns[#columns + 1] = {0, -d}
-		end
-		for _, o in ipairs(columns) do
-			local x, z = a.position.x + o[1], a.position.z + o[2]
-			local floor = P.ore_floor_at(x, z)
-			local protected = S.territory_rule_at({x = x, y = 30000, z = z}) ==
-				"hard_protected"
-			check((floor ~= nil) == protected, ("%s P8 floor %s vs hard protection %s" ..
-				" at %d,%d"):format(a.id, tostring(floor), tostring(protected), x, z))
-			if floor then
-				check(S.territory_rule_at({x = x, y = floor, z = z}) == "hard_protected" and
-					S.territory_rule_at({x = x, y = floor - 1, z = z}) ~= "hard_protected",
-					a.id .. " P8 floor is the volume's floor at " .. x .. "," .. z)
-			else
-				ring_open = ring_open + 1
-			end
-			ring_columns = ring_columns + 1
-		end
-		if a.slot_id == "start" then
-			-- beyond the band (pad -64..+63, band 12) the envelope is open
-			check(P.ore_floor_at(a.position.x + 80, a.position.z) == nil and
-				P.ore_floor_at(a.position.x + 127, a.position.z + 127) == nil,
-				a.id .. " envelope beyond the town has no P8 floor")
-			check(P.ore_floor_at(a.position.x + 70, a.position.z) == bound,
-				a.id .. " band column keeps the town's P8 floor")
-		end
-	end
-	lines[#lines + 1] = ("P8 floor = hard protection on %d envelope columns of the" ..
-		" starts and capitals, %d of them open"):format(ring_columns, ring_open)
-	check(ring_open > 0, "the blend envelopes have open columns")
-	-- Every other anchor (POI, village, camp, outpost, mine ...): no P8 floor
-	-- at its centre unless a start's or capital's footprint holds it.
-	local others = 0
-	for index = 13, #source.anchors do
-		local a = source.anchors[index]
-		local protected = S.territory_rule_at({x = a.position.x, y = 30000,
-			z = a.position.z}) == "hard_protected"
-		check((P.ore_floor_at(a.position.x, a.position.z) ~= nil) == protected,
-			a.id .. " P8 floor only under hard protection")
-		if not protected then others = others + 1 end
-	end
-	check(others > 0, "anchors outside the hard footprints exist")
 	-- The cave/surface floor (protected_floor_at, ruling 30 addendum): every
 	-- anchor envelope holds one, at most its anchor's own floor.
 	local envelopes = 0
@@ -424,8 +356,7 @@ local function mapgen_checks(W)
 	check(orc.position.x == 0 and orc.position.z == 2550, "anchor_005 is the Orc start")
 	local _, id = P.static_exclusion_values_at(0, 2550)
 	local orc_y = placement_y(P, 0, 2550)
-	local orc_floor = P.ore_floor_at(0, 2550)
-	check(orc_floor == orc_y - DEPTH, "Orc start P8 floor")
+	local orc_floor = orc_y - DEPTH
 	-- Ruling 30 addendum: the cave-content rule's view of the same column.
 	-- Its "cave" shape is a protected one (not route/water), and its floor is
 	-- the town's, so cave content places at y < floor and not above.
@@ -440,26 +371,10 @@ local function mapgen_checks(W)
 			P.protected_floor_at, 0, 2550)
 		check(limit == orc_floor, "Orc start cave limit is the town floor")
 	end
-	lines[#lines + 1] = ("Orc start (0,%d,2550): exclusion %s, P8 floor %d"):format(
+	lines[#lines + 1] = ("Orc start (0,%d,2550): exclusion %s, cave floor %d"):format(
 		orc_y, id, orc_floor)
 end
 
-local open = settlement.r30_resource_column_open
-check(type(open) == "function", "r6_settlement exports r30_resource_column_open")
-do
-	local floor = -63
-	-- bit 1: resource allowed on the column; bit 2: protected column
-	for _, y in ipairs({-700, -64, -63, -62, 37, 500}) do
-		check(open(1, 0, y) == true, "allowed ordinary column open at y=" .. y)
-		check(open(0, 0, y) == false, "disallowed column closed at y=" .. y)
-		check(open(2, floor, y) == false, "disallowed protected column closed at y=" .. y)
-	end
-	check(open(3, floor, floor - 1) == true, "protected column open at bound-1")
-	check(open(3, floor, floor) == false, "protected column closed at the bound")
-	check(open(3, floor, floor + 1) == false, "protected column closed at bound+1")
-	check(open(3, floor, -700) == true, "protected column open at -700")
-	check(open(3, floor, -701) == true, "protected column open at -701")
-end
 
 -- ---------------------------------------------------------------------------
 -- 4. Ruling 30 addendum: normal ground below the protected floor
@@ -677,9 +592,10 @@ local function addendum_checks(W, seed)
 			check(r.surface == 0, r.id .. " island: no surface writer below the floor")
 		end
 	end
-	-- 2. Mapgen and renewal give the same cave answer. The writer's input is
-	--    gathered as cave_content_allowed_at gathers it; renewal is the real
-	--    vegetation_density with the runtime's ruling-30 deps.
+	-- 2. Renewal gives the shared cave rule's answer (r30_cave_limit; the
+	--    writer's own rule until Round 49 made the cave plants native);
+	--    renewal is the real vegetation_density with the runtime's ruling-30
+	--    deps.
 	local density = dofile(dir .. "/vegetation_density.lua")({
 		habitat = habitat, world_plants = world_catalog.plants, p9g_rows = {},
 		decorations = {}, template_records = {}, support_names = {},
@@ -725,8 +641,8 @@ local function addendum_checks(W, seed)
 			end
 		end
 	end
-	check(disagree == 0, "mapgen and renewal disagree on " .. disagree .. " cave sites")
-	lines[#lines + 1] = ("seed %s: cave rule mapgen = renewal on %d columns," ..
+	check(disagree == 0, "cave rule and renewal disagree on " .. disagree .. " cave sites")
+	lines[#lines + 1] = ("seed %s: cave rule = renewal on %d columns," ..
 		" %d excluded-column sites open below a floor"):format(
 		seed, samples, below_open)
 end

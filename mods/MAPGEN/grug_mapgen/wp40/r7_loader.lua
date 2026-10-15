@@ -30,7 +30,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	handoff.validate_target_names(materials, projection)
 	local catalog = dofile(gathering_path .. "/catalog.lua")
 	local native = dofile(wp40 .. "/r7_native.lua")
-	local native_token = native.apply_and_validate_main()
+	local native_token = native.apply_and_validate_main(wp40, projection)
 
 	-- THE WORLD-FOLDER LAYOUT CACHE (plan D71, world_zones.md §13.4). The
 	-- water, road and capital layout texts are built on a world's first start

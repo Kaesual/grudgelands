@@ -549,3 +549,55 @@ Would the candidates remedies remove most of the cold cost?
 The largest remaining cold item at the surface is the candidate build
 itself (48–200 ms). Its non-hash part (`build_cell`/`load_cell` over 25
 cells) is not split yet.
+
+## First start baseline (Round 49, lane MEAS)
+
+One boot of a fresh world on main `f8f2d134` (0.49.0, nothing under `mods/`
+changed since `1ef11b5e`), seed 12345, the default starts-only preparation,
+`totals` mode (callback totals only, no stage marks), through the shared
+measuring queue under `chrt --idle` (load average 1.1–2.2 on 16 cores). The
+probe now also logs its load, the first server step and the moment the
+preparation listener reports ready (within one 0.2 s notification), and
+`run.sh` records the launch (the launcher's `server.conf` mtime, which leaves
+the queue wait out) and the log end. Start-up before the first server step
+is single-threaded Lua (CPU ≈ wall): the world layouts are built once for a
+new world (cache miss, 23.1 s), the world map base is rendered (9.2 s) and
+the mob spawn regions are built (8.1 s over 38 zones). The 84 prepared
+chunks are all surface chunks with writer work (42 at y −32..47, 42 at
+48..127); none was an air skip, a −112..−33 chunk or wholly underground. The
+emerge thread is busy 88 % of the preparation wall with the Lua callback
+and `makeChunk`, so the preparation rate follows the per-chunk Lua time.
+Evidence: `tools/mgprof/evidence/meas-first-start/` (the console is trimmed
+to the profiler and probe lines). The same boot's ten corpus chunks are the
+first `totals` numbers of the corpus (warm-up 415, A_S1 642, A_S2 213, A_B
+314, A_U1 342, A_U3 388, A_U6 419, B_U6 557, B_U1 373, B_B 545 ms); one boot
+cannot separate the stage timer's overhead from the boot-to-boot spread
+(finding 6). The older fresh-world boots carry the same preparation split
+(stage-timer boots, ready after 31–42 s of probe waiting, 26.9–39.3 s of
+preparation Lua): `summarize.py --first-start tools/mgprof/evidence/bootN`.
+
+| first start | wall s from launch (±1) | wall s from first server step | server CPU s |
+|---|---|---|---|
+| mods loaded (probe init) | 24 | – | 24.2 |
+| first server step | 42 | 0 | 42.5 |
+| preparation complete | 79 | 36.7 | 79.3 |
+| end (after the 10-chunk corpus) | 114 (log end) | 71.3 | 84.1 |
+
+| preparation chunks | chunks | Lua callback total, sum ms | mean ms (min–max) |
+|---|---|---|---|
+| surface, minp y = −32 | 42 | 22,457 | 535 (365–1036) |
+| surface, minp y = 48 | 42 | 7,410 | 176 (123–262) |
+| **all** | **84** | **29,866** | 356 (123–1036) |
+| engine: `Mapgen::makeChunk` | 84 | 2,510 | 30 |
+
+One emerge thread: **2.29 chunks/s** over the preparation (84 chunks in
+36.7 s from the first server step).
+
+MEAS2 repeats it after the last world-generation merge with the same
+command, from the worktree root:
+
+```sh
+LC_ALL=C MGPROF_QUEUE=~/projects/grudgelands-orchestration/r45/engine_run.sh CLEAN=1 \
+    tools/mgprof/run.sh totals tools/mgprof/evidence/meas2-first-start
+python3 -I tools/mgprof/summarize.py --first-start tools/mgprof/evidence/meas2-first-start
+```

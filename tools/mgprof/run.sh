@@ -58,6 +58,15 @@ set -e
 echo "wall_s=$(( $(date +%s) - start ))" >>"$out/headless.txt"
 kept="$(sed -n 's/^kept: //p' "$out/headless.txt" | tail -n 1)"
 log="$(sed -n 's/^log: //p' "$out/headless.txt" | tail -n 1)"
+# Wall-clock anchors for summarize.py --first-start (the queue wait before the
+# launcher stages the game is excluded): the launcher writes server.conf just
+# before it starts the server, and the log's last write is the shutdown.
+if [[ -n "$kept" && -f "$kept/server.conf" ]]; then
+	echo "launch_epoch=$(stat -c %.3Y "$kept/server.conf")" >>"$out/headless.txt"
+fi
+if [[ -n "$log" && -f "$log" ]]; then
+	echo "log_end_epoch=$(stat -c %.3Y "$log")" >>"$out/headless.txt"
+fi
 cat "$out/headless.txt"
 if [[ -n "$log" && -f "$log" ]]; then
 	cp "$log" "$out/server.log"

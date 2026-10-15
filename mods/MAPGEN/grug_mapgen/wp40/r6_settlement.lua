@@ -234,10 +234,11 @@ local function settlement_factory()
 	-- native v7 and the authored surface with plain default:stone (opcode 27,
 	-- policy fill-void).  A fill voxel is such stone that R5 wrote into native
 	-- void (air, water or plants) and that no later stage has touched.  It
-	-- hosts ores and takes the shallow bands like native stone; below the band
-	-- depth it takes sparse horizontal layers.  Nothing carves caves into it
+	-- hosts the P8 fill ores (Round 49; native rock keeps its native ores)
+	-- and takes the shallow bands like native stone; below the band depth it
+	-- takes sparse horizontal layers.  Nothing carves caves into it
 	-- (fill-void keeps native cave air only below the native heightmap), and
-	-- the seam to native v7 may cut through veins, bands and caves.
+	-- the seam to native v7 may cut through clusters, bands and caves.
 	local R24_FILL_OPCODE = 27
 	local R24_LAYER_FIRST_DEPTH = 41
 	local R24_LAYER_PERIOD = 13
@@ -250,45 +251,84 @@ local function settlement_factory()
 			intent_opcode == 0 and r5_opcode == R24_FILL_OPCODE
 	end
 
-	-- Base eligibility of one voxel as a P8 resource host (ruling 10, widened
-	-- by the user ruling of 2026-10-07: ground anyone may dig carries the
-	-- ordinary distribution).  Native host rock is a host unless a hydrology
-	-- seal (priority 3) or water (priority 6) holds it, or it is the walking
-	-- surface of a path or foundation (opcodes 22 and 16, which P7 leaves as
-	-- stone on a bay platform or a wet grade); below it an anchor's grading
-	-- or platform (4) and a hard foundation (2) are ordinary rock, the
-	-- hard-protected volume above its floor is kept out by the column
-	-- predicate instead.  Stone R5 wrote into native void (terrain fill 27,
-	-- an anchor's grading fill 21, a foundation fill 15) is a host of the
-	-- default:stone tier only.  A voxel P8 already claimed (opcode 24) keeps
-	-- its base eligibility, so the per-cell count does not depend on order.
-	local function r24_resource_host_base(original_cid, final_cid,
-			intent_opcode, occupancy_value, priority, r5_opcode, host_cid,
-			fill_host_cid)
-		if occupancy_value == 1 or not ((intent_opcode == 0 and
-				final_cid == host_cid) or intent_opcode == 24) then
-			return false
-		end
-		if original_cid == host_cid then
-			return priority ~= 3 and priority ~= 6 and r5_opcode ~= 22 and
-				r5_opcode ~= 16
-		end
-		return host_cid == fill_host_cid and (r5_opcode == R24_FILL_OPCODE or
-			r5_opcode == 21 or r5_opcode == 15)
+	-- Round 49: whether one voxel is a P8 fill-ore host. Native rock carries
+	-- the native scatter ores (r7_native.lua) and is never one. A host is the
+	-- `default:stone` R5 wrote into native void (air, water or plants) that no
+	-- later stage changed: the terrain fill (opcode 27), an anchor's grading
+	-- fill (21) or a foundation fill (15; user ruling 2026-10-07: ground
+	-- anyone may dig carries the ordinary distribution).
+	local function r49_fill_ore_host(original_cid, final_cid, intent_opcode,
+			r5_opcode, stone_cid)
+		return final_cid == stone_cid and original_cid ~= stone_cid and
+			intent_opcode == 0 and (r5_opcode == R24_FILL_OPCODE or
+				r5_opcode == 21 or r5_opcode == 15)
 	end
 
-	-- Round 24 ruling 30: whether a column admits a P8 resource at `y`.
-	-- `column_state` bit 1: the resource is allowed on the column (water
-	-- class); bit 2: the column lies in a hard-protected footprint, which
-	-- stays ore-free only inside its protected volume, from `floor_y` upward.
-	local function r30_resource_column_open(column_state, floor_y, y)
-		if column_state % 2 == 0 then return false end
-		return column_state < 2 or y < floor_y
+	-- Round 49: the P8 fill-ore choice, a function (x, y, z) -> the index of
+	-- the resource whose ore a fill host at (x, y, z) takes, or nil. The fill
+	-- is `default:stone`, the T1 host, and lies at y >= -37, so only the T1
+	-- column of the resource table applies (`tier`: WP43 tier 1); a
+	-- `lower_half_of` T1 row (Round 47 ruling 6) only at or below T1's
+	-- `lower_half_y_max`. The cluster shapes are the native rows'
+	-- (r7_native.lua, mapgen plan ruling 3) by vein cap: a lattice cube of
+	-- the row's size is a cluster with probability volume / (denominator *
+	-- ores per cluster), and in a cluster each voxel is an ore with
+	-- probability ores per cluster / volume, so the rate per host is
+	-- 1 / denominator. The first resource in table order takes a voxel two
+	-- would claim. The hash is exact double arithmetic (every product below
+	-- 2^53, no `bit` library), so LuaJIT and plain Lua 5.1 agree: a linear
+	-- lattice term, then two squarings for mixing.
+	local R49_CLUSTER_BY_CAP = {[8] = {3, 8}, [4] = {2, 4}, [2] = {2, 1}}
+	local function r49_fill_ores_new(resources, tier, full_seed)
+		local floor = math.floor
+		local y_min, lower_max = tier.y_min, tier.lower_half_y_max
+		-- A row: {resource index, cube size, cube volume, ores per cluster,
+		-- cluster modulus = denominator * ores per cluster, hash salt}.
+		local upper, lower = {}, {}
+		for index = 1, #resources do
+			local resource = resources[index]
+			local denominator = resource.denominators[1]
+			if denominator then
+				local shape = R49_CLUSTER_BY_CAP[resource.max_nodes_per_vein]
+				if not shape then
+					error("fail_resource_manifest: resource vein cap differs", 0)
+				end
+				local row = {index, shape[1], shape[1] * shape[1] * shape[1], shape[2],
+					denominator * shape[2], index * 7919}
+				if resource.lower_half_of ~= 1 then upper[#upper + 1] = row end
+				lower[#lower + 1] = row
+			end
+		end
+		local phase = 0
+		for index = 1, #full_seed do
+			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
+		end
+		local function mix(a, b, c, salt)
+			local value = (a * 374761 + b * 668265 + c * 972663 + phase * 69069 +
+				salt) % 16777213
+			value = (value * value + salt) % 16777213
+			value = (value * 48271 + 1) % 16777213
+			return (value * value) % 16777213
+		end
+		return function(x, y, z)
+			if y < y_min then return nil end
+			local rows = y > lower_max and upper or lower
+			for index = 1, #rows do
+				local row = rows[index]
+				local size = row[2]
+				if mix(floor(x / size), floor(y / size), floor(z / size), row[6]) % row[5] <
+						row[3] and mix(x, y, z, row[6] + 1) % row[3] < row[4] then
+					return row[1]
+				end
+			end
+			return nil
+		end
 	end
 
-	-- Ruling 30 addendum: the cave-content rule of one column, shared by the
-	-- writer (`cave_content_allowed_at`, world_content.lua) and runtime
-	-- renewal (vegetation_density.lua), so both answer alike. A column is
+	-- Ruling 30 addendum: the cave-content rule of one column, read by runtime
+	-- renewal (vegetation_density.lua). Since Round 49 the generator places
+	-- the cave plants natively (r7_native.lua) without this rule (mapgen plan
+	-- answer 3: also under towns and planned water). A column is
 	-- excluded by a "cave" claim shape on land, a functional kind other than
 	-- a land grade, or a hard foundation. Planned-water/coast shapes are no
 	-- protection: excluded at every depth. Every other exclusion (anchor
@@ -985,40 +1025,6 @@ local function settlement_factory()
 		return true
 	end
 
-	local function sift_down(values, root, finish, less)
-		while root * 2 <= finish do
-			local child = root * 2
-			if child < finish and less(values[child], values[child + 1]) then
-				child = child + 1
-			end
-			if not less(values[root], values[child]) then return end
-			values[root], values[child] = values[child], values[root]
-			root = child
-		end
-	end
-
-	local function sort_prefix(values, count, less)
-		for root = math.floor(count / 2), 1, -1 do
-			sift_down(values, root, count, less)
-		end
-		for finish = count, 2, -1 do
-			values[1], values[finish] = values[finish], values[1]
-			sift_down(values, 1, finish - 1, less)
-		end
-	end
-
-	-- The least of the first `count` values under a strict total order: the
-	-- element sort_prefix would put first (Round 24 B2: a vein only needs its
-	-- next node, not the whole frontier sorted).
-	local function frontier_min(values, count, less)
-		local best = values[1]
-		for index = 2, count do
-			local candidate = values[index]
-			if less(candidate, best) then best = candidate end
-		end
-		return best
-	end
-
 	local function new(dependencies, evidence_only, capture_enabled, runtime_mode)
 		if evidence_only ~= nil and evidence_only ~= true then
 			fail("fail_settlement", "evidence-only construction flag differs")
@@ -1064,7 +1070,6 @@ local function settlement_factory()
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
 				type(hash) ~= "table" or type(hash.digest_count) ~= "function" or
-				type(hash.prepare_root_draw) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(planner_source) ~= "table" or
 				type(planner_source.column_values_at) ~= "function" or
@@ -1075,7 +1080,6 @@ local function settlement_factory()
 				type(planner_source.river_water_in) ~= "function" or
 				type(planner_source.landmark_excluded_at) ~= "function" or
 				type(planner_source.overlay_exclusion_at) ~= "function" or
-				type(planner_source.ore_floor_at) ~= "function" or
 				type(planner_source.protected_floor_at) ~= "function" or
 				type(planner_source.protected_only_floor_at) ~= "function" or
 				type(source) ~= "table" or
@@ -1257,14 +1261,6 @@ local function settlement_factory()
 		local intent_interface = retained_array("r6_settlement_intent_interface",
 			retained_volume, 0)
 		local intent_aux = retained_array("r6_settlement_intent_aux", retained_volume, 0)
-		local coordinate_scratch = {}
-		for index = 1, 4096 do
-			coordinate_scratch[index] = {x = 0, y = 0, z = 0, digest = false}
-		end
-		local frontier_scratch = {}
-		for index = 1, 48 do
-			frontier_scratch[index] = {x = 0, y = 0, z = 0, digest = false}
-		end
 		local light_zero, light_full = {day = 0, night = 0}, {day = 15, night = 0}
 		local call_min, call_max = {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}
 		local transaction_state = {
@@ -1276,22 +1272,10 @@ local function settlement_factory()
 			call_min = call_min, call_max = call_max,
 			successor_tail = successor_tail,
 			runtime_mode = runtime_mode == true,
-			-- Runtime eligibility is cached by compact owner index, without halo.
-			-- Evidence mode keeps the uncached predicate as a differential oracle.
-			resource_host_base = runtime_mode and retained_array(
-				"r6_settlement_resource_host_base", evidence_only and 1 or 80 * 80 * 80, 0),
-			resource_excluded_column = retained_array(
-				"r6_settlement_resource_excluded_column", 6400, false),
-			-- The protected floor of each fixed/protected column (ruling 30).
-			resource_protected_floor = retained_array(
-				"r6_settlement_resource_protected_floor", 6400, 0),
 			-- Per owner column (ruling 30 addendum, memoised per call; false
-			-- until asked): the protected-only floor of the territory rule and
-			-- the cave-content limit.
+			-- until asked): the protected-only floor of the territory rule.
 			protected_only_floor_column = retained_array(
 				"r6_settlement_protected_only_floor_column", 6400, false),
-			cave_limit_column = retained_array(
-				"r6_settlement_cave_limit_column", 6400, false),
 			surface_skin_column = retained_array(
 				"r6_settlement_surface_skin_column", 6400, 0),
 			successor_refs = {p9g_min = 0, p9g_max = 0, anchor_min = 0,
@@ -1302,9 +1286,6 @@ local function settlement_factory()
 		end
 		local run_values = retained_array("r6_settlement_run_values",
 			(evidence_only or runtime_mode) and 1 or MAX_RUNS * RUN_STRIDE, 0)
-		local census_occupancy = retained_array("r6_settlement_census_occupancy", 4096, 0)
-		local census_column_allowed = retained_array(
-			"r6_settlement_census_column_allowed", 256, false)
 		local stable_state = {
 			resource = retained_array("r6_settlement_stable_resource", #resources, 0),
 			decoration = retained_array("r6_settlement_stable_decoration", #decorations, 0),
@@ -1592,27 +1573,8 @@ local function settlement_factory()
 			return cid, value
 		end
 
-		local function tier_at(y)
-			for index = 1, #tier_by_y do
-				if y >= tier_by_y[index].y_min then return index, tier_by_y[index].node end
-			end
-			return #tier_by_y, tier_by_y[#tier_by_y].node
-		end
-
-		-- Round 47 ruling 6: in its `lower_half_of` band a resource lies only
-		-- at or below the band's `lower_half_y_max` (WP43 tiers); in every
-		-- other band with a denominator it fills the whole band.
-		local function resource_active(resource, tier, y)
-			if not resource.denominators[tier] then return false end
-			return resource.lower_half_of ~= tier or
-				y <= tier_by_y[tier].lower_half_y_max
-		end
-
-		local function deep_band(y)
-			if y >= -1499 then return "ordinary", 1, 1 end
-			if y >= -1999 then return "deep_1500_1999", 5, 4 end
-			return "deep_2000_floor", 3, 2
-		end
+		-- P8 (Round 49): the fill-ore choice of this world.
+		local fill_ore_at = r49_fill_ores_new(resources, tier_by_y[1], full_seed)
 
 		-- The planner's river/lake bed and bank seal (planner.lua) as a y range,
 		-- or nil. A wet sealed column seals its bed; a column beside such water
@@ -1787,15 +1749,6 @@ local function settlement_factory()
 			local _, _, _, biome = planner_source.column_values_at(x, z)
 			if content.decoration_cover(row.id, biome, ref) > 0 then return ref end
 			return nil
-		end
-
-		local function coordinate_less(left, right)
-			if left.digest ~= right.digest then
-				return hash.less_bytes(left.digest, right.digest)
-			end
-			if left.z ~= right.z then return left.z < right.z end
-			if left.x ~= right.x then return left.x < right.x end
-			return left.y < right.y
 		end
 
 		local function owner_minimum(value)
@@ -2178,231 +2131,6 @@ local function settlement_factory()
 			return result
 		end
 
-		-- The exhaustive resource census is a production-owned fixture seam.  It
-		-- uses the same catalog, hash, budget, root and frontier rules as apply(),
-		-- but supplies the contract's closed immutable evidence substrate instead
-		-- of a VoxelManip.  Tooling may aggregate this ledger; it must not recreate
-		-- P8 settlement.
-		local function scan_census_cube(record)
-			exact_fields(record, {race = true, bucket = true, zone_id = true,
-				cell_x = true, cell_y = true, cell_z = true}, "census cube",
-				"fail_ledger")
-			local race = record.race
-			if type(race) ~= "string" or type(record.bucket) ~= "string" or
-					type(record.zone_id) ~= "string" then
-				fail("fail_ledger", "census cube vocabulary differs")
-			end
-			local cell_x = integer(record.cell_x, "census cell x", -1932, 1932,
-				"fail_ledger")
-			local cell_y = integer(record.cell_y, "census cell y", -1932, 1932,
-				"fail_ledger")
-			local cell_z = integer(record.cell_z, "census cell z", -1932, 1932,
-				"fail_ledger")
-			local min_x, min_y, min_z = cell_x * 16, cell_y * 16, cell_z * 16
-			local max_y = min_y + 15
-			if max_y >= -37 then
-				fail("fail_ledger", "census cube is not below the P2-P7 authored floor")
-			end
-			local tier, host_name = tier_at(min_y)
-			local last_tier, last_host = tier_at(max_y)
-			local band, multiplier_numerator, multiplier_denominator = deep_band(min_y)
-			local last_band = deep_band(max_y)
-			if last_tier ~= tier or last_host ~= host_name or last_band ~= band then
-				fail("fail_ledger", "census cube crosses a tier or deep-band boundary")
-			end
-
-			local substrate_counts, substrate_parts = {}, {}
-			local substrate_class_names = {"AIR", "NATIVE_ORE", "LIQUID", host_name}
-			for index = 1, #substrate_class_names do
-				local class_name = substrate_class_names[index]
-				if substrate_counts[class_name] ~= nil then
-					fail("fail_ledger", "duplicate substrate class identity")
-				end
-				substrate_counts[class_name], substrate_parts[class_name] = 0, {}
-			end
-			local function substrate_add(class_name, x, y, z)
-				if substrate_counts[class_name] == nil then
-					fail("fail_ledger", "unknown substrate class identity")
-				end
-				substrate_counts[class_name] = substrate_counts[class_name] + 1
-				local parts = substrate_parts[class_name]
-				parts[#parts + 1] = hash.frame(x) .. hash.frame(y) .. hash.frame(z) ..
-					hash.frame(class_name)
-			end
-			local function local_index(x, y, z)
-				return (z - min_z) * 256 + (y - min_y) * 16 + (x - min_x) + 1
-			end
-			for z = min_z, min_z + 15 do
-				for x = min_x, min_x + 15 do
-					local column = (z - min_z) * 16 + (x - min_x) + 1
-					census_column_allowed[column] = static_exclusion_reason(x, z) == nil and
-						analytic_p7_material_ref(x, max_y, z) == nil
-				end
-			end
-			for index = 1, 4096 do census_occupancy[index] = 0 end
-			for z = min_z, min_z + 15 do
-				for y = min_y, min_y + 15 do
-					for x = min_x, min_x + 15 do
-						local digest = hash.digest("evidence_substrate_v1", full_seed,
-							{x, y, z})
-						local byte = string.byte(digest, 1)
-						local class_name = byte <= 15 and "AIR" or
-							(byte == 16 and "NATIVE_ORE" or
-							(byte == 17 and "LIQUID" or host_name))
-						census_occupancy[local_index(x, y, z)] = class_name == host_name and 0 or -1
-						substrate_add(class_name, x, y, z)
-					end
-				end
-			end
-			local substrate = {}
-			for index = 1, #substrate_class_names do
-				local class_name = substrate_class_names[index]
-				local count = substrate_counts[class_name]
-				substrate[class_name] = {count = count,
-					digest = hash.hex(hash.sha256_bytes(table.concat(
-						substrate_parts[class_name])))}
-			end
-
-			local resource_rows, rejections, witnesses = {}, {}, {}
-			local union_host = 0
-			local counted_host = false
-			for resource_index = 1, #resources do
-				local resource = resources[resource_index]
-				local denominator = resource.denominators[tier]
-				local eligible = 0
-				if denominator then
-					counted_host = true
-					for z = min_z, min_z + 15 do
-						for y = min_y, min_y + 15 do
-							for x = min_x, min_x + 15 do
-								local column = (z - min_z) * 16 + (x - min_x) + 1
-								if census_column_allowed[column] and
-										resource_active(resource, tier, y) and
-										census_occupancy[local_index(x, y, z)] ~= -1 then
-									eligible = eligible + 1
-									local coordinate = coordinate_scratch[eligible]
-									coordinate.x, coordinate.y, coordinate.z = x, y, z
-
-								end
-							end
-						end
-					end
-				end
-				local remainder_digest = helpers.digest7(
-					"resource_budget_remainder_v1",
-					resource.key, cell_x, cell_y, cell_z, host_name, tier, band)
-				local budget, numerator, budget_denominator, base_budget, remainder =
-					0, 0, denominator and denominator * multiplier_denominator or 1, 0, 0
-				if denominator then
-					budget, numerator, budget_denominator, base_budget, remainder =
-						hash.budget(eligible, 1, denominator, multiplier_numerator,
-							multiplier_denominator, remainder_digest)
-				end
-				local root_draw = budget > 0 and helpers.prepare_root_draw(resource.key,
-					cell_x, cell_y, cell_z, host_name, tier, band)
-				local planned = budget == 0 and 0 or math.floor((budget +
-					resource.max_nodes_per_vein - 1) / resource.max_nodes_per_vein)
-				local small = planned == 0 and 0 or math.floor(budget / planned)
-				local large_count = budget - small * planned
-				local placed, accepted, shortfall, collisions = 0, 0, 0, 0
-				local next_root_rank = 1
-				for vein = 1, planned do
-					local target = small + (vein <= large_count and 1 or 0)
-					local root
-					while next_root_rank <= eligible do
-						local remaining = eligible - next_root_rank + 1
-						local selected = root_draw(remaining)
-						local coordinate = coordinate_scratch[selected]
-						coordinate_scratch[selected], coordinate_scratch[remaining] =
-							coordinate_scratch[remaining], coordinate
-						next_root_rank = next_root_rank + 1
-						local claim = census_occupancy[local_index(coordinate.x,
-							coordinate.y, coordinate.z)]
-						if claim == 0 then root = coordinate break end
-						if claim ~= resource_index then collisions = collisions + 1 end
-					end
-					if not root then
-						local key = "resource\0" .. resource.key .. "\0rejected_no_root"
-						rejections[key] = (rejections[key] or 0) + 1
-						shortfall = shortfall + target
-					else
-						accepted = accepted + 1
-						if not witnesses[resource.key] then
-							witnesses[resource.key] = {race = race, bucket = record.bucket,
-								zone_id = record.zone_id, x = root.x, y = root.y, z = root.z}
-						end
-						local vein_nodes = {{x = root.x, y = root.y, z = root.z}}
-						-- The frontier rank of a voxel is fixed for the whole vein.
-						local rank_memo = {}
-						census_occupancy[local_index(root.x, root.y, root.z)] = resource_index
-						placed = placed + 1
-						while #vein_nodes < target do
-							local frontier_count = 0
-							for node_index = 1, #vein_nodes do
-								local node = vein_nodes[node_index]
-								for face = 1, 6 do
-									local x, y, z = node.x + FACE_X[face],
-										node.y + FACE_Y[face], node.z + FACE_Z[face]
-									if x >= min_x and x <= min_x + 15 and y >= min_y and
-											y <= min_y + 15 and z >= min_z and z <= min_z + 15 and
-											census_occupancy[local_index(x, y, z)] == 0 then
-										local duplicate = false
-										for f = 1, frontier_count do
-											local old = frontier_scratch[f]
-											if old.x == x and old.y == y and old.z == z then
-												duplicate = true break
-											end
-										end
-										if not duplicate then
-											if frontier_count >= #frontier_scratch then
-												fail("fail_bound", "resource frontier bound exceeded")
-											end
-											frontier_count = frontier_count + 1
-											local frontier = frontier_scratch[frontier_count]
-											frontier.x, frontier.y, frontier.z = x, y, z
-											local rank_key = local_index(x, y, z)
-											local rank = rank_memo[rank_key]
-											if rank == nil then
-												rank = helpers.digest11(
-													"resource_frontier_rank_v1", resource.key, cell_x,
-													cell_y, cell_z, host_name, tier, band, vein, x, y, z)
-												rank_memo[rank_key] = rank
-											end
-											frontier.digest = rank
-										end
-									end
-								end
-							end
-							if frontier_count == 0 then break end
-							local next_node = frontier_min(frontier_scratch, frontier_count,
-								coordinate_less)
-							vein_nodes[#vein_nodes + 1] = {x = next_node.x,
-								y = next_node.y, z = next_node.z}
-							census_occupancy[local_index(next_node.x, next_node.y,
-								next_node.z)] = resource_index
-							placed = placed + 1
-						end
-						if #vein_nodes < target then
-							shortfall = shortfall + target - #vein_nodes
-							local key = "resource\0" .. resource.key .. "\0short_frontier"
-							rejections[key] = (rejections[key] or 0) + 1
-						end
-					end
-				end
-				resource_rows[resource.key] = {eligible = eligible,
-					numerator = numerator, denominator = budget_denominator,
-					base = base_budget, remainder = remainder,
-					remainder_digest = hash.hex(remainder_digest), budget = budget,
-					planned = planned, accepted = accepted, collisions = collisions,
-					shortfall = shortfall, target_nodes = budget, placed_nodes = placed,
-					host = host_name, tier = tier, band = band}
-			end
-			if counted_host then union_host = substrate_counts[host_name] or 0 end
-			return {substrate = substrate, resources = resource_rows,
-				region_host = {count = union_host, tier = tier, band = band},
-				rejections = rejections, witnesses = witnesses}
-		end
-
 		local function run_at(plan, column, y)
 			local r5 = plan.r5_plan
 			for run = r5.column_start[column], r5.column_start[column + 1] - 1 do
@@ -2433,8 +2161,6 @@ local function settlement_factory()
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			decoration_support_ref = decoration_support_ref,
-			coordinate_less = coordinate_less,
-			frontier_min = frontier_min,
 			run_class_policy = run_class_policy,
 			capture_private_buffers = capture_private_buffers,
 			r8_strata = r8_strata, r8_surfaces = surfaces,
@@ -2444,7 +2170,6 @@ local function settlement_factory()
 			r8_apply_strata = r8_apply_strata, r8_plan_cave = r8_plan_cave,
 			r24_layers = r24_layers, r24_apply_fill_layers = r24_apply_fill_layers,
 			r24_fill_stone = r24_fill_stone,
-			r24_resource_host_base = r24_resource_host_base,
 			r8_cave_writer_disabled = r8_cave_writer_disabled,
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
@@ -2459,32 +2184,8 @@ local function settlement_factory()
 				a, b, c, d
 			return hash.digest_count(domain, full_seed, digest_fields, 4)
 		end
-		function helpers.digest7(domain, a, b, c, d, e, f, g)
-			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
-				a, b, c, d
-			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
-			return hash.digest_count(domain, full_seed, digest_fields, 7)
-		end
-		function helpers.prepare_root_draw(a, b, c, d, e, f, g)
-			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
-				a, b, c, d
-			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
-			return hash.prepare_root_draw(full_seed,
-				digest_fields, 7)
-		end
-		function helpers.digest11(domain, a, b, c, d, e, f, g, h, i, j, k)
-			digest_fields[1], digest_fields[2], digest_fields[3], digest_fields[4] =
-				a, b, c, d
-			digest_fields[5], digest_fields[6], digest_fields[7] = e, f, g
-			digest_fields[8], digest_fields[9], digest_fields[10], digest_fields[11] =
-				h, i, j, k
-			return hash.digest_count(domain, full_seed, digest_fields, 11)
-		end
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
-			local resource_column_state = transaction_state.resource_excluded_column
-			local resource_protected_floor = transaction_state.resource_protected_floor
-			local resource_host_base = transaction_state.resource_host_base
 			if call_mode ~= "fixture" and call_mode ~= "production" and
 					call_mode ~= "replay_fixture" then
 				fail("fail_status", "R6 is disabled")
@@ -2626,10 +2327,8 @@ local function settlement_factory()
 			-- -math.huge where the column has no such floor.
 			local protected_only_floor_column =
 				transaction_state.protected_only_floor_column
-			local cave_limit_column = transaction_state.cave_limit_column
 			for index = 1, x_count * (max_z - min_z + 1) do
 				protected_only_floor_column[index] = false
-				cave_limit_column[index] = false
 			end
 			local function protected_only_floor(x, z)
 				local owned = x >= min_x and x <= max_x and z >= min_z and z <= max_z
@@ -2845,7 +2544,7 @@ local function settlement_factory()
 			if not skin_host_ref then
 				fail("fail_content_manifest", "surface skin host rock is absent")
 			end
-			-- Round 24: the terrain-fill stone predicate (bands, layers, P8 hosts).
+			-- Round 24: the terrain-fill stone predicate (bands and layers).
 			local fill_stone_cid = contract.content_cids[skin_host_ref]
 			local function fill_stone_at(index, x, y, z)
 				if final_data[index] ~= fill_stone_cid or intent_opcode[index] ~= 0 or
@@ -2960,266 +2659,42 @@ local function settlement_factory()
 					plan.candidate_values[base + 5], plan.candidate_values[base + 6]
 			end
 
+			-- P8 (Round 49): the fill ores, one flat pass over the voxels the
+			-- writer itself filled with stone (r49_fill_ore_host). The native
+			-- rock they meet carries the native scatter rows (r7_native.lua), so
+			-- every stone voxel takes its ores from exactly one source; an
+			-- integer hash per voxel decides (r49_fill_ores_new). No exclusion
+			-- under towns or deep water (mapgen plan ruling 5 and §4.1); no
+			-- whole-chunk scan, no per-cell budget, no SHA.
+			local r5_plan = plan.r5_plan
+			local fill_placed = ledger and {} or nil
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
-					-- Only a hard-protected volume (a start town or a capital's
-					-- city, exact footprint) keeps resources out, from its floor
-					-- upward: wherever digging is allowed the ordinary
-					-- distribution holds (user ruling 2026-10-07).
-					local floor = planner_source.ore_floor_at(x, z)
-					-- Bit 2 is that protected exclusion (Round 24 ruling 30). Bit 1
-					-- is filled for each resource below from the immutable water
-					-- class of the column.
-					resource_column_state[column] = floor and 2 or 0
-					resource_protected_floor[column] = floor or 0
-				end
-			end
-			-- With no predecessor runs, the live predicate is already cheap;
-			-- avoid cache traffic in ordinary deep chunks.
-			if plan.r5_plan.column_start[plan.column_count + 1] == 1 then
-				resource_host_base = false
-			end
-			local owner_columns = (max_x - min_x + 1) * (max_z - min_z + 1)
-			if resource_host_base then
-				for index = 1, owner_columns * (max_y - min_y + 1) do
-					resource_host_base[index] = 0
-				end
-			end
-			local function host_eligible(x, y, z, host_cid)
-				local column = column_index(x, z)
-				if not r30_resource_column_open(resource_column_state[column],
-						resource_protected_floor[column], y) then
-					return false
-				end
-				local index = index_at(x, y, z)
-				-- Native host rock, or (Round 24 ruling 10) terrain-fill stone,
-				-- which the cheap checks here pre-filter.
-				if original_data[index] ~= host_cid and (host_cid ~= fill_stone_cid or
-						not ((intent_opcode[index] == 0 and
-							final_data[index] == host_cid) or intent_opcode[index] == 24)) then
-					return false
-				end
-				local cache_index = (y - min_y) * owner_columns + column
-				if resource_host_base and resource_host_base[cache_index] ~= 0 then
-					return resource_host_base[cache_index] == 1
-				end
-				local rbase = run_at(plan, column, y)
-				local eligible = helpers.r24_resource_host_base(original_data[index],
-					final_data[index], intent_opcode[index], occupancy[index],
-					rbase and plan.r5_plan.run_values[rbase + 3],
-					rbase and plan.r5_plan.run_values[rbase + 4], host_cid, fill_stone_cid)
-				-- P8 only creates resource claims (occupancy >= 2, opcode 24),
-				-- which preserve this predicate. Occupied cells and R5 runs are
-				-- fixed before P8. Root/frontier occupancy checks remain live.
-				if resource_host_base then resource_host_base[cache_index] = eligible and 1 or 2 end
-				return eligible
-			end
-			for resource_index = 1, #resources do
-				local resource = resources[resource_index]
-				-- Water class is immutable for a complete column. Claims remain
-				-- live outside base eligibility.
-				local allowed_columns = 0
-				local active_tier = false
-				for y = min_y, max_y do
-					local tier = tier_at(y)
-					if resource.denominators[tier] then
-						active_tier = true
-						break
-					end
-				end
-				if active_tier then
-					for z = min_z, max_z do
-						for x = min_x, max_x do
-							local column = column_index(x, z)
-							local base = (column - 1) * COLUMN_STRIDE
-							local water_class = plan.column_values[base + 1]
-							-- Land, planned water and the coastal shelf: every column
-							-- a player may dig (deep ocean and the dragon channel
-							-- are immutable).
-							local allowed = water_class == 1 or water_class == 2 or
-								water_class == 3
-							if allowed then allowed_columns = allowed_columns + 1 end
-							resource_column_state[column] =
-								resource_column_state[column] >= 2 and
-								(allowed and 3 or 2) or (allowed and 1 or 0)
-						end
-					end
-				end
-				if allowed_columns > 0 then
-					for cell_z = math.floor(min_z / 16), math.floor(max_z / 16) do
-						for cell_x = math.floor(min_x / 16), math.floor(max_x / 16) do
-							for cell_y = math.floor(min_y / 16), math.floor(max_y / 16) do
-								local first_y = math.max(min_y, cell_y * 16)
-								local last_y = math.min(max_y, cell_y * 16 + 15)
-								local segment_y = first_y
-								while segment_y <= last_y do
-									local tier, host_name = tier_at(segment_y)
-									local band, multiplier_numerator,
-										multiplier_denominator = deep_band(segment_y)
-									local active = resource_active(resource, tier, segment_y)
-									local segment_end = segment_y
-									while segment_end < last_y do
-										local ntier = tier_at(segment_end + 1)
-										local nband = deep_band(segment_end + 1)
-										if ntier ~= tier or nband ~= band or
-												resource_active(resource, ntier, segment_end + 1) ~=
-													active then
-											break
-										end
-										segment_end = segment_end + 1
+					for run = r5_plan.column_start[column],
+							r5_plan.column_start[column + 1] - 1 do
+						local base = (run - 1) * RUN_STRIDE
+						local opcode = r5_plan.run_values[base + 4]
+						if opcode == 27 or opcode == 21 or opcode == 15 then
+							for y = r5_plan.run_values[base + 1], r5_plan.run_values[base + 2] do
+								local index = index_at(x, y, z)
+								local resource_index = r49_fill_ore_host(original_data[index],
+									final_data[index], intent_opcode[index], opcode, fill_stone_cid) and
+									fill_ore_at(x, y, z)
+								if resource_index then
+									local resource = resources[resource_index]
+									write_intent(x, y, z, resource.content_ref, 0, 24,
+										stable_state.resource[resource_index], 0, 4, resource_index + 1)
+									if fill_placed then
+										fill_placed[resource.key] = (fill_placed[resource.key] or 0) + 1
 									end
-									local host_ref = content.content_ref(host_name)
-									local host_cid = host_ref and contract.content_cids[host_ref]
-									local eligible = 0
-									if host_cid and active then
-										for z = math.max(min_z, cell_z * 16),
-												math.min(max_z, cell_z * 16 + 15) do
-											for y = segment_y, segment_end do
-												for x = math.max(min_x, cell_x * 16),
-														math.min(max_x, cell_x * 16 + 15) do
-													if host_eligible(x, y, z, host_cid) then
-														eligible = eligible + 1
-														local coordinate = coordinate_scratch[eligible]
-														coordinate.x, coordinate.y, coordinate.z = x, y, z
-													end
-												end
-											end
-										end
-									end
-									if eligible > 0 then
-										local denominator = resource.denominators[tier]
-										local remainder_digest = helpers.digest7(
-											"resource_budget_remainder_v1", resource.key, cell_x,
-											cell_y, cell_z, host_name, tier, band)
-										local budget, numerator, budget_denominator, base_budget,
-											remainder = helpers.r8_hash.budget(eligible, 1, denominator,
-											multiplier_numerator, multiplier_denominator,
-											remainder_digest)
-										local root_draw = budget > 0 and helpers.prepare_root_draw(
-											resource.key, cell_x, cell_y, cell_z, host_name, tier, band)
-										local planned = budget == 0 and 0 or
-											math.floor((budget + resource.max_nodes_per_vein - 1) /
-												resource.max_nodes_per_vein)
-										local small = planned == 0 and 0 or math.floor(budget / planned)
-										local large_count = budget - small * planned
-										local placed, accepted, shortfall, collisions = 0, 0, 0, 0
-										local next_root_rank = 1
-										for vein = 1, planned do
-											local target = small + (vein <= large_count and 1 or 0)
-											local root
-											while next_root_rank <= eligible do
-												local remaining = eligible - next_root_rank + 1
-												local selected = root_draw(remaining)
-												local coordinate = coordinate_scratch[selected]
-												coordinate_scratch[selected], coordinate_scratch[remaining] =
-													coordinate_scratch[remaining], coordinate
-												next_root_rank = next_root_rank + 1
-												local claim = occupancy[index_at(coordinate.x,
-													coordinate.y, coordinate.z)]
-												if claim == 0 then root = coordinate break end
-												if claim ~= resource_index + 1 then
-													collisions = collisions + 1
-												end
-											end
-											if not root then
-												metric_rejection(ledger, "resource", resource.key,
-													"rejected_no_root")
-												shortfall = shortfall + target
-											else
-												accepted = accepted + 1
-												local vein_nodes = {{x = root.x, y = root.y, z = root.z}}
-												-- A voxel's frontier rank is fixed for the vein.
-												local rank_memo = {}
-												local root_index = index_at(root.x, root.y, root.z)
-												occupancy[root_index] = resource_index + 1
-												write_intent(root.x, root.y, root.z,
-													resource.content_ref, 0, 24,
-													stable_state.resource[resource_index], 0, 4,
-													resource_index + 1)
-												placed = placed + 1
-												while #vein_nodes < target do
-													local frontier_count = 0
-													for node_index = 1, #vein_nodes do
-														local node = vein_nodes[node_index]
-														for face = 1, 6 do
-															local x, y, z = node.x + FACE_X[face],
-																node.y + FACE_Y[face], node.z + FACE_Z[face]
-															if x >= math.max(min_x, cell_x * 16) and
-																	x <= math.min(max_x, cell_x * 16 + 15) and
-																	y >= segment_y and y <= segment_end and
-																	z >= math.max(min_z, cell_z * 16) and
-																	z <= math.min(max_z, cell_z * 16 + 15) and
-																	host_eligible(x, y, z, host_cid) and
-																	occupancy[index_at(x, y, z)] == 0 then
-																local duplicate = false
-																for f = 1, frontier_count do
-																	local old = frontier_scratch[f]
-																	if old.x == x and old.y == y and old.z == z then
-																		duplicate = true break
-																	end
-																end
-																if not duplicate then
-																	if frontier_count >= #frontier_scratch then
-																		fail("fail_bound",
-																			"resource frontier bound exceeded")
-																	end
-																	frontier_count = frontier_count + 1
-																	local frontier = frontier_scratch[frontier_count]
-																	frontier.x, frontier.y, frontier.z = x, y, z
-																	local rank_key = index_at(x, y, z)
-																	local rank = rank_memo[rank_key]
-																	if rank == nil then
-																		rank = helpers.digest11(
-																			"resource_frontier_rank_v1", resource.key,
-																			cell_x, cell_y, cell_z, host_name, tier, band,
-																			vein, x, y, z)
-																		rank_memo[rank_key] = rank
-																	end
-																	frontier.digest = rank
-																end
-															end
-														end
-													end
-													if frontier_count == 0 then break end
-													local next_node = helpers.frontier_min(frontier_scratch,
-														frontier_count, helpers.coordinate_less)
-													vein_nodes[#vein_nodes + 1] = {x = next_node.x,
-														y = next_node.y, z = next_node.z}
-													occupancy[index_at(next_node.x, next_node.y,
-														next_node.z)] = resource_index + 1
-													write_intent(next_node.x, next_node.y, next_node.z,
-														resource.content_ref, 0, 24,
-														stable_state.resource[resource_index], 0, 4,
-														resource_index + 1)
-													placed = placed + 1
-												end
-												if #vein_nodes < target then
-													shortfall = shortfall + target - #vein_nodes
-													metric_rejection(ledger, "resource", resource.key,
-														"short_frontier")
-												end
-											end
-										end
-										if ledger then
-											local key = table.concat({resource.key, cell_x, cell_y,
-												cell_z, host_name, tier, band}, "\0")
-											ledger.resources[key] = {eligible = eligible, numerator = numerator,
-												denominator = budget_denominator, base = base_budget,
-												remainder = remainder,
-													remainder_digest = helpers.r8_hash.hex(remainder_digest),
-												budget = budget, planned = planned, accepted = accepted,
-												collisions = collisions, shortfall = shortfall,
-												target_nodes = budget, placed_nodes = placed}
-										end
-									end
-									segment_y = segment_end + 1
 								end
 							end
 						end
 					end
 				end
 			end
+			if ledger then ledger.resources = fill_placed end
 
 			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
 			-- `tree_roots`: the roots of the generated trees accepted in this owner
@@ -3581,30 +3056,6 @@ local function settlement_factory()
 					else opcode = 4 end
 					return contract.content_cids[ref], 0, 0, opcode, 0, 0,
 						(ref - 1) * 256
-				end
-				function successor_context.cave_content_allowed_at(x, y, z)
-					if not (inside_owner(x, y, z) and
-							planner_source.column_values_at(x, z) == "land" and
-							original_data[index_at(x,y,z)] == native_air_cid and
-							final_data[index_at(x,y,z)] == native_air_cid) then
-						return false
-					end
-					-- Round 24 ruling 30 addendum: below the protected floor a
-					-- town's or POI's column is ordinary cave ground (the same
-					-- rule as runtime renewal, `r30_cave_limit`).
-					local column = column_index(x, z)
-					local limit = cave_limit_column[column]
-					if not limit then
-						local water_class, _, _, _, _, _, _, _, _, functional_kind, _, _,
-							_, _, _, _, _, _, _, hard_foundation =
-								planner_source.column_values_at(x, z)
-						local _, cave_id = helpers.r8_horizontal.static_exclusion_values_at(
-							x, z, "cave")
-						limit = r30_cave_limit(water_class, cave_id, functional_kind,
-							hard_foundation, planner_source.protected_floor_at, x, z)
-						cave_limit_column[column] = limit
-					end
-					return y < limit
 				end
 				-- `y` (optional, ruling 30 addendum): the height a surface writer
 				-- places at; below the column's protected-only floor the claim
@@ -4082,9 +3533,6 @@ local function settlement_factory()
 			for index = 1, count * RUN_STRIDE do result[index] = run_values[index] end
 			return result, count
 		end
-		function fixture.scan_census_cube(record)
-			return copy_map(scan_census_cube(record))
-		end
 		function fixture.scan_horizontal_owner(owner_x, owner_z, decoration_candidates)
 			return copy_map(scan_horizontal_owner(owner_x, owner_z, decoration_candidates))
 		end
@@ -4115,9 +3563,7 @@ local function settlement_factory()
 		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
 		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
 		r24_fill_stone = r24_fill_stone,
-		r24_sort_prefix = sort_prefix, r24_frontier_min = frontier_min,
-		r24_resource_host_base = r24_resource_host_base,
-		r30_resource_column_open = r30_resource_column_open,
+		r49_fill_ore_host = r49_fill_ore_host, r49_fill_ores_new = r49_fill_ores_new,
 		r30_cave_limit = r30_cave_limit,
 		r24_fill_layers_new = new_r24_fill_layers,
 		r24_apply_fill_layers = r24_apply_fill_layers,

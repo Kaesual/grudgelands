@@ -913,17 +913,25 @@ rewrite records the WP40 model it replaced.
   It skips air, liquids, ores, dungeon blocks, functional volumes and every
   protected or excluded surface. Its depth loop is clipped at y = -37. The native ore records (gravel blob, five deep
   strata of the tier rocks `grug_materials:t2_stone`..`t6_stone`, three
-  decorative nests) remain authoritative below it.
+  decorative nests and, since Round 49, the scatter rows of every resource,
+  §11) remain authoritative below it; native ores the pass meets stay ores.
 - **Terrain fill (Round 24, rulings 9–15).** Where the final surface lies
   above native v7, the terrain fill (R5 opcode 27, `[-37, terrain_y - 1]`)
   closes the gap with `default:stone`. A fill voxel is stone the fill wrote
   into native void (air, water or plants) that no later stage changed. It is
-  treated like native stone near the surface: the resource pass counts it as
-  a `default:stone` host with the same budget per 16³ cell and the same veins
-  (ores stay in `default:stone` only), and the shallow strata above replace
-  it. The stone an anchor's grading or a hard foundation writes into native
-  void (R5 opcodes 21 and 15) is a resource host the same way (user ruling
-  2026-10-07); strata and layers keep to the terrain fill. Fill 41 or more nodes below the column's surface (mountain interiors)
+  treated like native stone near the surface: the fill-ore pass (P8, Round
+  49) gives it the T1 resources of the density table (§11) at the same
+  rates and in the native cluster shapes, by an integer hash per voxel, and
+  the shallow strata above replace it. The stone an anchor's grading or a
+  hard foundation writes into native void (R5 opcodes 21 and 15) takes fill
+  ores the same way (user ruling 2026-10-07); strata and layers keep to the
+  terrain fill. **The seam:** from y −37 up to one node below the final
+  surface the writer keeps every native solid (stone, tier rock, gravel,
+  nests and the native ores in them) and writes stone only into native
+  void; it rewrites native rock only above the final surface (cleared), at
+  the surface node and its soil, and inside authored cuts. So every stone
+  node takes its ores from exactly one source: native rock from the native
+  scatter rows, fill stone from the fill-ore pass. Fill 41 or more nodes below the column's surface (mountain interiors)
   carries sparse horizontal layers: absolute y plus a smooth per-column
   offset (bilinear on a 48-node lattice, ±5 nodes) selects a 13-node slab;
   a slab of the column's zone holds one layer of 2–4 nodes with probability
@@ -937,7 +945,7 @@ rewrite records the WP40 model it replaced.
   radii 2–3 × 2 × 2–3 inside the cell. Stone stays clearly dominant
   (measured 81 % stone plus 4 % ores in a real mountain interior, 89 % stone
   in the fixture). Nothing carves caves into the fill; the seam to native
-  v7 may cut through veins, bands and caves. Lava is unchanged.
+  v7 may cut through ore clusters, bands and caves. Lava is unchanged.
 - **Cliffs and near-surface nests (Round 24 B2).** In the top 40 nodes
   of a column, below its filler, where the shallow strata apply (same exclusions:
   protected, functional, water, towns), untouched native or fill
@@ -973,7 +981,7 @@ Mobs are not part of this catalog: each zone's spawn recipe places its
 surface mobs ([spawn_regions.md](spawn_regions.md)), and
 [zone_mobs.md](zone_mobs.md) is the table generated from the recipes, per
 zone and per family. The start towns (pad and band, §12) refuse hostile
-spawns from the town's protected floor upward (its placement height − 100,
+spawns from the town's protected floor upward (its placement height − 80,
 Round 24 ruling 30); caves deeper under a start town keep their ordinary
 population. A capital city refuses every ambient non-critter spawn (§3).
 
@@ -1403,9 +1411,9 @@ code, not by this document.
   Garnet, T4 Sapphire, T5 Ruby, T6 Diamond (below −1000). Its harvest tier
   equals its tier at any depth. One rough density for all six: one gem per
   512 eligible host nodes in its own band, per 1024 one tier deeper and per
-  2048 two tiers deeper, in veins of at most two nodes (the former G1 veins
-  held three); the deep multipliers apply to the T6 gems (Diamond, Ruby,
-  Sapphire) like every T6 resource.
+  2048 two tiers deeper, mostly as single nodes and pairs (vein cap 2; the
+  former G1 veins held three); the deep multipliers apply to the T6 gems
+  (Diamond, Ruby, Sapphire) like every T6 resource.
 - **Round 21 density calibration (accepted 2026-09-24; Round 46 changes in
   T3 and the gem rows, Round 47 the lower halves and Anthracite):**
   numbers below are eligible host nodes per target resource node. Dashes mean
@@ -1415,7 +1423,9 @@ code, not by this document.
   y 0), T2 −201…−300 (Anthracite), T3 −401…−500, T4 −601…−700, T5 −851…−1000
   (`grug_materials.TIERS[].lower_half_y_max`, the row field `lower_half_of`).
   Keep existing vein caps and first-appearance/harvest boundaries. These are
-  placement budgets, not independent discovery odds or measured mining time.
+  **rough targets** (Round 49, mapgen plan ruling 2: positions may change
+  freely, the frequency stays roughly the same), not independent discovery
+  odds or measured mining time.
 
   | Resource | T1 | T2 | T3 | T4 | T5 | T6 |
   |---|---:|---:|---:|---:|---:|---:|
@@ -1452,57 +1462,73 @@ code, not by this document.
   together are about 4.9 % of the host rock in T1, 3.9 % in T2, 3.5 % in T3,
   3.8 % in T4 and T5 and 3.5 % in T6 (the Round 47 census of seed
   12345, `tools/r47_or/evidence/census_seed12345.txt` and, with
-  Anthracite, `tools/r47_an/evidence/census_seed12345.txt`).
+  Anthracite, `tools/r47_an/evidence/census_seed12345.txt`; the Round 49
+  native rows give 5.0, 3.9, 3.5, 3.9, 3.8 and 3.5 %, `tools/r49_ore`).
+- **Native mapping (Round 49, mapgen plan §4.1, rulings 1–4).** Native v7
+  places every resource of native rock: one `scatter` ore row per resource,
+  tier band and deep band (`wp40/r7_native.lua`, derived from the table
+  above in `wp40/r7_r6_manifest.lua`), with `wherein` the band's tier rock,
+  the band's y range (a ½ row only its lower half; T6 split at −1500 and
+  −2000), `clust_scarcity` = denominator × `clust_num_ores` (divided by the
+  deep multiplier, rounded), no noise and no biome filter (uniform
+  scatter). The rows run after the strata and nests, after the caves (never
+  in cave air) and before the dungeons. Cluster shapes by vein cap: 8 (Coal,
+  Copper, Tin, Iron, Quartz, Anthracite) a 3-node cube holding 8 ores on
+  average, 4 (Gold, Silver, Emberglass) a 2-node cube holding 4, 2 (the gems,
+  Abyssal Crystal) a 2-node cube holding one: about 60 % single nodes and
+  30 % pairs. A cluster is a random sprinkle in its cube, not necessarily
+  face-connected. The terrain fill takes the same T1 rates from the fill-ore
+  pass (§7.6).
 - **Ground anyone may dig carries the ordinary distribution** (user ruling
   2026-10-07): ores, coal and gems are absent only where digging is
   forbidden for everyone, never in ground some player may dig.
-- Natural-resource placement and its accessible-host denominator admit the
-  horizontal classes `land`, zone-owned `planned_water` and
-  `coastal_shelf`. Rivers, lakes, marsh channels, cenotes, the landward bay
-  masks and the coastal shelf therefore retain their underground geology;
-  `deep_ocean` and `immutable_dragon_channel` (immutable at every depth)
-  admit no natural resource. Eligibility still requires the exact WP43
-  stratum host at y; water, bed material, hydrology seals, routes,
-  dungeons, foreign nodes and protected content are not hosts. Native rock
-  under an anchor's grading or platform, and the stone a grading or
-  foundation fill writes into native void, is ordinary rock; the walking
-  surface of a path or foundation is no host.
+- Natural resources lie in every horizontal class (Round 49, a coordinator
+  choice: also under the deep ocean and the dragon channels, whose columns
+  are immutable anyway). A host is the WP43 tier rock of the band at y as
+  native v7 lays it out, or the writer's fill stone (§7.6); water, bed
+  material, dungeons, foreign nodes and authored content are not hosts.
+  Native rock under a hydrology seal, an anchor's grading or platform or a
+  hard foundation keeps its native ores; the walking surface of a path or
+  foundation is written over.
 - **Hard-protected ground** (the exact footprint of a start town or a
-  capital's protected city) hosts no natural resource inside its protected
-  volume: from its placement height − 100 upward (Round 24 ruling 30).
-  Below that floor the column takes ores, gems, rock layers and nests like
-  any other ground. Every other anchor's claim envelope — the square of a
-  POI, village, camp or outpost, open to digging outside its building
-  core — is ordinary resource ground (user ruling 2026-10-07; the former
-  rule kept it resource-free from its anchor's placement height − 100
-  upward). The building cores, roads and the 36 functional outpost and
-  bandit columns stay protected for digging without a resource exception.
+  capital's protected city) carries ores like any other ground since Round
+  49 (mapgen plan ruling 5; Round 24 ruling 30 had kept it ore-free from
+  its placement height − 100 upward). Digging there stays forbidden for
+  everyone, so those ores are only reachable below the protected volume.
+  Every other anchor's claim envelope — the square of a POI, village, camp
+  or outpost, open to digging outside its building core — is ordinary
+  resource ground (user ruling 2026-10-07). The building cores, roads and
+  the 36 functional outpost and bandit columns stay protected for digging.
 - **Below the floor everything is ordinary ground** (ruling 30 addendum,
   2026-09-29). Where a column's claim exclusion comes only from protected
   shapes (anchor envelopes, hard cores, hard footprints), the writers apply
-  their normal rules below its floor: world-content cave rows (cave cap,
-  ember moss) at the cave voxel's y; P9G gathering roots at the root y (the
+  their normal rules below its floor: P9G gathering roots at the root y (the
   dragon islands' coast envelopes stay nonblocking on dry land, as always);
   world-content surface rows at the plant's y; strata
   bands and the near-surface nests and cliff layers per voxel. This matters
   for POI envelopes on steep ground: an envelope 112 nodes wide can reach
   shore or valley ground 100–300 nodes below its anchor. Start towns and
-  capitals never do (their lowest ground lies 79–100 nodes above the
-  floor). Non-protection exclusions keep applying at every depth to the
+  capitals never do (their lowest ground, a river or lake bed in a capital,
+  lies at most 35 nodes below the placement height over the quick seed
+  fleet, so at least 45 above the floor; Round 49). Non-protection exclusions keep applying at every depth to the
   writers they bind today: planned-water and coast shapes (the cave rule
   and every surface writer; P9G excepted on the dry islands), the overlay
   exclusions (road corridors, inland water, water banks) for the surface
   writers, and functional kinds and hard foundations at the surface. Runtime
-  renewal applies the same rules (`farming.md`).
-- **Natural-resource root sampling:** each resource/16-node cell/host/tier/
-  deep-band group keeps its eligible-host count, density budget and balanced
-  capped vein targets. Roots are drawn from a deterministic per-world stream
-  without repeats, so natural ore is finite and reproducible for a world seed.
-- **Natural-resource parity:** the six race regions receive about the same
-  natural-resource rate, within roughly 5%: accepted natural veins per
-  accessible host volume, counting all resources (every one is universal).
-  Placed natural nodes are a separate density concern.
-  Spot-checked on representative seeds.
+  renewal applies the same rules (`farming.md`), and for the cave plants
+  (Cave Cap, Ember Moss) the cave rule at the cave voxel's y; their
+  generation is native since Round 49 and ignores these exclusions (mapgen
+  plan answer 3: they may also grow in caves under planned water and inside
+  town protection).
+- **Natural-resource sampling (Round 49):** native rock takes the engine's
+  scatter (clusters per chunk drawn from the chunk's seed), the fill the
+  fill-ore pass's integer hash per voxel; no per-cell budget. Natural ore is
+  finite and reproducible for a world seed; the counts per band are rough
+  targets.
+- **Natural-resource parity:** the scatter is uniform (ruling 4: no noise,
+  no biome filter), so the six race regions receive the same expected
+  natural-resource rate per host volume, counting all resources (every one
+  is universal).
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
   subject to tools, explicit hard-protected capital or functional-anchor
@@ -1828,10 +1854,11 @@ one-cell settlement checks are unchanged.
   owner-slice preservation distinction fixed above.
 - Since the R7 cutover, native registration is closed at zero Lua biomes, one
   retained gravel blob, the five T2--T6 strata and the three decorative-nest
-  blobs of slate, granite and basalt (Round 24, §7.6; nine native ores,
-  `r7_native.lua`), with zero engine decorations. The
-  legacy clay, silver-sand and dirt blobs, every scatter resource and every
-  engine decoration are absent. The six existing v7 terrain/climate
+  blobs of slate, granite and basalt (Round 24, §7.6), and since Round 49
+  the scatter ore rows of the resource table and the two cave-plant
+  decorations (§11, `r7_native.lua`, all pinned by its digest). The legacy
+  clay, silver-sand and dirt blobs, the upstream scatter ores and every
+  other engine decoration are absent. The six existing v7 terrain/climate
   NoiseParams remain the exact authenticated native baseline in both main and
   emerge environments; they are inputs to the authored evaluator, never a
   competing biome authority.
@@ -1910,14 +1937,14 @@ numeric-truncated seed.
 - `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
   protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 inside the capital's protected volume (from the capital anchor's
-  placement height − 100 upward, Round 24 ruling 30). Below that floor and
+  placement height − 80 upward, Round 24 ruling 30). Below that floor and
   everywhere else on non-exterior land it returns the existing generic base
   `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
   remains outside this resolver.
 - `faction_at` returns `accord`, `throng` or nil and never derives
   construction rights from `race_region`. `territory_rule_at` and
   `pvp_rule_at` apply full 3D precedence: bounded hard protection (each
-  footprint from its placement height − 100 upward), immutable
+  footprint from its placement height − 80 upward), immutable
   deep ocean/channels, planned-water/shelf inheritance,
   ordinary land and the y = -501 contested-depth override.
 - Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,
@@ -2151,9 +2178,9 @@ bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
 | frost_melon | Frostbarrow, Whitebridge 21–30 | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
 | sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/256 |
 | bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/256 |
-| cave_cap | continental cave air at y −500…−100 | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |
+| cave_cap | cave floors at y −500…−100 (native `all_floors` decoration since Round 49) | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |
 | salt_crust | Shattered Line bands 2–3, levels 44–50 | badlands mesa clay | none; 1/512 |
-| ember_moss | continental cave air at y ≤ −701 | actual T5 tier rock (`grug_materials:t5_stone`) support | no surface placement; 1/1024 |
+| ember_moss | cave floors at y ≤ −701 (native `all_floors` decoration since Round 49) | actual T5 tier rock (`grug_materials:t5_stone`) support | no surface placement; 1/1024 |
 
 A viable soil is a matching nonrock fertile patch of that logical biome;
 ordinary dirt, relevant litter, mud, dry dirt, moss soil and ash soil do not
@@ -2161,11 +2188,19 @@ turn an unrelated logical biome into a host. Actual final support is checked,
 not assumed from the nominal biome. Surface sources stand above that support;
 cave sources require real preserved air above real exposed stone. No source
 may replace a functional surface, foundation, route or water.
-Cave eligibility follows the purpose-specific WORLD guards, not broad natural
-landmark envelopes; under a town, POI core, anchor grade or hard foundation
-those guards end at the column's protected floor (placement height − 100,
-Round 24 ruling 30), below which cave sources place normally. Candidate
-rejection does not move, retry or refill it.
+The two cave sources are native v7 decorations since Round 49
+(`wp40/r7_native.lua`, mapgen plan §4.1 and answer 3): `deco_type =
+"simple"`, `flags = "all_floors"`, `place_on` the row's host rocks, the
+row's y range (the engine tests the floor node, one below the plant) and
+`fill_ratio` one in the initial denominator (twice the catalog density for
+renewable sources, `habitat_registry.lua`), so about one plant per 1536
+(Cave Cap) or 2048 (Ember Moss) cave-floor nodes. They follow no WORLD
+guard: they may also grow in caves under planned water and inside town
+protection. Runtime renewal keeps the purpose-specific guards: under a
+town, POI core, anchor grade or hard foundation they end at the column's
+protected floor (placement height − 80, Round 24 ruling 30), below which
+cave sources regrow normally. Every other candidate rejection does not move, retry or refill
+it.
 
 The accepted Mushroom set additionally includes `kragmar_speargrass_reach` on
 its swamp-mud host. Stormkelp additionally includes `front_shattered_line`,
@@ -2187,7 +2222,8 @@ six, 2–6 tall) grow on sand beds at least three deep. The six default coral va
 sand-with-kelp replace eligible natural bed nodes, with their actual rooted
 geometry/height semantics. Lakes, rivers, planned freshwater and functional
 surfaces receive no reef content. There is one terrain/VM writer and no competing
-engine decoration pass or global density/census target.
+engine decoration pass (except the two native cave sources above) or global
+density/census target.
 
 ## Round 14 flight policy
 

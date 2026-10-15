@@ -8,14 +8,14 @@
 --   HP = 20 + 5*L + 0.66*L^2
 --   damage = 2 + 0.3*L + 0.005*L^2   XP = grug_xp.mob_xp(L) = 25 + 5*L
 --   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.4, gold tint
---   rare:  x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2,   violet tint
+--   rare:  x2.5 HP, x1.4 dmg, x2 XP, armor 90, scale x2, violet tint
 --   boss:  18000 HP flat (fixed apex encounter budget), normal damage and XP
 --
 -- ENGINE vs. DEF CONTRACT (the one rule for the whole mod):
 --   * HP (hp_min/hp_max/health), damage and XP are ALWAYS engine-owned.
 --     A def that hand-sets them is overridden — do not write them.
 --   * armor is engine-owned only when the tier says so (elite 80 / rare
---     70) or when the def leaves it nil (then: normal = 100). An explicit
+--     90) or when the def leaves it nil (then: normal = 100). An explicit
 --     def armor at tier "normal" is kept.
 --   * Everything else (speeds, view_range, drops, visuals) stays def-owned;
 --     the tier visuals (scale/tint) are layered on top of them at runtime.
@@ -77,8 +77,10 @@ local TIERS = {
 	-- watch and the royal guards towered over their own king.
 	elite = {hp = 3, dmg = 1.8, xp = 4, armor = 80, scale = 1.4,
 		tint = "#ffa800:80", prefix = "Elite ", telegraph = true},
+	-- Rare between normal and elite (Round 49 ruling 6): tougher than a
+	-- normal, weaker than an elite; the size and tint stay its recognition.
 	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
-	rare = {hp = 5, dmg = 2.2, xp = 6, armor = 70, scale = 2,
+	rare = {hp = 2.5, dmg = 1.4, xp = 2, armor = 90, scale = 2,
 		tint = "#a64dff:90", prefix = "★ ", telegraph = true},
 	boss = {hp = 1, dmg = 1, xp = 1, armor = nil, scale = 1,
 		hp_flat = 18000,
