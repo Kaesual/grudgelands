@@ -36,7 +36,10 @@ if [[ -n "$kept" && "$kept" == /tmp/grudgelands-headless.?* && -d "$kept" ]]; th
 fi
 grep -h '\[r49skip' "$out/server.log" >"$out/chunks.txt" 2>/dev/null || true
 cat "$out/chunks.txt"
-if [[ $boot -eq 0 ]] && grep -q 'RESULT PASS' "$out/chunks.txt"; then
+# A skipped chunk passes only when the full writer changed nothing in it.
+bad="$(grep -E 'skip=(deep|air) ' "$out/chunks.txt" | grep -vE ' dd=0 dp=0 dl=0 ' || true)"
+if [[ -n "$bad" ]]; then echo "skipped chunks that differ:"; echo "$bad"; fi
+if [[ $boot -eq 0 && -z "$bad" ]] && grep -q 'RESULT PASS' "$out/chunks.txt"; then
 	echo "r49 skip verify: PASS"
 	exit 0
 fi
