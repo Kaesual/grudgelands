@@ -98,7 +98,7 @@ return function(repo, seed, mode)
 	local mapgen_settings = {mg_name = "v7", water_level = "1", mapgen_limit = "31007",
 		chunksize = "5", mgv7_dungeon_ymin = "-31000", mgv7_dungeon_ymax = "-193",
 		mg_flags = "caves, dungeons, light, decorations, biomes, ores",
-		mgv7_spflags = "mountains, ridges, nofloatlands, caverns", seed = seed}
+		mgv7_spflags = "nomountains, ridges, nofloatlands, caverns", seed = seed}
 	local heightmap = {}
 	local fake = {
 		registered_nodes = nodes, CONTENT_AIR = CONTENT_AIR, CONTENT_IGNORE = CONTENT_IGNORE,

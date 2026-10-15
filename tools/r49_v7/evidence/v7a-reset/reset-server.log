@@ -1,0 +1,158 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+ACTION[Main]: [grug_materials] 24 pick/axe/shovel tools, 12 default: tool aliases
+ACTION[Main]: [grug_core] world version 0.49.0, game 0.49.0: no migration step due
+ACTION[Main]: [grug_core] map reset 1: cleared the world preparation progress
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 36 weapons + 72 armor pieces
+ACTION[Main]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.13 s), 75 neighbour pairs
+ACTION[Main]: [grug_mapgen] main tree templates: roll-up 631e45e683e3e699, 0.214 s CPU
+ACTION[Main]: [grug_mapgen] world protection: 191 road corridors (49874 segments in 3212 runs), 106 settlement cores, 3318 records in 480 cells (4259 references, at most 38 per cell), built in 0.006 s
+ACTION[Main]: [grug_mapgen] POI placement: 2 rows relaxed a rule (anchor:step anchor_068:2, anchor_069:2), placed in 0.49 s
+ACTION[Main]: [grug_mapgen] capital highcourt: area 99902 m2, built 27.3 %, plots 49 of 52 (overflowed 4, left out 3 fill, 0 buildings), required 9 of 9, relaxed 0, streets 22 (open arcs 1, cross-lanes 5, squares 12), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.85 s
+ACTION[Main]: [grug_mapgen] capital dur_brannoc: area 99960 m2, built 27.2 %, plots 48 of 52 (overflowed 4, left out 4 fill, 0 buildings), required 9 of 9, relaxed 0, streets 22 (open arcs 0, cross-lanes 4, squares 7), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.95 s
+ACTION[Main]: [grug_mapgen] capital gor_drazhak: area 99861 m2, built 29.6 %, plots 50 of 52 (overflowed 7, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0, streets 20 (open arcs 2, cross-lanes 3, squares 12), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.92 s
+ACTION[Main]: [grug_mapgen] capital lethariel: area 100120 m2, built 24.7 %, plots 44 of 44 (overflowed 6, left out 0 fill, 0 buildings), required 9 of 9, relaxed 0, streets 16 (open arcs 2, cross-lanes 4, squares 8), infeasible profiles 0, connector failures 0, shore avenues 1, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 1.17 s
+ACTION[Main]: [grug_mapgen] capital kezamba: area 99486 m2, built 26.8 %, plots 50 of 52 (overflowed 12, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0, streets 19 (open arcs 2, cross-lanes 3, squares 9), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 1.47 s
+ACTION[Main]: [grug_mapgen] capital nhal_veyr: area 100155 m2, built 27.7 %, plots 49 of 52 (overflowed 8, left out 3 fill, 0 buildings), required 9 of 9, relaxed 1, streets 19 (open arcs 0, cross-lanes 0, squares 10), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.98 s
+ACTION[Main]: [grug_mapgen] roads: 31 roads, 42 trails (42 of 42 trail candidates), 2 loops, 0 core pins dropped, built in 5.5 s, payload 213508 bytes (with the capital streets), capital layouts 79602 bytes
+ACTION[Main]: [grug_mapgen] road showcase: gallery (primary) at -847,63,1592; valley crossing (secondary) at -331,135,946; bridge (primary) at 16,61,400; deepest cut (primary) at 1329,90,-1272; junction (secondary) at 1801,67,-2099; ford (primary) at 672,31,1373
+ACTION[Main]: [grug_mapgen] protected capital cities (wall line + edge + treeless band): anchor_007 128 k m2 (reach 258), anchor_008 127 k m2 (reach 249), anchor_009 160 k m2 (reach 269), anchor_010 127 k m2 (reach 278), anchor_011 128 k m2 (reach 240), anchor_012 146 k m2 (reach 268)
+ACTION[Main]: [grug_mapgen] world layouts: cache hit (grug_world_layouts.txt), runtime construction 7.5 s; skipped layout builds of the first start: placement 0.5 s, water 0.7 s, roads 5.5 s, capitals 6.3 s (its construction took 22.0 s); the placement, capital and road figures above are from that start
+ACTION[Main]: [grug_mapgen] Lua heap after loading 789 MiB, 53 MiB after a full collection (372 ms)
+ACTION[Main]: [grug_core] map reset 1: cleared the grug_mobs actor records
+ACTION[Main]: [grug_core] map reset 1: cleared the housing claims
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+ACTION[Main]: [grug_map] world map base cache is current
+ACTION[Main]: [grug_map] removed 0 stale world map tiles
+ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+ACTION[Main]: grug_trees: ground connect_sides top on 26 nodes: default:desert_sand default:dirt default:dirt_with_coniferous_litter default:dirt_with_dry_grass default:dirt_with_grass default:dirt_with_grass_footsteps default:dirt_with_rainforest_litter default:dirt_with_snow default:dry_dirt default:dry_dirt_with_dry_grass default:gravel default:sand default:silver_sand grug_farming:soil grug_farming:soil_wet grug_nodes:ash_ground grug_nodes:blight_dirt grug_nodes:dirt_with_bone_litter grug_nodes:dirt_with_canopy_litter grug_nodes:dirt_with_forest_litter grug_nodes:dirt_with_moss grug_nodes:dirt_with_silver_litter grug_nodes:mud grug_nodes:mud_dry grug_nodes:mud_mottled grug_nodes:mud_with_wet_grass
+ACTION[Main]: [grug_materials] registry audit passed: 6 tier rocks, 3 decorative rocks, 16 resources, 12 processed forms, 6 race regions, 1129 dig-matrix pairs
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_core] region cloud base: dwarf 150 (capital ground 71, authored 150), human 130 (capital ground 42, authored 130), elf 170 (capital ground 55, authored 170), undead 110 (capital ground 45, authored 110), orc 190 (capital ground 60, authored 190), troll 100 (capital ground 36, authored 100)
+ACTION[Main]: [grug_core] map reset 1 applied to the world (was 0)
+ACTION[Main]: [grug_core] world preparation mode=starts cursor=0/84
+ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+WARNING[Main]: [grug_mobs] spawn regions elandor_glassroot_wilds: kind serpent_pools of belt l38_40 forms no region and its belt holds no block of 8 cells
+WARNING[Main]: [grug_mobs] spawn regions elandor_stormvault_heights: no valid camp cell for goblin_camp in belt l34_37
+ACTION[Main]: [grug_mobs] spawn regions: 38 region maps ready at start in 3.3 ms (38 from grug_region_maps.txt, 0 built in 0.0 s, 0 failed); cache hit, file 110133 bytes; Lua heap 70 -> 72 MiB
+ACTION[Main]: [grug_mobs] spawn ABM surface: 10 rows, interval 20, chance 248
+ACTION[Main]: [grug_mobs] spawn ABM underground: 18 rows, interval 20, chance 135
+ACTION[Main]: [grug_mobs] spawn ABM water: 2 rows, interval 30, chance 3287
+ACTION[Main]: [grug_mobs] 56 surface spawn rows retired (spawn regions): grug_mobs:ashen_treant, grug_mobs:bear, grug_mobs:blightfang_wolf, grug_mobs:boar, grug_mobs:bog_ooze, grug_mobs:bog_witch, grug_mobs:carrion_crow, grug_mobs:crag_eagle, grug_mobs:crocodile, grug_mobs:fox, grug_mobs:frost_stray, grug_mobs:gaunt_stag, grug_mobs:giant_rat, grug_mobs:giant_spider, grug_mobs:goblin_hound, grug_mobs:goblin_raider, grug_mobs:goblin_slinger, grug_mobs:gravewood_treant, grug_mobs:hyena, grug_mobs:ibex, grug_mobs:jungle_ape, grug_mobs:jungle_boar, grug_mobs:jungle_lynx, grug_mobs:jungle_spider, grug_mobs:mesa_golem, grug_mobs:mountain_ram, grug_mobs:pale_spider, grug_mobs:panther, grug_mobs:plague_boar, grug_mobs:plaguehide_bear, grug_mobs:plains_runner, grug_mobs:poacher, grug_mobs:reef_lurker, grug_mobs:scorpion, grug_mobs:serpent, grug_mobs:shore_crab, grug_mobs:skeleton_archer, grug_mobs:skeleton_raider, grug_mobs:snow_leopard, grug_mobs:speargrass_tiger, grug_mobs:stag, grug_mobs:stone_golem, grug_mobs:sun_dried_husk, grug_mobs:tapir, grug_mobs:viper, grug_mobs:vulture, grug_mobs:war_construct, grug_mobs:wisp, grug_mobs:wolf, grug_mobs:zebra, grug_mobs:zombie
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_bronze (2H), priest=grug_gear:staff_bronze (2H), scout=grug_gear:bow_bronze, scout=grug_gear:sword_bronze, warrior=grug_gear:sword_bronze
+ACTION[Main]: [grug_traders] core stock and 13 profession shelves, 104 offers, all registered and none an enchant input or above T1
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 118 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 43 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:ash_writ_bowman, grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:basket_poacher_thorn, grug_mobs:bough_counter_rusk, grug_mobs:causeway_aqueduct_bowman, grug_mobs:causeway_brigand, grug_mobs:coal_purse_factor, grug_mobs:confused_bandit, grug_mobs:confused_bandit_chief, grug_mobs:entrenched_bandit, grug_mobs:entrenched_bandit_archer, grug_mobs:furtive_poacher, grug_mobs:grave_broker_mute, grug_mobs:grave_robber_chief, grug_mobs:last_pay_archer, grug_mobs:misguided_poacher_chief, grug_mobs:muddled_ore_chief, grug_mobs:offering_broker_takka, grug_mobs:offering_thief_chief, grug_mobs:paymaster_chirr, grug_mobs:poacher, grug_mobs:quarrelsome_bandit, grug_mobs:quartermaster_scrip, grug_mobs:ration_broker_garr, grug_mobs:red_receipt_marshal, grug_mobs:requisitioner_hobb, grug_mobs:saltroad_deserter, grug_mobs:siege_deserter, grug_mobs:siege_deserter_archer, grug_mobs:snarekeeper_vetch, grug_mobs:snarewarden_bracken, grug_mobs:snaring_poacher, grug_mobs:tithe_keeper_vek, grug_mobs:toll_bandit, grug_mobs:toll_bandit_archer, grug_mobs:toll_taker_senn, grug_mobs:tollmaster_penn, grug_mobs:unlicensed_poacher, grug_mobs:vigilant_bandit_archer, grug_mobs:wartrail_poacher, grug_mobs:water_broker_korr, grug_mobs:water_thief_chief); their items are audited from the hardcoded FUNCTION_DROPS list
+WARNING[Main]: [grug_quests] zones/elandor_ashenward_march.quests.json: quest accord_main_collector: objective 1: no kill target is spawned by elandor_ashenward_march's spawn recipe [W-recipe-target]
+WARNING[Main]: [grug_quests] zones/kragmar_bannerbreak_mesa.quests.json: quest throng_main_finale: objective 1: no kill target is spawned by kragmar_bannerbreak_mesa's spawn recipe [W-recipe-target]
+ACTION[Main]: [grug_fishing] tables=6 entries=12 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_map] placed 38 zone labels in 0.111 s (grid 225x200 sampled in 0.102 s); at 1x on 1920x1080 0 overlapping pairs, 0 over a region name; on 1035x696 40 and 7
+ACTION[Main]: [grug_map] quest target index: 151 roles, 1263 regions, 359 areas, 49 leaders in 2.4 ms
+ACTION[Main]: [grug_farming] vegetation renewal: 788 non-natural node names, tree regrowth on
+ACTION[Main]: [grug_achievements] 20 achievements, 45 cloaks; 141 of 312 mobs count as wild animals, 30 as zombies
+ACTION[Main]: World at [/tmp/grudgelands-headless.oa8QOt/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39092.
+ACTION[Server]: [grug_mapgen] Lua heap at the first server step after a full collection: 68 MiB
+ACTION[Server]: [grug_housing] arrival-cube dig context on 108 buildable_to nodes
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 971 nodes, right-click on 162, node form on 12; exceptions: default:sign_wall_wood, grug_housing:claim_stone, grug_materials:iron_sign_wall
+ACTION[Emerge-0]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.12 s), 75 neighbour pairs
+ACTION[Emerge-0]: [grug_mapgen] emerge tree templates: roll-up 631e45e683e3e699, 0.287 s CPU (runtime build 2.03 s)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,37,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,37,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,37,-2498)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_traders:vendor_race_dwarf placed at socket plaza_vendor (-1793,37,-2555)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_west_door (-1816,37,-2546)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,37,-2549)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_workyard (-1819,37,-2533)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,37,-2560)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_woodpile (-1812,37,-2563)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_garden (-1819,37,-2529)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,37,-2524)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket trainer_cooking (-1798,37,-2540)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket quest_cook (-1798,37,-2537)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,37,-2498)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_traders:vendor_race_human placed at socket green_vendor (6,37,-2554)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket home_innkeeper (11,37,-2541)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_green_bench (-6,37,-2543)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,37,-2550)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,37,-2551)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_field (18,37,-2519)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_green_seat (-5,37,-2535)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,37,-2542)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket trainer_cooking (2,37,-2540)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket quest_cook (2,37,-2537)
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,37,-2498)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_traders:vendor_race_elf placed at socket court_vendor (1807,37,-2554)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket home_innkeeper (1765,37,-2572)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_court_bench (1793,37,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_bowyer (1828,37,-2551)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_market (1769,37,-2550)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_planters (1804,37,-2539)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_market (1767,37,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,37,-2536)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket trainer_cooking (1802,37,-2540)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket quest_cook (1802,37,-2537)
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,37,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,37,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,37,2498)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_traders:vendor_race_undead placed at socket court_vendor (-1793,37,2545)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_warden_door (-1813,37,2582)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_court_settle (-1810,37,2554)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_bone_works (-1778,37,2549)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_gate_brazier (-1805,37,2493)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket work_gravewood (-1790,37,2544)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket work_blightbed (-1822,37,2542)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,37,2560)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket trainer_cooking (-1798,37,2540)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket quest_cook (-1798,37,2537)
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,37,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,37,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,37,2510)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_traders:vendor_race_orc placed at socket yard_vendor (8,37,2545)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_tusk_door (-11,37,2528)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_council_seat (-3,37,2558)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_beast_pen (-25,37,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_armoury_forge (20,37,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket work_forge (-34,37,2552)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket work_acacia (-14,37,2549)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,37,2562)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket trainer_cooking (2,37,2540)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket quest_cook (2,37,2537)
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,37,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,37,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,37,2514)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_traders:vendor_race_troll placed at socket clearing_vendor (1807,37,2546)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_lodge_door (1798,37,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_terrace_settle (1788,37,2577)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_drying_shed (1783,37,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,37,2570)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket work_jungle (1771,37,2563)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket work_terrace (1784,37,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,37,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket trainer_cooking (1802,37,2540)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket quest_cook (1802,37,2537)
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Main]: Server: Shutting down

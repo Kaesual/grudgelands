@@ -527,6 +527,10 @@ do
 			return hex_sha(bytes)
 		end,
 		set_mapgen_setting_noiseparams = function() end,
+		-- Round 49 V7A: the v7 flags are forced over map_meta.txt.
+		set_mapgen_setting = function(name, value, override_meta)
+			captured.spflags = name == "mgv7_spflags" and override_meta == true and value
+		end,
 		get_mapgen_setting_noiseparams = function(name)
 			local s = specs[name]
 			return {offset = s[1], scale = s[2], spread = {x = s[3], y = s[3], z = s[3]},
@@ -552,6 +556,8 @@ do
 	rawset(_G, "core", fake)
 	local native = dofile(wp40 .. "/r7_native.lua")
 	local token = native.apply_and_validate_main(wp40, projection)
+	assert(captured.spflags == "nomountains, ridges, nofloatlands, caverns",
+		"V7A the v7 flags are forced over map_meta.txt")
 	-- every ore and wherein node must be registered
 	local function register(name) registered_nodes[name] = {} end
 	register("default:stone")

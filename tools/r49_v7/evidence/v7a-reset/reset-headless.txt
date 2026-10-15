@@ -1,0 +1,7 @@
+staged patch: reset.patch
+headless boot: PASS (port 39092, 120 s)
+log: /tmp/grudgelands-headless.oa8QOt/server.2.log
+seed = 12345
+68:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39092.
+kept: /tmp/grudgelands-headless.oa8QOt
+rc=0

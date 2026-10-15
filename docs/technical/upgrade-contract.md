@@ -41,6 +41,7 @@ What a change needs:
 | Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
+| A change to a validated world-creation scalar the game forces over `map_meta.txt` itself (`core.set_mapgen_setting*` with `override_meta`, `r7_native.lua` `apply_and_validate_main`: the six v7 terrain and climate noise params and, since Round 49, `mgv7_spflags`) | map reset |
 
 **Data migrations only through the tool, with a test:** a change to state
 that is not map-bound and that the new code cannot read is converted by a

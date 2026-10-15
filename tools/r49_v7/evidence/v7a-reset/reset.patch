@@ -1,0 +1,6 @@
+diff -ruN a/minetest.conf b/minetest.conf
+--- a/minetest.conf
++++ b/minetest.conf
+@@ -1,1 +1,2 @@
+ # Grudgelands — game-provided setting defaults.
++grug_reset_world = 1

@@ -1962,7 +1962,10 @@ tools](#player-meta-read-by-external-tools).
   because an ore or decoration whose `biomes` names do not resolve is silently
   unrestricted world-wide. The v7 terrain and climate noise params are
   overridden from `r7_native.lua` (`core.set_mapgen_setting_noiseparams`) —
-  **test mapgen work on a FRESH world**, an existing one gets seams.
+  **test mapgen work on a FRESH world**, an existing one gets seams. The v7
+  flags come from `minetest.conf` (`nomountains` since Round 49: no v7
+  mountain stone for the writer to clear) and are checked at load in both
+  environments (`r7_runtime.lua`, the R5 manifest's `caverns,ridges`).
   **Registration order is still a tool, not trivia**: in mgv7 a mapchunk runs
   caves (`mapgen_v7.cpp:335`) → ores (`:355`) → dungeons (`:359`), and inside
   the ore stage the ores run in **registration order**, each converting only

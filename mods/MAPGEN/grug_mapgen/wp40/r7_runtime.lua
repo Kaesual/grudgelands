@@ -97,9 +97,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		exact_integer_setting("mgv7_dungeon_ymax", -193)
 		flag_set("mg_flags", {biomes = true, caves = true, decorations = true,
 			dungeons = true, light = true, ores = true})
-		flag_set("mgv7_spflags", {mountains = true, ridges = true,
+		-- No v7 mountains since Round 49 (lane V7A); the engine writes every
+		-- flag of its table in order, an unset one as "no" .. name.
+		flag_set("mgv7_spflags", {nomountains = true, ridges = true,
 			caverns = true, nofloatlands = true},
-			"mountains, ridges, nofloatlands, caverns")
+			"nomountains, ridges, nofloatlands, caverns")
 		local settings_kind = type(core_api.settings)
 		if settings_kind ~= "table" and settings_kind ~= "userdata" then
 			fail("global settings object differs")

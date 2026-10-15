@@ -7,6 +7,9 @@
 # staged throwaway game copy only (tools/mgprof/run.sh, GAME_PATCH).
 #
 # Usage: tools/r49_v7/run.sh baseline|nomountains|noridges OUT
+# `baseline` stages no flag patch: the game's own flags, `mountains, ridges`
+# when V7 measured and `nomountains, ridges` since lane V7A adopted it. The
+# flag patches were made against the V7 tree and no longer apply after that.
 # Runs through the shared measuring queue (MGPROF_QUEUE, default
 # ~/projects/grudgelands-orchestration/r45/engine_run.sh); CLEAN=0 keeps the
 # run directory.
