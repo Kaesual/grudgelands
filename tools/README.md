@@ -1181,4 +1181,5 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (the one-pass adapter before the zones key fix) and `boot2` (the lane's
   final state), each `INSECURE=1 tools/mgprof/run.sh stages` like MGPROF's
   boots 5 and 6 (`summarize.py`), and `digest/` the chunk bytes of main
-  `f8f2d134` and of the branch (the 100 quick seeds, and 40 with `perturb`).
+  `f8f2d134` and of the branch (the 100 quick seeds, and 40 with `perturb`),
+  and the same for main `1b965ec4` and the branch merged with it.
