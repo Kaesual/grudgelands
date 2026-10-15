@@ -1,0 +1,938 @@
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+@@ -1096,6 +1096,10 @@
+ 				end
+ 			end
+ 			metric_add(K.M_HEIGHTMAP_ENTRIES, 6400)
++			-- MGPROF (throwaway): R5 adapter sub-stages, production call only.
++			local mgp = rawget(_G, "grug_mgprof")
++			if mgp and not mgp.stages_on then mgp = nil end
++			if mgp then mgp.mark("r5a_setup") end
+ 
+ 			local returned_data = vm_call1(vm_get_data, K.M_VM_GET_DATA, vm,
+ 				data_buffer)
+@@ -1107,6 +1111,7 @@
+ 			if not rawequal(returned_param2, param2_buffer) then
+ 				fail("fail_vm_contract", "get_param2_data did not reuse buffer")
+ 			end
++			if mgp then mgp.mark("r5a_shadow_get") end
+ 			-- No per-voxel scalar check here: this adapter only ever runs on the
+ 			-- composed R6 transaction's shadow VM (`r6_settlement.lua`), whose
+ 			-- buffers are copies of the engine's `get_data`/`get_param2_data`
+@@ -1242,6 +1247,7 @@
+ 				end
+ 			end
+ 
++			if mgp then mgp.mark("r5a_resolve_validate") end
+ 			-- All semantic validation is now complete.  The replay recomputes only
+ 			-- already-validated scalar outcomes from immutable old entries.
+ 			for z = minp.z, maxp.z do
+@@ -1263,6 +1269,7 @@
+ 				end
+ 			end
+ 
++			if mgp then mgp.mark("r5a_replay") end
+ 			metric_add(K.M_CLASSIFIED_COLUMNS, planned_columns)
+ 			metric_add(K.M_PLANNED_COLUMNS, planned_columns)
+ 			metric_add(K.M_MODIFIED_VOXELS, modified_voxels)
+@@ -1284,6 +1291,7 @@
+ 			if liquid_dirty_columns > 0 then
+ 				vm_call0(vm_update_liquids, K.M_VM_UPDATE_LIQUIDS, vm)
+ 			end
++			if mgp then mgp.mark("r5a_shadow_set") end
+ 			heightmap = nil
+ 
+ 			local has_content = content_dirty_columns > 0
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua b/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua
+@@ -0,0 +1,323 @@
++-- MGPROF (lane MGPROF, throwaway): a per-stage timer for the R7 generated
++-- callback. Installed only into the staged game copy of a measuring boot by
++-- tools/mgprof/stages.patch; never shipped.
++--
++-- Stages are a flat timeline: mark(name) books the time since the previous
++-- mark (or begin) to `name`, so the stages of one callback sum exactly to its
++-- total. add(name, us) books a sub-timer that is ALSO inside some stage (a
++-- part of that stage, reported separately, not added to the sum). count()
++-- books plain counters. finish() writes one GRUG_MGPROF line per callback.
++-- With the setting grug_mgprof_totals_only = true (set by the probe in the
++-- main environment; g_settings is shared) only the callback total is taken:
++-- no stage marks, sub-timers or counters, for the instrumentation-overhead
++-- comparison. P.stages_on is read once, at the first callback.
++--
++-- Follow-up 2 additions:
++-- * SHA-256 accounting: install_sha() wraps core.sha256 (every mapgen digest
++--   ends there); while a callback is active each call's count, input bytes
++--   and time (difference of two us readings: unbiased in the sum, coarse per
++--   call) are pending and booked to the stage of the next mark ("h.<stage>").
++-- * LuaJIT trace diagnosis, only where jit.attach exists (a boot with
++--   secure.enable_security = false; the sandbox's jit table has no attach):
++--   trace starts, stops, aborts (reason and source:line), flushes, machine
++--   code size and address range, per callback and for the process, from the
++--   emerge environment's start on.
++-- * One-time benchmarks at the first callback (outside its timer): a tight
++--   loop (a JIT health probe), raw core.sha256 by input length, the r6_hash
++--   digest with 4/7/11 fields and an integer-hash stand-in.
++local now = core.get_us_time
++local P = {active = false, column_sources = {}, now = now}
++local stages, order, sub, counts, hashes = {}, {}, {}, {}, {}
++local started, last = 0, 0
++local cache_before = {0, 0, 0}
++local callbacks = 0
++local totals_only
++local heap_before = 0
++local pending_calls, pending_us, pending_bytes = 0, 0, 0
++
++-- SHA-256 accounting -------------------------------------------------------
++function P.install_sha()
++	local raw = core.sha256
++	core.sha256 = function(data, raw_output)
++		if not P.active then return raw(data, raw_output) end
++		local t0 = now()
++		local result = raw(data, raw_output)
++		pending_us = pending_us + (now() - t0)
++		pending_calls = pending_calls + 1
++		pending_bytes = pending_bytes + #data
++		return result
++	end
++	P.raw_sha256 = raw
++end
++
++-- Trace diagnosis -----------------------------------------------------------
++local jit_api = rawget(_G, "jit")
++local trace = {start = 0, stop = 0, abort = 0, flush = 0}
++local trace_before = {start = 0, stop = 0, abort = 0, flush = 0}
++local abort_reason, abort_reason_before = {}, {}
++local abort_where, abort_where_before = {}, {}
++local mcode_bytes, mcode_min, mcode_max = 0, math.huge, 0
++local stop_kind = {}
++if type(jit_api) == "table" and type(jit_api.attach) == "function" and
++		type(require) == "function" then
++	local ok_util, jutil = pcall(require, "jit.util")
++	local ok_vmdef, vmdef = pcall(require, "jit.vmdef")
++	if ok_util and type(jutil) == "table" then
++		local function reason_text(err, info)
++			if type(err) ~= "number" then return tostring(err) end
++			local fmt = ok_vmdef and vmdef.traceerr[err] or ("err" .. err .. " %s")
++			if fmt == "NYI: bytecode %s" and type(info) == "number" then
++				info = string.sub(vmdef.bcnames, 6 * info + 1, 6 * info + 6)
++			end
++			local ok, text = pcall(string.format, fmt, tostring(info))
++			return ok and text or fmt
++		end
++		local function where(func, pc)
++			local ok, fi = pcall(jutil.funcinfo, func, pc)
++			if not ok or type(fi) ~= "table" then return "?" end
++			local source = fi.source or "?"
++			source = source:match("([^/]+)$") or source
++			return source .. ":" .. tostring(fi.currentline or fi.linedefined or "?")
++		end
++		jit_api.attach(function(what, tr, func, pc, otr, oex)
++			trace[what] = (trace[what] or 0) + 1
++			if what == "abort" then
++				local reason = reason_text(otr, oex)
++				abort_reason[reason] = (abort_reason[reason] or 0) + 1
++				local key = reason .. " @ " .. where(func, pc)
++				abort_where[key] = (abort_where[key] or 0) + 1
++			elseif what == "stop" then
++				local ok, mcode, address = pcall(jutil.tracemc, tr)
++				if ok and type(mcode) == "string" then
++					mcode_bytes = mcode_bytes + #mcode
++					if address < mcode_min then mcode_min = address end
++					if address > mcode_max then mcode_max = address end
++				end
++				local ok_info, info = pcall(jutil.traceinfo, tr)
++				local kind = ok_info and type(info) == "table" and
++					tostring(info.linktype) or "?"
++				stop_kind[kind] = (stop_kind[kind] or 0) + 1
++			elseif what == "flush" then
++				mcode_bytes = 0
++			end
++		end, "trace")
++		P.trace_attached = true
++		P.vmdef_loaded = ok_vmdef
++	end
++end
++
++local function cache_totals()
++	local hits, misses, evictions = 0, 0, 0
++	for index = 1, #P.column_sources do
++		local h, m, e = P.column_sources[index]()
++		hits, misses, evictions = hits + h, misses + m, evictions + e
++	end
++	return hits, misses, evictions
++end
++
++local function sorted_keys(map)
++	local keys = {}
++	for key in pairs(map) do keys[#keys + 1] = key end
++	table.sort(keys)
++	return keys
++end
++
++-- Benchmarks (first callback, outside the timer) ----------------------------
++local function bench()
++	local parts = {"GRUG_MGPROF_BENCH"}
++	-- A tight loop shaped like the P8 host scan (array reads, a small local
++	-- call, a compare): its ns per iteration tells a healthy JIT from a
++	-- starved or interpreted one.
++	local data = {}
++	for index = 1, 262144 do data[index] = index % 7 end
++	local function eligible(value, host) return value == host end
++	local t0, found = now(), 0
++	for _ = 1, 8 do
++		for index = 1, 262144 do
++			if eligible(data[index], 3) then found = found + 1 end
++		end
++	end
++	parts[#parts + 1] = ("loop_ns=%.2f"):format((now() - t0) * 1000 / (8 * 262144))
++	parts[#parts + 1] = "loop_found=" .. found
++	local raw = P.raw_sha256 or core.sha256
++	for _, length in ipairs({48, 96, 192}) do
++		local text = string.rep("x", length)
++		local n = 20000
++		t0 = now()
++		for index = 1, n do raw(text .. index, true) end
++		parts[#parts + 1] = ("sha%d_us=%.3f"):format(length, (now() - t0) / n)
++	end
++	local ok, hash = pcall(function()
++		return dofile(core.get_modpath("grug_mapgen") .. "/wp40/r6_hash.lua")(
++			function(bytes) return raw(bytes, true) end)
++	end)
++	if ok then
++		local seed = "15140735923413111218"
++		for _, count in ipairs({4, 7, 11}) do
++			local fields = {}
++			for index = 1, count do fields[index] = index * 37 - 500 end
++			fields[1] = "iron"
++			local n = 20000
++			t0 = now()
++			for index = 1, n do
++				fields[2] = index
++				hash.digest_count("resource_frontier_rank_v1", seed, fields, count)
++			end
++			parts[#parts + 1] = ("r6digest%d_us=%.3f"):format(count, (now() - t0) / n)
++		end
++	end
++	-- An integer stand-in for one 11-field digest: a 32-bit multiply/xorshift
++	-- mix per field with the bit library (what a replacement could cost).
++	local bit_api = rawget(_G, "bit")
++	if type(bit_api) == "table" then
++		local bxor, rshift, tobit = bit_api.bxor, bit_api.rshift, bit_api.tobit
++		local function mix(h, v)
++			h = tobit(bxor(h, v) * 0x01000193)
++			return bxor(h, rshift(h, 15))
++		end
++		local n, acc = 200000, 0
++		t0 = now()
++		for index = 1, n do
++			local h = 0x2545F491
++			h = mix(h, 77) h = mix(h, index) h = mix(h, -63) h = mix(h, -145)
++			h = mix(h, 5) h = mix(h, 2) h = mix(h, 0) h = mix(h, 7)
++			h = mix(h, 360) h = mix(h, -1001) h = mix(h, -2300)
++			acc = bxor(acc, h)
++		end
++		parts[#parts + 1] = ("int11_us=%.4f"):format((now() - t0) / n)
++		parts[#parts + 1] = "int11_acc=" .. acc
++	end
++	if jit_api and type(jit_api.status) == "function" then
++		local status = {jit_api.status()}
++		for index = 1, #status do status[index] = tostring(status[index]) end
++		parts[#parts + 1] = "jit_status=" .. table.concat(status, ","):gsub(" ", "_")
++		parts[#parts + 1] = "jit_version=" .. tostring(jit_api.version):gsub(" ", "_")
++	end
++	core.log("action", table.concat(parts, " "))
++end
++
++function P.begin()
++	if totals_only == nil then
++		totals_only = core.settings:get_bool("grug_mgprof_totals_only", false)
++		P.stages_on = not totals_only
++		if P.stages_on then pcall(bench) end
++	end
++	for key, value in pairs(trace) do trace_before[key] = value end
++	for key, value in pairs(abort_reason) do abort_reason_before[key] = value end
++	for key, value in pairs(abort_where) do abort_where_before[key] = value end
++	heap_before = collectgarbage("count")
++	stages, order, sub, counts, hashes = {}, {}, {}, {}, {}
++	pending_calls, pending_us, pending_bytes = 0, 0, 0
++	cache_before[1], cache_before[2], cache_before[3] = cache_totals()
++	P.result = "none"
++	P.active = P.stages_on
++	started = now()
++	last = started
++end
++
++function P.mark(name)
++	if not P.active then return end
++	local t = now()
++	local value = stages[name]
++	if value == nil then
++		order[#order + 1] = name
++		value = 0
++	end
++	stages[name] = value + (t - last)
++	if pending_calls > 0 then
++		local h = hashes[name]
++		if not h then
++			h = {0, 0, 0}
++			hashes[name] = h
++		end
++		h[1], h[2], h[3] = h[1] + pending_calls, h[2] + pending_us, h[3] + pending_bytes
++		pending_calls, pending_us, pending_bytes = 0, 0, 0
++	end
++	last = t
++end
++
++function P.add(name, us)
++	if P.active then sub[name] = (sub[name] or 0) + us end
++end
++
++function P.count(name, n)
++	if P.active then counts[name] = (counts[name] or 0) + (n or 1) end
++end
++
++local function top(map, before, limit)
++	local rows = {}
++	for key, value in pairs(map) do
++		local delta = value - (before and before[key] or 0)
++		if delta > 0 then rows[#rows + 1] = {key, delta} end
++	end
++	table.sort(rows, function(a, b)
++		if a[2] ~= b[2] then return a[2] > b[2] end
++		return a[1] < b[1]
++	end)
++	local out = {}
++	for index = 1, math.min(limit, #rows) do
++		out[#out + 1] = rows[index][2] .. "x " .. rows[index][1]
++	end
++	return table.concat(out, " | ")
++end
++
++function P.finish(minp, maxp)
++	if P.active then P.mark("tail") else last = now() end
++	P.active = false
++	callbacks = callbacks + 1
++	local total = last - started
++	local hits, misses, evictions = cache_totals()
++	local parts = {"GRUG_MGPROF",
++		"mode=" .. (totals_only and "totals" or "stages"),
++		"n=" .. callbacks,
++		"minp=" .. minp.x .. "," .. minp.y .. "," .. minp.z,
++		"maxp=" .. maxp.x .. "," .. maxp.y .. "," .. maxp.z,
++		"result=" .. tostring(P.result),
++		"total_us=" .. total,
++		"cc_hits=" .. (hits - cache_before[1]),
++		"cc_misses=" .. (misses - cache_before[2]),
++		"cc_evictions=" .. (evictions - cache_before[3]),
++		"heap_kb=" .. math.floor(heap_before),
++		"heap_after_kb=" .. math.floor(collectgarbage("count"))}
++	if P.trace_attached then
++		for _, key in ipairs({"start", "stop", "abort", "flush"}) do
++			parts[#parts + 1] = "jit_" .. key .. "=" .. (trace[key] - trace_before[key])
++			parts[#parts + 1] = "jit_" .. key .. "_cum=" .. trace[key]
++		end
++		parts[#parts + 1] = "jit_mcode_kb=" .. math.floor(mcode_bytes / 1024)
++		parts[#parts + 1] = ("jit_mcode_span_mb=%.1f"):format(
++			mcode_max >= mcode_min and (mcode_max - mcode_min) / 1048576 or 0)
++		parts[#parts + 1] = ("jit_mcode_min=0x%x"):format(
++			mcode_min < math.huge and mcode_min or 0)
++		parts[#parts + 1] = "jit_on=" .. tostring((jit_api.status()))
++	end
++	for index = 1, #order do
++		parts[#parts + 1] = "s." .. order[index] .. "=" .. stages[order[index]]
++	end
++	local keys = sorted_keys(sub)
++	for index = 1, #keys do
++		parts[#parts + 1] = "u." .. keys[index] .. "=" .. sub[keys[index]]
++	end
++	keys = sorted_keys(counts)
++	for index = 1, #keys do
++		parts[#parts + 1] = "c." .. keys[index] .. "=" .. counts[keys[index]]
++	end
++	keys = sorted_keys(hashes)
++	for index = 1, #keys do
++		local h = hashes[keys[index]]
++		parts[#parts + 1] = "h." .. keys[index] .. "=" .. h[1] .. "/" .. h[2] .. "/" .. h[3]
++	end
++	core.log("action", table.concat(parts, " "))
++	if P.trace_attached then
++		-- the aborts of this callback, and every 10th callback the process's
++		core.log("action", "GRUG_MGPROF_JIT n=" .. callbacks .. " aborts: " ..
++			top(abort_where, abort_where_before, 8))
++		if callbacks % 10 == 0 or callbacks <= 2 then
++			core.log("action", "GRUG_MGPROF_JITCUM n=" .. callbacks .. " reasons: " ..
++				top(abort_reason, nil, 20) .. " || stops: " .. top(stop_kind, nil, 8) ..
++				" || where: " .. top(abort_where, nil, 25))
++		end
++	end
++end
++
++return P
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6.lua b/mods/MAPGEN/grug_mapgen/wp40/r6.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r6.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r6.lua
+@@ -257,6 +257,8 @@
+ 			if successor_tail then
+ 				successor_tail:plan_slice(minp, maxp, plan, generation)
+ 			end
++			local mgp = rawget(_G, "grug_mgprof")
++			if mgp then mgp.mark("plan_successor") end
+ 			return plan, generation
+ 		end
+ 		function session.metrics()
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+@@ -648,6 +648,8 @@
+ 			local key = cell_x * 65536 + cell_z
+ 			local rows = cell_cache[key]
+ 			if rows then return rows end
++			local mgp = rawget(_G, "grug_mgprof")
++			if mgp then mgp.count("cell_cache_miss") end
+ 			local dc = build_cell(cell_x, cell_z, false)
+ 			rows = {count = dc}
+ 			local base = 0
+@@ -677,8 +679,11 @@
+ 
+ 		local function plan_slice_core(min_x, min_y, min_z, max_x, max_y, max_z)
+ 			plan.valid = false
++			local mgp = rawget(_G, "grug_mgprof")
++			if mgp then mgp.mark("plan_entry") end
+ 			local r5_plan, r5_generation = r5_planner:plan_slice(
+ 				{x = min_x, y = min_y, z = min_z}, {x = max_x, y = max_y, z = max_z})
++			if mgp then mgp.mark("plan_r5") end
+ 			plan.generation = plan.generation + 1
+ 			plan.min_x, plan.min_y, plan.min_z = min_x, min_y, min_z
+ 			plan.max_x, plan.max_y, plan.max_z = max_x, max_y, max_z
+@@ -712,6 +717,7 @@
+ 					column_values[base + 12] = surface and surface.dust_ref or 0
+ 				end
+ 			end
++			if mgp then mgp.mark("plan_r6_columns") end
+ 			-- Only the slice's own cells: a cell's roots are its own 16 x 16
+ 			-- columns and the writer places only roots inside its owner (Round 37,
+ 			-- audit MGT-02: the former 2-cell halo around the slice built
+@@ -744,6 +750,7 @@
+ 					candidate_cell_values[cell_base + 4] = candidate_count + 1
+ 				end
+ 			end
++			if mgp then mgp.mark("plan_r6_candidates") end
+ 			plan.column_count, plan.candidate_cell_count, plan.candidate_count =
+ 				column_count, cell_count, candidate_count
+ 			metrics.plan_buffer_reuse_calls = metrics.plan_buffer_reuse_calls + 1
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+@@ -2482,6 +2482,12 @@
+ 		end
+ 
+ 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
++			-- MGPROF (throwaway): stage marks only in the production call.
++			local mgp = call_mode == "production" and rawget(_G, "grug_mgprof") or nil
++			if mgp and not mgp.stages_on then mgp = nil end
++			local function mark(name) if mgp then mgp.mark(name) end end
++			local mgp_now = mgp and mgp.now or function() return 0 end
++			mark("w_entry")
+ 			local resource_column_state = transaction_state.resource_excluded_column
+ 			local resource_protected_floor = transaction_state.resource_protected_floor
+ 			local resource_host_base = transaction_state.resource_host_base
+@@ -2562,6 +2568,7 @@
+ 				return (z - eminz) * z_stride + (y - eminy) * y_stride +
+ 					(x - eminx) + 1
+ 			end
++			mark("w_checks")
+ 			local ok_data, returned_data = pcall(vm.get_data, vm, original_data)
+ 			if not ok_data or not rawequal(returned_data, original_data) then
+ 				fail("fail_vm_contract", "get_data did not reuse the retained buffer")
+@@ -2570,6 +2577,7 @@
+ 			if not ok_p2 or not rawequal(returned_p2, original_param2) then
+ 				fail("fail_vm_contract", "get_param2_data did not reuse the retained buffer")
+ 			end
++			mark("in_vm_get")
+ 			-- No per-voxel scalar check: the engine fills every index of the
+ 			-- emerged volume with an integer content ID (u16) and param2 (u8)
+ 			-- (`l_vmanip.cpp` get_data / get_param2_data), and the halo check
+@@ -2581,22 +2589,31 @@
+ 					intent_interface[index], intent_aux[index] = 0, 0, 0, 0, 0
+ 			end
+ 
++			mark("in_copy_zero")
+ 			local light_loaded = false
+ 			local shadow = {}
+ 			function shadow.get_emerged_area() return emerged_min, emerged_max end
+ 			function shadow.get_data(_, buffer)
++				local t0 = mgp_now()
+ 				for index = 1, volume do buffer[index] = original_data[index] end
++				if mgp then mgp.add("r5_shadow_copy", mgp_now() - t0) end
+ 				return buffer
+ 			end
+ 			function shadow.get_param2_data(_, buffer)
++				local t0 = mgp_now()
+ 				for index = 1, volume do buffer[index] = original_param2[index] end
++				if mgp then mgp.add("r5_shadow_copy", mgp_now() - t0) end
+ 				return buffer
+ 			end
+ 			function shadow.set_data(_, buffer)
++				local t0 = mgp_now()
+ 				for index = 1, volume do final_data[index] = buffer[index] end
++				if mgp then mgp.add("r5_shadow_copy", mgp_now() - t0) end
+ 			end
+ 			function shadow.set_param2_data(_, buffer)
++				local t0 = mgp_now()
+ 				for index = 1, volume do final_param2[index] = buffer[index] end
++				if mgp then mgp.add("r5_shadow_copy", mgp_now() - t0) end
+ 			end
+ 			local function discarded_light_call()
+ 				fail("fail_vm_contract", "composed R5 attempted an inner light transaction")
+@@ -2612,6 +2629,8 @@
+ 			if type(r5_result) ~= "string" then
+ 				fail("fail_settlement", "nested R5 result differs")
+ 			end
++			mark("r5_adapter")
++			if mgp then mgp.count("r5_result_" .. r5_result) end
+ 
+ 			local ledger = not transaction_state.runtime_mode and
+ 				{rejections = {}, resources = {}, decorations = {},
+@@ -2742,6 +2761,7 @@
+ 				end
+ 			end
+ 
++			mark("skin_columns")
+ 			-- P7: exact R5 P5 predecessor refinement.
+ 			-- These horizontal decisions are invariant for the complete column and
+ 			-- the planner has already frozen water/race values in its retained plan.
+@@ -2838,6 +2858,7 @@
+ 				end
+ 			end
+ 
++			mark("p7")
+ 			-- R9 surface skin. The opening decision above used immutable native data
+ 			-- before P7. Fill only native air that the R5 resolver actually preserved;
+ 			-- exact foundations, water, paths and clears therefore remain untouched.
+@@ -2883,6 +2904,7 @@
+ 				end
+ 			end
+ 
++			mark("r9_skin")
+ 			if contract.schema == "grug_wp40_r7_production_r6_content_v1" then
+ 			-- R8 shallow strata.  The shared writer seam accepts only immutable
+ 			-- native stone; native gravel ore is therefore never CID-ambiguous.
+@@ -2906,6 +2928,7 @@
+ 					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
+ 				end})
+ 
++			mark("r8_strata")
+ 			-- Round 24 ruling 12 and B2: layers in the fill below the band depth,
+ 			-- layers through steep faces, rock nests near the surface.
+ 			helpers.r24_apply_fill_layers({min_x = min_x, min_y = min_y,
+@@ -2921,6 +2944,7 @@
+ 					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
+ 				end})
+ 
++			mark("r24_fill_layers")
+ 			-- R8 connected mouths.  The immutable-input helper reconstructs the
+ 			-- complete lumen and proves a continuing, non-sky native component
+ 			-- before this transaction changes a single voxel.
+@@ -2948,6 +2972,7 @@
+ 					end
+ 				end
+ 			end
++			mark("r8_cave_mouth")
+ 			local function inside_owner(x, y, z)
+ 				return x >= min_x and x <= max_x and y >= min_y and y <= max_y and
+ 					z >= min_z and z <= max_z and x >= -3740 and x <= 3740 and
+@@ -2986,7 +3011,16 @@
+ 					resource_host_base[index] = 0
+ 				end
+ 			end
++			mark("p8_setup")
++			local mgp_host_calls, mgp_eligible, mgp_placed, mgp_veins = 0, 0, 0, 0
++			local mgp_active_resources, mgp_segments = 0, 0
++			-- finer P8 split (lane MGPROF boot 4): host_eligible calls from the
++			-- frontier (all calls minus the scanned volume), frontier rank
++			-- digests, root draws, frontier candidates
++			local mgp_frontier_calls, mgp_rank_digests, mgp_root_draws = 0, 0, 0
++			local mgp_frontier_nodes = 0
+ 			local function host_eligible(x, y, z, host_cid)
++				mgp_host_calls = mgp_host_calls + 1
+ 				local column = column_index(x, z)
+ 				if not r30_resource_column_open(resource_column_state[column],
+ 						resource_protected_floor[column], y) then
+@@ -3047,6 +3081,7 @@
+ 					end
+ 				end
+ 				if allowed_columns > 0 then
++					mgp_active_resources = mgp_active_resources + 1
+ 					for cell_z = math.floor(min_z / 16), math.floor(max_z / 16) do
+ 						for cell_x = math.floor(min_x / 16), math.floor(max_x / 16) do
+ 							for cell_y = math.floor(min_y / 16), math.floor(max_y / 16) do
+@@ -3072,7 +3107,13 @@
+ 									local host_ref = content.content_ref(host_name)
+ 									local host_cid = host_ref and contract.content_cids[host_ref]
+ 									local eligible = 0
++									local mgp_t0 = mgp_now()
+ 									if host_cid and active then
++										mgp_segments = mgp_segments + 1
++										mgp_frontier_calls = mgp_frontier_calls -
++											(math.min(max_z, cell_z * 16 + 15) - math.max(min_z, cell_z * 16) + 1) *
++											(segment_end - segment_y + 1) *
++											(math.min(max_x, cell_x * 16 + 15) - math.max(min_x, cell_x * 16) + 1)
+ 										for z = math.max(min_z, cell_z * 16),
+ 												math.min(max_z, cell_z * 16 + 15) do
+ 											for y = segment_y, segment_end do
+@@ -3087,6 +3128,9 @@
+ 											end
+ 										end
+ 									end
++									if mgp then mgp.add("p8_host_scan", mgp_now() - mgp_t0) end
++									mgp_eligible = mgp_eligible + eligible
++									local mgp_t1 = mgp_now()
+ 									if eligible > 0 then
+ 										local denominator = resource.denominators[tier]
+ 										local remainder_digest = helpers.digest7(
+@@ -3105,11 +3149,15 @@
+ 										local large_count = budget - small * planned
+ 										local placed, accepted, shortfall, collisions = 0, 0, 0, 0
+ 										local next_root_rank = 1
++										local mgp_t2 = mgp_now()
++										if mgp then mgp.add("p8_budget_draw_setup", mgp_t2 - mgp_t1) end
++										local mgp_growth = 0
+ 										for vein = 1, planned do
+ 											local target = small + (vein <= large_count and 1 or 0)
+ 											local root
+ 											while next_root_rank <= eligible do
+ 												local remaining = eligible - next_root_rank + 1
++												mgp_root_draws = mgp_root_draws + 1
+ 												local selected = root_draw(remaining)
+ 												local coordinate = coordinate_scratch[selected]
+ 												coordinate_scratch[selected], coordinate_scratch[remaining] =
+@@ -3138,6 +3186,7 @@
+ 													stable_state.resource[resource_index], 0, 4,
+ 													resource_index + 1)
+ 												placed = placed + 1
++												local mgp_t3 = mgp_now()
+ 												while #vein_nodes < target do
+ 													local frontier_count = 0
+ 													for node_index = 1, #vein_nodes do
+@@ -3170,6 +3219,7 @@
+ 																	local rank_key = index_at(x, y, z)
+ 																	local rank = rank_memo[rank_key]
+ 																	if rank == nil then
++																		mgp_rank_digests = mgp_rank_digests + 1
+ 																		rank = helpers.digest11(
+ 																			"resource_frontier_rank_v1", resource.key,
+ 																			cell_x, cell_y, cell_z, host_name, tier, band,
+@@ -3181,6 +3231,7 @@
+ 															end
+ 														end
+ 													end
++													mgp_frontier_nodes = mgp_frontier_nodes + frontier_count
+ 													if frontier_count == 0 then break end
+ 													local next_node = helpers.frontier_min(frontier_scratch,
+ 														frontier_count, helpers.coordinate_less)
+@@ -3194,6 +3245,7 @@
+ 														resource_index + 1)
+ 													placed = placed + 1
+ 												end
++												mgp_growth = mgp_growth + (mgp_now() - mgp_t3)
+ 												if #vein_nodes < target then
+ 													shortfall = shortfall + target - #vein_nodes
+ 													metric_rejection(ledger, "resource", resource.key,
+@@ -3201,6 +3253,11 @@
+ 												end
+ 											end
+ 										end
++										mgp_placed, mgp_veins = mgp_placed + placed, mgp_veins + accepted
++										if mgp then
++											mgp.add("p8_veins_total", mgp_now() - mgp_t2)
++											mgp.add("p8_vein_growth", mgp_growth)
++										end
+ 										if ledger then
+ 											local key = table.concat({resource.key, cell_x, cell_y,
+ 												cell_z, host_name, tier, band}, "\0")
+@@ -3221,6 +3278,21 @@
+ 				end
+ 			end
+ 
++			mark("p8_resources")
++			if mgp then
++				mgp.count("p8_host_eligible_calls", mgp_host_calls)
++				mgp.count("p8_eligible_hosts", mgp_eligible)
++				mgp.count("p8_placed_nodes", mgp_placed)
++				mgp.count("p8_veins", mgp_veins)
++				mgp.count("p8_active_resources", mgp_active_resources)
++				mgp.count("p8_scanned_segments", mgp_segments)
++				mgp.count("p8_host_cache", resource_host_base and 1 or 0)
++				-- all calls minus the scan's (counted as the scanned volume)
++				mgp.count("p8_frontier_host_calls", mgp_host_calls + mgp_frontier_calls)
++				mgp.count("p8_rank_digests", mgp_rank_digests)
++				mgp.count("p8_root_draws", mgp_root_draws)
++				mgp.count("p8_frontier_candidates", mgp_frontier_nodes)
++			end
+ 			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
+ 			-- `tree_roots`: the roots of the generated trees accepted in this owner
+ 			-- (Round 47), kept TREE_SPACING apart.
+@@ -3542,6 +3614,7 @@
+ 			-- closure surface over these private buffers, runs after the complete R6
+ 			-- P9 loop and before common run derivation/replay/commit, and cannot call
+ 			-- a VoxelManip setter. A missing tail preserves the accepted R6 path.
++			mark("p9_decorations")
+ 			if transaction_state.successor_tail then
+ 				local successor_context = {
+ 					schema = "grug_wp40_r7_successor_context_v1",
+@@ -3628,6 +3701,7 @@
+ 				end
+ 				function successor_context.write_p9g(x, y, z, cid, param2,
+ 						local_ref, feature_ref)
++					if mgp then mgp.count("succ_write_p9g") end
+ 					if not inside_owner(x, y, z) then
+ 						fail("fail_settlement", ("P9G write escaped central owner " ..
+ 							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
+@@ -3656,6 +3730,7 @@
+ 				end
+ 				function successor_context.write_anchor(x, y, z, cid, param2,
+ 						local_ref, feature_ref)
++					if mgp then mgp.count("succ_write_anchor") end
+ 					if not inside_owner(x, y, z) then
+ 						fail("fail_settlement", ("anchor write escaped central owner " ..
+ 							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
+@@ -3690,6 +3765,7 @@
+ 					return planner_source.road_column_at(x, z)
+ 				end
+ 				function successor_context.write_road(x, y, z, cid, param2)
++					if mgp then mgp.count("succ_write_road") end
+ 					if not inside_owner(x, y, z) then
+ 						fail("fail_settlement", ("road write escaped central owner " ..
+ 							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
+@@ -3709,6 +3785,7 @@
+ 				end
+ 				function successor_context.write_hearthpine(x, y, z, cid, param2,
+ 						local_ref, feature_ref)
++					if mgp then mgp.count("succ_write_hearthpine") end
+ 					if not inside_owner(x, y, z) then
+ 						fail("fail_settlement", ("Hearthpine write escaped central owner " ..
+ 							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
+@@ -3740,6 +3817,7 @@
+ 					intent_aux[index] = (successor_ref - 1) * 256 + param2
+ 					occupancy[index] = -2
+ 				end
++				mark("succ_closures")
+ 				local successor_ledger = transaction_state.successor_tail:settle(successor_context)
+ 				if type(successor_ledger) ~= "table" or
+ 						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" then
+@@ -3757,6 +3835,7 @@
+ 				end
+ 			end
+ 
++			mark("succ_ledger")
+ 			-- Canonical runs and their checksums are an evidence product. The live
+ 			-- writer has already materialized the same intent bytes and commits them
+ 			-- directly; no runtime consumer reads the encoded proof.
+@@ -3903,6 +3982,7 @@
+ 				metrics_state.replay_count = metrics_state.replay_count + 1
+ 			end
+ 
++			mark("evidence_runs")
+ 			local content_changed, param2_changed, light_changed, liquid_changed =
+ 				false, false, false, false
+ 			last_sun_runs = 0
+@@ -3978,6 +4058,12 @@
+ 				light_columns
+ 			metrics_state.liquid_dirty_columns = metrics_state.liquid_dirty_columns +
+ 				liquid_columns
++			mark("final_diff")
++			if mgp then
++				mgp.count("modified_voxels", modified)
++				mgp.count("light_columns", light_columns)
++				mgp.count("liquid_columns", liquid_columns)
++			end
+ 			if not content_changed and not param2_changed then return "noop_equal_content" end
+ 
+ 			-- One light read for the relight (halo.relight) before any setter.
+@@ -3989,6 +4075,7 @@
+ 				light_loaded = true
+ 			end
+ 
++			mark("commit_light_read")
+ 			transaction_state.written_vm = vm
+ 			if content_changed then
+ 				local ok = pcall(vm.set_data, vm, final_data)
+@@ -3998,6 +4085,7 @@
+ 				local ok = pcall(vm.set_param2_data, vm, final_param2)
+ 				if not ok then fail("fail_vm_contract", "set_param2_data failed") end
+ 			end
++			mark("commit_set_data")
+ 			if light_changed then
+ 				local a = halo.args
+ 				a.data, a.param2, a.light, a.ignore_cid = final_data, final_param2,
+@@ -4010,10 +4098,12 @@
+ 				transaction_state.written_light = true
+ 				last_sun_runs = halo.relight(a)
+ 			end
++			mark("commit_relight")
+ 			if liquid_changed then
+ 				local ok = pcall(vm.update_liquids, vm)
+ 				if not ok then fail("fail_vm_contract", "update_liquids failed") end
+ 			end
++			mark("commit_liquids")
+ 			metrics_state.apply_calls = metrics_state.apply_calls + 1
+ 			local c, p, l, q = content_changed, param2_changed, light_changed,
+ 				liquid_changed
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
+@@ -2,6 +2,10 @@
+ -- mapgen script and owns the sole generated callback and VM transaction.
+ 
+ local IPC_KEY = "grug_mapgen:r7_runtime_v1"
++-- MGPROF (throwaway): the stage timer, published before any wp40 file loads.
++local MGP = dofile(core.get_modpath("grug_mapgen") .. "/wp40/mgprof.lua")
++rawset(_G, "grug_mgprof", MGP)
++MGP.install_sha()
+ -- LuaJIT side-exit tuning for this environment (see ../jit_tuning.lua).
+ dofile(core.get_modpath("grug_mapgen") .. "/jit_tuning.lua")()
+ local function fail(message)
+@@ -96,9 +100,18 @@
+ 	maxp = plain_engine_position(maxp, "generated maxp")
+ 	-- Native air above everything the writer can place: the transaction would
+ 	-- change nothing (air_chunks.lua), so it is not run.
+-	if air_chunks.untouched(minp, maxp, get_heightmap) then return end
++	if air_chunks.untouched(minp, maxp, get_heightmap) then
++		MGP.mark("air_check")
++		MGP.result = "air_skip"
++		return
++	end
++	MGP.mark("air_check")
+ 	local plan, generation = built.session.plan_slice(minp, maxp)
++	MGP.count("r5_runs", plan.r5_plan.run_count or -1)
++	MGP.count("candidates", plan.candidate_count or -1)
++	MGP.count("candidate_cells", plan.candidate_cell_count or -1)
+ 	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
++	MGP.result = result
+ 	if type(result) ~= "string" then fail("writer result differs") end
+ end
+ 
+@@ -111,5 +124,7 @@
+ 	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
+ 	-- the external R8 cave checker can prove the component the real writer saw.
+ 	if native_baseline then return end
++	MGP.begin()
+ 	refine_or_degrade(refine, vmanip, minp, maxp)
++	MGP.finish(minp, maxp)
+ end)
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+@@ -475,6 +475,12 @@
+ 				end
+ 				return ledger
+ 			end
++			-- MGPROF (throwaway): P9G sub-timers (scan with rank digests, budget
++			-- and sort, candidate settlement) and counters.
++			local mgp = context.call_mode == "production" and rawget(_G, "grug_mgprof") or nil
++			if mgp and not mgp.stages_on then mgp = nil end
++			local mgp_now = mgp and mgp.now or function() return 0 end
++			local mgp_scan, mgp_sort, mgp_place, mgp_eligible, mgp_cells = 0, 0, 0, 0, 0
+ 			local candidate_count = 0
+ 			local first_cell_x = math.floor(context.min_x / 16)
+ 			local last_cell_x = math.floor(context.max_x / 16)
+@@ -485,6 +491,7 @@
+ 				for cell_z = first_cell_z, last_cell_z do
+ 					for cell_x = first_cell_x, last_cell_x do
+ 						local eligible, routed_eligible = 0, 0
++						local mgp_t0 = mgp_now()
+ 						for z = cell_z * 16, cell_z * 16 + 15 do
+ 							for x = cell_x * 16, cell_x * 16 + 15 do
+ 								if x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 then
+@@ -509,6 +516,9 @@
+ 								end
+ 							end
+ 						end
++						local mgp_t1 = mgp_now()
++						mgp_scan = mgp_scan + (mgp_t1 - mgp_t0)
++						mgp_eligible, mgp_cells = mgp_eligible + eligible, mgp_cells + 1
+ 						if eligible > metrics.peak_eligible_per_cell then
+ 							metrics.peak_eligible_per_cell = eligible
+ 						end
+@@ -520,6 +530,8 @@
+ 						local budget = hash.budget(eligible, row.fill_numerator,
+ 							density, 1, 1, remainder)
+ 						sort_prefix(rank_scratch, eligible)
++						local mgp_t2 = mgp_now()
++						mgp_sort = mgp_sort + (mgp_t2 - mgp_t1)
+ 						local group
+ 						if emit_ledger then
+ 							group = {source_id = row.id, cell_x = cell_x,
+@@ -621,6 +633,13 @@
+ 					end
+ 				end
+ 			end
++			if mgp then
++				mgp.add("p9g_scan_and_rank_digests", mgp_scan)
++				mgp.add("p9g_budget_and_sort", mgp_sort)
++				mgp.count("p9g_eligible_columns", mgp_eligible)
++				mgp.count("p9g_row_cells", mgp_cells)
++				mgp.count("p9g_candidates", candidate_count)
++			end
+ 			if candidate_count > metrics.peak_candidates then
+ 				metrics.peak_candidates = candidate_count
+ 			end
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+@@ -102,8 +102,13 @@
+ 		end
+ 		function tail.settle(self, context)
+ 			if not rawequal(self, tail) then fail("settle receiver differs") end
++			local mgp = rawget(_G, "grug_mgprof")
++			local function mark(name) if mgp then mgp.mark(name) end end
++			mark("succ_context")
+ 			if road_writer then road_writer.dress(context) end
++			mark("succ_roads")
+ 			if swamp then swamp.dress(context) end
++			mark("succ_swamp")
+ 			local p9g_context = {}
+ 			for _, key in ipairs({"schema", "plan", "generation", "call_mode",
+ 					"min_x", "min_y", "min_z", "max_x", "max_y", "max_z",
+@@ -113,14 +118,19 @@
+ 				p9g_context[key] = context[key]
+ 			end
+ 			local p9g_ledger = p9g:settle(p9g_context)
++			mark("succ_p9g")
+ 			local world_ledger = world.settle(context)
++			mark("succ_world_content")
+ 			local anchor_ledger = anchors:settle(context)
++			mark("succ_anchors")
+ 			local ledger = {schema = "grug_wp40_r7_successor_ledger_v1",
+ 				p9g = p9g_ledger, world_content = world_ledger, anchors = anchor_ledger}
+ 			for index = 1, #settlements do
+ 				ledger[settlements[index].key] = settlements[index]:settle(context)
+ 			end
++			mark("succ_settlements")
+ 			if arena_writer then arena_writer.dress(context) end
++			mark("succ_arena")
+ 			return ledger
+ 		end
+ 		function tail.metrics(self)
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/zones.lua b/mods/MAPGEN/grug_mapgen/wp40/zones.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/zones.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/zones.lua
+@@ -1318,6 +1318,15 @@
+ 			local column_cache_next_slot = 1
+ 			local column_cache_hits, column_cache_misses,
+ 				column_cache_evictions = 0, 0, 0
++			do -- MGPROF (throwaway): expose the runtime column cache counters.
++				local mgp = rawget(_G, "grug_mgprof")
++				if mgp and runtime_mode then
++					mgp.column_sources[#mgp.column_sources + 1] = function()
++						return column_cache_hits, column_cache_misses,
++							column_cache_evictions
++					end
++				end
++			end
+ 
+ 			-- The planner column tuple (20 values): water class, zone numeric id,
+ 			-- zone id, logical biome, race region, terrain y, water y, river id,

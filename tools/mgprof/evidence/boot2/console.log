@@ -1,0 +1,30 @@
+ACTION[Server]: [mgprof_probe] request id=warmup minp=608,-112,-2352
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      363
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+ACTION[Server]: [mgprof_probe] request id=A_S1 minp=368,-32,-2352
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      530
+ACTION[Server]: [mgprof_probe] request id=A_S2 minp=368,48,-2352
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      149
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       24
+ACTION[Server]: [mgprof_probe] request id=A_B minp=368,-112,-2352
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      322
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       20
+ACTION[Server]: [mgprof_probe] request id=A_U1 minp=368,-192,-2352
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      287
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+ACTION[Server]: [mgprof_probe] request id=A_U3 minp=368,-512,-2352
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      316
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       28
+ACTION[Server]: [mgprof_probe] request id=A_U6 minp=368,-1072,-2352
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      345
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       32
+ACTION[Server]: [mgprof_probe] request id=B_U6 minp=528,-1072,-2192
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      789
+ACTION[Server]: [mgprof_probe] request id=B_U1 minp=528,-192,-2192
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      277
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+ACTION[Server]: [mgprof_probe] request id=B_B minp=528,-112,-2192
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      265
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       20

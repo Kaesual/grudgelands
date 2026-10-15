@@ -37,6 +37,10 @@ the user decides, and their open items are tracked in BACKLOG.
 - [Items and professions analysis](items-professions-analysis-2026-10.md):
   the loot, vendor, crafting and money loop per tier, dead ends, options 1–5
   and 16 questions for a design session.
+- [Mapgen chunk profile](mapgen-chunk-profile-2026-10.md): the R7
+  callback's Lua time per stage for nine chunks from the surface to -1072
+  (P8 ores and gems are 84–90 % underground), throughput per chunk type and
+  ranked WP48 levers.
 
 ## Plans and evidence
 

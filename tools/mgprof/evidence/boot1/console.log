@@ -1,0 +1,107 @@
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      492
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     31.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      512
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      928
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      928
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    686.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       27
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      372
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       32
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      268
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   28.666
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  289.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   33.333
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      521
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       31
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      448
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       31
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      560
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       29
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x    286.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    27.75
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   214.25
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    30.75
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      697
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       31
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    655.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     32.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      647
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       33
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    671.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     30.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   481.75
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   27.333
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  281.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     28.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    399.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     27.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      555
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       28
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      610
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     28.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    604.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       31
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    428.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     34.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x    234.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     25.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      292
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       28
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      460
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       28
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      508
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      562
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       31
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   278.75
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     32.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   206.25
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x       28
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      638
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      694
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    826.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     29.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x     1143
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       32
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x      818
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     32.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x      284
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       27
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  272.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   27.666
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      321
+ACTION[Server]: [mgprof_probe] request id=warmup minp=608,-112,-2352
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      586
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+ACTION[Server]: [mgprof_probe] request id=A_S1 minp=368,-32,-2352
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      832
+ACTION[Server]: [mgprof_probe] request id=A_S2 minp=368,48,-2352
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       23
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      340
+ACTION[Server]: [mgprof_probe] request id=A_B minp=368,-112,-2352
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      491
+ACTION[Server]: [mgprof_probe] request id=A_U1 minp=368,-192,-2352
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      576
+ACTION[Server]: [mgprof_probe] request id=A_U3 minp=368,-512,-2352
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      571
+ACTION[Server]: [mgprof_probe] request id=A_U6 minp=368,-1072,-2352
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       30
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      635
+ACTION[Server]: [mgprof_probe] request id=B_U6 minp=528,-1072,-2192
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       29
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      773
+ACTION[Server]: [mgprof_probe] request id=B_U1 minp=528,-192,-2192
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      505
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       21
+ACTION[Server]: [mgprof_probe] request id=B_B minp=528,-112,-2192
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      503
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       20

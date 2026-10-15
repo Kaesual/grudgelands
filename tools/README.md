@@ -1092,3 +1092,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   boots and joins of this checkout: the sort into the new sizes, the
   letters read back from `grug_mail`'s storage, a second join); `evidence/`
   the last run.
+- **Lane MGPROF** (`mgprof`, a post-round measurement, 2026-10-15): the
+  per-stage Lua time of the R7 generated callback for a few chunks
+  ([profile](../docs/research/mapgen-chunk-profile-2026-10.md)), no fixture.
+  `run.sh stages|totals OUT [ROOT]` boots the headless server on seed 12345
+  with `stages.patch` (a flat stage timer in the staged game copy only;
+  replaces the stale `wp40/profile/instrument-settlement-stages.patch`) and
+  `grug_probe_mgprof` (generates the pinned chunks one at a time with the
+  engine profiler on, then stops); `reset_columns.py ROOT` makes a kept
+  world's measured columns generate fresh again; `summarize.py [--pct]
+  BOOT_DIR...` the tables (`--hash`: SHA-256 per stage); `evidence/` the
+  extracted lines of boots 1–6. `INSECURE=1 run.sh ...` (follow-up 2) adds
+  `insecure.patch` to the staged game, so only that run's throwaway
+  server config disables mod security and the timer logs LuaJIT trace
+  aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
