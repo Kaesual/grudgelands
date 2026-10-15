@@ -1428,7 +1428,11 @@ local function zones_factory(dependencies)
 				local row = bucket and bucket[z] or nil
 				if row then
 					column_cache_hits = column_cache_hits + 1
-					return unpack(row, 1, 20)
+					-- spelled out: LuaJIT does not compile `unpack` (Round 49
+					-- lane JIT; it was the most blacklisted mapgen location)
+					return row[1], row[2], row[3], row[4], row[5], row[6], row[7],
+						row[8], row[9], row[10], row[11], row[12], row[13], row[14],
+						row[15], row[16], row[17], row[18], row[19], row[20]
 				end
 				column_cache_misses = column_cache_misses + 1
 				local value_1, value_2, value_3, value_4, value_5,
@@ -1480,7 +1484,9 @@ local function zones_factory(dependencies)
 				bucket._count = bucket._count + 1
 				column_cache_slot_x[slot] = x
 				column_cache_slot_z[slot] = z
-				return unpack(row, 1, 20)
+				return value_1, value_2, value_3, value_4, value_5, value_6, value_7,
+					value_8, value_9, value_10, value_11, value_12, value_13, value_14,
+					value_15, value_16, value_17, value_18, value_19, value_20
 			end
 
 			-- True when a sealed (river or lake) water column may lie in the
