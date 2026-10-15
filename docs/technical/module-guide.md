@@ -1565,13 +1565,13 @@ tools](#player-meta-read-by-external-tools).
   meta survives; a future item-removal step scans them and the list
   `grug_mail_out` (upgrade contract §1).
 - **The API** (the contract lanes ADMIN, QUEST and BAGS build on):
-  - `send_letter(player, to_name, subject, body[, quoted])` — player mail:
-    a created character of the sender's faction (the index), never the
+  - `send_letter(player, to_name, subject, body)` — player mail: a
+    created character of the sender's faction (the index), never the
     sender, not into a mailbox at 50 player letters; postage `5 + 30 ×
-    stacks` and the four `grug_mail_out` slots leave in one
-    `grug_money.take_with_inventory` call. `quoted` is the slot stacks the
-    window showed the postage for: a slot that differs refuses before
-    anything is taken. Returns ok, message.
+    stacks` for the four `grug_mail_out` slots as they are at the call,
+    and the slots leave with it in one `grug_money.take_with_inventory`
+    call (Round 49: no quote). Returns ok, message ("Letter sent to X.
+    Postage paid: 65c.").
   - `send_system(to_name, kind, from_label, subject, body[, stacks])` —
     `kind` "admin" (always shown from "Server Admin", whatever the label) or
     "npc"; always delivered (no limit, faction or postage), to an indexed
@@ -1645,10 +1645,10 @@ tools](#player-meta-read-by-external-tools).
   nodes, else the window closes and the slots go back. Typed text is kept
   from every event and written back as the fields' defaults; the window is
   never resent on an inventory move (a resend drops unsent text), which is
-  why Send compares the slots with the quote of the last draw. The two Send
-  buttons carry the draw's serial (`write_send_<n>`, `admin_send_<n>`): a
-  click from a form already replaced (a double click, or a second click
-  after a refusal that showed new postage) acts on nothing and only redraws.
+  why the Write tab shows the postage rule, not a figure, and Send charges
+  the slots as they are at the click (Round 49). The two Send buttons carry
+  the draw's serial (`write_send_<n>`, `admin_send_<n>`): a click from a
+  form already replaced (a double click) acts on nothing and only redraws.
   The Write tab's rings put `grug_mail_out` right after `main` and after
   each bag (the engine follows the first entry naming the source list). The focus
   sits on an invisible button at every send ("UI and formspecs").

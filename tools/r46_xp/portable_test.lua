@@ -3,14 +3,15 @@
 -- rulings 5, 7 and 8). Loads the REAL files under minimal `core` stubs:
 --
 --   A. the kill-XP table (grug_xp.kill_xp through grug_mobs.kill_xp): XP
---      per kill at player levels 10, 30 and 60 for d = -7, -3, 0, +3, +6,
---      normal and elite (printed for the lane report), and the factor at
---      every d from -8 to +8;
+--      per kill at player levels 10, 30 and 60 for d = -10, -9, -3, 0, +3,
+--      +6, normal, elite and rare (printed for the lane report), and the
+--      factor at every d from -11 to +8 (Round 49 rulings 5 and 6: -10 % per
+--      level below, gray at 10 below, rare x2);
 --   B. the target frame's con colour: gray with "(no XP)" for every mob
---      whose kill pays the viewer nothing (7 below, a critter, a
+--      whose kill pays the viewer nothing (10 below, a critter, a
 --      `_grug_xp_reward` of 0, the viewer's own faction; the settlement's
 --      own predicate grug_mobs.player_kill_xp), else a gradient per level,
---      green at 6 below, yellow at the own level, red from 5 above;
+--      green at 9 below, yellow at the own level, red from 5 above;
 --   C. the shipped quest files hold no repeatable quest, and every hub
 --      line of a giver still has a quest;
 --   D. saved quest state holding removed quest ids (an active and tracked
@@ -71,31 +72,61 @@ local function kill(mob_level, player_level, tier)
 		_grug_tier = tier}, player_level))
 end
 do
-	local expected_percent = {[-8] = 0, [-7] = 0, [-6] = 10, [-5] = 25, [-4] = 40, [-3] = 55,
-		[-2] = 70, [-1] = 85, [0] = 100, [1] = 110, [2] = 120, [3] = 130, [4] = 140,
-		[5] = 150, [6] = 150, [7] = 150, [8] = 150}
-	for d = -8, 8 do
+	local expected_percent = {[-11] = 0, [-10] = 0, [-9] = 10, [-8] = 20, [-7] = 30,
+		[-6] = 40, [-5] = 50, [-4] = 60, [-3] = 70, [-2] = 80, [-1] = 90, [0] = 100,
+		[1] = 110, [2] = 120, [3] = 130, [4] = 140, [5] = 150, [6] = 150, [7] = 150, [8] = 150}
+	for d = -11, 8 do
 		eq(X.kill_percent(30 + d, 30), expected_percent[d], "A the factor at d = " .. d)
-		eq(X.is_gray(30 + d, 30), d <= -7, "A gray at d = " .. d)
+		eq(X.is_gray(30 + d, 30), d <= -10, "A gray at d = " .. d)
 	end
 	print("XP per kill (solo; d = mob level - player level)")
-	print("player   tier     d=-7   d=-3    d=0   d=+3   d=+6")
+	print("player   tier    d=-10  d=-9   d=-3    d=0   d=+3   d=+6")
 	local want = {
-		[10] = {normal = {0, 41, 75, 97, 112}, elite = {0, 165, 300, 390, 450}},
-		[30] = {normal = {0, 96, 175, 227, 262}, elite = {0, 385, 700, 910, 1050}},
-		[60] = {normal = {0, 178, 325, 422, 487}, elite = {0, 715, 1300, 1690, 1950}},
+		[10] = {normal = {0, 7, 52, 75, 97, 112}, elite = {0, 30, 210, 300, 390, 450},
+			rare = {0, 15, 105, 150, 195, 225}},
+		[30] = {normal = {0, 17, 122, 175, 227, 262}, elite = {0, 70, 490, 700, 910, 1050},
+			rare = {0, 35, 245, 350, 455, 525}},
+		[60] = {normal = {0, 32, 227, 325, 422, 487}, elite = {0, 130, 910, 1300, 1690, 1950},
+			rare = {0, 65, 455, 650, 845, 975}},
 	}
 	for _, level in ipairs({10, 30, 60}) do
-		for _, tier in ipairs({"normal", "elite"}) do
+		for _, tier in ipairs({"normal", "elite", "rare"}) do
 			local row = {}
-			for i, d in ipairs({-7, -3, 0, 3, 6}) do
+			for i, d in ipairs({-10, -9, -3, 0, 3, 6}) do
 				row[i] = kill(level + d, level, tier)
 				eq(row[i], want[level][tier][i], ("A L%d %s at d = %d"):format(level, tier, d))
 			end
-			print(("%6d   %-6s %6d %6d %6d %6d %6d"):format(level, tier, unpack(row)))
+			print(("%6d   %-6s %6d %6d %6d %6d %6d %6d"):format(level, tier, unpack(row)))
 		end
 	end
-	eq(kill(66, 60, "rare"), 2925, "A a rare 6 above at L60: 325 x 1.5 x 6")
+	eq(kill(66, 60, "rare"), 975, "A a rare 6 above at L60: 325 x 1.5 x 2")
+	-- The rare tier between normal and elite (Round 49 ruling 6): x2.5 HP,
+	-- x1.4 damage, x2 XP, armor 90; at L30 764 / 1910 / 2292 HP.
+	local n_hp, n_dmg, n_xp = grug_mobs.stats_for(30, "normal")
+	local r_hp, r_dmg, r_xp = grug_mobs.stats_for(30, "rare")
+	local e_hp, e_dmg, e_xp = grug_mobs.stats_for(30, "elite")
+	eq(n_hp, 764, "A a normal L30 has 764 HP")
+	eq(r_hp, 1910, "A a rare L30: 764 x 2.5")
+	eq(e_hp, 2292, "A an elite L30: x3")
+	eq(r_dmg, grug_mobs.scale_attack_damage(21.7), "A a rare L30 hits 15.5 x 1.4 = 21.7 (before the scale)")
+	eq(r_xp, 350, "A a rare L30 is worth 2 x 175")
+	check(n_hp < r_hp and r_hp < e_hp and n_dmg < r_dmg and r_dmg < e_dmg and n_xp < r_xp and r_xp < e_xp,
+		"A the rare lies between normal and elite in HP, damage and XP")
+	-- Promoting a live, full-health L30 mob applies the rare's HP and armor
+	-- 90 (its tier visuals already in place, so no rescale here).
+	local groups
+	local ent = {name = "test:rare", _grug_level = 30, _grug_visual_tier = "rare",
+		health = 764, hp_max = 764, object = {set_properties = noop,
+			get_properties = function() return {hp_max = 764} end,
+			set_armor_groups = function(_, g) groups = g end}}
+	grug_core.format_k, grug_core.set_tag_carrier_text = tostring, noop
+	grug_mobs.ensure_tag_carrier = noop
+	grug_mobs.set_tier(ent, "rare")
+	eq(ent.hp_max, 1910, "A set_tier rare: 1910 HP max")
+	eq(ent.health, 1910, "A set_tier rare: full health stays full")
+	eq(ent.armor, 90, "A set_tier rare: armor 90")
+	eq(groups and groups.fleshy, 90, "A set_tier rare: the fleshy armor group is 90")
+	eq(ent._grug_xp, 350, "A set_tier rare: 350 XP at L30")
 	eq(kill(60, 60, "critter"), 0, "A a critter pays nothing")
 	eq(kill(65, 60, "boss"), 487, "A a level-65 king at L60: the boss tier's x1 at +5")
 	eq(grug_mobs.kill_xp({name = "test:mob", _grug_level = 20, _grug_tier = "normal"}), 125,
@@ -149,17 +180,20 @@ do
 		for _, fn in ipairs(steps) do fn(0.5) end
 		return huds[1].text, huds[1].number
 	end
-	local text, color = frame_of(23)
-	eq(text, "Boar L23 (no XP)", "B 7 below: (no XP)")
-	eq(color, 0xaaaaaa, "B 7 below: gray")
-	text, color = frame_of(24)
-	eq(text, "Boar L24", "B 6 below: no (no XP)")
-	-- The gradient (Round 46 follow-up): green at -6, yellow at 0, red from +5.
-	local gradient = {[-8] = 0xaaaaaa, [-7] = 0xaaaaaa, [-6] = 0x55ff55, [-5] = 0x71ff55,
-		[-4] = 0x8eff55, [-3] = 0xaaff55, [-2] = 0xc6ff55, [-1] = 0xe3ff55, [0] = 0xffff55,
+	local text, color = frame_of(20)
+	eq(text, "Boar L20 (no XP)", "B 10 below: (no XP)")
+	eq(color, 0xaaaaaa, "B 10 below: gray")
+	text, color = frame_of(21)
+	eq(text, "Boar L21", "B 9 below: no (no XP)")
+	eq(color, 0x55ff55, "B 9 below: green")
+	-- The gradient (Round 46 follow-up, Round 49 ruling 5): green at -9,
+	-- yellow at 0, red from +5.
+	local gradient = {[-11] = 0xaaaaaa, [-10] = 0xaaaaaa, [-9] = 0x55ff55, [-8] = 0x68ff55,
+		[-7] = 0x7bff55, [-6] = 0x8eff55, [-5] = 0xa1ff55, [-4] = 0xb3ff55, [-3] = 0xc6ff55,
+		[-2] = 0xd9ff55, [-1] = 0xecff55, [0] = 0xffff55,
 		[1] = 0xffdd55, [2] = 0xffbb55, [3] = 0xff9955, [4] = 0xff7755, [5] = 0xff5555,
 		[6] = 0xff5555, [12] = 0xff5555}
-	for _, d in ipairs({-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 12}) do
+	for _, d in ipairs({-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 12}) do
 		text, color = frame_of(30 + d)
 		eq(color, gradient[d], ("B the colour at d = %d is %06x"):format(d, gradient[d]))
 	end
@@ -182,12 +216,13 @@ do
 	eq(color, 0xffdd55, "B an enemy-faction mob keeps its gradient colour")
 	text, color = frame_of(30, {name = "test:fixed"})
 	eq(text, "Boar L30", "B a positive _grug_xp_reward pays, so no (no XP)")
-	no_xp("a positive _grug_xp_reward 7 below (the gray line covers overrides)", 23,
+	no_xp("a positive _grug_xp_reward 10 below (the gray line covers overrides)", 20,
 		{name = "test:fixed"})
 	-- The predicate is what the settlement pays before the split.
 	local viewer_mob = {name = "test:mob", _grug_level = 33, _grug_tier = "normal", object = {}}
 	eq(grug_mobs.player_kill_xp(viewer_mob, viewer, 30), 227.5, "B the predicate: 175 x 1.3 at +3 (floored at the split)")
-	eq(grug_mobs.player_kill_xp(viewer_mob, viewer, 40), 0, "B ...and 0 at 7 below")
+	eq(grug_mobs.player_kill_xp(viewer_mob, viewer, 42), 23.5, "B ...M(42) 235 x 0.1 at 9 below")
+	eq(grug_mobs.player_kill_xp(viewer_mob, viewer, 43), 0, "B ...and 0 at 10 below")
 	local init_src = read(repo .. "/mods/ENTITIES/grug_mobs/init.lua")
 	check(init_src:find("math.floor(grug_mobs.player_kill_xp(self, player, player_level) / count)", 1, true)
 		~= nil, "B the kill settlement pays the same predicate")

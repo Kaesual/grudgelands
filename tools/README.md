@@ -1036,8 +1036,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_mail/model.lua`, then the real `grug_mail` with the real
   `grug_money`, the give and fit helpers of `grug_inventory` and the guards
   `grug_skills/bound_items.lua` and `grug_housing/soulbound.lua` on a stub
-  engine: postage and the attachment slots in one step, a changed slot
-  refused with nothing lost, the guards, closing, item meta, Take all,
+  engine: postage and the attachment slots in one step, the slots charged
+  as they are at Send (Round 49), the guards, closing, item meta, Take all,
   refusals, `send_system` with stacks, tickets, reports, answers,
   broadcasts, expiry and the window's tabs, dialogs, reach and stale
   clicks; the admin badge and NPC seal come from `r48_artm/generate.py`);
@@ -1060,8 +1060,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `r48_sell` the vendor's sell side (`portable_test.lua`: lot rows over the
   carried lists, All over several slots, the greyed row below the lot
   size, a moved stack refused without loss, the money ceiling before any
-  removal, the pack rule on the real `prices.lua`; the price rules and the
-  milli-copper second pass are in `r29_e1`);
+  removal, the pack rule on the real `prices.lua`, each row's item tooltip
+  (Round 49); the price rules and the milli-copper second pass are in
+  `r29_e1`);
   `r48_admin` the Admin Mail tab (`portable_test.lua`: `grug_mail/admin.lua`
   with the real `grug_mail`, the real sfinv and `grug_inventory/ui.lua` on a
   stub engine: the privilege gates the tab and its place after Help, grant
@@ -1106,7 +1107,30 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `insecure.patch` to the staged game, so only that run's throwaway
   server config disables mod security and the timer logs LuaJIT trace
   aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
-- **Round 49** (`r49_<lane>`): `r49_inv` the Claim Stone in the carried
+- **Round 49** (`r49_<lane>`): `r49_ui` lane UI's engine screenshots, no
+  fixture (its checks are in `r48_mail` and `r48_sell`): `capture.sh
+  OUT_DIR` with `grug_probe_r49_ui` shows the mailbox Write tab with the
+  postage rule, the result line of a Send and the vendor's Sell tab with a
+  row's tooltip (the r48_mail method; `warp_pointer.py` moves the Xvfb
+  pointer onto a form position with ctypes and libX11, so the tooltip
+  shows), one queue run of one slot.
+- **Round 49 lane NAV** (`r49_nav`, diagnosis only, no fixture): the
+  short-range chase probe `grug_probe_r49_nav` (disposable, staged with
+  `PROBE=`). `run.sh OUT LABEL [TIMEOUT]` boots it through the shared queue
+  (seed 12345); `R49NAV_PHASES=scenes,extra,real` picks the main scene list
+  (bushes on flat ground and at or on 1- and 2-high terraces, trunks,
+  distances 3–8), the second list (a strafing target, a target on a bush, a
+  grove, a trunk with stubs) and natural trials on the seed's first meadows,
+  deep forest and pine hills sites (bushes, blueberry bushes and trunks found
+  there; the geometry round each trial is saved); `R49NAV_MOVERS` the movers
+  (`zombie`, `rat`, `archer`, and the phase 2 candidates applied by the probe
+  only: `zombie_fix`/`rat_fix` = padding escalation 6/12/16 plus local repair
+  of a path the head-room or width check rejects, `rat_narrow` = a 0.98-wide
+  rat); `R49NAV_SCENES` filters lanes. It records the navigation events, the
+  detector windows, the counted failures and why, the line tests, the engine
+  searches and the rejected waypoints. `summarize.py RESULTS.json`
+  (`--events SCENE MOVER`, `--geometry SCENE`); `evidence/boot1..3` the runs.
+- **Round 49 lane INV** (`r49_inv`): the Claim Stone in the carried
   lists, the Housing Steward's button, the starter kit and a granted skill
   making room (`portable_test.lua`: the real `grug_inventory/storage.lua`,
   `grug_housing` api.lua and soulbound.lua, the starter kit cut from

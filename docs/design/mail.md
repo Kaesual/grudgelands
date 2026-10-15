@@ -79,10 +79,12 @@ letters (lane QUEST). Seams and storage: the
   slot. Soulbound items (the Claim Stone, which lies only in `main` and
   the bags), skills and mount items do not fit. Item meta (quality, enchants, the crown, wear) travels with the item.
 - **Send** takes the postage and the four slots in one transaction. The
-  button shows the postage for the slots as last drawn ("Send (65c)"); when
-  the slots changed since (a stack dragged in after the window was drawn),
-  Send refuses without taking anything and shows the new postage, and the
-  next Send pays it.
+  Write tab shows the rule, never a computed figure: "Postage: 5c per
+  letter + 30c per filled slot". Send charges the slots as they are at the
+  click (a stack dragged in after the window was drawn is charged and sent
+  with the letter), and the result line names the amount: "Letter sent to
+  X. Postage paid: 65c." (Round 49 ruling 1: the window is never resent on
+  an inventory move, since a resend drops text typed since the last event.)
 - Closing the window without sending gives the stacks back; what does not
   fit stays in the slots and shows at the next mailbox (and returns at the
   next join when there is room). **Discard** clears the letter and gives the
