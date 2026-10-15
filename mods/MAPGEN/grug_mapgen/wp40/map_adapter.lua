@@ -1338,12 +1338,28 @@ local function adapter_factory(allocator_factory)
 											local n_old_index = buffer_index(nx, ny, nz)
 											local n_old_cid = data_buffer[n_old_index]
 											local n_old_p2 = param2_buffer[n_old_index]
-											local n_final_cid, n_final_p2, n_family, n_kind =
-												final_neighbor(nx, ny, nz)
-											if n_final_cid == n_old_cid and
-													n_final_p2 == n_old_p2 and
-													compatible_liquid(n_family, n_kind) then
-												liquid_dirty = true
+											-- The odd faces (-x, -y, -z) lead to a voxel the
+											-- pass has validated already if it is planned, or
+											-- else to one final_neighbor only classifies; it
+											-- counts only unchanged, so only if its old
+											-- content is a compatible liquid. Any other needs
+											-- no second resolve (Round 49 lane JIT: the same
+											-- decision; ignore still fails in final_neighbor).
+											local resolve = true
+											if face % 2 == 1 and n_old_cid ~= ignore_cid then
+												classify_into(n_old_cid, n_old_p2, "fail_old_class",
+													RESOLVED_OLD)
+												resolve = compatible_liquid(resolved[RESOLVED_OLD + 2],
+													resolved[RESOLVED_OLD + 3])
+											end
+											if resolve then
+												local n_final_cid, n_final_p2, n_family, n_kind =
+													final_neighbor(nx, ny, nz)
+												if n_final_cid == n_old_cid and
+														n_final_p2 == n_old_p2 and
+														compatible_liquid(n_family, n_kind) then
+													liquid_dirty = true
+												end
 											end
 										end
 										if liquid_dirty then break end
