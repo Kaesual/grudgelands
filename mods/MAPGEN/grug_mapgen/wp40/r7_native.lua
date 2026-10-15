@@ -912,7 +912,7 @@ function module.apply_and_validate_main(wp40, projection)
 	if type(core) ~= "table" or
 			type(core.set_mapgen_setting_noiseparams) ~= "function" or
 			type(core.set_mapgen_setting) ~= "function" then
-		fail("noise setter API is unavailable")
+		fail("mapgen setting setter API is unavailable")
 	end
 	-- Validate all six literal setter tables before the first setting mutation.
 	local terrain_base = validate_noise_setter(noise_terrain_base(), NOISE_SPECS[1])
