@@ -673,7 +673,7 @@ def self_test():
           "a leader of another zone keeps its fixed level")
     # An item objective's source area in another zone than the quest's host
     # (a front file): its drop kills are found there (Highcourt has no recipe).
-    fresh = Ledger(design, existing)  # level 1: the rats are not gray (Round 46: 7 below)
+    fresh = Ledger(design, existing)  # level 1: the rats are not gray (Round 49: 10 below)
     drop_acc = defaultdict(float)
     fresh.item_objective("elandor_highcourt", {"id": "sample_front_tails", "level": 2},
                          {"type": "item", "item": "grug_mobs:rat_tail", "count": 40, "roles": ["large_rat"],

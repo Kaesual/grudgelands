@@ -285,7 +285,7 @@ python3 tools/r28_design/ledger.py \
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives
   (`count ×` the kill XP of `r28common.kill_xp`: `M(player level)` times the
   level-difference factor of Round 46 ruling 5, averaged over the levels
-  the target role is met at in the kind or camp, gray rule at 7 below, elite ×4), kills behind item requests for mob drops
+  the target role is met at in the kind or camp, gray rule at 10 below, elite ×4, rare ×2), kills behind item requests for mob drops
   (quest-only drops: `count × chance`; family drops from `catalog/drops.json`
   by band for the drop family — a sub-type's `drops`, else an existing mob's
   own role — else today's entity drops; drops from earlier quest kills are used
