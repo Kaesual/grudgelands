@@ -297,7 +297,7 @@ function grug_housing.add_fuel(claim, count, itemname)
 end
 
 -- Owner pick-up through the stone interface; returns ok, message. The stone
--- goes back into the main inventory together with the unburnt whole lumps
+-- goes back into the inventory (the give helper) together with the unburnt whole lumps
 -- (dropped at the player when they do not fit). A draft comes back at any
 -- time; an activated stone only 12 h after activation (R26 ruling 10).
 function grug_housing.pick_up(player)
