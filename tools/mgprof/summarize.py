@@ -220,12 +220,13 @@ def first_start(path):
     print(f"| end (after the corpus of {len(corpus)} chunks) | {end_launch} | "
           f"{probe.get('end', {}).get('step_wall_s', '-')} | {probe.get('end', {}).get('cpu_s', '-')} |")
     print()
-    # Engine profiler windows up to the probe's "preparation complete" line.
+    # Engine profiler windows up to the probe's first corpus request (the last
+    # preparation chunks' windows print after "preparation complete"; nothing
+    # else uses the emerge thread before that request).
     engine = {}
     console = path / "console.log"
     for line in console.read_text(errors="replace").splitlines() if console.exists() else []:
-        if ("] preparation complete " in line or "] preparation ready after " in line
-                or REQUEST.search(line)):
+        if REQUEST.search(line):
             break
         m = PROFILER.search(line)
         if m:
