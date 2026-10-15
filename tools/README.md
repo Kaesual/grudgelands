@@ -1112,4 +1112,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   70 % for every pose and stature with its anchor in the fist, the player
   path through `apply` with dirt, a slab and a mesh at 70 % and a pickaxe,
   an axe, a torch and a sapling unchanged, the re-attach on a block-to-flat
-  swap, an NPC holding a block); the onion art is `r48_artp/generate.py`.
+  swap, an NPC holding a block); `capture.sh OUT_DIR` with
+  `grug_probe_r49_vis` the engine screenshots (dirt and pickaxe in the
+  third-person hand front and back, dirt in first person, the wild and field
+  onions; the r48_hud method, `SUFFIX=`), one queue run of one slot; the
+  onion art is `r48_artp/generate.py`.
