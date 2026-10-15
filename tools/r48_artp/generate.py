@@ -174,27 +174,32 @@ def cassava_seed(variant):
 ONION = ["82441e", "ca733d", "e29258", "ffb77f", "ffd4a0"]
 
 
-def onion_bulb(s, x, y, w, h):
+def onion_bulb(s, x, y, w, h, root=True):
     s.oval((x, y, x+w-1, y+h-1), ONION[0])
     s.oval((x+1, y, x+w-2, y+h-2), ONION[2])
     if w > 4:
         s.line([(x+2, y+1), (x+1, y+h//2), (x+2, y+h-2)], ONION[3])
         s.line([(x+w-3, y+1), (x+w-2, y+h//2), (x+w-3, y+h-2)], ONION[1])
         s.line([(x+w//2, y+1), (x+w//2-1, y+h-3)], ONION[4])
-    s.p(x+w//2, min(15, y+h), ONION[1])
+    if root:
+        s.p(x+w//2, min(15, y+h), ONION[1])
 
 
 def onion(variant, stage):
     s = Sprite()
     if variant == "A":
-        neck = [15, 14, 12, 9][stage-1]
+        # Round 49 (ruling 9): stages 3 and 4 sit half in the ground. The bulb
+        # moves down until the bottom edge cuts it at about its widest row and
+        # its root tip is buried; the leaf tips stay where they were.
+        neck = [15, 14, 14, 13][stage-1]
         tips = [[(5, 12), (10, 11)], [(3, 9), (7, 7), (11, 8)],
                 [(2, 7), (5, 3), (9, 4), (13, 7)],
                 [(2, 5), (5, 2), (9, 1), (13, 4)]][stage-1]
         for i, tip in enumerate(tips):
             s.line([(7+i%2, neck), ((tip[0]+7)//2, tip[1]+2), tip], GREEN[1+i%2])
         if stage >= 3:
-            onion_bulb(s, 5 if stage == 3 else 4, neck, 6 if stage == 3 else 8, 3 if stage == 3 else 6)
+            onion_bulb(s, 5 if stage == 3 else 4, neck, 6 if stage == 3 else 8, 3 if stage == 3 else 6,
+                       root=False)
             s.p(7, neck, ONION[1])
     elif variant == "B":
         for cx, delta in [(5, 0), (11, 1)][:1 if stage == 1 else 2]:
@@ -1128,12 +1133,43 @@ def ledger(images, previews, data):
     return "\n".join(rows)+"\n"
 
 
+def save_png(path, im):
+    """Write one PNG unless the file already holds exactly these pixels."""
+    target = ROOT/path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists():
+        with Image.open(target) as saved:
+            if saved.mode == im.mode and saved.size == im.size and saved.tobytes() == im.tobytes():
+                return
+    im.save(target, format="PNG", optimize=False, compress_level=9)
+
+
+def install_picks(entries, images):
+    """Round 49: write the drafts, then copy each picked draft byte for byte to
+    its shipped path, so a changed painter (the half-buried onion) reaches the
+    game in the same run that the shipped-file check reads."""
+    for path, im in images.items():
+        save_png(path, im)
+    for entry in entries:
+        if entry["draft"] != PICKS[entry["item"]]:
+            continue
+        for draft in entry["files"]:
+            name = Path(draft).name
+            mod = "grug_farming" if name.startswith("grug_farming_") else "grug_gathering"
+            target = ROOT/f"mods/ITEMS/{mod}/textures/{name}"
+            content = (ROOT/draft).read_bytes()
+            if not target.exists() or target.read_bytes() != content:
+                target.write_bytes(content)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="compare generated pixels and manifest without writing")
     args = parser.parse_args()
     entries, images = build_drafts()
     assert len(entries) == 27 and len(images) == 87
+    if not args.check:
+        install_picks(entries, images)
     shipped = shipped_files(entries)
     previews = {f"tools/r48_artp/previews/{item}.png": preview(item, entries, images) for item in IDEAS}
     previews["tools/r48_artp/previews/final.png"] = final_preview(shipped)
@@ -1155,13 +1191,7 @@ def main():
         print("PASS: all 29 shipped files are byte-identical to their picked drafts, 16x16 RGBA; SHA-256 recorded.")
     else:
         for path, im in outputs.items():
-            target = ROOT/path
-            target.parent.mkdir(parents=True, exist_ok=True)
-            if target.exists():
-                with Image.open(target) as saved:
-                    if saved.mode == im.mode and saved.size == im.size and saved.tobytes() == im.tobytes():
-                        continue
-            im.save(target, format="PNG", optimize=False, compress_level=9)
+            save_png(path, im)
         (HERE/"drafts/manifest.json").write_text(document)
         (HERE/"LICENSE-media.md").write_text(media_ledger)
         print("Generated 27 drafts / 87 sprites, 10 comparison PNGs, manifest and media ledger; existing matching PNGs preserved.")

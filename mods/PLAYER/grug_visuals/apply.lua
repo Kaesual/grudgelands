@@ -110,7 +110,9 @@ end
 local pose_for = grug_visuals.pose_for
 local get_item_group = core.get_item_group
 
-local function spawn_wield(parent, itemname, stature, pose, appearance)
+local wield_item_scale = grug_visuals.wield_item_scale
+
+local function spawn_wield(parent, itemname, stature, pose, scale, appearance)
 	local pos = parent:get_pos()
 	if not pos then
 		return nil
@@ -119,7 +121,7 @@ local function spawn_wield(parent, itemname, stature, pose, appearance)
 	if not obj then
 		return nil
 	end
-	local wield = wield_transform(stature, pose)
+	local wield = wield_transform(stature, pose, scale)
 	obj:set_properties({textures = {itemname}, wield_item = appearance, visual_size = wield.size})
 	obj:set_attach(parent, WIELD_BONE, wield.pos, wield.rot)
 	return obj
@@ -151,14 +153,16 @@ local function sync_wield(holder, parent, shown, stature)
 	-- Swapping a sword for a torch is not a re-texture: the two are held in
 	-- DIFFERENT poses, and so are two wielders of different stature. Both
 	-- therefore re-attach, which is the only way position, rotation and size
-	-- move together.
-	local pose = nil
+	-- move together. So does a swap between a block and a flat-drawn item,
+	-- which are held at different sizes (Round 49).
+	local pose, scale = nil, nil
 	if itemname then
-		pose = pose_for(itemname, get_item_group,
-			core.registered_items[itemname]._grug_wield_pose)
+		local def = core.registered_items[itemname]
+		pose = pose_for(itemname, get_item_group, def._grug_wield_pose)
+		scale = wield_item_scale(def, stack:get_meta():get_string("wield_image"))
 	end
 	if obj and (holder._grug_wield_stature ~= stature or
-			holder._grug_wield_pose ~= pose) then
+			holder._grug_wield_pose ~= pose or holder._grug_wield_scale ~= scale) then
 		obj:remove()
 		obj = nil
 	end
@@ -171,6 +175,7 @@ local function sync_wield(holder, parent, shown, stature)
 		holder._grug_wield_appearance = nil
 		holder._grug_wield_stature = nil
 		holder._grug_wield_pose = nil
+		holder._grug_wield_scale = nil
 		return
 	end
 	if obj then
@@ -185,7 +190,7 @@ local function sync_wield(holder, parent, shown, stature)
 	-- entity budget). Leaving both fields nil is what makes the next pass --
 	-- the once-a-second poll below for players, the next equipment change or
 	-- activation otherwise -- try again instead of believing the hand is empty.
-	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, pose, appearance)
+	holder._grug_wield_obj = spawn_wield(parent, itemname, stature, pose, scale, appearance)
 	-- Written as a branch, not as `obj and value or nil`: a failed spawn must
 	-- leave every one of the three fields empty, so that the next pass retries
 	-- instead of believing the pose it never attached is the pose on show.
@@ -194,11 +199,13 @@ local function sync_wield(holder, parent, shown, stature)
 		holder._grug_wield_appearance = appearance
 		holder._grug_wield_stature = stature
 		holder._grug_wield_pose = pose
+		holder._grug_wield_scale = scale
 	else
 		holder._grug_wield_item = nil
 		holder._grug_wield_appearance = nil
 		holder._grug_wield_stature = nil
 		holder._grug_wield_pose = nil
+		holder._grug_wield_scale = nil
 	end
 end
 
@@ -229,7 +236,7 @@ local IRRELEVANT_LIST = {
 }
 
 -- player name -> {key, appearance_key, stature, _grug_wield_obj,
--- _grug_wield_item, _grug_wield_stature, _grug_wield_pose}
+-- _grug_wield_item, _grug_wield_stature, _grug_wield_pose, _grug_wield_scale}
 local players = {}
 
 local function player_entry(name)

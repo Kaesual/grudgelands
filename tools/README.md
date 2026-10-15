@@ -1130,3 +1130,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   detector windows, the counted failures and why, the line tests, the engine
   searches and the rejected waypoints. `summarize.py RESULTS.json`
   (`--events SCENE MOVER`, `--geometry SCENE`); `evidence/boot1..3` the runs.
+- **Round 49 lane VIS** (`r49_vis`): node items in the third-person
+  hand (`portable_test.lua`: the real `grug_visuals` and `player_api` on a
+  stub engine: which items the engine draws as blocks, the transform at
+  70 % for every pose and stature with its anchor in the fist, the player
+  path through `apply` with dirt, a slab and a mesh at 70 % and a pickaxe,
+  an axe, a torch and a sapling unchanged, the re-attach on a block-to-flat
+  swap, an NPC holding a block); `capture.sh OUT_DIR` with
+  `grug_probe_r49_vis` the engine screenshots (dirt and pickaxe in the
+  third-person hand front and back, dirt in first person, the wild and field
+  onions; the r48_hud method, `SUFFIX=`), one queue run of one slot; the
+  onion art is `r48_artp/generate.py`.
