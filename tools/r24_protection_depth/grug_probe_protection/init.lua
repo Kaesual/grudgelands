@@ -3,8 +3,10 @@
 --
 -- 1. Emerges the ground under the town's pad (x -48..47, z 2502..2597,
 --    from 96 below the floor to the anchor) and counts the P8 resource nodes above and below the
---    protected floor (the anchor's placement height - 100): none above,
---    ores below.
+--    protected floor (the anchor's placement height - 80 since Round 49,
+--    was 100): none above, ores below. Since Round 49 ores are native and
+--    lie above the floor too (mapgen-native plan ruling 5), so that count
+--    no longer passes; the digging checks still apply.
 -- 2. A Throng probe digger (Sunscar is Throng home) with a bronze pick:
 --    core.is_protected, the mining decision, the punch hint and a real
 --    core.node_dig at the floor + 1, the floor and the floor - 1. An Accord
@@ -26,7 +28,7 @@ local function check(ok, label)
 	return ok
 end
 
-local DEPTH = 100
+local DEPTH = 80 -- source.protection_depth_below_placement (Round 49)
 local PROBE_NAME = "r24gprobe"
 local PICK = "grug_materials:pick_bronze" -- T1: every rock here is T1 (y >= -100)
 
