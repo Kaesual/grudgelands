@@ -620,9 +620,9 @@ nodes/s and rides 400 more at 8. Phase 2: two players 600 nodes apart stand,
 then walk 400 nodes east, their picks alternating. Not modelled: turning,
 looking around, the sender's per-step window and the emerge queue's batches.
 Occlusion matters: under a surface player the ground hides the blocks
-below, so a walking player generates the surface chunks (y −32..47 and
-48..127), the air chunks above them and the fill floor (−112..−33) only
-where the ground dips, about 2.3 chunks with Lua work per chunk column.
+below, so the players generated the surface chunks (y −32..47 and 48..127)
+and the chunks above them, no fill-floor chunk (−112..−33): about two chunks
+with Lua work per chunk column.
 
 **Column cache** (the zones runtime column tuples, first in first out). A
 "later" chunk is any chunk with Lua work after the first one of its column;
