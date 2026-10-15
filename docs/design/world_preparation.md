@@ -258,5 +258,6 @@ content reach (the same envelope as full preparation). The transaction would
 then return without any VoxelManip write, so content, param2 and light of the
 chunk and its shell are identical. The envelope is per owner column, memoized
 for recent columns; it never scans the world. Chunks with native ground in the
-owner, near the envelope or underground keep the full writer: resources sample
-every land depth, cave plants and strata live below the surface.
+owner, near the envelope or underground keep the full writer (since Round 49
+native v7 places the ores and cave plants of native rock; the writer adds the
+fill ores and the strata).

@@ -68,6 +68,11 @@ grug_swamp|grug_nodes:mud|grug_nodes:mud|2|grug_nodes:mud|grug_nodes:mud|-
 -- an optional fifth field `lower_half_of` (Round 47 ruling 6): in that band
 -- the ore lies only at or below the band's `lower_half_y_max`
 -- (grug_materials.TIERS) at the same denominator, so the band total halves.
+-- Since Round 49 these rows are rough targets (mapgen plan ruling 2):
+-- r7_native.lua derives one native scatter row per resource and band from
+-- them (the vein cap picks the cluster shape: 8, 4 or 2), and P8 places the
+-- T1 column in the writer's fill stone (r6_settlement.lua
+-- r49_fill_ores_new). A change here re-pins r7_native.lua's NATIVE_DIGEST.
 local RESOURCE_ROWS = [[
 abyssal_crystal|5|-;-;-;-;512;256|2|5
 anthracite|2|-;256;96;128;128;128|8|2
