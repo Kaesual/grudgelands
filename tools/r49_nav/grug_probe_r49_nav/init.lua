@@ -22,7 +22,10 @@
 --   * mobs_redo's stop_attack and the give-ups;
 --   * static checks at the start: the walkable line from the start to the
 --     target, and the engine's search from the start with padding 6 (the
---     module's) and 12;
+--     module's first) and 12;
+--   * Round 49 NAV2: every shot of a ranged mover (the "shoot" clip) and
+--     whether the mob saw its target then; at the start, every registered
+--     dogshoot mob (flier or ground, pathfinding) in the results' meta;
 --   * a track every 0.25 s: position, commanded speed, distance, in sight,
 --     striking, following a path, a horizontal node collision.
 --
@@ -326,20 +329,13 @@ do
 	end
 end
 
--- Engine searches and the head-room/width check. A "pad" variant batch
--- widens the box with the episode's failures (VARIANT, set per batch).
+-- Engine searches and the head-room/width check (since Round 49 NAV2 the
+-- real code repairs a path and escalates the padding itself; the probe's
+-- "pad" and "repair" variants went with that). VARIANT is set per batch.
 local VARIANT = {}
-local repair_path -- the "repair" variant, below
-local PAD_STEPS = {6, 12, 16}
 do
 	local orig_search = NAV.search
 	NAV.search = function(from, goal, padding, jump, drop)
-		local rec0 = in_combat_step
-		if VARIANT.pad and rec0 and rec0.ent then
-			local nst = rec0.ent.temp and rec0.ent.temp.grug_nav
-			local fails = nst and nst.fails or 0
-			padding = PAD_STEPS[math.min(fails + 1, #PAD_STEPS)]
-		end
 		local t0 = now()
 		local path = orig_search(from, goal, padding, jump, drop)
 		local rec = in_combat_step
@@ -356,52 +352,8 @@ do
 	end
 	local orig_check = NAV.check_path
 
-	-- The "repair" variant (a phase 2 candidate): a path the head-room or
-	-- width check rejects is mended locally instead of thrown away. Every
-	-- waypoint that does not fit is replaced by the first neighbour (the 8
-	-- round it, on its level or one up or down) that fits, stands on walkable
-	-- ground, is a step from the previous kept waypoint and near the next
-	-- one. No new search; nil when a waypoint has no such neighbour.
-	local function cell_fits(body, c)
-		if not orig_check(body, {c, c}) then return false end
-		local node = core.get_node_or_nil({x = c.x, y = c.y - 1, z = c.z})
-		local def = node and core.registered_nodes[node.name]
-		return def ~= nil and def.walkable == true
-	end
-	local OFFS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}}
-	function repair_path(body, path)
-		local out, shifted = {path[1]}, 0
-		for i = 2, #path do
-			local p = path[i]
-			if cell_fits(body, p) then
-				out[#out + 1] = p
-			else
-				local prev, nxt = out[#out], path[i + 1]
-				local found
-				for _, o in ipairs(OFFS) do
-					for _, dy in ipairs({0, 1, -1}) do
-						local c = {x = p.x + o[1], y = p.y + dy, z = p.z + o[2]}
-						if abs(c.x - prev.x) <= 1 and abs(c.z - prev.z) <= 1
-								and c.y - prev.y <= body.step and prev.y - c.y <= body.drop
-								and (not nxt or (abs(c.x - nxt.x) <= 2 and abs(c.z - nxt.z) <= 2
-									and abs(c.y - nxt.y) <= 2))
-								and cell_fits(body, c) then
-							found = c
-							break
-						end
-					end
-					if found then break end
-				end
-				if not found then return nil, shifted end
-				shifted = shifted + 1
-				out[#out + 1] = found
-			end
-		end
-		return out, shifted
-	end
-
 	NAV.check_path = function(body, path)
-		local out = orig_check(body, path)
+		local out, repaired = orig_check(body, path)
 		local rec = in_combat_step
 		if rec and not out then
 			local bad
@@ -417,13 +369,8 @@ do
 				detail[3] = {u, v, h}
 			end
 			event(rec, "reject_at", detail)
-			if VARIANT.repair then
-				local fixed, shifted = repair_path(body, path)
-				out = fixed and orig_check(body, fixed)
-				event(rec, out and "repaired" or "repair_failed", shifted)
-			end
 		end
-		return out
+		return out, repaired
 	end
 end
 
@@ -450,6 +397,22 @@ do
 			count(rec, "give_up")
 		end
 		return orig_give_up(self)
+	end
+	-- A ranged mover's shot: the shoot branch plays the "shoot" clip as it
+	-- fires (mobs/api.lua do_states); recorded with the mob's sight of its
+	-- target (the shoot branch's own test).
+	local orig_set_animation = mc.set_animation
+	mc.set_animation = function(self, anim, force)
+		local rec = tracked[self]
+		if anim == "shoot" and rec and rec.t0 and not rec.done and self.attack then
+			local pos = self.object:get_pos()
+			local dpos = self.attack:get_pos()
+			local seen = pos and dpos and OB.target_visible(self, pos, dpos, false)
+			count(rec, seen and "shots" or "shots_blind")
+			if seen and not rec.shot_t then rec.shot_t = r2(trial_time(rec)) end
+			event(rec, seen and "shot" or "shot_blind")
+		end
+		return orig_set_animation(self, anim, force)
 	end
 	local orig_set_velocity = mc.set_velocity
 	mc.set_velocity = function(self, v)
@@ -517,26 +480,15 @@ core.register_entity(MOD .. ":dummy", {
 local MOVERS = {
 	zombie = {entity = "grug_mobs:zombie", T = 20, note = "narrow, 1.9 tall"},
 	rat = {entity = "grug_mobs:giant_rat", T = 20, note = "wide (1.28), 1 tall"},
-	-- Fix candidates (phase 2 proposals), applied by the probe only:
-	--   pad    a failed search widens the next one of the same stuck episode:
-	--          padding 6, then 12, then 16 (PAD_STEPS);
+	-- A candidate the user declined (2026-10-15), applied by the probe only:
 	--   narrow the rat's collision box 0.98 wide instead of 1.28 (a narrow
-	--          mob: no 2x2 width check, it passes 1-wide gaps);
-	--   repair a rejected path is mended (repair_path) instead of failing.
-	zombie_pad = {entity = "grug_mobs:zombie", T = 20, variant = "pad",
-		note = "zombie, padding escalation"},
-	rat_pad = {entity = "grug_mobs:giant_rat", T = 20, variant = "pad",
-		note = "rat, padding escalation"},
-	zombie_fix = {entity = "grug_mobs:zombie", T = 20, variant = "pad,repair",
-		note = "zombie, padding escalation and path repair"},
-	rat_fix = {entity = "grug_mobs:giant_rat", T = 20, variant = "pad,repair",
-		note = "rat, padding escalation and path repair"},
+	--          mob: no 2x2 width check, it passes 1-wide gaps).
+	-- (Phase 1's "pad" and "repair" candidates are the real code since Round
+	-- 49 NAV2: zombie and rat run them.)
 	rat_narrow = {entity = "grug_mobs:giant_rat", T = 20, variant = "narrow",
 		note = "rat with a 0.98-wide collision box"},
-	rat_narrow_pad = {entity = "grug_mobs:giant_rat", T = 20, variant = "narrow,pad",
-		note = "rat 0.98 wide, padding escalation"},
 	archer = {entity = "grug_mobs:skeleton_archer", T = 12,
-		note = "ranged ground mob (dogshoot), no navigation today"},
+		note = "ranged ground mob (dogshoot): paths to regain sight (Round 49 NAV2)"},
 }
 
 local active = {}
@@ -719,6 +671,7 @@ local function finish_trial(rec, mover)
 		reached = rec.hit_t ~= nil, t_hit = rec.hit_t, hit_at = rec.hit_at,
 		any_hit_t = rec.any_hit_t, min_d = rec.min_d and r2(rec.min_d),
 		cycles = rec.cycles, counts = rec.counts, ratios = rec.ratios,
+		t_shot = rec.shot_t,
 		static = rec.static, search_us = rec.search_us, lost = rec.lost,
 		events = rec.events, track = rec.track, site = spec.site,
 		frame = {x = spec.bx, z = spec.bz, y = spec.by},
@@ -1125,7 +1078,18 @@ core.after(1, function()
 			"mob_pathfinding_enable"}) do
 		results.meta.settings[key] = core.settings:get(key)
 	end
-	results.meta.nav = {PADDING = NAV.PADDING, CLOSE = NAV.CLOSE,
+	-- Every registered dogshoot mob: flier or ground, pathfinding.
+	results.meta.ranged = {}
+	for name, def in pairs(core.registered_entities) do
+		if def.attack_type == "dogshoot" then
+			results.meta.ranged[#results.meta.ranged + 1] = {name = name,
+				fly = def.fly == true, pathfinding = def.pathfinding or false}
+			log(("RANGED %s fly=%s pathfinding=%s"):format(name,
+				tostring(def.fly == true), tostring(def.pathfinding)))
+		end
+	end
+	results.meta.nav = {PADDING = NAV.PADDING, PADDING_STEPS = NAV.PADDING_STEPS,
+		CLOSE = NAV.CLOSE,
 		STUCK_RATIO = NAV.STUCK_RATIO, WINDOW = NAV.WINDOW.combat,
 		GIVE_UP_AFTER = NAV.GIVE_UP_AFTER, LOCKOUT = NAV.LOCKOUT.combat}
 	results.meta.scenes = {}

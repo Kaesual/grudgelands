@@ -99,12 +99,11 @@ local function golem_def(description, texture)
 		-- jump_height/stepheight and on the node in front), so the field above
 		-- is inert documentation, and this def carries the same default
 		-- jump_height 4 as everything else. The reasons that DO hold are:
-		--   * a dogshoot mob never runs the pathfinder at all (the T10 GRUG
-		--     PATCH in api.lua do_states skips A* for attack_type ==
-		--     "dogshoot"), so the "fear_height doubles as find_path's max_drop"
-		--     half of the cliff rule simply does not apply to it — 4 vs 6
-		--     changes nothing about how it navigates, only where is_at_cliff
-		--     stops it;
+		--   * a dogshoot mob searches only to regain sight of its target and in
+		--     its melee phase (Round 49 NAV2; before, never), so the
+		--     "fear_height doubles as find_path's max_drop" half of the cliff
+		--     rule matters little to it — 4 vs 6 only keeps its short detours
+		--     off deeper drops, and is_at_cliff stops it there;
 		--   * and the cliff rule exists to close a terrain EXPLOIT, which a
 		--     ranged elite does not have: a player on a ledge above a golem is
 		--     in its firing line, not out of its reach. Keeping it out of deep

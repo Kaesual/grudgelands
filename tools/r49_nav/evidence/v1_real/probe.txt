@@ -1,0 +1,187 @@
+ACTION[Server]: [r49nav] RANGED grug_mobs:goblin_miner_slinger fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:crystal_shard fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:dungeon_master fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:ember_wisp fly=true pathfinding=nil
+ACTION[Server]: [r49nav] RANGED grug_mobs:bandit_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:goblin_slinger fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:skeleton_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:frost_stray fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:bog_witch fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:stone_golem fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:mesa_golem fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:rubble_goblin_slinger fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:siege_goblin_slinger fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:barrow_skeleton_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:march_skeleton_raider fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:rime_skeleton_stray fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:siege_skeleton_raider fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:last_watch_skeleton_raider fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:crown_frost_stray fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:reed_hex_witch fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:seam_stone_golem fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:seam_mesa_golem fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:crown_stone_golem fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:misguided_poacher_chief fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:causeway_toll_skeleton fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:snarekeeper_vetch fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:ore_factor_brakk fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:bough_counter_rusk fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:powder_counter_nib fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:snarewarden_bracken fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:marrow_archivist fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:toll_bandit_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:entrenched_bandit_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:split_seam_warden fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:siege_deserter_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:last_pay_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:furtive_poacher fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:storm_bottle_witch fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:snaring_poacher fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:unlicensed_poacher fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:wartrail_poacher fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:salt_counter_witch fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:rime_bell_warden fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:vigilant_bandit_archer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:causeway_aqueduct_bowman fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:standard_bearer_ninepins fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:basket_poacher_thorn fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:bottle_keeper_zek fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:poacher fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:rift_boss fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:watch_captain_huskell fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:red_receipt_marshal fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:brandbound_collector fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:salt_hex_witch fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:ash_writ_bowman fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:kiln_whisper_hexer fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:king_elf fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:skeleton_raider fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:king_undead fly=false pathfinding=1
+ACTION[Server]: [r49nav] RANGED grug_mobs:king_troll fly=false pathfinding=1
+ACTION[Server]: [r49nav] arena (-2560,296,-2560) - (-2461,310,-2497)
+ACTION[Emerge-0]: [r49nav] arena emerged in 4.6 s
+ACTION[Server]: [r49nav] arena built
+ACTION[Emerge-0]: [r49nav] sites emerged in 7.5 s
+ACTION[Server]: [r49nav] SITE grug_meadows at -40,86,0: bushes 14, blueberry 0, trunks 19
+ACTION[Server]: [r49nav] SITE grug_deep_forest at -80,81,80: bushes 0, blueberry 0, trunks 65
+ACTION[Server]: [r49nav] SITE grug_pine_hills at -1360,66,-1320: bushes 20, blueberry 1, trunks 9
+ACTION[Server]: [r49nav] real trials: 28
+ACTION[Server]: [r49nav] batch lanes zombie (7 trials)
+ACTION[Server]: [r49nav] TRIAL zombie  trunk_d5_strafe        reached=true  t=1      min_d=0.08  line0=false p6=8 p12=8 hits=17 stop_attack=1 win_free=1
+ACTION[Server]: [r49nav] TRIAL zombie  t1_bush_d5_strafe      reached=true  t=1.54   min_d=0.11  line0=false p6=10 p12=10 hits=16 line_true=1 nav_found=1 nav_leave_line=1 nav_stuck=1 searches=1 searches_found=1 stop_attack=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  t2_bush_d5_strafe      reached=true  t=1.54   min_d=0.02  line0=false p6=14 p12=14 hits=16 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 stop_attack=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  bushtop_d3             reached=true  t=1      min_d=1.8   line0=false p6=0 p12=0 hits=18
+ACTION[Server]: [r49nav] TRIAL zombie  bluetop_d3             reached=true  t=1      min_d=1.75  line0=true p6=4 p12=4 hits=18
+ACTION[Server]: [r49nav] TRIAL zombie  grove_d7               reached=true  t=1.9    min_d=1.55  line0=false p6=10 p12=10 hits=17 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  trunk_root_d5          reached=true  t=1.63   min_d=1.12  line0=false p6=10 p12=10 hits=17 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] wrote /tmp/grudgelands-headless.r49nav-bLhnxW/world/r49nav_results.json (64141 bytes)
+ACTION[Server]: [r49nav] batch lanes rat (7 trials)
+ACTION[Server]: [r49nav] TRIAL rat     trunk_d5_strafe        reached=true  t=1      min_d=0.26  line0=false p6=8 p12=8 hits=16 nav_found=1 nav_stuck=1 searches=1 searches_found=1 stop_attack=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     t1_bush_d5_strafe      reached=true  t=1.63   min_d=0.04  line0=false p6=10 p12=10 hits=16 line_true=1 nav_found=1 nav_leave_line=1 nav_stuck=1 searches=1 searches_found=1 stop_attack=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     t2_bush_d5_strafe      reached=true  t=1.63   min_d=0.04  line0=false p6=14 p12=14 hits=16 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 stop_attack=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     bushtop_d3             reached=false t=nil    min_d=2.14  line0=false p6=0 p12=0 give_up=4 nav_give_up=4 nav_no_path=12 nav_stuck=4 search_fail=12 searches=12 stop_attack=4 win_free=1 win_stuck=24
+ACTION[Server]: [r49nav] TRIAL rat     bluetop_d3             reached=true  t=1      min_d=1.75  line0=true p6=4 p12=4 hits=18
+ACTION[Server]: [r49nav] TRIAL rat     grove_d7               reached=false t=nil    min_d=5.14  line0=false p6=10 p12=10 give_up=4 nav_give_up=4 nav_rejected=12 nav_stuck=4 search_fail=12 searches=12 searches_found=12 stop_attack=4 win_free=2 win_stuck=24
+ACTION[Server]: [r49nav] TRIAL rat     trunk_root_d5          reached=true  t=1.63   min_d=1.37  line0=false p6=10 p12=10 hits=17 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] wrote /tmp/grudgelands-headless.r49nav-bLhnxW/world/r49nav_results.json (131791 bytes)
+ACTION[Server]: [r49nav] batch lanes archer (7 trials)
+ACTION[Server]: [r49nav] TRIAL archer  trunk_d5_strafe        reached=true  t=3.62   min_d=0.08  line0=false p6=8 p12=8 hits=8 shots=1 win_free=1
+ACTION[Server]: [r49nav] TRIAL archer  t1_bush_d5_strafe      reached=true  t=5.89   min_d=0.16  line0=false p6=10 p12=10 hits=6 line_false=1 nav_found=2 nav_stuck=2 searches=2 searches_found=2 shots=2 win_free=2 win_stuck=2
+ACTION[Server]: [r49nav] TRIAL archer  t2_bush_d5_strafe      reached=true  t=1.72   min_d=0.01  line0=false p6=14 p12=14 hits=10 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  bushtop_d3             reached=false t=nil    min_d=1.8   line0=false p6=0 p12=0 give_up=2 nav_give_up=2 nav_no_path=7 nav_stuck=3 search_fail=7 searches=7 stop_attack=2 win_free=2 win_stuck=14
+ACTION[Server]: [r49nav] TRIAL archer  bluetop_d3             reached=true  t=10.96  min_d=1.55  line0=true p6=4 p12=4 hits=1 shots=4
+ACTION[Server]: [r49nav] TRIAL archer  grove_d7               reached=true  t=11.33  min_d=2.08  line0=false p6=10 p12=10 hits=1 line_false=1 nav_found=2 nav_stuck=2 searches=2 searches_found=2 shots=4 win_free=2 win_stuck=2
+ACTION[Server]: [r49nav] TRIAL archer  trunk_root_d5          reached=true  t=2.17   min_d=1.19  line0=false p6=10 p12=10 hits=10 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] wrote /tmp/grudgelands-headless.r49nav-bLhnxW/world/r49nav_results.json (168725 bytes)
+ACTION[Server]: [r49nav] batch real zombie (28 trials)
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_bush1          reached=true  t=2.98   min_d=0.94  line0=false p6=10 p12=10 hits=16 line_false=2 nav_found=2 nav_leave_stuck=1 nav_stuck=1 path_stuck=1 searches=2 searches_found=2 win_free=3 win_stuck=2
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_bush2          reached=true  t=2.35   min_d=1.39  line0=false p6=10 p12=10 hits=17 line_false=2 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_bush3          reached=true  t=0.99   min_d=1.26  line0=true p6=6 p12=6 hits=18
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_bush4          reached=true  t=2.26   min_d=1.4   line0=false p6=10 p12=10 hits=17 line_false=2 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_bush5          reached=true  t=0.99   min_d=0.84  line0=true p6=6 p12=6 hits=18 win_free=1
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_bush6          reached=true  t=1.36   min_d=1.41  line0=false p6=8 p12=8 hits=18 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_trunk1         reached=true  t=1.54   min_d=1.22  line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_trunk2         reached=true  t=1.54   min_d=1.22  line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_trunk3         reached=true  t=1.08   min_d=1.78  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_trunk4         reached=true  t=1.54   min_d=1.22  line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  meadows_trunk5         reached=true  t=0.99   min_d=1.33  line0=false p6=7 p12=7 hits=18 win_free=1
+ACTION[Server]: [r49nav] TRIAL zombie  deep_forest_trunk1     reached=false t=nil    min_d=3.8   line0=false p6=8 p12=8 give_up=4 nav_found=14 nav_give_up=4 nav_leave_stuck=13 nav_repaired=14 nav_stuck=5 path_stuck=13 searches=14 searches_found=14 stop_attack=4 win_free=1 win_stuck=23
+ACTION[Server]: [r49nav] TRIAL zombie  deep_forest_trunk2     reached=true  t=1.54   min_d=1.22  line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  deep_forest_trunk3     reached=true  t=1.54   min_d=1.27  line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  deep_forest_trunk4     reached=true  t=1.54   min_d=1.22  line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  deep_forest_trunk5     reached=true  t=0.99   min_d=0.81  line0=true p6=6 p12=6 hits=18 win_free=1
+ACTION[Server]: [r49nav] TRIAL zombie  deep_forest_trunk6     reached=true  t=1.54   min_d=1.22  line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_bush1       reached=false t=nil    min_d=2.8   line0=false p6=8 p12=8 give_up=4 line_false=1 nav_give_up=4 nav_rejected=12 nav_stuck=4 search_fail=12 searches=12 searches_found=12 stop_attack=4 win_free=2 win_stuck=23
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_bush2       reached=true  t=2.44   min_d=1.39  line0=false p6=8 p12=8 hits=17 line_false=2 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_bush3       reached=true  t=1.9    min_d=1.44  line0=false p6=8 p12=8 hits=17 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_bush4       reached=true  t=6.52   min_d=1.49  line0=false p6=10 p12=10 give_up=1 hits=13 line_false=1 nav_found=1 nav_give_up=1 nav_rejected=3 nav_repaired=1 nav_stuck=2 search_fail=3 searches=4 searches_found=4 stop_attack=1 win_free=2 win_stuck=7
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_bush5       reached=true  t=1.72   min_d=1.4   line0=false p6=10 p12=10 hits=17 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_bush6       reached=true  t=1.54   min_d=1.2   line0=false p6=8 p12=8 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_blue1       reached=false t=nil    min_d=3.8   line0=false p6=10 p12=10 give_up=4 nav_give_up=4 nav_rejected=12 nav_stuck=4 search_fail=12 searches=12 searches_found=12 stop_attack=4 win_free=1 win_stuck=24
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_trunk1      reached=true  t=1.17   min_d=1.39  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_trunk2      reached=true  t=1.17   min_d=1.39  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_trunk3      reached=true  t=1.17   min_d=1.39  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL zombie  pine_hills_trunk4      reached=true  t=1.81   min_d=1.2   line0=false p6=8 p12=8 hits=17 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] wrote /tmp/grudgelands-headless.r49nav-bLhnxW/world/r49nav_results.json (478467 bytes)
+ACTION[Server]: [r49nav] batch real rat (28 trials)
+ACTION[Server]: [r49nav] TRIAL rat     meadows_bush1          reached=true  t=2.17   min_d=1.3   line0=false p6=10 p12=10 hits=17 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_bush2          reached=true  t=2.26   min_d=2.14  line0=false p6=10 p12=10 hits=17 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_bush3          reached=true  t=1.54   min_d=1.3   line0=false p6=6 p12=6 hits=18 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_bush4          reached=true  t=2.44   min_d=1.49  line0=false p6=10 p12=10 hits=17 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_bush5          reached=true  t=0.99   min_d=1.26  line0=true p6=6 p12=6 hits=18 win_free=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_bush6          reached=true  t=1.54   min_d=1.46  line0=false p6=8 p12=8 hits=18 line_false=1 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=1 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_trunk1         reached=true  t=1.63   min_d=1.51  line0=false p6=8 p12=8 hits=17 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_trunk2         reached=true  t=1.63   min_d=1.55  line0=false p6=8 p12=8 hits=17 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_trunk3         reached=true  t=1.45   min_d=1.58  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL rat     meadows_trunk4         reached=true  t=1.63   min_d=1.51  line0=false p6=8 p12=8 hits=17 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     meadows_trunk5         reached=true  t=0.99   min_d=2.14  line0=false p6=7 p12=7 hits=18 win_free=1
+ACTION[Server]: [r49nav] TRIAL rat     deep_forest_trunk1     reached=true  t=2.17   min_d=1.45  line0=false p6=8 p12=8 hits=17 line_false=1 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     deep_forest_trunk2     reached=true  t=1.63   min_d=1.51  line0=false p6=8 p12=8 hits=17 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     deep_forest_trunk3     reached=true  t=1.63   min_d=1.37  line0=false p6=8 p12=8 hits=17 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     deep_forest_trunk4     reached=true  t=1.63   min_d=1.79  line0=false p6=8 p12=8 hits=17 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     deep_forest_trunk5     reached=true  t=0.99   min_d=1.22  line0=true p6=6 p12=6 hits=18 win_free=1
+ACTION[Server]: [r49nav] TRIAL rat     deep_forest_trunk6     reached=true  t=1.63   min_d=1.5   line0=false p6=8 p12=8 hits=17 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_bush1       reached=true  t=4.43   min_d=1.63  line0=false p6=8 p12=8 hits=15 line_false=3 nav_found=3 nav_leave_stuck=2 nav_stuck=1 path_stuck=2 searches=3 searches_found=3 win_free=5 win_stuck=3
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_bush2       reached=true  t=2.44   min_d=1.34  line0=false p6=8 p12=8 hits=17 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_bush3       reached=true  t=2.44   min_d=1.12  line0=false p6=8 p12=8 hits=17 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_bush4       reached=true  t=2.35   min_d=1.31  line0=false p6=10 p12=10 hits=17 line_false=2 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_bush5       reached=true  t=1.81   min_d=1.16  line0=false p6=10 p12=10 hits=17 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_bush6       reached=true  t=1.81   min_d=1.25  line0=false p6=8 p12=8 hits=17 line_false=1 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_blue1       reached=false t=nil    min_d=2.14  line0=false p6=10 p12=10 give_up=4 line_false=2 nav_found=14 nav_give_up=4 nav_leave_stuck=13 nav_stuck=5 path_stuck=13 searches=14 searches_found=14 stop_attack=4 win_free=2 win_stuck=22
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_trunk1      reached=true  t=1.17   min_d=2.14  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_trunk2      reached=true  t=1.17   min_d=2.14  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_trunk3      reached=true  t=1.17   min_d=2.14  line0=false p6=9 p12=9 hits=18 win_free=2
+ACTION[Server]: [r49nav] TRIAL rat     pine_hills_trunk4      reached=true  t=2.44   min_d=1.41  line0=false p6=8 p12=8 hits=17 line_false=1 nav_cap_wait=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=2
+ACTION[Server]: [r49nav] wrote /tmp/grudgelands-headless.r49nav-bLhnxW/world/r49nav_results.json (782263 bytes)
+ACTION[Server]: [r49nav] batch real archer (28 trials)
+ACTION[Server]: [r49nav] TRIAL archer  meadows_bush1          reached=true  t=2.27   min_d=1.48  line0=false p6=10 p12=10 hits=9 line_false=2 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  meadows_bush2          reached=true  t=2.54   min_d=1.45  line0=false p6=10 p12=10 hits=9 line_false=2 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  meadows_bush3          reached=true  t=1      min_d=1.37  line0=true p6=6 p12=6 hits=11 win_free=1
+ACTION[Server]: [r49nav] TRIAL archer  meadows_bush4          reached=true  t=2.81   min_d=1.45  line0=false p6=10 p12=10 hits=9 line_false=2 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  meadows_bush5          reached=true  t=1.09   min_d=0.08  line0=true p6=6 p12=6 hits=11 win_free=2
+ACTION[Server]: [r49nav] TRIAL archer  meadows_bush6          reached=true  t=2.54   min_d=1.32  line0=false p6=8 p12=8 hits=9 line_false=1 nav_found=2 nav_leave_stuck=1 nav_stuck=1 path_stuck=1 searches=2 searches_found=2 win_free=1 win_stuck=3
+ACTION[Server]: [r49nav] TRIAL archer  meadows_trunk1         reached=true  t=2.18   min_d=1.19  line0=false p6=8 p12=8 hits=10 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  meadows_trunk2         reached=true  t=2.18   min_d=1.19  line0=false p6=8 p12=8 hits=10 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  meadows_trunk3         reached=true  t=1.45   min_d=1.56  line0=false p6=9 p12=9 hits=10 win_free=2
+ACTION[Server]: [r49nav] TRIAL archer  meadows_trunk4         reached=true  t=2.18   min_d=1.19  line0=false p6=8 p12=8 hits=10 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  meadows_trunk5         reached=true  t=1      min_d=1.45  line0=false p6=7 p12=7 hits=11 win_free=1
+ACTION[Server]: [r49nav] TRIAL archer  deep_forest_trunk1     reached=false t=nil    min_d=3.8   line0=false p6=8 p12=8 give_up=2 nav_found=9 nav_give_up=2 nav_leave_stuck=8 nav_repaired=9 nav_stuck=3 path_stuck=8 searches=9 searches_found=9 stop_attack=2 win_free=1 win_stuck=15
+ACTION[Server]: [r49nav] TRIAL archer  deep_forest_trunk2     reached=true  t=2.18   min_d=1.19  line0=false p6=8 p12=8 hits=10 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  deep_forest_trunk3     reached=false t=nil    min_d=0.8   line0=false p6=8 p12=8 give_up=2 line_false=1 nav_found=8 nav_give_up=2 nav_leave_stuck=8 nav_stuck=3 path_stuck=8 searches=8 searches_found=8 stop_attack=2 win_free=3 win_stuck=13
+ACTION[Server]: [r49nav] TRIAL archer  deep_forest_trunk4     reached=true  t=2.18   min_d=1.19  line0=false p6=8 p12=8 hits=10 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  deep_forest_trunk5     reached=true  t=1      min_d=0.98  line0=true p6=6 p12=6 hits=11 win_free=1
+ACTION[Server]: [r49nav] TRIAL archer  deep_forest_trunk6     reached=true  t=2.18   min_d=1.19  line0=false p6=8 p12=8 hits=10 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_bush1       reached=false t=nil    min_d=2.8   line0=false p6=8 p12=8 give_up=2 line_false=1 nav_give_up=2 nav_rejected=8 nav_stuck=3 search_fail=8 searches=8 searches_found=8 stop_attack=2 win_free=2 win_stuck=14
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_bush2       reached=true  t=2.81   min_d=1.45  line0=false p6=8 p12=8 hits=9 line_false=2 nav_found=1 nav_repaired=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_bush3       reached=true  t=2.09   min_d=1.33  line0=false p6=8 p12=8 hits=10 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_bush4       reached=true  t=6.7    min_d=1.44  line0=false p6=10 p12=10 give_up=1 hits=5 line_false=1 nav_found=1 nav_give_up=1 nav_rejected=3 nav_repaired=1 nav_stuck=2 search_fail=3 searches=4 searches_found=4 stop_attack=1 win_free=2 win_stuck=7
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_bush5       reached=true  t=2.36   min_d=1.14  line0=false p6=10 p12=10 hits=9 line_false=3 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_bush6       reached=true  t=2.27   min_d=0.76  line0=false p6=8 p12=8 hits=9 line_false=1 line_true=1 nav_found=1 nav_leave_line=1 nav_stuck=1 searches=1 searches_found=1 win_free=3 win_stuck=1
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_blue1       reached=false t=nil    min_d=3.8   line0=false p6=10 p12=10 give_up=2 nav_give_up=2 nav_rejected=8 nav_stuck=3 search_fail=8 searches=8 searches_found=8 stop_attack=2 win_free=1 win_stuck=15
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_trunk1      reached=true  t=1.36   min_d=1.45  line0=false p6=9 p12=9 hits=10 win_free=2
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_trunk2      reached=true  t=2.09   min_d=0.72  line0=false p6=9 p12=9 hits=10 win_free=3
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_trunk3      reached=true  t=1.36   min_d=1.45  line0=false p6=9 p12=9 hits=10 win_free=2
+ACTION[Server]: [r49nav] TRIAL archer  pine_hills_trunk4      reached=true  t=1.99   min_d=1.03  line0=false p6=8 p12=8 hits=10 line_false=1 nav_found=1 nav_stuck=1 searches=1 searches_found=1 win_free=2 win_stuck=1
+ACTION[Server]: [r49nav] wrote /tmp/grudgelands-headless.r49nav-bLhnxW/world/r49nav_results.json (1003485 bytes)
+ACTION[Server]: [r49nav] wrote /tmp/grudgelands-headless.r49nav-bLhnxW/world/r49nav_results.json (1003512 bytes)
+ACTION[Server]: [r49nav] RESULT DONE

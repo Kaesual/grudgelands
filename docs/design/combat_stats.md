@@ -914,9 +914,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   attack state and therefore the punch timer; several players hitting one mob
   stretched its attack interval a lot. Mob-vs-mob hits keep that pause.
 - **Navigation** (Round 42, [round 42 plan](../planning/round42-plan.md)
-  rulings 1–9 and 17–20; `mobs/grug_nav.lua`, the dogfight branch of
-  `do_states` in `mobs/api.lua`). A ground melee mob in a fight walks
-  straight at its target. It is **stuck** when it wants to move but moved
+  rulings 1–9 and 17–20, with Round 49's path repair, padding steps and
+  ranged mobs; `mobs/grug_nav.lua`, the dogfight branch of `do_states` in
+  `mobs/api.lua`). A ground melee mob in a fight walks straight at its
+  target. It is **stuck** when it wants to move but moved
   itself less than **30 %** of the distance its current speed should have
   carried it over **0.5 s**; the current speed is the one it really has
   (slows, the evade speed and the liquid slowdown included). It wants to move
@@ -931,7 +932,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   intermediate point in the target's direction, on a ring of **10 nodes** and
   at the next attempt **16** (at 0°, ±20°, ±40°, the first point within
   **±3 nodes** of height where the mob stands with its head room). The search
-  box is the two ends padded by **6 nodes** (never below 2,
+  box is the two ends padded by **6 nodes** on the first search of a stuck
+  episode, **12** on the second and **16** on every later one (Round 49;
+  never below 2,
   [upstream workarounds](../technical/upstream-workarounds.md) §5; the
   engine's box reaches one node less on its positive side); no leg longer
   than **32 nodes** goes to the engine. A mob searches at most once a second
@@ -942,8 +945,15 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   rounded up, at every waypoint) and **width** (a mob up to two nodes wide
   needs a free 2×2 block at every waypoint and is steered through its
   middle; a wider one every cell round the waypoint); unknown and unloaded
-  nodes count as blocked. A path that fails the checks is a failed search, so
-  a wide mob that finds no wide route gives up like any other.
+  nodes count as blocked. A waypoint that fails the checks is repaired
+  (Round 49): one of the 8 cells round it, on its level or one node up or
+  down, where the mob fits standing on ground, one step from the previous
+  waypoint and near the next (one step, or two nodes that a straight walk
+  covers), takes its place, or the waypoint is left out when the waypoints
+  before and after it are one step apart; the shortest way wins (a straight
+  step before a diagonal one, which needs one of its two corners free),
+  without a new search. A path with a waypoint that has no such cell is a failed
+  search, so a wide mob that finds no wide route gives up like any other.
   The mob follows the path, smoothed: at each waypoint it steers at the
   furthest of the next eight it can walk to straight. It leaves the path when
   it strikes, at the path's end, when the target moved **4 nodes** from where
@@ -954,8 +964,15 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   both sides of the body, ground below, steps up to the mob's step height
   and drops down to its fear height; a diagonal step needs both corner cells
   free with ground under them; harmless water is ground for a mob that
-  floats. Fliers and the dogshoot families never search (a ranged family
-  answers terrain by shooting over it). This replaces mobs_redo's stuck
+  floats. Fliers never search. A ground `dogshoot` family (Round 49) in
+  its ranged phase that cannot see its target walks at it like a melee mob, stuck detector and
+  search included, until it sees it; then it stops and shoots, which ends
+  its stuck episode like a strike; it never shoots without sight. Its melee
+  phase navigates like any melee mob. A flying `dogshoot` mob keeps
+  upstream's switch (it shoots from range whether or not it sees); a
+  `dogshoot` mob without a ranged phase (no `dogshoot_switch`: the ranged
+  kings) keeps upstream's branches and never searches. This
+  replaces mobs_redo's stuck
   timer, the 1 s blocked-line-of-sight trigger and the sidestep of the
   close-cover ruling of 2026-09-17 and the walk-speed crawl of a wedged
   mob (ruling 17). The `reach × 0.6` contact stop applies only while the
