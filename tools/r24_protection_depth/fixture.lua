@@ -8,7 +8,7 @@
 -- plus the R7 anchor roster and functional-anchor overlay, then checks:
 --   1. every hard footprint type -- start town (centre and band), capital,
 --      outpost column, bandit column -- is protected at
---      its bound (placement height - 100) and at bound + 1, and not at
+--      its bound (placement height - the source's depth) and at bound + 1, and not at
 --      bound - 1, through territory_rule_at, hard_protection_kind_at and
 --      world_protected_for_faction for both factions; protection stays
 --      unbounded upward; below the bound the zone's own territory rule
@@ -45,7 +45,6 @@ local seeds = {}
 for index = 2, #arg do seeds[#seeds + 1] = arg[index] end
 if #seeds == 0 then seeds = {"4242424242", "10536739806879207652"} end
 
-local DEPTH = 100
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1
@@ -53,6 +52,10 @@ local function check(ok, label)
 end
 
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+-- The source's one protection depth (100 until Round 49, which sized it from
+-- the deepest town ground; tools/r49_prot).
+_G.core = _G.core or {}
+local DEPTH = dofile(dir .. "/source/simple_map.lua").protection_depth_below_placement
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
 local settlement = dofile(dir .. "/r6_settlement.lua")

@@ -199,7 +199,7 @@ the seeded share of a start's or capital's treeless band open (Round 36 W3;
 the band itself is a town and never renews). Cave plants follow the
 generator's own cave rule (`r6_settlement.lua` `r30_cave_limit`): they stay
 out of occupied ground and of planned-water and coast shapes, and below a
-town's or POI's protected floor (placement height − 100, Round 24 ruling
+town's or POI's protected floor (placement height − 80, Round 24 ruling
 30) the cave is ordinary ground. A surface resource plant on
 ground below such a floor ignores the envelope's claim exclusion, as the
 writers do. At the planned surface renewal follows the generator's own

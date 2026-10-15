@@ -973,7 +973,7 @@ Mobs are not part of this catalog: each zone's spawn recipe places its
 surface mobs ([spawn_regions.md](spawn_regions.md)), and
 [zone_mobs.md](zone_mobs.md) is the table generated from the recipes, per
 zone and per family. The start towns (pad and band, §12) refuse hostile
-spawns from the town's protected floor upward (its placement height − 100,
+spawns from the town's protected floor upward (its placement height − 80,
 Round 24 ruling 30); caves deeper under a start town keep their ordinary
 population. A capital city refuses every ambient non-critter spawn (§3).
 
@@ -1469,7 +1469,7 @@ code, not by this document.
   surface of a path or foundation is no host.
 - **Hard-protected ground** (the exact footprint of a start town or a
   capital's protected city) hosts no natural resource inside its protected
-  volume: from its placement height − 100 upward (Round 24 ruling 30).
+  volume: from its placement height − 80 upward (Round 24 ruling 30).
   Below that floor the column takes ores, gems, rock layers and nests like
   any other ground. Every other anchor's claim envelope — the square of a
   POI, village, camp or outpost, open to digging outside its building
@@ -1487,8 +1487,9 @@ code, not by this document.
   bands and the near-surface nests and cliff layers per voxel. This matters
   for POI envelopes on steep ground: an envelope 112 nodes wide can reach
   shore or valley ground 100–300 nodes below its anchor. Start towns and
-  capitals never do (their lowest ground lies 79–100 nodes above the
-  floor). Non-protection exclusions keep applying at every depth to the
+  capitals never do (their lowest ground, a river or lake bed in a capital,
+  lies at most 35 nodes below the placement height over the quick seed
+  fleet, so at least 45 above the floor; Round 49). Non-protection exclusions keep applying at every depth to the
   writers they bind today: planned-water and coast shapes (the cave rule
   and every surface writer; P9G excepted on the dry islands), the overlay
   exclusions (road corridors, inland water, water banks) for the surface
@@ -1910,14 +1911,14 @@ numeric-truncated seed.
 - `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
   protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 inside the capital's protected volume (from the capital anchor's
-  placement height − 100 upward, Round 24 ruling 30). Below that floor and
+  placement height − 80 upward, Round 24 ruling 30). Below that floor and
   everywhere else on non-exterior land it returns the existing generic base
   `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
   remains outside this resolver.
 - `faction_at` returns `accord`, `throng` or nil and never derives
   construction rights from `race_region`. `territory_rule_at` and
   `pvp_rule_at` apply full 3D precedence: bounded hard protection (each
-  footprint from its placement height − 100 upward), immutable
+  footprint from its placement height − 80 upward), immutable
   deep ocean/channels, planned-water/shelf inheritance,
   ordinary land and the y = -501 contested-depth override.
 - Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,
@@ -2163,7 +2164,7 @@ cave sources require real preserved air above real exposed stone. No source
 may replace a functional surface, foundation, route or water.
 Cave eligibility follows the purpose-specific WORLD guards, not broad natural
 landmark envelopes; under a town, POI core, anchor grade or hard foundation
-those guards end at the column's protected floor (placement height − 100,
+those guards end at the column's protected floor (placement height − 80,
 Round 24 ruling 30), below which cave sources place normally. Candidate
 rejection does not move, retry or refill it.
 
