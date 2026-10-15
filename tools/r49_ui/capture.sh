@@ -17,7 +17,7 @@
 # guiFormSpecMenu.cpp calculateImgsize, at 96 DPI) with python3's ctypes and
 # libX11, so the element's tooltip shows in the shot.
 #
-# Usage: XVFB=/path/to/Xvfb tools/r48_mail/capture.sh OUT_DIR
+# Usage: XVFB=/path/to/Xvfb tools/r49_ui/capture.sh OUT_DIR
 #   GUI_SCALE (default 1), WIDTH/HEIGHT (default 1600 x 900), SUFFIX=<text>
 #   appended to every file name, SETTLE=<seconds> before each shot (default
 #   3), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri).
