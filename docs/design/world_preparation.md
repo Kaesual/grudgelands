@@ -3,7 +3,8 @@
 Decided 2026-09-21; surface-selection revision approved 2026-09-22 (Round 16).
 Bounded full-throughput scheduling approved 2026-09-23. Full-column extent and
 the air-chunk fast path decided 2026-09-28 (Round 23, WP48). The waiting point
-decided 2026-10-09 (Round 46).
+decided 2026-10-09 (Round 46). Chunks below the writers skipped since
+2026-10-15 (Round 49).
 
 
 ### Preparation modes and readiness
@@ -267,7 +268,23 @@ mapblock above the writer's surface/content envelope of its columns and their
 content reach (the same envelope as full preparation). The transaction would
 then return without any VoxelManip write, so content, param2 and light of the
 chunk and its shell are identical. The envelope is per owner column, memoized
-for recent columns; it never scans the world. Chunks with native ground in the
-owner, near the envelope or underground keep the full writer (since Round 49
-native v7 places the ores and cave plants of native rock; the writer adds the
-fill ores and the strata).
+for recent columns; the fitted boxes and the owner's own columns are read
+before the content-reach ring round them (Round 49), so a chunk its own
+ground reaches decides at once. It never scans the world. Chunks with native
+ground in the owner or near the envelope keep the full writer.
+
+## Chunks below the writers (emerge environment, Round 49)
+
+Underground chunks skip the writer transaction too, before any planning,
+when their top lies more than one mapblock below the authored floor (y −37,
+where the terrain fill, the strata and every other broad pass of the writer
+stop) and below the bottom of every fitted settlement, POI and anchor box
+over them. Since Round 49 native v7 places the ores, gems and cave plants of
+native rock and nothing else of ours writes that deep, so the transaction
+would change nothing there. With chunks at −32 + 80k every chunk from
+y −113 down is skipped unless a fitted box reaches within a mapblock of it;
+the chunk −112…−33 holds the fill floor and keeps the full writer. The test
+reads neither columns nor the heightmap, so mining and caving deep cost the
+engine's own chunk generation only. The argument per writer stands in
+`wp40/air_chunks.lua`; a new pass that writes below y −37 outside a fitted
+box has to extend it first.

@@ -95,8 +95,9 @@ local function get_heightmap() return core.get_mapgen_object("heightmap") end
 local function refine(vmanip, minp, maxp)
 	minp = plain_engine_position(minp, "generated minp")
 	maxp = plain_engine_position(maxp, "generated maxp")
-	-- Native air above everything the writer can place: the transaction would
-	-- change nothing (air_chunks.lua), so it is not run.
+	-- Rock below or native air above everything the writer can place: the
+	-- transaction would change nothing (air_chunks.lua), so it is not run.
+	if air_chunks.below(minp, maxp) then return end
 	if air_chunks.untouched(minp, maxp, get_heightmap) then return end
 	local plan, generation = built.session.plan_slice(minp, maxp)
 	local result = built.writer.apply(vmanip, minp, maxp, plan, generation)
