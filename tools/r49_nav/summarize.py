@@ -15,7 +15,11 @@ failures by kind, the condensed event sequence and a classification:
   stuck on path      the mob got stuck on a found path before a give-up
   other              none of these
 
---events prints one trial's full event list.
+--events prints one trial's full event list. Each mover ends with a totals
+line per phase (Round 49 NAV2's before/after table): trials reached, reached without a
+give-up, trials with a give-up, searches (found), the largest single search
+in microseconds and, for a ranged mover, the trials with a shot that saw its
+target and the shots that did not.
 """
 import json
 import sys
@@ -24,7 +28,7 @@ KEEP = {
     "stuck", "found", "no_path", "rejected", "refused", "cap_wait",
     "leave_stuck", "leave_line", "leave_drift", "leave_end", "give_up",
     "line_fail", "path_stuck", "search_fail", "stop_attack", "re_engage",
-    "hit",
+    "hit", "repaired", "shot", "shot_blind",
 }
 
 
@@ -80,6 +84,31 @@ def windows(trial):
     low_free = sum(1 for r in free if r < 0.6)
     return (f"{c.get('win_stuck', 0)}/{c.get('win_free', 0)}"
             f" (free<0.6: {low_free})")
+
+
+def totals(trials, phase):
+    """One mover's totals line for one phase."""
+    n = len(trials)
+    reached = sum(1 for t in trials if t.get("reached"))
+    clean = sum(1 for t in trials if t.get("reached")
+                and not t["counts"].get("give_up"))
+    gave = sum(1 for t in trials if t["counts"].get("give_up"))
+    searches = sum(t["counts"].get("searches", 0) for t in trials)
+    found = sum(t["counts"].get("searches_found", 0) for t in trials)
+    largest = 0
+    for t in trials:
+        for row in t["events"]:
+            if row[1] == "search" and len(row) > 2 and row[2][6] > largest:
+                largest = row[2][6]
+    line = (f"**Totals {phase}:** {n} trials, reached {reached}, reached without a"
+            f" give-up {clean}, with a give-up {gave}, searches {searches}"
+            f" (found {found}), largest search {largest} us")
+    if any(t["counts"].get("shots") or t["counts"].get("shots_blind")
+           for t in trials):
+        shot = sum(1 for t in trials if t["counts"].get("shots"))
+        blind = sum(t["counts"].get("shots_blind", 0) for t in trials)
+        line += f", trials with a seeing shot {shot}, blind shots {blind}"
+    return line + "."
 
 
 def fails(trial):
@@ -177,8 +206,9 @@ def main():
               f" | {m.get('attack_type')} |")
     print()
     for b in data.get("batches", []):
-        print(f"- batch {b['mover']}: {b['seconds']} s, CPU {b.get('cpu_s')} s,"
-              f" module counters {json.dumps(b.get('counters'))}")
+        print(f"- batch {b.get('label', b['mover'])}: {b['seconds']} s,"
+              f" CPU {b.get('cpu_s')} s, searches {b.get('searches')}"
+              f" (found {b.get('found')}), largest so far {b.get('largest_us')} us")
     print()
     notes = {s["name"]: s for s in meta.get("scenes", [])}
     movers = []
@@ -214,6 +244,19 @@ def main():
                   f" | {t.get('min_d')} | {st.get('line')} | {p6} | {p12}"
                   f" | {windows(t)} | {c.get('searches', 0)}/{c.get('searches_found', 0)}"
                   f" | {fails(t)} | {condensed(t.get('events', []))} |")
+        print()
+        own = [t for t in trials if t["mover"] == mover]
+        for phase in ("scenes", "extra", "real"):
+            part = [t for t in own if (t.get("phase") or "scenes") == phase]
+            if part:
+                print(totals(part, phase))
+                print()
+    ranged = meta.get("ranged") or []
+    if ranged:
+        print("## Registered dogshoot mobs\n")
+        for r in sorted(ranged, key=lambda r: r["name"]):
+            print(f"- `{r['name']}`: {'flier' if r.get('fly') else 'ground'},"
+                  f" pathfinding {r.get('pathfinding')}")
         print()
     print("## Scenes\n")
     for name, s in notes.items():

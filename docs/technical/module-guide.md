@@ -881,8 +881,11 @@ tools](#player-meta-read-by-external-tools).
     navigates through `mobs/grug_nav.lua` (`mobs.grug_nav`, Round 42: the
     stuck detector, the local search, the follower and the give-up rule of
     `combat_stats.md` "Navigation" and "Unreachable targets are given up",
-    `grug_mobs.give_up_target` in `aggro.lua`); `nav.fixed_step` is the
-    fixed-walk interface. A walk to a fixed goal (a patrol, a post or seat,
+    `grug_mobs.give_up_target` in `aggro.lua`; Round 49 NAV2: `check_path`
+    repairs a waypoint without head room or width from the cells round it,
+    a stuck episode's searches pad 6, 12, then 16 (`PADDING_STEPS`), and
+    ground `dogshoot` mobs navigate too, to regain sight of their target);
+    `nav.fixed_step` is the fixed-walk interface. A walk to a fixed goal (a patrol, a post or seat,
     the evade, the rift boss's way home) goes through `patrol.lua`
     `grug_mobs.walk_fixed` from its owner's 1 Hz tick and
     `grug_mobs.walk_follow` on every other step (the per-step steer while

@@ -1123,13 +1123,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   grove, a trunk with stubs) and natural trials on the seed's first meadows,
   deep forest and pine hills sites (bushes, blueberry bushes and trunks found
   there; the geometry round each trial is saved); `R49NAV_MOVERS` the movers
-  (`zombie`, `rat`, `archer`, and the phase 2 candidates applied by the probe
-  only: `zombie_fix`/`rat_fix` = padding escalation 6/12/16 plus local repair
-  of a path the head-room or width check rejects, `rat_narrow` = a 0.98-wide
-  rat); `R49NAV_SCENES` filters lanes. It records the navigation events, the
-  detector windows, the counted failures and why, the line tests, the engine
-  searches and the rejected waypoints. `summarize.py RESULTS.json`
-  (`--events SCENE MOVER`, `--geometry SCENE`); `evidence/boot1..3` the runs.
+  (`zombie`, `rat`, `archer`, and `rat_narrow` = a 0.98-wide rat applied by
+  the probe only; phase 1's `zombie_fix`/`rat_fix` candidates, padding
+  escalation and path repair, are the real code since Round 49 NAV2);
+  `R49NAV_SCENES` filters lanes. It records the navigation events (also
+  `repaired`), the detector windows, the counted failures and why, the line
+  tests, the engine searches, the rejected waypoints, a ranged mover's shots
+  with its sight of the target, and every registered `dogshoot` mob (flier
+  or ground, `pathfinding`). `summarize.py RESULTS.json` (`--events SCENE
+  MOVER`, `--geometry SCENE`; a totals line per mover and phase);
+  `evidence/boot1..3` the phase 1 runs, `evidence/nav2_scenes` and
+  `evidence/nav2_real` Round 49 NAV2's runs of the real code.
 - **Round 49 lane VIS** (`r49_vis`): node items in the third-person
   hand (`portable_test.lua`: the real `grug_visuals` and `player_api` on a
   stub engine: which items the engine draws as blocks, the transform at

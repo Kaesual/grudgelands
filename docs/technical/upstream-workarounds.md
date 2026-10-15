@@ -209,8 +209,9 @@ Engine reference for the line citations: `reference_projects/luanti` at
   (5.17.0-dev).
 - **Our workaround:** the navigation module's one search,
   `nav.search` in `mods/ENTITIES/mobs/grug_nav.lua`, raises any padding below
-  `nav.MIN_PADDING` (2) to 2 (combat searches at 6, Round 42 NV1; fixture
-  `tools/r42_nv1` L3). The other callers search far above it
+  `nav.MIN_PADDING` (2) to 2 (combat and fixed-walk searches at 6, Round 42
+  NV1, then 12 and 16 within one stuck episode, Round 49 NAV2; fixture
+  `tools/r42_nv1` L3 and E). The other callers search far above it
   (`grug_mobs/patrol.lua` 24, `grug_mobs/rift.lua` 40; Round 42 NV2 moves
   them onto the module). The navigation probe never searches below 2
   (`tools/r42_nv0/grug_probe_r42_nv0/init.lua` `MIN_PAD`).
