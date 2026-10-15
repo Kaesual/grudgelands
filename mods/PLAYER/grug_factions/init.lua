@@ -20,10 +20,28 @@ local META_KIT = "grug_factions:kit_given"
 -- The torch stays in `main` on purpose: the offhand is where a carried light
 -- will live one day (combat_stats.md §7), and putting the starter torch there
 -- would silently cost every Priest and Mage their two-handed staff.
+--
+-- Apples on hotbar slot 7, torches on slot 8 (Round 49 ruling 10). The base
+-- abilities fill the hotbar from slot 1 afterwards (grug_abilities, at
+-- class choice); five at most today, so 7 and 8 stay the supplies'.
 local starter_kits = {
-	accord = {"default:torch 10", "default:apple 10"},
-	throng = {"default:torch 10", "default:apple 10"},
+	accord = {{slot = 7, item = "default:apple 10"}, {slot = 8, item = "default:torch 10"}},
+	throng = {{slot = 7, item = "default:apple 10"}, {slot = 8, item = "default:torch 10"}},
 }
+
+-- Each supply on its hotbar slot; a taken slot (never at creation) leaves it
+-- to the give helper. grug_inventory loads after this mod (it depends on
+-- it); the call runs at character creation, long after every mod has loaded.
+local function give_starter_kit(player, id)
+	local inv = player:get_inventory()
+	for _, entry in ipairs(starter_kits[id] or {}) do
+		if inv:get_stack("main", entry.slot):is_empty() then
+			inv:set_stack("main", entry.slot, entry.item)
+		else
+			grug_inventory.give(player, entry.item)
+		end
+	end
+end
 
 --
 -- API
@@ -199,11 +217,7 @@ function grug_factions.set_faction(player, id)
 	local meta = player:get_meta()
 	if meta:get_int(META_KIT) == 0 then
 		meta:set_int(META_KIT, 1)
-		-- grug_inventory loads after this mod (it depends on it); the call
-		-- runs at character creation, long after every mod has loaded.
-		for _, item in ipairs(starter_kits[id] or {}) do
-			grug_inventory.give(player, item)
-		end
+		give_starter_kit(player, id)
 	end
 	for _, func in ipairs(faction_chosen_callbacks) do
 		func(player, id)
