@@ -157,7 +157,7 @@ local S = dofile(wp40 .. "/r6_settlement.lua")
 check(M.TIERS[1].y_min == -100 and M.TIERS[1].lower_half_y_max == -50,
 	"fill_digest.lua's T1 matches the registry")
 local fill_ore_at = S.r49_fill_ores_new(manifest.resources, M.TIERS[1],
-	"10536739806879207652")
+	dofile(wp40 .. "/r6_hash.lua")().placement("10536739806879207652"))
 local counts, hosts = {}, 0
 local cubes = {}
 for z = 0, 191 do

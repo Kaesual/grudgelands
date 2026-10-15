@@ -388,7 +388,7 @@ do
 		local b = cell_rows(fixture_b, cell[1], cell[2])
 		if #a ~= #b then seam_ok = false end
 		for i = 1, math.min(#a, #b) do
-			if a[i].digest ~= b[i].digest or a[i].x ~= b[i].x or a[i].z ~= b[i].z then
+			if a[i].rank ~= b[i].rank or a[i].x ~= b[i].x or a[i].z ~= b[i].z then
 				seam_ok = false
 			end
 		end
@@ -405,8 +405,8 @@ do
 				plan.candidate_cell_values[base + 4]
 			local parts = {}
 			for c = first, stop - 1 do
-				local cb = (c - 1) * 14
-				for k = 1, 14 do parts[#parts + 1] = plan.candidate_values[cb + k] end
+				local cb = (c - 1) * 7
+				for k = 1, 7 do parts[#parts + 1] = plan.candidate_values[cb + k] end
 			end
 			by_cell[cx .. "," .. cz] = table.concat(parts, ",")
 		end

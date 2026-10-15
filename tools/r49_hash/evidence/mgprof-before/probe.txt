@@ -1,0 +1,64 @@
+ACTION[Main]: [mgprof_probe] loaded epoch=1792099526 cpu_s=24.3
+ACTION[Server]: [mgprof_probe] first server step epoch=1792099544 cpu_s=42.4
+ACTION[Server]: [mgprof_probe] waiting for preparation 0/84
+ACTION[Server]: [mgprof_probe] waiting for preparation 54/84
+ACTION[Server]: [mgprof_probe] preparation complete chunks=84 step_wall_s=23.64 cpu_s=66.1 epoch=1792099568
+ACTION[Server]: [mgprof_probe] preparation ready after 21 s of waiting (84/84 chunks), cpu_s=66.1
+ACTION[Server]: [mgprof_probe] column A x 368..447 z -2352..-2273: zone elandor_goldmead_vale, biome grug_meadows (6400 of 6400), terrain y 34..65 (1001 columns at y >= 48), land 6400, river 0, functional 0, hard foundation 0, road 0, hard-protected 0 -> ordinary
+ACTION[Server]: [mgprof_probe] column B x 528..607 z -2192..-2113: zone elandor_goldmead_vale, biome grug_deep_forest (3499 of 6400), terrain y 48..84 (6400 columns at y >= 48), land 6400, river 0, functional 0, hard foundation 0, road 0, hard-protected 0 -> ordinary
+ACTION[Server]: [mgprof_probe] mode=stages chunks=10 gap=2.5s
+ACTION[Server]: [mgprof_probe] request id=warmup minp=608,-112,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=warmup minp=608,-112,-2352 action=4 wall_ms=231.0
+ACTION[Server]: [mgprof_probe] request id=A_S1 minp=368,-32,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_S1 minp=368,-32,-2352 action=4 wall_ms=421.1
+ACTION[Server]: [mgprof_probe] request id=A_S2 minp=368,48,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_S2 minp=368,48,-2352 action=4 wall_ms=158.7
+ACTION[Server]: [mgprof_probe] request id=A_B minp=368,-112,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_B minp=368,-112,-2352 action=4 wall_ms=87.2
+ACTION[Server]: [mgprof_probe] request id=A_U1 minp=368,-192,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U1 minp=368,-192,-2352 action=4 wall_ms=25.7
+ACTION[Server]: [mgprof_probe] request id=A_U3 minp=368,-512,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U3 minp=368,-512,-2352 action=4 wall_ms=33.2
+ACTION[Server]: [mgprof_probe] request id=A_U6 minp=368,-1072,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U6 minp=368,-1072,-2352 action=4 wall_ms=35.1
+ACTION[Server]: [mgprof_probe] request id=B_U6 minp=528,-1072,-2192
+ACTION[Emerge-0]: [mgprof_probe] done id=B_U6 minp=528,-1072,-2192 action=4 wall_ms=32.7
+ACTION[Server]: [mgprof_probe] request id=B_U1 minp=528,-192,-2192
+ACTION[Emerge-0]: [mgprof_probe] done id=B_U1 minp=528,-192,-2192 action=4 wall_ms=24.8
+ACTION[Server]: [mgprof_probe] request id=B_B minp=528,-112,-2192
+ACTION[Emerge-0]: [mgprof_probe] done id=B_B minp=528,-112,-2192 action=4 wall_ms=440.0
+ACTION[Server]: [mgprof_probe] ore_count id=warmup band=T1 host=407439 ores=20541 share=5.04% citrine=809 coal=6224 copper=3988 iron=2369 quartz=3090 tin=4061
+ACTION[Server]: [mgprof_probe] ore_count id=warmup band=T2 host=75748 ores=2775 share=3.66% citrine=89 coal=579 copper=398 gold=133 iron=789 jade=144 quartz=277 tin=366
+ACTION[Server]: [mgprof_probe] cave_plants id=warmup cave_cap=0 floors=2034 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_count id=A_S1 band=T1 host=388272 ores=17920 share=4.62% citrine=799 coal=6104 copper=4010 quartz=3008 tin=3999
+ACTION[Server]: [mgprof_probe] cave_plants id=A_S1 cave_cap=0 floors=1377 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=A_S1 -32:2076/49596 -24:2077/49623 -16:2274/49445 -8:2197/49037 0:2233/44818 8:2109/40087 16:1900/35089 24:1503/35751 32:1216/27115 40:335/7711
+ACTION[Server]: [mgprof_probe] ore_count id=A_S2 band=T1 host=1768 ores=56 share=3.17% citrine=2 coal=12 copper=8 quartz=17 tin=17
+ACTION[Server]: [mgprof_probe] cave_plants id=A_S2 cave_cap=0 floors=0 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=A_S2 48:50/1542 56:6/226
+ACTION[Server]: [mgprof_probe] ore_count id=A_B band=T1 host=405984 ores=20303 share=5.00% citrine=805 coal=6132 copper=4150 iron=2258 quartz=3123 tin=3835
+ACTION[Server]: [mgprof_probe] ore_count id=A_B band=T2 host=64893 ores=2339 share=3.60% citrine=68 coal=517 copper=336 gold=115 iron=609 jade=107 quartz=279 tin=308
+ACTION[Server]: [mgprof_probe] cave_plants id=A_B cave_cap=0 floors=2417 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=A_B -104:814/21736 -96:2313/44431 -88:2782/49122 -80:2512/48054 -72:2565/48139 -64:2638/46065 -56:2396/48648 -48:2316/49918 -40:1967/49871
+ACTION[Server]: [mgprof_probe] ore_count id=A_U1 band=T2 host=485371 ores=17957 share=3.70% citrine=474 coal=3972 copper=2438 gold=910 iron=4977 jade=909 quartz=1893 tin=2384
+ACTION[Server]: [mgprof_probe] cave_plants id=A_U1 cave_cap=0 floors=1509 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_count id=A_U3 band=T3 host=416842 ores=14977 share=3.59% anthracite=4321 citrine=193 copper=1020 garnet=802 gold=1613 iron=3179 jade=408 quartz=797 silver=1581 tin=1063
+ACTION[Server]: [mgprof_probe] ore_count id=A_U3 band=T4 host=75089 ores=2680 share=3.57% anthracite=598 copper=186 garnet=78 gold=557 iron=187 jade=27 quartz=126 sapphire=150 silver=565 tin=206
+ACTION[Server]: [mgprof_probe] cave_plants id=A_U3 cave_cap=0 floors=722 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_count id=A_U6 band=T5 host=48095 ores=1740 share=3.62% abyssal_crystal=95 anthracite=354 copper=103 emberglass=368 garnet=16 gold=170 iron=115 quartz=101 ruby=93 sapphire=50 silver=164 tin=111
+ACTION[Server]: [mgprof_probe] ore_count id=A_U6 band=T6 host=435732 ores=14589 share=3.35% abyssal_crystal=1688 anthracite=3295 copper=1065 diamond=851 emberglass=1692 gold=1624 iron=1070 quartz=761 ruby=428 sapphire=204 silver=808 tin=1103
+ACTION[Server]: [mgprof_probe] cave_plants id=A_U6 cave_cap=0 floors=0 ember_moss=0 floors=271
+ACTION[Server]: [mgprof_probe] ore_count id=B_U6 band=T5 host=46238 ores=1693 share=3.66% abyssal_crystal=82 anthracite=342 copper=107 emberglass=364 garnet=25 gold=180 iron=94 quartz=82 ruby=77 sapphire=49 silver=176 tin=115
+ACTION[Server]: [mgprof_probe] ore_count id=B_U6 band=T6 host=440129 ores=15017 share=3.41% abyssal_crystal=1748 anthracite=3346 copper=1156 diamond=874 emberglass=1667 gold=1682 iron=1103 quartz=872 ruby=408 sapphire=188 silver=892 tin=1081
+ACTION[Server]: [mgprof_probe] cave_plants id=B_U6 cave_cap=0 floors=0 ember_moss=0 floors=436
+ACTION[Server]: [mgprof_probe] ore_count id=B_U1 band=T2 host=489133 ores=18027 share=3.69% citrine=494 coal=3773 copper=2575 gold=921 iron=5071 jade=951 quartz=1797 tin=2445
+ACTION[Server]: [mgprof_probe] cave_plants id=B_U1 cave_cap=1 floors=2013 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_count id=B_B band=T1 host=417267 ores=21122 share=5.06% citrine=805 coal=6505 copper=4331 iron=2333 quartz=3126 tin=4022
+ACTION[Server]: [mgprof_probe] ore_count id=B_B band=T2 host=74830 ores=2758 share=3.69% citrine=80 coal=585 copper=388 gold=146 iron=755 jade=138 quartz=282 tin=384
+ACTION[Server]: [mgprof_probe] cave_plants id=B_B cave_cap=0 floors=1166 ember_moss=0 floors=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=B_B -104:1000/24027 -96:2907/49241 -88:2688/48347 -80:2594/48434 -72:2558/49257 -64:2484/50042 -56:2536/50079 -48:2277/48635 -40:2078/49205
+ACTION[Server]: [mgprof_probe] surface_count id=A_S1 air=45160 default:apple=26 default:bush_leaves=254 default:bush_stem=21 default:desert_stone=18842 default:dirt=28007 default:dirt_with_grass=3291 default:grass_1=269 default:grass_2=259 default:grass_3=262 default:grass_4=258 default:grass_5=262 default:gravel=23574 default:leaves=1020 default:stone=370352 default:stone_with_coal=6104 default:stone_with_copper=4010 default:stone_with_tin=3999 default:tree=11 grug_gathering:corn_source=5 grug_gathering:potato_source=7 grug_gathering:sunleaf_source=3 grug_mapgen:pumpkin_source=8 grug_mapgen:wild_grain_source=4 grug_materials:granite=114 grug_materials:slate=151 grug_materials:stone_with_citrine=799 grug_materials:stone_with_quartz=3008 grug_nodes:dirt_with_forest_litter=1644 grug_trees:apple_base=18 grug_trees:apple_branch=49 grug_trees:apple_quarter=36 grug_trees:apple_twig=173
+ACTION[Server]: [mgprof_probe] surface_count id=A_S2 air=506372 default:bush_leaves=38 default:bush_stem=3 default:desert_stone=358 default:dirt=2152 default:dirt_with_grass=582 default:grass_1=62 default:grass_2=64 default:grass_3=55 default:grass_4=66 default:grass_5=66 default:stone=1712 default:stone_with_coal=12 default:stone_with_copper=8 default:stone_with_tin=17 grug_gathering:corn_source=3 grug_gathering:potato_source=2 grug_mapgen:pumpkin_source=5 grug_mapgen:wild_grain_source=1 grug_materials:stone_with_citrine=2 grug_materials:stone_with_quartz=17 grug_nodes:dirt_with_forest_litter=403
+ACTION[Server]: [mgprof_probe] bench digest11 n=20000 us_per_call=1.21
+ACTION[Server]: [mgprof_probe] cpu_s=68.0 at the end step_wall_s=55.38 epoch=1792099599
+ACTION[Server]: [mgprof_probe] RESULT PASS 10 chunks

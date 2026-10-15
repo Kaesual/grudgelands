@@ -259,7 +259,7 @@ for key, tier in pairs(HALF) do
 		whole[1].y_max == M.TIERS[tier].y_max, WHOLE[tier] .. " spans T" .. tier)
 end
 local fill_ore_at = dofile(wp40 .. "/r6_settlement.lua").r49_fill_ores_new(
-	manifest.resources, M.TIERS[1], "12345")
+	manifest.resources, M.TIERS[1], dofile(wp40 .. "/r6_hash.lua")().placement("12345"))
 local iron_index
 for index, row in ipairs(manifest.resources) do
 	if row.key == "iron" then iron_index = index end

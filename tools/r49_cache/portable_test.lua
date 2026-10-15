@@ -12,7 +12,7 @@
 --    an order that evicts every column before its second chunk, so each of
 --    those chunks scans again. Every chunk writes the same bytes and the
 --    same writer result in both, and P9G settles the same number of sources
---    (some in every chunk, so the hit path really writes).
+--    (some in a chunk that hits, so the hit path really writes).
 -- 2. Eviction: M counts a miss for every chunk and an eviction for every
 --    chunk after the first; H counts exactly one miss per column.
 -- 3. Key completeness: the key is the chunk's x/z owner, so a neighbouring
@@ -145,8 +145,11 @@ for _, name in ipairs(NAMES) do
 	check(a.result == b.result and a.hash == b.hash and a.accepted == b.accepted,
 		("%s: kept and scanned roots write the same chunk (%s, %s, %d sources)")
 			:format(name, tostring(a.result), a.hash, a.accepted))
-	check(a.accepted > 0, name .. ": P9G settles sources in the chunk")
 end
+-- (Round 49 lane HASH: the integer placement hash moved the sources; A_S2
+-- holds none since, so the hit path is proven by C_S1, the other hit chunk.)
+check(hit.C_S1.accepted > 0 and hit.A_S1.accepted > 0,
+	"P9G settles sources in a hit chunk (C_S1 " .. hit.C_S1.accepted .. ") and a kept one")
 
 -- 2. Eviction and the counts.
 check(h_metrics.column_cache_misses == 2 and h_metrics.column_cache_hits == 2 and

@@ -470,7 +470,10 @@ do
 		data[z * SX + x + 1] = {name = name, prob = 254, param2 = param2}
 	end
 	local hash = {digest = function() return "" end, digest_count = function() return "" end,
-		sha256_bytes = function(s) return s end, frame = tostring, hex = function() return "h" end}
+		sha256_bytes = function(s) return s end, frame = tostring, hex = function() return "h" end,
+		placement = function()
+			return function() return 0 end, function() return 0 end
+		end}
 	local content = {
 		content_contract = function()
 			return {content_kind_masks = setmetatable({}, {__index = function() return 8 end}),

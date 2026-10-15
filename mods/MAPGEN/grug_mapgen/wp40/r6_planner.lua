@@ -10,7 +10,7 @@ local function planner_factory()
 	local MAX_CANDIDATES = 65536
 	local COLUMN_STRIDE = 12
 	local CELL_STRIDE = 4
-	local CANDIDATE_STRIDE = 14
+	local CANDIDATE_STRIDE = 7
 	local WATER_SENTINEL = -31007
 	local WATER_CLASS_ID = {
 		land = 1, planned_water = 2, coastal_shelf = 3, deep_ocean = 4,
@@ -109,7 +109,8 @@ local function planner_factory()
 				type(horizontal) ~= "table" or
 				type(horizontal.static_exclusion_values_at) ~= "function" or
 				type(content) ~= "table" or
-			type(hash) ~= "table" or type(source) ~= "table" or
+			type(hash) ~= "table" or type(hash.placement) ~= "function" or
+			type(source) ~= "table" or
 			type(identity_holder) ~= "table" or identity_holder.value == nil then
 			fail("fail_source", "planner construction seam differs")
 		end
@@ -218,6 +219,16 @@ local function planner_factory()
 			decoration_fmax[index] = vegetation.class_max(class)
 			decoration_band_cover[index] = vegetation.band_cover(decorations[index])
 		end
+		-- The placement hash streams of each row (r6_hash.lua `placement`):
+		-- its candidate rank, its thinning draw and its cell budget remainder.
+		local mix, placement_salt = hash.placement(full_seed)
+		local rank_salt, thin_salt, remainder_salt = {}, {}, {}
+		for index = 1, #decorations do
+			local id = decorations[index].id
+			rank_salt[index] = placement_salt("decoration_candidate_rank", id)
+			thin_salt[index] = placement_salt("decoration_candidate_thin", id)
+			remainder_salt[index] = placement_salt("decoration_budget_remainder", id)
+		end
 		local mountain_zone = {}
 		for index = 1, #(source.zones or {}) do
 			local zone = source.zones[index]
@@ -257,7 +268,7 @@ local function planner_factory()
 		}
 		local rank_scratch = {}
 		for index = 1, 256 do
-			rank_scratch[index] = {digest = false, x = 0, y = 0, z = 0}
+			rank_scratch[index] = {rank = 0, x = 0, y = 0, z = 0}
 		end
 		local decoration_candidates = {}
 		local group_scratch = {}
@@ -271,7 +282,7 @@ local function planner_factory()
 		end
 		for index = 1, candidate_capacity do
 			decoration_candidates[index] = {catalog = 0, parameter = 0, x = 0, y = 0,
-				z = 0, digest = false}
+				z = 0, rank = 0}
 		end
 
 		local plan = {
@@ -473,7 +484,7 @@ local function planner_factory()
 		end
 
 		local function rank_less(left, right)
-			if left.digest ~= right.digest then return hash.less_bytes(left.digest, right.digest) end
+			if left.rank ~= right.rank then return left.rank < right.rank end
 			if left.z ~= right.z then return left.z < right.z end
 			return left.x < right.x
 		end
@@ -501,13 +512,13 @@ local function planner_factory()
 		end
 
 		local function append_candidate(buffer, count, catalog, parameter, x, y, z,
-				digest)
+				rank)
 			count = count + 1
 			if count > candidate_capacity then fail("fail_bound", "candidate bound exceeded") end
 			local record = buffer[count]
 			record.catalog, record.parameter, record.x, record.y, record.z =
 				catalog, parameter, x, y, z
-			record.digest = digest
+			record.rank = rank
 			return count
 		end
 
@@ -584,35 +595,32 @@ local function planner_factory()
 					local factor = cover > 0 and not scratch.snowy[column] and
 						factors[column] or 0
 					if factor > 0 then
-						local digest = hash.digest("decoration_candidate_rank_v1", full_seed,
-							{row.id, cell_x, cell_z, scratch.x[column], scratch.z[column]})
-						-- Thin eligible roots before budgeting; no extra noise/hash pass.
-						-- The vegetation factor thins by the digest's last 16 bits (the rank
-						-- order reads it from the first byte, so the two do not correlate):
+						-- Thin eligible roots before budgeting by the row's thinning
+						-- stream, apart from its rank stream: the low bits keep one
+						-- root in `cover` (1, 2 or 4), the 16 bits above the low byte
 						-- accept with probability factor / (fmax x ONE).
-						if string.byte(digest, 1) % cover == 0 and (fmax == 1 or
-								(string.byte(digest, 31) * 256 + string.byte(digest, 32)) *
-									fmax * VEGETATION_ONE < factor * 65536) then
+						local x, z = scratch.x[column], scratch.z[column]
+						local thin = mix(x, 0, z, thin_salt[catalog])
+						if thin % cover == 0 and (fmax == 1 or
+								math.floor(thin / 256) * fmax * VEGETATION_ONE <
+									factor * 65536) then
 							eligible = eligible + 1
 							local ranked = rank_scratch[eligible]
-							ranked.x, ranked.y, ranked.z = scratch.x[column], terrain_y + 1,
-								scratch.z[column]
-							ranked.digest = digest
+							ranked.x, ranked.y, ranked.z = x, terrain_y + 1, z
+							ranked.rank = mix(x, 0, z, rank_salt[catalog])
 						end
 					end
 				end
 				local budget = 0
 				if eligible > 0 then
-					local remainder_digest = hash.digest("decoration_budget_remainder_v1",
-						full_seed, {row.id, cell_x, cell_z})
 					budget = hash.budget(eligible, row.numerator, row.denominator,
-						fmax, 1, remainder_digest)
+						fmax, 1, mix(cell_x, 0, cell_z, remainder_salt[catalog]))
 					sort_prefix(rank_scratch, eligible, rank_less)
 					for chosen = 1, budget do
 						local ranked = rank_scratch[chosen]
 						decoration_count = append_candidate(decoration_candidates,
 							decoration_count, catalog, row.settlement_class, ranked.x,
-							ranked.y, ranked.z, ranked.digest)
+							ranked.y, ranked.z, ranked.rank)
 					end
 				end
 				if capture_groups then
@@ -625,7 +633,7 @@ local function planner_factory()
 			end
 			sort_prefix(decoration_candidates, decoration_count, function(left, right)
 				if left.parameter ~= right.parameter then return left.parameter < right.parameter end
-				if left.digest ~= right.digest then return hash.less_bytes(left.digest, right.digest) end
+				if left.rank ~= right.rank then return left.rank < right.rank end
 				if left.z ~= right.z then return left.z < right.z end
 				if left.x ~= right.x then return left.x < right.x end
 				return hash.less_bytes(decorations[left.catalog].id,
@@ -638,8 +646,8 @@ local function planner_factory()
 		-- of (cell_x, cell_z) -- no y, no owner -- yet every mapchunk rebuilt
 		-- its whole halo: the chunks stacked above and below one column and
 		-- the neighbours sharing a halo cell recomputed the same sorted rows
-		-- and SHA-256 rank digests. A bounded FIFO keeps the finished rows
-		-- (kind, catalog, parameter, x, y, z and the eight digest words) per
+		-- and rank draws. A bounded FIFO keeps the finished rows
+		-- (kind, catalog, parameter, x, y, z and the rank) per
 		-- cell, exactly the values the plan's candidate array receives.
 		local CELL_CACHE_LIMIT = 4096
 		local cell_cache, cell_cache_keys = {}, {}
@@ -659,8 +667,7 @@ local function planner_factory()
 				rows[base + 4] = record.x
 				rows[base + 5] = record.y
 				rows[base + 6] = record.z
-				local words = hash.words(record.digest)
-				for word = 1, 8 do rows[base + 6 + word] = words[word] end
+				rows[base + 7] = record.rank
 				base = base + CANDIDATE_STRIDE
 			end
 			if cell_cache_count < CELL_CACHE_LIMIT then
@@ -818,7 +825,7 @@ local function planner_factory()
 			for index = 1, dc do
 				local row = decoration_candidates[index]
 				dcopy[index] = {catalog = row.catalog, class = row.parameter,
-					x = row.x, y = row.y, z = row.z, digest = hash.hex(row.digest)}
+					x = row.x, y = row.y, z = row.z, rank = row.rank}
 			end
 			local groups = {}
 			for index = 1, group_count do

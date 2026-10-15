@@ -1,0 +1,1 @@
+ACTION[Emerge-0]: GRUG_MGPROF_BENCH loop_ns=0.83 loop_found=299592 sha48_us=0.284 sha96_us=0.489 sha192_us=0.310 r6digest4_us=0.710 r6digest7_us=1.114 r6digest11_us=0.922 int11_us=0.0089 int11_acc=-758179847 jit_status=true,SSE3,SSE4.1,BMI2,fold,cse,dce,fwd,dse,narrow,loop,abc,sink,fuse jit_version=LuaJIT_2.1.1784881202

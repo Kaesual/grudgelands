@@ -2044,6 +2044,14 @@ tools](#player-meta-read-by-external-tools).
   (`grug_trees/growth.lua`) and the town trees (`wp13/dressing.lua`) use the
   same generator. A change to the generator or the species table moves the
   sample pins of `tools/r47_tc/portable_test.lua`.
+  **Placement draws** (Round 49): the R6 decoration candidates (rank,
+  thinning, cell budget remainder), the P9 rotations, heights, variants and
+  template trials, the P9G ranks and remainders and the P8 fill ores draw
+  from one integer hash, `r6_hash.lua` `placement(full_seed)`: `mix(a, b, c,
+  salt)`, one cube round modulo a prime per input and a final one (no
+  lattice period, no point mirror), with one salt per stream (domain, row
+  id, seed), exact doubles, so LuaJIT and Lua 5.1 agree (`tools/r49_hash`). SHA-256 stays for identities
+  (manifests, pins, cache keys) and the tree template seeds.
   **The swamp's pools** (Round 47 lane SW, `tools/r47_sw/DESIGN.md`):
   `wp40/swamp_pools.lua` (pure, per column, from the seed and the planner
   source's analytic values) decides the pools by the user's rule: gentle
