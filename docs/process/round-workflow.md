@@ -118,7 +118,8 @@ before boots and plays on), needs a *map reset* (map-bound state or world
 generation changed), *migrate* (saved state the new code cannot read,
 converted by a declared step of `tools/migrate.py`: a removed item,
 restructured character state) or a *new server* (such state the round
-decides not to migrate, or a validated world-creation scalar), with the
+decides not to migrate, or a validated world-creation scalar the game does
+not force over `map_meta.txt`), with the
 reason; a new-server change is reported before it is built. The reviewer
 checks the statement. The round's declaration follows from the
 classifications: `tools/web_data/upgrade.json` carries the version

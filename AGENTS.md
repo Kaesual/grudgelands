@@ -83,8 +83,9 @@ Details: [STATUS](docs/STATUS.md).
   cannot read from saved state is declared: a map reset when the state is
   map-bound (or world generation changed), otherwise a migration (a removed
   item, restructured character state) or, when the round decides not to
-  migrate, a new server; a validated world-creation scalar always needs a
-  new server. A migration is one step file
+  migrate, a new server; a validated world-creation scalar needs a new
+  server unless the game forces it over `map_meta.txt` (then a map reset;
+  upgrade contract §1). A migration is one step file
   `tools/migration/steps/vX_Y_Z.py` per `migrate` entry, run offline by
   `tools/migrate.py` on the stopped world, with its online part only through
   grug_core's runner (`grug_core.migrations`); never a conversion at load
