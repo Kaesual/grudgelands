@@ -2713,7 +2713,7 @@ local function settlement_factory()
 							local root_runs
 							if row.generated_tree then
 								-- A generated tree (Round 47): this world's variant by a
-								-- digest of the root, turned like every template; its
+								-- hash of the root, turned like every template; its
 								-- roots are optional runs (below, after acceptance).
 								local rotation = helpers.rotation_at(row.id, root_x, root_y,
 									root_z)
