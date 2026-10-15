@@ -1106,3 +1106,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `insecure.patch` to the staged game, so only that run's throwaway
   server config disables mod security and the timer logs LuaJIT trace
   aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
+  Since Round 49 (lane JIT) the R5 adapter has one pass: its
+  `r5a_replay` mark follows `r5a_resolve_validate` directly.
+- **Round 49** (`r49_<lane>`): `r49_jit` the R5 adapter's one compilable
+  pass (`portable_test.lua`: on seed 12345 with v7's stand-in ground moved
+  off the plan, the runtime adapter with its classification memo and the
+  validating adapter write the same bytes, result and dirty counts, also
+  with flowing water of every level; an out-of-range param2 still fails in
+  the classifier); `fleet_digest.sh TREE OUT [perturb]` (through
+  `fleet_digest.lua`) the bytes of every chunk the seed fleet's quick seeds
+  write, for comparing two trees (`JOBS`, `COUNT`; `perturb` moves the
+  ground as the fixture does); `evidence/` the receipts of the lane.

@@ -32,8 +32,10 @@ GROUPS = [
     ("R5 adapter", ["r5_adapter"]),
     ("R5 adapter: setup + heightmap check", ["r5a_setup"]),
     ("R5 adapter: shadow get_data/param2", ["r5a_shadow_get"]),
+    # Since Round 49 (lane JIT) one pass resolves, validates and writes; the
+    # replay mark follows it directly (about 0 ms).
     ("R5 adapter: resolve + validate pass", ["r5a_resolve_validate"]),
-    ("R5 adapter: replay pass", ["r5a_replay"]),
+    ("R5 adapter: replay pass (none since Round 49)", ["r5a_replay"]),
     ("R5 adapter: shadow set_data/param2 + liquids", ["r5a_shadow_set"]),
     ("surface column passes (skin, P7, R9)", ["skin_columns", "p7", "r9_skin"]),
     ("R8 strata", ["r8_strata"]),
