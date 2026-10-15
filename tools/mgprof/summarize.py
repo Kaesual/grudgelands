@@ -170,6 +170,8 @@ PROBE_KV = re.compile(r"(\w+)=(-?[0-9.]+)")
 def chunk_type(minp_y, maxp_y, result):
     if result == "air_skip":
         return "air (writer skipped)"
+    if result == "deep_skip":
+        return "rock below the writers (writer skipped)"
     if minp_y >= -32:
         return "surface (y >= -32)"
     if minp_y == -112:

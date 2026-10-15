@@ -1,0 +1,7 @@
+staged patch: verify.patch
+staged probe: grug_probe_r49skip
+headless boot: PASS (port 30312, 300 s)
+log: /tmp/grudgelands-headless.GO2APG/server.log
+seed = 12345
+103:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:30312.
+kept: /tmp/grudgelands-headless.GO2APG

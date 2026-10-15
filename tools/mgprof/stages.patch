@@ -696,11 +696,17 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen
  -- LuaJIT side-exit tuning for this environment (see ../jit_tuning.lua).
  dofile(core.get_modpath("grug_mapgen") .. "/jit_tuning.lua")()
  local function fail(message)
-@@ -97,9 +101,18 @@
+@@ -97,10 +101,23 @@
  	maxp = plain_engine_position(maxp, "generated maxp")
- 	-- Native air above everything the writer can place: the transaction would
- 	-- change nothing (air_chunks.lua), so it is not run.
+ 	-- Rock below or native air above everything the writer can place: the
+ 	-- transaction would change nothing (air_chunks.lua), so it is not run.
+-	if air_chunks.below(minp, maxp) then return end
 -	if air_chunks.untouched(minp, maxp, get_heightmap) then return end
++	if air_chunks.below(minp, maxp) then
++		MGP.mark("air_check")
++		MGP.result = "deep_skip"
++		return
++	end
 +	if air_chunks.untouched(minp, maxp, get_heightmap) then
 +		MGP.mark("air_check")
 +		MGP.result = "air_skip"
@@ -716,7 +722,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen
  	if type(result) ~= "string" then fail("writer result differs") end
  end
  
-@@ -112,5 +125,7 @@
+@@ -113,5 +130,7 @@
  	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
  	-- the external R8 cave checker can prove the component the real writer saw.
  	if native_baseline then return end
