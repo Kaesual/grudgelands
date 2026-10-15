@@ -14,7 +14,10 @@
 --   E. the money ceiling refuses before anything is removed;
 --   F. a single good still sells one unit, at its quality factor;
 --   G. the real resolution: a block with a free 1 -> 9 unpack pays nine
---      times its item, a one-way block is halved (Round 48 Q2 ruling).
+--      times its item, a one-way block is halved (Round 48 Q2 ruling);
+--   H. (Round 49 ruling 2) every row's image carries the tooltip of its
+--      stack's own description: a quality stack shows its quality line, a
+--      lot row its first stack's.
 --
 -- Usage (repo root): luajit tools/r48_sell/portable_test.lua [REPO]
 
@@ -39,9 +42,11 @@ end
 local STACK_MAX = {["default:cobble"] = 99, ["default:sand"] = 99, ["t:gem"] = 99}
 
 local function new_meta()
-	local ints = {}
+	local ints, strings = {}, {}
 	return {get_int = function(_, key) return ints[key] or 0 end,
-		set_int = function(_, key, value) ints[key] = value end}
+		set_int = function(_, key, value) ints[key] = value end,
+		get_string = function(_, key) return strings[key] or "" end,
+		set_string = function(_, key, value) strings[key] = value end}
 end
 
 local Stack = {}
@@ -50,6 +55,7 @@ function ItemStack(value) -- luacheck: ignore (global stub)
 	if getmetatable(value) == Stack then
 		local copy = setmetatable({name = value.name, count = value.count, meta = new_meta()}, Stack)
 		copy.meta:set_int("grug_quality", value.meta:get_int("grug_quality"))
+		copy.meta:set_string("description", value.meta:get_string("description"))
 		return copy
 	end
 	local name, count = tostring(value or ""):match("^(%S*)%s*(%d*)$")
@@ -63,6 +69,12 @@ function Stack:get_count() return self.count end
 function Stack:set_count(n) self.count = n end
 function Stack:get_meta() return self.meta end
 function Stack:get_stack_max() return STACK_MAX[self.name] or 99 end
+-- As the engine: the meta description first, else the item's own.
+local DESCRIPTIONS = {["default:cobble"] = "Cobblestone", ["default:sand"] = "Sand", ["t:gem"] = "Gem"}
+function Stack:get_description()
+	local own = self.meta:get_string("description")
+	return own ~= "" and own or DESCRIPTIONS[self.name] or self.name
+end
 function Stack:take_item(n)
 	n = math.min(n or 1, self.count)
 	local taken = ItemStack(self)
@@ -268,6 +280,27 @@ check(has("12c each"), "F a blue gem sells at x3")
 click("sell1_1")
 eq(money, 12, "F one sold for 12c")
 eq(count_of(inv, "t:gem"), 1, "F one left")
+
+------------------------------------------------------------------------------
+-- H. Each row's image carries its stack's own tooltip.
+------------------------------------------------------------------------------
+do
+	local fine = ItemStack("t:gem 1")
+	fine:get_meta():set_int("grug_quality", 3)
+	fine:get_meta():set_string("description", "Gem\nQuality: Fine")
+	setup({{"main", 9, "default:cobble 50"}})
+	inv:set_stack("main", 10, fine)
+	inv:set_stack("bag1", 1, ItemStack("t:gem 2"))
+	handler(player, "grug_traders:trade", {mode_sell = "Sell"})
+	check(has("item_image[0.7,2.50;0.7,0.7;default:cobble]tooltip[0.7,2.50;0.7,0.7;Cobblestone]"),
+		"H the lot row's image carries its tooltip")
+	check(has("item_image[0.7,3.30;0.7,0.7;t:gem]tooltip[0.7,3.30;0.7,0.7;" ..
+		core.formspec_escape("Gem\nQuality: Fine") .. "]"),
+		"H a quality stack's tooltip shows its own description")
+	check(has("tooltip[0.7,4.10;0.7,0.7;Gem]"), "H a plain stack shows the item's description")
+	local _, tips = shown:gsub("tooltip%[", "")
+	eq(tips, 3, "H one tooltip per row")
+end
 
 ------------------------------------------------------------------------------
 -- G. The real resolution (prices.lua under registry stubs): a block that nine

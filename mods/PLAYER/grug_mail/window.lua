@@ -10,9 +10,10 @@
 -- the form does not keep it (guiFormSpecMenu regenerateGui keeps tables and
 -- the focus, not edit boxes). So the drafts are kept from every event and
 -- written back as the fields' defaults, and the window is resent only on an
--- event, never on an inventory move: the Write tab's postage is a quote of
--- the attachment slots as last drawn, and Send refuses (nothing taken) when
--- the slots differ from it, then shows the new postage.
+-- event, never on an inventory move. So the Write tab shows the postage
+-- rule, never a figure for the slots as drawn, and Send charges the slots as
+-- they are at the click (Round 49 ruling 1); its result line names the
+-- amount paid.
 
 local M, S = grug_mail.model, grug_mail.store
 local UI = grug_inventory.UI
@@ -362,8 +363,8 @@ end
 
 -- The two Send buttons carry the serial of the draw they belong to
 -- ("write_send_<n>", "admin_send_<n>"): a click from a form the server has
--- already replaced (a quick second click after a sent letter, or after a
--- refused Send that showed new postage) acts on nothing (see the events).
+-- already replaced (a quick second click after a sent letter) acts on
+-- nothing (see the events).
 local function send_button(session, prefix)
 	return prefix .. "_" .. session.draw
 end
@@ -391,12 +392,6 @@ end
 
 local function write_tab(player, session, fs)
 	local draft = session.draft
-	-- The quote: the attachment slots as drawn now (see the file comment).
-	local quote = {}
-	for index, stack in ipairs(grug_mail.attachments(player)) do quote[index] = stack:to_string() end
-	session.quote = quote
-	local count = grug_mail.filled(quote)
-	local postage = M.postage(count)
 	fs[#fs + 1] = ("label[0.4,1.375;To]field[1.3,1.05;4.2,0.65;mail_to;;%s]" ..
 		"field_close_on_enter[mail_to;false]"):format(esc(draft.to))
 	fs[#fs + 1] = ("label[5.8,1.375;Subject]field[7.0,1.05;6.1,0.65;mail_subject;;%s]" ..
@@ -405,23 +400,19 @@ local function write_tab(player, session, fs)
 		:format(esc(draft.body))
 	fs[#fs + 1] = "label[0.4,5.6;Attachments]"
 	fs[#fs + 1] = ("list[current_player;%s;0.4,5.85;4,1;]"):format(ATTACH)
-	local breakdown = "Postage: letter " .. grug_money.format(M.POSTAGE_LETTER)
-	if count > 0 then
-		breakdown = breakdown .. " + " .. count .. " x " ..
-			grug_money.format(M.POSTAGE_STACK)
-	end
+	-- The rule, not a figure (see the file comment).
 	fs[#fs + 1] = ("label[5.6,6.1;%s]label[5.6,6.55;%s]"):format(
-		esc(breakdown .. " = " .. grug_money.format(postage)),
-		esc(colored(COLOR.dim, "30c for every attachment slot used")))
+		esc("Postage: " .. grug_money.format(M.POSTAGE_LETTER) .. " per letter + " ..
+			grug_money.format(M.POSTAGE_STACK) .. " per filled slot"),
+		esc(colored(COLOR.dim, "Paid when you send.")))
 	fs[#fs + 1] = ("label[0.4,7.2;%s]label[0.4,7.6;%s]"):format(esc(colored(COLOR.dim,
 		"Drag up to four stacks in or out. Soulbound items and skills do not fit.")),
 		esc(colored(COLOR.dim, "The letter arrives at once, also when the recipient is " ..
 		"offline. Only players of your faction.")))
 	fs[#fs + 1] = status_line(session, 8.4)
 	fs[#fs + 1] = ("button[8.6,8.0;2.2,0.8;write_discard;Discard]" ..
-		"style[%s;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;%s;%s]"):format(
-		send_button(session, "write_send"), send_button(session, "write_send"),
-		esc("Send (" .. grug_money.format(postage) .. ")"))
+		"style[%s;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;%s;Send]"):format(
+		send_button(session, "write_send"), send_button(session, "write_send"))
 	fs[#fs + 1] = grug_inventory.inventory_view(player, "short", session.inv)
 	fs[#fs + 1] = rings(player)
 end
@@ -686,7 +677,7 @@ local function write_event(player, session, fields)
 	elseif fields[send_button(session, "write_send")] then
 		local draft = session.draft
 		local ok, message = grug_mail.send_letter(player, draft.to, draft.subject,
-			draft.body, session.quote)
+			draft.body)
 		say(session, ok, message)
 		if ok then
 			session.draft = {to = "", subject = "", body = ""}

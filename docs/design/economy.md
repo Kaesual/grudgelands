@@ -207,6 +207,9 @@ items without one:
   wear is ignored, so merging their stacks changes no price.
 - Below its lot size the row is greyed with `Need 50 to sell` and has no
   button, so the player learns that the item sells in lots.
+- Hovering a row's item image shows the item tooltip with the stack's own
+  description (quality, enchants; a lot row shows its first stack's), as
+  the mail attachments do (Round 49).
 - **All** sells as many whole lots as the player carries and leaves the
   rest: `Sold 100 Cobblestone for 2c. 43 left.` The units are taken with the
   engine's `remove_item`, list by list, only after every check has passed.
