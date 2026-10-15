@@ -38,8 +38,10 @@
 --     blocked. A waypoint that fails is repaired (Round 49 NAV2, the user
 --     2026-10-15, replacing ruling 19's "no extra mechanism"): one of the 8
 --     cells round it, on its level or one up or down, where the body fits
---     on ground, one step from the previous waypoint and the next. A path
---     with a waypoint that has no such cell is rejected: a failed search.
+--     on ground, one step from the previous waypoint and near the next (one
+--     step, or two nodes a straight walk covers); a waypoint whose two
+--     neighbours are one step apart is left out instead. A path with a
+--     waypoint that has none of these is rejected: a failed search.
 --   * Padding (Round 49 NAV2, ruling 18's value): the 1st search of a
 --     stuck episode pads its box by 6, the 2nd by 12, every later one by 16
 --     (PADDING_STEPS); progress starts the next episode at 6 again.
@@ -358,18 +360,35 @@ local function step_cost(body, a, b)
 	return nil
 end
 
--- The cell that replaces waypoint `p` (between `prev`, already kept, and
--- `nxt`, nil at the path's end) and its fit offset, or nil. Straight steps
--- are preferred to diagonal ones, then the order of AROUND and LEVELS.
+-- From cell c on to the next waypoint: a step (0, 1), or 2 for a waypoint
+-- two nodes away (and at most two up or down) that a straight walk reaches.
+local C_FEET = {x = 0, y = 0, z = 0}
+local function cost_on(body, c, nxt)
+	local cost = step_cost(body, c, nxt)
+	if cost then return cost end
+	if abs(c.x - nxt.x) > 2 or abs(c.z - nxt.z) > 2 or abs(c.y - nxt.y) > 2 then
+		return nil
+	end
+	C_FEET.x, C_FEET.y, C_FEET.z = c.x, c.y - 0.5, c.z
+	return nav.line_walkable(body, C_FEET, nxt) and 2 or nil
+end
+
+-- What becomes of waypoint `p` (between `prev`, already kept, and `nxt`,
+-- nil at the path's end): the cell that replaces it and its fit offset;
+-- false when it is left out (the previous waypoint is one step from the
+-- next: the previous one itself replaces it); nil when nothing fits. The
+-- cheapest way wins (a straight step 0, a diagonal 1, a two-node walk 2).
 local function repair(body, prev, p, nxt, psx, psz)
-	local best, bx, bz, best_cost
+	local best, bx, bz
+	local best_cost = nxt and step_cost(body, prev, nxt)
+	local skip = best_cost ~= nil
 	local c = {}
 	for k = 1, #AROUND do
 		for l = 1, #LEVELS do
 			c.x, c.y, c.z = p.x + AROUND[k][1], p.y + LEVELS[l], p.z + AROUND[k][2]
 			local cost = step_cost(body, prev, c)
-			if cost and nxt then
-				local after = step_cost(body, c, nxt)
+			if cost and nxt and (not best_cost or cost < best_cost) then
+				local after = cost_on(body, c, nxt)
 				cost = after and cost + after
 			end
 			if cost and (not best_cost or cost < best_cost) then
@@ -378,11 +397,12 @@ local function repair(body, prev, p, nxt, psx, psz)
 				if ground then ox, oz = fit(body, c.x, c.y, c.z, psx, psz) end
 				if ox then
 					best, bx, bz, best_cost = {x = c.x, y = c.y, z = c.z}, ox, oz, cost
-					if cost == 0 then return best, bx, bz end
+					skip = false
 				end
 			end
 		end
 	end
+	if skip then return false end
 	return best, bx, bz
 end
 
@@ -399,12 +419,14 @@ function nav.check_path(body, path)
 		local ox, oz = fit(body, p.x, p.y, p.z, psx, psz)
 		if not ox then
 			p, ox, oz = repair(body, prev, p, path[i + 1], psx, psz)
-			if not p then return nil end
+			if p == nil then return nil end
 			repaired = repaired + 1
 		end
-		if ox ~= 0 then psx, psz = ox * 2, oz * 2 end
-		out[i] = {x = p.x + ox, y = p.y, z = p.z + oz}
-		prev = p
+		if p then
+			if ox ~= 0 then psx, psz = ox * 2, oz * 2 end
+			out[#out + 1] = {x = p.x + ox, y = p.y, z = p.z + oz}
+			prev = p
+		end
 	end
 	return out, repaired
 end

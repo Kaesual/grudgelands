@@ -21,8 +21,9 @@
 --      the count, a mob pressed into a fence (NV0 F7), the veto of
 --      aggro.lua (8 nodes or 15 s, cut out);
 --   P  the physics box of a mob taller than two nodes (ruling 20);
---   R  Round 49 NAV2: the path repair (head room, width, a step, the "no
---      cell fits" rejection, one search, no failure);
+--   R  Round 49 NAV2: the path repair (head room, width, a step, a left-out
+--      waypoint, the "no cell fits" rejection, none through a wall, one
+--      search, no failure);
 --   E  Round 49 NAV2: the padding escalation 6, 12, 16, reset per episode,
 --      in combat and on fixed walks;
 --   S  Round 49 NAV2: ranged ground mobs (api.lua's branch conditions and
@@ -850,8 +851,9 @@ end
 -- R. Round 49 NAV2: the path repair (the user, 2026-10-15; replaces ruling
 -- 19's "no extra mechanism"). A waypoint without head room or width becomes
 -- one of the 8 cells round it (its level, one up or down) where the body fits
--- on ground, one step from the previous waypoint and the next; no cell, no
--- path.
+-- on ground, one step from the previous waypoint and near the next (a step,
+-- or two nodes a straight walk covers), or is left out when its neighbours
+-- are one step apart; no cell, no path.
 -- ---------------------------------------------------------------------------
 do
 	local zb = nav.body(mob(), nil)
@@ -923,6 +925,23 @@ do
 		"R6 a 2-wide body repaired onto a step, in its 2x2 block")
 	-- R7 a repaired path is no failure: the count stays 0.
 	check(nst(m).fails == 0, "R7 a repaired path counts no failure")
+	-- R8 the previous waypoint is one step (a diagonal past a free corner)
+	-- from the next and no cell round the waypoint stands: it is left out.
+	clear_world()
+	set(1, 2, 0, "stone")
+	set(0, 0, 1, "air") -- the free corner has no ground
+	set(0, -1, 1, "air")
+	out, n = nav.check_path(zb, {pos(0, 1, 0), pos(1, 1, 0), pos(1, 1, 1), pos(1, 1, 2)})
+	check(out and n == 1 and #out == 3 and at(out[2], 1, 1, 1),
+		"R8 a waypoint between two neighbouring ones is left out")
+	-- R9 the wall of W1 with its 1-high hole: a cell beside the hole two
+	-- nodes from the next waypoint is no repair (no straight walk through
+	-- the wall), so that path stays rejected (W1).
+	clear_world()
+	fill(5, 1, -3, 5, 4, 3, "stone")
+	set(5, 1, 0, "air")
+	check(nav.check_path(zb, {pos(3, 1, 0), pos(4, 1, 0), pos(5, 1, 0), pos(6, 1, 0),
+		pos(7, 1, 0)}) == nil, "R9 no repair through a wall")
 end
 
 -- ---------------------------------------------------------------------------
