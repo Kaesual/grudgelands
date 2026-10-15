@@ -12,6 +12,13 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.49.0 — faster world generation and gameplay polish (in progress)
+
+Round 49 is under way ([plan](docs/planning/round49-plan.md)); lane D writes
+this entry when the round closes. **Map reset**: ores, gems and cave plants
+come from the native map generator, and the protection depth under towns
+shrinks.
+
 ## 0.48.1 — fix after the first 0.48.0 playtest (2026-10-14)
 
 Existing worlds play on: no migration step, no map reset, no new world.

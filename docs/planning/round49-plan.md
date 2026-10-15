@@ -1,7 +1,8 @@
 # Round 49 — Mapgen performance (native first) and gameplay polish
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-15 from two partial plans the
-user accepted the same day. Status: **planned; starts on the user's "go"**.
+user accepted the same day. Status: **in progress** (the user's "go"
+2026-10-15; wave 1 started).
 
 The round folds two partial plans into one round. They stay the detailed
 specification of their lanes; this plan sets the lanes, the waves, the
@@ -196,5 +197,6 @@ Per lane the gates of the [round workflow](../process/round-workflow.md#3-gates)
   the column cache size (CACHE's probe; up to about +50–60 MB accepted); a
   v7 flag (the user, after V7); NAV2's scope (the user, when the diagnosis
   changes a Round 42 ruling).
-- **Version:** the coordinator bumps `game.conf` to 0.49.0 and declares the
-  map reset in `tools/web_data/upgrade.json` at the start of wave 1.
+- **Version:** done by the coordinator before the worktrees, so every lane
+  starts from it: `game.conf` 0.49.0, 0.49.0 in `map_reset` of
+  `tools/web_data/upgrade.json`, the CHANGELOG placeholder.
