@@ -1601,15 +1601,6 @@ local function zones_factory(dependencies)
 				end
 				return protected_floor_at(x, z)
 			end
-			-- The floor of the hard-protected volume holding a column (a start
-			-- town or a capital's city, exact footprint), or nil. The P8 resource
-			-- pass keeps ore, coal and gems out of the column from here up and
-			-- nowhere else (user ruling 2026-10-07): ground anyone may dig gets
-			-- the ordinary distribution, an anchor's blend envelope included.
-			function planner_source.ore_floor_at(x, z)
-				return hard_floor_at(x, z)
-			end
-
 			function planner_source.metrics()
 				local height_metrics = height.metrics()
 				if type(height_metrics) ~= "table" or
