@@ -6,11 +6,11 @@
 -- the thing the player is LOOKING at, colored relative to the viewer.
 --
 -- MOBS — con color against the viewer's own level L, a gradient by
--- d = mob level - L (Round 46 ruling 5):
+-- d = mob level - L (Round 46 ruling 5, Round 49 ruling 5):
 --   no XP        gray with "(no XP)": every mob whose kill pays this viewer
---                nothing (grug_mobs.player_kill_xp is 0: d <= -7, the
+--                nothing (grug_mobs.player_kill_xp is 0: d <= -10, the
 --                viewer's own faction, a critter, a `_grug_xp_reward` of 0)
---   d = -6 .. 0  green to yellow, evenly per level (less XP further below)
+--   d = -9 .. 0  green to yellow, evenly per level (less XP further below)
 --   d = 0 .. +5  yellow to red, evenly per level (more XP, up to +50 %)
 --   d >= +5      red
 --
@@ -48,11 +48,13 @@ local COLOR_RED = 0xff5555
 local frames = {}
 
 -- The mob gradient in integer RGB, one colour per level: green 0x55ff55 at
--- d = -6 to yellow 0xffff55 at d = 0 (red rises 85 -> 255), then to red
--- 0xff5555 at d = +5 (green falls 255 -> 85, 34 per level).
+-- the last level that still pays (d = 1 - grug_xp.GRAY_GAP, -9) to yellow
+-- 0xffff55 at d = 0 (red rises 85 -> 255), then to red 0xff5555 at d = +5
+-- (green falls 255 -> 85, 34 per level).
 local function con_gradient(d)
 	if d <= 0 then
-		local red = 85 + math.floor(170 * math.max(0, d + 6) / 6 + 0.5)
+		local span = grug_xp.GRAY_GAP - 1
+		local red = 85 + math.floor(170 * math.max(0, d + span) / span + 0.5)
 		return red * 0x10000 + 0xff55
 	end
 	return 0xff0055 + (255 - 34 * math.min(d, 5)) * 0x100

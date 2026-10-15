@@ -6,7 +6,7 @@
 -- A named rare is NOT its own mob registration: it is an ordinary mob of an
 -- existing family (Grimtusk = grug_mobs:boar) placed by this spawner,
 -- renamed, optionally re-textured, and promoted to tier "rare" by the level
--- engine (levels.lua: x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2, violet
+-- engine (levels.lua: x2.5 HP, x1.4 dmg, x2 XP, armor 90, scale x2, violet
 -- tint, star prefix). Its LEVEL still comes from the field at its spawn
 -- position, so the route points in the registrations below decide the level
 -- — see the level check comments there.
@@ -464,7 +464,7 @@ grug_mobs.register_rare("marrowclaw", {
 -- NB the base family is the game's only DEF-LEVEL ELITE (golem.lua,
 -- _grug_tier = "elite"). set_tier(ent, "rare") in try_spawn REPLACES that
 -- tier, it does not stack on it: the rare multipliers are applied to the base
--- formula (x5 HP / x2.2 dmg / x6 XP, armor 70, scale x2), and
+-- formula (x2.5 HP / x1.4 dmg / x2 XP, armor 90, scale x2), and
 -- apply_tier_visuals scales relative to the tier already APPLIED — which at
 -- that moment is still "normal", because set_tier runs before the mob's first
 -- tick and ensure_init then does level, stats, scale and tint in one go
