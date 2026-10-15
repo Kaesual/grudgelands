@@ -15,7 +15,11 @@
 -- boot) is reported as NOT_FRESH and fails the run.
 --
 -- config.lua (written next to this file by tools/mgprof/run.sh) returns
--- {totals_only = bool}. COLUMNS below are pinned (seed 12345); with
+-- {totals_only = bool, extra = optional list}. `extra` (Round 49 lane V7,
+-- tools/r49_v7) appends more chunk columns after the corpus: each entry
+-- {id = "M", x = x0, z = z0, heights = {minp y, ...}} adds the chunks
+-- "<id>_y<minp y>" in the listed order; such a column is only described,
+-- not required to be ordinary. COLUMNS below are pinned (seed 12345); with
 -- COLUMNS = nil the probe picks two columns itself (pick_columns) and logs
 -- them -- that is how the pinned pair was found.
 
@@ -429,10 +433,6 @@ local function start()
 	end
 	-- The warm-up chunk: three chunk columns east of A, at the B height.
 	local warm = {a[1] + 240, a[2]}
-	-- Columns whose blocks tools/mgprof/reset_columns.py deletes before a
-	-- re-used world's next boot (every chunk here must generate fresh).
-	core.safe_file_write(core.get_worldpath() .. "/mgprof_columns.txt",
-		("%d %d\n%d %d\n%d %d\n"):format(a[1], a[2], b[1], b[2], warm[1], warm[2]))
 	local list = {{id = "warmup", x = warm[1], y = HEIGHTS.B, z = warm[2]}}
 	for _, id in ipairs(ORDER_A) do
 		list[#list + 1] = {id = "A_" .. id, x = a[1], y = HEIGHTS[id], z = a[2]}
@@ -440,6 +440,19 @@ local function start()
 	for _, id in ipairs(ORDER_B) do
 		list[#list + 1] = {id = "B_" .. id, x = b[1], y = HEIGHTS[id], z = b[2]}
 	end
+	-- Columns whose blocks tools/mgprof/reset_columns.py deletes before a
+	-- re-used world's next boot (every chunk here must generate fresh).
+	local columns_text = ("%d %d\n%d %d\n%d %d\n"):format(a[1], a[2], b[1], b[2],
+		warm[1], warm[2])
+	for _, column in ipairs(config.extra or {}) do
+		describe(column.id, column.x, column.z, column_report(column.x, column.z))
+		columns_text = columns_text .. ("%d %d\n"):format(column.x, column.z)
+		for _, y in ipairs(column.heights) do
+			list[#list + 1] = {id = ("%s_y%d"):format(column.id, y), x = column.x, y = y,
+				z = column.z}
+		end
+	end
+	core.safe_file_write(core.get_worldpath() .. "/mgprof_columns.txt", columns_text)
 	log(("mode=%s chunks=%d gap=%.1fs"):format(config.totals_only and "totals" or
 		"stages", #list, GAP))
 	run_chunks(list)

@@ -601,3 +601,299 @@ LC_ALL=C MGPROF_QUEUE=~/projects/grudgelands-orchestration/r45/engine_run.sh CLE
     tools/mgprof/run.sh totals tools/mgprof/evidence/meas2-first-start
 python3 -I tools/mgprof/summarize.py --first-start tools/mgprof/evidence/meas2-first-start
 ```
+
+## Addendum: v7 flags, Round 49 (lane V7)
+
+The v7 flags `nomountains` and `noridges`, each on its own, against main
+`e43c886b` (ORE, PROT, SKIP and JIT merged). Measurement only: the flags were
+set in the staged throwaway game copy, nothing under `mods/` changed. The
+Round 9 plateau (terrain constant plus both flags) is not repeated.
+
+### Method
+
+- **Variants** (`mgv7_spflags`; `caverns, nofloatlands` in all three):
+  baseline `mountains, ridges` (today), `nomountains`, `noridges`.
+  `tools/r49_v7/run.sh` stages `tools/mgprof/stages.patch`, the R5 voxel
+  tally (`tally.patch`) and, for a variant, `flags-<variant>.patch`: the
+  staged `minetest.conf` and the live flag check of `r7_runtime.lua`, which
+  refuses any other flag set at load and was patched in the staged copy only.
+- **Boots:** one fresh world per boot (the flags are world-bound), seed
+  12345, the starts preload, then the 19 chunks one at a time through the
+  measuring queue (`chrt --idle`): baseline twice, `nomountains` twice,
+  `noridges` once; 122–128 s wall and 68–73 s server CPU each. One more boot
+  without generation ran the column picker.
+- **Columns:** the corpus (A, B) and three columns picked by
+  `grug_probe_v7pick` from v7's own noise (engine `ValueNoise`, the mapgen's
+  seed and formulas): it ranked all 2,901 land chunk columns of the world
+  rectangle on a 3 × 3 sample, refined the best on 8 × 8, and took the best
+  ordinary one (the mgprof rule) per metric (`evidence/pick/probe.txt`):
+  - **M** = x −1872, z 2288 (`kragmar_stillgrave_hollow`): the most v7
+    mountain stone above our surface; our terrain 21..35, v7 base 13..21,
+    mountain stone up to about y 153. Chunks y −32, 48, 128.
+  - **H** = x 1088, z −1792 (`elandor_lorindor`): mountain stone above our
+    surface **and** between v7's base and our higher terrain; our terrain
+    50..124, v7 base −6..38, mountain stone up to about y 220. Chunks y −32,
+    48, 128, 208.
+  - **R** = x 528, z −1552 (`elandor_lorindor`): the most v7 river channel
+    (ridges) under our land; our terrain 52..111, v7 base 26..75. Chunks
+    y −32, 48.
+  The corpus columns have no v7 mountain stone (base 10..28 under our
+  34..84); B has a little ridge channel.
+- **Tally** (`tally.patch`, a pre-pass over v7's input with its own stage
+  mark, left out of every total below): per chunk the planned voxels of the
+  R5 clear runs (`cut_natural`) holding v7 rock (**cleared**), and of the
+  fill runs (`fill_void`) holding air, liquid or vegetation, split into the
+  native cave content the run keeps under v7's heightmap
+  (`preserved_native_cave`, **kept cave**) and the rest (**filled**).
+- **Normalized wall:** the cold planner (R6 candidates) and the
+  slow-process spread vary by 100–270 ms between boots for identical work.
+  The stages that read only our plan (planner, VM read, P9/P9G, other
+  successors) are therefore replaced by their mean over all five boots;
+  the flag-dependent Lua (R5 adapter, strata/skin/fill layers, P8 fill ores,
+  diff + write-back + relight + liquids, air check) and `makeChunk` are
+  each boot's own.
+
+Reproduce with
+`summarize.py [--compact] baseline=tools/r49_v7/evidence/baseline baseline2=… nomountains=… nomountains2=… noridges=…`
+(`tools/r49_v7/summarize.py`).
+
+### Results per chunk
+
+Means over the boots of a variant, ms: `makeChunk` / flag-dependent Lua /
+normalized request-to-done wall. Results other than `applied_*` are named.
+
+| chunk | baseline | nomountains | noridges |
+|---|---|---|---|
+| A_S1 (−32) | 30 / 144 / 478 | 23 / 176¹ / 504 | 24 / 141 / 469 |
+| A_S2 (48) | 24 / 57 / 181 | 17 / 65 / 181 | 19 / 60 / 178 |
+| A_B (−112) | 22 / 28 / 87 | 16 / 27 / 79 | 22 / 27 / 88 |
+| U1 (−192), 2 chunks | 21–22 / deep skip / 25–26 | 14 / deep skip / 17–18 | 21–22 / deep skip / 25 |
+| U3, U6 (−512, −1072), 3 chunks | 30 / deep skip / 33–35 | 22–23 / deep skip / 25–28 | 30 / deep skip / 33–35 |
+| B_B (−112, cold) | 21 / 21 / 384 | 14 / 19 / 375 | 21 / 18 / 381 |
+| M_y−32 | 27 / 142 / 481 | 22 / 114 / 447 | 21 / 120 / 453 |
+| M_y48 | 32 / 74 / 145 | 18 / 29 / 84 (noop) | 28 / 70 / 136 |
+| M_y128 | 34 / 56 / 113 | 18 / 13 / 50 (**air skip**) | 28 / 58 / 111 |
+| H_y−32 | 28 / 79 / 278 | 22 / 130 / 323 | 22 / 77 / 271 |
+| H_y48 | 30 / 117 / 243 | 16 / 122 / 236 | 23 / 139² / 259 |
+| H_y128 | 33 / 61 / 142 | 18 / 30 / 95 (noop) | 27 / 70² / 145 |
+| H_y208 | 34 / 55 / 121 | 17 / 12 / 58 (**air skip**) | 27 / 64² / 125 |
+| R_y−32 | 34 / 103 / 335 | 26 / 103 / 328 | 20 / 56 / 273 |
+| R_y48 | 34 / 131 / 255 | 26 / 116 / 232 | 26 / 214² / 330 |
+
+¹ Identical work in all variants (no v7 mountain in A); one `nomountains`
+boot's R8 strata took 97 ms against 43–50 elsewhere: the noise level of the
+flag-dependent sum is about ±30 ms. ² The single `noridges` boot ran R8
+strata, P9G and the other successors 1.5–3× slower than every other boot from
+H_y48 on, also where its work was identical to the baseline's (the whole H
+column); its Lua numbers from there on are not attributable to the flag.
+
+R5 voxel tally (k voxels, identical in repeated boots; fill-run share of kept
+cave in brackets):
+
+| chunk | variant | cleared | filled (air + liquid) | kept cave | modified | P8 fill hosts / ores |
+|---|---|---|---|---|---|---|
+| A_S1 | all three | 0 | 146 | 12 (2.6 %) | 169 | 96 / 4.4 |
+| M_y−32 | baseline, noridges | 117 | 0 | 17 (4.6 %) | 187 | 0 / 0 |
+| M_y−32 | nomountains | 0 | 52 | 13 (3.5 %) | 102 | 31 / 1.7 |
+| M_y48 | baseline, noridges | 229 | 0 | – | 229 | 0 |
+| M_y48 | nomountains | 0 | 0 | – | 0 | 0 |
+| H_y−32 | baseline, noridges | 0 | 73 | 54 (10.5 %) | 74 | 63 / 2.7 |
+| H_y−32 | nomountains | 0 | 198 | 7 (1.4 %) | 198 | 173 / 8.0 |
+| H_y48 | baseline, noridges | 103 | 20 | 49 (15 %) | 173 | 14 / 0.7 |
+| H_y48 | nomountains | 0 | 325 | 0 | 334 | 265 / 12 |
+| H_y128 | baseline, noridges | 148 | 0 | – | 148 | 0 |
+| H_y128 | nomountains | 0 | 0 | – | 0 | 0 |
+| R_y−32 | baseline, nomountains | 0 | 240 + 33 | 32 + 11 liquid (8.4 %) | 273 | 246 / 11 |
+| R_y−32 | noridges | 0 | 4 | 14 (2.7 %) | 9 | 4 / 0.2 |
+| R_y48 | baseline, nomountains | 0 | 209 | 11 (4.6 %) | 230 | 158 / 7.2 |
+| R_y48 | noridges | 1.5 | 163 | 1.2 (0.5 %) | 193 | 119 / 5.5 |
+
+The ore census of these chunks keeps 4.4–5.2 % ore in the T1 host rock in
+every variant (fill ores and native ores use the same rates); a variant with
+less cave has more host rock and so more ore nodes.
+
+Per chunk column, sums of the means, and chunks per second of one emerge
+thread (chunks / summed normalized wall):
+
+| column | chunks | baseline makeChunk / flag Lua / chunks/s | nomountains | noridges |
+|---|---|---|---|---|
+| A (S1, S2, B) | 3 | 76 / 228 / 4.0 | 56 / 268¹ / 3.9 | 65 / 228 / 4.1 |
+| deep (U1, U3, U6) | 5 | 134 / 0 / **32.9** | 97 / 0 / **43.8** | 133 / 0 / 33.2 |
+| M | 3 | 94 / 272 / 4.1 | 57 / 157 / **5.2** | 77 / 248 / 4.3 |
+| H | 4 | 124 / 312 / 5.1 | 73 / 293 / **5.6** | 99 / 350² / 5.0 |
+| R | 2 | 68 / 233 / 3.4 | 52 / 219 / 3.6 | 46 / 270² / 3.3 |
+
+Whole boots: 84 preparation chunks (all surface chunks with writer work, no
+air or deep skip in any variant) ready 22.9–24.1 s after the first server
+step in every variant; no difference shows at that size. Over the 19
+measured chunks: deep skips 5 in every variant, air skips 0 (baseline,
+`noridges`) and 2 (`nomountains`: M_y128, H_y208), plus 2 chunks
+(M_y48, H_y128) that run the writer for a no-op because our content reach
+comes within 16 nodes. An air skip still costs 11–14 ms (the reach ring of
+the air test).
+
+### Findings
+
+1. **`makeChunk` pays v7's 3-D mountain noise at every depth.** v7 computes
+   `noise_mountain` (5 octaves, 80 × 82 × 80) for every chunk when
+   `mountains` is set (`mapgen_v7.cpp` `generateTerrain`), also 1000 nodes
+   down where it cannot matter. `nomountains` takes 5–8 ms off every chunk
+   (deep chunks 21–30 → 14–23 ms) and 14–17 ms off chunks above the surface.
+   Deep chunks run no Lua since lane SKIP, so this is now their main cost:
+   one emerge thread generates **about 44 instead of 33 deep chunks per
+   second (+33 %)**. `noridges` takes 4–8 ms off chunks from y −32 up only,
+   14 ms in the ridge column's S1 (`noise_ridge` is computed where
+   `node_max.y >= water_level − 16`).
+2. **Clearing v7 rock above our surface goes away with `nomountains`.** Where
+   mountain stone rises over low authored land (M), the chunks above the
+   surface become no-ops or air skips (M_y48 145 → 84 ms, M_y128 113 → 50
+   ms); the column's flag-dependent Lua drops 272 → 157 ms and its rate rises
+   4.1 → 5.2 chunks/s.
+3. **The trade-off: more fill where our surface is higher than v7's base.**
+   Under H the mountain stone was the rock under our terrain; without it the
+   writer fills: H_y−32 filled voxels 73k → 198k, fill-ore hosts 63k → 173k,
+   flag-dependent Lua 79 → 130 ms (R5 adapter +30, P8 fill ores +9,
+   write-back +9). H_y48 trades 103k cleared for 305k more filled at about
+   the same cost (117 → 122 ms). A filled voxel costs about 0.4 µs (adapter,
+   fill ores, write) against about 0.2 µs for a cleared one (mostly
+   write-back and relight); the adapter cost is not linear in the write
+   count. The fill ores stay in Lua (H: 3.4k → 20k ore nodes placed by the
+   fill pass instead of native rows). Over the H column the gain still
+   wins: chunks above become no-op or air (−31, −43 ms), so 312 → 293 ms
+   flag-dependent Lua and 124 → 73 ms `makeChunk`.
+4. **`noridges` matters only along v7's ridge lines.** In R, the channels
+   under our land were 273k voxels the writer filled in R_y−32; without
+   ridges 9k: flag-dependent Lua 103 → 56 ms (adapter −11..−16, P8 −18,
+   write −8, strata −7) and `makeChunk` 34 → 20 ms. Elsewhere it changes
+   only `makeChunk` above y −32.
+5. **Near-surface native caves.** The adapter keeps native cave air and
+   liquid below v7's heightmap inside our fill runs; fill itself has no
+   caves (Round 24 ruling 13). `nomountains` removes most of them where our
+   land lies above v7's base (H: 10.5–15 % of the fill-run voxels → 0–1.4
+   %); `noridges` removes the channel remnants under overhangs, including
+   pockets of v7 river water (R_y−32: 32k air + 11k water → 14k air).
+   Caves below v7's base terrain and all deep caves are unchanged.
+
+### What an adoption would change
+
+- **For players:** neither flag changes the visible relief or water: our
+  surface, rivers and lakes are authored and the writer clears everything v7
+  puts above them. `nomountains`: fewer caves in the top tens of nodes under
+  hills and highlands that lie above v7's base (in seed 12345's land v7's
+  base is about 10–75), the same ore rate there (from the fill pass).
+  `noridges`: fewer near-surface caves and no underground pockets of still
+  water along v7's ridge lines.
+- **Pins** (lane V7A): `minetest.conf:30` (`mgv7_spflags`);
+  `r7_runtime.lua:100-102` (the live check, engine form e.g.
+  `nomountains, ridges, nofloatlands, caverns`, both environments);
+  `mapgen_manifest.lua:45`, `planner.lua:493`, `map_adapter.lua:385` and
+  `r7_r6_manifest.lua:230` (the R5 manifest string, today
+  `caverns,mountains,ridges`; its digest is computed at load, no pinned
+  hex); `tools/seed_fleet/runtime.lua:101` (the fake engine's flag string;
+  the fleet's fake v7 is stone up to our ground, so its digests stay);
+  `tools/wp40/profile/run.sh:190` (stale). `NOISE_DIGEST`
+  (`r7_native.lua:21`) covers only the six noiseparams the game sets, not
+  the flags, so it does not change. The layout cache key reads the flags
+  itself (`r7_loader.lua:63`). The comment in `air_chunks.lua` that cites
+  v7's mountains stays true for any surviving mountain setting. A map reset,
+  which 0.49.0 is anyway.
+
+### Limits
+
+- One seed, three extra columns, a sample of 19 chunks; two boots for
+  baseline and `nomountains`, one for `noridges` (its later Lua stages ran
+  in a slow process, footnote 2). The two flags together were not measured.
+- How much of the world has mountain stone above our surface (the M case)
+  or above v7's base under our land (the H case) was not counted; the
+  picker ranks columns but logs only the best ones.
+
+## Addendum: per-column caches at runtime (Round 49, lane CACHE)
+
+Follow-up question 4 ("Planner caches" above) measured, and P9G's 2-D
+result kept per chunk column. Numbers are comparisons of single boots.
+
+**Probe** (`tools/r49_cache/run_probe.sh`, one boot per state, fresh world
+of seed 12345, the stage timer plus `tools/r49_cache/counters.patch` for the
+other caches): after the starts preload the probe requests chunks one at a
+time in the order the engine's block sender would for players over fresh
+land (`RemoteClient::GetNextBlocks`, engine defaults: cube shells d = 0..10
+blocks around the block one ahead of the player, the camera cone narrowed
+by the speed plus the movement cone, the server-side occlusion test over
+the loaded map; the players move on by each chunk's measured time). Phase 1:
+one player stands until its view is generated, walks 400 nodes east at 4
+nodes/s and rides 400 more at 8. Phase 2: two players 600 nodes apart stand,
+then walk 400 nodes east, their picks alternating. Not modelled: turning,
+looking around, the sender's per-step window and the emerge queue's batches.
+Occlusion matters: under a surface player the ground hides the blocks
+below, so the players generated the surface chunks (y −32..47 and 48..127)
+and the chunks above them, no fill-floor chunk (−112..−33): about two chunks
+with Lua work per chunk column.
+
+**Column cache** (the zones runtime column tuples, first in first out). A
+"later" chunk is any chunk with Lua work after the first one of its column;
+it re-pays the column when it misses at least half a column (3,200 tuples).
+The insertion distance is the misses since the column's tuples went in
+(first in first out evicts them after `limit` misses, however often they
+were hit).
+
+| | phase 1 before | phase 1 after | phase 2 before | phase 2 after |
+|---|---:|---:|---:|---:|
+| chunks generated (Lua work / air skip) | 100 / 34 | 100 / 34 | 120 / 25 | 120 / 26 |
+| later chunks | 48 | 48 | 59 | 59 |
+| later chunks re-paying the column | 1 | 0 | 13 | 0 |
+| later chunks' column misses, mean | 176 | 0 | 1,499 | 7 |
+| planner R5 + R6 columns on later chunks, sum ms | 673 | 521 | 1,661 | 942 |
+| later chunk callback, mean ms | 147 | 139 | 134 | 121 |
+| insertion distance of later chunks, max | 59,272 | 58,053 | 109,701 | 106,668 |
+
+"Before" is the limit 65,536 (`tools/r49_cache/evidence/probe-before`),
+"after" 196,608 (`probe-after`). One player stays under the old limit (one
+re-pay of 47); two players apart re-pay the cold column cost (about 63 ms
+each, 0.8 s over the phase, about 3 % of its Lua time), and the distances
+grow with the number of players interleaving. The mapgen planner's cache
+now holds 196,608 tuples (`zones.lua`, purpose "mapgen" from `r5.lua`), a
+margin of about 1.8 over two players, about three players walking apart;
+the main environment's sources keep 65,536.
+
+Memory (LuaJIT, the real cache filled with chunk columns to twice its
+limit, at the limits 65,536, 131,072 and 262,144): about 330 bytes per
+tuple at the margin (+20.3 MiB per 65,536 more), so 196,608 costs about
++41 MiB in the emerge environment (4x would be about +62 MiB). The emerge
+environment's Lua heap in these stage-timer boots is 1-2 GB between
+collections. One cold column costs about 6 µs per tuple (7,200 with the
+halo, about 42 ms).
+
+The other caches did not limit the order in either boot: the R6 decoration
+candidates (4,096 cells, about 164 columns) had no miss on a later chunk and
+no eviction; the start front cache and the surface cave candidates were not
+asked by these chunks.
+
+**P9G per chunk column** (`r7_p9g.lua`, 256 columns, production only): the
+scan, rank digests, budgets and sort read only the x/z owner and pure
+functions of the world, so the first surface chunk of a column keeps its
+ranked roots (source row and root; 6.4-7.5 per column, at most 24, so the
+256 columns stay well under a megabyte) and the next surface chunk settles
+them. In the probe the second surface chunk hit in 31 of 31 (phase 1) and
+16 of 16 (phase 2) cases; the stage took 26-33 ms on a miss and 0.0 ms on a
+hit. In the corpus (`tools/r49_cache/evidence/mgprof`, one stage boot on
+this lane's branch, against the SKIP boot `tools/r49_skip/evidence/mgprof`):
+
+| ms | A_S1 | A_S2 | B_B |
+|---|---:|---:|---:|
+| successor P9G, before | 63.2 | 61.1 | 0 |
+| successor P9G, after | 49.6 | 0.1 | 0 |
+| callback total, before | 449.2 | 160.6 | 218.2 |
+| callback total, after | 398.3 | 87.6 | 350.9 |
+
+A_S2 loses its P9G cost; the rest of its difference is the R5 adapter's
+replay pass that lane JIT removed (12.8 ms in the SKIP boot). B_B is the
+cold first chunk of column B (R6 candidates 230 ms against 98 ms) and the
+emerge environment's collector finished a cycle inside it in this boot
+(the heap fell by about 200 MB during the callback); its cold cost varies
+between boots (48-350 ms, "Planner caches" above).
+
+Byte identity: `tools/r49_cache/portable_test.lua` (hit against miss for
+both caches, on the moved-ground harness), `tools/r49_jit/fleet_digest.sh`
+(quick seeds and the moved-ground set against main) and
+`tools/r49_cache/fleet_stack.sh` (every sampled chunk with the chunks above
+and below it, so the later chunks hit, on this branch and on main).

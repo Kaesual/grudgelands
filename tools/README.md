@@ -1183,3 +1183,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   boots 5 and 6 (`summarize.py`), and `digest/` the chunk bytes of main
   `f8f2d134` and of the branch (the 100 quick seeds, and 40 with `perturb`),
   and the same for main `1b965ec4` and the branch merged with it.
+- **Round 49 lane V7** (`r49_v7`, measurement only, no fixture): the v7
+  flags `nomountains` and `noridges` one at a time against main.
+  `grug_probe_v7pick` (disposable, staged with `PROBE=`, no generation)
+  ranks every land chunk column of the seed by v7's own noise (mountain
+  stone above our surface, mountain stone under it, river channels under our
+  land) and checks the best ones for ordinariness; `columns.lua` pins its
+  picks as extra chunk columns of the mgprof probe (`config.extra`);
+  `run.sh baseline|nomountains|noridges OUT` is one fresh-world
+  `tools/mgprof/run.sh stages` boot with `tally.patch` (the R5 voxel tally:
+  cleared v7 rock, filled void, kept native cave content) and, for a variant,
+  `flags-<variant>.patch` (the staged `minetest.conf` and the live flag
+  check of `r7_runtime.lua`); `summarize.py [--compact] NAME=OUT ...` the
+  side-by-side tables; `evidence/` the picker log and the five boots
+  (`baseline`, `baseline2`, `nomountains`, `nomountains2`, `noridges`).

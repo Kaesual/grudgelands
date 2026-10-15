@@ -171,8 +171,10 @@ return function(dependencies)
 				fail("runtime zones constructor missing")
 			end
 		end
+		-- The mapgen planner's larger column cache (zones.lua
+		-- `column_cache_limit`, Round 49 lane CACHE).
 		local session, planner_source = zones_constructor(full_seed_string,
-			configured_water_level)
+			configured_water_level, runtime_mode and "mapgen" or nil)
 		local feature_lookup = build_feature_lookup(planner_allocator)
 		local plan_identity = planner_allocator:new_map("plan_identity", 0)
 		local planner = planner_module.new(planner_source, manifest,

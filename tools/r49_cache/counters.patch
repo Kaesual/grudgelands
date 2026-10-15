@@ -1,0 +1,64 @@
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+@@ -670,6 +670,7 @@
+ 				cell_cache_keys[cell_cache_count] = key
+ 			else
+ 				cell_cache[cell_cache_keys[cell_cache_next]] = nil
++				if mgp then mgp.count("cell_cache_eviction") end
+ 				cell_cache_keys[cell_cache_next] = key
+ 				cell_cache_next = cell_cache_next % CELL_CACHE_LIMIT + 1
+ 			end
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+@@ -511,6 +511,7 @@
+ 				cached = column_cache[cache_key]
+ 				if cached then
+ 					metrics.cache_hits = metrics.cache_hits + 1
++					if mgp then mgp.count("p9g_cache_hit") mgp.count("p9g_cache_roots", #cached / 4) end
+ 				else
+ 					metrics.cache_misses = metrics.cache_misses + 1
+ 					kept, kept_count = {}, 0
+@@ -699,8 +700,10 @@
+ 				if old_key then
+ 					column_cache[old_key] = nil
+ 					metrics.cache_evictions = metrics.cache_evictions + 1
++					if mgp then mgp.count("p9g_cache_eviction") end
+ 				end
+ 				column_cache[cache_key] = kept
++				if mgp then mgp.count("p9g_cache_miss") mgp.count("p9g_cache_roots", kept_count / 4) end
+ 				column_cache_keys[column_cache_next] = cache_key
+ 				column_cache_next = column_cache_next % COLUMN_CACHE_LIMIT + 1
+ 			end
+diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/zones.lua b/mods/MAPGEN/grug_mapgen/wp40/zones.lua
+--- a/mods/MAPGEN/grug_mapgen/wp40/zones.lua
++++ b/mods/MAPGEN/grug_mapgen/wp40/zones.lua
+@@ -148,6 +148,11 @@
+ 		end
+ 		cache_misses = cache_misses + 1
+ 		if slot.ready then cache_evictions = cache_evictions + 1 end
++		local mgp = rawget(_G, "grug_mgprof")
++		if mgp then
++			mgp.count("cave_cache_miss")
++			if slot.ready then mgp.count("cave_cache_eviction") end
++		end
+ 		slot.ready, slot.cell_x, slot.cell_z = true, cell_x, cell_z
+ 		slot.valid = build_candidate(cell_x, cell_z, slot.record)
+ 		return slot.valid and slot.record or nil
+@@ -761,12 +766,15 @@
+ 				(direction > 0 and 1 or 0)
+ 			local border = front_cache[key]
+ 			if not border then
++				local mgp = rawget(_G, "grug_mgprof")
++				if mgp then mgp.count("front_cache_miss") end
+ 				local back_z = cell_z * START_FRONT_CELL +
+ 					(direction > 0 and 0 or START_FRONT_CELL - 1)
+ 				border = front_border_z(cell_x * START_FRONT_CELL +
+ 					START_FRONT_CELL / 2, back_z, direction)
+ 				if front_cache_count >= START_FRONT_CACHE_LIMIT then
+ 					front_cache, front_cache_count = {}, 0
++					if mgp then mgp.count("front_cache_flush") end
+ 				end
+ 				front_cache[key] = border
+ 				front_cache_count = front_cache_count + 1

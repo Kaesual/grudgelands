@@ -1,0 +1,71 @@
+probe: preparation ready after 21 s of waiting, wall_s=41.4
+probe: phase 1 start players=1
+probe: player 1 view complete at clock=5.24, starts moving
+probe: player 1 reached its end at clock=155.58
+probe: phase 1 done chunks=134 clock=155.58
+probe: phase 2 start players=2
+probe: player 3 view complete at clock=9.25, starts moving
+probe: player 2 view complete at clock=9.83, starts moving
+probe: player 3 reached its end at clock=109.56
+probe: player 2 reached its end at clock=110.12
+probe: phase 2 done chunks=145 clock=110.12
+probe: chunks fresh=279 old=0 cpu_s=133.0 wall_s=126.8
+probe: RESULT PASS all phases
+
+preparation and other callbacks (not requested by the probe): 84
+
+## phase 1: 134 chunks generated
+results: air_skip 34, applied_clq 22, applied_cplq 70, noop_equal_content 8
+chunk columns with Lua work: 52; first chunks 52, later chunks 48
+  first chunks: 52 chunks; column cache misses mean 6215 (max 8822); planner R5 + R6 columns mean 52.4 ms, sum 2725 ms; R6 candidates sum 5431 ms; callback mean 315 ms
+  later chunks: 48 chunks; column cache misses mean 176 (max 6603); planner R5 + R6 columns mean 14.0 ms, sum 673 ms; R6 candidates sum 2 ms; callback mean 147 ms
+  later chunks re-paying (misses >= 3200): 1 chunks; column cache misses mean 6603 (max 6603); planner R5 + R6 columns mean 37.3 ms, sum 37 ms; R6 candidates sum 0 ms; callback mean 228 ms
+  re-paid column cost: about 28 ms over the warm median (9.3 ms per chunk)
+  chunks generated between a column's previous chunk and its re-paying one: median 16, min 16, max 16
+  insertion distance of later chunks (misses since the column's tuples went in): median 12010, max 59272
+    limit 65536: 0 of 47 later chunks beyond it
+    limit 131072: 0 of 47 later chunks beyond it
+    limit 196608: 0 of 47 later chunks beyond it
+    limit 262144: 0 of 47 later chunks beyond it
+  cc_evictions: 358606 (on later chunks 8470)
+  c.cell_cache_miss: 1300 (on later chunks 0)
+  c.cell_cache_eviction: 0 (on later chunks 0)
+  c.p9g_cache_hit: 31 (on later chunks 31)
+  c.p9g_cache_miss: 52 (on later chunks 8)
+  c.p9g_cache_eviction: 0 (on later chunks 0)
+  c.front_cache_miss: 0 (on later chunks 0)
+  c.front_cache_flush: 0 (on later chunks 0)
+  c.cave_cache_miss: 0 (on later chunks 0)
+  c.cave_cache_eviction: 0 (on later chunks 0)
+  P9G kept roots per column: mean 6.4, max 24
+  P9G stage on a miss: 52 chunks, mean 28.8 ms
+  P9G stage on a hit: 31 chunks, mean 0.0 ms
+  Lua heap after a callback (emerge environment): 950-2016 MB
+
+## phase 2: 145 chunks generated
+results: air_skip 25, applied_clq 25, applied_cplq 70, noop_equal_content 25
+chunk columns with Lua work: 61; first chunks 61, later chunks 59
+  first chunks: 61 chunks; column cache misses mean 6746 (max 7447); planner R5 + R6 columns mean 65.3 ms, sum 3986 ms; R6 candidates sum 5720 ms; callback mean 341 ms
+  later chunks: 59 chunks; column cache misses mean 1499 (max 6861); planner R5 + R6 columns mean 28.1 ms, sum 1661 ms; R6 candidates sum 2 ms; callback mean 134 ms
+  later chunks re-paying (misses >= 3200): 13 chunks; column cache misses mean 6366 (max 6861); planner R5 + R6 columns mean 77.5 ms, sum 1008 ms; R6 candidates sum 0 ms; callback mean 238 ms
+  re-paid column cost: about 819 ms over the warm median (14.5 ms per chunk)
+  chunks generated between a column's previous chunk and its re-paying one: median 25, min 13, max 37
+  insertion distance of later chunks (misses since the column's tuples went in): median 26910, max 109701
+    limit 65536: 9 of 59 later chunks beyond it
+    limit 131072: 0 of 59 later chunks beyond it
+    limit 196608: 0 of 59 later chunks beyond it
+    limit 262144: 0 of 59 later chunks beyond it
+  cc_evictions: 542475 (on later chunks 88467)
+  c.cell_cache_miss: 1525 (on later chunks 0)
+  c.cell_cache_eviction: 0 (on later chunks 0)
+  c.p9g_cache_hit: 16 (on later chunks 16)
+  c.p9g_cache_miss: 61 (on later chunks 2)
+  c.p9g_cache_eviction: 0 (on later chunks 0)
+  c.front_cache_miss: 0 (on later chunks 0)
+  c.front_cache_flush: 0 (on later chunks 0)
+  c.cave_cache_miss: 0 (on later chunks 0)
+  c.cave_cache_eviction: 0 (on later chunks 0)
+  P9G kept roots per column: mean 7.5, max 19
+  P9G stage on a miss: 61 chunks, mean 33.1 ms
+  P9G stage on a hit: 16 chunks, mean 0.0 ms
+  Lua heap after a callback (emerge environment): 978-2021 MB
