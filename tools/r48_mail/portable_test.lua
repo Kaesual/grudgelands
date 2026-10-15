@@ -7,14 +7,14 @@
 --      (take_with_inventory), the REAL give/fit helpers (grug_inventory
 --      bags.lua + storage.lua, inbox.lua) and the REAL guards
 --      (grug_skills/bound_items.lua, grug_housing/soulbound.lua): money and
---      stacks in one step, a changed slot refuses with nothing lost, the
+--      stacks in one step, the slots as they are at Send are charged, the
 --      guards keep soulbound, skill and mount items out of the attachment
 --      list, closing returns the stacks and keeps leftovers, item meta
 --      survives, Take all refuses without room, faction and unknown-name
 --      refusals, send_system with stacks;
 --   C. tickets, reports, answers and broadcasts in the stores;
 --   D. the window: opening, every tab and dialog builds, the Write tab's
---      quote, reach, closing.
+--      postage rule and Send at the click, reach, closing.
 --
 --   luajit tools/r48_mail/portable_test.lua [REPO]
 -- Prints "R48 MAIL PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -578,7 +578,7 @@ do -- money and two stacks leave in one step
 	alice.inv:set_stack(ATTACH, 1, ItemStack("t:ingot 12"))
 	alice.inv:set_stack(ATTACH, 3, ItemStack("t:axe"))
 	local ok, message = grug_mail.send_letter(alice, "brakka", "Your axe", "As promised.")
-	check(ok and message == "Letter sent to Brakka (65c).", "B sending with two stacks: " ..
+	check(ok and message == "Letter sent to Brakka. Postage paid: 65c.", "B sending with two stacks: " ..
 		tostring(message))
 	eq(grug_money.get(alice), 935, "B 65c postage taken")
 	check(alice.inv:is_empty(ATTACH), "B the attachment slots are empty")
@@ -592,20 +592,20 @@ do -- money and two stacks leave in one step
 		"B an online recipient gets the feed notice")
 end
 
-do -- a changed slot refuses with nothing lost
+do -- Round 49 ruling 1 (replaces the R48 quote pin): Send charges the
+	-- slots as they are at the call, no refusal for a changed slot.
 	alice.inv:set_stack(ATTACH, 2, ItemStack("t:dirt 10"))
-	local quote = {}
-	for index, stack in ipairs(grug_mail.attachments(alice)) do quote[index] = stack:to_string() end
 	alice.inv:set_stack(ATTACH, 4, ItemStack("t:dirt 3"))
-	local before, money, count = census(alice), grug_money.get(alice), #letters_of("Brakka")
-	local ok, message = grug_mail.send_letter(alice, "Brakka", "More dirt", "", quote)
-	check(not ok and message:find("attachments changed", 1, true),
-		"B a slot changed since the quote: refused")
-	check(same(before, census(alice)) and grug_money.get(alice) == money and
-		#letters_of("Brakka") == count, "B the refusal loses nothing and sends nothing")
-	quote[4] = "t:dirt 3"
-	ok = grug_mail.send_letter(alice, "Brakka", "More dirt", "", quote)
-	check(ok and grug_money.get(alice) == money - 65, "B the fresh quote sends")
+	local money, count = grug_money.get(alice), #letters_of("Brakka")
+	local ok, message = grug_mail.send_letter(alice, "Brakka", "More dirt", "")
+	check(ok and message == "Letter sent to Brakka. Postage paid: 65c.",
+		"B the slots at the call are charged: " .. tostring(message))
+	check(grug_money.get(alice) == money - 65 and alice.inv:is_empty(ATTACH) and
+		#letters_of("Brakka") == count + 1 and #letters_of("Brakka")[1].items == 2,
+		"B both stacks leave with the 65c postage")
+	ok, message = grug_mail.send_letter(alice, "Brakka", "Empty", "")
+	check(ok and message == "Letter sent to Brakka. Postage paid: 5c." and
+		grug_money.get(alice) == money - 70, "B a letter without attachments pays 5c")
 end
 
 do -- refusals before anything is taken
@@ -870,35 +870,39 @@ do
 	check(session.tab == "write" and session.draft.to == "Brakka" and
 		session.draft.subject == "Re: Ingots" and session.draft.body:find("> For you.", 1, true),
 		"D Reply on a player letter opens Write with the quote")
-	-- Write: the quote, a changed slot, the second Send.
+	-- Write (Round 49 ruling 1, replaces the R48 quote pins): the rule, no
+	-- figure; a slot filled after the draw is charged at the one Send; the
+	-- second click.
 	local money = grug_money.get(alice)
 	local brakka_letters = #letters_of("Brakka")
+	check(formspecs.Alice.text:find("Postage: 5c per letter + 30c per filled slot", 1, true),
+		"D the Write tab shows the postage rule")
+	check(not formspecs.Alice.text:find("Send (", 1, true) and
+		not formspecs.Alice.text:find(" = ", 1, true), "D no computed postage in the form")
+	local drawn = formspecs.Alice.text
 	alice.inv:set_stack(ATTACH, 1, ItemStack("t:dirt 4"))
+	for _, f in ipairs(callbacks.action) do
+		f(alice, "move", alice.inv, {from_list = "main", from_index = 9, to_list = ATTACH,
+			to_index = 1, count = 4})
+	end
+	check(formspecs.Alice.text == drawn, "D an inventory move resends nothing")
 	local first = button(alice, "write_send")
 	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
-		[first] = "Send (5c)"})
-	check(session.status and session.status:find("attachments changed", 1, true) and
-		grug_money.get(alice) == money, "D a slot filled after the quote: Send refuses")
-	check(formspecs.Alice.text:find("Send (35c)", 1, true), "D the new postage shows")
+		[first] = "Send"})
+	check(session.status_ok and session.status == "Letter sent to Brakka. Postage paid: 35c." and
+		grug_money.get(alice) == money - 35 and alice.inv:is_empty(ATTACH),
+		"D a slot filled after the draw: one Send charges it and names the postage")
+	check(formspecs.Alice.text:find("Postage paid: 35c.", 1, true), "D the result line shows")
+	eq(letters_of("Brakka")[1].body, "Thanks!", "D the typed text was sent")
+	eq(#letters_of("Brakka")[1].items, 1, "D the stack went with the letter")
 	local second = button(alice, "write_send")
 	check(second ~= first, "D every draw names its Send button anew")
 	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
-		[first] = "Send (5c)"})
-	check(grug_money.get(alice) == money and #letters_of("Brakka") == brakka_letters and
-		not alice.inv:is_empty(ATTACH),
-		"D a quick second click from the refused form charges and sends nothing")
-	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
-		[button(alice, "write_send")] = "Send (35c)"})
-	check(session.status_ok and grug_money.get(alice) == money - 35 and alice.inv:is_empty(ATTACH),
-		"D Send from the latest form pays the shown postage")
-	eq(letters_of("Brakka")[1].body, "Thanks!", "D the typed text was sent")
-	local sent = button(alice, "write_send")
-	send_fields(alice, {mail_to = "Brakka", mail_subject = "Re: Ingots", mail_body = "Thanks!",
-		[second] = "Send (35c)"})
+		[first] = "Send"})
 	check(grug_money.get(alice) == money - 35 and #letters_of("Brakka") == brakka_letters + 1 and
 		session.draft.to == "" and session.draft.body == "",
 		"D a double click on Send sends one letter; the stale fields are not kept")
-	check(button(alice, "write_send") ~= sent, "D the stale click redraws the window")
+	check(button(alice, "write_send") ~= second, "D the stale click redraws the window")
 	-- The shift-click rings with a bag: main and the bag both lead to the
 	-- attachment slots, the attachment slots to the inbox (the engine takes
 	-- the entry after the first one naming the source list).

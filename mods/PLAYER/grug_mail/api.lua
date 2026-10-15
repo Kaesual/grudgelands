@@ -109,21 +109,11 @@ function grug_mail.attachments(player)
 	return stacks
 end
 
-local function filled(stacks)
-	local count = 0
-	for _, stack in ipairs(stacks) do
-		if not ItemStack(stack):is_empty() then count = count + 1 end
-	end
-	return count
-end
-grug_mail.filled = filled
-
 -- Player mail (rulings 2 and 7, §3.8-§3.9). Postage and the four
 -- attachment slots leave in one grug_money.take_with_inventory transaction.
--- `quoted` (optional) is the attachment stacks the sender was shown the
--- postage for: any slot that differs from it refuses the letter and nothing
--- is taken. Returns ok, message.
-function grug_mail.send_letter(player, to_name, subject, body, quoted)
+-- The postage counts the slots as they are at this call (Round 49 ruling 1:
+-- no quote, the result names the amount paid). Returns ok, message.
+function grug_mail.send_letter(player, to_name, subject, body)
 	if not is_player(player) then return false, "Only a player can send letters." end
 	local name = player:get_player_name()
 	local recipient, refusal = resolve_recipient(player, to_name)
@@ -135,14 +125,8 @@ function grug_mail.send_letter(player, to_name, subject, body, quoted)
 	if not M.accepts(box, "player") then
 		return false, recipient .. "'s mailbox is full."
 	end
-	local current = grug_mail.attachments(player)
-	local expected = quoted or current
 	local changes, items = {}, {}
-	for index = 1, M.STACKS do
-		local stack = ItemStack(expected[index] or "")
-		if not current[index]:equals(stack) then
-			return false, "The attachments changed: check the new postage, then Send."
-		end
+	for index, stack in ipairs(grug_mail.attachments(player)) do
 		changes[index] = {list = ATTACH, index = index, expected = stack,
 			replacement = ItemStack("")}
 		if not stack:is_empty() then items[#items + 1] = stack:to_string() end
@@ -163,7 +147,7 @@ function grug_mail.send_letter(player, to_name, subject, body, quoted)
 	log(("letter #%d from %s to %s, postage %dc, attachments: %s"):format(
 		letter.id, name, recipient, postage, item_list(items)))
 	notice(recipient, name)
-	return true, ("Letter sent to %s (%s)."):format(recipient,
+	return true, ("Letter sent to %s. Postage paid: %s."):format(recipient,
 		grug_money.format(postage))
 end
 
