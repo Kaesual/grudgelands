@@ -21,6 +21,12 @@
 --      the count, a mob pressed into a fence (NV0 F7), the veto of
 --      aggro.lua (8 nodes or 15 s, cut out);
 --   P  the physics box of a mob taller than two nodes (ruling 20);
+--   R  Round 49 NAV2: the path repair (head room, width, a step, the "no
+--      cell fits" rejection, one search, no failure);
+--   E  Round 49 NAV2: the padding escalation 6, 12, 16, reset per episode,
+--      in combat and on fixed walks;
+--   S  Round 49 NAV2: ranged ground mobs (api.lua's branch conditions and
+--      can_nav, cut out);
 --   A  api.lua: the replaced pieces are gone.
 -- Usage (repo root): luajit tools/r42_nv1/portable_test.lua [REPO]
 -- Prints "R42 NV1 PORTABLE PASS checks=<n>" or raises.
@@ -838,6 +844,198 @@ do
 	local api = read("mods/ENTITIES/mobs/api.lua")
 	local _, n = api:gsub("grug_obstacle%.physics_box%(", "")
 	check(n == 3, "P7 every collision box api.lua sets goes through it: " .. n)
+end
+
+-- ---------------------------------------------------------------------------
+-- R. Round 49 NAV2: the path repair (the user, 2026-10-15; replaces ruling
+-- 19's "no extra mechanism"). A waypoint without head room or width becomes
+-- one of the 8 cells round it (its level, one up or down) where the body fits
+-- on ground, one step from the previous waypoint and the next; no cell, no
+-- path.
+-- ---------------------------------------------------------------------------
+do
+	local zb = nav.body(mob(), nil)
+	local function at(p, x, y, z) return p and p.x == x and p.y == y and p.z == z end
+	-- R1 a turn under a low overhang: the other corner of the turn.
+	clear_world()
+	set(1, 2, 0, "stone")
+	local out, n = nav.check_path(zb, {pos(0, 1, 0), pos(1, 1, 0), pos(1, 1, 1), pos(1, 1, 2)})
+	check(out and n == 1 and at(out[2], 0, 1, 1) and at(out[3], 1, 1, 1),
+		"R1 a turn under an overhang takes the other corner")
+	-- R2 one up: the other corner is a 1-high block, its top is the cell.
+	set(0, 1, 1, "stone")
+	out = nav.check_path(zb, {pos(0, 1, 0), pos(1, 1, 0), pos(1, 1, 1), pos(1, 1, 2)})
+	check(out and at(out[2], 0, 2, 1), "R2 a cell one up (a step) repairs")
+	set(0, 2, 1, "stone")
+	check(nav.check_path(zb, {pos(0, 1, 0), pos(1, 1, 0), pos(1, 1, 1), pos(1, 1, 2)}) == nil,
+		"R2 a 2-high block: no cell fits, rejected")
+	-- R3 a 1-wide tunnel with a low roof: nothing round the waypoint fits.
+	clear_world()
+	fill(0, 1, -1, 6, 2, -1, "stone")
+	fill(0, 1, 1, 6, 2, 1, "stone")
+	set(3, 2, 0, "stone")
+	local tunnel = {}
+	for x = 0, 6 do tunnel[#tunnel + 1] = pos(x, 1, 0) end
+	check(nav.check_path(zb, tunnel) == nil, "R3 no cell fits: the path is rejected")
+	-- R4 a straight run under an overhang: each waypoint moves to the side
+	-- row, one step from the one before; the mob searched once and follows.
+	clear_world()
+	fill(3, 2, 0, 5, 2, 0, "stone")
+	local m, t = mob(), target_obj()
+	local p, tp = pos(0, Y, 0), pos(8, Y, 0)
+	find_calls = {}
+	for _ = 1, 8 do step(m, p, t, tp, 4.6) end
+	check(#find_calls == 1 and m.ev.repaired == 1 and m.ev.found == 1
+		and not m.ev.rejected and nst(m).path ~= nil,
+		"R4 one search, repaired, followed")
+	local path = nst(m).path
+	local under, prev_wp = false, nil
+	for _, w in ipairs(path) do
+		local x, z = math.floor(w.x + 0.5), math.floor(w.z + 0.5)
+		if x >= 3 and x <= 5 and z == 0 then under = true end
+		if prev_wp then
+			check(math.abs(w.x - prev_wp.x) <= 1 and math.abs(w.z - prev_wp.z) <= 1,
+				"R4 every waypoint one step from the last")
+		end
+		prev_wp = w
+	end
+	check(not under, "R4 no waypoint under the overhang")
+	-- R5 a body wider than two nodes passes a post: the waypoints next to it
+	-- move one row away (every cell round them free).
+	clear_world()
+	fill(2, 1, -1, 2, 2, -1, "stone")
+	local ooze = nav.body(mob({_grug_cbox = {-1.02, -0.01, -1.02, 1.02, 1.5, 1.02}}), nil)
+	local line = {}
+	for x = 0, 5 do line[#line + 1] = pos(x, 1, 0) end
+	out, n = nav.check_path(ooze, line)
+	check(out and n == 3 and out[2].z == 1 and out[3].z == 1 and out[4].z == 1
+		and out[5].z == 0, "R5 a wide body steps round a post")
+	-- R6 a rat-wide body (the 2x2 rule) in a turn whose corner has no free
+	-- 2x2 block: the other corner is the top of a 1-high block, stepped on
+	-- and off, steered through the middle of its free 2x2 block.
+	clear_world()
+	set(0, 1, 1, "stone")
+	set(2, 1, 0, "stone")
+	set(1, 1, -1, "stone")
+	local rat = nav.body(mob({_grug_cbox = {-0.64, -0.01, -0.64, 0.64, 0.96, 0.64}}), nil)
+	out = nav.check_path(rat, {pos(0, 1, 0), pos(1, 1, 0), pos(1, 1, 1), pos(1, 1, 2)})
+	check(out and out[2].x == 0.5 and out[2].y == 2 and out[2].z == 1.5,
+		"R6 a 2-wide body repaired onto a step, in its 2x2 block")
+	-- R7 a repaired path is no failure: the count stays 0.
+	check(nst(m).fails == 0, "R7 a repaired path counts no failure")
+end
+
+-- ---------------------------------------------------------------------------
+-- E. Round 49 NAV2: padding escalation (ruling 18's value): 6 on the first
+-- search of a stuck episode, 12 on the second, 16 on every later one; a new
+-- episode starts at 6.
+-- ---------------------------------------------------------------------------
+do
+	check(nav.PADDING == 6 and #nav.PADDING_STEPS == 3 and nav.PADDING_STEPS[1] == 6
+		and nav.PADDING_STEPS[2] == 12 and nav.PADDING_STEPS[3] == 16,
+		"E0 the padding steps 6, 12, 16")
+	local function pads()
+		local list = {}
+		for i, c in ipairs(find_calls) do list[i] = c.pad end
+		return table.concat(list, ",")
+	end
+	-- E1 the dragons never give up: 6, 12, then 16 for good.
+	fence_scene()
+	local dragon, t = mob({never = true}), target_obj()
+	local p, tp = pos(5, Y, 0), pos(10, Y, 0)
+	find_calls = {}
+	for _ = 1, 300 do step(dragon, p, t, tp, 4.6) end
+	check(#find_calls >= 4 and pads():sub(1, 11) == "6,12,16,16,", "E1 " .. pads())
+	-- E2 three failures give up after 6, 12, 16.
+	fence_scene()
+	local m = mob()
+	find_calls = {}
+	for _ = 1, 200 do
+		local _, o = step(m, p, t, tp, 4.6)
+		if o then break end
+	end
+	check(pads() == "6,12,16", "E2 give-up after 6, 12, 16: " .. pads())
+	-- E3 progress ends the episode: the next one starts at 6 again.
+	fence_scene()
+	m = mob()
+	find_calls = {}
+	for _ = 1, 200 do
+		step(m, p, t, tp, 4.6)
+		if #find_calls == 2 then break end
+	end
+	step(m, p, t, tp, 0, true) -- strikes: progress
+	check(nst(m).searches == nil and nst(m).fails == 0, "E3 a strike resets the step")
+	for _ = 1, 200 do
+		step(m, p, t, tp, 4.6)
+		if #find_calls == 3 then break end
+	end
+	check(pads() == "6,12,6", "E3 a new episode starts at 6: " .. pads())
+	-- E4 a fixed walk escalates the same way.
+	clear_world()
+	fill(-2, 1, -2, 2, 3, 2, "fence")
+	fill(-1, 1, -1, 1, 3, 1, "air")
+	m = mob()
+	find_calls = {}
+	for _ = 1, 400 do fstep(m, pos(0, Y, 0), pos(8, 0.5, 0), "post", 1.2) end
+	check(#find_calls >= 3 and pads():sub(1, 7) == "6,12,16", "E4 fixed walk: " .. pads())
+end
+
+-- ---------------------------------------------------------------------------
+-- S. Round 49 NAV2: ranged ground mobs (round49-gameplay-draft.md ruling 7).
+-- The branch conditions of do_states' attack state and can_nav, cut out of
+-- api.lua: a ground dogshoot mob without sight of its target takes the
+-- dogfight branch (walks, paths); with sight it shoots; never a shot
+-- without sight; its melee phase is the dogfight branch; fliers unchanged.
+-- ---------------------------------------------------------------------------
+do
+	local api = read("mods/ENTITIES/mobs/api.lua")
+	-- The text from `from` (kept unless `skip`) up to `to`.
+	local function expr(from, to, skip)
+		local s = api:find(from, 1, true)
+		check(s ~= nil, "S0 anchor " .. from)
+		local e = api:find(to, s + #from, true)
+		return api:sub(skip and s + #from or s, e - 1)
+	end
+	local function fn(args, body)
+		local chunk = assert(loadstring("return function(" .. args .. ") return "
+			.. body .. " end"))
+		return chunk()
+	end
+	local melee = fn("self, ds_var, dist, in_sight", expr(
+		"self.attack_type == \"dogfight\" or (self.attack_type == \"dogshoot\"\n",
+		" then\n"))
+	local shoot = fn("self, ds_var", expr("self.attack_type == \"shoot\"\n", " then\n"))
+	local can_nav = fn("self, pathfinding_enable", expr("local can_nav = ",
+		"\n\t\t\tif can_nav then", true))
+	-- The attack state's branch: "dogfight", "shoot" or nil.
+	local function branch(self, ds_var, dist, in_sight)
+		if melee(self, ds_var, dist, in_sight) then return "dogfight" end
+		if shoot(self, ds_var) then return "shoot" end
+	end
+	local archer = {attack_type = "dogshoot", reach = 3, pathfinding = 1}
+	check(branch(archer, 1, 10, false) == "dogfight", "S1 no sight: walk and path")
+	check(branch(archer, 1, 10, true) == "shoot", "S1 sight: shoot")
+	check(branch(archer, 2, 10, true) == "dogfight"
+		and branch(archer, 2, 10, false) == "dogfight", "S1 the melee phase")
+	check(branch(archer, 1, 2, true) == "dogfight", "S1 in reach: melee")
+	local wisp = {attack_type = "dogshoot", reach = 2, pathfinding = 1, fly = true}
+	check(branch(wisp, 1, 10, false) == "shoot" and branch(wisp, 1, 10, true) == "shoot",
+		"S2 a flier shoots as before")
+	local zombie = {attack_type = "dogfight", reach = 3, pathfinding = 1}
+	check(branch(zombie, 0, 10, false) == "dogfight", "S3 dogfight unchanged")
+	check(can_nav(archer, true) and can_nav(zombie, true), "S4 ground dogshoot navigates")
+	check(not can_nav(wisp, true) and not can_nav(archer, false)
+		and not can_nav({attack_type = "dogshoot"}, true)
+		and not can_nav({attack_type = "shoot", pathfinding = 1}, true),
+		"S4 fliers, the setting off, no pathfinding, pure shooters: no")
+	-- S5 the shoot branch ends the episode like a strike (F5's behaviour).
+	local s = api:find("\t\telseif self.attack_type == \"shoot\"", 1, true)
+	local e = api:find("p.y = p.y - 0.5 ; s.y = s.y + 0.5", s, true)
+	local head = api:sub(s, e)
+	check(head:find("grug_nav.combat_step(self, s, dtime, self.attack, target_pos, dist,\n"
+		.. "\t\t\t\t\t\ttrue, self.keep_flying == true)", 1, true) ~= nil
+		and head:find("grug_nav.command(self, s, 0)", 1, true) ~= nil,
+		"S5 a shooting ground dogshoot mob strikes in the navigation's terms")
 end
 
 -- ---------------------------------------------------------------------------

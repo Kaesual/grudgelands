@@ -2416,8 +2416,14 @@ function mob_class:do_states(dtime)
 				end
 			end
 
+		-- GRUG PATCH (Round 49 NAV2, round49-gameplay-draft.md ruling 7): a
+		-- ground dogshoot mob that cannot see its target walks (and paths)
+		-- the dogfight way until it sees it; then the shoot branch stops it
+		-- and shoots, so it never shoots without line of sight. Fliers keep
+		-- upstream's switch.
 		elseif self.attack_type == "dogfight" or (self.attack_type == "dogshoot"
-		and (ds_var == 2 or dist <= self.reach)) then
+		and (ds_var == 2 or dist <= self.reach
+			or (not in_sight and not self.fly))) then
 			local movement_pos = target_pos
 
 			-- GRUG PATCH: the attack cadence runs during the CHASE
@@ -2504,11 +2510,14 @@ function mob_class:do_states(dtime)
 			-- steers at its waypoints until it strikes, reaches the path's end,
 			-- sees a walkable straight line, the target moved away from the
 			-- planned end or it is stuck again. Failed searches in a row give
-			-- the target up, also a visible one. Fliers and dogshoot families
-			-- never search (a ranged family answers terrain by shooting over
-			-- it); the dragons and whelps never give up, they only wait.
+			-- the target up, also a visible one. Fliers never search; the
+			-- dragons and whelps never give up, they only wait. GRUG PATCH
+			-- (Round 49 NAV2): a ground dogshoot mob searches too, in its melee
+			-- phase and to regain sight of its target (the shoot branch below
+			-- ends its episode).
 			local can_nav = self.pathfinding and pathfinding_enable
-				and not self.fly and self.attack_type == "dogfight"
+				and not self.fly and (self.attack_type == "dogfight"
+					or self.attack_type == "dogshoot")
 			if can_nav then
 				local steer, outcome = grug_nav.combat_step(self, s, dtime,
 						self.attack, target_pos, dist,
@@ -2688,6 +2697,16 @@ function mob_class:do_states(dtime)
 
 		elseif self.attack_type == "shoot"
 		or (self.attack_type == "dogshoot" and ds_var == 1) then
+
+			-- GRUG PATCH (Round 49 NAV2): a ground dogshoot mob here sees its
+			-- target (above): like a struck target, that ends its stuck
+			-- episode and path, and its stop is intentional.
+			if self.attack_type == "dogshoot" and self.pathfinding
+			and pathfinding_enable and not self.fly then
+				grug_nav.combat_step(self, s, dtime, self.attack, target_pos, dist,
+						true, self.keep_flying == true)
+				grug_nav.command(self, s, 0)
+			end
 
 			p.y = p.y - 0.5 ; s.y = s.y + 0.5
 
