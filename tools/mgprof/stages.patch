@@ -1,7 +1,7 @@
 diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
 --- a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
-@@ -1096,6 +1096,10 @@
+@@ -1221,6 +1221,10 @@
  				end
  			end
  			metric_add(K.M_HEIGHTMAP_ENTRIES, 6400)
@@ -12,7 +12,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapg
  
  			local returned_data = vm_call1(vm_get_data, K.M_VM_GET_DATA, vm,
  				data_buffer)
-@@ -1107,6 +1111,7 @@
+@@ -1232,6 +1236,7 @@
  			if not rawequal(returned_param2, param2_buffer) then
  				fail("fail_vm_contract", "get_param2_data did not reuse buffer")
  			end
@@ -20,23 +20,17 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapg
  			-- No per-voxel scalar check here: this adapter only ever runs on the
  			-- composed R6 transaction's shadow VM (`r6_settlement.lua`), whose
  			-- buffers are copies of the engine's `get_data`/`get_param2_data`
-@@ -1242,6 +1247,7 @@
- 				end
+@@ -1380,6 +1385,9 @@
+ 				light_dirty_columns = light_dirty_columns + dirty_light[column]
+ 				liquid_dirty_columns = liquid_dirty_columns + dirty_liquid[column]
  			end
- 
 +			if mgp then mgp.mark("r5a_resolve_validate") end
- 			-- All semantic validation is now complete.  The replay recomputes only
- 			-- already-validated scalar outcomes from immutable old entries.
- 			for z = minp.z, maxp.z do
-@@ -1263,6 +1269,7 @@
- 				end
- 			end
- 
++			-- (no replay pass since Round 49 lane JIT: the one pass above writes)
 +			if mgp then mgp.mark("r5a_replay") end
+ 
  			metric_add(K.M_CLASSIFIED_COLUMNS, planned_columns)
  			metric_add(K.M_PLANNED_COLUMNS, planned_columns)
- 			metric_add(K.M_MODIFIED_VOXELS, modified_voxels)
-@@ -1284,6 +1291,7 @@
+@@ -1402,6 +1410,7 @@
  			if liquid_dirty_columns > 0 then
  				vm_call0(vm_update_liquids, K.M_VM_UPDATE_LIQUIDS, vm)
  			end

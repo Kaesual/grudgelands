@@ -569,11 +569,14 @@ local function zones_factory(dependencies)
 		local max_cell_x = deterministic.floor_div(MAX_X, cell_size) + 1
 		local min_cell_z = deterministic.floor_div(MIN_Z, cell_size) - 1
 		local max_cell_z = deterministic.floor_div(MAX_Z, cell_size) + 1
+		-- Keyed by cell - min cell + 1 (Round 49 lane JIT): the lookup of a
+		-- negative key in a table that also holds array keys is a lookup
+		-- LuaJIT does not compile ("mixed sparse/dense table").
 		local logical_sites = {}
 		local logical_site_count = 0
 		for cell_x = min_cell_x, max_cell_x do
 			local column = {}
-			logical_sites[cell_x] = column
+			logical_sites[cell_x - min_cell_x + 1] = column
 			for cell_z = min_cell_z, max_cell_z do
 				local site_x = cell_x * cell_size + selector.site_offset_min +
 					logical_hash.range(selector.hash_domain, "", {cell_x, cell_z},
@@ -583,7 +586,7 @@ local function zones_factory(dependencies)
 						0, selector.hash_lanes.site_z, selector.site_offset_span)
 				local roll = logical_hash.range(selector.hash_domain, "",
 					{cell_x, cell_z}, 0, selector.hash_lanes.palette, 100)
-				column[cell_z] = {x = site_x, z = site_z, roll = roll}
+				column[cell_z - min_cell_z + 1] = {x = site_x, z = site_z, roll = roll}
 				logical_site_count = logical_site_count + 1
 			end
 		end
@@ -813,7 +816,8 @@ local function zones_factory(dependencies)
 			local best_site, best_x, best_z, best_distance
 			for cell_x = own_x - 1, own_x + 1 do
 				for cell_z = own_z - 1, own_z + 1 do
-					local site = logical_sites[cell_x] and logical_sites[cell_x][cell_z]
+					local sites = logical_sites[cell_x - min_cell_x + 1]
+					local site = sites and sites[cell_z - min_cell_z + 1]
 					if not site then fail("logical biome halo is incomplete") end
 					local dx, dz = x - site.x, z - site.z
 					local distance = dx * dx + dz * dz
@@ -1310,6 +1314,13 @@ local function zones_factory(dependencies)
 				schema = "grug_wp40_r5_planner_source_v1",
 			}
 			local column_cache_limit = 65536
+			-- The cache's x and z keys are the coordinates plus this offset
+			-- (Round 49 lane JIT): a negative integer key in a table that also
+			-- holds array keys is a lookup LuaJIT does not compile ("mixed
+			-- sparse/dense table"), and its aborts blacklisted this function
+			-- for every caller. Coordinates inside the mapgen limit give
+			-- positive keys; a key outside it only stays uncompiled.
+			local COLUMN_KEY_OFFSET = 32768
 			local column_cache_by_x = runtime_mode and {} or nil
 			local column_cache_slot_x = runtime_mode and {} or nil
 			local column_cache_slot_z = runtime_mode and {} or nil
@@ -1424,11 +1435,15 @@ local function zones_factory(dependencies)
 					return compute_column_values_at(x, z, outside)
 				end
 
-				local bucket = column_cache_by_x[x]
-				local row = bucket and bucket[z] or nil
+				local bucket = column_cache_by_x[x + COLUMN_KEY_OFFSET]
+				local row = bucket and bucket[z + COLUMN_KEY_OFFSET] or nil
 				if row then
 					column_cache_hits = column_cache_hits + 1
-					return unpack(row, 1, 20)
+					-- spelled out: LuaJIT does not compile `unpack` (Round 49
+					-- lane JIT)
+					return row[1], row[2], row[3], row[4], row[5], row[6], row[7],
+						row[8], row[9], row[10], row[11], row[12], row[13], row[14],
+						row[15], row[16], row[17], row[18], row[19], row[20]
 				end
 				column_cache_misses = column_cache_misses + 1
 				local value_1, value_2, value_3, value_4, value_5,
@@ -1452,13 +1467,16 @@ local function zones_factory(dependencies)
 					end
 					local old_x = column_cache_slot_x[slot]
 					local old_z = column_cache_slot_z[slot]
-					local old_bucket = column_cache_by_x[old_x]
-					if not old_bucket or old_bucket[old_z] ~= column_cache_rows[slot] then
+					local old_bucket = column_cache_by_x[old_x + COLUMN_KEY_OFFSET]
+					if not old_bucket or
+							old_bucket[old_z + COLUMN_KEY_OFFSET] ~= column_cache_rows[slot] then
 						fail("planner runtime column cache differs")
 					end
-					old_bucket[old_z] = nil
+					old_bucket[old_z + COLUMN_KEY_OFFSET] = nil
 					old_bucket._count = old_bucket._count - 1
-					if old_bucket._count == 0 then column_cache_by_x[old_x] = nil end
+					if old_bucket._count == 0 then
+						column_cache_by_x[old_x + COLUMN_KEY_OFFSET] = nil
+					end
 					row = column_cache_rows[slot]
 				end
 
@@ -1470,17 +1488,21 @@ local function zones_factory(dependencies)
 					value_11, value_12, value_13, value_14, value_15
 				row[16], row[17], row[18], row[19], row[20] =
 					value_16, value_17, value_18, value_19, value_20
-				bucket = column_cache_by_x[x]
+				bucket = column_cache_by_x[x + COLUMN_KEY_OFFSET]
 				if not bucket then
 					bucket = {_count = 0}
-					column_cache_by_x[x] = bucket
+					column_cache_by_x[x + COLUMN_KEY_OFFSET] = bucket
 				end
-				if bucket[z] ~= nil then fail("planner runtime column cache collision") end
-				bucket[z] = row
+				if bucket[z + COLUMN_KEY_OFFSET] ~= nil then
+					fail("planner runtime column cache collision")
+				end
+				bucket[z + COLUMN_KEY_OFFSET] = row
 				bucket._count = bucket._count + 1
 				column_cache_slot_x[slot] = x
 				column_cache_slot_z[slot] = z
-				return unpack(row, 1, 20)
+				return value_1, value_2, value_3, value_4, value_5, value_6, value_7,
+					value_8, value_9, value_10, value_11, value_12, value_13, value_14,
+					value_15, value_16, value_17, value_18, value_19, value_20
 			end
 
 			-- True when a sealed (river or lake) water column may lie in the

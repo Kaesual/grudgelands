@@ -122,6 +122,23 @@ local function adapter_factory(allocator_factory)
 	local TARGET_STRIDE = 13
 	local TARGET_CAPACITY = MAX_TARGET_SLOTS * TARGET_STRIDE
 	local SCRATCH_CAPACITY = TARGET_CAPACITY
+	-- One voxel's resolution (Round 49 lane JIT): a reused array instead of a
+	-- 20-value return, which LuaJIT could not compile. [1] the final CID, [2]
+	-- the final param2, then the old and the final classification at
+	-- RESOLVED_OLD + 1..9 and RESOLVED_FINAL + 1..9: class, family, liquid
+	-- kind, liquid level, floodable, paramtype light, light propagates,
+	-- sunlight propagates (the four flags as 0/1), light source.
+	local RESOLVED_OLD = 2
+	local RESOLVED_FINAL = 11
+	local RESOLVED_CAPACITY = 20
+	-- The writes of the validating pass wait one row of columns (index, CID,
+	-- param2 per changed voxel): a voxel's neighbour scan still reads the old
+	-- bytes of the row before and of its own row.
+	local PENDING_ROW = 80 * 80 * 3
+	local PENDING_CAPACITY = 2 * PENDING_ROW
+	-- Distinct (CID, param2) pairs the trusted classification memo keeps; a
+	-- chunk's natural content has far fewer.
+	local CLASS_MEMO_ENTRIES = 4096
 
 	local R_Y_MIN = 1
 	local R_Y_MAX = 2
@@ -427,6 +444,7 @@ local function adapter_factory(allocator_factory)
 		CLASS_FOREIGN = CLASS_FOREIGN,
 		CLASS_IGNORE = CLASS_IGNORE,
 		CLASS_LIQUID = CLASS_LIQUID,
+		CLASS_MEMO_ENTRIES = CLASS_MEMO_ENTRIES,
 		CLASS_NATURAL_HOST = CLASS_NATURAL_HOST,
 		CLASS_NATURAL_SURFACE = CLASS_NATURAL_SURFACE,
 		CLASS_NATURAL_VEGETATION = CLASS_NATURAL_VEGETATION,
@@ -479,6 +497,8 @@ local function adapter_factory(allocator_factory)
 		OWNER_MIN = OWNER_MIN,
 		PARAM2_EXACT = PARAM2_EXACT,
 		PARAM2_PRESERVE = PARAM2_PRESERVE,
+		PENDING_CAPACITY = PENDING_CAPACITY,
+		PENDING_ROW = PENDING_ROW,
 		PLAN_FIELDS = PLAN_FIELDS,
 		PLAN_SCHEMA = PLAN_SCHEMA,
 		POLICY_CUT_NATURAL = POLICY_CUT_NATURAL,
@@ -488,6 +508,9 @@ local function adapter_factory(allocator_factory)
 		POLICY_SEAL_VOID = POLICY_SEAL_VOID,
 		POLICY_SURFACE_EXACT = POLICY_SURFACE_EXACT,
 		POLICY_WRITE_WATER = POLICY_WRITE_WATER,
+		RESOLVED_CAPACITY = RESOLVED_CAPACITY,
+		RESOLVED_FINAL = RESOLVED_FINAL,
+		RESOLVED_OLD = RESOLVED_OLD,
 		RESULT_C = RESULT_C,
 		RESULT_CL = RESULT_CL,
 		RESULT_CLQ = RESULT_CLQ,
@@ -590,6 +613,16 @@ local function adapter_factory(allocator_factory)
 		local scratch = new_full_array("adapter_phase_scratch",
 			K.SCRATCH_CAPACITY)
 		local metric_values = new_full_array("adapter_metrics_state", K.METRIC_COUNT)
+		local resolved = new_full_array("adapter_resolved_voxel",
+			K.RESOLVED_CAPACITY)
+		local pending = new_full_array("adapter_pending_writes",
+			K.PENDING_CAPACITY)
+		-- The trusted classification memo (classify_into): CID -> param2 ->
+		-- slot in `class_memo`.
+		local class_memo = new_full_array("adapter_class_memo",
+			K.CLASS_MEMO_ENTRIES * 9)
+		local class_memo_slot = {}
+		local class_memo_count = 0
 
 		local adapter = allocator:new_map("adapter_api", 2)
 
@@ -601,9 +634,43 @@ local function adapter_factory(allocator_factory)
 		local trusted_classification = trusted_classify ~= nil
 		local get_heightmap = mapgen_context.get_heightmap
 
+		-- The per-voxel path's constants as immutable upvalues (Round 49 lane
+		-- JIT): LuaJIT folds these into a trace, while each `K.` field there is
+		-- a table load that keeps a register.
+		local R_Y_MIN, R_Y_MAX, R_OPCODE, R_ROLE, R_POLICY, R_FEATURE, R_AUX =
+			K.R_Y_MIN, K.R_Y_MAX, K.R_OPCODE, K.R_ROLE, K.R_POLICY, K.R_FEATURE,
+			K.R_AUX
+		local RUN_STRIDE, MAX_ROLE = K.RUN_STRIDE, K.MAX_ROLE
+		local MAX_TARGET_SLOTS, TARGET_STRIDE = K.MAX_TARGET_SLOTS, K.TARGET_STRIDE
+		local POLICY_CUT_NATURAL, POLICY_DEEP_EXACT_HOST, POLICY_FILL_VOID =
+			K.POLICY_CUT_NATURAL, K.POLICY_DEEP_EXACT_HOST, K.POLICY_FILL_VOID
+		local POLICY_OPEN_ENGINEERED, POLICY_SEAL_VOID, POLICY_SURFACE_EXACT =
+			K.POLICY_OPEN_ENGINEERED, K.POLICY_SEAL_VOID, K.POLICY_SURFACE_EXACT
+		local POLICY_WRITE_WATER = K.POLICY_WRITE_WATER
+		local TARGET_AIR, TARGET_SOLID, TARGET_WATER_SOURCE =
+			K.TARGET_AIR, K.TARGET_SOLID, K.TARGET_WATER_SOURCE
+		-- The target kind each policy needs: air to cut or open, water to write
+		-- water, solid otherwise.
+		local POLICY_TARGET_KIND = {
+			[POLICY_CUT_NATURAL] = TARGET_AIR,
+			[POLICY_DEEP_EXACT_HOST] = TARGET_SOLID,
+			[POLICY_FILL_VOID] = TARGET_SOLID,
+			[POLICY_OPEN_ENGINEERED] = TARGET_AIR,
+			[POLICY_SEAL_VOID] = TARGET_SOLID,
+			[POLICY_SURFACE_EXACT] = TARGET_SOLID,
+			[POLICY_WRITE_WATER] = TARGET_WATER_SOURCE,
+		}
+		local CLASS_IGNORE, PARAM2_EXACT = K.CLASS_IGNORE, K.PARAM2_EXACT
+		local OUTCOME_NOOP, OUTCOME_WRITE, OUTCOME_REJECT =
+			K.OUTCOME_NOOP, K.OUTCOME_WRITE, K.OUTCOME_REJECT
+		local OUTCOME_PRESERVED = 3
+		local LIQUID_SOURCE, LIQUID_FLOWING = K.LIQUID_SOURCE, K.LIQUID_FLOWING
+		local RESOLVED_OLD, RESOLVED_FINAL = K.RESOLVED_OLD, K.RESOLVED_FINAL
+		local PENDING_ROW = K.PENDING_ROW
+
 		local function compatible_liquid(family_id, liquid_kind)
 			return (family_id == ordinary_family or family_id == river_family) and
-				(liquid_kind == K.LIQUID_SOURCE or liquid_kind == K.LIQUID_FLOWING)
+				(liquid_kind == LIQUID_SOURCE or liquid_kind == LIQUID_FLOWING)
 		end
 
 		local function classify(cid, p2, failure_code)
@@ -636,16 +703,65 @@ local function adapter_factory(allocator_factory)
 				paramtype_light, light_propagates, sunlight_propagates, light_source
 		end
 
+		-- `classify` into `resolved` at `base` (+1..9, the flags as 0/1). The
+		-- trusted runtime classifier is pure, so its result per (CID, param2)
+		-- is kept as nine numbers (Round 49 lane JIT): the per-voxel trace then
+		-- reads numbers, where the classifier's booleans were type guards that
+		-- left the compiled trace at every change between air and rock. Only a
+		-- classified pair is kept, so an invalid CID or param2 still reaches
+		-- the classifier and fails there.
+		local function classify_into(cid, p2, failure_code, base)
+			if trusted_classification then
+				local by_param2 = class_memo_slot[cid]
+				local slot = by_param2 and by_param2[p2]
+				if slot then
+					resolved[base + 1] = class_memo[slot + 1]
+					resolved[base + 2] = class_memo[slot + 2]
+					resolved[base + 3] = class_memo[slot + 3]
+					resolved[base + 4] = class_memo[slot + 4]
+					resolved[base + 5] = class_memo[slot + 5]
+					resolved[base + 6] = class_memo[slot + 6]
+					resolved[base + 7] = class_memo[slot + 7]
+					resolved[base + 8] = class_memo[slot + 8]
+					resolved[base + 9] = class_memo[slot + 9]
+					return
+				end
+			end
+			local class_id, family_id, liquid_kind, liquid_level, floodable,
+				paramtype_light, light_propagates, sunlight_propagates, light_source =
+				classify(cid, p2, failure_code)
+			resolved[base + 1] = class_id
+			resolved[base + 2] = family_id
+			resolved[base + 3] = liquid_kind
+			resolved[base + 4] = liquid_level
+			resolved[base + 5] = floodable and 1 or 0
+			resolved[base + 6] = paramtype_light and 1 or 0
+			resolved[base + 7] = light_propagates and 1 or 0
+			resolved[base + 8] = sunlight_propagates and 1 or 0
+			resolved[base + 9] = light_source
+			if trusted_classification and class_memo_count < K.CLASS_MEMO_ENTRIES then
+				local by_param2 = class_memo_slot[cid]
+				if not by_param2 then
+					by_param2 = {}
+					class_memo_slot[cid] = by_param2
+				end
+				local slot = class_memo_count * 9
+				class_memo_count = class_memo_count + 1
+				for field = 1, 9 do class_memo[slot + field] = resolved[base + field] end
+				by_param2[p2] = slot
+			end
+		end
+
 		local function target_base(role_id, y, min_y)
 			local slot = (role_id - 1) * 80 + (y - min_y) + 1
-			if slot < 1 or slot > K.MAX_TARGET_SLOTS then
+			if slot < 1 or slot > MAX_TARGET_SLOTS then
 				fail("fail_target", "target cache slot is outside its bound")
 			end
-			return (slot - 1) * K.TARGET_STRIDE
+			return (slot - 1) * TARGET_STRIDE
 		end
 
 		local function cache_target(role_id, y, aux, min_y)
-			if role_id < 1 or role_id > K.MAX_ROLE or aux ~= 0 then
+			if role_id < 1 or role_id > MAX_ROLE or aux ~= 0 then
 				fail("fail_role", "role or aux is outside R5 vocabulary")
 			end
 			local base = target_base(role_id, y, min_y)
@@ -891,107 +1007,116 @@ local function adapter_factory(allocator_factory)
 		-- details are formatted on the failure branch only.
 		local function voxel_fail(code, message, plan, run_base, x, y, z, cid,
 				param2, class_id)
-			local feature_ref = plan.run_values[run_base + K.R_FEATURE]
+			local feature_ref = plan.run_values[run_base + R_FEATURE]
 			fail(code, message .. " " .. voxel_details(x, y, z, cid, param2,
-				class_id, plan.run_values[run_base + K.R_POLICY],
-				plan.run_values[run_base + K.R_OPCODE],
-				plan.run_values[run_base + K.R_ROLE],
+				class_id, plan.run_values[run_base + R_POLICY],
+				plan.run_values[run_base + R_OPCODE],
+				plan.run_values[run_base + R_ROLE],
 				feature_ref ~= 0 and plan.stable_refs[feature_ref] or nil))
 		end
 
-		local function resolve_voxel(plan, run_base, y, min_y, heightmap_value,
-				old_cid, old_param2, x, z)
+		-- The voxel column resolve_voxel works in (set by its caller).
+		local voxel_plan, voxel_min_y, voxel_heightmap, voxel_x, voxel_z
+
+		-- The voxel's target slot after the policy's target-kind checks. The
+		-- per-voxel steps run in small frames of their own (Round 49 lane JIT):
+		-- a value that stays in a local is part of every exit of the compiled
+		-- loop, and with too many of them LuaJIT cannot compile the side traces
+		-- ("register coalescing too complex") and runs them interpreted.
+		local function checked_target(run_base, y, old_cid, old_param2)
+			local target = cache_target(voxel_plan.run_values[run_base + R_ROLE], y,
+				voxel_plan.run_values[run_base + R_AUX], voxel_min_y)
+			-- one lookup instead of a branch per policy group
+			local required = POLICY_TARGET_KIND[voxel_plan.run_values[run_base +
+				R_POLICY]]
+			if required ~= nil and scratch[target + 2] ~= required then
+				voxel_fail("fail_target", (required == TARGET_AIR and "air" or
+					required == TARGET_SOLID and "solid" or "water") ..
+					" policy target differs", voxel_plan, run_base, voxel_x, y,
+					voxel_z, old_cid, old_param2, nil)
+			end
+			return target
+		end
+
+		-- Whether the voxel is native cave content under v7's heightmap that its
+		-- run keeps (preserved_native_cave), the old classification in
+		-- `resolved`.
+		local function preserved_voxel(run_base, y)
+			local feature_ref = voxel_plan.run_values[run_base + R_FEATURE]
+			return preserved_native_cave(voxel_plan.run_values[run_base + R_OPCODE],
+				voxel_plan.run_values[run_base + R_POLICY], resolved[RESOLVED_OLD + 1],
+				voxel_heightmap, y,
+				feature_ref ~= 0 and voxel_plan.stable_refs[feature_ref] or nil)
+		end
+
+		-- The replace-policy outcome against the target, the old classification
+		-- in `resolved`; OUTCOME_PRESERVED for preserved native cave content (a
+		-- no-op that also keeps param2).
+		local function voxel_outcome(run_base, y, old_cid, target)
+			if preserved_voxel(run_base, y) then return OUTCOME_PRESERVED end
+			if old_cid == scratch[target + 1] - 1 then return OUTCOME_NOOP end
+			return replacement_outcome(voxel_plan.run_values[run_base + R_POLICY],
+				resolved[RESOLVED_OLD + 1], resolved[RESOLVED_OLD + 2],
+				resolved[RESOLVED_OLD + 3])
+		end
+
+		-- Validates and resolves one planned voxel of the run at `run_base` in
+		-- the voxel column the caller set (voxel_plan, voxel_min_y,
+		-- voxel_heightmap: v7's heightmap entry of the column, voxel_x,
+		-- voxel_z); the result is in `resolved` until the next call.
+		local function resolve_voxel(run_base, y, old_cid, old_param2)
 			if old_cid == ignore_cid then
 				voxel_fail("fail_content_ignore", "planned owner content is ignore",
-					plan, run_base, x, y, z, old_cid, old_param2, K.CLASS_IGNORE)
+					voxel_plan, run_base, voxel_x, y, voxel_z, old_cid, old_param2,
+					CLASS_IGNORE)
 			end
-			local role = plan.run_values[run_base + K.R_ROLE]
-			local policy = plan.run_values[run_base + K.R_POLICY]
-			local opcode = plan.run_values[run_base + K.R_OPCODE]
-			local aux = plan.run_values[run_base + K.R_AUX]
-			local target = cache_target(role, y, aux, min_y)
-			local target_cid = scratch[target + 1] - 1
-			local target_kind = scratch[target + 2]
-			if (policy == K.POLICY_CUT_NATURAL or
-					policy == K.POLICY_OPEN_ENGINEERED) and target_kind ~= K.TARGET_AIR then
-				voxel_fail("fail_target", "air policy target differs", plan, run_base,
-					x, y, z, old_cid, old_param2, nil)
-			elseif (policy == K.POLICY_FILL_VOID or policy == K.POLICY_SEAL_VOID or
-					policy == K.POLICY_SURFACE_EXACT or
-					policy == K.POLICY_DEEP_EXACT_HOST) and
-					target_kind ~= K.TARGET_SOLID then
-				voxel_fail("fail_target", "solid policy target differs", plan,
-					run_base, x, y, z, old_cid, old_param2, nil)
-			elseif policy == K.POLICY_WRITE_WATER and
-					target_kind ~= K.TARGET_WATER_SOURCE then
-				voxel_fail("fail_target", "water policy target differs", plan,
-					run_base, x, y, z, old_cid, old_param2, nil)
-			end
-			local class_id, family_id, liquid_kind, liquid_level, floodable,
-				paramtype_light, light_propagates, sunlight_propagates, light_source =
-				classify(old_cid, old_param2, "fail_old_class")
-			if class_id == K.CLASS_IGNORE then
+			local target = checked_target(run_base, y, old_cid, old_param2)
+			classify_into(old_cid, old_param2, "fail_old_class", RESOLVED_OLD)
+			if resolved[RESOLVED_OLD + 1] == CLASS_IGNORE then
 				voxel_fail("fail_content_ignore", "classified owner content is ignore",
-					plan, run_base, x, y, z, old_cid, old_param2, class_id)
+					voxel_plan, run_base, voxel_x, y, voxel_z, old_cid, old_param2,
+					CLASS_IGNORE)
 			end
-			local feature_ref = plan.run_values[run_base + K.R_FEATURE]
-			local feature_id = feature_ref ~= 0 and plan.stable_refs[feature_ref] or nil
-			local preserved_by_heightmap = preserved_native_cave(opcode, policy,
-				class_id, heightmap_value, y, feature_id)
-			local outcome
-			if preserved_by_heightmap then
-				outcome = K.OUTCOME_NOOP
-			elseif old_cid == target_cid then
-				outcome = K.OUTCOME_NOOP
-			else
-				outcome = replacement_outcome(policy, class_id, family_id,
-					liquid_kind)
-			end
-			if outcome == K.OUTCOME_REJECT then
+			local outcome = voxel_outcome(run_base, y, old_cid, target)
+			if outcome == OUTCOME_REJECT then
 				voxel_fail("fail_replace_policy", "replace-policy matrix rejected",
-					plan, run_base, x, y, z, old_cid, old_param2, class_id)
+					voxel_plan, run_base, voxel_x, y, voxel_z, old_cid, old_param2,
+					resolved[RESOLVED_OLD + 1])
 			end
-			local final_cid = outcome == K.OUTCOME_WRITE and target_cid or old_cid
-			local param2_mode = scratch[target + 3]
-			local final_param2 = old_param2
-			if param2_mode == K.PARAM2_EXACT and not preserved_by_heightmap then
-				final_param2 = scratch[target + 4] - 1
-			end
-			local final_class, final_family, final_liquid_kind, final_liquid_level,
-				final_floodable, final_paramtype_light, final_light_propagates,
-				final_sunlight_propagates, final_light_source
-			if outcome == K.OUTCOME_WRITE then
-				final_class = scratch[target + 5]
-				final_family = scratch[target + 6]
-				final_liquid_kind = scratch[target + 7]
-				final_liquid_level = scratch[target + 8]
-				final_floodable = scratch[target + 9] == 1
-				final_paramtype_light = scratch[target + 10] == 1
-				final_light_propagates = scratch[target + 11] == 1
-				final_sunlight_propagates = scratch[target + 12] == 1
-				final_light_source = scratch[target + 13]
+			if outcome == OUTCOME_WRITE then
+				resolved[1] = scratch[target + 1] - 1
+				resolved[2] = scratch[target + 3] == PARAM2_EXACT and
+					scratch[target + 4] - 1 or old_param2
+				-- the cached target's classification (scratch + 5..13, the
+				-- flags already 0/1)
+				resolved[RESOLVED_FINAL + 1] = scratch[target + 5]
+				resolved[RESOLVED_FINAL + 2] = scratch[target + 6]
+				resolved[RESOLVED_FINAL + 3] = scratch[target + 7]
+				resolved[RESOLVED_FINAL + 4] = scratch[target + 8]
+				resolved[RESOLVED_FINAL + 5] = scratch[target + 9]
+				resolved[RESOLVED_FINAL + 6] = scratch[target + 10]
+				resolved[RESOLVED_FINAL + 7] = scratch[target + 11]
+				resolved[RESOLVED_FINAL + 8] = scratch[target + 12]
+				resolved[RESOLVED_FINAL + 9] = scratch[target + 13]
 			else
-				final_class, final_family, final_liquid_kind, final_liquid_level,
-					final_floodable, final_paramtype_light,
-					final_light_propagates, final_sunlight_propagates,
-					final_light_source = classify(final_cid, final_param2,
-						"fail_old_class")
+				local final_param2 = old_param2
+				if outcome ~= OUTCOME_PRESERVED and
+						scratch[target + 3] == PARAM2_EXACT then
+					final_param2 = scratch[target + 4] - 1
+				end
+				resolved[1] = old_cid
+				resolved[2] = final_param2
+				classify_into(old_cid, final_param2, "fail_old_class", RESOLVED_FINAL)
 			end
-			return final_cid, final_param2, class_id, family_id, liquid_kind,
-				liquid_level, floodable, paramtype_light, light_propagates,
-				sunlight_propagates, light_source, final_class, final_family,
-				final_liquid_kind, final_liquid_level, final_floodable,
-				final_paramtype_light, final_light_propagates,
-				final_sunlight_propagates, final_light_source
 		end
 
 		local function run_for_y(plan, column, y)
 			local first = plan.column_start[column]
 			local after = plan.column_start[column + 1]
 			for run = first, after - 1 do
-				local base = (run - 1) * K.RUN_STRIDE
-				if y < plan.run_values[base + K.R_Y_MIN] then return nil end
-				if y <= plan.run_values[base + K.R_Y_MAX] then return base end
+				local base = (run - 1) * RUN_STRIDE
+				if y < plan.run_values[base + R_Y_MIN] then return nil end
+				if y <= plan.run_values[base + R_Y_MAX] then return base end
 			end
 			return nil
 		end
@@ -1121,20 +1246,6 @@ local function adapter_factory(allocator_factory)
 				return (z - minp.z) * x_count + (x - minp.x) + 1
 			end
 
-			local modified_voxels = 0
-			local content_dirty_columns = 0
-			local param2_dirty_columns = 0
-			local light_dirty_columns = 0
-			local liquid_dirty_columns = 0
-
-			local function mark_column(array, column)
-				if array[column] == 0 then
-					array[column] = 1
-					return 1
-				end
-				return 0
-			end
-
 			local function final_neighbor(nx, ny, nz)
 				local column = column_index(nx, nz)
 				local index = buffer_index(nx, ny, nz)
@@ -1145,71 +1256,77 @@ local function adapter_factory(allocator_factory)
 					if old_cid == ignore_cid then
 						fail("fail_content_ignore",
 							"required owner neighbour is ignore " ..
-							voxel_details(nx, ny, nz, old_cid, old_p2, K.CLASS_IGNORE))
+							voxel_details(nx, ny, nz, old_cid, old_p2, CLASS_IGNORE))
 					end
 					local _, family, kind = classify(old_cid, old_p2,
 						"fail_old_class")
 					return old_cid, old_p2, family, kind
 				end
-				local final_cid, final_p2, old_class_unused, old_family_unused,
-					old_kind_unused, old_level_unused, old_floodable_unused,
-					old_paramtype_unused, old_light_unused, old_sunlight_unused,
-					old_source_unused, final_class_unused, final_family,
-					final_kind = resolve_voxel(plan, run_base, ny,
-						minp.y, heightmap[column], old_cid, old_p2, nx, nz)
-				return final_cid, final_p2, final_family, final_kind
+				voxel_heightmap, voxel_x, voxel_z = heightmap[column], nx, nz
+				resolve_voxel(run_base, ny, old_cid, old_p2)
+				return resolved[1], resolved[2], resolved[RESOLVED_FINAL + 2],
+					resolved[RESOLVED_FINAL + 3]
 			end
 
+			-- One pass validates, resolves and writes (Round 49 lane JIT; it was
+			-- a validating pass and a replay). A changed voxel's write waits in
+			-- `pending` until the next row of columns is done: until then the
+			-- neighbour scan of this row and of the next one still reads its old
+			-- bytes. A failure leaves only this private buffer partly written;
+			-- the setters below run after the whole pass.
+			-- The dirty columns are marked here and counted after the pass.
+			local modified_voxels = 0
+			local pending_base, pending_count = 0, 0
+			local previous_base, previous_count = PENDING_ROW, 0
+			local old_base, final_base = RESOLVED_OLD, RESOLVED_FINAL
+			voxel_plan, voxel_min_y = plan, minp.y
 			for z = minp.z, maxp.z do
 				for x = minp.x, maxp.x do
 					local column = column_index(x, z)
 					local first = plan.column_start[column]
 					local after = plan.column_start[column + 1]
 					for run = first, after - 1 do
-						local run_base = (run - 1) * K.RUN_STRIDE
-						for y = plan.run_values[run_base + K.R_Y_MIN],
-								plan.run_values[run_base + K.R_Y_MAX] do
+						local run_base = (run - 1) * RUN_STRIDE
+						for y = plan.run_values[run_base + R_Y_MIN],
+								plan.run_values[run_base + R_Y_MAX] do
 							local index = buffer_index(x, y, z)
 							local old_cid = data_buffer[index]
 							local old_p2 = param2_buffer[index]
-							local final_cid, final_p2, _, old_family, old_kind,
-								old_level, old_floodable, old_paramtype_light,
-								old_light_propagates, old_sunlight_propagates,
-								old_light_source, _, final_family, final_kind,
-								final_level, final_floodable, final_paramtype_light,
-								final_light_propagates, final_sunlight_propagates,
-								final_light_source = resolve_voxel(plan, run_base, y,
-									minp.y, heightmap[column], old_cid, old_p2, x, z)
+							voxel_heightmap, voxel_x, voxel_z = heightmap[column], x, z
+							resolve_voxel(run_base, y, old_cid, old_p2)
+							local final_cid = resolved[1]
+							local final_p2 = resolved[2]
 							local content_changed = final_cid ~= old_cid
 							local param2_changed = final_p2 ~= old_p2
 							if content_changed or param2_changed then
-								modified_voxels = modified_voxels + 1
+								local slot = pending_base + pending_count * 3
+								pending[slot + 1] = index
+								pending[slot + 2] = final_cid
+								pending[slot + 3] = final_p2
+								pending_count = pending_count + 1
 							end
-							if content_changed then
-								content_dirty_columns = content_dirty_columns +
-									mark_column(dirty_content, column)
-							end
-							if param2_changed then
-								param2_dirty_columns = param2_dirty_columns +
-									mark_column(dirty_param2, column)
-							end
+							if content_changed then dirty_content[column] = 1 end
+							if param2_changed then dirty_param2[column] = 1 end
 							if content_changed and
-									(old_paramtype_light ~= final_paramtype_light or
-									old_light_propagates ~= final_light_propagates or
-									old_sunlight_propagates ~= final_sunlight_propagates or
-									old_light_source ~= final_light_source) then
-								light_dirty_columns = light_dirty_columns +
-									mark_column(dirty_light, column)
+									(resolved[old_base + 6] ~= resolved[final_base + 6] or
+									resolved[old_base + 7] ~= resolved[final_base + 7] or
+									resolved[old_base + 8] ~= resolved[final_base + 8] or
+									resolved[old_base + 9] ~= resolved[final_base + 9]) then
+								dirty_light[column] = 1
 							end
 							local liquid_dirty = false
 							if dirty_liquid[column] == 0 and
 									(content_changed or param2_changed) then
+								local old_family = resolved[old_base + 2]
+								local final_family = resolved[final_base + 2]
 								if old_family > 0 or final_family > 0 or
-										old_kind ~= final_kind or
+										resolved[old_base + 3] ~= resolved[final_base + 3] or
 										old_family ~= final_family or
-										old_level ~= final_level then
+										resolved[old_base + 4] ~= resolved[final_base + 4] then
 									liquid_dirty = true
-								elseif old_floodable ~= final_floodable then
+								elseif resolved[old_base + 5] ~= resolved[final_base + 5] then
+									-- (final_neighbor overwrites `resolved`; this voxel's
+									-- values are no longer needed)
 									for face = 1, 6 do
 										local nx = x + K.FACE_DX[face]
 										local ny = y + K.FACE_DY[face]
@@ -1221,46 +1338,63 @@ local function adapter_factory(allocator_factory)
 											local n_old_index = buffer_index(nx, ny, nz)
 											local n_old_cid = data_buffer[n_old_index]
 											local n_old_p2 = param2_buffer[n_old_index]
-											local n_final_cid, n_final_p2, n_family, n_kind =
-												final_neighbor(nx, ny, nz)
-											if n_final_cid == n_old_cid and
-													n_final_p2 == n_old_p2 and
-													compatible_liquid(n_family, n_kind) then
-												liquid_dirty = true
+											-- The odd faces (-x, -y, -z) lead to a voxel the
+											-- pass has validated already if it is planned, or
+											-- else to one final_neighbor only classifies; it
+											-- counts only unchanged, so only if its old
+											-- content is a compatible liquid. Any other needs
+											-- no second resolve (Round 49 lane JIT: the same
+											-- decision; ignore still fails in final_neighbor).
+											local resolve = true
+											if face % 2 == 1 and n_old_cid ~= ignore_cid then
+												classify_into(n_old_cid, n_old_p2, "fail_old_class",
+													RESOLVED_OLD)
+												resolve = compatible_liquid(resolved[RESOLVED_OLD + 2],
+													resolved[RESOLVED_OLD + 3])
+											end
+											if resolve then
+												local n_final_cid, n_final_p2, n_family, n_kind =
+													final_neighbor(nx, ny, nz)
+												if n_final_cid == n_old_cid and
+														n_final_p2 == n_old_p2 and
+														compatible_liquid(n_family, n_kind) then
+													liquid_dirty = true
+												end
 											end
 										end
 										if liquid_dirty then break end
 									end
 								end
 							end
-							if liquid_dirty then
-								liquid_dirty_columns = liquid_dirty_columns +
-									mark_column(dirty_liquid, column)
-							end
+							if liquid_dirty then dirty_liquid[column] = 1 end
 						end
 					end
 				end
+				-- The row before this one is no longer read: write it.
+				for slot = previous_base, previous_base + (previous_count - 1) * 3, 3 do
+					local index = pending[slot + 1]
+					data_buffer[index] = pending[slot + 2]
+					param2_buffer[index] = pending[slot + 3]
+				end
+				modified_voxels = modified_voxels + pending_count
+				previous_base, pending_base = pending_base, previous_base
+				previous_count, pending_count = pending_count, 0
 			end
-
-			-- All semantic validation is now complete.  The replay recomputes only
-			-- already-validated scalar outcomes from immutable old entries.
-			for z = minp.z, maxp.z do
-				for x = minp.x, maxp.x do
-					local column = column_index(x, z)
-					for run = plan.column_start[column],
-							plan.column_start[column + 1] - 1 do
-						local run_base = (run - 1) * K.RUN_STRIDE
-						for y = plan.run_values[run_base + K.R_Y_MIN],
-								plan.run_values[run_base + K.R_Y_MAX] do
-							local index = buffer_index(x, y, z)
-							local final_cid, final_p2 = resolve_voxel(plan, run_base, y,
-								minp.y, heightmap[column], data_buffer[index],
-								param2_buffer[index], x, z)
-							data_buffer[index] = final_cid
-							param2_buffer[index] = final_p2
-						end
-					end
-				end
+			for slot = previous_base, previous_base + (previous_count - 1) * 3, 3 do
+				local index = pending[slot + 1]
+				data_buffer[index] = pending[slot + 2]
+				param2_buffer[index] = pending[slot + 3]
+			end
+			voxel_plan = nil
+			local content_dirty_columns = 0
+			local param2_dirty_columns = 0
+			local light_dirty_columns = 0
+			local liquid_dirty_columns = 0
+			for column = 1, column_count do
+				content_dirty_columns = content_dirty_columns + dirty_content[column]
+				param2_dirty_columns = param2_dirty_columns + dirty_param2[column]
+				light_dirty_columns = light_dirty_columns + dirty_light[column]
+				liquid_dirty_columns = liquid_dirty_columns + dirty_liquid[column]
 			end
 
 			metric_add(K.M_CLASSIFIED_COLUMNS, planned_columns)

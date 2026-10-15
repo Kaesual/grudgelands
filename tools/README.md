@@ -1107,6 +1107,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `insecure.patch` to the staged game, so only that run's throwaway
   server config disables mod security and the timer logs LuaJIT trace
   aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
+  Since Round 49 (lane JIT) the R5 adapter has one pass: its
+  `r5a_replay` mark follows `r5a_resolve_validate` directly.
 - **Round 49** (`r49_<lane>`): `r49_ui` lane UI's engine screenshots, no
   fixture (its checks are in `r48_mail` and `r48_sell`): `capture.sh
   OUT_DIR` with `grug_probe_r49_ui` shows the mailbox Write tab with the
@@ -1167,3 +1169,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `count_tiles.lua REPO [seed ...]` the full-preparation tiles and extra
   chunks the fill-floor bottom changes, from the real preparation authority
   without generating (about 75 s per seed).
+- **Round 49 lane JIT** (`r49_jit`): the R5 adapter's one compilable pass
+  (`portable_test.lua`: on seed 12345 with v7's stand-in ground moved
+  off the plan, the runtime adapter with its classification memo and the
+  validating adapter write the same bytes, result and dirty counts, also
+  with flowing water of every level; an out-of-range param2 still fails in
+  the classifier); `fleet_digest.sh TREE OUT [perturb]` (through
+  `fleet_digest.lua`) the bytes of every chunk the seed fleet's quick seeds
+  write, for comparing two trees (`JOBS`, `COUNT`; `perturb` moves the
+  ground as the fixture does); `evidence/` the lane's receipts: `boot1`
+  (the one-pass adapter before the zones key fix) and `boot2` (the lane's
+  final state), each `INSECURE=1 tools/mgprof/run.sh stages` like MGPROF's
+  boots 5 and 6 (`summarize.py`), and `digest/` the chunk bytes of main
+  `f8f2d134` and of the branch (the 100 quick seeds, and 40 with `perturb`),
+  and the same for main `1b965ec4` and the branch merged with it.
