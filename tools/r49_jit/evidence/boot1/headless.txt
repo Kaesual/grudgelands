@@ -1,0 +1,11 @@
+staged patch: stages-insecure.patch
+staged probe: grug_probe_mgprof
+headless boot: FAIL [ERROR lines] (port 36357, 330 s)
+log: /tmp/grudgelands-headless.s7ht7L/server.log
+seed = 12345
+7:ERROR[Main]: Secure setting secure.enable_security isn't allowed, so was ignored.
+105:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:36357.
+kept: /tmp/grudgelands-headless.s7ht7L
+failed boot evidence: /tmp/grudgelands-headless-failed/grudgelands-headless.s7ht7L
+wall_s=116
+root: /tmp/grudgelands-headless.s7ht7L

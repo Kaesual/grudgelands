@@ -1116,4 +1116,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the classifier); `fleet_digest.sh TREE OUT [perturb]` (through
   `fleet_digest.lua`) the bytes of every chunk the seed fleet's quick seeds
   write, for comparing two trees (`JOBS`, `COUNT`; `perturb` moves the
-  ground as the fixture does); `evidence/` the receipts of the lane.
+  ground as the fixture does); `evidence/` the lane's receipts: `boot1`
+  (the one-pass adapter before the zones key fix) and `boot2` (the lane's
+  final state), each `INSECURE=1 tools/mgprof/run.sh stages` like MGPROF's
+  boots 5 and 6 (`summarize.py`), and `digest/` the chunk bytes of main
+  `f8f2d134` and of the branch (the 100 quick seeds, and 40 with `perturb`).
