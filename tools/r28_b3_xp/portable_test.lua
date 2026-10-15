@@ -5,10 +5,11 @@
 --   1. the unit and the curve: M(L) = 25 + 5L, XP per level rounded to tens,
 --      4,200 XP to level 10 and 194,220 to level 60, level_from_xp on both
 --      sides of every threshold, set_xp capped at the level-60 total;
---   2. kill XP through the real settlement (Round 46 ruling 5): M(player
---      level) times the level-difference factor (-15 % per level below,
---      +10 % per level above, at most +50 %), the gray rule at 7 below,
---      elite x4 / rare x6, boss and critter tiers, the `_grug_xp_reward`
+--   2. kill XP through the real settlement (Round 46 ruling 5, Round 49
+--      rulings 5-6): M(player level) times the level-difference factor
+--      (-10 % per level below, +10 % per level above, at most +50 %), the
+--      gray rule at 10 below, elite x4 / rare x2, boss and critter tiers,
+--      the `_grug_xp_reward`
 --      override, the participant split with each recipient's own value and
 --      a gray member in the head count, same-faction refusal, no x1.5 and
 --      no race bonus;
@@ -215,16 +216,17 @@ do
 	eq(settle(mob(6, "normal", {a})).alice, 45, "L6 kill at L1: 30 x 1.5 = 45")
 	eq(settle(mob(20, "normal", {a})).alice, 45, "L20 kill at L1: capped at x 1.5, 45")
 	at_level(a, 15)
-	eq(settle(mob(8, "normal", {a})).alice, nil, "gray: L8 at L15 (7 below) gives nothing")
-	eq(settle(mob(9, "normal", {a})).alice, 10, "L9 at L15 is not gray: 100 x 0.10 = 10")
-	eq(settle(mob(12, "normal", {a})).alice, 55, "L12 at L15: 100 x 0.55 = 55")
-	eq(settle(mob(14, "normal", {a})).alice, 85, "L14 at L15: 100 x 0.85 = 85")
+	eq(settle(mob(5, "normal", {a})).alice, nil, "gray: L5 at L15 (10 below) gives nothing")
+	eq(settle(mob(6, "normal", {a})).alice, 10, "L6 at L15 (9 below) is not gray: 100 x 0.10 = 10")
+	eq(settle(mob(8, "normal", {a})).alice, 30, "L8 at L15: 100 x 0.30 = 30")
+	eq(settle(mob(12, "normal", {a})).alice, 70, "L12 at L15: 100 x 0.70 = 70")
+	eq(settle(mob(14, "normal", {a})).alice, 90, "L14 at L15: 100 x 0.90 = 90")
 	eq(settle(mob(15, "normal", {a})).alice, 100, "L15 at L15: 100")
 	eq(settle(mob(18, "normal", {a})).alice, 130, "L18 at L15: 100 x 1.3 = 130")
-	check(X.is_gray(8, 15) and not X.is_gray(9, 15), "is_gray: the line at 7 below")
+	check(X.is_gray(5, 15) and not X.is_gray(6, 15), "is_gray: the line at 10 below")
 	at_level(a, 10)
 	eq(settle(mob(10, "elite", {a})).alice, 300, "elite x4 at L10: 300")
-	eq(settle(mob(10, "rare", {a})).alice, 450, "rare x6 at L10: 450")
+	eq(settle(mob(10, "rare", {a})).alice, 150, "rare x2 at L10: 150")
 	eq(settle(mob(10, "boss", {a})).alice, 75, "boss tier: normal XP")
 	eq(settle(mob(1, "critter", {a})).alice, nil, "critter: 0 XP")
 	grug_mobs.register_level_cfg("test:kraken", {_grug_xp_reward = 0})
@@ -236,7 +238,8 @@ do
 	at_level(a, 60)
 	eq(settle(mob(65, "boss", {a})).alice, 487, "L65 boss at L60: 325 x 1.5 = 487.5 -> 487")
 	eq(settle(mob(70, "elite", {a})).alice, 1950, "L70 elite guard at L60: 4 x 325 x 1.5")
-	eq(settle(mob(53, "elite", {a})).alice, nil, "an elite 7 below is gray too")
+	eq(settle(mob(50, "elite", {a})).alice, nil, "an elite 10 below is gray too")
+	eq(settle(mob(51, "elite", {a})).alice, 130, "an elite 9 below: 4 x 325 x 0.1")
 	-- Split: each recipient's own cap, divided by the head count.
 	at_level(a, 10)
 	at_level(b, 1)

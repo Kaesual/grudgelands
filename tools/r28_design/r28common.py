@@ -6,9 +6,10 @@ Python 3 standard library only. Formulas follow the Round 28 plan, Rulings
   M(L)            = 25 + 5 L                (XP of one normal kill at level L)
   XP(L -> L + 1)  = round(M(L) * k(L), tens), k(L) = 8 + 0.29 (L - 1)
   kill XP         = M(player level) * f(d) * tier multiplier (Round 46
-                    ruling 5), d = mob level - player level, f in whole
-                    percent: 0 at d <= -7 (gray rule), 100 - 15 |d| for
-                    -6..-1, 100 + 10 d for 0..+5, 150 above; floored once
+                    ruling 5, Round 49 rulings 5-6), d = mob level - player
+                    level, f in whole percent: 0 at d <= -10 (gray rule),
+                    100 - 10 |d| for -9..-1, 100 + 10 d for 0..+5, 150
+                    above; tiers normal 1, elite 4, rare 2; floored once
                     after dividing by the number of eligible participants
   quest XP        = round(weight * M(quest level)); human +10 % on top
   gathering XP    = round(ratio * M(min(10 * tier, player level))),
@@ -29,9 +30,9 @@ GAME_ZONE_DIRS = (REPO / "mods" / "ENTITIES" / "grug_mobs" / "data" / "zones",
                   REPO / "mods" / "PLAYER" / "grug_quests" / "data" / "zones")
 
 LEVEL_CAP = 60
-TIER_MULT = {"normal": 1, "elite": 4, "rare": 6}
+TIER_MULT = {"normal": 1, "elite": 4, "rare": 2}
 GATHER_RATIO = {"ore": 0.05, "gem": 0.10, "fish": 0.33}
-GRAY_GAP = 7
+GRAY_GAP = 10
 HUMAN_QUEST_BONUS = 1.1
 
 STATS = ("str", "dex", "int", "attack_speed_percent", "crit_percent",
@@ -90,7 +91,7 @@ def kill_percent(mob_level, player_level):
     if d <= -GRAY_GAP:
         return 0
     if d < 0:
-        return 100 + 15 * d
+        return 100 + 10 * d
     return 100 + 10 * min(d, 5)
 
 

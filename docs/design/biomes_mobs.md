@@ -32,7 +32,7 @@ delivered behavior.
   ruling 30; no further kill multiplier); Round 17 applies the startup
   `grug_mob_damage_scale` (default 1.5) exactly once to non-player damage.
   `combat_stats.md` owns settlement and exceptions. Elite armor 80
-  (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70 (×5 / ×2.2 / ×6), and the
+  (×3 HP, ×1.8 dmg, ×4 XP), rare armor 90 (×2.5 / ×1.4 / ×2), and the
   boss tier has a flat 18,000 HP (normal damage, XP and armor). Speeds: aggressive **4.6**
   (4.4 until 2026-09-16,
   user ruling 2), heartland hunters 4.6
@@ -891,7 +891,7 @@ of the pair stays equal (same tier, same chance), the trophy does not —
 "same loot, different look" applies to the trophy too, and a literally
 identical third item would erase the flavor for no balance gain.
 
-### 3.3 Named rares (rare tier: armor 70, ×5 HP, ×2.2 dmg, ×6 XP, ×2 scale + tint, faction-wide spawn broadcast)
+### 3.3 Named rares (rare tier: armor 90, ×2.5 HP, ×1.4 dmg, ×2 XP, ×2 scale + tint, faction-wide spawn broadcast)
 
 Spawned by a scheduled spawner (not ABM): respawn 2–4 h after kill, patrol
 route between 2–3 fixed zone anchors. Every death books that respawn,
@@ -901,7 +901,9 @@ last known place while that place is active (a player is near); time nobody
 is near never counts. Each spawn is a new generation, and an older or second copy removes
 itself when it loads, so a rare never stands twice (Round 37,
 `grug_mobs/liveness.lua`). They inherit their base family's drop
-table (×6 XP and the rare multipliers are the reward WP6 ships); special loot
+table (×2 XP and the rare multipliers are the reward; since Round 49 ruling 6
+the tier sits between normal and elite: tougher than a normal, weaker than an
+elite, with the elite's gear-drop rates); special loot
 rolls ride on WP5's item/enchantment tables.
 
 | Name | Base family | Named-zone route | ~L |

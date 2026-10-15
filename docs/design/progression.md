@@ -192,19 +192,20 @@ owner.
 ## Kill XP
 
 Round 46 ruling 5 (2026-10-12), replacing Round 28 ruling 30's
-`M(min(mob level, player level + 5))` and its gray line at 10 below. A kill
-pays each eligible participant
+`M(min(mob level, player level + 5))`; below the player's level and the rare
+tier since Round 49 rulings 5 and 6 (2026-10-15; before: −15 % per level,
+gray at 7 below, rare ×6). A kill pays each eligible participant
 
 `XP = M(player level) × f(d) × tier multiplier`, then divided by the
 eligible head count (rounded down once),
 
 with d = mob level − player level and the level-difference factor
 
-| d | ≤ −7 | −6 … −1 | 0 | +1 … +5 | above +5 |
+| d | ≤ −10 | −9 … −1 | 0 | +1 … +5 | above +5 |
 |---|---|---|---|---|---|
-| f(d) | 0 (gray) | 1 − 0.15·\|d\| | 1 | 1 + 0.10·d | 1.5 |
+| f(d) | 0 (gray) | 1 − 0.10·\|d\| | 1 | 1 + 0.10·d | 1.5 |
 
-and the tier multipliers normal ×1, elite ×4, rare ×6. The boss tier pays the
+and the tier multipliers normal ×1, elite ×4, rare ×2. The boss tier pays the
 normal ×1 (its HP is flat, `combat_stats.md` §3), so kings, dragons and the
 camp guards follow the same rule with their tiers; critters pay 0; a def's
 `_grug_xp_reward` overrides the formula (the Kraken and the reed angelfish:
@@ -212,7 +213,7 @@ camp guards follow the same rule with their tiers; critters pay 0; a def's
 table is unchanged: its k(L) already rises linearly to three times k(2) at
 level 59 to 60.
 
-- **Gray rule:** a mob 7 or more levels below the player gives that player 0
+- **Gray rule:** a mob 10 or more levels below the player gives that player 0
   (`grug_xp.is_gray`, `grug_xp.GRAY_GAP`), an override too; the target frame
   shows such a mob gray with "(no XP)" (`combat_stats.md` §6).
 - **Split:** each recipient's own value divided by the same eligible count
@@ -226,10 +227,10 @@ level 59 to 60.
   `grug_xp.kill_xp` in `mods/PLAYER/grug_xp/init.lua`, called by
   `grug_mobs.kill_xp`.
 - Examples (solo): an L1 player gets 30 from an L1 mob, 36 from an L3 mob
-  and 45 from an L6 or higher one; an L30 player gets 0 from an L23 mob, 96
-  from an L27, 175 from an L30, 227 from an L33 and 262 from an L36; an L10
-  elite at L10 300, an L10 rare 450; an L70 elite guard at L60 1950. Two
-  players at L10 and L1 on an L10 mob receive 37 and 22.
+  and 45 from an L6 or higher one; an L30 player gets 0 from an L20 mob, 17
+  from an L21, 122 from an L27, 175 from an L30, 227 from an L33 and 262
+  from an L36; an L10 elite at L10 300, an L10 rare 150; an L70 elite guard
+  at L60 1950. Two players at L10 and L1 on an L10 mob receive 37 and 22.
 
 ## Gathering XP
 

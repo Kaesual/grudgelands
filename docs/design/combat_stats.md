@@ -493,7 +493,8 @@ Normal tier at level L:
   There is no other kill multiplier (the Round 16 ×1.5 is gone) and no race
   bonus on kill XP.
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
-  **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
+  **rare patrol 90 (×2.5 HP, ×1.4 dmg, ×2 XP; between normal and elite,
+  Round 49 ruling 6)**, and the registered
   **boss tier (18,000 HP flat; normal damage, XP and armor; no telegraph)**.
   No mob uses the boss tier before
   the round-6 king/dragon content. The single implementation table and formula
@@ -627,12 +628,12 @@ Normal tier at level L:
   82 kill equivalents to level 10, 968 to level 60); quest rewards and
   gathering XP (ore, gem and fish) carry part of it (`progression.md` "XP
   units and level curve", "Gathering XP").
-- **Gray kills award no XP**: a mob at level ≤ killer level − 7 gives 0
-  XP (kills trivial-mob farming; Round 46 ruling 5).
-- **XP by level difference** (Round 46 ruling 5): each recipient's XP is
-  `M(player level)` times 1 − 0.15 per level the mob is below (−6 … −1) or
-  1 + 0.10 per level above (+1 … +5), at most 1.5, times the tier multiplier
-  (`grug_xp.kill_xp`, called by `grug_mobs.kill_xp` in
+- **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
+  XP (kills trivial-mob farming; Round 46 ruling 5, Round 49 ruling 5).
+- **XP by level difference** (Round 46 ruling 5, Round 49 ruling 5): each
+  recipient's XP is `M(player level)` times 1 − 0.10 per level the mob is
+  below (−9 … −1) or 1 + 0.10 per level above (+1 … +5), at most 1.5, times
+  the tier multiplier (`grug_xp.kill_xp`, called by `grug_mobs.kill_xp` in
   `mods/ENTITIES/grug_mobs/levels.lua`; settlement `grug_mobs.award_kill_xp`
   in `init.lua`).
 - **XP participation and split**: a participant dealt accepted damage to the
@@ -718,10 +719,10 @@ Normal tier at level L:
 
 | Mob level | HP | Dmg/hit | Kill XP (normal, solo, own level) | Elite / rare XP |
 |-----------|----|---------|-----------------------:|----------------:|
-| 1 | 26 | 2.3 | 30 | 120 / 180 |
-| 10 | 136 | 5.5 | 75 | 300 / 450 |
-| 30 | 764 | 15.5 | 175 | 700 / 1050 |
-| 60 | 2696 | 38.0 | 325 | 1300 / 1950 |
+| 1 | 26 | 2.3 | 30 | 120 / 60 |
+| 10 | 136 | 5.5 | 75 | 300 / 150 |
+| 30 | 764 | 15.5 | 175 | 700 / 350 |
+| 60 | 2696 | 38.0 | 325 | 1300 / 650 |
 
 ### Same-level TTK check
 
@@ -1213,15 +1214,15 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   20 m and settles the question (nothing in reach, a wall, or a framable
   target first), otherwise from a 20 m ray of its own.
   Relative to the viewer's level L (mobs), a gradient by d = mob level − L
-  (Round 46; one integer RGB colour per level, `con_gradient` in
-  `target_frame.lua`). A mob is gray exactly when its kill would pay the
+  (Round 46, the green end at −9 since Round 49; one integer RGB colour per
+  level, `con_gradient` in `target_frame.lua`). A mob is gray exactly when its kill would pay the
   viewer nothing: the frame asks the settlement's own predicate
   `grug_mobs.player_kill_xp` (`levels.lua`), so the two cannot drift:
 
 | Relation | Color | XP |
 |----------|-------|----|
-| no XP (d ≤ −7, own faction, critter, `_grug_xp_reward` 0) | gray `#aaaaaa` | none, "(no XP)" |
-| d = −6 … 0 | green `#55ff55` to yellow `#ffff55`, evenly per level | 10–100 % (−15 % per level below) |
+| no XP (d ≤ −10, own faction, critter, `_grug_xp_reward` 0) | gray `#aaaaaa` | none, "(no XP)" |
+| d = −9 … 0 | green `#55ff55` to yellow `#ffff55`, evenly per level | 10–100 % (−10 % per level below) |
 | d = +1 … +5 | yellow to red `#ff5555`, evenly per level | 110–150 % (+10 % per level above) |
 | d > +5 | red `#ff5555` | 150 % |
 

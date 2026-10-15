@@ -622,10 +622,11 @@ def self_test():
     check(C.quest_xp(4, 6) == 220, "weight 4 at level 6 = 220 XP (frame example)")
     check(C.quest_xp(4, 6, human=True) == 242, "human +10 %")
     check(C.kill_xp(3, 1) == 36 and C.kill_xp(9, 1) == 45, "kill XP: +10 % per level above, at most +50 %")
-    check(C.kill_xp(7, 10) == 41 and C.kill_xp(4, 10) == 7, "kill XP: -15 % per level below (75 x 0.55, x 0.10)")
-    check(C.kill_xp(4, 11) == 0, "gray rule: 7 below gives 0")
+    check(C.kill_xp(7, 10) == 52 and C.kill_xp(1, 10) == 7, "kill XP: -10 % per level below (75 x 0.70, x 0.10)")
+    check(C.kill_xp(1, 11) == 0, "gray rule: 10 below gives 0")
     check(C.kill_xp(5, 5, participants=2) == 25, "party split floors")
     check(C.kill_xp(5, 5, tier="elite") == 200, "elite x4")
+    check(C.kill_xp(5, 5, tier="rare") == 100, "rare x2 (Round 49 ruling 6)")
     check(C.gathering_xp("ore", 1, 1) == 2, "T1 ore at level 1: 0.05 x M(1) = 1.5 -> 2")
 
     design = C.Design(sample)
