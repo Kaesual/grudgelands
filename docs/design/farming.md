@@ -196,8 +196,10 @@ envelopes round villages, camps and POIs grow their gatherables like open
 land), trees and shrubs the decoration rule (the planner's vegetation
 exclusions and road corridors; banks allowed), ground cover the same rule with
 the seeded share of a start's or capital's treeless band open (Round 36 W3;
-the band itself is a town and never renews). Cave plants follow the
-generator's own cave rule (`r6_settlement.lua` `r30_cave_limit`): they stay
+the band itself is a town and never renews). Cave plants follow the cave
+rule `r6_settlement.lua` `r30_cave_limit` (the generator's own until Round
+49; the generator now places them natively everywhere, mapgen plan answer
+3): they stay
 out of occupied ground and of planned-water and coast shapes, and below a
 town's or POI's protected floor (placement height − 100, Round 24 ruling
 30) the cave is ordinary ground. A surface resource plant on

@@ -426,7 +426,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapge
 diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 --- a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
-@@ -2482,6 +2482,12 @@
+@@ -2186,6 +2186,12 @@
  		end
  
  		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
@@ -436,10 +436,10 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
 +			local function mark(name) if mgp then mgp.mark(name) end end
 +			local mgp_now = mgp and mgp.now or function() return 0 end
 +			mark("w_entry")
- 			local resource_column_state = transaction_state.resource_excluded_column
- 			local resource_protected_floor = transaction_state.resource_protected_floor
- 			local resource_host_base = transaction_state.resource_host_base
-@@ -2562,6 +2568,7 @@
+ 			if call_mode ~= "fixture" and call_mode ~= "production" and
+ 					call_mode ~= "replay_fixture" then
+ 				fail("fail_status", "R6 is disabled")
+@@ -2263,6 +2269,7 @@
  				return (z - eminz) * z_stride + (y - eminy) * y_stride +
  					(x - eminx) + 1
  			end
@@ -447,7 +447,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			local ok_data, returned_data = pcall(vm.get_data, vm, original_data)
  			if not ok_data or not rawequal(returned_data, original_data) then
  				fail("fail_vm_contract", "get_data did not reuse the retained buffer")
-@@ -2570,6 +2577,7 @@
+@@ -2271,6 +2278,7 @@
  			if not ok_p2 or not rawequal(returned_p2, original_param2) then
  				fail("fail_vm_contract", "get_param2_data did not reuse the retained buffer")
  			end
@@ -455,7 +455,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- No per-voxel scalar check: the engine fills every index of the
  			-- emerged volume with an integer content ID (u16) and param2 (u8)
  			-- (`l_vmanip.cpp` get_data / get_param2_data), and the halo check
-@@ -2581,22 +2589,31 @@
+@@ -2282,22 +2290,31 @@
  					intent_interface[index], intent_aux[index] = 0, 0, 0, 0, 0
  			end
  
@@ -487,7 +487,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			end
  			local function discarded_light_call()
  				fail("fail_vm_contract", "composed R5 attempted an inner light transaction")
-@@ -2612,6 +2629,8 @@
+@@ -2313,6 +2330,8 @@
  			if type(r5_result) ~= "string" then
  				fail("fail_settlement", "nested R5 result differs")
  			end
@@ -496,7 +496,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  
  			local ledger = not transaction_state.runtime_mode and
  				{rejections = {}, resources = {}, decorations = {},
-@@ -2742,6 +2761,7 @@
+@@ -2441,6 +2460,7 @@
  				end
  			end
  
@@ -504,7 +504,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- P7: exact R5 P5 predecessor refinement.
  			-- These horizontal decisions are invariant for the complete column and
  			-- the planner has already frozen water/race values in its retained plan.
-@@ -2838,6 +2858,7 @@
+@@ -2537,6 +2557,7 @@
  				end
  			end
  
@@ -512,7 +512,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- R9 surface skin. The opening decision above used immutable native data
  			-- before P7. Fill only native air that the R5 resolver actually preserved;
  			-- exact foundations, water, paths and clears therefore remain untouched.
-@@ -2883,6 +2904,7 @@
+@@ -2582,6 +2603,7 @@
  				end
  			end
  
@@ -520,7 +520,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if contract.schema == "grug_wp40_r7_production_r6_content_v1" then
  			-- R8 shallow strata.  The shared writer seam accepts only immutable
  			-- native stone; native gravel ore is therefore never CID-ambiguous.
-@@ -2906,6 +2928,7 @@
+@@ -2605,6 +2627,7 @@
  					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
  				end})
  
@@ -528,7 +528,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- Round 24 ruling 12 and B2: layers in the fill below the band depth,
  			-- layers through steep faces, rock nests near the surface.
  			helpers.r24_apply_fill_layers({min_x = min_x, min_y = min_y,
-@@ -2921,6 +2944,7 @@
+@@ -2620,6 +2643,7 @@
  					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
  				end})
  
@@ -536,7 +536,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- R8 connected mouths.  The immutable-input helper reconstructs the
  			-- complete lumen and proves a continuing, non-sky native component
  			-- before this transaction changes a single voxel.
-@@ -2948,6 +2972,7 @@
+@@ -2647,6 +2671,7 @@
  					end
  				end
  			end
@@ -544,138 +544,45 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			local function inside_owner(x, y, z)
  				return x >= min_x and x <= max_x and y >= min_y and y <= max_y and
  					z >= min_z and z <= max_z and x >= -3740 and x <= 3740 and
-@@ -2986,7 +3011,16 @@
- 					resource_host_base[index] = 0
- 				end
- 			end
+@@ -2666,6 +2691,9 @@
+ 			-- integer hash per voxel decides (r49_fill_ores_new). No exclusion
+ 			-- under towns or deep water (mapgen plan ruling 5 and §4.1); no
+ 			-- whole-chunk scan, no per-cell budget, no SHA.
 +			mark("p8_setup")
-+			local mgp_host_calls, mgp_eligible, mgp_placed, mgp_veins = 0, 0, 0, 0
-+			local mgp_active_resources, mgp_segments = 0, 0
-+			-- finer P8 split (lane MGPROF boot 4): host_eligible calls from the
-+			-- frontier (all calls minus the scanned volume), frontier rank
-+			-- digests, root draws, frontier candidates
-+			local mgp_frontier_calls, mgp_rank_digests, mgp_root_draws = 0, 0, 0
-+			local mgp_frontier_nodes = 0
- 			local function host_eligible(x, y, z, host_cid)
-+				mgp_host_calls = mgp_host_calls + 1
- 				local column = column_index(x, z)
- 				if not r30_resource_column_open(resource_column_state[column],
- 						resource_protected_floor[column], y) then
-@@ -3047,6 +3081,7 @@
- 					end
- 				end
- 				if allowed_columns > 0 then
-+					mgp_active_resources = mgp_active_resources + 1
- 					for cell_z = math.floor(min_z / 16), math.floor(max_z / 16) do
- 						for cell_x = math.floor(min_x / 16), math.floor(max_x / 16) do
- 							for cell_y = math.floor(min_y / 16), math.floor(max_y / 16) do
-@@ -3072,7 +3107,13 @@
- 									local host_ref = content.content_ref(host_name)
- 									local host_cid = host_ref and contract.content_cids[host_ref]
- 									local eligible = 0
-+									local mgp_t0 = mgp_now()
- 									if host_cid and active then
-+										mgp_segments = mgp_segments + 1
-+										mgp_frontier_calls = mgp_frontier_calls -
-+											(math.min(max_z, cell_z * 16 + 15) - math.max(min_z, cell_z * 16) + 1) *
-+											(segment_end - segment_y + 1) *
-+											(math.min(max_x, cell_x * 16 + 15) - math.max(min_x, cell_x * 16) + 1)
- 										for z = math.max(min_z, cell_z * 16),
- 												math.min(max_z, cell_z * 16 + 15) do
- 											for y = segment_y, segment_end do
-@@ -3087,6 +3128,9 @@
- 											end
- 										end
- 									end
-+									if mgp then mgp.add("p8_host_scan", mgp_now() - mgp_t0) end
-+									mgp_eligible = mgp_eligible + eligible
-+									local mgp_t1 = mgp_now()
- 									if eligible > 0 then
- 										local denominator = resource.denominators[tier]
- 										local remainder_digest = helpers.digest7(
-@@ -3105,11 +3149,15 @@
- 										local large_count = budget - small * planned
- 										local placed, accepted, shortfall, collisions = 0, 0, 0, 0
- 										local next_root_rank = 1
-+										local mgp_t2 = mgp_now()
-+										if mgp then mgp.add("p8_budget_draw_setup", mgp_t2 - mgp_t1) end
-+										local mgp_growth = 0
- 										for vein = 1, planned do
- 											local target = small + (vein <= large_count and 1 or 0)
- 											local root
- 											while next_root_rank <= eligible do
- 												local remaining = eligible - next_root_rank + 1
-+												mgp_root_draws = mgp_root_draws + 1
- 												local selected = root_draw(remaining)
- 												local coordinate = coordinate_scratch[selected]
- 												coordinate_scratch[selected], coordinate_scratch[remaining] =
-@@ -3138,6 +3186,7 @@
- 													stable_state.resource[resource_index], 0, 4,
- 													resource_index + 1)
- 												placed = placed + 1
-+												local mgp_t3 = mgp_now()
- 												while #vein_nodes < target do
- 													local frontier_count = 0
- 													for node_index = 1, #vein_nodes do
-@@ -3170,6 +3219,7 @@
- 																	local rank_key = index_at(x, y, z)
- 																	local rank = rank_memo[rank_key]
- 																	if rank == nil then
-+																		mgp_rank_digests = mgp_rank_digests + 1
- 																		rank = helpers.digest11(
- 																			"resource_frontier_rank_v1", resource.key,
- 																			cell_x, cell_y, cell_z, host_name, tier, band,
-@@ -3181,6 +3231,7 @@
- 															end
- 														end
- 													end
-+													mgp_frontier_nodes = mgp_frontier_nodes + frontier_count
- 													if frontier_count == 0 then break end
- 													local next_node = helpers.frontier_min(frontier_scratch,
- 														frontier_count, helpers.coordinate_less)
-@@ -3194,6 +3245,7 @@
- 														resource_index + 1)
- 													placed = placed + 1
- 												end
-+												mgp_growth = mgp_growth + (mgp_now() - mgp_t3)
- 												if #vein_nodes < target then
- 													shortfall = shortfall + target - #vein_nodes
- 													metric_rejection(ledger, "resource", resource.key,
-@@ -3201,6 +3253,11 @@
- 												end
- 											end
- 										end
-+										mgp_placed, mgp_veins = mgp_placed + placed, mgp_veins + accepted
-+										if mgp then
-+											mgp.add("p8_veins_total", mgp_now() - mgp_t2)
-+											mgp.add("p8_vein_growth", mgp_growth)
-+										end
- 										if ledger then
- 											local key = table.concat({resource.key, cell_x, cell_y,
- 												cell_z, host_name, tier, band}, "\0")
-@@ -3221,6 +3278,21 @@
++			-- Round 49: the P8 fill-ore pass (fill hosts examined, ores placed).
++			local mgp_hosts, mgp_placed = 0, 0
+ 			local r5_plan = plan.r5_plan
+ 			local fill_placed = ledger and {} or nil
+ 			for z = min_z, max_z do
+@@ -2678,10 +2706,12 @@
+ 						if opcode == 27 or opcode == 21 or opcode == 15 then
+ 							for y = r5_plan.run_values[base + 1], r5_plan.run_values[base + 2] do
+ 								local index = index_at(x, y, z)
+-								local resource_index = r49_fill_ore_host(original_data[index],
+-									final_data[index], intent_opcode[index], opcode, fill_stone_cid) and
+-									fill_ore_at(x, y, z)
++								local fill_host = r49_fill_ore_host(original_data[index],
++									final_data[index], intent_opcode[index], opcode, fill_stone_cid)
++								if fill_host then mgp_hosts = mgp_hosts + 1 end
++								local resource_index = fill_host and fill_ore_at(x, y, z)
+ 								if resource_index then
++									mgp_placed = mgp_placed + 1
+ 									local resource = resources[resource_index]
+ 									write_intent(x, y, z, resource.content_ref, 0, 24,
+ 										stable_state.resource[resource_index], 0, 4, resource_index + 1)
+@@ -2695,6 +2725,11 @@
  				end
  			end
- 
+ 			if ledger then ledger.resources = fill_placed end
 +			mark("p8_resources")
 +			if mgp then
-+				mgp.count("p8_host_eligible_calls", mgp_host_calls)
-+				mgp.count("p8_eligible_hosts", mgp_eligible)
++				mgp.count("p8_fill_hosts", mgp_hosts)
 +				mgp.count("p8_placed_nodes", mgp_placed)
-+				mgp.count("p8_veins", mgp_veins)
-+				mgp.count("p8_active_resources", mgp_active_resources)
-+				mgp.count("p8_scanned_segments", mgp_segments)
-+				mgp.count("p8_host_cache", resource_host_base and 1 or 0)
-+				-- all calls minus the scan's (counted as the scanned volume)
-+				mgp.count("p8_frontier_host_calls", mgp_host_calls + mgp_frontier_calls)
-+				mgp.count("p8_rank_digests", mgp_rank_digests)
-+				mgp.count("p8_root_draws", mgp_root_draws)
-+				mgp.count("p8_frontier_candidates", mgp_frontier_nodes)
 +			end
+ 
  			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
  			-- `tree_roots`: the roots of the generated trees accepted in this owner
- 			-- (Round 47), kept TREE_SPACING apart.
-@@ -3542,6 +3614,7 @@
+@@ -3017,6 +3052,7 @@
  			-- closure surface over these private buffers, runs after the complete R6
  			-- P9 loop and before common run derivation/replay/commit, and cannot call
  			-- a VoxelManip setter. A missing tail preserves the accepted R6 path.
@@ -683,7 +590,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if transaction_state.successor_tail then
  				local successor_context = {
  					schema = "grug_wp40_r7_successor_context_v1",
-@@ -3628,6 +3701,7 @@
+@@ -3079,6 +3115,7 @@
  				end
  				function successor_context.write_p9g(x, y, z, cid, param2,
  						local_ref, feature_ref)
@@ -691,7 +598,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("P9G write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3656,6 +3730,7 @@
+@@ -3107,6 +3144,7 @@
  				end
  				function successor_context.write_anchor(x, y, z, cid, param2,
  						local_ref, feature_ref)
@@ -699,7 +606,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("anchor write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3690,6 +3765,7 @@
+@@ -3141,6 +3179,7 @@
  					return planner_source.road_column_at(x, z)
  				end
  				function successor_context.write_road(x, y, z, cid, param2)
@@ -707,7 +614,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("road write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3709,6 +3785,7 @@
+@@ -3160,6 +3199,7 @@
  				end
  				function successor_context.write_hearthpine(x, y, z, cid, param2,
  						local_ref, feature_ref)
@@ -715,7 +622,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("Hearthpine write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3740,6 +3817,7 @@
+@@ -3191,6 +3231,7 @@
  					intent_aux[index] = (successor_ref - 1) * 256 + param2
  					occupancy[index] = -2
  				end
@@ -723,7 +630,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  				local successor_ledger = transaction_state.successor_tail:settle(successor_context)
  				if type(successor_ledger) ~= "table" or
  						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" then
-@@ -3757,6 +3835,7 @@
+@@ -3208,6 +3249,7 @@
  				end
  			end
  
@@ -731,7 +638,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- Canonical runs and their checksums are an evidence product. The live
  			-- writer has already materialized the same intent bytes and commits them
  			-- directly; no runtime consumer reads the encoded proof.
-@@ -3903,6 +3982,7 @@
+@@ -3354,6 +3396,7 @@
  				metrics_state.replay_count = metrics_state.replay_count + 1
  			end
  
@@ -739,7 +646,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			local content_changed, param2_changed, light_changed, liquid_changed =
  				false, false, false, false
  			last_sun_runs = 0
-@@ -3978,6 +4058,12 @@
+@@ -3429,6 +3472,12 @@
  				light_columns
  			metrics_state.liquid_dirty_columns = metrics_state.liquid_dirty_columns +
  				liquid_columns
@@ -752,7 +659,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if not content_changed and not param2_changed then return "noop_equal_content" end
  
  			-- One light read for the relight (halo.relight) before any setter.
-@@ -3989,6 +4075,7 @@
+@@ -3440,6 +3489,7 @@
  				light_loaded = true
  			end
  
@@ -760,7 +667,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			transaction_state.written_vm = vm
  			if content_changed then
  				local ok = pcall(vm.set_data, vm, final_data)
-@@ -3998,6 +4085,7 @@
+@@ -3449,6 +3499,7 @@
  				local ok = pcall(vm.set_param2_data, vm, final_param2)
  				if not ok then fail("fail_vm_contract", "set_param2_data failed") end
  			end
@@ -768,7 +675,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if light_changed then
  				local a = halo.args
  				a.data, a.param2, a.light, a.ignore_cid = final_data, final_param2,
-@@ -4010,10 +4098,12 @@
+@@ -3461,10 +3512,12 @@
  				transaction_state.written_light = true
  				last_sun_runs = halo.relight(a)
  			end
@@ -795,7 +702,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen
  -- LuaJIT side-exit tuning for this environment (see ../jit_tuning.lua).
  dofile(core.get_modpath("grug_mapgen") .. "/jit_tuning.lua")()
  local function fail(message)
-@@ -96,9 +100,18 @@
+@@ -97,9 +101,18 @@
  	maxp = plain_engine_position(maxp, "generated maxp")
  	-- Native air above everything the writer can place: the transaction would
  	-- change nothing (air_chunks.lua), so it is not run.
@@ -815,7 +722,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen
  	if type(result) ~= "string" then fail("writer result differs") end
  end
  
-@@ -111,5 +124,7 @@
+@@ -112,5 +125,7 @@
  	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
  	-- the external R8 cave checker can prove the component the real writer saw.
  	if native_baseline then return end

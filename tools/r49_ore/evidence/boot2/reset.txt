@@ -1,0 +1,1 @@
+reset_columns: 3 columns, deleted 3038 blocks, 16728 blocks remain (xyz schema)

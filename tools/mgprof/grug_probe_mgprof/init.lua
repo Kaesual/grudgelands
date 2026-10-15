@@ -9,9 +9,10 @@
 -- (every one of their 6400 columns: land, no river, no functional or hard
 -- foundation, no road; logged); then generate the warm-up chunk and the
 -- measured chunks in order, GAP seconds apart, logging a request and a done
--- line per chunk; then shut the server down. A chunk that does not come back
--- EMERGE_GENERATED (for instance one left on disk by an earlier boot) is
--- reported as NOT_FRESH and fails the run.
+-- line per chunk; then count their ores, gems and cave plants (Round 49
+-- lane ORE, `ore_census`) and shut the server down. A chunk that does not
+-- come back EMERGE_GENERATED (for instance one left on disk by an earlier
+-- boot) is reported as NOT_FRESH and fails the run.
 --
 -- config.lua (written next to this file by tools/mgprof/run.sh) returns
 -- {totals_only = bool}. COLUMNS below are pinned (seed 12345); with
@@ -225,6 +226,104 @@ local function log_maps()
 		table.concat(lines, "; ")))
 end
 
+-- Round 49 lane ORE: the ore, gem and cave-plant nodes of every measured
+-- chunk, read back from the map. Per tier band the host rock (the band's
+-- tier rock plus the ores in it) and each resource's nodes; per chunk the
+-- cave plants and the cave floors of their host rocks (a walkable node with
+-- air above); for the surface chunks (S1, S2, B) the T1 ores per 8-layer
+-- slab of `default:stone`, so a doubled rate at the native/fill seam shows.
+local function ore_census(list)
+	local M = grug_materials
+	local tier_cid, ore_key, rock_tier = {}, {}, {}
+	for index, tier in ipairs(M.TIERS) do
+		tier_cid[index] = core.get_content_id(tier.node)
+		rock_tier[tier_cid[index]] = index
+	end
+	for _, resource in ipairs(M.RESOURCES) do
+		ore_key[core.get_content_id(resource.natural_node)] = resource.key
+	end
+	local air = core.CONTENT_AIR
+	local plants = {[core.get_content_id("grug_mapgen:cave_cap_source")] = "cave_cap",
+		[core.get_content_id("grug_mapgen:ember_moss_source")] = "ember_moss"}
+	local plant_hosts = {cave_cap = {}, ember_moss = {[tier_cid[5]] = true}}
+	for index = 1, 4 do plant_hosts.cave_cap[tier_cid[index]] = true end
+	for _, row in ipairs(list) do
+		local minp = {x = row.x, y = row.y, z = row.z}
+		local maxp = {x = row.x + 79, y = row.y + 79, z = row.z + 79}
+		local vm = core.get_voxel_manip(minp, maxp)
+		local emin, emax = vm:read_from_map(minp, maxp)
+		local area = VoxelArea(emin, emax)
+		local data = vm:get_data()
+		local bands, slabs = {}, {}
+		local plant_count = {cave_cap = 0, ember_moss = 0}
+		local floor_count = {cave_cap = 0, ember_moss = 0}
+		for z = minp.z, maxp.z do
+			for y = minp.y, maxp.y do
+				local tier = M.tier_at(y)
+				local band = bands[tier]
+				if not band then
+					band = {host = 0, ores = {}}
+					bands[tier] = band
+				end
+				local slab = math.floor(y / 8) * 8
+				for x = minp.x, maxp.x do
+					local index = area:index(x, y, z)
+					local cid = data[index]
+					local key = ore_key[cid]
+					if key then
+						band.host = band.host + 1
+						band.ores[key] = (band.ores[key] or 0) + 1
+					elseif rock_tier[cid] == tier then
+						band.host = band.host + 1
+					end
+					if tier == 1 and (key or cid == tier_cid[1]) then
+						local s = slabs[slab]
+						if not s then s = {host = 0, ores = 0} slabs[slab] = s end
+						s.host = s.host + 1
+						if key then s.ores = s.ores + 1 end
+					end
+					local plant = plants[cid]
+					if plant then plant_count[plant] = plant_count[plant] + 1 end
+					local above = y < maxp.y and data[area:index(x, y + 1, z)]
+					if above and (above == air or plants[above]) then
+						for name, hosts in pairs(plant_hosts) do
+							if hosts[cid] then floor_count[name] = floor_count[name] + 1 end
+						end
+					end
+				end
+			end
+		end
+		for tier = 1, #M.TIERS do
+			local band = bands[tier]
+			if band and band.host > 0 then
+				local keys, parts, total = {}, {}, 0
+				for key in pairs(band.ores) do keys[#keys + 1] = key end
+				table.sort(keys)
+				for _, key in ipairs(keys) do
+					total = total + band.ores[key]
+					parts[#parts + 1] = ("%s=%d"):format(key, band.ores[key])
+				end
+				log(("ore_count id=%s band=T%d host=%d ores=%d share=%.2f%% %s"):format(row.id,
+					tier, band.host, total, 100 * total / band.host, table.concat(parts, " ")))
+			end
+		end
+		log(("cave_plants id=%s cave_cap=%d floors=%d ember_moss=%d floors=%d"):format(row.id,
+			plant_count.cave_cap, floor_count.cave_cap, plant_count.ember_moss,
+			floor_count.ember_moss))
+		if row.id:find("S1", 1, true) or row.id:find("S2", 1, true) or
+				row.id:sub(-2) == "_B" then
+			local ys, parts = {}, {}
+			for slab in pairs(slabs) do ys[#ys + 1] = slab end
+			table.sort(ys)
+			for _, slab in ipairs(ys) do
+				local s = slabs[slab]
+				parts[#parts + 1] = ("%d:%d/%d"):format(slab, s.ores, s.host)
+			end
+			log(("ore_slabs id=%s %s"):format(row.id, table.concat(parts, " ")))
+		end
+	end
+end
+
 local function finish(ok, message)
 	pcall(bench_digest)
 	pcall(log_maps)
@@ -242,7 +341,11 @@ local function run_chunks(list)
 		local row = list[index]
 		if not row then
 			-- one more profiler window after the last chunk, then stop
-			core.after(GAP, function() finish(true, #list .. " chunks") end)
+			core.after(GAP, function()
+				local ok, err = pcall(ore_census, list)
+				if not ok then log("ore census failed: " .. tostring(err)) end
+				finish(true, #list .. " chunks")
+			end)
 			return
 		end
 		local p = {x = row.x + 8, y = row.y + 8, z = row.z + 8}

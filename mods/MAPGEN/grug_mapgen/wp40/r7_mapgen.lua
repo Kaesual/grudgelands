@@ -65,8 +65,9 @@ end
 local severe = dofile(core_path .. "/severe.lua")
 local wp40 = modpath .. "/wp40"
 local native = dofile(wp40 .. "/r7_native.lua")
-native.validate_emerge()
 local payload = exact_payload(core.ipc_get(IPC_KEY))
+-- The derived native rows (ores, cave plants) read the projection main sent.
+native.validate_emerge(wp40, payload.projection)
 local catalog = dofile(gathering_path .. "/catalog.lua")
 local runtime = dofile(wp40 .. "/r7_runtime.lua")(core, wp40,
 	default_path .. "/schematics", payload.projection, catalog,

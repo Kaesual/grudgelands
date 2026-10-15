@@ -63,8 +63,6 @@ return function(catalog, content, habitat)
    return ctx.analytic_p7_tuple(x,y,z)
   end
   local tail={};local bound,generation;local total=0
-  local cave_rows={}
-  for i,row in ipairs(catalog.plants) do if row.mode=="cave" then cave_rows[#cave_rows+1]={i,row} end end
   function tail.bind(plan,gen) bound,generation=plan,gen end
   function tail.settle(ctx)
    assert(ctx.plan==bound and ctx.generation==generation,"world content plan binding differs")
@@ -116,26 +114,8 @@ return function(catalog, content, habitat)
        end
       end
      end
-     -- Deep candidates use actual original/final air, not analytic surface air.
-     -- A support crossing the owner boundary is rejected: no order-dependent
-     -- guess about an uncommitted neighbouring slice's stratum is permitted.
-     if ctx.call_mode ~= "evidence_fixture" and water=="land" then
-      for _,entry in ipairs(cave_rows) do
-       local i,row=entry[1],entry[2]
-       if row.max>=ctx.min_y and row.min<=ctx.max_y then
-        local low=math.max(ctx.min_y+1,row.min)
-        local high=math.min(ctx.max_y,row.max,ground-2)
-        for y=low,high do
-         if hash(x,y,z,i)%habitat.initial_denominator(row.key,row.density)==0 and
-          ctx.cave_content_allowed_at(x,y,z) then
-          local cid,p2,occupancy=ctx.settled_at(x,y,z)
-          local below=ctx.settled_at(x,y-1,z)
-          if cid==air and p2==0 and occupancy==0 and hosts[i].stone[below] then write(i,x,y,z,0) end
-         end
-        end
-       end
-      end
-     end
+     -- The cave rows (mode "cave") are native v7 decorations since Round 49
+     -- (r7_native.lua); this pass places none.
      -- Rooted meshes occupy their bed cube; all stems must remain in sea water.
      -- Reefs grow on the coastal shelf and in the continental bays (sea
      -- water; a bay's own claim exclusion only keeps settlement off it).

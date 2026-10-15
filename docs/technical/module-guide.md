@@ -1946,10 +1946,13 @@ tools](#player-meta-read-by-external-tools).
   `docs/research/wp40-completion.md` are the current contract, and
   `docs/design/biomes_mobs.md` §1/§4 keep the retired WP18/WP36 tables as a
   labelled historical record only.
-  What R7 registers, and what that costs you: **zero Lua biomes and zero Lua
-  decorations**. One mapgen script (`core.register_mapgen_script`,
-  `wp40/r7_mapgen.lua`), one `register_on_generated` VM transaction, and a
-  six-record native ore allowlist in `wp40/r7_native.lua`. `game.conf` pins
+  What R7 registers, and what that costs you: **zero Lua biomes**. One
+  mapgen script (`core.register_mapgen_script`, `wp40/r7_mapgen.lua`), one
+  `register_on_generated` VM transaction, and the closed native allowlist in
+  `wp40/r7_native.lua`: the gravel blob, five strata, three decorative nests
+  and (Round 49) one scatter row per resource, tier band and deep band plus
+  two biome-less `all_floors` cave decorations (Cave Cap, Ember Moss), all
+  derived from the resource table and pinned by `NATIVE_DIGEST`. `game.conf` pins
   `allowed_mapgens = v7`; `default`'s own `register_biomes/ores/decorations`
   stay uncalled (GRUG PATCH at the tail of `mods/BASE/default/mapgen.lua`),
   because an ore or decoration whose `biomes` names do not resolve is silently
@@ -1966,7 +1969,8 @@ tools](#player-meta-read-by-external-tools).
   take exactly the nodes no other ore claimed, and — running after the caves —
   they convert the already-carved cave walls too, so those inherit their
   stratum for free. (Dungeons run after the ores, so dungeon walls are *not*
-  stratum rock — accepted.)
+  stratum rock — accepted.) The scatter ores are registered after the strata
+  and nests, so each lands in its band's tier rock.
   **Landmine since WP25: `default:stone` no longer exists below −100.**
   Every node whitelist, every `wherein`/`place_on` and every mob spawn
   `nodes` list that means "underground rock" has to carry
