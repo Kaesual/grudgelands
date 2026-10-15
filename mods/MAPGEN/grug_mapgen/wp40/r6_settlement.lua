@@ -264,6 +264,67 @@ local function settlement_factory()
 				r5_opcode == 21 or r5_opcode == 15)
 	end
 
+	-- Round 49: the P8 fill-ore choice, a function (x, y, z) -> the index of
+	-- the resource whose ore a fill host at (x, y, z) takes, or nil. The fill
+	-- is `default:stone`, the T1 host, and lies at y >= -37, so only the T1
+	-- column of the resource table applies (`tier`: WP43 tier 1); a
+	-- `lower_half_of` T1 row (Round 47 ruling 6) only at or below T1's
+	-- `lower_half_y_max`. The cluster shapes are the native rows'
+	-- (r7_native.lua, mapgen plan ruling 3) by vein cap: a lattice cube of
+	-- the row's size is a cluster with probability volume / (denominator *
+	-- ores per cluster), and in a cluster each voxel is an ore with
+	-- probability ores per cluster / volume, so the rate per host is
+	-- 1 / denominator. The first resource in table order takes a voxel two
+	-- would claim. The hash is exact double arithmetic (every product below
+	-- 2^53, no `bit` library), so LuaJIT and plain Lua 5.1 agree: a linear
+	-- lattice term, then two squarings for mixing.
+	local R49_CLUSTER_BY_CAP = {[8] = {3, 8}, [4] = {2, 4}, [2] = {2, 1}}
+	local function r49_fill_ores_new(resources, tier, full_seed)
+		local floor = math.floor
+		local y_min, lower_max = tier.y_min, tier.lower_half_y_max
+		-- A row: {resource index, cube size, cube volume, ores per cluster,
+		-- cluster modulus = denominator * ores per cluster, hash salt}.
+		local upper, lower = {}, {}
+		for index = 1, #resources do
+			local resource = resources[index]
+			local denominator = resource.denominators[1]
+			if denominator then
+				local shape = R49_CLUSTER_BY_CAP[resource.max_nodes_per_vein]
+				if not shape then
+					error("fail_resource_manifest: resource vein cap differs", 0)
+				end
+				local row = {index, shape[1], shape[1] * shape[1] * shape[1], shape[2],
+					denominator * shape[2], index * 7919}
+				if resource.lower_half_of ~= 1 then upper[#upper + 1] = row end
+				lower[#lower + 1] = row
+			end
+		end
+		local phase = 0
+		for index = 1, #full_seed do
+			phase = (phase * 131 + string.byte(full_seed, index)) % 65521
+		end
+		local function mix(a, b, c, salt)
+			local value = (a * 374761 + b * 668265 + c * 972663 + phase * 69069 +
+				salt) % 16777213
+			value = (value * value + salt) % 16777213
+			value = (value * 48271 + 1) % 16777213
+			return (value * value) % 16777213
+		end
+		return function(x, y, z)
+			if y < y_min then return nil end
+			local rows = y > lower_max and upper or lower
+			for index = 1, #rows do
+				local row = rows[index]
+				local size = row[2]
+				if mix(floor(x / size), floor(y / size), floor(z / size), row[6]) % row[5] <
+						row[3] and mix(x, y, z, row[6] + 1) % row[3] < row[4] then
+					return row[1]
+				end
+			end
+			return nil
+		end
+	end
+
 	-- Ruling 30 addendum: the cave-content rule of one column, read by runtime
 	-- renewal (vegetation_density.lua). Since Round 49 the generator places
 	-- the cave plants natively (r7_native.lua) without this rule (mapgen plan
@@ -1512,47 +1573,8 @@ local function settlement_factory()
 			return cid, value
 		end
 
-		-- P8 (Round 49): the fill-ore rows. The fill is `default:stone`, the T1
-		-- host, and lies at y >= -37, so only the T1 column of the resource
-		-- table applies; a `lower_half_of` T1 row (Round 47 ruling 6) only at or
-		-- below T1's `lower_half_y_max`. The cluster shapes are the native
-		-- rows' (r7_native.lua, ruling 3): {cube size, ores per cluster} by cap.
-		-- A row: {resource index, cube size, cube volume, ores per cluster,
-		-- cluster modulus = denominator * ores per cluster, hash salt}.
-		local FILL_CLUSTER_BY_CAP = {[8] = {3, 8}, [4] = {2, 4}, [2] = {2, 1}}
-		local fill_ore_y_min = tier_by_y[1].y_min
-		local fill_ore_lower_max = tier_by_y[1].lower_half_y_max
-		local fill_ore_upper, fill_ore_lower = {}, {}
-		for index = 1, #resources do
-			local resource = resources[index]
-			local denominator = resource.denominators[1]
-			if denominator then
-				local shape = FILL_CLUSTER_BY_CAP[resource.max_nodes_per_vein]
-				if not shape then
-					fail("fail_resource_manifest", "resource vein cap differs")
-				end
-				local row = {index, shape[1], shape[1] * shape[1] * shape[1], shape[2],
-					denominator * shape[2], index * 7919}
-				if resource.lower_half_of ~= 1 then
-					fill_ore_upper[#fill_ore_upper + 1] = row
-				end
-				fill_ore_lower[#fill_ore_lower + 1] = row
-			end
-		end
-		-- The integer hash of the fill ores: exact double arithmetic (every
-		-- product below 2^53, no `bit` library), so LuaJIT and plain Lua 5.1
-		-- agree; a linear lattice term, then two squarings for mixing.
-		local ore_phase = 0
-		for index = 1, #full_seed do
-			ore_phase = (ore_phase * 131 + string.byte(full_seed, index)) % 65521
-		end
-		local function ore_hash(a, b, c, salt)
-			local value = (a * 374761 + b * 668265 + c * 972663 + ore_phase * 69069 +
-				salt) % 16777213
-			value = (value * value + salt) % 16777213
-			value = (value * 48271 + 1) % 16777213
-			return (value * value) % 16777213
-		end
+		-- P8 (Round 49): the fill-ore choice of this world.
+		local fill_ore_at = r49_fill_ores_new(resources, tier_by_y[1], full_seed)
 
 		-- The planner's river/lake bed and bank seal (planner.lua) as a y range,
 		-- or nil. A wet sealed column seals its bed; a column beside such water
@@ -2640,14 +2662,10 @@ local function settlement_factory()
 			-- P8 (Round 49): the fill ores, one flat pass over the voxels the
 			-- writer itself filled with stone (r49_fill_ore_host). The native
 			-- rock they meet carries the native scatter rows (r7_native.lua), so
-			-- every stone voxel takes its ores from exactly one source. Per voxel
-			-- and resource a lattice cube of the row's cluster size is a cluster
-			-- with probability volume / (denominator * ores per cluster), and in
-			-- a cluster each voxel is an ore with probability ores per cluster /
-			-- volume: the native scatter's shapes at 1 / denominator per host.
-			-- The first resource in table order takes a voxel two would claim.
-			-- No exclusion under towns or deep water (mapgen plan ruling 5 and
-			-- §4.1); no whole-chunk scan, no per-cell budget, no SHA.
+			-- every stone voxel takes its ores from exactly one source; an
+			-- integer hash per voxel decides (r49_fill_ores_new). No exclusion
+			-- under towns or deep water (mapgen plan ruling 5 and §4.1); no
+			-- whole-chunk scan, no per-cell budget, no SHA.
 			local r5_plan = plan.r5_plan
 			local fill_placed = ledger and {} or nil
 			for z = min_z, max_z do
@@ -2658,29 +2676,17 @@ local function settlement_factory()
 						local base = (run - 1) * RUN_STRIDE
 						local opcode = r5_plan.run_values[base + 4]
 						if opcode == 27 or opcode == 21 or opcode == 15 then
-							for y = math.max(r5_plan.run_values[base + 1], fill_ore_y_min),
-									r5_plan.run_values[base + 2] do
+							for y = r5_plan.run_values[base + 1], r5_plan.run_values[base + 2] do
 								local index = index_at(x, y, z)
-								if r49_fill_ore_host(original_data[index], final_data[index],
-										intent_opcode[index], opcode, fill_stone_cid) then
-									local rows = y > fill_ore_lower_max and fill_ore_upper or
-										fill_ore_lower
-									for row_index = 1, #rows do
-										local row = rows[row_index]
-										local size = row[2]
-										if ore_hash(math.floor(x / size), math.floor(y / size),
-												math.floor(z / size), row[6]) % row[5] < row[3] and
-												ore_hash(x, y, z, row[6] + 1) % row[3] < row[4] then
-											local resource_index = row[1]
-											write_intent(x, y, z, resources[resource_index].content_ref,
-												0, 24, stable_state.resource[resource_index], 0, 4,
-												resource_index + 1)
-											if fill_placed then
-												local key = resources[resource_index].key
-												fill_placed[key] = (fill_placed[key] or 0) + 1
-											end
-											break
-										end
+								local resource_index = r49_fill_ore_host(original_data[index],
+									final_data[index], intent_opcode[index], opcode, fill_stone_cid) and
+									fill_ore_at(x, y, z)
+								if resource_index then
+									local resource = resources[resource_index]
+									write_intent(x, y, z, resource.content_ref, 0, 24,
+										stable_state.resource[resource_index], 0, 4, resource_index + 1)
+									if fill_placed then
+										fill_placed[resource.key] = (fill_placed[resource.key] or 0) + 1
 									end
 								end
 							end
@@ -3557,7 +3563,7 @@ local function settlement_factory()
 		new_capture = function(dependencies) return new(dependencies, nil, true, nil) end,
 		r8_strata_new = new_r8_strata, r8_apply_strata = r8_apply_strata,
 		r24_fill_stone = r24_fill_stone,
-		r49_fill_ore_host = r49_fill_ore_host,
+		r49_fill_ore_host = r49_fill_ore_host, r49_fill_ores_new = r49_fill_ores_new,
 		r30_cave_limit = r30_cave_limit,
 		r24_fill_layers_new = new_r24_fill_layers,
 		r24_apply_fill_layers = r24_apply_fill_layers,
