@@ -1,0 +1,11 @@
+--- a/minetest.conf
++++ b/minetest.conf
+@@ -174,3 +174,8 @@
+ # normal (1080x960, default) or high (3600x3200, about a minute more at the
+ # first start of a world and a larger client download). See settingtypes.txt.
+ grug_map_quality = normal
++
++# MGPROF diagnostic boot only (tools/mgprof/run.sh with INSECURE=1): the
++# throwaway server config turns the mod sandbox off so the emerge
++# environment's stage timer can use jit.attach / jit.util.
++secure.enable_security = false

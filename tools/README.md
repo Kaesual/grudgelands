@@ -1101,4 +1101,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_probe_mgprof` (generates the pinned chunks one at a time with the
   engine profiler on, then stops); `reset_columns.py ROOT` makes a kept
   world's measured columns generate fresh again; `summarize.py [--pct]
-  BOOT_DIR...` the tables; `evidence/` the four boots' extracted lines.
+  BOOT_DIR...` the tables (`--hash`: SHA-256 per stage); `evidence/` the
+  extracted lines of boots 1–6. `INSECURE=1 run.sh ...` (follow-up 2) adds
+  `insecure.patch` to the staged game, so only that run's throwaway
+  server config disables mod security and the timer logs LuaJIT trace
+  aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).

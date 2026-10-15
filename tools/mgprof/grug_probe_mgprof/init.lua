@@ -180,8 +180,33 @@ local function bench_digest()
 		(core.get_us_time() - t0) / n))
 end
 
+-- Insecure diagnostic boots only (io.open outside the world is refused in
+-- the sandbox): the process's executable mappings, to locate the LuaJIT
+-- library and the anonymous machine-code areas the emerge log's
+-- jit_mcode_min addresses fall into.
+local function log_maps()
+	local file = io.open("/proc/self/maps", "r")
+	if not file then return end
+	local exec_anon, lines = 0, {}
+	for line in file:lines() do
+		local range, perms, path = line:match("^(%S+)%s+(%S+)%s+%S+%s+%S+%s+%S+%s*(.*)$")
+		if perms and perms:sub(3, 3) == "x" then
+			if path == "" then
+				exec_anon = exec_anon + 1
+				lines[#lines + 1] = "anon " .. range
+			elseif path:find("luajit") or path:find("luanti") then
+				lines[#lines + 1] = (path:match("([^/]+)$") or path) .. " " .. range
+			end
+		end
+	end
+	file:close()
+	log(("maps: %d anonymous executable mappings; %s"):format(exec_anon,
+		table.concat(lines, "; ")))
+end
+
 local function finish(ok, message)
 	pcall(bench_digest)
+	pcall(log_maps)
 	-- os.clock(): CPU seconds of the whole server process (all threads) so far.
 	log(("cpu_s=%.1f at the end"):format(os.clock()))
 	log(("RESULT %s %s"):format(ok and "PASS" or "FAIL", message))

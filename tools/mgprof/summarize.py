@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Lane MGPROF summarizer: per-chunk stage table from one or more boots.
 
-Usage: summarize.py [--per-boot] [--median] [--pct] BOOT_DIR [BOOT_DIR...]
+Usage: summarize.py [--per-boot] [--median] [--pct|--hash] BOOT_DIR [BOOT_DIR...]
   --median  cells show the median instead of the mean (with min-max)
   --pct     print a compact table instead: the statistic of each group and
             its share of the statistic of the callback total
+  --hash    print the SHA-256 calls and raw core.sha256 ms per stage instead
 
 Each BOOT_DIR is an OUT directory of tools/mgprof/run.sh (server.log,
 console.log). For every probe chunk (request ... done lines) it takes:
@@ -29,6 +30,11 @@ GROUPS = [
     ("VM get_data/param2", ["w_entry", "w_checks", "in_vm_get"]),
     ("input copy+zero", ["in_copy_zero"]),
     ("R5 adapter", ["r5_adapter"]),
+    ("R5 adapter: setup + heightmap check", ["r5a_setup"]),
+    ("R5 adapter: shadow get_data/param2", ["r5a_shadow_get"]),
+    ("R5 adapter: resolve + validate pass", ["r5a_resolve_validate"]),
+    ("R5 adapter: replay pass", ["r5a_replay"]),
+    ("R5 adapter: shadow set_data/param2 + liquids", ["r5a_shadow_set"]),
     ("surface column passes (skin, P7, R9)", ["skin_columns", "p7", "r9_skin"]),
     ("R8 strata", ["r8_strata"]),
     ("R24 fill layers", ["r24_fill_layers"]),
@@ -54,7 +60,9 @@ SUBS = [("  of which P8 host scan", "p8_host_scan"),
         ("  of which P8 budget + root-draw setup", "p8_budget_draw_setup"),
         ("  of which P8 veins (root draws + growth)", "p8_veins_total"),
         ("  of which P8 vein growth (frontier + rank digests)", "p8_vein_growth"),
-        ("  of which R5 shadow copies", "r5_shadow_copy")]
+        ("  of which R5 shadow copies", "r5_shadow_copy"),
+        ("  of which P9G scan + rank digests", "p9g_scan_and_rank_digests"),
+        ("  of which P9G budget + sort", "p9g_budget_and_sort")]
 COUNTS = ["r5_runs", "candidates", "p8_active_resources", "p8_host_eligible_calls",
           "p8_eligible_hosts", "p8_placed_nodes", "p8_veins", "p8_frontier_host_calls",
           "p8_rank_digests", "p8_root_draws", "p8_frontier_candidates", "modified_voxels",
@@ -76,8 +84,8 @@ def parse_boot(path):
         m = DONE.search(line)
         if m:
             chunks[m.group(1)]["wall_ms"] = float(m.group(3))
-        if "GRUG_MGPROF" in line:
-            fields = dict(kv.split("=", 1) for kv in line.split("GRUG_MGPROF", 1)[1].split())
+        if "GRUG_MGPROF " in line:
+            fields = dict(kv.split("=", 1) for kv in line.split("GRUG_MGPROF ", 1)[1].split())
             for row in chunks.values():
                 if row["minp"] == fields["minp"] and "prof" not in row:
                     row["prof"] = fields
@@ -165,6 +173,25 @@ def main():
     def stage_rows(chunk_id):
         return [r["prof"] for b in stage_boots for r in b if r["id"] == chunk_id and "prof" in r]
 
+    if "--hash" in args:
+        # SHA-256 calls per stage (h.<stage>=calls/us/bytes; count from the
+        # first boot that has it, raw core.sha256 time as the mean of them).
+        stages = sorted({k for b in stage_boots for r in b for k in r.get("prof", {})
+                         if k.startswith("h.")})
+        print("| SHA-256 per stage: calls / raw ms | " + " | ".join(ids) + " |")
+        print("|---|" + "---|" * len(ids))
+        for key in stages:
+            cells = []
+            for cid in ids:
+                vals = [p[key] for p in stage_rows(cid) if key in p]
+                if not vals:
+                    cells.append("-")
+                    continue
+                calls = int(vals[0].split("/")[0])
+                raw = STAT([int(v.split("/")[1]) / 1000 for v in vals])
+                cells.append(f"{calls} / {raw:.1f}")
+            print(f"| {key[2:]} | " + " | ".join(cells) + " |")
+        return
     if "--pct" in args:
         pct_table(ids, stage_rows)
         return
@@ -179,9 +206,10 @@ def main():
             vals = [ms(sum(int(p.get("s." + k, 0)) for k in keys)) for p in stage_rows(cid)]
             cells.append(fmt(vals))
         print(f"| {name} | " + " | ".join(cells) + " |")
-        if keys == ["p8_resources"] or keys == ["r5_adapter"]:
+        owner = {"p8_resources": "p8_", "r5_adapter": "r5_", "succ_p9g": "p9g_"}
+        if len(keys) == 1 and keys[0] in owner:
             for label, sub in SUBS:
-                if sub.startswith("p8_") == (keys == ["p8_resources"]):
+                if sub.startswith(owner[keys[0]]):
                     cells = [fmt([ms(int(p.get("u." + sub, 0))) for p in stage_rows(cid)])
                              for cid in ids]
                     print(f"| {label} | " + " | ".join(cells) + " |")

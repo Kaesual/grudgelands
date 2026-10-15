@@ -329,3 +329,223 @@ The original survey listed these facts; each was checked at `1ef11b5e`.
 - `tools/mgprof/summarize.py`: the tables.
 - `tools/mgprof/evidence/boot1..4/`: the extracted log lines of the four
   boots.
+
+## Addendum: follow-up 2 (slow processes, surface split, hashes, caches)
+
+Two more boots of the same corpus, both on fresh worlds with the starts
+preload, like boots 1 and 3. Both ran with `INSECURE=1`
+(`tools/mgprof/insecure.patch`): only this run's throwaway server config sets
+`secure.enable_security = false`, so the stage timer can use `jit.attach` and
+`jit.util`. The game-defaults layer logs one expected ERROR line for that
+setting, which `run.sh` accepts.
+
+The patch version used here (the committed `stages.patch`) adds four things:
+- R5 adapter sub-stages (`r5a_*`);
+- P9G sub-timers;
+- per-stage SHA-256 accounting (a wrapper on `core.sha256`, which every
+  mapgen digest goes through);
+- LuaJIT trace diagnosis: starts, stops, aborts by reason and source line,
+  flushes, and machine-code size and range, plus one-time benchmarks.
+
+| boot | wall | server CPU | regime |
+|---|---|---|---|
+| 5 | 116 s | 83.7 s | fast (A_U1 339 ms) |
+| 6 | 127 s | 95.1 s | **slow** (A_U1 510 ms, B_B 677 ms) |
+
+Reproduce the tables with
+`summarize.py [--pct|--hash] tools/mgprof/evidence/boot5 tools/mgprof/evidence/boot6`.
+The JIT lines are the `GRUG_MGPROF_JIT*` and `GRUG_MGPROF_BENCH` lines in
+the same extracts.
+
+### The slow-process regime
+
+What the slow boot shows:
+- **It is the P8 host scan.** Over the 10 measured chunks, boot 6 needed
+  5.97 s against 4.01 s in boot 5. The host scan accounts for +1.78 s of
+  that (2.3×: 3.16 s against 1.38 s), and the R6 candidates for +0.07 s.
+  Every other stage is within ±10 %, including the vein growth (1.08×).
+- **It holds for the whole process.** The slow/fast ratio is 1.28–1.56 in
+  every block of 12 callbacks, from the first preload chunk to the last
+  measured one.
+- **It is not machine-code exhaustion and not a disabled JIT.** Both
+  processes had 0 trace flushes, about 10 MB of machine code (within about
+  330 MB of `libluajit`), `jit.status()` on throughout, and the same
+  benchmark loop speed (0.83 against 0.85 ns per iteration).
+- **The abort pattern matches.** Total aborts and their reasons were the same
+  in both boots: about 10 k, mostly "NYI: register coalescing too complex",
+  "blacklisted" and "leaving loop in root trace". The difference is at the
+  host scan's segment loop (patched `r6_settlement.lua` 3086 and 3098):
+  "inner loop / leaving loop in root trace" aborts appeared in 13 callbacks
+  in the slow boot and in 5 in the fast one.
+
+The likely mechanism (not proven trace by trace) is the following. The scan
+is a five-deep loop nest whose innermost loop runs only 16 iterations around
+a function call. Which loop LuaJIT records first, and when a failing start
+point is blacklisted, depends on hot counters keyed by bytecode addresses
+and on randomized penalties. Both vary per process. In about a third of the
+processes, the nest ends up with traces that leave to the interpreter on
+every short inner loop.
+
+Frequency: 2 of 6 boots (2 of 4 fresh worlds, 0 of 2 re-used worlds). That
+is about 1 in 3 per server start, a rough figure because the sample is
+small. A restart draws again.
+
+Cheapest fixes, as estimates:
+1. **Flatten or share the host scan.** One loop over a segment's voxel
+   range instead of the z/y/x nest, or one scan per segment shared by all
+   resources (lever 1). This removes the fragile nest; the slow-regime
+   penalty was +170..+280 ms per underground chunk and about +160 ms in S1.
+2. **Move ores to native v7.** This removes the scan underground. Fill ores
+   stay in Lua, so S1 and B keep the exposure unless the scan is fixed as
+   in fix 1.
+3. Process-level controls (`jit.flush`, `hotexit`, `jit.opt`) are not
+   targeted at this loop and are not recommended.
+
+### R5 adapter and P9G split
+
+Means of boots 5 and 6 (these stages are equal in both regimes):
+
+| ms | A_S1 | A_S2 | A_B |
+|---|---|---|---|
+| R5 adapter: setup + heightmap check | 4.3 | 3.9 | 0.4 |
+| R5 adapter: shadow get_data/param2 | 0.9 | 0.9 | 1.0 |
+| R5 adapter: resolve + validate pass | 66.9 | 14.5 | 0.8 |
+| R5 adapter: replay pass | 12.6 | 13.6 | 0.7 |
+| R5 adapter: shadow set_data/param2 + liquids | 0.4 | 0.4 | 0.5 |
+| (r6_settlement shadow copies, inside the above) | 1.3 | 1.3 | 1.4 |
+| P9G total | 57.0 | 57.3 | 0 |
+| P9G scan + rank digests | 52.0 | 52.4 | – |
+| P9G budget + sort | 4.8 | 4.8 | – |
+| P9G placement (rest) | 0.2 | 0.1 | – |
+
+R5 adapter:
+- The resolve pass costs about 150 ns per run voxel in S1 (17 k runs,
+  184 k modified voxels).
+- `resolve_voxel` and `preserved_native_cave` are among the top abort
+  sites: "NYI: register coalescing too complex" at `map_adapter.lua`
+  938/947/102, together about 2,100 aborts per boot. The likely reason is
+  `classify`'s 10-value return (`r7_content.lua:370`, the same abort), so
+  the resolve pass most likely runs interpreted.
+- The replay pass calls `resolve_voxel` a second time for every run voxel.
+
+P9G:
+- It scans 12 rows × 25 cells × 256 columns (76,800 row-column checks per
+  surface chunk). It finds 11,628 eligible columns, each with a SHA rank
+  digest.
+- **The scan is two-dimensional and identical for every vertical chunk that
+  holds surface.** S1 and S2 of the same column both pay it in full; the
+  code itself notes that the 2-D budget prefix is shared by every vertical
+  callback.
+- The scan's `column_values_at` path is affected: the column cache hit path
+  `unpack(row, 1, 20)` (`zones.lua:1429`) is the most often blacklisted
+  location (about 1,000 per boot).
+
+### SHA-256 per stage
+
+| SHA-256 calls per chunk | A_S1 | A_S2 | A_B | A_U1 | A_U6 | B_U6 (cold) |
+|---|---|---|---|---|---|---|
+| P8 resources | 59,151 | 271 | 82,214 | 64,030 | 59,232 | 59,467 |
+| planner R6 candidates (cold column only) | 43,734 | 0 | 0 | 0 | 0 | 37,383 |
+| P9G | 11,928 | 11,928 | 0 | 0 | 0 | 0 |
+| P9 decorations | 349 | 39 | 0 | 0 | 0 | 0 |
+| **all stages** | **115,162** | **12,238** | **82,214** | **64,030** | **59,232** | **96,850** |
+
+No other stage hashed in these chunks. That covers the planner R5 and R6
+columns, the R5 adapter, strata, roads, world content and settlements.
+
+Costs, all inside the same process:
+- **Raw `core.sha256`:** 0.28–0.58 µs per call (benchmark).
+- **Measured inside the callback:** a median of about 0.45 µs per call. That
+  figure includes the GC steps the result strings trigger, and outliers
+  reach 1.4 µs.
+- **A full framed digest** (`r6_hash`, 4–11 fields): 0.70–1.20 µs. Mean
+  about 0.95 µs.
+- **An integer mix over 11 fields:** 0.009 µs.
+
+**Estimate.** Replacing every digest with an integer hash saves about
+0.9 µs × calls:
+
+| chunk | saving | share |
+|---|---|---|
+| S1, cold column | −105 ms | about 15–18 % |
+| S1, warm column | −65 ms | – |
+| S2 | −11 ms | about 5 % |
+| B | −75 ms | – |
+| U chunks | −55..−60 ms | – |
+| B_U6, cold | −90 ms | – |
+
+After the native-ore move, only these Lua hash users remain:
+- fill ores (S1: 59 k digests, about −55 ms);
+- R6 candidates (37–44 k per new column, about −35..−40 ms, once per
+  column);
+- P9G (12 k per surface chunk, about −11 ms);
+- P9 decorations (under 1 ms).
+
+**Output that would change:** every ore and gem position (P8), every
+decoration placement (R6 candidate ranks, rotations, variants, budget
+remainders, and P9 template choices) and every gathering source (P9G).
+Terrain, water, roads, zones, settlements and strata use no runtime
+digests in these chunks, so they would stay as they are.
+
+### Planner caches: preparation against runtime (code reading)
+
+What a chunk needs:
+- **Every chunk with Lua work** needs the zones runtime column cache.
+  - It is a FIFO of 65,536 column tuples.
+  - It serves the R5 planner, the R6 column loop, P7, strata, P8, P9G and
+    the successors.
+  - A new 80×80 column costs 7.2–7.5 k misses, including the halo, and
+    about 50–60 ms (planner R5 about 30 ms and R6 columns 24–35 ms, against
+    about 2 + 6–8 ms warm).
+- **The first chunk of a column** also builds the R6 decoration candidates
+  of its 25 cells.
+  - These go into a 4,096-cell FIFO, which holds about 164 columns.
+  - The cost is 48–200 ms (350 ms once), of which 37–44 k digests are about
+    35–42 ms.
+  - The candidates are built even when no decoration can be rooted in the
+    chunk (B_U6).
+- **The first above-water chunk** pays the air-check envelope (12 ms; memo
+  of 64 owner columns).
+- **Every chunk holding surface** pays P9G's 2-D scan (57 ms), which has no
+  cache.
+
+Order of generation:
+- **Full-world preparation** runs in tile order, bottom-up within a column
+  (`preparation_plan.lua`). The column's lowest prepared chunk pays the cold
+  cost; everything above it is warm, because the column cache comfortably
+  holds the current column and its neighbours.
+  - **With the planned early-out** for chunks without Lua work (ores, gems
+    and cave plants native), the deep chunks are skipped. The first chunk
+    with Lua work then pays: B (-112..-33, the fill floor) or S1 where the
+    surface is low.
+  - Building the candidates lazily (only for chunks whose y range can hold
+    a root) would move the candidate part to the surface chunk without
+    removing it. Every column's surface chunk is generated anyway.
+- **Runtime generation** follows the engine's distance shells around each
+  player (`clientiface.cpp` GetNextBlocks). The chunk nearest the player,
+  normally S1 or S2 when walking, pays the cold cost.
+  - The generate reach is (10 + 1) × 16 = 176 nodes, about 5 × 5 chunk
+    columns around one player. That is about 180 k column tuples against a
+    cache of 65,536.
+  - So a column's later chunks (S2, the air checks, the chunks below) are
+    likely evicted again before they are generated, and pay the about
+    50–60 ms column cost repeatedly. Several players multiply this.
+  - The decoration cell cache (164 columns) holds a player's surroundings.
+
+Would the candidates remedies remove most of the cold cost?
+- **Lazy candidates:** they help only chunks without surface that come
+  first in a column, such as tunnels into ungenerated columns, or B in
+  bottom-up preparation. There they save 48–200 ms. The total per column is
+  unchanged.
+- **A larger or chunk-column-keyed column cache:** about 4×, an estimated
+  +50–60 MB of heap. This removes the repeated about 50–60 ms per later
+  chunk of a column at runtime.
+- **A per-column P9G cache** (the same 2-D result for S1 and S2): −57 ms on
+  every second surface chunk.
+- **Integer digests:** take about 35–40 ms out of the candidate build.
+- **Order changes** (top-down or surface-first preparation) only move the
+  cost.
+
+The largest remaining cold item at the surface is the candidate build
+itself (48–200 ms). Its non-hash part (`build_cell`/`load_cell` over 25
+cells) is not split yet.

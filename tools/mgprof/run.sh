@@ -9,7 +9,7 @@
 # probe logs the server's CPU seconds (os.clock) when preparation is ready and
 # at the end.
 #
-# Usage: tools/mgprof/run.sh stages|totals OUT [ROOT]
+# Usage: [INSECURE=1] tools/mgprof/run.sh stages|totals OUT [ROOT]
 #   stages  per-stage marks, sub-timers and counters (GRUG_MGPROF lines)
 #   totals  the same patch with only the callback total taken
 #           (grug_mgprof_totals_only), for the instrumentation overhead
@@ -40,9 +40,17 @@ fi
 cd "$repo"
 launcher=("$repo/tools/luanti_headless.sh")
 if [[ -n "${MGPROF_QUEUE:-}" ]]; then launcher=("$MGPROF_QUEUE" "mgprof-$mode"); fi
+# INSECURE=1 (diagnostic boots only): the staged minetest.conf, and with it
+# this run's throwaway server.conf, also gets secure.enable_security = false
+# (insecure.patch), so the stage timer can attach to LuaJIT's trace events.
+game_patch="$here/stages.patch"
+if [[ "${INSECURE:-0}" == 1 ]]; then
+	game_patch="$probe_dir/stages-insecure.patch"
+	cat "$here/stages.patch" "$here/insecure.patch" >"$game_patch"
+fi
 start=$(date +%s)
 set +e
-env GAME_PATCH="$here/stages.patch" PROBE="$probe_dir/grug_probe_mgprof" KEEP=1 \
+env GAME_PATCH="$game_patch" PROBE="$probe_dir/grug_probe_mgprof" KEEP=1 \
 	SEED=12345 ${root:+ROOT="$root"} \
 	"${launcher[@]}" "${TIMEOUT:-330}" --info >"$out/headless.txt" 2>&1
 boot=$?
@@ -55,11 +63,20 @@ if [[ -n "$log" && -f "$log" ]]; then
 	cp "$log" "$out/server.log"
 	cp "${log%.log}.console.log" "$out/console.log" 2>/dev/null || true
 fi
-grep -h 'GRUG_MGPROF' "$out/server.log" >"$out/mgprof.txt" 2>/dev/null || true
+grep -h 'GRUG_MGPROF ' "$out/server.log" >"$out/mgprof.txt" 2>/dev/null || true
+grep -h 'GRUG_MGPROF_' "$out/server.log" >"$out/mgprof_jit.txt" 2>/dev/null || true
 grep -h 'mgprof_probe' "$out/server.log" | tee "$out/probe.txt" || true
 echo "root: $kept" >>"$out/headless.txt"
 if [[ "${CLEAN:-0}" == 1 && -n "$kept" && "$kept" == /tmp/grudgelands-headless.?* ]]; then
 	rm -rf "$kept"
+fi
+# An insecure boot logs one expected ERROR line (the game-defaults layer
+# refuses the secure.* setting; the run's own server.conf still applies it)
+# and the launcher therefore reports FAIL; accept exactly that line.
+if [[ $boot -ne 0 && "${INSECURE:-0}" == 1 ]] &&
+		grep -q 'Mod security should never be disabled' "$out/server.log" &&
+		! grep 'ERROR' "$out/server.log" | grep -vq 'secure.enable_security isn'"'"'t allowed'; then
+	boot=0
 fi
 if [[ $boot -eq 0 ]] && grep -q 'RESULT PASS' "$out/probe.txt"; then
 	echo "mgprof run: PASS (root $kept)"
