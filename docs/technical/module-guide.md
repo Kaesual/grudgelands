@@ -1999,6 +1999,15 @@ tools](#player-meta-read-by-external-tools).
   borders (`docs/research/wp40-simple-map-r6-contract.md` §8.2, "Treeless
   bands"). A tree's roots lie inside its footprint, so a root run is
   written with its tree or not at all.
+  **Untouched chunks** (`wp40/air_chunks.lua`): `r7_mapgen.lua` returns
+  before planning when the transaction provably changes nothing — native
+  air above the writer's surface/content envelope (the engine heightmap plus
+  that envelope, Round 23) or rock more than a mapblock below the authored
+  floor y −37 and every fitted settlement, POI and anchor box (Round 49). A
+  new pass that writes above that envelope, or below y −37 outside a fitted
+  box, must extend the envelope or that file's argument first, or its chunks
+  are silently skipped (`tools/r49_skip` checks the writer's result on
+  skipped chunks).
   **Trees come from the seeded generator** (Round 47): `wp40/treegen.lua`
   (pure, the port of the approved concept) and `wp40/tree_templates.lua`
   (the species table, the template seeds, the sparse variants). A
