@@ -72,14 +72,18 @@ Further findings that shape the plan:
    height − 100, with a safety margin. The requirements are only: the town
    surface cannot be broken through, and no name tag under the town is
    visible from inside the town. Name tags show within 25 nodes and hide
-   beyond 30 (3-D, `grug_core/tag_carrier.lua`).
+   beyond 30 (3-D, `grug_core/tag_carrier.lua`). The depth need not be as
+   small as possible; a generous margin is fine.
 7. **Map reset accepted** whenever it buys clearly faster generation; no
    improvement is left out to avoid a reset. This round is a **map reset**.
 8. **Preparation extents stay** (per tile from the window's lowest surface
-   minus the generate reach up to the flight ceiling plus the reach), with one
-   addition: wherever our Lua still works below that bottom, preparation
-   reaches down far enough that everything not prepared is plain v7 work
-   (§4.4).
+   minus the generate reach up to the flight ceiling plus the reach): players
+   at the surface, flying, and on their first mining near the top load
+   everything from the world database and trigger no generation. This only
+   concerns worlds with preparation. One addition: wherever our Lua still
+   works below that bottom (high massifs, where the fill reaches down to
+   y −37), preparation reaches down far enough that everything not prepared
+   is plain v7 work (§4.4).
 9. **No repeat of the Round 9 plateau.** v7 terrain changes are measured
    flag by flag (§4.8) and adopted only on the user's word.
 
@@ -119,6 +123,11 @@ facts. Gains are MGPROF estimates, not targets.
     `clust_size 2, clust_num_ores 4`; cap 2 (gems, abyssal crystal):
     `clust_size 2, clust_num_ores 1` (about 60 % single nodes, 30 % pairs).
   - No noise, no biome filter (ruling 4).
+  - Expected differences, accepted under ruling 2: a native cluster is a
+    random sprinkle inside its cube (not necessarily face-connected, its size
+    varies around the mean); a band that cuts a chunk in a slice no thicker
+    than `clust_size` is skipped there (`mg_ore.cpp:89`); ores are placed
+    after caves (never into cave air) and before dungeons.
 - Cave plants become native simple decorations: `flags = "all_floors"`,
   `place_on` the row's host rocks, the row's y range, `fill_ratio =
   1 / density` (`all_floors` picks a column and decorates every floor in it,
@@ -130,9 +139,9 @@ facts. Gains are MGPROF estimates, not targets.
   foundation stone the user ruled a host on 2026-10-07), an integer hash per
   voxel against the same rates, the same cluster caps. No whole-chunk scan,
   no per-cell budget, no SHA. This also removes the slow-process regime.
-- Drop the resource exclusion under hard-protected volumes (ruling 5) and the
-  water-class exclusion (ores under deep ocean and the dragon channels are
-  harmless: those columns are immutable).
+- Drop the resource exclusion under hard-protected volumes (ruling 5) and,
+  as a coordinator choice, the water-class exclusion (ores under deep ocean
+  and the dragon channels are harmless: those columns are immutable).
 - Refresh the native allowlist pins (`r7_native.lua` NATIVE_DIGEST and its
   validation in both environments) and the manifests the change touches.
 - Estimate: underground Lua 330–520 ms → 44–58 ms before §4.3, about 0 after
@@ -192,6 +201,15 @@ facts. Gains are MGPROF estimates, not targets.
 
 ### 4.6 CACHE: per-column reuse
 
+Background (MGPROF follow-up, code reading): the cold planner cost lands on
+the first chunk of a column that has Lua work. Full-world preparation walks
+each column bottom-up, so only that chunk pays (after §4.3 and §4.4 the
+chunk −112…−33 or the lowest surface chunk). At runtime the chunk nearest
+the player pays, and later chunks of the same column may pay the column
+cost again if the cache has evicted it. Building the R6 decoration
+candidates lazily would only move their cost to the surface chunk and is not
+planned.
+
 - Cache P9G's 2-D result per 80×80 column so the second surface chunk of a
   column reuses it (−57 ms there; output identical).
 - Column cache: first measure the runtime pattern with one engine run that
@@ -217,6 +235,15 @@ facts. Gains are MGPROF estimates, not targets.
   repeated). v7 mountains can reach y ≈ 872 regardless of our relief, which
   the writer then clears voxel by voxel; ridges carve river channels though
   our water is fully authored.
+- What is already known (do not re-measure): the Round 9 plateau
+  (terrain_base/alt constant, together with `nomountains,noridges`) cost
+  +29..+70 % emerge time because the writer pays per modified voxel; it was
+  withdrawn (ruling 35) and never re-measured after R9-PERF (writer −35 %).
+  The fill has no caves (Round 24 ruling 13) and native caves are rare above
+  y ≈ 160 anyway (Round 22).
+- The trade-off to report: less v7 rock above our surface means less
+  clearing but more fill where our surface is higher, and fill ores stay in
+  Lua (§4.1).
 - After ORE and JIT are on main: the mgprof corpus plus one mountain-heavy and
   one ridge-heavy column, baseline vs `nomountains` vs `noridges`, reporting
   the R5 adapter split (clearing vs fill), the air fast-path share and the
@@ -256,7 +283,7 @@ after its predecessors merged.
 
 ## 6. Rules
 
-- Routing as in Round 48 (§8): Claude coordinates, Opus implements and
+- Routing as in Round 48 (§9): Claude coordinates, Opus implements and
   reviews.
 - Every code lane gets an independent review; fix deltas with logic are
   reviewed again.
@@ -294,7 +321,20 @@ after its predecessors merged.
   5. Walking, riding and flying over prepared land trigger no visible
      generation; going deep underground generates quickly.
 
-## 8. Answers of the user (2026-10-15)
+## 8. Not in this round
+
+- **The game thread:** about 1 % of a core in Lua with one player; mobs'
+  `on_step` is its largest share (61 %) and grows with active objects. To be
+  watched in a multi-player playtest, no change now.
+- **Several emerge threads:** blocked by Luanti #9357 (native ores and caves
+  lost in chunk edge slices); check for PR #16224 at every engine update.
+- **Process-wide JIT knobs** (`jit.flush`, `hotexit`, `jit.opt`) against the
+  slow-process regime: they do not target the cause; removing the scan does.
+- **Lazy R6 decoration candidates:** they only move the cost (§4.6).
+- **Native surface decorations or trees:** v7 places them on its own surface
+  before our writer reshapes the terrain, so they would float or be buried.
+
+## 9. Answers of the user (2026-10-15)
 
 1. Round 49, release 0.49.0, a map reset.
 2. Routing as in Round 48: Claude coordinates, Opus implements and reviews.
