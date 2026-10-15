@@ -248,7 +248,7 @@ name a species of the seeded generator (`wp40/treegen.lua`), not a
 schematic. Every world builds its own variants of each species from its
 seed at every server start: 32 per species, 16 kapoks
 (`wp40/tree_templates.lua`); a tree candidate takes one variant and one
-quarter turn by a digest of its root. Wide trunks (2 × 2, 3 × 3) stand on one
+quarter turn by an integer hash of its root. Wide trunks (2 × 2, 3 × 3) stand on one
 buried layer, so a gentle slope shows no gap under a corner. A leaf that
 would hit the ground is left out; every wood cell needs free space, as
 before. Generated trees interleave their crowns: a tree reserves only its
@@ -268,7 +268,8 @@ variant at the displayed fill.
 
 Candidate cells are globally anchored 16-column squares. Deterministic
 per-world placement and rotation replace engine randomness and the legacy
-emergent-tree `sidelen = 80`; the code specifies the hashing and ranking. A
+emergent-tree `sidelen = 80`; the code specifies the hashing and ranking
+(an integer placement hash since Round 49, `wp40/r6_hash.lua`). A
 decoration is placed only when its whole rotated footprint lies inside the
 80-node chunk of its root, so tall trees thin out in bands along chunk
 borders (docs/research/wp40-simple-map-r6-contract.md §8.2, "Treeless

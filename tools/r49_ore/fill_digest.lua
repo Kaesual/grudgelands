@@ -10,8 +10,9 @@ local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local resources = dofile(wp40 .. "/r7_r6_manifest.lua")().resources
 -- T1 as grug_materials.TIERS[1] has it (the fixture checks it is the same).
 local tier = {y_min = -100, lower_half_y_max = -50}
+local mix = dofile(wp40 .. "/r6_hash.lua")().placement("10536739806879207652")
 local fill_ore_at = dofile(wp40 .. "/r6_settlement.lua").r49_fill_ores_new(
-	resources, tier, "10536739806879207652")
+	resources, tier, mix)
 local count, acc = 0, 0
 for z = -3000, -2937 do
 	for y = -80, -17 do

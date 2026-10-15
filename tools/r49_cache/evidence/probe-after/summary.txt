@@ -1,0 +1,67 @@
+probe: preparation ready after 21 s of waiting, wall_s=42.6
+probe: phase 1 start players=1
+probe: player 1 view complete at clock=4.83, starts moving
+probe: player 1 reached its end at clock=155.10
+probe: phase 1 done chunks=134 clock=155.10
+probe: phase 2 start players=2
+probe: player 3 view complete at clock=8.79, starts moving
+probe: player 2 view complete at clock=9.36, starts moving
+probe: player 3 reached its end at clock=109.42
+probe: player 2 reached its end at clock=109.45
+probe: phase 2 done chunks=146 clock=109.45
+probe: chunks fresh=280 old=0 cpu_s=133.1 wall_s=125.6
+probe: RESULT PASS all phases
+
+preparation and other callbacks (not requested by the probe): 84
+
+## phase 1: 134 chunks generated
+results: air_skip 34, applied_clq 22, applied_cplq 70, noop_equal_content 8
+chunk columns with Lua work: 52; first chunks 52, later chunks 48
+  first chunks: 52 chunks; column cache misses mean 6090 (max 8822); planner R5 + R6 columns mean 51.0 ms, sum 2650 ms; R6 candidates sum 5268 ms; callback mean 305 ms
+  later chunks: 48 chunks; column cache misses mean 0 (max 18); planner R5 + R6 columns mean 10.9 ms, sum 521 ms; R6 candidates sum 2 ms; callback mean 139 ms
+  later chunks re-paying (misses >= 3200): none
+  insertion distance of later chunks (misses since the column's tuples went in): median 12003, max 58053
+    limit 65536: 0 of 46 later chunks beyond it
+    limit 131072: 0 of 46 later chunks beyond it
+    limit 196608: 0 of 46 later chunks beyond it
+    limit 262144: 0 of 46 later chunks beyond it
+  cc_evictions: 349542 (on later chunks 18)
+  c.cell_cache_miss: 1300 (on later chunks 0)
+  c.cell_cache_eviction: 0 (on later chunks 0)
+  c.p9g_cache_hit: 31 (on later chunks 31)
+  c.p9g_cache_miss: 52 (on later chunks 8)
+  c.p9g_cache_eviction: 0 (on later chunks 0)
+  c.front_cache_miss: 0 (on later chunks 0)
+  c.front_cache_flush: 0 (on later chunks 0)
+  c.cave_cache_miss: 0 (on later chunks 0)
+  c.cave_cache_eviction: 0 (on later chunks 0)
+  P9G kept roots per column: mean 6.4, max 24
+  P9G stage on a miss: 52 chunks, mean 26.5 ms
+  P9G stage on a hit: 31 chunks, mean 0.0 ms
+  Lua heap after a callback (emerge environment): 998-2136 MB
+
+## phase 2: 146 chunks generated
+results: air_skip 26, applied_clq 25, applied_cplq 70, noop_equal_content 25
+chunk columns with Lua work: 61; first chunks 61, later chunks 59
+  first chunks: 61 chunks; column cache misses mean 6341 (max 7447); planner R5 + R6 columns mean 60.4 ms, sum 3687 ms; R6 candidates sum 6148 ms; callback mean 341 ms
+  later chunks: 59 chunks; column cache misses mean 7 (max 335); planner R5 + R6 columns mean 16.0 ms, sum 942 ms; R6 candidates sum 2 ms; callback mean 121 ms
+  later chunks re-paying (misses >= 3200): none
+  insertion distance of later chunks (misses since the column's tuples went in): median 24042, max 106668
+    limit 65536: 6 of 58 later chunks beyond it
+    limit 131072: 0 of 58 later chunks beyond it
+    limit 196608: 0 of 58 later chunks beyond it
+    limit 262144: 0 of 58 later chunks beyond it
+  cc_evictions: 409626 (on later chunks 430)
+  c.cell_cache_miss: 1525 (on later chunks 0)
+  c.cell_cache_eviction: 0 (on later chunks 0)
+  c.p9g_cache_hit: 16 (on later chunks 16)
+  c.p9g_cache_miss: 61 (on later chunks 2)
+  c.p9g_cache_eviction: 0 (on later chunks 0)
+  c.front_cache_miss: 0 (on later chunks 0)
+  c.front_cache_flush: 0 (on later chunks 0)
+  c.cave_cache_miss: 0 (on later chunks 0)
+  c.cave_cache_eviction: 0 (on later chunks 0)
+  P9G kept roots per column: mean 7.5, max 19
+  P9G stage on a miss: 61 chunks, mean 33.2 ms
+  P9G stage on a hit: 16 chunks, mean 0.0 ms
+  Lua heap after a callback (emerge environment): 1055-2164 MB

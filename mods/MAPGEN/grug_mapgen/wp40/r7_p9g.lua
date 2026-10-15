@@ -6,7 +6,6 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		type(habitat.initial_denominator) == "function")
 	local MAX_SAFE = 9007199254740991
 	local MAX_CANDIDATES = 4096
-	local HASH_PREFIX = "grug_wp40_r6_hash_v1"
 	local REASONS = {
 		"clipped_owner", "fixed_or_protected", "route_or_water",
 		"content_ignore", "wrong_zone", "wrong_biome",
@@ -70,21 +69,6 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			if a ~= b then return a < b end
 		end
 		return #left < #right
-	end
-
-	local function frame(value)
-		local bytes = type(value) == "number" and string.format("%.0f", value) or value
-		if type(bytes) ~= "string" then fail("hash field is not bytes or integer") end
-		return tostring(#bytes) .. ":" .. bytes
-	end
-
-	local function digest(domain, full_seed, ...)
-		local parts = {frame(HASH_PREFIX), frame(domain), frame(full_seed)}
-		local count = select("#", ...)
-		for index = 1, count do parts[#parts + 1] = frame(select(index, ...)) end
-		local value = raw_sha256(table.concat(parts))
-		if type(value) ~= "string" or #value ~= 32 then fail("SHA-256 seam differs") end
-		return value
 	end
 
 	local function hex(bytes)
@@ -180,9 +164,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		while root * 2 <= finish do
 			local child = root * 2
 			local function before(left, right)
-				if left.digest ~= right.digest then
-					return less_bytes(left.digest, right.digest)
-				end
+				if left.rank ~= right.rank then return left.rank < right.rank end
 				if left.z ~= right.z then return left.z < right.z end
 				return left.x < right.x
 			end
@@ -219,7 +201,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		end
 		local emit_ledger = not dependencies.runtime_mode
 		if type(full_seed) ~= "string" or full_seed == "" or type(hash) ~= "table" or
-				type(hash.budget) ~= "function" or
+				type(hash.budget) ~= "function" or type(hash.placement) ~= "function" or
 				type(dependencies.zones_session) ~= "table" or
 				type(dependencies.zones_session.surface_mob_level_at) ~= "function" or
 				type(production) ~= "table" or
@@ -232,19 +214,46 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			fail("successor air authority differs")
 		end
 
+		-- The rank and budget-remainder streams of each row (r6_hash.lua
+		-- `placement`).
+		local mix, placement_salt = hash.placement(full_seed)
+		local rank_salt, remainder_salt = {}, {}
+		for index = 1, #rows do
+			rank_salt[index] = placement_salt("gathering_candidate_rank", rows[index].id)
+			remainder_salt[index] = placement_salt("gathering_budget_remainder",
+				rows[index].id)
+		end
 		local rank_scratch = {}
 		for index = 1, 256 do
-			rank_scratch[index] = {x = 0, y = 0, z = 0, digest = false}
+			rank_scratch[index] = {x = 0, y = 0, z = 0, rank = 0}
 		end
 		local candidate_scratch = {}
 		for index = 1, MAX_CANDIDATES do
 			candidate_scratch[index] = {catalog = 0, x = 0, y = 0, z = 0,
-				cell_x = 0, cell_z = 0, digest = false}
+				cell_x = 0, cell_z = 0, rank = 0}
 		end
 		local bound_plan, bound_generation, bound_vertical_active = false, 0, false
 		local evidence_generation = 1000000000
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
-			peak_candidates = 0, peak_eligible_per_cell = 0, accepted = 0}
+			peak_candidates = 0, peak_eligible_per_cell = 0, accepted = 0,
+			cache_hits = 0, cache_misses = 0, cache_evictions = 0}
+
+		-- THE 2-D RESULT PER CHUNK COLUMN (Round 49 lane CACHE). The scan, the
+		-- rank draws, the budgets and the sort below read only the column's
+		-- x/z owner, the seed and session-constant pure functions of x, y and z
+		-- (`column_values_at`, `analytic_p7_ref`, `production_content`, the
+		-- habitat density and the budget hash), never the chunk's voxels or its
+		-- y range. So every vertical chunk of a column ranks the same budget
+		-- prefixes; the first chunk that scans keeps them (source row and root,
+		-- in loop order) and the next surface chunk of the column settles the
+		-- kept list instead of scanning again. Keyed by the owner's x/z bounds,
+		-- first in first out over COLUMN_CACHE_LIMIT columns (a few dozen roots
+		-- each). Production only: the ledger counts every eligible column inside
+		-- the 3-D owner and records each root's cell and rank, which needs the
+		-- scan.
+		local COLUMN_CACHE_LIMIT = 256
+		local column_cache = not emit_ledger and {} or nil
+		local column_cache_keys, column_cache_next = {}, 1
 
 		local function shore_matches(context, catalog_index, x, z)
 			if rows[catalog_index].shore_predicate == "none" then return true end
@@ -480,7 +489,44 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			local last_cell_x = math.floor(context.max_x / 16)
 			local first_cell_z = math.floor(context.min_z / 16)
 			local last_cell_z = math.floor(context.max_z / 16)
-			for catalog_index = 1, #rows do
+			local cache_key, cached, kept, kept_count
+			if column_cache then
+				cache_key = context.min_x .. "," .. context.min_z .. "," ..
+					context.max_x .. "," .. context.max_z
+				cached = column_cache[cache_key]
+				if cached then
+					metrics.cache_hits = metrics.cache_hits + 1
+				else
+					metrics.cache_misses = metrics.cache_misses + 1
+					kept, kept_count = {}, 0
+				end
+			end
+			-- A kept column: its roots (source row, x, y, z) in the loop's order,
+			-- settled exactly as the loop below settles a budget prefix in
+			-- production, which fills no ledger. The loop then runs no row.
+			if cached then
+				for base = 1, #cached, 4 do
+					local catalog_index, x, y, z =
+						cached[base], cached[base + 1], cached[base + 2], cached[base + 3]
+					if context.inside_owner(x, y, z) then
+						candidate_count = candidate_count + 1
+						if candidate_count > MAX_CANDIDATES then
+							fail("candidate bound exceeded")
+						end
+						local reason = settlement_decision(context, catalog_index, x, y, z)
+						if reason then
+							if not REASON_SET[reason] then fail("unknown rejection reason") end
+						else
+							local cid, _, _, param2 =
+								p9g_content.resolve_p9g(catalog_index, 0)
+							context.write_p9g(x, y, z, cid, param2, catalog_index,
+								catalog_index)
+							ledger.accepted = ledger.accepted + 1
+						end
+					end
+				end
+			end
+			for catalog_index = 1, cached and 0 or #rows do
 				local row = rows[catalog_index]
 				for cell_z = first_cell_z, last_cell_z do
 					for cell_x = first_cell_x, last_cell_x do
@@ -502,9 +548,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 										end
 										local ranked = rank_scratch[eligible]
 										ranked.x, ranked.y, ranked.z = x, surface_y + 1, z
-										ranked.digest = digest("gathering_candidate_rank_v1",
-											full_seed, row.id, cell_x, cell_z, x,
-											surface_y + 1, z)
+										ranked.rank = mix(x, surface_y + 1, z,
+											rank_salt[catalog_index])
 									end
 								end
 							end
@@ -514,9 +559,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 						end
 						local density = habitat.initial_denominator(row.key,
 							row.fill_denominator)
-						local remainder = digest("gathering_budget_remainder_v1", full_seed,
-							row.id, cell_x, cell_z, row.fill_numerator,
-							density)
+						local remainder = mix(cell_x, density, cell_z,
+							remainder_salt[catalog_index])
 						local budget = hash.budget(eligible, row.fill_numerator,
 							density, 1, 1, remainder)
 						sort_prefix(rank_scratch, eligible)
@@ -533,6 +577,12 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 						end
 						for chosen = 1, budget do
 							local ranked = rank_scratch[chosen]
+							if kept then
+								kept[kept_count + 1], kept[kept_count + 2] =
+									catalog_index, ranked.x
+								kept[kept_count + 3], kept[kept_count + 4] = ranked.y, ranked.z
+								kept_count = kept_count + 4
+							end
 							-- The fixed 2-D budget prefix is shared by every vertical
 							-- callback, but exactly the 3-D owner containing the root may
 							-- account for or settle it. Skipping is not rejection/refill.
@@ -544,8 +594,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 								local candidate = candidate_scratch[candidate_count]
 								candidate.catalog, candidate.x, candidate.y, candidate.z =
 									catalog_index, ranked.x, ranked.y, ranked.z
-								candidate.cell_x, candidate.cell_z, candidate.digest =
-									cell_x, cell_z, ranked.digest
+								candidate.cell_x, candidate.cell_z, candidate.rank =
+									cell_x, cell_z, ranked.rank
 								local population_row
 								if emit_ledger then
 									population_row = population(catalog_index,
@@ -591,7 +641,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 										cell_z = candidate.cell_z, root_x = candidate.x,
 										root_y = candidate.y, root_z = candidate.z,
 										zone_id = zone_id, biome = biome, faction = faction,
-										bracket = bracket, candidate_sha256 = hex(candidate.digest),
+										bracket = bracket, candidate_rank = candidate.rank,
 										original_cid = decision.original_cid,
 										original_param2 = decision.original_param2,
 										prior_cid = decision.prior_cid,
@@ -620,6 +670,16 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 						end
 					end
 				end
+			end
+			if kept then
+				local old_key = column_cache_keys[column_cache_next]
+				if old_key then
+					column_cache[old_key] = nil
+					metrics.cache_evictions = metrics.cache_evictions + 1
+				end
+				column_cache[cache_key] = kept
+				column_cache_keys[column_cache_next] = cache_key
+				column_cache_next = column_cache_next % COLUMN_CACHE_LIMIT + 1
 			end
 			if candidate_count > metrics.peak_candidates then
 				metrics.peak_candidates = candidate_count
@@ -656,7 +716,11 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				peak_candidates = metrics.peak_candidates,
 				peak_eligible_per_cell = metrics.peak_eligible_per_cell,
 				accepted = metrics.accepted, retained_buffer_growth_events = 0,
-				allocator_sealed = true}
+				allocator_sealed = true,
+				column_cache_limit = column_cache and COLUMN_CACHE_LIMIT or 0,
+				column_cache_hits = metrics.cache_hits,
+				column_cache_misses = metrics.cache_misses,
+				column_cache_evictions = metrics.cache_evictions}
 		end
 		function tail.probe_reason(self, context, catalog_index, x, y, z)
 			if not rawequal(self, tail) then fail("probe receiver differs") end

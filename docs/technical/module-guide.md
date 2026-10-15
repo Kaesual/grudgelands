@@ -2015,6 +2015,22 @@ tools](#player-meta-read-by-external-tools).
   box, must extend the envelope or that file's argument first, or its chunks
   are silently skipped (`tools/r49_skip` checks the writer's result on
   skipped chunks).
+  **Per-column caches of the emerge environment** (the session's own,
+  first in first out; every value is a pure function of x/z and the world,
+  so a hit equals a miss): the planner column tuples (`zones.lua`
+  `column_cache_limit`: 196,608 for the mapgen planner, `cache_purpose`
+  "mapgen" from `r5.lua`; the main environment's sources keep 65,536), the
+  R6 decoration candidates per 16-node cell (`r6_planner.lua`, 4,096 cells)
+  and P9G's ranked roots per chunk column (`r7_p9g.lua`
+  `COLUMN_CACHE_LIMIT`, 256 columns, production only), which the second
+  surface chunk of a column settles instead of scanning again. The engine
+  generates a column's chunks in its distance-shell order around every
+  player, not bottom-up, so the sizes follow the Round 49 shell-order probe
+  (`tools/r49_cache`, research doc
+  [mapgen-chunk-profile-2026-10.md](../research/mapgen-chunk-profile-2026-10.md)).
+  A change that lets one of these values depend on the chunk's y range, its
+  voxels or anything else outside its key re-keys or drops that cache in
+  the same change (`tools/r49_cache` checks hit against miss).
   **Trees come from the seeded generator** (Round 47): `wp40/treegen.lua`
   (pure, the port of the approved concept) and `wp40/tree_templates.lua`
   (the species table, the template seeds, the sparse variants). A
@@ -2031,6 +2047,14 @@ tools](#player-meta-read-by-external-tools).
   (`grug_trees/growth.lua`) and the town trees (`wp13/dressing.lua`) use the
   same generator. A change to the generator or the species table moves the
   sample pins of `tools/r47_tc/portable_test.lua`.
+  **Placement draws** (Round 49): the R6 decoration candidates (rank,
+  thinning, cell budget remainder), the P9 rotations, heights, variants and
+  template trials, the P9G ranks and remainders and the P8 fill ores draw
+  from one integer hash, `r6_hash.lua` `placement(full_seed)`: `mix(a, b, c,
+  salt)`, one cube round modulo a prime per input and a final one (no
+  lattice period, no point mirror), with one salt per stream (domain, row
+  id, seed), exact doubles, so LuaJIT and Lua 5.1 agree (`tools/r49_hash`). SHA-256 stays for identities
+  (manifests, pins, cache keys) and the tree template seeds.
   **The swamp's pools** (Round 47 lane SW, `tools/r47_sw/DESIGN.md`):
   `wp40/swamp_pools.lua` (pure, per column, from the seed and the planner
   source's analytic values) decides the pools by the user's rule: gentle

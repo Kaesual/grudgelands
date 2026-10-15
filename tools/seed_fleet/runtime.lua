@@ -260,12 +260,12 @@ return function(repo, seed, mode)
 			local base = (cell - 1) * 4
 			for candidate = plan.candidate_cell_values[base + 3],
 					plan.candidate_cell_values[base + 4] - 1 do
-				local cb = (candidate - 1) * 14
+				local cb = (candidate - 1) * 7
 				local v = plan.candidate_values
 				local x, y, z = v[cb + 4], v[cb + 5], v[cb + 6]
 				if x >= plan.min_x and x <= plan.max_x and y >= plan.min_y and y <= plan.max_y and
 						z >= plan.min_z and z <= plan.max_z then
-					for k = 1, 14 do parts[#parts + 1] = ("%.0f"):format(v[cb + k]) end
+					for k = 1, 7 do parts[#parts + 1] = ("%.0f"):format(v[cb + k]) end
 				end
 			end
 		end

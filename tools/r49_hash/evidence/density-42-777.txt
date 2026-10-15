@@ -1,0 +1,192 @@
+# tools/r49_hash/density.lua, seeds 42 and 777 summed: main e43c886b (before) vs r49-hash with the cube-round mix (after)
+## grug_bone_forest
+  candidates per row          before   after
+    blight_bone_pile                  0      2  -
+    blight_dry_shrub                  7      6  0.86
+    bone_forest_bone_pile           129    129  1.00
+    bone_forest_dry_shrub           364    362  0.99
+    bone_forest_gravewood           302    297  0.98
+    crags_pine_bush                   1      1  1.00
+    meadows_bush                      1      1  1.00
+    meadows_grass_1                   7      5  0.71
+    meadows_grass_2                   7      7  1.00
+    meadows_grass_3                   5      4  0.80
+    meadows_grass_4                   5      3  0.60
+    meadows_grass_5                   4      5  1.25
+    swamp_dry_shrub                   0      1  -
+    swamp_fern_1                      5      4  0.80
+    swamp_fern_2                      5      4  0.80
+    swamp_fern_3                      5      5  1.00
+    swamp_grass_3                     1      1  1.00
+    swamp_grass_4                     2      1  0.50
+    swamp_grass_5                     1      1  1.00
+    swamp_junglegrass                 0      1  -
+    swamp_moss_carpet                 3      3  1.00
+  written nodes per kind      before   after
+    cover                        1298131 1298122  1.00
+    gathering                      6811   6808  1.00
+    leaves                          707    670  0.95
+    tree                           5515   5407  0.98
+## grug_deep_forest
+  candidates per row          before   after
+    deep_forest_apple_log            64     63  0.98
+    deep_forest_apple_tree          776    768  0.99
+    deep_forest_aspen_tree          515    505  0.98
+    deep_forest_fern_1              881    882  1.00
+    deep_forest_fern_2              886    893  1.01
+    deep_forest_fern_3              889    888  1.00
+    elf_forest_apple_tree             5      7  1.40
+    elf_forest_grass_1               34     37  1.09
+    elf_forest_grass_2               35     34  0.97
+    elf_forest_grass_3               37     35  0.95
+    elf_forest_silverwood            10      8  0.80
+    meadows_apple_tree                1      1  1.00
+    meadows_bush                      2      0  0.00
+    meadows_grass_1                  14     14  1.00
+    meadows_grass_2                  16     16  1.00
+    meadows_grass_3                  17     15  0.88
+    meadows_grass_4                  16     16  1.00
+    meadows_grass_5                  17     16  0.94
+    swamp_dry_shrub                   2      0  0.00
+    swamp_fern_1                      5      9  1.80
+    swamp_fern_2                      5      4  0.80
+    swamp_fern_3                      4      5  1.25
+    swamp_grass_3                     6      6  1.00
+    swamp_grass_4                     6      7  1.17
+    swamp_grass_5                     7      4  0.57
+    swamp_junglegrass                 1      2  2.00
+    swamp_moss_carpet                12     11  0.92
+    swamp_tree                        0      1  -
+  written nodes per kind      before   after
+    cover                        822127 822198  1.00
+    gathering                        47     50  1.06
+    leaves                        71079  69397  0.98
+    tree                          19412  19043  0.98
+## grug_deep_jungle
+  candidates per row          before   after
+    badlands_dry_shrub                2      1  0.50
+    emergent_jungle_tree             28     29  1.04
+    jungle_junglegrass              976    985  1.01
+    jungle_tree                     471    465  0.99
+    swamp_fern_1                      9     11  1.22
+    swamp_fern_2                     11      9  0.82
+    swamp_fern_3                      9      9  1.00
+    swamp_grass_3                     9     10  1.11
+    swamp_grass_4                     9      6  0.67
+    swamp_grass_5                     9      9  1.00
+    swamp_junglegrass                 5      3  0.60
+    swamp_moss_carpet                10     10  1.00
+    swamp_tree                        1      1  1.00
+  written nodes per kind      before   after
+    cover                        2697988 2697985  1.00
+    gathering                      2977   2966  1.00
+    leaves                         2350   2272  0.97
+    tree                            951    955  1.00
+## grug_elf_forest
+  candidates per row          before   after
+    elf_forest_apple_tree            89     90  1.01
+    elf_forest_grass_1              974    966  0.99
+    elf_forest_grass_2              969    971  1.00
+    elf_forest_grass_3              966    963  1.00
+    elf_forest_silverwood           213    219  1.03
+  written nodes per kind      before   after
+    cover                        224514 224520  1.00
+    gathering                       128    134  1.05
+    leaves                        33820  34735  1.03
+    tree                           8684   8898  1.02
+## grug_meadows
+  candidates per row          before   after
+    deep_forest_apple_tree            7      9  1.29
+    deep_forest_aspen_tree            6      8  1.33
+    deep_forest_fern_1                9     11  1.22
+    deep_forest_fern_2               11     11  1.00
+    deep_forest_fern_3               13     10  0.77
+    meadows_apple_tree               77     68  0.88
+    meadows_bush                    155    150  0.97
+    meadows_grass_1                2457   2446  1.00
+    meadows_grass_2                2440   2444  1.00
+    meadows_grass_3                2446   2428  0.99
+    meadows_grass_4                2442   2443  1.00
+    meadows_grass_5                2441   2443  1.00
+    swamp_fern_1                      2      2  1.00
+    swamp_fern_2                      5      1  0.20
+    swamp_fern_3                      2      3  1.50
+    swamp_grass_3                     5      7  1.40
+    swamp_grass_4                     7      6  0.86
+    swamp_grass_5                     5      7  1.40
+    swamp_junglegrass                 5      4  0.80
+    swamp_moss_carpet                 9      8  0.89
+    swamp_tree                        1      1  1.00
+  written nodes per kind      before   after
+    cover                        212024 212034  1.00
+    gathering                       126    125  0.99
+    leaves                        18801  17777  0.95
+    tree                           5494   5196  0.95
+## grug_savanna
+  candidates per row          before   after
+    badlands_dry_shrub               10      9  0.90
+    badlands_large_cactus             2      2  1.00
+    savanna_acacia_bush             173    168  0.97
+    savanna_acacia_tree             109    106  0.97
+    savanna_dry_grass_1            2638   2651  1.00
+    savanna_dry_grass_2            2639   2641  1.00
+    savanna_dry_grass_3            2643   2645  1.00
+    savanna_dry_grass_4            2654   2646  1.00
+    savanna_dry_grass_5            2653   2654  1.00
+    savanna_dry_shrub               170    177  1.04
+    swamp_dry_shrub                   0      1  -
+    swamp_fern_1                      4      6  1.50
+    swamp_fern_2                      3      3  1.00
+    swamp_fern_3                      4      3  0.75
+    swamp_grass_3                    11      8  0.73
+    swamp_grass_4                     8     11  1.38
+    swamp_grass_5                     8      8  1.00
+    swamp_junglegrass                 2      4  2.00
+    swamp_moss_carpet                11     10  0.91
+  written nodes per kind      before   after
+    cover                        552490 552529  1.00
+    gathering                      5749   5739  1.00
+    leaves                        10860  10356  0.95
+    tree                           2059   1952  0.95
+## grug_swamp
+  candidates per row          before   after
+    deep_forest_apple_log             3      2  0.67
+    deep_forest_apple_tree           32     33  1.03
+    deep_forest_aspen_tree           22     26  1.18
+    deep_forest_fern_1               29     34  1.17
+    deep_forest_fern_2               33     32  0.97
+    deep_forest_fern_3               33     31  0.94
+    elf_forest_apple_tree             0      8  -
+    elf_forest_grass_1               22     23  1.05
+    elf_forest_grass_2               24     24  1.00
+    elf_forest_grass_3               24     24  1.00
+    elf_forest_silverwood             5      8  1.60
+    meadows_apple_tree                0      1  -
+    meadows_bush                      3      2  0.67
+    meadows_grass_1                  29     24  0.83
+    meadows_grass_2                  28     22  0.79
+    meadows_grass_3                  22     21  0.95
+    meadows_grass_4                  22     24  1.09
+    meadows_grass_5                  26     23  0.88
+    swamp_dry_shrub                  79     63  0.80
+    swamp_fern_1                    432    432  1.00
+    swamp_fern_2                    431    428  0.99
+    swamp_fern_3                    445    424  0.95
+    swamp_grass_3                  1297   1288  0.99
+    swamp_grass_4                  1291   1300  1.01
+    swamp_grass_5                  1300   1303  1.00
+    swamp_junglegrass               580    584  1.01
+    swamp_moss_carpet              1634   1641  1.00
+    swamp_papyrus                     3      2  0.67
+    swamp_tree                       75     94  1.25
+  written nodes per kind      before   after
+    cover                        615958 615869  1.00
+    gathering                      5146   5137  1.00
+    leaves                         6144   7714  1.26
+    tree                           3185   3943  1.24
+## all chunks
+  candidates, every row         44088  44031  1.00
+  nodes: cover                  6423232 6423257  1.00
+  nodes: gathering               20984  20959  1.00
+  nodes: leaves                 143761 142921  0.99
+  nodes: tree                    45300  45394  1.00

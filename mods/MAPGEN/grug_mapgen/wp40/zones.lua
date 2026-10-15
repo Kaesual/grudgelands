@@ -378,9 +378,12 @@ local function zones_factory(dependencies)
 	}
 
 	local function construct(full_seed_string, configured_water_level,
-			planner_source_requested, runtime_mode)
+			planner_source_requested, runtime_mode, cache_purpose)
 		if runtime_mode ~= nil and runtime_mode ~= true then
 			fail("runtime construction mode differs")
+		end
+		if cache_purpose ~= nil and (cache_purpose ~= "mapgen" or not runtime_mode) then
+			fail("runtime cache purpose differs")
 		end
 		if configured_water_level ~= WATER_LEVEL then
 			fail("configured water level differs from exact integer 1")
@@ -1313,7 +1316,20 @@ local function zones_factory(dependencies)
 			planner_source = {
 				schema = "grug_wp40_r5_planner_source_v1",
 			}
-			local column_cache_limit = 65536
+			-- The column tuples of the last few chunk columns, first in first
+			-- out. A new 80 x 80 chunk column with its halo misses about 7,200
+			-- tuples (about 6 us each; most of the cold planner's 50-60 ms).
+			-- The emerge environment's planner (`cache_purpose` "mapgen",
+			-- r5.lua) generates the chunks of a column in the engine's
+			-- distance-shell order around every player, so a column's later
+			-- chunks come up to about 110,000 misses after its first one with
+			-- two players walking apart (Round 49 lane CACHE probe,
+			-- tools/r49_cache): 196,608 tuples hold that with margin for about
+			-- three players, at about 330 bytes each (+41 MiB over 65,536).
+			-- Every other runtime source (the main environment's authority)
+			-- keeps 65,536.
+			local column_cache_limit = cache_purpose == "mapgen" and 196608 or
+				65536
 			-- The cache's x and z keys are the coordinates plus this offset
 			-- (Round 49 lane JIT): a negative integer key in a table that also
 			-- holds array keys is a lookup LuaJIT does not compile ("mixed
@@ -1687,9 +1703,13 @@ local function zones_factory(dependencies)
 		return construct(full_seed_string, configured_water_level, true, nil)
 	end
 
+	-- `cache_purpose` (optional): "mapgen" for the emerge environment's
+	-- planner, which sizes the column cache for several players' generate
+	-- reach (see `column_cache_limit`).
 	function module.new_with_planner_source_runtime(full_seed_string,
-			configured_water_level)
-		return construct(full_seed_string, configured_water_level, true, true)
+			configured_water_level, cache_purpose)
+		return construct(full_seed_string, configured_water_level, true, true,
+			cache_purpose)
 	end
 
 	return module

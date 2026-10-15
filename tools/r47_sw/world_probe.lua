@@ -97,7 +97,7 @@ for _, minp in ipairs(chunks) do
 		local base = (cell - 1) * 4
 		for candidate = plan.candidate_cell_values[base + 3],
 				plan.candidate_cell_values[base + 4] - 1 do
-			local catalog = plan.candidate_values[(candidate - 1) * 14 + 2]
+			local catalog = plan.candidate_values[(candidate - 1) * 7 + 2]
 			roots[catalog] = (roots[catalog] or 0) + 1
 		end
 	end
