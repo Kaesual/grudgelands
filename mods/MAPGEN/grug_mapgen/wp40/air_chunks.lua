@@ -10,8 +10,9 @@
 --    (mgv7_spflags); caves, caverns and dungeons return early above the
 --    highest stone (MapgenBasic::generateCaves*/generateDungeons) and only
 --    carve; the native ores replace stone; the game registers no Lua biomes
---    or decorations (default/mapgen.lua GRUG PATCH). So the owner holds only
---    air.
+--    (default/mapgen.lua GRUG PATCH) and its only decorations, the native
+--    cave plants (Round 49), lie far below water level. So the owner holds
+--    only air.
 -- 2. The chunk lies more than MARGIN nodes above everything the writer can
 --    place there: the preparation surface/content envelope
 --    (preparation_source.lua) of the owner columns and their decoded content

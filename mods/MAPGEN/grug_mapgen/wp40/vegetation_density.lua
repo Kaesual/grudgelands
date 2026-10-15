@@ -511,8 +511,9 @@ return function(deps)
 	-- "cave" rule. Round 24 ruling 30 addendum (optional deps, all or none):
 	-- `cave_limit` is the writer's own column rule (r6_settlement.lua
 	-- `r30_cave_limit`, with `protected_floor_at`),
-	-- so cave rows regrow exactly where the generator places them, below a
-	-- town's or POI's protected floor included; `protected_only_floor_at`
+	-- so cave rows regrow by the writer's column rule, below a town's or
+	-- POI's protected floor included (generation itself is native since
+	-- Round 49: every cave floor in the band); `protected_only_floor_at`
 	-- lets a surface resource below such a floor ignore the claim exclusion,
 	-- as the writers do.
 	local cave_limit = deps.cave_limit
