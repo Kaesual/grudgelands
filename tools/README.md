@@ -1106,3 +1106,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `insecure.patch` to the staged game, so only that run's throwaway
   server config disables mod security and the timer logs LuaJIT trace
   aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
+- **Round 49** (`r49_<lane>`): `r49_prot` the protection depth under towns
+  and the preparation bottom (`portable_test.lua`: the one depth constant in
+  every consumer of one world, the fill-floor bottom of a high, an ordinary
+  and a boundary tile); `measure_depth.lua REPO [seed ...]` the deepest
+  place a player stands in a town below its placement height and the city
+  edge's reach (what the depth is sized from; about 40 s per seed);
+  `count_tiles.lua REPO [seed ...]` the full-preparation tiles and extra
+  chunks the fill-floor bottom changes, from the real preparation authority
+  without generating (about 75 s per seed).
