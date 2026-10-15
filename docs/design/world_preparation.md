@@ -59,7 +59,17 @@ decided 2026-10-09 (Round 46).
   (`grug_core.FLIGHT_CEILING`, shared with grug_mounts) plus 8 nodes of flight
   headroom and the window's highest surface/content plus 3 nodes of standing
   headroom, plus R, rounded outward to mapchunks.
-- **Bottom:** the window's lowest surface envelope minus R, rounded outward.
+- **Bottom:** the window's lowest surface envelope minus R, but never above
+  the terrain fill floor y = −37 (`preparation_plan.lua` `FILL_FLOOR`, the
+  mapgen's authored floor), rounded outward (Round 49, ruling 8 of the
+  [native-first plan](../planning/mapgen-native-plan.md)). Where our surface
+  lies above v7's, the mapgen's own Lua fills the terrain down to y −37, so
+  the chunk holding that floor (y −112…−33) is always prepared and everything
+  left below a tile's bottom is plain v7 work. Only tiles whose whole window
+  lies at or above about y 144 (high massifs) reach lower than before. An
+  existing world never takes the new bottom: its persisted preparation
+  authority digests `preparation_plan.lua` and refuses the changed code, and
+  a map reset starts a new plan.
 - Surface and content heights are the surface envelope: land surfaces, the real
   bed of sea, lake and river water on the bottom side (players dive to any bed;
   user ruling 2026-09-28) and the water surface on the top side, functional
