@@ -1106,3 +1106,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `insecure.patch` to the staged game, so only that run's throwaway
   server config disables mod security and the timer logs LuaJIT trace
   aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
+- **Round 49** (`r49_<lane>`): `r49_vis` node items in the third-person
+  hand (`portable_test.lua`: the real `grug_visuals` and `player_api` on a
+  stub engine: which items the engine draws as blocks, the transform at
+  70 % for every pose and stature with its anchor in the fist, the player
+  path through `apply` with dirt, a slab and a mesh at 70 % and a pickaxe,
+  an axe, a torch and a sapling unchanged, the re-attach on a block-to-flat
+  swap, an NPC holding a block); the onion art is `r48_artp/generate.py`.
