@@ -18,6 +18,7 @@ local module = {}
 
 local MAX_SAFE = 9007199254740991
 local NOISE_SCHEMA = "grug_wp40_r7_noiseparams_v1"
+local MGV7_SPFLAGS = "nomountains, ridges, nofloatlands, caverns"
 local NOISE_DIGEST =
 	"5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738"
 local NATIVE_SCHEMA = "grug_wp40_r7_native_allowlist_v1"
@@ -909,7 +910,8 @@ end
 function module.apply_and_validate_main(wp40, projection)
 	validated_native(derivation_inputs(wp40, projection))
 	if type(core) ~= "table" or
-			type(core.set_mapgen_setting_noiseparams) ~= "function" then
+			type(core.set_mapgen_setting_noiseparams) ~= "function" or
+			type(core.set_mapgen_setting) ~= "function" then
 		fail("noise setter API is unavailable")
 	end
 	-- Validate all six literal setter tables before the first setting mutation.
@@ -932,6 +934,11 @@ function module.apply_and_validate_main(wp40, projection)
 		heat_blend, true)
 	core.set_mapgen_setting_noiseparams("mg_biome_np_humidity_blend",
 		humidity_blend, true)
+	-- The v7 flags (Round 49, lane V7A: nomountains), forced over the world's
+	-- map_meta.txt like the noise params: a map reset keeps that file, and
+	-- with it the flags of the world's creation, which would override
+	-- minetest.conf. Engine canonical form; r7_runtime.lua checks the readback.
+	core.set_mapgen_setting("mgv7_spflags", MGV7_SPFLAGS, true)
 	return validate_runtime_readback("main", wp40, projection)
 end
 
