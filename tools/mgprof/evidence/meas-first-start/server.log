@@ -1,0 +1,364 @@
+
+
+-------------
+  Separator
+-------------
+
+WARNING[Main]: /!\ You are using the old mod storage files backend. This backend is deprecated and may be removed in a future release /!\
+WARNING[Main]: Switching to SQLite3 is advised, please read https://docs.luanti.org/for-server-hosts/database-backends.
+ACTION[Main]: [grug_materials] 24 pick/axe/shovel tools, 12 default: tool aliases
+ACTION[Main]: [grug_core] world version 0.49.0 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.49.0 (a new world), game 0.49.0: no migration step due
+ACTION[Main]: [grug_gear] 6 bracket catalogs: 36 weapons + 72 armor pieces
+ACTION[Main]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.12 s), 75 neighbour pairs
+ACTION[Main]: [grug_mapgen] main tree templates: roll-up 631e45e683e3e699, 0.229 s CPU
+ACTION[Main]: [grug_mapgen] world protection: 191 road corridors (49874 segments in 3212 runs), 106 settlement cores, 3318 records in 480 cells (4259 references, at most 38 per cell), built in 0.011 s
+ACTION[Main]: [grug_mapgen] POI placement: 2 rows relaxed a rule (anchor:step anchor_068:2, anchor_069:2), placed in 0.52 s
+ACTION[Main]: [grug_mapgen] capital highcourt: area 99902 m2, built 27.3 %, plots 49 of 52 (overflowed 4, left out 3 fill, 0 buildings), required 9 of 9, relaxed 0, streets 22 (open arcs 1, cross-lanes 5, squares 12), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.79 s
+ACTION[Main]: [grug_mapgen] capital dur_brannoc: area 99960 m2, built 27.2 %, plots 48 of 52 (overflowed 4, left out 4 fill, 0 buildings), required 9 of 9, relaxed 0, streets 22 (open arcs 0, cross-lanes 4, squares 7), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 0.86 s
+ACTION[Main]: [grug_mapgen] capital gor_drazhak: area 99861 m2, built 29.6 %, plots 50 of 52 (overflowed 7, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0, streets 20 (open arcs 2, cross-lanes 3, squares 12), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 1.04 s
+ACTION[Main]: [grug_mapgen] capital lethariel: area 100120 m2, built 24.7 %, plots 44 of 44 (overflowed 6, left out 0 fill, 0 buildings), required 9 of 9, relaxed 0, streets 16 (open arcs 2, cross-lanes 4, squares 8), infeasible profiles 0, connector failures 0, shore avenues 1, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 1.30 s
+ACTION[Main]: [grug_mapgen] capital kezamba: area 99486 m2, built 26.8 %, plots 50 of 52 (overflowed 12, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0, streets 19 (open arcs 2, cross-lanes 3, squares 9), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, no route: ring1/q1 ring2/q1, planned in 1.47 s
+ACTION[Main]: [grug_mapgen] capital nhal_veyr: area 100155 m2, built 27.7 %, plots 49 of 52 (overflowed 8, left out 3 fill, 0 buildings), required 9 of 9, relaxed 1, streets 19 (open arcs 0, cross-lanes 0, squares 10), infeasible profiles 0, connector failures 0, shore avenues 0, gate run-outs 0, wet avenue ends 0, planned in 1.18 s
+ACTION[Main]: [grug_mapgen] protected capital cities (wall line + edge + treeless band): anchor_007 128 k m2 (reach 258), anchor_008 127 k m2 (reach 249), anchor_009 160 k m2 (reach 269), anchor_010 127 k m2 (reach 278), anchor_011 128 k m2 (reach 240), anchor_012 146 k m2 (reach 268)
+ACTION[Main]: [grug_mapgen] roads: 31 roads, 42 trails (42 of 42 trail candidates), 2 loops, 0 core pins dropped, built in 5.8 s, payload 213508 bytes (with the capital streets), capital layouts 79602 bytes
+ACTION[Main]: [grug_mapgen] road showcase: gallery (primary) at -847,63,1592; valley crossing (secondary) at -331,135,946; bridge (primary) at 16,61,400; deepest cut (primary) at 1329,90,-1272; junction (secondary) at 1801,67,-2099; ford (primary) at 672,31,1373
+ACTION[Main]: [grug_mapgen] world layouts: cache miss (no cache file), built in runtime construction 23.1 s (placement 0.5 s, water 0.6 s, roads 5.8 s, capitals 6.6 s), stored grug_world_layouts.txt (426375 bytes)
+ACTION[Main]: [grug_mapgen] Lua heap after loading 1305 MiB, 397 MiB after a full collection (520 ms)
+ACTION[Main]: [mgprof_probe] loaded epoch=1792086157 cpu_s=24.2
+ACTION[Main]: [grug_quality] deterministic PcgRandom quality rolls enabled
+ACTION[Main]: [grug_map] rendered world map base 1080x960 (normal) in 9.22 s (zones/water 2.73 s, relief step 8 6.17 s, colour 0.21 s, bake+encode 0.06 s, 6 tiles, 862868 bytes; minimap copy 1080x960 0.06 s, 880132 bytes, 124 icons; baked 0 icons (0 overlapping pairs) and 9 names (0 over an icon))
+ACTION[Main]: [grug_map] removed 0 stale world map tiles
+ACTION[Main]: [grug_professions] registered Weaponsmith, Armorsmith, Leatherworker and Tailor catalogs
+ACTION[Main]: [grug_artisans] registered Woodcarver and Goldsmith catalogs
+ACTION[Main]: grug_trees: ground connect_sides top on 26 nodes: default:desert_sand default:dirt default:dirt_with_coniferous_litter default:dirt_with_dry_grass default:dirt_with_grass default:dirt_with_grass_footsteps default:dirt_with_rainforest_litter default:dirt_with_snow default:dry_dirt default:dry_dirt_with_dry_grass default:gravel default:sand default:silver_sand grug_farming:soil grug_farming:soil_wet grug_nodes:ash_ground grug_nodes:blight_dirt grug_nodes:dirt_with_bone_litter grug_nodes:dirt_with_canopy_litter grug_nodes:dirt_with_forest_litter grug_nodes:dirt_with_moss grug_nodes:dirt_with_silver_litter grug_nodes:mud grug_nodes:mud_dry grug_nodes:mud_mottled grug_nodes:mud_with_wet_grass
+ACTION[Main]: [grug_materials] registry audit passed: 6 tier rocks, 3 decorative rocks, 16 resources, 12 processed forms, 6 race regions, 1129 dig-matrix pairs
+ACTION[Main]: [grug_smelting] recipe audit passed: 5 cooking, 5 dualfurn, 12 storage pairs, 1 station
+ACTION[Main]: [grug_core] region cloud base: dwarf 150 (capital ground 71, authored 150), human 130 (capital ground 42, authored 130), elf 170 (capital ground 55, authored 170), undead 110 (capital ground 45, authored 110), orc 190 (capital ground 60, authored 190), troll 100 (capital ground 36, authored 100)
+ACTION[Main]: [grug_core] world preparation mode=starts cursor=0/84
+ACTION[Main]: [grug_visuals] 72 armor pieces indexed for overlays, 3 art lines x 4 slots
+ACTION[Main]: [grug_mobs] spawn regions elandor_ashenward_march: 1262 land cells, 57 regions, 3 camps, 2 leaders, built in 386 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_copperfell_foothills: 350 land cells, 19 regions, 2 camps, 1 leaders, built in 108 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_dawnmere_fields: 383 land cells, 22 regions, 1 camps, 1 leaders, built in 182 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_dur_brannoc: 594 land cells, 30 regions, 1 camps, 1 leaders, built in 212 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_frostbarrow_shelf: 299 land cells, 18 regions, 0 camps, 1 leaders, built in 90 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_glassroot_wilds: 1038 land cells, 46 regions, 1 camps, 2 leaders, built in 262 ms
+WARNING[Main]: [grug_mobs] spawn regions elandor_glassroot_wilds: kind serpent_pools of belt l38_40 forms no region and its belt holds no block of 8 cells
+ACTION[Main]: [grug_mobs] spawn regions elandor_goldmead_vale: 550 land cells, 31 regions, 2 camps, 1 leaders, built in 163 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_hearthpine_vale: 478 land cells, 30 regions, 1 camps, 1 leaders, built in 148 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_highcourt: 558 land cells, 30 regions, 1 camps, 1 leaders, built in 209 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_lethariel: 728 land cells, 33 regions, 1 camps, 1 leaders, built in 286 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_lorindor: 838 land cells, 44 regions, 2 camps, 1 leaders, built in 231 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_moonfall_wood: 341 land cells, 21 regions, 0 camps, 1 leaders, built in 118 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_silverleaf_glades: 595 land cells, 31 regions, 1 camps, 1 leaders, built in 172 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_starbough_vale: 466 land cells, 21 regions, 1 camps, 1 leaders, built in 120 ms
+ACTION[Main]: [grug_mobs] spawn regions elandor_stormvault_heights: 972 land cells, 48 regions, 1 camps, 2 leaders, built in 277 ms
+WARNING[Main]: [grug_mobs] spawn regions elandor_stormvault_heights: no valid camp cell for goblin_camp in belt l34_37
+ACTION[Main]: [grug_mobs] spawn regions elandor_whitebridge_shire: 724 land cells, 33 regions, 2 camps, 2 leaders, built in 246 ms
+ACTION[Main]: [grug_mobs] spawn regions front_broken_causeway: 968 land cells, 49 regions, 1 camps, 2 leaders, built in 314 ms
+ACTION[Main]: [grug_mobs] spawn regions front_gravesalt_escarpment: 759 land cells, 47 regions, 0 camps, 2 leaders, built in 257 ms
+ACTION[Main]: [grug_mobs] spawn regions front_shattered_line: 949 land cells, 49 regions, 0 camps, 2 leaders, built in 292 ms
+ACTION[Main]: [grug_mobs] spawn regions front_skyglass_canopy: 895 land cells, 42 regions, 1 camps, 2 leaders, built in 251 ms
+ACTION[Main]: [grug_mobs] spawn regions front_stormscale_summit: 236 land cells, 13 regions, 0 camps, 1 leaders, built in 68 ms
+ACTION[Main]: [grug_mobs] spawn regions front_wyrmglass_crown: 220 land cells, 10 regions, 0 camps, 1 leaders, built in 71 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_bannerbreak_mesa: 1260 land cells, 62 regions, 3 camps, 2 leaders, built in 374 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_blackwind_rise: 1029 land cells, 48 regions, 2 camps, 2 leaders, built in 351 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_gor_drazhak: 590 land cells, 26 regions, 1 camps, 1 leaders, built in 230 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_kapok_cradle: 738 land cells, 34 regions, 1 camps, 1 leaders, built in 348 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_kezamba: 599 land cells, 27 regions, 1 camps, 1 leaders, built in 233 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_mournfen: 433 land cells, 22 regions, 3 camps, 1 leaders, built in 189 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_nhal_veyr: 576 land cells, 27 regions, 0 camps, 1 leaders, built in 193 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_ossuary_reach: 546 land cells, 32 regions, 0 camps, 1 leaders, built in 147 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_raincall_basin: 352 land cells, 18 regions, 1 camps, 1 leaders, built in 121 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_redtusk_savanna: 485 land cells, 22 regions, 1 camps, 1 leaders, built in 140 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_speargrass_reach: 795 land cells, 41 regions, 1 camps, 1 leaders, built in 253 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_stillgrave_hollow: 559 land cells, 32 regions, 1 camps, 1 leaders, built in 165 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_sunscar_flats: 494 land cells, 33 regions, 1 camps, 1 leaders, built in 186 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_thunderroot_wilds: 1117 land cells, 55 regions, 1 camps, 2 leaders, built in 281 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_totemwater_reach: 535 land cells, 25 regions, 0 camps, 1 leaders, built in 156 ms
+ACTION[Main]: [grug_mobs] spawn regions kragmar_whispering_reedlands: 692 land cells, 35 regions, 2 camps, 1 leaders, built in 241 ms
+ACTION[Main]: [grug_mobs] spawn regions: 38 region maps ready at start in 8073.3 ms (0 from grug_region_maps.txt, 38 built in 8.1 s, 0 failed); cache miss (no cache file), stored 110131 bytes; Lua heap 437 -> 742 MiB
+ACTION[Main]: [grug_mobs] spawn ABM surface: 10 rows, interval 20, chance 248
+ACTION[Main]: [grug_mobs] spawn ABM underground: 18 rows, interval 20, chance 135
+ACTION[Main]: [grug_mobs] spawn ABM water: 2 rows, interval 30, chance 3287
+ACTION[Main]: [grug_mobs] 56 surface spawn rows retired (spawn regions): grug_mobs:ashen_treant, grug_mobs:bear, grug_mobs:blightfang_wolf, grug_mobs:boar, grug_mobs:bog_ooze, grug_mobs:bog_witch, grug_mobs:carrion_crow, grug_mobs:crag_eagle, grug_mobs:crocodile, grug_mobs:fox, grug_mobs:frost_stray, grug_mobs:gaunt_stag, grug_mobs:giant_rat, grug_mobs:giant_spider, grug_mobs:goblin_hound, grug_mobs:goblin_raider, grug_mobs:goblin_slinger, grug_mobs:gravewood_treant, grug_mobs:hyena, grug_mobs:ibex, grug_mobs:jungle_ape, grug_mobs:jungle_boar, grug_mobs:jungle_lynx, grug_mobs:jungle_spider, grug_mobs:mesa_golem, grug_mobs:mountain_ram, grug_mobs:pale_spider, grug_mobs:panther, grug_mobs:plague_boar, grug_mobs:plaguehide_bear, grug_mobs:plains_runner, grug_mobs:poacher, grug_mobs:reef_lurker, grug_mobs:scorpion, grug_mobs:serpent, grug_mobs:shore_crab, grug_mobs:skeleton_archer, grug_mobs:skeleton_raider, grug_mobs:snow_leopard, grug_mobs:speargrass_tiger, grug_mobs:stag, grug_mobs:stone_golem, grug_mobs:sun_dried_husk, grug_mobs:tapir, grug_mobs:viper, grug_mobs:vulture, grug_mobs:war_construct, grug_mobs:wisp, grug_mobs:wolf, grug_mobs:zebra, grug_mobs:zombie
+ACTION[Main]: [grug_mobs] settlement work activities: tools 7, weapon families 1, all registered
+ACTION[Main]: [grug_inventory] starter weapons: mage=grug_gear:staff_bronze (2H), priest=grug_gear:staff_bronze (2H), scout=grug_gear:bow_bronze, scout=grug_gear:sword_bronze, warrior=grug_gear:sword_bronze
+ACTION[Main]: [grug_traders] core stock and 13 profession shelves, 104 offers, all registered and none an enchant input or above T1
+ACTION[Main]: [grug_traders] dwarf capital vendors come from the sockets of dur_brannoc
+ACTION[Main]: [grug_traders] elf capital vendors come from the sockets of lethariel
+ACTION[Main]: [grug_traders] human capital vendors come from the sockets of highcourt
+ACTION[Main]: [grug_traders] orc capital vendors come from the sockets of gor_drazhak
+ACTION[Main]: [grug_traders] troll capital vendors come from the sockets of kezamba
+ACTION[Main]: [grug_traders] undead capital vendors come from the sockets of nhal_veyr
+ACTION[Main]: [grug_traders] 118 settlements indexed for profession vendor appearance
+ACTION[Main]: [grug_traders] drop audit: 43 mob(s) use a `drops` FUNCTION and cannot be walked statically (grug_mobs:ash_writ_bowman, grug_mobs:bandit, grug_mobs:bandit_archer, grug_mobs:basket_poacher_thorn, grug_mobs:bough_counter_rusk, grug_mobs:causeway_aqueduct_bowman, grug_mobs:causeway_brigand, grug_mobs:coal_purse_factor, grug_mobs:confused_bandit, grug_mobs:confused_bandit_chief, grug_mobs:entrenched_bandit, grug_mobs:entrenched_bandit_archer, grug_mobs:furtive_poacher, grug_mobs:grave_broker_mute, grug_mobs:grave_robber_chief, grug_mobs:last_pay_archer, grug_mobs:misguided_poacher_chief, grug_mobs:muddled_ore_chief, grug_mobs:offering_broker_takka, grug_mobs:offering_thief_chief, grug_mobs:paymaster_chirr, grug_mobs:poacher, grug_mobs:quarrelsome_bandit, grug_mobs:quartermaster_scrip, grug_mobs:ration_broker_garr, grug_mobs:red_receipt_marshal, grug_mobs:requisitioner_hobb, grug_mobs:saltroad_deserter, grug_mobs:siege_deserter, grug_mobs:siege_deserter_archer, grug_mobs:snarekeeper_vetch, grug_mobs:snarewarden_bracken, grug_mobs:snaring_poacher, grug_mobs:tithe_keeper_vek, grug_mobs:toll_bandit, grug_mobs:toll_bandit_archer, grug_mobs:toll_taker_senn, grug_mobs:tollmaster_penn, grug_mobs:unlicensed_poacher, grug_mobs:vigilant_bandit_archer, grug_mobs:wartrail_poacher, grug_mobs:water_broker_korr, grug_mobs:water_thief_chief); their items are audited from the hardcoded FUNCTION_DROPS list
+WARNING[Main]: [grug_quests] zones/elandor_ashenward_march.quests.json: quest accord_main_collector: objective 1: no kill target is spawned by elandor_ashenward_march's spawn recipe [W-recipe-target]
+WARNING[Main]: [grug_quests] zones/kragmar_bannerbreak_mesa.quests.json: quest throng_main_finale: objective 1: no kill target is spawned by kragmar_bannerbreak_mesa's spawn recipe [W-recipe-target]
+ACTION[Main]: [grug_fishing] tables=6 entries=12 weight=100 bite=3..10s rod_uses=64
+ACTION[Main]: [grug_map] placed 38 zone labels in 0.168 s (grid 225x200 sampled in 0.158 s); at 1x on 1920x1080 0 overlapping pairs, 0 over a region name; on 1035x696 40 and 7
+ACTION[Main]: [grug_map] quest target index: 151 roles, 1263 regions, 359 areas, 49 leaders in 2.5 ms
+ACTION[Main]: [grug_farming] vegetation renewal: 788 non-natural node names, tree regrowth on
+ACTION[Main]: [grug_achievements] 20 achievements, 45 cloaks; 141 of 312 mobs count as wild animals, 30 as zombies
+ACTION[Main]: World at [/tmp/grudgelands-headless.khWyGE/world]
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:37618.
+ACTION[Server]: [grug_mapgen] Lua heap at the first server step after a full collection: 94 MiB
+ACTION[Server]: [mgprof_probe] first server step epoch=1792086175 cpu_s=42.5
+ACTION[Server]: [grug_housing] arrival-cube dig context on 108 buildable_to nodes
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 971 nodes, right-click on 162, node form on 12; exceptions: default:sign_wall_wood, grug_housing:claim_stone, grug_materials:iron_sign_wall
+ACTION[Server]: [mgprof_probe] waiting for preparation 0/84
+ACTION[Emerge-0]: [grug_mapgen] zone field: warp scale 1.0 after 1 tries (0.12 s), 75 neighbour pairs
+ACTION[Emerge-0]: [grug_mapgen] emerge tree templates: roll-up 631e45e683e3e699, 0.408 s CPU (runtime build 1.98 s)
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=1 minp=-1872,-32,-2672 maxp=-1793,47,-2593 result=applied_cplq total_us=517655 cc_hits=422382 cc_misses=7275 cc_evictions=0 heap_kb=788986 heap_after_kb=881363
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=2 minp=-1792,-32,-2672 maxp=-1713,47,-2593 result=applied_cplq total_us=505653 cc_hits=417332 cc_misses=6850 cc_evictions=0 heap_kb=881364 heap_after_kb=954091
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=3 minp=-112,-32,-2672 maxp=-33,47,-2593 result=applied_cplq total_us=1035872 cc_hits=619672 cc_misses=7345 cc_evictions=0 heap_kb=954092 heap_after_kb=750302
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=4 minp=-32,-32,-2672 maxp=47,47,-2593 result=applied_cplq total_us=590532 cc_hits=574576 cc_misses=6779 cc_evictions=0 heap_kb=750302 heap_after_kb=805321
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=5 minp=48,-32,-2672 maxp=127,47,-2593 result=applied_cplq total_us=589951 cc_hits=610676 cc_misses=7015 cc_evictions=0 heap_kb=805321 heap_after_kb=888540
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=6 minp=1728,-32,-2672 maxp=1807,47,-2593 result=applied_cplq total_us=440499 cc_hits=416918 cc_misses=7262 cc_evictions=0 heap_kb=888541 heap_after_kb=966245
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=7 minp=1808,-32,-2672 maxp=1887,47,-2593 result=applied_cplq total_us=493509 cc_hits=445471 cc_misses=6917 cc_evictions=0 heap_kb=966246 heap_after_kb=1028123
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=8 minp=-1872,48,-2672 maxp=-1793,127,-2593 result=applied_cplq total_us=187393 cc_hits=68704 cc_misses=0 cc_evictions=0 heap_kb=1028124 heap_after_kb=1030399
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=9 minp=-1792,48,-2672 maxp=-1713,127,-2593 result=applied_cplq total_us=184479 cc_hits=65704 cc_misses=0 cc_evictions=0 heap_kb=1030400 heap_after_kb=1031180
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=10 minp=-112,48,-2672 maxp=-33,127,-2593 result=applied_clq total_us=261702 cc_hits=390509 cc_misses=1393 cc_evictions=0 heap_kb=1031180 heap_after_kb=1040375
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=11 minp=-32,48,-2672 maxp=47,127,-2593 result=noop_equal_content total_us=152853 cc_hits=120426 cc_misses=914 cc_evictions=0 heap_kb=1040376 heap_after_kb=1041786
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=12 minp=48,48,-2672 maxp=127,127,-2593 result=noop_equal_content total_us=155360 cc_hits=164322 cc_misses=1130 cc_evictions=0 heap_kb=1041787 heap_after_kb=1043310
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=13 minp=1728,48,-2672 maxp=1807,127,-2593 result=applied_cplq total_us=161192 cc_hits=59480 cc_misses=0 cc_evictions=0 heap_kb=1043311 heap_after_kb=1044032
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=14 minp=1808,48,-2672 maxp=1887,127,-2593 result=applied_cplq total_us=169599 cc_hits=77504 cc_misses=0 cc_evictions=0 heap_kb=1044032 heap_after_kb=1044750
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=15 minp=-1872,-32,-2592 maxp=-1793,47,-2513 result=applied_cplq total_us=367209 cc_hits=367912 cc_misses=6794 cc_evictions=0 heap_kb=1044751 heap_after_kb=1080271
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=16 minp=-1792,-32,-2592 maxp=-1713,47,-2513 result=applied_cplq total_us=390040 cc_hits=378720 cc_misses=6507 cc_evictions=687 heap_kb=1080272 heap_after_kb=1122483
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=17 minp=-112,-32,-2592 maxp=-33,47,-2513 result=applied_cplq total_us=531644 cc_hits=453163 cc_misses=6334 cc_evictions=6334 heap_kb=1122484 heap_after_kb=1184957
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=18 minp=-32,-32,-2592 maxp=47,47,-2513 result=applied_cplq total_us=395107 cc_hits=391868 cc_misses=5920 cc_evictions=5920 heap_kb=1184958 heap_after_kb=1226937
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=19 minp=48,-32,-2592 maxp=127,47,-2513 result=applied_cplq total_us=521383 cc_hits=509315 cc_misses=6141 cc_evictions=6141 heap_kb=1226939 heap_after_kb=1297372
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=20 minp=1728,-32,-2592 maxp=1807,47,-2513 result=applied_cplq total_us=364746 cc_hits=367020 cc_misses=6828 cc_evictions=6828 heap_kb=1297373 heap_after_kb=1331414
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=21 minp=1808,-32,-2592 maxp=1887,47,-2513 result=applied_cplq total_us=411523 cc_hits=382286 cc_misses=6512 cc_evictions=6512 heap_kb=1331415 heap_after_kb=1371695
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=22 minp=-1872,48,-2592 maxp=-1793,127,-2513 result=applied_cplq total_us=177973 cc_hits=65078 cc_misses=1942 cc_evictions=1942 heap_kb=1371695 heap_after_kb=1373695
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=23 minp=-1792,48,-2592 maxp=-1713,127,-2513 result=applied_cplq total_us=188667 cc_hits=66079 cc_misses=1653 cc_evictions=1653 heap_kb=1373696 heap_after_kb=1376393
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=24 minp=-112,48,-2592 maxp=-33,127,-2513 result=noop_equal_content total_us=150919 cc_hits=71166 cc_misses=1898 cc_evictions=1898 heap_kb=1376394 heap_after_kb=1377707
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=25 minp=-32,48,-2592 maxp=47,127,-2513 result=applied_cplq total_us=171179 cc_hits=65536 cc_misses=1280 cc_evictions=1280 heap_kb=1377708 heap_after_kb=1378586
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=26 minp=48,48,-2592 maxp=127,127,-2513 result=noop_equal_content total_us=151959 cc_hits=79981 cc_misses=1551 cc_evictions=1551 heap_kb=1378587 heap_after_kb=1379598
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=27 minp=1728,48,-2592 maxp=1807,127,-2513 result=applied_cplq total_us=168840 cc_hits=66345 cc_misses=1003 cc_evictions=1003 heap_kb=1379599 heap_after_kb=1380905
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=28 minp=1808,48,-2592 maxp=1887,127,-2513 result=applied_cplq total_us=174730 cc_hits=58952 cc_misses=0 cc_evictions=0 heap_kb=1380906 heap_after_kb=1381620
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=29 minp=-1872,-32,-2512 maxp=-1793,47,-2433 result=applied_cplq total_us=602992 cc_hits=417282 cc_misses=6478 cc_evictions=6478 heap_kb=1381621 heap_after_kb=1446376
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=30 minp=-1792,-32,-2512 maxp=-1713,47,-2433 result=applied_cplq total_us=549484 cc_hits=402673 cc_misses=6074 cc_evictions=6074 heap_kb=1446377 heap_after_kb=1507121
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=31 minp=-112,-32,-2512 maxp=-33,47,-2433 result=applied_cplq total_us=600366 cc_hits=454046 cc_misses=6427 cc_evictions=6427 heap_kb=1507122 heap_after_kb=1580180
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=32 minp=-32,-32,-2512 maxp=47,47,-2433 result=applied_cplq total_us=534546 cc_hits=443642 cc_misses=6012 cc_evictions=6012 heap_kb=1580181 heap_after_kb=1644702
+ACTION[Server]: [mgprof_probe] waiting for preparation 32/84
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=33 minp=48,-32,-2512 maxp=127,47,-2433 result=applied_cplq total_us=768152 cc_hits=535328 cc_misses=6070 cc_evictions=6070 heap_kb=1644703 heap_after_kb=1358559
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=34 minp=1728,-32,-2512 maxp=1807,47,-2433 result=applied_cplq total_us=751056 cc_hits=425250 cc_misses=6458 cc_evictions=6458 heap_kb=1358548 heap_after_kb=908115
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=35 minp=1808,-32,-2512 maxp=1887,47,-2433 result=applied_cplq total_us=497381 cc_hits=424915 cc_misses=6494 cc_evictions=6494 heap_kb=908116 heap_after_kb=967294
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=36 minp=-1872,48,-2512 maxp=-1793,127,-2433 result=applied_cplq total_us=184382 cc_hits=77008 cc_misses=1721 cc_evictions=1721 heap_kb=967294 heap_after_kb=968505
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=37 minp=-1792,48,-2512 maxp=-1713,127,-2433 result=applied_cplq total_us=203897 cc_hits=229816 cc_misses=1489 cc_evictions=1489 heap_kb=968505 heap_after_kb=969698
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=38 minp=-112,48,-2512 maxp=-33,127,-2433 result=applied_clq total_us=234528 cc_hits=253692 cc_misses=1803 cc_evictions=1803 heap_kb=969698 heap_after_kb=977688
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=39 minp=-32,48,-2512 maxp=47,127,-2433 result=applied_clq total_us=229255 cc_hits=251379 cc_misses=1194 cc_evictions=1194 heap_kb=977689 heap_after_kb=986477
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=40 minp=48,48,-2512 maxp=127,127,-2433 result=noop_equal_content total_us=148108 cc_hits=82974 cc_misses=1586 cc_evictions=1586 heap_kb=986478 heap_after_kb=987982
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=41 minp=1728,48,-2512 maxp=1807,127,-2433 result=applied_cplq total_us=174337 cc_hits=79307 cc_misses=1663 cc_evictions=1663 heap_kb=987983 heap_after_kb=989232
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=42 minp=1808,48,-2512 maxp=1887,127,-2433 result=applied_cplq total_us=177356 cc_hits=69569 cc_misses=811 cc_evictions=811 heap_kb=989233 heap_after_kb=990245
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=43 minp=-1872,-32,2448 maxp=-1793,47,2527 result=applied_cplq total_us=487539 cc_hits=395935 cc_misses=7253 cc_evictions=7253 heap_kb=990246 heap_after_kb=1048410
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=44 minp=-1792,-32,2448 maxp=-1713,47,2527 result=applied_cplq total_us=500890 cc_hits=416193 cc_misses=6951 cc_evictions=6951 heap_kb=1048411 heap_after_kb=1093061
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=45 minp=-112,-32,2448 maxp=-33,47,2527 result=applied_cplq total_us=577383 cc_hits=448549 cc_misses=7293 cc_evictions=7293 heap_kb=1093062 heap_after_kb=1177300
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=46 minp=-32,-32,2448 maxp=47,47,2527 result=applied_cplq total_us=488486 cc_hits=419096 cc_misses=6804 cc_evictions=6804 heap_kb=1177301 heap_after_kb=1229141
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=47 minp=48,-32,2448 maxp=127,47,2527 result=applied_cplq total_us=504692 cc_hits=524786 cc_misses=6830 cc_evictions=6830 heap_kb=1229142 heap_after_kb=1290673
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=48 minp=1728,-32,2448 maxp=1807,47,2527 result=applied_cplq total_us=440325 cc_hits=421299 cc_misses=7235 cc_evictions=7235 heap_kb=1290674 heap_after_kb=1360369
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=49 minp=1808,-32,2448 maxp=1887,47,2527 result=applied_cplq total_us=451322 cc_hits=436440 cc_misses=6905 cc_evictions=6905 heap_kb=1360370 heap_after_kb=1411767
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=50 minp=-1872,48,2448 maxp=-1793,127,2527 result=applied_clq total_us=210849 cc_hits=58780 cc_misses=0 cc_evictions=0 heap_kb=1411768 heap_after_kb=1412497
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=51 minp=-1792,48,2448 maxp=-1713,127,2527 result=applied_cplq total_us=193896 cc_hits=74058 cc_misses=0 cc_evictions=0 heap_kb=1412497 heap_after_kb=1413220
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=52 minp=-112,48,2448 maxp=-33,127,2527 result=noop_equal_content total_us=146693 cc_hits=63762 cc_misses=1442 cc_evictions=1442 heap_kb=1413221 heap_after_kb=1414936
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=53 minp=-32,48,2448 maxp=47,127,2527 result=noop_equal_content total_us=130185 cc_hits=59882 cc_misses=880 cc_evictions=880 heap_kb=1414937 heap_after_kb=1416101
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=54 minp=48,48,2448 maxp=127,127,2527 result=noop_equal_content total_us=155831 cc_hits=140321 cc_misses=1327 cc_evictions=1327 heap_kb=1416102 heap_after_kb=1417501
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=55 minp=1728,48,2448 maxp=1807,127,2527 result=applied_cplq total_us=167600 cc_hits=66760 cc_misses=1499 cc_evictions=1499 heap_kb=1417501 heap_after_kb=1419335
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=56 minp=1808,48,2448 maxp=1887,127,2527 result=applied_cplq total_us=172254 cc_hits=74384 cc_misses=1257 cc_evictions=1257 heap_kb=1419336 heap_after_kb=1420707
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=57 minp=-1872,-32,2528 maxp=-1793,47,2607 result=applied_cplq total_us=396611 cc_hits=371163 cc_misses=6800 cc_evictions=6800 heap_kb=1420708 heap_after_kb=1453616
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=58 minp=-1792,-32,2528 maxp=-1713,47,2607 result=applied_cplq total_us=507270 cc_hits=376956 cc_misses=6452 cc_evictions=6452 heap_kb=1453616 heap_after_kb=1500738
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=59 minp=-112,-32,2528 maxp=-33,47,2607 result=applied_cplq total_us=512109 cc_hits=437155 cc_misses=6347 cc_evictions=6347 heap_kb=1500739 heap_after_kb=1559953
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=60 minp=-32,-32,2528 maxp=47,47,2607 result=applied_cplq total_us=374702 cc_hits=370798 cc_misses=5920 cc_evictions=5920 heap_kb=1559954 heap_after_kb=1593502
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=61 minp=48,-32,2528 maxp=127,47,2607 result=applied_cplq total_us=441492 cc_hits=437803 cc_misses=5957 cc_evictions=5957 heap_kb=1593503 heap_after_kb=1646495
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=62 minp=1728,-32,2528 maxp=1807,47,2607 result=applied_cplq total_us=387297 cc_hits=381717 cc_misses=6287 cc_evictions=6287 heap_kb=1646496 heap_after_kb=1683880
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=63 minp=1808,-32,2528 maxp=1887,47,2607 result=applied_cplq total_us=419927 cc_hits=401705 cc_misses=6037 cc_evictions=6037 heap_kb=1683881 heap_after_kb=1726002
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=64 minp=-1872,48,2528 maxp=-1793,127,2607 result=applied_cplq total_us=188606 cc_hits=57548 cc_misses=192 cc_evictions=192 heap_kb=1726004 heap_after_kb=1728220
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=65 minp=-1792,48,2528 maxp=-1713,127,2607 result=applied_cplq total_us=168546 cc_hits=57418 cc_misses=182 cc_evictions=182 heap_kb=1728221 heap_after_kb=1729368
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=66 minp=-112,48,2528 maxp=-33,127,2607 result=noop_equal_content total_us=140554 cc_hits=59969 cc_misses=1843 cc_evictions=1843 heap_kb=1729369 heap_after_kb=1730553
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=67 minp=-32,48,2528 maxp=47,127,2607 result=noop_equal_content total_us=122615 cc_hits=59136 cc_misses=1280 cc_evictions=1280 heap_kb=1730554 heap_after_kb=1731393
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=68 minp=48,48,2528 maxp=127,127,2607 result=noop_equal_content total_us=140715 cc_hits=137911 cc_misses=1681 cc_evictions=1681 heap_kb=1731394 heap_after_kb=1732499
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=69 minp=1728,48,2528 maxp=1807,127,2607 result=applied_cplq total_us=164487 cc_hits=65975 cc_misses=949 cc_evictions=949 heap_kb=1732500 heap_after_kb=1733673
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=70 minp=1808,48,2528 maxp=1887,127,2607 result=applied_cplq total_us=177463 cc_hits=67117 cc_misses=807 cc_evictions=807 heap_kb=1733674 heap_after_kb=1734745
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=71 minp=-1872,-32,2608 maxp=-1793,47,2687 result=applied_cplq total_us=549183 cc_hits=395668 cc_misses=6839 cc_evictions=6839 heap_kb=1734746 heap_after_kb=1792939
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=72 minp=-1792,-32,2608 maxp=-1713,47,2687 result=applied_cplq total_us=592950 cc_hits=335501 cc_misses=6386 cc_evictions=6386 heap_kb=1792940 heap_after_kb=1869885
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=73 minp=-112,-32,2608 maxp=-33,47,2687 result=applied_cplq total_us=802902 cc_hits=420726 cc_misses=6524 cc_evictions=6524 heap_kb=1869885 heap_after_kb=1801018
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=74 minp=-32,-32,2608 maxp=47,47,2687 result=applied_cplq total_us=1000285 cc_hits=406969 cc_misses=6005 cc_evictions=6005 heap_kb=1801018 heap_after_kb=969524
+ACTION[Server]: [mgprof_probe] waiting for preparation 74/84
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=75 minp=48,-32,2608 maxp=127,47,2687 result=applied_cplq total_us=539460 cc_hits=371409 cc_misses=6005 cc_evictions=6005 heap_kb=969525 heap_after_kb=1026606
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=76 minp=1728,-32,2608 maxp=1807,47,2687 result=applied_cplq total_us=499721 cc_hits=474660 cc_misses=6470 cc_evictions=6470 heap_kb=1026607 heap_after_kb=1088926
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=77 minp=1808,-32,2608 maxp=1887,47,2687 result=applied_cplq total_us=523047 cc_hits=458109 cc_misses=6095 cc_evictions=6095 heap_kb=1088927 heap_after_kb=1153622
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=78 minp=-1872,48,2608 maxp=-1793,127,2687 result=applied_clq total_us=184426 cc_hits=74925 cc_misses=187 cc_evictions=187 heap_kb=1153623 heap_after_kb=1157097
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=79 minp=-1792,48,2608 maxp=-1713,127,2687 result=noop_equal_content total_us=159958 cc_hits=63077 cc_misses=2009 cc_evictions=2009 heap_kb=1157098 heap_after_kb=1170414
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=80 minp=-112,48,2608 maxp=-33,127,2687 result=applied_cplq total_us=240451 cc_hits=251488 cc_misses=1742 cc_evictions=1742 heap_kb=1170415 heap_after_kb=1177544
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=81 minp=-32,48,2608 maxp=47,127,2687 result=applied_cplq total_us=213355 cc_hits=246287 cc_misses=1158 cc_evictions=1158 heap_kb=1177545 heap_after_kb=1183141
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=82 minp=48,48,2608 maxp=127,127,2687 result=noop_equal_content total_us=141836 cc_hits=60519 cc_misses=1537 cc_evictions=1537 heap_kb=1183142 heap_after_kb=1184760
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=83 minp=1728,48,2608 maxp=1807,127,2687 result=applied_cplq total_us=175915 cc_hits=86661 cc_misses=839 cc_evictions=839 heap_kb=1184761 heap_after_kb=1185926
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=84 minp=1808,48,2608 maxp=1887,127,2687 result=applied_cplq total_us=204651 cc_hits=272070 cc_misses=716 cc_evictions=716 heap_kb=1185927 heap_after_kb=1189761
+ACTION[Server]: [mgprof_probe] preparation complete chunks=84 step_wall_s=36.72 cpu_s=79.3 epoch=1792086212
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_west (-1804,37,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket gate_east (-1796,37,-2491)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:guard_accord placed at socket watch_gate (-1800,37,-2498)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_traders:vendor_race_dwarf placed at socket plaza_vendor (-1793,37,-2555)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_west_door (-1816,37,-2546)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_plaza_bench (-1793,37,-2549)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_workyard (-1819,37,-2533)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket idle_forge_door (-1798,37,-2560)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_woodpile (-1812,37,-2563)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket work_garden (-1819,37,-2529)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket hall_quest (-1828,37,-2524)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:villager_dwarf placed at socket trainer_cooking (-1798,37,-2540)
+ACTION[Server]: [grug_mobs] start npcs hearthpine: grug_mobs:elder_dwarf placed at socket quest_cook (-1798,37,-2537)
+ACTION[Server]: [grug_mobs] start npcs dwarf hearthpine: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_west (-4,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket gate_east (4,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:guard_accord placed at socket watch_gate (0,37,-2498)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_traders:vendor_race_human placed at socket green_vendor (6,37,-2554)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket home_innkeeper (11,37,-2541)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_green_bench (-6,37,-2543)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_barn (-19,37,-2550)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket idle_smithy (22,37,-2551)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_field (18,37,-2519)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket work_green_seat (-5,37,-2535)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket hall_quest (-11,37,-2542)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:villager_human placed at socket trainer_cooking (2,37,-2540)
+ACTION[Server]: [grug_mobs] start npcs dawnmere: grug_mobs:elder_human placed at socket quest_cook (2,37,-2537)
+ACTION[Server]: [grug_mobs] start npcs human dawnmere: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_west (1796,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket gate_east (1804,37,-2493)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:guard_accord placed at socket watch_gate (1800,37,-2498)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_traders:vendor_race_elf placed at socket court_vendor (1807,37,-2554)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket home_innkeeper (1765,37,-2572)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_court_bench (1793,37,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_bowyer (1828,37,-2551)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket idle_market (1769,37,-2550)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_planters (1804,37,-2539)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket work_market (1767,37,-2545)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket hall_quest (1820,37,-2536)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:villager_elf placed at socket trainer_cooking (1802,37,-2540)
+ACTION[Server]: [grug_mobs] start npcs silverleaf: grug_mobs:elder_elf placed at socket quest_cook (1802,37,-2537)
+ACTION[Server]: [grug_mobs] start npcs elf silverleaf: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_west (-1804,37,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket gate_east (-1796,37,2494)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:guard_throng placed at socket watch_gate (-1800,37,2498)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_traders:vendor_race_undead placed at socket court_vendor (-1793,37,2545)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_warden_door (-1813,37,2582)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_court_settle (-1810,37,2554)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_bone_works (-1778,37,2549)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket idle_gate_brazier (-1805,37,2493)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket work_gravewood (-1790,37,2544)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket work_blightbed (-1822,37,2542)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket hall_quest (-1798,37,2560)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:villager_undead placed at socket trainer_cooking (-1798,37,2540)
+ACTION[Server]: [grug_mobs] start npcs stillgrave: grug_mobs:elder_undead placed at socket quest_cook (-1798,37,2537)
+ACTION[Server]: [grug_mobs] start npcs undead stillgrave: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_west (-4,37,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket gate_east (4,37,2499)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:guard_throng placed at socket watch_gate (0,37,2510)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_traders:vendor_race_orc placed at socket yard_vendor (8,37,2545)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_tusk_door (-11,37,2528)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_council_seat (-3,37,2558)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_beast_pen (-25,37,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket idle_armoury_forge (20,37,2548)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket work_forge (-34,37,2552)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket work_acacia (-14,37,2549)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket hall_quest (3,37,2562)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:villager_orc placed at socket trainer_cooking (2,37,2540)
+ACTION[Server]: [grug_mobs] start npcs sunscar: grug_mobs:elder_orc placed at socket quest_cook (2,37,2537)
+ACTION[Server]: [grug_mobs] start npcs orc sunscar: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_west (1796,37,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket gate_east (1804,37,2505)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:guard_throng placed at socket watch_gate (1800,37,2514)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_traders:vendor_race_troll placed at socket clearing_vendor (1807,37,2546)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_lodge_door (1798,37,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_terrace_settle (1788,37,2577)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_drying_shed (1783,37,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket idle_smoker (1813,37,2570)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket work_jungle (1771,37,2563)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket work_terrace (1784,37,2574)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket hall_quest (1803,37,2567)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:villager_troll placed at socket trainer_cooking (1802,37,2540)
+ACTION[Server]: [grug_mobs] start npcs kapok: grug_mobs:elder_troll placed at socket quest_cook (1802,37,2537)
+ACTION[Server]: [grug_mobs] start npcs troll kapok: guards 3/3 flair 7/7 vendor 1/1 quest 2/2 royal 0/0 new 13 pending 0 spare 3 residents 5 walkers 1
+ACTION[Server]: [mgprof_probe] preparation ready after 33 s of waiting (84/84 chunks), cpu_s=79.3
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=7 m_static_exists=true but static data doesn't actually exist in (-113,2,-157)
+WARNING[Server]: StaticObjectList::remove(): id=7 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=10 m_static_exists=true but static data doesn't actually exist in (-113,2,-160)
+WARNING[Server]: StaticObjectList::remove(): id=10 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=12 m_static_exists=true but static data doesn't actually exist in (-114,2,-160)
+WARNING[Server]: StaticObjectList::remove(): id=12 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=14 m_static_exists=true but static data doesn't actually exist in (-113,2,-160)
+WARNING[Server]: StaticObjectList::remove(): id=14 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=16 m_static_exists=true but static data doesn't actually exist in (-114,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=16 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=18 m_static_exists=true but static data doesn't actually exist in (-113,2,-160)
+WARNING[Server]: StaticObjectList::remove(): id=18 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=20 m_static_exists=true but static data doesn't actually exist in (-114,2,-161)
+WARNING[Server]: StaticObjectList::remove(): id=20 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=22 m_static_exists=true but static data doesn't actually exist in (-114,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=22 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=24 m_static_exists=true but static data doesn't actually exist in (-115,2,-158)
+WARNING[Server]: StaticObjectList::remove(): id=24 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=26 m_static_exists=true but static data doesn't actually exist in (-113,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=26 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=28 m_static_exists=true but static data doesn't actually exist in (-113,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=28 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=36 m_static_exists=true but static data doesn't actually exist in (0,2,-157)
+WARNING[Server]: StaticObjectList::remove(): id=36 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=39 m_static_exists=true but static data doesn't actually exist in (0,2,-160)
+WARNING[Server]: StaticObjectList::remove(): id=39 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=41 m_static_exists=true but static data doesn't actually exist in (0,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=41 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=43 m_static_exists=true but static data doesn't actually exist in (-1,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=43 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=45 m_static_exists=true but static data doesn't actually exist in (-2,2,-160)
+WARNING[Server]: StaticObjectList::remove(): id=45 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=47 m_static_exists=true but static data doesn't actually exist in (1,2,-160)
+WARNING[Server]: StaticObjectList::remove(): id=47 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=49 m_static_exists=true but static data doesn't actually exist in (1,2,-158)
+WARNING[Server]: StaticObjectList::remove(): id=49 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=51 m_static_exists=true but static data doesn't actually exist in (-1,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=51 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=53 m_static_exists=true but static data doesn't actually exist in (-1,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=53 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=55 m_static_exists=true but static data doesn't actually exist in (0,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=55 not found
+WARNING[Server]: ServerEnvironment::deactivateFarObjects(): id=57 m_static_exists=true but static data doesn't actually exist in (0,2,-159)
+WARNING[Server]: StaticObjectList::remove(): id=57 not found
+ACTION[Server]: [mgprof_probe] column A x 368..447 z -2352..-2273: zone elandor_goldmead_vale, biome grug_meadows (6400 of 6400), terrain y 34..65 (1001 columns at y >= 48), land 6400, river 0, functional 0, hard foundation 0, road 0, hard-protected 0 -> ordinary
+ACTION[Server]: [mgprof_probe] column B x 528..607 z -2192..-2113: zone elandor_goldmead_vale, biome grug_deep_forest (3499 of 6400), terrain y 48..84 (6400 columns at y >= 48), land 6400, river 0, functional 0, hard foundation 0, road 0, hard-protected 0 -> ordinary
+ACTION[Server]: [mgprof_probe] mode=totals chunks=10 gap=2.5s
+ACTION[Server]: [mgprof_probe] request id=warmup minp=608,-112,-2352
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=85 minp=608,-112,-2352 maxp=687,-33,-2273 result=applied_c total_us=415412 cc_hits=179701 cc_misses=7223 cc_evictions=7223 heap_kb=1189762 heap_after_kb=1251217
+ACTION[Emerge-0]: [mgprof_probe] done id=warmup minp=608,-112,-2352 action=4 wall_ms=439.1
+ACTION[Server]: [mgprof_probe] request id=A_S1 minp=368,-32,-2352
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=86 minp=368,-32,-2352 maxp=447,47,-2273 result=applied_cplq total_us=641766 cc_hits=444513 cc_misses=7448 cc_evictions=7448 heap_kb=1251218 heap_after_kb=1344215
+ACTION[Emerge-0]: [mgprof_probe] done id=A_S1 minp=368,-32,-2352 action=4 wall_ms=674.7
+ACTION[Server]: [mgprof_probe] request id=A_S2 minp=368,48,-2352
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=87 minp=368,48,-2352 maxp=447,127,-2273 result=applied_clq total_us=212881 cc_hits=271893 cc_misses=1768 cc_evictions=1768 heap_kb=1344216 heap_after_kb=1353387
+ACTION[Emerge-0]: [mgprof_probe] done id=A_S2 minp=368,48,-2352 action=4 wall_ms=241.2
+ACTION[Server]: [mgprof_probe] request id=A_B minp=368,-112,-2352
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=88 minp=368,-112,-2352 maxp=447,-33,-2273 result=applied_clq total_us=314378 cc_hits=55552 cc_misses=0 cc_evictions=0 heap_kb=1353388 heap_after_kb=1378285
+ACTION[Emerge-0]: [mgprof_probe] done id=A_B minp=368,-112,-2352 action=4 wall_ms=346.5
+ACTION[Server]: [mgprof_probe] request id=A_U1 minp=368,-192,-2352
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=89 minp=368,-192,-2352 maxp=447,-113,-2273 result=applied_c total_us=341840 cc_hits=49456 cc_misses=0 cc_evictions=0 heap_kb=1378285 heap_after_kb=1398549
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U1 minp=368,-192,-2352 action=4 wall_ms=367.0
+ACTION[Server]: [mgprof_probe] request id=A_U3 minp=368,-512,-2352
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=90 minp=368,-512,-2352 maxp=447,-433,-2273 result=applied_c total_us=387932 cc_hits=49395 cc_misses=0 cc_evictions=0 heap_kb=1398550 heap_after_kb=1418979
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U3 minp=368,-512,-2352 action=4 wall_ms=421.1
+ACTION[Server]: [mgprof_probe] request id=A_U6 minp=368,-1072,-2352
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=91 minp=368,-1072,-2352 maxp=447,-993,-2273 result=applied_c total_us=418562 cc_hits=49352 cc_misses=0 cc_evictions=0 heap_kb=1418980 heap_after_kb=1438437
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U6 minp=368,-1072,-2352 action=4 wall_ms=455.0
+ACTION[Server]: [mgprof_probe] request id=B_U6 minp=528,-1072,-2192
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=92 minp=528,-1072,-2192 maxp=607,-993,-2113 result=applied_cq total_us=556666 cc_hits=192019 cc_misses=7481 cc_evictions=7481 heap_kb=1438438 heap_after_kb=1506670
+ACTION[Emerge-0]: [mgprof_probe] done id=B_U6 minp=528,-1072,-2192 action=4 wall_ms=589.8
+ACTION[Server]: [mgprof_probe] request id=B_U1 minp=528,-192,-2192
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=93 minp=528,-192,-2192 maxp=607,-113,-2113 result=applied_c total_us=372894 cc_hits=57036 cc_misses=0 cc_evictions=0 heap_kb=1506671 heap_after_kb=1530758
+ACTION[Emerge-0]: [mgprof_probe] done id=B_U1 minp=528,-192,-2192 action=4 wall_ms=400.3
+ACTION[Server]: [mgprof_probe] request id=B_B minp=528,-112,-2192
+ACTION[Emerge-0]: GRUG_MGPROF mode=totals n=94 minp=528,-112,-2192 maxp=607,-33,-2113 result=applied_c total_us=544601 cc_hits=63189 cc_misses=0 cc_evictions=0 heap_kb=1530759 heap_after_kb=1576677
+ACTION[Emerge-0]: [mgprof_probe] done id=B_B minp=528,-112,-2192 action=4 wall_ms=572.6
+ACTION[Server]: [mgprof_probe] bench digest11 n=20000 us_per_call=1.64
+ACTION[Server]: [mgprof_probe] cpu_s=84.1 at the end step_wall_s=71.33 epoch=1792086246
+ACTION[Server]: [mgprof_probe] RESULT PASS 10 chunks
+ACTION[Main]: Server: Shutting down

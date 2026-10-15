@@ -28,6 +28,27 @@ do
 end
 local function log(message) core.log("action", PREFIX .. message) end
 
+-- First-start timing (lane MEAS): epoch seconds (os.time) anchor the probe to
+-- the launcher's server.conf mtime (run.sh: launch_epoch); get_us_time
+-- deltas from the first server step time the preparation precisely. The
+-- preparation listener sees "ready" within one 0.2 s notification.
+local step_us
+log(("loaded epoch=%d cpu_s=%.1f"):format(os.time(), os.clock()))
+core.after(0, function()
+	step_us = core.get_us_time()
+	log(("first server step epoch=%d cpu_s=%.1f"):format(os.time(), os.clock()))
+end)
+local function step_wall_s()
+	return step_us and (core.get_us_time() - step_us) / 1e6 or -1
+end
+local prepared = false
+grug_core.register_on_preparation_progress(function(status)
+	if prepared or not status.ready then return end
+	prepared = true
+	log(("preparation complete chunks=%d step_wall_s=%.2f cpu_s=%.1f epoch=%d"):format(
+		status.total, step_wall_s(), os.clock(), os.time()))
+end)
+
 -- Before the dedicated server loop starts (it reads the interval once).
 core.settings:set("profiler_print_interval", "1")
 core.settings:set("grug_mgprof_totals_only", config.totals_only and "true" or "false")
@@ -208,7 +229,8 @@ local function finish(ok, message)
 	pcall(bench_digest)
 	pcall(log_maps)
 	-- os.clock(): CPU seconds of the whole server process (all threads) so far.
-	log(("cpu_s=%.1f at the end"):format(os.clock()))
+	log(("cpu_s=%.1f at the end step_wall_s=%.2f epoch=%d"):format(os.clock(),
+		step_wall_s(), os.time()))
 	log(("RESULT %s %s"):format(ok and "PASS" or "FAIL", message))
 	core.request_shutdown("mgprof probe done", false, 0)
 end
