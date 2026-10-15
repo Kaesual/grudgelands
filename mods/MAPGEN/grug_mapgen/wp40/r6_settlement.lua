@@ -293,8 +293,10 @@ local function settlement_factory()
 				if not shape then
 					error("fail_resource_manifest: resource vein cap differs", 0)
 				end
+				-- (fields 7-10: the last cube this row tested and whether it is a
+				-- cluster, so the voxels of one cube draw its hash once)
 				local row = {index, shape[1], shape[1] * shape[1] * shape[1], shape[2],
-					denominator * shape[2], index * 7919}
+					denominator * shape[2], index * 7919, false, false, false, false}
 				if resource.lower_half_of ~= 1 then upper[#upper + 1] = row end
 				lower[#lower + 1] = row
 			end
@@ -305,8 +307,13 @@ local function settlement_factory()
 			for index = 1, #rows do
 				local row = rows[index]
 				local size = row[2]
-				if mix(floor(x / size), floor(y / size), floor(z / size), row[6]) % row[5] <
-						row[3] and mix(x, y, z, row[6] + 1) % row[3] < row[4] then
+				local cx, cy, cz = floor(x / size), floor(y / size), floor(z / size)
+				local cluster = row[10]
+				if cx ~= row[7] or cy ~= row[8] or cz ~= row[9] then
+					cluster = mix(cx, cy, cz, row[6]) % row[5] < row[3]
+					row[7], row[8], row[9], row[10] = cx, cy, cz, cluster
+				end
+				if cluster and mix(x, y, z, row[6] + 1) % row[3] < row[4] then
 					return row[1]
 				end
 			end

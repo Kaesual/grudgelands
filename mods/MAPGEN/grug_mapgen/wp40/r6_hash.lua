@@ -113,21 +113,29 @@ return function(raw_sha256)
 	-- (P9), the gathering sources (P9G) and the fill ores (P8), instead of a
 	-- framed SHA-256 digest each (about 0.95 us against 0.01 us).
 	--
-	-- `mix(a, b, c, salt)`: a linear lattice term of three integers and the
-	-- world's phase, then two squarings modulo the prime 2^24 - 3 for mixing.
-	-- Every product stays below 2^53 (|a|, |b|, |c| up to about 10^8, the
-	-- salt below 2^31), there is no `bit` library, and `%` on negative values
-	-- floors in both interpreters, so LuaJIT and plain Lua 5.1 agree exactly.
-	-- The result is an integer in [0, PLACEMENT_PRIME); consumers take `% n`
-	-- (n at most 65536, so the bias stays below 0.4 %). This is the fill-ore
-	-- hash Round 49 lane ORE introduced, moved here unchanged so there is one.
+	-- `mix(a, b, c, salt)`: four rounds modulo the prime PLACEMENT_PRIME
+	-- (2^24 - 17, which is 2 mod 3, so a cube permutes the residues). The
+	-- state starts from the world's phase and the salt; each of a, b and c is
+	-- added with its own multiplier and offset and the sum is cubed; a last
+	-- round multiplies, offsets and cubes once more. Each input passes through
+	-- a non-linear round of its own, so no step (dx, dy, dz) repeats a stream
+	-- (no lattice period) and, as the offsets of the b and c rounds put the
+	-- centre of the cube's odd symmetry far outside any coordinate range,
+	-- no point mirrors a stream either (tools/r49_hash searches both).
+	-- Every product stays below 2^53 (the cubes below 2^48; |a|, |b|, |c| up
+	-- to about 10^8, the salt below 2^31), there is no `bit` library, and `%`
+	-- on negative values floors in both interpreters, so LuaJIT and plain Lua
+	-- 5.1 agree exactly. The result is an integer in [0, PLACEMENT_PRIME);
+	-- consumers take `% n` (n at most 65536) or compare against a threshold,
+	-- and the errors of those rates are what tools/r49_hash measures. The
+	-- fill ores (P8, Round 49 lane ORE) use the same mix.
 	-- `salt(domain, id)`: the salt of one stream, a byte hash of the domain,
 	-- the row id and the full seed, so different purposes, rows and worlds
 	-- draw independently (tools/r49_hash checks uniformity, neighbour and
 	-- salt independence, and LuaJIT against plain Lua 5.1). A world's fill
 	-- ores salt by resource index alone (r6_settlement.lua r49_fill_ores_new).
 	-- More than three inputs chain: `mix(d, e, f, mix(a, b, c, salt))`.
-	local PLACEMENT_PRIME = 16777213
+	local PLACEMENT_PRIME = 16777199
 	local PLACEMENT_DOMAINS = {
 		"decoration_budget_remainder", "decoration_candidate_rank",
 		"decoration_candidate_thin", "decoration_rotation",
@@ -143,16 +151,20 @@ return function(raw_sha256)
 		if type(full_seed_string) ~= "string" or full_seed_string == "" then
 			fail("placement full seed is not bytes")
 		end
+		local P = PLACEMENT_PRIME
 		local phase = 0
 		for index = 1, #full_seed_string do
-			phase = (phase * 131 + string.byte(full_seed_string, index)) % 65521
+			phase = (phase * 131 + string.byte(full_seed_string, index)) % P
 		end
 		local function mix(a, b, c, salt)
-			local value = (a * 374761 + b * 668265 + c * 972663 + phase * 69069 +
-				salt) % 16777213
-			value = (value * value + salt) % 16777213
-			value = (value * 48271 + 1) % 16777213
-			return (value * value) % 16777213
+			local v = (phase + salt + a * 374761 + 1234567) % P
+			v = (v * v % P) * v % P
+			v = (v + b * 668265 + 15075207) % P
+			v = (v * v % P) * v % P
+			v = (v + c * 972663 + 15139651) % P
+			v = (v * v % P) * v % P
+			v = (v * 48271 + 7654321) % P
+			return (v * v % P) * v % P
 		end
 		local function salt(domain, id)
 			if not PLACEMENT_DOMAIN_SET[domain] then

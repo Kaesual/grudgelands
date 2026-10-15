@@ -2032,8 +2032,9 @@ tools](#player-meta-read-by-external-tools).
   thinning, cell budget remainder), the P9 rotations, heights, variants and
   template trials, the P9G ranks and remainders and the P8 fill ores draw
   from one integer hash, `r6_hash.lua` `placement(full_seed)`: `mix(a, b, c,
-  salt)` with one salt per stream (domain, row id, seed), exact doubles, so
-  LuaJIT and Lua 5.1 agree (`tools/r49_hash`). SHA-256 stays for identities
+  salt)`, one cube round modulo a prime per input and a final one (no
+  lattice period, no point mirror), with one salt per stream (domain, row
+  id, seed), exact doubles, so LuaJIT and Lua 5.1 agree (`tools/r49_hash`). SHA-256 stays for identities
   (manifests, pins, cache keys) and the tree template seeds.
   **The swamp's pools** (Round 47 lane SW, `tools/r47_sw/DESIGN.md`):
   `wp40/swamp_pools.lua` (pure, per column, from the seed and the planner

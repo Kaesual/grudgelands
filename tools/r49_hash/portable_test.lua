@@ -18,6 +18,14 @@
 --      acceptance rate are those of the catalog numbers.
 --   H. The SHA-256 vocabulary keeps only the seeded trees' domain;
 --      `prepare_root_draw` is gone; an unlisted placement domain fails.
+--   I. No lattice period and no point mirror (review of 54a0177d, whose
+--      mix fed a, b, c through one linear form): the review's steps
+--      (905, 462) and (179, -16, 287) and every step within +-2048 (x, z)
+--      or +-320 / +-32 / +-320 (x, y, z) leave the stream changed; the
+--      review's mirror centre and every centre of a 4096 x 4096 box are
+--      no point mirrors.
+-- An optional second argument names another r6_hash.lua to test (e.g. the
+-- 54a0177d one, which fails I).
 -- The chi-square bounds are the 0.1 % critical values; the sample is fixed,
 -- so the results do not vary between runs.
 -- Prints "R49 HASH PORTABLE PASS checks=<n>" or raises.
@@ -31,7 +39,7 @@ local function check(ok, label)
 end
 local floor = math.floor
 
-local hash = dofile(wp40 .. "/r6_hash.lua")()
+local hash = dofile(arg[2] or (wp40 .. "/r6_hash.lua"))()
 local PRIME = hash.PLACEMENT_PRIME
 local decorations = dofile(wp40 .. "/r7_r6_manifest.lua")().decorations
 local gathering = dofile(repo .. "/mods/ITEMS/grug_gathering/catalog.lua").p9g_sources()
@@ -303,5 +311,95 @@ check(hash.prepare_root_draw == nil and hash.words == nil and hash.reduce_digest
 check(not pcall(salt, "decoration_candidate_rank_v1", id_a),
 	"an unlisted placement domain fails")
 check(#hash.placement_domains() == 9, "nine placement domains")
+
+-- I. No period, no point mirror ------------------------------------------------------
+do
+	-- A step d is a period of a stream when f(p + d) = f(p) for every p; a
+	-- sum s is a point mirror (centre s / 2) when f(p) = f(s - p). Each test
+	-- compares at one point and confirms a hit at two more, so a chance
+	-- equality (about 1 in 2^24 per point) never counts.
+	local P1, P2, P3 = {100, 0, -200}, {-1733, 0, 2411}, {2950, 0, -3011}
+	local function shift(f, d, p) return f(p[1] + d[1], p[2] + d[2], p[3] + d[3]) end
+	local function is_period(f, d)
+		for _, p in ipairs({P1, P2, P3}) do
+			if shift(f, d, p) ~= f(p[1], p[2], p[3]) then return false end
+		end
+		return true
+	end
+	local function is_mirror(f, s)
+		for _, p in ipairs({P1, P2, P3}) do
+			if f(s[1] - p[1], s[2] - p[2], s[3] - p[3]) ~= f(p[1], p[2], p[3]) then
+				return false
+			end
+		end
+		return true
+	end
+	local found = {}
+	local function stream_xz(salt_value)
+		return function(x, _, z) return mix(x, 0, z, salt_value) end
+	end
+	local function stream_xyz(salt_value)
+		return function(x, y, z) return mix(x, y, z, salt_value) end
+	end
+	local xz = stream_xz(rank_a)
+	local xyz = stream_xyz(p9g_a)
+	for _, d in ipairs({{905, 0, 462}, {-905, 0, -462}, {1810, 0, 924}}) do
+		if is_period(xz, d) then found[#found + 1] = ("x/z period (%d, %d)"):format(d[1], d[3]) end
+	end
+	for _, d in ipairs({{179, -16, 287}, {-179, 16, -287}, {358, -32, 574}}) do
+		if is_period(xyz, d) then
+			found[#found + 1] = ("x/y/z period (%d, %d, %d)"):format(d[1], d[2], d[3])
+		end
+	end
+	-- brute search, x/z: every step within +-2048
+	local base = xz(P1[1], 0, P1[3])
+	local periods_xz = 0
+	for dz = -2048, 2048 do
+		for dx = -2048, 2048 do
+			if (dx ~= 0 or dz ~= 0) and xz(P1[1] + dx, 0, P1[3] + dz) == base and
+					is_period(xz, {dx, 0, dz}) then
+				periods_xz = periods_xz + 1
+			end
+		end
+	end
+	if periods_xz > 0 then found[#found + 1] = periods_xz .. " x/z periods within +-2048" end
+	-- brute search, x/y/z: +-320 in x and z, +-32 in y
+	base = xyz(P1[1], P1[2], P1[3])
+	local periods_xyz = 0
+	for dy = -32, 32 do
+		for dz = -320, 320 do
+			for dx = -320, 320 do
+				if (dx ~= 0 or dy ~= 0 or dz ~= 0) and
+						xyz(P1[1] + dx, P1[2] + dy, P1[3] + dz) == base and
+						is_period(xyz, {dx, dy, dz}) then
+					periods_xyz = periods_xyz + 1
+				end
+			end
+		end
+	end
+	if periods_xyz > 0 then
+		found[#found + 1] = periods_xyz .. " x/y/z periods within +-320/32/320"
+	end
+	-- the review's mirror: the thinning stream of badlands_dry_shrub in seed
+	-- 10536739806879207652 round (2339, -2899), and a brute search of the
+	-- 4096 x 4096 sums round it
+	local thin = stream_xz(salt("decoration_candidate_thin", "badlands_dry_shrub"))
+	if is_mirror(thin, {4678, 0, -5798}) then
+		found[#found + 1] = "point mirror round (2339, -2899)"
+	end
+	local mirrors = 0
+	base = thin(P1[1], 0, P1[3])
+	for sz = -5798 - 2048, -5798 + 2047 do
+		for sx = 4678 - 2048, 4678 + 2047 do
+			if thin(sx - P1[1], 0, sz - P1[3]) == base and is_mirror(thin, {sx, 0, sz}) then
+				mirrors = mirrors + 1
+			end
+		end
+	end
+	if mirrors > 0 then found[#found + 1] = mirrors .. " point mirrors in the 4096 x 4096 box" end
+	print("I periods x/z " .. periods_xz .. ", x/y/z " .. periods_xyz .. ", mirrors " ..
+		mirrors .. (#found > 0 and (": " .. table.concat(found, "; ")) or ""))
+	check(#found == 0, "no lattice period and no point mirror: " .. table.concat(found, "; "))
+end
 
 print("R49 HASH PORTABLE PASS checks=" .. checks)
