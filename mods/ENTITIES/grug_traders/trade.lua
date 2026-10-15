@@ -124,7 +124,9 @@ end
 -- with its count over every carried list ({item, count, lot, copper}: copper
 -- per lot), placed where its first stack is, so 30 + 30 Cobblestone in two
 -- slots still make a lot of 50. Lot goods sell without a quality factor and
--- wear is ignored, so merging their stacks changes no price.
+-- wear is ignored, so merging their stacks changes no price. Every row keeps
+-- a representative `stack` (its slot's, a lot row its first one) for the
+-- row's tooltip only (Round 49 ruling 2); no action reads it.
 local function current_rows(player)
 	local rows, lots = {}, {}
 	local inv = player:get_inventory()
@@ -142,6 +144,7 @@ local function current_rows(player)
 						item = stack:get_name(),
 						count = stack:get_count(),
 						unit = unit,
+						stack = stack,
 					}
 				else
 					local name = stack:get_name()
@@ -150,7 +153,7 @@ local function current_rows(player)
 						lots[name].count = lots[name].count + stack:get_count()
 					elseif lot and lot > 1 and copper > 0 then
 						lots[name] = {item = name, count = stack:get_count(),
-							lot = lot, copper = copper}
+							lot = lot, copper = copper, stack = stack}
 						rows[#rows + 1] = lots[name]
 					end
 				end
@@ -268,6 +271,10 @@ local function render_sell(parts, player, session)
 				return esc(short and core.colorize(GREYED, value) or value)
 			end
 			parts[#parts + 1] = ("item_image[0.7,%.2f;0.7,0.7;%s]"):format(y, row.item)
+			-- The stack's own tooltip (quality, enchants) over the image, as
+			-- the mail attachments show it (Round 49 ruling 2).
+			parts[#parts + 1] = ("tooltip[0.7,%.2f;0.7,0.7;%s]"):format(y,
+				esc(row.stack:get_description()))
 			parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.35,
 				text(short_desc(row.item) .. " x" .. row.count))
 			parts[#parts + 1] = ("label[7.4,%.2f;%s]"):format(y + 0.35, text(rate_text(row)))

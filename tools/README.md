@@ -1036,8 +1036,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_mail/model.lua`, then the real `grug_mail` with the real
   `grug_money`, the give and fit helpers of `grug_inventory` and the guards
   `grug_skills/bound_items.lua` and `grug_housing/soulbound.lua` on a stub
-  engine: postage and the attachment slots in one step, a changed slot
-  refused with nothing lost, the guards, closing, item meta, Take all,
+  engine: postage and the attachment slots in one step, the slots charged
+  as they are at Send (Round 49), the guards, closing, item meta, Take all,
   refusals, `send_system` with stacks, tickets, reports, answers,
   broadcasts, expiry and the window's tabs, dialogs, reach and stale
   clicks; the admin badge and NPC seal come from `r48_artm/generate.py`);
@@ -1060,8 +1060,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `r48_sell` the vendor's sell side (`portable_test.lua`: lot rows over the
   carried lists, All over several slots, the greyed row below the lot
   size, a moved stack refused without loss, the money ceiling before any
-  removal, the pack rule on the real `prices.lua`; the price rules and the
-  milli-copper second pass are in `r29_e1`);
+  removal, the pack rule on the real `prices.lua`, each row's item tooltip
+  (Round 49); the price rules and the milli-copper second pass are in
+  `r29_e1`);
   `r48_admin` the Admin Mail tab (`portable_test.lua`: `grug_mail/admin.lua`
   with the real `grug_mail`, the real sfinv and `grug_inventory/ui.lua` on a
   stub engine: the privilege gates the tab and its place after Help, grant
