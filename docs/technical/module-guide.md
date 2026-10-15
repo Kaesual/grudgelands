@@ -2012,6 +2012,22 @@ tools](#player-meta-read-by-external-tools).
   box, must extend the envelope or that file's argument first, or its chunks
   are silently skipped (`tools/r49_skip` checks the writer's result on
   skipped chunks).
+  **Per-column caches of the emerge environment** (the session's own,
+  first in first out; every value is a pure function of x/z and the world,
+  so a hit equals a miss): the planner column tuples (`zones.lua`
+  `column_cache_limit`: 196,608 for the mapgen planner, `cache_purpose`
+  "mapgen" from `r5.lua`; the main environment's sources keep 65,536), the
+  R6 decoration candidates per 16-node cell (`r6_planner.lua`, 4,096 cells)
+  and P9G's ranked roots per chunk column (`r7_p9g.lua`
+  `COLUMN_CACHE_LIMIT`, 256 columns, production only), which the second
+  surface chunk of a column settles instead of scanning again. The engine
+  generates a column's chunks in its distance-shell order around every
+  player, not bottom-up, so the sizes follow the Round 49 shell-order probe
+  (`tools/r49_cache`, research doc
+  [mapgen-chunk-profile-2026-10.md](../research/mapgen-chunk-profile-2026-10.md)).
+  A change that lets one of these values depend on the chunk's y range, its
+  voxels or anything else outside its key re-keys or drops that cache in
+  the same change (`tools/r49_cache` checks hit against miss).
   **Trees come from the seeded generator** (Round 47): `wp40/treegen.lua`
   (pure, the port of the approved concept) and `wp40/tree_templates.lua`
   (the species table, the template seeds, the sparse variants). A

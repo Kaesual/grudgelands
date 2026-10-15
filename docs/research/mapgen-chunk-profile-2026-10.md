@@ -806,3 +806,94 @@ the air test).
 - How much of the world has mountain stone above our surface (the M case)
   or above v7's base under our land (the H case) was not counted; the
   picker ranks columns but logs only the best ones.
+
+## Addendum: per-column caches at runtime (Round 49, lane CACHE)
+
+Follow-up question 4 ("Planner caches" above) measured, and P9G's 2-D
+result kept per chunk column. Numbers are comparisons of single boots.
+
+**Probe** (`tools/r49_cache/run_probe.sh`, one boot per state, fresh world
+of seed 12345, the stage timer plus `tools/r49_cache/counters.patch` for the
+other caches): after the starts preload the probe requests chunks one at a
+time in the order the engine's block sender would for players over fresh
+land (`RemoteClient::GetNextBlocks`, engine defaults: cube shells d = 0..10
+blocks around the block one ahead of the player, the camera cone narrowed
+by the speed plus the movement cone, the server-side occlusion test over
+the loaded map; the players move on by each chunk's measured time). Phase 1:
+one player stands until its view is generated, walks 400 nodes east at 4
+nodes/s and rides 400 more at 8. Phase 2: two players 600 nodes apart stand,
+then walk 400 nodes east, their picks alternating. Not modelled: turning,
+looking around, the sender's per-step window and the emerge queue's batches.
+Occlusion matters: under a surface player the ground hides the blocks
+below, so the players generated the surface chunks (y −32..47 and 48..127)
+and the chunks above them, no fill-floor chunk (−112..−33): about two chunks
+with Lua work per chunk column.
+
+**Column cache** (the zones runtime column tuples, first in first out). A
+"later" chunk is any chunk with Lua work after the first one of its column;
+it re-pays the column when it misses at least half a column (3,200 tuples).
+The insertion distance is the misses since the column's tuples went in
+(first in first out evicts them after `limit` misses, however often they
+were hit).
+
+| | phase 1 before | phase 1 after | phase 2 before | phase 2 after |
+|---|---:|---:|---:|---:|
+| chunks generated (Lua work / air skip) | 100 / 34 | 100 / 34 | 120 / 25 | 120 / 26 |
+| later chunks | 48 | 48 | 59 | 59 |
+| later chunks re-paying the column | 1 | 0 | 13 | 0 |
+| later chunks' column misses, mean | 176 | 0 | 1,499 | 7 |
+| planner R5 + R6 columns on later chunks, sum ms | 673 | 521 | 1,661 | 942 |
+| later chunk callback, mean ms | 147 | 139 | 134 | 121 |
+| insertion distance of later chunks, max | 59,272 | 58,053 | 109,701 | 106,668 |
+
+"Before" is the limit 65,536 (`tools/r49_cache/evidence/probe-before`),
+"after" 196,608 (`probe-after`). One player stays under the old limit (one
+re-pay of 47); two players apart re-pay the cold column cost (about 63 ms
+each, 0.8 s over the phase, about 3 % of its Lua time), and the distances
+grow with the number of players interleaving. The mapgen planner's cache
+now holds 196,608 tuples (`zones.lua`, purpose "mapgen" from `r5.lua`), a
+margin of about 1.8 over two players, about three players walking apart;
+the main environment's sources keep 65,536.
+
+Memory (LuaJIT, the real cache filled with chunk columns to twice its
+limit, at the limits 65,536, 131,072 and 262,144): about 330 bytes per
+tuple at the margin (+20.3 MiB per 65,536 more), so 196,608 costs about
++41 MiB in the emerge environment (4x would be about +62 MiB). The emerge
+environment's Lua heap in these stage-timer boots is 1-2 GB between
+collections. One cold column costs about 6 µs per tuple (7,200 with the
+halo, about 42 ms).
+
+The other caches did not limit the order in either boot: the R6 decoration
+candidates (4,096 cells, about 164 columns) had no miss on a later chunk and
+no eviction; the start front cache and the surface cave candidates were not
+asked by these chunks.
+
+**P9G per chunk column** (`r7_p9g.lua`, 256 columns, production only): the
+scan, rank digests, budgets and sort read only the x/z owner and pure
+functions of the world, so the first surface chunk of a column keeps its
+ranked roots (source row and root; 6.4-7.5 per column, at most 24, so the
+256 columns stay well under a megabyte) and the next surface chunk settles
+them. In the probe the second surface chunk hit in 31 of 31 (phase 1) and
+16 of 16 (phase 2) cases; the stage took 26-33 ms on a miss and 0.0 ms on a
+hit. In the corpus (`tools/r49_cache/evidence/mgprof`, one stage boot on
+this lane's branch, against the SKIP boot `tools/r49_skip/evidence/mgprof`):
+
+| ms | A_S1 | A_S2 | B_B |
+|---|---:|---:|---:|
+| successor P9G, before | 63.2 | 61.1 | 0 |
+| successor P9G, after | 49.6 | 0.1 | 0 |
+| callback total, before | 449.2 | 160.6 | 218.2 |
+| callback total, after | 398.3 | 87.6 | 350.9 |
+
+A_S2 loses its P9G cost; the rest of its difference is the R5 adapter's
+replay pass that lane JIT removed (12.8 ms in the SKIP boot). B_B is the
+cold first chunk of column B (R6 candidates 230 ms against 98 ms) and the
+emerge environment's collector finished a cycle inside it in this boot
+(the heap fell by about 200 MB during the callback); its cold cost varies
+between boots (48-350 ms, "Planner caches" above).
+
+Byte identity: `tools/r49_cache/portable_test.lua` (hit against miss for
+both caches, on the moved-ground harness), `tools/r49_jit/fleet_digest.sh`
+(quick seeds and the moved-ground set against main) and
+`tools/r49_cache/fleet_stack.sh` (every sampled chunk with the chunks above
+and below it, so the later chunks hit, on this branch and on main).
