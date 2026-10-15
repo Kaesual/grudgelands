@@ -1132,8 +1132,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   with its sight of the target, and every registered `dogshoot` mob (flier
   or ground, `pathfinding`). `summarize.py RESULTS.json` (`--events SCENE
   MOVER`, `--geometry SCENE`; a totals line per mover and phase);
-  `evidence/boot1..3` the phase 1 runs, `evidence/nav2_scenes` and
-  `evidence/nav2_real` Round 49 NAV2's runs of the real code.
+  `evidence/boot1..3` the phase 1 runs; Round 49 NAV2's runs of the real
+  code: `evidence/v1_scenes` and `v1_real` its first repair rule,
+  `evidence/final` the merged one (every phase and mover).
 - **Round 49 lane VIS** (`r49_vis`): node items in the third-person
   hand (`portable_test.lua`: the real `grug_visuals` and `player_api` on a
   stub engine: which items the engine draws as blocks, the transform at
