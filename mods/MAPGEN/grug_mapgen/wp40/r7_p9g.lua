@@ -244,7 +244,25 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		local bound_plan, bound_generation, bound_vertical_active = false, 0, false
 		local evidence_generation = 1000000000
 		local metrics = {plan_calls = 0, settle_calls = 0, replay_calls = 0,
-			peak_candidates = 0, peak_eligible_per_cell = 0, accepted = 0}
+			peak_candidates = 0, peak_eligible_per_cell = 0, accepted = 0,
+			cache_hits = 0, cache_misses = 0, cache_evictions = 0}
+
+		-- THE 2-D RESULT PER CHUNK COLUMN (Round 49 lane CACHE). The scan, the
+		-- rank digests, the budgets and the sort below read only the column's
+		-- x/z owner, the seed and session-constant pure functions of x, y and z
+		-- (`column_values_at`, `analytic_p7_ref`, `production_content`, the
+		-- habitat density and the budget hash), never the chunk's voxels or its
+		-- y range. So every vertical chunk of a column ranks the same budget
+		-- prefixes; the first chunk that scans keeps them (source row and root,
+		-- in loop order) and the next surface chunk of the column settles the
+		-- kept list instead of scanning again. Keyed by the owner's x/z bounds,
+		-- first in first out over COLUMN_CACHE_LIMIT columns (a few dozen roots
+		-- each). Production only: the ledger counts every eligible column inside
+		-- the 3-D owner and records each root's cell and digest, which needs the
+		-- scan.
+		local COLUMN_CACHE_LIMIT = 256
+		local column_cache = not emit_ledger and {} or nil
+		local column_cache_keys, column_cache_next = {}, 1
 
 		local function shore_matches(context, catalog_index, x, z)
 			if rows[catalog_index].shore_predicate == "none" then return true end
@@ -480,7 +498,44 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			local last_cell_x = math.floor(context.max_x / 16)
 			local first_cell_z = math.floor(context.min_z / 16)
 			local last_cell_z = math.floor(context.max_z / 16)
-			for catalog_index = 1, #rows do
+			local cache_key, cached, kept, kept_count
+			if column_cache then
+				cache_key = context.min_x .. "," .. context.min_z .. "," ..
+					context.max_x .. "," .. context.max_z
+				cached = column_cache[cache_key]
+				if cached then
+					metrics.cache_hits = metrics.cache_hits + 1
+				else
+					metrics.cache_misses = metrics.cache_misses + 1
+					kept, kept_count = {}, 0
+				end
+			end
+			-- A kept column: its roots (source row, x, y, z) in the loop's order,
+			-- settled exactly as the loop below settles a budget prefix in
+			-- production, which fills no ledger. The loop then runs no row.
+			if cached then
+				for base = 1, #cached, 4 do
+					local catalog_index, x, y, z =
+						cached[base], cached[base + 1], cached[base + 2], cached[base + 3]
+					if context.inside_owner(x, y, z) then
+						candidate_count = candidate_count + 1
+						if candidate_count > MAX_CANDIDATES then
+							fail("candidate bound exceeded")
+						end
+						local reason = settlement_decision(context, catalog_index, x, y, z)
+						if reason then
+							if not REASON_SET[reason] then fail("unknown rejection reason") end
+						else
+							local cid, _, _, param2 =
+								p9g_content.resolve_p9g(catalog_index, 0)
+							context.write_p9g(x, y, z, cid, param2, catalog_index,
+								catalog_index)
+							ledger.accepted = ledger.accepted + 1
+						end
+					end
+				end
+			end
+			for catalog_index = 1, cached and 0 or #rows do
 				local row = rows[catalog_index]
 				for cell_z = first_cell_z, last_cell_z do
 					for cell_x = first_cell_x, last_cell_x do
@@ -533,6 +588,12 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 						end
 						for chosen = 1, budget do
 							local ranked = rank_scratch[chosen]
+							if kept then
+								kept[kept_count + 1], kept[kept_count + 2] =
+									catalog_index, ranked.x
+								kept[kept_count + 3], kept[kept_count + 4] = ranked.y, ranked.z
+								kept_count = kept_count + 4
+							end
 							-- The fixed 2-D budget prefix is shared by every vertical
 							-- callback, but exactly the 3-D owner containing the root may
 							-- account for or settle it. Skipping is not rejection/refill.
@@ -621,6 +682,16 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 					end
 				end
 			end
+			if kept then
+				local old_key = column_cache_keys[column_cache_next]
+				if old_key then
+					column_cache[old_key] = nil
+					metrics.cache_evictions = metrics.cache_evictions + 1
+				end
+				column_cache[cache_key] = kept
+				column_cache_keys[column_cache_next] = cache_key
+				column_cache_next = column_cache_next % COLUMN_CACHE_LIMIT + 1
+			end
 			if candidate_count > metrics.peak_candidates then
 				metrics.peak_candidates = candidate_count
 			end
@@ -656,7 +727,11 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				peak_candidates = metrics.peak_candidates,
 				peak_eligible_per_cell = metrics.peak_eligible_per_cell,
 				accepted = metrics.accepted, retained_buffer_growth_events = 0,
-				allocator_sealed = true}
+				allocator_sealed = true,
+				column_cache_limit = column_cache and COLUMN_CACHE_LIMIT or 0,
+				column_cache_hits = metrics.cache_hits,
+				column_cache_misses = metrics.cache_misses,
+				column_cache_evictions = metrics.cache_evictions}
 		end
 		function tail.probe_reason(self, context, catalog_index, x, y, z)
 			if not rawequal(self, tail) then fail("probe receiver differs") end
