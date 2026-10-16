@@ -119,9 +119,13 @@ function grug_quickbar.formspec(player)
 			WIDTH - PAD * 2, esc(("Return home (%s)"):format(home_state)))
 		y = y + 0.8
 	end
+	-- Two lines: formspec labels do not wrap, and the window is narrow.
 	y = y + 0.45
 	fs[#fs + 1] = ("label[%.3f,%.2f;%s]"):format(PAD, y,
-		esc(core.colorize("#c8c8c8", "Click to use; the window closes. A and B switch the hotbar.")))
+		esc(core.colorize("#c8c8c8", "Click to use; the window closes.")))
+	y = y + 0.4
+	fs[#fs + 1] = ("label[%.3f,%.2f;%s]"):format(PAD, y,
+		esc(core.colorize("#c8c8c8", "A and B switch the hotbar.")))
 	local height = y + 0.45
 	return ("formspec_version[6]size[%.3f,%.3f]position[0.02,0.5]anchor[0,0.5]"):format(
 		WIDTH, height) .. table.concat(fs)

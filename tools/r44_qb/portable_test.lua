@@ -421,7 +421,8 @@ lacks(fs, "Click to dismount.", "on foot: no dismount line")
 lacks(fs, "#7ae08a", "on foot: no ridden frame")
 local w2, h2 = size_of(fs)
 eq(w2, 5.5, "width unchanged")
-check(h2 and h2 > 6 and h2 < 8, "one mount row and a home: about square (" .. tostring(h2) .. ")")
+-- Round 50: the A/B switch row and a second hint line add about 1.75.
+check(h2 and h2 > 6 and h2 < 8.5, "one mount row and a home: about square (" .. tostring(h2) .. ")")
 
 -- Five owned tiers: a second row.
 ada.meta["grug_mounts:flight_tier"] = 3
