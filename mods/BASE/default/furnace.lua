@@ -19,16 +19,21 @@ local furnace_fire_sounds = {}
 -- player's whole combined bag (grug_inventory.station_formspec, real
 -- coordinates); `context` is the node_formspec session's. Not shown while
 -- grug_jobs is loaded: its workspaces take over the furnace's right-click.
-local function furnace_formspec_with(fire, arrow, pos, player, context)
+-- GRUG PATCH (0.49.1 ANIM): the fire and the arrow come from
+-- grug_inventory.furnace_progress, animated while the furnace burns and
+-- cooks. `view` = {left, total (the fuel's seconds), burning, done, time
+-- (the item's seconds), cooking}.
+local function furnace_formspec_with(view, pos, player, context)
 	local loc = pos and default.node_formspec.location(pos) or "context"
+	local progress = grug_inventory.furnace_progress
 	local station = grug_inventory.STATION
 	local x, y, pitch = station.x, station.y, station.pitch
 	local box, bottom = grug_inventory.station_box(S("Furnace"), 3 * pitch - 0.25)
 	return grug_inventory.station_formspec(player, box ..
 		("list[%s;src;%.3f,%.3f;1,1;]"):format(loc, x + 2 * pitch, y) ..
 		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(loc, x + 2 * pitch, y + 2 * pitch) ..
-		("image[%.3f,%.3f;1,1;%s]"):format(x + 2 * pitch, y + pitch, fire) ..
-		("image[%.3f,%.3f;1,1;%s]"):format(x + 3 * pitch, y + pitch, arrow) ..
+		progress.fire(x + 2 * pitch, y + pitch, 1, 1, view.left, view.total, view.burning) ..
+		progress.arrow(x + 3 * pitch, y + pitch, 1, 1, view.done, view.time, view.cooking) ..
 		("list[%s;dst;%.3f,%.3f;2,2;]"):format(loc, x + 4 * pitch, y + pitch / 2) ..
 		"listring["..loc..";dst]"..
 		"listring[current_player;grug_inbox]"..
@@ -42,34 +47,48 @@ local function furnace_formspec_with(fire, arrow, pos, player, context)
 		bottom, context)
 end
 
+-- GRUG PATCH (0.49.1 ANIM): the two public builders draw a still picture
+-- at the given percentages; the furnace's own form animates (below).
 function default.get_furnace_active_formspec(fuel_percent, item_percent, pos, player, context)
-	return furnace_formspec_with("default_furnace_fire_bg.png^[lowpart:"..
-		(fuel_percent)..":default_furnace_fire_fg.png",
-		"gui_furnace_arrow_bg.png^[lowpart:"..
-		(item_percent)..":gui_furnace_arrow_fg.png^[transformR270",
-		pos, player, context)
+	return furnace_formspec_with({left = fuel_percent, total = 100, burning = false,
+		done = item_percent, time = 100, cooking = false}, pos, player, context)
 end
 
 function default.get_furnace_inactive_formspec(pos, player, context)
-	return furnace_formspec_with("default_furnace_fire_bg.png",
-		"gui_furnace_arrow_bg.png^[transformR270", pos, player, context)
+	return furnace_formspec_with({left = 0, total = 0, done = 0, time = 0},
+		pos, player, context)
 end
 
 --
 -- Node callback functions that are the same for active and inactive furnace
 --
 
--- GRUG PATCH: the timer records the two progress percentages instead of a
--- meta formspec; open viewers are re-shown when the formspec changes.
+-- GRUG PATCH: no meta formspec; open viewers are re-shown when the form
+-- changes (default/node_formspec.lua).
+-- GRUG PATCH (0.49.1 ANIM): the form reads the timer's own state (the fuel's
+-- and the item's seconds) and animates the fire and the arrow; the builder's
+-- second result tells node_formspec.refresh that nothing but the animation
+-- moved, so the form is re-sent only at a change of state (an item done, a
+-- new fuel, start, stop, an input or the output full).
 local FURNACE_NODES = {"default:furnace", "default:furnace_active"}
 
 local function furnace_formspec(pos, player, context)
 	local meta = core.get_meta(pos)
+	local view = {left = 0, total = 0, done = 0, time = 0}
 	if core.get_node(pos).name == "default:furnace_active" then
-		return default.get_furnace_active_formspec(meta:get_int("fuel_percent"),
-			meta:get_int("item_percent"), pos, player, context)
+		local cooked = core.get_craft_result({method = "cooking", width = 1,
+			items = meta:get_inventory():get_list("src")})
+		view.total = meta:get_float("fuel_totaltime")
+		view.left = view.total - meta:get_float("fuel_time")
+		view.done, view.time = meta:get_float("src_time"), cooked.time
+		-- Done but the output full: the timer burns nothing until it fits.
+		local blocked = cooked.time ~= 0 and view.done >= cooked.time
+		view.cooking = cooked.time ~= 0 and not blocked
+		view.burning = not blocked
 	end
-	return default.get_furnace_inactive_formspec(pos, player, context)
+	local formspec = furnace_formspec_with(view, pos, player, context)
+	return formspec, not grug_inventory.furnace_progress.changed(context, formspec,
+		view.left, view.done)
 end
 
 local function furnace_rightclick(pos, node, clicker, itemstack)
