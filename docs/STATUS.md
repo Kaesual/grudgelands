@@ -16,9 +16,28 @@ acceptance and implementation remain pending. HTML previews live in the
 user's home artifact folder, not the repository. **Parked 2026-10-12** as a
 future work package after two reviews; the next round focuses on world
 generation. Resume with the [continuation plan](planning/class-redesign/continuation.md).
-Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
-is open.
+Hotbar A/B shipped in 0.50.0. The [Class Redesign
+Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a private
+claude.ai page, Round 50 ART) shows the planning state with the user's
+notes.
 
+- **Round 50 "Hotbar A/B, claim containers across map resets, the
+  class-redesign page" complete on main, not pushed** (2026-10-16, version
+  0.50.0, **compatible**, no migration step;
+  [plan, rulings, numbers and GUI checklist](planning/round50-plan.md#completion-2026-10-16)).
+  From main `af9d6f06` (the version bump): PGAME (`819bd253`, delta
+  `dfbcffae`), PTOOL (`398c8f1e`, delta `be339ee3`), HOTBAR (`bd212678`)
+  and PACCEPT (`ef646f83`) merged; ART outside the repository. Each code
+  lane and each fix delta independently reviewed by Opus. The migration
+  tool now packs every container in every housing claim before a map
+  reset, reading the map read-only; the game restores them through the
+  Claim Stone's Belongings tab. The declaration is
+  `{"schema": 3, "version": "0.50.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`.
+  On main `f2a65fee`: full fixtures 203/203, `check_upgrade.py` (against
+  origin/main `bc1e6016`), `check_fresh_server.py`, `export.lua --check`
+  and a 120 s smoke boot PASS; PACCEPT 122/122 on a world built by 0.48.1,
+  on SQLite and PostgreSQL. Production (0.48.1) moves straight to 0.50.0,
+  and 0.49.0's map reset on that move packs its claims.
 - **0.49.1, a compatible fix round after the first 0.49.0 feedback, on
   main, not pushed** (2026-10-16,
   [plan, rulings and GUI checklist](planning/fix-0.49.1-plan.md#completion-2026-10-16)).

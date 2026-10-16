@@ -1,7 +1,7 @@
 # Round 50 — Hotbar A/B, claim containers across map resets, the class-redesign page
 
 Coordinator: Claude (Opus 5.5), planned with the user on 2026-10-16.
-Status: **agreed**, starts on the user's "go". Process: [round workflow](../process/round-workflow.md).
+Status: **complete** on main, not pushed ([completion](#completion-2026-10-16)). Process: [round workflow](../process/round-workflow.md).
 
 Released as **0.50.0**, a **compatible** release: from 0.49.1 there is no
 migration step, no map reset and no new world. It is also the first version
@@ -541,3 +541,56 @@ Also:
     both.
 - **Decided during the round:** the packed item's icon fallback (D5), from
   the screenshots.
+
+## Completion (2026-10-16)
+
+All lanes merged on main, each code lane independently reviewed (Opus),
+fix deltas reviewed again; the ART page checked by the coordinator against
+the sources and published as a private claude.ai artifact.
+
+| Lane | Merge | Outcome |
+|------|-------|---------|
+| PGAME | `819bd253`, delta `dfbcffae` | `grug_housing:packed_container` (soulbound, refused drop, the node's own image), the active stone's Belongings tab (take-only, partial takes), the marker handler in `grug_core/world_version.lua` after `run_world` (a failure stops the load and keeps the marker; undecodable lists stop it too). Delta (rulings 13–15): contents in `packed:<player>:<seq>:<n>[.<k>]`, the item keeps `ref`, `node`, `seq`, description and image; empties and stations the game cannot restore as themselves come back as their dropped node item, stacked in `recovered:<player>:<seq>:0.<k>`; any holder places; missing contents place empty with a warning |
+| PTOOL | `398c8f1e`, delta `be339ee3` | `tools/migration/mapblock.py` (read-only SQLite and PostgreSQL map access, format-29 decoder verified against the engine), `pack.py` (one transaction, read back before and after), `--map-reset`, `--check --map-reset`, refusals `pack_baseline`, `pack_pending`, `map_empty`, `map_block`; declaration schema 3 with `map_reset_pass` 0.50.0; contract §1, §3.2, §3.5, §5. Delta: empty containers packed too |
+| HOTBAR | `bd212678` | `grug_hotbar_store` (8 slots) and the A/B label; one switch element in every inventory page, every `station_formspec` form incl. the Claim Stone and its Belongings tab, the mail Write tab and the quick menu; 0.25 s limit, cast/draw/eat cancel; consumers take from the hidden layout last; vendor leaves it out, repair includes it; `normalize_kit` per layout; talent unlocks place nothing |
+| ART | — (outside the repository) | the [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR): 352 elements with status and source, both trees per class as graphs, findings and decisions, the 68 open points; notes stored in the page's database (collection `notes`) |
+| PACCEPT | `ef646f83` | a world built by the real 0.48.1 game, packed by the 0.50.0 tool in the runner image, the map emptied as the platform does, 0.50.0 booted twice per backend: 122/122 checks on SQLite and PostgreSQL; `reset_like_platform.sh` for the GUI test (12/12 own checks) |
+
+**Measured (PACCEPT, two claims, 2,177 map blocks):** the tool run 0.090 s
+on SQLite and 0.165 s on PostgreSQL wall clock, the pass itself 0.053 s and
+0.062 s (about 25 µs per block); the largest packed item string 905 bytes,
+the largest stored contents 1,439 bytes. A 32-slot chest of different
+10,000-character books: 324,206 bytes as the tool writes it, 1,153 bytes
+after the first-start clean-up. The platform fixture (the 0.48.1 world, a
+PostgreSQL dump in the platform's layout, the receipt and the expected
+counts, 12 MB) is kept outside the repository for the platform.
+
+**Decided during the round:** rulings 12–15 (§2). The packed item's image
+is the node's own cube (D5). Only the five container kinds are restored as
+themselves; a filled station of another kind comes back as its item plus a
+packed chest of its contents. A second pass while a marker is pending, or a
+pass on an emptied map, is refused. The coordinator added a CHANGELOG
+placeholder at the start (`318ccefb`), fixed two contract text points
+(`b46e86a2`) and put the quick menu's hint on two lines (`d9fb6a1c`).
+
+**Round-end gates on main `f2a65fee`:** full fixtures 203/203,
+`check_upgrade.py` (0.50.0, schema 3, against origin/main `bc1e6016`),
+`check_fresh_server.py`, `export.lua --check`, `test_pack.py`,
+`test_reset_like_platform.sh` and a 120 s smoke boot PASS. `mods/` +1,310
+−111 lines in 28 files.
+
+**Backlog notes from the reviews:** waiting entries of an older pass are
+not re-cleaned when a later version removes an item (a later item-removing
+step must cover `recovered:*` and `packed:*`, contract §1); shift-click from
+the Belongings tab fills only `main`; the join notice is a feed line that
+may pass during the relocation hold (the Steward and the tab remain); the
+bag resize's fail-safe drop could drop a packed item (as the Claim Stone
+today); a key-opened locked chest's form has no switch; plain and packed
+chests share an icon in the Belongings tab (the tooltip tells them apart);
+the `r48_bags` engine e2e fails two checks since Round 49 (the guard
+message, the Claim Stone expected in `main[9..]`), on the base as well.
+
+The user's GUI checklist is §6 above; item 6 runs
+`tools/r50_paccept/reset_like_platform.sh <world copy> <server.conf>` and
+then a terminal server with `--config <server.conf>`.
+
