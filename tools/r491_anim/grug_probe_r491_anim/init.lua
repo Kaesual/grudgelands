@@ -83,6 +83,14 @@ local function put(pos, list, index, item, player)
 	def.on_metadata_inventory_put(pos, list, index, ItemStack(item), player)
 end
 
+-- A1 waits for a quiet window: the item 1-3 s along and at least 7 s of
+-- the log left, so no item ends and no log is lit before A2.
+local function quiet(pos)
+	local state = core.deserialize(core.get_meta(pos):get_string("grug_jobs:process")) or {}
+	local progress, fuel = tonumber(state.progress) or 0, tonumber(state.fuel) or 0
+	return progress >= 1 and progress <= 3 and fuel >= 7
+end
+
 local shot_at = {}
 local SHOTS = {
 	{name = "A1_furnace_burning", run = function(player) open(player, "furnace") end},
@@ -157,7 +165,8 @@ core.register_globalstep(function(dtime)
 			log("ran " .. shot.name .. ", form " .. tostring(default.node_formspec.shown_form(NAME)))
 		end
 		state.waited = state.waited + step
-		if not state.logged and state.waited >= SETTLE then
+		if not state.logged and state.waited >= SETTLE and
+				(shot.name ~= "A1_furnace_burning" or quiet(spots.furnace)) then
 			state.logged = true
 			shot_at[shot.name] = clock
 			if shot.name == "A2_furnace_seconds_later" then
