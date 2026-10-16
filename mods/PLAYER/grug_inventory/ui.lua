@@ -243,7 +243,7 @@ end
 
 --
 -- The hotbar switch (Round 50 ruling 2): two small buttons, "A" and "B", the
--- shown layout marked with the shared selection style (tint and border). It
+-- shown layout marked (bright gold against dark, switch_style below). It
 -- is the one element every form showing the hotbar draws: the views below
 -- (the inventory pages, the station forms, the mail's Write tab) right of
 -- the hotbar's slots, and the quickbar (E). Whoever receives the form's
@@ -254,6 +254,18 @@ grug_inventory.HOTBAR_FIELDS = {A = "grug_hotbar_a", B = "grug_hotbar_b"}
 -- In a view: between the last slot and the box's right edge (0.57).
 local SWITCH_GAP, SWITCH_W, SWITCH_H = 0.08, 0.45, 0.47
 
+-- The shown layout in bright gold, the other one dark, both framed: the
+-- shared selection style's tint disappears on the gold Hotbar box, and its
+-- unselected state draws no button at all.
+local function switch_style(field, shown)
+	if shown then
+		return ("style[%s;bgcolor=#c8962f;bgcolor_hovered=#d9a640;" ..
+			"bgcolor_pressed=#a77f3b;border=true;textcolor=#ffffff]"):format(field)
+	end
+	return ("style[%s;bgcolor=#2a2a2a;bgcolor_hovered=#505050;" ..
+		"bgcolor_pressed=#303030;border=true;textcolor=#b4b4b4]"):format(field)
+end
+
 -- The two buttons in real coordinates, `w` x `h` each: "A" at (x, y), "B"
 -- `dx`, `dy` further.
 function grug_inventory.hotbar_switch(player, x, y, w, h, dx, dy)
@@ -261,7 +273,7 @@ function grug_inventory.hotbar_switch(player, x, y, w, h, dx, dy)
 	local fs = {}
 	for index, layout in ipairs({"A", "B"}) do
 		local field = grug_inventory.HOTBAR_FIELDS[layout]
-		fs[#fs + 1] = grug_inventory.selected_button_style(field, layout == shown)
+		fs[#fs + 1] = switch_style(field, layout == shown)
 		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.3f;%s;%s]tooltip[%s;%s]"):format(
 			x + (index - 1) * dx, y + (index - 1) * dy, w, h, field, layout, field,
 			layout == shown and "Hotbar " .. layout .. " is shown" or

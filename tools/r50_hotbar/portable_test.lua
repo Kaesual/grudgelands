@@ -825,7 +825,7 @@ end
 local function marked(fs)
 	local out = {}
 	for _, layout in ipairs({"A", "B"}) do
-		if fs:find("style[" .. I.HOTBAR_FIELDS[layout] .. ";bgcolor=#8a682f", 1, true) then
+		if fs:find("style[" .. I.HOTBAR_FIELDS[layout] .. ";bgcolor=#c8962f", 1, true) then
 			out[#out + 1] = layout
 		end
 	end
@@ -990,7 +990,6 @@ do
 end
 
 if failures > 0 then
-	print(("r50_hotbar: %d checks, %d failures"):format(checks, failures))
-	os.exit(1)
+	error(("R50 HOTBAR PORTABLE FAIL %d of %d checks"):format(failures, checks), 0)
 end
-print(("r50_hotbar: %d checks, 0 failures"):format(checks))
+print(("R50 HOTBAR PORTABLE PASS checks=%d"):format(checks))

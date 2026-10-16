@@ -617,7 +617,7 @@ do
 	local now = 0
 	core.get_us_time = function() now = now + 1000000 return now end -- past the limit
 	local function marked_b(fs)
-		return fs:find("style[grug_hotbar_b;bgcolor=#8a682f", 1, true) ~= nil
+		return fs:find("style[grug_hotbar_b;bgcolor=#c8962f", 1, true) ~= nil
 	end
 	local worker = new_player("hotbar_ws", BAGS.four)
 	local pos = place("default:furnace")

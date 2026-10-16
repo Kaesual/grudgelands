@@ -69,7 +69,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   stay, and the cooldown overlay follows the skill to its slot on the new
   layout); one switch per 0.25 s at most, an anti-spam limit, not a
   cooldown. The control is two small buttons, **A** and **B**, the shown
-  layout marked with the selection style (tint and border), right of the
+  layout marked bright gold, the other one dark, both framed, right of the
   hotbar's slots in every inventory view (so on every inventory page, every
   station form and the mail's Write tab) and in a **Hotbar** row of the
   quickbar (E). A switch re-shows the form it was made in, at its scroll
