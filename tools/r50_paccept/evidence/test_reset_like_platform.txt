@@ -4,6 +4,7 @@ PASS a config that cannot be written is refused before anything (no backup, map 
 PASS a server on the world named by a relative --world is refused
 PASS a server on the world named by an absolute --world is refused
 PASS neither refusal changed anything
+PASS a world under a path containing 'luanti' is accepted (a server on another world runs)
 reset_like_platform: backup: <tmp>/reset3.backup-<time>
 reset_like_platform: python3 tools/migrate.py --world <tmp>/reset3 --check --map-reset
 reset_like_platform: python3 tools/migrate.py --world <tmp>/reset3 --map-reset

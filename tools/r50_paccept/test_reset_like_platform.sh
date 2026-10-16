@@ -4,7 +4,7 @@
 # values BLOBs as database-sqlite3.cpp stores them). No engine run, a few
 # seconds: the refusals (the personal folder, a non-SQLite world, a config
 # that cannot be written, a running server named by an absolute or a relative
-# --world), a world reset before (grug_core reset_world = 3 stored the
+# --world; a world under a path containing "luanti" is accepted), a world reset before (grug_core reset_world = 3 stored the
 # engine's way: the counter becomes 4), a rerun refused before any write
 # (pack_pending, its backup removed), and a world without a record and no
 # config (the line printed: 1).
@@ -60,16 +60,21 @@ chmod 755 "$tmp/ro_conf"
 check "a config that cannot be written is refused before anything (no backup, map kept)" \
 	test $rc -eq 2 -a "$(backups ro)" -eq 0 -a "$(blocks "$tmp/ro")" -gt 0
 
+# A fake server: a process whose argv[0] is "luanti" with a --world argument.
+fake_server() {  # fake_server <dir> <args...>: started in <dir>, sleeps 30 s
+	local dir="$1"; shift
+	(cd "$dir" && exec python3 -c 'import os, sys
+os.execv(sys.executable, ["luanti", "-c", "import time; time.sleep(30)"] + sys.argv[1:])' "$@") &
+	fake=$!
+}
 world running
-(cd "$tmp" && exec -a "luanti --server --gameid grudgelands --world running" sleep 30) &
-fake=$!
+fake_server "$tmp" --server --gameid grudgelands --world running
 sleep 0.5
 out="$("$script" "$tmp/running" 2>&1)"; rc=$?
 check "a server on the world named by a relative --world is refused" \
 	test $rc -eq 2 -a -n "$(grep -F 'seems to run' <<<"$out")"
 kill "$fake" 2>/dev/null; wait "$fake" 2>/dev/null
-(exec -a "luanti --server --world $tmp/running" sleep 30) &
-fake=$!
+fake_server / --server "--world=$tmp/running"
 sleep 0.5
 out="$("$script" "$tmp/running" 2>&1)"; rc=$?
 check "a server on the world named by an absolute --world is refused" \
@@ -77,6 +82,14 @@ check "a server on the world named by an absolute --world is refused" \
 kill "$fake" 2>/dev/null; wait "$fake" 2>/dev/null
 fake=""
 check "neither refusal changed anything" test "$(backups running)" -eq 0 -a "$(blocks "$tmp/running")" -gt 0
+fake_server "$tmp" --server --world elsewhere
+mkdir -p "$tmp/luanti-test"
+world luanti-test/w
+out="$("$script" "$tmp/luanti-test/w" 2>&1)"; rc=$?
+check "a world under a path containing 'luanti' is accepted (a server on another world runs)" \
+	test $rc -eq 0 -a -z "$(grep -F 'seems to run' <<<"$out")"
+kill "$fake" 2>/dev/null; wait "$fake" 2>/dev/null
+fake=""
 
 world reset3
 set_record "$tmp/reset3" 3

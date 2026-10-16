@@ -51,22 +51,51 @@ for key in backend player_backend auth_backend mod_storage_backend; do
 	value="$(backend "$key" sqlite3)"
 	[[ "$value" == sqlite3 ]] || refuse "world.mt $key = $value: this script handles SQLite worlds only"
 done
-# A running server on this world: its --world argument, absolute or
-# relative (compared by the folder's name), on any luanti command line.
+# A running server on this world: only processes whose program is Luanti
+# (argv[0] luanti, luanti.bin, luantiserver, minetest or minetestserver; not
+# this script and its subshells, whose arguments name the world too), with
+# a --world argument naming this folder, absolute or relative (resolved in
+# the process's working directory, else compared by the folder's name).
 set +e
-procs="$(pgrep -af luanti)"
-pgrep_status=$?
+found="$(python3 - "$world" <<'PY'
+import os, sys
+world = sys.argv[1]
+PROGRAMS = {"luanti", "luanti.bin", "luantiserver", "minetest", "minetestserver"}
+for pid in os.listdir("/proc"):
+    if not pid.isdigit():
+        continue
+    try:
+        with open("/proc/%s/cmdline" % pid, "rb") as f:
+            argv = [a.decode("utf-8", "replace") for a in f.read().split(b"\0") if a]
+    except OSError:
+        continue  # gone meanwhile, or not readable
+    if not argv or os.path.basename(argv[0]) not in PROGRAMS:
+        continue
+    for i, arg in enumerate(argv):
+        target = None
+        if arg == "--world" and i + 1 < len(argv):
+            target = argv[i + 1]
+        elif arg.startswith("--world="):
+            target = arg[len("--world="):]
+        if target is None:
+            continue
+        try:
+            cwd = os.readlink("/proc/%s/cwd" % pid)
+        except OSError:
+            cwd = None
+        if cwd:
+            same = os.path.realpath(os.path.join(cwd, target)) == world
+        else:
+            same = os.path.basename(os.path.normpath(target)) == os.path.basename(world)
+        if same:
+            print("pid %s: %s" % (pid, " ".join(argv)))
+            sys.exit(3)
+PY
+)"
+scan_status=$?
 set -e
-[[ $pgrep_status -le 1 ]] || refuse "cannot tell whether a Luanti server runs (pgrep exit $pgrep_status)"
-name="$(basename -- "$world")"
-while IFS= read -r line; do
-	[[ -n "$line" ]] || continue
-	arg="$(sed -n 's/.*--world[= ]\([^ ]*\).*/\1/p' <<<"$line")"
-	if printf '%s\n' "$line" | grep -qF -- "$world" ||
-			[[ -n "$arg" && "$(basename -- "$arg")" == "$name" ]]; then
-		refuse "a Luanti server seems to run on $world ($line); stop it first"
-	fi
-done <<<"$procs"
+[[ $scan_status -ne 3 ]] || refuse "a Luanti server seems to run on $world ($found); stop it first"
+[[ $scan_status -eq 0 ]] || refuse "cannot tell whether a Luanti server runs (process scan exit $scan_status)"
 # The config must take the counter after the map is emptied.
 if [[ -n "$conf" ]]; then
 	if [[ -e "$conf" ]]; then
