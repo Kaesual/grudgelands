@@ -334,10 +334,20 @@ hosts follow the README's
   back (SQLite under `BEGIN IMMEDIATE`, PostgreSQL waiting at most 5 s for a
   lock). `--map-reset` runs the pre-reset pass (§3.5) first and then the due
   steps, in one run; a world at the target with nothing due still packs and
-  exits 0 (`"applied": []`). `--check --map-reset` also selects one map
-  block and decodes it, which proves zstd importable, besides the
-  rolled-back write on mod storage, where the pass writes. The tool cannot
-  detect a running server: stopping it is the caller's duty.
+  exits 0 (`"applied": []`). `--check --map-reset` is the pass's complete
+  **dry run** (since 0.50.1): the pass's own code up to its transaction
+  reads and decodes every block of every claim, builds every entry and
+  proves it reads back, with the same refusals and reasons (`pack_baseline`,
+  `pack_pending`, `map_empty`, `map_block`, `internal`); it also selects and
+  decodes one map block, which proves zstd importable even without claims,
+  and keeps the rolled-back write on mod storage, where the pass writes. It
+  writes nothing. Its `done` line carries `"pack"`: `seq`, `counts`,
+  `nodes` and `empty` exactly as the pass's `pack_done` would (only
+  `charcoal` follows the clock), and `seconds`. A check that passed leaves
+  the pass on the same unchanged world only failures the check cannot
+  test: a lock taken after the check, or the transaction itself failing
+  (exit 1, `pack`). The tool cannot detect a running server: stopping it is
+  the caller's duty.
 - It runs from the repository root of a full export of the commit (every
   tracked file except `reference_projects/`), on Python 3.13 or newer with
   the standard library; `psycopg` 3 only for a PostgreSQL world, and zstd

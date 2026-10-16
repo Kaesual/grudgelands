@@ -292,6 +292,12 @@ def verify(entries, scans, seq):
             raise AssertionError("the lists of a packed %s do not read back" % container.node)
 
 
+def taken_keys(store, entries):
+    """The entries' keys that exist already (none, unless pack_seq was set
+    back by hand)."""
+    return [key for key, _ in entries if storage_get(store, HOUSING, key) is not None]
+
+
 def write(store, entries, seq):
     """The pass's writes in the open mod-storage transaction; checked
     before the commit: only new keys, each reads back, nothing else
