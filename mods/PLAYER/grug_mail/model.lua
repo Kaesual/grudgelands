@@ -21,7 +21,15 @@ M.LETTER_LIMIT = 50       -- player letters per mailbox (ruling 7)
 M.OPEN_TICKETS = 5        -- open messages to the admin per player
 M.PAGE_SIZE = 8           -- rows per list page (§3.2)
 M.SUBJECT_MAX = 60        -- characters (§3.3)
-M.BODY_MAX = 1500
+-- A message's text (letters, tickets, admin letters and answers, broadcasts):
+-- a longer one is refused, not cut (fix 0.49.1 rulings 1 and 3); only the
+-- letters written by code keep a cut at it as a safety net (send_system).
+M.BODY_MAX = 4000
+-- What the window keeps of a typed text (ruling 4): Luanti limits neither
+-- textarea[] nor field[], only a whole submit (640 KB), so the drafts the
+-- form is sent back with are cut here (at most about 40 KB).
+M.DRAFT_MAX = 10000
+M.QUOTE_MAX = 500         -- characters of the original in a reply (ruling 5)
 M.NOTE_MAX = 200
 M.STACKS = 4              -- attachment stacks per letter
 M.EXPIRY = 30 * 24 * 3600 -- seconds a letter, ticket or broadcast is kept
@@ -51,9 +59,11 @@ function M.text_length(text)
 	return count
 end
 
--- The first `max` characters of `text`, never a cut character.
+-- The first `max` characters of `text`, never a cut character. Valid UTF-8
+-- has at most four bytes a character, so only the first 4 x `max` bytes are
+-- read: a huge or malformed input (a modified client) is never walked whole.
 function M.truncate(text, max)
-	text = tostring(text or "")
+	text = tostring(text or ""):sub(1, 4 * max)
 	local count, last = 0, 0
 	for from, char in text:gmatch("()(" .. CHAR .. ")") do
 		count = count + 1
@@ -65,7 +75,7 @@ end
 
 -- Player text as stored: control characters (the client's colour escapes
 -- among them) and stray bytes removed, line ends kept only where `multiline`,
--- outer blanks trimmed, at most `max` characters.
+-- outer blanks trimmed, at most `max` characters (no cut without `max`).
 function M.clean(text, max, multiline)
 	text = tostring(text or ""):gsub("\r\n?", "\n")
 	local kept = {}
@@ -79,7 +89,28 @@ function M.clean(text, max, multiline)
 		end
 	end
 	text = table.concat(kept):match("^%s*(.-)%s*$")
+	if not max then return text end
 	return M.truncate(text, max)
+end
+
+-- 5723 -> "5,723".
+function M.thousands(number)
+	local text, changed = tostring(math.floor(number)), 1
+	while changed > 0 do text, changed = text:gsub("^(%-?%d+)(%d%d%d)", "%1,%2") end
+	return text
+end
+
+-- A message body as it is stored (cleaned, never cut), or nil and the
+-- refusal when it is longer than M.BODY_MAX (ruling 3). The length counts
+-- what is stored: characters after cleaning.
+function M.check_body(body)
+	local text = M.clean(body, nil, true)
+	local length = M.text_length(text)
+	if length > M.BODY_MAX then
+		return nil, ("Too long, please shorten it (%s characters, %s allowed)."):format(
+			M.thousands(length), M.thousands(M.BODY_MAX))
+	end
+	return text
 end
 
 -- "Re: <subject>", never "Re: Re: ...", within the subject limit.
@@ -90,13 +121,19 @@ function M.reply_subject(subject)
 end
 
 -- The quoted text of a reply: every line of `body` behind "> ", after two
--- empty lines for the answer, within the body limit.
+-- empty lines for the answer. At most M.QUOTE_MAX characters of the original
+-- are quoted; a cut one ends in " [...]" (ruling 5). So a quote stays far
+-- below the body limit (about 1,500 characters even with a line each).
 function M.quote(body)
+	body = tostring(body or "")
+	if M.text_length(body) > M.QUOTE_MAX then
+		body = M.truncate(body, M.QUOTE_MAX):match("^(.-)%s*$") .. " [...]"
+	end
 	local lines = {}
-	for line in (tostring(body or "") .. "\n"):gmatch("(.-)\n") do
+	for line in (body .. "\n"):gmatch("(.-)\n") do
 		lines[#lines + 1] = "> " .. line
 	end
-	return M.truncate("\n\n" .. table.concat(lines, "\n"), M.BODY_MAX)
+	return "\n\n" .. table.concat(lines, "\n")
 end
 
 --

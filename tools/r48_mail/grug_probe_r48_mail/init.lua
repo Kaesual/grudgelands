@@ -74,6 +74,8 @@ local function fill_mail(player)
 		"starting village. Write to us any time under \"To the admin\": feedback on the game " ..
 		"and bug reports are welcome.", {}, 0, false)
 	S.save_box(name, box)
+	-- A recipient of the own faction for the Write shots (fix 0.49.1 MLEN).
+	S.index_player("Brakka", grug_factions.get_faction(player))
 	grug_mail.send_broadcast("Server restart tonight",
 		"The server restarts tonight at 22:00 for the update to 0.48.0.", "probe")
 	grug_mail.send_ticket(player, "Question", "Can I move my Claim Stone?",
@@ -136,12 +138,26 @@ local SHOTS = {
 		mail_fields(player, {mail_to = "Grommash", mail_subject = "Hi", mail_body = "Hello",
 			["write_send_" .. grug_mail.session(NAME).draw] = "Send"})
 	end},
+	-- Fix 0.49.1 MLEN: a letter over the 4,000 limit is refused, the text and
+	-- the attachments stay.
+	{name = "W3_write_too_long", run = function(player)
+		local words = {}
+		for index = 1, 954 do words[index] = "words" end
+		mail_fields(player, {mail_to = "Brakka", mail_subject = "A long story",
+			mail_body = "Dear Brakka,\n\n" .. table.concat(words, " "),
+			["write_send_" .. grug_mail.session(NAME).draw] = "Send"})
+	end},
 	{name = "T1_to_the_admin", run = function(player)
 		local session = grug_mail.session(NAME)
 		session.admin = {topic = 2, subject = "Waystone in Dawnmere does nothing",
 			body = "When I right-click the waystone next to the inn nothing happens."}
 		mail_fields(player, {grug_mail_tab = "4"})
 		mail_fields(player, {tickets = "CHG:2:1"})
+	end},
+	{name = "T2_admin_too_long", run = function(player)
+		mail_fields(player, {admin_topic = "2", admin_subject = "Waystone in Dawnmere does nothing",
+			admin_body = string.rep("The waystone next to the inn does nothing. ", 100),
+			["admin_send_" .. grug_mail.session(NAME).draw] = "Send (free)"})
 	end},
 	{name = "H1_help_mail", run = function(player)
 		mail_fields(player, {quit = "true"})

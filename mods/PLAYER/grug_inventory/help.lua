@@ -152,6 +152,7 @@ local SECTIONS = {
 		heading("Mailboxes"),
 		"• Every capital and starting village has a mailbox beside its waystone. Right-click it to read your letters, to write to players of your faction (online or offline) and to write to the server admin.",
 		"• Postage: 5c per letter and 30c for each attached stack, up to four stacks (a stack of 12 ingots costs as much as a single axe). Drag the stacks into the attachment slots of the Write tab; soulbound items and skills do not fit. A Bag of Coins sends money.",
+		"• A letter or a message to the admin holds up to 4,000 characters. A longer one is not sent: shorten it and send it again.",
 		"• A mailbox holds 50 letters from players; a full one takes no more until its owner deletes some. Letters from the admin and from the people of the realm always arrive.",
 		"• Every letter is deleted 30 days after it arrives, its attachments too: take them out with Take all.",
 		"• The letter icon beside the minimap shows how many letters and announcements you have not read yet. Announcements are letters from the admin to all players.",

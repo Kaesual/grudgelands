@@ -15,6 +15,13 @@
 --   C. tickets, reports, answers and broadcasts in the stores;
 --   D. the window: opening, every tab and dialog builds, the Write tab's
 --      postage rule and Send at the click, reach, closing.
+-- Fix round 0.49.1 lane MLEN (the 4,000 limit, the refusal, the 10,000
+-- draft cap, the 500-character quote) adds one block to each part:
+--   A. the length rule at 4,000 and 4,001, UTF-8 counting, the draft cap;
+--   B. a refused letter charges nothing and keeps its stacks;
+--   C. a refused ticket, answer, admin letter and broadcast; the quote;
+--   D. the hint on both tabs, a refusal keeps the draft, a 12,000-character
+--      submit comes back at 10,000.
 --
 --   luajit tools/r48_mail/portable_test.lua [REPO]
 -- Prints "R48 MAIL PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -162,6 +169,39 @@ do
 	eq(M.reply_subject("hello"), "Re: hello", "A Reply subject")
 	eq(M.quote("a\nb"), "\n\n> a\n> b", "A the quoted text of a reply")
 	eq(M.text_length(M.reply_subject(string.rep("x", 60))), 60, "A Reply subject keeps the limit")
+end
+
+do -- fix 0.49.1 MLEN: the length rule, the counting, the draft cap
+	eq(M.BODY_MAX, 4000, "A the message limit is 4,000")
+	eq(M.DRAFT_MAX, 10000, "A the draft cap is 10,000")
+	local text, refusal = M.check_body(string.rep("x", 4000))
+	check(text == string.rep("x", 4000) and refusal == nil, "A 4,000 characters pass whole")
+	text, refusal = M.check_body(string.rep("x", 4001))
+	check(text == nil and refusal == "Too long, please shorten it (4,001 characters, 4,000 allowed).",
+		"A 4,001 characters are refused, never cut: " .. tostring(refusal))
+	text, refusal = M.check_body(string.rep("x", 5723))
+	eq(refusal, "Too long, please shorten it (5,723 characters, 4,000 allowed).",
+		"A the refusal names the length with a thousands separator")
+	check(M.check_body(string.rep("ä", 4000)) == string.rep("ä", 4000),
+		"A UTF-8: 4,000 two-byte characters (8,000 bytes) pass")
+	check(not M.check_body(string.rep("€", 4001)), "A UTF-8: 4,001 three-byte characters are refused")
+	check(M.check_body(string.rep("x", 3990) .. string.rep("\1", 50) .. "\27\27  \n\n") ==
+		string.rep("x", 3990), "A what is stored counts: control characters and outer blanks do not")
+	eq(M.text_length(M.check_body("a\r\nb")), 3, "A a line end counts as one character")
+	eq(M.thousands(999), "999", "A thousands: three digits")
+	eq(M.thousands(1000000), "1,000,000", "A thousands: seven digits")
+	eq(M.truncate(string.rep("x", 12000), M.DRAFT_MAX), string.rep("x", 10000),
+		"A the draft cap cuts at 10,000")
+	eq(M.truncate(string.rep("€", 12000), M.DRAFT_MAX), string.rep("€", 10000),
+		"A the draft cap counts characters (three-byte ones)")
+	eq(M.truncate(string.rep("x", 9999), M.DRAFT_MAX), string.rep("x", 9999),
+		"A a shorter draft stays whole")
+	local malformed = "a" .. string.rep("\128", 600000)
+	check(#M.truncate(malformed, M.DRAFT_MAX) <= 4 * M.DRAFT_MAX,
+		"A a malformed 600 KB input is cut at 4 bytes a character")
+	eq(M.clean(string.rep("x", 5000), nil, true), string.rep("x", 5000), "A clean without a limit cuts nothing")
+	eq(M.clean(string.rep("x", 70), M.SUBJECT_MAX, false), string.rep("x", 60),
+		"A the subject keeps its silent cut (D2)")
 end
 
 ------------------------------------------------------------------------------
@@ -608,6 +648,29 @@ do -- Round 49 ruling 1 (replaces the R48 quote pin): Send charges the
 		grug_money.get(alice) == money - 70, "B a letter without attachments pays 5c")
 end
 
+do -- fix 0.49.1 MLEN: a refused letter charges nothing and keeps its stacks
+	alice.inv:set_stack(ATTACH, 1, ItemStack("t:ingot 5"))
+	alice.inv:set_stack(ATTACH, 4, ItemStack("t:axe 1 7 grug_quality=2"))
+	local before, money, count = census(alice), grug_money.get(alice), #letters_of("Brakka")
+	local ok, message = grug_mail.send_letter(alice, "Brakka", "Long", string.rep("y", 4001))
+	check(not ok and message == "Too long, please shorten it (4,001 characters, 4,000 allowed).",
+		"B a letter over 4,000 characters is refused: " .. tostring(message))
+	check(same(before, census(alice)) and grug_money.get(alice) == money and
+		#letters_of("Brakka") == count, "B the refusal charges nothing and sends nothing")
+	check(alice.inv:get_stack(ATTACH, 1):equals(ItemStack("t:ingot 5")) and
+		alice.inv:get_stack(ATTACH, 4):equals(ItemStack("t:axe 1 7 grug_quality=2")),
+		"B every attachment stays in its slot")
+	ok, message = grug_mail.send_letter(alice, "Brakka", "Long", string.rep("ä", 4000))
+	check(ok and grug_money.get(alice) == money - 65 and alice.inv:is_empty(ATTACH),
+		"B 4,000 characters are sent with their stacks: " .. tostring(message))
+	eq(letters_of("Brakka")[1].body, string.rep("ä", 4000), "B the letter arrives whole")
+	grug_money.set(alice, money)
+	local box = grug_mail.store.box("Brakka")
+	table.remove(box.letters, 1)
+	grug_mail.store.save_box("Brakka", box)
+	eq(#letters_of("Brakka"), count, "B the long test letter is removed again")
+end
+
 do -- refusals before anything is taken
 	alice.inv:set_stack(ATTACH, 1, ItemStack("t:dirt 7"))
 	local before, money = census(alice), grug_money.get(alice)
@@ -628,6 +691,7 @@ do -- refusals before anything is taken
 		"B the refusals take nothing")
 	grug_money.set(alice, money)
 end
+
 
 do -- closing returns the stacks; what does not fit stays
 	alice.inv:set_stack(ATTACH, 2, ItemStack("t:ingot 4"))
@@ -781,6 +845,101 @@ do
 	eq(#letters_of("Brakka"), 0, "C letters expire after 30 days, attachments too")
 	eq(#grug_mail.tickets(), 0, "C tickets expire after 30 days")
 	clock = clock - 30 * DAY
+end
+
+do -- fix 0.49.1 MLEN: refused ticket, answer, admin letter and broadcast; the quote
+	local cora = new_player("Cora", "accord")
+	local long, full = string.rep("z", 4001), string.rep("z", 4000)
+	local too_long = "Too long, please shorten it (4,001 characters, 4,000 allowed)."
+	local ok, message = grug_mail.send_ticket(cora, "Question", "Long", long, "Mailbox")
+	check(not ok and message == too_long and #M.tickets_of(grug_mail.tickets(), "Cora") == 0,
+		"C a message to the admin over 4,000 is refused and stores nothing")
+	local id
+	ok, message, id = grug_mail.send_ticket(cora, "Question", "Long", full, "Mailbox")
+	check(ok and grug_mail.ticket(id).body == full, "C 4,000 characters reach the admin whole")
+	local letters = #letters_of("Cora")
+	ok, message = grug_mail.answer_ticket(id, "Jan", long)
+	check(not ok and message == too_long and grug_mail.ticket(id).state == "open" and
+		#letters_of("Cora") == letters, "C an answer over 4,000 is refused, not cut: the ticket stays open")
+	-- The broadcast: refused before anything is stored.
+	local count = #grug_mail.broadcasts()
+	local bid, refusal = grug_mail.send_broadcast("Long", long, "Jan")
+	check(bid == false and refusal == too_long and #grug_mail.broadcasts() == count,
+		"C a broadcast over 4,000 is refused and stores nothing")
+	bid = grug_mail.send_broadcast("Long", full, "Jan")
+	check(type(bid) == "number" and grug_mail.broadcasts()[1].body == full,
+		"C a 4,000-character broadcast is stored whole")
+	grug_mail.delete_broadcast(bid, "Jan")
+	-- send_system keeps its safety cut (D3).
+	ok = grug_mail.send_system("Cora", "npc", "Riding Trainer", "Long", long)
+	check(ok and letters_of("Cora")[1].body == full, "C a letter by code is still cut at 4,000 (D3)")
+	-- The quote (ruling 5).
+	eq(M.quote(string.rep("q", 500)), "\n\n> " .. string.rep("q", 500),
+		"C a 500-character original is quoted whole, without [...]")
+	eq(M.quote(string.rep("q", 501)), "\n\n> " .. string.rep("q", 500) .. " [...]",
+		"C a longer original: 500 characters and \" [...]\"")
+	eq(M.quote(string.rep("q", 499) .. "\n\nmore"), "\n\n> " .. string.rep("q", 499) .. " [...]",
+		"C a cut at a line end drops the blanks before \" [...]\"")
+	eq(M.quote(string.rep("äb\n", 300)), "\n\n" .. ("> äb\n"):rep(166) .. "> äb [...]",
+		"C the quote counts characters over lines")
+	-- The Admin Mail tab (admin.lua) drives the answer and the compose form.
+	local privs, page = core.check_player_privs, sfinv.get_page
+	local style = grug_inventory.selected_button_style
+	core.check_player_privs = function() return true end
+	sfinv.get_page = function() return "elsewhere" end -- the page's redraw is not needed
+	grug_inventory.selected_button_style = function() return "" end
+	-- What the message panel's header reads (its own fixture: tools/r48_admin).
+	grug_factions.display_name = function() return "The Accord" end
+	grug_classes.registered_races, grug_classes.registered_classes = {}, {}
+	local jan = new_player("Jan", "accord")
+	local context = {}
+	local function admin(fields) return grug_mail.admin_fields(jan, context, fields) end
+	local form = grug_mail.admin_formspec(jan, context)
+	local state = context.grug_mail_admin
+	local row
+	for index, entry in ipairs(state.rows) do if entry.id == id then row = index end end
+	admin({mail_admin_list = "CHG:" .. row .. ":1"})
+	eq(state.answer, M.quote(full), "C the answer box starts with the quote")
+	check(state.answer:sub(-6) == " [...]" and M.text_length(state.answer) < 520,
+		"C a 4,000-character message is quoted at 500 with \" [...]\"")
+	form = grug_mail.admin_formspec(jan, context)
+	local answer = form:match("(mail_admin_answer_%d+_%d+);")
+	local typed = string.rep("w", 12000)
+	admin({mail_admin_answer = typed, [answer] = "Send answer and close"})
+	check(state.status == "Too long, please shorten it (10,000 characters, 4,000 allowed)." and
+		state.answer == string.rep("w", 10000) and grug_mail.ticket(id).state == "open" and
+		#letters_of("Cora") == letters + 1,
+		"C the tab keeps 10,000 of a 12,000 answer and refuses it: " .. tostring(state.status))
+	form = grug_mail.admin_formspec(jan, context)
+	answer = form:match("(mail_admin_answer_%d+_%d+);")
+	admin({mail_admin_answer = "Short " .. full:sub(7), [answer] = "Send answer and close"})
+	check(state.status_ok and grug_mail.ticket(id).state == "closed" and
+		letters_of("Cora")[1].body == "Short " .. full:sub(7),
+		"C an answer of 4,000 characters is sent whole")
+	-- The compose form: one player and All players.
+	admin({mail_admin_new = "New admin letter"})
+	letters = #letters_of("Cora")
+	form = grug_mail.admin_formspec(jan, context)
+	local send = form:match("(mail_admin_send_%d+);")
+	admin({mail_admin_to = "Cora", mail_admin_subject = "Hello", mail_admin_body = long, [send] = "Send"})
+	check(state.status == too_long and state.compose.body == long and #letters_of("Cora") == letters,
+		"C an admin letter over 4,000 is refused, the text stays, nothing is cut or sent")
+	form = grug_mail.admin_formspec(jan, context)
+	send = form:match("(mail_admin_send_%d+);")
+	admin({mail_admin_all = "true", mail_admin_subject = "Hello", mail_admin_body = long, [send] = "Send"})
+	check(state.status == too_long and state.compose.body == long and #grug_mail.broadcasts() == count,
+		"C All players over 4,000 is refused, the text stays")
+	form = grug_mail.admin_formspec(jan, context)
+	send = form:match("(mail_admin_send_%d+);")
+	admin({mail_admin_all = "false", mail_admin_to = "Cora", mail_admin_subject = "Hello",
+		mail_admin_body = full, [send] = "Send"})
+	check(state.status_ok and letters_of("Cora")[1].body == full and letters_of("Cora")[1].kind == "admin",
+		"C an admin letter of 4,000 characters arrives whole")
+	core.check_player_privs, sfinv.get_page = privs, page
+	grug_inventory.selected_button_style = style
+	-- Leave the stores as the D part expects them.
+	jan.online, cora.online = false, false
+	grug_mail.delete_ticket(id, "Jan")
 end
 
 ------------------------------------------------------------------------------
@@ -957,6 +1116,81 @@ do
 	nodes["102,10,100"] = nil
 	alice.pos = {x = 100, y = 10, z = 103}
 	check(not grug_mail.open_mailbox(alice, MAILBOX), "D a removed mailbox does not open")
+end
+
+do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
+	nodes["102,10,100"] = "grug_mapgen:mailbox"
+	alice.pos = {x = 100, y = 10, z = 103}
+	grug_money.set(alice, 500)
+	check(grug_mail.open_mailbox(alice, MAILBOX), "D the window opens again")
+	local session = grug_mail.session("Alice")
+	send_fields(alice, {grug_mail_tab = "3"})
+	local hint = core.formspec_escape("Up to 4,000 characters.")
+	check(formspecs.Alice.text:find(hint, 1, true), "D the Write tab shows the hint")
+	alice.inv:set_stack(ATTACH, 2, ItemStack("t:ingot 2"))
+	local count, long = #letters_of("Brakka"), string.rep("v", 5723)
+	send_fields(alice, {mail_to = "Brakka", mail_subject = "Essay", mail_body = long,
+		[button(alice, "write_send")] = "Send"})
+	check(not session.status_ok and
+		session.status == "Too long, please shorten it (5,723 characters, 4,000 allowed).",
+		"D Send refuses a long letter in the status line: " .. tostring(session.status))
+	check(formspecs.Alice.text:find(core.formspec_escape(session.status), 1, true),
+		"D the status line shows the refusal")
+	-- Beside Discard the long refusal takes two lines and starts higher.
+	local wrap = grug_inventory.wrap_text
+	grug_inventory.wrap_text = function(text, width)
+		return #text > width and text:sub(1, width) .. "\n" .. text:sub(width + 1) or text
+	end
+	send_fields(alice, {mail_to = "Brakka", mail_subject = "Essay", mail_body = long,
+		[button(alice, "write_send")] = "Send"})
+	check(formspecs.Alice.text:find("label[0.4,8.15;Too long", 1, true),
+		"D the Write tab wraps a long status line above its row")
+	grug_inventory.wrap_text = wrap
+	check(session.draft.body == long and session.draft.to == "Brakka" and
+		session.draft.subject == "Essay" and formspecs.Alice.text:find(long, 1, true),
+		"D the draft stays as typed and is drawn again")
+	check(#letters_of("Brakka") == count and grug_money.get(alice) == 500 and
+		alice.inv:get_stack(ATTACH, 2):equals(ItemStack("t:ingot 2")),
+		"D nothing sent, nothing charged, the attachment stays in its slot")
+	send_fields(alice, {mail_body = string.rep("v", 12000), grug_mail_tab = "3"})
+	eq(session.draft.body, string.rep("v", 10000), "D a 12,000-character submit is kept at 10,000")
+	check(formspecs.Alice.text:find(string.rep("v", 10000), 1, true) and
+		not formspecs.Alice.text:find(string.rep("v", 10001), 1, true),
+		"D the form comes back with 10,000 characters")
+	send_fields(alice, {mail_body = string.rep("v", 12000), [button(alice, "write_send")] = "Send"})
+	eq(session.status, "Too long, please shorten it (10,000 characters, 4,000 allowed).",
+		"D Send refuses the capped draft")
+	send_fields(alice, {mail_body = string.rep("v", 4000), [button(alice, "write_send")] = "Send"})
+	check(session.status_ok and letters_of("Brakka")[1].body == string.rep("v", 4000) and
+		#letters_of("Brakka")[1].items == 1 and grug_money.get(alice) == 465,
+		"D shortened to 4,000 the letter arrives whole with its stack")
+	-- To the admin: the same.
+	send_fields(alice, {grug_mail_tab = "4"})
+	check(formspecs.Alice.text:find(hint, 1, true), "D the To the admin tab shows the hint")
+	local own = #M.tickets_of(grug_mail.tickets(), "Alice")
+	send_fields(alice, {admin_topic = "3", admin_subject = "Long", admin_body = string.rep("u", 4001),
+		[button(alice, "admin_send")] = "Send (free)"})
+	check(session.status == "Too long, please shorten it (4,001 characters, 4,000 allowed)." and
+		session.admin.body == string.rep("u", 4001) and session.admin.subject == "Long" and
+		#M.tickets_of(grug_mail.tickets(), "Alice") == own,
+		"D To the admin refuses a long message and keeps the draft")
+	send_fields(alice, {admin_body = string.rep("u", 12000), grug_mail_tab = "4"})
+	eq(session.admin.body, string.rep("u", 10000), "D the admin draft is kept at 10,000")
+	send_fields(alice, {admin_body = string.rep("u", 4000), [button(alice, "admin_send")] = "Send (free)"})
+	local mine = M.tickets_of(grug_mail.tickets(), "Alice")
+	check(session.status_ok and #mine == own + 1 and mine[1].body == string.rep("u", 4000),
+		"D a 4,000-character message reaches the admin whole")
+	-- Reply on a long letter: the quote is cut at 500.
+	local box = grug_mail.store.box("Alice")
+	M.deliver(box, M.letter(grug_mail.store.next_id(), "player", "Brakka", "Saga",
+		string.rep("s", 3000), {}, clock))
+	grug_mail.store.save_box("Alice", box)
+	send_fields(alice, {grug_mail_tab = "1"})
+	send_fields(alice, {letters = "CHG:1:5"})
+	send_fields(alice, {reply = "Reply"})
+	check(session.tab == "write" and session.draft.body == "\n\n> " .. string.rep("s", 500) .. " [...]",
+		"D Reply on a 3,000-character letter quotes 500 with \" [...]\"")
+	send_fields(alice, {quit = "true"})
 end
 
 if failures > 0 then

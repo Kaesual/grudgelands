@@ -105,10 +105,17 @@ end
 -- Shared parts
 --
 
-local function status_line(session, y)
+-- `wrap` (characters) breaks a long line, for a status line that shares its
+-- row with buttons; a wrapped one starts higher, so it stays in its row.
+local function status_line(session, y, wrap)
 	if not session.status then return "" end
+	local text = session.status
+	if wrap then
+		text = grug_inventory.wrap_text(text, wrap)
+		if text:find("\n", 1, true) then y = y - 0.25 end
+	end
 	return ("label[0.4,%.2f;%s]"):format(y, esc(colored(
-		session.status_ok and COLOR.good or COLOR.bad, session.status)))
+		session.status_ok and COLOR.good or COLOR.bad, text)))
 end
 
 local function pager(prefix, x, y, page, pages)
@@ -390,6 +397,10 @@ local function rings(player)
 	return table.concat(fs)
 end
 
+-- The limit under both message fields (fix 0.49.1 ruling 2); a longer text
+-- is refused at Send with its length (ruling 3).
+local BODY_HINT = "Up to " .. M.thousands(M.BODY_MAX) .. " characters."
+
 local function write_tab(player, session, fs)
 	local draft = session.draft
 	fs[#fs + 1] = ("label[0.4,1.375;To]field[1.3,1.05;4.2,0.65;mail_to;;%s]" ..
@@ -398,7 +409,8 @@ local function write_tab(player, session, fs)
 		"field_close_on_enter[mail_subject;false]"):format(esc(draft.subject))
 	fs[#fs + 1] = ("label[0.4,2.0;Message]textarea[0.4,2.25;12.7,3.0;mail_body;;%s]")
 		:format(esc(draft.body))
-	fs[#fs + 1] = "label[0.4,5.6;Attachments]"
+	fs[#fs + 1] = ("label[0.4,5.6;Attachments]label[5.6,5.6;%s]"):format(
+		esc(colored(COLOR.dim, BODY_HINT)))
 	fs[#fs + 1] = ("list[current_player;%s;0.4,5.85;4,1;]"):format(ATTACH)
 	-- The rule, not a figure (see the file comment).
 	fs[#fs + 1] = ("label[5.6,6.1;%s]label[5.6,6.55;%s]"):format(
@@ -409,7 +421,9 @@ local function write_tab(player, session, fs)
 		"Drag up to four stacks in or out. Soulbound items and skills do not fit.")),
 		esc(colored(COLOR.dim, "The letter arrives at once, also when the recipient is " ..
 		"offline. Only players of your faction.")))
-	fs[#fs + 1] = status_line(session, 8.4)
+	-- Left of Discard: the refusal of a long letter (fix 0.49.1 ruling 3)
+	-- takes two lines.
+	fs[#fs + 1] = status_line(session, 8.4, 44)
 	fs[#fs + 1] = ("button[8.6,8.0;2.2,0.8;write_discard;Discard]" ..
 		"style[%s;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;%s;Send]"):format(
 		send_button(session, "write_send"), send_button(session, "write_send"))
@@ -462,13 +476,14 @@ local function admin_tab(player, session, fs)
 		"field_close_on_enter[admin_subject;false]"):format(esc(draft.subject))
 	fs[#fs + 1] = ("label[0.4,4.95;Message]textarea[0.4,5.2;6.3,3.3;admin_body;;%s]")
 		:format(esc(draft.body))
-	fs[#fs + 1] = ("label[0.4,8.85;%s]"):format(esc(colored(COLOR.dim,
+	fs[#fs + 1] = ("label[0.4,8.85;%s]label[0.4,9.4;%s]"):format(
+		esc(colored(COLOR.dim, BODY_HINT)), esc(colored(COLOR.dim,
 		"Sent from " .. mailbox_text(session) .. ",\nversion " ..
 		tostring(grug_inventory.GAME_VERSION or "unknown") .. " is attached.\n" ..
 		("You have %d of %d open messages."):format(M.open_tickets(tickets, name),
 		M.OPEN_TICKETS))))
-	fs[#fs + 1] = ("button[0.4,10.2;2.2,0.8;admin_discard;Discard]" ..
-		"style[%s;bgcolor=#3d5f8a]button[4.5,10.2;2.2,0.8;%s;Send (free)]"):format(
+	fs[#fs + 1] = ("button[0.4,10.75;2.2,0.8;admin_discard;Discard]" ..
+		"style[%s;bgcolor=#3d5f8a]button[4.5,10.75;2.2,0.8;%s;Send (free)]"):format(
 		send_button(session, "admin_send"), send_button(session, "admin_send"))
 
 	local selected = M.find(own, session.selected.tickets)
@@ -569,15 +584,17 @@ end
 -- Events
 --
 
+-- The message texts are kept up to the draft cap, never the body limit
+-- (fix 0.49.1 ruling 4): a longer text stays as typed until Send refuses it.
 local function keep_drafts(session, fields)
 	local function take(target, key, field, max)
 		if fields[field] ~= nil then target[key] = M.truncate(fields[field], max) end
 	end
 	take(session.draft, "to", "mail_to", 40)
 	take(session.draft, "subject", "mail_subject", M.SUBJECT_MAX)
-	take(session.draft, "body", "mail_body", M.BODY_MAX)
+	take(session.draft, "body", "mail_body", M.DRAFT_MAX)
 	take(session.admin, "subject", "admin_subject", M.SUBJECT_MAX)
-	take(session.admin, "body", "admin_body", M.BODY_MAX)
+	take(session.admin, "body", "admin_body", M.DRAFT_MAX)
 	take(session.report, "note", "report_note", M.NOTE_MAX)
 	local topic = tonumber(fields.admin_topic)
 	if topic and M.TOPICS[topic] then session.admin.topic = topic end

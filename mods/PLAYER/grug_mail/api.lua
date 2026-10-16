@@ -112,15 +112,18 @@ end
 -- Player mail (rulings 2 and 7, §3.8-§3.9). Postage and the four
 -- attachment slots leave in one grug_money.take_with_inventory transaction.
 -- The postage counts the slots as they are at this call (Round 49 ruling 1:
--- no quote, the result names the amount paid). Returns ok, message.
+-- no quote, the result names the amount paid). A text over M.BODY_MAX is
+-- refused before anything is taken (fix 0.49.1 ruling 3). Returns ok,
+-- message.
 function grug_mail.send_letter(player, to_name, subject, body)
 	if not is_player(player) then return false, "Only a player can send letters." end
 	local name = player:get_player_name()
 	local recipient, refusal = resolve_recipient(player, to_name)
 	if not recipient then return false, refusal end
 	subject = M.clean(subject, M.SUBJECT_MAX, false)
-	body = M.clean(body, M.BODY_MAX, true)
 	if subject == "" then return false, "Write a subject." end
+	body, refusal = M.check_body(body)
+	if not body then return false, refusal end
 	local box = S.box(recipient)
 	if not M.accepts(box, "player") then
 		return false, recipient .. "'s mailbox is full."
@@ -156,8 +159,11 @@ end
 -- delivered: no limit, no faction, no postage. `stacks` (optional, up to
 -- four ItemStack strings) is stored and taken like player attachments; only
 -- the 0.48.0 bag migration passes it (admin letters carry no items, ruling
--- 5). Returns true and the new letter id, or false and a message; never nil
--- (the migration retries at the next join on anything that is not truthy).
+-- 5). The text is cut at M.BODY_MAX as a safety net (fix 0.49.1 D3; the
+-- admin's own texts are checked before this call, so they are refused, not
+-- cut). Returns true and the new letter id, or false and a message; never
+-- nil (the migration retries at the next join on anything that is not
+-- truthy).
 function grug_mail.send_system(to_name, kind, from_label, subject, body, stacks)
 	if kind ~= "admin" and kind ~= "npc" then
 		return false, "Unknown letter kind: " .. tostring(kind)
@@ -276,11 +282,14 @@ function grug_mail.broadcasts()
 	return S.broadcasts()
 end
 
--- Stores a broadcast; every online player's count updates. Returns its id.
+-- Stores a broadcast; every online player's count updates. Returns its id,
+-- or false and the refusal for a text over M.BODY_MAX (fix 0.49.1 ruling 3).
 function grug_mail.send_broadcast(subject, body, admin_name)
+	local text, refusal = M.check_body(body)
+	if not text then return false, refusal end
 	local broadcasts = S.broadcasts()
 	local broadcast = {id = S.next_id(), subject = M.clean(subject, M.SUBJECT_MAX, false),
-		body = M.clean(body, M.BODY_MAX, true), time = S.now(), by = admin_name}
+		body = text, time = S.now(), by = admin_name}
 	table.insert(broadcasts, 1, broadcast)
 	S.save_broadcasts(broadcasts)
 	log(("broadcast #%d by %s: %s: %s"):format(broadcast.id, tostring(admin_name),
@@ -341,16 +350,20 @@ local function log_ticket(ticket)
 end
 
 -- A new message to the admin; free, no items. `mailbox` is the label of the
--- mailbox it was sent from. Returns ok, message.
+-- mailbox it was sent from. A text over M.BODY_MAX is refused (fix 0.49.1
+-- ruling 3). Returns ok, message.
 function grug_mail.send_ticket(player, topic, subject, body, mailbox)
 	if not is_player(player) then return false, "Only a player can write to the admin." end
 	if not M.valid_topic(topic) then return false, "Choose a topic." end
 	subject = M.clean(subject, M.SUBJECT_MAX, false)
-	body = M.clean(body, M.BODY_MAX, true)
 	if subject == "" then return false, "Write a subject." end
+	local refusal
+	body, refusal = M.check_body(body)
+	if not body then return false, refusal end
 	local name = player:get_player_name()
 	local tickets = S.tickets()
-	local ok, refusal = M.can_open_ticket(tickets, name)
+	local ok
+	ok, refusal = M.can_open_ticket(tickets, name)
 	if not ok then return false, refusal end
 	local ticket = M.ticket(S.next_id(), name, topic, subject, body,
 		header(player, mailbox), S.now())
@@ -417,16 +430,18 @@ function grug_mail.close_ticket(id, admin_name, answered)
 end
 
 -- An answer: an admin letter "Re: <subject>" to the sender, then the ticket
--- closes as answered. Returns ok, message.
+-- closes as answered. A text over M.BODY_MAX is refused before the letter
+-- (fix 0.49.1 D3: never cut by send_system). Returns ok, message.
 function grug_mail.answer_ticket(id, admin_name, body)
 	local ticket = grug_mail.ticket(id)
 	if not ticket then return false, "That message is gone." end
 	if ticket.state ~= "open" then return false, "That message is already closed." end
+	local text, refusal = M.check_body(body)
+	if not text then return false, refusal end
 	local ok, failure = grug_mail.send_system(ticket.from, "admin", M.ADMIN_LABEL,
-		M.reply_subject(ticket.subject), body)
+		M.reply_subject(ticket.subject), text)
 	if not ok then return false, failure end
-	log(("answer to ticket #%d by %s: %s"):format(id, tostring(admin_name),
-		M.clean(body, M.BODY_MAX, true)))
+	log(("answer to ticket #%d by %s: %s"):format(id, tostring(admin_name), text))
 	return grug_mail.close_ticket(id, admin_name, true)
 end
 
