@@ -56,6 +56,8 @@ grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25}
 grug_inventory.station_box = function() return "", 1 end
 grug_inventory.station_formspec = function(_, content) return content end
 grug_inventory.keep_scroll = function() return false end
+-- 0.49.1 ANIM: the furnace forms' fire and arrow (tested by tools/r491_anim).
+grug_inventory.furnace_progress = dofile(ROOT .. "/mods/PLAYER/grug_inventory/furnace_progress.lua")
 local failures, checks = 0, 0
 local function check(ok, label)
 	checks = checks + 1
@@ -526,8 +528,15 @@ do
 	}
 	function c.create_detached_inventory() return E.new_inventory() end
 	function c.formspec_escape(s) return s end
+	-- 0.49.1 ANIM: the pass re-shows only at a change of state; this
+	-- stand-in lights a new fuel at every build, so every pass is one.
+	local lit = 0
 	local stub_automatic = {sizes = {furnace = {src = 1, fuel = 1, dst = 4}},
-		advance = function() end, fractions = function() return 0, 0 end,
+		advance = function() end,
+		progress_view = function()
+			lit = lit + 1
+			return {left = lit, total = lit, burning = true, done = 0, time = 0}
+		end,
 		fuel_time = function() return 0 end, personal_light_deadline = function() return 0 end}
 	dofile = function(file)
 		if file:match("/automatic%.lua$") then return stub_automatic end
@@ -601,7 +610,8 @@ do
 	function c.create_detached_inventory() return E.new_inventory() end
 	function c.formspec_escape(s) return s end
 	local stub_automatic = {sizes = {furnace = {src = 1, fuel = 1, dst = 4}},
-		advance = function() end, fractions = function() return 0, 0 end,
+		advance = function() end,
+		progress_view = function() return {left = 0, total = 0, done = 0, time = 0} end,
 		fuel_time = function() return 0 end, personal_light_deadline = function() return 0 end}
 	dofile = function(file)
 		if file:match("/automatic%.lua$") then return stub_automatic end

@@ -41,7 +41,9 @@ local function in_range(player, pos)
 end
 
 -- Open the UI of the node at `pos` for `player`. `build(pos, player,
--- context)` returns the formspec string; it is called again by `refresh`. `names` optionally
+-- context)` returns the formspec string; it is called again by `refresh`,
+-- where a true second result means "only animated elements moved, do not
+-- re-send" (the furnace, 0.49.1 ANIM). `names` optionally
 -- lists every node name the form stays valid for (a furnace swaps between its
 -- idle and active node); by default only the node now at `pos`.
 function api.show(player, pos, build, names)
@@ -63,7 +65,8 @@ function api.show(player, pos, build, names)
 	return true
 end
 
--- Re-show the form of every open viewer of `pos` whose formspec changed.
+-- Re-show the form of every open viewer of `pos` whose formspec changed
+-- (and whose builder does not call the change unchanged).
 -- Viewers that left, walked away or whose node changed are closed instead.
 function api.refresh(pos)
 	for name, session in pairs(sessions) do
@@ -74,8 +77,9 @@ function api.refresh(pos)
 				sessions[name] = nil
 				if player then core.close_formspec(name, FORMNAME) end
 			else
-				local formspec = session.build(session.pos, player, session.context)
-				if formspec ~= session.last then
+				local formspec, unchanged = session.build(session.pos, player,
+					session.context)
+				if not unchanged and formspec ~= session.last then
 					session.last = formspec
 					core.show_formspec(name, FORMNAME, formspec)
 				end

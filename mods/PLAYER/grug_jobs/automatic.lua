@@ -140,14 +140,27 @@ function automatic.running(station, inv, state)
 		automatic.fuel_time(station, inv:get_stack("fuel", 1)) > 0
 end
 
-function automatic.fractions(station, inv, state)
-	local fuel_total = tonumber(state.fuel_total) or 0
-	local fuel = fuel_total > 0 and math.max(0, math.min(1,
-		(tonumber(state.fuel) or 0) / fuel_total)) or 0
+-- What the furnace forms draw (grug_inventory.furnace_progress, 0.49.1
+-- ANIM): the current fuel's seconds left and in all (none once it is out:
+-- the loop above lights the next fuel in the same call), whether it burns
+-- (the loop burns fuel whenever some is left, an item or not), the current
+-- item's seconds cooked and needed, and whether it cooks (it fits the output
+-- and fuel burns).
+function automatic.progress_view(station, inv, state)
+	local fuel = math.max(0, tonumber(state.fuel) or 0)
+	local view = {left = fuel, total = fuel > 0 and
+		math.max(fuel, tonumber(state.fuel_total) or 0) or 0,
+		burning = fuel > 0, done = 0, time = 0, cooking = false}
 	local recipe = recipe_at(station, inv)
-	local progress = recipe and recipe.time > 0 and math.max(0, math.min(1,
-		(tonumber(state.progress) or 0) / recipe.time)) or 0
-	return fuel, progress
+	if recipe and recipe.time > 0 then
+		view.done = math.max(0, tonumber(state.progress) or 0)
+		view.time = recipe.time
+		local outputs = {recipe.output}
+		for _, item in ipairs(recipe.replacements or {}) do outputs[#outputs + 1] = item end
+		view.cooking = fuel > 0 and
+			fit(inv, station == "furnace" and "dst" or "output", outputs) ~= nil
+	end
+	return view
 end
 
 return automatic

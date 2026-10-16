@@ -123,6 +123,7 @@ our changes. Derivatives keep their source's licence.
   others listed in `mods/BASE/default/license.txt`): the vendored textures
   and the derivatives built from them in `grug_materials`, `grug_gear`
   (weapon icons), `grug_nodes`, `grug_trees`, `grug_smelting`,
+  `grug_inventory` (the furnace's fire and arrow strips),
   `grug_gathering` and `grug_farming`; the water lily by **Gambit** and
   **yyt16384** (`grug_mapgen`); the bucket by **ElementW** (`grug_farming`).
   The player model `character.b3d` (player_api, CC BY-SA 3.0: celeron55,

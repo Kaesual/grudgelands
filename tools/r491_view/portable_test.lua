@@ -23,6 +23,8 @@
 local repo = arg and arg[1] or "."
 local H = dofile(repo .. "/tools/r44_ch/harness.lua")(repo)
 dofile(repo .. "/mods/PLAYER/grug_inventory/inbox.lua")
+-- 0.49.1 ANIM: the furnace forms' fire and arrow (tested by tools/r491_anim).
+grug_inventory.furnace_progress = dofile(repo .. "/mods/PLAYER/grug_inventory/furnace_progress.lua")
 
 local failures, checks = 0, 0
 local function check(ok, label)
@@ -139,6 +141,10 @@ core.item_eat = function() return noop end
 core.get_translator = function() return function(s) return s end end
 core.serialize = function() return "return {}" end
 core.deserialize = function() return nil end
+-- The burning furnace's item (0.49.1 ANIM: its form reads the cooking time).
+core.get_craft_result = function()
+	return {time = 10, item = ItemStack("default:stone"), replacements = {}}, {items = {}}
+end
 core.register_node = function(name, def)
 	registered_nodes[name:gsub("^:", "")] = def
 end
@@ -237,11 +243,11 @@ grug_jobs = {
 	end,
 	is_public_station = function(_, pos) return public[key(pos)] == true end,
 }
-local fractions = {0, 0}
+local view = {left = 0, total = 0, done = 0, time = 0}
 local stub_automatic = {sizes = {furnace = {src = 1, fuel = 1, dst = 4},
 	dual_furnace = {input = 2, fuel = 1, output = 2}},
 	advance = noop, running = function() return false end,
-	fractions = function() return fractions[1], fractions[2] end,
+	progress_view = function() return table.copy(view) end,
 	fuel_time = function() return 0 end, personal_light_deadline = function() return 0 end,
 	personal_light_active = function() return false end}
 local workspaces
@@ -448,13 +454,16 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 		{lists = {"src", "fuel", "dst"}, target = "src"}, bags_key)
 	local fs = node_form_case("burning furnace", "default:furnace_active",
 		{lists = {"src", "fuel", "dst"}, target = "src"}, bags_key, function(pos)
-			meta_at(pos):set_int("fuel_percent", 40)
-			meta_at(pos):set_int("item_percent", 70)
+			-- 0.49.1 ANIM: the form reads the timer's seconds (40 % fuel left,
+			-- 70 % cooked) and animates the fire and the arrow.
+			meta_at(pos):set_float("fuel_totaltime", 10)
+			meta_at(pos):set_float("fuel_time", 6)
+			meta_at(pos):set_float("src_time", 7)
 		end)
-	check(fs:find("default_furnace_fire_bg.png^[lowpart:40:default_furnace_fire_fg.png", 1, true),
-		"burning furnace " .. bags_key .. ": the fire at its percentage")
-	check(fs:find("gui_furnace_arrow_bg.png^[lowpart:70:gui_furnace_arrow_fg.png^[transformR270", 1, true),
-		"burning furnace " .. bags_key .. ": the arrow at its percentage")
+	check(fs:find(";grug_furnace_fire;grug_inventory_furnace_fire.png;30;667;10]", 1, true),
+		"burning furnace " .. bags_key .. ": the fire at its fraction")
+	check(fs:find(";grug_furnace_arrow;grug_inventory_furnace_arrow.png;40;500;15]", 1, true),
+		"burning furnace " .. bags_key .. ": the arrow at its fraction")
 	local shelf = node_form_case("bookshelf", "default:bookshelf",
 		{lists = {"books"}, target = "books"}, bags_key)
 	local _, empties = shelf:gsub("default_bookshelf_slot%.png", "")
@@ -565,7 +574,7 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 		local pos = place(case.node)
 		near(player, pos)
 		public[key(pos)] = case.personal or nil
-		fractions = {0.4, 0.7}
+		view = {left = 4, total = 10, burning = true, done = 7, time = 10, cooking = true}
 		check(workspaces.open(pos, player), label .. ": opens")
 		local last = last_shown(name)
 		eq(last and last.form, WORKSPACE, label .. ": the workspace form")
@@ -574,18 +583,21 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 			"nodemeta:" .. key(pos)
 		check_form(label, player, fs, {location = location, lists = case.lists,
 			target = case.target})
-		check(fs:find("default_furnace_fire_bg.png^[lowpart:40:default_furnace_fire_fg.png", 1, true),
-			label .. ": the fire at its percentage")
-		check(fs:find("gui_furnace_arrow_bg.png^[lowpart:70:gui_furnace_arrow_fg.png", 1, true),
-			label .. ": the arrow at its percentage")
+		-- 0.49.1 ANIM: animated (tools/r491_anim tests the frames).
+		check(fs:find(";grug_furnace_fire;grug_inventory_furnace_fire.png;30;667;10]", 1, true),
+			label .. ": the fire at its fraction")
+		check(fs:find(";grug_furnace_arrow;grug_inventory_furnace_arrow.png;40;500;15]", 1, true),
+			label .. ": the arrow at its fraction")
 		local max = scroll_max(player)
 		if max > 0 then
 			local before = #shown
 			check(submit(player, WORKSPACE, {[SCROLL] = "CHG:10"}), label .. ": S the scroll event is handled")
 			eq(#shown, before, label .. ": S a pure scroll event re-sends nothing")
-			-- The one-second re-show of the burning furnace.
+			-- The one-second pass re-shows the burning furnace at a change of
+			-- state (0.49.1 ANIM): here a new item.
+			view.done = 0
 			for _, step in ipairs(globalsteps) do step(1.1) end
-			eq(#shown, before + 1, label .. ": S the one-second re-show")
+			eq(#shown, before + 1, label .. ": S the one-second re-show at a change of state")
 			eq(parse(last_shown(name).formspec).scroll, 10, label .. ": S the re-show keeps the scroll position")
 			submit(player, WORKSPACE, {[SCROLL] = "VAL:" .. max, something = "x"})
 			eq(parse(last_shown(name).formspec).scroll, max, label .. ": S another event keeps it too")

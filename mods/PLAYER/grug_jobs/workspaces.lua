@@ -128,25 +128,19 @@ local function ring(location, list)
 		"]listring[current_player;grug_inbox]listring[current_player;main]"
 end
 
--- The fire and the arrow between the fuel slot and the output, at (x, y).
-local function progress_images(x, y, fuel_percent, progress_percent)
-	local fire = ("image[%.3f,%.3f;0.6,0.6;default_furnace_fire_bg.png]"):format(x, y)
-	if fuel_percent > 0 then
-		fire = fire .. ("image[%.3f,%.3f;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
-			"%d:default_furnace_fire_fg.png]"):format(x, y, fuel_percent)
-	end
-	local arrow = ("image[%.3f,%.3f;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]")
-		:format(x + 0.7, y)
-	if progress_percent > 0 then
-		arrow = arrow .. ("image[%.3f,%.3f;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
-			"%d:gui_furnace_arrow_fg.png^[transformR270]"):format(x + 0.7, y, progress_percent)
-	end
-	return fire .. arrow
+-- The fire and the arrow between the fuel slot and the output, at (x, y)
+-- (0.49.1 ANIM: animated, grug_inventory.furnace_progress).
+local function progress_images(x, y, view)
+	local progress = grug_inventory.furnace_progress
+	return progress.fire(x, y, 0.6, 0.6, view.left, view.total, view.burning) ..
+		progress.arrow(x + 0.7, y, 0.6, 0.6, view.done, view.time, view.cooking)
 end
 
 -- Built per viewer (0.49.1 ruling 6): the station in a box at the top, the
 -- player's whole combined bag below it (grug_inventory.station_formspec);
--- ctx keeps the bag view's scroll position over the re-shows.
+-- ctx keeps the bag view's scroll position over the re-shows. The second
+-- result: true when only the animated fire and arrow moved since the last
+-- build for this viewer (0.49.1 ANIM), so the form needs no re-send.
 local function formspec(ctx, player)
 	local location = ctx.personal and "detached:" .. ctx.detached or
 		"nodemeta:" .. ctx.pos.x .. "," .. ctx.pos.y .. "," .. ctx.pos.z
@@ -163,10 +157,7 @@ local function formspec(ctx, player)
 		process = core.deserialize(core.get_meta(ctx.pos):get_string(
 			"grug_jobs:process")) or {}
 	end
-	local fuel_fraction, progress_fraction = automatic.fractions(ctx.station,
-		inputs(ctx), process)
-	local fuel_percent = math.floor(fuel_fraction * 100 + 0.5)
-	local progress_percent = math.floor(progress_fraction * 100 + 0.5)
+	local view = automatic.progress_view(ctx.station, inputs(ctx), process)
 	local station = grug_inventory.STATION
 	local pitch, top = station.pitch, station.y
 	local function column(index) return station.x + index * pitch end
@@ -183,8 +174,10 @@ local function formspec(ctx, player)
 		("label[%.3f,%.3f;Finished output]list[%s;%s;%.3f,%.3f;2,%d;]"):format(column(5),
 			lists_y - 0.25, location, output, column(5), lists_y, rows) ..
 		ring(location, output) .. ring(location, source) .. ring(location, "fuel") ..
-		progress_images(column(4) - 0.15, lists_y + 0.2, fuel_percent, progress_percent)
-	return grug_inventory.station_formspec(player, content, bottom, ctx)
+		progress_images(column(4) - 0.15, lists_y + 0.2, view)
+	local result = grug_inventory.station_formspec(player, content, bottom, ctx)
+	return result, not grug_inventory.furnace_progress.changed(ctx, result,
+		view.left, view.done)
 end
 
 -- Whether the station's own form is the one open (default/node_formspec.lua
@@ -194,10 +187,14 @@ local function form_open(ctx)
 	return default.node_formspec.shown_form(ctx.name) == FORM
 end
 
-refresh = function(ctx, show)
+-- `if_changed`: only when more than the animation moved (the one-second
+-- pass, 0.49.1 ANIM); a player's own click always re-shows.
+refresh = function(ctx, show, if_changed)
 	local player = core.get_player_by_name(ctx.name)
-	if not accessible(ctx, player) then return end
-	if show and form_open(ctx) then core.show_formspec(ctx.name, FORM, formspec(ctx, player)) end
+	if not accessible(ctx, player) or not show or not form_open(ctx) then return end
+	local spec, unchanged = formspec(ctx, player)
+	if if_changed and unchanged then return end
+	core.show_formspec(ctx.name, FORM, spec)
 end
 
 local function refresh_position(pos)
@@ -277,7 +274,7 @@ function workspaces.open(pos, player)
 	end
 	viewers[name] = ctx
 	advance(ctx)
-	core.show_formspec(name, FORM, formspec(ctx, player))
+	core.show_formspec(name, FORM, (formspec(ctx, player)))
 	return true
 end
 
@@ -308,7 +305,7 @@ core.register_globalstep(function(dtime)
 			detach(ctx)
 		elseif accessible(ctx, core.get_player_by_name(ctx.name)) then
 			advance(ctx)
-			refresh(ctx, true)
+			refresh(ctx, true, true)
 		end
 	end
 end)
