@@ -1265,3 +1265,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   per-chunk cube decisions, `mgprof-after` its stage boot and
   `fleet-digest-quick.txt` the quick seeds' chunk bytes (identical to main
   `62123545`).
+- **0.49.1 study HKEEP** (`r491_hkeep`, study only, no fixture): keeping the
+  chunk columns of player claims at a map reset
+  ([study](../docs/research/housing-keep-reset-study.md)). `run.sh OUT` three
+  boots of the disposable probe `grug_probe_hkeep` on throw-away worlds
+  (seed 12345, a kept column and its 3 × 3 neighbours over three layers):
+  a fresh world with markers, then the same seed and a changed seed after
+  `keep_columns.py` deleted every block outside the kept column; each boot
+  one queue slot; `evidence/` the three boots and the summary.
