@@ -354,6 +354,8 @@ local function vendor_def(vendor, texture)
 		end,
 
 		on_rightclick = function(self, clicker)
+			-- A closed door in front takes the click (grug_mobs/door_click.lua).
+			if grug_mobs.door_before_npc(self, clicker) then return end
 			local faction = grug_traders.vendor_faction(vendor, self._grug_start)
 			if vendor.open then
 				vendor.open(clicker, vendor.nametag, self.object:get_pos(), faction)

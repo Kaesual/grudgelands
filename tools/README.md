@@ -1265,3 +1265,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   per-chunk cube decisions, `mgprof-after` its stage boot and
   `fleet-digest-quick.txt` the quick seeds' chunk bytes (identical to main
   `62123545`).
+- **0.49.1 lane DOOR** (`r491_door`): doors before NPCs
+  (`portable_test.lua`: the real `grug_mobs/door_click.lua` on a box world
+  whose ray orders hits like the engine's RaycastSort; a closed door takes
+  the click in both halves from both sides with a dialog NPC behind it, an
+  open door, no door, an NPC in front, a sneak click and another node
+  leave it to the NPC; every dialog NPC asks the helper first);
+  `probe.sh [OUT]` one probe boot (`grug_probe_r491_door`: the engine's
+  first hit with an NPC behind a closed door, an open door and no door,
+  then the helper on the same rays and one click per real dialog NPC kind).

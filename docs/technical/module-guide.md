@@ -804,7 +804,16 @@ tools](#player-meta-read-by-external-tools).
   function. Quest kill credit subscribes to the shared eligible participant event
   from `grug_mobs.award_kill_xp`; it must not use only the death killer.
   Quest/trader NPCs: `type="npc"`, `passive`, `on_rightclick` → formspec;
-  placement via `mobs:add_mob(pos, def)`.
+  placement via `mobs:add_mob(pos, def)`. Every NPC whose right-click opens
+  a dialog (the villagers' services and answers, the quest givers, every
+  vendor) first asks `grug_mobs.door_before_npc(self, clicker)`
+  (`door_click.lua`, 0.49.1): the engine's pointing, the client's too,
+  prefers an object up to one node squared farther than a node
+  (`src/raycast.cpp` RaycastSort), so a click on a closed door with an NPC
+  just behind it reaches the NPC; the helper casts the clicker's look ray
+  and hands the click to the door's `on_rightclick` when a closed door is
+  physically first. Fixture `tools/r491_door`, engine probe
+  `tools/r491_door/probe.sh`.
   **Pathfinding is a quality criterion** (user requirement: dangerous mobs
   must not fail at terrain, otherwise they are not dangerous): mobs_redo's
   `pathfinding = 1` lets a mob search (`core.find_path` through
