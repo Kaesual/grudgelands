@@ -483,8 +483,13 @@ user's judgement.
 
 ### Round-end gates
 
-**Round-end gates** (coordinator): _placeholder; the coordinator fills
-in the full fixtures, the full seed fleet, `check_upgrade.py`,
-`check_fresh_server.py`, the data checks and the smoke boot on main._
+**Round-end gates** (coordinator, 2026-10-16): on main `2c5c0191` (every
+world-generation lane merged; later merges are tools and docs only) the
+full fixtures 197/197 and the full seed fleet 304/304 (33 min 8 s); on
+main `aea065a8` `check_upgrade.py` (0.49.0 against origin/main),
+`check_fresh_server.py`, `validate.py --game` (0 errors),
+`income.py --check`, `web_data/export.lua --check`,
+`r33_ds/build_doc.py --check`, `r48_artp/generate.py --check` and a smoke
+boot (120 s) PASS, no server left.
 Lane D's own checks on its branch: `tools/r37_dc` and `check_upgrade.py`
 (0.49.0 against origin/main `1ef11b5e`) PASS.

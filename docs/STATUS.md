@@ -64,8 +64,10 @@ is open.
     rulings 18 and 19 changed by the user); blocks at 70 % in the
     third-person hand and the half-buried onion
     ([character_visuals.md](design/character_visuals.md)).
-  - **Round-end gates** (coordinator): placeholder, see the
-    [completion](planning/round49-plan.md#round-end-gates). Its GUI test
+  - **Round-end gates** (coordinator, 2026-10-16): full fixtures 197/197,
+    full seed fleet 304/304, `check_upgrade.py`, `check_fresh_server.py`,
+    the data checks and a smoke boot PASS (see the
+    [completion](planning/round49-plan.md#round-end-gates)). Its GUI test
     (desktop and web build, a new world after the map reset) is open
     ([carry-overs](../BACKLOG.md#round-49-carry-overs)).
 - **0.48.1, a compatible fix after the user's first 0.48.0 playtest,
