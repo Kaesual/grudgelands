@@ -1574,8 +1574,10 @@ tools](#player-meta-read-by-external-tools).
     sender, not into a mailbox at 50 player letters; postage `5 + 30 ×
     stacks` for the four `grug_mail_out` slots as they are at the call,
     and the slots leave with it in one `grug_money.take_with_inventory`
-    call (Round 49: no quote). Returns ok, message ("Letter sent to X.
-    Postage paid: 65c.").
+    call (Round 49: no quote). A body over `model.BODY_MAX` (4,000
+    characters after cleaning) is refused before anything is taken, never
+    cut (0.49.1; `model.check_body`). Returns ok, message ("Letter sent to
+    X. Postage paid: 65c.").
   - `send_system(to_name, kind, from_label, subject, body[, stacks])` —
     `kind` "admin" (always shown from "Server Admin", whatever the label) or
     "npc"; always delivered (no limit, faction or postage), to an indexed
@@ -1585,7 +1587,9 @@ tools](#player-meta-read-by-external-tools).
     passes them (admin letters carry no items). Returns `true` and the
     new letter id, or `false` and a reason (unknown recipient, unknown kind,
     more than four stacks); never nil, so a caller that retries on anything
-    not truthy (the 0.48.0 bag migration) never sends a letter twice.
+    not truthy (the 0.48.0 bag migration) never sends a letter twice. The
+    body is cut at `BODY_MAX` as a safety net; the admin's own texts
+    (`answer_ticket`, the compose form) are checked before this call.
   - `open_mailbox(player, pos)` — the mailbox node's right-click (lane
     WORLD's `grug_mapgen:mailbox`, `grug_mail.MAILBOX_NODE`); runs the
     `register_on_mailbox_open(fn(player, pos))` callbacks, then shows the
@@ -1605,8 +1609,16 @@ tools](#player-meta-read-by-external-tools).
     everyone). A ticket stores the header the admin sees (mailbox, version,
     level, faction, race, class, position). Every message, report, answer,
     closing and deletion is one `core.log("action", "[grug_mail] ...")` line.
-  - Broadcasts: `send_broadcast(subject, body, admin_name)`, `broadcasts()`,
+    `send_ticket` and `answer_ticket` refuse a body over `BODY_MAX` like
+    `send_letter`.
+  - Broadcasts: `send_broadcast(subject, body, admin_name)` (returns the id,
+    or false and the refusal for a body over `BODY_MAX`), `broadcasts()`,
     `delete_broadcast(id, admin_name)`, `read_broadcast(player, id)`.
+  - The window and the Admin Mail tab keep typed message texts up to
+    `model.DRAFT_MAX` (10,000 characters; Luanti limits only a whole form
+    submit, 640 KB), and `model.truncate` reads at most 4 bytes a character
+    of its input. `model.quote` quotes at most `QUOTE_MAX` (500) characters
+    of the original, a cut one ending in " [...]".
   - Letters: `open_letter(player, id)` (marks read), `take_all(player, id)`
     (`grug_inventory.fits` first, then `give`; all or nothing),
     `delete_letter(player, id)`, `return_attachments(player)` (the slots

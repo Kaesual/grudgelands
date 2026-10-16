@@ -409,14 +409,16 @@ end
 -- Events
 --
 
+-- The answer and the letter are kept up to the draft cap, never the body
+-- limit (fix 0.49.1 ruling 4, D1): Send refuses a longer one.
 local function keep_drafts(state, fields)
 	local function take(target, key, field, max)
 		if fields[field] ~= nil then target[key] = M.truncate(fields[field], max) end
 	end
-	take(state, "answer", "mail_admin_answer", M.BODY_MAX)
+	take(state, "answer", "mail_admin_answer", M.DRAFT_MAX)
 	take(state.compose, "to", "mail_admin_to", 40)
 	take(state.compose, "subject", "mail_admin_subject", M.SUBJECT_MAX)
-	take(state.compose, "body", "mail_admin_body", M.BODY_MAX)
+	take(state.compose, "body", "mail_admin_body", M.DRAFT_MAX)
 	if fields.mail_admin_all ~= nil then state.compose.all = fields.mail_admin_all == "true" end
 end
 
@@ -518,9 +520,9 @@ local function inbox_event(player, state, fields, action)
 		local ticket = grug_mail.ticket(state.selected)
 		if not ticket then
 			say(state, false, "That message is gone.")
-		elseif M.clean(state.answer, M.BODY_MAX, true) == "" or
-				M.clean(state.answer, M.BODY_MAX, true) ==
-				M.clean(M.quote(ticket.body), M.BODY_MAX, true) then
+		elseif M.clean(state.answer, M.DRAFT_MAX, true) == "" or
+				M.clean(state.answer, M.DRAFT_MAX, true) ==
+				M.clean(M.quote(ticket.body), M.DRAFT_MAX, true) then
 			-- Empty, or only the quote the box starts with.
 			say(state, false, "Write an answer above the quoted message, or close " ..
 				"the message without one.")
@@ -575,8 +577,19 @@ local function compose_event(player, state, fields, action)
 		say(state, false, "Write a subject.")
 		return
 	end
+	-- Checked before send_system, which would cut it (fix 0.49.1 D1, D3).
+	local _, too_long = M.check_body(draft.body)
+	if too_long then
+		say(state, false, too_long)
+		return
+	end
 	if draft.all then
-		grug_mail.send_broadcast(subject, draft.body, name) -- logged with the admin's name
+		-- Logged with the admin's name.
+		local sent, refusal = grug_mail.send_broadcast(subject, draft.body, name)
+		if not sent then
+			say(state, false, refusal)
+			return
+		end
 		say(state, true, "Announcement sent to all players.")
 	else
 		local to = M.clean(draft.to, 40, false)

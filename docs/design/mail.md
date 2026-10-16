@@ -45,7 +45,8 @@ letters (lane QUEST). Seams and storage: the
   attachments too, with no return to the sender. The Letters tab says so
   ("Letters are deleted 30 days after they arrive, attachments too.").
 - **Reply** on a player letter opens Write with the sender, "Re: <subject>"
-  (never "Re: Re:") and the quoted text; it costs postage as usual. Reply on
+  (never "Re: Re:") and the quoted text (at most 500 characters of the
+  original; a cut quote ends with " [...]"); it costs postage as usual. Reply on
   an admin letter or an announcement opens To the admin with "Re: <subject>".
   NPC letters have no Reply ("Letters from characters of the realm cannot be
   answered.") and no Report.
@@ -89,8 +90,17 @@ letters (lane QUEST). Seams and storage: the
   fit stays in the slots and shows at the next mailbox (and returns at the
   next join when there is room). **Discard** clears the letter and gives the
   stacks back.
-- Text limits: subject 60 characters (required), message 1,500. Control
-  characters (colour codes among them) are removed.
+- Text limits: subject 60 characters (required), message 4,000 (0.49.1;
+  counted after cleaning). Control characters (colour codes among them) are
+  removed. Write and To the admin show "Up to 4,000 characters." under the
+  message field. A longer message is **not sent**: the text stays as typed,
+  nothing is charged, the attachments stay in their slots, and the status
+  line names the length ("Too long, please shorten it (5,723 characters,
+  4,000 allowed)."). The window keeps at most 10,000 characters of a typed
+  message (longer is cut there). The same limit, refusal and draft cap
+  apply to letters, replies, messages to the admin and the admin's answers,
+  letters and announcements (§6). Letters written by the game (NPC, level,
+  quest, Lost and Found) are cut at the limit as a safety net.
 - Letters to other players vanish for the sender once sent: there is no
   sent folder.
 
@@ -139,7 +149,8 @@ letters (lane QUEST). Seams and storage: the
   time, subject, text and attachments).
 - **Send answer and close** sends the answer as an ordinary admin letter
   "Re: <subject>" from "Server Admin" into the player's Letters and closes
-  the message as answered; the answer box starts with the message quoted.
+  the message as answered; the answer box starts with the message quoted
+  (at most 500 characters, as a player's Reply, §2).
   **Close without answer** closes it without a letter. A closed message
   shows "Answered and closed by <admin>" or "Closed without answer by
   <admin>" with the time, only in this tab; players see Answered or Closed
