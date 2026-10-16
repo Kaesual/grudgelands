@@ -162,12 +162,6 @@ local function player(name, class_id, bags)
 		for list in pairs(self.lists) do out[list] = self:get_list(list) end
 		return out
 	end
-	function inv:set_list(list, stacks)
-		local size = #(self.lists[list] or stacks)
-		local out = {}
-		for i = 1, size do out[i] = ItemStack(stacks[i] or "") end
-		self.lists[list] = out
-	end
 	function inv:contains_item(list, item)
 		local name = ItemStack(item):get_name()
 		for _, stack in ipairs(self.lists[list] or {}) do

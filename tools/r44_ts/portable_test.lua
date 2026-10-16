@@ -18,13 +18,13 @@
 --      the catalog, one copy; mount items keep main and bags; and, on a
 --      model of the engine's move (inventorymanager.cpp IMoveAction::apply),
 --      a drag from the catalog onto the hotbar and a drag back that removes;
---   5. grants: grant_to_hotbar and grant_initial_kit with a free and with a
---      full hotbar (Round 49: the rightmost non-skill item moves into the
---      inventory through the real give helper and the skill takes its slot;
---      with no room anywhere nothing moves; never main[9..] or a bag), the
---      starter supplies on hotbar 7 and 8 at creation, and a talent unlock
---      through grug_skills (onto the hotbar, or the catalog when nothing
---      makes room).
+--   5. grants: grant_initial_kit with a free and with a full hotbar (Round
+--      49: the rightmost non-skill item moves into the inventory through the
+--      real give helper and the skill takes its slot; with no room anywhere
+--      nothing moves; never main[9..] or a bag), the starter supplies on
+--      hotbar 7 and 8 at creation, and a talent unlock through grug_skills,
+--      which places nothing (Round 50 D1: it waits in the catalog, the feed
+--      says so; grant_to_hotbar is gone).
 -- Prints the page's formspec bytes (a comparison, not a target).
 --
 -- Usage (repo root): luajit tools/r44_ts/portable_test.lua [repo]
@@ -440,6 +440,7 @@ local function cut(pattern, label)
 	return block or ""
 end
 local grant_initial_kit = assert(loadstring(table.concat({
+	cut("\n(local function active_lists%(%).-\nend)\n", "active_lists"),
 	cut("\n(local function representation_lists%(%).-\nend)\n", "representation_lists"),
 	cut("\n(local META_INITIAL_KIT = .-\n)\n", "META_INITIAL_KIT"),
 	cut("\n(local function insert_initial_ability%(.-\nend)\n", "insert_initial_ability"),
@@ -480,30 +481,10 @@ local function snapshot(target)
 	return table.concat(out, ",")
 end
 
-local granted = H.make_player("granted", "scout", 30, "")
-granted:get_inventory():set_size("grug_bag1_content", 8)
-fill_hotbar(granted, 6, "default:apple 99")
-eq(grug_abilities.grant_to_hotbar(granted, "sprint"), 6, "grant_to_hotbar: the free slot")
-eq(name_of(granted, "main", 6), "grug_abilities:sprint", "placed there")
-eq(grug_abilities.grant_to_hotbar(granted, "sprint"), nil, "not when already carried")
-eq(grug_abilities.grant_to_hotbar(granted, "loose"), 8,
-	"a full hotbar: the rightmost item makes room")
-eq(name_of(granted, "main", 8), "grug_abilities:loose", "the skill takes its slot")
-eq(granted:get_inventory():get_stack("main", 9):to_string(), "default:apple 99",
-	"the item moved into the inventory (the give helper: main[9..] first)")
-eq(grug_abilities.grant_to_hotbar(granted, "snare_shot"), 7, "the next one: slot 7")
-eq(grug_abilities.grant_to_hotbar(granted, "strike"), 5, "skills never move: slot 5")
-eq(count_skills(granted, "main"), 4, "four skills on the hotbar")
-eq(count_skills(granted, "main", 9), 0, "never main[9..]")
-eq(count_skills(granted, "grug_bag1_content"), 0, "never a bag")
--- No room in the inventory either: the skill waits in the catalog.
-local stuck = H.make_player("stuck", "scout", 30, "")
-stuck:get_inventory():set_size("grug_bag1_content", 4)
-fill_hotbar(stuck, nil, "default:apple 99")
-fill_inventory(stuck)
-local before = snapshot(stuck)
-eq(grug_abilities.grant_to_hotbar(stuck, "loose"), nil, "no room anywhere: nowhere")
-eq(snapshot(stuck), before, "no room anywhere: nothing moved")
+-- Round 50 D1: grant_to_hotbar (the talent-unlock grant) is gone; the
+-- kit's own placement (place_on_hotbar) is checked through grant_initial_kit
+-- below and by tools/r49_inv.
+check(grug_abilities.grant_to_hotbar == nil, "no talent-unlock grant (Round 50 D1)")
 
 -- The kit after a later class change (initial kit already given).
 local changer = H.make_player("changer", "scout", 30, "")
@@ -549,8 +530,9 @@ eq(fresh:get_inventory():get_stack("main", 8):to_string(), "default:torch 10",
 	"the torches stay on slot 8")
 eq(fresh:get_meta():get_int("grug_abilities:initial_kit_given"), 1, "the kit is given")
 
--- A talent unlock through grug_skills: onto a free hotbar slot, else the
--- room an item makes, else the catalog only.
+-- A talent unlock through grug_skills places nothing (Round 50 D1): with a
+-- free hotbar slot, a full hotbar or a full inventory alike it waits in the
+-- catalog, and the feed says where to find it.
 local function unlock(name, hotbar_free, item, full_inventory)
 	local p = H.make_player(name, "scout", 30, "quiver=5,fletching=4,strong_draw=3")
 	H.join(p)
@@ -560,36 +542,19 @@ local function unlock(name, hotbar_free, item, full_inventory)
 	check(ok, name .. ": Pinning Shot ranked")
 	return p
 end
-local lucky = unlock("lucky", 4)
-eq(name_of(lucky, "main", 4), "grug_abilities:pinning_shot",
-	"an unlock lands on the free hotbar slot")
-has(lucky.feed and lucky.feed[#lucky.feed], "on your hotbar", "the feed says so")
-local function unlock_carrying(name)
-	local p = H.make_player(name, "scout", 30, "quiver=5,fletching=4,strong_draw=3")
-	H.join(p)
-	p:get_inventory():set_stack("main", 20, "grug_abilities:pinning_shot")
-	check(grug_classes.spend_talent(p, "pinning_shot"), name .. ": Pinning Shot ranked")
-	return p
+for _, case in ipairs({{"lucky", 4}, {"pushed", nil, "default:apple 99"},
+		{"full", nil, "default:apple 99", true}}) do
+	local p = unlock(case[1], case[2], case[3], case[4])
+	eq(count_skills(p, "main"), 0, case[1] .. ": the unlock is not placed")
+	has(p.feed and p.feed[#p.feed], "Drag it from Talents & Skills onto your hotbar",
+		case[1] .. ": the feed points to the catalog")
+	local cat = H.catalog(case[1]).inv
+	local listed = false
+	for i = 1, cat:get_size("catalog") do
+		if cat:get_stack("catalog", i):get_name() == "grug_abilities:pinning_shot" then listed = true end
+	end
+	check(listed, case[1] .. ": the catalog lists the unlocked skill")
 end
-local carrier = unlock_carrying("carrier")
-has(carrier.feed and carrier.feed[#carrier.feed], "You already carry it",
-	"a carried copy gets its own feed line")
-eq(carrier:get_inventory():get_stack("main", 1):get_name(), "", "and no second copy")
-local pushed = unlock("pushed", nil, "default:apple 99")
-eq(name_of(pushed, "main", 8), "grug_abilities:pinning_shot",
-	"a full hotbar: the unlock takes the rightmost slot")
-eq(pushed:get_inventory():get_stack("main", 9):to_string(), "default:apple 99",
-	"and its item moves into the inventory")
-has(pushed.feed and pushed.feed[#pushed.feed], "on your hotbar", "the feed says so")
-local full = unlock("full", nil, "default:apple 99", true)
-eq(count_skills(full, "main"), 0, "a full hotbar and inventory: the unlock is not placed")
-has(full.feed and full.feed[#full.feed], "hotbar is full", "the feed points to the catalog")
-local fcat = H.catalog("full").inv
-local listed = false
-for i = 1, fcat:get_size("catalog") do
-	if fcat:get_stack("catalog", i):get_name() == "grug_abilities:pinning_shot" then listed = true end
-end
-check(listed, "the catalog lists the unlocked skill")
 
 print(("bytes: Talents & Skills page (level-30 Scout, 15 ranks) %d"):format(page_bytes))
 if failures > 0 then

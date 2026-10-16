@@ -16,7 +16,9 @@
 --   S  the scroll position: a pure scrollbar event re-sends nothing, the
 --      next re-show (node_formspec.refresh, the workspace's one-second
 --      re-show, a Claim Stone redraw) echoes it, clamped to the range;
---   V  per viewer: two players at one bookshelf get their own bags.
+--   V  per viewer: two players at one bookshelf get their own bags;
+--   H  (Round 50) the view's hotbar switch re-shows the workspace and the
+--      Claim Stone form at the kept scroll position.
 --
 -- Usage (repo root): luajit tools/r491_view/portable_test.lua [repo]
 
@@ -604,6 +606,45 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 		end
 		submit(player, WORKSPACE, {quit = "true"})
 	end
+end
+
+--
+-- H (Round 50 HOTBAR): the view's A/B switch re-shows the workspace and the
+-- Claim Stone form at the kept scroll position with B marked (the node
+-- forms, the chests and the switch itself: tools/r50_hotbar).
+--
+do
+	local now = 0
+	core.get_us_time = function() now = now + 1000000 return now end -- past the limit
+	local function marked_b(fs)
+		return fs:find("style[grug_hotbar_b;bgcolor=#8a682f", 1, true) ~= nil
+	end
+	local worker = new_player("hotbar_ws", BAGS.four)
+	local pos = place("default:furnace")
+	near(worker, pos)
+	check(workspaces.open(pos, worker), "H workspace: opens")
+	check(not marked_b(last_shown("hotbar_ws").formspec), "H workspace: A marked at first")
+	local before = #shown
+	submit(worker, WORKSPACE, {grug_hotbar_b = "B", [SCROLL] = "VAL:10"})
+	eq(grug_inventory.active_hotbar(worker), "B", "H workspace: B shown")
+	eq(#shown, before + 1, "H workspace: re-shown once")
+	local fs = last_shown("hotbar_ws").formspec
+	check(marked_b(fs), "H workspace: B marked")
+	eq(parse(fs).scroll, 10, "H workspace: the scroll position kept")
+	submit(worker, WORKSPACE, {quit = "true"})
+	players.stone = nil
+	local owner = new_player("stone", BAGS.four)
+	check(grug_housing.open_stone_interface(owner, CLAIM), "H stone: opens")
+	before = #shown
+	submit(owner, "grug_housing:stone", {grug_hotbar_b = "B", [SCROLL] = "VAL:10",
+		perm_name = "zed"})
+	eq(grug_inventory.active_hotbar(owner), "B", "H stone: B shown")
+	eq(#shown, before + 1, "H stone: re-shown once")
+	fs = last_shown("stone").formspec
+	check(marked_b(fs), "H stone: B marked")
+	eq(parse(fs).scroll, 10, "H stone: the scroll position kept")
+	check(fs:find("perm_name;Player name;zed]", 1, true) ~= nil, "H stone: the typed name kept")
+	submit(owner, "grug_housing:stone", {quit = "true"})
 end
 
 if failures > 0 then

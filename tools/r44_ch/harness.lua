@@ -133,6 +133,12 @@ local function new_inventory()
 		return ItemStack(l and l[i] or "")
 	end
 	function inv:set_stack(list, i, stack) self.lists[list][i] = ItemStack(stack) end
+	-- The list's size stays (InvRef set_list); the hotbar switch writes this.
+	function inv:set_list(list, stacks)
+		for i = 1, #(self.lists[list] or {}) do
+			self.lists[list][i] = ItemStack(stacks[i] or "")
+		end
+	end
 	function inv:get_list(list)
 		local l = self.lists[list]
 		if not l then return nil end
