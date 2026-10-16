@@ -1359,6 +1359,19 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   Belongings tab, two packed tooltips (the pointer moved by
   `r49_ui/warp_pointer.py`) and two restored containers, and an in-engine
   check of every placement ("place ... ok" in `probe.txt`).
+- **Round 50 lane HOTBAR** (`r50_hotbar`): the two hotbar layouts A and B
+  (`portable_test.lua` on the `r44_ch` harness: joins, the swap with wear
+  and metadata, the anti-spam limit, a failing switch callback, the hidden
+  list's guard before equipment, bags and quiver, give/fits/sort never
+  reaching it, the soulbound rule, every consumer of the study in its order
+  (crafting, ammunition, quests, Claim Stone fuel, Fallen Crown, vendor,
+  repair), `normalize_kit` per layout and the kit on the shown layout, the
+  switch callback with the real cooldown overlay, death and the map reset,
+  and the switch in the inventory pages, a node form, a chest and the
+  quickbar; the workspace, the Claim Stone form, its Belongings tab and the
+  mail's Write tab are in `r491_view`, `r50_pgame` and `r48_mail`).
+  `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r50_hotbar` the engine
+  screenshots of the Inventory page, a chest and the quickbar with B shown.
 - **Round 50 lane PTOOL** (`r50_ptool`): the migration tool's pre-reset pass
   (`--map-reset`). `test_pack.py` (Python unittest, locally on Python 3.14
   and in the runner's image on 3.13 with python3-zstandard): the block

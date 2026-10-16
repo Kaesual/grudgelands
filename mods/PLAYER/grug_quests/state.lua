@@ -92,9 +92,14 @@ local function owned_lists(player)
 	end
 	return lists
 end
+-- Quest items count from the owned lists and the inactive hotbar layout
+-- (Round 50 ruling 3); rewards land only in the owned lists (settlement).
+local STORE = grug_inventory.HOTBAR_STORE
 local function holdings(player)
 	local counts, inv = {}, player:get_inventory()
-	for _, list in ipairs(owned_lists(player)) do
+	local lists = owned_lists(player)
+	lists[#lists + 1] = STORE
+	for _, list in ipairs(lists) do
 		for _, stack in ipairs(inv:get_list(list) or {}) do
 			local name = stack:get_name()
 			counts[name] = (counts[name] or 0) + stack:get_count()
@@ -428,21 +433,33 @@ end
 -- Preflight copies every owned slot, in the give helper's order (main[9..],
 -- the bags, the hotbar last), so rewards land where any other item would.
 -- Removing requirements and adding rewards to the same copies accounts for
--- space freed by this very hand-in.
+-- space freed by this very hand-in. The inactive hotbar layout's slots come
+-- after them: requirements are taken from it last, rewards never land in it.
 local function settlement(player, def, active)
-	local inv, rows, hotbar = player:get_inventory(), {}, {}
-	for _, list in ipairs(owned_lists(player)) do
+	local inv, rows, hotbar, hidden = player:get_inventory(), {}, {}, {}
+	local lists = owned_lists(player)
+	lists[#lists + 1] = STORE
+	for _, list in ipairs(lists) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			local row = {list = list, index = index, expected = ItemStack(stack), replacement = ItemStack(stack)}
-			if list == "main" and index <= 8 then hotbar[#hotbar + 1] = row else rows[#rows + 1] = row end
+			if list == STORE then
+				hidden[#hidden + 1] = row
+			elseif list == "main" and index <= 8 then
+				hotbar[#hotbar + 1] = row
+			else
+				rows[#rows + 1] = row
+			end
 		end
 	end
 	for _, row in ipairs(hotbar) do rows[#rows + 1] = row end
+	local takes = {}
+	for _, row in ipairs(rows) do takes[#takes + 1] = row end
+	for _, row in ipairs(hidden) do takes[#takes + 1] = row end
 	local _, ready, allocation = progress(player, def, active)
 	if not ready then return nil, "You no longer have all required items." end
 	for _, taken in pairs(allocation) do
 		for name, amount in pairs(taken) do
-			for _, row in ipairs(rows) do
+			for _, row in ipairs(takes) do
 				local stack = row.replacement
 				if amount > 0 and stack:get_name() == name then
 					local count = math.min(amount, stack:get_count())
@@ -464,7 +481,7 @@ local function settlement(player, def, active)
 		end
 		if not rest:is_empty() then return nil, "Make room in your inventory or bags for the rewards." end
 	end
-	return rows
+	return takes
 end
 function Q.turn_in(player, id)
 	local name, state = player:get_player_name(), editable(player)

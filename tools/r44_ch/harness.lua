@@ -133,6 +133,12 @@ local function new_inventory()
 		return ItemStack(l and l[i] or "")
 	end
 	function inv:set_stack(list, i, stack) self.lists[list][i] = ItemStack(stack) end
+	-- The list's size stays (InvRef set_list); the hotbar switch writes this.
+	function inv:set_list(list, stacks)
+		for i = 1, #(self.lists[list] or {}) do
+			self.lists[list][i] = ItemStack(stacks[i] or "")
+		end
+	end
 	function inv:get_list(list)
 		local l = self.lists[list]
 		if not l then return nil end
@@ -287,6 +293,13 @@ item("t:apple", {}, {stack_max = 99})
 
 grug_inventory = {}
 dofile(repo .. "/mods/BASE/sfinv/api.lua")
+-- Round 50: init.lua loads the hotbar layouts first (their guard answers
+-- before equipment.lua's and bags.lua's).
+local hotbars = io.open(repo .. "/mods/PLAYER/grug_inventory/hotbars.lua")
+if hotbars then
+	hotbars:close()
+	dofile(repo .. "/mods/PLAYER/grug_inventory/hotbars.lua")
+end
 dofile(repo .. "/mods/PLAYER/grug_inventory/equipment.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/bags.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
@@ -400,6 +413,7 @@ local function allow(player, action, info)
 	end
 	return nil
 end
+H.allow = allow
 local function after_action(player, action, info)
 	for _, f in ipairs(callbacks.action) do f(player, action, player.inv, info) end
 end

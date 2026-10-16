@@ -131,8 +131,8 @@ function grug_jobs.is_ingredient_stack(stack)
 end
 local plain = grug_jobs.is_ingredient_stack
 
--- The slots ingredients are taken from, in order: the bags, main[9..], the
--- hotbar last.
+-- The slots ingredients are counted and taken from, in order: the bags,
+-- main[9..], the hotbar, the inactive hotbar layout last (Round 50 ruling 3).
 local function consume_order(inv)
 	local slots = {}
 	local function add(list, from, to)
@@ -145,11 +145,12 @@ local function consume_order(inv)
 	local size = inv:get_size("main")
 	add("main", HOTBAR + 1, size)
 	add("main", 1, math.min(HOTBAR, size))
+	add(grug_inventory.HOTBAR_STORE, 1, inv:get_size(grug_inventory.HOTBAR_STORE))
 	return slots
 end
 
--- One pass over the hotbar, `main` and the bags: {items = {name -> count},
--- groups = {}, order = {{name, count}, ...}, lists = {list -> stacks}}
+-- One pass over the consume order: {items = {name -> count}, groups = {},
+-- order = {{name, count}, ...}, lists = {list -> stacks}}
 -- (group totals filled on demand by ingredient_have; `order` the ingredient
 -- stacks in the consume order, for the dry-run take of crafts_from_counts;
 -- `lists` the copies the pass read, for the room check of output_fits, which

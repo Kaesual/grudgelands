@@ -888,6 +888,19 @@ do
 		"D shift-click takes into the inventory")
 	has(fs, "Belongings from the old map", "D the box's label")
 	lacks(fs, "scrollbar[", "D two rows need no scrollbar")
+	-- Round 50 HOTBAR: the bag view's hotbar switch on the Belongings tab
+	-- shows the Belongings tab again (the switch itself: tools/r50_hotbar).
+	local switches, before = 0, #shown
+	grug_inventory.hotbar_switch_fields = function(_, f)
+		if f.grug_hotbar_b then switches = switches + 1 return true end
+		return false
+	end
+	submit(ann, {grug_hotbar_b = "B", recovered_scroll = "VAL:0"})
+	grug_inventory.hotbar_switch_fields = nil
+	eq(switches, 1, "D the Belongings tab passes the hotbar switch on")
+	eq(#shown, before + 1, "D ...and shows the form again")
+	has(last_shown("ann").fs, "list[detached:grug_housing_recovered_ann;recovered;0,0;8,2;]",
+		"D ...on the Belongings tab")
 	eq(recovered_inv("ann").inv:get_size("recovered"), 16, "D the list rounded up to whole rows")
 	eq(slot("ann", 1), stored("recovered:ann:1:1"), "D slot 1: the older pass first")
 	eq(slot("ann", 12), "grug_smelting:charcoal 51", "D slot 12: the charcoal's rest")

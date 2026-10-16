@@ -229,10 +229,12 @@ function grug_housing.remove_stone_node(claim)
 	return false
 end
 
+-- The fuel counts and is taken from the carried lists and the inactive
+-- hotbar layout, that one last (Round 50 ruling 3).
 local function fuel_carried(inv)
 	local have, fuel = 0, {}
 	for _, item in ipairs(grug_housing.FUEL_ORDER) do fuel[item] = true end
-	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+	for _, list in ipairs(grug_inventory.consume_lists(inv)) do
 		for _, stack in ipairs(inv:get_list(list) or {}) do
 			if fuel[stack:get_name()] then have = have + stack:get_count() end
 		end
@@ -259,11 +261,19 @@ function grug_housing.activate(player)
 			"inventory; you have %d."):format(need, have)
 	end
 	local left = need
-	for _, item in ipairs(grug_housing.FUEL_ORDER) do
-		for _, list in ipairs(grug_inventory.carried_lists(inv)) do
-			if left <= 0 then break end
-			local taken = inv:remove_item(list, ItemStack(item .. " " .. left))
-			left = left - taken:get_count()
+	-- Each fuel in its order from the carried lists, then from the inactive
+	-- layout (fuel_carried's lists).
+	local sources = {grug_inventory.carried_lists(inv)}
+	if inv:get_size(grug_inventory.HOTBAR_STORE) > 0 then
+		sources[2] = {grug_inventory.HOTBAR_STORE}
+	end
+	for _, lists in ipairs(sources) do
+		for _, item in ipairs(grug_housing.FUEL_ORDER) do
+			for _, list in ipairs(lists) do
+				if left <= 0 then break end
+				local taken = inv:remove_item(list, ItemStack(item .. " " .. left))
+				left = left - taken:get_count()
+			end
 		end
 	end
 	local burnt = model.activate(claim, need - left)

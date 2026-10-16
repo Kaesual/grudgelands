@@ -30,6 +30,8 @@ grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25}
 grug_inventory.station_box = function() return "", 1 end
 grug_inventory.station_formspec = function(_, content) return content end
 grug_inventory.keep_scroll = function() return false end
+-- Round 50: the view's hotbar switch (tested by tools/r50_hotbar, tools/r491_view).
+grug_inventory.hotbar_switch_fields = function() return false end
 local failures, checks = 0, 0
 local function check(ok, label)
 	checks = checks + 1

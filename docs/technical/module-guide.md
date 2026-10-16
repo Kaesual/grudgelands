@@ -224,8 +224,9 @@ tools](#player-meta-read-by-external-tools).
   tab's build), else delivers the crafts finished so far and arms the
   timer; the timer is one `core.after` per online player with a job, at
   the next craft's end, no globalstep.
-  `ingredient_counts(player)` (one pass over `main` and the bags, stacks
-  without metadata: `is_ingredient_stack`), `ingredient_have(counts, entry)`,
+  `ingredient_counts(player)` (one pass over the bags, `main` and the
+  inactive hotbar layout last, in the take's order, stacks without metadata:
+  `is_ingredient_stack`), `ingredient_have(counts, entry)`,
   `crafts_from_counts(counts, recipe[, picks])` (when one item satisfies two entries,
   a dry-run take on the counted stacks, searched by halving from the
   per-entry total; Round 46, uncapped since Round 47),
@@ -394,13 +395,18 @@ tools](#player-meta-read-by-external-tools).
   `bound_items.lua` lets a move or a put land an ability only on `main[1..8]`
   and a catalog put only while no copy is carried in main, craft or owned bag
   contents; external inventories, equipment and trading refuse bound stacks.
-  Grants (`grant_initial_kit`, `grug_abilities.grant_to_hotbar` for talent
-  unlocks) use a free hotbar slot or leave the skill in the catalog, never
-  `main[9..]` or a bag. `grug_abilities.is_unlocked` is shared by catalogue,
+  The kit grant (`grant_initial_kit`) uses a free slot of the shown hotbar
+  layout or leaves the skill in the catalog, never `main[9..]`, a bag or the
+  inactive layout; a talent unlock places nothing (Round 50 D1, the feed
+  points to the catalog). `grug_abilities.is_unlocked` is shared by catalogue,
   recovery, normalization and actual cast/swing execution. `normalize_kit`
-  removes stale copies without re-granting missing ones; it still keeps
-  copies in `main[9..]` and bags (removing those is the 0.44.0 migration
-  step).
+  removes stale copies without re-granting missing ones, counting copies per
+  hotbar layout (the shown side: `main` and the bags; the inactive layout's
+  list `grug_hotbar_store`), so one skill may lie on A and on B; it still
+  keeps copies in `main[9..]` and bags (removing those is the 0.44.0
+  migration step). A future step that removes retired skills offline treats
+  `grug_hotbar_store` as a hotbar too (unlike `v0_44_0.py`, which keeps
+  only `main[0..7]`).
   Do not compare InvRef userdata for inventory ownership: engine callbacks can
   create a fresh wrapper for the same underlying inventory. Authenticate
   `inventory:get_location()` (type and player name), then the allowed list and
@@ -2369,6 +2375,23 @@ tools](#player-meta-read-by-external-tools).
   personal notice goes there too. Chat keeps deaths, rare sightings, boss
   and dragon warnings and the one-time no-weapon hint
   ([inventory_equipment.md](../design/inventory_equipment.md) "Message feed").
+- **The hotbar switch (Round 50, `grug_inventory/hotbars.lua`,
+  [inventory_equipment.md](../design/inventory_equipment.md) §1):**
+  `grug_inventory.inventory_view` draws the A/B buttons
+  (`grug_inventory.hotbar_switch(player, x, y, w, h, dx, dy)`, fields
+  `grug_inventory.HOTBAR_FIELDS`), so a form showing a view shows them; the
+  quickbar draws the same element. Whoever receives such a form's fields
+  calls `grug_inventory.hotbar_switch_fields(player, fields)` after
+  `keep_scroll` and re-shows its form when it answers true (the inventory
+  pages through `sfinv.handle_scroll`, chained in `hotbars.lua`;
+  `default/node_formspec.lua`, `default/chests.lua`, the workspaces, the
+  Claim Stone form, the mail's Write tab, the quickbar). The switch itself
+  is `grug_inventory.switch_hotbar(player, "A"|"B")`; consumers read
+  `grug_inventory.consume_lists(inv)` (carried lists, the inactive layout
+  last), and `register_on_hotbar_switch(fn)` runs before a switch's swap
+  (grug_abilities cancels input there). The hidden list's guard is the
+  first allow callback of `grug_inventory` (init.lua loads `hotbars.lua`
+  first).
 - **Initial focus (0.45.1):** the inventory key closes a window unless the
   focused element eats the key. When a window is built and nothing named in
   `set_focus[]` exists, the engine focuses the first empty edit box, else the

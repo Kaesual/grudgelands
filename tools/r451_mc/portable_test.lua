@@ -262,7 +262,10 @@ grug_money = {take = function() return true end, format = function(c) return c .
 grug_mobs = {register_start_socket_role = function() end}
 sfinv = {inventory_suspended = function() return false end}
 grug_inventory = {POTION_BELT = "grug_potion_belt", POTION_BELT_SIZE = 4,
-	home_state = function() return nil end}
+	home_state = function() return nil end,
+	-- Round 50: the hotbar switch (tested by tools/r50_hotbar).
+	hotbar_switch = function() return "" end,
+	hotbar_switch_fields = function() return false end}
 grug_home = {return_home = function() end}
 grug_keys = {register_on_press = function() end}
 

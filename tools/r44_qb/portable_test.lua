@@ -295,6 +295,9 @@ grug_inventory = {
 	BAG_COUNT = 1, equipment_slots = {},
 	content_list = function(i) return "grug_bag" .. i .. "_content" end,
 	POTION_BELT = "grug_potion_belt", POTION_BELT_SIZE = 4,
+	-- Round 50: the hotbar switch (tested by tools/r50_hotbar).
+	hotbar_switch = function() return "" end,
+	hotbar_switch_fields = function() return false end,
 	-- The Character tab's line (pages.lua home_state): label and state.
 	home_state = function(player)
 		local home = grug_home.get(player)

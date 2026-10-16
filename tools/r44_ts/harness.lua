@@ -358,6 +358,8 @@ return function(repo)
 	dofile(repo .. "/mods/BASE/sfinv/api.lua")
 	grug_inventory = {BAG_COUNT = 4, HOTBAR_SIZE = 8}
 	function grug_inventory.content_list(i) return "grug_bag" .. i .. "_content" end
+	-- Round 50: the views' A/B switch reads the shown layout (storage.lua).
+	function grug_inventory.active_hotbar() return "A" end
 	load("grug_classes", "PLAYER/grug_classes", {"talents.lua", "talents_ui.lua"})
 	load("grug_inventory", "PLAYER/grug_inventory", {"ui.lua"})
 	load("grug_skills", "PLAYER/grug_skills", {"init.lua"})

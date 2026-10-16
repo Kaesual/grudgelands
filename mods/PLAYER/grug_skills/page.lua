@@ -7,9 +7,8 @@
 -- (bound_items.lua decides where a skill may land and keeps it to one copy),
 -- and a drag of the carried copy back onto its own icon removes that copy
 -- (the engine undoes the swap such a drop asks for and keeps the catalog's
--- stack). A talent that unlocks an ability puts it on a free hotbar slot,
--- else it waits here. Mounts and boats are not listed (they move to the
--- quickbar).
+-- stack). A talent that unlocks an ability leaves it here (Round 50 D1).
+-- Mounts and boats are not listed (they move to the quickbar).
 local detached = {}
 local slots = {} -- player name -> ability id per catalog slot
 local known = {} -- player name -> set of ability ids at the last rebuild
@@ -40,15 +39,11 @@ local function fill(player)
 	return rows
 end
 
--- After an entitlement change. With announce == true (a talent change) each
--- talent ability unlocked since the last rebuild goes onto a free hotbar
--- slot, or waits in the catalog when the hotbar is full; the feed says which.
-local UNLOCK_LINES = {
-	placed = " unlocked: it is on your hotbar.",
-	full = " unlocked. Your hotbar is full: drag it from Talents & Skills.",
-	carried = " unlocked. You already carry it.",
-	locked = " unlocked. Drag it from Talents & Skills onto your hotbar.",
-}
+-- After an entitlement change. With announce == true (a talent change) the
+-- feed names each talent ability unlocked since the last rebuild; it waits
+-- in the catalog and is never placed on a hotbar (Round 50 D1: the player
+-- chooses the layout and the slot).
+local UNLOCK_LINE = " unlocked. Drag it from Talents & Skills onto your hotbar."
 local function rebuild(player, announce)
 	local name = player:get_player_name()
 	local rows = fill(player)
@@ -58,9 +53,7 @@ local function rebuild(player, announce)
 		now[id] = true
 		local def = grug_abilities.registered[id]
 		if announce == true and def and def.talent_gated and not before[id] then
-			local slot, why = grug_abilities.grant_to_hotbar(player, id)
-			grug_core.feed(player, "notice", def.name ..
-				(UNLOCK_LINES[slot and "placed" or why] or UNLOCK_LINES.locked))
+			grug_core.feed(player, "notice", def.name .. UNLOCK_LINE)
 		end
 	end
 	known[name] = now

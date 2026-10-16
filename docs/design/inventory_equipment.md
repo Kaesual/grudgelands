@@ -55,6 +55,32 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   rings send `main` to another list (the Crafting tab's target slot or
   overflow, the creative list, a station form's list), each bag the view
   shows rings to the same list (Round 45 playtest, `ui.lua` `bag_rings`).
+- **Hotbar layouts A and B** (Round 50 rulings 1–3, `grug_inventory/hotbars.lua`):
+  every character has two eight-slot hotbar layouts. The shown one is
+  `main[1..8]`, the hotbar the engine draws; the other one waits in the
+  player list `grug_hotbar_store`, which no form draws, and player meta
+  `grug_inventory:hotbar_layout` names the shown one ("A" or "B", missing =
+  A). Every character, new or existing, starts on A with its hotbar as it
+  was; B starts empty. A **switch** exchanges the two rows whole in one
+  step (counts, wear, metadata and empty slots kept); it is allowed at any
+  time, in combat too, and first cancels a pending cast, eating, the bow's
+  draw and held input like a stun does (a fresh press is needed; a held
+  swing loop ends, the weapon's due time stays; cooldowns and paid costs
+  stay, and the cooldown overlay follows the skill to its slot on the new
+  layout); one switch per 0.25 s at most, an anti-spam limit, not a
+  cooldown. The control is two small buttons, **A** and **B**, the shown
+  layout marked bright gold, the other one dark, both framed, right of the
+  hotbar's slots in every inventory view (so on every inventory page, every
+  station form and the mail's Write tab) and in a **Hotbar** row of the
+  quickbar (E). A switch re-shows the form it was made in, at its scroll
+  position. The cursor's picked-up stack is the client's selection of a
+  slot, not a server move: a switch moves nothing in flight; the picked
+  stack goes with its layout and the cursor then holds what that slot holds
+  now. The hidden list takes no item automatically (it is not in the give
+  order), is never sorted, and refuses every inventory action, so it is
+  edited only while shown. Consumers count and take from it last (§3, the
+  give order); a soulbound item may lie in it (a switch carries the Claim
+  Stone there); death and the map reset leave both layouts as they are.
 - **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2;
   boxed layout since the Round 45 playtest, `grug_inventory.LAYOUT`):
   each area has its own box with its label inside, top left above the
@@ -459,12 +485,23 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   results, coin withdrawals — goes through `grug_inventory.give`: arrows to
   a Scout's quiver first, then partial stacks of the same item anywhere,
   then the empty slots of `main[9..]`, the bags in slot order and the
-  hotbar last, so a hotbar slot freed for a skill stays free. A soulbound
+  hotbar last, so a hotbar slot freed for a skill stays free; never the
+  inactive hotbar layout (§1), not even its partial stacks. A soulbound
   item (the Claim Stone) follows the same order (Round 49 ruling 3: it may
   lie in `main` and every bag, nowhere else). `grug_inventory.fits` answers
   the same question without changing anything; a source that refuses
   instead of dropping (purchases, the Claim Stone, station results) says
   the inventory is full only when the whole inventory is.
+- **Consumption and the inactive hotbar layout** (Round 50 ruling 3):
+  every consumer keeps its own order and takes from the inactive layout
+  last, counting and taking over the same lists
+  (`grug_inventory.consume_lists`): crafting ingredients (§4), arrows (the
+  quiver, `main`, the bags, then B), quest items (counted for progress and
+  turn-in; rewards never land in the inactive layout), the Claim Stone's
+  activation fuel and the Fallen Crown. The vendor's sell list leaves the
+  inactive layout out (selling is editing by hand); the repair quote
+  includes it. The gear the Crownbinder offers to crown comes from the
+  shown side only.
 - **Shift-click from another inventory** (Round 45 playtest) follows the
   give order too: chests, furnaces, the bookshelf and vessels shelf, the
   creative inventory, the crafting overflow and the target slot ring
@@ -525,7 +562,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   while the quiver has room; anything else is refused. A shift-click on the
   slot moves its up to 100 arrows into the inventory in the give order,
   never back into the quiver. Shots draw from the
-  quiver first, then `main` and the bags; a talent refund returns to the
+  quiver first, then `main` and the bags, the inactive hotbar layout last
+  (Round 50); a talent refund returns to the
   quiver first. A
   drag of part of a stack onto the slot while it shows a full 100 moves the
   whole stack in (the engine treats that drop as a whole-stack swap).
@@ -548,8 +586,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   The player's engine `craft`
   list has size 0 (a join shrinks it while it is empty).
 - **Crafting jobs and the overflow** ([professions.md](professions.md)
-  §1.2): ingredients leave the bags first, then `main[9..]`, the hotbar last
-  (stacks without metadata only); a job starts only when its whole result
+  §1.2): ingredients leave the bags first, then `main[9..]`, the hotbar,
+  the inactive hotbar layout last (Round 50; stacks without metadata only,
+  and ×N counts the same slots); a job starts only when its whole result
   fits into the inventory once they are taken, and each finished craft goes
   into the inventory through the give helper (Round 47 ruling 18). What no
   longer fits lands in the overflow `grug_craft_out`, four take-only slots
@@ -744,17 +783,25 @@ as a fresh stack, and dragging the carried copy back onto its own icon
 removes that copy (the engine undoes the swap such a drop asks for). The
 hint reads "Drag skills onto the hotbar. Drag one back here to remove it."
 
-**Skills live on the hotbar only** (`main[1..8]`). Ability representations
+**Skills live on the hotbar only** (`main[1..8]`, and the inactive hotbar
+layout, §1, which only a switch fills). Ability representations
 carry `grug_ability` and `grug_bound_skill`; a move inside the inventory may
 take a skill only onto a hotbar slot (a swap that would push one off the
 hotbar is refused), and a put from the catalog lands only on a hotbar slot
 and only while the player carries no other copy in `main`, `craft` or an
-owned bag. Bags, `main[9..]`, the potion belt, crafting, equipment and the
-quiver refuse skills. A grant goes onto a free hotbar slot, never into
-`main[9..]` or a bag: the base kit at character creation (in kit order) and
-after a class change (its kit slot, else the first free one), and a talent
-unlock (`skill_trees.md` §3.4). With no free hotbar slot a non-skill item
-makes room (Round 49 ruling 10): the rightmost one the rest of the
+owned bag: a copy on the inactive layout does not count, so a skill may lie
+once on A and once on B (Round 50; both share one cooldown). Bags,
+`main[9..]`, the potion belt, crafting, equipment and the quiver refuse
+skills. The kit cleanup (`grug_abilities.normalize_kit`, at join, a class
+choice and a talent change) removes locked skills and second copies from
+both layouts at once, counting copies per layout. A grant goes onto a free
+slot of the shown hotbar layout, never into `main[9..]`, a bag or the
+inactive layout: the base kit at character creation (in kit order) and
+after a class change (its kit slot, else the first free one; Round 50 D1).
+A talent unlock places nothing (Round 50 D1): the skill waits in the
+catalog and the feed says "<Skill> unlocked. Drag it from Talents & Skills
+onto your hotbar." (`skill_trees.md` §3.4). For the kit, with no free hotbar
+slot a non-skill item makes room (Round 49 ruling 10): the rightmost one the rest of the
 inventory can take moves there through the give helper and the skill takes
 its slot; a skill never moves. With no room anywhere the skill waits in the
 catalog. A
@@ -792,8 +839,10 @@ a small window on the left of the screen, four inventory-sized slots wide
 - **Return home:** with a home, "Home: <name>" and the button "Return home
   (<state>)" with the Character tab's state text; the same travel request
   and its gates (combat, the cooldown, a running return).
+- **Hotbar:** the A and B buttons of the hotbar switch (§1); a switch keeps
+  the window open and shows it again with the new layout marked (Round 50).
 - A click acts once and closes the window. It is sent once per opening and
-  never refreshed; it does not open while dead or during character
+  refreshed only by a hotbar switch; it does not open while dead or during character
   creation. The client releases every key while a menu or the chat is open,
   so E cannot open it over another window. Help names the limits: a rebound
   aux1 key, "Aux1 key for climbing/descending" sinks in water and climbs

@@ -1,10 +1,11 @@
 -- The quickbar (Round 44, ui-crafting-rework-plan.md ruling 9 and §3.5): the
 -- rising edge of aux1 (E; grug_keys) opens a small window on the left of the
 -- screen with the character's purchased mounts and boats on top (and
--- Dismount below them while riding), the potion belt below and the Return
--- home button at the foot. A click uses the mount, boat, potion, Dismount or
--- Return home and closes the window. The window is sent once per opening and
--- never refreshed. Its own mod because it reaches mounts, home travel and the
+-- Dismount below them while riding), the potion belt and the hotbar switch
+-- (A and B, Round 50) below and the Return home button at the foot. A click
+-- uses the mount, boat, potion, Dismount or Return home and closes the
+-- window. The window is sent once per opening and refreshed only by a
+-- hotbar switch. Its own mod because it reaches mounts, home travel and the
 -- inventory's belt, and grug_mounts and grug_home already depend on
 -- grug_inventory.
 --
@@ -102,6 +103,13 @@ function grug_quickbar.formspec(player)
 		end
 	end
 	y = y + SLOT
+	-- The hotbar switch (Round 50 ruling 2): the inventory views' element,
+	-- the two buttons side by side on the slot columns.
+	y = y + 0.45
+	fs[#fs + 1] = ("label[%.3f,%.2f;Hotbar]"):format(PAD, y)
+	y = y + 0.3
+	fs[#fs + 1] = grug_inventory.hotbar_switch(player, PAD, y, SLOT, 0.6, PITCH, 0)
+	y = y + 0.6
 	local home_label, home_state = grug_inventory.home_state(player)
 	if home_label then
 		y = y + 0.45
@@ -113,7 +121,7 @@ function grug_quickbar.formspec(player)
 	end
 	y = y + 0.45
 	fs[#fs + 1] = ("label[%.3f,%.2f;%s]"):format(PAD, y,
-		esc(core.colorize("#c8c8c8", "Click to use; the window closes.")))
+		esc(core.colorize("#c8c8c8", "Click to use; the window closes. A and B switch the hotbar.")))
 	local height = y + 0.45
 	return ("formspec_version[6]size[%.3f,%.3f]position[0.02,0.5]anchor[0,0.5]"):format(
 		WIDTH, height) .. table.concat(fs)
@@ -145,10 +153,15 @@ function grug_quickbar.drink(player, index)
 end
 
 -- One click acts once and closes the window; the quit of the close (or of
--- Esc) and any event after it change nothing.
+-- Esc) and any event after it change nothing. A hotbar switch keeps the
+-- window open and shows it again with the new layout marked.
 function grug_quickbar.handle_fields(player, fields)
 	local name = player:get_player_name()
 	if not open[name] then return end
+	if grug_inventory.hotbar_switch_fields(player, fields) then
+		core.show_formspec(name, FORMNAME, grug_quickbar.formspec(player))
+		return
+	end
 	local acted = false
 	for tier_id = 1, #grug_mounts.TIERS do
 		if fields["grug_quickbar_mount_" .. tier_id] then

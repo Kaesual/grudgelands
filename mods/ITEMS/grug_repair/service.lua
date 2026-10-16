@@ -49,6 +49,8 @@ local function owned_lists()
 	for i = 1, grug_inventory.BAG_COUNT do
 		lists[#lists + 1] = grug_inventory.content_list(i)
 	end
+	-- The repair quote includes the inactive hotbar layout (Round 50 ruling 3).
+	lists[#lists + 1] = grug_inventory.HOTBAR_STORE
 	return lists
 end
 

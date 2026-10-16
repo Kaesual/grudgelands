@@ -614,10 +614,9 @@ it, including one that has not picked a class yet.
 
 A character permanently sees every currently unlocked active ability in the
 Talents & Skills catalogue. Initial class creation grants the universal and
-base-class starter kit once. A later talent unlock puts its ability on a
-free hotbar slot; on a full hotbar the rightmost non-skill item the
-inventory can take moves into it and the ability takes that slot (Round 49
-ruling 10), else the ability waits in the catalogue. Talent changes, joins
+base-class starter kit once, onto the shown hotbar layout (Round 50 D1). A
+later talent unlock places nothing: its ability waits in the catalogue until
+the player drags it onto a hotbar layout (Round 50 D1). Talent changes, joins
 and equipment changes never recreate a deleted representation. Losing a
 talent removes its representation.
 

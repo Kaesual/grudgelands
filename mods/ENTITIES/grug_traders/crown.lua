@@ -58,8 +58,12 @@ local function is_gear(stack)
 end
 
 -- The first Fallen Crown the player carries: list, index, stack; or nil.
+-- The inactive hotbar layout last (Round 50 ruling 3); the gear to crown is
+-- chosen from the owned lists only.
 local function find_crown(inv)
-	for _, list in ipairs(owned_lists()) do
+	local lists = owned_lists()
+	lists[#lists + 1] = grug_inventory.HOTBAR_STORE
+	for _, list in ipairs(lists) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			if stack:get_name() == grug_traders.CROWN_ITEM then
 				return list, index, stack

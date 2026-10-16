@@ -20,9 +20,13 @@ local function soulbound(stack)
 end
 grug_housing.is_soulbound = soulbound
 
--- `main` or a bag's content list (grug_inventory.content_list).
+-- `main`, a bag's content list (grug_inventory.content_list) or the
+-- inactive hotbar layout (grug_inventory.HOTBAR_STORE; Round 50 D3: a switch
+-- carries the stone there, and grug_inventory's guard keeps every inventory
+-- action out of it).
 local function carried_list(list)
-	return list == "main" or list:match("^grug_bag%d_content$") ~= nil
+	return list == "main" or list:match("^grug_bag%d_content$") ~= nil or
+		list == "grug_hotbar_store"
 end
 
 core.register_allow_player_inventory_action(function(player, action, inventory, info)
