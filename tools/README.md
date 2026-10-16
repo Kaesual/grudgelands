@@ -1108,10 +1108,24 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   server config disables mod security and the timer logs LuaJIT trace
   aborts, flushes and machine code (`GRUG_MGPROF_JIT*`).
   Since Round 49 (lane JIT) the R5 adapter has one pass: its
-  `r5a_replay` mark follows `r5a_resolve_validate` directly.
-- **Round 49** (`r49_<lane>`): `r49_ui` lane UI's engine screenshots, no
-  fixture (its checks are in `r48_mail` and `r48_sell`): `capture.sh
-  OUT_DIR` with `grug_probe_r49_ui` shows the mailbox Write tab with the
+  `r5a_replay` mark follows `r5a_resolve_validate` directly. Round 49
+  added: lane MEAS `summarize.py --first-start BOOT_DIR` (the first start
+  of a fresh world from the probe's loaded, first-step and
+  preparation-complete lines; `run.sh totals`, `evidence/meas-first-start`);
+  lane ORE the probe's ore census; lane SKIP the `deep_skip` label; lane V7
+  `EXTRA_PATCHES` and `PROBE_EXTRA` in `run.sh` and extra columns from the
+  probe's config; lane MEAS2 the refreshed `stages.patch` (it applies with
+  `git apply --check` again), `meas2_extra.lua` (19 extra chunks: air over
+  both columns and the cave-plant bands), the census per band's lower half
+  with in-range cave floors, `summarize.py --compare BEFORE... --vs
+  AFTER...`, `--rates` (chunks per second by chunk type) and `--census`,
+  and `evidence/meas2-boot1`, `meas2-boot2` and `meas2-first-start`
+  ([before/after](../docs/research/mapgen-chunk-profile-2026-10.md#round-49-beforeafter-lane-meas2)).
+  The older `wp40/profile` harness's stage patch is stale since Round 22;
+  per-stage profiles use `mgprof`.
+- **Round 49 lane UI** (`r49_ui`, no fixture; its checks are in
+  `r48_mail` and `r48_sell`): `capture.sh OUT_DIR` with
+  `grug_probe_r49_ui` shows the mailbox Write tab with the
   postage rule, the result line of a Send and the vendor's Sell tab with a
   row's tooltip (the r48_mail method; `warp_pointer.py` moves the Xvfb
   pointer onto a form position with ctypes and libX11, so the tooltip
@@ -1160,6 +1174,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `capture.sh OUT_DIR` with `grug_probe_r49_inv` the engine screenshots of
   the starter hotbar, the Inventory tab with the stone in a bag and the
   Steward's window in each state (the r48_mail method).
+- **Round 49 lane ORE** (`r49_ore`): ores, gems and cave plants from native
+  v7 (`portable_test.lua`: the 84 native scatter rows derived from the
+  resource table and the tiers, lower-half rows, the T6 split, the
+  scarcity and shapes, registered after the strata; the fill ores of
+  `r49_fill_ores_new` at rough rates with gems mostly singles and pairs;
+  the two cave decorations); `fill_digest.lua REPO` the fill-ore
+  choice over a fixed volume as one line, LuaJIT against
+  `tools/bin/lua51`; `evidence/boot1..2` the lane's mgprof stage boots.
 - **Round 49 lane PROT** (`r49_prot`): the protection depth under towns
   and the preparation bottom (`portable_test.lua`: the one depth constant in
   every consumer of one world, the fill-floor bottom of a high, an ordinary
@@ -1169,6 +1191,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `count_tiles.lua REPO [seed ...]` the full-preparation tiles and extra
   chunks the fill-floor bottom changes, from the real preparation authority
   without generating (about 75 s per seed).
+- **Round 49 lane SKIP** (`r49_skip`): no Lua for chunks below every
+  writer (`portable_test.lua [SEED]`: the rock-below test's bounds on a
+  synthetic envelope, the air test's owner-first order against a verbatim
+  copy of the Round 23 code, and the real runtime of one seed: chunks under
+  every settlement, the lowest fitted box, the highest mountain, a dragon
+  channel, a deep ocean and the corpus columns); `run_verify.sh OUT` one
+  verification boot with `verify_patch.py`'s disposable patch (the full
+  writer on every chunk, the VoxelManip compared on each chunk a test would
+  skip: content, param2 and light of the chunk and its shell) and the probe
+  `grug_probe_r49skip`; `evidence/mgprof` and `evidence/verify` the lane's
+  boots.
 - **Round 49 lane JIT** (`r49_jit`): the R5 adapter's one compilable pass
   (`portable_test.lua`: on seed 12345 with v7's stand-in ground moved
   off the plan, the runtime adapter with its classification memo and the
@@ -1203,3 +1236,32 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   a simulated map reset (a fresh world, then its `map_meta.txt` set back to
   `mountains`, the map emptied and `grug_reset_world = 1` via `reset.patch`):
   it boots and `map_meta.txt` holds `nomountains` again (r7_native forces it).
+- **Round 49 lane CACHE** (`r49_cache`): P9G's 2-D result per chunk column
+  and the mapgen column cache (`portable_test.lua`: on two real runtimes of
+  seed 12345 with moved ground, a hit writes the same bytes as a miss,
+  misses and evictions counted, the key covers its inputs);
+  `run_probe.sh OUT` one shell-order probe boot (`grug_probe_r49cache`:
+  chunks in the order a walking, riding and a second far player emerge
+  them) with `stages.patch` and `counters.patch` (cache hits, misses and
+  evictions), summarized by `analyze.py`; `fleet_stack.sh TREE OUT
+  [perturb]` (through `fleet_stack.lua`) the quick seeds' chunks with the
+  chunks above and below them, for comparing two trees; `evidence/` the
+  probe before and after, the mgprof boots and the digests.
+- **Round 49 lane HASH** (`r49_hash`): the integer placement hash
+  (`portable_test.lua`: the same draws under LuaJIT and `tools/bin/lua51`
+  over `sample.lua`'s sample, uniformity, neighbour correlation, stream
+  and seed independence, no grid or diagonal artefacts, distinct salts,
+  the catalog rates, no lattice period and no point mirror; section J the
+  P8 follow-up's per-chunk cube decisions against a reference without
+  memo); `density.lua REPO [SEED]` decoration, tree and gathering counts
+  per chunk through the seed fleet's harness, compared with
+  `density_compare.py`; `topview.lua REPO SEED X Z` a letter map of a
+  3 × 3 chunk area, `topview_png.py` its image (`shots/` the lane's views);
+  `evidence/` the densities, the quick fleet and the mgprof boots (before,
+  the first mix, the cube mix).
+- **Round 49 P8 follow-up** (`r49_p8`, evidence only; its test is
+  `r49_hash` section J): `evidence/README.txt` the fill-ore pass's time
+  per corpus boot before HASH, with HASH's two mixes and with the
+  per-chunk cube decisions, `mgprof-after` its stage boot and
+  `fleet-digest-quick.txt` the quick seeds' chunk bytes (identical to main
+  `62123545`).
