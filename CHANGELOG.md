@@ -12,12 +12,92 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.49.0 — faster world generation and gameplay polish (in progress)
+## 0.49.0 — faster world generation and gameplay polish (2026-10-16)
 
-Round 49 is under way ([plan](docs/planning/round49-plan.md)); lane D writes
-this entry when the round closes. **Map reset**: ores, gems and cave plants
-come from the native map generator, and the protection depth under towns
-shrinks.
+The world generates much faster, above all underground, with ores, gems
+and cave plants now placed by the engine's own map generator, and a round
+of gameplay polish: postage at Send, item tooltips when selling, the Claim
+Stone in your bags, the starter kit on the hotbar, kill XP and the rare
+tier, creatures that find their way round bushes and trees, smaller
+blocks in the hand and a half-buried onion. **Map reset** needed: world
+generation changed, so an existing world's map is generated anew from its
+seed. Characters keep their level, gear, inventory, money, quests,
+professions, mounts and waypoints, as in every map reset; their position
+and home claim go with the old map. No migration step: the new version
+reads every character as it is.
+
+- **Ores, gems and cave plants** come from the engine's own map generator.
+  Every depth layer holds them about as often as before (counted within a
+  few percent of the table); gems lie as single nodes or pairs, coal and
+  ores in clumps. Ores and gems now also lie under towns and deep water.
+  Mountains and raised land the game builds above the engine's ground
+  hold ores at the same rate. Cave Cap and Ember Moss grow on cave floors
+  in their depth bands, about one in every 1,500 to 2,000 floors as
+  before, under towns too.
+- **Faster world generation:** going deep now generates almost
+  instantly: a chunk below about y −113 costs the game no work of its own
+  (about 40 chunks per second instead of about 2 on one core). New land at
+  the surface generates about twice as fast, the next chunk of a column
+  about two and a half times as fast. The engine's own v7 mountains are
+  switched off; the land you see is the game's and stays as it was, but
+  fewer caves open in the top tens of blocks under hills and highlands.
+- **Trees and decorations are placed anew:** every tree, plant and
+  gathering node is drawn by a faster rule, as many as before at other
+  spots; tree shapes and rotations still vary.
+- **Town protection:** the protected ground under a town now ends 80
+  blocks below the town (was 100). Digging beside and under a town works
+  from there; the town's own ground still cannot be dug through.
+- **Mail and selling:** the Write tab shows the postage rule ("Postage:
+  5c per letter + 30c per filled slot", paid when you send); Send charges the
+  attachments as they are at the click, once, and the line names the
+  amount ("Letter sent to X. Postage paid: 65c."); the text you typed
+  stays. On the merchant's Sell tab, hovering an item shows its tooltip
+  with its quality, stats and enchants.
+- **The Claim Stone** may lie in any of your bags as well as the main
+  inventory and the hotbar, and sorting leaves it where it is; chests,
+  stations, equipment slots, trades and mail still refuse it, and
+  dropping it still destroys it. The Housing Steward shows "Receive Claim
+  Stone" only when you can receive one; otherwise the reason stands in
+  its place (below level 20, a stone already placed, a stone already
+  carried). With a full inventory the button stays and the click asks you
+  to make room.
+- **Starter kit and skills:** a new character finds its apples on hotbar
+  slot 7 and its torches on 8. When a skill a talent unlocks finds the
+  hotbar full, the rightmost item that is not a skill moves into your
+  inventory and the skill takes its slot; with no room there either, the
+  skill waits in the skill row as before.
+- **Kill XP and the rare tier:** a kill pays 10 % less per level below
+  yours (was 15 %): 3 below 70 %, 9 below 10 %; from 10 below it pays
+  nothing and the name line shows gray with (no XP) (was 7 below). Above
+  your level nothing changed. A rare (★, violet, twice the size) now sits
+  between a normal and an elite: 2.5 times a normal's health, 1.4 times its
+  damage and twice its XP (was 5, 2.2 and 6 times), with its size, tint,
+  warning and loot as before.
+- **Creatures that chase you:** zombies, giant rats and other creatures
+  reach you behind bushes and tree trunks, also one or two blocks above
+  them: their route steps round low leaves and, for wide creatures,
+  round trunks, and a creature that gets stuck looks further round each
+  time. Archers and other creatures with a ranged attack that lose sight
+  of you walk round the cover until they see you again, then stop and
+  shoot; they never shoot into cover. Flyers and the kings behave as
+  before.
+- **Looks:** a block held in the hand (dirt, stone, slabs, stairs) shows
+  at 70 % of its old size in third-person view and to other players, NPCs
+  included; tools, torches, plants and the first-person view are
+  unchanged. The wild onion and the grown field onion sit half in the
+  ground; the onion item is unchanged.
+- **This release needs a map reset** (for the server's host): stop the
+  server, back the world up, empty the map, raise `grug_reset_world` and
+  start it ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#1-four-outcomes)).
+  No migration step for 0.49.0; a world older than 0.48.0 still runs
+  `python3 tools/migrate.py --world <world directory>` for the steps it
+  crosses. The game now sets the v7 flag `nomountains` itself and writes
+  it over the world's `map_meta.txt` at every start, so a world created
+  with the old flags needs nothing beyond the map reset. The first start
+  after the reset, like a new world's, is ready about 13 s sooner (66
+  instead of 79 s on the measuring PC). The server uses about 30–40 MiB
+  more memory for the map generator's larger column cache.
 
 ## 0.48.1 — fix after the first 0.48.0 playtest (2026-10-14)
 
