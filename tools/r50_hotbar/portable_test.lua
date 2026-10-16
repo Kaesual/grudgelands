@@ -236,6 +236,8 @@ item("grug_abilities:strike", {stack_max = 1, groups = {grug_ability = 1, grug_b
 item("grug_abilities:loose", {stack_max = 1, groups = {grug_ability = 1, grug_bound_skill = 1}})
 item("grug_abilities:sprint", {stack_max = 1, groups = {grug_ability = 1, grug_bound_skill = 1}})
 item("grug_housing:claim_stone", {stack_max = 1, groups = {grug_soulbound = 1}})
+-- PGAME's packed container: soulbound by group like the stone.
+item("grug_housing:packed_container", {stack_max = 1, groups = {grug_soulbound = 1}})
 registered_nodes["default:chest"] = {description = "Chest"}
 
 --
@@ -413,8 +415,15 @@ do
 	eq(soulbound_allow(p, "move", p.inv, {from_list = "main", from_index = 9,
 		to_list = "craft", to_index = 1, count = 1}), 0, "G soulbound: the craft grid does not")
 	eq(H.allow(p, "move", info), 0, "G ...a hand move into the hidden list is still refused")
+	p.inv:set_stack("main", 2, ItemStack("grug_housing:packed_container"))
+	eq(soulbound_allow(p, "move", p.inv, {from_list = "main", from_index = 2, to_list = STORE,
+		to_index = 3, count = 1}), nil, "G soulbound: a packed container may lie on B too")
 	check(I.switch_hotbar(p, "B"), "G a switch carries the stone on the hotbar along")
 	eq(at(p, STORE, 1), "grug_housing:claim_stone", "G ...into the hidden list")
+	eq(at(p, STORE, 2), "grug_housing:packed_container", "G ...and the packed container")
+	wait(1)
+	check(I.switch_hotbar(p, "A"), "G switching back")
+	eq(at(p, "main", 2), "grug_housing:packed_container", "G ...brings the packed container back")
 end
 
 --
@@ -956,6 +965,13 @@ do
 		"U chest: at the kept scroll position")
 	submit(p, "default:chest", {grug_hotbar_a = "A"})
 	eq(#shown, count + 1, "U chest: a press within the limit re-shows nothing")
+	-- The chest dug while the form is open: the switch happens, no re-show.
+	wait(1)
+	nodes[key(pos)] = nil
+	submit(p, "default:chest", {grug_hotbar_a = "A"})
+	eq(I.active_hotbar(p), "A", "U chest gone: the switch still happens")
+	eq(#shown, count + 1, "U chest gone: the chest form is not shown again")
+	nodes[key(pos)] = "default:chest"
 	submit(p, "default:chest", {quit = "true"})
 	eq(default.chest.open_chests.u_chest, nil, "U chest: the quit still closes the chest")
 end

@@ -62,7 +62,7 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
   current with `grug_map/art/` (`tools/r44_mb/gen_baked_art.py --check`)
   and the generator's PNG decoder self-test (`--self-test`).
 - `python3 tools/check_upgrade.py`: the upgrade declaration
-  (`web_data/upgrade.json`, schema 2) against the last pushed commit, the
+  (`web_data/upgrade.json`, schema 3) against the last pushed commit, the
   game's step registry (`grug_core/migrations.lua`) against its `migrate`
   list and the declared step files, after its own self-test (`--self-test`
   alone; [upgrade contract](../docs/technical/upgrade-contract.md)).
@@ -95,13 +95,29 @@ PostgreSQL has none): stop the server and back the world up first (its
 directory and, for PostgreSQL, its databases).
 
 ```
-python3 tools/migrate.py --world <dir>           # migrate
-python3 tools/migrate.py --world <dir> --check   # report, change nothing
+python3 tools/migrate.py --world <dir>                       # migrate
+python3 tools/migrate.py --world <dir> --check               # report, change nothing
+python3 tools/migrate.py --world <dir> --map-reset           # pre-reset pass, then migrate
+python3 tools/migrate.py --world <dir> --check --map-reset   # also decode one map block
 ```
 
 `--check` reports the world version and the due steps and proves write
 access: on every backend a real write under the write lock (SQLite `BEGIN
 IMMEDIATE`, PostgreSQL at most 5 s for a row lock), rolled back.
+
+`--map-reset` (since 0.50.0) is the **pre-reset pass**, run before the map
+is emptied ([upgrade contract §3.5](../docs/technical/upgrade-contract.md#35-the-pre-reset-pass)):
+it reads the map (world.mt's `backend`, a missing key meaning `sqlite3`,
+and `pgsql_connection`; `map.sqlite` opened read-only, PostgreSQL in a
+read-only session; never a map write), packs every item-holding node of
+every housing claim for the claim's owner, adds the Claim Stone's remaining
+fuel as charcoal, commits that in one mod-storage transaction and then runs
+the due steps as without it. A world at the target with nothing due still
+packs and exits 0 (`"applied": []`). Map blocks need zstd: Python 3.14's
+`compression.zstd`, else `zstandard` (Debian: `python3-zstandard`).
+`--check --map-reset` also selects one map block, decodes it and proves
+zstd importable (`map_checked`: 1, or 0 for an empty map). Code:
+`tools/migration/mapblock.py` (the map and the decoder) and `pack.py`.
 
 The world is found from `world.mt` only: `player_backend`, `auth_backend`
 and `mod_storage_backend`, each `sqlite3` or `postgresql`, and the matching
@@ -126,18 +142,25 @@ escaped.
 | Event | Fields | When |
 |---|---|---|
 | `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first (a usage refusal comes alone) |
+| `pack_start` | `seq` (the pass number), `claims` (claim records read) | `--map-reset`: the pass begins |
+| `pack_done` | `seq`, `counts`: `claims`, `players` (owners given entries), `containers` (packed items), `items` (non-empty stacks inside them), `charcoal` (pieces), `blocks_read`; `nodes` and `empty` (packed and empty item-holding nodes by node name; `workspace record` for personal workspace records), `seconds` | the pass committed |
 | `step_start` | `step` (its version), `from` (the world's version before it) | a step begins |
 | `step_done` | `step`, `counts`: `characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers` (writes of that step) | a step committed |
-| `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`), and `applied` (migrate) or `write_checked` (check) | exit 0 |
+| `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`; with `--map-reset` also `map`), and `applied` (migrate) or `write_checked` (check); with `--map-reset` also `map_reset` (`true`) and `pack_seq` (migrate) or `map_checked` (check) | exit 0 |
 | `refusal` | `reason`, `message` | exit 2 |
 | `failed` | `step` (or `null`), `reason`, `message` | exit 1 |
 
 Refusal reasons: `usage`, `checkout` (game.conf, the declaration or a step
 file), `world_mt`, `backend`, `database_missing`, `connection`, `layout`
 (not the engine's table layout), `lock`, `write_access`, `record` (no
-`major.minor.patch`), `world_newer`, `internal`. Failure reasons: `lock`
-(a later step's lock), `step` (the step raised), `rule` (the step broke a
-limit of the data API), `commit`.
+`major.minor.patch`), `world_newer`, `internal`, and for `--map-reset`:
+`pack_baseline` (the world is below 0.48.1), `pack_pending` (the marker of
+an earlier pass that the game never loaded: restore the backup taken before
+it), `map_block` (a block in a claim the decoder cannot read, a format other
+than 29 included), `map_empty` (claims but no map block: the map was
+emptied before the pass). Failure reasons: `lock` (a later step's lock),
+`step` (the step raised), `rule` (the step broke a limit of the data API),
+`commit`, `pack` (the pass's transaction failed).
 
 **Steps** live in `tools/migration/steps/v<major>_<minor>_<patch>.py` and
 export `migrate(world)` (the data API: `tools/migration/data.py`; codecs:
@@ -1320,3 +1343,55 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_probe_r491_anim` the engine screenshots of a burning workspace
   furnace a few seconds apart and the re-sends counted (the r491_view
   method).
+- **Round 50 lane PGAME** (`r50_pgame`): packed containers and the Claim
+  Stone inventory (`portable_test.lua`: the tool's pass written as the
+  plan's §3 describes before the load, cleaned by the real grug_core runner
+  and `recovered.lua`: unknown items, an unknown node and a shrunken list
+  into extra packed chests, a split charcoal stack, the descriptions and
+  images, an older pass untouched, a rerun and a half-done rerun; the
+  entries across `M.map_reset`; `CONTAINER_LISTS` against the vendored
+  `set_size` calls; the soulbound guards and the refused drop; the
+  Belongings tab of the active stone only, take-only, stale slots, a closed
+  form, a full slot, pick-up and loss; every kind placed with exact
+  contents through the real chest code and stand-ins; the join notice and
+  the Steward's line). `capture.sh OUT_DIR` (`XVFB=`) with
+  `grug_probe_r50_pgame` the engine screenshots of the draft form, the
+  Belongings tab, two packed tooltips (the pointer moved by
+  `r49_ui/warp_pointer.py`) and two restored containers, and an in-engine
+  check of every placement ("place ... ok" in `probe.txt`).
+- **Round 50 lane HOTBAR** (`r50_hotbar`): the two hotbar layouts A and B
+  (`portable_test.lua` on the `r44_ch` harness: joins, the swap with wear
+  and metadata, the anti-spam limit, a failing switch callback, the hidden
+  list's guard before equipment, bags and quiver, give/fits/sort never
+  reaching it, the soulbound rule, every consumer of the study in its order
+  (crafting, ammunition, quests, Claim Stone fuel, Fallen Crown, vendor,
+  repair), `normalize_kit` per layout and the kit on the shown layout, the
+  switch callback with the real cooldown overlay, death and the map reset,
+  and the switch in the inventory pages, a node form, a chest and the
+  quickbar; the workspace, the Claim Stone form, its Belongings tab and the
+  mail's Write tab are in `r491_view`, `r50_pgame` and `r48_mail`).
+  `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r50_hotbar` the engine
+  screenshots of the Inventory page, a chest and the quickbar with B shown.
+- **Round 50 lane PTOOL** (`r50_ptool`): the migration tool's pre-reset pass
+  (`--map-reset`). `test_pack.py` (Python unittest, locally on Python 3.14
+  and in the runner's image on 3.13 with python3-zstandard): the block
+  decoder against `world/`, a world the engine wrote (every block decodes;
+  every placed container's node name, lists and slots; node fields and
+  private flags; refusals), the pass on copies (events and counts, every
+  entry against the probe's record, charcoal rounded up, the area's border
+  and MIN_Y, two passes appending, the pending-marker refusal, a restored
+  backup, the game's `recovered:…:<n>.<k>` keys kept, `pack_baseline`, steps
+  after the pass, `--check --map-reset`, a bad block, an emptied map, odd
+  claim records, the pre-5.12 SQLite layout, backends, the read-only map,
+  the lock), and the game facts pack.py freezes (registry.lua, api.lua,
+  workspaces.lua). `pg_test.py` (in the image, through Round 43 IT's
+  helpers): the map and the backends on PostgreSQL and in the platform's
+  layout, every recovered row equal to SQLite's, the shipped command line,
+  the map rows unchanged, the read-only session. `run.sh [EVIDENCE_DIR]`
+  (one queue slot): both in the image, then a boot whose probe reads every
+  packed entry back with `ItemStack` and `core.deserialize`. `world/` was
+  built by `make_world.sh OUT_DIR` with the probe `grug_probe_r50_ptool`
+  (two claims of grug_housing's model, a chest, a locked chest, a lit
+  furnace with a workspace record, a bookshelf with written books, a vessels
+  shelf, a chest of 32 long books, an empty chest, border chests) and
+  trimmed to the claims' blocks by `trim.py`.

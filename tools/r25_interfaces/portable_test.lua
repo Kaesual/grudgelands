@@ -237,6 +237,9 @@ grug_factions = {get_faction = function(player) return factions[player:get_playe
 grug_housing = {}
 dofile("mods/PLAYER/grug_housing/api.lua")
 local H = grug_housing
+-- Round 50: the stone form and the Steward ask for belongings from an old
+-- map (recovered.lua, tested by tools/r50_pgame); none wait here.
+H.recovered = {count = function() return 0 end}
 local LUMP = H.LUMP_SECONDS
 eq(LUMP, 26160, "one lump burns 7 h 16 min (api.lua)")
 check(H.is_fuel("default:coal_lump") and H.is_fuel("grug_smelting:charcoal") and

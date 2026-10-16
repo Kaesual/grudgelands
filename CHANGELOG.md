@@ -12,6 +12,11 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.50.0 — Round 50 (in progress)
+
+Existing worlds play on: no migration step, no map reset, no new world. The
+entry is completed at the end of the round.
+
 ## 0.49.1 — fix after the first 0.49.0 feedback (2026-10-16)
 
 Existing worlds play on: no migration step, no map reset, no new world.

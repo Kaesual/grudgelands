@@ -77,11 +77,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	-- GRUG PATCH (Round 50 HOTBAR): the bag view's scroll value of every
-	-- event, and the hotbar switch, which shows the chest form again.
+	-- event, and the hotbar switch, which shows the chest form again while
+	-- the chest is still there.
 	local open = default.chest.open_chests[pn]
 	if open and not fields.quit then
 		grug_inventory.keep_scroll(open.context, fields)
-		if grug_inventory.hotbar_switch_fields(player, fields) then
+		local node = core.get_node(open.pos).name
+		if grug_inventory.hotbar_switch_fields(player, fields) and
+				(node == open.swap or node == open.swap .. "_open") then
 			core.show_formspec(pn, "default:chest",
 				default.chest.get_chest_formspec(open.pos, player, open.context))
 		end

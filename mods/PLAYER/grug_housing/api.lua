@@ -24,6 +24,8 @@ model.load()
 -- The platform's map reset: the claims go with the map (registry.lua).
 grug_core.map_reset.clear("the housing claims", model.map_reset)
 grug_housing.model = model
+-- The Claim Stone inventory's entries share this storage (recovered.lua).
+grug_housing.storage = storage
 
 -- Claim size and placement bounds (rulings 1-2).
 grug_housing.RADIUS = model.RADIUS

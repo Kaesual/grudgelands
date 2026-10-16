@@ -1746,6 +1746,17 @@ tools](#player-meta-read-by-external-tools).
     `is_protected` wrapper with the arrival cube, the soulbound items.
   - `admin.lua` (Round 26): `/claim_remove <player> | here | orphans`
     (`server` privilege).
+  - `packed.lua`, `recovered.lua` (Round 50): the soulbound
+    `grug_housing:packed_container` (meta `node`, `lists`, `seq`; placing
+    restores the container through `core.item_place_node` and fills its
+    lists; `CONTAINER_LISTS` holds the restorable kinds with their list
+    sizes) and the Claim Stone inventory: the tool's entries
+    `recovered:<player>:<seq>:<n>` in this mod's storage, read through
+    `grug_housing.recovered` (`entries`, `count`, `take`), and `clean_pass`,
+    the handler of the world marker `map_reset_pack:<seq>` (unknown items
+    out, D6's extra chests under `<n>.<k>`, descriptions and images), plus
+    the join notice. The stone form shows the entries as the active stone's
+    Belongings tab. Fixture `tools/r50_pgame/portable_test.lua`.
   - `interaction.lua` (Lane B): the generic right-click and node-inventory
     guard installed at `register_on_mods_loaded`, and the "Home of <owner> –
     protected" reason for `grug_core.protection_hint`.
@@ -1939,8 +1950,11 @@ tools](#player-meta-read-by-external-tools).
   (`is_new_world`), the guard (`decide`: newer world or a step between
   refuses the start), the test hook (`grug_test_migrations`), the world
   markers (`run_world`, in `register_on_mods_loaded` after every map-reset
-  clear) and the character markers (`run_character`, moved to the first join
-  callback as registered, so the engine profiler's wrapper survives). Pure
+  clear), the packing passes' markers `map_reset_pack:<seq>` (`run_packs`,
+  right after, through the one handler `register_pack_handler` takes:
+  grug_housing's `clean_pass`, Round 50) and the character markers
+  (`run_character`, moved to the first join callback as registered, so the
+  engine profiler's wrapper survives). Pure
   parts are tested on stubs by `tools/r43_gs/portable_test.lua`.
   `check_fresh_server.py` refuses marker keys anywhere else.
 - **The tool** `tools/migrate.py` (entry) and the package `tools/migration/`:
