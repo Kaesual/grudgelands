@@ -1,0 +1,132 @@
+{
+ "containers": {
+  "keeper": [
+   "chest",
+   "locked_chest",
+   "furnace",
+   "bookshelf",
+   "vessels_shelf",
+   "relic_chest",
+   "cellar_chest"
+  ],
+  "neighbor": [
+   "neighbor_chest"
+  ]
+ },
+ "empty_mode": "skipped",
+ "sqlite": {
+  "tool_wall_s": 0.089809548,
+  "pack_done_s": 0.052,
+  "counts": {
+   "claims": 2,
+   "players": 2,
+   "containers": 8,
+   "items": 19,
+   "charcoal": 149,
+   "blocks_read": 2177
+  },
+  "nodes": {
+   "default:bookshelf": 1,
+   "default:chest": 4,
+   "default:chest_locked": 1,
+   "default:furnace_active": 1,
+   "vessels:shelf": 1
+  },
+  "empty": {
+   "default:chest": 1,
+   "default:furnace": 1
+  },
+  "claims": [
+   {
+    "id": 1,
+    "owner": "keeper",
+    "blocks": 1176,
+    "containers": 7,
+    "seconds": 0.029
+   },
+   {
+    "id": 2,
+    "owner": "neighbor",
+    "blocks": 1001,
+    "containers": 1,
+    "seconds": 0.021
+   }
+  ]
+ },
+ "pg": {
+  "tool_wall_s": 0.17,
+  "pack_done_s": 0.063,
+  "counts": {
+   "claims": 2,
+   "players": 2,
+   "containers": 8,
+   "items": 19,
+   "charcoal": 149,
+   "blocks_read": 2177
+  },
+  "nodes": {
+   "default:bookshelf": 1,
+   "default:chest": 4,
+   "default:chest_locked": 1,
+   "default:furnace_active": 1,
+   "vessels:shelf": 1
+  },
+  "empty": {
+   "default:chest": 1,
+   "default:furnace": 1
+  },
+  "claims": [
+   {
+    "id": 1,
+    "owner": "keeper",
+    "blocks": 1176,
+    "containers": 7,
+    "seconds": 0.034
+   },
+   {
+    "id": 2,
+    "owner": "neighbor",
+    "blocks": 1001,
+    "containers": 1,
+    "seconds": 0.027
+   }
+  ],
+  "map_rows": 20719
+ },
+ "fixture": {
+  "dir": "~/projects/grudgelands-orchestration/r50/platform-fixture",
+  "sizes": {
+   "world-0.48.1.tar.gz": 6819050,
+   "README.md": 2008,
+   "platform-pg.dump": 4714294,
+   "receipt.json": 8384
+  },
+  "world_files": [
+   "auth.sqlite",
+   "env_meta.txt",
+   "force_loaded.txt",
+   "grug_map_base.key",
+   "grug_map_base_0_0.png",
+   "grug_map_base_0_1.png",
+   "grug_map_base_1_0.png",
+   "grug_map_base_1_1.png",
+   "grug_map_base_2_0.png",
+   "grug_map_base_2_1.png",
+   "grug_map_mini_0_0.png",
+   "grug_map_mini_0_1.png",
+   "grug_map_mini_1_0.png",
+   "grug_map_mini_1_1.png",
+   "grug_map_mini_2_0.png",
+   "grug_map_mini_2_1.png",
+   "grug_map_minimap_mask.png",
+   "grug_region_maps.txt",
+   "grug_world_layouts.txt",
+   "ipban.txt",
+   "map.sqlite",
+   "map_meta.txt",
+   "mod_storage.sqlite",
+   "players.sqlite",
+   "world.mt"
+  ]
+ }
+}

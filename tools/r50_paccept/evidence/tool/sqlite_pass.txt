@@ -1,0 +1,8 @@
+migrate: migrate <run>/w_sqlite
+migrate: world version 0.48.1, target 0.50.0, due steps: none
+migrate: pass 1: 2 claim(s)
+migrate: claim 1 (keeper): 1176 blocks, 9 container(s), 0.029 s
+migrate: claim 2 (neighbor): 1001 blocks, 1 container(s), 0.021 s
+migrate: pass 1 done: {"claims": 2, "players": 2, "containers": 10, "items": 19, "charcoal": 149, "blocks_read": 2177}
+migrate: packed (pass 1), nothing to do
+paccept_wall_ns 89829311

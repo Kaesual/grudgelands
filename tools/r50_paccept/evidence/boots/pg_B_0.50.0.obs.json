@@ -1,0 +1,166 @@
+{
+ "at_end": {
+  "pack_seq": "1"
+ },
+ "at_load": {
+  "pack_seq": "1",
+  "packed:neighbor:1:1": "return {main={\"default:apple 6\",\"default:torch 8\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"}}",
+  "recovered:neighbor:1:1": "grug_housing:packed_container 1 0 \"\\u0001description\\u0002Packed \\u001b(T@default)Chest\\u001bE, 2 stacks\\n\\u001b(c@#c8c8c8)\\u001b(T@default)Apple\\u001bE \u00d76\\u001b(c@#fff)\\n\\u001b(c@#c8c8c8)\\u001b(T@default)Torch\\u001bE \u00d78\\u001b(c@#fff)\\n\\u001b(c@#a0a0a0)Place it to unpack it. Soulbound: it cannot be dropped, stored, mailed or sold.\\u001b(c@#fff)\\u0003seq\\u00021\\u0003wield_image\\u0002[inventorycube{default_chest_top.png{default_chest_front.png{default_chest_side.png&[transformFX\\u0003ref\\u0002packed:neighbor:1:1\\u0003inventory_image\\u0002[inventorycube{default_chest_top.png{default_chest_front.png{default_chest_side.png&[transformFX\\u0003node\\u0002default:chest\\u0003\"",
+  "recovered:neighbor:1:2": "grug_smelting:charcoal 60"
+ },
+ "errors": null,
+ "finish": "every planned player left",
+ "joins": [
+  {
+   "flow": {
+    "active": true,
+    "belongings_label": "Belongings (2)",
+    "belongings_list": true,
+    "charcoal": 60,
+    "draft": true,
+    "draft_belongings": false,
+    "draft_belongings_after_tab": false,
+    "draft_form_shown": true,
+    "draft_list_size": 0,
+    "draft_recovered_list": false,
+    "drop_refused": true,
+    "final_belongings": false,
+    "later": [
+     {
+      "id": "neighbor_chest",
+      "node": "default:chest",
+      "same": true,
+      "timer": false
+     }
+    ],
+    "left": 0,
+    "opened_draft": true,
+    "placed": [
+     {
+      "consumed": true,
+      "match": "neighbor_chest",
+      "node": "default:chest",
+      "owner": "",
+      "packed_node": "default:chest",
+      "pos": {
+       "x": 1203,
+       "y": 115,
+       "z": -1203
+      },
+      "protected": false,
+      "ref": "packed:neighbor:1:1",
+      "ref_after": false,
+      "ref_before": true,
+      "removed": null,
+      "timer": false
+     }
+    ],
+    "site": {
+     "x": 1200,
+     "y": 115,
+     "z": -1200
+    },
+    "slots": 8,
+    "tabs": [
+     "Claim Stone",
+     "Waypoints",
+     "Belongings (2)"
+    ],
+    "taken": [
+     {
+      "allowed": 1,
+      "bytes": 676,
+      "count": 1,
+      "description": "Packed \u001b(T@default)Chest\u001bE, 2 stacks\n\u001b(c@#c8c8c8)\u001b(T@default)Apple\u001bE \u00d76\u001b(c@#fff)\n\u001b(c@#c8c8c8)\u001b(T@default)Torch\u001bE \u00d78\u001b(c@#fff)\n\u001b(c@#a0a0a0)Place it to unpack it. Soulbound: it cannot be dropped, stored, mailed or sold.\u001b(c@#fff)",
+      "has_lists": false,
+      "image": "[inventorycube{default_chest_top.png{default_chest_front.png{default_chest_side.png&[transformFX",
+      "main_slot": 1,
+      "name": "grug_housing:packed_container",
+      "node": "default:chest",
+      "put": 1,
+      "ref": "packed:neighbor:1:1",
+      "slot": 1
+     },
+     {
+      "allowed": 60,
+      "bytes": 25,
+      "count": 60,
+      "description": "",
+      "has_lists": false,
+      "image": "",
+      "main_slot": 2,
+      "name": "grug_smelting:charcoal",
+      "node": "",
+      "put": 60,
+      "ref": "",
+      "slot": 2
+     }
+    ],
+    "waiting": 2
+   },
+   "flowed": true,
+   "name": "neighbor",
+   "notices": [
+    "Belongings from the old map wait in your Claim Stone."
+   ],
+   "pos_before_flow": {
+    "x": 0,
+    "y": 37,
+    "z": -2550
+   },
+   "relocation_wait": 0,
+   "waiting_at_join": 2
+  },
+  {
+   "name": "keeper",
+   "notices": null,
+   "waiting_at_join": 0
+  }
+ ],
+ "leaves": 2,
+ "phase": "accept",
+ "recheck": [
+  {
+   "id": "chest",
+   "node": "default:chest",
+   "same": true,
+   "why": ""
+  },
+  {
+   "id": "locked_chest",
+   "node": "default:chest_locked",
+   "same": true,
+   "why": ""
+  },
+  {
+   "id": "furnace",
+   "node": "default:furnace",
+   "same": true,
+   "why": ""
+  },
+  {
+   "id": "bookshelf",
+   "node": "default:bookshelf",
+   "same": true,
+   "why": ""
+  },
+  {
+   "id": "vessels_shelf",
+   "node": "vessels:shelf",
+   "same": true,
+   "why": ""
+  },
+  {
+   "id": "relic_chest",
+   "node": "default:chest",
+   "same": true,
+   "why": ""
+  },
+  {
+   "id": "cellar_chest",
+   "node": "default:chest",
+   "same": true,
+   "why": ""
+  }
+ ]
+}

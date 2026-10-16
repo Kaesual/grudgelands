@@ -1,0 +1,19 @@
+PASS the personal Luanti folder is refused (exit 2)
+PASS a PostgreSQL world is refused (exit 2)
+PASS a config that cannot be written is refused before anything (no backup, map kept)
+PASS a server on the world named by a relative --world is refused
+PASS a server on the world named by an absolute --world is refused
+PASS neither refusal changed anything
+PASS a world under a path containing 'luanti' is accepted (a server on another world runs)
+reset_like_platform: backup: <tmp>/reset3.backup-<time>
+reset_like_platform: python3 tools/migrate.py --world <tmp>/reset3 --check --map-reset
+reset_like_platform: python3 tools/migrate.py --world <tmp>/reset3 --map-reset
+reset_like_platform: map emptied: 763 map blocks removed (mod storage, players and auth kept)
+reset_like_platform: <tmp>/reset3.conf: grug_reset_world = 4 (the world's record was 3)
+reset_like_platform: done. Backup: <tmp>/reset3.backup-<time>
+PASS a world reset before (record 3): exit 0, the config says 4 once, the rest kept
+PASS ... and it prints 4 with the record 3
+PASS ... the map is empty, one backup taken
+PASS a rerun before the game loaded is refused (pack_pending), its backup removed, the config kept
+PASS no record, no config: exit 0, the line to add printed (1)
+reset_like_platform checks: 0 failed

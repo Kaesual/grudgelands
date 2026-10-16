@@ -1,0 +1,39 @@
+{
+ "errors": null,
+ "finish": "every planned player left",
+ "joins": [
+  {
+   "built": true,
+   "name": "keeper",
+   "notices": null
+  },
+  {
+   "built": true,
+   "name": "neighbor",
+   "notices": null
+  },
+  {
+   "name": "drifter",
+   "notices": null
+  }
+ ],
+ "leaves": 3,
+ "phase": "setup",
+ "sites": {
+  "one": {
+   "x": 1200,
+   "y": 74,
+   "z": -1800
+  },
+  "outside": {
+   "x": 1260,
+   "y": 53,
+   "z": -1800
+  },
+  "two": {
+   "x": 1200,
+   "y": 115,
+   "z": -1200
+  }
+ }
+}
