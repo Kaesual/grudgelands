@@ -1,0 +1,181 @@
+ACTION[Main]: [mgprof_probe] loaded epoch=1792108788 cpu_s=25.2
+ACTION[Server]: [mgprof_probe] first server step epoch=1792108806 cpu_s=44.0
+ACTION[Server]: [mgprof_probe] waiting for preparation 0/84
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      274
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x       25
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  327.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   23.666
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      259
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    19.75
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    7x  101.714
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    7x   23.714
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x   234.25
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    24.75
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    7x  124.571
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    7x   21.142
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      175
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x    27.25
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x    256.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     25.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    8x      112
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    8x    20.75
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  319.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    2x     22.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    2x    316.5
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   22.666
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    6x  190.833
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    6x       20
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    5x      150
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    5x     21.2
+ACTION[Server]: [mgprof_probe] waiting for preparation 60/84
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    4x      250
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    4x     24.5
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    8x  102.875
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    8x   20.875
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  273.333
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x   23.666
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    3x  272.666
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    3x       24
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    8x  117.375
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    7x   20.428
+ACTION[Server]: [mgprof_probe] preparation complete chunks=84 step_wall_s=22.12 cpu_s=66.1 epoch=1792108829
+ACTION[Server]: [mgprof_probe] preparation ready after 20 s of waiting (84/84 chunks), cpu_s=66.1
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] column A x 368..447 z -2352..-2273: zone elandor_goldmead_vale, biome grug_meadows (6400 of 6400), terrain y 34..65 (1001 columns at y >= 48), land 6400, river 0, functional 0, hard foundation 0, road 0, hard-protected 0 -> ordinary
+ACTION[Server]: [mgprof_probe] column B x 528..607 z -2192..-2113: zone elandor_goldmead_vale, biome grug_deep_forest (3499 of 6400), terrain y 48..84 (6400 columns at y >= 48), land 6400, river 0, functional 0, hard foundation 0, road 0, hard-protected 0 -> ordinary
+ACTION[Server]: [mgprof_probe] mode=totals chunks=10 gap=2.5s
+ACTION[Server]: [mgprof_probe] request id=warmup minp=608,-112,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=warmup minp=608,-112,-2352 action=4 wall_ms=156.8
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      136
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       16
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=A_S1 minp=368,-32,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_S1 minp=368,-32,-2352 action=4 wall_ms=313.0
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      287
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       23
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=A_S2 minp=368,48,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_S2 minp=368,48,-2352 action=4 wall_ms=107.3
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x       85
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       19
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=A_B minp=368,-112,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_B minp=368,-112,-2352 action=4 wall_ms=78.7
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x       53
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       14
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=A_U1 minp=368,-192,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U1 minp=368,-192,-2352 action=4 wall_ms=19.7
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       16
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=A_U3 minp=368,-512,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U3 minp=368,-512,-2352 action=4 wall_ms=24.9
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       22
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=A_U6 minp=368,-1072,-2352
+ACTION[Emerge-0]: [mgprof_probe] done id=A_U6 minp=368,-1072,-2352 action=4 wall_ms=26.8
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       23
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=B_U6 minp=528,-1072,-2192
+ACTION[Emerge-0]: [mgprof_probe] done id=B_U6 minp=528,-1072,-2192 action=4 wall_ms=25.1
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       23
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=B_U1 minp=528,-192,-2192
+ACTION[Emerge-0]: [mgprof_probe] done id=B_U1 minp=528,-192,-2192 action=4 wall_ms=18.0
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       14
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] request id=B_B minp=528,-112,-2192
+ACTION[Emerge-0]: [mgprof_probe] done id=B_B minp=528,-112,-2192 action=4 wall_ms=136.6
+INFO[Main]:   EmergeThread: Lua on_generated [ms] _____________    1x      120
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] ____________    1x       13
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
+ACTION[Server]: [mgprof_probe] ore_count id=warmup band=T1 host=407439 ores=20541 share=5.04% citrine=809 coal=6224 copper=3988 iron=2369 quartz=3090 tin=4061
+ACTION[Server]: [mgprof_probe] ore_expect id=warmup band=T1 host_lower=305229 expected=21218.0 citrine=795.8 coal=6366.2 copper=4244.2 iron=2384.6 quartz=3183.1 tin=4244.2
+ACTION[Server]: [mgprof_probe] ore_count id=warmup band=T2 host=75748 ores=2775 share=3.66% citrine=89 coal=579 copper=398 gold=133 iron=789 jade=144 quartz=277 tin=366
+ACTION[Server]: [mgprof_probe] ore_expect id=warmup band=T2 host_lower=0 expected=2835.6 anthracite=0.0 citrine=74.0 coal=591.8 copper=394.5 gold=147.9 iron=789.0 jade=147.9 quartz=295.9 tin=394.5
+ACTION[Server]: [mgprof_probe] cave_plants id=warmup cave_cap=0 floors_in_range=210 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_count id=A_S1 band=T1 host=388272 ores=17898 share=4.61% citrine=796 coal=6023 copper=4112 quartz=2963 tin=4004
+ACTION[Server]: [mgprof_probe] ore_expect id=A_S1 band=T1 host_lower=0 expected=17947.5 citrine=758.3 coal=6066.8 copper=4044.5 iron=0.0 quartz=3033.4 tin=4044.5
+ACTION[Server]: [mgprof_probe] cave_plants id=A_S1 cave_cap=0 floors_in_range=0 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=A_S1 -32:2076/49596 -24:2077/49623 -16:2274/49445 -8:2197/49037 0:2233/44818 8:2116/40087 16:1744/35089 24:1611/35751 32:1263/27115 40:307/7711
+ACTION[Server]: [mgprof_probe] ore_count id=A_S2 band=T1 host=1768 ores=119 share=6.73% citrine=4 coal=25 copper=35 quartz=24 tin=31
+ACTION[Server]: [mgprof_probe] ore_expect id=A_S2 band=T1 host_lower=0 expected=81.7 citrine=3.5 coal=27.6 copper=18.4 iron=0.0 quartz=13.8 tin=18.4
+ACTION[Server]: [mgprof_probe] cave_plants id=A_S2 cave_cap=0 floors_in_range=0 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=A_S2 48:112/1542 56:7/226
+ACTION[Server]: [mgprof_probe] ore_count id=A_B band=T1 host=405984 ores=20307 share=5.00% citrine=805 coal=6133 copper=4155 iron=2258 quartz=3121 tin=3835
+ACTION[Server]: [mgprof_probe] ore_expect id=A_B band=T1 host_lower=299951 expected=21109.6 citrine=792.9 coal=6343.5 copper=4229.0 iron=2343.4 quartz=3171.8 tin=4229.0
+ACTION[Server]: [mgprof_probe] ore_count id=A_B band=T2 host=64893 ores=2339 share=3.60% citrine=68 coal=517 copper=336 gold=115 iron=609 jade=107 quartz=279 tin=308
+ACTION[Server]: [mgprof_probe] ore_expect id=A_B band=T2 host_lower=0 expected=2429.3 anthracite=0.0 citrine=63.4 coal=507.0 copper=338.0 gold=126.7 iron=676.0 jade=126.7 quartz=253.5 tin=338.0
+ACTION[Server]: [mgprof_probe] cave_plants id=A_B cave_cap=0 floors_in_range=207 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=A_B -104:814/21736 -96:2313/44431 -88:2782/49122 -80:2512/48054 -72:2565/48139 -64:2638/46065 -56:2396/48648 -48:2316/49918 -40:1971/49871
+ACTION[Server]: [mgprof_probe] ore_count id=A_U1 band=T2 host=485371 ores=17957 share=3.70% citrine=474 coal=3972 copper=2438 gold=910 iron=4977 jade=909 quartz=1893 tin=2384
+ACTION[Server]: [mgprof_probe] ore_expect id=A_U1 band=T2 host_lower=0 expected=18169.8 anthracite=0.0 citrine=474.0 coal=3792.0 copper=2528.0 gold=948.0 iron=5055.9 jade=948.0 quartz=1896.0 tin=2528.0
+ACTION[Server]: [mgprof_probe] cave_plants id=A_U1 cave_cap=0 floors_in_range=1509 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_count id=A_U3 band=T3 host=416842 ores=14977 share=3.59% anthracite=4321 citrine=193 copper=1020 garnet=802 gold=1613 iron=3179 jade=408 quartz=797 silver=1581 tin=1063
+ACTION[Server]: [mgprof_probe] ore_expect id=A_U3 band=T3 host_lower=416842 expected=15265.2 anthracite=4342.1 citrine=203.5 copper=1085.5 garnet=814.1 gold=1628.3 iron=3256.6 jade=407.1 quartz=814.1 silver=1628.3 tin=1085.5
+ACTION[Server]: [mgprof_probe] ore_count id=A_U3 band=T4 host=75089 ores=2680 share=3.57% anthracite=598 copper=186 garnet=78 gold=557 iron=187 jade=27 quartz=126 sapphire=150 silver=565 tin=206
+ACTION[Server]: [mgprof_probe] ore_expect id=A_U3 band=T4 host_lower=0 expected=2749.8 anthracite=586.6 copper=195.5 emberglass=0.0 garnet=73.3 gold=586.6 iron=195.5 jade=36.7 quartz=146.7 sapphire=146.7 silver=586.6 tin=195.5
+ACTION[Server]: [mgprof_probe] cave_plants id=A_U3 cave_cap=0 floors_in_range=722 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_count id=A_U6 band=T5 host=48095 ores=1740 share=3.62% abyssal_crystal=95 anthracite=354 copper=103 emberglass=368 garnet=16 gold=170 iron=115 quartz=101 ruby=93 sapphire=50 silver=164 tin=111
+ACTION[Server]: [mgprof_probe] ore_expect id=A_U6 band=T5 host_lower=48095 expected=1855.2 abyssal_crystal=93.9 anthracite=375.7 copper=125.2 emberglass=375.7 garnet=23.5 gold=187.9 iron=125.2 quartz=93.9 ruby=93.9 sapphire=47.0 silver=187.9 tin=125.2
+ACTION[Server]: [mgprof_probe] ore_count id=A_U6 band=T6 host=435732 ores=14589 share=3.35% abyssal_crystal=1688 anthracite=3295 copper=1065 diamond=851 emberglass=1692 gold=1624 iron=1070 quartz=761 ruby=428 sapphire=204 silver=808 tin=1103
+ACTION[Server]: [mgprof_probe] ore_expect id=A_U6 band=T6 host_lower=0 expected=15105.9 abyssal_crystal=1702.1 anthracite=3404.2 copper=1134.7 diamond=851.0 emberglass=1702.1 gold=1702.1 iron=1134.7 quartz=851.0 ruby=425.5 sapphire=212.8 silver=851.0 tin=1134.7
+ACTION[Server]: [mgprof_probe] cave_plants id=A_U6 cave_cap=0 floors_in_range=0 ember_moss=0 floors_in_range=271
+ACTION[Server]: [mgprof_probe] ore_count id=B_U6 band=T5 host=46238 ores=1693 share=3.66% abyssal_crystal=82 anthracite=342 copper=107 emberglass=364 garnet=25 gold=180 iron=94 quartz=82 ruby=77 sapphire=49 silver=176 tin=115
+ACTION[Server]: [mgprof_probe] ore_expect id=B_U6 band=T5 host_lower=46238 expected=1783.6 abyssal_crystal=90.3 anthracite=361.2 copper=120.4 emberglass=361.2 garnet=22.6 gold=180.6 iron=120.4 quartz=90.3 ruby=90.3 sapphire=45.2 silver=180.6 tin=120.4
+ACTION[Server]: [mgprof_probe] ore_count id=B_U6 band=T6 host=440129 ores=15017 share=3.41% abyssal_crystal=1748 anthracite=3346 copper=1156 diamond=874 emberglass=1667 gold=1682 iron=1103 quartz=872 ruby=408 sapphire=188 silver=892 tin=1081
+ACTION[Server]: [mgprof_probe] ore_expect id=B_U6 band=T6 host_lower=0 expected=15258.4 abyssal_crystal=1719.3 anthracite=3438.5 copper=1146.2 diamond=859.6 emberglass=1719.3 gold=1719.3 iron=1146.2 quartz=859.6 ruby=429.8 sapphire=214.9 silver=859.6 tin=1146.2
+ACTION[Server]: [mgprof_probe] cave_plants id=B_U6 cave_cap=0 floors_in_range=0 ember_moss=0 floors_in_range=436
+ACTION[Server]: [mgprof_probe] ore_count id=B_U1 band=T2 host=489133 ores=18027 share=3.69% citrine=494 coal=3773 copper=2575 gold=921 iron=5071 jade=951 quartz=1797 tin=2445
+ACTION[Server]: [mgprof_probe] ore_expect id=B_U1 band=T2 host_lower=0 expected=18310.6 anthracite=0.0 citrine=477.7 coal=3821.4 copper=2547.6 gold=955.3 iron=5095.1 jade=955.3 quartz=1910.7 tin=2547.6
+ACTION[Server]: [mgprof_probe] cave_plants id=B_U1 cave_cap=1 floors_in_range=2013 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_count id=B_B band=T1 host=417267 ores=21122 share=5.06% citrine=805 coal=6505 copper=4331 iron=2333 quartz=3126 tin=4022
+ACTION[Server]: [mgprof_probe] ore_expect id=B_B band=T1 host_lower=313213 expected=21734.7 citrine=815.0 coal=6519.8 copper=4346.5 iron=2447.0 quartz=3259.9 tin=4346.5
+ACTION[Server]: [mgprof_probe] ore_count id=B_B band=T2 host=74830 ores=2758 share=3.69% citrine=80 coal=585 copper=388 gold=146 iron=755 jade=138 quartz=282 tin=384
+ACTION[Server]: [mgprof_probe] ore_expect id=B_B band=T2 host_lower=0 expected=2801.3 anthracite=0.0 citrine=73.1 coal=584.6 copper=389.7 gold=146.2 iron=779.5 jade=146.2 quartz=292.3 tin=389.7
+ACTION[Server]: [mgprof_probe] cave_plants id=B_B cave_cap=0 floors_in_range=202 ember_moss=0 floors_in_range=0
+ACTION[Server]: [mgprof_probe] ore_slabs id=B_B -104:1000/24027 -96:2907/49241 -88:2688/48347 -80:2594/48434 -72:2558/49257 -64:2484/50042 -56:2536/50079 -48:2277/48635 -40:2078/49205
+ACTION[Server]: [mgprof_probe] surface_count id=A_S1 air=45202 default:apple=24 default:bush_leaves=200 default:bush_stem=17 default:desert_stone=18842 default:dirt=28010 default:dirt_with_grass=3294 default:grass_1=272 default:grass_2=276 default:grass_3=261 default:grass_4=280 default:grass_5=256 default:gravel=23574 default:leaves=996 default:stone=370374 default:stone_with_coal=6023 default:stone_with_copper=4112 default:stone_with_tin=4004 default:tree=13 grug_gathering:corn_source=8 grug_gathering:potato_source=4 grug_gathering:sunleaf_source=2 grug_mapgen:pumpkin_source=8 grug_mapgen:wild_grain_source=6 grug_materials:granite=114 grug_materials:slate=151 grug_materials:stone_with_citrine=796 grug_materials:stone_with_quartz=2963 grug_nodes:dirt_with_forest_litter=1647 grug_trees:apple_base=18 grug_trees:apple_branch=49 grug_trees:apple_quarter=20 grug_trees:apple_twig=184
+ACTION[Server]: [mgprof_probe] surface_count id=A_S2 air=506357 default:bush_leaves=60 default:bush_stem=5 default:desert_stone=358 default:dirt=2152 default:dirt_with_grass=582 default:grass_1=66 default:grass_2=57 default:grass_3=64 default:grass_4=58 default:grass_5=65 default:stone=1649 default:stone_with_coal=25 default:stone_with_copper=35 default:stone_with_tin=31 grug_mapgen:pumpkin_source=4 grug_mapgen:wild_grain_source=1 grug_materials:stone_with_citrine=4 grug_materials:stone_with_quartz=24 grug_nodes:dirt_with_forest_litter=403
+ACTION[Server]: [mgprof_probe] bench digest11 n=20000 us_per_call=1.27
+ACTION[Server]: [mgprof_probe] bench placement_mix n=1000000 us_per_call=0.0236 (acc 13247606)
+ACTION[Server]: [mgprof_probe] cpu_s=67.5 at the end step_wall_s=53.91 epoch=1792108860
+ACTION[Server]: [mgprof_probe] RESULT PASS 10 chunks
+INFO[Main]:   EmergeThread: Lua on_generated [ms] 
+INFO[Main]:   EmergeThread: Mapgen::makeChunk [ms] 
