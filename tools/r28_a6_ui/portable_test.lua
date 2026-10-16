@@ -473,7 +473,9 @@ sfinv = {pages = pages, pages_unordered = {}, contexts = contexts,
 	get_formspec = function() return "" end,
 	get_nav_fs = function() return "tabheader[0,0;sfinv_nav_tabs;Character,Quests;1;true;false]" end,
 }
-grug_inventory = {BAG_COUNT = 0}
+grug_inventory = {BAG_COUNT = 0,
+	-- Round 50: the views' A/B switch reads the shown layout (storage.lua).
+	active_hotbar = function() return "A" end}
 dofile("mods/PLAYER/grug_inventory/ui.lua")
 grug_money = {format = function(c) return c .. " copper" end, get = function() return 0 end,
 	register_on_change = function() end,
