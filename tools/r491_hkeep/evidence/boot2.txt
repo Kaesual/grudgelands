@@ -1,0 +1,39 @@
+[grug_core] map reset 1: cleared the world preparation progress
+[hkeep_probe] loaded mode check
+[grug_core] map reset 1: cleared the grug_mobs actor records
+[grug_core] map reset 1: cleared the housing claims
+[grug_core] map reset 1 applied to the world (was 0)
+[hkeep_probe] preparation ready (84 chunks)
+[hkeep_probe] emerge start
+[hkeep_probe] emerge done in 4.9 s
+[hkeep_probe] markers: pillar missing 0 of 9, trench not air 0 of 132, pocket not air 18 of 27, chest default:chest meta=marker apples=true
+[hkeep_probe] item entity in K: found 1
+[hkeep_probe] diff c-1_-1_y-112 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c-1_-1_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c-1_-1_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c0_-1_y-112 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c0_-1_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c0_-1_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_-1_y-112 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_-1_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_-1_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c-1_0_y-112 regen blocks[from_memory=124,generated=1] changed=5241 (nearK=5241) default:water_source>grug_materials:t2_stone x2130 @367,-111,-2320; air>grug_materials:t2_stone x1518 @367,-110,-2324; default:water_flowing>grug_materials:t2_stone x746 @367,-111,-2321; air>default:stone x236 @367,-99,-2327; default:water_source>default:stone x233 @367,-100,-2312; air>grug_materials:slate x81 @356,-106,-2289; default:water_flowing>grug_materials:slate x70 @356,-109,-2290; default:water_source>default:stone_with_copper x44 @365,-105,-2310
+[hkeep_probe] diff c-1_0_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c-1_0_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c0_0_y-112 KEPT blocks[from_disk=60,from_memory=65] changed=61 (edge=4,block1=56,inner=1) air>default:water_flowing x34 @380,-105,-2307; default:water_flowing>default:water_source x18 @379,-105,-2307; air>default:water_source x6 @371,-105,-2291; p2:default:water_flowing x3 @384,-112,-2322
+[hkeep_probe] diff c0_0_y-32 KEPT blocks[from_disk=60,from_memory=65] changed=0 () 
+[hkeep_probe] diff c0_0_y48 KEPT blocks[from_disk=60,from_memory=65] changed=0 () 
+[hkeep_probe] diff c1_0_y-112 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_0_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_0_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c-1_1_y-112 regen blocks[from_memory=124,generated=1] changed=149 (nearK=149) air>grug_materials:t2_stone x146 @356,-112,-2272; air>default:stone_with_iron x3 @358,-107,-2271
+[hkeep_probe] diff c-1_1_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c-1_1_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c0_1_y-112 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c0_1_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c0_1_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_1_y-112 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_1_y-32 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] diff c1_1_y48 regen blocks[from_memory=124,generated=1] changed=0 () 
+[hkeep_probe] seam same-seed columns=320 |dy| 0:224 1:82 2-3:3 4-7:11; max dy 5 at 367,-2324 in 43 out 48 (grug_nodes:dirt_with_forest_litter); |predicted-found outside| 0:320
+[hkeep_probe] RESULT DONE check

@@ -1,0 +1,10 @@
+boot1 rc=0
+boot1 wall_s=79
+keep_columns: 1 kept columns, 21641 blocks before, 21216 deleted, 425 kept
+keep_columns: 1 kept columns, 21641 blocks before, 21216 deleted, 425 kept
+seed = 12345
+seed = 4242
+boot2 rc=0
+boot2 wall_s=44
+boot3 rc=0
+boot3 wall_s=81

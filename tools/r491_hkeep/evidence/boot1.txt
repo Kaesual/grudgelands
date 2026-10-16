@@ -1,0 +1,8 @@
+[hkeep_probe] loaded mode build
+[hkeep_probe] preparation ready (84 chunks)
+[hkeep_probe] emerge start
+[hkeep_probe] emerge done in 5.4 s
+[hkeep_probe] markers placed: chest (368,50,-2312) item (408,39,-2312)
+[hkeep_probe] seam original columns=320 |dy| 0:224 1:82 2-3:3 4-7:11; max dy 5 at 367,-2324 in 43 out 48 (grug_nodes:dirt_with_forest_litter); |predicted-found outside| 0:320
+[hkeep_probe] snapshots written: 27 chunks in 0.5 s
+[hkeep_probe] RESULT DONE build
