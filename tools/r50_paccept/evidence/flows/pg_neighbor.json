@@ -1,0 +1,79 @@
+{
+ "active": true,
+ "belongings_label": "Belongings (2)",
+ "belongings_list": true,
+ "charcoal": 60,
+ "draft": true,
+ "draft_belongings": false,
+ "draft_belongings_after_tab": false,
+ "draft_form_shown": true,
+ "draft_list_size": 0,
+ "draft_recovered_list": false,
+ "drop_refused": true,
+ "final_belongings": false,
+ "later": [
+  {
+   "id": "neighbor_chest",
+   "node": "default:chest",
+   "same": true,
+   "timer": false
+  }
+ ],
+ "left": 0,
+ "opened_draft": true,
+ "placed": [
+  {
+   "consumed": true,
+   "match": "neighbor_chest",
+   "node": "default:chest",
+   "owner": "",
+   "packed_node": "default:chest",
+   "pos": {
+    "x": 1203,
+    "y": 115,
+    "z": -1203
+   },
+   "protected": false,
+   "removed": null,
+   "timer": false
+  }
+ ],
+ "site": {
+  "x": 1200,
+  "y": 115,
+  "z": -1200
+ },
+ "slots": 8,
+ "tabs": [
+  "Claim Stone",
+  "Waypoints",
+  "Belongings (2)"
+ ],
+ "taken": [
+  {
+   "allowed": 1,
+   "bytes": 864,
+   "count": 1,
+   "description": "Packed \u001b(T@default)Chest\u001bE, 2 stacks\n\u001b(c@#c8c8c8)\u001b(T@default)Apple\u001bE ×6\u001b(c@#fff)\n\u001b(c@#c8c8c8)\u001b(T@default)Torch\u001bE ×8\u001b(c@#fff)\n\u001b(c@#a0a0a0)Place it to unpack it. Soulbound: it cannot be dropped, stored, mailed or sold.\u001b(c@#fff)",
+   "image": "[inventorycube{default_chest_top.png{default_chest_front.png{default_chest_side.png&[transformFX",
+   "main_slot": 1,
+   "name": "grug_housing:packed_container",
+   "node": "default:chest",
+   "put": 1,
+   "slot": 1
+  },
+  {
+   "allowed": 60,
+   "bytes": 25,
+   "count": 60,
+   "description": "",
+   "image": "",
+   "main_slot": 2,
+   "name": "grug_smelting:charcoal",
+   "node": "",
+   "put": 60,
+   "slot": 2
+  }
+ ],
+ "waiting": 2
+}

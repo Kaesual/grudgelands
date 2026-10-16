@@ -1,0 +1,3 @@
+migrate: check <run>/pg/w_pg
+migrate: world version 0.48.1, target 0.50.0, due steps: none
+migrate: checked: write access on player, auth, mod_storage; 1 map block decoded

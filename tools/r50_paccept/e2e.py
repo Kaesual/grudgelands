@@ -732,6 +732,10 @@ def package_fixture(run, w0, receipt, target):
         "`charcoal` follows the clock: ceil((paid_until - now) / 26160) per claim,",
         "paid_until keeper %d, neighbor %d (Unix seconds)."
         % (claims["keeper"]["paid_until"], claims["neighbor"]["paid_until"]),
+        "The fuel runs out on %s (keeper) and %s (neighbor); a pass after"
+        % tuple(time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(claims[o]["paid_until"]))
+                for o in ("keeper", "neighbor")),
+        "that gives no charcoal for that claim (the containers are packed all the same).",
         "Blocks read per claim: %s." % ", ".join(
             "claim %d %d blocks" % (c["id"], c["blocks"]) for c in sq.get("claims") or []),
         "",
@@ -741,7 +745,7 @@ def package_fixture(run, w0, receipt, target):
     ]
     (target / "README.md").write_text("\n".join(lines) + "\n")
     sizes = {p.name: p.stat().st_size for p in target.iterdir() if p.is_file()}
-    numbers["fixture"] = {"dir": str(target), "sizes": sizes,
+    numbers["fixture"] = {"dir": str(target).replace(str(Path.home()), "~"), "sizes": sizes,
                           "world_files": sorted(p.name for p in w0.iterdir())}
     return sizes
 

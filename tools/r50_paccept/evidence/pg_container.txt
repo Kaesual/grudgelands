@@ -1,0 +1,10 @@
+PASS postgres started cluster 17, server 17.11 (Debian 17.11-0+deb13u1)
+PASS seeded: every player and auth row of the 0.48.1 world 
+PASS seeded: every map row of the 0.48.1 world 20719 rows
+PASS pg_dump of the seeded database 
+PASS --check --map-reset: one block read and decoded, exit 0 exit 0 {"event": "done", "mode": "check", "world_version": "0.48.1", "record": "0.48.1", "new_world": false, "target": "0.50.0", "due": [], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "sqlite3", "map": "postgresql"}, "map_reset": true, "map_checked": 1, "write_checked": ["player", "auth", "mod_storage"]}
+PASS --map-reset: exit 0 with done map_reset true exit 0 {"event": "done", "mode": "migrate", "world_version": "0.48.1", "record": "0.48.1", "new_world": false, "target": "0.50.0", "due": [], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "sqlite3", "map": "postgresql"}, "map_reset": true, "pack_seq": 1, "applied": []}
+PASS the map rows are unchanged by the tool 
+PASS the player and auth rows are unchanged by the tool 
+PASS TRUNCATE public.blocks: the map is empty 0 rows
+PASS the player and auth rows survive the emptying 

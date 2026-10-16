@@ -14,8 +14,9 @@
 --   protection holds everything against a player without a faction). When
 --   "keeper" joins: a Claim Stone (registry model.create, as placing does), activated
 --   through grug_housing.activate with 5 lumps from the inventory, then fuel
---   through grug_housing.add_fuel (one anthracite, 1.5 lumps, and two coal
---   lumps: 8.5 lumps, so the charcoal rounds up); in the claim a filled
+--   through grug_housing.add_fuel (one anthracite, 1.5 lumps, and 82 coal
+--   lumps: 88.5 lumps, about 27 days, so the charcoal rounds up and the
+--   world stays a fuelled fixture for weeks); in the claim a filled
 --   chest (a quality sword with wear), a locked chest (after_place_node:
 --   owner keeper) with a written book, a furnace lit through its own put
 --   callback with input, fuel and output, a bookshelf with a written book
@@ -23,7 +24,7 @@
 --   chest holding this probe's own item (unregistered under 0.50.0), an
 --   empty chest, an empty furnace and a cellar chest at y -95; outside
 --   every claim a chest. "neighbor" gets a
---   claim (5 lumps) and a chest; "drifter" nothing. At the shutdown, before
+--   claim (5 + 55 lumps) and a chest; "drifter" nothing. At the shutdown, before
 --   the engine saves (server.cpp: on_shutdown runs before the map save),
 --   every container's lists and node are written to
 --   <world>/paccept_receipt.json with the claims.
@@ -240,7 +241,7 @@ local function build_keeper(player)
 	local ok, message = grug_housing.activate(player)
 	assert(ok, "activate: " .. tostring(message))
 	assert(grug_housing.add_fuel(claim, 1, "grug_materials:anthracite") == 1, "anthracite")
-	assert(grug_housing.add_fuel(claim, 2, "default:coal_lump") == 2, "coal")
+	assert(grug_housing.add_fuel(claim, 82, "default:coal_lump") == 82, "coal")
 	claims[#claims + 1] = claim.id
 
 	local y = C.y
@@ -315,6 +316,7 @@ local function build_neighbor(player)
 	player:get_inventory():add_item("main", "default:coal_lump " .. grug_housing.ACTIVATION_LUMPS)
 	local ok, message = grug_housing.activate(player)
 	assert(ok, "activate: " .. tostring(message))
+	assert(grug_housing.add_fuel(claim, 55, "default:coal_lump") == 55, "coal")
 	claims[#claims + 1] = claim.id
 	place("neighbor_chest", name, "default:chest", {x = C.x + 3, y = C.y, z = C.z}, player,
 		function(cinv)

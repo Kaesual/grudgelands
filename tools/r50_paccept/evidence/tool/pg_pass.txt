@@ -1,0 +1,7 @@
+migrate: migrate <run>/pg/w_pg
+migrate: world version 0.48.1, target 0.50.0, due steps: none
+migrate: pass 1: 2 claim(s)
+migrate: claim 1 (keeper): 1176 blocks, 7 container(s), 0.034 s
+migrate: claim 2 (neighbor): 1001 blocks, 1 container(s), 0.027 s
+migrate: pass 1 done: {"claims": 2, "players": 2, "containers": 8, "items": 19, "charcoal": 149, "blocks_read": 2177}
+migrate: packed (pass 1), nothing to do

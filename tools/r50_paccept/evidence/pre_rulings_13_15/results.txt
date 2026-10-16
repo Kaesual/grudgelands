@@ -1,0 +1,114 @@
+PASS  setup  the 0.48.1 game: r50-v0481 at 1ef11b5e
+PASS  setup  boot S (0.48.1): keeper, neighbor and drifter joined; both claims built
+PASS  setup  the world's version record says 0.48.1
+PASS  setup  three characters saved
+PASS  setup  the receipt: 11 containers, 2 claims (keeper and neighbor, both fuelled)
+PASS  setup  the furnace is lit at the save, with input, fuel and output
+PASS  setup  the locked chest belongs to keeper
+PASS  setup  the probe's own item lies in a chest of keeper's claim
+PASS  setup  in keeper's claim an empty chest and an empty furnace
+PASS  setup  outside every claim: the outside chest
+PASS  sqlite --check --map-reset wrote nothing
+PASS  sqlite --check --map-reset: one block read and decoded, nothing due, exit 0
+PASS  sqlite --map-reset: start, pack_start, pack_done, done; exit 0
+PASS  sqlite done: mode migrate, target 0.50.0, map_reset true, applied [], map backend sqlite3
+PASS  sqlite pack_done counts: 2 claims, 2 players, 8 containers (2 more if the empty ones count), 19 items, charcoal rounded up
+PASS  sqlite every entry equals a receipt container of its owner; the outside chest is not packed
+PASS  sqlite charcoal per owner = ceil((paid_until - pass time) / LUMP_SECONDS)
+PASS  sqlite pack_seq 1
+PASS  sqlite empty containers are not packed (pack_done 'empty': 2)
+PASS  sqlite the pass only added mod storage keys (grug_housing recovered:* and pack_seq, grug_core map_reset_pack:1); map, players and auth unchanged
+PASS  sqlite the map emptied as the platform does (the map rows only): 20719 rows
+PASS  pg     postgres started
+PASS  pg     seeded: every player and auth row of the 0.48.1 world
+PASS  pg     seeded: every map row of the 0.48.1 world
+PASS  pg     pg_dump of the seeded database
+PASS  pg     --check --map-reset: one block read and decoded, exit 0
+PASS  pg     --map-reset: exit 0 with done map_reset true
+PASS  pg     the map rows are unchanged by the tool
+PASS  pg     the player and auth rows are unchanged by the tool
+PASS  pg     TRUNCATE public.blocks: the map is empty
+PASS  pg     the player and auth rows survive the emptying
+PASS  pg     the container part passed
+PASS  pg     --check --map-reset: one block read and decoded, nothing due, exit 0
+PASS  pg     --map-reset: start, pack_start, pack_done, done; exit 0
+PASS  pg     done: mode migrate, target 0.50.0, map_reset true, applied [], map backend postgresql
+PASS  pg     pack_done counts: 2 claims, 2 players, 8 containers (2 more if the empty ones count), 19 items, charcoal rounded up
+PASS  pg     every entry equals a receipt container of its owner; the outside chest is not packed
+PASS  pg     charcoal per owner = ceil((paid_until - pass time) / LUMP_SECONDS)
+PASS  pg     pack_seq 1
+PASS  pg     empty containers are not packed (pack_done 'empty': 2)
+PASS  pg     the PostgreSQL pass wrote the same entries as the SQLite pass
+PASS  pg     the boot world's map is empty (TRUNCATE on PostgreSQL; here the copy's rows deleted)
+PASS  sqlite boot A (0.50.0, grug_reset_world 1 in server.conf): ran clean, three joins
+PASS  sqlite the first-start clean-up ran: the probe's item removed, the pass ready
+PASS  sqlite the marker is deleted; the world is 0.50.0 with reset record 1
+PASS  sqlite every character was moved to its race start (the map reset's player part) before keeper's flow
+PASS  sqlite join notices: keeper and neighbor once each, drifter none
+PASS  sqlite waiting at the join: keeper 8, neighbor 2, drifter 0
+PASS  sqlite keeper: the new draft stone's form shows no Belongings, also after a tab click
+PASS  sqlite keeper: activated through the form, the tab 'Belongings (8)' and its list
+PASS  sqlite keeper: all 8 entries taken as the engine moves them; none left
+PASS  sqlite keeper: every packed item is described ('Packed <container>, N stacks')
+PASS  sqlite keeper: a packed container's drop is refused (it stays)
+PASS  sqlite keeper: every packed container placed, consumed and restored with exactly the receipt's contents
+PASS  sqlite keeper: the lit furnace comes back unlit (default:furnace, no timer), still so 3 s later
+PASS  sqlite keeper: the locked chest is owned by its placer
+PASS  sqlite keeper: the chest with the unknown item comes back without it, the rest exact
+PASS  sqlite keeper: every placed container unchanged 3 s later
+PASS  sqlite keeper: 89 charcoal taken (the pass's count)
+PASS  sqlite keeper: the empty containers as plain node items: none (not packed)
+PASS  sqlite keeper: with nothing waiting, the form has no Belongings tab
+PASS  sqlite after boot A: keeper's entries are gone, neighbor's wait (cleaned, described)
+PASS  sqlite boot B (the same world again): ran clean, two joins
+PASS  sqlite boot B's load changed nothing: no clean-up, no reset, the entries as boot A left them
+PASS  sqlite keeper's placed containers are still there with the receipt's contents
+PASS  sqlite boot B notices: neighbor once, keeper none (nothing waits for keeper)
+PASS  sqlite neighbor: the new draft stone's form shows no Belongings, also after a tab click
+PASS  sqlite neighbor: activated through the form, the tab 'Belongings (2)' and its list
+PASS  sqlite neighbor: all 2 entries taken as the engine moves them; none left
+PASS  sqlite neighbor: every packed item is described ('Packed <container>, N stacks')
+PASS  sqlite neighbor: a packed container's drop is refused (it stays)
+PASS  sqlite neighbor: every packed container placed, consumed and restored with exactly the receipt's contents
+PASS  sqlite neighbor: every placed container unchanged 3 s later
+PASS  sqlite neighbor: 60 charcoal taken (the pass's count)
+PASS  sqlite neighbor: the empty containers as plain node items: none (not packed)
+PASS  sqlite neighbor: with nothing waiting, the form has no Belongings tab
+PASS  sqlite nothing waits any more
+PASS  pg     boot A (0.50.0, grug_reset_world 1 in server.conf): ran clean, three joins
+PASS  pg     the first-start clean-up ran: the probe's item removed, the pass ready
+PASS  pg     the marker is deleted; the world is 0.50.0 with reset record 1
+PASS  pg     every character was moved to its race start (the map reset's player part) before keeper's flow
+PASS  pg     join notices: keeper and neighbor once each, drifter none
+PASS  pg     waiting at the join: keeper 8, neighbor 2, drifter 0
+PASS  pg     keeper: the new draft stone's form shows no Belongings, also after a tab click
+PASS  pg     keeper: activated through the form, the tab 'Belongings (8)' and its list
+PASS  pg     keeper: all 8 entries taken as the engine moves them; none left
+PASS  pg     keeper: every packed item is described ('Packed <container>, N stacks')
+PASS  pg     keeper: a packed container's drop is refused (it stays)
+PASS  pg     keeper: every packed container placed, consumed and restored with exactly the receipt's contents
+PASS  pg     keeper: the lit furnace comes back unlit (default:furnace, no timer), still so 3 s later
+PASS  pg     keeper: the locked chest is owned by its placer
+PASS  pg     keeper: the chest with the unknown item comes back without it, the rest exact
+PASS  pg     keeper: every placed container unchanged 3 s later
+PASS  pg     keeper: 89 charcoal taken (the pass's count)
+PASS  pg     keeper: the empty containers as plain node items: none (not packed)
+PASS  pg     keeper: with nothing waiting, the form has no Belongings tab
+PASS  pg     after boot A: keeper's entries are gone, neighbor's wait (cleaned, described)
+PASS  pg     boot B (the same world again): ran clean, two joins
+PASS  pg     boot B's load changed nothing: no clean-up, no reset, the entries as boot A left them
+PASS  pg     keeper's placed containers are still there with the receipt's contents
+PASS  pg     boot B notices: neighbor once, keeper none (nothing waits for keeper)
+PASS  pg     neighbor: the new draft stone's form shows no Belongings, also after a tab click
+PASS  pg     neighbor: activated through the form, the tab 'Belongings (2)' and its list
+PASS  pg     neighbor: all 2 entries taken as the engine moves them; none left
+PASS  pg     neighbor: every packed item is described ('Packed <container>, N stacks')
+PASS  pg     neighbor: a packed container's drop is refused (it stays)
+PASS  pg     neighbor: every packed container placed, consumed and restored with exactly the receipt's contents
+PASS  pg     neighbor: every placed container unchanged 3 s later
+PASS  pg     neighbor: 60 charcoal taken (the pass's count)
+PASS  pg     neighbor: the empty containers as plain node items: none (not packed)
+PASS  pg     neighbor: with nothing waiting, the form has no Belongings tab
+PASS  pg     nothing waits any more
+
+112 checks, 0 failed

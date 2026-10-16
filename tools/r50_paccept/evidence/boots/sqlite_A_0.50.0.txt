@@ -1,0 +1,39 @@
+launcher: staged patch: reset_1.diff
+seconds: 107, exit 0
+joins: ['keeper logged in (protocol 52), stayed 20.0 s', 'neighbor logged in (protocol 52), stayed 4.0 s', 'drifter logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.48.1, game 0.50.0: no migration step due
+ACTION[Main]: [grug_core] map reset 1: cleared the world preparation progress
+ACTION[Main]: [grug_core] map reset 1: cleared the grug_mobs actor records
+ACTION[Main]: [grug_core] map reset 1: cleared the housing claims
+ACTION[Main]: [grug_housing] map reset pass 1: recovered:keeper:1:6 lost unknown grug_probe_r50_paccept:relic 2
+ACTION[Main]: [grug_housing] map reset pass 1: 10 entries cleaned, 0 deleted, 0 extra, 1 unknown items removed
+ACTION[Main]: [grug_core] map reset pass 1: the packed containers are ready
+ACTION[Main]: [grug_core] map reset 1 applied to the world (was 0)
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39987.
+ACTION[Server]: [grug_core] world version 0.50.0 recorded (was 0.48.1)
+ACTION[Server]: [r50_paccept_probe] sites ready, the world preparation is ready
+ACTION[Server]: keeper [127.0.0.1] joins game. List of players: keeper
+ACTION[Server]: [r50_paccept_probe] joined keeper
+ACTION[Server]: [grug_core] map reset 1: keeper moved to the race start
+ACTION[Server]: [grug_housing] keeper unpacked default:chest at (1203,74,-1803)
+ACTION[Server]: [grug_housing] keeper unpacked default:chest_locked at (1204,74,-1803)
+ACTION[Server]: [grug_housing] keeper unpacked default:furnace at (1205,74,-1803)
+ACTION[Server]: [grug_housing] keeper unpacked default:bookshelf at (1206,74,-1803)
+ACTION[Server]: [grug_housing] keeper unpacked vessels:shelf at (1207,74,-1803)
+ACTION[Server]: [grug_housing] keeper unpacked default:chest at (1208,74,-1803)
+ACTION[Server]: [grug_housing] keeper unpacked default:chest at (1209,74,-1803)
+ACTION[Server]: [r50_paccept_probe] flow done for keeper: 8 taken, 7 placed
+ACTION[Server]: [r50_paccept_probe] left keeper
+ACTION[Server]: keeper leaves game. List of players: 
+ACTION[Server]: neighbor [127.0.0.1] joins game. List of players: neighbor
+ACTION[Server]: [r50_paccept_probe] joined neighbor
+ACTION[Server]: [grug_core] map reset 1: neighbor moved to the race start
+ACTION[Server]: [r50_paccept_probe] left neighbor
+ACTION[Server]: neighbor leaves game. List of players: 
+ACTION[Server]: drifter [127.0.0.1] joins game. List of players: drifter
+ACTION[Server]: [r50_paccept_probe] joined drifter
+ACTION[Server]: [grug_core] map reset 1: drifter moved to the race start
+ACTION[Server]: [r50_paccept_probe] left drifter
+ACTION[Server]: drifter leaves game. List of players: 
+ACTION[Server]: [r50_paccept_probe] observations written: every planned player left

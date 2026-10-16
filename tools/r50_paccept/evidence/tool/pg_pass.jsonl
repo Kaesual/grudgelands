@@ -1,0 +1,4 @@
+{"event": "start", "mode": "migrate", "world": "<run>/pg/w_pg"}
+{"event": "pack_start", "seq": 1, "claims": 2}
+{"event": "pack_done", "seq": 1, "counts": {"claims": 2, "players": 2, "containers": 8, "items": 19, "charcoal": 149, "blocks_read": 2177}, "nodes": {"default:bookshelf": 1, "default:chest": 4, "default:chest_locked": 1, "default:furnace_active": 1, "vessels:shelf": 1}, "empty": {"default:chest": 1, "default:furnace": 1}, "seconds": 0.063}
+{"event": "done", "mode": "migrate", "world_version": "0.48.1", "record": "0.48.1", "new_world": false, "target": "0.50.0", "due": [], "backends": {"player": "postgresql", "auth": "postgresql", "mod_storage": "sqlite3", "map": "postgresql"}, "map_reset": true, "pack_seq": 1, "applied": []}

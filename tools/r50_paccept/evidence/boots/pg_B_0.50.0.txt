@@ -1,0 +1,18 @@
+launcher: staged patch: reset_1.diff
+seconds: 43, exit 0
+joins: ['neighbor logged in (protocol 52), stayed 20.0 s', 'keeper logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.50.0, game 0.50.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39987.
+ACTION[Emerge-0]: [r50_paccept_probe] sites ready, the world preparation is ready
+ACTION[Server]: neighbor [127.0.0.1] joins game. List of players: neighbor
+ACTION[Server]: [r50_paccept_probe] joined neighbor
+ACTION[Server]: [grug_housing] neighbor unpacked default:chest at (1203,115,-1203)
+ACTION[Server]: [r50_paccept_probe] flow done for neighbor: 2 taken, 1 placed
+ACTION[Server]: [r50_paccept_probe] left neighbor
+ACTION[Server]: neighbor leaves game. List of players: 
+ACTION[Server]: keeper [127.0.0.1] joins game. List of players: keeper
+ACTION[Server]: [r50_paccept_probe] joined keeper
+ACTION[Server]: [r50_paccept_probe] left keeper
+ACTION[Server]: keeper leaves game. List of players: 
+ACTION[Server]: [r50_paccept_probe] observations written: every planned player left

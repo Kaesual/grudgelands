@@ -1,0 +1,522 @@
+{
+ "claims": [
+  {
+   "activated_at": 1792179651,
+   "center": {
+    "x": 1200,
+    "y": 74,
+    "z": -1800
+   },
+   "id": 1,
+   "owner": "keeper",
+   "paid_until": 1794494811,
+   "placed_at": 1792179651
+  },
+  {
+   "activated_at": 1792179666,
+   "center": {
+    "x": 1200,
+    "y": 115,
+    "z": -1200
+   },
+   "id": 2,
+   "owner": "neighbor",
+   "paid_until": 1793749266,
+   "placed_at": 1792179666
+  }
+ ],
+ "containers": [
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "chest",
+   "lists": {
+    "main": [
+     "default:dirt 99",
+     "",
+     "",
+     "",
+     "default:torch 50",
+     "",
+     "",
+     "",
+     "",
+     "grug_gear:sword_iron 1 4321 \"\\u0001_grug_dexterity\\u00024\\u0003_grug_max_hp_percent\\u00022.4\\u0003inventory_image\\u0002grug_gear_item_sword_iron.png^(grug_gear_item_sword_iron_ench.png^[verticalframe:2:0^[multiply:#b55370^[opacity:128)^(grug_gear_item_sword_iron_ench.png^[verticalframe:2:1^[multiply:#20dea2^[opacity:128)\\u0003grug_ench\\u0002local _={};_[1]=\\\"channel\\\";return {{stat=\\\"max_hp_percent\\\",tier=2,value=2.3999999999999999,[_[1]]=\\\"prefix\\\"},{stat=\\\"dex\\\",tier=2,value=4,[_[1]]=\\\"suffix\\\"}}\\u0003grug_roll_seed\\u00024242\\u0003description\\u0002\\u001b(c@#FFD700)Stout Iron Sword of the Fox\\u001b(c@#fff)\\nItem level 20\\n\\u001b(c@#9aa0a6)11 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\n+2.4% maximum HP (T2)\\n+4 Dexterity (T2)\\nUsable by: Warrior, Scout\\nRequires level 20\\nDurability: 1500 / 1500\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":11},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_req_level\\u000220\\u0003grug_ilvl\\u000220\\u0003grug_quality\\u00023\\u0003grug_base_name\\u0002Iron Sword\\u0003\"",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "default:apple 12",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "default:cobble 7"
+    ]
+   },
+   "node": "default:chest",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1203,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "locked_chest",
+   "lists": {
+    "main": [
+     "",
+     "default:coal_lump 33",
+     "default:book_written 1 0 \"\\u0001text\\u0002Ledger of the \\\"old\\\" claim\\nLine two: Grüße, naïve café, ½ ✓\\n\\tA tab, a back\\\\slash and 'single' quotes\\n\\nLast line — 日本\\u0003owner\\u0002keeper\\u0003page_max\\u00021\\u0003page\\u00021\\u0003description\\u0002\\\"Accounts\\\" by keeper\\u0003title\\u0002Accounts\\u0003\"",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "default:chest_locked",
+   "owner": "keeper",
+   "owner_meta": "keeper",
+   "pos": {
+    "x": 1204,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "furnace",
+   "lists": {
+    "dst": [
+     "default:stone 7",
+     "",
+     "",
+     ""
+    ],
+    "fuel": [
+     "default:coal_lump 5"
+    ],
+    "src": [
+     "default:cobble 23"
+    ]
+   },
+   "node": "default:furnace_active",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1205,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": true
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "bookshelf",
+   "lists": {
+    "books": [
+     "default:book_written 1 0 \"\\u0001text\\u0002Ledger of the \\\"old\\\" claim\\nLine two: Grüße, naïve café, ½ ✓\\n\\tA tab, a back\\\\slash and 'single' quotes\\n\\nLast line — 日本\\u0003owner\\u0002keeper\\u0003page_max\\u00021\\u0003page\\u00021\\u0003description\\u0002\\\"Ledger \\\"one\\\"\\\" by keeper\\u0003title\\u0002Ledger \\\"one\\\"\\u0003\"",
+     "",
+     "",
+     "default:book 3",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "default:bookshelf",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1206,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "vessels_shelf",
+   "lists": {
+    "vessels": [
+     "vessels:glass_bottle 5",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "vessels:drinking_glass 3",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "vessels:shelf",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1207,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "relic_chest",
+   "lists": {
+    "main": [
+     "grug_probe_r50_paccept:relic 2",
+     "default:stick 5",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "default:chest",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1208,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "empty_chest",
+   "lists": {
+    "main": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "default:chest",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1209,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "empty_furnace",
+   "lists": {
+    "dst": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "fuel": [
+     ""
+    ],
+    "src": [
+     ""
+    ]
+   },
+   "node": "default:furnace",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1210,
+    "y": 74,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "cellar_chest",
+   "lists": {
+    "main": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "default:torch 3",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "default:chest",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1210,
+    "y": -95,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "outside_chest",
+   "lists": {
+    "main": [
+     "default:dirt 2",
+     "default:apple",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "default:chest",
+   "owner": "keeper",
+   "owner_meta": "",
+   "pos": {
+    "x": 1260,
+    "y": 53,
+    "z": -1800
+   },
+   "timer": false
+  },
+  {
+   "fuel_time": "",
+   "fuel_totaltime": "",
+   "id": "neighbor_chest",
+   "lists": {
+    "main": [
+     "default:apple 6",
+     "default:torch 8",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   "node": "default:chest",
+   "owner": "neighbor",
+   "owner_meta": "",
+   "pos": {
+    "x": 1203,
+    "y": 115,
+    "z": -1200
+   },
+   "timer": false
+  }
+ ],
+ "game": "0.48.1",
+ "sites": {
+  "one": {
+   "x": 1200,
+   "y": 74,
+   "z": -1800
+  },
+  "outside": {
+   "x": 1260,
+   "y": 53,
+   "z": -1800
+  },
+  "two": {
+   "x": 1200,
+   "y": 115,
+   "z": -1200
+  }
+ }
+}
