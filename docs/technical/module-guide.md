@@ -560,6 +560,10 @@ tools](#player-meta-read-by-external-tools).
   wear/proc. The no-dig pointabilities can mask a ground-level drop, so each
   fresh LMB press retains the bounded first-visible 4 m builtin-item pickup ray;
   nodes/other objects block it and held repeats do not become auto-loot.
+  Since 0.49.1 a fresh press that arrives as the native punch on a drop
+  (`M.press(player, entity)`) picks up that drop when the ray misses it and
+  the press is no combat press, within `HAND_RANGE + 2.6` of its server
+  position (upstream-workarounds §7).
   **WP39 shipped the current-ray authority on 2026-08-10.**
   `grug_core.combat_eye_pos(player)` and
   `grug_core.combat_ray(player, range, opts)` are the shared server-side

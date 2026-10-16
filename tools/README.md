@@ -1292,3 +1292,18 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   first hit with an NPC behind a closed door, an open door and no door,
   then the helper on the same rays and one click per real dialog NPC kind);
   `evidence/` the probe before and after the fix.
+- **0.49.1 lane DROP** (`r491_drop`): drops a client draws sliding and
+  cannot pick up (`portable_test.lua`: A the real vendored
+  `default/item_entity.lua` over a fake builtin item, the resting position
+  sent again 0.5 s and 2 s after a landing or an ice slide and never for an
+  item lying still; B the real `grug_abilities/input.lua`, the plain pickup
+  at once, the punched drop the server ray misses, the reach, a combat press
+  through the loot, held and punch-less presses). `repro.sh OUT` (`XVFB=`,
+  `LOSS=`, `WAVES=`, `SEED=`; two queue slots) the reproduction: the server
+  with `grug_probe_r491_drop` and one real Flatpak client in a private
+  unprivileged network namespace whose loopback drops LOSS % of the packets
+  (netem), the client mod `r491scan` logging where the client draws each
+  object, mob-style drops thrown at Bannerbreak Warhold, plus server-side
+  cases against and inside walls and on steps; `analyze.py OUT` the
+  comparison (sliders, their client speed against the server's last flight
+  speed, the lead cases).

@@ -1,0 +1,50 @@
+drops thrown: 120, landed: 120
+horizontal speed at the last step in the air: mean 0.39, max 0.66 nodes/s
+flight time: mean 1.09 s
+landing step travel <= 0.2 node (the engine sends the stop once): 120 of 120; the others get it twice
+objects within 128 nodes of the waystone: 0-222, moving 0-24
+drops that still move on the SERVER 1 s after landing: 0
+client objects seen: 121, matched to drops: 117
+SLIDERS (client draws it moving, server has it at rest): 18
+  drop  33 id   285: client speed 0.44 n/s over 15 s, 7.19 nodes from the server's copy at the end; server's last air speed 0.45 n/s, landing step 0.00
+  drop  32 id   284: client speed 0.17 n/s over 14 s, 2.61 nodes from the server's copy at the end; server's last air speed 0.18 n/s, landing step 0.00
+  drop  34 id   286: client speed 0.47 n/s over 19 s, 9.42 nodes from the server's copy at the end; server's last air speed 0.47 n/s, landing step 0.00
+  drop  35 id   287: client speed 0.24 n/s over 36 s, 8.98 nodes from the server's copy at the end; server's last air speed 0.27 n/s, landing step 0.00
+  drop  31 id   283: client speed 0.49 n/s over 8 s, 4.54 nodes from the server's copy at the end; server's last air speed 0.66 n/s, landing step 0.00
+  drop  36 id   288: client speed 0.17 n/s over 15 s, 2.98 nodes from the server's copy at the end; server's last air speed 0.20 n/s, landing step 0.00
+  drop  39 id   293: client speed 0.36 n/s over 17 s, 6.61 nodes from the server's copy at the end; server's last air speed 0.38 n/s, landing step 0.00
+  drop  37 id   291: client speed 0.39 n/s over 26 s, 10.40 nodes from the server's copy at the end; server's last air speed 0.39 n/s, landing step 0.00
+  drop  42 id   296: client speed 0.46 n/s over 11 s, 5.52 nodes from the server's copy at the end; server's last air speed 0.47 n/s, landing step 0.00
+  drop  41 id   295: client speed 0.29 n/s over 26 s, 7.86 nodes from the server's copy at the end; server's last air speed 0.29 n/s, landing step 0.00
+  drop  38 id   292: client speed 0.30 n/s over 8 s, 2.81 nodes from the server's copy at the end; server's last air speed 0.33 n/s, landing step 0.00
+  drop  40 id   294: client speed 0.55 n/s over 5 s, 3.37 nodes from the server's copy at the end; server's last air speed 0.58 n/s, landing step 0.00
+  drop  70 id   328: client speed 0.43 n/s over 7 s, 3.75 nodes from the server's copy at the end; server's last air speed 0.45 n/s, landing step 0.00
+  drop  69 id   327: client speed 0.12 n/s over 56 s, 6.69 nodes from the server's copy at the end; server's last air speed 0.12 n/s, landing step 0.00
+  drop  71 id   329: client speed 0.14 n/s over 56 s, 8.10 nodes from the server's copy at the end; server's last air speed 0.23 n/s, landing step 0.00
+  drop  67 id   325: client speed 0.44 n/s over 10 s, 5.03 nodes from the server's copy at the end; server's last air speed 0.43 n/s, landing step 0.00
+  drop  72 id   330: client speed 0.43 n/s over 14 s, 6.91 nodes from the server's copy at the end; server's last air speed 0.64 n/s, landing step 0.00
+  drop  61 id   326: client speed 0.46 n/s over 26 s, 11.85 nodes from the server's copy at the end; server's last air speed 0.43 n/s, landing step 0.00
+DROPS total=120 moved_in_last_2s=0
+LEADS walls=8 steps=6
+LEAD n=1001 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-125.00,123.80,783.79) spawn=(-125.00,124.40,783.20)
+LEAD n=1002 kind=inside rest_after=- path=0.00 force_outs=0 moving_now=false final=(-124.83,123.80,783.65) spawn=(-125.00,124.40,784.00)
+LEAD n=1003 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-122.20,123.80,789.00) spawn=(-122.20,124.40,789.00)
+LEAD n=1004 kind=inside rest_after=- path=0.00 force_outs=1 moving_now=false final=(-122.07,123.80,788.97) spawn=(-123.00,124.40,789.00)
+LEAD n=1005 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-105.80,123.80,776.00) spawn=(-105.80,124.40,776.00)
+LEAD n=1006 kind=inside rest_after=- path=0.00 force_outs=1 moving_now=false final=(-106.04,123.80,775.88) spawn=(-105.00,124.40,776.00)
+LEAD n=1007 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-105.80,123.80,779.00) spawn=(-105.80,124.40,779.00)
+LEAD n=1008 kind=inside rest_after=- path=0.00 force_outs=1 moving_now=false final=(-105.85,123.80,778.94) spawn=(-105.00,124.40,779.00)
+LEAD n=1009 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-105.80,123.80,782.00) spawn=(-105.80,124.40,782.00)
+LEAD n=1010 kind=inside rest_after=- path=0.00 force_outs=1 moving_now=false final=(-105.99,123.80,782.08) spawn=(-105.00,124.40,782.00)
+LEAD n=1011 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-105.80,123.80,785.00) spawn=(-105.80,124.40,785.00)
+LEAD n=1012 kind=inside rest_after=- path=0.00 force_outs=1 moving_now=false final=(-105.95,123.80,784.99) spawn=(-105.00,124.40,785.00)
+LEAD n=1013 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-120.00,123.80,790.20) spawn=(-120.00,124.40,790.20)
+LEAD n=1014 kind=inside rest_after=- path=0.00 force_outs=1 moving_now=false final=(-120.07,123.80,790.10) spawn=(-120.00,124.40,791.00)
+LEAD n=1015 kind=wall rest_after=- path=0.00 force_outs=0 moving_now=false final=(-117.00,123.80,790.20) spawn=(-117.00,124.40,790.20)
+LEAD n=1016 kind=inside rest_after=- path=0.00 force_outs=1 moving_now=false final=(-116.86,123.80,790.01) spawn=(-117.00,124.40,791.00)
+LEAD n=1017 kind=step rest_after=- path=0.00 force_outs=0 moving_now=false final=(-106.40,133.80,770.65) spawn=(-106.50,134.40,771.00)
+LEAD n=1018 kind=step rest_after=- path=0.00 force_outs=0 moving_now=false final=(-107.67,133.80,770.51) spawn=(-107.50,134.40,770.00)
+LEAD n=1019 kind=step rest_after=- path=0.00 force_outs=0 moving_now=false final=(-107.65,133.80,768.47) spawn=(-107.50,134.40,768.00)
+LEAD n=1020 kind=step rest_after=- path=0.00 force_outs=0 moving_now=false final=(-107.73,133.80,766.53) spawn=(-107.50,134.40,766.00)
+LEAD n=1021 kind=step rest_after=- path=0.00 force_outs=0 moving_now=false final=(-106.03,132.80,765.26) spawn=(-106.50,134.40,765.00)
+LEAD n=1022 kind=step rest_after=- path=0.00 force_outs=0 moving_now=false final=(-104.42,133.80,764.57) spawn=(-104.50,134.40,765.00)
