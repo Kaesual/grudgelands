@@ -34,6 +34,9 @@
     "z": -1203
    },
    "protected": false,
+   "ref": "packed:neighbor:1:1",
+   "ref_after": false,
+   "ref_before": true,
    "removed": null,
    "timer": false
   }
@@ -52,14 +55,16 @@
  "taken": [
   {
    "allowed": 1,
-   "bytes": 864,
+   "bytes": 676,
    "count": 1,
    "description": "Packed \u001b(T@default)Chest\u001bE, 2 stacks\n\u001b(c@#c8c8c8)\u001b(T@default)Apple\u001bE ×6\u001b(c@#fff)\n\u001b(c@#c8c8c8)\u001b(T@default)Torch\u001bE ×8\u001b(c@#fff)\n\u001b(c@#a0a0a0)Place it to unpack it. Soulbound: it cannot be dropped, stored, mailed or sold.\u001b(c@#fff)",
+   "has_lists": false,
    "image": "[inventorycube{default_chest_top.png{default_chest_front.png{default_chest_side.png&[transformFX",
    "main_slot": 1,
    "name": "grug_housing:packed_container",
    "node": "default:chest",
    "put": 1,
+   "ref": "packed:neighbor:1:1",
    "slot": 1
   },
   {
@@ -67,11 +72,13 @@
    "bytes": 25,
    "count": 60,
    "description": "",
+   "has_lists": false,
    "image": "",
    "main_slot": 2,
    "name": "grug_smelting:charcoal",
    "node": "",
    "put": 60,
+   "ref": "",
    "slot": 2
   }
  ],

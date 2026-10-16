@@ -28,8 +28,9 @@
 --   the engine saves (server.cpp: on_shutdown runs before the map save),
 --   every container's lists and node are written to
 --   <world>/paccept_receipt.json with the claims.
--- accept (0.50.0)  records the waiting entries as loaded (after the
---   game's first-start clean-up), captures the join notices (grug_core.feed,
+-- accept (0.50.0)  records the waiting entries and the stored contents
+--   (`recovered:*`, `packed:*`, ruling 14) as loaded (after the game's
+--   first-start clean-up), captures the join notices (grug_core.feed,
 --   key grug_housing_recovered) and the stone forms; reloads the sites and
 --   lays the floor again; it signals ready once the world preparation is
 --   ready. For each player in plan.flow, once the map reset's relocation
@@ -39,7 +40,8 @@
 --   the inventory, the Belongings tab, every slot taken as the engine moves
 --   it (detached allow_take, the player inventory's allow/on put callbacks,
 --   on_take), every packed container placed through its item's on_place on
---   the floor, and each placed node read back and matched against the
+--   the floor (its stored contents present before, deleted after), and each
+--   placed node read back and matched against the
 --   receipt (ItemStack ==: name, count, wear, meta; items this version does
 --   not register count as removed). plan.recheck names containers a
 --   previous boot placed: read back again (a second boot changes nothing).
@@ -454,7 +456,9 @@ local function recovered_rows()
 	local store = grug_housing.storage
 	if not store then return rows end
 	for _, key in ipairs(store:get_keys()) do
-		if key:match("^recovered:") or key == "pack_seq" then rows[key] = store:get_string(key) end
+		if key:match("^recovered:") or key:match("^packed:") or key == "pack_seq" then
+			rows[key] = store:get_string(key)
+		end
 	end
 	return rows
 end
@@ -533,6 +537,8 @@ local function flow(player, entry)
 				node = stack:get_meta():get_string("node"),
 				description = stack:get_meta():get_string("description"),
 				image = stack:get_meta():get_string("inventory_image"),
+				ref = stack:get_meta():get_string("ref"),
+				has_lists = stack:get_meta():get_string("lists") ~= "",
 				bytes = #stack:to_string()}
 			t.allowed = cb.allow_take(dinv, "recovered", i, ItemStack(stack), player)
 			t.put = slot and allow_put(player, pinv, slot, stack) or 0
@@ -569,13 +575,18 @@ local function flow(player, entry)
 			local under = {x = target.x, y = target.y - 1, z = target.z}
 			local stack = pinv:get_stack("main", t.main_slot)
 			local def = core.registered_items[stack:get_name()]
-			local p = {packed_node = t.node, pos = target,
+			local p = {packed_node = t.node, pos = target, ref = t.ref,
 				protected = core.is_protected(target, name)}
+			-- Ruling 14: the contents wait under the item's reference until
+			-- the placement, which deletes them.
+			local store = grug_housing.storage
+			p.ref_before = t.ref ~= "" and store:get_string(t.ref) ~= ""
 			local result = def.on_place(ItemStack(stack), player,
 				{type = "node", under = under, above = target})
 			result = ItemStack(result)
 			pinv:set_stack("main", t.main_slot, result)
 			p.consumed = result:is_empty()
+			p.ref_after = t.ref ~= "" and store:get_string(t.ref) ~= ""
 			local back = read_back(target)
 			p.node, p.owner, p.timer = back.node, back.owner, back.timer
 			local c = match(name, back.node, back.lists, used)

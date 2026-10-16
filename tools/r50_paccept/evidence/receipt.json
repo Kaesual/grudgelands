@@ -1,7 +1,7 @@
 {
  "claims": [
   {
-   "activated_at": 1792179651,
+   "activated_at": 1792180266,
    "center": {
     "x": 1200,
     "y": 74,
@@ -9,11 +9,11 @@
    },
    "id": 1,
    "owner": "keeper",
-   "paid_until": 1794494811,
-   "placed_at": 1792179651
+   "paid_until": 1794495426,
+   "placed_at": 1792180266
   },
   {
-   "activated_at": 1792179666,
+   "activated_at": 1792180280,
    "center": {
     "x": 1200,
     "y": 115,
@@ -21,8 +21,8 @@
    },
    "id": 2,
    "owner": "neighbor",
-   "paid_until": 1793749266,
-   "placed_at": 1792179666
+   "paid_until": 1793749880,
+   "placed_at": 1792180280
   }
  ],
  "containers": [
@@ -41,7 +41,7 @@
      "",
      "",
      "",
-     "grug_gear:sword_iron 1 4321 \"\\u0001_grug_dexterity\\u00024\\u0003_grug_max_hp_percent\\u00022.4\\u0003inventory_image\\u0002grug_gear_item_sword_iron.png^(grug_gear_item_sword_iron_ench.png^[verticalframe:2:0^[multiply:#b55370^[opacity:128)^(grug_gear_item_sword_iron_ench.png^[verticalframe:2:1^[multiply:#20dea2^[opacity:128)\\u0003grug_ench\\u0002local _={};_[1]=\\\"channel\\\";return {{stat=\\\"max_hp_percent\\\",tier=2,value=2.3999999999999999,[_[1]]=\\\"prefix\\\"},{stat=\\\"dex\\\",tier=2,value=4,[_[1]]=\\\"suffix\\\"}}\\u0003grug_roll_seed\\u00024242\\u0003description\\u0002\\u001b(c@#FFD700)Stout Iron Sword of the Fox\\u001b(c@#fff)\\nItem level 20\\n\\u001b(c@#9aa0a6)11 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\n+2.4% maximum HP (T2)\\n+4 Dexterity (T2)\\nUsable by: Warrior, Scout\\nRequires level 20\\nDurability: 1500 / 1500\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":11},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_req_level\\u000220\\u0003grug_ilvl\\u000220\\u0003grug_quality\\u00023\\u0003grug_base_name\\u0002Iron Sword\\u0003\"",
+     "grug_gear:sword_iron 1 4321 \"\\u0001_grug_max_hp_percent\\u00022.4\\u0003_grug_dexterity\\u00024\\u0003inventory_image\\u0002grug_gear_item_sword_iron.png^(grug_gear_item_sword_iron_ench.png^[verticalframe:2:0^[multiply:#b55370^[opacity:128)^(grug_gear_item_sword_iron_ench.png^[verticalframe:2:1^[multiply:#20dea2^[opacity:128)\\u0003grug_ench\\u0002local _={};_[1]=\\\"channel\\\";return {{value=2.3999999999999999,tier=2,[_[1]]=\\\"prefix\\\",stat=\\\"max_hp_percent\\\"},{value=4,tier=2,[_[1]]=\\\"suffix\\\",stat=\\\"dex\\\"}}\\u0003grug_roll_seed\\u00024242\\u0003description\\u0002\\u001b(c@#FFD700)Stout Iron Sword of the Fox\\u001b(c@#fff)\\nItem level 20\\n\\u001b(c@#9aa0a6)11 damage, 1.0 s swing\\u001b(c@#fff)\\n\\u001b(c@#9aa0a6)Equip in Character > Weapon (Scout: Melee); attack with a hotbar combat skill\\u001b(c@#fff)\\n+2.4% maximum HP (T2)\\n+4 Dexterity (T2)\\nUsable by: Warrior, Scout\\nRequires level 20\\nDurability: 1500 / 1500\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":11},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":null,\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_req_level\\u000220\\u0003grug_ilvl\\u000220\\u0003grug_quality\\u00023\\u0003grug_base_name\\u0002Iron Sword\\u0003\"",
      "",
      "",
      "",
@@ -84,7 +84,7 @@
     "main": [
      "",
      "default:coal_lump 33",
-     "default:book_written 1 0 \"\\u0001text\\u0002Ledger of the \\\"old\\\" claim\\nLine two: Grüße, naïve café, ½ ✓\\n\\tA tab, a back\\\\slash and 'single' quotes\\n\\nLast line — 日本\\u0003owner\\u0002keeper\\u0003page_max\\u00021\\u0003page\\u00021\\u0003description\\u0002\\\"Accounts\\\" by keeper\\u0003title\\u0002Accounts\\u0003\"",
+     "default:book_written 1 0 \"\\u0001owner\\u0002keeper\\u0003page_max\\u00021\\u0003text\\u0002Ledger of the \\\"old\\\" claim\\nLine two: Grüße, naïve café, ½ ✓\\n\\tA tab, a back\\\\slash and 'single' quotes\\n\\nLast line — 日本\\u0003page\\u00021\\u0003title\\u0002Accounts\\u0003description\\u0002\\\"Accounts\\\" by keeper\\u0003\"",
      "",
      "",
      "",
@@ -160,7 +160,7 @@
    "id": "bookshelf",
    "lists": {
     "books": [
-     "default:book_written 1 0 \"\\u0001text\\u0002Ledger of the \\\"old\\\" claim\\nLine two: Grüße, naïve café, ½ ✓\\n\\tA tab, a back\\\\slash and 'single' quotes\\n\\nLast line — 日本\\u0003owner\\u0002keeper\\u0003page_max\\u00021\\u0003page\\u00021\\u0003description\\u0002\\\"Ledger \\\"one\\\"\\\" by keeper\\u0003title\\u0002Ledger \\\"one\\\"\\u0003\"",
+     "default:book_written 1 0 \"\\u0001owner\\u0002keeper\\u0003page_max\\u00021\\u0003text\\u0002Ledger of the \\\"old\\\" claim\\nLine two: Grüße, naïve café, ½ ✓\\n\\tA tab, a back\\\\slash and 'single' quotes\\n\\nLast line — 日本\\u0003page\\u00021\\u0003title\\u0002Ledger \\\"one\\\"\\u0003description\\u0002\\\"Ledger \\\"one\\\"\\\" by keeper\\u0003\"",
      "",
      "",
      "default:book 3",

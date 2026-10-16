@@ -4,14 +4,16 @@
 +'storage' | 'grug_core' | 'map_reset_pack:1' | '1'
 @@ -47,0 +49 @@
 +'storage' | 'grug_housing' | 'pack_seq' | '1'
-@@ -49,0 +52,10 @@
+@@ -49,0 +52,12 @@
 +'storage' | 'grug_housing' | 'recovered:keeper:1:1' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:chest\\u0003lists\...(2154)
++'storage' | 'grug_housing' | 'recovered:keeper:1:10' | 'grug_smelting:charcoal 89'
 +'storage' | 'grug_housing' | 'recovered:keeper:1:2' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:chest_locked\\u000...(888)
 +'storage' | 'grug_housing' | 'recovered:keeper:1:3' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:furnace_active\\u0...(242)
 +'storage' | 'grug_housing' | 'recovered:keeper:1:4' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:bookshelf\\u0003li...(832)
 +'storage' | 'grug_housing' | 'recovered:keeper:1:5' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002vessels:shelf\\u0003lists\...(289)
 +'storage' | 'grug_housing' | 'recovered:keeper:1:6' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:chest\\u0003lists\...(397)
-+'storage' | 'grug_housing' | 'recovered:keeper:1:7' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:chest\\u0003lists\...(367)
-+'storage' | 'grug_housing' | 'recovered:keeper:1:8' | 'grug_smelting:charcoal 89'
++'storage' | 'grug_housing' | 'recovered:keeper:1:7' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:chest\\u0003lists\...(352)
++'storage' | 'grug_housing' | 'recovered:keeper:1:8' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:chest\\u0003lists\...(367)
++'storage' | 'grug_housing' | 'recovered:keeper:1:9' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:furnace\\u0003list...(184)
 +'storage' | 'grug_housing' | 'recovered:neighbor:1:1' | 'grug_housing:packed_container 1 0 "\\u0001node\\u0002default:chest\\u0003lists\...(382)
 +'storage' | 'grug_housing' | 'recovered:neighbor:1:2' | 'grug_smelting:charcoal 60'

@@ -24,11 +24,14 @@ agreement; docs/technical/upgrade-contract.md sections 1, 3.5 and 5).
   boot A   per backend, this checkout's 0.50.0 game with the raised counter
            (a disposable patch of the staged minetest.conf, which
            luanti_headless.sh copies into server.conf): the first-start
-           clean-up (the probe's own item removed), the marker deleted;
-           keeper, neighbor and drifter join: notices for keeper and
-           neighbor only; keeper's new draft stone shows no Belongings, the
-           activated one does; every entry taken, every packed container
-           placed and read back equal to the receipt; the charcoal equals
+           clean-up (the probe's own item removed; rulings 13-14: the
+           contents moved to packed:* keys, the items keep only a
+           reference, the empty chest and furnace plain stacked items), the
+           marker deleted; keeper, neighbor and drifter join: notices for
+           keeper and neighbor only; keeper's new draft stone shows no
+           Belongings, the activated one does; every entry taken, every
+           packed container placed (its stored contents then deleted) and
+           read back equal to the receipt; the charcoal equals
            ceil((paid_until - pass time) / LUMP_SECONDS)
   boot B   the same world again: nothing changes at the load; keeper's
            placed containers still equal the receipt; neighbor's flow
@@ -284,15 +287,20 @@ def charcoal_range(claim, clock):
 
 
 def recovered(world):
+    """grug_housing's waiting entries, the stored contents (ruling 14) and
+    the pass counter."""
     return {k: v for k, v in it.storage(world, "grug_housing").items()
-            if k.startswith("recovered:") or k == "pack_seq"}
+            if k.startswith("recovered:") or k.startswith("packed:") or k == "pack_seq"}
 
 
 def entries_match(rows, receipt, seq=1):
-    """Every recovered entry against the receipt: (ok, detail, per owner)."""
+    """The tool's entries against the receipt: every container in a claim,
+    the empty ones too (ruling 13), as a packed container of its owner with
+    the lists the map held. Returns (ok, detail, per owner keys, charcoal)."""
     packed, empty, _ = expected(receipt)
-    nodes = {base_node(c["node"]) for c in receipt["containers"]}
-    problems, per_owner, charcoal, plain = [], {}, {}, {}
+    problems, per_owner, charcoal = [], {}, {}
+    candidates = {o: list(packed.get(o, [])) + list(empty.get(o, []))
+                  for o in set(packed) | set(empty)}
     for key in sorted(rows):
         m = re.fullmatch(r"recovered:([^:]+):(\d+):(\d+)", key)
         if not m:
@@ -303,33 +311,73 @@ def entries_match(rows, receipt, seq=1):
         if stack.name == CHARCOAL:
             charcoal[owner] = charcoal.get(owner, 0) + stack.count
             continue
-        if stack.name in nodes and stack.name != PACKED:
-            # Ruling 13: an empty container comes back as its plain node item.
-            plain.setdefault(owner, {})
-            plain[owner][stack.name] = plain[owner].get(stack.name, 0) + stack.count
-            continue
         if stack.name != PACKED or stack.meta.get("seq") != str(seq):
             problems.append("%s: %s" % (key, stack.name))
             continue
-        lists = codec.deserialize(stack.meta.get("lists", ""))
-        got = norm_lists({k: v for k, v in lists.items()})
-        hit = [c for c in packed.get(owner, []) if c["node"] == stack.meta.get("node")
+        got = norm_lists(codec.deserialize(stack.meta.get("lists", "")))
+        hit = [c for c in candidates.get(owner, []) if c["node"] == stack.meta.get("node")
                and norm_lists(c["lists"]) == got and not c.get("_used")]
         if hit:
             hit[0]["_used"] = True
         else:
             problems.append("%s: no receipt container (%s)" % (key, stack.meta.get("node")))
-    missing = [c["id"] for cs in packed.values() for c in cs if not c.pop("_used", False)]
+    missing = [c["id"] for cs in candidates.values() for c in cs if not c.pop("_used", False)]
     if missing:
         problems.append("not packed: %s" % missing)
-    # Empty containers: not packed at all (0.50.0 as first built), or all of
-    # them as plain node items (ruling 13); never a part of them.
-    mode = "plain" if plain else "skipped"
-    if plain and plain != {o: empty_items(empty, o) for o in empty}:
-        problems.append("empty containers as plain items %s, expected %s" % (
-            plain, {o: empty_items(empty, o) for o in empty}))
-    numbers["empty_mode"] = mode
     return not problems, "; ".join(problems), per_owner, charcoal
+
+
+def cleaned_match(rows, receipt, seq=1):
+    """The entries after the game's first-start clean-up (rulings 13 and
+    14): each filled container a packed item with `ref`, `node`, `seq`, a
+    description and no `lists`, its contents under `packed:<key rest>`
+    equal to the receipt's (unknown items gone); each empty one back as its
+    node's plain item, stacked, under `recovered:<p>:<seq>:0.<k>`; the
+    charcoal unchanged. Returns (problems, waiting keys per owner, the
+    largest entry's item-string length)."""
+    packed, empty, _ = expected(receipt)
+    problems, waiting, largest = [], {}, 0
+    plain = {}
+    used = set()
+    for key in sorted(rows):
+        m = re.fullmatch(r"recovered:([^:]+):(\d+):(\d+)(?:\.(\d+))?", key)
+        if not m or not rows[key]:
+            continue
+        owner, n = m.group(1), int(m.group(3))
+        waiting.setdefault(owner, []).append(key)
+        largest = max(largest, len(rows[key]))
+        stack = codec.ItemStack.parse(rows[key])
+        if stack.name == CHARCOAL:
+            continue
+        if n == 0:
+            plain.setdefault(owner, {})
+            plain[owner][stack.name] = plain[owner].get(stack.name, 0) + stack.count
+            continue
+        meta = stack.meta
+        ref = "packed:" + key[len("recovered:"):]
+        if stack.name != PACKED or "lists" in meta or meta.get("ref") != ref \
+                or meta.get("seq") != str(seq) or not meta.get("description"):
+            problems.append("%s: not a cleaned packed item (%s, meta keys %s)" % (
+                key, stack.name, sorted(meta)))
+            continue
+        if not rows.get(ref):
+            problems.append("%s: its contents %s are not stored" % (key, ref))
+            continue
+        got = norm_lists(codec.deserialize(rows[ref]))
+        hit = [c for c in packed.get(owner, []) if c["id"] not in used
+               and base_node(c["node"]) == meta.get("node")
+               and norm_lists(c["lists"], drop=(RELIC,)) == got]
+        if hit:
+            used.add(hit[0]["id"])
+        else:
+            problems.append("%s: the stored contents match no receipt container" % key)
+    missing = [c["id"] for cs in packed.values() for c in cs if c["id"] not in used]
+    if missing:
+        problems.append("no cleaned item for %s" % missing)
+    want = {o: empty_items(empty, o) for o in empty}
+    if plain != want:
+        problems.append("empty containers as plain items %s, expected %s" % (plain, want))
+    return problems, waiting, largest
 
 
 # -- the scenario ---------------------------------------------------------------
@@ -416,26 +464,25 @@ def check_pass(run, label, world, receipt, rc_check, rc_pass, dump_before, diges
                      for v in c["lists"].values())
     n_packed = sum(len(v) for v in packed.values())
     n_empty = sum(len(v) for v in empty.values())
-    check(label, "pack_done counts: 2 claims, 2 players, %d containers (%d more if the empty "
-          "ones count), %d items, charcoal rounded up" % (n_packed, n_empty, want_items),
+    check(label, "pack_done counts: 2 claims, 2 players, %d containers (%d of them empty, "
+          "ruling 13), %d items, charcoal rounded up" % (n_packed + n_empty, n_empty,
+                                                         want_items),
           counts.get("claims") == 2 and counts.get("players") == 2
-          and counts.get("containers") in (n_packed, n_packed + n_empty)
+          and counts.get("containers") == n_packed + n_empty
           and counts.get("items") == want_items
           and counts.get("charcoal") in {a + b for a in ranges["keeper"]
                                          for b in ranges["neighbor"]}, json.dumps(counts))
     rows = recovered(world)
     ok, detail, per_owner, charcoal = entries_match(rows, receipt)
-    check(label, "every entry equals a receipt container of its owner; the outside chest is "
-          "not packed", ok, detail)
+    check(label, "every entry equals a receipt container of its owner, the empty ones too; "
+          "the outside chest is not packed", ok, detail)
     check(label, "charcoal per owner = ceil((paid_until - pass time) / LUMP_SECONDS)",
           all(charcoal.get(o, 0) in ranges[o] for o in claims),
           "%s vs %s" % (charcoal, {o: sorted(r) for o, r in ranges.items()}))
     check(label, "pack_seq 1", rows.get("pack_seq") == "1", rows.get("pack_seq"))
-    if numbers.get("empty_mode") == "skipped":
-        skipped = event(rc_pass["events"], "pack_done").get("empty") or {}
-        check(label, "empty containers are not packed (pack_done 'empty': %d)" % n_empty,
-              sum(skipped.values()) == n_empty if isinstance(skipped, dict) else False,
-              json.dumps(skipped))
+    empties = event(rc_pass["events"], "pack_done").get("empty") or {}
+    check(label, "pack_done 'empty' counts the %d empty ones" % n_empty,
+          isinstance(empties, dict) and sum(empties.values()) == n_empty, json.dumps(empties))
     return rows, per_owner, charcoal, counts
 
 
@@ -445,6 +492,7 @@ def run_backend(run, label, world, receipt, pass_info):
     record = int(it.storage(world, "grug_core").get("reset_world") or 0)
     raised = record + 1
     packed, empty, _ = expected(receipt)
+    n_empty = sum(len(v) for v in empty.values())
     sites = {"keeper": receipt["sites"]["one"], "neighbor": receipt["sites"]["two"]}
     plan = {"phase": "accept", "receipt": receipt, "sites": sites}
     a = boot(run, world, "%s_A_0.50.0" % label, REPO / "tools" / "luanti_headless.sh",
@@ -459,9 +507,10 @@ def run_backend(run, label, world, receipt, pass_info):
     check(label, "the first-start clean-up ran: the probe's item removed, the pass ready",
           re.search(r"\[grug_housing\] map reset pass 1: recovered:keeper:1:\d+ lost unknown "
                     + re.escape(RELIC) + r" 2", log) is not None
-          and re.search(r"\[grug_housing\] map reset pass 1: %d entries cleaned, 0 deleted, "
-                        r"0 extra, 1 unknown items removed" % len(
-                            [k for k in rows_after_pass if k != "pack_seq"]), log) is not None
+          and re.search(r"\[grug_housing\] map reset pass 1: %d entries cleaned, %d deleted "
+                        r"\(%d containers back as their nodes' items\), 1 unknown items "
+                        r"removed" % (len([k for k in rows_after_pass if k != "pack_seq"]),
+                                      n_empty, n_empty), log) is not None
           and "[grug_core] map reset pass 1: the packed containers are ready" in log,
           "\n".join(l for l in log.splitlines() if "map reset pass" in l))
     core = it.storage(world, "grug_core")
@@ -471,6 +520,15 @@ def run_backend(run, label, world, receipt, pass_info):
           and core.get("reset_world") == str(raised), json.dumps(
               {k: v for k, v in core.items() if k in ("world_version", "reset_world")
                or k.startswith("map_reset_pack")}))
+    at_load = obs.get("at_load") or {}
+    problems, waiting_keys, largest = cleaned_match(at_load, receipt)
+    content = max((len(v) for k, v in at_load.items() if k.startswith("packed:")), default=0)
+    numbers.setdefault(label, {})["largest_entry_bytes"] = largest
+    numbers[label]["largest_content_bytes"] = content
+    check(label, "after the clean-up: packed items carry ref, node, seq and a description, no "
+          "lists; their contents in packed:* equal the receipt; the empty chest and furnace "
+          "plain stacked items (largest entry %d bytes)" % largest, not problems,
+          "; ".join(problems))
     joins = {j["name"]: j for j in obs.get("joins") or []}
     check(label, "every character was moved to its race start (the map reset's player "
           "part) before keeper's flow", all(
@@ -483,7 +541,7 @@ def run_backend(run, label, world, receipt, pass_info):
           and (joins.get("neighbor") or {}).get("notices") == [NOTICE]
           and not (joins.get("drifter") or {}).get("notices"),
           json.dumps({n: j.get("notices") for n, j in joins.items()}))
-    waiting = {n: len(per_owner.get(n, [])) for n in ("keeper", "neighbor", "drifter")}
+    waiting = {n: len(waiting_keys.get(n, [])) for n in ("keeper", "neighbor", "drifter")}
     check(label, "waiting at the join: keeper %(keeper)d, neighbor %(neighbor)d, drifter 0"
           % waiting, all((joins.get(n) or {}).get("waiting_at_join") == waiting[n]
                          for n in waiting),
@@ -492,8 +550,11 @@ def run_backend(run, label, world, receipt, pass_info):
                 packed["keeper"], waiting["keeper"], charcoal.get("keeper", 0),
                 empty_items(empty, "keeper"))
     after_a = recovered(world)
-    check(label, "after boot A: keeper's entries are gone, neighbor's wait (cleaned, "
-          "described)", not any(k.startswith("recovered:keeper:") for k in after_a)
+    check(label, "after boot A: keeper's entries and stored contents are gone, neighbor's "
+          "wait (cleaned, described)", not any(k.startswith(("recovered:keeper:",
+                                                               "packed:keeper:"))
+                                                for k in after_a)
+          and any(k.startswith("packed:neighbor:") for k in after_a)
           and len([k for k in after_a if k.startswith("recovered:neighbor:")])
           == waiting["neighbor"] and all(
               "Packed " in codec.ItemStack.parse(v).meta.get("description", "")
@@ -526,8 +587,8 @@ def run_backend(run, label, world, receipt, pass_info):
     flow_checks(run, label, "neighbor", (joins.get("neighbor") or {}).get("flow") or {},
                 packed["neighbor"], waiting["neighbor"], charcoal.get("neighbor", 0),
                 empty_items(empty, "neighbor"))
-    check(label, "nothing waits any more", not any(k.startswith("recovered:")
-                                                   for k in recovered(world)),
+    check(label, "nothing waits any more, no stored contents left", not any(
+              k.startswith(("recovered:", "packed:")) for k in recovered(world)),
           json.dumps(sorted(recovered(world))))
     return a, b
 
@@ -595,9 +656,20 @@ def flow_checks(run, label, name, flow, containers, waiting, charcoal, plain):
     for t in taken:
         if t.get("name") not in (PACKED, CHARCOAL) and t.get("main_slot"):
             got[t["name"]] = got.get(t["name"], 0) + t.get("count", 0)
-    want = plain if numbers.get("empty_mode") == "plain" else {}
-    check(label, "%s: the empty containers as plain node items: %s" % (name, want or "none "
-          "(not packed)"), got == want, json.dumps(got))
+    check(label, "%s: the empty containers as plain node items: %s" % (name, plain or "none"),
+          got == plain, json.dumps(got))
+    packed_taken = [t for t in taken if t.get("name") == PACKED]
+    check(label, "%s: the packed items carry no lists, only a reference (largest %d bytes)"
+          % (name, max([t.get("bytes", 0) for t in packed_taken] or [0])),
+          packed_taken and all(not t.get("has_lists") and (t.get("ref") or "").startswith(
+              "packed:%s:" % name) for t in packed_taken),
+          json.dumps([{k: t.get(k) for k in ("ref", "has_lists", "bytes")}
+                      for t in packed_taken]))
+    check(label, "%s: each placement found its stored contents and deleted them" % name,
+          placed and all(p.get("ref_before") is True and p.get("ref_after") is False
+                         for p in placed),
+          json.dumps([{k: p.get(k) for k in ("ref", "ref_before", "ref_after")}
+                      for p in placed]))
     check(label, "%s: with nothing waiting, the form has no Belongings tab" % name,
           flow.get("final_belongings") is False)
 

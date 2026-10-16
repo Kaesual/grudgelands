@@ -4,7 +4,7 @@ joins: ['keeper registered (protocol 52), stayed 14.0 s', 'neighbor registered (
 --- log lines
 ACTION[Main]: [grug_core] world version 0.48.1 recorded for a new world
 ACTION[Main]: [grug_core] world version 0.48.1 (a new world), game 0.48.1: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39987.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39626.
 ACTION[Emerge-0]: [r50_paccept_probe] sites ready: (1200,74,-1800) (1200,115,-1200) outside (1260,53,-1800)
 ACTION[Server]: keeper [127.0.0.1] joins game. List of players: keeper
 ACTION[Server]: [r50_paccept_probe] joined keeper

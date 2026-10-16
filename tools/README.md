@@ -1356,10 +1356,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `pg_pass.py`, on PostgreSQL in the platform's layout (seeded from that
   world, `pg_dump`, `TRUNCATE public.blocks`); the map emptied and
   `grug_reset_world` raised; two boots of this checkout per backend with
-  joins: notices, the draft and active stone forms, every entry taken and
-  every packed container placed and read back against the receipt, the
-  charcoal, the first-start clean-up and a second boot that changes
-  nothing. `FIXTURE=<dir>` packages the 0.48.1 world for the platform.
+  joins: notices, the first-start clean-up (contents in `packed:*`, the
+  empties as plain stacked items), the draft and active stone forms, every
+  entry taken and every packed container placed (its stored contents
+  deleted) and read back against the receipt, the charcoal, and a second
+  boot that changes nothing. `FIXTURE=<dir>` packages the 0.48.1 world for the platform.
   `reset_like_platform.sh <world dir> [SERVER_CONF]`: a local SQLite test
   world reset the platform's way (backup, the tool, the map rows emptied,
   `grug_reset_world` raised in SERVER_CONF); it refuses the personal

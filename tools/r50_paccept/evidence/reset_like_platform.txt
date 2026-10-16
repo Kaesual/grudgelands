@@ -1,0 +1,25 @@
+reset_like_platform: backup: <copy>/world-0.48.1.backup-20261016-215650
+reset_like_platform: python3 tools/migrate.py --world <copy>/world-0.48.1 --check --map-reset
+{"event": "start", "mode": "check", "world": "<copy>/world-0.48.1"}
+migrate: check <copy>/world-0.48.1
+migrate: world version 0.48.1, target 0.50.0, due steps: none
+{"event": "done", "mode": "check", "world_version": "0.48.1", "record": "0.48.1", "new_world": false, "target": "0.50.0", "due": [], "backends": {"player": "sqlite3", "auth": "sqlite3", "mod_storage": "sqlite3", "map": "sqlite3"}, "map_reset": true, "map_checked": 1, "write_checked": ["player", "auth", "mod_storage"]}
+migrate: checked: write access on player, auth, mod_storage; 1 map block decoded
+reset_like_platform: python3 tools/migrate.py --world <copy>/world-0.48.1 --map-reset
+migrate: migrate <copy>/world-0.48.1
+{"event": "start", "mode": "migrate", "world": "<copy>/world-0.48.1"}
+migrate: world version 0.48.1, target 0.50.0, due steps: none
+migrate: pass 1: 2 claim(s)
+{"event": "pack_start", "seq": 1, "claims": 2}
+migrate: claim 1 (keeper): 1176 blocks, 9 container(s), 0.025 s
+migrate: claim 2 (neighbor): 1001 blocks, 1 container(s), 0.020 s
+migrate: pass 1 done: {"claims": 2, "players": 2, "containers": 10, "items": 19, "charcoal": 149, "blocks_read": 2177}
+{"event": "pack_done", "seq": 1, "counts": {"claims": 2, "players": 2, "containers": 10, "items": 19, "charcoal": 149, "blocks_read": 2177}, "nodes": {"default:bookshelf": 1, "default:chest": 5, "default:chest_locked": 1, "default:furnace": 1, "default:furnace_active": 1, "vessels:shelf": 1}, "empty": {"default:chest": 1, "default:furnace": 1}, "seconds": 0.047}
+migrate: packed (pass 1), nothing to do
+{"event": "done", "mode": "migrate", "world_version": "0.48.1", "record": "0.48.1", "new_world": false, "target": "0.50.0", "due": [], "backends": {"player": "sqlite3", "auth": "sqlite3", "mod_storage": "sqlite3", "map": "sqlite3"}, "map_reset": true, "pack_seq": 1, "applied": []}
+reset_like_platform: map emptied: 20719 map blocks removed (mod storage, players and auth kept)
+reset_like_platform: <copy>/server.conf: grug_reset_world = 1 (the world's record was 0)
+reset_like_platform: done. Backup: <copy>/world-0.48.1.backup-20261016-215650
+reset_like_platform wall 0.20 s
+exit 0
+grug_reset_world = 1

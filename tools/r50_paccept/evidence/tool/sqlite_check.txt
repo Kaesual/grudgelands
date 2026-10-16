@@ -1,4 +1,4 @@
 migrate: check <run>/w_sqlite
 migrate: world version 0.48.1, target 0.50.0, due steps: none
 migrate: checked: write access on player, auth, mod_storage; 1 map block decoded
-paccept_wall_ns 40343502
+paccept_wall_ns 40265159

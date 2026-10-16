@@ -13,22 +13,22 @@
    "neighbor_chest"
   ]
  },
- "empty_mode": "skipped",
  "sqlite": {
-  "tool_wall_s": 0.089809548,
-  "pack_done_s": 0.052,
+  "tool_wall_s": 0.089829311,
+  "pack_done_s": 0.053,
   "counts": {
    "claims": 2,
    "players": 2,
-   "containers": 8,
+   "containers": 10,
    "items": 19,
    "charcoal": 149,
    "blocks_read": 2177
   },
   "nodes": {
    "default:bookshelf": 1,
-   "default:chest": 4,
+   "default:chest": 5,
    "default:chest_locked": 1,
+   "default:furnace": 1,
    "default:furnace_active": 1,
    "vessels:shelf": 1
   },
@@ -41,7 +41,7 @@
     "id": 1,
     "owner": "keeper",
     "blocks": 1176,
-    "containers": 7,
+    "containers": 9,
     "seconds": 0.029
    },
    {
@@ -51,23 +51,26 @@
     "containers": 1,
     "seconds": 0.021
    }
-  ]
+  ],
+  "largest_entry_bytes": 901,
+  "largest_content_bytes": 1439
  },
  "pg": {
-  "tool_wall_s": 0.17,
-  "pack_done_s": 0.063,
+  "tool_wall_s": 0.165,
+  "pack_done_s": 0.062,
   "counts": {
    "claims": 2,
    "players": 2,
-   "containers": 8,
+   "containers": 10,
    "items": 19,
    "charcoal": 149,
    "blocks_read": 2177
   },
   "nodes": {
    "default:bookshelf": 1,
-   "default:chest": 4,
+   "default:chest": 5,
    "default:chest_locked": 1,
+   "default:furnace": 1,
    "default:furnace_active": 1,
    "vessels:shelf": 1
   },
@@ -80,8 +83,8 @@
     "id": 1,
     "owner": "keeper",
     "blocks": 1176,
-    "containers": 7,
-    "seconds": 0.034
+    "containers": 9,
+    "seconds": 0.033
    },
    {
     "id": 2,
@@ -91,14 +94,16 @@
     "seconds": 0.027
    }
   ],
-  "map_rows": 20719
+  "map_rows": 20719,
+  "largest_entry_bytes": 901,
+  "largest_content_bytes": 1439
  },
  "fixture": {
   "dir": "~/projects/grudgelands-orchestration/r50/platform-fixture",
   "sizes": {
-   "world-0.48.1.tar.gz": 6819050,
-   "README.md": 2008,
-   "platform-pg.dump": 4714294,
+   "world-0.48.1.tar.gz": 6819375,
+   "README.md": 2009,
+   "platform-pg.dump": 4715166,
    "receipt.json": 8384
   },
   "world_files": [
