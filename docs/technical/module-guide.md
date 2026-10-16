@@ -810,9 +810,10 @@ tools](#player-meta-read-by-external-tools).
   (`door_click.lua`, 0.49.1): the engine's pointing, the client's too,
   prefers an object up to one node squared farther than a node
   (`src/raycast.cpp` RaycastSort), so a click on a closed door with an NPC
-  just behind it reaches the NPC; the helper casts the clicker's look ray
-  and hands the click to the door's `on_rightclick` when a closed door is
-  physically first. Fixture `tools/r491_door`, engine probe
+  close behind it can reach the NPC (in either half, depending on the gap,
+  distance and angle); the helper casts the clicker's look ray and hands
+  the click to the door's `on_rightclick` when the ray meets the NPC and,
+  physically before it, a closed door. Fixture `tools/r491_door`, engine probe
   `tools/r491_door/probe.sh`.
   **Pathfinding is a quality criterion** (user requirement: dangerous mobs
   must not fail at terrain, otherwise they are not dangerous): mobs_redo's

@@ -42,30 +42,30 @@ CAUSE door=none side=in gap=0.300 upper: npc 13/42 door 0 | lower: npc 16/42 doo
 CAUSE door=none side=in gap=0.450 upper: npc 8/42 door 0 | lower: npc 11/42 door 21
 CAUSE door=none side=in gap=0.650 upper: npc 6/42 door 0 | lower: npc 6/42 door 24
 CAUSE door=none side=in gap=1.200 upper: npc 5/42 door 0 | lower: npc 3/42 door 26
-FIX closed in lower: door took the click 294/294
-FIX closed in lower npc-in-front: door took the click 0/42
-FIX closed in upper: door took the click 294/294
-FIX closed in upper npc-in-front: door took the click 3/42
-FIX closed out lower: door took the click 294/294
-FIX closed out lower npc-in-front: door took the click 0/42
-FIX closed out upper: door took the click 294/294
-FIX closed out upper npc-in-front: door took the click 3/42
-FIX none in lower: door took the click 0/294
-FIX none in lower npc-in-front: door took the click 0/42
-FIX none in upper: door took the click 0/294
-FIX none in upper npc-in-front: door took the click 0/42
-FIX none out lower: door took the click 0/294
-FIX none out lower npc-in-front: door took the click 0/42
-FIX none out upper: door took the click 0/294
-FIX none out upper npc-in-front: door took the click 0/42
-FIX open in lower: door took the click 0/294
-FIX open in lower npc-in-front: door took the click 0/42
-FIX open in upper: door took the click 0/294
-FIX open in upper npc-in-front: door took the click 0/42
-FIX open out lower: door took the click 0/294
-FIX open out lower npc-in-front: door took the click 0/42
-FIX open out upper: door took the click 0/294
-FIX open out upper npc-in-front: door took the click 0/42
+FIX closed in lower: door took the click 47/294 (want 47)
+FIX closed in lower npc-in-front: door took the click 0/42 (want 0)
+FIX closed in upper: door took the click 34/294 (want 34)
+FIX closed in upper npc-in-front: door took the click 0/42 (want 0)
+FIX closed out lower: door took the click 51/294 (want 51)
+FIX closed out lower npc-in-front: door took the click 0/42 (want 0)
+FIX closed out upper: door took the click 37/294 (want 37)
+FIX closed out upper npc-in-front: door took the click 0/42 (want 0)
+FIX none in lower: door took the click 0/294 (want 0)
+FIX none in lower npc-in-front: door took the click 0/42 (want 0)
+FIX none in upper: door took the click 0/294 (want 0)
+FIX none in upper npc-in-front: door took the click 0/42 (want 0)
+FIX none out lower: door took the click 0/294 (want 0)
+FIX none out lower npc-in-front: door took the click 0/42 (want 0)
+FIX none out upper: door took the click 0/294 (want 0)
+FIX none out upper npc-in-front: door took the click 0/42 (want 0)
+FIX open in lower: door took the click 0/294 (want 0)
+FIX open in lower npc-in-front: door took the click 0/42 (want 0)
+FIX open in upper: door took the click 0/294 (want 0)
+FIX open in upper npc-in-front: door took the click 0/42 (want 0)
+FIX open out lower: door took the click 0/294 (want 0)
+FIX open out lower npc-in-front: door took the click 0/42 (want 0)
+FIX open out upper: door took the click 0/294 (want 0)
+FIX open out upper npc-in-front: door took the click 0/42 (want 0)
 WIRE grug_traders:vendor_general_throng behind the closed door, upper half from 2 m: door opened
 WIRE grug_mobs:villager_dwarf behind the closed door, upper half from 2 m: door opened
 WIRE grug_mobs:elder_dwarf behind the closed door, upper half from 2 m: door opened

@@ -13,9 +13,10 @@
 --
 -- FIX (once grug_mobs.door_before_npc exists): the helper on the same rays
 -- with a fake clicker. Expected: it hands the click to the closed door
--- (which then is open) on every ray, never with the door open, without a
--- door, or with the NPC in front of the door (unless the ray passes over
--- its head and meets the door first). Then one click per real
+-- (which then is open) on every ray where the engine points at the NPC
+-- behind it, and nowhere else: not where the engine already points at the
+-- door (the client sends that node click itself), not with the door open,
+-- without a door, or with the NPC in front of the door. Then one click per real
 -- dialog NPC kind (vendor, villager, elder) through its own on_rightclick.
 --
 -- Every line carries "[r491door]"; the probe ends the server when done.
@@ -247,13 +248,16 @@ local function run()
 					npc:set_pos(npc_pos(side, faces, gap))
 					for _, ray in ipairs(list) do
 						place_door(state)
-						-- Behind the panel the NPC is never first; in front of
-						-- it, a ray over its head still meets the door first.
-						local want = state == "closed" and not npc_physically_first(ray, npc)
+						-- Only the reported click: the engine points at the NPC
+						-- (else the client sends a node click itself) and the
+						-- closed door is physically first.
+						local want = state == "closed" and first_hit(ray, npc) == "npc" and
+							not npc_physically_first(ray, npc)
 						local handed = helper(self, fake_clicker(ray))
 						local key = state .. " " .. side.id .. " " .. ray.half .. (gap < 0 and " npc-in-front" or "")
 						counts[key] = (counts[key] or 0) + (handed and 1 or 0)
 						counts[key .. " n"] = (counts[key .. " n"] or 0) + 1
+						counts[key .. " want"] = (counts[key .. " want"] or 0) + (want and 1 or 0)
 						expect(("%s gap=%s eye=%s dir=%s handed=%s"):format(key, fmt(gap),
 							core.pos_to_string(ray.eye, 2), core.pos_to_string(ray.dir, 2), tostring(handed)),
 							handed == want)
@@ -267,10 +271,13 @@ local function run()
 			end
 		end
 		local keys = {}
-		for k in pairs(counts) do if not k:find(" n$") then keys[#keys + 1] = k end end
+		for k in pairs(counts) do
+			if not k:find(" n$") and not k:find(" want$") then keys[#keys + 1] = k end
+		end
 		table.sort(keys)
 		for _, k in ipairs(keys) do
-			log(("FIX %s: door took the click %d/%d"):format(k, counts[k], counts[k .. " n"]))
+			log(("FIX %s: door took the click %d/%d (want %d)"):format(k, counts[k], counts[k .. " n"],
+				counts[k .. " want"] or 0))
 		end
 
 		-- Wiring: each real dialog NPC kind behind the closed door, clicked

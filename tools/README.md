@@ -1267,10 +1267,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `62123545`).
 - **0.49.1 lane DOOR** (`r491_door`): doors before NPCs
   (`portable_test.lua`: the real `grug_mobs/door_click.lua` on a box world
-  whose ray orders hits like the engine's RaycastSort; a closed door takes
-  the click in both halves from both sides with a dialog NPC behind it, an
-  open door, no door, an NPC in front, a sneak click and another node
-  leave it to the NPC; every dialog NPC asks the helper first);
+  whose ray orders hits like the engine's RaycastSort; wherever the engine
+  points at a dialog NPC behind a closed door, in both halves and from both
+  sides, the door takes the click; an open door, no door, an NPC in front,
+  a sneak click, another node and a server ray that misses the NPC (a touch
+  tap off the crosshair) leave it to the NPC; every dialog NPC asks the
+  helper first);
   `probe.sh [OUT]` one probe boot (`grug_probe_r491_door`: the engine's
   first hit with an NPC behind a closed door, an open door and no door,
   then the helper on the same rays and one click per real dialog NPC kind);

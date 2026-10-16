@@ -10,10 +10,13 @@
 --      panel, a ray at the upper half meets the NPC first, a ray aimed low
 --      the door;
 --   C  closed door, NPC behind it: both halves, both sides, several
---      distances: the door takes the click (its on_rightclick, at the
---      door's foot) and the helper says so;
+--      distances: where the engine points at the NPC, the door takes the
+--      click (its on_rightclick, at the door's foot) and the helper says
+--      so; where the engine already points at the door, the helper stays
+--      out;
 --   O  the door open, N no door, F the NPC in front of the closed door, S a
---      sneak click, X another node first: the helper does nothing, the NPC
+--      sneak click, X another node first, T the server's ray missing the NPC
+--      (a touch tap off the crosshair): the helper does nothing, the NPC
 --      answers;
 --   W  every dialog NPC's on_rightclick (villager, quest giver, vendor) asks
 --      the helper before anything else.
@@ -189,7 +192,7 @@ local function engine_first(eye, look)
 	return first and first.type
 end
 
--- E: the stub reproduces the report.
+-- E: the stub reproduces the report (one case of the engine's order).
 scene("closed")
 npc.pos = npc_behind("out", 0.075)
 do
@@ -199,10 +202,15 @@ do
 	check(engine_first(eye, look) == "node", "E low on the door at 2 m: the engine points at the door")
 end
 
--- C: closed door, NPC behind: the door takes every click.
+-- C: closed door, NPC behind. Where the engine points at the NPC (the
+-- reported click), the door takes it; elsewhere the client points at the
+-- door itself and sends a node click, so the helper is not asked, and if it
+-- were it does nothing.
 local HALVES = {upper = {1.25, 1.6}, lower = {0.3, 0.75}}
 local GAPS = {out = {0.0, 0.075, 0.15, 0.3}, ["in"] = {0.0, 0.1, 0.2, 0.3}}
 local npc_first_seen = 0
+local reported = {upper = 0, lower = 0}
+local door_first_seen = 0
 for _, side in ipairs({"out", "in"}) do
 	for _, gap in ipairs(GAPS[side]) do
 		for half, heights in pairs(HALVES) do
@@ -211,18 +219,27 @@ for _, side in ipairs({"out", "in"}) do
 					scene("closed")
 					npc.pos = npc_behind(side, gap)
 					local player, eye, look = player_at(side, d, h)
-					if engine_first(eye, look) == "object" then npc_first_seen = npc_first_seen + 1 end
 					local label = ("C %s gap %.3f %s %.2f at %.1f m"):format(side, gap, half, h, d)
-					check(helper(npc, player) == true, label .. ": the door took the click")
-					local c = clicks[1]
-					check(#clicks == 1 and c.node == "doors:door_wood_a" and c.clicker == player and
-						c.pos.x == 0 and c.pos.y == 0 and c.pos.z == 0 and c.stack == "wielded" and
-						c.pointed.type == "node", label .. ": once, at the door's foot, as a node click")
+					if engine_first(eye, look) == "object" then
+						npc_first_seen = npc_first_seen + 1
+						reported[half] = reported[half] + 1
+						check(helper(npc, player) == true, label .. ": the door took the click")
+						local c = clicks[1]
+						check(#clicks == 1 and c.node == "doors:door_wood_a" and c.clicker == player and
+							c.pos.x == 0 and c.pos.y == 0 and c.pos.z == 0 and c.stack == "wielded" and
+							c.pointed.type == "node", label .. ": once, at the door's foot, as a node click")
+					else
+						door_first_seen = door_first_seen + 1
+						check(helper(npc, player) == false and #clicks == 0,
+							label .. ": the engine points at the door, the helper stays out")
+					end
 				end
 			end
 		end
 	end
 end
+check(reported.upper > 0 and reported.lower > 0, "C reported clicks in both halves")
+check(door_first_seen > 0, "C some clicks the engine already gives the door")
 check(npc_first_seen > 0, "C some of these clicks are the reported ones (the engine points at the NPC)")
 -- The open leaf lies along the cell's -x side; an NPC beside the doorway,
 -- behind the leaf as seen from the -z side.
@@ -268,6 +285,10 @@ end
 untouched("X a thin node that is no door", "none", npc_behind("out", 0.075), "out", 2.0, 0.6,
 	false, {pos = DOOR_POS, name = "grug_probe:thin"})
 untouched("N the NPC with nothing between", "none", vector.new(0, FLOOR_Y, 0), "out", 2.0, 1.0)
+-- T: a touch tap on an NPC off the crosshair (the client's shootline runs
+-- through the tapped point, the server's along the look): the server's ray
+-- meets a closed door and not this NPC, so the NPC answers.
+untouched("T touch tap off the crosshair", "closed", vector.new(2.5, FLOOR_Y, 1.0), "out", 2.0, 1.25)
 check(helper(npc, nil) == false and helper(nil, player_at("out", 2, 1)) == false,
 	"a click without clicker or NPC does nothing")
 local robot = {is_player = function() return false end}

@@ -9,18 +9,24 @@
 -- upstream since 2018). An object whose squared distance is at most one more
 -- than a node's wins: at 2 m that is about 0.24 m behind the node, at 1 m
 -- about 0.41 m. A door is a thin panel at the edge of its cell, so an NPC
--- standing just behind it (in the door's own cell, or close to it on the
--- other side) wins wherever the ray meets its body at a shallow angle: about
--- eye level, the upper half. A ray aimed low runs longer through the gap and
--- the door wins (tools/r491_door/probe.sh measures both). The client then
--- sends an object click, and the engine calls the NPC's on_rightclick.
+-- standing close behind it (in the door's own cell, or close to it on the
+-- other side) can win in either half: whether it does depends on the gap,
+-- the distance and the angle at which the ray meets its body
+-- (tools/r491_door/probe.sh measures both halves; flush behind the panel the
+-- NPC wins most low rays too). The report, the upper half to the NPC and the
+-- lower to the door, is one case of it: an NPC on the door cell's centre and
+-- a ray aimed low at the door, which runs longer through the gap. The client
+-- then sends an object click, and the engine calls the NPC's on_rightclick.
 --
 -- THE FIX: every NPC that opens a dialog calls this first. It casts the
 -- clicker's own look ray (the aiming ray, grug_core.aim_raycast) and, when
--- the nearest node on it is a closed door that lies physically before the
--- NPC, hands the click to that door's on_rightclick, as a node click would.
--- With the door open, with no door, or with the NPC in front of the door,
--- it does nothing and the NPC answers as before. One cast per click; no
+-- the ray meets this NPC and, physically before it, a closed door as the
+-- nearest node, hands the click to that door's on_rightclick, as a node
+-- click would. With the door open, with no door, with the NPC in front of
+-- the door, or when the server's ray misses the NPC (a touch tap off the
+-- crosshair: the client's shootline runs through the tapped point,
+-- client/game.cpp, the server's along the look), it does nothing and the
+-- NPC answers as before. One cast per click; no
 -- per-step work.
 --
 local REACH = 4.5 -- nodes: the hand reach of 4, plus slack for the eye
@@ -59,7 +65,10 @@ function grug_mobs.door_before_npc(self, clicker)
 	if not origin or not look then return false end
 	local pointed, distance, npc_distance = first_node(origin, look, self.object)
 	if not pointed or not distance then return false end
-	if npc_distance and npc_distance <= distance then return false end
+	-- The engine ranks an object hidden behind the door before it, so the
+	-- reported click always has the NPC's hit here; without it the click was
+	-- not aimed through this door.
+	if not npc_distance or npc_distance <= distance then return false end
 	local pos = pointed.under
 	local node = core.get_node_or_nil(pos)
 	if not node or not doors.registered_doors[node.name] then return false end
