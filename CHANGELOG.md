@@ -12,6 +12,36 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.49.1 — fix after the first 0.49.0 feedback (2026-10-16)
+
+Existing worlds play on: no migration step, no map reset, no new world.
+
+- **Mail:** letters, replies and messages to the admin hold up to 4,000
+  characters (was 1,500), and a hint under the message field says so. A
+  longer text is not sent: the status line names its length and the
+  limit, and the text, the attachments and your money stay. A reply quotes
+  at most 500 characters of the original, ending in " [...]".
+- **Stations:** the furnace, chests, the bookshelf, the vessels shelf,
+  the Claim Stone and the profession workspaces show your whole bag: the
+  hotbar below, the rest of your inventory and your bags scrolling in three
+  rows above it. Shift-click moves items between the station and your bags.
+- **Furnace:** the fire and the arrow run smoothly over the burn and
+  cooking time, and the window is no longer sent again every second (about
+  a tenth of the traffic while a furnace is open), so scrolling the bag is
+  no longer interrupted.
+- **Doors before people:** a right-click on a closed door opens it, also
+  when a villager, quest giver or vendor stands right behind it.
+- **Drops:** a drop that kept sliding slowly over the ground and could not
+  be picked up now settles where it really lies, and a click on a drop in
+  reach picks it up. It happened when a network packet was lost, more
+  often in busy places.
+- **Walking legs:** guards, leaders, bandits, mirefolk, villagers and
+  goblins move their legs at a pace that fits their walking speed.
+- **PvP fortresses:** the floating wagon wheel is gone from fortresses
+  generated from now on. **Server admins:** in an existing world, dig the
+  wheel by hand in both fortresses (Ashenward Bastion and Bannerbreak
+  Warhold).
+
 ## 0.49.0 — faster world generation and gameplay polish (2026-10-16)
 
 The world generates much faster, above all underground, with ores, gems

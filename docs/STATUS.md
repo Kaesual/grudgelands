@@ -19,11 +19,35 @@ generation. Resume with the [continuation plan](planning/class-redesign/continua
 Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
 is open.
 
+- **0.49.1, a compatible fix round after the first 0.49.0 feedback, on
+  main, not pushed** (2026-10-16,
+  [plan, rulings and GUI checklist](planning/fix-0.49.1-plan.md#completion-2026-10-16)).
+  The coordinator committed WHEEL (`1d99075b`, the floating wagon wheel out
+  of the fortress blueprint) and GAIT (`acfd84d4`, the humanoid walk clip
+  paced to the walking speed) on main; then the lanes MLEN (mail limit
+  4,000, refusal instead of a cut, draft cap 10,000, quote 500), VIEW (the
+  combined bag in every station form), DOOR (the engine's pointing ranks an
+  object one node² nearer than a node, so a dialog NPC right behind a door
+  panel took the click; a shared helper hands it to the door), DROP (the
+  engine sends an entity's stop once and unreliably; a client that lost it
+  drew the drop sliding, and the server ray missed the picture; the item
+  re-sends its rest position, and a click on a drop in reach picks it up),
+  ANIM (fire and arrow as animated images, the form re-sent only at a
+  change of state: 60 re-sends and 156 KB per minute down to 6 and 15 KB)
+  and the study HKEEP
+  ([keeping player housing at a map reset](research/housing-keep-reset-study.md):
+  possible with conditions; the user decides) merged. Each code lane
+  independently reviewed by Opus (all MERGE; DOOR with a
+  coordinator-ordered fix round for touch clients, delta reviewed; ANIM's
+  arrow strip under 2048 px); HKEEP checked by the coordinator against the
+  engine and the code. Main has 201 portable fixtures (4 new); `mods/`
+  +672 −203 lines in 32 files. The declaration is
+  `{"schema": 2, "version": "0.49.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"]}`.
 - **Round 49 "Mapgen performance (native first) and gameplay polish"
-  complete on main, not pushed** (2026-10-16, version 0.49.0, **map reset**, no
+  complete and pushed** (origin/main `bc1e6016`; 2026-10-16, version 0.49.0, **map reset**, no
   migration step,
   [plan, decisions, numbers and GUI checklist](planning/round49-plan.md#completion-2026-10-16));
-  pushed only on the user's word. From main `f8f2d134` (the version bump):
+  From main `f8f2d134` (the version bump):
   MEAS, MOB, UI, NAV, VIS, INV, ORE, PROT, NAV2, SKIP, JIT, V7, CACHE,
   HASH, V7A, the P8 follow-up and MEAS2 merged up to `aea065a8`, then this
   documentation lane D. Each code lane independently reviewed by Opus
@@ -1218,7 +1242,8 @@ is open.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.49.0 (Round 49, a map reset, not pushed)
+- **Latest game:** main carries 0.49.1 (a compatible fix, not pushed) on
+  0.49.0 (Round 49, a map reset, pushed at origin/main `bc1e6016`)
   on 0.48.1 (a compatible fix, pushed at origin/main `1ef11b5e`) on
   0.48.0 (Round 48, a map reset plus the step 0.48.0, pushed at
   origin/main `f915d777`) on 0.47.0 (Round 47, a map reset plus the step

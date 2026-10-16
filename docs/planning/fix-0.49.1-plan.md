@@ -1,7 +1,7 @@
 # Fix round 0.49.1 — after the first 0.49.0 feedback
 
 Coordinator: Claude (Opus 5.5), planned with the user on 2026-10-16.
-Status: **agreed**, starts on the user's "go". Process:
+Status: **complete** (2026-10-16, see [Completion](#completion-2026-10-16)). Process:
 [round workflow](../process/round-workflow.md).
 
 Released as **0.49.1**, a compatible patch: 0.49.0 is pushed (origin/main
@@ -467,3 +467,37 @@ pointer. The CHANGELOG notes that the admin removes the two wheels by hand
   first. The rest merge in any order.
 - **Decided during the round:** the hint's exact position, from the
   screenshots.
+
+## Completion (2026-10-16)
+
+All lanes merged on main, each code lane independently reviewed (Opus,
+MERGE); the study checked by the coordinator.
+
+| Lane | Merge | Outcome |
+|------|-------|---------|
+| WHEEL | `1d99075b` | the wheel line removed; fortresses generated from now on have no wheel |
+| GAIT | `acfd84d4` | walk clip: guards and leaders 14, bandits and mirefolk 12, villagers 13 (walk and run), goblins 23 frames/s |
+| HKEEP | `a860d9a6` | [study](../research/housing-keep-reset-study.md): possible with conditions; the decisions are its §6.4 |
+| VIEW | `90431e5d` | the combined bag (3 rows) in every station form; merged before MLEN (different files) so ANIM could start |
+| MLEN | `4c62bb5b` | limit 4,000, refusal, draft cap 10,000 (`truncate` also bounded in bytes), quote 500 + " [...]" |
+| DOOR | `22e891e6` | cause: the engine ranks an object one node² nearer than a node; a shared helper hands the click to a closed door; fix round for touch taps off the crosshair |
+| DROP | `229c9f8d` | cause: the stop is sent once and unreliably; a resting item re-sends its position at 0.5 s and 2 s, and a click on a drop in reach picks it up |
+| ANIM | `f08aa1ea` | fire and arrow animated; re-sends per open minute 60 → 6 (156 KB → 15 KB with four bags) |
+
+Decided during the round: the hint sits right of "Attachments" above the
+postage line on Write and directly under the field on To the admin; the
+500-character quote counts the original before the "> " prefixes; gates,
+trapdoors and an upstream-workarounds entry for the door rule stay out
+(DOOR's questions, the user did not object).
+
+Backlog notes from the reviews: a malformed UTF-8 "character" of up to about
+40 KB still passes the mail count (optional byte cap); the mailbox window
+clips some labels at GUI scale 1.5 (older); the Claim Stone's right column
+ends about 0.5 short of the bag view; a drop's pickup fallback needs a
+fresh click when the punch packet itself was lost; a drop pushed out of a
+node placed onto it gets no re-send; the furnace frame start has no
+sub-frame offset (the fire may lag one frame, never run out); the probe in
+`tools/pt_fixes/lane_f` still names the old furnace textures.
+
+The user's GUI checklist is §6 above. The admin digs the two wagon wheels
+in the production world by hand after the update (ruling 10).

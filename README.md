@@ -97,7 +97,10 @@ postage is paid at Send, the merchant's Sell rows show item tooltips, the
 Claim Stone fits in your bags, a new character's apples and torches sit
 on the hotbar, kills pay XP down to 9 levels below yours (was 6), rares
 sit between normal and elite creatures, and creatures find their way round
-bushes and trees. 0.48.0 before it put a mailbox beside the waystone of every capital
+bushes and trees. 0.49.1 raises the mail limit to 4,000 characters, shows
+your whole bag at every station, animates the furnace, lets a closed door
+open with a villager behind it and fixes drops that slid out of reach.
+0.48.0 before it put a mailbox beside the waystone of every capital
 and starting village, made crops need light, let vendors buy almost
 everything and halved the bags.
 
