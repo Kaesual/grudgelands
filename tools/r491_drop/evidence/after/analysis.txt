@@ -1,0 +1,32 @@
+drops thrown: 120, landed: 120
+horizontal speed at the last step in the air: mean 0.39, max 0.64 nodes/s
+flight time: mean 1.08 s
+landing step travel <= 0.2 node (the engine sends the stop once): 3 of 120; the others get it twice
+objects within 128 nodes of the waystone: 12-226, moving 0-32
+drops that still move on the SERVER 1 s after landing: 0
+client objects seen: 123, matched to drops: 114
+SLIDERS (client draws it moving, server has it at rest): 0
+DROPS total=120 moved_in_last_2s=0
+LEADS walls=8 steps=6
+LEAD n=1001 kind=wall rest_after=1.08 path=3.24 force_outs=0 moving_now=false final=(-125.00,123.80,783.79) spawn=(-125.00,124.40,783.20)
+LEAD n=1002 kind=inside rest_after=1.08 path=3.20 force_outs=0 moving_now=false final=(-125.30,123.80,783.64) spawn=(-125.00,124.40,784.00)
+LEAD n=1003 kind=wall rest_after=0.54 path=1.42 force_outs=0 moving_now=false final=(-122.20,123.80,789.00) spawn=(-122.20,124.40,789.00)
+LEAD n=1004 kind=inside rest_after=1.08 path=3.29 force_outs=1 moving_now=false final=(-121.94,123.80,788.96) spawn=(-123.00,124.40,789.00)
+LEAD n=1005 kind=wall rest_after=0.54 path=1.42 force_outs=0 moving_now=false final=(-105.80,123.80,776.00) spawn=(-105.80,124.40,776.00)
+LEAD n=1006 kind=inside rest_after=0.99 path=3.02 force_outs=1 moving_now=false final=(-105.88,123.80,776.02) spawn=(-105.00,124.40,776.00)
+LEAD n=1007 kind=wall rest_after=0.54 path=1.42 force_outs=0 moving_now=false final=(-105.80,123.80,779.00) spawn=(-105.80,124.40,779.00)
+LEAD n=1008 kind=inside rest_after=1.08 path=3.32 force_outs=1 moving_now=false final=(-105.95,123.80,778.88) spawn=(-105.00,124.40,779.00)
+LEAD n=1009 kind=wall rest_after=0.54 path=1.42 force_outs=0 moving_now=false final=(-105.80,123.80,782.00) spawn=(-105.80,124.40,782.00)
+LEAD n=1010 kind=inside rest_after=0.99 path=3.02 force_outs=1 moving_now=false final=(-105.87,123.80,781.96) spawn=(-105.00,124.40,782.00)
+LEAD n=1011 kind=wall rest_after=0.54 path=1.42 force_outs=0 moving_now=false final=(-105.80,123.80,785.00) spawn=(-105.80,124.40,785.00)
+LEAD n=1012 kind=inside rest_after=0.99 path=3.02 force_outs=1 moving_now=false final=(-105.83,123.80,785.09) spawn=(-105.00,124.40,785.00)
+LEAD n=1013 kind=wall rest_after=0.54 path=1.42 force_outs=0 moving_now=false final=(-120.00,123.80,790.20) spawn=(-120.00,124.40,790.20)
+LEAD n=1014 kind=inside rest_after=1.08 path=3.31 force_outs=1 moving_now=false final=(-119.89,123.80,789.98) spawn=(-120.00,124.40,791.00)
+LEAD n=1015 kind=wall rest_after=0.54 path=1.42 force_outs=0 moving_now=false final=(-117.00,123.80,790.20) spawn=(-117.00,124.40,790.20)
+LEAD n=1016 kind=inside rest_after=1.08 path=3.29 force_outs=1 moving_now=false final=(-117.02,123.80,789.97) spawn=(-117.00,124.40,791.00)
+LEAD n=1017 kind=step rest_after=1.27 path=4.31 force_outs=0 moving_now=false final=(-105.83,132.80,770.44) spawn=(-106.50,134.40,771.00)
+LEAD n=1018 kind=step rest_after=1.08 path=3.19 force_outs=0 moving_now=false final=(-107.40,133.80,769.61) spawn=(-107.50,134.40,770.00)
+LEAD n=1019 kind=step rest_after=1.27 path=4.27 force_outs=0 moving_now=false final=(-107.10,132.80,768.63) spawn=(-107.50,134.40,768.00)
+LEAD n=1020 kind=step rest_after=1.08 path=3.15 force_outs=0 moving_now=false final=(-107.55,133.80,766.17) spawn=(-107.50,134.40,766.00)
+LEAD n=1021 kind=step rest_after=1.45 path=4.23 force_outs=0 moving_now=false final=(-106.14,132.80,764.80) spawn=(-106.50,134.40,765.00)
+LEAD n=1022 kind=step rest_after=1.08 path=3.17 force_outs=0 moving_now=false final=(-104.50,133.80,765.29) spawn=(-104.50,134.40,765.00)
