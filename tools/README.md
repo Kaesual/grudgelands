@@ -1273,4 +1273,5 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   leave it to the NPC; every dialog NPC asks the helper first);
   `probe.sh [OUT]` one probe boot (`grug_probe_r491_door`: the engine's
   first hit with an NPC behind a closed door, an open door and no door,
-  then the helper on the same rays and one click per real dialog NPC kind).
+  then the helper on the same rays and one click per real dialog NPC kind);
+  `evidence/` the probe before and after the fix.
