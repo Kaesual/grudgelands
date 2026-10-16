@@ -1343,6 +1343,27 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_probe_r491_anim` the engine screenshots of a burning workspace
   furnace a few seconds apart and the re-sends counted (the r491_view
   method).
+- **Round 50 lane PACCEPT** (`r50_paccept`): the map-reset packing end to
+  end. `run.sh [EVIDENCE_DIR]` (one queue slot; `e2e.py`, its header): the
+  real 0.48.1 game (`OLD_GAME`, default the worktree `r50-v0481` at
+  1ef11b5e) builds a world with the probe `grug_probe_r50_paccept` (created
+  characters keeper, neighbor and drifter; two fuelled claims; a chest with
+  a quality sword, a locked chest, a lit furnace, a bookshelf and a vessels
+  shelf with written books, a chest holding the probe's own item, an empty
+  chest and an empty furnace, a cellar chest, a chest outside the claims)
+  and writes the receipt at the shutdown; the shipped tool `--check
+  --map-reset` and `--map-reset` in the runner's image on SQLite and, with
+  `pg_pass.py`, on PostgreSQL in the platform's layout (seeded from that
+  world, `pg_dump`, `TRUNCATE public.blocks`); the map emptied and
+  `grug_reset_world` raised; two boots of this checkout per backend with
+  joins: notices, the draft and active stone forms, every entry taken and
+  every packed container placed and read back against the receipt, the
+  charcoal, the first-start clean-up and a second boot that changes
+  nothing. `FIXTURE=<dir>` packages the 0.48.1 world for the platform.
+  `reset_like_platform.sh <world dir> [SERVER_CONF]`: a local SQLite test
+  world reset the platform's way (backup, the tool, the map rows emptied,
+  `grug_reset_world` raised in SERVER_CONF); it refuses the personal
+  Luanti folder.
 - **Round 50 lane PGAME** (`r50_pgame`): packed containers and the Claim
   Stone inventory (`portable_test.lua`: the tool's pass written as the
   plan's §3 describes before the load, cleaned by the real grug_core runner
