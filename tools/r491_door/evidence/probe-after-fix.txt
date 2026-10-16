@@ -1,0 +1,73 @@
+PANEL closed param2=0: outer face z=-0.500 inner face z=-0.375 (node-relative)
+NPC box grug_traders:vendor_general_throng: -0.3,0,-0.3,0.3,1.7,0.3
+CAUSE door=closed side=out gap=0.000 upper: npc 21/42 door 21 | lower: npc 40/42 door 2 | npc first although behind the panel: upper 21 (up to 0.135 m) lower 40 (up to 0.231 m)
+CAUSE door=closed side=out gap=0.075 upper: npc 10/42 door 32 | lower: npc 10/42 door 32 | npc first although behind the panel: upper 10 (up to 0.208 m) lower 10 (up to 0.269 m)
+CAUSE door=closed side=out gap=0.150 upper: npc 5/42 door 37 | lower: npc 1/42 door 41 | npc first although behind the panel: upper 5 (up to 0.285 m) lower 1 (up to 0.370 m)
+CAUSE door=closed side=out gap=0.250 upper: npc 1/42 door 41 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 1 (up to 0.389 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=out gap=0.400 upper: npc 0/42 door 42 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 0 (up to 0.000 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=out gap=0.600 upper: npc 0/42 door 42 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 0 (up to 0.000 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=out gap=1.075 upper: npc 0/42 door 42 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 0 (up to 0.000 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=in gap=0.000 upper: npc 21/42 door 21 | lower: npc 40/42 door 2 | npc first although behind the panel: upper 21 (up to 0.135 m) lower 40 (up to 0.231 m)
+CAUSE door=closed side=in gap=0.100 upper: npc 10/42 door 32 | lower: npc 7/42 door 35 | npc first although behind the panel: upper 10 (up to 0.234 m) lower 7 (up to 0.303 m)
+CAUSE door=closed side=in gap=0.200 upper: npc 2/42 door 40 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 2 (up to 0.337 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=in gap=0.300 upper: npc 1/42 door 41 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 1 (up to 0.441 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=in gap=0.450 upper: npc 0/42 door 42 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 0 (up to 0.000 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=in gap=0.650 upper: npc 0/42 door 42 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 0 (up to 0.000 m) lower 0 (up to 0.000 m)
+CAUSE door=closed side=in gap=1.200 upper: npc 0/42 door 42 | lower: npc 0/42 door 42 | npc first although behind the panel: upper 0 (up to 0.000 m) lower 0 (up to 0.000 m)
+CAUSE door=open side=out gap=0.000 upper: npc 21/42 door 4 | lower: npc 42/42 door 0
+CAUSE door=open side=out gap=0.075 upper: npc 19/42 door 5 | lower: npc 37/42 door 5
+CAUSE door=open side=out gap=0.150 upper: npc 17/42 door 6 | lower: npc 30/42 door 10
+CAUSE door=open side=out gap=0.250 upper: npc 15/42 door 7 | lower: npc 24/42 door 15
+CAUSE door=open side=out gap=0.400 upper: npc 8/42 door 8 | lower: npc 11/42 door 22
+CAUSE door=open side=out gap=0.600 upper: npc 6/42 door 8 | lower: npc 6/42 door 25
+CAUSE door=open side=out gap=1.075 upper: npc 5/42 door 8 | lower: npc 4/42 door 26
+CAUSE door=open side=in gap=0.000 upper: npc 21/42 door 0 | lower: npc 42/42 door 0
+CAUSE door=open side=in gap=0.100 upper: npc 19/42 door 0 | lower: npc 37/42 door 5
+CAUSE door=open side=in gap=0.200 upper: npc 15/42 door 0 | lower: npc 25/42 door 14
+CAUSE door=open side=in gap=0.300 upper: npc 13/42 door 0 | lower: npc 16/42 door 18
+CAUSE door=open side=in gap=0.450 upper: npc 8/42 door 0 | lower: npc 11/42 door 21
+CAUSE door=open side=in gap=0.650 upper: npc 6/42 door 0 | lower: npc 6/42 door 24
+CAUSE door=open side=in gap=1.200 upper: npc 5/42 door 0 | lower: npc 3/42 door 26
+CAUSE door=none side=out gap=0.000 upper: npc 21/42 door 0 | lower: npc 42/42 door 0
+CAUSE door=none side=out gap=0.075 upper: npc 19/42 door 0 | lower: npc 37/42 door 5
+CAUSE door=none side=out gap=0.150 upper: npc 17/42 door 0 | lower: npc 30/42 door 10
+CAUSE door=none side=out gap=0.250 upper: npc 15/42 door 0 | lower: npc 24/42 door 15
+CAUSE door=none side=out gap=0.400 upper: npc 8/42 door 0 | lower: npc 11/42 door 21
+CAUSE door=none side=out gap=0.600 upper: npc 6/42 door 0 | lower: npc 6/42 door 24
+CAUSE door=none side=out gap=1.075 upper: npc 5/42 door 0 | lower: npc 4/42 door 25
+CAUSE door=none side=in gap=0.000 upper: npc 21/42 door 0 | lower: npc 42/42 door 0
+CAUSE door=none side=in gap=0.100 upper: npc 19/42 door 0 | lower: npc 37/42 door 5
+CAUSE door=none side=in gap=0.200 upper: npc 15/42 door 0 | lower: npc 25/42 door 14
+CAUSE door=none side=in gap=0.300 upper: npc 13/42 door 0 | lower: npc 16/42 door 18
+CAUSE door=none side=in gap=0.450 upper: npc 8/42 door 0 | lower: npc 11/42 door 21
+CAUSE door=none side=in gap=0.650 upper: npc 6/42 door 0 | lower: npc 6/42 door 24
+CAUSE door=none side=in gap=1.200 upper: npc 5/42 door 0 | lower: npc 3/42 door 26
+FIX closed in lower: door took the click 47/294 (want 47)
+FIX closed in lower npc-in-front: door took the click 0/42 (want 0)
+FIX closed in upper: door took the click 34/294 (want 34)
+FIX closed in upper npc-in-front: door took the click 0/42 (want 0)
+FIX closed out lower: door took the click 51/294 (want 51)
+FIX closed out lower npc-in-front: door took the click 0/42 (want 0)
+FIX closed out upper: door took the click 37/294 (want 37)
+FIX closed out upper npc-in-front: door took the click 0/42 (want 0)
+FIX none in lower: door took the click 0/294 (want 0)
+FIX none in lower npc-in-front: door took the click 0/42 (want 0)
+FIX none in upper: door took the click 0/294 (want 0)
+FIX none in upper npc-in-front: door took the click 0/42 (want 0)
+FIX none out lower: door took the click 0/294 (want 0)
+FIX none out lower npc-in-front: door took the click 0/42 (want 0)
+FIX none out upper: door took the click 0/294 (want 0)
+FIX none out upper npc-in-front: door took the click 0/42 (want 0)
+FIX open in lower: door took the click 0/294 (want 0)
+FIX open in lower npc-in-front: door took the click 0/42 (want 0)
+FIX open in upper: door took the click 0/294 (want 0)
+FIX open in upper npc-in-front: door took the click 0/42 (want 0)
+FIX open out lower: door took the click 0/294 (want 0)
+FIX open out lower npc-in-front: door took the click 0/42 (want 0)
+FIX open out upper: door took the click 0/294 (want 0)
+FIX open out upper npc-in-front: door took the click 0/42 (want 0)
+WIRE grug_traders:vendor_general_throng behind the closed door, upper half from 2 m: door opened
+WIRE grug_mobs:villager_dwarf behind the closed door, upper half from 2 m: door opened
+WIRE grug_mobs:elder_dwarf behind the closed door, upper half from 2 m: door opened
+RESULT FIX PASS fails=0
+RESULT DONE

@@ -1082,6 +1082,8 @@ for index = 1, #identities do
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
+				-- A closed door in front takes the click (door_click.lua).
+				if grug_mobs.door_before_npc(self, clicker) then return end
 				-- Ruling 13 (Round 31): a service serves only the NPC's own
 				-- faction, its race's; plain residents still answer anyone.
 				if (SERVICE_ROLE[self._grug_socket_role] or self._grug_profession) and
@@ -1139,6 +1141,7 @@ for index = 1, #identities do
 				grug_mobs.start_npc_claim(self)
 			end,
 			on_rightclick = function(self, clicker)
+				if grug_mobs.door_before_npc(self, clicker) then return end
 				if core.global_exists("grug_quests") and grug_quests.open_npc(clicker, self) then return end
 				answer(self, clicker, "quest")
 			end,

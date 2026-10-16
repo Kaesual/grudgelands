@@ -1280,3 +1280,15 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the scroll position across re-shows, per viewer); `capture.sh OUT_DIR`
   with `grug_probe_r491_view` the engine screenshots of each form with four
   bags and of a burning furnace, scrolled (the r48_mail method).
+- **0.49.1 lane DOOR** (`r491_door`): doors before NPCs
+  (`portable_test.lua`: the real `grug_mobs/door_click.lua` on a box world
+  whose ray orders hits like the engine's RaycastSort; wherever the engine
+  points at a dialog NPC behind a closed door, in both halves and from both
+  sides, the door takes the click; an open door, no door, an NPC in front,
+  a sneak click, another node and a server ray that misses the NPC (a touch
+  tap off the crosshair) leave it to the NPC; every dialog NPC asks the
+  helper first);
+  `probe.sh [OUT]` one probe boot (`grug_probe_r491_door`: the engine's
+  first hit with an NPC behind a closed door, an open door and no door,
+  then the helper on the same rays and one click per real dialog NPC kind);
+  `evidence/` the probe before and after the fix.

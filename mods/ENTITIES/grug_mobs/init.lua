@@ -1043,6 +1043,8 @@ dofile(modpath .. "/telegraph.lua")
 dofile(modpath .. "/liveness.lua")
 -- Round 42 DR: settlement NPCs open, pass and close doors (before the walks).
 dofile(modpath .. "/npc_doors.lua")
+-- 0.49.1 DOOR: a click on a closed door in front of a dialog NPC opens the door.
+dofile(modpath .. "/door_click.lua")
 dofile(modpath .. "/patrol.lua")
 -- Round 42 NV3: the settlement route cache on the fixed walks.
 dofile(modpath .. "/routes.lua")

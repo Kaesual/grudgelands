@@ -669,6 +669,11 @@ Decided in Round 42 ([plan](../planning/round42-plan.md) ruling 15):
 - **Never a locked door:** a door with an owner (a locked door a player
   placed) is no door for an NPC; an unlocked door is a door wherever it
   stands. Trapdoors are no way through a wall.
+- **A player's click goes to the door first** (0.49.1, [fix
+  plan](../planning/fix-0.49.1-plan.md) ruling 8): a right-click on a
+  closed door opens it, whichever half and from either side, also when an
+  NPC with a dialog stands right behind it. With the door open, or with no
+  door in between, the NPC answers.
 - **Gates are routed round:** NPCs never open a fence gate. Every walker
   stops when it faces a fence gate, open or not (the vendored mob code's
   fence rule: a blocking node named fence, gate or wall; a gate blocks open

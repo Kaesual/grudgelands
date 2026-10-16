@@ -173,6 +173,8 @@ local mob_defs = {}
 mobs = {register_mob = function(_, name, def) mob_defs[name] = def end}
 grug_mobs = {noncombatant = function(def) return def end, face_yaw = function() end,
 	start_npc_claim = function() end, set_plain_tag = function() end,
+	-- 0.49.1 DOOR: no door in front of these NPCs (r491_door tests the helper).
+	door_before_npc = function() return false end,
 	register_start_socket_role = function() end, register_start_npc_restyle = function() end,
 	register_on_eligible_kill = function() end, register_participant_drop_hook = function() end,
 	dragon_map_markers = function()
