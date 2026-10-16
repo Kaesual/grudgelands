@@ -1320,3 +1320,19 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_probe_r491_anim` the engine screenshots of a burning workspace
   furnace a few seconds apart and the re-sends counted (the r491_view
   method).
+- **Round 50 lane PGAME** (`r50_pgame`): packed containers and the Claim
+  Stone inventory (`portable_test.lua`: the tool's pass written as the
+  plan's §3 describes before the load, cleaned by the real grug_core runner
+  and `recovered.lua`: unknown items, an unknown node and a shrunken list
+  into extra packed chests, a split charcoal stack, the descriptions and
+  images, an older pass untouched, a rerun and a half-done rerun; the
+  entries across `M.map_reset`; `CONTAINER_LISTS` against the vendored
+  `set_size` calls; the soulbound guards and the refused drop; the
+  Belongings tab of the active stone only, take-only, stale slots, a closed
+  form, a full slot, pick-up and loss; every kind placed with exact
+  contents through the real chest code and stand-ins; the join notice and
+  the Steward's line). `capture.sh OUT_DIR` (`XVFB=`) with
+  `grug_probe_r50_pgame` the engine screenshots of the draft form, the
+  Belongings tab, two packed tooltips (the pointer moved by
+  `r49_ui/warp_pointer.py`) and two restored containers, and an in-engine
+  check of every placement ("place ... ok" in `probe.txt`).
