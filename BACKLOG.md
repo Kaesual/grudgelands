@@ -426,7 +426,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP45 | Character-creation stasis and safe arrival | Delivered; Round 24 makes creation pausable (ruling 32). Current rules: topic design. | — |
 | WP46 | Indirect terrain-damage guard | Partial: actor-neutral guard and protected water flow delivered; the fire/explosion remainder is deferred until a fire or explosion source exists (expected with V2's Nether) (E6). | WP40 ✅, WP24 ✅ |
 | WP47 | Skills catalog and recoverable representations | Delivered R12–13; current rules in inventory_equipment.md. | — |
-| WP48 | Mapgen writer performance and parallel emerge | Partial; parked until a playtest shows slowness (E8). | WP40 ✅ |
+| WP48 | Mapgen writer performance and parallel emerge | Partial: Round 49 did the single-thread part ([completion](docs/planning/round49-plan.md#completion-2026-10-16)); several emerge threads wait for Luanti #9357, the cold planner and the first-start pre-step remain. | WP40 ✅ |
 | WP49 | Fixed mapgen source-audit roster | Canceled 2026-09-29: its audit script was deleted in Round 22 (D1/D3/D22). | — |
 | WP50 | [Own minimap and map quality](docs/planning/work-package-scopes.md#wp50) | Delivered in Round 27 ([completion](docs/planning/round27-minimap-plan.md#completion-2026-09-30)): our own round minimap on the pre-generated map with quest-giver, service, home and party markers; native minimap off; `grug_map_quality` normal/high shared with the Map tab; readable relief; 512 px tiles. GUI-accepted with Round 27 (the user, 2026-10-05); carry-overs below. | WP40 ✅, WP24 ✅ |
 
@@ -476,9 +476,39 @@ short headless probe, no KAT suite or static sweep.
 
 ### WP48 — Mapgen writer performance and parallel emerge
 
-**Parked until a playtest shows that preparation or exploration is too slow**
-(E8, user decision 2026-09-29). Performance numbers are comparisons, never
-targets. The rest of this section is the record.
+**Partial: Round 49 did the single-thread part** (2026-10-16,
+[completion](docs/planning/round49-plan.md#completion-2026-10-16)), after the
+user's live session of 2026-10-15 showed the one emerge thread about 87 %
+busy in our mapgen Lua (it had been parked until a playtest showed slowness,
+E8, user decision 2026-09-29). Performance numbers are comparisons, never
+targets.
+
+**What Round 49 did** ([before/after](docs/research/mapgen-chunk-profile-2026-10.md#round-49-beforeafter-lane-meas2)):
+ores, gems and cave plants native in v7, the fill ores by a flat
+integer-hash pass (P8 71–463 → ≤ 1 ms per chunk, 12 ms in a filled
+surface chunk); no Lua for chunks below every writer (wholly underground
+chunks 1.3–2.3 → about 40 chunks per second); a compilable R5 adapter and
+zones lookup; an integer placement hash instead of SHA-256; P9G per column
+and the mapgen column cache 3× (+30–40 MiB); the v7 flag `nomountains`
+(`makeChunk` about 6–7 ms less). Surface chunks need about half the Lua
+(A_S1 648 → 304 ms, A_S2 229 → 88 ms); the first start is ready at 66 s
+instead of 79 s.
+
+**What remains:**
+
+1. **Several emerge threads** after Luanti #9357 (PR #16224 pending;
+   [upstream workarounds §2](docs/technical/upstream-workarounds.md#2-more-than-one-emerge-thread-loses-ores-and-caves-at-chunk-edges)):
+   with native ores the lost edge slices would now cost ores as well as
+   caves, so `num_emerge_threads = 1` stays pinned until the engine fix.
+2. **The cold planner** (R5, R6 columns and candidates) costs about 95 ms
+   (93–102) on the first chunk with Lua work of every new column and is now
+   the largest surface cost.
+3. **The first-start pre-step:** before the first server step the world
+   layouts take about 24 s, the world map base render 9.5 s and the mob
+   spawn regions 8 s (single-threaded, a new world or a map reset only),
+   about two thirds of the time to ready.
+
+The rest of this section is the record.
 
 **Opened by the Round 9 MAP-C plateau attempt, 2026-09-19.** The WP40
 writer spends its time in Lua post-processing per MODIFIED voxel (dirty-
@@ -559,9 +589,6 @@ frozen 157-file roster stays historical evidence only.
 **Noted 2026-09-29** ([completion](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29)); none blocks
 the playtest.
 
-- WP48: `tools/wp40/profile/instrument-settlement-stages.patch` no longer
-  applies to `r6_settlement.lua` on main (stale since Round 22). Re-anchor it
-  before the next stage profile.
 - WP45: a one-time waiting-screen race when an Esc crosses a progress update.
 - The "Requires level N" tooltip line does not relabel tool stacks from older
   worlds. This does not matter for fresh worlds.
@@ -1780,9 +1807,7 @@ its baked icons. MB has nothing else open.
   exists); a pure scrollbar event stops at sfinv, so `""` handlers
   registered after it never see one (none acts on it).
 - **Bags** (IH): a cross-inventory bag swap (a chest's bag onto an equipped
-  bag) is checked as a full removal, stricter than needed; two soulbound
-  stacks past `main` would push one into a bag in a sort (one Claim Stone
-  per player).
+  bag) is checked as a full removal, stricter than needed.
 - **Character** (CH): a future allow rule on gear or arrow moves must also
   cover `route_shift`, which skips the allow callbacks registered after
   `equipment.lua`; a quiver change, a Scout's shot included, resends the
@@ -2198,8 +2223,8 @@ severity).
 
 ### Round 48 — mail, plants and light, selling, smaller bags
 
-**Delivered 2026-10-14; not pushed (pushed only on the user's word); GUI
-test open** ([completion](docs/planning/round48-plan.md#completion-2026-10-14),
+**Delivered 2026-10-14; pushed (origin/main `f915d777`; 0.48.1 at
+`1ef11b5e`); GUI test open** ([completion](docs/planning/round48-plan.md#completion-2026-10-14),
 plan [round48-plan.md](docs/planning/round48-plan.md)); every code lane
 independently reviewed by Opus, every fix delta with game logic reviewed
 again, ARTP and ARTM on the user's picks, the letters and the quest text
@@ -2298,6 +2323,107 @@ severity). The items the user decides in the GUI test are in the
 - **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `os.exit` or
   `io.popen` in `tools/r35_f`, `tools/r44_ih`, `tools/r33_c1` and
   `tools/r37_po`.
+
+### Round 49 — mapgen performance (native first) and gameplay polish
+
+**Delivered 2026-10-16; not pushed (pushed only on the user's word); GUI
+test open** ([completion](docs/planning/round49-plan.md#completion-2026-10-16),
+plan [round49-plan.md](docs/planning/round49-plan.md)); every code lane
+independently reviewed by Opus, every fix delta with game logic reviewed
+again, the measurement lanes checked by the coordinator. Version 0.49.0,
+**map reset**, no migration step.
+
+- **World generation** (ORE, PROT, SKIP, JIT, HASH, CACHE, V7, V7A, P8,
+  MEAS, MEAS2): WP48's single-thread part, see
+  [WP48](#wp48--mapgen-writer-performance-and-parallel-emerge)
+  ([mapgen plan](docs/planning/mapgen-native-plan.md),
+  [world_zones.md](docs/design/world_zones.md),
+  [world_preparation.md](docs/design/world_preparation.md)).
+- **Gameplay** (UI, INV, MOB, NAV, NAV2, VIS): postage at Send, Sell
+  tooltips, the Claim Stone in any carried list, the Steward's button, the
+  starter kit on the hotbar, kill XP and the rare tier, path repair,
+  padding escalation and ranged mobs regaining sight, blocks at 70 % in the
+  third-person hand, the half-buried onion
+  ([gameplay draft](docs/planning/round49-gameplay-draft.md)).
+
+### Round 49 carry-overs
+
+**Noted 2026-10-16** ([completion](docs/planning/round49-plan.md#completion-2026-10-16)),
+the reviews' and reports' backlog notes (theoretical or accepted, no
+severity). The items the user decides in the GUI test are in the
+[GUI checklist](docs/planning/round49-plan.md#gui-checklist-round-49).
+
+- **Kings' volley** (NAV2 review; the user 2026-10-15: backlog, a balance
+  question): the kings' scripted volley signature
+  (`grug_mobs/bosses.lua` ~511) fires without a line-of-sight check
+  (unchanged by the round).
+- **Navigation** (NAV, NAV2): the repair's node reads (about 1,200–1,700 for
+  a 40-waypoint path repaired throughout, against 80 open) run outside the
+  A* time budget, bounded by the search cap; a repaired step does not check
+  head room during the step (`grug_nav.lua` ~349–361, the engine's own
+  blind spot), which may explain the zombie's repair-then-stuck loop at the
+  probe's `deep_forest_trunk1`; still failing in the probe: a blueberry
+  bush on a steep pine slope, a rat at a grove and on a bush top (out of
+  reach); elite and rare ×2 bodies are untested; padding also escalates
+  after successful re-plans, so a kiting target is searched at 16;
+  `routes.lua` ~713 overwrites a repaired last waypoint with the goal
+  (harmless); a strafing dummy lost its pursuer after about 15 s (probably
+  the leash contact timeout).
+- **Town protection** (PROT): v7 tunnels under a town can cross the
+  protected floor (as with 100); POI-envelope columns on steep ground 80–100
+  below their anchor now get ordinary surface content (accepted); the
+  research contracts `wp40-simple-map-r4-contract.md` ~114 and
+  `wp40-r7-implementation-contract.md` ~90 still say 100 (historical).
+- **Native ores** (ORE): native ores also fill the near-surface strata
+  bands; town plinths show ore that cannot be dug (GUI checklist); cave
+  plants and ores also lie inside the Round 46 underground reservations;
+  the T1 rows reach y 31000, so every sky chunk scatters them (`makeChunk`
+  +0–2 ms; SKIP found no exact bound to cap `y_max`).
+- **Fill-ore pass** (P8 review): its cube-decision arrays are allocated and
+  zero-filled per chunk (about 2.3 MB garbage, +0.2 ms on chunks with few
+  hosts; allocate once with a chunk generation stamp); the fill-ore choice
+  has no guard against a voxel outside the declared chunk (its only caller
+  stays inside; a fixture-only range check would do).
+- **Placement hash** (HASH review): the z lines are windows into one
+  sequence per stream (one-node-wide coincidences, invisible);
+  `world_content.lua`'s surface-plant hash is purely linear (runs along an
+  axis) and could use the placement hash.
+- **Deep skip** (SKIP): `air_chunks.lua` ~81 repeats −37 (pinned by the
+  fixture); a deep chunk whose planning would fail is now skipped silently
+  (same output); any later pass writing below −37 outside a fitted box must
+  extend the skip argument (the module guide says so); the seed fleet does
+  not exercise the refine path; `tools/r23_full_column/make_patch.py`'s
+  anchor is stale since Round 41.
+- **Caches and memory** (CACHE): the emerge heap swings 1–2 GB between
+  collections; the column cache's memory figure is not rerunnable from the
+  repository (lane +41 MiB, review +31 MiB).
+- **JIT** (JIT): untraceable patterns remain in `index128.lua` ~623,
+  `simple_map.lua` 622/661/794, `r6_settlement.lua` ~438,
+  `road_layout.lua` ~2450 and `habitat_registry.lua` ~130 (a note in
+  `luanti-lua.md` would help); the frozen R5 contract §6 step 6 still
+  describes two passes; `map_adapter.lua` ~1384 keeps `voxel_plan` after a
+  failure (harmless); a headless boot counts the INSECURE security notice
+  as an ERROR line.
+- **v7 flags** (V7, V7A): a closed-form v7 base height could bound high air
+  chunks without the heightmap read; `tools/r49_v7`'s flag patches no
+  longer apply (documented).
+- **Mail and selling** (UI): a Sell row's label stays the plain item name
+  (only the tooltip carries quality); the mail `item_image` with a stack
+  string and `warp_pointer.py`'s pixel formula follow engine internals.
+- **Inventory** (INV): no feed line names the item a skill moved off the
+  hotbar (the user: none wanted); the moved item may merge into a partial
+  stack; `apply_bag_resize` and `empty_inbox`'s drop-overflow fallback
+  could make a bagged stone a world item (ruled out by the allow check in
+  the same step); `place_on_hotbar` ignores the give helper's return (safe
+  while the fit check and the helper agree).
+- **Looks** (VIS): the Wild Onion source node's inventory image is the
+  half-buried stage 4 tile (creative and admin only); the realm website's
+  3-D viewer uses `wield_transform` without the block factor (hand-slot
+  equipment only, never a block).
+- **Mobs** (MOB): `docs/planning/round28/mobs/catalogue.{json,md}` keep
+  the old rare numbers (historical).
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` and
+  `os.exit` in older tool fixtures.
 
 ### Audit 2026-10 open questions
 

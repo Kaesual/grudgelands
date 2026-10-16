@@ -2,8 +2,9 @@
 
 Draft for the Round 49 plan (written 2026-10-15 from a read-only study of
 main at 1ef11b5e; main is now at c05f205a, which adds only the mapgen plan
-and the MGPROF tools); accepted by the user on 2026-10-15. It covers the
-user's non-mapgen points; the mapgen part is planned separately
+and the MGPROF tools); accepted by the user on 2026-10-15; built in Round
+49 (2026-10-16, [completion](round49-plan.md#completion-2026-10-16)). It
+covers the user's non-mapgen points; the mapgen part is planned separately
 ([mapgen plan](mapgen-native-plan.md)), and both merge into
 `round49-plan.md`. Section numbers follow the round plan layout
 ([round workflow](../process/round-workflow.md) §2.1). File facts below were

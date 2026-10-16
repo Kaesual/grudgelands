@@ -486,8 +486,22 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   crafted goods at half value) with every old payout unchanged; cactus and
   leaves as fuel; the daytime band beside the minimap; bags at half size,
   with what no longer fits mailed at the next join. Complete on
-  2026-10-14; not pushed (pushed only on the user's word). Next: its GUI
+  2026-10-14 and pushed on the user's word (origin/main `f915d777`), with
+  its fix 0.48.1 (bag slots in rows of eight, `1ef11b5e`). Next: its GUI
   test.
+- [x] **Round 49 "Mapgen performance (native first) and gameplay polish"**
+  ([completion](docs/planning/round49-plan.md#completion-2026-10-16)),
+  version 0.49.0, **map reset**, no migration step: ores, gems and cave
+  plants native in v7 at the table's rates, the fill ores by a flat
+  integer-hash pass, no ore exclusion under towns; no Lua for chunks
+  below every writer, JIT-compilable hot code, an integer placement hash
+  instead of SHA-256, per-column caches, the v7 flag `nomountains`; the
+  protection depth under towns 80; postage at Send, Sell tooltips, the
+  Claim Stone in any carried list, the starter kit on the hotbar, kill XP
+  −10 % per level below, the rare tier, path repair and ranged mobs
+  regaining sight, smaller blocks in the third-person hand, the
+  half-buried onion (WP48's single-thread part). Complete on 2026-10-16;
+  not pushed (pushed only on the user's word). Next: its GUI test.
 
 ### Remaining work
 
@@ -523,8 +537,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 45](BACKLOG.md#round-45-carry-overs),
   [0.45.1](BACKLOG.md#0451-carry-overs),
   [Round 46](BACKLOG.md#round-46-carry-overs),
-  [Round 47](BACKLOG.md#round-47-carry-overs) and
-  [Round 48](BACKLOG.md#round-48-carry-overs) carry-overs (Round 40: the
+  [Round 47](BACKLOG.md#round-47-carry-overs),
+  [Round 48](BACKLOG.md#round-48-carry-overs) and
+  [Round 49](BACKLOG.md#round-49-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -532,7 +547,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   GUI test; Round 45: theoretical crafting, inventory, mount and step
   notes; Round 46: depth pulse, spawn, placement, crafting and price
   notes; Round 47: tree, swamp, mining, crafting and map window notes;
-  Round 48: mail, plant, price, HUD and step notes);
+  Round 48: mail, plant, price, HUD and step notes; Round 49: mapgen,
+  navigation, inventory and tooling notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
@@ -546,8 +562,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   ([biomes_mobs.md §4.1](docs/design/biomes_mobs.md#41-the-depth-pulse-decided-2026-08-08-built-round-46)).
   Renewable camp resources are removed; the T6 lava lakes stay planned.
 - [ ] **WP46 / WP48:** the fire/explosion guard is deferred until a fire or explosion source exists (expected with V2's Nether)
-  (nothing damages terrain today); writer performance is parked until a playtest shows
-  slowness.
+  (nothing damages terrain today); WP48's single-thread mapgen work was
+  done in Round 49, several emerge threads wait for Luanti #9357.
 - Closed on 2026-09-29: WP11, WP14, WP21, WP22, WP23, WP27, WP29, WP30, WP31,
   WP32 (delivered or merged), WP37 and WP49 (canceled). Held-torch moving light,
   natural out-of-combat regeneration, rested XP, renewable ores, the dragon

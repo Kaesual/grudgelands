@@ -90,18 +90,16 @@ and its profession trainers.
 
 ## Current state
 
-**0.48.0** puts a mailbox beside the waystone of every capital and
-starting village: write letters with attachments to your faction, read
-the welcome letter and write to the admin for free. Crops now need
-daylight or torchlight (mushrooms and cave plants grow in the dark),
-papyrus and cactus grow indoors, Melon and Mushroom join the crops and a
-Salt Pan collects salt. Vendors buy almost everything, cheap goods in
-lots, and what sold before still pays the same; leaves and cactus burn
-as fuel, a daytime band sits beside the minimap, and bags hold half as
-much (what no longer fits arrives by mail); 0.48.1 lets their slots flow
-on in rows of eight. 0.47.0 before it grew new
-trees from each world's seed, gave the swamp its own ground and added a
-mining ladder with Anthracite and Steel.
+**0.49.0** makes world generation much faster, above all underground:
+ores, gems and cave plants now come from the engine's own map generator,
+about as often as before, and going deep generates almost instantly. Mail
+postage is paid at Send, the merchant's Sell rows show item tooltips, the
+Claim Stone fits in your bags, a new character's apples and torches sit
+on the hotbar, kills pay XP down to 9 levels below yours (was 6), rares
+sit between normal and elite creatures, and creatures find their way round
+bushes and trees. 0.48.0 before it put a mailbox beside the waystone of every capital
+and starting village, made crops need light, let vendors buy almost
+everything and halved the bags.
 
 Read the [changelog](CHANGELOG.md) for changes and upgrade requirements,
 and the [project status](docs/STATUS.md) for delivery and playtest progress.
@@ -155,19 +153,19 @@ uses mapgen **v7** and brings its own map settings.
 > generator accepts only its own values and stops the world from loading
 > with an error otherwise. The New World dialog hides the map generator
 > checkboxes for this game, but it still writes the flags saved in your
-> Luanti settings: if you ever changed `mg_flags` or `mgv7_spflags`
-> (Caves, Dungeons, Decorations, Mountains, Rivers, Caverns, Floatlands),
-> set them back to their defaults first. They are in Luanti's settings
-> with *Show advanced settings* ticked, on the pages *Mapgen* ("Mapgen
-> flags") and *Mapgen V7* ("Mapgen V7 specific flags"); the reset button
-> beside a changed setting restores its default. Do not set `chunksize`,
+> Luanti settings: if you ever changed `mg_flags` (Caves, Dungeons,
+> Decorations, Biomes, Ores, Light), set them back to their defaults first. It is
+> in Luanti's settings with *Show advanced settings* ticked, on the page
+> *Mapgen* ("Mapgen flags"); the reset button beside a changed setting
+> restores its default. The v7 flags (`mgv7_spflags`) the game sets
+> itself. Do not set `chunksize`,
 > `water_level`, `mapgen_limit`, `mgv7_dungeon_ymin`, `mgv7_dungeon_ymax`
 > or `num_emerge_threads` in your own `minetest.conf` either; none of them
 > is in the dialog.
 
 **The first start of a new world takes a while.** The game prepares the six
-starting areas before anyone can enter: about a minute and a half from the
-server's start on a desktop PC (measured headless, 2026-10-05). A window
+starting areas before anyone can enter: a little over a minute from the
+server's start on a desktop PC (66 s, measured headless, 2026-10-16). A window
 shows the progress and the time left; you may disconnect and come back
 later. Later starts of the same world are much faster.
 

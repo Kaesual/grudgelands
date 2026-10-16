@@ -1,5 +1,11 @@
 # WP40 real-engine mapgen profiler
 
+> **Per-stage profiles now use [`tools/mgprof/`](../../mgprof/)** (lane
+> MGPROF, 2026-10-15; Round 49's before/after in
+> [the chunk profile](../../../docs/research/mapgen-chunk-profile-2026-10.md)).
+> This harness's `instrument-settlement-stages.patch` no longer applies
+> (stale since Round 22).
+
 This bounded harness profiles the R7 mapgen callback in Luanti 5.17.x with
 LuaJIT. It copies the selected game into a disposable user path, patches only
 that copy, generates an ordered ten-owner corpus in a fresh world, restarts the

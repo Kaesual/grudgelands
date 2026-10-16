@@ -12,23 +12,21 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.48.1 (a compatible fix: bag slots flow on in rows
-of eight) on 0.48.0, Round 48 "Mail, plants and light, selling,
-smaller bags" (**map reset** plus the migration step 0.48.0: bags at half
-size, what no longer fits mailed as "Lost and Found" letters); 0.48.0 is
-pushed (origin/main `f915d777`), 0.48.1 is on main and not pushed
-([completion](docs/planning/round48-plan.md#completion-2026-10-14)):
-mailboxes on the twelve waystone pads with letters, attachments, postage,
-messages to the admin and announcements (`grug_mail`, the privilege
-`mail_admin`), the starter quest and the welcome and level letters, plant
-light 8 for crops, papyrus and cactus, Melon and Mushroom crops, the Salt
-Pan, selling almost everything in lots with today's payouts unchanged,
-cactus and leaves as fuel, the daytime band beside the minimap and bags of
-4 / 8 / 12 / 16 slots. Its GUI test is open.
+**Current state:** 0.49.0, Round 49 "Mapgen performance (native
+first) and gameplay polish" (**map reset**, no migration step), complete on main and
+not pushed; 0.48.1 is pushed (origin/main `1ef11b5e`)
+([completion](docs/planning/round49-plan.md#completion-2026-10-16)):
+ores, gems and cave plants native in v7, no Lua for chunks below every
+writer, an integer placement hash, per-column caches, the v7 flag
+`nomountains` forced over `map_meta.txt`, the protection depth under towns
+80; postage at Send, Sell tooltips, the Claim Stone in any carried list,
+the starter kit on the hotbar, kill XP −10 % per level below, the rare
+tier, path repair and ranged mobs regaining sight, smaller blocks in the
+third-person hand. Its GUI test is open.
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
-47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48 and
-of 0.45.1 are open. The class redesign
+47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48, 49
+and of 0.45.1 are open. The class redesign
 is parked ([continuation](docs/planning/class-redesign/continuation.md)).
 Details: [STATUS](docs/STATUS.md).
 
