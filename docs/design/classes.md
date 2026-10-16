@@ -50,7 +50,10 @@ Core principles:
   attempts pickup of the first visible dropped item within 4 m exactly once,
   unless a hostile stands behind it (loot never hides a hostile; the press is
   then a combat press). Combat range never extends pickup reach; pickup does
-  not also cast.
+  not also cast. A press that is the click on a drop picks up that drop
+  even when the server's ray misses it (the client may draw it elsewhere),
+  if the server has it within 6.6 m of the eye (hand reach plus the
+  engine's own interaction tolerance; 0.49.1).
 - **No global cooldown** (removed 2026-08-09 with the proc model of §2b;
   it was 1.0 s from 2026-08-06 to WP35). A GCD existed to stop instant
   chaining, and the two limiters that replaced it do that job better and
@@ -326,7 +329,8 @@ intervening objects (dropped items excepted) matter.
   (shorter than one control report, about 0.09 s) can still go unseen
   (Round 20 limit).
 - **Dropped item:** one pickup attempt at the beginning of each physical press,
-  including when inventory is full. That decision does not also cast. The
+  including when inventory is full; the clicked drop when the server's ray
+  misses it (0.49.1). That decision does not also cast. The
   hold is a gather hold: it may subsequently dig, attack only once a threat
   switches it to combat (above), and another drop requires another
   press. A hostile behind the drop makes it a combat

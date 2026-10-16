@@ -344,6 +344,14 @@ return function(api)
 			food.click(player, f.target, native_rightclick)
 		end
 	end
+	-- The engine takes a punch up to the tool range plus 2.6 nodes from the
+	-- server's position of the object (Server::checkInteractDistance).
+	local PICKUP_REACH = HAND_RANGE + 2.6
+	local function within_pickup(player, entity)
+		local pos = entity.object and entity.object:get_pos()
+		local eye = pos and grug_core.combat_eye_pos(player)
+		return eye ~= nil and vector.distance(eye, pos) <= PICKUP_REACH
+	end
 	-- `carried`: the fresh decision of a press held across a hotbar switch
 	-- (see step): it acts like a press of the new item, but reports nothing
 	-- and has no tap window, because the button went down before the item.
@@ -357,6 +365,16 @@ return function(api)
 				if pickup_delegate then pickup_delegate(ent, player) end
 				return
 			end
+		end
+		-- The drop the native punch named (M.press) when this ray does not
+		-- reach it: the client may draw a drop elsewhere than the server has
+		-- it (a lost position update, upstream-workarounds.md §7), and the
+		-- player clicked what the client draws. A combat press still goes
+		-- through the loot.
+		local punched = fresh and s.punched
+		if punched and s.mode ~= "combat" and pickup_delegate and within_pickup(player, punched) then
+			pickup_delegate(punched, player)
+			return
 		end
 		-- A pending tap only waits for its release: where the crosshair wanders
 		-- meanwhile (kiting with the eyes on the ground) changes nothing, the
@@ -599,7 +617,15 @@ return function(api)
 		stepping[name] = nil
 		if not ok then error(err, 0) end
 	end
-	function M.press(player) M.step(player, true) end
+	-- `punched`: the dropped item's entity when the press arrived as a native
+	-- punch on it (the item wrapper below), else nil.
+	function M.press(player, punched)
+		local s = state(player)
+		s.punched = punched
+		local ok, err = pcall(M.step, player, true)
+		s.punched = nil
+		if not ok then error(err, 0) end
+	end
 	-- Did the current (or last) LMB press cast a skill? The mining hint skips
 	-- its protection line on a punch whose press already cast (Round 24).
 	function M.cast_this_press(player)
@@ -794,7 +820,7 @@ return function(api)
 		pickup_delegate = item.on_punch
 		item.on_punch = function(entity, player, ...)
 			if player and player:is_player() and api.selected(player) then
-				M.press(player)
+				M.press(player, entity)
 				return
 			end
 			return pickup_delegate(entity, player, ...)

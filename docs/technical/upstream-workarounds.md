@@ -252,6 +252,45 @@ Engine reference for the line citations: `reference_projects/luanti` at
   (`st.enter_focus`, `st.field_focus`) and the resend on close in
   `grug_jobs/ui.lua`.
 
+## 7. An entity's stop is sent once, unreliably
+
+- **Upstream problem:** an entity's position, velocity and acceleration
+  reach the client only as `AO_CMD_UPDATE_POSITION`, which
+  `LuaEntitySAO::sendPosition` queues unreliable (`src/server/luaentity_sao.cpp`)
+  and `Server::SendActiveObjectMessages` sends on channel 1 without
+  acknowledgement (`src/server.cpp`); all objects' updates of one server
+  step travel in one bundle, split into 512-byte packets
+  (`src/network/connection.cpp` `MAX_PACKET_SIZE`), so one lost fragment
+  loses the whole step. `LuaEntitySAO::step` sends again only when the
+  position or the velocity changed past a threshold (its own "TODO: force
+  send when acceleration changes enough?"), never while an entity lies
+  still. The client predicts a physical entity itself with the last
+  velocity it got (`GenericCAO::step`, `collisionMoveSimple` without
+  friction). A dropped item stops when the builtin zeroes its velocity on
+  landing (`builtin/game/item_entity.lua` `on_step`); a client that loses
+  that update (and its one repeat, when the landing step moved more than
+  0.2 nodes) keeps the flight's sideways velocity and draws the item
+  sliding slowly over the ground for good, while the server's copy lies
+  still. Reproduced with a real client over a 15 % lossy loopback at
+  Bannerbreak Warhold (`tools/r491_drop/repro.sh`, 0.49.1 DROP): 18 of
+  117 drops slid, each at the speed the server last sent before the landing,
+  up to 12 nodes from the server's copy; leaving and coming back reloads
+  the object at its server position.
+- **Issue:** none filed yet (found 2026-10-16).
+- **Affected versions:** unchanged up to `df0487906` (5.17.0-dev).
+- **Our workaround:** `mods/BASE/default/item_entity.lua` (GRUG PATCH, 0.49.1
+  DROP): an item that comes to rest (after a flight or a slide on ice) sends
+  its position again through `set_pos` 0.5 s and 2 s later; the same run
+  with it showed no slider. The left-click pickup also takes the drop the
+  client punched when the server's own ray misses it
+  (`mods/PLAYER/grug_abilities/input.lua`, `M.press`), within the engine's
+  interaction reach. Fixture `tools/r491_drop` A and B.
+- **How to tell upstream fixed it:** a resting entity's position is sent
+  reliably, or resent periodically while nothing changes.
+- **What to remove then:** the resync block and `RESYNC_FIRST`/`RESYNC_LAST`
+  in `default/item_entity.lua` (the pickup rule may stay: it also covers a
+  picture that lags for other reasons).
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields
