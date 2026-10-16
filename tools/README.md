@@ -1280,3 +1280,16 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the scroll position across re-shows, per viewer); `capture.sh OUT_DIR`
   with `grug_probe_r491_view` the engine screenshots of each form with four
   bags and of a burning furnace, scrolled (the r48_mail method).
+- **0.49.1 lane ANIM** (`r491_anim`): the furnace's fire and arrow as
+  animated images, the form re-sent only at a change of state
+  (`portable_test.lua`: the frame starts and the buffer of
+  `grug_inventory/furnace_progress.lua`, its change check, scripted burns
+  through the plain furnace's timer and the workspace furnace and dual
+  furnace's one-second pass with the re-send points, no animation running
+  out before a re-send and the cooking results; `portable_test.lua REPO
+  measure` the formspec bytes of a burning minute, also against an older
+  tree); `gen_furnace_strips.py [--check]` the two frame strips from the
+  minetest_game furnace textures; `capture.sh OUT_DIR` with
+  `grug_probe_r491_anim` the engine screenshots of a burning workspace
+  furnace a few seconds apart and the re-sends counted (the r491_view
+  method).

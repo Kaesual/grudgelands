@@ -569,7 +569,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   its affixes change; a plain stack carries no image of its own.
 - **Stations:** a profession recipe needs its station within 4 nodes when its
   job starts (`professions.md` §1.5). Only **furnaces and dual furnaces** keep
-  a dialog with lists. The forge, the four benches and the brewing stand are
+  a dialog with lists. Their fire runs down over the current fuel's burn
+  time and their arrow fills over the current item's cooking time, each as
+  an animation of its own; the form is re-sent only at a change of state
+  (an item done, a new fuel, start, stop, the output full, the player's own
+  click), not every second (0.49.1 ruling 7). The forge, the four benches and the brewing stand are
   proximity stations without a dialog, lists or a right-click action (Round
   45). No station repairs: repair happens only in towns (Round 46,
   [durability_repair.md](durability_repair.md)).
