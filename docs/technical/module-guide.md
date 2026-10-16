@@ -1747,15 +1747,19 @@ tools](#player-meta-read-by-external-tools).
   - `admin.lua` (Round 26): `/claim_remove <player> | here | orphans`
     (`server` privilege).
   - `packed.lua`, `recovered.lua` (Round 50): the soulbound
-    `grug_housing:packed_container` (meta `node`, `lists`, `seq`; placing
-    restores the container through `core.item_place_node` and fills its
-    lists; `CONTAINER_LISTS` holds the restorable kinds with their list
-    sizes) and the Claim Stone inventory: the tool's entries
-    `recovered:<player>:<seq>:<n>` in this mod's storage, read through
-    `grug_housing.recovered` (`entries`, `count`, `take`), and `clean_pass`,
-    the handler of the world marker `map_reset_pack:<seq>` (unknown items
-    out, D6's extra chests under `<n>.<k>`, descriptions and images), plus
-    the join notice. The stone form shows the entries as the active stone's
+    `grug_housing:packed_container` (as the tool writes it: meta `node`,
+    `lists`, `seq`; cleaned: `node`, `ref`, `seq`, description and image,
+    its contents in this mod's storage under `ref`; placing restores the
+    container through `core.item_place_node`, fills its lists from the
+    contents and deletes them; `CONTAINER_LISTS` holds the restorable kinds
+    with their list sizes) and the Claim Stone inventory: the tool's
+    entries `recovered:<player>:<seq>:<n>` in this mod's storage, read
+    through `grug_housing.recovered` (`entries`, `count`, `take`), and
+    `clean_pass`, the handler of the world marker `map_reset_pack:<seq>`
+    (unknown items out, D6's extra chests under `<n>.<k>`, the contents
+    moved to `packed:<player>:<seq>:<n>[.<k>]`, empty containers as their
+    nodes' items stacked under `<seq>:0.<k>`, descriptions and images),
+    plus the join notice. The stone form shows the entries as the active stone's
     Belongings tab. Fixture `tools/r50_pgame/portable_test.lua`.
   - `interaction.lua` (Lane B): the generic right-click and node-inventory
     guard installed at `register_on_mods_loaded`, and the "Home of <owner> –

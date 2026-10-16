@@ -98,6 +98,26 @@ local function seed()
 	end
 	storage:set_string(("recovered:%s:%d:%d"):format(NAME, SEQ, #rows + 1), "grug_smelting:charcoal 120")
 	storage:set_string(("recovered:%s:%d:%d"):format(NAME, SEQ, #rows + 2), "gone:coal 3")
+	-- Empty containers (ruling 13): an open chest and a lit furnace.
+	storage:set_string(("recovered:%s:%d:%d"):format(NAME, SEQ, #rows + 3),
+		packed.make("default:chest_open", {main = {""}}, SEQ):to_string())
+	storage:set_string(("recovered:%s:%d:%d"):format(NAME, SEQ, #rows + 4),
+		packed.make("default:furnace_active", {src = {""}, fuel = {""}, dst = {}}, SEQ):to_string())
+	-- The largest item (ruling 14): 32 written books of 10000 characters, for
+	-- another player.
+	-- Each book differs: core.serialize writes a repeated string only once.
+	local shelf = {}
+	for i = 1, 32 do
+		local long = ItemStack("default:book_written")
+		long:get_meta():set_string("title", "Ledger " .. i)
+		long:get_meta():set_string("owner", "dave")
+		long:get_meta():set_string("text", (("Page %d: all the ore of the northern claim. "):format(i))
+			:rep(300):sub(1, 10000))
+		shelf[i] = long:to_string()
+	end
+	local big = packed.make("default:chest", {main = shelf}, SEQ):to_string()
+	storage:set_string(("recovered:dave:%d:1"):format(SEQ), big)
+	log(("book chest as packed: %d bytes"):format(#big))
 	storage:set_string("pack_seq", tostring(SEQ))
 	-- grug_core's runner over a store that holds the marker.
 	local marker = {["map_reset_pack:" .. SEQ] = "1"}
@@ -111,6 +131,9 @@ local function seed()
 		set_string = function(_, key, value) marker[key] = value ~= "" and value or nil end,
 	}
 	grug_core.world_version.run_packs(store)
+	log(("book chest cleaned: %d bytes, contents %d bytes"):format(
+		#storage:get_string(("recovered:dave:%d:1"):format(SEQ)),
+		#storage:get_string(("packed:dave:%d:1"):format(SEQ))))
 	log(("cleaned: marker %s, %d entries waiting"):format(
 		store:get_string("map_reset_pack:" .. SEQ) == "" and "deleted" or "KEPT",
 		grug_housing.recovered.count(NAME)))
@@ -141,7 +164,8 @@ local function place_all(player)
 		local stack = entry.stack
 		if stack:get_name() == grug_housing.packed.ITEM then
 			local node = stack:get_meta():get_string("node")
-			local lists = grug_housing.packed.lists(stack)
+			local lists, ref = grug_housing.packed.contents(stack)
+			lists = lists or {}
 			local at = spots[#results + 1]
 			if not at then break end
 			local under = vector.offset(at, 0, -1, 0)
@@ -169,6 +193,9 @@ local function place_all(player)
 						ok, why = false, why .. (" %s#%d"):format(listname, index)
 					end
 				end
+			end
+			if grug_housing.storage:get_string(ref) ~= "" then
+				ok, why = false, why .. " contents kept"
 			end
 			if node == "default:chest_locked" and core.get_meta(at):get_string("owner") ~= NAME then
 				ok, why = false, why .. " owner=" .. core.get_meta(at):get_string("owner")
@@ -207,8 +234,8 @@ SHOTS = {
 		end
 		submit(player, "grug_housing:stone", {stone_tab = tostring(index)})
 	end},
-	{name = "P3_packed_chest_tooltip", hover_slot = 1, run = function() end},
-	{name = "P4_furnace_tooltip", hover_slot = 3, run = function() end},
+	{name = "P3_packed_chest_tooltip", hover_slot = 3, run = function() end},
+	{name = "P4_furnace_tooltip", hover_slot = 5, run = function() end},
 	{name = "P5_restored_chest", run = function(player)
 		core.close_formspec(NAME, "")
 		local results = place_all(player)

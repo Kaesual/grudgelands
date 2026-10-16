@@ -1,28 +1,44 @@
 -- Packed containers (Round 50 lane PGAME, docs/planning/round50-plan.md
 -- rulings 5-8, D5-D7 and §3). Before a map reset the migration tool packs
 -- every container of every claim into one item, grug_housing:packed_container,
--- which waits in its owner's Claim Stone inventory (recovered.lua). Its item
--- meta carries
+-- which waits in its owner's Claim Stone inventory (recovered.lua). As the
+-- tool writes it, its item meta carries
 --   node    the container's node name
 --   lists   core.serialize'd {list name = {item string, ...}}, slot order kept
---   seq     the tool's pass
--- and, once the first start's clean-up ran (recovered.lua), `description`
--- ("Packed Chest, 14 stacks" with the contents) and the container's image.
+--   seq     the tool's pass.
+-- The first start's clean-up (recovered.lua) moves the lists out of the item
+-- (ruling 14): into this mod's storage under the content key P.content_key
+-- of its entry, and leaves in the item only `ref` (that key), `node`, `seq`,
+-- the `description` ("Packed Chest, 14 stacks" with the contents) and the
+-- container's image. An empty container comes back as its node's own item
+-- (ruling 13), never as a packed one.
 --
 -- The item is soulbound (group grug_soulbound, soulbound.lua): it lives only
 -- in the carried lists, so chests, stations, mail, trades, the inbox and the
 -- vendors refuse it. Dropping it is refused (it stays, unlike the Claim
--- Stone). Placing it restores the container through the node's own placement
--- (core.item_place_node: protection, on_construct, after_place_node, so a
--- locked chest belongs to the placer) and then fills its lists; a failed
--- placement keeps the item. D7: a furnace comes back unlit with its fuel in
--- the fuel list (its timer starts at the player's first touch), a locked
--- chest's old owner and every node's facing are not restored.
+-- Stone). Whoever holds it may place it (ruling 15): the container is
+-- restored through the node's own placement (core.item_place_node:
+-- protection, on_construct, after_place_node, so a locked chest belongs to
+-- the placer), filled from the stored contents, which are then deleted; a
+-- failed placement keeps the item and its contents. Contents that are gone
+-- (a copy placed before) leave the container empty, with a warning in the
+-- log. D7: a furnace comes back unlit with its fuel in the fuel list (its
+-- timer starts at the player's first touch), a locked chest's old owner and
+-- every node's facing are not restored.
 
 local P = {}
 grug_housing.packed = P
 
+local storage = grug_housing.storage
+
 P.ITEM = "grug_housing:packed_container"
+
+-- The content key of the entry `recovered:<player>:<seq>:<n>[.<k>]`:
+-- `packed:<player>:<seq>:<n>[.<k>]` (no claim and no `recovered:` key; the
+-- map reset's clear of the claims leaves it).
+function P.content_key(entry_key)
+	return "packed:" .. entry_key:sub(#"recovered:" + 1)
+end
 -- What D6's extra stacks and an unrestorable node's stacks are packed into.
 P.CHEST = "default:chest"
 
@@ -64,12 +80,8 @@ function P.restorable(node)
 	return nil
 end
 
--- The packed lists of a stack: {list name = {[index] = item string}}; an
--- unreadable value counts as empty.
-function P.lists(stack)
-	local text = stack:get_meta():get_string("lists")
-	local lists = text ~= "" and core.deserialize(text, true) or nil
-	if type(lists) ~= "table" then return {} end
+-- Only string list names, number slots and string items of a decoded table.
+local function only_lists(lists)
 	local result = {}
 	for listname, list in pairs(lists) do
 		if type(listname) == "string" and type(list) == "table" then
@@ -81,6 +93,29 @@ function P.lists(stack)
 		end
 	end
 	return result
+end
+
+-- The plain item a node comes back as (ruling 13): the item it drops when
+-- that is one plain item string (an open or lit variant drops its base),
+-- else the node itself; nil for a node this version does not register.
+function P.node_item(node)
+	local def = core.registered_nodes[node]
+	if not def then return nil end
+	if type(def.drop) == "string" and def.drop ~= "" then
+		local name = ItemStack(def.drop):get_name()
+		if core.registered_items[name] then return name end
+	end
+	return node
+end
+
+-- The packed lists of a stack as the tool writes them: {list name =
+-- {[index] = item string}}; an unreadable value counts as empty (the
+-- clean-up refuses one first).
+function P.lists(stack)
+	local text = stack:get_meta():get_string("lists")
+	local lists = text ~= "" and core.deserialize(text, true) or nil
+	if type(lists) ~= "table" then return {} end
+	return only_lists(lists)
 end
 
 -- The highest index of a sparse list.
@@ -107,7 +142,7 @@ function P.stacks(lists)
 	return result
 end
 
--- A new packed item for `node` with `lists`, of pass `seq`.
+-- A packed item as the tool writes it: `node` with `lists`, of pass `seq`.
 function P.make(node, lists, seq)
 	local stack = ItemStack(P.ITEM)
 	local meta = stack:get_meta()
@@ -170,15 +205,30 @@ function P.description(node, lists)
 	return table.concat(lines, "\n")
 end
 
--- Writes the description and the image into `stack`'s meta (the clean-up).
-function P.describe(stack)
+-- The cleaned item (the clean-up): `node` of pass `seq`, its contents
+-- `lists` stored under `ref`, described by them, with the node's image.
+function P.make_ref(node, ref, seq, lists)
+	local stack = ItemStack(P.ITEM)
 	local meta = stack:get_meta()
-	local node = meta:get_string("node")
-	meta:set_string("description", P.description(node, P.lists(stack)))
+	meta:set_string("node", node)
+	meta:set_string("ref", ref)
+	meta:set_string("seq", tostring(seq or ""))
+	meta:set_string("description", P.description(node, lists))
 	local image = P.image(node) or ""
 	meta:set_string("inventory_image", image)
 	meta:set_string("wield_image", image)
 	return stack
+end
+
+-- The stored contents of a cleaned item: the lists table, or nil when they
+-- are gone; the reference; and whether stored contents do not decode.
+function P.contents(stack)
+	local ref = stack:get_meta():get_string("ref")
+	local text = ref ~= "" and storage:get_string(ref) or ""
+	if text == "" then return nil, ref, false end
+	local lists = core.deserialize(text, true)
+	if type(lists) ~= "table" then return nil, ref, true end
+	return only_lists(lists), ref, false
 end
 
 local function tell(player, text)
@@ -216,11 +266,24 @@ local function on_place(itemstack, placer, pointed_thing)
 		tell(placer, "This packed container cannot be unpacked here.")
 		return itemstack
 	end
-	local lists = P.lists(itemstack)
+	local lists, ref, unreadable = P.contents(itemstack)
+	if unreadable then
+		-- Kept, item and contents, for an administrator to look at.
+		tell(placer, "This packed container cannot be unpacked; please tell an administrator.")
+		core.log("error", ("[grug_housing] the contents %q of %s's packed %s do not decode; " ..
+			"nothing placed"):format(ref, placer:get_player_name(), node))
+		return itemstack
+	end
 	local _, pos = core.item_place_node(ItemStack(node), placer, pointed_thing)
 	if not pos then return itemstack end
 	local inv = core.get_meta(pos):get_inventory()
-	if misfits(inv, lists) then
+	if not lists then
+		-- Ruling 15: placed empty rather than an item nobody can place.
+		lists = {}
+		core.log("warning", ("[grug_housing] the contents %q of %s's packed %s are " ..
+			"missing; placed empty at %s"):format(ref, placer:get_player_name(), node,
+			core.pos_to_string(pos)))
+	elseif misfits(inv, lists) then
 		core.remove_node(pos)
 		tell(placer, "This packed container no longer fits its contents.")
 		core.log("warning", ("[grug_housing] packed %s of %s does not fit at %s; kept"):format(
@@ -243,8 +306,10 @@ local function on_place(itemstack, placer, pointed_thing)
 			def.on_metadata_inventory_put(pos, listname, first.index, first.stack, placer)
 		end
 	end
-	core.log("action", ("[grug_housing] %s unpacked %s at %s"):format(
-		placer:get_player_name(), node, core.pos_to_string(pos)))
+	-- The contents are in the node now: their stored copy goes, then the item.
+	if ref ~= "" then storage:set_string(ref, "") end
+	core.log("action", ("[grug_housing] %s unpacked %s at %s (%s)"):format(
+		placer:get_player_name(), node, core.pos_to_string(pos), ref))
 	itemstack:take_item(1)
 	return itemstack
 end
@@ -253,7 +318,7 @@ core.register_craftitem(P.ITEM, {
 	description = "Packed Container\nPlace it to unpack it. Soulbound: it " ..
 		"cannot be dropped, stored, mailed or sold.",
 	-- The packed chest's look; a packed item shows its own container's
-	-- image through its meta (P.describe).
+	-- image through its meta (P.make_ref).
 	inventory_image = "[inventorycube{default_chest_top.png{default_chest_front.png" ..
 		"{default_chest_side.png",
 	stack_max = 1,

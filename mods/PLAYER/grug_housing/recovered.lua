@@ -8,12 +8,17 @@
 -- and marks the pass in grug_core's storage, `map_reset_pack:<seq>`. At the
 -- next start grug_core's runner (world_version.lua) hands each marked pass to
 -- the clean-up below, after the map-reset clears and before any join. The
--- clean-up writes keys of its own in the same pass, `<n>.<k>` (D6's
--- additional packed chests and the parts of an overfull stack).
+-- clean-up writes keys of its own in the same pass:
+--   recovered:<player>:<seq>:<n>.<k>   D6's additional packed chests and the
+--                                      parts of an overfull stack
+--   recovered:<player>:<seq>:0.<k>     the pass's empty containers as their
+--                                      nodes' items, stacked (ruling 13)
+--   packed:<player>:<seq>:<n>[.<k>]    a packed container's contents, which
+--                                      its item references (ruling 14)
 --
--- The entries belong to the player, not to the claim: picking the stone up,
--- losing it or a later map reset (registry.lua M.map_reset clears only the
--- claim records) leaves them. They show, take-only, in the active stone's
+-- The entries and contents belong to the player, not to the claim: picking
+-- the stone up, losing it or a later map reset (registry.lua M.map_reset
+-- clears only the claim records) leaves them. They show, take-only, in the active stone's
 -- form (stone_form.lua); taking an item deletes its entry or keeps the rest.
 
 local R = {}
@@ -102,13 +107,18 @@ function R.take(key, count)
 end
 
 --
--- The first start's clean-up of a pass (§3, the world marker): every entry
--- of pass `seq` loses the items this version does not register; a packed
--- container is fitted to its node (D6); a stack above its stack size is
--- split; the packed items get their descriptions and images (D5). Safe to
--- run again: every key it writes is a function of the entry it reads, the
--- derived keys first and the entry itself last, so a rerun over a half-done
--- pass writes the same values, and a cleaned entry cleans to itself.
+-- The first start's clean-up of a pass (§3, the world marker; rulings 8,
+-- 13 and 14): every entry of pass `seq` loses the items this version does
+-- not register; a packed container is fitted to its node (D6, extra chests
+-- under `<n>.<k>`), its contents move into storage under its content key
+-- (packed.content_key) and the item keeps only the reference, the node,
+-- the pass, the description and the image; an empty container becomes its
+-- node's own item, stacked with the player's other ones of the pass under
+-- `0.<k>` (the tool counts from 1); a stack above its stack size is split.
+-- Safe to run again: each key it writes is a function of the entries it
+-- reads, new keys are written before old ones change or go, a cleaned item
+-- (a reference, no lists) is left alone, and the stacked empties count as
+-- written once their first key, written last, exists.
 --
 
 -- Splits `stacks` (an array of item strings) into chests of the chest's
@@ -124,10 +134,13 @@ local function chest_lists(stacks)
 	return chests
 end
 
--- A packed entry's cleaned item and the extra chests' lists (D6). Lists
--- that do not decode raise: the runner stops the load and keeps the marker
--- and the entry, never an empty container in their place.
-local function clean_packed(key, stack, seq, removed)
+-- A packed entry's node and lists, fitted to the node, the extra chests'
+-- lists (D6) and, for a node this version does not restore as itself, the
+-- node's plain item (packed.node_item). The node is nil for an empty one
+-- this version cannot restore.
+-- Lists that do not decode raise: the runner stops the load and keeps the
+-- marker and the entry, never an empty container in their place.
+local function clean_packed(key, stack, removed)
 	local meta = stack:get_meta()
 	local node = meta:get_string("node")
 	local text = meta:get_string("lists")
@@ -156,96 +169,161 @@ local function clean_packed(key, stack, seq, removed)
 			list[i] = nil
 		end
 	end
+	local names = {}
+	for listname in pairs(lists) do names[#names + 1] = listname end
+	table.sort(names)
 	if base then
 		-- Stacks beyond a list's size, and lists the node lacks, go extra.
 		local sizes = packed.CONTAINER_LISTS[base]
-		local names = {}
-		for listname in pairs(lists) do names[#names + 1] = listname end
-		table.sort(names)
 		for _, listname in ipairs(names) do
 			local size = sizes[listname]
 			extra(lists[listname], (size or 0) + 1)
 			if not size then lists[listname] = nil end
 		end
-		node = base
-	else
-		-- A node this version cannot restore: its stacks go into chests.
-		local names = {}
-		for listname in pairs(lists) do names[#names + 1] = listname end
-		table.sort(names)
-		for _, listname in ipairs(names) do extra(lists[listname], 1) end
-		if #extras == 0 then return nil, {} end
-		local chests = chest_lists(extras)
-		node, lists, extras = packed.CHEST, chests[1], {}
-		for i = 2, #chests do
-			for _, item in ipairs(chests[i].main) do extras[#extras + 1] = item end
-		end
+		return base, lists, chest_lists(extras)
 	end
-	local cleaned = packed.describe(packed.make(node, lists, meta:get_string("seq") ~= "" and
-		meta:get_string("seq") or seq))
-	local more = {}
-	for _, chest in ipairs(chest_lists(extras)) do
-		more[#more + 1] = packed.describe(packed.make(packed.CHEST, chest, seq))
-	end
-	return cleaned, more
+	-- A node this version cannot restore (a station, a gone node): its
+	-- stacks go into chests, and the node comes back as its plain item if
+	-- it still exists.
+	for _, listname in ipairs(names) do extra(lists[listname], 1) end
+	local item = packed.node_item(node)
+	if #extras == 0 then return nil, {}, {}, item end
+	local chests = chest_lists(extras)
+	return packed.CHEST, table.remove(chests, 1), chests, item
 end
 
--- One entry: returns the item to keep (nil: delete) and the extra items.
-local function clean_entry(key, stack, seq, removed)
+-- Writes a cleaned packed item under `key`: its contents first.
+local function store_packed(key, node, lists, seq)
+	local ref = packed.content_key(key)
+	storage:set_string(ref, core.serialize(lists))
+	storage:set_string(key, packed.make_ref(node, ref, seq, lists):to_string())
+end
+
+-- The stacked empties' keys of a player's pass: `0.<k>`.
+local function empties_key(player, seq, k)
+	return ("recovered:%s:%d:0.%d"):format(player, seq, k)
+end
+
+-- Ruling 13: the empty containers' items, stacked; written last to first, so
+-- the first key stands for all of them; then the empties go.
+local function stack_empties(player, seq, empties)
+	if storage:get_string(empties_key(player, seq, 1)) == "" then
+		local totals, names = {}, {}
+		for _, empty in ipairs(empties) do
+			if empty.item then
+				if not totals[empty.item] then names[#names + 1] = empty.item end
+				totals[empty.item] = (totals[empty.item] or 0) + 1
+			end
+		end
+		table.sort(names)
+		local stacks = {}
+		for _, name in ipairs(names) do
+			local left, max = totals[name], ItemStack(name):get_stack_max()
+			while left > 0 do
+				local count = math.min(max, left)
+				stacks[#stacks + 1] = ItemStack(name .. " " .. count)
+				left = left - count
+			end
+		end
+		for k = #stacks, 1, -1 do
+			storage:set_string(empties_key(player, seq, k), stacks[k]:to_string())
+		end
+	end
+	for _, empty in ipairs(empties) do
+		if empty.key then storage:set_string(empty.key, "") end
+	end
+end
+
+-- One entry. Returns whether it was deleted. A filled container whose node
+-- comes back as a plain item too (a station) is rewritten only after the
+-- stacking (`later`), so a rerun still reads its node from it.
+local function clean_entry(key, seq, removed, empties, later)
+	local stack = ItemStack(storage:get_string(key))
 	local name = stack:get_name()
-	if stack:is_empty() then return nil, {} end
-	if not packed.registered(name) then
-		removed[#removed + 1] = stack:to_string()
-		return nil, {}
+	if stack:is_empty() or not packed.registered(name) then
+		if not stack:is_empty() then removed[#removed + 1] = stack:to_string() end
+		storage:set_string(key, "")
+		return true
 	end
 	if name == packed.ITEM then
-		return clean_packed(key, stack, seq, removed)
+		local meta = stack:get_meta()
+		if meta:get_string("ref") ~= "" and meta:get_string("lists") == "" then
+			return false -- cleaned before
+		end
+		local node, lists, chests, item = clean_packed(key, stack, removed)
+		for k, chest in ipairs(chests) do
+			store_packed(key .. "." .. k, packed.CHEST, chest, seq)
+		end
+		if node and #packed.stacks(lists) > 0 then
+			if item then
+				empties[#empties + 1] = {item = item}
+				later[#later + 1] = {key = key, node = node, lists = lists}
+			else
+				store_packed(key, node, lists, seq)
+			end
+			return false
+		end
+		empties[#empties + 1] = {key = key, item = node or item}
+		return true
 	end
 	-- Plain stacks (the stone's charcoal): split at the stack size.
 	local max = stack:get_stack_max()
-	if stack:get_count() <= max then return stack, {} end
-	local more, left = {}, stack:get_count() - max
-	stack:set_count(max)
+	if stack:get_count() <= max then return false end
+	local k, left = 0, stack:get_count() - max
 	while left > 0 do
+		k = k + 1
 		local part = ItemStack(stack)
 		part:set_count(math.min(max, left))
 		left = left - part:get_count()
-		more[#more + 1] = part
+		storage:set_string(key .. "." .. k, part:to_string())
 	end
-	return stack, more
+	stack:set_count(max)
+	storage:set_string(key, stack:to_string())
+	return false
 end
 
 -- Runs the clean-up of pass `seq`; returns a summary for the log.
 function R.clean_pass(seq)
 	seq = tonumber(seq)
 	assert(seq, "the pass number is no number")
-	local keys = {}
+	-- The tool's own entries of the pass, per player; derived keys are
+	-- written from theirs.
+	local players, keys = {}, {}
 	for _, key in ipairs(storage:get_keys()) do
-		local player, key_seq, _, k = R.parse_key(key)
-		-- The pass's own entries; derived keys are rewritten from theirs.
-		if player and key_seq == seq and k == 0 then keys[#keys + 1] = key end
+		local player, key_seq, n, k = R.parse_key(key)
+		if player and key_seq == seq and k == 0 and n > 0 then
+			if not keys[player] then
+				keys[player] = {}
+				players[#players + 1] = player
+			end
+			table.insert(keys[player], key)
+		end
 	end
-	table.sort(keys, key_before)
-	local stats = {entries = #keys, deleted = 0, extra = 0, removed = 0}
-	for _, key in ipairs(keys) do
-		local removed = {}
-		local keep, more = clean_entry(key, ItemStack(storage:get_string(key)), seq, removed)
-		for k, item in ipairs(more) do
-			storage:set_string(key .. "." .. k, item:to_string())
+	table.sort(players)
+	local stats = {entries = 0, deleted = 0, empties = 0, removed = 0}
+	for _, player in ipairs(players) do
+		table.sort(keys[player], key_before)
+		local empties, later = {}, {}
+		for _, key in ipairs(keys[player]) do
+			local removed = {}
+			if clean_entry(key, seq, removed, empties, later) then
+				stats.deleted = stats.deleted + 1
+			end
+			if #removed > 0 then
+				stats.removed = stats.removed + #removed
+				core.log("action", ("[grug_housing] map reset pass %d: %s lost unknown %s"):format(
+					seq, key, table.concat(removed, ", ")))
+			end
 		end
-		stats.extra = stats.extra + #more
-		storage:set_string(key, keep and keep:to_string() or "")
-		if not keep then stats.deleted = stats.deleted + 1 end
-		if #removed > 0 then
-			stats.removed = stats.removed + #removed
-			core.log("action", ("[grug_housing] map reset pass %d: %s lost unknown %s"):format(
-				seq, key, table.concat(removed, ", ")))
-		end
+		stats.entries = stats.entries + #keys[player]
+		stats.empties = stats.empties + #empties
+		if #empties > 0 then stack_empties(player, seq, empties) end
+		for _, entry in ipairs(later) do store_packed(entry.key, entry.node, entry.lists, seq) end
 	end
 	index = nil
-	core.log("action", ("[grug_housing] map reset pass %d: %d entries cleaned, %d deleted, " ..
-		"%d extra, %d unknown items removed"):format(seq, stats.entries, stats.deleted,
-		stats.extra, stats.removed))
+	core.log("action", ("[grug_housing] map reset pass %d: %d entries cleaned, %d deleted " ..
+		"(%d containers back as their nodes' items), %d unknown items removed"):format(seq,
+		stats.entries, stats.deleted, stats.empties, stats.removed))
 	return stats
 end
 
