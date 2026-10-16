@@ -1,6 +1,10 @@
 # The migration tool (tools/migrate.py) for self-hosters, Python 3.13 or newer.
 # SQLite worlds need nothing beyond the standard library. PostgreSQL worlds
 # need psycopg 3 and the system's libpq (or install psycopg[binary]==3.2.6).
-# The versions are Debian trixie's (python3-psycopg 3.2.6-1), which the
-# platform's runner uses; the tests ran on them (tools/r43_mt/container_test.sh).
+# The pre-reset pass (--map-reset) reads zstd map blocks: Python 3.14 has
+# compression.zstd, Python 3.13 needs zstandard.
+# The versions are Debian trixie's (python3-psycopg 3.2.6-1,
+# python3-zstandard 0.23.0), which the platform's runner uses; the tests ran
+# on them (tools/r43_mt/container_test.sh, tools/r50_ptool/run.sh).
 psycopg==3.2.6
+zstandard==0.23.0

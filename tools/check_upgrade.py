@@ -5,25 +5,32 @@ The hosting platform reads this file to decide how a world moves to a newer
 Grudgelands version (the upgrade contract, docs/technical/upgrade-contract.md):
 compatible, map reset, migrate or new server. The rules checked here:
 
-- the shape is exactly {"schema": 2, "version": "x.y.z", "map_reset": [...],
-  "new_server": [...], "migrate": [...]}; versions are major.minor.patch,
-  compared numerically per component;
+- the shape is exactly {"schema": 3, "version": "x.y.z", "map_reset": [...],
+  "new_server": [...], "migrate": [...], "map_reset_pass": "x.y.z"};
+  versions are major.minor.patch, compared numerically per component;
 - `version` equals game.conf's `version`;
 - each list is strictly ascending and every entry is at most `version`;
+- `map_reset_pass` (schema 3, Round 50) is a version at most `version`: the
+  first version whose tool runs the pre-reset pass (`--map-reset`);
 - the game's step registry (`versions` in mods/CORE/grug_core/migrations.lua,
   which the start guard reads) equals the `migrate` list;
 - every `migrate` entry has its step file tools/migration/steps/vX_Y_Z.py;
 - against the last pushed commit (default `origin/main`): the version never
   decreases, entries are never edited or removed, a new entry comes only
-  together with a version bump, and the step file of every pushed `migrate`
-  entry is unchanged. A missing earlier declaration is accepted (the first
-  declaration); a pushed schema-1 declaration has no `migrate` list.
+  together with a version bump, a pushed `map_reset_pass` is never edited,
+  and the step file of every pushed `migrate` entry is unchanged. A missing
+  earlier declaration is accepted (the first declaration); a pushed schema-1
+  declaration has no `migrate` list, a pushed schema-1 or schema-2 one no
+  `map_reset_pass`.
 
 `outcome()` is the platform's reading: a move from `a` to `b` crosses every
 entry v with a < v <= b; crossing a `new_server` entry needs a new server
 (whatever else is crossed), else crossing `map_reset` and `migrate` entries
-needs both (the map is emptied first, then the tool runs), one of them alone
-that one, else the move is compatible.
+needs both, one of them alone that one, else the move is compatible.
+`runs_pass()` is the platform's gate of the pre-reset pass: a move to a
+target at or above `map_reset_pass` runs the target's tool with
+`--map-reset` before every emptying of the map (then the due steps in the
+same run); below it, or without the field, the old order applies.
 
 Usage (repository root; a check runs the self-test of these rules first):
   python3 tools/check_upgrade.py [--base REF]
@@ -39,8 +46,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DECLARATION = "tools/web_data/upgrade.json"
 REGISTRY = "mods/CORE/grug_core/migrations.lua"
 STEPS = "tools/migration/steps"
-SCHEMA = 2
-KEYS = ("schema", "version", "map_reset", "new_server", "migrate")
+SCHEMA = 3
+KEYS = ("schema", "version", "map_reset", "new_server", "migrate", "map_reset_pass")
 LISTS = ("map_reset", "new_server", "migrate")
 VERSION = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 
@@ -113,12 +120,19 @@ def validate(decl, conf_version):
             if version is not None and parsed > version:
                 errors.append("%s: %s is above the version %s" % (name, entry, decl["version"]))
             last = parsed
+    passed = parse_version(decl["map_reset_pass"])
+    if passed is None:
+        errors.append("map_reset_pass must be major.minor.patch: %r" % (decl["map_reset_pass"],))
+    elif version is not None and passed > version:
+        errors.append("map_reset_pass %s is above the version %s"
+                      % (decl["map_reset_pass"], decl["version"]))
     return errors
 
 
 def compare(old, new):
     """The rules against the last pushed declaration; returns a list of errors.
-    A pushed schema-1 declaration has no `migrate` list (an empty one)."""
+    A pushed schema-1 declaration has no `migrate` list (an empty one), a
+    pushed schema-1 or schema-2 one no `map_reset_pass`."""
     errors = []
     old_version, new_version = parse_version(old.get("version")), parse_version(new["version"])
     if old_version is None:
@@ -133,8 +147,13 @@ def compare(old, new):
                           (name, before, after))
         if after != before:
             changed = True
+    if old.get("map_reset_pass") != new["map_reset_pass"]:
+        changed = True
     if changed and not new_version > old_version:
         errors.append("a new entry needs a version bump (still %s)" % new["version"])
+    if "map_reset_pass" in old and old["map_reset_pass"] != new["map_reset_pass"]:
+        errors.append("map_reset_pass was edited (%s -> %s)" %
+                      (old["map_reset_pass"], new["map_reset_pass"]))
     return errors
 
 
@@ -191,6 +210,13 @@ def outcome(decl, from_version, to_version):
     return "compatible"
 
 
+def runs_pass(decl, to_version):
+    """Whether the platform runs the pre-reset pass of a move to
+    `to_version` (before every emptying of the map)."""
+    passed = parse_version(decl.get("map_reset_pass"))
+    return passed is not None and parse_version(to_version) >= passed
+
+
 def resolve_base(ref):
     probe = subprocess.run(["git", "rev-parse", "--verify", "--quiet", ref + "^{commit}"],
                            cwd=ROOT, capture_output=True, text=True)
@@ -243,16 +269,27 @@ def self_test():
         if not ok:
             failures.append(label)
 
-    first = {"schema": 2, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": [],
-             "migrate": []}
-    expect(validate(first, "0.41.0") == [], "a schema-2 declaration is valid")
+    first = {"schema": 3, "version": "0.41.0", "map_reset": ["0.40.1"], "new_server": [],
+             "migrate": [], "map_reset_pass": "0.41.0"}
+    expect(validate(first, "0.41.0") == [], "a schema-3 declaration is valid")
     expect(validate(first, "0.40.1") != [], "version must equal game.conf's")
     expect(validate(dict(first, extra=1), "0.41.0") != [], "no extra key")
     expect(validate({k: v for k, v in first.items() if k != "new_server"}, "0.41.0") != [],
            "no missing key")
     expect(validate({k: v for k, v in first.items() if k != "migrate"}, "0.41.0") != [],
-           "schema 2 has the migrate list")
-    expect(validate(dict(first, schema=1), "0.41.0") != [], "schema 2 only")
+           "schema 3 has the migrate list")
+    expect(validate({k: v for k, v in first.items() if k != "map_reset_pass"}, "0.41.0") != [],
+           "schema 3 has map_reset_pass")
+    expect(validate(dict(first, schema=1), "0.41.0") != [], "schema 3 only")
+    expect(validate(dict(first, schema=2), "0.41.0") != [], "schema 2 is history")
+    expect(validate(dict(first, map_reset_pass="0.41.1"), "0.41.0") != [],
+           "map_reset_pass above the version")
+    expect(validate(dict(first, map_reset_pass="0.40.9"), "0.41.0") == [],
+           "map_reset_pass below the version")
+    expect(validate(dict(first, map_reset_pass="0.41"), "0.41.0") != [],
+           "map_reset_pass is major.minor.patch")
+    expect(validate(dict(first, map_reset_pass=None), "0.41.0") != [],
+           "map_reset_pass is a version")
     expect(validate(dict(first, schema=True), "0.41.0") != [], "schema is an integer")
     expect(validate(dict(first, version="0.41"), "0.41") != [], "major.minor.patch")
     expect(validate(dict(first, version="0.041.0"), "0.041.0") != [], "no leading zero")
@@ -300,18 +337,31 @@ def self_test():
     expect(compare(stepped, dict(stepped, version="0.43.0", migrate=["0.42.1"])) != [],
            "a migrate entry is never edited")
     schema1 = {"schema": 1, "version": "0.42.0", "map_reset": ["0.40.1"], "new_server": []}
-    expect(compare(schema1, dict(first, version="0.42.0")) == [],
+    expect(compare(schema1, dict(first, version="0.43.0")) == [],
            "a pushed schema-1 declaration is accepted")
     expect(compare(schema1, dict(first, version="0.43.0", migrate=["0.43.0"])) == [],
            "the first migrate entry after a schema-1 declaration, with a bump")
     expect(compare(schema1, dict(first, version="0.42.0", migrate=["0.42.0"])) != [],
            "the first migrate entry after a schema-1 declaration needs a bump")
+    schema2 = {"schema": 2, "version": "0.49.1", "map_reset": ["0.40.1"], "new_server": [],
+               "migrate": ["0.44.0"]}
+    third = dict(schema2, schema=3, version="0.50.0", map_reset_pass="0.50.0")
+    expect(compare(schema2, third) == [], "schema 3 after a pushed schema-2 declaration")
+    expect(compare(schema2, dict(third, version="0.49.1")) != [],
+           "map_reset_pass comes with a version bump")
+    expect(compare(third, dict(third, version="0.51.0")) == [], "map_reset_pass kept")
+    expect(compare(third, dict(third, version="0.51.0", map_reset_pass="0.51.0")) != [],
+           "a pushed map_reset_pass is never edited")
+    expect(runs_pass(third, "0.50.0") and runs_pass(third, "0.51.0"),
+           "the pass runs from map_reset_pass on")
+    expect(not runs_pass(third, "0.49.1"), "not below map_reset_pass")
+    expect(not runs_pass(schema2, "0.50.0"), "not without map_reset_pass")
 
     expect(outcome(first, "0.40.0", "0.41.0") == "map_reset", "0.40.0 -> 0.41.0 resets the map")
     expect(outcome(first, "0.40.1", "0.41.0") == "compatible", "0.40.1 crosses nothing")
     expect(outcome(first, "0.41.0", "0.41.0") == "compatible", "no move")
     expect(outcome(schema1, "0.40.0", "0.42.0") == "map_reset", "a schema-1 declaration reads")
-    both = {"schema": 2, "version": "0.46.0", "map_reset": ["0.40.1", "0.43.0"],
+    both = {"schema": 3, "version": "0.46.0", "map_reset": ["0.40.1", "0.43.0"],
             "new_server": ["0.42.0"], "migrate": ["0.44.0", "0.45.0"]}
     expect(outcome(both, "0.40.0", "0.46.0") == "new_server", "every list crossed: new server")
     expect(outcome(both, "0.41.0", "0.44.0") == "new_server", "new server wins over migrate")
