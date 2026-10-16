@@ -12,11 +12,13 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.49.1 (a compatible fix round after the first
-0.49.0 feedback: mail limit 4,000, the combined bag in every station form,
-the animated furnace, doors before NPCs, drops that slid on the client,
-walking legs, the fortress wagon wheel; [plan](docs/planning/fix-0.49.1-plan.md)),
-on main and not pushed, on 0.49.0, Round 49 "Mapgen performance (native
+**Current state:** 0.50.0, Round 50 "Hotbar A/B, claim containers across
+map resets, the class-redesign page" (compatible, no migration step;
+[plan](docs/planning/round50-plan.md)), on main and not pushed; the
+migration tool packs claim containers before every map reset (declaration
+schema 3, `map_reset_pass`). Before it 0.49.1 (a compatible fix round
+after the first 0.49.0 feedback; [plan](docs/planning/fix-0.49.1-plan.md)),
+on 0.49.0, Round 49 "Mapgen performance (native
 first) and gameplay polish" (**map reset**, no migration step), pushed
 (origin/main `bc1e6016`)
 ([completion](docs/planning/round49-plan.md#completion-2026-10-16)):
@@ -30,7 +32,7 @@ third-person hand. Its GUI test is open.
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
 47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48, 49
-and of 0.45.1 and 0.49.1 are open. The class redesign
+and of 0.45.1, 0.49.1 and 0.50.0 are open. The class redesign
 is parked ([continuation](docs/planning/class-redesign/continuation.md)).
 Details: [STATUS](docs/STATUS.md).
 
@@ -76,7 +78,7 @@ Details: [STATUS](docs/STATUS.md).
   hosting platform's upgrade contract
   ([upgrade contract](docs/technical/upgrade-contract.md)): every upgrade is
   **compatible**, needs a **map reset**, a **migration** (since Round 43) or
-  a **new server**, declared in `tools/web_data/upgrade.json` (schema 2) and
+  a **new server**, declared in `tools/web_data/upgrade.json` (schema 3) and
   checked by `python3 tools/check_upgrade.py`. New server wins; map reset
   and migrate combine. Exactly one real world existed then (the user's
   production server on 0.40.0); nothing checks, audits or supports older

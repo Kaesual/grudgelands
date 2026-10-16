@@ -12,10 +12,35 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.50.0 — Round 50 (in progress)
+## 0.50.0 — two hotbars and belongings kept across a map reset (2026-10-16)
 
-Existing worlds play on: no migration step, no map reset, no new world. The
-entry is completed at the end of the round.
+Existing worlds play on: no migration step, no map reset, no new world.
+
+- **Hotbar A and B:** two buttons, "A" and "B", switch between two hotbar
+  layouts. They sit next to the hotbar on every inventory page, at every
+  station (furnace, workspaces, chests, bookshelf, vessels shelf, Claim
+  Stone), in the mail's Write tab and in the quick menu (E). Your current
+  hotbar is A; B starts empty. A skill may lie on both. Switching works in
+  a fight too: it cancels a cast, a draw or eating in progress, at most
+  about four times a second. Crafting, arrows, quest turn-ins and the
+  Claim Stone's fuel take from the hidden layout last; the merchant does
+  not offer to buy what lies there, and the repair quote includes it.
+- **Talent unlocks** no longer put the new skill on your hotbar: drag it
+  from Talents & Skills to the layout you want. The class kit still lands
+  on the hotbar you see.
+- **Belongings across a map reset:** when the server regenerates its map,
+  everything in your housing claim that holds items comes back: chests,
+  locked chests, furnaces, bookshelves and vessels shelves with their
+  contents, other stations as plain items with their contents in a packed
+  chest, and the Claim Stone's remaining fuel as charcoal. They wait in a new **Belongings** tab of your Claim Stone
+  once you place a new one and activate it with coal; you are told at
+  login, and the Housing Steward says so too. A packed container is
+  bound to you (it cannot be dropped, stored, mailed or sold) and becomes
+  the container with its exact contents when you place it. Empty
+  containers come back as plain items. Nothing waiting is lost when the
+  stone is picked up or destroyed. **Server admins:** this happens at
+  every map reset from this version on, run by the migration tool before
+  the map is emptied (upgrade declaration schema 3, `map_reset_pass`).
 
 ## 0.49.1 — fix after the first 0.49.0 feedback (2026-10-16)
 

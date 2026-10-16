@@ -90,6 +90,12 @@ and its profession trainers.
 
 ## Current state
 
+**0.50.0** adds a second hotbar layout: the buttons A and B next to the
+hotbar switch between them at every station, in the inventory, the mail
+and the quick menu. At a map reset, the containers in your housing claim
+are now packed with their contents and wait in your Claim Stone's
+Belongings tab, together with its remaining fuel as charcoal.
+
 **0.49.0** makes world generation much faster, above all underground:
 ores, gems and cave plants now come from the engine's own map generator,
 about as often as before, and going deep generates almost instantly. Mail
