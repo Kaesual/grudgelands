@@ -3,8 +3,8 @@
 Coordinator: Claude (Opus 5.5), drafted 2026-10-15 from the user's
 decisions in this session and two measurement lanes (MGPROF).
 Status: **accepted by the user (2026-10-15) as Round 49** (release 0.49.0,
-a map reset), the world-generation round named in [STATUS](../STATUS.md);
-not started.
+a map reset); built in Round 49 (2026-10-16,
+[completion](round49-plan.md#completion-2026-10-16)).
 
 Evidence:
 - [mapgen-chunk-profile-2026-10.md](../research/mapgen-chunk-profile-2026-10.md)

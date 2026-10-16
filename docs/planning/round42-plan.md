@@ -160,10 +160,15 @@ conditions); the user asked for numbers with a basis, not guesses.
     - lockout per mob 1 s in combat, 5 s otherwise (the existing no-path
       waits on top); a global cap of 20 searches per second, provisional —
       NV1 reports the real demand.
+    Round 49 changed the padding: 6, then 12, then 16 per stuck episode
+    (the user, 2026-10-15; [Round 49](round49-plan.md#completion-2026-10-16)).
 19. **Wide mobs** (NV0 finding F3): the engine's search cannot produce a
     route for a mob wider than one node. Where the width check rejects
     every path, the mob gives up like any other (a rejected path counts as
     a failed search; ruling 9); no extra mechanism.
+    Round 49 added a path repair for head room and width (a waypoint that
+    does not fit moves to a fitting neighbour cell; the user, 2026-10-15;
+    [Round 49](round49-plan.md#completion-2026-10-16)).
 20. **Tall mobs** (NV0 finding F4): mobs taller than 2 nodes (elites and
     royal guards 2.38, the bog ooze 2.03) get a physics collision height
     just under 2, so they pass 2-high doorways; their look and their
