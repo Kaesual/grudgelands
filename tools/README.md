@@ -1343,25 +1343,26 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_probe_r491_anim` the engine screenshots of a burning workspace
   furnace a few seconds apart and the re-sends counted (the r491_view
   method).
-- **Round 50 lane PTOOL** (`r50_ptool`): the migration tool's pre-reset
-  pass (`--map-reset`). `test_pack.py` (Python unittest, locally on Python
-  3.14 and in the runner's image on 3.13 with python3-zstandard): the block
+- **Round 50 lane PTOOL** (`r50_ptool`): the migration tool's pre-reset pass
+  (`--map-reset`). `test_pack.py` (Python unittest, locally on Python 3.14
+  and in the runner's image on 3.13 with python3-zstandard): the block
   decoder against `world/`, a world the engine wrote (every block decodes;
   every placed container's node name, lists and slots; node fields and
   private flags; refusals), the pass on copies (events and counts, every
   entry against the probe's record, charcoal rounded up, the area's border
   and MIN_Y, two passes appending, the pending-marker refusal, a restored
-  backup, the game's `recovered:…:<n>.<k>` keys kept, `pack_baseline`, steps after the pass, `--check --map-reset`, a
-  bad block, an emptied map, odd claim records, the pre-5.12 SQLite layout,
-  backends, the read-only map, the lock), and the game facts pack.py freezes
-  (registry.lua, api.lua, workspaces.lua). `pg_test.py` (in the image,
-  through Round 43 IT's helpers): the map and the backends on PostgreSQL and
-  in the platform's layout, every recovered row equal to SQLite's, the
-  shipped command line, the map rows unchanged, the read-only session.
-  `run.sh [EVIDENCE_DIR]` (one queue slot): both in the image, then a boot
-  whose probe reads every packed entry back with `ItemStack` and
-  `core.deserialize`. `world/` was built by `make_world.sh OUT_DIR` with the
-  probe `grug_probe_r50_ptool` (two claims of grug_housing's model, a chest,
-  a locked chest, a lit furnace with a workspace record, a bookshelf with
-  written books, a vessels shelf, a chest of 32 long books, an empty chest,
-  border chests) and trimmed to the claims' blocks by `trim.py`.
+  backup, the game's `recovered:…:<n>.<k>` keys kept, `pack_baseline`, steps
+  after the pass, `--check --map-reset`, a bad block, an emptied map, odd
+  claim records, the pre-5.12 SQLite layout, backends, the read-only map,
+  the lock), and the game facts pack.py freezes (registry.lua, api.lua,
+  workspaces.lua). `pg_test.py` (in the image, through Round 43 IT's
+  helpers): the map and the backends on PostgreSQL and in the platform's
+  layout, every recovered row equal to SQLite's, the shipped command line,
+  the map rows unchanged, the read-only session. `run.sh [EVIDENCE_DIR]`
+  (one queue slot): both in the image, then a boot whose probe reads every
+  packed entry back with `ItemStack` and `core.deserialize`. `world/` was
+  built by `make_world.sh OUT_DIR` with the probe `grug_probe_r50_ptool`
+  (two claims of grug_housing's model, a chest, a locked chest, a lit
+  furnace with a workspace record, a bookshelf with written books, a vessels
+  shelf, a chest of 32 long books, an empty chest, border chests) and
+  trimmed to the claims' blocks by `trim.py`.
