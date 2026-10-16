@@ -658,7 +658,7 @@ lives.
 
 ### 3.4 Granting a new skill, and replacing an existing one
 
-A newly ranked active-skill talent adds its ability to the skill catalogue and puts it on the first free hotbar slot; on a full hotbar the rightmost non-skill item the inventory can take moves into it and the skill takes that slot (Round 49 ruling 10), with no room anywhere it waits in the catalogue (Round 44: skills live on the hotbar only, `inventory_equipment.md` §6). The message feed says which. Full respec removes representations that are no longer unlocked. Re-ranking grants the ability the same way. Passive and replacement talents remain read-only information and never create dummy items.
+A newly ranked active-skill talent adds its ability to the skill catalogue and places nothing (Round 50 D1: the player chooses the hotbar layout, A or B, and the slot): it waits in the catalogue, and the message feed says "<Skill> unlocked. Drag it from Talents & Skills onto your hotbar." (Round 44: skills live on the hotbar only, `inventory_equipment.md` §6). Full respec removes representations that are no longer unlocked. Re-ranking grants the ability the same way. Passive and replacement talents remain read-only information and never create dummy items.
 
 **Two mechanisms, and ruling 13 makes the second one carry most of the
 design.**
@@ -670,8 +670,8 @@ positive talent rank; catalogue listing, recovery, normalization and actual
 cast/swing execution all use that authority. Possessing a forged or stale
 representation never grants an ability.
 
-A talent-granted ability appears in the Talents & Skills catalogue and on a
-free hotbar slot when there is one; otherwise the player drags it there.
+A talent-granted ability appears in the Talents & Skills catalogue; the
+player drags it onto a hotbar layout (Round 50 D1).
 Registration order determines catalogue order but never moves an existing
 hotbar item. Under ruling 13 at most two such abilities exist per build.
 Base-kit insertion occurs once at character creation; later unlocks never
@@ -690,7 +690,7 @@ items and zero grant logic.
 Talent spending and respec invoke `grug_abilities.normalize_kit(player)`.
 This removes stale or duplicate representations and refreshes surviving item
 metadata without filling discarded slots. The skill catalogue refreshes its
-entitlement list, places new entries on a free hotbar slot and announces them. Replacements need no additional
+entitlement list and announces new entries; it places none (Round 50 D1). Replacements need no additional
 item: the next cast reads the current talent rank.
 
 **Hotbar budget** (`classes.md` §2b reserves keys 1-8). Under rulings 13 and
