@@ -499,5 +499,7 @@ node placed onto it gets no re-send; the furnace frame start has no
 sub-frame offset (the fire may lag one frame, never run out); the probe in
 `tools/pt_fixes/lane_f` still names the old furnace textures.
 
-The user's GUI checklist is §6 above. The admin digs the two wagon wheels
-in the production world by hand after the update (ruling 10).
+The user's GUI checklist is §6 above. Ruling 10 assumed production already
+ran 0.49.0; it runs 0.48.1, so the update to 0.49.1 passes 0.49.0's map
+reset and the fortresses are generated anew without the wheel. Only a world
+already on 0.49.0 needs the two wheels dug by hand (CHANGELOG).

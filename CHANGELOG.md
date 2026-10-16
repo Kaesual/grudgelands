@@ -38,9 +38,11 @@ Existing worlds play on: no migration step, no map reset, no new world.
 - **Walking legs:** guards, leaders, bandits, mirefolk, villagers and
   goblins move their legs at a pace that fits their walking speed.
 - **PvP fortresses:** the floating wagon wheel is gone from fortresses
-  generated from now on. **Server admins:** in an existing world, dig the
-  wheel by hand in both fortresses (Ashenward Bastion and Bannerbreak
-  Warhold).
+  generated from now on. A world coming from 0.48.x or earlier passes
+  0.49.0's map reset on this update, so its fortresses are built anew
+  without the wheel. **Server admins:** only a world that already runs
+  0.49.0 keeps its wheels; dig them by hand in both fortresses (Ashenward
+  Bastion and Bannerbreak Warhold).
 
 ## 0.49.0 — faster world generation and gameplay polish (2026-10-16)
 
