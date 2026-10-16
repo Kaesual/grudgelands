@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-14. This is the delivery pointer, not another game specification.
+Updated 2026-10-16. This is the delivery pointer, not another game specification.
 
 Planning pointer added 2026-10-12: the [class and hotbar redesign
 handoff](planning/class-redesign-handoff.md) preserves the redesign
@@ -19,12 +19,61 @@ generation. Resume with the [continuation plan](planning/class-redesign/continua
 Hotbar A/B is prepared by a read-only survey (2026-10-12); its timing
 is open.
 
-- **0.48.1, a compatible fix after the user's first 0.48.0 playtest, on
-  main, not pushed** (2026-10-14): fix lane INV (`2386eadf`, review MERGE)
-  lets the bags' slots flow on in 8-wide rows instead of each bag starting
-  a row (a 4- or 12-slot bag left half a row empty). On main: full
-  fixtures 189/189, smoke boot, `check_upgrade.py` (0.48.1 against
-  origin/main `f915d777`) PASS.
+- **Round 49 "Mapgen performance (native first) and gameplay polish"
+  complete on main, not pushed** (2026-10-16, version 0.49.0, **map reset**, no
+  migration step,
+  [plan, decisions, numbers and GUI checklist](planning/round49-plan.md#completion-2026-10-16));
+  pushed only on the user's word. From main `f8f2d134` (the version bump):
+  MEAS, MOB, UI, NAV, VIS, INV, ORE, PROT, NAV2, SKIP, JIT, V7, CACHE,
+  HASH, V7A, the P8 follow-up and MEAS2 merged up to `aea065a8`, then this
+  documentation lane D. Each code lane independently reviewed by Opus
+  (NAV2 MERGE AFTER FIXES, the kings drifting off their seat, fixed; HASH
+  MERGE with a coordinator-ordered fix round, the mix's periods and
+  mirrors; V7A MERGE AFTER FIXES, a High: the old flags in `map_meta.txt`
+  would have stopped the production world after the reset, fixed by the
+  user's option (a), the game forcing the flag; every fix delta reviewed
+  again); MEAS, NAV, V7 and MEAS2 (measurement only) checked by the
+  coordinator against their evidence. Main has 197 portable fixtures (8
+  new); `mods/` +1,716 −1,353 lines in 47 files, no new Lua file. The
+  declaration is
+  `{"schema": 2, "version": "0.49.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"]}`.
+  - **World generation (ORE, PROT, SKIP, JIT, HASH, CACHE, V7A, P8):**
+    ores, gems and cave plants native in v7 with a flat integer-hash pass
+    for the fill ores; no ore exclusion under towns or deep water; the
+    protection depth under towns 80 (was 100) and the preparation bottom at
+    the fill floor; no Lua for chunks below every writer; compilable R5
+    adapter and zones lookup; an integer placement hash instead of SHA-256;
+    P9G per column and the mapgen column cache 3×; the v7 flag
+    `nomountains`, forced over `map_meta.txt`
+    ([world_zones.md](design/world_zones.md),
+    [world_preparation.md](design/world_preparation.md),
+    [module guide](technical/module-guide.md#mapgen-and-biomes)).
+    MEAS2: surface chunks about half the Lua, wholly underground chunks
+    none (about 40 chunks per second instead of 1.3–2.3), the first start
+    ready at 66 s instead of 79 s
+    ([before/after](research/mapgen-chunk-profile-2026-10.md#round-49-beforeafter-lane-meas2)).
+  - **Gameplay (UI, INV, MOB, NAV, NAV2, VIS):** postage at Send and Sell
+    tooltips ([mail.md](design/mail.md), [economy.md](design/economy.md));
+    the Claim Stone in any carried list, the Steward's button, the starter
+    kit on hotbar 7/8 and skills making room
+    ([housing.md](design/housing.md), [classes.md](design/classes.md));
+    kill XP −10 % per level below with gray at 10 below, the rare tier
+    ([progression.md](design/progression.md),
+    [combat_stats.md](design/combat_stats.md)); path repair, padding
+    escalation 6/12/16 and ranged ground mobs regaining sight (Round 42
+    rulings 18 and 19 changed by the user); blocks at 70 % in the
+    third-person hand and the half-buried onion
+    ([character_visuals.md](design/character_visuals.md)).
+  - **Round-end gates** (coordinator): placeholder, see the
+    [completion](planning/round49-plan.md#round-end-gates). Its GUI test
+    (desktop and web build, a new world after the map reset) is open
+    ([carry-overs](../BACKLOG.md#round-49-carry-overs)).
+- **0.48.1, a compatible fix after the user's first 0.48.0 playtest,
+  pushed** (origin/main `1ef11b5e`, 2026-10-14): fix lane INV
+  (`2386eadf`, review MERGE) lets the bags' slots flow on in 8-wide rows
+  instead of each bag starting a row (a 4- or 12-slot bag left half a row
+  empty). On main: full fixtures 189/189, smoke boot, `check_upgrade.py`
+  (0.48.1 against origin/main `f915d777`) PASS.
 - **Round 48 "Mail, plants and light, selling, smaller bags" complete and
   pushed** (origin/main `f915d777`; GUI test open)
   (2026-10-14, version 0.48.0, **map reset** plus the migration step
