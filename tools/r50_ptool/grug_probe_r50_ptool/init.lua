@@ -261,8 +261,9 @@ local function verify()
 				check(true, key .. ": equals the placed " .. found.node .. " at " ..
 					core.pos_to_string(found.pos) .. " stack by stack")
 			elseif node == "default:chest" and lists and lists.main and #lists.main == 3 then
-				-- The furnace's personal workspace record, packed into a chest.
-				local want = {"default:cobble 3", "default:coal_lump 2", "default:stone 1"}
+				-- The furnace's personal workspace record, packed into a chest
+				-- (its lists in name order: dst, fuel, src).
+				local want = {"default:stone 1", "default:coal_lump 2", "default:cobble 3"}
 				local same = true
 				for i = 1, 3 do
 					if ItemStack(lists.main[i]) ~= ItemStack(want[i]) then same = false end
