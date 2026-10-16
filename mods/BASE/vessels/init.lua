@@ -11,32 +11,28 @@ local S = minetest.get_translator("vessels")
 -- (default/node_formspec.lua); no formspec is stored in node metadata.
 -- GRUG PATCH: shift-click goes to the inbox (grug_inventory/inbox.lua):
 -- main[9..] and the bags.
-local function vessels_shelf_formspec(pos)
+-- GRUG PATCH (0.49.1 VIEW): built per viewer, below the shelf the player's
+-- whole combined bag (grug_inventory.station_formspec, real coordinates);
+-- `context` is the node_formspec session's.
+local function vessels_shelf_formspec(pos, player, context)
 	local loc = default.node_formspec.location(pos)
-	local formspec =
-		"size[8,7;]" ..
-		"list[" .. loc .. ";vessels;0,0.3;8,2;]" ..
-		"list[current_player;main;0,2.85;8,1;]" ..
-		"list[current_player;main;0,4.08;8,3;8]" ..
+	local station = grug_inventory.STATION
+	local x, y, pitch = station.x, station.y, station.pitch
+	local box, bottom = grug_inventory.station_box(S("Vessels Shelf"), 2 * pitch - 0.25)
+	local formspec = box ..
+		("list[%s;vessels;%.3f,%.3f;8,2;]"):format(loc, x, y) ..
 		"listring[" .. loc .. ";vessels]" ..
 		"listring[current_player;grug_inbox]" ..
-		"listring[current_player;main]" ..
-		default.get_hotbar_bg(0, 2.85)
+		"listring[current_player;main]"
 	local invlist = core.get_meta(pos):get_inventory():get_list("vessels")
 	-- Inventory slots overlay
-	local vx, vy = 0, 0.3
 	for i = 1, 16 do
-		if i == 9 then
-			vx = 0
-			vy = vy + 1
-		end
 		if not invlist or not invlist[i] or invlist[i]:is_empty() then
-			formspec = formspec ..
-				"image[" .. vx .. "," .. vy .. ";1,1;vessels_shelf_slot.png]"
+			formspec = formspec .. ("image[%.3f,%.3f;1,1;vessels_shelf_slot.png]"):format(
+				x + (i - 1) % 8 * pitch, y + math.floor((i - 1) / 8) * pitch)
 		end
-		vx = vx + 1
 	end
-	return formspec
+	return grug_inventory.station_formspec(player, formspec, bottom, context)
 end
 
 local function update_vessels_shelf(pos)

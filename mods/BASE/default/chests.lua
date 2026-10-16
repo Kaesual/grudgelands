@@ -5,18 +5,20 @@ local S = default.get_translator
 
 -- GRUG PATCH: shift-click goes to the inbox (grug_inventory/inbox.lua):
 -- main[9..] and the bags.
-function default.chest.get_chest_formspec(pos)
+-- GRUG PATCH (0.49.1 VIEW): built per viewer, below the chest the player's
+-- whole combined bag (grug_inventory.station_formspec, real coordinates).
+-- The form is never re-shown while open, so it keeps no scroll context.
+function default.chest.get_chest_formspec(pos, player)
 	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
-	local formspec =
-		"size[8,9]" ..
-		"list[nodemeta:" .. spos .. ";main;0,0.3;8,4;]" ..
-		"list[current_player;main;0,4.85;8,1;]" ..
-		"list[current_player;main;0,6.08;8,3;8]" ..
+	local station = grug_inventory.STATION
+	local box, bottom = grug_inventory.station_box(S("Chest"),
+		4 * station.pitch - 0.25)
+	return grug_inventory.station_formspec(player, box ..
+		("list[nodemeta:%s;main;%.3f,%.3f;8,4;]"):format(spos, station.x, station.y) ..
 		"listring[nodemeta:" .. spos .. ";main]" ..
 		"listring[current_player;grug_inbox]" ..
-		"listring[current_player;main]" ..
-		default.get_hotbar_bg(0,4.85)
-	return formspec
+		"listring[current_player;main]",
+		bottom, nil)
 end
 
 function default.chest.chest_lid_obstructed(pos)
@@ -156,7 +158,7 @@ function default.chest.register_chest(prefixed_name, d)
 						param2 = node.param2 })
 			end
 			minetest.after(0.2, minetest.show_formspec, cn,
-					"default:chest", default.chest.get_chest_formspec(pos))
+					"default:chest", default.chest.get_chest_formspec(pos, clicker))
 			default.chest.open_chests[cn] = { pos = pos,
 					sound = def.sound_close, swap = name }
 		end
@@ -182,7 +184,7 @@ function default.chest.register_chest(prefixed_name, d)
 			minetest.show_formspec(
 				player:get_player_name(),
 				"default:chest_locked",
-				default.chest.get_chest_formspec(pos)
+				default.chest.get_chest_formspec(pos, player)
 			)
 		end
 		def.on_skeleton_key_use = function(pos, player, newsecret)
@@ -233,7 +235,7 @@ function default.chest.register_chest(prefixed_name, d)
 			end
 			minetest.after(0.2, minetest.show_formspec,
 					cn,
-					"default:chest", default.chest.get_chest_formspec(pos))
+					"default:chest", default.chest.get_chest_formspec(pos, clicker))
 			default.chest.open_chests[cn] = { pos = pos,
 					sound = def.sound_close, swap = name }
 		end

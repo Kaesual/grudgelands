@@ -2498,32 +2498,28 @@ minetest.register_node("default:lava_flowing", {
 -- (default/node_formspec.lua); no formspec is stored in node metadata.
 -- GRUG PATCH: shift-click goes to the inbox (grug_inventory/inbox.lua):
 -- main[9..] and the bags.
-local function bookshelf_formspec(pos)
+-- GRUG PATCH (0.49.1 VIEW): built per viewer, below the shelf the player's
+-- whole combined bag (grug_inventory.station_formspec, real coordinates);
+-- `context` is the node_formspec session's.
+local function bookshelf_formspec(pos, player, context)
 	local loc = default.node_formspec.location(pos)
-	local formspec =
-		"size[8,7;]" ..
-		"list[" .. loc .. ";books;0,0.3;8,2;]" ..
-		"list[current_player;main;0,2.85;8,1;]" ..
-		"list[current_player;main;0,4.08;8,3;8]" ..
+	local station = grug_inventory.STATION
+	local x, y, pitch = station.x, station.y, station.pitch
+	local box, bottom = grug_inventory.station_box(S("Bookshelf"), 2 * pitch - 0.25)
+	local formspec = box ..
+		("list[%s;books;%.3f,%.3f;8,2;]"):format(loc, x, y) ..
 		"listring[" .. loc .. ";books]" ..
 		"listring[current_player;grug_inbox]" ..
-		"listring[current_player;main]" ..
-		default.get_hotbar_bg(0,2.85)
+		"listring[current_player;main]"
 	local invlist = core.get_meta(pos):get_inventory():get_list("books")
 	-- Inventory slots overlay
-	local bx, by = 0, 0.3
 	for i = 1, 16 do
-		if i == 9 then
-			bx = 0
-			by = by + 1
-		end
 		if not invlist or not invlist[i] or invlist[i]:is_empty() then
-			formspec = formspec ..
-				"image[" .. bx .. "," .. by .. ";1,1;default_bookshelf_slot.png]"
+			formspec = formspec .. ("image[%.3f,%.3f;1,1;default_bookshelf_slot.png]"):format(
+				x + (i - 1) % 8 * pitch, y + math.floor((i - 1) / 8) * pitch)
 		end
-		bx = bx + 1
 	end
-	return formspec
+	return grug_inventory.station_formspec(player, formspec, bottom, context)
 end
 
 local function update_bookshelf(pos)

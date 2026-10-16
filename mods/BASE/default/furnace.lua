@@ -15,18 +15,21 @@ local furnace_fire_sounds = {}
 -- inventory as `nodemeta:<pos>` instead of `context`.
 -- GRUG PATCH: shift-click from a furnace list goes to the inbox
 -- (grug_inventory/inbox.lua): main[9..] and the bags.
-function default.get_furnace_active_formspec(fuel_percent, item_percent, pos)
+-- GRUG PATCH (0.49.1 VIEW): built per viewer, below the furnace the
+-- player's whole combined bag (grug_inventory.station_formspec, real
+-- coordinates); `context` is the node_formspec session's. Not shown while
+-- grug_jobs is loaded: its workspaces take over the furnace's right-click.
+local function furnace_formspec_with(fire, arrow, pos, player, context)
 	local loc = pos and default.node_formspec.location(pos) or "context"
-	return "size[8,8.5]"..
-		"list["..loc..";src;2.75,0.5;1,1;]"..
-		"list["..loc..";fuel;2.75,2.5;1,1;]"..
-		"image[2.75,1.5;1,1;default_furnace_fire_bg.png^[lowpart:"..
-		(fuel_percent)..":default_furnace_fire_fg.png]"..
-		"image[3.75,1.5;1,1;gui_furnace_arrow_bg.png^[lowpart:"..
-		(item_percent)..":gui_furnace_arrow_fg.png^[transformR270]"..
-		"list["..loc..";dst;4.75,0.96;2,2;]"..
-		"list[current_player;main;0,4.25;8,1;]"..
-		"list[current_player;main;0,5.5;8,3;8]"..
+	local station = grug_inventory.STATION
+	local x, y, pitch = station.x, station.y, station.pitch
+	local box, bottom = grug_inventory.station_box(S("Furnace"), 3 * pitch - 0.25)
+	return grug_inventory.station_formspec(player, box ..
+		("list[%s;src;%.3f,%.3f;1,1;]"):format(loc, x + 2 * pitch, y) ..
+		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(loc, x + 2 * pitch, y + 2 * pitch) ..
+		("image[%.3f,%.3f;1,1;%s]"):format(x + 2 * pitch, y + pitch, fire) ..
+		("image[%.3f,%.3f;1,1;%s]"):format(x + 3 * pitch, y + pitch, arrow) ..
+		("list[%s;dst;%.3f,%.3f;2,2;]"):format(loc, x + 4 * pitch, y + pitch / 2) ..
 		"listring["..loc..";dst]"..
 		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
@@ -35,30 +38,21 @@ function default.get_furnace_active_formspec(fuel_percent, item_percent, pos)
 		"listring[current_player;main]"..
 		"listring["..loc..";fuel]"..
 		"listring[current_player;grug_inbox]"..
-		"listring[current_player;main]"..
-		default.get_hotbar_bg(0, 4.25)
+		"listring[current_player;main]",
+		bottom, context)
 end
 
-function default.get_furnace_inactive_formspec(pos)
-	local loc = pos and default.node_formspec.location(pos) or "context"
-	return "size[8,8.5]"..
-		"list["..loc..";src;2.75,0.5;1,1;]"..
-		"list["..loc..";fuel;2.75,2.5;1,1;]"..
-		"image[2.75,1.5;1,1;default_furnace_fire_bg.png]"..
-		"image[3.75,1.5;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
-		"list["..loc..";dst;4.75,0.96;2,2;]"..
-		"list[current_player;main;0,4.25;8,1;]"..
-		"list[current_player;main;0,5.5;8,3;8]"..
-		"listring["..loc..";dst]"..
-		"listring[current_player;grug_inbox]"..
-		"listring[current_player;main]"..
-		"listring["..loc..";src]"..
-		"listring[current_player;grug_inbox]"..
-		"listring[current_player;main]"..
-		"listring["..loc..";fuel]"..
-		"listring[current_player;grug_inbox]"..
-		"listring[current_player;main]"..
-		default.get_hotbar_bg(0, 4.25)
+function default.get_furnace_active_formspec(fuel_percent, item_percent, pos, player, context)
+	return furnace_formspec_with("default_furnace_fire_bg.png^[lowpart:"..
+		(fuel_percent)..":default_furnace_fire_fg.png",
+		"gui_furnace_arrow_bg.png^[lowpart:"..
+		(item_percent)..":gui_furnace_arrow_fg.png^[transformR270",
+		pos, player, context)
+end
+
+function default.get_furnace_inactive_formspec(pos, player, context)
+	return furnace_formspec_with("default_furnace_fire_bg.png",
+		"gui_furnace_arrow_bg.png^[transformR270", pos, player, context)
 end
 
 --
@@ -69,13 +63,13 @@ end
 -- meta formspec; open viewers are re-shown when the formspec changes.
 local FURNACE_NODES = {"default:furnace", "default:furnace_active"}
 
-local function furnace_formspec(pos)
+local function furnace_formspec(pos, player, context)
 	local meta = core.get_meta(pos)
 	if core.get_node(pos).name == "default:furnace_active" then
 		return default.get_furnace_active_formspec(meta:get_int("fuel_percent"),
-			meta:get_int("item_percent"), pos)
+			meta:get_int("item_percent"), pos, player, context)
 	end
-	return default.get_furnace_inactive_formspec(pos)
+	return default.get_furnace_inactive_formspec(pos, player, context)
 end
 
 local function furnace_rightclick(pos, node, clicker, itemstack)

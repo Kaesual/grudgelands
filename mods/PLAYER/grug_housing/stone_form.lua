@@ -190,7 +190,7 @@ local function main_formspec(player, claim, session)
 	-- Close takes the focus at every send (0.45.1): otherwise the engine
 	-- focuses the name field, which eats the inventory key, also after a tab
 	-- switch; the field gets it when the player clicks into it.
-	local fs = {"formspec_version[4]size[10.75,13]set_focus[close;true]"}
+	local fs = {"set_focus[close;true]"}
 	if home then fs[#fs + 1] = tabs(1) end
 	fuel_section(fs, claim, inv)
 
@@ -230,10 +230,11 @@ local function main_formspec(player, claim, session)
 		fs[#fs + 1] = "button[3.8,6.75;3.1,0.8;set_home;Set as home]"
 	end
 	fs[#fs + 1] = "button_exit[7.25,6.75;3.1,0.8;close;Close]"
-	fs[#fs + 1] = "list[current_player;main;0.4,7.85;8,1;]"
-	fs[#fs + 1] = "list[current_player;main;0.4,9.1;8,3;8]"
 	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, LIST)
-	return table.concat(fs)
+	-- The player's whole combined bag below (0.49.1 ruling 6); the session
+	-- keeps its scroll position.
+	return grug_inventory.station_formspec(player, table.concat(fs), 6.75 + 0.8,
+		session)
 end
 
 local function confirm_formspec(draft)
@@ -468,6 +469,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	if fields.perm_name then session.typed = fields.perm_name end
+	-- The bag view's scroll value; a pure scrollbar event needs no redraw.
+	if grug_inventory.keep_scroll(session, fields) then return true end
 	local claim = current_claim(player, session)
 	if not claim then
 		sessions[name] = nil
