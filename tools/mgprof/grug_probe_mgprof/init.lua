@@ -243,9 +243,15 @@ end
 -- Round 49 lane ORE: the ore, gem and cave-plant nodes of every measured
 -- chunk, read back from the map. Per tier band the host rock (the band's
 -- tier rock plus the ores in it) and each resource's nodes; per chunk the
--- cave plants and the cave floors of their host rocks (a walkable node with
--- air above); for the surface chunks (S1, S2, B) the T1 ores per 8-layer
--- slab of `default:stone`, so a doubled rate at the native/fill seam shows.
+-- cave plants and the cave floors of their host rocks (a host node with air
+-- or a plant above); for the surface chunks (S1, S2, B) the T1 ores per
+-- 8-layer slab of `default:stone`, so a doubled rate at the native/fill seam
+-- shows.
+-- Lane MEAS2: per band also the host rock of its lower half and each
+-- resource's expected count (host / the density table's denominator, a "½"
+-- row over the lower half only; the deep multipliers start below these
+-- chunks), and a cave floor counts only inside its plant's native
+-- decoration range (the floor node's y, catalog min - 1 .. max - 1).
 local function ore_census(list)
 	local M = grug_materials
 	local tier_cid, ore_key, rock_tier = {}, {}, {}
@@ -256,11 +262,20 @@ local function ore_census(list)
 	for _, resource in ipairs(M.RESOURCES) do
 		ore_key[core.get_content_id(resource.natural_node)] = resource.key
 	end
+	local wp40 = core.get_modpath("grug_mapgen") .. "/wp40"
+	local rows = dofile(wp40 .. "/r7_r6_manifest.lua")().resources
 	local air = core.CONTENT_AIR
-	local plants = {[core.get_content_id("grug_mapgen:cave_cap_source")] = "cave_cap",
-		[core.get_content_id("grug_mapgen:ember_moss_source")] = "ember_moss"}
-	local plant_hosts = {cave_cap = {}, ember_moss = {[tier_cid[5]] = true}}
-	for index = 1, 4 do plant_hosts.cave_cap[tier_cid[index]] = true end
+	local plants, plant_hosts, floor_range = {}, {}, {}
+	for _, plant in ipairs(dofile(wp40 .. "/world_content_catalog.lua").plants) do
+		if plant.mode == "cave" then
+			plants[core.get_content_id(plant.node)] = plant.key
+			plant_hosts[plant.key] = {}
+			for _, name in ipairs(plant.hosts.stone) do
+				plant_hosts[plant.key][core.get_content_id(name)] = true
+			end
+			floor_range[plant.key] = {plant.min - 1, plant.max - 1}
+		end
+	end
 	for _, row in ipairs(list) do
 		local minp = {x = row.x, y = row.y, z = row.z}
 		local maxp = {x = row.x + 79, y = row.y + 79, z = row.z + 79}
@@ -269,26 +284,27 @@ local function ore_census(list)
 		local area = VoxelArea(emin, emax)
 		local data = vm:get_data()
 		local bands, slabs = {}, {}
-		local plant_count = {cave_cap = 0, ember_moss = 0}
-		local floor_count = {cave_cap = 0, ember_moss = 0}
+		local plant_count, floor_count = {}, {}
+		for name in pairs(plant_hosts) do plant_count[name], floor_count[name] = 0, 0 end
 		for z = minp.z, maxp.z do
 			for y = minp.y, maxp.y do
 				local tier = M.tier_at(y)
 				local band = bands[tier]
 				if not band then
-					band = {host = 0, ores = {}}
+					band = {host = 0, host_lower = 0, ores = {}}
 					bands[tier] = band
 				end
+				local lower_top = M.TIERS[tier].lower_half_y_max
+				local lower = lower_top and y <= lower_top
 				local slab = math.floor(y / 8) * 8
 				for x = minp.x, maxp.x do
 					local index = area:index(x, y, z)
 					local cid = data[index]
 					local key = ore_key[cid]
-					if key then
+					if key or rock_tier[cid] == tier then
 						band.host = band.host + 1
-						band.ores[key] = (band.ores[key] or 0) + 1
-					elseif rock_tier[cid] == tier then
-						band.host = band.host + 1
+						if lower then band.host_lower = band.host_lower + 1 end
+						if key then band.ores[key] = (band.ores[key] or 0) + 1 end
 					end
 					if tier == 1 and (key or cid == tier_cid[1]) then
 						local s = slabs[slab]
@@ -301,7 +317,10 @@ local function ore_census(list)
 					local above = y < maxp.y and data[area:index(x, y + 1, z)]
 					if above and (above == air or plants[above]) then
 						for name, hosts in pairs(plant_hosts) do
-							if hosts[cid] then floor_count[name] = floor_count[name] + 1 end
+							local range = floor_range[name]
+							if hosts[cid] and y >= range[1] and y <= range[2] then
+								floor_count[name] = floor_count[name] + 1
+							end
 						end
 					end
 				end
@@ -319,11 +338,24 @@ local function ore_census(list)
 				end
 				log(("ore_count id=%s band=T%d host=%d ores=%d share=%.2f%% %s"):format(row.id,
 					tier, band.host, total, 100 * total / band.host, table.concat(parts, " ")))
+				local expect, expected = {}, 0
+				for _, resource in ipairs(rows) do
+					local denominator = resource.denominators[tier]
+					if denominator then
+						local host = resource.lower_half_of == tier and band.host_lower or
+							band.host
+						expected = expected + host / denominator
+						expect[#expect + 1] = ("%s=%.1f"):format(resource.key, host / denominator)
+					end
+				end
+				log(("ore_expect id=%s band=T%d host_lower=%d expected=%.1f %s"):format(row.id,
+					tier, band.host_lower, expected, table.concat(expect, " ")))
 			end
 		end
-		log(("cave_plants id=%s cave_cap=%d floors=%d ember_moss=%d floors=%d"):format(row.id,
-			plant_count.cave_cap, floor_count.cave_cap, plant_count.ember_moss,
-			floor_count.ember_moss))
+		log(("cave_plants id=%s cave_cap=%d floors_in_range=%d ember_moss=%d " ..
+			"floors_in_range=%d"):format(row.id, plant_count.cave_cap or 0,
+			floor_count.cave_cap or 0, plant_count.ember_moss or 0,
+			floor_count.ember_moss or 0))
 		if row.id:find("S1", 1, true) or row.id:find("S2", 1, true) or
 				row.id:sub(-2) == "_B" then
 			local ys, parts = {}, {}

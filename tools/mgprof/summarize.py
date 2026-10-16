@@ -10,6 +10,16 @@ Usage: summarize.py [--per-boot] [--median] [--pct|--hash] BOOT_DIR [BOOT_DIR...
   --first-start  the first start of a fresh world (lanes MEAS/MEAS2): wall and
             CPU seconds to "preparation complete" and to the end, and the
             preparation chunks by type with their callback totals
+  --compare BEFORE_DIR... --vs AFTER_DIR...  (lane MEAS2) the corpus chunks
+            before -> after: the main stage groups (stage boots), the callback
+            total, makeChunk and the request-to-done wall (all boots), means
+  --rates   (lane MEAS2) chunks per second of one emerge thread per chunk
+            type: 1000 / mean request-to-done wall over every probe chunk of
+            the boots, with the range of the per-boot rates
+  --census  (lane MEAS2) the probe's ore census and cave-plant count (the
+            first boot's lines; the others are checked to be identical): ore
+            and gem nodes per tier band against host / the density table's
+            denominators, cave plants per in-range cave floor
 
 Each BOOT_DIR is an OUT directory of tools/mgprof/run.sh (server.log,
 console.log). For every probe chunk (request ... done lines) it takes:
@@ -273,8 +283,218 @@ def first_start(path):
               f"({100 * busy / 1000 / step_s:.0f} % of that wall).")
 
 
+def chunk_kind(row):
+    """Lane MEAS2: the chunk type of one probe chunk (its GRUG_MGPROF line)."""
+    prof = row.get("prof", {})
+    y = int(row["minp"].split(",")[1])
+    result = prof.get("result", "?")
+    cold = int(prof.get("cc_misses", 0)) >= 3200  # half a column's tuples
+    if result == "air_skip":
+        return "air (writer skipped)"
+    if y >= 128:
+        return "above the surface (writer ran)"
+    if result == "deep_skip":
+        return "wholly underground (y <= -113): no Lua since Round 49"
+    temperature = "first chunk of a column (cold)" if cold else "warm"
+    if y >= -32:
+        return "surface (y >= -32), " + temperature
+    if y == -112:
+        return "fill floor (-112..-33), " + temperature
+    return "wholly underground (y <= -113), " + temperature
+
+
+KIND_ORDER = ["surface (y >= -32), first chunk of a column (cold)", "surface (y >= -32), warm",
+              "fill floor (-112..-33), first chunk of a column (cold)", "fill floor (-112..-33), warm",
+              "wholly underground (y <= -113), first chunk of a column (cold)",
+              "wholly underground (y <= -113), warm",
+              "wholly underground (y <= -113): no Lua since Round 49",
+              "above the surface (writer ran)", "air (writer skipped)"]
+
+
+def rates(boots):
+    per_kind = {}
+    for index, boot in enumerate(boots):
+        for row in boot:
+            if "wall_ms" not in row or "prof" not in row:
+                continue
+            entry = per_kind.setdefault(chunk_kind(row), {"walls": [], "boots": {}, "ids": [],
+                                                          "lua": [], "make": []})
+            entry["walls"].append(row["wall_ms"])
+            entry["boots"].setdefault(index, []).append(row["wall_ms"])
+            entry["lua"].append(ms(int(row["prof"]["total_us"])))
+            if "Mapgen::makeChunk" in row["engine"]:
+                entry["make"].append(row["engine"]["Mapgen::makeChunk"] /
+                                     max(row["engine"]["Mapgen::makeChunk n"], 1))
+            if row["id"] not in entry["ids"]:
+                entry["ids"].append(row["id"])
+    print("| chunk type | chunks (ids) | Lua callback ms, mean | makeChunk ms, mean "
+          "| request-to-done wall ms, mean | chunks/s (range of the boots) |")
+    print("|---|---|---|---|---|---|")
+    for kind in KIND_ORDER:
+        if kind not in per_kind:
+            continue
+        e = per_kind[kind]
+        boot_rates = [1000 / statistics.mean(w) for w in e["boots"].values()]
+        ids = ", ".join(e["ids"]) if len(e["ids"]) <= 4 else f"{len(e['ids'])} ids"
+        make = f"{statistics.mean(e['make']):.0f}" if e["make"] else "-"
+        print(f"| {kind} | {len(e['walls'])} ({ids}) | {statistics.mean(e['lua']):.0f} | {make} | "
+              f"{statistics.mean(e['walls']):.0f} | {1000 / statistics.mean(e['walls']):.1f} "
+              f"({min(boot_rates):.1f}-{max(boot_rates):.1f}) |")
+
+
+def compare(before, after):
+    def rows(boots, cid, stages_only):
+        return [r for b in boots for r in b if r["id"] == cid and "prof" in r and
+                (not stages_only or r["prof"].get("mode") == "stages")]
+
+    ids = [r["id"] for r in before[0] if any(r["id"] == a["id"] for a in after[0])]
+
+    def group_ms(boots, cid, keys):
+        vals = [ms(sum(int(r["prof"].get("s." + k, 0)) for k in keys))
+                for r in rows(boots, cid, True)]
+        return statistics.mean(vals) if vals else None
+
+    def cell(b, a):
+        def f(v):
+            return "-" if v is None else f"{v:.0f}"
+        return f"{f(b)} -> {f(a)}"
+
+    print("| ms, mean: before -> after | " + " | ".join(ids) + " |")
+    print("|---|" + "---|" * len(ids))
+    shown, other_b, other_a = [], [0.0] * len(ids), [0.0] * len(ids)
+    for name, keys in GROUPS:
+        if name.startswith("R5 adapter:"):
+            continue
+        pairs = [(group_ms(before, c, keys), group_ms(after, c, keys)) for c in ids]
+        if any(max(b or 0, a or 0) >= 2.0 for b, a in pairs):
+            print(f"| {name} | " + " | ".join(cell(b, a) for b, a in pairs) + " |")
+        else:
+            for i, (b, a) in enumerate(pairs):
+                other_b[i] += b or 0
+                other_a[i] += a or 0
+    print("| other stages (each < 2 ms everywhere) | " + " | ".join(
+        cell(b, a) for b, a in zip(other_b, other_a)) + " |")
+
+    def total(boots, cid, stages_only):
+        vals = [ms(int(r["prof"]["total_us"])) for r in rows(boots, cid, stages_only)]
+        return statistics.mean(vals) if vals else None
+
+    print("| **callback total (stage boots)** | " + " | ".join(
+        "**" + cell(total(before, c, True), total(after, c, True)) + "**" for c in ids) + " |")
+    print("| callback total (all boots, incl. totals mode) | " + " | ".join(
+        cell(total(before, c, False), total(after, c, False)) for c in ids) + " |")
+    print("| writer result after | " + " | ".join(
+        next((r["prof"].get("result", "?") for r in rows(after, c, False)), "-") for c in ids) + " |")
+
+    def engine(boots, cid, key):
+        vals = [r["engine"][key] for b in boots for r in b if r["id"] == cid and key in r["engine"]]
+        return statistics.mean(vals) if vals else None
+
+    def wall(boots, cid):
+        vals = [r["wall_ms"] for b in boots for r in b if r["id"] == cid and "wall_ms" in r]
+        return statistics.mean(vals) if vals else None
+
+    print("| engine `Mapgen::makeChunk` | " + " | ".join(
+        cell(engine(before, c, "Mapgen::makeChunk"), engine(after, c, "Mapgen::makeChunk"))
+        for c in ids) + " |")
+    print("| request-to-done wall | " + " | ".join(
+        cell(wall(before, c), wall(after, c)) for c in ids) + " |")
+
+
+CENSUS = re.compile(r"\[mgprof_probe\] (ore_count|ore_expect|cave_plants) id=(\S+) (.*)$")
+# Cave plants: one per this many in-range cave-floor nodes (world_zones.md:
+# fill_ratio one in twice the catalog density, habitat_registry.lua).
+PLANT_DENOMINATOR = {"cave_cap": 1536, "ember_moss": 2048}
+
+
+def census(paths):
+    boots = []
+    for path in paths:
+        lines = [m.groups() for m in map(CENSUS.search, (Path(path) / "server.log").read_text(
+            errors="replace").splitlines()) if m]
+        boots.append(lines)
+    same = all(b == boots[0] for b in boots[1:])
+    print(f"Census lines from {paths[0]}; identical in all {len(boots)} boots: {same}.")
+    print()
+    bands, plants, chunks = {}, {}, set()
+    for kind, cid, rest in boots[0]:
+        chunks.add(cid)
+        if kind == "cave_plants":
+            parts = rest.split()
+            for i in range(0, len(parts), 2):
+                plant = parts[i].split("=")
+                floors = int(parts[i + 1].split("=")[1])
+                e = plants.setdefault(plant[0], {"plants": 0, "floors": 0, "chunks": 0})
+                e["plants"] += int(plant[1])
+                e["floors"] += floors
+                e["chunks"] += 1 if floors > 0 else 0
+            continue
+        fields = dict(kv.split("=", 1) for kv in rest.split())
+        band = bands.setdefault(fields.pop("band"), {"host": 0, "ores": 0, "expected": 0.0,
+                                                      "obs": {}, "exp": {}, "chunks": 0})
+        if kind == "ore_count":
+            band["host"] += int(fields.pop("host"))
+            band["ores"] += int(fields.pop("ores"))
+            band["chunks"] += 1
+            fields.pop("share")
+            for key, value in fields.items():
+                band["obs"][key] = band["obs"].get(key, 0) + int(value)
+        else:
+            fields.pop("host_lower")
+            band["expected"] += float(fields.pop("expected"))
+            for key, value in fields.items():
+                band["exp"][key] = band["exp"].get(key, 0.0) + float(value)
+    names = sorted(bands)
+    print("| tier band | chunks | host rock nodes | ore + gem nodes | share | expected share "
+          "| observed / expected |")
+    print("|---|---|---|---|---|---|---|")
+    for name in names:
+        b = bands[name]
+        ratio = f"{b['ores'] / b['expected']:.2f}" if b["expected"] else "-"
+        print(f"| {name} | {b['chunks']} | {b['host']} | {b['ores']} | "
+              f"{100 * b['ores'] / b['host']:.2f} % | {100 * b['expected'] / b['host']:.2f} % | "
+              f"{ratio} |")
+    print()
+    keys = sorted({k for b in bands.values() for k in b["exp"]})
+    print("| resource: observed / expected (ratio) | " + " | ".join(names) + " |")
+    print("|---|" + "---|" * len(names))
+    for key in keys:
+        cells = []
+        for name in names:
+            b = bands[name]
+            if key not in b["exp"]:
+                cells.append("-" if key not in b["obs"] else f"{b['obs'][key]} / 0")
+                continue
+            o, e = b["obs"].get(key, 0), b["exp"][key]
+            cells.append(f"{o} / {e:.0f} ({o / e:.2f})" if e >= 0.5 else f"{o} / {e:.1f}")
+        print(f"| {key} | " + " | ".join(cells) + " |")
+    print()
+    print("| cave plant | chunks with in-range floors | in-range cave floors | plants "
+          "| floors per plant | expected floors per plant | plants expected |")
+    print("|---|---|---|---|---|---|---|")
+    for key in sorted(plants):
+        e, d = plants[key], PLANT_DENOMINATOR.get(key)
+        per = f"{e['floors'] / e['plants']:.0f}" if e["plants"] else "-"
+        expected = f"{e['floors'] / d:.1f}" if d else "-"
+        print(f"| {key} | {e['chunks']} | {e['floors']} | {e['plants']} | {per} | {d or '-'} "
+              f"| {expected} |")
+    print()
+    print(f"{len(chunks)} chunks counted.")
+
+
 def main():
     args = sys.argv[1:]
+    if "--compare" in args:
+        rest = [a for a in args if a != "--compare"]
+        cut = rest.index("--vs")
+        compare([parse_boot(a) for a in rest[:cut]], [parse_boot(a) for a in rest[cut + 1:]])
+        return
+    if "--rates" in args:
+        rates([parse_boot(a) for a in args if not a.startswith("--")])
+        return
+    if "--census" in args:
+        census([a for a in args if not a.startswith("--")])
+        return
     if "--first-start" in args:
         for a in args:
             if not a.startswith("--"):

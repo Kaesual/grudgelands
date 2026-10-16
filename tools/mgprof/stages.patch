@@ -1,7 +1,8 @@
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
+index 573274f..967bdca 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua
-@@ -1221,6 +1221,10 @@
+@@ -1221,6 +1221,10 @@ local function adapter_factory(allocator_factory)
  				end
  			end
  			metric_add(K.M_HEIGHTMAP_ENTRIES, 6400)
@@ -12,7 +13,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapg
  
  			local returned_data = vm_call1(vm_get_data, K.M_VM_GET_DATA, vm,
  				data_buffer)
-@@ -1232,6 +1236,7 @@
+@@ -1232,6 +1236,7 @@ local function adapter_factory(allocator_factory)
  			if not rawequal(returned_param2, param2_buffer) then
  				fail("fail_vm_contract", "get_param2_data did not reuse buffer")
  			end
@@ -20,7 +21,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapg
  			-- No per-voxel scalar check here: this adapter only ever runs on the
  			-- composed R6 transaction's shadow VM (`r6_settlement.lua`), whose
  			-- buffers are copies of the engine's `get_data`/`get_param2_data`
-@@ -1380,6 +1385,9 @@
+@@ -1396,6 +1401,9 @@ local function adapter_factory(allocator_factory)
  				light_dirty_columns = light_dirty_columns + dirty_light[column]
  				liquid_dirty_columns = liquid_dirty_columns + dirty_liquid[column]
  			end
@@ -30,7 +31,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapg
  
  			metric_add(K.M_CLASSIFIED_COLUMNS, planned_columns)
  			metric_add(K.M_PLANNED_COLUMNS, planned_columns)
-@@ -1402,6 +1410,7 @@
+@@ -1418,6 +1426,7 @@ local function adapter_factory(allocator_factory)
  			if liquid_dirty_columns > 0 then
  				vm_call0(vm_update_liquids, K.M_VM_UPDATE_LIQUIDS, vm)
  			end
@@ -38,8 +39,10 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/map_adapter.lua b/mods/MAPGEN/grug_mapg
  			heightmap = nil
  
  			local has_content = content_dirty_columns > 0
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua b/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua
---- a/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua b/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua
+new file mode 100644
+index 0000000..0a8709e
+--- /dev/null
 +++ b/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua
 @@ -0,0 +1,323 @@
 +-- MGPROF (lane MGPROF, throwaway): a per-stage timer for the R7 generated
@@ -365,10 +368,11 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/mgprof.lua b/mods/MAPGEN/grug_mapgen/wp
 +end
 +
 +return P
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6.lua b/mods/MAPGEN/grug_mapgen/wp40/r6.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/r6.lua b/mods/MAPGEN/grug_mapgen/wp40/r6.lua
+index 54d27d7..65f3d1d 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/r6.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r6.lua
-@@ -257,6 +257,8 @@
+@@ -257,6 +257,8 @@ return function(dependencies)
  			if successor_tail then
  				successor_tail:plan_slice(minp, maxp, plan, generation)
  			end
@@ -377,10 +381,11 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6.lua b/mods/MAPGEN/grug_mapgen/wp40/r
  			return plan, generation
  		end
  		function session.metrics()
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
+index 7001f37..9a5bee8 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua
-@@ -648,6 +648,8 @@
+@@ -656,6 +656,8 @@ local function planner_factory()
  			local key = cell_x * 65536 + cell_z
  			local rows = cell_cache[key]
  			if rows then return rows end
@@ -389,7 +394,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapge
  			local dc = build_cell(cell_x, cell_z, false)
  			rows = {count = dc}
  			local base = 0
-@@ -677,8 +679,11 @@
+@@ -684,8 +686,11 @@ local function planner_factory()
  
  		local function plan_slice_core(min_x, min_y, min_z, max_x, max_y, max_z)
  			plan.valid = false
@@ -401,7 +406,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapge
  			plan.generation = plan.generation + 1
  			plan.min_x, plan.min_y, plan.min_z = min_x, min_y, min_z
  			plan.max_x, plan.max_y, plan.max_z = max_x, max_y, max_z
-@@ -712,6 +717,7 @@
+@@ -719,6 +724,7 @@ local function planner_factory()
  					column_values[base + 12] = surface and surface.dust_ref or 0
  				end
  			end
@@ -409,7 +414,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapge
  			-- Only the slice's own cells: a cell's roots are its own 16 x 16
  			-- columns and the writer places only roots inside its owner (Round 37,
  			-- audit MGT-02: the former 2-cell halo around the slice built
-@@ -744,6 +750,7 @@
+@@ -751,6 +757,7 @@ local function planner_factory()
  					candidate_cell_values[cell_base + 4] = candidate_count + 1
  				end
  			end
@@ -417,10 +422,11 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_planner.lua b/mods/MAPGEN/grug_mapge
  			plan.column_count, plan.candidate_cell_count, plan.candidate_count =
  				column_count, cell_count, candidate_count
  			metrics.plan_buffer_reuse_calls = metrics.plan_buffer_reuse_calls + 1
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
+index db62758..fa45f7b 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua
-@@ -2186,6 +2186,12 @@
+@@ -2227,6 +2227,12 @@ local function settlement_factory()
  		end
  
  		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
@@ -433,7 +439,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if call_mode ~= "fixture" and call_mode ~= "production" and
  					call_mode ~= "replay_fixture" then
  				fail("fail_status", "R6 is disabled")
-@@ -2263,6 +2269,7 @@
+@@ -2304,6 +2310,7 @@ local function settlement_factory()
  				return (z - eminz) * z_stride + (y - eminy) * y_stride +
  					(x - eminx) + 1
  			end
@@ -441,7 +447,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			local ok_data, returned_data = pcall(vm.get_data, vm, original_data)
  			if not ok_data or not rawequal(returned_data, original_data) then
  				fail("fail_vm_contract", "get_data did not reuse the retained buffer")
-@@ -2271,6 +2278,7 @@
+@@ -2312,6 +2319,7 @@ local function settlement_factory()
  			if not ok_p2 or not rawequal(returned_p2, original_param2) then
  				fail("fail_vm_contract", "get_param2_data did not reuse the retained buffer")
  			end
@@ -449,7 +455,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- No per-voxel scalar check: the engine fills every index of the
  			-- emerged volume with an integer content ID (u16) and param2 (u8)
  			-- (`l_vmanip.cpp` get_data / get_param2_data), and the halo check
-@@ -2282,22 +2290,31 @@
+@@ -2323,22 +2331,31 @@ local function settlement_factory()
  					intent_interface[index], intent_aux[index] = 0, 0, 0, 0, 0
  			end
  
@@ -481,7 +487,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			end
  			local function discarded_light_call()
  				fail("fail_vm_contract", "composed R5 attempted an inner light transaction")
-@@ -2313,6 +2330,8 @@
+@@ -2354,6 +2371,8 @@ local function settlement_factory()
  			if type(r5_result) ~= "string" then
  				fail("fail_settlement", "nested R5 result differs")
  			end
@@ -490,7 +496,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  
  			local ledger = not transaction_state.runtime_mode and
  				{rejections = {}, resources = {}, decorations = {},
-@@ -2441,6 +2460,7 @@
+@@ -2482,6 +2501,7 @@ local function settlement_factory()
  				end
  			end
  
@@ -498,7 +504,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- P7: exact R5 P5 predecessor refinement.
  			-- These horizontal decisions are invariant for the complete column and
  			-- the planner has already frozen water/race values in its retained plan.
-@@ -2537,6 +2557,7 @@
+@@ -2578,6 +2598,7 @@ local function settlement_factory()
  				end
  			end
  
@@ -506,7 +512,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- R9 surface skin. The opening decision above used immutable native data
  			-- before P7. Fill only native air that the R5 resolver actually preserved;
  			-- exact foundations, water, paths and clears therefore remain untouched.
-@@ -2582,6 +2603,7 @@
+@@ -2623,6 +2644,7 @@ local function settlement_factory()
  				end
  			end
  
@@ -514,7 +520,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if contract.schema == "grug_wp40_r7_production_r6_content_v1" then
  			-- R8 shallow strata.  The shared writer seam accepts only immutable
  			-- native stone; native gravel ore is therefore never CID-ambiguous.
-@@ -2605,6 +2627,7 @@
+@@ -2646,6 +2668,7 @@ local function settlement_factory()
  					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
  				end})
  
@@ -522,7 +528,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- Round 24 ruling 12 and B2: layers in the fill below the band depth,
  			-- layers through steep faces, rock nests near the surface.
  			helpers.r24_apply_fill_layers({min_x = min_x, min_y = min_y,
-@@ -2620,6 +2643,7 @@
+@@ -2661,6 +2684,7 @@ local function settlement_factory()
  					write_intent(x, y, z, ref, 0, 2, 0, 0, 1, false)
  				end})
  
@@ -530,7 +536,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- R8 connected mouths.  The immutable-input helper reconstructs the
  			-- complete lumen and proves a continuing, non-sky native component
  			-- before this transaction changes a single voxel.
-@@ -2647,6 +2671,7 @@
+@@ -2688,6 +2712,7 @@ local function settlement_factory()
  					end
  				end
  			end
@@ -538,7 +544,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			local function inside_owner(x, y, z)
  				return x >= min_x and x <= max_x and y >= min_y and y <= max_y and
  					z >= min_z and z <= max_z and x >= -3740 and x <= 3740 and
-@@ -2666,6 +2691,9 @@
+@@ -2707,6 +2732,9 @@ local function settlement_factory()
  			-- integer hash per voxel decides (r49_fill_ores_new). No exclusion
  			-- under towns or deep water (mapgen plan ruling 5 and §4.1); no
  			-- whole-chunk scan, no per-cell budget, no SHA.
@@ -547,8 +553,8 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
 +			local mgp_hosts, mgp_placed = 0, 0
  			local r5_plan = plan.r5_plan
  			local fill_placed = ledger and {} or nil
- 			for z = min_z, max_z do
-@@ -2678,10 +2706,12 @@
+ 			fill_ore_chunk(min_x, min_y, min_z)
+@@ -2720,10 +2748,12 @@ local function settlement_factory()
  						if opcode == 27 or opcode == 21 or opcode == 15 then
  							for y = r5_plan.run_values[base + 1], r5_plan.run_values[base + 2] do
  								local index = index_at(x, y, z)
@@ -564,9 +570,9 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  									local resource = resources[resource_index]
  									write_intent(x, y, z, resource.content_ref, 0, 24,
  										stable_state.resource[resource_index], 0, 4, resource_index + 1)
-@@ -2695,6 +2725,11 @@
- 				end
+@@ -2738,6 +2768,11 @@ local function settlement_factory()
  			end
+ 			fill_ore_chunk(nil)
  			if ledger then ledger.resources = fill_placed end
 +			mark("p8_resources")
 +			if mgp then
@@ -576,7 +582,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  
  			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
  			-- `tree_roots`: the roots of the generated trees accepted in this owner
-@@ -3017,6 +3052,7 @@
+@@ -3054,6 +3089,7 @@ local function settlement_factory()
  			-- closure surface over these private buffers, runs after the complete R6
  			-- P9 loop and before common run derivation/replay/commit, and cannot call
  			-- a VoxelManip setter. A missing tail preserves the accepted R6 path.
@@ -584,7 +590,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if transaction_state.successor_tail then
  				local successor_context = {
  					schema = "grug_wp40_r7_successor_context_v1",
-@@ -3079,6 +3115,7 @@
+@@ -3116,6 +3152,7 @@ local function settlement_factory()
  				end
  				function successor_context.write_p9g(x, y, z, cid, param2,
  						local_ref, feature_ref)
@@ -592,7 +598,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("P9G write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3107,6 +3144,7 @@
+@@ -3144,6 +3181,7 @@ local function settlement_factory()
  				end
  				function successor_context.write_anchor(x, y, z, cid, param2,
  						local_ref, feature_ref)
@@ -600,7 +606,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("anchor write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3141,6 +3179,7 @@
+@@ -3178,6 +3216,7 @@ local function settlement_factory()
  					return planner_source.road_column_at(x, z)
  				end
  				function successor_context.write_road(x, y, z, cid, param2)
@@ -608,7 +614,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("road write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3160,6 +3199,7 @@
+@@ -3197,6 +3236,7 @@ local function settlement_factory()
  				end
  				function successor_context.write_hearthpine(x, y, z, cid, param2,
  						local_ref, feature_ref)
@@ -616,7 +622,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  					if not inside_owner(x, y, z) then
  						fail("fail_settlement", ("Hearthpine write escaped central owner " ..
  							"at (%s,%s,%s)"):format(tostring(x), tostring(y), tostring(z)))
-@@ -3191,6 +3231,7 @@
+@@ -3228,6 +3268,7 @@ local function settlement_factory()
  					intent_aux[index] = (successor_ref - 1) * 256 + param2
  					occupancy[index] = -2
  				end
@@ -624,7 +630,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  				local successor_ledger = transaction_state.successor_tail:settle(successor_context)
  				if type(successor_ledger) ~= "table" or
  						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" then
-@@ -3208,6 +3249,7 @@
+@@ -3245,6 +3286,7 @@ local function settlement_factory()
  				end
  			end
  
@@ -632,7 +638,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			-- Canonical runs and their checksums are an evidence product. The live
  			-- writer has already materialized the same intent bytes and commits them
  			-- directly; no runtime consumer reads the encoded proof.
-@@ -3354,6 +3396,7 @@
+@@ -3391,6 +3433,7 @@ local function settlement_factory()
  				metrics_state.replay_count = metrics_state.replay_count + 1
  			end
  
@@ -640,7 +646,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			local content_changed, param2_changed, light_changed, liquid_changed =
  				false, false, false, false
  			last_sun_runs = 0
-@@ -3429,6 +3472,12 @@
+@@ -3466,6 +3509,12 @@ local function settlement_factory()
  				light_columns
  			metrics_state.liquid_dirty_columns = metrics_state.liquid_dirty_columns +
  				liquid_columns
@@ -653,7 +659,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if not content_changed and not param2_changed then return "noop_equal_content" end
  
  			-- One light read for the relight (halo.relight) before any setter.
-@@ -3440,6 +3489,7 @@
+@@ -3477,6 +3526,7 @@ local function settlement_factory()
  				light_loaded = true
  			end
  
@@ -661,7 +667,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			transaction_state.written_vm = vm
  			if content_changed then
  				local ok = pcall(vm.set_data, vm, final_data)
-@@ -3449,6 +3499,7 @@
+@@ -3486,6 +3536,7 @@ local function settlement_factory()
  				local ok = pcall(vm.set_param2_data, vm, final_param2)
  				if not ok then fail("fail_vm_contract", "set_param2_data failed") end
  			end
@@ -669,7 +675,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			if light_changed then
  				local a = halo.args
  				a.data, a.param2, a.light, a.ignore_cid = final_data, final_param2,
-@@ -3461,10 +3512,12 @@
+@@ -3498,10 +3549,12 @@ local function settlement_factory()
  				transaction_state.written_light = true
  				last_sun_runs = halo.relight(a)
  			end
@@ -682,7 +688,8 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua b/mods/MAPGEN/grug_ma
  			metrics_state.apply_calls = metrics_state.apply_calls + 1
  			local c, p, l, q = content_changed, param2_changed, light_changed,
  				liquid_changed
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
+index d2f2d4c..bc6564c 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua
 @@ -2,6 +2,10 @@
@@ -696,7 +703,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen
  -- LuaJIT side-exit tuning for this environment (see ../jit_tuning.lua).
  dofile(core.get_modpath("grug_mapgen") .. "/jit_tuning.lua")()
  local function fail(message)
-@@ -97,10 +101,23 @@
+@@ -97,10 +101,23 @@ local function refine(vmanip, minp, maxp)
  	maxp = plain_engine_position(maxp, "generated maxp")
  	-- Rock below or native air above everything the writer can place: the
  	-- transaction would change nothing (air_chunks.lua), so it is not run.
@@ -722,7 +729,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen
  	if type(result) ~= "string" then fail("writer result differs") end
  end
  
-@@ -113,5 +130,7 @@
+@@ -113,5 +130,7 @@ core.register_on_generated(function(vmanip, minp, maxp, blockseed)
  	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
  	-- the external R8 cave checker can prove the component the real writer saw.
  	if native_baseline then return end
@@ -730,10 +737,11 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua b/mods/MAPGEN/grug_mapgen
  	refine_or_degrade(refine, vmanip, minp, maxp)
 +	MGP.finish(minp, maxp)
  end)
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
+index 6013a9e..71c0863 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
-@@ -475,6 +475,12 @@
+@@ -484,6 +484,12 @@ return function(catalog, p9g_content, raw_sha256, habitat)
  				end
  				return ledger
  			end
@@ -746,7 +754,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp
  			local candidate_count = 0
  			local first_cell_x = math.floor(context.min_x / 16)
  			local last_cell_x = math.floor(context.max_x / 16)
-@@ -485,6 +491,7 @@
+@@ -531,6 +537,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
  				for cell_z = first_cell_z, last_cell_z do
  					for cell_x = first_cell_x, last_cell_x do
  						local eligible, routed_eligible = 0, 0
@@ -754,7 +762,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp
  						for z = cell_z * 16, cell_z * 16 + 15 do
  							for x = cell_x * 16, cell_x * 16 + 15 do
  								if x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 then
-@@ -509,6 +516,9 @@
+@@ -554,6 +561,9 @@ return function(catalog, p9g_content, raw_sha256, habitat)
  								end
  							end
  						end
@@ -764,7 +772,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp
  						if eligible > metrics.peak_eligible_per_cell then
  							metrics.peak_eligible_per_cell = eligible
  						end
-@@ -520,6 +530,8 @@
+@@ -564,6 +574,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
  						local budget = hash.budget(eligible, row.fill_numerator,
  							density, 1, 1, remainder)
  						sort_prefix(rank_scratch, eligible)
@@ -773,9 +781,9 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp
  						local group
  						if emit_ledger then
  							group = {source_id = row.id, cell_x = cell_x,
-@@ -621,6 +633,13 @@
- 					end
- 				end
+@@ -681,6 +693,13 @@ return function(catalog, p9g_content, raw_sha256, habitat)
+ 				column_cache_keys[column_cache_next] = cache_key
+ 				column_cache_next = column_cache_next % COLUMN_CACHE_LIMIT + 1
  			end
 +			if mgp then
 +				mgp.add("p9g_scan_and_rank_digests", mgp_scan)
@@ -787,10 +795,11 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua b/mods/MAPGEN/grug_mapgen/wp
  			if candidate_count > metrics.peak_candidates then
  				metrics.peak_candidates = candidate_count
  			end
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua b/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+index 6f18aea..8de5fa6 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
-@@ -102,8 +102,13 @@
+@@ -102,8 +102,13 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
  		end
  		function tail.settle(self, context)
  			if not rawequal(self, tail) then fail("settle receiver differs") end
@@ -804,7 +813,7 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua b/mods/MAPGEN/grug_map
  			local p9g_context = {}
  			for _, key in ipairs({"schema", "plan", "generation", "call_mode",
  					"min_x", "min_y", "min_z", "max_x", "max_y", "max_z",
-@@ -113,14 +118,19 @@
+@@ -113,14 +118,19 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
  				p9g_context[key] = context[key]
  			end
  			local p9g_ledger = p9g:settle(p9g_context)
@@ -824,10 +833,11 @@ diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua b/mods/MAPGEN/grug_map
  			return ledger
  		end
  		function tail.metrics(self)
-diff -ruN a/mods/MAPGEN/grug_mapgen/wp40/zones.lua b/mods/MAPGEN/grug_mapgen/wp40/zones.lua
+diff --git a/mods/MAPGEN/grug_mapgen/wp40/zones.lua b/mods/MAPGEN/grug_mapgen/wp40/zones.lua
+index e915e87..5718407 100644
 --- a/mods/MAPGEN/grug_mapgen/wp40/zones.lua
 +++ b/mods/MAPGEN/grug_mapgen/wp40/zones.lua
-@@ -1318,6 +1318,15 @@
+@@ -1345,6 +1345,15 @@ local function zones_factory(dependencies)
  			local column_cache_next_slot = 1
  			local column_cache_hits, column_cache_misses,
  				column_cache_evictions = 0, 0, 0

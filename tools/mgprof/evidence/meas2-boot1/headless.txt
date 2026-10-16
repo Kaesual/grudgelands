@@ -1,0 +1,11 @@
+staged patch: stages.patch
+staged probe: grug_probe_mgprof
+headless boot: PASS (port 30294, 330 s)
+log: /tmp/grudgelands-headless.qYHyHg/server.log
+seed = 12345
+104:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:30294.
+kept: /tmp/grudgelands-headless.qYHyHg
+wall_s=147
+launch_epoch=1792108600.373
+log_end_epoch=1792108745.373
+root: /tmp/grudgelands-headless.qYHyHg
