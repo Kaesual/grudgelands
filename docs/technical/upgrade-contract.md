@@ -239,8 +239,9 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   fuel included; a record that does not decode is skipped, as the game's
   load drops it), and in each claim's area (x ± 50, z ± 50, from y = −100
   upward) the map blocks that exist, nothing else. Every node whose metadata
-  inventory holds an item is packed, whoever placed it; a node whose lists
-  are all empty is not. A personal workspace record (node meta
+  has an inventory with at least one list is packed, whoever placed it,
+  an empty one too (Round 50 ruling 13: the game's first start turns it
+  into its node's own item). A personal workspace record (node meta
   `grug_jobs:workspace:<name>`) that holds items is packed as a chest
   holding its stacks.
 - **What it writes,** only `grug_housing` and `grug_core` mod storage rows,
