@@ -137,7 +137,7 @@ def main():
     shutil.copytree(WORLD, reference)
     rc, events = in_process(reference)
     want = storage_rows(reference)
-    check("the SQLite reference pass", rc == 0 and events[2]["counts"]["containers"] == 10,
+    check("the SQLite reference pass", rc == 0 and events[2]["counts"]["containers"] == 11,
           json.dumps(events[2].get("counts")))
 
     all_pg = make_world("all_pg", "grug_it_all", True)
@@ -161,7 +161,7 @@ def main():
           and events[-1]["backends"]["mod_storage"] == "sqlite3",
           "exit %d, %d rows vs %d" % (rc, len(got), len(want)))
     recovered = [r for r in want if r[1].startswith("recovered:")]
-    check("the entries compared", len(recovered) == 12, "%d entries" % len(recovered))
+    check("the entries compared", len(recovered) == 13, "%d entries" % len(recovered))
 
     rc, events = shipped(shipped_world, "--check", "--map-reset")
     done = events[-1] if events else {}
@@ -172,7 +172,7 @@ def main():
     rc, events = shipped(shipped_world, "--map-reset")
     packed = next((e for e in events if e.get("event") == "pack_done"), {})
     check("shipped --map-reset: packed, exit 0, done with map_reset",
-          rc == 0 and packed.get("counts", {}).get("containers") == 10
+          rc == 0 and packed.get("counts", {}).get("containers") == 11
           and packed["counts"]["blocks_read"] == 763 and events[-1].get("map_reset") is True
           and events[-1].get("applied") == [],
           "exit %d %s" % (rc, json.dumps(packed.get("counts"))))
