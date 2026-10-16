@@ -295,7 +295,6 @@ def read_pass(backends, map_reader, out):
         out.say("%d claim record(s) do not decode and are skipped, as the game does" % bad)
     out.event("pack_start", "pass %d: %d claim(s)" % (seq, len(claims)),
               seq=seq, claims=len(claims))
-    mapblock.zstd()
     try:
         if claims and map_reader.any_block() is None:
             raise Refusal("map_empty", "the map holds no block but there are %d claim(s): "

@@ -91,12 +91,14 @@ class ClaimScan:
 
 
 def _number(text):
-    """Lua tonumber for the record's fields: a whole number, else None."""
+    """Lua tonumber for the record's decimal fields, or None."""
     try:
         value = float(text)
     except ValueError:
         return None
-    return int(value) if value.is_integer() else None
+    if value != value or value in (float("inf"), float("-inf")):
+        return None
+    return int(value) if value.is_integer() else value
 
 
 def read_claims(store):
