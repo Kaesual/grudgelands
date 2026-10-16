@@ -251,9 +251,10 @@ function grug_inventory.unload_quiver(player, count)
 end
 
 -- Arrows shoot from the quiver first, then from `main` and every bag, so
--- sorted or overflowed arrows in a bag still count (Round 44).
+-- sorted or overflowed arrows in a bag still count (Round 44), and from the
+-- inactive hotbar layout last (Round 50 ruling 3).
 local function usable_ammo_lists(player)
-	local lists = grug_inventory.carried_lists(player:get_inventory())
+	local lists = grug_inventory.consume_lists(player:get_inventory())
 	if grug_inventory.has_quiver(player) then
 		table.insert(lists, 1, QUIVER_LIST)
 	end
@@ -276,7 +277,8 @@ function grug_inventory.is_bow(stack)
 		core.get_item_group(stack:get_name(), "grug_bow") > 0
 end
 
--- One server-side transaction: quiver first, then main and the bags. No list
+-- One server-side transaction: quiver first, then main, the bags and the
+-- inactive layout (ammo_count's lists, in its order). No list
 -- is written until the combined preflight has proved that the complete shot
 -- can settle.
 function grug_inventory.consume_ammo(player, count)

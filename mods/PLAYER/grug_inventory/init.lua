@@ -5,6 +5,9 @@
 grug_inventory = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
+-- Hotbars A and B first: their guard must answer before equipment.lua's and
+-- bags.lua's allow callbacks (hotbars.lua).
+dofile(modpath .. "/hotbars.lua")
 dofile(modpath .. "/equipment.lua")
 dofile(modpath .. "/bags.lua")
 dofile(modpath .. "/inbox.lua")

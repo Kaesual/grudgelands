@@ -286,6 +286,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	-- The bag view's scroll value; a pure scrollbar event needs no re-show.
 	if grug_inventory.keep_scroll(ctx, fields) then return true end
 	if not accessible(ctx, player) then return true end
+	-- The view's hotbar switch (Round 50); the re-show below follows it.
+	grug_inventory.hotbar_switch_fields(player, fields)
 	refresh(ctx, true)
 	return true
 end)

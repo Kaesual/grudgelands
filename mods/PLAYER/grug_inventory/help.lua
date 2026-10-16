@@ -131,6 +131,7 @@ local SECTIONS = {
 		"• Hand slots by class: Warriors carry a weapon and a shield (only Warriors use shields), Mages and Priests a weapon and a spellbook in the Caster offhand. Scouts carry a bow in the Ranged slot for the bow skills and a sword or dagger in the Melee slot for Strike and every melee skill. Both hand items always count toward your stats.",
 		"• Scouts have a quiver slot for up to 500 arrows: drag or shift-click arrows onto it, and picked-up arrows go there first. Click it to take up to 100 arrows. Shots use the quiver first, then your inventory. Arrows stack to 100.",
 		"• The Talents & Skills tab keeps every unlocked skill: drag one onto your hotbar. Skills stay on the hotbar; drag one back to the list to remove it and take it again at any time.",
+		"• You have two hotbars, A and B: switch with the A and B buttons beside the hotbar (inventory, chests, stations, mail) or in the quickbar (E); new items never land on the hidden one, but crafting, quests, arrows and fuel use its items last.",
 		"",
 		heading("Bags, food and repair"),
 		"• The Inventory tab holds up to four bags of 4 to 16 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",

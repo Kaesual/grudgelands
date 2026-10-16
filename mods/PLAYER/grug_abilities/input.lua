@@ -835,15 +835,17 @@ return function(api)
 		ranges[name], states[name] = nil, nil
 	end)
 	-- A crash mid-hold saves a skill stack without pointing range; every join
-	-- starts with all of them pointing.
+	-- starts with all of them pointing, on both hotbar layouts.
 	core.register_on_joinplayer(function(player)
 		local inv = player:get_inventory()
-		for index, stack in ipairs(inv and inv:get_list("main") or {}) do
-			local meta = stack:get_meta()
-			if meta:get_string("range") ~= "" and
-					core.get_item_group(stack:get_name(), "grug_ability") > 0 then
-				meta:set_string("range", "")
-				inv:set_stack("main", index, stack)
+		for _, list in ipairs({"main", grug_inventory.HOTBAR_STORE}) do
+			for index, stack in ipairs(inv and inv:get_list(list) or {}) do
+				local meta = stack:get_meta()
+				if meta:get_string("range") ~= "" and
+						core.get_item_group(stack:get_name(), "grug_ability") > 0 then
+					meta:set_string("range", "")
+					inv:set_stack(list, index, stack)
+				end
 			end
 		end
 	end)

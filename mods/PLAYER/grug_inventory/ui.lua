@@ -98,7 +98,8 @@ end
 -- furnaces, shelves, stations and the Claim Stone, 0.49.1 ruling 6;
 -- station_formspec below) all draw main[9..] and then each equipped bag's
 -- content list in a scroll_container, and the hotbar (main[1..8]) below it,
--- outside the scroll area. The lists flow on as one
+-- outside the scroll area, with the A/B switch beside it (hotbar_switch
+-- below). The lists flow on as one
 -- 8-wide grid (the user, Round 48 playtest): a bag (4, 8, 12 or 16 slots)
 -- starts in the column after the previous list's last slot, so only the very
 -- last row may be partial (view_elements below). Both are boxed (LAYOUT
@@ -240,6 +241,35 @@ function grug_inventory.view_scroll_max(rows, visible)
 	return math.max(0, rows - visible) * ROW_STEPS
 end
 
+--
+-- The hotbar switch (Round 50 ruling 2): two small buttons, "A" and "B", the
+-- shown layout marked with the shared selection style (tint and border). It
+-- is the one element every form showing the hotbar draws: the views below
+-- (the inventory pages, the station forms, the mail's Write tab) right of
+-- the hotbar's slots, and the quickbar (E). Whoever receives the form's
+-- fields passes them to grug_inventory.hotbar_switch_fields (hotbars.lua)
+-- and re-shows the form when it switched.
+--
+grug_inventory.HOTBAR_FIELDS = {A = "grug_hotbar_a", B = "grug_hotbar_b"}
+-- In a view: between the last slot and the box's right edge (0.57).
+local SWITCH_GAP, SWITCH_W, SWITCH_H = 0.08, 0.45, 0.47
+
+-- The two buttons in real coordinates, `w` x `h` each: "A" at (x, y), "B"
+-- `dx`, `dy` further.
+function grug_inventory.hotbar_switch(player, x, y, w, h, dx, dy)
+	local shown = grug_inventory.active_hotbar(player)
+	local fs = {}
+	for index, layout in ipairs({"A", "B"}) do
+		local field = grug_inventory.HOTBAR_FIELDS[layout]
+		fs[#fs + 1] = grug_inventory.selected_button_style(field, layout == shown)
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.3f;%s;%s]tooltip[%s;%s]"):format(
+			x + (index - 1) * dx, y + (index - 1) * dy, w, h, field, layout, field,
+			layout == shown and "Hotbar " .. layout .. " is shown" or
+				"Switch to hotbar " .. layout)
+	end
+	return table.concat(fs)
+end
+
 -- The formspec part of one inventory view, in real coordinates (it switches
 -- them on itself, so it may follow legacy content). mode: "full", "short" or
 -- "station"; `top` (station only) is the y of its Inventory box.
@@ -308,6 +338,10 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	end
 	fs[#fs + 1] = ("list[current_player;main;%.3f,%.3f;8,1;]"):format(view_x,
 		hotbar_y)
+	-- The layout switch right of the slots, one button above the other, as
+	-- high as a slot together.
+	fs[#fs + 1] = grug_inventory.hotbar_switch(player, view_x + VIEW_W + SWITCH_GAP,
+		hotbar_y, SWITCH_W, SWITCH_H, 0, SLOT - SWITCH_H)
 	return table.concat(fs)
 end
 

@@ -7,8 +7,9 @@ local S = default.get_translator
 -- main[9..] and the bags.
 -- GRUG PATCH (0.49.1 VIEW): built per viewer, below the chest the player's
 -- whole combined bag (grug_inventory.station_formspec, real coordinates).
--- The form is never re-shown while open, so it keeps no scroll context.
-function default.chest.get_chest_formspec(pos, player)
+-- GRUG PATCH (Round 50 HOTBAR): `context` (optional) keeps the bag view's
+-- scroll position; only the view's hotbar switch re-shows the open form.
+function default.chest.get_chest_formspec(pos, player, context)
 	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
 	local station = grug_inventory.STATION
 	local box, bottom = grug_inventory.station_box(S("Chest"),
@@ -18,7 +19,7 @@ function default.chest.get_chest_formspec(pos, player)
 		"listring[nodemeta:" .. spos .. ";main]" ..
 		"listring[current_player;grug_inbox]" ..
 		"listring[current_player;main]",
-		bottom, nil)
+		bottom, context)
 end
 
 function default.chest.chest_lid_obstructed(pos)
@@ -72,6 +73,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			default.chest.chest_lid_close(pn)
 		end
 
+		return
+	end
+
+	-- GRUG PATCH (Round 50 HOTBAR): the bag view's scroll value of every
+	-- event, and the hotbar switch, which shows the chest form again.
+	local open = default.chest.open_chests[pn]
+	if open and not fields.quit then
+		grug_inventory.keep_scroll(open.context, fields)
+		if grug_inventory.hotbar_switch_fields(player, fields) then
+			core.show_formspec(pn, "default:chest",
+				default.chest.get_chest_formspec(open.pos, player, open.context))
+		end
 		return
 	end
 
@@ -157,10 +170,12 @@ function default.chest.register_chest(prefixed_name, d)
 						{ name = name .. "_open",
 						param2 = node.param2 })
 			end
+			-- GRUG PATCH (Round 50 HOTBAR): the session's view context.
+			local context = {}
 			minetest.after(0.2, minetest.show_formspec, cn,
-					"default:chest", default.chest.get_chest_formspec(pos, clicker))
+					"default:chest", default.chest.get_chest_formspec(pos, clicker, context))
 			default.chest.open_chests[cn] = { pos = pos,
-					sound = def.sound_close, swap = name }
+					sound = def.sound_close, swap = name, context = context }
 		end
 		def.on_blast = function() end
 		def.on_key_use = function(pos, player)
@@ -233,11 +248,13 @@ function default.chest.register_chest(prefixed_name, d)
 						name = name .. "_open",
 						param2 = node.param2 })
 			end
+			-- GRUG PATCH (Round 50 HOTBAR): the session's view context.
+			local context = {}
 			minetest.after(0.2, minetest.show_formspec,
 					cn,
-					"default:chest", default.chest.get_chest_formspec(pos, clicker))
+					"default:chest", default.chest.get_chest_formspec(pos, clicker, context))
 			default.chest.open_chests[cn] = { pos = pos,
-					sound = def.sound_close, swap = name }
+					sound = def.sound_close, swap = name, context = context }
 		end
 		def.on_blast = function(pos)
 			local drops = {}

@@ -511,6 +511,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	elseif fields.stone_tab then
 		session.tab = fields.stone_tab == "2" and 2 or 1
 		say(session, nil)
+	elseif grug_inventory.hotbar_switch_fields(player, fields) then
+		-- The view's hotbar switch (Round 50): the re-show below.
 	elseif session.tab == 2 and travel_target(fields) and travel_api() then
 		local ok, message = travel_api().travel_from_claim(player, travel_target(fields))
 		if ok then

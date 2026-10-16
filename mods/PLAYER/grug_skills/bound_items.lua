@@ -4,7 +4,11 @@ local function bound(stack)
 end
 
 -- Skills (ability representations) live on the hotbar only (Round 44, spec
--- ui-crafting-rework-plan.md ruling 8): main[1..8]. The retired mount items
+-- ui-crafting-rework-plan.md ruling 8): main[1..8], and on the inactive
+-- hotbar layout's hidden list, which only a switch fills (Round 50;
+-- grug_inventory/hotbars.lua refuses every inventory action on it). The
+-- one-copy check (`carried`) leaves that list out, so a skill may lie once
+-- on each layout. The retired mount items
 -- (grug_mounts/items.lua; nothing hands them out since Round 44) keep the
 -- older rule, `main` and the owned bag contents, until the 0.44.0 migration
 -- step removes them offline.
@@ -42,7 +46,8 @@ end
 
 grug_skills.is_entitled = entitled
 
--- Whether the player carries `itemname` in main, craft or an owned bag.
+-- Whether the player carries `itemname` in main, craft or an owned bag (the
+-- shown layout's side, not the inactive layout).
 local function carried(inv, itemname)
 	for _, listname in ipairs({"main", "craft"}) do
 		if inv:contains_item(listname, itemname) then return true end

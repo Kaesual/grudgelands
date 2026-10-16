@@ -4,8 +4,9 @@
 -- redistribution plan bags.lua runs. Loaded from bags.lua; draws nothing.
 --
 -- The data model stays `main` (hotbar 1..8, then 24 slots) plus one content
--- list per equipped bag. Items arrive in one order: `main[9..]`, the bags in
--- slot order, the hotbar last, so a hotbar slot freed for a skill stays free.
+-- list per equipped bag, and the inactive hotbar layout (below). Items
+-- arrive in one order: `main[9..]`, the bags in slot order, the hotbar last,
+-- so a hotbar slot freed for a skill stays free; never the inactive layout.
 -- Arrows go to a Scout's quiver first.
 
 local HOTBAR = 8
@@ -14,14 +15,41 @@ grug_inventory.POTION_BELT = "grug_potion_belt"
 grug_inventory.POTION_BELT_SIZE = 4
 local BELT = grug_inventory.POTION_BELT
 
+-- The two hotbar layouts (Round 50 rulings 1-3, hotbars.lua): the visible
+-- hotbar is always main[1..8]; the other layout's eight stacks wait in the
+-- player list HOTBAR_STORE, which no form draws. Player meta
+-- HOTBAR_LAYOUT_KEY names the layout on main[1..8], "A" or "B" (missing:
+-- "A", so every character starts on A with B empty).
+grug_inventory.HOTBAR_STORE = "grug_hotbar_store"
+grug_inventory.HOTBAR_LAYOUT_KEY = "grug_inventory:hotbar_layout"
+
+function grug_inventory.active_hotbar(player)
+	return player:get_meta():get_string(grug_inventory.HOTBAR_LAYOUT_KEY) == "B" and
+		"B" or "A"
+end
+
 -- The lists a player keeps items in: `main` and each equipped bag's content
 -- list, in bag slot order. Readers that count or take items walk these.
--- The quiver, the potion belt and the equipment slots are not among them.
+-- The quiver, the potion belt, the equipment slots and the inactive hotbar
+-- layout are not among them.
 function grug_inventory.carried_lists(inv)
 	local lists = {"main"}
 	for i = 1, grug_inventory.BAG_COUNT do
 		local list = grug_inventory.content_list(i)
 		if inv:get_size(list) > 0 then lists[#lists + 1] = list end
+	end
+	return lists
+end
+
+-- The lists a consumer counts and takes items from (Round 50 ruling 3):
+-- carried_lists, then the inactive hotbar layout last. Counting and taking
+-- walk the same lists, so a count never promises what the take cannot find.
+-- Nothing ever gives into the inactive layout (it is not in the give order
+-- below), and a vendor's sell list leaves it out (carried_lists).
+function grug_inventory.consume_lists(inv)
+	local lists = grug_inventory.carried_lists(inv)
+	if inv:get_size(grug_inventory.HOTBAR_STORE) > 0 then
+		lists[#lists + 1] = grug_inventory.HOTBAR_STORE
 	end
 	return lists
 end

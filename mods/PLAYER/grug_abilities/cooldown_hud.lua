@@ -194,11 +194,17 @@ end
 function H.state(name) return states[name] end
 function H.active_count() return #order end
 
+-- Read the hotbar again on the next pass: after a hotbar switch
+-- (grug_abilities), which a Lua write does not report as an action.
+function H.rescan(name)
+	local st = states[name]
+	if st then st.scan = true end
+end
+
 -- A player's inventory action may move a skill between slots, into or out of
 -- the hotbar: read the hotbar again on the next pass.
 core.register_on_player_inventory_action(function(player)
-	local st = states[player:get_player_name()]
-	if st then st.scan = true end
+	H.rescan(player:get_player_name())
 end)
 
 core.register_on_leaveplayer(function(player)
