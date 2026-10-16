@@ -328,14 +328,19 @@ local function measure()
 	local player = new_player(name, {16, 8, 16, 8})
 	local pos = {x = 900, y = 0, z = 0}
 	nodes[key(pos)] = "default:furnace"
-	registered_nodes["default:furnace"] = registered_nodes["default:furnace"] or {}
-	registered_nodes["default:furnace"]._grug_station = "furnace"
+	-- (The station mark install_node gives; an older tree is measured
+	-- without running its on_mods_loaded.)
+	for _, node in ipairs({"default:furnace", "default:furnace_active"}) do
+		registered_nodes[node]._grug_station = "furnace"
+	end
 	near(player, pos)
 	public[key(pos)] = true
 	local workspaces = grug_jobs.workspaces
 	workspaces.open(pos, player)
 	local ctx_inv
-	for _, d in pairs(detached) do ctx_inv = d end
+	for dname, d in pairs(detached) do
+		if dname:find("_" .. name .. "_", 1, true) then ctx_inv = d end
+	end
 	ctx_inv.inv:set_stack("fuel", 1, "default:coal_lump 5")
 	ctx_inv.inv:set_stack("src", 1, "test:ore 30")
 	ctx_inv.callbacks.on_put(ctx_inv.inv, "src", 1, ItemStack("test:ore 30"), player)
@@ -391,18 +396,18 @@ do
 		eq(a and a.start, row[2], ("A arrow %.1f of 10 s: frame start"):format(row[1]))
 		eq(a and a.duration, math.floor(10000 / A.fill + 0.5), "A arrow 10 s: ms per frame")
 	end
-	-- The buffer: as long as the duration, at least MIN_BUFFER.
+	-- The buffer: as long as the duration, at least two seconds (the
+	-- one-second tick plus a second of lag).
+	eq(FP.MIN_BUFFER, 2, "A the minimum buffer in seconds")
 	for _, total in ipairs({1, 2, 3, 15, 80}) do
 		local f = anim(FP.fire(0, 0, 1, 1, total, total, true))[F.name]
 		local a = anim(FP.arrow(0, 0, 1, 1, 0, total, true))[A.name]
 		local fire_buffer = (F.frames - F.fill) * f.duration
 		local arrow_buffer = (A.frames - A.fill) * a.duration
-		check(fire_buffer >= math.max(total, FP.MIN_BUFFER) * 1000 - F.fill,
+		check(fire_buffer >= math.max(total, 2) * 1000 - F.fill,
 			("A fire %d s: buffer %d ms"):format(total, fire_buffer))
-		check(arrow_buffer >= math.max(total, FP.MIN_BUFFER) * 1000 - A.fill,
+		check(arrow_buffer >= math.max(total, 2) * 1000 - A.fill,
 			("A arrow %d s: buffer %d ms"):format(total, arrow_buffer))
-		check(fire_buffer >= FP.MIN_BUFFER * 1000 - F.fill and
-			arrow_buffer >= FP.MIN_BUFFER * 1000 - A.fill, ("A %d s: the minimum buffer"):format(total))
 	end
 	-- Still pictures.
 	check(parse(FP.fire(0, 0, 1, 1, 0, 0, false)).fire_off, "A no fuel: the empty fire")
@@ -594,7 +599,7 @@ local function ws_case(label, case, inputs, seconds, expected, prepare, during)
 	if case.personal then
 		local d
 		for dname, entry in pairs(detached) do
-			if dname:find(name, 1, true) then d = entry end
+			if dname:find("_" .. name .. "_", 1, true) then d = entry end
 		end
 		inv = d.inv
 		put = function(list) d.callbacks.on_put(inv, list, 1, inv:get_stack(list, 1), player) end
