@@ -105,10 +105,17 @@ end
 -- Shared parts
 --
 
-local function status_line(session, y)
+-- `wrap` (characters) breaks a long line, for a status line that shares its
+-- row with buttons; a wrapped one starts higher, so it stays in its row.
+local function status_line(session, y, wrap)
 	if not session.status then return "" end
+	local text = session.status
+	if wrap then
+		text = grug_inventory.wrap_text(text, wrap)
+		if text:find("\n", 1, true) then y = y - 0.25 end
+	end
 	return ("label[0.4,%.2f;%s]"):format(y, esc(colored(
-		session.status_ok and COLOR.good or COLOR.bad, session.status)))
+		session.status_ok and COLOR.good or COLOR.bad, text)))
 end
 
 local function pager(prefix, x, y, page, pages)
@@ -414,7 +421,9 @@ local function write_tab(player, session, fs)
 		"Drag up to four stacks in or out. Soulbound items and skills do not fit.")),
 		esc(colored(COLOR.dim, "The letter arrives at once, also when the recipient is " ..
 		"offline. Only players of your faction.")))
-	fs[#fs + 1] = status_line(session, 8.4)
+	-- Left of Discard: the refusal of a long letter (fix 0.49.1 ruling 3)
+	-- takes two lines.
+	fs[#fs + 1] = status_line(session, 8.4, 44)
 	fs[#fs + 1] = ("button[8.6,8.0;2.2,0.8;write_discard;Discard]" ..
 		"style[%s;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;%s;Send]"):format(
 		send_button(session, "write_send"), send_button(session, "write_send"))

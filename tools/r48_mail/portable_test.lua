@@ -1136,6 +1136,16 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 		"D Send refuses a long letter in the status line: " .. tostring(session.status))
 	check(formspecs.Alice.text:find(core.formspec_escape(session.status), 1, true),
 		"D the status line shows the refusal")
+	-- Beside Discard the long refusal takes two lines and starts higher.
+	local wrap = grug_inventory.wrap_text
+	grug_inventory.wrap_text = function(text, width)
+		return #text > width and text:sub(1, width) .. "\n" .. text:sub(width + 1) or text
+	end
+	send_fields(alice, {mail_to = "Brakka", mail_subject = "Essay", mail_body = long,
+		[button(alice, "write_send")] = "Send"})
+	check(formspecs.Alice.text:find("label[0.4,8.15;Too long", 1, true),
+		"D the Write tab wraps a long status line above its row")
+	grug_inventory.wrap_text = wrap
 	check(session.draft.body == long and session.draft.to == "Brakka" and
 		session.draft.subject == "Essay" and formspecs.Alice.text:find(long, 1, true),
 		"D the draft stays as typed and is drawn again")
