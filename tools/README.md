@@ -1363,8 +1363,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   boot that changes nothing. `FIXTURE=<dir>` packages the 0.48.1 world for the platform.
   `reset_like_platform.sh <world dir> [SERVER_CONF]`: a local SQLite test
   world reset the platform's way (backup, the tool, the map rows emptied,
-  `grug_reset_world` raised in SERVER_CONF); it refuses the personal
-  Luanti folder.
+  `grug_reset_world` raised above the world's record in SERVER_CONF); it
+  refuses the personal Luanti folder, a non-SQLite world, an unwritable
+  config and a running server. `test_reset_like_platform.sh`: its checks
+  on copies of `r50_ptool/world` (the refusals, a world reset before, a
+  rerun, no config), no engine run.
 - **Round 50 lane PGAME** (`r50_pgame`): packed containers and the Claim
   Stone inventory (`portable_test.lua`: the tool's pass written as the
   plan's §3 describes before the load, cleaned by the real grug_core runner

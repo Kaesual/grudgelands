@@ -51,13 +51,37 @@ for key in backend player_backend auth_backend mod_storage_backend; do
 	value="$(backend "$key" sqlite3)"
 	[[ "$value" == sqlite3 ]] || refuse "world.mt $key = $value: this script handles SQLite worlds only"
 done
-if pgrep -af "luanti.*--world[= ]$world(/| |\$)" >/dev/null 2>&1; then
-	refuse "a Luanti server seems to run on $world; stop it first"
+# A running server on this world: its --world argument, absolute or
+# relative (compared by the folder's name), on any luanti command line.
+set +e
+procs="$(pgrep -af luanti)"
+pgrep_status=$?
+set -e
+[[ $pgrep_status -le 1 ]] || refuse "cannot tell whether a Luanti server runs (pgrep exit $pgrep_status)"
+name="$(basename -- "$world")"
+while IFS= read -r line; do
+	[[ -n "$line" ]] || continue
+	arg="$(sed -n 's/.*--world[= ]\([^ ]*\).*/\1/p' <<<"$line")"
+	if printf '%s\n' "$line" | grep -qF -- "$world" ||
+			[[ -n "$arg" && "$(basename -- "$arg")" == "$name" ]]; then
+		refuse "a Luanti server seems to run on $world ($line); stop it first"
+	fi
+done <<<"$procs"
+# The config must take the counter after the map is emptied.
+if [[ -n "$conf" ]]; then
+	if [[ -e "$conf" ]]; then
+		[[ -f "$conf" && -w "$conf" ]] || refuse "the config $conf is not a writable file"
+	else
+		[[ -d "$(dirname -- "$conf")" && -w "$(dirname -- "$conf")" ]] ||
+			refuse "cannot create the config $conf"
+	fi
 fi
 
 # 1. The backup.
-backup="$world.backup-$(date +%Y%m%d-%H%M%S)"
-cp -a -- "$world" "$backup"
+# A folder of its own (mktemp): two runs in the same second never share one.
+backup="$(mktemp -d -- "$world.backup-$(date +%Y%m%d-%H%M%S)-XXXX")"
+chmod --reference="$world" -- "$backup"
+cp -a -- "$world/." "$backup/"
 say "backup: $backup"
 
 # 2. The tool, from this checkout's root.
@@ -85,16 +109,23 @@ elif [[ $status -ne 0 ]]; then
 	say "  rm -rf '$world' && mv '$backup' '$world'"
 	exit 1
 fi
-python3 - "$out" <<'PY' || { say "no done line with \"map_reset\": true: the map is kept"; exit 1; }
+if ! python3 - "$out" <<'PY'
 import json, sys
 lines = [l for l in open(sys.argv[1]) if l.strip()]
-done = json.loads(lines[-1])
+done = json.loads(lines[-1]) if lines else {}
 sys.exit(0 if done.get("event") == "done" and done.get("map_reset") is True else 1)
 PY
+then
+	say "exit 0 but no done line with \"map_reset\": true: the map is kept; the tool may"
+	say "have written its entries, so restore the backup:"
+	say "  rm -rf '$world' && mv '$backup' '$world'"
+	exit 1
+fi
 
 # 3. The emptying (the platform: TRUNCATE public.blocks), 4. the counter.
 python3 - "$world" "$conf" <<'PY'
 import re, sqlite3, sys
+from pathlib import Path
 world, conf = sys.argv[1], sys.argv[2]
 db = sqlite3.connect(world + "/map.sqlite")
 with db:
@@ -103,11 +134,15 @@ db.execute("VACUUM")
 db.close()
 print("reset_like_platform: map emptied: %d map blocks removed (mod storage, players and "
       "auth kept)" % removed)
-store = sqlite3.connect("file:%s/mod_storage.sqlite?mode=ro" % world, uri=True)
-row = store.execute("SELECT value FROM entries WHERE modname = 'grug_core' "
-                    "AND key = 'reset_world'").fetchone()
+# The engine stores mod storage keys and values as BLOBs
+# (database-sqlite3.cpp): the key is bound as bytes, a TEXT literal never
+# equals a BLOB.
+store = sqlite3.connect(Path(world, "mod_storage.sqlite").as_uri() + "?mode=ro", uri=True)
+row = store.execute("SELECT value FROM entries WHERE modname = ? AND key = ?",
+                    ("grug_core", b"reset_world")).fetchone()
 store.close()
-record = int(row[0]) if row and bytes(row[0]).isdigit() else 0
+text = bytes(row[0]).decode() if row else ""
+record = int(text) if text.isdigit() else 0
 current, lines = 0, []
 if conf:
     try:
