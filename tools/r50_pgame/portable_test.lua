@@ -13,19 +13,24 @@
 --      dropping is refused and keeps the item;
 --   B. the marker handler at the load: unknown items removed, an unknown
 --      node and a shrunken list into additional packed chests (D6), an
---      overfull charcoal stack split, the descriptions and images, the
---      marker deleted, an older pass untouched; a rerun and a half-done
---      rerun change nothing;
---   C. the entries survive M.map_reset; the list sizes match the vendored
---      on_construct code;
+--      overfull charcoal stack split, the contents moved out of the items
+--      into their content keys (ruling 14; a 32-book chest measured), the
+--      descriptions and images, empty containers (an open chest and a lit
+--      furnace too) as their nodes' items stacked per player (ruling 13),
+--      the marker deleted, an older pass untouched; a rerun and half-done
+--      reruns change nothing;
+--   C. the entries and contents survive M.map_reset; the list sizes match
+--      the vendored on_construct code;
 --   D. the Claim Stone inventory: the Belongings tab of the active stone
 --      only (never the draft's), take-only, a take deletes its entry or
 --      keeps the rest, a stale slot, a closed form and a full inventory take
 --      nothing, the entries survive picking the stone up and losing it;
 --   E. placing every container kind with exact contents (item meta
---      included), the locked chest owned by the placer, the furnace unlit,
---      a protected and an invalid spot keep the item, a packed container
---      that no longer fits is refused and kept;
+--      included) and the stored contents deleted, the locked chest owned by
+--      the placer, the furnace unlit, another holder places too, missing
+--      contents place empty with a warning (ruling 15), a protected and an
+--      invalid spot keep the item and its contents, a packed container that
+--      no longer fits is refused and kept;
 --   F. the join notice and the Housing Steward's line.
 --
 --   luajit tools/r50_pgame/portable_test.lua [REPO]
@@ -240,7 +245,7 @@ local function snapshot(mod)
 end
 
 local allow_player, mods_loaded, joins, receive, afters = {}, {}, {}, {}, {}
-local shown, closed, chats, flashes, feeds = {}, {}, {}, {}, {}
+local shown, closed, chats, flashes, feeds, warnings = {}, {}, {}, {}, {}, {}
 local detached = {}
 local nodes, metas = {}, {}
 local protected = {}
@@ -289,7 +294,9 @@ core = {
 	get_game_info = function() return {path = "/game"} end,
 	get_worldpath = function() return "/world" end,
 	get_dir_list = function() return {} end,
-	log = function() end,
+	log = function(level, text)
+		if level == "warning" then warnings[#warnings + 1] = text end
+	end,
 	serialize = function(value) return "return " .. ser(value) end,
 	deserialize = function(text)
 		if type(text) ~= "string" then return nil end
@@ -529,7 +536,8 @@ node("default:furnace_active", {description = "Furnace", drop = "default:furnace
 stand_in("default:bookshelf", {description = "Bookshelf", tiles = {"default_wood.png",
 	"default_wood.png", "default_wood.png", "default_wood.png", "default_bookshelf.png",
 	"default_bookshelf.png"}})
-stand_in("vessels:shelf", {description = "Vessels Shelf", tiles = {"default_wood.png",
+-- Stack size 2 here, to show the empties stacked by stack size.
+stand_in("vessels:shelf", {description = "Vessels Shelf", stack_max = 2, tiles = {"default_wood.png",
 	"default_wood.png", "default_wood.png", "default_wood.png", "vessels_shelf.png",
 	"vessels_shelf.png"}})
 node("t:anvil", {description = "Anvil", on_rightclick = function(_, _, _, itemstack)
@@ -598,11 +606,30 @@ local SEED = {
 	["recovered:ann:2:8"] = "grug_smelting:charcoal 150",
 	["recovered:ann:2:9"] = "gone:coal 3",
 	["recovered:ann:2:10"] = packed_string("gone:empty_barrel", {stuff = {}}, 2),
+	-- Empty containers (ruling 13): a chest, an open chest, a lit furnace, a
+	-- chest whose only item is gone, three vessels shelves.
+	["recovered:ann:2:11"] = packed_string("default:chest", {main = {"", "", ""}}, 2),
+	["recovered:ann:2:12"] = packed_string("default:chest_open", {main = {""}}, 2),
+	["recovered:ann:2:13"] = packed_string("default:furnace_active", {src = {""}, fuel = {""},
+		dst = {"", "", "", ""}}, 2),
+	["recovered:ann:2:14"] = packed_string("default:chest", {main = {"gone:thing 2"}}, 2),
+	["recovered:ann:2:15"] = packed_string("vessels:shelf", {vessels = {}}, 2),
+	["recovered:ann:2:16"] = packed_string("vessels:shelf", {vessels = {""}}, 2),
+	["recovered:ann:2:17"] = packed_string("vessels:shelf", {vessels = {}}, 2),
 	["recovered:bob:2:1"] = packed_string("default:chest", {main = {"default:apple 9"}}, 2),
+	["recovered:bob:2:2"] = packed_string("default:bookshelf", {books = {}}, 2),
 	-- An older pass the player never collected: kept as it is.
 	["recovered:ann:1:1"] = packed_string("default:chest", {main = {"gone:relic 1"}}, 1),
 	["pack_seq"] = "2",
 }
+-- The largest packed item: a chest of 32 written books, 10000 characters
+-- each (default's limit).
+local long = ItemStack("default:book_written")
+long.meta.fields = {title = "Ledger", owner = "dave", description = "\"Ledger\" by dave",
+	text = ("All the ore of the northern claim. "):rep(300):sub(1, 10000)}
+local books = {}
+for i = 1, 32 do books[i] = long:to_string() end
+SEED["recovered:dave:2:1"] = packed_string("default:chest", {main = books}, 2)
 for key, value in pairs(SEED) do housing:set_string(key, value) end
 core_store:set_string("map_reset_pack:2", "1")
 local SEED_SNAPSHOT = snapshot("grug_housing")
@@ -660,6 +687,16 @@ local function allow(p, action, info)
 end
 local function stored(key) return housing:get_string(key) end
 local function stack_of(key) return ItemStack(stored(key)) end
+local function content_key(key) return "packed:" .. key:sub(#"recovered:" + 1) end
+-- The stored contents of an entry's item (its reference).
+local function contents_of(key)
+	return core.deserialize(stored(stack_of(key):get_meta():get_string("ref"))) or {}
+end
+local function index_of(name, key)
+	for index, entry in ipairs(R.entries(name)) do
+		if entry.key == key then return index end
+	end
+end
 
 ------------------------------------------------------------------------------
 -- B. The marker handler ran at the load.
@@ -669,7 +706,11 @@ do
 	-- The chest: the unknown item gone, the alias kept, the slots in place.
 	local chest = stack_of("recovered:ann:2:1")
 	eq(chest:get_name(), PACKED, "B the chest entry is a packed container")
-	local lists = P.lists(chest)
+	eq(chest:get_meta():get_string("lists"), "", "B ruling 14: no lists in the item")
+	eq(chest:get_meta():get_string("ref"), "packed:ann:2:1", "B ...but the content key")
+	eq(chest:get_meta():get_string("node"), "default:chest", "B ...the node")
+	eq(chest:get_meta():get_string("seq"), "2", "B ...and the pass")
+	local lists = contents_of("recovered:ann:2:1")
 	eq(lists.main[3], "", "B the unknown item left the chest")
 	eq(lists.main[5], BOOK_STRING, "B the written book kept with its meta")
 	eq(lists.main[6], SWORD_STRING, "B the quality sword kept with its meta")
@@ -687,7 +728,7 @@ do
 	-- The lit furnace comes back as the furnace (D7), the unknown slag gone.
 	local furnace = stack_of("recovered:ann:2:3")
 	eq(furnace:get_meta():get_string("node"), "default:furnace", "B a lit furnace packs as the furnace")
-	eq(P.lists(furnace).dst[4], "", "B the unknown item left the furnace")
+	eq(contents_of("recovered:ann:2:3").dst[4], "", "B the unknown item left the furnace")
 	has(furnace:get_meta():get_string("description"), "Packed Furnace, 3 stacks",
 		"B the furnace's description")
 	eq(furnace:get_meta():get_string("inventory_image"),
@@ -696,15 +737,15 @@ do
 	-- D6: the unknown node's 40 stacks fill a chest and an additional one.
 	local barrel1, barrel2 = stack_of("recovered:ann:2:6"), stack_of("recovered:ann:2:6.1")
 	eq(barrel1:get_meta():get_string("node"), "default:chest", "B D6 an unknown node becomes a chest")
-	eq(#P.stacks(P.lists(barrel1)), 32, "B D6 ...filled to its size")
-	eq(#P.stacks(P.lists(barrel2)), 8, "B D6 ...the rest in an additional chest")
-	eq(P.lists(barrel2).main[8], "default:torch 40", "B D6 ...in the packed order")
+	eq(#P.stacks(contents_of("recovered:ann:2:6")), 32, "B D6 ...filled to its size")
+	eq(#P.stacks(contents_of("recovered:ann:2:6.1")), 8, "B D6 ...the rest in an additional chest")
+	eq(contents_of("recovered:ann:2:6.1").main[8], "default:torch 40", "B D6 ...in the packed order")
 	eq(stored("recovered:ann:2:6.2"), "", "B D6 no third chest")
 	-- D6: a list bigger than the chest's, and a list the chest lacks.
 	local wide1, wide2 = stack_of("recovered:ann:2:7"), stack_of("recovered:ann:2:7.1")
-	eq(#P.stacks(P.lists(wide1)), 32, "B D6 a shrunken list keeps the node's size")
-	eq(P.lists(wide1).hidden, nil, "B D6 a list the node lacks goes")
-	eq(#P.stacks(P.lists(wide2)), 9, "B D6 the 8 stacks beyond and the lacking list's one")
+	eq(#P.stacks(contents_of("recovered:ann:2:7")), 32, "B D6 a shrunken list keeps the node's size")
+	eq(contents_of("recovered:ann:2:7").hidden, nil, "B D6 a list the node lacks goes")
+	eq(#P.stacks(contents_of("recovered:ann:2:7.1")), 9, "B D6 the 8 stacks beyond and the lacking list's one")
 	has(wide2:get_meta():get_string("description"), "Packed Chest, 9 stacks",
 		"B D6 the additional chest is described")
 	-- Charcoal above its stack size splits; unknown and empty entries go.
@@ -712,23 +753,50 @@ do
 	eq(stored("recovered:ann:2:8.1"), "grug_smelting:charcoal 51", "B charcoal: the rest")
 	eq(stored("recovered:ann:2:9"), "", "B an unknown plain item goes")
 	eq(stored("recovered:ann:2:10"), "", "B an empty unknown container goes")
+	-- Ruling 13: the empties as their nodes' items, stacked per player.
+	eq(stored("recovered:ann:2:0.1"), "default:chest 3",
+		"B the empty chest, the open chest and the emptied chest: 3 chests")
+	eq(stored("recovered:ann:2:0.2"), "default:furnace", "B the lit empty furnace: a furnace")
+	eq(stored("recovered:ann:2:0.3"), "vessels:shelf 2", "B three shelves: a full stack")
+	eq(stored("recovered:ann:2:0.4"), "vessels:shelf", "B ...and the rest")
+	eq(stored("recovered:ann:2:0.5"), "", "B nothing more")
+	for n = 11, 17 do
+		eq(stored("recovered:ann:2:" .. n), "", "B empty source " .. n .. " deleted")
+		eq(stored(content_key("recovered:ann:2:" .. n)), "", "B ...with no contents stored")
+	end
+	eq(stored("recovered:bob:2:0.1"), "default:bookshelf", "B the other player's empty, his own")
+	-- Ruling 14: the book chest's item is small, its contents stored.
+	local before, after = #SEED["recovered:dave:2:1"], #stored("recovered:dave:2:1")
+	print(("R50 PGAME the 32-book chest's item string: %d bytes as packed, %d bytes cleaned " ..
+		"(contents %d bytes)"):format(before, after, #stored("packed:dave:2:1")))
+	check(before > 320000 and after < 1000, "B the book chest's item string is small")
+	eq(#P.stacks(contents_of("recovered:dave:2:1")), 32, "B ...and its 32 books are stored")
 	eq(stored("recovered:ann:1:1"), SEED["recovered:ann:1:1"], "B an older pass is not touched")
 	eq(stored("pack_seq"), "2", "B the pass counter is the tool's")
 	-- The order of the stone's slots: passes, then entries, then their parts.
 	local order = {}
 	for _, entry in ipairs(R.entries("ann")) do order[#order + 1] = entry.key:match("ann:(.*)$") end
-	eq(table.concat(order, " "), "1:1 2:1 2:2 2:3 2:4 2:5 2:6 2:6.1 2:7 2:7.1 2:8 2:8.1",
-		"B the entries in slot order")
-	eq(R.count("bob"), 1, "B the other player's entry")
+	eq(table.concat(order, " "), "1:1 2:0.1 2:0.2 2:0.3 2:0.4 2:1 2:2 2:3 2:4 2:5 2:6 2:6.1 " ..
+		"2:7 2:7.1 2:8 2:8.1", "B the entries in slot order")
+	eq(R.count("bob"), 2, "B the other player's entries")
 
 	-- A rerun changes nothing; nor does a rerun over a half-done pass.
 	local done = snapshot("grug_housing")
 	R.clean_pass(2)
 	eq(snapshot("grug_housing"), done, "B a rerun writes the same")
-	housing:set_string("recovered:ann:2:6", SEED["recovered:ann:2:6"])
-	housing:set_string("recovered:ann:2:8", SEED["recovered:ann:2:8"])
+	-- Half-done: entries not yet rewritten (their contents and parts
+	-- written), empties not yet deleted (their stack written).
+	for _, n in ipairs({"1", "6", "7", "8", "11", "13", "16"}) do
+		housing:set_string("recovered:ann:2:" .. n, SEED["recovered:ann:2:" .. n])
+	end
 	R.clean_pass(2)
 	eq(snapshot("grug_housing"), done, "B a rerun over a half-done pass writes the same")
+	-- Half-done: the empties' later stacks written, the first not yet.
+	housing:set_string("recovered:ann:2:0.1", "")
+	housing:set_string("recovered:ann:2:0.4", "")
+	for n = 11, 17 do housing:set_string("recovered:ann:2:" .. n, SEED["recovered:ann:2:" .. n]) end
+	R.clean_pass(2)
+	eq(snapshot("grug_housing"), done, "B ...also over half-written stacks of empties")
 	-- A marker left by a failed start runs again through grug_core's runner.
 	core_store:set_string("map_reset_pack:2", "1")
 	grug_core.world_version.run_packs(core_store)
@@ -758,7 +826,9 @@ do
 	H.model.create("ann", {x = 500, y = 10, z = 500})
 	local before = {}
 	for key, value in pairs(storages.grug_housing) do
-		if key:match("^recovered:") or key == "pack_seq" then before[key] = value end
+		if key:match("^recovered:") or key:match("^packed:") or key == "pack_seq" then
+			before[key] = value
+		end
 	end
 	H.model.map_reset()
 	local same, count = true, 0
@@ -766,7 +836,8 @@ do
 		count = count + 1
 		if storages.grug_housing[key] ~= value then same = false end
 	end
-	check(same and count > 10, "C M.map_reset leaves every recovered entry and pack_seq")
+	check(same and count > 10 and before["packed:ann:2:1"],
+		"C M.map_reset leaves every recovered entry, the contents and pack_seq")
 	eq(H.model.claim_count(), 0, "C ...and clears the claims")
 	for name, sizes in pairs(P.CONTAINER_LISTS) do
 		eq(ser(sizes), ser(VENDORED[name]), "C " .. name .. ": the list sizes of its on_construct")
@@ -877,7 +948,7 @@ do
 	H.model.activate(claim, 5)
 	H.open_stone_interface(ann, claim)
 	fs = last_shown("ann").fs
-	has(fs, "tabheader[0,0;stone_tab;Claim Stone,Belongings (12);1;false;false]",
+	has(fs, "tabheader[0,0;stone_tab;Claim Stone,Belongings (16);1;false;false]",
 		"D the active stone's form has the Belongings tab with the count")
 	eq(engine_take(ann, 1, 1, "main", 9), 0, "D the main tab takes nothing")
 	submit(ann, {stone_tab = "2"})
@@ -903,7 +974,7 @@ do
 		"D ...on the Belongings tab")
 	eq(recovered_inv("ann").inv:get_size("recovered"), 16, "D the list rounded up to whole rows")
 	eq(slot("ann", 1), stored("recovered:ann:1:1"), "D slot 1: the older pass first")
-	eq(slot("ann", 12), "grug_smelting:charcoal 51", "D slot 12: the charcoal's rest")
+	eq(slot("ann", 16), "grug_smelting:charcoal 51", "D slot 16: the charcoal's rest")
 
 	-- Take-only: no put, no move.
 	local callbacks = recovered_inv("ann").callbacks
@@ -915,31 +986,41 @@ do
 	-- A packed chest into the hotbar: the entry goes, the slots close up.
 	local key2 = "recovered:ann:2:1"
 	local chest = stored(key2)
-	eq(engine_take(ann, 2, 1, "main", 1), 1, "D a packed chest taken onto the hotbar")
+	local idx = index_of("ann", key2)
+	eq(engine_take(ann, idx, 1, "main", 1), 1, "D a packed chest taken onto the hotbar")
 	eq(ann.inv:get_stack("main", 1):to_string(), chest, "D ...exactly the entry's item")
 	eq(stored(key2), "", "D ...and its entry is gone")
+	check(stored("packed:ann:2:1") ~= "", "D ...its contents wait for the placement")
 	run_afters()
-	eq(slot("ann", 2), stored("recovered:ann:2:2"), "D the slots close up after the take")
-	has(last_shown("ann").fs, "Belongings (11)", "D the count follows")
+	eq(slot("ann", idx), stored("recovered:ann:2:2"), "D the slots close up after the take")
+	has(last_shown("ann").fs, "Belongings (15)", "D the count follows")
+
+	-- Part of a stack: one of the three stacked chests, the entry keeps two.
+	eq(engine_take(ann, index_of("ann", "recovered:ann:2:0.1"), 1, "main", 4), 1,
+		"D one chest of the stack of three")
+	eq(stored("recovered:ann:2:0.1"), "default:chest 2", "D the entry keeps two")
+	eq(ann.inv:get_stack("main", 4):to_string(), "default:chest", "D ...one in the hotbar")
+	run_afters()
 
 	-- Part of the charcoal into a bag: the entry keeps the rest.
-	eq(engine_take(ann, 10, 30, "grug_bag1_content", 1), 30, "D 30 charcoal into the bag")
+	eq(engine_take(ann, index_of("ann", "recovered:ann:2:8"), 30, "grug_bag1_content", 1), 30,
+		"D 30 charcoal into the bag")
 	eq(stored("recovered:ann:2:8"), "grug_smelting:charcoal 69", "D the entry keeps 69")
 	eq(ann.inv:get_stack("grug_bag1_content", 1):to_string(), "grug_smelting:charcoal 30",
 		"D ...the bag holds 30")
 	run_afters()
 
 	-- Refused: into the mail, a stale slot, a full slot, a closed form.
-	eq(engine_take(ann, 2, 1, "grug_mail_out", 1), 0, "D a packed item never goes into the mail")
+	eq(engine_take(ann, idx, 1, "grug_mail_out", 1), 0, "D a packed item never goes into the mail")
 	local stale = stored("recovered:ann:2:2")
 	housing:set_string("recovered:ann:2:2", "default:apple 1")
-	eq(engine_take(ann, 2, 1, "main", 2), 0, "D a slot that no longer holds its entry takes nothing")
+	eq(engine_take(ann, idx, 1, "main", 2), 0, "D a slot that no longer holds its entry takes nothing")
 	housing:set_string("recovered:ann:2:2", stale)
 	ann.inv:set_stack("main", 2, ItemStack("default:torch 5"))
-	eq(engine_take(ann, 2, 1, "main", 2), 0, "D a full slot takes nothing")
+	eq(engine_take(ann, idx, 1, "main", 2), 0, "D a full slot takes nothing")
 	eq(stored("recovered:ann:2:2"), stale, "D ...and the entry stays")
 	core.show_formspec("ann", "other:form", "size[1,1]")
-	eq(engine_take(ann, 3, 1, "main", 3), 0, "D with another form open nothing is taken")
+	eq(engine_take(ann, idx + 1, 1, "main", 3), 0, "D with another form open nothing is taken")
 	eq(ann.inv:get_stack("main", 3):to_string(), "", "D ...and nothing arrives")
 
 	-- Picking the stone up and losing it leave the entries.
@@ -961,11 +1042,12 @@ end
 ------------------------------------------------------------------------------
 do
 	local ann = players.ann
-	local function place(stack, at)
+	local function place(stack, at, placer)
 		local def = core.registered_items[PACKED]
 		local below = {x = at.x, y = at.y - 1, z = at.z}
 		nodes[hash(below)] = nodes[hash(below)] or {name = "t:stone"}
-		return def.on_place(ItemStack(stack), ann, {type = "node", under = below, above = at})
+		return def.on_place(ItemStack(stack), placer or ann, {type = "node", under = below,
+			above = at})
 	end
 	local function lists_at(pos)
 		local result = {}
@@ -978,9 +1060,9 @@ do
 		end
 		return result
 	end
-	local function packed_items(stack)
+	local function packed_items(key)
 		local result = {}
-		for listname, list in pairs(P.lists(stack)) do
+		for listname, list in pairs(contents_of(key)) do
 			local items = {}
 			for index, text in pairs(list) do
 				if text ~= "" then items[index] = ItemStack(text):to_string() end
@@ -998,12 +1080,15 @@ do
 	}
 	for index, kind in ipairs(kinds) do
 		local stack = ItemStack(stored(kind[1]))
+		local want = packed_items(kind[1])
+		check(next(want) ~= nil, "E " .. kind[2] .. ": contents stored")
 		local at = {x = 10 * index, y = 5, z = 0}
 		puts = {}
 		local left = place(stack, at)
 		eq(left:get_count(), 0, "E " .. kind[2] .. ": the packed item is used")
 		eq(core.get_node(at).name, kind[2], "E " .. kind[2] .. ": the node stands")
-		eq(ser(lists_at(at)), ser(packed_items(stack)), "E " .. kind[2] .. ": exactly its contents")
+		eq(ser(lists_at(at)), ser(want), "E " .. kind[2] .. ": exactly its contents")
+		eq(stored(content_key(kind[1])), "", "E " .. kind[2] .. ": the stored contents are deleted")
 		if kind[2] == "default:chest_locked" then
 			eq(core.get_meta(at):get_string("owner"), "ann", "E the locked chest belongs to the placer")
 		elseif kind[2] == "default:furnace" then
@@ -1022,6 +1107,22 @@ do
 		"E the sword keeps its quality meta")
 	eq(core.get_meta(at):get_inventory():get_stack("main", 20):to_string(), "default:apple 2",
 		"E the alias resolves")
+	eq(stored("packed:ann:2:1"), "", "E ...its stored contents deleted")
+
+	-- Ruling 15: another holder places it; a copy placed later finds its
+	-- contents gone and places empty, with a warning naming the key.
+	local bob = new_player("bob", 8)
+	local extra = ItemStack(stored("recovered:ann:2:7.1"))
+	local extra_want = packed_items("recovered:ann:2:7.1")
+	local bspot = {x = 120, y = 5, z = 0}
+	eq(place(extra, bspot, bob):get_count(), 0, "E another player places ann's packed chest")
+	eq(ser(lists_at(bspot)), ser(extra_want), "E ...with exactly its contents")
+	warnings = {}
+	local cspot = {x = 130, y = 5, z = 0}
+	eq(place(extra, cspot, bob):get_count(), 0, "E a copy of it is placed too")
+	eq(core.get_node(cspot).name, "default:chest", "E ...as the container")
+	check(core.get_meta(cspot):get_inventory():is_empty("main"), "E ...empty")
+	has(warnings[1], "packed:ann:2:7.1", "E ...and the log names the missing contents")
 
 	-- Failed placements keep the item.
 	local spare = ItemStack(stored("recovered:ann:2:7"))
@@ -1029,6 +1130,7 @@ do
 	protected[hash(spot)] = true
 	eq(place(spare, spot):to_string(), spare:to_string(), "E a protected spot keeps the item")
 	eq(core.get_node(spot).name, "air", "E ...and places nothing")
+	check(stored("packed:ann:2:7") ~= "", "E ...and keeps its contents")
 	protected[hash(spot)] = nil
 	nodes[hash(spot)] = {name = "t:stone"}
 	local def = core.registered_items[PACKED]
@@ -1041,12 +1143,15 @@ do
 		above = {x = 90, y = 6, z = 0}})
 	eq(kept:to_string(), spare:to_string(), "E a click on a station opens it and keeps the item")
 	-- A packed list that no longer fits (no clean-up in between): refused.
-	local misfit = P.make("default:furnace", {dst = {"", "", "", "", "default:steel_ingot 1"}}, 2)
+	local too_many = {dst = {"", "", "", "", "default:steel_ingot 1"}}
+	housing:set_string("packed:ann:9:1", core.serialize(too_many))
+	local misfit = P.make_ref("default:furnace", "packed:ann:9:1", 9, too_many)
 	local mspot = {x = 100, y = 5, z = 30}
 	eq(place(misfit, mspot):to_string(), misfit:to_string(), "E contents that do not fit: kept")
 	eq(core.get_node(mspot).name, "air", "E ...and the node is taken back")
+	check(stored("packed:ann:9:1") ~= "", "E ...and the contents are kept")
 	-- A node this version cannot restore (never after the clean-up): kept.
-	local unknown = P.make("gone:barrel", {stuff = {"default:apple 1"}}, 2)
+	local unknown = P.make_ref("gone:barrel", "packed:ann:9:1", 9, too_many)
 	eq(place(unknown, {x = 110, y = 5, z = 30}):to_string(), unknown:to_string(),
 		"E an unknown node: kept")
 end
