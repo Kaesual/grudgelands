@@ -8,7 +8,8 @@ platform's task files `~/projects/kaesual-stack/.local/grudgelands-upgrade-contr
 and, since Round 43, `grudgelands-migration-contract-task.md` revision 2 in
 the same folder; not in this repository; the pre-reset pass of §3.5 was
 agreed on 2026-10-16, [round 50 plan](../planning/round50-plan.md) §2
-"Platform agreement"). This file owns the game's side of it. The working rules are in [AGENTS.md "Release mode"](../../AGENTS.md#release-mode).
+"Platform agreement"). This file owns the game's side of it. The working
+rules are in [AGENTS.md "Release mode"](../../AGENTS.md#release-mode).
 
 ## 1. Four outcomes
 
@@ -46,7 +47,7 @@ What a change needs:
 |---|---|
 | Nothing saved changes meaning | compatible |
 | World generation, or map-bound state (§3.2) the new code cannot read | map reset |
-| A removed item: a step replaces or removes it in inventories, offline characters included (a step never reads the map: items in node inventories on the map stay, and at a map reset the pre-reset pass packs those in claims, whose unregistered items the game drops at the next load, §3.5), and in the mail (since 0.48.0: the item strings of letter attachments in `grug_mail`'s mod storage, keys `box:<name>`, and the player list `grug_mail_out`); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
+| A removed item: a step replaces or removes it in inventories, offline characters included, and the waiting packed belongings in `grug_housing`'s `recovered:*` entries with the item strings in their `lists` (a step never reads the map: items in node inventories on the map stay, and at a map reset the pre-reset pass packs those in claims, whose unregistered items the game drops at the next load, §3.5), and in the mail (since 0.48.0: the item strings of letter attachments in `grug_mail`'s mod storage, keys `box:<name>`, and the player list `grug_mail_out`); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
 | Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
@@ -266,8 +267,13 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   taken; the pass number grows. Every existing `recovered:` key is opaque
   to the pass (the game's first-start clean-up adds
   `recovered:<player>:<seq>:<n>.<k>` keys of its own, plan D6): never
-  parsed, renumbered or deleted; a pass only adds keys under its new `seq`. A pass on a restored backup writes the same
-  rows (only the charcoal follows the clock).
+  parsed, renumbered or deleted; a pass only adds keys under its new
+  `seq`. A pass on a restored backup writes the same rows (only the
+  charcoal follows the clock). Waiting entries are long-lived player-owned
+  item storage: the game cleans each pass only once, at the next load, so
+  a later step that removes or transforms an item must also cover the
+  `recovered:*` entries and the item strings nested in their packed
+  `lists` (§5.2).
 - **Refused before any write** (exit 2): a world below 0.48.1
   (`pack_baseline`, Round 50 ruling 9; a world without a record counts as
   0.41.0); a pending `map_reset_pack:` marker (`pack_pending`: an earlier
