@@ -68,7 +68,7 @@ local mirefolk = {
 	-- bandit.lua.
 	animation = {
 		stand_start = 0, stand_end = 79, stand_speed = 30,
-		walk_start = 168, walk_end = 187, walk_speed = 30,
+		walk_start = 168, walk_end = 187, walk_speed = 12, -- guard.lua's gait rule
 		run_start = 168, run_end = 187, run_speed = 45,
 		punch_start = 189, punch_end = 198, punch_speed = 30,
 	},

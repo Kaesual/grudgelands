@@ -998,8 +998,10 @@ local function npc_def(race_id, faction_id, nametag, extra)
 		makes_footstep_sound = true,
 		animation = {
 			stand_start = 0, stand_end = 79, stand_speed = 30,
-			walk_start = 168, walk_end = 187, walk_speed = 30,
-			run_start = 168, run_end = 187, run_speed = 30,
+			-- Walk and run share 1.1 m/s: the guard's walk rate per m/s
+			-- (guard.lua's gait rule).
+			walk_start = 168, walk_end = 187, walk_speed = 13,
+			run_start = 168, run_end = 187, run_speed = 13,
 			punch_start = 189, punch_end = 198, punch_speed = 30,
 			-- THE TWO WORK RANGES (contract section 8.2), taken from
 			-- `mods/BASE/player_api/init.lua`'s own registration of

@@ -230,10 +230,13 @@ local function guard_def(faction, description, texture)
 
 		-- Frame ranges from mods/BASE/player_api/init.lua via
 		-- wp6_model_notes §5: stand 0-79, walk 168-187, mine 189-198 (used as
-		-- the punch clip).
+		-- the punch clip). The walk clip's rate follows the run clip's per m/s
+		-- (0.49.1 ruling 12): run_speed * walk_velocity / run_velocity, times
+		-- 1.2 for the shorter walking stride. The other humanoids use the same
+		-- rule.
 		animation = {
 			stand_start = 0, stand_end = 79, stand_speed = 30,
-			walk_start = 168, walk_end = 187, walk_speed = 30,
+			walk_start = 168, walk_end = 187, walk_speed = 14,
 			run_start = 168, run_end = 187, run_speed = 45,
 			punch_start = 189, punch_end = 198, punch_speed = 30,
 		},

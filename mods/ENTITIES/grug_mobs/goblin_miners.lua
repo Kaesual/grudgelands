@@ -3,7 +3,7 @@
 
 local animation = {
 	stand_start = 1, stand_end = 79, stand_speed = 30,
-	walk_start = 168, walk_end = 187, walk_speed = 40,
+	walk_start = 168, walk_end = 187, walk_speed = 23, -- guard.lua's gait rule
 	run_start = 168, run_end = 187, run_speed = 60,
 	punch_start = 200, punch_end = 219, punch_speed = 60,
 	shoot_start = 200, shoot_end = 219, shoot_speed = 60,
