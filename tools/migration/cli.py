@@ -54,8 +54,11 @@ DECLARATION = REPO / "tools" / "web_data" / "upgrade.json"
 STEPS = Path(__file__).resolve().parent / "steps"
 BASELINE = "0.41.0"
 # Round 50 ruling 9: the pre-reset pass is planned from the production
-# version on.
-PACK_BASELINE = "0.48.1"
+# version on, 0.48.1; its floor is 0.48.0, because a world moved
+# compatibly to 0.48.1 and never started still records 0.48.0 (the game
+# writes its version at the first load), and 0.48.1 changed no saved state
+# the pass reads (only the bag view and the minimap).
+PACK_BASELINE = "0.48.0"
 # The wall clock of the pass (the fuel's remaining time); tests replace it.
 clock = time.time
 VERSION = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")

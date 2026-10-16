@@ -352,7 +352,8 @@ class PackTest(PassCase):
         self.assertEqual(self.storage(), first)
 
     def test_baseline(self):
-        for record, code in (("0.48.0", 2), ("0.41.0", 2), (None, 2), ("0.48.1", 0)):
+        for record, code in (("0.47.0", 2), ("0.41.0", 2), (None, 2), ("0.48.0", 0),
+                             ("0.48.1", 0)):
             with self.subTest(record=record):
                 world = Path(self._tmp.name, "w" + str(record))
                 shutil.copytree(self.world, world)

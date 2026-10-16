@@ -159,7 +159,7 @@ Refusal reasons: `usage`, `checkout` (game.conf, the declaration or a step
 file), `world_mt`, `backend`, `database_missing`, `connection`, `layout`
 (not the engine's table layout), `lock`, `write_access`, `record` (no
 `major.minor.patch`), `world_newer`, `internal`, and for `--map-reset`:
-`pack_baseline` (the world is below 0.48.1), `pack_pending` (the marker of
+`pack_baseline` (the world is below 0.48.0), `pack_pending` (the marker of
 an earlier pass that the game never loaded: restore the backup taken before
 it), `map_block` (a block in a claim the decoder cannot read, a format other
 than 29 included), `map_empty` (claims but no map block: the map was

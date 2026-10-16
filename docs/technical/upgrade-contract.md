@@ -277,9 +277,11 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   `packed:*` content keys (the clean-up moves them there out of the
   items) and those nested in the `lists` of a pass not cleaned yet
   (§5.2).
-- **Refused before any write** (exit 2): a world below 0.48.1
-  (`pack_baseline`, Round 50 ruling 9; a world without a record counts as
-  0.41.0); a pending `map_reset_pack:` marker (`pack_pending`: an earlier
+- **Refused before any write** (exit 2): a world below 0.48.0
+  (`pack_baseline`, Round 50 ruling 9: the production version 0.48.1, with
+  the floor at 0.48.0 because a world moved compatibly to 0.48.1 and never
+  started still records 0.48.0, and 0.48.1 changed no saved state the pass
+  reads; a world without a record counts as 0.41.0); a pending `map_reset_pack:` marker (`pack_pending`: an earlier
   pass the game never loaded, so its map may already be gone and a second
   pass would hand out its charcoal twice; restore the backup taken before
   it); a block in a claim that does not decode (`map_block`); claims but
