@@ -12,6 +12,9 @@
 -- node's own on_receive_fields, re-shows changed forms to open viewers and
 -- forgets sessions on close, on another form and on leave.
 -- Inventories use `nodemeta:<x>,<y>,<z>` list locations (see `location`).
+-- Each session has a context table (0.49.1 VIEW): the builder passes it to
+-- grug_inventory's station view, and every submission's scroll value is kept
+-- in it, so a re-show keeps the bag view's scroll position.
 
 local FORMNAME = "default:node_formspec"
 -- Generous against lag and the reach of long tools; not an interaction rule.
@@ -20,7 +23,7 @@ local MAX_DISTANCE = 10
 local api = {formname = FORMNAME, max_distance = MAX_DISTANCE}
 default.node_formspec = api
 
--- [player name] = {pos, names = {[node name] = true}, build, last}
+-- [player name] = {pos, names = {[node name] = true}, build, last, context}
 local sessions = {}
 
 function api.location(pos)
@@ -37,8 +40,8 @@ local function in_range(player, pos)
 	return at ~= nil and vector.distance(at, pos) <= MAX_DISTANCE
 end
 
--- Open the UI of the node at `pos` for `player`. `build(pos, player)` returns
--- the formspec string; it is called again by `refresh`. `names` optionally
+-- Open the UI of the node at `pos` for `player`. `build(pos, player,
+-- context)` returns the formspec string; it is called again by `refresh`. `names` optionally
 -- lists every node name the form stays valid for (a furnace swaps between its
 -- idle and active node); by default only the node now at `pos`.
 function api.show(player, pos, build, names)
@@ -52,8 +55,10 @@ function api.show(player, pos, build, names)
 	if not accepted[node.name] then return false end
 	local name = player:get_player_name()
 	local at = vector.new(pos.x, pos.y, pos.z)
-	local formspec = build(at, player)
-	sessions[name] = {pos = at, names = accepted, build = build, last = formspec}
+	local context = {}
+	local formspec = build(at, player, context)
+	sessions[name] = {pos = at, names = accepted, build = build, last = formspec,
+		context = context}
 	core.show_formspec(name, FORMNAME, formspec)
 	return true
 end
@@ -69,7 +74,7 @@ function api.refresh(pos)
 				sessions[name] = nil
 				if player then core.close_formspec(name, FORMNAME) end
 			else
-				local formspec = session.build(session.pos, player)
+				local formspec = session.build(session.pos, player, session.context)
 				if formspec ~= session.last then
 					session.last = formspec
 					core.show_formspec(name, FORMNAME, formspec)
@@ -128,6 +133,12 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	if fields.quit then sessions[name] = nil end
+	-- The bag view's scroll value; a pure scrollbar event needs nothing more.
+	local inventory = rawget(_G, "grug_inventory")
+	if inventory and inventory.keep_scroll and
+			inventory.keep_scroll(session.context, fields) then
+		return true
+	end
 	local pos = vector.new(session.pos.x, session.pos.y, session.pos.z)
 	local def = core.registered_nodes[core.get_node(pos).name]
 	if def and def.on_receive_fields then

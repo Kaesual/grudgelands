@@ -37,18 +37,24 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   scrollbar and the gold **Hotbar** box, each labelled inside, top left
   above the slots. **Full** shows seven rows (the Inventory tab, layout
   below); **short** shows two (every other tab with an inventory), its
-  Inventory box right above the Hotbar box. The Hotbar box is at the same
+  Inventory box right above the Hotbar box; **station** shows three (0.49.1
+  ruling 6): the forms of the furnace, chests, the bookshelf, the vessels
+  shelf, the Claim Stone and the profession workspaces (furnace and dual
+  furnace) put their own content at the top (the node and workspace forms
+  in a box labelled with the station's name) and the station view below it (`grug_inventory.station_formspec`, `STATION` geometry,
+  built per viewer). The Hotbar box is at the same
   place in every tab, so it does not jump on a tab switch; page content
   ends above the short Inventory box (`VIEW_GEOMETRY.top`). The scrollbar's
   thumb shows the visible share of the rows, so it can be dragged. A page asks the frame for its view and never draws `main`
   itself; Help and Party & PvP show **no** view (Round 44 lane PP): their
   content has the whole window. The scroll position is kept per view and sent back with every
-  rebuild (the client forgets it on a resend), so equipping a bag or sorting
-  keeps the place; a pure scrollbar event re-sends nothing. No listring in
+  rebuild (the client forgets it on a resend), so equipping a bag, sorting
+  or a station form's re-show (a burning furnace's) keeps the place; a pure
+  scrollbar event re-sends nothing. No listring in
   the views: shift-click has no job inside one inventory. On a page whose
   rings send `main` to another list (the Crafting tab's target slot or
-  overflow, the creative list), each bag the view shows rings to the
-  same list (Round 45 playtest, `ui.lua` `bag_rings`).
+  overflow, the creative list, a station form's list), each bag the view
+  shows rings to the same list (Round 45 playtest, `ui.lua` `bag_rings`).
 - **The Inventory tab** ([UI rework spec](../planning/ui-crafting-rework-plan.md) §3.2;
   boxed layout since the Round 45 playtest, `grug_inventory.LAYOUT`):
   each area has its own box with its label inside, top left above the

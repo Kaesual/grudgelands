@@ -128,7 +128,26 @@ local function ring(location, list)
 		"]listring[current_player;grug_inbox]listring[current_player;main]"
 end
 
-local function formspec(ctx)
+-- The fire and the arrow between the fuel slot and the output, at (x, y).
+local function progress_images(x, y, fuel_percent, progress_percent)
+	local fire = ("image[%.3f,%.3f;0.6,0.6;default_furnace_fire_bg.png]"):format(x, y)
+	if fuel_percent > 0 then
+		fire = fire .. ("image[%.3f,%.3f;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
+			"%d:default_furnace_fire_fg.png]"):format(x, y, fuel_percent)
+	end
+	local arrow = ("image[%.3f,%.3f;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]")
+		:format(x + 0.7, y)
+	if progress_percent > 0 then
+		arrow = arrow .. ("image[%.3f,%.3f;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
+			"%d:gui_furnace_arrow_fg.png^[transformR270]"):format(x + 0.7, y, progress_percent)
+	end
+	return fire .. arrow
+end
+
+-- Built per viewer (0.49.1 ruling 6): the station in a box at the top, the
+-- player's whole combined bag below it (grug_inventory.station_formspec);
+-- ctx keeps the bag view's scroll position over the re-shows.
+local function formspec(ctx, player)
 	local location = ctx.personal and "detached:" .. ctx.detached or
 		"nodemeta:" .. ctx.pos.x .. "," .. ctx.pos.y .. "," .. ctx.pos.z
 	local title = grug_jobs.station_info(ctx.station).display_name
@@ -138,6 +157,7 @@ local function formspec(ctx)
 	local source = ctx.station == "furnace" and "src" or "input"
 	local output = ctx.station == "furnace" and "dst" or "output"
 	local width = ctx.station == "dual_furnace" and 2 or 1
+	local rows = ctx.station == "furnace" and 2 or 1
 	local process = ctx.process
 	if not ctx.personal then
 		process = core.deserialize(core.get_meta(ctx.pos):get_string(
@@ -147,21 +167,24 @@ local function formspec(ctx)
 		inputs(ctx), process)
 	local fuel_percent = math.floor(fuel_fraction * 100 + 0.5)
 	local progress_percent = math.floor(progress_fraction * 100 + 0.5)
-	return "formspec_version[4]size[12,11]label[0.5,0.4;" .. core.formspec_escape(title) ..
-		"]label[0.5,0.85;" .. mode .. "]label[0.5,1.25;" .. core.formspec_escape(explanation) .. "]" ..
-		"label[1,1.9;Input]list[" .. location .. ";" .. source .. ";1,2.3;" .. width .. ",1;]" ..
-		"label[3.5,1.9;Fuel]list[" .. location .. ";fuel;3.5,2.3;1,1;]" ..
-		"label[6,1.9;Finished output]list[" .. location .. ";" .. output .. ";6,2.3;2," ..
-		(ctx.station == "furnace" and 2 or 1) .. ";]" .. ring(location, output) ..
-		ring(location, source) .. ring(location, "fuel") ..
-		"image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png]" ..
-		(fuel_percent > 0 and "image[4.55,2.4;0.6,0.6;default_furnace_fire_bg.png^[lowpart:" ..
-			fuel_percent .. ":default_furnace_fire_fg.png]" or "") ..
-		"image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[transformR270]" ..
-		(progress_percent > 0 and "image[5.25,2.4;0.6,0.6;gui_furnace_arrow_bg.png^[lowpart:" ..
-			progress_percent .. ":gui_furnace_arrow_fg.png^[transformR270]" or "") ..
-		"list[current_player;main;1,6;8,1;]list[current_player;main;1,7.25;8,3;8]" ..
-		default.get_hotbar_bg(1, 6)
+	local station = grug_inventory.STATION
+	local pitch, top = station.pitch, station.y
+	local function column(index) return station.x + index * pitch end
+	local lists_y = top + 1.45
+	local box, bottom = grug_inventory.station_box(title,
+		lists_y + rows * pitch - 0.25 - top)
+	local content = box ..
+		("label[%.3f,%.3f;%s]label[%.3f,%.3f;%s]"):format(column(0), top + 0.2, mode,
+			column(0), top + 0.6, core.formspec_escape(explanation)) ..
+		("label[%.3f,%.3f;Input]list[%s;%s;%.3f,%.3f;%d,1;]"):format(column(1),
+			lists_y - 0.25, location, source, column(1), lists_y, width) ..
+		("label[%.3f,%.3f;Fuel]list[%s;fuel;%.3f,%.3f;1,1;]"):format(column(3),
+			lists_y - 0.25, location, column(3), lists_y) ..
+		("label[%.3f,%.3f;Finished output]list[%s;%s;%.3f,%.3f;2,%d;]"):format(column(5),
+			lists_y - 0.25, location, output, column(5), lists_y, rows) ..
+		ring(location, output) .. ring(location, source) .. ring(location, "fuel") ..
+		progress_images(column(4) - 0.15, lists_y + 0.2, fuel_percent, progress_percent)
+	return grug_inventory.station_formspec(player, content, bottom, ctx)
 end
 
 -- Whether the station's own form is the one open (default/node_formspec.lua
@@ -172,8 +195,9 @@ local function form_open(ctx)
 end
 
 refresh = function(ctx, show)
-	if not accessible(ctx, core.get_player_by_name(ctx.name)) then return end
-	if show and form_open(ctx) then core.show_formspec(ctx.name, FORM, formspec(ctx)) end
+	local player = core.get_player_by_name(ctx.name)
+	if not accessible(ctx, player) then return end
+	if show and form_open(ctx) then core.show_formspec(ctx.name, FORM, formspec(ctx, player)) end
 end
 
 local function refresh_position(pos)
@@ -253,7 +277,7 @@ function workspaces.open(pos, player)
 	end
 	viewers[name] = ctx
 	advance(ctx)
-	core.show_formspec(name, FORM, formspec(ctx))
+	core.show_formspec(name, FORM, formspec(ctx, player))
 	return true
 end
 
@@ -262,6 +286,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local ctx = viewers[player:get_player_name()]
 	if not ctx then return true end
 	if fields.quit then detach(ctx) return true end
+	-- The bag view's scroll value; a pure scrollbar event needs no re-show.
+	if grug_inventory.keep_scroll(ctx, fields) then return true end
 	if not accessible(ctx, player) then return true end
 	refresh(ctx, true)
 	return true

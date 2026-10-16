@@ -383,7 +383,8 @@ local function check_rings(path, expected)
 	eq(found, expected, path .. ": ring entries checked")
 end
 check_rings("mods/BASE/default/chests.lua", 1)
-check_rings("mods/BASE/default/furnace.lua", 6)
+-- 0.49.1 VIEW: the active and the idle furnace form share one ring text.
+check_rings("mods/BASE/default/furnace.lua", 3)
 check_rings("mods/BASE/default/nodes.lua", 1)
 check_rings("mods/BASE/vessels/init.lua", 1)
 check_rings("mods/BASE/creative/inventory.lua", 1)

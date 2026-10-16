@@ -50,6 +50,12 @@ end, slot_order = function(inv)
 	for index = 1, inv:get_size("main") do slots[index] = {list = "main", index = index} end
 	return slots
 end}
+-- 0.49.1 VIEW: station forms draw the bag view through grug_inventory
+-- (tested by tools/r491_view); a pass-through stand-in here.
+grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25}
+grug_inventory.station_box = function() return "", 1 end
+grug_inventory.station_formspec = function(_, content) return content end
+grug_inventory.keep_scroll = function() return false end
 local failures, checks = 0, 0
 local function check(ok, label)
 	checks = checks + 1

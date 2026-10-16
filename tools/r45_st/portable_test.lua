@@ -442,6 +442,12 @@ grug_inventory = {BAG_COUNT = 0, content_list = function(i) return "grug_bag" ..
 	wrap_text = function(value) return tostring(value or "") end}
 local refreshed = 0
 grug_inventory.refresh = function() refreshed = refreshed + 1 end
+-- 0.49.1 VIEW: station forms draw the bag view through grug_inventory
+-- (tested by tools/r491_view); a pass-through stand-in here.
+grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25}
+grug_inventory.station_box = function() return "", 1 end
+grug_inventory.station_formspec = function(_, content) return content end
+grug_inventory.keep_scroll = function() return false end
 local classes = {}
 local arrival
 grug_classes = {

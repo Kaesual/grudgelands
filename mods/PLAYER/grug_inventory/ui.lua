@@ -93,25 +93,29 @@ function grug_inventory.order_tabs()
 end
 
 --
--- Inventory views (spec §3.1-§3.2). "full" (the Inventory tab) and "short"
--- (every other page with an inventory) both draw main[9..] and then each
--- equipped bag's content list in a scroll_container, and the hotbar
--- (main[1..8]) below it, outside the scroll area. The lists flow on as one
+-- Inventory views (spec §3.1-§3.2). "full" (the Inventory tab), "short"
+-- (every other page with an inventory) and "station" (the forms of chests,
+-- furnaces, shelves, stations and the Claim Stone, 0.49.1 ruling 6;
+-- station_formspec below) all draw main[9..] and then each equipped bag's
+-- content list in a scroll_container, and the hotbar (main[1..8]) below it,
+-- outside the scroll area. The lists flow on as one
 -- 8-wide grid (the user, Round 48 playtest): a bag (4, 8, 12 or 16 slots)
 -- starts in the column after the previous list's last slot, so only the very
 -- last row may be partial (view_elements below). Both are boxed (LAYOUT
 -- below): an Inventory box with the grid and the Hotbar box, each labelled
--- inside. The full view shows VIEW_ROWS.full rows, the short one two; the
--- Hotbar box is at one place in every tab, so it does not jump on a tab
--- switch.
+-- inside. The full view shows VIEW_ROWS.full rows, the short one two, the
+-- station view three; the Hotbar box is at one place in every tab, so it
+-- does not jump on a tab switch. The station view sits below its form's own
+-- content instead (STATION below).
 -- No listring: shift-click has no job inside one inventory.
 --
 -- The scroll position: the client does not keep a scroll_container's
 -- scrollbar across a resend, but sends its value with every event of the form
 -- (CHG for the scrollbar's own event, VAL for any other;
--- guiFormSpecMenu.cpp acceptInput). sfinv.handle_scroll below keeps it in the
--- sfinv context and the view echoes it on every build, so equipping a bag or
--- sorting does not jump back to the top. A pure scrollbar event ends there,
+-- guiFormSpecMenu.cpp acceptInput). grug_inventory.keep_scroll below keeps
+-- it in a context table (sfinv's; a station form's session) and the view
+-- echoes it on every build, so equipping a bag, sorting or a station's
+-- re-show does not jump back to the top. A pure scrollbar event ends there,
 -- before any page handler, and never causes a resend.
 --
 local SLOT, PITCH = 1, 1.25 -- real-coordinate slot and slot + list spacing
@@ -124,14 +128,14 @@ local SCROLL_FACTOR = 0.125
 local ROW_STEPS = PITCH / SCROLL_FACTOR
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
-grug_inventory.VIEW_ROWS = {full = 7, short = 2}
+grug_inventory.VIEW_ROWS = {full = 7, short = 2, station = 3}
 -- The background of the window's boxed areas (the Character tab's boxes, the
 -- views' Inventory boxes, the Inventory tab's areas).
 grug_inventory.BOX_COLOR = "#00000040"
 local HOTBAR_COLOR = "#8a682f44"
 
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
-	short = "grug_inv_scroll_short"}
+	short = "grug_inv_scroll_short", station = "grug_inv_scroll_station"}
 
 -- The boxed layout (Round 45 playtest): one box per area with its label
 -- inside, top left above the slots, all boxes on one left edge and equally
@@ -161,6 +165,22 @@ do
 	local money_y = inventory_y + inventory_h + gap
 	local hotbar_box_y = money_y + money_h + gap
 	local short_h = grid_box_h(grug_inventory.VIEW_ROWS.short)
+	-- A station form (0.49.1 ruling 6): its own content at the top, the
+	-- station view's two boxes below it, `margin` around everything.
+	local margin = 0.4
+	local station_h = grid_box_h(grug_inventory.VIEW_ROWS.station)
+	grug_inventory.STATION = {
+		width = box_w + 2 * margin, margin = margin,
+		box_x = margin, box_w = box_w,
+		-- The slots' left edge (the view's columns) and the slot pitch.
+		x = margin + pad, pitch = PITCH,
+		-- The first slot row of a labelled box at the form's top.
+		y = margin + label_h,
+		inventory_h = station_h,
+		-- The view's height, from the top of its Inventory box to the bottom
+		-- of its Hotbar box.
+		view_h = station_h + gap + slot_box_h,
+	}
 	grug_inventory.LAYOUT = {
 		pad = pad, label_h = label_h, gap = gap,
 		box_x = box_x, box_w = box_w, x = box_x + pad,
@@ -221,24 +241,32 @@ function grug_inventory.view_scroll_max(rows, visible)
 end
 
 -- The formspec part of one inventory view, in real coordinates (it switches
--- them on itself, so it may follow legacy content). mode: "full" or "short".
-function grug_inventory.inventory_view(player, mode, context)
+-- them on itself, so it may follow legacy content). mode: "full", "short" or
+-- "station"; `top` (station only) is the y of its Inventory box.
+function grug_inventory.inventory_view(player, mode, context, top)
 	local visible = grug_inventory.VIEW_ROWS[mode]
 	assert(visible, "inventory_view: unknown mode " .. tostring(mode))
 	local inv = player:get_inventory()
 	local elements, rows = view_elements(inv)
 	local area_h = visible * PITCH - (PITCH - SLOT)
-	local box_y, box_h = LAYOUT.inventory_y, LAYOUT.inventory_h
+	local box_x, box_y, box_h = LAYOUT.box_x, LAYOUT.inventory_y, LAYOUT.inventory_h
+	local hotbar_box_y = LAYOUT.hotbar_box_y
 	if mode == "short" then
 		box_y, box_h = LAYOUT.short_y, LAYOUT.short_h
+	elseif mode == "station" then
+		local station = grug_inventory.STATION
+		box_x, box_y, box_h = station.box_x, top, station.inventory_h
+		hotbar_box_y = top + box_h + LAYOUT.gap
 	end
 	local area_y = box_y + LAYOUT.label_h
-	local view_x, scrollbar_x = LAYOUT.x, LAYOUT.x + SCROLLBAR_DX
+	local hotbar_y = hotbar_box_y + LAYOUT.label_h
+	local view_x = box_x + LAYOUT.pad
+	local scrollbar_x = view_x + SCROLLBAR_DX
 	local field = grug_inventory.SCROLL_FIELDS[mode]
 	-- The two boxes, drawn first so the lists lie on them.
 	local fs = {"real_coordinates[true]",
-		grug_inventory.area_box(LAYOUT.box_x, box_y, LAYOUT.box_w, box_h, "Inventory"),
-		grug_inventory.area_box(LAYOUT.box_x, LAYOUT.hotbar_box_y, LAYOUT.box_w,
+		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory"),
+		grug_inventory.area_box(box_x, hotbar_box_y, LAYOUT.box_w,
 			LAYOUT.slot_box_h, "Hotbar", HOTBAR_COLOR),
 	}
 
@@ -276,18 +304,18 @@ function grug_inventory.inventory_view(player, mode, context)
 	-- slot and the first eight cells of main.
 	for index = 0, 7 do
 		fs[#fs + 1] = ("image[%.3f,%.3f;1,1;gui_hb_bg.png]"):format(
-			view_x + index * PITCH, LAYOUT.hotbar_y)
+			view_x + index * PITCH, hotbar_y)
 	end
 	fs[#fs + 1] = ("list[current_player;main;%.3f,%.3f;8,1;]"):format(view_x,
-		LAYOUT.hotbar_y)
+		hotbar_y)
 	return table.concat(fs)
 end
 
--- Chains sfinv's hook (api.lua GRUG PATCH): keeps the views' scroll values
--- from every event and reports a pure scrollbar event as handled.
-local previous_handle_scroll = sfinv.handle_scroll
-function sfinv.handle_scroll(player, context, fields)
-	local pure = previous_handle_scroll(player, context, fields)
+-- Keeps the views' scroll values of one event in `context` (the table the
+-- form's builder passes to inventory_view) and returns whether the event was
+-- a pure scrollbar event, which needs no resend.
+function grug_inventory.keep_scroll(context, fields)
+	local pure = false
 	for mode, field in pairs(grug_inventory.SCROLL_FIELDS) do
 		local raw = fields[field]
 		local kind, value
@@ -301,6 +329,14 @@ function sfinv.handle_scroll(player, context, fields)
 		end
 	end
 	return pure
+end
+
+-- Chains sfinv's hook (api.lua GRUG PATCH): keeps the views' scroll values
+-- from every event and reports a pure scrollbar event as handled.
+local previous_handle_scroll = sfinv.handle_scroll
+function sfinv.handle_scroll(player, context, fields)
+	local pure = previous_handle_scroll(player, context, fields)
+	return grug_inventory.keep_scroll(context, fields) or pure
 end
 
 --
@@ -336,6 +372,44 @@ local function bag_rings(player, content)
 		end
 	end
 	return #fs > 1 and table.concat(fs) or ""
+end
+
+--
+-- Station forms (0.49.1 ruling 6): the forms of chests, furnaces, the
+-- bookshelf, the vessels shelf, the profession workspaces and the Claim
+-- Stone show the player's whole combined bag like the Character tab, as
+-- the station view (three rows) below their own content. Each form is built
+-- per viewer (bags differ per player) in formspec_version 6 with real
+-- coordinates, STATION wide; its content uses the view's columns
+-- (STATION.x, STATION.pitch) and ends at `content_h`. The form's rings get
+-- bag_rings, so shift-click reaches the station from the bags too.
+-- `context` is the form's own session table: whoever receives the form's
+-- fields passes them to keep_scroll with it, so a re-show keeps the scroll
+-- position.
+--
+
+-- A labelled box across the form's top holding `inner_h` of content below
+-- its label (slot rows start at STATION.y); returns the box and its bottom
+-- edge.
+function grug_inventory.station_box(label, inner_h)
+	local station = grug_inventory.STATION
+	local h = LAYOUT.label_h + inner_h + LAYOUT.pad
+	return grug_inventory.area_box(station.box_x, station.margin, station.box_w, h,
+		label), station.margin + h
+end
+
+-- The whole station form: the header, `content` (real coordinates, ending
+-- at `content_h`), the station view below it and the bag rings.
+function grug_inventory.station_formspec(player, content, content_h, context)
+	local station = grug_inventory.STATION
+	local top = content_h + LAYOUT.gap
+	return table.concat({
+		("formspec_version[6]size[%.3f,%.3f]"):format(station.width,
+			top + station.view_h + station.margin),
+		content,
+		grug_inventory.inventory_view(player, "station", context, top),
+		bag_rings(player, content),
+	})
 end
 
 --
