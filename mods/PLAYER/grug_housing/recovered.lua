@@ -134,8 +134,10 @@ local function chest_lists(stacks)
 	return chests
 end
 
--- A packed entry's node and lists, fitted to the node, and the extra chests'
--- lists (D6). The node is nil for an empty one this version cannot restore.
+-- A packed entry's node and lists, fitted to the node, the extra chests'
+-- lists (D6) and, for a node this version does not restore as itself, the
+-- node's plain item (packed.node_item). The node is nil for an empty one
+-- this version cannot restore.
 -- Lists that do not decode raise: the runner stops the load and keeps the
 -- marker and the entry, never an empty container in their place.
 local function clean_packed(key, stack, removed)
@@ -180,14 +182,14 @@ local function clean_packed(key, stack, removed)
 		end
 		return base, lists, chest_lists(extras)
 	end
-	-- A node this version cannot restore: its stacks go into chests; empty,
-	-- it is the node's own item if the node still exists.
+	-- A node this version cannot restore (a station, a gone node): its
+	-- stacks go into chests, and the node comes back as its plain item if
+	-- it still exists.
 	for _, listname in ipairs(names) do extra(lists[listname], 1) end
-	if #extras == 0 then
-		return core.registered_nodes[node] and node or nil, {}, {}
-	end
+	local item = packed.node_item(node)
+	if #extras == 0 then return nil, {}, {}, item end
 	local chests = chest_lists(extras)
-	return packed.CHEST, table.remove(chests, 1), chests
+	return packed.CHEST, table.remove(chests, 1), chests, item
 end
 
 -- Writes a cleaned packed item under `key`: its contents first.
@@ -227,11 +229,15 @@ local function stack_empties(player, seq, empties)
 			storage:set_string(empties_key(player, seq, k), stacks[k]:to_string())
 		end
 	end
-	for _, empty in ipairs(empties) do storage:set_string(empty.key, "") end
+	for _, empty in ipairs(empties) do
+		if empty.key then storage:set_string(empty.key, "") end
+	end
 end
 
--- One entry. Returns whether it was deleted.
-local function clean_entry(key, seq, removed, empties)
+-- One entry. Returns whether it was deleted. A filled container whose node
+-- comes back as a plain item too (a station) is rewritten only after the
+-- stacking (`later`), so a rerun still reads its node from it.
+local function clean_entry(key, seq, removed, empties, later)
 	local stack = ItemStack(storage:get_string(key))
 	local name = stack:get_name()
 	if stack:is_empty() or not packed.registered(name) then
@@ -244,15 +250,20 @@ local function clean_entry(key, seq, removed, empties)
 		if meta:get_string("ref") ~= "" and meta:get_string("lists") == "" then
 			return false -- cleaned before
 		end
-		local node, lists, chests = clean_packed(key, stack, removed)
+		local node, lists, chests, item = clean_packed(key, stack, removed)
 		for k, chest in ipairs(chests) do
 			store_packed(key .. "." .. k, packed.CHEST, chest, seq)
 		end
 		if node and #packed.stacks(lists) > 0 then
-			store_packed(key, node, lists, seq)
+			if item then
+				empties[#empties + 1] = {item = item}
+				later[#later + 1] = {key = key, node = node, lists = lists}
+			else
+				store_packed(key, node, lists, seq)
+			end
 			return false
 		end
-		empties[#empties + 1] = {key = key, item = node}
+		empties[#empties + 1] = {key = key, item = node or item}
 		return true
 	end
 	-- Plain stacks (the stone's charcoal): split at the stack size.
@@ -292,10 +303,12 @@ function R.clean_pass(seq)
 	local stats = {entries = 0, deleted = 0, empties = 0, removed = 0}
 	for _, player in ipairs(players) do
 		table.sort(keys[player], key_before)
-		local empties = {}
+		local empties, later = {}, {}
 		for _, key in ipairs(keys[player]) do
 			local removed = {}
-			if clean_entry(key, seq, removed, empties) then stats.deleted = stats.deleted + 1 end
+			if clean_entry(key, seq, removed, empties, later) then
+				stats.deleted = stats.deleted + 1
+			end
 			if #removed > 0 then
 				stats.removed = stats.removed + #removed
 				core.log("action", ("[grug_housing] map reset pass %d: %s lost unknown %s"):format(
@@ -305,11 +318,12 @@ function R.clean_pass(seq)
 		stats.entries = stats.entries + #keys[player]
 		stats.empties = stats.empties + #empties
 		if #empties > 0 then stack_empties(player, seq, empties) end
+		for _, entry in ipairs(later) do store_packed(entry.key, entry.node, entry.lists, seq) end
 	end
 	index = nil
 	core.log("action", ("[grug_housing] map reset pass %d: %d entries cleaned, %d deleted " ..
-		"(%d empty containers), %d unknown items removed"):format(seq, stats.entries,
-		stats.deleted, stats.empties, stats.removed))
+		"(%d containers back as their nodes' items), %d unknown items removed"):format(seq,
+		stats.entries, stats.deleted, stats.empties, stats.removed))
 	return stats
 end
 

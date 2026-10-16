@@ -95,6 +95,19 @@ local function only_lists(lists)
 	return result
 end
 
+-- The plain item a node comes back as (ruling 13): the item it drops when
+-- that is one plain item string (an open or lit variant drops its base),
+-- else the node itself; nil for a node this version does not register.
+function P.node_item(node)
+	local def = core.registered_nodes[node]
+	if not def then return nil end
+	if type(def.drop) == "string" and def.drop ~= "" then
+		local name = ItemStack(def.drop):get_name()
+		if core.registered_items[name] then return name end
+	end
+	return node
+end
+
 -- The packed lists of a stack as the tool writes them: {list name =
 -- {[index] = item string}}; an unreadable value counts as empty (the
 -- clean-up refuses one first).
@@ -208,12 +221,14 @@ function P.make_ref(node, ref, seq, lists)
 end
 
 -- The stored contents of a cleaned item: the lists table, or nil when they
--- are gone or do not decode.
+-- are gone; the reference; and whether stored contents do not decode.
 function P.contents(stack)
 	local ref = stack:get_meta():get_string("ref")
 	local text = ref ~= "" and storage:get_string(ref) or ""
-	local lists = text ~= "" and core.deserialize(text, true) or nil
-	return type(lists) == "table" and only_lists(lists) or nil, ref
+	if text == "" then return nil, ref, false end
+	local lists = core.deserialize(text, true)
+	if type(lists) ~= "table" then return nil, ref, true end
+	return only_lists(lists), ref, false
 end
 
 local function tell(player, text)
@@ -251,7 +266,14 @@ local function on_place(itemstack, placer, pointed_thing)
 		tell(placer, "This packed container cannot be unpacked here.")
 		return itemstack
 	end
-	local lists, ref = P.contents(itemstack)
+	local lists, ref, unreadable = P.contents(itemstack)
+	if unreadable then
+		-- Kept, item and contents, for an administrator to look at.
+		tell(placer, "This packed container cannot be unpacked; please tell an administrator.")
+		core.log("error", ("[grug_housing] the contents %q of %s's packed %s do not decode; " ..
+			"nothing placed"):format(ref, placer:get_player_name(), node))
+		return itemstack
+	end
 	local _, pos = core.item_place_node(ItemStack(node), placer, pointed_thing)
 	if not pos then return itemstack end
 	local inv = core.get_meta(pos):get_inventory()

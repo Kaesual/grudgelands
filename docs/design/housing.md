@@ -155,7 +155,8 @@ Round 50 (rulings 4–8 and 13–15, D5–D8 of the [Round 50 plan](../planning/
   version no longer has are removed from the packed containers. A
   container this version cannot restore, and the stacks beyond a list that
   became smaller, are moved into additional packed chests (D6), so nothing
-  is lost. A charcoal stack above its stack size is split.
+  is lost; such a container that still exists (a station such as the Dual
+  Furnace) also comes back as its plain item, like an empty one. A charcoal stack above its stack size is split.
 - **Notices:** a player with waiting belongings is told at every join:
   "Belongings from the old map wait in your Claim Stone." The Housing
   Steward says the same (§7.2).

@@ -295,7 +295,7 @@ core = {
 	get_worldpath = function() return "/world" end,
 	get_dir_list = function() return {} end,
 	log = function(level, text)
-		if level == "warning" then warnings[#warnings + 1] = text end
+		if level == "warning" or level == "error" then warnings[#warnings + 1] = text end
 	end,
 	serialize = function(value) return "return " .. ser(value) end,
 	deserialize = function(text)
@@ -544,6 +544,10 @@ node("t:anvil", {description = "Anvil", on_rightclick = function(_, _, _, itemst
 	return itemstack
 end})
 node("t:stone", {description = "Stone"})
+-- A station this version does not restore as itself, and its lit variant.
+node("grug_smelting:dual_furnace", {description = "Dual Furnace"})
+node("grug_smelting:dual_furnace_active", {description = "Dual Furnace",
+	drop = "grug_smelting:dual_furnace", groups = {not_in_creative_inventory = 1}})
 
 -- grug_core: the REAL world_version.lua (with an empty step registry) and
 -- node_rightclick.lua; the feed and the flash record.
@@ -616,6 +620,11 @@ local SEED = {
 	["recovered:ann:2:15"] = packed_string("vessels:shelf", {vessels = {}}, 2),
 	["recovered:ann:2:16"] = packed_string("vessels:shelf", {vessels = {""}}, 2),
 	["recovered:ann:2:17"] = packed_string("vessels:shelf", {vessels = {}}, 2),
+	-- A filled station and an empty lit one: the station comes back as its item.
+	["recovered:ann:2:18"] = packed_string("grug_smelting:dual_furnace",
+		{src = {"default:iron_lump 5"}, fuel = {"default:coal_lump 2"}}, 2),
+	["recovered:ann:2:19"] = packed_string("grug_smelting:dual_furnace_active",
+		{src = {""}, fuel = {""}}, 2),
 	["recovered:bob:2:1"] = packed_string("default:chest", {main = {"default:apple 9"}}, 2),
 	["recovered:bob:2:2"] = packed_string("default:bookshelf", {books = {}}, 2),
 	-- An older pass the player never collected: kept as it is.
@@ -757,9 +766,16 @@ do
 	eq(stored("recovered:ann:2:0.1"), "default:chest 3",
 		"B the empty chest, the open chest and the emptied chest: 3 chests")
 	eq(stored("recovered:ann:2:0.2"), "default:furnace", "B the lit empty furnace: a furnace")
-	eq(stored("recovered:ann:2:0.3"), "vessels:shelf 2", "B three shelves: a full stack")
-	eq(stored("recovered:ann:2:0.4"), "vessels:shelf", "B ...and the rest")
-	eq(stored("recovered:ann:2:0.5"), "", "B nothing more")
+	eq(stored("recovered:ann:2:0.3"), "grug_smelting:dual_furnace 2",
+		"B the filled station and the empty lit one: two stations, the lit one as it drops")
+	eq(stored("recovered:ann:2:0.4"), "vessels:shelf 2", "B three shelves: a full stack")
+	eq(stored("recovered:ann:2:0.5"), "vessels:shelf", "B ...and the rest")
+	eq(stored("recovered:ann:2:0.6"), "", "B nothing more")
+	local station = stack_of("recovered:ann:2:18")
+	eq(station:get_meta():get_string("node"), "default:chest", "B the filled station's stacks: a chest")
+	eq(contents_of("recovered:ann:2:18").main[1], "default:coal_lump 2", "B ...with its fuel")
+	eq(contents_of("recovered:ann:2:18").main[2], "default:iron_lump 5", "B ...and its input")
+	eq(stored("recovered:ann:2:19"), "", "B the empty lit station's entry goes")
 	for n = 11, 17 do
 		eq(stored("recovered:ann:2:" .. n), "", "B empty source " .. n .. " deleted")
 		eq(stored(content_key("recovered:ann:2:" .. n)), "", "B ...with no contents stored")
@@ -776,8 +792,8 @@ do
 	-- The order of the stone's slots: passes, then entries, then their parts.
 	local order = {}
 	for _, entry in ipairs(R.entries("ann")) do order[#order + 1] = entry.key:match("ann:(.*)$") end
-	eq(table.concat(order, " "), "1:1 2:0.1 2:0.2 2:0.3 2:0.4 2:1 2:2 2:3 2:4 2:5 2:6 2:6.1 " ..
-		"2:7 2:7.1 2:8 2:8.1", "B the entries in slot order")
+	eq(table.concat(order, " "), "1:1 2:0.1 2:0.2 2:0.3 2:0.4 2:0.5 2:1 2:2 2:3 2:4 2:5 2:6 " ..
+		"2:6.1 2:7 2:7.1 2:8 2:8.1 2:18", "B the entries in slot order")
 	eq(R.count("bob"), 2, "B the other player's entries")
 
 	-- A rerun changes nothing; nor does a rerun over a half-done pass.
@@ -786,7 +802,7 @@ do
 	eq(snapshot("grug_housing"), done, "B a rerun writes the same")
 	-- Half-done: entries not yet rewritten (their contents and parts
 	-- written), empties not yet deleted (their stack written).
-	for _, n in ipairs({"1", "6", "7", "8", "11", "13", "16"}) do
+	for _, n in ipairs({"1", "6", "7", "8", "11", "13", "16", "18", "19"}) do
 		housing:set_string("recovered:ann:2:" .. n, SEED["recovered:ann:2:" .. n])
 	end
 	R.clean_pass(2)
@@ -794,9 +810,24 @@ do
 	-- Half-done: the empties' later stacks written, the first not yet.
 	housing:set_string("recovered:ann:2:0.1", "")
 	housing:set_string("recovered:ann:2:0.4", "")
-	for n = 11, 17 do housing:set_string("recovered:ann:2:" .. n, SEED["recovered:ann:2:" .. n]) end
+	for n = 11, 19 do housing:set_string("recovered:ann:2:" .. n, SEED["recovered:ann:2:" .. n]) end
 	R.clean_pass(2)
 	eq(snapshot("grug_housing"), done, "B ...also over half-written stacks of empties")
+	-- A real interruption: back to the tool's rows, the pass fails at the
+	-- first stack of empties, the rerun completes it (the filled station is
+	-- rewritten only after the stacks, so its item is not lost).
+	local data = storages.grug_housing
+	for key in pairs(data) do data[key] = nil end
+	for key, value in pairs(SEED) do data[key] = value end
+	local set_string = H.storage.set_string
+	H.storage.set_string = function(self, key, value)
+		if key:match(":0%.%d+$") then error("interrupted", 0) end
+		return set_string(self, key, value)
+	end
+	check(not pcall(R.clean_pass, 2), "B the interrupted pass fails")
+	H.storage.set_string = set_string
+	R.clean_pass(2)
+	eq(snapshot("grug_housing"), done, "B ...and its rerun ends where an uninterrupted one does")
 	-- A marker left by a failed start runs again through grug_core's runner.
 	core_store:set_string("map_reset_pack:2", "1")
 	grug_core.world_version.run_packs(core_store)
@@ -948,17 +979,17 @@ do
 	H.model.activate(claim, 5)
 	H.open_stone_interface(ann, claim)
 	fs = last_shown("ann").fs
-	has(fs, "tabheader[0,0;stone_tab;Claim Stone,Belongings (16);1;false;false]",
+	has(fs, "tabheader[0,0;stone_tab;Claim Stone,Belongings (18);1;false;false]",
 		"D the active stone's form has the Belongings tab with the count")
 	eq(engine_take(ann, 1, 1, "main", 9), 0, "D the main tab takes nothing")
 	submit(ann, {stone_tab = "2"})
 	fs = last_shown("ann").fs
-	has(fs, "list[detached:grug_housing_recovered_ann;recovered;0,0;8,2;]",
-		"D the Claim Stone inventory, two rows")
+	has(fs, "list[detached:grug_housing_recovered_ann;recovered;0,0;8,3;]",
+		"D the Claim Stone inventory, three rows")
 	has(fs, "listring[detached:grug_housing_recovered_ann;recovered]listring[current_player;main]",
 		"D shift-click takes into the inventory")
 	has(fs, "Belongings from the old map", "D the box's label")
-	lacks(fs, "scrollbar[", "D two rows need no scrollbar")
+	lacks(fs, "scrollbar[", "D three rows need no scrollbar")
 	-- Round 50 HOTBAR: the bag view's hotbar switch on the Belongings tab
 	-- shows the Belongings tab again (the switch itself: tools/r50_hotbar).
 	local switches, before = 0, #shown
@@ -970,11 +1001,11 @@ do
 	grug_inventory.hotbar_switch_fields = nil
 	eq(switches, 1, "D the Belongings tab passes the hotbar switch on")
 	eq(#shown, before + 1, "D ...and shows the form again")
-	has(last_shown("ann").fs, "list[detached:grug_housing_recovered_ann;recovered;0,0;8,2;]",
+	has(last_shown("ann").fs, "list[detached:grug_housing_recovered_ann;recovered;0,0;8,3;]",
 		"D ...on the Belongings tab")
-	eq(recovered_inv("ann").inv:get_size("recovered"), 16, "D the list rounded up to whole rows")
+	eq(recovered_inv("ann").inv:get_size("recovered"), 24, "D the list rounded up to whole rows")
 	eq(slot("ann", 1), stored("recovered:ann:1:1"), "D slot 1: the older pass first")
-	eq(slot("ann", 16), "grug_smelting:charcoal 51", "D slot 16: the charcoal's rest")
+	eq(slot("ann", 17), "grug_smelting:charcoal 51", "D slot 17: the charcoal's rest")
 
 	-- Take-only: no put, no move.
 	local callbacks = recovered_inv("ann").callbacks
@@ -993,7 +1024,7 @@ do
 	check(stored("packed:ann:2:1") ~= "", "D ...its contents wait for the placement")
 	run_afters()
 	eq(slot("ann", idx), stored("recovered:ann:2:2"), "D the slots close up after the take")
-	has(last_shown("ann").fs, "Belongings (15)", "D the count follows")
+	has(last_shown("ann").fs, "Belongings (17)", "D the count follows")
 
 	-- Part of a stack: one of the three stacked chests, the entry keeps two.
 	eq(engine_take(ann, index_of("ann", "recovered:ann:2:0.1"), 1, "main", 4), 1,
@@ -1150,6 +1181,15 @@ do
 	eq(place(misfit, mspot):to_string(), misfit:to_string(), "E contents that do not fit: kept")
 	eq(core.get_node(mspot).name, "air", "E ...and the node is taken back")
 	check(stored("packed:ann:9:1") ~= "", "E ...and the contents are kept")
+	-- Stored contents that do not decode: nothing placed, item and key kept.
+	housing:set_string("packed:ann:9:2", "return {main = {")
+	local garbled = P.make_ref("default:chest", "packed:ann:9:2", 9, {})
+	local gspot = {x = 105, y = 5, z = 30}
+	warnings = {}
+	eq(place(garbled, gspot):to_string(), garbled:to_string(), "E undecodable contents: kept")
+	eq(core.get_node(gspot).name, "air", "E ...nothing placed")
+	eq(stored("packed:ann:9:2"), "return {main = {", "E ...the stored contents kept")
+	has(warnings[1], "packed:ann:9:2", "E ...and the error names the key")
 	-- A node this version cannot restore (never after the clean-up): kept.
 	local unknown = P.make_ref("gone:barrel", "packed:ann:9:1", 9, too_many)
 	eq(place(unknown, {x = 110, y = 5, z = 30}):to_string(), unknown:to_string(),
