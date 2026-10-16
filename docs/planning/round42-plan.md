@@ -160,6 +160,7 @@ conditions); the user asked for numbers with a basis, not guesses.
     - lockout per mob 1 s in combat, 5 s otherwise (the existing no-path
       waits on top); a global cap of 20 searches per second, provisional —
       NV1 reports the real demand.
+
     Round 49 changed the padding: 6, then 12, then 16 per stuck episode
     (the user, 2026-10-15; [Round 49](round49-plan.md#completion-2026-10-16)).
 19. **Wide mobs** (NV0 finding F3): the engine's search cannot produce a

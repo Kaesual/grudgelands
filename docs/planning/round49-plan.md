@@ -338,7 +338,7 @@ first start; a seed fleet ran beside them).
   band, 0.90–1.02 per resource. Gems 59 % singles and 31 % pairs (ORE's
   fixture). Cave Cap 8 plants on 14,013 in-range floors (1 / 1,752,
   target 1 / 1,536), Ember Moss 11 on 31,781 (1 / 2,889, target
-  1 / 2,048), within one standard deviation.
+  1 / 2,048), about one standard deviation from the targets.
 - **The first start** (starts-only preparation, 84 surface chunks):
 
   | | before (MEAS) | after (MEAS2) |

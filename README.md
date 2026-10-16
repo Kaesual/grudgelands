@@ -95,7 +95,7 @@ ores, gems and cave plants now come from the engine's own map generator,
 about as often as before, and going deep generates almost instantly. Mail
 postage is paid at Send, the merchant's Sell rows show item tooltips, the
 Claim Stone fits in your bags, a new character's apples and torches sit
-on the hotbar, kills pay XP down to 10 levels below yours (was 7), rares
+on the hotbar, kills pay XP down to 9 levels below yours (was 6), rares
 sit between normal and elite creatures, and creatures find their way round
 bushes and trees. 0.48.0 before it put a mailbox beside the waystone of every capital
 and starting village, made crops need light, let vendors buy almost
@@ -154,7 +154,7 @@ uses mapgen **v7** and brings its own map settings.
 > with an error otherwise. The New World dialog hides the map generator
 > checkboxes for this game, but it still writes the flags saved in your
 > Luanti settings: if you ever changed `mg_flags` (Caves, Dungeons,
-> Decorations, Biomes, Ores), set them back to their defaults first. It is
+> Decorations, Biomes, Ores, Light), set them back to their defaults first. It is
 > in Luanti's settings with *Show advanced settings* ticked, on the page
 > *Mapgen* ("Mapgen flags"); the reset button beside a changed setting
 > restores its default. The v7 flags (`mgv7_spflags`) the game sets

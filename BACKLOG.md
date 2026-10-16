@@ -1807,9 +1807,7 @@ its baked icons. MB has nothing else open.
   exists); a pure scrollbar event stops at sfinv, so `""` handlers
   registered after it never see one (none acts on it).
 - **Bags** (IH): a cross-inventory bag swap (a chest's bag onto an equipped
-  bag) is checked as a full removal, stricter than needed; two soulbound
-  stacks past `main` would push one into a bag in a sort (one Claim Stone
-  per player).
+  bag) is checked as a full removal, stricter than needed.
 - **Character** (CH): a future allow rule on gear or arrow moves must also
   cover `route_shift`, which skips the allow callbacks registered after
   `equipment.lua`; a quiver change, a Scout's shot included, resends the
@@ -2225,8 +2223,8 @@ severity).
 
 ### Round 48 — mail, plants and light, selling, smaller bags
 
-**Delivered 2026-10-14; not pushed (pushed only on the user's word); GUI
-test open** ([completion](docs/planning/round48-plan.md#completion-2026-10-14),
+**Delivered 2026-10-14; pushed (origin/main `f915d777`; 0.48.1 at
+`1ef11b5e`); GUI test open** ([completion](docs/planning/round48-plan.md#completion-2026-10-14),
 plan [round48-plan.md](docs/planning/round48-plan.md)); every code lane
 independently reviewed by Opus, every fix delta with game logic reviewed
 again, ARTP and ARTM on the user's picks, the letters and the quest text

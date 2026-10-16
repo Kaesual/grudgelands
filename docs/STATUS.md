@@ -1216,7 +1216,8 @@ is open.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.48.1 (a compatible fix, not pushed) on
+- **Latest game:** main carries 0.49.0 (Round 49, a map reset, not pushed)
+  on 0.48.1 (a compatible fix, pushed at origin/main `1ef11b5e`) on
   0.48.0 (Round 48, a map reset plus the step 0.48.0, pushed at
   origin/main `f915d777`) on 0.47.0 (Round 47, a map reset plus the step
   0.47.0) and 0.46.0 (Round 46, a map reset, never deployed on its own;
@@ -1252,7 +1253,8 @@ is open.
   the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06,
   Round 42 by the user's playtest on 2026-10-08, Rounds 46 and 47 together
   on 2026-10-14.
-  **Rounds 36–38, 40, 41, 43–45 and 48 and 0.45.1 are open** (Round 48's
+  **Rounds 36–38, 40, 41, 43–45, 48 and 49 and 0.45.1 are open** (Round 49's
+  [checklist](planning/round49-plan.md#gui-checklist-round-49), Round 48's
   [checklist](planning/round48-plan.md#gui-checklist-round-48), 0.45.1's
   [checklist](planning/round45-plan.md#gui-checklist-0451), Round 45's
   [checklist](planning/round45-plan.md#gui-checklist), Round 44's
