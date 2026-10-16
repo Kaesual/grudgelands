@@ -244,7 +244,6 @@ return function(options, profile)
 		-- North-west: stores beside the keep.
 		for _,q in ipairs({{-21,13},{-20,13},{-21,14},{-21,15},{-19,13}}) do put(q[1],1,q[2],"grug_decor:xdecor_barrel") end
 		put(-21,2,13,"grug_decor:xdecor_barrel")
-		put(-15,1,15,"grug_decor:cottages_wagon_wheel")
 		-- East: the Quartermaster's store, open to the cross way behind a
 		-- counter, and the armoury north of it.
 		hall("quartermaster store",19,0,3,5,4,{kind="store",open="x1"})
