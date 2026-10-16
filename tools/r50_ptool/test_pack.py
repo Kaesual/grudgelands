@@ -317,6 +317,22 @@ class PackTest(PassCase):
         self.assertEqual(storage[("grug_housing", "pack_seq")], "2")
         self.assertIn(("grug_core", "map_reset_pack:2"), storage)
 
+    def test_game_entries_kept(self):
+        """The game's first-start clean-up adds `recovered:<p>:<seq>:<n>.<k>`
+        keys (plan D6): opaque to the pass, kept, and the next pass appends."""
+        self.assertEqual(self.run_tool("--map-reset")[0], 0)
+        self.set_storage("grug_core", "map_reset_pack:1", None)
+        extra = "recovered:builder:1:7.1"
+        self.set_storage("grug_housing", extra, "grug_housing:packed_container")
+        self.set_storage("grug_housing", "recovered:builder:1:2", None)  # taken
+        before = self.recovered()
+        code, events, err = self.run_tool("--map-reset")
+        self.assertEqual(code, 0, err)
+        after = self.recovered()
+        self.assertEqual({k: after[k] for k in before}, before)
+        self.assertEqual(len(after) - len(before), 12)
+        self.assertTrue(all(":2:" in k for k in set(after) - set(before)))
+
     def test_pending_marker_refused(self):
         self.assertEqual(self.run_tool("--map-reset")[0], 0)
         hashes = self.hashes()

@@ -1351,7 +1351,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   private flags; refusals), the pass on copies (events and counts, every
   entry against the probe's record, charcoal rounded up, the area's border
   and MIN_Y, two passes appending, the pending-marker refusal, a restored
-  backup, `pack_baseline`, steps after the pass, `--check --map-reset`, a
+  backup, the game's `recovered:…:<n>.<k>` keys kept, `pack_baseline`, steps after the pass, `--check --map-reset`, a
   bad block, an emptied map, odd claim records, the pre-5.12 SQLite layout,
   backends, the read-only map, the lock), and the game facts pack.py freezes
   (registry.lua, api.lua, workspaces.lua). `pg_test.py` (in the image,

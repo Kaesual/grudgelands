@@ -160,7 +160,7 @@ written in `register_on_mods_loaded`, after every clear.
 |---|---|---|
 | `grug_core` `world_preparation` (`starts_preload.lua`) | the plan and its progress: total, cursor, order, geometry, reach, authority digest, selection | `mode` (starts or full): the selected plan starts again |
 | `grug_mobs` (`map_reset.lua`) | every record of the world's authored actors: `startnpc:` and `startnpcdue:` (settlement NPC markers and respawn times), `rare_alive:` and `rare_next:`, `boss:dragon:<id>:alive/due/warned`, `leader_next:`, `rift_crack:` and `rift_boss_due:`, `live_pos:` and `live_absent:` | `live_gen:<key>`, the liveness generations (monotonic: a copy of an older generation never returns) |
-| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:<player>:<seq>:<n>` and `pack_seq` (§3.5) |
+| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>`, until their items are taken) and `pack_seq` (§3.5) |
 | `grug_core` `map_reset_pack:<seq>` (§3.5) | — | the pass's marker until the game's handler has run at the next load |
 | `grug_core` `reset_world` | — | the world record itself |
 | `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up or destruction |
@@ -263,7 +263,10 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   new, every written key to read back and the row count to grow by exactly
   the new keys.
 - **Later passes append:** earlier entries stay until their items are
-  taken; the pass number grows. A pass on a restored backup writes the same
+  taken; the pass number grows. Every existing `recovered:` key is opaque
+  to the pass (the game's first-start clean-up adds
+  `recovered:<player>:<seq>:<n>.<k>` keys of its own, plan D6): never
+  parsed, renumbered or deleted; a pass only adds keys under its new `seq`. A pass on a restored backup writes the same
   rows (only the charcoal follows the clock).
 - **Refused before any write** (exit 2): a world below 0.48.1
   (`pack_baseline`, Round 50 ruling 9; a world without a record counts as
