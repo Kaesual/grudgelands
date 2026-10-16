@@ -124,10 +124,16 @@ local function chest_lists(stacks)
 	return chests
 end
 
--- A packed entry's cleaned item and the extra chests' lists (D6).
-local function clean_packed(stack, seq, removed)
+-- A packed entry's cleaned item and the extra chests' lists (D6). Lists
+-- that do not decode raise: the runner stops the load and keeps the marker
+-- and the entry, never an empty container in their place.
+local function clean_packed(key, stack, seq, removed)
 	local meta = stack:get_meta()
 	local node = meta:get_string("node")
+	local text = meta:get_string("lists")
+	if text ~= "" and type(core.deserialize(text, true)) ~= "table" then
+		error(("%s: the packed lists of %s do not decode"):format(key, node), 0)
+	end
 	local lists = packed.lists(stack)
 	-- Unregistered items go (ruling 8).
 	for _, list in pairs(lists) do
@@ -185,7 +191,7 @@ local function clean_packed(stack, seq, removed)
 end
 
 -- One entry: returns the item to keep (nil: delete) and the extra items.
-local function clean_entry(stack, seq, removed)
+local function clean_entry(key, stack, seq, removed)
 	local name = stack:get_name()
 	if stack:is_empty() then return nil, {} end
 	if not packed.registered(name) then
@@ -193,7 +199,7 @@ local function clean_entry(stack, seq, removed)
 		return nil, {}
 	end
 	if name == packed.ITEM then
-		return clean_packed(stack, seq, removed)
+		return clean_packed(key, stack, seq, removed)
 	end
 	-- Plain stacks (the stone's charcoal): split at the stack size.
 	local max = stack:get_stack_max()
@@ -223,7 +229,7 @@ function R.clean_pass(seq)
 	local stats = {entries = #keys, deleted = 0, extra = 0, removed = 0}
 	for _, key in ipairs(keys) do
 		local removed = {}
-		local keep, more = clean_entry(ItemStack(storage:get_string(key)), seq, removed)
+		local keep, more = clean_entry(key, ItemStack(storage:get_string(key)), seq, removed)
 		for k, item in ipairs(more) do
 			storage:set_string(key .. "." .. k, item:to_string())
 		end

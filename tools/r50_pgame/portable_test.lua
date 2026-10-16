@@ -735,6 +735,19 @@ do
 	eq(core_store:get_string("map_reset_pack:2"), "", "B the runner runs a pending marker again")
 	eq(snapshot("grug_housing"), done, "B ...and changes nothing")
 	check(SEED_SNAPSHOT ~= done, "B the load did clean the seeded pass")
+	-- Lists that do not decode stop the runner: entry and marker are kept.
+	local broken = ItemStack("grug_housing:packed_container")
+	broken.meta.fields = {node = "default:chest", lists = "return {main = {", seq = "3"}
+	housing:set_string("recovered:ann:3:1", broken:to_string())
+	core_store:set_string("map_reset_pack:3", "1")
+	local ok, err = pcall(grug_core.world_version.run_packs, core_store)
+	check(not ok, "B lists that do not decode fail the clean-up")
+	has(tostring(err), "recovered:ann:3:1", "B ...naming the entry")
+	eq(stored("recovered:ann:3:1"), broken:to_string(), "B ...which stays unchanged")
+	eq(core_store:get_string("map_reset_pack:3"), "1", "B ...and the marker stays")
+	housing:set_string("recovered:ann:3:1", "")
+	core_store:set_string("map_reset_pack:3", "")
+	eq(snapshot("grug_housing"), done, "B the broken pass removed again")
 end
 
 ------------------------------------------------------------------------------
