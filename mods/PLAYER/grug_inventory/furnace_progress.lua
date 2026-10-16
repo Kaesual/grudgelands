@@ -21,7 +21,7 @@
 local M = {}
 
 local FIRE = {texture = "grug_inventory_furnace_fire.png", fill = 15, name = "grug_furnace_fire"}
-local ARROW = {texture = "grug_inventory_furnace_arrow.png", fill = 22, name = "grug_furnace_arrow"}
+local ARROW = {texture = "grug_inventory_furnace_arrow.png", fill = 20, name = "grug_furnace_arrow"}
 FIRE.frames, ARROW.frames = 2 * FIRE.fill, 2 * ARROW.fill
 M.FIRE, M.ARROW = FIRE, ARROW
 -- Seconds: the one-second tick plus a second of lag.

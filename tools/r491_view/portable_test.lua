@@ -462,7 +462,7 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 		end)
 	check(fs:find(";grug_furnace_fire;grug_inventory_furnace_fire.png;30;667;10]", 1, true),
 		"burning furnace " .. bags_key .. ": the fire at its fraction")
-	check(fs:find(";grug_furnace_arrow;grug_inventory_furnace_arrow.png;44;455;16]", 1, true),
+	check(fs:find(";grug_furnace_arrow;grug_inventory_furnace_arrow.png;40;500;15]", 1, true),
 		"burning furnace " .. bags_key .. ": the arrow at its fraction")
 	local shelf = node_form_case("bookshelf", "default:bookshelf",
 		{lists = {"books"}, target = "books"}, bags_key)
@@ -586,7 +586,7 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 		-- 0.49.1 ANIM: animated (tools/r491_anim tests the frames).
 		check(fs:find(";grug_furnace_fire;grug_inventory_furnace_fire.png;30;667;10]", 1, true),
 			label .. ": the fire at its fraction")
-		check(fs:find(";grug_furnace_arrow;grug_inventory_furnace_arrow.png;44;455;16]", 1, true),
+		check(fs:find(";grug_furnace_arrow;grug_inventory_furnace_arrow.png;40;500;15]", 1, true),
 			label .. ": the arrow at its fraction")
 		local max = scroll_max(player)
 		if max > 0 then

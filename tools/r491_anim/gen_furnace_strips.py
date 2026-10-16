@@ -14,7 +14,7 @@ H * (100 - p) / 100 .. H - 1 of the overlay with blit_pixel's alpha rule,
 The fire's flame covers rows 1..15 of its 16 (row 0 is empty): FIRE_FILL
 frames, one flame row less each, from the full flame (frame 0) to the
 lowest flame (the bottom row only, frame FIRE_FILL - 1). The arrow's fill
-covers rows 2..45 of its 49, drawn in 2-pixel art steps: ARROW_FILL frames
+covers rows 2..45 of its 49 (44 rows, about 2.2 px per frame): ARROW_FILL frames
 from the empty arrow (frame 0) to one step short of full. Each strip then
 holds as many buffer frames as fill frames, all showing its end picture
 (the fire's lowest flame, never empty; the arrow full): the server only
@@ -45,7 +45,9 @@ TARGET = ROOT / "mods/PLAYER/grug_inventory/textures"
 
 # grug_inventory/furnace_progress.lua FIRE / ARROW must match.
 FIRE_FILL, FIRE_TOP, FIRE_BOTTOM = 15, 1, 15        # flame rows 1..15
-ARROW_FILL, ARROW_TOP, ARROW_BOTTOM = 22, 2, 45     # fill rows 2..45, 2 px steps
+# 20 fill frames keep the strip at 49 x 1960 px, under the 2048 px texture
+# limit of some GPUs.
+ARROW_FILL, ARROW_TOP, ARROW_BOTTOM = 20, 2, 45     # fill rows 2..45
 
 
 def decode(path):

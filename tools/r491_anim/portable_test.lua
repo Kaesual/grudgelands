@@ -391,7 +391,7 @@ do
 		eq(a and a.frames, F.frames, "A fire: every strip frame")
 	end
 	-- Arrow over a 10 s item.
-	for _, row in ipairs({{0, 1}, {5, 12}, {9.9, 22}, {10, 22}}) do
+	for _, row in ipairs({{0, 1}, {5, 11}, {9.9, 20}, {10, 20}}) do
 		local a = anim(FP.arrow(0, 0, 1, 1, row[1], 10, true))[A.name]
 		eq(a and a.start, row[2], ("A arrow %.1f of 10 s: frame start"):format(row[1]))
 		eq(a and a.duration, math.floor(10000 / A.fill + 0.5), "A arrow 10 s: ms per frame")
