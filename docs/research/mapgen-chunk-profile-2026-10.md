@@ -900,3 +900,181 @@ both caches, on the moved-ground harness), `tools/r49_jit/fleet_digest.sh`
 (quick seeds and the moved-ground set against main) and
 `tools/r49_cache/fleet_stack.sh` (every sampled chunk with the chunks above
 and below it, so the later chunks hit, on this branch and on main).
+
+## Round 49 before/after (lane MEAS2)
+
+The corpus, the native ore count and the first start after every Round 49
+world-generation lane, on main `2c5c0191` (ORE, PROT, SKIP, JIT, HASH,
+CACHE, V7A `nomountains`, the P8 follow-up). Measurement only: nothing
+under `mods/` changed. Numbers are comparisons on one machine, not targets.
+
+**Before** is the MGPROF corpus (`evidence/boot1..6`, stage boots, code of
+`1ef11b5e`) plus lane MEAS's first start (`evidence/meas-first-start`,
+totals mode, same code). **After** is two stage boots
+(`evidence/meas2-boot1`, `meas2-boot2`) and the first start
+(`evidence/meas2-first-start`, MEAS's command unchanged). All boots: fresh
+world of seed 12345, the starts preload, then the corpus, through the
+shared measuring queue under `chrt --idle`; a full seed fleet (4 Lua
+processes) ran beside them (load average 2.7–4.4 on 16 cores). The stage
+boots add, after the unchanged corpus, two chunks above each column and the
+missing chunks of both columns inside the cave-plant bands
+(`tools/mgprof/meas2_extra.lua`, 19 chunks; they never precede a corpus
+chunk). `tools/mgprof/stages.patch` was regenerated against `2c5c0191`
+(context only, the same added lines; it now applies with `git apply
+--check`, where CACHE's and P8's lines had left fuzzed hunks).
+
+| boot | wall | server CPU | preparation ready after the first step |
+|---|---|---|---|
+| meas2-boot1 (stages + extra) | 147 s | 67.8 s | 21.7 s |
+| meas2-first-start (totals) | 100 s | 67.5 s | 22.1 s |
+| meas2-boot2 (stages + extra) | 148 s | 68.3 s | 21.3 s |
+
+Reproduce:
+
+```sh
+python3 -I tools/mgprof/summarize.py --compare tools/mgprof/evidence/boot{1,2,3,4,5,6} \
+    tools/mgprof/evidence/meas-first-start --vs tools/mgprof/evidence/meas2-boot{1,2} \
+    tools/mgprof/evidence/meas2-first-start
+python3 -I tools/mgprof/summarize.py --rates <boot dirs>     # chunks per second by type
+python3 -I tools/mgprof/summarize.py --census tools/mgprof/evidence/meas2-boot{1,2}
+python3 -I tools/mgprof/summarize.py --first-start tools/mgprof/evidence/meas2-first-start
+```
+
+### The corpus, before → after
+
+Means in ms (stage groups from the stage boots; totals, `makeChunk` and
+wall from every boot). Neighbouring small groups are summed (`--compare`
+prints each group).
+
+| ms: before → after | warmup | A_S1 | A_S2 | A_B | A_U1 | A_U3 | A_U6 | B_U6 | B_U1 | B_B |
+|---|---|---|---|---|---|---|---|---|---|---|
+| planner R5 | 33 → 32 | 30 → 29 | 2 → 1 | 2 → 1 | 2 → 0 | 1 → 0 | 1 → 0 | 30 → 0 | 1 → 0 | 2 → 29 |
+| planner R6 columns | 26 → 25 | 25 → 23 | 6 → 6 | 6 → 6 | 6 → 0 | 6 → 0 | 6 → 0 | 34 → 0 | 8 → 0 | 7 → 33 |
+| planner R6 candidates | 49 → 45 | 104 → 41 | 0 | 0 | 0 | 0 | 0 | 157 → 0 | 0 | 0 → 35 |
+| VM get + input copy | 12 → 12 | 11 → 12 | 11 → 11 | 11 → 12 | 11 → 0 | 12 → 0 | 12 → 0 | 12 → 0 | 11 → 0 | 11 → 12 |
+| R5 adapter | 3 → 0 | 60 → 0 | 16 → 0 | 3 → 0 | 0 | 0 | 0 | 0 | 0 | 3 → 0 |
+| surface passes + R8 strata + R24 fill | 15 → 16 | 44 → 50 | 11 → 10 | 9 → 8 | 8 → 0 | 8 → 0 | 8 → 0 | 15 → 0 | 9 → 0 | 10 → 16 |
+| **P8 resources** | 294 → 0 | 237 → 12 | 71 → 1 | 325 → 1 | 348 → 0 | 381 → 0 | 417 → 0 | 463 → 0 | 330 → 0 | 331 → 0 |
+| P9 decorations | 0 | 10 → 8 | 2 → 1 | 0 → 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| successor P9G | 0 | 53 → 23 | 53 → 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| other successors | 20 → 8 | 9 → 9 | 7 → 7 | 7 → 7 | 9 → 0 | 8 → 0 | 9 → 0 | 12 → 0 | 10 → 0 | 8 → 10 |
+| diff scan + write-back + relight + liquids | 10 → 9 | 36 → 37 | 27 → 27 | 17 → 16 | 9 → 0 | 9 → 0 | 9 → 0 | 11 → 0 | 9 → 0 | 10 → 2 |
+| air check, tail, P8 setup and the rest | 1 → 0 | 1 → 0 | 12 → 0 | 1 → 0 | 0 | 0 | 0 | 0 | 0 | 1 → 0 |
+| **callback total (stage boots)** | **463 → 150** | **648 → 304** | **229 → 88** | **382 → 54** | **393 → 0** | **426 → 0** | **463 → 0** | **735 → 0** | **379 → 0** | **384 → 139** |
+| callback total (all boots) | 456 → 145 | 647 → 298 | 227 → 87 | 372 → 54 | 386 → 0 | 420 → 0 | 457 → 0 | 709 → 0 | 378 → 0 | 407 → 133 |
+| writer result after | applied_c | applied_cplq | applied_clq | applied_clq | deep_skip | deep_skip | deep_skip | deep_skip | deep_skip | noop_equal_content |
+| engine `Mapgen::makeChunk` | 21 → 15 | 29 → 23 | 24 → 18 | 20 → 15 | 21 → 15 | 29 → 22 | 30 → 23 | 30 → 23 | 21 → 14 | 21 → 13 |
+| request-to-done wall | 561 → 165 | 679 → 325 | 254 → 108 | 403 → 78 | 410 → 18 | 452 → 29 | 491 → 27 | 742 → 25 | 403 → 18 | 431 → 150 |
+
+- **P8 is gone** (ORE, P8): native ores cost nothing in Lua; the fill-ore
+  pass is 12 ms in A_S1 (the column's filled terrain) and ≤ 1 ms elsewhere.
+- **Wholly underground chunks run no Lua** (SKIP, PROT): `deep_skip` in
+  0.05 ms; their cost is `makeChunk`, 14–23 ms, about 6–7 ms less than
+  before (V7A `nomountains`).
+- **B_B changed role.** Before, B_U6 was column B's first chunk and paid the
+  cold planner; now B_U6 and B_U1 are skipped, so B_B is the first chunk
+  with Lua work and pays it (R5 29, R6 columns 33, R6 candidates 35 ms),
+  then finds nothing to change (`noop_equal_content`, no write-back).
+- **The cold planner remains the largest surface cost**: 93–102 ms of A_S1
+  and the warm-up, 97 ms of B_B. Its candidate part fell from 48–350 ms to
+  28–56 ms (HASH's integer digests); the spread between boots is now
+  275–333 ms for A_S1 (before 530–831) and 126–152 ms for B_B. No slow-
+  process regime showed: the host scan it lived in is gone.
+- **Surface chunks:** A_S1 −53 % (P8 −225, R5 adapter −60 (JIT), candidates
+  −63, P9G −30), A_S2 −62 % (P9G −53 by CACHE's per-column reuse, air check
+  −12, R5 adapter −16).
+
+### Chunks per second of one emerge thread
+
+1000 / mean request-to-done wall over every probe chunk of the type; the
+range is the slowest and fastest boot. The type is read from the writer
+result and the column-cache misses (≥ 3,200: the first chunk of a column).
+
+| chunk type | before: chunks, chunks/s (range) | after: chunks, chunks/s (range) |
+|---|---|---|
+| surface, first chunk of a column (cold; A_S1) | 7, 1.5 (1.2–1.8) | 3, **3.1** (2.8–3.3) |
+| surface, warm (A_S2) | 7, 3.9 (2.7–5.7) | 3, **9.3** (9.3–9.3) |
+| fill floor −112..−33, cold (before: warm-up; after: warm-up, B_B) | 7, 1.8 (1.5–2.3) | 6, **6.4** (5.7–6.8) |
+| fill floor −112..−33, warm (before: A_B, B_B; after: A_B) | 14, 2.4 (1.6–3.1) | 3, **12.9** (12.7–13.1) |
+| wholly underground, cold (before: B_U6) | 7, 1.3 (1.2–1.7) | – (no Lua) |
+| wholly underground, warm (before: U1/U3/U6) | 28, 2.3 (1.7–3.0) | – (no Lua) |
+| wholly underground, writer skipped (after: 20 chunks, −1072..−113) | – | 45, **40.0** (39.3–43.7) |
+| air above the surface, writer skipped (after: A/B at y 128 and 208) | not measured (live session: about 17–70) | 8, **38.1** (37.9–38.2) |
+
+The air skips at y 128 still pay the air test's reach ring (10–12 ms
+Lua); at y 208 0.1 ms. No chunk above the surface ran the writer.
+
+### Native ore and gem count
+
+The probe's census (lane ORE's `ore_census`, extended): every ore and gem
+node and the host rock (the band's tier rock plus its ores) per tier band
+in all 29 chunks of a stage boot, against the expected count host /
+denominator of the density table (`world_zones.md`, the same rows as
+`r7_r6_manifest.lua`; a "½" row over the band's lower half only; the deep
+multipliers start below −1500, so none applies). T1 includes the fill ores
+of A_S1/A_S2. Both boots gave identical lines (the placement is
+deterministic).
+
+| tier band | chunks | host rock nodes | ore + gem nodes | share | expected share | observed / expected |
+|---|---|---|---|---|---|---|
+| T1 | 5 | 1,620,730 | 79,987 | 4.94 % | 5.07 % | 0.97 |
+| T2 | 9 | 2,485,402 | 95,522 | 3.84 % | 3.93 % | 0.98 |
+| T3 | 6 | 2,432,300 | 83,183 | 3.42 % | 3.47 % | 0.99 |
+| T4 | 4 | 429,026 | 16,184 | 3.77 % | 3.92 % | 0.96 |
+| T5 | 10 | 2,513,621 | 92,405 | 3.68 % | 3.75 % | 0.98 |
+| T6 | 2 | 875,861 | 29,606 | 3.38 % | 3.47 % | 0.98 |
+
+Per resource (observed / expected): every row lies at 0.90–1.02 of its
+density-table rate; the lowest are Jade in T4 (189 / 209) and Sapphire in
+T6 (392 / 428), both small samples, and the ores sit about 2–5 % below
+(a scatter cluster's cube loses the nodes that fall into caves or other
+rock). The full table is printed by `--census`. The Round 47 census gave
+4.9, 3.9, 3.5, 3.8, 3.8 and 3.5 %; the counts match the density table
+within these rough targets.
+
+**Cave plants** per cave floor inside the decoration's range (a host-rock
+node with air or a plant above, its y in the plant's native range: Cave Cap
+floors −501..−101 in T1–T4 rock, Ember Moss floors −1000..−702 in T5 rock;
+the earlier count also took floors outside the range):
+
+| cave plant | chunks with in-range floors | in-range floors | plants | floors per plant | expected per plant |
+|---|---|---|---|---|---|
+| Cave Cap | 13 | 14,013 | 8 | 1,752 | 1,536 (9.1 expected) |
+| Ember Moss | 10 | 31,781 | 11 | 2,889 | 2,048 (15.5 expected) |
+
+Both are within about one standard deviation of a count this small
+(Poisson: 9 ± 3, 16 ± 4); a sharper rate needs more chunks.
+
+### First start, before → after
+
+MEAS's command, totals mode, the default starts-only preparation.
+
+| first start | before (MEAS): wall s from launch / from first step / CPU s | after (MEAS2) |
+|---|---|---|
+| mods loaded (probe init) | 24 / – / 24.2 | 25 / – / 25.2 |
+| first server step | 42 / 0 / 42.5 | 43 / 0 / 44.0 |
+| **preparation complete** | **79 / 36.7 / 79.3** | **66 / 22.1 / 66.1** |
+| end (after the 10-chunk corpus) | 114 / 71.3 / 84.1 | 98 / 53.9 / 67.5 |
+
+| preparation chunks (84, all surface chunks with writer work) | before: Lua sum ms, mean (min–max) | after |
+|---|---|---|
+| surface, minp y = −32 (42) | 22,457, 535 (365–1036) | 11,618, 277 (192–448) |
+| surface, minp y = 48 (42) | 7,410, 176 (123–262) | 3,699, 88 (59–111) |
+| **all** | **29,866**, 356 | **15,317**, 182 |
+| engine `makeChunk` | 2,510, 30 | 1,880, 22 |
+| one emerge thread over the preparation | 2.29 chunks/s | **3.80 chunks/s** |
+
+The preparation's Lua halved and its wall fell from 36.7 to 22.1 s; the
+first start is ready 13 s sooner (79 → 66 s from launch). What stays
+before the first step is unchanged single-threaded Lua: world layouts
+24.1 s (23.1 before), world map base render 9.5 s (9.2), mob spawn regions
+8.3 s (8.1); these 42 s are now about two thirds of the time to ready.
+
+### Limits
+
+- One seed, two columns, one machine; two stage boots and one totals boot
+  after, against six stage boots and one totals boot before. The before
+  boots ran on an idle machine, these beside a seed fleet.
+- The before corpus has no air chunk; the extra chunks are after only.
+- The chunk types follow the corpus; deep chunks of an occupied column
+  (towns, roads) and chunks of other columns were not measured.
