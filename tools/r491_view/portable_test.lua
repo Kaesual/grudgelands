@@ -222,6 +222,8 @@ grug_housing = {
 	remaining_seconds = function() return 86400 * 3 end,
 	pickup_wait = function() return 0 end,
 	is_fuel = function() return true end,
+	-- Round 50: no belongings from an old map wait (tools/r50_pgame).
+	recovered = {count = function() return 0 end},
 }
 local stone_ui = {
 	esc = function(text) return core.formspec_escape(text) end,

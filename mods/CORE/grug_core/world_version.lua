@@ -18,9 +18,17 @@
 -- (grug_core/map_reset.lua): that one counts map resets and drives the
 -- clears; this one names the game version that last started the world and
 -- drives the guard. A move that combines both passes the guard, then resets.
+--
+-- The tool's pre-reset pass (Round 50, docs/planning/round50-plan.md §3)
+-- packs the claims' containers and marks the pass in this storage,
+-- "map_reset_pack:<seq>". Once every mod has loaded (after every map-reset
+-- clear, before any join) each marked pass goes, in pass order, to the one
+-- handler grug_housing registers (recovered.lua); the marker goes after the
+-- handler succeeded, a failure stops the load as a world marker does.
 local storage = core.get_mod_storage()
 local RECORD_KEY = "world_version"
 local WORLD_MARKER = "migrate_world:"
+local PACK_MARKER = "map_reset_pack:"
 local CHARACTER_MARKER = "grug_core:migrate:"
 local BASELINE = "0.41.0"
 -- The test hook: undeclared test steps for the integration tests, read before
@@ -34,6 +42,7 @@ local M = {}
 grug_core.world_version = M
 M.RECORD_KEY = RECORD_KEY
 M.WORLD_MARKER = WORLD_MARKER
+M.PACK_MARKER = PACK_MARKER
 M.CHARACTER_MARKER = CHARACTER_MARKER
 M.BASELINE = BASELINE
 
@@ -179,6 +188,39 @@ function M.run_world(store, steps)
 	end
 end
 
+-- The pack markers' handler: fn(seq) cleans pass `seq`, raising on a failure.
+local pack_handler
+function M.register_pack_handler(fn)
+	assert(type(fn) == "function" and not pack_handler,
+		"one pack handler, a function")
+	pack_handler = fn
+end
+
+-- Runs the marked packing passes in pass order through the handler; each
+-- marker goes after its handler succeeded. Raises on a failure: the server
+-- does not start and the next start runs the pass again.
+function M.run_packs(store)
+	local seqs = {}
+	for _, key in ipairs(store:get_keys()) do
+		local seq = key:match("^" .. PACK_MARKER .. "(%d+)$")
+		if seq and store:get_string(key) ~= "" then seqs[#seqs + 1] = tonumber(seq) end
+	end
+	table.sort(seqs)
+	for _, seq in ipairs(seqs) do
+		local ok, err = false, "no pack handler is registered"
+		if pack_handler then
+			ok, err = pcall(pack_handler, seq)
+		end
+		if not ok then
+			error(("[grug_core] map reset pass %d: cleaning the packed containers failed, " ..
+				"the server does not start: %s"):format(seq, tostring(err)), 0)
+		end
+		store:set_string(PACK_MARKER .. seq, "")
+		core.log("action", ("[grug_core] map reset pass %d: the packed containers are ready"):
+			format(seq))
+	end
+end
+
 -- Runs a joining character's pending markers in step order. On a failure the
 -- character is held: an administrator sees a severe error, the player is
 -- disconnected with a short message and the marker stays, so the next join
@@ -244,6 +286,7 @@ core.log("action", ("[grug_core] world version %s%s, game %s: no migration step 
 
 core.register_on_mods_loaded(function()
 	M.run_world(storage, M.steps)
+	M.run_packs(storage)
 	-- An existing world's record once the load has succeeded: every mod and
 	-- every register_on_mods_loaded callback ran without an error.
 	core.after(0, function()

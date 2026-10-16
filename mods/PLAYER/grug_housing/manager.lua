@@ -101,24 +101,33 @@ local LINES = {
 
 -- The button only when the player can receive a stone (Round 49 ruling 4),
 -- else the reason in its place: below level 20, a stone placed or carried.
--- A full inventory keeps the button; the click then says so in red.
+-- A full inventory keeps the button; the click then says so in red. While
+-- belongings from an old map wait (Round 50 D8), one more line says so.
 local function formspec(session, player)
-	local fs = {"formspec_version[4]size[10.5,6.8]",
+	local lines = LINES
+	if grug_housing.recovered.count(player:get_player_name()) > 0 then
+		lines = {}
+		for index, line in ipairs(LINES) do lines[index] = line end
+		lines[#lines + 1] = grug_housing.recovered.NOTICE
+	end
+	-- One more line moves the rest down by a line.
+	local shift = (#lines - #LINES) * 0.45
+	local fs = {("formspec_version[4]size[10.5,%g]"):format(6.8 + shift),
 		"label[0.4,0.5;Housing Steward]"}
-	for index, line in ipairs(LINES) do
+	for index, line in ipairs(lines) do
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.7 + index * 0.45, ui.esc(line))
 	end
 	if session.message then
-		fs[#fs + 1] = ("label[0.4,4.75;%s]"):format(ui.text(session.message,
+		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(4.75 + shift, ui.text(session.message,
 			session.message_color))
 	end
 	local ok, reason = grug_housing.can_receive_stone(player)
 	if ok then
-		fs[#fs + 1] = "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]"
+		fs[#fs + 1] = ("button[0.4,%g;5.2,0.8;receive;Receive Claim Stone]"):format(5.5 + shift)
 	else
-		fs[#fs + 1] = ("label[0.4,5.9;%s]"):format(ui.esc(reason))
+		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(5.9 + shift, ui.esc(reason))
 	end
-	fs[#fs + 1] = "button_exit[6.9,5.5;3.2,0.8;close;Close]"
+	fs[#fs + 1] = ("button_exit[6.9,%g;3.2,0.8;close;Close]"):format(5.5 + shift)
 	return table.concat(fs)
 end
 
