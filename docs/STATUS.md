@@ -43,6 +43,10 @@ is open.
   engine and the code. Main has 201 portable fixtures (4 new); `mods/`
   +672 −203 lines in 32 files. The declaration is
   `{"schema": 2, "version": "0.49.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"]}`.
+  On main `96bd48f2`: full fixtures 201/201, `check_upgrade.py` (0.49.1
+  against origin/main `bc1e6016`), `check_fresh_server.py` and a 120 s
+  smoke boot PASS. The admin digs the two fortress wagon wheels in the
+  production world by hand after the update.
 - **Round 49 "Mapgen performance (native first) and gameplay polish"
   complete and pushed** (origin/main `bc1e6016`; 2026-10-16, version 0.49.0, **map reset**, no
   migration step,
