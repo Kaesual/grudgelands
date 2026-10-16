@@ -687,6 +687,8 @@ local function announcements_event(player, session, fields)
 end
 
 local function write_event(player, session, fields)
+	-- The view's hotbar switch (Round 50): the re-show after every event.
+	if grug_inventory.hotbar_switch_fields(player, fields) then return end
 	if fields.write_discard then
 		session.draft = {to = "", subject = "", body = ""}
 		grug_mail.return_attachments(player)

@@ -940,13 +940,25 @@ function grug_abilities.update_stack_description(stack, def, player)
 	return true
 end
 
--- The lists ability representations may live in: main and the bag contents.
-local function representation_lists()
+-- The lists of the shown hotbar layout's side: main and the bag contents
+-- (skills outside the hotbar are strays from before Round 44).
+local function active_lists()
 	local lists = {"main"}
 	if core.global_exists("grug_inventory") then
 		for i = 1, grug_inventory.BAG_COUNT do
 			lists[#lists + 1] = grug_inventory.content_list(i)
 		end
+	end
+	return lists
+end
+
+-- The lists ability representations may live in: those and the inactive
+-- hotbar layout (Round 50), whose skins and tooltips every sync refreshes
+-- too, so a switch shows them current.
+local function representation_lists()
+	local lists = active_lists()
+	if core.global_exists("grug_inventory") then
+		lists[#lists + 1] = grug_inventory.HOTBAR_STORE
 	end
 	return lists
 end
@@ -1784,9 +1796,9 @@ end
 
 -- Rewrite the skins of the granted ability items. `hand_list` limits the pass
 -- to the skills that read that equipment list; nil means both hands. The
--- swing clock (apply_swing_caps) follows the melee list. Ability items live in
--- "main" only (the allow callback above enforces it), so this is one list, and
--- it writes only the stacks whose token is stale.
+-- swing clock (apply_swing_caps) follows the melee list. Ability items live on
+-- the two hotbar layouts (grug_skills/bound_items.lua enforces it), and this
+-- writes only the stacks whose token is stale.
 local function sync_skins(player, hand_list)
 	local inv = player:get_inventory()
 	local source_of = skin_source_cache(player)
@@ -1815,7 +1827,7 @@ local function sync_skins(player, hand_list)
 end
 
 -- Level and talent changes can re-tune every numeric ability. Walk only the
--- main list where ability items are allowed to live, and spend at most one
+-- lists where ability items are allowed to live, and spend at most one
 -- inventory write per changed ability. No globalstep or cast path calls this.
 local function sync_descriptions(player)
 	local inv = player:get_inventory()
@@ -1975,10 +1987,8 @@ function grug_abilities.stack_for(player, ability_id)
 end
 
 local function allowed_storage(listname)
-	if listname == "main" then return true end
-	if not core.global_exists("grug_inventory") then return false end
-	for i = 1, grug_inventory.BAG_COUNT do
-		if listname == grug_inventory.content_list(i) then return true end
+	for _, list in ipairs(representation_lists()) do
+		if listname == list then return true end
 	end
 	return false
 end
@@ -2009,10 +2019,16 @@ local function insert_initial_ability(inv, index, stack)
 	return true
 end
 
+-- Removes every representation that is locked, outside the allowed lists or
+-- a second copy, and refreshes the others. Copies count per hotbar layout
+-- (Round 50): the same skill may lie once on the shown side (main and the
+-- bags) and once on the inactive layout.
 function grug_abilities.normalize_kit(player)
 	local inv = player:get_inventory()
-	local have, equipment_changed = {}, false
+	local hidden = core.global_exists("grug_inventory") and grug_inventory.HOTBAR_STORE
+	local seen, equipment_changed = {shown = {}, hidden = {}}, false
 	for listname, list in pairs(inv:get_lists()) do
+		local have = listname == hidden and seen.hidden or seen.shown
 		for i, stack in ipairs(list) do
 			local def = item_defs[stack:get_name()]
 			if def then
@@ -2034,7 +2050,9 @@ function grug_abilities.normalize_kit(player)
 end
 
 -- Skills live on the hotbar only (Round 44, spec ui-crafting-rework-plan.md
--- ruling 8): a grant puts a skill on the first free hotbar slot. With none
+-- ruling 8): the kit's grant (grant_initial_kit below; a talent unlock
+-- places nothing, Round 50 D1) puts a skill on the first free hotbar slot of
+-- the shown layout. With none
 -- free, a non-skill item makes room (Round 49 ruling 10): the rightmost one
 -- the rest of the inventory can take moves there through the give helper,
 -- and the skill takes its slot; a skill never moves. With no room anywhere
@@ -2066,25 +2084,14 @@ local function place_on_hotbar(player, inv, stack)
 	return nil
 end
 
+-- Whether the shown side (the hotbar, main and the bags) holds the skill: a
+-- copy on the inactive layout does not count, so the kit goes onto the shown
+-- layout whichever one it is (Round 50 D1).
 local function carries(inv, ability_id)
-	for _, listname in ipairs(representation_lists()) do
+	for _, listname in ipairs(active_lists()) do
 		if inv:contains_item(listname, "grug_abilities:" .. ability_id) then return true end
 	end
 	return false
-end
-
--- The talent-unlock grant (grug_skills): the ability onto the hotbar
--- (place_on_hotbar) unless the player already carries it. Returns the slot,
--- or nil and why not: "locked", "carried" or "full" (no room on the hotbar
--- and none in the inventory for the item that would make room).
-function grug_abilities.grant_to_hotbar(player, ability_id)
-	local inv = player:get_inventory()
-	local stack = grug_abilities.stack_for(player, ability_id)
-	if not stack then return nil, "locked" end
-	if carries(inv, ability_id) then return nil, "carried" end
-	local slot = place_on_hotbar(player, inv, stack)
-	if not slot then return nil, "full" end
-	return slot
 end
 
 local function grant_initial_kit(player)
@@ -2520,3 +2527,17 @@ grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 	delay_strike = grug_abilities.delay_strike,
 	within_hand_reach = within_hand_reach,
 })
+
+-- A hotbar switch (Round 50 ruling 3, grug_inventory/hotbars.lua), before
+-- the rows change hands: like a stun, it cancels a pending cast, eating, the
+-- bow's draw (its stage image is reset on the leaving copy) and held input,
+-- latched until a fresh press, and ends a held swing loop while keeping the
+-- weapon's due time (so switching never swings sooner). Cooldowns and paid
+-- costs stay. The wield watcher and the cooldown overlay read the new row on
+-- their next pass.
+grug_inventory.register_on_hotbar_switch(function(player)
+	grug_abilities.input.cancel(player)
+	reset_swing_boundary(player)
+	dirty[player:get_player_name()] = true
+	cooldown_hud.rescan(player:get_player_name())
+end)

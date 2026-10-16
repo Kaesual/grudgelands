@@ -143,7 +143,7 @@ escaped.
 |---|---|---|
 | `start` | `mode` (`migrate` or `check`), `world` (absolute directory) | first (a usage refusal comes alone) |
 | `pack_start` | `seq` (the pass number), `claims` (claim records read) | `--map-reset`: the pass begins |
-| `pack_done` | `seq`, `counts`: `claims`, `players` (owners given entries), `containers` (packed items), `items` (non-empty stacks inside them), `charcoal` (pieces), `blocks_read`; `nodes` and `empty` (packed and empty item-holding nodes by node name; `workspace record` for personal workspace records), `seconds` | the pass committed |
+| `pack_done` | `seq`, `counts`: `claims`, `players` (owners given entries), `containers` (packed items), `items` (non-empty stacks inside them), `charcoal` (pieces), `blocks_read`; `nodes` (packed containers by node name, empty ones included; `workspace record` for personal workspace records) and `empty` (the empty ones among them, by node name), `seconds` | the pass committed |
 | `step_start` | `step` (its version), `from` (the world's version before it) | a step begins |
 | `step_done` | `step`, `counts`: `characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers` (writes of that step) | a step committed |
 | `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`; with `--map-reset` also `map`), and `applied` (migrate) or `write_checked` (check); with `--map-reset` also `map_reset` (`true`) and `pack_seq` (migrate) or `map_checked` (check) | exit 0 |
@@ -1380,6 +1380,19 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   Belongings tab, two packed tooltips (the pointer moved by
   `r49_ui/warp_pointer.py`) and two restored containers, and an in-engine
   check of every placement ("place ... ok" in `probe.txt`).
+- **Round 50 lane HOTBAR** (`r50_hotbar`): the two hotbar layouts A and B
+  (`portable_test.lua` on the `r44_ch` harness: joins, the swap with wear
+  and metadata, the anti-spam limit, a failing switch callback, the hidden
+  list's guard before equipment, bags and quiver, give/fits/sort never
+  reaching it, the soulbound rule, every consumer of the study in its order
+  (crafting, ammunition, quests, Claim Stone fuel, Fallen Crown, vendor,
+  repair), `normalize_kit` per layout and the kit on the shown layout, the
+  switch callback with the real cooldown overlay, death and the map reset,
+  and the switch in the inventory pages, a node form, a chest and the
+  quickbar; the workspace, the Claim Stone form, its Belongings tab and the
+  mail's Write tab are in `r491_view`, `r50_pgame` and `r48_mail`).
+  `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r50_hotbar` the engine
+  screenshots of the Inventory page, a chest and the quickbar with B shown.
 - **Round 50 lane PTOOL** (`r50_ptool`): the migration tool's pre-reset pass
   (`--map-reset`). `test_pack.py` (Python unittest, locally on Python 3.14
   and in the runner's image on 3.13 with python3-zstandard): the block

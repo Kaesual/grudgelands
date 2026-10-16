@@ -14,7 +14,8 @@
 -- Inventories use `nodemeta:<x>,<y>,<z>` list locations (see `location`).
 -- Each session has a context table (0.49.1 VIEW): the builder passes it to
 -- grug_inventory's station view, and every submission's scroll value is kept
--- in it, so a re-show keeps the bag view's scroll position.
+-- in it, so a re-show keeps the bag view's scroll position; the view's
+-- hotbar switch re-shows the form (Round 50).
 
 local FORMNAME = "default:node_formspec"
 -- Generous against lag and the reach of long tools; not an interaction rule.
@@ -141,6 +142,14 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local inventory = rawget(_G, "grug_inventory")
 	if inventory and inventory.keep_scroll and
 			inventory.keep_scroll(session.context, fields) then
+		return true
+	end
+	-- The view's hotbar switch (Round 50): the same form again, at the kept
+	-- scroll position.
+	if inventory and inventory.hotbar_switch_fields and
+			inventory.hotbar_switch_fields(player, fields) then
+		session.last = (session.build(session.pos, player, session.context))
+		core.show_formspec(name, FORMNAME, session.last)
 		return true
 	end
 	local pos = vector.new(session.pos.x, session.pos.y, session.pos.z)

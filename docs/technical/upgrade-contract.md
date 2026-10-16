@@ -47,7 +47,7 @@ What a change needs:
 |---|---|
 | Nothing saved changes meaning | compatible |
 | World generation, or map-bound state (§3.2) the new code cannot read | map reset |
-| A removed item: a step replaces or removes it in inventories, offline characters included, and the waiting packed belongings in `grug_housing`'s `recovered:*` entries with the item strings in their `lists` (a step never reads the map: items in node inventories on the map stay, and at a map reset the pre-reset pass packs those in claims, whose unregistered items the game drops at the next load, §3.5), and in the mail (since 0.48.0: the item strings of letter attachments in `grug_mail`'s mod storage, keys `box:<name>`, and the player list `grug_mail_out`); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
+| A removed item: a step replaces or removes it in inventories, offline characters included, and the waiting packed belongings in `grug_housing`'s `recovered:*` entries and the item strings of their contents in the `packed:*` content keys (and in the `lists` of a pass the game has not cleaned yet; a step never reads the map: items in node inventories on the map stay, and at a map reset the pre-reset pass packs those in claims, whose unregistered items the game drops at the next load, §3.5), and in the mail (since 0.48.0: the item strings of letter attachments in `grug_mail`'s mod storage, keys `box:<name>`, and the player list `grug_mail_out`); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
 | Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
@@ -161,7 +161,7 @@ written in `register_on_mods_loaded`, after every clear.
 |---|---|---|
 | `grug_core` `world_preparation` (`starts_preload.lua`) | the plan and its progress: total, cursor, order, geometry, reach, authority digest, selection | `mode` (starts or full): the selected plan starts again |
 | `grug_mobs` (`map_reset.lua`) | every record of the world's authored actors: `startnpc:` and `startnpcdue:` (settlement NPC markers and respawn times), `rare_alive:` and `rare_next:`, `boss:dragon:<id>:alive/due/warned`, `leader_next:`, `rift_crack:` and `rift_boss_due:`, `live_pos:` and `live_absent:` | `live_gen:<key>`, the liveness generations (monotonic: a copy of an older generation never returns) |
-| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>`, until their items are taken) and `pack_seq` (§3.5) |
+| `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>` and `recovered:<player>:<seq>:0.<k>`, until their items are taken), the packed containers' contents `packed:<player>:<seq>:<n>[.<k>]` (until the container is placed) and `pack_seq` (§3.5) |
 | `grug_core` `map_reset_pack:<seq>` (§3.5) | — | the pass's marker until the game's handler has run at the next load |
 | `grug_core` `reset_world` | — | the world record itself |
 | `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up or destruction |
@@ -239,8 +239,9 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   fuel included; a record that does not decode is skipped, as the game's
   load drops it), and in each claim's area (x ± 50, z ± 50, from y = −100
   upward) the map blocks that exist, nothing else. Every node whose metadata
-  inventory holds an item is packed, whoever placed it; a node whose lists
-  are all empty is not. A personal workspace record (node meta
+  has an inventory with at least one list is packed, whoever placed it,
+  an empty one too (Round 50 ruling 13: the game's first start turns it
+  into its node's own item). A personal workspace record (node meta
   `grug_jobs:workspace:<name>`) that holds items is packed as a chest
   holding its stacks.
 - **What it writes,** only `grug_housing` and `grug_core` mod storage rows,
@@ -272,8 +273,10 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   charcoal follows the clock). Waiting entries are long-lived player-owned
   item storage: the game cleans each pass only once, at the next load, so
   a later step that removes or transforms an item must also cover the
-  `recovered:*` entries and the item strings nested in their packed
-  `lists` (§5.2).
+  `recovered:*` entries, the item strings of the packed contents in the
+  `packed:*` content keys (the clean-up moves them there out of the
+  items) and those nested in the `lists` of a pass not cleaned yet
+  (§5.2).
 - **Refused before any write** (exit 2): a world below 0.48.1
   (`pack_baseline`, Round 50 ruling 9; a world without a record counts as
   0.41.0); a pending `map_reset_pack:` marker (`pack_pending`: an earlier

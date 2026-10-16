@@ -78,6 +78,8 @@ All lanes touch disjoint files except the docs listed in §7.
     the hotbar makes room: it moves into the inventory (the give helper) and
     the skill takes its slot. With no room in the inventory either, the
     skill waits in the catalog as today (coordinator default).
+    *Superseded for talent unlocks in Round 50 (round50-plan.md ruling 12):
+    a talent unlock places nothing; the class kit grant keeps this rule.*
 
 ## 3. Shared conventions
 

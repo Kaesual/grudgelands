@@ -45,7 +45,6 @@ CLAIMS = {c["id"]: c for c in RECORD["claims"]}
 # lumps, 4.86 remain: 5).
 NOW = min(c["paid_until"] for c in RECORD["claims"]) - 5 * pack.LUMP_SECONDS + 3600
 OUTSIDE = {(1051, 150, 1000), (1010, -101, 1000)}
-EMPTY = {(1008, 150, 1000)}
 
 
 def sha(path):
@@ -231,13 +230,13 @@ class PackTest(PassCase):
                        for c in RECORD["claims"])
         self.assertEqual(charcoal, 27)
         inside = [c for c in RECORD["containers"]
-                  if key(c["pos"]) not in OUTSIDE | EMPTY]
+                  if key(c["pos"]) not in OUTSIDE]
         stacks = sum(1 for c in inside for s in recorded_lists(c).values() for i in s if i)
         self.assertEqual(packed["counts"], {
             "claims": 2, "players": 2, "containers": len(inside) + 1, "items": stacks + 3,
             "charcoal": 27, "blocks_read": 763})
         self.assertEqual(packed["nodes"], {
-            "default:bookshelf": 1, "default:chest": 5, "default:chest_locked": 1,
+            "default:bookshelf": 1, "default:chest": 6, "default:chest_locked": 1,
             "default:furnace_active": 1, "vessels:shelf": 1, "workspace record": 1})
         self.assertEqual(packed["empty"], {"default:chest": 1})
         self.assertEqual(done["map_reset"], True)
@@ -255,8 +254,8 @@ class PackTest(PassCase):
         self.assertEqual(after[("grug_housing", "pack_seq")], "1")
         builder = sorted((k for k in recovered if k.startswith("recovered:builder:1:")),
                          key=lambda k: int(k.rsplit(":", 1)[1]))
-        self.assertEqual(builder, ["recovered:builder:1:%d" % n for n in range(1, 11)])
-        self.assertEqual(recovered["recovered:builder:1:10"], "grug_smelting:charcoal 22")
+        self.assertEqual(builder, ["recovered:builder:1:%d" % n for n in range(1, 12)])
+        self.assertEqual(recovered["recovered:builder:1:11"], "grug_smelting:charcoal 22")
         self.assertEqual(recovered["recovered:neighbor:1:2"], "grug_smelting:charcoal 5")
 
         # Every packed entry: exactly one placed container inside the area,
@@ -330,7 +329,7 @@ class PackTest(PassCase):
         self.assertEqual(code, 0, err)
         after = self.recovered()
         self.assertEqual({k: after[k] for k in before}, before)
-        self.assertEqual(len(after) - len(before), 12)
+        self.assertEqual(len(after) - len(before), 13)
         self.assertTrue(all(":2:" in k for k in set(after) - set(before)))
 
     def test_pending_marker_refused(self):
@@ -386,7 +385,7 @@ class PackTest(PassCase):
         self.assertEqual([e["event"] for e in events],
                          ["start", "pack_start", "pack_done", "step_start", "step_done", "done"])
         self.assertEqual(events[-1]["applied"], ["0.49.5"])
-        self.assertEqual(len(seen[0]), 12, "the step sees the committed pass")
+        self.assertEqual(len(seen[0]), 13, "the step sees the committed pass")
         self.assertEqual(self.storage()[("grug_core", "world_version")], "0.49.5")
 
     def test_check(self):

@@ -96,7 +96,12 @@ reviewed plan; only then are implementation lanes briefed.
    extra hotbar keys" and "the base kit granted at class choice stays"; the
    Priest's 12–16 s TTK band in `combat_stats.md`; the 4.6 > 4.0 pursuit rule
    for Frost (M5). Record the result as a "rulings superseded or changed"
-   table in the implementation design.
+   table in the implementation design. Already decided (user, 2026-10-16,
+   [round 50 plan](../round50-plan.md) ruling 12): talent unlocks place
+   nothing on a hotbar, and a talent that turns a skill into a variant
+   that is a different skill (for example Retort replacing Strike)
+   replaces the old skill in place on every hotbar layout, A and B, that
+   holds it.
 2. **Prepared skills (M8).** List every skill with a preparation (Heal,
    Flame Lance, Word of Ruin, Final Word, Aimed Shot, Hearten, the Mercy
    ultimate, Censure and others) and decide per skill: instant, hold-to-charge

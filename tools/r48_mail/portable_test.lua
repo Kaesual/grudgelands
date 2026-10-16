@@ -544,6 +544,9 @@ grug_inventory.GAME_VERSION = "0.48.0"
 grug_inventory.UI = {frame_w = 13.5, frame_h = 13.673}
 grug_inventory.SCROLL_FIELDS = {short = "grug_inv_scroll_short"}
 grug_inventory.inventory_view = function() return "<inventory view>" end
+-- Round 50: the view's hotbar switch (tested by tools/r50_hotbar; the Write
+-- tab's handling below).
+grug_inventory.hotbar_switch_fields = function() return false end
 grug_inventory.wrap_text = function(text) return text end
 current_mod = "grug_skills"
 dofile(ROOT .. "/mods/PLAYER/grug_skills/bound_items.lua")
@@ -1127,6 +1130,21 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 	send_fields(alice, {grug_mail_tab = "3"})
 	local hint = core.formspec_escape("Up to 4,000 characters.")
 	check(formspecs.Alice.text:find(hint, 1, true), "D the Write tab shows the hint")
+	-- Round 50 HOTBAR: the view's hotbar switch on the Write tab draws the
+	-- window again, the draft kept (the switch itself: tools/r50_hotbar).
+	local switches, draws = 0, session.draw
+	local real_switch = grug_inventory.hotbar_switch_fields
+	grug_inventory.hotbar_switch_fields = function(_, fields)
+		if fields.grug_hotbar_b then switches = switches + 1 return true end
+		return false
+	end
+	send_fields(alice, {mail_to = "Brakka", mail_subject = "Hotbar", mail_body = "A draft",
+		grug_hotbar_b = "B"})
+	grug_inventory.hotbar_switch_fields = real_switch
+	eq(switches, 1, "D the Write tab passes the hotbar switch on")
+	eq(session.draw, draws + 1, "D ...and draws the window again")
+	check(session.draft.subject == "Hotbar" and formspecs.Alice.text:find("A draft", 1, true) and
+		formspecs.Alice.text:find(hint, 1, true), "D ...on the Write tab, the draft kept")
 	alice.inv:set_stack(ATTACH, 2, ItemStack("t:ingot 2"))
 	local count, long = #letters_of("Brakka"), string.rep("v", 5723)
 	send_fields(alice, {mail_to = "Brakka", mail_subject = "Essay", mail_body = long,

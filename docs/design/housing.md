@@ -118,13 +118,13 @@ or guild land.
 
 ## 3a. Packed containers and the Claim Stone inventory
 
-Round 50 (rulings 4–8, D5–D8 of the [Round 50 plan](../planning/round50-plan.md)).
+Round 50 (rulings 4–8 and 13–15, D5–D8 of the [Round 50 plan](../planning/round50-plan.md)).
 
 - **Packing:** before a map reset empties the map, the migration tool packs
   every container in every claim (101 × 101 from y −100 upward: chests,
   locked chests, furnaces, bookshelves, vessels shelves, every node that
-  holds items) with its contents and fuel. Every container belongs to the
-  claim's owner, whoever placed it. The stone's unburnt fuel comes back as
+  holds items, empty ones too) with its contents and fuel. Every container
+  belongs to the claim's owner, whoever placed it. The stone's unburnt fuel comes back as
   charcoal of the same burn time, rounded up.
 - **The Claim Stone inventory:** one per player, holding what was packed
   for that player. It shows as the **Belongings (N)** tab of the owner's
@@ -137,18 +137,26 @@ Round 50 (rulings 4–8, D5–D8 of the [Round 50 plan](../planning/round50-plan
   stacks"), up to eight of its stacks and how many more; it shows the
   container's own look. It is **soulbound** like the stone (§3), but
   dropping it is refused and it stays. Packed containers come only from
-  the Claim Stone inventory, so containers never nest.
+  the Claim Stone inventory, so containers never nest. The item carries
+  only a reference to its contents, which wait in the housing storage
+  (ruling 14), so inventories stay small, written books included.
+- **Empty containers** come back as their nodes' plain items (an open
+  chest as a chest, a lit furnace as a furnace), equal ones stacked
+  (ruling 13).
 - **Placing** one restores a normal container as any placement would
   (protection, the facing of a new placement) and fills it with exactly
-  the packed contents, item data such as a written book's text included.
-  A placement that fails keeps the item. A locked chest belongs to whoever
-  places it. A furnace comes back unlit, its fuel and input in their
+  the packed contents, item data such as a written book's text included;
+  the stored contents are then deleted. A placement that fails keeps the
+  item and its contents. Whoever holds a packed container may place it
+  (ruling 15); if its contents are gone, it is placed empty and the server
+  logs a warning. A locked chest belongs to whoever places it. A furnace comes back unlit, its fuel and input in their
   slots, and starts when it is next used.
 - **First start after the reset** (before anybody joins): items this
   version no longer has are removed from the packed containers. A
   container this version cannot restore, and the stacks beyond a list that
   became smaller, are moved into additional packed chests (D6), so nothing
-  is lost. A charcoal stack above its stack size is split.
+  is lost; such a container that still exists (a station such as the Dual
+  Furnace) also comes back as its plain item, like an empty one. A charcoal stack above its stack size is split.
 - **Notices:** a player with waiting belongings is told at every join:
   "Belongings from the old map wait in your Claim Stone." The Housing
   Steward says the same (§7.2).

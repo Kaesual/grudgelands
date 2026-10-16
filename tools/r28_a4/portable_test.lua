@@ -310,19 +310,27 @@ function ItemStack(name) return new_stack(type(name) == "string" and name or "")
 
 local main = {}
 for i = 1, 8 do main[i] = new_stack("") end
+-- Round 50: the inactive hotbar layout's list (grug_inventory.HOTBAR_STORE),
+-- which the join clears too.
+grug_inventory = {HOTBAR_STORE = "grug_hotbar_store"}
+local hidden = {}
+for i = 1, 8 do hidden[i] = new_stack("") end
+local lists = {main = main, grug_hotbar_store = hidden}
 local writes = {} -- {via = "wield" | "set_stack", index, range, skip}
 local wield_index = 1
 local inventory = {
 	get_stack = function(_, list, i) assert(list == "main"); return copy_stack(main[i]) end,
 	set_stack = function(_, list, i, st)
-		assert(list == "main")
-		main[i] = copy_stack(st)
-		writes[#writes + 1] = {via = "set_stack", index = i, range = st.meta.range or ""}
+		assert(lists[list])
+		lists[list][i] = copy_stack(st)
+		if list == "main" then
+			writes[#writes + 1] = {via = "set_stack", index = i, range = st.meta.range or ""}
+		end
 	end,
 	get_list = function(_, list)
-		assert(list == "main")
+		assert(lists[list])
 		local out = {}
-		for i, st in ipairs(main) do out[i] = copy_stack(st) end
+		for i, st in ipairs(lists[list]) do out[i] = copy_stack(st) end
 		return out
 	end,
 }
@@ -819,9 +827,11 @@ do -- L9 leave restores; join clears every saved zero range.
 	controls.dig = false
 	main[3] = new_stack("grug_abilities:charge", {range = "0"})
 	main[4] = new_stack("test:pick", {range = "0"})
+	hidden[2] = new_stack("grug_abilities:charge", {range = "0"})
 	for _, f in ipairs(joins) do f(player) end
 	check(range_of(3) == "" and range_of(4) == "0", "L9 join clears skill stacks only")
-	main[3], main[4] = new_stack(""), new_stack("")
+	check((hidden[2].meta.range or "") == "", "L9 join clears the inactive hotbar layout too (Round 50)")
+	main[3], main[4], hidden[2] = new_stack(""), new_stack(""), new_stack("")
 end
 
 if failures == 0 then

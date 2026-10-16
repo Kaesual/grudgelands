@@ -12,12 +12,13 @@ to the file by tools/r50_ptool/test_pack.py):
             game's load drops it. Drafts and claims without fuel count too.
   the area  x +- RADIUS, z +- RADIUS, from y = MIN_Y upward (claim_at), only
             the blocks stored in the map.
-  in it     every node whose metadata holds an item in its inventory, and
-            every personal workspace record (grug_jobs/workspaces.lua:
-            node meta `grug_jobs:workspace:<name>`, a core.serialize'd
-            {lists = {list = {item strings}}, process = ...}) that holds one
-            (plan D7: its items go into a packed chest). A node whose lists
-            are all empty is not packed (counted in `empty`).
+  in it     every node whose metadata has an inventory with at least one
+            list, empty ones too (ruling 13: the game turns an empty one into
+            its node's item; counted in `empty` as well), and every personal
+            workspace record (grug_jobs/workspaces.lua: node meta
+            `grug_jobs:workspace:<name>`, a core.serialize'd
+            {lists = {list = {item strings}}, process = ...}) that holds an
+            item (plan D7: its items go into a packed chest).
 
 What it writes, only mod storage, only new keys (plan section 3):
   grug_housing `recovered:<owner>:<seq>:<n>`   one item string each:
@@ -87,7 +88,7 @@ class ClaimScan:
     claim: Claim
     blocks: int = 0
     containers: list = field(default_factory=list)
-    empty: dict = field(default_factory=dict)   # node name -> count
+    empty: dict = field(default_factory=dict)   # node name -> packed empty ones
 
 
 def _number(text):
@@ -195,11 +196,11 @@ def scan_claim(map_reader, claim):
             if node is None:
                 raise PackError("claim %d: block (%d, %d, %d) has no name for the node at %s"
                                 % (claim.id, bx, by, bz, pos))
-            if meta.has_items():
+            if meta.lists:
                 scan.containers.append(Container(
                     pos, node, {inv.name: list(inv.items) for inv in meta.lists}))
-            elif meta.lists:
-                scan.empty[node] = scan.empty.get(node, 0) + 1
+                if not meta.has_items():
+                    scan.empty[node] = scan.empty.get(node, 0) + 1
             for name in sorted(meta.fields):
                 if not name.startswith(WORKSPACE_PREFIX):
                     continue
@@ -261,7 +262,7 @@ def build(scans, seq, now):
 
 
 def by_node(scans):
-    """What the pass found: packed containers and empty ones, by node name."""
+    """What the pass packed by node name, and the empty ones among them."""
     packed, empty = {}, {}
     for scan in scans:
         for container in scan.containers:

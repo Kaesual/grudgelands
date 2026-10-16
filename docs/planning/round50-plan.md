@@ -139,6 +139,31 @@ accepted those. Records:
     The notes are saved, and the coordinator can read them for the
     preparatory planning round.
 
+**Decided during the round (user, 2026-10-16)**
+
+12. **Talent unlocks place nothing** (D1 confirmed). A talent unlock never
+    puts a skill on a hotbar; the player drags it from Talents & Skills.
+    This supersedes Round 49's rule that a granted skill makes room on the
+    hotbar for talent unlocks (`round49-gameplay-draft.md` ruling 10); the
+    class kit grant keeps it. A talent that changes a skill **overwrites the
+    old variant**: today such a talent keeps the skill's button and changes
+    what it does, so it acts on A and B alike. When the class rework
+    introduces a variant that is a different skill, it replaces the old one
+    in place on every layout that holds it.
+13. **Empty containers are packed too.** They come back as plain node
+    items, not as packed containers: the first-start clean-up turns each
+    empty packed container into its node's own item (an open or lit
+    variant becomes the node it drops) and stacks equal items.
+14. **The contents live outside the item.** A packed container carries only
+    a reference, the node name, its description and its image. Its contents
+    are stored in `grug_housing`'s mod storage and fetched when it is
+    placed; then the stored contents are deleted. This keeps inventories
+    small, also with written books.
+15. **Whoever holds a packed container may place it.** Should one reach
+    another player, it is still placeable, so nobody keeps an unplaceable
+    item. If its stored contents are missing, it places as an empty
+    container and the server logs a warning.
+
 ### Coordinator defaults
 
 The user may overrule these.

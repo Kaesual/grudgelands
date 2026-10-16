@@ -663,6 +663,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	elseif fields.stone_tab then
 		session.tab = session.tab_ids and session.tab_ids[tonumber(fields.stone_tab)] or "main"
 		say(session, nil)
+	elseif grug_inventory.hotbar_switch_fields(player, fields) then
+		-- The view's hotbar switch (Round 50): the re-show below.
 	elseif session.tab == "waypoints" and travel_target(fields) and travel_api() then
 		local ok, message = travel_api().travel_from_claim(player, travel_target(fields))
 		if ok then
