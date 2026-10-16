@@ -108,12 +108,50 @@ or guild land.
   [upgrade contract](../technical/upgrade-contract.md) §3): every claim goes
   with the old map. A placed stone does not come back into the inventory; its
   owner gets a new one from the Housing Steward, as after losing it, and the
-  travel home falls back to the innkeeper (§8). A carried stone stays.
+  travel home falls back to the innkeeper (§8). A carried stone stays. The
+  claim's containers come back packed in the Claim Stone inventory (§3a).
 - It is placed like any block from a hotbar slot.
 - **One lock only** (Round 26 ruling 10): for **12 hours (43 200 s)** after
   activation the stone cannot be picked up. There is no placing lock and no
   daily limit: after a pick-up or destruction the player may place and
   activate again at once. The former once-a-day limits are gone.
+
+## 3a. Packed containers and the Claim Stone inventory
+
+Round 50 (rulings 4–8, D5–D8 of the [Round 50 plan](../planning/round50-plan.md)).
+
+- **Packing:** before a map reset empties the map, the migration tool packs
+  every container in every claim (101 × 101 from y −100 upward: chests,
+  locked chests, furnaces, bookshelves, vessels shelves, every node that
+  holds items) with its contents and fuel. Every container belongs to the
+  claim's owner, whoever placed it. The stone's unburnt fuel comes back as
+  charcoal of the same burn time, rounded up.
+- **The Claim Stone inventory:** one per player, holding what was packed
+  for that player. It shows as the **Belongings (N)** tab of the owner's
+  stone form (§7.1) once the stone is activated, never while it is a draft.
+  It is take-only (nothing goes in, nothing moves inside it), scrollable,
+  and waits indefinitely. Picking the stone up or losing it keeps it; a
+  later map reset adds to it.
+- **Packed container:** one item, `grug_housing:packed_container`. Its
+  tooltip names the container and its stack count ("Packed Chest, 14
+  stacks"), up to eight of its stacks and how many more; it shows the
+  container's own look. It is **soulbound** like the stone (§3), but
+  dropping it is refused and it stays. Packed containers come only from
+  the Claim Stone inventory, so containers never nest.
+- **Placing** one restores a normal container as any placement would
+  (protection, the facing of a new placement) and fills it with exactly
+  the packed contents, item data such as a written book's text included.
+  A placement that fails keeps the item. A locked chest belongs to whoever
+  places it. A furnace comes back unlit, its fuel and input in their
+  slots, and starts when it is next used.
+- **First start after the reset** (before anybody joins): items this
+  version no longer has are removed from the packed containers. A
+  container this version cannot restore, and the stacks beyond a list that
+  became smaller, are moved into additional packed chests (D6), so nothing
+  is lost. A charcoal stack above its stack size is split.
+- **Notices:** a player with waiting belongings is told at every join:
+  "Belongings from the old map wait in your Claim Stone." The Housing
+  Steward says the same (§7.2).
 
 ## 4. Fuel and upkeep
 
@@ -254,6 +292,9 @@ Once activated:
 - Pick-up (§5).
 - A second tab, **Waypoints** (Round 45 PT9): the owner's discovered
   waystones, each with Travel (§8).
+- While belongings from an old map wait, a tab **Belongings (N)** (Round
+  50): the Claim Stone inventory (§3a), four rows visible and scrollable,
+  above the player's combined bag; shift-click takes into the inventory.
 
 ### 7.2 Housing Steward
 
@@ -271,7 +312,9 @@ placed." or "You already carry a Claim Stone." (in any list, a bag
 included). A full inventory keeps the button: the click then refuses with
 "Make room in your inventory for the Claim Stone." in red. After a
 hand-out the dialog shows the green line and "You already carry a Claim
-Stone." in place of the button.
+Stone." in place of the button. While belongings from an old map wait
+(§3a), the dialog adds the line "Belongings from the old map wait in your
+Claim Stone."
 
 ### 7.3 Character page status
 

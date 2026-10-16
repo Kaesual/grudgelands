@@ -14,6 +14,12 @@
 -- waystones to travel to (grug_home.travel_from_claim, the waystones' rules).
 -- A draft has no tabs.
 --
+-- Round 50 (ruling 7): while the owner has belongings from an old map
+-- (recovered.lua), the activated stone's form has the tab "Belongings (N)",
+-- the Claim Stone inventory: take-only, scrollable, never in the draft's
+-- form. Each slot is one entry; a take deletes the entry or keeps the rest
+-- (re-checked against the stored entry, so a stale slot takes nothing).
+--
 -- One session per player holds the claim id, never the claim table: every
 -- action re-reads the player's claim from the registry and re-checks that it
 -- is still placed, still the player's own and still within reach.
@@ -45,6 +51,17 @@ end
 
 local function inventory_name(name)
 	return "grug_housing_fuel_" .. name
+end
+
+-- The Claim Stone inventory (Round 50): one detached list per player, the
+-- entry key of each slot, built when the Belongings tab is shown.
+local RECOVERED = "recovered"
+local RECOVERED_SCROLL = "recovered_scroll"
+local slot_keys = {}
+local recovered_inv = {}
+
+local function recovered_name(name)
+	return "grug_housing_recovered_" .. name
 end
 
 -- The player's claim, if it is still the placed claim of this session, owned
@@ -153,16 +170,35 @@ local function travel_api()
 	end
 end
 
-local function tabs(selected)
-	return ("tabheader[0,0;stone_tab;Claim Stone,Waypoints;%d;false;false]"):format(selected)
+-- The tabs of the activated stone's form: the stone, Waypoints when grug_home
+-- offers travel, Belongings while some wait. session.tab_ids keeps the shown
+-- order for the tabheader's index; "" when there is only the stone's tab.
+local function tabs(player, session)
+	local ids, labels = {"main"}, {"Claim Stone"}
+	if travel_api() then
+		ids[#ids + 1], labels[#labels + 1] = "waypoints", "Waypoints"
+	end
+	local waiting = grug_housing.recovered.count(player:get_player_name())
+	if waiting > 0 then
+		ids[#ids + 1], labels[#labels + 1] = "belongings", ("Belongings (%d)"):format(waiting)
+	end
+	session.tab_ids = ids
+	local selected = 1
+	for index, id in ipairs(ids) do
+		if id == session.tab then selected = index end
+	end
+	session.tab = ids[selected]
+	if #ids == 1 then return "" end
+	return ("tabheader[0,0;stone_tab;%s;%d;false;false]"):format(table.concat(labels, ","),
+		selected)
 end
 
 -- The Waypoints tab: one Travel button per discovered waystone of the own
 -- network; the stone itself is not listed.
-local function waypoints_formspec(player, session, home)
+local function waypoints_formspec(player, session, home, header)
 	local rows = home.known_waypoints(player)
 	local height = 2.6 + 0.7 * math.max(1, #rows)
-	local fs = {("formspec_version[4]size[10.75,%.2f]"):format(height), tabs(2),
+	local fs = {("formspec_version[4]size[10.75,%.2f]"):format(height), header,
 		"label[0.4,0.5;" .. ui.esc("Travel from your Claim Stone") .. "]"}
 	for index, row in ipairs(rows) do
 		local y = 0.6 + 0.7 * index
@@ -180,18 +216,84 @@ local function waypoints_formspec(player, session, home)
 	return table.concat(fs)
 end
 
+-- Fills the player's Claim Stone inventory from the entries, in their order;
+-- returns the number of entries.
+local function fill_recovered(name)
+	local inv = recovered_inv[name]
+	local entries = grug_housing.recovered.entries(name)
+	local keys, stacks = {}, {}
+	for index, entry in ipairs(entries) do
+		keys[index], stacks[index] = entry.key, entry.stack
+	end
+	inv:set_size(RECOVERED, math.max(8, math.ceil(#entries / 8) * 8))
+	inv:set_list(RECOVERED, stacks)
+	slot_keys[name] = keys
+	return #entries
+end
+
+-- Scrollbar steps per row: one wheel step scrolls a row (grug_inventory's
+-- bag view does the same).
+local SCROLL_FACTOR = 0.125
+local VISIBLE_ROWS = 4
+
+-- The Belongings tab: the Claim Stone inventory above the player's bag.
+local function belongings_formspec(player, session, header)
+	local name = player:get_player_name()
+	local count = fill_recovered(name)
+	local station = grug_inventory.STATION
+	local pitch = station.pitch
+	local rows = math.max(1, math.ceil(count / 8))
+	local visible = math.min(rows, VISIBLE_ROWS)
+	local area_h = visible * pitch - (pitch - 1)
+	local box, bottom = grug_inventory.station_box("Belongings from the old map", area_h)
+	local inv = "detached:" .. recovered_name(name)
+	local width = grug_inventory.VIEW_GEOMETRY.width
+	local fs = {header, box}
+	local steps = pitch / SCROLL_FACTOR
+	local max = math.max(0, rows - visible) * steps
+	if max > 0 then
+		local value = math.max(0, math.min(max, math.floor(session.recovered_scroll or 0)))
+		local thumb = math.max(1, math.floor(visible * (max + 1) / rows + 0.5))
+		fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=%d;largestep=%d;" ..
+			"thumbsize=%d;arrows=hide]"):format(max, steps, visible * steps, thumb)
+		fs[#fs + 1] = ("scrollbar[%.3f,%.3f;0.3,%.3f;vertical;%s;%d]"):format(
+			station.x + width + 0.15, station.y, area_h, RECOVERED_SCROLL, value)
+		fs[#fs + 1] = "scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;" ..
+			"thumbsize=1;arrows=default]"
+	end
+	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;vertical;%.3f]"):format(
+		station.x, station.y, width, area_h, RECOVERED_SCROLL, SCROLL_FACTOR)
+	fs[#fs + 1] = ("list[%s;%s;0,0;8,%d;]"):format(inv, RECOVERED, rows)
+	fs[#fs + 1] = "scroll_container_end[]"
+	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(station.box_x, bottom + 0.35,
+		ui.esc("Take them into your inventory; place a packed container to unpack it."))
+	local y = bottom + 0.75
+	if session.message then
+		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(station.box_x, y + 0.1,
+			ui.text(session.message, session.message_color))
+	end
+	fs[#fs + 1] = ("button_exit[%.3f,%.3f;3.1,0.8;close;Close]"):format(
+		station.box_x + station.box_w - 3.1, y)
+	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, RECOVERED)
+	return grug_inventory.station_formspec(player, table.concat(fs), y + 0.8, session)
+end
+
 local function main_formspec(player, claim, session)
 	session.draft = grug_housing.is_draft(claim)
 	if session.draft then return draft_formspec(claim, session) end
 	local home = travel_api()
-	if home and session.tab == 2 then return waypoints_formspec(player, session, home) end
+	local header = tabs(player, session)
+	if session.tab == "waypoints" then
+		return waypoints_formspec(player, session, home, header)
+	elseif session.tab == "belongings" then
+		return belongings_formspec(player, session, header)
+	end
 	local name = player:get_player_name()
 	local inv = "detached:" .. inventory_name(name)
 	-- Close takes the focus at every send (0.45.1): otherwise the engine
 	-- focuses the name field, which eats the inventory key, also after a tab
 	-- switch; the field gets it when the player clicks into it.
-	local fs = {"set_focus[close;true]"}
-	if home then fs[#fs + 1] = tabs(1) end
+	local fs = {"set_focus[close;true]", header}
 	fuel_section(fs, claim, inv)
 
 	local rows = access_rows(claim)
@@ -349,6 +451,48 @@ local function ensure_inventory(name)
 		end,
 	}, name)
 	detached[name]:set_size(LIST, 1)
+	-- The Claim Stone inventory: take-only, for the owner, on the Belongings
+	-- tab of an activated stone in reach; the slot must still hold its entry.
+	local function may_take(player, index, stack)
+		if player:get_player_name() ~= name then return false end
+		local session = sessions[name]
+		if not session or session.mode ~= "main" or session.tab ~= "belongings" then
+			return false
+		end
+		local claim = current_claim(player, session)
+		if not claim or grug_housing.is_draft(claim) then return false end
+		local key = slot_keys[name] and slot_keys[name][index]
+		return key ~= nil and
+			ItemStack(grug_housing.recovered.stored(key)):to_string() == stack:to_string()
+	end
+	recovered_inv[name] = core.create_detached_inventory(recovered_name(name), {
+		allow_move = function() return 0 end,
+		allow_put = function() return 0 end,
+		allow_take = function(inv, listname, index, stack, player)
+			if not may_take(player, index, inv:get_stack(listname, index)) then return 0 end
+			return stack:get_count()
+		end,
+		on_take = function(_, _, index, stack, player)
+			local key = slot_keys[name][index]
+			local taken = grug_housing.recovered.take(key, stack:get_count())
+			if taken:get_count() ~= stack:get_count() then
+				core.log("error", ("[grug_housing] %s took %s from %s, which held %s"):format(
+					name, stack:to_string(), key, grug_housing.recovered.stored(key)))
+			end
+			if grug_housing.recovered.stored(key) == "" then slot_keys[name][index] = nil end
+			core.log("action", ("[grug_housing] %s took %s from the Claim Stone (%s)"):format(
+				name, stack:to_string(), key))
+			-- Redrawn once the move is done (a shift-click may still fill
+			-- more slots with this stack): the tab's count, the slots closed up.
+			core.after(0, function()
+				local session = sessions[name]
+				local online = core.get_player_by_name(name)
+				if session and online and session.tab == "belongings" then
+					show(online, session)
+				end
+			end)
+		end,
+	}, name)
 end
 
 function grug_housing.open_stone_interface(player, claim)
@@ -469,8 +613,16 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	if fields.perm_name then session.typed = fields.perm_name end
+	-- The Claim Stone inventory's scroll value, as the bag view keeps its own.
+	local scroll_kind, scroll_value
+	if type(fields[RECOVERED_SCROLL]) == "string" then
+		scroll_kind, scroll_value = fields[RECOVERED_SCROLL]:match("^(%u+):(%-?%d+)$")
+		if scroll_kind == "CHG" or scroll_kind == "VAL" then
+			session.recovered_scroll = math.max(0, tonumber(scroll_value))
+		end
+	end
 	-- The bag view's scroll value; a pure scrollbar event needs no redraw.
-	if grug_inventory.keep_scroll(session, fields) then return true end
+	if grug_inventory.keep_scroll(session, fields) or scroll_kind == "CHG" then return true end
 	local claim = current_claim(player, session)
 	if not claim then
 		sessions[name] = nil
@@ -509,9 +661,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			end
 		end
 	elseif fields.stone_tab then
-		session.tab = fields.stone_tab == "2" and 2 or 1
+		session.tab = session.tab_ids and session.tab_ids[tonumber(fields.stone_tab)] or "main"
 		say(session, nil)
-	elseif session.tab == 2 and travel_target(fields) and travel_api() then
+	elseif session.tab == "waypoints" and travel_target(fields) and travel_api() then
 		local ok, message = travel_api().travel_from_claim(player, travel_target(fields))
 		if ok then
 			sessions[name] = nil
@@ -556,6 +708,10 @@ local function forget(player)
 	if detached[name] then
 		core.remove_detached_inventory(inventory_name(name))
 		detached[name] = nil
+	end
+	if recovered_inv[name] then
+		core.remove_detached_inventory(recovered_name(name))
+		recovered_inv[name], slot_keys[name] = nil, nil
 	end
 end
 core.register_on_leaveplayer(forget)

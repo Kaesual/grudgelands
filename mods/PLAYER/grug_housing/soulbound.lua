@@ -11,7 +11,8 @@
 -- grug_mail_out (grug_mail, Round 48), which the move and put rules below
 -- refuse like every list that is not carried. Death keeps the whole
 -- inventory in this game, so the stone stays; dropping destroys it (the
--- item's on_drop, stone.lua).
+-- item's on_drop, stone.lua). The packed containers of a map reset (Round
+-- 50, packed.lua) are soulbound too; dropping one is refused.
 
 local function soulbound(stack)
 	return stack ~= nil and not stack:is_empty() and
