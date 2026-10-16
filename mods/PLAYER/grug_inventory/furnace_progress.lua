@@ -76,19 +76,25 @@ function M.arrow(x, y, w, h, done, total, cooking)
 	return element(ARROW, x, y, w, h, frame, duration)
 end
 
+-- Seconds of burning or cooking between two builds (one tick apart) that
+-- the animation cannot have shown: the furnace caught up time at once (a
+-- node timer's catch-up when its block activates, a long server stall).
+M.JUMP = 2.5
+
 -- Whether `formspec`, built now from `left` seconds of fuel and `done`
 -- seconds of cooking, must be re-sent to the viewer whose session table is
 -- `context`; it is remembered there as the last build. The comparison
 -- ignores the frame starts, which move on every build. A new fuel (more
 -- fuel left than at the last build) or a new item (less cooked) is a
--- change too, even when it leaves the form's text as it was.
+-- change too, even when it leaves the form's text as it was, and so is a
+-- jump of more than JUMP seconds.
 function M.changed(context, formspec, left, done)
 	local key = formspec:gsub("(animated_image%[[^%]]*;)%d+%]", "%1]")
 	left, done = tonumber(left) or 0, tonumber(done) or 0
 	local last = context.grug_furnace_last
 	context.grug_furnace_last = {key = key, left = left, done = done}
 	return not last or last.key ~= key or left > last.left + 0.01 or
-		done < last.done - 0.01
+		done < last.done - 0.01 or left < last.left - M.JUMP or done > last.done + M.JUMP
 end
 
 return M

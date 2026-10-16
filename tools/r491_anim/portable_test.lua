@@ -455,6 +455,11 @@ do
 	eq(FP.changed(context, fs2 .. "y", 13, 0.5), true, "K less cooked (a new item): a change")
 	local other = {}
 	eq(FP.changed(other, fs2, 13, 2), true, "K per viewer: another session's first build")
+	-- A catch-up (more burnt or cooked at once than a tick shows) re-sends.
+	eq(FP.JUMP, 2.5, "K the jump limit in seconds")
+	eq(FP.changed(other, fs2, 11, 4), false, "K two seconds at once (an integer game-time pass): no change")
+	eq(FP.changed(other, fs2, 7, 4), true, "K four seconds of fuel at once: a change")
+	eq(FP.changed(other, fs2, 7, 8), true, "K four seconds of cooking at once: a change")
 end
 
 --
@@ -470,8 +475,10 @@ end
 
 -- Checks over the shows of `name` since index `from`: no animated element
 -- wraps before the next show (or `until_t`), and at each re-send the
--- element that did not change state goes on where it was (within a frame).
-local function check_animation(label, name, from, until_t)
+-- element that did not change state goes on where it was (within a frame),
+-- except at a catch-up re-send (`jump_at`, seconds after `start`), which
+-- moves it on.
+local function check_animation(label, name, from, until_t, start, jump_at)
 	local list = {}
 	for i = from + 1, #shown do
 		if shown[i].name == name and shown[i].formspec ~= "" then list[#list + 1] = shown[i] end
@@ -485,7 +492,7 @@ local function check_animation(label, name, from, until_t)
 				label, element, show.at, next_at))
 		end
 		local nxt = list[index + 1] and parse(list[index + 1].formspec)
-		if nxt then
+		if nxt and not (jump_at and next_at - start == jump_at) then
 			for element, a in pairs(form.anim) do
 				local b = nxt.anim[element]
 				if b and b.duration == a.duration then
@@ -518,7 +525,8 @@ end
 --
 
 local plain_results = {}
-local function plain_case(label, inputs, seconds, expected, prepare)
+-- `ticks`: {[second] = elapsed} for a tick that catches up time.
+local function plain_case(label, inputs, seconds, expected, prepare, ticks)
 	local name = "p_" .. label:gsub("%W", "")
 	local player = new_player(name, {16})
 	local pos = {x = #plain_results * 3 + 3, y = 0, z = 0}
@@ -538,13 +546,16 @@ local function plain_case(label, inputs, seconds, expected, prepare)
 		now = now + 1
 		if timers[key(pos)] then
 			local node_def = registered_nodes[nodes[key(pos)]]
-			if not node_def.on_timer(pos, 1.0) then timers[key(pos)] = nil end
+			local elapsed = ticks and ticks[now - start] or 1.0
+			if not node_def.on_timer(pos, elapsed) then timers[key(pos)] = nil end
 		end
 	end
 	local at = shows_of(name, from)
 	for i, t in ipairs(at) do at[i] = t - start end
 	eq(list_text(at), list_text(expected), "P " .. label .. ": re-sent at (s)")
-	check_animation("P " .. label, name, from, now)
+	local jump_at
+	for second in pairs(ticks or {}) do jump_at = second end
+	check_animation("P " .. label, name, from, now, start, jump_at)
 	return inv, pos
 end
 
@@ -572,6 +583,11 @@ do
 	check(last.still.fire ~= nil and last.anim[FP.FIRE.name] == nil, "P output full: the fire held")
 	-- An idle furnace open: nothing is re-sent.
 	plain_case("idle", {}, 20, {})
+	-- A tick that catches up 4 s (its block was inactive) at 5 s: re-sent
+	-- there, the item done 4 s early at 6 s, the log out at 11 s (lit
+	-- again at 12 s).
+	plain_case("catch-up", {src = "test:ore 3", fuel = "test:log 2"}, 13, {1, 5, 6, 12},
+		nil, {[5] = 5.0})
 end
 
 --
