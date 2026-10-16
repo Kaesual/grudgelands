@@ -1273,3 +1273,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   a fresh world with markers, then the same seed and a changed seed after
   `keep_columns.py` deleted every block outside the kept column; each boot
   one queue slot; `evidence/` the three boots and the summary.
+- **0.49.1 lane VIEW** (`r491_view`): the combined bag in every station
+  form (`portable_test.lua`: furnace, workspace furnaces, chest and locked
+  chest, bookshelf, vessels shelf and Claim Stone built for a player with
+  0, 1 and 4 bags: the lists, the shift-click rings, the scroll container,
+  the scroll position across re-shows, per viewer); `capture.sh OUT_DIR`
+  with `grug_probe_r491_view` the engine screenshots of each form with four
+  bags and of a burning furnace, scrolled (the r48_mail method).
