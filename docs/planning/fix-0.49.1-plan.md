@@ -18,6 +18,7 @@ world.
 | **DROP** | Mob drops that sometimes slide slowly over the ground and cannot be picked up | 1 | Opus / Opus |
 | **HKEEP** | Read-only study: keep the mapchunks of player housing at a map reset | 1 | Opus / the coordinator verifies |
 | **WHEEL** | The floating wagon wheel in both PvP fortresses goes | 1 | the coordinator (one line) |
+| **GAIT** | Guards (and the other humanoid NPCs) move their legs at a pace that fits their walking speed | 1 | the coordinator (animation values) |
 | **ANIM** | Furnace fire and arrow animated over their duration; the form is re-sent only at a change of state | 2 (after VIEW) | Opus / Opus |
 
 Every reviewer works in a fresh context that wrote none of the change.
@@ -78,6 +79,9 @@ User, 2026-10-16:
     wheels by hand after the update. There is no migration step, and 0.49.1
     stays compatible.
 
+12. **Guards' walking legs.** When guards walk, on patrol or wandering, their
+    leg animation is too fast. When they run, it fits.
+
 **Study (HKEEP)**
 
 11. **Keeping housing at a map reset.** The idea: at a map reset the admin
@@ -108,6 +112,14 @@ These are marked as such; the user may overrule them.
 - **D5 Wording.** Hint: "Up to 4,000 characters." Refusal as in ruling 3.
   Numbers use a thousands separator, like the design doc. These are display
   texts; the coordinator checks them.
+- **D6 Gait for every humanoid.** All humanoid NPCs share the character walk
+  clip (frames 168–187) and walk at 1–1.5 m/s, with the clip at 30–40
+  frames/s. They run at 4.6 m/s with the clip at 45–60 frames/s. So while
+  walking, their legs move about 2.5 times faster for their speed than
+  while running. Default: the same rule for all of them, not only the
+  guards: bandits, mirefolk, leaders and bosses, settlement villagers,
+  goblin miners and the night families. Vendors stand still and are not
+  affected.
 
 ## 3. Shared conventions
 
@@ -296,6 +308,25 @@ both fortresses come from this blueprint and that this line is the floating
 wheel. The fortress blueprint's existing fixture, if there is one, runs
 once.
 
+### GAIT — walking legs that fit the speed
+
+The guard (`grug_mobs/guard.lua`) walks at 1.2 m/s with the walk clip at 30
+frames/s, and runs at 4.6 m/s with it at 45 frames/s. One 20-frame step
+cycle covers 0.8 m walking and 2.0 m running. The running pace looks right
+(ruling 12), so it is the reference. The walk speed becomes
+`run_speed × walk_velocity / run_velocity`, times about 1.2 because a
+walking stride is shorter, rounded: for the guard about 14 frames/s instead
+of 30. A mob whose walk and run velocities are the same (the settlement
+villagers) uses the guard's rate per m/s.
+
+The same rule applies to every humanoid in D6: `bandit.lua`,
+`mirefolk.lua`, `bosses.lua`, `start_villagers.lua`, `goblin_miners.lua`,
+`night_families.lua`, wherever the shared walk clip is set. The clip choice
+(`grug_mobs.walk_animation`, Round 41) stays as it is. This is a first
+version by feel, and the user fine-tunes it in the GUI test. It changes only
+animation values, so the coordinator does it on main without a lane
+review.
+
 ### ANIM — furnace animation instead of a re-send every tick
 
 Today the furnace's node timer ticks every second, and every tick changes
@@ -392,6 +423,9 @@ pointer. The CHANGELOG notes that the admin removes the two wheels by hand
     With the door open, the NPC answers.
 11. Both PvP fortresses: no wagon wheel in the air. In the existing world,
     check this after digging them by hand (ruling 10).
+12. Guards on patrol and wandering, then chasing: the legs fit the pace both
+    times. The same for a bandit, a villager and a leader. If the pace is
+    still off, give the coordinator a number (faster or slower).
 
 ## 7. Orchestration
 
@@ -400,8 +434,9 @@ pointer. The CHANGELOG notes that the admin removes the two wheels by hand
 - **Model routing:** the user decides per session. The default is that
   Claude coordinates and Opus implements and reviews.
 - **Worktrees and briefs:** `.claude/worktrees/r491-<lane>`, branch
-  `r491-<lane>`, for mlen, view, door, drop, hkeep and anim. WHEEL is
-  committed by the coordinator on main. Private folder:
+  `r491-<lane>`, for mlen, view, door, drop, hkeep and anim. WHEEL and GAIT
+  are committed by the coordinator on main, before the wave 1 worktrees are
+  created. Private folder:
   `~/projects/grudgelands-orchestration/r49.1/`. The lane-start checklist
   applies to every launch, reviewers and fix rounds included.
 - **Process budget:** wave 1 runs five agent lanes at once. Headless Lua
@@ -419,6 +454,9 @@ pointer. The CHANGELOG notes that the admin removes the two wheels by hand
     `default/item_entity.lua`).
   - HKEEP writes only its report.
   - WHEEL owns its one line.
+  - GAIT owns the walk animation values of the files in D6. They are on
+    main before the lanes branch, so DOOR and DROP rebase over them without
+    conflict.
   - ANIM starts after VIEW has merged. It owns the fire and arrow parts of
     `default/furnace.lua` and `grug_jobs/workspaces.lua`, a new shared
     helper and its textures.
