@@ -606,7 +606,6 @@ eq(band_x(), corner, "M the side row back in the corner")
 
 if #failures > 0 then
 	for _, failure in ipairs(failures) do print("FAIL " .. failure) end
-	print(("R502 CMAP PORTABLE FAIL %d of %d checks"):format(#failures, checks))
-	os.exit(1)
+	error(("R502 CMAP PORTABLE FAIL %d of %d checks"):format(#failures, checks), 0)
 end
 print("R502 CMAP PORTABLE PASS checks=" .. checks)
