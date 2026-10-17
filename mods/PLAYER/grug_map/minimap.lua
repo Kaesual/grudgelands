@@ -615,6 +615,7 @@ local function update(player, state, slow, window)
 	local claim = claim_mode(player)
 	if not state.enabled and not claim then
 		remove(player, state)
+		state.claim = nil
 		return 0
 	end
 	if not state.hud then create(player, state) end

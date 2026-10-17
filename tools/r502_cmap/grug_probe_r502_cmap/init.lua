@@ -8,8 +8,8 @@
 -- the start, a spot whose claim square reaches a forbidden border (BORDER)
 -- and one with a village, camp or point of interest in the minimap's window
 -- (SITE), both in an eligible zone, using grug_housing's own rule
--- (column_problem, placement_world). It puts the Claim Stone into hotbar
--- slot 1, then for each shot moves the player, sets the wielded slot and the
+-- (column_problem, placement_world). For each shot it moves the player,
+-- puts the Claim Stone into the wielded slot or empties it, sets the
 -- minimap switch, waits SETTLE seconds and logs "SHOT <name>" and a CHECK
 -- line (claim mode, overlay tiles and fills in the cell texture, the
 -- square). The CLAIM shot places a draft for another name next to BORDER.
@@ -88,7 +88,10 @@ end
 
 local function show(player, shot)
 	place(player, state.spots[shot.spot])
-	player:set_wield_index(shot.stone and 1 or 2)
+	-- the wielded slot holds the stone or nothing (this engine has no
+	-- set_wield_index)
+	player:get_inventory():set_stack("main", player:get_wield_index(),
+		ItemStack(shot.stone and grug_housing.STONE_ITEM or ""))
 	grug_map.minimap.set_enabled(player, shot.shown)
 	if shot.draft and not state.draft then
 		local spot = state.spots.border
@@ -124,9 +127,6 @@ core.register_globalstep(function(dtime)
 			site and (site.x .. "," .. site.z) or "none"))
 		state.spots = {border = border or {x = at.x, z = at.z}, site = site or border or
 			{x = at.x, z = at.z}}
-		local inv = player:get_inventory()
-		inv:set_stack("main", 1, ItemStack(grug_housing.STONE_ITEM))
-		inv:set_stack("main", 2, ItemStack(""))
 		log(("minimap available: %s"):format(tostring(grug_map.minimap.available())))
 		state.phase = "shoot"
 		state.shot, state.waited, state.logged = 1, 0, false
