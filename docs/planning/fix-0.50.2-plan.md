@@ -1,7 +1,7 @@
 # Fix round 0.50.2 — Claim Stone placement preview on the minimap
 
 Coordinator: Claude (Opus 5.5), planned with the user on 2026-10-17.
-Status: **go given by the user on 2026-10-17**. Process:
+Status: **complete 2026-10-17** (see Completion). Process:
 [round workflow](../process/round-workflow.md).
 
 To ship as **0.50.2**, a compatible patch on 0.50.1 (main `bdabec4d`, not
@@ -235,3 +235,37 @@ unchanged after exposing the column rule).
   the sync. Then the user's GUI test (may go together with 0.50.1's) and
   the push.
 - Shared files: none with other lanes.
+
+## Completion (2026-10-17)
+
+CMAP merged on main (`7a592e05`; lane `1106d60d`, fix delta `9275f319`),
+independently reviewed by Opus (MERGE; the delta MERGE).
+
+Different from the plan:
+- **Engine fact corrected.** A `[fill` with x or y outside the image, or a
+  zero size, is logged and left out; the rest of the texture is still built
+  (`imagesource.cpp` `generateImage`). Every rectangle is clipped in Lua all
+  the same.
+- **The green square** is built at runtime from `[fill`s at the drawn size
+  (an exact one-pixel frame at every window), so there is no PNG and no art
+  script.
+- **The cache key** also covers the mapgen tree digest (the settlement
+  margins and landmark columns are not in the older parts of the key) and
+  `grug_housing/api.lua` (the territory and settlement queries).
+- **Fix round:** an overlay that fails to render now only drops claim mode;
+  the base and the minimap stay. The base then re-renders and retries at
+  every start until the overlays succeed.
+
+Numbers (measured; comparisons, not targets): the overlays add 0.48 s to
+the 9.1 s base render on a normal server (about 4.2 s to 47 s on high
+quality), 22 KB of tiles for both factions; packets while walking are the
+same with and without the stone (bytes +8–10 %); client textures over an
+hour's walk 1344 (26.6 MB) without and with the stone; the minimap's cost
+per player and step is unchanged within noise. Of 3000 squares on a real
+world that touch no red, 7 were refused, each by a single coastal-shelf
+column narrower than a pixel (the accepted exception).
+
+Backlog notes: sub-pixel coastal-shelf columns can still give "green, yet
+refused"; touching claims show a darker shared line.
+
+The user's GUI checklist is §6 above.

@@ -21,6 +21,16 @@ Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a private
 claude.ai page, Round 50 ART) shows the planning state with the user's
 notes.
 
+- **Fix round 0.50.2 "Claim Stone placement preview" complete on main, not
+  pushed** (2026-10-17, **compatible**, no migration step;
+  [plan, rulings, numbers and GUI checklist](planning/fix-0.50.2-plan.md#completion-2026-10-17)).
+  While a Claim Stone is held the minimap shows forbidden ground and every
+  claim in red and the player's 101 × 101 square in green. CMAP merged
+  `7a592e05` (lane `1106d60d`, fix delta `9275f319`), reviewed by Opus
+  (MERGE, delta MERGE). Round-end gates on `7a592e05`: full fixtures
+  204/204, `check_lua` PASS, `check_fresh_server` PASS, `check_upgrade`
+  PASS (0.50.2 compatible, compared with origin/main), smoke boot from an
+  empty cache 120 s PASS.
 - **0.50.1, a compatible tool-only follow-up, on main, not pushed**
   (2026-10-17, [follow-up](planning/round50-plan.md#follow-up-0501-2026-10-17)):
   at the platform's request `--check --map-reset` is a complete dry run of
