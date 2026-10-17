@@ -1462,6 +1462,6 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r502_home` the engine
   screenshots (both frames, "Your Home" and "<name>'s Home" with their
   banners, the stone held) on a fresh world, the smoke boot, and the
-  sample's engine cost. Its drafts are set before their chunks are
-  generated, so the mapgen logs two refinement errors for the stone nodes
-  (a probe artifact).
+  sample's engine cost. It sets each draft's stone only after
+  `core.emerge_area` generated its area (a node set into a chunk not yet
+  generated makes the refinement refuse the chunk).

@@ -8,7 +8,9 @@
 -- near the start, an eligible column with no settlement near (grug_housing's
 -- own rule) and places two drafts with their stone nodes: the player's own
 -- claim there (HOME) and another player's ("neighbor") 110 nodes south of
--- it. For each shot it moves the player (for a banner shot first outside,
+-- it. Each stone is set only after core.emerge_area has generated its
+-- area: a node set into a chunk not yet generated makes the mapgen's
+-- refinement refuse that chunk (a [GRUG-SEVERE] line). For each shot it moves the player (for a banner shot first outside,
 -- then after SETTLE seconds into the claim, and takes the shot BANNER
 -- seconds later, while the banner shows), puts the Claim Stone into the
 -- wielded slot or empties it, and logs "SHOT <name>" and a CHECK line (the
@@ -73,13 +75,25 @@ local function ground(x, z)
 	return math.max(grug_zones.terrain_height_at(x, z), 1)
 end
 
+-- The draft once its area is generated; `state.pending` counts the drafts
+-- still waiting.
 local function draft(owner, x, z)
 	local pos = {x = x, y = ground(x, z) + 1, z = z}
-	core.load_area(pos)
-	core.set_node(pos, {name = grug_housing.DRAFT_STONE})
-	local claim = grug_housing.model.create(owner, pos)
-	log(("claim %d of %s at %s"):format(claim.id, owner, core.pos_to_string(pos)))
-	return claim
+	state.pending = (state.pending or 0) + 1
+	local function emerged(_, _, remaining)
+		if remaining > 0 then return end
+		-- a block another emerge was already generating comes back
+		-- cancelled: ask again until the stone's node is there
+		if core.get_node(pos).name == "ignore" then
+			core.emerge_area(vector.subtract(pos, 16), vector.add(pos, 16), emerged)
+			return
+		end
+		core.set_node(pos, {name = grug_housing.DRAFT_STONE})
+		local claim = grug_housing.model.create(owner, pos)
+		log(("claim %d of %s at %s"):format(claim.id, owner, core.pos_to_string(pos)))
+		state.pending = state.pending - 1
+	end
+	core.emerge_area(vector.subtract(pos, 16), vector.add(pos, 16), emerged)
 end
 
 -- offsets from the own claim's centre
@@ -130,6 +144,9 @@ core.register_globalstep(function(dtime)
 		draft(NAME, state.spot.x, state.spot.z)
 		draft(OTHER, state.spot.x, state.spot.z - 110)
 		log(("minimap available: %s"):format(tostring(grug_map.minimap.available())))
+		state.phase = "emerge"
+	elseif state.phase == "emerge" then
+		if state.pending > 0 then return end
 		state.samples0, state.us0 = grug_map.location.stats.samples, grug_map.location.stats.us
 		state.updates0, state.mus0 = grug_map.minimap.stats.updates, grug_map.minimap.stats.us
 		state.phase = "shoot"
