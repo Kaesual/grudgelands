@@ -23,8 +23,11 @@
 -- normal-size base (user ruling 2026-10-06), its own variant since Round 44:
 -- the render copies its terrain (at high quality scaled down in the same
 -- pass) before anything is baked, bakes the small icons into the copy and
--- sends it as `grug_map_mini_*` tiles. Nothing else is sent, so the download
--- is the tiles alone.
+-- sends it as `grug_map_mini_*` tiles. Since 0.50.2 the render also makes
+-- one transparent overlay per faction at the minimap base's size, red where
+-- that faction's Claim Stone may not reach (`grug_map_claim_*` tiles,
+-- claim_overlay below); the minimap shows it while a stone is held. Nothing
+-- else is sent, so the download is the tiles alone.
 
 local M = {}
 
@@ -354,10 +357,165 @@ local function encode_tiles(pixels, width, tiles)
 	return total
 end
 
+-- The Claim Stone preview (fix 0.50.2, docs/design/housing.md §2): per
+-- faction a transparent image at the minimap base's size, red where the
+-- faction's claim may not reach. The column part comes from pass 1's arrays
+-- (no second zone sampling): a pixel is red when the column rule
+-- (`claim.problem`, grug_housing.column_problem) refuses its centre column,
+-- the territory asked only where the zone itself is eligible; at high
+-- quality a minimap pixel is red when ANY render pixel whose centre lies in
+-- it is red, never averaged; then every red pixel is widened by one pixel.
+-- The settlement part comes on top, rounded outward: a pixel is red when
+-- `claim.feature_in` (the placement check's own query) finds a settlement
+-- core or hard footprint within the margin of a column the pixel touches,
+-- asked over a quadtree of CLAIM_BLOCK blocks so only the few blocks near a
+-- settlement are split down to pixels. So a claim square that touches no red
+-- passes the zone and settlement checks; one that only touches red may pass
+-- too (the coordinator default "Conservative red").
+-- `claim`: {factions, problem, territory_at, feature_in, margin}.
+M.CLAIM_PREFIX = "grug_map_claim"
+-- RGBA, about 45 % opaque; the minimap draws the claims in the same red.
+M.CLAIM_RED = {220, 40, 40, 115}
+local CLAIM_RED = string.char(unpack(M.CLAIM_RED))
+local CLAIM_CLEAR = string.char(0, 0, 0, 0)
+local CLAIM_BLOCK = 64
+
+-- The settlement part as {[pixel index] = true} over the w x h minimap
+-- base, and the number of queries asked.
+local function claim_features(view, w, h, claim)
+	local floor = math.floor
+	local npp_x = (view.max_x - view.min_x) / w
+	local npp_z = (view.max_z - view.min_z) / h
+	-- the columns a pixel span touches (a node covers its column +- 0.5),
+	-- with up to one column more on each side
+	local function x_lo(i) return floor(view.min_x + i * npp_x - 0.5) end
+	local function x_hi(i) return floor(view.min_x + (i + 1) * npp_x + 0.5) end
+	local function z_lo(j) return floor(view.max_z - (j + 1) * npp_z - 0.5) end
+	local function z_hi(j) return floor(view.max_z - j * npp_z + 0.5) end
+	local red, feature_in, margin, asked = {}, claim.feature_in, claim.margin, 0
+	local function visit(i0, j0, size)
+		local i1, j1 = math.min(i0 + size, w) - 1, math.min(j0 + size, h) - 1
+		if i0 > i1 or j0 > j1 then return end
+		asked = asked + 1
+		if not feature_in(x_lo(i0), z_lo(j1), x_hi(i1), z_hi(j0), margin) then return end
+		if size == 1 then
+			red[j0 * w + i0 + 1] = true
+			return
+		end
+		local half = size / 2
+		visit(i0, j0, half)
+		visit(i0 + half, j0, half)
+		visit(i0, j0 + half, half)
+		visit(i0 + half, j0 + half, half)
+	end
+	for j = 0, h - 1, CLAIM_BLOCK do
+		for i = 0, w - 1, CLAIM_BLOCK do visit(i, j, CLAIM_BLOCK) end
+	end
+	return red, asked
+end
+
+-- The overlays from pass 1's `water` and `owner` arrays: {[faction] = tiles
+-- with png} and the counts for the log.
+local function claim_overlay(zones, view, spec, water, owner, claim)
+	local WIDTH, HEIGHT = spec.width, spec.height
+	local w, h = spec.minimap.width, spec.minimap.height
+	local floor = math.floor
+	local scale_x = (view.max_x - view.min_x) / WIDTH
+	local scale_z = (view.max_z - view.min_z) / HEIGHT
+	-- the minimap pixel each render pixel's centre lies in (as M.downscale)
+	local column, row_of = {}, {}
+	for i = 0, WIDTH - 1 do column[i] = floor((i + 0.5) * w / WIDTH) end
+	for j = 0, HEIGHT - 1 do row_of[j] = floor((j + 0.5) * h / HEIGHT) end
+	-- The zone part per water class and zone id: the faction whose claim may
+	-- cover such a column as far as its zone goes, or false. At most one:
+	-- the zone's territory rule is one faction's home.
+	local factions, problem, territory_at = claim.factions, claim.problem, claim.territory_at
+	local eligible, records = {}, {}
+	local function zone_faction(class, id)
+		local by_id = eligible[class]
+		if not by_id then
+			by_id = {}
+			eligible[class] = by_id
+		end
+		local known = by_id[id]
+		if known == nil then
+			known = false
+			if id and records[id] == nil then records[id] = zones.get(id) or false end
+			local zone = id and records[id] or nil
+			for _, faction in ipairs(factions) do
+				if not problem(faction, class, zone, false) then
+					known = faction
+					break
+				end
+			end
+			by_id[id] = known
+		end
+		return known
+	end
+	-- Per minimap pixel: the faction every render pixel in it so far allows,
+	-- or false once two disagree or one allows none.
+	local allowed, asked = {}, 0
+	for j = 0, HEIGHT - 1 do
+		local z = floor(view.max_z - (j + 0.5) * scale_z)
+		local first = row_of[j] * w + 1
+		for i = 0, WIDTH - 1 do
+			local index = j * WIDTH + i + 1
+			local class, id = water[index], owner[index]
+			local faction = zone_faction(class, id)
+			if faction then
+				asked = asked + 1
+				if problem(faction, class, records[id] or nil,
+						territory_at(floor(view.min_x + (i + 0.5) * scale_x), z)) then
+					faction = false
+				end
+			end
+			local target = first + column[i]
+			local was = allowed[target]
+			if was == nil then
+				allowed[target] = faction
+			elseif was ~= faction then
+				allowed[target] = false
+			end
+		end
+	end
+	local features, feature_queries = claim_features(view, w, h, claim)
+	local result = {}
+	for _, faction in ipairs(factions) do
+		-- widened by one pixel: a pixel stays clear only when it and its
+		-- eight neighbours allow the faction (outside the base never does)
+		local across = {}
+		for j = 0, h - 1 do
+			local row = j * w + 1
+			for i = 0, w - 1 do
+				across[row + i] = i > 0 and i < w - 1 and allowed[row + i - 1] == faction and
+					allowed[row + i] == faction and allowed[row + i + 1] == faction
+			end
+		end
+		local tiles = M.tiles(w, h, M.CLAIM_PREFIX .. "_" .. faction)
+		for _, tile in ipairs(tiles) do
+			local rows = {}
+			for j = tile.y, tile.y + tile.h - 1 do
+				local line = {}
+				for i = tile.x, tile.x + tile.w - 1 do
+					local index = j * w + i + 1
+					local clear = j > 0 and j < h - 1 and across[index - w] and across[index] and
+						across[index + w] and not features[index]
+					line[#line + 1] = clear and CLAIM_CLEAR or CLAIM_RED
+				end
+				rows[#rows + 1] = table.concat(line)
+			end
+			tile.png = core.encode_png(tile.w, tile.h, table.concat(rows), 9)
+		end
+		result[faction] = tiles
+	end
+	return result, asked, feature_queries
+end
+
 -- `layer` ({items, labels, art}, baked_layer below) is baked into both
 -- images, the world map's its names only (Round 47); nil (offline crops)
--- bakes nothing.
-local function render(zones, view, spec, layer)
+-- bakes nothing. `claim` (claim_overlay; nil: none) adds the Claim Stone
+-- overlays at the minimap copy's size.
+local function render(zones, view, spec, layer, claim)
 	local WIDTH, HEIGHT, R = spec.width, spec.height, spec.relief
 	local started = core.get_us_time()
 	local scale_x = (view.max_x - view.min_x) / WIDTH
@@ -507,6 +665,26 @@ local function render(zones, view, spec, layer)
 		mini_total = encode_tiles(mini_pixels, mini.width, mini_tiles)
 	end
 	local finished = core.get_us_time()
+	-- A failed overlay costs only the claim preview (plan §4): the base
+	-- and the minimap stay, and `overlays` stays nil.
+	local overlays
+	if claim and mini then
+		local ok, result, territories, features = pcall(claim_overlay, zones, view, spec,
+			water, owner, claim)
+		if ok then
+			overlays = result
+			local bytes = 0
+			for _, tiles in pairs(overlays) do
+				for _, tile in ipairs(tiles) do bytes = bytes + #tile.png end
+			end
+			core.log("action", ("[grug_map] rendered the Claim Stone overlays %dx%d in " ..
+				"%.2f s (%d territory and %d settlement queries, %d bytes)"):format(mini.width,
+				mini.height, (core.get_us_time() - finished) / 1e6, territories, features, bytes))
+		else
+			core.log("error", "[grug_map] Claim Stone overlays not rendered, the minimap " ..
+				"has no claim preview: " .. tostring(result))
+		end
+	end
 	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
 		"(zones/water %.2f s, relief step %d %.2f s, colour %.2f s, bake+encode %.2f s, " ..
 		"%d tiles, %d bytes; minimap copy %s %.2f s, %d bytes, %d icons; baked %d icons " ..
@@ -519,7 +697,7 @@ local function render(zones, view, spec, layer)
 		mini and (mini.width .. "x" .. mini.height) or "none",
 		(copied - coloured + finished - encoded) / 1e6, mini_total, mini_icons,
 		baked.icons, baked.icon_overlaps, baked.names, baked.name_overlaps))
-	return tiles, mini_tiles
+	return tiles, mini_tiles, overlays
 end
 
 -- The tiles of a width x height base, row by row: {name, col, row, x, y, w,
@@ -688,19 +866,23 @@ end
 -- Deletes the world-map tiles in the world folder that the current quality
 -- does not use (Round 41 ruling 7): after high -> normal the extra base
 -- tiles would otherwise stay (since Round 44 both qualities send the
--- minimap's own copy under the same six names). Only names of the two
--- tile patterns this file writes are touched; `lists` are the tile lists in
--- use. Logs the count; a failed delete is a warning.
+-- minimap's own copy under the same six names; since 0.50.2 the Claim Stone
+-- overlays too). Only names of the tile patterns this file writes are
+-- touched; `lists` are the tile lists in use. Logs the count; a failed
+-- delete is a warning.
 local function remove_stale_tiles(lists)
 	local used = {}
 	for _, list in ipairs(lists) do
 		for _, tile in ipairs(list) do used[tile.name] = true end
 	end
 	local patterns = {"^" .. M.BASE_PREFIX .. "_%d+_%d+%.png$",
-		"^" .. M.MINI_PREFIX .. "_%d+_%d+%.png$"}
+		"^" .. M.MINI_PREFIX .. "_%d+_%d+%.png$",
+		"^" .. M.CLAIM_PREFIX .. "_%a+_%d+_%d+%.png$"}
 	local removed = 0
 	for _, name in ipairs(core.get_dir_list(WORLD, false) or {}) do
-		if not used[name] and (name:find(patterns[1]) or name:find(patterns[2])) then
+		local stale = false
+		for _, pattern in ipairs(patterns) do stale = stale or name:find(pattern) ~= nil end
+		if not used[name] and stale then
 			local ok, err = os.remove(WORLD .. "/" .. name)
 			if ok then
 				removed = removed + 1
@@ -713,6 +895,35 @@ local function remove_stale_tiles(lists)
 	core.log("action", "[grug_map] removed " .. removed .. " stale world map tiles")
 end
 
+-- The Claim Stone rules for the overlays (claim_overlay): grug_housing's
+-- column rule, its world queries (placement_world, what validate asks) and
+-- its settlement distance, never a copy; with the text that enters the cache
+-- key: the rule's own source (registry.lua), its world queries' source
+-- (api.lua: territory_at and the feature_in composition) and the digest of
+-- the whole mapgen tree grug_mapgen publishes, which holds the settlement
+-- cores' margins and the landmark columns (the fitted cores and footprints
+-- are in the world identity already). Nil (no overlays) when grug_housing or a
+-- part of its world is missing.
+local function claim_rules()
+	local housing = rawget(_G, "grug_housing")
+	local world = type(housing) == "table" and housing.placement_world
+	if type(world) ~= "table" or type(housing.column_problem) ~= "function" then return nil end
+	local mapgen = rawget(_G, "grug_mapgen")
+	local wp40 = type(mapgen) == "table" and mapgen.wp40
+	local world_key = type(wp40) == "table" and wp40.world_key
+	local registry = read_file(core.get_modpath("grug_housing") .. "/registry.lua")
+	local api = read_file(core.get_modpath("grug_housing") .. "/api.lua")
+	if not registry or not api then return nil end
+	local factions = {}
+	for _, faction in ipairs(grug_core.faction_ids) do factions[#factions + 1] = faction end
+	return {factions = factions, problem = housing.column_problem,
+		territory_at = world.territory_at, feature_in = world.feature_in,
+		margin = housing.SETTLEMENT_MARGIN,
+		key = table.concat(factions, ",") .. "\n" .. housing.SETTLEMENT_MARGIN .. "\n" ..
+			core.sha256(registry) .. "\n" .. core.sha256(api) .. "\n" ..
+			tostring(type(world_key) == "table" and world_key.source)}
+end
+
 local function prepare(view)
 	assert(grug_core.zone_authority_installed(), "world authority is not installed")
 	local zones = grug_zones
@@ -721,49 +932,81 @@ local function prepare(view)
 	local mini = spec.minimap
 	local mini_tiles = mini and M.tiles(mini.width, mini.height, M.MINI_PREFIX)
 	local layer = baked_layer()
+	local claim = mini and claim_rules()
+	if mini and not claim then
+		core.log("warning", "[grug_map] no Claim Stone rules: the minimap has no claim preview")
+	end
+	local claim_tiles = {}
+	for _, faction in ipairs(claim and claim.factions or {}) do
+		claim_tiles[faction] = M.tiles(mini.width, mini.height, M.CLAIM_PREFIX .. "_" .. faction)
+	end
 	-- The quality and the minimap copy's size enter the key (ruling 3), so
 	-- switching either re-renders both; so does the baked layer (Round 44:
-	-- its layout, art and font versions and every icon's kind and place).
-	local key = core.sha256(spec.quality .. "\n" .. M.TILE .. "\n" ..
+	-- its layout, art and font versions and every icon's kind and place) and
+	-- the Claim Stone rules (0.50.2).
+	local base_key = spec.quality .. "\n" .. M.TILE .. "\n" ..
 		(mini and (mini.width .. "x" .. mini.height) or "-") .. "\n" ..
-		cache_key(zones, view) .. "\n" .. core.sha256(bake.key_text(layer.versions, layer.items)))
+		cache_key(zones, view) .. "\n" .. core.sha256(bake.key_text(layer.versions, layer.items))
+	-- The key and the tile lists in use, with the overlays or (claim nil)
+	-- without them.
+	local key, lists
+	local function with_claim()
+		key = core.sha256(base_key .. "\n" .. (claim and core.sha256(claim.key) or "-"))
+		lists = {tiles, mini_tiles or {}}
+		for _, faction in ipairs(claim and claim.factions or {}) do
+			lists[#lists + 1] = claim_tiles[faction]
+		end
+	end
+	with_claim()
 	local current = read_file(CACHE_KEY) == key
-	for _, list in ipairs({tiles, mini_tiles or {}}) do
+	for _, list in ipairs(lists) do
 		for _, tile in ipairs(list) do
 			current = current and read_file(WORLD .. "/" .. tile.name) ~= nil
 		end
 	end
 	if current then
 		core.log("action", "[grug_map] world map base cache is current")
-		for _, tile in ipairs(tiles) do M.add_media(tile.name) end
-		for _, tile in ipairs(mini_tiles or {}) do M.add_media(tile.name) end
+		for _, list in ipairs(lists) do
+			for _, tile in ipairs(list) do M.add_media(tile.name) end
+		end
 	else
-		local rendered, rendered_mini = render(zones, view, spec, layer)
+		local rendered, rendered_mini, overlays = render(zones, view, spec, layer, claim)
+		if claim and not overlays then
+			-- the overlays failed: cache and announce the base without them
+			-- (the next start tries again under the full key)
+			claim = nil
+			with_claim()
+		end
 		-- Tile names are shared across qualities: the old key goes before
 		-- the first tile is overwritten and the new one is written last, so
 		-- a crash in between renders again at the next start (ruling 7).
 		assert(core.safe_file_write(CACHE_KEY, ""), "cannot write " .. CACHE_KEY)
 		for _, tile in ipairs(rendered) do M.add_media(tile.name, tile.png) end
 		for _, tile in ipairs(rendered_mini or {}) do M.add_media(tile.name, tile.png) end
+		for _, faction in ipairs(claim and claim.factions or {}) do
+			for _, tile in ipairs(overlays[faction]) do M.add_media(tile.name, tile.png) end
+		end
 		assert(core.safe_file_write(CACHE_KEY, key), "cannot write " .. CACHE_KEY)
 	end
 	-- Never stops the load: the base is announced already.
-	local ok, err = pcall(remove_stale_tiles, {tiles, mini_tiles or {}})
+	local ok, err = pcall(remove_stale_tiles, lists)
 	if not ok then
 		core.log("warning", "[grug_map] stale world map tiles not removed: " .. tostring(err))
 	end
 	local result = {quality = spec.quality, width = spec.width, height = spec.height,
 		tiles = tiles,
 		texture = M.combined_texture(spec.width, spec.height, tiles)}
+	-- `claim`: the Claim Stone overlays' tiles by faction (nil without them).
 	result.minimap = mini and {quality = mini.quality, width = mini.width,
-		height = mini.height, tiles = mini_tiles} or result
+		height = mini.height, tiles = mini_tiles, claim = claim and claim_tiles or nil} or result
 	return result
 end
 
 -- Load-time entry point. Returns the base: {quality, width, height, tiles,
 -- texture, minimap} with `texture` what the Map tab shows and `minimap` the
--- base the minimap shows ({quality, width, height, tiles}: its own
--- normal-size variant with the small icons and no names), or
+-- base the minimap shows ({quality, width, height, tiles, claim}: its own
+-- normal-size variant with the small icons and no names, and the Claim
+-- Stone overlays' tiles by faction), or
 -- {texture = fallback} without tiles if the base is unavailable. Startup
 -- media must be announced while mods load (dynamic_add_media without a
 -- callback), so init.lua calls this; grug_mapgen has installed the world

@@ -442,9 +442,18 @@ middle of a render renders again instead of taking mixed tiles as current
 
 **Tiles.** The base is sent as 512 px tiles (`grug_map_base_<col>_<row>.png`,
 edge tiles smaller), the minimap's copy as
-`grug_map_mini_<col>_<row>.png`, written to the world directory and
-announced as startup media; nothing else of the base is sent. After every
-render or cache hit, tiles of these two names that the current quality does
+`grug_map_mini_<col>_<row>.png` and, since 0.50.2, the Claim Stone
+overlays as `grug_map_claim_<faction>_<col>_<row>.png` (both factions to
+every client; [Minimap](#minimap) "Claim mode"), written to the world
+directory and announced as startup media; nothing else of the base is sent.
+The overlays are rendered and cached with the base; their rules (the
+column rule's source `grug_housing/registry.lua`, its world queries' source
+`grug_housing/api.lua`, the settlement margin and the digest of the mapgen
+tree, which holds the settlement cores' margins and the landmark columns)
+enter the cache key. A failing overlay render costs only the claim preview:
+it logs an error, the base and the minimap are cached and announced without
+the overlays, and the next start tries again. After every
+render or cache hit, tiles of these names that the current quality does
 not use (after high → normal the 50 extra base tiles, about 5.3 MB) are
 deleted from the world directory and their count is logged; a failed delete
 is a warning (Round 41). No other file is touched. A world of an earlier
@@ -550,10 +559,10 @@ drawn from the base image above. The gliding version (approved in playtest,
 - **Updates:** the map, markers and party members are checked every server
   step, and placed again only when something the player sees changed
   (Round 37): the map and its markers when the map moves by a whole screen
-  pixel, the cell, the markers or the window change; the party arrows then
-  or when a member comes, goes, moves or turns to another of the 16 heading
-  frames. A player standing still with a still party costs one position read
-  per step and sends nothing. Static markers are asked from their providers
+  pixel, the cell, the cell texture, the markers or the window change; the
+  party arrows then or when a member comes, goes, moves or turns to another
+  of the 16 heading frames. A player standing still with a still party costs
+  one position read and one wielded-item read per step and sends nothing. Static markers are asked from their providers
   on joining, whenever the quest markers may have changed
   (`grug_quests.markers_changed`: a quest change, held objective items as
   the quest tracker sees them every 0.5 s, a level change), and at a check
@@ -585,13 +594,58 @@ drawn from the base image above. The gliding version (approved in playtest,
   the zoom: walking 0.23 → 0.39 KB/s, sprinting 0.29 → 0.31, riding
   0.23 → 0.21, flying 0.15 → 0.31 KB/s, and new cell textures 0.17–0.40 →
   0.47–1.23 per second.
+- **Claim mode** (0.50.2, [housing.md](housing.md) §2 "Placement
+  preview"): while a player with a faction holds a Claim Stone, the minimap
+  shows where a claim may go. The cell texture then also holds the
+  faction's overlay tiles after the map's (`[combine` blends them by their
+  alpha): forbidden ground semi-transparent red (about 45 %). Every claim
+  near the cell, drafts included, is one `[fill` in the same red; two
+  claims that touch share a pixel line that looks darker (accepted). The
+  player's own 101 × 101 square is one HUD image above the map and below
+  the markers, centred on the arrow: a green fill (about 30 %) with a more
+  opaque frame of one HUD pixel, built as `[fill`s at the size it is drawn
+  (it changes only with the window; the map glides under it, so walking
+  sends nothing for it). The texture is built again on a cell change, a
+  mode change or a change of the claim set (grug_housing's claim-set
+  version: a stone placed, picked up, crumbled, destroyed or removed) and
+  sent only when its string differs, so a claim elsewhere sends nothing.
+  Every claim rectangle is clipped to the cell texture in Lua and left out
+  when empty: the engine refuses a `[fill` whose x or y lies outside the
+  image or whose width or height is 0, and leaves it out of the texture
+  with an error line (`imagesource.cpp`). Another item, no faction or no
+  overlays (the render failed or grug_housing is missing): the normal
+  minimap. A switched-off minimap appears for claim mode and goes after it;
+  its side row moves beside the bezel meanwhile and back afterwards.
+  **Overlays:** rendered once per world with the base, one per faction at
+  the minimap base's size, from the render's per-pixel water class and
+  zone (no second sampling); the territory is asked only for pixels whose
+  zone is eligible. At high quality a minimap pixel is red when any render
+  pixel whose centre lies in it is red, never averaged; then red is widened
+  by one pixel. Settlement cores and hard footprints come on top, widened by
+  the 16-node margin and rounded outward (the placement check's own query
+  over a quadtree of 64-pixel blocks). Not shown: the depth limit and the
+  arrival cube.
+  **Cost** (comparisons; `tools/r502_cmap/`): the overlays add about
+  0.4–0.5 s to the 9–10 s normal render and about 4.2 s to the 47 s high
+  render (LuaJIT offline, seed 4242424242; about 205,000 territory queries
+  at normal, 2.3 million at high, 44,000 settlement queries) and about
+  22.5 KB of tiles for both factions. Held on the bench's walk
+  (`bench_claim.lua`, 70 claims near the route), the stone sends the same
+  packets per second (11.1 walking, 33.1 flying) and about 8–10 % more
+  bytes (longer texture strings); the per-step cost stays within the
+  noise (about 1–2.5 µs per player and step with and without; the engine
+  adds one wielded-item read per player and step). An hour's walk builds
+  the same 1344 cell textures (26.6 MB) with the stone held as without;
+  held on every other leg 1384 (27.4 MB). A client decodes the faction's
+  overlay tiles once (at most six, about 4 MB as RGBA8).
 - **Underground** the minimap keeps showing the surface map.
 - **Switch:** "Show minimap" in the map window (the Map tab until Round 44;
   Luanti has no custom keybinds), stored per player in player meta, on by
   default. If the server has no base image (the render failed) or cannot
   write the minimap's round mask to the world directory, the map window
   shows "No minimap available" instead; the native minimap stays off. The
-  side elements below stay in either case.
+  side elements below stay in either case. A Claim Stone in the hand shows
+  the minimap while the switch is off (claim mode above).
 - **Side elements** (Round 48): two small images in one row beside the
   minimap, sized with the minimap's box (they grow with the window like the
   bezel):

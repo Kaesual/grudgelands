@@ -35,12 +35,24 @@
 -- on every call, so every element keeps what was last sent and only
 -- differences (whole screen pixels) are sent.
 --
+-- Claim mode (fix 0.50.2; docs/design/housing.md §2): while a player with a
+-- faction holds a Claim Stone, the cell texture also holds the faction's
+-- red overlay of forbidden ground (base.lua claim_overlay) and one red
+-- rectangle per claim near the cell (grug_housing.claims_in, drafts
+-- included), and a green square of the claim's size sits on the arrow. The
+-- texture is built again on a cell change, a mode change or a change of the
+-- claim set (grug_housing.claim_set_version) and sent only when its string
+-- differs; the square changes only with the window. A switched-off minimap
+-- appears for claim mode and goes after it. The preview is a guide:
+-- grug_housing's validate alone decides a placement.
+--
 -- Every server step only the cheap test runs (Round 37, audit CORE-04): the
 -- map and its markers are placed again only when the map moved by a whole
--- screen pixel, the cell, the markers or the window changed; the party
--- arrows only then or when a member moved or turned to another of the 16
--- heading frames. A player standing still with a still party costs one
--- position read per step.
+-- screen pixel, the cell, the texture, the markers or the window changed;
+-- the party arrows only then or when a member moved or turned to another of
+-- the 16 heading frames. A player standing still with a still party costs
+-- one position read and one wielded-item read per step (and the claim
+-- set's version while a stone is held).
 
 local atlas = grug_map.atlas
 local layout = grug_core.hud_layout
@@ -88,7 +100,13 @@ local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_hom
 -- Round 44; the mender's marker of Round 46 adds at most one).
 local PRIORITY = {quest = 1, steward = 2, service = 2, home = 3, innkeeper = 4,
 	trainer = 5, waypoint = 6}
-local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}
+local Z = {background = 10, map = 11, square = 12, marker = 20, bezel = 45, party = 50,
+	player = 60}
+-- Claim mode's colours (the plan's starting values, the user tunes them):
+-- the claims in the overlay's red (base.lua CLAIM_RED, about 45 % opaque;
+-- set by M.install), the player's square green, its fill about 30 % opaque,
+-- its frame 80 %.
+local SQUARE_FILL, SQUARE_EDGE = "#40d04a4d", "#40d04acc"
 -- The location line (Round 28 M1, location.lua): centred under the bezel,
 -- LOCATION_GAP HUD px below it, in its territory status's colour (Round 32,
 -- location.lua), else the feed's calm notice colour.
@@ -101,6 +119,9 @@ local PLAYING_BOX_COLOR = "#3434344d"
 local PLAYING_ICON = "grug_ambience_note.png"
 
 local base, view -- set by M.install
+-- Claim mode (set by M.install when the overlays exist): the overlay tiles
+-- by faction, the Claim Stone's item name, the claim's radius and the red.
+local claim_tiles, STONE, RADIUS, CLAIM_RED
 local players = {}
 -- Unread letters per online player (M.set_mail_count), kept apart from the
 -- minimap state so a count told before this mod's join callback is kept.
@@ -248,7 +269,7 @@ local BACKGROUND -- the sea disc under the map, set by M.install
 local function create(player, state)
 	local hud = {background = image(player, Z.background, true),
 		map = image(player, Z.map, true), bezel = image(player, Z.bezel, true),
-		markers = {}, party = {}}
+		square = image(player, Z.square, true), markers = {}, party = {}}
 	for i = 1, MARKER_SLOTS do hud.markers[i] = image(player, Z.marker + i) end
 	for i = 1, PARTY_SLOTS do hud.party[i] = image(player, Z.party + i) end
 	-- The player's arrow is a compass element: the client turns it with the
@@ -259,14 +280,15 @@ local function create(player, state)
 	hud.location = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
 		alignment = {x = 0, y = 1}, text = "", number = LOCATION_COLOR,
 		z_index = Z.bezel}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
-	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location}
+	hud.all = {hud.background, hud.map, hud.bezel, hud.square, hud.player, hud.location}
 	for _, list in ipairs({hud.markers, hud.party}) do
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
 	state.hud, state.cell_x, state.cell_y, state.static = hud, nil, nil, nil
 	state.near, state.frame_box, state.window = nil, nil, nil
-	-- what the map, markers and party arrows were last drawn for
+	-- what the map, markers, party arrows and claim square were last drawn for
 	state.mx, state.my, state.drawn_near, state.drawn_frame = nil, nil, nil, nil
+	state.drawn_texture, state.square_frame, state.square_claim = nil, nil, nil
 	state.party_shown, state.seen, state.members = nil, {}, {}
 	for i = 1, PARTY_SLOTS do state.seen[i] = {} end
 end
@@ -468,6 +490,37 @@ local function update_window(player, state)
 	return changes
 end
 
+-- Claim mode: the faction whose overlay the player sees while holding a
+-- Claim Stone, or nil (another item, no faction, no overlays).
+local function claim_mode(player)
+	if not claim_tiles or player:get_wielded_item():get_name() ~= STONE then return nil end
+	local faction = grug_factions.get_faction(player)
+	return faction and claim_tiles[faction] and faction or nil
+end
+
+-- The claim part of the cell texture: the faction's overlay tiles and one
+-- clipped rectangle per claim on the texture, in id order.
+local function claim_layer(state)
+	local min_x, min_z, max_x, max_z = V.texture_area(view, state.ox, state.oy)
+	local rects = {}
+	for _, claim in ipairs(grug_housing.claims_in(min_x, min_z, max_x, max_z)) do
+		local rect = V.claim_rect(view, state.ox, state.oy, claim.center.x, claim.center.z,
+			RADIUS)
+		if rect then rects[#rects + 1] = rect end
+	end
+	return {tiles = claim_tiles[state.claim], rects = rects, color = CLAIM_RED}
+end
+
+-- The player's green square in claim mode, hidden otherwise.
+local function draw_square(player, state, frame)
+	local element = state.hud.square
+	if not state.claim then return show(player, frame, element, "") end
+	local square = V.claim_square(view, frame, RADIUS)
+	return show(player, frame, element,
+		V.claim_square_texture(square, SQUARE_FILL, SQUARE_EDGE), square.x, square.y,
+		exact(square.size, square.size, frame))
+end
+
 -- The map element and the markers inside the hole, for the map corner
 -- mx/my. The rows are reused from step to step (`state.rows`), so a draw
 -- builds no tables.
@@ -558,8 +611,11 @@ end
 -- `window` asks for the window and location check (every WINDOW seconds).
 local function update(player, state, slow, window)
 	if state.enabled == nil then state.enabled = M.enabled(player) end
-	if not state.enabled then
+	-- Claim mode shows the minimap even when it is switched off (ruling 6).
+	local claim = claim_mode(player)
+	if not state.enabled and not claim then
 		remove(player, state)
+		state.claim = nil
 		return 0
 	end
 	if not state.hud then create(player, state) end
@@ -570,12 +626,26 @@ local function update(player, state, slow, window)
 	local frame = state.frame
 	local pos = locate(player:get_player_name(), player)
 	local cx, cy = V.cell(view, pos.x, pos.z)
-	if cx ~= state.cell_x or cy ~= state.cell_y then
-		state.cell_x, state.cell_y = cx, cy
-		state.ox, state.oy = V.origin(view, cx, cy)
-		state.texture = V.texture(view, state.ox, state.oy, M.mask)
-		state.near = nil
-		M.stats.textures = M.stats.textures + 1
+	local version = claim and grug_housing.claim_set_version() or nil
+	if cx ~= state.cell_x or cy ~= state.cell_y or claim ~= state.claim or
+			version ~= state.claim_version then
+		if cx ~= state.cell_x or cy ~= state.cell_y then
+			state.cell_x, state.cell_y = cx, cy
+			state.ox, state.oy = V.origin(view, cx, cy)
+			state.near = nil
+		end
+		state.claim, state.claim_version = claim, version
+		-- The recipe is built again; the client gets it only when it differs.
+		local texture = V.texture(view, state.ox, state.oy, M.mask,
+			claim and claim_layer(state) or nil)
+		if texture ~= state.texture then
+			state.texture = texture
+			M.stats.textures = M.stats.textures + 1
+		end
+	end
+	if frame ~= state.square_frame or state.claim ~= state.square_claim then
+		state.square_frame, state.square_claim = frame, state.claim
+		changes = changes + draw_square(player, state, frame)
 	end
 	if slow then state.party = nil end
 	if slow or not state.static then
@@ -603,9 +673,10 @@ local function update(player, state, slow, window)
 	local px, py = V.base_pixel(view, pos.x, pos.z)
 	local mx, my = V.map_corner(view, frame, state.cell_x, state.cell_y, px, py)
 	local moved = mx ~= state.mx or my ~= state.my or state.near ~= state.drawn_near or
-		frame ~= state.drawn_frame
+		frame ~= state.drawn_frame or state.texture ~= state.drawn_texture
 	if moved then
 		state.mx, state.my, state.drawn_near, state.drawn_frame = mx, my, state.near, frame
+		state.drawn_texture = state.texture
 		M.stats.drawn = M.stats.drawn + 1
 		changes = changes + draw_map(player, state, frame, mx, my)
 	end
@@ -685,6 +756,12 @@ function M.install(installed)
 	end
 	base, view, M.mask = mini, candidate, grug_map.base.MASK
 	BACKGROUND = M.mask .. "^[multiply:" .. SEA
+	-- Claim mode needs the overlays (base.lua) and grug_housing.
+	local housing = rawget(_G, "grug_housing")
+	if mini.claim and housing then
+		claim_tiles, STONE, RADIUS = mini.claim, housing.STONE_ITEM, housing.RADIUS
+		CLAIM_RED = ("#%02x%02x%02x%02x"):format(unpack(grug_map.base.CLAIM_RED))
+	end
 end
 
 -- False when the world map base or the minimap's mask is missing.
@@ -701,6 +778,12 @@ end
 function M.texture_of(player)
 	local state = players[player:get_player_name()]
 	return state and state.texture
+end
+
+-- The faction whose claim preview the player sees now, or nil.
+function M.claim_of(player)
+	local state = players[player:get_player_name()]
+	return state and state.claim
 end
 
 -- Each player's SLOW refresh has its own phase, so the marker providers are

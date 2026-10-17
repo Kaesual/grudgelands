@@ -95,6 +95,24 @@ function grug_housing.claim_at(pos)
 	return model.claim_at(pos)
 end
 
+-- The minimap's claim preview (fix 0.50.2) draws every claim near the
+-- player: the claims whose square meets the inclusive x/z rectangle, ordered
+-- by id, and a number that changes whenever a claim comes or goes.
+function grug_housing.claims_in(min_x, min_z, max_x, max_z)
+	return model.claims_in(min_x, min_z, max_x, max_z)
+end
+
+function grug_housing.claim_set_version()
+	return model.claim_set_version()
+end
+
+-- The placement rule of one column (registry.lua column_problem), for the
+-- preview's overlay of forbidden ground; with the settlement distance and
+-- the world queries below (placement_world) it is the whole column and
+-- settlement part of validate.
+grug_housing.column_problem = model.column_problem
+grug_housing.SETTLEMENT_MARGIN = model.SETTLEMENT_MARGIN
+
 -- True while the claim is activated and has fuel (paid_until is in the
 -- future). A draft is never active: it protects nothing, spawns and
 -- interaction are not guarded there.

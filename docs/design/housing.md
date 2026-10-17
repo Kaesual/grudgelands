@@ -72,6 +72,24 @@ or guild land.
   in the cube later (snow, for example) can be dug under the ordinary claim
   rules (Round 26 ruling 12); placing into the cube stays refused.
 - Placing makes a **draft** (§2a). There is no placing limit.
+- **Placement preview** (fix 0.50.2): while a player with a faction holds
+  the Claim Stone, the minimap shows the ground the rules above forbid for
+  that faction in semi-transparent red (other faction, level 1–10 and 31+
+  zones, capital zones, land that is not the faction's home, the coastal
+  shelf and the sea, and the settlement cores and hard footprints widened by
+  the 16 nodes), every claim (drafts, active and expired) in the same red,
+  and the player's own 101 × 101 square in green on the arrow; a switched-off
+  minimap appears meanwhile ([world_map.md](world_map.md) "Minimap", claim
+  mode). The red is conservative: the zone part is judged per minimap pixel
+  (about 6.7 nodes) and widened by one pixel, settlements and claims are
+  rounded outward, so a square that touches no red passes the zone,
+  settlement and claim checks, and one that only touches red may pass too.
+  The one exception is a forbidden piece narrower than a pixel that holds no
+  pixel centre (on the world of seed 4242424242 a lone coastal-shelf column
+  in a bay). The square is centred on the player, the stone lands on the
+  pointed node (usually 1–5 nodes away). Not shown: the depth limit and the
+  arrival cube, whose refusals say enough. The preview is a guide; the
+  placement check above alone decides, with its messages.
 
 ## 2a. Draft and activation
 
