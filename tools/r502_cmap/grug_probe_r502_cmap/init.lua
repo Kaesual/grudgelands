@@ -94,10 +94,15 @@ local function show(player, shot)
 		ItemStack(shot.stone and grug_housing.STONE_ITEM or ""))
 	grug_map.minimap.set_enabled(player, shot.shown)
 	if shot.draft and not state.draft then
+		-- a draft with its node (a claim whose stone is missing from a
+		-- loaded block vanishes at stone.lua's next check)
 		local spot = state.spots.border
-		state.draft = grug_housing.model.create("neighbor", {x = spot.x + 95, y = 10,
-			z = spot.z + 40})
-		log(("draft %d at %d,%d"):format(state.draft.id, spot.x + 95, spot.z + 40))
+		local pos = {x = spot.x + 95, z = spot.z + 40}
+		pos.y = math.max(grug_zones.terrain_height_at(pos.x, pos.z), 1) + 1
+		core.load_area(pos)
+		core.set_node(pos, {name = grug_housing.DRAFT_STONE})
+		state.draft = grug_housing.model.create("neighbor", pos)
+		log(("draft %d at %s"):format(state.draft.id, core.pos_to_string(pos)))
 	end
 end
 
