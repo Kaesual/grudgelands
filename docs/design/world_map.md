@@ -447,9 +447,12 @@ overlays as `grug_map_claim_<faction>_<col>_<row>.png` (both factions to
 every client; [Minimap](#minimap) "Claim mode"), written to the world
 directory and announced as startup media; nothing else of the base is sent.
 The overlays are rendered and cached with the base; their rules (the
-column rule's source `grug_housing/registry.lua`, the settlement margin and
-the digest of the mapgen tree, which holds the settlement cores' margins
-and the landmark columns) enter the cache key. After every
+column rule's source `grug_housing/registry.lua`, its world queries' source
+`grug_housing/api.lua`, the settlement margin and the digest of the mapgen
+tree, which holds the settlement cores' margins and the landmark columns)
+enter the cache key. A failing overlay render costs only the claim preview:
+it logs an error, the base and the minimap are cached and announced without
+the overlays, and the next start tries again. After every
 render or cache hit, tiles of these names that the current quality does
 not use (after high → normal the 50 extra base tiles, about 5.3 MB) are
 deleted from the world directory and their count is logged; a failed delete

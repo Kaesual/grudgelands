@@ -665,17 +665,25 @@ local function render(zones, view, spec, layer, claim)
 		mini_total = encode_tiles(mini_pixels, mini.width, mini_tiles)
 	end
 	local finished = core.get_us_time()
+	-- A failed overlay costs only the claim preview (plan §4): the base
+	-- and the minimap stay, and `overlays` stays nil.
 	local overlays
 	if claim and mini then
-		local territories, features
-		overlays, territories, features = claim_overlay(zones, view, spec, water, owner, claim)
-		local bytes = 0
-		for _, tiles in pairs(overlays) do
-			for _, tile in ipairs(tiles) do bytes = bytes + #tile.png end
+		local ok, result, territories, features = pcall(claim_overlay, zones, view, spec,
+			water, owner, claim)
+		if ok then
+			overlays = result
+			local bytes = 0
+			for _, tiles in pairs(overlays) do
+				for _, tile in ipairs(tiles) do bytes = bytes + #tile.png end
+			end
+			core.log("action", ("[grug_map] rendered the Claim Stone overlays %dx%d in " ..
+				"%.2f s (%d territory and %d settlement queries, %d bytes)"):format(mini.width,
+				mini.height, (core.get_us_time() - finished) / 1e6, territories, features, bytes))
+		else
+			core.log("error", "[grug_map] Claim Stone overlays not rendered, the minimap " ..
+				"has no claim preview: " .. tostring(result))
 		end
-		core.log("action", ("[grug_map] rendered the Claim Stone overlays %dx%d in %.2f s " ..
-			"(%d territory and %d settlement queries, %d bytes)"):format(mini.width,
-			mini.height, (core.get_us_time() - finished) / 1e6, territories, features, bytes))
 	end
 	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
 		"(zones/water %.2f s, relief step %d %.2f s, colour %.2f s, bake+encode %.2f s, " ..
@@ -890,10 +898,11 @@ end
 -- The Claim Stone rules for the overlays (claim_overlay): grug_housing's
 -- column rule, its world queries (placement_world, what validate asks) and
 -- its settlement distance, never a copy; with the text that enters the cache
--- key: the rule's own source (registry.lua) and the digest of the whole
--- mapgen tree grug_mapgen publishes, which holds the settlement cores'
--- margins and the landmark columns (the fitted cores and footprints are in
--- the world identity already). Nil (no overlays) when grug_housing or a
+-- key: the rule's own source (registry.lua), its world queries' source
+-- (api.lua: territory_at and the feature_in composition) and the digest of
+-- the whole mapgen tree grug_mapgen publishes, which holds the settlement
+-- cores' margins and the landmark columns (the fitted cores and footprints
+-- are in the world identity already). Nil (no overlays) when grug_housing or a
 -- part of its world is missing.
 local function claim_rules()
 	local housing = rawget(_G, "grug_housing")
@@ -903,14 +912,15 @@ local function claim_rules()
 	local wp40 = type(mapgen) == "table" and mapgen.wp40
 	local world_key = type(wp40) == "table" and wp40.world_key
 	local registry = read_file(core.get_modpath("grug_housing") .. "/registry.lua")
-	if not registry then return nil end
+	local api = read_file(core.get_modpath("grug_housing") .. "/api.lua")
+	if not registry or not api then return nil end
 	local factions = {}
 	for _, faction in ipairs(grug_core.faction_ids) do factions[#factions + 1] = faction end
 	return {factions = factions, problem = housing.column_problem,
 		territory_at = world.territory_at, feature_in = world.feature_in,
 		margin = housing.SETTLEMENT_MARGIN,
 		key = table.concat(factions, ",") .. "\n" .. housing.SETTLEMENT_MARGIN .. "\n" ..
-			core.sha256(registry) .. "\n" ..
+			core.sha256(registry) .. "\n" .. core.sha256(api) .. "\n" ..
 			tostring(type(world_key) == "table" and world_key.source)}
 end
 
@@ -934,14 +944,20 @@ local function prepare(view)
 	-- switching either re-renders both; so does the baked layer (Round 44:
 	-- its layout, art and font versions and every icon's kind and place) and
 	-- the Claim Stone rules (0.50.2).
-	local key = core.sha256(spec.quality .. "\n" .. M.TILE .. "\n" ..
+	local base_key = spec.quality .. "\n" .. M.TILE .. "\n" ..
 		(mini and (mini.width .. "x" .. mini.height) or "-") .. "\n" ..
-		cache_key(zones, view) .. "\n" .. core.sha256(bake.key_text(layer.versions, layer.items)) ..
-		"\n" .. (claim and core.sha256(claim.key) or "-"))
-	local lists = {tiles, mini_tiles or {}}
-	for _, faction in ipairs(claim and claim.factions or {}) do
-		lists[#lists + 1] = claim_tiles[faction]
+		cache_key(zones, view) .. "\n" .. core.sha256(bake.key_text(layer.versions, layer.items))
+	-- The key and the tile lists in use, with the overlays or (claim nil)
+	-- without them.
+	local key, lists
+	local function with_claim()
+		key = core.sha256(base_key .. "\n" .. (claim and core.sha256(claim.key) or "-"))
+		lists = {tiles, mini_tiles or {}}
+		for _, faction in ipairs(claim and claim.factions or {}) do
+			lists[#lists + 1] = claim_tiles[faction]
+		end
 	end
+	with_claim()
 	local current = read_file(CACHE_KEY) == key
 	for _, list in ipairs(lists) do
 		for _, tile in ipairs(list) do
@@ -955,6 +971,12 @@ local function prepare(view)
 		end
 	else
 		local rendered, rendered_mini, overlays = render(zones, view, spec, layer, claim)
+		if claim and not overlays then
+			-- the overlays failed: cache and announce the base without them
+			-- (the next start tries again under the full key)
+			claim = nil
+			with_claim()
+		end
 		-- Tile names are shared across qualities: the old key goes before
 		-- the first tile is overwritten and the new one is written last, so
 		-- a crash in between renders again at the next start (ruling 7).

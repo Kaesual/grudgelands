@@ -25,6 +25,9 @@
 --      pixel within the margin of a settlement core is red; no square of a
 --      claim that touches no red is refused by validate's zone and
 --      settlement checks ("Conservative red"); a few that touch red pass;
+--   I  install on that world at the game's size: the overlays announced
+--      and handed to the minimap; a failing overlay render keeps the base and
+--      the minimap's copy, without claim mode, overlay media or their key;
 --   M  minimap runtime: claim mode only with the stone held and a faction;
 --      the cell texture adds the faction's overlay tiles and one fill per
 --      claim on the texture; the same claims give the same string, a claim
@@ -441,6 +444,55 @@ do
 			check(passed_red >= 0, label .. " " .. faction .. ": squares touching red counted")
 		end
 	end
+
+	-- I  install (base.lua prepare) on this world at the game's size: the
+	-- overlays are announced and handed to the minimap; a failing overlay
+	-- render leaves the base and the minimap's copy, without claim mode,
+	-- with no overlay tile announced and the key of the base alone.
+	local announced, written, logged = {}, {}, {}
+	core.sha256 = function(text) return "#" .. #text .. ":" .. text:sub(1, 64) end
+	core.get_mapgen_setting = function() return "42" end
+	core.safe_file_write = function(path, data) written[path] = data; return true end
+	core.dynamic_add_media = function(def) announced[#announced + 1] = def.filename; return true end
+	core.log = function(level, text) logged[#logged + 1] = level .. ": " .. text end
+	rawset(_G, "grug_core", {faction_ids = {"accord", "throng"},
+		zone_authority_installed = function() return true end,
+		settlement_socket_settlements = function() return {} end,
+		start_identities = function() return {} end})
+	rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
+	rawset(_G, "grug_zones", zones)
+	local function install(fail)
+		announced, written, logged = {}, {}, {}
+		rawset(_G, "grug_housing", {column_problem = model.column_problem,
+			SETTLEMENT_MARGIN = model.SETTLEMENT_MARGIN,
+			placement_world = {territory_at = territory_at, feature_in = fail and function()
+				error("forced overlay failure")
+			end or feature_in}})
+		local result = B.install({min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200})
+		local claims = 0
+		for _, name in ipairs(announced) do
+			if name:find("^grug_map_claim_") then claims = claims + 1 end
+		end
+		local errors = 0
+		for _, line in ipairs(logged) do
+			if line:find("^error: %[grug_map%] Claim Stone overlays not rendered") then
+				errors = errors + 1
+			end
+		end
+		return result, claims, errors, written["/nonexistent-world/grug_map_base.key"]
+	end
+	local good, good_claims, _, good_key = install(false)
+	check(good.tiles and #good.tiles == 6 and good.minimap and good.minimap.claim and
+		good.minimap.claim.accord and good.minimap.claim.throng and good_claims == 12,
+		"I install: the base, the minimap's copy and both overlays announced")
+	local bad, bad_claims, bad_errors, bad_key = install(true)
+	check(bad.tiles and #bad.tiles == 6 and bad.texture:find("^%[combine") and
+		bad.minimap and bad.minimap.tiles and #bad.minimap.tiles == 6,
+		"I a failing overlay: the base and the minimap's copy stay")
+	check(bad.minimap and bad.minimap.claim == nil and bad_claims == 0 and bad_errors == 1,
+		"I a failing overlay: no claim mode, no overlay announced, one error line")
+	check(bad_key and good_key and bad_key ~= good_key, "I a failing overlay: the key without them")
+	rawset(_G, "grug_housing", nil)
 end
 
 -- ---------------------------------------------------------------------------
