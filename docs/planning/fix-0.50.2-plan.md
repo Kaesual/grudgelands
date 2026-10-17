@@ -1,8 +1,8 @@
 # Fix round 0.50.2 — Claim Stone placement preview on the minimap
 
 Coordinator: Claude (Opus 5.5), planned with the user on 2026-10-17.
-Status: CMAP **complete 2026-10-17** (see Completion); the HOME addendum
-(end of file) has the **user's go (2026-10-17)**. Process:
+Status: **complete 2026-10-17** (CMAP: see Completion; HOME: see the
+addendum's completion at the end of the file). Process:
 [round workflow](../process/round-workflow.md).
 
 To ship as **0.50.2**, a compatible patch on 0.50.1 (main `bdabec4d`, not
@@ -373,3 +373,24 @@ The user may overrule these.
     yellowish frames, gliding with the map and cut cleanly at the bezel;
     with the stone: everything red as before.
 13. The Map tab: unchanged apart from its location line.
+
+### HOME completion (2026-10-17)
+
+HOME merged on main (`8583a850`; lane `bab51dd5`), independently reviewed by
+Opus (MERGE, no fixes). Built as the addendum says; the fixtures that pinned
+the old banner rule (`tools/r28_m1`, `tools/r32_f1`) were updated for H3.
+
+Numbers (measured; comparisons): the location sample's claim lookup adds
+about 0.25 µs (0.08 → 0.32 µs, 420 claims); walking sends the same packets,
+without the stone about 15 % more bytes (longer texture strings); client
+textures over an hour's walk unchanged (1344, 26.6 MB); the minimap's cost
+per player and step within the noise.
+
+Backlog notes: a second claim per player would get no frame (one claim per
+player is the rule); without a zone resolver a nil sample keeps the old
+banner to its end (not in the game); the yellow frame has little contrast on
+beige land, and claims about 9 nodes apart look adjacent (GUI items 11–12).
+
+Round-end gates on `436945b3`: full fixtures 205/205, `check_lua`,
+`check_fresh_server`, `check_upgrade` PASS, smoke boot from an empty cache
+PASS. The user's GUI checklist is §6 items 1–7 plus the addendum's 8–13.
