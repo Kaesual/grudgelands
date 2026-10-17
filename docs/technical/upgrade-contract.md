@@ -281,10 +281,11 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   (`pack_baseline`, Round 50 ruling 9: the production version 0.48.1, with
   the floor at 0.48.0 because a world moved compatibly to 0.48.1 and never
   started still records 0.48.0, and 0.48.1 changed no saved state the pass
-  reads; a world without a record counts as 0.41.0); a pending `map_reset_pack:` marker (`pack_pending`: an earlier
-  pass the game never loaded, so its map may already be gone and a second
-  pass would hand out its charcoal twice; restore the backup taken before
-  it); a block in a claim that does not decode (`map_block`); claims but
+  reads; a world without a record counts as 0.41.0); a pending
+  `map_reset_pack:` marker (`pack_pending`: an earlier pass the game never
+  loaded, so its map may already be gone and a second pass would hand out
+  its charcoal twice; restore the backup taken before it); a block in a
+  claim that does not decode (`map_block`); claims but
   not one block in the map (`map_empty`: the map was emptied first).
 - **Map block format:** 29 only, the one format every engine since 5.5.0
   writes (zstd, reference_projects/luanti commit d1624a552 of 2021-08-31;

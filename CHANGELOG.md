@@ -12,6 +12,20 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.50.1 — a complete dry run before a map reset (2026-10-17)
+
+Existing worlds play on: no migration step, no map reset, no new world.
+Nothing changes in the game.
+
+- **Server admins:** `tools/migrate.py --check --map-reset` is now a
+  complete dry run of the pre-reset pass. It reads every map block of every
+  housing claim, refuses for the same reasons as the pass, reports what
+  the pass would pack and writes nothing. A check that passes means the
+  pass will not refuse on the same unchanged world.
+- **Server admins:** the pass also accepts a world recorded as 0.48.0 (a
+  world moved to 0.48.1 and not started since); 0.48.1 changed nothing the
+  pass reads.
+
 ## 0.50.0 — two hotbars and belongings kept across a map reset (2026-10-16)
 
 Existing worlds play on: no migration step, no map reset, no new world.

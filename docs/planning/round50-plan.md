@@ -89,6 +89,9 @@ User, 2026-10-16.
 9. **Baseline 0.48.1.** Migrations are planned only from 0.48.1 on, the
    production version; older worlds do not matter (there is no other
    production server). `--map-reset` on a world below 0.48.1 is refused.
+   *Changed for 0.50.1 (user, 2026-10-17): the floor is 0.48.0, because a
+   world moved compatibly to 0.48.1 and not started since still records
+   0.48.0, and 0.48.1 changed nothing the pass reads.*
 10. **Production waits.** Production stays on 0.48.1 with no 0.49.x deploy
     and no manual map reset until 0.50.0.
 
@@ -593,4 +596,23 @@ message, the Claim Stone expected in `main[9..]`), on the base as well.
 The user's GUI checklist is §6 above; item 6 runs
 `tools/r50_paccept/reset_like_platform.sh <world copy> <server.conf>` and
 then a terminal server with `--config <server.conf>`.
+
+## Follow-up 0.50.1 (2026-10-17)
+
+After the push of 0.50.0 (origin/main `12cd9822`) the platform asked for a
+complete dry run: its real pass runs only after the automatic backup and a
+"pass started" mark, so any refusal there blocks the realm until the backup
+is restored. The user agreed to a compatible 0.50.1 and to the 0.48.0
+floor (ruling 9 above).
+
+- PTOOL follow-up (`19497685`, `6830e9a5`, merged `fdc663e0`): `--check
+  --map-reset` shares the pass's own preparation (`prepare_pass()`: the
+  claims, every block of every claim decoded, the entries built and read
+  back, existing keys refused) and writes nothing; its `done` line carries
+  `"pack"` with `seq`, `counts`, `nodes`, `empty` and `seconds`. Only a lock
+  taken after the check, the transaction itself and the clock-dependent
+  charcoal count can still differ in the pass. The pack baseline is 0.48.0.
+  Independently reviewed by Opus (both commits MERGE); the dry run leaves
+  the map and mod storage byte-identical.
+- Measured: the dry run on the r50_ptool test world takes 0.11 s.
 

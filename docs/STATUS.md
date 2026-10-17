@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-16. This is the delivery pointer, not another game specification.
+Updated 2026-10-17. This is the delivery pointer, not another game specification.
 
 Planning pointer added 2026-10-12: the [class and hotbar redesign
 handoff](planning/class-redesign-handoff.md) preserves the redesign
@@ -21,8 +21,14 @@ Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a private
 claude.ai page, Round 50 ART) shows the planning state with the user's
 notes.
 
+- **0.50.1, a compatible tool-only follow-up, on main, not pushed**
+  (2026-10-17, [follow-up](planning/round50-plan.md#follow-up-0501-2026-10-17)):
+  at the platform's request `--check --map-reset` is a complete dry run of
+  the pre-reset pass (every claim block decoded, the same refusals, the
+  pass's counts, nothing written), and the pack baseline is 0.48.0.
+  Reviewed by Opus (MERGE).
 - **Round 50 "Hotbar A/B, claim containers across map resets, the
-  class-redesign page" complete on main, not pushed** (2026-10-16, version
+  class-redesign page" complete and pushed (origin/main `12cd9822`)** (2026-10-16, version
   0.50.0, **compatible**, no migration step;
   [plan, rulings, numbers and GUI checklist](planning/round50-plan.md#completion-2026-10-16)).
   From main `af9d6f06` (the version bump): PGAME (`819bd253`, delta
