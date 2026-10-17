@@ -1741,6 +1741,13 @@ tools](#player-meta-read-by-external-tools).
     `arrival_pos`, `register_on_claim_changed(fn)` with events `placed`,
     `activated`, `fuel`, `permission`, `picked_up`, `destroyed`, `removed`,
     `draft_expired`, `expired`. Constants `RADIUS = 50`, `MIN_Y = −100`.
+    For the minimap's claim preview (0.50.2): `claims_in(min_x, min_z,
+    max_x, max_z)` (the claims whose square meets the rectangle, by id,
+    from the claim grid), `claim_set_version()` (changes on every create
+    and remove, load and map reset), `column_problem(faction, water, zone,
+    territory)` (validate's column rule for one column; `territory` false
+    judges the zone alone), `SETTLEMENT_MARGIN` and `placement_world` (the
+    world queries validate asks).
   - `stone.lua`, `stone_form.lua`, `protection.lua`, `soulbound.lua`: the
     stone and draft nodes with draft and fuel expiry, the stone forms, the
     `is_protected` wrapper with the arrival cube, the soulbound items.
@@ -1852,6 +1859,18 @@ tools](#player-meta-read-by-external-tools).
   Fixture:
   `tools/r27_minimap/portable_test.lua`; traffic comparison:
   `tools/r27_minimap/bench_glide.lua`.
+  **Claim mode** (0.50.2): `base.lua` `claim_overlay` renders one
+  transparent overlay per faction at the minimap base's size from pass 1's
+  arrays with grug_housing's `column_problem` and `placement_world`
+  (`grug_map_claim_<faction>_*` tiles, cached with the base; the rules
+  enter the cache key); `minimap.lua` switches on with the Claim Stone
+  wielded and a faction, adds the overlay tiles and one clipped `[fill` per
+  claim to the cell texture (`minimap_view.lua` `texture(v, ox, oy, mask,
+  claim)`, `claim_rect`, never a `[fill` outside the image or of zero size)
+  and shows the square (`claim_square`, `claim_square_texture`) at z 12.
+  Fixture `tools/r502_cmap/portable_test.lua`; measurements
+  `render_overlay.lua` (offline render and the "green, yet refused" check
+  on a real world) and `bench_claim.lua`.
   **Side elements** (Round 48): the mail icon, the daytime band and the
   "Now playing" box are `state.side`, apart from the minimap's own
   `state.hud`: created at the first step, never removed while the player
