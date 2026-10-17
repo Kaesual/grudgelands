@@ -1426,3 +1426,23 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   a locked chest, a lit furnace with a workspace record, a bookshelf with
   written books, a vessels shelf, a chest of 32 long books, an empty chest,
   border chests) and trimmed to the claims' blocks by `trim.py`.
+- **0.50.2 lane CMAP** (`r502_cmap`): the Claim Stone preview on the
+  minimap (`portable_test.lua`: a claim's rectangle in a cell texture
+  rounded outward and clipped at every edge, fully outside, on an edge and
+  of zero size, and every `[fill` of a recipe and of the player's square
+  inside the engine's limits; the claim-set version and `claims_in` of the
+  real registry, `column_problem` against validate; the real render's
+  overlays on a small synthetic world at normal and a reduced "high" size:
+  refused pixel centres red and widened, the settlement margin red, no
+  square that touches no red refused; the real minimap.lua in claim mode:
+  the overlay tiles and fills, the same string for the same claims, a draft
+  shown and gone without re-selecting the stone, another item, no faction,
+  the switched-off minimap and its side row). `render_overlay.lua <repo>
+  <seed> <out> [quality]` renders the overlays on the real world of one
+  seed (`tools/r25_road_poi/world.lua`), times them and checks that random
+  squares touching no red pass validate; `bench_claim.lua <repo>` the
+  packets, bytes and µs per step with and without the stone, and the cell
+  textures of an hour's walk. `capture.sh OUT_DIR` (`XVFB=`) with
+  `grug_probe_r502_cmap` the engine screenshots (a border, a settlement, a
+  draft in view, the switched-off minimap) on a fresh world, so it is also
+  the smoke boot that renders the base and both overlays.

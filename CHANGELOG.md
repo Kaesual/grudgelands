@@ -12,6 +12,27 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.50.2 — where a Claim Stone may go, on the minimap (2026-10-17)
+
+Existing worlds play on: no migration step, no map reset, no new world. The
+world map re-renders once at the first start (about 10 seconds longer).
+
+- **Claim Stone preview:** while you hold your Claim Stone, the minimap
+  shows where it may go. Ground a claim may not cover is red: the other
+  faction's land, level 1–10 and 31+ zones, capital zones, land that is not
+  your faction's home, the coastal shelf and the sea, and towns, villages,
+  camps, points of interest and landmarks with their 16-node distance.
+  Every other claim is red too, drafts included; a draft another player
+  places nearby shows at once and goes when it is picked up or crumbles.
+  Your own 101 × 101 square is green on your arrow: where it touches no
+  red, the claim fits (the stone itself still needs room above it and must
+  stand at y −100 or higher). The red is drawn a little generously, so a
+  square that only touches red may still fit.
+- With the minimap switched off, it appears while you hold the stone and
+  goes again afterwards. Any other item in your hand shows the normal
+  minimap.
+- The placement rules and their messages are unchanged.
+
 ## 0.50.1 — a complete dry run before a map reset (2026-10-17)
 
 Existing worlds play on: no migration step, no map reset, no new world.
