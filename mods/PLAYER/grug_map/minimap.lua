@@ -46,13 +46,20 @@
 -- appears for claim mode and goes after it. The preview is a guide:
 -- grug_housing's validate alone decides a placement.
 --
+-- Claims outside claim mode (fix 0.50.2 lane HOME, ruling H4): the cell
+-- texture frames the player's own claim in the square's green and every
+-- other claim in yellow, one base pixel wide and without fill, drafts and
+-- expired claims included (minimap_view.lua claim_frame). The texture is
+-- built again on a cell change or a claim-set version change and sent only
+-- when its string differs; with no claim near it is the plain map's.
+--
 -- Every server step only the cheap test runs (Round 37, audit CORE-04): the
 -- map and its markers are placed again only when the map moved by a whole
 -- screen pixel, the cell, the texture, the markers or the window changed;
 -- the party arrows only then or when a member moved or turned to another of
 -- the 16 heading frames. A player standing still with a still party costs
--- one position read and one wielded-item read per step (and the claim
--- set's version while a stone is held).
+-- one position read, one wielded-item read and one read of the claim set's
+-- version per step.
 
 local atlas = grug_map.atlas
 local layout = grug_core.hud_layout
@@ -107,6 +114,10 @@ local Z = {background = 10, map = 11, square = 12, marker = 20, bezel = 45, part
 -- set by M.install), the player's square green, its fill about 30 % opaque,
 -- its frame 80 %.
 local SQUARE_FILL, SQUARE_EDGE = "#40d04a4d", "#40d04acc"
+-- The claims' frames outside claim mode (lane HOME's starting values, the
+-- user tunes them): the own claim in the square's frame green, the others
+-- in a yellow.
+local OWN_FRAME, OTHER_FRAME = SQUARE_EDGE, "#f0d040cc"
 -- The location line (Round 28 M1, location.lua): centred under the bezel,
 -- LOCATION_GAP HUD px below it, in its territory status's colour (Round 32,
 -- location.lua), else the feed's calm notice colour.
@@ -119,9 +130,11 @@ local PLAYING_BOX_COLOR = "#3434344d"
 local PLAYING_ICON = "grug_ambience_note.png"
 
 local base, view -- set by M.install
--- Claim mode (set by M.install when the overlays exist): the overlay tiles
--- by faction, the Claim Stone's item name, the claim's radius and the red.
-local claim_tiles, STONE, RADIUS, CLAIM_RED
+-- The claims (set by M.install when grug_housing is there): the Claim
+-- Stone's item name and the claim's radius. Claim mode needs the overlays
+-- too: their tiles by faction and the red.
+local housing, STONE, RADIUS
+local claim_tiles, CLAIM_RED
 local players = {}
 -- Unread letters per online player (M.set_mail_count), kept apart from the
 -- minimap state so a count told before this mod's join callback is kept.
@@ -503,12 +516,33 @@ end
 local function claim_layer(state)
 	local min_x, min_z, max_x, max_z = V.texture_area(view, state.ox, state.oy)
 	local rects = {}
-	for _, claim in ipairs(grug_housing.claims_in(min_x, min_z, max_x, max_z)) do
+	for _, claim in ipairs(housing.claims_in(min_x, min_z, max_x, max_z)) do
 		local rect = V.claim_rect(view, state.ox, state.oy, claim.center.x, claim.center.z,
 			RADIUS)
 		if rect then rects[#rects + 1] = rect end
 	end
 	return {tiles = claim_tiles[state.claim], rects = rects, color = CLAIM_RED}
+end
+
+-- The claims near the cell outside claim mode: the others' frames first,
+-- the player's own last (on top where two touch); nil when none is on the
+-- texture, so the recipe is the plain map's.
+local function frame_layer(name, state)
+	local min_x, min_z, max_x, max_z = V.texture_area(view, state.ox, state.oy)
+	local rects, own = {}, nil
+	for _, claim in ipairs(housing.claims_in(min_x, min_z, max_x, max_z)) do
+		if claim.owner == name then
+			own = claim
+		else
+			V.claim_frame(view, state.ox, state.oy, claim.center.x, claim.center.z, RADIUS,
+				OTHER_FRAME, rects)
+		end
+	end
+	if own then
+		V.claim_frame(view, state.ox, state.oy, own.center.x, own.center.z, RADIUS,
+			OWN_FRAME, rects)
+	end
+	return rects[1] and {rects = rects} or nil
 end
 
 -- The player's green square in claim mode, hidden otherwise.
@@ -626,7 +660,7 @@ local function update(player, state, slow, window)
 	local frame = state.frame
 	local pos = locate(player:get_player_name(), player)
 	local cx, cy = V.cell(view, pos.x, pos.z)
-	local version = claim and grug_housing.claim_set_version() or nil
+	local version = housing and housing.claim_set_version() or nil
 	if cx ~= state.cell_x or cy ~= state.cell_y or claim ~= state.claim or
 			version ~= state.claim_version then
 		if cx ~= state.cell_x or cy ~= state.cell_y then
@@ -636,8 +670,13 @@ local function update(player, state, slow, window)
 		end
 		state.claim, state.claim_version = claim, version
 		-- The recipe is built again; the client gets it only when it differs.
-		local texture = V.texture(view, state.ox, state.oy, M.mask,
-			claim and claim_layer(state) or nil)
+		local layer
+		if claim then
+			layer = claim_layer(state)
+		elseif housing then
+			layer = frame_layer(player:get_player_name(), state)
+		end
+		local texture = V.texture(view, state.ox, state.oy, M.mask, layer)
 		if texture ~= state.texture then
 			state.texture = texture
 			M.stats.textures = M.stats.textures + 1
@@ -756,11 +795,15 @@ function M.install(installed)
 	end
 	base, view, M.mask = mini, candidate, grug_map.base.MASK
 	BACKGROUND = M.mask .. "^[multiply:" .. SEA
-	-- Claim mode needs the overlays (base.lua) and grug_housing.
-	local housing = rawget(_G, "grug_housing")
-	if mini.claim and housing then
-		claim_tiles, STONE, RADIUS = mini.claim, housing.STONE_ITEM, housing.RADIUS
-		CLAIM_RED = ("#%02x%02x%02x%02x"):format(unpack(grug_map.base.CLAIM_RED))
+	-- The claims' frames need grug_housing; claim mode the overlays
+	-- (base.lua) too.
+	housing = rawget(_G, "grug_housing")
+	if housing then
+		STONE, RADIUS = housing.STONE_ITEM, housing.RADIUS
+		if mini.claim then
+			claim_tiles = mini.claim
+			CLAIM_RED = ("#%02x%02x%02x%02x"):format(unpack(grug_map.base.CLAIM_RED))
+		end
 	end
 end
 
