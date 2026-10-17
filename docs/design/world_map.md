@@ -657,7 +657,7 @@ drawn from the base image above. The gliding version (approved in playtest,
   15 % more bytes without the stone (327 → 377 bytes/s walking: longer
   texture strings), the same 1344 textures (26.6 MB) on the hour's walk, the
   per-step cost within the noise (about 1–3 µs per player and step before
-  and after); the engine reads the claim set's version once per player and
+  and after); the server reads the claim set's version once per player and
   step, now also without the stone.
 - **Underground** the minimap keeps showing the surface map.
 - **Switch:** "Show minimap" in the map window (the Map tab until Round 44;
