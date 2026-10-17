@@ -22,7 +22,7 @@ claude.ai page, Round 50 ART) shows the planning state with the user's
 notes.
 
 - **Fix round 0.50.2 "Claim Stone placement preview, claims on the minimap"
-  complete on main, not pushed** (2026-10-17, **compatible**, no migration
+  complete and pushed (origin/main `5e50b456`)** (2026-10-17, **compatible**, no migration
   step; [plan, rulings, numbers and GUI checklist](planning/fix-0.50.2-plan.md#completion-2026-10-17)).
   While a Claim Stone is held the minimap shows forbidden ground and every
   claim in red and the player's 101 × 101 square in green (CMAP, merged
@@ -35,7 +35,7 @@ notes.
   `check_lua` PASS, `check_fresh_server` PASS, `check_upgrade` PASS (0.50.2
   compatible, compared with origin/main), smoke boot 120 s from an empty
   cache PASS.
-- **0.50.1, a compatible tool-only follow-up, on main, not pushed**
+- **0.50.1, a compatible tool-only follow-up, pushed**
   (2026-10-17, [follow-up](planning/round50-plan.md#follow-up-0501-2026-10-17)):
   at the platform's request `--check --map-reset` is a complete dry run of
   the pre-reset pass (every claim block decoded, the same refusals, the
