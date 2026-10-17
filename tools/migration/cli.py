@@ -23,7 +23,8 @@ stdout carries one JSON object per line; the last one is the result:
   {"event": "done", "mode", "world_version", "record", "new_world", "target",
    "due", "applied" (migrate) or "write_checked" (check), "backends"; with
    --map-reset also "map_reset": true and "pack_seq" (migrate) or
-   "map_checked" (check)}  exit 0
+   "map_checked" and "pack" (check: the pass's dry run, {"seq", "counts",
+   "nodes", "empty", "seconds"} as pack_done would carry them)}  exit 0
 Refusal reasons: usage, checkout, world_mt, backend, database_missing,
 connection, layout, lock, write_access, record, world_newer, pack_baseline,
 pack_pending, map_block, map_empty, internal.
@@ -53,8 +54,11 @@ DECLARATION = REPO / "tools" / "web_data" / "upgrade.json"
 STEPS = Path(__file__).resolve().parent / "steps"
 BASELINE = "0.41.0"
 # Round 50 ruling 9: the pre-reset pass is planned from the production
-# version on.
-PACK_BASELINE = "0.48.1"
+# version on, 0.48.1; its floor is 0.48.0, because a world moved
+# compatibly to 0.48.1 and never started still records 0.48.0 (the game
+# writes its version at the first load), and 0.48.1 changed no saved state
+# the pass reads (only the bag view and the minimap).
+PACK_BASELINE = "0.48.0"
 # The wall clock of the pass (the fuel's remaining time); tests replace it.
 clock = time.time
 VERSION = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
@@ -276,9 +280,10 @@ def check_map(map_reader):
     return 1
 
 
-def read_pass(backends, map_reader, out):
+def read_pass(backends, map_reader, out, dry=False):
     """The pass's reads, before anything is written: its number, the claims
-    and what their areas hold. Refusals only."""
+    and what their areas hold. Refusals only. `dry` (the check) announces
+    no pass."""
     store = backends["mod_storage"]
     pending = pack.pending_markers(store)
     if pending:
@@ -293,8 +298,9 @@ def read_pass(backends, map_reader, out):
     claims, bad = pack.read_claims(store)
     if bad:
         out.say("%d claim record(s) do not decode and are skipped, as the game does" % bad)
-    out.event("pack_start", "pass %d: %d claim(s)" % (seq, len(claims)),
-              seq=seq, claims=len(claims))
+    if not dry:
+        out.event("pack_start", "pass %d: %d claim(s)" % (seq, len(claims)),
+                  seq=seq, claims=len(claims))
     try:
         if claims and map_reader.any_block() is None:
             raise Refusal("map_empty", "the map holds no block but there are %d claim(s): "
@@ -313,17 +319,32 @@ def read_pass(backends, map_reader, out):
     return seq, scans
 
 
-def run_pass(backends, map_reader, new_world, out):
-    """The pre-reset pass (pack.py): reads, then one mod-storage
-    transaction. Returns the pass number."""
-    started = time.monotonic()
-    seq, scans = read_pass(backends, map_reader, out)
+def prepare_pass(backends, map_reader, out, dry=False):
+    """Everything of the pass before its transaction, for the pass and its
+    dry run (`--check --map-reset`) alike: the reads, every block of every
+    claim decoded, the entries built and proved to read back, none of their
+    keys taken. Refusals only; writes nothing. Returns (seq, entries,
+    report) with report = {seq, counts, nodes, empty}."""
+    seq, scans = read_pass(backends, map_reader, out, dry)
     entries, counts = pack.build(scans, seq, int(clock()))
     try:
         pack.verify(entries, scans, seq)
     except (AssertionError, ValueError) as err:
         raise Refusal("internal", "the packed entries do not read back: %s" % err) from None
+    taken = pack.taken_keys(backends["mod_storage"], entries)
+    if taken:
+        raise Refusal("internal", "grug_housing already holds %s: pack_seq is behind its "
+                      "entries" % ", ".join(taken[:3]))
     nodes, empty = pack.by_node(scans)
+    return seq, entries, dict(seq=seq, counts=counts, nodes=nodes, empty=empty)
+
+
+def run_pass(backends, map_reader, new_world, out):
+    """The pre-reset pass (pack.py): prepare_pass, then one mod-storage
+    transaction. Returns the pass number."""
+    started = time.monotonic()
+    seq, entries, report = prepare_pass(backends, map_reader, out)
+    counts = report["counts"]
     if new_world:
         out.say("a new world: nothing to pack, nothing written")
     else:
@@ -343,9 +364,8 @@ def run_pass(backends, map_reader, new_world, out):
             out.say("".join(traceback.format_exception(err)).rstrip())
             raise Failure("pack", "the pass %d failed: %s: %s"
                           % (seq, type(err).__name__, err)) from None
-    out.event("pack_done", "pass %d done: %s" % (seq, json.dumps(counts)), seq=seq,
-              counts=counts, nodes=nodes, empty=empty,
-              seconds=round(time.monotonic() - started, 3))
+    out.event("pack_done", "pass %d done: %s" % (seq, json.dumps(counts)),
+              seconds=round(time.monotonic() - started, 3), **report)
     return seq
 
 
@@ -401,13 +421,18 @@ def main(argv, test_steps=None, stdout=None, stderr=None):
                 current, "" if record else " (no record: the baseline)", target,
                 ", ".join(due) or "none"))
         if args.check:
+            text = ""
             if map_reader is not None:
+                # The pass's dry run: the same code up to its transaction.
                 result["map_checked"] = check_map(map_reader)
+                started = time.monotonic()
+                result["pack"] = prepare_pass(backends, map_reader, out, dry=True)[2]
+                result["pack"]["seconds"] = round(time.monotonic() - started, 3)
+                text = "; %d map block decoded; the pass would write: %s" % (
+                    result["map_checked"], json.dumps(result["pack"]["counts"]))
             result["write_checked"] = check_writes(backends, target)
             out.event("done", "checked: write access on %s%s"
-                      % (", ".join(result["write_checked"]),
-                         "; %d map block decoded" % result["map_checked"]
-                         if map_reader is not None else ""), **result)
+                      % (", ".join(result["write_checked"]), text), **result)
             return 0
         if map_reader is not None:
             # Refused before its transaction begins; a failure inside it is

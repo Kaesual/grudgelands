@@ -277,9 +277,11 @@ after the reset (the Claim Stone, [housing](../design/housing.md)).
   `packed:*` content keys (the clean-up moves them there out of the
   items) and those nested in the `lists` of a pass not cleaned yet
   (§5.2).
-- **Refused before any write** (exit 2): a world below 0.48.1
-  (`pack_baseline`, Round 50 ruling 9; a world without a record counts as
-  0.41.0); a pending `map_reset_pack:` marker (`pack_pending`: an earlier
+- **Refused before any write** (exit 2): a world below 0.48.0
+  (`pack_baseline`, Round 50 ruling 9: the production version 0.48.1, with
+  the floor at 0.48.0 because a world moved compatibly to 0.48.1 and never
+  started still records 0.48.0, and 0.48.1 changed no saved state the pass
+  reads; a world without a record counts as 0.41.0); a pending `map_reset_pack:` marker (`pack_pending`: an earlier
   pass the game never loaded, so its map may already be gone and a second
   pass would hand out its charcoal twice; restore the backup taken before
   it); a block in a claim that does not decode (`map_block`); claims but
@@ -334,10 +336,20 @@ hosts follow the README's
   back (SQLite under `BEGIN IMMEDIATE`, PostgreSQL waiting at most 5 s for a
   lock). `--map-reset` runs the pre-reset pass (§3.5) first and then the due
   steps, in one run; a world at the target with nothing due still packs and
-  exits 0 (`"applied": []`). `--check --map-reset` also selects one map
-  block and decodes it, which proves zstd importable, besides the
-  rolled-back write on mod storage, where the pass writes. The tool cannot
-  detect a running server: stopping it is the caller's duty.
+  exits 0 (`"applied": []`). `--check --map-reset` is the pass's complete
+  **dry run** (since 0.50.1): the pass's own code up to its transaction
+  reads and decodes every block of every claim, builds every entry and
+  proves it reads back, with the same refusals and reasons (`pack_baseline`,
+  `pack_pending`, `map_empty`, `map_block`, `internal`); it also selects and
+  decodes one map block, which proves zstd importable even without claims,
+  and keeps the rolled-back write on mod storage, where the pass writes. It
+  writes nothing. Its `done` line carries `"pack"`: `seq`, `counts`,
+  `nodes` and `empty` exactly as the pass's `pack_done` would (only
+  `charcoal` follows the clock), and `seconds`. A check that passed leaves
+  the pass on the same unchanged world only failures the check cannot
+  test: a lock taken after the check, or the transaction itself failing
+  (exit 1, `pack`). The tool cannot detect a running server: stopping it is
+  the caller's duty.
 - It runs from the repository root of a full export of the commit (every
   tracked file except `reference_projects/`), on Python 3.13 or newer with
   the standard library; `psycopg` 3 only for a PostgreSQL world, and zstd

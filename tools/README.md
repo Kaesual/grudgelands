@@ -98,7 +98,7 @@ directory and, for PostgreSQL, its databases).
 python3 tools/migrate.py --world <dir>                       # migrate
 python3 tools/migrate.py --world <dir> --check               # report, change nothing
 python3 tools/migrate.py --world <dir> --map-reset           # pre-reset pass, then migrate
-python3 tools/migrate.py --world <dir> --check --map-reset   # also decode one map block
+python3 tools/migrate.py --world <dir> --check --map-reset   # the pass's dry run
 ```
 
 `--check` reports the world version and the due steps and proves write
@@ -115,8 +115,13 @@ fuel as charcoal, commits that in one mod-storage transaction and then runs
 the due steps as without it. A world at the target with nothing due still
 packs and exits 0 (`"applied": []`). Map blocks need zstd: Python 3.14's
 `compression.zstd`, else `zstandard` (Debian: `python3-zstandard`).
-`--check --map-reset` also selects one map block, decodes it and proves
-zstd importable (`map_checked`: 1, or 0 for an empty map). Code:
+`--check --map-reset` is the pass's complete dry run (since 0.50.1): the
+pass's own code up to its transaction, so every claim block is read and
+decoded and every refusal of the pass comes with the same reason; it
+writes nothing and reports in `done` what the pass would write (`pack`:
+`seq`, `counts`, `nodes`, `empty` as in `pack_done`, and `seconds`). It
+also selects one map block, decodes it and proves zstd importable
+(`map_checked`: 1, or 0 for an empty map). Code:
 `tools/migration/mapblock.py` (the map and the decoder) and `pack.py`.
 
 The world is found from `world.mt` only: `player_backend`, `auth_backend`
@@ -146,7 +151,7 @@ escaped.
 | `pack_done` | `seq`, `counts`: `claims`, `players` (owners given entries), `containers` (packed items), `items` (non-empty stacks inside them), `charcoal` (pieces), `blocks_read`; `nodes` (packed containers by node name, empty ones included; `workspace record` for personal workspace records) and `empty` (the empty ones among them, by node name), `seconds` | the pass committed |
 | `step_start` | `step` (its version), `from` (the world's version before it) | a step begins |
 | `step_done` | `step`, `counts`: `characters`, `player_meta`, `inventories`, `positions`, `privileges`, `mod_storage`, `markers` (writes of that step) | a step committed |
-| `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`; with `--map-reset` also `map`), and `applied` (migrate) or `write_checked` (check); with `--map-reset` also `map_reset` (`true`) and `pack_seq` (migrate) or `map_checked` (check) | exit 0 |
+| `done` | `mode`, `world_version` (before the run; `null` for a new world), `record` (the stored record or `null`), `new_world`, `target` (game.conf), `due` (step versions), `backends` (per kind: `sqlite3`, `postgresql` or `absent`; with `--map-reset` also `map`), and `applied` (migrate) or `write_checked` (check); with `--map-reset` also `map_reset` (`true`) and `pack_seq` (migrate) or `map_checked` and `pack` (check: the dry run's `seq`, `counts`, `nodes`, `empty`, `seconds`) | exit 0 |
 | `refusal` | `reason`, `message` | exit 2 |
 | `failed` | `step` (or `null`), `reason`, `message` | exit 1 |
 
@@ -154,7 +159,7 @@ Refusal reasons: `usage`, `checkout` (game.conf, the declaration or a step
 file), `world_mt`, `backend`, `database_missing`, `connection`, `layout`
 (not the engine's table layout), `lock`, `write_access`, `record` (no
 `major.minor.patch`), `world_newer`, `internal`, and for `--map-reset`:
-`pack_baseline` (the world is below 0.48.1), `pack_pending` (the marker of
+`pack_baseline` (the world is below 0.48.0), `pack_pending` (the marker of
 an earlier pass that the game never loaded: restore the backup taken before
 it), `map_block` (a block in a claim the decoder cannot read, a format other
 than 29 included), `map_empty` (claims but no map block: the map was
@@ -1406,17 +1411,18 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   entry against the probe's record, charcoal rounded up, the area's border
   and MIN_Y, two passes appending, the pending-marker refusal, a restored
   backup, the game's `recovered:…:<n>.<k>` keys kept, `pack_baseline`, steps
-  after the pass, `--check --map-reset`, a bad block, an emptied map, odd
-  claim records, the pre-5.12 SQLite layout, backends, the read-only map,
-  the lock), and the game facts pack.py freezes (registry.lua, api.lua,
-  workspaces.lua). `pg_test.py` (in the image, through Round 43 IT's
-  helpers): the map and the backends on PostgreSQL and in the platform's
-  layout, every recovered row equal to SQLite's, the shipped command line,
-  the map rows unchanged, the read-only session. `run.sh [EVIDENCE_DIR]`
-  (one queue slot): both in the image, then a boot whose probe reads every
-  packed entry back with `ItemStack` and `core.deserialize`. `world/` was
-  built by `make_world.sh OUT_DIR` with the probe `grug_probe_r50_ptool`
-  (two claims of grug_housing's model, a chest, a locked chest, a lit
-  furnace with a workspace record, a bookshelf with written books, a vessels
-  shelf, a chest of 32 long books, an empty chest, border chests) and
-  trimmed to the claims' blocks by `trim.py`.
+  after the pass, `--check --map-reset` as the dry run (its counts equal the
+  pass's, every refusal reproduced, nothing written), a bad block, an
+  emptied map, odd claim records, the pre-5.12 SQLite layout, backends, the
+  read-only map, the lock), and the game facts pack.py freezes
+  (registry.lua, api.lua, workspaces.lua). `pg_test.py` (in the image,
+  through Round 43 IT's helpers): the map and the backends on PostgreSQL and
+  in the platform's layout, every recovered row equal to SQLite's, the
+  shipped command line, the map rows unchanged, the read-only session.
+  `run.sh [EVIDENCE_DIR]` (one queue slot): both in the image, then a boot
+  whose probe reads every packed entry back with `ItemStack` and
+  `core.deserialize`. `world/` was built by `make_world.sh OUT_DIR` with the
+  probe `grug_probe_r50_ptool` (two claims of grug_housing's model, a chest,
+  a locked chest, a lit furnace with a workspace record, a bookshelf with
+  written books, a vessels shelf, a chest of 32 long books, an empty chest,
+  border chests) and trimmed to the claims' blocks by `trim.py`.

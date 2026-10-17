@@ -352,7 +352,8 @@ class PackTest(PassCase):
         self.assertEqual(self.storage(), first)
 
     def test_baseline(self):
-        for record, code in (("0.48.0", 2), ("0.41.0", 2), (None, 2), ("0.48.1", 0)):
+        for record, code in (("0.47.0", 2), ("0.41.0", 2), (None, 2), ("0.48.0", 0),
+                             ("0.48.1", 0)):
             with self.subTest(record=record):
                 world = Path(self._tmp.name, "w" + str(record))
                 shutil.copytree(self.world, world)
@@ -401,6 +402,62 @@ class PackTest(PassCase):
         code, events, _ = self.run_tool("--check")
         self.assertNotIn("map", events[-1]["backends"])
         self.assertNotIn("map_reset", events[-1])
+
+    def test_dry_run(self):
+        """--check --map-reset is the pass's dry run: the same counts as the
+        pass that follows, nothing written."""
+        before = {n: (self.world / n).read_bytes() for n in ("mod_storage.sqlite", "map.sqlite")}
+        code, events, err = self.run_tool("--check", "--map-reset")
+        self.assertEqual(code, 0, err)
+        self.assertEqual([e["event"] for e in events], ["start", "done"])
+        dry = events[-1]["pack"]
+        self.assertEqual({n: (self.world / n).read_bytes() for n in before}, before)
+        code, events, err = self.run_tool("--map-reset")
+        self.assertEqual(code, 0, err)
+        done = events[2]
+        self.assertEqual({k: dry[k] for k in ("seq", "counts", "nodes", "empty")},
+                         {k: done[k] for k in ("seq", "counts", "nodes", "empty")})
+        self.assertEqual(dry["counts"]["blocks_read"], 763)
+        self.assertIn("seconds", dry)
+        print("\ndry run: %.3f s" % dry["seconds"], file=sys.stderr)
+
+    def test_dry_run_refusals(self):
+        """Every refusal of the pass, reproduced by the check, writing nothing."""
+        def corrupt(world):
+            conn = sqlite3.connect(world / "map.sqlite")
+            with conn:
+                data = conn.execute("SELECT data FROM blocks WHERE x = 62 AND y = 9 "
+                                    "AND z = 62").fetchone()[0]
+                conn.execute("UPDATE blocks SET data = ? WHERE x = 62 AND y = 9 AND z = 62",
+                             (bytes([28]) + data[1:],))
+            conn.close()
+
+        def emptied(world):
+            conn = sqlite3.connect(world / "map.sqlite")
+            with conn:
+                conn.execute("DELETE FROM blocks")
+            conn.close()
+
+        cases = {
+            "pack_baseline": lambda w: self.set_storage("grug_core", "world_version",
+                                                        "0.47.0", w),
+            "pack_pending": lambda w: self.set_storage("grug_core", "map_reset_pack:1", "1", w),
+            "map_block": corrupt,
+            "map_empty": emptied,
+            "internal": lambda w: self.set_storage(
+                "grug_housing", "recovered:builder:1:1", "default:dirt", w),
+        }
+        for reason, setup in cases.items():
+            with self.subTest(reason=reason):
+                world = Path(self._tmp.name, reason)
+                shutil.copytree(self.world, world)
+                setup(world)
+                hashes = self.hashes(world)
+                for args in (("--check", "--map-reset"), ("--map-reset",)):
+                    code, events, _ = self.run_tool(*args, world=world)
+                    self.assertEqual((code, events[-1]["event"], events[-1]["reason"]),
+                                     (2, "refusal", reason), args)
+                    self.assertEqual(self.hashes(world), hashes, args)
 
     def test_bad_block_refused(self):
         conn = sqlite3.connect(self.world / "map.sqlite")

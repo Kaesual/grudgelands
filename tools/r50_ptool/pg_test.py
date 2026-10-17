@@ -169,12 +169,18 @@ def main():
           rc == 0 and done.get("map_checked") == 1 and done.get("map_reset") is True
           and done.get("write_checked") == ["player", "auth", "mod_storage"],
           "exit %d %s" % (rc, json.dumps(done)))
+    dry = done.get("pack") or {}
+    check("shipped --check --map-reset: the dry run read every claim block, wrote nothing",
+          dry.get("counts", {}).get("blocks_read") == 763 and dry.get("seq") == 1
+          and storage_rows(shipped_world, "grug_it_empty") == storage_rows(WORLD),
+          json.dumps(dry.get("counts")))
     rc, events = shipped(shipped_world, "--map-reset")
     packed = next((e for e in events if e.get("event") == "pack_done"), {})
-    check("shipped --map-reset: packed, exit 0, done with map_reset",
+    check("shipped --map-reset: packed, exit 0, done with map_reset, the dry run's counts",
           rc == 0 and packed.get("counts", {}).get("containers") == 11
           and packed["counts"]["blocks_read"] == 763 and events[-1].get("map_reset") is True
-          and events[-1].get("applied") == [],
+          and events[-1].get("applied") == [] and packed.get("counts") == dry.get("counts")
+          and packed.get("nodes") == dry.get("nodes"),
           "exit %d %s" % (rc, json.dumps(packed.get("counts"))))
     rc, events = shipped(shipped_world, "--map-reset")
     check("shipped --map-reset again before the game loaded: refused (pack_pending)",
