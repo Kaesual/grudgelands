@@ -1446,3 +1446,22 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `grug_probe_r502_cmap` the engine screenshots (a border, a settlement, a
   draft in view, the switched-off minimap) on a fresh world, so it is also
   the smoke boot that renders the base and both overlays.
+- **0.50.2 lane HOME** (`r502_home`): claims named in the location line and
+  banner and framed on the minimap (`portable_test.lua`: the banner rule,
+  a change replacing a running display and restarting its time; through the
+  real location.lua and registry "Your Home" and "<owner>'s Home" in every
+  claim state, y −100 in and −101 out, the edge node in and the next out,
+  the territory line and the discovery's zone unchanged, a zigzag across a
+  claim's edge; the frames' geometry, the outward-rounded box's border one
+  pixel wide, clipped exactly at every edge with valid fills; the real
+  minimap.lua: the plain string with no claim near, own green and others
+  yellow, every state, the same string for the same claims, claim mode
+  unchanged). `bench_sample.lua <repo>` the location sample's µs with and
+  without the claim lookup; the minimap's packets, bytes, µs and textures
+  come from `tools/r502_cmap/bench_claim.lua` run before and after.
+  `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r502_home` the engine
+  screenshots (both frames, "Your Home" and "<name>'s Home" with their
+  banners, the stone held) on a fresh world, the smoke boot, and the
+  sample's engine cost. Its drafts are set before their chunks are
+  generated, so the mapgen logs two refinement errors for the stone nodes
+  (a probe artifact).

@@ -29,6 +29,17 @@ or guild land.
 - Claims never overlap. Two claims may touch edge to edge; there is no extra
   spacing (ruling 5). A draft (§2a) and a claim whose fuel ran out still block
   other claims until the stone is picked up, crumbles or is destroyed (§5).
+- **Seeing a claim** (fix 0.50.2 lane HOME, rulings H1–H4): inside a claim,
+  exactly where §1 places it (to the node, from y −100 upwards), the
+  location line under the minimap, the entry banner and the map window name
+  it: "Your Home" for its owner, "<owner>'s Home" for everybody else, in
+  every state (draft, active, expired); the territory line stays
+  ([world_map.md](world_map.md) "Zone and town names"). Without the Claim
+  Stone in hand the minimap frames the player's own claim in green and every
+  other claim in yellow, one minimap pixel wide (about 7 nodes, rounded
+  outward like the preview's red), no fill; with the stone in hand the
+  placement preview (§2) shows instead. The map window draws no claims; it
+  shows only the activated stone's waypoint (§8).
 
 ## 2. Placement
 
