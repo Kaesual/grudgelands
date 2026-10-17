@@ -103,17 +103,89 @@ end
 -- least as large as the texture) combined, halved at high quality, cut to a
 -- disc by `mask` (made at the texture's own size). Parts outside the base
 -- stay transparent.
-function V.texture(v, ox, oy, mask)
+--
+-- `claim` (fix 0.50.2, the Claim Stone preview; nil: none) adds the
+-- faction's overlay tiles (`claim.tiles`, base.lua claim_overlay) after the
+-- map's, which `[combine` blends by their alpha, and one `[fill` of
+-- `claim.color` per rectangle of `claim.rects` (V.claim_rect: inside the
+-- combined texture, never empty) before any resize and the mask.
+function V.texture(v, ox, oy, mask, claim)
 	local size = v.combined
 	local parts = {("[combine:%dx%d"):format(size, size)}
-	for _, tile in ipairs(v.tiles) do
-		if tile.x < ox + size and tile.x + tile.w > ox and
-				tile.y < oy + size and tile.y + tile.h > oy then
-			parts[#parts + 1] = ("%d,%d=%s"):format(tile.x - ox, tile.y - oy, tile.name)
+	local function add(tiles)
+		for _, tile in ipairs(tiles) do
+			if tile.x < ox + size and tile.x + tile.w > ox and
+					tile.y < oy + size and tile.y + tile.h > oy then
+				parts[#parts + 1] = ("%d,%d=%s"):format(tile.x - ox, tile.y - oy, tile.name)
+			end
 		end
 	end
+	add(v.tiles)
+	local fills = ""
+	if claim then
+		add(claim.tiles)
+		local list = {}
+		for index, rect in ipairs(claim.rects) do
+			list[index] = ("^[fill:%dx%d:%d,%d:%s"):format(rect.w, rect.h, rect.x, rect.y,
+				claim.color)
+		end
+		fills = table.concat(list)
+	end
 	local resize = v.reduce > 1 and ("^[resize:%dx%d"):format(v.pixels, v.pixels) or ""
-	return table.concat(parts, ":") .. resize .. "^[mask:" .. mask
+	return table.concat(parts, ":") .. fills .. resize .. "^[mask:" .. mask
+end
+
+-- The Claim Stone preview's geometry (fix 0.50.2; docs/design/world_map.md
+-- "Minimap"). A claim covers the columns cx - radius .. cx + radius (and the
+-- same in z), each node its column +- 0.5.
+--
+-- Its pixel rectangle {x, y, w, h} in the combined texture of the cell
+-- whose top-left base pixel is ox/oy: rounded outward, clipped to the
+-- texture; nil when nothing of it lies on the texture. The engine refuses a
+-- `[fill` whose x or y lies outside the image or whose width or height is
+-- 0, and leaves the part out with an error line per build (imagesource.cpp
+-- `[fill`, CHECK_DIM), so no other rectangle may reach a recipe.
+function V.claim_rect(v, ox, oy, cx, cz, radius)
+	local size = v.combined
+	local left, top = V.base_pixel(v, cx - radius - 0.5, cz + radius + 0.5)
+	local right, bottom = V.base_pixel(v, cx + radius + 0.5, cz - radius - 0.5)
+	local x0 = math.max(0, math.floor(left) - ox)
+	local y0 = math.max(0, math.floor(top) - oy)
+	local x1 = math.min(size, math.ceil(right) - ox)
+	local y1 = math.min(size, math.ceil(bottom) - oy)
+	if x1 <= x0 or y1 <= y0 then return nil end
+	return {x = x0, y = y0, w = x1 - x0, h = y1 - y0}
+end
+
+-- The world rectangle (inclusive columns) the combined texture of the cell
+-- at ox/oy shows, one column more on each side: the claims to ask for.
+function V.texture_area(v, ox, oy)
+	local size = v.combined
+	return math.floor(v.min_x + ox * v.npp) - 1, math.floor(v.max_z - (oy + size) * v.npp) - 1,
+		math.ceil(v.min_x + (ox + size) * v.npp) + 1, math.ceil(v.max_z - oy * v.npp) + 1
+end
+
+-- The player's own square: `radius` nodes each way of the player's
+-- position at the frame's scale, centred on the arrow (the map glides under
+-- it, so it changes only with the window). {x, y, size, line}: the top-left
+-- screen pixel, the side and the frame's width (one HUD pixel, at least
+-- one pixel), in real screen pixels.
+function V.claim_square(v, frame, radius)
+	local line = math.max(1, math.floor(frame.hud + 0.5))
+	local size = math.max(2 * line + 1, math.floor((2 * radius + 1) / v.npp * frame.f + 0.5))
+	return {x = math.floor(frame.arrow_x - size / 2 + 0.5),
+		y = math.floor(frame.arrow_y - size / 2 + 0.5), size = size, line = line}
+end
+
+-- Its texture, made at the size it is drawn so the frame stays exactly
+-- `line` pixels: a `fill` square with an `edge` frame (colour strings).
+function V.claim_square_texture(square, fill, edge)
+	local s, l = square.size, square.line
+	return ("[fill:%dx%d:%s"):format(s, s, fill) ..
+		("^[fill:%dx%d:0,0:%s"):format(s, l, edge) ..
+		("^[fill:%dx%d:0,%d:%s"):format(s, l, s - l, edge) ..
+		("^[fill:%dx%d:0,%d:%s"):format(l, s - 2 * l, l, edge) ..
+		("^[fill:%dx%d:%d,%d:%s"):format(l, s - 2 * l, s - l, l, edge)
 end
 
 -- The drawing frame for a minimap `box` (grug_core.hud_layout.minimap_box):

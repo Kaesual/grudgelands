@@ -64,6 +64,9 @@ return function(api)
 	local players = {}       -- name -> record
 	local next_id = 1
 	local claim_count = 0
+	-- Changes whenever a claim comes or goes, also on load and map reset
+	-- (fix 0.50.2: the minimap's claim preview rebuilds its texture on it).
+	local claim_set_version = 0
 
 	-- Serialization -----------------------------------------------------------
 
@@ -177,6 +180,7 @@ return function(api)
 
 	function M.load()
 		claims, grid, players, claim_count = {}, {}, {}, 0
+		claim_set_version = claim_set_version + 1
 		next_id = tonumber(storage.get_string("next_id")) or 1
 		local keys = storage.keys()
 		table.sort(keys)
@@ -210,6 +214,7 @@ return function(api)
 			if keys[index]:match("^claim:") then storage.set_string(keys[index], "") end
 		end
 		claims, grid, claim_count = {}, {}, 0
+		claim_set_version = claim_set_version + 1
 		storage.set_string("next_id", tostring(next_id))
 		for name, rec in pairs(players) do
 			if rec.state == "placed" then
@@ -244,6 +249,36 @@ return function(api)
 	function M.claim_by_id(id) return claims[id] end
 
 	function M.claim_count() return claim_count end
+
+	-- A number that changes whenever a claim is created or removed (and on
+	-- load and map reset); equal numbers mean the same claim set.
+	function M.claim_set_version() return claim_set_version end
+
+	-- Every claim whose square meets the inclusive x/z rectangle, ordered
+	-- by id: a lookup in the claim grid's cells under the rectangle.
+	function M.claims_in(min_x, min_z, max_x, max_z)
+		local found, list = {}, {}
+		for gz = cell(min_z), cell(max_z) do
+			local row = grid[gz]
+			if row then
+				for gx = cell(min_x), cell(max_x) do
+					local cell_list = row[gx]
+					for index = 1, cell_list and #cell_list or 0 do
+						local claim = cell_list[index]
+						local c = claim.center
+						if not found[claim] and c.x - RADIUS <= max_x and
+								c.x + RADIUS >= min_x and c.z - RADIUS <= max_z and
+								c.z + RADIUS >= min_z then
+							found[claim] = true
+							list[#list + 1] = claim
+						end
+					end
+				end
+			end
+		end
+		table.sort(list, function(a, b) return a.id < b.id end)
+		return list
+	end
 
 	-- Every claim, ordered by id.
 	function M.all_claims()
@@ -482,6 +517,17 @@ return function(api)
 	}
 	M.MESSAGES = MESSAGES
 
+	-- The column rule above for one column (fix 0.50.2, the minimap's claim
+	-- preview; validate is unchanged): the problem code for `faction`, or
+	-- nil. `territory` false judges the zone part alone (the territory taken
+	-- as the faction's home), so a caller asks the territory only where the
+	-- zone itself is eligible.
+	function M.column_problem(faction, water, zone, territory)
+		local home = faction .. "_home"
+		if territory == false then territory = home end
+		return zone_problem(faction, home, water, zone, territory)
+	end
+
 	-- The sample columns (offsets from the centre) in a fixed order.
 	local sample_offsets
 	do
@@ -589,6 +635,7 @@ return function(api)
 		storage.set_string("next_id", tostring(next_id))
 		claims[claim.id] = claim
 		claim_count = claim_count + 1
+		claim_set_version = claim_set_version + 1
 		grid_add(claim)
 		save_claim(claim)
 		local rec = record(name)
@@ -606,6 +653,7 @@ return function(api)
 		if not claims[claim.id] then return false end
 		claims[claim.id] = nil
 		claim_count = claim_count - 1
+		claim_set_version = claim_set_version + 1
 		grid_remove(claim)
 		storage.set_string("claim:" .. claim.id, "")
 		local rec = record(claim.owner)
