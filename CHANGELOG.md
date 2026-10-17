@@ -12,7 +12,7 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.50.2 — where a Claim Stone may go, on the minimap (2026-10-17)
+## 0.50.2 — where a Claim Stone may go, and where claims are (2026-10-17)
 
 Existing worlds play on: no migration step, no map reset, no new world. The
 world map re-renders once at the first start (about 10 seconds longer).
@@ -32,6 +32,17 @@ world map re-renders once at the first start (about 10 seconds longer).
   goes again afterwards. Any other item in your hand shows the normal
   minimap.
 - The placement rules and their messages are unchanged.
+- **Your home by name:** inside a claim the line under the minimap, the
+  zone banner and the map window say "Your Home" in your own claim and
+  "<name>'s Home" in anyone else's, right to its edge and from y −100
+  upwards, so you can see where its protection ends. The territory line
+  stays.
+- **Claims on the minimap:** without the stone in hand, the minimap frames
+  your own claim in green and every other claim in yellow. With the stone
+  in hand, the preview above shows instead.
+- **Zone banner:** a new place or territory now replaces a banner that is
+  still showing at once, and the last one stays its full 4 seconds; until
+  now a showing banner held the next one back.
 
 ## 0.50.1 — a complete dry run before a map reset (2026-10-17)
 

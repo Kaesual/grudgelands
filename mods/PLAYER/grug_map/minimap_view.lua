@@ -104,11 +104,12 @@ end
 -- disc by `mask` (made at the texture's own size). Parts outside the base
 -- stay transparent.
 --
--- `claim` (fix 0.50.2, the Claim Stone preview; nil: none) adds the
--- faction's overlay tiles (`claim.tiles`, base.lua claim_overlay) after the
--- map's, which `[combine` blends by their alpha, and one `[fill` of
--- `claim.color` per rectangle of `claim.rects` (V.claim_rect: inside the
--- combined texture, never empty) before any resize and the mask.
+-- `claim` (fix 0.50.2; nil: none) is the claim layer: in claim mode (the
+-- Claim Stone preview) the faction's overlay tiles (`claim.tiles`, base.lua
+-- claim_overlay) after the map's, which `[combine` blends by their alpha;
+-- in both modes one `[fill` per rectangle of `claim.rects` (V.claim_rect,
+-- V.claim_frame: inside the combined texture, never empty) in its own
+-- `color` or else `claim.color`, before any resize and the mask.
 function V.texture(v, ox, oy, mask, claim)
 	local size = v.combined
 	local parts = {("[combine:%dx%d"):format(size, size)}
@@ -123,11 +124,11 @@ function V.texture(v, ox, oy, mask, claim)
 	add(v.tiles)
 	local fills = ""
 	if claim then
-		add(claim.tiles)
+		if claim.tiles then add(claim.tiles) end
 		local list = {}
 		for index, rect in ipairs(claim.rects) do
 			list[index] = ("^[fill:%dx%d:%d,%d:%s"):format(rect.w, rect.h, rect.x, rect.y,
-				claim.color)
+				rect.color or claim.color)
 		end
 		fills = table.concat(list)
 	end
@@ -145,16 +146,47 @@ end
 -- `[fill` whose x or y lies outside the image or whose width or height is
 -- 0, and leaves the part out with an error line per build (imagesource.cpp
 -- `[fill`, CHECK_DIM), so no other rectangle may reach a recipe.
-function V.claim_rect(v, ox, oy, cx, cz, radius)
-	local size = v.combined
+-- The claim's box rounded outward, in pixels of that texture and not yet
+-- clipped: left, top, right, bottom (right and bottom exclusive).
+local function claim_box(v, ox, oy, cx, cz, radius)
 	local left, top = V.base_pixel(v, cx - radius - 0.5, cz + radius + 0.5)
 	local right, bottom = V.base_pixel(v, cx + radius + 0.5, cz - radius - 0.5)
-	local x0 = math.max(0, math.floor(left) - ox)
-	local y0 = math.max(0, math.floor(top) - oy)
-	local x1 = math.min(size, math.ceil(right) - ox)
-	local y1 = math.min(size, math.ceil(bottom) - oy)
+	return math.floor(left) - ox, math.floor(top) - oy, math.ceil(right) - ox,
+		math.ceil(bottom) - oy
+end
+
+-- The pixels x0 .. x1 - 1, y0 .. y1 - 1 clipped to a `size` square texture:
+-- {x, y, w, h}, or nil when nothing is left.
+local function clip(size, x0, y0, x1, y1)
+	x0, y0 = math.max(0, x0), math.max(0, y0)
+	x1, y1 = math.min(size, x1), math.min(size, y1)
 	if x1 <= x0 or y1 <= y0 then return nil end
 	return {x = x0, y = y0, w = x1 - x0, h = y1 - y0}
+end
+
+function V.claim_rect(v, ox, oy, cx, cz, radius)
+	return clip(v.combined, claim_box(v, ox, oy, cx, cz, radius))
+end
+
+-- The claims outside claim mode (fix 0.50.2 ruling H4): a frame one base
+-- pixel wide just inside the claim's outward-rounded box (claim_rect's),
+-- no fill. Appends its edges in `color` to `list` as rectangles {x, y, w,
+-- h, color}, each clipped as claim_rect's (top and bottom the box's whole
+-- width, left and right between them, so no pixel is drawn twice); an
+-- edge with nothing on the texture is left out. Returns `list`.
+function V.claim_frame(v, ox, oy, cx, cz, radius, color, list)
+	local size = v.combined
+	local x0, y0, x1, y1 = claim_box(v, ox, oy, cx, cz, radius)
+	local edges = {clip(size, x0, y0, x1, y0 + 1), clip(size, x0, y1 - 1, x1, y1),
+		clip(size, x0, y0 + 1, x0 + 1, y1 - 1), clip(size, x1 - 1, y0 + 1, x1, y1 - 1)}
+	for index = 1, 4 do
+		local rect = edges[index]
+		if rect then
+			rect.color = color
+			list[#list + 1] = rect
+		end
+	end
+	return list
 end
 
 -- The world rectangle (inclusive columns) the combined texture of the cell

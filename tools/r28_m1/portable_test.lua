@@ -9,8 +9,9 @@
 --      village keeps the zone's name; open sea; the exact footprint query is
 --      asked only inside a town's box;
 --   D  debounce: the brief's city example (leave and re-enter within the
---      display: nothing new), A->B->A, A->B->C, no start while a display
---      runs, an unchanged sample shows nothing;
+--      display: each change shows at once and restarts the display, fix
+--      0.50.2 ruling H3; it used to wait), A->B->A, A->B->C, an unchanged
+--      sample shows nothing;
 --   T, P  (zone tooltips and the zone markers' placement; gone in Round
 --      44 with the zone markers, which the map window does not draw);
 --   R  runtime: banner element on join, the join banner, DISPLAY s then
@@ -97,27 +98,32 @@ do
 	check(L.expire(s, "Dawnmere Fields", t(1.5)) == false, "D end, same place: hide")
 	check(s.busy_until == nil, "D idle after hiding")
 	check(L.sample(s, "Dawnmere Fields", t(2)) == nil, "D unchanged sample: nothing")
-	-- The brief's example: enter the city, leave and re-enter within the display.
+	-- The brief's example: enter the city, leave and re-enter within the
+	-- display. Since fix 0.50.2 (ruling H3) every change replaces the
+	-- running display at once and starts its time afresh; it used to wait.
 	check(L.sample(s, "Highcourt City", t(10)) == "Highcourt City", "D enter city: shows")
-	check(L.sample(s, "Highcourt", t(11)) == nil, "D left the city while busy: nothing")
-	check(L.expire(s, "Highcourt City", t(11.5)) == false, "D back in the city at the end: hide")
-	check(s.shown == "Highcourt City", "D shown stays the city")
+	check(L.sample(s, "Highcourt", t(11)) == "Highcourt", "D left the city while busy: shows at once")
+	check(s.busy_until == t(11) + L.DISPLAY, "D ...for a full display")
+	check(L.expire(s, "Highcourt", t(10) + L.DISPLAY) == nil, "D the first display's end: nothing")
+	check(L.sample(s, "Highcourt City", t(11.5)) == "Highcourt City", "D back in: shows again")
+	check(L.expire(s, "Highcourt City", t(11.5) + L.DISPLAY) == false,
+		"D the last display runs its full time, then hides")
+	check(s.shown == "Highcourt City", "D shown is the city")
 	-- A -> B -> A
 	local a = L.new_state()
 	L.sample(a, "A", t(0))
 	L.expire(a, "A", t(1.5))
 	check(L.sample(a, "B", t(3)) == "B", "D A->B shows B")
-	check(L.sample(a, "A", t(4)) == nil, "D A->B->A: A waits")
-	check(L.expire(a, "A", t(4.5)) == "A", "D A->B->A: A shows when B ends")
-	check(a.busy_until == t(6), "D the follow-up display runs DISPLAY s")
-	check(L.expire(a, "A", t(6)) == false, "D then hides")
+	check(L.sample(a, "A", t(4)) == "A", "D A->B->A: A shows at once")
+	check(a.busy_until == t(4) + L.DISPLAY, "D the replacing display runs DISPLAY s")
+	check(L.expire(a, "A", t(4) + L.DISPLAY) == false, "D then hides")
 	-- A -> B -> C
 	local c = L.new_state()
 	L.sample(c, "A", t(0))
 	L.expire(c, "A", t(1.5))
 	L.sample(c, "B", t(2))
-	check(L.sample(c, "C", t(3)) == nil, "D A->B->C: C waits")
-	check(L.expire(c, "C", t(3.5)) == "C", "D A->B->C: C shows when B ends")
+	check(L.sample(c, "C", t(3)) == "C", "D A->B->C: C shows at once")
+	check(L.sample(c, "C", t(3.5)) == nil, "D ...and once")
 	check(L.sample(L.new_state(), nil, t(0)) == nil, "D no location: nothing")
 end
 
@@ -249,23 +255,30 @@ do
 	p.pos = {x = 10, y = 10, z = -2540}
 	step(1.1)
 	check(p.huds[banner].text == "Dawnmere", "R entering the start town shows its name")
-	-- Leave and come back within the display: nothing new afterwards.
+	-- Leave and come back within the display: each crossing shows at the
+	-- next sample, the last one for the full display (fix 0.50.2 ruling H3;
+	-- it used to wait for the running display).
 	p.pos = {x = 300, y = 10, z = -2600}
-	step(0.5)
+	step(1.0)
 	check(M.text_of(p) == "Dawnmere Fields", "R the minimap line follows at once")
+	check(p.huds[banner].text == "Dawnmere Fields", "R leaving replaces the town's banner")
 	p.pos = {x = 10, y = 10, z = -2540}
-	step(1.5 + EXTRA)
-	check(p.huds[banner].text == "", "R back in town at the end: no new banner")
+	step(1.0)
+	check(p.huds[banner].text == "Dawnmere", "R coming back shows the town again")
+	step(L.DISPLAY - 1.1)
+	check(p.huds[banner].text == "Dawnmere", "R ...for its full display")
+	step(1.3)
+	check(p.huds[banner].text == "", "R then it hides")
 	-- A -> B -> C: start zone, Goldmead (village), Highcourt city.
 	p.pos = {x = -120, y = 10, z = -2020}
 	step(1.1)
 	check(p.huds[banner].text == "Goldmead Vale", "R the village shows its zone")
 	p.pos = {x = 0, y = 10, z = -1500}
-	step(0.3)
-	check(p.huds[banner].text == "Goldmead Vale", "R the city waits for the display to end")
-	step(1.3 + EXTRA)
-	check(p.huds[banner].text == "Highcourt", "R then the city shows")
-	step(2 + EXTRA)
+	step(1.0)
+	check(p.huds[banner].text == "Highcourt", "R the city replaces the village's banner")
+	step(L.DISPLAY - 1.1)
+	check(p.huds[banner].text == "Highcourt", "R ...for its full display")
+	step(1.3)
 	check(p.huds[banner].text == "", "R and hides")
 	for _, fn in ipairs(leaves) do fn(p) end
 	players.p1 = nil

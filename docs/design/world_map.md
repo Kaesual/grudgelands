@@ -638,6 +638,27 @@ drawn from the base image above. The gliding version (approved in playtest,
   the same 1344 cell textures (26.6 MB) with the stone held as without;
   held on every other leg 1384 (27.4 MB). A client decodes the faction's
   overlay tiles once (at most six, about 4 MB as RGBA8).
+- **Claims** (0.50.2 lane HOME, ruling H4; [housing.md](housing.md) §1
+  "Seeing a claim"): outside claim mode the cell texture frames every claim
+  near the cell, drafts and expired claims included: the player's own in
+  the green square's frame colour, every other in yellow (starting values
+  the user tunes), one base pixel wide just inside the claim's
+  outward-rounded box (the rectangle claim mode fills red, so about ±1 base
+  pixel, roughly 7 nodes), no fill. Each frame is up to four `[fill`s,
+  clipped to the cell texture in Lua exactly like claim mode's (an edge with
+  nothing on the texture is left out), before the mask, so a frame is cut
+  cleanly at the bezel and glides with the map; the own frame comes last, on
+  top where two claims touch. The texture is built again on a cell change
+  or a claim-set version change and sent only when its string differs; with
+  no claim near it is the plain map's string. In claim mode everything stays
+  as above (all claims red). **Cost** (comparisons, LuaJIT bench
+  `tools/r502_cmap/bench_claim.lua` before and after, 70 claims near the
+  route): the same packets per second (11.1 walking, 33.1 flying), about
+  15 % more bytes without the stone (327 → 377 bytes/s walking: longer
+  texture strings), the same 1344 textures (26.6 MB) on the hour's walk, the
+  per-step cost within the noise (about 1–3 µs per player and step before
+  and after); the engine reads the claim set's version once per player and
+  step, now also without the stone.
 - **Underground** the minimap keeps showing the surface map.
 - **Switch:** "Show minimap" in the map window (the Map tab until Round 44;
   Luanti has no custom keybinds), stored per player in player meta, on by
@@ -703,6 +724,18 @@ were in, and quest texts and level routes now name zones.
   column the text is "Open sea". The town still belongs to its zone for
   everything else. The minimap line, the entry banner and the map window's
   "Current:" label show the same text.
+- **Claims** (0.50.2 lane HOME, the user's rulings H1–H2): inside a Claim
+  Stone's claim the text is **"Your Home"** for its owner and
+  **"<owner>'s Home"** for everybody else (permission holders included;
+  always `'s`, "Jens's Home"), in every claim state (draft, active,
+  expired). "Inside" is `grug_housing.claim_at` on the player's position,
+  exact to the node in x and z and in 3D: from y −100 (the claim's lower
+  limit) upwards without a top; no hysteresis, so the edge where the text
+  changes is the edge of the protection. Only the text changes: the
+  territory line and colour, the town flags and the zone handed to the
+  zone discovery stay the column's (a first visit to the zone under one's
+  own claim still counts). The lookup is one claim-grid cell in the same
+  1 s sample, no zone query.
 - **Location line:** a small text centred under the minimap bezel (4 HUD px
   gap), in the colour of the territory status (below), created and removed
   with the minimap (hidden when the minimap is switched off or unavailable)
@@ -743,10 +776,13 @@ were in, and quest texts and level routes now name zones.
   in the status colour, below the
   target frame's line (`hud_layout.zone_banner_offset`), clear of the
   level-up banner (0.25 of the window height) and the flash line (0.35).
-  While a display runs no new one starts; when it ends, a fresh sample
-  decides: a location or status other than the one just shown displays at
-  once, otherwise the banner hides (leaving a city and coming back within
-  the 4 s shows nothing new). Crossing y −501 under friendly or enemy land
+  A change found by a sample replaces a running display at once and starts
+  its 4 s afresh (0.50.2 ruling H3; from Round 28 to 0.50.1 a running
+  display blocked new ones until it ended), so the last banner always stays
+  the full 4 s: zigzagging across a zone border or a claim's edge shows each
+  crossing within a second. When a display ends, a fresh sample decides: a
+  location or status other than the one just shown displays at once,
+  otherwise the banner hides. Crossing y −501 under friendly or enemy land
   (through caves or shafts too) shows the same name again with the new line
   and colour; crossing it in a contested zone shows nothing; a zone change
   always shows. The location a player joins in shows once on join. A change
@@ -772,7 +808,8 @@ were in, and quest texts and level routes now name zones.
   "Enemy Territory (PvP)", none without a status. No level range (the
   underground mob level follows depth, so a range would only confuse).
   Each sample adds the status's two zone queries (`pvp_rule_at`,
-  `faction_at`) to the location's one.
+  `faction_at`) to the location's one; the claim lookup adds none (about
+  0.25 µs per sample on `tools/r502_home/bench_sample.lua`'s fakes).
 - **Zone names on the map:** Rounds 28 to 43 had one Map tab marker per
   zone (a pennant icon, the name and level band in its tooltip); Round 44's
   window had none. Since Round 47 the map window's **Zones** layer shows
