@@ -1,7 +1,8 @@
 # Fix round 0.50.2 — Claim Stone placement preview on the minimap
 
 Coordinator: Claude (Opus 5.5), planned with the user on 2026-10-17.
-Status: **complete 2026-10-17** (see Completion). Process:
+Status: CMAP **complete 2026-10-17** (see Completion); the HOME addendum
+(end of file) has the **user's go (2026-10-17)**. Process:
 [round workflow](../process/round-workflow.md).
 
 To ship as **0.50.2**, a compatible patch on 0.50.1 (main `bdabec4d`, not
@@ -269,3 +270,106 @@ Backlog notes: sub-pixel coastal-shelf columns can still give "green, yet
 refused"; touching claims show a darker shared line.
 
 The user's GUI checklist is §6 above.
+
+## Addendum: lane HOME (2026-10-17)
+
+Planned with the user on 2026-10-17 after CMAP's merge, before the push.
+It ships in **0.50.2** too (nothing pushed yet), compatible, no migration
+step, no map reset. One GUI test for both lanes.
+
+**Why:** a player with a placed claim cannot see how far it reaches or
+where its protection ends; the map shows only the stone's waypoint.
+
+### Lane
+
+| Lane | Goal | Implementer / reviewer (default) |
+|------|------|----------------------------------|
+| **HOME** | Claims are named in the location line and banner and drawn on the minimap at all times | Opus / Opus |
+
+Worktree `.claude/worktrees/r502-home`, branch `r502-home`, from main
+`46808920` (CMAP merged).
+
+### Rulings (user, 2026-10-17)
+
+H1. **Location name inside a claim.** Where `registry.claim_at(pos)` finds a
+    claim (exact, in 3D: y ≥ −100, the T1 rock band, upwards without a top;
+    x and z to the node) the location text is **"Your Home"** for its owner
+    and **"<owner>'s Home"** for everybody else (permission holders
+    included; always `'s`). Elsewhere the text is unchanged (zone, town or
+    open sea). The territory line and its colour stay. All claim states
+    count: draft, active, expired.
+H2. **No hysteresis** at a claim's edge: the exact border shows where
+    building is protected.
+H3. **Banner rule (all banners).** A location or status change found by
+    the 1 s sample replaces a running banner at once and restarts its
+    display time, so the last banner always stays the full 4 s. Today a
+    running banner blocks new ones until it ends (Round 47); this changes
+    that deliberately for every banner, zone changes included.
+H4. **Claims on the minimap, always.** Outside claim mode the minimap shows
+    the player's own claim as a **green frame** (the placement square's
+    green) and every other claim as a **yellowish frame**, no fill; all
+    claim states. They are baked into the cell texture recipe like CMAP's
+    claims (one clipped `[fill` per frame edge), never markers. With the
+    stone held (claim mode) everything stays as CMAP built it: all claims
+    red. (A player who holds a stone has no claim, so the CMAP default "own
+    claim red" never occurs; it is dropped.)
+H5. **Map tab unchanged**: no claim drawing there; only the own claim
+    stone's waypoint marker as today.
+
+### Coordinator defaults
+
+The user may overrule these.
+
+- **Zone discovery unchanged.** The name shown changes, the zone id the
+  sample hands to the discovery does not (a first visit to the zone under
+  one's own claim is still discovered).
+- **The Map tab's location line** (`window.lua`, `text_of`) shows the same
+  text as the minimap line, "Your Home" included: one source for the text.
+- **Precision:** the minimap frame follows CMAP's outward rounding (about
+  ±1 base pixel, roughly 7 nodes); the banner is node-exact.
+- **Frame width** one base pixel, inside the outward-rounded box; the
+  colours are starting values the user tunes after the GUI test.
+- **Rebuilds:** outside claim mode the recipe now also depends on the
+  claim-set version: rebuilt on a cell change or a version change, sent
+  only when the string differs (as in claim mode).
+- **Wording** of a name ending in s: "Jens's Home" (one rule, no
+  exceptions).
+
+### Lane goal
+
+- `location_view.lua` / `location.lua`: the claim name (H1) from
+  `grug_housing`'s `claim_at` in the sample, 3D; the banner rule (H3) in
+  `L.sample`/`L.expire`. The fixtures that pin the old banner rule are
+  updated with a one-line reason.
+- `minimap.lua` / `minimap_view.lua`: the frames (H4) in the normal recipe,
+  clipped exactly like CMAP's fills; pure geometry in `minimap_view.lua`.
+- Docs: `world_map.md` ("Zone and town names", "Minimap"), `housing.md`
+  where it describes what a player sees; the CHANGELOG 0.50.2 entry
+  extended (version stays 0.50.2, `upgrade.json` unchanged unless
+  `check_upgrade` asks).
+- **Measurements** (comparisons): the sample's µs per player with the claim
+  lookup; on a `texture_growth.lua`-style walk through an area with
+  claims, the client textures and MB next to CMAP's numbers; HUD packets
+  per second while walking (should be unchanged).
+- **Fixtures:** a new portable fixture for the name (owner, other player,
+  y −100 / −101, the edge node in and out, all states), the banner rule
+  (replace and restart, last banner full time) and the frames (clipping at
+  every edge, own versus other colour, recipe identity). Of the existing
+  ones, only those that test the changed behaviour: the banner and
+  location fixtures (`tools/r28_m1`, `tools/r32_f1`, `tools/r47_nz`; the
+  lane checks which really pin the rule), the minimap ones
+  (`tools/r27_minimap`, `tools/r37_po`, `tools/r502_cmap`).
+
+### GUI checklist (adds to §6)
+
+8. Walk into your own claim: "Your Home" under the minimap and as banner
+   at the exact edge; walk out: the zone name again within a second.
+9. Dig below y −100 inside the claim: the zone name returns; climb back:
+   "Your Home".
+10. Another player's claim: "<name>'s Home".
+11. Zigzag across a zone border or claim edge: each crossing shows the
+    fresh banner within a second, and the last one stays 4 s.
+12. Minimap without the stone: your claim as a green frame, others as
+    yellowish frames, gliding with the map and cut cleanly at the bezel;
+    with the stone: everything red as before.
+13. The Map tab: unchanged apart from its location line.
