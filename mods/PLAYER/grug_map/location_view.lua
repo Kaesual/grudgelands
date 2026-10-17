@@ -1,8 +1,9 @@
 -- Zone and town names for players (Round 28 Lane M1; docs/design/world_map.md
--- "Zone and town names"): which name a position shows, when the entry banner
--- shows it (with the territory line and colour, Round 32). PURE Lua: it
--- calls nothing from `core`, so the portable fixture loads the real file.
--- location.lua is the runtime around it.
+-- "Zone and town names"): which name a position shows, a claim's name over
+-- it (fix 0.50.2), when the entry banner shows it (with the territory line
+-- and colour, Round 32). PURE Lua: it calls nothing from `core`, so the
+-- portable fixture loads the real file. location.lua is the runtime around
+-- it.
 
 local L = {}
 
@@ -61,6 +62,17 @@ function L.resolver(opts)
 		return names[id] or id, false, nil, id
 	end
 	return resolve, town_at
+end
+
+-- The name inside a Claim Stone's claim (fix 0.50.2 ruling H1; grug_housing
+-- claim_at decides where, in 3D, every claim state): "Your Home" for its
+-- owner, "<owner>'s Home" for everybody else (always 's). It replaces the
+-- zone's name in the text only; the zone itself, the town flags and the
+-- territory stay what the column gives.
+L.OWN_HOME = "Your Home"
+function L.home_text(owner, viewer)
+	if owner == viewer then return L.OWN_HOME end
+	return owner .. "'s Home"
 end
 
 -- ---------------------------------------------------------------------------
@@ -140,11 +152,13 @@ end
 -- Returns the text to display now, or nil. A display starts when the
 -- location or the status differs from what was shown last (crossing y -501
 -- under friendly or enemy land shows the same name again with the new line;
--- inside a contested zone the status stays and nothing shows). While a
--- display runs nothing new starts.
+-- inside a contested zone the status stays and nothing shows). A change
+-- replaces a running display at once and starts its DISPLAY seconds afresh
+-- (fix 0.50.2 ruling H3; until then a running display blocked new ones), so
+-- the last banner always stays the full time.
 function L.sample(state, text, now, status)
 	state.current, state.status = text, status
-	if state.busy_until or text == nil then return nil end
+	if text == nil then return nil end
 	if text == state.shown and status == state.shown_status then return nil end
 	state.shown, state.shown_status, state.busy_until = text, status, now + L.DISPLAY
 	return text
@@ -152,8 +166,8 @@ end
 
 -- Called while a display runs, with a fresh sample `text` and `status`.
 -- Before the display ends: nil. When it ends: the next text to display if
--- the location or the status now differs from what was just shown, else
--- false (hide).
+-- the location or the status now differs from what was just shown (a change
+-- since the last sample), else false (hide).
 function L.expire(state, text, now, status)
 	if not state.busy_until or now < state.busy_until then return nil end
 	state.busy_until, state.current, state.status = nil, text, status

@@ -14,7 +14,8 @@
 --      without a status; the trigger: a zone change shows, a status change
 --      on the same name shows (friendly <-> contested and enemy <->
 --      contested by depth), a depth crossing inside a contested zone shows
---      nothing, a change during a display waits for its end;
+--      nothing, a change during a display replaces it at once (fix 0.50.2
+--      ruling H3; until then it waited for the display's end);
 --   R  runtime: banner and line texts and colours on join and on every
 --      crossing above, the button flag in friendly land still "Friendly
 --      Territory", the open sea neutral, a player without a faction neutral
@@ -83,13 +84,14 @@ do
 	eq(L.sample(s, "Ember", t(14), "contested"), "Ember", "P enemy -> contested by depth shows")
 	L.expire(s, "Ember", t(15.5), "contested")
 	eq(L.sample(s, "Ember", t(16), "enemy"), "Ember", "P contested -> enemy shows")
-	-- A status change during a display waits for its end, then shows.
-	eq(L.sample(s, "Ember", t(16.5), "contested"), nil, "P busy: a status change waits")
-	eq(L.expire(s, "Ember", t(17.5), "contested"), "Ember", "P ...and shows at the end")
+	-- A status change during a display replaces it at once, for a full
+	-- display (fix 0.50.2 ruling H3; it used to wait for the display's end).
+	eq(L.sample(s, "Ember", t(16.5), "contested"), "Ember", "P busy: a status change shows at once")
 	eq(s.shown_status, "contested", "P ...with the new status")
-	-- ...and a change undone during the display shows nothing more.
-	eq(L.sample(s, "Ember", t(18), "enemy"), nil, "P busy again")
-	eq(L.expire(s, "Ember", t(19), "contested"), false, "P back to what is shown: hide")
+	eq(s.busy_until, t(16.5) + L.DISPLAY, "P ...for a full display")
+	-- ...and a change undone during the display shows again.
+	eq(L.sample(s, "Ember", t(17), "enemy"), "Ember", "P undone during the display: shows again")
+	eq(L.expire(s, "Ember", t(17) + L.DISPLAY, "enemy"), false, "P then hides")
 	-- No location: nothing.
 	eq(L.sample(L.new_state(), nil, t(0), "friendly"), nil, "P no location: nothing")
 	-- No status (the open sea): the name shows; gaining one shows again.

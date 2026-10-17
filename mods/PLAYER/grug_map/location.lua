@@ -5,7 +5,11 @@
 --   * one location per player, sampled every second: the zone's display
 --     name, or the town's name inside a start town or capital city (their
 --     protected footprint, grug_zones.hard_footprint_in); villages, outposts,
---     camps and POIs keep the zone's name;
+--     camps and POIs keep the zone's name; inside a Claim Stone's claim
+--     (grug_housing.claim_at, exact in 3D, every claim state; fix 0.50.2)
+--     "Your Home" for its owner and "<owner>'s Home" for everybody else,
+--     in place of the zone's name only;
+--   * the Map tab's location line shows the same text (window.lua);
 --   * the line under the minimap shows it (minimap.lua reads text_of);
 --   * whether the player stands in a start town or capital (in_town, the
 --     quieter town bed of grug_ambience) and in which capital, with a few
@@ -15,8 +19,9 @@
 --     contested or enemy, grug_pvp.territory_at, sampled with the name)
 --     colours the minimap line and both banner lines;
 --   * the entry banner shows a new location or status top centre for
---     DISPLAY seconds, debounced (location_view.lua), with the territory
---     line under the name;
+--     DISPLAY seconds, with the territory line under the name; a change at
+--     a sample replaces a running banner and starts its time afresh (fix
+--     0.50.2 ruling H3, location_view.lua);
 --   * a changed zone at a sample, and a player's first sample, go to the
 --     zone discovery (zone_discovery.lua, Round 47) when init.lua installed
 --     it as `discovery`;
@@ -43,6 +48,9 @@ local COLOR = grug_core.FEED_COLOR.notice
 M.stats = {samples = 0, us = 0}
 
 local resolve, town_at
+-- The claims (fix 0.50.2): grug_map depends on grug_housing, so it is
+-- loaded; a fixture without it names no claim.
+local housing = rawget(_G, "grug_housing")
 
 local function zone_names()
 	return setmetatable({}, {__index = function(names, id)
@@ -152,6 +160,10 @@ local function sample(player, rec)
 		text, town, here, zone = resolve(pos.x, pos.z)
 		rec.capital = L.capital_at(town_at, rec.capital, pos.x, pos.z, here)
 	end
+	-- Inside a claim its name instead (ruling H1, no hysteresis: H2); the
+	-- zone handed to the discovery stays the column's.
+	local claim = housing and housing.claim_at(pos)
+	if claim then text = L.home_text(claim.owner, player:get_player_name()) end
 	local status = territory(player, pos)
 	M.stats.samples = M.stats.samples + 1
 	M.stats.us = M.stats.us + (core.get_us_time() - started)
