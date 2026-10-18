@@ -77,7 +77,7 @@ def build(three_base, art_dir):
             art.append(name)
     if os.path.isdir(LAB_DIR):
         for name in sorted(os.listdir(LAB_DIR)):
-            if name.endswith(".png"):
+            if name.endswith(".png") and not name.startswith("preview"):
                 textures["lab_" + name[:-4]] = data_uri(os.path.join(LAB_DIR, name))
     data = ("var TEXTURES = " + json.dumps(textures, indent=0, sort_keys=True) + ";\n" +
             "var ART_SET = " + json.dumps(art) + ";")

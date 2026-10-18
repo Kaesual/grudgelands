@@ -91,13 +91,16 @@
 		wet_grass_side: [['calm', 'lab_wet_grass_side_calm']],
 		mud_mottled: [['calm', 'lab_mud_mottled_top_calm'], ['calm, 2 × 2 nodes', 'lab_mud_mottled_top_calm32']],
 		mud_mottled_side: [['calm', 'lab_mud_mottled_side_calm']],
-		mud_light: [], mud_light_side: [], mud: [], moss_top: [], moss_carpet: [],
+		mud_light: [['2 × 2 nodes (Astra)', 'lab_mud_dry_top_32']], mud_light_side: [],
+		mud: [['2 × 2 nodes (Astra)', 'lab_mud_top_32']],
+		moss_top: [['muted, 2 × 2 nodes (Astra)', 'lab_moss_soil_top_32']],
+		moss_side: [['muted (Astra)', 'lab_moss_soil_side']], moss_carpet: [],
 		hanging_moss: [], hanging_moss_mid: [['continuous strand', 'lab_hanging_moss_strand']]
 	};
 	var LAB_NAMES = {
 		wet_grass: 'wet grass, top', wet_grass_side: 'wet grass, side', mud_mottled: 'wet (mottled) mud, top',
 		mud_mottled_side: 'wet mud, side', mud_light: 'dry mud, top', mud_light_side: 'dry mud, side',
-		mud: 'mud (today\'s, pools\' bed)', moss_top: 'moss soil, top', moss_carpet: 'moss carpet',
+		mud: 'mud (all faces)', moss_top: 'moss soil, top', moss_side: 'moss soil, side', moss_carpet: 'moss carpet',
 		hanging_moss: 'hanging moss, lowest node', hanging_moss_mid: 'hanging moss, nodes above'
 	};
 	Object.keys(LAB).forEach(function (slot) {
