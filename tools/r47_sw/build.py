@@ -47,6 +47,10 @@ ART_DIRS = [os.path.join(ROOT, "tools", "r47_art", "swamp"),
             os.path.join(ROOT, "..", "r47-art", "tools", "r47_art", "swamp")]
 ART_DIR = next((d for d in ART_DIRS if os.path.isdir(d)), ART_DIRS[0])
 
+# The texture lab's proposals (Round 51 concept, tools/r51_land/swamp_calm.py),
+# inlined as lab_<file> when present.
+LAB_DIR = os.path.join(ROOT, "tools", "r51_land", "swamp")
+
 
 def data_uri(path):
     with open(path, "rb") as handle:
@@ -71,6 +75,10 @@ def build(three_base, art_dir):
         if os.path.exists(path):
             textures["art_" + name] = data_uri(path)
             art.append(name)
+    if os.path.isdir(LAB_DIR):
+        for name in sorted(os.listdir(LAB_DIR)):
+            if name.endswith(".png"):
+                textures["lab_" + name[:-4]] = data_uri(os.path.join(LAB_DIR, name))
     data = ("var TEXTURES = " + json.dumps(textures, indent=0, sort_keys=True) + ";\n" +
             "var ART_SET = " + json.dumps(art) + ";")
     page = read(os.path.join(HERE, "page.html"))
