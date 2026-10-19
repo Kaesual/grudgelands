@@ -1,7 +1,8 @@
 # Round 51 follow-up — after the user's first GUI look
 
 Coordinator: Claude, 2026-10-19, from the user's GUI feedback on the built Round 51 (main `473d658c`, not pushed).
-Status: **started** 2026-10-19; the user chose **B** (animated textures) for §3.
+Status: **built** 2026-10-19 (merges `c6fa76ff`, `107124cd`, `ef02ae36`, `898f64e1`); the user chose **B** (animated
+textures) for §3. What shipped: the round plan's completion, "Follow-up lanes".
 
 0.51.0 is not pushed yet, so these fixes ship **inside 0.51.0** (still the one map reset; no version bump). The
 round plan's completion gets a "follow-up lanes" block (round workflow §4, post-merge status step).

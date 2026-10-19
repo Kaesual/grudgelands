@@ -732,6 +732,38 @@ Points marked **(decide)** are for the user's judgement.
 37. **Regrowth:** a picked flower near a player comes back after some
     minutes.
 
+### Follow-up lanes (after the user's first GUI look, 2026-10-19)
+
+The user's GUI feedback on the built round (eight items, quoted in
+[round51-followup-plan.md](round51-followup-plan.md) §1) went into four
+lanes that ship inside 0.51.0 (not yet pushed, so no version bump):
+
+| Lane | What | Merge |
+|---|---|---|
+| FA (GPT-6 Astra) | Sway frame strips for the three seagrass kinds and a kelp of our own (8 frames, 3.2 s), picked as they are | `c6fa76ff` |
+| FW | Seagrass meadows that thin out with tufts beyond, ragged coral rims, the depth fade; the strips as tile animations (`waving` 0); lily pads and waterweed in wild lakes, with regrowth | `107124cd` |
+| FT | Start towns' trees halved (e.g. Hearthpine 180 → 90); Stillgrave's bones outside its graveyards 254 → 58; capital cores' cover cut to about a third in patches (Nhal Veyr's bones 899 → 67); sparse zone plants on the capitals' city ground; lily pads and waterweed (sand beds only) in Kezamba's and Lethariel's lakes | `ef02ae36` |
+| FM | Amphibians (tortoise, frog, crocodile, crabs) hold one height under the surface and take no water damage, all other mobs keep the old float; the frog's swim stroke; Reed Angelfish in wild and capital lakes, no combat mob in a capital lake | `898f64e1` |
+
+The user's decisions: animated textures for the sway (option B, not the
+engine's waving, which players must switch on); all four strips as drawn;
+the steady swim height only for amphibians (the coordinator counted the
+crabs in), water-hurt and land mobs keep jumping out. Coordinator
+decisions: less seagrass in the deepest belt through the depth fade, the
+waterweed sways with the kelp strip, district plots keep their authored
+ground, the tortoise swims at half speed, about ten fish at a big capital
+lake. Each lane had an independent review and a delta review of its fix.
+
+GUI items added to the checklist below: meadows thin out with tufts beyond;
+seagrass, kelp and lake weed sway with "Waving plants" off; wild lakes and
+the start ponds (Dawnmere, Sunscar, Moonfall's lake) have lily pads and
+weed; start towns with half the trees and no bare quarter; Stillgrave's
+graveyards as before with scattered bones elsewhere; the capital cores'
+patchy cover and the city ground's sparse plants (nothing on streets);
+Kezamba's and Lethariel's lakes with lilies, weed and fish; tortoises,
+frogs, crocodiles and crabs swim without breaching, the frog with its
+stroke, while a wolf or a water-hurt mob still bobs or climbs out.
+
 ### Round-end gates
 
 **Round-end gates** (coordinator, 2026-10-19, on main `08163c89` with every

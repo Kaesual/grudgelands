@@ -46,8 +46,11 @@ version reads every character as it is.
 - **Seabed growth:** coral patches down to about 10 nodes, kelp meadows
   down to about 20 (never reaching the surface) and seagrass meadows in
   three kinds down to about 14, in the belt, the bays and the channels.
-  The open sea stays bare. Seagrass and kelp you dig leave sand and grow
-  back near players; coral does not.
+  The open sea stays bare. Meadows thin out toward their edges, with
+  single tufts beyond, and coral patches have ragged rims. Seagrass, kelp
+  (now a kelp of our own) and the lakes' waterweed sway gently for every
+  player, with or without the "Waving plants" setting. Seagrass and kelp
+  you dig leave sand and grow back near players; coral does not.
 - **Shipwrecks:** four kinds (a hull, a bow, a stern and a debris field)
   lie on the protected seabed of the belt and the bays, up to 14 nodes deep
   (mostly 7–11),
@@ -71,6 +74,12 @@ version reads every character as it is.
   have no frogs and no stingrays. Each drops its band's fish (the tortoise
   and the frog sometimes meat too; the Abyssal Shark 3–6 Storm Tuna), and
   quests can name the tortoise, frog and stingray like any zone creature.
+- **Amphibians swim:** the tortoise, the frog, the crocodile and the crabs
+  swim at one height just under the surface instead of bobbing up and
+  down, and water never hurts them; the frog swims with a stroke. Other
+  creatures still keep their heads above water as before.
+- **Fish in lakes:** Reed Angelfish swim in wild lakes and in the lakes of
+  Kezamba and Lethariel; no fighting creature lives in a capital's lake.
 - **Swimmers let go at the shore:** a stingray or shark whose target
   leaves the water onto a beach, bank or pier gives up, heals, ignores
   that player for a moment and swims back. In the water or in a boat you
@@ -112,6 +121,14 @@ version reads every character as it is.
   river banks too); papyrus grows 2–4 tall right on the sand by the water
   in the warm zones, no longer on a pedestal; marram grass on dry sand and
   driftwood on the beaches.
+- **Lakes:** wild lakes have lily pads near the shore and waterweed on the
+  bed, and both grow back near players; Kezamba's and Lethariel's lakes
+  have lily pads and waterweed too, as do the start towns' ponds.
+- **Towns:** the start towns have about half as many trees; Stillgrave
+  keeps its graveyards and has only scattered bones elsewhere; the
+  capitals' cores have much less and patchier ground cover (Nhal Veyr far
+  fewer bones), and the rest of each capital's ground has sparse plants of
+  its zone (a few bones at Nhal Veyr).
 - **Town graveyards:** every town's graves are the new gravestones
   (Stillgrave, Nhal Veyr, Kezamba, Highcourt, Gor Drazhak, Dur Brannoc and
   Lethariel), and the bones in Stillgrave and Nhal Veyr are the varied

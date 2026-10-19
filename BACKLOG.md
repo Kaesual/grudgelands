@@ -2458,6 +2458,12 @@ the reviews' and reports' backlog notes (theoretical or accepted, no
 severity). The items the user decides in the GUI test are in the
 [GUI checklist](docs/planning/round51-plan.md#gui-checklist-round-51).
 
+- **Follow-up notes** (FW, FT, FM reviews): capital-lake plants do not grow
+  back (the regrowth skips excluded ground); a lily at a chunk's top water
+  layer waits for regrowth; a few trees now fit where a halved start tree's
+  crown used to block them; the amphibian float hold has a 0.1 bank margin
+  and wobbles on lag spikes over 0.5 s; the crocodile's swim clip stays
+  unused; the Reed Angelfish's old row still spawns it in bays.
 - **Seed-specific land warnings** (MOBS M2's smoke boot, a random seed): a
   spawn-kind fallback in Frostbarrow Shelf and Mournfen's bandit camp belt
   more than one belt from the land beside its POI; not on the production
