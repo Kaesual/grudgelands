@@ -796,45 +796,6 @@
    "tier": "normal",
    "zone": "elandor_copperfell_foothills"
   },
-  "elandor_dawnmere_fields/frog_t1/L1-2": {
-   "base": "grug_mobs:frog",
-   "belt": "l1_2",
-   "disposition": "aggressive",
-   "drop_tier": "T1",
-   "family": "frog",
-   "habitats": [
-    "freshwater"
-   ],
-   "levels": [
-    1,
-    2
-   ],
-   "name": "Marsh Frog",
-   "reason": "Round 51 NAMES draft: Frog T1 (Marsh Frog, L1-10), lakes and rivers; zone belt l1_2",
-   "role": "frog_t1",
-   "seeds": {
-    "freshwater": [
-     4,
-     4,
-     4,
-     4
-    ],
-    "shore": [
-     0,
-     0,
-     0,
-     0
-    ],
-    "swamp_pools": [
-     4,
-     0,
-     0,
-     2
-    ]
-   },
-   "tier": "normal",
-   "zone": "elandor_dawnmere_fields"
-  },
   "elandor_dawnmere_fields/frog_t1/L8-10": {
    "base": "grug_mobs:frog",
    "belt": "l8_10",
@@ -10251,45 +10212,6 @@
    },
    "tier": "normal",
    "zone": "kragmar_stillgrave_hollow"
-  },
-  "kragmar_sunscar_flats/frog_t1/L1-2": {
-   "base": "grug_mobs:frog",
-   "belt": "l1_2",
-   "disposition": "aggressive",
-   "drop_tier": "T1",
-   "family": "frog",
-   "habitats": [
-    "freshwater"
-   ],
-   "levels": [
-    1,
-    2
-   ],
-   "name": "Marsh Frog",
-   "reason": "Round 51 NAMES draft: Frog T1 (Marsh Frog, L1-10), lakes and rivers; zone belt l1_2",
-   "role": "frog_t1",
-   "seeds": {
-    "freshwater": [
-     0,
-     0,
-     1,
-     0
-    ],
-    "shore": [
-     0,
-     0,
-     0,
-     0
-    ],
-    "swamp_pools": [
-     0,
-     0,
-     0,
-     0
-    ]
-   },
-   "tier": "normal",
-   "zone": "kragmar_sunscar_flats"
   },
   "kragmar_sunscar_flats/frog_t1/L3-4": {
    "base": "grug_mobs:frog",

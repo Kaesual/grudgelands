@@ -33,6 +33,7 @@
   },
   {
    "id": "frog", "status": "new", "label": "Frog",
+   "from_level": 3, "from_level_why": "No hostile frogs in the L1-2 home belts (the user took the NAMES lane's question 5 as recommended, 2026-10-19); the tortoise stays there.",
    "behaviour": "aggressive", "behaviour_text": "Hostile amphibian: hops after a player through water and onto the bank.",
    "follows_ashore": true,
    "habitats": ["freshwater"],
@@ -50,6 +51,7 @@
   },
   {
    "id": "stingray", "status": "new", "label": "Stingray",
+   "from_level": 3, "from_level_why": "No hostile water mob in the L1-2 home belts, as for the frog (Round 51 MOBS M2); the survey found no stingray water there anyway.",
    "behaviour": "aggressive", "behaviour_text": "Hostile pure swimmer: glides over the seabed; resets and swims off when its target leaves the water (S11).",
    "follows_ashore": false,
    "habitats": ["belt", "channel"],

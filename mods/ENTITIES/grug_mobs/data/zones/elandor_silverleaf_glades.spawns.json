@@ -9,7 +9,13 @@
         "kinds": {
           "open": {"id": "home_glades", "name": "Silverleaf Home Glades",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l1_2", "name": "Silverleaf Glades Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l1_2", "name": "Silverleaf Glades Lakes",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -20,7 +26,19 @@
             "night": [{"role": "large_rat", "weight": 3}, {"role": "braindead_zombie", "weight": 1}], "density": "normal"},
           "shore": {"id": "strand", "name": "Silverleaf Strand",
             "day": [{"role": "quiet_shore_crab", "weight": 1}],
-            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense", "quest_target": true}
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l3_4", "name": "Silverleaf Glades Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l3_4", "name": "Silverleaf Glades Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l3_4", "name": "Silverleaf Glades Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l3_4", "name": "Silverleaf Glades Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -31,7 +49,19 @@
             "night": [{"role": "rabid_rat", "weight": 3}, {"role": "sluggish_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "driftwood_shore", "name": "Silverleaf Driftwood Shore",
             "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
-            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"}
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
+          "sea_shallows": {"id": "sea_shallows_l5_7", "name": "Silverleaf Glades Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l5_7", "name": "Silverleaf Glades Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l5_7", "name": "Silverleaf Glades Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l5_7", "name": "Silverleaf Glades Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -42,7 +72,19 @@
             "night": [{"role": "monstrous_rat", "weight": 3}, {"role": "drowned_zombie", "weight": 1}], "density": "normal"},
           "shore": {"id": "wrack_shore", "name": "Silverleaf Wrack Shore",
             "day": [{"role": "giant_crab", "weight": 1}],
-            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"}
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
+          "sea_shallows": {"id": "sea_shallows_l8_10", "name": "Silverleaf Glades Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l8_10", "name": "Silverleaf Glades Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l8_10", "name": "Silverleaf Glades Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l8_10", "name": "Silverleaf Glades Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       }
     ],

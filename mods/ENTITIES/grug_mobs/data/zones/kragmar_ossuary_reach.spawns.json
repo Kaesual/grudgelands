@@ -21,7 +21,19 @@
             "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "cairn_ridge", "name": "Ossuary Cairn Ridge",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l21_23", "name": "Ossuary Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l21_23", "name": "Ossuary Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l21_23", "name": "Ossuary Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l21_23", "name": "Ossuary Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -41,7 +53,19 @@
             "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "barrow_ridge", "name": "Ossuary Barrow Ridge",
             "day": [{"role": "marrow_weevil", "weight": 1}],
-            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Ossuary Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l24_27", "name": "Ossuary Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Ossuary Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Ossuary Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -61,7 +85,19 @@
             "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crypt_heights", "name": "Ossuary Crypt Heights",
             "day": [{"role": "marrow_weevil", "weight": 1}],
-            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l28_30", "name": "Ossuary Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l28_30", "name": "Ossuary Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Ossuary Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Ossuary Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

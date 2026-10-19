@@ -12,7 +12,13 @@
             "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "riverbanks", "name": "Kezamba Riverbanks",
             "day": [{"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l20_23", "name": "Kezamba Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l20_23", "name": "Kezamba Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -23,7 +29,13 @@
             "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "mudbanks", "name": "Kezamba Mudbanks",
             "day": [{"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Kezamba Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Kezamba Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -34,7 +46,13 @@
             "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "reed_fang_viper", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "floodbanks", "name": "Kezamba Floodbanks",
             "day": [{"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Kezamba Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Kezamba Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

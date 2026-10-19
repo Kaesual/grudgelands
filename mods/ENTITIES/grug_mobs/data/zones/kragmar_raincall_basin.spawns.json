@@ -15,7 +15,19 @@
             "night": [{"role": "reed_fang_viper", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "mire", "name": "Raincall Mire",
             "day": "open",
-            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l11_13", "name": "Raincall Basin Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l11_13", "name": "Raincall Basin Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l11_13", "name": "Raincall Basin Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l11_13", "name": "Raincall Basin Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -32,7 +44,19 @@
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "rainmire", "name": "Raincall Rainmire",
             "day": "open",
-            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l14_17", "name": "Raincall Basin Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l14_17", "name": "Raincall Basin Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l14_17", "name": "Raincall Basin Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l14_17", "name": "Raincall Basin Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -46,7 +70,19 @@
             "night": [{"role": "muttering_zombie", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "blackwater", "name": "Raincall Blackwater",
             "day": "open",
-            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l18_20", "name": "Raincall Basin Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l18_20", "name": "Raincall Basin Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l18_20", "name": "Raincall Basin Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l18_20", "name": "Raincall Basin Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       }
     ],

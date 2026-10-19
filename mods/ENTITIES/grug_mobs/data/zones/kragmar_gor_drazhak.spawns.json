@@ -15,7 +15,13 @@
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
           "highland": {"id": "redrock", "name": "Gor Drazhak Redrock",
             "day": [{"role": "debtbound_husk", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
-            "night": [{"role": "debtbound_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "debtbound_husk", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l20_23", "name": "Gor Drazhak Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l20_23", "name": "Gor Drazhak Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -29,7 +35,13 @@
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
           "highland": {"id": "mesas", "name": "Gor Drazhak Mesas",
             "day": [{"role": "stubborn_husk", "weight": 3}, {"role": "debtbound_husk", "weight": 1}],
-            "night": [{"role": "stubborn_husk", "weight": 3}, {"role": "debtbound_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "stubborn_husk", "weight": 3}, {"role": "debtbound_husk", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l24_27", "name": "Gor Drazhak Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Gor Drazhak Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -40,7 +52,13 @@
             "night": [{"role": "dust_stinger", "weight": 3}, {"role": "stubborn_husk", "weight": 1}], "density": "normal"},
           "highland": {"id": "scarps", "name": "Gor Drazhak Scarps",
             "day": [{"role": "stubborn_husk", "weight": 1}],
-            "night": [{"role": "stubborn_husk", "weight": 3}, {"role": "dust_stinger", "weight": 1}], "density": "normal"}
+            "night": [{"role": "stubborn_husk", "weight": 3}, {"role": "dust_stinger", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l28_30", "name": "Gor Drazhak Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Gor Drazhak Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

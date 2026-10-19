@@ -21,7 +21,19 @@
             "night": [{"role": "prowling_snow_leopard", "weight": 3}, {"role": "ore_thieving_goblin", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crags", "name": "Frostbarrow Crags",
             "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "hill_ram", "weight": 1}],
-            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l21_23", "name": "Frostbarrow Shelf Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l21_23", "name": "Frostbarrow Shelf Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l21_23", "name": "Frostbarrow Shelf Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l21_23", "name": "Frostbarrow Shelf Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -41,7 +53,19 @@
             "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "eagle_crags", "name": "Frostbarrow Eagle Crags",
             "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "hill_ram", "weight": 1}],
-            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Frostbarrow Shelf Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l24_27", "name": "Frostbarrow Shelf Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Frostbarrow Shelf Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Frostbarrow Shelf Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -58,7 +82,19 @@
             "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "rime_crags", "name": "Frostbarrow Rime Crags",
             "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "hill_ram", "weight": 1}],
-            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l28_30", "name": "Frostbarrow Shelf Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l28_30", "name": "Frostbarrow Shelf Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Frostbarrow Shelf Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Frostbarrow Shelf Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

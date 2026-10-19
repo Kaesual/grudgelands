@@ -13,12 +13,35 @@
 -- the water and off a boat, and a target that leaves the water resets it
 -- (S11, aggro.lua swimmer_reset). `_grug_fixed_level`: one name, one level
 -- everywhere (sea plan §5 item 3, world slots in data/names.json; the water
--- authority in spawn_policy.lua). Their placement by water band is Round 51
--- MOBS step M2.
+-- authority in spawn_policy.lua). Each spawns from its own water row below
+-- (Round 51 MOBS M2), with its band as the row's spawn check.
 --
 -- Port of animalworld's shark (MIT code and media, LICENSE-media.md §3): its
 -- model and texture; the behaviour is ours. No sounds until the user picks
 -- them (Round 51 plan §5).
+
+-- The water bands of the two rows (grug_zones.water_query_at): the Bay
+-- Shark in the deep middle of a bay (S12), BAY_MIDDLE nodes or more from dry
+-- land and BAY_DEPTH or more deep; the Abyssal Shark in the open sea (S13).
+-- Both need water at the spot and above it (a shark is over a node tall).
+local BAY_MIDDLE = 40
+local BAY_DEPTH = 16
+
+local function water(pos, dy)
+	return core.get_node({x = pos.x, y = pos.y + dy, z = pos.z}).name == "default:water_source"
+end
+
+local function in_bay_middle(pos)
+	if not (water(pos, 0) and water(pos, 1) and water(pos, 2)) then return false end
+	local class, _, _, distance, depth = grug_zones.water_query_at(pos.x, pos.z)
+	return class == "bay" and (distance or 0) >= BAY_MIDDLE and (depth or 0) >= BAY_DEPTH
+end
+
+local function in_open_sea(pos)
+	return grug_zones.water_query_at(pos.x, pos.z) == "open_sea"
+end
+grug_mobs.shark_bands = {bay_middle = in_bay_middle, open_sea = in_open_sea,
+	BAY_MIDDLE = BAY_MIDDLE, BAY_DEPTH = BAY_DEPTH}
 
 -- The shared definition; `fields` are the slot's own (its fixed level and
 -- tier first, as tools/r38_names/inventory.py reads them from the call),
@@ -89,6 +112,7 @@ end
 grug_mobs.register_mob("grug_mobs:bay_shark", shark_def("Bay Shark", {
 	_grug_fixed_level = 30,
 	_grug_tier = "normal",
+	_grug_spawn_check = in_bay_middle,
 	drops = {
 		{name = "grug_fishing:mire_carp", chance = 1, min = 1, max = 2},
 		{name = "mobs:meat_raw", chance = 1, min = 1, max = 1},
@@ -101,6 +125,7 @@ grug_mobs.register_mob("grug_mobs:bay_shark", shark_def("Bay Shark", {
 grug_mobs.register_mob("grug_mobs:abyssal_shark", shark_def("Abyssal Shark", {
 	_grug_fixed_level = 70,
 	_grug_tier = "elite",
+	_grug_spawn_check = in_open_sea,
 	knock_back = false,
 	reach = 4,
 	run_velocity = 5,
@@ -110,3 +135,30 @@ grug_mobs.register_mob("grug_mobs:abyssal_shark", shark_def("Abyssal Shark", {
 		{name = "mobs:meat_raw", chance = 1, min = 3, max = 3},
 	},
 }, 1.8))
+
+-- The rows (the merged water ABM, spawn_abms.lua). The Bay Shark rises from
+-- the bay floor (water beside sand); the Abyssal Shark, like the Kraken,
+-- appears at the open sea's surface and is a seldom spawn: a third of the
+-- Kraken's rate. mobs_redo spawns one node above the matched node, and every
+-- water row keeps its top at or above y 0 (a row with a lower top would join
+-- the underground ABM).
+mobs:spawn({
+	name = "grug_mobs:bay_shark",
+	nodes = {"default:water_source"},
+	neighbors = {"default:sand"},
+	interval = 60,
+	chance = 6000,
+	active_object_count = 1,
+	min_height = -45,
+	max_height = 0,
+})
+mobs:spawn({
+	name = "grug_mobs:abyssal_shark",
+	nodes = {"default:water_source"},
+	neighbors = {"air"},
+	interval = 60,
+	chance = 36000,
+	active_object_count = 1,
+	min_height = -10,
+	max_height = 4,
+})

@@ -15,7 +15,13 @@
             "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
           "forest": {"id": "kingswood", "name": "Highcourt Kingswood",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "orchard_fox", "weight": 1}],
-            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"}
+            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l20_23", "name": "Highcourt Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l20_23", "name": "Highcourt Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -32,7 +38,13 @@
             "night": [{"role": "toll_bandit_archer", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "downs", "name": "Highcourt Downs",
             "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l24_27", "name": "Highcourt Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Highcourt Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -49,7 +61,13 @@
             "night": [{"role": "toll_bandit_archer", "weight": 1}], "density": "normal"},
           "highland": {"id": "ridges", "name": "Highcourt Ridges",
             "day": [{"role": "monstrous_boar", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l28_30", "name": "Highcourt Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Highcourt Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

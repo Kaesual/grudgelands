@@ -21,7 +21,19 @@
             "night": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "salt_strand", "name": "Gravesalt Salt Strand",
             "day": [{"role": "salt_boring_weevil", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
-            "night": "open", "density": "normal"}
+            "night": "open", "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l51_53", "name": "Gravesalt Escarpment Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l51_53", "name": "Gravesalt Escarpment Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l51_53", "name": "Gravesalt Escarpment Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l51_53", "name": "Gravesalt Escarpment Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -41,7 +53,19 @@
             "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "brine_shore", "name": "Gravesalt Brine Shore",
             "day": [{"role": "salt_boring_weevil", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
-            "night": "open", "density": "normal"}
+            "night": "open", "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l54_57", "name": "Gravesalt Escarpment Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l54_57", "name": "Gravesalt Escarpment Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l54_57", "name": "Gravesalt Escarpment Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l54_57", "name": "Gravesalt Escarpment Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -61,7 +85,19 @@
             "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal"},
           "shore": {"id": "wreck_strand", "name": "Gravesalt Wreck Strand",
             "day": [{"role": "last_watch_husk", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
-            "night": "open", "density": "normal"}
+            "night": "open", "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l58_60", "name": "Gravesalt Escarpment Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l58_60", "name": "Gravesalt Escarpment Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l58_60", "name": "Gravesalt Escarpment Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l58_60", "name": "Gravesalt Escarpment Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       }
     ],

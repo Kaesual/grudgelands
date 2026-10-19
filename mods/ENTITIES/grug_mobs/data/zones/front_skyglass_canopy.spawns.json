@@ -15,7 +15,19 @@
             "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "dunshade_prowler", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "glass_strand", "name": "Skyglass Glass Strand",
             "day": [{"role": "glass_fang_serpent", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
-            "night": "open", "density": "normal"}
+            "night": "open", "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l51_53", "name": "The Skyglass Canopy Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l51_53", "name": "The Skyglass Canopy Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l51_53", "name": "The Skyglass Canopy Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l51_53", "name": "The Skyglass Canopy Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -29,7 +41,19 @@
             "night": [{"role": "glass_web_spider", "weight": 3}, {"role": "furnace_coil_serpent", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "root_shore", "name": "Skyglass Root Shore",
             "day": [{"role": "glass_fang_serpent", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
-            "night": "open", "density": "normal"}
+            "night": "open", "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l54_57", "name": "The Skyglass Canopy Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l54_57", "name": "The Skyglass Canopy Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l54_57", "name": "The Skyglass Canopy Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l54_57", "name": "The Skyglass Canopy Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -43,7 +67,19 @@
             "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "sootlace_spinner", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "skyfall_strand", "name": "Skyglass Skyfall Strand",
             "day": [{"role": "glass_fang_serpent", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
-            "night": "open", "density": "normal"}
+            "night": "open", "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l58_60", "name": "The Skyglass Canopy Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l58_60", "name": "The Skyglass Canopy Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l58_60", "name": "The Skyglass Canopy Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l58_60", "name": "The Skyglass Canopy Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       }
     ],

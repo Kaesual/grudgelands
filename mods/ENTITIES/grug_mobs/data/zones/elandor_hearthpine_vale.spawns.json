@@ -9,7 +9,13 @@
         "kinds": {
           "open": {"id": "timberline", "name": "Hearthpine Timberline",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l1_2", "name": "Hearthpine Vale Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l1_2", "name": "Hearthpine Vale Lakes",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -23,7 +29,19 @@
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "forest": {"id": "pinewood", "name": "Hearthpine Pinewood",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l3_4", "name": "Hearthpine Vale Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l3_4", "name": "Hearthpine Vale Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l3_4", "name": "Hearthpine Vale Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l3_4", "name": "Hearthpine Vale Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -37,7 +55,19 @@
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "forest": {"id": "high_pines", "name": "Hearthpine High Pines",
             "day": [{"role": "young_ibex", "weight": 3}, {"role": "small_fox", "weight": 1}],
-            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l5_7", "name": "Hearthpine Vale Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l5_7", "name": "Hearthpine Vale Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l5_7", "name": "Hearthpine Vale Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l5_7", "name": "Hearthpine Vale Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -51,7 +81,19 @@
             "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
           "forest": {"id": "darkpines", "name": "Hearthpine Darkpines",
             "day": [{"role": "aggressive_boar", "weight": 1}],
-            "night": [{"role": "monstrous_rat", "weight": 1}], "density": "normal"}
+            "night": [{"role": "monstrous_rat", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l8_10", "name": "Hearthpine Vale Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l8_10", "name": "Hearthpine Vale Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l8_10", "name": "Hearthpine Vale Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l8_10", "name": "Hearthpine Vale Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       }
     ],

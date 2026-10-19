@@ -19,7 +19,19 @@
             "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "glass_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crags", "name": "Stormscale Crags",
             "day": [{"role": "last_pay_archer", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal"}
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l60", "name": "Stormscale Summit Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l60", "name": "Stormscale Summit Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l60", "name": "Stormscale Summit Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l60", "name": "Stormscale Summit Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       }
     ],

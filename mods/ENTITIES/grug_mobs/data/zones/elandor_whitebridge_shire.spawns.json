@@ -18,7 +18,19 @@
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "forest": {"id": "oakwood", "name": "Whitebridge Oakwood",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
-            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l21_23", "name": "Whitebridge Shire Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l21_23", "name": "Whitebridge Shire Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l21_23", "name": "Whitebridge Shire Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l21_23", "name": "Whitebridge Shire Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -35,7 +47,19 @@
             "night": [{"role": "briarpack_wolf", "weight": 1}], "density": "sparse", "quest_target": true},
           "forest": {"id": "briarwood", "name": "Whitebridge Briarwood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Whitebridge Shire Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l24_27", "name": "Whitebridge Shire Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Whitebridge Shire Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Whitebridge Shire Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -49,7 +73,19 @@
             "night": [{"role": "briar_web_spider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "thornwood", "name": "Whitebridge Thornwood",
             "day": [{"role": "territorial_bear", "weight": 1}],
-            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal"}
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l28_30", "name": "Whitebridge Shire Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l28_30", "name": "Whitebridge Shire Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Whitebridge Shire Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Whitebridge Shire Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

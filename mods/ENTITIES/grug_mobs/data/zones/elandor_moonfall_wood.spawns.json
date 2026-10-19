@@ -12,7 +12,19 @@
             "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal", "quest_target": true},
           "swamp": {"id": "mistmarsh", "name": "Moonfall Mistmarsh",
             "day": "open",
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l21_23", "name": "Moonfall Wood Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l21_23", "name": "Moonfall Wood Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l21_23", "name": "Moonfall Wood Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l21_23", "name": "Moonfall Wood Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -26,7 +38,19 @@
             "night": "open", "density": "dense", "quest_target": true},
           "swamp": {"id": "wisp_fen", "name": "Moonfall Wisp Fen",
             "day": "open",
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Moonfall Wood Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l24_27", "name": "Moonfall Wood Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Moonfall Wood Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Moonfall Wood Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -40,7 +64,19 @@
             "night": "open", "density": "dense"},
           "swamp": {"id": "black_fen", "name": "Moonfall Black Fen",
             "day": "open",
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l28_30", "name": "Moonfall Wood Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l28_30", "name": "Moonfall Wood Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Moonfall Wood Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Moonfall Wood Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

@@ -27,7 +27,11 @@
 -- has) and `_grug_spawn_clock`. Camps spawn through their slots (camps.lua);
 -- leaders stand at their rule-placed spot with a fixed level.
 --
--- Unchanged: underground spawns, water spawns and swimmers, rares, vendors,
+-- Water (Round 51 MOBS M2): a column whose top is water takes the recipe's
+-- water kind for its band (spawn_regions_core.lua M.water_band) in the belt
+-- of its level, at the same one attempt per player and second
+-- (SR.water_attempt). Unchanged: underground spawns, the water authorities'
+-- rows (Kraken, Reed Angelfish, the sharks, the Tide Goby), rares, vendors,
 -- guards and guard posts, mapgen content.
 --
 
@@ -645,6 +649,37 @@ function SR.ground_at(x, z, y_center, reach)
 	return {x = best.x, y = best.y, z = best.z, node = core.get_node(best).name}
 end
 
+-- The water surfaces an ambient attempt may find (Round 51 M2): the top
+-- water node of a column, with air above.
+local WATER_TOPS = {"default:water_source", "default:river_water_source"}
+local surface_nodes
+
+-- The highest natural ground node OR water surface with air above in column
+-- x, z within y_center +- reach: {x, y, z, node, water = true|nil} or nil.
+-- One engine search, the same as SR.ground_at's.
+function SR.surface_at(x, z, y_center, reach)
+	if not surface_nodes then
+		surface_nodes = {}
+		for _, name in ipairs(ground_list()) do surface_nodes[#surface_nodes + 1] = name end
+		for _, name in ipairs(WATER_TOPS) do surface_nodes[#surface_nodes + 1] = name end
+	end
+	local found = core.find_nodes_in_area_under_air(
+		{x = x, y = y_center - reach, z = z},
+		{x = x, y = y_center + reach, z = z}, surface_nodes)
+	local best
+	for i = 1, #found do
+		if not best or found[i].y > best.y then
+			best = found[i]
+		end
+	end
+	if not best then
+		return nil
+	end
+	local node = core.get_node(best).name
+	local water = node == WATER_TOPS[1] or node == WATER_TOPS[2]
+	return {x = best.x, y = best.y, z = best.z, node = node, water = water or nil}
+end
+
 -- The Shore Crab's host (shore_crab.lua, D36): dry sand with water at or
 -- below the sea surface within NEAR_WATER nodes. Crab-family roles keep it.
 local NEAR_WATER = 6
@@ -859,7 +894,10 @@ function SR.attempt(player_pos, players, clock, roll_angle, roll_dist)
 	if not map then
 		return count("no_map")
 	end
-	local g = SR.ground_at(x, z, math.floor(player_pos.y + 0.5), SR.GROUND_REACH)
+	local g = SR.surface_at(x, z, math.floor(player_pos.y + 0.5), SR.GROUND_REACH)
+	if g and g.water then
+		return SR.water_attempt(g, players, clock)
+	end
 	if not g or g.y < 0 then
 		return count("no_ground")
 	end
@@ -899,6 +937,103 @@ function SR.attempt(player_pos, players, clock, roll_angle, roll_dist)
 		return count("no_room")
 	end
 	return count("spawned")
+end
+
+--
+-- Water attempts (Round 51 MOBS M2; sea plan rulings S10-S15). The column's
+-- top is water: its band comes from the water query (class, distance to
+-- dry land, depth; grug_zones.water_query_at, without the costly inland
+-- distance), its level is the column's surface level (the region overlay,
+-- else the zone field; a channel: its island's), and the belt of that level
+-- in the recipe of the query's zone gives the kind of the band. Amphibians
+-- appear at the surface, pure swimmers a little under it; then the land
+-- path's gates (players, protected surface and claims, the drift band for
+-- hostiles, light at the surface, density). A sea column whose neighbours
+-- POCKET_STEP nodes away in the four directions are not all its own class
+-- and zone is a pocket (T2: small channel patches inside a belt and the
+-- like) and spawns nothing, so no stray level shows beside a coast.
+--
+SR.POCKET_STEP = 12
+local POCKET_DIRS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
+local SEA = {bay = true, belt = true, channel = true}
+
+function SR.water_pocket(x, z, class, zone_id)
+	if not SEA[class] then
+		return false
+	end
+	for i = 1, #POCKET_DIRS do
+		local d = POCKET_DIRS[i]
+		local c, zone = grug_zones.water_query_at(x + d[1] * SR.POCKET_STEP,
+			z + d[2] * SR.POCKET_STEP)
+		if c ~= class or zone ~= zone_id then
+			return true
+		end
+	end
+	return false
+end
+
+-- The spot in the water column under the surface node `w` (y = surface):
+-- a swimmer one or two nodes down where the water is deep enough, so its
+-- box stays in the water; everything else at the surface.
+function SR.water_spot(w, name, depth)
+	local def = core.registered_entities[name]
+	local y = w.y
+	if def and def._grug_swim_dy and (depth or 0) >= 3 then
+		y = w.y - math.min(2, depth - 2)
+	end
+	return {x = w.x, y = y, z = w.z}
+end
+
+function SR.water_attempt(w, players, clock)
+	local class, zone_id, _, distance, depth = grug_zones.water_query_at(w.x, w.z)
+	local band = CORE.water_band(class, distance, depth)
+	if not band then
+		return count("water_no_band")
+	end
+	local rec = zone_id and zones[zone_id]
+	if not rec or not rec.recipe then
+		return count("no_recipe_zone")
+	end
+	local level = grug_core.surface_mob_level_at(w.x, w.z)
+	local kind = CORE.water_kind(rec.recipe, band, level)
+	if not kind then
+		return count("water_no_kind")
+	end
+	if SR.water_pocket(w.x, w.z, class, zone_id) then
+		return count("water_pocket")
+	end
+	local roster = kind.rosters[clock]
+	local role, weight = SR.pick_role(roster)
+	local name = MOD_PREFIX .. role
+	local stand = SR.water_spot(w, name, depth)
+	if core.get_node(stand).name ~= w.node then
+		return count("no_room")
+	end
+	if not nospawn_range then
+		nospawn_range = tonumber(core.settings:get("mob_nospawn_range")) or 24
+	end
+	if not SR.players_clear(stand, nospawn_range, players) then
+		return count("player_near")
+	end
+	local refused = SR.spawn_refused(name, stand)
+	if refused then
+		return count(refused)
+	end
+	if grug_mobs.disposition(name) == "aggressive" and SR.in_drift(stand) then
+		return count("drift")
+	end
+	if not SR.light_allows(name, {x = w.x, y = w.y + 1, z = w.z}, clock) then
+		return count("light")
+	end
+	if not grug_mobs.region_density_allows(stand, zone_id, clock, kind, name,
+			weight, roster.total) then
+		return count("density")
+	end
+	if not SR.spawn_mob(kind, role, {x = stand.x, y = stand.y - 1, z = stand.z,
+			node = w.node}, clock) then
+		return count("no_room")
+	end
+	return count("spawned_" .. band)
 end
 
 -- The camps of the built maps of `zone_ids`, default every zone (camps.lua

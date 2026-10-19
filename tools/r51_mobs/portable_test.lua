@@ -137,23 +137,30 @@ eq(NAMES["world/kraken/L70-70"], "Kraken", "A the Kraken keeps its slot")
 for _, w in ipairs(DRAFT.world) do
 	eq(NAMES[w.key], w.name, "A the draft's world slot " .. w.key)
 end
--- Step M1: no recipe places a water role yet, so each sub-type is an
--- unplaced world slot named as in the draft; step M2's recipe kinds replace
--- them with the draft's zone slots (gen_names.py --proposals draft.json).
-local zone_slots = 0
-for key in pairs(NAMES) do
-	local role = key:match("^[%w_]+/([%w_]+)/L")
-	if role and shipped[role] and DRAFT.slots and key:sub(1, 6) ~= "world/" then
-		for _, d in ipairs(DRAFT.subtypes) do
-			if d.role == role then zone_slots = zone_slots + 1 end
-		end
+-- Step M2: the recipes' water kinds place every water role, so the names
+-- are zone slots: every draft slot bears its draft name, a slot the draft
+-- lacks (a belt its survey saw no water beside) its role's one name, and no
+-- sub-type is an unplaced world slot any more. No frog in an L1-2 belt (the
+-- NAMES lane's question 5).
+local display = {}
+for _, d in ipairs(DRAFT.subtypes) do display[d.role] = d.display end
+for key, slot in pairs(DRAFT.slots) do
+	eq(NAMES[key], slot.name, "A draft zone slot " .. key)
+end
+local water_zone_slots, frog_home = 0, 0
+for key, name in pairs(NAMES) do
+	local scope, role, lo, hi = key:match("^([%w_]+)/([%w_]+)/L(%d+)%-(%d+)$")
+	if role and display[role] then
+		check(scope ~= "world", "A " .. key .. " is no unplaced world slot")
+		eq(name, display[role], "A " .. key .. " bears its role's name")
+		water_zone_slots = water_zone_slots + 1
+		if role:match("^frog_") and tonumber(hi) <= 2 then frog_home = frog_home + 1 end
 	end
 end
-eq(zone_slots, 0, "A M1 places no water role in a zone recipe yet")
-for _, d in ipairs(DRAFT.subtypes) do
-	eq(NAMES[("world/%s/L%d-%d"):format(d.role, d.levels[1], d.levels[2])], d.display,
-		"A unplaced world slot of " .. d.role)
-end
+check(water_zone_slots >= 291, "A the water zone slots (" .. water_zone_slots .. ") hold the draft's 291")
+eq(frog_home, 0, "A no frog slot in an L1-2 belt")
+eq(DRAFT.slots["elandor_dawnmere_fields/frog_t1/L1-2"], nil, "A the draft dropped Dawnmere's L1-2 frog")
+eq(DRAFT.slots["kragmar_sunscar_flats/frog_t1/L1-2"], nil, "A the draft dropped Sunscar's L1-2 frog")
 local policy = read(MOBS .. "/spawn_policy.lua")
 local authority = policy:match("local INDEPENDENT_AUTHORITY = (%b{})")
 for _, name in ipairs({"kraken", "reed_angelfish", "bay_shark", "abyssal_shark", "goby"}) do
@@ -236,7 +243,7 @@ for key, slot in pairs(DRAFT.slots) do
 	slots = slots + 1
 	eq(role_for(slot.family, slot.levels[1], slot.levels[2]), slot.role, "B draft slot " .. key)
 end
-eq(slots, 293, "B the draft's 293 zone slots")
+eq(slots, 291, "B the draft's 291 zone slots (293 less the two L1-2 frogs)")
 eq(band_of(20), 2, "B a level-20 mob drops band 2 (either role)")
 eq(band_of(21), 3, "B level 21 drops band 3")
 
@@ -303,7 +310,19 @@ _G.grug_core = {
 	prune_engagement = function() end,
 	clear_threat = function(self) self._threat_cleared = true end,
 }
-_G.grug_zones = {id_at = function() return "test_zone" end}
+-- The water query of part G's spawn checks: a scripted answer.
+local query = {}
+_G.grug_zones = {
+	id_at = function() return "test_zone" end,
+	water_query_at = function() return query.class, query.zone, query.level,
+		query.distance, query.depth, query.protected end,
+}
+-- The spawn rows the mob files add (mobs:spawn), by mob name.
+local rows = {}
+_G.mobs = {spawn = function(_, def) rows[def.name] = def end}
+core.get_node = function(pos)
+	return {name = node_at(math.floor(pos.x + 0.5), math.floor(pos.y + 0.5), math.floor(pos.z + 0.5))}
+end
 
 local base_defs, registered = {}, {}
 _G.grug_mobs = {
@@ -574,6 +593,231 @@ do
 	tick(idle)
 	eq(idle.temp.grug_evading, nil, "D an idle swimmer is left alone")
 end
+
+
+------------------------------------------------------------------------------
+-- E. The recipes' water kinds (step M2), parsed by the REAL
+--    spawn_regions_core.lua: each band holds only its families (S10, S15),
+--    no frog or stingray in an L1-2 belt, every role's levels inside its
+--    belt; the band rule and the belt of a level.
+------------------------------------------------------------------------------
+local CORE = dofile(ROOT .. "/" .. MOBS .. "/spawn_regions_core.lua")
+local role_levels = {}
+for _, row in ipairs(SUBTYPES) do role_levels[row.role] = row.levels end
+local function family(role)
+	return role:match("^(tortoise)_t%d$") or role:match("^(frog)_t%d$") or role:match("^(stingray)_t%d$")
+end
+local ALLOWED = {sea_shallows = {tortoise = true}, sea_deep = {stingray = true},
+	lake = {frog = true, tortoise = true}, river = {frog = true}}
+local recipes, bands_seen, water_kinds = {}, {}, 0
+local zone_ids = {}
+for key in pairs(NAMES) do
+	local zone = key:match("^([%w_]+)/")
+	if zone and zone ~= "world" then zone_ids[zone] = true end
+end
+for zone in pairs(zone_ids) do
+	local handle = io.open(ROOT .. "/" .. MOBS .. "/data/zones/" .. zone .. ".spawns.json", "rb")
+	if handle then
+		local data = json.parse(handle:read("*a"))
+		handle:close()
+		local belts = data.recipe.belts
+		-- Camps, leaders and quest places need the world's POIs; the water
+		-- kinds do not, so they are parsed without them.
+		data.recipe.camps, data.recipe.leaders, data.recipe.places = nil, nil, nil
+		local ok, parsed = pcall(CORE.parse_recipe, zone, data.recipe, {
+			band = {belts[1].levels[1], belts[#belts].levels[2]},
+			role_levels = function(role) return role_levels[role] end,
+			leader = function() return false end,
+		})
+		if check(ok, "E " .. zone .. " recipe parses (" .. tostring(not ok and parsed or "") .. ")") then
+			recipes[zone] = parsed
+			for _, belt in ipairs(parsed.belts) do
+				for _, band in ipairs(CORE.WATER_TYPES) do
+					local kind = belt.kinds[band]
+					if kind then
+						water_kinds = water_kinds + 1
+						bands_seen[band] = true
+						eq(kind.density, "sparse", "E " .. kind.tag .. " is sparse")
+						for _, clock in ipairs({"day", "night"}) do
+							for _, row in ipairs(kind.rosters[clock].list) do
+								local fam = family(row.role)
+								check(fam ~= nil and ALLOWED[band][fam],
+									("E %s %s: %s belongs in %s"):format(kind.tag, clock, row.role, band))
+								if fam == "frog" or fam == "stingray" then
+									check(belt.levels[2] >= 3, "E " .. kind.tag .. ": no hostile water mob in an L1-2 belt")
+								end
+								local range = kind.levels_by_role[row.role]
+								check(range[1] >= belt.levels[1] and range[2] <= belt.levels[2],
+									"E " .. kind.tag .. " " .. row.role .. " within its belt")
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+eq(water_kinds, 392, "E the 392 water kinds")
+for _, band in ipairs(CORE.WATER_TYPES) do check(bands_seen[band], "E some zone has " .. band) end
+local BAND = {
+	{"lake", nil, 2, "lake"}, {"river", nil, 1, "river"},
+	{"bay", 5, 20, "sea_shallows"}, {"bay", 40, 6, "sea_shallows"}, {"bay", 40, 7, "sea_deep"},
+	{"belt", 16, 30, "sea_shallows"}, {"belt", 17, 30, "sea_deep"}, {"channel", 30, 10, "sea_deep"},
+	{"open_sea", 300, 25, nil}, {nil, nil, nil, nil},
+}
+for _, b in ipairs(BAND) do
+	eq(CORE.water_band(b[1], b[2], b[3]), b[4], ("E band of %s, %s from land, %s deep"):format(
+		tostring(b[1]), tostring(b[2]), tostring(b[3])))
+end
+local DAWN = recipes.elandor_dawnmere_fields
+for _, lb in ipairs({{nil, "l1_2"}, {1, "l1_2"}, {2, "l1_2"}, {3, "l3_4"}, {7, "l5_7"},
+		{10, "l8_10"}, {14, "l8_10"}}) do
+	eq(CORE.belt_for_level(DAWN, lb[1]).id, lb[2], "E Dawnmere's belt of level " .. tostring(lb[1]))
+end
+eq(CORE.water_kind(DAWN, "sea_deep", 2), nil, "E no stingray in Dawnmere's home belt")
+eq(CORE.water_kind(DAWN, "sea_deep", 5).id, "sea_deep_l5_7", "E Dawnmere's L5-7 coastal waters")
+eq(CORE.water_kind(DAWN, "lake", 1).rosters.day.list[1].role, "tortoise_t1",
+	"E Dawnmere's home lakes: the tortoise only")
+eq(#CORE.water_kind(DAWN, "lake", 1).rosters.day.list, 1, "E ... and no frog")
+
+------------------------------------------------------------------------------
+-- F. The water attempt (cut out of the REAL spawn_regions.lua): the band,
+--    the zone's belt of the column's level, the kind's role, the spot (an
+--    amphibian at the surface, a swimmer under it), the pocket rule, and the
+--    land path's gates in order.
+------------------------------------------------------------------------------
+do
+	local src = read(MOBS .. "/spawn_regions.lua")
+	local cut = src:match("\n(SR%.POCKET_STEP = %d+.-)\n%-%- The camps of the built maps")
+	if check(cut ~= nil, "F the water attempt is found in spawn_regions.lua") then
+		local spawned, world = {}, {}
+		local F = {SR = {}, CORE = CORE, MOD_PREFIX = "grug_mobs:", math = math,
+			ipairs = ipairs, tonumber = tonumber, zones = {}}
+		for zone, r in pairs(recipes) do F.zones[zone] = {recipe = r} end
+		function F.count(reason) return reason end
+		F.core = {
+			settings = {get = function() return nil end},
+			registered_entities = entities,
+			get_node = function(pos) return {name = world.node_at(pos)} end,
+		}
+		F.grug_zones = {water_query_at = function(x, z) return world.query(x, z) end}
+		F.grug_core = {surface_mob_level_at = function() return world.level end}
+		F.grug_mobs = {
+			disposition = grug_mobs.disposition,
+			region_density_allows = function() return true end,
+		}
+		local pick = 1
+		local SR = F.SR
+		function SR.pick_role(roster)
+			local row = roster.list[math.min(pick, #roster.list)]
+			return row.role, row.weight
+		end
+		function SR.players_clear() return true end
+		function SR.spawn_refused() return nil end
+		function SR.in_drift() return false end
+		function SR.light_allows() return true end
+		function SR.spawn_mob(kind, role, g, clock)
+			spawned[#spawned + 1] = {kind = kind, role = role, y = g.y + 1}
+			return {}
+		end
+		local chunk = assert(loadstring(cut))
+		setfenv(chunk, F)
+		chunk()
+		-- A scripted world: the surface at y 1 of sea water (any column), and
+		-- one answer of the water query for the column and its neighbours.
+		local function attempt(answer, level, neighbours, surface_node)
+			world.level = level
+			world.node_at = function() return surface_node or "default:water_source" end
+			world.query = function(x, z)
+				if (x ~= 0 or z ~= 0) and neighbours then return unpack(neighbours) end
+				return unpack(answer)
+			end
+			spawned = {}
+			local result = SR.water_attempt({x = 0, y = 1, z = 0, node = surface_node or
+				"default:water_source"}, {}, "day")
+			return result, spawned[1]
+		end
+		local D = "elandor_dawnmere_fields"
+		local r, s = attempt({"lake", D, 5, nil, 3}, 5, nil)
+		check(r == "spawned_lake" and s.role == "frog_t1" and s.y == 1 and s.kind.id == "lake_l5_7",
+			"F a lake at L5: a frog of the L5-7 lakes at the surface (" .. tostring(r) .. ")")
+		pick = 2
+		r, s = attempt({"lake", D, 5, nil, 3}, 5, nil)
+		check(r == "spawned_lake" and s.role == "tortoise_t1", "F ... or its minor role, the tortoise")
+		pick = 1
+		r, s = attempt({"river", D, 8, nil, 2}, 8, nil, "default:river_water_source")
+		check(r == "spawned_river" and s.role == "frog_t1" and s.kind.id == "river_l8_10",
+			"F a river at L8: a frog of the L8-10 rivers (" .. tostring(r) .. ")")
+		r, s = attempt({"belt", D, 4, 10, 5}, 4, {"belt", D, 4, 30, 9})
+		check(r == "spawned_sea_shallows" and s.role == "tortoise_t1" and s.y == 1,
+			"F sea water 10 nodes from land: a tortoise at the surface (" .. tostring(r) .. ")")
+		r, s = attempt({"belt", D, 6, 40, 20}, 6, {"belt", D, 6, 40, 20})
+		check(r == "spawned_sea_deep" and s.role == "stingray_t1" and s.y == -1,
+			"F deep sea water 40 nodes out: a stingray two nodes under the surface (" .. tostring(r) .. ")")
+		r = attempt({"belt", D, 2, 40, 20}, 2, {"belt", D, 2, 40, 20})
+		eq(r, "water_no_kind", "F deep water in the home belt: nothing")
+		r = attempt({"open_sea", nil, nil, 400, 25}, nil, nil)
+		eq(r, "water_no_band", "F the open sea: no recipe band (world rows only)")
+		r = attempt({nil}, nil, nil)
+		eq(r, "water_no_band", "F dry land: nothing")
+		local S = "front_stormscale_summit"
+		r, s = attempt({"channel", S, 60, 60, 10}, 60, {"channel", S, 60, 60, 10})
+		check(r == "spawned_sea_deep" and s.role == "stingray_t6",
+			"F a dragon channel at its island's L60: a Wyrmwake Ray (" .. tostring(r) .. ")")
+		r = attempt({"channel", S, 60, 60, 10}, 60, {"belt", "front_shattered_line", 45, 60, 10})
+		eq(r, "water_pocket", "F a channel pocket inside a belt spawns nothing")
+		r = attempt({"belt", D, 6, 40, 20}, 6, {"belt", "elandor_goldmead_vale", 12, 40, 20})
+		eq(r, "water_pocket", "F a column whose neighbours are another zone's: a pocket")
+		r = attempt({"belt", "no_such_zone", 6, 40, 20}, 6, nil)
+		eq(r, "no_recipe_zone", "F a zone without a recipe")
+		-- A swimmer in water too shallow to dive stays at the surface.
+		eq(SR.water_spot({x = 0, y = 1, z = 0}, "grug_mobs:stingray_t1", 2).y, 1,
+			"F a swimmer in 2-deep water at the surface")
+		eq(SR.water_spot({x = 0, y = 1, z = 0}, "grug_mobs:stingray_t1", 3).y, 0,
+			"F ... one node down in 3-deep water")
+		eq(SR.water_spot({x = 0, y = 1, z = 0}, "grug_mobs:frog_t1", 20).y, 1,
+			"F an amphibian always at the surface")
+	end
+end
+
+------------------------------------------------------------------------------
+-- G. The world rows (shark.lua, goby.lua): in the merged water ABM (water
+--    nodes, tops at or above y 0), and their bands as spawn checks.
+------------------------------------------------------------------------------
+for _, name in ipairs({"grug_mobs:bay_shark", "grug_mobs:abyssal_shark", "grug_mobs:goby"}) do
+	local row = rows[name]
+	if check(row ~= nil, "G " .. name .. " has a spawn row") then
+		eq(row.nodes[1], "default:water_source", "G " .. name .. " spawns from water")
+		check(row.max_height >= 0, "G " .. name .. " joins the water ABM (top at or above y 0)")
+	end
+end
+check(rows["grug_mobs:abyssal_shark"].chance >= 3 * 12000,
+	"G the Abyssal Shark is a seldom spawn (a third of the Kraken's rate or less)")
+local bands = grug_mobs.shark_bands
+local deep = {x = -5, y = -3, z = 0} -- water below and above (x <= 0, y <= 1)
+local function answer(class, distance, depth) query.class, query.distance, query.depth = class, distance, depth end
+answer("bay", 50, 30)
+eq(bands.bay_middle(deep), true, "G Bay Shark: the deep middle of a bay")
+answer("bay", 20, 30)
+eq(bands.bay_middle(deep), false, "G ... not near the bay's shore")
+answer("bay", 50, 10)
+eq(bands.bay_middle(deep), false, "G ... not in shallow bay water")
+answer("belt", 50, 30)
+eq(bands.bay_middle(deep), false, "G ... not in the belt")
+answer("bay", 50, 30)
+eq(bands.bay_middle({x = -5, y = 0, z = 0}), false, "G ... and not where the water above runs out")
+answer("open_sea", 400, 25)
+eq(bands.open_sea(deep), true, "G Abyssal Shark: the open sea")
+answer("belt", 100, 25)
+eq(bands.open_sea(deep), false, "G ... never in the belt")
+local goby_check = base_defs["grug_mobs:goby"]._grug_spawn_check
+for _, c in ipairs({{"bay", true}, {"belt", true}, {"channel", true}, {"open_sea", true},
+		{"lake", false}, {"river", false}}) do
+	answer(c[1], 30, 10)
+	eq(goby_check(deep), c[2], "G the Tide Goby in " .. c[1] .. " water")
+end
+answer("belt", 30, 10)
+eq(goby_check({x = -5, y = 1, z = 0}), false, "G ... below the surface, never at it")
 
 if failures > 0 then
 	error(("R51 MOBS PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)

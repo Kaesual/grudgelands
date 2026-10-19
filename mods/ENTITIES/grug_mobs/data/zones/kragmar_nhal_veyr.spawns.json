@@ -15,7 +15,13 @@
             "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
           "forest": {"id": "bonewood", "name": "Nhal Veyr Bonewood",
             "day": [{"role": "furrow_boar", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
-            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l20_23", "name": "Nhal Veyr Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l20_23", "name": "Nhal Veyr Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -29,7 +35,13 @@
             "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
           "forest": {"id": "pallwood", "name": "Nhal Veyr Pallwood",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l24_27", "name": "Nhal Veyr Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Nhal Veyr Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -46,7 +58,13 @@
             "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
           "highland": {"id": "barrows", "name": "Nhal Veyr Barrows",
             "day": [{"role": "stubborn_husk", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l28_30", "name": "Nhal Veyr Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Nhal Veyr Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

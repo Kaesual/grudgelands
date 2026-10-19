@@ -18,7 +18,19 @@
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
           "highland": {"id": "red_bluffs", "name": "Redtusk Red Bluffs",
             "day": [{"role": "dustpack_hyena", "weight": 3}, {"role": "muttering_husk", "weight": 1}],
-            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "muttering_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "muttering_husk", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l11_13", "name": "Redtusk Savanna Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l11_13", "name": "Redtusk Savanna Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l11_13", "name": "Redtusk Savanna Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l11_13", "name": "Redtusk Savanna Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -35,7 +47,19 @@
             "night": "open", "density": "sparse"},
           "highland": {"id": "sunbluffs", "name": "Redtusk Sunbluffs",
             "day": [{"role": "parched_husk", "weight": 3}, {"role": "muttering_husk", "weight": 1}],
-            "night": [{"role": "parched_husk", "weight": 3}, {"role": "muttering_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "parched_husk", "weight": 3}, {"role": "muttering_husk", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l14_17", "name": "Redtusk Savanna Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l14_17", "name": "Redtusk Savanna Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l14_17", "name": "Redtusk Savanna Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l14_17", "name": "Redtusk Savanna Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -49,7 +73,19 @@
             "night": [{"role": "parched_husk", "weight": 1}], "density": "sparse"},
           "highland": {"id": "ashbluffs", "name": "Redtusk Ashbluffs",
             "day": [{"role": "parched_husk", "weight": 1}],
-            "night": [{"role": "parched_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "parched_husk", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l18_20", "name": "Redtusk Savanna Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l18_20", "name": "Redtusk Savanna Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l18_20", "name": "Redtusk Savanna Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l18_20", "name": "Redtusk Savanna Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       }
     ],

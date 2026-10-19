@@ -18,7 +18,19 @@
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
           "highland": {"id": "ridges", "name": "Speargrass Ridges",
             "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
-            "night": [{"role": "dust_stinger", "weight": 1}], "density": "normal"}
+            "night": [{"role": "dust_stinger", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l21_23", "name": "Speargrass Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l21_23", "name": "Speargrass Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l21_23", "name": "Speargrass Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l21_23", "name": "Speargrass Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -35,7 +47,19 @@
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
           "highland": {"id": "crags", "name": "Speargrass Crags",
             "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
-            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"}
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Speargrass Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l24_27", "name": "Speargrass Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Speargrass Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Speargrass Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -49,7 +73,19 @@
             "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
           "highland": {"id": "heights", "name": "Speargrass Heights",
             "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
-            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"}
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l28_30", "name": "Speargrass Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l28_30", "name": "Speargrass Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Speargrass Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Speargrass Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

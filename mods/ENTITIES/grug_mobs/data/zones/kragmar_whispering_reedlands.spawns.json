@@ -18,7 +18,19 @@
             "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "reeds", "name": "Whispering Reeds",
             "day": [{"role": "sullen_bog_ooze", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l21_23", "name": "Whispering Reedlands Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l21_23", "name": "Whispering Reedlands Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l21_23", "name": "Whispering Reedlands Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l21_23", "name": "Whispering Reedlands Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -32,7 +44,19 @@
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "sparse", "quest_target": true},
           "swamp": {"id": "hushmire", "name": "Whispering Hushmire",
             "day": [{"role": "sullen_bog_ooze", "weight": 1}],
-            "night": [{"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Whispering Reedlands Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l24_27", "name": "Whispering Reedlands Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Whispering Reedlands Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Whispering Reedlands Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -46,7 +70,19 @@
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "blackreeds", "name": "Whispering Blackreeds",
             "day": [{"role": "sullen_bog_ooze", "weight": 1}],
-            "night": [{"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l28_30", "name": "Whispering Reedlands Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l28_30", "name": "Whispering Reedlands Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Whispering Reedlands Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Whispering Reedlands Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

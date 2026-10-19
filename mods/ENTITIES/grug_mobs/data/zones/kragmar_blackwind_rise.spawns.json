@@ -21,7 +21,19 @@
             "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "barrow_ridge", "name": "Blackwind Barrow Ridge",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l31_33", "name": "Blackwind Rise Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l31_33", "name": "Blackwind Rise Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l31_33", "name": "Blackwind Rise Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l31_33", "name": "Blackwind Rise Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -44,7 +56,19 @@
             "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crags", "name": "Blackwind Crags",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l34_37", "name": "Blackwind Rise Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l34_37", "name": "Blackwind Rise Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l34_37", "name": "Blackwind Rise Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l34_37", "name": "Blackwind Rise Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -64,7 +88,19 @@
             "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "summits", "name": "Blackwind Summits",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l38_40", "name": "Blackwind Rise Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l38_40", "name": "Blackwind Rise Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l38_40", "name": "Blackwind Rise Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l38_40", "name": "Blackwind Rise Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       }
     ],

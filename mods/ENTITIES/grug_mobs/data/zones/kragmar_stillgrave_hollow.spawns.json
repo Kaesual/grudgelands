@@ -9,7 +9,13 @@
         "kinds": {
           "open": {"id": "dead_furrows", "name": "Stillgrave Dead Furrows",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l1_2", "name": "Stillgrave Hollow Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l1_2", "name": "Stillgrave Hollow Lakes",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -23,7 +29,19 @@
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
           "highland": {"id": "barrow_hills", "name": "Stillgrave Barrow Hills",
             "day": [{"role": "braindead_zombie", "weight": 3}, {"role": "small_boar", "weight": 1}],
-            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l3_4", "name": "Stillgrave Hollow Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l3_4", "name": "Stillgrave Hollow Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l3_4", "name": "Stillgrave Hollow Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l3_4", "name": "Stillgrave Hollow Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -37,7 +55,19 @@
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "highland": {"id": "cairn_ridge", "name": "Stillgrave Cairn Ridge",
             "day": [{"role": "sluggish_zombie", "weight": 3}, {"role": "young_gaunt_stag", "weight": 1}],
-            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l5_7", "name": "Stillgrave Hollow Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l5_7", "name": "Stillgrave Hollow Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l5_7", "name": "Stillgrave Hollow Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l5_7", "name": "Stillgrave Hollow Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -48,7 +78,19 @@
             "night": [{"role": "monstrous_rat", "weight": 3}, {"role": "drowned_zombie", "weight": 1}], "density": "normal"},
           "shore": {"id": "wreck_shore", "name": "Stillgrave Wreck Shore",
             "day": [{"role": "giant_crab", "weight": 1}],
-            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"}
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
+          "sea_shallows": {"id": "sea_shallows_l8_10", "name": "Stillgrave Hollow Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l8_10", "name": "Stillgrave Hollow Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l8_10", "name": "Stillgrave Hollow Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l8_10", "name": "Stillgrave Hollow Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       }
     ],

@@ -12,7 +12,19 @@
             "night": [{"role": "granary_rat", "weight": 3}, {"role": "snaring_poacher", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "strand", "name": "Starbough Strand",
             "day": [{"role": "tidepool_crab", "weight": 1}],
-            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"}
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"},
+          "sea_shallows": {"id": "sea_shallows_l11_13", "name": "Starbough Vale Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l11_13", "name": "Starbough Vale Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l11_13", "name": "Starbough Vale Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l11_13", "name": "Starbough Vale Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -26,7 +38,19 @@
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "dense"},
           "bank": {"id": "fernbanks", "name": "Starbough Fernbanks",
             "day": "open",
-            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l14_17", "name": "Starbough Vale Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l14_17", "name": "Starbough Vale Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l14_17", "name": "Starbough Vale Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l14_17", "name": "Starbough Vale Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -37,7 +61,19 @@
             "night": [{"role": "mangy_rat", "weight": 3}, {"role": "muttering_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "willow_banks", "name": "Starbough Willow Banks",
             "day": "open",
-            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l18_20", "name": "Starbough Vale Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l18_20", "name": "Starbough Vale Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l18_20", "name": "Starbough Vale Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l18_20", "name": "Starbough Vale Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       }
     ],

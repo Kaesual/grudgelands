@@ -9,7 +9,13 @@
         "kinds": {
           "open": {"id": "yam_beds", "name": "Kapok Yam Beds",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l1_2", "name": "Kapok Cradle Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l1_2", "name": "Kapok Cradle Lakes",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -23,7 +29,19 @@
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense", "quest_target": true},
           "swamp": {"id": "mudwallow", "name": "Kapok Mudwallow",
             "day": "open",
-            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l3_4", "name": "Kapok Cradle Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l3_4", "name": "Kapok Cradle Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l3_4", "name": "Kapok Cradle Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l3_4", "name": "Kapok Cradle Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -37,7 +55,19 @@
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
           "swamp": {"id": "vipermire", "name": "Kapok Vipermire",
             "day": [{"role": "reed_viper", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
-            "night": [{"role": "sluggish_zombie", "weight": 3}, {"role": "reed_viper", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "sluggish_zombie", "weight": 3}, {"role": "reed_viper", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l5_7", "name": "Kapok Cradle Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l5_7", "name": "Kapok Cradle Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l5_7", "name": "Kapok Cradle Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l5_7", "name": "Kapok Cradle Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -51,7 +81,19 @@
             "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
           "swamp": {"id": "blackmire", "name": "Kapok Blackmire",
             "day": [{"role": "giant_viper", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
-            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l8_10", "name": "Kapok Cradle Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l8_10", "name": "Kapok Cradle Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l8_10", "name": "Kapok Cradle Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l8_10", "name": "Kapok Cradle Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       }
     ],

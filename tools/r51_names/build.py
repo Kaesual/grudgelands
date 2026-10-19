@@ -112,10 +112,13 @@ def load_bays_channels(zones):
         xs = [int(x) for x in re.findall(r"point\((-?\d+),", m.group(3))]
         islands[m.group(1)] = (by_num[int(m.group(2))], sum(xs) / len(xs))
     channels = []
-    for m in re.finditer(r'\{id="(channel_\w+)",polygon=polygon\(([^\n]*?)\),warning_width', src):
-        xs = [int(x) for x in re.findall(r"point\((-?\d+),", m.group(2))]
+    # Since Round 51 T2 a channel names its island's zone itself.
+    for m in re.finditer(r'\{id="(channel_\w+)",(?:zone_numeric_id=(\d+),)?polygon=polygon\(([^\n]*?)\),'
+                         r'warning_width', src):
+        xs = [int(x) for x in re.findall(r"point\((-?\d+),", m.group(3))]
         cx = sum(xs) / len(xs)
-        island = min(islands.values(), key=lambda v: abs(v[1] - cx))[0]
+        island = (by_num[int(m.group(2))] if m.group(2) else
+                  min(islands.values(), key=lambda v: abs(v[1] - cx))[0])
         channels.append({"id": m.group(1), "zone": island,
                          "where": "%s:%d" % (SIMPLE_MAP, src.count("\n", 0, m.start()) + 1)})
     if len(bays) != 4 or len(channels) != 2:
@@ -204,7 +207,10 @@ def build_model():
             for z in zone_rows:
                 for b in z["belts"]:
                     hab = habitats_in(fam, b["survey"], z["id"], channels)
-                    if not hab:
+                    # `from_level` (Round 51 MOBS M2, the NAMES lane's Q5): no
+                    # slot in a belt that ends below it (no frogs in the L1-2
+                    # home belts).
+                    if not hab or b["levels"][1] < fam.get("from_level", 1):
                         continue
                     role = role_for(roles, b["levels"])
                     if role is None:

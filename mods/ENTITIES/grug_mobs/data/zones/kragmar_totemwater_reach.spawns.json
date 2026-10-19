@@ -18,7 +18,19 @@
             "night": [{"role": "reed_crocodile", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "bogs", "name": "Totemwater Bogs",
             "day": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l21_23", "name": "Totemwater Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l21_23", "name": "Totemwater Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l21_23", "name": "Totemwater Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l21_23", "name": "Totemwater Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -35,7 +47,19 @@
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "wispfen", "name": "Totemwater Wispfen",
             "day": [{"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse", "quest_target": true}
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Totemwater Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l24_27", "name": "Totemwater Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l24_27", "name": "Totemwater Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Totemwater Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -49,7 +73,19 @@
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "dense"},
           "swamp": {"id": "blackwater", "name": "Totemwater Blackwater",
             "day": [{"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l28_30", "name": "Totemwater Reach Shallows",
+            "day": [{"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l28_30", "name": "Totemwater Reach Coastal Waters",
+            "day": [{"role": "stingray_t3", "weight": 1}],
+            "night": [{"role": "stingray_t3", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l28_30", "name": "Totemwater Reach Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Totemwater Reach Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],
