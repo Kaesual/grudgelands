@@ -749,6 +749,7 @@ do
 	_G.grug_zones = {
 		territory_rule_at = function(pos) return at(pos).rule or "contested_land" end,
 		hard_protection_kind_at = function(pos) return at(pos).kind end,
+		water_class_at = function(x, z) return at({x = x, y = 10, z = z}).water end,
 	}
 	local factions = {}
 	_G.grug_core = {
@@ -768,9 +769,9 @@ do
 	core_stub.is_protected = function() return false end
 	assert(loadfile(repo .. "/mods/CORE/grug_core/protection.lua"))()
 	factions.a, factions.t = "accord", "throng"
-	local function spot(x, rule, kind)
+	local function spot(x, rule, kind, water)
 		local pos = {x = x, y = 10, z = 0}
-		zones[key(pos)] = {rule = rule, kind = kind}
+		zones[key(pos)] = {rule = rule, kind = kind, water = water}
 		return pos
 	end
 	local expectations = {
@@ -782,6 +783,9 @@ do
 		{spot(4, "throng_home"), "a", "Throng home territory – protected"},
 		{spot(4, "throng_home"), "t", nil},
 		{spot(5, "immutable"), "a", "Open sea – protected"},
+		{spot(7, "immutable", nil, "deep_ocean"), "a", "Open sea – protected"},
+		-- Round 51 T2: protected belt water is no open sea
+		{spot(8, "immutable", nil, "coastal_shelf"), "a", "Deep water – protected"},
 		{spot(6, "contested_land"), "a", nil},
 		{spot(6, "contested_land"), "nobody", "Protected – choose a faction first"},
 	}

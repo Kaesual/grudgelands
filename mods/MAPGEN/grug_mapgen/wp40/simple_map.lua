@@ -4,12 +4,20 @@
 -- hooks and writes no map. Zone borders and the coastline come from
 -- `zone_field.lua` and vary per world seed (D24).
 --
--- Usage: dofile("simple_map.lua")(zone_field_module) is the factory the zone
--- authority calls with {source, schemas, canonical, deterministic, raw_sha256}.
+-- Usage: dofile("simple_map.lua")(zone_field_module, terrain_field_module) is
+-- the factory the zone authority calls with {source, schemas, canonical,
+-- deterministic, raw_sha256}. The terrain field module (Round 51 T2) gives
+-- the true coast distance grid, the belt's outer edge and the noises of the
+-- water classes.
 
-return function(zone_field)
+return function(zone_field, terrain_field)
 	if type(zone_field) ~= "table" or type(zone_field.new_checked) ~= "function" then
 		error("WP40 simple map: zone field module missing", 0)
+	end
+	if type(terrain_field) ~= "table" or type(terrain_field.coast_grid) ~= "function" or
+			type(terrain_field.belt_edge) ~= "function" or
+			type(terrain_field.simplex) ~= "function" then
+		error("WP40 simple map: terrain field module missing", 0)
 	end
 
 	-- One checked zone field and one set of per-world tables per seed, shared by
@@ -34,7 +42,12 @@ return function(zone_field)
 		if capital_protection ~= nil and type(capital_protection) ~= "table" then
 			error("WP40 simple map capital protection differs", 0)
 		end
-		local floor, abs, max, min = math.floor, math.abs, math.max, math.min
+		local floor, abs, max, min, sqrt = math.floor, math.abs, math.max, math.min,
+			math.sqrt
+		-- The water rules of Round 51 T2 (sea plan rulings 4-6, 8).
+		local water_rules = assert(source.water, "WP40 simple map water rules missing")
+		local MOUTH = water_rules.bay_mouth
+		local CHANNEL = water_rules.channel
 		-- Query bounds of the horizontal world (`source/simple_map.lua`
 		-- world_bounds); outside is open sea.
 		local world_bounds = assert(source.world_bounds, "WP40 simple map world bounds missing")
@@ -159,13 +172,29 @@ return function(zone_field)
 			return region == "wyrmglass_island" or region == "stormscale_island"
 		end
 
-		local channel_bounds = {}
-		for _, row in ipairs(source.channels) do channel_bounds[row] = polygon_bounds(row.polygon) end
-		local function channel_at(x, z)
-			for index = 1, #source.channels do
-				local row = source.channels[index]
-				if in_rectangle(x, z, channel_bounds[row], 0) and in_polygon(x, z, row.polygon) then
-					return row
+		-- A dragon channel (ruling 6) is organic: a rounded box round the
+		-- authored strait (its polygon's bounds, CHANNEL.pad wider in x so it
+		-- reaches both coasts, corners of radius CHANNEL.corner) whose edge a
+		-- noise moves by up to CHANNEL.edge nodes. `channel_value` is the signed
+		-- distance to that edge (negative inside) for a channel within reach.
+		local channel_boxes = {}
+		for _, row in ipairs(source.channels) do
+			local b = polygon_bounds(row.polygon)
+			channel_boxes[#channel_boxes + 1] = {row = row,
+				cx = (b.min_x + b.max_x) / 2, cz = (b.min_z + b.max_z) / 2,
+				hx = (b.max_x - b.min_x) / 2 + CHANNEL.pad, hz = (b.max_z - b.min_z) / 2}
+		end
+		local CHANNEL_REACH = CHANNEL.edge + CHANNEL.ramp
+		local function channel_value(x, z, noise)
+			for index = 1, #channel_boxes do
+				local box = channel_boxes[index]
+				local ax, az = abs(x - box.cx), abs(z - box.cz)
+				if ax <= box.hx + CHANNEL_REACH and az <= box.hz + CHANNEL_REACH then
+					local r = CHANNEL.corner
+					local qx, qz = ax - (box.hx - r), az - (box.hz - r)
+					local ox, oz = max(qx, 0), max(qz, 0)
+					local s = sqrt(ox * ox + oz * oz) + min(max(qx, qz), 0) - r
+					return box.row, s + CHANNEL.edge * noise(x / CHANNEL.period, z / CHANNEL.period)
 				end
 			end
 			return nil
@@ -173,9 +202,15 @@ return function(zone_field)
 
 		local bay_by_id = {}
 		for _, row in ipairs(source.bays) do bay_by_id[row.id] = row end
-		local function bay_mouth_is_deep_ocean(bay, warped_z)
-			if bay.deep_ocean_side == "min_z" then return warped_z <= bay.deep_ocean_cut_z end
-			return warped_z >= bay.deep_ocean_cut_z
+		-- A bay ends at its mouth: past the cut (in the coast-warped frame) its
+		-- water is the belt's or the open sea's. The cut wanders by up to
+		-- MOUTH.amplitude nodes along a noise of MOUTH.period, so the bay's
+		-- edge toward the open sea is organic (ruling 4).
+		local function bay_mouth_passed(bay, warped_z, x, noise)
+			local cut = bay.deep_ocean_cut_z + MOUTH.amplitude * noise(x / MOUTH.period,
+				bay.deep_ocean_cut_z / MOUTH.period)
+			if bay.deep_ocean_side == "min_z" then return warped_z <= cut end
+			return warped_z >= cut
 		end
 
 		local shelf_width = source.shelf_width
@@ -302,6 +337,18 @@ return function(zone_field)
 				local field = zone_field.new_checked(full_seed_string, source, params)
 				world = build_world_tables(field)
 				world.field = field
+				-- Round 51 T2: the true coast distance (the terrain field's
+				-- chamfer grid over this land, which the terrain field reuses),
+				-- the belt's outer edge and the noises of the water classes.
+				local sample = field.sample
+				world.coast = terrain_field.coast_grid(function(x, z)
+					return (sample(x, z)) ~= 0
+				end)
+				world.belt_edge = terrain_field.belt_edge(full_seed_string)
+				world.mouth_noise = terrain_field.simplex(full_seed_string, "bay_mouth")
+				world.channel_noise = terrain_field.simplex(full_seed_string, "channel_edge")
+				world.channel_depth_noise = terrain_field.simplex(full_seed_string,
+					"channel_depth")
 				world_cache[full_seed_string] = world
 				local check = field.check
 				local log = type(core) == "table" and core.log or nil
@@ -342,7 +389,22 @@ return function(zone_field)
 			end
 			local neighbors = world.neighbors
 			local levels = world.levels
+			local coast_signed = world.coast.coast_signed
+			local belt_edge = world.belt_edge
+			local mouth_noise, channel_noise = world.mouth_noise, world.channel_noise
+			local channel_depth_noise = world.channel_depth_noise
+			-- Nodes from the coast (0 on land), on the true coast distance.
+			local function coast_distance(x, z)
+				local d = -coast_signed(x, z)
+				return d > 0 and d or 0
+			end
 
+			-- The water classes (Round 51 T2): a bay's water up to its organic
+			-- mouth; a dragon channel's organic box; the coastal belt, owned by
+			-- the zone on land, out to its organic edge 250-350 nodes off the
+			-- true coast (ruling 5), so no open sea lies inside or at the rim of
+			-- a bay (ruling 4); the open sea beyond. Returns the class, macro
+			-- region, owning zone, bay id and channel id.
 			local function classification_values_at(x, z)
 				local zone, coast, owner = sample(x, z)
 				if zone ~= 0 then
@@ -352,18 +414,40 @@ return function(zone_field)
 					local bay_index, _, warped_z = field.bay_at(x, z)
 					if bay_index then
 						local bay = source.bays[bay_index]
-						if bay_mouth_is_deep_ocean(bay, warped_z) then return "deep_ocean" end
-						return "planned_water", zones[owner].macro_region, owner, bay.id
+						if not bay_mouth_passed(bay, warped_z, x, mouth_noise) then
+							return "planned_water", zones[owner].macro_region, owner, bay.id
+						end
 					end
 				end
-				local channel = channel_at(x, z)
-				if channel then
-					return "immutable_dragon_channel", nil, nil, nil, channel.id
+				local channel, value = channel_value(x, z, channel_noise)
+				if channel and value < 0 then
+					local island = channel.zone_numeric_id
+					return "immutable_dragon_channel", zones[island].macro_region, island, nil,
+						channel.id
 				end
-				if coast > -shelf_width and owner and owner ~= 0 then
+				if owner and owner ~= 0 and coast_distance(x, z) < belt_edge(x, z) then
 					return "coastal_shelf", zones[owner].macro_region, owner
 				end
 				return "deep_ocean"
+			end
+
+			-- A dragon channel's floor (ruling 6): its weight at (x, z) (1 inside
+			-- the channel, easing to 0 over CHANNEL.ramp nodes beyond its edge)
+			-- and the floor y it lifts the sea floor to, CHANNEL.depth_min to
+			-- CHANNEL.depth_max nodes of water along a slow noise. nil away from
+			-- every channel.
+			local CHANNEL_RAMP = CHANNEL.ramp
+			local DEPTH_MID = (CHANNEL.depth_min + CHANNEL.depth_max) / 2
+			local DEPTH_HALF = (CHANNEL.depth_max - CHANNEL.depth_min) / 2
+			local function channel_floor_at(x, z)
+				local channel, value = channel_value(x, z, channel_noise)
+				if not channel or value >= CHANNEL_RAMP then return nil end
+				local t = value / CHANNEL_RAMP
+				if t < 0 then t = 0 end
+				local weight = 1 - t * t * (3 - 2 * t)
+				local n = channel_depth_noise(x / CHANNEL.depth_period, z / CHANNEL.depth_period)
+				if n > 1 then n = 1 elseif n < -1 then n = -1 end
+				return weight, 1 - (DEPTH_MID + DEPTH_HALF * n), channel.id
 			end
 
 			local function zone_level_at(x, z, owner)
@@ -716,6 +800,27 @@ return function(zone_field)
 			-- Approximate signed distance to the coast in nodes (+ = land).
 			function session.coast_signed_at(x, z)
 				return field.coast_signed(x, z)
+			end
+
+			-- Round 51 T2. The true coast distance in nodes (0 on land): the
+			-- water classes, the sea floor and the protected water (ruling 8)
+			-- read it.
+			function session.coast_distance_at(x, z)
+				return coast_distance(x, z)
+			end
+			-- The coast distance grid itself, for the terrain field of this
+			-- world (`terrain_field.lua` coast_grid; the same grid, built once).
+			function session.coast_grid()
+				return world.coast
+			end
+			-- The belt's outer edge at (x, z): its distance off the coast.
+			function session.belt_edge_at(x, z)
+				return belt_edge(x, z)
+			end
+			-- A dragon channel's floor: weight, floor y and channel id, or nil
+			-- (see channel_floor_at above).
+			function session.channel_floor_at(x, z)
+				return channel_floor_at(x, z)
 			end
 
 			-- Owning zone, second-nearest zone and the warped-space distance to

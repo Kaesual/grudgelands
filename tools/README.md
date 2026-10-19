@@ -1476,7 +1476,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   two dumps, `grid_cost.lua REPO SEED [N]` the terrain grids' build time and
   heap; `mgprof_extra.lua` the edge and ring chunks for `tools/mgprof/run.sh`
   (`PROBE_EXTRA=`); `grug_probe_r51_terrain` reads the new ring in the engine,
-  `PROBE=` of the smoke boot).
+  `PROBE=` of the smoke boot). T2, the sea's shape: the fixture's part C (the
+  water query, bay rims, the belt, the channels and a boat's path, protected
+  water at 23/24/25 nodes off the coast, Stormkelp's shore);
+  `diff_land.py BEFORE AFTER` compares two `compare.lua` dumps on land only;
+  `sea_survey.lua REPO SEED` the bay rims (before/after), the belt's width,
+  the depth profile, the wreck band, brightness, protection and the channels;
+  `mgprof_t2_extra.lua` the coastal and channel chunks; the probe (boot it
+  with `SEED=12345`) also reads the query and the protection in the engine.
 - **Round 51 lane NAMES** (`r51_names`, design only, no fixture): the water
   families' ladders and names. `survey.sh` (through the Lua queue, 4
   processes) runs `water_survey.lua` per seed: the game's region builder

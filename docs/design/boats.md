@@ -148,12 +148,13 @@ are owned by `world.md` §2b. What matters for a boat:
 - **Deep ocean is not survivable in a boat.** The Kraken swims 10
   nodes/s inside deep-ocean columns, above the Improved Boat's 8, with a view
   range of 40 (ruling 7); one hit ejects the rider into deep water.
-- **The coastal shelf and the dragon channels are safe boat water.** No
+- **The coastal belt and the dragon channels are safe boat water.** No
   Kraken spawns there, and a Kraken outside deep ocean drops its target
   and holds position, so it never pursues a boat beyond the deep-ocean edge.
 - Both approaches to either island (`world_zones.md` §7.4) are required boat
   routes; a crossing is about 390–420 nodes, roughly 100 s by Boat and 50 s by
-  Improved Boat. Because the shelf follows the entire mainland perimeter, a
+  Improved Boat. Because the belt (250-350 nodes wide, Round 51) follows the
+  entire mainland perimeter, a
   low-level character may coast to a channel mouth and visit an island; the
   level-60 island itself is the gate.
 

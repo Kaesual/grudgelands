@@ -181,6 +181,9 @@ local PROTECTION_HINTS = {
 	accord_home = "Accord home territory – protected",
 	throng_home = "Throng home territory – protected",
 	immutable = "Open sea – protected",
+	-- Round 51 T2 (sea plan ruling 8): bay, belt or channel water 24 nodes or
+	-- more off the coast is immutable too, but it is not the open sea.
+	protected_water = "Deep water – protected",
 	no_faction = "Protected – choose a faction first",
 }
 
@@ -202,6 +205,10 @@ function grug_core.protection_reason(pos, name)
 		local feature = grug_core.world_feature_at(pos)
 		if feature then return feature end
 		local territory = grug_zones.territory_rule_at(pos)
+		if territory == "immutable" and grug_zones.water_class_at then
+			local water = grug_zones.water_class_at(pos.x, pos.z)
+			if water ~= nil and water ~= "deep_ocean" then return "protected_water" end
+		end
 		if territory == "immutable" or territory == "accord_home" or
 				territory == "throng_home" then
 			return territory

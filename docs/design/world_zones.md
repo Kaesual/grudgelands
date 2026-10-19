@@ -152,7 +152,8 @@ of commit `082982da`.
 - At **y = −501 and below** (depth tier T4 and deeper; Round 31, it was
   −701), every non-ocean land column is contested even
   beneath a peaceful surface zone, capital, functional anchor or active claim.
-  Deep ocean and immutable dragon channels remain full-column exceptions.
+  Deep ocean and protected water (bay, belt and channel water 24 nodes or more
+  off the coast, Round 51, §7.4) remain full-column exceptions.
 - **Shore-height ruling (2026-09-17):** the first cardinal dry-land column
   beside any exposed water-surface node has its terrain surface at exactly the
   water-surface y. The inland terrain then continues through its existing bank
@@ -448,11 +449,20 @@ rewrite records the WP40 model it replaced.
   wide, reaches no capital envelope and splits no zone. Bay outlines get the
   same coast warp as the rest of the shore; their authored centrelines live
   in the source data.
-- **Water classes.** Every column is land, inland water (rivers, lakes, civic
-  water), bay water, coastal shelf, deep ocean or dragon channel. The coastal
-  shelf is the 80-node band beyond the land shapes (`source.shelf_width`);
-  bay water beyond each bay mouth's cut at z = ±3000 (`deep_ocean_cut_z`) is
-  deep ocean ([world.md](world.md) §2 R3). The old
+- **Water classes** (Round 51, sea plan rulings 4-6). Every column is land,
+  inland water (rivers, lakes, civic water), bay water, the coastal belt
+  (internal class `coastal_shelf`), deep ocean (the open sea) or a dragon
+  channel. Bay water ends at its mouth's cut at z = ±3000
+  (`deep_ocean_cut_z`, in the coast-warped frame), which wanders by up to 70
+  nodes along a noise, so the bay's edge toward the open sea is organic.
+  Past the mouth and everywhere else the **coastal belt** reaches from the
+  coast out to an organic edge 250-350 nodes off it (`terrain_data.lua`
+  `belt_edge`, on the true coast distance, the 16-node chamfer grid of the
+  terrain field); the open sea begins beyond it, so no open sea lies inside or
+  at the rim of a bay. The belt belongs to the zone on land (its level,
+  faction and PvP rule), as the 80-node shelf did before. The **open sea**
+  has no zone. Planned and bay water belong to their zone
+  ([world.md](world.md) §2 R3). The old
   hydrology rows were removed at the start of Round 22 Phase 5, which lays out
   all inland water anew: rivers and lakes from the terrain's drainage, civic
   water as authored lakes (below). Inland and
@@ -465,12 +475,29 @@ rewrite records the WP40 model it replaced.
   Round 22 Phase 5): no gathering source stands in
   or right beside inland water, except content that seeks it (shore rows on
   the bank, freshwater plants in the water). Decorations are not claims and
-  may grow on banks. Deep ocean and dragon channels are immutable at every y.
-- **Dragon channels.** The two island channels are roughly 200 water nodes
-  wide between mainland and island land; the construction self-check (§7.1)
-  requires at least 104. Each shore contributes a 48-node flight-warning
-  band (`mounts.md` §4.1). Filling, draining, bridging or tunnelling through
-  the channel is forbidden.
+  may grow on banks.
+- **Protected water** (Round 51, sea plan ruling 8). The open sea, and bay,
+  belt and channel water 24 nodes or more off the coast (the true coast
+  distance, not the depth; `source.water.protected_distance`), are immutable
+  at every y, the seabed and what lies below it included: no building, no
+  mining and no Claim Stone. The shore, water nearer than 24 nodes, stays
+  under its zone's terrain rule. Lakes and rivers are never protected. A
+  refused edit there says "Deep water – protected" (the open sea's says "Open
+  sea – protected"). The
+  border follows the coast distance grid, so it lies within about 8 nodes of
+  24 from the exact shoreline.
+- **Dragon channels** (Round 51, ruling 6). Each channel is organic: a
+  rounded box round the authored strait, 80 nodes wider in x so it meets both
+  coasts, with corners of radius 140 and an edge a noise moves by up to 40
+  nodes (`source.water.channel`). Its floor lies 9-11 nodes under the surface
+  from 48 nodes off the coast (closer in, the shore keeps its shallows) and
+  eases into the surrounding sea floor over 32 nodes beyond the edge. A
+  channel belongs to its island's zone (its level 60) but carries no PvP rule.
+  The two channels are roughly 200 water nodes wide between mainland and
+  island land; the construction self-check (§7.1) requires at least 104. Each
+  shore contributes a 48-node flight-warning band (`mounts.md` §4.1). Its
+  middle is protected water, so filling, bridging or tunnelling through it is
+  impossible.
 - **Island approaches.** Each island keeps two boat approaches, one northern
   and one southern, each ending at a landing beach at a fixed point in the
   source data. The northern and southern boat routes to either island are
@@ -598,11 +625,25 @@ rewrite records the WP40 model it replaced.
   (bed patches, shore material, biome top). A native cave of a neighbouring mapchunk generated later can
   still cut up to about 13 nodes into an already generated one (engine
   behaviour); forced-order engine tests found no bed cut open that way.
-- Wet inland beds vary in depth with the terrain detail. Sea, bays and
-  dragon channels share one sea-floor profile by distance from the coast
-  (`terrain_field.lua`, Round 22 D35): shallow at the shore, a gently
-  deepening shelf, then down to 32 nodes below the water level in deep water
-  (the depth cap 31.7 + 0.3, with ±1.5 nodes of noise, so about 32–33). The 24-node floor (`height.lua` `OUTSIDE_FLOOR`) applies only
+- Wet inland beds vary in depth with the terrain detail. Sea, bays and the
+  belt share one sea-floor profile by distance d from the coast
+  (`terrain_field.lua`, Round 22 D35, Round 51 T2): a shallow shelf to
+  d = 70, then the belt deepening by about 1 node per 20, and past the belt's
+  edge (250-350) a fall to 32 nodes below the water level in deep water (the
+  depth cap 31.7 + 0.3, with ±1.5 nodes of noise, so about 32–33). The
+  shelf's steepness factor (0.75-1.25, steeper coasts shelve faster) fades
+  out between d = 70 and 170. **The depth profile** (median depth over the
+  four reference seeds, Round 51): d 0-25: 3, 25-50: 5, 50-75: 6,
+  75-100: 8, 100-125: 9, 125-150: 11, 150-175: 12, 175-200: 13, 200-225: 15,
+  225-250: 16, 250-275: 17, 275-300: 18, 300-325: 20, 325-350: 22, then
+  25-27, 30 and 32 by d = 400. Coral depths (to about 10) reach about 140 off
+  the coast, kelp depths (to about 20) the whole belt. **The wreck band**,
+  seabed 8-14 deep, lies about 90-220 off the coast: 3.9-4.1 km² of
+  protected belt and bay seabed per world, in 26-28 zones. Daylight drops
+  one light level per water node, so seabed deeper than about 12 is nearly
+  dark by day: about 56 % of the belt's seabed lies at most 12 deep. A bay's
+  middle more than about 300 nodes off its shores falls toward 30 deep (the
+  deep bay middle); a dragon channel lays its own floor (§7.4). The 24-node floor (`height.lua` `OUTSIDE_FLOOR`) applies only
   outside the query bounds, x ±4190 and z ±3740 (`source/simple_map.lua`
   `world_bounds`; ±3740 × ±3340 before Round 51). Inside them, far from any
   coast, the world is deep ocean too: no zone, no zone mob level, immutable.

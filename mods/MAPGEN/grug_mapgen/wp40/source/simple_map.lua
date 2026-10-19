@@ -162,9 +162,30 @@ source.islands = {
 	{id="island_stormscale",region="stormscale_island",zone_numeric_id=38,polygon=polygon(point(2870,-130),point(2970,-310),point(3200,-340),point(3400,-220),point(3440,20),point(3370,260),point(3150,330),point(2940,230),point(2860,60))},
 }
 
+-- A channel's water belongs to its island's zone (`zone_numeric_id`; Round 51
+-- T2, sea plan ruling 6: the island's mob level). The polygon is the authored
+-- strait; the class's organic outline and floor are `source.water.channel`.
 source.channels = {
-	{id="channel_wyrmglass",polygon=polygon(point(-2850,-350),point(-2500,-350),point(-2500,350),point(-2850,350)),warning_width=48,minimum_hard_width=104},
-	{id="channel_stormscale",polygon=polygon(point(2500,-350),point(2860,-350),point(2860,350),point(2500,350)),warning_width=48,minimum_hard_width=104},
+	{id="channel_wyrmglass",zone_numeric_id=33,polygon=polygon(point(-2850,-350),point(-2500,-350),point(-2500,350),point(-2850,350)),warning_width=48,minimum_hard_width=104},
+	{id="channel_stormscale",zone_numeric_id=38,polygon=polygon(point(2500,-350),point(2860,-350),point(2860,350),point(2500,350)),warning_width=48,minimum_hard_width=104},
+}
+
+-- The water rules (Round 51 T2, sea plan rulings 4-6 and 8; world_zones.md
+-- "The sea"). The belt's outer edge and its floor are terrain data
+-- (`terrain_data.lua` belt_edge, belt_slope).
+source.water = {
+	-- bay, belt and channel water this many nodes or more off the true coast
+	-- is immutable like the open sea (ruling 8); the shore stays alterable
+	protected_distance = 24,
+	-- the bay mouth's cut wanders by up to `amplitude` nodes (period in nodes)
+	bay_mouth = {amplitude = 70, period = 240},
+	-- the organic dragon channel: the authored strait `pad` nodes wider in x,
+	-- corners of radius `corner`, an edge moved by up to `edge` nodes (noise
+	-- period `period`); its floor lies depth_min..depth_max nodes under the
+	-- surface (noise period depth_period) and eases into the sea floor over
+	-- `ramp` nodes beyond the edge
+	channel = {pad = 80, corner = 140, edge = 40, period = 110,
+		depth_min = 9, depth_max = 11, depth_period = 70, ramp = 32},
 }
 
 -- Round 22 zone borders and coastline (world_zones.md §7.1-7.4, D24): the
