@@ -1,5 +1,176 @@
 # Round 52 ARTA — art drops
 
+## Drop 04 — the picked overlays under the engine alpha rule
+
+Delivered 2026-10-20 by GPT-6 Astra on `r52-arta`. **Compatible:** staged
+art and a Python generator only. This pass reworks exactly the user's
+24 family/weapon picks from drop 03 (`94bbadbd`), plus the six picked bow
+draw stages: **30 strips** under their final game filenames. The
+coordinator's WFX lane integrates them after the user's look. No `mods/`
+or Lua changes; no fixtures, engine runs, agents, merge or push.
+
+- [Preview](drop-04/preview.png): one band per class, all 30 strips at
+  exactly 8×, labelled active phases, **old left / new right** for each
+  comparison. The idle bow shows both silhouettes.
+- [Manifest](drop-04/manifest.json): filenames, family, weapon, stage,
+  exact source pick and SHA-256, frames, frame length, old/new visible
+  pixels and empty frames; preview input hashes and media licences.
+- Each PNG has a matching GIF: old/new side by side over every existing
+  material and one enchanted example, at exactly 8× and real speed.
+  Idle bows show alder, wood and enchanted alder. Draw stages show their
+  own sprite and the identical enchanted draw sprite, following the
+  existing preview convention documented below.
+- [Media checks](drop-04/checks.json): per-frame counts, grip/string
+  exclusions, loop seams, contrast observations and exact GIF roundtrips.
+- [Generator](arta_fx4.py): Python/Pillow, reading the actual selected
+  drop-03 PNGs and reusing the frozen pass-3 geometry, masks and preview
+  helpers. All three earlier drops are unchanged.
+
+### Opaque shading and preserved motion
+
+The PNGs contain only alpha **0 or 255**, with zero RGB under transparency.
+Both sides of every preview apply the same rule **before** compositing
+over the weapon: alpha below 128 disappears, alpha at least 128 becomes
+255. The old side reads the actual picked PNG, without palette changes.
+No preview uses the old soft alpha blending. GIFs have an exact shared
+palette, with no dithering or colour approximation.
+
+The new strips replace soft alpha with explicit colour ramps: dark and
+muted family shades beneath brighter crests. Every original motion pixel
+retains its position and phase. Small fixed shoulders reinforce Ember's
+wand/dagger, Rime's crystal, Bulwark's edges, Reckoning's seal and Quarry's
+sword/dagger. These use pixels already visited by the chosen animation.
+Veil's dagger had its silver point overwritten by its smoke base at
+`(9, 5)`; its fixed silver point now sits on the adjacent blade pixel
+`(8, 6)`. That is the only extension of a source strip's total footprint.
+There is no rotation, new particle path, grip or string coverage.
+
+Each frame now has **2–7 effect pixels**; quiet phases hold a restrained
+coloured mark. Every last frame equals the first frame exactly. The
+selected motion, family frame count and frame length remain unchanged.
+Visibility below means effect pixels after the alpha test, summed over
+all frames of all strips in the family; empty counts use the same frame
+instances, including bow draw stages.
+
+| Family | Picked variants | Strips | Frames × seconds | Visible pixels old → new | Empty frames old → new / total |
+|---|---|---:|---|---:|---:|
+| ember | staff v1, wand v1, dagger v1 | 3 | 8 × 0.12 | 41 → 77 | 6 → 0 / 24 |
+| rime | staff v1, wand v1, dagger v1 | 3 | 12 × 0.26 | 76 → 121 | 15 → 0 / 36 |
+| mercy | staff v2, wand v1, dagger v1 | 3 | 12 × 0.28 | 48 → 124 | 18 → 0 / 36 |
+| reckoning | staff v1, wand v2, dagger v2 | 3 | 12 × 0.16 | 25 → 82 | 27 → 0 / 36 |
+| bulwark | sword v2, dagger v1, greataxe v1 | 3 | 12 × 0.18 | 22 → 97 | 21 → 0 / 36 |
+| ruin | sword v1, dagger v1, greataxe v1 | 3 | 10 × 0.16 | 57 → 135 | 15 → 0 / 30 |
+| quarry | bow and draw0/1/2 v1, sword v1, dagger v1 | 6 | 12 × 0.26 | 82 → 242 | 30 → 0 / 72 |
+| veil | bow and draw0/1/2 v1, sword v1, dagger v1 | 6 | 12 × 0.28 | 51 → 272 | 30 → 0 / 72 |
+| **Total** | | **30** | | **402 → 1,150** | **162 → 0 / 342** |
+
+### Reproduction and media checks
+
+From the repository root, with Python 3 and Pillow:
+
+```sh
+python3 -I tools/r52_art/arta/arta_fx4.py --out /tmp/arta-fx4-rebuild
+```
+
+The default output is `drop-04/`. Identical existing bytes are accepted;
+different bytes are refused. Output under `mods/` or an earlier drop is
+rejected. The same inputs and Pillow reproduce every output byte.
+
+All 30 PNGs and 30 GIFs pass the generator's media checks: dimensions,
+binary alpha, pick hashes, unchanged timing, fewer than one third empty
+frames in every strip (actually zero), no grip/string intersections,
+retained motion pixels, monotone source paths and zero-delta loop seams.
+Every GIF is decoded and compared with its exact rendered RGB frames,
+including every hold frame, duration and infinite-loop flag. The weakest
+frame's strongest channel difference against each material is recorded
+as a contrast observation, not a gameplay or accessibility standard.
+The class sheet, all animation phases and the wood, Embersteel and
+enchanted-material comparisons were visually inspected. A separate
+rebuild matches the deliverable byte for byte. Desktop/web appearance
+remains for the user's look and WFX's later integration.
+
+### Drop 04 media
+
+All 30 overlay PNGs are original art by **GPT-6 Astra (Grudgelands)**,
+dated **2026-10-20**, dedicated to **CC0 1.0 Universal**, to the extent the
+project holds rights in them:
+<https://creativecommons.org/publicdomain/zero/1.0/>.
+The generator is **GPL-3.0-or-later**. `FX4` below means the picked CC0
+pass-3 strip reworked by `arta_fx4.py` with opaque RGB shading and the
+small fixed marks described above. `composite` means both versions under
+the alpha rule, above the source weapon/enchant samples, with labels,
+8× nearest-neighbour scaling and an exact GIF palette.
+
+The [existing source credits and provenance](#drop-02-media) apply to the
+weapon composites; every input is recorded by path and hash in the new
+manifest. No external media are imported. The original overlays remain
+CC0; the GIFs and sheet retain the respective weapon-source licences.
+Existing attribution is also retained in [CREDITS.md](../../../CREDITS.md).
+
+| File (relative to drop-04) | Author | Source / modifications | Licence |
+|---|---|---|---|
+| `grug_abilities_fx_ember_staff.png` | GPT-6 Astra (Grudgelands) | FX4: ember, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_ember_staff.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_ember_wand.png` | GPT-6 Astra (Grudgelands) | FX4: ember, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_ember_wand.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC0-1.0 |
+| `grug_abilities_fx_ember_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: ember, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_ember_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_rime_staff.png` | GPT-6 Astra (Grudgelands) | FX4: rime, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_rime_staff.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_rime_wand.png` | GPT-6 Astra (Grudgelands) | FX4: rime, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_rime_wand.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC0-1.0 |
+| `grug_abilities_fx_rime_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: rime, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_rime_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_mercy_staff.png` | GPT-6 Astra (Grudgelands) | FX4: mercy, picked v2 | CC0-1.0 |
+| `grug_abilities_fx_mercy_staff.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_mercy_wand.png` | GPT-6 Astra (Grudgelands) | FX4: mercy, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_mercy_wand.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC0-1.0 |
+| `grug_abilities_fx_mercy_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: mercy, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_mercy_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_reckoning_staff.png` | GPT-6 Astra (Grudgelands) | FX4: reckoning, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_reckoning_staff.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_reckoning_wand.png` | GPT-6 Astra (Grudgelands) | FX4: reckoning, picked v2 | CC0-1.0 |
+| `grug_abilities_fx_reckoning_wand.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC0-1.0 |
+| `grug_abilities_fx_reckoning_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: reckoning, picked v2 | CC0-1.0 |
+| `grug_abilities_fx_reckoning_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_bulwark_sword.png` | GPT-6 Astra (Grudgelands) | FX4: bulwark, picked v2 | CC0-1.0 |
+| `grug_abilities_fx_bulwark_sword.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_bulwark_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: bulwark, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_bulwark_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_bulwark_greataxe.png` | GPT-6 Astra (Grudgelands) | FX4: bulwark, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_bulwark_greataxe.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC0-1.0 |
+| `grug_abilities_fx_ruin_sword.png` | GPT-6 Astra (Grudgelands) | FX4: ruin, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_ruin_sword.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_ruin_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: ruin, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_ruin_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_ruin_greataxe.png` | GPT-6 Astra (Grudgelands) | FX4: ruin, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_ruin_greataxe.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC0-1.0 |
+| `grug_abilities_fx_quarry_bow.png` | GPT-6 Astra (Grudgelands) | FX4: quarry, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_quarry_bow.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_quarry_bow_draw0.png` | GPT-6 Astra (Grudgelands) | FX4: quarry, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_quarry_bow_draw0.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-4.0 |
+| `grug_abilities_fx_quarry_bow_draw1.png` | GPT-6 Astra (Grudgelands) | FX4: quarry, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_quarry_bow_draw1.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-4.0 |
+| `grug_abilities_fx_quarry_bow_draw2.png` | GPT-6 Astra (Grudgelands) | FX4: quarry, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_quarry_bow_draw2.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-4.0 |
+| `grug_abilities_fx_quarry_sword.png` | GPT-6 Astra (Grudgelands) | FX4: quarry, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_quarry_sword.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_quarry_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: quarry, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_quarry_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_veil_bow.png` | GPT-6 Astra (Grudgelands) | FX4: veil, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_veil_bow.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_veil_bow_draw0.png` | GPT-6 Astra (Grudgelands) | FX4: veil, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_veil_bow_draw0.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-4.0 |
+| `grug_abilities_fx_veil_bow_draw1.png` | GPT-6 Astra (Grudgelands) | FX4: veil, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_veil_bow_draw1.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-4.0 |
+| `grug_abilities_fx_veil_bow_draw2.png` | GPT-6 Astra (Grudgelands) | FX4: veil, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_veil_bow_draw2.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-4.0 |
+| `grug_abilities_fx_veil_sword.png` | GPT-6 Astra (Grudgelands) | FX4: veil, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_veil_sword.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `grug_abilities_fx_veil_dagger.png` | GPT-6 Astra (Grudgelands) | FX4: veil, picked v1 | CC0-1.0 |
+| `grug_abilities_fx_veil_dagger.gif` | GPT-6 Astra; weapon authors | FX4 composite; source credits below | CC-BY-SA-3.0 |
+| `preview.png` | GPT-6 Astra; weapon authors | Labelled FX4 old/new contact sheet; source credits below | CC-BY-SA-4.0 |
+
 ## Drop 03 — one overlay family per talent tree
 
 Delivered 2026-10-19 by GPT-6 Astra on `r52-arta`. **Compatible:** staged
