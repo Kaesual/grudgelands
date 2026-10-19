@@ -246,6 +246,9 @@ local NODE_STYLES = {
 		"border=false;textcolor=#9a9a9a",
 }
 local CONNECTOR_MET, CONNECTOR_OPEN = "#c9a65a", "#5a5a5a"
+-- The new graph page (talent_graph_ui.lua) draws its nodes and lines alike.
+grug_classes.TALENT_NODE_STYLES = NODE_STYLES
+grug_classes.TALENT_CONNECTOR_COLORS = {met = CONNECTOR_MET, open = CONNECTOR_OPEN}
 
 -- Button field index per talent id (registration order, fixed after load).
 local field_index
