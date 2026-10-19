@@ -2458,6 +2458,10 @@ the reviews' and reports' backlog notes (theoretical or accepted, no
 severity). The items the user decides in the GUI test are in the
 [GUI checklist](docs/planning/round51-plan.md#gui-checklist-round-51).
 
+- **Seed-specific land warnings** (MOBS M2's smoke boot, a random seed): a
+  spawn-kind fallback in Frostbarrow Shelf and Mournfen's bandit camp belt
+  more than one belt from the land beside its POI; not on the production
+  seed. Find the seed and check whether they predate Round 51.
 - **World bounds** (T1, T4): the seabed steps up to −23 at the world bound
   (as before); the land-only clamps at the old bounds stay
   (`wp40/habitat_registry.lua` ~72, `r6_content.lua` ~857 and ~1001,

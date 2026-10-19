@@ -734,8 +734,15 @@ Points marked **(decide)** are for the user's judgement.
 
 ### Round-end gates
 
-**Round-end gates** (coordinator): *to be recorded* — full fixtures, the
-full seed fleet, `check_upgrade.py`, `check_fresh_server.py`, the data
-checks and a smoke boot from an empty cache on main.
+**Round-end gates** (coordinator, 2026-10-19, on main `08163c89` with every
+build lane merged, then the docs): full fixtures 213/213 PASS; the full seed
+fleet 304 of 304 seeds build (19 min); `check_fresh_server.py` PASS;
+`check_lua.sh` on every changed mod file PASS (its sweep 5 flags the
+`io.popen` in `tools/r49_hash/portable_test.lua:57`, unchanged since before
+the round); `check_upgrade.py` PASS (0.51.0 against origin/main `fae056c5`);
+`r37_dc` PASS; a smoke boot from an empty cache on the production seed PASS
+(only the two known W-recipe-target quest warnings). The two land warnings of
+MOBS M2's smoke boot came from its random seed and did not appear on the
+production seed; they are a carry-over.
 Lane D's own checks on its branch: `tools/r37_dc` and `check_upgrade.py`
 (0.51.0 against origin/main `fae056c5`) PASS.
