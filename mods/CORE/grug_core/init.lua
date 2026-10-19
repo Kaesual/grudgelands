@@ -92,6 +92,10 @@ dofile(modpath .. "/particle_effects.lua")
 dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat_ray.lua")
 dofile(modpath .. "/combat.lua")
+-- The area helpers of the class rework (Round 52): ground anchor, area query,
+-- group recipients, delayed impact. They read combat_ray and the particles
+-- only when called.
+dofile(modpath .. "/area.lua")
 dofile(modpath .. "/homing.lua")
 dofile(modpath .. "/combat_hud.lua")
 dofile(modpath .. "/death_messages.lua")

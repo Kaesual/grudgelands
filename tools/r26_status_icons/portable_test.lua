@@ -10,8 +10,8 @@
 --   * frame kinds match the user decisions (buff / debuff / neutral), and a
 --     registered id keeps its kind whatever the caller passes;
 --   * every status id the game sets (set_status literals, the mount constant,
---     status-source ids, talent windows) is registered, and every talent
---     window names a real talent;
+--     status-source ids, talent windows, readiness windows) is registered,
+--     and every talent window names a real talent;
 --   * countdown / value captions, the food item-image path and its fallback;
 --   * the row: order, hidden values, the ten-slot limit (debuffs kept first),
 --     GUI-scaled captions, expiry, movement
@@ -237,6 +237,12 @@ for talent, status_id in pairs(icons.TALENT_WINDOWS) do
 	set_ids[status_id] = "status_icons.lua TALENT_WINDOWS"
 	check(talents_text:find("id = \"" .. talent .. "\"", 1, true) ~= nil,
 		"talent window " .. talent .. " is a registered talent")
+end
+-- The readiness windows by any id (Round 52, grug_classes.open_window): a
+-- table of window id -> status id, each a registered status.
+check(type(icons.WINDOWS) == "table", "the readiness window table exists")
+for window, status_id in pairs(icons.WINDOWS or {}) do
+	set_ids[status_id] = "status_icons.lua WINDOWS (" .. window .. ")"
 end
 local used = 0
 for id, file in pairs(set_ids) do

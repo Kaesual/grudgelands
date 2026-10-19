@@ -75,6 +75,14 @@ Briefs quote the rulings they implement in full.
     first-person weapon, one overlay per element.
   - Third person is unaffected.
   - The web client is 5.17.
+  - **Per class and weapon type** (the user, 2026-10-19, after the first
+    picks): every family has its own strip for each weapon type its class
+    can wield, placed on that type's business end (Warrior rage: sword,
+    dagger, greataxe; Scout wild and shadow: bow, sword, dagger, the bow
+    with one strip per draw stage; Mage fire and frost and Priest holy:
+    staff, wand, dagger). 18 combinations. All strips share one animation
+    (8 frames, 0.96 s), because the engine lets the stack meta override
+    only the overlay's name; the skin pass picks the strip by weapon type.
 - **C8 Hotbars.** Talent unlocks place nothing. A transformation replaces
   the old skill in place on every layout, A and B, that holds it (Round 50
   ruling 12).
@@ -349,7 +357,10 @@ each node's name, type and icon motif, and its §4 for the overlays.
 
 ### WFX — weapon overlay (wave 3, after CORE-A and ARTA's strip picks)
 
-- Each skill item gets an animated `wield_overlay` from its element family:
+- Each skill item gets an animated `wield_overlay` from its element family
+  and the held weapon type (C7): the definition carries the shared animation,
+  the skin pass writes the strip name for the weapon type into the stack meta
+  (`wield_overlay` overrides only the name);
   - the animation comes from the item definition;
   - the stack meta keeps only the weapon image;
   - the family mapping is an id-keyed table in `init.lua`, like
