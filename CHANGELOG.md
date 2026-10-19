@@ -12,6 +12,123 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.51.0 — land zones and the sea (2026-10-19)
+
+A larger sea with a wide coastal belt, natural bays and channels, seabed
+meadows, shipwrecks and creatures of their own, the sea coloured by depth
+on the map, and a few characteristic changes in every land zone: calm
+ground textures, new plants, ruins, graveyards, cairns, statues and
+varied bones. **Map reset** needed: world generation changed, so an
+existing world's map is generated anew from its seed. Characters keep
+their level, gear, inventory, money, quests, professions, mounts and
+waypoints, as in every map reset; their position and home claim go with
+the old map, and the containers in a housing claim come back through the
+Claim Stone's Belongings tab (since 0.50.0). No migration step: the new
+version reads every character as it is.
+
+- **A larger world:** the sea reaches 450 nodes farther east and west and
+  400 farther north and south. The land stays exactly where it was.
+- **Bays:** no more specks of open sea at a bay's rim, and a bay opens into
+  the sea through a natural mouth instead of a straight cut.
+- **The coastal belt:** the open sea now begins about 250–350 nodes off
+  the coast (was 80). The belt belongs to the zone on the land beside it:
+  its level, faction and PvP rule. It deepens gently, about 3 nodes deep
+  25 nodes out, 11 at 150 and 18 at 300.
+- **Dragon channels:** the straits to the two dragon islands are shallow
+  natural channels, 9–11 nodes deep, with their island's level 60; a boat
+  passes everywhere. They still have no PvP rule.
+- **Protected water:** bay, belt and channel water 24 nodes or more off the
+  coast cannot be built on, dug (the seabed included) or claimed, like the
+  open sea; a refused try says "Deep water – protected". The shore nearer
+  than 24 nodes stays as editable as its zone, and lakes and rivers are
+  never protected. A Claim Stone may reach bay water only within 24 nodes
+  of the coast.
+- **Seabed growth:** coral patches down to about 10 nodes, kelp meadows
+  down to about 20 (never reaching the surface) and seagrass meadows in
+  three kinds down to about 14, in the belt, the bays and the channels.
+  The open sea stays bare. Seagrass and kelp you dig leave sand and grow
+  back near players; coral does not.
+- **Shipwrecks:** four kinds (a hull, a bow, a stern and a debris field)
+  lie on the protected seabed of the belt and the bays, 8–14 nodes deep,
+  at most four per zone and about 55 per world, with kelp growing round
+  them. A hull's broken mast reaches near the surface.
+- **Water creatures:** five new families, all silent:
+  - the **tortoise** (Pond Terrapin to Stoneback Tortoise) in the coastal
+    shallows and at lakes, neutral, following you ashore when struck;
+  - the **frog** (Marsh Frog to Blackwater Toad) at lakes, rivers and swamp
+    pools, hostile, following you ashore;
+  - the **stingray** (Sand Ray to Thornback Ray) in deeper belt, bay and
+    channel water at least 16 nodes from land, and the level-60 Wyrmwake
+    Ray in the dragon channels;
+  - the **Bay Shark** (level 30) in the deep middle of the bays and the
+    rare elite **Abyssal Shark** (level 70) in the open sea beside the
+    Kraken;
+  - the **Tide Goby**, a small fish in any sea water (no XP).
+
+  They take the level of the zone around them; the level 1–2 home belts
+  have no frogs and no stingrays. Each drops its band's fish (the tortoise
+  and the frog sometimes meat too; the Abyssal Shark 3–6 Storm Tuna), and
+  quests can name them like any zone creature.
+- **Swimmers let go at the shore:** a stingray or shark whose target
+  leaves the water onto a beach, bank or pier gives up, heals, ignores
+  that player for a moment and swims back. In the water or in a boat you
+  stay in reach.
+- **The map:** the sea is coloured by depth: light at the coast, a middle
+  blue over the belt, the bays and the channels, dark over the open sea,
+  blending softly into each other. Bay shores get the coast line. The map
+  covers the larger world, at 1215 × 1080 (normal) or 3600 × 3200 (high);
+  at 1x, names and icons look a little smaller. It is rendered anew at the
+  first start (about 14 seconds at normal quality, about a minute at high).
+- **Calm grounds:** many ground textures are larger and calmer, one
+  picture over 2 × 2 nodes with no visible grid: the swamp's wet grass and
+  mud, dry mud, both moss soils, the undead bone litter and blight dirt,
+  the jungle's canopy litter, the elves' silver litter, mesa clay and sand,
+  above and under water.
+- **The swamp:** its own muted Swamp Moss ground (digging gives mud), and
+  the elf forest's moss soil is muted too. Hanging moss hangs as one
+  continuous strand with a tapered tip; digging the lowest piece moves the
+  tip up, digging a middle piece drops the pieces below it. The papyrus
+  on dirt pedestals is gone (see the shores below).
+- **The jungle:** lianas hang from the leaves of jungle and kapok trees
+  (Kezamba's too), with Ruby Fan, Ember Star and Violet Fan flowers, ferns,
+  jungle bushes and fallen kapok logs.
+- **The undead lands:** small graveyards with steles and crosses, fallen
+  and sunken gravestones and a fence here and there; ruined arches,
+  columns and wall corners, a collapsed crypt now and then, kneeling
+  mourner statues, obelisks, fallen gravewood logs and stumps, grave
+  mounds. Bones are rarer and varied: skulls, ribcages, spines, scattered
+  long bones and fragments instead of one bone pile.
+- **The dwarves' crags:** boulders, two kinds of cairns, sparse lichen
+  patches on gravel and stone, Alpine Cushion and Alpine Windshrub, dead
+  pines on the snow, and small ice patches in the snowy crags.
+- **The orc badlands:** steep slopes and mountains show ochre, sienna,
+  chalk and umber clay bands by height; flat ground stays mesa clay. Bones
+  and withered bushes lie about.
+- **The elves' forests:** ruins, statues, fallen logs and the pastel
+  flowers Blush Star, Lilac Bells and Cream Cups.
+- **Beaches and shores:** small gravel patches in dry sand (on lake and
+  river banks too); papyrus grows 2–4 tall right on the sand by the water
+  in the warm zones, no longer on a pedestal; marram grass on dry sand and
+  driftwood on the beaches.
+- **Town graveyards:** every town's graves are the new gravestones
+  (Stillgrave, Nhal Veyr, Kezamba, Highcourt, Gor Drazhak, Dur Brannoc and
+  Lethariel), and the bones in Stillgrave and Nhal Veyr are the varied
+  pieces.
+- **Drops:** a decorative block gives an ordinary block (cobblestone,
+  stone, silver sandstone, wood, a stick; a clay band gives mesa clay, the
+  swamp moss mud). Decorative plants and bones give nothing; that now
+  includes ferns and marram grass everywhere.
+- **Plants that come back:** the new flowers, alpine plants, lichen,
+  papyrus and marram grow back near players like the other wild plants.
+  Lianas and hanging moss come only with their tree, bushes and coral not
+  at all.
+- **Server admins:** a server on 0.50.x (the production world) moves to
+  0.51.0 with this one map reset and no migration step; a world on 0.48.x
+  or 0.49.x crosses 0.49.0's reset too, and one reset covers both. Before
+  the map is emptied, the migration tool's pre-reset pass packs every
+  claim's containers (declaration `map_reset_pass` 0.50.0). The first
+  start prepares about a quarter more sea and renders the larger map.
+
 ## 0.50.2 — where a Claim Stone may go, and where claims are (2026-10-17)
 
 Existing worlds play on: no migration step, no map reset, no new world. The
