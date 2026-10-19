@@ -6,6 +6,9 @@ closed every open point. Status, the user's decisions on the two reviews and
 the adopted simplifications: **[continuation plan](continuation.md)** — start
 there when the rework resumes. Review records: [design](reviews/design-review-2026-10-12.md),
 [engineering](reviews/implementation-review-2026-10-12.md).
+**2026-10-19:** the user's "maximally simple" rulings (continuation §4a) and
+the [skill inventory](skill-inventory.md) that applies them to every skill
+override the candidates where they conflict.
 
 Prepared 2026-10-12 for round planning. The user supports the overall direction
 and approved the [first-person targeting contract](../../design/ability_targeting.md).
