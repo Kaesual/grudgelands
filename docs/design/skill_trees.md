@@ -549,7 +549,8 @@ edge.
   kinds, spend and respec, persistence and the accessors.
 - `grug_classes/talents_warrior.lua`, `talents_mage.lua` and
   `talents_priest.lua`: the 48 talents of Warrior, Mage and Priest as data.
-- `grug_classes/talent_windows.lua`: the timed-window table (§3.2).
+- `grug_classes/talent_windows.lua`: the timed-window table and the
+  readiness windows by any id (§3.2).
 - `grug_classes/scout_talents.lua`: the Scout's 16 talents.
 - `grug_classes/talents_ui.lua`: the Talents & Skills page with the tree
   framework (§3.5) and the paid respec
@@ -636,8 +637,13 @@ talent code sets, not a new mechanism. The Scout's base-kit **Sidestep** and
 keys in `grug_classes.TALENT_WINDOW_KEYS`), so a consumer needs no second
 accessor. The windows live in one per-player expiry table in `talent_windows.lua`
 (`start_talent_window`, `talent_window_active`), cleared on leave, death and
-respec (`clear_talent_windows`); that table is the single place a window
-lives.
+respec (`clear_talent_windows`); that table is the single place a talent
+window lives. Beside it, the same file holds the readiness windows of the
+class rework (Round 52, not used by a shipped talent yet): keyed by any id,
+opened with an optional internal cooldown on the monotonic clock
+(`open_window`), spent by the next qualifying attack (`consume_window`),
+with a status icon from `grug_core.status_icons.WINDOWS`. Today's trigger
+cooldowns (`talent_trigger_ready`) keep their `os.time` player-meta clock.
 
 ### 3.3 Persistence
 
