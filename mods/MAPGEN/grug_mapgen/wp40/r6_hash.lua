@@ -4,10 +4,12 @@ return function(raw_sha256)
 	local MAX_SAFE = 9007199254740991
 	local PREFIX = "grug_wp40_r6_hash_v1"
 	-- The SHA-256 domains still in use: since Round 49 (lane HASH) only the
-	-- seeded trees' template seeds (tree_templates.lua), a handful per world at
+	-- seeded trees' template seeds (tree_templates.lua) and, since Round 51
+	-- (lane LK), the land kit's (kit_templates.lua), a handful per world at
 	-- construction. Every placement draw uses the integer placement hash below.
 	local DOMAIN_VALUES = {
 		"tree_template_seed_v1",
+		"kit_template_seed_v1",
 	}
 	local DOMAIN_SET = {}
 	for index = 1, #DOMAIN_VALUES do
@@ -187,7 +189,7 @@ return function(raw_sha256)
 			multiplier_numerator, multiplier_denominator, draw)
 		bound_integer(eligible, "eligible count", 0, 4096)
 		bound_integer(numerator_factor, "density numerator", 1, 3)
-		bound_integer(density_denominator, "density denominator", 1, 12000)
+		bound_integer(density_denominator, "density denominator", 1, 16000)
 		bound_integer(multiplier_numerator, "multiplier numerator", 1, 5)
 		bound_integer(multiplier_denominator, "multiplier denominator", 1, 4)
 		bound_integer(draw, "budget draw", 0, PLACEMENT_PRIME - 1)

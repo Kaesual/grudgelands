@@ -1175,9 +1175,13 @@ local function settlement_factory()
 				row.partial_leaves = row.kind == "template" and
 					(class == "shrub" or class == "shrub_band") or nil
 				row.plant_purpose = rule.band_cover(row) and "cover" or "vegetation"
-				-- A generated tree (Round 47 lane TC, tree_templates.lua).
+				-- A generated tree (Round 47 lane TC, tree_templates.lua), or a
+				-- land kit structure (Round 51 lane LK, kit_templates.lua):
+				-- placed as a generated tree, its runs by the kit's rule (P9).
+				row.generated_kit = row.kind == "template" and
+					row.asset_or_node:match("^kitgen:") ~= nil or nil
 				row.generated_tree = row.kind == "template" and
-					row.asset_or_node:match("^treegen:") ~= nil or nil
+					(row.asset_or_node:match("^treegen:") ~= nil or row.generated_kit) or nil
 			end
 		end
 		-- The ground a generated tree's root stands in (the root runs below):
@@ -1188,6 +1192,15 @@ local function settlement_factory()
 			for index = 1, #names do
 				local ref = content.content_ref(names[index])
 				if ref then root_ground_cids[contract.content_cids[ref]] = true end
+			end
+		end
+		-- The ground a land kit run's column stands on (Round 51 lane LK).
+		local kit_ground_cids = {}
+		if type(templates.kit_ground_names) == "function" then
+			local names = templates.kit_ground_names()
+			for index = 1, #names do
+				local ref = content.content_ref(names[index])
+				if ref then kit_ground_cids[contract.content_cids[ref]] = true end
 			end
 		end
 		local projection = content.wp43_projection()
@@ -2211,7 +2224,8 @@ local function settlement_factory()
 			r8_cave_writer_disabled = r8_cave_writer_disabled,
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
-			root_ground_cids = root_ground_cids, template_metrics = metrics_state.templates,
+			root_ground_cids = root_ground_cids, kit_ground_cids = kit_ground_cids,
+			template_metrics = metrics_state.templates,
 			tree_spacing = TREE_SPACING,
 			r8_hash = hash,
 			template_rotation = runtime_mode and (templates.rotation_runtime or
@@ -2885,7 +2899,7 @@ local function settlement_factory()
 							-- owner (clipped_owner above), so a crown never meets one
 							-- of another mapchunk and none is cut at a border.
 							if row.generated_tree and not flags.clipped_owner then
-								local spacing = helpers.tree_spacing
+								local spacing = row.generated_kit and 0 or helpers.tree_spacing
 								for index = 1, #tree_roots do
 									local other = tree_roots[index]
 									if math.abs(other[1] - root_x) < spacing and
@@ -2948,6 +2962,43 @@ local function settlement_factory()
 									end
 								end
 							end
+							-- THE KIT'S RUNS (Round 51 lane LK, kit_templates.lua): every
+							-- cell's column has kit ground right under the root's level
+							-- and none at it; a cell at or above that level is free (air
+							-- or natural vegetation, no claim but a tree's leaf), a cell
+							-- below it (a sunken course, a crypt step) takes its own
+							-- column's surface top; a run with a parent only with its
+							-- parent. A required run that cannot stand rejects the whole
+							-- structure, so its core stands on level ground or not at all.
+							local kit_kept
+							if row.generated_kit and root_runs and not flags.clipped_owner then
+								local kit_ground = helpers.kit_ground_cids
+								kit_kept = helpers.r8_templates.kept_root_runs(root_runs,
+									function(cell_record)
+										local x, z = root_x + cell_record.x, root_z + cell_record.z
+										local y = root_y + cell_record.y
+										if not (inside_owner(x, root_y - 1, z) and
+												inside_owner(x, root_y, z) and inside_owner(x, y, z)) or
+												not kit_ground[final_data[index_at(x, root_y - 1, z)]] or
+												kit_ground[final_data[index_at(x, root_y, z)]] then
+											return false
+										end
+										local index = index_at(x, y, z)
+										if y < root_y then
+											return occupancy[index] == 0 and intent_opcode[index] >= 1 and
+												intent_opcode[index] <= 4
+										end
+										local class_id = classify(final_data[index], final_param2[index])
+										return (occupancy[index] == 0 or occupancy[index] == -4) and
+											(class_id == CLASS_AIR or class_id == CLASS_NATURAL_VEGETATION)
+									end)
+								for run_index = 1, #root_runs do
+									if root_runs[run_index].required and not kit_kept[run_index] then
+										flags.insufficient_clearance = true
+										break
+									end
+								end
+							end
 							local reason = helpers.primary_reason(flags, {"clipped_owner",
 								"content_ignore", "fixed_or_protected", "route_or_water",
 								"wrong_host", "insufficient_clearance", "occupied_collision",
@@ -2978,7 +3029,9 @@ local function settlement_factory()
 							if reason then metric_rejection(ledger, "decoration", row.id, reason)
 							else
 								if aggregate then aggregate.accepted = aggregate.accepted + 1 end
-								if row.generated_tree then
+								if row.generated_kit then
+									-- a kit structure claims only its cells (written below)
+								elseif row.generated_tree then
 									tree_roots[#tree_roots + 1] = {root_x, root_z}
 								else
 									for z = root_z + min_fz, root_z + max_fz do
@@ -3017,7 +3070,7 @@ local function settlement_factory()
 								-- border is complete or absent with its tree.
 								if root_runs then
 									local root_ground_cids = helpers.root_ground_cids
-									local kept = helpers.r8_templates.kept_root_runs(root_runs,
+									local kept = kit_kept or helpers.r8_templates.kept_root_runs(root_runs,
 										function(cell_record)
 											local x, z = root_x + cell_record.x, root_z + cell_record.z
 											local y = root_y + cell_record.y

@@ -310,18 +310,20 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 
 	local decorations, decoration_by_id = {}, {}
 	if dense(manifest_values.decorations, "decoration catalog",
-			"fail_content_manifest") ~= 61 then
+			"fail_content_manifest") ~= 80 then
 		fail("fail_content_manifest", "expanded decoration population differs")
 	end
 	for index = 1, #manifest_values.decorations do
 		local row = manifest_values.decorations[index]
-		-- A generated tree (`treegen:<species>`, Round 47 lane TC) carries no
-		-- settlement class: r6_templates.lua computes it from this world's
-		-- variants and `set_template_classes` fills it in before any planner
-		-- or writer reads the rows.
+		-- A generated tree (`treegen:<species>`, Round 47 lane TC) or land kit
+		-- structure (`kitgen:<key>`, Round 51 lane LK) carries no settlement
+		-- class: r6_templates.lua computes it from this world's variants and
+		-- `set_template_classes` fills it in before any planner or writer
+		-- reads the rows.
 		local generated_tree = row.kind == "template" and
 			type(row.asset_or_node) == "string" and
-			row.asset_or_node:match("^treegen:[a-z_]+$") ~= nil
+			(row.asset_or_node:match("^treegen:[a-z_]+$") ~= nil or
+				row.asset_or_node:match("^kitgen:[a-z_]+$") ~= nil)
 		exact_fields(row, {id = true, biomes = true, kind = true, asset_or_node = true,
 			host = true, numerator = true, denominator = true, rule = true,
 			settlement_class = generated_tree and "optional" or true},
@@ -342,7 +344,8 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 		safe_integer(row.numerator, "decoration numerator", 1, 3,
 			"fail_content_manifest")
-		safe_integer(row.denominator, "decoration denominator", 1, 2000,
+		-- (to 16000 since Round 51 lane LK: the land kit's rare structures)
+		safe_integer(row.denominator, "decoration denominator", 1, 16000,
 			"fail_content_manifest")
 		if generated_tree then
 			if row.settlement_class ~= nil then
@@ -679,6 +682,18 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			cover[require_role(name, 1, p7_classes, "swamp host")] = divisor
 		end
 		biomes.grug_swamp = cover
+	end
+	-- The land kit's structures (Round 51 lane LK, `kitgen:` rows) also
+	-- stand on their biomes' bare gravel and stone (the crags' outcrops, a
+	-- gravel patch in the blight), like the viewer's kit.
+	for _, row in ipairs(decorations) do
+		if row.kind == "template" and row.asset_or_node:match("^kitgen:") then
+			for _, hosts in pairs(decoration_cover[row.id]) do
+				for _, name in ipairs({"default:gravel", "default:stone"}) do
+					hosts[require_role(name, 1, p7_classes, "kit host")] = 1
+				end
+			end
+		end
 	end
 	function module.decoration_cover(id, biome, support_ref)
 		local biomes = decoration_cover[id]
