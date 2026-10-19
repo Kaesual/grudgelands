@@ -157,8 +157,35 @@ swamp_grass_4|grug_swamp|simple|default:grass_4|grug_nodes:mud_with_wet_grass|1|
 swamp_grass_5|grug_swamp|simple|default:grass_5|grug_nodes:mud_with_wet_grass|1|9|one_entry_per_variant|4
 swamp_junglegrass|grug_swamp|simple|default:junglegrass|grug_nodes:mud_with_wet_grass|1|20|none|4
 swamp_moss_carpet|grug_swamp|simple|grug_nodes:moss_carpet|grug_nodes:mud|1|16|none|4
-swamp_papyrus|grug_swamp|template|papyrus_on_dirt.mts|grug_nodes:mud|1|50|surface_y_1_to_4;replace_dirt_with_mud;center_xz;quarter_turn_rotation|1
 swamp_tree|grug_swamp|template|treegen:swamp|grug_nodes:mud|1|120|stilt_ground;center_xz;quarter_turn_rotation|-
+]]
+
+-- Round 51 lane LP: the land plants (tools/r47_sw/land.js ITEMS, the
+-- viewer's guide densities), in their own block; the constructor sorts every
+-- block's rows into one catalog by ID. Their hosts are r6_content.lua's
+-- LAND_PLANT_HOSTS. Rules: `surface_y_1_to_4` papyrus at the water's edge
+-- (a 2-4 stack, class 3), `shore_dry` dry sand away from the water,
+-- `rock_patch` the lichen patches (r6_planner.lua).
+local LAND_PLANT_ROWS = [[
+badlands_withered_bush|grug_badlands;grug_badlands_east|template|acacia_bush.mts|grug_nodes:mesa_clay|1|150|center_xz;quarter_turn_rotation|2
+beach_marram_1|grug_badlands;grug_badlands_east;grug_beach;grug_blight;grug_bone_forest;grug_crags;grug_crags_snowy;grug_deep_forest;grug_deep_jungle;grug_elf_forest;grug_jungle_edge;grug_jungle_fringe;grug_meadows;grug_pine_hills;grug_savanna|simple|default:marram_grass_1|default:sand|1|27|shore_dry|4
+beach_marram_2|grug_badlands;grug_badlands_east;grug_beach;grug_blight;grug_bone_forest;grug_crags;grug_crags_snowy;grug_deep_forest;grug_deep_jungle;grug_elf_forest;grug_jungle_edge;grug_jungle_fringe;grug_meadows;grug_pine_hills;grug_savanna|simple|default:marram_grass_2|default:sand|1|27|shore_dry|4
+beach_marram_3|grug_badlands;grug_badlands_east;grug_beach;grug_blight;grug_bone_forest;grug_crags;grug_crags_snowy;grug_deep_forest;grug_deep_jungle;grug_elf_forest;grug_jungle_edge;grug_jungle_fringe;grug_meadows;grug_pine_hills;grug_savanna|simple|default:marram_grass_3|default:sand|1|27|shore_dry|4
+beach_papyrus|grug_badlands;grug_badlands_east;grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe;grug_savanna|simple|default:papyrus|default:sand|1|5|surface_y_1_to_4|3
+crags_alpine_cushion|grug_crags;grug_pine_hills|simple|grug_nodes:alpine_cushion|default:gravel|1|80|none|4
+crags_alpine_windshrub|grug_crags;grug_pine_hills|simple|grug_nodes:alpine_windshrub|default:gravel|1|80|none|4
+crags_lichen_a|grug_crags;grug_pine_hills|simple|grug_nodes:lichen_carpet|default:gravel|1|14|rock_patch|4
+crags_lichen_b|grug_crags;grug_pine_hills|simple|grug_nodes:lichen_carpet_b|default:gravel|1|14|rock_patch|4
+elf_flower_blush_star|grug_deep_forest;grug_elf_forest|simple|grug_nodes:flower_blush_star|grug_nodes:dirt_with_silver_litter|1|300|none|4
+elf_flower_cream_cups|grug_deep_forest;grug_elf_forest|simple|grug_nodes:flower_cream_cups|grug_nodes:dirt_with_silver_litter|1|300|none|4
+elf_flower_lilac_bells|grug_deep_forest;grug_elf_forest|simple|grug_nodes:flower_lilac_bells|grug_nodes:dirt_with_silver_litter|1|300|none|4
+jungle_bush|grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe|template|bush.mts|grug_nodes:dirt_with_canopy_litter|1|250|center_xz;quarter_turn_rotation|2
+jungle_fern_1|grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe|simple|default:fern_1|grug_nodes:dirt_with_canopy_litter|1|75|one_entry_per_variant|4
+jungle_fern_2|grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe|simple|default:fern_2|grug_nodes:dirt_with_canopy_litter|1|75|one_entry_per_variant|4
+jungle_fern_3|grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe|simple|default:fern_3|grug_nodes:dirt_with_canopy_litter|1|75|one_entry_per_variant|4
+jungle_flower_ember_star|grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe|simple|grug_nodes:flower_ember_star|grug_nodes:dirt_with_canopy_litter|1|300|none|4
+jungle_flower_ruby_fan|grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe|simple|grug_nodes:flower_ruby_fan|grug_nodes:dirt_with_canopy_litter|1|300|none|4
+jungle_flower_violet_fan|grug_deep_jungle;grug_jungle_edge;grug_jungle_fringe|simple|grug_nodes:flower_violet_fan|grug_nodes:dirt_with_canopy_litter|1|300|none|4
 ]]
 
 local function fields(line)
@@ -206,13 +233,24 @@ return function()
 			deep_2000_floor_numerator = 3, deep_2000_floor_denominator = 2}
 	end)
 	local decorations = {}
-	lines(DECORATION_ROWS, function(row)
+	local function decoration(row)
 		decorations[#decorations + 1] = {id = row[1], biomes = array(row[2]),
 			kind = row[3], asset_or_node = row[4], host = row[5],
 			numerator = assert(tonumber(row[6])), denominator = assert(tonumber(row[7])),
 			-- "-": a generated tree's class, computed from the world's variants
 			-- (r6_templates.lua), never pinned here.
 			rule = row[8], settlement_class = row[9] ~= "-" and assert(tonumber(row[9])) or nil}
+	end
+	lines(DECORATION_ROWS, decoration)
+	lines(LAND_PLANT_ROWS, decoration)
+	-- One catalog in byte order of the IDs (r6_content.lua requires it).
+	table.sort(decorations, function(left, right)
+		local a, b = left.id, right.id
+		for index = 1, math.min(#a, #b) do
+			local x, y = string.byte(a, index), string.byte(b, index)
+			if x ~= y then return x < y end
+		end
+		return #a < #b
 	end)
 	return {
 		schema = "grug_wp40_r6_manifest_values_v1",

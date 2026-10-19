@@ -49,7 +49,9 @@ do
 	local simple, band = 0, 0
 	for _, row in ipairs(manifest.decorations) do
 		local yes = habitat.band_cover(row)
-		if row.kind == "simple" then
+		-- Round 51 lane LP: the beach papyrus is the one 2-4 tall (class 3)
+		-- simple row, and stays out.
+		if row.kind == "simple" and row.settlement_class ~= 3 then
 			simple = simple + 1
 			check(yes, "A simple row " .. row.id .. " grows in the band")
 		else
@@ -60,7 +62,7 @@ do
 	check(simple == band and band >= 20, "A every simple row and only those (" .. band .. ")")
 	check(not habitat.band_cover({id = "tall", kind = "simple", settlement_class = 3}),
 		"A a 2-4 node tall simple row stays out")
-	for _, id in ipairs({"swamp_papyrus", "pine_hills_blueberry_bush", "meadows_bush",
+	for _, id in ipairs({"beach_papyrus", "pine_hills_blueberry_bush", "meadows_bush",
 			"meadows_apple_tree", "badlands_large_cactus", "deep_forest_apple_log"}) do
 		check(not BAND_ROWS[id], "A " .. id .. " stays out of the band")
 	end

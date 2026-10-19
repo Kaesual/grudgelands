@@ -74,6 +74,15 @@ local V = {
 	-- Densest factor a class can reach, in whole multiples of the catalog
 	-- density: the planner's budget multiplier and thinning denominator.
 	CLASS_MAX = {tree = 5, last_tree = 5, shrub = 3, shrub_band = 3, cover = 1},
+	-- Round 51 lane LP: the shore sites of the decoration rows (r6_planner
+	-- rules 3 and 5): papyrus within WATER_BESIDE (square) of standing water
+	-- whose surface lies at most WATER_RISE below the root's ground; dry
+	-- sand (marram) with no wet column within DRY_REACH.
+	WATER_BESIDE = 2, WATER_RISE = 3, DRY_REACH = 3,
+	-- Lichen patches (rule 6): a patch centre in one of PATCH_ONE_IN
+	-- columns (an integer hash of the column and the world), its patch every
+	-- column within PATCH_RADIUS (square) of it; PATCH_AREA columns.
+	PATCH_ONE_IN = 450, PATCH_RADIUS = 2, PATCH_AREA = 25,
 }
 V.DENSE = {grug_deep_forest = 3, grug_deep_jungle = 3} -- times 1/2: x1.5
 V.WARM_BIOMES = {grug_deep_jungle = true, grug_jungle_edge = true,
@@ -88,7 +97,9 @@ local ROW_CLASS = {
 	savanna_acacia_bush = "shrub", blight_dry_shrub = "shrub",
 	crags_pine_bush = "shrub_band", deep_forest_bush = "shrub_band",
 	elf_forest_bush = "shrub_band", bone_forest_dry_shrub = "shrub_band",
-	swamp_papyrus = "cover", pine_hills_blueberry_bush = "cover",
+	pine_hills_blueberry_bush = "cover",
+	-- Round 51 lane LP: the jungle's and the badlands' own bushes.
+	jungle_bush = "shrub", badlands_withered_bush = "shrub",
 }
 -- The altitude class of one R6 decoration row (r7_r6_manifest.lua).
 function M.decoration_class(row)
@@ -311,6 +322,54 @@ function M.vegetation_rule(full_seed, land_zone_at)
 		-- are about 100..924, the range the threshold sweeps.)
 		local patch = noise(x, z, V.SNOW_PATCH_PERIOD, SALT_SNOW)
 		return (patch - 100) * V.SNOW_BAND < (V.SNOW_BAND - depth) * 824 and 1 or 0
+	end
+	-- Round 51 lane LP: the shore and patch sites the planner and renewal
+	-- share. `column_values_at` is the planner source's column query.
+	-- Rule 3: a wet column within WATER_BESIDE has its water surface between
+	-- `ground - WATER_RISE` and `ground`.
+	function rule.water_beside(column_values_at, x, z, ground)
+		local reach = V.WATER_BESIDE
+		for dz = -reach, reach do
+			for dx = -reach, reach do
+				if dx ~= 0 or dz ~= 0 then
+					local _, _, _, _, _, terrain_y, water_y = column_values_at(x + dx, z + dz)
+					if water_y and water_y > terrain_y and ground >= water_y and
+							ground <= water_y + V.WATER_RISE then
+						return true
+					end
+				end
+			end
+		end
+		return false
+	end
+	-- Rule 5: no wet column within DRY_REACH.
+	function rule.dry_shore(column_values_at, x, z)
+		local reach = V.DRY_REACH
+		for dz = -reach, reach do
+			for dx = -reach, reach do
+				local _, _, _, _, _, terrain_y, water_y = column_values_at(x + dx, z + dz)
+				if water_y and water_y > terrain_y then return false end
+			end
+		end
+		return true
+	end
+	-- Rule 6: the column lies in a lichen patch.
+	local SALT_PATCH = 71234567
+	local function patch_centre(x, z)
+		local h = ((x + 8192) * 73856093 + (z + 8192) * 19349663 + phase * 83492791 +
+			SALT_PATCH) % 2147483647
+		h = (h * 48271) % 2147483647
+		h = (h * 48271) % 2147483647
+		return h % V.PATCH_ONE_IN == 0
+	end
+	function rule.rock_patch(x, z)
+		local reach = V.PATCH_RADIUS
+		for dz = -reach, reach do
+			for dx = -reach, reach do
+				if patch_centre(x + dx, z + dz) then return true end
+			end
+		end
+		return false
 	end
 	return rule
 end

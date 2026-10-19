@@ -41,6 +41,9 @@ local function decoration_cover(id, biome, support)
 	local listed = false
 	for _, value in ipairs(row.biomes) do if value == biome then listed = true end end
 	if not listed then return 0 end
+	-- Round 51 lane LP: the beach plants grow on sand only (r6_content.lua
+	-- LAND_PLANT_HOSTS), never on the palette or gravel.
+	if row.host == "default:sand" then return support == "default:sand" and 1 or 0 end
 	if support == row.host then return 1 end
 	for _, name in ipairs(FERTILE[biome] or {}) do if name == support then return 1 end end
 	if row.settlement_class == 4 and support == "default:gravel" then return 4 end

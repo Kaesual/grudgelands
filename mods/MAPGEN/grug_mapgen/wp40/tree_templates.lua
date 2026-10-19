@@ -47,10 +47,14 @@ return function(treegen)
 	M.SPECIES = {
 		{key = "apple", count = 32, wood = "apple", trunk = "default:tree",
 			leaves = "default:leaves", fruit = "default:apple"},
+		-- Round 51 lane LP: jungle and kapok hang lianas (`liana`,
+		-- `liana_strand`; LIANAS below).
 		{key = "jungle", count = 32, wood = "jungle", trunk = "default:jungletree",
-			leaves = "default:jungleleaves"},
+			leaves = "default:jungleleaves", liana = "grug_trees:liana",
+			liana_strand = "grug_trees:liana_strand"},
 		{key = "kapok", count = 16, wood = "jungle", trunk = "default:jungletree",
-			leaves = "default:jungleleaves"},
+			leaves = "default:jungleleaves", liana = "grug_trees:liana",
+			liana_strand = "grug_trees:liana_strand"},
 		{key = "acacia", count = 32, wood = "acacia", trunk = "default:acacia_tree",
 			leaves = "default:acacia_leaves"},
 		{key = "pine", count = 32, wood = "pine", trunk = "default:pine_tree",
@@ -104,7 +108,7 @@ return function(treegen)
 
 	M.STEM, M.LIMB, M.LEAF = 1, 2, 3
 	local FLAG = {trunk = 1, quarter = 1, base = 2, branch = 2, twig = 2,
-		leaves = 3, fruit = 3, moss = 3}
+		leaves = 3, fruit = 3, moss = 3, liana = 3}
 	-- The flag of a node of a tree: a stilt of a `stilts` species (a limb
 	-- cell up to one above the stem's lowest log) is optional (LEAF).
 	local function stilt_foot(row, tree)
@@ -127,7 +131,78 @@ return function(treegen)
 	-- (`row[HANGING[kind]]`), the lowest cell of a run its end node
 	-- (`row[kind]`), so a run reads as one continuous curtain (grug_trees
 	-- hanging.lua keeps it whole when dug). Lane LP's lianas join here.
-	M.HANGING = {moss = "moss_strand"}
+	M.HANGING = {moss = "moss_strand", liana = "liana_strand"}
+
+	-- LIANAS (Round 51 lane LP, the land viewer's `jungle.liana`): a species
+	-- with a `liana` node hangs a run under about one in ONE_IN of its leaf
+	-- cells with a free cell below, LONGEST at most (2 + a draw of 0..4),
+	-- going down while the cell and the one below it are free of the tree,
+	-- the cell lies at y >= LOWEST (two free nodes above the foot's ground)
+	-- and within the leaf decay reach (REACH, shapes.lua's radius 3) of the
+	-- tree's wood, so the tree's leaf decay takes the run with it. A run
+	-- shorter than 2 is dropped. The draws are an integer hash of the tree's
+	-- seed and the leaf cell, so the world's variants, the saplings and the
+	-- town dressing hang the same lianas on the same tree; the generator
+	-- itself (treegen.lua, the concept port) is unchanged.
+	M.LIANAS = {ONE_IN = 8, SHORTEST = 2, LONGEST = 6, LOWEST = 2, REACH = 3}
+	local WOOD_KIND = {trunk = true, quarter = true, base = true, branch = true, twig = true}
+	local function cell_key(x, y, z)
+		return ((x + 64) * 256 + (y + 64)) * 256 + (z + 64)
+	end
+	local function liana_draw(seed, x, y, z, salt)
+		local h = ((seed + 2) % 2147483647 * 48271 + (x + 64) * 7919 +
+			(y + 64) * 104729 + (z + 64) * 1299709 + salt * 15485863) % 2147483647
+		h = (h * 48271) % 2147483647
+		h = (h * 48271) % 2147483647
+		return h
+	end
+	local function hang_lianas(row, tree, seed)
+		if not row.liana then return end
+		local L = M.LIANAS
+		local taken, wood = {}, {}
+		for index = 1, #tree.nodes do
+			local node = tree.nodes[index]
+			taken[cell_key(node.x, node.y, node.z)] = true
+			if WOOD_KIND[node.kind] then wood[#wood + 1] = node end
+		end
+		local function near_wood(x, y, z)
+			for index = 1, #wood do
+				local w = wood[index]
+				if math.abs(w.x - x) <= L.REACH and math.abs(w.y - y) <= L.REACH and
+						math.abs(w.z - z) <= L.REACH then
+					return true
+				end
+			end
+			return false
+		end
+		local count = #tree.nodes
+		for index = 1, count do
+			local node = tree.nodes[index]
+			if node.kind == "leaves" and not taken[cell_key(node.x, node.y - 1, node.z)] and
+					liana_draw(seed, node.x, node.y, node.z, 1) % L.ONE_IN == 0 then
+				local want = L.SHORTEST + liana_draw(seed, node.x, node.y, node.z, 2) %
+					(L.LONGEST - L.SHORTEST + 1)
+				local length = 0
+				while length < want do
+					local y = node.y - length - 1
+					if y < L.LOWEST or taken[cell_key(node.x, y, node.z)] or
+							taken[cell_key(node.x, y - 1, node.z)] or
+							not near_wood(node.x, y, node.z) then
+						break
+					end
+					length = length + 1
+				end
+				if length >= L.SHORTEST then
+					for m = 1, length do
+						local y = node.y - m
+						taken[cell_key(node.x, y, node.z)] = true
+						tree.nodes[#tree.nodes + 1] = {x = node.x, y = y, z = node.z,
+							kind = "liana", rot = 0}
+					end
+				end
+			end
+		end
+	end
 
 	-- Every node name a species places, sorted.
 	function M.names(key)
@@ -136,6 +211,10 @@ return function(treegen)
 		if row.fruit then list[#list + 1] = row.fruit end
 		if row.moss then list[#list + 1] = row.moss end
 		if row.moss_strand then list[#list + 1] = row.moss_strand end
+		if row.liana then
+			list[#list + 1] = row.liana
+			list[#list + 1] = row.liana_strand
+		end
 		table.sort(list)
 		return list
 	end
@@ -211,6 +290,7 @@ return function(treegen)
 		local row = M.BY_KEY[key]
 		if not row then error("tree templates: unknown species " .. tostring(key), 0) end
 		local tree = treegen.generate(key, seed, is_ground)
+		hang_lianas(row, tree, seed)
 		local foot = stilt_foot(row, tree)
 		local root_set = {}
 		for index = 1, #tree.roots do
@@ -238,6 +318,7 @@ return function(treegen)
 	function M.variant(key, seed)
 		local row = M.BY_KEY[key]
 		local tree = treegen.generate(key, seed)
+		hang_lianas(row, tree, seed)
 		local foot_y = stilt_foot(row, tree)
 		local roots = {}
 		for index = 1, #tree.roots do

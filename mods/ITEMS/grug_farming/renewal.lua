@@ -51,6 +51,8 @@ return function(api)
 		WOODY_UP = 12,
 		-- Shoreline species: eligible supports per box width (a band along the
 		-- water line crossing the box), since only shore columns host them.
+		-- A patch species (the lichen, Round 51) counts at most its patch's
+		-- columns (the category's `patch_area`).
 		SHORE_BAND = 2,
 		-- Placement chance at a full deficit, per class; it scales with the
 		-- deficit fraction (target - present) / target.
@@ -103,14 +105,22 @@ return function(api)
 		return (maxp.x - minp.x + 1) * (maxp.y - minp.y + 1) * (maxp.z - minp.z + 1)
 	end
 
-	-- Present plants of a category in its counting box.
+	-- Present plants of a category in its counting box. A category with a
+	-- stacked species (papyrus, 2-4 high; Round 51) counts plant columns.
 	local function present(category, pos, radius)
 		if not WOODY[category.class] then
 			local minp = {x = pos.x - radius, y = pos.y - R.BOX_HALF_HEIGHT,
 				z = pos.z - radius}
 			local maxp = {x = pos.x + radius, y = pos.y + R.BOX_HALF_HEIGHT,
 				z = pos.z + radius}
-			return #api.find_nodes_in_area(minp, maxp, category.names), volume(minp, maxp)
+			local found = api.find_nodes_in_area(minp, maxp, category.names)
+			if not category.stacked then return #found, volume(minp, maxp) end
+			local seen, columns = {}, 0
+			for index = 1, #found do
+				local key = found[index].x * 65536 + found[index].z
+				if not seen[key] then seen[key], columns = true, columns + 1 end
+			end
+			return columns, volume(minp, maxp)
 		end
 		local minp = {x = pos.x - radius, y = pos.y - R.WOODY_DOWN, z = pos.z - radius}
 		local maxp = {x = pos.x + radius, y = pos.y + R.WOODY_UP, z = pos.z + radius}
@@ -247,6 +257,7 @@ return function(api)
 		if category.shore then
 			supports = min(supports, R.SHORE_BAND * (2 * radius + 1))
 		end
+		if category.patch_area then supports = min(supports, category.patch_area) end
 		local expected = category.p * supports
 		local target = floor(expected)
 		if patch_fraction(category.key, pos.x, pos.z, 2 * radius + 1) <
