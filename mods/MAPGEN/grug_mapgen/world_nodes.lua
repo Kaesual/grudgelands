@@ -43,6 +43,35 @@ return function(engine, directory, nodes, gathering)
   drop="default:sand",
  })
 
+ -- Seagrass (Round 51 T3, sea plan ruling 7): three low rooted variants on
+ -- the sand bed, one node of blades in the sea water above. A decorative
+ -- plant drops nothing (round plan §3.6); digging it leaves the plain sand
+ -- bed, like default kelp, and the renewal grows it back (farming.md).
+ for index,name in ipairs(catalog.seagrass) do
+  local image="grug_mapgen_seagrass_"..index..".png"
+  engine.register_node(name, {
+   description="Seagrass",
+   drawtype="plantlike_rooted",
+   waving=1,
+   tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
+   special_tiles={{name=image,tileable_vertical=true}},
+   inventory_image=image,
+   wield_image=image,
+   paramtype="light",
+   groups={snappy=3,not_in_creative_inventory=1},
+   sounds=default.node_sound_sand_defaults(),
+   selection_box={type="fixed",fixed={
+    {-0.5,-0.5,-0.5,0.5,0.5,0.5},
+    {-0.3,0.5,-0.3,0.3,1.25,0.3}}},
+   node_dig_prediction="default:sand",
+   node_placement_prediction="",
+   drop="",
+   after_dig_node=function(pos)
+    engine.set_node(pos,{name="default:sand"})
+   end,
+  })
+ end
+
  -- The waystone (Round 29, WP17): written by the settlement writer at the
  -- centre of every waypoint pad, so it must exist before the settlement
  -- content is resolved. A standing stone one and a half nodes tall; it can

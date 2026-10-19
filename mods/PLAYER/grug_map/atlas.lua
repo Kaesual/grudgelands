@@ -4,8 +4,10 @@
 
 local M = {}
 
+-- The atlas bounds (Round 51 S2: +-4050 x +-3600, 9:8, room for the coastal
+-- belt; inside the world's query bounds, +-4190 x +-3740, simple_map.lua).
 local WORLD = {label = "World", texture = "",
-	min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
+	min_x = -4050, max_x = 4050, min_z = -3600, max_z = 3600}
 local providers = {}
 
 -- Set once at load time to the rendered base's media name (or a fallback).
@@ -25,7 +27,7 @@ function M.view()
 end
 
 -- Zoom levels 1, 2, 4 and 8. Every level draws the same base image, only
--- larger: at 8x each base pixel (about 6.7 nodes at normal quality, 2 at
+-- larger: at 8x each base pixel (about 6.7 nodes at normal quality, 2.25 at
 -- high) covers several screen pixels and may look pixelated; the gain is
 -- marker precision.
 M.MAX_ZOOM = 8

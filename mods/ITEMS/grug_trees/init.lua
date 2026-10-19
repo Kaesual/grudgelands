@@ -254,6 +254,11 @@ hanging_moss("grug_trees:swamp_hanging_moss", "Hanging Moss",
 	"grug_trees_swamp_hanging_moss.png")
 hanging_moss("grug_trees:swamp_hanging_moss_strand", "Hanging Moss Strand",
 	"grug_trees_swamp_hanging_moss_strand.png")
+-- Round 51 lane LP: the jungle's lianas, the same strand above an end under
+-- jungle and kapok leaves (wp40/tree_templates.lua), decaying with jungle
+-- wood (shapes.lua) and dropping nothing.
+hanging_moss("grug_trees:liana", "Liana", "grug_trees_liana.png")
+hanging_moss("grug_trees:liana_strand", "Liana Strand", "grug_trees_liana_strand.png")
 
 -- The strand/end pairs (lane LP's lianas register theirs the same way).
 grug_trees.hanging = dofile(core.get_modpath("grug_trees") .. "/hanging.lua")({
@@ -264,6 +269,7 @@ grug_trees.hanging = dofile(core.get_modpath("grug_trees") .. "/hanging.lua")({
 	override_item = function(name, fields) return core.override_item(name, fields) end,
 })
 grug_trees.hanging.register("grug_trees:swamp_hanging_moss_strand", "grug_trees:swamp_hanging_moss")
+grug_trees.hanging.register("grug_trees:liana_strand", "grug_trees:liana")
 
 core.register_node("grug_trees:gravewood_sapling", {
 	description = "Gravewood Tree Sapling",

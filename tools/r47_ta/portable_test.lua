@@ -77,7 +77,9 @@ local nodes = H.nodes
 -- the swamp tree (lane SW) grows from gravewood wood.
 local WOODS = {
 	{"apple", "default:tree", {"default:leaves"}, {"default:leaves", "default:apple"}},
-	{"jungle", "default:jungletree", {"default:jungleleaves"}, {"default:jungleleaves"}},
+	-- Round 51 lane LP: the lianas decay with jungle wood
+	{"jungle", "default:jungletree", {"default:jungleleaves"}, {"default:jungleleaves",
+		"grug_trees:liana", "grug_trees:liana_strand"}},
 	{"acacia", "default:acacia_tree", {"default:acacia_leaves"}, {"default:acacia_leaves"}},
 	{"pine", "default:pine_tree", {"default:pine_needles"}, {"default:pine_needles"}},
 	{"aspen", "default:aspen_tree", {"default:aspen_leaves"}, {"default:aspen_leaves"}},

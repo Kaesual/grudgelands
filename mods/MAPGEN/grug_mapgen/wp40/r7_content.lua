@@ -1,5 +1,6 @@
--- Closed R7 production content resolvers: the 128-row production-R6
--- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
+-- Closed R7 production content resolvers: the 174-row production-R6
+-- namespace (the accepted R8 terrain rows) and the 39-row P9G suffix (36
+-- before Round 51 T3 added the three seagrass variants). Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
 -- (84 -> 87 rows); Round 33 removed the six cultural source rows (93 -> 87);
@@ -9,7 +10,17 @@
 -- grounds (surface role) and its moss carpet, leaves and hanging moss
 -- (decoration role): 116 -> 122. Round 51 lane LG: the swamp moss and the
 -- four clay bands (surface role) and the hanging moss strand (decoration
--- role): 122 -> 128.
+-- role): 122 -> 128. Round 51 lane LK added the land kit
+-- (decoration role): 18 of its props (the bone pile is one already) and
+-- the three stone cairn shapes of grug_nodes, and the default blocks its
+-- ruins, crypt and graveyard fences are built from (cobble, stone brick,
+-- stone block, the three silver sandstones, the junglewood fence):
+-- 128 -> 156; dirt, gravel, mossy cobble and stone, surface rows already,
+-- take the decoration role too (mask 9, as mud), so the kit may place them.
+-- Round 51 lane LP: the land plants (decoration role: six flowers, two
+-- alpine plants, two lichens, two bush foliages, the liana end and strand,
+-- and default's three marram grasses): 156 -> 173. Round 51 T4: the snowy
+-- crags' ice patches (surface role): 173 -> 174.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -30,8 +41,9 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:bush_stem", 8},
 		{"default:cactus", 8},
 		{"default:clay", 1},
+		{"default:cobble", 8},
 		{"default:desert_stone", 1},
-		{"default:dirt", 1},
+		{"default:dirt", 9},
 		{"default:dirt_with_coniferous_litter", 1},
 		{"default:dirt_with_grass", 1},
 		{"default:dirt_with_rainforest_litter", 1},
@@ -43,6 +55,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:dry_grass_4", 8},
 		{"default:dry_grass_5", 8},
 		{"default:dry_shrub", 8},
+		{"default:fence_junglewood", 8},
 		{"default:fern_1", 8},
 		{"default:fern_2", 8},
 		{"default:fern_3", 8},
@@ -51,12 +64,13 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:grass_3", 8},
 		{"default:grass_4", 8},
 		{"default:grass_5", 8},
-		{"default:gravel", 1},
+		{"default:gravel", 9},
+		{"default:ice", 1},
 		{"default:junglegrass", 8},
 		{"default:jungleleaves", 8},
 		{"default:jungletree", 8},
 		{"default:leaves", 8},
-		{"default:mossycobble", 1},
+		{"default:mossycobble", 9},
 		{"default:papyrus", 8},
 		{"default:pine_bush_needles", 8},
 		{"default:pine_bush_stem", 8},
@@ -64,14 +78,19 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:pine_tree", 8},
 		{"default:sand", 1},
 		{"default:sandstone", 1},
+		{"default:silver_sandstone", 8},
+		{"default:silver_sandstone_block", 8},
+		{"default:silver_sandstone_brick", 8},
 		{"default:snow", 10},
 		{"default:snowblock", 1},
-		{"default:stone", 1},
+		{"default:stone", 9},
+		{"default:stone_block", 8},
 		{"default:stone_with_coal", 4},
 		{"default:stone_with_copper", 4},
 		{"default:stone_with_gold", 4},
 		{"default:stone_with_iron", 4},
 		{"default:stone_with_tin", 4},
+		{"default:stonebrick", 8},
 		{"default:tree", 8},
 		{"grug_materials:abyssal_crystal_ore", 4},
 		{"grug_materials:basalt", 1},
@@ -95,6 +114,12 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_nodes:ash_ground", 1},
 		{"grug_nodes:blight_dirt", 1},
 		{"grug_nodes:bone_pile", 24},
+		{"grug_nodes:bones_fragments", 8},
+		{"grug_nodes:cairn_base", 8},
+		{"grug_nodes:cairn_branch", 8},
+		{"grug_nodes:cairn_cap", 8},
+		{"grug_nodes:cairn_course", 8},
+		{"grug_nodes:cairn_twig", 8},
 		{"grug_nodes:clay_band_chalk", 1},
 		{"grug_nodes:clay_band_ochre", 1},
 		{"grug_nodes:clay_band_sienna", 1},
@@ -104,12 +129,27 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_nodes:dirt_with_forest_litter", 1},
 		{"grug_nodes:dirt_with_moss", 1},
 		{"grug_nodes:dirt_with_silver_litter", 1},
+		{"grug_nodes:driftwood_fork", 8},
+		{"grug_nodes:driftwood_log", 8},
+		{"grug_nodes:gravestone_cross", 8},
+		{"grug_nodes:gravestone_fallen", 8},
+		{"grug_nodes:gravestone_stele", 8},
+		{"grug_nodes:gravestone_sunken", 8},
 		{"grug_nodes:mesa_clay", 1},
 		{"grug_nodes:moss_carpet", 8},
 		{"grug_nodes:mud", 9},
 		{"grug_nodes:mud_dry", 1},
 		{"grug_nodes:mud_mottled", 1},
 		{"grug_nodes:mud_with_wet_grass", 1},
+		{"grug_nodes:obelisk_broken_tip", 8},
+		{"grug_nodes:ribcage_human", 8},
+		{"grug_nodes:skull_horned", 8},
+		{"grug_nodes:skull_human", 8},
+		{"grug_nodes:spine_animal", 8},
+		{"grug_nodes:statue_broken_torso", 8},
+		{"grug_nodes:statue_mourner_base", 8},
+		{"grug_nodes:statue_mourner_upper", 8},
+		{"grug_nodes:statue_veiled_head", 8},
 		{"grug_nodes:swamp_moss", 1},
 		{"grug_trees:acacia_base", 8},
 		{"grug_trees:acacia_branch", 8},
@@ -146,6 +186,24 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_trees:swamp_hanging_moss", 8},
 		{"grug_trees:swamp_hanging_moss_strand", 8},
 		{"grug_trees:swamp_leaves", 8},
+		-- Round 51 lane LP: the land plants
+		{"default:marram_grass_1", 8},
+		{"default:marram_grass_2", 8},
+		{"default:marram_grass_3", 8},
+		{"grug_nodes:alpine_cushion", 8},
+		{"grug_nodes:alpine_windshrub", 8},
+		{"grug_nodes:flower_blush_star", 8},
+		{"grug_nodes:flower_cream_cups", 8},
+		{"grug_nodes:flower_ember_star", 8},
+		{"grug_nodes:flower_lilac_bells", 8},
+		{"grug_nodes:flower_ruby_fan", 8},
+		{"grug_nodes:flower_violet_fan", 8},
+		{"grug_nodes:jungle_bush_leaves", 8},
+		{"grug_nodes:lichen_carpet", 8},
+		{"grug_nodes:lichen_carpet_b", 8},
+		{"grug_nodes:withered_bush_leaves", 8},
+		{"grug_trees:liana", 8},
+		{"grug_trees:liana_strand", 8},
 	}
 	local P9G_NAMES = {
 		"grug_gathering:corn_source",
@@ -184,6 +242,10 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		"default:sand_with_kelp",
 		"grug_mapgen:freshwater_waterlily",
 		"grug_mapgen:freshwater_waterweed",
+		-- Round 51 T3: the seagrass variants (P9G 36 -> 39)
+		"grug_mapgen:seagrass_1",
+		"grug_mapgen:seagrass_2",
+		"grug_mapgen:seagrass_3",
 	}
 	local ANCHOR_NAMES = {
 		"grug_nodes:camp_fire",
@@ -252,7 +314,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 128 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 174 or #P9G_NAMES ~= 39 then
 		fail("closed population differs")
 	end
 
@@ -424,9 +486,10 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		content_cids = p9g_cids}
 	function p9g.resolve_p9g(content_ref, param2)
 		calls.p9g_resolve = calls.p9g_resolve + 1
-		integer(content_ref, "P9G content ref", 1, 36)
+		integer(content_ref, "P9G content ref", 1, 39)
 		if content_ref == 34 then
-			integer(param2, "kelp height", 16, 160)
+			-- Round 51 T3: kelp up to 15 nodes in water up to 20 deep
+			integer(param2, "kelp height", 16, 240)
 			if param2 % 16 ~= 0 then fail("kelp height differs") end
 		elseif content_ref == 35 then
 			integer(param2, "waterlily rotation", 0, 3)

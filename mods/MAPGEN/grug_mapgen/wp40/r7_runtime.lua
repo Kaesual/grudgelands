@@ -175,8 +175,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
 	local template_source_factory = dofile(wp40_directory .. "/r7_template_source.lua")
 	-- The seeded tree generator and the world's tree templates (Round 47).
-	local tree_templates = dofile(wp40_directory .. "/tree_templates.lua")(
-		dofile(wp40_directory .. "/treegen.lua"))
+	local treegen = dofile(wp40_directory .. "/treegen.lua")
+	local tree_templates = dofile(wp40_directory .. "/tree_templates.lua")(treegen)
+	-- The land kit's structures (Round 51 lane LK), templates per world seed
+	-- like the trees.
+	local kit_templates = dofile(wp40_directory .. "/kit_templates.lua")(treegen,
+		tree_templates)
 	local fetch_mapgen_object = core_api.get_mapgen_object
 
 	local r6_module = r6_factory({r5_factory = r5_factory,
@@ -190,7 +194,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
 		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory,
 		habitat = habitat_registry, tree_templates = tree_templates,
-		swamp_pools = dofile(wp40_directory .. "/swamp_pools.lua")})
+		swamp_pools = dofile(wp40_directory .. "/swamp_pools.lua"),
+		kit_templates = kit_templates})
 	if type(r6_module.new_runtime) ~= "function" or
 			type(r6_module.new_authority) ~= "function" then
 		fail("R6 runtime constructor differs")
@@ -377,12 +382,18 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				r7_anchor_roster_factory, content_set.anchors)
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
 				settlement_configs, settlement_keys,
-				world_factory(world_catalog, content_set.p9g, habitat_registry),
+				world_factory(world_catalog, content_set.p9g, habitat_registry,
+					dofile(wp40_directory .. "/seabed.lua")),
 				dofile(wp40_directory .. "/road_writer.lua")(core_api, source),
 				dofile(wp40_directory .. "/arena_writer.lua")(core_api, source,
 					dofile(wp40_directory .. "/arena_layout.lua")),
 				swamp_writer.config(core_api),
-				wreck_writer.config(core_api, wreck_shapes))
+				wreck_writer.config(core_api, wreck_shapes, (function()
+					local plants = {}
+					for _, name in ipairs(world_catalog.reef) do plants[#plants + 1] = name end
+					for _, name in ipairs(world_catalog.seagrass) do plants[#plants + 1] = name end
+					return plants
+				end)()))
 		end
 		local consumer_payload = consumer_payload_factory(source, sha256_hex)
 		local constructor, session, writer, zones_session, settlement_fixture,
@@ -459,6 +470,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			template_counts = (function()
 				local counts = {}
 				for _, row in ipairs(tree_templates.SPECIES) do counts[row.key] = row.count end
+				for _, row in ipairs(kit_templates.SPECIES) do
+					if counts[row.key] then fail("kit and tree species share a key") end
+					counts[row.key] = row.count
+				end
 				return counts
 			end)(),
 			consumer_payload = consumer_payload,
@@ -506,6 +521,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					protected_only_floor_at =
 						r6_identity.planner_source.protected_only_floor_at,
 					surface_mob_level_at = public_zones_session.surface_mob_level_at,
+					-- the seabed's regrowth (Round 51 T3): the writer's rule
+					seabed = dofile(wp40_directory .. "/seabed.lua")(full_seed),
+					seagrass_names = world_catalog.seagrass,
 				}),
 				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(
 					r6_identity.planner_source, r6_identity.template_records,

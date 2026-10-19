@@ -94,7 +94,7 @@ the plant. Neither grows where the terrain guard refuses
 (`grug_core.world_alterable`: towns, capitals, landmarks), so the reed rows of
 a capital's fields stay as built. A rotated cactus piece (`param2` ≥ 4) never
 grows; the generated badlands cacti stand on trunks taller than four pieces and
-so stay as generated, while wild swamp papyrus grows to its cap of four. The
+so stay as generated, while wild shore papyrus grows to its cap of four. The
 Large Cactus Seedling follows the cactus ground and light.
 
 **Saplings** (trees and bushes) grow only by daylight: natural light 13
@@ -157,13 +157,22 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
   one total** at the sum of the biome's decoration rates
   ([biomes_mobs.md](biomes_mobs.md) §2.1), thinned per support exactly like the
   planner (gravel at a quarter); the zone's biome palette picks the species by
-  its rates. Bone piles are not vegetation and do not renew.
+  its rates. The land kit's structures (bone finds, graveyards, ruins,
+  boulders, cairns, fallen logs, driftwood; [biomes_mobs.md](biomes_mobs.md)
+  §2.1) are not vegetation and do not renew.
 - *Trees* and *shrubs* (bushes, the blueberry bush included) are two separate
   classes, each counted against its own density by its trunks or stems,
   divided by the marker columns one grown plant of that template has; planted
   saplings count as plants. A generated tree (Round 47) is counted by its
   trunk logs and trunk quarters, divided by the mean trunk columns of the
   world's variants of its species.
+- *The seabed* (Round 51 T3): seagrass and kelp regrow on the sand bed where
+  the generator's own seabed rule grows them (`wp40/seabed.lua`, read through
+  the authority's `seabed`), at the same variant and kelp height, with the
+  ground-cover chance, once the bare `default:sand` bed lies under water
+  source again. A renewal sample that finds no open ground (under water) asks
+  the seabed instead; no extra sample is taken. Coral patches stay as
+  generated and do not renew.
 - Every decoration species' rate is multiplied by its altitude class factor
   at the spot, from the same vegetation rule the generator uses
   (`habitat_registry.lua` `vegetation_rule`, [world_zones.md](world_zones.md)
@@ -185,7 +194,10 @@ territory rule refuses natural change (`grug_core.natural_ground_alterable`:
 towns, landmarks, immutable ground) or a natural renewal guard. The one guard
 is the Claim Stone's: inside an active claim there is no natural renewal (wild
 plants, trees); an expired claim renews like any other ground (Round 25 rulings 14
-and 19, `housing.md` §6.4). Other
+and 19, `housing.md` §6.4). The one exception to the territory rule is the
+seabed's (Round 51 T3): seagrass and kelp regrow in protected bay, belt and
+channel water too (`grug_core.water_plant_renewal_allowed`), never in the open
+sea, and nothing else passes through it. Other
 player protection is never consulted. Each class keeps its
 own writer's claim exclusions: resource plants the "gathering" rule (the
 static shapes as trees see them — start towns, capitals, a POI's core and
@@ -218,6 +230,19 @@ the natural count about 1.5 plants (radius 4–24, ±4 nodes high; woody trunks
 integer by a fixed per-patch fraction. At or above the target nothing is
 placed; below it the chance is the class chance × (target − present) / target.
 Shoreline species count at most two eligible supports per box width.
+Round 51: the shore papyrus counts as a shoreline species and by columns (a
+stack of 2–4 is one plant); the lichen counts at most one patch (25 columns)
+of supports, since it grows only inside its patches.
+
+**The Round 51 land plants** (lane LP) are ground cover and renew like the
+grass: the jungle's ferns and strong flowers, the elves' pastel flowers, the
+crags' and pine hills' alpine plants and lichen, the warm shores' papyrus
+(one stalk at the water's edge, which then grows to four) and the marram on
+dry sand, each at its row's density on its row's hosts, at the sites its row
+asks (papyrus beside the water, marram away from it, lichen in its patches).
+The jungle's large-leaved bush and the badlands' withered bush have no
+renewal path (no sapling grows their foliage), and the lianas come back only
+with their tree.
 
 **Trees.** Trees and bushes renew as saplings of the species the biome
 naturally grows (setting `grug_tree_regrowth`, default on), which then grow
@@ -227,8 +252,8 @@ any non-natural node, farm soil or unloaded terrain. Natural nodes are air,
 liquids, generated ground and ores (`grug_natural`), the tree, leaf, sapling,
 flora and fruit families and every node the generator places as vegetation.
 The snowy crags pine and the crags pine bush (gravel), the fallen apple log, the badlands cactus
-and swamp papyrus have no renewal path (the last two grow from their own
-stands, above).
+(it grows from its own stands, above) and the two Round 51 bushes have no
+renewal path.
 
 **Rates** (first version by feel, tuned in playtest; constants in
 `grug_farming/renewal.lua`): each player is serviced once per 5 seconds with

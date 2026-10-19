@@ -342,6 +342,8 @@ do
 		id_at = function(x, z) return water_at(x, z) ~= "deep_ocean" and id_at(x, z) or nil end,
 		get = function(id) return Z[id] end,
 		terrain_height_at = function() return 20 end,
+		-- Round 51 (lane MAP): the render asks it for planned water (a lake here)
+		water_query_at = function() return "lake" end,
 	}
 	-- a town (hard footprint, territory hard_protected) and a village core
 	local function town(x, z) return x >= -150 and x <= -110 and z >= -40 and z <= 0 end
@@ -482,12 +484,13 @@ do
 		return result, claims, errors, written["/nonexistent-world/grug_map_base.key"]
 	end
 	local good, good_claims, _, good_key = install(false)
-	check(good.tiles and #good.tiles == 6 and good.minimap and good.minimap.claim and
-		good.minimap.claim.accord and good.minimap.claim.throng and good_claims == 12,
+	-- Round 51 (lane MAP): the game's normal size is 1215 x 1080, 3 x 3 tiles
+	check(good.tiles and #good.tiles == 9 and good.minimap and good.minimap.claim and
+		good.minimap.claim.accord and good.minimap.claim.throng and good_claims == 18,
 		"I install: the base, the minimap's copy and both overlays announced")
 	local bad, bad_claims, bad_errors, bad_key = install(true)
-	check(bad.tiles and #bad.tiles == 6 and bad.texture:find("^%[combine") and
-		bad.minimap and bad.minimap.tiles and #bad.minimap.tiles == 6,
+	check(bad.tiles and #bad.tiles == 9 and bad.texture:find("^%[combine") and
+		bad.minimap and bad.minimap.tiles and #bad.minimap.tiles == 9,
 		"I a failing overlay: the base and the minimap's copy stay")
 	check(bad.minimap and bad.minimap.claim == nil and bad_claims == 0 and bad_errors == 1,
 		"I a failing overlay: no claim mode, no overlay announced, one error line")

@@ -28,7 +28,9 @@
 --   E. the writer on a fake successor context: two neighbouring owners
 --      write a wreck's cells exactly once between them, only inside their
 --      owner, only over water or the natural seabed (a foreign node in the
---      way keeps), and "." cells (the water in a hull) are never written.
+--      way keeps), and "." cells (the water in a hull) are never written;
+--      a bed plant in a wreck cell's place is replaced whole and one rooted
+--      under a wreck cell goes back to sand.
 --
 -- Usage (repo root): luajit tools/r51_wreck/portable_test.lua [REPO]
 local repo = arg and arg[1] or "."
@@ -417,4 +419,29 @@ end
 check(inside_water == 0, "no write puts water")
 
 if failures > 0 then error(failures .. " FAILURES of " .. checks .. " checks", 0) end
+-- bed plants (the seabed growth's rooted plants): one standing where a wreck
+-- cell goes is replaced whole, one rooted right under a wreck cell goes back
+-- to sand, so no stem runs through a wreck
+local KELP = fake.get_content_id("default:sand_with_kelp")
+local planted = W.config(fake, shapes, {"default:sand_with_kelp"}).new({full_seed_string = "12345",
+	zones_session = {water_query_at = query}, planner_source = planner,
+	horizontal = horizontal, source = SOURCE})
+local cellset, at_cell, under = {}, nil, nil
+layout.cells(site, function(x, y, z) cellset[wkey(x, y, z)] = true end)
+layout.cells(site, function(x, y, z)
+	at_cell = at_cell or wkey(x, y, z)
+	if not under and not cellset[wkey(x, y - 1, z)] and y - 1 > ground_at(x, z) - 1 then
+		under = {x, y - 1, z}
+	end
+end)
+world, written, outside = {}, {}, 0
+world[at_cell] = KELP
+if under then world[wkey(under[1], under[2], under[3])] = KELP end
+planted.dress(owner(split_x - 79, split_x - 1))
+planted.dress(owner(split_x, split_x + 79))
+check(world[at_cell] ~= KELP and written[at_cell] == 1, "a bed plant in a wreck cell's place is replaced")
+check(under ~= nil and world[wkey(under[1], under[2], under[3])] == SAND,
+	"a bed plant rooted under a wreck cell goes back to sand")
+check(outside == 0, "the plant rule writes inside the owner only")
+
 print(("PASS r51_wreck: %d checks; %d wrecks on the synthetic sea"):format(checks, #sites))

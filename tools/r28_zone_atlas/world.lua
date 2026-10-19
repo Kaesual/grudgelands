@@ -11,7 +11,7 @@
 -- the height session reused from the capital planning) wrapped in the R7
 -- functional-anchor overlay, which is what `grug_zones` publishes. Returns
 --   zones     the public query surface base.lua reads (get, id_at,
---             water_class_at, terrain_height_at),
+--             water_class_at, terrain_height_at, water_query_at),
 --   wp40      the fields base.lua reads from grug_mapgen.wp40
 --             (road_polylines, river_polylines, water_layout_text),
 --   planner_source  the planner column source (column_values_at), as
@@ -39,7 +39,8 @@ return function(repo, seed)
 	local t2 = os.clock()
 
 	local zones = {}
-	for _, name in ipairs({"get", "id_at", "water_class_at", "terrain_height_at"}) do
+	for _, name in ipairs({"get", "id_at", "water_class_at", "terrain_height_at",
+			"water_query_at"}) do
 		zones[name] = function(...) return session[name](...) end
 	end
 	local water, roads = W.water, W.roads

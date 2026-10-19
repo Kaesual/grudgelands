@@ -216,7 +216,10 @@ against the sketch in §5, and why:
   inside its own owner, so nothing is clipped and **no template bound
   changes** (the R6 templates are untouched). Its writes go through
   `write_road` and only over sea water or the natural seabed (sand, gravel,
-  stone, clay, dirt); anything else keeps.
+  stone, clay, dirt) or a bed plant of T3's seabed growth (the reef and
+  seagrass lists: replaced whole, and one rooted under a wreck cell goes
+  back to sand; in a fresh chunk the growth runs after the pass and keeps
+  off the wreck anyway); anything else keeps.
 - **Schematics:** `wp40/wreck_shapes.lua`, generated from `shapes/*.json`
   by `to_lua.py` (`--check`), sparse cells; the pass turns them in quarter
   steps (logs along x and z swap on an odd turn).

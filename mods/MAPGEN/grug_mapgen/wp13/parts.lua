@@ -134,6 +134,16 @@ local PARAM2_KIND = {
 	["grug_decor:castle_arrowslit_desert_stonebrick"] = M.FACEDIR,
 	["grug_decor:castle_arrowslit_mossycobble"] = M.FACEDIR,
 	["grug_decor:xdecor_chair"] = M.FACEDIR,
+	-- The land kit (Round 51 lane LK): the gravestones face the way their
+	-- front tile looks, and the pieces of the skeleton set lie turned.
+	["grug_nodes:gravestone_stele"] = M.FACEDIR,
+	["grug_nodes:gravestone_cross"] = M.FACEDIR,
+	["grug_nodes:bone_pile"] = M.FACEDIR,
+	["grug_nodes:bones_fragments"] = M.FACEDIR,
+	["grug_nodes:skull_human"] = M.FACEDIR,
+	["grug_nodes:skull_horned"] = M.FACEDIR,
+	["grug_nodes:ribcage_human"] = M.FACEDIR,
+	["grug_nodes:spine_animal"] = M.FACEDIR,
 	-- The stair and slab shapes are folded in from `SHAPED` below, which is
 	-- the one place this library writes that family down.
 }

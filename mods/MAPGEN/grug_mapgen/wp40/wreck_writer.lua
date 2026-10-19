@@ -248,8 +248,14 @@ function M.layout(shapes, deps)
 	return layout
 end
 
--- The successor's configuration. `shapes`: wreck_shapes.lua's table.
-function M.config(core_api, shapes)
+-- The successor's configuration. `shapes`: wreck_shapes.lua's table;
+-- `bed_plants` (optional): the rooted plants the seabed growth puts on the
+-- bed (world_content_catalog.lua `reef` and `seagrass`). The pass runs before
+-- that growth, so in a fresh chunk none stands in a wreck's way; should one
+-- (a plant's base is its bed cube), a wreck cell replaces it whole, and a
+-- plant rooted right under a wreck cell goes back to sand, so no stem ever
+-- runs through a wreck and no plant floats.
+function M.config(core_api, shapes, bed_plants)
 	local function fail(message) error("WP40 wreck writer: " .. message, 0) end
 	if type(core_api) ~= "table" or type(core_api.get_content_id) ~= "function" or
 			type(core_api.registered_nodes) ~= "table" or type(shapes) ~= "table" or
@@ -269,6 +275,12 @@ function M.config(core_api, shapes)
 			"default:desert_sand", "default:sandstone"}) do
 		REPLACE[cid(name)] = true
 	end
+	local PLANT = {}
+	for _, name in ipairs(bed_plants or {}) do
+		PLANT[cid(name)] = true
+		REPLACE[cid(name)] = true
+	end
+	local SAND = cid("default:sand")
 
 	local config = {}
 	-- `dependencies`: the successor's (full_seed_string, zones_session,
@@ -327,6 +339,9 @@ function M.config(core_api, shapes)
 						if inside(x, y, z) and REPLACE[(settled(x, y, z))] then
 							write(x, y, z, CID[n], param2)
 							count = count + 1
+							if inside(x, y - 1, z) and PLANT[(settled(x, y - 1, z))] then
+								write(x, y - 1, z, SAND, 0)
+							end
 						end
 					end)
 				end
