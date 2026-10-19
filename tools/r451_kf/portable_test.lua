@@ -16,6 +16,8 @@
 --    and Help (help.lua, every sub-page). Each focuses a harmless button
 --    when opened and after a tab click; without its set_focus the engine
 --    would focus an element that eats the key (the bug this lane fixes).
+--    Also the new talent page's admin preview (Round 52, its own window:
+--    talent_graph_ui.lua through tools/r52_graph/graph_loader.lua).
 -- B. The written book's read view (the vendored default craftitems.lua).
 -- S. Every set_focus[] of these windows names an element that is no field
 --    or textarea of the same file.
@@ -125,6 +127,20 @@ local sink_handled = sfinv.pages["grug_classes:talents"]:on_player_receive_field
 	core.get_player_by_name("t_fresh"), sfinv.get_or_create_context(core.get_player_by_name("t_fresh")),
 	{grug_talent_focus = ""})
 check(not sink_handled, "I Talents: pressing the focus button (Space, Enter) does nothing")
+
+-- The talent preview (Round 52 D3): a window of its own, with the same
+-- read-only strip under its trees; opened new, then re-shown on a tab click.
+do
+	local G = dofile(repo .. "/tools/r52_graph/graph_loader.lua")(repo)
+	G.privileged.t_admin = true
+	local admin = H.make_player("t_admin", "mage", 30, "")
+	G.commands.talent_preview.func("t_admin", "mage")
+	local fs = G.shown[#G.shown].fs
+	check(fs:find("textarea[", 1, true) ~= nil, "I Talent preview: the text strip is there")
+	harmless(fs, "button:grug_graph_focus", "I Talent preview", {new_form = true})
+	G.receive(admin, "grug_classes:talent_preview", {grug_graph_tab_2 = "x"})
+	harmless(G.shown[#G.shown].fs, "button:grug_graph_focus", "I Talent preview, second tab")
+end
 
 -- Party & PvP and Help on the same stub world, with their neighbours stubbed.
 local function load_mod(mod, path, file)
@@ -251,6 +267,7 @@ do
 	local found = 0
 	for _, path in ipairs({"mods/PLAYER/grug_parties/ui.lua",
 			"mods/PLAYER/grug_classes/talents_ui.lua", "mods/PLAYER/grug_inventory/help.lua",
+			"mods/PLAYER/grug_classes/talent_graph_ui.lua",
 			"mods/ENTITIES/grug_traders/crown.lua", "mods/PLAYER/grug_classes/selection.lua",
 			"mods/PLAYER/grug_housing/stone_form.lua", "mods/PLAYER/grug_money/coins.lua",
 			"mods/BASE/default/craftitems.lua", "mods/PLAYER/grug_inventory/pages.lua"}) do
