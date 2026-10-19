@@ -775,6 +775,9 @@ the round); `check_upgrade.py` PASS (0.51.0 against origin/main `fae056c5`);
 `r37_dc` PASS; a smoke boot from an empty cache on the production seed PASS
 (only the two known W-recipe-target quest warnings). The two land warnings of
 MOBS M2's smoke boot came from its random seed and did not appear on the
-production seed; they are a carry-over.
+production seed; they are a carry-over. After the follow-up lanes (main
+`898f64e1`, 2026-10-19): full fixtures 215/215 PASS, the full seed fleet 304 of
+304 seeds build (19 min), `check_fresh_server.py` PASS, `check_upgrade.py` PASS,
+`r37_dc` PASS, a smoke boot from an empty cache on the production seed PASS.
 Lane D's own checks on its branch: `tools/r37_dc` and `check_upgrade.py`
 (0.51.0 against origin/main `fae056c5`) PASS.
