@@ -9,7 +9,9 @@ there when the rework resumes. Review records: [design](reviews/design-review-20
 **2026-10-19:** the user's "maximally simple" rulings (continuation §4a) and
 the [skill inventory](skill-inventory.md) that applies them to every skill
 override the candidates where they conflict. The [delivery plan](delivery-plan.md)
-drafts the rounds.
+drafts the rounds; the [node list](node-list.md) is the final talent node list (P4).
+**Round 52** builds round F (the foundation) as part B of its plan:
+[round52-class-plan.md](../round52-class-plan.md).
 
 Prepared 2026-10-12 for round planning. The user supports the overall direction
 and approved the [first-person targeting contract](../../design/ability_targeting.md).

@@ -27,12 +27,19 @@ Realistic scope: **two delivery rounds** plus an art lane that runs ahead.
 | Step | Content | Owner |
 |---|---|---|
 | P1 | ~~Confirm the rulings table in section 6~~ — confirmed 2026-10-19 | user |
-| P2 | **Balance calculator page** (artifact, outside the repository): class, tree, level, gear → hits to kill a normal and an elite mob, HP lost per fight, fights per mana pool, today versus new, from the inventory's numbers. The user tunes by feel; the result freezes the numbers per class | coordinator builds, user tunes |
-| P3 | Names for the two skills that carry exact names from a well-known commercial game ("Aimed Shot", "Ice Armor") and any other name the user wants changed | user picks from proposals |
-| P4 | Final node list per tree (inventory minus cut nodes such as Shelter, plus the decided renames): the input for the art lane and for the class lanes | coordinator |
-| P5 | Independent review of the finished plan against the code (continuation §5 item 7) | reviewer agent |
+| P2 | ~~**Balance calculator page**~~ — built 2026-10-19 (artifact; its stored values feed round K) — (artifact, outside the repository): class, tree, level, gear → hits to kill a normal and an elite mob, HP lost per fight, fights per mana pool, today versus new, from the inventory's numbers. The user tunes by feel; the result freezes the numbers per class | coordinator builds, user tunes |
+| P3 | ~~Names~~ — decided 2026-10-19: True Draw, Rime Mantle, Iron Hail (provisional); generic genre words stay — Names for the two skills that carry exact names from a well-known commercial game ("Aimed Shot", "Ice Armor") and any other name the user wants changed | user picks from proposals |
+| P4 | ~~Final node list~~ — [node-list.md](node-list.md), 2026-10-19 — Final node list per tree (inventory minus cut nodes such as Shelter, plus the decided renames): the input for the art lane and for the class lanes | coordinator |
+| P5 | ~~Independent review~~ — done for Round 52's plan, 2026-10-19 — Independent review of the finished plan against the code (continuation §5 item 7) | reviewer agent |
 
 ## 3. Art lane (runs ahead, parallel to other rounds)
+
+**Decided 2026-10-19 (Round 52 plan, ruling C11):** the art runs inside
+round F as lanes ARTA and ARTB: 8 backgrounds at 1040 × 440 px (13 × 5.5
+formspec units), **74 talent icons**, **all 44 skill icons as one consistent
+set** (the 19 shipped ones redrawn), and **6 overlay families** (fire,
+frost, holy, rage, wild, shadow; Strike none). The text below is the
+original draft.
 
 Starts after P4. Astra drafts, the user picks on a review page, nothing
 ships without the pick.
@@ -54,6 +61,21 @@ it also works for today's skills.
 Goal: every building block exists and the new Talents page runs, while the
 shipped classes play exactly as before.
 
+**Decided shape (Round 52, 2026-10-19; [round52-class-plan.md](../round52-class-plan.md)
+rulings C1–C13, D1–D9):** round F is Round 52 part B. Today's trees are
+**not** converted: the new graph registry and the new Talents page are built
+beside today's and shown only as an **admin preview** (privilege `server`)
+with the new trees from the [node list](node-list.md); the live game keeps
+today's talent engine and page until round K, which switches over with the
+new kits and an **automatic talent reset** for every character. CORE is
+split by files into **CORE-A** (action clock in three directions,
+transformation field and per-class basic attack, Mend on `set_status`, PvE
+bench) and **CORE-B** (area query, ground anchor, delayed area, readiness
+windows, group helper). The skill list in Talents & Skills scrolls
+horizontally (live). **WFX** adds the element overlay on the first-person
+weapon. The table below is the original draft; where it differs (the 1:1
+conversion, one CORE lane), the Round 52 plan wins.
+
 | Lane | Content | Files it owns |
 |---|---|---|
 | SPLIT | Mechanical pre-split: `kits.lua` (1166 lines) and `talents.lua` (1410 lines) into per-class files. No behaviour change. Merges first; the other lanes branch from it | `grug_abilities/kits*.lua`, `grug_classes/talents*.lua` |
@@ -61,8 +83,8 @@ shipped classes play exactly as before.
 | GRAPH | Graph talent registry and validator (per-node gate, multi-parent prerequisites, data-driven modifiers); the Talents page with **one inner tab per tree**, background image slot and drawn connection lines; **today's trees converted 1:1 into the new format**, so the engine ships with known content and no migration | `grug_classes/talents*.lua` registry part, `talents_ui.lua` |
 | D | Docs and status | docs |
 
-Classification: **compatible** (no saved state changes; today's talent ids
-keep their meaning). The user's GUI check covers the new Talents page and a
+Classification: **compatible** (no saved state changes; today's talents and
+their ids stay untouched; the preview writes nothing). The user's GUI check covers the new Talents page and a
 normal fight per class.
 
 ## 5. Round K: the new classes (migrate)
