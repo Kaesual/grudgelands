@@ -67,11 +67,12 @@ end
 
 ------------------------------------------------------------------------------
 -- The shipped skill list: id, kind, target_kind and the input-relevant flags
--- of every registration in kits.lua and scout.lua (the header of each block,
+-- of every registration in kits*.lua and scout.lua (the header of each block,
 -- before its first function).
 ------------------------------------------------------------------------------
 local defs = {}
-for _, file in ipairs({"kits.lua", "scout.lua"}) do
+for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_priest.lua",
+		"scout.lua"}) do
 	local f = assert(io.open(ROOT .. "/mods/PLAYER/grug_abilities/" .. file))
 	local text = f:read("*a")
 	f:close()

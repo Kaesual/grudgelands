@@ -99,8 +99,11 @@ local function enchant(stat, ilvl)
 	return math.max(curve.minimum, math.floor(raw * factor + 0.5) / factor)
 end
 
--- The real helpers and values of kits.lua.
-local kits = read("mods/PLAYER/grug_abilities/kits.lua")
+-- The real helpers and values of kits.lua and its per-class files (Round 52).
+local kits = read("mods/PLAYER/grug_abilities/kits.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_mage.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_priest.lua")
 local helpers = cut(kits, "(local function spell_damage_value%(player, amount%).-\nend\n.-" ..
 	"local function support_value%(player, percent%).-\nend)\n", "spell_damage_value and support_value")
 local fireball = cut(kits, "(local function fireball_values%(user%).-\nend)\n", "fireball_values")

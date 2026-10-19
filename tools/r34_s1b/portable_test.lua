@@ -160,7 +160,8 @@ for id, cue in (block or ""):gmatch('([%w_]+) = "([%w_]+)"') do
 	cues[id] = cue
 end
 local registered, swings = {}, {}
-for _, file in ipairs({"kits.lua", "scout.lua", "blink.lua"}) do
+for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_priest.lua",
+		"scout.lua", "blink.lua"}) do
 	local text = read(ABIL .. file) or ""
 	-- Each registration's id and kind (the strike definition is a local table).
 	for body in text:gmatch("register_ability(%b())") do
@@ -192,7 +193,8 @@ check(count >= 21, "A at least 21 registered abilities (" .. count .. ")")
 for id in pairs(cues) do check(registered[id], "A cue for a registered ability: " .. id) end
 -- The projectile abilities and their projectiles.
 local projectiles = 0
-for _, file in ipairs({"kits.lua", "scout.lua"}) do
+for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_priest.lua",
+		"scout.lua"}) do
 	local text = read(ABIL .. file) or ""
 	for body in text:gmatch("grug_projectiles%.register(%b())") do
 		projectiles = projectiles + 1

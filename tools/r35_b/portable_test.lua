@@ -225,7 +225,10 @@ end
 
 -- E. The consumers read the keys; no flat literal is left behind.
 do
-	local kits = read("mods/PLAYER/grug_abilities/kits.lua")
+	local kits = read("mods/PLAYER/grug_abilities/kits.lua") ..
+		read("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
+		read("mods/PLAYER/grug_abilities/kits_mage.lua") ..
+		read("mods/PLAYER/grug_abilities/kits_priest.lua")
 	check(kits:find('get_talent_bonus(user, "whitehot_damage")', 1, true) ~= nil,
 		"E Fireball reads Whitehot's damage key")
 	check(not kits:find('"whitehot") and 6 or 0', 1, true),
@@ -293,7 +296,10 @@ do
 		near(1 + 2 * value, 1 + 0.4 * rank, "F Cold Focus rank " .. rank .. " is x" ..
 			(1 + 0.4 * rank))
 	end
-	local kits = read("mods/PLAYER/grug_abilities/kits.lua")
+	local kits = read("mods/PLAYER/grug_abilities/kits.lua") ..
+		read("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
+		read("mods/PLAYER/grug_abilities/kits_mage.lua") ..
+		read("mods/PLAYER/grug_abilities/kits_priest.lua")
 	check(kits:find('local mult = 1.5 + grug_classes.get_talent_bonus(user,', 1, true),
 		"F Mighty Blow adds Heavy Hand's multiplier directly (x2.0 at 5/5)")
 	check(kits:find('try_trigger_talent_window(user, "ruination", 15, 60)', 1, true),
