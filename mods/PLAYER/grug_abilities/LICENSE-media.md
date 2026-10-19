@@ -27,7 +27,7 @@
 
 ## Round 18 active-skill action icons — CC0
 
-All 22 `textures/grug_abilities_skill_*.png` files were generated for this
+The 22 original `textures/grug_abilities_skill_*.png` files were generated for this
 project on 2026-09-23 with OpenAI's built-in `image_gen.imagegen` tool, one
 separate prompt/call per asset. No third-party image was supplied to the tool.
 The project dedicates any rights it holds in these generated images to
@@ -41,6 +41,10 @@ Round 31 renamed four skills; their files are unchanged renamed copies
 (same SHA-256), listed in the manifest under the new id with `renamed_from`:
 `grug_abilities_skill_heal.png`, `_shield_spell.png`, `_mend.png` and
 `_ice_nova.png`.
+Round 52 replaced 19 of these files with redrawn icons (the section "Round 52
+redrawn skill icons" below); only `grug_abilities_skill_cinderfall.png`,
+`_glacial_ward.png` and `_pinning_shot.png` are still the Round 18 art, and
+the manifest's hashes hold for those three only.
 
 ## Bow draw stages — CC BY-SA 4.0
 
@@ -107,3 +111,41 @@ count × 16 px high; the animation is on the skill item's definition
 | `textures/grug_abilities_fx_veil_bow_draw2.png` | `drop-04/grug_abilities_fx_veil_bow_draw2.png` | opaque rework of the user's pick `fx/scout/veil_bow_draw2_v1.png` | `5becc3e8329ffe449a9a320e041e3f9e3b674514c0e28304324bbe8559c26703` |
 | `textures/grug_abilities_fx_veil_dagger.png` | `drop-04/grug_abilities_fx_veil_dagger.png` | opaque rework of the user's pick `fx/scout/veil_dagger_v1.png` | `81c3325b3eee9cae87ad67c02b2d03aec9b5cb250a0364eb6c71488b0c14d925` |
 | `textures/grug_abilities_fx_veil_sword.png` | `drop-04/grug_abilities_fx_veil_sword.png` | opaque rework of the user's pick `fx/scout/veil_sword_v1.png` | `181bfdd2386974931aaf49a4e67131c1bee96ba567d4d46b12303a71e872d982` |
+
+## Round 52 redrawn skill icons — CC0
+
+The 19 icons of the shipped skills, redrawn as one set with the new talent
+icons (round52-class-plan.md C11, D7), replace the Round 18 files of the same
+names: own work by GPT-6 Astra for Grudgelands, Round 52 lane ARTB, style A
+"Painted embers" (drop 02, 2026-10-19/20; Loose redrawn in drop 03,
+2026-10-20, picked v1). Each was one separate call (or an edit of the
+project's own image) of the built-in `image_gen.imagegen` tool, no
+third-party image supplied, reduced with Pillow's Lanczos filter to an opaque
+64 × 64 RGB PNG without crop, recolouring or compositing. Prompts, source
+paths and hashes: `tools/r52_art/artb/README.md`, `drop-02/manifest.json` and
+`drop-03/manifest.json`. The project dedicates any rights it holds in these
+images to **CC0-1.0**, to the extent such rights exist. Byte-identical renamed
+copies of the user's picks (2026-10-20). The 25 icons of skills that do not
+exist yet stay staged under `tools/r52_art/artb/` for round K.
+
+| Local file | Source (`tools/r52_art/`) | Pick | Bytes | SHA-256 |
+|---|---|---|---:|---|
+| `textures/grug_abilities_skill_strike.png` | `artb/drop-02/skills/skill.strike.png` | skill.strike | 8109 | `5666910678cc705e88fa839373aefa8001029671ebcf6630d2370d79d5ab0587` |
+| `textures/grug_abilities_skill_charge.png` | `artb/drop-02/skills/skill.charge.png` | skill.charge | 9213 | `7a1dc99645ac99335658279640fce1fd64d394df1a8a2fce577b7e8068d6baf4` |
+| `textures/grug_abilities_skill_hold_ground.png` | `artb/drop-02/skills/skill.hold_ground.png` | skill.hold_ground | 9024 | `5433f549236debd96fb6dd30f838f2db6bf01ea87430fad96e86d9f70afaca02` |
+| `textures/grug_abilities_skill_taunt.png` | `artb/drop-02/skills/skill.taunt.png` | skill.taunt | 9188 | `5ed39b5b66ef222d8711869d8627598791ce79f60f9e309ea9359436cdf61a7c` |
+| `textures/grug_abilities_skill_mighty_blow.png` | `artb/drop-02/skills/skill.mighty_blow.png` | skill.mighty_blow | 8683 | `7cda0edb066b8bdb20e082b897b3e301f54163a58a9af8042cfeceab23da8f87` |
+| `textures/grug_abilities_skill_hamstring.png` | `artb/drop-02/skills/skill.hamstring.png` | skill.hamstring | 8113 | `8f233ce93b3e9343362755e1da1de12a508c2ff6b30f5ab99e21fba2799a9060` |
+| `textures/grug_abilities_skill_fireball.png` | `artb/drop-02/skills/skill.fireball.png` | skill.fireball | 7055 | `2ae5bfafdf836ed39786f3a9a2f00e5138ceec5e7f5fc9c0da4f3aa86f650a6f` |
+| `textures/grug_abilities_skill_ice_nova.png` | `artb/drop-02/skills/skill.ice_nova.png` | skill.ice_nova | 9041 | `92176404ec4d4d53b8749caa0a4c5f00e43fa8e290aa9361fc3b49848c7900d5` |
+| `textures/grug_abilities_skill_blink.png` | `artb/drop-02/skills/skill.blink.png` | skill.blink | 9693 | `c57ee52e5b4a7fcb589753756ea20b4be2ea9863dde9ff35eeec8d11f0a2b879` |
+| `textures/grug_abilities_skill_smite.png` | `artb/drop-02/skills/skill.smite.png` | skill.smite | 7323 | `6da52ab3175d0ee5f2b8754bf6e2457e84836d8239a673154cf42444f6e089a7` |
+| `textures/grug_abilities_skill_heal.png` | `artb/drop-02/skills/skill.heal.png` | skill.heal | 8016 | `b5899864a8001a7c01a7153bb84aceddf68deb8f032a1b760b69a10f01f09368` |
+| `textures/grug_abilities_skill_shield_spell.png` | `artb/drop-02/skills/skill.shield_spell.png` | skill.shield_spell | 7681 | `2a1f74181df7ee031a50304c9fd162e2d6fc16b5f324b4dc5f8d1f9de9489388` |
+| `textures/grug_abilities_skill_mend.png` | `artb/drop-02/skills/skill.mend.png` | skill.mend | 8111 | `290145f4c0735a491dbe89d775232517a08aeafb92acfc0f6e629e30e297fd7d` |
+| `textures/grug_abilities_skill_word_of_ruin.png` | `artb/drop-02/skills/skill.word_of_ruin.png` | skill.word_of_ruin | 8964 | `5fcf2834dc18993756ecb5b27137da26215a2230b08d985fbaee8c094d5b9baf` |
+| `textures/grug_abilities_skill_loose.png` | `artb/drop-03/skill.loose_v1.png` | skill.loose.v1 | 7346 | `cde451eff5b15849cd0c510f115af743433291ecba64bb2c8572d482efe25717` |
+| `textures/grug_abilities_skill_sidestep.png` | `artb/drop-02/skills/skill.sidestep.png` | skill.sidestep | 8810 | `335c9ac13b81ddfb326698726d4748d953207d6d36c2614f81d3443ae950f6f6` |
+| `textures/grug_abilities_skill_sprint.png` | `artb/drop-02/skills/skill.sprint.png` | skill.sprint | 9022 | `56e9f05032fd61e85cc79f1da10fe8ce1dec8842ff2315a96e440297f905fb5a` |
+| `textures/grug_abilities_skill_snare_shot.png` | `artb/drop-02/skills/skill.snare_shot.png` | skill.snare_shot | 8255 | `0ad0b911c343bfd7131453bb4366aa2e21b723be522c49c40f5cb25c21063362` |
+| `textures/grug_abilities_skill_opening.png` | `artb/drop-02/skills/skill.opening.png` | skill.opening | 8800 | `a24d39906d16dc7a38e255691ee08465c6f7c584e3ff88e9f405332a931c0d02` |
