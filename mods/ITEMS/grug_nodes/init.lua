@@ -276,7 +276,19 @@ end
 -- lies above and under water, so the rooted kelp's sand bed wears it too
 -- (grug_mapgen's freshwater waterweed binds the same tile).
 core.override_item("default:sand", {tiles = {world_tile("grug_nodes_sand.png")}})
-core.override_item("default:sand_with_kelp", {tiles = {world_tile("grug_nodes_sand.png")}})
+-- Our own kelp sways (Round 51 follow-up FW, the user's pick B): an
+-- animated strip of eight 16 x 16 frames, one loop in 3.2 s, tiled once per
+-- node, so a stalk's nodes move in step; `waving` 0 so the engine's optional
+-- wave does not add to it (grug_mapgen/world_nodes.lua wires the seagrass
+-- and the freshwater waterweed the same way).
+core.override_item("default:sand_with_kelp", {
+	tiles = {world_tile("grug_nodes_sand.png")},
+	waving = 0,
+	special_tiles = {{name = "grug_nodes_kelp_anim.png", tileable_vertical = true,
+		animation = {type = "vertical_frames", aspect_w = 16, aspect_h = 16, length = 3.2}}},
+	inventory_image = "grug_nodes_kelp_anim.png^[verticalframe:8:0",
+	wield_image = "grug_nodes_kelp_anim.png^[verticalframe:8:0",
+})
 
 --
 -- Decoration
