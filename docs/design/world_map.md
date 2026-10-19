@@ -17,7 +17,9 @@ Decided 2026-09-21; Round 14 user Go.
   sends it to clients as dynamic media. Markers stay separate as before.
   The base shows land/water, zone areas in race-region colours with borders
   and a hillshade (stronger relief since Round 27, below); roads join it in
-  Phase 4. Lakes show as water pixels; rivers (about 7.5–30 nodes of water
+  Phase 4. Since Round 51 the sea is coloured by depth ("Sea" in
+  [Map quality and relief](#map-quality-and-relief)).
+  Lakes show as water pixels; rivers (about 7.5–30 nodes of water
   width, `terrain_data.lua`) are stroked from the water layout's centrelines
   onto land at about their water width at the image scale, at least three
   pixels wide from 18 nodes (`grug_map/base.lua` `RIVER_WIDE`; Map quality
@@ -404,17 +406,29 @@ quality of the server setting `grug_map_quality` in `minetest.conf` (main
 menu: *World map › World map quality*), the same for every player on that
 server. The minimap always shows normal quality (user ruling 2026-10-06)
 in its own variant (Round 44, [Baked layer](#baked-layer)): a normal-size
-copy (1080×960) of the terrain taken before anything is baked, the same
+copy (1215×1080) of the terrain taken before anything is baked, the same
 pixels at `normal` and at `high` scaled down from the high image in the same
 pass, with no second terrain sampling (each high pixel goes to the normal
 pixel its centre lies in, which takes their mean):
 
 | Quality | Size | Nodes per pixel | Relief grid | Tiles | Download | First render |
 |---|---|---|---|---|---|---|
-| `normal` (default) | 1080×960 | about 6.7 | 8 nodes | 6 + 6 | about 0.87 + 0.89 MB | about 9 s |
-| `high` | 3600×3200 | 2 | 4 nodes | 56 + 6 | about 6.51 + 1.08 MB | about 47 s |
+| `normal` (default) | 1215×1080 | about 6.7 | 8 nodes | 9 + 9 | about 1.07 + 1.09 MB | about 13 s |
+| `high` | 3600×3200 | 2.25 | 4 nodes | 56 + 9 | about 6.77 + 1.25 MB | about 66 s |
 
-Sizes and times are comparisons from one engine run each on the development
+Both images cover the atlas, ±4050 × ±3600 nodes since Round 51 (sea plan
+rulings 2 and 3: room for the coastal belt; ±3600 × ±3200 before): normal
+grew with it at the same scale, high kept its pixel count. The Round 51
+figures are one engine run each on the user's seed (2026-10-19, with the
+region names baked, the second figure the minimap's copy; the Claim Stone
+overlays add about 26 KB). Offline renders with the real renderer on the
+same world (`tools/r27_minimap/render_base.lua`, without names and icons)
+compare: before the round 1080×960 in 12.0 s (6 tiles, 0.92 MB) and
+3600×3200 in 60.3 s (6.92 MB), after it 1215×1080 in 14.0 s (9 tiles,
+1.09 MB) and 3600×3200 in 67.4 s (6.92 MB); the time grows with the area,
+the depth colouring costs about nothing and compresses as well as before.
+
+The older figures are comparisons from one engine run each on the development
 workstation (seed 42, 2026-10-13, Round 47: the world map's image without
 icons), not targets; the second figure is the minimap's copy. On the same
 seed and day with the icons baked (Round 46) the world map's image was
@@ -432,9 +446,10 @@ map's tiles got smaller (until Round 47); at normal the minimap's own copy adds 
 download. Before Round 27 the normal base was one
 PNG of about 0.56 MB in about the same time; high as one PNG would be about
 8.06 MB. No edge exceeds 4096 px, because some GPUs cannot hold larger
-textures. An unknown value warns and falls back to `normal`. The quality
-and the size of the minimap's copy enter the cache key, so switching it
-re-renders the base (and the copy) at the next start; both are cached in
+textures. An unknown value warns and falls back to `normal`. The quality,
+its size, the atlas bounds (Round 51) and the size of the minimap's copy
+enter the cache key, so switching the quality re-renders the base (and the
+copy) at the next start, and so does a world of an older size; both are cached in
 the world directory. A render clears the old key before it writes the
 first tile and writes the new key last, so a start after a crash in the
 middle of a render renders again instead of taking mixed tiles as current
@@ -454,7 +469,7 @@ enter the cache key. A failing overlay render costs only the claim preview:
 it logs an error, the base and the minimap are cached and announced without
 the overlays, and the next start tries again. After every
 render or cache hit, tiles of these names that the current quality does
-not use (after high → normal the 50 extra base tiles, about 5.3 MB) are
+not use (after high → normal the 47 extra base tiles, about 5.8 MB) are
 deleted from the world directory and their count is logged; a failed delete
 is a warning (Round 41). No other file is touched. A world of an earlier
 version re-renders once under the new key and overwrites its tiles of the
@@ -474,6 +489,29 @@ only the at most four tiles of its base each cell texture overlaps.
 - River strokes follow the river's water width at the image scale, so high
   quality draws wide rivers wider; wide rivers keep the Round 22 minimum of
   three pixels.
+
+**Sea** (Round 51, sea plan ruling 1; `grug_map/base.lua` `SEA`). Water is
+coloured by depth in three steps with soft edges:
+- **Bay, belt and channel water** is light at the waterline (66, 122, 146),
+  the middle blue (48, 92, 118) from 8 nodes of water on, and shades a
+  little further toward (36, 72, 98) down to 32 nodes, so a bay's deep
+  middle reads a little darker than its rims. The depth is sea level minus
+  the floor height of the relief grid above (the same terrain height the
+  water query's depth is, sampled once and read bilinearly), so it is
+  smooth at both qualities.
+- **The open sea** is clearly darker (16, 35, 54). Its edge to the belt,
+  the bays and the channels is soft: the open sea's share of the pixels in
+  16-node cells, box-blurred twice by two cells, blends the two colours over
+  about 100 nodes. A pocket of belt or channel water inside the open sea, or
+  an open-sea speck inside the belt, a few dozen nodes across, fades into
+  its surroundings instead of showing as a speck; belt pockets at bay rims
+  and channel pockets in the belt share the colour of the water around them.
+- **Lakes and rivers** keep the lake blue (62, 118, 152). Planned water is a
+  bay or a lake by the water query (`grug_zones.water_query_at`), asked for
+  planned-water pixels only; swamp pools stay land on the map as before.
+- **Coast:** land next to sea or bay water is drawn in the coast brown
+  (bays got it in Round 51); lake shores are not. Beyond the image (the
+  minimap's sea disc, the fallback image) the open sea's colour is used.
 
 **Region labels.** The nine region names are baked into the Map tab's
 image since Round 44 ([Baked layer](#baked-layer)); until then they were

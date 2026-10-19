@@ -480,6 +480,8 @@ do -- the shared selection style, as grug_inventory/ui.lua ships it
 end
 
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")})
+-- Round 51 (lane MAP): layers.lua reads the normal image's width from base.lua
+grug_map.base = {QUALITY = {normal = {width = 1215, height = 1080}}}
 local minimap_on = {}
 grug_map.minimap = {available = function() return true end,
 	enabled = function(p) return minimap_on[p.name] ~= false end,
@@ -897,7 +899,8 @@ do
 	map = map_part(W.formspec(accord, state, nil))
 	local big = tonumber(map:match("image%[[%d.%-]+,[%d.%-]+;([%d.]+),[%d.]+;grug_map_ring"))
 	local L = W.layout(20, 12)
-	local expect = 2 * targets.ring_radius(9, 32) * L.map_w * 8 / 7200
+	local view = grug_map.atlas.view()
+	local expect = 2 * targets.ring_radius(9, 32) * L.map_w * 8 / (view.max_x - view.min_x)
 	check(big and near(big, expect, 0.002), ("T ring scales with the region and zoom (%.3f vs %.3f)"):format(
 		big or -1, expect))
 end
@@ -1628,7 +1631,8 @@ do
 		"ZL in zone order, each on its own land")
 	local stats = grug_map.layers.zone_stats
 	check(stats and stats.zones == 2, "ZL the placement's figures")
-	eq(zone_samples, 225 * 200, "ZL the grid sampled once at start (32 nodes, 225x200)")
+	-- Round 51 (lane MAP): the atlas grew to 8100 x 7200 nodes
+	eq(zone_samples, 254 * 225, "ZL the grid sampled once at start (32 nodes, 254x225)")
 end
 
 -- ---------------------------------------------------------------------------

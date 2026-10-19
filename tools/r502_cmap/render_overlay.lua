@@ -46,7 +46,7 @@ local W = dofile(repo .. "/tools/r25_road_poi/world.lua")(repo, seed)
 io.stderr:write(("world built in %.1f s\n"):format((now_us() - t0) / 1e6))
 local session = W.session
 local zones = {}
-for _, name in ipairs({"get", "id_at", "water_class_at", "terrain_height_at"}) do
+for _, name in ipairs({"get", "id_at", "water_class_at", "terrain_height_at", "water_query_at"}) do
 	zones[name] = function(...) return session[name](...) end
 end
 local model = dofile(repo .. "/mods/PLAYER/grug_housing/registry.lua")({
@@ -69,7 +69,7 @@ local path = repo .. "/mods/PLAYER/grug_map/base.lua"
 local text = assert(io.open(path, "rb")):read("*a")
 text = text:gsub("\nreturn M%s*$", "\nM._render = render\nreturn M\n")
 local M = assert(loadstring(text, "@" .. path))()
-local view = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
+local view = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua").view()
 local spec = M.spec(quality)
 
 local function assemble(name, tiles, width, height)
