@@ -126,6 +126,9 @@ local function loader(directory)
 	-- placement rules quietly fail to reach is exactly the defect the review
 	-- found here twice.
 	local GRAVE_WALL_CELLS = 164
+	-- The bones outside the burial grounds (Round 51 follow-up FT): the patch
+	-- field and its keep (`dressing.patch_keep`).
+	local OUTSIDE_BONES = {salt = 23, keep = 1.3}
 	-- Eighteen from the road pass (nine z stations, both verges) and the
 	-- twenty-three court and lane spots authored below. Every one of them
 	-- now stands; three did not before the placement was made fatal.
@@ -232,6 +235,8 @@ local function loader(directory)
 		local palette = palettes.new("undead")
 		local crypt = palettes.new("undead", CRYPT_STONE)
 		local buf = parts.buffer()
+		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`).
+		buf.tree_share = 2
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
 		local ruin_ivy, ruin_cobwebs = 0, 0
@@ -585,8 +590,21 @@ local function loader(directory)
 
 		-- 10. Bone piles and dead shrubs on whatever open blight is left:
 		-- thin over the basin, thicker where the ground is already turned.
+		-- Round 51 follow-up FT (the user: too many bones outside the
+		-- graveyard): outside the burial grounds' walls a bone cell keeps its
+		-- bones only in a sparse patchy scatter (`dressing.patch_keep`),
+		-- about a quarter of them; inside the walls nothing changes.
+		local function keep_bone(x, z)
+			for _, yard in ipairs(GRAVEYARDS) do
+				if x >= yard[1] - 2 and x <= yard[3] + 2 and
+						z >= yard[2] - 2 and z <= yard[4] + 2 then
+					return true
+				end
+			end
+			return dressing.patch_keep(x, z, OUTSIDE_BONES.salt, OUTSIDE_BONES.keep)
+		end
 		local bones, shrubs = dressing.blight_flora(buf, palette, -RADIUS,
-			-RADIUS, RADIUS, RADIUS, 97, 2, 4)
+			-RADIUS, RADIUS, RADIUS, 97, 2, 4, keep_bone)
 		for _, yard in ipairs(GRAVEYARDS) do
 			local b, s = dressing.blight_flora(buf, palette, yard[1] - 2,
 				yard[2] - 2, yard[3] + 2, yard[4] + 2, 17, 2, 2)
@@ -600,6 +618,8 @@ local function loader(directory)
 		-- 12. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end

@@ -525,6 +525,9 @@ local function loader(directory)
 		if giants ~= 3 then
 			error("wp13 kapok: an emergent kapok lost its ground: " .. giants, 0)
 		end
+		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`),
+		-- the three giants kept.
+		buf.tree_share = 2
 		local jungle = layout.plant_jungle(buf, palette, RADIUS, 7)
 
 		-- 12b. Every house's small touches (Round 36 decor kit): a barrel or a

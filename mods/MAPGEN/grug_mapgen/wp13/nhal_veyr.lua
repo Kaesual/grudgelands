@@ -917,7 +917,18 @@ local function loader(directory)
 						local name = undead.node(role)
 						buf:put(x, 1, z, name, parts.place_param2(name))
 					end
-					flora = flora + 1
+					-- Round 51 follow-up FT (the user: "far too many" bones,
+					-- the cover too even): it stays only in patches
+					-- (`dressing.patch_keep`), and there one bone cell in three
+					-- and one shrub cell in two; the rest goes once the trees
+					-- stand (`dressing.thin_cover`).
+					if not dressing.patch_keep(x, z, dressing.CORE_PATCH.salt,
+							dressing.CORE_PATCH.keep) or dressing.cell_hash(x, z, 53) *
+							(role == "undergrowth" and 3 or 2) >= 1 then
+						dressing.drop_later(buf, x, 1, z)
+					else
+						flora = flora + 1
+					end
 				end
 			end
 		end
@@ -960,6 +971,8 @@ local function loader(directory)
 		-- 16. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, undead, RADIUS, sockets, doorways)
+		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end

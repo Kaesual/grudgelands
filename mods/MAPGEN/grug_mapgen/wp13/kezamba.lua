@@ -721,8 +721,10 @@ local function loader(directory)
 		-- quadrants of the pad, never over the water.
 		for _, area in ipairs({{-RADIUS, -RADIUS, -1, -1},
 				{1, -RADIUS, RADIUS, -1}, {-RADIUS, 1, -1, RADIUS}}) do
+			-- Round 51 follow-up FT: in patches and gaps, far thinner
+			-- (`dressing.patch_keep`; the user: too dense, too even).
 			dressing.basin_flora(buf, timber, area[1], area[2], area[3],
-				area[4])
+				area[4], dressing.CORE_PATCH)
 		end
 		-- `basin_flora`, `undergrowth` and the lamp scatter all write where they
 		-- are told, so whatever landed in a masked column comes straight back
@@ -859,6 +861,8 @@ local function loader(directory)
 		-- authored there: an air cell over the cenote is a hole in the lake.
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, timber, RADIUS, sockets, doorways)
+		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do
