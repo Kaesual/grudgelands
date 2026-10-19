@@ -818,8 +818,9 @@ tools](#player-meta-read-by-external-tools).
     called by `input.lua` after a cast and, without a def, by the Scout's
     bow release), which pushes the melee clock's `next_due` and never
     shortens it; **cast → cast** and **swing → cast** are `occupy_casts`
-    after a successful `try_cast` and after an accepted swing (the
-    selected skill's value, Strike's in the fallback), a per-player time
+    after a successful `try_cast` and when a swing finds its valid target
+    and consumes its interval (the selected skill's value, Strike's in the
+    fallback), a per-player time
     on `core.get_us_time` that never shortens a running lock and is
     cleared on death, respawn and leave. `cast_refusal`, shared by the
     input gate and `try_cast`, refuses with "You are still busy." while
