@@ -83,6 +83,14 @@ Briefs quote the rulings they implement in full.
     staff, wand, dagger). 18 combinations. All strips share one animation
     (8 frames, 0.96 s), because the engine lets the stack meta override
     only the overlay's name; the skin pass picks the strip by weapon type.
+  - **One family per talent tree** (the user, 2026-10-19, second overlay
+    pass): Ember (fire), Rime (frost), Bulwark (steel, new), Ruin (rage),
+    Mercy (warm healing light), Reckoning (hard judgment gold), Quarry
+    (wild), Veil (shadow); 24 combinations with the weapon types. Small
+    accents in the class's style, no swirling or rotating motion; each
+    family has its own tempo (fire as drafted, frost and the Scout's
+    slower), shared by all weapon strips of that family. Shipped and
+    starter skills take the family of their thematic tree; Strike none.
 - **C8 Hotbars.** Talent unlocks place nothing. A transformation replaces
   the old skill in place on every layout, A and B, that holds it (Round 50
   ruling 12).
@@ -94,7 +102,8 @@ Briefs quote the rulings they implement in full.
   - All **44 skill icons** are drawn as one consistent set, the 19 shipped
     ones included, plus **74 talent icons**.
   - **6 overlay families:** fire, frost, holy, rage, wild, shadow. Strike has
-    none (node list §4).
+    none (node list §4). *Superseded by C7's amendment: 8 families, one per
+    tree.*
   - Generic genre words stay as names (Fireball, Blink, Taunt, Smite …).
     Only the Quarry talent "Heavy Rain" is renamed, provisionally **Iron
     Hail**.

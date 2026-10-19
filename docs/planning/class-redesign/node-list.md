@@ -274,6 +274,14 @@ The count is 44 skills, of which 19 have a shipped icon and **25 need new icons*
 
 ## 4. Weapon-overlay element families (6, plus none)
 
+> **Superseded 2026-10-19 (the user, Round 52 C7 amendment):** one family per tree (8): Ember fire, Rime frost,
+> Bulwark steel, Ruin rage, Mercy warm healing light, Reckoning hard judgment gold, Quarry wild, Veil shadow; each
+> drawn per weapon type the class can wield. A skill takes its tree's family; starters take their thematic tree
+> (Charge, Mighty Blow, Hamstring → Ruin; Taunt, Hold Ground → Bulwark; Heal, Shield, Mend → Mercy; Smite, Word of
+> Ruin → Reckoning; Loose, Snare Shot, Sidestep, Sprint → Quarry; Opening → Veil; Fiery Spark, Fireball,
+> Cinderfall → Ember; Ice Wave, Ice Nova, Blink, Glacial Ward → Rime). Strike none. The table below is the first
+> draft.
+
 | Family | Look (short vertical-frame strip) | Skills |
 |---|---|---|
 | **fire** | orange-red licking flames, rising sparks | Fiery Spark, Fireball, Flame Lance, Meteor, Fire Rain |
