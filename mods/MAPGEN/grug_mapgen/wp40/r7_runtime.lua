@@ -524,6 +524,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					-- the seabed's regrowth (Round 51 T3): the writer's rule
 					seabed = dofile(wp40_directory .. "/seabed.lua")(full_seed),
 					seagrass_names = world_catalog.seagrass,
+					-- the wild lakes' waterlily and waterweed (Round 51 FW)
+					freshwater_names = world_catalog.freshwater,
 				}),
 				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(
 					r6_identity.planner_source, r6_identity.template_records,

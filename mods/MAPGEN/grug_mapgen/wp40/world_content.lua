@@ -150,41 +150,47 @@ return function(catalog, content, habitat, seabed_factory)
       end
       end
      end
-     -- Freshwater waterweed uses only a natural sand bed. Functional water
-     -- corridors and authored structures are already closed by the water
-     -- class and the shared exclusion predicate above. Lakes (and
-     -- bays) hold ordinary water; a river reach holds river water and gets
-     -- weed at half the rate, never on a step face (rapid or fall).
+     -- Freshwater plants use only a natural sand bed (waterweed) or the air
+     -- over source water (waterlily). Functional water corridors and
+     -- authored structures are already closed by the water class and the
+     -- shared exclusion predicate above. A wild lake ("lake:" id, ordinary
+     -- water) grows lily clusters near its shore and weed clumps on its bed
+     -- by seabed.lua's `lake_at` (Round 51 follow-up FW, the user's item 8;
+     -- the renewal reads the same rule); a river reach (river water) keeps
+     -- its sparse weed, 2-6 deep at 1/192; neither on a step face (rapid or
+     -- fall).
      local river=type(river_id)=="string" and river_id:sub(1,6)=="river:"
-     local family=river and contract.river_water_family_id or
-      contract.ordinary_water_family_id
-     if not excluded and water=="planned_water" and water_y and
-      water_y-ground>=2 and water_y-ground<=6 and step==nil and
-      ctx.inside_owner(x,ground,z) and reef_hash(x,z,211)%(river and 192 or 96)==0 then
-      local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
-      local _,sand=ctx.production_content("default:sand")
-      if bed==sand and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
-       local height=math.min(4,water_y-ground-1)
-       local clear=true
-       for y=ground+1,ground+height do
-        if not ctx.inside_owner(x,y,z) then clear=false;break end
-        local current,param2=ctx.settled_at(x,y,z)
-        local _,found,liquid=contract.classify(current,param2)
-        if found~=family or liquid~=1 then clear=false;break end
-       end
-       if clear then write(24,x,ground,z,height*16) end
+     local lake=type(river_id)=="string" and river_id:sub(1,5)=="lake:"
+     if not excluded and water=="planned_water" and water_y and step==nil and (lake or river) then
+      local depth=water_y-ground
+      local kind,value
+      if lake then kind,value=seabed.lake_at(x,z,depth)
+      elseif depth>=2 and depth<=6 and reef_hash(x,z,211)%192==0 then
+       kind,value="weed",math.min(4,depth-1)
       end
-     end
-     if not excluded and water=="planned_water" and water_y and
-      water_y-ground>=2 and water_y-ground<=6 and
-      ctx.inside_owner(x,water_y,z) and ctx.inside_owner(x,water_y+1,z) and
-      reef_hash(x,z,223)%192==0 then
-      local surface,param2,occupancy,opcode=ctx.settled_at(x,water_y+1,z)
-      local below,below_p2=ctx.settled_at(x,water_y,z)
-      local _,family,liquid=contract.classify(below,below_p2)
-      if surface==air and param2==0 and occupancy==0 and opcode==0 and
-       family==contract.ordinary_water_family_id and liquid==1 then
-       write(23,x,water_y+1,z,reef_hash(x,z,227)%4)
+      local family=river and contract.river_water_family_id or
+       contract.ordinary_water_family_id
+      if kind=="weed" and ctx.inside_owner(x,ground,z) then
+       local bed,p2,occupancy,opcode=ctx.settled_at(x,ground,z)
+       local _,sand=ctx.production_content("default:sand")
+       if bed==sand and p2==0 and occupancy==0 and opcode>=1 and opcode<=4 then
+        local clear=true
+        for y=ground+1,ground+value do
+         if not ctx.inside_owner(x,y,z) then clear=false;break end
+         local current,param2=ctx.settled_at(x,y,z)
+         local _,found,liquid=contract.classify(current,param2)
+         if found~=family or liquid~=1 then clear=false;break end
+        end
+        if clear then write(24,x,ground,z,value*16) end
+       end
+      elseif kind=="lily" and ctx.inside_owner(x,water_y,z) and ctx.inside_owner(x,water_y+1,z) then
+       local surface,param2,occupancy,opcode=ctx.settled_at(x,water_y+1,z)
+       local below,below_p2=ctx.settled_at(x,water_y,z)
+       local _,found,liquid=contract.classify(below,below_p2)
+       if surface==air and param2==0 and occupancy==0 and opcode==0 and
+        found==contract.ordinary_water_family_id and liquid==1 then
+        write(23,x,water_y+1,z,value)
+       end
       end
      end
     end
