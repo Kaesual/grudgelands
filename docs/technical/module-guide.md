@@ -2240,7 +2240,11 @@ tools](#player-meta-read-by-external-tools).
   measures the raised half of Highcourt's seats in the engine); renders
   `tools/r36_w/render.py`, the whole roster `tools/r36_p`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
-  transaction. `zones.lua` publishes 80-node owner-local cave candidates but
+  transaction. A surface row may carry `bands` (seven content refs by
+  `y % 7 + 1`) and `band_depth` (Round 51 T4, the badlands' clay bands from
+  `r6_content.lua`): the strata pass then lays that cycle from one node below
+  the top down `band_depth - 1` nodes, over the column's stone and its own
+  filler only (never an ore, a cave or water), and its ordinary strata below. `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air
   beneath a three-node roof is witnessed within 24 vertical and (for a
   sinkhole) 24 horizontal nodes in the same mapchunk, then validates the exact

@@ -629,7 +629,9 @@ rewrite records the WP40 model it replaced.
   height, slope and reach limits are jittered by noise, so material edges
   follow the terrain and never run straight. This rule is the only source of
   dry beach sand: the palette beach biome shows shingle and rock wherever the
-  rule gives no sand. Lake and river banks (Phase 5) reuse the same rule with
+  rule gives no sand. About a tenth of that dry sand lies as gravel pebble
+  patches of a few nodes (a 5-node noise field, the same sandstone below;
+  Round 51); the sand under water is unchanged. Lake and river banks (Phase 5) reuse the same rule with
   their own water surface; river banks count their distance twice, so the
   sand beside a river stays a narrow band (D54).
 - **Shore height:** the first cardinal dry-land column beside any exposed
@@ -772,7 +774,9 @@ rewrite records the WP40 model it replaced.
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
   on a 64-node field. Wet-bed and beach-shore patches follow §7.4. Dry swamp
   surfaces (Round 47, `tools/r47_sw/DESIGN.md`) mix today's mud with a
-  lighter mud, wet grass and moss soil in noise patches and turn to mottled
+  lighter mud, wet grass and the swamp's own moss (`grug_nodes:swamp_moss`
+  since Round 51; the moss soil stays the elf forest's) in noise patches and
+  turn to mottled
   mud in wet hollows and round the swamp's pools: small pools 1–2 deep on
   flat or gentle ground only (a 5 × 5 window within one node; at most one node
   levelled, never at a claim, road, coast, surface cave or within two nodes
@@ -821,7 +825,15 @@ rewrite records the WP40 model it replaced.
   **gravel scree** in noise patches. Rock faces and lips skip the shallow
   strata, so no band follows a cliff face. Graded pads, hard foundations and
   road corridors keep their surfaces. Trees and plants do not root on bare
-  rock.
+  rock. The badlands keep their mesa clay on steep ground and band it
+  instead (Round 51): a column the same rule calls a rock face or a lip
+  shows **clay bands** by height, a 7-node cycle (ochre, mesa clay, sienna,
+  chalk, mesa clay, umber, sienna, by `y mod 7`) from its top down its face,
+  over at least three nodes (the drop to its lowest neighbour, at most 40),
+  through the shallow strata; its top is the cycle's band at its height, or
+  its own top where the cycle gives mesa clay. Gentle badlands ground stays
+  mesa clay. On seed 12345 about 6 % of the badlands columns stand 2 or more
+  above a neighbour; mostly the faces are 2–3 nodes high.
 - **Vegetation and altitude (Round 23 Phase 2, user rulings 2026-09-28).**
   One rule (`habitat_registry.lua` `vegetation_rule`) is read by the
   decoration planner, the surface selector and runtime vegetation renewal
@@ -857,7 +869,10 @@ rewrite records the WP40 model it replaced.
     below it, snow dust lies in patches (a 10-node field) whose share rises
     from none at the foot of the band to all at the line. Steep rock faces
     (above) stay bare rock; shores, start towns and water columns get no
-    snow. No ice, no slope-aspect rule. A column with snow (cap or dust)
+    snow. No slope-aspect rule. In the snowy crags about a tenth of the
+    snowblock tops are `default:ice` in patches of a few nodes (a 7-node
+    noise field, Round 51), with no snow dust on the ice; no other biome has
+    ice. A column with snow (cap or dust)
     hosts no decoration.
   - **Forests and clearings.** Trees are multiplied by a forest field: groves
     from a 224-node field (0.24–1.76 of the mean) times clearings from a

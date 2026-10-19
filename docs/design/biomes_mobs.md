@@ -127,10 +127,13 @@ sides for both moss grounds. The forest's `grug_nodes:dirt_with_moss` (moss
 soil) wears a muted moss in place of the old bright one.
 `grug_nodes:swamp_moss` is the swamp's own moss ground: the moss soil's
 groups (soil, natural loose ground), it drops `grug_nodes:mud`, and it
-hosts what the swamp's moss soil hosts (gathering sources, the bog ooze,
-bog fowl and crocodile, spawn-region ground). The badlands' clay bands
+hosts what the swamp's moss soil hosted (gathering sources, the bog ooze,
+bog fowl and crocodile, spawn-region ground). The world generator lays it
+where the swamp's ground mix laid the moss soil, which is now the elf
+forest's alone ([world_zones.md](world_zones.md) §7.6). The badlands' clay bands
 `grug_nodes:clay_band_ochre|sienna|chalk|umber` are loose ground like mesa
-clay and drop `grug_nodes:mesa_clay`. Hanging moss is a run of the
+clay and drop `grug_nodes:mesa_clay`; they band the badlands' steep faces by
+height (world_zones.md §7.6, "Steep ground"). Hanging moss is a run of the
 continuous strand (`grug_trees:swamp_hanging_moss_strand`) above the tapered
 end (`grug_trees:swamp_hanging_moss`): digging a piece turns the strand
 right above it into the end and takes the pieces below it (they drop
@@ -237,13 +240,13 @@ contract error rather than a fallback to an engine biome.
 | `grug_meadows` | `default:dirt_with_grass` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/2000`; bush `1/250`; each grass 1–5 `3/50` |
 | `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50` |
 | `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only |
-| `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
+| `grug_crags_snowy` | `default:snowblock` / 1, about a tenth `default:ice` in patches (Round 51) | `default:gravel` / 2 | `default:gravel` | none |
 | `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50` |
 | `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; bush `1/250`, shrub band only; each fern 1–3 `1/50` |
-| `grug_swamp` | `grug_nodes:mud` / 1, mixed with `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` and `grug_nodes:dirt_with_moss` (Round 47) | `grug_nodes:mud` / 2 (3 under a pool) | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root beside standing water: a wet column (sea, bay, lake or river) within two nodes whose surface lies 0–3 below the root's ground (Round 22 Phase 5), so a swamp grows reeds wherever it has water and none where it has none; replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250`; Round 47: swamp tree `1/120` on every swamp ground; tall grass 3–5 `1/9` each and junglegrass `1/20` on wet grass (a quarter on the muds); ferns 1–3 `1/14` each on moss soil; moss carpet `1/16` on the muds. The pools, the waterlilies on them, reeds rooted in their beds and the bank's reeds, cattails and carpets come from the swamp pass (`wp40/swamp_writer.lua`) |
+| `grug_swamp` | `grug_nodes:mud` / 1, mixed with `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` (Round 47) and `grug_nodes:swamp_moss` (Round 51) | `grug_nodes:mud` / 2 (3 under a pool) | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root beside standing water: a wet column (sea, bay, lake or river) within two nodes whose surface lies 0–3 below the root's ground (Round 22 Phase 5), so a swamp grows reeds wherever it has water and none where it has none; replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250`; Round 47: swamp tree `1/120` on every swamp ground; tall grass 3–5 `1/9` each and junglegrass `1/20` on wet grass (a quarter on the muds); ferns 1–3 `1/14` each on the swamp moss; moss carpet `1/16` on the muds. The pools, the waterlilies on them, reeds rooted in their beds and the bank's reeds, cattails and carpets come from the swamp pass (`wp40/swamp_writer.lua`) |
 | `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
-| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
-| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
+| `grug_badlands` | `grug_nodes:mesa_clay` / 1; steep faces banded by height with the four clay bands (Round 51) | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` (both on mesa clay, not on a band) |
+| `grug_badlands_east` | as `grug_badlands` | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` (both on mesa clay, not on a band) |
 | `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; bone pile `1/500` |
 | `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; dry shrub `3/200`, shrub band only; bone pile `1/250` |
 | `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25` |
