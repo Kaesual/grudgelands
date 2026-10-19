@@ -569,6 +569,23 @@ local function planner_factory()
 					end
 				end
 			end
+			-- Rules 5 and 6 per column, asked by several rows (the three marram
+			-- grasses, the two lichens): each column's answer once per cell.
+			local site_memo
+			local function site_ok(rule_id, column)
+				site_memo = site_memo or {}
+				local key = rule_id * 1024 + column
+				local known = site_memo[key]
+				if known == nil then
+					if rule_id == 5 then
+						known = vegetation.dry_shore(column_values_at, scratch.x[column], scratch.z[column])
+					else
+						known = vegetation.rock_patch(scratch.x[column], scratch.z[column])
+					end
+					site_memo[key] = known
+				end
+				return known
+			end
 			for catalog = 1, #decorations do
 				local row = decorations[catalog]
 				local height_rule = decoration_height_rule[catalog]
@@ -598,10 +615,7 @@ local function planner_factory()
 						hosts[column] and
 						content.decoration_cover(row.id, scratch.biome[column],
 							content.content_ref(scratch.support_name[column])) or 0
-					if cover > 0 and height_rule >= 5 and not (height_rule == 5 and
-							vegetation.dry_shore(column_values_at, scratch.x[column],
-								scratch.z[column]) or height_rule == 6 and
-							vegetation.rock_patch(scratch.x[column], scratch.z[column])) then
+					if cover > 0 and height_rule >= 5 and not site_ok(height_rule, column) then
 						cover = 0
 					end
 					local factor = cover > 0 and not scratch.snowy[column] and
