@@ -6,10 +6,11 @@
 --   M  every registered skill has a family or none, exactly the ruling's
 --      mapping (node list §4 note plus Cinderfall, Glacial Ward, Pinning Shot;
 --      Strike none); the table lives in init.lua and no kit file names it;
---   O  off as shipped: no strip in grug_abilities/textures, no family
+--   O  off while no strip ships (the state before the art step): no family
 --      animation, no definition overlay, every skin writes the transparent
 --      override (never an empty string) for a weapon, a bow and an empty
---      slot; SKIN_VERSION is 5 and the token carries the overlay;
+--      slot; always: SKIN_VERSION is 5, the token carries the overlay, the
+--      empty slot shows the hand;
 --   S  on (patched): the definition carries the family's animation under the
 --      transparent name; the skin pass writes grug_abilities_fx_<family>_
 --      <weapon>.png for the held weapon type, the transparent override for an
@@ -23,10 +24,12 @@
 --      functions copied out of the source) shows the cosmetic weapon for a
 --      selected skill and copies only that stack's keys, so the skill's
 --      overlay never reaches it;
---   F  every strip that ships (none before the art step) is named
+--   F  every strip that ships (30 since the art step) is named
 --      <family>_<weapon>[_draw<n>] for a weapon its family's class wields,
 --      has its family's animation, is 16 px wide and `frames` frames high,
---      and has a LICENSE-media.md row.
+--      and has a LICENSE-media.md row; an animated family ships every strip
+--      of its class's weapons and the bow's draw stages, and the shipped skin
+--      names them.
 --
 -- Usage (repo root): luajit tools/r52_wfx/portable_test.lua [repo]
 -- Prints "R52 WFX PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -369,7 +372,8 @@ do
 	local p = new_player("o_token", "mage")
 	hands(p, "grug_gear:staff_iron")
 	eq(G.stack_for(p, "fireball"):get_meta():get_string("grug_skin"),
-		"5|grug_gear_item_staff_iron.png|" .. NONE, "O the token carries the overlay")
+		"5|grug_gear_item_staff_iron.png|" .. G.skin_overlay(G.registered.fireball, "staff"),
+		"O the token carries the overlay")
 	hands(p, nil)
 	local stack = G.stack_for(p, "fireball")
 	eq(stack:get_meta():get_string("grug_skin"), "5||" .. NONE, "O the empty slot's token")
@@ -388,7 +392,7 @@ local STRIPS = {"grug_abilities_fx_ember_staff.png", "grug_abilities_fx_ember_wa
 	"grug_abilities_bow_draw_0.png"}
 local patched = 0
 local function patch(source)
-	local out, n = source:gsub("\ngrug_abilities%.WEAPON_FX_ANIMATION = {}",
+	local out, n = source:gsub("\ngrug_abilities%.WEAPON_FX_ANIMATION = %b{}",
 		"\ngrug_abilities.WEAPON_FX_ANIMATION = " .. ANIM)
 	patched = n
 	return out
@@ -575,6 +579,30 @@ do
 		eq(width, 16, "F 16 px wide: " .. file)
 		if a then eq(height, a.frames * 16, "F " .. a.frames .. " frames high: " .. file) end
 		check(license:find(file, 1, true) ~= nil, "F a LICENSE-media.md row: " .. file)
+	end
+	-- A family that ships has every strip of its class's weapons (and the
+	-- bow's draw stages), and the shipped skin names them.
+	for family in pairs(anim) do
+		for weapon in pairs(CLASS_WEAPONS[FAMILY_CLASS[family]] or {}) do
+			local names = {"grug_abilities_fx_" .. family .. "_" .. weapon .. ".png"}
+			if weapon == "bow" then
+				for n = 0, 2 do
+					names[#names + 1] = "grug_abilities_fx_" .. family .. "_bow_draw" .. n .. ".png"
+				end
+			end
+			for _, name in ipairs(names) do
+				local found = false
+				for _, file in ipairs(shipped) do found = found or file == name end
+				check(found, "F a picked family ships all its strips: " .. name)
+			end
+		end
+	end
+	if anim.ember then
+		eq(real.skin_overlay(real.registered.fireball, "staff"), "grug_abilities_fx_ember_staff.png",
+			"F as shipped, Fireball over a staff shows ember's staff strip")
+		eq(real.skin_overlay(real.registered.loose, "bow", 1), anim.quarry and
+			"grug_abilities_fx_quarry_bow_draw1.png" or NONE, "F as shipped, Loose's draw stage 1")
+		eq(real.skin_overlay(real.registered.strike, "sword"), NONE, "F as shipped, Strike none")
 	end
 	print(("F %d strips ship, %d families animated"):format(#shipped, (function()
 		local n = 0

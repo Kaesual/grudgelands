@@ -59,3 +59,49 @@ textures to those license notes.
 At runtime the Scout applies the equipped bow family's existing color grade
 and any bracket modifier to the selected stage. Ending or cancelling the draw
 restores that concrete bow's ordinary wield image.
+
+## Round 52 weapon element overlays — CC0
+
+The 30 `textures/grug_abilities_fx_<family>_<weapon>[_draw<n>].png` strips (the
+first-person element overlay, round52-class-plan.md C7): own work by GPT-6 Astra
+for Grudgelands, Round 52 lane ARTA drop 03 (2026-10-19), drawn pixel by pixel by
+the generator `tools/r52_art/arta/arta_fx3.py` on branch `r52-arta` (Python/Pillow,
+explicit original geometry; no weapon pixels enter a strip), **CC0-1.0**.
+Provenance and the full drop manifest: `tools/r52_art/arta/README.md` and
+`drop-03/manifest.json` on that branch. Each file is a byte-identical renamed
+copy of the strip the user picked on 2026-10-19 (`r52/picks/arta/picks.md`):
+RGBA, 16 px wide, the family's frame count × 16 px high; the animation is on the
+skill item's definition (`grug_abilities.WEAPON_FX_ANIMATION`).
+
+| Local file | Source (drop-03 on r52-arta) | Pick | SHA-256 |
+|---|---|---|---|
+| `textures/grug_abilities_fx_bulwark_dagger.png` | `fx/warrior/bulwark_dagger_v1.png` | fx.warrior.bulwark.dagger.v1 "Measured edge" | `b4675aa7d2c2b62b0f3d8eafc151c9821147ddeeda8b914157b06507bc530ffa` |
+| `textures/grug_abilities_fx_bulwark_greataxe.png` | `fx/warrior/bulwark_greataxe_v1.png` | fx.warrior.bulwark.greataxe.v1 "Measured edge" | `77e44d519cef2a24af2f8f16226b3bd191dae230adb6978a740b95602503b771` |
+| `textures/grug_abilities_fx_bulwark_sword.png` | `fx/warrior/bulwark_sword_v2.png` | fx.warrior.bulwark.sword.v2 "Rivet glint" | `86c022ca9f5e05625db245110d7d692fec140f01c4606356d1fb91fdfaea4b3f` |
+| `textures/grug_abilities_fx_ember_dagger.png` | `fx/mage/ember_dagger_v1.png` | fx.mage.ember.dagger.v1 "Candle tongue" | `28f88f808b188c6adbbf995ce2b5d532a83e35c9d1fd841bad71a5058a8b87bc` |
+| `textures/grug_abilities_fx_ember_staff.png` | `fx/mage/ember_staff_v1.png` | fx.mage.ember.staff.v1 "Candle tongue" | `da6bb86a3702fb282b9372c6a455557c929bb3b66317f7c53b051e3c73375eb5` |
+| `textures/grug_abilities_fx_ember_wand.png` | `fx/mage/ember_wand_v1.png` | fx.mage.ember.wand.v1 "Candle tongue" | `ab36fb3c11a112a8d5ef8450dfb50ed5bfa212402dd0419249c46f2b64bfdb33` |
+| `textures/grug_abilities_fx_mercy_dagger.png` | `fx/priest/mercy_dagger_v1.png` | fx.priest.mercy.dagger.v1 "Quiet blessing" | `8e17aff736ebcfadca0387bf655247a7a528ffe334679b2dcbbd485c74d5ef30` |
+| `textures/grug_abilities_fx_mercy_staff.png` | `fx/priest/mercy_staff_v2.png` | fx.priest.mercy.staff.v2 "Sheltered light" | `4b00c603fbd534e49649f46defd8ce2efb7e3e7fc237591cb994f10429b5b8dc` |
+| `textures/grug_abilities_fx_mercy_wand.png` | `fx/priest/mercy_wand_v1.png` | fx.priest.mercy.wand.v1 "Quiet blessing" | `da02e8ad08e9fda7dd894c082e6ff4606c9ecc701919fad4013754acba388975` |
+| `textures/grug_abilities_fx_quarry_bow.png` | `fx/scout/quarry_bow_v1.png` | fx.scout.quarry.bow.v1 "Passing breeze" | `313b1fa0b46e000735a712197b10eb6d5b902a32fa9250f0c4a491664656034f` |
+| `textures/grug_abilities_fx_quarry_bow_draw0.png` | `fx/scout/quarry_bow_draw0_v1.png` | fx.scout.quarry.bow.draw0.v1 "Passing breeze" | `ab7f1a7c7ca0d306cc2391989cb08ce8ec8805becc4b8248194e08a3824aba0c` |
+| `textures/grug_abilities_fx_quarry_bow_draw1.png` | `fx/scout/quarry_bow_draw1_v1.png` | fx.scout.quarry.bow.draw1.v1 "Passing breeze" | `8518c6677a34e03fbee56f3a9130a0aa683dc31363a36c8e57475401847c382e` |
+| `textures/grug_abilities_fx_quarry_bow_draw2.png` | `fx/scout/quarry_bow_draw2_v1.png` | fx.scout.quarry.bow.draw2.v1 "Passing breeze" | `7a416f83079b0354765b752d153440356926f098dffd61928ac9d93599cc1869` |
+| `textures/grug_abilities_fx_quarry_dagger.png` | `fx/scout/quarry_dagger_v1.png` | fx.scout.quarry.dagger.v1 "Passing breeze" | `41bf37af02d4cc9a9d717b7656afab479eafcb3f4ce6154a9cbb7cdd6dd1becc` |
+| `textures/grug_abilities_fx_quarry_sword.png` | `fx/scout/quarry_sword_v1.png` | fx.scout.quarry.sword.v1 "Passing breeze" | `d8f5f67c284d2f44ff2c571cc86e7ac29e35db0f9a55d6cc87a976e5cd5a01ac` |
+| `textures/grug_abilities_fx_reckoning_dagger.png` | `fx/priest/reckoning_dagger_v2.png` | fx.priest.reckoning.dagger.v2 "Golden seal" | `0230bae1264428314a03ba1d33ab8c499bc8c19cdfedb38477f62df26b2260dd` |
+| `textures/grug_abilities_fx_reckoning_staff.png` | `fx/priest/reckoning_staff_v1.png` | fx.priest.reckoning.staff.v1 "White verdict" | `271202b65d7f59138993d468820fb0c035542de0e11f2292ec08032bc234e568` |
+| `textures/grug_abilities_fx_reckoning_wand.png` | `fx/priest/reckoning_wand_v2.png` | fx.priest.reckoning.wand.v2 "Golden seal" | `fb356d488fc4018e7c5960c6ee0896a5419bb74399fad69599e4ac7e9b98c60b` |
+| `textures/grug_abilities_fx_rime_dagger.png` | `fx/mage/rime_dagger_v1.png` | fx.mage.rime.dagger.v1 "Growing frost fern" | `dd0b68415d8868f98fb94091c729e7b6e7d4067087bbf55fb68bc93083aa0d3f` |
+| `textures/grug_abilities_fx_rime_staff.png` | `fx/mage/rime_staff_v1.png` | fx.mage.rime.staff.v1 "Growing frost fern" | `69a72e3371b46915de1cc25e3aa07b58447bda331734d4848e7ee59d9e5ff0ab` |
+| `textures/grug_abilities_fx_rime_wand.png` | `fx/mage/rime_wand_v1.png` | fx.mage.rime.wand.v1 "Growing frost fern" | `99bb5c35f1452c7386c46516c914477eac07213cfc434d1f64f9c852a81b51f3` |
+| `textures/grug_abilities_fx_ruin_dagger.png` | `fx/warrior/ruin_dagger_v1.png` | fx.warrior.ruin.dagger.v1 "Hot cutting edge" | `8088c17ad1793d97eade76fd45292fb1a625f5dd1837a304f8946eedbb257fda` |
+| `textures/grug_abilities_fx_ruin_greataxe.png` | `fx/warrior/ruin_greataxe_v1.png` | fx.warrior.ruin.greataxe.v1 "Hot cutting edge" | `ec88358112a94ffbf67df10b0be41ddb03e02663b8a438be9fc0720a781910b9` |
+| `textures/grug_abilities_fx_ruin_sword.png` | `fx/warrior/ruin_sword_v1.png` | fx.warrior.ruin.sword.v1 "Hot cutting edge" | `84a2a0380096aef8376659fd29f3c0c7730802f83f29de046a3cbb2e84584ac9` |
+| `textures/grug_abilities_fx_veil_bow.png` | `fx/scout/veil_bow_v1.png` | fx.scout.veil.bow.v1 "Fine smoke" | `6314d293e40596c4001a2b302cf7f887562d808d8221928fffac4276459500df` |
+| `textures/grug_abilities_fx_veil_bow_draw0.png` | `fx/scout/veil_bow_draw0_v1.png` | fx.scout.veil.bow.draw0.v1 "Fine smoke" | `c5383fd986d26fc76ac27c29db12bd93f8835ef4d8e21a5bfe6aa37e2f23d67e` |
+| `textures/grug_abilities_fx_veil_bow_draw1.png` | `fx/scout/veil_bow_draw1_v1.png` | fx.scout.veil.bow.draw1.v1 "Fine smoke" | `2d9b8defa53c8a9152484375af95c5a4abf0efbd04e522f86c42a6d7f36b465c` |
+| `textures/grug_abilities_fx_veil_bow_draw2.png` | `fx/scout/veil_bow_draw2_v1.png` | fx.scout.veil.bow.draw2.v1 "Fine smoke" | `dca9f4b5bd745af20508ecf1cc57326e83a9b559898baf9c6100b1e1c79b0b31` |
+| `textures/grug_abilities_fx_veil_dagger.png` | `fx/scout/veil_dagger_v1.png` | fx.scout.veil.dagger.v1 "Fine smoke" | `554be2b04f0e0d02c8be10ee3a0ce7485a0faf09c6c28390b8dcf3e0c5929cfe` |
+| `textures/grug_abilities_fx_veil_sword.png` | `fx/scout/veil_sword_v1.png` | fx.scout.veil.sword.v1 "Fine smoke" | `5534f9229cc304326f4cdfcb491e4ef4e263488c2e30b67385698062b393e3e3` |

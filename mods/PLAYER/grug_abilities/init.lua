@@ -809,10 +809,19 @@ grug_abilities.WEAPON_FX = {
 -- Each family's animation, shared by all of its weapon strips, because the
 -- stack meta overrides only the overlay's name and the item definition keeps
 -- the animation (src/inventory.cpp ItemStack::getWieldOverlay). A strip is
--- `frames` vertical 16 x 16 frames of `frame_length` seconds each, e.g.
--- `ember = {frames = 8, frame_length = 0.12}`. Filled as the user picks the
--- strips (D7); a family without an entry shows no overlay.
-grug_abilities.WEAPON_FX_ANIMATION = {}
+-- `frames` vertical 16 x 16 frames of `frame_length` seconds each. The user's
+-- picks of 2026-10-19 (D7; tools/r52_art/arta drop 03 on r52-arta); a family
+-- without an entry shows no overlay.
+grug_abilities.WEAPON_FX_ANIMATION = {
+	ember = {frames = 8, frame_length = 0.12},
+	rime = {frames = 12, frame_length = 0.26},
+	bulwark = {frames = 12, frame_length = 0.18},
+	ruin = {frames = 10, frame_length = 0.16},
+	mercy = {frames = 12, frame_length = 0.28},
+	reckoning = {frames = 12, frame_length = 0.16},
+	quarry = {frames = 12, frame_length = 0.26},
+	veil = {frames = 12, frame_length = 0.28},
+}
 
 -- The overlay a skill shows where it has none: a transparent image the client
 -- builds itself, one 16 x 16 frame under any family's animation. An empty
