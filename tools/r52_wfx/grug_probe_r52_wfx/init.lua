@@ -13,16 +13,24 @@
 -- applies; eight squashed stripes if not), the empty weapon slot (the skin
 -- pass's transparent override over the bare hand), third person from the
 -- front (the holder shows the sword alone).
+--
+-- With `r52wfx_mode = art` (the art step) nothing is overridden: a Scout,
+-- one shot per shipped family, its skill on hotbar slot 1 over one weapon its
+-- class wields in the skill's own slot, skinned by the real skin pass with
+-- the real strip and animation.
 local P = "[r52wfx] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r52wfx_settle") or "") or 3
 local STRIP = "grug_probe_r52_wfx_strip.png"
 local SWORD = "grug_gear:sword_iron"
 local SKILL = "grug_abilities:charge"
+local ART = core.settings:get("r52wfx_mode") == "art"
 local function log(msg) core.log("action", P .. msg) end
 
-core.override_item(SKILL, {wield_overlay = {name = grug_abilities.NO_OVERLAY,
-	animation = {type = "vertical_frames", aspect_w = 16, aspect_h = 16, length = 4.0}}})
+if not ART then
+	core.override_item(SKILL, {wield_overlay = {name = grug_abilities.NO_OVERLAY,
+		animation = {type = "vertical_frames", aspect_w = 16, aspect_h = 16, length = 4.0}}})
+end
 
 local function receive(player, formname, fields)
 	for _, fn in ipairs(core.registered_on_player_receive_fields) do
@@ -30,10 +38,11 @@ local function receive(player, formname, fields)
 	end
 end
 
-local function equip(player, item)
-	local inv = player:get_inventory()
-	inv:set_stack(grug_inventory.hand_list(player, "weapon"), 1, ItemStack(item or ""))
-	grug_inventory.equipment_changed(player, grug_inventory.hand_list(player, "weapon"))
+-- `slot`: the ability slot whose list takes the item (default "weapon").
+local function equip(player, item, slot)
+	local list = grug_inventory.hand_list(player, slot or "weapon")
+	player:get_inventory():set_stack(list, 1, ItemStack(item or ""))
+	grug_inventory.equipment_changed(player, list)
 end
 
 -- Charge on hotbar slot 1 (the wielded one), its meta naming `overlay`.
@@ -80,6 +89,26 @@ local SHOTS = {
 	end},
 }
 
+-- The art step: a family's skill over a weapon of its class, skinned by the
+-- real pass (a fresh stack has no token, so the equipment change skins it).
+local function show_family(skill, weapon)
+	return function(player)
+		player:get_inventory():set_stack("main", 1, ItemStack("grug_abilities:" .. skill))
+		equip(player, grug_gear.weapon_item(weapon, 2), grug_abilities.registered[skill].slot)
+		report(player, skill .. "/" .. weapon)
+	end
+end
+if ART then
+	SHOTS = {}
+	for _, row in ipairs({{"ember", "fireball", "staff"}, {"rime", "ice_nova", "wand"},
+			{"mercy", "heal", "staff"}, {"reckoning", "smite", "dagger"},
+			{"bulwark", "taunt", "greataxe"}, {"ruin", "charge", "sword"},
+			{"quarry", "loose", "bow"}, {"veil", "opening", "dagger"}}) do
+		SHOTS[#SHOTS + 1] = {name = "F_" .. row[1] .. "_" .. row[3],
+			act = show_family(row[2], row[3])}
+	end
+end
+
 local state = {phase = "wait", clock = 0}
 
 local function read_ack()
@@ -103,7 +132,10 @@ core.register_globalstep(function(dtime)
 		if not grug_classes.get_class(player) then
 			receive(player, "", {faction_accord = "Accord"})
 			receive(player, "", {race_human = "Human"})
-			receive(player, "", {class_warrior = "Warrior"})
+			-- The art step plays a Scout: Loose's bow must be one the class
+			-- may use (scout.lua reads the usable bow); every other shot
+			-- reads the cosmetic hand, which any class shows.
+			receive(player, "", ART and {class_scout = "Scout"} or {class_warrior = "Warrior"})
 			receive(player, "", {create_character = "Create"})
 			return
 		end

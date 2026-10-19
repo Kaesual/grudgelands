@@ -19,7 +19,9 @@
 # Usage: XVFB=/path/to/Xvfb tools/r52_wfx/capture.sh OUT_DIR
 #   WIDTH/HEIGHT (default 1280 x 720), GUI=<gui_scaling> (default 1),
 #   SEED (default 42), SUFFIX=<text> appended to every file name,
-#   SETTLE=<seconds> before each shot (default 3), XVFB_DRIVERS=<Mesa DRI
+#   SETTLE=<seconds> before each shot (default 3), MODE=art for one shot (as a
+#   Scout) of
+#   each shipped family's real strip instead (the art step), XVFB_DRIVERS=<Mesa DRI
 #   dir for Xvfb's GLX> (default /usr/lib64/dri). Run it through the shared
 #   queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
@@ -30,7 +32,7 @@ repo="$(cd "$here/../.." && pwd -P)"
 out="${1:?usage: capture.sh OUT_DIR}"
 xvfb="${XVFB:?set XVFB to an Xvfb binary}"
 width="${WIDTH:-1280}"; height="${HEIGHT:-720}"; gui="${GUI:-1}"
-settle="${SETTLE:-3}"; suffix="${SUFFIX:-}"; seed="${SEED:-42}"
+settle="${SETTLE:-3}"; mode="${MODE:-probe}"; suffix="${SUFFIX:-}"; seed="${SEED:-42}"
 server_timeout=300; client_timeout=290
 mkdir -p "$out"
 out="$(cd "$out" && pwd -P)"
@@ -79,6 +81,7 @@ cat >>"$patchdir/b/minetest.conf" <<CONF
 # Round 52 WFX capture probe
 mobs_spawn = false
 r52wfx_settle = $settle
+r52wfx_mode = $mode
 CONF
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 
