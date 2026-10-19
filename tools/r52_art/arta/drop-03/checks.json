@@ -1,0 +1,4000 @@
+{
+  "scope": "Media only; no fixtures, Lua execution or engine runs",
+  "assets": [
+    {
+      "key": "fx.mage.ember.staff.v1",
+      "size": [
+        16,
+        128
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        4,
+        5,
+        5,
+        4,
+        4,
+        3,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        191072,
+        201936,
+        268224,
+        140976,
+        268224,
+        178880,
+        73152,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 0,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.ember.staff.v2",
+      "size": [
+        16,
+        128
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        3,
+        4,
+        5,
+        4,
+        4,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        124256,
+        79200,
+        194656,
+        124256,
+        66000,
+        207856,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.ember.wand.v1",
+      "size": [
+        16,
+        128
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        3,
+        4,
+        4,
+        3,
+        3,
+        2,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        191072,
+        201936,
+        268224,
+        140976,
+        268224,
+        178880,
+        73152,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 0,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.ember.wand.v2",
+      "size": [
+        16,
+        128
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        3,
+        4,
+        5,
+        4,
+        4,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        124256,
+        79200,
+        194656,
+        124256,
+        66000,
+        207856,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.ember.dagger.v1",
+      "size": [
+        16,
+        128
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        3,
+        4,
+        4,
+        3,
+        3,
+        2,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        191072,
+        201936,
+        268224,
+        140976,
+        268224,
+        178880,
+        73152,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 0,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.ember.dagger.v2",
+      "size": [
+        16,
+        128
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        3,
+        4,
+        5,
+        4,
+        4,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        124256,
+        79200,
+        194656,
+        124256,
+        66000,
+        207856,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.rime.staff.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        2,
+        3,
+        5,
+        6,
+        6,
+        6,
+        4,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        221376,
+        142736,
+        285472,
+        147065,
+        0,
+        216473,
+        285472,
+        425072,
+        147264,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.rime.staff.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        2,
+        4,
+        4,
+        5,
+        5,
+        5,
+        5,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        221376,
+        306240,
+        0,
+        147065,
+        0,
+        216473,
+        0,
+        588576,
+        147264,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.rime.wand.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        4,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        221376,
+        142736,
+        142736,
+        147065,
+        0,
+        216473,
+        142736,
+        425072,
+        147264,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.rime.wand.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        221376,
+        152240,
+        0,
+        69408,
+        0,
+        138816,
+        0,
+        415568,
+        147264,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.rime.dagger.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        4,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        221376,
+        142736,
+        142736,
+        147065,
+        0,
+        216473,
+        142736,
+        425072,
+        147264,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.mage.rime.dagger.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        4,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        221376,
+        163504,
+        142736,
+        147065,
+        0,
+        216473,
+        142736,
+        445840,
+        147264,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.bulwark.sword.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        2,
+        2,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        166144,
+        74576,
+        415872,
+        481440,
+        338032,
+        162880,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.bulwark.sword.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        2,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        166144,
+        327791,
+        481440,
+        253215,
+        338032,
+        97312,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.bulwark.dagger.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        166144,
+        74576,
+        0,
+        347040,
+        74576,
+        162880,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 6,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.bulwark.dagger.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        2,
+        3,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        166144,
+        327791,
+        240720,
+        12495,
+        338032,
+        97312,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.bulwark.greataxe.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        3,
+        3,
+        4,
+        4,
+        3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        316448,
+        74576,
+        716480,
+        481440,
+        638640,
+        313184,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.bulwark.greataxe.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        3,
+        4,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        316448,
+        327791,
+        541328,
+        12495,
+        638640,
+        247616,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.ruin.sword.v1",
+      "size": [
+        16,
+        160
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        5,
+        5,
+        5,
+        5,
+        5,
+        4,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        191504,
+        234589,
+        416317,
+        393728,
+        0,
+        344848,
+        58656,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 10,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.ruin.sword.v2",
+      "size": [
+        16,
+        160
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        2,
+        3,
+        3,
+        2,
+        4,
+        4,
+        3,
+        2,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        199856,
+        129265,
+        300433,
+        268448,
+        0,
+        353200,
+        58656,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 10,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.ruin.dagger.v1",
+      "size": [
+        16,
+        160
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        107984,
+        152113,
+        250321,
+        310208,
+        0,
+        261328,
+        58656,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 10,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.ruin.dagger.v2",
+      "size": [
+        16,
+        160
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        2,
+        3,
+        4,
+        3,
+        4,
+        4,
+        3,
+        2,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        199856,
+        193351,
+        383431,
+        402080,
+        0,
+        353200,
+        58656,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 10,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.ruin.greataxe.v1",
+      "size": [
+        16,
+        160
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7,
+        6,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        268464,
+        310587,
+        569275,
+        470688,
+        0,
+        421808,
+        58656,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 10,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.warrior.ruin.greataxe.v2",
+      "size": [
+        16,
+        160
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        4,
+        5,
+        6,
+        5,
+        6,
+        6,
+        5,
+        4,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        276816,
+        269349,
+        536389,
+        479040,
+        0,
+        430160,
+        58656,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 10,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.mercy.staff.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        87168,
+        147360,
+        98544,
+        319616,
+        0,
+        0,
+        418160,
+        147360,
+        87168,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.mercy.staff.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        87168,
+        147360,
+        171600,
+        319616,
+        0,
+        0,
+        491216,
+        147360,
+        87168,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.mercy.wand.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        87168,
+        147360,
+        98544,
+        319616,
+        0,
+        0,
+        418160,
+        147360,
+        87168,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.mercy.wand.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        3,
+        3,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        2496,
+        72640,
+        164384,
+        0,
+        171600,
+        0,
+        491216,
+        147360,
+        87168,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.mercy.dagger.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        87168,
+        147360,
+        98544,
+        319616,
+        0,
+        0,
+        418160,
+        147360,
+        87168,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.mercy.dagger.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        3,
+        3,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        87168,
+        147360,
+        171600,
+        0,
+        319616,
+        0,
+        491216,
+        147360,
+        87168,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.reckoning.staff.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        5,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        1033080,
+        831480,
+        132000,
+        69600,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 7,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.reckoning.staff.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        5,
+        3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        1033080,
+        735912,
+        227568,
+        69600,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 7,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "wood",
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.reckoning.wand.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        4,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        782415,
+        580815,
+        132000,
+        69600,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 7,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.reckoning.wand.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        4,
+        3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        782415,
+        485247,
+        227568,
+        69600,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 7,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.reckoning.dagger.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        4,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        782415,
+        580815,
+        132000,
+        69600,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 7,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.priest.reckoning.dagger.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        5,
+        3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        0,
+        1033080,
+        735912,
+        227568,
+        69600,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 7,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        5,
+        5,
+        3,
+        3,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        12768,
+        55760,
+        48320,
+        182272,
+        52560,
+        368896,
+        104080,
+        351744,
+        52560,
+        63072,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "Alder",
+        "Wood",
+        "alder enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        113760,
+        53840,
+        48320,
+        335200,
+        0,
+        0,
+        383520,
+        0,
+        53840,
+        113760,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "Alder",
+        "Wood",
+        "alder enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.draw0.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        3,
+        3,
+        5,
+        5,
+        6,
+        6,
+        4,
+        4,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        12768,
+        55760,
+        103440,
+        254848,
+        52560,
+        425728,
+        159200,
+        351744,
+        52560,
+        63072,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw0",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.draw0.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        113760,
+        53840,
+        103440,
+        335200,
+        0,
+        0,
+        438640,
+        0,
+        53840,
+        113760,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw0",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.draw1.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        3,
+        3,
+        5,
+        5,
+        6,
+        6,
+        4,
+        4,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        12768,
+        55760,
+        103440,
+        254848,
+        52560,
+        425728,
+        159200,
+        351744,
+        52560,
+        63072,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw1",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.draw1.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        113760,
+        53840,
+        103440,
+        335200,
+        0,
+        0,
+        438640,
+        0,
+        53840,
+        113760,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw1",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.draw2.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        3,
+        3,
+        5,
+        5,
+        6,
+        6,
+        4,
+        4,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        12768,
+        55760,
+        103440,
+        254848,
+        52560,
+        425728,
+        159200,
+        351744,
+        52560,
+        63072,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw2",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.bow.draw2.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        113760,
+        53840,
+        103440,
+        335200,
+        0,
+        0,
+        438640,
+        0,
+        53840,
+        113760,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw2",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.sword.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        1,
+        2,
+        3,
+        4,
+        4,
+        4,
+        2,
+        2,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        12768,
+        55760,
+        191776,
+        63072,
+        247024,
+        231264,
+        189584,
+        351744,
+        52560,
+        63072,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 1,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.sword.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        65376,
+        53840,
+        0,
+        281056,
+        0,
+        0,
+        335200,
+        0,
+        53840,
+        113760,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.dagger.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        1,
+        1,
+        2,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        12768,
+        55760,
+        0,
+        63072,
+        244336,
+        231264,
+        55760,
+        300864,
+        52560,
+        63072,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 2,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.quarry.dagger.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        113760,
+        53840,
+        0,
+        335200,
+        0,
+        0,
+        335200,
+        0,
+        53840,
+        113760,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        24192,
+        50000,
+        0,
+        185248,
+        0,
+        0,
+        186304,
+        0,
+        50000,
+        94752,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "Alder",
+        "Wood",
+        "alder enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        5,
+        5,
+        5,
+        5,
+        3,
+        3
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        16416,
+        43520,
+        0,
+        239056,
+        0,
+        157792,
+        82320,
+        191488,
+        43520,
+        86976,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "Alder",
+        "Wood",
+        "alder enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.draw0.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        24192,
+        50000,
+        0,
+        252768,
+        0,
+        0,
+        253824,
+        0,
+        50000,
+        94752,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw0",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.draw0.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        16416,
+        43520,
+        0,
+        306576,
+        0,
+        157792,
+        149840,
+        191488,
+        43520,
+        86976,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw0",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.draw1.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        24192,
+        50000,
+        0,
+        179392,
+        0,
+        0,
+        253824,
+        0,
+        50000,
+        103968,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw1",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.draw1.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        16416,
+        43520,
+        0,
+        306576,
+        0,
+        157792,
+        149840,
+        191488,
+        43520,
+        86976,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw1",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.draw2.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        24192,
+        50000,
+        0,
+        179392,
+        0,
+        0,
+        253824,
+        0,
+        50000,
+        103968,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 5,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw2",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.bow.draw2.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        4,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        16416,
+        43520,
+        0,
+        306576,
+        0,
+        157792,
+        149840,
+        191488,
+        43520,
+        86976,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bow draw2",
+        "enchanted (same)"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.sword.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        24192,
+        50000,
+        0,
+        185248,
+        0,
+        186304,
+        0,
+        220000,
+        50000,
+        94752,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.sword.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        16416,
+        43520,
+        0,
+        239056,
+        0,
+        157792,
+        82320,
+        191488,
+        43520,
+        86976,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.dagger.v1",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        24192,
+        50000,
+        0,
+        185248,
+        0,
+        186304,
+        0,
+        220000,
+        50000,
+        94752,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 4,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    },
+    {
+      "key": "fx.scout.veil.dagger.v2",
+      "size": [
+        16,
+        192
+      ],
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        16416,
+        43520,
+        0,
+        239056,
+        0,
+        157792,
+        82320,
+        191488,
+        43520,
+        86976,
+        0,
+        0
+      ],
+      "seam_delta": 0,
+      "exact_seam_hold": true,
+      "identical_adjacent_frames": 3,
+      "gif_frames": 12,
+      "gif_frame_ms": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "gif_roundtrip_pass": true,
+      "preview_weapons": [
+        "bronze",
+        "iron",
+        "steel",
+        "silversteel",
+        "embersteel",
+        "abyssal steel",
+        "iron enchanted"
+      ]
+    }
+  ],
+  "monotone_particle_paths": true,
+  "family_timing_pass": true,
+  "class_counts": {
+    "mage": 12,
+    "warrior": 12,
+    "priest": 12,
+    "scout": 24
+  }
+}

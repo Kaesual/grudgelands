@@ -1,0 +1,1924 @@
+{
+  "scope": "Media checks only; no fixtures, Lua execution or engine runs",
+  "strip_count": 30,
+  "gif_count": 30,
+  "family_timing_unchanged": true,
+  "monotone_particle_paths": true,
+  "assets": [
+    {
+      "file": "grug_abilities_fx_ember_staff.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        128
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 19,
+          "per_frame": [
+            1,
+            2,
+            4,
+            4,
+            3,
+            3,
+            1,
+            1
+          ],
+          "empty_frames": 0
+        },
+        "new": {
+          "total": 29,
+          "per_frame": [
+            2,
+            4,
+            5,
+            5,
+            4,
+            4,
+            3,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "wood": 91,
+        "bronze": 97,
+        "iron": 125,
+        "steel": 216,
+        "silversteel": 216,
+        "embersteel": 164,
+        "abyssal steel": 195,
+        "iron enchanted": 122
+      },
+      "gif_frames": 8,
+      "gif_frame_ms": 120,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_ember_wand.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        128
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 11,
+          "per_frame": [
+            0,
+            1,
+            3,
+            3,
+            2,
+            2,
+            0,
+            0
+          ],
+          "empty_frames": 3
+        },
+        "new": {
+          "total": 24,
+          "per_frame": [
+            2,
+            3,
+            4,
+            4,
+            3,
+            3,
+            3,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 122,
+        "iron": 177,
+        "steel": 203,
+        "silversteel": 216,
+        "embersteel": 146,
+        "abyssal steel": 202,
+        "iron enchanted": 148
+      },
+      "gif_frames": 8,
+      "gif_frame_ms": 120,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_ember_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        128
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 11,
+          "per_frame": [
+            0,
+            1,
+            3,
+            3,
+            2,
+            2,
+            0,
+            0
+          ],
+          "empty_frames": 3
+        },
+        "new": {
+          "total": 24,
+          "per_frame": [
+            2,
+            3,
+            4,
+            4,
+            3,
+            3,
+            3,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 120,
+        "iron": 125,
+        "steel": 216,
+        "silversteel": 216,
+        "embersteel": 164,
+        "abyssal steel": 195,
+        "iron enchanted": 122
+      },
+      "gif_frames": 8,
+      "gif_frame_ms": 120,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_rime_staff.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 28,
+          "per_frame": [
+            0,
+            0,
+            2,
+            3,
+            5,
+            5,
+            5,
+            5,
+            3,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 43,
+          "per_frame": [
+            2,
+            2,
+            2,
+            3,
+            5,
+            6,
+            6,
+            6,
+            4,
+            3,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 8,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "wood": 117,
+        "bronze": 168,
+        "iron": 84,
+        "steel": 108,
+        "silversteel": 108,
+        "embersteel": 163,
+        "abyssal steel": 85,
+        "iron enchanted": 66
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_rime_wand.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 24,
+          "per_frame": [
+            0,
+            0,
+            2,
+            3,
+            4,
+            4,
+            4,
+            4,
+            3,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 39,
+          "per_frame": [
+            2,
+            2,
+            2,
+            3,
+            4,
+            5,
+            5,
+            5,
+            4,
+            3,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 8,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 163,
+        "iron": 129,
+        "steel": 146,
+        "silversteel": 151,
+        "embersteel": 163,
+        "abyssal steel": 129,
+        "iron enchanted": 129
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_rime_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 24,
+          "per_frame": [
+            0,
+            0,
+            2,
+            3,
+            4,
+            4,
+            4,
+            4,
+            3,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 39,
+          "per_frame": [
+            2,
+            2,
+            2,
+            3,
+            4,
+            5,
+            5,
+            5,
+            4,
+            3,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 8,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 163,
+        "iron": 84,
+        "steel": 85,
+        "silversteel": 66,
+        "embersteel": 163,
+        "abyssal steel": 120,
+        "iron enchanted": 62
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_mercy_staff.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 16,
+          "per_frame": [
+            0,
+            0,
+            0,
+            2,
+            3,
+            3,
+            3,
+            3,
+            2,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 6
+        },
+        "new": {
+          "total": 36,
+          "per_frame": [
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            4,
+            3,
+            3,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "wood": 51,
+        "bronze": 130,
+        "iron": 115,
+        "steel": 206,
+        "silversteel": 206,
+        "embersteel": 135,
+        "abyssal steel": 185,
+        "iron enchanted": 115
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_mercy_wand.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 16,
+          "per_frame": [
+            0,
+            0,
+            0,
+            2,
+            3,
+            3,
+            3,
+            3,
+            2,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 6
+        },
+        "new": {
+          "total": 44,
+          "per_frame": [
+            3,
+            3,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            3,
+            3
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 89,
+        "iron": 91,
+        "steel": 89,
+        "silversteel": 93,
+        "embersteel": 89,
+        "abyssal steel": 111,
+        "iron enchanted": 89
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_mercy_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 16,
+          "per_frame": [
+            0,
+            0,
+            0,
+            2,
+            3,
+            3,
+            3,
+            3,
+            2,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 6
+        },
+        "new": {
+          "total": 44,
+          "per_frame": [
+            3,
+            3,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            3,
+            3
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 87,
+        "iron": 87,
+        "steel": 151,
+        "silversteel": 151,
+        "embersteel": 87,
+        "abyssal steel": 130,
+        "iron enchanted": 87
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_reckoning_staff.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 8,
+          "per_frame": [
+            0,
+            0,
+            5,
+            2,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 9
+        },
+        "new": {
+          "total": 27,
+          "per_frame": [
+            2,
+            2,
+            5,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 4,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "wood": 49,
+        "bronze": 62,
+        "iron": 75,
+        "steel": 171,
+        "silversteel": 183,
+        "embersteel": 54,
+        "abyssal steel": 143,
+        "iron enchanted": 103
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 160,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_reckoning_wand.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 8,
+          "per_frame": [
+            0,
+            0,
+            4,
+            3,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 9
+        },
+        "new": {
+          "total": 27,
+          "per_frame": [
+            2,
+            2,
+            4,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 4,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 90,
+        "iron": 90,
+        "steel": 106,
+        "silversteel": 132,
+        "embersteel": 90,
+        "abyssal steel": 98,
+        "iron enchanted": 123
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 160,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_reckoning_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 9,
+          "per_frame": [
+            0,
+            0,
+            5,
+            3,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 9
+        },
+        "new": {
+          "total": 28,
+          "per_frame": [
+            2,
+            2,
+            5,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 4,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 94,
+        "iron": 137,
+        "steel": 81,
+        "silversteel": 81,
+        "embersteel": 151,
+        "abyssal steel": 153,
+        "iron enchanted": 137
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 160,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_bulwark_sword.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 7,
+          "per_frame": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 7
+        },
+        "new": {
+          "total": 28,
+          "per_frame": [
+            2,
+            3,
+            4,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 176,
+        "iron": 109,
+        "steel": 65,
+        "silversteel": 69,
+        "embersteel": 173,
+        "abyssal steel": 97,
+        "iron enchanted": 111
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 180,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_bulwark_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 5,
+          "per_frame": [
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 7
+        },
+        "new": {
+          "total": 24,
+          "per_frame": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 5,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 173,
+        "iron": 94,
+        "steel": 173,
+        "silversteel": 171,
+        "embersteel": 173,
+        "abyssal steel": 130,
+        "iron enchanted": 69
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 180,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_bulwark_greataxe.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 10,
+          "per_frame": [
+            0,
+            2,
+            2,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 7
+        },
+        "new": {
+          "total": 45,
+          "per_frame": [
+            3,
+            5,
+            5,
+            6,
+            5,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 190,
+        "iron": 150,
+        "steel": 173,
+        "silversteel": 178,
+        "embersteel": 190,
+        "abyssal steel": 148,
+        "iron enchanted": 131
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 180,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_ruin_sword.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        160
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 19,
+          "per_frame": [
+            0,
+            4,
+            4,
+            1,
+            5,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 45,
+          "per_frame": [
+            4,
+            4,
+            5,
+            5,
+            5,
+            5,
+            5,
+            4,
+            4,
+            4
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 51,
+        "iron": 64,
+        "steel": 104,
+        "silversteel": 119,
+        "embersteel": 58,
+        "abyssal steel": 78,
+        "iron enchanted": 64
+      },
+      "gif_frames": 10,
+      "gif_frame_ms": 160,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_ruin_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        160
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 11,
+          "per_frame": [
+            0,
+            2,
+            2,
+            1,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 25,
+          "per_frame": [
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 97,
+        "iron": 108,
+        "steel": 193,
+        "silversteel": 193,
+        "embersteel": 146,
+        "abyssal steel": 156,
+        "iron enchanted": 83
+      },
+      "gif_frames": 10,
+      "gif_frame_ms": 160,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_ruin_greataxe.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        160
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 27,
+          "per_frame": [
+            0,
+            6,
+            6,
+            1,
+            7,
+            7,
+            0,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 65,
+          "per_frame": [
+            6,
+            6,
+            7,
+            7,
+            7,
+            7,
+            7,
+            6,
+            6,
+            6
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 139,
+        "iron": 179,
+        "steel": 201,
+        "silversteel": 209,
+        "embersteel": 169,
+        "abyssal steel": 190,
+        "iron enchanted": 179
+      },
+      "gif_frames": 10,
+      "gif_frame_ms": 160,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_quarry_bow.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 13,
+          "per_frame": [
+            0,
+            0,
+            1,
+            2,
+            2,
+            3,
+            3,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 34,
+          "per_frame": [
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            5,
+            5,
+            3,
+            3,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 10,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "Alder": 85,
+        "Wood": 85,
+        "alder enchanted": 85
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_quarry_bow_draw0.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 17,
+          "per_frame": [
+            0,
+            0,
+            1,
+            3,
+            3,
+            4,
+            4,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 48,
+          "per_frame": [
+            3,
+            3,
+            3,
+            3,
+            5,
+            5,
+            6,
+            6,
+            4,
+            4,
+            3,
+            3
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 10,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bow draw0": 90,
+        "enchanted (same)": 90
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_quarry_bow_draw1.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 17,
+          "per_frame": [
+            0,
+            0,
+            1,
+            3,
+            3,
+            4,
+            4,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 48,
+          "per_frame": [
+            3,
+            3,
+            3,
+            3,
+            5,
+            5,
+            6,
+            6,
+            4,
+            4,
+            3,
+            3
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 10,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bow draw1": 134,
+        "enchanted (same)": 134
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_quarry_bow_draw2.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 17,
+          "per_frame": [
+            0,
+            0,
+            1,
+            3,
+            3,
+            4,
+            4,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 48,
+          "per_frame": [
+            3,
+            3,
+            3,
+            3,
+            5,
+            5,
+            6,
+            6,
+            4,
+            4,
+            3,
+            3
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 10,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bow draw2": 134,
+        "enchanted (same)": 134
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_quarry_sword.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 9,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            1,
+            2,
+            2,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 34,
+          "per_frame": [
+            2,
+            2,
+            2,
+            2,
+            3,
+            4,
+            4,
+            5,
+            3,
+            3,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 10,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 126,
+        "iron": 57,
+        "steel": 119,
+        "silversteel": 127,
+        "embersteel": 98,
+        "abyssal steel": 58,
+        "iron enchanted": 57
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_quarry_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 9,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            1,
+            2,
+            2,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 30,
+          "per_frame": [
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 9,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 208,
+        "iron": 129,
+        "steel": 208,
+        "silversteel": 206,
+        "embersteel": 208,
+        "abyssal steel": 165,
+        "iron enchanted": 75
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 260,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_veil_bow.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 7,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 45,
+          "per_frame": [
+            3,
+            3,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            5,
+            3,
+            3
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "Alder": 171,
+        "Wood": 171,
+        "alder enchanted": 171
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_veil_bow_draw0.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 10,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            2,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 57,
+          "per_frame": [
+            4,
+            4,
+            4,
+            4,
+            5,
+            5,
+            5,
+            6,
+            6,
+            6,
+            4,
+            4
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bow draw0": 157,
+        "enchanted (same)": 157
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_veil_bow_draw1.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 10,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            2,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 51,
+          "per_frame": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            5,
+            5,
+            5,
+            4,
+            4
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bow draw1": 99,
+        "enchanted (same)": 99
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_veil_bow_draw2.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 10,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            2,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 51,
+          "per_frame": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            5,
+            5,
+            5,
+            4,
+            4
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 6,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bow draw2": 99,
+        "enchanted (same)": 99
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_veil_sword.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 7,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 34,
+          "per_frame": [
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            4,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 178,
+        "iron": 109,
+        "steel": 55,
+        "silversteel": 70,
+        "embersteel": 185,
+        "abyssal steel": 90,
+        "iron enchanted": 109
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    },
+    {
+      "file": "grug_abilities_fx_veil_dagger.png",
+      "alpha_levels": [
+        0,
+        255
+      ],
+      "size": [
+        16,
+        192
+      ],
+      "visible_pixels": {
+        "old": {
+          "total": 7,
+          "per_frame": [
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "empty_frames": 5
+        },
+        "new": {
+          "total": 34,
+          "per_frame": [
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            4,
+            2,
+            2
+          ],
+          "empty_frames": 0
+        }
+      },
+      "grip_or_string_pixels": 0,
+      "original_motion_pixels_retained": true,
+      "added_footprint_pixels": [
+        [
+          8,
+          6
+        ]
+      ],
+      "seam_delta": 0,
+      "distinct_frames": 7,
+      "minimum_peak_rgb_contrast_by_sample": {
+        "bronze": 109,
+        "iron": 59,
+        "steel": 144,
+        "silversteel": 144,
+        "embersteel": 115,
+        "abyssal steel": 85,
+        "iron enchanted": 64
+      },
+      "gif_frames": 12,
+      "gif_frame_ms": 280,
+      "gif_exact_rgb_roundtrip": true
+    }
+  ]
+}
