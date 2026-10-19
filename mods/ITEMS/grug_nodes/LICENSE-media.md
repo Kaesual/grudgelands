@@ -9,6 +9,7 @@ Four groups, listed in their own tables below:
 4. **Land grounds (Round 51)** — original, CC0 1.0, by GPT-6 Astra and
    Claude; they replace several files of groups 1 and 3 under the same
    names.
+5. **Shipwreck set (Round 51)** — original, CC0 1.0, by GPT-6 Astra.
 
 ## 1. Biome signature tops — derived from minetest_game
 
@@ -128,3 +129,25 @@ commit `c16c6bcb`).
 | `grug_nodes_clay_band_chalk.png` | `tools/r51_land/grounds/clay_band_chalk_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_clay_band_umber.png` | `tools/r51_land/grounds/clay_band_umber_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_sand.png` | `tools/r51_land/grounds/sand_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only; `default:sand`, `default:sand_with_kelp` and `grug_mapgen:freshwater_waterweed` bind it (the vendored `default_sand.png` stays unchanged) |
+
+## 5. Shipwreck set (Round 51) — CC0 1.0
+
+Original textures for Grudgelands by GPT-6 Astra (lane ARTS, 2026-10-19),
+picked by the user on the wreck page (`tools/r51_wreck/wreck.html`) and
+copied byte for byte from `tools/r51_sea` under this mod's names. No
+downloaded, traced or recoloured third-party pixels. Generator and per-file
+record: `tools/r51_sea/sea_art.py`, `tools/r51_sea/README.md` and
+`tools/r51_sea/LICENSE-media.md` (merged at `101f2091`).
+
+**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_nodes_wreck_planks.png` | `tools/r51_sea/wreck_planks.png` (`sea_art.py`, original opaque plank texture) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wreck_planks_algae.png` | `tools/r51_sea/wreck_planks_algae.png` (`sea_art.py`, original algae on the original planks) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wreck_log.png` | `tools/r51_sea/wreck_log.png` (`sea_art.py`, original hewn timber side) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wreck_log_top.png` | `tools/r51_sea/wreck_log_top.png` (`sea_art.py`, original end grain and splits) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wreck_mast.png` | `tools/r51_sea/wreck_mast.png` (`sea_art.py`, original four-pixel pole, vertically periodic) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wreck_rope.png` | `tools/r51_sea/wreck_rope.png` (`sea_art.py`, original coil and frayed tail) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wreck_sail.png` | `tools/r51_sea/wreck_sail.png` (`sea_art.py`, original ragged canvas and peg) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_wreck_algae.png` | `tools/r51_sea/wreck_algae.png` (`sea_art.py`, original branching tuft) | GPT-6 Astra | CC0 1.0 | renamed only |

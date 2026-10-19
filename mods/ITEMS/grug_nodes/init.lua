@@ -424,3 +424,6 @@ grug_nodes = {}
 local crop_path = core.get_modpath("grug_nodes")
 grug_nodes.crop_visual = dofile(crop_path .. "/crop_visual.lua")
 grug_nodes.bind_crop_soil_callbacks = dofile(crop_path .. "/crop_soil.lua")(core, default)
+
+-- Round 51 lane WRECK: the shipwreck nodes (before R7 builds its writers).
+dofile(crop_path .. "/wreck.lua")
