@@ -164,6 +164,13 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
   saplings count as plants. A generated tree (Round 47) is counted by its
   trunk logs and trunk quarters, divided by the mean trunk columns of the
   world's variants of its species.
+- *The seabed* (Round 51 T3): seagrass and kelp regrow on the sand bed where
+  the generator's own seabed rule grows them (`wp40/seabed.lua`, read through
+  the authority's `seabed`), at the same variant and kelp height, with the
+  ground-cover chance, once the bare `default:sand` bed lies under water
+  source again. A renewal sample that finds no open ground (under water) asks
+  the seabed instead; no extra sample is taken. Coral patches stay as
+  generated and do not renew.
 - Every decoration species' rate is multiplied by its altitude class factor
   at the spot, from the same vegetation rule the generator uses
   (`habitat_registry.lua` `vegetation_rule`, [world_zones.md](world_zones.md)
@@ -185,7 +192,10 @@ territory rule refuses natural change (`grug_core.natural_ground_alterable`:
 towns, landmarks, immutable ground) or a natural renewal guard. The one guard
 is the Claim Stone's: inside an active claim there is no natural renewal (wild
 plants, trees); an expired claim renews like any other ground (Round 25 rulings 14
-and 19, `housing.md` §6.4). Other
+and 19, `housing.md` §6.4). The one exception to the territory rule is the
+seabed's (Round 51 T3): seagrass and kelp regrow in protected bay, belt and
+channel water too (`grug_core.water_plant_renewal_allowed`), never in the open
+sea, and nothing else passes through it. Other
 player protection is never consulted. Each class keeps its
 own writer's claim exclusions: resource plants the "gathering" rule (the
 static shapes as trees see them — start towns, capitals, a POI's core and

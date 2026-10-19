@@ -609,6 +609,39 @@ return function(deps)
 		return result, values
 	end
 
+	-- The seabed's regrowing plants (Round 51 T3; L18, the user 2026-10-19):
+	-- the seagrass or kelp the generator grows at this column (seabed.lua, the
+	-- writer's own rule, `deps.seabed`, optional), as the node, its param2,
+	-- the bed y and the water surface y; nil where it grows none, where it
+	-- grows coral (coral patches stay as generated) or under a settlement,
+	-- road or POI exclusion. The writer's classes: the belt, a bay, a channel.
+	local seabed = deps.seabed
+	local SEAGRASS = {}
+	for index = 1, #(deps.seagrass_names or {}) do SEAGRASS[index] = deps.seagrass_names[index] end
+	function M.seabed(x, z)
+		if not seabed then return nil end
+		local water, _, _, _, _, ground, water_y, river_id = column_values_at(x, z)
+		if not water_y or water_y <= ground then return nil end
+		if water ~= "coastal_shelf" and water ~= "immutable_dragon_channel" and
+				not (water == "planned_water" and river_id == nil) then
+			return nil
+		end
+		local _, id = deps.static_exclusion_values_at(x, z)
+		if id ~= nil and id:sub(1, 14) ~= "exclude:water:" and
+				id:sub(1, 14) ~= "exclude:coast:" then
+			return nil
+		end
+		if deps.overlay_exclusion_at(x, z) ~= nil then return nil end
+		local depth = water_y - ground
+		local kind, variant = seabed.at(x, z, depth)
+		if kind == "kelp" then
+			return "default:sand_with_kelp", seabed.kelp_height(x, z, depth) * 16, ground, water_y
+		elseif kind == "seagrass" and SEAGRASS[variant] then
+			return SEAGRASS[variant], 0, ground, water_y
+		end
+		return nil
+	end
+
 	-- Support names any renewable plant accepts (sorted).
 	function M.support_names() return support_list end
 	-- Every ground-cover plant node (sorted); counted together as one total.

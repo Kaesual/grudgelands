@@ -586,6 +586,9 @@ do
 		-- The territory rule plus the natural renewal guards (an active
 		-- Claim Stone's claim, Round 25 ruling 14).
 		natural_ground_alterable = grug_core.natural_renewal_allowed,
+		-- The seabed's seagrass and kelp also regrow in protected water
+		-- (Round 51 T3): their one exception, never any other plant's.
+		water_plant_alterable = grug_core.water_plant_renewal_allowed,
 		random = math.random,
 		trees = core.settings:get_bool("grug_tree_regrowth", true),
 		non_natural = {},

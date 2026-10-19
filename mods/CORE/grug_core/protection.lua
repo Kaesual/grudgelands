@@ -62,6 +62,23 @@ function grug_core.natural_renewal_allowed(pos)
 	return true
 end
 
+-- The one exception for the water plants (Round 51 T3, coordinator decision
+-- on the sea plan's ruling 8): seagrass and kelp regrow in protected bay,
+-- belt and channel water, which the territory rule keeps immutable for
+-- everything else. Only the seabed renewal (grug_farming/renewal.lua) asks
+-- this; the natural renewal guards (claims) still answer.
+function grug_core.water_plant_renewal_allowed(pos)
+	if grug_core.natural_renewal_allowed(pos) then return true end
+	if not grug_core.zone_authority_installed() then return false end
+	if grug_zones.territory_rule_at(pos) ~= "immutable" then return false end
+	local class = grug_zones.water_query_at(pos.x, pos.z)
+	if class ~= "bay" and class ~= "belt" and class ~= "channel" then return false end
+	for index = 1, #natural_renewal_guards do
+		if natural_renewal_guards[index](pos) == false then return false end
+	end
+	return true
+end
+
 function grug_core.world_alterable(pos)
 	if not grug_core.natural_ground_alterable(pos) then return false end
 	return not grug_core.world_alteration_guarded(pos)
