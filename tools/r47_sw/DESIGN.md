@@ -308,12 +308,22 @@ lianas under jungle leaves with open air below (2–6 long, at least one node
 above the ground). The skeleton set replaces the bone pile; the swamp's
 own moss replaces the moss soil there; the clay bands take the faces of
 steep badland columns by height (a 7-node cycle of four colours).
+Lichen (rework after the user's first look, 2026-10-19) lies in small
+patches: a patch centre in 1 of 450 columns, 2–5 carpets within 2 of it,
+only on gravel and stone; the carpet is drawn with alpha clip (the ground
+shows through). The undead got more variety at about the same density:
+ruin variants (a broken arch, a column stub, a sunken wall corner whose
+lowest course is the ground's top, a crypt doorway over a sunken step
+with rubble), fallen gravewood logs, gravewood stumps (a log with
+gravewood's own branch or twig shape on top and a root base beside it),
+earth grave mounds, and wild graveyards that differ per seed (2–6 stones,
+2 or 3 apart, a mix leaning to steles or crosses, a fence on 0–2 sides).
 
 | zone | keys |
 | --- | --- |
 | swamp | `swamp.ground.calm`, `swamp.ground.mud32`, `swamp.moss`, `moss.forest`, `swamp.hanging_moss`, `swamp.papyrus` |
 | jungle | `jungle.ground.canopy32`, `jungle.liana`, `jungle.flower.ruby_fan`, `jungle.flower.ember_star`, `jungle.flower.violet_fan`, `jungle.fern`, `jungle.bush`, `jungle.log` |
-| undead | `undead.ground.blight32`, `undead.ground.bone_litter32`, `undead.graveyard`, `undead.ruin`, `undead.statue`, `undead.obelisk`, `undead.bones`, `undead.town_graveyard`, `gravestone.slab`, `gravestone.cross`, `bones.skull_human`, `bones.skull_horned`, `bones.ribcage_human`, `bones.spine_animal`, `bones.scattered`, `bones.fragments` |
+| undead | `undead.ground.blight32`, `undead.ground.bone_litter32`, `undead.graveyard`, `undead.ruin`, `undead.ruin.arch`, `undead.ruin.column`, `undead.ruin.corner`, `undead.crypt`, `undead.log`, `undead.stump`, `undead.grave_mound`, `undead.statue`, `undead.obelisk`, `undead.bones`, `undead.town_graveyard`, `gravestone.slab`, `gravestone.cross`, `bones.skull_human`, `bones.skull_horned`, `bones.ribcage_human`, `bones.spine_animal`, `bones.scattered`, `bones.fragments` |
 | dwarf | `dwarf.boulder`, `dwarf.lichen`, `dwarf.alpine`, `dwarf.cairn.blocks`, `dwarf.cairn.branches`, `dwarf.ice`, `dwarf.dead_pine` |
 | orc | `orc.ground.mesa32`, `orc.bones`, `orc.withered_bush`, `orc.clay_bands`, the `bones.*` pieces |
 | elves | `elves.ground.silver32`, `moss.forest`, `elves.ruin`, `elves.statue`, `elves.flower.blush_star`, `elves.flower.lilac_bells`, `elves.flower.cream_cups`, `elves.log` |
