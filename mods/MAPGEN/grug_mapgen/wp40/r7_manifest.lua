@@ -109,6 +109,13 @@ return function(canonical, raw_sha256, settlement_order)
 	-- ground list, which moves the WP43 projection (was `785f36400419118f...`);
 	-- the gathering catalog's swamp hosts take the mixed ground, which moves
 	-- the gathering manifest (was `56a3daf013148e99...`).
+	-- Round 51 LK: the land kit's props, cairn shapes and default blocks join
+	-- the production rows (122 -> 148) and dirt, gravel, mossy cobble and
+	-- stone take the decoration role, which moves the accepted-content limb
+	-- (was `6a978d54d87588b0...`), the production semantics (the bone pile
+	-- became a node box too; was `630445ae282ddbb3...`) and the decoded MTS
+	-- templates, whose content refs shift with the inserted rows (was
+	-- `2facd3c930837487...`).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -382,7 +389,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"630445ae282ddbb35c77a8dd03eddb46df1e3d8c2f276fa3d9f4d26ee487b0ed" or
+				"15fe829f3935859716d47e6cf162179059e8f23697e64cb01133699edabf14e8" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -545,9 +552,9 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"6a978d54d87588b05de56b5d2fc206f643ae6f4386f95dbe6b3a4eb5eae5c661" or
+				"34399993578b098c1f303e93512fbf5330658a300db50f06872e08deb8987135" or
 			frozen.decoded_templates ~=
-				"2facd3c930837487138e8d4d823da98d698a7ce1213252e6b78f3d40dfe07152" or
+				"22917b4bc30a1e7927d2fa2c8893b83993ec007f6e4e0deea4549a735ab2c9b7" or
 			frozen.wp43_projection ~=
 				"aa6e16d73513fa6c783ee025203e766b03154f12607f7889634853bba4370fee" or
 			frozen.consumer_payload ~=
