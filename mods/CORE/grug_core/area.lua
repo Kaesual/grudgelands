@@ -88,10 +88,11 @@ function area.ground_below(point, start)
 	return nil
 end
 
--- The terrain point of a ray: the first walkable or liquid node it meets
--- (plants are passed; a liquid surface is a point, so deep water finds no
--- ground below it). Node-only, so the engine's raycast is the right one
--- (AGENTS.md "Combat, input and notices").
+-- The terrain point of a ray: the first walkable (or unknown) or liquid
+-- node it meets (plants are passed; a liquid surface is a point, so deep
+-- water finds no ground below it). Node-only, so the engine's raycast is the
+-- right one (AGENTS.md "Combat, input and notices"); objects do not stop it,
+-- so an object that is no legal enemy leaves the terrain behind it.
 local function terrain_point(ray)
 	if not ray.origin or not ray.destination then
 		return nil
@@ -100,7 +101,7 @@ local function terrain_point(ray)
 		if pointed.type == "node" then
 			local node = core.get_node_or_nil(pointed.under)
 			local def = node and core.registered_nodes[node.name]
-			if def and (def.walkable ~= false or
+			if node and (def == nil or def.walkable ~= false or
 					(def.liquidtype or "none") ~= "none") then
 				return pointed.intersection_point, pointed.above
 			end
