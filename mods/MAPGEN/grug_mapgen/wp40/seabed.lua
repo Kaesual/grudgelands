@@ -25,7 +25,7 @@
 -- its noise (EDGE, about 3-6 nodes wide at the noise's usual slope) and a
 -- few single tufts stand beyond it (TUFT, about as wide again); a coral
 -- patch keeps its ellipse and gains a sparse rim and a few loose pieces
--- round it.
+-- round it. Toward the deepest depth a meadow grows the fill thins as well.
 return function(full_seed_string)
 	assert(type(full_seed_string) == "string" and full_seed_string ~= "",
 		"seabed: full seed missing")
@@ -94,12 +94,22 @@ return function(full_seed_string)
 		return 0
 	end
 	M.fill = fill
+	-- The deep end fades too: the fill thins over the last DEEP_FADE nodes
+	-- of depth (coral 6-10, seagrass 10-14, kelp 16-20), so a meadow does not
+	-- end on a depth line either.
+	M.DEEP_FADE = 5
+	local function deep_fade(depth, deepest)
+		local left = deepest + 1 - depth
+		if left >= M.DEEP_FADE then return 1 end
+		return left / M.DEEP_FADE
+	end
+	M.deep_fade = deep_fade
 
 	-- The coral patch whose ellipse, rim or loose pieces hold this column:
 	-- its own 16-node cell first, then the eight round it (a patch near its
 	-- cell's side reaches across), the first that grows here wins.
 	local CELLS = {{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}, {-1, 1}, {1, 1}}
-	local function coral_at(x, z)
+	local function coral_at(x, z, depth)
 		local home_x, home_z = floor(x / 16), floor(z / 16)
 		local chance_roll = roll(x, z, 113)
 		for c = 1, #CELLS do
@@ -116,7 +126,9 @@ return function(full_seed_string)
 					local chance = q <= size and M.CORAL_FILL or
 						q <= M.CORAL_RIM * size and M.CORAL_RIM_FILL or
 						q <= M.CORAL_LOOSE * size and M.CORAL_LOOSE_FILL or 0
-					if chance_roll < chance then return true end
+					if chance_roll < chance * deep_fade(depth, M.CORAL_MAX) then
+						return true
+					end
 				end
 			end
 		end
@@ -125,15 +137,15 @@ return function(full_seed_string)
 
 	function M.at(x, z, depth)
 		if depth < M.CORAL_MIN or depth > M.KELP_MAX then return nil end
-		if depth <= M.CORAL_MAX and coral_at(x, z) then
+		if depth <= M.CORAL_MAX and coral_at(x, z, depth) then
 			return "patch", reef_hash(x, z, 127) % 7
 		end
-		if depth >= M.KELP_MIN and
-				roll(x, z, 137) < fill(M.KELP_FADE, reef_noise(x, z, 24, 131)) then
+		if depth >= M.KELP_MIN and roll(x, z, 137) <
+				fill(M.KELP_FADE, reef_noise(x, z, 24, 131)) * deep_fade(depth, M.KELP_MAX) then
 			return "kelp"
 		end
-		if depth <= M.SEAGRASS_MAX and
-				roll(x, z, 157) < fill(M.SEAGRASS_FADE, reef_noise(x, z, 20, 151)) then
+		if depth <= M.SEAGRASS_MAX and roll(x, z, 157) <
+				fill(M.SEAGRASS_FADE, reef_noise(x, z, 20, 151)) * deep_fade(depth, M.SEAGRASS_MAX) then
 			return "seagrass", 1 + reef_hash(x, z, 163) % 3
 		end
 		return nil
