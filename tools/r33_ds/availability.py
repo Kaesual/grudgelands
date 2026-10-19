@@ -51,20 +51,27 @@ def presence():
                 zones[(family, band)].add(zone)
                 share[(family, band)] += weight
 
+        # Round 51 MOBS M2: a belt's water kinds (the water bands) take no
+        # land cell, so they share a belt among themselves and leave the
+        # land kinds' shares as they were.
+        water_types = ("sea_shallows", "sea_deep", "lake", "river")
         for belt in recipe.get("belts", []):
             lo, hi = belt["levels"]
-            kinds = belt["kinds"]
-            for kind in kinds.values():
-                for clock in ("day", "night"):
-                    rows = kind.get(clock)
-                    if isinstance(rows, str):
-                        rows = kind.get(rows)
-                    if not isinstance(rows, list):
-                        continue
-                    total = float(sum(r["weight"] for r in rows)) or 1.0
-                    for r in rows:
-                        place(r["role"], lo, hi, belt["share"] / 100.0 * r["weight"] / total
-                              / (2 * len(kinds)))
+            all_kinds = belt["kinds"]
+            groups = ({t: k for t, k in all_kinds.items() if t not in water_types},
+                      {t: k for t, k in all_kinds.items() if t in water_types})
+            for kinds in groups:
+                for kind in kinds.values():
+                    for clock in ("day", "night"):
+                        rows = kind.get(clock)
+                        if isinstance(rows, str):
+                            rows = kind.get(rows)
+                        if not isinstance(rows, list):
+                            continue
+                        total = float(sum(r["weight"] for r in rows)) or 1.0
+                        for r in rows:
+                            place(r["role"], lo, hi, belt["share"] / 100.0 * r["weight"] / total
+                                  / (2 * len(kinds)))
         for camp in recipe.get("camps", []):
             belt = belts.get(camp.get("belt"))
             lo, hi = belt["levels"] if belt else (1, 60)
