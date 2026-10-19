@@ -1,6 +1,7 @@
 # Class redesign: delivery plan
 
-Planning draft, 2026-10-19, for the user's decision. It turns the
+Planning draft, 2026-10-19. **The user confirmed the sequence (sections 2–5)
+and the rulings table (section 6) on 2026-10-19.** It turns the
 [continuation plan](continuation.md) §5 item 7 and §6 into a concrete
 sequence under the user's "maximally simple" rulings
 ([§4a](continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework))
@@ -25,7 +26,7 @@ Realistic scope: **two delivery rounds** plus an art lane that runs ahead.
 
 | Step | Content | Owner |
 |---|---|---|
-| P1 | Confirm the rulings table in section 6 | user |
+| P1 | ~~Confirm the rulings table in section 6~~ — confirmed 2026-10-19 | user |
 | P2 | **Balance calculator page** (artifact, outside the repository): class, tree, level, gear → hits to kill a normal and an elite mob, HP lost per fight, fights per mana pool, today versus new, from the inventory's numbers. The user tunes by feel; the result freezes the numbers per class | coordinator builds, user tunes |
 | P3 | Names for the two skills that carry exact names from a well-known commercial game ("Aimed Shot", "Ice Armor") and any other name the user wants changed | user picks from proposals |
 | P4 | Final node list per tree (inventory minus cut nodes such as Shelter, plus the decided renames): the input for the art lane and for the class lanes | coordinator |
