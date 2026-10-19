@@ -151,45 +151,15 @@
 	}
 
 	// Stand-in props in the prop format (tools/r51_land/README.md), tiles
-	// as texture strings of today's textures. A prop ARTL delivers under
-	// tools/r51_land/props/<id>/ with the same id takes their place.
-	var GRAVE = 'default_stone.png^[colorize:#5c6157:80';
-	var BONE = 'default_clay.png^[colorize:#e4dcc2:190';
+	// as texture strings of today's textures, for what ARTL has not drawn:
+	// the undead statue (ARTL's statue is the elves'). A prop ARTL delivers
+	// under tools/r51_land/props/<id>/ with the same id takes its place.
 	var STATUE = 'default_stone.png^[colorize:#8b8e84:50';
-	var ELF_STONE = 'default_silver_sandstone.png^[colorize:#c9cfc0:40';
-	var DRIFT = 'default_tree.png^[colorize:#b9b09e:160';
-	var ribs = [[-6, -8, -1, 6, -7, 1]];
-	for (var ri = -5; ri <= 4; ri += 3) {
-		ribs.push([ri, -8, -4, ri + 1, -4, -3], [ri, -8, 3, ri + 1, -4, 4], [ri, -4, -3, ri + 1, -3, 4]);
-	}
 	var STANDIN_PROPS = {
-		gravestone_slab: {name: 'Gravestone slab', drop: 'default:cobble', tiles: [GRAVE],
-			boxes: [[-5, -8, -1, 5, 8, 2]]},
-		gravestone_head: {name: 'Gravestone head', drop: 'default:cobble', tiles: [GRAVE],
-			boxes: [[-5, -8, -1, 5, 0, 2], [-4, 0, -1, 4, 3, 2], [-2, 3, -1, 2, 4, 2]]},
-		skull_human: {name: 'Skull (humanoid)', drop: '', tiles: [BONE],
-			boxes: [[-3, -8, -2, 3, -3, 3], [-3, -8, -3, 3, -5, -2], [-2, -5, -3, -1, -4, -2], [1, -5, -3, 2, -4, -2]]},
-		skull_animal: {name: 'Skull (animal)', drop: '', tiles: [BONE],
-			boxes: [[-2, -8, -1, 2, -4, 5], [-1, -8, -6, 1, -6, -1], [-5, -5, 2, -2, -4, 3], [2, -5, 2, 5, -4, 3]]},
-		ribcage: {name: 'Ribcage', drop: '', tiles: [BONE], boxes: ribs},
-		bones_scattered: {name: 'Scattered bones', drop: '', tiles: [BONE],
-			boxes: [[-6, -8, -3, 1, -7, -2], [2, -8, 1, 7, -7, 2], [-3, -8, 3, -2, -7, 7], [0, -8, -6, 1, -7, -1],
-				[-7, -8, -4, -5, -6, -1], [6, -8, 0, 8, -6, 3]]},
-		cairn_low: {name: 'Cairn stones, wide', drop: 'default:cobble', tiles: ['default_stone.png'],
-			boxes: [[-6, -8, -5, 6, -4, 5], [-5, -4, -6, 4, 0, 4], [-4, 0, -3, 5, 3, 5]]},
-		cairn_high: {name: 'Cairn stones, top', drop: 'default:cobble', tiles: ['default_cobble.png'],
-			boxes: [[-4, -8, -4, 4, -3, 4], [-3, -3, -3, 3, 1, 3], [-2, 1, -2, 2, 5, 2]]},
 		statue_body: {name: 'Statue body', drop: 'default:cobble', tiles: [STATUE],
 			boxes: [[-3, -8, -1, -1, 1, 1], [1, -8, -1, 3, 1, 1], [-4, 1, -2, 4, 8, 2], [-6, 0, -1, -4, 7, 1], [4, 0, -1, 6, 7, 1]]},
 		statue_head: {name: 'Statue head', drop: 'default:cobble', tiles: [STATUE],
-			boxes: [[-1, -8, -1, 1, -7, 1], [-3, -7, -3, 3, -1, 3]]},
-		elf_statue_body: {name: 'Elf statue body (decayed)', drop: 'default:silver_sandstone', tiles: [ELF_STONE],
-			boxes: [[-3, -8, -1, 3, 0, 1], [-4, 0, -2, 4, 8, 2], [4, 1, -1, 6, 6, 1]]},
-		obelisk_shaft: {name: 'Obelisk shaft', drop: 'default:cobble', tiles: [STATUE], boxes: [[-4, -8, -4, 4, 8, 4]]},
-		obelisk_tip: {name: 'Obelisk tip', drop: 'default:cobble', tiles: [STATUE],
-			boxes: [[-4, -8, -4, 4, -4, 4], [-3, -4, -3, 3, 0, 3], [-2, 0, -2, 2, 4, 2], [-1, 4, -1, 1, 7, 1]]},
-		driftwood: {name: 'Driftwood', drop: 'default:stick', tiles: [DRIFT],
-			boxes: [[-8, -8, -2, 8, -4, 2], [2, -7, 2, 3, -5, 6], [-5, -6, -4, -4, -5, -2]]}
+			boxes: [[-1, -8, -1, 1, -7, 1], [-3, -7, -3, 3, -1, 3]]}
 	};
 	// The props ARTL delivers (build.py inlines tools/r51_land/props).
 	var ART_PROPS = (D && D.props) || {};
@@ -279,7 +249,7 @@
 
 		{key: 'jungle.ground.canopy32', zones: ['jungle'], name: 'Canopy litter, 2 × 2 (ARTL, L6)',
 			tex: {'grug_nodes:dirt_with_canopy_litter': ['grounds/canopy_litter_top_32.png', DIRT, DIRT + '^grug_nodes_canopy_litter_side.png']}},
-		{key: 'jungle.liana', zones: ['jungle'], name: 'Lianas from jungle leaves (strand above an end piece)', den: 5,
+		{key: 'jungle.liana', zones: ['jungle'], name: 'Lianas from jungle leaves (strand above an end piece)', den: 8,
 			unit: 'free leaf undersides', kit: 'liana', plant: 'new:liana'},
 		{key: 'jungle.flower.ruby_fan', zones: ['jungle'], name: 'Flower: ruby fan (strong)', den: 300, plant: 'new:flower_ruby_fan'},
 		{key: 'jungle.flower.ember_star', zones: ['jungle'], name: 'Flower: ember star (strong)', den: 300, plant: 'new:flower_ember_star'},
@@ -293,26 +263,24 @@
 		{key: 'undead.ground.bone_litter32', zones: ['undead'], name: 'Bone litter, 2 × 2 (ARTL, L6)',
 			tex: {'grug_nodes:dirt_with_bone_litter': ['grounds/bone_litter_top_32.png', DIRT, DIRT + '^grug_nodes_bone_litter_side.png']}},
 		{key: 'undead.graveyard', zones: ['undead'], name: 'Small wild graveyard: 3–5 crooked gravestones, a broken fence', den: 5000,
-			standin: 'gravestone blocks', kit: 'graveyard'},
+			kit: 'graveyard'},
 		{key: 'undead.ruin', zones: ['undead'], name: 'Mossy ruin remnants (two or three wall pieces)', den: 5000, kit: 'ruinUndead'},
 		{key: 'undead.statue', zones: ['undead'], name: 'Weathered statue, rarely', den: 10000, standin: 'statue blocks', kit: 'statueUndead'},
-		{key: 'undead.obelisk', zones: ['undead'], name: 'Weathered obelisk, rarely', den: 10000, standin: 'obelisk blocks', kit: 'obelisk'},
+		{key: 'undead.obelisk', zones: ['undead'], name: 'Weathered obelisk, rarely (a broken tip on a stone shaft)', den: 10000, kit: 'obelisk'},
 		{key: 'undead.bones', zones: ['undead'], name: 'Skeleton pieces, singly or a pair; replace the bone pile (L8, L9)', den: 1500,
-			standin: 'skeleton set', kit: 'bones'},
+			kit: 'bones'},
 		{key: 'undead.town_graveyard', zones: ['undead'], name: 'The towns\' graveyards from the new gravestone blocks (kit view)',
-			standin: 'gravestone blocks', kit: 'townGraveyard', kitOnly: true},
-		{key: 'gravestone.slab', zones: ['undead'], name: 'Gravestone block: slab (L12)', standin: 'gravestone blocks',
-			piece: 'gravestone_slab', kitOnly: true},
-		{key: 'gravestone.head', zones: ['undead'], name: 'Gravestone block: head (L12)', standin: 'gravestone blocks',
-			piece: 'gravestone_head', kitOnly: true},
-		{key: 'bones.skull_human', zones: ['undead', 'orc'], name: 'Skeleton piece: skull, humanoid', standin: 'skeleton set',
-			piece: 'skull_human', kitOnly: true},
-		{key: 'bones.skull_animal', zones: ['undead', 'orc'], name: 'Skeleton piece: skull, animal', standin: 'skeleton set',
-			piece: 'skull_animal', kitOnly: true},
-		{key: 'bones.ribcage', zones: ['undead', 'orc'], name: 'Skeleton piece: ribcage', standin: 'skeleton set',
-			piece: 'ribcage', kitOnly: true},
-		{key: 'bones.scattered', zones: ['undead', 'orc'], name: 'Skeleton piece: scattered bones', standin: 'skeleton set',
+			kit: 'townGraveyard', kitOnly: true},
+		{key: 'gravestone.slab', zones: ['undead'], name: 'Gravestone block: weathered stele (L12)', piece: 'gravestone_slab', kitOnly: true},
+		{key: 'gravestone.cross', zones: ['undead'], name: 'Gravestone block: cross, alone or as the crown on a stele (L12)',
+			piece: 'gravestone_cross', kitOnly: true},
+		{key: 'bones.skull_human', zones: ['undead', 'orc'], name: 'Bone find: skull, humanoid', piece: 'skull_human', kitOnly: true},
+		{key: 'bones.skull_horned', zones: ['undead', 'orc'], name: 'Bone find: skull, horned animal', piece: 'skull_horned', kitOnly: true},
+		{key: 'bones.ribcage_human', zones: ['undead', 'orc'], name: 'Bone find: ribcage, humanoid', piece: 'ribcage_human', kitOnly: true},
+		{key: 'bones.spine_animal', zones: ['undead', 'orc'], name: 'Bone find: spine, small animal', piece: 'spine_animal', kitOnly: true},
+		{key: 'bones.scattered', zones: ['undead', 'orc'], name: 'Bone find: scattered long bones (the bone pile\'s successor)',
 			piece: 'bones_scattered', kitOnly: true},
+		{key: 'bones.fragments', zones: ['undead', 'orc'], name: 'Bone find: broken jaw and splinters', piece: 'bones_fragments', kitOnly: true},
 
 		{key: 'dwarf.boulder', zones: ['dwarf'], name: 'Boulders of 2–4 nodes, stone and mossy cobble', den: 500,
 			biomes: ['grug_crags', 'grug_crags_snowy', 'grug_pine_hills'], kit: 'boulder'},
@@ -321,7 +289,7 @@
 		{key: 'dwarf.alpine', zones: ['dwarf'], name: 'Small alpine plants (cushion, windshrub)', den: 40,
 			biomes: ['grug_crags', 'grug_pine_hills'], plant: 'new:alpine_cushion'},
 		{key: 'dwarf.cairn.blocks', zones: ['dwarf'], name: 'Cairn from cairn stone blocks (L13, variant A)', den: 4000,
-			standin: 'cairn stones', kit: 'cairnBlocks'},
+			kit: 'cairnBlocks'},
 		{key: 'dwarf.cairn.branches', zones: ['dwarf'], name: 'Cairn from the trees\' branch and twig shapes in stone (L13, variant B)', den: 4000,
 			kit: 'cairnBranches'},
 		{key: 'dwarf.ice', zones: ['dwarf'], name: 'Ice patches high up (default ice)', share: 0.1, biomes: ['grug_crags_snowy']},
@@ -330,7 +298,7 @@
 
 		{key: 'orc.ground.mesa32', zones: ['orc', 'savanna'], name: 'Mesa clay, 2 × 2 (ARTL, L6)',
 			tex: {'grug_nodes:mesa_clay': ['grounds/mesa_clay_32.png']}},
-		{key: 'orc.bones', zones: ['orc'], name: 'Skeleton pieces, humanoid and animal (L14)', den: 1500, standin: 'skeleton set', kit: 'bones'},
+		{key: 'orc.bones', zones: ['orc'], name: 'Skeleton pieces, humanoid and animal (L14)', den: 1500, kit: 'bones'},
 		{key: 'orc.withered_bush', zones: ['orc'], name: 'Yellow withered bush (an acacia bush with withered foliage)', den: 150,
 			kit: 'witheredBush'},
 		{key: 'orc.clay_bands', zones: ['orc'], name: 'Coloured clay bands on steep slopes (ochre, sienna, chalk, umber)'},
@@ -338,7 +306,7 @@
 		{key: 'elves.ground.silver32', zones: ['elves'], name: 'Structured silver litter, 2 × 2 (ARTL, L6)',
 			tex: {'grug_nodes:dirt_with_silver_litter': ['grounds/silver_litter_top_32.png', DIRT, DIRT + '^grug_nodes_silver_litter_side.png']}},
 		{key: 'elves.ruin', zones: ['elves'], name: 'Small ruin pieces', den: 6000, kit: 'ruinElves'},
-		{key: 'elves.statue', zones: ['elves'], name: 'Mysterious decayed statue', den: 10000, standin: 'statue blocks', kit: 'statueElves'},
+		{key: 'elves.statue', zones: ['elves'], name: 'Mysterious decayed statue (veiled head, broken torso)', den: 10000, kit: 'statueElves'},
 		{key: 'elves.flower.blush_star', zones: ['elves'], name: 'Flower: blush star (pastel)', den: 300, plant: 'new:flower_blush_star'},
 		{key: 'elves.flower.lilac_bells', zones: ['elves'], name: 'Flower: lilac bells (pastel)', den: 300, plant: 'new:flower_lilac_bells'},
 		{key: 'elves.flower.cream_cups', zones: ['elves'], name: 'Flower: cream cups (pastel)', den: 300, plant: 'new:flower_cream_cups'},
@@ -351,8 +319,8 @@
 		{key: 'beach.papyrus', zones: ['beach'], name: 'Papyrus as a plain stack of 2–4 on sand at the water\'s edge (L16)', den: 5,
 			unit: 'sand columns at the water', kit: 'papyrus', plant: 'default:papyrus'},
 		{key: 'beach.marram', zones: ['beach'], name: 'Marram tufts on dry sand away from the water', den: 9, plant: 'default:marram_grass_2'},
-		{key: 'beach.driftwood', zones: ['beach'], name: 'Driftwood now and then (drops sticks or wood)', den: 120,
-			unit: 'sand columns near the water', standin: 'driftwood', kit: 'driftwood'},
+		{key: 'beach.driftwood', zones: ['beach'], name: 'Driftwood now and then (a log drops wood, a fork sticks)', den: 120,
+			unit: 'sand columns near the water', kit: 'driftwood'},
 		{key: 'beach.pebbles', zones: ['beach'], name: 'Small gravel pebble patches in the sand', share: 0.1}
 	];
 	var ITEM = {};
@@ -431,7 +399,7 @@
 			var n = t.nodes[i];
 			var free = this.free(x + n.x, foot + n.y, z + n.z);
 			if (wood[n.kind] && !free) { return null; }
-			if (opts && opts.dead && (n.kind === 'leaves' || n.kind === 'fruit')) { continue; }
+			if (opts && opts.dead && (n.kind === 'leaves' || n.kind === 'fruit' || n.y > t.height * 0.6)) { continue; }
 			if (free) { keep.push(n); }
 		}
 		keep.forEach(function (n) { self.cells[(x + n.x) + ',' + (foot + n.y) + ',' + (z + n.z)] = 'tree:' + n.kind; });
@@ -677,9 +645,9 @@
 	function top1(w, x, z) { return w.col(x, z).h + 1; }
 
 	var BUILD = {
-		// 3-5 gravestones on a 6 x 5 plot, two rough rows, each a head alone
-		// (sunk), a slab alone (broken) or a slab with a head, turned about;
-		// a fence along one side with gaps
+		// 3-5 gravestones on a 6 x 5 plot, two rough rows, each a stele, a
+		// low cross or a stele crowned by the cross (one quarter-turn per
+		// stack), turned about; a fence along one side with gaps
 		graveyard: function (w, x, z, rng, item) {
 			if (!w.flat(x - 1, z - 1, 7, 6, 1)) { return false; }
 			var spots = [];
@@ -693,12 +661,12 @@
 				if (!w.free(sp[0], y, sp[1])) { continue; }
 				var form = G.rint(rng, 0, 9), turn = pick(rng, [0, 0, 0, 1, 3, 2]);
 				if (form < 3) {
-					w.put(sp[0], y, sp[1], 'prop:gravestone_head', turn, item);
+					w.put(sp[0], y, sp[1], 'prop:gravestone_cross', turn, item);
 				} else if (form < 5) {
 					w.put(sp[0], y, sp[1], 'prop:gravestone_slab', turn, item);
 				} else {
 					w.put(sp[0], y, sp[1], 'prop:gravestone_slab', turn, item);
-					w.put(sp[0], y + 1, sp[1], 'prop:gravestone_head', turn, item);
+					w.put(sp[0], y + 1, sp[1], 'prop:gravestone_cross', turn, item);
 				}
 				n--;
 			}
@@ -711,7 +679,9 @@
 		// a town graveyard as wp13/dressing.lua lays it: graves two apart,
 		// a mossy cobble flagstone with a marker (a wall post, a second one
 		// where (x * 29 + z * 61) % 11 is divisible by 4), plot 7 a bone pile,
-		// plot 3 left open; `fresh`: the markers from the new blocks
+		// plot 3 left open; `fresh`: the markers from the new blocks (a
+		// stele, crowned by the cross where today's stands two high) and the
+		// bone pile's successor
 		townGraveyard: function (w, x, z, rng, item, fresh) {
 			for (var gz = 0; gz < 3; gz++) {
 				for (var gx = 0; gx < 4; gx++) {
@@ -727,9 +697,9 @@
 					if (fresh) {
 						if (hash % 4 === 0) {
 							w.put(px, y, pz, 'prop:gravestone_slab', 0, item);
-							w.put(px, y + 1, pz, 'prop:gravestone_head', 0, item);
+							w.put(px, y + 1, pz, 'prop:gravestone_cross', 0, item);
 						} else {
-							w.put(px, y, pz, 'prop:gravestone_head', 0, item);
+							w.put(px, y, pz, 'prop:gravestone_slab', 0, item);
 						}
 					} else {
 						w.put(px, y, pz, 'walls:mossycobble', 0, item);
@@ -767,6 +737,7 @@
 			return BUILD.ruin(w, x, z, rng, item, ['default:silver_sandstone_brick', 'default:silver_sandstone_brick',
 				'default:silver_sandstone_block', 'default:mossycobble']);
 		},
+		// a stand-in figure on a stone block (ARTL drew the elves' statue)
 		statueUndead: function (w, x, z, rng, item) {
 			if (!w.flat(x - 1, z - 1, 3, 3, 0)) { return false; }
 			var y = top1(w, x, z), turn = G.rint(rng, 0, 3);
@@ -776,35 +747,43 @@
 			w.put(x + 1, top1(w, x + 1, z), z, 'grug_nodes:moss_carpet', 0, item);
 			return true;
 		},
-		// decayed: the head lies beside the pedestal
+		// the broken torso on a silver sandstone plinth, the veiled head on
+		// it (same quarter-turn) or, decayed, fallen beside it
 		statueElves: function (w, x, z, rng, item) {
 			if (!w.flat(x - 1, z - 1, 3, 3, 0)) { return false; }
 			var y = top1(w, x, z), turn = G.rint(rng, 0, 3);
-			w.put(x, y, z, 'default:silver_sandstone_block', 0, item);
-			w.put(x, y + 1, z, 'prop:elf_statue_body', turn, item);
-			w.put(x + 1, top1(w, x + 1, z), z, 'prop:statue_head', G.rint(rng, 0, 3), item);
+			w.put(x, y, z, 'default:silver_sandstone', 0, item);
+			w.put(x, y + 1, z, 'prop:statue_broken_torso', turn, item);
+			if (G.rint(rng, 0, 2) > 0) {
+				w.put(x, y + 2, z, 'prop:statue_veiled_head', turn, item);
+			} else {
+				w.put(x + 1, top1(w, x + 1, z), z, 'prop:statue_veiled_head', G.rint(rng, 0, 3), item);
+			}
 			w.put(x - 1, top1(w, x - 1, z + 1), z + 1, 'grug_nodes:moss_carpet', 0, item);
 			return true;
 		},
+		// a stone block plinth, a shaft of 1-2 plain stone, the broken tip
 		obelisk: function (w, x, z, rng, item) {
 			if (!w.flat(x - 1, z - 1, 3, 3, 0)) { return false; }
 			var y = top1(w, x, z);
 			w.put(x, y, z, 'default:stone_block', 0, item);
-			w.put(x, y + 1, z, 'prop:obelisk_shaft', 0, item);
-			if (G.rint(rng, 0, 1)) { w.put(x, y + 2, z, 'prop:obelisk_shaft', 0, item); y++; }
-			w.put(x, y + 2, z, 'prop:obelisk_tip', 0, item);
+			w.put(x, y + 1, z, 'default:stone', 0, item);
+			if (G.rint(rng, 0, 1)) { w.put(x, y + 2, z, 'default:stone', 0, item); y++; }
+			w.put(x, y + 2, z, 'prop:obelisk_broken_tip', G.rint(rng, 0, 3), item);
 			return true;
 		},
-		// one piece, sometimes a pair (a skull beside a ribcage)
-		bones: function (w, x, z, rng, item) {
+		// one piece, sometimes a pair (a skull beside its ribcage or spine);
+		// `pair` 'human' / 'animal' forces that pair (the kit)
+		bones: function (w, x, z, rng, item, pair) {
 			if (!w.open(x, z)) { return false; }
-			var pair = G.rint(rng, 0, 3) === 0;
+			if (!pair && G.rint(rng, 0, 3) === 0) { pair = G.rint(rng, 0, 1) ? 'human' : 'animal'; }
 			if (pair && w.open(x + 1, z)) {
-				w.put(x, top1(w, x, z), z, pick(rng, ['prop:skull_human', 'prop:skull_animal']), G.rint(rng, 0, 3), item);
-				w.put(x + 1, top1(w, x + 1, z), z, 'prop:ribcage', G.rint(rng, 0, 3), item);
+				var turn = G.rint(rng, 0, 3);
+				w.put(x, top1(w, x, z), z, pair === 'human' ? 'prop:skull_human' : 'prop:skull_horned', turn, item);
+				w.put(x + 1, top1(w, x + 1, z), z, pair === 'human' ? 'prop:ribcage_human' : 'prop:spine_animal', turn, item);
 			} else {
-				w.put(x, top1(w, x, z), z, pick(rng, ['prop:skull_human', 'prop:skull_animal', 'prop:ribcage', 'prop:bones_scattered']),
-					G.rint(rng, 0, 3), item);
+				w.put(x, top1(w, x, z), z, pick(rng, ['prop:skull_human', 'prop:skull_horned', 'prop:ribcage_human', 'prop:spine_animal',
+					'prop:bones_scattered', 'prop:bones_fragments']), G.rint(rng, 0, 3), item);
 			}
 			return true;
 		},
@@ -822,9 +801,10 @@
 		cairnBlocks: function (w, x, z, rng, item) {
 			if (!w.open(x, z)) { return false; }
 			var y = top1(w, x, z);
-			w.put(x, y, z, 'prop:cairn_low', G.rint(rng, 0, 3), item);
-			if (G.rint(rng, 0, 1)) { w.put(x, y + 1, z, 'prop:cairn_low', G.rint(rng, 0, 3), item); y++; }
-			w.put(x, y + 1, z, 'prop:cairn_high', G.rint(rng, 0, 3), item);
+			// one or two courses, then the cap (ARTL's notes)
+			w.put(x, y, z, 'prop:cairn_course', G.rint(rng, 0, 3), item);
+			if (G.rint(rng, 0, 1)) { w.put(x, y + 1, z, 'prop:cairn_course', G.rint(rng, 0, 3), item); y++; }
+			w.put(x, y + 1, z, 'prop:cairn_cap', G.rint(rng, 0, 3), item);
 			return true;
 		},
 		// a base on the ground, a branch, a twig on top: a rough tapering
@@ -838,6 +818,7 @@
 			if (G.rint(rng, 0, 1) && w.open(x + 1, z) && top1(w, x + 1, z) === y) { w.put(x + 1, y, z, 'cairn:twig', 0, item); }
 			return true;
 		},
+		// a pine without needles, its top broken off at 60 % of its height
 		deadPine: function (w, x, z, rng, item) {
 			return w.tree(x, z, 'pine', G.rint(rng, 1, 99999), item, {dead: true, snow: true}) !== null;
 		},
@@ -873,13 +854,13 @@
 			for (var j = 0; j < n; j++) { w.put(x, y + j, z, 'default:papyrus', 0, item); }
 			return true;
 		},
+		// a log (drops wood), now and then the forked branch (sticks) beside it
 		driftwood: function (w, x, z, rng, item) {
-			var alongX = G.rint(rng, 0, 1) === 1, dx = alongX ? 1 : 0, dz = alongX ? 0 : 1;
-			if (!w.open(x, z) || !w.open(x + dx, z + dz) || top1(w, x, z) !== top1(w, x + dx, z + dz)) {
-				return w.open(x, z) && w.put(x, top1(w, x, z), z, 'prop:driftwood', G.rint(rng, 0, 3), item);
+			if (!w.open(x, z)) { return false; }
+			w.put(x, top1(w, x, z), z, 'prop:driftwood_log', G.rint(rng, 0, 3), item);
+			if (G.rint(rng, 0, 2) === 0 && w.open(x + 1, z)) {
+				w.put(x + 1, top1(w, x + 1, z), z, 'prop:driftwood_fork', G.rint(rng, 0, 3), item);
 			}
-			w.put(x, top1(w, x, z), z, 'prop:driftwood', alongX ? 0 : 1, item);
-			w.put(x + dx, top1(w, x + dx, z + dz), z + dz, 'prop:driftwood', alongX ? 0 : 1, item);
 			return true;
 		},
 		// a strand of n hanging from (x, y + 1, z) down to y - n + 1
@@ -1100,24 +1081,30 @@
 			} else if (it.kit === 'papyrus') {
 				list.push({item: it.key, label: 'papyrus, today (pedestal)', build: 'papyrus', fresh: true, w: 2});
 				list.push({item: it.key, label: 'papyrus, the fix', build: 'papyrus', fresh: false, w: 2});
+			} else if (it.kit === 'bones') {
+				list.push({item: it.key, label: 'bone find, a humanoid pair', build: 'bones', fresh: 'human', w: 3});
+				list.push({item: it.key, label: 'bone find, an animal pair', build: 'bones', fresh: 'animal', w: 3});
+			} else if (it.kit === 'driftwood') {
+				list.push({item: it.key, label: 'driftwood log', prop: 'driftwood_log', w: 2});
+				list.push({item: it.key, label: 'driftwood fork', prop: 'driftwood_fork', w: 2});
 			} else if (it.kit && it.kit !== 'liana') {
 				list.push({item: it.key, label: it.name, build: it.kit, w: {graveyard: 8, ruinUndead: 7, ruinElves: 7, kapokLog: 8,
 					silverLog: 6, deadPine: 8, jungleBush: 4, witheredBush: 4, boulder: 3, bones: 3}[it.kit] || 3});
 			}
 		});
 		// rows of at most ROW nodes, ROW_DEPTH apart (front to back)
-		var ROW = 30, ROW_DEPTH = 12, rows = [[]], used = 0;
+		var ROW = 26, ROW_DEPTH = 9, rows = [[]], used = 0;
 		list.forEach(function (e) {
-			if (used + e.w + 2 > ROW && rows[rows.length - 1].length) { rows.push([]); used = 0; }
+			if (used + e.w + 1 > ROW && rows[rows.length - 1].length) { rows.push([]); used = 0; }
 			rows[rows.length - 1].push(e);
-			used += e.w + 2;
+			used += e.w + 1;
 		});
 		var size = Math.max(ROW + 2, rows.length * ROW_DEPTH + 2), w = strip(zone, size, size);
 		var rng = G.newRng(seed, 54), labels = [], n = 0;
 		rows.forEach(function (row, r) {
 			var x = 2, z0 = size - 2 - (r + 1) * ROW_DEPTH;
 			row.forEach(function (e) {
-				var cz = z0 + 4;
+				var cz = z0 + 3;
 				var bx = e.build === 'deadPine' ? x + 3 : x;
 				if (e.prop) {
 					w.put(bx, 1, cz, 'prop:' + e.prop, 0, e.item);
@@ -1128,7 +1115,7 @@
 				}
 				n++;
 				labels.push({x: x + e.w / 2 - 0.5, z: z0 + 1, text: String(n), item: e.item});
-				x += e.w + 2;
+				x += e.w + 1;
 			});
 		});
 		// the unused part of the square stays empty

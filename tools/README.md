@@ -1002,10 +1002,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   drops, dig times and leaf decay through the r24 mining harness; the pool
   rule of `wp40/swamp_pools.lua` and the swamp pass); the browser concept
   `swamp.html` built by `build.py` (`--check`, `--art-dir`) from
-  `page.html`, `patch.js`, `view.js` and the tree concept, `node check.js`
-  its patch and tree rules, `node digest.js` that the eight approved
-  species stay unchanged (`species_digest.txt`); `DESIGN.md` the swamp as
-  built; `world_probe.lua REPO SEED [CHUNKS] [GRID]` the ground mix, pools
+  `page.html`, `patch.js`, `mesh.js`, `view.js` and the tree concept,
+  `node check.js` its patch and tree rules, `node digest.js` that the eight
+  approved species stay unchanged (`species_digest.txt`); the Round 51 land
+  viewer `land.html` (page content only; `--local FILE` a wrapped copy for
+  `file://`) from `land_page.html`, `land.js`, `land_view.js` and the art of
+  `tools/r51_land`, `node land_check.js` its patches, kit and page;
+  `DESIGN.md` the swamp as built and the land viewer; `world_probe.lua REPO SEED [CHUNKS] [GRID]` the ground mix, pools
   (no water that can flow), plants and trunks through the seed fleet's
   writer; `capture.sh` with `grug_probe_r47_sw` the in-engine pool check
   and the swamp screenshots on a seed;

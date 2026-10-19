@@ -248,7 +248,7 @@
 			} else if (def.draw === 'box') {
 				var bt = turnTiles(faceTiles(t, 0), n.p2 % 4);
 				def.boxes.forEach(function (b) {
-					addCuboid(def.alpha === 'clip' ? pb : sb, def.alpha === 'clip' ? 'clip' : 'solid', px, py, pz, turnBox(b, n.p2 % 4), bt, null);
+					addCuboid(sb, def.alpha === 'clip' ? 'clip' : 'solid', px, py, pz, turnBox(b, n.p2 % 4), bt, null);
 				});
 			} else if (def.draw === 'fence' || def.draw === 'wall') {
 				var fence = def.draw === 'fence';
@@ -372,7 +372,8 @@
 	}
 
 	// A text label facing the camera.
-	function label(text, x, y, z, strong) {
+	function label(text, x, y, z, strong, size) {
+		size = size || 0.75;
 		var canvas = document.createElement('canvas'), g = canvas.getContext('2d');
 		var font = '600 28px system-ui, sans-serif';
 		g.font = font;
@@ -387,7 +388,7 @@
 		var t = new THREE.CanvasTexture(canvas);
 		t.encoding = THREE.sRGBEncoding;
 		var s = new THREE.Sprite(new THREE.SpriteMaterial({map: t, depthTest: false}));
-		s.scale.set(w / 42 * 0.75, 0.75, 1);
+		s.scale.set(w / 42 * size, size, 1);
 		s.position.set(x, y, -z);
 		s.renderOrder = 5;
 		return s;
@@ -486,7 +487,7 @@
 			var off = -p.size / 2;
 			var kitMode = state.mode === 'kit';
 			p.labels.forEach(function (lb, i) {
-				groups.labels.add(label(lb.text, lb.x + off, kitMode ? 5.5 : 4.2, lb.z + off, !lb.gather));
+				groups.labels.add(label(lb.text, lb.x + off, kitMode ? 5.5 : 4.2, lb.z + off, !lb.gather, 1));
 			});
 			state.shown = [p];
 			var used = {lo: p.size, hi: 0};
@@ -503,10 +504,10 @@
 				p = L.generate(state.zone, genOpts(v));
 				var ox = n === 1 ? 0 : (i === 0 ? -(p.size + gap) / 2 : (p.size + gap) / 2);
 				buildPatch(p, groups, ox, v === 'proposal');
-				if (both) { groups.labels.add(label(v === 'today' ? 'Today' : 'Proposal', ox, 14, -p.size / 2 - 2, true)); }
+				if (both) { groups.labels.add(label(v === 'today' ? 'Today' : 'Proposal', ox, 16, -p.size / 2 - 2, true, 3)); }
 				if (v === 'proposal' && state.show.labels) {
 					p.marks.forEach(function (m) {
-						groups.labels.add(label(m.item, m.x - p.size / 2 + ox, m.y + 4, m.z - p.size / 2, false));
+						groups.labels.add(label(m.item, m.x - p.size / 2 + ox, m.y + 4, m.z - p.size / 2, false, 1.4));
 					});
 				}
 				var fig2 = playerFigure(), spot = figureSpot(p);
@@ -558,15 +559,20 @@
 		c.z = -c.z;
 		var cam = (params.get('cam') || '').split(',').map(parseFloat);
 		var strip = state.mode === 'kit' || state.mode === 'plants';
-		var yaw = isFinite(cam[0]) ? cam[0] : (strip ? 8 : 28), pitch = isFinite(cam[1]) ? cam[1] : (strip ? 22 : 34);
+		var kitMode = state.mode === 'kit';
+		var yaw = isFinite(cam[0]) ? cam[0] : (strip ? 8 : 28), pitch = isFinite(cam[1]) ? cam[1] : (kitMode ? 40 : strip ? 22 : 34);
 		var zoom = isFinite(cam[2]) ? cam[2] : 1;
 		var dist = Math.max(size.x, size.z) * 1.35;
-		if (strip || (state.variant === 'both' && state.mode === 'patch')) {
+		if (kitMode) {
+			dist = Math.max(size.x, size.z) * 1.15;
+		} else if (strip || (state.variant === 'both' && state.mode === 'patch')) {
 			var vt = Math.tan(persp.fov * Math.PI / 360), ht = vt * persp.aspect;
-			dist = Math.max(size.x / 2 / ht, size.y / 2 / vt) * (strip ? 0.95 : 0.8) + size.z / 2;
+			dist = Math.max(size.x / 2 / ht, size.y / 2 / vt) * (strip ? 0.95 : 1.0) + size.z / 2;
 		}
+		// a portrait view (a phone) fits the width, not the height
+		if (persp.aspect < 1) { dist = dist / Math.max(0.45, persp.aspect); }
 		dist = dist * zoom;
-		orbit.target.set(c.x, strip ? 2 : 0, c.z);
+		orbit.target.set(c.x, strip && !kitMode ? 2 : 0, c.z);
 		var yr = yaw * Math.PI / 180, pr = pitch * Math.PI / 180;
 		persp.position.set(c.x + Math.sin(yr) * Math.cos(pr) * dist, Math.sin(pr) * dist, c.z + Math.cos(yr) * Math.cos(pr) * dist);
 		orbit.update();
