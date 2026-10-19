@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Round 51 ARTL, pass 1: original pixel work, GPT-6 Astra, CC0-1.0.
+"""Round 51 ARTL, passes 1 and 3: original pixel work, GPT-6 Astra, CC0-1.0.
 
 Run with python3 -I tools/r51_land/land_art.py (installed Pillow only).
 New art starts on blank canvases; existing pixels are read only for previews.
@@ -7,6 +7,8 @@ No writes to swamp/, mods/, the viewer or any other generator. The comparison
 sheets include attributed CC BY-SA media; their licence is recorded in README.
 """
 
+import argparse
+import io
 from pathlib import Path
 from statistics import mean
 import hashlib
@@ -141,6 +143,36 @@ def ground_art():
 
 
 GREEN = {"s": "344d31", "g": "49643b", "l": "67834b", "v": "819352"}
+
+
+def lichen_art():
+    """Sparse crusts on exposed rock, with three small colonies per node.
+
+    Lobed edges and occasional holes describe growth, without raised highlights,
+    metallic sparkles, a filled ground layer, or a rectangular carpet outline.
+    """
+    sage = {"a": "929987", "b": "a7ad9c", "c": "7e8576"}
+    grey = {"a": "a5a79b", "b": "b5b7a9", "c": "92978a"}
+    ochre = {"a": "a39c84", "b": "afa68c", "c": "918c76"}
+    rosettes = [
+        sprite([".ab..", "abbca", "bc.cb", ".bca.", "..a.."], sage),
+        sprite(["..a..", ".abb.", "abcba", ".b.b.", "..a.."], grey),
+        sprite([".ab.", "abca", ".cb.", "..a."], sage),
+    ]
+    out = {}
+    for suffix, placements, flecks in [
+            ("", [(0, 1, 1, 0), (1, 10, 5, 1), (2, 4, 11, 2)],
+             [(10, 1, "a"), (13, 12, "b"), (12, 13, "a")]),
+            ("_b", [(1, 6, 0, 3), (0, 0, 7, 1), (2, 10, 10, 0)],
+             [(2, 2, "a"), (3, 3, "b"), (7, 14, "a")])]:
+        image = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+        for which, x, y, rotation in placements:
+            wrapped_stamp(image, turned(rosettes[which], rotation), x, y)
+        # Only three dull ochre flecks: a minority among grey-green crusts.
+        for x, y, color in flecks:
+            image.putpixel((x, y), rgba(ochre[color]))
+        out["lichen_carpet_top" + suffix] = image
+    return out
 
 
 def flower(stems, blooms, colors, leaves):
@@ -567,7 +599,8 @@ def seam_report(image):
 
 def validate(grounds, plants):
     records = {}
-    tile_plants = {"withered_bush_leaves", "jungle_bush_leaves", "lichen_carpet_top"}
+    tile_plants = {"withered_bush_leaves", "jungle_bush_leaves"} | {
+        name for name in plants if name.startswith("lichen_carpet_top")}
     for folder, art in [("grounds", grounds), ("plants", plants)]:
         for name, expected in art.items():
             path = HERE / folder / (name + ".png")
@@ -580,6 +613,10 @@ def validate(grounds, plants):
                 assert all(p == (0, 0, 0, 0) for p in pixels(image) if not p[3]), name
                 record = {"size": list(image.size), "mode": image.mode, "alpha": sorted(alpha),
                           "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                if name.startswith("lichen_carpet_top"):
+                    record["opaque_pixels"] = sum(p[3] == 255 for p in pixels(image))
+                    if not name.endswith("_v1"):
+                        assert record["opaque_pixels"] < size * size / 4, name
                 if folder == "grounds" or name in tile_plants:
                     record["seams"] = seam_report(image)
                     axes = [0] if name.endswith("_side") else [0, 1]
@@ -611,15 +648,35 @@ def validate(grounds, plants):
 
 
 def main():
-    grounds, plants = ground_art(), plant_art()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="compare every output without writing")
+    args = parser.parse_args()
+    grounds, original_plants = ground_art(), plant_art()
+    plants = dict(original_plants)
+    plants["lichen_carpet_top_v1"] = original_plants["lichen_carpet_top"]
+    plants.update(lichen_art())
+    outputs = {}
     for folder, art in [("grounds", grounds), ("plants", plants)]:
-        (HERE / folder).mkdir(exist_ok=True)
         for name, image in art.items():
-            image.save(HERE / folder / (name + ".png"))
-    ground_preview(grounds).save(HERE / "preview-grounds.png")
-    plant_preview(plants, grounds, gathering()).save(HERE / "preview-plants.png")
+            outputs[HERE / folder / (name + ".png")] = image
+    # Preserve the historical pass-1 comparison; pass 3 has its own sheet.
+    outputs[HERE / "preview-grounds.png"] = ground_preview(grounds)
+    outputs[HERE / "preview-plants.png"] = plant_preview(original_plants, grounds, gathering())
+    for path, image in outputs.items():
+        stream = io.BytesIO()
+        image.save(stream, format="PNG")
+        if args.check:
+            assert path.read_bytes() == stream.getvalue(), "Stale output: " + str(path)
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(stream.getvalue())
     report = validate(grounds, plants)
-    (HERE / "artl-checks.json").write_text(json.dumps(report, indent=2) + "\n")
+    record = (json.dumps(report, indent=2) + "\n").encode("utf-8")
+    path = HERE / "artl-checks.json"
+    if args.check:
+        assert path.read_bytes() == record, "Stale artl-checks.json"
+    else:
+        path.write_bytes(record)
     print(f"ARTL: {len(grounds)} grounds, {len(plants)} plants, two previews; size/mode/alpha/period/join checks passed.")
 
 

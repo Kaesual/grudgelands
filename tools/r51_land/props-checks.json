@@ -575,6 +575,88 @@
         }
       }
     },
+    "gravestone_fallen": {
+      "name": "Gravestone, fallen split stele",
+      "drop": "default:cobble",
+      "boxes": 4,
+      "bounds": [
+        -5,
+        -8,
+        -7,
+        5,
+        -6,
+        7
+      ],
+      "prop_sha256": "a41523f5266e9c4910d28d2da90cf31b9f2133936de927bacff1156a9d6084c0",
+      "images": {
+        "gravestone_fallen_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "cd4592c455f3a8036c6d24e109f72a6c463f49693f53023673740430f1545ae0"
+        },
+        "gravestone_fallen_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e6726a4d1bfbc6c32eab89d4a05cc88b87f75ba81ed5f5340d48f135a2581003"
+        },
+        "gravestone_fallen_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "b6aae50c9677d8516226b2cc3be33180b6c07ae4d14b9303aaeea9f9cbd77922"
+        },
+        "gravestone_fallen_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "6d04c8e8ed577cfddb9cf294c016f831df17d7c7b065ed98cb4a6c2a2d2112f9"
+        },
+        "gravestone_fallen_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "685a178775ed53c9db982acdc2400f66823a16949570a8020f16b56cb8e501c0"
+        },
+        "gravestone_fallen_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "12d6edf72052068dc0394c33a964dc7f3f9f156bc922e97209d35f8532c8f290"
+        }
+      }
+    },
     "gravestone_slab": {
       "name": "Gravestone, weathered stele",
       "drop": "default:cobble",
@@ -654,6 +736,88 @@
             255
           ],
           "sha256": "5579ad54603531ad6e5aebc2508ed031232cebd73cea20876bff5576ead4fea4"
+        }
+      }
+    },
+    "gravestone_sunken": {
+      "name": "Gravestone, sunken leaning stele",
+      "drop": "default:cobble",
+      "boxes": 3,
+      "bounds": [
+        -5,
+        -8,
+        -1,
+        5,
+        0,
+        4
+      ],
+      "prop_sha256": "a660993c60f4388f80aabf5bfead56d48f8353e43c73f9e1beb9ae4b11dfb0dc",
+      "images": {
+        "gravestone_sunken_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "d22965b67b38e05b84b535fa7a5b27f14e4f6e1ae3a1745499ece5eb975e3e77"
+        },
+        "gravestone_sunken_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "86e821732e4d82df15cd0fcc33021ee8630141f440a85bc0c65156cbed4dd589"
+        },
+        "gravestone_sunken_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5e117456196e8e4d72d1d57633fa86a70a9ebab0cb20e32a9eb56b171a764914"
+        },
+        "gravestone_sunken_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "c6a6a6982a4a8959b0090f1236634084cca911e10250365d9f9a6654738372ab"
+        },
+        "gravestone_sunken_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "de182502da8988db26b41539ed611e7f6cfc5c7024d381704f58952d0d8faff3"
+        },
+        "gravestone_sunken_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "cbd15f80cef9971b6163f9b5295ddb338db115f8577ecdc58971ba9507ccb66b"
         }
       }
     },
@@ -1151,6 +1315,170 @@
         }
       }
     },
+    "statue_mourner_base": {
+      "name": "Mourner, kneeling robe and knees",
+      "drop": "default:stone",
+      "boxes": 9,
+      "bounds": [
+        -6,
+        -8,
+        -6,
+        6,
+        8,
+        6
+      ],
+      "prop_sha256": "8e1fcc3fd84643fd93b7da8b2b9c8670fce4d4d3892799f433e3543bfad427d4",
+      "images": {
+        "statue_mourner_base_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5459b59c24640795fceab8c9a086cdac069fd478c6c87d4278a8bae5e218a2ea"
+        },
+        "statue_mourner_base_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "f10745a1b0b4cde6590111026c8f2df10acb7399e53ca4fed0e978b09d7b0e16"
+        },
+        "statue_mourner_base_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "6dcf6440d91516704d37a09aa05d5777774fce21316a5350a4580169e7a16fd4"
+        },
+        "statue_mourner_base_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "b7cb28ef867e69a79efdee976b3b7dbb065913d68bf4788583189f655cbc8f55"
+        },
+        "statue_mourner_base_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "67c23f63a2dec2c817675db927a35a9f3ce134d8709af0f7aa20fad00a1f8f6b"
+        },
+        "statue_mourner_base_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "2ff6f72535988bab25f5749fa1b2563a26b743c7d82cd9eb160cc6b55607cb05"
+        }
+      }
+    },
+    "statue_mourner_upper": {
+      "name": "Mourner, bowed hood and clasped hands",
+      "drop": "default:stone",
+      "boxes": 14,
+      "bounds": [
+        -6,
+        -8,
+        -5,
+        6,
+        7,
+        4
+      ],
+      "prop_sha256": "d2046586a10107a965549bb991a4fa886c6754bd5ac8b69f17d933fef0b7027b",
+      "images": {
+        "statue_mourner_upper_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "fbf68e717ad5bd67c078616da49aeb3f5d90350cb04fbdd33227c2ed7f82652a"
+        },
+        "statue_mourner_upper_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ae06b4e6c980dc41bb3e0fe8fa771ddde1ef3e20fcedd42ec8bb0f4d3915676e"
+        },
+        "statue_mourner_upper_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "31d5b00ab4da6b7ea171feca7ca6b1e363dc5c39348b9341e7d68cdc5cd95010"
+        },
+        "statue_mourner_upper_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "41cf938f95d3117e9baa4482778f256386a1b02531c2bf5070fd1257320b1bc6"
+        },
+        "statue_mourner_upper_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "14f5ee63426a474002178cec13b6c5a2a00a518692b8feaadca32663d7d1bfa6"
+        },
+        "statue_mourner_upper_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "9107b935678e99789d49cca395fdee873a1132adfe8d60b496914ae72a08f4ad"
+        }
+      }
+    },
     "statue_veiled_head": {
       "name": "Statue, worn veiled head",
       "drop": "default:silver_sandstone",
@@ -1234,5 +1562,7 @@
       }
     }
   },
-  "preview_sha256": "f9cd3418eb7062be850475b827d8c4eafcfc3f20086751625fcba290510ca0a9"
+  "classification": "compatible: concept art only",
+  "preview_sha256": "f9cd3418eb7062be850475b827d8c4eafcfc3f20086751625fcba290510ca0a9",
+  "pass3_preview_sha256": "d71c65012971ce85f37fa1757593ac2acd4fd54742e347da16049e66181a448d"
 }
