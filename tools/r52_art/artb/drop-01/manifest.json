@@ -1,0 +1,1273 @@
+{
+  "schema": 1,
+  "date": "2026-10-19",
+  "author": "GPT-6 Astra",
+  "tool": "built-in image_gen.imagegen",
+  "license": "CC0-1.0 (project dedication, to the extent rights exist)",
+  "status": "Style samples only; user selection pending",
+  "upgrade": "compatible; staged media only",
+  "size": [
+    64,
+    64
+  ],
+  "mode": "RGB",
+  "styles": {
+    "A": {
+      "name": "Painted embers",
+      "render": "Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide.",
+      "frame": "A single simple circular patinated-bronze medallion rim, outer diameter 91% of canvas, rim width 5% of canvas. Dark inset disk. Restrained upper-left rim highlight; no gems, scrollwork or ornaments. Main motif inside the disk fills 66% of canvas."
+    },
+    "B": {
+      "name": "Cut enamel",
+      "render": "Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces.",
+      "frame": "A thick simple chamfered SQUARE enamel frame, outer bounds 5% to 95% of canvas; clipped corners, flat edge bands 5% of canvas wide. Rim uses a muted midtone from the tree palette, with a pale upper-left segment. Dark inset field; main motif fills 66% of canvas. No ornamental corner objects."
+    },
+    "C": {
+      "name": "Forged sigils",
+      "render": "Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px.",
+      "frame": "A single thick OCTAGONAL forged-metal bezel, outer bounds 5% to 95% of canvas; eight clearly cut sides, broad 5%-wide bevel, dark inset plate. Bezel tinted by the tree palette, softly highlighted upper left. Main motif fills 66% of canvas. No rivets or ornaments on the bezel."
+    }
+  },
+  "assets": [
+    {
+      "key": "skill.fiery_spark",
+      "style": "A",
+      "path": "A/skill.fiery_spark.png",
+      "name": "Fiery Spark",
+      "family": "fire",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: Fiery Spark, a small bright FLAME DART with a spark tail, clearly a narrow pointed dart rather than a round fireball. Locked composition for a later frost transform: one long tapered lozenge pointing upper-right, tip at (82%,20%), broad luminous head centred (62%,40%), three tapering tail tongues trailing toward (18%,80%). Main silhouette occupies 75% of square. Style A, 'Painted embers': hand-painted gouache-like fantasy illustration, bold faceted brush masses, dark atmospheric charcoal background edge-to-edge, warm ivory core, burnt orange body and red outer flame, very restrained bloom. Light from upper left; broad highlights and deep shadow; no fine texture or thin strokes. Skills have NO frame, rim, badge or medallion. One clear silhouette, at most three main tonal masses, generous dark separation around the subject. Constraints: one image only, opaque square, no text, letters, numbers, logo, watermark, UI, panels, people, or tiny scattered particles. No supplied reference image.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-59dd07b2-18e5-4804-bcbf-48b5e946bc61.png",
+      "source_sha256": "52ec22e59b124d53947046c54eac47b86520b1972473443d91d7f40618d9f31f",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "c9d788e51ab2f50a26fefa7c508481a1a8d11476895658284662accf5d1d500f"
+    },
+    {
+      "key": "skill.cold_spark",
+      "style": "A",
+      "path": "A/skill.cold_spark.png",
+      "name": "Cold Spark",
+      "family": "frost",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square dark fantasy game SKILL icon, reduced to 64x64 and displayed at 32 px. Input image: the project's own generated A Fiery Spark, used as the edit target; no third-party image. Primary request: transform its flame dart into COLD SPARK, a blue crystal dart with a frost tail. Preserve exactly the dart's outer silhouette, three tail tongues, position, scale, angle, backdrop coverage, and all composition. Change only the element: replace the orange-red flame surface with a pale blue-white faceted ice crystal, warm tail with pale blue frost ribbons, and warm-charcoal backdrop tint with deep navy. Internal planes should clearly read as crystal. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Keep it an unframed full-bleed skill icon. No added border, snowflakes, extra objects, letters, text, logo, UI or watermark. One opaque square image.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-950377d6-0bc2-449d-b6a2-59d8c2a21170.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-59dd07b2-18e5-4804-bcbf-48b5e946bc61.png"
+      ],
+      "source_sha256": "db9e79918148c97a015a814d8a4f42d1e35f1ebd9675ed3dfcd9278a58a7bb1a",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "a2f782a6399d2e48fead4b4be213c822f85a27a1418621549130870f8ed36ecf"
+    },
+    {
+      "key": "skill.fireball",
+      "style": "A",
+      "path": "A/skill.fireball.png",
+      "name": "Fireball",
+      "family": "fire",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One ROARING ROUND FIRE ORB, circular bright core centred slightly right and below middle, with three short broad licking flame lobes flowing upper-left. The spherical head dominates; the tail is much shorter than the orb diameter. Clear round silhouette, distinct from a narrow spark dart. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: orange-red flame, warm ivory molten core, charcoal background. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-c7ed5e35-ffbd-42a1-b0a0-72431fa02ecf.png",
+      "source_sha256": "38595fddbaee449598d57ff03e7bbdb23315670cd9c9ab5ffafda6c56a9a49ef",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "2ae5bfafdf836ed39786f3a9a2f00e5138ceec5e7f5fc9c0da4f3aa86f650a6f"
+    },
+    {
+      "key": "skill.smite",
+      "style": "A",
+      "path": "A/skill.smite.png",
+      "name": "Smite",
+      "family": "holy",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One SHORT DOWNWARD BOLT OF LIGHT, a broad gold-white zigzag descending from upper centre into one small simple impact wedge near lower centre. Forceful single flash; no weapon, no person, no religious symbol. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: warm gold-white light on dark umber-charcoal. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-2df88907-f4b6-4edc-9a91-eddcbd0357d2.png",
+      "source_sha256": "7b2d3c404543b4d28def239cab76c91ab3a4b6ab42add5cbc76dea0961ea7ccc",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "6da52ab3175d0ee5f2b8754bf6e2457e84836d8239a673154cf42444f6e089a7"
+    },
+    {
+      "key": "skill.bladecraft",
+      "style": "A",
+      "path": "A/skill.bladecraft.png",
+      "name": "Bladecraft",
+      "family": "shadow",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One SHORT BROAD SILVER BLADE crossed diagonally OVER ONE BOW. Blade from lower-left handle to upper-right point; a simple curved bow behind it on the other diagonal, with a clearly visible taut bowstring and open negative space. The whole bow fits; no arrow and no person. Clear blade-plus-bow silhouette. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: silver blade, indigo and violet bow, faint violet shadow on deep indigo-black. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-1a56bfc5-e4dd-45a4-a02a-50f61d64d071.png",
+      "source_sha256": "781253f871de0e81a86817bccb165f2598489477e117cea59e38943900e86390",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "29d7ab62993c8a1169734219becbd06fc62167ff62aa1a80c842cd7544b33709"
+    },
+    {
+      "key": "skill.arrowfall",
+      "style": "A",
+      "path": "A/skill.arrowfall.png",
+      "name": "Arrowfall",
+      "family": "wild",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: EXACTLY FOUR separated large ARROWS descending in a fan and CONVERGING on ONE small target point at lower centre. Four visible arrowheads above the impact, four thick shafts, four fletchings; two from each side of vertical, broad dark gaps between arrows until they meet. Count must be obvious at 32px. No additional shafts, motion lines or arrows. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: ivory steel arrowheads, muted green-teal fletchings, earth-brown shafts on dark forest ground. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-df15b9fe-f019-4c0e-8775-3a1148ae3646.png",
+      "source_sha256": "ac7c0be8aa969003f83b1e78664ffbb7b58901dcd9b017e6640985482ec35961",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "989391412d0ca4f5919f3f66e34178338f03696a1e43c5d684a6e380a17a4bc3"
+    },
+    {
+      "key": "talent.f1",
+      "style": "A",
+      "path": "A/talent.f1.png",
+      "name": "Fire Mastery",
+      "tree": "Ember",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One upright FLAME CROWNED with a small solid three-point crown, inside a plain circular ring. Crown, flame and ring form one simple readable emblem, no separate extra objects. Crown clearly wider than flame tip. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: orange-red flames, ivory highlight, dark charcoal. Composition: A single simple circular patinated-bronze medallion rim, outer diameter 91% of canvas, rim width 5% of canvas. Dark inset disk. Restrained upper-left rim highlight; no gems, scrollwork or ornaments. Main motif inside the disk fills 66% of canvas. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-2b26e78c-423e-4b37-a41b-9da66349c175.png",
+      "source_sha256": "2dbfa435138fc9644723068d8b462c75f76a9d71a2b57c46d37ab23699bc71f9",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "8e05cdb0a9fc0d5bcce9c314de39dffa03b0edc707e16f989e1cefc1b09fd5ed"
+    },
+    {
+      "key": "talent.r10",
+      "style": "A",
+      "path": "A/talent.r10.png",
+      "name": "Cold Shock",
+      "tree": "Rime",
+      "node_type": "window",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One JAGGED FROST SPARK CRACKING: a compact asymmetric angular crystalline flash split by one bold dark lightning-shaped fissure. Two clear bright halves of the same spark, a few large ice points; no fine snowflake branches, no lightning bolt added beside it. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: pale blue and white ice on deep navy. Composition: A single simple circular patinated-bronze medallion rim, outer diameter 91% of canvas, rim width 5% of canvas. Dark inset disk. Restrained upper-left rim highlight; no gems, scrollwork or ornaments. Main motif inside the disk fills 66% of canvas. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-41d25b7a-0705-4ce3-84ac-41cc70028c1c.png",
+      "source_sha256": "69d26f45614d599af4d3a41f15b44f8728e57c01692e2c78c7da4c41c9398acc",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "02033b85bbf58ace2b9a7921d36aeaf12a170ead7272541f8ad3e335d71d9689"
+    },
+    {
+      "key": "talent.b2",
+      "style": "A",
+      "path": "A/talent.b2.png",
+      "name": "Ironbound",
+      "tree": "Bulwark",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: Two thick horizontal RIVETED IRON BANDS reinforcing ONE broad upright armor PLATE. Four large bronze rivets, two on each band. Central plate is a simple slab, no heraldry, no person, no full suit of armor. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: steel grey plate and iron bands with bronze rivets on dark slate. Composition: A single simple circular patinated-bronze medallion rim, outer diameter 91% of canvas, rim width 5% of canvas. Dark inset disk. Restrained upper-left rim highlight; no gems, scrollwork or ornaments. Main motif inside the disk fills 66% of canvas. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-ddab8d41-ddb6-4018-bfd5-3b8db1638cf5.png",
+      "source_sha256": "6e25952b919db477389cb9e3ad4b00402c0beb72e8a3dda133eccd0d875fb9c0",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "f3e5bf3cb2737459096ac88d78ebdcbf9ec34cb551d52b6b4b6d46a31975b8de"
+    },
+    {
+      "key": "talent.m7",
+      "style": "A",
+      "path": "A/talent.m7.png",
+      "name": "Patient Care",
+      "tree": "Mercy",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One simple upright HOURGLASS with wide ivory glass chambers, DRIPPING TWO LARGE GOLDEN DROPS through its narrow waist into the lower chamber. Strong hourglass silhouette and visible droplets, broad gold top and bottom bars; no numbers, clock face or extra vessels. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: warm honey gold and ivory white on deep warm brown. Composition: A single simple circular patinated-bronze medallion rim, outer diameter 91% of canvas, rim width 5% of canvas. Dark inset disk. Restrained upper-left rim highlight; no gems, scrollwork or ornaments. Main motif inside the disk fills 66% of canvas. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-36c8c199-b50d-44e4-a294-2becb8dfdeaa.png",
+      "source_sha256": "527bfb9e1824b3d4b59a5a691269e07bcabe2c97e2ae595fe7a8306cf9c1942d",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "d604d083ea53ff166042f11bd5139fc03b4217c2b9cea9626a23783a4c01c75e"
+    },
+    {
+      "key": "talent.rk1",
+      "style": "A",
+      "path": "A/talent.rk1.png",
+      "name": "Sharpened Word",
+      "tree": "Reckoning",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One QUILL SHARPENED INTO A BLADE, diagonal from lower-left sharp nib to upper-right feather tip. Upper half visibly a broad ivory feather with three large vane cuts; lower half becomes a short gleaming blade with a sharp cutting edge. One small crimson binding at the transition. Single joined object, no book, writing, letters or detached sword. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: hard gold-white with one crimson accent on near-black umber. Composition: A single simple circular patinated-bronze medallion rim, outer diameter 91% of canvas, rim width 5% of canvas. Dark inset disk. Restrained upper-left rim highlight; no gems, scrollwork or ornaments. Main motif inside the disk fills 66% of canvas. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-7dccf512-94e8-4a5d-a9ad-4cfa43f29403.png",
+      "source_sha256": "29becf9a1f493b81e7876ba432f8d366a7b7454fb7d92e3b228524fa1793137f",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "173a1b8fe5899954e1677c8ad44d14b13533d6c8be50053deb22b1be3e2265cc"
+    },
+    {
+      "key": "talent.q2",
+      "style": "A",
+      "path": "A/talent.q2.png",
+      "name": "Quiver",
+      "tree": "Quarry",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One squat open LEATHER QUIVER with ONE ARROW CURVING BACK INTO ITS MOUTH. The single returning arrow forms a broad hooked inverted-U above and right of the quiver, with its ivory arrowhead visibly pointing downward into the opening. Thick green curved shaft, feathered tail. No extra arrows and no separate circular-arrow symbol. Style A, 'Painted embers': Hand-painted gouache-like fantasy illustration, broad faceted brush masses, shaped luminous highlights with very restrained bloom, matte charcoal shadows; strong three-value structure, almost no fine texture. Light from upper left. Edges and meaningful gaps at least two final pixels wide. Palette: earth-brown leather, green return arrow, ivory arrowhead on dark forest green. Composition: A single simple circular patinated-bronze medallion rim, outer diameter 91% of canvas, rim width 5% of canvas. Dark inset disk. Restrained upper-left rim highlight; no gems, scrollwork or ornaments. Main motif inside the disk fills 66% of canvas. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-0beb8cf2-12aa-4286-b3eb-a2fc25fc0723.png",
+      "source_sha256": "040892c60ec68e3145a760aad5255a09c11f254920f1932d46b28335d5d0b705",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "e58cc1e23aca3be79b5723a349dbab37405bf5c975b705b830eddab49a38a08c"
+    },
+    {
+      "key": "skill.fiery_spark",
+      "style": "B",
+      "path": "B/skill.fiery_spark.png",
+      "name": "Fiery Spark",
+      "family": "fire",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: A small bright FLAME DART with a spark tail, clearly a narrow pointed dart rather than a round fireball. Locked composition for its later frost transform: one long tapered lozenge pointing upper-right, tip at (82%,20%), broad luminous head centred (62%,40%), three tapering tail tongues trailing toward (18%,80%). Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: warm ivory core, burnt orange body and red outer flame, charcoal ground. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-1c3e9699-8012-4269-83fb-9088c6fcb722.png",
+      "source_sha256": "a6777e2917ec57db638d29c29bf19d41f27c401e61ec53dcc4a283b89f513e65",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "d05664e1fe2b5ac408e54f477fe0061b4cf1384c394857ad529c7ac611d08150"
+    },
+    {
+      "key": "skill.cold_spark",
+      "style": "B",
+      "path": "B/skill.cold_spark.png",
+      "name": "Cold Spark",
+      "family": "frost",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square dark fantasy game SKILL icon, reduced to 64x64 and displayed at 32 px. Input image: the project's own generated B Fiery Spark, used as the edit target; no third-party image. Primary request: transform its flame dart into COLD SPARK, a blue crystal dart with a frost tail. Preserve exactly the dart's outer silhouette, three tail tongues, position, scale, angle, backdrop coverage, and all composition. Change only the element: replace the orange-red flame surface with a pale blue-white faceted ice crystal, warm tail with pale blue frost ribbons, and warm-charcoal backdrop tint with deep navy. Internal planes should clearly read as crystal. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Keep it an unframed full-bleed skill icon. No added border, snowflakes, extra objects, letters, text, logo, UI or watermark. One opaque square image.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-783e4fb2-8585-443a-85d6-7331a9540603.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-1c3e9699-8012-4269-83fb-9088c6fcb722.png"
+      ],
+      "source_sha256": "fe7c41b0dfda512aa5c2f746c00198405bd1b8e7d113c166a77ce419df70a0c9",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "89597d56fc778b19f235894e2509e2b78e9ad2b1ccbf1c378b3a0bb45c58a453"
+    },
+    {
+      "key": "skill.fireball",
+      "style": "B",
+      "path": "B/skill.fireball.png",
+      "name": "Fireball",
+      "family": "fire",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One ROARING ROUND FIRE ORB, circular bright core centred slightly right and below middle, with three short broad licking flame lobes flowing upper-left. The spherical head dominates; the tail is much shorter than the orb diameter. Clear round silhouette, distinct from a narrow spark dart. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: orange-red flame, warm ivory molten core, charcoal background. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-5b42848a-1e01-40b8-ba71-21ac550860d1.png",
+      "source_sha256": "3a0f7cd28baf61fdec0388691f73c7248420086527e125be78536a00ffd417e3",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "0cfe5f442bea5dd907f8c091855bd9c022ac7acf0ef25a9ed0e5fc2d0a12d2e3"
+    },
+    {
+      "key": "skill.smite",
+      "style": "B",
+      "path": "B/skill.smite.png",
+      "name": "Smite",
+      "family": "holy",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One SHORT DOWNWARD BOLT OF LIGHT, a broad gold-white zigzag descending from upper centre into one small simple impact wedge near lower centre. Forceful single flash; no weapon, no person, no religious symbol. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: warm gold-white light on dark umber-charcoal. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-3de30da3-67ae-4969-954b-ec6cba3547ef.png",
+      "source_sha256": "d7be7c83c9829b1007932bf4b29eb9ec1f12815a92bb921e33fc362649be7635",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "a4152d65bdb738d4e8ee6274f1bd5ecc442225a70c5ab1050080a267c2265d09"
+    },
+    {
+      "key": "skill.bladecraft",
+      "style": "B",
+      "path": "B/skill.bladecraft.png",
+      "name": "Bladecraft",
+      "family": "shadow",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One SHORT BROAD SILVER BLADE crossed diagonally OVER ONE BOW. Blade from lower-left handle to upper-right point; a simple curved bow behind it on the other diagonal, with a clearly visible taut bowstring and open negative space. The whole bow fits; no arrow and no person. Clear blade-plus-bow silhouette. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: silver blade, indigo and violet bow, faint violet shadow on deep indigo-black. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-3d9b6045-7206-4b44-a15f-53789a409f1f.png",
+      "source_sha256": "bac432ed2b99a328848d441332a1b06ea76abe0966b94e2998076eb3dc45dd81",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "4a69852c59206cae63ddedabe0f8167c211fb907a0380374998211b290aa8a7d"
+    },
+    {
+      "key": "skill.arrowfall",
+      "style": "B",
+      "path": "B/skill.arrowfall.png",
+      "name": "Arrowfall",
+      "family": "wild",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: EXACTLY FOUR separated large ARROWS descending in a fan and CONVERGING on ONE small target point at lower centre. Four visible arrowheads above the impact, four thick shafts, four fletchings; two from each side of vertical, broad dark gaps between arrows until they meet. Count must be obvious at 32px. No additional shafts, motion lines or arrows. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: ivory steel arrowheads, muted green-teal fletchings, earth-brown shafts on dark forest ground. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-3c1719ae-3c90-4ea3-ac85-f24bb63d67e0.png",
+      "source_sha256": "23b1d25b6a04ff785a475db0cf0fad8d3830033630d70c1815d39ab1a62200e2",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "ea02b25041c1eb400ec61eaafd6cfe2fba43031f37a8368b72ccb9e21bc649e1"
+    },
+    {
+      "key": "talent.f1",
+      "style": "B",
+      "path": "B/talent.f1.png",
+      "name": "Fire Mastery",
+      "tree": "Ember",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One upright FLAME CROWNED with a small solid three-point crown, inside a plain circular ring. Crown, flame and ring form one simple readable emblem, no separate extra objects. Crown clearly wider than flame tip. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: orange-red flames, ivory highlight, dark charcoal. Composition: A thick simple chamfered SQUARE enamel frame, outer bounds 5% to 95% of canvas; clipped corners, flat edge bands 5% of canvas wide. Rim uses a muted midtone from the tree palette, with a pale upper-left segment. Dark inset field; main motif fills 66% of canvas. No ornamental corner objects. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-20ebfed0-3969-4bd6-89d7-de016dd46287.png",
+      "source_sha256": "1515353ee763847062e154420f1af556e7ce0dfe5a3daceed3659ef82b77ad2d",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "a6683272f3a688c11e3fdbbfc86da4fa81fa587eacc1c502f9d510ced5189d32"
+    },
+    {
+      "key": "talent.r10",
+      "style": "B",
+      "path": "B/talent.r10.png",
+      "name": "Cold Shock",
+      "tree": "Rime",
+      "node_type": "window",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One JAGGED FROST SPARK CRACKING: a compact asymmetric angular crystalline flash split by one bold dark lightning-shaped fissure. Two clear bright halves of the same spark, a few large ice points; no fine snowflake branches, no lightning bolt added beside it. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: pale blue and white ice on deep navy. Composition: A thick simple chamfered SQUARE enamel frame, outer bounds 5% to 95% of canvas; clipped corners, flat edge bands 5% of canvas wide. Rim uses a muted midtone from the tree palette, with a pale upper-left segment. Dark inset field; main motif fills 66% of canvas. No ornamental corner objects. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-413d65c6-3790-4224-aae7-ac5a68f7596d.png",
+      "source_sha256": "5a29f9ab25f49d2a43e28188b52df87e5bb51eb3112f2d9a32383be3d54fad43",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "bb02dc29e610fc2e4fe6f7d049de39139db86a865e3ef80e190592cf645b4f07"
+    },
+    {
+      "key": "talent.b2",
+      "style": "B",
+      "path": "B/talent.b2.png",
+      "name": "Ironbound",
+      "tree": "Bulwark",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: Two thick horizontal RIVETED IRON BANDS reinforcing ONE broad upright armor PLATE. Four large bronze rivets, two on each band. Central plate is a simple slab, no heraldry, no person, no full suit of armor. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: steel grey plate and iron bands with bronze rivets on dark slate. Composition: A thick simple chamfered SQUARE enamel frame, outer bounds 5% to 95% of canvas; clipped corners, flat edge bands 5% of canvas wide. Rim uses a muted midtone from the tree palette, with a pale upper-left segment. Dark inset field; main motif fills 66% of canvas. No ornamental corner objects. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-87dd0be0-d852-43b9-b284-9d9637688f26.png",
+      "source_sha256": "50984f241674436572d8c24a13a211025fe536da709adc40180a9f3ba4e72b56",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "ee6fde0141c32ac5cd1ae2e7962b06cee410203589446d97925ea25160e4d4a9"
+    },
+    {
+      "key": "talent.m7",
+      "style": "B",
+      "path": "B/talent.m7.png",
+      "name": "Patient Care",
+      "tree": "Mercy",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One simple upright HOURGLASS with wide ivory glass chambers, DRIPPING TWO LARGE GOLDEN DROPS through its narrow waist into the lower chamber. Strong hourglass silhouette and visible droplets, broad gold top and bottom bars; no numbers, clock face or extra vessels. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: warm honey gold and ivory white on deep warm brown. Composition: A thick simple chamfered SQUARE enamel frame, outer bounds 5% to 95% of canvas; clipped corners, flat edge bands 5% of canvas wide. Rim uses a muted midtone from the tree palette, with a pale upper-left segment. Dark inset field; main motif fills 66% of canvas. No ornamental corner objects. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-50526f6a-aba7-4a0a-b447-d6fcb32bf8fe.png",
+      "source_sha256": "80b766fca291a7ae9454f9a094d317c313cfea26b31621dee234701f26bd85f9",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "3459f1527dd9dce34561674149dea358b0b2aaba6966c272681bdbbb90b41d2b"
+    },
+    {
+      "key": "talent.rk1",
+      "style": "B",
+      "path": "B/talent.rk1.png",
+      "name": "Sharpened Word",
+      "tree": "Reckoning",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One QUILL SHARPENED INTO A BLADE, diagonal from lower-left sharp nib to upper-right feather tip. Upper half visibly a broad ivory feather with three large vane cuts; lower half becomes a short gleaming blade with a sharp cutting edge. One small crimson binding at the transition. Single joined object, no book, writing, letters or detached sword. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: hard gold-white with one crimson accent on near-black umber. Composition: A thick simple chamfered SQUARE enamel frame, outer bounds 5% to 95% of canvas; clipped corners, flat edge bands 5% of canvas wide. Rim uses a muted midtone from the tree palette, with a pale upper-left segment. Dark inset field; main motif fills 66% of canvas. No ornamental corner objects. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-6238998b-910f-4cf6-9350-fbbdb174b109.png",
+      "source_sha256": "bbc579b1a5f3b3f6ae6e75fb0bb4fcd60b7905c38b992f73a3674576bcae96aa",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "1e6e1201c0a051b4adc5ef48a13aa13f44539cf9c2e868d625c808ee19e59155"
+    },
+    {
+      "key": "talent.q2",
+      "style": "B",
+      "path": "B/talent.q2.png",
+      "name": "Quiver",
+      "tree": "Quarry",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One squat open LEATHER QUIVER with ONE ARROW CURVING BACK INTO ITS MOUTH. The single returning arrow forms a broad hooked inverted-U above and right of the quiver, with its ivory arrowhead visibly pointing downward into the opening. Thick green curved shaft, feathered tail. No extra arrows and no separate circular-arrow symbol. Style B, 'Cut enamel': Bold flat dark-fantasy enamel illustration, crisp angular cut-paper silhouettes, exactly three solid value steps plus a tiny highlight, no gradients, glow, photorealism, brush texture or fine hatching. Thick dark outline equivalent to 2 pixels at 64px, strong negative spaces. Upper-left highlight faces. Palette: earth-brown leather, green return arrow, ivory arrowhead on dark forest green. Composition: A thick simple chamfered SQUARE enamel frame, outer bounds 5% to 95% of canvas; clipped corners, flat edge bands 5% of canvas wide. Rim uses a muted midtone from the tree palette, with a pale upper-left segment. Dark inset field; main motif fills 66% of canvas. No ornamental corner objects. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-03b9300b-dcd2-4e8a-b10b-adeb2b05846e.png",
+      "source_sha256": "d4922a6620371d4e0f0e570b84da6fb92fa61997c6234a8eecdd58bf9ad310ad",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "ecc060d2d8cf8a97638d1d222735b546d127c5fe42a42c5fcbbd25e09835bd89"
+    },
+    {
+      "key": "skill.fiery_spark",
+      "style": "C",
+      "path": "C/skill.fiery_spark.png",
+      "name": "Fiery Spark",
+      "family": "fire",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: A small bright FLAME DART with a spark tail, clearly a narrow pointed dart rather than a round fireball. Locked composition for its later frost transform: one long tapered lozenge pointing upper-right, tip at (82%,20%), broad luminous head centred (62%,40%), three tapering tail tongues trailing toward (18%,80%). Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: warm ivory core, burnt orange body and red outer flame, charcoal ground. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-56380173-a894-4751-a7ff-93689a9a3c94.png",
+      "source_sha256": "ace12e1d4481d572c4c716372212947ba8383a8cb36708252b7eb802861227c6",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "6b7bc3074cbcfb27531b1c16054fb8410738e78dad94ee34b92d51ea02467370"
+    },
+    {
+      "key": "skill.cold_spark",
+      "style": "C",
+      "path": "C/skill.cold_spark.png",
+      "name": "Cold Spark",
+      "family": "frost",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square dark fantasy game SKILL icon, reduced to 64x64 and displayed at 32 px. Input image: the project's own generated C Fiery Spark, used as the edit target; no third-party image. Primary request: transform its flame dart into COLD SPARK, a blue crystal dart with a frost tail. Preserve exactly the dart's outer silhouette, three tail tongues, position, scale, angle, backdrop coverage, and all composition. Change only the element: replace the orange-red flame surface with a pale blue-white faceted ice crystal, warm tail with pale blue frost ribbons, and warm-charcoal backdrop tint with deep navy. Internal planes should clearly read as crystal. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Keep it an unframed full-bleed skill icon. No added border, snowflakes, extra objects, letters, text, logo, UI or watermark. One opaque square image.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-2997ce9b-534c-4082-a185-a9b2c23942d0.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-56380173-a894-4751-a7ff-93689a9a3c94.png"
+      ],
+      "source_sha256": "db12f2dd60deabd91c21a5f4ce027eb3d164903b7b9fff37aff1cbb4b5d59573",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "3aa8930a4faf801d89819911bed700e099826ce5cea48d8821d6d80ae59c8a69"
+    },
+    {
+      "key": "skill.fireball",
+      "style": "C",
+      "path": "C/skill.fireball.png",
+      "name": "Fireball",
+      "family": "fire",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One ROARING ROUND FIRE ORB, circular bright core centred slightly right and below middle, with three short broad licking flame lobes flowing upper-left. The spherical head dominates; the tail is much shorter than the orb diameter. Clear round silhouette, distinct from a narrow spark dart. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: orange-red flame, warm ivory molten core, charcoal background. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-7d3fbceb-3cc7-4e86-ab06-7ecc893c4fbe.png",
+      "source_sha256": "20402414d23a20dc109e0a45df5a5690ddcc72695d529ef4e706bb2cac66b9f0",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "4a6748e7515a30cdf22e6d78f251054a6cfcd163f5078d894d7cce8c80d538ab"
+    },
+    {
+      "key": "skill.smite",
+      "style": "C",
+      "path": "C/skill.smite.png",
+      "name": "Smite",
+      "family": "holy",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One SHORT DOWNWARD BOLT OF LIGHT, a broad gold-white zigzag descending from upper centre into one small simple impact wedge near lower centre. Forceful single flash; no weapon, no person, no religious symbol. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: warm gold-white light on dark umber-charcoal. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-234c379d-b39f-4bc7-b244-e26fa78648d2.png",
+      "source_sha256": "3401ff788355a8ab247bbe2bf763b67889cb35c8cd6875d0410741dca2778414",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "7503fc67873054941354b7fdca64e8b8cbf0e48e2700692941d907a3be9840c7"
+    },
+    {
+      "key": "skill.bladecraft",
+      "style": "C",
+      "path": "C/skill.bladecraft.png",
+      "name": "Bladecraft",
+      "family": "shadow",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One SHORT BROAD SILVER BLADE crossed diagonally OVER ONE BOW. Blade from lower-left handle to upper-right point; a simple curved bow behind it on the other diagonal, with a clearly visible taut bowstring and open negative space. The whole bow fits; no arrow and no person. Clear blade-plus-bow silhouette. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: silver blade, indigo and violet bow, faint violet shadow on deep indigo-black. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-7e82fc7e-3632-4584-b96b-74da6ce9c738.png",
+      "source_sha256": "745feef5e860b7e8596d44bdbf8a49a5a3bf4c13cf0e10eea4494314bcc239bd",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "658b579c0d2c279d7470dab8b9b2d9d46dc9c27a30769ea1c707a27f2ba588a5"
+    },
+    {
+      "key": "skill.arrowfall",
+      "style": "C",
+      "path": "C/skill.arrowfall.png",
+      "name": "Arrowfall",
+      "family": "wild",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game SKILL icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: EXACTLY FOUR separated large ARROWS descending in a fan and CONVERGING on ONE small target point at lower centre. Four visible arrowheads above the impact, four thick shafts, four fletchings; two from each side of vertical, broad dark gaps between arrows until they meet. Count must be obvious at 32px. No additional shafts, motion lines or arrows. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: ivory steel arrowheads, muted green-teal fletchings, earth-brown shafts on dark forest ground. Composition: Full-bleed dark backdrop edge-to-edge, NO frame, rim, badge or medallion. One clear action silhouette filling about 78% of square, generous dark separation around the main shape. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-6eb5c25a-f2b8-4218-bb00-c5dd86f11306.png",
+      "source_sha256": "52235dc81762337177fb6160769b3bba6ea52c78de0752f76de1c6e181a1e396",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "483e7ca4821e105d7aa70ca9e11dbf6c44c1766595ddb37e60c5ae89d98c56c0"
+    },
+    {
+      "key": "talent.f1",
+      "style": "C",
+      "path": "C/talent.f1.png",
+      "name": "Fire Mastery",
+      "tree": "Ember",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One upright FLAME CROWNED with a small solid three-point crown, inside a plain circular ring. Crown, flame and ring form one simple readable emblem, no separate extra objects. Crown clearly wider than flame tip. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: orange-red flames, ivory highlight, dark charcoal. Composition: A single thick OCTAGONAL forged-metal bezel, outer bounds 5% to 95% of canvas; eight clearly cut sides, broad 5%-wide bevel, dark inset plate. Bezel tinted by the tree palette, softly highlighted upper left. Main motif fills 66% of canvas. No rivets or ornaments on the bezel. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-dd5d8d2a-d1dc-4be6-bfea-1c7ef7a48587.png",
+      "source_sha256": "4a2e8bbe2100b6e3fcd1461190da8f4ff582e8ae683a2638de0b2b96125f4ed3",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "94a4984e138ee2d4ba999a0eba620872397c205ed6ed0cd6dab139351b37a39d"
+    },
+    {
+      "key": "talent.r10",
+      "style": "C",
+      "path": "C/talent.r10.png",
+      "name": "Cold Shock",
+      "tree": "Rime",
+      "node_type": "window",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One JAGGED FROST SPARK CRACKING: a compact asymmetric angular crystalline flash split by one bold dark lightning-shaped fissure. Two clear bright halves of the same spark, a few large ice points; no fine snowflake branches, no lightning bolt added beside it. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: pale blue and white ice on deep navy. Composition: A single thick OCTAGONAL forged-metal bezel, outer bounds 5% to 95% of canvas; eight clearly cut sides, broad 5%-wide bevel, dark inset plate. Bezel tinted by the tree palette, softly highlighted upper left. Main motif fills 66% of canvas. No rivets or ornaments on the bezel. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-e95174f1-98d4-4af2-88e6-f06746d83b85.png",
+      "source_sha256": "8356136f021dffd308d966dcb523f16fbce6d4817e1daa81e1d23886ed1913ba",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "deac3f26d40a3826535302fe6220869aee725daa23ca188681430792ccb8b85c"
+    },
+    {
+      "key": "talent.b2",
+      "style": "C",
+      "path": "C/talent.b2.png",
+      "name": "Ironbound",
+      "tree": "Bulwark",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: Two thick horizontal RIVETED IRON BANDS reinforcing ONE broad upright armor PLATE. Four large bronze rivets, two on each band. Central plate is a simple slab, no heraldry, no person, no full suit of armor. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: steel grey plate and iron bands with bronze rivets on dark slate. Composition: A single thick OCTAGONAL forged-metal bezel, outer bounds 5% to 95% of canvas; eight clearly cut sides, broad 5%-wide bevel, dark inset plate. Bezel tinted by the tree palette, softly highlighted upper left. Main motif fills 66% of canvas. No rivets or ornaments on the bezel. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-d9b82954-1ae8-4b8b-a0ae-a05ffcc1788f.png",
+      "source_sha256": "a8a0230c183bf39a2003e1131672c811e531f5f3ee48f83e4bb1b9334bf5dc69",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "a1d7eca4d9a9112a52c0e1e4587fd75077b2edf0c8ab79209d6bd5d5538d697d"
+    },
+    {
+      "key": "talent.m7",
+      "style": "C",
+      "path": "C/talent.m7.png",
+      "name": "Patient Care",
+      "tree": "Mercy",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One simple upright HOURGLASS with wide ivory glass chambers, DRIPPING TWO LARGE GOLDEN DROPS through its narrow waist into the lower chamber. Strong hourglass silhouette and visible droplets, broad gold top and bottom bars; no numbers, clock face or extra vessels. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: warm honey gold and ivory white on deep warm brown. Composition: A single thick OCTAGONAL forged-metal bezel, outer bounds 5% to 95% of canvas; eight clearly cut sides, broad 5%-wide bevel, dark inset plate. Bezel tinted by the tree palette, softly highlighted upper left. Main motif fills 66% of canvas. No rivets or ornaments on the bezel. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-637b3e2c-0d6b-4ffd-b15b-fc89ee59aed2.png",
+      "source_sha256": "581356a2a6841215efb0edb3c6fb8080bdf64c7c99d8a1d54f984978d3f77b0b",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "43e902f45ec54fa7586e321bc3858f5a615b25f7b906da24229c70b326c09cbe"
+    },
+    {
+      "key": "talent.rk1",
+      "style": "C",
+      "path": "C/talent.rk1.png",
+      "name": "Sharpened Word",
+      "tree": "Reckoning",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One QUILL SHARPENED INTO A BLADE, diagonal from lower-left sharp nib to upper-right feather tip. Upper half visibly a broad ivory feather with three large vane cuts; lower half becomes a short gleaming blade with a sharp cutting edge. One small crimson binding at the transition. Single joined object, no book, writing, letters or detached sword. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: hard gold-white with one crimson accent on near-black umber. Composition: A single thick OCTAGONAL forged-metal bezel, outer bounds 5% to 95% of canvas; eight clearly cut sides, broad 5%-wide bevel, dark inset plate. Bezel tinted by the tree palette, softly highlighted upper left. Main motif fills 66% of canvas. No rivets or ornaments on the bezel. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-17ab4843-bba4-4e3c-9db5-84018c0c3013.png",
+      "source_sha256": "8f97280b2c7b69005dd381b538dc5b1ed50304060182c2b5fcf27d3c429007a8",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "f17a07dcc6f4d0574b087b786bb22e50d88c440989e7192509e55069436daa7e"
+    },
+    {
+      "key": "talent.q2",
+      "style": "C",
+      "path": "C/talent.q2.png",
+      "name": "Quiver",
+      "tree": "Quarry",
+      "node_type": "modifier",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square dark fantasy game TALENT icon for Grudgelands, ultimately reduced to 64x64 and displayed at 32 px. Subject: One squat open LEATHER QUIVER with ONE ARROW CURVING BACK INTO ITS MOUTH. The single returning arrow forms a broad hooked inverted-U above and right of the quiver, with its ivory arrowhead visibly pointing downward into the opening. Thick green curved shaft, feathered tail. No extra arrows and no separate circular-arrow symbol. Style C, 'Forged sigils': Sculpted shallow bas-relief dark-fantasy icon, broad raised metal planes with colored enamel inlay, blackened recessed ground, worn outer edges but NO tiny scratches, filigree or fine hatching. Chiselled bevels and bold carved silhouette, upper-left raking light, firm dark shadow lower-right. Three large values. Carved grooves at least 2 pixels wide at final 64px. Palette: earth-brown leather, green return arrow, ivory arrowhead on dark forest green. Composition: A single thick OCTAGONAL forged-metal bezel, outer bounds 5% to 95% of canvas; eight clearly cut sides, broad 5%-wide bevel, dark inset plate. Bezel tinted by the tree palette, softly highlighted upper left. Main motif fills 66% of canvas. No rivets or ornaments on the bezel. Constraints: prioritize unmistakable motif at 32px, little fine detail, no text, letters, numbers, logos, watermark, UI, panels, human figures or tiny scattered particles. One opaque square image, no supplied reference.",
+      "source": "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-d0e0fd0a-f788-483e-99c5-4800b7c46877.png",
+      "source_sha256": "acacf06a175a584468afc6e33722c6dfe28f38fd5c7e5ea3cc224d4ec361e667",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "1e27c82ef9ca8707d849d745cdf93beb1c5c121b051258bf44cfa24ebba9f50a"
+    }
+  ],
+  "comparisons": [
+    {
+      "key": "shipped.fireball",
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_fireball.png",
+      "sha256": "93ca48384e8fbd89f4493eb8d2a5a7b4544928ed28d7056ebf8ddc9889d71cb1",
+      "license": "CC0-1.0",
+      "source_manifest": "tools/r18_art/manifest.json"
+    },
+    {
+      "key": "shipped.smite",
+      "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_smite.png",
+      "sha256": "e845d749a84cd1738777b24bb591e32714cd076c4d38b71226d5664ce56e38a2",
+      "license": "CC0-1.0",
+      "source_manifest": "tools/r18_art/manifest.json"
+    }
+  ],
+  "preview": {
+    "path": "preview.png",
+    "sha256": "a1dd491b7e82c69627a237c57ee2faea6f8f1631f2cde0d87220eaff196e26f4",
+    "size": [
+      1496,
+      1472
+    ],
+    "processing": "Pillow composition of unchanged finals and shipped comparison art; 32/48px copies use Lanczos; 64px copies are pasted unchanged; default Pillow font; opaque RGB PNG"
+  }
+}
