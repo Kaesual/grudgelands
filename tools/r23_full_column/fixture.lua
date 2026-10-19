@@ -21,7 +21,8 @@ end
 
 -- Geometry: whole-world tile count, generate reach, neighbourhood window.
 local full = plan.new("full",geometry,ids,options())
-check(full.total==8811 and full.counts.x==99 and full.counts.z==89,"horizontal tile count")
+-- Round 51 T1: the map's extent grew to +-4050 x +-3600 (was 99 x 89 = 8811).
+check(full.total==10989 and full.counts.x==111 and full.counts.z==99,"horizontal tile count")
 check(full.reach==176 and full.window.x==3 and full.window.z==3,"reach 176, window 3 at distance 10")
 check(full.air_top==608,"flight ceiling plus headroom")
 local near = plan.new("full",geometry,ids,options({generate_distance=5}))
@@ -52,9 +53,10 @@ local lo,hi=plan.unit(small,61)
 check(lo.y==-192 and hi.y==-113 and hi.x-lo.x==79,"first unit bottom-up")
 -- Negative and positive alignment on the engine grid.
 full.cursor=0;resolve(full,flat(20));lo=plan.unit(full,1)
-check(lo.x==-3952 and lo.z==-3552,"negative alignment")
+-- Round 51 T1: the map's extent grew (was -3952, -3552 and 3967, 3567).
+check(lo.x==-4432 and lo.z==-3952,"negative alignment")
 full.selection=nil;full.cursor=full.total-1;resolve(full,flat(20));lo,hi=plan.unit(full,full.total)
-check(hi.x==3967 and hi.z==3567,"positive extent")
+check(hi.x==4447 and hi.z==3967,"positive extent")
 
 -- Neighbourhood: a narrow peak three tiles away raises the top; four do not.
 -- A deep column three tiles away lowers the bottom.
