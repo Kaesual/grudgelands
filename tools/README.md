@@ -1474,3 +1474,12 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   heap; `mgprof_extra.lua` the edge and ring chunks for `tools/mgprof/run.sh`
   (`PROBE_EXTRA=`); `grug_probe_r51_terrain` reads the new ring in the engine,
   `PROBE=` of the smoke boot).
+- **Round 51 lane NAMES** (`r51_names`, design only, no fixture): the water
+  families' ladders and names. `survey.sh` (through the Lua queue, 4
+  processes) runs `water_survey.lua` per seed: the game's region builder
+  counts per zone belt the cells near sea water and near lakes and rivers
+  (`survey/seed_<seed>.json`); `build.py [--check]` expands `design.json`
+  over the belts into `draft.json` (sub-type rows, world slots, zone slots
+  in the Round 38 proposal format) and the preview page `page.html`
+  (`page_local.html` for file://); `check_draft.py` runs the Round 38 name
+  gates over today's names plus the draft.
