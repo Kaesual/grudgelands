@@ -90,22 +90,29 @@ and its profession trainers.
 
 ## Current state
 
-**0.51.0** brings the land zones and the sea: a larger sea with a wide
+**0.52.0** lets the background sounds follow the landscape and your
+height: one bed for every temperate forest, new beds for the badlands,
+the swamp, the crags, the snowy crags and the Battlegrounds, night
+choruses, a soft wind only high up, a quiet bed in real caves and
+silence in the tunnels you dig, and animals calling now and then. It also
+lays the groundwork for the class update: the skill row scrolls, most
+skill icons are redrawn, the selected skill shows a small glow on your
+weapon, and Mend heals counting from your own cast. Your classes and
+talents play as before. No map reset is needed.
+
+**0.51.0** brought the land zones and the sea: a larger sea with a wide
 coastal belt, natural bays and shallow dragon channels, coral, kelp and
 seagrass on the seabed, shipwrecks, and tortoises, frogs, stingrays,
 sharks and gobies by water depth, with the sea coloured by depth on the
-map. Every land zone gets a few characteristic changes: calm 2 × 2 ground
-textures, lianas and flowers in the jungle, graveyards, ruins and varied
-bones in the undead lands, boulders, cairns and lichen in the dwarves'
-crags, clay bands on the orc badlands' slopes, ruins and pastel flowers in
-the elves' forests, papyrus, marram and driftwood on the shores. It needs
-a map reset; characters keep their level, gear, inventory and quests.
+map, and a few characteristic changes in every land zone (calm grounds,
+new plants, ruins, graveyards, cairns, statues and varied bones). It
+needed a map reset; characters keep their level, gear, inventory and
+quests.
 
 **0.50.0** added a second hotbar layout (A and B) and packs the containers
 of your housing claim at a map reset into the Claim Stone's Belongings
 tab; 0.50.2 shows on the minimap where a Claim Stone may go and names the
-claims you stand in. **0.49.0** made world generation much faster, above
-all underground.
+claims you stand in.
 
 Read the [changelog](CHANGELOG.md) for changes and upgrade requirements,
 and the [project status](docs/STATUS.md) for delivery and playtest progress.

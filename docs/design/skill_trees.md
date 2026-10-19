@@ -7,7 +7,10 @@ Talents page, the respec and the level-up notice shipped in Rounds 11 and 12
 and on 2026-09-17 (WP11 lanes X1–X4, the Scout's trees in Round 11); Round 35
 made every damage and armour talent level-proof (§2.10) and applied the
 user's picks from a review of all talents (2026-10-05); Round 36 added the
-support factor. The tables below carry the current values.
+support factor. The tables below carry the current values. Round 52 built
+the graph talents of the class rework beside them (§3.12): admins can
+preview them, players keep these trees until round K switches over with an
+automatic talent reset.
 
 - "Ruling N" means the user's rulings of 2026-09-16, summarised in §5.
 - Code is cited by symbol (a function, a registration, a field), never by
@@ -556,6 +559,11 @@ edge.
   framework (§3.5) and the paid respec
   (`grug_classes.buy_respec`); for these `grug_classes` depends on `sfinv` and
   `grug_money`.
+- `grug_classes/talent_graph.lua`, `talent_graph_preview.lua` and
+  `talent_graph_ui.lua` (Round 52): the graph registry of round K with its
+  rules and audit, the eight new trees as preview data, and the new page
+  with the admin command `/talent_preview` (§3.12). Nothing live reads
+  them.
 
 Registration mirrors `register_class`:
 
@@ -791,6 +799,11 @@ shared frame the short inventory (the hotbar and two scrolling rows) below. The 
   as base skills (`classes.md` §2c). Passive talent-tree artwork remains outside
   that action-icon scope.
 - `/talents` is a read-only rank summary; no command changes talent state.
+- **The skill row scrolls** (Round 52, class plan C13): past eight skills a
+  horizontal scrollbar under the slots moves the row
+  ([inventory_equipment.md §6](inventory_equipment.md#6-the-skill-catalog-and-bound-representations)).
+  The row's box grew 0.3 for the bar, so the selected talent's text above
+  it is 1.0 high and ends at 7.15.
 
 ### 3.6 Level-up flow
 
@@ -902,7 +915,114 @@ grug_core.get_absorb(target)        -- the total
 Writers: the Priest's Shield, Glacial Ward, Hold Ground, Recompense and the
 Last Light Locket's trinket special (`items_crafting.md` §6.2).
 
----
+### 3.12 The graph talents of round K (Round 52)
+
+Round 52 ([class plan](../planning/round52-class-plan.md) C6, C12, D3–D5,
+D7) built the talent engine and page of the class rework **beside** the
+registry above. Nothing live reads them: the shipped trees, their stored
+string and today's page stay until round K, which switches over with the
+new kits and gives every character an automatic talent reset. The trees are
+the eight of the [node list](../planning/class-redesign/node-list.md): 109
+nodes, 31–34 ranks per tree.
+
+**The data format** (`grug_classes.graph`, `talent_graph.lua`):
+
+```lua
+graph.register_class_vocabulary("mage", {
+    keys = {},                         -- class keys: {key = "the consumer"}
+    params = {"fire", "fireball", …},  -- tags and ability ids families may name
+})
+
+graph.register_tree({
+    id = "ember", class = "mage", name = "Ember", description = "…",
+    ranks = 32,                        -- the declared rank total, audited
+    example = "F1x4 F4 F2x3 …",        -- a worked 30-point build (the preview)
+    nodes = {
+        {id = "fire_mastery", code = "F1", name = "Fire Mastery",
+         type = "modifier", ranks = 4, gate = 0, col = 3,
+         effects = {["damage_pct:fire"] = {5, 10, 15, 20}},
+         description = "…"},
+        {id = "fireball", code = "F4", name = "Fireball", type = "unlock",
+         ability = "fireball", ranks = 1, gate = 2, col = 3,
+         requires = {"fire_mastery"}, description = "…"},
+        …
+    },
+})
+graph.audit()
+```
+
+- **A node** has an id (its name in snake_case), the node list's `code`,
+  a `type` (`modifier`, `window`, `unlock`, `transform` or `ultimate`), a
+  rank count, a **gate** (one of `graph.GATE_ROWS`: 0, 2, 6, 10, 12, 16,
+  20; the page draws one row per gate), a column `col` 1–5, any number of
+  prerequisites `requires` (each needs **one** rank, not a full chain) and
+  its effects as data, one value per rank. A granting node (`unlock`,
+  `transform`, `ultimate`) names its `ability` and has one rank; a
+  transform's ability carries the ability-side `transforms` field
+  ([module guide](../technical/module-guide.md#combat-and-classes)); each
+  tree has exactly one ultimate, at gate 20.
+- **Effect keys** come from three places: the shared stat keys
+  (`graph.SHARED_KEYS`: armour, max HP, max mana, crit and dodge, with
+  today's names and units), the class's own keys
+  (`register_class_vocabulary`, one call per class, so round K's class
+  lanes never edit one shared list: D4), and the families
+  `<family>:<param>` (`damage_pct`, `cost_pct`, `cooldown_sub`,
+  `radius_add`, `duration_add`, `range_add`) whose param is a tag or an
+  ability id the class registered. Today's `EFFECT_KEYS` and `WINDOW_KEYS`
+  are unchanged.
+- **The gate rule:** a node's gate counts the ranks in its tree's nodes of
+  a **lower** gate. For a build bought in order that is the points spent
+  in the tree; on a stored string it also rejects nodes of one gate that
+  only "pay" for each other. One function (`graph.structure_refusal`)
+  gives the reason on both paths, so the spend refusal and the read path
+  say the same ("Meteor needs 12 points in Ember (you have 8).", "… needs
+  a rank in …").
+- **The rules** work on a ranks table `{node id = rank}`:
+  `graph.spend_refusal(class, ranks, id, budget)` and `graph.spend` (one
+  rank), `graph.reset` (everything back), `graph.parse(class, raw,
+  budget)` (the read path: unknown and foreign ids dropped, ranks clamped,
+  gates and prerequisites enforced, the total refunded deepest first),
+  `graph.serialize` (`id=rank,…` in registration order) and
+  `graph.apply_order` (a build in the node list's notation). Points stay
+  `floor(level / 2)`, 30 at level 60 (`graph.POINTS_MAX`).
+- **The audit** (`graph.audit()`, at load; a failure stops the server):
+  types, ranks, gates and columns, one node per cell, prerequisites inside
+  the tree and of no higher gate, no cycle, every node reachable within
+  30 points, the declared rank total (and more than 30, so no tree can be
+  bought out), the vocabulary and the sample build.
+
+**The preview** (D3): `/talent_preview [mage|warrior|priest|scout]`
+(privilege `server`; default the admin's own class) opens the new page
+read-only with the class's two trees, each showing its sample build. The
+state (class, tab, selected node, the builds) lives in memory for the open
+form; nothing writes `grug_classes:talents`. The data is one file,
+`talent_graph_preview.lua`; round K replaces it with one data file per
+class.
+
+**The page** (`graph.page_content`, real coordinates of the sfinv frame,
+so round K can put it into Talents & Skills; D5,
+`graph.PAGE`):
+
+- one inner tab per tree, as buttons in the header row (y 0.15–0.75,
+  2.6 wide) beside the points text: the selected style of the Character
+  page's mode buttons; the tab lives in the form context, never stored;
+- the tab content rectangle **13 × 5.5** at (0.25, 0.95): the tree's
+  background `grug_classes_tree_<tree>.png` (1040 × 440 px, 80 px per
+  unit) or a plain dark box while none ships; seven gate rows of 0.6-high
+  nodes with 0.18 between them, centred, the gate number at the left;
+  five columns 2.16 wide;
+- connection lines of `box[]` segments (0.06 thick) under the nodes,
+  orthogonal like `layout_tree`'s, gold once the parent has a rank;
+- a node shows its icon (`grug_classes_talent_<node>.png`, or for a
+  granting node its skill's `grug_abilities_skill_<ability>.png`) with
+  its rank beside it, or its name and rank as text while no icon ships;
+  its look follows today's node styles, and the tooltip names the effect
+  and, when locked, the reason;
+- the selected node's text in a strip at 6.50–7.15, above the skill row.
+
+The art shipped with the user's picks of 2026-10-19/20 (D7): the eight
+backgrounds and the 74 talent icons; the granting nodes of skills that do
+not exist yet stay text until round K.
 
 ## 4. Implementation lanes (archived)
 

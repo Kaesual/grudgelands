@@ -19,8 +19,11 @@ remain delivered foundations, with this refinement work still ahead.
   decide more of which abilities a character gains or leaves out. Build
   coherent ability interactions and rotations, and improve balance in group
   play and PvP. The Scout most urgently needs attention to how it feels to play.
-  A four-class redesign proposal is parked as a future work package
-  (2026-10-12); player feedback ranks other problems first.
+  The four-class rework runs in two rounds
+  ([delivery plan](docs/planning/class-redesign/delivery-plan.md)): round
+  F, the foundation, shipped in 0.52.0 (the building blocks, the new
+  talent trees as an admin preview, the art); round K brings the new kits
+  and talent graphs with an automatic talent reset.
 - **World atmosphere, variety and resources:** review music, sounds and
   icons with care for the details that give each region character. Improve
   areas dominated by wind, add more surface variety, more varied tree shapes
@@ -29,7 +32,9 @@ remain delivered foundations, with this refinement work still ahead.
   0.46.0: gems one and two tiers deeper, more Coal and Iron in T3; 0.47.0
   added generated trees, the swamp and a mining ladder with Anthracite;
   0.51.0 gave every land zone calm grounds, new plants and a decoration
-  kit, and the sea a belt, seabed growth, wrecks and water creatures).
+  kit, and the sea a belt, seabed growth, wrecks and water creatures;
+  0.52.0 gave the ambience beds by landscape and height, wind only high
+  up, quiet caves and animal calls).
 - **Crafting with more character and purpose:** build on the improved
   recipe system with more variety, wit and versatility, especially in
   Cooking. Explore a broader range of useful food buffs.
@@ -517,8 +522,18 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   patches, lianas, flowers, alpine plants, lichen, papyrus on the sand,
   marram and the land kit (ruins, graveyards in the wild and the towns,
   cairns, statues, logs, varied bones, driftwood). Complete on
-  2026-10-19; not pushed (pushed only on the user's word). Next: its GUI
-  test.
+  2026-10-19 and pushed (`75ea1b4c`). Next: its GUI test.
+- [x] **Round 52 "Ambience and the class rework foundation"**
+  ([completion](docs/planning/round52-plan.md#completion-2026-10-20)),
+  version 0.52.0, **compatible**, no migration step: ambience beds by
+  biome group in three layers by the height relative to the terrain, real
+  caves told from dug tunnels, the underground sky relative to the
+  terrain, animal calls; round F of the class rework (the action clock,
+  transformations, readiness windows, area and group helpers, Mend on the
+  status system, the graph talents as an admin preview, the scrolling
+  skill row, the weapon overlay, the picked art and particle design).
+  Complete on 2026-10-20; not pushed (pushed only on the user's word).
+  Next: its GUI test, then round K.
 
 ### Remaining work
 
@@ -556,8 +571,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 46](BACKLOG.md#round-46-carry-overs),
   [Round 47](BACKLOG.md#round-47-carry-overs),
   [Round 48](BACKLOG.md#round-48-carry-overs),
-  [Round 49](BACKLOG.md#round-49-carry-overs) and
-  [Round 51](BACKLOG.md#round-51-carry-overs) carry-overs (Round 40: the
+  [Round 49](BACKLOG.md#round-49-carry-overs),
+  [Round 51](BACKLOG.md#round-51-carry-overs) and
+  [Round 52](BACKLOG.md#round-52-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -567,7 +583,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   notes; Round 47: tree, swamp, mining, crafting and map window notes;
   Round 48: mail, plant, price, HUD and step notes; Round 49: mapgen,
   navigation, inventory and tooling notes; Round 51: sea, surface, plant,
-  kit, wreck, map and water-mob notes);
+  kit, wreck, map and water-mob notes; Round 52: round K's open points,
+  ambience notes and the parked sounds);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

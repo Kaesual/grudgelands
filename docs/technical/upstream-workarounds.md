@@ -315,6 +315,19 @@ Engine reference for the line citations: `reference_projects/luanti` at
   dash therefore holds on its stop for three time constants and puts the
   player on it with `set_pos` after the detach (the engine sends the detach
   first, `Server::SendMovePlayer`). Smoothing by design, not a bug.
+- The weapon overlay of the class rework (Round 52, [module
+  guide](module-guide.md#combat-and-classes) "The weapon overlay") shows
+  in first person only. A wield-item entity (the third-person holder)
+  advances its overlay animation only in `GenericCAO::setNodeLight`, which
+  runs at creation and when the light at the entity changes
+  (`src/client/content_cao.cpp:806`, `:876`, `:882-887`), so an animated
+  overlay there would freeze on one frame; we show none (the user's call,
+  2026-10-19). The wield mesh also drops every pixel below alpha 0.5 and
+  draws the rest opaque (`TILE_MATERIAL_BASIC` →
+  `EMT_TRANSPARENT_ALPHA_CHANNEL_REF`, `src/client/shader.cpp:892-898`;
+  `client/shaders/object_shader/opengl_fragment.glsl:383-385`), so the
+  strips use opaque pixels only. Engine behaviour, no workaround on our
+  side.
 - Comments that describe engine behaviour our code follows (attached-node
   lamps in `grug_mapgen/wp13/parts.lua`, craft replacements in
   `grug_traders/prices.lua`, the client camera offset FIXME `#16221` in the

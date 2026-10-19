@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-19. This is the delivery pointer, not another game specification.
+Updated 2026-10-20. This is the delivery pointer, not another game specification.
 
 Planning pointer added 2026-10-12: the [class and hotbar redesign
 handoff](planning/class-redesign-handoff.md) preserves the redesign
@@ -16,11 +16,57 @@ acceptance and implementation remain pending. HTML previews live in the
 user's home artifact folder, not the repository. **Parked 2026-10-12** as a
 future work package after two reviews; the next round focuses on world
 generation. Resume with the [continuation plan](planning/class-redesign/continuation.md).
-Hotbar A/B shipped in 0.50.0. The [Class Redesign
+Resumed 2026-10-19: the [delivery plan](planning/class-redesign/delivery-plan.md)
+splits it into round F (the foundation, built in Round 52) and round K
+(the four new classes). Hotbar A/B shipped in 0.50.0. The [Class Redesign
 Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a private
 claude.ai page, Round 50 ART) shows the planning state with the user's
 notes.
 
+- **Round 52 "Ambience and the class rework foundation" complete**
+  (2026-10-20, version 0.52.0, **compatible**, no migration step;
+  [plan, decisions, numbers and GUI checklist](planning/round52-plan.md#completion-2026-10-20);
+  partial plans [ambience](planning/round52-ambience-plan.md) and
+  [class foundation](planning/round52-class-plan.md)). Not pushed
+  (pushed only on the user's word); origin/main stays at `dea1d163`
+  (0.51.0). From main `7813165e` (the three plans): SPLIT (`e2ab497f`),
+  SND (`07c7c1bc`), CORE-B (`78895157`), GRAPH (`0fd6d6f5`), AMB
+  (`a0d3c032`), CORE-A (`13b579b3`), AMB's file step (`87a4970c`), WFX
+  (`890b977e`), the staged art of ARTA (`f18b2db2`) and ARTB (`a23cf211`),
+  PFX (`120dd0b3`, added during the round), WFX's data step (`d0ad6c7d`)
+  and GRAPH's art step (`260402b9`) merged, then this documentation lane D.
+  Each code lane independently reviewed by Opus (all MERGE; PFX MERGE
+  AFTER FIXES, its fix checked by the coordinator); the sounds, the art
+  and the particle cards picked by the user. Main has 221 portable
+  fixtures (6 new); `mods/` +4,509 −1,566 lines in 31 text files, 11 new
+  Lua files, 160 media files. The declaration is
+  `{"schema": 3, "version": "0.52.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.51.0 moves on without a step.
+  - **Ambience (SND, AMB):** beds by biome group instead of the race
+    zone, new beds for the badlands, the swamp, the crags, the snowy crags
+    and the Battlegrounds, night beds, three layers (surface, cave, wind)
+    by the height relative to the terrain or the water surface, real caves
+    told from dug tunnels by a sampled probe, the underground sky relative
+    to the terrain (in > 20, out < 16), animal calls, `/ambience debug`;
+    23 new cuts, six beds dropped
+    ([sound.md §4](design/sound.md#4-ambience-beds-grug_ambience),
+    [module guide](technical/module-guide.md#sound)).
+  - **Class rework, round F (SPLIT, CORE-A, CORE-B, GRAPH, WFX):** the
+    shipped classes play as before except Mend's tick (3, 6, 9 and 12 s
+    after the cast); the action clock, the transformation field, the
+    readiness windows, the area and group helpers, the graph talents as an
+    admin preview (`/talent_preview`), the scrolling skill row and the
+    animated weapon overlay per talent tree and weapon type
+    ([module guide](technical/module-guide.md#combat-and-classes),
+    [skill_trees.md §3.12](design/skill_trees.md#312-the-graph-talents-of-round-k-round-52)).
+  - **Art and design (ARTA, ARTB, PFX):** 8 tree backgrounds, 74 talent
+    icons, 19 redrawn skill icons and 30 overlay strips ship; 25 skill
+    icons and the 65 particle cards wait for round K.
+  - **Round-end gates** on main `260402b9` (coordinator): full fixtures
+    221/221, `check_fresh_server` PASS, synced; this lane's
+    `check_upgrade.py` PASS (against origin/main `dea1d163`); *to be
+    recorded:* the boot of main. Its GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-52-carry-overs)).
 - **Round 51 "Land zones and the sea" complete and pushed**
   (2026-10-19, version 0.51.0, **map reset**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round51-plan.md#completion-2026-10-19);

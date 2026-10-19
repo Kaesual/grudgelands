@@ -1,7 +1,7 @@
 # Round 52, part A — ambience by biome and height
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-19 in a read-only design
-session while Round 51 runs. Status: **started** 2026-10-19 (the user's questions settled the same day; the user's "go").
+session while Round 51 runs. Status: **built** 2026-10-19 (the user's questions settled the same day; the user's "go"; AMB and its file step merged; [completion](round52-plan.md#completion-2026-10-20)).
 **Frame plan:** [round52-plan.md](round52-plan.md) owns the lanes, waves,
 shared files, the joint lane D and the release. Part B is the
 [class rework foundation](round52-class-plan.md). Where this part names its

@@ -656,7 +656,11 @@ Revised 2026-09-23, Round 18:
   class wields and per bow draw stage, one animation per family on the item
   definition, the strip's name in the stack meta. An empty slot, Strike and a
   strip not yet picked show none (a transparent override); a strip ships only
-  once the user picked it. Third person and other players never show it.
+  once the user picked it. Third person and other players never show it (the
+  engine would not animate it there, [module
+  guide](../technical/module-guide.md#combat-and-classes)). The strips use
+  opaque pixels only, because the held weapon draws no half-transparent
+  pixel.
 - Existing accepted weapon and armor media are unchanged. The round delivers a
   reviewed active-skill contact sheet and provenance for imported/generated icons.
 
@@ -828,7 +832,7 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
 | Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (the spell base + spell power; combat_stats §2), then the damage fit. Solo viability. |
 | Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool times the support factor (gear Intelligence, `combat_stats.md` §2; exactly 25% without Intelligence gear). Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
 | Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool times the support factor for 15 s or until consumed. |
-| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool times the support factor every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
+| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool times the support factor every 3 s for 12 s: a status on the target (since Round 52) whose four ticks come 3, 6, 9 and 12 s after the cast, each for the amount the cast fixed; a recast renews it, death and leaving end it. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 

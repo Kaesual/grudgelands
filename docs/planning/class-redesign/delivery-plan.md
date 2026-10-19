@@ -1,7 +1,8 @@
 # Class redesign: delivery plan
 
 Planning draft, 2026-10-19. **The user confirmed the sequence (sections 2–5)
-and the rulings table (section 6) on 2026-10-19.** It turns the
+and the rulings table (section 6) on 2026-10-19.** Progress: round F done in
+Round 52 (2026-10-20, §4); round K is next. It turns the
 [continuation plan](continuation.md) §5 item 7 and §6 into a concrete
 sequence under the user's "maximally simple" rulings
 ([§4a](continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework))
@@ -38,7 +39,11 @@ Realistic scope: **two delivery rounds** plus an art lane that runs ahead.
 round F as lanes ARTA and ARTB: 8 backgrounds at 1040 × 440 px (13 × 5.5
 formspec units), **74 talent icons**, **all 44 skill icons as one consistent
 set** (the 19 shipped ones redrawn), and **6 overlay families** (fire,
-frost, holy, rage, wild, shadow; Strike none). The text below is the
+frost, holy, rage, wild, shadow; Strike none). **Done in Round 52:** the
+overlays became eight families, one per talent tree (C7 amended twice),
+drawn per weapon type (30 strips); the backgrounds, the 74 talent icons,
+the 19 redrawn skill icons and the strips ship, and the 25 icons of new
+skills wait under `tools/r52_art/artb/` for round K. The text below is the
 original draft.
 
 Starts after P4. Astra drafts, the user picks on a review page, nothing
@@ -57,6 +62,17 @@ small independent lane that can join any round once the strips are picked;
 it also works for today's skills.
 
 ## 4. Round F: foundation (compatible)
+
+**Done: Round 52, 0.52.0, compatible** (2026-10-20,
+[completion](../round52-plan.md#completion-2026-10-20)). Lanes SPLIT,
+CORE-A, CORE-B, GRAPH and WFX built the blocks below, ARTA and ARTB the
+art, PFX (added during the round) the particle design of the 44 skills,
+all picked by the user. The shipped classes play as before except Mend's
+tick phase; the module guide's
+"[class rework's building blocks](../../technical/module-guide.md#combat-and-classes)"
+and [skill_trees.md §3.12](../../design/skill_trees.md#312-the-graph-talents-of-round-k-round-52)
+document the APIs round K builds on. Round K's open points:
+[Round 52 carry-overs](../../../BACKLOG.md#round-52-carry-overs).
 
 Goal: every building block exists and the new Talents page runs, while the
 shipped classes play exactly as before.
