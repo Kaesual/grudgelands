@@ -11,8 +11,8 @@
 -- Charge, whose stack meta names the test strip. Shots: first person twice
 -- (one coloured block at the tip, changing over time, if the animation
 -- applies; eight squashed stripes if not), the empty weapon slot (the skin
--- pass's transparent override over the bare hand), third person (the holder
--- shows the sword alone).
+-- pass's transparent override over the bare hand), third person from the
+-- front (the holder shows the sword alone).
 local P = "[r52wfx] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r52wfx_settle") or "") or 3
@@ -75,7 +75,7 @@ local SHOTS = {
 	{name = "C_third_person", act = function(player)
 		equip(player, SWORD)
 		hold_skill(player, STRIP)
-		player:set_camera({mode = "third"})
+		player:set_camera({mode = "third_front"})
 		report(player, "C")
 	end},
 }
