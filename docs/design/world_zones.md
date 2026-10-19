@@ -603,7 +603,9 @@ rewrite records the WP40 model it replaced.
   (`terrain_field.lua`, Round 22 D35): shallow at the shore, a gently
   deepening shelf, then down to 32 nodes below the water level in deep water
   (the depth cap 31.7 + 0.3, with ±1.5 nodes of noise, so about 32–33). The 24-node floor (`height.lua` `OUTSIDE_FLOOR`) applies only
-  outside the query bounds.
+  outside the query bounds, x ±4190 and z ±3740 (`source/simple_map.lua`
+  `world_bounds`; ±3740 × ±3340 before Round 51). Inside them, far from any
+  coast, the world is deep ocean too: no zone, no zone mob level, immutable.
 - Wet beds use deterministic patches of their bed material, sand, gravel and
   stone; mud remains the dominant swamp bed. Dry continental beaches are
   plain sand (no gravel speckles; Round 22 Phase 6).

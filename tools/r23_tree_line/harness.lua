@@ -152,7 +152,10 @@ function H.new(repo)
 				return {construction_identity = identity}, 1
 			end},
 			horizontal = planner_source, content = content,
-			hash = dofile(wp40 .. "/r6_hash.lua")(sha), source = source or {zones = {}},
+			hash = dofile(wp40 .. "/r6_hash.lua")(sha),
+			-- (the world's query bounds the planner reads since Round 51 T1)
+			source = source or {zones = {},
+				world_bounds = dofile(wp40 .. "/source/simple_map.lua").world_bounds},
 			construction_identity = {value = false},
 			counting_allocator = allocator_factory.new("grug_wp40_r6_planner_allocator_v1"),
 		})

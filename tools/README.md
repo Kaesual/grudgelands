@@ -1466,3 +1466,11 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `core.emerge_area` generated its area (a node set into a chunk not yet
   generated makes the refinement refuse the chunk).
 - **Round 51 lane ARTS** ([`r51_sea`](r51_sea/README.md)): original CC0 seagrass and wreck textures, deterministic Pillow generator (`python3 -I tools/r51_sea/sea_art.py`, `--check`), and the attributed sea-art comparison sheet.
+- **Round 51 lane TERRAIN** (`r51_terrain`): T1, the larger world
+  (`portable_test.lua`: the bounds agree in every place and the new ring
+  reads as open sea; `compare.lua REPO SEED OUT` dumps the world inside the
+  old bounds for a before/after diff, `diff_dumps.py BEFORE AFTER` summarises
+  two dumps, `grid_cost.lua REPO SEED [N]` the terrain grids' build time and
+  heap; `mgprof_extra.lua` the edge and ring chunks for `tools/mgprof/run.sh`
+  (`PROBE_EXTRA=`); `grug_probe_r51_terrain` reads the new ring in the engine,
+  `PROBE=` of the smoke boot).

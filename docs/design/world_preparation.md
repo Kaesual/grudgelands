@@ -30,8 +30,10 @@ decided 2026-10-09 (Round 46). Chunks below the writers skipped since
   x_min/x_max/z_min/z_max. Select heights per horizontal tile (see "Full-column
   extent"), not one global y_min/y_max slab. Cover both continents, the mainland
   frontier, both islands and a generous ocean margin.
-- The ocean margin is **20 mapblocks = 320 nodes**, rounded outward to actual
-  generation boundaries.
+- The ocean margin is **20 mapblocks = 320 nodes** around the map's extent
+  (x ±4050, z ±3600 since Round 51; ±3600 × ±3200 before), rounded outward to
+  actual generation boundaries; it covers the world's query bounds
+  (±4190 × ±3740).
 - A finished full preparation leaves nothing for the engine to generate while
   players walk, swim, ride or fly mounts up to the flight ceiling, or look around
   at the surface. On-demand generation remains only for:

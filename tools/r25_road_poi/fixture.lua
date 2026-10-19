@@ -44,6 +44,8 @@ local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local roads = dofile(dir .. "/road_layout.lua")
 local index128 = dofile(dir .. "/index128.lua")
 local wp = dofile(dir .. "/world_protection.lua")
+-- The world's query bounds (Round 51 T1: read, no longer a copy of +-3740 x +-3340).
+local B = wp.BOUNDS
 local floor, abs, sqrt = math.floor, math.abs, math.sqrt
 local HALF = roads.P.HALF
 local Q = roads.P.Q
@@ -326,7 +328,8 @@ local function run_seed(seed)
 	local S = W.session
 	local hits = 0
 	for _ = 1, 1500 do
-		local x, z = -3740 + random(7481), -3340 + random(6681)
+		local x, z = B.min_x + random(B.max_x - B.min_x + 1),
+			B.min_z + random(B.max_z - B.min_z + 1)
 		local y = S.terrain_height_at(x, z) - 8 + random(17)
 		if agree(x, y, z, "random point") then hits = hits + 1 end
 	end
@@ -565,7 +568,8 @@ local function run_seed(seed)
 			brute_in(b.min_x, z1 - 100, b.min_x + 100, z1, 16), "claim query south")
 	end
 	for _ = 1, 2000 do
-		local x0, z0 = -3740 + random(7381), -3340 + random(6581)
+		local x0, z0 = B.min_x + random(B.max_x - B.min_x - 99),
+			B.min_z + random(B.max_z - B.min_z - 99)
 		local got = grug_core.world_feature_boxes_in(x0, z0, x0 + 100, z0 + 100, 16)
 		check(got == brute_in(x0, z0, x0 + 100, z0 + 100, 16), "claim query random")
 		if got then claim_hits = claim_hits + 1 end

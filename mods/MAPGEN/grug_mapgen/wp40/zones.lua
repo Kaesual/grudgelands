@@ -224,8 +224,11 @@ local function zones_factory(dependencies)
 	-- dragon channels stay outside it. Mob levels and stone tiers by depth
 	-- are separate and unchanged.
 	local CONTESTED_DEPTH_Y = -501
-	local MIN_X, MAX_X = -3740, 3740
-	local MIN_Z, MAX_Z = -3340, 3340
+	-- The world's query bounds (`source/simple_map.lua` world_bounds).
+	local world_bounds = source.world_bounds
+	if type(world_bounds) ~= "table" then error("WP40 R4 world bounds missing", 0) end
+	local MIN_X, MAX_X = world_bounds.min_x, world_bounds.max_x
+	local MIN_Z, MAX_Z = world_bounds.min_z, world_bounds.max_z
 	local ZONES_SCHEMA = "grug_wp40_zones_v1"
 	local SPARSE_SCHEMA = "grug_wp40_sparse_feature_index_v1"
 	local WATER_CLASSES = {

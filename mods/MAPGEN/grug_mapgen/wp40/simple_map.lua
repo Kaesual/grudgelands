@@ -35,8 +35,11 @@ return function(zone_field)
 			error("WP40 simple map capital protection differs", 0)
 		end
 		local floor, abs, max, min = math.floor, math.abs, math.max, math.min
-		-- Query bounds of the horizontal world; outside is open sea.
-		local QUERY_BOUNDS = {min_x = -3740, max_x = 3740, min_z = -3340, max_z = 3340}
+		-- Query bounds of the horizontal world (`source/simple_map.lua`
+		-- world_bounds); outside is open sea.
+		local world_bounds = assert(source.world_bounds, "WP40 simple map world bounds missing")
+		local QUERY_BOUNDS = {min_x = world_bounds.min_x, max_x = world_bounds.max_x,
+			min_z = world_bounds.min_z, max_z = world_bounds.max_z}
 		local params = assert(source.zone_field, "WP40 simple map zone field params missing")
 		local zones = source.zones
 
