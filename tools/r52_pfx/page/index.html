@@ -1,0 +1,838 @@
+<title>Partikeleffekte Runde 52</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root {
+  --bg: #eef0ec; --surface: #f9faf7; --ink: #1c221f; --muted: #5a645e; --line: #cfd6d0;
+  --accent: #9a5f17; --accent-soft: #f2e2c6; --chip: #e2e8e3; --chip-on: #233a2f; --chip-on-ink: #f3f6f4;
+  --code-bg: #e5ebe6; --good: #2d7547; --warn: #a3561a; --bad: #b22a2a; --view: #182019;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121714; --surface: #1a201c; --ink: #e2e8e4; --muted: #98a59e; --line: #2e3933;
+    --accent: #e0a650; --accent-soft: #3b2f1a; --chip: #253029; --chip-on: #e0a650; --chip-on-ink: #1a1408;
+    --code-bg: #212a24; --good: #6cc48a; --warn: #e09a5a; --bad: #ef7a6a; --view: #0f1511;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121714; --surface: #1a201c; --ink: #e2e8e4; --muted: #98a59e; --line: #2e3933;
+  --accent: #e0a650; --accent-soft: #3b2f1a; --chip: #253029; --chip-on: #e0a650; --chip-on-ink: #1a1408;
+  --code-bg: #212a24; --good: #6cc48a; --warn: #e09a5a; --bad: #ef7a6a; --view: #0f1511;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 "Source Sans 3", "Segoe UI", system-ui, sans-serif; padding: 0 16px; overflow-x: hidden; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-block: 28px 72px; display: grid; gap: 26px; min-width: 0; }
+h1, h2, h3, h4 { font-family: "Barlow Semi Condensed", "Arial Narrow", sans-serif; text-wrap: balance; margin: 0; }
+h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.1; }
+h2 { font-size: 1.5rem; font-weight: 600; }
+h3 { font-size: 1.2rem; font-weight: 600; }
+h4 { font-size: 1.06rem; font-weight: 600; }
+p { margin: 0; max-width: 74ch; }
+.lede { color: var(--muted); }
+.eyebrow { font: 600 .74rem/1 "Barlow Semi Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+code, pre { font-family: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace; font-size: .8em; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+pre { background: var(--code-bg); padding: 8px 10px; border-radius: 4px; overflow-x: auto; margin: 6px 0 0; max-width: 100%; }
+header { display: grid; gap: 10px; }
+ul.facts { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 84ch; }
+.dbline { font-size: .92rem; }
+.ok { color: var(--good); } .err { color: var(--bad); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* the calculator */
+.calc { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 14px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; }
+.controls label { display: inline-flex; gap: 8px; align-items: center; font-size: .94rem; }
+.controls output { font: 500 .9rem "JetBrains Mono", monospace; min-width: 3.2em; }
+.controls input[type=range] { width: 150px; max-width: 42vw; }
+.seg { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.seg button { font: 600 .86rem "Source Sans 3", sans-serif; background: var(--chip); color: var(--ink); border: 0; border-radius: 4px; padding: 4px 9px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); }
+.ctl { display: inline-flex; gap: 8px; align-items: center; font-size: .94rem; flex-wrap: wrap; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.tile { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+.tile .v { font: 600 1.45rem "Barlow Semi Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+.tile .k { font-size: .84rem; color: var(--muted); }
+.budget { height: 10px; border-radius: 5px; background: var(--chip); position: relative; overflow: hidden; }
+.budget i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; }
+.budget b { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); opacity: .5; }
+.toplists { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; font-size: .9rem; }
+.toplists ol { margin: 4px 0 0; padding-left: 22px; display: grid; gap: 2px; }
+.toplists a { color: var(--accent); text-decoration: none; }
+table.plain { border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+table.plain th, table.plain td { text-align: right; padding: 3px 10px 3px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.plain th:first-child, table.plain td:first-child { text-align: left; }
+.scroll { overflow-x: auto; max-width: 100%; }
+
+/* families and navigation */
+.families { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px 18px; }
+.fam { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: center; font-size: .9rem; }
+.sw { display: inline-flex; gap: 2px; }
+.sw i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid rgba(0,0,0,.2); }
+.fam small { grid-column: 2; color: var(--muted); }
+nav.groups { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+nav.groups a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.classsec { display: grid; gap: 14px; }
+.treehead { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; border-bottom: 2px solid var(--line); padding-bottom: 4px; margin-top: 8px; }
+.treehead .sw i { width: 12px; height: 12px; }
+
+/* cards */
+.cards { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; scroll-margin-top: 12px; min-width: 0; }
+.card.none { grid-template-columns: 1fr; }
+@media (max-width: 900px) { .card { grid-template-columns: minmax(0, 1fr); } }
+.views { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 6px; align-self: start; min-width: 0; }
+@media (max-width: 520px) { .views { grid-template-columns: minmax(0, 1fr); } }
+.view { position: relative; background: var(--view); border-radius: 5px; overflow: hidden; min-width: 0; }
+.view canvas { display: block; width: 100%; height: auto; }
+.view span { position: absolute; left: 7px; top: 5px; font: 600 .66rem "Barlow Semi Condensed", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #a9b8ae; pointer-events: none; }
+.vtools { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; font-size: .86rem; color: var(--muted); }
+.vtools label { display: inline-flex; gap: 5px; align-items: center; }
+.body { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.num { font: 500 .78rem "JetBrains Mono", monospace; color: var(--muted); overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { font-size: .8rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); display: inline-flex; gap: 5px; align-items: center; }
+.tag i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.tag.keep { background: color-mix(in srgb, var(--good) 18%, var(--chip)); }
+.tag.retint { background: color-mix(in srgb, var(--accent) 20%, var(--chip)); }
+.tag.new { background: color-mix(in srgb, #4a7ad0 22%, var(--chip)); }
+.look { max-width: 62ch; }
+.small { font-size: .9rem; color: var(--muted); }
+.build { font-size: .84rem; border-collapse: collapse; width: 100%; }
+.build td, .build th { text-align: left; padding: 2px 8px 2px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.build th { font: 600 .7rem "Barlow Semi Condensed", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.cost { font-size: .9rem; font-variant-numeric: tabular-nums; display: grid; gap: 3px; }
+.delta-good { color: var(--good); } .delta-warn { color: var(--warn); }
+.sprite { font-size: .88rem; border-left: 3px solid var(--accent); padding-left: 10px; }
+details summary { cursor: pointer; font-size: .86rem; color: var(--muted); }
+.verdict { display: grid; gap: 6px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.vrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.vrow .lbl { font: 600 .72rem "Barlow Semi Condensed", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.vbtn { font: 600 .86rem "Source Sans 3", sans-serif; background: var(--chip); color: var(--ink); border: 0; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+.vbtn[aria-pressed="true"][data-v="pick"] { background: var(--good); color: #fff; }
+.vbtn[aria-pressed="true"][data-v="rework"] { background: var(--warn); color: #fff; }
+.vbtn[aria-pressed="true"][data-v="drop"] { background: var(--bad); color: #fff; }
+.vbtn:disabled, .sbtn:disabled { opacity: .55; cursor: default; }
+.verdict textarea { width: 100%; font: inherit; font-size: .92rem; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; resize: vertical; min-height: 2.2em; }
+.sbtn { font: 600 .84rem "Source Sans 3", sans-serif; background: var(--chip-on); color: var(--chip-on-ink); border: 0; border-radius: 4px; padding: 3px 10px; cursor: pointer; }
+.status { font-size: .86rem; }
+.method { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px 30px; }
+.method ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Runde 52 · Lane PFX · Entwurf zur Abnahme</div>
+    <h1>Partikeleffekte der neuen Fähigkeiten</h1>
+    <p class="lede">Eine Karte pro Effekt-Moment für alle 44 Fähigkeiten des Klassen-Reworks: Wirken, Spur, Einschlag, Flächenwarnung und Einschlag, Ticks, Bereitschaft, Ultimates. Jede Vorschau spielt die Emitter mit ihren echten Werten in Echtzeit ab, einmal aus Spielersicht und einmal von der Seite. Daneben steht, was der Effekt den Server und jeden Spieler in der Nähe kostet. Oben rechnet der Rechner einen Kampf mit 5, 20 oder 50 Spielern durch.</p>
+    <p class="lede">Bitte pro Karte <b>Übernehmen</b>, <b>Überarbeiten</b> oder <b>Streichen</b> wählen; eine Notiz ist frei. Karten ohne Bewertung zählen als übernommen. Die Nummer vor dem Schlüssel (z. B. <code>#12 · pfx.cold_spark.impact</code>) kann im Chat genannt werden.</p>
+    <p class="dbline" id="dbstatus" role="status">Bewertungen: Speicher wird verbunden …</p>
+    <ul class="facts">
+      <li><b>Erst der Verkehr, dann das Aussehen.</b> Ein Spawner kostet jeden Empfänger etwa 0,67 KB, egal wie viele Partikel er macht: der Server baut für jeden Spieler ein eigenes Paket. Einzelne Partikel kosten gepackt etwa 20–40 B pro Stück plus etwa 150 B pro Paket, und alle einzelnen Partikel eines Serverschritts teilen sich ein Paket. Darum: bis etwa zehn Partikel einzeln, darüber ein Spawner.</li>
+      <li>Ein Spawner bis 1 s, der an nichts hängt, geht nur an Spieler in der Nähe (192 m). Ein angehängter oder längerer ginge an <b>jeden Spieler des Servers</b>; keine Karte braucht einen.</li>
+      <li>Grundangriffe und häufige Fähigkeiten sind am billigsten (Fiery Spark, Cold Spark, Smite: vier bis sechs einzelne Partikel; Loose ohne Spur). Ultimates dürfen reicher sein: sie kommen einmal pro Minute.</li>
+      <li><b>Keine Drehbewegung</b>: Ringe laufen nach außen, Licht fällt, Rauch sinkt. Jede Familie hat ihre Farben und ihre Bewegung (unten). Wo ein kleiner Sprite klar helfen würde, schlägt die Karte ihn vor; die Vorschau zeigt dann einen Platzhalter.</li>
+    </ul>
+  </header>
+
+  <section class="calc" aria-labelledby="calc-h">
+    <h2 id="calc-h">Kampfrechner</h2>
+    <p class="small">Alle Spieler kämpfen in einem Gebiet, jeder sieht alles. Sie verteilen sich gleich auf die acht Bäume; jeder nutzt die Fähigkeiten seines Baums und seine Startfähigkeiten, jede bei voller Abklingzeit (Tempo 100 %), den Grundangriff in der Zeit, die das Wirken der anderen frei lässt. Das ist eine Obergrenze: so schnell spielt niemand alles.</p>
+    <div class="controls">
+      <div class="ctl"><label for="players">Spieler <input type="range" id="players" min="1" max="60" value="20"></label><output id="playersOut" for="players">20</output>
+        <span class="seg" id="playerSeg"><button type="button" id="p5" data-p="5" aria-pressed="false">5</button><button type="button" id="p20" data-p="20" aria-pressed="true">20</button><button type="button" id="p50" data-p="50" aria-pressed="false">50</button></span></div>
+      <div class="ctl"><label for="pace">Tempo <input type="range" id="pace" min="10" max="100" step="5" value="100"></label><output id="paceOut" for="pace">100 %</output></div>
+      <div class="ctl">grug_particle_scale <span class="seg" id="scaleSeg"><button type="button" id="s1" data-s="1" aria-pressed="true">1,0</button><button type="button" id="s05" data-s="0.5" aria-pressed="false">0,5</button><button type="button" id="s025" data-s="0.25" aria-pressed="false">0,25</button></span></div>
+      <div class="ctl">Vorschau <span class="seg" id="bgSeg"><button type="button" id="bgNight" data-bg="night" aria-pressed="true">Nacht</button><button type="button" id="bgDay" data-bg="day" aria-pressed="false">Tag</button></span></div>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div>
+      <div class="small" id="budgetText"></div>
+      <div class="budget" aria-hidden="true"><i id="budgetBar"></i><b style="left:50%"></b></div>
+    </div>
+    <div class="toplists">
+      <div><h4>Am meisten Verkehr</h4><ol id="topBytes"></ol></div>
+      <div><h4>Am meisten Partikel gleichzeitig</h4><ol id="topAlive"></ol></div>
+    </div>
+    <details>
+      <summary>Die drei Szenarien als Tabelle (Tempo 100 %)</summary>
+      <div class="scroll"><table class="plain" id="scnTable"></table></div>
+    </details>
+  </section>
+
+  <section aria-labelledby="fam-h" style="display:grid; gap:10px">
+    <h2 id="fam-h">Die acht Familien</h2>
+    <p class="small">Ein Baum, eine Familie: dieselben Farben wie die Baum-Hintergründe, Icons und Waffen-Overlays (die Farbanker aus ARTBs Stilblatt). Die Partikelfarbe liegt heller als der Anker, weil sie den grauen Rauchpunkt einfärbt und leuchtet.</p>
+    <div class="families" id="families"></div>
+  </section>
+
+  <nav class="groups" aria-label="Klassen und Bäume" id="nav"></nav>
+  <div id="groups"></div>
+
+  <section class="method" id="method" aria-labelledby="method-h">
+    <div>
+      <h2 id="method-h">Methode</h2>
+      <ul>
+        <li><b>Spawner:</b> ein Paket pro Empfänger, im Lua-Aufruf gebaut (<code>server.cpp:1772-1854</code>): etwa 540 B plus Texturname, mit Anziehung 65 B mehr; über 502 B wird es in zwei Datagramme geteilt, zusammen etwa 650–740 B auf der Leitung.</li>
+        <li><b>Einzelne Partikel:</b> gesammelt und im nächsten Serverschritt (0,09 s) für jeden Spieler in Reichweite serialisiert und mit zstd gepackt, ein Paket pro Spieler und Schritt (<code>server.cpp:1656-1700</code>). Die Größen sind echte zstd-Ergebnisse der Datensätze jeder Karte. Eine Karte allein zahlt Rahmen und Kopf voll; im Rechner teilen sich alle einzelnen Partikel eines Schritts ein Paket.</li>
+        <li><b>Gleichzeitig lebende Partikel:</b> für jede Karte die Kurve n(t) nach dem Einsatz. Im Kampf ist der Mittelwert die Summe aus Rate mal Fläche unter n(t), die Spitze Mittelwert plus drei Standardabweichungen (Einsätze kommen zufällig). „Hunderte, nie Tausende“ ist die Grenze aus den Regeln; der Balken markiert 500 und endet bei 1000.</li>
+        <li><b>Server:</b> Lua-Aufruf gemessen in Runde 40 (Spawner 1,9 µs, mit Anziehung 2,3 µs, ein Partikel 0,6 µs); geschätzt 3 µs pro Spawner und Empfänger, 0,3 µs pro Partikel und Empfänger plus zstd, 0,01 µs pro Abstandsprüfung. Nur Hauptthread, Netzwerk-Threads nicht.</li>
+        <li><b>Raten:</b> jede Fähigkeit einmal pro Abklingzeit; Procs in ihrem Takt (Broadstroke alle 3 s, Hamstring alle 8 s); Ticks, Empfänger und Nebenziele pro Einsatz gezählt. Der Grundangriff füllt die Zeit, die die belegte Zeit nach dem Wirken frei lässt.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Für Runde K</h2>
+      <ul>
+        <li>Jede Karte steht in <code>tools/r52_pfx/effects.py</code> im Format von <code>particle_effects.lua</code>; eine gewählte neue Karte wird unter ihrer <code>id</code> so registriert, wie sie dort steht (die Lua-Ansicht jeder Karte zeigt es).</li>
+        <li><code>tools/r52_pfx/check_limits.lua</code> lädt das echte <code>particles.lua</code> und prüft jede Karte mit <code>particles.check</code>; Karten „behalten“ und „umgefärbt“ vergleicht es Feld für Feld mit dem ausgelieferten Katalog.</li>
+        <li><b>Flächen:</b> <code>area.delayed</code> gäbe ein <code>spec.color</code> an Warnung, Fall und Einschlag zugleich; darum setzt keine Karte es. Jede Fläche nennt ihre eigenen Effekt-IDs für <code>spec.warning</code>, <code>spec.fall</code> und <code>spec.burst</code> (die farbigen Warnungen von Winter Field und Censure sind eigene IDs).</li>
+        <li><b>Bereitschaften</b> nutzen den vorhandenen Proc-Ring mit neuer Farbe in <code>grug_core.PROC_COLORS</code>.</li>
+        <li><b>Spawner-Bereiche drehen nicht mit:</b> Kasten-Ausdehnung und Geschwindigkeitsbereiche eines Spawners bleiben an der Welt ausgerichtet; jede Karte hält sie richtungsgleich (effects.py prüft das). Was mit der Blickrichtung zeigen muss, ist eine Linie oder einzelne Partikel.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script type="application/json" id="pfx-data">{"cards":[{"class":"mage","context":[],"cost":{"check_us":0.05,"dg":1,"i1":1.8501,"i2":8.6341,"lua_us":3.0,"marginal":174,"particles":5,"peak":5.0,"rx_us":5.8375,"single_events":1,"singles":5,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":289},"dynamic":"","family":"ember","family_de":"Feuer","family_name":"Ember","flight":{"color":"#ffb347","size":0.45,"speed":20},"group":"ember","hook":"Fiery Spark's projectile on_hit (kits_mage.lua: the new spark projectile, before the damage), like today's fireball on_hit (kits_mage.lua:33)","id":"spark_hit","key":"pfx.fiery_spark.impact","look":"Wo der Funke trifft, springen fünf Glutfunken heraus und fallen zurück. Klein genug für den Grundangriff, der jede Sekunde fliegt.","lua_text":"{\n\tsingle(5, {acc = {0, -9, 0}, at = \"target\", exp = {0.3, 0.45}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {1.2, 1.8}, tex = \"mobs_fire_particle.png\", vel = {{-1.5, 0.5, -1.5}, {1.5, 2.5, 1.5}}}),\n}","marker":null,"moment":"impact","n":1,"name":"Fiery Spark","note":"Das Geschoss selbst ist ein Objekt (der Feuer-Sprite), kein Partikel: kleiner als beim Fireball (0,45 statt 0,7) kostet nichts extra.","rate":0.0561,"sim":[{"acc":[0,-9,0],"color":"#ffffff","engine":null,"exp":[0.3,0.45],"fade":true,"glow":14,"kind":"single","n":5,"pull":null,"radial":null,"reach":null,"shape":["sphere",[6.0,1.0,0.0],0.15,false],"size":[1.2,1.8],"tex":"fire","time":0,"vel":[[-1.5,0.5,-1.5],[1.5,2.5,1.5]]}],"skill":"fiery_spark","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"Der Grundangriff ist Fireball: bei jedem Treffer der volle Fireball-Spritzer (38 Partikel, zwei Spawner), etwa einmal pro Sekunde.","today_cost":{"particles":38,"wire":1324},"tree":"ember","unlock":"Start (ersetzt Strike)"},{"class":"mage","context":[],"cost":{"check_us":0.0,"dg":4,"i1":26.7949,"i2":828.3133,"lua_us":3.76,"marginal":0,"particles":38,"peak":38.0,"rx_us":6.0,"single_events":0,"singles":0,"spawner_dg":4,"spawner_wire":1324,"spawners":2,"wire":1324},"dynamic":"","family":"ember","family_de":"Feuer","family_name":"Ember","flight":{"color":"#ff8a3a","size":0.7,"speed":20},"group":"ember","hook":"the Fireball projectile's on_hit (kits_mage.lua:33)","id":"fireball","key":"pfx.fireball.impact","look":"Glut spritzt in einer Halbkugel aus dem Einschlag und fällt zurück, dazu ein kurzer dunkler Rauch. Der angenommene Spritzer aus Runde 40, jetzt nur noch alle 5 s statt jede Sekunde.","lua_text":"{\n\tspawner(28, 0.05, {acc = {0, -12, 0}, at = \"target\", exp = {0.4, 0.8}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.2, false}, size = {1, 2}, tex = \"mobs_fire_particle.png\", vel = {{-5, 1, -5}, {5, 6, 5}}}),\n\tspawner(10, 0.1, {at = \"target\", color = \"#3a2a22\", exp = {0.8, 1.2}, glow = 0, shape = {\"sphere\", {0, 1, 0}, 0.4, false}, size = {3, 5}, vel = {{-0.6, 0.5, -0.6}, {0.6, 1.5, 0.6}}}),\n}","marker":null,"moment":"impact","n":2,"name":"Fireball","note":"","rate":0.025,"sim":[{"acc":[0,-12,0],"color":"#ffffff","engine":{"pos":[[5.8,0.8,-0.2],[6.2,1.2,0.2]],"radius":null,"tween":null},"exp":[0.4,0.8],"fade":true,"glow":14,"kind":"spawner","n":28,"pull":null,"radial":null,"reach":null,"shape":["sphere",[6.0,1.0,0.0],0.2,false],"size":[1,2],"tex":"fire","time":0.05,"vel":[[-5,1,-5],[5,6,5]]},{"acc":[0,0,0],"color":"#3a2a22","engine":{"pos":[[5.6,0.6,-0.4],[6.4,1.4,0.4]],"radius":null,"tween":null},"exp":[0.8,1.2],"fade":true,"glow":0,"kind":"spawner","n":10,"pull":null,"radial":null,"reach":null,"shape":["sphere",[6.0,1.0,0.0],0.4,false],"size":[3,5],"tex":"smoke","time":0.1,"vel":[[-0.6,0.5,-0.6],[0.6,1.5,0.6]]}],"skill":"fireball","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"genau dieser Spritzer (heute bei jedem Grundangriff)","today_cost":{"particles":38,"wire":1324},"tree":"ember","unlock":"Ember F4"},{"class":"mage","context":[],"cost":{"check_us":0.0,"dg":2,"i1":5.9712,"i2":77.316,"lua_us":1.88,"marginal":0,"particles":24,"peak":17.82,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":653,"spawners":1,"wire":653},"dynamic":"line frame.from..frame.to over frame.time: grug_projectiles' trail (init.lua:262-284), params.trail = {effect = \"flame_lance_trail\"}","family":"ember","family_de":"Feuer","family_name":"Ember","flight":{"color":"#fff0c8","size":0.6,"speed":35},"group":"ember","hook":"Flame Lance's launch: grug_projectiles.spawn(..., {trail = ...}) as the skill arrows do (scout.lua:11-15, grug_projectiles/init.lua:269)","id":"flame_lance_trail","key":"pfx.flame_lance.trail","look":"Eine weißglühende Flammenspur entlang der Flugbahn: die Lanze zieht für einen Augenblick eine gerade Feuerlinie, die sofort verglüht.","lua_text":"{\n\tspawner(24, \"frame\", {exp = {0.2, 0.3}, glow = 14, shape = {\"line\", \"frame\"}, size = {2, 3}, tex = \"mobs_fire_particle.png\", vel = {{-0.3, -0.1, -0.3}, {0.3, 0.4, 0.3}}}),\n}","marker":null,"moment":"trail","n":3,"name":"Flame Lance","note":"Ein ungebundener Spawner längs der Fluglinie (höchstens 1 s): nur Spieler in der Nähe bekommen ihn. Ein an das Geschoss gehängter Spawner ginge an jeden Spieler des Servers.","rate":0.0156,"sim":[{"acc":[0,0,0],"color":"#ffffff","engine":{"pos":null,"radius":null,"tween":[[0.5,1.4,0],[12,1.0,0]]},"exp":[0.2,0.3],"fade":true,"glow":14,"kind":"spawner","n":24,"pull":null,"radial":null,"reach":null,"shape":["line",[0.5,1.4,0],[12,1.0,0]],"size":[2,3],"tex":"fire","time":0.33,"vel":[[-0.3,-0.1,-0.3],[0.3,0.4,0.3]]}],"skill":"flame_lance","sprite":null,"status":"new","t0":0.0,"target":[12,0,0],"today":"","today_cost":null,"tree":"ember","unlock":"Ember F5"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffffff","engine":{"pos":null,"radius":null,"tween":[[0.5,1.4,0],[12,1.0,0]]},"exp":[0.2,0.3],"fade":true,"glow":14,"kind":"spawner","n":24,"pull":null,"radial":null,"reach":null,"shape":["line",[0.5,1.4,0],[12,1.0,0]],"size":[2,3],"tex":"fire","time":0.33,"vel":[[-0.3,-0.1,-0.3],[0.3,0.4,0.3]]}],"flight":{"color":"#fff0c8","size":0.6,"speed":35},"key":"pfx.flame_lance.trail","t0":0.0}],"cost":{"check_us":0.08,"dg":1,"i1":2.1592,"i2":15.6821,"lua_us":4.8,"marginal":295,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":410},"dynamic":"","family":"ember","family_de":"Feuer","family_name":"Ember","flight":null,"group":"ember","hook":"Flame Lance's projectile on_hit (kits_mage.lua, new def)","id":"flame_lance_hit","key":"pfx.flame_lance.impact","look":"Ein kurzer weißgelber Blitz aus acht Funken am Ziel, schneller und heller als der Fireball, ohne Rauch.","lua_text":"{\n\tsingle(8, {acc = {0, -6, 0}, at = \"target\", color = \"#fff0c8\", exp = {0.2, 0.35}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {2, 3}, vel = {{-3, 0, -3}, {3, 3, 3}}}),\n}","marker":null,"moment":"impact","n":4,"name":"Flame Lance","note":"","rate":0.0156,"sim":[{"acc":[0,-6,0],"color":"#fff0c8","engine":null,"exp":[0.2,0.35],"fade":true,"glow":14,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["sphere",[12,1,0],0.15,false],"size":[2,3],"tex":"smoke","time":0,"vel":[[-3,0,-3],[3,3,3]]}],"skill":"flame_lance","sprite":null,"status":"new","t0":0.33,"target":[12,0,0],"today":"","today_cost":null,"tree":"ember","unlock":"Ember F5"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.5,10.0,0],[6.5,10.0,0]],"size":[14,14],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]},{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.269,10.661,0],[6.269,10.661,0]],"size":[9,9],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]},{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.038,11.321,0],[6.038,11.321,0]],"size":[5,5],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]}],"flight":null,"key":"pfx.meteor.fall","t0":0.0}],"cost":{"check_us":0.2,"dg":1,"i1":30.0,"i2":600.0,"lua_us":12.0,"marginal":172,"particles":20,"peak":20.0,"rx_us":11.83,"single_events":1,"singles":20,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":287},"dynamic":"reach = the radius (3 m + Broad Impact), time = the delay; no spec.color (area.delayed would pass it to warning, fall and impact alike; the default warning is already #ffb347)","family":"ember","family_de":"Feuer","family_name":"Ember","flight":null,"group":"ember","hook":"area.delayed (grug_core/area.lua:318): spec.warning default","id":"area_warning","key":"pfx.meteor.warning","look":"Ein Ring aus 20 glühenden Punkten markiert den Einschlag (3 m) und steht die ganze Verzögerung von 1,5 s. CORE-Bs Warnring, unverändert.","lua_text":"{\n\tsingle(20, {at = \"target\", color = \"#ffb347\", exp = {1.5, 1.5}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 3, true}, size = {3, 3}}),\n}","marker":{"at":"target","radius":3},"moment":"warning","n":5,"name":"Meteor","note":"","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#ffb347","engine":null,"exp":[1.5,1.5],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],3,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"meteor","sprite":null,"status":"keep","t0":0.0,"target":[10,0,0],"today":"","today_cost":null,"tree":"ember","unlock":"Ember F8"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffb347","engine":null,"exp":[1.5,1.5],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],3,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.meteor.warning","t0":0.0}],"cost":{"check_us":0.03,"dg":3,"i1":4.5,"i2":13.5,"lua_us":1.8,"marginal":36,"particles":3,"peak":3.0,"rx_us":12.8625,"single_events":1,"singles":3,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":381},"dynamic":"height = area.fall_height (below the first solid node, at most 12), time = the delay; none below 1.5 m (area.lua MIN_FALL)","family":"ember","family_de":"Feuer","family_name":"Ember","flight":null,"group":"ember","hook":"area.delayed spec.fall = \"meteor_fall\"","id":"meteor_fall","key":"pfx.meteor.fall","look":"Ein einzelner brennender Brocken fällt schräg aus der Höhe genau zum Ende der Verzögerung auf den Punkt: ein großer Kopf und zwei kleiner werdende Glutstücke dahinter, alle gleich schnell, wie ein Komet.","lua_text":"{\n\tsingle(1, {at = \"target\", exp = {1.5, 1.5}, glow = 14, shape = {\"box\", {-3.5, 10, 0}, {-3.5, 10, 0}}, size = {14, 14}, tex = \"mobs_fire_particle.png\", vel = {{2.333, -6.667, 0}, {2.333, -6.667, 0}}}),\n\tsingle(1, {at = \"target\", exp = {1.5, 1.5}, glow = 14, shape = {\"box\", {-3.731, 10.661, 0}, {-3.731, 10.661, 0}}, size = {9, 9}, tex = \"mobs_fire_particle.png\", vel = {{2.333, -6.667, 0}, {2.333, -6.667, 0}}}),\n\tsingle(1, {at = \"target\", exp = {1.5, 1.5}, glow = 14, shape = {\"box\", {-3.962, 11.321, 0}, {-3.962, 11.321, 0}}, size = {5, 5}, tex = \"mobs_fire_particle.png\", vel = {{2.333, -6.667, 0}, {2.333, -6.667, 0}}}),\n}","marker":{"at":"target","radius":3},"moment":"fall","n":6,"name":"Meteor","note":"Drei einzelne Partikel statt eines Regens: \"Größe statt Anzahl\". Große fallende Partikel erlaubt C3 ausdrücklich.","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.5,10.0,0],[6.5,10.0,0]],"size":[14,14],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]},{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.269,10.661,0],[6.269,10.661,0]],"size":[9,9],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]},{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.038,11.321,0],[6.038,11.321,0]],"size":[5,5],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]}],"skill":"meteor","sprite":{"name":"Meteor-Brocken","stand_in":"rock","text":"Ein brennender Gesteinsbrocken (16×16, dunkle Kruste, glühende Risse) für den Kopf; bis dahin der Feuer-Sprite."},"status":"new","t0":0.0,"target":[10,0,0],"today":"Cinderfall heute: 36 Glutpartikel regnen 0,4 s lang auf den Kreis.","today_cost":null,"tree":"ember","unlock":"Ember F8"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffb347","engine":null,"exp":[1.5,1.5],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],3,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.meteor.warning","t0":0.0},{"emitters":[{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.5,10.0,0],[6.5,10.0,0]],"size":[14,14],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]},{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.269,10.661,0],[6.269,10.661,0]],"size":[9,9],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]},{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[1.5,1.5],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[6.038,11.321,0],[6.038,11.321,0]],"size":[5,5],"tex":"fire","time":0,"vel":[[2.333,-6.667,0],[2.333,-6.667,0]]}],"flight":null,"key":"pfx.meteor.fall","t0":0.0}],"cost":{"check_us":0.32,"dg":3,"i1":20.5575,"i2":825.4529,"lua_us":21.08,"marginal":366,"particles":52,"peak":52.0,"rx_us":19.588,"single_events":1,"singles":32,"spawner_dg":2,"spawner_wire":653,"spawners":1,"wire":1134},"dynamic":"reach = the radius (ring lands on it; spray disc 0.8 x reach)","family":"ember","family_de":"Feuer","family_name":"Ember","flight":null,"group":"ember","hook":"area.delayed spec.burst = \"meteor_impact\"","id":"meteor_impact","key":"pfx.meteor.impact","look":"Beim Einschlag schießt ein Glutring bis an den 3-m-Rand und Funken spritzen hoch und fallen zurück.","lua_text":"{\n\tsingle(32, {at = \"target\", color = \"#ffb347\", exp = {0.3, 0.3}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {3, 3}}),\n\tspawner(20, 0.1, {acc = {0, -9, 0}, at = \"target\", exp = {0.4, 0.7}, glow = 14, shape = {\"disc\", {0, 0.3, 0}, 2.4, false}, size = {2, 3.5}, tex = \"mobs_fire_particle.png\", vel = {{-1.5, 2, -1.5}, {1.5, 5, 1.5}}}),\n}","marker":{"at":"target","radius":3},"moment":"impact","n":7,"name":"Meteor","note":"","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#ffb347","engine":null,"exp":[0.3,0.3],"fade":true,"glow":12,"kind":"single","n":32,"pull":null,"radial":null,"reach":3,"shape":["disc",[10,0.2,0],0.4,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,-9,0],"color":"#ffffff","engine":{"pos":[[10,0.3,0],[10,0.3,0]],"radius":[2.4,0,2.4],"tween":null},"exp":[0.4,0.7],"fade":true,"glow":14,"kind":"spawner","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.3,0],2.4,false],"size":[2,3.5],"tex":"fire","time":0.1,"vel":[[-1.5,2,-1.5],[1.5,5,1.5]]}],"skill":"meteor","sprite":null,"status":"new","t0":1.5,"target":[10,0,0],"today":"CORE-Bs Vorgabe area_impact: 40 Ringpunkte und 30 Spritzer in einer Farbe.","today_cost":{"particles":70,"wire":1437},"tree":"ember","unlock":"Ember F8"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffffff","engine":{"pos":[[6.5,8,-3.5],[13.5,8,3.5]],"radius":null,"tween":null},"exp":[0.5,0.5],"fade":true,"glow":14,"kind":"spawner","n":40,"pull":null,"radial":null,"reach":null,"shape":["box",[6.5,8,-3.5],[13.5,8,3.5]],"size":[4,6],"tex":"fire","time":1,"vel":[[0,-16,0],[0,-16,0]]}],"flight":null,"key":"pfx.fire_rain.fall","t0":0.0}],"cost":{"check_us":0.2,"dg":1,"i1":30.0,"i2":600.0,"lua_us":12.0,"marginal":176,"particles":20,"peak":20.0,"rx_us":11.83,"single_events":1,"singles":20,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":291},"dynamic":"reach = the radius (5 m + Spreading Rain), time = the delay; no spec.color (the default warning is already #ffb347)","family":"ember","family_de":"Feuer","family_name":"Ember","flight":null,"group":"ember","hook":"area.delayed spec.warning default","id":"area_warning","key":"pfx.fire_rain.warning","look":"Derselbe Warnring wie beim Meteor, auf 5 m: 20 Punkte für 1,5 s.","lua_text":"{\n\tsingle(20, {at = \"target\", color = \"#ffb347\", exp = {1.5, 1.5}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 5, true}, size = {3, 3}}),\n}","marker":{"at":"target","radius":5},"moment":"warning","n":8,"name":"Fire Rain","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#ffb347","engine":null,"exp":[1.5,1.5],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],5,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"fire_rain","sprite":null,"status":"keep","t0":0.0,"target":[10,0,0],"today":"","today_cost":null,"tree":"ember","unlock":"Ember F12, Ultimate"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffb347","engine":null,"exp":[1.5,1.5],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],5,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.fire_rain.warning","t0":0.0}],"cost":{"check_us":0.0,"dg":2,"i1":20.0,"i2":340.8888,"lua_us":1.88,"marginal":0,"particles":40,"peak":21.5,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":653,"spawners":1,"wire":653},"dynamic":"height = min(area.fall_height, 8): starts there, falls 2 x height per second (0.5 s); the box spans 0.7 x reach","family":"ember","family_de":"Feuer","family_name":"Ember","flight":null,"group":"ember","hook":"area.delayed spec.fall = \"fire_rain_fall\"","id":"fire_rain_fall","key":"pfx.fire_rain.fall","look":"Ein Feuerregen: eine Sekunde lang fallen 40 Flammen senkrecht über dem Kreis, jede 0,5 s unterwegs, so dass der Regen ab der halben Verzögerung auf den Boden trifft und mit dem Einschlag endet.","lua_text":"{\n\tspawner(40, 1, {at = \"target\", exp = {0.5, 0.5}, glow = 14, shape = {\"box\", {-3.5, 8, -3.5}, {3.5, 8, 3.5}}, size = {4, 6}, tex = \"mobs_fire_particle.png\", vel = {{0, -16, 0}, {0, -16, 0}}}),\n}","marker":{"at":"target","radius":5},"moment":"fall","n":9,"name":"Fire Rain","note":"Ein Spawner über die volle erlaubte Sekunde. Die Partikel fallen nur senkrecht, also sieht er aus jeder Blickrichtung gleich aus (die Bereiche eines Spawners drehen nicht mit).","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#ffffff","engine":{"pos":[[6.5,8,-3.5],[13.5,8,3.5]],"radius":null,"tween":null},"exp":[0.5,0.5],"fade":true,"glow":14,"kind":"spawner","n":40,"pull":null,"radial":null,"reach":null,"shape":["box",[6.5,8,-3.5],[13.5,8,3.5]],"size":[4,6],"tex":"fire","time":1,"vel":[[0,-16,0],[0,-16,0]]}],"skill":"fire_rain","sprite":null,"status":"new","t0":0.0,"target":[10,0,0],"today":"Cinderfall heute: 36 Glutpartikel in 0,4 s aus 4 m (dasselbe Muster, hier größer und länger).","today_cost":null,"tree":"ember","unlock":"Ember F12, Ultimate"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffb347","engine":null,"exp":[1.5,1.5],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],5,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.fire_rain.warning","t0":0.0},{"emitters":[{"acc":[0,0,0],"color":"#ffffff","engine":{"pos":[[6.5,8,-3.5],[13.5,8,3.5]],"radius":null,"tween":null},"exp":[0.5,0.5],"fade":true,"glow":14,"kind":"spawner","n":40,"pull":null,"radial":null,"reach":null,"shape":["box",[6.5,8,-3.5],[13.5,8,3.5]],"size":[4,6],"tex":"fire","time":1,"vel":[[0,-16,0],[0,-16,0]]}],"flight":null,"key":"pfx.fire_rain.fall","t0":0.0}],"cost":{"check_us":0.4,"dg":4,"i1":39.0128,"i2":2148.5541,"lua_us":25.88,"marginal":602,"particles":76,"peak":76.0,"rx_us":22.76,"single_events":1,"singles":40,"spawner_dg":2,"spawner_wire":653,"spawners":1,"wire":1421},"dynamic":"reach = the radius","family":"ember","family_de":"Feuer","family_name":"Ember","flight":null,"group":"ember","hook":"area.delayed spec.burst = \"fire_rain_impact\"","id":"fire_rain_impact","key":"pfx.fire_rain.impact","look":"Der große Einschlag: ein Glutring rast bis an den 5-m-Rand, Flammen springen über die ganze Fläche hoch.","lua_text":"{\n\tsingle(40, {at = \"target\", color = \"#ff8a3a\", exp = {0.35, 0.35}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.5, true}, size = {3, 3.5}}),\n\tspawner(36, 0.15, {acc = {0, -9, 0}, at = \"target\", exp = {0.5, 0.9}, glow = 14, shape = {\"disc\", {0, 0.3, 0}, 4, false}, size = {2.5, 4}, tex = \"mobs_fire_particle.png\", vel = {{-2, 3, -2}, {2, 6, 2}}}),\n}","marker":{"at":"target","radius":5},"moment":"impact","n":10,"name":"Fire Rain","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#ff8a3a","engine":null,"exp":[0.35,0.35],"fade":true,"glow":12,"kind":"single","n":40,"pull":null,"radial":null,"reach":5,"shape":["disc",[10,0.2,0],0.5,true],"size":[3,3.5],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,-9,0],"color":"#ffffff","engine":{"pos":[[10,0.3,0],[10,0.3,0]],"radius":[4.0,0,4.0],"tween":null},"exp":[0.5,0.9],"fade":true,"glow":14,"kind":"spawner","n":36,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.3,0],4.0,false],"size":[2.5,4],"tex":"fire","time":0.15,"vel":[[-2,3,-2],[2,6,2]]}],"skill":"fire_rain","sprite":null,"status":"new","t0":1.5,"target":[10,0,0],"today":"","today_cost":null,"tree":"ember","unlock":"Ember F12, Ultimate"},{"class":"mage","context":[],"cost":{"check_us":0.1,"dg":1,"i1":3.9435,"i2":38.8081,"lua_us":6.0,"marginal":362,"particles":10,"peak":10.0,"rx_us":7.865,"single_events":1,"singles":10,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":477},"dynamic":"","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"Ice Wave's cast after its last refusal (kits_mage.lua, new def)","id":"ice_wave","key":"pfx.ice_wave.cast","look":"Ein Fächer aus Frostflocken fährt vor dem Magier über den 70°-Kegel und verlischt am 5-m-Rand.","lua_text":"{\n\tsingle(10, {color = \"#bfe8ff\", exp = {0.38, 0.42}, glow = 10, shape = {\"box\", {0.4, 1, -0.2}, {0.6, 1.3, 0.2}}, size = {2.5, 3.5}, vel = {{9, -0.5, -6}, {12, 0.5, 6}}}),\n}","marker":{"cone":[5,70]},"moment":"cast","n":11,"name":"Ice Wave","note":"Einzelne Partikel, weil ihre Geschwindigkeit mit der Blickrichtung dreht (die eines Spawners bliebe an der Welt ausgerichtet und flöge immer nach Osten).","rate":0.0104,"sim":[{"acc":[0,0,0],"color":"#bfe8ff","engine":null,"exp":[0.38,0.42],"fade":true,"glow":10,"kind":"single","n":10,"pull":null,"radial":null,"reach":null,"shape":["box",[0.4,1.0,-0.2],[0.6,1.3,0.2]],"size":[2.5,3.5],"tex":"smoke","time":0,"vel":[[9,-0.5,-6],[12,0.5,6]]}],"skill":"ice_wave","sprite":{"name":"Schneeflocke","stand_in":"flake","text":"Eine kleine Schneeflocke (5×5 oder 8×8) für alle Frost-Effekte; die Runde-40-Notiz nennt VoxeLibres weather_pack_snow_snowflake (CC BY-SA 3.0)."},"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"rime","unlock":"Start"},{"class":"mage","context":[],"cost":{"check_us":0.04,"dg":1,"i1":1.6993,"i2":6.4145,"lua_us":2.4,"marginal":152,"particles":4,"peak":4.0,"rx_us":5.486,"single_events":1,"singles":4,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":267},"dynamic":"","family":"rime","family_de":"Frost","family_name":"Rime","flight":{"color":"#bfe8ff","size":0.45,"speed":20},"group":"rime","hook":"Cold Spark's projectile on_hit (kits_mage.lua, new def)","id":"cold_spark_hit","key":"pfx.cold_spark.impact","look":"Vier Frostsplitter springen am Ziel kurz auf und sinken langsam.","lua_text":"{\n\tsingle(4, {acc = {0, -4, 0}, at = \"target\", color = \"#f1fbff\", exp = {0.35, 0.5}, glow = 10, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {1.5, 2}, vel = {{-1, 0.3, -1}, {1, 1.5, 1}}}),\n}","marker":null,"moment":"impact","n":12,"name":"Cold Spark","note":"Das Geschoss ist der Funken-Sprite in Frostfarbe (eine Objekteigenschaft, kostenlos).","rate":0.116,"sim":[{"acc":[0,-4,0],"color":"#f1fbff","engine":null,"exp":[0.35,0.5],"fade":true,"glow":10,"kind":"single","n":4,"pull":null,"radial":null,"reach":null,"shape":["sphere",[6.0,1.0,0.0],0.15,false],"size":[1.5,2],"tex":"smoke","time":0,"vel":[[-1,0.3,-1],[1,1.5,1]]}],"skill":"cold_spark","sprite":{"name":"Schneeflocke","stand_in":"flake","text":"dieselbe Schneeflocke"},"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"rime","unlock":"Rime R1, verwandelt Fiery Spark"},{"class":"mage","context":[],"cost":{"check_us":0.08,"dg":1,"i1":3.5444,"i2":27.3101,"lua_us":4.8,"marginal":194,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":309},"dynamic":"","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"grug_classes.open_window (talent_windows.lua:93) for Cold Shock: grug_core.proc_flash(player, \"cold_shock\") with PROC_COLORS.cold_shock = \"#bfe8ff\"","id":"proc","key":"pfx.cold_spark.window","look":"Cold Shock bereit (eine Nova hat getroffen): der bekannte Bereitschaftsring aus acht Punkten steigt um den Magier auf, in Frostblau.","lua_text":"{\n\tsingle(8, {color = \"#bfe8ff\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}","marker":null,"moment":"window","n":13,"name":"Cold Spark","note":"Der Proc-Ring bleibt der eine Bereitschaftseffekt; jede Bereitschaft bekommt nur ihre Farbe.","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#bfe8ff","engine":null,"exp":[0.4,0.5],"fade":true,"glow":12,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.3,0],0.6,true],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,1.5,0],[0,2.2,0]]}],"skill":"cold_spark","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"der Proc-Ring (heute in Gelb für White-Hot)","today_cost":null,"tree":"rime","unlock":"Rime R1, verwandelt Fiery Spark"},{"class":"mage","context":[],"cost":{"check_us":0.0,"dg":4,"i1":9.5018,"i2":239.8822,"lua_us":4.52,"marginal":0,"particles":28,"peak":28.0,"rx_us":6.0,"single_events":0,"singles":0,"spawner_dg":4,"spawner_wire":1472,"spawners":2,"wire":1472},"dynamic":"","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"Blink's cast (kits_mage.lua:243)","id":"blink","key":"pfx.blink.cast","look":"Frostflocken stürzen in die Stelle, die der Magier verlässt, und platzen am Ankunftsort auseinander. Die Form aus Runde 40, jetzt Frost statt Violett.","lua_text":"{\n\tspawner(14, 0.1, {attract = {kill = true, origin = {0, 1, 0}, strength = 3}, color = \"#bfe8ff\", exp = {0.3, 0.4}, glow = 12, shape = {\"sphere\", {0, 1, 0}, 1, true}, size = {2, 2.5}}),\n\tspawner(14, 0.05, {at = \"target\", color = \"#bfe8ff\", exp = {0.3, 0.4}, glow = 12, radial = {3, 4}, shape = {\"sphere\", {0, 1, 0}, 0.2, false}, size = {2, 2.5}}),\n}","marker":null,"moment":"cast","n":14,"name":"Blink","note":"","rate":0.0063,"sim":[{"acc":[0,0,0],"color":"#bfe8ff","engine":{"pos":[[0,1,0],[0,1,0]],"radius":[1,1,1],"tween":null},"exp":[0.3,0.4],"fade":true,"glow":12,"kind":"spawner","n":14,"pull":{"kill":true,"origin":[0,1,0],"smax":3,"smin":3},"radial":null,"reach":null,"shape":["sphere",[0,1,0],1,true],"size":[2,2.5],"tex":"smoke","time":0.1,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#bfe8ff","engine":{"pos":[[9.8,0.8,-0.2],[10.2,1.2,0.2]],"radius":null,"tween":null},"exp":[0.3,0.4],"fade":true,"glow":12,"kind":"spawner","n":14,"pull":{"kill":false,"origin":[10,1,0],"smax":-15.0,"smin":-20.0},"radial":null,"reach":null,"shape":["sphere",[10,1,0],0.2,false],"size":[2,2.5],"tex":"smoke","time":0.05,"vel":[[0,0,0],[0,0,0]]}],"skill":"blink","sprite":null,"status":"retint","t0":0.0,"target":[10,0,0],"today":"dieselbe Form in Violett (#b06aff)","today_cost":null,"tree":"rime","unlock":"Rime R4"},{"class":"mage","context":[],"cost":{"check_us":0.0,"dg":2,"i1":8.0,"i2":132.6719,"lua_us":2.26,"marginal":0,"particles":20,"peak":20.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":736,"spawners":1,"wire":736},"dynamic":"","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"Rime Mantle's cast (as Glacial Ward, kits_mage.lua:289)","id":"glacial_ward","key":"pfx.rime_mantle.cast","look":"Frostflocken erscheinen auf einer Hülle um den Magier und ziehen nach innen: Glacial Wards Effekt, unverändert für Rime Mantle.","lua_text":"{\n\tspawner(20, 0.2, {attract = {kill = true, origin = {0, 1, 0}, strength = 2.5}, color = \"#bfe8ff\", exp = {0.4, 0.5}, glow = 10, shape = {\"sphere\", {0, 1, 0}, 1.1, true}, size = {2, 2.5}}),\n}","marker":null,"moment":"cast","n":15,"name":"Rime Mantle","note":"","rate":0.0052,"sim":[{"acc":[0,0,0],"color":"#bfe8ff","engine":{"pos":[[0,1,0],[0,1,0]],"radius":[1.1,1.1,1.1],"tween":null},"exp":[0.4,0.5],"fade":true,"glow":10,"kind":"spawner","n":20,"pull":{"kill":true,"origin":[0,1,0],"smax":2.5,"smin":2.5},"radial":null,"reach":null,"shape":["sphere",[0,1,0],1.1,true],"size":[2,2.5],"tex":"smoke","time":0.2,"vel":[[0,0,0],[0,0,0]]}],"skill":"rime_mantle","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"genau dieser Effekt bei Glacial Ward","today_cost":null,"tree":"rime","unlock":"Rime R7"},{"class":"mage","context":[],"cost":{"check_us":0.48,"dg":4,"i1":27.5136,"i2":1402.5461,"lua_us":31.06,"marginal":528,"particles":64,"peak":64.0,"rx_us":25.932,"single_events":1,"singles":48,"spawner_dg":2,"spawner_wire":736,"spawners":1,"wire":1430},"dynamic":"reach = the nova's radius (5 m + Far Frost)","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"Ice Nova's cast (kits_mage.lua:205)","id":"ice_nova","key":"pfx.ice_nova.cast","look":"Ein flacher Ring aus Frostflocken schießt bis an den 5-m-Rand, darunter ein langsamer Nebel. Unverändert aus Runde 40; die Wurzelkristalle an jedem festgehaltenen Gegner bleiben auch.","lua_text":"{\n\tsingle(48, {color = \"#bfe8ff\", exp = {0.34, 0.34}, glow = 10, radial = \"reach\", shape = {\"disc\", {0, 0.25, 0}, 0.4, true}, size = {2.5, 2.5}}),\n\tspawner(16, 0.1, {color = \"#e6f6ff\", exp = {0.6, 0.8}, glow = 4, radial = {3, 5}, shape = {\"disc\", {0, 0.15, 0}, 0.6, false}, size = {4, 6}}),\n}","marker":{"radius":5},"moment":"cast","n":16,"name":"Ice Nova","note":"","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#bfe8ff","engine":null,"exp":[0.34,0.34],"fade":true,"glow":10,"kind":"single","n":48,"pull":null,"radial":null,"reach":5,"shape":["disc",[0,0.25,0],0.4,true],"size":[2.5,2.5],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#e6f6ff","engine":{"pos":[[0,0.15,0],[0,0.15,0]],"radius":[0.6,0,0.6],"tween":null},"exp":[0.6,0.8],"fade":true,"glow":4,"kind":"spawner","n":16,"pull":{"kill":false,"origin":[0,0.15,0],"smax":-5.0,"smin":-8.3333},"radial":null,"reach":null,"shape":["disc",[0,0.15,0],0.6,false],"size":[4,6],"tex":"smoke","time":0.1,"vel":[[0,0,0],[0,0,0]]}],"skill":"ice_nova","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"rime","unlock":"Rime R9, verwandelt Ice Wave"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#f1fbff","engine":{"pos":[[7.2,5,-2.8],[12.8,5,2.8]],"radius":null,"tween":null},"exp":[1.2,1.6],"fade":true,"glow":8,"kind":"spawner","n":36,"pull":null,"radial":null,"reach":null,"shape":["box",[7.2,5,-2.8],[12.8,5,2.8]],"size":[3,4],"tex":"smoke","time":1,"vel":[[-0.4,-4,-0.4],[0.4,-3,0.4]]}],"flight":null,"key":"pfx.winter_field.fall","t0":0.0}],"cost":{"check_us":0.2,"dg":1,"i1":20.0,"i2":400.0,"lua_us":12.0,"marginal":172,"particles":20,"peak":20.0,"rx_us":11.83,"single_events":1,"singles":20,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":287},"dynamic":"a recolour of area_warning: reach = 4 m, time = the delay (1 s); no spec.color, which would repaint the fall and the impact too (area.lua:327-355)","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"area.delayed spec.warning = \"winter_field_warning\"","id":"winter_field_warning","key":"pfx.winter_field.warning","look":"Der Warnring auf 4 m, eine Sekunde lang, in Frostblau: CORE-Bs Warnring in Frostfarbe.","lua_text":"{\n\tsingle(20, {at = \"target\", color = \"#bfe8ff\", exp = {1, 1}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 4, true}, size = {3, 3}}),\n}","marker":{"at":"target","radius":4},"moment":"warning","n":17,"name":"Winter Field","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#bfe8ff","engine":null,"exp":[1.0,1.0],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],4,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"winter_field","sprite":null,"status":"new","t0":0.0,"target":[10,0,0],"today":"","today_cost":null,"tree":"rime","unlock":"Rime R13, Ultimate"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#bfe8ff","engine":null,"exp":[1.0,1.0],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],4,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.winter_field.warning","t0":0.0}],"cost":{"check_us":0.0,"dg":2,"i1":50.2209,"i2":1372.7306,"lua_us":1.88,"marginal":0,"particles":36,"peak":36.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"height = min(area.fall_height, 5); the box spans 0.7 x reach","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"area.delayed spec.fall = \"winter_field_fall\"","id":"winter_field_fall","key":"pfx.winter_field.fall","look":"Ein Schneegestöber: eine Sekunde lang rieseln 36 große Flocken aus bis zu 5 m Höhe in den Kreis, langsam und leicht seitlich treibend; sie fallen über den Einschlag hinaus weiter.","lua_text":"{\n\tspawner(36, 1, {at = \"target\", color = \"#f1fbff\", exp = {1.2, 1.6}, glow = 8, shape = {\"box\", {-2.8, 5, -2.8}, {2.8, 5, 2.8}}, size = {3, 4}, vel = {{-0.4, -4, -0.4}, {0.4, -3, 0.4}}}),\n}","marker":{"at":"target","radius":4},"moment":"fall","n":18,"name":"Winter Field","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#f1fbff","engine":{"pos":[[7.2,5,-2.8],[12.8,5,2.8]],"radius":null,"tween":null},"exp":[1.2,1.6],"fade":true,"glow":8,"kind":"spawner","n":36,"pull":null,"radial":null,"reach":null,"shape":["box",[7.2,5,-2.8],[12.8,5,2.8]],"size":[3,4],"tex":"smoke","time":1,"vel":[[-0.4,-4,-0.4],[0.4,-3,0.4]]}],"skill":"winter_field","sprite":{"name":"Schneeflocke","stand_in":"flake","text":"dieselbe Schneeflocke, hier groß"},"status":"new","t0":0.0,"target":[10,0,0],"today":"","today_cost":null,"tree":"rime","unlock":"Rime R13, Ultimate"},{"class":"mage","context":[{"emitters":[{"acc":[0,0,0],"color":"#bfe8ff","engine":null,"exp":[1.0,1.0],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],4,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.winter_field.warning","t0":0.0},{"emitters":[{"acc":[0,0,0],"color":"#f1fbff","engine":{"pos":[[7.2,5,-2.8],[12.8,5,2.8]],"radius":null,"tween":null},"exp":[1.2,1.6],"fade":true,"glow":8,"kind":"spawner","n":36,"pull":null,"radial":null,"reach":null,"shape":["box",[7.2,5,-2.8],[12.8,5,2.8]],"size":[3,4],"tex":"smoke","time":1,"vel":[[-0.4,-4,-0.4],[0.4,-3,0.4]]}],"flight":null,"key":"pfx.winter_field.fall","t0":0.0}],"cost":{"check_us":0.4,"dg":4,"i1":50.3966,"i2":1840.3746,"lua_us":25.88,"marginal":603,"particles":64,"peak":64.0,"rx_us":22.76,"single_events":1,"singles":40,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":1440},"dynamic":"reach = the radius","family":"rime","family_de":"Frost","family_name":"Rime","flight":null,"group":"rime","hook":"area.delayed spec.burst = \"winter_field_impact\"","id":"winter_field_impact","key":"pfx.winter_field.impact","look":"Ein Frostring schnellt auf 4 m hinaus, danach liegt ein flacher Frostnebel kurz über dem Feld.","lua_text":"{\n\tsingle(40, {at = \"target\", color = \"#bfe8ff\", exp = {0.35, 0.35}, glow = 10, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {2.5, 3}}),\n\tspawner(24, 0.2, {at = \"target\", color = \"#e6f6ff\", exp = {1.2, 1.8}, glow = 6, shape = {\"disc\", {0, 0.15, 0}, 3.2, false}, size = {4, 6}, vel = {{-0.3, 0.1, -0.3}, {0.3, 0.4, 0.3}}}),\n}","marker":{"at":"target","radius":4},"moment":"impact","n":19,"name":"Winter Field","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#bfe8ff","engine":null,"exp":[0.35,0.35],"fade":true,"glow":10,"kind":"single","n":40,"pull":null,"radial":null,"reach":4,"shape":["disc",[10,0.2,0],0.4,true],"size":[2.5,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#e6f6ff","engine":{"pos":[[10,0.15,0],[10,0.15,0]],"radius":[3.2,0,3.2],"tween":null},"exp":[1.2,1.8],"fade":true,"glow":6,"kind":"spawner","n":24,"pull":null,"radial":null,"reach":null,"shape":["disc",[10,0.15,0],3.2,false],"size":[4,6],"tex":"smoke","time":0.2,"vel":[[-0.3,0.1,-0.3],[0.3,0.4,0.3]]}],"skill":"winter_field","sprite":null,"status":"new","t0":1.0,"target":[10,0,0],"today":"","today_cost":null,"tree":"rime","unlock":"Rime R13, Ultimate"},{"class":"warrior","context":[],"cost":null,"dynamic":"","family":"none","family_de":"keine","family_name":"—","flight":null,"group":"bulwark","hook":"","id":null,"key":"pfx.strike.swing","look":"Kein Effekt: Strike bekommt keinen (Runde-40-Regel), auch nicht als Rückfall einer Fähigkeit, die gerade abklingt.","lua_text":"","marker":null,"moment":"swing","n":20,"name":"Strike","note":"","rate":0.0,"sim":[],"skill":"strike","sprite":null,"status":"none","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"bulwark","unlock":"Start (universell)"},{"class":"warrior","context":[],"cost":{"check_us":0.08,"dg":1,"i1":3.5522,"i2":27.3733,"lua_us":4.8,"marginal":191,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":306},"dynamic":"","family":"bulwark","family_de":"Stahl","family_name":"Bulwark","flight":null,"group":"bulwark","hook":"grug_classes.open_window for Retort (the settled-hit hook): grug_core.proc_flash(player, \"retort\")","id":"proc","key":"pfx.retort.window","look":"Retort bereit (ein Treffer hat Leben gekostet): der Bereitschaftsring in Stahlgrau.","lua_text":"{\n\tsingle(8, {color = \"#c4ccd6\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}","marker":null,"moment":"window","n":21,"name":"Retort","note":"Höchstens alle 6 s (die interne Abklingzeit).","rate":0.0208,"sim":[{"acc":[0,0,0],"color":"#c4ccd6","engine":null,"exp":[0.4,0.5],"fade":true,"glow":12,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.3,0],0.6,true],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,1.5,0],[0,2.2,0]]}],"skill":"retort","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"bulwark","unlock":"Bulwark B1, verwandelt Strike"},{"class":"warrior","context":[],"cost":{"check_us":0.06,"dg":1,"i1":1.178,"i2":6.4662,"lua_us":3.6,"marginal":225,"particles":6,"peak":6.0,"rx_us":6.279,"single_events":1,"singles":6,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":340},"dynamic":"","family":"bulwark","family_de":"Stahl","family_name":"Bulwark","flight":null,"group":"bulwark","hook":"Retort's landed readied swing (the window consumed), kits_warrior.lua","id":"retort_hit","key":"pfx.retort.hit","look":"Der vorbereitete Gegenschlag landet: sechs stahlweiße Funken springen vom Ziel ab, ein kurzes metallisches Aufblitzen.","lua_text":"{\n\tsingle(6, {acc = {0, -8, 0}, at = \"target\", color = \"#e6ebf3\", exp = {0.15, 0.25}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.1, false}, size = {1.2, 1.8}, vel = {{-2.5, -0.5, -2.5}, {2.5, 2.5, 2.5}}}),\n}","marker":null,"moment":"hit","n":22,"name":"Retort","note":"","rate":0.0208,"sim":[{"acc":[0,-8,0],"color":"#e6ebf3","engine":null,"exp":[0.15,0.25],"fade":true,"glow":14,"kind":"single","n":6,"pull":null,"radial":null,"reach":null,"shape":["sphere",[1.8,1.1,0.0],0.1,false],"size":[1.2,1.8],"tex":"smoke","time":0,"vel":[[-2.5,-0.5,-2.5],[2.5,2.5,2.5]]}],"skill":"retort","sprite":{"name":"Funke","stand_in":"spark","text":"Ein kleiner vierzackiger Funke (5×5) für Stahl, Schatten-Silber und das Gericht; die Runde-40-Notiz wollte ihn für Smite."},"status":"new","t0":0.0,"target":[1.8,0.0,0.0],"today":"","today_cost":null,"tree":"bulwark","unlock":"Bulwark B1, verwandelt Strike"},{"class":"warrior","context":[],"cost":{"check_us":0.0,"dg":2,"i1":19.242,"i2":429.7351,"lua_us":1.88,"marginal":0,"particles":24,"peak":24.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"","family":"bulwark","family_de":"Stahl","family_name":"Bulwark","flight":null,"group":"bulwark","hook":"Hold Ground's cast (kits_warrior.lua:237)","id":"hold_ground","key":"pfx.hold_ground.cast","look":"Ein Bronzering um die Füße, der langsam aufsteigt: die Form aus Runde 40 in Bronze statt Gold.","lua_text":"{\n\tspawner(24, 0.1, {color = \"#d0a060\", exp = {0.7, 0.9}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 1, true}, size = {2, 2.5}, vel = {{0, 0.5, 0}, {0, 1.2, 0}}}),\n}","marker":null,"moment":"cast","n":23,"name":"Hold Ground","note":"","rate":0.0052,"sim":[{"acc":[0,0,0],"color":"#d0a060","engine":{"pos":[[0,0.1,0],[0,0.1,0]],"radius":[1,0,1],"tween":null},"exp":[0.7,0.9],"fade":true,"glow":12,"kind":"spawner","n":24,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.1,0],1,true],"size":[2,2.5],"tex":"smoke","time":0.1,"vel":[[0,0.5,0],[0,1.2,0]]}],"skill":"hold_ground","sprite":null,"status":"retint","t0":0.0,"target":[6.0,0.0,0.0],"today":"dieselbe Form in Gold (#e8c06a)","today_cost":null,"tree":"bulwark","unlock":"Bulwark B4"},{"class":"warrior","context":[],"cost":{"check_us":0.06,"dg":1,"i1":3.6143,"i2":20.4784,"lua_us":3.6,"marginal":221,"particles":6,"peak":6.0,"rx_us":6.279,"single_events":1,"singles":6,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":336},"dynamic":"","family":"bulwark","family_de":"Stahl","family_name":"Bulwark","flight":null,"group":"bulwark","hook":"Taunt's cast (kits_warrior.lua:218)","id":"taunt","key":"pfx.taunt.cast","look":"Ein paar Bronzefunken springen über dem Kopf des Gegners hoch und hängen kurz dort.","lua_text":"{\n\tsingle(6, {at = \"target\", color = \"#d0a060\", exp = {0.5, 0.7}, glow = 12, shape = {\"box\", {-0.2, 2.1, -0.2}, {0.2, 2.3, 0.2}}, size = {2.5, 3}, vel = {{-0.2, 1.2, -0.2}, {0.2, 2, 0.2}}}),\n}","marker":null,"moment":"cast","n":24,"name":"Taunt","note":"","rate":0.0,"sim":[{"acc":[0,0,0],"color":"#d0a060","engine":null,"exp":[0.5,0.7],"fade":true,"glow":12,"kind":"single","n":6,"pull":null,"radial":null,"reach":null,"shape":["box",[5.8,2.1,-0.2],[6.2,2.3,0.2]],"size":[2.5,3],"tex":"smoke","time":0,"vel":[[-0.2,1.2,-0.2],[0.2,2,0.2]]}],"skill":"taunt","sprite":null,"status":"retint","t0":0.0,"target":[6.0,0.0,0.0],"today":"dieselbe Form in Orange (#ff8a3a)","today_cost":null,"tree":"bulwark","unlock":"Bulwark B7"},{"class":"warrior","context":[],"cost":{"check_us":0.4,"dg":2,"i1":16.0,"i2":640.0,"lua_us":24.0,"marginal":451,"particles":40,"peak":40.0,"rx_us":19.76,"single_events":1,"singles":40,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":617},"dynamic":"reach = the Bellow radius (6 m)","family":"bulwark","family_de":"Stahl","family_name":"Bulwark","flight":null,"group":"bulwark","hook":"Bellow's cast (kits_warrior.lua:200)","id":"bellow","key":"pfx.bellow.cast","look":"Ein stahlgrauer Stoßring läuft am Boden vom Krieger bis an den 6-m-Rand.","lua_text":"{\n\tsingle(40, {color = \"#c4ccd6\", exp = {0.4, 0.4}, glow = 10, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {2.5, 2.5}}),\n}","marker":{"radius":6},"moment":"cast","n":25,"name":"Bellow","note":"","rate":0.0156,"sim":[{"acc":[0,0,0],"color":"#c4ccd6","engine":null,"exp":[0.4,0.4],"fade":true,"glow":10,"kind":"single","n":40,"pull":null,"radial":null,"reach":6,"shape":["disc",[0,0.2,0],0.4,true],"size":[2.5,2.5],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"bellow","sprite":null,"status":"retint","t0":0.0,"target":[6.0,0.0,0.0],"today":"dieselbe Form in Orange","today_cost":null,"tree":"bulwark","unlock":"Bulwark B9, verwandelt Taunt"},{"class":"warrior","context":[],"cost":{"check_us":0.0,"dg":4,"i1":13.5199,"i2":446.6295,"lua_us":4.52,"marginal":0,"particles":38,"peak":38.0,"rx_us":6.0,"single_events":0,"singles":0,"spawner_dg":4,"spawner_wire":1472,"spawners":2,"wire":1472},"dynamic":"","family":"bulwark","family_de":"Stahl","family_name":"Bulwark","flight":null,"group":"bulwark","hook":"Unbroken's cast (kits_warrior.lua, new def)","id":"unbroken","key":"pfx.unbroken.cast","look":"Stahlsplitter schlagen von einer Hülle nach innen auf den Krieger ein, gleichzeitig drückt ein Bronzering an den Füßen nach außen: er steht.","lua_text":"{\n\tspawner(22, 0.15, {attract = {kill = true, origin = {0, 1, 0}, strength = 3}, color = \"#c4ccd6\", exp = {0.3, 0.35}, glow = 12, shape = {\"sphere\", {0, 1, 0}, 1.2, true}, size = {2, 3}}),\n\tspawner(16, 0.05, {color = \"#d0a060\", exp = {0.35, 0.45}, glow = 10, radial = {3, 4}, shape = {\"disc\", {0, 0.1, 0}, 0.5, true}, size = {2.5, 3}}),\n}","marker":null,"moment":"cast","n":26,"name":"Unbroken","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#c4ccd6","engine":{"pos":[[0,1,0],[0,1,0]],"radius":[1.2,1.2,1.2],"tween":null},"exp":[0.3,0.35],"fade":true,"glow":12,"kind":"spawner","n":22,"pull":{"kill":true,"origin":[0,1,0],"smax":3,"smin":3},"radial":null,"reach":null,"shape":["sphere",[0,1,0],1.2,true],"size":[2,3],"tex":"smoke","time":0.15,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#d0a060","engine":{"pos":[[0,0.1,0],[0,0.1,0]],"radius":[0.5,0,0.5],"tween":null},"exp":[0.35,0.45],"fade":true,"glow":10,"kind":"spawner","n":16,"pull":{"kill":false,"origin":[0,0.1,0],"smax":-6.0,"smin":-8.0},"radial":null,"reach":null,"shape":["disc",[0,0.1,0],0.5,true],"size":[2.5,3],"tex":"smoke","time":0.05,"vel":[[0,0,0],[0,0,0]]}],"skill":"unbroken","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"der heutige passive Unbroken-Proc spielt den Proc-Ring (fällt in Runde K weg)","today_cost":{"particles":8,"wire":309},"tree":"bulwark","unlock":"Bulwark B12, Ultimate"},{"class":"warrior","context":[{"emitters":[{"acc":[0,0,0],"color":"#b8a27a","engine":{"pos":[[6.0,0.1,0.0],[6.0,0.1,0.0]],"radius":[0.5,0,0.5],"tween":null},"exp":[0.3,0.45],"fade":true,"glow":0,"kind":"spawner","n":14,"pull":{"kill":false,"origin":[6.0,0.1,0.0],"smax":-8.0,"smin":-10.0},"radial":null,"reach":null,"shape":["disc",[6.0,0.1,0.0],0.5,true],"size":[3,4],"tex":"smoke","time":0.05,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.charge.arrival","t0":0.5}],"cost":{"check_us":0.0,"dg":2,"i1":10.0179,"i2":120.797,"lua_us":1.88,"marginal":0,"particles":18,"peak":17.55,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"line frame.from..frame.to over frame.time (grug_abilities.charge_dust)","family":"ruin","family_de":"Wut","family_name":"Ruin","flight":null,"group":"ruin","hook":"charge.lua:127 (charge_dust)","id":"charge_dust","key":"pfx.charge.dash","look":"Staub, der entlang des Sturmwegs am Boden aufwirbelt. Unverändert.","lua_text":"{\n\tspawner(18, \"frame\", {color = \"#b8a27a\", exp = {0.4, 0.7}, glow = 0, shape = {\"line\", \"frame\"}, size = {2.5, 4}, vel = {{-0.5, 0.3, -0.5}, {0.5, 1.2, 0.5}}}),\n}","marker":null,"moment":"dash","n":27,"name":"Charge","note":"","rate":0.025,"sim":[{"acc":[0,0,0],"color":"#b8a27a","engine":{"pos":null,"radius":null,"tween":[[0,0.1,0],[4.7,0.1,0]]},"exp":[0.4,0.7],"fade":true,"glow":0,"kind":"spawner","n":18,"pull":null,"radial":null,"reach":null,"shape":["line",[0,0.1,0],[4.7,0.1,0]],"size":[2.5,4],"tex":"smoke","time":0.5,"vel":[[-0.5,0.3,-0.5],[0.5,1.2,0.5]]}],"skill":"charge","sprite":null,"status":"keep","t0":0.0,"target":[6,0,0],"today":"genau dieser Effekt","today_cost":null,"tree":"ruin","unlock":"Start"},{"class":"warrior","context":[{"emitters":[{"acc":[0,0,0],"color":"#b8a27a","engine":{"pos":null,"radius":null,"tween":[[0,0.1,0],[4.7,0.1,0]]},"exp":[0.4,0.7],"fade":true,"glow":0,"kind":"spawner","n":18,"pull":null,"radial":null,"reach":null,"shape":["line",[0,0.1,0],[4.7,0.1,0]],"size":[2.5,4],"tex":"smoke","time":0.5,"vel":[[-0.5,0.3,-0.5],[0.5,1.2,0.5]]}],"flight":null,"key":"pfx.charge.dash","t0":0.0}],"cost":{"check_us":0.0,"dg":2,"i1":5.2167,"i2":66.4045,"lua_us":2.26,"marginal":0,"particles":14,"peak":14.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":736,"spawners":1,"wire":736},"dynamic":"","family":"ruin","family_de":"Wut","family_name":"Ruin","flight":null,"group":"ruin","hook":"charge.lua:158","id":"charge_ring","key":"pfx.charge.arrival","look":"Bei der Ankunft ein flacher Staubring um das Ziel. Unverändert.","lua_text":"{\n\tspawner(14, 0.05, {at = \"target\", color = \"#b8a27a\", exp = {0.3, 0.45}, glow = 0, radial = {4, 5}, shape = {\"disc\", {0, 0.1, 0}, 0.5, true}, size = {3, 4}}),\n}","marker":null,"moment":"arrival","n":28,"name":"Charge","note":"","rate":0.025,"sim":[{"acc":[0,0,0],"color":"#b8a27a","engine":{"pos":[[6.0,0.1,0.0],[6.0,0.1,0.0]],"radius":[0.5,0,0.5],"tween":null},"exp":[0.3,0.45],"fade":true,"glow":0,"kind":"spawner","n":14,"pull":{"kill":false,"origin":[6.0,0.1,0.0],"smax":-8.0,"smin":-10.0},"radial":null,"reach":null,"shape":["disc",[6.0,0.1,0.0],0.5,true],"size":[3,4],"tex":"smoke","time":0.05,"vel":[[0,0,0],[0,0,0]]}],"skill":"charge","sprite":null,"status":"keep","t0":0.5,"target":[6.0,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"ruin","unlock":"Start"},{"class":"warrior","context":[],"cost":{"check_us":0.0,"dg":4,"i1":9.9773,"i2":207.7642,"lua_us":3.76,"marginal":0,"particles":26,"peak":26.0,"rx_us":6.0,"single_events":0,"singles":0,"spawner_dg":4,"spawner_wire":1316,"spawners":2,"wire":1316},"dynamic":"","family":"ruin","family_de":"Wut","family_name":"Ruin","flight":null,"group":"ruin","hook":"kits_warrior.lua:111 (the landed proc)","id":"mighty_blow","key":"pfx.mighty_blow.swing","look":"Eine rote Diagonale hängt vor dem Krieger und verlischt in einer Drittelsekunde, dazu die sechs Blutstropfen am Ziel. Unverändert.","lua_text":"{\n\tspawner(20, 0.08, {color = \"#d8263a\", exp = {0.3, 0.4}, glow = 10, shape = {\"line\", {1.2, 2, -0.5}, {1.2, 0.6, 0.6}}, size = {3, 4}}),\n\tspawner(6, 0.2, {at = \"target\", exp = {0.3, 0.7}, fade = false, glow = 10, shape = {\"box\", {-0.5, 0, -0.5}, {0.5, 1, 0.5}}, size = {1.5, 3}, tex = \"mobs_blood.png\", vel = {{-2, 0, -2}, {2, 3, 2}}}),\n}","marker":null,"moment":"swing","n":29,"name":"Mighty Blow","note":"","rate":0.0,"sim":[{"acc":[0,0,0],"color":"#d8263a","engine":{"pos":null,"radius":null,"tween":[[1.2,2,-0.5],[1.2,0.6,0.6]]},"exp":[0.3,0.4],"fade":true,"glow":10,"kind":"spawner","n":20,"pull":null,"radial":null,"reach":null,"shape":["line",[1.2,2,-0.5],[1.2,0.6,0.6]],"size":[3,4],"tex":"smoke","time":0.08,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#ffffff","engine":{"pos":[[1.3,0.0,-0.5],[2.3,1.0,0.5]],"radius":null,"tween":null},"exp":[0.3,0.7],"fade":false,"glow":10,"kind":"spawner","n":6,"pull":null,"radial":null,"reach":null,"shape":["box",[1.3,0.0,-0.5],[2.3,1.0,0.5]],"size":[1.5,3],"tex":"blood","time":0.2,"vel":[[-2,0,-2],[2,3,2]]}],"skill":"mighty_blow","sprite":null,"status":"keep","t0":0.0,"target":[1.8,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"ruin","unlock":"Ruin U1"},{"class":"warrior","context":[],"cost":{"check_us":0.0,"dg":2,"i1":7.6631,"i2":146.0423,"lua_us":1.88,"marginal":0,"particles":22,"peak":22.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"","family":"ruin","family_de":"Wut","family_name":"Ruin","flight":null,"group":"ruin","hook":"Broadstroke's landed proc (kits_warrior.lua, where mighty_blow plays today)","id":"broadstroke","key":"pfx.broadstroke.swing","look":"Ein waagrechter roter Hieb läuft in 0,12 s von links nach rechts über die ganze Front. Ohne die sechs extra Blutstropfen von Mighty Blow: die Gegner bluten bei jedem Treffer ohnehin.","lua_text":"{\n\tspawner(22, 0.12, {color = \"#d8263a\", exp = {0.3, 0.4}, glow = 10, shape = {\"line\", {1.4, 1.2, 1.9}, {1.4, 1, -1.9}}, size = {3, 4}}),\n}","marker":{"cone":[3,100]},"moment":"swing","n":30,"name":"Broadstroke","note":"Die Linie dreht mit der Blickrichtung (nur ihre Enden, das reicht), und weil der Spawner seine Position über die Zeit verschiebt, sieht man den Hieb wandern.","rate":0.0417,"sim":[{"acc":[0,0,0],"color":"#d8263a","engine":{"pos":null,"radius":null,"tween":[[1.4,1.2,1.9],[1.4,1.0,-1.9]]},"exp":[0.3,0.4],"fade":true,"glow":10,"kind":"spawner","n":22,"pull":null,"radial":null,"reach":null,"shape":["line",[1.4,1.2,1.9],[1.4,1.0,-1.9]],"size":[3,4],"tex":"smoke","time":0.12,"vel":[[0,0,0],[0,0,0]]}],"skill":"broadstroke","sprite":null,"status":"new","t0":0.0,"target":[1.8,0.0,0.0],"today":"Mighty Blows Diagonale","today_cost":{"particles":26,"wire":1316},"tree":"ruin","unlock":"Ruin U7, verwandelt Mighty Blow"},{"class":"warrior","context":[],"cost":{"check_us":0.06,"dg":1,"i1":1.6188,"i2":9.4179,"lua_us":3.6,"marginal":139,"particles":6,"peak":6.0,"rx_us":6.279,"single_events":1,"singles":6,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":254},"dynamic":"","family":"ruin","family_de":"Wut","family_name":"Ruin","flight":null,"group":"ruin","hook":"kits_warrior.lua:170","id":"hamstring","key":"pfx.hamstring.swing","look":"Ein kurzer, tiefer roter Schnitt über die Beine des Ziels. Unverändert.","lua_text":"{\n\tsingle(6, {at = \"target\", color = \"#c0303f\", exp = {0.25, 0.3}, glow = 8, shape = {\"line\", {-0.4, 0.4, -0.3}, {0.4, 0.35, 0.3}}, size = {2.5, 3}}),\n}","marker":null,"moment":"swing","n":31,"name":"Hamstring","note":"","rate":0.0156,"sim":[{"acc":[0,0,0],"color":"#c0303f","engine":null,"exp":[0.25,0.3],"fade":true,"glow":8,"kind":"single","n":6,"pull":null,"radial":null,"reach":null,"shape":["line",[1.4,0.4,-0.3],[2.2,0.35,0.3]],"size":[2.5,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"hamstring","sprite":null,"status":"keep","t0":0.0,"target":[1.8,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"ruin","unlock":"Ruin U4"},{"class":"warrior","context":[],"cost":{"check_us":0.0,"dg":2,"i1":13.584,"i2":334.4682,"lua_us":1.88,"marginal":0,"particles":30,"peak":30.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"","family":"ruin","family_de":"Wut","family_name":"Ruin","flight":null,"group":"ruin","hook":"Ruination's cast (kits_warrior.lua, new def; replaces the ruination proc flash, kits_warrior.lua:121)","id":"ruination","key":"pfx.ruination.cast","look":"Eine rote Lohe schießt um die Füße des Kriegers hoch: 30 heiße Funken, die steil aufsteigen und verglühen.","lua_text":"{\n\tspawner(30, 0.2, {color = \"#e8402a\", exp = {0.35, 0.55}, glow = 14, shape = {\"disc\", {0, 0.1, 0}, 0.7, false}, size = {2, 3}, vel = {{0, 2.5, 0}, {0, 4.5, 0}}}),\n}","marker":null,"moment":"cast","n":32,"name":"Ruination","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#e8402a","engine":{"pos":[[0,0.1,0],[0,0.1,0]],"radius":[0.7,0,0.7],"tween":null},"exp":[0.35,0.55],"fade":true,"glow":14,"kind":"spawner","n":30,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.1,0],0.7,false],"size":[2,3],"tex":"smoke","time":0.2,"vel":[[0,2.5,0],[0,4.5,0]]}],"skill":"ruination","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"der Proc-Ring in Rot (#ff5a3a)","today_cost":{"particles":8,"wire":306},"tree":"ruin","unlock":"Ruin U12, Ultimate"},{"class":"warrior","context":[{"emitters":[{"acc":[0,0,0],"color":"#e8402a","engine":{"pos":[[0,0.1,0],[0,0.1,0]],"radius":[0.7,0,0.7],"tween":null},"exp":[0.35,0.55],"fade":true,"glow":14,"kind":"spawner","n":30,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.1,0],0.7,false],"size":[2,3],"tex":"smoke","time":0.2,"vel":[[0,2.5,0],[0,4.5,0]]}],"flight":null,"key":"pfx.ruination.cast","t0":0.0}],"cost":{"check_us":0.03,"dg":1,"i1":0.8889,"i2":2.522,"lua_us":1.8,"marginal":119,"particles":3,"peak":3.0,"rx_us":5.0895,"single_events":1,"singles":3,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":234},"dynamic":"","family":"ruin","family_de":"Wut","family_name":"Ruin","flight":null,"group":"ruin","hook":"the swing path's landed hit while the Ruination window is active (kits.lua strike_def)","id":"ruination_swing","key":"pfx.ruination.swing","look":"Solange Ruination läuft, wirft jeder gelandete Schlag drei heiße Funken vom Ziel.","lua_text":"{\n\tsingle(3, {acc = {0, -6, 0}, at = \"target\", color = \"#ff6a4a\", exp = {0.25, 0.35}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.2, false}, size = {1.5, 2}, vel = {{-1, 0.5, -1}, {1, 2, 1}}}),\n}","marker":null,"moment":"swing","n":33,"name":"Ruination","note":"Etwa acht Schläge im 8-s-Fenster.","rate":0.0167,"sim":[{"acc":[0,-6,0],"color":"#ff6a4a","engine":null,"exp":[0.25,0.35],"fade":true,"glow":14,"kind":"single","n":3,"pull":null,"radial":null,"reach":null,"shape":["sphere",[1.8,1.1,0.0],0.2,false],"size":[1.5,2],"tex":"smoke","time":0,"vel":[[-1,0.5,-1],[1,2,1]]}],"skill":"ruination","sprite":null,"status":"new","t0":0.6,"target":[1.8,0.0,0.0],"today":"","today_cost":null,"tree":"ruin","unlock":"Ruin U12, Ultimate"},{"class":"priest","context":[],"cost":{"check_us":0.0,"dg":2,"i1":9.6018,"i2":107.8134,"lua_us":1.88,"marginal":0,"particles":12,"peak":12.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"Heal's cast (kits_priest.lua:135)","id":"heal","key":"pfx.heal.cast","look":"Warmgoldene Punkte steigen um den Geheilten auf. Die Form aus Runde 40, Gold statt Grüngelb.","lua_text":"{\n\tspawner(12, 0.1, {at = \"target\", color = \"#ffe08a\", exp = {0.7, 0.9}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 0.5, false}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.5, 0}}}),\n}","marker":null,"moment":"cast","n":34,"name":"Heal","note":"","rate":0.05,"sim":[{"acc":[0,0,0],"color":"#ffe08a","engine":{"pos":[[6.0,0.1,0.0],[6.0,0.1,0.0]],"radius":[0.5,0,0.5],"tween":null},"exp":[0.7,0.9],"fade":true,"glow":12,"kind":"spawner","n":12,"pull":null,"radial":null,"reach":null,"shape":["disc",[6.0,0.1,0.0],0.5,false],"size":[2,2.5],"tex":"smoke","time":0.1,"vel":[[0,1.5,0],[0,2.5,0]]}],"skill":"heal","sprite":null,"status":"retint","t0":0.0,"target":[6.0,0.0,0.0],"today":"dieselbe Form in Grüngelb (#d8f0a0)","today_cost":null,"tree":"mercy","unlock":"Start"},{"class":"priest","context":[],"cost":{"check_us":0.0,"dg":2,"i1":7.1901,"i2":120.8676,"lua_us":1.88,"marginal":0,"particles":18,"peak":18.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"kits_priest.lua:186","id":"shield_spell","key":"pfx.shield.cast","look":"Eine blassgoldene Hülle aus Punkten blitzt um den Geschützten auf. Unverändert.","lua_text":"{\n\tspawner(18, 0.05, {at = \"target\", color = \"#ffe9a0\", exp = {0.35, 0.45}, glow = 12, shape = {\"sphere\", {0, 1, 0}, 0.9, true}, size = {2, 2.5}}),\n}","marker":null,"moment":"cast","n":35,"name":"Shield","note":"","rate":0.0104,"sim":[{"acc":[0,0,0],"color":"#ffe9a0","engine":{"pos":[[6.0,1.0,0.0],[6.0,1.0,0.0]],"radius":[0.9,0.9,0.9],"tween":null},"exp":[0.35,0.45],"fade":true,"glow":12,"kind":"spawner","n":18,"pull":null,"radial":null,"reach":null,"shape":["sphere",[6.0,1.0,0.0],0.9,true],"size":[2,2.5],"tex":"smoke","time":0.05,"vel":[[0,0,0],[0,0,0]]}],"skill":"shield","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"mercy","unlock":"Mercy M3"},{"class":"priest","context":[],"cost":{"check_us":0.03,"dg":1,"i1":2.0916,"i2":5.9657,"lua_us":1.8,"marginal":83,"particles":3,"peak":3.0,"rx_us":5.0895,"single_events":1,"singles":3,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":198},"dynamic":"","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"Mend's cast and on_tick (kits_priest.lua:244, 249)","id":"mend","key":"pfx.mend.tick","look":"Drei warmgoldene Punkte steigen beim Wirken und bei jedem der vier Ticks auf.","lua_text":"{\n\tsingle(3, {at = \"target\", color = \"#ffe08a\", exp = {0.6, 0.8}, glow = 12, shape = {\"disc\", {0, 0.6, 0}, 0.4, false}, size = {2, 2.5}, vel = {{0, 1.2, 0}, {0, 1.8, 0}}}),\n}","marker":null,"moment":"tick","n":36,"name":"Mend","note":"Im Szenario tickt Mend dauernd auf einem Ziel (alle 3 s) und wird alle 8 s neu gewirkt.","rate":0.0417,"sim":[{"acc":[0,0,0],"color":"#ffe08a","engine":null,"exp":[0.6,0.8],"fade":true,"glow":12,"kind":"single","n":3,"pull":null,"radial":null,"reach":null,"shape":["disc",[6.0,0.6,0.0],0.4,false],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,1.2,0],[0,1.8,0]]}],"skill":"mend","sprite":null,"status":"retint","t0":0.0,"target":[6.0,0.0,0.0],"today":"dieselbe Form in Grüngelb","today_cost":null,"tree":"mercy","unlock":"Mercy M6"},{"class":"priest","context":[],"cost":{"check_us":0.08,"dg":1,"i1":3.5662,"i2":27.5096,"lua_us":4.8,"marginal":189,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":304},"dynamic":"","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"grug_classes.open_window for Clear Conscience: grug_core.proc_flash(player, \"clear_conscience\")","id":"proc","key":"pfx.smite.window","look":"Clear Conscience bereit (nach Heal, Shield oder Mend): der Bereitschaftsring in Elfenbein.","lua_text":"{\n\tsingle(8, {color = \"#fff0c8\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}","marker":null,"moment":"window","n":37,"name":"Smite","note":"Höchstens alle 8 s (die interne Abklingzeit).","rate":0.0312,"sim":[{"acc":[0,0,0],"color":"#fff0c8","engine":null,"exp":[0.4,0.5],"fade":true,"glow":12,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.3,0],0.6,true],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,1.5,0],[0,2.2,0]]}],"skill":"smite","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"reckoning","unlock":"Start (ersetzt Strike)"},{"class":"priest","context":[],"cost":{"check_us":0.24,"dg":1,"i1":12.0,"i2":288.0,"lua_us":14.4,"marginal":294,"particles":24,"peak":24.0,"rx_us":13.416,"single_events":1,"singles":24,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":409},"dynamic":"reach = 6 m","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"Hearten's cast (kits_priest.lua, new def)","id":"hearten","key":"pfx.hearten.cast","look":"Ein weicher Goldring breitet sich vom Priester bis an den 6-m-Rand aus: so weit reicht die Heilung.","lua_text":"{\n\tsingle(24, {color = \"#ffe08a\", exp = {0.5, 0.5}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.3, 0}, 0.4, true}, size = {2.5, 2.5}}),\n}","marker":{"radius":6},"moment":"cast","n":38,"name":"Hearten","note":"","rate":0.0063,"sim":[{"acc":[0,0,0],"color":"#ffe08a","engine":null,"exp":[0.5,0.5],"fade":true,"glow":12,"kind":"single","n":24,"pull":null,"radial":null,"reach":6,"shape":["disc",[0,0.3,0],0.4,true],"size":[2.5,2.5],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"hearten","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"mercy","unlock":"Mercy M10"},{"class":"priest","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffe08a","engine":null,"exp":[0.5,0.5],"fade":true,"glow":12,"kind":"single","n":24,"pull":null,"radial":null,"reach":6,"shape":["disc",[0,0.3,0],0.4,true],"size":[2.5,2.5],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.hearten.cast","t0":0.0}],"cost":{"check_us":0.04,"dg":1,"i1":2.7786,"i2":10.5688,"lua_us":2.4,"marginal":108,"particles":4,"peak":4.0,"rx_us":5.486,"single_events":1,"singles":4,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":223},"dynamic":"","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"Hearten's loop over area.group's recipients","id":"hearten_recipient","key":"pfx.hearten.recipient","look":"Jeder Geheilte (bis zu vier, der Priester eingeschlossen): vier Goldpunkte steigen auf.","lua_text":"{\n\tsingle(4, {at = \"target\", color = \"#ffe08a\", exp = {0.6, 0.8}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 0.4, false}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}","marker":null,"moment":"recipient","n":39,"name":"Hearten","note":"Vier Partikel als einzelne kosten ein Drittel eines Spawners, der für 4 Partikel ein ganzes Paket schickt.","rate":0.025,"sim":[{"acc":[0,0,0],"color":"#ffe08a","engine":null,"exp":[0.6,0.8],"fade":true,"glow":12,"kind":"single","n":4,"pull":null,"radial":null,"reach":null,"shape":["disc",[3,0.1,0],0.4,false],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,1.5,0],[0,2.2,0]]}],"skill":"hearten","sprite":null,"status":"new","t0":0.05,"target":[3,0,0],"today":"Heals Spritzer (Hearten-Talent) heute: ein Spawner aus 4 Partikeln je Verbündetem","today_cost":{"particles":4,"wire":671},"tree":"mercy","unlock":"Mercy M10"},{"class":"priest","context":[],"cost":{"check_us":0.4,"dg":4,"i1":49.621,"i2":2635.8103,"lua_us":25.88,"marginal":454,"particles":64,"peak":64.0,"rx_us":22.76,"single_events":1,"singles":40,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":1291},"dynamic":"reach = 8 m","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"Haven's cast (kits_priest.lua, new def)","id":"haven","key":"pfx.haven.cast","look":"Eine Säule aus warmem Licht steigt um den Priester auf, während ein Ring aus Elfenbein bis an den 8-m-Rand läuft.","lua_text":"{\n\tsingle(40, {color = \"#fff0c8\", exp = {0.7, 0.7}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.3, 0}, 0.5, true}, size = {3, 3}}),\n\tspawner(24, 0.3, {color = \"#ffe08a\", exp = {0.8, 1}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 1, false}, size = {2, 3}, vel = {{0, 2, 0}, {0, 3.5, 0}}}),\n}","marker":{"radius":8},"moment":"cast","n":40,"name":"Haven","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#fff0c8","engine":null,"exp":[0.7,0.7],"fade":true,"glow":12,"kind":"single","n":40,"pull":null,"radial":null,"reach":8,"shape":["disc",[0,0.3,0],0.5,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#ffe08a","engine":{"pos":[[0,0.1,0],[0,0.1,0]],"radius":[1.0,0,1.0],"tween":null},"exp":[0.8,1.0],"fade":true,"glow":12,"kind":"spawner","n":24,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.1,0],1.0,false],"size":[2,3],"tex":"smoke","time":0.3,"vel":[[0,2,0],[0,3.5,0]]}],"skill":"haven","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"mercy","unlock":"Mercy M13, Ultimate"},{"class":"priest","context":[],"cost":{"check_us":0.02,"dg":1,"i1":1.394,"i2":2.659,"lua_us":1.2,"marginal":59,"particles":2,"peak":2.0,"rx_us":4.693,"single_events":1,"singles":2,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":174},"dynamic":"","family":"mercy","family_de":"Heilendes Licht","family_name":"Mercy","flight":null,"group":"mercy","hook":"the haven status' on_tick (grug_core.set_status)","id":"haven_tick","key":"pfx.haven.tick","look":"Jeder Tick der Heilung über Zeit: zwei Elfenbeinpunkte steigen am Träger auf (bis zu fünf Träger, sechs Ticks).","lua_text":"{\n\tsingle(2, {at = \"target\", color = \"#fff0c8\", exp = {0.6, 0.8}, glow = 12, shape = {\"disc\", {0, 0.8, 0}, 0.35, false}, size = {2, 2.5}, vel = {{0, 1, 0}, {0, 1.5, 0}}}),\n}","marker":null,"moment":"tick","n":41,"name":"Haven","note":"Zwei statt Mends drei, damit beide Heilungen über Zeit auf einem Spieler unterscheidbar bleiben.","rate":0.0625,"sim":[{"acc":[0,0,0],"color":"#fff0c8","engine":null,"exp":[0.6,0.8],"fade":true,"glow":12,"kind":"single","n":2,"pull":null,"radial":null,"reach":null,"shape":["disc",[3,0.8,0],0.35,false],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,1,0],[0,1.5,0]]}],"skill":"haven","sprite":null,"status":"new","t0":0.0,"target":[3,0,0],"today":"","today_cost":null,"tree":"mercy","unlock":"Mercy M13, Ultimate"},{"class":"priest","context":[],"cost":{"check_us":0.06,"dg":1,"i1":1.2291,"i2":7.2847,"lua_us":3.6,"marginal":153,"particles":6,"peak":6.0,"rx_us":6.279,"single_events":1,"singles":6,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":268},"dynamic":"","family":"reckoning","family_de":"Richtendes Gold","family_name":"Reckoning","flight":null,"group":"reckoning","hook":"Smite's cast (kits_priest.lua:61)","id":"smite_hit","key":"pfx.smite.hit","look":"Sechs weißgoldene Punkte fallen von oben aufs Ziel, schnell und gerade: der Lichtfall aus Runde 40 mit sechs statt 36 Partikeln, ohne Blitzring.","lua_text":"{\n\tsingle(6, {at = \"target\", color = \"#fff2c0\", exp = {0.2, 0.22}, glow = 14, shape = {\"disc\", {0, 3, 0}, 0.5, false}, size = {2.5, 3.5}, vel = {{0, -12, 0}, {0, -10, 0}}}),\n}","marker":null,"moment":"hit","n":42,"name":"Smite","note":"Der alte Lichtfall wandert vergrößert zu Final Word.","rate":0.0977,"sim":[{"acc":[0,0,0],"color":"#fff2c0","engine":null,"exp":[0.2,0.22],"fade":true,"glow":14,"kind":"single","n":6,"pull":null,"radial":null,"reach":null,"shape":["disc",[6.0,3.0,0.0],0.5,false],"size":[2.5,3.5],"tex":"smoke","time":0,"vel":[[0,-12,0],[0,-10,0]]}],"skill":"smite","sprite":{"name":"Funke","stand_in":"spark","text":"der vierzackige Funke, golden"},"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"der Runde-40-Lichtfall: 24 fallende Punkte und ein 12er-Blitzring, zwei Spawner (bei 2 s Abklingzeit angenommen; jetzt ist Smite der Grundangriff, einmal pro Sekunde)","today_cost":{"particles":36,"wire":1472},"tree":"reckoning","unlock":"Start (ersetzt Strike)"},{"class":"priest","context":[],"cost":{"check_us":0.0,"dg":2,"i1":2.107,"i2":23.8325,"lua_us":1.88,"marginal":0,"particles":14,"peak":14.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"line frame.from (the priest's hand: eye height minus a little) .. frame.to (the target's body)","family":"reckoning","family_de":"Richtendes Gold","family_name":"Reckoning","flight":null,"group":"reckoning","hook":"Rebuke's cast (kits_priest.lua, new def)","id":"rebuke","key":"pfx.rebuke.hit","look":"Ein goldener Splitter zuckt aus der Hand des Priesters ins Ziel: eine Spur, die in 0,08 s von der Hand zum Gegner wandert und sofort erlischt.","lua_text":"{\n\tspawner(14, 0.08, {color = \"#ffd257\", exp = {0.12, 0.18}, glow = 14, shape = {\"line\", \"frame\"}, size = {2, 3}, vel = {{-0.2, -0.2, -0.2}, {0.2, 0.2, 0.2}}}),\n}","marker":null,"moment":"hit","n":43,"name":"Rebuke","note":"","rate":0.0208,"sim":[{"acc":[0,0,0],"color":"#ffd257","engine":{"pos":null,"radius":null,"tween":[[0.4,1.4,0],[6,1.0,0]]},"exp":[0.12,0.18],"fade":true,"glow":14,"kind":"spawner","n":14,"pull":null,"radial":null,"reach":null,"shape":["line",[0.4,1.4,0],[6,1.0,0]],"size":[2,3],"tex":"smoke","time":0.08,"vel":[[-0.2,-0.2,-0.2],[0.2,0.2,0.2]]}],"skill":"rebuke","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"reckoning","unlock":"Reckoning RK3"},{"class":"priest","context":[],"cost":{"check_us":0.0,"dg":2,"i1":8.0,"i2":102.0991,"lua_us":2.26,"marginal":0,"particles":16,"peak":16.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":736,"spawners":1,"wire":736},"dynamic":"","family":"reckoning","family_de":"Richtendes Gold","family_name":"Reckoning","flight":null,"group":"reckoning","hook":"kits_priest.lua:266","id":"word_of_ruin","key":"pfx.word_of_ruin.hit","look":"Goldenes Licht löst sich vom Ziel und strömt zur Brust des Priesters zurück. Die Form aus Runde 40, Gold statt Dunkelviolett.","lua_text":"{\n\tspawner(16, 0.3, {at = \"target\", attract = {at = \"caster\", kill = true, origin = {0, 1.2, 0}, strength = 2}, color = \"#ffd257\", exp = {0.6, 0.7}, glow = 6, shape = {\"sphere\", {0, 1, 0}, 0.5, false}, size = {2, 2.5}}),\n}","marker":null,"moment":"hit","n":44,"name":"Word of Ruin","note":"","rate":0.0078,"sim":[{"acc":[0,0,0],"color":"#ffd257","engine":{"pos":[[5.5,0.5,-0.5],[6.5,1.5,0.5]],"radius":null,"tween":null},"exp":[0.6,0.7],"fade":true,"glow":6,"kind":"spawner","n":16,"pull":{"kill":true,"origin":[0,1.2,0],"smax":2,"smin":2},"radial":null,"reach":null,"shape":["sphere",[6.0,1.0,0.0],0.5,false],"size":[2,2.5],"tex":"smoke","time":0.3,"vel":[[0,0,0],[0,0,0]]}],"skill":"word_of_ruin","sprite":null,"status":"retint","t0":0.0,"target":[6.0,0.0,0.0],"today":"dieselbe Form in Dunkelviolett (#6a2a9a)","today_cost":null,"tree":"reckoning","unlock":"Reckoning RK6"},{"class":"priest","context":[{"emitters":[{"acc":[0,0,0],"color":"#fff6dd","engine":null,"exp":[0.75,0.75],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[8,6,0],[8,6,0]],"size":[16,16],"tex":"smoke","time":0,"vel":[[0,-8.0,0],[0,-8.0,0]]}],"flight":null,"key":"pfx.censure.fall","t0":0.0}],"cost":{"check_us":0.2,"dg":1,"i1":15.0,"i2":300.0,"lua_us":12.0,"marginal":174,"particles":20,"peak":20.0,"rx_us":11.83,"single_events":1,"singles":20,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":289},"dynamic":"a recolour of area_warning: reach = the radius (3 m + Broad Judgment), time = the delay; no spec.color, which would repaint the seal and the impact too (area.lua:327-355)","family":"reckoning","family_de":"Richtendes Gold","family_name":"Reckoning","flight":null,"group":"reckoning","hook":"area.delayed spec.warning = \"censure_warning\"","id":"censure_warning","key":"pfx.censure.warning","look":"Der Warnring auf 3 m in hartem Gold, eine Dreiviertelsekunde lang: CORE-Bs Warnring in Gold.","lua_text":"{\n\tsingle(20, {at = \"target\", color = \"#ffd257\", exp = {0.75, 0.75}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 3, true}, size = {3, 3}}),\n}","marker":{"at":"target","radius":3},"moment":"warning","n":45,"name":"Censure","note":"","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#ffd257","engine":null,"exp":[0.75,0.75],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[8,0.15,0],3,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"censure","sprite":null,"status":"new","t0":0.0,"target":[8,0,0],"today":"","today_cost":null,"tree":"reckoning","unlock":"Reckoning RK9"},{"class":"priest","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffd257","engine":null,"exp":[0.75,0.75],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[8,0.15,0],3,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.censure.warning","t0":0.0}],"cost":{"check_us":0.01,"dg":1,"i1":0.75,"i2":0.75,"lua_us":0.6,"marginal":25,"particles":1,"peak":1.0,"rx_us":4.2965,"single_events":1,"singles":1,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":140},"dynamic":"height = area.fall_height, time = the delay: speed height / time","family":"reckoning","family_de":"Richtendes Gold","family_name":"Reckoning","flight":null,"group":"reckoning","hook":"area.delayed spec.fall = \"censure_fall\"","id":"censure_fall","key":"pfx.censure.fall","look":"Ein einziges großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf.","lua_text":"{\n\tsingle(1, {at = \"target\", color = \"#fff6dd\", exp = {0.75, 0.75}, glow = 14, shape = {\"box\", {0, 6, 0}, {0, 6, 0}}, size = {16, 16}, vel = {{0, -8, 0}, {0, -8, 0}}}),\n}","marker":{"at":"target","radius":3},"moment":"fall","n":46,"name":"Censure","note":"","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#fff6dd","engine":null,"exp":[0.75,0.75],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[8,6,0],[8,6,0]],"size":[16,16],"tex":"smoke","time":0,"vel":[[0,-8.0,0],[0,-8.0,0]]}],"skill":"censure","sprite":{"name":"Siegel","stand_in":"seal","text":"Ein rundes Siegel mit Strahlenkranz (16×16, Gold auf Weiß) für dieses eine große Partikel; bis dahin ein großer leuchtender Punkt."},"status":"new","t0":0.0,"target":[8,0,0],"today":"","today_cost":null,"tree":"reckoning","unlock":"Reckoning RK9"},{"class":"priest","context":[{"emitters":[{"acc":[0,0,0],"color":"#ffd257","engine":null,"exp":[0.75,0.75],"fade":false,"glow":12,"kind":"single","n":20,"pull":null,"radial":null,"reach":null,"shape":["disc",[8,0.15,0],3,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"flight":null,"key":"pfx.censure.warning","t0":0.0},{"emitters":[{"acc":[0,0,0],"color":"#fff6dd","engine":null,"exp":[0.75,0.75],"fade":true,"glow":14,"kind":"single","n":1,"pull":null,"radial":null,"reach":null,"shape":["box",[8,6,0],[8,6,0]],"size":[16,16],"tex":"smoke","time":0,"vel":[[0,-8.0,0],[0,-8.0,0]]}],"flight":null,"key":"pfx.censure.fall","t0":0.0}],"cost":{"check_us":0.32,"dg":1,"i1":9.6,"i2":307.2,"lua_us":19.2,"marginal":364,"particles":32,"peak":32.0,"rx_us":16.588,"single_events":1,"singles":32,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":479},"dynamic":"reach = the radius","family":"reckoning","family_de":"Richtendes Gold","family_name":"Reckoning","flight":null,"group":"reckoning","hook":"area.delayed spec.burst = \"censure_impact\"","id":"censure_impact","key":"pfx.censure.impact","look":"Ein harter Goldring schnappt bis an den 3-m-Rand.","lua_text":"{\n\tsingle(32, {at = \"target\", color = \"#ffd257\", exp = {0.3, 0.3}, glow = 14, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.3, true}, size = {3, 3}}),\n}","marker":{"at":"target","radius":3},"moment":"impact","n":47,"name":"Censure","note":"","rate":0.0069,"sim":[{"acc":[0,0,0],"color":"#ffd257","engine":null,"exp":[0.3,0.3],"fade":true,"glow":14,"kind":"single","n":32,"pull":null,"radial":null,"reach":3,"shape":["disc",[8,0.2,0],0.3,true],"size":[3,3],"tex":"smoke","time":0,"vel":[[0,0,0],[0,0,0]]}],"skill":"censure","sprite":null,"status":"new","t0":0.75,"target":[8,0,0],"today":"","today_cost":null,"tree":"reckoning","unlock":"Reckoning RK9"},{"class":"priest","context":[],"cost":{"check_us":0.0,"dg":4,"i1":12.4207,"i2":492.0861,"lua_us":4.14,"marginal":0,"particles":46,"peak":46.0,"rx_us":6.0,"single_events":0,"singles":0,"spawner_dg":4,"spawner_wire":1407,"spawners":2,"wire":1407},"dynamic":"","family":"reckoning","family_de":"Richtendes Gold","family_name":"Reckoning","flight":null,"group":"reckoning","hook":"Final Word's cast (kits_priest.lua, new def)","id":"final_word","key":"pfx.final_word.hit","look":"Eine Lichtsäule schlägt aus 7 m senkrecht auf das Ziel, ein goldener Ring springt am Boden auseinander.","lua_text":"{\n\tspawner(26, 0.1, {at = \"target\", color = \"#fff6dd\", exp = {0.2, 0.3}, glow = 14, shape = {\"line\", {0, 7, 0}, {0, 0.2, 0}}, size = {4, 5}}),\n\tspawner(20, 0.05, {at = \"target\", color = \"#ffd257\", exp = {0.25, 0.35}, glow = 14, radial = {5, 6}, shape = {\"disc\", {0, 0.15, 0}, 0.4, true}, size = {2.5, 3}}),\n}","marker":null,"moment":"hit","n":48,"name":"Final Word","note":"","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#fff6dd","engine":{"pos":null,"radius":null,"tween":[[6.0,7.0,0.0],[6.0,0.2,0.0]]},"exp":[0.2,0.3],"fade":true,"glow":14,"kind":"spawner","n":26,"pull":null,"radial":null,"reach":null,"shape":["line",[6.0,7.0,0.0],[6.0,0.2,0.0]],"size":[4,5],"tex":"smoke","time":0.1,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#ffd257","engine":{"pos":[[6.0,0.15,0.0],[6.0,0.15,0.0]],"radius":[0.4,0,0.4],"tween":null},"exp":[0.25,0.35],"fade":true,"glow":14,"kind":"spawner","n":20,"pull":{"kill":false,"origin":[6.0,0.15,0.0],"smax":-12.5,"smin":-15.0},"radial":null,"reach":null,"shape":["disc",[6.0,0.15,0.0],0.4,true],"size":[2.5,3],"tex":"smoke","time":0.05,"vel":[[0,0,0],[0,0,0]]}],"skill":"final_word","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"Smites heutiger Lichtfall (dieses Muster, größer)","today_cost":{"particles":36,"wire":1472},"tree":"reckoning","unlock":"Reckoning RK13, Ultimate"},{"class":"scout","context":[],"cost":null,"dynamic":"","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":null,"group":"quarry","hook":"scout.lua:11-15 (ARROW_TRAILS: drop the loose entry)","id":null,"key":"pfx.loose.shot","look":"Kein Effekt: der Grundangriff des Bogens fliegt ohne Spur. Der Pfeil ist zu sehen, und ein Treffer zeigt das Blut des Gegners. Die Spur bleibt den Bogenfähigkeiten mit Abklingzeit.","lua_text":"","marker":null,"moment":"shot","n":49,"name":"Loose","note":"Bei 50 Spielern kosteten die Loose-Spuren allein etwa so viel wie alle anderen Späher-Effekte zusammen; der Grundangriff muss der billigste Effekt sein.","rate":0.0822,"sim":[],"skill":"loose","sprite":null,"status":"none","t0":0.0,"target":[6.0,0.0,0.0],"today":"heute zieht jeder Loose die Pfeilspur (ein Spawner aus 30 Partikeln)","today_cost":{"particles":30,"wire":671},"tree":"quarry","unlock":"Start"},{"class":"scout","context":[],"cost":{"check_us":0.08,"dg":1,"i1":3.5528,"i2":27.3297,"lua_us":4.8,"marginal":191,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":306},"dynamic":"","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":null,"group":"quarry","hook":"grug_classes.open_window for Follow the Line: grug_core.proc_flash(player, \"follow_the_line\")","id":"proc","key":"pfx.loose.window","look":"Follow the Line bereit (ein True Draw hat getroffen): der Bereitschaftsring in Grün.","lua_text":"{\n\tsingle(8, {color = \"#a8c86a\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}","marker":null,"moment":"window","n":50,"name":"Loose","note":"","rate":0.0208,"sim":[{"acc":[0,0,0],"color":"#a8c86a","engine":null,"exp":[0.4,0.5],"fade":true,"glow":12,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.3,0],0.6,true],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,1.5,0],[0,2.2,0]]}],"skill":"loose","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"quarry","unlock":"Start"},{"class":"scout","context":[],"cost":{"check_us":0.08,"dg":1,"i1":3.1788,"i2":24.395,"lua_us":4.8,"marginal":231,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":346},"dynamic":"","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":null,"group":"quarry","hook":"scout.lua:577","id":"sidestep","key":"pfx.sidestep.cast","look":"Ein blassgrünes Flimmern um den Späher. Unverändert.","lua_text":"{\n\tsingle(8, {color = \"#a8e0c0\", exp = {0.35, 0.45}, glow = 10, shape = {\"sphere\", {0, 1, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 0.2, 0}, {0, 0.6, 0}}}),\n}","marker":null,"moment":"cast","n":51,"name":"Sidestep","note":"","rate":0.0139,"sim":[{"acc":[0,0,0],"color":"#a8e0c0","engine":null,"exp":[0.35,0.45],"fade":true,"glow":10,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["sphere",[0,1,0],0.6,true],"size":[2,2.5],"tex":"smoke","time":0,"vel":[[0,0.2,0],[0,0.6,0]]}],"skill":"sidestep","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"quarry","unlock":"Start"},{"class":"scout","context":[],"cost":{"check_us":0.08,"dg":1,"i1":3.9764,"i2":29.7805,"lua_us":4.8,"marginal":287,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":402},"dynamic":"","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":null,"group":"quarry","hook":"scout.lua:602","id":"sprint","key":"pfx.sprint.cast","look":"Ein Staubstoß hinter dem Späher. Unverändert.","lua_text":"{\n\tsingle(8, {color = \"#b8a27a\", exp = {0.4, 0.6}, glow = 0, shape = {\"box\", {-0.6, 0.05, -0.3}, {-0.2, 0.2, 0.3}}, size = {3, 4}, vel = {{-2, 0.5, -0.5}, {-1, 1.5, 0.5}}}),\n}","marker":null,"moment":"cast","n":52,"name":"Sprint","note":"","rate":0.0008,"sim":[{"acc":[0,0,0],"color":"#b8a27a","engine":null,"exp":[0.4,0.6],"fade":true,"glow":0,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["box",[-0.6,0.05,-0.3],[-0.2,0.2,0.3]],"size":[3,4],"tex":"smoke","time":0,"vel":[[-2,0.5,-0.5],[-1,1.5,0.5]]}],"skill":"sprint","sprite":null,"status":"keep","t0":0.0,"target":[6.0,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"quarry","unlock":"Start (angeboren)"},{"class":"scout","context":[],"cost":{"check_us":0.0,"dg":2,"i1":11.2297,"i2":181.3444,"lua_us":1.88,"marginal":0,"particles":30,"peak":22.35,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"line frame.from..frame.to over the flight time; frame.color per shot (ARROW_TRAILS)","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":{"color":"#d8c8a0","size":0.25,"speed":45},"group":"quarry","hook":"scout.lua ARROW_TRAILS.true_draw = {effect = \"skill_arrow\", color = \"#f0e6b8\"}","id":"skill_arrow","key":"pfx.true_draw.trail","look":"Die Pfeilspur aus Runde 40 in hellem Gold-Elfenbein: der voll gespannte Schuss glänzt.","lua_text":"{\n\tspawner(30, \"frame\", {color = \"#f0e6b8\", exp = {0.3, 0.45}, glow = 6, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}","marker":null,"moment":"trail","n":53,"name":"True Draw","note":"","rate":0.0208,"sim":[{"acc":[0,0,0],"color":"#f0e6b8","engine":{"pos":null,"radius":null,"tween":[[0.3,1.45,0],[25,1.2,0]]},"exp":[0.3,0.45],"fade":true,"glow":6,"kind":"spawner","n":30,"pull":null,"radial":null,"reach":null,"shape":["line",[0.3,1.45,0],[25,1.2,0]],"size":[1,1.5],"tex":"smoke","time":0.55,"vel":[[-0.2,-0.1,-0.2],[0.2,0.2,0.2]]}],"skill":"true_draw","sprite":null,"status":"keep","t0":0.0,"target":[25,0,0],"today":"","today_cost":null,"tree":"quarry","unlock":"Quarry Q4"},{"class":"scout","context":[],"cost":{"check_us":0.0,"dg":2,"i1":11.226,"i2":163.5608,"lua_us":1.88,"marginal":0,"particles":30,"peak":19.125,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"as True Draw","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":{"color":"#d8c8a0","size":0.25,"speed":40},"group":"quarry","hook":"scout.lua ARROW_TRAILS.snare_shot (kept)","id":"skill_arrow","key":"pfx.snare_shot.trail","look":"Die Pfeilspur in Grün, wie heute.","lua_text":"{\n\tspawner(30, \"frame\", {color = \"#79a65a\", exp = {0.3, 0.45}, glow = 6, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}","marker":null,"moment":"trail","n":54,"name":"Snare Shot","note":"","rate":0.0089,"sim":[{"acc":[0,0,0],"color":"#79a65a","engine":{"pos":null,"radius":null,"tween":[[0.3,1.45,0],[25,1.2,0]]},"exp":[0.3,0.45],"fade":true,"glow":6,"kind":"spawner","n":30,"pull":null,"radial":null,"reach":null,"shape":["line",[0.3,1.45,0],[25,1.2,0]],"size":[1,1.5],"tex":"smoke","time":0.62,"vel":[[-0.2,-0.1,-0.2],[0.2,0.2,0.2]]}],"skill":"snare_shot","sprite":null,"status":"keep","t0":0.0,"target":[25,0,0],"today":"genau dieser Effekt","today_cost":null,"tree":"quarry","unlock":"Quarry Q6"},{"class":"scout","context":[{"emitters":[{"acc":[0,0,0],"color":"#79a65a","engine":{"pos":null,"radius":null,"tween":[[0.3,1.45,0],[25,1.2,0]]},"exp":[0.3,0.45],"fade":true,"glow":6,"kind":"spawner","n":30,"pull":null,"radial":null,"reach":null,"shape":["line",[0.3,1.45,0],[25,1.2,0]],"size":[1,1.5],"tex":"smoke","time":0.62,"vel":[[-0.2,-0.1,-0.2],[0.2,0.2,0.2]]}],"flight":{"color":"#d8c8a0","size":0.25,"speed":40},"key":"pfx.snare_shot.trail","t0":0.0}],"cost":{"check_us":0.0,"dg":2,"i1":4.485,"i2":42.1416,"lua_us":2.26,"marginal":0,"particles":10,"peak":10.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":736,"spawners":1,"wire":736},"dynamic":"","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":null,"group":"quarry","hook":"scout.lua:146","id":"snare_hit","key":"pfx.snare_shot.hit","look":"Ein grüner Ring springt um die Beine des getroffenen Ziels auf. Unverändert.","lua_text":"{\n\tspawner(10, 0.05, {at = \"target\", color = \"#79a65a\", exp = {0.4, 0.5}, glow = 6, radial = {2, 2.5}, shape = {\"disc\", {0, 0.4, 0}, 0.2, true}, size = {2, 2.5}}),\n}","marker":null,"moment":"hit","n":55,"name":"Snare Shot","note":"","rate":0.0089,"sim":[{"acc":[0,0,0],"color":"#79a65a","engine":{"pos":[[25,0.4,0],[25,0.4,0]],"radius":[0.2,0,0.2],"tween":null},"exp":[0.4,0.5],"fade":true,"glow":6,"kind":"spawner","n":10,"pull":{"kill":false,"origin":[25,0.4,0],"smax":-10.0,"smin":-12.5},"radial":null,"reach":null,"shape":["disc",[25,0.4,0],0.2,true],"size":[2,2.5],"tex":"smoke","time":0.05,"vel":[[0,0,0],[0,0,0]]}],"skill":"snare_shot","sprite":null,"status":"keep","t0":0.62,"target":[25,0,0],"today":"genau dieser Effekt","today_cost":null,"tree":"quarry","unlock":"Quarry Q6"},{"class":"scout","context":[],"cost":{"check_us":0.0,"dg":2,"i1":11.1487,"i2":185.0938,"lua_us":1.88,"marginal":0,"particles":30,"peak":22.725,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"as True Draw","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":{"color":"#d8c8a0","size":0.25,"speed":40},"group":"quarry","hook":"scout.lua ARROW_TRAILS.split_shot = {..., color = \"#a8c86a\"}","id":"skill_arrow","key":"pfx.split_shot.trail","look":"Die Pfeilspur in Wiesengrün.","lua_text":"{\n\tspawner(30, \"frame\", {color = \"#a8c86a\", exp = {0.3, 0.45}, glow = 6, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}","marker":null,"moment":"trail","n":56,"name":"Split Shot","note":"","rate":0.0125,"sim":[{"acc":[0,0,0],"color":"#a8c86a","engine":{"pos":null,"radius":null,"tween":[[0.3,1.45,0],[20,1.2,0]]},"exp":[0.3,0.45],"fade":true,"glow":6,"kind":"spawner","n":30,"pull":null,"radial":null,"reach":null,"shape":["line",[0.3,1.45,0],[20,1.2,0]],"size":[1,1.5],"tex":"smoke","time":0.5,"vel":[[-0.2,-0.1,-0.2],[0.2,0.2,0.2]]}],"skill":"split_shot","sprite":null,"status":"keep","t0":0.0,"target":[20,0,0],"today":"","today_cost":null,"tree":"quarry","unlock":"Quarry Q8"},{"class":"scout","context":[{"emitters":[{"acc":[0,0,0],"color":"#a8c86a","engine":{"pos":null,"radius":null,"tween":[[0.3,1.45,0],[20,1.2,0]]},"exp":[0.3,0.45],"fade":true,"glow":6,"kind":"spawner","n":30,"pull":null,"radial":null,"reach":null,"shape":["line",[0.3,1.45,0],[20,1.2,0]],"size":[1,1.5],"tex":"smoke","time":0.5,"vel":[[-0.2,-0.1,-0.2],[0.2,0.2,0.2]]}],"flight":{"color":"#d8c8a0","size":0.25,"speed":40},"key":"pfx.split_shot.trail","t0":0.0}],"cost":{"check_us":0.05,"dg":1,"i1":1.354,"i2":6.5746,"lua_us":3.0,"marginal":180,"particles":5,"peak":5.0,"rx_us":5.8825,"single_events":1,"singles":5,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":295},"dynamic":"line frame.from (the struck target) .. frame.to (one secondary), once per secondary","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":null,"group":"quarry","hook":"Split Shot's splash loop, once per secondary hit (the Fireball splash pattern, kits_mage.lua:44-51)","id":"split_shot_splinter","key":"pfx.split_shot.splinter","look":"Vom getroffenen Ziel zuckt je eine kurze Splitterlinie zu den bis zu zwei Gegnern daneben, die ebenfalls Schaden nehmen.","lua_text":"{\n\tsingle(5, {color = \"#c8a878\", exp = {0.25, 0.3}, glow = 4, shape = {\"line\", \"frame\"}, size = {1.5, 2}, vel = {{-0.3, 0, -0.3}, {0.3, 0.5, 0.3}}}),\n}","marker":null,"moment":"splinter","n":57,"name":"Split Shot","note":"","rate":0.025,"sim":[{"acc":[0,0,0],"color":"#c8a878","engine":null,"exp":[0.25,0.3],"fade":true,"glow":4,"kind":"single","n":5,"pull":null,"radial":null,"reach":null,"shape":["line",[20,1.1,0],[21.5,1.0,2.2]],"size":[1.5,2],"tex":"smoke","time":0,"vel":[[-0.3,0,-0.3],[0.3,0.5,0.3]]}],"skill":"split_shot","sprite":null,"status":"new","t0":0.5,"target":[20,0,0],"today":"","today_cost":null,"tree":"quarry","unlock":"Quarry Q8"},{"class":"scout","context":[],"cost":{"check_us":0.0,"dg":2,"i1":14.903,"i2":357.6323,"lua_us":1.88,"marginal":0,"particles":40,"peak":34.8,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"line frame.from..frame.to over the flight time; played once for the volley","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":{"color":"#d8c8a0","size":0.35,"speed":45},"group":"quarry","hook":"Arrowfall's launch batch (scout.lua launch(count)): the trail on the first arrow only","id":"arrowfall_trail","key":"pfx.arrowfall.trail","look":"Die vier Pfeile fliegen zusammen: eine einzige, dichtere und breitere Spur für die ganze Salve.","lua_text":"{\n\tspawner(40, \"frame\", {color = \"#f0e6b8\", exp = {0.3, 0.45}, glow = 8, shape = {\"line\", \"frame\"}, size = {1.5, 2.2}, vel = {{-0.4, -0.2, -0.4}, {0.4, 0.4, 0.4}}}),\n}","marker":null,"moment":"trail","n":58,"name":"Arrowfall","note":"Vier Spuren wären vier Spawner-Pakete pro Empfänger; die Pfeile fliegen fast dieselbe Bahn.","rate":0.0021,"sim":[{"acc":[0,0,0],"color":"#f0e6b8","engine":{"pos":null,"radius":null,"tween":[[0.3,1.45,0],[20,1.2,0]]},"exp":[0.3,0.45],"fade":true,"glow":8,"kind":"spawner","n":40,"pull":null,"radial":null,"reach":null,"shape":["line",[0.3,1.45,0],[20,1.2,0]],"size":[1.5,2.2],"tex":"smoke","time":0.45,"vel":[[-0.4,-0.2,-0.4],[0.4,0.4,0.4]]}],"skill":"arrowfall","sprite":null,"status":"new","t0":0.0,"target":[20,0,0],"today":"","today_cost":null,"tree":"quarry","unlock":"Quarry Q12, Ultimate"},{"class":"scout","context":[{"emitters":[{"acc":[0,0,0],"color":"#f0e6b8","engine":{"pos":null,"radius":null,"tween":[[0.3,1.45,0],[20,1.2,0]]},"exp":[0.3,0.45],"fade":true,"glow":8,"kind":"spawner","n":40,"pull":null,"radial":null,"reach":null,"shape":["line",[0.3,1.45,0],[20,1.2,0]],"size":[1.5,2.2],"tex":"smoke","time":0.45,"vel":[[-0.4,-0.2,-0.4],[0.4,0.4,0.4]]}],"flight":{"color":"#d8c8a0","size":0.35,"speed":45},"key":"pfx.arrowfall.trail","t0":0.0}],"cost":{"check_us":0.0,"dg":2,"i1":13.2414,"i2":280.2972,"lua_us":1.88,"marginal":0,"particles":24,"peak":24.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"","family":"quarry","family_de":"Wildnis","family_name":"Quarry","flight":null,"group":"quarry","hook":"Arrowfall's first arrow on_hit (scout.lua)","id":"arrowfall_impact","key":"pfx.arrowfall.impact","look":"Die Salve schlägt ein: Holzsplitter und Erde spritzen am Ziel hoch und fallen zurück.","lua_text":"{\n\tspawner(24, 0.08, {acc = {0, -10, 0}, at = \"target\", color = \"#b89a68\", exp = {0.4, 0.7}, glow = 2, shape = {\"sphere\", {0, 0.5, 0}, 0.3, false}, size = {1.5, 2.5}, vel = {{-3, 1, -3}, {3, 5, 3}}}),\n}","marker":null,"moment":"impact","n":59,"name":"Arrowfall","note":"","rate":0.0021,"sim":[{"acc":[0,-10,0],"color":"#b89a68","engine":{"pos":[[19.7,0.2,-0.3],[20.3,0.8,0.3]],"radius":null,"tween":null},"exp":[0.4,0.7],"fade":true,"glow":2,"kind":"spawner","n":24,"pull":null,"radial":null,"reach":null,"shape":["sphere",[20,0.5,0],0.3,false],"size":[1.5,2.5],"tex":"smoke","time":0.08,"vel":[[-3,1,-3],[3,5,3]]}],"skill":"arrowfall","sprite":null,"status":"new","t0":0.45,"target":[20,0,0],"today":"","today_cost":null,"tree":"quarry","unlock":"Quarry Q12, Ultimate"},{"class":"scout","context":[],"cost":null,"dynamic":"","family":"veil","family_de":"Schatten","family_name":"Veil","flight":null,"group":"veil","hook":"","id":null,"key":"pfx.bladecraft.swing","look":"Kein eigener Effekt: der Klingenschlag (Linksklick) bleibt wie Strike ohne Effekt, der Schuss (Rechtsklick) ist ein Loose und fliegt ohne Spur.","lua_text":"","marker":null,"moment":"swing","n":60,"name":"Bladecraft","note":"","rate":0.025,"sim":[],"skill":"bladecraft","sprite":null,"status":"none","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"veil","unlock":"Veil V1, verwandelt Loose"},{"class":"scout","context":[],"cost":{"check_us":0.06,"dg":1,"i1":1.0188,"i2":5.8238,"lua_us":3.6,"marginal":216,"particles":6,"peak":6.0,"rx_us":6.279,"single_events":1,"singles":6,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":331},"dynamic":"","family":"veil","family_de":"Schatten","family_name":"Veil","flight":null,"group":"veil","hook":"scout.lua:663","id":"opening","key":"pfx.opening.hit","look":"Ein kurzer weißer Funkenblitz am Ziel. Unverändert; das Weiß liest sich als Schatten-Silber.","lua_text":"{\n\tsingle(6, {at = \"target\", color = \"#ffffff\", exp = {0.15, 0.2}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.15, false}, size = {1.5, 2}, vel = {{-2, -1, -2}, {2, 2, 2}}}),\n}","marker":null,"moment":"hit","n":61,"name":"Opening","note":"","rate":0.0156,"sim":[{"acc":[0,0,0],"color":"#ffffff","engine":null,"exp":[0.15,0.2],"fade":true,"glow":14,"kind":"single","n":6,"pull":null,"radial":null,"reach":null,"shape":["sphere",[1.8,1.1,0.0],0.15,false],"size":[1.5,2],"tex":"smoke","time":0,"vel":[[-2,-1,-2],[2,2,2]]}],"skill":"opening","sprite":null,"status":"keep","t0":0.0,"target":[1.8,0.0,0.0],"today":"genau dieser Effekt","today_cost":null,"tree":"veil","unlock":"Veil V4"},{"class":"scout","context":[],"cost":{"check_us":0.08,"dg":1,"i1":1.5586,"i2":11.3887,"lua_us":4.8,"marginal":291,"particles":8,"peak":8.0,"rx_us":7.072,"single_events":1,"singles":8,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":406},"dynamic":"","family":"veil","family_de":"Schatten","family_name":"Veil","flight":null,"group":"veil","hook":"Parry's cast (scout.lua, new def)","id":"parry","key":"pfx.parry.cast","look":"Wo zwei Klingen sich treffen, sprüht vor dem Späher auf Handhöhe ein kurzer Silberfunke.","lua_text":"{\n\tsingle(8, {color = \"#e6ebf3\", exp = {0.15, 0.25}, glow = 14, shape = {\"box\", {0.6, 1.2, -0.1}, {0.7, 1.4, 0.1}}, size = {1.2, 1.8}, vel = {{-1, -0.5, -2}, {1, 2, 2}}}),\n}","marker":null,"moment":"cast","n":62,"name":"Parry","note":"","rate":0.0104,"sim":[{"acc":[0,0,0],"color":"#e6ebf3","engine":null,"exp":[0.15,0.25],"fade":true,"glow":14,"kind":"single","n":8,"pull":null,"radial":null,"reach":null,"shape":["box",[0.6,1.2,-0.1],[0.7,1.4,0.1]],"size":[1.2,1.8],"tex":"smoke","time":0,"vel":[[-1,-0.5,-2],[1,2,2]]}],"skill":"parry","sprite":{"name":"Funke","stand_in":"spark","text":"der vierzackige Funke, silbern"},"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"veil","unlock":"Veil V6"},{"class":"scout","context":[],"cost":{"check_us":0.0,"dg":2,"i1":5.3761,"i2":83.9655,"lua_us":1.88,"marginal":0,"particles":18,"peak":18.0,"rx_us":3.0,"single_events":0,"singles":0,"spawner_dg":2,"spawner_wire":671,"spawners":1,"wire":671},"dynamic":"","family":"veil","family_de":"Schatten","family_name":"Veil","flight":null,"group":"veil","hook":"Flourish's cast (scout.lua, new def)","id":"flourish","key":"pfx.flourish.cast","look":"Ein schneller violetter Schwung läuft in 0,1 s über die 90°-Front vor dem Späher.","lua_text":"{\n\tspawner(18, 0.1, {color = \"#b9a2e6\", exp = {0.25, 0.35}, glow = 10, shape = {\"line\", {1.5, 1.2, 1.5}, {1.5, 1, -1.5}}, size = {2.5, 3.5}}),\n}","marker":{"cone":[3,90]},"moment":"cast","n":63,"name":"Flourish","note":"","rate":0.0104,"sim":[{"acc":[0,0,0],"color":"#b9a2e6","engine":{"pos":null,"radius":null,"tween":[[1.5,1.2,1.5],[1.5,1.0,-1.5]]},"exp":[0.25,0.35],"fade":true,"glow":10,"kind":"spawner","n":18,"pull":null,"radial":null,"reach":null,"shape":["line",[1.5,1.2,1.5],[1.5,1.0,-1.5]],"size":[2.5,3.5],"tex":"smoke","time":0.1,"vel":[[0,0,0],[0,0,0]]}],"skill":"flourish","sprite":null,"status":"new","t0":0.0,"target":[1.8,0.0,0.0],"today":"","today_cost":null,"tree":"veil","unlock":"Veil V8"},{"class":"scout","context":[],"cost":{"check_us":0.06,"dg":3,"i1":17.2112,"i2":351.8496,"lua_us":5.86,"marginal":154,"particles":26,"peak":26.0,"rx_us":9.279,"single_events":1,"singles":6,"spawner_dg":2,"spawner_wire":736,"spawners":1,"wire":1005},"dynamic":"","family":"veil","family_de":"Schatten","family_name":"Veil","flight":null,"group":"veil","hook":"Close Dance's cast (scout.lua, new def)","id":"close_dance","key":"pfx.close_dance.cast","look":"Violetter Rauch drückt sich um die Füße des Spähers nach außen und sinkt, ein paar Silberfunken steigen daraus auf.","lua_text":"{\n\tspawner(20, 0.15, {acc = {0, -0.5, 0}, color = \"#5a4a9a\", exp = {0.6, 0.9}, glow = 2, radial = {1.5, 2.5}, shape = {\"disc\", {0, 0.3, 0}, 0.6, false}, size = {4, 6}}),\n\tsingle(6, {color = \"#e6ebf3\", exp = {0.3, 0.45}, glow = 14, shape = {\"disc\", {0, 0.4, 0}, 0.6, false}, size = {1.2, 1.6}, vel = {{0, 1.5, 0}, {0, 2.5, 0}}}),\n}","marker":null,"moment":"cast","n":64,"name":"Close Dance","note":"","rate":0.0021,"sim":[{"acc":[0,-0.5,0],"color":"#5a4a9a","engine":{"pos":[[0,0.3,0],[0,0.3,0]],"radius":[0.6,0,0.6],"tween":null},"exp":[0.6,0.9],"fade":true,"glow":2,"kind":"spawner","n":20,"pull":{"kill":false,"origin":[0,0.3,0],"smax":-2.5,"smin":-4.1667},"radial":null,"reach":null,"shape":["disc",[0,0.3,0],0.6,false],"size":[4,6],"tex":"smoke","time":0.15,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#e6ebf3","engine":null,"exp":[0.3,0.45],"fade":true,"glow":14,"kind":"single","n":6,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.4,0],0.6,false],"size":[1.2,1.6],"tex":"smoke","time":0,"vel":[[0,1.5,0],[0,2.5,0]]}],"skill":"close_dance","sprite":null,"status":"new","t0":0.0,"target":[6.0,0.0,0.0],"today":"","today_cost":null,"tree":"veil","unlock":"Veil V12, Ultimate"},{"class":"scout","context":[{"emitters":[{"acc":[0,-0.5,0],"color":"#5a4a9a","engine":{"pos":[[0,0.3,0],[0,0.3,0]],"radius":[0.6,0,0.6],"tween":null},"exp":[0.6,0.9],"fade":true,"glow":2,"kind":"spawner","n":20,"pull":{"kill":false,"origin":[0,0.3,0],"smax":-2.5,"smin":-4.1667},"radial":null,"reach":null,"shape":["disc",[0,0.3,0],0.6,false],"size":[4,6],"tex":"smoke","time":0.15,"vel":[[0,0,0],[0,0,0]]},{"acc":[0,0,0],"color":"#e6ebf3","engine":null,"exp":[0.3,0.45],"fade":true,"glow":14,"kind":"single","n":6,"pull":null,"radial":null,"reach":null,"shape":["disc",[0,0.4,0],0.6,false],"size":[1.2,1.6],"tex":"smoke","time":0,"vel":[[0,1.5,0],[0,2.5,0]]}],"flight":null,"key":"pfx.close_dance.cast","t0":0.0}],"cost":{"check_us":0.02,"dg":1,"i1":0.3393,"i2":0.6476,"lua_us":1.2,"marginal":79,"particles":2,"peak":2.0,"rx_us":4.693,"single_events":1,"singles":2,"spawner_dg":0,"spawner_wire":0,"spawners":0,"wire":194},"dynamic":"","family":"veil","family_de":"Schatten","family_name":"Veil","flight":null,"group":"veil","hook":"the blade swing's landed hit while the Close Dance window is active","id":"close_dance_swing","key":"pfx.close_dance.swing","look":"Solange Close Dance läuft, blitzen bei jedem gelandeten Klingenschlag zwei Silberfunken am Ziel.","lua_text":"{\n\tsingle(2, {at = \"target\", color = \"#e6ebf3\", exp = {0.15, 0.2}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.15, false}, size = {1.2, 1.6}, vel = {{-1.5, 0, -1.5}, {1.5, 1.5, 1.5}}}),\n}","marker":null,"moment":"swing","n":65,"name":"Close Dance","note":"","rate":0.0125,"sim":[{"acc":[0,0,0],"color":"#e6ebf3","engine":null,"exp":[0.15,0.2],"fade":true,"glow":14,"kind":"single","n":2,"pull":null,"radial":null,"reach":null,"shape":["sphere",[1.8,1.1,0.0],0.15,false],"size":[1.2,1.6],"tex":"smoke","time":0,"vel":[[-1.5,0,-1.5],[1.5,1.5,1.5]]}],"skill":"close_dance","sprite":null,"status":"new","t0":0.5,"target":[1.8,0.0,0.0],"today":"","today_cost":null,"tree":"veil","unlock":"Veil V12, Ultimate"}],"classes":[{"de":"Magier","id":"mage","trees":["ember","rime"]},{"de":"Krieger","id":"warrior","trees":["bulwark","ruin"]},{"de":"Priester","id":"priest","trees":["mercy","reckoning"]},{"de":"Späher","id":"scout","trees":["quarry","veil"]}],"constants":{"base_hdr":38,"check_us":0.01,"chunk":502,"lua_particle_us":0.6,"lua_spawner_attract_us":2.26,"lua_spawner_us":1.88,"original_hdr":1,"particle_us":0.3,"spawner_us":3.0,"split_hdr":7,"steps_per_s":11.1111,"zframe":70},"families":{"bulwark":{"anchor":["#99A3AE","#B08A4D"],"de":"Stahl","motion":"fest am Boden: Ringe um die Füße, kurze harte Funken","name":"Bulwark","tints":{"bronze":"#d0a060","steel":"#c4ccd6","white":"#e6ebf3"}},"ember":{"anchor":["#F68B28","#BC321E"],"de":"Feuer","motion":"steigt und sprüht, Funken fallen mit Schwerkraft zurück","name":"Ember","tints":{"core":"#ffb347","hot":"#ff8a3a","white":"#fff0c8"}},"mercy":{"anchor":["#E8BC5C","#FFF0CE"],"de":"Heilendes Licht","motion":"sanft aufsteigend, weich verblassend","name":"Mercy","tints":{"gold":"#ffe08a","ivory":"#fff0c8","shield":"#ffe9a0"}},"none":{"anchor":["#888888","#444444"],"de":"keine","motion":"","name":"—","tints":{}},"quarry":{"anchor":["#91AA55","#94603A"],"de":"Wildnis","motion":"Spuren entlang der Flugbahn, Splitter und Erde","name":"Quarry","tints":{"earth":"#b89a68","glint":"#f0e6b8","green":"#a8c86a","snare":"#79a65a","trail":"#e9e4d0","wood":"#c8a878"}},"reckoning":{"anchor":["#D5AD52","#A32A32"],"de":"Richtendes Gold","motion":"von oben herab, gerade und hart","name":"Reckoning","tints":{"fall":"#fff2c0","gold":"#ffd257","white":"#fff6dd"}},"rime":{"anchor":["#A5D9F2","#F1FBFF"],"de":"Frost","motion":"scharfe Ringe und Fächer, dann langsames Sinken","name":"Rime","tints":{"mist":"#e6f6ff","pale":"#bfe8ff","white":"#f1fbff"}},"ruin":{"anchor":["#B52F3B","#140E15"],"de":"Wut","motion":"schnelle Hiebe, die stehen bleiben und verlöschen","name":"Ruin","tints":{"crimson":"#d8263a","flare":"#e8402a","hot":"#ff6a4a"}},"veil":{"anchor":["#8162B1","#343568"],"de":"Schatten","motion":"Rauch, der sinkt; kurze silberne Funken","name":"Veil","tints":{"silver":"#e6ebf3","smoke":"#5a4a9a","violet":"#b9a2e6"}}},"scenarios":{"20@0.5":{"bytes":7595.544,"datagrams":25.985,"mean":58.927,"out_bytes":151910.887,"packets":18.548,"peak":132.504,"server_us":2557.782,"single_bytes":2526.867,"spawner_bytes":5068.678,"started":126.568},"20@1.0":{"bytes":8844.633,"datagrams":25.985,"mean":117.855,"out_bytes":176892.662,"packets":18.548,"peak":265.009,"server_us":2557.782,"single_bytes":3775.955,"spawner_bytes":5068.678,"started":253.135},"20@1.0 uncut":{"bytes":14062.177,"datagrams":42.274,"mean":177.493,"out_bytes":281243.534,"packets":26.541,"peak":368.32,"server_us":2625.871,"single_bytes":3192.885,"spawner_bytes":10869.292,"started":398.091},"50@0.5":{"bytes":17072.194,"datagrams":48.296,"mean":147.319,"out_bytes":853609.71,"packets":29.703,"peak":263.654,"server_us":15685.586,"single_bytes":4400.5,"spawner_bytes":12671.694,"started":316.419},"50@1.0":{"bytes":20761.583,"datagrams":59.407,"mean":294.637,"out_bytes":1038079.14,"packets":29.703,"peak":527.308,"server_us":15685.586,"single_bytes":8089.888,"spawner_bytes":12671.694,"started":632.839},"50@1.0 uncut":{"bytes":33892.523,"datagrams":100.887,"mean":443.734,"out_bytes":1694626.147,"packets":50.444,"peak":745.456,"server_us":16090.591,"single_bytes":6719.293,"spawner_bytes":27173.23,"started":995.227},"5@0.5":{"bytes":1992.999,"datagrams":7.315,"mean":14.732,"out_bytes":9964.994,"packets":5.455,"peak":51.52,"server_us":174.889,"single_bytes":725.829,"spawner_bytes":1267.169,"started":31.642},"5@1.0":{"bytes":2305.271,"datagrams":7.315,"mean":29.464,"out_bytes":11526.355,"packets":5.455,"peak":103.041,"server_us":174.889,"single_bytes":1038.102,"spawner_bytes":1267.169,"started":63.284},"5@1.0 uncut":{"bytes":3515.544,"datagrams":10.569,"mean":44.373,"out_bytes":17577.721,"packets":6.635,"peak":139.786,"server_us":180.172,"single_bytes":798.221,"spawner_bytes":2717.323,"started":99.523}}}</script>
+<script>
+(() => {
+  "use strict";
+  const DATA = JSON.parse(document.getElementById("pfx-data").textContent);
+  const C = DATA.constants;
+  const CARDS = DATA.cards;
+  const byKey = Object.fromEntries(CARDS.map(c => [c.key, c]));
+  const MOMENT = {cast: "Wirken", trail: "Spur", impact: "Einschlag", hit: "Treffer", warning: "Warnung", fall: "Fall",
+    tick: "Tick", window: "Bereitschaft", recipient: "Empfänger", swing: "Schlag", dash: "Sturmlauf", arrival: "Ankunft",
+    splinter: "Splitter", shot: "Schuss"};
+  const STATUS = {keep: "behalten", retint: "umgefärbt", new: "neu", none: "kein Effekt"};
+  const state = {players: 20, pace: 1, scale: 1, bg: "night"};
+  try {
+    const s = JSON.parse(localStorage.getItem("r52pfx-calc") || "null");
+    if (s && typeof s === "object") {
+      if (s.players >= 1 && s.players <= 60) state.players = Math.round(s.players);
+      if (s.pace >= 0.1 && s.pace <= 1) state.pace = s.pace;
+      if ([1, 0.5, 0.25].includes(s.scale)) state.scale = s.scale;
+      if (s.bg === "day" || s.bg === "night") state.bg = s.bg;
+    }
+  } catch (e) {}
+  const remember = () => { try { localStorage.setItem("r52pfx-calc", JSON.stringify(state)); } catch (e) {} };
+
+  const de = (x, d = 1) => x.toLocaleString("de-DE", {minimumFractionDigits: d, maximumFractionDigits: d});
+  const fmtB = b => b >= 1024 * 1024 ? de(b / 1048576) + " MB" : b >= 1024 ? de(b / 1024) + " KB" : Math.round(b) + " B";
+  const fmtUs = us => us >= 1000 ? de(us / 1000, 2) + " ms" : de(us, us < 10 ? 1 : 0) + " µs";
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const sid = key => key.replace(/[^A-Za-z0-9_-]/g, "-");
+  const docId = key => key.replace(/[^A-Za-z0-9_.:@+-]/g, c => "~" + c.charCodeAt(0).toString(16).padStart(2, "0"));
+
+  // ------------------------------------------------------------------ cost model (cost.py scenario(), the same formulas)
+  function serverUs(c, rx) { return c.lua_us + rx * (c.rx_us + c.check_us); }
+  function scenario(players, pace, scale, only) {
+    let spBytes = 0, spDg = 0, spPk = 0, marg = 0, events = 0, started = 0, mean = 0, vari = 0, us = 0;
+    const per = [];
+    for (const d of CARDS) {
+      if (!d.cost || !d.rate) continue;
+      const c = d.cost, r = d.rate * players * pace;
+      spBytes += r * c.spawner_wire; spDg += r * c.spawner_dg; spPk += r * c.spawners;
+      marg += r * c.marginal * scale; events += r * c.single_events;
+      started += r * c.particles * scale; mean += r * c.i1 * scale; vari += r * c.i2 * scale * scale;
+      us += r * serverUs(c, players);
+      per.push({d, bytes: r * (c.spawner_wire + c.marginal * scale), alive: r * c.i1 * scale});
+    }
+    const packets = Math.min(events, C.steps_per_s);
+    let sBytes = 0, sDg = 0;
+    if (packets > 0) {
+      const size = 6 + C.zframe + marg / packets;
+      const dg = size + 1 > C.chunk ? Math.ceil(size / (C.chunk - C.split_hdr)) : 1;
+      const hdr = C.base_hdr + (dg > 1 ? C.split_hdr : C.original_hdr);
+      sBytes = packets * (size + dg * hdr); sDg = packets * dg;
+    }
+    return {bytes: spBytes + sBytes, datagrams: spDg + sDg, packets: spPk + packets, started, mean,
+      peak: mean + 3 * Math.sqrt(vari), us, out: (spBytes + sBytes) * players, per};
+  }
+
+  function renderCalc() {
+    const s = scenario(state.players, state.pace, state.scale);
+    const tiles = [
+      [fmtB(s.bytes) + "/s", "an jeden Spieler im Kampf (" + de(s.bytes * 8 / 1000, 0) + " kbit/s)"],
+      [de(s.packets, 1) + "/s", "Partikelpakete an jeden Spieler (" + de(s.datagrams, 0) + " Datagramme/s)"],
+      [Math.round(s.mean) + " / " + Math.round(s.peak), "Partikel gleichzeitig sichtbar: Mittel / Spitze"],
+      [Math.round(s.started) + "/s", "Partikel neu pro Sekunde, die jeder Client zeichnet"],
+      [fmtUs(s.us) + "/s", "Server-Hauptthread (" + de(s.us / 10000, 2) + " % eines Kerns)"],
+      [fmtB(s.out) + "/s", "aus dem Server für alle Spieler zusammen"],
+    ];
+    const host = document.getElementById("tiles"); host.textContent = "";
+    for (const [v, k] of tiles) { const t = el("div", "tile"); t.append(el("div", "v", v), el("div", "k", k)); host.append(t); }
+    const frac = Math.min(1, s.peak / 1000);
+    const bar = document.getElementById("budgetBar");
+    bar.style.width = (frac * 100) + "%";
+    bar.style.background = s.peak < 500 ? "var(--good)" : s.peak < 1000 ? "var(--warn)" : "var(--bad)";
+    document.getElementById("budgetText").textContent =
+      `Partikel-Budget („Hunderte, nie Tausende“): Spitze etwa ${Math.round(s.peak)} gleichzeitig bei ${state.players} Spielern, Tempo ${Math.round(state.pace * 100)} %, Skala ${de(state.scale, state.scale === 0.25 ? 2 : 1)}.`;
+    const list = (id, field, fmt) => {
+      const ol = document.getElementById(id); ol.textContent = "";
+      const top = s.per.slice().sort((a, b) => b[field] - a[field]).slice(0, 6);
+      for (const x of top) {
+        const li = el("li"); const a = el("a", null, `#${x.d.n} ${x.d.name} · ${MOMENT[x.d.moment] || x.d.moment}`);
+        a.href = "#card-" + sid(x.d.key); li.append(a, document.createTextNode(" " + fmt(x[field]))); ol.append(li);
+      }
+    };
+    list("topBytes", "bytes", v => fmtB(v) + "/s");
+    list("topAlive", "alive", v => "≈ " + de(v, 1));
+    for (const card of cardsUi) updateCardCost(card);
+  }
+
+  function renderScenarioTable() {
+    const t = document.getElementById("scnTable");
+    const rows = [["Spieler", "KB/s je Spieler", "Pakete/s", "Datagramme/s", "Partikel Mittel", "Spitze", "Server ms/s"]];
+    const keys = [["5@1.0", "5"], ["20@1.0", "20"], ["50@1.0", "50"], ["50@0.5", "50, Skala 0,5"], ["50@1.0 uncut", "50, mit den heutigen Effekten der vier häufigen Momente"]];
+    for (const [k, label] of keys) {
+      const s = DATA.scenarios[k]; if (!s) continue;
+      rows.push([label, de(s.bytes / 1024), de(s.packets), de(s.datagrams, 0), Math.round(s.mean), Math.round(s.peak), de(s.server_us / 1000, 2)]);
+    }
+    rows.forEach((r, i) => { const tr = el("tr"); r.forEach(x => tr.append(el(i ? "td" : "th", null, String(x)))); t.append(tr); });
+  }
+
+  // ------------------------------------------------------------------ families and groups
+  function swatch(fam) {
+    const f = DATA.families[fam]; const s = el("span", "sw");
+    for (const c of Object.values(f.tints || {}).slice(0, 3)) { const i = el("i"); i.style.background = c; s.append(i); }
+    return s;
+  }
+  const famHost = document.getElementById("families");
+  for (const cls of DATA.classes) for (const t of cls.trees) {
+    const f = DATA.families[t]; const d = el("div", "fam");
+    d.append(swatch(t), el("b", null, `${f.name} · ${f.de}`), el("small", null, f.motion));
+    famHost.append(d);
+  }
+
+  // ------------------------------------------------------------------ the simulation (engine rules, client/particles.cpp)
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function engineRadius(rad) {
+    // rotate (|radius|, 0, 0) by three random angles, then scale per axis (client/particles.cpp:386-396)
+    const l = Math.hypot(...rad); if (!l) return [0, 0, 0];
+    const mag = rad.map(v => v / l);
+    let x = l, y = 0, z = 0;
+    const rot = (u, v) => { const a = Math.random() * Math.PI * 2, c = Math.cos(a), s = Math.sin(a); return [u * c - v * s, u * s + v * c]; };
+    [x, z] = rot(x, z); [y, z] = rot(y, z); [x, y] = rot(x, y);
+    return [x * mag[0], y * mag[1], z * mag[2]];
+  }
+  function spawn(em, scale, t0, dim) {
+    const n = Math.max(1, Math.floor(em.n * scale + 0.5));
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const born = t0 + (em.kind === "spawner" ? Math.random() * em.time : 0);
+      let p, v = [0, 1, 2].map(k => rnd(em.vel[0][k], em.vel[1][k]));
+      let life = rnd(em.exp[0], em.exp[1]);
+      const s = em.shape;
+      if (em.kind === "spawner") {
+        const g = em.engine;
+        if (g.tween) { const f = em.time > 0 ? (born - t0) / em.time : Math.random(); p = g.tween[0].map((a, k) => a + (g.tween[1][k] - a) * f); }
+        else p = g.pos[0].map((a, k) => rnd(a, g.pos[1][k]));
+        if (g.radius) { const o = engineRadius(g.radius); p = p.map((x, k) => x + o[k]); }
+        if (em.pull) {
+          // speed |strength| x distance, towards the origin (away when negative), once at birth; a pulling one that
+          // dies on contact lives at most distance / speed (client/particles.cpp:398-458)
+          const st = rnd(em.pull.smin, em.pull.smax);
+          const d = em.pull.origin.map((x, k) => x - p[k]);
+          v = v.map((x, k) => x + d[k] * st);
+          if (em.pull.kill && st > 0) life = Math.min(life, 1 / st);
+        }
+      } else {
+        let c;
+        const frac = n > 1 ? i / (n - 1) : 0.5;
+        if (s[0] === "box") { p = [0, 1, 2].map(k => rnd(s[1][k], s[2][k])); c = s[1].map((x, k) => (x + s[2][k]) / 2); }
+        else if (s[0] === "disc") { const a = s[3] ? Math.PI * 2 * i / n : Math.random() * Math.PI * 2, r = s[3] ? s[2] : s[2] * Math.sqrt(Math.random()); p = [s[1][0] + Math.cos(a) * r, s[1][1], s[1][2] + Math.sin(a) * r]; c = s[1]; }
+        else if (s[0] === "sphere") { let w; do { w = [rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)]; } while (Math.hypot(...w) > 1 || Math.hypot(...w) < 0.05); const l = Math.hypot(...w), r = s[3] ? s[2] : s[2] * Math.cbrt(Math.random()); p = w.map((x, k) => s[1][k] + x / l * r); c = s[1]; }
+        else { p = s[1].map((x, k) => x + (s[2][k] - x) * frac); c = p.slice(); }
+        const d = p.map((x, k) => x - c[k]); const l = Math.hypot(...d);
+        if (l > 0 && em.reach != null) { const sp = Math.max(0, (em.reach - l) / life); v = v.map((x, k) => x + d[k] / l * sp); }
+        else if (l > 0 && em.radial) { const sp = rnd(em.radial[0], em.radial[1]); v = v.map((x, k) => x + d[k] / l * sp); }
+      }
+      out.push({born, p, v, life, size: rnd(em.size[0], em.size[1]) * 0.1, em, dim, alive: true, seen: false});
+    }
+    return out;
+  }
+  function step(list, dt, age) {
+    for (const q of list) {
+      if (!q.alive || age < q.born) continue;
+      if (!q.seen) { q.seen = true; continue; }
+      const a = q.em.acc;
+      q.v = q.v.map((x, k) => x + a[k] * dt);
+      q.p = q.p.map((x, k) => x + q.v[k] * dt);
+      if (age - q.born > q.life) q.alive = false;
+    }
+  }
+
+  // ------------------------------------------------------------------ drawing
+  const STAND_IN = {};
+  function standIn(kind, color) {
+    const key = kind + color;
+    if (STAND_IN[key]) return STAND_IN[key];
+    const cv = document.createElement("canvas"); cv.width = cv.height = 32;
+    const g = cv.getContext("2d"); g.strokeStyle = color; g.fillStyle = color; g.lineCap = "round";
+    if (kind === "flake") { g.lineWidth = 3; for (let i = 0; i < 3; i++) { const a = i * Math.PI / 3; g.beginPath(); g.moveTo(16 - 13 * Math.cos(a), 16 - 13 * Math.sin(a)); g.lineTo(16 + 13 * Math.cos(a), 16 + 13 * Math.sin(a)); g.stroke(); } }
+    else if (kind === "spark") { g.beginPath(); g.moveTo(16, 1); g.lineTo(19, 13); g.lineTo(31, 16); g.lineTo(19, 19); g.lineTo(16, 31); g.lineTo(13, 19); g.lineTo(1, 16); g.lineTo(13, 13); g.closePath(); g.fill(); }
+    else if (kind === "seal") { g.lineWidth = 3; g.beginPath(); g.arc(16, 16, 9, 0, Math.PI * 2); g.stroke(); for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; g.beginPath(); g.moveTo(16 + 11 * Math.cos(a), 16 + 11 * Math.sin(a)); g.lineTo(16 + 15 * Math.cos(a), 16 + 15 * Math.sin(a)); g.stroke(); } g.beginPath(); g.arc(16, 16, 4, 0, Math.PI * 2); g.fill(); }
+    else if (kind === "rock") { g.fillStyle = "#3a2a24"; g.beginPath(); g.moveTo(6, 10); g.lineTo(14, 4); g.lineTo(26, 7); g.lineTo(29, 18); g.lineTo(22, 28); g.lineTo(9, 27); g.lineTo(3, 18); g.closePath(); g.fill(); g.strokeStyle = "#ff9a3a"; g.lineWidth = 2; g.beginPath(); g.moveTo(9, 14); g.lineTo(16, 17); g.lineTo(22, 12); g.moveTo(16, 17); g.lineTo(15, 25); g.stroke(); }
+    STAND_IN[key] = cv; return cv;
+  }
+  function blob(g, x, y, s, color, tex, alpha, add) {
+    g.globalAlpha = alpha;
+    if (tex === "fire") {
+      const gr = g.createRadialGradient(x, y + s * 0.1, 0, x, y, s * 0.6);
+      gr.addColorStop(0, "#fff3b0"); gr.addColorStop(0.35, "#ffb030"); gr.addColorStop(0.75, "rgba(230,70,20,0.75)"); gr.addColorStop(1, "rgba(200,40,10,0)");
+      g.fillStyle = gr; g.fillRect(x - s * 0.6, y - s * 0.6, s * 1.2, s * 1.2);
+    } else if (tex === "blood") {
+      g.fillStyle = "#8a0e10"; g.fillRect(x - s * 0.3, y - s * 0.3, s * 0.6, s * 0.6);
+    } else {
+      // the 8x8 smoke puff tinted by multiply: a soft square-ish blob
+      const gr = g.createRadialGradient(x, y, 0, x, y, s * 0.55);
+      gr.addColorStop(0, color); gr.addColorStop(0.55, color); gr.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = gr; g.fillRect(x - s * 0.55, y - s * 0.55, s * 1.1, s * 1.1);
+    }
+  }
+  function drawParticles(g, parts, age, project, sprite) {
+    for (const add of [false, true]) {
+      g.globalCompositeOperation = add ? "lighter" : "source-over";
+      for (const q of parts) {
+        if (!q.alive || age < q.born || !q.seen) continue;
+        if ((q.em.glow >= 8) !== add) continue;
+        const pr = project(q.p, q.size); if (!pr) continue;
+        const t = (age - q.born) / q.life;
+        let a = q.em.fade ? Math.max(0, 1 - t) : 1;
+        if (q.dim) a *= 0.35;
+        if (!add) a *= 0.9;
+        const s = Math.max(2, pr.s);
+        if (sprite && q.em.standin && q.em.tex !== "blood") {
+          g.globalAlpha = a; g.imageSmoothingEnabled = true; g.drawImage(standIn(q.em.standin, q.em.tex === "fire" ? "#ffb347" : q.em.color), pr.x - s / 2, pr.y - s / 2, s, s);
+        } else blob(g, pr.x, pr.y, s, q.em.color, q.em.tex, a, add);
+      }
+    }
+    g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+  }
+  function bgFill(g, W, H, kind, horizon) {
+    if (state.bg === "day") {
+      const gr = g.createLinearGradient(0, 0, 0, H);
+      gr.addColorStop(0, "#9ab8cc"); gr.addColorStop(Math.max(0.01, Math.min(0.99, horizon / H)), "#c8d6d6");
+      gr.addColorStop(Math.max(0.02, Math.min(1, horizon / H + 0.001)), "#6f8f5a"); gr.addColorStop(1, "#56733f");
+      g.fillStyle = gr;
+    } else {
+      const gr = g.createLinearGradient(0, 0, 0, H);
+      gr.addColorStop(0, "#0c1117"); gr.addColorStop(Math.max(0.01, Math.min(0.99, horizon / H)), "#1a232a");
+      gr.addColorStop(Math.max(0.02, Math.min(1, horizon / H + 0.001)), "#1b2a1d"); gr.addColorStop(1, "#14200f");
+      g.fillStyle = gr;
+    }
+    g.fillRect(0, 0, W, H);
+  }
+  // A figure as a flat billboard: head, body, legs.
+  function figure(g, project, x, z, height, color, bulk) {
+    const feet = project([x, 0, z], 0), head = project([x, height, z], 0);
+    if (!feet || !head) return;
+    const h = feet.y - head.y, w = h * 0.26 * bulk;
+    g.fillStyle = color; g.globalAlpha = 0.95;
+    const cx = (feet.x + head.x) / 2;
+    g.beginPath(); g.arc(head.x, head.y + h * 0.09, h * 0.09, 0, Math.PI * 2); g.fill();
+    g.fillRect(cx - w / 2, head.y + h * 0.19, w, h * 0.42);
+    g.fillRect(cx - w / 2, head.y + h * 0.6, w * 0.42, h * 0.4);
+    g.fillRect(cx + w / 2 - w * 0.42, head.y + h * 0.6, w * 0.42, h * 0.4);
+    g.globalAlpha = 1;
+  }
+
+  function cam(d) {
+    // first-person-ish: behind and above the caster's right shoulder, looking along +x towards the target
+    const tx = d.target[0];
+    const look = [Math.min(Math.max(tx * 0.5, 2.5), 9), 1.0, 0];
+    const C0 = [-3.4, 2.5, -1.0];
+    const f = look.map((x, k) => x - C0[k]); const fl = Math.hypot(...f); const F = f.map(x => x / fl);
+    // left-handed world: +z is the caster's left, so screen-right is cross(up, forward)
+    let R = [F[2], 0, -F[0]]; const rl = Math.hypot(...R); R = R.map(x => x / rl);
+    const U = [F[1] * R[2] - F[2] * R[1], F[2] * R[0] - F[0] * R[2], F[0] * R[1] - F[1] * R[0]];
+    return {C0, F, R, U: U[1] < 0 ? U.map(x => -x) : U};
+  }
+  function drawFirst(cv, d, parts, age, sprite, flight) {
+    const W = cv.clientWidth || 360, H = Math.round(W * 0.62);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.height = H + "px"; }
+    const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const K = d._cam || (d._cam = cam(d));
+    const focal = (H / 2) / Math.tan(30 * Math.PI / 180);
+    const project = (p, size) => {
+      const v = [p[0] - K.C0[0], p[1] - K.C0[1], p[2] - K.C0[2]];
+      const z = v[0] * K.F[0] + v[1] * K.F[1] + v[2] * K.F[2];
+      if (z < 0.2) return null;
+      const x = v[0] * K.R[0] + v[1] * K.R[1] + v[2] * K.R[2], y = v[0] * K.U[0] + v[1] * K.U[1] + v[2] * K.U[2];
+      return {x: W / 2 + x / z * focal, y: H / 2 - y / z * focal, s: size / z * focal};
+    };
+    const hz = project([400, 0, 0], 0); bgFill(g, W, H, "first", hz ? hz.y : H / 2);
+    // ground grid
+    g.strokeStyle = state.bg === "day" ? "rgba(40,60,30,.35)" : "rgba(150,180,150,.13)"; g.lineWidth = 1;
+    const xmax = Math.max(14, d.target[0] + 8);
+    for (let x = -2; x <= xmax; x += 1) { const a = project([x, 0, -7], 0), b = project([x, 0, 7], 0); if (a && b) { g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); } }
+    for (let z = -7; z <= 7; z += 1) { const a = project([-2, 0, z], 0), b = project([xmax, 0, z], 0); if (a && b) { g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); } }
+    // markers
+    const m = d.marker;
+    g.strokeStyle = "rgba(255,214,130,.55)"; g.setLineDash([5, 5]); g.lineWidth = 1.2;
+    if (m && m.radius) {
+      const cx = m.at === "target" ? d.target[0] : 0; g.beginPath();
+      for (let i = 0; i <= 64; i++) { const a = i / 64 * Math.PI * 2; const pr = project([cx + Math.cos(a) * m.radius, 0.02, Math.sin(a) * m.radius], 0); if (!pr) continue; if (i) g.lineTo(pr.x, pr.y); else g.moveTo(pr.x, pr.y); }
+      g.stroke();
+    }
+    if (m && m.cone) {
+      const half = m.cone[1] * Math.PI / 360, r = m.cone[0]; g.beginPath();
+      const o = project([0, 0.02, 0], 0); g.moveTo(o.x, o.y);
+      for (let i = 0; i <= 24; i++) { const a = -half + 2 * half * i / 24; const pr = project([Math.cos(a) * r, 0.02, Math.sin(a) * r], 0); if (pr) g.lineTo(pr.x, pr.y); }
+      g.closePath(); g.stroke();
+    }
+    g.setLineDash([]);
+    // figures: the mob first (further away), then the caster
+    if (d.target[0] > 0.5) figure(g, project, d.target[0], 0, 1.9, "#7a3b33", 1.35);
+    figure(g, project, 0, 0, 1.8, "#3f6488", 1);
+    if (flight) drawFlight(g, project, flight, age);
+    drawParticles(g, parts, age, project, sprite);
+  }
+  function frameFor(d, parts) {
+    let xmin = -2, xmax = Math.max(4, d.target[0] + 2.5), ymax = 3;
+    const m = d.marker;
+    if (m && m.radius) { const cx = m.at === "target" ? d.target[0] : 0; xmin = Math.min(xmin, cx - m.radius - 0.8); xmax = Math.max(xmax, cx + m.radius + 0.8); }
+    if (m && m.cone) xmax = Math.max(xmax, m.cone[0] + 0.8);
+    for (const q of parts) { ymax = Math.max(ymax, Math.min(14, q.p[1] + 0.8)); }
+    return {xmin, xmax, ymax};
+  }
+  function drawSide(cv, d, parts, age, sprite, flight) {
+    const f = d._frame || (d._frame = frameFor(d, parts));
+    const W = cv.clientWidth || 240, spanX = f.xmax - f.xmin;
+    const ppm = W / spanX; const H = Math.max(80, Math.round((f.ymax + 0.6) * ppm));
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.height = H + "px"; }
+    const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const X = x => (x - f.xmin) * ppm, Y = y => H - (y + 0.6) * ppm;
+    bgFill(g, W, H, "side", Y(0));
+    g.strokeStyle = state.bg === "day" ? "rgba(40,60,30,.3)" : "rgba(150,180,150,.12)"; g.lineWidth = 1;
+    for (let x = Math.ceil(f.xmin); x <= f.xmax; x++) { g.beginPath(); g.moveTo(X(x), 0); g.lineTo(X(x), Y(0)); g.stroke(); }
+    const m = d.marker;
+    if (m && m.radius) {
+      const cx = m.at === "target" ? d.target[0] : 0;
+      g.strokeStyle = "rgba(255,214,130,.55)"; g.setLineDash([4, 4]); g.beginPath();
+      g.moveTo(X(cx - m.radius), Y(0) - 6); g.lineTo(X(cx - m.radius), Y(0)); g.lineTo(X(cx + m.radius), Y(0)); g.lineTo(X(cx + m.radius), Y(0) - 6); g.stroke(); g.setLineDash([]);
+    }
+    const proj = (p, size) => ({x: X(p[0]), y: Y(p[1]), s: size * ppm});
+    const fig = (x, h, color, bulk) => figure(g, (p) => ({x: X(p[0]), y: Y(p[1]), s: 0}), x, 0, h, color, bulk);
+    if (d.target[0] > 0.5) fig(d.target[0], 1.9, "#7a3b33", 1.35);
+    fig(0, 1.8, "#3f6488", 1);
+    if (flight) drawFlight(g, proj, flight, age);
+    drawParticles(g, parts, age, proj, sprite);
+  }
+  function drawFlight(g, project, fl, age) {
+    if (age < 0 || age > fl.dur) return;
+    const f = age / fl.dur;
+    const p = fl.from.map((a, k) => a + (fl.to[k] - a) * f);
+    const pr = project(p, fl.size); if (!pr) return;
+    g.globalCompositeOperation = "lighter";
+    blob(g, pr.x, pr.y, Math.max(4, pr.s), fl.color, "smoke", 1, true);
+    g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
+  }
+
+  // ------------------------------------------------------------------ cards
+  const cardsUi = [];
+  const groupsHost = document.getElementById("groups"), nav = document.getElementById("nav");
+  function emitterRow(e, frameReach) {
+    const tr = el("tr");
+    let kind = e.kind === "spawner" ? `Spawner, ${e.n} in ${de(e.time, 2)} s` : `${e.n} einzeln`;
+    const shapeName = {box: "Kasten", line: "Linie", disc: e.shape[3] ? "Ring" : "Scheibe", sphere: e.shape[3] ? "Hülle" : "Kugel"}[e.shape[0]];
+    const extra = [];
+    if (e.reach != null) extra.push(`fliegt bis ${de(e.reach, 1)} m`);
+    if (e.radial) extra.push("fliegt nach außen");
+    if (e.pull && e.pull.smax > 0) extra.push(e.pull.kill ? "wird angezogen, erlischt am Ziel" : "wird angezogen");
+    if (e.pull && e.pull.smax <= 0) extra.push("fliegt nach außen");
+    const col = el("td"); const sw = el("span", "sw"); const i = el("i"); i.style.background = e.tex === "fire" ? "#ff9a30" : e.tex === "blood" ? "#8a0e10" : e.color; sw.append(i);
+    col.append(sw, document.createTextNode(" " + (e.tex === "fire" ? "Feuer-Sprite" : e.tex === "blood" ? "Blut" : e.color)));
+    tr.append(el("td", null, kind), col, el("td", null, shapeName + (extra.length ? ", " + extra.join(", ") : "")),
+      el("td", null, `${de(e.exp[0], 2)}–${de(e.exp[1], 2)} s`), el("td", null, `${de(e.size[0] / 10, 2)}–${de(e.size[1] / 10, 2)} m`),
+      el("td", null, e.kind === "spawner" && (e.time > 1) ? "alle" : "nahe"));
+    return tr;
+  }
+  function makeCard(d) {
+    const art = el("article", "card" + (d.status === "none" ? " none" : ""));
+    art.id = "card-" + sid(d.key);
+    const ui = {d, art};
+    if (d.status !== "none") {
+      const views = el("div", "views");
+      const v1 = el("div", "view"), c1 = document.createElement("canvas"); v1.append(c1, el("span", null, "Spielersicht"));
+      const v2 = el("div", "view"), c2 = document.createElement("canvas"); v2.append(c2, el("span", null, "Seite"));
+      c1.setAttribute("role", "img"); c1.setAttribute("aria-label", "Vorschau aus Spielersicht: " + d.look);
+      c2.setAttribute("role", "img"); c2.setAttribute("aria-label", "Vorschau von der Seite");
+      views.append(v1, v2);
+      const tools = el("div", "vtools");
+      if (d.context.length) {
+        const lab = el("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = true; cb.id = "ctx-" + sid(d.key);
+        cb.addEventListener("change", () => { ui.ctx = cb.checked; ui.t0 = performance.now(); ui.parts = null; });
+        lab.append(cb, document.createTextNode("mit den anderen Momenten (blass)")); tools.append(lab);
+      }
+      if (d.sprite) {
+        const lab = el("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "spr-" + sid(d.key);
+        cb.addEventListener("change", () => { ui.sprite = cb.checked; });
+        lab.append(cb, document.createTextNode("Sprite-Vorschlag (Platzhalter)")); tools.append(lab);
+      }
+      const replay = el("button", "sbtn", "Neu abspielen"); replay.type = "button"; replay.id = "replay-" + sid(d.key);
+      replay.addEventListener("click", () => { ui.t0 = performance.now(); ui.parts = null; });
+      tools.append(replay);
+      views.append(tools);
+      art.append(views);
+      Object.assign(ui, {c1, c2, ctx: true, sprite: false, t0: performance.now(), parts: null});
+    }
+    const body = el("div", "body");
+    const top = el("div", "top");
+    const h = el("h4", null, `${d.name} · ${MOMENT[d.moment] || d.moment}`);
+    top.append(h, el("span", "num", `#${d.n} · ${d.key}`));
+    body.append(top);
+    const chips = el("div", "chips");
+    const fam = el("span", "tag"); const dot = el("i"); const tints = Object.values(DATA.families[d.family].tints || {}); dot.style.background = tints[0] || "#888"; fam.append(dot, document.createTextNode(d.family_name + " · " + d.family_de));
+    chips.append(fam, el("span", "tag " + d.status, STATUS[d.status] + (d.id && d.status !== "none" ? ": " + d.id : "")), el("span", "tag", d.unlock));
+    body.append(chips);
+    body.append(el("p", "look", d.look));
+    if (d.today) body.append(el("div", "small", "Heute: " + d.today));
+    if (d.sim.length) {
+      const tbl = el("table", "build"); const th = el("tr");
+      for (const x of ["Aufbau", "Farbe", "Form", "Leben", "Größe", "Empfänger"]) th.append(el("th", null, x));
+      const thead = el("thead"); thead.append(th); const tb = el("tbody");
+      for (const e of d.sim) tb.append(emitterRow(e));
+      tbl.append(thead, tb); const sc = el("div", "scroll"); sc.append(tbl); body.append(sc);
+    }
+    if (d.cost) { ui.costEl = el("div", "cost"); body.append(ui.costEl); }
+    if (d.sprite) {
+      const sp = el("div", "sprite"); sp.append(el("b", null, "Sprite-Vorschlag: " + d.sprite.name + ". "), document.createTextNode(d.sprite.text));
+      body.append(sp);
+    }
+    if (d.note) body.append(el("div", "small", d.note));
+    const det = el("details"); det.append(el("summary", null, "Haken und Lua für Runde K"));
+    det.append(el("div", "small", "Haken: "), el("code", null, d.hook || "—"));
+    if (d.dynamic) det.append(el("div", "small", "Aus dem Frame: " + d.dynamic));
+    if (d.lua_text) det.append(el("pre", null, d.lua_text));
+    body.append(det);
+    // verdict
+    const vd = el("div", "verdict");
+    const row = el("div", "vrow"); row.append(el("span", "lbl", "Urteil"));
+    ui.chips = [["pick", "Übernehmen"], ["rework", "Überarbeiten"], ["drop", "Streichen"]].map(([v, label]) => {
+      const b = el("button", "vbtn", label); b.type = "button"; b.dataset.v = v; b.id = v + "-" + sid(d.key);
+      b.setAttribute("aria-pressed", "false"); b.disabled = true;
+      b.addEventListener("click", () => {
+        const cur = local[d.key] || {verdict: "", text: ""};
+        local[d.key] = {verdict: cur.verdict === v ? "" : v, text: ui.note.value};
+        paintVerdict(d.key); write(d.key);
+      });
+      row.append(b); return b;
+    });
+    const note = el("textarea"); note.id = "note-" + sid(d.key); note.rows = 1; note.readOnly = true;
+    note.placeholder = "Notiz (z. B. „Ring langsamer“, „weniger Partikel“)";
+    note.setAttribute("aria-label", "Notiz zu #" + d.n);
+    note.addEventListener("input", () => { local[d.key] = {verdict: (local[d.key] || {}).verdict || "", text: note.value}; dirty[d.key] = true; });
+    note.addEventListener("blur", () => write(d.key));
+    const save = el("button", "sbtn", "Speichern"); save.type = "button"; save.id = "save-" + sid(d.key); save.disabled = true;
+    save.addEventListener("click", () => write(d.key));
+    const status = el("span", "status"); status.setAttribute("role", "status");
+    const srow = el("div", "vrow"); srow.append(save, status);
+    vd.append(row, note, srow);
+    body.append(vd);
+    Object.assign(ui, {note, save, status});
+    art.append(body);
+    cardsUi.push(ui); uiByKey[d.key] = ui;
+    return art;
+  }
+  function updateCardCost(ui) {
+    const d = ui.d; if (!d.cost || !ui.costEl) return;
+    const c = d.cost, P = state.players;
+    const parts = [];
+    parts.push(`<div><b>Ein Einsatz:</b> ${c.particles} Partikel (${c.spawners ? c.spawners + " Spawner" : ""}${c.spawners && c.singles ? " und " : ""}${c.singles ? c.singles + " einzeln" : ""}), ${fmtB(c.wire)} an jeden Spieler in der Nähe (${c.dg} Datagramm${c.dg > 1 ? "e" : ""}, allein gerechnet), Server ${fmtUs(serverUs(c, P))} bei ${P} Spielern, Spitze ${Math.round(c.peak)} gleichzeitig.</div>`);
+    if (d.rate > 0) {
+      const r = d.rate * P * state.pace;
+      const b = r * (c.spawner_wire + c.marginal * state.scale), a = r * c.i1 * state.scale;
+      parts.push(`<div><b>Im Kampf mit ${P} Spielern:</b> ${de(r, 2)} Einsätze/s, ${fmtB(b)}/s an jeden Spieler, im Mittel ${de(a, 1)} Partikel gleichzeitig.</div>`);
+    } else parts.push(`<div class="small">Im Rechner nicht gezählt: ${d.status === "none" ? "kein Effekt" : "die Verwandlung ersetzt diese Fähigkeit in ihrem Baum (gezählt wird die verwandelte Karte)"}.</div>`);
+    if (d.today_cost) {
+      const t = d.today_cost, diff = c.wire - t.wire;
+      parts.push(`<div>Heute im selben Moment: ${t.particles} Partikel, ${fmtB(t.wire)} pro Spieler → <span class="${diff > 0 ? "delta-warn" : "delta-good"}">${diff > 0 ? "+" : "−"}${fmtB(Math.abs(diff))}</span>.</div>`);
+    }
+    ui.costEl.innerHTML = parts.join("");
+  }
+
+  const uiByKey = {};
+  for (const cls of DATA.classes) {
+    const sec = el("section", "classsec"); sec.id = "cls-" + cls.id;
+    sec.append(el("h2", null, cls.de));
+    const navC = el("a", null, cls.de); navC.href = "#cls-" + cls.id; nav.append(navC);
+    for (const t of cls.trees) {
+      const f = DATA.families[t];
+      const head = el("div", "treehead"); head.id = "tree-" + t;
+      head.append(swatch(t), el("h3", null, `${f.name} · ${f.de}`), el("span", "small", f.motion));
+      sec.append(head);
+      const list = el("div", "cards");
+      for (const d of CARDS.filter(x => x.group === t)) list.append(makeCard(d));
+      sec.append(list);
+      const navT = el("a", null, f.name); navT.href = "#tree-" + t; navT.style.fontWeight = "500"; nav.append(navT);
+    }
+    groupsHost.append(sec);
+  }
+  const navM = el("a", null, "Methode"); navM.href = "#method"; nav.append(navM);
+
+  // ------------------------------------------------------------------ animation of the visible cards
+  const visible = new Set();
+  const io = new IntersectionObserver(es => { for (const x of es) { const ui = x.target._ui; if (x.isIntersecting) visible.add(ui); else visible.delete(ui); } }, {rootMargin: "120px"});
+  for (const ui of cardsUi) if (ui.c1) { ui.art._ui = ui; io.observe(ui.art); }
+  function timeline(ui) {
+    const d = ui.d;
+    let flight = d.flight, fdur = 0;
+    if (!flight && ui.ctx) for (const c of d.context) if (c.flight) { flight = c.flight; break; }
+    const own = d.sim;
+    let start = d.t0;
+    let fl = null;
+    if (flight) {
+      const from = [0.3, 1.4, 0], to = [d.target[0], 1.0, d.target[2] || 0];
+      fdur = Math.hypot(...to.map((x, k) => x - from[k])) / flight.speed;
+      fl = {from, to, dur: fdur, size: flight.size, color: flight.color};
+      if (!d.context.length && (d.moment === "impact" || d.moment === "hit")) start = fdur;
+    }
+    const lists = [];
+    if (ui.ctx) for (const c of d.context) for (const e of c.emitters) lists.push([e, c.t0, true]);
+    for (const e of own) lists.push([e, start, false]);
+    return {lists, fl};
+  }
+  let last = performance.now();
+  function tick(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    for (const ui of visible) {
+      if (!ui.parts) {
+        const tl = timeline(ui);
+        ui.parts = [].concat(...tl.lists.map(([e, t0, dim]) => spawn(e, state.scale, t0, dim)));
+        ui.fl = tl.fl;
+        let end = 0; for (const [e, t0] of tl.lists) end = Math.max(end, t0 + (e.kind === "spawner" ? e.time : 0) + e.exp[1]);
+        ui.len = end + 0.7; ui.t0 = now;
+        for (const [e] of tl.lists) e.standin = ui.d.sprite ? ui.d.sprite.stand_in : null;
+      }
+      let age = (now - ui.t0) / 1000;
+      if (age > ui.len) { ui.parts = null; continue; }
+      step(ui.parts, dt, age);
+      drawFirst(ui.c1, ui.d, ui.parts, age, ui.sprite, ui.fl);
+      drawSide(ui.c2, ui.d, ui.parts, age, ui.sprite, ui.fl);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ------------------------------------------------------------------ controls
+  const playersI = document.getElementById("players"), paceI = document.getElementById("pace");
+  function paintControls() {
+    playersI.value = state.players; document.getElementById("playersOut").textContent = state.players;
+    paceI.value = Math.round(state.pace * 100); document.getElementById("paceOut").textContent = Math.round(state.pace * 100) + " %";
+    for (const b of document.querySelectorAll("#playerSeg button")) b.setAttribute("aria-pressed", String(+b.dataset.p === state.players));
+    for (const b of document.querySelectorAll("#scaleSeg button")) b.setAttribute("aria-pressed", String(+b.dataset.s === state.scale));
+    for (const b of document.querySelectorAll("#bgSeg button")) b.setAttribute("aria-pressed", String(b.dataset.bg === state.bg));
+  }
+  playersI.addEventListener("input", () => { state.players = +playersI.value; paintControls(); renderCalc(); remember(); });
+  paceI.addEventListener("input", () => { state.pace = +paceI.value / 100; paintControls(); renderCalc(); remember(); });
+  document.getElementById("playerSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; state.players = +b.dataset.p; paintControls(); renderCalc(); remember(); });
+  document.getElementById("scaleSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; state.scale = +b.dataset.s; paintControls(); renderCalc(); remember(); for (const ui of cardsUi) ui.parts = null; });
+  document.getElementById("bgSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; state.bg = b.dataset.bg; paintControls(); remember(); });
+
+  // ------------------------------------------------------------------ ratings (db capability: collection "notes")
+  let db = null, readOnly = true;
+  const stored = {}, local = {}, dirty = {}, writing = {}, again = {};
+  const header = document.getElementById("dbstatus");
+  const VERDICTS = ["pick", "rework", "drop"];
+  function setStatus(node, text, kind) { node.textContent = text; node.classList.toggle("ok", kind === "ok"); node.classList.toggle("err", kind === "err"); }
+  function paintVerdict(key) {
+    const v = (local[key] || {}).verdict || "";
+    uiByKey[key].chips.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+  }
+  function paintAll() {
+    for (const key of Object.keys(uiByKey)) {
+      const u = uiByKey[key];
+      paintVerdict(key);
+      if (!dirty[key] && document.activeElement !== u.note) u.note.value = (local[key] || {}).text || "";
+      u.chips.forEach(b => (b.disabled = readOnly));
+      u.note.readOnly = readOnly; u.save.disabled = readOnly;
+    }
+  }
+  function goReadOnly(msg) {
+    readOnly = true; paintAll();
+    setStatus(header, msg || "Bewertungen sind hier nur lesbar; abgeben lassen sie sich auf der veröffentlichten Seite.", "err");
+  }
+  const MSG = {
+    invalid_argument: "abgelehnt (keine Schreibrechte?)",
+    resource_exhausted: "zu viele Anfragen, gleich noch einmal versuchen",
+    quota_exceeded: "Speicher voll",
+    unavailable: "Speicher gerade nicht erreichbar",
+    revoked: "Zugriff entzogen",
+  };
+  async function write(key) {
+    if (readOnly || !db) return;
+    if (writing[key]) { again[key] = true; return; }
+    const want = local[key] || {verdict: "", text: ""};
+    const have = stored[key] || {verdict: "", text: ""};
+    if (want.verdict === have.verdict && want.text === have.text) { dirty[key] = false; return; }
+    const u = uiByKey[key];
+    writing[key] = true;
+    setStatus(u.status, "speichert …");
+    const ref = db.collection("notes").doc(docId(key));
+    const attempt = () => (!want.verdict && !want.text)
+      ? ref.delete()
+      : ref.set({key, verdict: want.verdict, text: want.text, updatedAt: new Date().toISOString()});
+    try {
+      try { await attempt(); }
+      catch (e) {
+        if (!e || e.code !== "unavailable") throw e;
+        await new Promise(r => setTimeout(r, 300 + Math.random() * 700));
+        await attempt();
+      }
+      stored[key] = {verdict: want.verdict, text: want.text};
+      if ((local[key] || {}).text === want.text) dirty[key] = false;
+      setStatus(u.status, "Gespeichert", "ok");
+    } catch (e) {
+      const code = e && e.code || "unbekannt";
+      setStatus(u.status, "Nicht gespeichert: " + (MSG[code] || "Fehler (" + code + ")"), "err");
+      if (code === "invalid_argument" || code === "revoked") goReadOnly();
+    } finally {
+      writing[key] = false;
+      if (again[key]) { again[key] = false; write(key); }
+    }
+  }
+  function subscribe() {
+    db.collection("notes").onSnapshot(snap => {
+      const seen = {};
+      snap.docs.forEach(doc => {
+        const v = doc.data() || {};
+        const key = typeof v.key === "string" ? v.key : doc.id;
+        if (!uiByKey[key]) return;
+        seen[key] = true;
+        stored[key] = {verdict: VERDICTS.includes(v.verdict) ? v.verdict : "", text: typeof v.text === "string" ? v.text : ""};
+      });
+      Object.keys(stored).forEach(k => { if (!seen[k]) delete stored[k]; });
+      Object.keys(uiByKey).forEach(k => { if (!dirty[k] && !writing[k]) local[k] = Object.assign({verdict: "", text: ""}, stored[k]); });
+      paintAll();
+      const n = Object.values(stored).filter(s => s.verdict).length;
+      setStatus(header, "Bewertungen: Speicher verbunden · " + n + " von " + Object.keys(uiByKey).length + " Karten bewertet", "ok");
+    }, e => {
+      const code = e && e.code || "unbekannt";
+      if (code === "unavailable") { setTimeout(subscribe, 2000); return; }
+      if (code === "revoked") { goReadOnly(); return; }
+      setStatus(header, "Bewertungen konnten nicht geladen werden (" + (MSG[code] || code) + ")", "err");
+    });
+  }
+
+  paintControls(); renderScenarioTable(); renderCalc();
+  // The cards are built by this script, after the browser's own jump to a #card-… link.
+  if (location.hash.length > 1) { const t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  requestAnimationFrame(tick);
+  (async () => {
+    const use = window.claude && typeof window.claude.use === "function" ? window.claude.use.bind(window.claude) : null;
+    if (!use) { goReadOnly(); return; }
+    try { db = await use("db"); } catch (e) { db = null; }
+    if (!db) { goReadOnly(); return; }
+    readOnly = false; paintAll();
+    subscribe();
+  })();
+})();
+</script>

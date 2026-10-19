@@ -1,0 +1,838 @@
+<title>Partikeleffekte Runde 52</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root {
+  --bg: #eef0ec; --surface: #f9faf7; --ink: #1c221f; --muted: #5a645e; --line: #cfd6d0;
+  --accent: #9a5f17; --accent-soft: #f2e2c6; --chip: #e2e8e3; --chip-on: #233a2f; --chip-on-ink: #f3f6f4;
+  --code-bg: #e5ebe6; --good: #2d7547; --warn: #a3561a; --bad: #b22a2a; --view: #182019;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121714; --surface: #1a201c; --ink: #e2e8e4; --muted: #98a59e; --line: #2e3933;
+    --accent: #e0a650; --accent-soft: #3b2f1a; --chip: #253029; --chip-on: #e0a650; --chip-on-ink: #1a1408;
+    --code-bg: #212a24; --good: #6cc48a; --warn: #e09a5a; --bad: #ef7a6a; --view: #0f1511;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121714; --surface: #1a201c; --ink: #e2e8e4; --muted: #98a59e; --line: #2e3933;
+  --accent: #e0a650; --accent-soft: #3b2f1a; --chip: #253029; --chip-on: #e0a650; --chip-on-ink: #1a1408;
+  --code-bg: #212a24; --good: #6cc48a; --warn: #e09a5a; --bad: #ef7a6a; --view: #0f1511;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 "Source Sans 3", "Segoe UI", system-ui, sans-serif; padding: 0 16px; overflow-x: hidden; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-block: 28px 72px; display: grid; gap: 26px; min-width: 0; }
+h1, h2, h3, h4 { font-family: "Barlow Semi Condensed", "Arial Narrow", sans-serif; text-wrap: balance; margin: 0; }
+h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.1; }
+h2 { font-size: 1.5rem; font-weight: 600; }
+h3 { font-size: 1.2rem; font-weight: 600; }
+h4 { font-size: 1.06rem; font-weight: 600; }
+p { margin: 0; max-width: 74ch; }
+.lede { color: var(--muted); }
+.eyebrow { font: 600 .74rem/1 "Barlow Semi Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+code, pre { font-family: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace; font-size: .8em; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+pre { background: var(--code-bg); padding: 8px 10px; border-radius: 4px; overflow-x: auto; margin: 6px 0 0; max-width: 100%; }
+header { display: grid; gap: 10px; }
+ul.facts { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 84ch; }
+.dbline { font-size: .92rem; }
+.ok { color: var(--good); } .err { color: var(--bad); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* the calculator */
+.calc { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 14px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; }
+.controls label { display: inline-flex; gap: 8px; align-items: center; font-size: .94rem; }
+.controls output { font: 500 .9rem "JetBrains Mono", monospace; min-width: 3.2em; }
+.controls input[type=range] { width: 150px; max-width: 42vw; }
+.seg { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.seg button { font: 600 .86rem "Source Sans 3", sans-serif; background: var(--chip); color: var(--ink); border: 0; border-radius: 4px; padding: 4px 9px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); }
+.ctl { display: inline-flex; gap: 8px; align-items: center; font-size: .94rem; flex-wrap: wrap; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.tile { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+.tile .v { font: 600 1.45rem "Barlow Semi Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+.tile .k { font-size: .84rem; color: var(--muted); }
+.budget { height: 10px; border-radius: 5px; background: var(--chip); position: relative; overflow: hidden; }
+.budget i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; }
+.budget b { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); opacity: .5; }
+.toplists { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; font-size: .9rem; }
+.toplists ol { margin: 4px 0 0; padding-left: 22px; display: grid; gap: 2px; }
+.toplists a { color: var(--accent); text-decoration: none; }
+table.plain { border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+table.plain th, table.plain td { text-align: right; padding: 3px 10px 3px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.plain th:first-child, table.plain td:first-child { text-align: left; }
+.scroll { overflow-x: auto; max-width: 100%; }
+
+/* families and navigation */
+.families { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px 18px; }
+.fam { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: center; font-size: .9rem; }
+.sw { display: inline-flex; gap: 2px; }
+.sw i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid rgba(0,0,0,.2); }
+.fam small { grid-column: 2; color: var(--muted); }
+nav.groups { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+nav.groups a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.classsec { display: grid; gap: 14px; }
+.treehead { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; border-bottom: 2px solid var(--line); padding-bottom: 4px; margin-top: 8px; }
+.treehead .sw i { width: 12px; height: 12px; }
+
+/* cards */
+.cards { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; scroll-margin-top: 12px; min-width: 0; }
+.card.none { grid-template-columns: 1fr; }
+@media (max-width: 900px) { .card { grid-template-columns: minmax(0, 1fr); } }
+.views { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 6px; align-self: start; min-width: 0; }
+@media (max-width: 520px) { .views { grid-template-columns: minmax(0, 1fr); } }
+.view { position: relative; background: var(--view); border-radius: 5px; overflow: hidden; min-width: 0; }
+.view canvas { display: block; width: 100%; height: auto; }
+.view span { position: absolute; left: 7px; top: 5px; font: 600 .66rem "Barlow Semi Condensed", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #a9b8ae; pointer-events: none; }
+.vtools { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; font-size: .86rem; color: var(--muted); }
+.vtools label { display: inline-flex; gap: 5px; align-items: center; }
+.body { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.num { font: 500 .78rem "JetBrains Mono", monospace; color: var(--muted); overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { font-size: .8rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); display: inline-flex; gap: 5px; align-items: center; }
+.tag i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.tag.keep { background: color-mix(in srgb, var(--good) 18%, var(--chip)); }
+.tag.retint { background: color-mix(in srgb, var(--accent) 20%, var(--chip)); }
+.tag.new { background: color-mix(in srgb, #4a7ad0 22%, var(--chip)); }
+.look { max-width: 62ch; }
+.small { font-size: .9rem; color: var(--muted); }
+.build { font-size: .84rem; border-collapse: collapse; width: 100%; }
+.build td, .build th { text-align: left; padding: 2px 8px 2px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.build th { font: 600 .7rem "Barlow Semi Condensed", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.cost { font-size: .9rem; font-variant-numeric: tabular-nums; display: grid; gap: 3px; }
+.delta-good { color: var(--good); } .delta-warn { color: var(--warn); }
+.sprite { font-size: .88rem; border-left: 3px solid var(--accent); padding-left: 10px; }
+details summary { cursor: pointer; font-size: .86rem; color: var(--muted); }
+.verdict { display: grid; gap: 6px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.vrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.vrow .lbl { font: 600 .72rem "Barlow Semi Condensed", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.vbtn { font: 600 .86rem "Source Sans 3", sans-serif; background: var(--chip); color: var(--ink); border: 0; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+.vbtn[aria-pressed="true"][data-v="pick"] { background: var(--good); color: #fff; }
+.vbtn[aria-pressed="true"][data-v="rework"] { background: var(--warn); color: #fff; }
+.vbtn[aria-pressed="true"][data-v="drop"] { background: var(--bad); color: #fff; }
+.vbtn:disabled, .sbtn:disabled { opacity: .55; cursor: default; }
+.verdict textarea { width: 100%; font: inherit; font-size: .92rem; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; resize: vertical; min-height: 2.2em; }
+.sbtn { font: 600 .84rem "Source Sans 3", sans-serif; background: var(--chip-on); color: var(--chip-on-ink); border: 0; border-radius: 4px; padding: 3px 10px; cursor: pointer; }
+.status { font-size: .86rem; }
+.method { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px 30px; }
+.method ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Runde 52 · Lane PFX · Entwurf zur Abnahme</div>
+    <h1>Partikeleffekte der neuen Fähigkeiten</h1>
+    <p class="lede">Eine Karte pro Effekt-Moment für alle 44 Fähigkeiten des Klassen-Reworks: Wirken, Spur, Einschlag, Flächenwarnung und Einschlag, Ticks, Bereitschaft, Ultimates. Jede Vorschau spielt die Emitter mit ihren echten Werten in Echtzeit ab, einmal aus Spielersicht und einmal von der Seite. Daneben steht, was der Effekt den Server und jeden Spieler in der Nähe kostet. Oben rechnet der Rechner einen Kampf mit 5, 20 oder 50 Spielern durch.</p>
+    <p class="lede">Bitte pro Karte <b>Übernehmen</b>, <b>Überarbeiten</b> oder <b>Streichen</b> wählen; eine Notiz ist frei. Karten ohne Bewertung zählen als übernommen. Die Nummer vor dem Schlüssel (z. B. <code>#12 · pfx.cold_spark.impact</code>) kann im Chat genannt werden.</p>
+    <p class="dbline" id="dbstatus" role="status">Bewertungen: Speicher wird verbunden …</p>
+    <ul class="facts">
+      <li><b>Erst der Verkehr, dann das Aussehen.</b> Ein Spawner kostet jeden Empfänger etwa 0,67 KB, egal wie viele Partikel er macht: der Server baut für jeden Spieler ein eigenes Paket. Einzelne Partikel kosten gepackt etwa 20–40 B pro Stück plus etwa 150 B pro Paket, und alle einzelnen Partikel eines Serverschritts teilen sich ein Paket. Darum: bis etwa zehn Partikel einzeln, darüber ein Spawner.</li>
+      <li>Ein Spawner bis 1 s, der an nichts hängt, geht nur an Spieler in der Nähe (192 m). Ein angehängter oder längerer ginge an <b>jeden Spieler des Servers</b>; keine Karte braucht einen.</li>
+      <li>Grundangriffe und häufige Fähigkeiten sind am billigsten (Fiery Spark, Cold Spark, Smite: vier bis sechs einzelne Partikel; Loose ohne Spur). Ultimates dürfen reicher sein: sie kommen einmal pro Minute.</li>
+      <li><b>Keine Drehbewegung</b>: Ringe laufen nach außen, Licht fällt, Rauch sinkt. Jede Familie hat ihre Farben und ihre Bewegung (unten). Wo ein kleiner Sprite klar helfen würde, schlägt die Karte ihn vor; die Vorschau zeigt dann einen Platzhalter.</li>
+    </ul>
+  </header>
+
+  <section class="calc" aria-labelledby="calc-h">
+    <h2 id="calc-h">Kampfrechner</h2>
+    <p class="small">Alle Spieler kämpfen in einem Gebiet, jeder sieht alles. Sie verteilen sich gleich auf die acht Bäume; jeder nutzt die Fähigkeiten seines Baums und seine Startfähigkeiten, jede bei voller Abklingzeit (Tempo 100 %), den Grundangriff in der Zeit, die das Wirken der anderen frei lässt. Das ist eine Obergrenze: so schnell spielt niemand alles.</p>
+    <div class="controls">
+      <div class="ctl"><label for="players">Spieler <input type="range" id="players" min="1" max="60" value="20"></label><output id="playersOut" for="players">20</output>
+        <span class="seg" id="playerSeg"><button type="button" id="p5" data-p="5" aria-pressed="false">5</button><button type="button" id="p20" data-p="20" aria-pressed="true">20</button><button type="button" id="p50" data-p="50" aria-pressed="false">50</button></span></div>
+      <div class="ctl"><label for="pace">Tempo <input type="range" id="pace" min="10" max="100" step="5" value="100"></label><output id="paceOut" for="pace">100 %</output></div>
+      <div class="ctl">grug_particle_scale <span class="seg" id="scaleSeg"><button type="button" id="s1" data-s="1" aria-pressed="true">1,0</button><button type="button" id="s05" data-s="0.5" aria-pressed="false">0,5</button><button type="button" id="s025" data-s="0.25" aria-pressed="false">0,25</button></span></div>
+      <div class="ctl">Vorschau <span class="seg" id="bgSeg"><button type="button" id="bgNight" data-bg="night" aria-pressed="true">Nacht</button><button type="button" id="bgDay" data-bg="day" aria-pressed="false">Tag</button></span></div>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div>
+      <div class="small" id="budgetText"></div>
+      <div class="budget" aria-hidden="true"><i id="budgetBar"></i><b style="left:50%"></b></div>
+    </div>
+    <div class="toplists">
+      <div><h4>Am meisten Verkehr</h4><ol id="topBytes"></ol></div>
+      <div><h4>Am meisten Partikel gleichzeitig</h4><ol id="topAlive"></ol></div>
+    </div>
+    <details>
+      <summary>Die drei Szenarien als Tabelle (Tempo 100 %)</summary>
+      <div class="scroll"><table class="plain" id="scnTable"></table></div>
+    </details>
+  </section>
+
+  <section aria-labelledby="fam-h" style="display:grid; gap:10px">
+    <h2 id="fam-h">Die acht Familien</h2>
+    <p class="small">Ein Baum, eine Familie: dieselben Farben wie die Baum-Hintergründe, Icons und Waffen-Overlays (die Farbanker aus ARTBs Stilblatt). Die Partikelfarbe liegt heller als der Anker, weil sie den grauen Rauchpunkt einfärbt und leuchtet.</p>
+    <div class="families" id="families"></div>
+  </section>
+
+  <nav class="groups" aria-label="Klassen und Bäume" id="nav"></nav>
+  <div id="groups"></div>
+
+  <section class="method" id="method" aria-labelledby="method-h">
+    <div>
+      <h2 id="method-h">Methode</h2>
+      <ul>
+        <li><b>Spawner:</b> ein Paket pro Empfänger, im Lua-Aufruf gebaut (<code>server.cpp:1772-1854</code>): etwa 540 B plus Texturname, mit Anziehung 65 B mehr; über 502 B wird es in zwei Datagramme geteilt, zusammen etwa 650–740 B auf der Leitung.</li>
+        <li><b>Einzelne Partikel:</b> gesammelt und im nächsten Serverschritt (0,09 s) für jeden Spieler in Reichweite serialisiert und mit zstd gepackt, ein Paket pro Spieler und Schritt (<code>server.cpp:1656-1700</code>). Die Größen sind echte zstd-Ergebnisse der Datensätze jeder Karte. Eine Karte allein zahlt Rahmen und Kopf voll; im Rechner teilen sich alle einzelnen Partikel eines Schritts ein Paket.</li>
+        <li><b>Gleichzeitig lebende Partikel:</b> für jede Karte die Kurve n(t) nach dem Einsatz. Im Kampf ist der Mittelwert die Summe aus Rate mal Fläche unter n(t), die Spitze Mittelwert plus drei Standardabweichungen (Einsätze kommen zufällig). „Hunderte, nie Tausende“ ist die Grenze aus den Regeln; der Balken markiert 500 und endet bei 1000.</li>
+        <li><b>Server:</b> Lua-Aufruf gemessen in Runde 40 (Spawner 1,9 µs, mit Anziehung 2,3 µs, ein Partikel 0,6 µs); geschätzt 3 µs pro Spawner und Empfänger, 0,3 µs pro Partikel und Empfänger plus zstd, 0,01 µs pro Abstandsprüfung. Nur Hauptthread, Netzwerk-Threads nicht.</li>
+        <li><b>Raten:</b> jede Fähigkeit einmal pro Abklingzeit; Procs in ihrem Takt (Broadstroke alle 3 s, Hamstring alle 8 s); Ticks, Empfänger und Nebenziele pro Einsatz gezählt. Der Grundangriff füllt die Zeit, die die belegte Zeit nach dem Wirken frei lässt.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Für Runde K</h2>
+      <ul>
+        <li>Jede Karte steht in <code>tools/r52_pfx/effects.py</code> im Format von <code>particle_effects.lua</code>; eine gewählte neue Karte wird unter ihrer <code>id</code> so registriert, wie sie dort steht (die Lua-Ansicht jeder Karte zeigt es).</li>
+        <li><code>tools/r52_pfx/check_limits.lua</code> lädt das echte <code>particles.lua</code> und prüft jede Karte mit <code>particles.check</code>; Karten „behalten“ und „umgefärbt“ vergleicht es Feld für Feld mit dem ausgelieferten Katalog.</li>
+        <li><b>Flächen:</b> <code>area.delayed</code> gäbe ein <code>spec.color</code> an Warnung, Fall und Einschlag zugleich; darum setzt keine Karte es. Jede Fläche nennt ihre eigenen Effekt-IDs für <code>spec.warning</code>, <code>spec.fall</code> und <code>spec.burst</code> (die farbigen Warnungen von Winter Field und Censure sind eigene IDs).</li>
+        <li><b>Bereitschaften</b> nutzen den vorhandenen Proc-Ring mit neuer Farbe in <code>grug_core.PROC_COLORS</code>.</li>
+        <li><b>Spawner-Bereiche drehen nicht mit:</b> Kasten-Ausdehnung und Geschwindigkeitsbereiche eines Spawners bleiben an der Welt ausgerichtet; jede Karte hält sie richtungsgleich (effects.py prüft das). Was mit der Blickrichtung zeigen muss, ist eine Linie oder einzelne Partikel.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script type="application/json" id="pfx-data">/*DATA*/</script>
+<script>
+(() => {
+  "use strict";
+  const DATA = JSON.parse(document.getElementById("pfx-data").textContent);
+  const C = DATA.constants;
+  const CARDS = DATA.cards;
+  const byKey = Object.fromEntries(CARDS.map(c => [c.key, c]));
+  const MOMENT = {cast: "Wirken", trail: "Spur", impact: "Einschlag", hit: "Treffer", warning: "Warnung", fall: "Fall",
+    tick: "Tick", window: "Bereitschaft", recipient: "Empfänger", swing: "Schlag", dash: "Sturmlauf", arrival: "Ankunft",
+    splinter: "Splitter", shot: "Schuss"};
+  const STATUS = {keep: "behalten", retint: "umgefärbt", new: "neu", none: "kein Effekt"};
+  const state = {players: 20, pace: 1, scale: 1, bg: "night"};
+  try {
+    const s = JSON.parse(localStorage.getItem("r52pfx-calc") || "null");
+    if (s && typeof s === "object") {
+      if (s.players >= 1 && s.players <= 60) state.players = Math.round(s.players);
+      if (s.pace >= 0.1 && s.pace <= 1) state.pace = s.pace;
+      if ([1, 0.5, 0.25].includes(s.scale)) state.scale = s.scale;
+      if (s.bg === "day" || s.bg === "night") state.bg = s.bg;
+    }
+  } catch (e) {}
+  const remember = () => { try { localStorage.setItem("r52pfx-calc", JSON.stringify(state)); } catch (e) {} };
+
+  const de = (x, d = 1) => x.toLocaleString("de-DE", {minimumFractionDigits: d, maximumFractionDigits: d});
+  const fmtB = b => b >= 1024 * 1024 ? de(b / 1048576) + " MB" : b >= 1024 ? de(b / 1024) + " KB" : Math.round(b) + " B";
+  const fmtUs = us => us >= 1000 ? de(us / 1000, 2) + " ms" : de(us, us < 10 ? 1 : 0) + " µs";
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const sid = key => key.replace(/[^A-Za-z0-9_-]/g, "-");
+  const docId = key => key.replace(/[^A-Za-z0-9_.:@+-]/g, c => "~" + c.charCodeAt(0).toString(16).padStart(2, "0"));
+
+  // ------------------------------------------------------------------ cost model (cost.py scenario(), the same formulas)
+  function serverUs(c, rx) { return c.lua_us + rx * (c.rx_us + c.check_us); }
+  function scenario(players, pace, scale, only) {
+    let spBytes = 0, spDg = 0, spPk = 0, marg = 0, events = 0, started = 0, mean = 0, vari = 0, us = 0;
+    const per = [];
+    for (const d of CARDS) {
+      if (!d.cost || !d.rate) continue;
+      const c = d.cost, r = d.rate * players * pace;
+      spBytes += r * c.spawner_wire; spDg += r * c.spawner_dg; spPk += r * c.spawners;
+      marg += r * c.marginal * scale; events += r * c.single_events;
+      started += r * c.particles * scale; mean += r * c.i1 * scale; vari += r * c.i2 * scale * scale;
+      us += r * serverUs(c, players);
+      per.push({d, bytes: r * (c.spawner_wire + c.marginal * scale), alive: r * c.i1 * scale});
+    }
+    const packets = Math.min(events, C.steps_per_s);
+    let sBytes = 0, sDg = 0;
+    if (packets > 0) {
+      const size = 6 + C.zframe + marg / packets;
+      const dg = size + 1 > C.chunk ? Math.ceil(size / (C.chunk - C.split_hdr)) : 1;
+      const hdr = C.base_hdr + (dg > 1 ? C.split_hdr : C.original_hdr);
+      sBytes = packets * (size + dg * hdr); sDg = packets * dg;
+    }
+    return {bytes: spBytes + sBytes, datagrams: spDg + sDg, packets: spPk + packets, started, mean,
+      peak: mean + 3 * Math.sqrt(vari), us, out: (spBytes + sBytes) * players, per};
+  }
+
+  function renderCalc() {
+    const s = scenario(state.players, state.pace, state.scale);
+    const tiles = [
+      [fmtB(s.bytes) + "/s", "an jeden Spieler im Kampf (" + de(s.bytes * 8 / 1000, 0) + " kbit/s)"],
+      [de(s.packets, 1) + "/s", "Partikelpakete an jeden Spieler (" + de(s.datagrams, 0) + " Datagramme/s)"],
+      [Math.round(s.mean) + " / " + Math.round(s.peak), "Partikel gleichzeitig sichtbar: Mittel / Spitze"],
+      [Math.round(s.started) + "/s", "Partikel neu pro Sekunde, die jeder Client zeichnet"],
+      [fmtUs(s.us) + "/s", "Server-Hauptthread (" + de(s.us / 10000, 2) + " % eines Kerns)"],
+      [fmtB(s.out) + "/s", "aus dem Server für alle Spieler zusammen"],
+    ];
+    const host = document.getElementById("tiles"); host.textContent = "";
+    for (const [v, k] of tiles) { const t = el("div", "tile"); t.append(el("div", "v", v), el("div", "k", k)); host.append(t); }
+    const frac = Math.min(1, s.peak / 1000);
+    const bar = document.getElementById("budgetBar");
+    bar.style.width = (frac * 100) + "%";
+    bar.style.background = s.peak < 500 ? "var(--good)" : s.peak < 1000 ? "var(--warn)" : "var(--bad)";
+    document.getElementById("budgetText").textContent =
+      `Partikel-Budget („Hunderte, nie Tausende“): Spitze etwa ${Math.round(s.peak)} gleichzeitig bei ${state.players} Spielern, Tempo ${Math.round(state.pace * 100)} %, Skala ${de(state.scale, state.scale === 0.25 ? 2 : 1)}.`;
+    const list = (id, field, fmt) => {
+      const ol = document.getElementById(id); ol.textContent = "";
+      const top = s.per.slice().sort((a, b) => b[field] - a[field]).slice(0, 6);
+      for (const x of top) {
+        const li = el("li"); const a = el("a", null, `#${x.d.n} ${x.d.name} · ${MOMENT[x.d.moment] || x.d.moment}`);
+        a.href = "#card-" + sid(x.d.key); li.append(a, document.createTextNode(" " + fmt(x[field]))); ol.append(li);
+      }
+    };
+    list("topBytes", "bytes", v => fmtB(v) + "/s");
+    list("topAlive", "alive", v => "≈ " + de(v, 1));
+    for (const card of cardsUi) updateCardCost(card);
+  }
+
+  function renderScenarioTable() {
+    const t = document.getElementById("scnTable");
+    const rows = [["Spieler", "KB/s je Spieler", "Pakete/s", "Datagramme/s", "Partikel Mittel", "Spitze", "Server ms/s"]];
+    const keys = [["5@1.0", "5"], ["20@1.0", "20"], ["50@1.0", "50"], ["50@0.5", "50, Skala 0,5"], ["50@1.0 uncut", "50, mit den heutigen Effekten der vier häufigen Momente"]];
+    for (const [k, label] of keys) {
+      const s = DATA.scenarios[k]; if (!s) continue;
+      rows.push([label, de(s.bytes / 1024), de(s.packets), de(s.datagrams, 0), Math.round(s.mean), Math.round(s.peak), de(s.server_us / 1000, 2)]);
+    }
+    rows.forEach((r, i) => { const tr = el("tr"); r.forEach(x => tr.append(el(i ? "td" : "th", null, String(x)))); t.append(tr); });
+  }
+
+  // ------------------------------------------------------------------ families and groups
+  function swatch(fam) {
+    const f = DATA.families[fam]; const s = el("span", "sw");
+    for (const c of Object.values(f.tints || {}).slice(0, 3)) { const i = el("i"); i.style.background = c; s.append(i); }
+    return s;
+  }
+  const famHost = document.getElementById("families");
+  for (const cls of DATA.classes) for (const t of cls.trees) {
+    const f = DATA.families[t]; const d = el("div", "fam");
+    d.append(swatch(t), el("b", null, `${f.name} · ${f.de}`), el("small", null, f.motion));
+    famHost.append(d);
+  }
+
+  // ------------------------------------------------------------------ the simulation (engine rules, client/particles.cpp)
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function engineRadius(rad) {
+    // rotate (|radius|, 0, 0) by three random angles, then scale per axis (client/particles.cpp:386-396)
+    const l = Math.hypot(...rad); if (!l) return [0, 0, 0];
+    const mag = rad.map(v => v / l);
+    let x = l, y = 0, z = 0;
+    const rot = (u, v) => { const a = Math.random() * Math.PI * 2, c = Math.cos(a), s = Math.sin(a); return [u * c - v * s, u * s + v * c]; };
+    [x, z] = rot(x, z); [y, z] = rot(y, z); [x, y] = rot(x, y);
+    return [x * mag[0], y * mag[1], z * mag[2]];
+  }
+  function spawn(em, scale, t0, dim) {
+    const n = Math.max(1, Math.floor(em.n * scale + 0.5));
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const born = t0 + (em.kind === "spawner" ? Math.random() * em.time : 0);
+      let p, v = [0, 1, 2].map(k => rnd(em.vel[0][k], em.vel[1][k]));
+      let life = rnd(em.exp[0], em.exp[1]);
+      const s = em.shape;
+      if (em.kind === "spawner") {
+        const g = em.engine;
+        if (g.tween) { const f = em.time > 0 ? (born - t0) / em.time : Math.random(); p = g.tween[0].map((a, k) => a + (g.tween[1][k] - a) * f); }
+        else p = g.pos[0].map((a, k) => rnd(a, g.pos[1][k]));
+        if (g.radius) { const o = engineRadius(g.radius); p = p.map((x, k) => x + o[k]); }
+        if (em.pull) {
+          // speed |strength| x distance, towards the origin (away when negative), once at birth; a pulling one that
+          // dies on contact lives at most distance / speed (client/particles.cpp:398-458)
+          const st = rnd(em.pull.smin, em.pull.smax);
+          const d = em.pull.origin.map((x, k) => x - p[k]);
+          v = v.map((x, k) => x + d[k] * st);
+          if (em.pull.kill && st > 0) life = Math.min(life, 1 / st);
+        }
+      } else {
+        let c;
+        const frac = n > 1 ? i / (n - 1) : 0.5;
+        if (s[0] === "box") { p = [0, 1, 2].map(k => rnd(s[1][k], s[2][k])); c = s[1].map((x, k) => (x + s[2][k]) / 2); }
+        else if (s[0] === "disc") { const a = s[3] ? Math.PI * 2 * i / n : Math.random() * Math.PI * 2, r = s[3] ? s[2] : s[2] * Math.sqrt(Math.random()); p = [s[1][0] + Math.cos(a) * r, s[1][1], s[1][2] + Math.sin(a) * r]; c = s[1]; }
+        else if (s[0] === "sphere") { let w; do { w = [rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)]; } while (Math.hypot(...w) > 1 || Math.hypot(...w) < 0.05); const l = Math.hypot(...w), r = s[3] ? s[2] : s[2] * Math.cbrt(Math.random()); p = w.map((x, k) => s[1][k] + x / l * r); c = s[1]; }
+        else { p = s[1].map((x, k) => x + (s[2][k] - x) * frac); c = p.slice(); }
+        const d = p.map((x, k) => x - c[k]); const l = Math.hypot(...d);
+        if (l > 0 && em.reach != null) { const sp = Math.max(0, (em.reach - l) / life); v = v.map((x, k) => x + d[k] / l * sp); }
+        else if (l > 0 && em.radial) { const sp = rnd(em.radial[0], em.radial[1]); v = v.map((x, k) => x + d[k] / l * sp); }
+      }
+      out.push({born, p, v, life, size: rnd(em.size[0], em.size[1]) * 0.1, em, dim, alive: true, seen: false});
+    }
+    return out;
+  }
+  function step(list, dt, age) {
+    for (const q of list) {
+      if (!q.alive || age < q.born) continue;
+      if (!q.seen) { q.seen = true; continue; }
+      const a = q.em.acc;
+      q.v = q.v.map((x, k) => x + a[k] * dt);
+      q.p = q.p.map((x, k) => x + q.v[k] * dt);
+      if (age - q.born > q.life) q.alive = false;
+    }
+  }
+
+  // ------------------------------------------------------------------ drawing
+  const STAND_IN = {};
+  function standIn(kind, color) {
+    const key = kind + color;
+    if (STAND_IN[key]) return STAND_IN[key];
+    const cv = document.createElement("canvas"); cv.width = cv.height = 32;
+    const g = cv.getContext("2d"); g.strokeStyle = color; g.fillStyle = color; g.lineCap = "round";
+    if (kind === "flake") { g.lineWidth = 3; for (let i = 0; i < 3; i++) { const a = i * Math.PI / 3; g.beginPath(); g.moveTo(16 - 13 * Math.cos(a), 16 - 13 * Math.sin(a)); g.lineTo(16 + 13 * Math.cos(a), 16 + 13 * Math.sin(a)); g.stroke(); } }
+    else if (kind === "spark") { g.beginPath(); g.moveTo(16, 1); g.lineTo(19, 13); g.lineTo(31, 16); g.lineTo(19, 19); g.lineTo(16, 31); g.lineTo(13, 19); g.lineTo(1, 16); g.lineTo(13, 13); g.closePath(); g.fill(); }
+    else if (kind === "seal") { g.lineWidth = 3; g.beginPath(); g.arc(16, 16, 9, 0, Math.PI * 2); g.stroke(); for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; g.beginPath(); g.moveTo(16 + 11 * Math.cos(a), 16 + 11 * Math.sin(a)); g.lineTo(16 + 15 * Math.cos(a), 16 + 15 * Math.sin(a)); g.stroke(); } g.beginPath(); g.arc(16, 16, 4, 0, Math.PI * 2); g.fill(); }
+    else if (kind === "rock") { g.fillStyle = "#3a2a24"; g.beginPath(); g.moveTo(6, 10); g.lineTo(14, 4); g.lineTo(26, 7); g.lineTo(29, 18); g.lineTo(22, 28); g.lineTo(9, 27); g.lineTo(3, 18); g.closePath(); g.fill(); g.strokeStyle = "#ff9a3a"; g.lineWidth = 2; g.beginPath(); g.moveTo(9, 14); g.lineTo(16, 17); g.lineTo(22, 12); g.moveTo(16, 17); g.lineTo(15, 25); g.stroke(); }
+    STAND_IN[key] = cv; return cv;
+  }
+  function blob(g, x, y, s, color, tex, alpha, add) {
+    g.globalAlpha = alpha;
+    if (tex === "fire") {
+      const gr = g.createRadialGradient(x, y + s * 0.1, 0, x, y, s * 0.6);
+      gr.addColorStop(0, "#fff3b0"); gr.addColorStop(0.35, "#ffb030"); gr.addColorStop(0.75, "rgba(230,70,20,0.75)"); gr.addColorStop(1, "rgba(200,40,10,0)");
+      g.fillStyle = gr; g.fillRect(x - s * 0.6, y - s * 0.6, s * 1.2, s * 1.2);
+    } else if (tex === "blood") {
+      g.fillStyle = "#8a0e10"; g.fillRect(x - s * 0.3, y - s * 0.3, s * 0.6, s * 0.6);
+    } else {
+      // the 8x8 smoke puff tinted by multiply: a soft square-ish blob
+      const gr = g.createRadialGradient(x, y, 0, x, y, s * 0.55);
+      gr.addColorStop(0, color); gr.addColorStop(0.55, color); gr.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = gr; g.fillRect(x - s * 0.55, y - s * 0.55, s * 1.1, s * 1.1);
+    }
+  }
+  function drawParticles(g, parts, age, project, sprite) {
+    for (const add of [false, true]) {
+      g.globalCompositeOperation = add ? "lighter" : "source-over";
+      for (const q of parts) {
+        if (!q.alive || age < q.born || !q.seen) continue;
+        if ((q.em.glow >= 8) !== add) continue;
+        const pr = project(q.p, q.size); if (!pr) continue;
+        const t = (age - q.born) / q.life;
+        let a = q.em.fade ? Math.max(0, 1 - t) : 1;
+        if (q.dim) a *= 0.35;
+        if (!add) a *= 0.9;
+        const s = Math.max(2, pr.s);
+        if (sprite && q.em.standin && q.em.tex !== "blood") {
+          g.globalAlpha = a; g.imageSmoothingEnabled = true; g.drawImage(standIn(q.em.standin, q.em.tex === "fire" ? "#ffb347" : q.em.color), pr.x - s / 2, pr.y - s / 2, s, s);
+        } else blob(g, pr.x, pr.y, s, q.em.color, q.em.tex, a, add);
+      }
+    }
+    g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+  }
+  function bgFill(g, W, H, kind, horizon) {
+    if (state.bg === "day") {
+      const gr = g.createLinearGradient(0, 0, 0, H);
+      gr.addColorStop(0, "#9ab8cc"); gr.addColorStop(Math.max(0.01, Math.min(0.99, horizon / H)), "#c8d6d6");
+      gr.addColorStop(Math.max(0.02, Math.min(1, horizon / H + 0.001)), "#6f8f5a"); gr.addColorStop(1, "#56733f");
+      g.fillStyle = gr;
+    } else {
+      const gr = g.createLinearGradient(0, 0, 0, H);
+      gr.addColorStop(0, "#0c1117"); gr.addColorStop(Math.max(0.01, Math.min(0.99, horizon / H)), "#1a232a");
+      gr.addColorStop(Math.max(0.02, Math.min(1, horizon / H + 0.001)), "#1b2a1d"); gr.addColorStop(1, "#14200f");
+      g.fillStyle = gr;
+    }
+    g.fillRect(0, 0, W, H);
+  }
+  // A figure as a flat billboard: head, body, legs.
+  function figure(g, project, x, z, height, color, bulk) {
+    const feet = project([x, 0, z], 0), head = project([x, height, z], 0);
+    if (!feet || !head) return;
+    const h = feet.y - head.y, w = h * 0.26 * bulk;
+    g.fillStyle = color; g.globalAlpha = 0.95;
+    const cx = (feet.x + head.x) / 2;
+    g.beginPath(); g.arc(head.x, head.y + h * 0.09, h * 0.09, 0, Math.PI * 2); g.fill();
+    g.fillRect(cx - w / 2, head.y + h * 0.19, w, h * 0.42);
+    g.fillRect(cx - w / 2, head.y + h * 0.6, w * 0.42, h * 0.4);
+    g.fillRect(cx + w / 2 - w * 0.42, head.y + h * 0.6, w * 0.42, h * 0.4);
+    g.globalAlpha = 1;
+  }
+
+  function cam(d) {
+    // first-person-ish: behind and above the caster's right shoulder, looking along +x towards the target
+    const tx = d.target[0];
+    const look = [Math.min(Math.max(tx * 0.5, 2.5), 9), 1.0, 0];
+    const C0 = [-3.4, 2.5, -1.0];
+    const f = look.map((x, k) => x - C0[k]); const fl = Math.hypot(...f); const F = f.map(x => x / fl);
+    // left-handed world: +z is the caster's left, so screen-right is cross(up, forward)
+    let R = [F[2], 0, -F[0]]; const rl = Math.hypot(...R); R = R.map(x => x / rl);
+    const U = [F[1] * R[2] - F[2] * R[1], F[2] * R[0] - F[0] * R[2], F[0] * R[1] - F[1] * R[0]];
+    return {C0, F, R, U: U[1] < 0 ? U.map(x => -x) : U};
+  }
+  function drawFirst(cv, d, parts, age, sprite, flight) {
+    const W = cv.clientWidth || 360, H = Math.round(W * 0.62);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.height = H + "px"; }
+    const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const K = d._cam || (d._cam = cam(d));
+    const focal = (H / 2) / Math.tan(30 * Math.PI / 180);
+    const project = (p, size) => {
+      const v = [p[0] - K.C0[0], p[1] - K.C0[1], p[2] - K.C0[2]];
+      const z = v[0] * K.F[0] + v[1] * K.F[1] + v[2] * K.F[2];
+      if (z < 0.2) return null;
+      const x = v[0] * K.R[0] + v[1] * K.R[1] + v[2] * K.R[2], y = v[0] * K.U[0] + v[1] * K.U[1] + v[2] * K.U[2];
+      return {x: W / 2 + x / z * focal, y: H / 2 - y / z * focal, s: size / z * focal};
+    };
+    const hz = project([400, 0, 0], 0); bgFill(g, W, H, "first", hz ? hz.y : H / 2);
+    // ground grid
+    g.strokeStyle = state.bg === "day" ? "rgba(40,60,30,.35)" : "rgba(150,180,150,.13)"; g.lineWidth = 1;
+    const xmax = Math.max(14, d.target[0] + 8);
+    for (let x = -2; x <= xmax; x += 1) { const a = project([x, 0, -7], 0), b = project([x, 0, 7], 0); if (a && b) { g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); } }
+    for (let z = -7; z <= 7; z += 1) { const a = project([-2, 0, z], 0), b = project([xmax, 0, z], 0); if (a && b) { g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); } }
+    // markers
+    const m = d.marker;
+    g.strokeStyle = "rgba(255,214,130,.55)"; g.setLineDash([5, 5]); g.lineWidth = 1.2;
+    if (m && m.radius) {
+      const cx = m.at === "target" ? d.target[0] : 0; g.beginPath();
+      for (let i = 0; i <= 64; i++) { const a = i / 64 * Math.PI * 2; const pr = project([cx + Math.cos(a) * m.radius, 0.02, Math.sin(a) * m.radius], 0); if (!pr) continue; if (i) g.lineTo(pr.x, pr.y); else g.moveTo(pr.x, pr.y); }
+      g.stroke();
+    }
+    if (m && m.cone) {
+      const half = m.cone[1] * Math.PI / 360, r = m.cone[0]; g.beginPath();
+      const o = project([0, 0.02, 0], 0); g.moveTo(o.x, o.y);
+      for (let i = 0; i <= 24; i++) { const a = -half + 2 * half * i / 24; const pr = project([Math.cos(a) * r, 0.02, Math.sin(a) * r], 0); if (pr) g.lineTo(pr.x, pr.y); }
+      g.closePath(); g.stroke();
+    }
+    g.setLineDash([]);
+    // figures: the mob first (further away), then the caster
+    if (d.target[0] > 0.5) figure(g, project, d.target[0], 0, 1.9, "#7a3b33", 1.35);
+    figure(g, project, 0, 0, 1.8, "#3f6488", 1);
+    if (flight) drawFlight(g, project, flight, age);
+    drawParticles(g, parts, age, project, sprite);
+  }
+  function frameFor(d, parts) {
+    let xmin = -2, xmax = Math.max(4, d.target[0] + 2.5), ymax = 3;
+    const m = d.marker;
+    if (m && m.radius) { const cx = m.at === "target" ? d.target[0] : 0; xmin = Math.min(xmin, cx - m.radius - 0.8); xmax = Math.max(xmax, cx + m.radius + 0.8); }
+    if (m && m.cone) xmax = Math.max(xmax, m.cone[0] + 0.8);
+    for (const q of parts) { ymax = Math.max(ymax, Math.min(14, q.p[1] + 0.8)); }
+    return {xmin, xmax, ymax};
+  }
+  function drawSide(cv, d, parts, age, sprite, flight) {
+    const f = d._frame || (d._frame = frameFor(d, parts));
+    const W = cv.clientWidth || 240, spanX = f.xmax - f.xmin;
+    const ppm = W / spanX; const H = Math.max(80, Math.round((f.ymax + 0.6) * ppm));
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.height = H + "px"; }
+    const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const X = x => (x - f.xmin) * ppm, Y = y => H - (y + 0.6) * ppm;
+    bgFill(g, W, H, "side", Y(0));
+    g.strokeStyle = state.bg === "day" ? "rgba(40,60,30,.3)" : "rgba(150,180,150,.12)"; g.lineWidth = 1;
+    for (let x = Math.ceil(f.xmin); x <= f.xmax; x++) { g.beginPath(); g.moveTo(X(x), 0); g.lineTo(X(x), Y(0)); g.stroke(); }
+    const m = d.marker;
+    if (m && m.radius) {
+      const cx = m.at === "target" ? d.target[0] : 0;
+      g.strokeStyle = "rgba(255,214,130,.55)"; g.setLineDash([4, 4]); g.beginPath();
+      g.moveTo(X(cx - m.radius), Y(0) - 6); g.lineTo(X(cx - m.radius), Y(0)); g.lineTo(X(cx + m.radius), Y(0)); g.lineTo(X(cx + m.radius), Y(0) - 6); g.stroke(); g.setLineDash([]);
+    }
+    const proj = (p, size) => ({x: X(p[0]), y: Y(p[1]), s: size * ppm});
+    const fig = (x, h, color, bulk) => figure(g, (p) => ({x: X(p[0]), y: Y(p[1]), s: 0}), x, 0, h, color, bulk);
+    if (d.target[0] > 0.5) fig(d.target[0], 1.9, "#7a3b33", 1.35);
+    fig(0, 1.8, "#3f6488", 1);
+    if (flight) drawFlight(g, proj, flight, age);
+    drawParticles(g, parts, age, proj, sprite);
+  }
+  function drawFlight(g, project, fl, age) {
+    if (age < 0 || age > fl.dur) return;
+    const f = age / fl.dur;
+    const p = fl.from.map((a, k) => a + (fl.to[k] - a) * f);
+    const pr = project(p, fl.size); if (!pr) return;
+    g.globalCompositeOperation = "lighter";
+    blob(g, pr.x, pr.y, Math.max(4, pr.s), fl.color, "smoke", 1, true);
+    g.globalCompositeOperation = "source-over"; g.globalAlpha = 1;
+  }
+
+  // ------------------------------------------------------------------ cards
+  const cardsUi = [];
+  const groupsHost = document.getElementById("groups"), nav = document.getElementById("nav");
+  function emitterRow(e, frameReach) {
+    const tr = el("tr");
+    let kind = e.kind === "spawner" ? `Spawner, ${e.n} in ${de(e.time, 2)} s` : `${e.n} einzeln`;
+    const shapeName = {box: "Kasten", line: "Linie", disc: e.shape[3] ? "Ring" : "Scheibe", sphere: e.shape[3] ? "Hülle" : "Kugel"}[e.shape[0]];
+    const extra = [];
+    if (e.reach != null) extra.push(`fliegt bis ${de(e.reach, 1)} m`);
+    if (e.radial) extra.push("fliegt nach außen");
+    if (e.pull && e.pull.smax > 0) extra.push(e.pull.kill ? "wird angezogen, erlischt am Ziel" : "wird angezogen");
+    if (e.pull && e.pull.smax <= 0) extra.push("fliegt nach außen");
+    const col = el("td"); const sw = el("span", "sw"); const i = el("i"); i.style.background = e.tex === "fire" ? "#ff9a30" : e.tex === "blood" ? "#8a0e10" : e.color; sw.append(i);
+    col.append(sw, document.createTextNode(" " + (e.tex === "fire" ? "Feuer-Sprite" : e.tex === "blood" ? "Blut" : e.color)));
+    tr.append(el("td", null, kind), col, el("td", null, shapeName + (extra.length ? ", " + extra.join(", ") : "")),
+      el("td", null, `${de(e.exp[0], 2)}–${de(e.exp[1], 2)} s`), el("td", null, `${de(e.size[0] / 10, 2)}–${de(e.size[1] / 10, 2)} m`),
+      el("td", null, e.kind === "spawner" && (e.time > 1) ? "alle" : "nahe"));
+    return tr;
+  }
+  function makeCard(d) {
+    const art = el("article", "card" + (d.status === "none" ? " none" : ""));
+    art.id = "card-" + sid(d.key);
+    const ui = {d, art};
+    if (d.status !== "none") {
+      const views = el("div", "views");
+      const v1 = el("div", "view"), c1 = document.createElement("canvas"); v1.append(c1, el("span", null, "Spielersicht"));
+      const v2 = el("div", "view"), c2 = document.createElement("canvas"); v2.append(c2, el("span", null, "Seite"));
+      c1.setAttribute("role", "img"); c1.setAttribute("aria-label", "Vorschau aus Spielersicht: " + d.look);
+      c2.setAttribute("role", "img"); c2.setAttribute("aria-label", "Vorschau von der Seite");
+      views.append(v1, v2);
+      const tools = el("div", "vtools");
+      if (d.context.length) {
+        const lab = el("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = true; cb.id = "ctx-" + sid(d.key);
+        cb.addEventListener("change", () => { ui.ctx = cb.checked; ui.t0 = performance.now(); ui.parts = null; });
+        lab.append(cb, document.createTextNode("mit den anderen Momenten (blass)")); tools.append(lab);
+      }
+      if (d.sprite) {
+        const lab = el("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "spr-" + sid(d.key);
+        cb.addEventListener("change", () => { ui.sprite = cb.checked; });
+        lab.append(cb, document.createTextNode("Sprite-Vorschlag (Platzhalter)")); tools.append(lab);
+      }
+      const replay = el("button", "sbtn", "Neu abspielen"); replay.type = "button"; replay.id = "replay-" + sid(d.key);
+      replay.addEventListener("click", () => { ui.t0 = performance.now(); ui.parts = null; });
+      tools.append(replay);
+      views.append(tools);
+      art.append(views);
+      Object.assign(ui, {c1, c2, ctx: true, sprite: false, t0: performance.now(), parts: null});
+    }
+    const body = el("div", "body");
+    const top = el("div", "top");
+    const h = el("h4", null, `${d.name} · ${MOMENT[d.moment] || d.moment}`);
+    top.append(h, el("span", "num", `#${d.n} · ${d.key}`));
+    body.append(top);
+    const chips = el("div", "chips");
+    const fam = el("span", "tag"); const dot = el("i"); const tints = Object.values(DATA.families[d.family].tints || {}); dot.style.background = tints[0] || "#888"; fam.append(dot, document.createTextNode(d.family_name + " · " + d.family_de));
+    chips.append(fam, el("span", "tag " + d.status, STATUS[d.status] + (d.id && d.status !== "none" ? ": " + d.id : "")), el("span", "tag", d.unlock));
+    body.append(chips);
+    body.append(el("p", "look", d.look));
+    if (d.today) body.append(el("div", "small", "Heute: " + d.today));
+    if (d.sim.length) {
+      const tbl = el("table", "build"); const th = el("tr");
+      for (const x of ["Aufbau", "Farbe", "Form", "Leben", "Größe", "Empfänger"]) th.append(el("th", null, x));
+      const thead = el("thead"); thead.append(th); const tb = el("tbody");
+      for (const e of d.sim) tb.append(emitterRow(e));
+      tbl.append(thead, tb); const sc = el("div", "scroll"); sc.append(tbl); body.append(sc);
+    }
+    if (d.cost) { ui.costEl = el("div", "cost"); body.append(ui.costEl); }
+    if (d.sprite) {
+      const sp = el("div", "sprite"); sp.append(el("b", null, "Sprite-Vorschlag: " + d.sprite.name + ". "), document.createTextNode(d.sprite.text));
+      body.append(sp);
+    }
+    if (d.note) body.append(el("div", "small", d.note));
+    const det = el("details"); det.append(el("summary", null, "Haken und Lua für Runde K"));
+    det.append(el("div", "small", "Haken: "), el("code", null, d.hook || "—"));
+    if (d.dynamic) det.append(el("div", "small", "Aus dem Frame: " + d.dynamic));
+    if (d.lua_text) det.append(el("pre", null, d.lua_text));
+    body.append(det);
+    // verdict
+    const vd = el("div", "verdict");
+    const row = el("div", "vrow"); row.append(el("span", "lbl", "Urteil"));
+    ui.chips = [["pick", "Übernehmen"], ["rework", "Überarbeiten"], ["drop", "Streichen"]].map(([v, label]) => {
+      const b = el("button", "vbtn", label); b.type = "button"; b.dataset.v = v; b.id = v + "-" + sid(d.key);
+      b.setAttribute("aria-pressed", "false"); b.disabled = true;
+      b.addEventListener("click", () => {
+        const cur = local[d.key] || {verdict: "", text: ""};
+        local[d.key] = {verdict: cur.verdict === v ? "" : v, text: ui.note.value};
+        paintVerdict(d.key); write(d.key);
+      });
+      row.append(b); return b;
+    });
+    const note = el("textarea"); note.id = "note-" + sid(d.key); note.rows = 1; note.readOnly = true;
+    note.placeholder = "Notiz (z. B. „Ring langsamer“, „weniger Partikel“)";
+    note.setAttribute("aria-label", "Notiz zu #" + d.n);
+    note.addEventListener("input", () => { local[d.key] = {verdict: (local[d.key] || {}).verdict || "", text: note.value}; dirty[d.key] = true; });
+    note.addEventListener("blur", () => write(d.key));
+    const save = el("button", "sbtn", "Speichern"); save.type = "button"; save.id = "save-" + sid(d.key); save.disabled = true;
+    save.addEventListener("click", () => write(d.key));
+    const status = el("span", "status"); status.setAttribute("role", "status");
+    const srow = el("div", "vrow"); srow.append(save, status);
+    vd.append(row, note, srow);
+    body.append(vd);
+    Object.assign(ui, {note, save, status});
+    art.append(body);
+    cardsUi.push(ui); uiByKey[d.key] = ui;
+    return art;
+  }
+  function updateCardCost(ui) {
+    const d = ui.d; if (!d.cost || !ui.costEl) return;
+    const c = d.cost, P = state.players;
+    const parts = [];
+    parts.push(`<div><b>Ein Einsatz:</b> ${c.particles} Partikel (${c.spawners ? c.spawners + " Spawner" : ""}${c.spawners && c.singles ? " und " : ""}${c.singles ? c.singles + " einzeln" : ""}), ${fmtB(c.wire)} an jeden Spieler in der Nähe (${c.dg} Datagramm${c.dg > 1 ? "e" : ""}, allein gerechnet), Server ${fmtUs(serverUs(c, P))} bei ${P} Spielern, Spitze ${Math.round(c.peak)} gleichzeitig.</div>`);
+    if (d.rate > 0) {
+      const r = d.rate * P * state.pace;
+      const b = r * (c.spawner_wire + c.marginal * state.scale), a = r * c.i1 * state.scale;
+      parts.push(`<div><b>Im Kampf mit ${P} Spielern:</b> ${de(r, 2)} Einsätze/s, ${fmtB(b)}/s an jeden Spieler, im Mittel ${de(a, 1)} Partikel gleichzeitig.</div>`);
+    } else parts.push(`<div class="small">Im Rechner nicht gezählt: ${d.status === "none" ? "kein Effekt" : "die Verwandlung ersetzt diese Fähigkeit in ihrem Baum (gezählt wird die verwandelte Karte)"}.</div>`);
+    if (d.today_cost) {
+      const t = d.today_cost, diff = c.wire - t.wire;
+      parts.push(`<div>Heute im selben Moment: ${t.particles} Partikel, ${fmtB(t.wire)} pro Spieler → <span class="${diff > 0 ? "delta-warn" : "delta-good"}">${diff > 0 ? "+" : "−"}${fmtB(Math.abs(diff))}</span>.</div>`);
+    }
+    ui.costEl.innerHTML = parts.join("");
+  }
+
+  const uiByKey = {};
+  for (const cls of DATA.classes) {
+    const sec = el("section", "classsec"); sec.id = "cls-" + cls.id;
+    sec.append(el("h2", null, cls.de));
+    const navC = el("a", null, cls.de); navC.href = "#cls-" + cls.id; nav.append(navC);
+    for (const t of cls.trees) {
+      const f = DATA.families[t];
+      const head = el("div", "treehead"); head.id = "tree-" + t;
+      head.append(swatch(t), el("h3", null, `${f.name} · ${f.de}`), el("span", "small", f.motion));
+      sec.append(head);
+      const list = el("div", "cards");
+      for (const d of CARDS.filter(x => x.group === t)) list.append(makeCard(d));
+      sec.append(list);
+      const navT = el("a", null, f.name); navT.href = "#tree-" + t; navT.style.fontWeight = "500"; nav.append(navT);
+    }
+    groupsHost.append(sec);
+  }
+  const navM = el("a", null, "Methode"); navM.href = "#method"; nav.append(navM);
+
+  // ------------------------------------------------------------------ animation of the visible cards
+  const visible = new Set();
+  const io = new IntersectionObserver(es => { for (const x of es) { const ui = x.target._ui; if (x.isIntersecting) visible.add(ui); else visible.delete(ui); } }, {rootMargin: "120px"});
+  for (const ui of cardsUi) if (ui.c1) { ui.art._ui = ui; io.observe(ui.art); }
+  function timeline(ui) {
+    const d = ui.d;
+    let flight = d.flight, fdur = 0;
+    if (!flight && ui.ctx) for (const c of d.context) if (c.flight) { flight = c.flight; break; }
+    const own = d.sim;
+    let start = d.t0;
+    let fl = null;
+    if (flight) {
+      const from = [0.3, 1.4, 0], to = [d.target[0], 1.0, d.target[2] || 0];
+      fdur = Math.hypot(...to.map((x, k) => x - from[k])) / flight.speed;
+      fl = {from, to, dur: fdur, size: flight.size, color: flight.color};
+      if (!d.context.length && (d.moment === "impact" || d.moment === "hit")) start = fdur;
+    }
+    const lists = [];
+    if (ui.ctx) for (const c of d.context) for (const e of c.emitters) lists.push([e, c.t0, true]);
+    for (const e of own) lists.push([e, start, false]);
+    return {lists, fl};
+  }
+  let last = performance.now();
+  function tick(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    for (const ui of visible) {
+      if (!ui.parts) {
+        const tl = timeline(ui);
+        ui.parts = [].concat(...tl.lists.map(([e, t0, dim]) => spawn(e, state.scale, t0, dim)));
+        ui.fl = tl.fl;
+        let end = 0; for (const [e, t0] of tl.lists) end = Math.max(end, t0 + (e.kind === "spawner" ? e.time : 0) + e.exp[1]);
+        ui.len = end + 0.7; ui.t0 = now;
+        for (const [e] of tl.lists) e.standin = ui.d.sprite ? ui.d.sprite.stand_in : null;
+      }
+      let age = (now - ui.t0) / 1000;
+      if (age > ui.len) { ui.parts = null; continue; }
+      step(ui.parts, dt, age);
+      drawFirst(ui.c1, ui.d, ui.parts, age, ui.sprite, ui.fl);
+      drawSide(ui.c2, ui.d, ui.parts, age, ui.sprite, ui.fl);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ------------------------------------------------------------------ controls
+  const playersI = document.getElementById("players"), paceI = document.getElementById("pace");
+  function paintControls() {
+    playersI.value = state.players; document.getElementById("playersOut").textContent = state.players;
+    paceI.value = Math.round(state.pace * 100); document.getElementById("paceOut").textContent = Math.round(state.pace * 100) + " %";
+    for (const b of document.querySelectorAll("#playerSeg button")) b.setAttribute("aria-pressed", String(+b.dataset.p === state.players));
+    for (const b of document.querySelectorAll("#scaleSeg button")) b.setAttribute("aria-pressed", String(+b.dataset.s === state.scale));
+    for (const b of document.querySelectorAll("#bgSeg button")) b.setAttribute("aria-pressed", String(b.dataset.bg === state.bg));
+  }
+  playersI.addEventListener("input", () => { state.players = +playersI.value; paintControls(); renderCalc(); remember(); });
+  paceI.addEventListener("input", () => { state.pace = +paceI.value / 100; paintControls(); renderCalc(); remember(); });
+  document.getElementById("playerSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; state.players = +b.dataset.p; paintControls(); renderCalc(); remember(); });
+  document.getElementById("scaleSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; state.scale = +b.dataset.s; paintControls(); renderCalc(); remember(); for (const ui of cardsUi) ui.parts = null; });
+  document.getElementById("bgSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; state.bg = b.dataset.bg; paintControls(); remember(); });
+
+  // ------------------------------------------------------------------ ratings (db capability: collection "notes")
+  let db = null, readOnly = true;
+  const stored = {}, local = {}, dirty = {}, writing = {}, again = {};
+  const header = document.getElementById("dbstatus");
+  const VERDICTS = ["pick", "rework", "drop"];
+  function setStatus(node, text, kind) { node.textContent = text; node.classList.toggle("ok", kind === "ok"); node.classList.toggle("err", kind === "err"); }
+  function paintVerdict(key) {
+    const v = (local[key] || {}).verdict || "";
+    uiByKey[key].chips.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+  }
+  function paintAll() {
+    for (const key of Object.keys(uiByKey)) {
+      const u = uiByKey[key];
+      paintVerdict(key);
+      if (!dirty[key] && document.activeElement !== u.note) u.note.value = (local[key] || {}).text || "";
+      u.chips.forEach(b => (b.disabled = readOnly));
+      u.note.readOnly = readOnly; u.save.disabled = readOnly;
+    }
+  }
+  function goReadOnly(msg) {
+    readOnly = true; paintAll();
+    setStatus(header, msg || "Bewertungen sind hier nur lesbar; abgeben lassen sie sich auf der veröffentlichten Seite.", "err");
+  }
+  const MSG = {
+    invalid_argument: "abgelehnt (keine Schreibrechte?)",
+    resource_exhausted: "zu viele Anfragen, gleich noch einmal versuchen",
+    quota_exceeded: "Speicher voll",
+    unavailable: "Speicher gerade nicht erreichbar",
+    revoked: "Zugriff entzogen",
+  };
+  async function write(key) {
+    if (readOnly || !db) return;
+    if (writing[key]) { again[key] = true; return; }
+    const want = local[key] || {verdict: "", text: ""};
+    const have = stored[key] || {verdict: "", text: ""};
+    if (want.verdict === have.verdict && want.text === have.text) { dirty[key] = false; return; }
+    const u = uiByKey[key];
+    writing[key] = true;
+    setStatus(u.status, "speichert …");
+    const ref = db.collection("notes").doc(docId(key));
+    const attempt = () => (!want.verdict && !want.text)
+      ? ref.delete()
+      : ref.set({key, verdict: want.verdict, text: want.text, updatedAt: new Date().toISOString()});
+    try {
+      try { await attempt(); }
+      catch (e) {
+        if (!e || e.code !== "unavailable") throw e;
+        await new Promise(r => setTimeout(r, 300 + Math.random() * 700));
+        await attempt();
+      }
+      stored[key] = {verdict: want.verdict, text: want.text};
+      if ((local[key] || {}).text === want.text) dirty[key] = false;
+      setStatus(u.status, "Gespeichert", "ok");
+    } catch (e) {
+      const code = e && e.code || "unbekannt";
+      setStatus(u.status, "Nicht gespeichert: " + (MSG[code] || "Fehler (" + code + ")"), "err");
+      if (code === "invalid_argument" || code === "revoked") goReadOnly();
+    } finally {
+      writing[key] = false;
+      if (again[key]) { again[key] = false; write(key); }
+    }
+  }
+  function subscribe() {
+    db.collection("notes").onSnapshot(snap => {
+      const seen = {};
+      snap.docs.forEach(doc => {
+        const v = doc.data() || {};
+        const key = typeof v.key === "string" ? v.key : doc.id;
+        if (!uiByKey[key]) return;
+        seen[key] = true;
+        stored[key] = {verdict: VERDICTS.includes(v.verdict) ? v.verdict : "", text: typeof v.text === "string" ? v.text : ""};
+      });
+      Object.keys(stored).forEach(k => { if (!seen[k]) delete stored[k]; });
+      Object.keys(uiByKey).forEach(k => { if (!dirty[k] && !writing[k]) local[k] = Object.assign({verdict: "", text: ""}, stored[k]); });
+      paintAll();
+      const n = Object.values(stored).filter(s => s.verdict).length;
+      setStatus(header, "Bewertungen: Speicher verbunden · " + n + " von " + Object.keys(uiByKey).length + " Karten bewertet", "ok");
+    }, e => {
+      const code = e && e.code || "unbekannt";
+      if (code === "unavailable") { setTimeout(subscribe, 2000); return; }
+      if (code === "revoked") { goReadOnly(); return; }
+      setStatus(header, "Bewertungen konnten nicht geladen werden (" + (MSG[code] || code) + ")", "err");
+    });
+  }
+
+  paintControls(); renderScenarioTable(); renderCalc();
+  // The cards are built by this script, after the browser's own jump to a #card-… link.
+  if (location.hash.length > 1) { const t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  requestAnimationFrame(tick);
+  (async () => {
+    const use = window.claude && typeof window.claude.use === "function" ? window.claude.use.bind(window.claude) : null;
+    if (!use) { goReadOnly(); return; }
+    try { db = await use("db"); } catch (e) { db = null; }
+    if (!db) { goReadOnly(); return; }
+    readOnly = false; paintAll();
+    subscribe();
+  })();
+})();
+</script>
