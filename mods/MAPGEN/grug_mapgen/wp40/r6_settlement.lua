@@ -200,7 +200,9 @@ local function settlement_factory()
 					-- Round 51 T4: a banded badlands row (r6_content.lua
 					-- `bands`) lays its clay bands by height down the face below
 					-- its top, over the column's stone and its own filler (never
-					-- an ore, a cave or water), and takes the strata below.
+					-- a resource ore, a cave or water; a native gravel blob under
+					-- a gravel filler matches the filler and may take a band),
+					-- and takes the strata below.
 					local bands, band_last = surface and surface.bands, 0
 					if bands then
 						band_last = surface.band_depth - 1

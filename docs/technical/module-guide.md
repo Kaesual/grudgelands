@@ -2271,7 +2271,9 @@ tools](#player-meta-read-by-external-tools).
   `y % 7 + 1`) and `band_depth` (Round 51 T4, the badlands' clay bands from
   `r6_content.lua`): the strata pass then lays that cycle from one node below
   the top down `band_depth - 1` nodes, over the column's stone and its own
-  filler only (never an ore, a cave or water), and its ordinary strata below. `zones.lua` publishes 80-node owner-local cave candidates but
+  filler only (never a resource ore, a cave or water; a native gravel blob
+  under a gravel-filled band row may take a band), and its ordinary strata
+  below. `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air
   beneath a three-node roof is witnessed within 24 vertical and (for a
   sinkhole) 24 horizontal nodes in the same mapchunk, then validates the exact

@@ -39,7 +39,8 @@ def expected(before, after):
         return True
     # low plants: the decoration rows follow the new tops (a host lost or
     # gained, the cell's thinning order), a change the summary counts
-    if (before == "air") != (after == "air") and not solid(before if after == "air" else after):
+    other = before if after == "air" else after
+    if (before == "air") != (after == "air") and "water" not in other and not solid(other):
         return True
     return False
 
