@@ -2301,11 +2301,28 @@ rule shared by the writer and the renewal) grows in the coastal belt, the
 continental bays and the dragon channels, never in the open sea, and nothing
 deeper than 20: one 16-node cell in four carries a small or large **coral
 patch** (beds 2–10 deep); loose **kelp meadows** (soft noise-bounded areas,
-one sand column in six) grow on sand 3–20 deep, 2–6 tall plus one node per
-two nodes of water beyond 6, at most 15 and always under the surface;
-**seagrass meadows** (their own noise, two sand columns in three, the three
-picked variants `grug_mapgen:seagrass_1..3`, one node of blades) grow on sand
-2–14 deep. Coast claim exclusions (bays, island and channel coasts) do not
+one sand column in six in the core) grow on sand 3–20 deep, 2–6 tall plus one
+node per two nodes of water beyond 6, at most 15 and always under the
+surface; **seagrass meadows** (their own noise, two sand columns in three in
+the core, the three picked variants `grug_mapgen:seagrass_1..3` mixed, one
+node of blades) grow on sand 2–14 deep. **No meadow or patch has a sharp
+outline** (Round 51 follow-up, the user's GUI feedback): a meadow's fill falls
+from its core's over a band of its noise, about 3–6 nodes at the noise's usual
+slope, and single tufts or stalks stand about as far again beyond it; a coral
+patch keeps its ellipse (four in five) and gains a rim of the same width at
+one in four and loose pieces round it at one in twenty, reaching across its
+cell's side. Toward the deepest depth each grows at the fill thins too (the
+last three nodes at ¾, ½ and ¼: coral 8–10, seagrass 12–14, kelp 18–20), so
+no meadow ends on a depth line. Measured on the rule (production seed, 1024 × 1024 columns 6
+deep), the seagrass fill by distance from the old outline goes from 59 %
+inside / 0 outside to 58, 56, 48, 37 % at 4…1 nodes inside and 26, 14, 6, 3,
+2, 1 % at 1…6 outside; kelp 16 → 15, 13, 9 % inside and 6, 2, 1 % outside;
+seagrass 32.6 → 33.7 %, kelp 5.7 %, coral 3.4 → 4.9 % of the columns; in
+written chunks (seed 12345, 12 per class, columns 2–20 deep) seagrass shelf
+15.6 → 16.5 %, belt beyond 10.4 → 6.7 % (much of it 12–14 deep), bays 9.7 →
+9.1 %, channels 13.4 → 14.7 %; coral shelf 3.3 → 4.5 %, channels 1.5 → 0.7 %
+(9–11 deep); kelp within ±0.3 points. Coast
+claim exclusions (bays, island and channel coasts) do not
 keep the seabed bare; settlements, roads and POIs do. Measured on the
 production seed and seed 42 (12 chunks per class, seabed columns 2–20 deep):
 the shelf (the belt's first 80 nodes) coral 2.9–3.0 %, kelp 2.1–2.7 %,
@@ -2317,7 +2334,11 @@ deeper than 12 (in bays 20–81 %), where daylight is nearly gone. Seagrass and 
 ([farming.md](farming.md) "Wild plant renewal"); coral patches stay as
 generated. The six default coral variants, rooted sand-with-kelp and the
 seagrass replace eligible natural bed nodes, with their actual rooted
-geometry/height semantics. Lakes, rivers, planned freshwater and functional
+geometry/height semantics. Seagrass, kelp and the freshwater waterweed
+**sway in drawn frames** (Round 51 follow-up, the user's pick B: eight
+16 × 16 frames over 3.2 s as a tile animation every client shows, our own kelp
+art on `default:sand_with_kelp`); the engine's optional waving stays off for
+them. Lakes, rivers, planned freshwater and functional
 surfaces receive no reef content. There is one terrain/VM writer and no competing
 engine decoration pass (except the two native cave sources above) or global
 density/census target.
@@ -2338,17 +2359,28 @@ lowland/rolling amplitudes, "no additional noise octave") are replaced by
 §7.6. The lake-edge and beach/cliff rules are replaced by Phase 5 water
 (natural lake shores, levels from the terrain) and the shore material rule
 in §7.4. The coral rule remains. The waterweed, lily and fish rules remain
-and are hosted by Phase 5 inland water: waterweed in lakes and, at half the
-rate, in river reaches away from rapids and falls; lilies and Reed Angelfish
-in lakes only (a river holds river water).
+and are hosted by Phase 5 inland water: waterweed in lakes and in river
+reaches away from rapids and falls; lilies and Reed Angelfish in lakes only (a
+river holds river water). **Wild lakes since the Round 51 follow-up** (the
+user's GUI feedback; `wp40/seabed.lua` `lake_at`, shared by the writer and
+the renewal): waterlily pads in clusters on water 1–3 deep (near the shore)
+and waterweed clumps 1–4 tall on the sand bed 3–10 deep, both fading out like
+the sea's meadows, one plant per column; measured over the production seed's
+12 fullest lake chunks: a lily on one in six columns 1 deep and one in seven
+within two of the shore, weed on one in 16–20 columns 2–12 deep (about one
+sand bed in eight). Both regrow ([farming.md](farming.md)). A river keeps its
+sparse weed (2–6 deep, 1/192 columns); the swamp's pools keep their own
+plants; a capital's lake is the settlement's and keeps the town writer's
+water.
 
 Approved 2026-09-24. Preserve continental profile roles and ranges. The broad
 64-node lattice is smoothed once with 1:2:1 weights; the two existing detail
 scales are 128/32 nodes with 3:1 weights. Lowland and rolling amplitudes are
 9 and 12 respectively. No additional noise octave is evaluated. Corals form
 varied deterministic patches at similar overall density. Rooted freshwater
-waterweed sparsely decorates safe, 2–6-node-deep freshwater over natural sand
-without displacing the water column. Thin waterlilies occupy the air node
+waterweed decorates safe freshwater over natural sand (since the Round 51
+follow-up: lakes as above, rivers 2–6 deep) without displacing the water
+column. Thin waterlilies occupy the air node
 immediately above a similarly safe freshwater surface and remain passable.
 Reed Angelfish use existing capped critter spawning, without XP, quality loot
 or fishing changes.

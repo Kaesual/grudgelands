@@ -1,6 +1,6 @@
 # Media Origin & Licenses (grug_nodes)
 
-Seven groups, listed in their own tables below:
+Eight groups, listed in their own tables below:
 
 1. **Biome signature tops (WP18)** — derived works of minetest_game
    textures, CC BY-SA 3.0.
@@ -12,6 +12,7 @@ Seven groups, listed in their own tables below:
 5. **Land kit props (Round 51)** — original, CC0 1.0, by GPT-6 Astra.
 6. **Land plants (Round 51)** — original, CC0 1.0, by GPT-6 Astra.
 7. **Shipwreck set (Round 51)** — original, CC0 1.0, by GPT-6 Astra.
+8. **Kelp (Round 51 follow-up)** — original, CC0 1.0, by GPT-6 Astra.
 
 ## 1. Biome signature tops — derived from minetest_game
 
@@ -218,3 +219,19 @@ record: `tools/r51_sea/sea_art.py`, `tools/r51_sea/README.md` and
 | `grug_nodes_wreck_rope.png` | `tools/r51_sea/wreck_rope.png` (`sea_art.py`, original coil and frayed tail) | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_wreck_sail.png` | `tools/r51_sea/wreck_sail.png` (`sea_art.py`, original ragged canvas and peg) | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_wreck_algae.png` | `tools/r51_sea/wreck_algae.png` (`sea_art.py`, original branching tuft) | GPT-6 Astra | CC0 1.0 | renamed only |
+
+## 8. Kelp (Round 51 follow-up) — CC0 1.0
+
+Our own kelp in place of the vendored `default_kelp.png` on
+`default:sand_with_kelp` (and, tinted, on grug_mapgen's freshwater
+waterweed): eight swaying frames by GPT-6 Astra (follow-up lane FA,
+2026-10-19), picked by the user, copied byte for byte from
+`tools/r51_sea/anim/`. No third-party pixels. Generator and record:
+`tools/r51_sea/anim_art.py`, `tools/r51_sea/README.md` ("FA") and
+`tools/r51_sea/LICENSE-media.md`.
+
+**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_nodes_kelp_anim.png` | `tools/r51_sea/anim/kelp_anim.png` (`anim_art.py`, original stalk and leaves, eight vertically seamless frames) | GPT-6 Astra | CC0 1.0 | renamed only |
