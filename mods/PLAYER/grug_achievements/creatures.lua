@@ -34,6 +34,8 @@ C.ANIMALS = set({
 	"scorpion", "serpent", "shore_crab", "snow_leopard", "song_bird",
 	"speargrass_tiger", "spiderling", "stag", "stone_mite", "tapir", "viper",
 	"vulture", "wild_turkey", "wolf", "zebra",
+	-- Round 51 water families: the amphibians, the swimmers and the fish.
+	"abyssal_shark", "bay_shark", "frog", "goby", "stingray", "tortoise",
 })
 
 C.ZOMBIES = set({"zombie", "sun_dried_husk"})

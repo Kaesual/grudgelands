@@ -229,11 +229,17 @@ local function planner_factory()
 		-- The one-node ground cover also grows in a start's or capital's bare
 		-- band (Round 36 W3): those rows read the column's cover host.
 		local decoration_band_cover = {}
+		-- The land kit's structures (Round 51 lane LK, `kitgen:` rows, class
+		-- "cover") keep their catalog density everywhere their host lies,
+		-- snow included (the dead pines of the snowy crags): no factor.
+		local decoration_kit = {}
 		for index = 1, #decorations do
 			local class = vegetation.decoration_class(decorations[index])
 			decoration_vclass[index] = vegetation.class_index(class)
 			decoration_fmax[index] = vegetation.class_max(class)
 			decoration_band_cover[index] = vegetation.band_cover(decorations[index])
+			decoration_kit[index] = decorations[index].kind == "template" and
+				decorations[index].asset_or_node:match("^kitgen:") ~= nil
 		end
 		-- The placement hash streams of each row (r6_hash.lua `placement`):
 		-- its candidate rank, its thinning draw and its cell budget remainder.
@@ -618,8 +624,8 @@ local function planner_factory()
 					if cover > 0 and height_rule >= 5 and not site_ok(height_rule, column) then
 						cover = 0
 					end
-					local factor = cover > 0 and not scratch.snowy[column] and
-						factors[column] or 0
+					local factor = cover > 0 and (decoration_kit[catalog] and VEGETATION_ONE or
+						not scratch.snowy[column] and factors[column]) or 0
 					if factor > 0 then
 						-- Thin eligible roots before budgeting by the row's thinning
 						-- stream, apart from its rank stream: the low bits keep one

@@ -8,6 +8,11 @@
 -- (bounds, vocabulary, decoration role, registered solids, no 4dir), are
 -- stored sparse and turned per placement (`generated_cells`), and their
 -- settlement class is computed here, never pinned in the row.
+--
+-- Round 51 lane LK: a row whose asset is `kitgen:<key>` is a structure of
+-- the land kit (kit_templates.lua, `generated.kit`), built and turned the
+-- same way; its cells are runs the writer places by the kit's ground rule
+-- (r6_settlement.lua), its runs may be required.
 
 return function(hash, content, template_source, generated)
 	local MAX_SAFE = 9007199254740991
@@ -98,9 +103,11 @@ return function(hash, content, template_source, generated)
 	local source_cache = {}
 	local records, by_id = {}, {}
 	local trees = generated and generated.trees
+	local kit = generated and generated.kit
 	if generated ~= nil and (type(generated) ~= "table" or
 			type(generated.full_seed) ~= "string" or generated.full_seed == "" or
-			type(trees) ~= "table" or type(trees.variant) ~= "function") then
+			type(trees) ~= "table" or type(trees.variant) ~= "function" or
+			(kit ~= nil and (type(kit) ~= "table" or type(kit.variant) ~= "function"))) then
 		fail("generated tree seam differs")
 	end
 
@@ -349,6 +356,7 @@ return function(hash, content, template_source, generated)
 	-- production content with the decoration role, a registered solid, and
 	-- no 4dir/degrotate rotation kind.
 	local species_variants = {}
+	local kit_variants = {}
 	local generated_seconds = 0
 	local name_refs = {}
 	local function generated_ref(name)
@@ -378,19 +386,23 @@ return function(hash, content, template_source, generated)
 		integer(param2, label .. " param2", 0, 23)
 		if kind == "none" and param2 ~= 0 then fail(label .. " turns a node without rotation") end
 	end
-	local function variants_of(key)
-		local list = species_variants[key]
+	-- `source` is the tree module or the kit module (Round 51 lane LK);
+	-- the kit's seeds hash under a domain of their own.
+	local function variants_of(key, source)
+		source = source or trees
+		local cache = source == trees and species_variants or kit_variants
+		local list = cache[key]
 		if list then return list end
-		local row = trees.BY_KEY[key]
+		local row = source.BY_KEY[key]
 		if not row then fail("unknown generated species " .. tostring(key)) end
 		local started = os.clock()
-		local seeds = trees.template_seeds(key, function(k)
-			return hash.digest_count("tree_template_seed_v1", generated.full_seed,
-				{key, k}, 2)
+		local domain = source == trees and "tree_template_seed_v1" or "kit_template_seed_v1"
+		local seeds = source.template_seeds(key, function(k)
+			return hash.digest_count(domain, generated.full_seed, {key, k}, 2)
 		end)
 		list = {}
 		for index = 1, #seeds do
-			local v = trees.variant(key, seeds[index])
+			local v = source.variant(key, seeds[index])
 			if v.count + v.root_count > 16384 then fail("generated tree cell bound exceeded") end
 			v.ref, v.kind, v.rref, v.rkind = {}, {}, {}, {}
 			for cell = 1, v.count do
@@ -408,11 +420,14 @@ return function(hash, content, template_source, generated)
 				integer(r.first, "root run start", 1, v.root_count)
 				integer(r.last, "root run end", r.first, v.root_count)
 				integer(r.parent, "root run parent", 0, run - 1)
+				if r.required ~= nil and type(r.required) ~= "boolean" then
+					fail("root run requirement is not boolean")
+				end
 			end
 			v.bounds = {}
 			for rotation = 0, 3 do
 				local min_x, max_x, min_y, max_y, min_z, max_z =
-					trees.rotated_bounds(v, rotation)
+					source.rotated_bounds(v, rotation)
 				v.bounds[rotation + 1] = {min_x = min_x, max_x = max_x, min_y = min_y,
 					max_y = max_y, min_z = min_z, max_z = max_z}
 			end
@@ -421,12 +436,12 @@ return function(hash, content, template_source, generated)
 			list[index] = v
 		end
 		generated_seconds = generated_seconds + os.clock() - started
-		species_variants[key] = list
+		cache[key] = list
 		return list
 	end
 
-	local function generated_record(definition, key)
-		local variants = variants_of(key)
+	local function generated_record(definition, key, source)
+		local variants = variants_of(key, source)
 		local rotations = {}
 		local computed_class = 2
 		for rotation = 0, 3 do
@@ -458,7 +473,9 @@ return function(hash, content, template_source, generated)
 			fail("generated template pins a settlement class at " .. definition.id)
 		end
 		return {definition_id = definition.id, species = key, generated = true,
-			rotations = rotations, variants = variants}, computed_class
+			kit = (kit ~= nil and source == kit) or nil, rotations = rotations,
+			variants = variants},
+			computed_class
 	end
 
 	local classes = {}
@@ -466,7 +483,15 @@ return function(hash, content, template_source, generated)
 		local definition = definitions[index]
 		local generated_key = definition.kind == "template" and
 			definition.asset_or_node:match("^treegen:([a-z_]+)$")
-		if generated_key then
+		local kit_key = definition.kind == "template" and
+			definition.asset_or_node:match("^kitgen:([a-z_]+)$")
+		if kit_key then
+			if not kit then fail("kit template without the kit at " .. definition.id) end
+			local record, class = generated_record(definition, kit_key, kit)
+			classes[definition.id] = class
+			records[#records + 1] = record
+			by_id[definition.id] = record
+		elseif generated_key then
 			if not trees then fail("generated template without a world seed at " .. definition.id) end
 			local record, class = generated_record(definition, generated_key)
 			classes[definition.id] = class
@@ -548,7 +573,7 @@ return function(hash, content, template_source, generated)
 	local function copy_record(record)
 		if not record or not record.generated then return copy(record) end
 		return {definition_id = record.definition_id, species = record.species,
-			generated = true, rotations = copy(record.rotations),
+			generated = true, kit = record.kit, rotations = copy(record.rotations),
 			variants = record.variants}
 	end
 
@@ -573,7 +598,7 @@ return function(hash, content, template_source, generated)
 				local digests = {}
 				for v = 1, #record.variants do digests[v] = record.variants[v].digest end
 				generated_rows[#generated_rows + 1] = {definition_id = record.definition_id,
-					species = record.species, digests = digests}
+					species = record.species, kit = record.kit, digests = digests}
 			else
 				static[#static + 1] = copy(record)
 			end
@@ -587,6 +612,12 @@ return function(hash, content, template_source, generated)
 		for index = 1, #(trees and trees.ROOT_GROUND or {}) do
 			names[index] = trees.ROOT_GROUND[index]
 		end
+		return names
+	end
+	-- The ground a kit run's column stands on (kit_templates.lua GROUND).
+	function module.kit_ground_names()
+		local names = {}
+		for index = 1, #(kit and kit.GROUND or {}) do names[index] = kit.GROUND[index] end
 		return names
 	end
 	function module.rotation(definition_id, rotation)
@@ -632,6 +663,7 @@ return function(hash, content, template_source, generated)
 		local v = record and record.generated and record.variants[variant_index]
 		if not v then fail("generated variant differs") end
 		local rotate, stem, leaf = trees.rotate, trees.STEM, trees.LEAF
+		if record.kit then rotate, stem, leaf = kit.rotate, kit.STEM, kit.LEAF end
 		local cells = {}
 		for index = 1, v.count do
 			local x, z = rotate(v.x[index], v.z[index], rotation)
@@ -644,7 +676,7 @@ return function(hash, content, template_source, generated)
 		local runs = {}
 		for run_index = 1, #v.runs do
 			local run = v.runs[run_index]
-			local list = {parent = run.parent}
+			local list = {parent = run.parent, required = run.required}
 			for index = run.first, run.last do
 				local x, z = rotate(v.rx[index], v.rz[index], rotation)
 				list[#list + 1] = {x = x, y = v.ry[index], z = z,

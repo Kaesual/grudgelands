@@ -380,29 +380,6 @@ core.register_node("grug_nodes:camp_fire", {
 	drop = "",
 })
 
--- Purely decorative bone heap for the blight/bone forest ground cover:
--- not walkable, replaceable by anything and it drops nothing.
-core.register_node("grug_nodes:bone_pile", {
-	description = "Bone Pile",
-	drawtype = "plantlike",
-	tiles = {"grug_nodes_bone_pile.png"},
-	inventory_image = "grug_nodes_bone_pile.png",
-	wield_image = "grug_nodes_bone_pile.png",
-	paramtype = "light",
-	sunlight_propagates = true,
-	walkable = false,
-	buildable_to = true,
-	floodable = true,
-	is_ground_content = false,
-	drop = "",
-	selection_box = {
-		type = "fixed",
-		fixed = {-6 / 16, -0.5, -6 / 16, 6 / 16, 1 / 16, 6 / 16},
-	},
-	groups = {snappy = 3, attached_node = 1},
-	sounds = default.node_sound_gravel_defaults(),
-})
-
 -- Round-10 secondary ground; existing default media, no new resource identity.
 core.register_node("grug_nodes:ash_ground", {
  description="Ash Ground", tiles={"default_gravel.png^[colorize:#45403e:145"},
@@ -425,5 +402,7 @@ local crop_path = core.get_modpath("grug_nodes")
 grug_nodes.crop_visual = dofile(crop_path .. "/crop_visual.lua")
 grug_nodes.bind_crop_soil_callbacks = dofile(crop_path .. "/crop_soil.lua")(core, default)
 
+-- The land kit's props, the bone pile among them (Round 51 lane LK).
+dofile(crop_path .. "/props.lua")
 -- The Round 51 land plants (flowers, alpine plants, lichen, bush foliage).
 dofile(crop_path .. "/plants.lua")

@@ -703,7 +703,7 @@ Normal tier at level L:
   field (world.md §1) with its own cap of **70** (the mob axis stays
   1–60), and a guard at level **≥ 60 is promoted to elite
   automatically**. Its T3 positional base is `nil` in every exterior class,
-  including shelf. Inside a capital's protected city (its hard-protection x/z
+  including the coastal belt. Inside a capital's protected city (its hard-protection x/z
   mask, `world_zones.md` §12) it is exactly 60 only inside the capital's
   protected volume (from the capital anchor's placement height − 80 upward,
   Round 24 ruling 30); below that floor and at all other non-exterior
@@ -715,7 +715,8 @@ Normal tier at level L:
   remain exactly 60. `_grug_fixed_level` is the sole explicit fixed-entity
   mechanism and bypasses positional and post-role fields only for a deliberately
   designed fixed entity. Its implemented uses are the Kraken (an elite)
-  at L70 and every WP13 king at L65. No second king-specific fixed-level path exists.
+  at L70, the Round 51 sharks (the Bay Shark, normal, at L30; the Abyssal
+  Shark, elite, at L70) and every WP13 king at L65. No second king-specific fixed-level path exists.
 
 | Mob level | HP | Dmg/hit | Kill XP (normal, solo, own level) | Elite / rare XP |
 |-----------|----|---------|-----------------------:|----------------:|
@@ -892,9 +893,24 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   teleport). A mob idle in water (a fight that ended mid-lake, a reset close
   to home) swims toward its home once a second until it stands on land.
   Leashes, contact timeouts and arena edges are unchanged. Fliers,
-  the water swimmers (Kraken, Reed Angelfish) and the dragons and their
+  the water swimmers (Kraken, Reed Angelfish, and since Round 51 the
+  Stingray family, the sharks and the Tide Goby) and the dragons and their
   whelps keep their own movement (`mobs/api.lua` `grug_may_wade`,
   `grug_mobs/aggro.lua` `shore_check`).
+- **Swimmer reset** (Round 51, sea plan ruling S11): a pure water swimmer
+  under the ordinary leash fights only targets within its reach, in water
+  (feet or body in a water node, so a wader counts) or on a boat. It
+  acquires no player out of its reach (the `_grug_target_veto` seam, which
+  threat and taunt honour too), and a target that leaves its reach — onto a
+  bank, a beach, a pier or a ground mount — resets it within a second: the
+  unreachable-target give-up (below) forgets and heals it (and ignores that
+  player for 8 nodes or 15 s), and the evade swims it back to its spawn
+  point, which lies in deeper water, untouchable as every evader. A swimmer has no wander
+  leash, so its evade ends within about four nodes of home, not at the
+  32-node wander radius; reset next to home it only heals and forgets. So
+  nobody fights a swimmer from the bank that cannot answer. The bespoke
+  Kraken keeps its own open-sea leash (`grug_mobs/swimmer.lua`
+  `in_swimmer_reach`, `grug_mobs/aggro.lua` `swimmer_reset`).
 - **Catching up must be enough to hit** (decided 2026-08-13): a mob that has
   closed to within its `reach` lands its attacks on a target fleeing at full
   speed. The **attack cadence therefore runs during the chase**, not only

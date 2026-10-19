@@ -107,7 +107,8 @@ owns shore, hydrology and resource placement. Both deep-jungle and jungle-fringe
 use canopy litter. `grug_badlands_east` remains the ochre component of the Troll
 frontier and Stormscale palettes, not a transfer of Orc cultural ownership.
 
-The coastal habitat follows the authored shelf; planned inland water keeps its
+The coastal habitat follows the coastal belt (Round 51: 250-350 nodes wide,
+`world_zones.md` §7.4); planned inland water keeps its
 zone classification. Coral, kelp and wild-source details follow
 `world_zones.md`'s Round 10 source/reef rules. The recipes' crab roles live
 on sandy sea shore near water (§3.1, §4.2). Registered node/biome names
@@ -234,8 +235,8 @@ placeholder.
 | grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`; lichen patches and alpine plants (Round 51) | band-specific nature biome (Dwarf area only) |
 | grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
 | grug_badlands (+ `_east`) | large_cactus, dead shrub, withered bush (Round 51) | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
-| grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
-| grug_bone_forest | gravewood (generated) dense (fill 0.015), bone piles | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
+| grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, the land kit's bone finds, graveyards and ruins (§2.1); gravemoss `[herb T1]` | fireflies/wisp particles optional |
+| grug_bone_forest | gravewood (generated) dense (fill 0.015), the land kit (§2.1) | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); large-leaved bushes; papyrus at the warm shores (§2.1) | lianas, ferns and strong-coloured flowers (Round 51); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), dead bush (no papyrus since Round 51: the reeds and cattails do that job) | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]` | shallow water pools 1–2 deep (mud floor), Round 47 |
@@ -260,21 +261,21 @@ contract error rather than a fallback to an engine biome.
 | Logical biome | Top / depth | Filler / depth | Shore and bed | Deterministic R6 decorations (`fill_numerator/fill_denominator`) |
 |---|---|---|---|---|
 | `grug_meadows` | `default:dirt_with_grass` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/2000`; bush `1/250`; each grass 1–5 `3/50` |
-| `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50` |
-| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only; Round 51 (also in the pine hills): alpine cushion and windshrub `1/80` each on gravel and the pine hills' soils; lichen a and b `1/14` each on gravel and stone inside a lichen patch (a centre in one of 450 columns, every column within 2 of it) |
-| `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
-| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50`; Round 51 (also in the deep forest): each pastel flower `1/300` on the fertile palette |
-| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; bush `1/250`, shrub band only; each fern 1–3 `1/50` |
+| `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50`; land kit: boulder `1/500`, cairn A `1/4000`, cairn B `1/4000` |
+| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only; land kit: boulder `1/500`, cairn A `1/4000`, cairn B `1/4000`; Round 51 (also in the pine hills): alpine cushion and windshrub `1/80` each on gravel and the pine hills' soils; lichen a and b `1/14` each on gravel and stone inside a lichen patch (a centre in one of 450 columns, every column within 2 of it) |
+| `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | land kit only: dead snow-covered pine `1/400`; boulder `1/500`, cairn A `1/4000`, cairn B `1/4000` |
+| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50`; land kit: fallen silverwood log `1/3000`, ruin `1/6000`, statue `1/10000`; Round 51 (also in the deep forest): each pastel flower `1/300` on the fertile palette |
+| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; bush `1/250`, shrub band only; each fern 1–3 `1/50`; land kit as the elf forest |
 | `grug_swamp` | `grug_nodes:mud` / 1, mixed with `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` and `grug_nodes:dirt_with_moss` (Round 47) | `grug_nodes:mud` / 2 (3 under a pool) | `grug_nodes:mud` | dry shrub `1/250`; Round 47: swamp tree `1/120` on every swamp ground; tall grass 3–5 `1/9` each and junglegrass `1/20` on wet grass (a quarter on the muds); ferns 1–3 `1/14` each on moss soil; moss carpet `1/16` on the muds. The pools, the waterlilies on them, reeds rooted in their beds and the bank's reeds, cattails and carpets come from the swamp pass (`wp40/swamp_writer.lua`) |
 | `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
-| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; withered bush `1/150` (Round 51) |
-| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; withered bush `1/150` (Round 51) |
-| `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; bone pile `1/500` |
-| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; dry shrub `3/200`, shrub band only; bone pile `1/250` |
-| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25`; the jungle's Round 51 rows (below) |
-| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; Round 51 (all three jungle biomes, on the fertile palette): each fern 1–3 `1/75`, each strong flower `1/300`, large-leaved bush `1/250` (default bush with jungle bush leaves, shrub class) |
-| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; the jungle's Round 51 rows |
-| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | each marram 1–3 `1/27` (the sand shores' rows below) |
+| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; land kit: bone find `1/1500`; withered bush `1/150` (Round 51) |
+| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; land kit: bone find `1/1500`; withered bush `1/150` (Round 51) |
+| `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; the undead land kit (below) |
+| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; dry shrub `3/200`, shrub band only; the undead land kit (below) |
+| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25`; land kit: fallen kapok log `1/2500`; the jungle's Round 51 rows (deep jungle row) |
+| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; land kit: fallen kapok log `1/2500`; Round 51 (all three jungle biomes, on the fertile palette): each fern 1–3 `1/75`, each strong flower `1/300`, large-leaved bush `1/250` (default bush with jungle bush leaves, shrub class) |
+| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; land kit: fallen kapok log `1/2500`; the jungle's Round 51 rows |
+| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | land kit: driftwood `1/360`; each marram 1–3 `1/27` (the sand shores' rows below) |
 
 **Sand shores (Round 51 lane LP).** Dry sand above the water (the coast rule,
 in any biome) hosts two rows of their own, on sand only: papyrus `1/5` as a
@@ -324,6 +325,45 @@ own nodes. Leaves decay within radius 3 of wood; the gravewood's grey leaves
 drop nothing. Saplings grow the generator's tree of their species too (§5).
 Simple variant ranges above mean one independently settled entry per named
 variant at the displayed fill.
+
+**The land kit** (Round 51, land plan rulings 7–9 and 12–14; the user's
+picks in the land viewer, `tools/r47_sw/land.js` `ITEMS` and
+`DESIGN.md` "Round 51"). Small structures stand in the wild at the
+viewer's guide densities (per column of the biome's host ground):
+
+| Zone (biomes) | Structure and catalog density |
+|---|---|
+| Undead (`grug_blight`, `grug_bone_forest`) | bone find `1/2000`; wild graveyard `1/5000` (2–6 crooked gravestones a fifth fallen and a fifth sunken, a fence remnant on 0–2 sides; every world its own); fallen gravewood log `1/5000`; gravewood stump `1/4000`; mossy ruin remnants `1/8000`; grave mound `1/8000`; mourner statue (or its bust or base alone) `1/10000`; obelisk `1/10000`; ruin column `1/12000`; sunken ruin corner `1/12000`; broken arch `1/14000`; crypt doorway `1/16000` |
+| Dwarf (`grug_crags`, `grug_crags_snowy`, `grug_pine_hills`) | boulder of 2–4 stone and mossy cobble `1/500`; cairn A (cairn stone courses and cap) `1/4000`; cairn B (the trees' base, branch and twig shapes in stone) `1/4000`; dead snow-covered pine `1/400` (snowy crags only) |
+| Orc (`grug_badlands`, `grug_badlands_east`) | bone find `1/1500` |
+| Elves (`grug_elf_forest`, `grug_deep_forest`) | fallen silverwood log `1/3000`; ruin pieces of silver sandstone `1/6000`; decayed statue (veiled head, broken torso) `1/10000` |
+| Jungle (`grug_deep_jungle`, `grug_jungle_fringe`, `grug_jungle_edge`) | fallen kapok log `1/2500` |
+| Beach (`grug_beach`) | driftwood (a log, now and then a forked branch) `1/360` of the beach's columns (the viewer's `1/120` of the sand near the water) |
+
+A bone find is one piece of the skeleton set (humanoid skull, horned
+animal skull, ribcage, small animal's spine, scattered long bones,
+splinters), or now and then a pair (a skull with its ribcage or spine),
+turned at random: rare, and never one picture repeated. Each structure is
+built per world from its seed like the trees (`wp40/kit_templates.lua`,
+16 graveyards, 32 bone finds, 8–16 variants of the rest) and turned per
+placement. Every piece follows its own ground one node up or down; a piece
+spanning columns (a log's first three nodes, a crypt post with its lintel)
+lies level. The core pieces (a graveyard's first stone, a crypt's doorway
+and posts, an arch's piers, both nodes of a grave mound) must stand or the
+structure is not placed; the others (a further stone, a wall column of a
+ruin, a fence post, the second piece of a pair) drop out where the ground
+does not allow them, so nothing floats; a sunken course takes its own
+column's dry top, never a bed under water. The kit keeps
+off settlements, roads, POIs and water (the trees' exclusions) and needs
+its whole footprint inside one mapchunk. The rows have no altitude or
+forest factor and stand on snow; they are no vegetation and never renew.
+Every block drops an ordinary block (ruling 7): ruins, boulders, plinths,
+logs and fences are default blocks and drop themselves (stone drops
+cobblestone); the props (`grug_nodes`: gravestones, cairn stones, statue
+pieces, the obelisk's tip, driftwood) drop cobblestone, stone, silver
+sandstone, wood or a stick; the bone pieces drop nothing. The bone pile
+keeps its name as the scattered long bones (ruling 9); its two simple rows
+(blight `1/500`, bone forest `1/250`) are gone.
 
 Candidate cells are globally anchored 16-column squares. Deterministic
 per-world placement and rotation replace engine randomness and the legacy
@@ -1542,9 +1582,9 @@ The current family classification is:
 
 | Disposition | Existing families and named variants |
 |---|---|
-| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker |
-| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings and the PvP fortress Generals |
-| Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish |
+| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker; Tortoise |
+| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Frog, Stingray, Bay Shark, Abyssal Shark; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings and the PvP fortress Generals |
+| Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish, Tide Goby |
 | Independent role | Accord/Throng guards, land guards, royal guards, PvP camp captains and the Generals' bodyguards, and peaceful settlement NPCs |
 
 
@@ -1576,10 +1616,10 @@ formats in the design frame §4.1–§4.3. All of it is data in
 `items.json`, `drops.json`), loaded by `grug_mobs/subtypes.lua` after every
 mob file. A missing or empty file means no data, and without data every mob
 behaves as before. The shipped files are copies of the reviewed design
-catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 205 sub-types
-(49 leaders, 10 corrupted, below), 12 tints, 120 items (94 signatures, of
-which 89 new, 24 existing generic materials and 2 quest items) and 24 drop
-families. The catalogue is the
+catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 222 sub-types
+(49 leaders, 10 corrupted, below, and Round 51's 17 water sub-types), 12
+tints, 120 items (94 signatures, of which 89 new, 24 existing generic
+materials and 2 quest items) and 27 drop families. The catalogue is the
 source; edit both together.
 
 **Sub-types.** Each record registers `grug_mobs:<role>` as a copy of its
@@ -1623,7 +1663,11 @@ sub-types burn like the Zombie).
      every zone that uses it. A capital's L20–23 slot counts as tier 3 (the
      user, plan §6 item 11). The world slots (underground casts, water mobs,
      the faction guards, unplaced sub-types; their level comes from the
-     place) are exempt (items 9, 10).
+     place) are exempt (items 9, 10). Since Round 51 a water family that
+     lives in zone water is no world slot: its sub-types are zone slots and
+     bound by this rule (below, "Round 51 water families"); the fixed-level
+     water mobs (Kraken, Bay Shark, Abyssal Shark) and the critter fish stay
+     world slots.
   5. The faction names stay The Accord and The Throng; no name refers to an
      existing game.
 
@@ -1756,3 +1800,56 @@ receives the sorted names of the players the quest kill credit receives
 Code seams for other lanes: `grug_mobs.family_of(name_or_role)`,
 `grug_mobs.subtype(name_or_role)` (the parsed record or nil),
 `grug_mobs.level_band(level)`, `grug_mobs.read_data_json(file)`.
+
+## Round 51 water families
+
+Sea plan rulings S10–S17 and §5 (`docs/planning/round51-sea-plan.md`), the
+families, ladders and names of the NAMES lane accepted by the user
+(2026-10-19; `tools/r51_names/draft.json`). Water is a complement, not a
+second land: five new families next to the crab, the crocodile, the Reed
+Angelfish and the Kraken. Models and textures from animalworld (MIT,
+`grug_mobs/LICENSE-media.md` §3); all of them silent until the user picks
+sounds.
+
+| Family | Disposition | Moves | Sub-types or slot | Fish loot |
+|---|---|---|---|---|
+| Tortoise | neutral (bites back) | amphibian, slow (walk 0.5, run 2) | 6 by drop tier: Pond Terrapin (1–10), Sandbar (11–20), Knobshell (20–30), Ridgeshell (31–40), Ironshell (41–50), Stoneback Tortoise (51–60) | the band's fish 1/1, meat 1/2 |
+| Frog | aggressive | amphibian, hops (run 3.4); bites with its walk frames | 6: Marsh Frog, Bog Toad, Fen Croaker, Mire Bullfrog, Wartback Toad, Blackwater Toad | the band's fish 1/1, meat 1/3 |
+| Stingray | aggressive | pure swimmer (run 3.5) | 5: Sand Ray, Shoal Ray, Barbtail Ray, Thornback Ray, Wyrmwake Ray (no tier 5) | the band's fish 1/1 |
+| Shark | aggressive | pure swimmer | world slots: Bay Shark, fixed L30, normal; Abyssal Shark, fixed L70, elite (1.8 × the Bay Shark, about 2.5 × with the elite ×1.4) | Bay Shark Mire Carp 1/1 ×1–2 and meat; Abyssal Shark Storm Tuna ×3–6 and meat ×3 |
+| Goby | critter | pure swimmer | world slot: Tide Goby, L1 | Raw Fish 1/1 |
+
+- **Amphibians** (tortoise, frog) float and do not fly, like the crocodile:
+  they walk on land, swim at the surface and follow their target through
+  harmless water and up a bank (Round 34, `combat_stats.md` §4 "Mobs in
+  water"). They may live near land (S10).
+- **Pure swimmers** (stingray, sharks, goby) never leave the sea water
+  (`grug_mobs/swimmer.lua`, as the Kraken and the Reed Angelfish). A fighting
+  swimmer never acquires a player out of its reach — neither in water (feet
+  or body in a water node) nor on a boat — and a target that leaves its
+  reach **resets** it (S11): it forgets the fight, heals to full and swims
+  back to its spawn point in deeper water (`combat_stats.md` §4).
+- **Drop tiers and level 20.** The tiers run 1–10, 11–20, 20–30, 31–40,
+  41–50, 51–60: T3 starts at 20 so a capital's L20–23 belt takes the T3 name,
+  and T2 ends at 20 so an L18–20 belt takes the T2 name. Which sub-type a
+  level-20 mob is follows from its belt, never from the level: a belt takes
+  the family's sub-type of the tier that holds most of its levels, the
+  higher on a tie (`tools/r38_names/check_rules.py` `effective_tier`), so an
+  L18–20 belt's kind lists the T2 role and an L20–23 belt's the T3 role; a
+  lone L20 would be T2. Either way a level-20 mob drops band-2 loot
+  (`floor((20 − 1) / 10) + 1`).
+- **Sizes.** The draft's sizes are the shown sizes; the catalogue's sub-type
+  sizes stay within 0.75–1.3 because the bases are enlarged (tortoise 1.1,
+  frog 2.16, stingray 1.15 of the model).
+- **Quest-ready** (S17, sea plan §5): each zone-water family is a ladder of
+  sub-types inside one drop tier each, so its names are the exact kill
+  targets and pass rule 4; the sharks are world slots with one level; the
+  critter fish are never kill targets (their fish count for item
+  objectives). **Until MOBS step M2** places them, no recipe holds a water
+  role: each sub-type is an unplaced world slot named as in the draft, and
+  the new mobs spawn nowhere (`/spawnentity grug_mobs:<role>` shows one).
+  Step M2 adds the water kinds to the zone recipes (hosts by water band:
+  distance to dry land and depth, S10–S12), which turns the draft's zone
+  slots into names (`tools/r38_b1/gen_names.py --proposals
+  tools/r51_names/draft.json`), and the sharks' and the goby's spawn rows
+  (they are water authorities, `spawn_policy.lua`).

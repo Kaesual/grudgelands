@@ -114,8 +114,16 @@ return function(deps)
 		-- from gravewood's wood, whose leaves drop no sapling).
 		swamp_tree = "no swamp sapling",
 	}
-	-- Simple decorations that are not vegetation.
-	local NOT_VEGETATION = {["grug_nodes:bone_pile"] = true}
+	-- Simple decorations that are not vegetation. (The bone pile was one
+	-- until Round 51: lane LK's land kit places it, see below.)
+	local NOT_VEGETATION = {}
+	-- A land kit structure (Round 51 lane LK, `kitgen:` rows): no plant, so
+	-- no renewal; of its blocks only the kit's own props (no default block a
+	-- player builds with) count as natural, so they never guard a sapling
+	-- spot the way built blocks do.
+	local function kit_row(row)
+		return row.kind == "template" and row.asset_or_node:match("^kitgen:") ~= nil
+	end
 
 	local function sorted_keys(set)
 		local result = {}
@@ -216,6 +224,8 @@ return function(deps)
 					param2 = row.rule:find("param2_4", 1, true) and 4 or 0,
 					rule = site_rule(row), stacked = stacked(row)}
 			end
+		elseif kit_row(row) then
+			-- not renewed
 		elseif WOODY[row.id] then
 			local species = WOODY[row.id]
 			local name = TREES[row.id] and "tree" or "shrub"
@@ -288,7 +298,17 @@ return function(deps)
 	-- Template cells are the rest of what the decorations place naturally.
 	for index = 1, #deps.template_records do
 		local record = deps.template_records[index]
-		if record.generated then
+		if record.kit then
+			for v = 1, #record.variants do
+				local variant = record.variants[v]
+				for c = 1, variant.count do
+					if variant.name[c]:sub(1, 8) ~= "default:" then natural[variant.name[c]] = true end
+				end
+				for c = 1, variant.root_count do
+					if variant.rname[c]:sub(1, 8) ~= "default:" then natural[variant.rname[c]] = true end
+				end
+			end
+		elseif record.generated then
 			for v = 1, #record.variants do
 				local variant = record.variants[v]
 				for c = 1, variant.count do natural[variant.name[c]] = true end

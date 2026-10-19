@@ -68,7 +68,14 @@ end
 rawset(_G, "grug_mapgen", {wp40 = W.wp40})
 rawset(_G, "grug_zones", W.zones)
 
-local ATLAS = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
+-- The atlas bounds of the tree (atlas.lua's view), or R27_ATLAS=
+-- "min_x,min_z,max_x,max_z" for a render of an older tree's bounds.
+local ATLAS = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua").view()
+if os.getenv("R27_ATLAS") then
+	local a, b, c, d = os.getenv("R27_ATLAS"):match("^(-?%d+),(-?%d+),(-?%d+),(-?%d+)$")
+	assert(a, "bad R27_ATLAS")
+	ATLAS = {min_x = tonumber(a), min_z = tonumber(b), max_x = tonumber(c), max_z = tonumber(d)}
+end
 
 for index = 4, #arg do
 	local name, path, quality, rest = arg[index]:match("^([%w_%-]+)=([^:]+):(%w+):?(.*)$")

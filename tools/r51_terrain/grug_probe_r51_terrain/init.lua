@@ -4,7 +4,9 @@
 -- +-4190 x +-3740), just inside and just outside the new bounds, through the
 -- game's own seams (grug_zones, grug_core, core.is_protected), generates the
 -- chunk holding each column's sea floor and checks what the engine wrote
--- there (water at y 1, ground at the planned floor), then shuts down.
+-- there (water at y 1, ground at the planned floor); then (Round 51 T2) reads
+-- the water query and the protection at 23 and 25 nodes off a coast; then
+-- shuts down. Boot it with SEED=12345 (the windows are that seed's).
 -- Logs "[r51_terrain_probe] RESULT PASS|FAIL ...".
 local PREFIX = "[r51_terrain_probe] "
 local function log(message) core.log("action", PREFIX .. message) end
@@ -57,9 +59,85 @@ local function finish()
 	core.request_shutdown("r51 terrain probe done", false, 0)
 end
 
+-- Round 51 T2: the water query at one column of each class, and the
+-- protection 23 and 25 nodes off a coast for bay, belt and channel water
+-- (what core.is_protected asks for a player of either faction, and the
+-- system rule water and plants follow), at the surface and the seabed.
+-- The classes are found every 16 nodes over the world, the 23/25 columns
+-- every 3 nodes in a few windows (seed 12345: a bay, the Wyrmglass channel
+-- and its island's belt).
+local WINDOWS = {{-1500, -3000, -400, -2000}, {-3400, -800, -2300, 800},
+	{-400, -2700, 900, -1800}}
+local function t2_checks()
+	local Q = grug_zones.water_query_at
+	if type(Q) ~= "function" then
+		failures[#failures + 1] = "no water query"
+		return
+	end
+	local classes, probes = {}, {}
+	for z = -3740, 3740, 16 do
+		for x = -4190, 4190, 16 do
+			local class, zone, level, distance, depth, protected = Q(x, z)
+			if class and not classes[class] then
+				classes[class] = true
+				log(("query %d %d: %s zone %s level %s distance %s depth %d protected %s")
+					:format(x, z, class, tostring(zone), tostring(level), tostring(distance),
+					depth, tostring(protected)))
+			end
+		end
+	end
+	for _, w in ipairs(WINDOWS) do
+		for z = w[2], w[4], 3 do
+			for x = w[1], w[3], 3 do
+				local class, _, _, distance, _, protected = Q(x, z)
+				if class == "bay" or class == "belt" or class == "channel" then
+					local band = math.floor(distance)
+					local key = class .. band
+					if (band == 23 or band == 25) and not probes[key] then
+						probes[key] = {class, band, x, z, protected}
+					end
+				end
+			end
+		end
+	end
+	for _, class in ipairs({"lake", "river", "bay", "belt", "channel", "open_sea"}) do
+		expect(classes[class], "a " .. class .. " column")
+	end
+	for _, class in ipairs({"bay", "belt", "channel"}) do
+		for _, band in ipairs({23, 25}) do
+			local probe = probes[class .. band]
+			expect(probe ~= nil, ("a %s column %d off the coast"):format(class, band))
+			if probe then
+				local x, z = probe[3], probe[4]
+				local floor_y = grug_zones.terrain_height_at(x, z)
+				for _, y in ipairs({1, floor_y}) do
+					local pos = {x = x, y = y, z = z}
+					local accord = grug_core.world_protected_for_faction(pos, "accord")
+					local throng = grug_core.world_protected_for_faction(pos, "throng")
+					local system = grug_core.natural_ground_alterable(pos)
+					log(("protect %s %d off at %d %d y %d: territory %s, accord %s, throng %s, " ..
+						"system alterable %s"):format(class, band, x, z, y,
+						tostring(grug_zones.territory_rule_at(pos)), tostring(accord),
+						tostring(throng), tostring(system)))
+					local label = ("%s %d off y %d"):format(class, band, y)
+					if band >= 24 then
+						expect(accord and throng and not system, label .. " protected")
+					else
+						expect(not (accord and throng) and system, label .. " open")
+					end
+				end
+				expect(probe[5] == (band >= 24), class .. " " .. band .. " query flag")
+			end
+		end
+	end
+end
+
 local function check_nodes(index)
 	local c = COLUMNS[index]
-	if not c then return finish() end
+	if not c then
+		t2_checks()
+		return finish()
+	end
 	local x, z = c[1], c[2]
 	local h = read_column(c)
 	local lo, hi = {x = x, y = h - 2, z = z}, {x = x, y = 2, z = z}

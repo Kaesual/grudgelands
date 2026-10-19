@@ -345,7 +345,10 @@ do
 		for cx = 0, 47, quick and 2 or 1 do
 			for _, row in ipairs(cell_rows(fixture, cx, cz)) do
 				local x, z, y = row.x, row.z, row.y - 1
-				if x >= cx * 16 and x < cx * 16 + 16 and z >= cz * 16 and z < cz * 16 + 16 then
+				-- (Round 51 lane LK: the land kit's `kitgen:` structures are no
+				-- plants; they stand on snow too)
+				if x >= cx * 16 and x < cx * 16 + 16 and z >= cz * 16 and z < cz * 16 + 16 and
+						not content.decorations()[row.catalog].asset_or_node:match("^kitgen:") then
 					total = total + 1
 					local id = ids[row.catalog]
 					local class = habitat.decoration_class(content.decorations()[row.catalog])
@@ -532,8 +535,11 @@ do
 				for _, row in ipairs(rows) do
 					local cover = content.decoration_cover(row.id, biome, ref)
 					local rule_class = habitat.decoration_class(row)
+					-- (Round 51 lane LK: the land kit's `kitgen:` structures are
+					-- no plants and never renewed)
 					if cover > 0 and row.id ~= "crags_snowy_pine" and
-							row.id ~= "deep_forest_apple_log" then
+							row.id ~= "deep_forest_apple_log" and
+							not row.asset_or_node:match("^kitgen:") then
 						local class = row.kind == "simple" and "cover" or
 							((rule_class == "shrub" or rule_class == "shrub_band" or
 								row.id == "pine_hills_blueberry_bush") and "shrub" or "tree")
@@ -584,7 +590,10 @@ do
 		for cx = ccx - 24, ccx + 24, stride do
 			for _, row in ipairs(cell_rows(fixture, cx, cz)) do
 				local x, z, y = row.x, row.z, row.y - 1
-				if floor(x / 16) == cx and floor(z / 16) == cz then
+				-- (Round 51 lane LK: the land kit's structures are no plants;
+				-- the dead pines and cairns stand on the snowy heights)
+				if floor(x / 16) == cx and floor(z / 16) == cz and
+						not content.decorations()[row.catalog].asset_or_node:match("^kitgen:") then
 					total = total + 1
 					local _, _, zone, biome = ps.column_values_at(x, z)
 					local class = habitat.decoration_class(content.decorations()[row.catalog])

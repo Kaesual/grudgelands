@@ -17,14 +17,14 @@ end
 classify("critter", {
 	"bog_fowl", "bone_weevil", "cave_bat", "cave_crawler", "gull",
 	"hare", "parrot", "rabbit", "song_bird",
-	"wild_turkey", "reed_angelfish",
+	"wild_turkey", "reed_angelfish", "goby",
 })
 
 classify("neutral", {
 	"boar", "carrion_crow", "gaunt_stag", "ibex", "jungle_boar",
 	"mountain_ram", "plague_boar", "plains_runner", "reef_lurker",
 	"shore_crab", "stag",
-	"tapir", "zebra",
+	"tapir", "tortoise", "zebra",
 })
 
 classify("aggressive", {
@@ -42,6 +42,8 @@ classify("aggressive", {
 	"snow_leopard", "speargrass_tiger", "spiderling", "stone_golem",
 	"stone_mite", "storm_whelp", "sun_dried_husk", "viper", "vulture",
 	"war_construct", "wisp", "wolf", "zombie",
+	-- Round 51: the water families (biomes_mobs.md, Round 51 section).
+	"abyssal_shark", "bay_shark", "frog", "stingray",
 })
 
 -- Sub-types (subtypes.lua, Round 28 ruling 35) add their own entity names to

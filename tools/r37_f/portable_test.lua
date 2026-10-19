@@ -382,10 +382,11 @@ rawset(_G, "grug_zones", {
 })
 local base = dofile(ROOT .. "/mods/PLAYER/grug_map/base.lua")
 local hi, no = base.spec("high"), base.spec("normal")
-check(no.minimap and no.minimap.quality == "normal" and no.minimap.width == 1080
-	and no.minimap.height == 960, "M normal: the minimap's own 1080x960 copy (Round 44)")
-check(hi.minimap and hi.minimap.quality == "normal" and hi.minimap.width == 1080
-	and hi.minimap.height == 960, "M high: a 1080x960 normal minimap copy")
+-- Round 51 (lane MAP): normal is 1215 x 1080 over the larger atlas
+check(no.minimap and no.minimap.quality == "normal" and no.minimap.width == 1215
+	and no.minimap.height == 1080, "M normal: the minimap's own 1215x1080 copy (Round 44)")
+check(hi.minimap and hi.minimap.quality == "normal" and hi.minimap.width == 1215
+	and hi.minimap.height == 1080, "M high: a 1215x1080 normal minimap copy")
 check(base.spec("high", {width = 200, height = 100}).minimap == nil, "M a crop has no copy")
 
 -- downscale: a gradient, the real 10:3 ratio at a tenth of the size

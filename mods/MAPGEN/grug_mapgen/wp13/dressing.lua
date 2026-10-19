@@ -705,13 +705,54 @@ local function loader(directory)
 		return name
 	end
 
-	-- A grave: a flagstone laid in the blight with an upright marker on it.
-	-- `tall` stacks a second course, which is what the older half of a
-	-- burial ground looks like next to the newer.
+	-- The gravestone blocks (Round 51 lane LK, land plan ruling 12; the land
+	-- viewer's "town graveyard"): every town's graves, the wild graveyards'
+	-- too. They drop cobblestone.
+	M.GRAVESTONE = "grug_nodes:gravestone_stele"
+	M.GRAVESTONE_CROSS = "grug_nodes:gravestone_cross"
+
+	-- A grave: a flagstone laid in the ground with a gravestone on it, its
+	-- face to the front (-z) of the composition. `tall` crowns the stone
+	-- with the cross, which is what the older half of a burial ground
+	-- looks like next to the newer.
 	function M.grave(buf, palette, x, z, tall)
 		buf:put(x, 0, z, palette.node("path"))
-		buf:put(x, 1, z, palette.node("low_wall"))
-		if tall then buf:put(x, 2, z, palette.node("low_wall")) end
+		buf:put(x, 1, z, M.GRAVESTONE, 0)
+		if tall then buf:put(x, 2, z, M.GRAVESTONE_CROSS, 0) end
+	end
+
+	-- The skeleton set (Round 51 lane LK, land plan rulings 8-9): what lies
+	-- where a town's flora or a lair puts bones. Mostly the scattered long
+	-- bones (`grug_nodes:bone_pile`, the set's piece under the old name) and
+	-- splinters, now and then a skull, a ribcage or an animal's skull or
+	-- spine; the piece and its quarter turn come from a hash of the cell,
+	-- so neighbours differ. Returns the node and its param2.
+	local BONE_PIECES = {"grug_nodes:skull_human", "grug_nodes:ribcage_human",
+		"grug_nodes:skull_horned", "grug_nodes:spine_animal",
+		"grug_nodes:bones_fragments", "grug_nodes:bones_fragments"}
+	M.BONES = "grug_nodes:bone_pile"
+	function M.bone_piece(x, z)
+		local hash = (x * 113 + z * 197 + x * z * 5 + 4099) % 16
+		local turn = (x * 7 + z * 13 + 1024) % 4
+		if hash == 2 then
+			return BONE_PIECES[3 + (x + z + 1024) % 2], turn
+		elseif hash < 2 then
+			return BONE_PIECES[hash + 1], turn
+		elseif hash < 5 then
+			return BONE_PIECES[5], turn
+		end
+		return M.BONES, turn
+	end
+	-- Put the palette's undergrowth at (x, y, z); where that is the bone
+	-- pile, a piece of the skeleton set instead.
+	function M.undergrowth_at(buf, palette, x, y, z)
+		local name = palette.node("undergrowth")
+		if name == M.BONES then
+			local piece, turn = M.bone_piece(x, z)
+			buf:put(x, y, z, piece, turn)
+		else
+			buf:put(x, y, z, name)
+		end
 	end
 
 	-- A burial ground: rows of graves two nodes apart, with the odd plot
@@ -727,7 +768,7 @@ local function loader(directory)
 				if below and below.name ~= "air" and
 						(above == nil or above.name == "air") and hash ~= 3 then
 					if hash == 7 then
-						buf:put(x, 1, z, palette.node("undergrowth"))
+						M.undergrowth_at(buf, palette, x, 1, z)
 					else
 						M.grave(buf, palette, x, z, hash % 4 == 0)
 						set = set + 1
@@ -868,7 +909,8 @@ local function loader(directory)
 					local above = buf:at(x, 1, z)
 					if below and parts.wild_soil(below.name) and
 							(above == nil or above.name == "air") then
-						buf:put(x, 1, z, name)
+						if name == bone then M.undergrowth_at(buf, palette, x, 1, z)
+						else buf:put(x, 1, z, name) end
 						if name == bone then sown_bones = sown_bones + 1
 						else sown_shrubs = sown_shrubs + 1 end
 					end
@@ -1250,7 +1292,8 @@ local function loader(directory)
 							parts.position_hash(x + 977, z + 383) % 3 == 0
 						local name = palette.node(bush and "undergrowth" or
 							"grass_tuft")
-						buf:put(x, 1, z, name, parts.place_param2(name))
+						if bush then M.undergrowth_at(buf, palette, x, 1, z)
+						else buf:put(x, 1, z, name, parts.place_param2(name)) end
 						if bush then planted_bush = planted_bush + 1
 						else planted_tuft = planted_tuft + 1 end
 					end

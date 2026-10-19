@@ -22,7 +22,8 @@
 --   E. the lianas of this world's jungle and kapok templates and grown trees:
 --      strands above one end, 2-6 long, under leaves, two nodes clear of the
 --      ground, within the leaf decay reach of wood; no other species;
---   F. the closed node roster: 145 rows, LP's 17 with the decoration role.
+--   F. the closed node roster: 173 rows (LK's kit and LP's 17), LP's with the
+--      decoration role.
 --
 -- Usage (repo root): luajit tools/r51_lp/portable_test.lua [REPO]
 local repo = arg and arg[1] or "."
@@ -182,7 +183,7 @@ for index, row in ipairs(manifest.decorations) do
 	check(row.asset_or_node ~= "papyrus_on_dirt.mts", row.id .. " is no papyrus pedestal")
 end
 check(by_id.swamp_papyrus == nil, "the swamp papyrus pedestal row is gone")
-check(#manifest.decorations == 79, "the catalog holds 79 rows (" .. #manifest.decorations .. ")")
+check(#manifest.decorations == 99, "the catalog holds 99 rows (" .. #manifest.decorations .. ")")
 -- The authority's ground-cover palette rows of one row at a biome and support.
 local function weight_at(id, biome, support)
 	local total
@@ -508,8 +509,8 @@ for name, m in roster:gmatch('{"([^"]+)", (%d+)}') do
 	total = total + 1
 	mask[name] = tonumber(m)
 end
-check(total == 145 and content:find("#ACCEPTED_R6_ROWS ~= 145", 1, true) ~= nil,
-	"the roster holds 145 rows and checks that count (" .. total .. ")")
+check(total == 173 and content:find("#ACCEPTED_R6_ROWS ~= 173", 1, true) ~= nil,
+	"the roster holds 173 rows and checks that count (" .. total .. ")")
 for _, name in ipairs({"default:marram_grass_1", "default:marram_grass_2", "default:marram_grass_3",
 		"grug_nodes:alpine_cushion", "grug_nodes:alpine_windshrub", "grug_nodes:flower_blush_star",
 		"grug_nodes:flower_cream_cups", "grug_nodes:flower_ember_star", "grug_nodes:flower_lilac_bells",

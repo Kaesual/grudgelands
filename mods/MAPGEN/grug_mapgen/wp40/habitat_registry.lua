@@ -101,9 +101,15 @@ local ROW_CLASS = {
 	-- Round 51 lane LP: the jungle's and the badlands' own bushes.
 	jungle_bush = "shrub", badlands_withered_bush = "shrub",
 }
--- The altitude class of one R6 decoration row (r7_r6_manifest.lua).
+-- The altitude class of one R6 decoration row (r7_r6_manifest.lua). A land
+-- kit structure (`kitgen:`, Round 51 lane LK) is no plant: "cover", whose
+-- maximum is the catalog density (the planner gives it no factor at all).
 function M.decoration_class(row)
 	assert(type(row) == "table" and type(row.id) == "string")
+	if row.kind == "template" and type(row.asset_or_node) == "string" and
+			row.asset_or_node:match("^kitgen:") then
+		return "cover"
+	end
 	return ROW_CLASS[row.id] or (row.kind == "template" and "tree" or "cover")
 end
 -- Whether an R6 decoration row also grows in the bare band round a start

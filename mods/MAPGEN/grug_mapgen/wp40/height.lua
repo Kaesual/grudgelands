@@ -276,6 +276,9 @@ local function height_factory(dependencies)
 					return class == LAND and owner or nil
 				end,
 				land_at = function(x, z) return (column_class(x, z)) == LAND end,
+				-- the horizontal world's coast distance grid (Round 51 T2): the
+				-- same chamfer over the same land, built once
+				coast_grid = horizontal.coast_grid and horizontal.coast_grid() or nil,
 			})
 			if terrain_cache then
 				terrain_cache.seed, terrain_cache.field = full_seed_string, field
@@ -560,6 +563,7 @@ local function height_factory(dependencies)
 			if box.min_x <= box.max_x then boat_boxes[#boat_boxes + 1] = box end
 		end
 		local boat_noise = terrain_field.simplex(full_seed_string, "boat_edge")
+		local channel_floor_at = horizontal.channel_floor_at
 		local boat_distances = {}
 		local function boat_floor_at(x, z)
 			-- The distances are collected first; the smooth minimum only runs
@@ -689,6 +693,22 @@ local function height_factory(dependencies)
 					natural = floor(field.height_at(x, z, false))
 					local deep_y = boat_floor_at(x, z)
 					if deep_y ~= nil and deep_y < natural then natural = deep_y end
+					-- A dragon channel (Round 51 T2, ruling 6) lays its floor at
+					-- 9-11 nodes of water, easing out beyond its edge: the deeper
+					-- sea floor rises to it, the shallower one sinks to it from
+					-- BOAT_SHORE nodes off the coast (fading in from 8, like the
+					-- boat floor), so the shore keeps its shallows.
+					if channel_floor_at then
+						local weight, channel_y = channel_floor_at(x, z)
+						if weight and channel_y ~= natural then
+							if channel_y < natural then
+								local shore = (-field.coast_signed(x, z) - 8) / (BOAT_SHORE - 8)
+								if shore < 0 then shore = 0 elseif shore > 1 then shore = 1 end
+								weight = weight * shore * shore * (3 - 2 * shore)
+							end
+							natural = floor(natural + weight * (channel_y - natural))
+						end
+					end
 				end
 				block.natural[slot] = natural
 			else

@@ -21,23 +21,23 @@ Mob entities and today's drops: [Mob entities](#mob-entities).
 
 | Section | Entries |
 |---|---|
-| [Ores and gems (mined raw items)](#ores-and-gems-mined-raw-items) | 15 |
+| [Ores and gems (mined raw items)](#ores-and-gems-mined-raw-items) | 16 |
 | [Bars and alloys](#bars-and-alloys) | 10 |
 | [Cut gems](#cut-gems) | 6 |
 | [Mob drops and mob materials](#mob-drops-and-mob-materials) | 34 |
 | [Fish](#fish) | 6 |
-| [Food (raw, cooked, found)](#food-raw-cooked-found) | 55 |
-| [Wood (logs, planks, sticks, seasoned wood)](#wood-logs-planks-sticks-seasoned-wood) | 21 |
+| [Food (raw, cooked, found)](#food-raw-cooked-found) | 61 |
+| [Wood (logs, planks, sticks, seasoned wood)](#wood-logs-planks-sticks-seasoned-wood) | 49 |
 | [Profession materials](#profession-materials) | 25 |
 | [Gathered herbs and plants](#gathered-herbs-and-plants) | 19 |
-| [Farming (seeds, crops, crop nodes)](#farming-seeds-crops-crop-nodes) | 101 |
+| [Farming (seeds, crops, crop nodes)](#farming-seeds-crops-crop-nodes) | 111 |
 | [Alchemy and brewing](#alchemy-and-brewing) | 82 |
 | [Tools](#tools) | 34 |
 | [Gear (weapons, armour, offhands, trinkets)](#gear-weapons-armour-offhands-trinkets) | 156 |
-| [Other craft items](#other-craft-items) | 45 |
+| [Other craft items](#other-craft-items) | 46 |
 | [Skill items (soulbound; never quest items or rewards)](#skill-items-soulbound-never-quest-items-or-rewards) | 28 |
-| [Ore and gem nodes (dig for the raw item; not quest items)](#ore-and-gem-nodes-dig-for-the-raw-item-not-quest-items) | 15 |
-| [Other nodes (building, decor, terrain)](#other-nodes-building-decor-terrain) | 779 |
+| [Ore and gem nodes (dig for the raw item; not quest items)](#ore-and-gem-nodes-dig-for-the-raw-item-not-quest-items) | 16 |
+| [Other nodes (building, decor, terrain)](#other-nodes-building-decor-terrain) | 793 |
 
 ## Ores and gems (mined raw items)
 
@@ -50,8 +50,9 @@ Gathering XP: ore 0.10 KE, gem 0.20 KE at the reference level 10 x harvest tier.
 | `default:gold_lump` | Gold Lump | 2 | mining, dig |  |
 | `default:iron_lump` | Iron Lump | 1 | mining, mob drop, dig |  |
 | `default:tin_lump` | Tin Lump | 1 | mining, dig |  |
-| `grug_materials:abyssal_crystal` | Abyssal Crystal | 5 | grid, mining, dig |  |
-| `grug_materials:emberglass` | Emberglass | 4 | grid, mining, mob drop, dig |  |
+| `grug_materials:abyssal_crystal` | Abyssal Crystal | 5 | mining, dig |  |
+| `grug_materials:anthracite` | Anthracite | 2 | mining, dig |  |
+| `grug_materials:emberglass` | Emberglass | 4 | mining, mob drop, dig |  |
 | `grug_materials:quartz` | Quartz | 1 | mining, mob drop, dig |  |
 | `grug_materials:rough_citrine` | Rough Citrine | 1 | mining, mob drop, dig |  |
 | `grug_materials:rough_diamond` | Rough Diamond | 6 | mining, mob drop, dig |  |
@@ -67,27 +68,27 @@ Normal furnace: one lump, one bar. Dual furnace: two inputs, one alloy bar.
 
 | Item | Name | Tier | Sources | Groups |
 |---|---|---|---|---|
-| `grug_materials:abyssal_steel_bar` | Abyssal Steel Bar | 6 | grid, dual furnace |  |
-| `grug_materials:bronze_bar` | Bronze Bar | 1 | grid, dual furnace |  |
-| `grug_materials:copper_bar` | Copper Bar | 1 | grid, furnace |  |
-| `grug_materials:embersteel_bar` | Embersteel Bar | 5 | grid, dual furnace |  |
-| `grug_materials:gold_bar` | Gold Bar | 2 | grid, furnace |  |
-| `grug_materials:iron_bar` | Iron Bar | 2 | grid, furnace, mob drop |  |
-| `grug_materials:silver_bar` | Silver Bar |  | grid, furnace |  |
-| `grug_materials:silversteel_bar` | Silversteel Bar | 4 | grid, dual furnace |  |
-| `grug_materials:steel_bar` | Steel Bar | 3 | grid, dual furnace |  |
-| `grug_materials:tin_bar` | Tin Bar | 1 | grid, furnace |  |
+| `grug_materials:abyssal_steel_bar` | Abyssal Steel Bar | 6 | dual furnace |  |
+| `grug_materials:bronze_bar` | Bronze Bar | 1 | dual furnace |  |
+| `grug_materials:copper_bar` | Copper Bar | 1 | furnace |  |
+| `grug_materials:embersteel_bar` | Embersteel Bar | 5 | dual furnace |  |
+| `grug_materials:gold_bar` | Gold Bar | 2 | furnace |  |
+| `grug_materials:iron_bar` | Iron Bar | 2 | furnace, mob drop |  |
+| `grug_materials:silver_bar` | Silver Bar |  | furnace |  |
+| `grug_materials:silversteel_bar` | Silversteel Bar | 4 | dual furnace |  |
+| `grug_materials:steel_bar` | Steel Bar | 3 | dual furnace |  |
+| `grug_materials:tin_bar` | Tin Bar | 1 | furnace |  |
 
 ## Cut gems
 
 | Item | Name | Tier | Sources | Groups |
 |---|---|---|---|---|
-| `grug_materials:cut_citrine` | Cut Citrine | 1 | grid, goldsmith T1 |  |
-| `grug_materials:cut_diamond` | Cut Diamond | 6 | grid, goldsmith T6 |  |
-| `grug_materials:cut_garnet` | Cut Garnet | 3 | grid, goldsmith T3 |  |
-| `grug_materials:cut_jade` | Cut Jade | 2 | grid, goldsmith T2 |  |
-| `grug_materials:cut_ruby` | Cut Ruby | 5 | grid, goldsmith T5 |  |
-| `grug_materials:cut_sapphire` | Cut Sapphire | 4 | grid, goldsmith T4 |  |
+| `grug_materials:cut_citrine` | Cut Citrine | 1 | goldsmith T1 |  |
+| `grug_materials:cut_diamond` | Cut Diamond | 6 | goldsmith T6 |  |
+| `grug_materials:cut_garnet` | Cut Garnet | 3 | goldsmith T3 |  |
+| `grug_materials:cut_jade` | Cut Jade | 2 | goldsmith T2 |  |
+| `grug_materials:cut_ruby` | Cut Ruby | 5 | goldsmith T5 |  |
+| `grug_materials:cut_sapphire` | Cut Sapphire | 4 | goldsmith T4 |  |
 
 ## Mob drops and mob materials
 
@@ -98,37 +99,37 @@ Today's static drops (chance = 1 in N). Ruling 36 replaces them with band tables
 | `default:apple` | Apple | 2 | mob drop | ashen_treant 4, gravewood_treant 4 |
 | `grug_materials:emberglass_shard` | Emberglass Shard |  | mob drop | crystal_shard 1, dungeon_master 2 |
 | `grug_mobs:ape_hair` | Ape Hair |  | mob drop | jungle_ape 4 |
-| `grug_mobs:arrow` | Bundle of Arrows |  | mob drop | frost_stray 3, goblin_miner_slinger 3, goblin_slinger 3, skeleton_archer 3, skeleton_raider 3 |
+| `grug_mobs:arrow` | Bundle of Arrows |  |  |  |
 | `grug_mobs:bear_claw` | Bear Claw | 3 | mob drop | bear 4, plaguehide_bear 4 |
 | `grug_mobs:boar_tusk` | Boar Tusk | 1 | mob drop | boar 3, jungle_boar 3, plague_boar 3 |
 | `grug_mobs:bone` | Bone |  | mob drop | frost_stray 1, skeleton_archer 1, skeleton_raider 1 |
-| `grug_mobs:croc_tooth` | Crocodile Tooth |  | mob drop | crocodile 3 |
+| `grug_mobs:croc_tooth` | Crocodile Tooth |  |  |  |
 | `grug_mobs:dragon_rime` | Dragon Rime |  |  |  |
 | `grug_mobs:dragon_scorch` | Dragon Scorch |  |  |  |
 | `grug_mobs:fallen_crown` | Fallen Crown |  |  |  |
 | `grug_mobs:fang` | Fang | 2 | mob drop | blightfang_wolf 3, fox 3, hyena 3, wolf 3 |
-| `grug_mobs:feather` | Feather |  | mob drop | carrion_crow 1, crag_eagle 2, vulture 2 |
+| `grug_mobs:feather` | Feather |  |  |  |
 | `grug_mobs:heavy_cloth` | Heavy Cloth | 3 | mob drop | bodyguard_accord 3, bodyguard_throng 3, captain_accord 3, captain_throng 3, commander_accord 3, commander_throng 3, general_accord 3, general_throng 3, guard_accord 3, guard_throng 3, royal_guard_dwarf 3, royal_guard_elf 3, royal_guard_human 3, royal_guard_orc 3, royal_guard_troll 3, royal_guard_undead 3, skeleton_raider 3 |
-| `grug_mobs:heavy_leather` | Heavy Leather | 3 | grid, mob drop | bear 2, jungle_ape 2, land_guard 2, mountain_ram 4, plaguehide_bear 2, speargrass_tiger 2 |
-| `grug_mobs:light_leather` | Light Leather | 1 | grid, mob drop | boar 2, jungle_boar 2, plague_boar 2 |
+| `grug_mobs:heavy_leather` | Heavy Leather | 3 | mob drop | bear 2, jungle_ape 2, land_guard 2, mountain_ram 4, plaguehide_bear 2, speargrass_tiger 2 |
+| `grug_mobs:light_leather` | Light Leather | 1 | mob drop | boar 2, jungle_boar 2, plague_boar 2 |
 | `grug_mobs:linen_cloth` | Linen Cloth | 2 | mob drop | mirefolk 2 |
 | `grug_mobs:linen_scrap` | Linen Scrap | 1 | mob drop | bog_ooze 3, bog_witch 2, frost_stray 2, goblin_miner 2, goblin_miner_slinger 2, goblin_raider 2, goblin_slinger 2, skeleton_archer 2, skeleton_raider 2, sun_dried_husk 2, zombie 2 |
-| `grug_mobs:raptor_claw` | Small Cat Claw |  | mob drop | jungle_lynx 3 |
+| `grug_mobs:raptor_claw` | Cat Claw |  |  |  |
 | `grug_mobs:rift_void` | Rift Void |  |  |  |
-| `grug_mobs:scaled_hide` | Scaled Hide | 4 | grid, mob drop | crocodile 1, reef_lurker 2, scorpion 2, serpent 2, shore_crab 2, viper 2 |
+| `grug_mobs:scaled_hide` | Scaled Hide | 4 | mob drop | crocodile 1, reef_lurker 2, scorpion 2, serpent 2, shore_crab 2, viper 2 |
 | `grug_mobs:sharp_feather` | Sharp Feather | 6 | mob drop | crag_eagle 1, vulture 1 |
 | `grug_mobs:shiny_scale` | Shiny Scale | 4 | mob drop | mirefolk 4 |
 | `grug_mobs:sleek_pelt` | Sleek Pelt | 5 | mob drop | panther 4, snow_leopard 4, speargrass_tiger 4 |
 | `grug_mobs:slime_gel` | Slime Gel |  | mob drop | bog_ooze 1, lava_flan 2, rift_spawn 2 |
 | `grug_mobs:spider_silk` | Raw Silk | 4 | mob drop | giant_spider 1, jungle_spider 1, pale_spider 1, spiderling 2 |
 | `grug_mobs:stolen_purse` | Stolen Purse |  | mob drop | goblin_miner 8, goblin_raider 8 |
-| `grug_mobs:stone_core` | Stone Core |  | mob drop | mesa_golem 1, stone_golem 1, stone_mite 8, war_construct 1 |
+| `grug_mobs:stone_core` | Stone Core |  |  |  |
 | `grug_mobs:venom_gland` | Venom Gland | 2 | mob drop | giant_spider 6, glowwing 5, jungle_spider 6, pale_spider 6 |
 | `grug_mobs:venom_sac` | Venom Sac | 4 | mob drop | bog_witch 3, scorpion 3, serpent 3, viper 3 |
 | `grug_mobs:war_trophy` | War Trophy |  | mob drop | bodyguard_accord 1, bodyguard_throng 1, captain_accord 1, captain_throng 1, commander_accord 1, commander_throng 1, general_accord 1, general_throng 1, guard_accord 1, guard_throng 1, royal_guard_dwarf 1, royal_guard_elf 1, royal_guard_human 1, royal_guard_orc 1, royal_guard_troll 1, royal_guard_undead 1 |
 | `grug_mobs:zombie_flesh` | Rotting Flesh |  | mob drop | sun_dried_husk 1, zombie 1 |
 | `mobs:leather` | Leather | 1 | mob drop | blightfang_wolf 2, fox 2, gaunt_stag 2, hyena 2, ibex 2, jungle_lynx 2, panther 2, snow_leopard 2, stag 2, tapir 2, wolf 2, zebra 2 |
-| `mobs:meat_raw` | Raw Meat | 1 | mob drop | bear 1, blightfang_wolf 1, blood_bat 1, boar 1, bog_fowl 1, bone_weevil 1, cave_bat 1, cave_crawler 1, crag_eagle 2, crocodile 1, fox 1, gaunt_stag 1, giant_rat 1, goblin_hound 1, gull 1, hare 1, hyena 1, ibex 1, jungle_ape 1, jungle_boar 1, jungle_lynx 1, mountain_ram 1, panther 1, parrot 1, plague_boar 1, plaguehide_bear 1, plains_runner 1, rabbit 1, reef_lurker 1, shore_crab 1, snow_leopard 1, song_bird 1, speargrass_tiger 1, stag 1, tapir 1, vulture 2, wild_turkey 1, wolf 1, zebra 1 |
+| `mobs:meat_raw` | Raw Meat | 1 | mob drop | abyssal_shark 1, bay_shark 1, bear 1, blightfang_wolf 1, blood_bat 1, boar 1, bog_fowl 1, bone_weevil 1, cave_bat 1, cave_crawler 1, crag_eagle 2, crocodile 1, fox 1, gaunt_stag 1, giant_rat 1, goblin_hound 1, gull 1, hare 1, hyena 1, ibex 1, jungle_ape 1, jungle_boar 1, jungle_lynx 1, mountain_ram 1, panther 1, parrot 1, plague_boar 1, plaguehide_bear 1, plains_runner 1, rabbit 1, reef_lurker 1, riftwing 1, shore_crab 1, snow_leopard 1, song_bird 1, speargrass_tiger 1, stag 1, tapir 1, vulture 2, wild_turkey 1, wolf 1, zebra 1 |
 
 ## Fish
 
@@ -138,9 +139,9 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 |---|---|---|---|---|
 | `grug_fishing:ember_eel` | Ember Eel | 5 | fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_fishing:frostfin` | Frostfin | 4 | fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
-| `grug_fishing:mire_carp` | Mire Carp | 3 | fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
+| `grug_fishing:mire_carp` | Mire Carp | 3 | mob drop, fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_fishing:silver_trout` | Silver Trout | 2 | fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
-| `grug_fishing:storm_tuna` | Storm Tuna | 6 | fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
+| `grug_fishing:storm_tuna` | Storm Tuna | 6 | mob drop, fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_mobs:raw_fish` | Raw Fish | 1 | mob drop, fishing | food_fish_raw, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 
 ## Food (raw, cooked, found)
@@ -149,40 +150,46 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 |---|---|---|---|---|
 | `default:blueberries` | Blueberries | 2 | dig | food_berry, food_blueberries, grug_cooking_berry, grug_cooking_fruit, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_cooking:bamboo_shoot` | Bamboo Shoot | 1 | dig | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:berry_preserve` | Berry Preserve | 2 | grid, cooking T2 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
+| `grug_cooking:berry_preserve` | Berry Preserve | 2 | cooking T2 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
 | `grug_cooking:blightberry` | Blightberry | 2 | dig | grug_cooking_berry, grug_cooking_fruit, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:bread` | Bread | 1 | furnace | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
-| `grug_cooking:carrot` | Carrot | 1 | dig | grug_cooking_root, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:cassava` | Cassava | 1 | dig | grug_cooking_root, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:cave_cap` | Cave Cap | 3 | dig | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:cocoa_rubbed_game` | Cocoa-Rubbed Game | 6 | grid, cooking T6 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
-| `grug_cooking:corn_crusted_fish` | Corn-Crusted Fish | 1 | grid, cooking T1 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
-| `grug_cooking:foragers_pot` | Forager's Pot | 3 | furnace, cooking T3 | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `grug_cooking:bread` | Bread | 1 | furnace | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
+| `grug_cooking:carrot` | Carrot | 1 | dig | grug_cooking_root, grug_cooking_staple, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
+| `grug_cooking:cassava` | Cassava | 1 | dig | grug_cooking_root, grug_cooking_staple, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
+| `grug_cooking:cave_cap` | Cave Cap | 3 | dig | grug_cooking_mushroom, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
+| `grug_cooking:cocoa_rubbed_game` | Cocoa-Rubbed Game | 6 | cooking T6 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
+| `grug_cooking:corn_crusted_fish` | Corn-Crusted Fish | 1 | cooking T1 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
+| `grug_cooking:foragers_pot` | Forager's Pot | 3 | furnace | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
 | `grug_cooking:frost_melon` | Frost Melon | 4 | dig | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:fruit_glazed_roast` | Fruit-Glazed Roast | 2 | grid, cooking T2 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
-| `grug_cooking:grand_feast` | Grand Feast | 6 | furnace, cooking T6 | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
-| `grug_cooking:hearty_stew` | Hearty Stew | 1 | furnace, cooking T1 | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
-| `grug_cooking:hunters_feast` | Hunter's Feast | 4 | grid, cooking T4 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
+| `grug_cooking:frostfin_fillet` | Frostfin Fillet | 4 | cooking T4 | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
+| `grug_cooking:fruit_glazed_roast` | Fruit-Glazed Roast | 2 | cooking T2 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
+| `grug_cooking:grand_feast` | Grand Feast | 6 | furnace | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `grug_cooking:hearty_stew` | Hearty Stew | 1 | furnace | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `grug_cooking:hunters_feast` | Hunter's Feast | 4 | cooking T4 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
 | `grug_cooking:jungle_berry` | Jungle Berry | 2 | dig | grug_cooking_berry, grug_cooking_fruit, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:jungle_cocoa` | Jungle Cocoa | 6 | grid, cooking T6 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
-| `grug_cooking:kelp_wrapped_roast` | Kelp-Wrapped Roast | 5 | furnace, cooking T5 | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
-| `grug_cooking:marsh_roast` | Marsh Roast | 4 | furnace, cooking T4 | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
-| `grug_cooking:marshbloom_chowder` | Marshbloom Chowder | 4 | grid, cooking T4 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
-| `grug_cooking:mushroom_skewer` | Mushroom Skewer | 3 | grid, cooking T3 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
-| `grug_cooking:onion_seared_steak` | Onion-Seared Steak | 3 | grid, cooking T3 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
+| `grug_cooking:jungle_cocoa` | Jungle Cocoa | 6 | cooking T6 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
+| `grug_cooking:kelp_steamed_tuna` | Kelp-Steamed Tuna | 6 | cooking T6 | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
+| `grug_cooking:kelp_wrapped_roast` | Kelp-Wrapped Roast | 5 | furnace | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `grug_cooking:marsh_roast` | Marsh Roast | 4 | furnace | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `grug_cooking:marshbloom_chowder` | Marshbloom Chowder | 4 | cooking T4 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
+| `grug_cooking:mire_carp_stew` | Mire Carp Stew | 3 | cooking T3 | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
+| `grug_cooking:mushroom_skewer` | Mushroom Skewer | 3 | cooking T3 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
+| `grug_cooking:onion_seared_steak` | Onion-Seared Steak | 3 | cooking T3 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
+| `grug_cooking:pan_fried_trout` | Pan-Fried Trout | 2 | cooking T2 | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
 | `grug_cooking:pumpkin` | Pumpkin | 2 | dig | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:pumpkin_stew` | Pumpkin Stew | 2 | furnace, cooking T2 | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
-| `grug_cooking:salt_crusted_fish` | Salt-Crusted Fish | 5 | grid, cooking T5 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
-| `grug_cooking:stormkelp_broth` | Stormkelp Broth | 5 | grid, cooking T5 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
+| `grug_cooking:pumpkin_stew` | Pumpkin Stew | 2 | furnace | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `grug_cooking:salt_crusted_fish` | Salt-Crusted Fish | 5 | cooking T5 | grug_food, grug_food_dish, grug_food_role_hunter, grug_food_tier |
+| `grug_cooking:smoked_ember_eel` | Smoked Ember Eel | 5 | cooking T5 | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
+| `grug_cooking:spiced_skewer` | Spiced Skewer | 1 | cooking T1 | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
+| `grug_cooking:stormkelp_broth` | Stormkelp Broth | 5 | cooking T5 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
 | `grug_cooking:sunberry` | Sunberry | 2 | dig | grug_cooking_berry, grug_cooking_fruit, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_cooking:sweetroot_mash` | Sweetroot Mash | 1 | grid, cooking T1 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
+| `grug_cooking:sweetroot_mash` | Sweetroot Mash | 1 | cooking T1 | grug_food, grug_food_dish, grug_food_role_caster, grug_food_tier |
 | `grug_cooking:wild_grain` | Wild Grain | 1 | dig | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier, grug_plant_item |
-| `grug_fishing:cooked_fish` | Cooked Fish | 1 | furnace | food_fish, grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `grug_fishing:cooked_fish` | Cooked Fish | 1 | furnace | food_fish, grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
 | `grug_gathering:corn` | Corn | 1 | dig | grug_cooking_staple, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_gathering:corn_source` | Corn Source |  |  | grug_food, grug_gathering_source |
 | `grug_gathering:melon` | Melon | 4 | dig | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_gathering:melon_source` | Melon Source |  |  | grug_food, grug_gathering_source |
-| `grug_gathering:mushroom` | Mushroom | 3 | dig | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
+| `grug_gathering:mushroom` | Mushroom | 3 | dig | grug_cooking_mushroom, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_gathering:mushroom_source` | Mushroom Source |  |  | grug_food, grug_found_only_food, grug_gathering_source |
 | `grug_gathering:potato` | Potato | 1 | dig | grug_cooking_staple, grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 | `grug_gathering:potato_source` | Potato Source |  |  | grug_food, grug_gathering_source |
@@ -199,34 +206,62 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_mapgen:pumpkin_source` | Pumpkin (Wild) |  |  | grug_food, grug_gathering_source |
 | `grug_mapgen:sunberry_source` | Sunberry (Wild) |  |  | grug_food, grug_gathering_source |
 | `grug_mapgen:wild_grain_source` | Wild Grain (Wild) |  |  | grug_food, grug_gathering_source |
-| `mobs:meat` | Meat | 1 | furnace | food_meat, grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
-| `mobs:meatblock` | Meat Block | 1 | furnace, grid | grug_food, grug_food_dish, grug_food_role_hearty, grug_food_tier |
+| `mobs:meat` | Meat | 1 | furnace | food_meat, grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
+| `mobs:meatblock` | Meat Block | 1 | furnace, grid | grug_food, grug_food_dish, grug_food_role_plain, grug_food_tier |
 | `mobs:meatblock_raw` | Raw Meat Block | 1 | grid | grug_food, grug_food_raw, grug_food_role_hp, grug_food_tier |
 
 ## Wood (logs, planks, sticks, seasoned wood)
 
 | Item | Name | Tier | Sources | Groups |
 |---|---|---|---|---|
-| `default:acacia_tree` | Acacia Tree |  |  | tree |
+| `default:acacia_tree` | Acacia Tree |  | dig | tree |
 | `default:acacia_wood` | Acacia Wood Planks |  | grid | wood |
-| `default:aspen_tree` | Aspen Tree |  |  | tree |
+| `default:aspen_tree` | Aspen Tree |  | dig | tree |
 | `default:aspen_wood` | Aspen Wood Planks |  | grid | wood |
-| `default:jungletree` | Jungle Tree |  |  | tree |
+| `default:jungletree` | Jungle Tree |  | dig | tree |
 | `default:junglewood` | Jungle Wood Planks |  | grid | wood |
-| `default:pine_tree` | Pine Tree |  |  | tree |
+| `default:pine_tree` | Pine Tree |  | dig | tree |
 | `default:pine_wood` | Pine Wood Planks |  | grid | wood |
 | `default:stick` | Stick |  | grid | stick |
-| `default:tree` | Apple Tree |  |  | tree |
+| `default:tree` | Apple Tree |  | dig | tree |
 | `default:wood` | Apple Wood Planks |  | grid | wood |
-| `grug_artisans:hardened_wood` | Hardened Wood | 3 | grid | grug_profession_material, grug_wood_grade |
-| `grug_artisans:heartwood_wood` | Heartwood Wood | 6 | grid | grug_profession_material, grug_wood_grade |
-| `grug_artisans:inlaid_wood` | Inlaid Wood | 4 | grid | grug_profession_material, grug_wood_grade |
-| `grug_artisans:lacquered_wood` | Lacquered Wood | 5 | grid | grug_profession_material, grug_wood_grade |
-| `grug_artisans:polished_wood` | Polished Wood | 2 | grid | grug_profession_material, grug_wood_grade |
-| `grug_artisans:seasoned_wood` | Seasoned Wood | 1 | grid | grug_profession_material, grug_wood_grade |
-| `grug_trees:gravewood_tree` | Gravewood Tree |  |  | tree |
+| `grug_artisans:hardened_wood` | Hardened Wood | 3 |  | grug_profession_material, grug_wood_grade |
+| `grug_artisans:heartwood_wood` | Heartwood Wood | 6 |  | grug_profession_material, grug_wood_grade |
+| `grug_artisans:inlaid_wood` | Inlaid Wood | 4 |  | grug_profession_material, grug_wood_grade |
+| `grug_artisans:lacquered_wood` | Lacquered Wood | 5 |  | grug_profession_material, grug_wood_grade |
+| `grug_artisans:polished_wood` | Polished Wood | 2 |  | grug_profession_material, grug_wood_grade |
+| `grug_artisans:seasoned_wood` | Seasoned Wood | 1 |  | grug_profession_material, grug_wood_grade |
+| `grug_trees:acacia_base` | Acacia Tree |  |  | tree |
+| `grug_trees:acacia_branch` | Acacia Tree |  |  | tree |
+| `grug_trees:acacia_quarter` | Acacia Tree |  |  | tree |
+| `grug_trees:acacia_twig` | Acacia Tree |  |  | tree |
+| `grug_trees:apple_base` | Apple Tree |  |  | tree |
+| `grug_trees:apple_branch` | Apple Tree |  |  | tree |
+| `grug_trees:apple_quarter` | Apple Tree |  |  | tree |
+| `grug_trees:apple_twig` | Apple Tree |  |  | tree |
+| `grug_trees:aspen_base` | Aspen Tree |  |  | tree |
+| `grug_trees:aspen_branch` | Aspen Tree |  |  | tree |
+| `grug_trees:aspen_quarter` | Aspen Tree |  |  | tree |
+| `grug_trees:aspen_twig` | Aspen Tree |  |  | tree |
+| `grug_trees:gravewood_base` | Gravewood Tree |  |  | tree |
+| `grug_trees:gravewood_branch` | Gravewood Tree |  |  | tree |
+| `grug_trees:gravewood_quarter` | Gravewood Tree |  |  | tree |
+| `grug_trees:gravewood_tree` | Gravewood Tree |  | dig | tree |
+| `grug_trees:gravewood_twig` | Gravewood Tree |  |  | tree |
 | `grug_trees:gravewood_wood` | Gravewood Planks |  | grid | wood |
-| `grug_trees:silverwood_tree` | Silverwood Tree |  |  | tree |
+| `grug_trees:jungle_base` | Jungle Tree |  |  | tree |
+| `grug_trees:jungle_branch` | Jungle Tree |  |  | tree |
+| `grug_trees:jungle_quarter` | Jungle Tree |  |  | tree |
+| `grug_trees:jungle_twig` | Jungle Tree |  |  | tree |
+| `grug_trees:pine_base` | Pine Tree |  |  | tree |
+| `grug_trees:pine_branch` | Pine Tree |  |  | tree |
+| `grug_trees:pine_quarter` | Pine Tree |  |  | tree |
+| `grug_trees:pine_twig` | Pine Tree |  |  | tree |
+| `grug_trees:silverwood_base` | Silverwood Tree |  |  | tree |
+| `grug_trees:silverwood_branch` | Silverwood Tree |  |  | tree |
+| `grug_trees:silverwood_quarter` | Silverwood Tree |  |  | tree |
+| `grug_trees:silverwood_tree` | Silverwood Tree |  | dig | tree |
+| `grug_trees:silverwood_twig` | Silverwood Tree |  |  | tree |
 | `grug_trees:silverwood_wood` | Silverwood Planks |  | grid | wood |
 
 ## Profession materials
@@ -239,24 +274,24 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_artisans:setting_gold_filigreed_embersteel` | Gold-filigreed Embersteel Setting | 5 | goldsmith T5 | grug_jewellery_setting, grug_profession_material |
 | `grug_artisans:setting_iron` | Iron Setting | 2 | goldsmith T2 | grug_jewellery_setting, grug_profession_material |
 | `grug_artisans:setting_tin` | Tin Setting | 1 | goldsmith T1 | grug_jewellery_setting, grug_profession_material |
-| `grug_professions:bolt_heavy` | Heavy Bolt | 3 | grid | grug_profession_material, grug_tailor_bolt |
-| `grug_professions:bolt_patch` | Patch Bolt | 1 | grid | grug_profession_material, grug_tailor_bolt |
-| `grug_professions:bolt_silk` | Silk Bolt | 5 | grid | grug_profession_material, grug_tailor_bolt |
-| `grug_professions:bolt_silkweave` | Silkweave Bolt | 4 | grid | grug_profession_material, grug_tailor_bolt |
-| `grug_professions:bolt_stormweave` | Stormweave Bolt | 6 | grid | grug_profession_material, grug_tailor_bolt |
-| `grug_professions:bolt_woven` | Woven Bolt | 2 | grid | grug_profession_material, grug_tailor_bolt |
-| `grug_professions:cured_leather` | Cured Leather | 2 | grid | grug_leather_grade, grug_profession_material |
+| `grug_professions:bolt_heavy` | Heavy Bolt | 3 |  | grug_profession_material, grug_tailor_bolt |
+| `grug_professions:bolt_patch` | Patch Bolt | 1 |  | grug_profession_material, grug_tailor_bolt |
+| `grug_professions:bolt_silk` | Silk Bolt | 5 |  | grug_profession_material, grug_tailor_bolt |
+| `grug_professions:bolt_silkweave` | Silkweave Bolt | 4 |  | grug_profession_material, grug_tailor_bolt |
+| `grug_professions:bolt_stormweave` | Stormweave Bolt | 6 |  | grug_profession_material, grug_tailor_bolt |
+| `grug_professions:bolt_woven` | Woven Bolt | 2 |  | grug_profession_material, grug_tailor_bolt |
+| `grug_professions:cured_leather` | Cured Leather | 2 |  | grug_leather_grade, grug_profession_material |
 | `grug_professions:heavy_bolt_bundle` | Bundle of Five Heavy Bolts | 3 | tailor T3 | grug_tailor_bundle |
-| `grug_professions:metal_rod_abyssal_steel` | Abyssal Steel Rod |  | grid | grug_metal_rod |
-| `grug_professions:metal_rod_bronze` | Bronze Rod |  | grid | grug_metal_rod |
-| `grug_professions:metal_rod_embersteel` | Embersteel Rod |  | grid | grug_metal_rod |
-| `grug_professions:metal_rod_iron` | Iron Rod |  | grid | grug_metal_rod |
-| `grug_professions:metal_rod_silversteel` | Silversteel Rod |  | grid | grug_metal_rod |
-| `grug_professions:metal_rod_steel` | Steel Rod |  | grid | grug_metal_rod |
-| `grug_professions:nightscale_leather` | Nightscale Leather | 6 | grid | grug_leather_grade, grug_profession_material |
+| `grug_professions:metal_rod_abyssal_steel` | Abyssal Steel Rod |  |  | grug_metal_rod |
+| `grug_professions:metal_rod_bronze` | Bronze Rod |  |  | grug_metal_rod |
+| `grug_professions:metal_rod_embersteel` | Embersteel Rod |  |  | grug_metal_rod |
+| `grug_professions:metal_rod_iron` | Iron Rod |  |  | grug_metal_rod |
+| `grug_professions:metal_rod_silversteel` | Silversteel Rod |  |  | grug_metal_rod |
+| `grug_professions:metal_rod_steel` | Steel Rod |  |  | grug_metal_rod |
+| `grug_professions:nightscale_leather` | Nightscale Leather | 6 |  | grug_leather_grade, grug_profession_material |
 | `grug_professions:parchment` | Parchment |  |  | grug_profession_supply |
-| `grug_professions:sleek_leather` | Sleek Leather | 5 | grid | grug_leather_grade, grug_profession_material |
-| `grug_professions:thread` | Thread |  | grid | grug_profession_supply |
+| `grug_professions:sleek_leather` | Sleek Leather | 5 |  | grug_leather_grade, grug_profession_material |
+| `grug_professions:thread` | Thread |  |  | grug_profession_supply |
 | `grug_professions:woven_bolt_bundle` | Bundle of Four Woven Bolts | 2 | tailor T2 | grug_tailor_bundle |
 
 ## Gathered herbs and plants
@@ -334,6 +369,14 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_farming:jungle_berry_2` | Jungle Berry Crop (Stage 2) |  |  | grug_farming_crop, plant |
 | `grug_farming:jungle_berry_3` | Jungle Berry Crop (Stage 3) |  |  | grug_farming_crop, plant |
 | `grug_farming:jungle_berry_4` | Jungle Berry Crop |  |  | grug_farming_crop, plant |
+| `grug_farming:melon_1` | Melon Crop (Stage 1) |  |  | grug_farming_crop, plant |
+| `grug_farming:melon_2` | Melon Crop (Stage 2) |  |  | grug_farming_crop, plant |
+| `grug_farming:melon_3` | Melon Crop (Stage 3) |  |  | grug_farming_crop, plant |
+| `grug_farming:melon_4` | Melon Crop |  |  | grug_farming_crop, plant |
+| `grug_farming:mushroom_1` | Mushroom Crop (Stage 1) |  |  | grug_farming_crop, plant |
+| `grug_farming:mushroom_2` | Mushroom Crop (Stage 2) |  |  | grug_farming_crop, plant |
+| `grug_farming:mushroom_3` | Mushroom Crop (Stage 3) |  |  | grug_farming_crop, plant |
+| `grug_farming:mushroom_4` | Mushroom Crop |  |  | grug_farming_crop, plant |
 | `grug_farming:potato_1` | Potato Crop (Stage 1) |  |  | grug_farming_crop, plant |
 | `grug_farming:potato_2` | Potato Crop (Stage 2) |  |  | grug_farming_crop, plant |
 | `grug_farming:potato_3` | Potato Crop (Stage 3) |  |  | grug_farming_crop, plant |
@@ -342,23 +385,25 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_farming:pumpkin_2` | Pumpkin Crop (Stage 2) |  |  | grug_farming_crop, plant |
 | `grug_farming:pumpkin_3` | Pumpkin Crop (Stage 3) |  |  | grug_farming_crop, plant |
 | `grug_farming:pumpkin_4` | Pumpkin Crop |  |  | grug_farming_crop, plant |
-| `grug_farming:salt_crust_1` | Salt Crust Crop (Stage 1) |  |  | grug_farming_crop, plant |
-| `grug_farming:salt_crust_2` | Salt Crust Crop (Stage 2) |  |  | grug_farming_crop, plant |
-| `grug_farming:salt_crust_3` | Salt Crust Crop (Stage 3) |  |  | grug_farming_crop, plant |
-| `grug_farming:salt_crust_4` | Salt Crust Crop |  |  | grug_farming_crop, plant |
+| `grug_farming:salt_pan` | Salt Pan |  | dig |  |
+| `grug_farming:salt_pan_1` | Salt Pan (Filling) |  |  | grug_salt_pan |
+| `grug_farming:salt_pan_2` | Salt Pan (Filling) |  |  | grug_salt_pan |
+| `grug_farming:salt_pan_3` | Salt Pan (Filling) |  |  | grug_salt_pan |
+| `grug_farming:salt_pan_4` | Salt Pan (Full) |  |  | grug_salt_pan |
 | `grug_farming:seed_bamboo_shoot` | Bamboo Shoot Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_blightberry` | Blightberry Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_carrot` | Carrot Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_cassava` | Cassava Seeds |  | grid, dig | grug_farming_seed, seed |
-| `grug_farming:seed_cave_cap` | Cave Cap Seeds |  | grid, dig | grug_farming_seed, seed |
+| `grug_farming:seed_cave_cap` | Cave Cap Spores |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_corn` | Corn Seeds |  | grid, dig | grug_farming_seed, seed |
-| `grug_farming:seed_ember_moss` | Ember Moss Seeds |  | grid, dig | grug_farming_seed, seed |
+| `grug_farming:seed_ember_moss` | Ember Moss Spores |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_fire_pepper` | Fire Pepper Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_frost_melon` | Frost Melon Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_jungle_berry` | Jungle Berry Seeds |  | grid, dig | grug_farming_seed, seed |
+| `grug_farming:seed_melon` | Melon Seeds |  | grid, dig | grug_farming_seed, seed |
+| `grug_farming:seed_mushroom` | Mushroom Spores |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_potato` | Potato Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_pumpkin` | Pumpkin Seeds |  | grid, dig | grug_farming_seed, seed |
-| `grug_farming:seed_salt_crust` | Salt Crust Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_sugar_cane` | Sugar Cane Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_sunberry` | Sunberry Seeds |  | grid, dig | grug_farming_seed, seed |
 | `grug_farming:seed_wild_grain` | Wild Grain Seeds |  | grid, dig | grug_farming_seed, seed |
@@ -418,46 +463,46 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_alchemy:elixir_vigor_t4` | Elixir of Vigor IV |  | alchemist T4 | grug_elixir, grug_potion |
 | `grug_alchemy:elixir_vigor_t5` | Elixir of Vigor V |  | alchemist T5 | grug_elixir, grug_potion |
 | `grug_alchemy:elixir_vigor_t6` | Elixir of Vigor VI |  | alchemist T6 | grug_elixir, grug_potion |
-| `grug_alchemy:mixture_elixir_deepwater` | Prepared Deepwater Elixir Mixture | 5 | grid, alchemist T5 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_focus_t1` | Prepared Elixir of Focus I Mixture | 1 | grid, alchemist T1 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_focus_t2` | Prepared Elixir of Focus II Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_focus_t3` | Prepared Elixir of Focus III Mixture | 3 | grid, alchemist T3 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_focus_t4` | Prepared Elixir of Focus IV Mixture | 4 | grid, alchemist T4 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_focus_t5` | Prepared Elixir of Focus V Mixture | 5 | grid, alchemist T5 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_focus_t6` | Prepared Elixir of Focus VI Mixture | 6 | grid, alchemist T6 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_precision_t1` | Prepared Elixir of Precision I Mixture | 1 | grid, alchemist T1 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_precision_t2` | Prepared Elixir of Precision II Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_precision_t3` | Prepared Elixir of Precision III Mixture | 3 | grid, alchemist T3 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_precision_t4` | Prepared Elixir of Precision IV Mixture | 4 | grid, alchemist T4 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_precision_t5` | Prepared Elixir of Precision V Mixture | 5 | grid, alchemist T5 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_precision_t6` | Prepared Elixir of Precision VI Mixture | 6 | grid, alchemist T6 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_stoneskin_t1` | Prepared Stoneskin Elixir I Mixture | 1 | grid, alchemist T1 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_stoneskin_t2` | Prepared Stoneskin Elixir II Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_stoneskin_t3` | Prepared Stoneskin Elixir III Mixture | 3 | grid, alchemist T3 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_stoneskin_t4` | Prepared Stoneskin Elixir IV Mixture | 4 | grid, alchemist T4 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_stoneskin_t5` | Prepared Stoneskin Elixir V Mixture | 5 | grid, alchemist T5 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_stoneskin_t6` | Prepared Stoneskin Elixir VI Mixture | 6 | grid, alchemist T6 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_vigor_t1` | Prepared Elixir of Vigor I Mixture | 1 | grid, alchemist T1 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_vigor_t2` | Prepared Elixir of Vigor II Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_vigor_t3` | Prepared Elixir of Vigor III Mixture | 3 | grid, alchemist T3 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_vigor_t4` | Prepared Elixir of Vigor IV Mixture | 4 | grid, alchemist T4 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_vigor_t5` | Prepared Elixir of Vigor V Mixture | 5 | grid, alchemist T5 | grug_potion_mixture |
-| `grug_alchemy:mixture_elixir_vigor_t6` | Prepared Elixir of Vigor VI Mixture | 6 | grid, alchemist T6 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_antivenom` | Prepared Antivenom Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_cave` | Prepared Cave Draught Mixture | 3 | grid, alchemist T3 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_healing_t1` | Prepared Healing Potion I Mixture | 1 | grid, alchemist T1 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_healing_t2` | Prepared Healing Potion II Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_healing_t3` | Prepared Healing Potion III Mixture | 3 | grid, alchemist T3 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_healing_t4` | Prepared Healing Potion IV Mixture | 4 | grid, alchemist T4 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_healing_t5` | Prepared Healing Potion V Mixture | 5 | grid, alchemist T5 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_healing_t6` | Prepared Healing Potion VI Mixture | 6 | grid, alchemist T6 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_mana_t1` | Prepared Mana Potion I Mixture | 1 | grid, alchemist T1 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_mana_t2` | Prepared Mana Potion II Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_mana_t3` | Prepared Mana Potion III Mixture | 3 | grid, alchemist T3 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_mana_t4` | Prepared Mana Potion IV Mixture | 4 | grid, alchemist T4 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_mana_t5` | Prepared Mana Potion V Mixture | 5 | grid, alchemist T5 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_mana_t6` | Prepared Mana Potion VI Mixture | 6 | grid, alchemist T6 | grug_potion_mixture |
-| `grug_alchemy:mixture_potion_swiftness` | Prepared Swiftness Draught Mixture | 2 | grid, alchemist T2 | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_deepwater` | Prepared Deepwater Elixir Mixture | 5 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_focus_t1` | Prepared Elixir of Focus I Mixture | 1 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_focus_t2` | Prepared Elixir of Focus II Mixture | 2 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_focus_t3` | Prepared Elixir of Focus III Mixture | 3 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_focus_t4` | Prepared Elixir of Focus IV Mixture | 4 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_focus_t5` | Prepared Elixir of Focus V Mixture | 5 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_focus_t6` | Prepared Elixir of Focus VI Mixture | 6 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_precision_t1` | Prepared Elixir of Precision I Mixture | 1 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_precision_t2` | Prepared Elixir of Precision II Mixture | 2 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_precision_t3` | Prepared Elixir of Precision III Mixture | 3 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_precision_t4` | Prepared Elixir of Precision IV Mixture | 4 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_precision_t5` | Prepared Elixir of Precision V Mixture | 5 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_precision_t6` | Prepared Elixir of Precision VI Mixture | 6 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_stoneskin_t1` | Prepared Stoneskin Elixir I Mixture | 1 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_stoneskin_t2` | Prepared Stoneskin Elixir II Mixture | 2 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_stoneskin_t3` | Prepared Stoneskin Elixir III Mixture | 3 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_stoneskin_t4` | Prepared Stoneskin Elixir IV Mixture | 4 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_stoneskin_t5` | Prepared Stoneskin Elixir V Mixture | 5 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_stoneskin_t6` | Prepared Stoneskin Elixir VI Mixture | 6 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_vigor_t1` | Prepared Elixir of Vigor I Mixture | 1 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_vigor_t2` | Prepared Elixir of Vigor II Mixture | 2 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_vigor_t3` | Prepared Elixir of Vigor III Mixture | 3 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_vigor_t4` | Prepared Elixir of Vigor IV Mixture | 4 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_vigor_t5` | Prepared Elixir of Vigor V Mixture | 5 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_elixir_vigor_t6` | Prepared Elixir of Vigor VI Mixture | 6 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_antivenom` | Prepared Antivenom Mixture | 2 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_cave` | Prepared Cave Draught Mixture | 3 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_healing_t1` | Prepared Healing Potion I Mixture | 1 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_healing_t2` | Prepared Healing Potion II Mixture | 2 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_healing_t3` | Prepared Healing Potion III Mixture | 3 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_healing_t4` | Prepared Healing Potion IV Mixture | 4 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_healing_t5` | Prepared Healing Potion V Mixture | 5 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_healing_t6` | Prepared Healing Potion VI Mixture | 6 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_mana_t1` | Prepared Mana Potion I Mixture | 1 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_mana_t2` | Prepared Mana Potion II Mixture | 2 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_mana_t3` | Prepared Mana Potion III Mixture | 3 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_mana_t4` | Prepared Mana Potion IV Mixture | 4 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_mana_t5` | Prepared Mana Potion V Mixture | 5 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_mana_t6` | Prepared Mana Potion VI Mixture | 6 |  | grug_potion_mixture |
+| `grug_alchemy:mixture_potion_swiftness` | Prepared Swiftness Draught Mixture | 2 |  | grug_potion_mixture |
 | `grug_alchemy:potion_antivenom` | Antivenom |  | alchemist T2 | grug_potion, grug_potion_instant |
 | `grug_alchemy:potion_cave` | Cave Draught |  | alchemist T3 | grug_potion, grug_potion_instant |
 | `grug_alchemy:potion_healing_t1` | Healing Potion I |  | alchemist T1 | grug_potion, grug_potion_instant |
@@ -473,7 +518,7 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_alchemy:potion_mana_t5` | Mana Potion V |  | alchemist T5 | grug_potion, grug_potion_instant |
 | `grug_alchemy:potion_mana_t6` | Mana Potion VI |  | alchemist T6 | grug_potion, grug_potion_instant |
 | `grug_alchemy:potion_swiftness` | Swiftness Draught |  | alchemist T2 | grug_potion, grug_potion_instant |
-| `grug_brewing:brewing_stand` | Brewing Stand |  | grid, alchemist T3, dig |  |
+| `grug_brewing:brewing_stand` | Brewing Stand |  | alchemist T3, dig |  |
 | `grug_brewing:brewing_stand_active` | Brewing Stand |  |  |  |
 
 ## Tools
@@ -489,28 +534,28 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_farming:hoe_steel` | Steel Hoe | 3 | grid | grug_farming_hoe, grug_gathering_tool, hoe |
 | `grug_farming:hoe_stone` | Stone Hoe | 1 | grid | grug_farming_hoe, grug_gathering_tool, hoe |
 | `grug_fishing:rod` | Fishing Rod |  | grid | fishing_rod, tool |
-| `grug_materials:axe_abyssal_steel` | Abyssal Steel Woodcutting Axe | 6 | grid | axe, grug_axe_tier, grug_gathering_tool |
-| `grug_materials:axe_bronze` | Bronze Axe | 1 | grid | axe, grug_axe_tier, grug_gathering_tool |
-| `grug_materials:axe_embersteel` | Embersteel Woodcutting Axe | 5 | grid | axe, grug_axe_tier, grug_gathering_tool |
-| `grug_materials:axe_iron` | Iron Woodcutting Axe | 2 | grid | axe, grug_axe_tier, grug_gathering_tool |
-| `grug_materials:axe_silversteel` | Silversteel Woodcutting Axe | 4 | grid | axe, grug_axe_tier, grug_gathering_tool |
-| `grug_materials:axe_steel` | Steel Axe | 3 | grid | axe, grug_axe_tier, grug_gathering_tool |
+| `grug_materials:axe_abyssal_steel` | Abyssal Steel Woodcutting Axe | 6 |  | axe, grug_axe_tier, grug_gathering_tool |
+| `grug_materials:axe_bronze` | Bronze Axe | 1 |  | axe, grug_axe_tier, grug_gathering_tool |
+| `grug_materials:axe_embersteel` | Embersteel Woodcutting Axe | 5 |  | axe, grug_axe_tier, grug_gathering_tool |
+| `grug_materials:axe_iron` | Iron Woodcutting Axe | 2 |  | axe, grug_axe_tier, grug_gathering_tool |
+| `grug_materials:axe_silversteel` | Silversteel Woodcutting Axe | 4 |  | axe, grug_axe_tier, grug_gathering_tool |
+| `grug_materials:axe_steel` | Steel Axe | 3 |  | axe, grug_axe_tier, grug_gathering_tool |
 | `grug_materials:axe_stone` | Stone Axe | 1 | grid | axe, grug_axe_tier, grug_gathering_tool |
 | `grug_materials:axe_wood` | Wooden Axe | 1 | grid | axe, grug_axe_tier, grug_gathering_tool |
-| `grug_materials:pick_abyssal_steel` | Abyssal Steel Pickaxe | 6 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
-| `grug_materials:pick_bronze` | Bronze Pickaxe | 1 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
-| `grug_materials:pick_embersteel` | Embersteel Pickaxe | 5 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
-| `grug_materials:pick_iron` | Iron Pickaxe | 2 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
-| `grug_materials:pick_silversteel` | Silversteel Pickaxe | 4 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
-| `grug_materials:pick_steel` | Steel Pickaxe | 3 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
+| `grug_materials:pick_abyssal_steel` | Abyssal Steel Pickaxe | 6 |  | grug_gathering_tool, grug_pick_tier, pickaxe |
+| `grug_materials:pick_bronze` | Bronze Pickaxe | 1 |  | grug_gathering_tool, grug_pick_tier, pickaxe |
+| `grug_materials:pick_embersteel` | Embersteel Pickaxe | 5 |  | grug_gathering_tool, grug_pick_tier, pickaxe |
+| `grug_materials:pick_iron` | Iron Pickaxe | 2 |  | grug_gathering_tool, grug_pick_tier, pickaxe |
+| `grug_materials:pick_silversteel` | Silversteel Pickaxe | 4 |  | grug_gathering_tool, grug_pick_tier, pickaxe |
+| `grug_materials:pick_steel` | Steel Pickaxe | 3 |  | grug_gathering_tool, grug_pick_tier, pickaxe |
 | `grug_materials:pick_stone` | Stone Pickaxe | 1 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
 | `grug_materials:pick_wood` | Wooden Pickaxe | 1 | grid | grug_gathering_tool, grug_pick_tier, pickaxe |
-| `grug_materials:shovel_abyssal_steel` | Abyssal Steel Shovel | 6 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
-| `grug_materials:shovel_bronze` | Bronze Shovel | 1 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
-| `grug_materials:shovel_embersteel` | Embersteel Shovel | 5 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
-| `grug_materials:shovel_iron` | Iron Shovel | 2 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
-| `grug_materials:shovel_silversteel` | Silversteel Shovel | 4 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
-| `grug_materials:shovel_steel` | Steel Shovel | 3 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
+| `grug_materials:shovel_abyssal_steel` | Abyssal Steel Shovel | 6 |  | grug_gathering_tool, grug_shovel_tier, shovel |
+| `grug_materials:shovel_bronze` | Bronze Shovel | 1 |  | grug_gathering_tool, grug_shovel_tier, shovel |
+| `grug_materials:shovel_embersteel` | Embersteel Shovel | 5 |  | grug_gathering_tool, grug_shovel_tier, shovel |
+| `grug_materials:shovel_iron` | Iron Shovel | 2 |  | grug_gathering_tool, grug_shovel_tier, shovel |
+| `grug_materials:shovel_silversteel` | Silversteel Shovel | 4 |  | grug_gathering_tool, grug_shovel_tier, shovel |
+| `grug_materials:shovel_steel` | Steel Shovel | 3 |  | grug_gathering_tool, grug_shovel_tier, shovel |
 | `grug_materials:shovel_stone` | Stone Shovel | 1 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
 | `grug_materials:shovel_wood` | Wooden Shovel | 1 | grid | grug_gathering_tool, grug_shovel_tier, shovel |
 | `mobs:mob_reset_stick` | Mob Reset Stick |  |  |  |
@@ -531,102 +576,102 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_gear:battlebeat_t4` | Gold Battlebeat Band |  | goldsmith T4 | grug_equip_trinket, grug_gear |
 | `grug_gear:battlebeat_t5` | Embersteel Battlebeat Band |  | goldsmith T5 | grug_equip_trinket, grug_gear |
 | `grug_gear:battlebeat_t6` | Abyssal Steel Battlebeat Band |  | goldsmith T6 | grug_equip_trinket, grug_gear |
-| `grug_gear:bow_abyssal_steel` | Abyssal Steel Bow |  | grid | bow, grug_bow, grug_equip_weapon, grug_gear |
-| `grug_gear:bow_bronze` | Bronze Bow |  | grid | bow, grug_bow, grug_equip_weapon, grug_gear |
-| `grug_gear:bow_embersteel` | Embersteel Bow |  | grid | bow, grug_bow, grug_equip_weapon, grug_gear |
-| `grug_gear:bow_iron` | Iron Bow |  | grid | bow, grug_bow, grug_equip_weapon, grug_gear |
-| `grug_gear:bow_silversteel` | Silversteel Bow |  | grid | bow, grug_bow, grug_equip_weapon, grug_gear |
-| `grug_gear:bow_steel` | Steel Bow |  | grid | bow, grug_bow, grug_equip_weapon, grug_gear |
-| `grug_gear:chest_cloth_heavy` | Heavy Robe |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_cloth_patch` | Patch Robe |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_cloth_silk` | Silk Robe |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_cloth_silkweave` | Silkweave Robe |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_cloth_stormweave` | Stormweave Robe |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_cloth_woven` | Woven Robe |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_leather_cured` | Cured Jerkin |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_leather_heavy` | Heavy Jerkin |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_leather_light` | Light Jerkin |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_leather_nightscale` | Nightscale Jerkin |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_leather_scaled` | Scaled Jerkin |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_leather_sleek` | Sleek Jerkin |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_metal_abyssal_steel` | Abyssal Steel Chestplate |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_metal_bronze` | Bronze Chestplate |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_metal_embersteel` | Embersteel Chestplate |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_metal_iron` | Iron Chestplate |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_metal_silversteel` | Silversteel Chestplate |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:chest_metal_steel` | Steel Chestplate |  | grid | grug_armor_class, grug_equip_chest, grug_gear |
-| `grug_gear:dagger_abyssal_steel` | Abyssal Steel Dagger |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:dagger_bronze` | Bronze Dagger |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:dagger_embersteel` | Embersteel Dagger |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:dagger_iron` | Iron Dagger |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:dagger_silversteel` | Silversteel Dagger |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:dagger_steel` | Steel Dagger |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:feet_cloth_heavy` | Heavy Slippers |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_cloth_patch` | Patch Slippers |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_cloth_silk` | Silk Slippers |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_cloth_silkweave` | Silkweave Slippers |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_cloth_stormweave` | Stormweave Slippers |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_cloth_woven` | Woven Slippers |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_leather_cured` | Cured Boots |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_leather_heavy` | Heavy Boots |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_leather_light` | Light Boots |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_leather_nightscale` | Nightscale Boots |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_leather_scaled` | Scaled Boots |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_leather_sleek` | Sleek Boots |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_metal_abyssal_steel` | Abyssal Steel Sabatons |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_metal_bronze` | Bronze Sabatons |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_metal_embersteel` | Embersteel Sabatons |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_metal_iron` | Iron Sabatons |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_metal_silversteel` | Silversteel Sabatons |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:feet_metal_steel` | Steel Sabatons |  | grid | grug_armor_class, grug_equip_feet, grug_gear |
-| `grug_gear:greataxe_abyssal_steel` | Abyssal Steel Battle Axe |  | grid | axe, grug_equip_weapon, grug_gear |
-| `grug_gear:greataxe_bronze` | Bronze Battle Axe |  | grid | axe, grug_equip_weapon, grug_gear |
-| `grug_gear:greataxe_embersteel` | Embersteel Battle Axe |  | grid | axe, grug_equip_weapon, grug_gear |
-| `grug_gear:greataxe_iron` | Iron Battle Axe |  | grid | axe, grug_equip_weapon, grug_gear |
-| `grug_gear:greataxe_silversteel` | Silversteel Battle Axe |  | grid | axe, grug_equip_weapon, grug_gear |
-| `grug_gear:greataxe_steel` | Steel Battle Axe |  | grid | axe, grug_equip_weapon, grug_gear |
-| `grug_gear:head_cloth_heavy` | Heavy Cowl |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_cloth_patch` | Patch Cowl |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_cloth_silk` | Silk Cowl |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_cloth_silkweave` | Silkweave Cowl |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_cloth_stormweave` | Stormweave Cowl |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_cloth_woven` | Woven Cowl |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_leather_cured` | Cured Hood |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_leather_heavy` | Heavy Hood |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_leather_light` | Light Hood |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_leather_nightscale` | Nightscale Hood |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_leather_scaled` | Scaled Hood |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_leather_sleek` | Sleek Hood |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_metal_abyssal_steel` | Abyssal Steel Helm |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_metal_bronze` | Bronze Helm |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_metal_embersteel` | Embersteel Helm |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_metal_iron` | Iron Helm |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_metal_silversteel` | Silversteel Helm |  | grid | grug_armor_class, grug_equip_head, grug_gear |
-| `grug_gear:head_metal_steel` | Steel Helm |  | grid | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:bow_abyssal_steel` | Abyssal Steel Bow |  | leatherworker T6 | bow, grug_bow, grug_equip_weapon, grug_gear |
+| `grug_gear:bow_bronze` | Bronze Bow |  | leatherworker T1 | bow, grug_bow, grug_equip_weapon, grug_gear |
+| `grug_gear:bow_embersteel` | Embersteel Bow |  | leatherworker T5 | bow, grug_bow, grug_equip_weapon, grug_gear |
+| `grug_gear:bow_iron` | Iron Bow |  | leatherworker T2 | bow, grug_bow, grug_equip_weapon, grug_gear |
+| `grug_gear:bow_silversteel` | Silversteel Bow |  | leatherworker T4 | bow, grug_bow, grug_equip_weapon, grug_gear |
+| `grug_gear:bow_steel` | Steel Bow |  | leatherworker T3 | bow, grug_bow, grug_equip_weapon, grug_gear |
+| `grug_gear:chest_cloth_heavy` | Heavy Robe |  | tailor T3 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_cloth_patch` | Patch Robe |  | tailor T1 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_cloth_silk` | Silk Robe |  | tailor T5 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_cloth_silkweave` | Silkweave Robe |  | tailor T4 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_cloth_stormweave` | Stormweave Robe |  | tailor T6 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_cloth_woven` | Woven Robe |  | tailor T2 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_leather_cured` | Cured Jerkin |  | leatherworker T2 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_leather_heavy` | Heavy Jerkin |  | leatherworker T3 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_leather_light` | Light Jerkin |  | leatherworker T1 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_leather_nightscale` | Nightscale Jerkin |  | leatherworker T6 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_leather_scaled` | Scaled Jerkin |  | leatherworker T4 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_leather_sleek` | Sleek Jerkin |  | leatherworker T5 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_metal_abyssal_steel` | Abyssal Steel Chestplate |  | armorsmith T6 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_metal_bronze` | Bronze Chestplate |  | armorsmith T1 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_metal_embersteel` | Embersteel Chestplate |  | armorsmith T5 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_metal_iron` | Iron Chestplate |  | armorsmith T2 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_metal_silversteel` | Silversteel Chestplate |  | armorsmith T4 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:chest_metal_steel` | Steel Chestplate |  | armorsmith T3 | grug_armor_class, grug_equip_chest, grug_gear |
+| `grug_gear:dagger_abyssal_steel` | Abyssal Steel Dagger |  | weaponsmith T6 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:dagger_bronze` | Bronze Dagger |  | weaponsmith T1 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:dagger_embersteel` | Embersteel Dagger |  | weaponsmith T5 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:dagger_iron` | Iron Dagger |  | weaponsmith T2 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:dagger_silversteel` | Silversteel Dagger |  | weaponsmith T4 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:dagger_steel` | Steel Dagger |  | weaponsmith T3 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:feet_cloth_heavy` | Heavy Slippers |  | tailor T3 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_cloth_patch` | Patch Slippers |  | tailor T1 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_cloth_silk` | Silk Slippers |  | tailor T5 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_cloth_silkweave` | Silkweave Slippers |  | tailor T4 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_cloth_stormweave` | Stormweave Slippers |  | tailor T6 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_cloth_woven` | Woven Slippers |  | tailor T2 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_leather_cured` | Cured Boots |  | leatherworker T2 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_leather_heavy` | Heavy Boots |  | leatherworker T3 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_leather_light` | Light Boots |  | leatherworker T1 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_leather_nightscale` | Nightscale Boots |  | leatherworker T6 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_leather_scaled` | Scaled Boots |  | leatherworker T4 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_leather_sleek` | Sleek Boots |  | leatherworker T5 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_metal_abyssal_steel` | Abyssal Steel Sabatons |  | armorsmith T6 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_metal_bronze` | Bronze Sabatons |  | armorsmith T1 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_metal_embersteel` | Embersteel Sabatons |  | armorsmith T5 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_metal_iron` | Iron Sabatons |  | armorsmith T2 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_metal_silversteel` | Silversteel Sabatons |  | armorsmith T4 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:feet_metal_steel` | Steel Sabatons |  | armorsmith T3 | grug_armor_class, grug_equip_feet, grug_gear |
+| `grug_gear:greataxe_abyssal_steel` | Abyssal Steel Battle Axe |  | weaponsmith T6 | axe, grug_equip_weapon, grug_gear |
+| `grug_gear:greataxe_bronze` | Bronze Battle Axe |  | weaponsmith T1 | axe, grug_equip_weapon, grug_gear |
+| `grug_gear:greataxe_embersteel` | Embersteel Battle Axe |  | weaponsmith T5 | axe, grug_equip_weapon, grug_gear |
+| `grug_gear:greataxe_iron` | Iron Battle Axe |  | weaponsmith T2 | axe, grug_equip_weapon, grug_gear |
+| `grug_gear:greataxe_silversteel` | Silversteel Battle Axe |  | weaponsmith T4 | axe, grug_equip_weapon, grug_gear |
+| `grug_gear:greataxe_steel` | Steel Battle Axe |  | weaponsmith T3 | axe, grug_equip_weapon, grug_gear |
+| `grug_gear:head_cloth_heavy` | Heavy Cowl |  | tailor T3 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_cloth_patch` | Patch Cowl |  | tailor T1 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_cloth_silk` | Silk Cowl |  | tailor T5 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_cloth_silkweave` | Silkweave Cowl |  | tailor T4 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_cloth_stormweave` | Stormweave Cowl |  | tailor T6 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_cloth_woven` | Woven Cowl |  | tailor T2 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_leather_cured` | Cured Hood |  | leatherworker T2 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_leather_heavy` | Heavy Hood |  | leatherworker T3 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_leather_light` | Light Hood |  | leatherworker T1 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_leather_nightscale` | Nightscale Hood |  | leatherworker T6 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_leather_scaled` | Scaled Hood |  | leatherworker T4 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_leather_sleek` | Sleek Hood |  | leatherworker T5 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_metal_abyssal_steel` | Abyssal Steel Helm |  | armorsmith T6 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_metal_bronze` | Bronze Helm |  | armorsmith T1 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_metal_embersteel` | Embersteel Helm |  | armorsmith T5 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_metal_iron` | Iron Helm |  | armorsmith T2 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_metal_silversteel` | Silversteel Helm |  | armorsmith T4 | grug_armor_class, grug_equip_head, grug_gear |
+| `grug_gear:head_metal_steel` | Steel Helm |  | armorsmith T3 | grug_armor_class, grug_equip_head, grug_gear |
 | `grug_gear:last_light_t1` | Tin Last Light Locket |  | goldsmith T1 | grug_equip_trinket, grug_gear |
 | `grug_gear:last_light_t2` | Iron Last Light Locket |  | goldsmith T2 | grug_equip_trinket, grug_gear |
 | `grug_gear:last_light_t3` | Steel Last Light Locket |  | goldsmith T3 | grug_equip_trinket, grug_gear |
 | `grug_gear:last_light_t4` | Gold Last Light Locket |  | goldsmith T4 | grug_equip_trinket, grug_gear |
 | `grug_gear:last_light_t5` | Embersteel Last Light Locket |  | goldsmith T5 | grug_equip_trinket, grug_gear |
 | `grug_gear:last_light_t6` | Abyssal Steel Last Light Locket |  | goldsmith T6 | grug_equip_trinket, grug_gear |
-| `grug_gear:legs_cloth_heavy` | Heavy Leggings |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_cloth_patch` | Patch Leggings |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_cloth_silk` | Silk Leggings |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_cloth_silkweave` | Silkweave Leggings |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_cloth_stormweave` | Stormweave Leggings |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_cloth_woven` | Woven Leggings |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_leather_cured` | Cured Pants |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_leather_heavy` | Heavy Pants |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_leather_light` | Light Pants |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_leather_nightscale` | Nightscale Pants |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_leather_scaled` | Scaled Pants |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_leather_sleek` | Sleek Pants |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_metal_abyssal_steel` | Abyssal Steel Greaves |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_metal_bronze` | Bronze Greaves |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_metal_embersteel` | Embersteel Greaves |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_metal_iron` | Iron Greaves |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_metal_silversteel` | Silversteel Greaves |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
-| `grug_gear:legs_metal_steel` | Steel Greaves |  | grid | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_cloth_heavy` | Heavy Leggings |  | tailor T3 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_cloth_patch` | Patch Leggings |  | tailor T1 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_cloth_silk` | Silk Leggings |  | tailor T5 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_cloth_silkweave` | Silkweave Leggings |  | tailor T4 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_cloth_stormweave` | Stormweave Leggings |  | tailor T6 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_cloth_woven` | Woven Leggings |  | tailor T2 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_leather_cured` | Cured Pants |  | leatherworker T2 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_leather_heavy` | Heavy Pants |  | leatherworker T3 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_leather_light` | Light Pants |  | leatherworker T1 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_leather_nightscale` | Nightscale Pants |  | leatherworker T6 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_leather_scaled` | Scaled Pants |  | leatherworker T4 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_leather_sleek` | Sleek Pants |  | leatherworker T5 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_metal_abyssal_steel` | Abyssal Steel Greaves |  | armorsmith T6 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_metal_bronze` | Bronze Greaves |  | armorsmith T1 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_metal_embersteel` | Embersteel Greaves |  | armorsmith T5 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_metal_iron` | Iron Greaves |  | armorsmith T2 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_metal_silversteel` | Silversteel Greaves |  | armorsmith T4 | grug_armor_class, grug_equip_legs, grug_gear |
+| `grug_gear:legs_metal_steel` | Steel Greaves |  | armorsmith T3 | grug_armor_class, grug_equip_legs, grug_gear |
 | `grug_gear:manawell_t1` | Tin Manawell Pendant |  | goldsmith T1 | grug_equip_trinket, grug_gear |
 | `grug_gear:manawell_t2` | Iron Manawell Pendant |  | goldsmith T2 | grug_equip_trinket, grug_gear |
 | `grug_gear:manawell_t3` | Steel Manawell Pendant |  | goldsmith T3 | grug_equip_trinket, grug_gear |
@@ -645,36 +690,36 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `grug_gear:reclaimers_mark_t4` | Gold Reclaimer's Mark |  | goldsmith T4 | grug_equip_trinket, grug_gear |
 | `grug_gear:reclaimers_mark_t5` | Embersteel Reclaimer's Mark |  | goldsmith T5 | grug_equip_trinket, grug_gear |
 | `grug_gear:reclaimers_mark_t6` | Abyssal Steel Reclaimer's Mark |  | goldsmith T6 | grug_equip_trinket, grug_gear |
-| `grug_gear:shield_abyssal_steel` | Abyssal Steel Shield |  | grid | grug_equip_offhand, grug_gear, grug_shield |
-| `grug_gear:shield_bronze` | Bronze Shield |  | grid | grug_equip_offhand, grug_gear, grug_shield |
-| `grug_gear:shield_embersteel` | Embersteel Shield |  | grid | grug_equip_offhand, grug_gear, grug_shield |
-| `grug_gear:shield_iron` | Iron Shield |  | grid | grug_equip_offhand, grug_gear, grug_shield |
-| `grug_gear:shield_silversteel` | Silversteel Shield |  | grid | grug_equip_offhand, grug_gear, grug_shield |
-| `grug_gear:shield_steel` | Steel Shield |  | grid | grug_equip_offhand, grug_gear, grug_shield |
+| `grug_gear:shield_abyssal_steel` | Abyssal Steel Shield |  | armorsmith T6 | grug_equip_offhand, grug_gear, grug_shield |
+| `grug_gear:shield_bronze` | Bronze Shield |  | armorsmith T1 | grug_equip_offhand, grug_gear, grug_shield |
+| `grug_gear:shield_embersteel` | Embersteel Shield |  | armorsmith T5 | grug_equip_offhand, grug_gear, grug_shield |
+| `grug_gear:shield_iron` | Iron Shield |  | armorsmith T2 | grug_equip_offhand, grug_gear, grug_shield |
+| `grug_gear:shield_silversteel` | Silversteel Shield |  | armorsmith T4 | grug_equip_offhand, grug_gear, grug_shield |
+| `grug_gear:shield_steel` | Steel Shield |  | armorsmith T3 | grug_equip_offhand, grug_gear, grug_shield |
 | `grug_gear:spellbook_abyssal_steel` | Abyssal Steel Spellbook |  | tailor T6 | grug_equip_offhand, grug_gear, grug_spellbook |
 | `grug_gear:spellbook_bronze` | Bronze Spellbook |  | tailor T1 | grug_equip_offhand, grug_gear, grug_spellbook |
 | `grug_gear:spellbook_embersteel` | Embersteel Spellbook |  | tailor T5 | grug_equip_offhand, grug_gear, grug_spellbook |
 | `grug_gear:spellbook_iron` | Iron Spellbook |  | tailor T2 | grug_equip_offhand, grug_gear, grug_spellbook |
 | `grug_gear:spellbook_silversteel` | Silversteel Spellbook |  | tailor T4 | grug_equip_offhand, grug_gear, grug_spellbook |
 | `grug_gear:spellbook_steel` | Steel Spellbook |  | tailor T3 | grug_equip_offhand, grug_gear, grug_spellbook |
-| `grug_gear:staff_abyssal_steel` | Abyssal Steel Staff |  | grid | grug_equip_weapon, grug_gear, staff |
-| `grug_gear:staff_bronze` | Bronze Staff |  | grid | grug_equip_weapon, grug_gear, staff |
-| `grug_gear:staff_embersteel` | Embersteel Staff |  | grid | grug_equip_weapon, grug_gear, staff |
-| `grug_gear:staff_iron` | Iron Staff |  | grid | grug_equip_weapon, grug_gear, staff |
-| `grug_gear:staff_silversteel` | Silversteel Staff |  | grid | grug_equip_weapon, grug_gear, staff |
-| `grug_gear:staff_steel` | Steel Staff |  | grid | grug_equip_weapon, grug_gear, staff |
-| `grug_gear:sword_abyssal_steel` | Abyssal Steel Sword |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:sword_bronze` | Bronze Sword |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:sword_embersteel` | Embersteel Sword |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:sword_iron` | Iron Sword |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:sword_silversteel` | Silversteel Sword |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:sword_steel` | Steel Sword |  | grid | grug_equip_weapon, grug_gear, sword |
-| `grug_gear:wand_abyssal_steel` | Abyssal Steel Wand |  | grid | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
-| `grug_gear:wand_bronze` | Bronze Wand |  | grid | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
-| `grug_gear:wand_embersteel` | Embersteel Wand |  | grid | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
-| `grug_gear:wand_iron` | Iron Wand |  | grid | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
-| `grug_gear:wand_silversteel` | Silversteel Wand |  | grid | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
-| `grug_gear:wand_steel` | Steel Wand |  | grid | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
+| `grug_gear:staff_abyssal_steel` | Abyssal Steel Staff |  | woodcarver T6 | grug_equip_weapon, grug_gear, staff |
+| `grug_gear:staff_bronze` | Bronze Staff |  | woodcarver T1 | grug_equip_weapon, grug_gear, staff |
+| `grug_gear:staff_embersteel` | Embersteel Staff |  | woodcarver T5 | grug_equip_weapon, grug_gear, staff |
+| `grug_gear:staff_iron` | Iron Staff |  | woodcarver T2 | grug_equip_weapon, grug_gear, staff |
+| `grug_gear:staff_silversteel` | Silversteel Staff |  | woodcarver T4 | grug_equip_weapon, grug_gear, staff |
+| `grug_gear:staff_steel` | Steel Staff |  | woodcarver T3 | grug_equip_weapon, grug_gear, staff |
+| `grug_gear:sword_abyssal_steel` | Abyssal Steel Sword |  | weaponsmith T6 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:sword_bronze` | Bronze Sword |  | weaponsmith T1 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:sword_embersteel` | Embersteel Sword |  | weaponsmith T5 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:sword_iron` | Iron Sword |  | weaponsmith T2 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:sword_silversteel` | Silversteel Sword |  | weaponsmith T4 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:sword_steel` | Steel Sword |  | weaponsmith T3 | grug_equip_weapon, grug_gear, sword |
+| `grug_gear:wand_abyssal_steel` | Abyssal Steel Wand |  | woodcarver T6 | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
+| `grug_gear:wand_bronze` | Bronze Wand |  | woodcarver T1 | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
+| `grug_gear:wand_embersteel` | Embersteel Wand |  | woodcarver T5 | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
+| `grug_gear:wand_iron` | Iron Wand |  | woodcarver T2 | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
+| `grug_gear:wand_silversteel` | Silversteel Wand |  | woodcarver T4 | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
+| `grug_gear:wand_steel` | Steel Wand |  | woodcarver T3 | grug_caster_weapon, grug_equip_weapon, grug_gear, wand |
 
 ## Other craft items
 
@@ -705,23 +750,24 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 | `dye:violet` | Violet Dye |  | grid | color_violet, dye |
 | `dye:white` | White Dye |  |  | color_white, dye |
 | `dye:yellow` | Yellow Dye |  |  | color_yellow, dye |
-| `grug_cooking:raw_foragers_pot` | Raw Forager's Pot | 3 | grid, cooking T3 | grug_raw_dish |
-| `grug_cooking:raw_grand_feast` | Raw Grand Feast | 6 | grid, cooking T6 | grug_raw_dish |
-| `grug_cooking:raw_kelp_roast` | Raw Kelp-Wrapped Roast | 5 | grid, cooking T5 | grug_raw_dish |
-| `grug_cooking:raw_marsh_roast` | Raw Marsh Roast | 4 | grid, cooking T4 | grug_raw_dish |
-| `grug_cooking:raw_pumpkin_pot` | Raw Pumpkin Stew | 2 | grid, cooking T2 | grug_raw_dish |
-| `grug_cooking:raw_stew_pot` | Raw Hearty Stew | 1 | grid, cooking T1 | grug_raw_dish |
-| `grug_gear:arrow` | Arrow |  | grid | grug_arrow |
-| `grug_inventory:bag_great` | Great Cloth Bag (32 slots) |  | tailor T5 | bagslots |
-| `grug_inventory:bag_large` | Large Bag (24 slots) |  | tailor T4 | bagslots |
-| `grug_inventory:bag_leather_pack` | Leather Pack (24 slots) |  | leatherworker T4 | bagslots |
-| `grug_inventory:bag_leather_pouch` | Leather Pouch (8 slots) |  | leatherworker T1 | bagslots |
-| `grug_inventory:bag_leather_rucksack` | Leather Rucksack (32 slots) |  | leatherworker T5 | bagslots |
-| `grug_inventory:bag_leather_satchel` | Leather Satchel (16 slots) |  | leatherworker T2 | bagslots |
-| `grug_inventory:bag_medium` | Medium Bag (16 slots) |  | tailor T2 | bagslots |
-| `grug_inventory:bag_small` | Small Bag (8 slots) |  | tailor T1 | bagslots |
+| `grug_cooking:raw_foragers_pot` | Raw Forager's Pot | 3 | cooking T3 | grug_raw_dish |
+| `grug_cooking:raw_grand_feast` | Raw Grand Feast | 6 | cooking T6 | grug_raw_dish |
+| `grug_cooking:raw_kelp_roast` | Raw Kelp-Wrapped Roast | 5 | cooking T5 | grug_raw_dish |
+| `grug_cooking:raw_marsh_roast` | Raw Marsh Roast | 4 | cooking T4 | grug_raw_dish |
+| `grug_cooking:raw_pumpkin_pot` | Raw Pumpkin Stew | 2 | cooking T2 | grug_raw_dish |
+| `grug_cooking:raw_stew_pot` | Raw Hearty Stew | 1 | cooking T1 | grug_raw_dish |
+| `grug_gear:arrow` | Arrow |  |  | grug_arrow |
+| `grug_housing:packed_container` | Packed Container |  |  |  |
+| `grug_inventory:bag_great` | Great Cloth Bag (16 slots) |  | tailor T5 | bagslots |
+| `grug_inventory:bag_large` | Large Bag (12 slots) |  | tailor T4 | bagslots |
+| `grug_inventory:bag_leather_pack` | Leather Pack (12 slots) |  | leatherworker T4 | bagslots |
+| `grug_inventory:bag_leather_pouch` | Leather Pouch (4 slots) |  | leatherworker T1 | bagslots |
+| `grug_inventory:bag_leather_rucksack` | Leather Rucksack (16 slots) |  | leatherworker T5 | bagslots |
+| `grug_inventory:bag_leather_satchel` | Leather Satchel (8 slots) |  | leatherworker T2 | bagslots |
+| `grug_inventory:bag_medium` | Medium Bag (8 slots) |  | tailor T2 | bagslots |
+| `grug_inventory:bag_small` | Small Bag (4 slots) |  | tailor T1 | bagslots |
 | `grug_money:bag_of_coins` | Bag of Coins |  |  |  |
-| `grug_smelting:charcoal` | Charcoal |  | furnace | grug_furnace_fuel |
+| `grug_smelting:charcoal` | Charcoal |  | furnace | coal, grug_furnace_fuel |
 | `grug_traders:potion_healing_weak` | Weak Healing Potion |  |  | grug_potion, grug_potion_instant |
 | `vessels:glass_fragments` | Glass Fragments |  | grid |  |
 | `xpanes:door_steel_bar` | Steel Bar Door |  | grid, dig |  |
@@ -765,19 +811,20 @@ Gathering XP: fish 0.33 KE at the reference level 10 x the water's band.
 |---|---|---|---|---|
 | `default:stone_with_coal` | Coal Ore |  |  | grug_resource |
 | `default:stone_with_copper` | Copper Ore |  |  | grug_resource |
-| `default:stone_with_gold` | Gold Ore |  |  | grug_resource |
-| `default:stone_with_iron` | Iron Ore |  |  | grug_resource |
+| `default:stone_with_gold` | Gold Ore |  |  | grug_pick_level, grug_resource |
+| `default:stone_with_iron` | Iron Ore |  |  | grug_pick_level, grug_resource |
 | `default:stone_with_tin` | Tin Ore |  |  | grug_resource |
-| `grug_materials:abyssal_crystal_ore` | Abyssal Crystal Ore |  |  | grug_resource |
+| `grug_materials:abyssal_crystal_ore` | Abyssal Crystal Ore |  |  | grug_pick_level, grug_resource |
+| `grug_materials:stone_with_anthracite` | Anthracite Ore |  |  | grug_pick_level, grug_resource |
 | `grug_materials:stone_with_citrine` | Citrine Ore |  |  | grug_resource |
-| `grug_materials:stone_with_diamond` | Diamond Ore |  |  | grug_resource |
-| `grug_materials:stone_with_emberglass` | Emberglass Ore |  |  | grug_resource |
-| `grug_materials:stone_with_garnet` | Garnet Ore |  |  | grug_resource |
-| `grug_materials:stone_with_jade` | Jade Ore |  |  | grug_resource |
+| `grug_materials:stone_with_diamond` | Diamond Ore |  |  | grug_pick_level, grug_resource |
+| `grug_materials:stone_with_emberglass` | Emberglass Ore |  |  | grug_pick_level, grug_resource |
+| `grug_materials:stone_with_garnet` | Garnet Ore |  |  | grug_pick_level, grug_resource |
+| `grug_materials:stone_with_jade` | Jade Ore |  |  | grug_pick_level, grug_resource |
 | `grug_materials:stone_with_quartz` | Quartz Ore |  |  | grug_resource |
-| `grug_materials:stone_with_ruby` | Ruby Ore |  |  | grug_resource |
-| `grug_materials:stone_with_sapphire` | Sapphire Ore |  |  | grug_resource |
-| `grug_materials:stone_with_silver` | Silver Ore |  |  | grug_resource |
+| `grug_materials:stone_with_ruby` | Ruby Ore |  |  | grug_pick_level, grug_resource |
+| `grug_materials:stone_with_sapphire` | Sapphire Ore |  |  | grug_pick_level, grug_resource |
+| `grug_materials:stone_with_silver` | Silver Ore |  |  | grug_pick_level, grug_resource |
 
 ## Other nodes (building, decor, terrain)
 
@@ -786,14 +833,15 @@ Names only; see existing.json for groups and descriptions.
 - **beds** (4): `bed_bottom`, `bed_top`, `fancy_bed_bottom`, `fancy_bed_top`
 - **default** (123): `acacia_bush_leaves`, `acacia_bush_sapling`, `acacia_bush_stem`, `acacia_leaves`, `acacia_sapling`, `apple_mark`, `aspen_leaves`, `aspen_sapling`, `blueberry_bush_leaves`, `blueberry_bush_leaves_with_berries`, `blueberry_bush_sapling`, `bookshelf`, `brick`, `bush_leaves`, `bush_sapling`, `bush_stem`, `cactus`, `cave_ice`, `chest`, `chest_locked`, `chest_locked_open`, `chest_open`, `clay`, `cloud`, `coalblock`, `cobble`, `coral_brown`, `coral_cyan`, `coral_green`, `coral_orange`, `coral_pink`, `coral_skeleton`, `desert_cobble`, `desert_sand`, `desert_sandstone`, `desert_sandstone_block`, `desert_sandstone_brick`, `desert_stone`, `desert_stone_block`, `desert_stonebrick`, `dirt`, `dirt_with_coniferous_litter`, `dirt_with_dry_grass`, `dirt_with_grass`, `dirt_with_grass_footsteps`, `dirt_with_rainforest_litter`, `dirt_with_snow`, `dry_dirt`, `dry_dirt_with_dry_grass`, `dry_grass_1`, `dry_grass_2`, `dry_grass_3`, `dry_grass_4`, `dry_grass_5`, `dry_shrub`, `emergent_jungle_sapling`, `fence_acacia_wood`, `fence_aspen_wood`, `fence_junglewood`, `fence_pine_wood`, `fence_rail_acacia_wood`, `fence_rail_aspen_wood`, `fence_rail_junglewood`, `fence_rail_pine_wood`, `fence_rail_wood`, `fence_wood`, `fern_1`, `fern_2`, `fern_3`, `furnace`, `furnace_active`, `glass`, `grass_1`, `grass_2`, `grass_3`, `grass_4`, `grass_5`, `gravel`, `ice`, `junglegrass`, `jungleleaves`, `junglesapling`, `ladder_wood`, `large_cactus_seedling`, `lava_flowing`, `lava_source`, `leaves`, `marram_grass_1`, `marram_grass_2`, `marram_grass_3`, `mossycobble`, `obsidian`, `obsidian_block`, `obsidian_glass`, `obsidianbrick`, `papyrus`, `permafrost`, `permafrost_with_moss`, `permafrost_with_stones`, `pine_bush_needles`, `pine_bush_sapling`, `pine_bush_stem`, `pine_needles`, `pine_sapling`, `river_water_flowing`, `river_water_source`, `sand`, `sand_with_kelp`, `sandstone`, `sandstone_block`, `sandstonebrick`, `sapling`, `sign_wall_wood`, `snow`, `snowblock`, `stone`, `stone_block`, `stonebrick`, `torch`, `torch_ceiling`, `torch_wall`, `water_flowing`, `water_source`
 - **doors** (31): `door_glass_a`, `door_glass_b`, `door_glass_c`, `door_glass_d`, `door_obsidian_glass_a`, `door_obsidian_glass_b`, `door_obsidian_glass_c`, `door_obsidian_glass_d`, `door_steel_a`, `door_steel_b`, `door_steel_c`, `door_steel_d`, `door_wood_a`, `door_wood_b`, `door_wood_c`, `door_wood_d`, `gate_acacia_wood_closed`, `gate_acacia_wood_open`, `gate_aspen_wood_closed`, `gate_aspen_wood_open`, `gate_junglewood_closed`, `gate_junglewood_open`, `gate_pine_wood_closed`, `gate_pine_wood_open`, `gate_wood_closed`, `gate_wood_open`, `hidden`, `trapdoor`, `trapdoor_open`, `trapdoor_steel`, `trapdoor_steel_open`
+- **grug_core** (1): `water_barrier`
 - **grug_decor** (356): `capital_anvil`, `capital_bedding`, `capital_carving`, `capital_case`, `capital_cloth`, `capital_counter`, `capital_herbs`, `capital_hides`, `capital_lava`, `capital_loom`, `capital_product_alchemist`, `capital_product_armorsmith`, `capital_product_cooking`, `capital_product_goldsmith`, `capital_product_leatherworker`, `capital_product_leatherworker_exterior`, `capital_product_tailor`, `capital_product_weaponsmith`, `capital_product_woodcarver`, `capital_quench`, `capital_rail`, `capital_timber`, `capital_trough`, `castle_arrowslit_castle`, `castle_arrowslit_castle_cross`, `castle_arrowslit_castle_embrasure`, `castle_arrowslit_castle_hole`, `castle_arrowslit_desert_stone_block`, `castle_arrowslit_desert_stone_block_cross`, `castle_arrowslit_desert_stone_block_embrasure`, `castle_arrowslit_desert_stone_block_hole`, `castle_arrowslit_desert_stonebrick`, `castle_arrowslit_desert_stonebrick_cross`, `castle_arrowslit_desert_stonebrick_embrasure`, `castle_arrowslit_desert_stonebrick_hole`, `castle_arrowslit_mossycobble`, `castle_arrowslit_mossycobble_cross`, `castle_arrowslit_mossycobble_embrasure`, `castle_arrowslit_mossycobble_hole`, `castle_arrowslit_obsidianbrick`, `castle_arrowslit_obsidianbrick_cross`, `castle_arrowslit_obsidianbrick_embrasure`, `castle_arrowslit_obsidianbrick_hole`, `castle_arrowslit_sandstonebrick`, `castle_arrowslit_sandstonebrick_cross`, `castle_arrowslit_sandstonebrick_embrasure`, `castle_arrowslit_sandstonebrick_hole`, `castle_arrowslit_silver_sandstone_brick`, `castle_arrowslit_silver_sandstone_brick_cross`, `castle_arrowslit_silver_sandstone_brick_embrasure`, `castle_arrowslit_silver_sandstone_brick_hole`, `castle_arrowslit_stone_block`, `castle_arrowslit_stone_block_cross`, `castle_arrowslit_stone_block_embrasure`, `castle_arrowslit_stone_block_hole`, `castle_arrowslit_stonebrick`, `castle_arrowslit_stonebrick_cross`, `castle_arrowslit_stonebrick_embrasure`, `castle_arrowslit_stonebrick_hole`, `castle_dungeon_stone`, `castle_dungeon_stone_slab`, `castle_dungeon_stone_stair`, `castle_dungeon_stone_stair_inner`, `castle_dungeon_stone_stair_outer`, `castle_hole_castle`, `castle_hole_desert_stone_block`, `castle_hole_desert_stonebrick`, `castle_hole_mossycobble`, `castle_hole_obsidianbrick`, `castle_hole_sandstonebrick`, `castle_hole_silver_sandstone_brick`, `castle_hole_stone_block`, `castle_hole_stonebrick`, `castle_machicolation_castle`, `castle_machicolation_desert_stone_block`, `castle_machicolation_desert_stonebrick`, `castle_machicolation_mossycobble`, `castle_machicolation_obsidianbrick`, `castle_machicolation_sandstonebrick`, `castle_machicolation_silver_sandstone_brick`, `castle_machicolation_stone_block`, `castle_machicolation_stonebrick`, `castle_pavement_brick`, `castle_pavement_brick_slab`, `castle_pavement_brick_stair`, `castle_pavement_brick_stair_inner`, `castle_pavement_brick_stair_outer`, `castle_pillar_castle_bottom`, `castle_pillar_castle_bottom_half`, `castle_pillar_castle_crossbrace`, `castle_pillar_castle_extended_crossbrace`, `castle_pillar_castle_middle`, `castle_pillar_castle_middle_half`, `castle_pillar_castle_top`, `castle_pillar_castle_top_half`, `castle_pillar_desert_stone_block_bottom`, `castle_pillar_desert_stone_block_bottom_half`, `castle_pillar_desert_stone_block_crossbrace`, `castle_pillar_desert_stone_block_extended_crossbrace`, `castle_pillar_desert_stone_block_middle`, `castle_pillar_desert_stone_block_middle_half`, `castle_pillar_desert_stone_block_top`, `castle_pillar_desert_stone_block_top_half`, `castle_pillar_desert_stonebrick_bottom`, `castle_pillar_desert_stonebrick_bottom_half`, `castle_pillar_desert_stonebrick_crossbrace`, `castle_pillar_desert_stonebrick_extended_crossbrace`, `castle_pillar_desert_stonebrick_middle`, `castle_pillar_desert_stonebrick_middle_half`, `castle_pillar_desert_stonebrick_top`, `castle_pillar_desert_stonebrick_top_half`, `castle_pillar_mossycobble_bottom`, `castle_pillar_mossycobble_bottom_half`, `castle_pillar_mossycobble_crossbrace`, `castle_pillar_mossycobble_extended_crossbrace`, `castle_pillar_mossycobble_middle`, `castle_pillar_mossycobble_middle_half`, `castle_pillar_mossycobble_top`, `castle_pillar_mossycobble_top_half`, `castle_pillar_obsidianbrick_bottom`, `castle_pillar_obsidianbrick_bottom_half`, `castle_pillar_obsidianbrick_crossbrace`, `castle_pillar_obsidianbrick_extended_crossbrace`, `castle_pillar_obsidianbrick_middle`, `castle_pillar_obsidianbrick_middle_half`, `castle_pillar_obsidianbrick_top`, `castle_pillar_obsidianbrick_top_half`, `castle_pillar_sandstonebrick_bottom`, `castle_pillar_sandstonebrick_bottom_half`, `castle_pillar_sandstonebrick_crossbrace`, `castle_pillar_sandstonebrick_extended_crossbrace`, `castle_pillar_sandstonebrick_middle`, `castle_pillar_sandstonebrick_middle_half`, `castle_pillar_sandstonebrick_top`, `castle_pillar_sandstonebrick_top_half`, `castle_pillar_silver_sandstone_brick_bottom`, `castle_pillar_silver_sandstone_brick_bottom_half`, `castle_pillar_silver_sandstone_brick_crossbrace`, `castle_pillar_silver_sandstone_brick_extended_crossbrace`, `castle_pillar_silver_sandstone_brick_middle`, `castle_pillar_silver_sandstone_brick_middle_half`, `castle_pillar_silver_sandstone_brick_top`, `castle_pillar_silver_sandstone_brick_top_half`, `castle_pillar_stone_block_bottom`, `castle_pillar_stone_block_bottom_half`, `castle_pillar_stone_block_crossbrace`, `castle_pillar_stone_block_extended_crossbrace`, `castle_pillar_stone_block_middle`, `castle_pillar_stone_block_middle_half`, `castle_pillar_stone_block_top`, `castle_pillar_stone_block_top_half`, `castle_pillar_stonebrick_bottom`, `castle_pillar_stonebrick_bottom_half`, `castle_pillar_stonebrick_crossbrace`, `castle_pillar_stonebrick_extended_crossbrace`, `castle_pillar_stonebrick_middle`, `castle_pillar_stonebrick_middle_half`, `castle_pillar_stonebrick_top`, `castle_pillar_stonebrick_top_half`, `castle_roofslate`, `castle_rubble`, `castle_rubble_slab`, `castle_rubble_stair`, `castle_rubble_stair_inner`, `castle_rubble_stair_outer`, `castle_stonewall`, `castle_stonewall_corner`, `castle_stonewall_slab`, `castle_stonewall_stair`, `castle_stonewall_stair_inner`, `castle_stonewall_stair_outer`, `cottages_anvil`, `cottages_barrel`, `cottages_barrel_lying`, `cottages_barrel_lying_open`, `cottages_barrel_open`, `cottages_bench`, `cottages_clay_slab`, `cottages_clay_stair`, `cottages_clay_stair_inner`, `cottages_clay_stair_outer`, `cottages_glass_pane`, `cottages_glass_pane_side`, `cottages_loam`, `cottages_loam_slab`, `cottages_loam_stair`, `cottages_loam_stair_inner`, `cottages_loam_stair_outer`, `cottages_reet`, `cottages_roof_connector_reet`, `cottages_roof_connector_shingle_red`, `cottages_roof_connector_shingle_wood`, `cottages_roof_connector_slate`, `cottages_roof_connector_straw`, `cottages_roof_connector_wood`, `cottages_roof_flat_reet`, `cottages_roof_flat_shingle_red`, `cottages_roof_flat_shingle_wood`, `cottages_roof_flat_slate`, `cottages_roof_flat_straw`, `cottages_roof_flat_wood`, `cottages_roof_reet`, `cottages_roof_shingle_red`, `cottages_roof_shingle_wood`, `cottages_roof_slate`, `cottages_roof_straw`, `cottages_roof_wood`, `cottages_shelf`, `cottages_slate_vertical`, `cottages_straw`, `cottages_straw_bale`, `cottages_straw_ground`, `cottages_straw_mat`, `cottages_table`, `cottages_tub`, `cottages_wagon_load`, `cottages_wagon_wheel`, `cottages_wagon_wheel_road`, `cottages_washing`, `cottages_window_shutter_closed`, `cottages_window_shutter_open`, `cottages_wood_flat`, `cottages_wool_tent`, `darkage_adobe`, `darkage_basalt`, `darkage_basalt_block`, `darkage_basalt_brick`, `darkage_basalt_brick_slab`, `darkage_basalt_brick_stair`, `darkage_basalt_brick_stair_inner`, `darkage_basalt_brick_stair_outer`, `darkage_basalt_rubble`, `darkage_basalt_rubble_slab`, `darkage_basalt_rubble_stair`, `darkage_basalt_rubble_stair_inner`, `darkage_basalt_rubble_stair_outer`, `darkage_basalt_rubble_wall`, `darkage_basalt_slab`, `darkage_basalt_stair`, `darkage_basalt_stair_inner`, `darkage_basalt_stair_outer`, `darkage_chalk`, `darkage_chalked_bricks`, `darkage_chalked_bricks_slab`, `darkage_chalked_bricks_stair`, `darkage_chalked_bricks_stair_inner`, `darkage_chalked_bricks_stair_outer`, `darkage_glass`, `darkage_glass_round`, `darkage_glass_square`, `darkage_iron_bars`, `darkage_iron_grille`, `darkage_marble`, `darkage_marble_slab`, `darkage_marble_stair`, `darkage_marble_stair_inner`, `darkage_marble_stair_outer`, `darkage_marble_tile`, `darkage_marble_tile_slab`, `darkage_marble_tile_stair`, `darkage_marble_tile_stair_inner`, `darkage_marble_tile_stair_outer`, `darkage_mud`, `darkage_ors`, `darkage_ors_block`, `darkage_ors_brick`, `darkage_ors_brick_slab`, `darkage_ors_brick_stair`, `darkage_ors_brick_stair_inner`, `darkage_ors_brick_stair_outer`, `darkage_ors_rubble`, `darkage_ors_rubble_slab`, `darkage_ors_rubble_stair`, `darkage_ors_rubble_stair_inner`, `darkage_ors_rubble_stair_outer`, `darkage_ors_rubble_wall`, `darkage_ors_slab`, `darkage_ors_stair`, `darkage_ors_stair_inner`, `darkage_ors_stair_outer`, `darkage_reinforced_wood`, `darkage_reinforced_wood_arrow`, `darkage_reinforced_wood_bars`, `darkage_reinforced_wood_slope`, `darkage_serpentine`, `darkage_serpentine_slab`, `darkage_serpentine_stair`, `darkage_serpentine_stair_inner`, `darkage_serpentine_stair_outer`, `darkage_slate`, `darkage_slate_block`, `darkage_slate_brick`, `darkage_slate_brick_slab`, `darkage_slate_brick_stair`, `darkage_slate_brick_stair_inner`, `darkage_slate_brick_stair_outer`, `darkage_slate_rubble`, `darkage_slate_rubble_slab`, `darkage_slate_rubble_stair`, `darkage_slate_rubble_stair_inner`, `darkage_slate_rubble_stair_outer`, `darkage_slate_rubble_wall`, `darkage_slate_slab`, `darkage_slate_stair`, `darkage_slate_stair_inner`, `darkage_slate_stair_outer`, `darkage_slate_tile`, `darkage_slate_tile_slab`, `darkage_slate_tile_stair`, `darkage_slate_tile_stair_inner`, `darkage_slate_tile_stair_outer`, `darkage_stone_brick`, `darkage_stone_brick_slab`, `darkage_stone_brick_stair`, `darkage_stone_brick_stair_inner`, `darkage_stone_brick_stair_outer`, `darkage_stone_brick_wall`, `darkage_straw_bale`, `darkage_straw_bale_slab`, `darkage_straw_bale_stair`, `darkage_straw_bale_stair_inner`, `darkage_straw_bale_stair_outer`, `darkage_wood_bars`, `darkage_wood_frame`, `darkage_wood_grille`, `xdecor_barrel`, `xdecor_candle`, `xdecor_cauldron`, `xdecor_chair`, `xdecor_cobweb`, `xdecor_curtain`, `xdecor_curtain_open`, `xdecor_cushion`, `xdecor_cushion_block`, `xdecor_empty_shelf`, `xdecor_itemframe`, `xdecor_ivy`, `xdecor_lantern`, `xdecor_lantern_hanging`, `xdecor_painting_1`, `xdecor_painting_2`, `xdecor_painting_3`, `xdecor_painting_4`, `xdecor_potted_chrysanthemum_green`, `xdecor_potted_dandelion_white`, `xdecor_potted_dandelion_yellow`, `xdecor_potted_geranium`, `xdecor_potted_rose`, `xdecor_potted_tulip`, `xdecor_potted_tulip_black`, `xdecor_potted_viola`, `xdecor_rope`, `xdecor_stonepath`, `xdecor_table`, `xdecor_woodframed_glass`, `xdecor_workbench`
 - **grug_housing** (3): `claim_stone`, `claim_stone_draft`, `claim_stone_empty`
 - **grug_jobs** (5): `carving_bench`, `forge`, `jewellers_bench`, `tailor_bench`, `tanning_rack`
-- **grug_mapgen** (18): `arena_basalt`, `arena_ember`, `arena_frost_stone`, `arena_ice_water`, `arena_thin_ice`, `fire_pepper_source`, `freshwater_waterlily`, `freshwater_waterweed`, `poi_display_dwarf`, `poi_display_elf`, `poi_display_human`, `poi_display_orc`, `poi_display_troll`, `poi_display_undead`, `salt_crust_source`, `sugar_cane_source`, `waystone`, `wild_onion_source`
-- **grug_materials** (54): `abyssal_crystal_block`, `abyssal_steel_block`, `basalt`, `bronze_block`, `citrine_block`, `copper_block`, `diamond_block`, `emberglass_block`, `emberglass_lamp`, `emberglass_post_light`, `emberglass_post_light_acacia_wood`, `emberglass_post_light_aspen_wood`, `emberglass_post_light_junglewood`, `emberglass_post_light_pine_wood`, `embersteel_block`, `garnet_block`, `gold_block`, `granite`, `iron_block`, `iron_ladder`, `iron_sign_wall`, `jade_block`, `ruby_block`, `sapphire_block`, `silver_block`, `silversteel_block`, `slab_bronze_block`, `slab_copper_block`, `slab_gold_block`, `slab_iron_block`, `slab_tin_block`, `slate`, `stair_bronze_block`, `stair_copper_block`, `stair_gold_block`, `stair_inner_bronze_block`, `stair_inner_copper_block`, `stair_inner_gold_block`, `stair_inner_iron_block`, `stair_inner_tin_block`, `stair_iron_block`, `stair_outer_bronze_block`, `stair_outer_copper_block`, `stair_outer_gold_block`, `stair_outer_iron_block`, `stair_outer_tin_block`, `stair_tin_block`, `steel_block`, `t2_stone`, `t3_stone`, `t4_stone`, `t5_stone`, `t6_stone`, `tin_block`
-- **grug_nodes** (12): `ash_ground`, `blight_dirt`, `bone_pile`, `camp_fire`, `dirt_with_bone_litter`, `dirt_with_canopy_litter`, `dirt_with_forest_litter`, `dirt_with_moss`, `dirt_with_silver_litter`, `guard_banner`, `mesa_clay`, `mud`
+- **grug_mapgen** (19): `arena_basalt`, `arena_ember`, `arena_frost_stone`, `arena_ice_water`, `arena_thin_ice`, `fire_pepper_source`, `freshwater_waterlily`, `freshwater_waterweed`, `mailbox`, `poi_display_dwarf`, `poi_display_elf`, `poi_display_human`, `poi_display_orc`, `poi_display_troll`, `poi_display_undead`, `salt_crust_source`, `sugar_cane_source`, `waystone`, `wild_onion_source`
+- **grug_materials** (57): `abyssal_crystal_block`, `abyssal_steel_block`, `anthracite_torch`, `anthracite_torch_ceiling`, `anthracite_torch_wall`, `basalt`, `bronze_block`, `citrine_block`, `copper_block`, `diamond_block`, `emberglass_block`, `emberglass_lamp`, `emberglass_post_light`, `emberglass_post_light_acacia_wood`, `emberglass_post_light_aspen_wood`, `emberglass_post_light_junglewood`, `emberglass_post_light_pine_wood`, `embersteel_block`, `garnet_block`, `gold_block`, `granite`, `iron_block`, `iron_ladder`, `iron_sign_wall`, `jade_block`, `ruby_block`, `sapphire_block`, `silver_block`, `silversteel_block`, `slab_bronze_block`, `slab_copper_block`, `slab_gold_block`, `slab_iron_block`, `slab_tin_block`, `slate`, `stair_bronze_block`, `stair_copper_block`, `stair_gold_block`, `stair_inner_bronze_block`, `stair_inner_copper_block`, `stair_inner_gold_block`, `stair_inner_iron_block`, `stair_inner_tin_block`, `stair_iron_block`, `stair_outer_bronze_block`, `stair_outer_copper_block`, `stair_outer_gold_block`, `stair_outer_iron_block`, `stair_outer_tin_block`, `stair_tin_block`, `steel_block`, `t2_stone`, `t3_stone`, `t4_stone`, `t5_stone`, `t6_stone`, `tin_block`
+- **grug_nodes** (19): `ash_ground`, `blight_dirt`, `bone_pile`, `camp_fire`, `cattails`, `dirt_with_bone_litter`, `dirt_with_canopy_litter`, `dirt_with_forest_litter`, `dirt_with_moss`, `dirt_with_silver_litter`, `guard_banner`, `mesa_clay`, `moss_carpet`, `mud`, `mud_dry`, `mud_mottled`, `mud_with_reeds`, `mud_with_wet_grass`, `reeds`
 - **grug_smelting** (2): `dual_furnace`, `dual_furnace_active`
-- **grug_trees** (4): `gravewood_leaves`, `gravewood_sapling`, `silverwood_leaves`, `silverwood_sapling`
+- **grug_trees** (6): `gravewood_leaves`, `gravewood_sapling`, `silverwood_leaves`, `silverwood_sapling`, `swamp_hanging_moss`, `swamp_leaves`
 - **mobs** (6): `fallback_node`, `fence_top`, `fence_wood`, `hearing_vines`, `hearing_vines_active`, `spawner`
 - **stairs** (112): `slab_acacia_wood`, `slab_aspen_wood`, `slab_brick`, `slab_cobble`, `slab_desert_cobble`, `slab_desert_sandstone`, `slab_desert_sandstone_block`, `slab_desert_sandstone_brick`, `slab_desert_stone`, `slab_desert_stone_block`, `slab_desert_stonebrick`, `slab_glass`, `slab_ice`, `slab_junglewood`, `slab_mossycobble`, `slab_obsidian`, `slab_obsidian_block`, `slab_obsidian_glass`, `slab_obsidianbrick`, `slab_pine_wood`, `slab_sandstone`, `slab_sandstone_block`, `slab_sandstonebrick`, `slab_snowblock`, `slab_stone`, `slab_stone_block`, `slab_stonebrick`, `slab_wood`, `stair_acacia_wood`, `stair_aspen_wood`, `stair_brick`, `stair_cobble`, `stair_desert_cobble`, `stair_desert_sandstone`, `stair_desert_sandstone_block`, `stair_desert_sandstone_brick`, `stair_desert_stone`, `stair_desert_stone_block`, `stair_desert_stonebrick`, `stair_glass`, `stair_ice`, `stair_inner_acacia_wood`, `stair_inner_aspen_wood`, `stair_inner_brick`, `stair_inner_cobble`, `stair_inner_desert_cobble`, `stair_inner_desert_sandstone`, `stair_inner_desert_sandstone_block`, `stair_inner_desert_sandstone_brick`, `stair_inner_desert_stone`, `stair_inner_desert_stone_block`, `stair_inner_desert_stonebrick`, `stair_inner_glass`, `stair_inner_ice`, `stair_inner_junglewood`, `stair_inner_mossycobble`, `stair_inner_obsidian`, `stair_inner_obsidian_block`, `stair_inner_obsidian_glass`, `stair_inner_obsidianbrick`, `stair_inner_pine_wood`, `stair_inner_sandstone`, `stair_inner_sandstone_block`, `stair_inner_sandstonebrick`, `stair_inner_snowblock`, `stair_inner_stone`, `stair_inner_stone_block`, `stair_inner_stonebrick`, `stair_inner_wood`, `stair_junglewood`, `stair_mossycobble`, `stair_obsidian`, `stair_obsidian_block`, `stair_obsidian_glass`, `stair_obsidianbrick`, `stair_outer_acacia_wood`, `stair_outer_aspen_wood`, `stair_outer_brick`, `stair_outer_cobble`, `stair_outer_desert_cobble`, `stair_outer_desert_sandstone`, `stair_outer_desert_sandstone_block`, `stair_outer_desert_sandstone_brick`, `stair_outer_desert_stone`, `stair_outer_desert_stone_block`, `stair_outer_desert_stonebrick`, `stair_outer_glass`, `stair_outer_ice`, `stair_outer_junglewood`, `stair_outer_mossycobble`, `stair_outer_obsidian`, `stair_outer_obsidian_block`, `stair_outer_obsidian_glass`, `stair_outer_obsidianbrick`, `stair_outer_pine_wood`, `stair_outer_sandstone`, `stair_outer_sandstone_block`, `stair_outer_sandstonebrick`, `stair_outer_snowblock`, `stair_outer_stone`, `stair_outer_stone_block`, `stair_outer_stonebrick`, `stair_outer_wood`, `stair_pine_wood`, `stair_sandstone`, `stair_sandstone_block`, `stair_sandstonebrick`, `stair_snowblock`, `stair_stone`, `stair_stone_block`, `stair_stonebrick`, `stair_wood`
 - **vessels** (3): `drinking_glass`, `glass_bottle`, `shelf`
@@ -816,8 +864,8 @@ more members that describes a kind of item. Engine dig and placement groups
 | `group:grass` | any grass tuft | `default:dry_grass_1`, `default:dry_grass_2`, `default:dry_grass_3`, `default:dry_grass_4`, `default:dry_grass_5`, `default:fern_1`, `default:fern_2`, `default:fern_3`, `default:grass_1`, `default:grass_2`, `default:grass_3`, `default:grass_4`, `default:grass_5`, `default:junglegrass`, `default:marram_grass_1`, `default:marram_grass_2`, `default:marram_grass_3` |
 | `group:grug_cooking_berry` | any berry | `default:blueberries`, `grug_cooking:blightberry`, `grug_cooking:jungle_berry`, `grug_cooking:sunberry` |
 | `group:grug_cooking_fruit` | any fruit | `default:apple`, `default:blueberries`, `grug_cooking:blightberry`, `grug_cooking:jungle_berry`, `grug_cooking:sunberry` |
-| `group:grug_farming_seed` | any farming seed | `grug_farming:seed_bamboo_shoot`, `grug_farming:seed_blightberry`, `grug_farming:seed_carrot`, `grug_farming:seed_cassava`, `grug_farming:seed_cave_cap`, `grug_farming:seed_corn`, `grug_farming:seed_ember_moss`, `grug_farming:seed_fire_pepper`, `grug_farming:seed_frost_melon`, `grug_farming:seed_jungle_berry`, `grug_farming:seed_potato`, `grug_farming:seed_pumpkin`, `grug_farming:seed_salt_crust`, `grug_farming:seed_sugar_cane`, `grug_farming:seed_sunberry`, `grug_farming:seed_wild_grain`, `grug_farming:seed_wild_onion` |
-| `group:grug_food_dish` | any cooked dish | `grug_cooking:berry_preserve`, `grug_cooking:bread`, `grug_cooking:cocoa_rubbed_game`, `grug_cooking:corn_crusted_fish`, `grug_cooking:foragers_pot`, `grug_cooking:fruit_glazed_roast`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:hunters_feast`, `grug_cooking:jungle_cocoa`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:marshbloom_chowder`, `grug_cooking:mushroom_skewer`, `grug_cooking:onion_seared_steak`, `grug_cooking:pumpkin_stew`, `grug_cooking:salt_crusted_fish`, `grug_cooking:stormkelp_broth`, `grug_cooking:sweetroot_mash`, `grug_fishing:cooked_fish`, `mobs:meat`, `mobs:meatblock` |
+| `group:grug_farming_seed` | any farming seed | `grug_farming:seed_bamboo_shoot`, `grug_farming:seed_blightberry`, `grug_farming:seed_carrot`, `grug_farming:seed_cassava`, `grug_farming:seed_cave_cap`, `grug_farming:seed_corn`, `grug_farming:seed_ember_moss`, `grug_farming:seed_fire_pepper`, `grug_farming:seed_frost_melon`, `grug_farming:seed_jungle_berry`, `grug_farming:seed_melon`, `grug_farming:seed_mushroom`, `grug_farming:seed_potato`, `grug_farming:seed_pumpkin`, `grug_farming:seed_sugar_cane`, `grug_farming:seed_sunberry`, `grug_farming:seed_wild_grain`, `grug_farming:seed_wild_onion` |
+| `group:grug_food_dish` | any cooked dish | `grug_cooking:berry_preserve`, `grug_cooking:bread`, `grug_cooking:cocoa_rubbed_game`, `grug_cooking:corn_crusted_fish`, `grug_cooking:foragers_pot`, `grug_cooking:frostfin_fillet`, `grug_cooking:fruit_glazed_roast`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:hunters_feast`, `grug_cooking:jungle_cocoa`, `grug_cooking:kelp_steamed_tuna`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:marshbloom_chowder`, `grug_cooking:mire_carp_stew`, `grug_cooking:mushroom_skewer`, `grug_cooking:onion_seared_steak`, `grug_cooking:pan_fried_trout`, `grug_cooking:pumpkin_stew`, `grug_cooking:salt_crusted_fish`, `grug_cooking:smoked_ember_eel`, `grug_cooking:spiced_skewer`, `grug_cooking:stormkelp_broth`, `grug_cooking:sweetroot_mash`, `grug_fishing:cooked_fish`, `mobs:meat`, `mobs:meatblock` |
 | `group:grug_food_raw` | any raw food | `default:apple`, `default:blueberries`, `grug_cooking:bamboo_shoot`, `grug_cooking:blightberry`, `grug_cooking:carrot`, `grug_cooking:cassava`, `grug_cooking:cave_cap`, `grug_cooking:frost_melon`, `grug_cooking:jungle_berry`, `grug_cooking:pumpkin`, `grug_cooking:sunberry`, `grug_cooking:wild_grain`, `grug_fishing:ember_eel`, `grug_fishing:frostfin`, `grug_fishing:mire_carp`, `grug_fishing:silver_trout`, `grug_fishing:storm_tuna`, `grug_gathering:corn`, `grug_gathering:melon`, `grug_gathering:mushroom`, `grug_gathering:potato`, `grug_gathering:wild_cocoa`, `grug_mobs:raw_fish`, `mobs:meat_raw`, `mobs:meatblock_raw` |
 | `group:grug_healing_herb` | any healing herb | `grug_gathering:crimson_lotus_source`, `grug_gathering:dragonweed_source`, `grug_gathering:gravemoss_source`, `grug_mapgen:ember_moss_source` |
 | `group:grug_leather` | any leather | `grug_mobs:heavy_leather`, `grug_mobs:light_leather`, `grug_mobs:scaled_hide` |
@@ -827,13 +875,13 @@ more members that describes a kind of item. Engine dig and placement groups
 | `group:grug_profession_material` | processed profession material | `grug_artisans:hardened_wood`, `grug_artisans:heartwood_wood`, `grug_artisans:inlaid_wood`, `grug_artisans:lacquered_wood`, `grug_artisans:polished_wood`, `grug_artisans:seasoned_wood`, `grug_artisans:setting_copper_inlaid_steel`, `grug_artisans:setting_gold`, `grug_artisans:setting_gold_filigreed_abyssal_steel`, `grug_artisans:setting_gold_filigreed_embersteel`, `grug_artisans:setting_iron`, `grug_artisans:setting_tin`, `grug_professions:bolt_heavy`, `grug_professions:bolt_patch`, `grug_professions:bolt_silk`, `grug_professions:bolt_silkweave`, `grug_professions:bolt_stormweave`, `grug_professions:bolt_woven`, `grug_professions:cured_leather`, `grug_professions:nightscale_leather`, `grug_professions:sleek_leather` |
 | `group:grug_tailor_bolt` | any cloth bolt | `grug_professions:bolt_heavy`, `grug_professions:bolt_patch`, `grug_professions:bolt_silk`, `grug_professions:bolt_silkweave`, `grug_professions:bolt_stormweave`, `grug_professions:bolt_woven` |
 | `group:grug_wood_grade` | any seasoned wood grade | `grug_artisans:hardened_wood`, `grug_artisans:heartwood_wood`, `grug_artisans:inlaid_wood`, `grug_artisans:lacquered_wood`, `grug_artisans:polished_wood`, `grug_artisans:seasoned_wood` |
-| `group:leaves` | any leaves | `default:acacia_bush_leaves`, `default:acacia_leaves`, `default:aspen_leaves`, `default:blueberry_bush_leaves`, `default:blueberry_bush_leaves_with_berries`, `default:bush_leaves`, `default:jungleleaves`, `default:leaves`, `default:pine_bush_needles`, `default:pine_needles`, `grug_trees:gravewood_leaves`, `grug_trees:silverwood_leaves` |
-| `group:sand` | any sand | `default:desert_sand`, `default:sand`, `default:silver_sand`, `grug_mapgen:freshwater_waterweed` |
+| `group:leaves` | any leaves | `default:acacia_bush_leaves`, `default:acacia_leaves`, `default:aspen_leaves`, `default:blueberry_bush_leaves`, `default:blueberry_bush_leaves_with_berries`, `default:bush_leaves`, `default:jungleleaves`, `default:leaves`, `default:pine_bush_needles`, `default:pine_needles`, `grug_trees:gravewood_leaves`, `grug_trees:silverwood_leaves`, `grug_trees:swamp_leaves` |
+| `group:sand` | any sand | `default:desert_sand`, `default:sand`, `default:silver_sand` |
 | `group:sapling` | any sapling | `default:acacia_bush_sapling`, `default:acacia_sapling`, `default:aspen_sapling`, `default:blueberry_bush_sapling`, `default:bush_sapling`, `default:emergent_jungle_sapling`, `default:junglesapling`, `default:pine_bush_sapling`, `default:pine_sapling`, `default:sapling`, `grug_trees:gravewood_sapling`, `grug_trees:silverwood_sapling` |
-| `group:seed` | any seed | `grug_farming:seed_bamboo_shoot`, `grug_farming:seed_blightberry`, `grug_farming:seed_carrot`, `grug_farming:seed_cassava`, `grug_farming:seed_cave_cap`, `grug_farming:seed_corn`, `grug_farming:seed_ember_moss`, `grug_farming:seed_fire_pepper`, `grug_farming:seed_frost_melon`, `grug_farming:seed_jungle_berry`, `grug_farming:seed_potato`, `grug_farming:seed_pumpkin`, `grug_farming:seed_salt_crust`, `grug_farming:seed_sugar_cane`, `grug_farming:seed_sunberry`, `grug_farming:seed_wild_grain`, `grug_farming:seed_wild_onion` |
+| `group:seed` | any seed | `grug_farming:seed_bamboo_shoot`, `grug_farming:seed_blightberry`, `grug_farming:seed_carrot`, `grug_farming:seed_cassava`, `grug_farming:seed_cave_cap`, `grug_farming:seed_corn`, `grug_farming:seed_ember_moss`, `grug_farming:seed_fire_pepper`, `grug_farming:seed_frost_melon`, `grug_farming:seed_jungle_berry`, `grug_farming:seed_melon`, `grug_farming:seed_mushroom`, `grug_farming:seed_potato`, `grug_farming:seed_pumpkin`, `grug_farming:seed_sugar_cane`, `grug_farming:seed_sunberry`, `grug_farming:seed_wild_grain`, `grug_farming:seed_wild_onion` |
 | `group:stick` | sticks | `default:stick` |
 | `group:stone` | any plain stone / cobble | `default:cobble`, `default:desert_cobble`, `default:desert_stone`, `default:desert_stone_block`, `default:desert_stonebrick`, `default:mossycobble`, `default:stone`, `default:stone_block`, `default:stonebrick`, `walls:cobble`, `walls:desertcobble`, `walls:mossycobble` |
-| `group:tree` | any log (trunk node) | `default:acacia_tree`, `default:aspen_tree`, `default:jungletree`, `default:pine_tree`, `default:tree`, `grug_trees:gravewood_tree`, `grug_trees:silverwood_tree` |
+| `group:tree` | any log (trunk node) | `default:acacia_tree`, `default:aspen_tree`, `default:jungletree`, `default:pine_tree`, `default:tree`, `grug_trees:acacia_base`, `grug_trees:acacia_branch`, `grug_trees:acacia_quarter`, `grug_trees:acacia_twig`, `grug_trees:apple_base`, `grug_trees:apple_branch`, `grug_trees:apple_quarter`, `grug_trees:apple_twig`, `grug_trees:aspen_base`, `grug_trees:aspen_branch`, `grug_trees:aspen_quarter`, `grug_trees:aspen_twig`, `grug_trees:gravewood_base`, `grug_trees:gravewood_branch`, `grug_trees:gravewood_quarter`, `grug_trees:gravewood_tree`, `grug_trees:gravewood_twig`, `grug_trees:jungle_base`, `grug_trees:jungle_branch`, `grug_trees:jungle_quarter`, `grug_trees:jungle_twig`, `grug_trees:pine_base`, `grug_trees:pine_branch`, `grug_trees:pine_quarter`, `grug_trees:pine_twig`, `grug_trees:silverwood_base`, `grug_trees:silverwood_branch`, `grug_trees:silverwood_quarter`, `grug_trees:silverwood_tree`, `grug_trees:silverwood_twig` |
 | `group:wood` | any planks | `default:acacia_wood`, `default:aspen_wood`, `default:junglewood`, `default:pine_wood`, `default:wood`, `grug_trees:gravewood_wood`, `grug_trees:silverwood_wood` |
 | `group:wool` | any wool | `wool:black`, `wool:blue`, `wool:brown`, `wool:cyan`, `wool:dark_green`, `wool:dark_grey`, `wool:green`, `wool:grey`, `wool:magenta`, `wool:orange`, `wool:pink`, `wool:red`, `wool:violet`, `wool:white`, `wool:yellow` |
 
@@ -843,6 +891,7 @@ more members that describes a kind of item. Engine dig and placement groups
 | `group:bagslots` | `grug_inventory:bag_great`, `grug_inventory:bag_large`, `grug_inventory:bag_leather_pack`, `grug_inventory:bag_leather_pouch`, `grug_inventory:bag_leather_rucksack`, `grug_inventory:bag_leather_satchel`, `grug_inventory:bag_medium`, `grug_inventory:bag_small` |
 | `group:book` | `default:book`, `default:book_written` |
 | `group:bow` | `grug_gear:bow_abyssal_steel`, `grug_gear:bow_bronze`, `grug_gear:bow_embersteel`, `grug_gear:bow_iron`, `grug_gear:bow_silversteel`, `grug_gear:bow_steel` |
+| `group:coal` | `default:coal_lump`, `grug_smelting:charcoal` |
 | `group:dry_grass` | `default:dry_grass_1`, `default:dry_grass_2`, `default:dry_grass_3`, `default:dry_grass_4`, `default:dry_grass_5` |
 | `group:fern` | `default:fern_1`, `default:fern_2`, `default:fern_3` |
 | `group:grug_arena_hazard` | `grug_mapgen:arena_basalt`, `grug_mapgen:arena_ember`, `grug_mapgen:arena_frost_stone`, `grug_mapgen:arena_ice_water`, `grug_mapgen:arena_thin_ice` |
@@ -852,8 +901,9 @@ more members that describes a kind of item. Engine dig and placement groups
 | `group:grug_bucket` | `grug_farming:empty_iron_bucket`, `grug_farming:water_bucket` |
 | `group:grug_caster_weapon` | `grug_gear:wand_abyssal_steel`, `grug_gear:wand_bronze`, `grug_gear:wand_embersteel`, `grug_gear:wand_iron`, `grug_gear:wand_silversteel`, `grug_gear:wand_steel` |
 | `group:grug_cooking_early_spice` | `grug_cooking:fire_pepper`, `grug_cooking:wild_onion` |
+| `group:grug_cooking_mushroom` | `grug_cooking:cave_cap`, `grug_gathering:mushroom` |
 | `group:grug_cooking_root` | `grug_cooking:carrot`, `grug_cooking:cassava` |
-| `group:grug_cooking_staple` | `grug_gathering:corn`, `grug_gathering:potato` |
+| `group:grug_cooking_staple` | `grug_cooking:carrot`, `grug_cooking:cassava`, `grug_gathering:corn`, `grug_gathering:potato` |
 | `group:grug_decorative_rock` | `grug_materials:basalt`, `grug_materials:granite`, `grug_materials:slate` |
 | `group:grug_elixir` | `grug_alchemy:elixir_deepwater`, `grug_alchemy:elixir_focus_t1`, `grug_alchemy:elixir_focus_t2`, `grug_alchemy:elixir_focus_t3`, `grug_alchemy:elixir_focus_t4`, `grug_alchemy:elixir_focus_t5`, `grug_alchemy:elixir_focus_t6`, `grug_alchemy:elixir_precision_t1`, `grug_alchemy:elixir_precision_t2`, `grug_alchemy:elixir_precision_t3`, `grug_alchemy:elixir_precision_t4`, `grug_alchemy:elixir_precision_t5`, `grug_alchemy:elixir_precision_t6`, `grug_alchemy:elixir_stoneskin_t1`, `grug_alchemy:elixir_stoneskin_t2`, `grug_alchemy:elixir_stoneskin_t3`, `grug_alchemy:elixir_stoneskin_t4`, `grug_alchemy:elixir_stoneskin_t5`, `grug_alchemy:elixir_stoneskin_t6`, `grug_alchemy:elixir_vigor_t1`, `grug_alchemy:elixir_vigor_t2`, `grug_alchemy:elixir_vigor_t3`, `grug_alchemy:elixir_vigor_t4`, `grug_alchemy:elixir_vigor_t5`, `grug_alchemy:elixir_vigor_t6` |
 | `group:grug_equip_chest` | `grug_gear:chest_cloth_heavy`, `grug_gear:chest_cloth_patch`, `grug_gear:chest_cloth_silk`, `grug_gear:chest_cloth_silkweave`, `grug_gear:chest_cloth_stormweave`, `grug_gear:chest_cloth_woven`, `grug_gear:chest_leather_cured`, `grug_gear:chest_leather_heavy`, `grug_gear:chest_leather_light`, `grug_gear:chest_leather_nightscale`, `grug_gear:chest_leather_scaled`, `grug_gear:chest_leather_sleek`, `grug_gear:chest_metal_abyssal_steel`, `grug_gear:chest_metal_bronze`, `grug_gear:chest_metal_embersteel`, `grug_gear:chest_metal_iron`, `grug_gear:chest_metal_silversteel`, `grug_gear:chest_metal_steel` |
@@ -863,14 +913,15 @@ more members that describes a kind of item. Engine dig and placement groups
 | `group:grug_equip_offhand` | `grug_gear:shield_abyssal_steel`, `grug_gear:shield_bronze`, `grug_gear:shield_embersteel`, `grug_gear:shield_iron`, `grug_gear:shield_silversteel`, `grug_gear:shield_steel`, `grug_gear:spellbook_abyssal_steel`, `grug_gear:spellbook_bronze`, `grug_gear:spellbook_embersteel`, `grug_gear:spellbook_iron`, `grug_gear:spellbook_silversteel`, `grug_gear:spellbook_steel` |
 | `group:grug_equip_trinket` | `grug_gear:apothecary_loop_t1`, `grug_gear:apothecary_loop_t2`, `grug_gear:apothecary_loop_t3`, `grug_gear:apothecary_loop_t4`, `grug_gear:apothecary_loop_t5`, `grug_gear:apothecary_loop_t6`, `grug_gear:battlebeat_t1`, `grug_gear:battlebeat_t2`, `grug_gear:battlebeat_t3`, `grug_gear:battlebeat_t4`, `grug_gear:battlebeat_t5`, `grug_gear:battlebeat_t6`, `grug_gear:last_light_t1`, `grug_gear:last_light_t2`, `grug_gear:last_light_t3`, `grug_gear:last_light_t4`, `grug_gear:last_light_t5`, `grug_gear:last_light_t6`, `grug_gear:manawell_t1`, `grug_gear:manawell_t2`, `grug_gear:manawell_t3`, `grug_gear:manawell_t4`, `grug_gear:manawell_t5`, `grug_gear:manawell_t6`, `grug_gear:mercy_seal_t1`, `grug_gear:mercy_seal_t2`, `grug_gear:mercy_seal_t3`, `grug_gear:mercy_seal_t4`, `grug_gear:mercy_seal_t5`, `grug_gear:mercy_seal_t6`, `grug_gear:reclaimers_mark_t1`, `grug_gear:reclaimers_mark_t2`, `grug_gear:reclaimers_mark_t3`, `grug_gear:reclaimers_mark_t4`, `grug_gear:reclaimers_mark_t5`, `grug_gear:reclaimers_mark_t6` |
 | `group:grug_equip_weapon` | `grug_gear:bow_abyssal_steel`, `grug_gear:bow_bronze`, `grug_gear:bow_embersteel`, `grug_gear:bow_iron`, `grug_gear:bow_silversteel`, `grug_gear:bow_steel`, `grug_gear:dagger_abyssal_steel`, `grug_gear:dagger_bronze`, `grug_gear:dagger_embersteel`, `grug_gear:dagger_iron`, `grug_gear:dagger_silversteel`, `grug_gear:dagger_steel`, `grug_gear:greataxe_abyssal_steel`, `grug_gear:greataxe_bronze`, `grug_gear:greataxe_embersteel`, `grug_gear:greataxe_iron`, `grug_gear:greataxe_silversteel`, `grug_gear:greataxe_steel`, `grug_gear:staff_abyssal_steel`, `grug_gear:staff_bronze`, `grug_gear:staff_embersteel`, `grug_gear:staff_iron`, `grug_gear:staff_silversteel`, `grug_gear:staff_steel`, `grug_gear:sword_abyssal_steel`, `grug_gear:sword_bronze`, `grug_gear:sword_embersteel`, `grug_gear:sword_iron`, `grug_gear:sword_silversteel`, `grug_gear:sword_steel`, `grug_gear:wand_abyssal_steel`, `grug_gear:wand_bronze`, `grug_gear:wand_embersteel`, `grug_gear:wand_iron`, `grug_gear:wand_silversteel`, `grug_gear:wand_steel` |
-| `group:grug_farming_crop` | `grug_farming:bamboo_shoot_1`, `grug_farming:bamboo_shoot_2`, `grug_farming:bamboo_shoot_3`, `grug_farming:bamboo_shoot_4`, `grug_farming:blightberry_1`, `grug_farming:blightberry_2`, `grug_farming:blightberry_3`, `grug_farming:blightberry_4`, `grug_farming:carrot_1`, `grug_farming:carrot_2`, `grug_farming:carrot_3`, `grug_farming:carrot_4`, `grug_farming:cassava_1`, `grug_farming:cassava_2`, `grug_farming:cassava_3`, `grug_farming:cassava_4`, `grug_farming:cave_cap_1`, `grug_farming:cave_cap_2`, `grug_farming:cave_cap_3`, `grug_farming:cave_cap_4`, `grug_farming:corn_1`, `grug_farming:corn_2`, `grug_farming:corn_3`, `grug_farming:corn_4`, `grug_farming:ember_moss_1`, `grug_farming:ember_moss_2`, `grug_farming:ember_moss_3`, `grug_farming:ember_moss_4`, `grug_farming:fire_pepper_1`, `grug_farming:fire_pepper_2`, `grug_farming:fire_pepper_3`, `grug_farming:fire_pepper_4`, `grug_farming:frost_melon_1`, `grug_farming:frost_melon_2`, `grug_farming:frost_melon_3`, `grug_farming:frost_melon_4`, `grug_farming:jungle_berry_1`, `grug_farming:jungle_berry_2`, `grug_farming:jungle_berry_3`, `grug_farming:jungle_berry_4`, … (28 more) |
+| `group:grug_farming_crop` | `grug_farming:bamboo_shoot_1`, `grug_farming:bamboo_shoot_2`, `grug_farming:bamboo_shoot_3`, `grug_farming:bamboo_shoot_4`, `grug_farming:blightberry_1`, `grug_farming:blightberry_2`, `grug_farming:blightberry_3`, `grug_farming:blightberry_4`, `grug_farming:carrot_1`, `grug_farming:carrot_2`, `grug_farming:carrot_3`, `grug_farming:carrot_4`, `grug_farming:cassava_1`, `grug_farming:cassava_2`, `grug_farming:cassava_3`, `grug_farming:cassava_4`, `grug_farming:cave_cap_1`, `grug_farming:cave_cap_2`, `grug_farming:cave_cap_3`, `grug_farming:cave_cap_4`, `grug_farming:corn_1`, `grug_farming:corn_2`, `grug_farming:corn_3`, `grug_farming:corn_4`, `grug_farming:ember_moss_1`, `grug_farming:ember_moss_2`, `grug_farming:ember_moss_3`, `grug_farming:ember_moss_4`, `grug_farming:fire_pepper_1`, `grug_farming:fire_pepper_2`, `grug_farming:fire_pepper_3`, `grug_farming:fire_pepper_4`, `grug_farming:frost_melon_1`, `grug_farming:frost_melon_2`, `grug_farming:frost_melon_3`, `grug_farming:frost_melon_4`, `grug_farming:jungle_berry_1`, `grug_farming:jungle_berry_2`, `grug_farming:jungle_berry_3`, `grug_farming:jungle_berry_4`, … (32 more) |
 | `group:grug_farming_hoe` | `grug_farming:hoe`, `grug_farming:hoe_abyssal_steel`, `grug_farming:hoe_bronze`, `grug_farming:hoe_embersteel`, `grug_farming:hoe_iron`, `grug_farming:hoe_silversteel`, `grug_farming:hoe_steel`, `grug_farming:hoe_stone` |
-| `group:grug_food` | `default:apple`, `default:blueberries`, `grug_cooking:bamboo_shoot`, `grug_cooking:berry_preserve`, `grug_cooking:blightberry`, `grug_cooking:bread`, `grug_cooking:carrot`, `grug_cooking:cassava`, `grug_cooking:cave_cap`, `grug_cooking:cocoa_rubbed_game`, `grug_cooking:corn_crusted_fish`, `grug_cooking:foragers_pot`, `grug_cooking:frost_melon`, `grug_cooking:fruit_glazed_roast`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:hunters_feast`, `grug_cooking:jungle_berry`, `grug_cooking:jungle_cocoa`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:marshbloom_chowder`, `grug_cooking:mushroom_skewer`, `grug_cooking:onion_seared_steak`, `grug_cooking:pumpkin`, `grug_cooking:pumpkin_stew`, `grug_cooking:salt_crusted_fish`, `grug_cooking:stormkelp_broth`, `grug_cooking:sunberry`, `grug_cooking:sweetroot_mash`, `grug_cooking:wild_grain`, `grug_fishing:cooked_fish`, `grug_fishing:ember_eel`, `grug_fishing:frostfin`, `grug_fishing:mire_carp`, `grug_fishing:silver_trout`, `grug_fishing:storm_tuna`, `grug_gathering:corn`, `grug_gathering:corn_source`, `grug_gathering:melon`, … (23 more) |
+| `group:grug_food` | `default:apple`, `default:blueberries`, `grug_cooking:bamboo_shoot`, `grug_cooking:berry_preserve`, `grug_cooking:blightberry`, `grug_cooking:bread`, `grug_cooking:carrot`, `grug_cooking:cassava`, `grug_cooking:cave_cap`, `grug_cooking:cocoa_rubbed_game`, `grug_cooking:corn_crusted_fish`, `grug_cooking:foragers_pot`, `grug_cooking:frost_melon`, `grug_cooking:frostfin_fillet`, `grug_cooking:fruit_glazed_roast`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:hunters_feast`, `grug_cooking:jungle_berry`, `grug_cooking:jungle_cocoa`, `grug_cooking:kelp_steamed_tuna`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:marshbloom_chowder`, `grug_cooking:mire_carp_stew`, `grug_cooking:mushroom_skewer`, `grug_cooking:onion_seared_steak`, `grug_cooking:pan_fried_trout`, `grug_cooking:pumpkin`, `grug_cooking:pumpkin_stew`, `grug_cooking:salt_crusted_fish`, `grug_cooking:smoked_ember_eel`, `grug_cooking:spiced_skewer`, `grug_cooking:stormkelp_broth`, `grug_cooking:sunberry`, `grug_cooking:sweetroot_mash`, `grug_cooking:wild_grain`, `grug_fishing:cooked_fish`, `grug_fishing:ember_eel`, `grug_fishing:frostfin`, … (29 more) |
 | `group:grug_food_role_caster` | `grug_cooking:berry_preserve`, `grug_cooking:jungle_cocoa`, `grug_cooking:marshbloom_chowder`, `grug_cooking:mushroom_skewer`, `grug_cooking:stormkelp_broth`, `grug_cooking:sweetroot_mash` |
-| `group:grug_food_role_hearty` | `grug_cooking:bread`, `grug_cooking:foragers_pot`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:pumpkin_stew`, `grug_fishing:cooked_fish`, `mobs:meat`, `mobs:meatblock` |
+| `group:grug_food_role_hearty` | `grug_cooking:foragers_pot`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:pumpkin_stew` |
 | `group:grug_food_role_hp` | `default:apple`, `default:blueberries`, `grug_cooking:bamboo_shoot`, `grug_cooking:blightberry`, `grug_cooking:carrot`, `grug_cooking:cassava`, `grug_cooking:cave_cap`, `grug_cooking:frost_melon`, `grug_cooking:jungle_berry`, `grug_cooking:pumpkin`, `grug_cooking:sunberry`, `grug_cooking:wild_grain`, `grug_fishing:ember_eel`, `grug_fishing:frostfin`, `grug_fishing:mire_carp`, `grug_fishing:silver_trout`, `grug_fishing:storm_tuna`, `grug_gathering:corn`, `grug_gathering:melon`, `grug_gathering:mushroom`, `grug_gathering:potato`, `grug_gathering:wild_cocoa`, `grug_mobs:raw_fish`, `mobs:meat_raw`, `mobs:meatblock_raw` |
 | `group:grug_food_role_hunter` | `grug_cooking:cocoa_rubbed_game`, `grug_cooking:corn_crusted_fish`, `grug_cooking:fruit_glazed_roast`, `grug_cooking:hunters_feast`, `grug_cooking:onion_seared_steak`, `grug_cooking:salt_crusted_fish` |
-| `group:grug_food_tier` | `default:apple`, `default:blueberries`, `grug_cooking:bamboo_shoot`, `grug_cooking:berry_preserve`, `grug_cooking:blightberry`, `grug_cooking:bread`, `grug_cooking:carrot`, `grug_cooking:cassava`, `grug_cooking:cave_cap`, `grug_cooking:cocoa_rubbed_game`, `grug_cooking:corn_crusted_fish`, `grug_cooking:foragers_pot`, `grug_cooking:frost_melon`, `grug_cooking:fruit_glazed_roast`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:hunters_feast`, `grug_cooking:jungle_berry`, `grug_cooking:jungle_cocoa`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:marshbloom_chowder`, `grug_cooking:mushroom_skewer`, `grug_cooking:onion_seared_steak`, `grug_cooking:pumpkin`, `grug_cooking:pumpkin_stew`, `grug_cooking:salt_crusted_fish`, `grug_cooking:stormkelp_broth`, `grug_cooking:sunberry`, `grug_cooking:sweetroot_mash`, `grug_cooking:wild_grain`, `grug_fishing:cooked_fish`, `grug_fishing:ember_eel`, `grug_fishing:frostfin`, `grug_fishing:mire_carp`, `grug_fishing:silver_trout`, `grug_fishing:storm_tuna`, `grug_gathering:corn`, `grug_gathering:melon`, `grug_gathering:mushroom`, … (7 more) |
+| `group:grug_food_role_plain` | `grug_cooking:bread`, `grug_cooking:frostfin_fillet`, `grug_cooking:kelp_steamed_tuna`, `grug_cooking:mire_carp_stew`, `grug_cooking:pan_fried_trout`, `grug_cooking:smoked_ember_eel`, `grug_cooking:spiced_skewer`, `grug_fishing:cooked_fish`, `mobs:meat`, `mobs:meatblock` |
+| `group:grug_food_tier` | `default:apple`, `default:blueberries`, `grug_cooking:bamboo_shoot`, `grug_cooking:berry_preserve`, `grug_cooking:blightberry`, `grug_cooking:bread`, `grug_cooking:carrot`, `grug_cooking:cassava`, `grug_cooking:cave_cap`, `grug_cooking:cocoa_rubbed_game`, `grug_cooking:corn_crusted_fish`, `grug_cooking:foragers_pot`, `grug_cooking:frost_melon`, `grug_cooking:frostfin_fillet`, `grug_cooking:fruit_glazed_roast`, `grug_cooking:grand_feast`, `grug_cooking:hearty_stew`, `grug_cooking:hunters_feast`, `grug_cooking:jungle_berry`, `grug_cooking:jungle_cocoa`, `grug_cooking:kelp_steamed_tuna`, `grug_cooking:kelp_wrapped_roast`, `grug_cooking:marsh_roast`, `grug_cooking:marshbloom_chowder`, `grug_cooking:mire_carp_stew`, `grug_cooking:mushroom_skewer`, `grug_cooking:onion_seared_steak`, `grug_cooking:pan_fried_trout`, `grug_cooking:pumpkin`, `grug_cooking:pumpkin_stew`, `grug_cooking:salt_crusted_fish`, `grug_cooking:smoked_ember_eel`, `grug_cooking:spiced_skewer`, `grug_cooking:stormkelp_broth`, `grug_cooking:sunberry`, `grug_cooking:sweetroot_mash`, `grug_cooking:wild_grain`, `grug_fishing:cooked_fish`, `grug_fishing:ember_eel`, `grug_fishing:frostfin`, … (13 more) |
 | `group:grug_found_only_food` | `grug_gathering:mushroom_source`, `grug_gathering:rock_salt_source`, `grug_gathering:wild_cocoa_source` |
 | `group:grug_gathering_source` | `grug_gathering:corn_source`, `grug_gathering:crimson_lotus_source`, `grug_gathering:dragonweed_source`, `grug_gathering:gravemoss_source`, `grug_gathering:marshbloom_source`, `grug_gathering:melon_source`, `grug_gathering:mushroom_source`, `grug_gathering:potato_source`, `grug_gathering:rock_salt_source`, `grug_gathering:stormkelp_source`, `grug_gathering:sunleaf_source`, `grug_gathering:wild_cocoa_source`, `grug_mapgen:bamboo_shoot_source`, `grug_mapgen:blightberry_source`, `grug_mapgen:carrot_source`, `grug_mapgen:cassava_source`, `grug_mapgen:cave_cap_source`, `grug_mapgen:ember_moss_source`, `grug_mapgen:fire_pepper_source`, `grug_mapgen:frost_melon_source`, `grug_mapgen:jungle_berry_source`, `grug_mapgen:pumpkin_source`, `grug_mapgen:salt_crust_source`, `grug_mapgen:sugar_cane_source`, `grug_mapgen:sunberry_source`, `grug_mapgen:wild_grain_source`, `grug_mapgen:wild_onion_source` |
 | `group:grug_gathering_tool` | `grug_farming:hoe`, `grug_farming:hoe_abyssal_steel`, `grug_farming:hoe_bronze`, `grug_farming:hoe_embersteel`, `grug_farming:hoe_iron`, `grug_farming:hoe_silversteel`, `grug_farming:hoe_steel`, `grug_farming:hoe_stone`, `grug_materials:axe_abyssal_steel`, `grug_materials:axe_bronze`, `grug_materials:axe_embersteel`, `grug_materials:axe_iron`, `grug_materials:axe_silversteel`, `grug_materials:axe_steel`, `grug_materials:axe_stone`, `grug_materials:axe_wood`, `grug_materials:pick_abyssal_steel`, `grug_materials:pick_bronze`, `grug_materials:pick_embersteel`, `grug_materials:pick_iron`, `grug_materials:pick_silversteel`, `grug_materials:pick_steel`, `grug_materials:pick_stone`, `grug_materials:pick_wood`, `grug_materials:shovel_abyssal_steel`, `grug_materials:shovel_bronze`, `grug_materials:shovel_embersteel`, `grug_materials:shovel_iron`, `grug_materials:shovel_silversteel`, `grug_materials:shovel_steel`, `grug_materials:shovel_stone`, `grug_materials:shovel_wood` |
@@ -879,12 +930,14 @@ more members that describes a kind of item. Engine dig and placement groups
 | `group:grug_leather_grade` | `grug_mobs:heavy_leather`, `grug_mobs:light_leather`, `grug_mobs:scaled_hide`, `grug_professions:cured_leather`, `grug_professions:nightscale_leather`, `grug_professions:sleek_leather` |
 | `group:grug_metal_rod` | `grug_professions:metal_rod_abyssal_steel`, `grug_professions:metal_rod_bronze`, `grug_professions:metal_rod_embersteel`, `grug_professions:metal_rod_iron`, `grug_professions:metal_rod_silversteel`, `grug_professions:metal_rod_steel` |
 | `group:grug_mount` | `grug_mounts:apprentice_mount`, `grug_mounts:boat`, `grug_mounts:expert_mount`, `grug_mounts:improved_boat`, `grug_mounts:journeyman_mount`, `grug_mounts:master_mount` |
+| `group:grug_pick_level` | `default:stone_with_gold`, `default:stone_with_iron`, `grug_materials:abyssal_crystal_ore`, `grug_materials:stone_with_anthracite`, `grug_materials:stone_with_diamond`, `grug_materials:stone_with_emberglass`, `grug_materials:stone_with_garnet`, `grug_materials:stone_with_jade`, `grug_materials:stone_with_ruby`, `grug_materials:stone_with_sapphire`, `grug_materials:stone_with_silver`, `grug_materials:t2_stone`, `grug_materials:t3_stone`, `grug_materials:t4_stone`, `grug_materials:t5_stone`, `grug_materials:t6_stone` |
 | `group:grug_pick_tier` | `grug_materials:pick_abyssal_steel`, `grug_materials:pick_bronze`, `grug_materials:pick_embersteel`, `grug_materials:pick_iron`, `grug_materials:pick_silversteel`, `grug_materials:pick_steel`, `grug_materials:pick_stone`, `grug_materials:pick_wood` |
 | `group:grug_potion_instant` | `grug_alchemy:potion_antivenom`, `grug_alchemy:potion_cave`, `grug_alchemy:potion_healing_t1`, `grug_alchemy:potion_healing_t2`, `grug_alchemy:potion_healing_t3`, `grug_alchemy:potion_healing_t4`, `grug_alchemy:potion_healing_t5`, `grug_alchemy:potion_healing_t6`, `grug_alchemy:potion_mana_t1`, `grug_alchemy:potion_mana_t2`, `grug_alchemy:potion_mana_t3`, `grug_alchemy:potion_mana_t4`, `grug_alchemy:potion_mana_t5`, `grug_alchemy:potion_mana_t6`, `grug_alchemy:potion_swiftness`, `grug_traders:potion_healing_weak` |
 | `group:grug_potion_mixture` | `grug_alchemy:mixture_elixir_deepwater`, `grug_alchemy:mixture_elixir_focus_t1`, `grug_alchemy:mixture_elixir_focus_t2`, `grug_alchemy:mixture_elixir_focus_t3`, `grug_alchemy:mixture_elixir_focus_t4`, `grug_alchemy:mixture_elixir_focus_t5`, `grug_alchemy:mixture_elixir_focus_t6`, `grug_alchemy:mixture_elixir_precision_t1`, `grug_alchemy:mixture_elixir_precision_t2`, `grug_alchemy:mixture_elixir_precision_t3`, `grug_alchemy:mixture_elixir_precision_t4`, `grug_alchemy:mixture_elixir_precision_t5`, `grug_alchemy:mixture_elixir_precision_t6`, `grug_alchemy:mixture_elixir_stoneskin_t1`, `grug_alchemy:mixture_elixir_stoneskin_t2`, `grug_alchemy:mixture_elixir_stoneskin_t3`, `grug_alchemy:mixture_elixir_stoneskin_t4`, `grug_alchemy:mixture_elixir_stoneskin_t5`, `grug_alchemy:mixture_elixir_stoneskin_t6`, `grug_alchemy:mixture_elixir_vigor_t1`, `grug_alchemy:mixture_elixir_vigor_t2`, `grug_alchemy:mixture_elixir_vigor_t3`, `grug_alchemy:mixture_elixir_vigor_t4`, `grug_alchemy:mixture_elixir_vigor_t5`, `grug_alchemy:mixture_elixir_vigor_t6`, `grug_alchemy:mixture_potion_antivenom`, `grug_alchemy:mixture_potion_cave`, `grug_alchemy:mixture_potion_healing_t1`, `grug_alchemy:mixture_potion_healing_t2`, `grug_alchemy:mixture_potion_healing_t3`, `grug_alchemy:mixture_potion_healing_t4`, `grug_alchemy:mixture_potion_healing_t5`, `grug_alchemy:mixture_potion_healing_t6`, `grug_alchemy:mixture_potion_mana_t1`, `grug_alchemy:mixture_potion_mana_t2`, `grug_alchemy:mixture_potion_mana_t3`, `grug_alchemy:mixture_potion_mana_t4`, `grug_alchemy:mixture_potion_mana_t5`, `grug_alchemy:mixture_potion_mana_t6`, `grug_alchemy:mixture_potion_swiftness` |
 | `group:grug_profession_supply` | `grug_professions:parchment`, `grug_professions:thread` |
 | `group:grug_raw_dish` | `grug_cooking:raw_foragers_pot`, `grug_cooking:raw_grand_feast`, `grug_cooking:raw_kelp_roast`, `grug_cooking:raw_marsh_roast`, `grug_cooking:raw_pumpkin_pot`, `grug_cooking:raw_stew_pot` |
 | `group:grug_salt` | `grug_cooking:salt_crust`, `grug_mapgen:salt_crust_source` |
+| `group:grug_salt_pan` | `grug_farming:salt_pan_1`, `grug_farming:salt_pan_2`, `grug_farming:salt_pan_3`, `grug_farming:salt_pan_4` |
 | `group:grug_shield` | `grug_gear:shield_abyssal_steel`, `grug_gear:shield_bronze`, `grug_gear:shield_embersteel`, `grug_gear:shield_iron`, `grug_gear:shield_silversteel`, `grug_gear:shield_steel` |
 | `group:grug_shovel_tier` | `grug_materials:shovel_abyssal_steel`, `grug_materials:shovel_bronze`, `grug_materials:shovel_embersteel`, `grug_materials:shovel_iron`, `grug_materials:shovel_silversteel`, `grug_materials:shovel_steel`, `grug_materials:shovel_stone`, `grug_materials:shovel_wood` |
 | `group:grug_spellbook` | `grug_gear:spellbook_abyssal_steel`, `grug_gear:spellbook_bronze`, `grug_gear:spellbook_embersteel`, `grug_gear:spellbook_iron`, `grug_gear:spellbook_silversteel`, `grug_gear:spellbook_steel` |
@@ -894,11 +947,12 @@ more members that describes a kind of item. Engine dig and placement groups
 | `group:grug_trash_loot` | `grug_mobs:stolen_purse`, `grug_mobs:war_trophy` |
 | `group:hoe` | `grug_farming:hoe`, `grug_farming:hoe_abyssal_steel`, `grug_farming:hoe_bronze`, `grug_farming:hoe_embersteel`, `grug_farming:hoe_iron`, `grug_farming:hoe_silversteel`, `grug_farming:hoe_steel`, `grug_farming:hoe_stone` |
 | `group:marram_grass` | `default:marram_grass_1`, `default:marram_grass_2`, `default:marram_grass_3` |
+| `group:mud` | `grug_nodes:mud`, `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` |
 | `group:normal_grass` | `default:grass_1`, `default:grass_2`, `default:grass_3`, `default:grass_4`, `default:grass_5` |
 | `group:pickaxe` | `grug_materials:pick_abyssal_steel`, `grug_materials:pick_bronze`, `grug_materials:pick_embersteel`, `grug_materials:pick_iron`, `grug_materials:pick_silversteel`, `grug_materials:pick_steel`, `grug_materials:pick_stone`, `grug_materials:pick_wood` |
-| `group:plant` | `grug_farming:bamboo_shoot_1`, `grug_farming:bamboo_shoot_2`, `grug_farming:bamboo_shoot_3`, `grug_farming:bamboo_shoot_3_upper_1`, `grug_farming:bamboo_shoot_4`, `grug_farming:bamboo_shoot_4_upper_1`, `grug_farming:bamboo_shoot_4_upper_2`, `grug_farming:blightberry_1`, `grug_farming:blightberry_2`, `grug_farming:blightberry_3`, `grug_farming:blightberry_4`, `grug_farming:carrot_1`, `grug_farming:carrot_2`, `grug_farming:carrot_3`, `grug_farming:carrot_4`, `grug_farming:cassava_1`, `grug_farming:cassava_2`, `grug_farming:cassava_3`, `grug_farming:cassava_4`, `grug_farming:cave_cap_1`, `grug_farming:cave_cap_2`, `grug_farming:cave_cap_3`, `grug_farming:cave_cap_4`, `grug_farming:corn_1`, `grug_farming:corn_2`, `grug_farming:corn_3`, `grug_farming:corn_3_upper_1`, `grug_farming:corn_4`, `grug_farming:corn_4_upper_1`, `grug_farming:corn_4_upper_2`, `grug_farming:ember_moss_1`, `grug_farming:ember_moss_2`, `grug_farming:ember_moss_3`, `grug_farming:ember_moss_4`, `grug_farming:fire_pepper_1`, `grug_farming:fire_pepper_2`, `grug_farming:fire_pepper_3`, `grug_farming:fire_pepper_4`, `grug_farming:frost_melon_1`, `grug_farming:frost_melon_2`, … (40 more) |
+| `group:plant` | `grug_farming:bamboo_shoot_1`, `grug_farming:bamboo_shoot_2`, `grug_farming:bamboo_shoot_3`, `grug_farming:bamboo_shoot_3_upper_1`, `grug_farming:bamboo_shoot_4`, `grug_farming:bamboo_shoot_4_upper_1`, `grug_farming:bamboo_shoot_4_upper_2`, `grug_farming:blightberry_1`, `grug_farming:blightberry_2`, `grug_farming:blightberry_3`, `grug_farming:blightberry_4`, `grug_farming:carrot_1`, `grug_farming:carrot_2`, `grug_farming:carrot_3`, `grug_farming:carrot_4`, `grug_farming:cassava_1`, `grug_farming:cassava_2`, `grug_farming:cassava_3`, `grug_farming:cassava_4`, `grug_farming:cave_cap_1`, `grug_farming:cave_cap_2`, `grug_farming:cave_cap_3`, `grug_farming:cave_cap_4`, `grug_farming:corn_1`, `grug_farming:corn_2`, `grug_farming:corn_3`, `grug_farming:corn_3_upper_1`, `grug_farming:corn_4`, `grug_farming:corn_4_upper_1`, `grug_farming:corn_4_upper_2`, `grug_farming:ember_moss_1`, `grug_farming:ember_moss_2`, `grug_farming:ember_moss_3`, `grug_farming:ember_moss_4`, `grug_farming:fire_pepper_1`, `grug_farming:fire_pepper_2`, `grug_farming:fire_pepper_3`, `grug_farming:fire_pepper_4`, `grug_farming:frost_melon_1`, `grug_farming:frost_melon_2`, … (44 more) |
 | `group:shovel` | `grug_materials:shovel_abyssal_steel`, `grug_materials:shovel_bronze`, `grug_materials:shovel_embersteel`, `grug_materials:shovel_iron`, `grug_materials:shovel_silversteel`, `grug_materials:shovel_steel`, `grug_materials:shovel_stone`, `grug_materials:shovel_wood` |
-| `group:soil` | `default:dirt`, `default:dirt_with_coniferous_litter`, `default:dirt_with_dry_grass`, `default:dirt_with_grass`, `default:dirt_with_grass_footsteps`, `default:dirt_with_rainforest_litter`, `default:dirt_with_snow`, `default:dry_dirt`, `default:dry_dirt_with_dry_grass`, `grug_farming:soil`, `grug_farming:soil_wet`, `grug_nodes:ash_ground`, `grug_nodes:blight_dirt`, `grug_nodes:dirt_with_bone_litter`, `grug_nodes:dirt_with_canopy_litter`, `grug_nodes:dirt_with_forest_litter`, `grug_nodes:dirt_with_moss`, `grug_nodes:dirt_with_silver_litter`, `grug_nodes:mud` |
+| `group:soil` | `default:dirt`, `default:dirt_with_coniferous_litter`, `default:dirt_with_dry_grass`, `default:dirt_with_grass`, `default:dirt_with_grass_footsteps`, `default:dirt_with_rainforest_litter`, `default:dirt_with_snow`, `default:dry_dirt`, `default:dry_dirt_with_dry_grass`, `grug_farming:soil`, `grug_farming:soil_wet`, `grug_nodes:ash_ground`, `grug_nodes:blight_dirt`, `grug_nodes:dirt_with_bone_litter`, `grug_nodes:dirt_with_canopy_litter`, `grug_nodes:dirt_with_forest_litter`, `grug_nodes:dirt_with_moss`, `grug_nodes:dirt_with_silver_litter`, `grug_nodes:mud`, `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` |
 | `group:staff` | `grug_gear:staff_abyssal_steel`, `grug_gear:staff_bronze`, `grug_gear:staff_embersteel`, `grug_gear:staff_iron`, `grug_gear:staff_silversteel`, `grug_gear:staff_steel` |
 | `group:sword` | `grug_gear:dagger_abyssal_steel`, `grug_gear:dagger_bronze`, `grug_gear:dagger_embersteel`, `grug_gear:dagger_iron`, `grug_gear:dagger_silversteel`, `grug_gear:dagger_steel`, `grug_gear:sword_abyssal_steel`, `grug_gear:sword_bronze`, `grug_gear:sword_embersteel`, `grug_gear:sword_iron`, `grug_gear:sword_silversteel`, `grug_gear:sword_steel` |
 | `group:wand` | `grug_gear:wand_abyssal_steel`, `grug_gear:wand_bronze`, `grug_gear:wand_embersteel`, `grug_gear:wand_iron`, `grug_gear:wand_silversteel`, `grug_gear:wand_steel` |
@@ -910,9 +964,11 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 
 | Entity | Name | Type | Disposition | Drops (1 in N) |
 |---|---|---|---|---|
+| `grug_mobs:abyssal_shark` | Abyssal Shark | monster | aggressive | grug_fishing:storm_tuna 1, mobs:meat_raw 1 |
 | `grug_mobs:ashen_treant` | Ashen Treant | monster | aggressive | default:apple 4 |
 | `grug_mobs:bandit` | Bandit | monster | aggressive |  |
 | `grug_mobs:bandit_archer` | Bandit Archer | monster | aggressive |  |
+| `grug_mobs:bay_shark` | Bay Shark | monster | aggressive | grug_fishing:mire_carp 1, mobs:meat_raw 1 |
 | `grug_mobs:bear` | Bear | monster | aggressive | mobs:meat_raw 1, grug_mobs:heavy_leather 2, grug_mobs:bear_claw 4 |
 | `grug_mobs:blightfang_wolf` | Blightfang Wolf | monster | aggressive | mobs:meat_raw 1, mobs:leather 2, grug_mobs:fang 3 |
 | `grug_mobs:blood_bat` | Blood Bat | monster | aggressive | mobs:meat_raw 1 |
@@ -925,15 +981,15 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 | `grug_mobs:bone_weevil` | Bone Weevil | animal | critter | mobs:meat_raw 1 |
 | `grug_mobs:captain_accord` | Accord Captain | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
 | `grug_mobs:captain_throng` | Throng Captain | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:carrion_crow` | Carrion Crow | animal | neutral | grug_mobs:feather 1 |
+| `grug_mobs:carrion_crow` | Carrion Crow | animal | neutral |  |
 | `grug_mobs:cave_bat` | Cave Bat | animal | critter | mobs:meat_raw 1 |
 | `grug_mobs:cave_crawler` | Cave Crawler | animal | critter | mobs:meat_raw 1 |
 | `grug_mobs:commander_accord` | Accord War Commander | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
 | `grug_mobs:commander_throng` | Throng War Commander | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:crag_eagle` | Crag Eagle | monster | aggressive | grug_mobs:sharp_feather 1, grug_mobs:feather 2, mobs:meat_raw 2 |
-| `grug_mobs:crocodile` | Crocodile | monster | aggressive | grug_mobs:scaled_hide 1, mobs:meat_raw 1, grug_mobs:croc_tooth 3 |
+| `grug_mobs:crag_eagle` | Crag Eagle | monster | aggressive | grug_mobs:sharp_feather 1, mobs:meat_raw 2 |
+| `grug_mobs:crocodile` | Crocodile | monster | aggressive | grug_mobs:scaled_hide 1, mobs:meat_raw 1 |
 | `grug_mobs:crystal_shard` | Crystal Shard | monster | aggressive | grug_materials:emberglass_shard 1, grug_materials:emberglass 6 |
-| `grug_mobs:dungeon_master` | Dungeon Master | monster | aggressive | grug_materials:emberglass_shard 2, grug_materials:rough_sapphire 8 |
+| `grug_mobs:dungeon_master` | Fire Hurler | monster | aggressive | grug_materials:emberglass_shard 2, grug_materials:rough_sapphire 8 |
 | `grug_mobs:elder_dwarf` | Vale Elder | npc |  |  |
 | `grug_mobs:elder_elf` | Lore Keeper | npc |  |  |
 | `grug_mobs:elder_human` | Village Elder | npc |  |  |
@@ -942,18 +998,20 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 | `grug_mobs:elder_undead` | Hollow Warden | npc |  |  |
 | `grug_mobs:ember_wisp` | Ember Wisp | monster | aggressive | grug_materials:emberglass 4 |
 | `grug_mobs:fox` | Fox | monster | aggressive | mobs:meat_raw 1, mobs:leather 2, grug_mobs:fang 3 |
-| `grug_mobs:frost_stray` | Frost Stray | monster | aggressive | grug_mobs:bone 1, grug_mobs:linen_scrap 2, grug_mobs:arrow 3 |
+| `grug_mobs:frog` | Frog | monster | aggressive | grug_mobs:raw_fish 1 |
+| `grug_mobs:frost_stray` | Frost Stray | monster | aggressive | grug_mobs:bone 1, grug_mobs:linen_scrap 2 |
 | `grug_mobs:gaunt_stag` | Gaunt Stag | animal | neutral | mobs:meat_raw 1, mobs:leather 2 |
 | `grug_mobs:general_accord` | General Haldren Ashward | npc | aggressive | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
 | `grug_mobs:general_throng` | General Grask Oathscar | npc | aggressive | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:giant_rat` | Giant Rat | monster | aggressive | mobs:meat_raw 1 |
-| `grug_mobs:giant_spider` | Giant Spider | monster | aggressive | grug_mobs:spider_silk 1, grug_mobs:venom_gland 6 |
+| `grug_mobs:giant_rat` | Pit Rat | monster | aggressive | mobs:meat_raw 1 |
+| `grug_mobs:giant_spider` | Crevice Spider | monster | aggressive | grug_mobs:spider_silk 1, grug_mobs:venom_gland 6 |
 | `grug_mobs:glowwing` | Glowwing | monster | aggressive | grug_mobs:venom_gland 5 |
 | `grug_mobs:goblin_hound` | Goblin Raider Hound | monster | aggressive | mobs:meat_raw 1 |
 | `grug_mobs:goblin_miner` | Goblin Miner | monster | aggressive | grug_mobs:linen_scrap 2, grug_mobs:stolen_purse 8 |
-| `grug_mobs:goblin_miner_slinger` | Goblin Miner Slinger | monster | aggressive | grug_mobs:linen_scrap 2, grug_mobs:arrow 3 |
+| `grug_mobs:goblin_miner_slinger` | Goblin Pelter | monster | aggressive | grug_mobs:linen_scrap 2 |
 | `grug_mobs:goblin_raider` | Goblin Raider | monster | aggressive | grug_mobs:linen_scrap 2, grug_mobs:stolen_purse 8 |
-| `grug_mobs:goblin_slinger` | Goblin Slinger | monster | aggressive | grug_mobs:linen_scrap 2, grug_mobs:arrow 3 |
+| `grug_mobs:goblin_slinger` | Goblin Slinger | monster | aggressive | grug_mobs:linen_scrap 2 |
+| `grug_mobs:goby` | Tide Goby | animal | critter | grug_mobs:raw_fish 1 |
 | `grug_mobs:gravewood_treant` | Gravewood Treant | monster | aggressive | default:apple 4 |
 | `grug_mobs:guard_accord` | Accord Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
 | `grug_mobs:guard_throng` | Throng Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
@@ -962,22 +1020,22 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 | `grug_mobs:hyena` | Hyena | monster | aggressive | mobs:meat_raw 1, mobs:leather 2, grug_mobs:fang 3 |
 | `grug_mobs:ibex` | Ibex | animal | neutral | mobs:meat_raw 1, mobs:leather 2 |
 | `grug_mobs:ice_dragon` | Wyrmglass Ice Dragon | monster | aggressive |  |
-| `grug_mobs:ice_whelp` | Wyrmglass Ice Dragon Whelp | monster | aggressive |  |
+| `grug_mobs:ice_whelp` | Ice Whelp | monster | aggressive |  |
 | `grug_mobs:jungle_ape` | Jungle Ape | monster | aggressive | mobs:meat_raw 1, grug_mobs:heavy_leather 2, grug_mobs:ape_hair 4 |
 | `grug_mobs:jungle_boar` | Jungle Boar | monster | neutral | mobs:meat_raw 1, grug_mobs:light_leather 2, grug_mobs:boar_tusk 3 |
-| `grug_mobs:jungle_lynx` | Jungle Lynx | monster | aggressive | mobs:meat_raw 1, mobs:leather 2, grug_mobs:raptor_claw 3 |
+| `grug_mobs:jungle_lynx` | Jungle Lynx | monster | aggressive | mobs:meat_raw 1, mobs:leather 2 |
 | `grug_mobs:jungle_spider` | Jungle Spider | monster | aggressive | grug_mobs:spider_silk 1, grug_mobs:venom_gland 6 |
 | `grug_mobs:jungle_wyvern` | Stormscale Jungle Wyvern | monster | aggressive |  |
-| `grug_mobs:king_dwarf` | King of Dur Brannoc | npc | aggressive |  |
+| `grug_mobs:king_dwarf` | Dur Brannoc King | npc | aggressive |  |
 | `grug_mobs:king_elf` | King of Lethariel | npc | aggressive |  |
 | `grug_mobs:king_human` | King of Highcourt | npc | aggressive |  |
-| `grug_mobs:king_orc` | King of Gor Drazhak | npc | aggressive |  |
+| `grug_mobs:king_orc` | Gor Drazhak King | npc | aggressive |  |
 | `grug_mobs:king_troll` | King of Kezamba | npc | aggressive |  |
-| `grug_mobs:king_undead` | King of Nhal Veyr | npc | aggressive |  |
-| `grug_mobs:kraken` | Kraken Guard | monster | aggressive |  |
-| `grug_mobs:land_guard` | Land Guard | monster |  | grug_mobs:heavy_leather 2, grug_materials:rough_diamond 4 |
-| `grug_mobs:lava_flan` | Lava Flan | monster | aggressive | grug_materials:emberglass 5, grug_mobs:slime_gel 2 |
-| `grug_mobs:mesa_golem` | Mesa Golem | monster | aggressive | grug_mobs:stone_core 1, default:iron_lump 2, grug_materials:rough_citrine 8 |
+| `grug_mobs:king_undead` | Nhal Veyr King | npc | aggressive |  |
+| `grug_mobs:kraken` | Kraken | monster | aggressive |  |
+| `grug_mobs:land_guard` | Bedrock Sentinel | monster |  | grug_mobs:heavy_leather 2, grug_materials:rough_diamond 4 |
+| `grug_mobs:lava_flan` | Lava Seep | monster | aggressive | grug_materials:emberglass 5, grug_mobs:slime_gel 2 |
+| `grug_mobs:mesa_golem` | Mesa Golem | monster | aggressive | default:iron_lump 2, grug_materials:rough_citrine 8 |
 | `grug_mobs:mirefolk` | Mirefolk | monster | aggressive | grug_mobs:linen_cloth 2, grug_mobs:raw_fish 1, grug_mobs:shiny_scale 4 |
 | `grug_mobs:mountain_ram` | Mountain Ram | animal | neutral | mobs:meat_raw 1, grug_mobs:heavy_leather 4 |
 | `grug_mobs:oerkki` | Oerkki | monster | aggressive | grug_materials:quartz 2, grug_materials:silver_lump 5 |
@@ -993,27 +1051,30 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 | `grug_mobs:reef_lurker` | Reef Lurker | animal | neutral | mobs:meat_raw 1, grug_mobs:scaled_hide 2 |
 | `grug_mobs:rift_boss` | Isquarre the Tithe-Eater | monster | aggressive |  |
 | `grug_mobs:rift_spawn` | Rift Spawn | monster | aggressive | grug_mobs:slime_gel 2 |
-| `grug_mobs:royal_guard_dwarf` | King of Dur Brannoc Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:royal_guard_elf` | King of Lethariel Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:royal_guard_human` | King of Highcourt Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:royal_guard_orc` | King of Gor Drazhak Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:royal_guard_troll` | King of Kezamba Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
-| `grug_mobs:royal_guard_undead` | King of Nhal Veyr Royal Guard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
+| `grug_mobs:riftwing` | Riftwing | monster | aggressive | mobs:meat_raw 1 |
+| `grug_mobs:royal_guard_dwarf` | Royal Axeman | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
+| `grug_mobs:royal_guard_elf` | Royal Warden | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
+| `grug_mobs:royal_guard_human` | Royal Yeoman | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
+| `grug_mobs:royal_guard_orc` | Royal Oathguard | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
+| `grug_mobs:royal_guard_troll` | Royal Drummer | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
+| `grug_mobs:royal_guard_undead` | Royal Pallbearer | npc |  | grug_mobs:war_trophy 1, grug_mobs:heavy_cloth 3 |
 | `grug_mobs:scorpion` | Scorpion | monster | aggressive | grug_mobs:scaled_hide 2, grug_mobs:venom_sac 3 |
 | `grug_mobs:serpent` | Serpent | monster | aggressive | grug_mobs:scaled_hide 2, grug_mobs:venom_sac 3 |
 | `grug_mobs:shore_crab` | Shore Crab | animal | neutral | mobs:meat_raw 1, grug_mobs:scaled_hide 2 |
-| `grug_mobs:skeleton_archer` | Skeleton Archer | monster | aggressive | grug_mobs:bone 1, grug_mobs:linen_scrap 2, grug_mobs:arrow 3 |
-| `grug_mobs:skeleton_raider` | Skeleton Raider | monster | aggressive | grug_mobs:bone 1, grug_mobs:linen_scrap 2, grug_mobs:arrow 3, grug_mobs:heavy_cloth 3 |
+| `grug_mobs:skeleton_archer` | Skeleton Archer | monster | aggressive | grug_mobs:bone 1, grug_mobs:linen_scrap 2 |
+| `grug_mobs:skeleton_raider` | Skeleton Raider | monster | aggressive | grug_mobs:bone 1, grug_mobs:linen_scrap 2, grug_mobs:heavy_cloth 3 |
 | `grug_mobs:snow_leopard` | Snow Leopard | monster | aggressive | mobs:meat_raw 1, mobs:leather 2, grug_mobs:sleek_pelt 4 |
 | `grug_mobs:song_bird` | Song Bird | animal | critter | mobs:meat_raw 1 |
 | `grug_mobs:speargrass_tiger` | Speargrass Tiger | monster | aggressive | mobs:meat_raw 1, grug_mobs:heavy_leather 2, grug_mobs:sleek_pelt 4 |
 | `grug_mobs:spiderling` | Spiderling | monster | aggressive | grug_mobs:spider_silk 2 |
 | `grug_mobs:stag` | Stag | animal | neutral | mobs:meat_raw 1, mobs:leather 2 |
-| `grug_mobs:stone_golem` | Stone Golem | monster | aggressive | grug_mobs:stone_core 1, default:iron_lump 2, grug_materials:rough_citrine 8 |
-| `grug_mobs:stone_mite` | Stone Mite | monster | aggressive | grug_mobs:stone_core 8 |
-| `grug_mobs:storm_whelp` | Stormscale Jungle Wyvern Whelp | monster | aggressive |  |
+| `grug_mobs:stingray` | Stingray | monster | aggressive | grug_mobs:raw_fish 1 |
+| `grug_mobs:stone_golem` | Stone Golem | monster | aggressive | default:iron_lump 2, grug_materials:rough_citrine 8 |
+| `grug_mobs:stone_mite` | Stone Mite | monster | aggressive |  |
+| `grug_mobs:storm_whelp` | Wyvern Whelp | monster | aggressive |  |
 | `grug_mobs:sun_dried_husk` | Sun-Dried Husk | monster | aggressive | grug_mobs:zombie_flesh 1, grug_mobs:linen_scrap 2, grug_materials:iron_bar 10 |
 | `grug_mobs:tapir` | Tapir | animal | neutral | mobs:meat_raw 1, mobs:leather 2 |
+| `grug_mobs:tortoise` | Tortoise | animal | neutral | grug_mobs:raw_fish 1 |
 | `grug_mobs:villager_dwarf` | Vale Dwarf | npc |  |  |
 | `grug_mobs:villager_elf` | Glade Elf | npc |  |  |
 | `grug_mobs:villager_human` | Dawnmere Farmer | npc |  |  |
@@ -1021,13 +1082,13 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 | `grug_mobs:villager_troll` | Cradle Troll | npc |  |  |
 | `grug_mobs:villager_undead` | Hollow Dweller | npc |  |  |
 | `grug_mobs:viper` | Viper | monster | aggressive | grug_mobs:scaled_hide 2, grug_mobs:venom_sac 3 |
-| `grug_mobs:vulture` | Vulture | monster | aggressive | grug_mobs:sharp_feather 1, grug_mobs:feather 2, mobs:meat_raw 2 |
-| `grug_mobs:war_construct` | War Construct | monster | aggressive | grug_mobs:stone_core 1, grug_materials:iron_bar 1 |
+| `grug_mobs:vulture` | Vulture | monster | aggressive | grug_mobs:sharp_feather 1, mobs:meat_raw 2 |
+| `grug_mobs:war_construct` | War Construct | monster | aggressive | grug_materials:iron_bar 1 |
 | `grug_mobs:wild_turkey` | Wild Turkey | animal | critter | mobs:meat_raw 1 |
 | `grug_mobs:wisp` | Wisp | monster | aggressive |  |
 | `grug_mobs:wolf` | Wolf | monster | aggressive | mobs:meat_raw 1, mobs:leather 2, grug_mobs:fang 3 |
 | `grug_mobs:zebra` | Zebra | animal | neutral | mobs:meat_raw 1, mobs:leather 2 |
-| `grug_mobs:zombie` | Zombie | monster | aggressive | grug_mobs:zombie_flesh 1, grug_mobs:linen_scrap 2, grug_materials:iron_bar 10 |
+| `grug_mobs:zombie` | Buried Miner | monster | aggressive | grug_mobs:zombie_flesh 1, grug_mobs:linen_scrap 2, grug_materials:iron_bar 10 |
 | `grug_traders:crownbinder` | Crownbinder | npc |  |  |
 | `grug_traders:vendor_armourer` | Armourer | npc |  |  |
 | `grug_traders:vendor_baker` | Baker | npc |  |  |
@@ -1257,6 +1318,7 @@ Alias names resolve to another item; always write the target id.
 - `default:shovel_steel` → `grug_materials:shovel_steel`
 - `default:shovel_stone` → `grug_materials:shovel_stone`
 - `default:shovel_wood` → `grug_materials:shovel_wood`
+- `grug_farming:seed_salt_crust` → `grug_cooking:salt_crust`
 - `mapgen_apple` → `default:apple`
 - `mapgen_cobble` → `default:cobble`
 - `mapgen_desert_sand` → `default:desert_sand`

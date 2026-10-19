@@ -1476,7 +1476,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   two dumps, `grid_cost.lua REPO SEED [N]` the terrain grids' build time and
   heap; `mgprof_extra.lua` the edge and ring chunks for `tools/mgprof/run.sh`
   (`PROBE_EXTRA=`); `grug_probe_r51_terrain` reads the new ring in the engine,
-  `PROBE=` of the smoke boot).
+  `PROBE=` of the smoke boot). T2, the sea's shape: the fixture's part C (the
+  water query, bay rims, the belt, the channels and a boat's path, protected
+  water at 23/24/25 nodes off the coast, Stormkelp's shore);
+  `diff_land.py BEFORE AFTER` compares two `compare.lua` dumps on land only;
+  `sea_survey.lua REPO SEED` the bay rims (before/after), the belt's width,
+  the depth profile, the wreck band, brightness, protection and the channels;
+  `mgprof_t2_extra.lua` the coastal and channel chunks; the probe (boot it
+  with `SEED=12345`) also reads the query and the protection in the engine.
 - **Round 51 lane NAMES** (`r51_names`, design only, no fixture): the water
   families' ladders and names. `survey.sh` (through the Lua queue, 4
   processes) runs `water_survey.lua` per seed: the game's region builder
@@ -1487,5 +1494,17 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`page_local.html` for file://); `check_draft.py` runs the Round 38 name
   gates over today's names plus the draft.
 - **Round 51 lane WRECK** ([`r51_wreck`](r51_wreck/DESIGN.md)): the shipwreck design: four shapes as data (`shapes.py` writes `shapes/*.json` and the node list, `--check`), the preview page (`build.py` writes `wreck.html`, `--check`) and the placement sketch for the build step.
+- **Round 51 lane LK** (`r51_lk`): the land kit: `gen_props.py` writes the prop nodes' data and tiles from `tools/r51_land/props` (`--check`), `portable_test.lua` the fixture (props, drops, kit rows against the viewer, variants, roster, town graves and bones, one seed's chunks with no floating cell), `region.lua REPO SEED [N]` the plan and write seconds and kit counts in fixed chunks (before/after), `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r51_lk` the engine counts and screenshots per kit biome and Stillgrave.
 - **Round 51 lane LG** (`r51_lg`): the land grounds and nodes. `portable_test.lua` (r24 mining harness): every 32 px world-aligned and 16 px face, the shipped files against the picked art of `tools/r51_land`, the swamp moss and the clay bands with their host lists, the sand override, the hanging moss strand/end dig rule and the world's moss runs, the closed node roster; `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r51_lg` the engine look once: a sky test patch of the 2 × 2 grounds, the clay band wall, a sand basin with water and a hanging moss run before and after its end is dug.
+- **Round 51 lane MAP** (`r51_map`): the sea coloured by depth, the larger atlas and the map qualities. `portable_test.lua`: colour per class and depth on a synthetic world through the real render (lakes, bays, belt, channel, open sea, the soft edge, pockets, coast lines), the atlas geometry at the new edges, the quality sizes, the cache key; `capture.sh OUT_DIR` (`XVFB=`, `QUALITY=normal|high`) with `grug_probe_r51_map` the map window at 1x and at 4x on a bay, a channel and the belt's edge and the minimap at a coast. Offline renders: `tools/r27_minimap/render_base.lua` (atlas from `atlas.lua`, `R27_ATLAS=` for an older tree's bounds).
+- **Round 51 lane MOBS** (`r51_mobs`): step M1, the water mobs
+  (`portable_test.lua`: the sub-types, fish drops and names against the
+  NAMES draft, sub-type selection at every ladder edge with level 20 by its
+  belt, the real registrations, and the swimmer reset in the real leash
+  tick with the reach veto). `probe.sh OUT_DIR` (one queue slot) with
+  `grug_probe_r51_mobs`: every new mob spawned by command in an arena,
+  frog and tortoise chasing a probe player ashore and back, the stingray's
+  reset, one kill per family and its fish. `capture.sh OUT_DIR` (`XVFB=`,
+  two queue slots) with `grug_probe_r51_shots`: screenshots of the
+  line-ups.
 - **Round 51 lane LP** (`r51_lp`): the land plants. `portable_test.lua` (the seed fleet runtime of seed 12345, built as the engine builds it): the plant nodes (drawtype, alpha, no glow, no drops, the picked art byte for byte, decay, the liana pair), every LP row and its hosts and density in the vegetation authority, the plants on written jungle, elf forest, crags and warm-beach chunks (papyrus stacks at the water, marram on dry sand, lichen patches, lianas), their regrowth through renewal, the template lianas, the node roster; `density.lua REPO [SEED] [PER]` counts the plants and the plan and write seconds of the same chunks on any checkout, for before/after comparisons. `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r51_lp` the engine look once: sky strips of the plants beside their zones' gathering sources, then the nearest generated jungle, elf forest, crags and warm beach, each counted and shot.

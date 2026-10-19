@@ -844,7 +844,8 @@ tools](#player-meta-read-by-external-tools).
     multipliers on the first active tick. `_grug_fixed_level` is the sole
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
-    Kraken L70 (elite), the island dragons L70, the capital kings L65 and their royal
+    Kraken L70 (elite), the Round 51 sharks (Bay Shark L30, Abyssal Shark
+    L70 elite), the island dragons L70, the capital kings L65 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
@@ -1118,7 +1119,10 @@ tools](#player-meta-read-by-external-tools).
   the slam's hit through a `core.calculate_knockback` wrapper);
   `boss_dragons.lua` applies them (one `ice_break` sound per event):
   `_grug_target_veto` (a hook in the `init.lua` acquisition veto, honoured by
-  `grug_core`'s `valid_target`, `add_threat` and `taunt`), the once-a-second
+  `grug_core`'s `valid_target`, `add_threat` and `taunt`; since Round 51 the
+  water swimmers under the ordinary leash carry it on their prototype too,
+  `grug_mobs/swimmer.lua`, vetoing players out of the water and off a boat),
+  the once-a-second
   arena tick (threat prune, reset and flight home, hazards and the wrath
   through `set_hp`; `grug_core.bypasses_absorb` covers the wrath), the
   participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`,
@@ -1827,6 +1831,12 @@ tools](#player-meta-read-by-external-tools).
   Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
   it as 512 px tiles, plus a normal-size copy for the minimap (scaled down
   in the same pass at high, Round 37; at both qualities since Round 44).
+  Since Round 51 the atlas is ±4050 × ±3600 (normal 1215 × 1080, high
+  3600 × 3200) and the sea is coloured by depth: pass 1 asks
+  `grug_zones.water_query_at` for planned-water pixels only (bay or lake)
+  and counts the open sea's pixels per 16-node cell (blurred into the soft
+  edge); pass 2 reads the depth from the relief grid's floor heights
+  (fixture `tools/r51_map`).
   Since Round 44 the pure `bake.lua` draws the settlement, point-of-interest,
   king and dragon icons and the region names (pixel font, dark halo) into
   the Map tab's image and the small icons alone into the minimap's copy;
@@ -2120,6 +2130,23 @@ tools](#player-meta-read-by-external-tools).
   of its kind right below takes the species' strand node, the lowest the end
   node, in the variants and the grown trees alike; `grug_trees/hanging.lua`
   keeps a dug run whole.
+  **The land kit** (Round 51 lane LK, [biomes_mobs.md](../design/biomes_mobs.md)
+  §2.1): `wp40/kit_templates.lua` (pure) builds the kit's structures with
+  the shape of the tree module (species table, template seeds under their
+  own SHA domain `kit_template_seed_v1`, packed variants), and a
+  `kitgen:<key>` row is expanded by `r6_templates.lua` like a tree row
+  (`generated.kit`, records flagged `kit`). A kit variant is runs (no tree
+  cells but the dead pine's): the writer (`row.generated_kit`) gives each
+  run its columns' common ground offset (0, +1 or -1 against the root's
+  level, kit ground `kit_ground_names`), places it where every moved cell
+  is free (a cell below the level takes its column's dry surface top, never
+  the wet bed), and
+  rejects the structure when a `required` run cannot stand; no
+  `TREE_SPACING`, no box reservation, only its cells. Kit rows are class
+  cover without a factor (`r6_planner.lua` `decoration_kit`, snow
+  included); renewal skips them and counts only their props as natural.
+  The prop nodes are `grug_nodes/props.lua` (data `props_data.lua`,
+  written by `tools/r51_lk/gen_props.py`); `tools/r51_lk` checks them all.
   **Placement draws** (Round 49): the R6 decoration candidates (rank,
   thinning, cell budget remainder), the P9 rotations, heights, variants and
   template trials, the P9G ranks and remainders and the P8 fill ores draw
@@ -2171,6 +2198,33 @@ tools](#player-meta-read-by-external-tools).
   `water_class_at`, `territory_rule_at`, `surface_mob_level_at`) and **never**
   the engine biomemap, because the authored surface pass — not climate
   competition — owns logical biome identity.
+  **The water query (Round 51 T2)** is `grug_zones.water_query_at(x, z,
+  inland_distance)` (the
+  zones session, `wp40/zones.lua`; the same function in the mapgen and the
+  main environment). One column, no allocation; it returns six values:
+  `class` (`"lake"`, `"river"`, `"bay"`, `"belt"`, `"channel"` or
+  `"open_sea"`; a swamp pool reads `"lake"`; on dry land it returns `nil`
+  alone), the owning `zone id` (a channel's island's; `nil` for the open
+  sea), the zone's analytic surface `mob level` (`nil` for the open sea),
+  the `distance` to dry land in nodes (for the sea's classes the true coast
+  distance of `simple_map.lua` `coast_distance_at`, the terrain field's
+  16-node chamfer grid read through a spline; for lakes, rivers and pools
+  only when the third argument is true, else `nil`: the nearest dry column,
+  searched in rings up to 16 nodes, so a farther one answers 16),
+  the `depth` (water nodes over the floor) and `protected` (immutable water,
+  sea plan ruling 8: the open sea, and bay, belt and channel water 24 or more
+  nodes off the coast). Outside the world's bounds it answers `"open_sea"`.
+  **Cost** (seed 12345, LuaJIT, warm, measured over the columns of each
+  class within 30 nodes of a spot): without the inland distance 0.1-0.7 us
+  per call for every class, so a per-pixel map render or a spawn check calls
+  it plainly; with it a lake column costs about 20 us on average and up to
+  about 250 us (the ring search tests up to about 1,000 columns), so only a
+  caller that needs the distance to a lake's or river's shore (the
+  amphibians "near land") asks for it, once per decision.
+  MOBS's water bands and MAP's water colours read it; the swamp pools are
+  attached by `r6.lua` (`attach_swamp_pools`). The internal water classes
+  (`water_class_at`: `planned_water`, `coastal_shelf` for the belt,
+  `deep_ocean`, `immutable_dragon_channel`) keep their names.
   **R7.6 difficulty seam (2026-09-18):** `simple_map.lua` derives straight
   z-axis progression extents from authored hub rows and the fixed
   Battlegrounds edges, splits each published zone range into three rational

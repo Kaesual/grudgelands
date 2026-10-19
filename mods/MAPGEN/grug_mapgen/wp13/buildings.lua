@@ -819,7 +819,8 @@ local function loader(directory)
 					if hash < 3 then
 						dressing.rubble_heap(buf, palette, x, z, 1 + hash % 2)
 					elseif hash == 5 then
-						buf:put(x, 1, z, palette.node("undergrowth"))
+						-- the bone pile: a piece of the skeleton set (Round 51 lane LK)
+						dressing.undergrowth_at(buf, palette, x, 1, z)
 					elseif hash == 9 then
 						buf:put(x, 1, z, palette.node("grass_tuft"))
 					end

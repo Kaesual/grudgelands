@@ -168,10 +168,11 @@ local function place_zones()
 	local layout = W.layout(W.window_size(L.REFERENCE))
 	local nodes = (view.max_x - view.min_x) / layout.map_w
 	local metrics = zone_labels.metrics(L.REFERENCE)
-	-- The baked region names, drawn at normal (bake.SCALE) over the 1080 px
-	-- wide image: their glyph box in nodes.
+	-- The baked region names, drawn at normal (bake.SCALE) over the normal
+	-- image's width: their glyph box in nodes.
 	local art = dofile(modpath .. "/baked_art.lua")
-	local per_px = (view.max_x - view.min_x) / 1080 * bake.SCALE.normal
+	local per_px = (view.max_x - view.min_x) / grug_map.base.QUALITY.normal.width *
+		bake.SCALE.normal
 	local names = {}
 	for _, label in ipairs(bake.REGION_LABELS) do
 		local box = bake.layout(art.font, label[1], label.wrap)
