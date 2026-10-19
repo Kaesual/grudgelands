@@ -654,7 +654,7 @@ Points marked **(decide)** are for the user's judgement.
    shows 0.51.0; characters keep level, gear, bags, money and quests; a
    claim's containers wait in the new stone's Belongings tab.
 9. The first start renders the larger map (normal about 14 s, high about
-   a minute) and prepares the larger sea.
+   a minute); a full preparation covers about a quarter more tiles (sea).
 
 **The world's edge:**
 

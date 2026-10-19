@@ -127,7 +127,8 @@ version reads every character as it is.
   or 0.49.x crosses 0.49.0's reset too, and one reset covers both. Before
   the map is emptied, the migration tool's pre-reset pass packs every
   claim's containers (declaration `map_reset_pass` 0.50.0). The first
-  start prepares about a quarter more sea and renders the larger map.
+  start renders the larger map; a full preparation covers about a quarter
+  more tiles, all of them sea.
 
 ## 0.50.2 — where a Claim Stone may go, and where claims are (2026-10-17)
 
