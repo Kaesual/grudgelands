@@ -12,30 +12,27 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.50.1 (compatible, tool only: `--check --map-reset`
-is a complete dry run of the pre-reset pass, the pack baseline 0.48.0;
-[follow-up](docs/planning/round50-plan.md#follow-up-0501-2026-10-17)), on
-main and not pushed, on 0.50.0, Round 50 "Hotbar A/B, claim containers
-across map resets, the class-redesign page" (compatible, no migration
-step; [plan](docs/planning/round50-plan.md)), pushed (origin/main
-`12cd9822`); the migration tool packs claim containers before every map
-reset (declaration schema 3, `map_reset_pass`). Before it 0.49.1 (a compatible fix round
-after the first 0.49.0 feedback; [plan](docs/planning/fix-0.49.1-plan.md)),
-on 0.49.0, Round 49 "Mapgen performance (native
-first) and gameplay polish" (**map reset**, no migration step), pushed
-(origin/main `bc1e6016`)
-([completion](docs/planning/round49-plan.md#completion-2026-10-16)):
-ores, gems and cave plants native in v7, no Lua for chunks below every
-writer, an integer placement hash, per-column caches, the v7 flag
-`nomountains` forced over `map_meta.txt`, the protection depth under towns
-80; postage at Send, Sell tooltips, the Claim Stone in any carried list,
-the starter kit on the hotbar, kill XP −10 % per level below, the rare
-tier, path repair and ranged mobs regaining sight, smaller blocks in the
-third-person hand. Its GUI test is open.
+**Current state:** 0.51.0, Round 51 "Land zones and the sea" (**map
+reset**, no migration step;
+[completion](docs/planning/round51-plan.md#completion-2026-10-19)), on
+main and not pushed: the world bounds ±4190 × ±3740 with the land
+unchanged, bays without specks, a 250–350-node coastal belt, organic
+dragon channels, bay, belt and channel water 24+ off the coast protected
+like the open sea (`grug_zones.water_query_at`), seabed growth and
+shipwrecks, water mobs by band, the map by depth on a ±4050 × ±3600
+atlas; calm 2 × 2 grounds, new plants with regrowth and the land kit
+(ruins, graveyards, cairns, statues, varied bones) in every land zone. Its
+GUI test is open. Before it 0.50.2 (compatible: the Claim Stone preview
+and claims on the minimap) on 0.50.1 and 0.50.0, Round 50 "Hotbar A/B,
+claim containers across map resets" (compatible; the migration tool packs
+claim containers before every map reset, declaration schema 3,
+`map_reset_pass`), pushed (origin/main `fae056c5`); production runs
+0.50.2. Earlier: 0.49.0, Round 49 "Mapgen performance (native first) and
+gameplay polish" (**map reset**; [completion](docs/planning/round49-plan.md#completion-2026-10-16)).
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
 47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48, 49
-and of 0.45.1, 0.49.1, 0.50.0 and 0.50.1 are open. The class redesign
+and 51 and of 0.45.1, 0.49.1, 0.50.0 and 0.50.1 are open. The class redesign
 is parked ([continuation](docs/planning/class-redesign/continuation.md)).
 Details: [STATUS](docs/STATUS.md).
 

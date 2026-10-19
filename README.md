@@ -90,25 +90,22 @@ and its profession trainers.
 
 ## Current state
 
-**0.50.0** adds a second hotbar layout: the buttons A and B next to the
-hotbar switch between them at every station, in the inventory, the mail
-and the quick menu. At a map reset, the containers in your housing claim
-are now packed with their contents and wait in your Claim Stone's
-Belongings tab, together with its remaining fuel as charcoal.
+**0.51.0** brings the land zones and the sea: a larger sea with a wide
+coastal belt, natural bays and shallow dragon channels, coral, kelp and
+seagrass on the seabed, shipwrecks, and tortoises, frogs, stingrays,
+sharks and gobies by water depth, with the sea coloured by depth on the
+map. Every land zone gets a few characteristic changes: calm 2 × 2 ground
+textures, lianas and flowers in the jungle, graveyards, ruins and varied
+bones in the undead lands, boulders, cairns and lichen in the dwarves'
+crags, clay bands on the orc badlands' slopes, ruins and pastel flowers in
+the elves' forests, papyrus, marram and driftwood on the shores. It needs
+a map reset; characters keep their level, gear, inventory and quests.
 
-**0.49.0** makes world generation much faster, above all underground:
-ores, gems and cave plants now come from the engine's own map generator,
-about as often as before, and going deep generates almost instantly. Mail
-postage is paid at Send, the merchant's Sell rows show item tooltips, the
-Claim Stone fits in your bags, a new character's apples and torches sit
-on the hotbar, kills pay XP down to 9 levels below yours (was 6), rares
-sit between normal and elite creatures, and creatures find their way round
-bushes and trees. 0.49.1 raises the mail limit to 4,000 characters, shows
-your whole bag at every station, animates the furnace, lets a closed door
-open with a villager behind it and fixes drops that slid out of reach.
-0.48.0 before it put a mailbox beside the waystone of every capital
-and starting village, made crops need light, let vendors buy almost
-everything and halved the bags.
+**0.50.0** added a second hotbar layout (A and B) and packs the containers
+of your housing claim at a map reset into the Claim Stone's Belongings
+tab; 0.50.2 shows on the minimap where a Claim Stone may go and names the
+claims you stand in. **0.49.0** made world generation much faster, above
+all underground.
 
 Read the [changelog](CHANGELOG.md) for changes and upgrade requirements,
 and the [project status](docs/STATUS.md) for delivery and playtest progress.

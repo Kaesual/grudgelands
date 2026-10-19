@@ -128,6 +128,11 @@ list of the platform's migration contract):
   its tool packs the claims' containers before a map reset (§3.5). It is
   compatible and declares no step; the production world moves from 0.48.1
   to 0.50.0 across 0.49.0's map reset, and that reset packs its claims.
+- 0.51.0 (Round 51) needs the sixth map reset (the larger sea, the land
+  zones' surfaces and kit, the seabed and the wrecks change world
+  generation) and declares no step. `map_reset_pass` stays 0.50.0, so the
+  pass packs the claims' containers before the map is emptied; the
+  production world moves from 0.50.x to 0.51.0 across this one reset.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the

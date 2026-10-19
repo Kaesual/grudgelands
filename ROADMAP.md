@@ -27,7 +27,9 @@ remain delivered foundations, with this refinement work still ahead.
   and more distinctive cities. Rebalance ores, gems and coal, with many ores
   and gems available across more depth tiers (a first pass shipped in
   0.46.0: gems one and two tiers deeper, more Coal and Iron in T3; 0.47.0
-  added generated trees, the swamp and a mining ladder with Anthracite).
+  added generated trees, the swamp and a mining ladder with Anthracite;
+  0.51.0 gave every land zone calm grounds, new plants and a decoration
+  kit, and the sea a belt, seabed growth, wrecks and water creatures).
 - **Crafting with more character and purpose:** build on the improved
   recipe system with more variety, wit and versatility, especially in
   Cooking. Explore a broader range of useful food buffs.
@@ -68,7 +70,8 @@ available in the game. Detailed follow-up scope and current design owners:
 - **Controlled destructibility keeps the world playable.** Peaceful home
   terrain is editable by its faction; peaceful enemy land is not. Ordinary
   contested land, including the Battlegrounds at every depth, is editable by
-  both sides. Deep ocean and full dragon channels are immutable. Roads with
+  both sides. Deep ocean and bay, belt and channel water 24 nodes or more
+  off the coast are immutable (Round 51). Roads with
   their bridges and the building cores of POIs, villages and camps are
   protected for everyone (Round 25); the rest of village/outpost/camp shells
   and battlefield dressing stays mutable. Only
@@ -77,9 +80,10 @@ available in the game. Detailed follow-up scope and current design owners:
   hard-protected, fail-closed
   against indirect mutation.
 - **The ocean has authored classes.** Planned mainland water stays part of its
-  named zone. An editable 80-node coastal shelf follows the analytic outer
-  perimeter; immutable deep ocean begins beyond it. Two immutable channels
-  separate the offshore level-60 dragon islands and keep them boat-only.
+  named zone. A coastal belt 250–350 nodes wide belongs to the zone on land,
+  editable only along its shore; the immutable open sea begins beyond it.
+  Two shallow organic channels of their islands' level 60 separate the
+  offshore dragon islands and keep them boat-only (Round 51).
   Deep ocean is deadly through the Kraken, which never breaks off a
   pursuit while it stands in open water and leashes normally everywhere else.
 - **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
@@ -502,6 +506,19 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   regaining sight, smaller blocks in the third-person hand, the
   half-buried onion (WP48's single-thread part). Complete on 2026-10-16;
   not pushed (pushed only on the user's word). Next: its GUI test.
+- [x] **Round 51 "Land zones and the sea"**
+  ([completion](docs/planning/round51-plan.md#completion-2026-10-19)),
+  version 0.51.0, **map reset**, no migration step: the larger sea (bounds
+  ±4190 × ±3740, the land unchanged), bays without specks, a 250–350-node
+  coastal belt, organic dragon channels, protected water 24+ off the
+  coast, coral, kelp and seagrass with regrowth, shipwrecks, five water
+  families by band with the swimmer reset, the sea by depth on a larger
+  map; calm 2 × 2 grounds, the swamp moss, clay bands, ice and pebble
+  patches, lianas, flowers, alpine plants, lichen, papyrus on the sand,
+  marram and the land kit (ruins, graveyards in the wild and the towns,
+  cairns, statues, logs, varied bones, driftwood). Complete on
+  2026-10-19; not pushed (pushed only on the user's word). Next: its GUI
+  test.
 
 ### Remaining work
 
@@ -538,8 +555,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [0.45.1](BACKLOG.md#0451-carry-overs),
   [Round 46](BACKLOG.md#round-46-carry-overs),
   [Round 47](BACKLOG.md#round-47-carry-overs),
-  [Round 48](BACKLOG.md#round-48-carry-overs) and
-  [Round 49](BACKLOG.md#round-49-carry-overs) carry-overs (Round 40: the
+  [Round 48](BACKLOG.md#round-48-carry-overs),
+  [Round 49](BACKLOG.md#round-49-carry-overs) and
+  [Round 51](BACKLOG.md#round-51-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -548,7 +566,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   notes; Round 46: depth pulse, spawn, placement, crafting and price
   notes; Round 47: tree, swamp, mining, crafting and map window notes;
   Round 48: mail, plant, price, HUD and step notes; Round 49: mapgen,
-  navigation, inventory and tooling notes);
+  navigation, inventory and tooling notes; Round 51: sea, surface, plant,
+  kit, wreck, map and water-mob notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
@@ -588,9 +607,10 @@ through migration steps.
 
 - [ ] Further classes, names open. Scout already owns the delivered bow and
   melee class paths; its stealth remains deferred.
-- [ ] Further coastal-shelf life and shore wildlife inside the editable shelf,
-  without redefining deep ocean or dragon channels. Shallow coral/kelp and
-  fishing already shipped in bounded rounds; missing roster/media remains future.
+- [ ] Further coastal life and shore wildlife (seals and cold coasts, a sea
+  turtle, underwater places for quests), without redefining the open sea or
+  the dragon channels. Coral, kelp, seagrass, shipwrecks, fishing and five
+  water families by band shipped (Round 51).
 - [ ] **V2's main content update: the walkable Nether**, with its own mapgen,
   story line and mob cast. The Fire Dragon and the Nether reserve from the mob
   plan remain reserve content for that update.

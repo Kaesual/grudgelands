@@ -3,7 +3,8 @@
 Draft, 2026-10-19. One of the two partial plans of Round 51; the other one
 covers the land ([round51-land-plan.md](round51-land-plan.md)). A round
 coordinator merges both into the round plan. Land and sea share one map
-reset. **No lane starts from this file.**
+reset. **No lane starts from this file.** Status: built in Round 51 (0.51.0,
+2026-10-19, [completion](round51-plan.md#completion-2026-10-19)).
 
 ## 1. Goal
 

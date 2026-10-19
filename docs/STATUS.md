@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-17. This is the delivery pointer, not another game specification.
+Updated 2026-10-19. This is the delivery pointer, not another game specification.
 
 Planning pointer added 2026-10-12: the [class and hotbar redesign
 handoff](planning/class-redesign-handoff.md) preserves the redesign
@@ -21,6 +21,54 @@ Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a private
 claude.ai page, Round 50 ART) shows the planning state with the user's
 notes.
 
+- **Round 51 "Land zones and the sea" complete on main, not pushed**
+  (2026-10-19, version 0.51.0, **map reset**, no migration step;
+  [plan, decisions, numbers and GUI checklist](planning/round51-plan.md#completion-2026-10-19);
+  partial plans [land](planning/round51-land-plan.md) and
+  [sea](planning/round51-sea-plan.md)). Main is not pushed (origin/main
+  `fae056c5`, 0.50.2); push only on the user's word. From main `6c1b6139`
+  (the plans): the art lanes SWART, ARTS and ARTL (three passes), the
+  design and page lanes NAMES, VIEW and WRECK's design (each picked by the
+  user), then T1 (`fe540a38`), LG (`f4b1322c`), MOBS M1 (`cb93b631`), T2
+  (`5c8ac48e`), MAP (`89bc91e3`), LK (`a2dccc54`), LP (`1d28d889`), T4
+  (`d7cebe4f`), T3 (`c3ee3922`), WRECK's build (`08df9bc9`) and MOBS M2
+  (`08163c89`) merged, then this documentation lane D. Each code lane
+  independently reviewed by Opus (T2 and LK MERGE AFTER FIXES, WRECK with
+  a coordinator-ordered fix round and a merge delta MERGE AFTER FIXES,
+  every fix delta reviewed again; MOBS M2's rate fix checked by the
+  coordinator). Main has 213 portable fixtures (8 new); `mods/` +6,892
+  −606 lines in 118 text files, 14 new Lua files. The declaration is
+  `{"schema": 3, "version": "0.51.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`;
+  a host on 0.50.x moves with this one map reset, and the pre-reset pass
+  packs the claims' containers.
+  - **The sea (T1, T2, T3, MAP, WRECK):** the world bounds ±4190 × ±3740
+    (the land unchanged), bays without open-sea specks and with a natural
+    mouth, a coastal belt to 250–350 nodes off the coast that belongs to
+    the zone on land, organic dragon channels 9–11 deep at their island's
+    level, bay, belt and channel water 24+ off the coast protected like the
+    open sea, `grug_zones.water_query_at`, coral, kelp and seagrass with
+    underwater regrowth, the map coloured by depth on an atlas of ±4050 ×
+    ±3600 (1215 × 1080 / 3600 × 3200), about 55 shipwrecks per world
+    ([world_zones.md §7.4](design/world_zones.md#74-water-coast-and-islands),
+    [world_map.md](design/world_map.md#map-quality-and-relief)).
+  - **Water creatures (NAMES, MOBS):** tortoise, frog, stingray, Bay
+    Shark, Abyssal Shark and Tide Goby by water band, at the zone's level,
+    silent; a swimmer resets when its target leaves the water; fish loot;
+    zone slots and names so quests can use them
+    ([biomes_mobs.md](design/biomes_mobs.md#round-51-water-families)).
+  - **The land zones (VIEW, ARTL, LG, LP, LK, T4):** calm world-aligned
+    2 × 2 grounds and the 32 px sand, the swamp moss, the hanging-moss and
+    liana strands, orc clay bands, ice and pebble patches, flowers, alpine
+    plants, lichen, bushes, papyrus on the sand, marram, regrowth; the
+    kit: ruins, wild and town graveyards, cairns, statues, logs, boulders,
+    varied bones in place of one bone pile, driftwood
+    ([biomes_mobs.md §2.1](design/biomes_mobs.md#21-wp40-surface-and-deterministic-decoration-projection),
+    [farming.md](design/farming.md), [settlements.md](design/settlements.md)).
+  - **Round-end gates** (coordinator): *to be recorded* (full fixtures,
+    full seed fleet, `check_upgrade.py`, `check_fresh_server.py`, smoke
+    boot from an empty cache). Its GUI test (desktop and web build, a new
+    world after the map reset) is open
+    ([carry-overs](../BACKLOG.md#round-51-carry-overs)).
 - **Fix round 0.50.2 "Claim Stone placement preview, claims on the minimap"
   complete and pushed (origin/main `5e50b456`)** (2026-10-17, **compatible**, no migration
   step; [plan, rulings, numbers and GUI checklist](planning/fix-0.50.2-plan.md#completion-2026-10-17)).
@@ -1286,14 +1334,17 @@ notes.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.49.1 (a compatible fix, not pushed) on
+- **Latest game:** main carries 0.51.0 (Round 51, a map reset, not
+  pushed) on 0.50.2, 0.50.1 and 0.50.0 (Round 50, compatible, pushed at
+  origin/main `fae056c5`; the user moved production to 0.50.2 on
+  2026-10-17) on 0.49.1 (a compatible fix) on
   0.49.0 (Round 49, a map reset, pushed at origin/main `bc1e6016`)
   on 0.48.1 (a compatible fix, pushed at origin/main `1ef11b5e`) on
   0.48.0 (Round 48, a map reset plus the step 0.48.0, pushed at
   origin/main `f915d777`) on 0.47.0 (Round 47, a map reset plus the step
   0.47.0) and 0.46.0 (Round 46, a map reset, never deployed on its own;
   both GUI-accepted and pushed at origin/main `6a8afb9f`) on
-  0.45.1 (pushed, in production) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
+  0.45.1 (pushed) and Round 45 (0.45.0, pushed) on top of Round 44 (0.44.0) and Round 43 (0.43.0, pushed on
   2026-10-09), Round 42 (0.42.0, pushed on 2026-10-08), Round 41
   (0.41.0, pushed on 2026-10-08), Round 40 (pushed 2026-10-06) and its follow-up
   0.40.1 (pushed on 2026-10-07, origin/main `7d8b79d9`),
@@ -1324,7 +1375,9 @@ notes.
   the 2026-09-28 playtest fixes; Round 39 was accepted on 2026-10-06,
   Round 42 by the user's playtest on 2026-10-08, Rounds 46 and 47 together
   on 2026-10-14.
-  **Rounds 36–38, 40, 41, 43–45, 48 and 49 and 0.45.1 are open** (Round 49's
+  **Rounds 36–38, 40, 41, 43–45, 48, 49 and 51 and 0.45.1 are open**
+  (Round 51's [checklist](planning/round51-plan.md#gui-checklist-round-51),
+  Round 49's
   [checklist](planning/round49-plan.md#gui-checklist-round-49), Round 48's
   [checklist](planning/round48-plan.md#gui-checklist-round-48), 0.45.1's
   [checklist](planning/round45-plan.md#gui-checklist-0451), Round 45's
@@ -1383,9 +1436,9 @@ notes.
   the rest of housing; earlier rounds keep their own checklists. The walk
   of the Round 20 POI art (audit E2) became Round 36's review page and
   decor pass; the reworked places are in its checklist.
-- **Remote observation:** origin/main is `6a8afb9f` (0.47.0 with its
-  closing documentation); production runs 0.45.1; the top entry has the
-  current push line.
+- **Remote observation:** origin/main is `fae056c5` (0.50.2 with its
+  status line); production runs 0.50.2; the top entry has the current push
+  line.
 - **Release:** release mode since 0.41.0 (the user, 2026-10-07): one
   production server, upgrades through the
   [upgrade contract](technical/upgrade-contract.md) (compatible, map
