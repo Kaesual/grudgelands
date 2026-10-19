@@ -210,8 +210,8 @@ placeholder.
 | grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
 | grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
 | grug_badlands (+ `_east`) | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
-| grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
-| grug_bone_forest | gravewood (generated) dense (fill 0.015), bone piles | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
+| grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, the land kit's bone finds, graveyards and ruins (§2.1); gravemoss `[herb T1]` | fireflies/wisp particles optional |
+| grug_bone_forest | gravewood (generated) dense (fill 0.015), the land kit (§2.1) | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); papyrus lives at the water in the swamp (§2.1) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), papyrus_on_dirt, dead bush | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]` | shallow water pools 1–2 deep (mud floor), Round 47 |
@@ -236,21 +236,21 @@ contract error rather than a fallback to an engine biome.
 | Logical biome | Top / depth | Filler / depth | Shore and bed | Deterministic R6 decorations (`fill_numerator/fill_denominator`) |
 |---|---|---|---|---|
 | `grug_meadows` | `default:dirt_with_grass` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/2000`; bush `1/250`; each grass 1–5 `3/50` |
-| `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50` |
-| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only |
-| `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
-| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50` |
-| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; bush `1/250`, shrub band only; each fern 1–3 `1/50` |
+| `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50`; land kit: boulder `1/500`, cairn A `1/4000`, cairn B `1/4000` |
+| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only; land kit: boulder `1/500`, cairn A `1/4000`, cairn B `1/4000` |
+| `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | land kit only: dead snow-covered pine `1/400`; boulder `1/500`, cairn A `1/4000`, cairn B `1/4000` |
+| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50`; land kit: fallen silverwood log `1/3000`, ruin `1/6000`, statue `1/10000` |
+| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; bush `1/250`, shrub band only; each fern 1–3 `1/50`; land kit as the elf forest |
 | `grug_swamp` | `grug_nodes:mud` / 1, mixed with `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` and `grug_nodes:dirt_with_moss` (Round 47) | `grug_nodes:mud` / 2 (3 under a pool) | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root beside standing water: a wet column (sea, bay, lake or river) within two nodes whose surface lies 0–3 below the root's ground (Round 22 Phase 5), so a swamp grows reeds wherever it has water and none where it has none; replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250`; Round 47: swamp tree `1/120` on every swamp ground; tall grass 3–5 `1/9` each and junglegrass `1/20` on wet grass (a quarter on the muds); ferns 1–3 `1/14` each on moss soil; moss carpet `1/16` on the muds. The pools, the waterlilies on them, reeds rooted in their beds and the bank's reeds, cattails and carpets come from the swamp pass (`wp40/swamp_writer.lua`) |
 | `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
-| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
-| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
-| `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; bone pile `1/500` |
-| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; dry shrub `3/200`, shrub band only; bone pile `1/250` |
-| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25` |
-| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
-| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
-| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | none |
+| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; land kit: bone find `1/1500` |
+| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; land kit: bone find `1/1500` |
+| `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; the undead land kit (below) |
+| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; dry shrub `3/200`, shrub band only; the undead land kit (below) |
+| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25`; land kit: fallen kapok log `1/2500` |
+| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; land kit: fallen kapok log `1/2500` |
+| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; land kit: fallen kapok log `1/2500` |
+| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | land kit: driftwood `1/360` |
 
 Every decoration root requires `surface_y >= 1`. Every density above is the
 catalog density; altitude, snow and the forest field scale it per column
@@ -290,6 +290,45 @@ own nodes. Leaves decay within radius 3 of wood; the gravewood's grey leaves
 drop nothing. Saplings grow the generator's tree of their species too (§5).
 Simple variant ranges above mean one independently settled entry per named
 variant at the displayed fill.
+
+**The land kit** (Round 51, land plan rulings 7–9 and 12–14; the user's
+picks in the land viewer, `tools/r47_sw/land.js` `ITEMS` and
+`DESIGN.md` "Round 51"). Small structures stand in the wild at the
+viewer's guide densities (per column of the biome's host ground):
+
+| Zone (biomes) | Structure and catalog density |
+|---|---|
+| Undead (`grug_blight`, `grug_bone_forest`) | bone find `1/2000`; wild graveyard `1/5000` (2–6 crooked gravestones a fifth fallen and a fifth sunken, a fence remnant on 0–2 sides; every world its own); fallen gravewood log `1/5000`; gravewood stump `1/4000`; mossy ruin remnants `1/8000`; grave mound `1/8000`; mourner statue (or its bust or base alone) `1/10000`; obelisk `1/10000`; ruin column `1/12000`; sunken ruin corner `1/12000`; broken arch `1/14000`; crypt doorway `1/16000` |
+| Dwarf (`grug_crags`, `grug_crags_snowy`, `grug_pine_hills`) | boulder of 2–4 stone and mossy cobble `1/500`; cairn A (cairn stone courses and cap) `1/4000`; cairn B (the trees' base, branch and twig shapes in stone) `1/4000`; dead snow-covered pine `1/400` (snowy crags only) |
+| Orc (`grug_badlands`, `grug_badlands_east`) | bone find `1/1500` |
+| Elves (`grug_elf_forest`, `grug_deep_forest`) | fallen silverwood log `1/3000`; ruin pieces of silver sandstone `1/6000`; decayed statue (veiled head, broken torso) `1/10000` |
+| Jungle (`grug_deep_jungle`, `grug_jungle_fringe`, `grug_jungle_edge`) | fallen kapok log `1/2500` |
+| Beach (`grug_beach`) | driftwood (a log, now and then a forked branch) `1/360` of the beach's columns (the viewer's `1/120` of the sand near the water) |
+
+A bone find is one piece of the skeleton set (humanoid skull, horned
+animal skull, ribcage, small animal's spine, scattered long bones,
+splinters), or now and then a pair (a skull with its ribcage or spine),
+turned at random: rare, and never one picture repeated. Each structure is
+built per world from its seed like the trees (`wp40/kit_templates.lua`,
+16 graveyards, 32 bone finds, 8–16 variants of the rest) and turned per
+placement. Every piece follows its own ground one node up or down; a piece
+spanning columns (a log's first three nodes, a crypt post with its lintel)
+lies level. The core pieces (a graveyard's first stone, a crypt's doorway
+and posts, an arch's piers, both nodes of a grave mound) must stand or the
+structure is not placed; the others (a further stone, a wall column of a
+ruin, a fence post, the second piece of a pair) drop out where the ground
+does not allow them, so nothing floats; a sunken course takes its own
+column's dry top, never a bed under water. The kit keeps
+off settlements, roads, POIs and water (the trees' exclusions) and needs
+its whole footprint inside one mapchunk. The rows have no altitude or
+forest factor and stand on snow; they are no vegetation and never renew.
+Every block drops an ordinary block (ruling 7): ruins, boulders, plinths,
+logs and fences are default blocks and drop themselves (stone drops
+cobblestone); the props (`grug_nodes`: gravestones, cairn stones, statue
+pieces, the obelisk's tip, driftwood) drop cobblestone, stone, silver
+sandstone, wood or a stick; the bone pieces drop nothing. The bone pile
+keeps its name as the scattered long bones (ruling 9); its two simple rows
+(blight `1/500`, bone forest `1/250`) are gone.
 
 Candidate cells are globally anchored 16-column squares. Deterministic
 per-world placement and rotation replace engine randomness and the legacy

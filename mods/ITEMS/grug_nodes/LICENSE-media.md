@@ -1,6 +1,6 @@
 # Media Origin & Licenses (grug_nodes)
 
-Four groups, listed in their own tables below:
+Five groups, listed in their own tables below:
 
 1. **Biome signature tops (WP18)** — derived works of minetest_game
    textures, CC BY-SA 3.0.
@@ -9,6 +9,7 @@ Four groups, listed in their own tables below:
 4. **Land grounds (Round 51)** — original, CC0 1.0, by GPT-6 Astra and
    Claude; they replace several files of groups 1 and 3 under the same
    names.
+5. **Land kit props (Round 51)** — original, CC0 1.0, by GPT-6 Astra.
 
 ## 1. Biome signature tops — derived from minetest_game
 
@@ -38,7 +39,7 @@ preserved.
 | `grug_nodes_forest_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (deep green `#34502a`, alpha kept) |
 | `grug_nodes_silver_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (pale ivory-green `#c3caae`, alpha kept) |
 | `grug_nodes_canopy_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (deep shade emerald `#1d4433`); exact command: `magick default_coniferous_litter_side.png -colorspace Gray -gamma 0.693 -fill '#1d4433' -tint 100 grug_nodes_canopy_litter_side.png` (the gamma pulls the source's grayscale mean onto the target's Rec709 luma, per the recipe above), alpha kept |
-| `grug_nodes_bone_pile.png` | `default_coral_skeleton.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (bone white `#ddd8c9`) and masked down to a 16×16 heap silhouette (own alpha mask) |
+| `grug_nodes_bone_pile.png` | `default_coral_skeleton.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (bone white `#ddd8c9`) and masked down to a 16×16 heap silhouette (own alpha mask); no node uses it since Round 51 (the bone pile is the land kit's scattered bones, section 5), kept for the land viewer's "today" side (`tools/r47_sw/land.js`) |
 
 ### 1b. Nodes that carry no media of their own
 
@@ -128,3 +129,40 @@ commit `c16c6bcb`).
 | `grug_nodes_clay_band_chalk.png` | `tools/r51_land/grounds/clay_band_chalk_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_clay_band_umber.png` | `tools/r51_land/grounds/clay_band_umber_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_sand.png` | `tools/r51_land/grounds/sand_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only; `default:sand`, `default:sand_with_kelp` and `grug_mapgen:freshwater_waterweed` bind it (the vendored `default_sand.png` stays unchanged) |
+
+## 5. Land kit props (Round 51) — CC0 1.0
+
+Original 16×16 RGBA textures made by **GPT-6 Astra** (2026-10-19, lane
+ARTL passes 2 and 3) from blank canvases, no downloaded or third-party
+pixels; the user picked them in the land viewer (2026-10-19). Generator:
+`tools/r51_land/props_art.py` (provenance in `tools/r51_land/README.md`,
+"ARTL pass 2 media" and "ARTL pass 3 media"). Copied byte for byte by
+`tools/r51_lk/gen_props.py` (`--check`) under this mod's texture prefix,
+six tiles per prop; the props `bones_scattered` and `gravestone_slab` are
+the nodes `grug_nodes:bone_pile` and `grug_nodes:gravestone_stele`. The
+stone cairn shapes (`grug_nodes:cairn_base`, `_branch`, `_twig`) bind the
+shipped `default_stone.png` and carry no bitmap of their own.
+
+**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_nodes_bones_fragments_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/bones_fragments/bones_fragments_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Bones, broken jaw and splinters) |
+| `grug_nodes_bone_pile_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/bones_scattered/bones_scattered_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Bones, scattered long bones) |
+| `grug_nodes_cairn_cap_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/cairn_cap/cairn_cap_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Cairn, offset cap stones) |
+| `grug_nodes_cairn_course_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/cairn_course/cairn_course_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Cairn, rough stone course) |
+| `grug_nodes_driftwood_fork_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/driftwood_fork/driftwood_fork_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Driftwood, forked branch) |
+| `grug_nodes_driftwood_log_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/driftwood_log/driftwood_log_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Driftwood, bleached log) |
+| `grug_nodes_gravestone_cross_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/gravestone_cross/gravestone_cross_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Gravestone, chipped cross crown) |
+| `grug_nodes_gravestone_fallen_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/gravestone_fallen/gravestone_fallen_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Gravestone, fallen split stele) |
+| `grug_nodes_gravestone_stele_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/gravestone_slab/gravestone_slab_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Gravestone, weathered stele) |
+| `grug_nodes_gravestone_sunken_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/gravestone_sunken/gravestone_sunken_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Gravestone, sunken leaning stele) |
+| `grug_nodes_obelisk_broken_tip_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/obelisk_broken_tip/obelisk_broken_tip_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Obelisk, fractured stone tip) |
+| `grug_nodes_ribcage_human_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/ribcage_human/ribcage_human_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Ribcage, humanoid) |
+| `grug_nodes_skull_horned_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/skull_horned/skull_horned_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Skull, horned animal) |
+| `grug_nodes_skull_human_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/skull_human/skull_human_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Skull, humanoid) |
+| `grug_nodes_spine_animal_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/spine_animal/spine_animal_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Spine, small animal) |
+| `grug_nodes_statue_broken_torso_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/statue_broken_torso/statue_broken_torso_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Statue, broken draped torso) |
+| `grug_nodes_statue_mourner_base_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/statue_mourner_base/statue_mourner_base_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Mourner, kneeling robe and knees) |
+| `grug_nodes_statue_mourner_upper_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/statue_mourner_upper/statue_mourner_upper_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Mourner, bowed hood and clasped hands) |
+| `grug_nodes_statue_veiled_head_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/statue_veiled_head/statue_veiled_head_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Statue, worn veiled head) |

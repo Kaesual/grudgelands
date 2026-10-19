@@ -2130,6 +2130,23 @@ tools](#player-meta-read-by-external-tools).
   of its kind right below takes the species' strand node, the lowest the end
   node, in the variants and the grown trees alike; `grug_trees/hanging.lua`
   keeps a dug run whole.
+  **The land kit** (Round 51 lane LK, [biomes_mobs.md](../design/biomes_mobs.md)
+  §2.1): `wp40/kit_templates.lua` (pure) builds the kit's structures with
+  the shape of the tree module (species table, template seeds under their
+  own SHA domain `kit_template_seed_v1`, packed variants), and a
+  `kitgen:<key>` row is expanded by `r6_templates.lua` like a tree row
+  (`generated.kit`, records flagged `kit`). A kit variant is runs (no tree
+  cells but the dead pine's): the writer (`row.generated_kit`) gives each
+  run its columns' common ground offset (0, +1 or -1 against the root's
+  level, kit ground `kit_ground_names`), places it where every moved cell
+  is free (a cell below the level takes its column's dry surface top, never
+  the wet bed), and
+  rejects the structure when a `required` run cannot stand; no
+  `TREE_SPACING`, no box reservation, only its cells. Kit rows are class
+  cover without a factor (`r6_planner.lua` `decoration_kit`, snow
+  included); renewal skips them and counts only their props as natural.
+  The prop nodes are `grug_nodes/props.lua` (data `props_data.lua`,
+  written by `tools/r51_lk/gen_props.py`); `tools/r51_lk` checks them all.
   **Placement draws** (Round 49): the R6 decoration candidates (rank,
   thinning, cell budget remainder), the P9 rotations, heights, variants and
   template trials, the P9G ranks and remainders and the P8 fill ores draw

@@ -119,6 +119,13 @@ return function(canonical, raw_sha256, settlement_order)
 	-- `aa6e16d73513fa6c...`); the gathering catalog's swamp hosts take the
 	-- swamp moss, which moves the gathering manifest (was
 	-- `2bac7904e80f4687...`).
+	-- Round 51 LK: the land kit's props, cairn shapes and default blocks join
+	-- the production rows (128 -> 156) and dirt, gravel, mossy cobble and
+	-- stone take the decoration role, which moves the accepted-content limb
+	-- (was `55003f50fa8905c7...`), the production semantics (the bone pile
+	-- became a node box too; was `2f92257ce7b4c5c9...`) and the decoded MTS
+	-- templates, whose content refs shift with the inserted rows (was
+	-- `ce55b1b08aea44a5...`). T2 (merged after) moves none of the three.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -392,7 +399,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"2f92257ce7b4c5c9f781a3a6f4088beca8a0897b51ac703d016ab8dbd7ed857f" or
+				"fbc13fd4749e506e5904cd68cf49a7881824556e00110e71be59984d81f922b3" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -555,9 +562,9 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"55003f50fa8905c7af1f972e4e93c683f9dd17f2311107e933fb627b94604f22" or
+				"a24cfa649667e66f45b7bb3f3af6985a6eac39d77ea8a1768e55b72e00c72bbc" or
 			frozen.decoded_templates ~=
-				"ce55b1b08aea44a557ca9eb619810826d50cf7e3faa44fdad4f323c40e049903" or
+				"22cc4bb61dc76b9faed810262509147dbdb3a97cb97852f6309081ed86ba31cc" or
 			frozen.wp43_projection ~=
 				"ee08d28c64bdc90ce3e58be7f4c80f8c2381741838b9c075aa75c9fae94f2a80" or
 			frozen.consumer_payload ~=

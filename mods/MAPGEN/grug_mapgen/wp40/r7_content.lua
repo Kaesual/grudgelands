@@ -1,4 +1,4 @@
--- Closed R7 production content resolvers: the 128-row production-R6
+-- Closed R7 production content resolvers: the 156-row production-R6
 -- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
@@ -9,7 +9,13 @@
 -- grounds (surface role) and its moss carpet, leaves and hanging moss
 -- (decoration role): 116 -> 122. Round 51 lane LG: the swamp moss and the
 -- four clay bands (surface role) and the hanging moss strand (decoration
--- role): 122 -> 128.
+-- role): 122 -> 128. Round 51 lane LK added the land kit
+-- (decoration role): 18 of its props (the bone pile is one already) and
+-- the three stone cairn shapes of grug_nodes, and the default blocks its
+-- ruins, crypt and graveyard fences are built from (cobble, stone brick,
+-- stone block, the three silver sandstones, the junglewood fence):
+-- 128 -> 156; dirt, gravel, mossy cobble and stone, surface rows already,
+-- take the decoration role too (mask 9, as mud), so the kit may place them.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -30,8 +36,9 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:bush_stem", 8},
 		{"default:cactus", 8},
 		{"default:clay", 1},
+		{"default:cobble", 8},
 		{"default:desert_stone", 1},
-		{"default:dirt", 1},
+		{"default:dirt", 9},
 		{"default:dirt_with_coniferous_litter", 1},
 		{"default:dirt_with_grass", 1},
 		{"default:dirt_with_rainforest_litter", 1},
@@ -43,6 +50,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:dry_grass_4", 8},
 		{"default:dry_grass_5", 8},
 		{"default:dry_shrub", 8},
+		{"default:fence_junglewood", 8},
 		{"default:fern_1", 8},
 		{"default:fern_2", 8},
 		{"default:fern_3", 8},
@@ -51,12 +59,12 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:grass_3", 8},
 		{"default:grass_4", 8},
 		{"default:grass_5", 8},
-		{"default:gravel", 1},
+		{"default:gravel", 9},
 		{"default:junglegrass", 8},
 		{"default:jungleleaves", 8},
 		{"default:jungletree", 8},
 		{"default:leaves", 8},
-		{"default:mossycobble", 1},
+		{"default:mossycobble", 9},
 		{"default:papyrus", 8},
 		{"default:pine_bush_needles", 8},
 		{"default:pine_bush_stem", 8},
@@ -64,14 +72,19 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:pine_tree", 8},
 		{"default:sand", 1},
 		{"default:sandstone", 1},
+		{"default:silver_sandstone", 8},
+		{"default:silver_sandstone_block", 8},
+		{"default:silver_sandstone_brick", 8},
 		{"default:snow", 10},
 		{"default:snowblock", 1},
-		{"default:stone", 1},
+		{"default:stone", 9},
+		{"default:stone_block", 8},
 		{"default:stone_with_coal", 4},
 		{"default:stone_with_copper", 4},
 		{"default:stone_with_gold", 4},
 		{"default:stone_with_iron", 4},
 		{"default:stone_with_tin", 4},
+		{"default:stonebrick", 8},
 		{"default:tree", 8},
 		{"grug_materials:abyssal_crystal_ore", 4},
 		{"grug_materials:basalt", 1},
@@ -95,6 +108,12 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_nodes:ash_ground", 1},
 		{"grug_nodes:blight_dirt", 1},
 		{"grug_nodes:bone_pile", 24},
+		{"grug_nodes:bones_fragments", 8},
+		{"grug_nodes:cairn_base", 8},
+		{"grug_nodes:cairn_branch", 8},
+		{"grug_nodes:cairn_cap", 8},
+		{"grug_nodes:cairn_course", 8},
+		{"grug_nodes:cairn_twig", 8},
 		{"grug_nodes:clay_band_chalk", 1},
 		{"grug_nodes:clay_band_ochre", 1},
 		{"grug_nodes:clay_band_sienna", 1},
@@ -104,12 +123,27 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_nodes:dirt_with_forest_litter", 1},
 		{"grug_nodes:dirt_with_moss", 1},
 		{"grug_nodes:dirt_with_silver_litter", 1},
+		{"grug_nodes:driftwood_fork", 8},
+		{"grug_nodes:driftwood_log", 8},
+		{"grug_nodes:gravestone_cross", 8},
+		{"grug_nodes:gravestone_fallen", 8},
+		{"grug_nodes:gravestone_stele", 8},
+		{"grug_nodes:gravestone_sunken", 8},
 		{"grug_nodes:mesa_clay", 1},
 		{"grug_nodes:moss_carpet", 8},
 		{"grug_nodes:mud", 9},
 		{"grug_nodes:mud_dry", 1},
 		{"grug_nodes:mud_mottled", 1},
 		{"grug_nodes:mud_with_wet_grass", 1},
+		{"grug_nodes:obelisk_broken_tip", 8},
+		{"grug_nodes:ribcage_human", 8},
+		{"grug_nodes:skull_horned", 8},
+		{"grug_nodes:skull_human", 8},
+		{"grug_nodes:spine_animal", 8},
+		{"grug_nodes:statue_broken_torso", 8},
+		{"grug_nodes:statue_mourner_base", 8},
+		{"grug_nodes:statue_mourner_upper", 8},
+		{"grug_nodes:statue_veiled_head", 8},
 		{"grug_nodes:swamp_moss", 1},
 		{"grug_trees:acacia_base", 8},
 		{"grug_trees:acacia_branch", 8},
@@ -252,7 +286,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 128 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 156 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 
