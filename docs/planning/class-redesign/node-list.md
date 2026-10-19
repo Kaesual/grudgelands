@@ -2,8 +2,8 @@
 
 Compiled 2026-10-19 from `docs/planning/class-redesign/skill-inventory.md`
 (authoritative), `continuation.md` §4a, the candidates `warrior.md`,
-`priest.md`, `scout.md`, `mage.md` and the handoff §5 (Mage tables), on
-branch `class-plan`. Documentation only.
+`priest.md`, `scout.md`, `mage.md` and the handoff §5 (Mage tables), in
+this folder. Documentation only.
 
 Applied rulings:
 
