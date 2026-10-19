@@ -131,6 +131,12 @@ return function(canonical, raw_sha256, settlement_order)
 	-- production semantics; the decoded MTS templates move with the shifted
 	-- content refs, the swamp papyrus pedestal leaving and the two bushes with
 	-- their own foliage (old values in LP's pin commit).
+	-- Round 51 T4 (merged after LP): default:ice joins the production rows
+	-- (173 -> 174, the snowy crags' ice patches) and the swamp fern rows'
+	-- host is the swamp moss, which moves the production semantics (was
+	-- `716b1e196070827d...`), the accepted-content limb (was
+	-- `2e770b8694d02268...`) and the decoded MTS templates (content refs
+	-- shift; was `81f57950d28e9aae...`).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -404,7 +410,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"716b1e196070827d4635828f430707e2ae949cba2e53bbe2cb4e6d0085220d9c" or
+				"c8dc82de1f5cffb129a1f0339f68e9d6e5c424d1602dd05b1968fa9048454a20" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -567,9 +573,9 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"2e770b8694d022687ca730d1d0dbefa44e53165574ec8317fafe336c8d5aad95" or
+				"2830c15fb292596861f178a01c42ef695fb4ca905af589a88d88d259e4dfb536" or
 			frozen.decoded_templates ~=
-				"81f57950d28e9aaee92e0182a467a7f495a8d306ff7cb3b21b4d66cd72ab405c" or
+				"35dcacdfe5ac4de37a0b44b4024bbc6d12489efbca2bb0cdcb0896225cbc6320" or
 			frozen.wp43_projection ~=
 				"ee08d28c64bdc90ce3e58be7f4c80f8c2381741838b9c075aa75c9fae94f2a80" or
 			frozen.consumer_payload ~=
