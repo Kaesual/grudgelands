@@ -1,0 +1,495 @@
+{
+  "date": "2026-10-19",
+  "classification": "compatible",
+  "media_files": 50,
+  "backgrounds": [
+    {
+      "key": "bg.ember",
+      "variant": 1,
+      "bytes": 189696,
+      "centre_luminance_mean": 22.91,
+      "centre_luminance_p95": 50
+    },
+    {
+      "key": "bg.ember",
+      "variant": 2,
+      "bytes": 203933,
+      "centre_luminance_mean": 22.0,
+      "centre_luminance_p95": 43
+    },
+    {
+      "key": "bg.ember",
+      "variant": 3,
+      "bytes": 193236,
+      "centre_luminance_mean": 21.9,
+      "centre_luminance_p95": 45
+    },
+    {
+      "key": "bg.rime",
+      "variant": 1,
+      "bytes": 178498,
+      "centre_luminance_mean": 30.76,
+      "centre_luminance_p95": 82
+    },
+    {
+      "key": "bg.rime",
+      "variant": 2,
+      "bytes": 185459,
+      "centre_luminance_mean": 35.93,
+      "centre_luminance_p95": 83
+    },
+    {
+      "key": "bg.rime",
+      "variant": 3,
+      "bytes": 200685,
+      "centre_luminance_mean": 23.7,
+      "centre_luminance_p95": 60
+    },
+    {
+      "key": "bg.bulwark",
+      "variant": 1,
+      "bytes": 191343,
+      "centre_luminance_mean": 40.83,
+      "centre_luminance_p95": 76
+    },
+    {
+      "key": "bg.bulwark",
+      "variant": 2,
+      "bytes": 190754,
+      "centre_luminance_mean": 37.93,
+      "centre_luminance_p95": 76
+    },
+    {
+      "key": "bg.bulwark",
+      "variant": 3,
+      "bytes": 180251,
+      "centre_luminance_mean": 38.73,
+      "centre_luminance_p95": 76
+    },
+    {
+      "key": "bg.ruin",
+      "variant": 1,
+      "bytes": 180673,
+      "centre_luminance_mean": 21.32,
+      "centre_luminance_p95": 49
+    },
+    {
+      "key": "bg.ruin",
+      "variant": 2,
+      "bytes": 203658,
+      "centre_luminance_mean": 13.17,
+      "centre_luminance_p95": 32
+    },
+    {
+      "key": "bg.ruin",
+      "variant": 3,
+      "bytes": 193378,
+      "centre_luminance_mean": 25.63,
+      "centre_luminance_p95": 56
+    },
+    {
+      "key": "bg.mercy",
+      "variant": 1,
+      "bytes": 180950,
+      "centre_luminance_mean": 45.21,
+      "centre_luminance_p95": 104
+    },
+    {
+      "key": "bg.mercy",
+      "variant": 2,
+      "bytes": 182921,
+      "centre_luminance_mean": 38.24,
+      "centre_luminance_p95": 70
+    },
+    {
+      "key": "bg.mercy",
+      "variant": 3,
+      "bytes": 174308,
+      "centre_luminance_mean": 43.31,
+      "centre_luminance_p95": 98
+    },
+    {
+      "key": "bg.reckoning",
+      "variant": 1,
+      "bytes": 177017,
+      "centre_luminance_mean": 37.44,
+      "centre_luminance_p95": 90
+    },
+    {
+      "key": "bg.reckoning",
+      "variant": 2,
+      "bytes": 168242,
+      "centre_luminance_mean": 36.99,
+      "centre_luminance_p95": 79
+    },
+    {
+      "key": "bg.reckoning",
+      "variant": 3,
+      "bytes": 195280,
+      "centre_luminance_mean": 28.3,
+      "centre_luminance_p95": 63
+    },
+    {
+      "key": "bg.quarry",
+      "variant": 1,
+      "bytes": 198429,
+      "centre_luminance_mean": 33.9,
+      "centre_luminance_p95": 74
+    },
+    {
+      "key": "bg.quarry",
+      "variant": 2,
+      "bytes": 190381,
+      "centre_luminance_mean": 33.69,
+      "centre_luminance_p95": 78
+    },
+    {
+      "key": "bg.quarry",
+      "variant": 3,
+      "bytes": 182117,
+      "centre_luminance_mean": 40.08,
+      "centre_luminance_p95": 77
+    },
+    {
+      "key": "bg.veil",
+      "variant": 1,
+      "bytes": 216091,
+      "centre_luminance_mean": 21.1,
+      "centre_luminance_p95": 47
+    },
+    {
+      "key": "bg.veil",
+      "variant": 2,
+      "bytes": 188355,
+      "centre_luminance_mean": 21.58,
+      "centre_luminance_p95": 49
+    },
+    {
+      "key": "bg.veil",
+      "variant": 3,
+      "bytes": 207612,
+      "centre_luminance_mean": 16.23,
+      "centre_luminance_p95": 39
+    }
+  ],
+  "overlays": [
+    {
+      "key": "fx.fire",
+      "variant": 1,
+      "bytes": 258,
+      "frames": 8,
+      "loop_s": 0.8,
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "lit_pixels_min": 7,
+      "lit_pixels_max": 10,
+      "transition_rgb_l1": [
+        1234.76,
+        1908.39,
+        1818.67,
+        2339.2,
+        1418.48,
+        1234.76,
+        1871.75,
+        2208.56
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.fire",
+      "variant": 2,
+      "bytes": 300,
+      "frames": 8,
+      "loop_s": 0.96,
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "lit_pixels_min": 11,
+      "lit_pixels_max": 14,
+      "transition_rgb_l1": [
+        2290.07,
+        2541.11,
+        1526.71,
+        3102.56,
+        2106.35,
+        1998.12,
+        2473.79,
+        2208.56
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.frost",
+      "variant": 1,
+      "bytes": 228,
+      "frames": 8,
+      "loop_s": 1.12,
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "lit_pixels_min": 11,
+      "lit_pixels_max": 12,
+      "transition_rgb_l1": [
+        664.53,
+        536.09,
+        664.53,
+        735.62,
+        667.33,
+        935.15,
+        667.33,
+        735.62
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.frost",
+      "variant": 2,
+      "bytes": 212,
+      "frames": 8,
+      "loop_s": 0.96,
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "lit_pixels_min": 13,
+      "lit_pixels_max": 14,
+      "transition_rgb_l1": [
+        443.95,
+        1319.4,
+        443.95,
+        1319.4,
+        443.95,
+        1518.93,
+        443.95,
+        1518.93
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.holy",
+      "variant": 1,
+      "bytes": 222,
+      "frames": 8,
+      "loop_s": 1.12,
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "lit_pixels_min": 8,
+      "lit_pixels_max": 8,
+      "transition_rgb_l1": [
+        1919.44,
+        1702.02,
+        1916.72,
+        1702.02,
+        1916.72,
+        1702.02,
+        1919.44,
+        1702.02
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.holy",
+      "variant": 2,
+      "bytes": 264,
+      "frames": 8,
+      "loop_s": 0.96,
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "lit_pixels_min": 10,
+      "lit_pixels_max": 11,
+      "transition_rgb_l1": [
+        2134.13,
+        1223.72,
+        1655.82,
+        1515.67,
+        1947.78,
+        1702.02,
+        1947.78,
+        1515.67
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.rage",
+      "variant": 1,
+      "bytes": 169,
+      "frames": 8,
+      "loop_s": 0.8,
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "lit_pixels_min": 6,
+      "lit_pixels_max": 6,
+      "transition_rgb_l1": [
+        218.98,
+        458.29,
+        218.98,
+        500.96,
+        135.53,
+        708.64,
+        302.43,
+        417.51
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.rage",
+      "variant": 2,
+      "bytes": 234,
+      "frames": 8,
+      "loop_s": 0.96,
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "lit_pixels_min": 10,
+      "lit_pixels_max": 10,
+      "transition_rgb_l1": [
+        617.1,
+        540.7,
+        281.45,
+        416.46,
+        281.45,
+        541.74,
+        617.1,
+        604.49
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.wild",
+      "variant": 1,
+      "bytes": 194,
+      "frames": 8,
+      "loop_s": 0.96,
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "lit_pixels_min": 6,
+      "lit_pixels_max": 6,
+      "transition_rgb_l1": [
+        128.31,
+        1664.88,
+        128.31,
+        1189.15,
+        128.31,
+        1438.24,
+        128.31,
+        1408.25
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.wild",
+      "variant": 2,
+      "bytes": 245,
+      "frames": 8,
+      "loop_s": 1.12,
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "lit_pixels_min": 7,
+      "lit_pixels_max": 8,
+      "transition_rgb_l1": [
+        0.0,
+        2408.85,
+        128.31,
+        2132.58,
+        128.31,
+        2182.21,
+        128.31,
+        2081.07
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.shadow",
+      "variant": 1,
+      "bytes": 305,
+      "frames": 8,
+      "loop_s": 1.12,
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "lit_pixels_min": 8,
+      "lit_pixels_max": 10,
+      "transition_rgb_l1": [
+        346.6,
+        737.19,
+        346.6,
+        554.29,
+        600.6,
+        783.5,
+        507.98,
+        600.6
+      ],
+      "seam_within_internal_max": true
+    },
+    {
+      "key": "fx.shadow",
+      "variant": 2,
+      "bytes": 316,
+      "frames": 8,
+      "loop_s": 0.96,
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "lit_pixels_min": 11,
+      "lit_pixels_max": 14,
+      "transition_rgb_l1": [
+        346.6,
+        760.28,
+        346.6,
+        785.07,
+        600.6,
+        1014.27,
+        507.98,
+        531.07
+      ],
+      "seam_within_internal_max": true
+    }
+  ],
+  "scope": "Only tools/r52_art/arta; no Lua or mods; no fixtures or engine runs",
+  "checks": [
+    "Manifest paths, bytes, SHA-256 and dimensions match all 50 media files",
+    "All 24 backgrounds are opaque, 1040x440",
+    "All 12 strips are RGBA 16x128; transparent pixels have zero RGB; grip and lower half clear",
+    "All eight generated phases match saved strip; phase 8 equals phase 0",
+    "GIF loops repeat forever and total duration equals loop_s",
+    "All generator and background source hashes match"
+  ],
+  "background_bytes_total": 4553267,
+  "background_bytes_min": 168242,
+  "background_bytes_max": 216091,
+  "overlay_bytes_total": 2947
+}

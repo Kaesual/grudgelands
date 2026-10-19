@@ -1,0 +1,1825 @@
+{
+  "schema": 1,
+  "date": "2026-10-19",
+  "lane": "ARTA",
+  "classification": "compatible",
+  "paths_relative_to": "manifest directory",
+  "assets": [
+    {
+      "key": "bg.ember",
+      "variant": 1,
+      "path": "bg/ember_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 189696,
+      "sha256": "498fbd7bba0624b76df72016b77605d2352aa10ddde44f89767913a41bdce060",
+      "mode": "P",
+      "title": "Basalt embers",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Ember, draft 1, 'Basalt embers'. A charcoal-and-ember field of broad cracked black basalt slabs in the outer left and right margins, narrow orange-red molten fissures visible only near those edges, a few rising sparks against upper corners, warm copper-orange glow from the top left. Centre is quiet near-black charcoal smoke with a subdued warm undertone; large shapes, sparse edge cracks, no central focal object.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-199b29dd-6af1-4523-b49c-be34da73c880.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "b1af5623bb4217b246f3c4a225c4af7650edac3c9209f3c38b18c6babcdb65be",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.ember",
+      "variant": 2,
+      "path": "bg/ember_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 203933,
+      "sha256": "3b3a1cf58f57a514b9fd87c684dc266095dabc170a0924634a02005c23489d7b",
+      "mode": "P",
+      "title": "Banked furnace",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Ember, draft 2, 'Banked furnace'. Close broad slabs of charcoal basalt, cropped tightly at the outermost left and right borders. Dim red embers hidden in a few large fractures, small orange sparks rising near the right border. A muted amber glow at the upper right, a broad completely calm field of soot-dark smoke fading across the centre. Less geological depth, more a tactile flat charcoal-and-ember field.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-81a6ff7f-b3d8-410b-bab1-a3942fdf63f5.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "b0277483ee7e71896d46bd02fb7e70773e348e62c27cf910fdaaf71867501f26",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.ember",
+      "variant": 3,
+      "path": "bg/ember_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 193236,
+      "sha256": "7174d434a32e245e6ab62d18da2576b6b3ebc287b8c468cff95876dd2251da8c",
+      "mode": "P",
+      "title": "Ash and cinder",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Ember, draft 3, 'Ash and cinder'. An atmospheric charcoal-and-ember field with sparse angular cracked basalt shoulders barely entering both lower outer corners, ash haze, two small orange tongues of flame and rising sparks along the upper left edge, subdued crimson reflections at the right edge. Mostly empty dark umber smoke and fine matte charcoal surface at centre, no busy central texture.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-38950dcc-7f6c-4e64-b837-dca33a9caed8.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "35ddc9425fd3dd8749f6a4efd590d8562c5927846744cb8939ad2b34e071f611",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.rime",
+      "variant": 1,
+      "path": "bg/rime_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 178498,
+      "sha256": "c3607478551c977a3ae3645d6719a3fb4284177458cc4e4da29847872412b96a",
+      "mode": "P",
+      "title": "Aurora lake",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Rime, draft 1, 'Aurora lake'. A frozen lake under a deep navy night sky, its horizon indistinct and without a hard dividing line. Pale blue frost ferns curl in from the extreme left and right edges; icy white facets at outer corners. A subdued pale cyan aurora concentrated high at upper left. Centre and bottom are quiet deep navy frozen water and haze, barely any reflections, no central star field.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-f3f02efb-0aa6-462d-942d-edca9f25020b.png",
+      "generation_size": [
+        1928,
+        815
+      ],
+      "generation_sha256": "c0e82a2edf6fe4587be0d8eeebab8843ac2e97bedee671fcb89979b79ac9edbc",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.rime",
+      "variant": 2,
+      "path": "bg/rime_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 185459,
+      "sha256": "c256be64db689bf0e1978e4109841ecf0cc29f5b10c3ef6fc802c36e8ceec682",
+      "mode": "P",
+      "title": "Blue stillness",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Rime, draft 2, 'Blue stillness'. A frozen lake dissolving into a midnight-blue night sky. Two cropped banks of ice and slender white-blue frost ferns at extreme side edges, a pale aurora drifting along the upper right rim. Soft large brushwork, centre a very calm blue-black mist gradient, corners like frost on a window but no literal frame.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-156c0105-d085-4602-a8af-41b8b497bd43.png",
+      "generation_size": [
+        1927,
+        816
+      ],
+      "generation_sha256": "0675f125910d763d5019c1d7856bc8a0c40da5140389851da4414f2c7cc9c39e",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.rime",
+      "variant": 3,
+      "path": "bg/rime_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 200685,
+      "sha256": "ce784db6e03724e0280c6ca33d7ec056e51843cc6aa4ecf4775f608b2860797a",
+      "mode": "P",
+      "title": "Winter breath",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Rime, draft 3, 'Winter breath'. A nearly abstract nocturnal frozen lake, broad deep navy negative space, a few pale frost-fern fronds along the left edge and compact ice crystals at the outer right corners. Pale silver-blue aurora haze brushed along the very top, subdued and narrow. Distant snowy shores are only silhouettes at the margins; centre has no cracks or sparkling detail.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-5ca1e6a4-3921-4698-857e-4d23ef6add2c.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "38b041b73d88a039b1d4c33271c3a97a2828de10eb735b08e0f2c1136970b429",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.bulwark",
+      "variant": 1,
+      "path": "bg/bulwark_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 191343,
+      "sha256": "41c7f04f09a1a9dfcd828385645a92566bce3703031f14c7d00787361a43d3cc",
+      "mode": "P",
+      "title": "Watch gate",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Bulwark, draft 1, 'Watch gate'. A weathered stone rampart and iron-banded gates in steel grey and muted bronze, cropped upright gate jambs at the extreme left and right edges, heavy steel rivets visible on those cropped edges, a plain folded bronze cloth banner in the upper left corner, no insignia. Centre recedes into a quiet smoky slate shadow without masonry seams; subtle warm light high at upper right.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-1dbadfff-ec3e-4b39-9713-860422830bb7.png",
+      "generation_size": [
+        1928,
+        815
+      ],
+      "generation_sha256": "6756c56f5fbad6c34060cdc36b57730f90d0348828d93186b62972f2ab0d8cc3",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.bulwark",
+      "variant": 2,
+      "path": "bg/bulwark_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 190754,
+      "sha256": "afb4b873476c33a6e1b513df21738c68ccf9013c5c1efaf6046649260291b2c4",
+      "mode": "P",
+      "title": "Iron threshold",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Bulwark, draft 2, 'Iron threshold'. A close quiet view into a rampart gate: broad weathered grey stone shoulders at the extreme side margins, cropped dark iron gate leaves with a few large bronze rivets. A plain hanging banner folded tight against the upper right corner. Centre is very low-detail slate-grey shadow, subtly warm upper-left daylight, grounded protective weight.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-ca9ec03e-0fe4-4c47-8d77-7e1d4ab1293a.png",
+      "generation_size": [
+        1927,
+        816
+      ],
+      "generation_sha256": "6a7e5f1768b9cdb6c3d3bba7c8fec3fb39f65a83330494cf718c7a6a21d5ad58",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.bulwark",
+      "variant": 3,
+      "path": "bg/bulwark_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 180251,
+      "sha256": "004030964837e72b4649306a421c23107a710388587048fdc09c1057c22d5ae7",
+      "mode": "P",
+      "title": "Rampart dusk",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Bulwark, draft 3, 'Rampart dusk'. Weathered rampart masonry suggested only at the outer corners and edges, a few cropped steel gate bands and bronze rivet heads, one wind-folded plain banner at the upper left. Deep muted steel blue and grey centre, no doors or masonry lines across it. Evening amber rim light on the very top of the side stones, sober and sturdy.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-ae0bd8bd-6799-4227-95b7-396aec7cecf9.png",
+      "generation_size": [
+        1930,
+        815
+      ],
+      "generation_sha256": "2da428734ebcfc4ec45fa987cf384195ee919dd90898b35a9d8b9de6a5022a40",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.ruin",
+      "variant": 1,
+      "path": "bg/ruin_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 180673,
+      "sha256": "0288bce9bae1ac86dae554c8d4add740e992415d317dc70232bedb9c6723fece",
+      "mode": "P",
+      "title": "Broken iron",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Ruin, draft 1, 'Broken iron'. A scorched battlefield dissolving into dark crimson smoke. A broken heavy blade and split iron plate, cropped at opposite outer edges, black charred earth only at outer bottom corners. Red smoke rising up the sides with a muted crimson glow at upper left. Centre quiet soft black-red haze with no weapon shapes or battle figures.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-2f912094-5ba7-497f-9da9-4fdf49d51be8.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "435f82418ea8e5da6739337a10cab7fa4fba47ad1245ecb024f769b0f025b031",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.ruin",
+      "variant": 2,
+      "path": "bg/ruin_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 203658,
+      "sha256": "11e5e547dc873a990fe90dfdb57bca43d83cab2435c8cff6a28a7ad1ad87ff7e",
+      "mode": "P",
+      "title": "Red aftermath",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Ruin, draft 2, 'Red aftermath'. A quiet scorched battlefield in black and deep crimson, a cracked iron shield edge and snapped weapon haft partly cropped off the left border, a shattered axe head cropped off the right. Thin red smoke curls only in the side margins, a copper-red glow above the upper right edge. Empty low-detail soot-black middle with dark red undertone.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-971c6f61-197a-4d79-b7ee-0bea187710f2.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "7d0f14501f94edc14efdb32325c6adf26bbf97d7bf48e927864414784b80c9e7",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.ruin",
+      "variant": 3,
+      "path": "bg/ruin_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 193378,
+      "sha256": "bc65277e448e3e2b46222ba1188c7c51985cc6c25932a3ea0fb6e90d96b27094",
+      "mode": "P",
+      "title": "Cinder steel",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Ruin, draft 3, 'Cinder steel'. Cracked black iron fragments from broken battlefield weapons form sparse asymmetric shapes at the left and right corners. A scorched battlefield lost in broad red-black smoke. Upper-left smoke has restrained crimson light, bottom centre stays nearly black. Large heavy angular edge silhouettes, no central debris or conflict scene.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-c5d18399-744b-49b4-a497-8bbe42a78493.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "b997c75d186568315356b5d9daa1a9320839155e646f52d5c47852c91ab4bf74",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.mercy",
+      "variant": 1,
+      "path": "bg/mercy_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 180950,
+      "sha256": "7f3ef8b32c9391e49e934cf1baffd3ba2b32a725fe88d61a459bc0fa69efba1b",
+      "mode": "P",
+      "title": "Quiet sanctuary",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Mercy, draft 1, 'Quiet sanctuary'. A quiet sanctuary with warm stone arch piers at extreme side margins, small ivory lilies tucked against the outer bottom corners. Soft warm gold-white light filters through a cropped arch at the upper left edge. Broad empty central expanse of soft umber stone shadow and gentle haze, no centre aisle lines, comforting and still.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-1f5550a9-d62a-44d2-bd26-31f232f1fb0b.png",
+      "generation_size": [
+        1928,
+        815
+      ],
+      "generation_sha256": "8c3521d61bf2ccb4ec5f65a2ab10765159a7e22826a27f8cd77303a94810235c",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.mercy",
+      "variant": 2,
+      "path": "bg/mercy_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 182921,
+      "sha256": "8a6286544ac11d787175a57c28da31d218c9754f4cb79c7e1da4adc6b11802f8",
+      "mode": "P",
+      "title": "Lily alcove",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Mercy, draft 2, 'Lily alcove'. An intimate warm sandstone sanctuary: softly rounded cropped arch stone at the outer corners, a small cluster of ivory lilies at the left edge and a few pale petals at the right edge. Warm golden light touching only the upper right arch. Centre remains muted deep warm grey-brown, broad quiet brushwork without floor tiles or focal objects.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-f775b7ac-e46b-483e-ba52-ec57756bbdfc.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "e4c59bae676a09a3711471aa2a8112309e02fae6650489ac9f6475bdd4e6cb30",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.mercy",
+      "variant": 3,
+      "path": "bg/mercy_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 174308,
+      "sha256": "6a29649dc1e03587c30477946becdab56b4fd8c3ee1198ce6c3c4d1716d3c2e9",
+      "mode": "P",
+      "title": "Gentle vigil",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Mercy, draft 3, 'Gentle vigil'. Quiet sanctuary arch fragments in warm limestone along the left and right borders, tall slender lilies cropped tightly at the right edge, soft ivory-gold light above the upper left corner. Centre and bottom are calm warm brown shadows, restrained luminous haze, serene open space with no symbols or religious text.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-6d455dda-70ea-4282-bc8e-dc4313562694.png",
+      "generation_size": [
+        1928,
+        815
+      ],
+      "generation_sha256": "477fde147b5f46df869c04c44f53306e74c1cbb0af43e840c3bb33e8a1541c71",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.reckoning",
+      "variant": 1,
+      "path": "bg/reckoning_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 177017,
+      "sha256": "efcd090cfdbc68f6c6c0042daa33e56a67603aa7d6237e2237c45c0100f600ae",
+      "mode": "P",
+      "title": "Severe tribunal",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Reckoning, draft 1, 'Severe tribunal'. A stern tribunal hall with tall stone columns cropped to the extreme left and right margins. Small golden balance scales cropped into the left edge, crimson cloth tucked along the far right. A harsh gold-white sunburst light source mostly above the top right edge, its rays confined to that corner. Centre quiet dark warm slate shadow with no floor lines, austere hard gold highlights.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-670d6d71-6c75-40cc-b71a-f748743f0b2e.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "226b42c22bba6475f5fdbb9132a2fd35c514f8d8874250b93fa7a2fe8fa9e311",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.reckoning",
+      "variant": 2,
+      "path": "bg/reckoning_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 168242,
+      "sha256": "b7a7fcd65b018f5480f349833367d5850fd0f4e3ffaa1763d245bdcc61629339",
+      "mode": "P",
+      "title": "Scales at dawn",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Reckoning, draft 2, 'Scales at dawn'. A stern tribunal hall implied by two weathered stone columns at the far outer edges, one small hanging golden balance scale at the upper right margin and a restrained crimson cloth accent at the left edge. Harsh sunburst light peeks from beyond the top left corner, hard white-gold against stone. Central 80 percent remains featureless dark stone-grey haze, no throne, no central emblem.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-3e1595c9-4c7c-4114-aa0d-e5e2ec6f7a4e.png",
+      "generation_size": [
+        1928,
+        815
+      ],
+      "generation_sha256": "134c311381e52a5c78c9c080dfd3e18dbfa2234e0a54dc74095a6010bf6f6cd5",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.reckoning",
+      "variant": 3,
+      "path": "bg/reckoning_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 195280,
+      "sha256": "62c3ab2a448d5632e15464caec314d3ae83238221c229a6748d901c4224c2387",
+      "mode": "P",
+      "title": "Judgment stone",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Reckoning, draft 3, 'Judgment stone'. An austere tribunal entrance, monumental cropped grey stone columns tight to the side margins, small gold scale pans at the left outer border and a narrow plain crimson drape at the right. A severe white-gold solar glare at the very top right, restrained in area. Middle is a quiet brown-black charcoal expanse, no radiating lines crossing the central field.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-05b5a689-8290-47b9-91eb-e7e9e05dbc11.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "362c6088f771c3ba23700cf9de6b5112a763413e0d331b0e7d86c08fd2135434",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.quarry",
+      "variant": 1,
+      "path": "bg/quarry_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 198429,
+      "sha256": "56decdc475d9a7a86f36c4cdc2d3b9085223b846bd443615bcb7958e619c96d1",
+      "mode": "P",
+      "title": "Dawn ridge",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Quarry, draft 1, 'Dawn ridge'. A forest edge at dawn, muted forest green and earth brown. Tall grasses, one shed antler and two feathers tucked into the narrow outer corners, dark trunks at extreme left and right. A distant ridge barely visible through central low-contrast dark green haze without a strong horizon. Small soft amber dawn glow at the upper left edge, no central sun or animals.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-baa008b4-f0ba-4853-8862-a4c60332fcf4.png",
+      "generation_size": [
+        1928,
+        815
+      ],
+      "generation_sha256": "d04b0a834a9bc9fe961838ff1ed74a5bb9a76b877e983e87bc3c2f5a06439fc8",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.quarry",
+      "variant": 2,
+      "path": "bg/quarry_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 190381,
+      "sha256": "a43d63eaab39646bab9472379c969fe49fc39d50927c51600f86ff77443fc896",
+      "mode": "P",
+      "title": "Hunter's clearing",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Quarry, draft 2, 'Hunter's clearing'. A dim forest clearing on an early dawn ridge, deep moss green and muted earth brown. Tall grass close at the extreme left, a shed antler and pale feather half-cropped on the right edge, sparse dark tree silhouettes framing the outer edges. Subdued golden light high at upper right; broad centre remains smooth dark forest mist, no path lines.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-5fe93fae-c6ae-454f-bedd-ebd66446faea.png",
+      "generation_size": [
+        1930,
+        815
+      ],
+      "generation_sha256": "a1f01be895b3e91a2d4d5303b639444eac9093f4a2b65ccc41a6963c11af1f6c",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.quarry",
+      "variant": 3,
+      "path": "bg/quarry_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 182117,
+      "sha256": "bbabe04fce117f879719c7fff52ab47c99b7f6e7af43e9dcf9274cf7413533ea",
+      "mode": "P",
+      "title": "Feathers in mist",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Quarry, draft 3, 'Feathers in mist'. A forest edge overlooking a distant soft ridge before dawn. Sparse curved grasses and a shed antler barely entering the far left corner, two small feathers caught on a branch at the right border, dark green trees kept to margins. A soft olive-gold dawn haze along the upper left rim, central full-height expanse of muted deep green mist, earth-brown corners.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-c3e6ab18-aa85-4cd4-bccd-26f467a7bd6d.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "266f27d218ec0d4264e169c10e5737dfbd3dbf9d571b148bf0d1d92a24f06e31",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.veil",
+      "variant": 1,
+      "path": "bg/veil_v1.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 216091,
+      "sha256": "ef201f2d3f3e453f4b887cb038d0654974fcecd0f3c4ad62629d4606d24d0311",
+      "mode": "P",
+      "title": "Moonlit alley",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Veil, draft 1, 'Moonlit alley'. Moonlit stone alleys suggested by cropped walls only at extreme side edges, indigo and violet shadows, a small silver crescent moon at the upper left corner. Wisps of smoke curl beside the edges and dissolve into broad calm low-detail dark indigo mist at centre. Very faint silver glints on right-side stone, no street lines or person.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-44260e32-9639-4dd6-a1e2-0f963e440d7a.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "29ae95171158c74b7f8f4b21df88f802c76abf98182173470bb6f9f730f404ef",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.veil",
+      "variant": 2,
+      "path": "bg/veil_v2.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 188355,
+      "sha256": "08ee867d57f64874146a1164c66aff14a9b37008f95be1cd7e3ed411ff80545f",
+      "mode": "P",
+      "title": "Silver passage",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Veil, draft 2, 'Silver passage'. A quiet moonlit alley with violet-black doorways cropped off the outer left and right margins, one tiny silver crescent moon in the top right corner, drifting smoke along the left border. Deep indigo atmospheric centre across full height, no pavement perspective lines or windows in the middle, broad restrained painterly forms.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-d48ca1a8-125b-4608-8bde-95f356a34cc6.png",
+      "generation_size": [
+        1928,
+        815
+      ],
+      "generation_sha256": "62a94fea594b6799524ba6e3d1341d93d1250f1f2bba06e03e850b2bafede2f0",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "bg.veil",
+      "variant": 3,
+      "path": "bg/veil_v3.png",
+      "size": [
+        1040,
+        440
+      ],
+      "bytes": 207612,
+      "sha256": "82cc587a8121489e8ac2590bbf7407fe21d5a10918605a955f7f9296b75f19c4",
+      "mode": "P",
+      "title": "Violet hush",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "role": "background",
+      "tool": "built-in image_gen.imagegen",
+      "prompt": "Use case: stylized-concept. Asset type: one opaque painterly background plate for a talent tree in the original MMO-inspired Luanti game Grudgelands. Wide horizontal canvas, aspect 1040:440 (26:11), compose for exact final 1040 x 440 pixels. Shared collection style: restrained atmospheric gouache and oil brushwork, broad graphic silhouettes, tactile matte surfaces, soft depth, elegant muted fantasy illustration. The middle 80 percent of width, across the FULL height, must be dark-to-mid value very low-detail negative space so an overlay of 7 rows by 5 columns of square icons and pale labels reads clearly. Put identifiable objects only into narrow left/right margins and corners; fade scene depth softly into the centre. Keep bottom centre especially dark. Any brightest light belongs high at the top edge or upper corner, never bottom. No text, letters, symbols that resemble writing, logo, watermark, border frame, nodes, icons, diagram, connectors, graphic lines or UI. One continuous image, no panels. Tree Veil, draft 3, 'Violet hush'. Old moonlit alley walls nearly lost in darkness at the extreme sides, silver rims on a few stones, a narrow crescent moon tucked high at the upper left edge. Violet smoke curls from the outer right corners without forming an emblem. Middle and bottom remain a smooth dark indigo-violet field, subdued mystery, no figures, no text.",
+      "generation_output_path": "/home/jan/.codex/generated_images/01a155b4-4328-7802-ac69-f13bb7021c3f/exec-c136bc60-3f8f-436e-9d12-923b1abed3f9.png",
+      "generation_size": [
+        1928,
+        816
+      ],
+      "generation_sha256": "0b47842315cbfd7603389e03addb78b2c563193da9b242dd3098a9831834c802",
+      "post_processing": {
+        "geometry": "ImageOps.fit 1040x440, centred, Lanczos; RGB opaque",
+        "calm_centre": "Smooth horizontal mask: zero at outer 5%, full from 18% to 82%; Gaussian blur radius 2 px and brightness 0.72 inside mask",
+        "encoding": "256-colour MEDIANCUT palette, no dithering, PNG optimize=True"
+      },
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "alpha": "opaque"
+    },
+    {
+      "key": "preview.bg",
+      "variant": 1,
+      "path": "preview-bg.png",
+      "size": [
+        1608,
+        2080
+      ],
+      "bytes": 2904336,
+      "sha256": "fd2c9f9fbc04eeffd6d27f03fa0ec2231a086f86ef554e61a06f78aac1aac116",
+      "mode": "RGB",
+      "generator": {
+        "path": "tools/r52_art/arta/arta_bg.py",
+        "sha256": "8b357400c9c08575b41886be8b3bc84fa14a874108f9c0eccb431b218f0b5bc1"
+      },
+      "role": "preview",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "date": "2026-10-19",
+      "license": "CC0-1.0",
+      "method": "All 24 final PNGs at half size; mock grid added before reduction"
+    },
+    {
+      "key": "fx.fire",
+      "variant": 1,
+      "path": "fx/fire_v1.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 258,
+      "sha256": "cca98b1f97e98f1574a522400c3550c22bbd604cab48dbdda08c7edf200d07d1",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.8,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Twin tongues",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.fire",
+      "variant": 1,
+      "path": "fx/fire_v1.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 61527,
+      "sha256": "1b9bbc7faaff51fffa39765826c4a60fa82cb8f9a98be568f8a1dd76c0613169",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.8,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Twin tongues",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.fire",
+      "variant": 2,
+      "path": "fx/fire_v2.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 300,
+      "sha256": "cdc40325010eff0a810a026cafafc8aa32d176ba8ba7f0026c50470457c512a3",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Ember crown",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.fire",
+      "variant": 2,
+      "path": "fx/fire_v2.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 62669,
+      "sha256": "fc96e7f6bb89dec7a656eb28b2193ec3ca7f9e3ce779a36d303c66f13f87f616",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Ember crown",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.frost",
+      "variant": 1,
+      "path": "fx/frost_v1.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 228,
+      "sha256": "3be57a5fbe8962d52baafcb0fe33a53704361549554396e605b71dd9a5b6c399",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Rime needles",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.frost",
+      "variant": 1,
+      "path": "fx/frost_v1.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 61611,
+      "sha256": "fdef68c5f1ae7b30f1f15c6dedead8810efa994bcf7376573e4fae4998b070ce",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Rime needles",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.frost",
+      "variant": 2,
+      "path": "fx/frost_v2.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 212,
+      "sha256": "0957654e47c80007d7e01000839d5b9846a2ea5fe640f87c80f63dd81ed03976",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Crystal breath",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.frost",
+      "variant": 2,
+      "path": "fx/frost_v2.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 62601,
+      "sha256": "66c8a30a498b442a61ad48127a9fc55549bbeb8cb215a06b4a6b341a6f7aad51",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Crystal breath",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.holy",
+      "variant": 1,
+      "path": "fx/holy_v1.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 222,
+      "sha256": "7e10a730cb15cffdbc2ea4048725043716246d1c7632dea839ffac9e631a33a6",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Golden motes",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.holy",
+      "variant": 1,
+      "path": "fx/holy_v1.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 61046,
+      "sha256": "30ef31374d40919cbd7e44ba42db37ba4cbc5b1045426681be27eddbb15b143b",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Golden motes",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.holy",
+      "variant": 2,
+      "path": "fx/holy_v2.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 264,
+      "sha256": "5ead93ae6c06700f38084632f0227b58092fca4366cf0ad0bc1a15a3e107662f",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Quiet radiance",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.holy",
+      "variant": 2,
+      "path": "fx/holy_v2.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 62337,
+      "sha256": "d21bddce8d09f5f0b414291aadb8ff11f7a716c84bb56fb17dbed2e66faeb849",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Quiet radiance",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.rage",
+      "variant": 1,
+      "path": "fx/rage_v1.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 169,
+      "sha256": "c8aa6d8a74eca0dfb2d6240c5d842d5b2bca866a35888a28eeead4660245173b",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.8,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Crimson edge",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.rage",
+      "variant": 1,
+      "path": "fx/rage_v1.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 60737,
+      "sha256": "39b6604f7c2003a6f38237e4335da58f581855737bf026ec491368517499b653",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.8,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Crimson edge",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.rage",
+      "variant": 2,
+      "path": "fx/rage_v2.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 234,
+      "sha256": "5d8ddf474e016a48ad8b068529616052923b81709c370a9f052cdf46d943c074",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Red heartbeat",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.rage",
+      "variant": 2,
+      "path": "fx/rage_v2.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 62317,
+      "sha256": "17d84f5bb1aad66f044efa5a272100ec617f3f7e781176df3cf56e6cea8c92c2",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Red heartbeat",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.wild",
+      "variant": 1,
+      "path": "fx/wild_v1.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 194,
+      "sha256": "744f4e5a3b7434a8d1698c8d762eb98282da1378aa3331b52672e7703df88926",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Teal slipstream",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.wild",
+      "variant": 1,
+      "path": "fx/wild_v1.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 61547,
+      "sha256": "3d186266db1419324fd3e2f6623fb1c4bce583c2e667b2cc73dd3621468b51b7",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Teal slipstream",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.wild",
+      "variant": 2,
+      "path": "fx/wild_v2.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 245,
+      "sha256": "9da624725cc0333aa20cc4e8e064aba0eaec1e4d723f6f156f9b3c80b669b817",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Leaf drift",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.wild",
+      "variant": 2,
+      "path": "fx/wild_v2.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 53967,
+      "sha256": "4b519183e77b4023337b7ebbf6ee9c5f615bd72708f7c77773bfb6434b3d6acf",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Leaf drift",
+      "gif_encoded_frames": 7,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.shadow",
+      "variant": 1,
+      "path": "fx/shadow_v1.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 305,
+      "sha256": "da18d3ee3b27bc75f4afc00bdd06c5387e8fce6ea196d10efad7e9b98452b76c",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Violet curl",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.shadow",
+      "variant": 1,
+      "path": "fx/shadow_v1.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 62178,
+      "sha256": "086e55ae2f33e0da357a6b47ed9857b174e35f9903748b87cabeb4b78575d577",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 1.12,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Violet curl",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "fx.shadow",
+      "variant": 2,
+      "path": "fx/shadow_v2.png",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 316,
+      "sha256": "ac533efbf5fb238214a5582e142f6a57e326bc91aed4763a704e614ac7592874",
+      "mode": "RGBA",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Silver smoke",
+      "author": "GPT-6 Astra (Grudgelands)",
+      "license": "CC0-1.0",
+      "role": "overlay",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "method": "Original explicit pixel coordinates and cyclic eight-phase paths; Python/Pillow; no weapon pixels copied",
+      "animation": "vertical_frames",
+      "frame_size": [
+        16,
+        16
+      ]
+    },
+    {
+      "key": "fx.shadow",
+      "variant": 2,
+      "path": "fx/shadow_v2.gif",
+      "size": [
+        448,
+        196
+      ],
+      "bytes": 63958,
+      "sha256": "e2363e408e4700954cca5d5e63aeb2865e8bfed2b83dbb5e31990e7e24257c81",
+      "mode": "P",
+      "frames": 8,
+      "loop_s": 0.96,
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "date": "2026-10-19",
+      "title": "Silver smoke",
+      "gif_encoded_frames": 8,
+      "role": "preview",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "license": "CC-BY-SA-4.0",
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "method": "RGBA overlay composited over three weapon sprites; nearest-neighbour 8x; fixed global GIF palette"
+    },
+    {
+      "key": "preview.fx",
+      "variant": 1,
+      "path": "preview-fx.png",
+      "size": [
+        1240,
+        1730
+      ],
+      "bytes": 60878,
+      "sha256": "e40f8caa4ce811b51ac7fceebdc54acfb8a9c53b5d7ac03b133eb0977cd17c45",
+      "mode": "RGB",
+      "generator": {
+        "path": "tools/r52_art/arta/arta_fx.py",
+        "sha256": "a00fe71fa9d817632dedfeb215518f182f3259e116aaaa28ea2ddacf4d745276"
+      },
+      "sources": [
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+          "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+          "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+          "license": "CC-BY-SA-3.0"
+        },
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+          "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "role": "preview",
+      "date": "2026-10-19",
+      "license": "CC-BY-SA-4.0",
+      "author": "GPT-6 Astra (composite); weapon authors credited in README.md",
+      "method": "12 variants: phase 4 over three weapons at 8x and all raw phases at 4x"
+    }
+  ]
+}
