@@ -50,7 +50,7 @@ function M.config(core_api)
 	-- The swamp's grounds (surface tops and the mud filler).
 	local GROUND = {}
 	for _, name in ipairs({"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-			"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss"}) do
+			"grug_nodes:mud_with_wet_grass", "grug_nodes:swamp_moss"}) do
 		GROUND[cid(name)] = true
 	end
 	-- A plant that may go where a pool takes its ground: not walkable, no

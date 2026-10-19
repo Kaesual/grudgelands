@@ -1,5 +1,5 @@
 -- MAP-B P9G-2 extension. Pure data shared by registration and mapgen.
-local M={schema="grug_world_content_v1", p9g_count=36}
+local M={schema="grug_world_content_v1", p9g_count=39}
 local starts={"elandor_hearthpine_vale","elandor_dawnmere_fields","elandor_silverleaf_glades",
  "kragmar_stillgrave_hollow","kragmar_sunscar_flats","kragmar_kapok_cradle"}
 local homes={"elandor_copperfell_foothills","elandor_goldmead_vale","elandor_starbough_vale",
@@ -17,9 +17,9 @@ local soil={
  blight={"grug_nodes:blight_dirt","grug_nodes:ash_ground","grug_nodes:dirt_with_bone_litter"},
  jungle_edge={"default:dirt_with_rainforest_litter","grug_nodes:dirt_with_canopy_litter","grug_nodes:mud"},
  badlands={"grug_nodes:mesa_clay"},crags={"default:gravel"},
- -- Round 47 lane SW: the swamp's mixed ground
+ -- Round 47 lane SW: the swamp's mixed ground (its own moss since Round 51 T4)
  swamp={"grug_nodes:mud","grug_nodes:mud_dry","grug_nodes:mud_mottled",
-  "grug_nodes:mud_with_wet_grass","grug_nodes:dirt_with_moss"}}
+  "grug_nodes:mud_with_wet_grass","grug_nodes:swamp_moss"}}
 local function hosts(keys)
  local out={};for _,key in ipairs(keys) do out["grug_"..key]=soil[key] end;return out
 end
@@ -54,8 +54,12 @@ M.plants={
 M.reef={"default:coral_brown","default:coral_cyan","default:coral_green",
  "default:coral_orange","default:coral_pink","default:coral_skeleton","default:sand_with_kelp"}
 M.freshwater={"grug_mapgen:freshwater_waterlily","grug_mapgen:freshwater_waterweed"}
+-- Round 51 T3 (sea plan ruling 7): the three seagrass variants, low rooted
+-- plants on the sand bed (seabed.lua decides where).
+M.seagrass={"grug_mapgen:seagrass_1","grug_mapgen:seagrass_2","grug_mapgen:seagrass_3"}
 M.names={}
 for _,p in ipairs(M.plants) do M.names[#M.names+1]=p.node end
 for _,name in ipairs(M.reef) do M.names[#M.names+1]=name end
 for _,name in ipairs(M.freshwater) do M.names[#M.names+1]=name end
+for _,name in ipairs(M.seagrass) do M.names[#M.names+1]=name end
 return M

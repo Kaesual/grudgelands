@@ -96,8 +96,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		fail("gathering manifest identity differs")
 	end
 	dense(rows, 12, "P9G catalog")
-	dense(p9g_content.content_names, 36, "P9G content names")
-	dense(p9g_content.content_cids, 36, "P9G content CIDs")
+	dense(p9g_content.content_names, 39, "P9G content names")
+	dense(p9g_content.content_cids, 39, "P9G content CIDs")
 
 	local zone_sets, host_sets, shore_sets = {}, {}, {}
 	for index = 1, #rows do
@@ -212,7 +212,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				type(dependencies.zones_session.surface_mob_level_at) ~= "function" or
 				type(production) ~= "table" or
 				production.schema ~= "grug_wp40_r7_production_r6_content_v1" or
-				#production.content_names ~= 128 then
+				#production.content_names ~= 174 then
 			fail("successor production identity differs")
 		end
 		local air_cid, air_kind, air_param2 = production.r5.resolve(1, 0, 0)

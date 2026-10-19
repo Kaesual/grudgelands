@@ -310,18 +310,20 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 
 	local decorations, decoration_by_id = {}, {}
 	if dense(manifest_values.decorations, "decoration catalog",
-			"fail_content_manifest") ~= 61 then
+			"fail_content_manifest") ~= 99 then
 		fail("fail_content_manifest", "expanded decoration population differs")
 	end
 	for index = 1, #manifest_values.decorations do
 		local row = manifest_values.decorations[index]
-		-- A generated tree (`treegen:<species>`, Round 47 lane TC) carries no
-		-- settlement class: r6_templates.lua computes it from this world's
-		-- variants and `set_template_classes` fills it in before any planner
-		-- or writer reads the rows.
+		-- A generated tree (`treegen:<species>`, Round 47 lane TC) or land kit
+		-- structure (`kitgen:<key>`, Round 51 lane LK) carries no settlement
+		-- class: r6_templates.lua computes it from this world's variants and
+		-- `set_template_classes` fills it in before any planner or writer
+		-- reads the rows.
 		local generated_tree = row.kind == "template" and
 			type(row.asset_or_node) == "string" and
-			row.asset_or_node:match("^treegen:[a-z_]+$") ~= nil
+			(row.asset_or_node:match("^treegen:[a-z_]+$") ~= nil or
+				row.asset_or_node:match("^kitgen:[a-z_]+$") ~= nil)
 		exact_fields(row, {id = true, biomes = true, kind = true, asset_or_node = true,
 			host = true, numerator = true, denominator = true, rule = true,
 			settlement_class = generated_tree and "optional" or true},
@@ -342,7 +344,8 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 		safe_integer(row.numerator, "decoration numerator", 1, 3,
 			"fail_content_manifest")
-		safe_integer(row.denominator, "decoration denominator", 1, 2000,
+		-- (to 16000 since Round 51 lane LK: the land kit's rare structures)
+		safe_integer(row.denominator, "decoration denominator", 1, 16000,
 			"fail_content_manifest")
 		if generated_tree then
 			if row.settlement_class ~= nil then
@@ -646,9 +649,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			end
 		end
 	end
-	-- Papyrus stands at the water (r6_planner rule 3), where the near-water
-	-- material turns the swamp's mud into sand; the reeds root there too.
-	decoration_cover.swamp_papyrus.grug_swamp[content_ref_by_name["default:sand"]] = 1
 	-- The swamp's mixed ground (Round 47 lane SW, tools/r47_sw/DESIGN.md):
 	-- its rows name their hosts here, each with the cover divisor the
 	-- planner thins by (1: every eligible column, 4: a quarter of them), in
@@ -656,7 +656,9 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	local SWAMP_HOSTS
 	do
 		local MUD, DRY, WET = "grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled"
-		local GRASS, MOSS = "grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss"
+		-- Round 51 T4: the swamp's own moss ground (lane LG's node) in place
+		-- of the moss soil, which stays the elf forest's (land plan ruling 5).
+		local GRASS, MOSS = "grug_nodes:mud_with_wet_grass", "grug_nodes:swamp_moss"
 		local tall = {[GRASS] = 1, [MUD] = 4, [DRY] = 4, [WET] = 4}
 		local fern = {[MOSS] = 1, [WET] = 4}
 		SWAMP_HOSTS = {
@@ -666,7 +668,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			swamp_fern_1 = fern, swamp_fern_2 = fern, swamp_fern_3 = fern,
 			swamp_moss_carpet = {[MUD] = 1, [WET] = 1, [DRY] = 2},
 			swamp_dry_shrub = {[MUD] = 1, [DRY] = 1},
-			swamp_papyrus = {[MUD] = 1, [WET] = 1, ["default:sand"] = 1},
 		}
 	end
 	for id, hosts in pairs(SWAMP_HOSTS) do
@@ -679,6 +680,60 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			cover[require_role(name, 1, p7_classes, "swamp host")] = divisor
 		end
 		biomes.grug_swamp = cover
+	end
+	-- The land kit's structures (Round 51 lane LK, `kitgen:` rows) also
+	-- stand on their biomes' bare gravel and stone (the crags' outcrops, a
+	-- gravel patch in the blight), like the viewer's kit.
+	for _, row in ipairs(decorations) do
+		if row.kind == "template" and row.asset_or_node:match("^kitgen:") then
+			for _, hosts in pairs(decoration_cover[row.id]) do
+				for _, name in ipairs({"default:gravel", "default:stone"}) do
+					hosts[require_role(name, 1, p7_classes, "kit host")] = 1
+				end
+			end
+		end
+	end
+	-- The land plants (Round 51 lane LP, tools/r47_sw/land.js): their hosts
+	-- in place of the row host, the fertile palette and the gravel quarter.
+	-- "soil" is each biome's fertile palette (no gravel: the viewer's plants
+	-- grow on soil); a set names its hosts, each with its cover divisor.
+	local LAND_PLANT_HOSTS
+	do
+		local SAND = {["default:sand"] = 1}
+		local ROCK = {["default:gravel"] = 1, ["default:stone"] = 1}
+		-- gravel and the pine hills' soils, never bare stone
+		local ALPINE = {["default:gravel"] = 1, ["default:dirt_with_coniferous_litter"] = 1,
+			["grug_nodes:dirt_with_forest_litter"] = 1, ["default:dirt_with_grass"] = 1}
+		LAND_PLANT_HOSTS = {
+			jungle_flower_ruby_fan = "soil", jungle_flower_ember_star = "soil",
+			jungle_flower_violet_fan = "soil", elf_flower_blush_star = "soil",
+			elf_flower_lilac_bells = "soil", elf_flower_cream_cups = "soil",
+			jungle_fern_1 = "soil", jungle_fern_2 = "soil", jungle_fern_3 = "soil",
+			jungle_bush = "soil",
+			crags_alpine_cushion = ALPINE, crags_alpine_windshrub = ALPINE,
+			crags_lichen_a = ROCK, crags_lichen_b = ROCK,
+			beach_papyrus = SAND,
+			beach_marram_1 = SAND, beach_marram_2 = SAND, beach_marram_3 = SAND,
+		}
+	end
+	for id, hosts in pairs(LAND_PLANT_HOSTS) do
+		local biomes = decoration_cover[id]
+		if not biomes then
+			fail("fail_content_manifest", "land plant decoration row missing: " .. id)
+		end
+		for biome in pairs(biomes) do
+			local cover = {}
+			if hosts == "soil" then
+				for _, name in ipairs(fertile_palettes[biome] or {}) do
+					cover[require_role(name, 1, p7_classes, "land plant soil")] = 1
+				end
+			else
+				for name, divisor in pairs(hosts) do
+					cover[require_role(name, 1, p7_classes, "land plant host")] = divisor
+				end
+			end
+			biomes[biome] = cover
+		end
 	end
 	function module.decoration_cover(id, biome, support_ref)
 		local biomes = decoration_cover[id]
@@ -781,6 +836,15 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		for id, base in pairs(surface_by_id) do
 			sand_shores[id] = coast_row(base, "default:sand", sandstone, 3)
 		end
+		-- Pebble patches in the dry beach sand (Round 51 T4, the land
+		-- viewer's `beach.pebbles`, ruling 17): gravel over the same
+		-- sandstone, on about a tenth of the sand in small patches.
+		local pebble_shores = {}
+		for id, base in pairs(surface_by_id) do
+			local row = coast_row(base, "default:gravel", sandstone, 3)
+			row.shore, row.shore_ref = row.top, row.top_ref
+			pebble_shores[id] = row
+		end
 		for id, base in pairs(surface_by_id) do
 			rocky_shores[id] = {}
 			for index, name in ipairs({"default:gravel", "default:stone"}) do
@@ -843,21 +907,25 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		-- so no class edge runs straight. Graded pads, hard foundations and
 		-- roads with their side slopes keep their surfaces.
 		local STEEP_SLOTS = 65536
-		local steep_x, steep_z, steep_class = {}, {}, {}
+		local steep_x, steep_z, steep_class, steep_drop = {}, {}, {}, {}
 		local column_values_at = planner_source.column_values_at
 		local function shown_y(x, z)
 			local _, _, _, _, _, y, water_y = column_values_at(x, z)
 			if water_y ~= nil and water_y > y then return water_y end
 			return y
 		end
+		-- The second result is the drop to the lowest neighbour (0 outside
+		-- the bounds), the height of the column's exposed face.
 		local function steep_at(x, z, terrain_y)
 			local slot = (x * 40503 + z) % STEEP_SLOTS
-			if steep_x[slot] == x and steep_z[slot] == z then return steep_class[slot] end
-			local class = 0
+			if steep_x[slot] == x and steep_z[slot] == z then
+				return steep_class[slot], steep_drop[slot]
+			end
+			local class, drop = 0, 0
 			if x >= -3736 and x <= 3736 and z >= -3336 and z <= 3336 then
 				local e1, w1 = shown_y(x + 1, z), shown_y(x - 1, z)
 				local n1, s1 = shown_y(x, z - 1), shown_y(x, z + 1)
-				local drop = terrain_y - math.min(e1, w1, n1, s1)
+				drop = terrain_y - math.min(e1, w1, n1, s1)
 				local e3, w3 = shown_y(x + 3, z), shown_y(x - 3, z)
 				local n3, s3 = shown_y(x, z - 3), shown_y(x, z + 3)
 				local grade = math.max(math.abs(e3 - w3), math.abs(s3 - n3))
@@ -885,8 +953,45 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 					end
 				end
 			end
-			steep_x[slot], steep_z[slot], steep_class[slot] = x, z, class
-			return class
+			steep_x[slot], steep_z[slot], steep_class[slot], steep_drop[slot] =
+				x, z, class, drop
+			return class, drop
+		end
+		-- The badlands' clay bands (Round 51 T4; the land viewer's
+		-- `orc.clay_bands`, tools/r47_sw/DESIGN.md): a steep badlands column
+		-- (a rock face or a lip by steep_at) shows strata by height, a 7-node
+		-- cycle of the four band colours with mesa clay between, from its top
+		-- down its exposed face (at least 3 nodes); flat ground stays mesa
+		-- clay. The row keeps its ordinary top where the cycle gives mesa clay
+		-- and carries the cycle (`bands`, content refs by y % 7 + 1) and the
+		-- run (`band_depth` nodes from the top); the strata pass
+		-- (r6_settlement.lua r8_apply_strata) lays the run below the top.
+		local MESA = "grug_nodes:mesa_clay"
+		local BAND_CYCLE = {"grug_nodes:clay_band_ochre", MESA, "grug_nodes:clay_band_sienna",
+			"grug_nodes:clay_band_chalk", MESA, "grug_nodes:clay_band_umber",
+			"grug_nodes:clay_band_sienna"}
+		local band_refs = {}
+		for index = 1, #BAND_CYCLE do
+			band_refs[index] = require_role(BAND_CYCLE[index], 1, p7_classes, "clay band")
+		end
+		local BAND_DEPTH_MIN, BAND_DEPTH_MAX = 3, 40
+		local band_rows = {}
+		local function banded(row, terrain_y, drop)
+			local cycle = terrain_y % 7 + 1
+			local band_depth = math.min(BAND_DEPTH_MAX, math.max(BAND_DEPTH_MIN, drop))
+			local by_row = band_rows[row]
+			if not by_row then by_row = {} band_rows[row] = by_row end
+			local key = cycle * 64 + band_depth
+			local result = by_row[key]
+			if not result then
+				result = deep_copy(row)
+				if BAND_CYCLE[cycle] ~= MESA then
+					result.top, result.top_ref = BAND_CYCLE[cycle], band_refs[cycle]
+				end
+				result.bands, result.band_depth = band_refs, band_depth
+				by_row[key] = result
+			end
+			return result
 		end
 		-- A start town's own ground in the band round its pad (plan D78,
 		-- `height.lua` start_ground_at): the biome's ordinary row with the
@@ -942,14 +1047,36 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 		local SNOW_FLOOR = habitat.VEGETATION.SNOW_LINE - habitat.VEGETATION.JITTER -
 			habitat.VEGETATION.SNOW_BAND
+		-- Ice patches in the snowy crags (Round 51 T4, the land viewer's
+		-- `dwarf.ice`): about a tenth of their snowblock tops turn to ice in
+		-- small patches, with no snow on the ice. Rows are derived once per
+		-- source row.
+		local ice_ref = require_role("default:ice", 1, p7_classes, "ice patch top")
+		local iced_rows = {}
+		local function iced(row)
+			local result = iced_rows[row]
+			if not result then
+				result = deep_copy(row)
+				result.top, result.top_ref = "default:ice", ice_ref
+				result.dust, result.dust_ref = "-", 0
+				iced_rows[row] = result
+			end
+			return result
+		end
+		-- The patches: the value noise lies below 213 on about 10 % of the
+		-- columns (the viewer's guide share 0.1), in patches of a few nodes
+		-- at periods 7 and 5 (shares measured by tools/r51_t4).
+		local PATCH_BELOW = 213
+		local ICE_PERIOD, PEBBLE_PERIOD = 7, 5
 		-- The swamp's ground mix (Round 47 lane SW, tools/r47_sw/DESIGN.md):
-		-- today's mud with patches of the lighter mud, wet grass and moss
-		-- soil; the mottled mud in wet hollows and round the pools; a pool
-		-- column keeps plain mud over a filler of 3 (its bed and banks stay
-		-- mud down to the deepest water). Rows per top node and filler depth.
+		-- today's mud with patches of the lighter mud, wet grass and the
+		-- swamp's moss (its own node since Round 51); the mottled mud in wet
+		-- hollows and round the pools; a pool column keeps plain mud over a
+		-- filler of 3 (its bed and banks stay mud down to the deepest water).
+		-- Rows per top node and filler depth.
 		local SWAMP_MUD, SWAMP_DRY = "grug_nodes:mud", "grug_nodes:mud_dry"
 		local SWAMP_WET, SWAMP_GRASS = "grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass"
-		local SWAMP_MOSS = "grug_nodes:dirt_with_moss"
+		local SWAMP_MOSS = "grug_nodes:swamp_moss" -- Round 51 T4 (ruling 5)
 		local swamp_rows = {}
 		for _, name in ipairs({SWAMP_MUD, SWAMP_DRY, SWAMP_WET, SWAMP_GRASS, SWAMP_MOSS}) do
 			swamp_rows[name] = {}
@@ -991,12 +1118,17 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			if id == "grug_crags" or id == "grug_crags_snowy" then
 				if patch > 650 then kind = 4 elseif patch < 300 then kind = 3 end
 			end
-			-- Mesa clay is the badlands' own cliff material.
+			-- Mesa clay is the badlands' own cliff material, banded on steep
+			-- faces (Round 51 T4).
+			local band_drop
 			if id ~= "grug_badlands" and id ~= "grug_badlands_east" then
 				local steep = steep_at(x, z, terrain_y)
 				if steep == 1 then return rock_rows[id][depth], true end
 				if steep == 2 then return lip_rows[id][kind], false end
 				if steep == 3 then return variants[id][3][depth], false end
+			else
+				local steep, drop = steep_at(x, z, terrain_y)
+				if steep == 1 or steep == 2 then band_drop = drop end
 			end
 			if patch > 660 and x >= -3736 and x <= 3736 and
 					z >= -3336 and z <= 3336 then
@@ -1011,6 +1143,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				if (kind == 3 or kind == 4) and rise < 12 and detail > 680 and
 						id ~= "grug_crags" and id ~= "grug_crags_snowy" then kind = 1 end
 			end
+			if band_drop then return banded(variants[id][kind][depth], terrain_y, band_drop), false end
 			return variants[id][kind][depth], false
 		end
 		-- `zone_id` is the column's zone (the warm Skyglass lines).
@@ -1019,7 +1152,12 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			if not base then return nil end
 			local dry = water_y == nil or water_y <= terrain_y
 			local shore = dry and planner_source.coast_material_at(x, z) or nil
-			if shore == "sand" then return sand_shores[id] end
+			if shore == "sand" then
+				if noise(x, z, PEBBLE_PERIOD, 37748717) < PATCH_BELOW then
+					return pebble_shores[id]
+				end
+				return sand_shores[id]
+			end
 			if shore then return rocky_shores[id][shore == "gravel" and 1 or 2] end
 			-- The coast rule is the only source of dry beach sand: where it
 			-- gives nothing, the palette beach biome is shingle and rock.
@@ -1044,7 +1182,11 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			local row, rock_face = dry_row(id, x, z, terrain_y, patch, detail, depth)
 			if terrain_y >= SNOW_FLOOR and not rock_face then
 				local snow = vegetation.snow_class(x, z, terrain_y, id, zone_id)
-				if snow ~= 0 then return snowed(row, snow) end
+				if snow ~= 0 then row = snowed(row, snow) end
+			end
+			if id == "grug_crags_snowy" and row.top == "default:snowblock" and
+					noise(x, z, ICE_PERIOD, 46137347) < PATCH_BELOW then
+				return iced(row)
 			end
 			return row
 		end

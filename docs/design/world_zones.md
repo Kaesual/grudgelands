@@ -637,7 +637,8 @@ rewrite records the WP40 model it replaced.
   75-100: 8, 100-125: 9, 125-150: 11, 150-175: 12, 175-200: 13, 200-225: 15,
   225-250: 16, 250-275: 17, 275-300: 18, 300-325: 20, 325-350: 22, then
   25-27, 30 and 32 by d = 400. Coral depths (to about 10) reach about 140 off
-  the coast, kelp depths (to about 20) the whole belt. **The wreck band**,
+  the coast, kelp depths (to about 20) the whole belt (seabed growth: §
+  "Round 10 Cooking wild sources, field soil and shallow reefs"). **The wreck band**,
   seabed 8-14 deep, lies about 90-220 off the coast: 3.9-4.1 km² of
   protected belt and bay seabed per world, in 26-28 zones. Daylight drops
   one light level per water node, so seabed deeper than about 12 is nearly
@@ -670,7 +671,9 @@ rewrite records the WP40 model it replaced.
   height, slope and reach limits are jittered by noise, so material edges
   follow the terrain and never run straight. This rule is the only source of
   dry beach sand: the palette beach biome shows shingle and rock wherever the
-  rule gives no sand. Lake and river banks (Phase 5) reuse the same rule with
+  rule gives no sand. About a tenth of that dry sand lies as gravel pebble
+  patches of a few nodes (a 5-node noise field, the same sandstone below;
+  Round 51); the sand under water is unchanged. Lake and river banks (Phase 5) reuse the same rule with
   their own water surface; river banks count their distance twice, so the
   sand beside a river stays a narrow band (D54).
 - **Shore height:** the first cardinal dry-land column beside any exposed
@@ -813,7 +816,9 @@ rewrite records the WP40 model it replaced.
   8-node material fields at weights 3:1; filler depth varies from 1–4 nodes
   on a 64-node field. Wet-bed and beach-shore patches follow §7.4. Dry swamp
   surfaces (Round 47, `tools/r47_sw/DESIGN.md`) mix today's mud with a
-  lighter mud, wet grass and moss soil in noise patches and turn to mottled
+  lighter mud, wet grass and the swamp's own moss (`grug_nodes:swamp_moss`
+  since Round 51; the moss soil stays the elf forest's) in noise patches and
+  turn to mottled
   mud in wet hollows and round the swamp's pools: small pools 1–2 deep on
   flat or gentle ground only (a 5 × 5 window within one node; at most one node
   levelled, never at a claim, road, coast, surface cave or within two nodes
@@ -862,7 +867,15 @@ rewrite records the WP40 model it replaced.
   **gravel scree** in noise patches. Rock faces and lips skip the shallow
   strata, so no band follows a cliff face. Graded pads, hard foundations and
   road corridors keep their surfaces. Trees and plants do not root on bare
-  rock.
+  rock. The badlands keep their mesa clay on steep ground and band it
+  instead (Round 51): a column the same rule calls a rock face or a lip
+  shows **clay bands** by height, a 7-node cycle (ochre, mesa clay, sienna,
+  chalk, mesa clay, umber, sienna, by `y mod 7`) from its top down its face,
+  over at least three nodes (the drop to its lowest neighbour, at most 40),
+  through the shallow strata; its top is the cycle's band at its height, or
+  its own top where the cycle gives mesa clay. Gentle badlands ground stays
+  mesa clay. On seed 12345 about 6 % of the badlands columns stand 2 or more
+  above a neighbour; mostly the faces are 2–3 nodes high.
 - **Vegetation and altitude (Round 23 Phase 2, user rulings 2026-09-28).**
   One rule (`habitat_registry.lua` `vegetation_rule`) is read by the
   decoration planner, the surface selector and runtime vegetation renewal
@@ -898,7 +911,10 @@ rewrite records the WP40 model it replaced.
     below it, snow dust lies in patches (a 10-node field) whose share rises
     from none at the foot of the band to all at the line. Steep rock faces
     (above) stay bare rock; shores, start towns and water columns get no
-    snow. No ice, no slope-aspect rule. A column with snow (cap or dust)
+    snow. No slope-aspect rule. In the snowy crags about a tenth of the
+    snowblock tops are `default:ice` in patches of a few nodes (a 7-node
+    noise field, Round 51), with no snow dust on the ice; no other biome has
+    ice. A column with snow (cap or dust)
     hosts no decoration.
   - **Forests and clearings.** Trees are multiplied by a forest field: groves
     from a 224-node field (0.24–1.76 of the mean) times clearings from a
@@ -2262,12 +2278,28 @@ rules retain priority. Authored settlement fields use actual dry/wet farming
 soil, with the existing current-load timer activation and nearby-water rule.
 Capital protection remains effective; editable ground requires no housing.
 
-Shallow reefs use deterministic 16-node reef-cell patches plus column selection,
-only in sea water with bed depth 2–10: the coastal shelf and, since Round 22
-Phase 6, the continental bays. One cell in four carries a small or large coral
-patch, and loose kelp meadows (soft noise-bounded areas, one sand column in
-six, 2–6 tall) grow on sand beds at least three deep. The six default coral variants and rooted
-sand-with-kelp replace eligible natural bed nodes, with their actual rooted
+Shallow reefs use deterministic 16-node reef-cell patches plus column selection.
+**Seabed growth since Round 51 T3** (sea plan ruling 7, `wp40/seabed.lua`, one
+rule shared by the writer and the renewal) grows in the coastal belt, the
+continental bays and the dragon channels, never in the open sea, and nothing
+deeper than 20: one 16-node cell in four carries a small or large **coral
+patch** (beds 2–10 deep); loose **kelp meadows** (soft noise-bounded areas,
+one sand column in six) grow on sand 3–20 deep, 2–6 tall plus one node per
+two nodes of water beyond 6, at most 15 and always under the surface;
+**seagrass meadows** (their own noise, two sand columns in three, the three
+picked variants `grug_mapgen:seagrass_1..3`, one node of blades) grow on sand
+2–14 deep. Coast claim exclusions (bays, island and channel coasts) do not
+keep the seabed bare; settlements, roads and POIs do. Measured on the
+production seed and seed 42 (12 chunks per class, seabed columns 2–20 deep):
+the shelf (the belt's first 80 nodes) coral 2.9–3.0 %, kelp 2.1–2.7 %,
+seagrass 12.6–13.6 %; the belt beyond coral 0.6–0.8 %, kelp 2.5–2.9 %,
+seagrass 8.9–9.5 %; bays coral 0.7–1.4 %, kelp 3.1–4.3 %, seagrass
+11.4–17.3 %; channels coral 1.5–1.7 %, kelp 2.1–2.8 %, seagrass 11.5–13.4 %;
+the open sea none. In the belt beyond the shelf 41–57 % of the kelp stands
+deeper than 12 (in bays 20–81 %), where daylight is nearly gone. Seagrass and kelp regrow
+([farming.md](farming.md) "Wild plant renewal"); coral patches stay as
+generated. The six default coral variants, rooted sand-with-kelp and the
+seagrass replace eligible natural bed nodes, with their actual rooted
 geometry/height semantics. Lakes, rivers, planned freshwater and functional
 surfaces receive no reef content. There is one terrain/VM writer and no competing
 engine decoration pass (except the two native cave sources above) or global

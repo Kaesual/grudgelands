@@ -442,12 +442,20 @@ local function loader(directory)
 
 	-- Lair pieces --------------------------------------------------------
 
+	-- A piece of the skeleton set (Round 51 lane LK, dressing.bone_piece):
+	-- the bone pile, splinters, now and then a skull, a ribcage or a spine,
+	-- picked and turned by the cell.
+	local function bone(buf, x, y, z)
+		local name, turn = dressing.bone_piece(x, z)
+		buf:put(x, y, z, name, turn)
+	end
+
 	-- Gnawed bones on a few cells.
 	function P.bones(brush, x, z, face)
 		local at = frame(x, z, face)
 		for _, c in ipairs({{0, 0}, {1, 1}, {-1, 1}, {2, -1}}) do
 			local cx, cz = at(c[1], c[2])
-			brush.buf:put(cx, 1, cz, N.bones)
+			bone(brush.buf, cx, 1, cz)
 		end
 	end
 
@@ -460,7 +468,7 @@ local function loader(directory)
 				brush.buf:put(x + dx, 1, z + dz, N.shrub)
 			end
 		end end
-		brush.buf:put(x, 1, z, N.bones)
+		bone(brush.buf, x, 1, z)
 	end
 
 	-- Webs strung between two stakes.
@@ -500,7 +508,7 @@ local function loader(directory)
 		local cx, cz = at(1, 1)
 		brush.buf:put(cx, 1, cz, p.node("storage"))
 		cx, cz = at(-1, 1)
-		brush.buf:put(cx, 1, cz, N.bones)
+		bone(brush.buf, cx, 1, cz)
 	end
 
 	-- A den: a low shelter of piled stone, its roof a stone lip over the
@@ -519,7 +527,7 @@ local function loader(directory)
 			end
 		end
 		local cx, cz = at(0, 1)
-		buf:put(cx, 1, cz, N.bones)
+		bone(buf, cx, 1, cz)
 	end
 
 	-- Work pieces (mines, camps) -----------------------------------------

@@ -226,7 +226,8 @@ for quality, spec in pairs(base.QUALITY) do
 	check(texture:sub(1, 9) == "[combine:" and select(2, texture:gsub("=grug_map_base_", "")) ==
 		#tiles, "B " .. quality .. " Map tab texture combines every tile")
 end
-check(#base.tiles(1080, 960) == 6 and #base.tiles(3600, 3200) == 56, "B tile counts 6 / 56")
+-- Round 51 (lane MAP): normal 1215 x 1080 over the larger atlas
+check(#base.tiles(1215, 1080) == 9 and #base.tiles(3600, 3200) == 56, "B tile counts 9 / 56")
 check(base.spec("high").width == 3600 and base.spec("normal").relief_step == 8 and
 	base.spec("nonsense").quality == "normal", "B spec")
 do
@@ -280,7 +281,8 @@ for quality, spec in pairs(base.QUALITY) do
 		tiles = base.tiles(spec.width, spec.height)}
 	local v = V.new(info, bounds)
 	views[quality] = v
-	local expected = quality == "normal" and 66 or 220
+	-- Round 51: high is 2.25 nodes per pixel over the larger atlas (was 2)
+	local expected = quality == "normal" and 66 or 196
 	check(v.crop == expected, "G " .. quality .. " window " .. v.crop .. " px")
 	check(near(v.crop * v.npp, 440, 5), "G " .. quality .. " window ~440 nodes")
 	check(v.texture % v.grid == 0 and v.texture <= base.TILE,
@@ -291,8 +293,8 @@ for quality, spec in pairs(base.QUALITY) do
 		v.crop / 2, v.texture / 2 - v.d, v.texture / 2 + v.d, V.BEZEL_OPAQUE * v.outer))
 	-- the player is never further than d from the texture centre
 	local worst = 0
-	for x = -3600, 3600, 37 do
-		for z = -3200, 3200, 41 do
+	for x = bounds.min_x, bounds.max_x, 37 do
+		for z = bounds.min_z, bounds.max_z, 41 do
 			local cx, cy = V.cell(v, x, z)
 			local ox, oy = V.origin(v, cx, cy)
 			local px, py = V.base_pixel(v, x, z)
@@ -487,13 +489,15 @@ QUESTS.giver, QUESTS.far, QUESTS.crowd = "available", "available", "available"
 
 local loaded = {}
 core.register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end
-local installed = {quality = "normal", width = 1080, height = 960,
-	tiles = base.tiles(1080, 960)}
-installed.texture = base.combined_texture(1080, 960, installed.tiles)
+-- the game's normal size (Round 51: 1215 x 1080 over the larger atlas)
+local NW, NH = base.QUALITY.normal.width, base.QUALITY.normal.height
+local installed = {quality = "normal", width = NW, height = NH,
+	tiles = base.tiles(NW, NH)}
+installed.texture = base.combined_texture(NW, NH, installed.tiles)
 -- Round 44: the minimap has its own variant (baked small icons, no names)
 -- at every quality.
-installed.minimap = {quality = "normal", width = 1080, height = 960,
-	tiles = base.tiles(1080, 960, base.MINI_PREFIX)}
+installed.minimap = {quality = "normal", width = NW, height = NH,
+	tiles = base.tiles(NW, NH, base.MINI_PREFIX)}
 atlas.set_base_texture(installed.texture)
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 local minimap = grug_map.minimap

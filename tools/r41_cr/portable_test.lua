@@ -92,7 +92,9 @@ local session, writer, fake = R.built.session, R.built.writer, R.fake
 local barrier = fake.get_content_id("grug_core:water_barrier")
 local stone = fake.get_content_id("default:stone")
 local air = fake.CONTENT_AIR
-local foreign = fake.get_content_id("default:cobble")
+-- (Round 51 lane LK: cobblestone is a land kit block of the production
+-- roster now, natural vegetation to the writer; brick is still foreign)
+local foreign = fake.get_content_id("default:brick")
 local UNKNOWN_CID = 999
 check(fake.registered_nodes["grug_core:water_barrier"].groups.grug_air == 1,
 	"the fleet runtime carries the real water barrier (group grug_air)")
@@ -171,7 +173,7 @@ local function refine(vm, minp, maxp)
 	local plan, generation = session.plan_slice(minp, maxp)
 	writer.apply(vm, minp, maxp, plan, generation)
 end
-for _, case in ipairs({{foreign, "foreign", "default:cobble"},
+for _, case in ipairs({{foreign, "foreign", "default:brick"},
 		{UNKNOWN_CID, "unknown", nil}}) do
 	local cid, class, name = case[1], case[2], case[3]
 	local where = ("at (%d,%d,%d)"):format(column_b[1], TOP, column_b[2])

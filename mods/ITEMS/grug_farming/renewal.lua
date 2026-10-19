@@ -19,6 +19,9 @@
 --   natural_ground_alterable(pos)  grug_core's rule for natural change: the
 --               territory rule plus the natural renewal guards (nothing
 --               regrows inside an active Claim Stone's claim)
+--   water_plant_alterable(pos)  (optional, Round 51 T3) the same for the
+--               seabed's seagrass and kelp, which also regrow in protected
+--               water (grug_core.water_plant_renewal_allowed)
 --   random()    uniform [0, 1); trees  bool (setting grug_tree_regrowth)
 --   non_natural array of node names that are not natural (sapling guard)
 return function(api)
@@ -51,6 +54,8 @@ return function(api)
 		WOODY_UP = 12,
 		-- Shoreline species: eligible supports per box width (a band along the
 		-- water line crossing the box), since only shore columns host them.
+		-- A patch species (the lichen, Round 51) counts at most its patch's
+		-- columns (the category's `patch_area`).
 		SHORE_BAND = 2,
 		-- Placement chance at a full deficit, per class; it scales with the
 		-- deficit fraction (target - present) / target.
@@ -103,14 +108,22 @@ return function(api)
 		return (maxp.x - minp.x + 1) * (maxp.y - minp.y + 1) * (maxp.z - minp.z + 1)
 	end
 
-	-- Present plants of a category in its counting box.
+	-- Present plants of a category in its counting box. A category with a
+	-- stacked species (papyrus, 2-4 high; Round 51) counts plant columns.
 	local function present(category, pos, radius)
 		if not WOODY[category.class] then
 			local minp = {x = pos.x - radius, y = pos.y - R.BOX_HALF_HEIGHT,
 				z = pos.z - radius}
 			local maxp = {x = pos.x + radius, y = pos.y + R.BOX_HALF_HEIGHT,
 				z = pos.z + radius}
-			return #api.find_nodes_in_area(minp, maxp, category.names), volume(minp, maxp)
+			local found = api.find_nodes_in_area(minp, maxp, category.names)
+			if not category.stacked then return #found, volume(minp, maxp) end
+			local seen, columns = {}, 0
+			for index = 1, #found do
+				local key = found[index].x * 65536 + found[index].z
+				if not seen[key] then seen[key], columns = true, columns + 1 end
+			end
+			return columns, volume(minp, maxp)
 		end
 		local minp = {x = pos.x - radius, y = pos.y - R.WOODY_DOWN, z = pos.z - radius}
 		local maxp = {x = pos.x + radius, y = pos.y + R.WOODY_UP, z = pos.z + radius}
@@ -247,6 +260,7 @@ return function(api)
 		if category.shore then
 			supports = min(supports, R.SHORE_BAND * (2 * radius + 1))
 		end
+		if category.patch_area then supports = min(supports, category.patch_area) end
 		local expected = category.p * supports
 		local target = floor(expected)
 		if patch_fraction(category.key, pos.x, pos.z, 2 * radius + 1) <
@@ -296,8 +310,38 @@ return function(api)
 				budget.left = budget.left - (2 * R.TERRAIN_HALF_HEIGHT + 2)
 			end
 		end
-		if #found == 0 then return nil end
+		if #found == 0 then return nil, x, z end
 		return found[floor(random() * #found) + 1]
+	end
+
+	-- The seabed (Round 51 T3): a sampled column without open ground (under
+	-- water) grows back the seagrass or kelp the generator grows there
+	-- (density.seabed, the writer's own rule) when its plain sand bed lies
+	-- under water source again, with the cover class's chance. Coral is not
+	-- renewed. Same per-step sample, no extra one.
+	local SEABED_WATER = "default:water_source"
+	local function evaluate_seabed(x, z, positions, budget, forced_roll)
+		if not density.seabed or not api.water_plant_alterable then return "no_ground" end
+		local node, param2, ground = density.seabed(x, z)
+		if not node then return "no_ground" end
+		local pos = {x = x, y = ground, z = z}
+		if not far_from_players(pos, positions) then return "near_player" end
+		local bed = api.get_node_or_nil(pos)
+		if not bed then return "unloaded" end
+		if bed.name ~= "default:sand" then return "occupied" end
+		local height = param2 > 0 and param2 / 16 or 1
+		budget.left = budget.left - (height + 1)
+		for y = ground + 1, ground + height do
+			local water = api.get_node_or_nil({x = x, y = y, z = z})
+			if not water then return "unloaded" end
+			if water.name ~= SEABED_WATER then return "no_water" end
+		end
+		if planner.hard_row_at(x, ground, z) ~= nil then return "hard_row" end
+		if not api.water_plant_alterable(pos) then return "protected" end
+		local roll = forced_roll or random()
+		if roll >= R.CHANCE.cover then return "roll" end
+		api.set_node(pos, {name = node, param2 = param2})
+		return "placed", node, pos
 	end
 
 	-- Service one player: SAMPLES_PER_PLAYER spots within VOLUME_BUDGET.
@@ -309,9 +353,11 @@ return function(api)
 				count("budget")
 				break
 			end
-			local spot = sample_spot(origin, budget)
+			local spot, sx, sz = sample_spot(origin, budget)
 			if not spot then
-				count("no_ground")
+				local result = sx and evaluate_seabed(sx, sz, positions, budget) or "no_ground"
+				count(result == "placed" and "seabed_placed" or result)
+				if result == "placed" then placed = placed + 1 end
 			else
 				local result = evaluate(spot, positions, budget)
 				count(result)
@@ -324,6 +370,7 @@ return function(api)
 
 	local module = {constants = R}
 	module.evaluate = evaluate
+	module.evaluate_seabed = evaluate_seabed
 	module.sample_spot = sample_spot
 	module.service = service
 	function module.stats() return stats end
