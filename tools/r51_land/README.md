@@ -155,7 +155,160 @@ byte for byte.
 Upgrade classification: **compatible**, concept art only. No changes under
 `mods/`, no Lua, no viewer or SWART changes; no fixtures or engine runs,
 as requested. User selection, independent integration review and desktop/web
-appearance acceptance remain open. Props are deferred to pass 2.
+appearance acceptance remain open. Props continue in pass 2 below.
+
+## ARTL pass 2: land props
+
+[props_art.py](props_art.py) writes **15 prop folders**, each containing
+`prop.json` and **six 16 × 16 RGBA tiles**, into [props/](props/), plus
+[preview-props.png](preview-props.png) and [props-checks.json](props-checks.json).
+
+```sh
+python3 -I tools/r51_land/props_art.py
+python3 -I tools/r51_land/props_art.py --check
+```
+
+Original **GPT-6 Astra**, **2026-10-19**, **CC0-1.0**. Every shape, palette
+and mark is authored in the generator, starting from blank images; no
+downloaded, traced or recoloured source artwork enters the props. The only
+shared art inputs are the Round 47 CC0 pixel font and pass 1's original CC0
+grounds, read for the preview. Pass 1's outputs are unchanged.
+
+Integration notes (proposals, awaiting the user's viewer picks):
+
+- **Bones:** `skull_human`, `skull_horned`, `ribcage_human`, `spine_animal`,
+  `bones_scattered`, `bones_fragments`. Each rests at `y = -8`; skulls rise
+  at most half a node and the other pieces less. The skulls use `alpha:
+  "clip"` for small nasal openings; the rib, vertebra and fragment gaps are
+  actual geometry. All six drop `""`, as requested. Each note mentions the
+  possible alternative `grug_mobs:bone`, for the user to decide.
+  **`bones_scattered` is the proposed `grug_nodes:bone_pile` successor**;
+  LK can retain that registered name for the existing town-kit references.
+  These are sparse finds, singles or an occasional pair, not a new density
+  prescription or a repeated complete skeleton.
+- **Graves:** `gravestone_slab` is a rounded, weathered stele by itself;
+  `gravestone_cross` is a low cross by itself or its crown one node above
+  the slab. Both drop `default:cobble`. Courses shift horizontally by one
+  sixteenth to suggest age and a lean. Keep the same quarter-turn for a
+  slab/crown stack; no tilted placement or fractional node position is used.
+- **Cairns:** one or two `cairn_course` nodes, then `cairn_cap`, make a
+  two- or three-node stack. The course reaches `y = 8`; the cap begins at
+  `y = -8`, so there is no floating join. The cap is a terminal piece,
+  not a repeatable course. Both drop `default:cobble`. The tree-branch
+  alternative remains the viewer lane's proposal.
+- **Statues:** `statue_broken_torso` and `statue_veiled_head` are pale,
+  worn silver sandstone, each dropping `default:silver_sandstone`. Stack
+  the head directly above the torso with the same quarter-turn, on ordinary
+  silver-sandstone blocks. `obelisk_broken_tip` drops `default:stone` and
+  finishes an ordinary stone shaft for the undead. Special shapes cover
+  only the drapery, damaged anatomy and fractured tip, not extra plinth or
+  wall blocks. There are no copper-green mineral stains.
+- **Driftwood:** `driftwood_log` recommends `default:wood` for the thicker
+  log; `driftwood_fork` recommends `default:stick` for the small branch.
+  Both lie low, with bleached grey grain and worn, broken ends.
+
+All props use six explicit tiles in **+Y, -Y, +X, -X, +Z, -Z** order.
+Only each box face's projected strips receive texture detail; unused
+texels stay at a plain material colour. The filenames follow the binding
+format below. All coordinates are integer sixteenths within one node;
+all props permit quarter-turn rotation. The shapes use **4–18 boxes**
+each. Nothing sets runtime collision, placement density or selection boxes
+in this art package; LK owns those decisions after selection.
+
+The **1600 × 7472 RGBA** preview shows every prop from the front and in
+three-quarter view, each at **1× and 4×**, on both light and dark backgrounds.
+One native projected unit equals one texel; the enlarged samples use nearest
+neighbour. Six diagnostic tile strips at 2× show the used face areas (unused
+pixels are hidden in this diagnostic only). Keys and drops label every row.
+Eight small compositions show four crooked wild graves with a broken fence,
+a town row, two cairn heights, a humanoid skull/ribcage pair, a horned skull
+and animal spine on mesa clay, the elf statue on silver litter, an undead
+obelisk, and driftwood on sand. Each composition also has a native-size
+copy. Placements use whole nodes and quarter-turns, with no scaling or tilting.
+
+This is an orthographic box rasterization with the documented UV mapping,
+depth occlusion, binary alpha and fixed face shading, **not an engine
+screenshot**. Ordinary plinth, shaft and fence blocks use original neutral
+material stand-ins; the cairn's ground is pass 1's ash-grey bone litter as a
+colour context, not a proposed dwarf ground. The viewer and the user's
+desktop/web checks remain the final appearance judgement.
+
+The generator reopens **every `prop.json` and every referenced PNG**, checking
+keys, names, tile count/order by generation, filenames, existence, box bounds
+and strict extents, RGBA dimensions and binary/opaque alpha. `--check` writes
+nothing and requires byte-identical regeneration, including the preview and
+the SHA-256 receipt. The native/enlarged views, alpha openings, face strips
+and compositions were inspected visually. Upgrade classification:
+**compatible**, concept art only. No fixtures or engine runs, as requested;
+no changes under `mods/`, no Lua or viewer changes. User selection and the
+coordinator's independent integration review remain open.
+
+## Prop format (lane VIEW, for ARTL and LK)
+
+A prop is **one node** drawn as a node box: a PNG set plus a box list. The
+land viewer (`tools/r47_sw/land.html`, built by `build.py`) reads exactly this; LK later
+turns each prop into a `nodebox` node. Bigger things (a gravestone of two
+blocks, a statue, a cairn) are stacks of props, composed in the viewer's kit.
+
+**Where:** one folder per prop, `tools/r51_land/props/<prop>/`. `<prop>` is
+lowercase `a-z`, `0-9` and `_`, unique, and never renamed once the viewer
+shows it (it is the prop's key there: `prop.<prop>`), e.g. `gravestone_a`,
+`skull_human`, `cairn_stone`.
+
+**`prop.json`** in that folder (UTF-8 JSON):
+
+| field | meaning |
+| --- | --- |
+| `name` | short English name, e.g. `"Gravestone, leaning slab"` |
+| `drop` | what digging it gives (L7): a default block such as `"default:cobble"`, `"default:stone"`, `"default:gravel"`, `"default:dirt"`, `"default:wood"`; `""` for nothing |
+| `tiles` | 1–6 PNG file names in Luanti's order **+Y, −Y, +X, −X, +Z, −Z** (top, bottom, right, left, back, front); a shorter list repeats its last entry, as the engine does |
+| `boxes` | a list of boxes `[x1, y1, z1, x2, y2, z2]` in **sixteenths** of a node, the node centre at 0, every value from −8 to 8 with `x1 < x2`, `y1 < y2`, `z1 < z2`; +Y is up and −Z is the front. LK writes each value as `v / 16` into `node_box = {type = "fixed", fixed = {...}}` |
+| `alpha` | optional, `"clip"` when transparent pixels should cut holes (`use_texture_alpha = "clip"`); default: every pixel opaque |
+| `rotate` | optional, default `true`: the prop may be placed turned in 90° steps round Y (`paramtype2 = "facedir"`); `false` for something that must face one way |
+| `note` | optional, one line for the user |
+
+**The PNGs:** 16 × 16 RGBA, one node, in the same folder, named
+`<prop>.png` when one tile serves every face, else `<prop>_top.png`,
+`<prop>_bottom.png`, `<prop>_side.png`, `<prop>_front.png`, `<prop>_back.png`
+(and `_right`, `_left` when those differ). Own work, CC0, as for every ARTL
+texture.
+
+**What a box face shows** (as the engine maps node boxes): each face of a box
+shows the part of its tile that lies under it, seen from outside, the image
+upright. In tile pixels (column, row from the top-left corner):
+
+| face | columns | rows |
+| --- | --- | --- |
+| front (−Z) | `x + 8` | `8 − y` |
+| back (+Z) | `8 − x` | `8 − y` |
+| right (+X) | `z + 8` | `8 − y` |
+| left (−X) | `8 − z` | `8 − y` |
+| top (+Y) | `x + 8` | `8 − z` (the back edge at the top of the image) |
+| bottom (−Y) | `x + 8` | `z + 8` |
+
+So a thin box only uses a strip of its tile: paint what that strip must show
+and leave the rest plain. Faces of two boxes that touch are still drawn.
+
+**Worked example** — a leaning slab, `tools/r51_land/props/gravestone_a/`:
+
+```json
+{
+  "name": "Gravestone, leaning slab",
+  "drop": "default:cobble",
+  "tiles": ["gravestone_a_top.png", "gravestone_a_top.png", "gravestone_a_side.png",
+            "gravestone_a_side.png", "gravestone_a_face.png", "gravestone_a_face.png"],
+  "boxes": [[-5, -8, -1, 5, 3, 2],
+            [-4, 3, -1, 4, 6, 2],
+            [-6, -8, -3, 6, -6, 3]]
+}
+```
+
+A slab 10 wide and 3 deep up to 3/16 above the centre, a narrower cap up to
+6/16, a low foot. Its front shows columns 3–12, rows 5–15 of
+`gravestone_a_face.png` for the slab and columns 4–11, rows 2–4 for the cap;
+so the painter draws the weathered face in that area. Lean and crookedness
+are in the boxes (a cap shifted by one sixteenth) or in a second prop; the
+engine has no tilted boxes.
 
 ## Media
 
@@ -303,3 +456,34 @@ Default-file attribution was verified in the vendored
 files were checked in the pinned `x_farming/LICENSE.txt` (SaKeL's
 CC BY-SA 4.0 list). The source repositories are provenance, not design
 references.
+
+### ARTL pass 2 media
+
+Every file in the 15 folders below (`prop.json` and the six named PNGs),
+[props_art.py](props_art.py), [props-checks.json](props-checks.json) and
+[preview-props.png](preview-props.png) is original **GPT-6 Astra**,
+**2026-10-19**, dedicated to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). Source for every
+prop and its textures: [props_art.py](props_art.py). No third-party pixels
+are used. The preview reuses pass 1's CC0 grounds (recorded above), the
+Round 47 CC0 pixel font ([record](../r47_art/LICENSE-media.md)), and original
+material stand-ins; its operations are projection, binary clipping, fixed
+face shading, repetition, nearest-neighbour enlargement and labels.
+
+| Prop folder | Files / size | Licence | Idea / drop |
+| --- | --- | --- | --- |
+| [skull_human](props/skull_human/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Low humanoid skull with dark sockets, pierced nose, worn teeth and a crown seam; drops nothing. |
+| [skull_horned](props/skull_horned/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Small horned animal skull with a long muzzle and one broken horn; drops nothing. |
+| [ribcage_human](props/ribcage_human/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Four arched ribs, sternum and backbone lying close to the ground; drops nothing. |
+| [spine_animal](props/spine_animal/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Uneven small vertebrae, transverse processes and a broken pelvis; drops nothing. |
+| [bones_scattered](props/bones_scattered/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Two irregular long bones and a chip, proposed `bone_pile` successor; drops nothing. |
+| [bones_fragments](props/bones_fragments/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Broken jaw arc and two thin splinters as a quiet alternative find; drops nothing. |
+| [gravestone_slab](props/gravestone_slab/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Crooked rounded stele with an eroded diamond and damp foot; `default:cobble`. |
+| [gravestone_cross](props/gravestone_cross/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Chipped cross used alone or as the slab's crown; `default:cobble`. |
+| [cairn_course](props/cairn_course/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Compact rough stone courses with broad stacking contacts; `default:cobble`. |
+| [cairn_cap](props/cairn_cap/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Three low, offset cap stones finishing the cairn; `default:cobble`. |
+| [statue_veiled_head](props/statue_veiled_head/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Almost erased face beneath a chipped pale hood; `default:silver_sandstone`. |
+| [statue_broken_torso](props/statue_broken_torso/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Broken-armed torso with worn drapery for an elf relic; `default:silver_sandstone`. |
+| [obelisk_broken_tip](props/obelisk_broken_tip/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Fractured grey taper above an ordinary stone shaft; `default:stone`. |
+| [driftwood_log](props/driftwood_log/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Bleached grey log with exposed grain and broken end rings; `default:wood` recommended. |
+| [driftwood_fork](props/driftwood_fork/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Thin weathered fork on the sand; `default:stick` recommended. |

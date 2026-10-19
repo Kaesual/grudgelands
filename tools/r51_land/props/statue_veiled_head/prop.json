@@ -1,0 +1,72 @@
+{
+  "name": "Statue, worn veiled head",
+  "drop": "default:silver_sandstone",
+  "tiles": [
+    "statue_veiled_head_top.png",
+    "statue_veiled_head_bottom.png",
+    "statue_veiled_head_right.png",
+    "statue_veiled_head_left.png",
+    "statue_veiled_head_back.png",
+    "statue_veiled_head_front.png"
+  ],
+  "boxes": [
+    [
+      -2,
+      -8,
+      -2,
+      2,
+      -5,
+      2
+    ],
+    [
+      -4,
+      -5,
+      -3,
+      4,
+      4,
+      3
+    ],
+    [
+      -3,
+      4,
+      -2,
+      3,
+      6,
+      3
+    ],
+    [
+      -5,
+      -5,
+      -2,
+      -4,
+      2,
+      3
+    ],
+    [
+      4,
+      -3,
+      -2,
+      5,
+      2,
+      3
+    ],
+    [
+      -3,
+      -4,
+      -4,
+      3,
+      2,
+      -3
+    ],
+    [
+      -4,
+      2,
+      -4,
+      4,
+      4,
+      -3
+    ]
+  ],
+  "rotate": true,
+  "note": "Weathered silver sandstone, an erased face beneath a hood. Stack above statue_broken_torso with the same quarter-turn."
+}

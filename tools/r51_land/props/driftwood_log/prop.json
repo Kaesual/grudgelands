@@ -1,0 +1,48 @@
+{
+  "name": "Driftwood, bleached log",
+  "drop": "default:wood",
+  "tiles": [
+    "driftwood_log_top.png",
+    "driftwood_log_bottom.png",
+    "driftwood_log_right.png",
+    "driftwood_log_left.png",
+    "driftwood_log_back.png",
+    "driftwood_log_front.png"
+  ],
+  "boxes": [
+    [
+      -7,
+      -8,
+      -2,
+      7,
+      -4,
+      3
+    ],
+    [
+      -6,
+      -7,
+      -3,
+      6,
+      -5,
+      4
+    ],
+    [
+      -5,
+      -4,
+      -1,
+      5,
+      -3,
+      2
+    ],
+    [
+      5,
+      -7,
+      -2,
+      8,
+      -5,
+      1
+    ]
+  ],
+  "rotate": true,
+  "note": "Recommend default:wood for the substantial low log; pale grain and broken end rings suggest sea-worn wood."
+}
