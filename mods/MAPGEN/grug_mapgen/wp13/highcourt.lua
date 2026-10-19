@@ -821,7 +821,10 @@ local function loader(directory)
 		end)
 
 		-- 10. Meadow flora on the turf between the plots.
-		dressing.undergrowth(buf, human, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
+		-- Round 51 follow-up FT: in patches and gaps, far thinner than the
+		-- plain scatter (`dressing.patch_keep`; the user: too dense, too even).
+		dressing.undergrowth(buf, human, -RADIUS, -RADIUS, RADIUS, RADIUS, 5,
+			dressing.CORE_PATCH)
 
 		-- 11. The sockets the composition owns: the two royal vendors, the
 		-- quest shell at the chapel door, the travel waypoint on its plaza,
@@ -889,6 +892,8 @@ local function loader(directory)
 		-- 13. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, human, RADIUS, sockets, doorways)
+		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end

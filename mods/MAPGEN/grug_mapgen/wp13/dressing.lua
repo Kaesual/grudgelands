@@ -476,6 +476,15 @@ local function loader(directory)
 		end
 		if not best then return false end
 		buf.grown_stems[#buf.grown_stems + 1] = {x, z}
+		-- Round 51 follow-up FT (the user: the start towns' trees "halved"):
+		-- a start sets `buf.tree_share = 2`, and of the trees that fit only
+		-- every second is written. A skipped tree keeps its stem in the
+		-- spacing list, so no later tree takes its place: the town keeps its
+		-- spread and its groves with half the trees.
+		if buf.tree_share then
+			buf.tree_fits = (buf.tree_fits or 0) + 1
+			if (buf.tree_fits - 1) % buf.tree_share ~= 0 then return false end
+		end
 		-- Every write is recorded with what it replaced, so a tree a later
 		-- write cuts goes out whole (parts.lua `Buffer:cells`).
 		buf.grown_trees = buf.grown_trees or {}
@@ -731,6 +740,9 @@ local function loader(directory)
 		"grug_nodes:skull_horned", "grug_nodes:spine_animal",
 		"grug_nodes:bones_fragments", "grug_nodes:bones_fragments"}
 	M.BONES = "grug_nodes:bone_pile"
+	-- Every piece `bone_piece` returns.
+	M.BONE_SET = {M.BONES, BONE_PIECES[1], BONE_PIECES[2], BONE_PIECES[3], BONE_PIECES[4],
+		BONE_PIECES[5]}
 	function M.bone_piece(x, z)
 		local hash = (x * 113 + z * 197 + x * z * 5 + 4099) % 16
 		local turn = (x * 7 + z * 13 + 1024) % 4
@@ -753,6 +765,70 @@ local function loader(directory)
 		else
 			buf:put(x, y, z, name)
 		end
+	end
+
+	-- PATCHY GROUND COVER (Round 51 follow-up FT; the user: the capital
+	-- cores' ground cover was far too dense and "too even"). One smooth
+	-- field over the ground, value noise on a PATCH_STEP lattice: every
+	-- lattice corner takes a hash in [0, 1), a cell eases between its four
+	-- corners, the field's lower PATCH_GAP is cut to 0 and the rest is
+	-- stretched to [0, 1]. So a good share of the ground lies in gaps with
+	-- no cover, and the cover thickens toward a patch's middle. `salt` gives
+	-- every caller its own field. Pure arithmetic, the same in every process.
+	local PATCH_STEP, PATCH_GAP = 9, 0.45
+	local function unit_hash(ix, iz, salt)
+		local h = ((ix + 8192) * 73856093 + (iz + 8192) * 19349663 +
+			salt * 83492791) % 2147483647
+		h = (h * 48271) % 2147483647
+		h = (h * 48271) % 2147483647
+		return h / 2147483647
+	end
+	function M.patch_weight(x, z, salt)
+		local fx, fz = x / PATCH_STEP, z / PATCH_STEP
+		local ix, iz = math.floor(fx), math.floor(fz)
+		local u, v = fx - ix, fz - iz
+		u, v = u * u * (3 - 2 * u), v * v * (3 - 2 * v)
+		local a, b = unit_hash(ix, iz, salt), unit_hash(ix + 1, iz, salt)
+		local c, d = unit_hash(ix, iz + 1, salt), unit_hash(ix + 1, iz + 1, salt)
+		local n = a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v
+		if n <= PATCH_GAP then return 0 end
+		return (n - PATCH_GAP) / (1 - PATCH_GAP)
+	end
+	-- Does the cover at (x, z) stay? The chance is `keep` times the field,
+	-- at most 1 (so `keep` 2 fills the inner half of a patch and keeps about
+	-- a third of the cover overall); a gap keeps nothing.
+	function M.patch_keep(x, z, salt, keep)
+		local w = M.patch_weight(x, z, salt)
+		return w > 0 and unit_hash(x, z, salt + 7919) < keep * w
+	end
+	-- A cell hash in [0, 1) for the callers that pick a role or a turn.
+	M.cell_hash = unit_hash
+	-- The capital cores' ground cover (Highcourt, Dur Brannoc, Lethariel,
+	-- Nhal Veyr, Gor Drazhak, Kezamba): one field, one keep.
+	M.CORE_PATCH = {salt = 11, keep = 2}
+	-- The thinning waits for the trees: a cover cell the field refuses is
+	-- sown as before and only marked (`drop_later`), so the town greening
+	-- after it (`layout.green`, which keeps its stems off cover) plants the
+	-- same trees as before; `thin_cover` clears the marked cells to air once
+	-- the trees stand, as the cell was before it was sown (a cell something
+	-- else has written since stays).
+	function M.drop_later(buf, x, y, z)
+		local cell = buf:at(x, y, z)
+		if not cell then return end
+		buf.cover_drops = buf.cover_drops or {}
+		buf.cover_drops[#buf.cover_drops + 1] = {x, y, z, cell.name}
+	end
+	function M.thin_cover(buf)
+		local taken = 0
+		for _, drop in ipairs(buf.cover_drops or {}) do
+			local cell = buf:at(drop[1], drop[2], drop[3])
+			if cell and cell.name == drop[4] then
+				buf:put(drop[1], drop[2], drop[3], parts.AIR, 0)
+				taken = taken + 1
+			end
+		end
+		buf.cover_drops = nil
+		return taken
 	end
 
 	-- A burial ground: rows of graves two nodes apart, with the odd plot
@@ -893,8 +969,12 @@ local function loader(directory)
 	--
 	-- One hash, three bands: `bones` cells in `modulus` get a bone pile,
 	-- the next `shrubs` a dead shrub, the rest nothing. Only unbuilt soil is
-	-- sown. Returns the two populations.
-	function M.blight_flora(buf, palette, x1, z1, x2, z2, modulus, bones, shrubs)
+	-- sown. `keep_bone(x, z)`, when given, says whether a bone cell keeps its
+	-- bones (Stillgrave thins them outside its burial grounds, Round 51
+	-- follow-up FT); a bone it refuses is sown and marked to go
+	-- (`M.drop_later`). Returns the two populations that stay.
+	function M.blight_flora(buf, palette, x1, z1, x2, z2, modulus, bones, shrubs,
+			keep_bone)
 		local bone = palette.node("undergrowth")
 		local shrub = palette.node("grass_tuft")
 		local sown_bones, sown_shrubs = 0, 0
@@ -911,7 +991,9 @@ local function loader(directory)
 							(above == nil or above.name == "air") then
 						if name == bone then M.undergrowth_at(buf, palette, x, 1, z)
 						else buf:put(x, 1, z, name) end
-						if name == bone then sown_bones = sown_bones + 1
+						if name == bone and keep_bone and not keep_bone(x, z) then
+							M.drop_later(buf, x, 1, z)
+						elseif name == bone then sown_bones = sown_bones + 1
 						else sown_shrubs = sown_shrubs + 1 end
 					end
 				end
@@ -1054,8 +1136,10 @@ local function loader(directory)
 	-- green stripes from above -- which is exactly what the first Kapok
 	-- overview showed. This seeds clump CENTRES on a coarse lattice and fills
 	-- a small ragged blob around each, so the floor reads as vegetation and
-	-- not as a pattern.
-	function M.basin_flora(buf, palette, x1, z1, x2, z2)
+	-- not as a pattern. `patch` ({salt, keep}, Round 51 follow-up FT) keeps a
+	-- planted cell only where `M.patch_keep` does (patches and gaps); the
+	-- others are planted and marked to go (`M.drop_later`).
+	function M.basin_flora(buf, palette, x1, z1, x2, z2, patch)
 		local planted = 0
 		for z = z1 + 2, z2 - 2, 3 do
 			for x = x1 + 2, x2 - 2, 3 do
@@ -1075,7 +1159,11 @@ local function loader(directory)
 								if below ~= nil and parts.wild_soil(below.name) and
 										(above == nil or above.name == "air") then
 									buf:put(cx, 1, cz, name)
-									planted = planted + 1
+									if patch and not M.patch_keep(cx, cz, patch.salt, patch.keep) then
+										M.drop_later(buf, cx, 1, cz)
+									else
+										planted = planted + 1
+									end
 								end
 							end
 						end
@@ -1279,7 +1367,12 @@ local function loader(directory)
 	-- `parts.position_hash`, whose two LCG rounds leave neither derivable
 	-- from the other. The WP13 library KAT (retired in Round 22)
 	-- asserted that every start emits both of its ground-cover nodes.
-	function M.undergrowth(buf, palette, x1, z1, x2, z2, density)
+	--
+	-- `patch` ({salt, keep}, Round 51 follow-up FT, the capital cores) keeps
+	-- a picked cell only where `M.patch_keep` does, so the cover falls into
+	-- patches and gaps; the others are sown and marked to go
+	-- (`M.drop_later`).
+	function M.undergrowth(buf, palette, x1, z1, x2, z2, density, patch)
 		local planted_bush, planted_tuft = 0, 0
 		for z = z1, z2 do
 			for x = x1, x2 do
@@ -1294,7 +1387,9 @@ local function loader(directory)
 							"grass_tuft")
 						if bush then M.undergrowth_at(buf, palette, x, 1, z)
 						else buf:put(x, 1, z, name, parts.place_param2(name)) end
-						if bush then planted_bush = planted_bush + 1
+						if patch and not M.patch_keep(x, z, patch.salt, patch.keep) then
+							M.drop_later(buf, x, 1, z)
+						elseif bush then planted_bush = planted_bush + 1
 						else planted_tuft = planted_tuft + 1 end
 					end
 				end

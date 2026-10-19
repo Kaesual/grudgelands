@@ -1633,10 +1633,30 @@ function M.config(prepared, content, raw_sha256)
 						max_z = context.max_z}, column)
 					if state.make_green and not state.green then state.green = state.make_green() end
 					if state.green then
-						local trees = state.green.cells({min_x = context.min_x,
-							max_x = context.max_x, min_z = context.min_z,
-							max_z = context.max_z})
+						local box = {min_x = context.min_x, max_x = context.max_x,
+							min_z = context.min_z, max_z = context.max_z}
+						local trees = state.green.cells(box)
 						for tree_index = 1, #trees do cells[#cells + 1] = trees[tree_index] end
+						-- the ground cover and lake plants (Round 51 follow-up FT),
+						-- never on a cell the edge or a tree writes
+						if state.green.cover then
+							local taken = {}
+							for cell_index = 1, #cells do
+								local cell = cells[cell_index]
+								taken[cell.x .. ":" .. cell.y .. ":" .. cell.z] = true
+							end
+							-- a waterweed only on a natural sand bed (the cell as
+							-- the chunk holds it; outside the owner it is not
+							-- written anyway)
+							local _, sand = context.production_content("default:sand")
+							local function bed_ok(x, y, z)
+								if not context.inside_owner(x, y, z) then return true end
+								local bed, bed_p2 = context.settled_at(x, y, z)
+								return sand ~= nil and bed == sand and bed_p2 == 0
+							end
+							local cover = state.green.cover(box, taken, bed_ok)
+							for cover_index = 1, #cover do cells[#cells + 1] = cover[cover_index] end
+						end
 					end
 					for cell_index = 1, #cells do
 						local cell = cells[cell_index]

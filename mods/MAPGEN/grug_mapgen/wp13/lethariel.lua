@@ -757,8 +757,10 @@ local function loader(directory)
 		end, {skip = function(x, z) return not dry(x, z) end})
 
 		-- 11. Undergrowth on the turf between the quarters.
+		-- Round 51 follow-up FT: in patches and gaps, far thinner than the
+		-- plain scatter (`dressing.patch_keep`; the user: too dense, too even).
 		dressing.undergrowth(buf, elf_palette, -RADIUS, -RADIUS, RADIUS,
-			RADIUS, 5)
+			RADIUS, 5, dressing.CORE_PATCH)
 
 		-- 12. The sockets the composition owns.
 		local function socket(id, role, x, y, z, face, extra)
@@ -838,6 +840,8 @@ local function loader(directory)
 		-- 14. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, elf_palette, RADIUS, sockets, doorways)
+		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end

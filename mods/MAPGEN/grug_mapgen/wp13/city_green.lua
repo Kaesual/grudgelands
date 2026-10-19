@@ -44,9 +44,56 @@ local function loader(directory)
 	local wp40 = directory .. "/../wp40"
 	local floor, abs, sqrt, min, max = math.floor, math.abs, math.sqrt, math.min, math.max
 
+	local dressing = dofile(directory .. "/dressing.lua")(directory)
+
 	local M = {}
 	M.SPECIES = {human = "apple", dwarf = "pine", elf = "silverwood", undead = "gravewood",
 		orc = "acacia", troll = "jungle"}
+	-- The city's ground cover per race (Round 51 follow-up FT): what the
+	-- wild ground of the capital's zone grows (`wp40/r7_r6_manifest.lua`'s
+	-- rows: the meadows' grasses, the pine hills' ferns, the elf forest's
+	-- grasses and pastel flowers, the blight's dry shrubs with a few bones,
+	-- the savanna's dry grasses and shrubs, the jungle's grass, ferns and
+	-- strong flowers), {name, weight}; "bones" is a piece of the skeleton set
+	-- (`dressing.bone_piece`).
+	M.COVER = {
+		human = {{"default:grass_1", 1}, {"default:grass_2", 2}, {"default:grass_3", 2},
+			{"default:grass_4", 2}, {"default:grass_5", 1}},
+		dwarf = {{"default:fern_1", 2}, {"default:fern_2", 2}, {"default:fern_3", 1}},
+		elf = {{"default:grass_1", 2}, {"default:grass_2", 2}, {"default:grass_3", 2},
+			{"grug_nodes:flower_blush_star", 1}, {"grug_nodes:flower_cream_cups", 1},
+			{"grug_nodes:flower_lilac_bells", 1}},
+		undead = {{"default:dry_shrub", 5}, {"bones", 1}},
+		orc = {{"default:dry_grass_1", 1}, {"default:dry_grass_2", 1}, {"default:dry_grass_3", 1},
+			{"default:dry_grass_4", 1}, {"default:dry_grass_5", 1}, {"default:dry_shrub", 1}},
+		troll = {{"default:junglegrass", 4}, {"default:fern_1", 1}, {"default:fern_2", 1},
+			{"default:fern_3", 1}, {"grug_nodes:flower_ruby_fan", 1},
+			{"grug_nodes:flower_ember_star", 1}, {"grug_nodes:flower_violet_fan", 1}},
+	}
+	-- The lake plants: wp40/world_content_catalog.lua's freshwater pair.
+	M.LILY, M.WEED = "grug_mapgen:freshwater_waterlily", "grug_mapgen:freshwater_waterweed"
+	-- The patch fields (`dressing.patch_keep`): about 4 % of the open
+	-- ground, a lake's shallow rim (1-3 deep) about 8 %, its bed 3-10 deep
+	-- about 4 %.
+	M.LAND_PATCH = {salt = 31, keep = 0.2}
+	M.LILY_PATCH = {salt = 37, keep = 0.4}
+	M.WEED_PATCH = {salt = 41, keep = 0.2}
+	-- Every name the cover of one race (and a lake) may write.
+	function M.cover_names(race, lake)
+		local list = {}
+		for _, row in ipairs(M.COVER[race]) do
+			if row[1] == "bones" then
+				for _, name in ipairs(dressing.BONE_SET) do list[#list + 1] = name end
+			else
+				list[#list + 1] = row[1]
+			end
+		end
+		if lake then
+			list[#list + 1] = M.LILY
+			list[#list + 1] = M.WEED
+		end
+		return list
+	end
 	local GREEN_STEP, SPACING, KEEP, WALL_CLEAR = 11, 4, 4, 12
 	local GROUP = {{0, 0}, {4, 1}, {-3, 3}, {1, -4}, {-4, -2}}
 	local POOL, ATTEMPTS, SMALLEST = 24, 2, 8
@@ -423,6 +470,86 @@ local function loader(directory)
 			end
 			return out
 		end
+		-- THE CITY'S GROUND COVER AND LAKE PLANTS (Round 51 follow-up FT, the
+		-- user: "outside the cores the ground decoration is missing", the
+		-- lakes want plants and a few lily pads). On the same open ground as a
+		-- tree's stem (`clear`: inside the city, off the wall, the core, every
+		-- plot with its collar and approach, the squares), sparse and in
+		-- patches (`dressing.patch_keep`): a plant of the race's zone on a dry
+		-- column, and in a capital lake (`opts.lake`) a lily pad on the water
+		-- or a waterweed rooted in the bed. Never on or beside a street or
+		-- bridge column (no road in the 3 x 3), never on a cell in `taken`
+		-- (the edge's and the trees' cells). A waterweed is rooted in its bed
+		-- and shows a sand base, so it goes only where `bed_ok(x, y, z)` says
+		-- the bed is natural sand (the writer asks the chunk, as the wild
+		-- lakes' rule does; a cell outside the chunk it may pass, it is not
+		-- written there). Without `bed_ok` (the counting tools) every bed
+		-- passes. Returns {x, y, z, name, param2}.
+		local cover_roles = M.COVER[race]
+		local cover_weight = 0
+		for _, row in ipairs(cover_roles) do cover_weight = cover_weight + row[2] end
+		local function road_near(x, z)
+			for dz = -1, 1 do
+				for dx = -1, 1 do
+					local _, _, road = col(x + dx, z + dz)
+					if road then return true end
+				end
+			end
+			return false
+		end
+		local function ckey3(x, y, z) return x .. ":" .. y .. ":" .. z end
+		function green.cover(box, taken, bed_ok)
+			local out = {}
+			taken = taken or {}
+			local land, lily, weed = M.LAND_PATCH, M.LILY_PATCH, M.WEED_PATCH
+			for z = box.min_z, box.max_z do
+				for x = box.min_x, box.max_x do
+					local lx, lz = x - anchor.x, z - anchor.z
+					local on_land = dressing.patch_keep(lx, lz, land.salt, land.keep)
+					local on_water = opts.lake and
+						(dressing.patch_keep(lx, lz, lily.salt, lily.keep) or
+							dressing.patch_keep(lx, lz, weed.salt, weed.keep))
+					if (on_land or on_water) and clear(x, z) then
+						local ground, water, road = col(x, z)
+						if not road and not road_near(x, z) then
+							if not water and on_land then
+								local pick = dressing.cell_hash(lx, lz, 97) * cover_weight
+								local name
+								for _, row in ipairs(cover_roles) do
+									pick = pick - row[2]
+									if pick < 0 then name = row[1] break end
+								end
+								local param2 = parts.place_param2(name)
+								if name == "bones" then name, param2 = dressing.bone_piece(lx, lz) end
+								if not taken[ckey3(x, ground + 1, z)] then
+									out[#out + 1] = {x = x, y = ground + 1, z = z, name = name,
+										param2 = param2}
+								end
+							elseif water and opts.lake then
+								-- the wild lakes' bands (wp40/seabed.lua `lake_at`):
+								-- lily pads 1-3 deep, weed 3-10 deep, at most 4 tall
+								local depth = water - ground
+								if depth >= 1 and depth <= 3 and
+										dressing.patch_keep(lx, lz, lily.salt, lily.keep) then
+									if not taken[ckey3(x, water + 1, z)] then
+										out[#out + 1] = {x = x, y = water + 1, z = z,
+											name = M.LILY, param2 = floor(dressing.cell_hash(lx, lz, 89) * 4)}
+									end
+								elseif depth >= 3 and depth <= 10 and
+										dressing.patch_keep(lx, lz, weed.salt, weed.keep) and
+										not taken[ckey3(x, ground, z)] and
+										(not bed_ok or bed_ok(x, ground, z)) then
+									out[#out + 1] = {x = x, y = ground, z = z, name = M.WEED,
+										param2 = min(4, depth - 1) * 16}
+								end
+							end
+						end
+					end
+				end
+			end
+			return out
+		end
+
 		-- The trees whose stems lie in the world rectangle and are planted
 		-- (for the counts of tools/r47_tc).
 		function green.count(x0, x1, z0, z1)
