@@ -6,9 +6,9 @@ Usage: python3 tools/r52_bench/compare.py BEFORE/probe.txt AFTER/probe.txt
 Per class, the action records (try, swing, hit, cd, charge, heal, absorb,
 flash, phase, start, end) must match exactly in order and content; their
 times must agree within one server step (the larger maximum step of the two
-runs). Mend's ticks ("tick": a heal outside any cast) are the named exception
-of class plan D1: they are compared as a list of amounts, and their times
-since the cast are printed. Exits 1 on a content difference; a cadence
+runs, plus the logs' 1 ms rounding). Mend's ticks ("tick": a heal outside
+any cast) are the named exception of class plan D1: they are compared as a
+list of amounts, and their times since the cast are printed. Exits 1 on a content difference; a cadence
 outside the tolerance is reported, not gated.
 """
 import re
@@ -39,7 +39,8 @@ def main():
         return 2
     before, step_a = load(sys.argv[1])
     after, step_b = load(sys.argv[2])
-    tolerance = max(step_a, step_b)
+    # Record times carry 1 ms, the step 0.1 ms: allow that rounding.
+    tolerance = max(step_a, step_b) + 0.002
     print("max server step: before %.3f s, after %.3f s; cadence tolerance %.3f s"
           % (step_a, step_b, tolerance))
     content_ok, cadence_ok = True, True
