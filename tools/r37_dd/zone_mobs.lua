@@ -189,7 +189,8 @@ local function build(repo)
 	line("- **Rift Spawn**, its own night ABM row on its host ground (`spawn_policy.lua`")
 	line("  `RECIPE_ZONE_ROWS`): " .. table.concat(rift_names, ", ") .. ".")
 	line("- Not placed by recipes: the underground rows, the water rows (Kraken,")
-	line("  Reed Angelfish), named rares, bosses and kings, guards and the PvP")
+	line("  Reed Angelfish, Bay and Abyssal Shark, Tide Goby), named rares, bosses")
+	line("  and kings, guards and the PvP")
 	line("  garrisons ([biomes_mobs.md](biomes_mobs.md) §3, §4).")
 	return table.concat(out, "\n") .. "\n", zones
 end

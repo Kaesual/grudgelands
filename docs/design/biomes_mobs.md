@@ -62,10 +62,12 @@ delivered behavior.
   their row caps around an ABM spawn point) applied to no zone after the
   spawn recipes replaced the palettes (0 of 38 zones, its fixture retired),
   and Round 30 removed it with the surface ABM rows it governed (§4).
-  Critters, underground rows, the Kraken and Reed Angelfish, NPCs, authored
+  Critters, underground rows, the water rows (Kraken, Reed Angelfish, since
+  Round 51 the sharks and the Tide Goby), NPCs, authored
   guards, camps, patrols, kings, dragons, summoned/encounter adds, bosses and
   named rares are neither counted nor limited. An ordinary (non-critter) ABM
-  row above the underground (its top above y = −1), today the Kraken's,
+  row above the underground (its top above y = −1), today the Kraken's and
+  the two sharks',
   keeps the Round 16 rule (1.3x
   attempt frequency and a nearest-integer 1.3x species cap); the Rift
   Spawn's surface row states its final numbers (§4).
@@ -957,7 +959,7 @@ surface only the recipes' critters and the Rift Spawn's surface row stay
 (the list below; the pre-recipe row table is archived). The
 remaining rows run through three merged ABMs, one per node set: underground
 (stone and strata, rows whose top is y −1 or lower), water (Kraken, Reed
-Angelfish) and surface
+Angelfish; since Round 51 the Bay and Abyssal Sharks and the Tide Goby) and surface
 (`grug_mobs/spawn_abms.lua`). A merged ABM takes its rows' shortest interval
 `I`; its dispatcher picks at most one row per triggered node, by one roll
 against the cumulative probabilities `p = C × I / (c × i)` of the rows hosted
@@ -1030,7 +1032,7 @@ beach ground, Parrot, Bone Weevil, Bog Fowl, Wild Turkey and Song Bird;
 row (Gravesalt, Skyglass and both islands), every underground row (top at
 y −1 or lower,
 the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken,
-Reed Angelfish). Every other surface row registers no ABM, the Shore Crab's
+Reed Angelfish, Bay and Abyssal Shark, Tide Goby). Every other surface row registers no ABM, the Shore Crab's
 and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
 (§4.2), the Reef Lurker only as its 51–60 shore sub-type.
 Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
@@ -1175,8 +1177,9 @@ gate, protected surface).
   and night clock (the catalogue keeps its spawning, Round 28 S2c); shore crabs
   and every other surface row are refused there, and since Round 30 a
   surface row no zone keeps registers no ABM at all (§4).
-  Unchanged everywhere: underground rows and their depth level, water rows
-  and swimmers (Kraken, Reed Angelfish), named rares, vendors, guards and
+  Unchanged everywhere: underground rows and their depth level, the water
+  rows (Kraken, Reed Angelfish, the sharks, the Tide Goby; the zone water
+  families spawn from the recipes' water kinds since Round 51), named rares, vendors, guards and
   guard posts, and the mapgen content. Since Round 28 (S2, W1) every one of
   the 38 zones has a recipe.
 - **Ambient spawner.** Once a second per player (the players spread over
@@ -1771,11 +1774,29 @@ sounds.
   sub-types inside one drop tier each, so its names are the exact kill
   targets and pass rule 4; the sharks are world slots with one level; the
   critter fish are never kill targets (their fish count for item
-  objectives). **Until MOBS step M2** places them, no recipe holds a water
-  role: each sub-type is an unplaced world slot named as in the draft, and
-  the new mobs spawn nowhere (`/spawnentity grug_mobs:<role>` shows one).
-  Step M2 adds the water kinds to the zone recipes (hosts by water band:
-  distance to dry land and depth, S10–S12), which turns the draft's zone
-  slots into names (`tools/r38_b1/gen_names.py --proposals
-  tools/r51_names/draft.json`), and the sharks' and the goby's spawn rows
-  (they are water authorities, `spawn_policy.lua`).
+  objectives). Each zone-water sub-type spawns from a water kind of its
+  zone's recipe, so a quest may name it with or without an area
+  (`zone/kind`); its names are zone slots (`tools/r38_b1/gen_names.py
+  --proposals tools/r51_names/draft.json`).
+
+**Where they spawn (Round 51 MOBS M2).** By water band, from the column's
+water query ([spawn_regions.md](spawn_regions.md#water-kinds-round-51)):
+
+| Band | Water | Mobs |
+|---|---|---|
+| Sea shallows | bay, belt and channel water within 16 nodes of dry land or at most 6 deep | Tortoise (follows ashore, S10) |
+| Coastal waters (`sea_deep`) | the rest of the bay, belt and channel water | Stingray (pure swimmer, away from land) |
+| Lake | lakes and swamp pools | Frog (3 in 4), Tortoise (1 in 4; S15) |
+| River | rivers | Frog |
+| Bay middle | bay water 40+ nodes from dry land and 16+ deep | Bay Shark, L30 (its own row, S12) |
+| Open sea | beyond the belt | Kraken, Abyssal Shark (a third of the Kraken's rate, S13) |
+| Any sea water | bay, belt, channel and open sea, under the surface | Tide Goby (critter, its own row) |
+
+The zone kinds take the belt of the column's level (a channel: its
+island's, L60 Wyrmwake Rays); the home belts (levels 1–2) hold no frog and
+no stingray, only the tortoise. A sea column beside another zone's water
+spawns nothing, so a channel patch inside a mainland belt shows no L60 mob.
+The sharks and the goby appear at the surface or the sea floor through the
+merged water spawn ABM like the Kraken and the Reed Angelfish; the zone
+families through the ambient region spawner's one attempt per player and
+second, whose column now may be water.

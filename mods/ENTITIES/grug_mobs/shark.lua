@@ -23,16 +23,10 @@
 -- The water bands of the two rows (grug_zones.water_query_at): the Bay
 -- Shark in the deep middle of a bay (S12), BAY_MIDDLE nodes or more from dry
 -- land and BAY_DEPTH or more deep; the Abyssal Shark in the open sea (S13).
--- Both need water at the spot and above it (a shark is over a node tall).
 local BAY_MIDDLE = 40
 local BAY_DEPTH = 16
 
-local function water(pos, dy)
-	return core.get_node({x = pos.x, y = pos.y + dy, z = pos.z}).name == "default:water_source"
-end
-
 local function in_bay_middle(pos)
-	if not (water(pos, 0) and water(pos, 1) and water(pos, 2)) then return false end
 	local class, _, _, distance, depth = grug_zones.water_query_at(pos.x, pos.z)
 	return class == "bay" and (distance or 0) >= BAY_MIDDLE and (depth or 0) >= BAY_DEPTH
 end
@@ -136,21 +130,21 @@ grug_mobs.register_mob("grug_mobs:abyssal_shark", shark_def("Abyssal Shark", {
 	},
 }, 1.8))
 
--- The rows (the merged water ABM, spawn_abms.lua). The Bay Shark rises from
--- the bay floor (water beside sand); the Abyssal Shark, like the Kraken,
--- appears at the open sea's surface and is a seldom spawn: a third of the
--- Kraken's rate. mobs_redo spawns one node above the matched node, and every
--- water row keeps its top at or above y 0 (a row with a lower top would join
--- the underground ABM).
+-- The rows (the merged water ABM, spawn_abms.lua). Like the Kraken, both
+-- appear at the surface (water touching air; mobs_redo spawns one node
+-- above the matched node) and dive (swimmer.lua): the Bay Shark at the
+-- Kraken's rate, the Abyssal Shark a seldom spawn at a third of it. Every
+-- water row keeps its top at or above y 0 (a lower top would join the
+-- underground ABM).
 mobs:spawn({
 	name = "grug_mobs:bay_shark",
 	nodes = {"default:water_source"},
-	neighbors = {"default:sand"},
+	neighbors = {"air"},
 	interval = 60,
-	chance = 6000,
+	chance = 12000,
 	active_object_count = 1,
-	min_height = -45,
-	max_height = 0,
+	min_height = -10,
+	max_height = 4,
 })
 mobs:spawn({
 	name = "grug_mobs:abyssal_shark",

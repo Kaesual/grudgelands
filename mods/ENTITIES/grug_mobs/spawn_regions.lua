@@ -948,10 +948,13 @@ end
 -- in the recipe of the query's zone gives the kind of the band. Amphibians
 -- appear at the surface, pure swimmers a little under it; then the land
 -- path's gates (players, protected surface and claims, the drift band for
--- hostiles, light at the surface, density). A sea column whose neighbours
--- POCKET_STEP nodes away in the four directions are not all its own class
--- and zone is a pocket (T2: small channel patches inside a belt and the
--- like) and spawns nothing, so no stray level shows beside a coast.
+-- hostiles, light at the surface, density). A sea column with water of
+-- another zone POCKET_STEP nodes away in one of the four directions spawns
+-- nothing: a pocket (T2: small channel patches inside a belt and belt
+-- patches inside a channel, whose zone and level differ from the water
+-- around them) or the strip along a border, so no stray level shows beside
+-- a coast. Land and the zone's own water (bay or belt alike) around the
+-- column do not count.
 --
 SR.POCKET_STEP = 12
 local POCKET_DIRS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
@@ -965,7 +968,7 @@ function SR.water_pocket(x, z, class, zone_id)
 		local d = POCKET_DIRS[i]
 		local c, zone = grug_zones.water_query_at(x + d[1] * SR.POCKET_STEP,
 			z + d[2] * SR.POCKET_STEP)
-		if c ~= class or zone ~= zone_id then
+		if c ~= nil and zone ~= zone_id then
 			return true
 		end
 	end

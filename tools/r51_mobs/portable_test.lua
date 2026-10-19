@@ -767,7 +767,11 @@ do
 		r = attempt({"channel", S, 60, 60, 10}, 60, {"belt", "front_shattered_line", 45, 60, 10})
 		eq(r, "water_pocket", "F a channel pocket inside a belt spawns nothing")
 		r = attempt({"belt", D, 6, 40, 20}, 6, {"belt", "elandor_goldmead_vale", 12, 40, 20})
-		eq(r, "water_pocket", "F a column whose neighbours are another zone's: a pocket")
+		eq(r, "water_pocket", "F a column beside another zone's water: the border strip")
+		r = attempt({"belt", D, 4, 10, 5}, 4, {nil})
+		eq(r, "spawned_sea_shallows", "F land around a shallow column does not make it a pocket")
+		r = attempt({"belt", D, 6, 40, 20}, 6, {"bay", D, 6, 40, 20})
+		eq(r, "spawned_sea_deep", "F the zone's own bay water beside its belt is no pocket")
 		r = attempt({"belt", "no_such_zone", 6, 40, 20}, 6, nil)
 		eq(r, "no_recipe_zone", "F a zone without a recipe")
 		-- A swimmer in water too shallow to dive stays at the surface.
@@ -789,6 +793,9 @@ for _, name in ipairs({"grug_mobs:bay_shark", "grug_mobs:abyssal_shark", "grug_m
 	if check(row ~= nil, "G " .. name .. " has a spawn row") then
 		eq(row.nodes[1], "default:water_source", "G " .. name .. " spawns from water")
 		check(row.max_height >= 0, "G " .. name .. " joins the water ABM (top at or above y 0)")
+		if name ~= "grug_mobs:goby" then
+			eq(row.neighbors[1], "air", "G " .. name .. " appears at the surface, as the Kraken")
+		end
 	end
 end
 check(rows["grug_mobs:abyssal_shark"].chance >= 3 * 12000,
@@ -804,8 +811,6 @@ answer("bay", 50, 10)
 eq(bands.bay_middle(deep), false, "G ... not in shallow bay water")
 answer("belt", 50, 30)
 eq(bands.bay_middle(deep), false, "G ... not in the belt")
-answer("bay", 50, 30)
-eq(bands.bay_middle({x = -5, y = 0, z = 0}), false, "G ... and not where the water above runs out")
 answer("open_sea", 400, 25)
 eq(bands.open_sea(deep), true, "G Abyssal Shark: the open sea")
 answer("belt", 100, 25)
