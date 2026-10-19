@@ -310,7 +310,12 @@ end
 local EVADE_ARRIVED = 4 -- m horizontal from `_grug_home` counts as home
 
 -- The horizontal distance from `_grug_home` at which this evader has arrived.
+-- A water swimmer has no wander leash (free_roamer below), so it swims all
+-- the way back to its spawn point (Round 51, swimmer_reset below).
 local function evade_radius(self)
+	if self._grug_swim_dy then
+		return EVADE_ARRIVED
+	end
 	return grug_mobs.damage_pursuit(self) and grug_mobs.WANDER_RADIUS
 		or EVADE_ARRIVED
 end
@@ -388,8 +393,42 @@ local function evade_tick(self, dtime)
 		"evade", EVADE_SEARCH)
 end
 
+--
+-- The swimmer reset (Round 51, sea plan ruling S11). A pure swimmer
+-- (swimmer.lua) whose target is out of its reach -- neither in water nor on a
+-- boat, `grug_mobs.in_swimmer_reach` -- forgets the fight, heals to full and
+-- swims off toward deeper water: back to its spawn point, which lies in
+-- deeper water away from land (S10; the spawn rules are MOBS step M2's).
+-- No second mechanism: the give-up below forgets and heals through the
+-- ordinary leash reset and keeps that player out of the next acquisition for
+-- 15 s or 8 nodes, and the evade swims it home, untouchable, from any
+-- distance beyond EVADE_ARRIVED (a swimmer's evade arrives there, see
+-- evade_radius). A swimmer acquires nobody out of its reach in the first
+-- place (swimmer.lua's acquisition veto), so this ends the fights that
+-- began in the water or by a hit from the bank. Checked in the existing 1 Hz
+-- leash slot below: two node reads per fighting swimmer and second. The
+-- bespoke no-leash Kraken never gets here (leash_tick).
+--
+function grug_mobs.swimmer_reset(self)
+	grug_mobs.give_up_target(self)
+	self.temp = self.temp or {}
+	local home = self._grug_home
+	local pos = self.object and self.object:get_pos()
+	if home and pos and not self.temp.grug_evading then
+		local dx, dz = pos.x - home.x, pos.z - home.z
+		if dx * dx + dz * dz > EVADE_ARRIVED * EVADE_ARRIVED then
+			self.temp.grug_evading = {started = grug_core.mono_time()}
+		end
+	end
+end
+
 local function leash_check(self)
 	local target = self.attack
+	if target and self._grug_swim_dy and not self.temp.grug_evading
+			and not grug_mobs.in_swimmer_reach(target) then
+		grug_mobs.swimmer_reset(self)
+		return
+	end
 	if grug_mobs.damage_pursuit(self) then
 		if self.temp.grug_evading then return end
 		if self.state == "die" or (self.health or 0) <= 0 then

@@ -128,6 +128,12 @@ grug_materials.NATURAL_GROUND_NODES = {
 	"grug_nodes:mud_mottled",
 	"grug_nodes:mud_with_wet_grass",
 	"grug_nodes:mesa_clay",
+	-- the swamp's own moss and the badlands' clay bands (Round 51 lane LG)
+	"grug_nodes:swamp_moss",
+	"grug_nodes:clay_band_ochre",
+	"grug_nodes:clay_band_sienna",
+	"grug_nodes:clay_band_chalk",
+	"grug_nodes:clay_band_umber",
 }
 
 grug_materials.NATURAL_GROUND_SET = {}

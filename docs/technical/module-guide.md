@@ -844,7 +844,8 @@ tools](#player-meta-read-by-external-tools).
     multipliers on the first active tick. `_grug_fixed_level` is the sole
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
-    Kraken L70 (elite), the island dragons L70, the capital kings L65 and their royal
+    Kraken L70 (elite), the Round 51 sharks (Bay Shark L30, Abyssal Shark
+    L70 elite), the island dragons L70, the capital kings L65 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
@@ -1118,7 +1119,10 @@ tools](#player-meta-read-by-external-tools).
   the slam's hit through a `core.calculate_knockback` wrapper);
   `boss_dragons.lua` applies them (one `ice_break` sound per event):
   `_grug_target_veto` (a hook in the `init.lua` acquisition veto, honoured by
-  `grug_core`'s `valid_target`, `add_threat` and `taunt`), the once-a-second
+  `grug_core`'s `valid_target`, `add_threat` and `taunt`; since Round 51 the
+  water swimmers under the ordinary leash carry it on their prototype too,
+  `grug_mobs/swimmer.lua`, vetoing players out of the water and off a boat),
+  the once-a-second
   arena tick (threat prune, reset and flight home, hazards and the wrath
   through `set_hp`; `grug_core.bypasses_absorb` covers the wrath), the
   participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`,
@@ -2115,7 +2119,11 @@ tools](#player-meta-read-by-external-tools).
   forest density parameter. Saplings
   (`grug_trees/growth.lua`) and the town trees (`wp13/dressing.lua`) use the
   same generator. A change to the generator or the species table moves the
-  sample pins of `tools/r47_tc/portable_test.lua`.
+  sample pins of `tools/r47_tc/portable_test.lua`. Hanging kinds
+  (`tree_templates.lua` `HANGING`, Round 51): a cell of such a kind with one
+  of its kind right below takes the species' strand node, the lowest the end
+  node, in the variants and the grown trees alike; `grug_trees/hanging.lua`
+  keeps a dug run whole.
   **Placement draws** (Round 49): the R6 decoration candidates (rank,
   thinning, cell budget remainder), the P9 rotations, heights, variants and
   template trials, the P9G ranks and remainders and the P8 fill ores draw

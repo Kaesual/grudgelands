@@ -45,7 +45,7 @@ local WOODS = {
 		leaves = {"grug_trees:silverwood_leaves"}, joins = {"grug_trees:silverwood_leaves"}},
 	{key = "gravewood", trunk = "grug_trees:gravewood_tree",
 		leaves = {"grug_trees:gravewood_leaves", "grug_trees:swamp_leaves",
-			"grug_trees:swamp_hanging_moss"},
+			"grug_trees:swamp_hanging_moss", "grug_trees:swamp_hanging_moss_strand"},
 		joins = {"grug_trees:gravewood_leaves", "grug_trees:swamp_leaves"}},
 }
 local SHAPES = {"quarter", "base", "branch", "twig"}

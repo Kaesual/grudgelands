@@ -177,6 +177,12 @@ if ok_ffi then
 	-- ground list; without them the rest is unchanged.
 	local SWAMP = {["grug_nodes:mud_dry"] = true, ["grug_nodes:mud_mottled"] = true,
 		["grug_nodes:mud_with_wet_grass"] = true}
+	-- Round 51 lane LG adds the swamp moss and the four clay bands the same way.
+	for _, name in ipairs({"grug_nodes:swamp_moss", "grug_nodes:clay_band_ochre",
+			"grug_nodes:clay_band_sienna", "grug_nodes:clay_band_chalk",
+			"grug_nodes:clay_band_umber"}) do
+		SWAMP[name] = true
+	end
 	for index = #projection.natural_ground_nodes, 1, -1 do
 		if SWAMP[projection.natural_ground_nodes[index]] then
 			table.remove(projection.natural_ground_nodes, index)

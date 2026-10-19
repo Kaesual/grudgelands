@@ -1303,7 +1303,7 @@ General's bodyguards, the dragons' whelps and the raiders a King calls in his
 fight. Their ordinary drops stay (the guards' war trophies and heavy cloth on
 an enemy player's kill; the raiders' skeleton materials; whelps have none).
 
-**Bags** drop from any mob at **0.1%** per kill (not from the Kraken and
+**Bags** drop from any mob at **0.1%** per kill (not from the Kraken, the Tide Goby and
 the Reed Angelfish, which drop no quality loot at all), independent of the gear roll,
 sized by the mob's level: 1–15 → 4 slots, 16–30 → 8, 31–45 → 12, 46+ → 16
 (the cloth bag line of `grug_inventory`). The 4-slot bag stays on sale; larger

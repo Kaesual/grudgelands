@@ -5,9 +5,9 @@
 -- FOR the Lord-of-the-Test spawn trick (biomes_mobs.md §4): mob spawning is
 -- gated on a node whitelist, which is precise and costs nothing at runtime.
 --
--- All textures are cheap retints of vendored minetest_game textures
--- (CC BY-SA 3.0) -- see LICENSE-media.md for attribution and the exact
--- ImageMagick operations.
+-- The first textures were cheap retints of vendored minetest_game textures
+-- (CC BY-SA 3.0); since Round 47 and 51 most are original CC0 art -- see
+-- LICENSE-media.md for every file's origin.
 --
 -- WP18 registers the nodes only; grug_mapgen (T4) wires them into the biome
 -- definitions. The shared crop-definition seam also lives below world/jobs content.
@@ -40,14 +40,25 @@ local litter_sounds = default.node_sound_dirt_defaults({
 	footstep = {name = "default_grass_footstep", gain = 0.4},
 })
 
+-- Large flat grounds (Round 51, land plan ruling 6): a 32 px texture spans
+-- 2 x 2 nodes at the node's 16 px per node, world-aligned, so the eye sees
+-- no 1-node grid. The engine honours it on solid nodes and node boxes (and
+-- on a rooted plant's base, which it draws as a solid node); the scale 2
+-- divides the 16-node mapblock (lua_api.md, "Tile definition").
+local function world_tile(texture)
+	return {name = texture, align_style = "world", scale = 2}
+end
+
 -- Dirt with a litter layer on top: litter tile on top, plain dirt at the
 -- bottom, dirt + litter overlay on the sides (same tile setup default uses
 -- for its coniferous/rainforest litter). Drops plain dirt like default's.
-local function register_litter(name, description, texture)
+-- `wide`: the top is a 32 px world-aligned texture (ruling 6); the 16 px
+-- side overlay stays.
+local function register_litter(name, description, texture, wide)
 	core.register_node("grug_nodes:" .. name, {
 		description = description,
 		tiles = {
-			texture .. ".png",
+			wide and world_tile(texture .. ".png") or texture .. ".png",
 			"default_dirt.png",
 			{name = "default_dirt.png^" .. texture .. "_side.png",
 				tileable_vertical = false},
@@ -64,17 +75,17 @@ end
 
 core.register_node("grug_nodes:blight_dirt", {
 	description = "Blight Dirt",
-	tiles = {"grug_nodes_blight_dirt.png"},
+	tiles = {world_tile("grug_nodes_blight_dirt.png")},
 	groups = dirt_groups(),
 	sounds = default.node_sound_dirt_defaults(),
 })
 
 register_litter("dirt_with_bone_litter", "Dirt with Bone Litter",
-	"grug_nodes_bone_litter")
+	"grug_nodes_bone_litter", true)
 register_litter("dirt_with_forest_litter", "Dirt with Forest Litter",
 	"grug_nodes_forest_litter")
 register_litter("dirt_with_silver_litter", "Dirt with Silver Litter",
-	"grug_nodes_silver_litter")
+	"grug_nodes_silver_litter", true)
 -- The shaded floor under the closed deep-jungle canopy (WP36, biomes_mobs.md
 -- §1.3). It exists because grug_deep_jungle used to SHARE
 -- `default:dirt_with_rainforest_litter` with grug_jungle_edge, which made
@@ -84,14 +95,15 @@ register_litter("dirt_with_silver_litter", "Dirt with Silver Litter",
 -- three above; the tint is deliberately colder and darker than
 -- `dirt_with_forest_litter` (which is Accord-only, so the two never meet).
 register_litter("dirt_with_canopy_litter", "Dirt with Canopy Litter",
-	"grug_nodes_canopy_litter")
+	"grug_nodes_canopy_litter", true)
 
 -- Swamp mud. `mud = 1` is a MARKER GROUP only -- the walking slow-down
 -- described in docs/design/biomes_mobs.md §1.3 is NOT implemented in WP18;
 -- a later WP adds the player-movement handler and dispatches on this group.
 core.register_node("grug_nodes:mud", {
 	description = "Swamp Mud",
-	tiles = {"grug_nodes_mud.png"},
+	-- one 32 px tile on every face, world-aligned (Round 51)
+	tiles = {world_tile("grug_nodes_mud.png")},
 	groups = dirt_groups({mud = 1}),
 	sounds = default.node_sound_dirt_defaults(),
 })
@@ -101,9 +113,12 @@ core.register_node("grug_nodes:mud", {
 -- the world generator places them from build step 2 on. The two mud
 -- variants and the wet grass are surface variants of the mud: the same
 -- groups, and they drop plain mud, as the litters drop plain dirt.
+-- Round 51 (land plan ruling 4): the picked calm tops are 32 px,
+-- world-aligned; the calm 16 px sides replace the Round 47 sides of the wet
+-- mud and the wet grass; the dry mud keeps its side.
 core.register_node("grug_nodes:mud_dry", {
 	description = "Dry Swamp Mud",
-	tiles = {"grug_nodes_mud_dry_top.png", "grug_nodes_mud_dry_side.png",
+	tiles = {world_tile("grug_nodes_mud_dry_top.png"), "grug_nodes_mud_dry_side.png",
 		"grug_nodes_mud_dry_side.png"},
 	groups = dirt_groups({mud = 1}),
 	drop = "grug_nodes:mud",
@@ -112,7 +127,7 @@ core.register_node("grug_nodes:mud_dry", {
 
 core.register_node("grug_nodes:mud_mottled", {
 	description = "Wet Swamp Mud",
-	tiles = {"grug_nodes_mud_mottled_top.png", "grug_nodes_mud_mottled_side.png",
+	tiles = {world_tile("grug_nodes_mud_mottled_top.png"), "grug_nodes_mud_mottled_side.png",
 		"grug_nodes_mud_mottled_side.png"},
 	groups = dirt_groups({mud = 1}),
 	drop = "grug_nodes:mud",
@@ -123,11 +138,26 @@ core.register_node("grug_nodes:mud_mottled", {
 -- mottled mud's side, as lane ART laid it out.
 core.register_node("grug_nodes:mud_with_wet_grass", {
 	description = "Mud with Wet Grass",
-	tiles = {"grug_nodes_wet_grass_top.png", "grug_nodes_mud_mottled_side.png",
+	tiles = {world_tile("grug_nodes_wet_grass_top.png"), "grug_nodes_mud_mottled_side.png",
 		{name = "grug_nodes_wet_grass_side.png", tileable_vertical = false}},
 	groups = dirt_groups({mud = 1}),
 	drop = "grug_nodes:mud",
 	sounds = litter_sounds,
+})
+
+-- The swamp's own moss ground (Round 51, land plan ruling 5): the moss
+-- hummocks of the swamp, darker and cooler than the forest's moss soil
+-- (`dirt_with_moss` below), on mud. It has the moss soil's groups and
+-- sounds (soil, natural loose ground, no `mud` marker) and drops plain mud,
+-- like the swamp's other grounds. Its side is a whole 16 px texture (a moss
+-- fringe over mud), its bottom the mud.
+core.register_node("grug_nodes:swamp_moss", {
+	description = "Swamp Moss",
+	tiles = {world_tile("grug_nodes_swamp_moss_top.png"), world_tile("grug_nodes_mud.png"),
+		{name = "grug_nodes_swamp_moss_side.png", tileable_vertical = false}},
+	groups = dirt_groups(),
+	drop = "grug_nodes:mud",
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 -- A thin moss carpet on the ground (1/16 high), like a waterlily on land:
@@ -179,7 +209,8 @@ core.register_node("grug_nodes:mud_with_reeds", {
 	description = "Mud with Reeds",
 	drawtype = "plantlike_rooted",
 	waving = 1,
-	tiles = {"grug_nodes_mud.png"},
+	-- the mud's own world-aligned tile, so a bed matches the mud around it
+	tiles = {world_tile("grug_nodes_mud.png")},
 	special_tiles = {{name = "grug_nodes_reeds.png", tileable_vertical = true}},
 	inventory_image = "grug_nodes_reeds.png",
 	wield_image = "grug_nodes_reeds.png",
@@ -220,10 +251,32 @@ core.register_node("grug_nodes:cattails", {
 -- `cracky`, so a shovel digs it faster than the pick of its tier.
 core.register_node("grug_nodes:mesa_clay", {
 	description = "Mesa Clay",
-	tiles = {"grug_nodes_mesa_clay.png"},
+	tiles = {world_tile("grug_nodes_mesa_clay.png")},
 	groups = grug_materials.natural_groups({crumbly = 2, grug_loose = 2}),
 	sounds = default.node_sound_dirt_defaults(),
 })
+
+-- The badlands' coloured clay bands (Round 51, land plan §4 "Orc"): mesa
+-- clay in four colours for the strata of steep slopes, which the world
+-- generator places. Loose ground like the mesa clay, and each drops plain
+-- mesa clay (the user's pick), so no special blocks pile up.
+for _, band in ipairs({{"ochre", "Ochre"}, {"sienna", "Sienna"}, {"chalk", "Chalk"},
+		{"umber", "Umber"}}) do
+	core.register_node("grug_nodes:clay_band_" .. band[1], {
+		description = band[2] .. " Mesa Clay",
+		tiles = {world_tile("grug_nodes_clay_band_" .. band[1] .. ".png")},
+		groups = grug_materials.natural_groups({crumbly = 2, grug_loose = 2}),
+		drop = "grug_nodes:mesa_clay",
+		sounds = default.node_sound_dirt_defaults(),
+	})
+end
+
+-- The 32 px sand (Round 51, round plan §3.1): a retexture of `default:sand`,
+-- not a new node, because the shore crab's host is exactly that node. It
+-- lies above and under water, so the rooted kelp's sand bed wears it too
+-- (grug_mapgen's freshwater waterweed binds the same tile).
+core.override_item("default:sand", {tiles = {world_tile("grug_nodes_sand.png")}})
+core.override_item("default:sand_with_kelp", {tiles = {world_tile("grug_nodes_sand.png")}})
 
 --
 -- Decoration
@@ -333,9 +386,12 @@ core.register_node("grug_nodes:ash_ground", {
  groups=dirt_groups(), drop="default:dirt",
  is_ground_content=true, sounds=default.node_sound_dirt_defaults(),
 })
+-- The forest's moss soil (elf forest mix): Round 51 (ruling 5) replaces the
+-- shipped neon moss with a muted 32 px world-aligned top and a whole 16 px
+-- side (a moss fringe over dirt).
 core.register_node("grug_nodes:dirt_with_moss", {
- description="Moss Soil", tiles={"default_moss.png","default_dirt.png",
-  "default_dirt.png^default_moss_side.png"},
+ description="Moss Soil", tiles={world_tile("grug_nodes_moss_soil_top.png"),"default_dirt.png",
+  {name="grug_nodes_moss_soil_side.png",tileable_vertical=false}},
  groups=dirt_groups(), drop="default:dirt",
  is_ground_content=true, sounds=default.node_sound_dirt_defaults(),
 })

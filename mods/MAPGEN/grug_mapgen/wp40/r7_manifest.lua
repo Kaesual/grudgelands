@@ -109,13 +109,22 @@ return function(canonical, raw_sha256, settlement_order)
 	-- ground list, which moves the WP43 projection (was `785f36400419118f...`);
 	-- the gathering catalog's swamp hosts take the mixed ground, which moves
 	-- the gathering manifest (was `56a3daf013148e99...`).
+	-- Round 51 LG: the swamp moss, the four clay bands and the hanging moss
+	-- strand join the production rows (122 -> 128), which moves the
+	-- accepted-content limb (was `6a978d54d87588b0...`), the production
+	-- semantics (was `630445ae282ddbb3...`) and the decoded MTS templates
+	-- (content refs shift with the inserted sorted rows; was
+	-- `2facd3c930837487...`); the swamp moss and the clay bands join the
+	-- natural ground list, which moves the WP43 projection (was
+	-- `aa6e16d73513fa6c...`); the gathering catalog's swamp hosts take the
+	-- swamp moss, which moves the gathering manifest (was
+	-- `2bac7904e80f4687...`).
 	-- Round 51 LK: the land kit's props, cairn shapes and default blocks join
-	-- the production rows (122 -> 148) and dirt, gravel, mossy cobble and
+	-- the production rows (128 -> 156) and dirt, gravel, mossy cobble and
 	-- stone take the decoration role, which moves the accepted-content limb
-	-- (was `6a978d54d87588b0...`), the production semantics (the bone pile
-	-- became a node box too; was `630445ae282ddbb3...`) and the decoded MTS
-	-- templates, whose content refs shift with the inserted rows (was
-	-- `2facd3c930837487...`).
+	-- (was LG's), the production semantics (the bone pile became a node box
+	-- too; was LG's) and the decoded MTS templates, whose content refs shift
+	-- with the inserted rows (was LG's).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -384,12 +393,12 @@ return function(canonical, raw_sha256, settlement_order)
 		local gathering = inputs.gathering_manifest
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v3" or
 			gathering.sha256 ~=
-				"2bac7904e80f468713d1312dc6a4e367abdecc35d654392df7ecc7b0ff76c75c" or
+				"1751733095a5cdb18633918ec8a390bb044f0e4e54272ab9ab27aad405e2fcd5" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"15fe829f3935859716d47e6cf162179059e8f23697e64cb01133699edabf14e8" or
+				"fbc13fd4749e506e5904cd68cf49a7881824556e00110e71be59984d81f922b3" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -552,11 +561,11 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"34399993578b098c1f303e93512fbf5330658a300db50f06872e08deb8987135" or
+				"a24cfa649667e66f45b7bb3f3af6985a6eac39d77ea8a1768e55b72e00c72bbc" or
 			frozen.decoded_templates ~=
-				"22917b4bc30a1e7927d2fa2c8893b83993ec007f6e4e0deea4549a735ab2c9b7" or
+				"22cc4bb61dc76b9faed810262509147dbdb3a97cb97852f6309081ed86ba31cc" or
 			frozen.wp43_projection ~=
-				"aa6e16d73513fa6c783ee025203e766b03154f12607f7889634853bba4370fee" or
+				"ee08d28c64bdc90ce3e58be7f4c80f8c2381741838b9c075aa75c9fae94f2a80" or
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" then
 			fail("frozen source projection differs: accepted=" ..

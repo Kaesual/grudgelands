@@ -1487,3 +1487,14 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`page_local.html` for file://); `check_draft.py` runs the Round 38 name
   gates over today's names plus the draft.
 - **Round 51 lane WRECK** ([`r51_wreck`](r51_wreck/DESIGN.md)): the shipwreck design: four shapes as data (`shapes.py` writes `shapes/*.json` and the node list, `--check`), the preview page (`build.py` writes `wreck.html`, `--check`) and the placement sketch for the build step.
+- **Round 51 lane LG** (`r51_lg`): the land grounds and nodes. `portable_test.lua` (r24 mining harness): every 32 px world-aligned and 16 px face, the shipped files against the picked art of `tools/r51_land`, the swamp moss and the clay bands with their host lists, the sand override, the hanging moss strand/end dig rule and the world's moss runs, the closed node roster; `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r51_lg` the engine look once: a sky test patch of the 2 × 2 grounds, the clay band wall, a sand basin with water and a hanging moss run before and after its end is dug.
+- **Round 51 lane MOBS** (`r51_mobs`): step M1, the water mobs
+  (`portable_test.lua`: the sub-types, fish drops and names against the
+  NAMES draft, sub-type selection at every ladder edge with level 20 by its
+  belt, the real registrations, and the swimmer reset in the real leash
+  tick with the reach veto). `probe.sh OUT_DIR` (one queue slot) with
+  `grug_probe_r51_mobs`: every new mob spawned by command in an arena,
+  frog and tortoise chasing a probe player ashore and back, the stingray's
+  reset, one kill per family and its fish. `capture.sh OUT_DIR` (`XVFB=`,
+  two queue slots) with `grug_probe_r51_shots`: screenshots of the
+  line-ups.

@@ -1,4 +1,4 @@
--- Closed R7 production content resolvers: the 148-row production-R6
+-- Closed R7 production content resolvers: the 156-row production-R6
 -- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
@@ -7,14 +7,15 @@
 -- of the generated trees (lane TC; the quarter, base, branch and twig of
 -- seven woods, decoration role: 88 -> 116); lane SW the swamp's three new
 -- grounds (surface role) and its moss carpet, leaves and hanging moss
--- (decoration role): 116 -> 122. Round 51 lane LK added the land kit
--- (decoration role): 16 of its props (the bone pile is one already; the
--- driftwood belongs to the beach) and the three stone cairn shapes of
--- grug_nodes, and the default blocks its ruins, crypt and graveyard fences
--- are built from (cobble, stone brick, stone block, the three silver
--- sandstones, the junglewood fence): 122 -> 148; dirt, gravel, mossy cobble
--- and stone, surface rows already, take the decoration role too (mask 9,
--- as mud), so the kit may place them.
+-- (decoration role): 116 -> 122. Round 51 lane LG: the swamp moss and the
+-- four clay bands (surface role) and the hanging moss strand (decoration
+-- role): 122 -> 128. Round 51 lane LK added the land kit
+-- (decoration role): 18 of its props (the bone pile is one already) and
+-- the three stone cairn shapes of grug_nodes, and the default blocks its
+-- ruins, crypt and graveyard fences are built from (cobble, stone brick,
+-- stone block, the three silver sandstones, the junglewood fence):
+-- 128 -> 156; dirt, gravel, mossy cobble and stone, surface rows already,
+-- take the decoration role too (mask 9, as mud), so the kit may place them.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -113,11 +114,17 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_nodes:cairn_cap", 8},
 		{"grug_nodes:cairn_course", 8},
 		{"grug_nodes:cairn_twig", 8},
+		{"grug_nodes:clay_band_chalk", 1},
+		{"grug_nodes:clay_band_ochre", 1},
+		{"grug_nodes:clay_band_sienna", 1},
+		{"grug_nodes:clay_band_umber", 1},
 		{"grug_nodes:dirt_with_bone_litter", 1},
 		{"grug_nodes:dirt_with_canopy_litter", 1},
 		{"grug_nodes:dirt_with_forest_litter", 1},
 		{"grug_nodes:dirt_with_moss", 1},
 		{"grug_nodes:dirt_with_silver_litter", 1},
+		{"grug_nodes:driftwood_fork", 8},
+		{"grug_nodes:driftwood_log", 8},
 		{"grug_nodes:gravestone_cross", 8},
 		{"grug_nodes:gravestone_fallen", 8},
 		{"grug_nodes:gravestone_stele", 8},
@@ -137,6 +144,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_nodes:statue_mourner_base", 8},
 		{"grug_nodes:statue_mourner_upper", 8},
 		{"grug_nodes:statue_veiled_head", 8},
+		{"grug_nodes:swamp_moss", 1},
 		{"grug_trees:acacia_base", 8},
 		{"grug_trees:acacia_branch", 8},
 		{"grug_trees:acacia_quarter", 8},
@@ -170,6 +178,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_trees:silverwood_tree", 8},
 		{"grug_trees:silverwood_twig", 8},
 		{"grug_trees:swamp_hanging_moss", 8},
+		{"grug_trees:swamp_hanging_moss_strand", 8},
 		{"grug_trees:swamp_leaves", 8},
 	}
 	local P9G_NAMES = {
@@ -277,7 +286,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 148 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 156 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 
