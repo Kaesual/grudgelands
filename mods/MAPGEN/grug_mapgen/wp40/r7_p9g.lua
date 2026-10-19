@@ -194,6 +194,12 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			"successor dependencies")
 		local full_seed = dependencies.full_seed_string
 		local hash = dependencies.hash
+		-- The world's query bounds (`source/simple_map.lua` world_bounds).
+		local world_bounds = type(dependencies.source) == "table" and
+			dependencies.source.world_bounds
+		if type(world_bounds) ~= "table" then fail("successor world bounds missing") end
+		local WORLD_MIN_X, WORLD_MAX_X = world_bounds.min_x, world_bounds.max_x
+		local WORLD_MIN_Z, WORLD_MAX_Z = world_bounds.min_z, world_bounds.max_z
 		local production = dependencies.content.content_contract()
 		if dependencies.runtime_mode ~= nil and
 				type(dependencies.runtime_mode) ~= "boolean" then
@@ -533,7 +539,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 						local eligible, routed_eligible = 0, 0
 						for z = cell_z * 16, cell_z * 16 + 15 do
 							for x = cell_x * 16, cell_x * 16 + 15 do
-								if x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 then
+								if x >= WORLD_MIN_X and x <= WORLD_MAX_X and
+										z >= WORLD_MIN_Z and z <= WORLD_MAX_Z then
 									local _, _, _, _, _, surface_y =
 										context.column_values_at(x, z)
 									if surface_y >= 1 and not geographic_reason(context,

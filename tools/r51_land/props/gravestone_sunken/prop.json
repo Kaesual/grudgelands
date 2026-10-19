@@ -1,0 +1,40 @@
+{
+  "name": "Gravestone, sunken leaning stele",
+  "drop": "default:cobble",
+  "tiles": [
+    "gravestone_sunken_top.png",
+    "gravestone_sunken_bottom.png",
+    "gravestone_sunken_right.png",
+    "gravestone_sunken_left.png",
+    "gravestone_sunken_back.png",
+    "gravestone_sunken_front.png"
+  ],
+  "boxes": [
+    [
+      -5,
+      -8,
+      -1,
+      4,
+      -5,
+      2
+    ],
+    [
+      -4,
+      -5,
+      0,
+      5,
+      -2,
+      3
+    ],
+    [
+      -2,
+      -2,
+      1,
+      4,
+      0,
+      4
+    ]
+  ],
+  "rotate": true,
+  "note": "Half-height stele with its foot buried; offset courses lean right and back beneath a narrower crown. Mix with gravestone_slab, gravestone_cross and gravestone_fallen."
+}

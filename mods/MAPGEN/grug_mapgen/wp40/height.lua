@@ -84,8 +84,11 @@ local function height_factory(dependencies)
 	end
 
 	local WATER_LEVEL = 1
-	-- Same query bounds as zones.lua; outside them the world is deep sea.
-	local MIN_X, MAX_X, MIN_Z, MAX_Z = -3740, 3740, -3340, 3340
+	-- The world's query bounds (`source/simple_map.lua` world_bounds, as in
+	-- zones.lua); outside them the world is deep sea.
+	local world_bounds = assert(source.world_bounds, "WP40 height world bounds missing")
+	local MIN_X, MAX_X, MIN_Z, MAX_Z = world_bounds.min_x, world_bounds.max_x,
+		world_bounds.min_z, world_bounds.max_z
 	local OUTSIDE_FLOOR = WATER_LEVEL - 24
 	local FEATURE_CELL = 128
 	-- Boat water floor (y) and the landing approach radius / ramp in nodes.

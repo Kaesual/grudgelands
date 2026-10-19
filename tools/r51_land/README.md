@@ -243,6 +243,91 @@ and compositions were inspected visually. Upgrade classification:
 no changes under `mods/`, no Lua or viewer changes. User selection and the
 coordinator's independent integration review remain open.
 
+## ARTL pass 3: sparse lichen and undead memorials
+
+Rework after the user's first look, **2026-10-19**. Original **GPT-6 Astra**
+art, **CC0-1.0**, generated with installed Pillow:
+
+```sh
+python3 -I tools/r51_land/land_art.py
+python3 -I tools/r51_land/props_art.py
+python3 -I tools/r51_land/land_art.py --check
+python3 -I tools/r51_land/props_art.py --check
+```
+
+Run the land generator first: the new prop preview reads its three lichen
+files. Both `--check` commands validate and compare outputs without writing.
+The land generator now writes 15 plant textures, including the archived
+lichen; the prop generator writes 19 folders. The pass-1 and pass-2 preview
+sheets remain historical comparisons, byte-identical to their earlier
+versions, as do the 15 existing props and all unrelated textures.
+
+- **Lichen:** `plants/lichen_carpet_top.png` and
+  `plants/lichen_carpet_top_b.png`, **16 × 16 RGBA**, each have **39 opaque
+  texels out of 256** (15.23% cover, **84.77% transparent**). Each tile has
+  three small, lobed grey-green/pale-grey crusts and three dull ochre flecks.
+  Only alpha **0 or 255** is used, with zero RGB beneath transparent pixels.
+  A and B differ in placement and orientation; their mixed repeat is shown
+  alongside the individual repeats. Retain binary clipping when integrating
+  the horizontal carpet. The filename of A is unchanged for viewer pickup;
+  the old PNG survives byte-for-byte as `lichen_carpet_top_v1.png`.
+  No saturated orange, copper-green mineral marks or luminous pixels are
+  proposed. This changes appearance only; VIEW owns the requested lower
+  placement frequency, and the existing drop decision is unaffected.
+- **`prop.statue_mourner_base`**, *Mourner, kneeling robe and knees*:
+  cracked dark stone, two forward knees and a folded robe with restrained
+  olive moss; **9 boxes**, drop **`default:stone`**. It also works as a
+  broken lower fragment. For **`undead.statue`**, put
+  **`prop.statue_mourner_upper`**, *Mourner, bowed hood and clasped hands*,
+  directly above, with the **same quarter-turn**: **14 boxes**, also
+  **`default:stone`**. The upper piece contains shoulders, hands and the
+  whole bowed, empty hood, and can rest on its broken waist as a separate
+  bust. This is a dark, closed mourning pose, distinct from the pale elf
+  head/torso pair. There are no glowing features. The base's top and upper
+  piece's bottom share `x = -4..4, z = -1..4` at their node boundary.
+- **`prop.gravestone_fallen`**, *Gravestone, fallen split stele*:
+  **4 boxes**, drop **`default:cobble`**. Two ground-touching fragments,
+  two sixteenths thick, have an open break and the old stele's eroded
+  diamond on the upward face; both fragments belong to one node.
+- **`prop.gravestone_sunken`**, *Gravestone, sunken leaning stele*:
+  **3 boxes**, drop **`default:cobble`**. Its eight-sixteenth height is
+  half the upright stele's; offset courses suggest a lean to the right
+  and back, with a mossy soil line and no exposed pedestal. Both new
+  gravestones use the existing slab/cross palette and engraving language.
+  The wild study mixes all four types as five memorials with a broken fence.
+
+Every new prop has `prop.json` and six **16 × 16 opaque RGBA** textures in
+the binding **+Y, -Y, +X, -X, +Z, -Z** order; the unchanged format below
+applies. All geometry stays inside the node, touches the ground when used
+alone, and uses integer sixteenths and quarter-turns. No decorative
+mushrooms, new bone props or density prescriptions are introduced.
+
+[preview-pass3.png](preview-pass3.png) is **1600 × 4214 RGBA**, with light
+and dark panels. Old lichen, A, B and a mixed A/B patch each cover a
+**4 × 4-node** gravel and stone study, each at **1× and 4×**. These
+preview-only substrates are original CC0 material studies, not the game's
+ground textures or new replacement proposals. A filled 4 × 4 repeat tests
+the artwork; it does not prescribe how frequently carpets occur in a zone.
+Every new prop appears from the front and in three-quarter view at **1×
+and 4×**, with face-strip diagnostics, its key, name and drop. An assembled
+mourner also appears from both angles, followed by a wild graveyard and
+the statue on blight dirt and bone litter; both statue scenes include a
+detached bust and a sunken stone. All enlargement is nearest-neighbour.
+This uses pass 2's orthographic box renderer, without engine lighting.
+
+Delivery checks: all **19** delivered `prop.json` files and **114**
+referenced tiles reopened and validated against the format; both generators
+reproduce their outputs byte-for-byte. Lichen alpha, coverage, dimensions,
+periods and hashes are in [artl-checks.json](artl-checks.json); prop bounds,
+tile/spec hashes and both prop-preview hashes are in
+[props-checks.json](props-checks.json). Native/enlarged views, stacking
+contacts, ground contacts and both preview backgrounds were inspected.
+
+Upgrade classification: **compatible**, art proposals only. No changes under
+`mods/`, no Lua, viewer edits, fixtures, engine runs or agents, as requested.
+The user's pick and coordinator's integration review and desktop/web
+appearance checks remain open.
+
 ## Prop format (lane VIEW, for ARTL and LK)
 
 A prop is **one node** drawn as a node box: a PNG set plus a box list. The
@@ -390,7 +475,7 @@ third-party art occur in these individual assets.
 | [flower_cream_cups.png](plants/flower_cream_cups.png) | 16 × 16 RGBA | CC0-1.0 | Small open cream cups above modest green leaves. |
 | [withered_bush_leaves.png](plants/withered_bush_leaves.png) | 16 × 16 RGBA | CC0-1.0 | Curled dry yellow leaves and a few exposed brown twigs. |
 | [jungle_bush_leaves.png](plants/jungle_bush_leaves.png) | 16 × 16 RGBA | CC0-1.0 | Broad overlapping leaves with subdued central folds and open gaps. |
-| [lichen_carpet_top.png](plants/lichen_carpet_top.png) | 16 × 16 RGBA | CC0-1.0 | Dull grey and earthy orange lobes forming a thin broken crust. |
+| [lichen_carpet_top_v1.png](plants/lichen_carpet_top_v1.png) | 16 × 16 RGBA | CC0-1.0 | Original pass-1 grey/orange crust, archived byte-for-byte in pass 3; shown in the historical pass-1 sheet. |
 | [alpine_cushion.png](plants/alpine_cushion.png) | 16 × 16 RGBA | CC0-1.0 | Compact grey-sage cushion hugging the gravel. |
 | [alpine_windshrub.png](plants/alpine_windshrub.png) | 16 × 16 RGBA | CC0-1.0 | Low woody evergreen with short folded leaves above the snow. |
 | [land_art.py](land_art.py) | Python source | CC0-1.0 | Original deterministic drawing, source rendering, preview layout and image checks, reusing the documented CC0 helpers. |
@@ -487,3 +572,35 @@ face shading, repetition, nearest-neighbour enlargement and labels.
 | [obelisk_broken_tip](props/obelisk_broken_tip/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Fractured grey taper above an ordinary stone shaft; `default:stone`. |
 | [driftwood_log](props/driftwood_log/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Bleached grey log with exposed grain and broken end rings; `default:wood` recommended. |
 | [driftwood_fork](props/driftwood_fork/) | JSON + 6 × 16 × 16 RGBA | CC0-1.0 | Thin weathered fork on the sand; `default:stick` recommended. |
+
+### ARTL pass 3 media
+
+Original **GPT-6 Astra**, **2026-10-19**, dedicated to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). Every new bitmap
+starts on a blank canvas; every box and mark is authored in the generators.
+No downloaded, traced or recoloured third-party source art is used.
+The preview uses the original gravel/stone studies in `props_art.py`, the
+CC0 blight and bone-litter grounds from pass 1, existing CC0 props from
+pass 2, and the Round 47 CC0 pixel font recorded above. Its operations are
+alpha compositing, repetition, projection, fixed face shading, cropping,
+nearest-neighbour scaling and labels. Both generators and both JSON check
+records retain the CC0 dedication recorded above, including their pass-3
+extensions.
+
+| File | Size | Licence | Source / idea / modifications |
+| --- | --- | --- | --- |
+| [lichen_carpet_top.png](plants/lichen_carpet_top.png) | 16 × 16 RGBA | CC0-1.0 | `land_art.py`: replacement A, small open grey-green and pale-grey crusts, three dull ochre flecks. |
+| [lichen_carpet_top_b.png](plants/lichen_carpet_top_b.png) | 16 × 16 RGBA | CC0-1.0 | `land_art.py`: alternative B, repositioned and turned colonies with the same sparse coverage. |
+| [lichen_carpet_top_v1.png](plants/lichen_carpet_top_v1.png) | 16 × 16 RGBA | CC0-1.0 | `land_art.py`: unchanged pass-1 output under an archive name, for comparison only. |
+| [preview-pass3.png](preview-pass3.png) | 1600 × 4214 RGBA | CC0-1.0 | `props_art.py`: lichen comparison, four props, mourner assembly, mixed graves and two undead ground contexts. |
+
+For each prop below the media record covers the explicitly listed six
+**16 × 16 RGBA** files plus **`prop.json`** in that folder. Source:
+[props_art.py](props_art.py); licence: **CC0-1.0** for every file.
+
+| Prop folder | Files | Idea / drop |
+| --- | --- | --- |
+| [statue_mourner_base](props/statue_mourner_base/) | `prop.json`, `statue_mourner_base_top.png`, `statue_mourner_base_bottom.png`, `statue_mourner_base_right.png`, `statue_mourner_base_left.png`, `statue_mourner_base_back.png`, `statue_mourner_base_front.png` | Kneeling dark-stone lower body, cracked robe and mossy knees; `default:stone`. |
+| [statue_mourner_upper](props/statue_mourner_upper/) | `prop.json`, `statue_mourner_upper_top.png`, `statue_mourner_upper_bottom.png`, `statue_mourner_upper_right.png`, `statue_mourner_upper_left.png`, `statue_mourner_upper_back.png`, `statue_mourner_upper_front.png` | Bowed hollow hood, clasped hands, worn shoulders, broken waist; `default:stone`. |
+| [gravestone_fallen](props/gravestone_fallen/) | `prop.json`, `gravestone_fallen_top.png`, `gravestone_fallen_bottom.png`, `gravestone_fallen_right.png`, `gravestone_fallen_left.png`, `gravestone_fallen_back.png`, `gravestone_fallen_front.png` | Two flat pieces with an open break and weathered upward engraving; `default:cobble`. |
+| [gravestone_sunken](props/gravestone_sunken/) | `prop.json`, `gravestone_sunken_top.png`, `gravestone_sunken_bottom.png`, `gravestone_sunken_right.png`, `gravestone_sunken_left.png`, `gravestone_sunken_back.png`, `gravestone_sunken_front.png` | Half-buried, offset stele sharing the existing graves' stone and diamond; `default:cobble`. |

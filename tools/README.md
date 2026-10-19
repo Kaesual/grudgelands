@@ -1469,3 +1469,20 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `core.emerge_area` generated its area (a node set into a chunk not yet
   generated makes the refinement refuse the chunk).
 - **Round 51 lane ARTS** ([`r51_sea`](r51_sea/README.md)): original CC0 seagrass and wreck textures, deterministic Pillow generator (`python3 -I tools/r51_sea/sea_art.py`, `--check`), and the attributed sea-art comparison sheet.
+- **Round 51 lane TERRAIN** (`r51_terrain`): T1, the larger world
+  (`portable_test.lua`: the bounds agree in every place and the new ring
+  reads as open sea; `compare.lua REPO SEED OUT` dumps the world inside the
+  old bounds for a before/after diff, `diff_dumps.py BEFORE AFTER` summarises
+  two dumps, `grid_cost.lua REPO SEED [N]` the terrain grids' build time and
+  heap; `mgprof_extra.lua` the edge and ring chunks for `tools/mgprof/run.sh`
+  (`PROBE_EXTRA=`); `grug_probe_r51_terrain` reads the new ring in the engine,
+  `PROBE=` of the smoke boot).
+- **Round 51 lane NAMES** (`r51_names`, design only, no fixture): the water
+  families' ladders and names. `survey.sh` (through the Lua queue, 4
+  processes) runs `water_survey.lua` per seed: the game's region builder
+  counts per zone belt the cells near sea water and near lakes and rivers
+  (`survey/seed_<seed>.json`); `build.py [--check]` expands `design.json`
+  over the belts into `draft.json` (sub-type rows, world slots, zone slots
+  in the Round 38 proposal format) and the preview page `page.html`
+  (`page_local.html` for file://); `check_draft.py` runs the Round 38 name
+  gates over today's names plus the draft.

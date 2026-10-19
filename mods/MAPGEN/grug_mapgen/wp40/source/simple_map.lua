@@ -18,7 +18,17 @@ local source = {
 	layout_id = "wp40-simple-map-v1d",
 	layout_revision_id = "wp40-simple-map-v1e",
 	height_revision_id = "wp40-height-shore-v6",
+	-- The land's extent: every placed anchor lies in it (`placement.lua`),
+	-- and the zone field's construction check covers it (`zone_field.check`
+	-- below). Not a world bound: the world reaches further, as open sea.
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
+	-- The world's query bounds (Round 51 T1, sea plan ruling 2: 450 nodes
+	-- wider in x and 400 in z than the +-3740 x +-3340 before). Inside them
+	-- the zones, height and simple-map sessions and the planners answer;
+	-- outside them every query reads open sea with a flat floor at y -23.
+	-- `world_protection.lua` M.BOUNDS, `terrain_data.lua`'s grids and
+	-- `grug_core/preparation_plan.lua` follow them (tools/r51_terrain checks).
+	world_bounds = {min_x = -4190, max_x = 4190, min_z = -3740, max_z = 3740},
 	shelf_width = 80,
 }
 

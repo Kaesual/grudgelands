@@ -46,8 +46,9 @@ M.BOX_ABOVE = 10
 M.PVP_MARGIN = 10
 -- Segments per registered run.
 M.CHUNK = 16
--- The world's query bounds (`zones.lua` and `height.lua` MIN_X .. MAX_Z).
-M.BOUNDS = {min_x = -3740, max_x = 3740, min_z = -3340, max_z = 3340}
+-- The world's query bounds (`source/simple_map.lua` world_bounds, which
+-- `zones.lua` and `height.lua` read; tools/r51_terrain checks they agree).
+M.BOUNDS = {min_x = -4190, max_x = 4190, min_z = -3740, max_z = 3740}
 
 local floor, abs, min, max = math.floor, math.abs, math.min, math.max
 

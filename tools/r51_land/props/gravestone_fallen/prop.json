@@ -1,0 +1,48 @@
+{
+  "name": "Gravestone, fallen split stele",
+  "drop": "default:cobble",
+  "tiles": [
+    "gravestone_fallen_top.png",
+    "gravestone_fallen_bottom.png",
+    "gravestone_fallen_right.png",
+    "gravestone_fallen_left.png",
+    "gravestone_fallen_back.png",
+    "gravestone_fallen_front.png"
+  ],
+  "boxes": [
+    [
+      -5,
+      -8,
+      -7,
+      4,
+      -6,
+      -2
+    ],
+    [
+      -4,
+      -8,
+      -2,
+      4,
+      -6,
+      -1
+    ],
+    [
+      -4,
+      -8,
+      1,
+      5,
+      -6,
+      5
+    ],
+    [
+      -3,
+      -8,
+      5,
+      4,
+      -6,
+      7
+    ]
+  ],
+  "rotate": true,
+  "note": "The weathered stele lies in two ground-touching pieces, its diamond face upward and an open break between them; mix with slab, cross and sunken stones."
+}

@@ -1,0 +1,143 @@
+{
+ "notes": "Round 51 lane NAMES: the hand-written design (families, habitats, tiers, names). build.py expands it over the zones' belts and the water survey into draft.json and the preview page. Edit this file, then rerun build.py.",
+ "habitats": {
+  "shore": {"label": "Sea shore", "text": "Sea water up to about 16 nodes from dry land (or about 6-8 nodes deep) and the beach above it. Only mobs that follow a player ashore live here.", "rulings": ["S10"]},
+  "belt": {"label": "Shelf and belt", "text": "Sea water farther out inside the zone: the shelf, the wider coastal belt and the bay rims. It belongs to the zone on land (level, faction, PvP). Pure swimmers live here.", "rulings": ["S5", "S10", "S12"]},
+  "bay_deep": {"label": "Deep bay middle", "text": "The deep middle of a bay; it may be deadly for new players.", "rulings": ["S12"]},
+  "channel": {"label": "Dragon channel", "text": "The shallow organic channels to the dragon islands; they take their island's mob level.", "rulings": ["S6"]},
+  "open_sea": {"label": "Open sea", "text": "Beyond the belt. Elites only here.", "rulings": ["S13"]},
+  "freshwater": {"label": "Lakes and rivers", "text": "Lakes, rivers and swamp pools (swamp pools count as lake in the water query, round plan T2).", "rulings": ["S15"]},
+  "cave_water": {"label": "Cave water", "text": "Pools in caves. No family proposed.", "rulings": []}
+ },
+ "tiers": {
+  "T1": [1, 10], "T2": [11, 20], "T3": [20, 30], "T4": [31, 40], "T5": [41, 50], "T6": [51, 60]
+ },
+ "tier_note": "Drop tier = floor((level - 1) / 10) + 1. T3 starts at 20 so a capital's L20-23 belt takes the T3 name (it counts as T3, naming rule 4); T2 ends at 20 so an L18-20 belt takes the T2 name.",
+ "families": [
+  {
+   "id": "tortoise", "status": "new", "label": "Tortoise",
+   "behaviour": "neutral", "behaviour_text": "Neutral beast: bites back when attacked, normal XP and loot.",
+   "follows_ashore": true,
+   "habitats": ["shore", "freshwater"],
+   "base": "grug_mobs:tortoise",
+   "source": {"project": "animalworld", "files": ["reference_projects/animalworld/tortoise.lua", "reference_projects/animalworld/models/Tortoise.b3d", "reference_projects/animalworld/textures/texturetortoise.png"], "licence": "MIT (code and media)", "facts": "type animal, not passive, has a punch animation (frames from 300), walk speed 0.2"},
+   "why": "Ruling S15 names it: the neutral water beast on shores and at lakes, at zone level. Slow, so a player can always walk away.",
+   "roles": [
+    {"role": "tortoise_t1", "tier": "T1", "name": "Pond Terrapin", "size": 0.8},
+    {"role": "tortoise_t2", "tier": "T2", "name": "Sandbar Tortoise", "size": 0.9},
+    {"role": "tortoise_t3", "tier": "T3", "name": "Knobshell Tortoise", "size": 1.0},
+    {"role": "tortoise_t4", "tier": "T4", "name": "Ridgeshell Tortoise", "size": 1.15},
+    {"role": "tortoise_t5", "tier": "T5", "name": "Ironshell Tortoise", "size": 1.3},
+    {"role": "tortoise_t6", "tier": "T6", "name": "Stoneback Tortoise", "size": 1.45}
+   ]
+  },
+  {
+   "id": "frog", "status": "new", "label": "Frog",
+   "behaviour": "aggressive", "behaviour_text": "Hostile amphibian: hops after a player through water and onto the bank.",
+   "follows_ashore": true,
+   "habitats": ["freshwater"],
+   "base": "grug_mobs:frog",
+   "source": {"project": "animalworld", "files": ["reference_projects/animalworld/frog.lua", "reference_projects/animalworld/models/Frog.b3d", "reference_projects/animalworld/textures/texturefrog.png"], "licence": "MIT (code and media)", "facts": "type animal, passive in the source, walks and swims (fly_in water); no punch animation, so the port bites with its walk frames (an open question for the user)"},
+   "why": "The one hostile family for lakes, rivers and swamp pools in every zone: today the banks hold only land mobs, and the crocodile only three swamp zones.",
+   "roles": [
+    {"role": "frog_t1", "tier": "T1", "name": "Marsh Frog", "size": 1.0},
+    {"role": "frog_t2", "tier": "T2", "name": "Bog Toad", "size": 1.15},
+    {"role": "frog_t3", "tier": "T3", "name": "Fen Croaker", "size": 1.3},
+    {"role": "frog_t4", "tier": "T4", "name": "Mire Bullfrog", "size": 1.45},
+    {"role": "frog_t5", "tier": "T5", "name": "Wartback Toad", "size": 1.6},
+    {"role": "frog_t6", "tier": "T6", "name": "Blackwater Toad", "size": 1.8}
+   ]
+  },
+  {
+   "id": "stingray", "status": "new", "label": "Stingray",
+   "behaviour": "aggressive", "behaviour_text": "Hostile pure swimmer: glides over the seabed; resets and swims off when its target leaves the water (S11).",
+   "follows_ashore": false,
+   "habitats": ["belt", "channel"],
+   "base": "grug_mobs:stingray",
+   "source": {"project": "animalworld", "files": ["reference_projects/animalworld/stingray.lua", "reference_projects/animalworld/models/Stingray.b3d", "reference_projects/animalworld/textures/texturestingray.png"], "licence": "MIT (code and media)", "facts": "type monster, dogfight attack, swims (fly), has a punch animation (frames from 200)"},
+   "why": "The one hostile family of the shelf, the coastal belt, the bay rims and the channels, at zone level (channels: island level). It keeps away from the bank (S10), so nobody fights it from land.",
+   "roles": [
+    {"role": "stingray_t1", "tier": "T1", "name": "Sand Ray", "size": 0.8},
+    {"role": "stingray_t2", "tier": "T2", "name": "Shoal Ray", "size": 0.9},
+    {"role": "stingray_t3", "tier": "T3", "name": "Barbtail Ray", "size": 1.0},
+    {"role": "stingray_t4", "tier": "T4", "name": "Thornback Ray", "size": 1.2},
+    {"role": "stingray_t6", "tier": "T6", "name": "Wyrmwake Ray", "size": 1.5}
+   ]
+  },
+  {
+   "id": "shark", "status": "new", "label": "Shark",
+   "behaviour": "aggressive", "behaviour_text": "Hostile pure swimmer with fixed levels: the Bay Shark in the deep bay middles, the Abyssal Shark (scaled about 2.5 times, a seldom spawn) in the open sea.",
+   "follows_ashore": false,
+   "habitats": ["bay_deep", "open_sea"],
+   "base": "grug_mobs:shark",
+   "source": {"project": "animalworld", "files": ["reference_projects/animalworld/shark.lua", "reference_projects/animalworld/models/Shark.b3d", "reference_projects/animalworld/textures/textureshark.png"], "licence": "MIT (code and media)", "facts": "type monster, dogfight attack, swims (fly), has a punch animation (frames from 100)"},
+   "why": "Rulings S12 and S13 name both: the Bay Shark (fixed L30, normal) and the Abyssal Shark (elite, open sea, next to the Kraken). World slots: one name, one level everywhere (contract item 3)."
+  },
+  {
+   "id": "goby", "status": "new", "label": "Goby",
+   "behaviour": "critter", "behaviour_text": "Critter fish: swims anywhere in sea water for atmosphere, flees, drops fish (S14). Never a kill target.",
+   "follows_ashore": false,
+   "habitats": ["shore", "belt", "bay_deep", "channel"],
+   "base": "grug_mobs:goby",
+   "source": {"project": "animalworld", "files": ["reference_projects/animalworld/goby.lua", "reference_projects/animalworld/models/Goby.b3d", "reference_projects/animalworld/textures/texturegoby.png"], "licence": "MIT (code and media)", "facts": "type animal, passive, swims (fly_in water)"},
+   "why": "The sea's one critter fish, as the Reed Angelfish is the lakes'. Same API as our mobs (mobs_redo), MIT, so a cheap port."
+  },
+  {
+   "id": "crab", "status": "existing", "label": "Crab",
+   "behaviour": "mixed", "behaviour_text": "Shown as it is: the shore ladder, neutral and hostile sub-types by level band, on sandy sea shore.",
+   "follows_ashore": true, "habitats": ["shore"], "base": "grug_mobs:shore_crab",
+   "source": {"project": "animalworld (vendored)", "files": ["mods/ENTITIES/grug_mobs/shore_crab.lua", "mods/ENTITIES/grug_mobs/data/subtypes.json"], "licence": "MIT", "facts": "the pattern the new families follow (sea plan section 5)"},
+   "why": "Stays (brief). The quest-ready pattern: one family, sub-types by level band, a shore kind of each zone recipe, names per slot."
+  },
+  {
+   "id": "crocodile", "status": "existing", "label": "Crocodile",
+   "behaviour": "aggressive", "behaviour_text": "Shown as it is: ambushes on swamp banks and shores of three troll and undead zones.",
+   "follows_ashore": true, "habitats": ["freshwater", "shore"], "base": "grug_mobs:crocodile",
+   "source": {"project": "animalworld (vendored)", "files": ["mods/ENTITIES/grug_mobs/crocodile.lua", "mods/ENTITIES/grug_mobs/data/subtypes.json"], "licence": "MIT", "facts": "sub-types reed_crocodile L11-30, reed_maw_crocodile L30"},
+   "why": "Stays (brief)."
+  },
+  {
+   "id": "reed_angelfish", "status": "existing", "label": "Reed Angelfish",
+   "behaviour": "critter", "behaviour_text": "Shown as it is: the lakes' critter fish, one Raw Fish per kill.",
+   "follows_ashore": false, "habitats": ["freshwater"], "base": "grug_mobs:reed_angelfish",
+   "source": {"project": "animalia (vendored)", "files": ["mods/ENTITIES/grug_mobs/reed_angelfish.lua"], "licence": "MIT", "facts": "independent water spawn authority, world slot L1"},
+   "why": "Stays (brief)."
+  },
+  {
+   "id": "kraken", "status": "existing", "label": "Kraken",
+   "behaviour": "aggressive", "behaviour_text": "Shown as it is: the open-sea guard, fixed L70 elite.",
+   "follows_ashore": false, "habitats": ["open_sea"], "base": "grug_mobs:kraken",
+   "source": {"project": "VoxeLibre squid (vendored)", "files": ["mods/ENTITIES/grug_mobs/kraken.lua"], "licence": "GPL-3.0-or-later model, CC BY-SA 4.0 texture", "facts": "independent water spawn authority in deep-ocean columns, world slot L70"},
+   "why": "Stays (S13)."
+  }
+ ],
+ "world_slots": [
+  {"key": "world/bay_shark/L30-30", "family": "shark", "entity": "grug_mobs:bay_shark", "name": "Bay Shark", "tier": "normal", "level": 30, "habitats": ["bay_deep"], "status": "new", "size": 1.0, "why": "S12: a fixed level 30, normal tier, in the deep middle of the four bays."},
+  {"key": "world/abyssal_shark/L70-70", "family": "shark", "entity": "grug_mobs:abyssal_shark", "name": "Abyssal Shark", "tier": "elite", "level": 70, "habitats": ["open_sea"], "status": "new", "size": 2.5, "why": "S13: an elite shark scaled two to three times, a seldom spawn in the open sea next to the Kraken. Level 70 like the Kraken, so the open sea has one level (an open question for the user)."},
+  {"key": "world/goby/L1-1", "family": "goby", "entity": "grug_mobs:goby", "name": "Tide Goby", "tier": "critter", "level": 1, "habitats": ["shore", "belt", "bay_deep", "channel"], "status": "new", "size": 1.0, "why": "S10, S14: the sea's critter fish, anywhere in sea water, fish loot."},
+  {"key": "world/kraken/L70-70", "family": "kraken", "entity": "grug_mobs:kraken", "name": "Kraken", "tier": "elite", "level": 70, "habitats": ["open_sea"], "status": "existing", "why": "Stays (S13)."},
+  {"key": "world/reed_angelfish/L1-1", "family": "reed_angelfish", "entity": "grug_mobs:reed_angelfish", "name": "Reed Angelfish", "tier": "critter", "level": 1, "habitats": ["freshwater"], "status": "existing", "why": "Stays."}
+ ],
+ "left_out": [
+  {"id": "otter", "label": "Otter", "habitat": "lakes and rivers, start-zone shore", "behaviour": "would be neutral or hostile", "source": "reference_projects/animalworld/otter.lua (MIT); passive, no punch animation", "why": "Frog and tortoise already cover the banks; a third bank family would make water a second land (S18). First reserve if the banks feel thin."},
+  {"id": "beaver", "label": "Beaver", "habitat": "rivers", "behaviour": "hostile", "source": "reference_projects/animalworld/beaver.lua (MIT); type monster, has a punch animation", "why": "Overlaps the frog. The alternative to the frog if a bite animation matters (an open question for the user)."},
+  {"id": "hermit_crab", "label": "Hermit crab", "habitat": "start-zone shore", "behaviour": "critter or neutral", "source": "reference_projects/animalworld/hermitcrab.lua (MIT); passive, no punch animation", "why": "The crab ladder already holds the start-zone shores (L3-10)."},
+  {"id": "lobster", "label": "Lobster", "habitat": "shelf seabed", "behaviour": "hostile walker", "source": "reference_projects/animalworld/lobster.lua (MIT); has a punch animation", "why": "A seabed walker next to the crab and the stingray; one family too many for the shelf."},
+  {"id": "manatee", "label": "Manatee", "habitat": "kelp in the belt, channels", "behaviour": "neutral swimmer", "source": "reference_projects/animalworld/manatee.lua (MIT); has a punch animation", "why": "The tortoise is the neutral water beast. Reserve for the kelp belt if the belt feels empty."},
+  {"id": "squid", "label": "Squid (small Kraken)", "habitat": "belt", "behaviour": "hostile swimmer", "source": "the vendored Kraken mesh at a small scale (mods/ENTITIES/grug_mobs/models/grug_mobs_kraken.b3d); also reference_projects/animalworld/squid.lua (MIT)", "why": "The cheapest second belt family (no port), but a small Kraken would blur the Kraken's look. Reserve."},
+  {"id": "tropical_fish", "label": "Tropical fish (VoxeLibre)", "habitat": "reefs", "behaviour": "critter", "source": "reference_projects/VoxeLibre/mods/ENTITIES/mobs_mc/tropical_fish.lua, models extra_mobs_tropical_fish_a/b.b3d (GPL-3.0 models, CC BY-SA textures)", "why": "The goby is the sea's one critter fish; a VoxeLibre port also brings share-alike media."},
+  {"id": "salmon", "label": "Salmon (VoxeLibre)", "habitat": "river mouths", "behaviour": "critter", "source": "reference_projects/VoxeLibre/mods/ENTITIES/mobs_mc/salmon.lua (GPL-3.0 model)", "why": "Critter role taken by the goby and the Reed Angelfish."},
+  {"id": "cod", "label": "Cod schools (VoxeLibre)", "habitat": "belt", "behaviour": "critter", "source": "reference_projects/VoxeLibre/mods/ENTITIES/mobs_mc/cod.lua (GPL-3.0 model)", "why": "Critter role taken by the goby; schools cost objects."},
+  {"id": "dolphin", "label": "Dolphin groups (VoxeLibre)", "habitat": "belt", "behaviour": "neutral", "source": "reference_projects/VoxeLibre/mods/ENTITIES/mobs_mc/dolphin.lua (GPL-3.0 model)", "why": "Groups cost objects and a group behaviour we do not have; not needed for levels."},
+  {"id": "glow_squid", "label": "Glow squid (VoxeLibre)", "habitat": "open sea at night", "behaviour": "critter", "source": "reference_projects/VoxeLibre/mods/ENTITIES/mobs_mc/glow_squid.lua (GPL-3.0 model)", "why": "Atmosphere only, where nobody swims; later if wanted."},
+  {"id": "carp", "label": "Carp", "habitat": "lakes", "behaviour": "critter", "source": "reference_projects/animalworld/carp.lua (MIT)", "why": "The Reed Angelfish already is the lakes' critter fish."},
+  {"id": "trout", "label": "Trout", "habitat": "rivers", "behaviour": "critter", "source": "reference_projects/animalworld/trout.lua (MIT)", "why": "As carp."},
+  {"id": "nymph", "label": "Nymph", "habitat": "lakes", "behaviour": "critter", "source": "reference_projects/animalworld/nymph.lua (MIT)", "why": "Atmosphere only; the lakes have the Reed Angelfish."},
+  {"id": "diving_beetle", "label": "Diving beetle", "habitat": "lakes", "behaviour": "critter (hostile in the source)", "source": "reference_projects/animalworld/divingbeetle.lua (MIT); no punch animation", "why": "As nymph."},
+  {"id": "hippo", "label": "Hippo", "habitat": "jungle and swamp lakes", "behaviour": "hostile", "source": "reference_projects/animalworld/hippo.lua (MIT); has a punch animation", "why": "The crocodile already holds the swamp and jungle waters."},
+  {"id": "seahorse", "label": "Seahorse", "habitat": "start-zone shore", "behaviour": "critter", "source": "reference_projects/animalworld/seahorse.lua (MIT)", "why": "The goby is the sea's one critter fish."},
+  {"id": "olm", "label": "Olm", "habitat": "cave water", "behaviour": "critter", "source": "reference_projects/animalworld/olm.lua (MIT)", "why": "Cave pools are rare and no ruling asks for them; atmosphere only."},
+  {"id": "seal", "label": "Seal", "habitat": "cold coasts", "behaviour": "-", "source": "reference_projects/animalworld/seal.lua (MIT)", "why": "Out of scope (S16)."},
+  {"id": "sea_turtle", "label": "Sea turtle", "habitat": "shore and belt", "behaviour": "-", "source": "no reference project has one", "why": "Out of scope (S15): a later art job."}
+ ]
+}
