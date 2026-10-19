@@ -120,6 +120,7 @@
 		'new:jungle_bush_leaves': leaves('plants/jungle_bush_leaves.png'),
 		'new:withered_bush_leaves': leaves('plants/withered_bush_leaves.png'),
 		'new:lichen': {draw: 'carpet', tiles: ['plants/lichen_carpet_top.png']},
+		'new:lichen_b': {draw: 'carpet', tiles: ['plants/lichen_carpet_top_b.png']},
 		'new:alpine_cushion': plant('plants/alpine_cushion.png'),
 		'new:alpine_windshrub': plant('plants/alpine_windshrub.png'),
 		// the cairn of tree shapes (ruling 13): the tree concept's connected
@@ -159,17 +160,11 @@
 		return 'itself (' + name + ')';
 	}
 
-	// Stand-in props in the prop format (tools/r51_land/README.md), tiles
-	// as texture strings of today's textures, for what ARTL has not drawn:
-	// the undead statue (ARTL's statue is the elves'). A prop ARTL delivers
-	// under tools/r51_land/props/<id>/ with the same id takes its place.
-	var STATUE = 'default_stone.png^[colorize:#8b8e84:50';
-	var STANDIN_PROPS = {
-		statue_body: {name: 'Statue body', drop: 'default:cobble', tiles: [STATUE],
-			boxes: [[-3, -8, -1, -1, 1, 1], [1, -8, -1, 3, 1, 1], [-4, 1, -2, 4, 8, 2], [-6, 0, -1, -4, 7, 1], [4, 0, -1, 6, 7, 1]]},
-		statue_head: {name: 'Statue head', drop: 'default:cobble', tiles: [STATUE],
-			boxes: [[-1, -8, -1, 1, -7, 1], [-3, -7, -3, 3, -1, 3]]}
-	};
+	// Stand-in props in the prop format (tools/r51_land/README.md), tiles as
+	// texture strings of today's textures, for a prop ARTL has not drawn
+	// (none at present). A prop under tools/r51_land/props/<id>/ with the
+	// same id takes its place.
+	var STANDIN_PROPS = {};
 	// The props ARTL delivers (build.py inlines tools/r51_land/props).
 	var ART_PROPS = (D && D.props) || {};
 	function propDef(id) {
@@ -283,7 +278,8 @@
 		{key: 'undead.stump', zones: ['undead'], name: 'Gravewood stump (log and broken branch shapes)', den: 4000, kit: 'gravewoodStump'},
 		{key: 'undead.grave_mound', zones: ['undead'], name: 'Earth grave mound (default dirt), now and then with a cross', den: 8000,
 			kit: 'graveMound'},
-		{key: 'undead.statue', zones: ['undead'], name: 'Weathered statue, rarely', den: 10000, standin: 'statue blocks', kit: 'statueUndead'},
+		{key: 'undead.statue', zones: ['undead'], name: 'Weathered statue, rarely: a kneeling mourner, or its bust or base alone', den: 10000,
+			kit: 'statueUndead'},
 		{key: 'undead.obelisk', zones: ['undead'], name: 'Weathered obelisk, rarely (a broken tip on a stone shaft)', den: 10000, kit: 'obelisk'},
 		{key: 'undead.bones', zones: ['undead'], name: 'Skeleton pieces, singly or a pair; replace the bone pile (L8, L9)', den: 2000,
 			kit: 'bones'},
@@ -292,6 +288,10 @@
 		{key: 'gravestone.slab', zones: ['undead'], name: 'Gravestone block: weathered stele (L12)', piece: 'gravestone_slab', kitOnly: true},
 		{key: 'gravestone.cross', zones: ['undead'], name: 'Gravestone block: cross, alone or as the crown on a stele (L12)',
 			piece: 'gravestone_cross', kitOnly: true},
+		{key: 'gravestone.fallen', zones: ['undead'], name: 'Gravestone block: a fallen, split stele (wild graveyards)',
+			piece: 'gravestone_fallen', kitOnly: true},
+		{key: 'gravestone.sunken', zones: ['undead'], name: 'Gravestone block: a sunken, leaning stele (wild graveyards)',
+			piece: 'gravestone_sunken', kitOnly: true},
 		{key: 'bones.skull_human', zones: ['undead', 'orc'], name: 'Bone find: skull, humanoid', piece: 'skull_human', kitOnly: true},
 		{key: 'bones.skull_horned', zones: ['undead', 'orc'], name: 'Bone find: skull, horned animal', piece: 'skull_horned', kitOnly: true},
 		{key: 'bones.ribcage_human', zones: ['undead', 'orc'], name: 'Bone find: ribcage, humanoid', piece: 'ribcage_human', kitOnly: true},
@@ -302,7 +302,7 @@
 
 		{key: 'dwarf.boulder', zones: ['dwarf'], name: 'Boulders of 2–4 nodes, stone and mossy cobble', den: 500,
 			biomes: ['grug_crags', 'grug_crags_snowy', 'grug_pine_hills'], kit: 'boulder'},
-		{key: 'dwarf.lichen', zones: ['dwarf'], name: 'Lichen: small scattered patches on gravel and stone (grey-orange)', den: 450,
+		{key: 'dwarf.lichen', zones: ['dwarf'], name: 'Lichen: small scattered patches on gravel and stone (grey crusts, ochre flecks)', den: 450,
 			unit: 'columns, one patch of 2–5', biomes: ['grug_crags', 'grug_pine_hills'], plant: 'new:lichen'},
 		{key: 'dwarf.alpine', zones: ['dwarf'], name: 'Small alpine plants (cushion, windshrub)', den: 40,
 			biomes: ['grug_crags', 'grug_pine_hills'], plant: 'new:alpine_cushion'},
@@ -664,9 +664,10 @@
 
 	var BUILD = {
 		// a small plot that differs per seed: 2-6 stones in rough rows 2 or 3
-		// apart, a mix leaning to steles or to crosses (a stele, a low cross,
-		// a stele crowned by the cross; one quarter-turn per stack, turned
-		// about), and a fence remnant on 0-2 sides
+		// apart, a fifth fallen and a fifth sunken, the rest a mix leaning to
+		// steles or to crosses (a stele, a low cross, a stele crowned by the
+		// cross; one quarter-turn per stack, turned about), and a fence
+		// remnant on 0-2 sides
 		graveyard: function (w, x, z, rng, item) {
 			var gap = G.rint(rng, 2, 3), cols = G.rint(rng, 2, 3), rows = G.rint(rng, 1, 2);
 			var wide = (cols - 1) * gap + 2, deep = (rows - 1) * gap + 2;
@@ -682,7 +683,12 @@
 				var y = top1(w, sp[0], sp[1]);
 				if (!w.free(sp[0], y, sp[1])) { continue; }
 				var form = G.rint(rng, 0, 9) + (lean - 1) * 3, turn = pick(rng, [0, 0, 0, 1, 3, 2]);
-				if (form >= 7) {
+				var ruin = G.rint(rng, 0, 9);
+				if (ruin < 2) {
+					w.put(sp[0], y, sp[1], 'prop:gravestone_fallen', G.rint(rng, 0, 3), item);
+				} else if (ruin < 4) {
+					w.put(sp[0], y, sp[1], 'prop:gravestone_sunken', turn, item);
+				} else if (form >= 7) {
 					w.put(sp[0], y, sp[1], 'prop:gravestone_cross', turn, item);
 				} else if (form <= 2) {
 					w.put(sp[0], y, sp[1], 'prop:gravestone_slab', turn, item);
@@ -766,13 +772,18 @@
 			return BUILD.ruin(w, x, z, rng, item, ['default:silver_sandstone_brick', 'default:silver_sandstone_brick',
 				'default:silver_sandstone_block', 'default:mossycobble']);
 		},
-		// a stand-in figure on a stone block (ARTL drew the elves' statue)
+		// the kneeling mourner (base, upper with the same quarter-turn) on a
+		// stone block; now and then only the bust, or only the broken base
 		statueUndead: function (w, x, z, rng, item) {
 			if (!w.flat(x - 1, z - 1, 3, 3, 0)) { return false; }
-			var y = top1(w, x, z), turn = G.rint(rng, 0, 3);
+			var y = top1(w, x, z), turn = G.rint(rng, 0, 3), form = G.rint(rng, 0, 5);
 			w.put(x, y, z, 'default:stone_block', 0, item);
-			w.put(x, y + 1, z, 'prop:statue_body', turn, item);
-			w.put(x, y + 2, z, 'prop:statue_head', turn, item);
+			if (form === 0) {
+				w.put(x, y + 1, z, 'prop:statue_mourner_upper', turn, item);
+			} else {
+				w.put(x, y + 1, z, 'prop:statue_mourner_base', turn, item);
+				if (form !== 1) { w.put(x, y + 2, z, 'prop:statue_mourner_upper', turn, item); }
+			}
 			w.put(x + 1, top1(w, x + 1, z), z, 'grug_nodes:moss_carpet', 0, item);
 			return true;
 		},
@@ -1029,7 +1040,7 @@
 		'default:ice': false};
 	function soil(c) { return SOIL_LIKE[c.top] === undefined; }
 	// the lichen's texture variants, alternated
-	var LICHEN = ['new:lichen'];
+	var LICHEN = ['new:lichen', 'new:lichen_b'];
 
 	function proposal(zone, biome, w, opts, seed, s) {
 		var rng = G.newRng(seed, 53), its = ITEMS.filter(function (it) {
