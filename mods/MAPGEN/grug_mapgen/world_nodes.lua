@@ -22,17 +22,32 @@ return function(engine, directory, nodes, gathering)
  engine.register_node(row.node,def)
  end
 
+ -- The water plants sway in drawn frames (Round 51 follow-up FW, the user's
+ -- pick B, followup plan §3): a tile animation every client shows, the web
+ -- build included, from one global clock, so every node of a kelp stalk and
+ -- every tuft of a variant shows the same frame. The strips are 16 x 128,
+ -- eight 16 x 16 frames, one loop in 3.2 s (tools/r51_sea/anim). `waving`
+ -- stays 0, so the engine's optional wave never adds to them. Default kelp
+ -- binds the same strip (grug_nodes/init.lua, the same numbers).
+ local SWAY={type="vertical_frames",aspect_w=16,aspect_h=16,length=3.2}
+ local function sway_tile(image)
+  return {name=image,animation=SWAY,tileable_vertical=true}
+ end
+ local function first_frame(image) return image.."^[verticalframe:8:0" end
+ local WEED="grug_nodes_kelp_anim.png^[colorize:#4F8A52:45"
+
  -- A rooted node keeps the water column intact: only the natural sand bed is
  -- replaced, while the special tile grows upward through source water. The
  -- bed wears the sand's world-aligned 32 px tile (grug_nodes, Round 51).
  engine.register_node(catalog.freshwater[2], {
   description="Freshwater Waterweed",
   drawtype="plantlike_rooted",
-  waving=1,
+  waving=0,
   tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
-  special_tiles={{name="default_kelp.png^[colorize:#4F8A52:45",tileable_vertical=true}},
-  inventory_image="default_kelp.png^[colorize:#4F8A52:45",
-  wield_image="default_kelp.png^[colorize:#4F8A52:45",
+  -- our kelp's strip, tinted as the default kelp was before (Round 51 FW)
+  special_tiles={sway_tile(WEED)},
+  inventory_image=first_frame(WEED),
+  wield_image=first_frame(WEED),
   paramtype="light",
   paramtype2="leveled",
   -- No `sand` group: the bed is no sand item (it drops default:sand), and
@@ -48,15 +63,15 @@ return function(engine, directory, nodes, gathering)
  -- plant drops nothing (round plan §3.6); digging it leaves the plain sand
  -- bed, like default kelp, and the renewal grows it back (farming.md).
  for index,name in ipairs(catalog.seagrass) do
-  local image="grug_mapgen_seagrass_"..index..".png"
+  local image="grug_mapgen_seagrass_"..index.."_anim.png"
   engine.register_node(name, {
    description="Seagrass",
    drawtype="plantlike_rooted",
-   waving=1,
+   waving=0,
    tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
-   special_tiles={{name=image,tileable_vertical=true}},
-   inventory_image=image,
-   wield_image=image,
+   special_tiles={sway_tile(image)},
+   inventory_image=first_frame(image),
+   wield_image=first_frame(image),
    paramtype="light",
    groups={snappy=3,not_in_creative_inventory=1},
    sounds=default.node_sound_sand_defaults(),
