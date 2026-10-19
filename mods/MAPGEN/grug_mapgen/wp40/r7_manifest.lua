@@ -122,9 +122,10 @@ return function(canonical, raw_sha256, settlement_order)
 	-- Round 51 LK: the land kit's props, cairn shapes and default blocks join
 	-- the production rows (128 -> 156) and dirt, gravel, mossy cobble and
 	-- stone take the decoration role, which moves the accepted-content limb
-	-- (was LG's), the production semantics (the bone pile became a node box
-	-- too; was LG's) and the decoded MTS templates, whose content refs shift
-	-- with the inserted rows (was LG's).
+	-- (was `55003f50fa8905c7...`), the production semantics (the bone pile
+	-- became a node box too; was `2f92257ce7b4c5c9...`) and the decoded MTS
+	-- templates, whose content refs shift with the inserted rows (was
+	-- `ce55b1b08aea44a5...`). T2 (merged after) moves none of the three.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
