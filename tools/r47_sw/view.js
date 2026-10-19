@@ -80,7 +80,46 @@
 	// slots without a texture of their own
 	var SAME = {mud_light_side: 'mud_light', mud_mottled_side: 'mud_mottled'};
 
+	// Texture lab (Round 51 concept): per slot the textures to compare with
+	// today's, as [label, TEXTURES key]; build.py inlines tools/r51_land/swamp
+	// as lab_<file>, a PNG uploaded on the page is added as up_<n>. A texture
+	// wider than 16 px is drawn world-aligned over 2 x 2 (32 px) or 4 x 4
+	// (64 px) nodes, as Luanti's align_style = "world" with that scale.
+	// hanging_moss_mid is the moss node with more moss below it.
+	var LAB = {
+		wet_grass: [['calm', 'lab_wet_grass_top_calm'], ['calm, 2 × 2 nodes', 'lab_wet_grass_top_calm32']],
+		wet_grass_side: [['calm', 'lab_wet_grass_side_calm']],
+		mud_mottled: [['calm', 'lab_mud_mottled_top_calm'], ['calm, 2 × 2 nodes', 'lab_mud_mottled_top_calm32']],
+		mud_mottled_side: [['calm', 'lab_mud_mottled_side_calm']],
+		mud_light: [['2 × 2 nodes (Astra)', 'lab_mud_dry_top_32']], mud_light_side: [],
+		mud: [['2 × 2 nodes (Astra)', 'lab_mud_top_32']],
+		moss_top: [['muted, 2 × 2 nodes (Astra)', 'lab_moss_soil_top_32']],
+		moss_side: [['muted (Astra)', 'lab_moss_soil_side']], moss_carpet: [],
+		hanging_moss: [], hanging_moss_mid: [['continuous strand', 'lab_hanging_moss_strand']]
+	};
+	var LAB_NAMES = {
+		wet_grass: 'wet grass, top', wet_grass_side: 'wet grass, side', mud_mottled: 'wet (mottled) mud, top',
+		mud_mottled_side: 'wet mud, side', mud_light: 'dry mud, top', mud_light_side: 'dry mud, side',
+		mud: 'mud (all faces)', moss_top: 'moss soil, top', moss_side: 'moss soil, side', moss_carpet: 'moss carpet',
+		hanging_moss: 'hanging moss, lowest node', hanging_moss_mid: 'hanging moss, nodes above'
+	};
+	Object.keys(LAB).forEach(function (slot) {
+		LAB[slot] = LAB[slot].filter(function (o) { return TEXTURES[o[1]] !== undefined; });
+	});
+
+	function labKey(slot) { return state.lab[slot] || ''; }
+
+	// tiles per texture side: 1, or 2 / 4 for a world-aligned 32 / 64 px one
+	function slotScale(slot) {
+		var src = slotSource(slot);
+		if (src.indexOf('lab:') !== 0) { return 1; }
+		var im = images[src.slice(4)];
+		return im && im.naturalWidth >= 32 ? Math.round(im.naturalWidth / 16) : 1;
+	}
+
 	function slotSource(slot) {
+		if (labKey(slot)) { return 'lab:' + labKey(slot); }
+		if (slot === 'hanging_moss_mid') { return slotSource('hanging_moss'); }
 		if (state.tex === 'art' && ART[slot] && ART_SET.indexOf(ART[slot]) >= 0) { return 'art:' + ART[slot]; }
 		if (STANDIN[slot]) { return 'std:' + slot; }
 		return 'std:' + SAME[slot];
@@ -113,16 +152,24 @@
 	function texture(src) {
 		if (texCache[src]) { return texCache[src]; }
 		var canvas = document.createElement('canvas');
-		canvas.width = 16; canvas.height = 16;
+		var lab = src.indexOf('lab:') === 0;
+		// a lab texture is loaded before it can be picked: its size is known
+		var size = lab ? images[src.slice(4)].naturalWidth : 16;
+		canvas.width = size; canvas.height = size;
 		var t = nearest(new THREE.CanvasTexture(canvas));
 		var g = canvas.getContext('2d');
-		var steps = src.indexOf('art:') === 0 ? [{img: 'art_' + src.slice(4)}] : STANDIN[src.slice(4)];
+		var steps = lab ? [{img: src.slice(4)}] :
+			src.indexOf('art:') === 0 ? [{img: 'art_' + src.slice(4)}] : STANDIN[src.slice(4)];
 		var i = 0;
 		(function next() {
 			if (i >= steps.length) { t.needsUpdate = true; return; }
 			var st = steps[i++];
 			if (st.img) {
-				image(st.img, function (img) { g.drawImage(img, 0, 0, 16, 16); next(); });
+				// the top square (an animated strip shows its first frame)
+				image(st.img, function (img) {
+					g.drawImage(img, 0, 0, img.naturalWidth, img.naturalWidth, 0, 0, size, size);
+					next();
+				});
 				return;
 			}
 			var d = g.getImageData(0, 0, 16, 16), p = d.data, k;
@@ -220,10 +267,19 @@
 			[[x2, y2, z2, 16, 17], [x1, y2, z2, 18, 17], [x1, y1, z2, 18, 19], [x2, y1, z2, 16, 19]],
 			[[x1, y2, z1, 20, 21], [x2, y2, z1, 22, 21], [x2, y1, z1, 22, 23], [x1, y1, z1, 20, 23]]
 		];
+		var ix = Math.round(ox), iy = Math.floor(oy), iz = Math.round(oz);
 		for (var f = 0; f < 6; f++) {
 			if (skip && skip[f]) { continue; }
 			var tile = tiles[f];
 			var bk = buckets.get(tile.tex, kind);
+			// world-aligned: this node's cell of the sc x sc texture, along the
+			// face's u (right) and w (down) directions
+			var sc = slotScale(tile.tex), cu = 0, cw = 0;
+			if (sc > 1) {
+				var fa = [[ix, -iz], [ix, iz], [iz, -iy], [-iz, -iy], [-ix, -iy], [ix, -iy]][f];
+				cu = ((fa[0] % sc) + sc) % sc;
+				cw = ((fa[1] % sc) + sc) % sc;
+			}
 			var base = bk.pos.length / 3;
 			var n = FACE_DIRS[f];
 			var pts = [];
@@ -233,6 +289,7 @@
 				if (tile.rot === 1) { t = 1 - w; w = u; u = t; }
 				else if (tile.rot === 2) { u = 1 - u; w = 1 - w; }
 				else if (tile.rot === 3) { t = w; w = 1 - u; u = t; }
+				if (sc > 1) { u = (u + cu) / sc; w = (w + cw) / sc; }
 				var p = [ox + v[0], oy + v[1], -(oz + v[2])];
 				pts.push(p);
 				bk.pos.push(p[0], p[1], p[2]);
@@ -302,7 +359,7 @@
 			for (z = 0; z < p.size; z++) {
 				var c = p.cols[x][z], top = solidTop(p, x, z);
 				if (c.void) { continue; }
-				var g = c.pool ? GROUND.mud : GROUND[c.top];
+				var g = c.pool ? GROUND.mud : GROUND[state.ground || c.top];
 				var topTiles = faceTiles([g[0], g[1], g[1], g[1], g[1], g[1]], 0);
 				var fill = uniform('mud');
 				for (y = FLOOR; y <= top; y++) {
@@ -381,7 +438,9 @@
 			} else if (nd.kind === 'leaves') {
 				addCuboid(lb, 'leaves', ox, oy, oz, [-8, -8, -8, 8, 8, 8], uniform(leafSlot), null);
 			} else if (nd.kind === 'moss') {
-				addPlant(lb, 'hanging_moss', ox, oy, oz, 1, 1);
+				var below = at(nd.x, nd.y - 1, nd.z);
+				addPlant(lb, below !== undefined && below.kind === 'moss' ? 'hanging_moss_mid' : 'hanging_moss',
+					ox, oy, oz, 1, 1);
 			}
 		});
 		wb.build(group, 'wood');
@@ -469,6 +528,8 @@
 		view: params.get('view') === 'top' ? 'top' : 'orbit',
 		tex: params.get('tex') === 'std' || !ART_SET.length ? 'std' : 'art',
 		leaves: params.get('leaves') === 'grey' ? 'grey' : 'olive',
+		ground: GROUND[params.get('ground')] ? params.get('ground') : '',
+		lab: {},
 		show: {trees: params.get('trees') !== '0', plants: params.get('plants') !== '0',
 			leaves: params.get('leafs') !== '0', grid: params.get('grid') === '1'},
 		patch: null
@@ -677,7 +738,95 @@
 		texSel.value = state.tex;
 		texSel.disabled = !ART_SET.length;
 		document.getElementById('leafsel').value = state.leaves;
+		document.getElementById('groundsel').value = state.ground;
 	}
+
+	// One row per slot: today's texture or a lab one, a thumbnail, and an
+	// upload of an own PNG (16 px, or 32 / 64 px for 2 x 2 / 4 x 4 nodes).
+	var uploads = 0;
+	function thumb(slot) {
+		var src = slotSource(slot), key = null;
+		if (src.indexOf('lab:') === 0) { key = src.slice(4); }
+		else if (src.indexOf('art:') === 0) { key = 'art_' + src.slice(4); }
+		else { var st = STANDIN[src.slice(4)]; key = st && st.length === 1 ? st[0].img : null; }
+		return key ? TEXTURES[key] : '';
+	}
+	function labUi() {
+		var el = document.getElementById('lab');
+		el.innerHTML = '';
+		Object.keys(LAB).forEach(function (slot) {
+			var row = document.createElement('div');
+			row.className = 'labrow';
+			var img = document.createElement('img');
+			img.className = 'thumb';
+			img.alt = '';
+			var src = thumb(slot);
+			if (src) { img.src = src; } else { img.style.visibility = 'hidden'; }
+			var name = document.createElement('span');
+			name.className = 'labname';
+			name.textContent = LAB_NAMES[slot];
+			var sel = document.createElement('select');
+			sel.setAttribute('aria-label', LAB_NAMES[slot]);
+			var def = document.createElement('option');
+			def.value = '';
+			def.textContent = slot === 'hanging_moss_mid' ? 'same as lowest (today)' : 'today';
+			sel.appendChild(def);
+			LAB[slot].forEach(function (o) {
+				var op = document.createElement('option');
+				op.value = o[1];
+				op.textContent = o[0];
+				sel.appendChild(op);
+			});
+			sel.value = labKey(slot);
+			sel.onchange = function () { state.lab[slot] = sel.value; labUi(); build(); };
+			var file = document.createElement('input');
+			file.type = 'file';
+			file.accept = 'image/png';
+			file.hidden = true;
+			file.onchange = function () {
+				var f = file.files[0];
+				if (!f) { return; }
+				var reader = new FileReader();
+				reader.onload = function () {
+					uploads = uploads + 1;
+					var key = 'up_' + uploads;
+					TEXTURES[key] = reader.result;
+					image(key, function (im) {
+						var w = im.naturalWidth;
+						if (w !== 16 && w !== 32 && w !== 64) {
+							document.getElementById('labmsg').textContent =
+								f.name + ' is ' + w + ' px wide. Use a 16, 32 or 64 px wide PNG.';
+							return;
+						}
+						document.getElementById('labmsg').textContent = '';
+						LAB[slot].push([f.name + (w > 16 ? ' (' + w / 16 + ' × ' + w / 16 + ' nodes)' : ''), key]);
+						state.lab[slot] = key;
+						labUi();
+						build();
+					});
+				};
+				reader.readAsDataURL(f);
+			};
+			var up = document.createElement('button');
+			up.textContent = 'PNG…';
+			up.title = 'Try an own PNG here (16, 32 or 64 px)';
+			up.onclick = function () { file.click(); };
+			row.appendChild(img);
+			row.appendChild(name);
+			row.appendChild(sel);
+			row.appendChild(up);
+			row.appendChild(file);
+			el.appendChild(row);
+		});
+	}
+	function allCalm() {
+		Object.keys(LAB).forEach(function (slot) {
+			var calm = LAB[slot].filter(function (o) { return o[1].indexOf('lab_') === 0; });
+			if (calm.length) { state.lab[slot] = calm[calm.length - 1][1]; }
+		});
+	}
+	document.getElementById('lab-calm').onclick = function () { allCalm(); labUi(); build(); };
+	document.getElementById('lab-today').onclick = function () { state.lab = {}; labUi(); build(); };
 	Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) {
 		b.onclick = function () { state.view = b.dataset.view; syncUi(); applyToggles(); };
 	});
@@ -699,6 +848,7 @@
 	});
 	document.getElementById('tex').onchange = function (e) { state.tex = e.target.value; build(); };
 	document.getElementById('leafsel').onchange = function (e) { state.leaves = e.target.value; build(); };
+	document.getElementById('groundsel').onchange = function (e) { state.ground = e.target.value; build(); };
 
 	function resize() {
 		var w = view.clientWidth, h = view.clientHeight;
@@ -715,9 +865,19 @@
 		renderer.render(scene, state.view === 'orbit' ? persp : ortho);
 	}
 
-	resize();
-	syncUi();
-	build();
-	loop();
-	window.__swampReady = true;
+	// the lab textures are loaded first: their size decides the scale
+	var labKeys = [];
+	Object.keys(LAB).forEach(function (slot) { LAB[slot].forEach(function (o) { labKeys.push(o[1]); }); });
+	var waiting = labKeys.length;
+	function start() {
+		if (params.get('lab') === 'calm') { allCalm(); }
+		resize();
+		syncUi();
+		labUi();
+		build();
+		loop();
+		window.__swampReady = true;
+	}
+	if (!waiting) { start(); }
+	labKeys.forEach(function (k) { image(k, function () { waiting = waiting - 1; if (!waiting) { start(); } }); });
 })();
