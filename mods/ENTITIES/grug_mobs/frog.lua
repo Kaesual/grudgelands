@@ -6,8 +6,10 @@
 -- An AMPHIBIAN, not a swimmer, for the crocodile's reason (crocodile.lua's
 -- water note: a `fly` mob flops on every bank): it floats and has no `fly`,
 -- so it walks on land and swims at the surface, and it follows its target
--- through harmless water (Round 34, mobs/api.lua grug_may_wade). The
--- upstream swim clip (250-350) is therefore unused.
+-- through harmless water (Round 34, mobs/api.lua grug_may_wade). It swims
+-- at one height with its feet half a node under the surface (Round 51 FM,
+-- mobs/api.lua grug_float_hold) and plays the upstream swim clip (250-350)
+-- there instead of its hop (swimmer.lua install_swim_animation).
 --
 -- What spawns is the family's six sub-types by drop tier (data/subtypes.json,
 -- frog_t1 .. frog_t6); this registration is their base. Spawning by water band
@@ -56,13 +58,15 @@ local frog = {
 	makes_footstep_sound = false,
 
 	-- Keys 1..350 (LICENSE-media.md §8): stand 1-100, walk (a hop) 100-200;
-	-- run and the bite reuse the hop.
+	-- run and the bite reuse the hop; in water stand, walk and run play the
+	-- swim clip 250-350 (Round 51 FM, swimmer.lua).
 	animation = {
 		speed_normal = 100,
 		stand_start = 1, stand_end = 100,
 		walk_start = 100, walk_end = 200,
 		run_start = 100, run_end = 200, run_speed = 150,
 		punch_start = 100, punch_end = 200, punch_speed = 150,
+		swim_start = 250, swim_end = 350, swim_speed = 120,
 	},
 
 	-- The fallback; the family table by band (data/drops.json `frog`)

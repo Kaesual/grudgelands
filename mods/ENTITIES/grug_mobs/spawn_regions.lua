@@ -987,8 +987,54 @@ function SR.water_spot(w, name, depth)
 	return {x = w.x, y = y, z = w.z}
 end
 
+-- Fish in land lakes (Round 51 FM, the user's GUI feedback item 8): a lake
+-- column (wild lakes, swamp pools and the capitals' lakes alike) first tries
+-- the Reed Angelfish, the lakes' critter fish, while fewer than LAKE_FISH_CAP
+-- of them swim within LAKE_FISH_RADIUS: one or two nodes under the surface in
+-- water at least two deep, no player within the no-spawn range. A critter:
+-- no protection, drift, light or density gate (critters may appear in towns),
+-- never a kill target, its fish loot as for critters. Its ABM row
+-- (reed_angelfish.lua) stays as it was. Returns the entity, or nil when the
+-- lake is full or the spot does not fit; then the band's kind may spawn.
+SR.LAKE_FISH = "grug_mobs:reed_angelfish"
+SR.LAKE_FISH_CAP = 3
+SR.LAKE_FISH_RADIUS = 24
+function SR.lake_fish(w, depth, players)
+	if (depth or 0) < 2 then
+		return nil
+	end
+	local stand = {x = w.x, y = w.y - math.min(2, depth - 1), z = w.z}
+	if core.get_node(stand).name ~= w.node then
+		return nil
+	end
+	if not nospawn_range then
+		nospawn_range = tonumber(core.settings:get("mob_nospawn_range")) or 24
+	end
+	if not SR.players_clear(stand, nospawn_range, players) then
+		return nil
+	end
+	local near = 0
+	for _, object in ipairs(core.get_objects_inside_radius(stand, SR.LAKE_FISH_RADIUS)) do
+		local ent = object:get_luaentity()
+		if ent and ent.name == SR.LAKE_FISH then
+			near = near + 1
+			if near >= SR.LAKE_FISH_CAP then
+				return nil
+			end
+		end
+	end
+	if SR.spawn_refused(SR.LAKE_FISH, stand) then
+		return nil
+	end
+	local spot = mobs:can_spawn(stand, SR.LAKE_FISH)
+	return spot and grug_mobs.add_mob(spot, {name = SR.LAKE_FISH, ignore_count = true}) or nil
+end
+
 function SR.water_attempt(w, players, clock)
 	local class, zone_id, _, distance, depth = grug_zones.water_query_at(w.x, w.z)
+	if class == "lake" and SR.lake_fish(w, depth, players) then
+		return count("spawned_lake_fish")
+	end
 	local band = CORE.water_band(class, distance, depth)
 	if not band then
 		return count("water_no_band")

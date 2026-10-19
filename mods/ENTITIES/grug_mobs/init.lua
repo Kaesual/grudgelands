@@ -976,8 +976,10 @@ function grug_mobs.register_mob(name, def)
 	if def._grug_swimmer then
 		grug_mobs.install_swimmer_guard(name, def)
 	end
-	-- An air flier plays its fly clip in the air (flight.lua).
+	-- An air flier plays its fly clip in the air (flight.lua), a floating
+	-- amphibian with a swim clip that clip in water (swimmer.lua).
 	grug_mobs.install_flier_animation(name)
+	grug_mobs.install_swim_animation(name)
 	-- Target acquisition can happen after do_custom in mobs_redo's one-second
 	-- general_attack pass, or before the first custom tick through group alert.
 	-- Put the boss-group activity seam on the registered prototype so every

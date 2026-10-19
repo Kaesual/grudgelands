@@ -7,7 +7,10 @@
 -- it walks on land, swims at the surface and, once struck, follows its
 -- attacker through the water and up the bank (Round 34: every floating
 -- non-flier swims after its target, mobs/api.lua grug_may_wade). Slow on
--- purpose: a player can always walk away from it.
+-- purpose: a player can always walk away from it. In water it holds one
+-- height with its feet half a node under the surface, its shell just
+-- breaking it (Round 51 FM, mobs/api.lua grug_float_hold); the model has no
+-- swim clip, so it paddles with its walk clip.
 --
 -- What spawns is the family's six sub-types by drop tier (data/subtypes.json,
 -- tortoise_t1 .. tortoise_t6, names per slot in data/names.json); this

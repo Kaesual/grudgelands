@@ -274,3 +274,47 @@ function grug_mobs.install_swimmer_guard(name, def)
 		medium_id[name] = get_content_id(fly_in)
 	end)
 end
+
+--
+-- THE SWIM CLIP OF A FLOATING AMPHIBIAN (Round 51 FM). A floating non-flier
+-- (the frog) swims at the surface with its feet held under it (mobs/api.lua
+-- grug_float_hold), so mobs_redo's standing_in stays water while it swims.
+-- On a definition with a swim clip (`animation.swim_start`/`swim_end`), every
+-- "stand", "walk" or "run" request plays that clip while standing_in is
+-- water; on land the clip asked for plays. Installed on the registered
+-- prototype, as the fliers' fly clip is (flight.lua). The swing lock
+-- (mobs/api.lua set_animation, Round 37 MB) holds back the three movement
+-- clips but not "swim": while it holds, the request goes through unchanged
+-- so the lock still applies.
+--
+local SWIM_FROM = {stand = true, walk = true, run = true}
+
+function grug_mobs.swim_clip(self, anim, force)
+	if not SWIM_FROM[anim] then
+		return anim
+	end
+	local within = core.registered_nodes[self.standing_in]
+	if not (within and within.groups and (within.groups.water or 0) > 0) then
+		return anim
+	end
+	local temp = self.temp
+	if not force and temp and temp.grug_punch_until
+			and core.get_us_time() / 1000000 < temp.grug_punch_until then
+		return anim
+	end
+	return "swim"
+end
+
+-- Called right after mobs:register_mob; true when it installed the clip.
+function grug_mobs.install_swim_animation(name)
+	local proto = core.registered_entities[name]
+	local anims = proto and proto.animation
+	if not (anims and anims.swim_start and anims.swim_end) or proto.fly then
+		return false
+	end
+	local native = proto.set_animation
+	proto.set_animation = function(self, anim, force)
+		return native(self, grug_mobs.swim_clip(self, anim, force), force)
+	end
+	return true
+end

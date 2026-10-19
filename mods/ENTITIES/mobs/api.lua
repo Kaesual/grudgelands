@@ -2786,6 +2786,47 @@ local function grug_bank_ahead(self, pos)
 	return step and step.walkable and not (above and above.walkable) or false
 end
 
+-- GRUG PATCH (Round 51 FM, round51-followup-plan.md §2 "FM"): a floating mob
+-- in water holds one height with its feet GRUG_FLOAT_DEPTH under the surface,
+-- so the point get_nodes reads as standing_in (feet + 0.25) stays in the
+-- water. Before, the mob rose until that point left the water, gravity took
+-- over until the next quarter-second get_nodes saw water again, and it bobbed
+-- about half a node out of the water and back twice a second. The vertical
+-- speed follows the distance to the target height (no gravity while
+-- holding); a mob more than a node deep rises at GRUG_FLOAT_UP. nil when the
+-- point is in no water (lava and other liquids keep the old float, and so
+-- does a mob above the surface until get_nodes catches up). Two node reads
+-- per step at the held height, only while the mob floats in water.
+local GRUG_FLOAT_DEPTH = 0.5
+local GRUG_FLOAT_GAIN = 4
+local GRUG_FLOAT_UP = 0.6
+local GRUG_FLOAT_DOWN = 1.2
+
+local function grug_water_at(x, y, z)
+	local def = core.registered_nodes[node_ok({x = x, y = y, z = z}).name]
+	return def ~= nil and (def.groups.water or 0) > 0
+end
+
+local function grug_float_hold(self, pos)
+
+	local feet = pos.y + mob_cbox(self)[2]
+	local x, z = pos.x, pos.z
+	-- the node of the standing_in point
+	local y = floor(feet + 0.75)
+
+	if grug_water_at(x, y, z) then
+		if grug_water_at(x, y + 1, z) then return GRUG_FLOAT_UP end
+	elseif grug_water_at(x, y - 1, z) then
+		y = y - 1
+	else
+		return nil
+	end
+
+	local vy = (y + 0.5 - GRUG_FLOAT_DEPTH - feet) * GRUG_FLOAT_GAIN
+
+	return max(-GRUG_FLOAT_DOWN, min(GRUG_FLOAT_UP, vy))
+end
+
 function mob_class:falling(pos)
 
 	if self.fly or self.disable_falling then return end
@@ -2799,11 +2840,20 @@ function mob_class:falling(pos)
 		local visc = min(core.registered_nodes[self.standing_in].liquid_viscosity, 7) + 1
 
 		-- GRUG PATCH (Round 34 F1): climb out onto a one-node bank.
-		local rise = grug_bank_ahead(self, pos) and GRUG_CLIMB_RISE or 0.45
+		local bank = grug_bank_ahead(self, pos)
+		local rise = bank and GRUG_CLIMB_RISE or 0.45
+		-- GRUG PATCH (Round 51 FM): otherwise hold one height in water.
+		local hold = not bank and grug_float_hold(self, pos)
 
-		self.object:set_velocity({x = v.x, y = rise, z = v.z}) -- slow ascent in water
+		if hold then
+			self.object:set_velocity({x = v.x, y = hold, z = v.z})
 
-		fall_speed = -1.2 / visc
+			fall_speed = 0
+		else
+			self.object:set_velocity({x = v.x, y = rise, z = v.z}) -- slow ascent in water
+
+			fall_speed = -1.2 / visc
+		end
 
 	elseif self.fall_damage and v.y == 0 then
 

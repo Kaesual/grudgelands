@@ -124,6 +124,8 @@ local CELLS = {
 	{label = "float", size = 40, inset = 6, depth = 6},
 	{label = "bank_frog", size = 32, inset = 6, depth = 3, bank = 1},
 	{label = "bank_tortoise", size = 32, inset = 6, depth = 3, bank = 1},
+	-- land for the last chase's inland leg (9.5 nodes past its pool)
+	{label = "margin", size = 16, bank = 1, land_only = true},
 }
 local cell = {}
 local origin
@@ -167,26 +169,30 @@ local function build_arena()
 	end
 	local cx = origin.x
 	for _, spec in ipairs(CELLS) do
-		local x0, x1 = cx + spec.inset, cx + spec.size - 1 - spec.inset
-		local z0, z1 = origin.z + spec.inset, origin.z + spec.size - 1 - spec.inset
-		local floor_y = W - spec.depth
-		for z = z0, z1 do
-			for x = x0, x1 do
-				local edge = x == x0 or x == x1 or z == z0 or z == z1
-				local bed = (spec.shelf and edge) and (W - 1) or floor_y
-				for y = BASE_Y + 1, W + 1 + (spec.bank or 0) do
-					local id = air
-					if y < bed then id = stone
-					elseif y == bed then id = sand
-					elseif y <= W then id = water end
-					data[area:index(x, y, z)] = id
+		if spec.land_only then
+			cx = cx + spec.size
+		else
+			local x0, x1 = cx + spec.inset, cx + spec.size - 1 - spec.inset
+			local z0, z1 = origin.z + spec.inset, origin.z + spec.size - 1 - spec.inset
+			local floor_y = W - spec.depth
+			for z = z0, z1 do
+				for x = x0, x1 do
+					local edge = x == x0 or x == x1 or z == z0 or z == z1
+					local bed = (spec.shelf and edge) and (W - 1) or floor_y
+					for y = BASE_Y + 1, W + 1 + (spec.bank or 0) do
+						local id = air
+						if y < bed then id = stone
+						elseif y == bed then id = sand
+						elseif y <= W then id = water end
+						data[area:index(x, y, z)] = id
+					end
 				end
 			end
+			spec.pool = {x0 = x0, x1 = x1, z0 = z0, z1 = z1,
+				xc = math.floor((x0 + x1) / 2), zc = math.floor((z0 + z1) / 2)}
+			cell[spec.label] = spec
+			cx = cx + spec.size
 		end
-		spec.pool = {x0 = x0, x1 = x1, z0 = z0, z1 = z1,
-			xc = math.floor((x0 + x1) / 2), zc = math.floor((z0 + z1) / 2)}
-		cell[spec.label] = spec
-		cx = cx + spec.size
 	end
 	vm:set_data(data)
 	vm:write_to_map(true)
@@ -680,7 +686,7 @@ local function find_origin()
 			for _, c in ipairs({{i, -r}, {i, r}, {-r, i}, {r, i}}) do
 				local x, z = c[1] * 256, c[2] * 256
 				local ok = true
-				for _, d in ipairs({{0, 0}, {140, 0}, {0, 40}, {140, 40}, {260, 0}, {260, 40}}) do
+				for _, d in ipairs({{0, 0}, {140, 0}, {0, 40}, {140, 40}, {270, 0}, {270, 40}}) do
 					if grug_zones.water_class_at(x + d[1], z + d[2]) ~= "deep_ocean" then
 						ok = false
 						break
