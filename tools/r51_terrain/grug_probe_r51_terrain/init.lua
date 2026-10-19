@@ -80,9 +80,9 @@ local function t2_checks()
 			local class, zone, level, distance, depth, protected = Q(x, z)
 			if class and not classes[class] then
 				classes[class] = true
-				log(("query %d %d: %s zone %s level %s distance %.1f depth %d protected %s")
-					:format(x, z, class, tostring(zone), tostring(level), distance, depth,
-					tostring(protected)))
+				log(("query %d %d: %s zone %s level %s distance %s depth %d protected %s")
+					:format(x, z, class, tostring(zone), tostring(level), tostring(distance),
+					depth, tostring(protected)))
 			end
 		end
 	end

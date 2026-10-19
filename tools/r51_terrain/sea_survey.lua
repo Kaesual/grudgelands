@@ -173,7 +173,7 @@ for _, path in ipairs(source.boat_paths) do
 		local x = floor(a.x + (b.x - a.x) * i / steps + 0.5)
 		local z = floor(a.z + (b.z - a.z) * i / steps + 0.5)
 		local class, _, _, distance, depth = S.water_query_at(x, z)
-		if class and distance >= 48 then
+		if class and distance and distance >= 48 then
 			first = first or {x, z}
 			last = {x, z}
 			if not lo or depth < lo then lo = depth end

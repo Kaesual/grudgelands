@@ -490,7 +490,10 @@ return function(api)
 		if zone.civic_no_hostiles then return "capital_zone" end
 		if zone.territory_rule ~= home then return "not_home" end
 		if territory == "hard_protected" then return "town" end
-		if territory == "immutable" then return "sea" end
+		-- protected bay water (Round 51 T2) is immutable but no open sea
+		if territory == "immutable" then
+			return water == "planned_water" and "deep_water" or "sea"
+		end
 		if territory ~= home then return "not_home" end
 		return nil
 	end
@@ -507,6 +510,8 @@ return function(api)
 		site = "Too close to a village, camp or point of interest: the claim " ..
 			"must stay " .. M.SETTLEMENT_MARGIN .. " nodes away from its buildings.",
 		sea = "The claim (101 x 101) may not reach over the open sea.",
+		deep_water = "The claim (101 x 101) may not reach over protected deep " ..
+			"water (24 nodes or more off the coast).",
 		shelf = "The claim (101 x 101) may not reach over the coastal shelf.",
 		enemy = "The claim (101 x 101) may not reach into enemy territory.",
 		low_level = "The claim (101 x 101) may not reach into a level 1-10 zone.",

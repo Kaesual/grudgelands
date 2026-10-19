@@ -251,6 +251,11 @@ for class, c in pairs(found) do
 	local got, zone, level, distance, depth, protected = Q(c[1], c[2])
 	local at = (" (%s at %d, %d)"):format(class, c[1], c[2])
 	eq(got, class, "C1 class" .. at)
+	if class == "lake" or class == "river" then
+		-- the inland distance only on request (its ring search is not cheap)
+		eq(distance, nil, "C1 no inland distance unasked" .. at)
+		distance = select(4, Q(c[1], c[2], true))
+	end
 	check(type(distance) == "number" and distance >= 0, "C1 distance" .. at)
 	check(type(depth) == "number" and depth >= 1, "C1 depth" .. at)
 	check(type(protected) == "boolean", "C1 protected flag" .. at)
@@ -285,7 +290,7 @@ for z = swamp[2] - 200, swamp[2] + 200, 2 do
 end
 check(pool ~= nil, "C1 a swamp pool reads as a lake")
 if pool then
-	local _, _, _, distance, depth, protected = Q(pool[1], pool[2])
+	local _, _, _, distance, depth, protected = Q(pool[1], pool[2], true)
 	check(depth >= 1 and depth <= 2 and distance >= 1 and protected == false,
 		("C1 the pool at %d, %d: depth %d, distance %.1f"):format(pool[1], pool[2], depth, distance))
 end
@@ -387,7 +392,7 @@ for _, path in ipairs(source.boat_paths) do
 		local x = math.floor((a.x + (b.x - a.x) * i / steps) / 2 + 0.5) * 2
 		local z = math.floor((a.z + (b.z - a.z) * i / steps) / 2 + 0.5) * 2
 		local class, _, _, distance = Q(x, z)
-		if class and distance >= 48 then first = first or {x, z} last = {x, z} end
+		if class and distance and distance >= 48 then first = first or {x, z} last = {x, z} end
 	end
 	check(first ~= nil, "C4 the boat path " .. path.id .. " crosses open water")
 	local min_x, max_x = math.min(a.x, b.x) - 160, math.max(a.x, b.x) + 160

@@ -1280,9 +1280,13 @@ local function zones_factory(dependencies)
 		--              channel), nil for the open sea
 		--   distance   nodes to dry land: for the sea's classes the true coast
 		--              distance (`simple_map.lua` coast_distance_at, a 16-node
-		--              chamfer read through a spline); for lakes, rivers and
-		--              pools the nearest dry column's distance, searched up to
-		--              INLAND_REACH (a farther one answers INLAND_REACH)
+		--              chamfer read through a spline; about 1 us); for lakes,
+		--              rivers and pools only when the third argument is true
+		--              (else nil): the nearest dry column's distance, searched
+		--              in rings up to INLAND_REACH (a farther one answers
+		--              INLAND_REACH), up to about 1,000 column tests, some
+		--              100-250 us, so a per-pixel or per-spawn caller leaves it
+		--              off
 		--   depth      nodes of water over the floor (surface y - floor y)
 		--   protected  true where the water is immutable (ruling 8)
 		-- Outside the world's bounds: "open_sea" over the flat floor.
@@ -1326,7 +1330,7 @@ local function zones_factory(dependencies)
 			end
 			return best
 		end
-		function session.water_query_at(x, z)
+		function session.water_query_at(x, z, inland_distance_wanted)
 			local outside
 			x, z, outside = normalize_xz(x, z, "water query")
 			if outside then
@@ -1346,7 +1350,7 @@ local function zones_factory(dependencies)
 				if not kind then return nil end
 				return kind, zone_by_numeric[owner].id,
 					surface_level_from_classification(x, z, water_class, owner),
-					inland_distance(x, z), depth, false
+					inland_distance_wanted and inland_distance(x, z) or nil, depth, false
 			end
 			return QUERY_CLASS[water_class], owner and zone_by_numeric[owner].id or nil,
 				surface_level_from_classification(x, z, water_class, owner),

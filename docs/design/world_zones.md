@@ -481,7 +481,9 @@ rewrite records the WP40 model it replaced.
   distance, not the depth; `source.water.protected_distance`), are immutable
   at every y, the seabed and what lies below it included: no building, no
   mining and no Claim Stone. The shore, water nearer than 24 nodes, stays
-  under its zone's terrain rule. Lakes and rivers are never protected. The
+  under its zone's terrain rule. Lakes and rivers are never protected. A
+  refused edit there says "Deep water – protected" (the open sea's says "Open
+  sea – protected"). The
   border follows the coast distance grid, so it lies within about 8 nodes of
   24 from the exact shoreline.
 - **Dragon channels** (Round 51, ruling 6). Each channel is organic: a

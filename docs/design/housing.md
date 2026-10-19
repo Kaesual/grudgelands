@@ -66,7 +66,7 @@ or guild land.
 
   **Water** (ruling 23): lakes, rivers and bay water inside an eligible zone
   may lie in a claim; bay water 24 nodes or more off the coast is protected
-  (Round 51) and refuses the claim like the sea. The coastal belt may not,
+  (Round 51) and refuses the claim ("protected deep water"). The coastal belt may not,
   although it belongs to a zone; the ocean has no zone and may not either
   (`world.md` §2b).
 - **Conservative check.** The placement check may sample coarsely and refuse
