@@ -1,5 +1,84 @@
 # Round 52 ARTB — talent and skill icons
 
+## Pass 3 — five redraws, three variants each
+
+Completed 2026-10-20 by GPT-6 Astra on `r52-artb`. The user accepted
+113 of the 118 pass-2 icons and requested these five redraws. This drop
+offers **15 variants** for selection, all in **style A / Painted embers**.
+
+Upgrade classification: **compatible**. This is staged media and its
+documentation. No `mods/`, Lua, shipped assets, `drop-01/` or `drop-02/`
+files changed. No fixtures, engine runs, agents, merge or push were used.
+
+- [Comparison preview](drop-03/preview.png): each old icon beside v1, v2
+  and v3, at actual **64 px and 32 px**, on a dark strip and its picked
+  tree background crop. View at 100%. This is an offline art comparison.
+- [Manifest and exact prompt set](drop-03/manifest.json): key, variant,
+  tree, path, SHA-256, individual prompt, source path/hash, reference
+  path/hash, processing and earlier refinement receipts for every final.
+  Relative paths resolve from `drop-03/`.
+- `drop-03/<key>_v1.png`, `_v2.png`, `_v3.png`: **64 × 64 opaque RGB
+  PNGs**, three for each key below. The variants remain unpicked.
+
+| Key | Change |
+|---|---|
+| `skill.loose` | The wooden bow bulges toward the outgoing arrow; its string reaches the rear nock, with a small release glint. |
+| `skill.bladecraft` | The bow is reversed behind the retained silver blade, preserving the selected violet palette and the matching Loose bow family. |
+| `talent.measured_breath` | A clean symmetric bow, correctly nocked arrow and separate breath mist sit inside the bronze Quarry medallion. |
+| `skill.parry` | A short silver blade catches an incoming indigo strike at one bright contact spark and turns it aside. |
+| `skill.flourish` | One forward sweep, or three parallel motion echoes, stays in front of the wielder; the former spinning motif is removed. |
+
+Each numbered Loose variant derives from the matching corrected
+Bladecraft variant. Bladecraft edits use the project's own selected
+original to retain the sword and colors; Measured Breath edits retain its
+medallion. Parry and Flourish began as new individual generations.
+All generation and edits used the **built-in `image_gen.imagegen` tool**,
+one prompt and call per image. Seven focused refinement calls corrected
+the three Loose nock connections, one Measured Breath limb curve and the
+three Flourish sweep extents; their preceding prompts and source hashes
+remain in `previous_versions`. No third-party images were supplied.
+
+Pillow converts each whole square original to RGB, downsamples it with
+`Image.Resampling.LANCZOS` to 64 × 64 and saves an optimized PNG without
+source metadata. There is no crop, recolor, compositing or sharpening of
+final icons. Only the preview combines images, labels and backgrounds.
+Its Quarry v1 and Veil v3 crops are read unchanged from the committed
+pass-2 crops, with their ARTA source provenance and hashes in the manifest.
+
+All 15 finals were visually inspected at 64 px and 32 px on both preview
+backgrounds, including the Loose/Bladecraft pairs. The file audit verified
+the exact five-key/three-variant roster, 15 unique final hashes, PNG/RGB/size,
+complete prompts and processing receipts, reference/source hashes, old
+icon and crop hashes, preview placement and per-file CC0 media rows.
+The user selects variants; later integration owns desktop/web checks.
+
+### Pass-3 media
+
+Paths are relative to this folder. **CC0** means **CC0-1.0**: the project
+dedicates any rights it holds in these images and the preview to CC0-1.0,
+to the extent such rights exist. The preview also uses this project's
+existing CC0 icons and ARTA crops, already listed in the pass-2 media rows.
+
+| File | Author | Date | Source / method | License |
+|---|---|---|---|---|
+| `drop-03/skill.loose_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.loose_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.loose_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.bladecraft_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.bladecraft_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.bladecraft_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/talent.measured_breath_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/talent.measured_breath_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/talent.measured_breath_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.parry_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.parry_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.parry_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.flourish_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.flourish_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/skill.flourish_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt and edit history in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-03/preview.png` | GPT-6 Astra; GPT-6 Astra / ARTA (backgrounds) | 2026-10-20 | Pillow composition of listed CC0 final/old icons and unchanged picked tree crops | **CC0-1.0** |
+
+
 ## Pass 2 — full set in style A / Painted embers
 
 Completed 2026-10-20 by GPT-6 Astra on `r52-artb`; started 2026-10-19.

@@ -1,0 +1,901 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "author": "GPT-6 Astra",
+  "style": "A / Painted embers",
+  "style_rules": "../drop-01/STYLE.md",
+  "style_rules_sha256": "773e8d76b976427340ddb253db50394ea4ddf1dadd444b6bd8e57486606b3541",
+  "tool": "built-in image_gen.imagegen; one individual prompt and call per image or refinement",
+  "license": "CC0-1.0",
+  "upgrade": "compatible",
+  "status": "Staged variants for user selection; not integrated",
+  "scope": "Five requested keys only; three variants each. No changes to mods, Lua or previous drops.",
+  "path_base": "drop-03; all relative paths resolve from this manifest directory",
+  "review_brief": "User pass-3 request, 2026-10-20, carrying user notes dated 2026-10-19; overrides old Flourish spinning motif.",
+  "assets": [
+    {
+      "key": "skill.loose",
+      "variant": 1,
+      "tree": "quarry",
+      "prompt": "Use case: precise-object-edit. Correct ONLY the bowstring and release glint in this supplied own Loose icon. Keep the wooden bow, complete arrow with its feathers and arrowhead, color, shape and placement, background and painted style identical. The current image is anatomically wrong because the string crosses the SHAFT ahead of the feathers. ERASE that entire old straight string. Draw a new continuous taut V-shaped bowstring: one straight segment from the TOP-LEFT WOODEN LIMB TIP to the very LOWER-LEFT REAR END of the arrow (the open nock at the butt, BEHIND ALL THE FEATHERS, near x20%,y65%); a second straight segment from that SAME REAR NOCK to the BOTTOM-RIGHT WOODEN LIMB TIP. Both segments meet exactly at the rear butt of the arrow, not at the front of the feathers. No string anywhere crosses the middle of the shaft. The arrow's full shaft and feathers are entirely AHEAD of that contact point. One small restrained green-white release spark at this actual rear nock shows the instant of release. Remove the old glint from the middle of the shaft. The bow's wooden belly stays on the forward upper-right side of the V string, the arrowhead points upper-right past the bow. Exactly one bow, one arrow, one continuous string from tip to nock to tip. No extra strings, disconnected string or leftover old line. Opaque square, no text, no additional objects, style A Painted embers, 64px target, clear at 32px. Variant 1: preserve this input variant's own bow and arrow exactly.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-391d58ec-2949-4c23-a1d2-c70bf14f80cc.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-8dff6a21-bcc1-49d0-833b-9b27b87c6d9c.png"
+      ],
+      "edit_base": "skill.bladecraft_v1.png",
+      "previous_versions": [
+        {
+          "key": "skill.loose",
+          "variant": 1,
+          "tree": "quarry",
+          "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands skill icon, style A Painted embers, for reduction to 64x64 RGB and display at 32px. Input image 1 is this project's own corrected Bladecraft variant, used as the transform-family geometry reference and edit target. Primary request: create Loose, an arrow just leaving a bowstring. Preserve the reference bow's EXACT placement, silhouette, two symmetric limbs and its correctly oriented wood-to-string relationship. Replace the silver sword completely with ONE slender wooden arrow aimed to the UPPER RIGHT, across the bow. No sword, handle or guard remains. The bow's wood bulges upper-right, away from the implied archer at lower-left; its one taut string connects the upper-left and lower-right limb tips and stays to the LOWER LEFT of the wooden belly. The arrow shaft crosses the wooden grip and extends past it toward the upper-right arrowhead. Its feathered nock is at the MIDPOINT of the bowstring, just a hair beyond it, NOT down at the former sword pommel. Show the instant of release, one tiny pale-green release glint at the nock and barely separated taut string, no speed cloud. The arrow is one straight continuous shaft, fletching near its lower-left nock, silver leaf-shaped head upper-right; arrowhead entirely beyond the wood, on its forward side. Recolor the reference bow to Quarry moss green #91AA55 and warm earth brown #94603A, with ivory glints, dark forest field #10251D. Keep the same recognizable diagonal bow silhouette as its Bladecraft counterpart. Broad faceted gouache-like painted masses, upper-left light, minimal texture, restrained bloom, strong three-value structure, meaningful gaps at least two final pixels. Full-bleed opaque square, no border, no frame, no medallion. No hands or person, no extra bowstrings, no letters, text, numbers, logos or watermark. Variant 1 uses the supplied simple longbow and a clean ivory triangular arrowhead, with two broad green feather vanes.",
+          "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-8dff6a21-bcc1-49d0-833b-9b27b87c6d9c.png",
+          "reference_sources": [
+            "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-ba36efbe-11ec-4839-a8aa-21c3f6c9bce6.png"
+          ],
+          "edit_base": "skill.bladecraft_v1.png",
+          "reason": "String met shaft ahead of feathers; revised to meet rear nock.",
+          "source_sha256": "6355732b0de11f153881da862f0f1fbde9a8401e6879e72aba45d2f83182ad60",
+          "reference_sha256": [
+            "5961c9e85743aedd09e48554d0cc88eae369ce8a0abaf5764bad05bf9769b338"
+          ]
+        }
+      ],
+      "source_sha256": "f855f4c1c5ff99a846c953ccbea62458d341713a55f93641df3e52c77916edf7",
+      "reference_sha256": [
+        "6355732b0de11f153881da862f0f1fbde9a8401e6879e72aba45d2f83182ad60"
+      ],
+      "path": "skill.loose_v1.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.loose.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "cde451eff5b15849cd0c510f115af743433291ecba64bb2c8572d482efe25717"
+    },
+    {
+      "key": "skill.loose",
+      "variant": 2,
+      "tree": "quarry",
+      "prompt": "Use case: precise-object-edit. Correct ONLY the bowstring and release glint in this supplied own Loose icon. Keep the wooden bow, complete arrow with its feathers and arrowhead, color, shape and placement, background and painted style identical. The current image is anatomically wrong because the string crosses the SHAFT ahead of the feathers. ERASE that entire old straight string. Draw a new continuous taut V-shaped bowstring: one straight segment from the TOP-LEFT WOODEN LIMB TIP to the very LOWER-LEFT REAR END of the arrow (the open nock at the butt, BEHIND ALL THE FEATHERS, near x20%,y65%); a second straight segment from that SAME REAR NOCK to the BOTTOM-RIGHT WOODEN LIMB TIP. Both segments meet exactly at the rear butt of the arrow, not at the front of the feathers. No string anywhere crosses the middle of the shaft. The arrow's full shaft and feathers are entirely AHEAD of that contact point. One small restrained green-white release spark at this actual rear nock shows the instant of release. Remove the old glint from the middle of the shaft. The bow's wooden belly stays on the forward upper-right side of the V string, the arrowhead points upper-right past the bow. Exactly one bow, one arrow, one continuous string from tip to nock to tip. No extra strings, disconnected string or leftover old line. Opaque square, no text, no additional objects, style A Painted embers, 64px target, clear at 32px. Variant 2: preserve this input variant's own bow and arrow exactly.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-50d370da-4111-4b0f-bcd1-a8e9438b88bc.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-2bc46e41-0c51-45ba-b40d-23de228dde98.png"
+      ],
+      "edit_base": "skill.bladecraft_v2.png",
+      "previous_versions": [
+        {
+          "key": "skill.loose",
+          "variant": 2,
+          "tree": "quarry",
+          "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands skill icon, style A Painted embers, for reduction to 64x64 RGB and display at 32px. Input image 1 is this project's own corrected Bladecraft variant, used as the transform-family geometry reference and edit target. Primary request: create Loose, an arrow just leaving a bowstring. Preserve the reference bow's EXACT placement, silhouette, two symmetric limbs and its correctly oriented wood-to-string relationship. Replace the silver sword completely with ONE slender wooden arrow aimed to the UPPER RIGHT, across the bow. No sword, handle or guard remains. The bow's wood bulges upper-right, away from the implied archer at lower-left; its one taut string connects the upper-left and lower-right limb tips and stays to the LOWER LEFT of the wooden belly. The arrow shaft crosses the wooden grip and extends past it toward the upper-right arrowhead. Its feathered nock is at the MIDPOINT of the bowstring, just a hair beyond it, NOT down at the former sword pommel. Show the instant of release, one tiny pale-green release glint at the nock and barely separated taut string, no speed cloud. The arrow is one straight continuous shaft, fletching near its lower-left nock, silver leaf-shaped head upper-right; arrowhead entirely beyond the wood, on its forward side. Recolor the reference bow to Quarry moss green #91AA55 and warm earth brown #94603A, with ivory glints, dark forest field #10251D. Keep the same recognizable diagonal bow silhouette as its Bladecraft counterpart. Broad faceted gouache-like painted masses, upper-left light, minimal texture, restrained bloom, strong three-value structure, meaningful gaps at least two final pixels. Full-bleed opaque square, no border, no frame, no medallion. No hands or person, no extra bowstrings, no letters, text, numbers, logos or watermark. Variant 2 uses the supplied compact recurve and a broad leaf-shaped silver arrowhead, with two light olive feather vanes.",
+          "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-2bc46e41-0c51-45ba-b40d-23de228dde98.png",
+          "reference_sources": [
+            "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-b6bc0926-8c72-4f46-a981-7f6ebc2c34a6.png"
+          ],
+          "edit_base": "skill.bladecraft_v2.png",
+          "reason": "String met shaft ahead of feathers; revised to meet rear nock.",
+          "source_sha256": "8389a5554e863deead9f5f53722d78a1712b9a6be321661ea54dd8dc420daf8c",
+          "reference_sha256": [
+            "d4a14ebf91210a5588da4a0482c5175d138eefc43435760ffce4d4340373fe4f"
+          ]
+        }
+      ],
+      "source_sha256": "7db618e2f69c87ad3932d6f6fa89acce69e9a867a8f02419f471291d2306dad9",
+      "reference_sha256": [
+        "8389a5554e863deead9f5f53722d78a1712b9a6be321661ea54dd8dc420daf8c"
+      ],
+      "path": "skill.loose_v2.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.loose.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "6fa9eaca7482171228a8bada3465c213233df1d9450ce07addd408df26d9f00b"
+    },
+    {
+      "key": "skill.loose",
+      "variant": 3,
+      "tree": "quarry",
+      "prompt": "Use case: precise-object-edit. Correct ONLY the bowstring and release glint in this supplied own Loose icon. Keep the wooden bow, complete arrow with its feathers and arrowhead, color, shape and placement, background and painted style identical. The current image is anatomically wrong because the string crosses the SHAFT ahead of the feathers. ERASE that entire old straight string. Draw a new continuous taut V-shaped bowstring: one straight segment from the TOP-LEFT WOODEN LIMB TIP to the very LOWER-LEFT REAR END of the arrow (the open nock at the butt, BEHIND ALL THE FEATHERS, near x20%,y65%); a second straight segment from that SAME REAR NOCK to the BOTTOM-RIGHT WOODEN LIMB TIP. Both segments meet exactly at the rear butt of the arrow, not at the front of the feathers. No string anywhere crosses the middle of the shaft. The arrow's full shaft and feathers are entirely AHEAD of that contact point. One small restrained green-white release spark at this actual rear nock shows the instant of release. Remove the old glint from the middle of the shaft. The bow's wooden belly stays on the forward upper-right side of the V string, the arrowhead points upper-right past the bow. Exactly one bow, one arrow, one continuous string from tip to nock to tip. No extra strings, disconnected string or leftover old line. Opaque square, no text, no additional objects, style A Painted embers, 64px target, clear at 32px. Variant 3: preserve this input variant's own bow and arrow exactly.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-e0fa1682-0088-4604-8d91-48aebdec8e37.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-d17b9ca4-6521-4023-8758-9dc27342e23c.png"
+      ],
+      "edit_base": "skill.bladecraft_v3.png",
+      "previous_versions": [
+        {
+          "key": "skill.loose",
+          "variant": 3,
+          "tree": "quarry",
+          "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands skill icon, style A Painted embers, for reduction to 64x64 RGB and display at 32px. Input image 1 is this project's own corrected Bladecraft variant, used as the transform-family geometry reference and edit target. Primary request: create Loose, an arrow just leaving a bowstring. Preserve the reference bow's EXACT placement, silhouette, two symmetric limbs and its correctly oriented wood-to-string relationship. Replace the silver sword completely with ONE slender wooden arrow aimed to the UPPER RIGHT, across the bow. No sword, handle or guard remains. The bow's wood bulges upper-right, away from the implied archer at lower-left; its one taut string connects the upper-left and lower-right limb tips and stays to the LOWER LEFT of the wooden belly. The arrow shaft crosses the wooden grip and extends past it toward the upper-right arrowhead. Its feathered nock is at the MIDPOINT of the bowstring, just a hair beyond it, NOT down at the former sword pommel. Show the instant of release, one tiny pale-green release glint at the nock and barely separated taut string, no speed cloud. The arrow is one straight continuous shaft, fletching near its lower-left nock, silver leaf-shaped head upper-right; arrowhead entirely beyond the wood, on its forward side. Recolor the reference bow to Quarry moss green #91AA55 and warm earth brown #94603A, with ivory glints, dark forest field #10251D. Keep the same recognizable diagonal bow silhouette as its Bladecraft counterpart. Broad faceted gouache-like painted masses, upper-left light, minimal texture, restrained bloom, strong three-value structure, meaningful gaps at least two final pixels. Full-bleed opaque square, no border, no frame, no medallion. No hands or person, no extra bowstrings, no letters, text, numbers, logos or watermark. Variant 3 uses the supplied stout longbow and a narrow faceted silver arrowhead, with two warm ivory feather vanes.",
+          "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-d17b9ca4-6521-4023-8758-9dc27342e23c.png",
+          "reference_sources": [
+            "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-7ff24d52-06df-4bfc-8e4b-6f406aab4468.png"
+          ],
+          "edit_base": "skill.bladecraft_v3.png",
+          "reason": "String met shaft ahead of feathers; revised to meet rear nock.",
+          "source_sha256": "29b7daa7a395ca6f8cada55528b1e7be5cd9c2441353ce91593085d8f41cddb1",
+          "reference_sha256": [
+            "5044559507c1da4fec520ea08c9d7980f83c0639919169d4d8951372e5d931c9"
+          ]
+        }
+      ],
+      "source_sha256": "b4f7a5dcc0b9177faa1982c8248e4f6e3a1dfef4c4be30512eb5d433ca683030",
+      "reference_sha256": [
+        "29b7daa7a395ca6f8cada55528b1e7be5cd9c2441353ce91593085d8f41cddb1"
+      ],
+      "path": "skill.loose_v3.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.loose.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "34c15da1bb588579af57536ff461f00aa9c46c64ece807ac561a7a9966dfb575"
+    },
+    {
+      "key": "skill.bladecraft",
+      "variant": 1,
+      "tree": "veil",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands skill icon, style A Painted embers, for reduction to 64x64 RGB and display at 32px. Input image 1 is the project's own previously selected Bladecraft and the edit target. Primary request: keep the EXACT silver sword unchanged, including its silhouette, faceted painted highlights, guard, purple wrapped grip, pommel, scale, diagonal lower-left to upper-right placement and the indigo-black background. Keep the same indigo/violet/silver palette. Redraw ONLY the bow and its string behind the sword to fix its reversed orientation. Geometry: the arrow direction for this bow would be toward the UPPER RIGHT, parallel to the sword point. The wood must bulge to the UPPER RIGHT of its taut string. Bow limb tips stay near upper-left (16%,10%) and lower-right (90%,84%). The wood's central grip is near (67%,33%), on the UPPER-RIGHT SIDE of the straight line between those tips. Bowstring is ONE thin straight diagonal joining the tips, passing near (50%,46%), to the LOWER LEFT of the wooden grip; the sword occludes it at the crossing. The bow is seen side-on; two symmetric smooth limbs, clean negative space between wood and string, no extra kinks, no S-bow. The sword stays in front and the complete bow stays behind. Keep the old sword pixels visually identical; do not redesign the blade or repaint the whole scene. Broad gouache-like painted facets, upper-left illumination, restrained bloom, deep matte shadows, three main values, meaningful gaps at least 2 final pixels. No arrow, no figure, no extra weapons, no frame, no text, no marks, no UI, no logos, opaque square background. Variant 1: use a simple elegant smooth longbow: a single symmetrical shallow C curve bulging upper-right, purple wood with a restrained silver edge. Avoid any hook or ornamental protrusion.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-ba36efbe-11ec-4839-a8aa-21c3f6c9bce6.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-1a56bfc5-e4dd-45a4-a02a-50f61d64d071.png"
+      ],
+      "edit_base": "../drop-02/skills/skill.bladecraft.png",
+      "source_sha256": "5961c9e85743aedd09e48554d0cc88eae369ce8a0abaf5764bad05bf9769b338",
+      "reference_sha256": [
+        "781253f871de0e81a86817bccb165f2598489477e117cea59e38943900e86390"
+      ],
+      "path": "skill.bladecraft_v1.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.bladecraft.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "398225941205a2afe137ce43b24c52d33c9400a71fa4429341cdb063fc437537"
+    },
+    {
+      "key": "skill.bladecraft",
+      "variant": 2,
+      "tree": "veil",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands skill icon, style A Painted embers, for reduction to 64x64 RGB and display at 32px. Input image 1 is the project's own previously selected Bladecraft and the edit target. Primary request: keep the EXACT silver sword unchanged, including its silhouette, faceted painted highlights, guard, purple wrapped grip, pommel, scale, diagonal lower-left to upper-right placement and the indigo-black background. Keep the same indigo/violet/silver palette. Redraw ONLY the bow and its string behind the sword to fix its reversed orientation. Geometry: the arrow direction for this bow would be toward the UPPER RIGHT, parallel to the sword point. The wood must bulge to the UPPER RIGHT of its taut string. Bow limb tips stay near upper-left (16%,10%) and lower-right (90%,84%). The wood's central grip is near (67%,33%), on the UPPER-RIGHT SIDE of the straight line between those tips. Bowstring is ONE thin straight diagonal joining the tips, passing near (50%,46%), to the LOWER LEFT of the wooden grip; the sword occludes it at the crossing. The bow is seen side-on; two symmetric smooth limbs, clean negative space between wood and string, no extra kinks, no S-bow. The sword stays in front and the complete bow stays behind. Keep the old sword pixels visually identical; do not redesign the blade or repaint the whole scene. Broad gouache-like painted facets, upper-left illumination, restrained bloom, deep matte shadows, three main values, meaningful gaps at least 2 final pixels. No arrow, no figure, no extra weapons, no frame, no text, no marks, no UI, no logos, opaque square background. Variant 2: use a compact classic recurve bow with a smooth upper-right-bulging belly and just a small graceful return at each limb tip, perfectly symmetric limbs. Keep its silhouette broad and simple.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-b6bc0926-8c72-4f46-a981-7f6ebc2c34a6.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-1a56bfc5-e4dd-45a4-a02a-50f61d64d071.png"
+      ],
+      "edit_base": "../drop-02/skills/skill.bladecraft.png",
+      "source_sha256": "d4a14ebf91210a5588da4a0482c5175d138eefc43435760ffce4d4340373fe4f",
+      "reference_sha256": [
+        "781253f871de0e81a86817bccb165f2598489477e117cea59e38943900e86390"
+      ],
+      "path": "skill.bladecraft_v2.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.bladecraft.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "58c0e7384b57dc2cce49a1514e1e75d20dc58b3283b58cc66496980d0b848f7c"
+    },
+    {
+      "key": "skill.bladecraft",
+      "variant": 3,
+      "tree": "veil",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands skill icon, style A Painted embers, for reduction to 64x64 RGB and display at 32px. Input image 1 is the project's own previously selected Bladecraft and the edit target. Primary request: keep the EXACT silver sword unchanged, including its silhouette, faceted painted highlights, guard, purple wrapped grip, pommel, scale, diagonal lower-left to upper-right placement and the indigo-black background. Keep the same indigo/violet/silver palette. Redraw ONLY the bow and its string behind the sword to fix its reversed orientation. Geometry: the arrow direction for this bow would be toward the UPPER RIGHT, parallel to the sword point. The wood must bulge to the UPPER RIGHT of its taut string. Bow limb tips stay near upper-left (16%,10%) and lower-right (90%,84%). The wood's central grip is near (67%,33%), on the UPPER-RIGHT SIDE of the straight line between those tips. Bowstring is ONE thin straight diagonal joining the tips, passing near (50%,46%), to the LOWER LEFT of the wooden grip; the sword occludes it at the crossing. The bow is seen side-on; two symmetric smooth limbs, clean negative space between wood and string, no extra kinks, no S-bow. The sword stays in front and the complete bow stays behind. Keep the old sword pixels visually identical; do not redesign the blade or repaint the whole scene. Broad gouache-like painted facets, upper-left illumination, restrained bloom, deep matte shadows, three main values, meaningful gaps at least 2 final pixels. No arrow, no figure, no extra weapons, no frame, no text, no marks, no UI, no logos, opaque square background. Variant 3: use a stout simple longbow with a slightly deeper continuous upper-right-bulging arc, broad violet facets and silver limb-tip caps; no recurves or extra bends.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-7ff24d52-06df-4bfc-8e4b-6f406aab4468.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a155c5-3daa-7f10-a5ec-38aedfa52b77/exec-1a56bfc5-e4dd-45a4-a02a-50f61d64d071.png"
+      ],
+      "edit_base": "../drop-02/skills/skill.bladecraft.png",
+      "source_sha256": "5044559507c1da4fec520ea08c9d7980f83c0639919169d4d8951372e5d931c9",
+      "reference_sha256": [
+        "781253f871de0e81a86817bccb165f2598489477e117cea59e38943900e86390"
+      ],
+      "path": "skill.bladecraft_v3.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.bladecraft.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "d8a495a2ec2e48b33d5fabdb4bdddcbf8ee080a981d488d858dd1b1c679b86dc"
+    },
+    {
+      "key": "talent.measured_breath",
+      "variant": 1,
+      "tree": "quarry",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands Quarry TALENT icon, Measured Breath, style A Painted embers, for 64x64 RGB and 32px display. Input image 1 is the project's own previous Measured Breath, used as the medallion, painting and color reference. Redraw the inner motif with a physically coherent bow: breath mist hovering above ONE nocked arrow, on ONE clean symmetric smooth longbow. Preserve the simple round bronze medallion, 91% canvas diameter and 5% canvas rim, dark forest inset and opaque dark corners. Replace the old malformed bow and remove the hand. In exact side view the bow stands vertically: upper and lower limb tips at about (43%,20%) and (43%,80%), central wooden grip at (62%,50%), curving smoothly to the RIGHT away from the archer on the left. A drawn string connects upper tip to nock at (27%,50%) to lower tip: exactly two straight segments, with an open large triangular space between wood and string. One continuous straight horizontal arrow starts at that nock (27%,50%), crosses the grip (62%,50%), and its pointed arrowhead reaches (83%,50%), past the wood to the RIGHT. Feather vanes stay near the left nock; no arrow behind the nock. The whole bow fits inside the medallion. Two symmetric limbs, no kink, no S-shaped limb, no extra bend. One small pale-green wisp of breath floats ABOVE the arrow, clearly separate from bow and string, not a flame or letter. Quarry green #91AA55 and earth brown #94603A, warm ivory highlights, dark forest #10251D. Broad gouache-like painted facets, upper-left lighting, deep matte shadows, three values, restrained bloom; shapes and meaningful gaps at least two final pixels. No person or hands, extra weapon, ornament, text, letters, digits, logo or watermark. One opaque square image. Variant 1: warm brown elegant simple longbow, ivory leaf arrowhead, one short soft horizontal breath puff above the shaft.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-9be43657-69e6-4dec-a8bd-4e06d4eb3988.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a1560a-035f-7453-8a6a-9455c8bb1b47/exec-6144f93e-e9a3-40dd-a566-92d769e10673.png"
+      ],
+      "edit_base": "../drop-02/talents/talent.measured_breath.png",
+      "source_sha256": "1d6e91d9ee0296fbae5c534ae37dce1f5259e6499059600c0873dd0dec3c12c8",
+      "reference_sha256": [
+        "80b851adc32d1583353aa66de57985ea680a8756951e06095e00d091fc0f762d"
+      ],
+      "path": "talent.measured_breath_v1.png",
+      "kind": "talent",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/talents/talent.measured_breath.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "dc37428c95a8c0407dbab7d5d94e28806d9f6f3e598d333e8836bd07bc75e8b8"
+    },
+    {
+      "key": "talent.measured_breath",
+      "variant": 2,
+      "tree": "quarry",
+      "prompt": "Use case: precise-object-edit. Edit only the wooden bow silhouette of this own Measured Breath medallion. Preserve the arrow, correct nock and V-shaped string, breath mist, circular bronze rim, palette, background, dimensions and painted style. The current wood has angular dog-leg steps just above and below its grip. Replace BOTH limbs by ONE smooth continuous symmetrical longbow arc, like a right parenthesis ), widest to the right at the central grip, smoothly tapering to the existing upper and lower tips. No S curves, no zigzags, no dog-leg offsets, no abrupt bends, no hooks. The wooden arc must bulge RIGHT of the string. Its two halves mirror across the horizontal arrow axis. Keep the straight arrow crossing its center and extending to the right. Preserve the olive-green edge highlights and earth-brown wood, broad painted facets, upper-left lighting, dark forest disk. No added objects, no lettering, opaque square, 64px target, readable at 32px.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-546ea7d5-fdac-4950-8216-2fe4fa47d4c6.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-f8881675-4d8e-461f-8600-af2f005dc994.png"
+      ],
+      "edit_base": "../drop-02/talents/talent.measured_breath.png",
+      "previous_versions": [
+        {
+          "key": "talent.measured_breath",
+          "variant": 2,
+          "tree": "quarry",
+          "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands Quarry TALENT icon, Measured Breath, style A Painted embers, for 64x64 RGB and 32px display. Input image 1 is the project's own previous Measured Breath, used as the medallion, painting and color reference. Redraw the inner motif with a physically coherent bow: breath mist hovering above ONE nocked arrow, on ONE clean symmetric smooth longbow. Preserve the simple round bronze medallion, 91% canvas diameter and 5% canvas rim, dark forest inset and opaque dark corners. Replace the old malformed bow and remove the hand. In exact side view the bow stands vertically: upper and lower limb tips at about (43%,20%) and (43%,80%), central wooden grip at (62%,50%), curving smoothly to the RIGHT away from the archer on the left. A drawn string connects upper tip to nock at (27%,50%) to lower tip: exactly two straight segments, with an open large triangular space between wood and string. One continuous straight horizontal arrow starts at that nock (27%,50%), crosses the grip (62%,50%), and its pointed arrowhead reaches (83%,50%), past the wood to the RIGHT. Feather vanes stay near the left nock; no arrow behind the nock. The whole bow fits inside the medallion. Two symmetric limbs, no kink, no S-shaped limb, no extra bend. One small pale-green wisp of breath floats ABOVE the arrow, clearly separate from bow and string, not a flame or letter. Quarry green #91AA55 and earth brown #94603A, warm ivory highlights, dark forest #10251D. Broad gouache-like painted facets, upper-left lighting, deep matte shadows, three values, restrained bloom; shapes and meaningful gaps at least two final pixels. No person or hands, extra weapon, ornament, text, letters, digits, logo or watermark. One opaque square image. Variant 2: green-edged earth-brown simple recurve with only subtle symmetric tip returns, wider silver arrowhead, one rising pale-green breath wisp above the shaft.",
+          "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-f8881675-4d8e-461f-8600-af2f005dc994.png",
+          "reference_sources": [
+            "/home/jan/.codex/generated_images/01a1560a-035f-7453-8a6a-9455c8bb1b47/exec-6144f93e-e9a3-40dd-a566-92d769e10673.png"
+          ],
+          "edit_base": "../drop-02/talents/talent.measured_breath.png",
+          "reason": "Removed angular offsets at bow grip for a smooth longbow silhouette.",
+          "source_sha256": "be87592fdfd2452545f4d2fd83664c653bb3a4c4c036e913ede6651a284b7993",
+          "reference_sha256": [
+            "80b851adc32d1583353aa66de57985ea680a8756951e06095e00d091fc0f762d"
+          ]
+        }
+      ],
+      "source_sha256": "c3a595c3499196acd1afb4e0a46ceb3c617157d7607037a9e1ff30bbeb0a8eae",
+      "reference_sha256": [
+        "be87592fdfd2452545f4d2fd83664c653bb3a4c4c036e913ede6651a284b7993"
+      ],
+      "path": "talent.measured_breath_v2.png",
+      "kind": "talent",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/talents/talent.measured_breath.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "c0cfd7817b4726f997a3b9920beb6ef1d973eb796801534ca3619b4e00ca7656"
+    },
+    {
+      "key": "talent.measured_breath",
+      "variant": 3,
+      "tree": "quarry",
+      "prompt": "Use case: precise-object-edit. Asset type: ONE square Grudgelands Quarry TALENT icon, Measured Breath, style A Painted embers, for 64x64 RGB and 32px display. Input image 1 is the project's own previous Measured Breath, used as the medallion, painting and color reference. Redraw the inner motif with a physically coherent bow: breath mist hovering above ONE nocked arrow, on ONE clean symmetric smooth longbow. Preserve the simple round bronze medallion, 91% canvas diameter and 5% canvas rim, dark forest inset and opaque dark corners. Replace the old malformed bow and remove the hand. In exact side view the bow stands vertically: upper and lower limb tips at about (43%,20%) and (43%,80%), central wooden grip at (62%,50%), curving smoothly to the RIGHT away from the archer on the left. A drawn string connects upper tip to nock at (27%,50%) to lower tip: exactly two straight segments, with an open large triangular space between wood and string. One continuous straight horizontal arrow starts at that nock (27%,50%), crosses the grip (62%,50%), and its pointed arrowhead reaches (83%,50%), past the wood to the RIGHT. Feather vanes stay near the left nock; no arrow behind the nock. The whole bow fits inside the medallion. Two symmetric limbs, no kink, no S-shaped limb, no extra bend. One small pale-green wisp of breath floats ABOVE the arrow, clearly separate from bow and string, not a flame or letter. Quarry green #91AA55 and earth brown #94603A, warm ivory highlights, dark forest #10251D. Broad gouache-like painted facets, upper-left lighting, deep matte shadows, three values, restrained bloom; shapes and meaningful gaps at least two final pixels. No person or hands, extra weapon, ornament, text, letters, digits, logo or watermark. One opaque square image. Variant 3: slightly stouter smooth longbow in honey brown with olive highlights, broad ivory triangular arrowhead, a soft translucent breath ribbon drifting horizontally above the shaft.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-4bbe27f7-45bb-4981-98f3-5a8517ccfc03.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a1560a-035f-7453-8a6a-9455c8bb1b47/exec-6144f93e-e9a3-40dd-a566-92d769e10673.png"
+      ],
+      "edit_base": "../drop-02/talents/talent.measured_breath.png",
+      "source_sha256": "4e5847a3601dee021911e3c5c35d0d9423bcb86ee55c928209e65b4034bcdab4",
+      "reference_sha256": [
+        "80b851adc32d1583353aa66de57985ea680a8756951e06095e00d091fc0f762d"
+      ],
+      "path": "talent.measured_breath_v3.png",
+      "kind": "talent",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/talents/talent.measured_breath.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "d7c3ec8b6e4962f35634f7239d696fe255aeea92fa54811e32dcf3081553f648"
+    },
+    {
+      "key": "skill.parry",
+      "variant": 1,
+      "tree": "veil",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square Grudgelands Veil skill icon, Parry, for reduction to 64x64 RGB and 32px display. Primary request: unmistakable DEFENSIVE DEFLECTION of an incoming strike with a short blade: absorbing a hit and turning it aside. Exactly TWO blades, different sizes and contrasting value: one large foreground silver defensive dagger and one dimmer indigo incoming sword. One bright silver-white spark exactly where their edges meet; compact violet contact glow. One clear action with broad separation, never a decorative crossed-swords emblem or tangled weapons. Style A Painted embers: broad faceted gouache-like painted masses, upper-left lighting, restrained bloom, deep matte shadows, three main values, no fine texture. Indigo #343568, violet #8162B1, silver #DFE4ED on indigo-black #100F22. Full-bleed opaque square, no border or medallion. Subject fills 80% of square, edges and meaningful gaps at least two final pixels. No text, letters, digits, UI, logos or watermark, no extra weapons or flying fragments. Variant 1: close-up foreground short broad silver dagger with a clearly visible violet wrapped hilt at lower-left, blade pointing upper-right. It catches the dim descending opponent blade arriving from upper-left at its strong middle near the center. The attacker blade is being knocked sideways to the upper-right; one short angular violet motion streak beside the contact conveys that change of direction. Sturdy braced diagonal defence, dramatic bright contact, dark open area below. No hands or people.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-1f949947-3b71-4a7c-9980-d0c5afdcc5a2.png",
+      "reference_sources": [],
+      "source_sha256": "feee6b39484a2a451b1eea1a7ce1594b660acb2ac31124307a5181e9e3adba0f",
+      "reference_sha256": [],
+      "path": "skill.parry_v1.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.parry.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "3a26050a538a499af3642d9b5da11adce655a20761451c5f30a5b88153d1d5e9"
+    },
+    {
+      "key": "skill.parry",
+      "variant": 2,
+      "tree": "veil",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square Grudgelands Veil skill icon, Parry, for reduction to 64x64 RGB and 32px display. Primary request: unmistakable DEFENSIVE DEFLECTION of an incoming strike with a short blade: absorbing a hit and turning it aside. Exactly TWO blades, different sizes and contrasting value: one large foreground silver defensive dagger and one dimmer indigo incoming sword. One bright silver-white spark exactly where their edges meet; compact violet contact glow. One clear action with broad separation, never a decorative crossed-swords emblem or tangled weapons. Style A Painted embers: broad faceted gouache-like painted masses, upper-left lighting, restrained bloom, deep matte shadows, three main values, no fine texture. Indigo #343568, violet #8162B1, silver #DFE4ED on indigo-black #100F22. Full-bleed opaque square, no border or medallion. Subject fills 80% of square, edges and meaningful gaps at least two final pixels. No text, letters, digits, UI, logos or watermark, no extra weapons or flying fragments. Variant 2: a short silver parrying blade held almost horizontally across the middle, violet wrapped grip at left, point right and slightly raised. A dim narrower sword descends steeply from upper-right into its upper edge at center-right. The short blade levers that attack outward to the right; a single small outward violet sweep beside the contact and one bright silver spark make the defensive action obvious. Show one simple dark gloved hand around the hilt at lower-left, no body.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-1b9fad7c-dd7c-4b05-8018-a7663e049a73.png",
+      "reference_sources": [],
+      "source_sha256": "fa0466c122010c1bbe5b536c141ec9e2eb7fdf864bcef699e23909c3ae168335",
+      "reference_sha256": [],
+      "path": "skill.parry_v2.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.parry.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "361376923a107f287ad2f7ee57eaaef8566ca84da9c65bfe10af95b61973a33d"
+    },
+    {
+      "key": "skill.parry",
+      "variant": 3,
+      "tree": "veil",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square Grudgelands Veil skill icon, Parry, for reduction to 64x64 RGB and 32px display. Primary request: unmistakable DEFENSIVE DEFLECTION of an incoming strike with a short blade: absorbing a hit and turning it aside. Exactly TWO blades, different sizes and contrasting value: one large foreground silver defensive dagger and one dimmer indigo incoming sword. One bright silver-white spark exactly where their edges meet; compact violet contact glow. One clear action with broad separation, never a decorative crossed-swords emblem or tangled weapons. Style A Painted embers: broad faceted gouache-like painted masses, upper-left lighting, restrained bloom, deep matte shadows, three main values, no fine texture. Indigo #343568, violet #8162B1, silver #DFE4ED on indigo-black #100F22. Full-bleed opaque square, no border or medallion. Subject fills 80% of square, edges and meaningful gaps at least two final pixels. No text, letters, digits, UI, logos or watermark, no extra weapons or flying fragments. Variant 3: a stout silver dagger rising nearly upright from a lower-center indigo grip, its tip leaning left. It braces against one dim sword striking diagonally from top-right into the dagger's strong middle. Bright white contact spark on the right edge, and a single short violet angled motion accent leading away toward upper-right indicates the redirected strike. Asymmetric T-like collision, wide negative space, no hand or figure.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-58159a97-27cf-424b-81e2-f89354205df5.png",
+      "reference_sources": [],
+      "source_sha256": "0789daf6cb8cee567ddaf7c6d973409623489a9254e81e9b5e9aefbd61576fb1",
+      "reference_sha256": [],
+      "path": "skill.parry_v3.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.parry.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "164a0313145a5a27dd8e9e07cf96df36ad31aab1f14eb14be5dd4042d7a6d671"
+    },
+    {
+      "key": "skill.flourish",
+      "variant": 1,
+      "tree": "veil",
+      "prompt": "Use case: precise-object-edit. Input is this project's own Flourish icon. Preserve its painted style A, indigo/violet/silver palette and the small right-facing wielder on the LEFT. Correct the sweep geometry: the current crescent curls too far around. Completely erase ALL existing luminous arcs and their trails, restoring dark indigo-black behind them, then draw a compact FORWARD 90-DEGREE sweep wholly within the RIGHT HALF. Think of the rightmost QUARTER of a large circle whose center is at the wielder's outstretched hand near (30%,50%): angles -45 to +45 only. The arc's upper endpoint must be near (72%,18%), its rightmost midpoint near (90%,50%), and its lower endpoint near (72%,82%). This is a SHORT parenthesis segment on the right; it does not extend across the top or bottom of the canvas, and never curves back toward the wielder. All bright trail pixels stay right of x55%. The left half contains only the existing small wielder and a single outstretched short blade, with calm dark space above and below. Keep one clear action, wide forward fan, no spin or ring. Silver-white leading edge, violet inner facet, edges and gaps at least two final pixels. Opaque square, 64px target, unmistakable at 32px, no text, no UI, no ornament. Variant 1: ONE thick clean tapered quarter-arc, no echoes or extra arcs. Preserve the current left-side figure but simplify trailing cape scraps. Connect the arm's short blade visually toward the middle of the arc.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-94a12b82-f38c-444f-8f07-888ff018c4b8.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-e63ea2bc-2173-4ee0-b3b1-c0945b0f93e3.png"
+      ],
+      "previous_versions": [
+        {
+          "key": "skill.flourish",
+          "variant": 1,
+          "tree": "veil",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square Grudgelands Veil skill icon, Flourish, for reduction to 64x64 RGB and display at 32px. Primary request: ONE wide FORWARD slash covering a 90-degree cone in front of a blade wielder, reaching multiple opponents in that forward fan. The small dark indigo silhouette of the wielder stays at the LEFT side, facing RIGHT, behind the sweep; all luminous motion is to the RIGHT and IN FRONT of the wielder. One instant directional action, no spin, no circular motion, no orbit, no ring around the person. The arc must sweep across the forward quadrant only, about a quarter-circle, never a full or nearly full circle. Style A Painted embers: broad faceted gouache-like painted masses, upper-left lighting, restrained bloom, deep matte shadows, three main values, almost no fine texture. Indigo #343568, violet #8162B1, silver #DFE4ED on indigo-black #100F22. Bright silver-white leading edge, violet inner trail, clear empty dark gap between wielder and outside sweep. Main action fills 80% of square with broad gaps at least two final pixels. Full-bleed opaque square, no frame, no medallion, no text, letters, numerals, UI, logos or watermark. No gore, no tiny particles, no targets needed, no blade wheel or pinwheel. Variant 1: compact side-view silhouette at lower-left, one outstretched arm holding one short silver blade in front. A SINGLE thick luminous crescent-shaped slash traverses the right half from upper-center through far-right to lower-right, visibly tapering at both ends. The brightest leading edge and blade end at lower-right, the trail behind it stays in the forward fan. Keep the figure small and secondary, and the sweeping crescent dominant.",
+          "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-e63ea2bc-2173-4ee0-b3b1-c0945b0f93e3.png",
+          "reference_sources": [],
+          "reason": "Shortened overextended crescent to the forward quarter; removed sweep around figure.",
+          "source_sha256": "787842d9a7d2c83f462bffe8b2af4493d0b68de58ad72e031292f5fa73155f55",
+          "reference_sha256": []
+        }
+      ],
+      "source_sha256": "8ae6e25f90cfb72b96b9f3ccc9ccbbe458c092d6c58c77553af632b840b14c04",
+      "reference_sha256": [
+        "787842d9a7d2c83f462bffe8b2af4493d0b68de58ad72e031292f5fa73155f55"
+      ],
+      "path": "skill.flourish_v1.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.flourish.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "a0c1d1115eda96fd215bdc342762e106d00887cdfb0439920dc955d57a02d3bf"
+    },
+    {
+      "key": "skill.flourish",
+      "variant": 2,
+      "tree": "veil",
+      "prompt": "Use case: precise-object-edit. Input is this project's own Flourish icon. Preserve its painted style A, indigo/violet/silver palette and the small right-facing wielder on the LEFT. Correct the sweep geometry: the current crescent curls too far around. Completely erase ALL existing luminous arcs and their trails, restoring dark indigo-black behind them, then draw a compact FORWARD 90-DEGREE sweep wholly within the RIGHT HALF. Think of the rightmost QUARTER of a large circle whose center is at the wielder's outstretched hand near (30%,50%): angles -45 to +45 only. The arc's upper endpoint must be near (72%,18%), its rightmost midpoint near (90%,50%), and its lower endpoint near (72%,82%). This is a SHORT parenthesis segment on the right; it does not extend across the top or bottom of the canvas, and never curves back toward the wielder. All bright trail pixels stay right of x55%. The left half contains only the existing small wielder and a single outstretched short blade, with calm dark space above and below. Keep one clear action, wide forward fan, no spin or ring. Silver-white leading edge, violet inner facet, edges and gaps at least two final pixels. Opaque square, 64px target, unmistakable at 32px, no text, no UI, no ornament. Variant 2: EXACTLY THREE parallel short quarter-arcs, all right of x50%, nested like ))) with the same center at the hand and the same -45 to +45 degree extent. Clear dark gaps. All flow the same way. Keep the current figure at far left, behind all the arcs. Never three full crescents.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-ffe705b5-05e5-457a-9b23-91c8fede7037.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-0115ed62-28a1-41a1-8651-e451c9916b86.png"
+      ],
+      "previous_versions": [
+        {
+          "key": "skill.flourish",
+          "variant": 2,
+          "tree": "veil",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square Grudgelands Veil skill icon, Flourish, for reduction to 64x64 RGB and display at 32px. Primary request: ONE wide FORWARD slash covering a 90-degree cone in front of a blade wielder, reaching multiple opponents in that forward fan. The small dark indigo silhouette of the wielder stays at the LEFT side, facing RIGHT, behind the sweep; all luminous motion is to the RIGHT and IN FRONT of the wielder. One instant directional action, no spin, no circular motion, no orbit, no ring around the person. The arc must sweep across the forward quadrant only, about a quarter-circle, never a full or nearly full circle. Style A Painted embers: broad faceted gouache-like painted masses, upper-left lighting, restrained bloom, deep matte shadows, three main values, almost no fine texture. Indigo #343568, violet #8162B1, silver #DFE4ED on indigo-black #100F22. Bright silver-white leading edge, violet inner trail, clear empty dark gap between wielder and outside sweep. Main action fills 80% of square with broad gaps at least two final pixels. Full-bleed opaque square, no frame, no medallion, no text, letters, numerals, UI, logos or watermark. No gore, no tiny particles, no targets needed, no blade wheel or pinwheel. Variant 2: compact side-view torso at far-left, facing right, one extended short blade; EXACTLY THREE parallel separated silver-violet quarter-arc trails form one broad fan to its right. All three trails bend the same way, have the same center outside the arcs at the wielder's hand, and end forward-right. These are three motion echoes of ONE stroke, not separate weapons, never spokes or a pinwheel. The three clean parallel arcs dominate the small icon.",
+          "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-0115ed62-28a1-41a1-8651-e451c9916b86.png",
+          "reference_sources": [],
+          "reason": "Shortened overextended crescent to the forward quarter; removed sweep around figure.",
+          "source_sha256": "0fec15514ca6c06f8ec2a07afde1b15b982e62dcd63e9e623f237dd62d0499f0",
+          "reference_sha256": []
+        }
+      ],
+      "source_sha256": "6c75f1652716e6c38d6083c76a257da3f55c6a36ce196b366220337235cc1ae2",
+      "reference_sha256": [
+        "0fec15514ca6c06f8ec2a07afde1b15b982e62dcd63e9e623f237dd62d0499f0"
+      ],
+      "path": "skill.flourish_v2.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.flourish.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "f0db71874bae79ff9726432f9789c058e42ebf1fd64cf3ce988cecd69ad123b3"
+    },
+    {
+      "key": "skill.flourish",
+      "variant": 3,
+      "tree": "veil",
+      "prompt": "Use case: precise-object-edit. Input is this project's own Flourish icon. Preserve its painted style A, indigo/violet/silver palette and the small right-facing wielder on the LEFT. Correct the sweep geometry: the current crescent curls too far around. Completely erase ALL existing luminous arcs and their trails, restoring dark indigo-black behind them, then draw a compact FORWARD 90-DEGREE sweep wholly within the RIGHT HALF. Think of the rightmost QUARTER of a large circle whose center is at the wielder's outstretched hand near (30%,50%): angles -45 to +45 only. The arc's upper endpoint must be near (72%,18%), its rightmost midpoint near (90%,50%), and its lower endpoint near (72%,82%). This is a SHORT parenthesis segment on the right; it does not extend across the top or bottom of the canvas, and never curves back toward the wielder. All bright trail pixels stay right of x55%. The left half contains only the existing small wielder and a single outstretched short blade, with calm dark space above and below. Keep one clear action, wide forward fan, no spin or ring. Silver-white leading edge, violet inner facet, edges and gaps at least two final pixels. Opaque square, 64px target, unmistakable at 32px, no text, no UI, no ornament. Variant 3: ONE low forward quarter-arc, slightly flattened by perspective, upper endpoint near (68%,32%), rightmost point near (92%,58%), lower endpoint near (68%,80%). No luminous trails behind the crouching figure or under its feet. Keep the low stance and outstretched short blade, simplify the cape.",
+      "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-bced29a7-f268-4ab5-bad1-51ce8a54d939.png",
+      "reference_sources": [
+        "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-f3fdfd29-c501-49c4-9783-a03c44d2f686.png"
+      ],
+      "previous_versions": [
+        {
+          "key": "skill.flourish",
+          "variant": 3,
+          "tree": "veil",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square Grudgelands Veil skill icon, Flourish, for reduction to 64x64 RGB and display at 32px. Primary request: ONE wide FORWARD slash covering a 90-degree cone in front of a blade wielder, reaching multiple opponents in that forward fan. The small dark indigo silhouette of the wielder stays at the LEFT side, facing RIGHT, behind the sweep; all luminous motion is to the RIGHT and IN FRONT of the wielder. One instant directional action, no spin, no circular motion, no orbit, no ring around the person. The arc must sweep across the forward quadrant only, about a quarter-circle, never a full or nearly full circle. Style A Painted embers: broad faceted gouache-like painted masses, upper-left lighting, restrained bloom, deep matte shadows, three main values, almost no fine texture. Indigo #343568, violet #8162B1, silver #DFE4ED on indigo-black #100F22. Bright silver-white leading edge, violet inner trail, clear empty dark gap between wielder and outside sweep. Main action fills 80% of square with broad gaps at least two final pixels. Full-bleed opaque square, no frame, no medallion, no text, letters, numerals, UI, logos or watermark. No gore, no tiny particles, no targets needed, no blade wheel or pinwheel. Variant 3: one low crouched indigo silhouette in the lower-left third, clearly facing right with one short blade held forward. A SINGLE broad low sweeping blade crescent spans across the forward-right area like a shallow luminous wave, rising from center-left to far-right, silver leading edge over a violet inner facet. This is a horizontal forward slash through a wide cone. Trail stays wholly in front of the figure, no arc behind or overhead enclosing it.",
+          "source": "/home/jan/.codex/generated_images/01a15647-2d93-7822-8ee3-b3e8e26c8567/exec-f3fdfd29-c501-49c4-9783-a03c44d2f686.png",
+          "reference_sources": [],
+          "reason": "Shortened overextended crescent to the forward quarter; removed sweep around figure.",
+          "source_sha256": "436730cd9735c362a456fc73e727b2371697c5f7e1a03115b5042795f5798749",
+          "reference_sha256": []
+        }
+      ],
+      "source_sha256": "28398b7f0fa6285c8f31538fb19b34a22ca83f7904ccab9b1d6f6369d0c83431",
+      "reference_sha256": [
+        "436730cd9735c362a456fc73e727b2371697c5f7e1a03115b5042795f5798749"
+      ],
+      "path": "skill.flourish_v3.png",
+      "kind": "skill",
+      "license": "CC0-1.0",
+      "comparison": "../drop-02/skills/skill.flourish.png",
+      "processing": {
+        "tool": "Pillow",
+        "version": "12.3.0",
+        "source_size": [
+          1254,
+          1254
+        ],
+        "source_mode": "RGB",
+        "operations": [
+          "convert RGB",
+          "resize 64x64 with Image.Resampling.LANCZOS",
+          "save PNG, optimize=True, no source metadata"
+        ],
+        "crop": null,
+        "recolor": false,
+        "composite": false,
+        "sharpen": false,
+        "output_size": [
+          64,
+          64
+        ],
+        "output_mode": "RGB"
+      },
+      "sha256": "2f8b8d59b11bdd6a6a9d3a476494005d4810704cc783d9094299722a58357069"
+    }
+  ],
+  "comparisons": [
+    {
+      "key": "skill.loose",
+      "path": "../drop-02/skills/skill.loose.png",
+      "sha256": "4a5ad72428babdbf0f6a45b86b1844b90a839a0535947eab7c0868ebb2706336",
+      "source_commit": "afc205f81ba680bb0f6e5a3730d022a62dd60ea1"
+    },
+    {
+      "key": "skill.bladecraft",
+      "path": "../drop-02/skills/skill.bladecraft.png",
+      "sha256": "29d7ab62993c8a1169734219becbd06fc62167ff62aa1a80c842cd7544b33709",
+      "source_commit": "afc205f81ba680bb0f6e5a3730d022a62dd60ea1"
+    },
+    {
+      "key": "talent.measured_breath",
+      "path": "../drop-02/talents/talent.measured_breath.png",
+      "sha256": "72d1b2606a53e77e4c5edfb3dd24bd8a3756bdb0cb1aecbce8c520e97d6ff616",
+      "source_commit": "afc205f81ba680bb0f6e5a3730d022a62dd60ea1"
+    },
+    {
+      "key": "skill.parry",
+      "path": "../drop-02/skills/skill.parry.png",
+      "sha256": "f31bd38a1f7c3fc3781d4f28d4ee0a76acdbe1992aed64d465d607dfe7553288",
+      "source_commit": "afc205f81ba680bb0f6e5a3730d022a62dd60ea1"
+    },
+    {
+      "key": "skill.flourish",
+      "path": "../drop-02/skills/skill.flourish.png",
+      "sha256": "1023d8cfbd3ff721907252ca44d1f8fcfec7d153a45d39361b57bae0240d3986",
+      "source_commit": "afc205f81ba680bb0f6e5a3730d022a62dd60ea1"
+    }
+  ],
+  "backgrounds": [
+    {
+      "tree": "quarry",
+      "git_commit": "94bbadbdd74e90fe71a1512d0bbb4d27906d363d",
+      "source_path": "tools/r52_art/arta/drop-01/bg/quarry_v1.png",
+      "source_sha256": "56decdc475d9a7a86f36c4cdc2d3b9085223b846bd443615bcb7958e619c96d1",
+      "crop_box": [
+        0,
+        60,
+        1040,
+        380
+      ],
+      "path": "../drop-02/background-crops/quarry.png",
+      "sha256": "c32df425b48843d129527b0a5d879ae0a4e1bd75ef32279077f966d7a54d7639",
+      "license": "CC0-1.0",
+      "author": "GPT-6 Astra / ARTA",
+      "processing": "RGB conversion; exact crop; optimized PNG",
+      "reuse_processing": "Read unchanged committed crop; native-pixel review strips only"
+    },
+    {
+      "tree": "veil",
+      "git_commit": "94bbadbdd74e90fe71a1512d0bbb4d27906d363d",
+      "source_path": "tools/r52_art/arta/drop-01/bg/veil_v3.png",
+      "source_sha256": "82cc587a8121489e8ac2590bbf7407fe21d5a10918605a955f7f9296b75f19c4",
+      "crop_box": [
+        0,
+        60,
+        1040,
+        380
+      ],
+      "path": "../drop-02/background-crops/veil.png",
+      "sha256": "ff1ca11f0139d6af7ca92882084277994098971c879d016a1753128b7ddffb82",
+      "license": "CC0-1.0",
+      "author": "GPT-6 Astra / ARTA",
+      "processing": "RGB conversion; exact crop; optimized PNG",
+      "reuse_processing": "Read unchanged committed crop; native-pixel review strips only"
+    }
+  ],
+  "preview": {
+    "path": "preview.png",
+    "sha256": "1b173ec7fe598e9d3cebcfc8560aa3165b59dac5e74f43babf356f56c6a3ad21",
+    "size": [
+      1100,
+      1340
+    ],
+    "mode": "RGB",
+    "license": "CC0-1.0",
+    "processing": {
+      "tool": "Pillow",
+      "version": "12.3.0",
+      "font": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+      "rows": [
+        "skill.loose",
+        "skill.bladecraft",
+        "talent.measured_breath",
+        "skill.parry",
+        "skill.flourish"
+      ],
+      "columns": [
+        "old",
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "row_top": 122,
+      "row_pitch": 236,
+      "column_left": 160,
+      "column_pitch": 224,
+      "strip_top_offset": 34,
+      "strip_pitch": 82,
+      "strip_size": [
+        212,
+        77
+      ],
+      "strip_backgrounds": [
+        "#202731",
+        "matching tree crop at native pixels, box [0,0,212,77]"
+      ],
+      "icon_64_offset": [
+        20,
+        6
+      ],
+      "icon_32_offset": [
+        112,
+        22
+      ],
+      "icon_32_resampling": "Image.Resampling.LANCZOS",
+      "operations": [
+        "compose labels, unchanged old icons, new finals and committed tree crops",
+        "save RGB PNG, optimize=True"
+      ]
+    }
+  },
+  "inspection": {
+    "author": "GPT-6 Astra",
+    "date": "2026-10-20",
+    "visual": "Inspected all 15 icons at 64 and 32 px on dark strips and the picked tree crops; compared matching Loose/Bladecraft variants and old motifs.",
+    "file_audit": {
+      "icons": 15,
+      "unique_final_hashes": 15,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGB",
+      "format": "PNG",
+      "preview_icon_stamps_verified": 80,
+      "sha256_and_source_receipts": "PASS",
+      "per_file_CC0_rows": "PASS",
+      "previous_drops_unchanged": "PASS"
+    },
+    "fixtures": "Not run, as requested; no Lua or mods changes.",
+    "selection": "Pending user choice; staged art only."
+  }
+}
