@@ -1830,11 +1830,14 @@ sounds.
 - **Amphibians** (tortoise, frog) float and do not fly, like the crocodile:
   they walk on land, swim at the surface and follow their target through
   harmless water and up a bank (Round 34, `combat_stats.md` §4 "Mobs in
-  water"). They may live near land (S10). In water they swim at one height,
-  feet half a node under the surface (the shell or back just breaking it),
-  like every floating mob since the Round 51 follow-up; the frog plays its
-  swim clip there, the tortoise (no swim clip in its model) paddles with its
-  walk clip.
+  water"). They may live near land (S10). Since the Round 51 follow-up the
+  amphibians (`_grug_amphibian`: tortoise, frog, crocodile and the crabs,
+  none hurt by water) swim at one height, feet half a node under the surface
+  (the shell or back just breaking it); the frog plays its swim clip there,
+  the tortoise (no swim clip in its model) paddles with its walk clip. Every
+  other floating mob — humanoids, land mobs, bosses, mobs hurt by water —
+  keeps the old float that lifts it out of the water and back (the user,
+  2026-10-19: a mob that water hurts may still jump to survive).
 - **Pure swimmers** (stingray, sharks, goby) never leave the sea water
   (`grug_mobs/swimmer.lua`, as the Kraken and the Reed Angelfish). A fighting
   swimmer never acquires a player out of its reach — neither in water (feet

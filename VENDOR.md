@@ -617,6 +617,13 @@ second; measured in the engine, idle in a 6-deep pool, the feet swung 0.37 to
 0.51 nodes with 35 to 37 breaches of the surface in 30 s (tortoise, frog,
 crocodile, Shore Crab).
 
+Only amphibians hold (the user, 2026-10-19: a mob that water hurts may
+still jump to survive): `_grug_amphibian` on the grug_mobs definition, which
+`grug_mobs.register_mob` puts on the registered prototype (sub-types inherit
+it through the copied base definition) and which requires `water_damage` 0;
+set for the tortoise, the frog, the crocodile, the Shore Crab and the Reef
+Lurker. Every other floating mob runs the old float unchanged.
+
 Two new markers in `mobs/api.lua`, both in the float branch's block:
 
 - the helper `grug_float_hold` (with `grug_water_at` and its four
@@ -627,14 +634,14 @@ Two new markers in `mobs/api.lua`, both in the float branch's block:
   in no water (lava and other liquids, or a mob above the surface until
   `get_nodes` catches up);
 - the call in `falling()`: facing a one-node bank the Round 34 climb hop
-  still wins; otherwise the hold sets the vertical speed with no gravity
+  still wins; otherwise, for an amphibian, the hold sets the vertical speed with no gravity
   (acceleration 0); without a hold the old float runs unchanged.
 
 At the held height `standing_in` stays water, so the bob is gone (the same
 probe: a range of 0.07 to 0.09 nodes, no breach); the mob still swims at
 half its land speed (the liquid slowdown, now steady instead of flickering).
-Cost: two node reads per step while a mob floats in water, besides the bank
-test's two. Fixtures `tools/r51_mobs/portable_test.lua` part H and
+Cost: two node reads per step while an amphibian floats in water, besides
+the bank test's two. Fixtures `tools/r51_mobs/portable_test.lua` part H and
 `tools/r34_f1/portable_test.lua` part D; engine probe
 `tools/r51_mobs/probe.sh`. `mobs/api.lua` now has **133 markers**.
 

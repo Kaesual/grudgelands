@@ -66,6 +66,9 @@ local crocodile = {
 	-- pool instead of walking along its floor, so it must not be lost in a
 	-- later cleanup.
 	floats = true,
+	-- Water never hurts it: it swims at one height instead of bobbing
+	-- (Round 51 FM, init.lua register_mob).
+	_grug_amphibian = true,
 
 	visual = "mesh",
 	mesh = "grug_mobs_crocodile.b3d",

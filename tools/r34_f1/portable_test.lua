@@ -317,15 +317,16 @@ do
 	front = {[0] = "stone", [1] = "stone", [2] = "grass"}
 	check(bank_ahead(self, pos) == true, "D a plant on the bank does not block the hop")
 	-- The hop clears the step: the ballistic lift v * v / (2 g) from the
-	-- feet's held depth (half a node under the surface since Round 51 FM)
+	-- feet's held depth (an amphibian's, half a node under the surface since
+	-- Round 51 FM; every other mob floats higher)
 	-- must bring them over the bank's top (one node over the surface) minus
 	-- the floating mobs' stepheight of 1.1 (the Shore Crab's since Round 45).
 	check(rise * rise / (2 * 9.81) > 0.5 + 1 - 1.1,
 		"D the hop lifts the feet over the stepheight line")
 	-- Round 51 FM: the bank test is read once into `bank`, and the steady
-	-- hold in water (tools/r51_mobs part H) yields to it.
+	-- hold of an amphibian in water (tools/r51_mobs part H) yields to it.
 	check(api:find("local bank = grug_bank_ahead(self, pos)\n\t\tlocal rise = bank and GRUG_CLIMB_RISE or 0.45", 1, true) ~= nil
-		and api:find("local hold = not bank and grug_float_hold(self, pos)", 1, true) ~= nil,
+		and api:find("local hold = not bank and self._grug_amphibian and grug_float_hold(self, pos)", 1, true) ~= nil,
 		"D falling() rises at the hop speed facing a bank")
 end
 

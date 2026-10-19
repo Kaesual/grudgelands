@@ -924,6 +924,7 @@ do
 		local function mob(y)
 			local o = {pos = {x = 0, y = y, z = 0}, vel = {x = 0, y = 0, z = 0}, acc = {x = 0, y = 0, z = 0}}
 			local self = {floats = true, fall_speed = -9.81, fall_damage = false,
+				_grug_amphibian = true,
 				standing_in = "air", _grug_cbox = BOX, object = {
 				get_pos = function() return {x = o.pos.x, y = o.pos.y, z = o.pos.z} end,
 				get_velocity = function() return {x = o.vel.x, y = o.vel.y, z = o.vel.z} end,
@@ -936,8 +937,9 @@ do
 		-- 30 s in server steps of 0.09 s; get_nodes every 0.25 s as mobs_redo.
 		-- Statistics over the last 18 s (a mob six nodes deep needs about 10 s
 		-- to rise).
-		local function simulate(y0, falling)
+		local function simulate(y0, falling, fields)
 			local self, o = mob(y0)
+			for k, v in pairs(fields or {}) do self[k] = v end
 			local st = {min = math.huge, max = -math.huge, breach = 0, vmax = -math.huge}
 			local nodes_t, wet = 0, nil
 			for i = 1, math.floor(30 / 0.09) do
@@ -974,19 +976,23 @@ do
 			eq(st.breach, 0, ("H from y %.1f: standing_in never leaves the water"):format(y0))
 			check(st.vmax <= UP + 1e-9, ("H from y %.1f: no upward impulse (max %.2f/s)"):format(y0, st.vmax))
 		end
-		-- The same simulation without the hold (the float before Round 51 FM)
-		-- bobs: the check above can fail.
-		local old_cut, replaced = cut:gsub("local hold = not bank and grug_float_hold%(self, pos%)",
-			"local hold = false")
-		eq(replaced, 1, "H the hold is asked in exactly one place")
-		local old = {mob_class = {}}
-		for k, v in pairs(H) do if k ~= "mob_class" then old[k] = v end end
-		local ochunk = assert(loadstring(old_cut))
-		setfenv(ochunk, setmetatable(old, {__index = _G}))
-		ochunk()
-		local st = simulate(-1, old.mob_class.falling)
-		check(st.max - st.min > 0.2 and st.breach >= 10,
-			("H the old float bobs (range %.2f, %d breaches in 18 s)"):format(st.max - st.min, st.breach))
+		-- Only amphibians hold (the user, 2026-10-19): an unflagged land mob and a
+		-- mob that water hurts keep the old float that lifts them out and back
+		-- (so the checks above can fail, too).
+		for _, fields in ipairs({{_grug_amphibian = false}, {_grug_amphibian = false, water_damage = 4}}) do
+			local st = simulate(-1, falling, fields)
+			check(st.max - st.min > 0.2 and st.breach >= 10,
+				("H %s keeps the old float (range %.2f, %d breaches in 18 s)"):format(
+				fields.water_damage and "a mob that water hurts" or "a land mob", st.max - st.min, st.breach))
+		end
+		do
+			local m, o = mob(-0.3)
+			m._grug_amphibian = nil
+			m.standing_in = "water"
+			m:falling(m.object:get_pos())
+			check(o.vel.y == 0.45 and math.abs(o.acc.y - (-1.2 / 2)) < 1e-12,
+				"H an unflagged mob in water: the old rise 0.45 and sink -1.2 / (viscosity + 1)")
+		end
 		-- The hold itself.
 		local self = {_grug_cbox = BOX}
 		local function at(feet) return hold(self, {x = 0, y = feet - BOX[2], z = 0}) end
@@ -1024,6 +1030,26 @@ do
 	check(frog.swim_start == 250 and frog.swim_end == 350, "I the frog's swim clip is 250-350")
 	eq(registered["grug_mobs:frog_t4"].animation.swim_start, 250, "I a frog sub-type keeps the swim clip")
 	eq(registered["grug_mobs:tortoise"].animation.swim_start, nil, "I the tortoise has no swim clip")
+	-- The amphibians: flagged, never hurt by water, sub-types included; the
+	-- pure swimmers are not amphibians.
+	for _, short in ipairs({"tortoise", "frog", "tortoise_t1", "tortoise_t6", "frog_t1", "frog_t6"}) do
+		local def = registered["grug_mobs:" .. short]
+		eq(def._grug_amphibian, true, "I " .. short .. " is an amphibian")
+		eq(def.water_damage or 0, 0, "I " .. short .. " takes no water damage")
+	end
+	eq(registered["grug_mobs:stingray"]._grug_amphibian, nil, "I the stingray is no amphibian")
+	for _, file in ipairs({"crocodile", "shore_crab"}) do
+		local src = read(MOBS .. "/" .. file .. ".lua")
+		check(src:find("_grug_amphibian = true", 1, true) ~= nil, "I " .. file .. ".lua flags an amphibian")
+		check(src:find("water_damage = 0", 1, true) ~= nil and src:find("water_damage = [1-9]") == nil,
+			"I " .. file .. ".lua takes no water damage")
+	end
+	local init_src = read(MOBS .. "/init.lua")
+	check(init_src:find("if def._grug_amphibian then%s*assert%(%(def%.water_damage or 0%) == 0") ~= nil
+		and init_src:find("core%.registered_entities%[name%]%._grug_amphibian = true") ~= nil,
+		"I register_mob refuses a water-hurt amphibian and puts the flag on the prototype")
+	check(read("mods/ENTITIES/mobs/api.lua"):find("local hold = not bank and self._grug_amphibian and grug_float_hold(self, pos)", 1, true) ~= nil,
+		"I falling() holds amphibians only")
 	core.registered_nodes["default:water_source"] = {groups = {water = 3, liquid = 3}}
 	core.registered_nodes["air"] = {groups = {}}
 	core.registered_nodes["default:sand"] = {groups = {}, walkable = true}

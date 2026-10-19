@@ -40,8 +40,10 @@ local tortoise = {
 	stepheight = 1.1,
 	fear_height = 2,
 	view_range = 8,
-	-- Swims at the surface instead of walking along the bed (crocodile.lua).
+	-- Swims at the surface instead of walking along the bed (crocodile.lua),
+	-- at one height as an amphibian (Round 51 FM, init.lua register_mob).
 	floats = true,
+	_grug_amphibian = true,
 
 	visual = "mesh",
 	mesh = "grug_mobs_tortoise.b3d",

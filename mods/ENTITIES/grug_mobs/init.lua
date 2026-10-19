@@ -972,7 +972,19 @@ function grug_mobs.register_mob(name, def)
 	if def._grug_swimmer then
 		grug_mobs.prepare_swimmer_def(name, def)
 	end
+	-- An amphibian (`_grug_amphibian`, Round 51 FM: tortoise, frog,
+	-- crocodile, Shore Crab and Reef Lurker, and their sub-types through the
+	-- copied base definition) swims at one height in water (mobs/api.lua
+	-- grug_float_hold); water never hurts it. Every other floating mob keeps
+	-- mobs_redo's float, which lifts a water-hurt mob out of the water.
+	if def._grug_amphibian then
+		assert((def.water_damage or 0) == 0,
+			name .. ": an _grug_amphibian takes no water damage")
+	end
 	mobs:register_mob(name, def)
+	if def._grug_amphibian then
+		core.registered_entities[name]._grug_amphibian = true
+	end
 	if def._grug_swimmer then
 		grug_mobs.install_swimmer_guard(name, def)
 	end

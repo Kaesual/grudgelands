@@ -594,6 +594,8 @@ local FLOATERS = {
 	"grug_mobs:tortoise_t1", "grug_mobs:frog_t1", "grug_mobs:crocodile",
 	"grug_mobs:shore_crab", "grug_mobs:reed_angelfish", "grug_mobs:goby",
 	"grug_mobs:stingray_t1",
+	-- not amphibians: a land mob and a mob that water hurts keep the old float
+	"grug_mobs:wolf", "grug_mobs:oerkki",
 }
 local FLOAT_SETTLE, FLOAT_SECONDS = 4, 30
 local floaters = {}
@@ -601,7 +603,7 @@ local function start_float()
 	local pool = cell.float.pool
 	for i, name in ipairs(FLOATERS) do
 		local def = core.registered_entities[name]
-		local obj, ent = spawn(name, vector.new(pool.x0 + 4 + (i - 1) * 3.5, W - 0.2, pool.zc + 0.5))
+		local obj, ent = spawn(name, vector.new(pool.x0 + 3 + (i - 1) * 2.6, W - 0.2, pool.zc + 0.5))
 		floaters[#floaters + 1] = {name = name, obj = obj, ent = ent, st = new_stats(),
 			swimmer = def._grug_swim_dy ~= nil}
 	end
@@ -627,11 +629,15 @@ end
 local function report_float()
 	for _, f in ipairs(floaters) do
 		log(("float %-22s %s"):format(f.name, stat_line(f.st)))
-		if not f.swimmer then
-			local st = f.st
+		local st = f.st
+		if f.ent._grug_amphibian then
 			check(st.n >= 100 and st.max - st.min <= 0.1 and st.breach == 0,
 				("float %s: one height in the water for %d s (%d samples, range %.2f, breaches %d)"):format(
 					f.name, FLOAT_SECONDS, st.n, st.n > 0 and st.max - st.min or -1, st.breach))
+		elseif not f.swimmer and st.n >= 50 then
+			check(st.max - st.min > 0.2 and st.breach >= 5,
+				("float %s: no amphibian, keeps the old float (%d samples, range %.2f, breaches %d)"):format(
+					f.name, st.n, st.max - st.min, st.breach))
 		end
 	end
 end

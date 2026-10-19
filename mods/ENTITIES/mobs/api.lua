@@ -2786,7 +2786,9 @@ local function grug_bank_ahead(self, pos)
 	return step and step.walkable and not (above and above.walkable) or false
 end
 
--- GRUG PATCH (Round 51 FM, round51-followup-plan.md §2 "FM"): a floating mob
+-- GRUG PATCH (Round 51 FM, round51-followup-plan.md §2 "FM"): an amphibian
+-- (`_grug_amphibian` on the grug_mobs definition, installed on the prototype:
+-- the tortoise, the frog, the crocodile and the crabs, none hurt by water)
 -- in water holds one height with its feet GRUG_FLOAT_DEPTH under the surface,
 -- so the point get_nodes reads as standing_in (feet + 0.25) stays in the
 -- water. Before, the mob rose until that point left the water, gravity took
@@ -2795,8 +2797,10 @@ end
 -- speed follows the distance to the target height (no gravity while
 -- holding); a mob more than a node deep rises at GRUG_FLOAT_UP. nil when the
 -- point is in no water (lava and other liquids keep the old float, and so
--- does a mob above the surface until get_nodes catches up). Two node reads
--- per step at the held height, only while the mob floats in water.
+-- does a mob above the surface until get_nodes catches up). Every other
+-- floating mob keeps the old float: its rise out of the water lets a mob that
+-- water hurts escape it (the user, 2026-10-19). Two node reads per step at the
+-- held height, only while an amphibian floats in water.
 local GRUG_FLOAT_DEPTH = 0.5
 local GRUG_FLOAT_GAIN = 4
 local GRUG_FLOAT_UP = 0.6
@@ -2842,8 +2846,10 @@ function mob_class:falling(pos)
 		-- GRUG PATCH (Round 34 F1): climb out onto a one-node bank.
 		local bank = grug_bank_ahead(self, pos)
 		local rise = bank and GRUG_CLIMB_RISE or 0.45
-		-- GRUG PATCH (Round 51 FM): otherwise hold one height in water.
-		local hold = not bank and grug_float_hold(self, pos)
+		-- GRUG PATCH (Round 51 FM): otherwise an amphibian (grug_mobs
+		-- `_grug_amphibian`) holds one height in water; every other mob keeps
+		-- the float below.
+		local hold = not bank and self._grug_amphibian and grug_float_hold(self, pos)
 
 		if hold then
 			self.object:set_velocity({x = v.x, y = hold, z = v.z})
