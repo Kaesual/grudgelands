@@ -153,7 +153,7 @@ user (key `wreck.mast_height`, the page's mast control): broken 6 (default),
 mast's param2 from the depth at placement so its top just reaches the
 surface (1 node above) wherever it can.
 
-## 5. Placement sketch (for the build step)
+## 5. Placement sketch (the design step's; §6 says what was built)
 
 - **Where:** the seabed of the coastal belt and the bays, inside the
   protected water (S8: 24 nodes or more from the coast, so nobody digs the
@@ -199,3 +199,50 @@ surface (1 node above) wherever it can.
   cell writes per accepted wreck; the build step reports mapgen time before
   and after. The placement is part of the one map reset.
 - **First in-game test:** a mast on a test wreck (§5a).
+
+## 6. As built (build step, branch `r51-wreck-build`)
+
+The user picked v2 as shown (four shapes, broken mast 6). What changed
+against the sketch in §5, and why:
+
+- **A successor pass, not a decoration row.** The R6 decoration rows take
+  roots only at `surface_y >= 1`, refuse a cell over water unless
+  `force_place`, keep templates at 16 × 64 × 16 and need the whole footprint
+  inside one 80³ owner (a 22-node hull would lose about half its roots).
+  The wrecks are placed instead by `wp40/wreck_writer.lua`, a pass of the R7
+  successor settle like the road, swamp and arena passes: right after the
+  swamp pass, before P9G and the world content. The placement is a pure
+  function of the world, and every chunk writes the part of each wreck
+  inside its own owner, so nothing is clipped and **no template bound
+  changes** (the R6 templates are untouched). Its writes go through
+  `write_road` and only over sea water or the natural seabed (sand, gravel,
+  stone, clay, dirt); anything else keeps.
+- **Schematics:** `wp40/wreck_shapes.lua`, generated from `shapes/*.json`
+  by `to_lua.py` (`--check`), sparse cells; the pass turns them in quarter
+  steps (logs along x and z swap on an odd turn).
+- **Placement rules** (`wreck_writer.lua` header): one 256-node cell holds
+  at most one wreck; half the cells try (CHANCE 50), with a shape by weight
+  (hull 3, bow 2, stern 2, debris 3) and a quarter turn by hash, 16 hashed
+  spots inside the cell (inset 16), the shallowest that passes wins. Every
+  footprint column is protected bay or belt water outside every non-water
+  claim exclusion (towns, capitals, envelopes, POIs, cores, underground
+  reservations); the seabed under it varies by at most one; the water over
+  its lowest column is at least the shape's height over the sand plus one
+  (the wreck stays under the surface) and at most 14; a ring 16 round the
+  footprint (every 4 nodes) is bay, belt or open-sea water outside the same
+  exclusions. The `seabed` layer sits on the lowest sand column.
+- **Counts** (`count.lua`): seed 12345 65 wrecks (hull 17, bow 15, stern 12,
+  debris 21) in 22 zones, seed 42 69 (18, 14, 19, 18) in 21 zones; 1-7 per
+  zone, median 2-3; most at 7-11 deep. The layout of the whole world takes
+  about 0.5 s; a chunk asks at most four cells.
+- **Nodes** in `grug_nodes/wreck.lua` (§3), ARTS's textures under
+  `grug_nodes_wreck_*.png`. They are not R6 roster rows (`r7_content.lua`):
+  the roster gates what the R6 rows and P9G place; the successor passes
+  write their own nodes (the swamp's reeds and cattails, the arena's
+  hazards) without one.
+- **First in-game test** (`capture.sh`, `grug_probe_r51_wreck`): on seed
+  12345 five wrecks stand where `count.lua` puts them, with no air at or
+  below the water level and no flowing water round them, the broken mast
+  (param2 96) crossing the surface by one node over a 9-deep seabed;
+  screenshots `r51/shots/wreck/build_*.png`.
+

@@ -641,7 +641,22 @@ rewrite records the WP40 model it replaced.
   seabed 8-14 deep, lies about 90-220 off the coast: 3.9-4.1 km² of
   protected belt and bay seabed per world, in 26-28 zones. Daylight drops
   one light level per water node, so seabed deeper than about 12 is nearly
-  dark by day: about 56 % of the belt's seabed lies at most 12 deep. A bay's
+  dark by day: about 56 % of the belt's seabed lies at most 12 deep.
+  **Shipwrecks** (Round 51 lane WRECK, sea plan ruling 20 and §5a,
+  `tools/r51_wreck/DESIGN.md`) lie in that band as decoration: four shapes
+  of our own (a whole hull, a bow part, a stern part, a debris field; 12-22
+  nodes long, full blocks plus rooted masts and details), at most one per
+  256-node cell, in quarter turns, on protected bay and belt seabed only
+  (never a channel, a lake, a river or the open sea), the seabed under a
+  footprint within one node, at least the shape's height plus one and at
+  most 14 nodes of water over it (the shallowest of the spots a cell tries),
+  the footprint and a ring 16 nodes round it clear of the shore and of every
+  settlement, POI and other non-water claim exclusion; their lowest layers
+  lie in the sand. About 65-70 per world in 21-22 zones (1-7 a zone, median
+  2-3; seeds 12345 and 42). The broken main mast (6 nodes) just breaks the
+  surface where the seabed is 9 deep and ends under it deeper down. The
+  wreck pass `wp40/wreck_writer.lua` writes them (module guide, "the wreck
+  pass"). A bay's
   middle more than about 300 nodes off its shores falls toward 30 deep (the
   deep bay middle); a dragon channel lays its own floor (§7.4). The 24-node floor (`height.lua` `OUTSIDE_FLOOR`) applies only
   outside the query bounds, x ±4190 and z ±3740 (`source/simple_map.lua`
