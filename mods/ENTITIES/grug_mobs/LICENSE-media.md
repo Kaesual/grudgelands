@@ -487,7 +487,7 @@ false positives here.
 | `grug_mobs_zebra.b3d` | ANIM+BONE+KEYS | 11 | 264 | 2200 | 1..200 | `zebra.lua` | 0..200 | animated, in range |
 | `grug_mobs_zombie.b3d` | ANIM+BONE+KEYS | 7 | 2160 | 847 | 1..121 | `zombie.lua` | 0..59 | animated, in range |
 | `grug_mobs_tortoise.b3d` (Round 51) | ANIM+BONE+KEYS | 18 | 432 | 7200 | 1..400 | `tortoise.lua` | 1..400 | animated, in range |
-| `grug_mobs_frog.b3d` (Round 51) | ANIM+BONE+KEYS | 17 | 408 | 4850 | 1..350 | `frog.lua` | 1..200 | animated, in range |
+| `grug_mobs_frog.b3d` (Round 51) | ANIM+BONE+KEYS | 17 | 408 | 4850 | 1..350 | `frog.lua` | 1..350 (the swim clip 250-350 since Round 51 FM) | animated, in range |
 | `grug_mobs_stingray.b3d` (Round 51; `ANIM` says 199) | ANIM+BONE+KEYS | 9 | 216 | 2100 | 1..300 | `stingray.lua` | 1..300 | animated, in range |
 | `grug_mobs_shark.b3d` (Round 51) | ANIM+BONE+KEYS | 13 | 312 | 2600 | 1..200 | `shark.lua` | 1..200 | animated, in range |
 | `grug_mobs_goby.b3d` (Round 51) | ANIM+BONE+KEYS | 4 | 96 | 800 | 1..200 | `goby.lua` | 1..200 | animated, in range |

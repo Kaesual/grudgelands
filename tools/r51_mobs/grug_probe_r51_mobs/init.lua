@@ -21,6 +21,13 @@
 --    in the water.
 -- 4. Fish loot: one kill of each family by the probe player's ability hit
 --    drops its band's fish.
+-- 5. Float height (Round 51 FM): idle water mobs in a 6-deep pool, their
+--    feet sampled every server step for 30 s (depth under the surface,
+--    its range, direction reversals, breaches of the surface by the point
+--    mobs_redo reads as standing_in, the clips played in the water); the
+--    amphibians hold one height. The chases log the same in their water
+--    legs, and two more chases (bank_frog, bank_tortoise) leave over a bank
+--    one node above the water.
 -- A headless server has no client, so a "player" is an invisible entity
 -- whose ObjectRef answers the player accessors (tools/pt_fixes/lane_c).
 -- The mob code is the shipped code. Lines "[r51mobs] ...", "RESULT PASS".
@@ -114,6 +121,11 @@ local CELLS = {
 	{label = "lake_tortoise", size = 32, inset = 6, depth = 3, shelf = true},
 	{label = "sea_ray", size = 32, inset = 6, depth = 5},
 	{label = "tank", size = 48, inset = 12, depth = 6},
+	{label = "float", size = 40, inset = 6, depth = 6},
+	{label = "bank_frog", size = 32, inset = 6, depth = 3, bank = 1},
+	{label = "bank_tortoise", size = 32, inset = 6, depth = 3, bank = 1},
+	-- land for the last chase's inland leg (9.5 nodes past its pool)
+	{label = "margin", size = 16, bank = 1, land_only = true},
 }
 local cell = {}
 local origin
@@ -134,12 +146,22 @@ local function build_arena()
 	local cid = core.get_content_id
 	local air, stone, sand = cid("air"), cid("default:stone"), cid("default:sand")
 	local dirt, grass, water = cid("default:dirt"), cid("default:dirt_with_grass"), cid(WATER)
+	-- The land level of each column along x: W, or W + bank in a bank cell.
+	local land_at = {}
+	do
+		local cx = origin.x
+		for _, spec in ipairs(CELLS) do
+			for x = cx, cx + spec.size - 1 do land_at[x] = W + (spec.bank or 0) end
+			cx = cx + spec.size
+		end
+	end
 	for z = minp.z, maxp.z do
 		for y = minp.y, maxp.y do
 			for x = minp.x, maxp.x do
-				-- Land everywhere first: dirt to the bank level W, grass on top.
+				-- Land everywhere first: dirt to the bank level, grass on top.
 				local id = air
-				if y < W then id = dirt elseif y == W then id = grass end
+				local land = land_at[x] or W
+				if y < land then id = dirt elseif y == land then id = grass end
 				if y == BASE_Y then id = stone end
 				data[area:index(x, y, z)] = id
 			end
@@ -147,26 +169,30 @@ local function build_arena()
 	end
 	local cx = origin.x
 	for _, spec in ipairs(CELLS) do
-		local x0, x1 = cx + spec.inset, cx + spec.size - 1 - spec.inset
-		local z0, z1 = origin.z + spec.inset, origin.z + spec.size - 1 - spec.inset
-		local floor_y = W - spec.depth
-		for z = z0, z1 do
-			for x = x0, x1 do
-				local edge = x == x0 or x == x1 or z == z0 or z == z1
-				local bed = (spec.shelf and edge) and (W - 1) or floor_y
-				for y = BASE_Y + 1, W + 1 do
-					local id = air
-					if y < bed then id = stone
-					elseif y == bed then id = sand
-					elseif y <= W then id = water end
-					data[area:index(x, y, z)] = id
+		if spec.land_only then
+			cx = cx + spec.size
+		else
+			local x0, x1 = cx + spec.inset, cx + spec.size - 1 - spec.inset
+			local z0, z1 = origin.z + spec.inset, origin.z + spec.size - 1 - spec.inset
+			local floor_y = W - spec.depth
+			for z = z0, z1 do
+				for x = x0, x1 do
+					local edge = x == x0 or x == x1 or z == z0 or z == z1
+					local bed = (spec.shelf and edge) and (W - 1) or floor_y
+					for y = BASE_Y + 1, W + 1 + (spec.bank or 0) do
+						local id = air
+						if y < bed then id = stone
+						elseif y == bed then id = sand
+						elseif y <= W then id = water end
+						data[area:index(x, y, z)] = id
+					end
 				end
 			end
+			spec.pool = {x0 = x0, x1 = x1, z0 = z0, z1 = z1,
+				xc = math.floor((x0 + x1) / 2), zc = math.floor((z0 + z1) / 2)}
+			cell[spec.label] = spec
+			cx = cx + spec.size
 		end
-		spec.pool = {x0 = x0, x1 = x1, z0 = z0, z1 = z1,
-			xc = math.floor((x0 + x1) / 2), zc = math.floor((z0 + z1) / 2)}
-		cell[spec.label] = spec
-		cx = cx + spec.size
 	end
 	vm:set_data(data)
 	vm:write_to_map(true)
@@ -186,6 +212,58 @@ local function hdist(a, b)
 	local dx, dz = a.x - b.x, a.z - b.z
 	return math.sqrt(dx * dx + dz * dz)
 end
+-- Float statistics of one mob's feet against the arena's water surface
+-- (Round 51 FM), fed once per server step while the mob is over its pool.
+local SURFACE = W + 0.5
+local function new_stats()
+	return {n = 0, min = math.huge, max = -math.huge, sum = 0, sq = 0, rev = 0,
+		breach = 0, vup = -math.huge, anims = {}}
+end
+local function add_stat(st, obj, ent)
+	local pos = obj:get_pos()
+	if not pos then return end
+	st.box = st.box or obj:get_properties().collisionbox
+	local feet = pos.y + st.box[2]
+	local depth = SURFACE - feet
+	st.n = st.n + 1
+	if depth < st.min then st.min = depth end
+	if depth > st.max then st.max = depth end
+	st.sum, st.sq = st.sum + depth, st.sq + depth * depth
+	if st.last then
+		local dy = feet - st.last
+		local dir = dy > 0.003 and 1 or (dy < -0.003 and -1 or 0)
+		if dir ~= 0 then
+			if st.dir and dir ~= st.dir then st.rev = st.rev + 1 end
+			st.dir = dir
+		end
+	end
+	st.last = feet
+	-- A breach: the point mobs_redo reads as standing_in leaves the water.
+	local wet = core.get_node(vector.round({x = pos.x, y = feet + 0.25, z = pos.z})).name == WATER
+	if st.wet and not wet then st.breach = st.breach + 1 end
+	st.wet = wet
+	local v = obj:get_velocity()
+	if v and v.y > st.vup then st.vup = v.y end
+	local a = tostring(ent and ent.animation_current)
+	st.anims[a] = (st.anims[a] or 0) + 1
+end
+local function stat_line(st)
+	if st.n == 0 then return "no samples" end
+	local mean = st.sum / st.n
+	local sd = math.sqrt(math.max(0, st.sq / st.n - mean * mean))
+	local anims = {}
+	for a, k in pairs(st.anims) do anims[#anims + 1] = ("%s=%d"):format(a, k) end
+	table.sort(anims)
+	return ("n=%d feet %.2f..%.2f under the surface (range %.2f, mean %.2f, sd %.3f), reversals %d, breaches %d, max rise %.2f/s, clips %s"):format(
+		st.n, st.min, st.max, st.max - st.min, mean, sd, st.rev, st.breach, st.vup,
+		table.concat(anims, " "))
+end
+local function over_pool(obj, pool)
+	local pos = obj:get_pos()
+	return pos ~= nil and pos.x >= pool.x0 - 0.5 and pos.x <= pool.x1 + 0.5
+		and pos.z >= pool.z0 - 0.5 and pos.z <= pool.z1 + 0.5 and pos.y < SURFACE + 0.5
+end
+
 -- On land: the standing point is not water and the node below it is solid.
 local function on_land(obj)
 	local pos, r = ref_point(obj)
@@ -289,7 +367,7 @@ local function start_chase(label, mob_name, spec)
 	local pool = spec.pool
 	local zc, xc = pool.zc + 0.5, pool.xc + 0.5
 	local surface = W - 0.3 -- feet in the surface water node
-	local land = W + 0.5
+	local land = W + 0.5 + (spec.bank or 0)
 	local hero = make_player("chase_" .. label, vector.new(xc - 2, surface, zc))
 	local obj, ent = spawn(mob_name, vector.new(xc - 6, W - 0.5, zc))
 	local c = {label = label, hero = hero, obj = obj, ent = ent, t = 0, leg = 1,
@@ -302,7 +380,7 @@ local function start_chase(label, mob_name, spec)
 			{x = pool.x1, y = W - 0.45, phase = "back", hold = 0},
 			{x = xc - 3, y = surface, phase = "water_again", hold = 12},
 		},
-		near = {}, mob_land = false, dropped = 0}
+		near = {}, mob_land = false, dropped = 0, pool = pool, float = {}}
 	ent:do_attack(hero)
 	chases[#chases + 1] = c
 end
@@ -337,6 +415,10 @@ local function step_chase(c, dtime)
 	if dist <= reach then n.close = true end
 	if (phase == "ashore" or phase == "inland") and on_land(c.obj) then c.mob_land = true end
 	if phase == "water_again" and on_land(c.obj) then c.land_late = true end
+	if (phase == "water" or phase == "water_again") and over_pool(c.obj, c.pool) then
+		c.float[phase] = c.float[phase] or new_stats()
+		add_stat(c.float[phase], c.obj, c.ent)
+	end
 	if c.ent.attack ~= c.hero then
 		c.dropped = c.dropped + 1
 		c.ent:do_attack(c.hero) -- logged, and re-armed to keep measuring
@@ -354,6 +436,10 @@ local function report_chase(c)
 	for _, phase in ipairs({"water", "wading", "ashore", "inland", "back", "water_again"}) do
 		local n = c.near[phase] or {min = -1}
 		log(("chase %s %-11s min distance %.1f close=%s"):format(c.label, phase, n.min, tostring(n.close)))
+	end
+	for _, phase in ipairs({"water", "water_again"}) do
+		log(("chase %s %-11s float %s"):format(c.label, phase,
+			c.float[phase] and stat_line(c.float[phase]) or "no samples"))
 	end
 	log(("chase %s: target dropped %d steps (re-armed), mob ended in %s"):format(
 		c.label, c.dropped, c.obj:get_pos() and node_at(select(2, ref_point(c.obj))) or "nil"))
@@ -502,6 +588,77 @@ local function kill_test(done)
 end
 
 --
+-- 5. Float height (Round 51 FM).
+--
+local FLOATERS = {
+	"grug_mobs:tortoise_t1", "grug_mobs:frog_t1", "grug_mobs:crocodile",
+	"grug_mobs:shore_crab", "grug_mobs:reed_angelfish", "grug_mobs:goby",
+	"grug_mobs:stingray_t1",
+	-- not amphibians: a land mob and a mob that water hurts keep the old float
+	"grug_mobs:wolf", "grug_mobs:oerkki",
+}
+local FLOAT_SETTLE, FLOAT_SECONDS = 4, 30
+local floaters = {}
+local function start_float()
+	local pool = cell.float.pool
+	for i, name in ipairs(FLOATERS) do
+		local def = core.registered_entities[name]
+		local obj, ent = spawn(name, vector.new(pool.x0 + 3 + (i - 1) * 2.6, W - 0.2, pool.zc + 0.5))
+		floaters[#floaters + 1] = {name = name, obj = obj, ent = ent, st = new_stats(),
+			swimmer = def._grug_swim_dy ~= nil}
+	end
+end
+local function step_float(t)
+	for _, f in ipairs(floaters) do
+		if not f.gone and not f.obj:get_pos() then
+			f.gone = ("gone at t=%.1f (hp %s)"):format(t, tostring(f.ent.health))
+		end
+	end
+	-- The mob that water hurts is sampled from the first second (it dies).
+	if t < 1 or t > FLOAT_SETTLE + FLOAT_SECONDS then return end
+	for _, f in ipairs(floaters) do
+		if (t >= FLOAT_SETTLE or f.name == "grug_mobs:oerkki")
+				and over_pool(f.obj, cell.float.pool) then
+			add_stat(f.st, f.obj, f.ent)
+		elseif f.st.n > 0 and not f.left and f.obj:get_pos() and on_land(f.obj) then
+			f.left = ("left the water at t=%.1f (hp %s)"):format(t, tostring(f.ent.health))
+		end
+		-- A trace of the two amphibians, every half second.
+		if (f.name == "grug_mobs:tortoise_t1" or f.name == "grug_mobs:frog_t1") and f.st.box
+				and t >= (f.next_trace or FLOAT_SETTLE) then
+			f.next_trace = (f.next_trace or FLOAT_SETTLE) + 0.5
+			local pos = f.obj:get_pos()
+			if pos then
+				local v = f.obj:get_velocity() or {y = 0}
+				log(("trace %s t=%.1f feet %.2f under the surface, vy %.2f, %s"):format(
+					f.name:sub(11), t - FLOAT_SETTLE, SURFACE - (pos.y + f.st.box[2]), v.y,
+					tostring(f.ent.animation_current)))
+			end
+		end
+	end
+end
+local function report_float()
+	for _, f in ipairs(floaters) do
+		log(("float %-22s %s%s%s"):format(f.name, stat_line(f.st), f.gone and (", " .. f.gone) or "",
+			f.left and (", " .. f.left) or ""))
+		local st = f.st
+		if f.ent._grug_amphibian then
+			check(st.n >= 100 and st.max - st.min <= 0.1 and st.breach == 0,
+				("float %s: one height in the water for %d s (%d samples, range %.2f, breaches %d)"):format(
+					f.name, FLOAT_SECONDS, st.n, st.n > 0 and st.max - st.min or -1, st.breach))
+		elseif f.name == "grug_mobs:oerkki" then
+			-- Water hurts it: the old float and its climb hop get it out.
+			check(f.left ~= nil, "float " .. f.name .. ": hurt by water, it climbs out (" ..
+				tostring(f.left or f.gone) .. ")")
+		elseif not f.swimmer and st.n >= 30 then
+			check(st.max - st.min > 0.2 and st.breach >= 5,
+				("float %s: no amphibian, keeps the old float (%d samples, range %.2f, breaches %d)"):format(
+					f.name, st.n, st.max - st.min, st.breach))
+		end
+	end
+end
+
+--
 -- Driver
 --
 local function finish()
@@ -515,7 +672,10 @@ local function run_all()
 	showcase()
 	start_chase("frog", "grug_mobs:frog_t1", cell.lake_frog)
 	start_chase("tortoise", "grug_mobs:tortoise_t1", cell.lake_tortoise)
+	start_chase("bank_frog", "grug_mobs:frog_t1", cell.bank_frog)
+	start_chase("bank_tortoise", "grug_mobs:tortoise_t1", cell.bank_tortoise)
 	start_ray()
+	start_float()
 	local t, acc, running = 0, 0, true
 	core.register_globalstep(function(dtime)
 		if not running then return end
@@ -523,17 +683,19 @@ local function run_all()
 		acc = acc + dtime
 		for _, c in ipairs(chases) do step_chase(c, dtime) end
 		step_ray(dtime)
+		step_float(t)
 		if acc >= 0.25 then
 			acc = 0
 			sample_showcase(t)
 		end
-		local busy = not ray.done
+		local busy = not ray.done or t < FLOAT_SETTLE + FLOAT_SECONDS
 		for _, c in ipairs(chases) do busy = busy or not c.done end
 		if (not busy and t >= 30) or t >= RUN_SECONDS then
 			running = false
 			report_showcase()
 			for _, c in ipairs(chases) do report_chase(c) end
 			report_ray()
+			report_float()
 			kill_test(finish)
 		end
 	end)
@@ -546,7 +708,7 @@ local function find_origin()
 			for _, c in ipairs({{i, -r}, {i, r}, {-r, i}, {r, i}}) do
 				local x, z = c[1] * 256, c[2] * 256
 				local ok = true
-				for _, d in ipairs({{0, 0}, {140, 0}, {0, 40}, {140, 40}}) do
+				for _, d in ipairs({{0, 0}, {140, 0}, {0, 40}, {140, 40}, {270, 0}, {270, 40}}) do
 					if grug_zones.water_class_at(x + d[1], z + d[2]) ~= "deep_ocean" then
 						ok = false
 						break

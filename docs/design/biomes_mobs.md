@@ -1614,7 +1614,9 @@ the water swims back if water is adjacent or otherwise flops in place. Their
 habitat is planned natural inland water, with source water at the spawn
 position and above it, next to a sand bed, above the column's natural bed:
 lakes (and bays) at any altitude, not rivers, whose river water is another
-liquid, and not cave pools. They use the existing critter spawn machinery:
+liquid, and not cave pools. Since the Round 51 follow-up the region spawner's
+water attempt also places them in every lake ("Round 51 water families",
+fish in land lakes). They use the existing critter spawn machinery:
 interval 30s, chance 1/4000, local active-object cap 2, no fixed height cap
 (y -30 to the 600 flight ceiling; Round 22 Phase 5). They add ambient
 movement, not a fishing-resource system.
@@ -1833,7 +1835,14 @@ sounds.
 - **Amphibians** (tortoise, frog) float and do not fly, like the crocodile:
   they walk on land, swim at the surface and follow their target through
   harmless water and up a bank (Round 34, `combat_stats.md` §4 "Mobs in
-  water"). They may live near land (S10).
+  water"). They may live near land (S10). Since the Round 51 follow-up the
+  amphibians (`_grug_amphibian`: tortoise, frog, crocodile and the crabs,
+  none hurt by water) swim at one height, feet half a node under the surface
+  (the shell or back just breaking it); the frog plays its swim clip there,
+  the tortoise (no swim clip in its model) paddles with its walk clip. Every
+  other floating mob — humanoids, land mobs, bosses, mobs hurt by water —
+  keeps the old float that lifts it out of the water and back (the user,
+  2026-10-19: a mob that water hurts may still jump to survive).
 - **Pure swimmers** (stingray, sharks, goby) never leave the sea water
   (`grug_mobs/swimmer.lua`, as the Kraken and the Reed Angelfish). A fighting
   swimmer never acquires a player out of its reach — neither in water (feet
@@ -1868,7 +1877,7 @@ water query ([spawn_regions.md](spawn_regions.md#water-kinds-round-51)):
 |---|---|---|
 | Sea shallows | bay, belt and channel water within 16 nodes of dry land or at most 6 deep | Tortoise (follows ashore, S10) |
 | Coastal waters (`sea_deep`) | the rest of the bay, belt and channel water | Stingray (pure swimmer, away from land) |
-| Lake | lakes and swamp pools | Frog (3 in 4), Tortoise (1 in 4; S15) |
+| Lake | lakes and swamp pools | Reed Angelfish first while fewer than 2 swim within 32 nodes (critter, water at least 2 deep); else Frog (3 in 4), Tortoise (1 in 4; S15) |
 | River | rivers | Frog |
 | Bay middle | bay water 40+ nodes from dry land and 16+ deep | Bay Shark, L30 (its own row, S12) |
 | Open sea | beyond the belt | Kraken, Abyssal Shark (a rare spawn: a tenth of the Kraken's rate, S13) |
@@ -1882,3 +1891,17 @@ The sharks and the goby appear at the surface or the sea floor through the
 merged water spawn ABM like the Kraken and the Reed Angelfish; the zone
 families through the ambient region spawner's one attempt per player and
 second, whose column now may be water.
+
+**Fish in land lakes (Round 51 follow-up, the user's GUI feedback).** Every
+lake — wild lakes, swamp pools and the capitals' lakes (Kezamba's cenote,
+Lethariel's crown lake; the other capitals have only river water, which the
+Reed Angelfish does not swim in) — holds a few Reed Angelfish: a lake
+attempt places one, one or two nodes under the surface, while fewer than 2
+swim within 32 nodes, before it tries the band's kind. A critter: no
+protection, drift or density gate, never a kill target, a Raw Fish as its
+loot; its old ABM row (lakes and bays next to sand, at most 2 within the
+active area) stays. No combat mob spawns in a capital's lake: every column
+of both capitals' own lakes lies in the protected city, where the protected
+surface refuses every non-critter (tortoise and frog included) and the drift
+band keeps aggressive mobs 16 nodes off (measured on the production seed,
+`tools/r51_mobs/lakes.sh`).

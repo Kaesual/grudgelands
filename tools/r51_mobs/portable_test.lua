@@ -30,6 +30,10 @@
 --    4 nodes, not the 32-node wander radius); the reach veto refuses players
 --    ashore at acquisition; the Kraken, critters, amphibians and land mobs
 --    are untouched.
+-- E-G (step M2): the recipes' water kinds, the water attempt (since the
+--    Round 51 follow-up FM with the lake fish) and the world rows.
+-- H. (FM) The steady swimming height of mobs/api.lua falling(), simulated.
+-- I. (FM) The frog's swim clip (swimmer.lua install_swim_animation).
 -- Prints "R51 MOBS PORTABLE PASS checks=<n>" or exits 1 listing failures.
 
 local ROOT = arg and arg[1] or "."
@@ -699,12 +703,28 @@ do
 			settings = {get = function() return nil end},
 			registered_entities = entities,
 			get_node = function(pos) return {name = world.node_at(pos)} end,
+			-- The Reed Angelfish already round a lake spot (Round 51 FM):
+			-- by default its cap, so the lake checks below see the kinds.
+			get_objects_inside_radius = function()
+				local list = {}
+				for i = 1, world.fish or 3 do
+					list[i] = {get_luaentity = function() return {name = "grug_mobs:reed_angelfish"} end}
+				end
+				list[#list + 1] = {get_luaentity = function() return {name = "grug_mobs:frog_t1"} end}
+				return list
+			end,
 		}
+		F.mobs = {can_spawn = function(_, pos) return pos end}
 		F.grug_zones = {water_query_at = function(x, z) return world.query(x, z) end}
 		F.grug_core = {surface_mob_level_at = function() return world.level end}
+		local fish = {}
 		F.grug_mobs = {
 			disposition = grug_mobs.disposition,
 			region_density_allows = function() return true end,
+			add_mob = function(pos, def)
+				fish[#fish + 1] = {name = def.name, y = pos.y}
+				return {name = def.name}
+			end,
 		}
 		local pick = 1
 		local SR = F.SR
@@ -712,8 +732,12 @@ do
 			local row = roster.list[math.min(pick, #roster.list)]
 			return row.role, row.weight
 		end
-		function SR.players_clear() return true end
-		function SR.spawn_refused() return nil end
+		function SR.players_clear() return not world.player_near end
+		-- The real rule's shape: a protected surface refuses non-critters.
+		function SR.spawn_refused(name)
+			if world.protected and grug_mobs.disposition(name) ~= "critter" then return "protected" end
+			return nil
+		end
 		function SR.in_drift() return false end
 		function SR.light_allows() return true end
 		function SR.spawn_mob(kind, role, g, clock)
@@ -729,8 +753,8 @@ do
 			world.level = level
 			world.node_at = function() return surface_node or "default:water_source" end
 			world.query = function(x, z)
-				if (x ~= 0 or z ~= 0) and neighbours then return unpack(neighbours) end
-				return unpack(answer)
+				if (x ~= 0 or z ~= 0) and neighbours then return unpack(neighbours, 1, 6) end
+				return unpack(answer, 1, 6)
 			end
 			spawned = {}
 			local result = SR.water_attempt({x = 0, y = 1, z = 0, node = surface_node or
@@ -781,6 +805,40 @@ do
 			"F ... one node down in 3-deep water")
 		eq(SR.water_spot({x = 0, y = 1, z = 0}, "grug_mobs:frog_t1", 20).y, 1,
 			"F an amphibian always at the surface")
+		-- Fish in land lakes (Round 51 FM): a lake below its fish cap gets a
+		-- Reed Angelfish under the surface first; a full lake, shallow water,
+		-- a near player, rivers and the sea go on to the kinds.
+		eq(SR.LAKE_FISH, "grug_mobs:reed_angelfish", "F the lakes' fish is the Reed Angelfish")
+		eq(grug_mobs.disposition(SR.LAKE_FISH), "critter", "F ... a critter")
+		local function lake(answer, fish_near, extra)
+			world.fish = fish_near
+			fish = {}
+			for k, v in pairs(extra or {}) do world[k] = v end
+			local r, s = attempt(answer, answer[3], nil, answer[1] == "river" and
+				"default:river_water_source" or nil)
+			for k in pairs(extra or {}) do world[k] = nil end
+			world.fish = nil
+			return r, fish[1], s
+		end
+		local r1, f1 = lake({"lake", D, 5, nil, 3}, SR.LAKE_FISH_CAP - 1)
+		check(r1 == "spawned_lake_fish" and f1 and f1.name == SR.LAKE_FISH and f1.y == -1,
+			"F a lake 3 deep below its fish cap: one more two nodes under the surface (" .. tostring(r1) .. ")")
+		r1, f1 = lake({"lake", D, 5, nil, 2}, 0)
+		check(r1 == "spawned_lake_fish" and f1.y == 0, "F 2 deep: one node under the surface")
+		local r2, f2, k2 = lake({"lake", D, 5, nil, 1}, 0)
+		check(r2 == "spawned_lake" and f2 == nil and k2 ~= nil, "F 1 deep: no fish, the lake kind")
+		r2, f2 = lake({"lake", D, 5, nil, 3}, SR.LAKE_FISH_CAP)
+		check(r2 == "spawned_lake" and f2 == nil, "F a lake at its fish cap: the lake kind")
+		r2, f2 = lake({"lake", D, 5, nil, 3}, 0, {player_near = true})
+		check(r2 == "player_near" and f2 == nil, "F a player near: no fish, and no kind")
+		r2, f2 = lake({"lake", D, 5, nil, 3}, 0, {protected = true})
+		check(r2 == "spawned_lake_fish" and f2 ~= nil, "F a lake inside a town still gets fish")
+		r2, f2 = lake({"lake", D, 5, nil, 3}, SR.LAKE_FISH_CAP, {protected = true})
+		check(r2 == "protected" and f2 == nil, "F ... and never a frog or a tortoise")
+		r2, f2 = lake({"river", D, 8, nil, 3}, 0)
+		check(r2 == "spawned_river" and f2 == nil, "F a river: no fish (river water)")
+		r2, f2 = lake({"belt", D, 4, 10, 5}, 0)
+		check(r2 == "spawned_sea_shallows" and f2 == nil, "F the sea: no lake fish")
 	end
 end
 
@@ -823,6 +881,209 @@ for _, c in ipairs({{"bay", true}, {"belt", true}, {"channel", true}, {"open_sea
 end
 answer("belt", 30, 10)
 eq(goby_check({x = -5, y = 1, z = 0}), false, "G ... below the surface, never at it")
+
+------------------------------------------------------------------------------
+-- H. Swimming at one height (Round 51 FM, cut out of the REAL mobs/api.lua
+--    falling()): a floating mob in water holds its feet half a node under
+--    the surface with no gravity and no upward impulse, simulated with
+--    mobs_redo's quarter-second standing_in; the same simulation without the
+--    hold bobs (so the check can fail); a one-node bank still gets the climb
+--    hop; lava keeps the old float.
+------------------------------------------------------------------------------
+do
+	local api = read("mods/ENTITIES/mobs/api.lua")
+	local cut = api:match("\n(local GRUG_CLIMB_RISE = %d+.-\nfunction mob_class:falling%(pos%).-\nend\n)")
+	if check(cut ~= nil, "H falling() and its helpers are found in api.lua") then
+		local NODES = {
+			air = {walkable = false, groups = {}},
+			stone = {walkable = true, groups = {}},
+			water = {walkable = false, liquid_viscosity = 1, groups = {water = 3, liquid = 3}},
+			lava = {walkable = false, liquid_viscosity = 7, groups = {lava = 3, liquid = 2}},
+		}
+		-- The world: `liquid` up to y = 0 (surface 0.5) over a stone bed at
+		-- `bed`; `bank` puts stone at y 0..1 for z >= 1 (a bank one node above
+		-- the water, ahead of a mob facing +z).
+		local W = {liquid = "water", bed = -6, bank = false}
+		local function name_at(x, y, z)
+			local ny = math.floor(y + 0.5)
+			if W.bank and math.floor(z + 0.5) >= 1 and ny <= 1 then return "stone" end
+			if ny <= W.bed then return "stone" end
+			if ny <= 0 then return W.liquid end
+			return "air"
+		end
+		local H = {sin = math.sin, cos = math.cos, floor = math.floor, min = math.min,
+			max = math.max, mob_class = {},
+			mob_cbox = function(self) return self._grug_cbox end,
+			node_ok = function(pos) return {name = name_at(pos.x, pos.y, pos.z)} end,
+			core = {registered_nodes = NODES}}
+		local chunk = assert(loadstring(cut .. "\nreturn grug_float_hold, GRUG_FLOAT_DEPTH, GRUG_FLOAT_UP, GRUG_CLIMB_RISE"))
+		setfenv(chunk, setmetatable(H, {__index = _G}))
+		local hold, DEPTH, UP, CLIMB = chunk()
+		eq(DEPTH, 0.5, "H the feet are held half a node under the surface")
+		local BOX = {-0.4, -0.01, -0.4, 0.4, 0.6, 0.4}
+		local function mob(y)
+			local o = {pos = {x = 0, y = y, z = 0}, vel = {x = 0, y = 0, z = 0}, acc = {x = 0, y = 0, z = 0}}
+			local self = {floats = true, fall_speed = -9.81, fall_damage = false,
+				_grug_amphibian = true,
+				standing_in = "air", _grug_cbox = BOX, object = {
+				get_pos = function() return {x = o.pos.x, y = o.pos.y, z = o.pos.z} end,
+				get_velocity = function() return {x = o.vel.x, y = o.vel.y, z = o.vel.z} end,
+				set_velocity = function(_, v) o.vel = {x = v.x, y = v.y, z = v.z} end,
+				set_acceleration = function(_, a) o.acc = {x = a.x, y = a.y, z = a.z} end,
+				get_yaw = function() return 0 end,
+			}}
+			return setmetatable(self, {__index = H.mob_class}), o
+		end
+		-- 30 s in server steps of 0.09 s; get_nodes every 0.25 s as mobs_redo.
+		-- Statistics over the last 18 s (a mob six nodes deep needs about 10 s
+		-- to rise).
+		local function simulate(y0, falling, fields)
+			local self, o = mob(y0)
+			for k, v in pairs(fields or {}) do self[k] = v end
+			local st = {min = math.huge, max = -math.huge, breach = 0, vmax = -math.huge}
+			local nodes_t, wet = 0, nil
+			for i = 1, math.floor(30 / 0.09) do
+				local t = i * 0.09
+				if t >= nodes_t then
+					nodes_t = nodes_t + 0.25
+					self.standing_in = name_at(0, o.pos.y + BOX[2] + 0.25, 0)
+				end
+				falling(self, self.object:get_pos())
+				if o.vel.y > st.vmax then st.vmax = o.vel.y end
+				local dt = 0.09
+				o.pos.y = o.pos.y + o.vel.y * dt + 0.5 * o.acc.y * dt * dt
+				o.vel.y = o.vel.y + o.acc.y * dt
+				local floor_top = W.bed + 0.5
+				if o.pos.y + BOX[2] < floor_top then
+					o.pos.y, o.vel.y = floor_top - BOX[2], 0
+				end
+				if t > 12 then
+					local depth = 0.5 - (o.pos.y + BOX[2])
+					if depth < st.min then st.min = depth end
+					if depth > st.max then st.max = depth end
+					local now_wet = name_at(0, o.pos.y + BOX[2] + 0.25, 0) == W.liquid
+					if wet and not now_wet then st.breach = st.breach + 1 end
+					wet = now_wet
+				end
+			end
+			return st
+		end
+		local falling = H.mob_class.falling
+		for _, y0 in ipairs({1.5, 0.3, -3.2, -5.4}) do
+			local st = simulate(y0, falling)
+			check(st.max - st.min < 0.02 and math.abs(st.min - DEPTH) < 0.02,
+				("H from y %.1f: feet held %.2f..%.2f under the surface"):format(y0, st.min, st.max))
+			eq(st.breach, 0, ("H from y %.1f: standing_in never leaves the water"):format(y0))
+			check(st.vmax <= UP + 1e-9, ("H from y %.1f: no upward impulse (max %.2f/s)"):format(y0, st.vmax))
+		end
+		-- Only amphibians hold (the user, 2026-10-19): an unflagged land mob and a
+		-- mob that water hurts keep the old float that lifts them out and back
+		-- (so the checks above can fail, too).
+		for _, fields in ipairs({{_grug_amphibian = false}, {_grug_amphibian = false, water_damage = 4}}) do
+			local st = simulate(-1, falling, fields)
+			check(st.max - st.min > 0.2 and st.breach >= 10,
+				("H %s keeps the old float (range %.2f, %d breaches in 18 s)"):format(
+				fields.water_damage and "a mob that water hurts" or "a land mob", st.max - st.min, st.breach))
+		end
+		do
+			local m, o = mob(-0.3)
+			m._grug_amphibian = nil
+			m.standing_in = "water"
+			m:falling(m.object:get_pos())
+			check(o.vel.y == 0.45 and math.abs(o.acc.y - (-1.2 / 2)) < 1e-12,
+				"H an unflagged mob in water: the old rise 0.45 and sink -1.2 / (viscosity + 1)")
+		end
+		-- The hold itself.
+		local self = {_grug_cbox = BOX}
+		local function at(feet) return hold(self, {x = 0, y = feet - BOX[2], z = 0}) end
+		check(math.abs(at(0)) < 1e-9, "H at the held height: no vertical speed")
+		check(at(0.3) < 0 and at(0.3) >= -1.2, "H above it: down, gently")
+		eq(at(0.45), -1.2 < (0 - 0.45) * 4 and (0 - 0.45) * 4 or -1.2, "H feet at the surface: down")
+		check(at(-0.4) > 0 and at(-0.4) <= UP, "H below it: up, at most " .. UP)
+		eq(at(-2), UP, "H two nodes deep: up at the rise speed")
+		check(at(0.7) ~= nil and at(0.7) < 0, "H just above the water (a stale standing_in): down")
+		eq(at(3), nil, "H well above the water: the old float")
+		W.liquid = "lava"
+		eq(at(0), nil, "H in lava: the old float")
+		W.liquid = "water"
+		-- The bank hop still wins over the hold.
+		W.bank = true
+		local m, o = mob(0.01)
+		m.standing_in = "water"
+		m:falling(m.object:get_pos())
+		eq(o.vel.y, CLIMB, "H facing a one-node bank: the climb hop (" .. CLIMB .. ")")
+		W.bank = false
+		m.standing_in = "water"
+		m:falling(m.object:get_pos())
+		check(math.abs(o.vel.y) < 1e-9 and o.acc.y == 0, "H open water: held, no gravity")
+	end
+end
+
+------------------------------------------------------------------------------
+-- I. The swim clip (Round 51 FM, the REAL swimmer.lua): the frog plays its
+--    swim clip 250-350 for stand, walk and run in water and its own clips
+--    on land; the swing lock and the bite pass through; the tortoise (no
+--    swim clip) and the swimmers get no wrapper.
+------------------------------------------------------------------------------
+do
+	local frog = registered["grug_mobs:frog"].animation
+	check(frog.swim_start == 250 and frog.swim_end == 350, "I the frog's swim clip is 250-350")
+	eq(registered["grug_mobs:frog_t4"].animation.swim_start, 250, "I a frog sub-type keeps the swim clip")
+	eq(registered["grug_mobs:tortoise"].animation.swim_start, nil, "I the tortoise has no swim clip")
+	-- The amphibians: flagged, never hurt by water, sub-types included; the
+	-- pure swimmers are not amphibians.
+	for _, short in ipairs({"tortoise", "frog", "tortoise_t1", "tortoise_t6", "frog_t1", "frog_t6"}) do
+		local def = registered["grug_mobs:" .. short]
+		eq(def._grug_amphibian, true, "I " .. short .. " is an amphibian")
+		eq(def.water_damage or 0, 0, "I " .. short .. " takes no water damage")
+	end
+	eq(registered["grug_mobs:stingray"]._grug_amphibian, nil, "I the stingray is no amphibian")
+	for _, file in ipairs({"crocodile", "shore_crab"}) do
+		local src = read(MOBS .. "/" .. file .. ".lua")
+		check(src:find("_grug_amphibian = true", 1, true) ~= nil, "I " .. file .. ".lua flags an amphibian")
+		check(src:find("water_damage = 0", 1, true) ~= nil and src:find("water_damage = [1-9]") == nil,
+			"I " .. file .. ".lua takes no water damage")
+	end
+	local init_src = read(MOBS .. "/init.lua")
+	check(init_src:find("if def._grug_amphibian then%s*assert%(%(def%.water_damage or 0%) == 0") ~= nil
+		and init_src:find("core%.registered_entities%[name%]%._grug_amphibian = true") ~= nil,
+		"I register_mob refuses a water-hurt amphibian and puts the flag on the prototype")
+	check(read("mods/ENTITIES/mobs/api.lua"):find("local hold = not bank and self._grug_amphibian and grug_float_hold(self, pos)", 1, true) ~= nil,
+		"I falling() holds amphibians only")
+	core.registered_nodes["default:water_source"] = {groups = {water = 3, liquid = 3}}
+	core.registered_nodes["air"] = {groups = {}}
+	core.registered_nodes["default:sand"] = {groups = {}, walkable = true}
+	core.get_us_time = function() return now * 1000000 end
+	local function proto_of(name)
+		local played = {}
+		local proto = {animation = registered[name].animation, fly = registered[name].fly,
+			set_animation = function(_, anim) played[#played + 1] = anim end}
+		entities["fm:" .. name] = proto
+		return proto, played, grug_mobs.install_swim_animation("fm:" .. name)
+	end
+	local proto, played, installed = proto_of("grug_mobs:frog")
+	eq(installed, true, "I the frog gets the swim clip wrapper")
+	local self = {standing_in = "default:water_source", temp = {}}
+	for _, anim in ipairs({"stand", "walk", "run"}) do
+		proto.set_animation(self, anim)
+		eq(played[#played], "swim", "I in water " .. anim .. " plays the swim clip")
+	end
+	proto.set_animation(self, "punch")
+	eq(played[#played], "punch", "I the bite keeps its clip in water")
+	self.temp.grug_punch_until = now + 1
+	proto.set_animation(self, "walk")
+	eq(played[#played], "walk", "I while the swing lock holds, the request passes unchanged")
+	self.temp.grug_punch_until = nil
+	self.standing_in = "air"
+	proto.set_animation(self, "walk")
+	eq(played[#played], "walk", "I on land the walk clip")
+	local _, _, t_installed = proto_of("grug_mobs:tortoise")
+	eq(t_installed, false, "I the tortoise gets no wrapper")
+	local _, _, s_installed = proto_of("grug_mobs:stingray")
+	eq(s_installed, false, "I a swimmer gets no wrapper")
+	check(read(MOBS .. "/init.lua"):find("mobs:register_mob%(name, def%).-grug_mobs%.install_swim_animation%(name%)") ~= nil,
+		"I register_mob installs the swim clip after mobs:register_mob")
+end
 
 if failures > 0 then
 	error(("R51 MOBS PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)

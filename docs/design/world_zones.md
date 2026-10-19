@@ -2392,5 +2392,7 @@ source columns over natural sand and never leaves the water (it cannot climb
 a bank, and shore plants and waterlilies are not water to it); stranded away
 from water it flops in place. It gives no XP, drops exactly one ordinary Raw
 Fish (like a land critter's one meat; the better fish come only from
-fishing) and uses the ambient spawn cap of two. It has no school, breeding,
+fishing) and uses the ambient spawn cap of two; since the Round 51
+follow-up every lake also gets a few through the region spawner's lake fish
+(`biomes_mobs.md` "Round 51 water families"). It has no school, breeding,
 pathfinding or fishing integration.

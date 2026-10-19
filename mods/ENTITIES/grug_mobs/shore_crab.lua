@@ -33,6 +33,8 @@ local function crab_def(description, tier, spawn_check, drop_scale)
 		-- every other ground mob (Round 45 playtest).
 		jump = false, jump_height = 0, stepheight = 1.1, fear_height = 2,
 		view_range = 8, floats = true,
+		-- A shore amphibian: one height in water (Round 51 FM, init.lua).
+		_grug_amphibian = true,
 		visual = "mesh", mesh = "grug_mobs_shore_crab.b3d",
 		textures = {{"grug_mobs_shore_crab.png"}},
 		visual_size = {x = 1, y = 1},
