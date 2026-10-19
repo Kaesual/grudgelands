@@ -8,7 +8,8 @@ there when the rework resumes. Review records: [design](reviews/design-review-20
 [engineering](reviews/implementation-review-2026-10-12.md).
 **2026-10-19:** the user's "maximally simple" rulings (continuation §4a) and
 the [skill inventory](skill-inventory.md) that applies them to every skill
-override the candidates where they conflict.
+override the candidates where they conflict. The [delivery plan](delivery-plan.md)
+drafts the rounds.
 
 Prepared 2026-10-12 for round planning. The user supports the overall direction
 and approved the [first-person targeting contract](../../design/ability_targeting.md).

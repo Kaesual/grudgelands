@@ -195,7 +195,8 @@ reviewed plan; only then are implementation lanes briefed.
    shipped with Hotbar A/B (0.50.0); the Arrowfall cone and Split Shot
    ammunition questions fall away with §4a; food belt and tools are out of
    this rework (§4a item 11).
-7. **Delivery plan:** the engineering review's sequence (section 6), the
+7. **Delivery plan:** drafted in the [delivery plan](delivery-plan.md)
+   (2026-10-19). Originally: the engineering review's sequence (section 6), the
    migration step and the test retire/rewrite list, then an independent
    review of the finished plan.
 
