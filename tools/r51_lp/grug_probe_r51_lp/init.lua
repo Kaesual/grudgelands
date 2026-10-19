@@ -235,6 +235,9 @@ local function hide_hud(player)
 end
 
 local function hold(player, shot)
+	-- no fall, drowning or mob may end the run
+	player:set_armor_groups({immortal = 1})
+	if player:get_hp() < 20 then player:set_hp(20) end
 	local pos, yaw, pitch = camera_of(shot)
 	player:set_pos({x = pos.x, y = pos.y - 1.625, z = pos.z})
 	player:set_look_horizontal(math.rad(yaw))
@@ -271,8 +274,21 @@ local function count_scene()
 	end
 	log(("COUNT %s %s (emerge %.1f s)"):format(s.scene.name, table.concat(parts, " "),
 		(core.get_us_time() - state.emerge_started) / 1e6))
-	SHOTS[#SHOTS + 1] = {name = s.scene.name, first = true,
-		pos = {x = s.spot.x, y = s.ground + s.scene.up, z = s.spot.z - 18}, yaw = 0, pitch = s.scene.pitch}
+	-- the camera in open air: up from the scene's height until the eye and
+	-- the cells round it are free (a trunk or leaves there would hide all)
+	local cam = {x = s.spot.x, y = s.ground + s.scene.up, z = s.spot.z - 18}
+	local function free(p)
+		for _, d in ipairs({{0, 0, 0}, {0, -1, 0}, {0, -2, 0}, {0, 0, 1}, {1, 0, 0}, {-1, 0, 0}}) do
+			local name = core.get_node({x = p.x + d[1], y = p.y + d[2], z = p.z + d[3]}).name
+			if name ~= "air" then return false end
+		end
+		return true
+	end
+	for _ = 1, 40 do
+		if free(cam) then break end
+		cam.y = cam.y + 1
+	end
+	SHOTS[#SHOTS + 1] = {name = s.scene.name, first = true, pos = cam, yaw = 0, pitch = s.scene.pitch}
 end
 
 core.register_globalstep(function(dtime)
