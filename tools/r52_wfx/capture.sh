@@ -19,11 +19,10 @@
 # Usage: XVFB=/path/to/Xvfb tools/r52_wfx/capture.sh OUT_DIR
 #   WIDTH/HEIGHT (default 1280 x 720), GUI=<gui_scaling> (default 1),
 #   SEED (default 42), SUFFIX=<text> appended to every file name,
-#   SETTLE=<seconds> before each shot (default 3), MODE=art for one shot (as a
-#   Scout) of
-#   each shipped family's real strip instead (the art step), XVFB_DRIVERS=<Mesa DRI
-#   dir for Xvfb's GLX> (default /usr/lib64/dri). Run it through the shared
-#   queue (one boot).
+#   SETTLE=<seconds> before each shot (default 3), MODE=art for one shot (as
+#   a Scout) of each shipped family's real strip instead (the art step),
+#   XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri). Run it
+#   through the shared queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
 export LC_ALL=C
