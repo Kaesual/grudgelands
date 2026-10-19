@@ -49,7 +49,8 @@ version reads every character as it is.
   The open sea stays bare. Seagrass and kelp you dig leave sand and grow
   back near players; coral does not.
 - **Shipwrecks:** four kinds (a hull, a bow, a stern and a debris field)
-  lie on the protected seabed of the belt and the bays, 8–14 nodes deep,
+  lie on the protected seabed of the belt and the bays, up to 14 nodes deep
+  (mostly 7–11),
   at most four per zone and about 55 per world, with kelp growing round
   them. A hull's broken mast reaches near the surface.
 - **Water creatures:** five new families, all silent:
@@ -65,10 +66,11 @@ version reads every character as it is.
     Kraken;
   - the **Tide Goby**, a small fish in any sea water (no XP).
 
-  They take the level of the zone around them; the level 1–2 home belts
+  The tortoise, the frog and the stingray take the level of the zone around
+  them (the sharks have fixed levels); the level 1–2 home belts
   have no frogs and no stingrays. Each drops its band's fish (the tortoise
   and the frog sometimes meat too; the Abyssal Shark 3–6 Storm Tuna), and
-  quests can name them like any zone creature.
+  quests can name the tortoise, frog and stingray like any zone creature.
 - **Swimmers let go at the shore:** a stingray or shark whose target
   leaves the water onto a beach, bank or pier gives up, heals, ignores
   that player for a moment and swims back. In the water or in a boat you
@@ -124,7 +126,7 @@ version reads every character as it is.
   at all.
 - **Server admins:** a server on 0.50.x (the production world) moves to
   0.51.0 with this one map reset and no migration step; a world on 0.48.x
-  or 0.49.x crosses 0.49.0's reset too, and one reset covers both. Before
+  also crosses 0.49.0's reset, and one reset covers both. Before
   the map is emptied, the migration tool's pre-reset pass packs every
   claim's containers (declaration `map_reset_pass` 0.50.0). The first
   start renders the larger map; a full preparation covers about a quarter

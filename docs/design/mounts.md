@@ -429,8 +429,8 @@ warning and forced dismount are separate consumer states derived from
   requires at least **104 nodes** (`world_zones.md` §7.4), so neither island is
   reachable by flying mount from a continent. Clearing residual velocity on
   the hard dismount prevents high-altitude drift onto the island.
-- The two dragon islands remain boat destinations. Their complete water
-  channels are immutable at every depth, and the flight classification may not
+- The two dragon islands remain boat destinations. Their channel water 24
+  nodes or more off the coast is immutable at every depth, and the flight classification may not
   accidentally create a bridge, tunnel or aerial-access exception.
 - The obsolete ten-second mounted `Exhausted` rule and the rectangular
   legacy open-sea geometry do not govern flight in the target map.

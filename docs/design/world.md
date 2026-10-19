@@ -255,7 +255,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   The four
   Battlegrounds zones follow the same shared edit rule at every y, remain
   claim-excluded and follow the Round 14 contested-mainland flight rule. Dragon
-  channels remain immutable at every y. A cultural `race_region` never grants
+  channel water 24 nodes or more off the coast is immutable at every y. A cultural `race_region` never grants
   terrain rights (`world_zones.md` §§8.3/11).
 - **R3 — Water columns**: classification is analytic in x/z and does not
   change when players fill or drain nodes. Every authored lake, river, marsh
