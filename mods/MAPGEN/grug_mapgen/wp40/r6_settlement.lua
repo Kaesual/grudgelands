@@ -21,6 +21,10 @@ local function settlement_factory()
 	-- apart (Chebyshev, strictly less refuses). Lane TD measures density
 	-- against it; 1 would be wood-against-wood only.
 	local TREE_SPACING = 4
+	-- The P9G suffix of the content namespace (r7_content.lua P9G_NAMES; 36
+	-- before Round 51 T3's seagrass): its writes and the anchor and settlement
+	-- windows after it.
+	local P9G_COUNT = 39
 	local R8_CAVE_COMPONENT_RADIUS = 12
 	local R8_CAVE_COMPONENT_MINIMUM = 24
 
@@ -2146,14 +2150,14 @@ local function settlement_factory()
 					occupied[key] = -2
 					occupied_positions[key] = {x, y, z}
 					written[key] = {x, y, z, cid, param2, -2, 36, feature, 0,
-						(#contract.content_names + 36 + local_ref - 1) * 256 + param2}
+						(#contract.content_names + P9G_COUNT + local_ref - 1) * 256 + param2}
 				end
 				function context.write_hearthpine(x, y, z, cid, param2, local_ref, feature)
 					local key = occupied_key(x, y, z)
 					occupied[key] = -2
 					occupied_positions[key] = {x, y, z}
 					written[key] = {x, y, z, cid, param2, -2, 37, feature, 0,
-						(#contract.content_names + 38 + local_ref - 1) * 256 + param2}
+						(#contract.content_names + P9G_COUNT + 2 + local_ref - 1) * 256 + param2}
 				end
 				local successor_result = successor_tail:settle(context)
 				if type(successor_result) ~= "table" or
@@ -3121,6 +3125,8 @@ local function settlement_factory()
 				function successor_context.column_values_at(x, z)
 					return planner_source.column_values_at(x, z)
 				end
+				-- 39: P9G_COUNT (a literal here: this function is at Lua's limit of
+				-- 60 upvalues)
 				function successor_context.write_p9g(x, y, z, cid, param2,
 						local_ref, feature_ref)
 					if not inside_owner(x, y, z) then
@@ -3129,8 +3135,8 @@ local function settlement_factory()
 					end
 					integer(cid, "P9G CID", 0, MAX_SAFE, "fail_content_manifest")
 					integer(param2, "P9G param2", 0, 255, "fail_content_manifest")
-					integer(local_ref, "P9G local ref", 1, 36, "fail_content_manifest")
-					integer(feature_ref, "P9G feature ref", 1, 36, "fail_content_manifest")
+					integer(local_ref, "P9G local ref", 1, 39, "fail_content_manifest")
+					integer(feature_ref, "P9G feature ref", 1, 39, "fail_content_manifest")
 					if cid == contract.ignore_cid then
 						fail("fail_content_manifest", ("P9G target is ignore " ..
 							"at (%d,%d,%d)"):format(x, y, z))
@@ -3167,7 +3173,7 @@ local function settlement_factory()
 					final_data[index], final_param2[index] = cid, param2
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						36, feature_ref, 0
-					local successor_ref = #contract.content_names + 36 + local_ref
+					local successor_ref = #contract.content_names + 39 + local_ref
 					if successor_refs.anchor_min == 0 or
 							successor_ref < successor_refs.anchor_min then
 						successor_refs.anchor_min = successor_ref
@@ -3224,7 +3230,7 @@ local function settlement_factory()
 					final_data[index], final_param2[index] = cid, param2
 					intent_opcode[index], intent_feature[index], intent_interface[index] =
 						37, feature_ref, 0
-					local successor_ref = #contract.content_names + 36 + 2 + local_ref
+					local successor_ref = #contract.content_names + 39 + 2 + local_ref
 					if successor_refs.settlement_min == 0 or
 							successor_ref < successor_refs.settlement_min then
 						successor_refs.settlement_min = successor_ref

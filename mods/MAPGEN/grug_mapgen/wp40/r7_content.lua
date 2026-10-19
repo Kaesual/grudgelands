@@ -1,5 +1,6 @@
 -- Closed R7 production content resolvers: the 128-row production-R6
--- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
+-- namespace (the accepted R8 terrain rows) and the 39-row P9G suffix (36
+-- before Round 51 T3 added the three seagrass variants). Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
 -- (84 -> 87 rows); Round 33 removed the six cultural source rows (93 -> 87);
@@ -184,6 +185,10 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		"default:sand_with_kelp",
 		"grug_mapgen:freshwater_waterlily",
 		"grug_mapgen:freshwater_waterweed",
+		-- Round 51 T3: the seagrass variants (P9G 36 -> 39)
+		"grug_mapgen:seagrass_1",
+		"grug_mapgen:seagrass_2",
+		"grug_mapgen:seagrass_3",
 	}
 	local ANCHOR_NAMES = {
 		"grug_nodes:camp_fire",
@@ -252,7 +257,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 128 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 128 or #P9G_NAMES ~= 39 then
 		fail("closed population differs")
 	end
 
@@ -424,9 +429,10 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		content_cids = p9g_cids}
 	function p9g.resolve_p9g(content_ref, param2)
 		calls.p9g_resolve = calls.p9g_resolve + 1
-		integer(content_ref, "P9G content ref", 1, 36)
+		integer(content_ref, "P9G content ref", 1, 39)
 		if content_ref == 34 then
-			integer(param2, "kelp height", 16, 160)
+			-- Round 51 T3: kelp up to 15 nodes in water up to 20 deep
+			integer(param2, "kelp height", 16, 240)
 			if param2 % 16 ~= 0 then fail("kelp height differs") end
 		elseif content_ref == 35 then
 			integer(param2, "waterlily rotation", 0, 3)
