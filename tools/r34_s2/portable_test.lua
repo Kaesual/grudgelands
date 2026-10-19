@@ -11,9 +11,8 @@
 --      surface bed by it (underwater, sea and stream water, night beds and
 --      the crags' silent night, no key yet keeps the bed), the fallback to
 --      a shipped bed, the two-pass hysteresis, town gain; the shipped beds
---      per group (Round 52 code step: the groups whose files are not
---      shipped yet are silent) and no dropped file named;
---   C  calls by sound key and time of day;
+--      per group as round52-ambience-plan.md §2 and no dropped file named;
+--   C  calls by sound key, biome and time of day, the animal calls' rows;
 --   T  the town flag of grug_map's location resolver;
 --   E  fire and water emitters: the nearest per kind; none at forges and anvils;
 --   P  settings: /music and /ambience words, volumes;
@@ -140,15 +139,15 @@ do
 	check(math.abs(R.bed_gain(D, 100, true) - D.gains.bed * D.gains.town_bed) < 1e-9 and
 		math.abs(R.bed_gain(D, 50, false) - D.gains.bed * 0.5) < 1e-9, "B gain: volume and town")
 
-	-- the shipped data (code step: only shipped files are named; the groups
-	-- whose files come with the user's approval are silent until then)
+	-- the shipped data (Round 52 file step: every group has its approved beds)
 	local function real(key, night) return R.pick_bed(D, R.bed_keys(D, {key = key, night = night}), AVAILABLE) end
-	local day = {temperate = "temperate", savanna = "savanna", jungle = "jungle", badlands = false,
-		swamp = false, crags = false, crags_snowy = false, blight = "blight", beach = "beach",
-		battlegrounds = false, dragon_island = "dragon_island", ocean = "ocean"}
-	local night = {temperate = "temperate_night", savanna = "savanna_night", jungle = "jungle",
-		badlands = false, swamp = false, crags = false, crags_snowy = false, blight = "blight",
-		beach = "beach", battlegrounds = false, dragon_island = "dragon_island", ocean = "ocean"}
+	local day = {temperate = "temperate", savanna = "savanna", jungle = "jungle", badlands = "badlands",
+		swamp = "swamp", crags = "crags", crags_snowy = "crags_snowy", blight = "blight", beach = "beach",
+		battlegrounds = "battlegrounds", dragon_island = "dragon_island", ocean = "ocean"}
+	local night = {temperate = "temperate_night", savanna = "savanna_night", jungle = "jungle_night",
+		badlands = "badlands_night", swamp = "swamp_night", crags = false, crags_snowy = "crags_snowy",
+		blight = "blight", beach = "beach", battlegrounds = "battlegrounds",
+		dragon_island = "dragon_island", ocean = "ocean"}
 	for k, want in pairs(day) do
 		check(real(k) == want, "B day bed for " .. k .. ": " .. tostring(real(k)))
 		check(real(k, true) == night[k], "B night bed for " .. k .. ": " .. tostring(real(k, true)))
@@ -166,6 +165,21 @@ do
 		names_of("jungle") == "grug_ambience_elf_birdsong,grug_ambience_troll_jungle",
 		"B the orc bed in the savanna, the troll bed in the jungle (ruling 1)")
 	check(names_of("wind") == "grug_ambience_battlegrounds_gusts", "B the gusts are the wind (ruling 2)")
+	-- the groups of §2 (the SND cuts the user approved)
+	local P = "grug_ambience_"
+	local want = {
+		temperate_night = {"night_crickets", "night_forest", "night_insects", "night_owl_crickets"},
+		jungle_night = {"jungle_night_crickets", "jungle_night_hills", "jungle_night_rainforest", "night_tropical"},
+		badlands = {"badlands_crickets", "badlands_quiet"}, badlands_night = {"badlands_crickets"},
+		swamp = {"swamp_frogs"}, swamp_night = {"night_tropical", "swamp_evening", "swamp_frogs"},
+		crags = {"crags_birds", "crags_birds_clear", "crags_mountain"}, crags_snowy = {"snow_afternoon"},
+		blight = {"undead_lake"}, beach = {"sea_waves"}, battlegrounds = {"battlegrounds_fields"},
+	}
+	for key, list in pairs(want) do
+		local full = {}
+		for i, n in ipairs(list) do full[i] = P .. n end
+		check(names_of(key) == table.concat(full, ","), "B " .. key .. " beds as §2: " .. names_of(key))
+	end
 	check(names_of("cave") == "grug_ambience_underground_dungeon" and
 		names_of("cave_deep") == "grug_ambience_underground_crystal", "B the cave beds (ruling 6, §6.6)")
 	local dropped = {grug_ambience_elf_blackbirds = true, grug_ambience_undead_graveyard = true,
@@ -196,11 +210,31 @@ do
 	check(real({key = "dragon_island"}) == "thunder" and real({key = "dragon_island", night = true}) == "thunder",
 		"C thunder on the dragon islands, day and night")
 	check(real({key = "dragon_island", surface = 0}) == "thunder", "C thunder ignores the surface level")
-	local others = ""
+	-- the animal calls by sound key (§3.2 step 8), each only by day or by night
+	local by_day, by_night = {}, {}
 	for k in pairs(D.region) do
-		if k ~= "dragon_island" then others = others .. real({key = k, surface = 1}) .. real({key = k, night = true, surface = 1}) end
+		by_day[#by_day + 1] = k .. "=" .. real({key = k, surface = 1})
+		by_night[#by_night + 1] = k .. "=" .. real({key = k, night = true, surface = 1})
 	end
-	check(others == "", "C no other call ships yet: " .. others)
+	table.sort(by_day)
+	table.sort(by_night)
+	check(table.concat(by_day, " ") == "badlands=hawk battlegrounds=crow beach= blight=crow crags=hawk " ..
+		"crags_snowy= dragon_island=thunder jungle= ocean= savanna= swamp= temperate=",
+		"C by day: crows, hawks, thunder: " .. table.concat(by_day, " "))
+	check(table.concat(by_night, " ") == "badlands= battlegrounds= beach= blight= crags=wolf " ..
+		"crags_snowy= dragon_island=thunder jungle= ocean= savanna= swamp= temperate=owl",
+		"C by night: owls, wolves, thunder: " .. table.concat(by_night, " "))
+	check(real({key = "temperate", biome = "grug_pine_hills", night = true, surface = 1}) == "owl,wolf" and
+		real({key = "temperate", biome = "grug_meadows", night = true, surface = 1}) == "owl",
+		"C wolves in the pine hills, not in the meadows")
+	check(real({key = "temperate", night = true, surface = 0.4}) == "" and
+		real({key = "crags", surface = 0.5}) == "hawk", "C animal calls only at a surface level of 50 % or more")
+	for id, call in pairs(D.calls) do
+		if id ~= "thunder" then
+			check(call.distance[1] == 24 and call.distance[2] == 40 and call.surface == 0.5,
+				"C " .. id .. ": 24-40 nodes away, surface 50 %")
+		end
+	end
 	local lo, hi = math.huge, -math.huge
 	for seed = 1, 200 do
 		local d = R.next_call_delay(D, seeded(seed))
@@ -556,12 +590,14 @@ do
 	check(#beds >= count + 2 and (beds[#beds].spec.name == "grug_ambience_troll_jungle" or
 		beds[#beds].spec.name == "grug_ambience_elf_birdsong"),
 		"R into the jungle by day: a crossfade to the jungle bed")
-	-- a zone override: the Battlegrounds' own bed is not shipped yet: silence
+	-- a zone override: the Battlegrounds' own bed (ruling 2)
 	mood.ana = "battlegrounds"
 	fades = {}
 	run(4)
-	check(#fades >= 1 and fades[#fades].gain == 0 and #plays_to("ana", is_bed) == #beds,
-		"R the Battlegrounds override the biome (their bed comes with its file: silence now)")
+	local after = plays_to("ana", is_bed)
+	check(#fades >= 1 and fades[#fades].gain == 0 and #after == #beds + 1 and
+		after[#after].spec.name == "grug_ambience_battlegrounds_fields",
+		"R the Battlegrounds override the biome with their own bed")
 	mood.ana, biome.ana = "human", "grug_meadows"
 	run(4)
 
@@ -747,6 +783,15 @@ do
 	ok = commands.ambience.func("ana", "debug")
 	check(ok and huds[1].removed, "R /ambience debug again removes it")
 	check(commands.music.func("ana", "debug") == false, "R /music debug is no word")
+	ok = commands.ambience.func("ana", "debug")
+	commands.ambience.func("ana", "off")
+	run(2)
+	check(huds[2] and huds[2].text == "ambience: off" and not huds[2].removed,
+		"R ambience off: the line says so instead of freezing: " .. tostring(huds[2] and huds[2].text))
+	commands.ambience.func("ana", "on")
+	run(2)
+	check(huds[2].text:find("surface", 1, true) ~= nil, "R ambience on: the levels again")
+	commands.ambience.func("ana", "debug")
 	ana._pos.y = 9.5
 	run(4)
 
@@ -775,12 +820,26 @@ do
 	commands.ambience.func("ana", "on")
 	run(2)
 	check(#plays_to("ana", is_bed) == 1, "R ambience on: the bed returns at once")
-	-- calls: none in the meadows, rare thunder on a dragon island
+	-- calls: owls at night in the meadows, 24-40 nodes away; none in a
+	-- shaft; rare thunder on a dragon island
 	timeofday = 0.95
 	sounds = {}
 	run(1800)
-	check(#plays_to("ana", function(s) return s.ephemeral end) == 0, "R no calls in the meadows")
+	local owls = plays_to("ana", function(s) return s.ephemeral end)
+	local owls_ok = #owls >= 6 and #owls <= 22
+	for _, s in ipairs(owls) do
+		local dx, dz = s.params.pos.x - ana._pos.x, s.params.pos.z - ana._pos.z
+		local d = math.sqrt(dx * dx + dz * dz)
+		if s.spec.name ~= "grug_ambience_call_owl" or d < 24 - 1e-6 or d > 40 + 1e-6 then owls_ok = false end
+	end
+	check(owls_ok, "R owls at night in the meadows, 24-40 nodes away (" .. #owls .. " in 30 min)")
+	ana._pos.y = 9.5 - 10
+	sounds = {}
+	run(1800)
+	check(#plays_to("ana", function(s) return s.ephemeral end) == 0, "R no owls 10 down a shaft (surface < 50 %)")
+	ana._pos.y = 9.5
 	mood.ana = "dragon_island"
+	sounds = {}
 	run(1800)
 	local calls = plays_to("ana", function(s) return s.ephemeral end)
 	local spread_ok = #calls >= 6 and #calls <= 22

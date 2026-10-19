@@ -178,6 +178,19 @@ do
 	check(not R.probe_due(p, {x = 1, y = -10, z = 1}), "V a second pass in place: reuse")
 	check(R.probe_due(p, {x = 1, y = -10, z = 1}), "V the third pass: probe again")
 	check(R.probe_due(p, {x = 1, y = -12, z = 1}), "V moved 2 nodes: probe at once")
+	-- the deep cave bed's band round y -500 (review item, file step)
+	check(D.deep_y == -500 and D.deep_band == 2, "V the deep bed below -500, band 2")
+	check(R.deep_cave(D, nil, -501) == false and R.deep_cave(D, nil, -502.5) == true,
+		"V into the deep bed only below -502")
+	check(R.deep_cave(D, true, -499) == true and R.deep_cave(D, true, -497.5) == false,
+		"V out of it only above -498")
+	local flips, deep = 0, false
+	for _, y in ipairs({-499, -501, -500, -501.5, -499.5, -500.5, -501}) do
+		local now = R.deep_cave(D, deep, y)
+		if now ~= deep then flips = flips + 1 end
+		deep = now
+	end
+	check(flips == 0, "V a cave floor at -500 never swaps the beds")
 	local cells = #D.cave.grid_xz * #D.cave.grid_xz * #D.cave.grid_y
 	check(cells == 75 and D.cave.min_depth == 4, "V a 5 x 3 x 5 grid (75 reads), only below 4 nodes")
 end
