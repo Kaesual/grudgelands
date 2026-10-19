@@ -1,5 +1,266 @@
 # Round 52 ARTA — art drops
 
+## Drop 03 — one overlay family per talent tree
+
+Delivered 2026-10-19 by GPT-6 Astra on `r52-arta`. **Compatible:** staged
+art proposals and their Python generator only. This pass follows the user's
+eight-family ruling and the pass-2 feedback: small accents, distinct tree
+language, slower frost and Scout effects, and no rotation or swirling.
+The coordinator owns the pick page and integration; these proposals await
+the user's picks. No Lua or `mods/` changes, fixtures, engine runs, agents,
+merge or push. Both earlier drop folders are unchanged.
+
+**Count clarification:** the brief's table specifies 24 family/weapon
+combinations. With two variants and the additional three draw stages for
+each of two bow families, that is **60 strips**, not the stated 52:
+22 non-bow strips + 8 bow strips per variant. The smaller total would omit
+the Scout's sword and dagger combinations. This drop follows the full
+table, keeping all of them.
+
+- [Preview](drop-03/preview.png): frame 1 at exactly 8×, one class band,
+  one family row and three weapon columns; variants sit side by side.
+  Bow idle and draw stages occupy four subcells in the bow column; idle
+  shows both silhouettes. Every selection key and each family's clock
+  are labelled. The first frame is intentionally quiet: use the GIFs to
+  judge the motion and pauses.
+- [Manifest](drop-03/manifest.json): 60 unique records with class, family,
+  weapon, stage, variant, path, SHA-256, frame count, `frame_s` and
+  `loop_s`. It also records the GIF paths, source image hashes, exact
+  licences, enchant samples and generator hash. Paths are relative to
+  the drop; source/code paths are relative to the repository. Stages use
+  `null` for non-bows, `idle`, or `draw0` / `draw1` / `draw2`.
+- [Media checks](drop-03/checks.json): dimensions, alpha, per-frame effect
+  coverage, exclusion checks, seam deltas, encoded GIF frames and timing.
+- [Generator](arta_fx3.py): standalone Python/Pillow; explicit original
+  pixel geometry and open motion paths. No weapon pixels enter the
+  overlay PNGs. The weapon files are read only for previews.
+
+| Class | Families | Non-bow strips | Bow strips | Total |
+|---|---|---:|---:|---:|
+| Mage | ember, rime | 12 | 0 | 12 |
+| Warrior | bulwark, ruin | 12 | 0 | 12 |
+| Priest | mercy, reckoning | 12 | 0 | 12 |
+| Scout | quarry, veil | 8 | 16 | 24 |
+| **Total** | | **44** | **16** | **60** |
+
+### Family clocks and motion
+
+Every family shares **one frame count and frame length** across both
+variants, all weapons and all bow stages. Strips are RGBA,
+**16 × (16 × F)**, with alpha **0, 96, 176, 255** and zero RGB under zero
+alpha. Each frame has only **1–7 effect pixels**. Stationary marks vary in
+brightness or grow in place; free particles rise along open monotone paths,
+fade out and restart only after a pause. Nothing orbits or reverses its path.
+Last and first frames are identical quiet states, giving every strip an
+exact zero-delta loop seam; repeated frames deliberately hold still.
+
+| Family | F | Frame length | Loop | Motion | Variant 1 / Variant 2 |
+|---|---:|---:|---:|---|---|
+| ember | 8 | 0.12 s | 0.96 s | Small rising flame and warm spark. | Candle tongue / Split cinder |
+| rime | 12 | 0.26 s | 3.12 s | A crystal forms, holds its glint and fades with cold mist. | Growing frost fern / Held crystal |
+| bulwark | 12 | 0.18 s | 2.16 s | A short silver-blue glint slides along the edge, then rests. | Measured edge / Rivet glint |
+| ruin | 10 | 0.16 s | 1.60 s | A fixed red-hot edge gives a double heartbeat; one ember rises. | Hot cutting edge / Tempered fracture |
+| mercy | 12 | 0.28 s | 3.36 s | Soft gold-white breathing with one rising mote. | Quiet blessing / Sheltered light |
+| reckoning | 12 | 0.16 s | 1.92 s | A hard gold-white beat and brief crimson point, then stillness. | White verdict / Golden seal |
+| quarry | 12 | 0.26 s | 3.12 s | A short teal breeze or one green leaf drifts away and rests. | Passing breeze / Single leaf |
+| veil | 12 | 0.28 s | 3.36 s | A thin violet-black wisp rises beside a fixed silver glint. | Fine smoke / Silver in shadow |
+
+### Weapon compositions and previews
+
+| Weapon | Composition |
+|---|---|
+| Sword | A diagonal rail follows the upper cutting edge; the alternate variant isolates the tip and a separate adjacent accent. |
+| Dagger | A compact point and shoulder form a small fang or crystal, with room above the short blade for a mote; it is not a shortened sword strip. |
+| Greataxe | Separate, simultaneous accents follow the two cutting edges, with the main glint on the upper bit and a smaller echo on the lower bit. |
+| Staff | The head receives a small crown or fork; rising light uses the head's flanks because the crystal already touches the image's upper boundary. |
+| Wand | One compact cap accent or short tongue sits on the tip, with one neighbouring spark and no shaft treatment. |
+| Bow | Variant 1 uses the upper limb, variant 2 the lower limb; the opposite limb has a tiny supporting mark, and draw stages add a point on the arrow's forward end. |
+
+Each matching GIF is enlarged by nearest-neighbour scaling at exactly 8×,
+loops forever, and encodes all F frames at the family's real frame length.
+A small frame counter preserves individually encoded hold frames and makes
+the pauses inspectable. A shared palette prevents palette flicker.
+
+Non-bow GIFs show every existing material sprite: bronze, iron, steel,
+silversteel, embersteel and abyssal steel, plus wood for the staff, then an
+enchanted iron sample. No stone weapon sprites exist. The two groups of
+each enchant mask are static affix masks: Strength + Crit for sword/axe,
+Intelligence + Mana for dagger/staff/wand, at the shipped 128 opacity.
+Idle bows show both requested silhouettes, alder and wood, plus enchanted
+alder with Dexterity + Crit. Every draw GIF shows its actual stage sprite
+and the same sprite labelled `enchanted (same)`: the runtime explicitly
+removes affix masks during drawing
+([source](../../../mods/PLAYER/grug_abilities/scout.lua)), so no artificial
+draw-stage enchant mask is invented. The effect is composited above each
+weapon/enchant sample.
+
+### Reproduction and validation
+
+From the repository root, with Python 3 and Pillow:
+
+```sh
+python3 -I tools/r52_art/arta/arta_fx3.py --out /tmp/arta-fx3-rebuild
+```
+
+The default output is `drop-03/`. Identical existing bytes are accepted;
+different bytes are refused. The generator explicitly rejects output into
+`mods/`, `drop-01/` and `drop-02/`, including nested paths. It uses no
+network, image-generation service, random input, Lua or game execution.
+The same inputs and Pillow produce the same output.
+
+The completed media checks pass for all 60 strips: correct sizes and alpha,
+unique keys and PNG hashes, common timing per family, zero grip/string
+intersections in every frame, and an exact last-to-first hold. The exclusion
+regions are the independently traced pass-2 grip/string maps, inspected
+against the actual source silhouettes; they validate the art and never
+clip it into compliance. Free-particle paths are checked for monotone
+coordinates. GIFs are decoded again to confirm every frame's displayed
+pixels, duration and infinite loop. All family/weapon phase sheets,
+preview labels and the material/enchant composites were visually inspected.
+Desktop/web acceptance remains the user's pick and later runtime check.
+
+### Drop 03 media
+
+All 60 overlay PNGs are original art by **GPT-6 Astra (Grudgelands)**,
+dated **2026-10-19**, dedicated to **CC0 1.0 Universal**, to the extent the
+project holds rights in them:
+<https://creativecommons.org/publicdomain/zero/1.0/>.
+The generator is **GPL-3.0-or-later**. `FX3` below means the original pixel
+coordinates and motion in `arta_fx3.py`; `composite` means alpha layering,
+8× nearest-neighbour scaling, checker background, labels and GIF palette.
+
+The [source credits and full provenance below](#drop-02-media) also apply
+to this drop; per-file source paths and hashes are in the manifest. No new
+external media are imported. Sword, dagger, staff and idle-bow GIFs retain
+**CC BY-SA 3.0**; wand/greataxe GIFs are **CC0 1.0**; draw-stage GIFs retain
+**CC BY-SA 4.0**. The mixed preview is a **CC BY-SA 4.0 adaptation**.
+The original CC0 overlays remain separately available. Existing weapon
+authors and attribution remain in [CREDITS.md](../../../CREDITS.md).
+
+| File (relative to drop-03) | Author | Source / modifications | Licence |
+|---|---|---|---|
+| `fx/mage/ember_staff_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Candle tongue | CC0-1.0 |
+| `fx/mage/ember_staff_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/mage/ember_staff_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Split cinder | CC0-1.0 |
+| `fx/mage/ember_staff_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/mage/ember_wand_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Candle tongue | CC0-1.0 |
+| `fx/mage/ember_wand_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/mage/ember_wand_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Split cinder | CC0-1.0 |
+| `fx/mage/ember_wand_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/mage/ember_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Candle tongue | CC0-1.0 |
+| `fx/mage/ember_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/mage/ember_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Split cinder | CC0-1.0 |
+| `fx/mage/ember_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/mage/rime_staff_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Growing frost fern | CC0-1.0 |
+| `fx/mage/rime_staff_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/mage/rime_staff_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Held crystal | CC0-1.0 |
+| `fx/mage/rime_staff_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/mage/rime_wand_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Growing frost fern | CC0-1.0 |
+| `fx/mage/rime_wand_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/mage/rime_wand_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Held crystal | CC0-1.0 |
+| `fx/mage/rime_wand_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/mage/rime_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Growing frost fern | CC0-1.0 |
+| `fx/mage/rime_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/mage/rime_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Held crystal | CC0-1.0 |
+| `fx/mage/rime_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/bulwark_sword_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Measured edge | CC0-1.0 |
+| `fx/warrior/bulwark_sword_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/bulwark_sword_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Rivet glint | CC0-1.0 |
+| `fx/warrior/bulwark_sword_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/bulwark_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Measured edge | CC0-1.0 |
+| `fx/warrior/bulwark_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/bulwark_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Rivet glint | CC0-1.0 |
+| `fx/warrior/bulwark_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/bulwark_greataxe_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Measured edge | CC0-1.0 |
+| `fx/warrior/bulwark_greataxe_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/warrior/bulwark_greataxe_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Rivet glint | CC0-1.0 |
+| `fx/warrior/bulwark_greataxe_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/warrior/ruin_sword_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Hot cutting edge | CC0-1.0 |
+| `fx/warrior/ruin_sword_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/ruin_sword_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Tempered fracture | CC0-1.0 |
+| `fx/warrior/ruin_sword_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/ruin_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Hot cutting edge | CC0-1.0 |
+| `fx/warrior/ruin_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/ruin_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Tempered fracture | CC0-1.0 |
+| `fx/warrior/ruin_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/warrior/ruin_greataxe_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Hot cutting edge | CC0-1.0 |
+| `fx/warrior/ruin_greataxe_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/warrior/ruin_greataxe_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Tempered fracture | CC0-1.0 |
+| `fx/warrior/ruin_greataxe_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/priest/mercy_staff_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Quiet blessing | CC0-1.0 |
+| `fx/priest/mercy_staff_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/priest/mercy_staff_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Sheltered light | CC0-1.0 |
+| `fx/priest/mercy_staff_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/priest/mercy_wand_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Quiet blessing | CC0-1.0 |
+| `fx/priest/mercy_wand_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/priest/mercy_wand_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Sheltered light | CC0-1.0 |
+| `fx/priest/mercy_wand_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/priest/mercy_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Quiet blessing | CC0-1.0 |
+| `fx/priest/mercy_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/priest/mercy_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Sheltered light | CC0-1.0 |
+| `fx/priest/mercy_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/priest/reckoning_staff_v1.png` | GPT-6 Astra (Grudgelands) | FX3: White verdict | CC0-1.0 |
+| `fx/priest/reckoning_staff_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/priest/reckoning_staff_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Golden seal | CC0-1.0 |
+| `fx/priest/reckoning_staff_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/priest/reckoning_wand_v1.png` | GPT-6 Astra (Grudgelands) | FX3: White verdict | CC0-1.0 |
+| `fx/priest/reckoning_wand_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/priest/reckoning_wand_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Golden seal | CC0-1.0 |
+| `fx/priest/reckoning_wand_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC0-1.0 |
+| `fx/priest/reckoning_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: White verdict | CC0-1.0 |
+| `fx/priest/reckoning_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/priest/reckoning_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Golden seal | CC0-1.0 |
+| `fx/priest/reckoning_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/quarry_bow_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Passing breeze | CC0-1.0 |
+| `fx/scout/quarry_bow_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/quarry_bow_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Single leaf | CC0-1.0 |
+| `fx/scout/quarry_bow_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/quarry_bow_draw0_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Passing breeze | CC0-1.0 |
+| `fx/scout/quarry_bow_draw0_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/quarry_bow_draw0_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Single leaf | CC0-1.0 |
+| `fx/scout/quarry_bow_draw0_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/quarry_bow_draw1_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Passing breeze | CC0-1.0 |
+| `fx/scout/quarry_bow_draw1_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/quarry_bow_draw1_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Single leaf | CC0-1.0 |
+| `fx/scout/quarry_bow_draw1_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/quarry_bow_draw2_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Passing breeze | CC0-1.0 |
+| `fx/scout/quarry_bow_draw2_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/quarry_bow_draw2_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Single leaf | CC0-1.0 |
+| `fx/scout/quarry_bow_draw2_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/quarry_sword_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Passing breeze | CC0-1.0 |
+| `fx/scout/quarry_sword_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/quarry_sword_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Single leaf | CC0-1.0 |
+| `fx/scout/quarry_sword_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/quarry_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Passing breeze | CC0-1.0 |
+| `fx/scout/quarry_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/quarry_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Single leaf | CC0-1.0 |
+| `fx/scout/quarry_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/veil_bow_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Fine smoke | CC0-1.0 |
+| `fx/scout/veil_bow_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/veil_bow_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Silver in shadow | CC0-1.0 |
+| `fx/scout/veil_bow_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/veil_bow_draw0_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Fine smoke | CC0-1.0 |
+| `fx/scout/veil_bow_draw0_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/veil_bow_draw0_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Silver in shadow | CC0-1.0 |
+| `fx/scout/veil_bow_draw0_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/veil_bow_draw1_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Fine smoke | CC0-1.0 |
+| `fx/scout/veil_bow_draw1_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/veil_bow_draw1_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Silver in shadow | CC0-1.0 |
+| `fx/scout/veil_bow_draw1_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/veil_bow_draw2_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Fine smoke | CC0-1.0 |
+| `fx/scout/veil_bow_draw2_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/veil_bow_draw2_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Silver in shadow | CC0-1.0 |
+| `fx/scout/veil_bow_draw2_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-4.0 |
+| `fx/scout/veil_sword_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Fine smoke | CC0-1.0 |
+| `fx/scout/veil_sword_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/veil_sword_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Silver in shadow | CC0-1.0 |
+| `fx/scout/veil_sword_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/veil_dagger_v1.png` | GPT-6 Astra (Grudgelands) | FX3: Fine smoke | CC0-1.0 |
+| `fx/scout/veil_dagger_v1.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `fx/scout/veil_dagger_v2.png` | GPT-6 Astra (Grudgelands) | FX3: Silver in shadow | CC0-1.0 |
+| `fx/scout/veil_dagger_v2.gif` | GPT-6 Astra; weapon authors | FX3 composite; source credits below | CC-BY-SA-3.0 |
+| `preview.png` | GPT-6 Astra; weapon authors | Labelled FX3 contact sheet; source credits below | CC-BY-SA-4.0 |
+
 ## Drop 02 — class and weapon overlays
 
 Delivered 2026-10-19 by GPT-6 Astra on `r52-arta`. **Compatible:** staged
