@@ -803,6 +803,139 @@ tools](#player-meta-read-by-external-tools).
   `tools/r40_ch/portable_test.lua` and `tools/r451_ch/portable_test.lua`
   (stairs and slopes down and up, the straight drop); headless bench
   `tools/r40_ch/bench`.
+- **The class rework's building blocks** (Round 52, round F of the
+  [delivery plan](../planning/class-redesign/delivery-plan.md);
+  [class plan](../planning/round52-class-plan.md) C1–C13, D1–D9). Every
+  block is built and tested, but no shipped skill uses the new ones yet:
+  the shipped classes play as before except Mend's tick phase (below).
+  Round K wires them into the new kits.
+  - **The action clock** (D2, `grug_abilities/init.lua`): every ability
+    definition gets `occupied_cast` (seconds ≥ 0, default 0, either kind)
+    and every cast `occupied_swing` (seconds ≥ 0, or `"weapon"`, the
+    default: one interval of the current melee weapon; a swing may not set
+    it, its own clock is that interval). Three directions: **cast → swing**
+    is `grug_abilities.delay_strike(player[, def])` (`strike_delay.lua`,
+    called by `input.lua` after a cast and, without a def, by the Scout's
+    bow release), which pushes the melee clock's `next_due` and never
+    shortens it; **cast → cast** and **swing → cast** are `occupy_casts`
+    after a successful `try_cast` and after an accepted swing (the
+    selected skill's value, Strike's in the fallback), a per-player time
+    on `core.get_us_time` that never shortens a running lock and is
+    cleared on death, respawn and leave. `cast_refusal`, shared by the
+    input gate and `try_cast`, refuses with "You are still busy." while
+    it runs (after the cooldown and cast-interval checks, before the
+    cost); a held repeat stays quiet like every other refusal. The
+    defaults are today's rule: a cast pushes the next swing by one weapon
+    interval, a swing blocks no cast, a cast blocks no other cast. A
+    per-skill lock is no global cooldown (C2). PvE bench
+    `tools/r52_bench` (per-action records of each class, main against a
+    branch).
+  - **The transformation** (D8): `transforms = "<base id>"` on the ability
+    definition names an ability registered before it, of its own class or
+    a universal one. With `talent_gated` it replaces the base while its
+    talent (`def.talent` or its own id) has a rank; without a talent it
+    may only replace a universal ability, which makes it its class's
+    basic attack in place of Strike (register it first in its class
+    file: the initial kit follows `by_class` order). `cooldown_key` is
+    derived, never declared: the base's key, else the own id; cooldowns,
+    cast intervals, charges and the cooldown overlay all key on it, so a
+    form and its base share one cooldown. `is_unlocked` is false for a
+    replaced base; `grug_abilities.current_form(player, def)` names the
+    unlocked member of a family. `normalize_kit` swaps a locked family
+    stack in place for that member, on `main` and the inactive layout
+    first and then in bags, after its pass, so a copy the player already
+    holds wins (Round 50 ruling 12, class plan C8). No shipped definition
+    sets the field; the talents' own `replaces` field is unrelated and
+    never read.
+  - **Readiness windows** (B8, `grug_classes/talent_windows.lua`): keyed
+    by any string id. `grug_classes.open_window(player, id, {duration,
+    icd, value, label})` returns true when it opened (false while its ICD
+    runs; reopening renews it); `get_window(player, id)` returns
+    `{expiry_us, value}` or nil without spending it; `consume_window`
+    returns that record once and closes the window with its status icon
+    (the qualifying attack, or an early end); `window_icd_ready`. The ICD
+    runs on `core.get_us_time` in memory and outlives death, respec and a
+    relog within one server run; `clear_talent_windows` (leave, death,
+    respec) ends the open windows and drops run-out ICDs. Icons come from
+    `grug_core.status_icons.WINDOWS` (empty until round K). Today's
+    talent windows and their trigger cooldowns (`talent_trigger_ready`,
+    `os.time` in the player-meta key `grug_classes:talent_ready:<id>`)
+    are unchanged (D1).
+  - **Area helpers** (`grug_core/area.lua`, `grug_core.area`; C3, C4,
+    D9; the ground anchor of
+    [skill inventory §3a](../planning/class-redesign/skill-inventory.md)).
+    `area.anchor(player, range, opts)` returns `anchor, target` or `nil,
+    "No ground found."`: a legal enemy on the combat ray
+    (`opts.is_enemy`, the abilities' `valid_target`) gives its position,
+    else the terrain point of a node-only ray (walkable, unknown or
+    liquid nodes stop it, plants pass); `area.ground_below(point,
+    start)` then searches straight down for the top of a walkable node
+    under a non-walkable one, at most `area.H` (3) below the point,
+    through liquids and plants. A `def.cast` returns the refusal as it is,
+    so nothing is paid and no cooldown is armed. `area.query(anchor,
+    {radius, band, filter, cap})` returns the objects within the
+    horizontal radius and ±`band` (default 3) of the anchor, nearest
+    first (ties by y, x, z, then name), each in sight of the point 0.5
+    above the anchor by `area.clear_line`, a node-only ray that only
+    walkable nodes block (grass and water do not, unlike
+    `core.line_of_sight`), stopping at the cap. `area.fall_height(anchor)`
+    is the room for falling visuals: half a node below the first solid
+    node above the anchor's column, at most 12. `area.delayed(caster,
+    {anchor, delay, impact, radius, color, warning, fall, burst})` plays
+    the warning ring (single particles that live exactly the delay) and
+    the falling particles at once and runs `impact(caster, anchor)` after
+    `delay` (at most 3 s) through `core.after`, no globalstep: the caster
+    leaving cancels it, a caster who died still lands it, the caster is
+    fetched again by name and the impact queries its targets itself. The
+    particle effects are `area_warning`, `area_fall` and `area_impact` in
+    `particle_effects.lua` (96 particles per cast at scale 1); no sound.
+  - **The group helper:** `area.group(caster, {radius, cap, eligible})`
+    returns the caster and the players within the radius (a sphere) that
+    `eligible` accepts and the caster can see (walkable-only, body to
+    body), at most `cap` with the caster counted, lowest HP share first,
+    ties by distance and name.
+  - Fixture `tools/r52_core` (the pure functions, the window API, the
+    group order, a heal-over-time status that runs on after its target
+    left the area) and the engine probe `tools/r52_core/probe.sh` (stairs,
+    stacked floors, a cave, shallow and deep water, a flying mob, a dead
+    caster, the group heal; its test ability lives only in the probe
+    mod).
+  - **Mend on the status system** (D1, `kits_priest.lua`): a
+    `grug_core.set_status` with `interval = 3`, `duration = 12` and an
+    `on_tick`, so its four ticks come 3, 6, 9 and 12 s after the cast
+    (the status pass runs every 0.5 s and fires a tick due at expiry);
+    the amount is the cast's snapshot, an offline healer's ticks heal as
+    the target, a recast renews duration, phase and amount, and the
+    status ends on death and leave. Its own globalstep and die handler
+    are gone ([classes.md §5](../design/classes.md#5-priest-mana)).
+  - **The weapon overlay** (C7, `grug_abilities/init.lua`):
+    `grug_abilities.WEAPON_FX` maps every ability id to its tree's
+    family (ember, rime, bulwark, ruin, mercy, reckoning, quarry, veil;
+    Strike `"none"`), `WEAPON_FX_ANIMATION[family]` holds the family's
+    `{frames, frame_length}`, and an animated family's skill item
+    definition carries `wield_overlay = {name = NO_OVERLAY, animation =
+    16 × 16 vertical frames}`. The skin pass (`apply_skin`,
+    `skin_overlay(def, weapon, stage)`) writes the strip
+    `grug_abilities_fx_<family>_<weapon>.png` for the held weapon type
+    into the stack meta (`_bow_draw<n>` while a draw stage shows, written
+    by `scout.lua` with the draw image): the engine's meta overrides
+    only the overlay's name and keeps the definition's animation
+    (`ItemStack::getWieldOverlay`, `src/inventory.cpp`). An empty slot,
+    Strike, a weapon without a strip and a strip that does not ship get
+    `NO_OVERLAY` (`"[combine:16x16"`, transparent; an empty meta string
+    would not override the definition). `SKIN_VERSION` 5 (token
+    `5|<src>|<overlay>`) rewrites each skill stack once. The strips use
+    opaque pixels only: the wield mesh (`object_shader`,
+    `TILE_MATERIAL_BASIC`) discards a pixel below alpha 0.5 and draws
+    the rest opaque (`src/client/shader.cpp`,
+    `client/shaders/object_shader/opengl_fragment.glsl`). **Third
+    person** shows no overlay: the holder copies only the cosmetic
+    weapon (`grug_visuals/apply.lua` `shown_item`), and the engine
+    advances a wield-item entity's overlay animation only when the light
+    at it changes (`GenericCAO::setNodeLight`,
+    `src/client/content_cao.cpp`), so an animated overlay would freeze
+    there in 5.17 (a still frame was built in Round 52 and reverted at
+    the user's word). Fixture `tools/r52_wfx`.
 
 ## Mobs
 
@@ -2468,6 +2601,81 @@ tools](#player-meta-read-by-external-tools).
     `now_playing_box`, three side elements that stay with the minimap hidden
     or unavailable and then stand in the corner, `now_playing_corner`, since
     Round 48). Fixtures `tools/r451_mu` and `tools/r27_minimap` block P.
+  - **The ambience model (Round 52,
+    [ambience plan](../planning/round52-ambience-plan.md); rules
+    [sound.md §4](../design/sound.md#4-ambience-beds-grug_ambience)).** One
+    pass per player every 2 s in the existing slot scheduler; no new
+    globalstep.
+    - **Depth reference:** `grug_core.depth_below_surface(pos[, name])`
+      (`grug_core/atmosphere_zones.lua`) returns `depth, column`: the
+      depth is `ref + 0.5 - pos.y` (0 standing on the ground, positive
+      below it, negative above it), nil while no zone authority exists.
+      `ref` is `terrain_height_at`, or terrain plus the water depth from
+      `water_query_at` where that is above 0, so a swimmer, a boat or the
+      flying mount over a lake, a river, the coastal belt or a dragon
+      channel counts from the water surface; over the sea it is sea level
+      (y 1). Buildings and towers never count. The column record `{x, z,
+      ref, zone_id, biome}` is a memo per player, keyed by the node
+      column (`floor(x + 0.5)`, `floor(z + 0.5)`) and cleared on leave:
+      a player who stays in one column costs no zone query, and the
+      atmosphere driver and the ambience asking in the same column cost
+      one (`grug_core.depth_stats`: calls, memo hits, columns, µs).
+    - **The atmosphere's underground band:** `mood_key_at` turns
+      "underground" at a depth above 20 and back only below 16
+      (`UNDERGROUND_IN`, `UNDERGROUND_OUT`; before Round 52 the absolute
+      y < −20), so a level tunnel under rolling ground does not flip sky
+      and fog every pass. A column without a zone id (the ownerless
+      ocean) keeps the ocean mood at every depth. The mobs' "underground"
+      (`spawn_policy.lua`) is a separate, absolute rule.
+    - **Sound key:** `R.sound_key(D, mood, known, biome)`: a mood in
+      `D.overrides` (Battlegrounds, dragon island, ocean) first, then
+      `D.groups[biome]` by the full `grug_` biome id (16 biomes in 9
+      groups: temperate, savanna, jungle, badlands, swamp, crags,
+      crags_snowy, blight, beach); an ownerless column is the ocean; the
+      underground mood keeps the last key. `D.region[key]` names the day
+      and night beds (`night = false`: silence at night, the crags; no
+      night row: the day bed at night too).
+    - **Three layers** (`st.layers`: surface, cave, wind), each its own
+      handle. `R.layer_levels(D, depth, y, cave)` gives their levels from
+      `D.layers`, linear, as shares of the bed gain (`R.bed_gain`: the
+      player's volume, halved in towns): the surface 1 from 0 to +10
+      above the reference, 0 at 15 below and at 60 above; the wind 0 at
+      +30, 0.5 from +100; the peak wind, only within 4 nodes of the
+      surface or above it, 0 at y 215 and 0.25 from y 230 (`peak.ramp`
+      15), the wind layer taking the higher of the two; the cave, only
+      with a cave verdict, 0 at depth 4 and 0.4 from depth 16, the deep
+      bed (`cave_deep`) below y −502 until above y −498 (`R.deep_cave`,
+      `D.deep_y`, `D.deep_band`). `R.layer_step` turns a level into
+      start, switch (a crossfade), fade or stop: a layer starts at
+      `LEVEL_STEP` 0.03, fades only when its level moved by 0.03 (the
+      dead band), falls to `LEVEL_FLOOR` 0.01 and keeps its handle, and
+      is stopped (a fade to 0, which deletes the sound) only after
+      `FLOOR_PASSES` 3 passes at 0. Under water and where music plays
+      every layer is silent.
+    - **Cave probe:** `grug_ambience.cave_share(pos)` reads 75 nodes with
+      `get_node_raw` on the grid `D.cave.grid_xz` × `grid_y` (5 × 5 × 3,
+      a 2-node stride) round the feet; open air is a node that is neither
+      walkable nor a liquid, an unloaded node counts as rock. It runs only
+      deeper than `D.cave.min_depth` 4, and `R.probe_due` probes again
+      only after a move of 2 nodes or on the third pass; `R.cave_step`
+      needs two passes in a row for a new verdict. `D.cave.threshold`
+      0.20 comes from the engine calibration (`tools/r52_amb/engine.sh
+      calib`, seed 12345: natural caves 0.23 at the 5th percentile, dug
+      tunnels and corridors at most 0.11, a large dug hall counts as a
+      cave).
+    - **Calls:** `R.eligible_calls` matches a `D.calls` row by sound key
+      (`keys`) or biome (`biomes`, the wolves' pine hills), time of day
+      and the surface layer's level (`surface`, 0.5 for the animals);
+      none under water or in the underground mood. Animals 24–40 nodes
+      away, thunder 40–56, one call per 90–240 s (`D.call_gap`).
+    - **Loops underground:** the fire and flowing-water search runs on
+      every pass out of water, underground too (Round 52; before, it
+      stopped underground).
+    - **`/ambience debug`:** `R.parse_command` accepts `debug`; the
+      command toggles one HUD text line for the player who typed it (no
+      privilege; left edge, 30 % down) with biome, sound key, depth, cave
+      share and verdict and the three levels, sent only when its text
+      changed, "ambience: off" while the ambience is off or at 0.
 
 ## UI and formspecs
 

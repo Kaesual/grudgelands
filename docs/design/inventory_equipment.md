@@ -780,7 +780,11 @@ currently unlocked active ability, nothing else: mounts and boats left it
 (they are in the quickbar). Since Round 52 (C13) the row scrolls
 horizontally, so any number of skills fits: past eight a scrollbar under the
 slots (the box 0.3 higher than the Hotbar box) moves it a slot per step, and
-the position is kept in the sfinv context, so a refresh does not jump back. Its detached list is an infinite source and an
+the position is kept in the sfinv context, so a refresh does not jump back.
+The box (1.8 high) ends 0.1 above the short inventory and starts at about
+y 7.24 in the page's real coordinates; the talent text above it ends at
+7.15, and the new talent page of round K keeps its trees in 13 × 5.5 units
+from y 0.95 to 6.45 (`skill_trees.md` §3.12). Its detached list is an infinite source and an
 infinite destination: a drag onto a free hotbar slot copies the skill there
 as a fresh stack, and dragging the carried copy back onto its own icon
 removes that copy (the engine undoes the swap such a drop asks for). The
