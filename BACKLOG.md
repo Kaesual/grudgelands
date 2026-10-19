@@ -47,8 +47,10 @@ layouts, resource tables or buff values.
 - Review surface variety, tree shapes and city variety, and prepare changes
   that give exploration and settlements more character. Round 47 built the
   tree rework (generated trees per world, greener towns and capitals) and
-  the swamp ([Round 47](#round-47--trees-mining-progression-and-crafting-feedback));
-  the other biomes' surfaces and city variety stay open.
+  the swamp ([Round 47](#round-47--trees-mining-progression-and-crafting-feedback)),
+  Round 51 a few characteristic changes in every other land zone
+  ([Round 51](#round-51--land-zones-and-the-sea)); city variety stays
+  open.
 - Reassess ore, gem and coal availability through the depth tiers, then
   revise the distribution design and data. Round 46 made a first pass
   (gems one and two tiers deeper at half and a quarter, Coal and Iron
@@ -2424,6 +2426,117 @@ severity). The items the user decides in the GUI test are in the
   the old rare numbers (historical).
 - **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` and
   `os.exit` in older tool fixtures.
+
+### Round 51 — land zones and the sea
+
+**Delivered 2026-10-19; not pushed (pushed only on the user's word); GUI
+test open** ([completion](docs/planning/round51-plan.md#completion-2026-10-19),
+plan [round51-plan.md](docs/planning/round51-plan.md), partial plans
+[land](docs/planning/round51-land-plan.md) and
+[sea](docs/planning/round51-sea-plan.md)); every code lane independently
+reviewed by Opus, every fix delta with game logic reviewed again, the art,
+design and page lanes checked by the coordinator and picked by the user.
+Version 0.51.0, **map reset**, no migration step.
+
+- **The sea** (T1, T2, T3, MAP, WRECK): the larger world, bays without
+  specks, the 250–350-node coastal belt, organic dragon channels, protected
+  water 24+ off the coast, the water query, seabed growth, the sea by depth
+  on the map, shipwrecks ([world_zones.md §7.4](docs/design/world_zones.md#74-water-coast-and-islands),
+  [world_map.md](docs/design/world_map.md#map-quality-and-relief)).
+- **Water creatures** (NAMES, MOBS): five families by water band, the
+  swimmer reset, fish loot, quest-ready zone slots
+  ([biomes_mobs.md](docs/design/biomes_mobs.md#round-51-water-families)).
+- **The land zones** (VIEW, ARTL, LG, LP, LK, T4): calm 2 × 2 grounds, the
+  swamp moss, clay bands, ice and pebble patches, new plants with regrowth,
+  the kit (ruins, graveyards, cairns, statues, logs, varied bones,
+  driftwood), the towns' graves ([biomes_mobs.md §2.1](docs/design/biomes_mobs.md#21-wp40-surface-and-deterministic-decoration-projection)).
+
+### Round 51 carry-overs
+
+**Noted 2026-10-19** ([completion](docs/planning/round51-plan.md#completion-2026-10-19)),
+the reviews' and reports' backlog notes (theoretical or accepted, no
+severity). The items the user decides in the GUI test are in the
+[GUI checklist](docs/planning/round51-plan.md#gui-checklist-round-51).
+
+- **World bounds** (T1, T4): the seabed steps up to −23 at the world bound
+  (as before); the land-only clamps at the old bounds stay
+  (`wp40/habitat_registry.lua` ~72, `r6_content.lua` ~857 and ~1001,
+  `steep_at` and the outcrop rise ~872 and ~1080), so dry land past ±3736
+  would get no steep classes, bands or outcrops; research tools still
+  sample the old extents (`tools/r23_tree_line/shares.lua`, `survey.lua`,
+  `tools/r25_road_poi/bench.lua`); the first start's preparation over 25 %
+  more tiles is unmeasured.
+- **The sea's shape** (T2, MOBS M2): the protected border lies within about
+  ±8 nodes of 24 (16-node coast cells); an islet smaller than a coast cell
+  could drop out of the coast grid (the fleet's rim check would catch it);
+  the pocket rule probes only four axis directions, and a neighbouring
+  zone's lake or river within 12 nodes also refuses a sea column.
+- **Seabed growth** (T3): kelp deeper than 12 is dark by day (GUI
+  checklist); kelp inside a coral patch does not regrow; the seabed renewal
+  uses a flat 0.5 chance, not L18's deficit-scaled one; the water-plant
+  exception has no effect in normal play (protected water cannot be dug);
+  a few plants grow under the island-landing piers.
+- **Surfaces** (T4, LG): a cactus placed on a clay band does not grow
+  (`default.cactus_ground` knows mesa clay only); band tops host no dry
+  shrub, cactus, salt crust or fire pepper; a gravel-filled band row may
+  take a native gravel blob (cosmetic, documented); in claim-excluded or
+  transition columns a band top can stand without its face; `default:ice`
+  is not in `NATURAL_GROUND_NODES` (no dig hint, no spawns on ice);
+  pebbles take about 10 % of the dry-sand hosts (crab, papyrus, marram);
+  `dirt_with_moss` stays harmlessly in the gathering catalog and the bog
+  mobs' lists; `world_zones.md`'s fertile-palette table says "forest
+  litter" for the elf forest (predates the round).
+- **Hanging plants** (LG, LP): the strand above a dug piece becomes the
+  end without a protection check (`grug_trees/hanging.lua` ~39); a dig
+  without a player swaps the strand above but leaves the pieces below; the
+  writer can skip a tree's end cell and leave a run untapered; interleaved
+  crowns and slopes cut about 6 % of the lianas; lianas are not climbable.
+- **Plants and regrowth** (LP): renewal may place papyrus at a few
+  cell-edge shore columns the generator would not; shore and patch
+  categories count against every cover plant (marram could over-fill a
+  sparse biome; count the category's own species); withered bushes use the
+  acacia bush stem, the savanna bush's renewal marker; default's fern and
+  marram fuel recipes are unreachable.
+- **The kit** (LK): `default:cobble`, stonebrick, stone block, the silver
+  sandstones and the junglewood fence now count as natural to the writer
+  (dungeon cobble can be filled over or replaced; `r7_anchor_activation.lua`
+  ~141 would refuse an anchor on untouched dungeon cobble, theoretical;
+  stair nodes stay foreign; a narrow explicit set is an option); the kit
+  places `moss_carpet`, which drops itself; kit rows ignore the snow factor
+  (a structure replaces snow dust); rugged undead and jungle terrain
+  rejects level cores often; `r14_poi_blueprint.lua` ~63's accent bone
+  pile is dead code; the old bone-pile texture stays for the viewer's
+  "today".
+- **Wrecks** (WRECK): the writer's `REPLACE` lists the seabed nodes by name
+  (a new seabed material would leave holes); `air_chunks.lua`'s header does
+  not name the wreck pass (still true: its writes are at y ≥ −15); a
+  query error inside `lay_out` would leave a partial cache in that state
+  (an error already fails the emerge); the kind-filter test catches an
+  under-flagged town or POI only if a site lands in its box.
+- **The map** (MAP): the odd normal width (1215) leaves the minimap's last
+  cell column half a cell (covered by the sea disc); an edge cell with no
+  pixel centre counts as open sea (offline crops only); `r502_home`,
+  `r30_p1` and `r37_po` still build a synthetic 1080 × 960 geometry (valid,
+  same nodes per pixel); swamp pools stay land on the map; no water relief
+  shading.
+- **Water mobs** (MOBS M1, M2): swimmers have no wander leash (a shark may
+  drift out of its band); a shore guard hitting a swimmer from the bank
+  would reset it every second (harmless); the merged water ABM runs about
+  3 × the Lua (20 → 62 µs per second over 7 areas); the `W-no-mob-catalogue`
+  warning names only the first base; a quest area text on a water kind has
+  no region to describe; `tools/r33_ds/availability.py` gives the water
+  kinds a whole extra belt share and its command line fails with
+  `KeyError 'family'` (also before); `tools/r24_mobs/wander_fixture.lua` is
+  broken and the runner never picks it up.
+- **Tools and pages** (NAMES, VIEW, LG): the names survey JSON records its
+  run times (a rerun changes the bytes); the land viewer does not
+  quarter-turn generated trees, draws dry shrubs without meshoptions and
+  uses noise relief; `tools/r47_sw/build.py --check` reports `swamp.html`
+  and `land.html` stale (kept as the record of the picks);
+  `tools/wp13/node_tiles.json` draws a 32 px ground once per node and lacks
+  the props.
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` in
+  `tools/r49_hash/portable_test.lua` and `os.exit` in older fixtures.
 
 ### Audit 2026-10 open questions
 
