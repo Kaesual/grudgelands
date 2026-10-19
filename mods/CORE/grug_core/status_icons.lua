@@ -153,6 +153,13 @@ icons.TALENT_WINDOWS = {
 	untouchable = "talent_untouchable",
 }
 
+-- The readiness windows of the window API by any id (Round 52, B8:
+-- grug_classes.open_window in talent_windows.lua), window id -> status id.
+-- An open window shows its status with the window's expiry; consuming or
+-- clearing the window removes it. Empty until round K adds its windows; each
+-- status id needs its entry in STATUS above (the portable fixture checks).
+icons.WINDOWS = {}
+
 -- Row order: buffs, then debuffs, then neutral states; inside one kind by id,
 -- so an icon keeps its place while others come and go.
 icons.KIND_RANK = {buff = 1, debuff = 2, neutral = 3}
