@@ -1468,6 +1468,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   sample's engine cost. It sets each draft's stone only after
   `core.emerge_area` generated its area (a node set into a chunk not yet
   generated makes the refinement refuse the chunk).
+- **Round 51 lanes SWART and ARTL** ([`r51_land`](r51_land/README.md), art only, no fixture): original CC0 land art by GPT-6 Astra, deterministic Pillow generators: `swamp_calm.py` and `swamp_art.py` the calm swamp grounds of the texture lab, `land_art.py` (`--check`) the 32 px grounds and the plants, `props_art.py` (`--check`) the props in lane VIEW's prop format (`prop.json` plus six 16 px tiles per prop, the format in the README), with preview sheets and check records; the user's picks ship in `grug_nodes` and `grug_trees`.
 - **Round 51 lane ARTS** ([`r51_sea`](r51_sea/README.md)): original CC0 seagrass and wreck textures, deterministic Pillow generator (`python3 -I tools/r51_sea/sea_art.py`, `--check`), and the attributed sea-art comparison sheet.
 - **Round 51 lane TERRAIN** (`r51_terrain`): T1, the larger world
   (`portable_test.lua`: the bounds agree in every place and the new ring
