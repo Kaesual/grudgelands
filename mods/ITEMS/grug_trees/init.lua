@@ -228,23 +228,42 @@ core.register_node("grug_trees:swamp_leaves", {
 -- Hanging moss trails 1-3 nodes below leaves and limbs. Not an attached
 -- node: `attached_node = 4` needs a walkable node above, so the second
 -- node of a strand would fall; it goes with the tree's leaf decay instead.
-core.register_node("grug_trees:swamp_hanging_moss", {
-	description = "Hanging Moss",
-	drawtype = "plantlike",
-	tiles = {"grug_trees_swamp_hanging_moss.png"},
-	inventory_image = "grug_trees_swamp_hanging_moss.png",
-	wield_image = "grug_trees_swamp_hanging_moss.png",
-	paramtype = "light",
-	sunlight_propagates = true,
-	walkable = false,
-	waving = 1,
-	is_ground_content = false,
-	selection_box = {type = "fixed", fixed = {-5 / 16, -0.5, -5 / 16, 5 / 16, 0.5, 5 / 16}},
-	groups = {snappy = 3, leafdecay = 3, flammable = 2},
-	drop = "",
-	sounds = default.node_sound_leaves_defaults(),
-	after_place_node = after_place_leaves,
+-- Round 51 (land plan ruling 4): a run is the continuous strand above the
+-- tapered end (`swamp_hanging_moss`, the lowest node); hanging.lua keeps a
+-- dug run whole (the end moves up).
+local function hanging_moss(name, description, texture)
+	core.register_node(name, {
+		description = description,
+		drawtype = "plantlike",
+		tiles = {texture},
+		inventory_image = texture,
+		wield_image = texture,
+		paramtype = "light",
+		sunlight_propagates = true,
+		walkable = false,
+		waving = 1,
+		is_ground_content = false,
+		selection_box = {type = "fixed", fixed = {-5 / 16, -0.5, -5 / 16, 5 / 16, 0.5, 5 / 16}},
+		groups = {snappy = 3, leafdecay = 3, flammable = 2},
+		drop = "",
+		sounds = default.node_sound_leaves_defaults(),
+		after_place_node = after_place_leaves,
+	})
+end
+hanging_moss("grug_trees:swamp_hanging_moss", "Hanging Moss",
+	"grug_trees_swamp_hanging_moss.png")
+hanging_moss("grug_trees:swamp_hanging_moss_strand", "Hanging Moss Strand",
+	"grug_trees_swamp_hanging_moss_strand.png")
+
+-- The strand/end pairs (lane LP's lianas register theirs the same way).
+grug_trees.hanging = dofile(core.get_modpath("grug_trees") .. "/hanging.lua")({
+	get_node = function(pos) return core.get_node(pos) end,
+	swap_node = function(pos, node) return core.swap_node(pos, node) end,
+	remove_node = function(pos) return core.remove_node(pos) end,
+	is_protected = function(pos, name) return core.is_protected(pos, name) end,
+	override_item = function(name, fields) return core.override_item(name, fields) end,
 })
+grug_trees.hanging.register("grug_trees:swamp_hanging_moss_strand", "grug_trees:swamp_hanging_moss")
 
 core.register_node("grug_trees:gravewood_sapling", {
 	description = "Gravewood Tree Sapling",

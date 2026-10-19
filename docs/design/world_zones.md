@@ -2214,8 +2214,9 @@ restricted there to swamp-mud shores. Other closed WP33 rows remain unchanged.
 
 Second-soil patches use coherent existing terrain variation: meadow dirt,
 pine gravel, savanna dry/cracked earth, jungle mud, blight ash ground and elf
-moss soil. Ash ground and moss soil reuse shipped licensed textures; neither
-adds an ore, currency or separate farming progression. Mountain/rocky shore
+moss soil. Ash ground reuses a shipped licensed texture and moss soil wears
+its own CC0 one (Round 51); neither adds an ore, currency or separate farming
+progression. Mountain/rocky shore
 rules retain priority. Authored settlement fields use actual dry/wet farming
 soil, with the existing current-load timer activation and nearby-water rule.
 Capital protection remains effective; editable ground requires no housing.

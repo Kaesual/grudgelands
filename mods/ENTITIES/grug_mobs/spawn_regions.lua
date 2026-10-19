@@ -609,6 +609,9 @@ local GROUND = {
 	"grug_nodes:dirt_with_bone_litter", "grug_nodes:blight_dirt",
 	"grug_nodes:ash_ground", "grug_nodes:mesa_clay", "grug_nodes:mud",
 	"grug_nodes:mud_dry", "grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass",
+	-- Round 51 lane LG: the swamp's own moss and the badlands' clay bands
+	"grug_nodes:swamp_moss", "grug_nodes:clay_band_ochre", "grug_nodes:clay_band_sienna",
+	"grug_nodes:clay_band_chalk", "grug_nodes:clay_band_umber",
 }
 
 local function ground_list()

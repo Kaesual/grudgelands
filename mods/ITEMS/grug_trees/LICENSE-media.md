@@ -65,3 +65,4 @@ no texture pixels.
 |------|-------------|--------|---------|---------------|
 | `grug_trees_swamp_hanging_moss.png` | `tools/r47_art/swamp/hanging_moss.png` (lane ART, commit `3480a978`, generator `tools/r47_art/swamp/generate.py`, provenance in `tools/r47_art/LICENSE-media.md`) | GPT-6 Astra | CC0 1.0 (<https://creativecommons.org/publicdomain/zero/1.0/>) | renamed only |
 | `grug_trees_swamp_leaves.png` | `tools/r47_art/swamp/swamp_leaves.png` (lane ART, commit `d7996ec8`, generator `tools/r47_art/swamp/generate_leaves.py`, provenance in `tools/r47_art/LICENSE-media.md`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_trees_swamp_hanging_moss_strand.png` | `tools/r51_land/swamp/hanging_moss_strand.png` (Round 51, written by `tools/r51_land/swamp_calm.py` from the hanging moss above, commit `8dbeea8d`; record in `tools/r51_land/README.md` "Media") | Claude (Opus 5.5) | CC0 1.0 | renamed only |
