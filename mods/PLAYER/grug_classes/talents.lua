@@ -422,10 +422,10 @@ grug_classes.audit_talents()
 
 --
 -- Runtime state. One parsed cache per online player (the pattern of
--- grug_abilities' runtime tables) plus the timed-window table of §3.2, which
--- is the single place a window lives. Both are cleared on leave; the windows
--- additionally on death and on respec (§3.7 group 7 -- and those are the only
--- three lifecycle events left, since ruling 20 removed the class change).
+-- grug_abilities' runtime tables), cleared on leave. The timed-window table of
+-- §3.2 lives in talent_windows.lua; clear_talent_windows clears it on leave,
+-- death and respec (§3.7 group 7 -- and those are the only three lifecycle
+-- events left, since ruling 20 removed the class change).
 --
 
 local cache = {} -- player name -> {ranks, tree_points, spent, static, windowed}
