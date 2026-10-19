@@ -28,10 +28,13 @@ layouts, resource tables or buff values.
   including how their mechanics work together in group play and PvP.
   A working ability implementation alone does not settle class feel or
   balance.
-- **Redesign proposal parked (2026-10-12):** the four-class package is a
-  future work package with a preparatory planning round before any
-  implementation ([continuation plan](docs/planning/class-redesign/continuation.md)).
-  Player feedback ranks other problems first.
+- **The class rework is under way:** parked on 2026-10-12, planned again
+  on 2026-10-19 ([delivery plan](docs/planning/class-redesign/delivery-plan.md));
+  Round 52 built round F, its foundation (the building blocks, the graph
+  talents as an admin preview, the art; [Round 52](#round-52--ambience-and-the-class-rework-foundation)).
+  Round K brings the four new kits and talent graphs with an automatic
+  talent reset; its open points are in the
+  [Round 52 carry-overs](#round-52-carry-overs).
 - Current owners: [classes](docs/design/classes.md),
   [talents](docs/design/skill_trees.md), [Scout](docs/design/scout.md),
   [combat](docs/design/combat_stats.md) and [PvP](docs/design/pvp.md).
@@ -43,7 +46,10 @@ layouts, resource tables or buff values.
   the human areas' daytime birds and nighttime crickets. Wind-dominated
   areas currently lack that richness. Use those contrasts to guide the
   listening and visual review; retain the existing exact-file sound
-  approval process.
+  approval process. Round 52 moved the beds from the race zone to the
+  biome, gave the badlands, the swamp, the crags, the snowy crags and the
+  Battlegrounds beds of their own, wind only at height and on peaks, and
+  animal calls ([Round 52](#round-52--ambience-and-the-class-rework-foundation)).
 - Review surface variety, tree shapes and city variety, and prepare changes
   that give exploration and settlements more character. Round 47 built the
   tree rework (generated trees per world, greener towns and capitals) and
@@ -2429,8 +2435,8 @@ severity). The items the user decides in the GUI test are in the
 
 ### Round 51 — land zones and the sea
 
-**Delivered 2026-10-19; not pushed (pushed only on the user's word); GUI
-test open** ([completion](docs/planning/round51-plan.md#completion-2026-10-19),
+**Delivered 2026-10-19; pushed 2026-10-19 (`75ea1b4c`); GUI test open**
+([completion](docs/planning/round51-plan.md#completion-2026-10-19),
 plan [round51-plan.md](docs/planning/round51-plan.md), partial plans
 [land](docs/planning/round51-land-plan.md) and
 [sea](docs/planning/round51-sea-plan.md)); every code lane independently
@@ -2547,6 +2553,121 @@ severity). The items the user decides in the GUI test are in the
   the props.
 - **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` in
   `tools/r49_hash/portable_test.lua` and `os.exit` in older fixtures.
+
+### Round 52 — ambience and the class rework foundation
+
+**Delivered 2026-10-20; not pushed (pushed only on the user's word); GUI
+test open** ([completion](docs/planning/round52-plan.md#completion-2026-10-20),
+plan [round52-plan.md](docs/planning/round52-plan.md), partial plans
+[ambience](docs/planning/round52-ambience-plan.md) and
+[class foundation](docs/planning/round52-class-plan.md)); every code lane
+independently reviewed by Opus, the sounds, the art and the particle cards
+picked by the user. Version 0.52.0, **compatible**, no migration step.
+
+- **Ambience** (SND, AMB): beds by biome group, three layers (surface,
+  cave, wind) by the height relative to the terrain or the water surface,
+  real caves told from dug tunnels, the atmosphere's underground band
+  relative to the terrain, animal calls by sound key, `/ambience debug`;
+  23 new cuts, six beds dropped ([sound.md §4](docs/design/sound.md#4-ambience-beds-grug_ambience),
+  [module guide](docs/technical/module-guide.md#sound)).
+- **Class rework, round F** (SPLIT, CORE-A, CORE-B, GRAPH, WFX, ARTA,
+  ARTB, PFX): per-class kit and talent files, the action clock, the
+  transformation field, the readiness windows, the area helpers and the
+  group helper, Mend on the status system, the graph talents as an admin
+  preview, the scrolling skill row, the weapon overlay, the art and the
+  particle design ([module guide](docs/technical/module-guide.md#combat-and-classes),
+  [skill_trees.md §3.12](docs/design/skill_trees.md#312-the-graph-talents-of-round-k-round-52)).
+  The audit's CMB-13 (Mend's shared tick phase) is fixed.
+
+### Round 52 carry-overs
+
+**Noted 2026-10-20** ([completion](docs/planning/round52-plan.md#completion-2026-10-20)),
+the reviews' and reports' notes (theoretical or accepted, no severity),
+the parked sounds and round K's open points. The items the user decides
+in the GUI test are in the
+[GUI checklist](docs/planning/round52-plan.md#gui-checklist-round-52).
+
+- **Round K, from the node list** (class plan §5): Mercy's 31 ranks after
+  the Shelter cut; Mercy's support increments, frozen with the calculator;
+  the node-id scheme; Shake Loose clearing roots; Bladecraft kept on a
+  recommendation only; the soft values. The
+  [balance calculator](https://claude.ai/artifact/TAGi8NTRNGGuHoULXWwWCc)'s
+  stored values (`tuning`) feed round K's numbers.
+- **Round K, the action clock and transformations** (CORE-A): a held cast
+  refused by `occupied_cast` falls into the Strike fallback (skip the
+  fallback when the refusal is the clock, or keep `occupied_swing` ≥
+  `occupied_cast`); the fallback swing should use `current_form` of
+  Strike; the Scout's bow release bypasses the clock (the draw goes in
+  round K); a basic attack is registered first in its class file (the
+  initial kit follows `by_class`); a transformation pays its cost and
+  cooldown talents by its own id, so the base's modifiers do not carry
+  over; a transformation already held in a bag wins, and a locked base on
+  the hotbar is then removed instead of swapped in place (a line for the
+  C8 check).
+- **Round K, the area and window blocks** (CORE-B, PFX): `area.fall_height`
+  checks only the anchor's column, so under a sloped cave ceiling falling
+  visuals can start inside rock (take the lowest ceiling over the anchor
+  and four points at 0.6 R, or shrink the disc); `area.clear_line` and the
+  terrain ray pass walkable nodes that are not pointable (`doors:hidden`;
+  the door's own box blocks the ray, theoretical); `status_icons.WINDOWS`
+  is empty until round K adds its rows and icons; the three area effects
+  are a first look; reopening a window plays the proc flash again; the
+  particle cards' window rates assume the plan's ICDs; the 65 picked
+  cards (`tools/r52_pfx/effects.py`, `emitters.lua`) are registered
+  mechanically, the two coloured area warnings under their own ids.
+- **Round K, the graph talents** (GRAPH): the audit's `reach_cost` filler
+  pass skips extra ranks of needed nodes, so a future tree could fail the
+  audit falsely (it errs on the safe side); class keys for the
+  non-family modifiers (unit adds, absorbs, ticks, rage cost, window
+  keys); one data file per class; the live switch (spend and respec
+  through `graph.spend` and `graph.reset`, the stored string, the reset
+  step); the preview's two sample builds share one ranks table, so open
+  nodes read "No talent points left." (harmless); `/talent_preview`'s
+  class name is case-sensitive; `graph_loader.lua`'s `extra` parameter is
+  unused.
+- **Round K, art:** the 25 icons of new skills wait under
+  `tools/r52_art/artb/`; Cinderfall, Glacial Ward and Pinning Shot keep
+  their Round 18 icons beside the redrawn set (GUI check); six picked
+  strips no shipped skill reaches yet (`quarry_sword`, `quarry_dagger`,
+  `veil_bow` and its three draw stages).
+- **The weapon overlay** (WFX): `grug_abilities/init.lua` calls
+  `grug_gear.weapon_family`, but `grug_gear` is not in its `depends` (it
+  loads through `grug_visuals` and `grug_inventory`; `scout.lua` already
+  did the same); a Scout with a broken bow holding Loose shows the orb
+  (`reset_draw_stack` reads the usable bow; as before the round); desktop
+  clients older than 5.15 would draw a strip whole, squashed.
+- **Ambience** (AMB, its file step): the cave verdict's two-pass
+  hysteresis counts passes, not probes, so a probe and a reuse can flip
+  it; the column computation is the main new cost (a coarser cell for
+  biome and zone could roughly halve it); `tools/r34_s2/engine.sh`'s probe
+  is stale since Round 35 (it reads `D.pools`); the debug line has no
+  shadow (faint on a bright sky); the wolf row matches the pine hills
+  whatever the sound key (a Battleground over pine hills would get wolves;
+  none exists); a forced `/atmosphere underground` no longer drives the
+  beds, and with the atmosphere layer off there are no zone overrides
+  (the biome groups still play). For the GUI check: the snowy crags get
+  no hawks or wolves (one line of data), the mine's water loops (about 27
+  sound starts per player-minute in the walk).
+- **Parked sounds** (ambience plan §4): **crows from long recordings**
+  (n_214869, n_386768, n_353432, "reuse"): more crow calls if two variants
+  are too few; **n_236954** (birds near Szczawnica): "good, keep, no place
+  yet"; **c_bg3 crackling fire** (Freesound 182369, kingsrow, CC0;
+  `r34/listen/dl/fs_182369.mp3`): for large fires later, and an idea for
+  the Mage's Fire Rain in round K (noted on the class-redesign board);
+  **c_bg1** (soft tonal wind): maybe a badlands night, but too short and
+  too monotonous as a loop. Each needs its own cut and pick first.
+- **Fixtures and tools** (SPLIT, SND): `r40_px`'s `PROC_FILES` no longer
+  scans the shared `kits.lua`, so a proc added there would go unscanned
+  (the count check still catches a lost one); the leave cleanup of the
+  talent windows depends on `clear_talent_windows` clearing the table;
+  older Safari may not decode Ogg on a listening page (use Firefox or
+  Chrome).
+- **Repository size:** `tools/r52_art` holds about 40 MB (539 files: the
+  drops, previews and manifests of ARTA and ARTB) and `tools/r52_snd`
+  about 9 MB (the listening page inlines its audio). The first join
+  downloads about 2.2 MB more media since this round.
+- **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` and
+  `os.exit` in older tool fixtures.
 
 ### Audit 2026-10 open questions
 

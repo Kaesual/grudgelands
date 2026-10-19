@@ -2,7 +2,7 @@
 
 Coordinator: Claude (Opus 5.5), drafted 2026-10-19 with the user while
 Round 51 runs, revised the same day after an independent review
-(`r52/plan-review.md`). Status: **started** 2026-10-19 (the user's "go"). Frame plan:
+(`r52/plan-review.md`). Status: **built** 2026-10-20 (started 2026-10-19 on the user's "go"; [completion](round52-plan.md#completion-2026-10-20), which also records where the lanes followed C7's amendments over §3). Frame plan:
 [round52-plan.md](round52-plan.md) (lanes, waves, file ownership, gates).
 Part A is the [ambience plan](round52-ambience-plan.md).
 

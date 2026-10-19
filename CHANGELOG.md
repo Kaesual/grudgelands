@@ -12,6 +12,69 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.52.0 — ambience by landscape and height, the class rework's groundwork (2026-10-20)
+
+The background sounds follow the landscape under you and your height above
+or below the ground, real caves sound different from tunnels you dig, and
+animals call now and then. The first step of the class rework is in: your
+classes and talents play as before (only Mend's timing changes), the skill
+row scrolls, most skill icons are redrawn and the selected skill shows a
+small glow on your weapon. **Compatible:** no map reset and no migration
+step; characters keep everything.
+
+- **Sounds by landscape:** the background bed follows the landscape you
+  stand in instead of the people's region. All temperate forests and
+  meadows share one bed (the elves' and the dwarves' forests too), the
+  savanna has the orcs' bed and the jungle the trolls'. New beds: quiet
+  desert birds and crickets in the badlands, frogs in the swamp, mountain
+  air and birds in the crags (silent at night), a snowy afternoon in the
+  snowy crags (day and night), and "Abandoned Fields" on the
+  Battlegrounds. New nights: owls and insects in the temperate lands, four
+  night choruses in the jungle, frogs and a late evening in the swamp,
+  crickets in the badlands. Walking from one forest into another no longer
+  changes the bed.
+- **Sounds by height:** digging down, the bed fades out by 15 nodes below
+  the ground; building or flying up, it fades between 10 and 60 nodes
+  above it, and a soft wind rises from 30 nodes up. On the highest peaks
+  a quiet wind plays under the bed. Swimming and boats count from the
+  water surface, so the bed stays there. Towers count as up, the ground
+  around them decides.
+- **Caves:** a real cave fades in a quiet cave bed (deep below, the
+  crystal-cave bed); a tunnel you dig stays silent. A large dug hall counts
+  as a cave.
+- **Animal calls,** now and then and far off: crows by day on the
+  Battlegrounds and in the blighted lands, hawks by day in the crags and
+  the badlands, owls at night in the temperate lands, wolves at night in
+  the crags and the pine hills. None underground or high on a tower.
+- **Fires and water underground:** a burning furnace or flowing water near
+  you is now heard in a mine as well.
+- **The underground sky and fog** switch by the depth below the ground
+  (more than 20 nodes down, back above 16) instead of at a fixed height,
+  so a tunnel inside a mountain looks like underground too, and a level
+  tunnel under hills does not flicker.
+- **Dropped sounds:** the elves' blackbirds, the graveyard wind, the
+  orcs' wind, the dwarves' storm and two dark cave beds.
+- **`/ambience debug`** shows a line with the landscape, its sound group,
+  your depth, the cave reading and the beds' levels.
+- **Mend** heals 3 s after the cast and then every 3 s, four times, each
+  heal counting from your own cast (before, all Mends ticked on one shared
+  beat).
+- **The skill row** in Talents & Skills scrolls sideways once you own more
+  skills than fit; the talent text above it is a little shorter.
+- **Redrawn skill icons:** 19 of the 22 skills have new icons in one
+  painted style; Cinderfall, Glacial Ward and Pinning Shot keep theirs for
+  now.
+- **A glow on your weapon:** the selected skill shows a small animated
+  accent of its talent tree on the weapon in your hand, in first person:
+  embers, rime, steel, rage, warm healing light, judgment gold, wild green
+  and shadow, drawn for each weapon type (the bow follows its draw). Strike
+  and an empty hand show none; other players do not see it.
+- **Groundwork for the new classes** (not playable yet): the new talent
+  trees exist with their backgrounds and talent icons, and admins can look
+  at them read-only (`/talent_preview`). Your talents stay as they are
+  until the class update, which will reset every character's talents with
+  all points refunded.
+
 ## 0.51.0 — land zones and the sea (2026-10-19)
 
 A larger sea with a wide coastal belt, natural bays and channels, seabed
