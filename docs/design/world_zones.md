@@ -2311,11 +2311,17 @@ from its core's over a band of its noise, about 3–6 nodes at the noise's usual
 slope, and single tufts or stalks stand about as far again beyond it; a coral
 patch keeps its ellipse (four in five) and gains a rim of the same width at
 one in four and loose pieces round it at one in twenty, reaching across its
-cell's side. Measured on the rule (production seed, 1024 × 1024 columns 6
+cell's side. Toward the deepest depth each grows at the fill thins too (the
+last three nodes at ¾, ½ and ¼: coral 8–10, seagrass 12–14, kelp 18–20), so
+no meadow ends on a depth line. Measured on the rule (production seed, 1024 × 1024 columns 6
 deep), the seagrass fill by distance from the old outline goes from 59 %
 inside / 0 outside to 58, 56, 48, 37 % at 4…1 nodes inside and 26, 14, 6, 3,
 2, 1 % at 1…6 outside; kelp 16 → 15, 13, 9 % inside and 6, 2, 1 % outside;
-seagrass 32.6 → 33.7 %, kelp 5.7 %, coral 3.4 → 4.9 % of the columns. Coast
+seagrass 32.6 → 33.7 %, kelp 5.7 %, coral 3.4 → 4.9 % of the columns; in
+written chunks (seed 12345, 12 per class, columns 2–20 deep) seagrass shelf
+15.6 → 16.5 %, belt beyond 10.4 → 6.7 % (much of it 12–14 deep), bays 9.7 →
+9.1 %, channels 13.4 → 14.7 %; coral shelf 3.3 → 4.5 %, channels 1.5 → 0.7 %
+(9–11 deep); kelp within ±0.3 points. Coast
 claim exclusions (bays, island and channel coasts) do not
 keep the seabed bare; settlements, roads and POIs do. Measured on the
 production seed and seed 42 (12 chunks per class, seabed columns 2–20 deep):

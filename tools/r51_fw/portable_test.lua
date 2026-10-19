@@ -8,7 +8,8 @@
 --    measured by distance from the outline T3 cut at (the noise threshold
 --    of before); nothing grows far outside; the three seagrass variants
 --    stay mixed in cores and edges; a coral patch keeps its ellipse and
---    gains a sparse rim and loose pieces, across its cell's side too.
+--    gains a sparse rim and loose pieces, across its cell's side too; all
+--    three thin out toward the deepest depth they grow at.
 -- B. The wild lakes' rule (pure): lilies only 1-3 deep, weed only 3-10 deep
 --    and under the surface, one plant per column, both in clusters with
 --    soft edges.
@@ -189,6 +190,24 @@ check(share(2) > 0.15 and share(2) < 0.45, "A a sparse coral rim")
 check(share(3) > 0.02 and share(3) < 0.15, "A loose coral pieces round the rim")
 check(reached_across > 0, "A a patch reaches across its cell's side")
 check(rule.at(5, 5, 1) == nil and rule.at(5, 5, 21) == nil, "A the depths stay 2-20")
+-- the deep end thins too (no edge on a depth line)
+local function share_at(kind, depth)
+	local n = 0
+	for z = 0, 199 do
+		for x = 0, 199 do
+			local k = rule.at(x, z, depth)
+			if k == kind then n = n + 1 end
+		end
+	end
+	return n
+end
+check(share_at("seagrass", 10) > share_at("seagrass", 12) and
+	share_at("seagrass", 12) > share_at("seagrass", 14) and share_at("seagrass", 14) > 0,
+	"A seagrass thins toward 14 deep")
+check(share_at("kelp", 16) > share_at("kelp", 18) and share_at("kelp", 18) > share_at("kelp", 20),
+	"A kelp thins toward 20 deep")
+check(share_at("patch", 6) > share_at("patch", 8) and share_at("patch", 8) > share_at("patch", 10),
+	"A coral thins toward 10 deep")
 
 -- ---------------------------------------------------------------------------
 -- B. The wild lakes' rule

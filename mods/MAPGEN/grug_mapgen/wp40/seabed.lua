@@ -95,13 +95,13 @@ return function(full_seed_string)
 	end
 	M.fill = fill
 	-- The deep end fades too: the fill thins over the last DEEP_FADE nodes
-	-- of depth (coral 6-10, seagrass 10-14, kelp 16-20), so a meadow does not
+	-- of depth (coral 8-10, seagrass 12-14, kelp 18-20), so a meadow does not
 	-- end on a depth line either.
-	M.DEEP_FADE = 5
+	M.DEEP_FADE = 3
 	local function deep_fade(depth, deepest)
 		local left = deepest + 1 - depth
-		if left >= M.DEEP_FADE then return 1 end
-		return left / M.DEEP_FADE
+		if left > M.DEEP_FADE then return 1 end
+		return left / (M.DEEP_FADE + 1)
 	end
 	M.deep_fade = deep_fade
 
