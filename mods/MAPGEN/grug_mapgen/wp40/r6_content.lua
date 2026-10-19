@@ -783,6 +783,15 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		for id, base in pairs(surface_by_id) do
 			sand_shores[id] = coast_row(base, "default:sand", sandstone, 3)
 		end
+		-- Pebble patches in the dry beach sand (Round 51 T4, the land
+		-- viewer's `beach.pebbles`, ruling 17): gravel over the same
+		-- sandstone, on about a tenth of the sand in small patches.
+		local pebble_shores = {}
+		for id, base in pairs(surface_by_id) do
+			local row = coast_row(base, "default:gravel", sandstone, 3)
+			row.shore, row.shore_ref = row.top, row.top_ref
+			pebble_shores[id] = row
+		end
 		for id, base in pairs(surface_by_id) do
 			rocky_shores[id] = {}
 			for index, name in ipairs({"default:gravel", "default:stone"}) do
@@ -985,6 +994,27 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 		local SNOW_FLOOR = habitat.VEGETATION.SNOW_LINE - habitat.VEGETATION.JITTER -
 			habitat.VEGETATION.SNOW_BAND
+		-- Ice patches in the snowy crags (Round 51 T4, the land viewer's
+		-- `dwarf.ice`): about a tenth of their snowblock tops turn to ice in
+		-- small patches, with no snow on the ice. Rows are derived once per
+		-- source row.
+		local ice_ref = require_role("default:ice", 1, p7_classes, "ice patch top")
+		local iced_rows = {}
+		local function iced(row)
+			local result = iced_rows[row]
+			if not result then
+				result = deep_copy(row)
+				result.top, result.top_ref = "default:ice", ice_ref
+				result.dust, result.dust_ref = "-", 0
+				iced_rows[row] = result
+			end
+			return result
+		end
+		-- The patches: the value noise lies below 213 on about 10 % of the
+		-- columns (the viewer's guide share 0.1), in patches of a few nodes
+		-- at periods 7 and 5 (shares measured by tools/r51_t4).
+		local PATCH_BELOW = 213
+		local ICE_PERIOD, PEBBLE_PERIOD = 7, 5
 		-- The swamp's ground mix (Round 47 lane SW, tools/r47_sw/DESIGN.md):
 		-- today's mud with patches of the lighter mud, wet grass and the
 		-- swamp's moss (its own node since Round 51); the mottled mud in wet
@@ -1069,7 +1099,12 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			if not base then return nil end
 			local dry = water_y == nil or water_y <= terrain_y
 			local shore = dry and planner_source.coast_material_at(x, z) or nil
-			if shore == "sand" then return sand_shores[id] end
+			if shore == "sand" then
+				if noise(x, z, PEBBLE_PERIOD, 37748717) < PATCH_BELOW then
+					return pebble_shores[id]
+				end
+				return sand_shores[id]
+			end
 			if shore then return rocky_shores[id][shore == "gravel" and 1 or 2] end
 			-- The coast rule is the only source of dry beach sand: where it
 			-- gives nothing, the palette beach biome is shingle and rock.
@@ -1094,7 +1129,11 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			local row, rock_face = dry_row(id, x, z, terrain_y, patch, detail, depth)
 			if terrain_y >= SNOW_FLOOR and not rock_face then
 				local snow = vegetation.snow_class(x, z, terrain_y, id, zone_id)
-				if snow ~= 0 then return snowed(row, snow) end
+				if snow ~= 0 then row = snowed(row, snow) end
+			end
+			if id == "grug_crags_snowy" and row.top == "default:snowblock" and
+					noise(x, z, ICE_PERIOD, 46137347) < PATCH_BELOW then
+				return iced(row)
 			end
 			return row
 		end
