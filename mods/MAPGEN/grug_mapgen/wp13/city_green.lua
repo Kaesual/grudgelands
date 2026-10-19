@@ -73,10 +73,11 @@ local function loader(directory)
 	-- The lake plants: wp40/world_content_catalog.lua's freshwater pair.
 	M.LILY, M.WEED = "grug_mapgen:freshwater_waterlily", "grug_mapgen:freshwater_waterweed"
 	-- The patch fields (`dressing.patch_keep`): about 4 % of the open
-	-- ground, about 2 % of a lake's surface and 3 % of its bed.
+	-- ground, a lake's shallow rim (1-3 deep) about 8 %, its bed 3-10 deep
+	-- about 4 %.
 	M.LAND_PATCH = {salt = 31, keep = 0.2}
-	M.LILY_PATCH = {salt = 37, keep = 0.12}
-	M.WEED_PATCH = {salt = 41, keep = 0.15}
+	M.LILY_PATCH = {salt = 37, keep = 0.4}
+	M.WEED_PATCH = {salt = 41, keep = 0.2}
 	-- Every name the cover of one race (and a lake) may write.
 	function M.cover_names(race, lake)
 		local list = {}
@@ -519,15 +520,21 @@ local function loader(directory)
 									out[#out + 1] = {x = x, y = ground + 1, z = z, name = name,
 										param2 = param2}
 								end
-							elseif water and opts.lake and water - ground >= 2 then
-								if dressing.patch_keep(lx, lz, lily.salt, lily.keep) then
+							elseif water and opts.lake then
+								-- the wild lakes' bands (wp40/seabed.lua `lake_at`):
+								-- lily pads 1-3 deep, weed 3-10 deep, at most 4 tall
+								local depth = water - ground
+								if depth >= 1 and depth <= 3 and
+										dressing.patch_keep(lx, lz, lily.salt, lily.keep) then
 									if not taken[ckey3(x, water + 1, z)] then
 										out[#out + 1] = {x = x, y = water + 1, z = z,
 											name = M.LILY, param2 = floor(dressing.cell_hash(lx, lz, 89) * 4)}
 									end
-								elseif water - ground <= 8 and not taken[ckey3(x, ground, z)] then
+								elseif depth >= 3 and depth <= 10 and
+										dressing.patch_keep(lx, lz, weed.salt, weed.keep) and
+										not taken[ckey3(x, ground, z)] then
 									out[#out + 1] = {x = x, y = ground, z = z, name = M.WEED,
-										param2 = min(4, water - ground - 1) * 16}
+										param2 = min(4, depth - 1) * 16}
 								end
 							end
 						end

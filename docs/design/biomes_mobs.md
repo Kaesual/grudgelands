@@ -1427,7 +1427,12 @@ treeless; every grove and copse plot has trees. **Town greening**
 its open wild ground gets small groups of 1–5 of the race's trees on an
 11-node hashed lattice, never on roads, plazas or paving, 4 nodes clear of
 every NPC socket and door (`wp13/layout.lua` `green`); the capital plots
-green their yards the same way. **Capital greening**: the city ground
+green their yards the same way. **The six starts carry half their trees**
+(the user, 2026-10-19): a start writes only every second tree that fits,
+its own woods, orchards and groves and its greening alike, and a skipped
+tree's stem still keeps the spacing, so the spread stays even (Kapok's
+three emergent giants are kept); the capitals' trees are unchanged.
+**Capital greening**: the city ground
 between the core, the plots, the streets and the squares carries the same
 groups (`wp13/city_green.lua`, written by the capital's city edge overlay
 per mapchunk, per world): every cell inside the city and 12 from the wall

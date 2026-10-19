@@ -908,7 +908,35 @@ undergrowth, a graveyard's sunken plot or a lair puts bones, a cell hash
 picks a piece of the skeleton set and its turn (`dressing.bone_piece`):
 mostly the scattered long bones (the bone pile) and splinters, now and
 then a skull, a ribcage or an animal's skull or spine. Gravestones drop
-cobblestone, bones nothing.
+cobblestone, bones nothing. Outside Stillgrave's two burial grounds (their
+walls and what lies inside them unchanged) the bones are a sparse, patchy
+scatter of about a quarter of the old count (the user, 2026-10-19).
+
+**Ground cover in the capitals (Round 51 follow-up).** The user found the
+cores' cover far too dense and too even and the rest of each city bare
+(2026-10-19). One patch field (`dressing.patch_weight`: value noise on a
+9-node lattice whose lower part is cut to nothing) breaks the cover into
+patches and gaps:
+
+- **The cores** keep only the patches' share of their old scatter, about a
+  third of it (Highcourt, Dur Brannoc, Lethariel and Gor Drazhak's
+  undergrowth, Kezamba's basin flora); Nhal Veyr keeps a third of that for
+  its bones and half for its dry shrubs, so its core shows a few dozen
+  bones instead of nine hundred. The cells go after the town greening, so
+  the cores plant the same trees as before.
+- **The city ground** between the core, the plots, the streets and the
+  squares (the trees' open ground, `wp13/city_green.lua` `cover`, written by
+  the city overlay after the trees) gets a sparse patchy cover of its
+  zone's plants, about 4 % of the open ground: the meadows' grasses
+  (Highcourt), the pine hills' ferns (Dur Brannoc), the elf forest's grasses
+  and pastel flowers (Lethariel), dry shrubs with a few bones (Nhal Veyr),
+  the savanna's dry grasses and shrubs (Gor Drazhak), the jungle's grass,
+  ferns and strong flowers (Kezamba). Never on or beside a street or
+  bridge, never on a plot with its collar and approach.
+- **The capital lakes** (Kezamba's cenote, Lethariel's crown lake) get a
+  few lily pads on their shallow rim (1–3 deep) and freshwater waterweed on
+  beds 3–10 deep, the wild lakes' bands, outside the core, in the same
+  patchy way.
 
 ## Round 21 ground and access correction
 
