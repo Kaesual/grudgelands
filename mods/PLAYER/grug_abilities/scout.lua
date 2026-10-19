@@ -301,6 +301,7 @@ local function bow_wield_image(player)
 	return image
 end
 
+-- The drawn bow's image, and true when it is the stage's own sprite.
 local function staged_bow_image(player, stage)
 	-- The draw stages are other shapes than the bow's own sprite, so the bow's
 	-- enchant-colour masks do not fit them: drawn, the bow shows plain.
@@ -308,10 +309,18 @@ local function staged_bow_image(player, stage)
 	for base, family_tint in pairs(DRAW_STAGE_SOURCE) do
 		if source:sub(1, #base) == base then
 			return "grug_abilities_bow_draw_" .. stage .. ".png" ..
-				family_tint .. source:sub(#base + 1)
+				family_tint .. source:sub(#base + 1), true
 		end
 	end
-	return source
+	return source, false
+end
+
+-- Loose's element overlay (round52-class-plan.md C7): the strip of the draw
+-- stage the bow shows, the idle bow's (stage nil), none without a bow. It
+-- rides on the same stack writes as the draw images.
+local function loose_overlay(has_bow, stage)
+	return grug_abilities.skin_overlay(grug_abilities.registered.loose,
+		has_bow and "bow" or nil, stage)
 end
 
 -- Every draw end path runs through here: the stack loses its draw stages and
@@ -320,13 +329,16 @@ local function reset_draw_stack(player)
 	grug_core.clear_move_stance(player, DRAW_STANCE)
 	grug_abilities.crosshair.set_ring(player, nil, "bow")
 	local source = bow_wield_image(player)
+	local overlay = loose_overlay(source ~= "")
 	local inv = player:get_inventory()
 	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
 		if stack:get_name() == "grug_abilities:loose" then
 			local meta = stack:get_meta()
-			if stack:get_wear() ~= 0 or meta:get_string("wield_image") ~= source then
+			if stack:get_wear() ~= 0 or meta:get_string("wield_image") ~= source or
+					meta:get_string("wield_overlay") ~= overlay then
 				stack:set_wear(0)
 				meta:set_string("wield_image", source)
+				meta:set_string("wield_overlay", overlay)
 				inv:set_stack("main", index, stack)
 			end
 			break
@@ -357,7 +369,9 @@ local function set_draw_wear(player, fraction)
 		if stack:get_name() == "grug_abilities:loose" then
 			stack:set_wear(math.floor((9 - step) / 9 * 65534))
 			local meta = stack:get_meta()
-			meta:set_string("wield_image", staged_bow_image(player, stage))
+			local image, staged = staged_bow_image(player, stage)
+			meta:set_string("wield_image", image)
+			meta:set_string("wield_overlay", loose_overlay(true, staged and stage or nil))
 			inv:set_stack("main", index, stack)
 			return
 		end

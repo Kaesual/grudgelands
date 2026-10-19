@@ -197,6 +197,7 @@ grug_abilities = {
 	flash = function(_, message) flashes[#flashes + 1] = message end,
 	delay_strike = noop,
 	crosshair = {set_ring = noop},
+	skin_overlay = function() return "[combine:16x16" end,
 }
 
 dofile(ROOT .. "/mods/PLAYER/grug_abilities/scout.lua")
