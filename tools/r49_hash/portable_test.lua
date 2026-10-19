@@ -310,8 +310,10 @@ end
 
 -- H. Vocabulary -----------------------------------------------------------------------
 local domains = hash.domains()
-check(#domains == 1 and domains[1] == "tree_template_seed_v1",
-	"SHA-256 is left only for the seeded trees' template seeds")
+-- Round 51 lane LK: the land kit's template seeds are the second domain.
+check(#domains == 2 and domains[1] == "tree_template_seed_v1" and
+	domains[2] == "kit_template_seed_v1",
+	"SHA-256 is left only for the seeded trees' and the land kit's template seeds")
 check(hash.prepare_root_draw == nil and hash.words == nil and hash.reduce_digest == nil,
 	"the SHA draw helpers are gone")
 check(not pcall(salt, "decoration_candidate_rank_v1", id_a),

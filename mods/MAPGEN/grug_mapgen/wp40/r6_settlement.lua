@@ -201,9 +201,34 @@ local function settlement_factory()
 						info[(z - context.min_z) * x_count + (x - context.min_x) + 1] =
 							filler_depth * 2 + (surface and surface.steep and 1 or 0)
 					end
+					-- Round 51 T4: a banded badlands row (r6_content.lua
+					-- `bands`) lays its clay bands by height down the face below
+					-- its top, over the column's stone and its own filler (never
+					-- a resource ore, a cave or water; a native gravel blob under
+					-- a gravel filler matches the filler and may take a band),
+					-- and takes the strata below.
+					local bands, band_last = surface and surface.bands, 0
+					if bands then
+						band_last = surface.band_depth - 1
+						local filler_cid = context.content_cids[surface.filler_ref]
+						for depth = 1, band_last do
+							local y = terrain_y - depth
+							if y >= context.floor_y and y >= context.min_y and
+									y <= context.max_y and (cap == nil or y < cap) then
+								local index = context.index_at(x, y, z)
+								if context.final_data[index] == filler_cid or
+										context.original_data[index] == context.stone_cid or
+										context.fill_stone_at(index, x, y, z) then
+									context.write(x, y, z, bands[y % 7 + 1])
+									written = written + 1
+								end
+							end
+						end
+					end
 					-- Steep columns (rock faces and lips) show their side: no
 					-- bands along a cliff face (Round 22 Phase 6).
-					local first = surface and surface.steep and 41 or filler_depth + 1
+					local first = surface and surface.steep and 41 or
+						math.max(filler_depth, band_last) + 1
 					for depth = first, 40 do
 						local y = terrain_y - depth
 						if y < context.floor_y then
@@ -1179,9 +1204,13 @@ local function settlement_factory()
 				row.partial_leaves = row.kind == "template" and
 					(class == "shrub" or class == "shrub_band") or nil
 				row.plant_purpose = rule.band_cover(row) and "cover" or "vegetation"
-				-- A generated tree (Round 47 lane TC, tree_templates.lua).
+				-- A generated tree (Round 47 lane TC, tree_templates.lua), or a
+				-- land kit structure (Round 51 lane LK, kit_templates.lua):
+				-- placed as a generated tree, its runs by the kit's rule (P9).
+				row.generated_kit = row.kind == "template" and
+					row.asset_or_node:match("^kitgen:") ~= nil or nil
 				row.generated_tree = row.kind == "template" and
-					row.asset_or_node:match("^treegen:") ~= nil or nil
+					(row.asset_or_node:match("^treegen:") ~= nil or row.generated_kit) or nil
 			end
 		end
 		-- The ground a generated tree's root stands in (the root runs below):
@@ -1192,6 +1221,15 @@ local function settlement_factory()
 			for index = 1, #names do
 				local ref = content.content_ref(names[index])
 				if ref then root_ground_cids[contract.content_cids[ref]] = true end
+			end
+		end
+		-- The ground a land kit run's column stands on (Round 51 lane LK).
+		local kit_ground_cids = {}
+		if type(templates.kit_ground_names) == "function" then
+			local names = templates.kit_ground_names()
+			for index = 1, #names do
+				local ref = content.content_ref(names[index])
+				if ref then kit_ground_cids[contract.content_cids[ref]] = true end
 			end
 		end
 		local projection = content.wp43_projection()
@@ -2215,7 +2253,8 @@ local function settlement_factory()
 			r8_cave_writer_disabled = r8_cave_writer_disabled,
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
-			root_ground_cids = root_ground_cids, template_metrics = metrics_state.templates,
+			root_ground_cids = root_ground_cids, kit_ground_cids = kit_ground_cids,
+			template_metrics = metrics_state.templates,
 			tree_spacing = TREE_SPACING,
 			r8_hash = hash,
 			template_rotation = runtime_mode and (templates.rotation_runtime or
@@ -2647,6 +2686,7 @@ local function settlement_factory()
 			helpers.r8_apply_strata({min_x = min_x, min_y = min_y, min_z = min_z,
 				max_x = max_x, max_y = max_y, max_z = max_z, floor_y = -37,
 				original_data = original_data, column_info = column_info,
+				final_data = final_data, content_cids = contract.content_cids,
 				stone_cid = contract.content_cids[stone_ref], index_at = index_at,
 				column_values_at = planner_source.column_values_at,
 				static_exclusion_values_at = helpers.r8_horizontal.static_exclusion_values_at,
@@ -2889,7 +2929,7 @@ local function settlement_factory()
 							-- owner (clipped_owner above), so a crown never meets one
 							-- of another mapchunk and none is cut at a border.
 							if row.generated_tree and not flags.clipped_owner then
-								local spacing = helpers.tree_spacing
+								local spacing = row.generated_kit and 0 or helpers.tree_spacing
 								for index = 1, #tree_roots do
 									local other = tree_roots[index]
 									if math.abs(other[1] - root_x) < spacing and
@@ -2952,6 +2992,73 @@ local function settlement_factory()
 									end
 								end
 							end
+							-- THE KIT'S RUNS (Round 51 lane LK, kit_templates.lua). A
+							-- cell's column stands on kit ground right under the root's
+							-- level (offset 0), one node higher (+1) or one lower (-1),
+							-- with no ground at the level above that; a run takes the
+							-- offset of its columns, which must agree, so a structure
+							-- follows gentle ground column by column like the viewer's
+							-- and a multi-column piece (a log, a doorway) lies level.
+							-- Each cell, so moved, must be free (air or natural
+							-- vegetation, no claim but a tree's leaf); a cell below the
+							-- level (a sunken course, a crypt step) takes its column's
+							-- own dry surface top (never a bed under water). A run with a parent only with its
+							-- parent; a required run that cannot stand rejects the
+							-- whole structure. Kept runs are written moved (below).
+							local kit_kept
+							if row.generated_kit and root_runs and not flags.clipped_owner then
+								local kit_ground = helpers.kit_ground_cids
+								local function offset(x, z)
+									if not (inside_owner(x, root_y - 2, z) and inside_owner(x, root_y + 1, z)) then
+										return nil
+									end
+									local ground = kit_ground[final_data[index_at(x, root_y - 1, z)]]
+									local higher = kit_ground[final_data[index_at(x, root_y, z)]]
+									if higher then
+										if kit_ground[final_data[index_at(x, root_y + 1, z)]] then return nil end
+										return 1
+									elseif ground then
+										return 0
+									elseif kit_ground[final_data[index_at(x, root_y - 2, z)]] then
+										return -1
+									end
+									return nil
+								end
+								kit_kept = {}
+								for run_index = 1, #root_runs do
+									local run = root_runs[run_index]
+									local ok = run.parent == 0 or kit_kept[run.parent] == true
+									local shift
+									for part = 1, ok and #run or 0 do
+										local cell_record = run[part]
+										local x, z = root_x + cell_record.x, root_z + cell_record.z
+										local o = offset(x, z)
+										if o == nil or (shift ~= nil and o ~= shift) then ok = false break end
+										shift = o
+										local y = root_y + cell_record.y + o
+										if not inside_owner(x, y, z) then ok = false break end
+										local index = index_at(x, y, z)
+										if cell_record.y < 0 then
+											-- a dry surface top only (opcode 1 is the wet bed
+											-- under water)
+											if occupancy[index] ~= 0 or intent_opcode[index] < 2 or
+													intent_opcode[index] > 4 then ok = false break end
+										else
+											local class_id = classify(final_data[index], final_param2[index])
+											if not ((occupancy[index] == 0 or occupancy[index] == -4) and
+													(class_id == CLASS_AIR or class_id == CLASS_NATURAL_VEGETATION)) then
+												ok = false break
+											end
+										end
+									end
+									kit_kept[run_index] = ok
+									if ok then
+										for part = 1, #run do run[part].y = run[part].y + shift end
+									elseif run.required then
+										flags.insufficient_clearance = true
+									end
+								end
+							end
 							local reason = helpers.primary_reason(flags, {"clipped_owner",
 								"content_ignore", "fixed_or_protected", "route_or_water",
 								"wrong_host", "insufficient_clearance", "occupied_collision",
@@ -2982,7 +3089,9 @@ local function settlement_factory()
 							if reason then metric_rejection(ledger, "decoration", row.id, reason)
 							else
 								if aggregate then aggregate.accepted = aggregate.accepted + 1 end
-								if row.generated_tree then
+								if row.generated_kit then
+									-- a kit structure claims only its cells (written below)
+								elseif row.generated_tree then
 									tree_roots[#tree_roots + 1] = {root_x, root_z}
 								else
 									for z = root_z + min_fz, root_z + max_fz do
@@ -3021,7 +3130,7 @@ local function settlement_factory()
 								-- border is complete or absent with its tree.
 								if root_runs then
 									local root_ground_cids = helpers.root_ground_cids
-									local kept = helpers.r8_templates.kept_root_runs(root_runs,
+									local kept = kit_kept or helpers.r8_templates.kept_root_runs(root_runs,
 										function(cell_record)
 											local x, z = root_x + cell_record.x, root_z + cell_record.z
 											local y = root_y + cell_record.y

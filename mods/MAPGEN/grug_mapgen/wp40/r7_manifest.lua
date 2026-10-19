@@ -119,6 +119,24 @@ return function(canonical, raw_sha256, settlement_order)
 	-- `aa6e16d73513fa6c...`); the gathering catalog's swamp hosts take the
 	-- swamp moss, which moves the gathering manifest (was
 	-- `2bac7904e80f4687...`).
+	-- Round 51 LK: the land kit's props, cairn shapes and default blocks join
+	-- the production rows (128 -> 156) and dirt, gravel, mossy cobble and
+	-- stone take the decoration role, which moves the accepted-content limb
+	-- (was `55003f50fa8905c7...`), the production semantics (the bone pile
+	-- became a node box too; was `2f92257ce7b4c5c9...`) and the decoded MTS
+	-- templates, whose content refs shift with the inserted rows (was
+	-- `ce55b1b08aea44a5...`). T2 (merged after) moves none of the three.
+	-- Round 51 LP (merged after LK): the 17 land plants join the production
+	-- rows (156 -> 173), which moves the accepted-content limb and the
+	-- production semantics; the decoded MTS templates move with the shifted
+	-- content refs, the swamp papyrus pedestal leaving and the two bushes with
+	-- their own foliage (old values in LP's pin commit).
+	-- Round 51 T4 (merged after LP): default:ice joins the production rows
+	-- (173 -> 174, the snowy crags' ice patches) and the swamp fern rows'
+	-- host is the swamp moss, which moves the production semantics (was
+	-- `716b1e196070827d...`), the accepted-content limb (was
+	-- `2e770b8694d02268...`) and the decoded MTS templates (content refs
+	-- shift; was `81f57950d28e9aae...`).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -394,7 +412,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"2f92257ce7b4c5c9f781a3a6f4088beca8a0897b51ac703d016ab8dbd7ed857f" or
+				"c8dc82de1f5cffb129a1f0339f68e9d6e5c424d1602dd05b1968fa9048454a20" or
 				inputs.p9g_content.semantic_digest ~=
 				"ae1f7662c8270abee5d253ca1a028e2801c9c40159433c6a766e286747ecadb7" then
 			fail("frozen content semantics differ: production=" ..
@@ -557,9 +575,9 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"55003f50fa8905c7af1f972e4e93c683f9dd17f2311107e933fb627b94604f22" or
+				"2830c15fb292596861f178a01c42ef695fb4ca905af589a88d88d259e4dfb536" or
 			frozen.decoded_templates ~=
-				"ce55b1b08aea44a557ca9eb619810826d50cf7e3faa44fdad4f323c40e049903" or
+				"35dcacdfe5ac4de37a0b44b4024bbc6d12489efbca2bb0cdcb0896225cbc6320" or
 			frozen.wp43_projection ~=
 				"ee08d28c64bdc90ce3e58be7f4c80f8c2381741838b9c075aa75c9fae94f2a80" or
 			frozen.consumer_payload ~=

@@ -135,9 +135,11 @@ rawset(_G, "grug_map", {atlas = dofile(tree .. "/mods/PLAYER/grug_map/atlas.lua"
 	location = {text_of = function() return "Dawnmere Fields" end}})
 local base = dofile(tree .. "/mods/PLAYER/grug_map/base.lua")
 grug_map.base = base
-local installed = {quality = "normal", width = 1080, height = 960,
-	tiles = base.tiles(1080, 960)}
-installed.texture = base.combined_texture(1080, 960, installed.tiles)
+-- the tree's normal size (1080 x 960 before Round 51, 1215 x 1080 since)
+local NW, NH = base.QUALITY.normal.width, base.QUALITY.normal.height
+local installed = {quality = "normal", width = NW, height = NH,
+	tiles = base.tiles(NW, NH)}
+installed.texture = base.combined_texture(NW, NH, installed.tiles)
 installed.minimap = installed -- normal quality: the minimap shows the base itself
 grug_map.atlas.set_base_texture(installed.texture)
 dofile(tree .. "/mods/PLAYER/grug_map/minimap.lua")

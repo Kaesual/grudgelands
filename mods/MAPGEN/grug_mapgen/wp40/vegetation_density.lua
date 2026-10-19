@@ -106,13 +106,24 @@ return function(deps)
 		deep_forest_apple_log = "fallen log, not a growing plant",
 		-- The large-cactus seedling needs group:sand; badlands are mesa clay.
 		badlands_large_cactus = "cactus seedling cannot grow on mesa clay",
-		swamp_papyrus = "reed stand, not a sapling species",
+		-- Round 51 lane LP: decorative bushes; their leaves drop no sapling
+		-- and no sapling grows their foliage.
+		jungle_bush = "no jungle bush sapling",
+		badlands_withered_bush = "no withered bush sapling",
 		-- Round 47 lane SW: no swamp sapling exists (the swamp tree grows
 		-- from gravewood's wood, whose leaves drop no sapling).
 		swamp_tree = "no swamp sapling",
 	}
-	-- Simple decorations that are not vegetation.
-	local NOT_VEGETATION = {["grug_nodes:bone_pile"] = true}
+	-- Simple decorations that are not vegetation. (The bone pile was one
+	-- until Round 51: lane LK's land kit places it, see below.)
+	local NOT_VEGETATION = {}
+	-- A land kit structure (Round 51 lane LK, `kitgen:` rows): no plant, so
+	-- no renewal; of its blocks only the kit's own props (no default block a
+	-- player builds with) count as natural, so they never guard a sapling
+	-- spot the way built blocks do.
+	local function kit_row(row)
+		return row.kind == "template" and row.asset_or_node:match("^kitgen:") ~= nil
+	end
 
 	local function sorted_keys(set)
 		local result = {}
@@ -121,12 +132,20 @@ return function(deps)
 		return result
 	end
 
-	-- Site rules of the decoration rows (r6_planner.lua `decoration_height_rule`).
+	-- Site rules of the decoration rows (r6_planner.lua `decoration_height_rule`;
+	-- Round 51 lane LP: 5 `shore_dry`, 6 `rock_patch`).
 	local function site_rule(row)
 		if row.rule:find("surface_y_at_least_60", 1, true) then return 1 end
 		if row.rule:find("surface_y_at_most_32", 1, true) then return 2 end
 		if row.rule:find("surface_y_1_to_4", 1, true) then return 3 end
+		if row.rule:find("shore_dry", 1, true) then return 5 end
+		if row.rule:find("rock_patch", 1, true) then return 6 end
 		return 0
+	end
+	-- Rows that stand as a stack (class 3: papyrus, 2-4 high): renewal counts
+	-- their columns, not their nodes.
+	local function stacked(row)
+		return row.kind == "simple" and row.settlement_class == 3
 	end
 
 	-- Distinct columns holding a marker node in the row's own template: how
@@ -203,8 +222,10 @@ return function(deps)
 				cover_names[row.asset_or_node] = true
 				entry = {id = row.id, node = row.asset_or_node,
 					param2 = row.rule:find("param2_4", 1, true) and 4 or 0,
-					rule = site_rule(row)}
+					rule = site_rule(row), stacked = stacked(row)}
 			end
+		elseif kit_row(row) then
+			-- not renewed
 		elseif WOODY[row.id] then
 			local species = WOODY[row.id]
 			local name = TREES[row.id] and "tree" or "shrub"
@@ -234,7 +255,15 @@ return function(deps)
 						list[#list + 1] = {id = entry.id, node = entry.node,
 							param2 = entry.param2, rule = entry.rule,
 							markers = entry.markers, columns = entry.columns,
-							weight = weight / factor, vclass = vclass}
+							weight = weight / factor, vclass = vclass,
+							stacked = entry.stacked}
+						-- the shore and patch rules a support's rows ask (Round 51)
+						if entry.rule >= 3 then
+							target.site_rules = target.site_rules or {}
+							local rules = target.site_rules[support] or {}
+							target.site_rules[support] = rules
+							rules[entry.rule] = true
+						end
 					end
 				end
 			end
@@ -269,7 +298,17 @@ return function(deps)
 	-- Template cells are the rest of what the decorations place naturally.
 	for index = 1, #deps.template_records do
 		local record = deps.template_records[index]
-		if record.generated then
+		if record.kit then
+			for v = 1, #record.variants do
+				local variant = record.variants[v]
+				for c = 1, variant.count do
+					if variant.name[c]:sub(1, 8) ~= "default:" then natural[variant.name[c]] = true end
+				end
+				for c = 1, variant.root_count do
+					if variant.rname[c]:sub(1, 8) ~= "default:" then natural[variant.rname[c]] = true end
+				end
+			end
+		elseif record.generated then
 			for v = 1, #record.variants do
 				local variant = record.variants[v]
 				for c = 1, variant.count do natural[variant.name[c]] = true end
@@ -369,11 +408,19 @@ return function(deps)
 		return list
 	end
 
+	-- Rules 3, 5 and 6 are the vegetation rule's own tests (habitat_registry
+	-- `water_beside`, `dry_shore`, `rock_patch`), the planner's too.
 	local function site_allowed(site, values)
 		if site == 1 then return values.terrain_y >= 60 end
 		if site == 2 then return values.relief ~= "mountain" end
+		if site == 3 then
+			return rule.water_beside(column_values_at, values.x, values.z, values.terrain_y)
+		end
+		if site == 5 then return rule.dry_shore(column_values_at, values.x, values.z) end
+		if site == 6 then return rule.rock_patch(values.x, values.z) end
 		return site == 0
 	end
+	local EXTRA_SITES, NO_SITES = {3, 5, 6}, {}
 
 	-- The fixed part of one decoration class at a biome, support and site
 	-- rule outcome (species, marker divisors), cached.
@@ -383,22 +430,45 @@ return function(deps)
 		local key = values.support .. "|" ..
 			(site_allowed(1, values) and "1" or "0") ..
 			(site_allowed(2, values) and "1" or "0")
+		-- a shore or patch rule is tested only where the support's rows ask it
+		local extra = target.site_rules and target.site_rules[values.support]
+		local allowed = NO_SITES
+		if extra then
+			allowed = {}
+			for index = 1, #EXTRA_SITES do
+				local site = EXTRA_SITES[index]
+				if extra[site] then
+					allowed[site] = site_allowed(site, values)
+					key = key .. site .. (allowed[site] and "1" or "0")
+				end
+			end
+		end
 		target.cache = target.cache or {}
 		local base = target.cache[key]
 		if base ~= nil then return base or nil end
 		local species, total = {}, 0
+		local shore, patch, stack = false, false, false
 		for index = 1, #rows do
 			local row = rows[index]
-			if site_allowed(row.rule, values) then
+			local ok = allowed[row.rule]
+			if ok == nil then ok = site_allowed(row.rule, values) end
+			if ok then
 				species[#species + 1] = row
 				total = total + row.weight
+				shore = shore or row.rule == 3
+				patch = patch or row.rule == 6
+				stack = stack or row.stacked == true
 			end
 		end
 		if total <= 0 then
 			target.cache[key] = false
 			return nil
 		end
-		base = {species = species}
+		-- Round 51 lane LP: a shore row grows only along the water line and a
+		-- patch row only in its patch, so renewal counts their supports in a
+		-- band or one patch (renewal.lua); a stack counts once per column.
+		base = {species = species, shore = shore,
+			patch_area = patch and habitat.VEGETATION.PATCH_AREA or nil, stacked = stack}
 		if class_name ~= "cover" then
 			-- A marker shared by two rows (jungle and emergent jungle trees)
 			-- counts plants by the density-weighted mean of their columns.
@@ -442,7 +512,8 @@ return function(deps)
 		if total <= 0 then return nil end
 		return {class = class_name, key = class_name .. ":" .. values.biome,
 			p = total, hosts = target.host_list,
-			species = species, divisor = base.divisor, shore = false,
+			species = species, divisor = base.divisor, shore = base.shore == true,
+			patch_area = base.patch_area, stacked = base.stacked == true,
 			names = class_name == "cover" and cover_list or marker_lists[class_name]}
 	end
 

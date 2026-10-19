@@ -11,7 +11,7 @@
 -- a separate layer (window.lua, minimap.lua).
 --
 -- Only pure public queries are used (water_class_at, id_at, get,
--- terrain_height_at) plus the river centrelines grug_mapgen publishes and the
+-- terrain_height_at, and water_query_at for planned water) plus the river centrelines grug_mapgen publishes and the
 -- settlement, king and dragon registries: no chunk is generated, loaded or
 -- read.
 --
@@ -43,35 +43,56 @@ local WORLD = core.get_worldpath()
 local CACHE_KEY = WORLD .. "/grug_map_base.key"
 M.TILE = 512
 M.MASK = "grug_map_minimap_mask.png"
--- Map quality (Round 27 rulings 1-3): a server setting for the Map tab's
--- image. Both are 9:8 like the atlas bounds. Normal is the Round 22 image,
--- about 6.67 nodes per pixel; high is 2 nodes per pixel and stays below 4096
--- px per edge (some GPUs hold no larger texture). `minimap` names the size
--- the minimap's base has when it is not the Map tab's own (user ruling
--- 2026-10-06: the minimap shows normal quality on every server).
+-- Map quality (Round 27 rulings 1-3, Round 51 S3): a server setting for the
+-- Map tab's image. Both are 9:8 like the atlas bounds (atlas.lua, +-4050 x
+-- +-3600 since Round 51). Normal is about 6.67 nodes per pixel as since
+-- Round 22 (1215 x 1080 since the atlas grew); high keeps its pixel count,
+-- 2.25 nodes per pixel, and stays below 4096 px per edge (some GPUs hold no
+-- larger texture). `minimap` names the size the minimap's base has when it
+-- is not the Map tab's own (user ruling 2026-10-06: the minimap shows normal
+-- quality on every server).
 --
 -- Relief samples terrain_height_at on one fixed grid per quality, the same
 -- on every server (Round 22 D29: hardware never changes what is produced).
 -- Normal keeps the Round 22 step of 8 nodes (about one map pixel); high
--- samples every 4 nodes (two map pixels), which the bilinear interpolation
--- below keeps smooth. The steps are part of this file's source and therefore
--- of the cache key, so changing one re-renders cached bases.
+-- samples every 4 nodes (about two map pixels), which the bilinear
+-- interpolation below keeps smooth. The steps are part of this file's source
+-- and therefore of the cache key, so changing one re-renders cached bases.
 M.QUALITY = {
-	normal = {width = 1080, height = 960, relief_step = 8, minimap = "normal"},
+	normal = {width = 1215, height = 1080, relief_step = 8, minimap = "normal"},
 	high = {width = 3600, height = 3200, relief_step = 4, minimap = "normal"},
 }
 M.DEFAULT_QUALITY = "normal"
+-- The open sea's colour (SEA.open below) as "#rrggbb": the fallback image
+-- and the minimap's sea disc beyond the base (minimap.lua).
+M.OPEN_SEA_HEX = "#102336"
 -- Shown if rendering fails: plain sea, so the markers stay usable.
-local FALLBACK_TEXTURE = "[fill:90x80:#1c3a52"
+local FALLBACK_TEXTURE = "[fill:90x80:" .. M.OPEN_SEA_HEX
 
 local function rgb(r, g, b) return {r, g, b} end
 
-local WATER = {
-	deep_ocean = rgb(28, 58, 82),
-	immutable_dragon_channel = rgb(22, 46, 66),
-	coastal_shelf = rgb(48, 92, 118),
-	planned_water = rgb(62, 118, 152),
+-- Lakes and rivers (planned water that is no bay) keep the lake blue.
+local LAKE = rgb(62, 118, 152)
+-- The sea by depth (Round 51 ruling S1; docs/design/world_map.md "Sea"):
+-- bay, belt and channel water is `light` at the waterline, `middle` from
+-- `middle_depth` nodes of water on and shades a little further toward
+-- `middle_deep` down to `deep_depth`; the open sea is `open`, clearly darker.
+-- The depth is sea level (y 1) minus the relief grid's bilinear floor
+-- height (the water query's own depth, terrain_height_at, sampled once).
+-- The edge between the open sea and the rest is soft: the open sea's share
+-- of the pixels in cells of `edge_step` nodes, box-blurred twice by
+-- `edge_radius` cells and read bilinearly per pixel, blends the two colours
+-- (an edge about 100 nodes wide); a pocket of one class inside the other a
+-- few dozen nodes across fades into its surroundings instead of a speck.
+local SEA = {
+	light = rgb(66, 122, 146), middle = rgb(48, 92, 118), middle_deep = rgb(36, 72, 98),
+	open = rgb(16, 35, 54),
+	middle_depth = 8, deep_depth = 32, edge_step = 16, edge_radius = 2,
 }
+M.SEA = SEA
+-- The water classes of pass 1 (water_class_at) that are sea: the coast line
+-- runs along them and along bays (planned water the water query calls "bay").
+local SEA_CLASS = {deep_ocean = true, immutable_dragon_channel = true, coastal_shelf = true}
 local COAST = rgb(88, 72, 50)
 local REGION = {
 	dwarf = rgb(178, 176, 158),
@@ -181,7 +202,7 @@ local function water_layout_text()
 	local text = type(wp40) == "table" and wp40.water_layout_text
 	return type(text) == "string" and text or ""
 end
-local RIVER_COLOR = pack(rgb(62, 118, 152))
+local RIVER_COLOR = pack(LAKE)
 -- A river this wide or wider is stroked three pixels wide (radius 1), a
 -- narrower one one pixel; one pixel is about 7 nodes. (The Phase 5b water
 -- widths are about 1.6x the Phase 5 channel widths this threshold was set
@@ -274,10 +295,52 @@ local function bilinear(relief, field, fx, fz)
 	return (a + (b - a) * tx) * (1 - tz) + (c + (d - c) * tx) * tz
 end
 
-local function sea(class)
-	return class == "deep_ocean" or class == "immutable_dragon_channel" or
-		class == "coastal_shelf"
+-- `grid` ({nx, nz} and values 1..nx * nz, row by row) box-blurred by
+-- `radius` cells along x, then along z; cells beyond an edge repeat the edge
+-- cell. Pure.
+local function box_blur(grid, nx, nz, radius)
+	local out, span = {}, 2 * radius + 1
+	local function clamp(v, hi) return v < 0 and 0 or (v > hi and hi or v) end
+	for gz = 0, nz - 1 do
+		local row = gz * nx + 1
+		for gx = 0, nx - 1 do
+			local sum = 0
+			for k = -radius, radius do sum = sum + grid[row + clamp(gx + k, nx - 1)] end
+			out[row + gx] = sum / span
+		end
+	end
+	local result = {}
+	for gz = 0, nz - 1 do
+		for gx = 0, nx - 1 do
+			local sum = 0
+			for k = -radius, radius do sum = sum + out[clamp(gz + k, nz - 1) * nx + gx + 1] end
+			result[gz * nx + gx + 1] = sum / span
+		end
+	end
+	return result
 end
+
+-- The colour of sea water `depth` nodes deep whose open-sea share is
+-- `open` (0..1), packed (SEA above).
+local function sea_color(depth, open)
+	local a, b, t
+	local md = SEA.middle_depth
+	if depth < md then
+		a, b, t = SEA.light, SEA.middle, depth > 0 and depth / md or 0
+	else
+		a, b, t = SEA.middle, SEA.middle_deep, (depth - md) / (SEA.deep_depth - md)
+		if t > 1 then t = 1 end
+	end
+	local c, o = SEA.open, open
+	local packed = 0
+	for channel = 1, 3 do
+		local v = a[channel] + (b[channel] - a[channel]) * t
+		v = v + (c[channel] - v) * o
+		packed = packed * 256 + math.floor(v + 0.5)
+	end
+	return packed
+end
+M.sea_color = sea_color
 
 -- The render size and relief step of `quality` ("normal" or "high"; any
 -- other value is normal), and `minimap` {quality, width, height}: the size
@@ -520,10 +583,26 @@ local function render(zones, view, spec, layer, claim)
 	local started = core.get_us_time()
 	local scale_x = (view.max_x - view.min_x) / WIDTH
 	local scale_z = (view.max_z - view.min_z) / HEIGHT
-	-- Pass 1: one water class and owning zone id per pixel centre.
-	local water, owner, seen = {}, {}, {}
+	-- Pass 1: one water class and owning zone id per pixel centre; for
+	-- planned water the water query tells a bay from a lake or river
+	-- (`bay`, sparse), and every pixel counts toward its edge cell's open-sea
+	-- share (SEA).
+	local edge_step = SEA.edge_step
+	local gnx = math.max(2, math.ceil((view.max_x - view.min_x) / edge_step))
+	local gnz = math.max(2, math.ceil((view.max_z - view.min_z) / edge_step))
+	local cell_x, cell_z, open_count, all_count = {}, {}, {}, {}
+	for i = 0, WIDTH - 1 do
+		cell_x[i] = math.min(gnx - 1, math.floor((i + 0.5) * scale_x / edge_step))
+	end
+	for j = 0, HEIGHT - 1 do
+		cell_z[j] = math.min(gnz - 1, math.floor((j + 0.5) * scale_z / edge_step))
+	end
+	for cell = 1, gnx * gnz do open_count[cell], all_count[cell] = 0, 0 end
+	local water_query = zones.water_query_at
+	local water, owner, seen, bay = {}, {}, {}, {}
 	for j = 0, HEIGHT - 1 do
 		local z = math.floor(view.max_z - (j + 0.5) * scale_z)
+		local cell_row = cell_z[j] * gnx + 1
 		for i = 0, WIDTH - 1 do
 			local x = math.floor(view.min_x + (i + 0.5) * scale_x)
 			local class = zones.water_class_at(x, z)
@@ -533,20 +612,34 @@ local function render(zones, view, spec, layer, claim)
 				id = zones.id_at(x, z) or false
 				if id then seen[id] = true end
 			end
+			if class == "planned_water" and water_query(x, z) == "bay" then bay[index] = true end
+			local cell = cell_row + cell_x[i]
+			all_count[cell] = all_count[cell] + 1
+			if class == "deep_ocean" then open_count[cell] = open_count[cell] + 1 end
 			water[index], owner[index] = class, id
 		end
 	end
 	local classified = core.get_us_time()
 	local colors = palette(zones, seen)
 	local relief = relief_grid(zones, view, spec.relief_step, R)
+	-- The open-sea share per edge cell, blurred twice (a soft edge).
+	local open = {}
+	for cell = 1, gnx * gnz do
+		open[cell] = all_count[cell] > 0 and open_count[cell] / all_count[cell] or 1
+	end
+	open = box_blur(box_blur(open, gnx, gnz, SEA.edge_radius), gnx, gnz, SEA.edge_radius)
+	local edge = {nx = gnx, nz = gnz}
 	local shaded = core.get_us_time()
 
-	-- Pass 2: land takes its zone colour, tinted toward stone with height,
-	-- times the hillshade; a contour line darkens it further. A land pixel
-	-- next to open water is coast; a land pixel whose right or lower
-	-- neighbour belongs to another zone is a border line.
-	local pixels, water_colors = {}, {}
-	for class, color in pairs(WATER) do water_colors[class] = pack(color) end
+	-- Pass 2: sea and bay water take their colour by depth and open-sea
+	-- share (SEA), lakes the lake blue; land takes its zone colour, tinted
+	-- toward stone with height, times the hillshade; a contour line darkens
+	-- it further. A land pixel next to sea or bay water is coast; a land
+	-- pixel whose right or lower neighbour belongs to another zone is a
+	-- border line.
+	local pixels = {}
+	local lake = pack(LAKE)
+	local function sea(index) return SEA_CLASS[water[index]] or bay[index] end
 	local coast = pack(COAST)
 	local stone, tint_low = R.stone, R.tint_low
 	local tint_span, tint_max = R.tint_high - R.tint_low, R.tint_max
@@ -558,6 +651,7 @@ local function render(zones, view, spec, layer, claim)
 	local above = {}
 	for j = 0, HEIGHT - 1 do
 		local fz = (j + 0.5) * scale_z / relief.step
+		local ez = math.max(0, math.min(gnz - 1, (j + 0.5) * scale_z / edge_step - 0.5))
 		local left
 		for i = 0, WIDTH - 1 do
 			local index = j * WIDTH + i + 1
@@ -565,11 +659,16 @@ local function render(zones, view, spec, layer, claim)
 			local fx = (i + 0.5) * scale_x / relief.step
 			local h = bilinear(relief, relief.height, fx, fz)
 			if class ~= "land" then
-				pixels[index] = water_colors[class] or water_colors.deep_ocean
-			elseif (i > 0 and sea(water[index - 1])) or
-					(i < WIDTH - 1 and sea(water[index + 1])) or
-					(j > 0 and sea(water[index - WIDTH])) or
-					(j < HEIGHT - 1 and sea(water[index + WIDTH])) then
+				if class == "planned_water" and not bay[index] then
+					pixels[index] = lake
+				else
+					local ex = math.max(0, math.min(gnx - 1, (i + 0.5) * scale_x / edge_step - 0.5))
+					pixels[index] = sea_color(1 - h, bilinear(edge, open, ex, ez))
+				end
+			elseif (i > 0 and sea(index - 1)) or
+					(i < WIDTH - 1 and sea(index + 1)) or
+					(j > 0 and sea(index - WIDTH)) or
+					(j < HEIGHT - 1 and sea(index + WIDTH)) then
 				pixels[index] = coast
 			else
 				local id = owner[index]
@@ -940,11 +1039,14 @@ local function prepare(view)
 	for _, faction in ipairs(claim and claim.factions or {}) do
 		claim_tiles[faction] = M.tiles(mini.width, mini.height, M.CLAIM_PREFIX .. "_" .. faction)
 	end
-	-- The quality and the minimap copy's size enter the key (ruling 3), so
-	-- switching either re-renders both; so does the baked layer (Round 44:
+	-- The quality, its size, the atlas bounds (Round 51) and the minimap
+	-- copy's size enter the key (ruling 3), so switching either re-renders
+	-- both and a cache of an older size rebuilds; so does the baked layer (Round 44:
 	-- its layout, art and font versions and every icon's kind and place) and
 	-- the Claim Stone rules (0.50.2).
-	local base_key = spec.quality .. "\n" .. M.TILE .. "\n" ..
+	local base_key = spec.quality .. "\n" .. spec.width .. "x" .. spec.height .. "\n" ..
+		view.min_x .. "," .. view.min_z .. "," .. view.max_x .. "," .. view.max_z .. "\n" ..
+		M.TILE .. "\n" ..
 		(mini and (mini.width .. "x" .. mini.height) or "-") .. "\n" ..
 		cache_key(zones, view) .. "\n" .. core.sha256(bake.key_text(layer.versions, layer.items))
 	-- The key and the tile lists in use, with the overlays or (claim nil)
