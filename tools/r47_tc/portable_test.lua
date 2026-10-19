@@ -112,14 +112,16 @@ check(trees.total() == 32 * 8 + 16, "the species table counts 272 variants")
 -- Re-pinned in Round 47 lane SW: the swamp species joins the table (32
 -- variants), which adds its digests to every world's roll-up. Re-pinned in
 -- Round 51 lane LG: a swamp moss cell above another is the strand node, so
--- the swamp variants' digests move (every other species' stay).
+-- the swamp variants' digests move (every other species' stay). Re-pinned
+-- in Round 51 lane LP: jungle and kapok hang lianas, so their variants'
+-- digests move.
 local PINNED = {
-	["0"] = "af4088d037d4e2ab46e5ea7b600fba9a0945e875b6443a0304ceeb4303da8ecd",
-	["1"] = "a8cc4c2599f3796f9e9e0e6a67d590fa72f0ff6a85b449bab80ac638fb6a9b96",
-	["12345"] = "579316fec137f3fb3b00fa19e4f099310afbf0190e609aa17858222fc62c5a30",
-	["9007199254740992"] = "20031ce436c8fbf45004d3edddf20270b8626a723864266bf8c375ff79e44090",
-	["17713522922938657774"] = "cf685e5f7d851e57f9535841775d57f44c7adf5cea9dc07b78bfea4f55de58ff",
-	["18446744073709551615"] = "e8caaf4c0b8eb917afecf5ee7cabb6bd38a3dbd23706c6301c008c9e704b002a",
+	["0"] = "6d0a310072121fb0344f13a3abe00ae19f53c16f6540175ffbfe7b4267901751",
+	["1"] = "ec36d81d6ede110d3bde3f8341be9cf88c3fdc2c754e3cf4eba709328d6ab33c",
+	["12345"] = "bd0178d5cc6b3d2db5d1523e8fa9773449503197c19db965dad7ac58f21c6eba",
+	["9007199254740992"] = "d9f5f7a19ba088f5c0b041810c8da698717bb7996d3d231d730b8815feb4581d",
+	["17713522922938657774"] = "892132019ca600b30b6034ec397b68b4e9cb22b63348bfca595b302f00c68628",
+	["18446744073709551615"] = "8a1ff6324ea54c57d11d9a022a27f57cc1bf8486f87b5eaf3adcc72e0bf7f2cd",
 }
 local ORDER = {"0", "1", "12345", "9007199254740992", "17713522922938657774",
 	"18446744073709551615"}
