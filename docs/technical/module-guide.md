@@ -2417,14 +2417,20 @@ tools](#player-meta-read-by-external-tools).
     specs, files and the approval lists); fixtures that load a hooked file
     get a silent stub.
   - **`grug_ambience`** (`mods/CORE/grug_ambience`): `rules.lua` is pure
-    (bed choice and hysteresis, the either-music-or-bed rule, calls, the
+    (the sound key, bed choice and hysteresis, the layer levels and steps,
+    the cave verdict, the either-music-or-bed rule, calls, the
     capital music scheduler, the emitter choice, settings words; the fixtures
-    load the real file), `data.lua` is data (bed, loop and call names, gains,
-    one track rotation per capital, track lengths, timings),
+    load the real file), `data.lua` is data (biome groups, bed, loop and
+    call names, layer curves, the cave probe's grid, gains, one track
+    rotation per capital, track lengths, timings),
     `init.lua` the runtime: an eight-slot pass of 0.25 s per player
-    (`states[name].slot`, assigned on join), one `get_node_raw` probe for
+    (`states[name].slot`, assigned on join); since Round 52 three layers
+    (surface, cave, wind) by `grug_core.depth_below_surface` (defined in
+    `grug_core/atmosphere_zones.lua` with its per-player column memo) and
+    the cave probe (75 `get_node_raw` reads, only deeper than 4 nodes),
+    `/ambience debug`; one `get_node_raw` probe for
     under water (33 reads while a sea or stream bed exists), one
-    `find_nodes_in_area` above ground for the fire and flowing-water
+    `find_nodes_in_area` out of water for the fire and flowing-water
     loops (none at forges and anvils since Round 45 PT8) (node names from `D.emitter_nodes` plus every flowing liquid whose
     source is default or river water, filled on `register_on_mods_loaded`).
     Round 47: both burning furnaces are the `furnace` kind (the fire loop at
@@ -2447,8 +2453,12 @@ tools](#player-meta-read-by-external-tools).
     `grug_inventory/help.lua`) and `/music`, `/ambience`. A personal
     positional sound ignores `max_hear_distance`, so the emitter choice
     drops far nodes itself. `grug_ambience.stats` holds comparison figures
-    for the engine probes `tools/r34_s2/engine.sh` and `tools/r35_m/engine.sh`;
-    fixtures `tools/r34_s2` (beds, calls, loops, files) and `tools/r35_m`
+    for the engine probes `tools/r34_s2/engine.sh`, `tools/r35_m/engine.sh`
+    and `tools/r52_amb/engine.sh` (Round 52: a scripted walk, the cave
+    calibration, the peak heights; `grug_core.depth_stats` beside it);
+    fixtures `tools/r52_amb` (groups, curves, layer steps, cave verdict,
+    depth helper and the atmosphere's underground band), `tools/r34_s2`
+    (beds, layers, calls, loops, files) and `tools/r35_m`
     (capital music, either music or the bed, settings). The "Now playing"
     box (0.45.1): `R.now_playing(m)` is the track in phase "play";
     `sync_now_playing` compares it with `states[name].shown_track` after each

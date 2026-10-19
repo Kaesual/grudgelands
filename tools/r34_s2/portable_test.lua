@@ -7,17 +7,26 @@
 -- fake engine (every data name shipped, so the runtime paths run). Round 35
 -- made music a capital feature: its scheduler, the either-music-or-bed rule
 -- and the music settings are checked in tools/r35_m. Checks here:
---   B  bed selection by state (underwater, underground and deep, sea and
---      stream water, night beds, non-mood presets keep the bed), the
---      fallback to a shipped bed, the two-pass hysteresis, town gain;
---   C  calls by mood and time of day;
+--   B  the sound key (biome group, zone overrides, the ocean) and the
+--      surface bed by it (underwater, sea and stream water, night beds and
+--      the crags' silent night, no key yet keeps the bed), the fallback to
+--      a shipped bed, the two-pass hysteresis, town gain; the shipped beds
+--      per group (Round 52 code step: the groups whose files are not
+--      shipped yet are silent) and no dropped file named;
+--   C  calls by sound key and time of day;
 --   T  the town flag of grug_map's location resolver;
 --   E  fire and water emitters: the nearest per kind; none at forges and anvils;
 --   P  settings: /music and /ambience words, volumes;
 --   R  runtime on a fake engine: one pass per player per 2 s in eight
---      slots; a bed loop to the player only, crossfaded at night and under
---      water; emitters started and faded; no music outside a capital; the
---      ambience settings through the Help page fields and the chat command;
+--      slots; a bed loop to the player only, crossfaded at night, under
+--      water and between groups, none between biomes of one group; the
+--      three layers by the depth (Round 52): the surface bed fading down a
+--      shaft to the floor and stopped after three passes, the dead band,
+--      no restart when hovering at a threshold, the cave bed only in open
+--      air and its deep variant, the wind at height; emitters started and
+--      faded, underground too; the debug line; no music outside a
+--      capital; the ambience settings through the Help page fields and the
+--      chat command;
 --   F  files: data integrity (every rotation track, bed key and call);
 --      every shipped .ogg of the mod is on tools/r34_s2/approved.txt; once
 --      that list exists, every name in data.lua is shipped.
@@ -55,92 +64,119 @@ end
 local AVAILABLE = all_available()
 
 -- ---------------------------------------------------------------------------
--- B  beds: the rules on a several-zone test table, then the shipped pilot
+-- B  beds: the rules on a test table, then the shipped data (Round 52: the
+-- surface bed by sound key, round52-ambience-plan.md §2)
 -- ---------------------------------------------------------------------------
 local TD = {gains = D.gains,
-	beds = {human = {"h1"}, night = {"n1"}, elf = {"e1", "e2", "e3"}, dwarf = {"d1"},
-		undead = {"u1"}, ocean = {"s1"}, sea = {"s1"}, stream = {"st1"}, underwater = {"w1"},
-		underground = {"c1"}, underground_deep = {"c2"}},
-	region = {human = {day = "human", night = "night"}, elf = {day = "elf", night = "night"},
-		dwarf = {day = "dwarf"}, undead = {day = "undead"}, ocean = {day = "ocean"}},
-	calls = {owl = {sound = "o", time = "night", moods = {human = true, elf = true}},
-		crow = {sound = "c", time = "day", moods = {undead = true}},
-		thunder = {sound = "t", time = "any", moods = {dragon_island = true}}},
+	beds = {temperate = {"t1", "t2", "t3"}, temperate_night = {"n1"}, crags = {"c1"},
+		crags_snowy = {"s1"}, ocean = {"o1"}, sea = {"o1"}, stream = {"st1"}, underwater = {"w1"},
+		battlegrounds = {"b1"}},
+	region = {temperate = {day = "temperate", night = "temperate_night"},
+		crags = {day = "crags", night = false}, crags_snowy = {day = "crags_snowy"},
+		ocean = {day = "ocean"}, battlegrounds = {day = "battlegrounds"}},
+	groups = {grug_meadows = "temperate", grug_elf_forest = "temperate", grug_crags = "crags",
+		grug_crags_snowy = "crags_snowy"},
+	overrides = {battlegrounds = true, dragon_island = true, ocean = true},
+	calls = {owl = {sound = "o", time = "night", keys = {temperate = true}},
+		crow = {sound = "c", time = "day", keys = {battlegrounds = true}},
+		thunder = {sound = "t", time = "any", keys = {dragon_island = true}}},
 }
 local TA = {}
 for _, names in pairs(TD.beds) do for _, n in ipairs(names) do TA[n] = true end end
 for _, call in pairs(TD.calls) do TA[call.sound] = true end
 do
+	local function key(mood, biome) return R.sound_key(TD, mood, true, biome) end
+	check(key(nil, "grug_meadows") == "temperate" and key("human", "grug_elf_forest") == "temperate",
+		"B the biome's group, whatever race mood the zone has")
+	check(key("battlegrounds", "grug_meadows") == "battlegrounds" and
+		key("dragon_island", "grug_crags") == "dragon_island", "B zone overrides beat the biome")
+	check(key(nil, nil) == "ocean" and key("ocean", nil) == "ocean", "B no biome (deep ocean): the ocean")
+	check(key(nil, "grug_unknown") == false, "B a biome without a group: no bed")
+	check(key("underground", "grug_meadows") == nil and R.sound_key(TD, "human", false, nil) == nil,
+		"B underground mood or nothing known: keep the key")
 	local function keys(s) return R.bed_keys(TD, s) end
 	local function first(s) return R.pick_bed(TD, keys(s), TA) end
-	check(first({mood = "human", underwater = true, water = "sea"}) == "underwater",
+	check(first({key = "temperate", underwater = true, water = "sea"}) == "underwater",
 		"B underwater beats everything")
-	check(first({mood = "underground", night = true}) == "underground", "B underground, no night")
-	check(first({mood = "underground", deep = true}) == "underground_deep", "B deep underground")
-	check(first({mood = "human", water = "sea"}) == "sea", "B sea near the player")
-	check(first({mood = "elf", water = "stream", night = true}) == "stream", "B stream beats night")
-	check(first({mood = "human", night = true}) == "night", "B night bed")
-	check(first({mood = "human"}) == "human", "B day bed")
-	check(first({mood = "dwarf", night = true}) == "dwarf", "B a region without a night row keeps its bed")
-	check(first({mood = "ocean"}) == "ocean", "B open ocean")
-	check(first({mood = "orc"}) == false, "B a mood without a region row: silence")
-	check(R.bed_keys(TD, {mood = nil}) == nil, "B non-mood preset keeps the bed")
-	check(first({mood = nil, water = "sea"}) == "sea", "B non-mood preset still hears the sea")
+	check(first({key = "temperate", water = "sea"}) == "sea", "B sea near the player")
+	check(first({key = "temperate", water = "stream", night = true}) == "stream", "B stream beats night")
+	check(first({key = "temperate", night = true}) == "temperate_night", "B night bed")
+	check(first({key = "temperate"}) == "temperate", "B day bed")
+	check(first({key = "crags_snowy", night = true}) == "crags_snowy",
+		"B a key without a night row keeps its bed")
+	check(first({key = "crags", night = true}) == false and first({key = "crags"}) == "crags",
+		"B crags: the day bed, silence at night")
+	check(first({key = "crags", night = true, water = "sea"}) == "sea", "B crags at night still hear the sea")
+	check(first({key = "savanna"}) == false and first({key = false}) == false,
+		"B a key without a row, or none: silence")
+	check(R.bed_keys(TD, {key = nil}) == nil, "B no key yet: keep the bed")
+	check(first({key = nil, water = "sea"}) == "sea", "B no key yet still hears the sea")
 	local some = {}
 	for k, v in pairs(TA) do some[k] = v end
-	some.n1, some.c2 = nil, nil
-	check(R.pick_bed(TD, keys({mood = "elf", night = true}), some) == "elf",
+	some.n1 = nil
+	check(R.pick_bed(TD, keys({key = "temperate", night = true}), some) == "temperate",
 		"B no night file: the day bed")
-	check(R.pick_bed(TD, keys({mood = "underground", deep = true}), some) == "underground",
-		"B no deep file: the cave bed")
-	check(R.pick_bed(TD, keys({mood = "human", underwater = true}), {}) == false,
+	check(R.pick_bed(TD, keys({key = "temperate", underwater = true}), {}) == false,
 		"B nothing shipped: silence")
 	local ok = true
 	for seed = 1, 20 do
-		if R.bed_sound(TD, "elf", {e2 = true}, seeded(seed)) ~= "e2" then ok = false end
+		if R.bed_sound(TD, "temperate", {t2 = true}, seeded(seed)) ~= "t2" then ok = false end
 	end
 	check(ok, "B variant picked among shipped names only")
 	local b = {seen = 0}
-	check(R.bed_should_change(b, "human") == true, "B first bed starts at once")
-	b.key = "human"
+	check(R.bed_should_change(b, "temperate") == true, "B first bed starts at once")
+	b.key = "temperate"
 	check(R.bed_should_change(b, "stream") == false, "B one pass of stream: wait")
-	check(R.bed_should_change(b, "human") == false, "B back to human: stays")
+	check(R.bed_should_change(b, "temperate") == false, "B back to temperate: stays")
 	check(R.bed_should_change(b, "stream") == false and R.bed_should_change(b, "stream") == true,
 		"B two passes of stream: change")
 	b.key = "stream"
 	check(R.bed_should_change(b, "underwater", true) == true, "B diving changes at once")
 	b.key = "underwater"
 	check(R.bed_should_change(b, "stream", false) == true, "B surfacing changes at once")
-	b.key = "human"
+	b.key = "temperate"
 	check(R.bed_should_change(b, false, true) == true and b.underwater == true,
 		"B diving into silence changes at once")
 	check(math.abs(R.bed_gain(D, 100, true) - D.gains.bed * D.gains.town_bed) < 1e-9 and
 		math.abs(R.bed_gain(D, 50, false) - D.gains.bed * 0.5) < 1e-9, "B gain: volume and town")
 
-	-- the shipped beds (round34-plan.md §2.2a): one row per zone, night beds
-	-- for four regions, the deep cave bed only below deep_y
-	local function real(s) return R.pick_bed(D, R.bed_keys(D, s), AVAILABLE) end
-	local day = {human = "human", elf = "elf", troll = "troll", orc = "orc", dwarf = "dwarf",
-		undead = "undead", battlegrounds = "battlegrounds", dragon_island = "dragon_island",
-		ocean = "ocean"}
-	local night = {human = "night", elf = "night", troll = "night", orc = "night", dwarf = "dwarf",
-		undead = "undead", battlegrounds = "battlegrounds", dragon_island = "dragon_island",
-		ocean = "ocean"}
-	for m, key in pairs(day) do
-		check(real({mood = m}) == key, "B day bed for " .. m)
-		check(real({mood = m, night = true}) == night[m], "B night bed for " .. m)
+	-- the shipped data (code step: only shipped files are named; the groups
+	-- whose files come with the user's approval are silent until then)
+	local function real(key, night) return R.pick_bed(D, R.bed_keys(D, {key = key, night = night}), AVAILABLE) end
+	local day = {temperate = "temperate", savanna = "savanna", jungle = "jungle", badlands = false,
+		swamp = false, crags = false, crags_snowy = false, blight = "blight", beach = "beach",
+		battlegrounds = false, dragon_island = "dragon_island", ocean = "ocean"}
+	local night = {temperate = "temperate_night", savanna = "savanna_night", jungle = "jungle",
+		badlands = false, swamp = false, crags = false, crags_snowy = false, blight = "blight",
+		beach = "beach", battlegrounds = false, dragon_island = "dragon_island", ocean = "ocean"}
+	for k, want in pairs(day) do
+		check(real(k) == want, "B day bed for " .. k .. ": " .. tostring(real(k)))
+		check(real(k, true) == night[k], "B night bed for " .. k .. ": " .. tostring(real(k, true)))
 	end
-	check(real({mood = "underground"}) == "underground" and
-		real({mood = "underground", night = true}) == "underground", "B caves: the cave beds")
-	check(real({mood = "underground", deep = true}) == "underground_deep", "B deep: the crystal cave")
-	local deep_only = true
-	for _, n in ipairs(D.beds.underground) do
-		if n == "grug_ambience_underground_crystal" then deep_only = false end
+	check(D.region.crags.night == false, "B the crags are silent at night (§6.2)")
+	local function names_of(key)
+		local t = {}
+		for _, n in ipairs(D.beds[key] or {}) do t[#t + 1] = n end
+		table.sort(t)
+		return table.concat(t, ",")
 	end
-	check(deep_only and #D.beds.underground_deep == 1, "B the crystal cave plays only deep down")
-	check(real({mood = "elf", water = "sea"}) == "sea" and real({mood = "elf", water = "stream"}) == "elf",
-		"B sea water near the player: the sea bed; no stream bed")
-	check(real({mood = "human", underwater = true}) == false, "B under water: silent")
+	check(names_of("temperate") == "grug_ambience_elf_forest,grug_ambience_human_meadow",
+		"B temperate: the human and elf forest beds (ruling 1)")
+	check(names_of("savanna") == "grug_ambience_orc_steppe" and
+		names_of("jungle") == "grug_ambience_elf_birdsong,grug_ambience_troll_jungle",
+		"B the orc bed in the savanna, the troll bed in the jungle (ruling 1)")
+	check(names_of("wind") == "grug_ambience_battlegrounds_gusts", "B the gusts are the wind (ruling 2)")
+	check(names_of("cave") == "grug_ambience_underground_dungeon" and
+		names_of("cave_deep") == "grug_ambience_underground_crystal", "B the cave beds (ruling 6, §6.6)")
+	local dropped = {grug_ambience_elf_blackbirds = true, grug_ambience_undead_graveyard = true,
+		grug_ambience_underground_dark = true, grug_ambience_orc_wind = true,
+		grug_ambience_dwarf_storm = true, grug_ambience_underground_creepy = true}
+	local named_dropped = {}
+	for _, names in pairs(D.beds) do
+		for _, n in ipairs(names) do if dropped[n] then named_dropped[#named_dropped + 1] = n end end
+	end
+	check(#named_dropped == 0, "B no dropped file is named (ruling 9): " .. table.concat(named_dropped, ","))
+	check(D.beds.underground == nil and D.beds.underwater == nil, "B no underground or underwater bed key")
 	check(D.gains.bed == 0.2, "B every bed at gain 0.2")
 end
 
@@ -149,27 +185,28 @@ end
 -- ---------------------------------------------------------------------------
 do
 	local function ids(s) return table.concat(R.eligible_calls(TD, s, TA), ",") end
-	check(ids({mood = "human", night = true}) == "owl", "C night call by mood")
-	check(ids({mood = "human", night = false}) == "", "C day: none")
-	check(ids({mood = "undead", night = false}) == "crow", "C day call by mood")
-	check(ids({mood = "human", night = true, underwater = true}) == "", "C none under water")
-	check(ids({mood = "underground", night = true}) == "", "C none underground")
-	check(table.concat(R.eligible_calls(TD, {mood = "human", night = true}, {}), ",") == "",
+	check(ids({key = "temperate", night = true}) == "owl", "C night call by sound key")
+	check(ids({key = "temperate", night = false}) == "", "C day: none")
+	check(ids({key = "battlegrounds", night = false}) == "crow", "C day call by sound key")
+	check(ids({key = "temperate", night = true, underwater = true}) == "", "C none under water")
+	check(ids({key = "temperate", night = true, underground = true}) == "", "C none underground")
+	check(table.concat(R.eligible_calls(TD, {key = "temperate", night = true}, {}), ",") == "",
 		"C no shipped file: no call")
 	local function real(s) return table.concat(R.eligible_calls(D, s, AVAILABLE), ",") end
-	check(real({mood = "dragon_island"}) == "thunder" and real({mood = "dragon_island", night = true}) == "thunder",
-		"C pilot: thunder on the dragon islands, day and night")
+	check(real({key = "dragon_island"}) == "thunder" and real({key = "dragon_island", night = true}) == "thunder",
+		"C thunder on the dragon islands, day and night")
+	check(real({key = "dragon_island", surface = 0}) == "thunder", "C thunder ignores the surface level")
 	local others = ""
-	for _, m in ipairs({"human", "elf", "troll", "orc", "dwarf", "undead", "battlegrounds", "ocean"}) do
-		others = others .. real({mood = m}) .. real({mood = m, night = true})
+	for k in pairs(D.region) do
+		if k ~= "dragon_island" then others = others .. real({key = k, surface = 1}) .. real({key = k, night = true, surface = 1}) end
 	end
-	check(others == "", "C pilot: no other call anywhere")
+	check(others == "", "C no other call ships yet: " .. others)
 	local lo, hi = math.huge, -math.huge
 	for seed = 1, 200 do
 		local d = R.next_call_delay(D, seeded(seed))
 		lo, hi = math.min(lo, d), math.max(hi, d)
 	end
-	check(lo >= 90 and hi <= 240, "C thunder is rare: 90-240 s apart")
+	check(lo >= 90 and hi <= 240, "C calls are rare: 90-240 s apart")
 end
 
 -- ---------------------------------------------------------------------------
@@ -274,15 +311,19 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- R  runtime on a fake engine
+-- R  runtime on a fake engine (Round 52: the three layers by the depth below
+-- a per-player surface reference and the biome under the player, both from
+-- a stand-in grug_core.depth_below_surface)
 -- ---------------------------------------------------------------------------
 do
 	local us = 0
 	local steps, joins, leaves, loaded, commands = {}, {}, {}, {}, {}
 	local players = {}
 	local sounds, fades, pushes = {}, {}, {}
+	local huds = {}
 	local next_handle = 0
 	local node_at = {} -- "x,y,z" -> content id
+	local open_default = 0 -- the content id where node_at names none (0: rock)
 	local found_nodes = {}
 	local finds = 0
 	local searched
@@ -293,7 +334,9 @@ do
 	local music = {}
 	for _, track in pairs(D.tracks) do music[#music + 1] = track.file end
 	local CID = {["default:water_source"] = 10, ["default:water_flowing"] = 11,
-		["default:river_water_source"] = 12, ["default:river_water_flowing"] = 13}
+		["default:river_water_source"] = 12, ["default:river_water_flowing"] = 13,
+		air = 99, ignore = 127, ["default:torch"] = 98}
+	local AIR = 99
 	local fake_core = {
 		get_current_modname = function() return "grug_ambience" end,
 		get_modpath = function() return MOD end,
@@ -311,11 +354,13 @@ do
 		get_us_time = function() return us end,
 		get_timeofday = function() return timeofday end,
 		registered_nodes = {
-			["default:water_source"] = {liquidtype = "source"},
-			["default:water_flowing"] = {liquidtype = "flowing",
+			air = {walkable = false}, ignore = {walkable = false},
+			["default:torch"] = {walkable = false},
+			["default:water_source"] = {liquidtype = "source", walkable = false},
+			["default:water_flowing"] = {liquidtype = "flowing", walkable = false,
 				liquid_alternative_source = "default:water_source"},
-			["default:river_water_source"] = {liquidtype = "source"},
-			["default:river_water_flowing"] = {liquidtype = "flowing",
+			["default:river_water_source"] = {liquidtype = "source", walkable = false},
+			["default:river_water_flowing"] = {liquidtype = "flowing", walkable = false,
 				liquid_alternative_source = "default:river_water_source"},
 			["grug_test:bog_flowing"] = {liquidtype = "flowing",
 				liquid_alternative_source = "default:river_water_source"},
@@ -323,8 +368,8 @@ do
 				liquid_alternative_source = "default:lava_source"},
 			["grug_jobs:forge"] = {}, ["grug_decor:cottages_anvil"] = {},
 			["default:furnace_active"] = {}, ["grug_nodes:camp_fire"] = {}},
-		get_content_id = function(name) return CID[name] end,
-		get_node_raw = function(x, y, z) return node_at[x .. "," .. y .. "," .. z] or 0 end,
+		get_content_id = function(name) return CID[name] or 0 end,
+		get_node_raw = function(x, y, z) return node_at[x .. "," .. y .. "," .. z] or open_default end,
 		find_nodes_in_area = function(minp, maxp, names, grouped)
 			finds = finds + 1
 			assert(grouped == true)
@@ -369,12 +414,20 @@ do
 	rawset(_G, "core", fake_core)
 	local mood = {}
 	local in_town = {}
+	-- Per player: the surface reference y (terrain or water surface) and the
+	-- biome under the player; the stand-in counts its calls.
+	local ref, biome = {}, {}
+	local depth_calls = 0
 	rawset(_G, "grug_core", {
 		atmosphere_moods = {human = true, elf = true, dwarf = true, undead = true, orc = true,
 			troll = true, battlegrounds = true, dragon_island = true, ocean = true,
 			underground = true},
 		get_atmosphere = function(name) return mood[name] end,
 		is_day_phase = function(t) return t >= 0.1875 and t <= 0.8125 end,
+		depth_below_surface = function(pos, name)
+			depth_calls = depth_calls + 1
+			return (ref[name] or 9) + 0.5 - pos.y, {biome = biome[name] or "grug_meadows"}
+		end,
 	})
 	rawset(_G, "grug_map", {location = {in_town = function(name) return in_town[name] == true end,
 		capital_of = function() return nil end}})
@@ -392,6 +445,12 @@ do
 		function p:get_player_name() return name end
 		function p:get_pos() return {x = self._pos.x, y = self._pos.y, z = self._pos.z} end
 		function p:get_meta() return meta end
+		function p:hud_add(def)
+			huds[#huds + 1] = {def = def, text = def.text}
+			return #huds
+		end
+		function p:hud_change(id, stat, value) huds[id][stat] = value end
+		function p:hud_remove(id) huds[id].removed = true end
 		players[name] = p
 		for _, fn in ipairs(joins) do fn(p) end
 		return p
@@ -410,6 +469,16 @@ do
 		return list
 	end
 	local function is_bed(s) return s.params.loop and not s.params.pos end
+	local function named(prefix) return function(s) return is_bed(s) and s.spec.name:find(prefix, 1, true) == 1 end end
+	local is_wind = named("grug_ambience_battlegrounds_gusts")
+	local is_cave = function(s) return named("grug_ambience_underground_")(s) end
+	local function fades_of(handle)
+		local list = {}
+		for _, f in ipairs(fades) do if f.handle == handle then list[#list + 1] = f end end
+		return list
+	end
+	local function near(a, b) return type(a) == "number" and math.abs(a - b) < 1e-9 end
+	local FULL = D.gains.bed
 
 	-- slots: eight players, each evaluated once per 2 s
 	local before = A.stats.passes
@@ -427,21 +496,24 @@ do
 	end
 	check(A.stats.passes - before == 8 and table.concat(per_step, ",") == "1,1,1,1,1,1,1,1",
 		"R one player per slot, each once per 2 s: " .. table.concat(per_step, ","))
+	check(#steps == 1, "R one globalstep, no new per-tick work")
 	for i = 1, 8 do
 		players["slot" .. i] = nil
 		for _, fn in ipairs(leaves) do fn({get_player_name = function() return "slot" .. i end}) end
 	end
 
-	-- one player: day bed, night crossfade, water, underwater
+	-- one player on the ground in a meadow: day bed, night crossfade, water
 	sounds, fades, pushes = {}, {}, {}
-	mood.ana = "human"
-	local ana = new_player("ana", {x = 0, y = 10, z = 0})
-	local joined_us = us
+	mood.ana, ref.ana = "human", 9
+	local ana = new_player("ana", {x = 0, y = 9.5, z = 0})
 	run(2)
 	local beds = plays_to("ana", is_bed)
-	check(#beds == 1 and beds[1].spec.name:find("^grug_ambience_human_") and
-		beds[1].params.to_player == "ana" and beds[1].ephemeral == false,
-		"R day bed loops to the player only")
+	check(#beds == 1 and (beds[1].spec.name == "grug_ambience_human_meadow" or
+		beds[1].spec.name == "grug_ambience_elf_forest") and beds[1].params.to_player == "ana" and
+		beds[1].ephemeral == false and near(beds[1].spec.gain, FULL),
+		"R the meadow's temperate bed loops to the player only, at full level")
+	check(#plays_to("ana", is_wind) == 0 and #plays_to("ana", is_cave) == 0,
+		"R on the ground: no wind, no cave bed")
 	local day_handle = beds[1] and beds[1].handle
 	timeofday = 0.95
 	run(2)
@@ -455,34 +527,42 @@ do
 	end
 	check(faded, "R the day bed fades out (crossfade)")
 	-- under water: the eye node is water; no underwater bed ships, so silence
-	node_at["0,12,0"] = 10
+	node_at["0,11,0"] = 10
 	fades = {}
 	local count = #plays_to("ana", is_bed)
 	run(2)
 	local night_off = false
 	for _, f in ipairs(fades) do if f.handle == beds[2].handle and f.gain == 0 then night_off = true end end
 	check(night_off and #plays_to("ana", is_bed) == count, "R under water: the bed stops at once, silence")
-	node_at["0,12,0"] = nil
+	node_at["0,11,0"] = nil
 	run(2)
 	beds = plays_to("ana", is_bed)
 	check(#beds == count + 1 and beds[#beds].spec.name:find("^grug_ambience_night_") ~= nil,
 		"R surfacing: the night bed again")
-	-- at night the elf zone shares the night bed: nothing restarts; the
-	-- dwarf zone keeps its own bed at night: a crossfade after two passes
+	-- at night the elf forest is in the same group: nothing restarts; the
+	-- jungle is another group: a crossfade after two passes
+	biome.ana = "grug_elf_forest"
 	mood.ana = "elf"
 	fades = {}
 	run(4)
 	check(#fades == 0 and #plays_to("ana", is_bed) == count + 1,
-		"R into an elf zone at night: the same night bed goes on")
-	mood.ana = "dwarf"
-	run(4)
-	beds = plays_to("ana", is_bed)
-	check(#fades >= 1 and fades[#fades].gain == 0 and #beds == count + 2 and
-		(beds[#beds].spec.name == "grug_ambience_orc_wind" or
-			beds[#beds].spec.name == "grug_ambience_dwarf_storm"),
-		"R into a dwarf zone at night: a crossfade to the dwarf bed")
-	mood.ana = "human"
+		"R into the elf forest at night: the same temperate night bed goes on")
 	timeofday = 0.5
+	biome.ana = "grug_deep_jungle"
+	mood.ana = "troll"
+	run(2)
+	run(2)
+	beds = plays_to("ana", is_bed)
+	check(#beds >= count + 2 and (beds[#beds].spec.name == "grug_ambience_troll_jungle" or
+		beds[#beds].spec.name == "grug_ambience_elf_birdsong"),
+		"R into the jungle by day: a crossfade to the jungle bed")
+	-- a zone override: the Battlegrounds' own bed is not shipped yet: silence
+	mood.ana = "battlegrounds"
+	fades = {}
+	run(4)
+	check(#fades >= 1 and fades[#fades].gain == 0 and #plays_to("ana", is_bed) == #beds,
+		"R the Battlegrounds override the biome (their bed comes with its file: silence now)")
+	mood.ana, biome.ana = "human", "grug_meadows"
 	run(4)
 
 	-- town: the bed fades to the town gain
@@ -491,10 +571,118 @@ do
 	run(4)
 	local town_fade = false
 	for _, f in ipairs(fades) do
-		if math.abs(f.gain - D.gains.bed * D.gains.town_bed) < 1e-9 then town_fade = true end
+		if near(f.gain, FULL * D.gains.town_bed) then town_fade = true end
 	end
 	check(town_fade, "R in town the bed is quieter")
 	in_town.ana = nil
+	run(4)
+
+	-- digging down: the surface bed fades with the depth, to the floor at
+	-- -15, and is stopped only after three passes there; nothing restarts in
+	-- the shaft
+	beds = plays_to("ana", is_bed)
+	local surface = beds[#beds]
+	fades, sounds = {}, {}
+	ana._pos.y = 9.5 - 7.5 -- depth 7.5: half the surface level
+	run(2)
+	local f = fades_of(surface.handle)
+	check(#f == 1 and near(f[1].gain, 0.5 * FULL) and near(f[1].step, 0.5 * FULL / D.layer_fade),
+		"R 7.5 nodes down: the surface bed fades to 50 % over one pass")
+	ana._pos.y = 9.5 - 7.8 -- 0.3 deeper: inside the dead band
+	run(2)
+	check(#fades_of(surface.handle) == 1, "R a change under 3 % of the bed level sends nothing")
+	ana._pos.y = 9.5 - 15
+	run(2)
+	f = fades_of(surface.handle)
+	check(#f == 2 and near(f[2].gain, R.LEVEL_FLOOR * FULL), "R at -15 the bed fades to the 0.01 floor")
+	run(2)
+	check(#fades_of(surface.handle) == 2, "R a second pass at the floor: nothing")
+	run(2)
+	f = fades_of(surface.handle)
+	check(#f == 3 and f[3].gain == 0, "R the third pass at the floor stops the bed (fade to 0)")
+	ana._pos.y = 9.5 - 30
+	run(10)
+	check(#fades_of(surface.handle) == 3 and #plays_to("ana") == 0,
+		"R in the dug shaft: silence, the stopped sound is never touched again")
+	-- hovering around the threshold does not restart the loop every pass
+	ana._pos.y = 9.5 - 14
+	run(2)
+	beds = plays_to("ana", is_bed)
+	check(#beds == 1 and near(beds[1].spec.gain, (1 - 14 / 15) * FULL),
+		"R back up to -14: a new surface sound at 7 %")
+	ana._pos.y = 9.5 - 15.5
+	run(4)
+	ana._pos.y = 9.5 - 14
+	run(2)
+	check(#plays_to("ana", is_bed) == 1, "R dipping below -15 for two passes keeps the sound")
+	ana._pos.y = 9.5
+	run(2)
+	check(#plays_to("ana", is_bed) == 1 and near(fades_of(beds[1].handle)[#fades_of(beds[1].handle)].gain, FULL),
+		"R back on the ground: the same sound fades up to full")
+
+	-- a real cave: open air all round; the cave bed fades in after two
+	-- passes (the probe's hysteresis), quietly
+	open_default = AIR
+	fades, sounds = {}, {}
+	ana._pos.y = 9.5 - 10 -- depth 10
+	run(2)
+	check(#plays_to("ana", is_cave) == 0, "R in a cave: one pass is not enough (hysteresis)")
+	run(2)
+	local caves = plays_to("ana", is_cave)
+	check(#caves == 1 and caves[1].spec.name == "grug_ambience_underground_dungeon" and
+		near(caves[1].spec.gain, (10 - 4) / 12 * 0.4 * FULL),
+		"R in a cave 10 down: the dungeon bed at (10-4)/12 of 40 %")
+	ana._pos.y = 9.5 - 40
+	run(2)
+	f = fades_of(caves[1].handle)
+	check(#f == 1 and near(f[1].gain, 0.4 * FULL), "R deep in the cave: the cave bed at its 40 % cap")
+	-- a dug tunnel: rock all round; the cave bed fades to the floor, stops
+	-- (standing still, the probe's share is reused for up to two passes)
+	open_default = 0
+	run(14)
+	f = fades_of(caves[1].handle)
+	check(#f >= 3 and f[#f].gain == 0 and #plays_to("ana", is_cave) == 1,
+		"R into a dug tunnel: the cave bed goes, nothing else plays")
+	-- the deep cave bed below -500
+	open_default = AIR
+	ana._pos.y = -520
+	ref.ana = -480
+	run(6)
+	caves = plays_to("ana", is_cave)
+	check(caves[#caves].spec.name == "grug_ambience_underground_crystal",
+		"R a real cave below -500: the crystal bed")
+	-- the underground loops: a burning furnace in a mine is heard
+	found_nodes = {["default:furnace_active"] = {{x = 2, y = -520, z = 0}}}
+	run(2)
+	check(#plays_to("ana", function(s) return s.params.loop and s.params.pos end) == 1,
+		"R a burning furnace in the mine plays its loop (Round 52)")
+	found_nodes = {}
+	open_default = 0
+	ref.ana = 9
+	ana._pos.y = 9.5
+	run(8)
+
+	-- a tower and the flying mount: the bed fades from +10, the wind from +30
+	fades, sounds = {}, {}
+	ana._pos.y = 9.5 + 35
+	run(2)
+	local winds = plays_to("ana", is_wind)
+	check(#winds == 1 and near(winds[1].spec.gain, (35 - 30) / 70 * 0.5 * FULL),
+		"R 35 up: the wind starts at (35-30)/70 of 50 %")
+	ana._pos.y = 9.5 + 31
+	run(2)
+	check(#plays_to("ana", is_wind) == 1, "R hovering near +30 does not restart the wind")
+	ana._pos.y = 9.5 + 100
+	run(2)
+	f = fades_of(winds[1].handle)
+	check(near(f[#f].gain, 0.5 * FULL), "R 100 up: the wind at its 50 % cap")
+	ana._pos.y = 9.5 + 300
+	run(2)
+	check(near(fades_of(winds[1].handle)[#fades_of(winds[1].handle)].gain, 0.5 * FULL),
+		"R far above: the wind stays at 50 %")
+	-- music: every layer silent
+	ana._pos.y = 9.5
+	run(8)
 
 	-- emitters: an anvil, a furnace and flowing water near the player, a
 	-- forge far away, a water source next to the player (never a loop; since
@@ -506,6 +694,7 @@ do
 		["default:river_water_flowing"] = {{x = -3, y = 9, z = 0}},
 		["grug_test:bog_flowing"] = {{x = -6, y = 9, z = 0}, {x = -9, y = 9, z = 0}},
 		["default:lava_flowing"] = {{x = 2, y = 9, z = 2}}}
+	sounds = {}
 	local f0 = finds
 	run(2)
 	check(finds - f0 == 1, "R one node search per pass")
@@ -529,8 +718,37 @@ do
 	fades = {}
 	run(2)
 	local loop_fades = 0
-	for _, f in ipairs(fades) do if f.gain == 0 then loop_fades = loop_fades + 1 end end
+	for _, fd in ipairs(fades) do if fd.gain == 0 then loop_fades = loop_fades + 1 end end
 	check(loop_fades == 3, "R loops fade out when out of reach")
+
+	-- the debug line: on, one HUD text with the biome, group, depth, cave
+	-- share and the levels; sent only when it changes; off removes it
+	local ok, msg = commands.ambience.func("ana", "debug")
+	check(ok and msg:find("on") and #huds == 1 and huds[1].def.type == "text" and
+		huds[1].def.position.x == 0, "R /ambience debug: one text line, left")
+	run(2)
+	local shown = huds[1].text
+	check(shown:find("meadows", 1, true) and shown:find("temperate", 1, true) and
+		shown:find("depth 0.0", 1, true) and shown:find("surface 100%", 1, true) and
+		shown:find("wind 0%", 1, true), "R the line names biome, group, depth and levels: " .. shown)
+	local changes = 0
+	local real_change = players.ana.hud_change
+	players.ana.hud_change = function(self, ...) changes = changes + 1 return real_change(self, ...) end
+	run(6)
+	check(changes == 0, "R nothing changed: nothing sent")
+	ana._pos.y = 9.5 - 7.5
+	run(2)
+	check(changes == 1 and huds[1].text:find("surface 50%", 1, true), "R a change is sent once")
+	ana._pos.y = 9.5 + 100
+	run(2)
+	check(huds[1].text:find("surface 0% cave 0% wind 50%", 1, true) ~= nil,
+		"R 100 up: the line shows the wind's level: " .. huds[1].text)
+	players.ana.hud_change = real_change
+	ok = commands.ambience.func("ana", "debug")
+	check(ok and huds[1].removed, "R /ambience debug again removes it")
+	check(commands.music.func("ana", "debug") == false, "R /music debug is no word")
+	ana._pos.y = 9.5
+	run(4)
 
 	-- no music outside a capital (Round 35; the music runtime: tools/r35_m)
 	run(600)
@@ -541,22 +759,27 @@ do
 	check(A.get(ana, "ambience").on and A.get(ana, "ambience").volume == R.DEFAULT_VOLUME.ambience,
 		"R the ambience checkbox after 0 restores the default volume")
 	run(2)
+	-- a volume change fades every playing layer
+	fades = {}
+	commands.ambience.func("ana", "50")
+	check(#fades == 1 and near(fades[1].gain, 0.5 * FULL), "R /ambience 50 fades the bed to half")
+	commands.ambience.func("ana", "100")
 	-- ambience off: the bed fades, nothing new plays
 	fades, sounds = {}, {}
 	commands.ambience.func("ana", "off")
 	local bed_off = false
-	for _, f in ipairs(fades) do if f.gain == 0 then bed_off = true end end
+	for _, fd in ipairs(fades) do if fd.gain == 0 then bed_off = true end end
 	run(600)
 	check(bed_off and #plays_to("ana", function(s) return s.spec.name:find("^grug_ambience_") end) == 0,
 		"R ambience off: bed stops, no bed, call or loop for 10 min")
 	commands.ambience.func("ana", "on")
 	run(2)
 	check(#plays_to("ana", is_bed) == 1, "R ambience on: the bed returns at once")
-	-- calls: none in the human region, rare thunder on a dragon island
+	-- calls: none in the meadows, rare thunder on a dragon island
 	timeofday = 0.95
 	sounds = {}
 	run(1800)
-	check(#plays_to("ana", function(s) return s.ephemeral end) == 0, "R no calls in the human region")
+	check(#plays_to("ana", function(s) return s.ephemeral end) == 0, "R no calls in the meadows")
 	mood.ana = "dragon_island"
 	run(1800)
 	local calls = plays_to("ana", function(s) return s.ephemeral end)
@@ -565,6 +788,10 @@ do
 		if not s.params.pos or s.spec.name ~= "grug_ambience_call_thunder" then spread_ok = false end
 	end
 	check(spread_ok, "R thunder on a dragon island: positional, minutes apart (" .. #calls .. " in 30 min)")
+	mood.ana = "underground"
+	sounds = {}
+	run(1800)
+	check(#plays_to("ana", function(s) return s.ephemeral end) == 0, "R no thunder in the underground mood")
 	players.ana = nil
 	for _, fn in ipairs(leaves) do fn(ana) end
 end
@@ -578,10 +805,14 @@ do
 			check(D.tracks[id] ~= nil, "F rotation " .. capital .. " track " .. id)
 		end
 	end
-	for mood, row in pairs(D.region) do
-		check(D.beds[row.day] ~= nil and (row.night == nil or D.beds[row.night] ~= nil),
-			"F region " .. mood .. " beds exist")
+	for key, row in pairs(D.region) do
+		check(D.beds[row.day] ~= nil and (not row.night or D.beds[row.night] ~= nil),
+			"F region " .. key .. " beds exist")
 	end
+	for biome, group in pairs(D.groups) do
+		check(D.region[group] ~= nil, "F group " .. group .. " of " .. biome .. " has a row")
+	end
+	for mood in pairs(D.overrides) do check(D.region[mood] ~= nil, "F override " .. mood .. " has a row") end
 	for id, call in pairs(D.calls) do
 		check(call.distance[1] >= 8 and call.distance[2] >= call.distance[1], "F call " .. id .. " distance")
 	end

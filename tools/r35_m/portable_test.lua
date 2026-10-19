@@ -19,8 +19,9 @@
 --   R  runtime on a fake engine: a start town gets no music and the town
 --      bed; entering a capital pushes a track of its rotation and silences
 --      the bed in the same pass; music off fades the track out and brings
---      the bed back; leaving fades the music out; default volume 35 %, the
---      Help dropdown in 5 % steps, /music help;
+--      the bed back; leaving fades the music out; Round 52: the wind (up a
+--      tower) goes and returns with the music like the bed; default volume
+--      35 %, the Help dropdown in 5 % steps, /music help;
 --   D  data: one rotation for each of the six capitals, every track known
 --      and shipped, Master of the Feast in none, no region pools, the Help
 --      text.
@@ -397,10 +398,14 @@ do
 		log = function() end,
 	})
 	local in_town, capital = {}, {}
+	local stub_depth = 0
 	rawset(_G, "grug_core", {
 		atmosphere_moods = {human = true},
 		get_atmosphere = function() return "human" end,
 		is_day_phase = function() return true end,
+		-- Round 52: in a meadow (the temperate bed), on the ground (the
+		-- surface layer alone at full level) unless a check lifts the player.
+		depth_below_surface = function() return stub_depth, {biome = "grug_meadows"} end,
 	})
 	rawset(_G, "grug_map", {location = {
 		in_town = function(name) return in_town[name] == true end,
@@ -538,6 +543,24 @@ do
 		"R /music on after 0 restores 35 %")
 	check(commands.music.description:find("capitals") ~= nil and
 		commands.music.description:find("35") ~= nil, "R /music help names the capitals and 35 %")
+
+	-- Round 52: up a tower the wind plays beside the bed; where music plays
+	-- every layer is silent, and both return with the music off
+	stub_depth = -60
+	sounds, fades, pushes = {}, {}, {}
+	run(4)
+	local function is_wind(s) return is_bed(s) and s.spec.name == "grug_ambience_battlegrounds_gusts" end
+	local winds = filter(sounds, is_wind)
+	check(#winds == 1, "R 60 up outside a capital: the wind plays")
+	capital.ana = "highcourt"
+	run(2)
+	check(#fades_of(winds[1] and winds[1].handle, 0) == 1, "R music starts: the wind goes too")
+	run(20)
+	check(#filter(sounds, is_wind) == 1, "R no wind while music plays")
+	capital.ana = nil
+	run(2)
+	check(#filter(sounds, is_wind) == 2, "R leaving the capital: the wind returns")
+	stub_depth = 0
 
 	-- leave: later callback harmless
 	players.ana = nil

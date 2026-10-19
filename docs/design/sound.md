@@ -216,47 +216,78 @@ family.
 
 Every online player is evaluated once every 2 s in one of eight slots of
 0.25 s, so no step handles every player. A pass reads the atmosphere mood the
-player already carries (`grug_core.get_atmosphere`), day or night from the
-world clock, the town flag and the capital of the location sampler
-(`grug_map.location.in_town`, `capital_of`), one water probe and, above
-ground, one node search for the loops (§4.4). A forced `/atmosphere <mood>`
-preset drives the bed like the zone would; a preset that is no mood keeps
-what the player had.
+player already carries (`grug_core.get_atmosphere`), the depth below the
+surface and the biome under the player (`grug_core.depth_below_surface`,
+from a per-player column memo: a zone query only on a new node column), day
+or night from the world clock, the town flag and the capital of the location
+sampler (`grug_map.location.in_town`, `capital_of`), one water probe, the
+cave probe (§4.2a) and, out of water, one node search for the loops (§4.4).
+A forced `/atmosphere` Battlegrounds, dragon-island or ocean preset
+overrides the biome group like the zone would; any other preset leaves the
+biome in charge (since Round 52 a forced `underground` no longer drives the
+beds). `/ambience debug` toggles a one-line HUD readout for the player who
+types it: biome, sound group, depth, cave share and verdict, the three
+layers' levels.
 
 ### 4.2 Which bed
 
-One looped bed per player, to that player only, at the bed gain (the same
-for every bed) times the player's volume:
+Round 52 ([plan](../planning/round52-ambience-plan.md)): up to three looped
+beds per player, to that player only — the **surface** bed, the **cave**
+bed and the **wind** — at the bed gain (the same for every bed) times the
+player's volume times each layer's level:
 
 - **Under water** (the eye in water): no bed; ambience is silent.
-- **Underground** (the `underground` mood, below y −20): a cave bed, day or
-  night alike; below y −500 the deep crystal-cave bed.
 - **Sea water near the player** (default water around the feet): the sea bed,
-  over the region's. River and lake water has no bed of its own; the region
-  bed plays.
-- **The region's bed** by mood: humans, elves, trolls, orcs, dwarves, undead,
-  the Battlegrounds, the dragon islands and the open ocean each have a day
-  bed (one or two variants). **At night** humans, elves, trolls and orcs
-  switch to the night bed (crickets and night forest); the other regions keep
-  their day bed.
-- **In start towns and capitals** the bed plays at half gain.
-- **Either music or the bed, never both** (Round 35): where music plays — in
-  a capital with music on — the bed is silent; with music off the capital's
-  bed plays again. Outside the capitals there is no music and the beds play
-  as above. Calls and the loops of §4.4 are not affected.
-- A mood without a row has no bed.
+  over the surface bed. River and lake water has no bed of its own.
+- **The surface bed by sound key:** a zone override by mood (the
+  Battlegrounds, the dragon islands, the open ocean), else the sound group
+  of the biome under the player (`D.groups`: temperate for meadows, deep
+  forest, elf forest and pine hills; savanna; jungle; badlands; swamp;
+  crags; snowy crags; blight with the bone forest; beach). Moving between
+  biomes of one group changes nothing. A group may have a night bed; the
+  crags are silent at night. A group whose files are not shipped yet is
+  silent.
+- **The levels follow the height relative to the surface** (the terrain, or
+  the water surface over water; buildings and towers do not count),
+  linearly: the surface bed 100 % from the ground up to +10, 0 % at −15 and
+  at +60; the wind 0 % at +30, 50 % from +100; on high ground (within 4
+  nodes of the surface or above it) a peak wind of up to 25 % above an
+  absolute height (`D.layers.peak`); the cave bed only in a real cave (§4.2a)
+  from 0 % at −4 to 40 % at −16, below y −500 the deep crystal-cave bed. A
+  dug tunnel has no bed: the surface fades out.
+- **In start towns and capitals** every layer plays at half gain.
+- **Either music or the beds, never both** (Round 35): where music plays — in
+  a capital with music on — every layer is silent; with music off the
+  capital's beds play again. Outside the capitals there is no music and the
+  beds play as above. Calls and the loops of §4.4 are not affected.
 
-A new bed must be wanted on two passes in a row before it replaces the playing
-one (walking a shore or a town edge does not swap beds every pass); diving in
-or surfacing changes at once, and so does music starting or ending. A change crossfades over 3 s. Which file plays
-for which mood: `D.beds` and `D.region` in `data.lua`.
+A new surface bed must be wanted on two passes in a row before it replaces
+the playing one (walking a shore, a town edge or a biome border does not swap
+beds every pass); diving in or surfacing changes at once, and so does music
+starting or ending. A bed change crossfades over 3 s; a level change fades
+over one pass (2 s) and is sent only when it moved by 3 % of the bed level. A
+layer whose level falls to 0 fades to 1 % and is stopped only after three
+passes there, so hovering at a threshold does not restart loops. Which file
+plays for which key: `D.beds` and `D.region` in `data.lua`.
+
+### 4.2a Cave or dug tunnel
+
+A real cave is told from a dug tunnel by the open air around the player: a
+5 × 3 × 5 grid with a 2-node stride round the feet (75 `get_node_raw`
+reads; open air is a node a player walks through that is no liquid, an
+unloaded node counts as rock). A share at or above `D.cave.threshold` on two
+passes in a row is a cave. The probe runs only deeper than 4 nodes and
+again only after a move of 2 nodes or every third pass. A large dug hall
+counts as a cave.
 
 ### 4.3 Calls
 
-One-shot calls at a point 40–56 nodes from the player, to that player, at
-most one per 90–240 s. This round ships one: **distant thunder on the dragon
-islands** (four variants). No owl, crow, hawk or wolf calls (user: fewer
-layers).
+One-shot calls at a point around the player, to that player, at most one
+per 90–240 s, by sound key (a group or a zone override) and time of day,
+none under water or underground. Shipped: **distant thunder on the dragon
+islands** (four variants, 40–56 nodes away). Animal calls (Round 52: crows,
+hawks, owls, wolves; 24–40 nodes away, only while the surface bed is at
+50 % or more) come with their approved files.
 
 ### 4.4 Loops at hearths and flowing water
 
@@ -280,7 +311,8 @@ short hammer cue).
 
 At most the nearest two of each kind play; a playing loop stays while it is
 among the nearest four, so walking along a river does not restart it. No loops
-under water or underground. The engine ignores `max_hear_distance` for a
+under water; since Round 52 they play underground too (a burning furnace in
+a mine). The engine ignores `max_hear_distance` for a
 personal sound, so the choice drops nodes beyond their hearing distance
 itself.
 

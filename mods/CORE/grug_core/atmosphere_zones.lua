@@ -396,19 +396,22 @@ end)
 -- Zone resolution
 ---------------------------------------------------------------------------
 
--- Sea level is y = 1 (minetest.conf water_level, mirrored in the authored
--- source as constants.water_level). The shallowest authored relief profile,
--- wetland_delta, is pinned at min_above_water = 2, so no authored DRY land
--- surface exists below y = 3. y < -20 is therefore at least 23 nodes under the
--- lowest possible ground and cannot be reached by walking; a player there is
--- inside rock, a cave or a mine. It is also well above the y = -37 line where
--- the authored broad fills start (world_zones.md §13.1), so the threshold
--- never argues with mapgen.
-local UNDERGROUND_Y = -20
+-- Underground is relative to the terrain (Round 52 ruling 5,
+-- round52-ambience-plan.md §3.2 step 3): a player more than UNDERGROUND_IN
+-- nodes below the surface reference (grug_core.depth_below_surface below)
+-- turns underground, and turns back only above UNDERGROUND_OUT. The band
+-- matters because a relative depth changes along a level tunnel under
+-- rolling ground: without it sky and fog would flip every pass there, and
+-- each flip is a full set_atmosphere (three packets). Before Round 52 the
+-- switch was the absolute y < -20.
+local UNDERGROUND_IN, UNDERGROUND_OUT = 20, 16
 
--- Deep ocean and the immutable dragon channels are full-column classes
--- (world_zones.md §13.2 territory precedence), so the ocean mood holds at every
--- depth there: id_at returns nil and we never reach the underground branch.
+-- The deep ocean has no owner (world_zones.md §13.2 territory precedence),
+-- so the ocean mood holds at every depth there: id_at returns nil and we
+-- never reach the underground branch. Since Round 51 the dragon channels
+-- belong to their island's zone (wp40/zones.lua OWNER_CLASSES), so they show
+-- the dragon-island mood, and underground below the channel floor like any
+-- other owned column.
 
 local DEFAULT_MOOD = grug_core.ATMOSPHERE_DEFAULT
 
@@ -429,6 +432,79 @@ local function zone_api()
 	zones_api = grug_zones
 	return zones_api
 end
+
+---------------------------------------------------------------------------
+-- Depth below the surface (Round 52, round52-ambience-plan.md §3.2 steps 2
+-- and 11)
+---------------------------------------------------------------------------
+
+-- grug_core.depth_below_surface(pos[, name]) -> depth, column
+--   depth   nodes from the top face of the surface node down to pos.y:
+--           0 standing on the ground, positive below it, negative above it;
+--           nil while no zone authority exists.
+--   column  the column record {x, z, ref, zone_id, biome} (read-only for
+--           the caller; reused, so never kept past the call).
+-- The surface reference `ref` is the terrain (graded ground, roads and
+-- shores; buildings and towers do not count) or, over water, the water
+-- surface: terrain_height_at is the BED under a lake, a river, a swamp pool
+-- or the sea, so a swimmer or a boat would otherwise count as high above the
+-- ground. water_query_at gives the water depth of a wet column (and a bare
+-- nil for a dry one, from cached fields only), so the surface is terrain +
+-- depth; over the sea's classes the depth is 1 - terrain, which is <= 0 on a
+-- high shelf, hence the max. Over the ownerless deep ocean this is sea level
+-- (y 1). Both callers (this file's driver and grug_ambience) ask once per
+-- player every 2 s.
+--
+-- COST: one column memo per player, shared by both callers. A player who
+-- stays in one node column (standing, building, mining in place, climbing a
+-- shaft) costs no zone query at all, and two modules asking in the same
+-- column cost one. A new column costs terrain_height_at (warm: below a
+-- microsecond, height.lua's block memo; a column never computed: about
+-- 0.18 ms), water_query_at, id_at and biome_at. The memo never goes stale:
+-- the world's layout is fixed for the life of the server.
+local floor = math.floor
+local columns = {}
+local ANONYMOUS = {}
+-- Comparison figures for the engine probe (tools/r52_amb): calls, calls
+-- served by the memo, column computations and their microseconds.
+local depth_stats = {calls = 0, hits = 0, columns = 0, us = 0}
+grug_core.depth_stats = depth_stats
+
+function grug_core.depth_below_surface(pos, name)
+	local zones = zone_api()
+	if not zones then
+		return nil
+	end
+	depth_stats.calls = depth_stats.calls + 1
+	-- The node column holding pos (the zone queries round the same way).
+	local x, z = floor(pos.x + 0.5), floor(pos.z + 0.5)
+	local column = ANONYMOUS
+	if name then
+		column = columns[name]
+		if not column then
+			column = {}
+			columns[name] = column
+		end
+	end
+	if column.x == x and column.z == z then
+		depth_stats.hits = depth_stats.hits + 1
+	else
+		local started = core.get_us_time()
+		local terrain = zones.terrain_height_at(x, z)
+		local _, _, _, _, water = zones.water_query_at(x, z)
+		local zone_id = zones.id_at(x, z)
+		column.x, column.z, column.zone_id = x, z, zone_id
+		column.ref = (water and water > 0) and terrain + water or terrain
+		column.biome = zone_id and zones.biome_at(x, z) or nil
+		depth_stats.columns = depth_stats.columns + 1
+		depth_stats.us = depth_stats.us + (core.get_us_time() - started)
+	end
+	return column.ref + 0.5 - pos.y, column
+end
+
+core.register_on_leaveplayer(function(player)
+	columns[player:get_player_name()] = nil
+end)
 
 -- zone id -> mood name. At most 38 entries for the whole life of the server
 -- (world_zones.md §8 has 38 zones), each filled by exactly one grug_zones.get
@@ -461,30 +537,43 @@ local function classify(zones, zone_id)
 	return DEFAULT_MOOD
 end
 
--- The mood a position should be showing, or nil when no zone authority exists
--- yet (in which case the player keeps whatever they have).
-local function mood_key_at(pos)
-	local zones = zone_api()
-	if not zones then
+-- Player name -> true while that player is in the underground band (in at
+-- a depth above UNDERGROUND_IN, out below UNDERGROUND_OUT).
+local underground_of = {}
+
+-- Pure: the band's next state from the last one and the depth.
+local function underground_band(was, depth)
+	if was then
+		return depth >= UNDERGROUND_OUT
+	end
+	return depth > UNDERGROUND_IN
+end
+
+-- The mood a position should be showing for player `name`, or nil when no
+-- zone authority exists yet (in which case the player keeps whatever they
+-- have).
+local function mood_key_at(pos, name)
+	-- THE COST OF THIS PACKAGE, per evaluated player per 2 s: one
+	-- depth_below_surface, which answers from the player's column memo
+	-- while the player stays in one node column and otherwise runs the
+	-- column's zone queries once (see there). The zone id comes from the
+	-- same column record.
+	local depth, column = grug_core.depth_below_surface(pos, name)
+	if not depth then
 		return nil
 	end
-	-- THE COST OF THIS PACKAGE, per evaluated player per 2 s: one id_at.
-	-- id_at is the allocation-free hot point query of the public surface
-	-- (world_zones.md §13.2); it normalises x/z, runs one
-	-- classification_values_at and indexes the owner table
-	-- (wp40/zones.lua:1122-1127). The same call is what grug_mobs' spawn
-	-- policy already performs per spawn candidate
-	-- (grug_mobs/spawn_policy.lua:138), at a far higher rate than this.
-	local zone_id = zones.id_at(pos.x, pos.z)
+	local zone_id = column.zone_id
 	if not zone_id then
 		return "ocean"
 	end
-	if pos.y < UNDERGROUND_Y then
+	local under = underground_band(underground_of[name], depth)
+	underground_of[name] = under or nil
+	if under then
 		return "underground"
 	end
 	local key = mood_by_zone[zone_id]
 	if not key then
-		key = classify(zones, zone_id)
+		key = classify(zone_api(), zone_id)
 		mood_by_zone[zone_id] = key
 	end
 	return key
@@ -524,7 +613,7 @@ local function evaluate(name)
 	if not player then
 		return
 	end
-	local key = mood_key_at(player:get_pos())
+	local key = mood_key_at(player:get_pos(), name)
 	if not key then
 		return
 	end
@@ -570,6 +659,7 @@ core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	slot_of[name] = nil
 	auto_off[name] = nil
+	underground_of[name] = nil
 end)
 
 ---------------------------------------------------------------------------
@@ -586,7 +676,7 @@ function grug_core.atmosphere_resume_auto(name)
 	if not player then
 		return "Atmosphere: auto (zone-driven) again."
 	end
-	local key = mood_key_at(player:get_pos())
+	local key = mood_key_at(player:get_pos(), name)
 	if not key then
 		return "Atmosphere: auto (zone-driven) again; " ..
 			"no zone authority is installed yet."
