@@ -69,7 +69,7 @@ local path = repo .. "/mods/PLAYER/grug_map/base.lua"
 local text = assert(io.open(path, "rb")):read("*a")
 text = text:gsub("\nreturn M%s*$", "\nM._render = render\nreturn M\n")
 local M = assert(loadstring(text, "@" .. path))()
-local view = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
+local view = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua").view()
 local spec = M.spec(quality)
 
 local function assemble(name, tiles, width, height)

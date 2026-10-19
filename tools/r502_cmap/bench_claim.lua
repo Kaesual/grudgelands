@@ -160,13 +160,15 @@ rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"
 	location = {text_of = function() return "Dawnmere Fields" end}})
 local base = dofile(repo .. "/mods/PLAYER/grug_map/base.lua")
 grug_map.base = base
-local installed = {quality = "normal", width = 1080, height = 960,
-	tiles = base.tiles(1080, 960)}
-installed.texture = base.combined_texture(1080, 960, installed.tiles)
-installed.minimap = {quality = "normal", width = 1080, height = 960,
-	tiles = base.tiles(1080, 960, base.MINI_PREFIX),
-	claim = {accord = base.tiles(1080, 960, base.CLAIM_PREFIX .. "_accord"),
-		throng = base.tiles(1080, 960, base.CLAIM_PREFIX .. "_throng")}}
+-- the tree's normal size (1215 x 1080 since Round 51)
+local NW, NH = base.QUALITY.normal.width, base.QUALITY.normal.height
+local installed = {quality = "normal", width = NW, height = NH,
+	tiles = base.tiles(NW, NH)}
+installed.texture = base.combined_texture(NW, NH, installed.tiles)
+installed.minimap = {quality = "normal", width = NW, height = NH,
+	tiles = base.tiles(NW, NH, base.MINI_PREFIX),
+	claim = {accord = base.tiles(NW, NH, base.CLAIM_PREFIX .. "_accord"),
+		throng = base.tiles(NW, NH, base.CLAIM_PREFIX .. "_throng")}}
 grug_map.atlas.set_base_texture(installed.texture)
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 grug_map.minimap.install(installed)
@@ -217,7 +219,7 @@ for round, held in ipairs({false, true, false, true}) do
 end
 
 -- 2. texture growth on the tour (as texture_growth.lua)
-local BOUNDS = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200}
+local BOUNDS = grug_map.atlas.view()
 local view = grug_map.minimap.geometry()
 local bytes = view.pixels * view.pixels * 4
 local function tour(mode, hours, speed)
