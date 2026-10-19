@@ -24,11 +24,10 @@ local SETTLE = tonumber(core.settings:get("r52wfx_settle") or "") or 3
 local STRIP = "grug_probe_r52_wfx_strip.png"
 local SWORD = "grug_gear:sword_iron"
 local SKILL = "grug_abilities:charge"
-local MODE = core.settings:get("r52wfx_mode") or "probe"
-local ART = MODE == "art"
+local ART = core.settings:get("r52wfx_mode") == "art"
 local function log(msg) core.log("action", P .. msg) end
 
-if MODE == "probe" then
+if not ART then
 	core.override_item(SKILL, {wield_overlay = {name = grug_abilities.NO_OVERLAY,
 		animation = {type = "vertical_frames", aspect_w = 16, aspect_h = 16, length = 4.0}}})
 end
@@ -107,20 +106,6 @@ if ART then
 			{"quarry", "loose", "bow"}, {"veil", "opening", "dagger"}}) do
 		SHOTS[#SHOTS + 1] = {name = "F_" .. row[1] .. "_" .. row[3],
 			act = show_family(row[2], row[3])}
-	end
-end
-
--- `r52wfx_mode = third`: the third-person weapon from the front (what other
--- players see), each skill's still overlay through grug_visuals' holder.
-if MODE == "third" then
-	SHOTS = {}
-	for _, row in ipairs({{"ruin", "charge", "sword"}, {"ember", "fireball", "staff"},
-			{"bulwark", "taunt", "greataxe"}, {"none", "strike", "sword"}}) do
-		local show = show_family(row[2], row[3])
-		SHOTS[#SHOTS + 1] = {name = "T_" .. row[1] .. "_" .. row[3], act = function(player)
-			player:set_camera({mode = "third_front"})
-			show(player)
-		end}
 	end
 end
 

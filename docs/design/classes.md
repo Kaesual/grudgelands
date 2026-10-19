@@ -656,10 +656,7 @@ Revised 2026-09-23, Round 18:
   class wields and per bow draw stage, one animation per family on the item
   definition, the strip's name in the stack meta. An empty slot, Strike and a
   strip not yet picked show none (a transparent override); a strip ships only
-  once the user picked it. Third person and other players see the family on
-  the held weapon as a still (the family's `still` frame; the engine animates
-  an entity's item image only when its light changes), the user's call of
-  2026-10-19.
+  once the user picked it. Third person and other players never show it.
 - Existing accepted weapon and armor media are unchanged. The round delivers a
   reviewed active-skill contact sheet and provenance for imported/generated icons.
 

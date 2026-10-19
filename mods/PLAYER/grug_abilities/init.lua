@@ -811,19 +811,16 @@ grug_abilities.WEAPON_FX = {
 -- the animation (src/inventory.cpp ItemStack::getWieldOverlay). A strip is
 -- `frames` vertical 16 x 16 frames of `frame_length` seconds each. The user's
 -- picks of 2026-10-19 (D7; tools/r52_art/arta drop 03 on r52-arta); a family
--- without an entry shows no overlay. `still` is the frame (from 0) the
--- third-person weapon shows (grug_abilities.third_person_hand): the one with
--- the most pixels the wield mesh draws (alpha >= 128) over the family's
--- strips (tools/r52_wfx/still_frames.py --check).
+-- without an entry shows no overlay.
 grug_abilities.WEAPON_FX_ANIMATION = {
-	ember = {frames = 8, frame_length = 0.12, still = 2},
-	rime = {frames = 12, frame_length = 0.26, still = 4},
-	bulwark = {frames = 12, frame_length = 0.18, still = 2},
-	ruin = {frames = 10, frame_length = 0.16, still = 4},
-	mercy = {frames = 12, frame_length = 0.28, still = 4},
-	reckoning = {frames = 12, frame_length = 0.16, still = 2},
-	quarry = {frames = 12, frame_length = 0.26, still = 5},
-	veil = {frames = 12, frame_length = 0.28, still = 4},
+	ember = {frames = 8, frame_length = 0.12},
+	rime = {frames = 12, frame_length = 0.26},
+	bulwark = {frames = 12, frame_length = 0.18},
+	ruin = {frames = 10, frame_length = 0.16},
+	mercy = {frames = 12, frame_length = 0.28},
+	reckoning = {frames = 12, frame_length = 0.16},
+	quarry = {frames = 12, frame_length = 0.26},
+	veil = {frames = 12, frame_length = 0.28},
 }
 
 -- The overlay a skill shows where it has none: a transparent image the client
@@ -1780,10 +1777,11 @@ local function def_image(img)
 	return img or ""
 end
 
--- The wield source image of one stack. Empty when there is nothing to wear
--- (an empty stack, or an item with no inventory image -- a node item).
--- Mirrors the engine's own resolution order: stack meta wins over the
--- definition (src/inventory.cpp:258-295).
+-- The wield source image of what is in one hand slot, and the slot item's
+-- weapon family (grug_gear.weapon_family; nil for anything else). Empty when
+-- there is nothing to wear (an empty slot, or an item with no inventory image
+-- -- a node item). Mirrors the engine's own resolution order: stack meta wins
+-- over the definition (src/inventory.cpp:258-295).
 --
 -- The wield source is asked for SEPARATELY rather than reusing the inventory
 -- image: an item may define its own `wield_image`, and the engine prefers it
@@ -1791,7 +1789,8 @@ end
 -- (src/client/wieldmesh.cpp:454-493). No shipped weapon defines one today --
 -- taking the inventory image is correct for every one of them -- but the day
 -- one does, the ability item would have shown the wrong art in hand.
-local function wield_source(stack)
+local function slot_source(player, slot)
+	local stack = grug_inventory.get_cosmetic_hand(player, slot)
 	if not stack or stack:is_empty() then
 		return ""
 	end
@@ -1813,49 +1812,8 @@ local function wield_source(stack)
 	if wield_src == "" then
 		wield_src = inventory_src
 	end
-	return wield_src
+	return wield_src, grug_gear.weapon_family(stack)
 end
-
--- The wield source of what is in one hand slot, and the slot item's weapon
--- family (grug_gear.weapon_family; nil for anything else).
-local function slot_source(player, slot)
-	local stack = grug_inventory.get_cosmetic_hand(player, slot)
-	if not stack or stack:is_empty() then
-		return ""
-	end
-	return wield_source(stack), grug_gear.weapon_family(stack)
-end
-
--- The third-person hand of a held skill (the user, 2026-10-19: other players
--- may see which skill family someone holds): the cosmetic weapon `hand` with
--- the skill's idle strip as a STILL overlay, the family's `still` frame. An
--- entity redraws an animated item image only when its light changes
--- (src/client/content_cao.cpp GenericCAO::setNodeLight), so a running
--- animation is not available there. The weapon's own definition has no
--- overlay animation, so the name is drawn as it is; the wield image is set
--- because the engine draws `wield_overlay` only on its wield-image path
--- (src/client/wieldmesh.cpp WieldMeshSceneNode::setItem). `hand` unchanged
--- for Strike, an unpicked strip or a non-weapon. grug_visuals' held-item
--- holder asks through grug_visuals.skill_hand (set below).
-function grug_abilities.third_person_hand(skill_name, hand)
-	local def = item_defs[skill_name]
-	if not def or not hand or hand:is_empty() then
-		return hand
-	end
-	local strip = grug_abilities.skin_overlay(def, grug_gear.weapon_family(hand))
-	local fx = grug_abilities.WEAPON_FX_ANIMATION[grug_abilities.WEAPON_FX[def.id]]
-	local src = wield_source(hand)
-	if strip == NO_OVERLAY or not fx or src == "" then
-		return hand
-	end
-	local shown = ItemStack(hand)
-	local meta = shown:get_meta()
-	meta:set_string("wield_image", src)
-	meta:set_string("wield_overlay", strip .. "^[verticalframe:" .. fx.frames .. ":" ..
-		fx.still)
-	return shown
-end
-grug_visuals.skill_hand = grug_abilities.third_person_hand
 
 -- Would this source survive the client's image-source splitter? Three inputs
 -- do not, and the source
