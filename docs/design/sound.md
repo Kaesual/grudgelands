@@ -227,7 +227,7 @@ overrides the biome group like the zone would; any other preset leaves the
 biome in charge (since Round 52 a forced `underground` no longer drives the
 beds). `/ambience debug` toggles a one-line HUD readout for the player who
 types it: biome, sound group, depth, cave share and verdict, the three
-layers' levels.
+layers' levels ("ambience: off" while the ambience is off).
 
 ### 4.2 Which bed
 
@@ -244,16 +244,19 @@ player's volume times each layer's level:
   of the biome under the player (`D.groups`: temperate for meadows, deep
   forest, elf forest and pine hills; savanna; jungle; badlands; swamp;
   crags; snowy crags; blight with the bone forest; beach). Moving between
-  biomes of one group changes nothing. A group may have a night bed; the
-  crags are silent at night. A group whose files are not shipped yet is
-  silent.
+  biomes of one group changes nothing. A group may have a night bed (night
+  insects and owls in the temperate group, night choruses in the jungle,
+  frogs and evening in the swamp, crickets in the badlands); the crags are
+  silent at night, the snowy crags keep their afternoon bed. The
+  Battlegrounds have their own bed ("Abandoned Fields").
 - **The levels follow the height relative to the surface** (the terrain, or
   the water surface over water; buildings and towers do not count),
   linearly: the surface bed 100 % from the ground up to +10, 0 % at −15 and
   at +60; the wind 0 % at +30, 50 % from +100; on high ground (within 4
   nodes of the surface or above it) a peak wind of up to 25 % above an
-  absolute height (`D.layers.peak`); the cave bed only in a real cave (§4.2a)
-  from 0 % at −4 to 40 % at −16, below y −500 the deep crystal-cave bed. A
+  absolute height (`D.layers.peak`, y 215); the cave bed only in a real cave
+  (§4.2a) from 0 % at −4 to 40 % at −16, below y −500 the deep crystal-cave
+  bed (in below −502, out above −498). A
   dug tunnel has no bed: the surface fades out.
 - **In start towns and capitals** every layer plays at half gain.
 - **Either music or the beds, never both** (Round 35): where music plays — in
@@ -284,10 +287,12 @@ counts as a cave.
 
 One-shot calls at a point around the player, to that player, at most one
 per 90–240 s, by sound key (a group or a zone override) and time of day,
-none under water or underground. Shipped: **distant thunder on the dragon
-islands** (four variants, 40–56 nodes away). Animal calls (Round 52: crows,
-hawks, owls, wolves; 24–40 nodes away, only while the surface bed is at
-50 % or more) come with their approved files.
+none under water or underground. **Distant thunder on the dragon islands**
+(four variants, 40–56 nodes away, day and night). Animal calls (Round 52,
+two variants each, 24–40 nodes away, only while the surface bed is at 50 %
+or more): **crows** by day on the Battlegrounds and in the blight, **hawks**
+by day in the crags and badlands, **owls** at night in the temperate group,
+**wolves** at night in the crags and the pine hills.
 
 ### 4.4 Loops at hearths and flowing water
 

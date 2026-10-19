@@ -314,6 +314,14 @@ function R.cave_step(c, share, threshold)
 	return c.cave == true
 end
 
+-- Whether the cave layer plays the deep bed at height `y`, from the last
+-- answer `was`: in below data.deep_y - data.deep_band, out above
+-- data.deep_y + data.deep_band.
+function R.deep_cave(data, was, y)
+	if was then return y < data.deep_y + data.deep_band end
+	return y < data.deep_y - data.deep_band
+end
+
 -- ---------------------------------------------------------------------------
 -- Calls
 -- ---------------------------------------------------------------------------

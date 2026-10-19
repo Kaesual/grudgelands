@@ -118,7 +118,7 @@ end
 -- layers = {surface, cave, wind} (each a rules layer state plus handle and
 -- gain; the surface one also {want, seen, underwater, music}), sound_key
 -- (the group or override last known), cave = {cave, want, seen, share, px,
--- py, pz, age}, emitters = {[hash] = {handle, gain, kind}}, next_call, music
+-- py, pz, age}, deep (the cave layer plays the deep bed), emitters = {[hash] = {handle, gain, kind}}, next_call, music
 -- = rules music state, track_handle, track_gain, shown_track (the track the
 -- minimap's box names), debug = {id, text} while /ambience debug is on}
 local states = {}
@@ -435,6 +435,17 @@ end
 -- biome, the sound group, the depth, the cave share and verdict and the
 -- three layers' levels (`levels`: surface, cave, wind). Sent only when the
 -- shown text changed.
+-- Sends `text` when it differs from the line shown.
+local function set_debug_text(player, st, text)
+	if text ~= st.debug.text then
+		st.debug.text = text
+		player:hud_change(st.debug.id, "text", text)
+	end
+end
+
+-- The line while the ambience is off or at volume 0 (no pass runs then).
+local DEBUG_OFF = "ambience: off"
+
 local function show_debug(player, st, biome, depth, levels)
 	local c = st.cave
 	local text = ("ambience: %s / %s | depth %s | cave %s %s | surface %d%% cave %d%% wind %d%%"):format(
@@ -443,10 +454,7 @@ local function show_debug(player, st, biome, depth, levels)
 		c.share and ("%d%%"):format(floor(c.share * 100 + 0.5)) or "-",
 		c.cave and "cave" or "no", floor(levels[1] * 100 + 0.5),
 		floor(levels[2] * 100 + 0.5), floor(levels[3] * 100 + 0.5))
-	if text ~= st.debug.text then
-		st.debug.text = text
-		player:hud_change(st.debug.id, "text", text)
-	end
+	set_debug_text(player, st, text)
 end
 
 local function set_debug(player, st, on)
@@ -584,8 +592,8 @@ local function evaluate(name, st, now, night)
 		apply_layer(name, surface, R.layer_step(surface, surface_key, surface_level, base))
 		-- The cave and the wind: silent under water and where music plays.
 		local quiet = underwater or music
-		local cave_key = not quiet and R.pick_bed(D, pos.y < D.deep_y and DEEP_CAVE_KEYS or CAVE_KEYS,
-			available)
+		st.deep = R.deep_cave(D, st.deep, pos.y)
+		local cave_key = not quiet and R.pick_bed(D, st.deep and DEEP_CAVE_KEYS or CAVE_KEYS, available)
 		apply_layer(name, layers.cave, R.layer_step(layers.cave, cave_key, cave_level, base))
 		local wind_key = not quiet and R.pick_bed(D, WIND_KEYS, available)
 		apply_layer(name, layers.wind, R.layer_step(layers.wind, wind_key, wind_level, base))
@@ -608,6 +616,8 @@ local function evaluate(name, st, now, night)
 			levels[1], levels[2], levels[3] = surface_level, cave_level, wind_level
 			show_debug(player, st, biome, depth, levels)
 		end
+	elseif st.debug then
+		set_debug_text(player, st, DEBUG_OFF)
 	end
 	stats.passes = stats.passes + 1
 	stats.us = stats.us + (core.get_us_time() - started)

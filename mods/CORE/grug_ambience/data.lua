@@ -81,26 +81,30 @@ D.overrides = {battlegrounds = true, dragon_island = true, ocean = true}
 -- starts and loops until the state changes. Besides the D.region rows:
 -- sea and stream (water near the player; no stream bed ships, so river and
 -- lake water keeps the region bed), the wind layer, the cave layer and its
--- deep variant. A bed whose files are not shipped yet stays silent (the new
--- files of §2 come with the user's approval of their cuts; a list left
--- empty here is filled then).
+-- deep variant. Page ids "SND" are the Round 52 cuts the user approved
+-- (tools/r52_snd/picks.md, the ambience plan's §4 sources).
 D.beds = {
 	temperate = {"grug_ambience_human_meadow", "grug_ambience_elf_forest"}, -- S2 B1.1, B2.3
-	temperate_night = {"grug_ambience_night_forest", "grug_ambience_night_crickets"}, -- S2 B9.1, B9.2
+	temperate_night = {"grug_ambience_night_forest", "grug_ambience_night_crickets",
+		"grug_ambience_night_owl_crickets", "grug_ambience_night_insects"}, -- S2 B9.1, B9.2, SND c_ni4, n_328293
 	savanna = {"grug_ambience_orc_steppe"}, -- S2 B4.4
 	savanna_night = {"grug_ambience_night_crickets"}, -- S2 B9.2
 	jungle = {"grug_ambience_troll_jungle", "grug_ambience_elf_birdsong"}, -- S2 B3.1, B2.2
-	jungle_night = {},
-	badlands = {},
-	badlands_night = {},
-	swamp = {},
-	swamp_night = {},
-	crags = {},
-	crags_snowy = {},
+	jungle_night = {"grug_ambience_jungle_night_crickets", "grug_ambience_night_tropical",
+		"grug_ambience_jungle_night_hills", "grug_ambience_jungle_night_rainforest"}, -- SND n_450537, n_516157, n_635951, n_871624
+	badlands = {"grug_ambience_badlands_quiet", "grug_ambience_badlands_crickets"}, -- SND n_352597, c_or3
+	badlands_night = {"grug_ambience_badlands_crickets"}, -- SND c_or3
+	swamp = {"grug_ambience_swamp_frogs"}, -- SND c_un4
+	swamp_night = {"grug_ambience_swamp_frogs", "grug_ambience_swamp_evening",
+		"grug_ambience_night_tropical"}, -- SND c_un4, n_325501, n_516157
+	-- §6.3: the two short sources stay in the pool with Troodos.
+	crags = {"grug_ambience_crags_mountain", "grug_ambience_crags_birds",
+		"grug_ambience_crags_birds_clear"}, -- SND n_393693, n_733782, n_855953
+	crags_snowy = {"grug_ambience_snow_afternoon"}, -- SND c_dw2, day and night (§6.2)
 	blight = {"grug_ambience_undead_lake"}, -- S2 B6.3
 	beach = {"grug_ambience_sea_waves"}, -- S2 B11.1
-	-- Ruling 2: the Battlegrounds get a bed of their own (§2 n_164272).
-	battlegrounds = {},
+	-- Ruling 2: the Battlegrounds get a bed of their own.
+	battlegrounds = {"grug_ambience_battlegrounds_fields"}, -- SND n_164272
 	dragon_island = {"grug_ambience_dragon_island_coast"}, -- S2 B8.2
 	-- S2 B11.1: the open ocean, and sea water near the player anywhere.
 	ocean = {"grug_ambience_sea_waves"},
@@ -178,20 +182,33 @@ D.cave = {
 }
 
 -- Below this y the cave layer plays the deep bed (the Silversteel tier,
--- world.md mining depths).
+-- world.md mining depths), with a band of deep_band nodes either side: in
+-- below deep_y - deep_band, out above deep_y + deep_band, so a cave floor
+-- at -500 does not swap the two beds back and forth.
 D.deep_y = -500
+D.deep_band = 2
 
 -- Calls: one-shots placed at a random point `distance` nodes from the
 -- player (positional, to that player only), `time` "day", "night" or
 -- "any", where the player's sound key (a group or a zone override) is in
 -- `keys` or the biome under the player in `biomes`; a call with `surface`
 -- plays only while the surface layer is at least that share. Thunder has
--- four variants (.1-.4, picked by the engine; R34 C11.1-C11.4). The animal
--- calls of §3.2 step 8 (crows, hawks, owls, wolves; 24-40 nodes away, only
--- while the surface layer is at 50 % or more) come with their files.
+-- four variants (.1-.4, picked by the engine; R34 C11.1-C11.4) and keeps
+-- its rule; the animal calls of §3.2 step 8 (two variants each, SND
+-- c_ca_*) play 24-40 nodes away and only while the surface layer is at
+-- 50 % or more (no hawks in a mine, no wolves on a tower). The wolves' pine
+-- hills are a biome of the temperate group, hence their `biomes` list.
 D.calls = {
 	thunder = {sound = "grug_ambience_call_thunder", time = "any",
 		keys = {dragon_island = true}, distance = {40, 56}},
+	crow = {sound = "grug_ambience_call_crow", time = "day",
+		keys = {battlegrounds = true, blight = true}, distance = {24, 40}, surface = 0.5},
+	hawk = {sound = "grug_ambience_call_hawk", time = "day",
+		keys = {crags = true, badlands = true}, distance = {24, 40}, surface = 0.5},
+	owl = {sound = "grug_ambience_call_owl", time = "night",
+		keys = {temperate = true}, distance = {24, 40}, surface = 0.5},
+	wolf = {sound = "grug_ambience_call_wolf", time = "night",
+		keys = {crags = true}, biomes = {grug_pine_hills = true}, distance = {24, 40}, surface = 0.5},
 }
 
 -- Loops at nodes near the player (positional, to that player only): node
