@@ -26,10 +26,19 @@ root="$(mktemp -d /tmp/grudgelands-headless.r52-amb-XXXXXX)"
 stage="$(mktemp -d /tmp/grudgelands-probe.r52-amb-XXXXXX)"
 cp -a "$here/grug_probe_r52_amb" "$stage/"
 printf 'return "%s"\n' "$mode" >"$stage/grug_probe_r52_amb/mode.lua"
+# No real player keeps the probe's map loaded, so the staged game's
+# minetest.conf keeps unused blocks for an hour (the walk reads the mine's
+# nodes minutes after digging it) and spawns no mobs.
+mkdir -p "$stage/a" "$stage/b"
+cp "$repo/minetest.conf" "$stage/a/minetest.conf"
+cp "$repo/minetest.conf" "$stage/b/minetest.conf"
+printf '\n# Round 52 AMB probe\nserver_unload_unused_data_timeout = 3600\nmobs_spawn = false\n' \
+	>>"$stage/b/minetest.conf"
+(cd "$stage" && diff -u a/minetest.conf b/minetest.conf >"$stage/probe.patch") || true
 read -r -a launcher <<<"${LAUNCHER:-$repo/tools/luanti_headless.sh}"
 set +e
 (cd "$repo" && SEED="${SEED:-12345}" PROBE="$stage/grug_probe_r52_amb" \
-	ROOT="$root" "${launcher[@]}" "$timeout_s") >"$out/headless.txt" 2>&1
+	GAME_PATCH="$stage/probe.patch" ROOT="$root" "${launcher[@]}" "$timeout_s") >"$out/headless.txt" 2>&1
 code=$?
 set -e
 cat "$out/headless.txt"

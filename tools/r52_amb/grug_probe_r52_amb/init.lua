@@ -326,6 +326,15 @@ local function walk_step(dtime)
 			state.phase, state.phase_t = "settle", 0
 		end
 	elseif state.phase == "settle" then
+		if state.checked ~= state.index then
+			state.checked = state.index
+			local _, counts = core.find_nodes_in_area({x = site.x - 2, y = my - 1, z = site.z - 2},
+				{x = site.x + 42, y = my + 2, z = site.z + 2}, {"air", "default:furnace_active",
+				"default:water_flowing", "ignore"})
+			log(("%s: the tunnel holds air %d, burning furnaces %d, flowing water %d, ignore %d"):format(
+				WALK_PHASES[state.index], counts.air or 0, counts["default:furnace_active"] or 0,
+				counts["default:water_flowing"] or 0, counts.ignore or 0))
+		end
 		place_walk(WALK_PHASES[state.index], state.phase_t)
 		if state.phase_t >= SETTLE then
 			reset_figures()
