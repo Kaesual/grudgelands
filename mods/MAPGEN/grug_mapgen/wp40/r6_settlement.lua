@@ -197,9 +197,32 @@ local function settlement_factory()
 						info[(z - context.min_z) * x_count + (x - context.min_x) + 1] =
 							filler_depth * 2 + (surface and surface.steep and 1 or 0)
 					end
+					-- Round 51 T4: a banded badlands row (r6_content.lua
+					-- `bands`) lays its clay bands by height down the face below
+					-- its top, over the column's stone and its own filler (never
+					-- an ore, a cave or water), and takes the strata below.
+					local bands, band_last = surface and surface.bands, 0
+					if bands then
+						band_last = surface.band_depth - 1
+						local filler_cid = context.content_cids[surface.filler_ref]
+						for depth = 1, band_last do
+							local y = terrain_y - depth
+							if y >= context.floor_y and y >= context.min_y and
+									y <= context.max_y and (cap == nil or y < cap) then
+								local index = context.index_at(x, y, z)
+								if context.final_data[index] == filler_cid or
+										context.original_data[index] == context.stone_cid or
+										context.fill_stone_at(index, x, y, z) then
+									context.write(x, y, z, bands[y % 7 + 1])
+									written = written + 1
+								end
+							end
+						end
+					end
 					-- Steep columns (rock faces and lips) show their side: no
 					-- bands along a cliff face (Round 22 Phase 6).
-					local first = surface and surface.steep and 41 or filler_depth + 1
+					local first = surface and surface.steep and 41 or
+						math.max(filler_depth, band_last) + 1
 					for depth = first, 40 do
 						local y = terrain_y - depth
 						if y < context.floor_y then
@@ -2643,6 +2666,7 @@ local function settlement_factory()
 			helpers.r8_apply_strata({min_x = min_x, min_y = min_y, min_z = min_z,
 				max_x = max_x, max_y = max_y, max_z = max_z, floor_y = -37,
 				original_data = original_data, column_info = column_info,
+				final_data = final_data, content_cids = contract.content_cids,
 				stone_cid = contract.content_cids[stone_ref], index_at = index_at,
 				column_values_at = planner_source.column_values_at,
 				static_exclusion_values_at = helpers.r8_horizontal.static_exclusion_values_at,

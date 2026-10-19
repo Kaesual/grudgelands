@@ -845,21 +845,25 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		-- so no class edge runs straight. Graded pads, hard foundations and
 		-- roads with their side slopes keep their surfaces.
 		local STEEP_SLOTS = 65536
-		local steep_x, steep_z, steep_class = {}, {}, {}
+		local steep_x, steep_z, steep_class, steep_drop = {}, {}, {}, {}
 		local column_values_at = planner_source.column_values_at
 		local function shown_y(x, z)
 			local _, _, _, _, _, y, water_y = column_values_at(x, z)
 			if water_y ~= nil and water_y > y then return water_y end
 			return y
 		end
+		-- The second result is the drop to the lowest neighbour (0 outside
+		-- the bounds), the height of the column's exposed face.
 		local function steep_at(x, z, terrain_y)
 			local slot = (x * 40503 + z) % STEEP_SLOTS
-			if steep_x[slot] == x and steep_z[slot] == z then return steep_class[slot] end
-			local class = 0
+			if steep_x[slot] == x and steep_z[slot] == z then
+				return steep_class[slot], steep_drop[slot]
+			end
+			local class, drop = 0, 0
 			if x >= -3736 and x <= 3736 and z >= -3336 and z <= 3336 then
 				local e1, w1 = shown_y(x + 1, z), shown_y(x - 1, z)
 				local n1, s1 = shown_y(x, z - 1), shown_y(x, z + 1)
-				local drop = terrain_y - math.min(e1, w1, n1, s1)
+				drop = terrain_y - math.min(e1, w1, n1, s1)
 				local e3, w3 = shown_y(x + 3, z), shown_y(x - 3, z)
 				local n3, s3 = shown_y(x, z - 3), shown_y(x, z + 3)
 				local grade = math.max(math.abs(e3 - w3), math.abs(s3 - n3))
@@ -887,8 +891,45 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 					end
 				end
 			end
-			steep_x[slot], steep_z[slot], steep_class[slot] = x, z, class
-			return class
+			steep_x[slot], steep_z[slot], steep_class[slot], steep_drop[slot] =
+				x, z, class, drop
+			return class, drop
+		end
+		-- The badlands' clay bands (Round 51 T4; the land viewer's
+		-- `orc.clay_bands`, tools/r47_sw/DESIGN.md): a steep badlands column
+		-- (a rock face or a lip by steep_at) shows strata by height, a 7-node
+		-- cycle of the four band colours with mesa clay between, from its top
+		-- down its exposed face (at least 3 nodes); flat ground stays mesa
+		-- clay. The row keeps its ordinary top where the cycle gives mesa clay
+		-- and carries the cycle (`bands`, content refs by y % 7 + 1) and the
+		-- run (`band_depth` nodes from the top); the strata pass
+		-- (r6_settlement.lua r8_apply_strata) lays the run below the top.
+		local MESA = "grug_nodes:mesa_clay"
+		local BAND_CYCLE = {"grug_nodes:clay_band_ochre", MESA, "grug_nodes:clay_band_sienna",
+			"grug_nodes:clay_band_chalk", MESA, "grug_nodes:clay_band_umber",
+			"grug_nodes:clay_band_sienna"}
+		local band_refs = {}
+		for index = 1, #BAND_CYCLE do
+			band_refs[index] = require_role(BAND_CYCLE[index], 1, p7_classes, "clay band")
+		end
+		local BAND_DEPTH_MIN, BAND_DEPTH_MAX = 3, 40
+		local band_rows = {}
+		local function banded(row, terrain_y, drop)
+			local cycle = terrain_y % 7 + 1
+			local band_depth = math.min(BAND_DEPTH_MAX, math.max(BAND_DEPTH_MIN, drop))
+			local by_row = band_rows[row]
+			if not by_row then by_row = {} band_rows[row] = by_row end
+			local key = cycle * 64 + band_depth
+			local result = by_row[key]
+			if not result then
+				result = deep_copy(row)
+				if BAND_CYCLE[cycle] ~= MESA then
+					result.top, result.top_ref = BAND_CYCLE[cycle], band_refs[cycle]
+				end
+				result.bands, result.band_depth = band_refs, band_depth
+				by_row[key] = result
+			end
+			return result
 		end
 		-- A start town's own ground in the band round its pad (plan D78,
 		-- `height.lua` start_ground_at): the biome's ordinary row with the
@@ -994,12 +1035,17 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			if id == "grug_crags" or id == "grug_crags_snowy" then
 				if patch > 650 then kind = 4 elseif patch < 300 then kind = 3 end
 			end
-			-- Mesa clay is the badlands' own cliff material.
+			-- Mesa clay is the badlands' own cliff material, banded on steep
+			-- faces (Round 51 T4).
+			local band_drop
 			if id ~= "grug_badlands" and id ~= "grug_badlands_east" then
 				local steep = steep_at(x, z, terrain_y)
 				if steep == 1 then return rock_rows[id][depth], true end
 				if steep == 2 then return lip_rows[id][kind], false end
 				if steep == 3 then return variants[id][3][depth], false end
+			else
+				local steep, drop = steep_at(x, z, terrain_y)
+				if steep == 1 or steep == 2 then band_drop = drop end
 			end
 			if patch > 660 and x >= -3736 and x <= 3736 and
 					z >= -3336 and z <= 3336 then
@@ -1014,6 +1060,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 				if (kind == 3 or kind == 4) and rise < 12 and detail > 680 and
 						id ~= "grug_crags" and id ~= "grug_crags_snowy" then kind = 1 end
 			end
+			if band_drop then return banded(variants[id][kind][depth], terrain_y, band_drop), false end
 			return variants[id][kind][depth], false
 		end
 		-- `zone_id` is the column's zone (the warm Skyglass lines).
