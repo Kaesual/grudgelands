@@ -37,6 +37,9 @@ local function same_box(a, b)
 end
 
 core = setmetatable({
+	-- kits.lua dofiles its per-class files (Round 52).
+	get_modpath = function() return repo .. "/mods/PLAYER/grug_abilities" end,
+	get_current_modname = function() return "grug_abilities" end,
 	get_us_time = function() return 1000000 end,
 	add_particlespawner = function() end,
 	get_objects_inside_radius = function() return {} end,

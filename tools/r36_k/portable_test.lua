@@ -99,8 +99,11 @@ local function enchant(stat, ilvl)
 	return math.max(curve.minimum, math.floor(raw * factor + 0.5) / factor)
 end
 
--- The real helpers and values of kits.lua.
-local kits = read("mods/PLAYER/grug_abilities/kits.lua")
+-- The real helpers and values of kits.lua and its per-class files (Round 52).
+local kits = read("mods/PLAYER/grug_abilities/kits.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_mage.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_priest.lua")
 local helpers = cut(kits, "(local function spell_damage_value%(player, amount%).-\nend\n.-" ..
 	"local function support_value%(player, percent%).-\nend)\n", "spell_damage_value and support_value")
 local fireball = cut(kits, "(local function fireball_values%(user%).-\nend)\n", "fireball_values")
@@ -202,7 +205,9 @@ local mighty = cut(kits, "(local damage = math%.floor%(ctx%.weapon_damage %* mul
 check(mighty ~= nil, "D Mighty Blow keeps flooring the weapon part")
 
 -- E. Crit talent texts.
-local talents = read("mods/PLAYER/grug_classes/talents.lua") ..
+local talents = read("mods/PLAYER/grug_classes/talents_warrior.lua") ..
+	read("mods/PLAYER/grug_classes/talents_mage.lua") ..
+	read("mods/PLAYER/grug_classes/talents_priest.lua") ..
 	read("mods/PLAYER/grug_classes/scout_talents.lua")
 for _, id in ipairs({"keen_edge", "cold_eye", "firebrand", "hard_faith"}) do
 	local text = cut(talents, 'id = "' .. id .. '",.-description = "([^"]*)"', id .. "'s text")

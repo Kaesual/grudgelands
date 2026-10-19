@@ -47,7 +47,11 @@ local function cut(text, pattern, label)
 end
 
 local INIT = read("mods/PLAYER/grug_abilities/init.lua")
-local KITS = read("mods/PLAYER/grug_abilities/kits.lua")
+-- kits.lua and its per-class files (Round 52) as one text.
+local KITS = read("mods/PLAYER/grug_abilities/kits.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_mage.lua") ..
+	read("mods/PLAYER/grug_abilities/kits_priest.lua")
 local COMBAT = read("mods/CORE/grug_core/combat.lua")
 local GEAR = read("mods/ITEMS/grug_gear/init.lua")
 

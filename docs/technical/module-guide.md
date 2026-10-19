@@ -789,8 +789,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_abilities.charge_dust(from, to, duration)` per run segment and plays
   `charge_ring` on arrival. Fixture: `tools/r40_px/portable_test.lua`.
 - **Charge's dash** (Round 40, [classes.md](../design/classes.md) §3):
-  `kits.lua` keeps the cast's target, destination and refusals and calls
-  `grug_abilities.charge_dash(user, target, dest, def)`. The planner
+  `kits_warrior.lua` keeps the cast's target, destination and refusals and
+  calls `grug_abilities.charge_dash(user, target, dest, def)`. The planner
   `charge_path.lua` is pure (map through `boxes`/`liquid`, like `blink.lua`);
   `charge.lua` owns the carrier entity `grug_abilities:charge_carrier` (blank
   visible sprite, not pointable, not saved, removes itself without its

@@ -279,6 +279,9 @@ local function played_ids()
 end
 
 core = setmetatable({
+	-- kits.lua dofiles its per-class files (Round 52).
+	get_modpath = function() return ROOT .. "/mods/PLAYER/grug_abilities" end,
+	get_current_modname = function() return "grug_abilities" end,
 	get_us_time = function() return 1000000 end,
 	get_objects_inside_radius = function() return {} end,
 	yaw_to_dir = function(yaw) return vector.new(-math.sin(yaw), 0, math.cos(yaw)) end,
@@ -554,7 +557,9 @@ end
 -- C: every played id is in the catalogue.
 ------------------------------------------------------------------------------
 P = load_helper(nil)
-local FILES = {"mods/PLAYER/grug_abilities/kits.lua", "mods/PLAYER/grug_abilities/scout.lua",
+local FILES = {"mods/PLAYER/grug_abilities/kits.lua", "mods/PLAYER/grug_abilities/kits_warrior.lua",
+	"mods/PLAYER/grug_abilities/kits_mage.lua", "mods/PLAYER/grug_abilities/kits_priest.lua",
+	"mods/PLAYER/grug_abilities/scout.lua",
 	"mods/PLAYER/grug_abilities/charge.lua",
 	"mods/CORE/grug_core/combat.lua", "mods/CORE/grug_core/particle_effects.lua",
 	"mods/ENTITIES/grug_projectiles/init.lua", "mods/PLAYER/grug_xp/init.lua"}
@@ -575,7 +580,9 @@ for _, path in ipairs(FILES) do
 	end
 end
 check(seen >= 25, "C the scan found the game's effect calls (" .. seen .. ")")
-local PROC_FILES = {"mods/PLAYER/grug_abilities/kits.lua", "mods/PLAYER/grug_classes/scout.lua",
+local PROC_FILES = {"mods/PLAYER/grug_abilities/kits_warrior.lua",
+	"mods/PLAYER/grug_abilities/kits_mage.lua", "mods/PLAYER/grug_abilities/kits_priest.lua",
+	"mods/PLAYER/grug_classes/scout.lua",
 	"mods/PLAYER/grug_classes/talents.lua", "mods/PLAYER/grug_trinkets/init.lua"}
 local procs = 0
 for _, path in ipairs(PROC_FILES) do

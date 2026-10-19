@@ -281,7 +281,7 @@ local s_end = path.state_at(p, p.total + 1)
 check(dist(s_end, p.finish) < 1e-9, "A state_at past the end is the finish")
 
 ------------------------------------------------------------------------------
--- C: the kits.lua cast (sandboxed before the fake engine of B).
+-- C: the kits_warrior.lua cast (sandboxed before the fake engine of B).
 ------------------------------------------------------------------------------
 do
 	local function any()
@@ -290,7 +290,14 @@ do
 	end
 	local defs, started = {}, {}
 	local aim
-	local env = setmetatable({
+	local env
+	env = setmetatable({
+		-- kits.lua dofiles its per-class files (Round 52): into this sandbox.
+		core = setmetatable({
+			get_modpath = function() return ROOT .. "/mods/PLAYER/grug_abilities" end,
+			get_current_modname = function() return "grug_abilities" end,
+		}, {__index = function() return any() end}),
+		dofile = function(path) return setfenv(assert(loadfile(path)), env)() end,
 		grug_abilities = setmetatable({
 			register_ability = function(d) defs[d.id] = d end,
 			charge_destination = function() return aim.dest end,

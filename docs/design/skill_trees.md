@@ -215,8 +215,9 @@ Reading the tables:
   `cooldown`, `charge`, `range` and `max_distance` fields are evaluated once
   at load time with no player in scope**, so talents that re-tune those hook
   a central per-player seam instead — §3.2 lists them. `kits.lua` is
-  `grug_abilities/kits.lua`; "the Taunt cast" means that ability's
-  registration there.
+  `grug_abilities/kits.lua` with its per-class files `kits_warrior.lua`,
+  `kits_mage.lua` and `kits_priest.lua`; "the Taunt cast" means that
+  ability's registration there.
 - **Key** is the effect key in `grug_classes/talents.lua` (§3.2).
 
 ### 2.1 Warrior — Bulwark
@@ -443,9 +444,9 @@ used **twice in the six original-class trees**. Rime, Mercy and Ember took
 none because their fantasies did not need one, and leaving headroom is
 cheaper than inventing breaks.
 
-**Effect keys**, counted from the code (`grug_classes/talents.lua` and
-`scout_talents.lua`): every talent carries at least one key; **68 key cells,
-60 distinct**. Four keys are shared across classes — `crit_chance_add` (all
+**Effect keys**, counted from the code (`grug_classes/talents_warrior.lua`,
+`talents_mage.lua`, `talents_priest.lua` and `scout_talents.lua`): every
+talent carries at least one key; **68 key cells, 60 distinct**. Four keys are shared across classes — `crit_chance_add` (all
 four), `max_mana_percent_add` (Mage, Priest, Scout), `max_hp_percent_add`
 (Warrior, Priest) and `dodge_chance_window` (Turn Aside, Untouchable) — and
 `dodge_chance_add` appears twice, both on the Scout (Shifting Weight, Light
@@ -544,9 +545,11 @@ derived stats every numeric talent touches, and both `grug_inventory` and
 `grug_abilities` depend on it, so both read talents without a new dependency
 edge.
 
-- `grug_classes/talents.lua`: the registry, the 48 talents of Warrior, Mage
-  and Priest as data, the point budget, both gate kinds, spend and respec,
-  persistence, the timed-window table and the accessors.
+- `grug_classes/talents.lua`: the registry, the point budget, both gate
+  kinds, spend and respec, persistence and the accessors.
+- `grug_classes/talents_warrior.lua`, `talents_mage.lua` and
+  `talents_priest.lua`: the 48 talents of Warrior, Mage and Priest as data.
+- `grug_classes/talent_windows.lua`: the timed-window table (§3.2).
 - `grug_classes/scout_talents.lua`: the Scout's 16 talents.
 - `grug_classes/talents_ui.lua`: the Talents & Skills page with the tree
   framework (§3.5) and the paid respec
@@ -631,7 +634,7 @@ talent code sets, not a new mechanism. The Scout's base-kit **Sidestep** and
 **Sprint** use the same table without being talents ([scout.md](scout.md)
 §2). `get_talent_bonus` returns 0 for a window key that is not running (the
 keys in `grug_classes.TALENT_WINDOW_KEYS`), so a consumer needs no second
-accessor. The windows live in one per-player expiry table in `talents.lua`
+accessor. The windows live in one per-player expiry table in `talent_windows.lua`
 (`start_talent_window`, `talent_window_active`), cleared on leave, death and
 respec (`clear_talent_windows`); that table is the single place a window
 lives.
