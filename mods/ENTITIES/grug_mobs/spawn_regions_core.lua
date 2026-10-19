@@ -90,6 +90,20 @@ M.CAMP_POIS = {bandit = true, mirefolk = true}
 -- (never above the budget itself).
 M.DENSITY = {sparse = 0.5, normal = 0.75, dense = 1}
 M.TYPES = {"shore", "bank", "swamp", "forest", "highland", "open"}
+-- Round 51 (MOBS M2; sea plan rulings S10-S15): the water bands. A belt may
+-- give each a kind; no land cell ever takes one (step 4 assigns M.TYPES
+-- only), so a water kind forms no region: the ambient spawner picks it for
+-- a water column of the zone by the column's band and level (M.water_band,
+-- M.water_kind; spawn_regions.lua water_attempt).
+--   sea_shallows  bay, belt or channel water near land: within NEAR_LAND
+--                 nodes of dry land or at most SHALLOW_DEPTH deep (S10:
+--                 only mobs that follow a player ashore)
+--   sea_deep      the rest of that water (S10: pure swimmers)
+--   lake, river   the water query's lake (a swamp pool included) and river
+-- The open sea has no band: its mobs are world rows (Kraken, Abyssal Shark).
+M.WATER_TYPES = {"sea_shallows", "sea_deep", "lake", "river"}
+M.NEAR_LAND = 16
+M.SHALLOW_DEPTH = 6
 M.FOREST_BIOMES = {deep_forest = true, elf_forest = true, pine_hills = true,
 	bone_forest = true, deep_jungle = true, jungle_edge = true, jungle_fringe = true}
 M.MAX_MINOR = 0.25    -- a roster's minor role: at most this share of weight
@@ -155,8 +169,9 @@ local CAMP_KEYS = {id = true, name = true, belt = true, site = true, roster = tr
 	notes = true}
 local LEADER_KEYS = {role = true, at = true, respawn = true, notes = true}
 local PLACE_KEYS = {id = true, name = true, at = true, notes = true}
-local TYPE_SET = {}
+local TYPE_SET, WATER_SET = {}, {}
 for _, t in ipairs(M.TYPES) do TYPE_SET[t] = true end
+for _, t in ipairs(M.WATER_TYPES) do TYPE_SET[t], WATER_SET[t] = true, true end
 
 -- One roster: a list of {role, weight}, one main role and at most one minor
 -- role of at most MAX_MINOR of the weight.
@@ -379,6 +394,7 @@ function M.parse_recipe(zone_id, recipe, ctx)
 		for _, t in ipairs(M.TYPES) do
 			if t ~= "open" then order[#order + 1] = t end
 		end
+		for _, t in ipairs(M.WATER_TYPES) do order[#order + 1] = t end
 		for _, t in ipairs(order) do
 			local krow = row.kinds[t]
 			if krow ~= nil then
@@ -397,6 +413,14 @@ function M.parse_recipe(zone_id, recipe, ctx)
 				end
 				if krow.quest_target ~= nil and krow.quest_target ~= true then
 					fail(kw, "quest_target is true or absent")
+				end
+				-- A water kind forms no region, so no quest area can need one
+				-- to; and the open kind's land roster never swims.
+				if WATER_SET[t] and krow.quest_target then
+					fail(kw, "a water kind forms no region: no quest_target")
+				end
+				if WATER_SET[t] and (krow.day == "open" or krow.night == "open") then
+					fail(kw, "a water kind lists its own roles (the open kind's are land mobs)")
 				end
 				-- quest_target (Round 46): a quest's area or text names the kind,
 				-- so it forms a region on every seed (build step 5).
@@ -622,6 +646,45 @@ end
 -- entry (the explicit parent rule).
 function M.kind_for(belt, cell_type)
 	return belt.kinds[cell_type] or belt.kinds.open
+end
+
+-- The water band of a water query's answer (class, distance to dry land,
+-- depth; grug_zones.water_query_at), or nil (dry land, the open sea).
+local SEA_CLASSES = {bay = true, belt = true, channel = true}
+function M.water_band(class, distance, depth)
+	if class == "lake" or class == "river" then
+		return class
+	end
+	if not SEA_CLASSES[class] then
+		return nil
+	end
+	if (distance and distance <= M.NEAR_LAND) or (depth or 0) <= M.SHALLOW_DEPTH then
+		return "sea_shallows"
+	end
+	return "sea_deep"
+end
+
+-- The belt of `recipe` whose levels hold `level` (below the first belt: the
+-- first; above the last: the last). A zone's belts join without gaps or
+-- overlaps, so one level names one belt.
+function M.belt_for_level(recipe, level)
+	local belts = recipe.belts
+	if not level or level <= belts[1].levels[2] then
+		return belts[1]
+	end
+	for i = 1, #belts do
+		if level <= belts[i].levels[2] then
+			return belts[i]
+		end
+	end
+	return belts[#belts]
+end
+
+-- The water kind a column of band `band` at `level` takes, and its belt
+-- (nil, belt: the belt has no kind for the band, nothing spawns there).
+function M.water_kind(recipe, band, level)
+	local belt = M.belt_for_level(recipe, level)
+	return belt.kinds[band], belt
 end
 
 -- The zone's camp POIs, {id, slot, poi, name} in anchor order: the anchors

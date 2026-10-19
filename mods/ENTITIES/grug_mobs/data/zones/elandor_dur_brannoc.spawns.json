@@ -12,7 +12,13 @@
             "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
           "forest": {"id": "pinewood", "name": "Dur Brannoc Pinewood",
             "day": [{"role": "surefoot_ibex", "weight": 1}],
-            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l20_23", "name": "Dur Brannoc Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l20_23", "name": "Dur Brannoc Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -23,7 +29,13 @@
             "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "forest": {"id": "tollwood", "name": "Dur Brannoc Tollwood",
             "day": [{"role": "surefoot_ibex", "weight": 3}, {"role": "hill_ram", "weight": 1}],
-            "night": [{"role": "toll_bandit_archer", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "toll_bandit_archer", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal", "quest_target": true},
+          "lake": {"id": "lake_l24_27", "name": "Dur Brannoc Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l24_27", "name": "Dur Brannoc Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -37,7 +49,13 @@
             "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
           "highland": {"id": "crags", "name": "Dur Brannoc Crags",
             "day": [{"role": "hill_ram", "weight": 1}],
-            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l28_30", "name": "Dur Brannoc Lakes",
+            "day": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 3}, {"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l28_30", "name": "Dur Brannoc Rivers",
+            "day": [{"role": "frog_t3", "weight": 1}],
+            "night": [{"role": "frog_t3", "weight": 1}], "density": "sparse"}
         }
       }
     ],

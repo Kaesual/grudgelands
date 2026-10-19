@@ -15,7 +15,19 @@
             "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"},
           "forest": {"id": "lower_pines", "name": "Copperfell Lower Pines",
             "day": [{"role": "young_boar", "weight": 3}, {"role": "young_fox", "weight": 1}],
-            "night": [{"role": "granary_rat", "weight": 3}, {"role": "ore_thieving_goblin", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "granary_rat", "weight": 3}, {"role": "ore_thieving_goblin", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l11_13", "name": "Copperfell Foothills Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l11_13", "name": "Copperfell Foothills Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l11_13", "name": "Copperfell Foothills Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l11_13", "name": "Copperfell Foothills Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -29,7 +41,19 @@
             "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "ibex_ledges", "name": "Copperfell Ibex Ledges",
             "day": [{"role": "surefoot_ibex", "weight": 1}],
-            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l14_17", "name": "Copperfell Foothills Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l14_17", "name": "Copperfell Foothills Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l14_17", "name": "Copperfell Foothills Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l14_17", "name": "Copperfell Foothills Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -43,7 +67,19 @@
             "night": [{"role": "mangy_rat", "weight": 1}], "density": "normal"},
           "highland": {"id": "copper_crags", "name": "Copperfell Copper Crags",
             "day": [{"role": "surefoot_ibex", "weight": 1}],
-            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l18_20", "name": "Copperfell Foothills Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l18_20", "name": "Copperfell Foothills Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l18_20", "name": "Copperfell Foothills Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l18_20", "name": "Copperfell Foothills Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       }
     ],

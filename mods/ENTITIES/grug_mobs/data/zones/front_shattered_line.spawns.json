@@ -15,7 +15,13 @@
             "night": [{"role": "siege_husk", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "sparse"},
           "highland": {"id": "bluffs", "name": "Shattered Line Bluffs",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
+          "lake": {"id": "lake_l41_43", "name": "The Shattered Line Lakes",
+            "day": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l41_43", "name": "The Shattered Line Rivers",
+            "day": [{"role": "frog_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -29,7 +35,13 @@
             "night": [{"role": "war_stinger", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "sparse"},
           "highland": {"id": "ramparts", "name": "Shattered Line Ramparts",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "coal_purse_factor", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal", "quest_target": true},
+          "lake": {"id": "lake_l44_47", "name": "The Shattered Line Lakes",
+            "day": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l44_47", "name": "The Shattered Line Rivers",
+            "day": [{"role": "frog_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -43,7 +55,13 @@
             "night": [{"role": "unburied_husk", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "sparse"},
           "highland": {"id": "siegecrest", "name": "Shattered Line Siegecrest",
             "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
-            "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}], "density": "normal", "quest_target": true},
+          "lake": {"id": "lake_l48_50", "name": "The Shattered Line Lakes",
+            "day": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l48_50", "name": "The Shattered Line Rivers",
+            "day": [{"role": "frog_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 1}], "density": "sparse"}
         }
       }
     ],

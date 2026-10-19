@@ -21,7 +21,13 @@
             "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "dikes", "name": "Causeway Dikes",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l41_43", "name": "The Broken Causeway Lakes",
+            "day": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l41_43", "name": "The Broken Causeway Rivers",
+            "day": [{"role": "frog_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -41,7 +47,13 @@
             "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "ramparts", "name": "Causeway Ramparts",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l44_47", "name": "The Broken Causeway Lakes",
+            "day": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l44_47", "name": "The Broken Causeway Rivers",
+            "day": [{"role": "frog_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -61,7 +73,13 @@
             "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal"},
           "highland": {"id": "arch_heights", "name": "Causeway Arch Heights",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l48_50", "name": "The Broken Causeway Lakes",
+            "day": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 3}, {"role": "tortoise_t5", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l48_50", "name": "The Broken Causeway Rivers",
+            "day": [{"role": "frog_t5", "weight": 1}],
+            "night": [{"role": "frog_t5", "weight": 1}], "density": "sparse"}
         }
       }
     ],

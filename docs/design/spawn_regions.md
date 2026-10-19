@@ -276,7 +276,9 @@ since then). Every load error names the zone and the path.
   entry border cannot also be the exit. A recipe with exactly
   one belt may omit `to` (islands: L60 throughout) and then also `from`.
 - `belts`: shares in percent adding up to 100; `levels` inside the zone's
-  band; optional `max_from`; `kinds` keyed by type, `open` required.
+  band; optional `max_from`; `kinds` keyed by type, `open` required. Besides
+  the land types a belt may give the four **water bands** (Round 51 MOBS M2,
+  below): `sea_shallows`, `sea_deep`, `lake`, `river`.
 - A kind: `id` (unique among the zone's kinds and camps), `name`, `day` and
   `night` (a roster, or `"open"`: the belt's open roster for that clock),
   `density` `sparse` / `normal` / `dense` (0.5 / 0.75 / 1 of the zone's
@@ -315,6 +317,40 @@ since then). Every load error names the zone and the path.
   ground). `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
   from the recipe, `place_spot(zone, id)` its spot on the world.
 - `critters`: ambient critters that keep their ABM rows in the zone.
+
+### Water kinds (Round 51)
+
+Sea plan rulings S10-S15. A water kind takes no land cell, so it forms no
+region and is never a `quest_target`, and it lists its own rosters (never
+`"open"`: the open kind's are land mobs). The ambient spawner's attempt
+column (see above) that tops out in water instead of ground takes the water
+path (`spawn_regions.lua` `water_attempt`):
+
+- **Band** from the water query (`grug_zones.water_query_at`, without the
+  costly inland distance): `lake` (a swamp pool included) and `river` by
+  class; bay, belt and channel water is `sea_shallows` within 16 nodes of dry
+  land or at most 6 nodes deep (S10's "near land"), else `sea_deep`; the
+  open sea has no band (its mobs are world rows).
+- **Belt** of the column's surface level (the region overlay where a land
+  cell holds the column, else the zone field; a channel: its island's) in
+  the recipe of the query's zone. A zone's belts join without gaps or
+  overlaps, so one level names one belt.
+- **Pocket rule:** a sea column with another zone's water 12 nodes away in
+  one of the four directions spawns nothing (T2's small channel patches in a
+  belt and the like, and the strip along a zone border in the sea); land
+  and the zone's own bay or belt water around it do not count.
+- Amphibians appear at the surface, pure swimmers one or two nodes under it;
+  then the land path's gates (players near, protected surface and claims,
+  the drift band for hostiles, light at the surface, density).
+
+`tools/r51_mobs/water_kinds.py` writes the kinds from the accepted NAMES
+draft (`tools/r51_names/draft.json`) into every belt of a zone that holds
+the family's water: the tortoise in `sea_shallows`, the stingray in
+`sea_deep`, the frog (weight 3) with the tortoise (1) in `lake`, the frog in
+`river`; no frog and no stingray in a belt that ends below level 3. All are
+`sparse`. The fixed-level sharks, the Tide Goby, the Kraken and the Reed
+Angelfish keep their own water rows (`biomes_mobs.md` "Round 51 water
+families").
 
 ## Entry and exit borders (the border rule)
 

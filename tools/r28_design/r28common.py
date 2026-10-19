@@ -369,6 +369,9 @@ def split_area_ref(ref, own_zone):
 # this one collects as many as practical and skips the broken part.
 
 RECIPE_TYPES = ("shore", "bank", "swamp", "forest", "highland", "open")
+# Round 51 MOBS M2: the water bands (spawn_regions_core.lua M.WATER_TYPES), a
+# belt's kinds for water columns; they form no land region.
+WATER_TYPES = ("sea_shallows", "sea_deep", "lake", "river")
 DENSITIES = ("sparse", "normal", "dense")
 MAX_MINOR = 0.25  # a roster's minor role: at most this share of the weight
 LEADER_PICKS = ("farthest_from_roads",)
@@ -624,11 +627,11 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
             err("E-recipe-open", bpath + ".kinds", "every belt defines kinds.open (the parent of its other types)")
             kinds = kinds if isinstance(kinds, dict) else {}
         for t in sorted(kinds):
-            if t not in RECIPE_TYPES:
+            if t not in RECIPE_TYPES and t not in WATER_TYPES:
                 err("E-recipe-key", bpath + ".kinds", "kinds.%s is not a terrain type (%s)"
-                    % (t, ", ".join(RECIPE_TYPES)))
+                    % (t, ", ".join(RECIPE_TYPES + WATER_TYPES)))
         # The open entry first (the others inherit from it), then the rest.
-        for t in ("open",) + tuple(x for x in RECIPE_TYPES if x != "open"):
+        for t in ("open",) + tuple(x for x in RECIPE_TYPES if x != "open") + WATER_TYPES:
             krow = kinds.get(t)
             if krow is None:
                 continue
@@ -650,6 +653,10 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
                     % krow.get("density"))
             if "quest_target" in krow and krow["quest_target"] is not True:
                 err("E-recipe", kpath + ".quest_target", "quest_target is true or absent")
+            if t in WATER_TYPES and krow.get("quest_target"):
+                err("E-recipe", kpath + ".quest_target", "a water kind forms no region: no quest_target")
+            if t in WATER_TYPES and "open" in (krow.get("day"), krow.get("night")):
+                err("E-recipe-open", kpath, "a water kind lists its own roles (the open kind's are land mobs)")
             kind = {"id": krow["id"], "name": krow.get("name"), "unit": "kind", "type": t,
                     "belt": belt["id"], "density": krow.get("density"), "rosters": {}, "inherits": []}
             for clock in ("day", "night"):

@@ -15,7 +15,13 @@
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
           "highland": {"id": "tablelands", "name": "Bannerbreak Tablelands",
             "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "marching_husk", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "normal"}
+            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l31_33", "name": "Bannerbreak Mesa Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l31_33", "name": "Bannerbreak Mesa Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -29,7 +35,13 @@
             "night": [{"role": "watchful_carrion_crow", "weight": 1}], "density": "sparse"},
           "highland": {"id": "high_mesa", "name": "Bannerbreak High Mesa",
             "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
-            "night": [{"role": "unrelenting_husk", "weight": 3}, {"role": "marching_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "unrelenting_husk", "weight": 3}, {"role": "marching_husk", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l34_37", "name": "Bannerbreak Mesa Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l34_37", "name": "Bannerbreak Mesa Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -43,7 +55,13 @@
             "night": [{"role": "unrelenting_husk", "weight": 1}], "density": "sparse"},
           "highland": {"id": "vulture_crags", "name": "Bannerbreak Vulture Crags",
             "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
-            "night": [{"role": "unrelenting_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "unrelenting_husk", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l38_40", "name": "Bannerbreak Mesa Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l38_40", "name": "Bannerbreak Mesa Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       }
     ],

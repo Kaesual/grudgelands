@@ -9,7 +9,13 @@
         "kinds": {
           "open": {"id": "home_fields", "name": "Dawnmere Home Fields",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l1_2", "name": "Dawnmere Fields Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l1_2", "name": "Dawnmere Fields Lakes",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -26,7 +32,19 @@
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"},
           "swamp": {"id": "reedbeds", "name": "Dawnmere Reedbeds",
             "day": "open",
-            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l3_4", "name": "Dawnmere Fields Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l3_4", "name": "Dawnmere Fields Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l3_4", "name": "Dawnmere Fields Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l3_4", "name": "Dawnmere Fields Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -43,7 +61,19 @@
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
           "swamp": {"id": "marsh", "name": "Dawnmere Marsh",
             "day": "open",
-            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l5_7", "name": "Dawnmere Fields Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l5_7", "name": "Dawnmere Fields Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l5_7", "name": "Dawnmere Fields Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l5_7", "name": "Dawnmere Fields Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -60,7 +90,19 @@
             "night": [{"role": "drowned_zombie", "weight": 1}], "density": "normal"},
           "swamp": {"id": "fen", "name": "Dawnmere Fen",
             "day": "open",
-            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l8_10", "name": "Dawnmere Fields Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l8_10", "name": "Dawnmere Fields Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l8_10", "name": "Dawnmere Fields Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l8_10", "name": "Dawnmere Fields Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       }
     ],

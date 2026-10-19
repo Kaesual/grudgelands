@@ -477,7 +477,10 @@ class Model:
             belts = recipe["belts"]
             for b in belts:
                 kinds = b["kinds"]
-                for t in ("open", "shore", "bank", "swamp", "forest", "highland"):
+                # Round 51 MOBS M2: the water kinds (spawn_regions_core.lua
+                # M.WATER_TYPES) give zone slots like the land kinds.
+                for t in ("open", "shore", "bank", "swamp", "forest", "highland",
+                          "sea_shallows", "sea_deep", "lake", "river"):
                     k = kinds.get(t)
                     if not k:
                         continue

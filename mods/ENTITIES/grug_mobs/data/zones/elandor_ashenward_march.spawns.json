@@ -15,7 +15,13 @@
             "night": [{"role": "marching_zombie", "weight": 1}], "density": "sparse"},
           "forest": {"id": "cinderwood", "name": "Ashenward Cinderwood",
             "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
-            "night": [{"role": "rootbound_treant", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "rootbound_treant", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
+          "lake": {"id": "lake_l31_33", "name": "Ashenward March Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l31_33", "name": "Ashenward March Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -32,7 +38,13 @@
             "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "crow_ridges", "name": "Ashenward Crow Ridges",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
-            "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"}
+            "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l34_37", "name": "Ashenward March Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l34_37", "name": "Ashenward March Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -49,7 +61,13 @@
             "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "normal"},
           "highland": {"id": "high_ridges", "name": "Ashenward High Ridges",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
-            "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"}
+            "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"},
+          "lake": {"id": "lake_l38_40", "name": "Ashenward March Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l38_40", "name": "Ashenward March Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       }
     ],

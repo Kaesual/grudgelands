@@ -9,7 +9,13 @@
         "kinds": {
           "open": {"id": "wellfields", "name": "Sunscar Wellfields",
             "day": [{"role": "small_boar", "weight": 1}],
-            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l1_2", "name": "Sunscar Flats Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l1_2", "name": "Sunscar Flats Lakes",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -23,7 +29,19 @@
             "night": [{"role": "befuddled_husk", "weight": 1}], "density": "dense", "quest_target": true},
           "highland": {"id": "bluffs", "name": "Sunscar Bluffs",
             "day": [{"role": "befuddled_husk", "weight": 3}, {"role": "small_boar", "weight": 1}],
-            "night": [{"role": "befuddled_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "befuddled_husk", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l3_4", "name": "Sunscar Flats Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l3_4", "name": "Sunscar Flats Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l3_4", "name": "Sunscar Flats Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l3_4", "name": "Sunscar Flats Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -37,7 +55,19 @@
             "night": [{"role": "sluggish_husk", "weight": 1}], "density": "dense", "quest_target": true},
           "highland": {"id": "stingrocks", "name": "Sunscar Stingrocks",
             "day": [{"role": "irritable_scorpion", "weight": 3}, {"role": "sluggish_husk", "weight": 1}],
-            "night": [{"role": "irritable_scorpion", "weight": 3}, {"role": "sluggish_husk", "weight": 1}], "density": "normal"}
+            "night": [{"role": "irritable_scorpion", "weight": 3}, {"role": "sluggish_husk", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l5_7", "name": "Sunscar Flats Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l5_7", "name": "Sunscar Flats Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l5_7", "name": "Sunscar Flats Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l5_7", "name": "Sunscar Flats Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -51,7 +81,19 @@
             "night": [{"role": "salt_caked_husk", "weight": 3}, {"role": "monstrous_rat", "weight": 1}], "density": "dense"},
           "highland": {"id": "scorpion_rocks", "name": "Sunscar Scorpion Rocks",
             "day": [{"role": "giant_scorpion", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
-            "night": [{"role": "giant_scorpion", "weight": 3}, {"role": "monstrous_rat", "weight": 1}], "density": "normal"}
+            "night": [{"role": "giant_scorpion", "weight": 3}, {"role": "monstrous_rat", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l8_10", "name": "Sunscar Flats Shallows",
+            "day": [{"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l8_10", "name": "Sunscar Flats Coastal Waters",
+            "day": [{"role": "stingray_t1", "weight": 1}],
+            "night": [{"role": "stingray_t1", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l8_10", "name": "Sunscar Flats Lakes",
+            "day": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 3}, {"role": "tortoise_t1", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l8_10", "name": "Sunscar Flats Rivers",
+            "day": [{"role": "frog_t1", "weight": 1}],
+            "night": [{"role": "frog_t1", "weight": 1}], "density": "sparse"}
         }
       }
     ],

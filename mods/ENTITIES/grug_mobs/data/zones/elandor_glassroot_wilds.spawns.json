@@ -15,7 +15,19 @@
             "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "mirewood", "name": "Glassroot Mirewood",
             "day": "open",
-            "night": [{"role": "marching_zombie", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "marching_zombie", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l31_33", "name": "Glassroot Wilds Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l31_33", "name": "Glassroot Wilds Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l31_33", "name": "Glassroot Wilds Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l31_33", "name": "Glassroot Wilds Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -29,7 +41,19 @@
             "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "glassmire", "name": "Glassroot Glassmire",
             "day": "open",
-            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l34_37", "name": "Glassroot Wilds Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l34_37", "name": "Glassroot Wilds Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l34_37", "name": "Glassroot Wilds Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l34_37", "name": "Glassroot Wilds Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -46,7 +70,19 @@
             "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse", "quest_target": true},
           "swamp": {"id": "rotfen", "name": "Glassroot Rotfen",
             "day": "open",
-            "night": [{"role": "battle_wisp", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "battle_wisp", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l38_40", "name": "Glassroot Wilds Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l38_40", "name": "Glassroot Wilds Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l38_40", "name": "Glassroot Wilds Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l38_40", "name": "Glassroot Wilds Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       }
     ],

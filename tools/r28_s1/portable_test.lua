@@ -604,7 +604,9 @@ local function register(role)
 end
 for _, role in ipairs({"small_boar", "large_rat", "quiet_shore_crab", "braindead_zombie", "small_fox",
 		"aggressive_boar", "rabid_rat", "giant_crab", "sluggish_zombie", "monstrous_rat", "drowned_zombie",
-		"confused_bandit", "confused_bandit_chief", "rabbit", "wild_turkey", "boar", "fox"}) do
+		"confused_bandit", "confused_bandit_chief", "rabbit", "wild_turkey", "boar", "fox",
+		-- Round 51 MOBS M2: the recipe's water kinds
+		"tortoise_t1", "frog_t1", "stingray_t1"}) do
 	register(role)
 end
 load_into(env, MOBS .. "/spawn_regions.lua")
@@ -639,7 +641,8 @@ local roles = SR.area_roles(DAWN, "pastures")
 check(roles.small_fox and roles.aggressive_boar and roles.rabid_rat and not roles.small_boar, "area_roles day+night")
 check(SR.get_area(DAWN, "bandit_camp").is_camp and SR.get_area(DAWN, "nope") == nil, "camp area, unknown area")
 local ids = SR.zone_area_ids(DAWN)
-check(#ids == 14 and ids[1] == "home_fields" and ids[14] == "bandit_camp", "zone_area_ids: 13 kinds + 1 camp")
+-- Round 51 MOBS M2: plus the 14 water kinds (shallows and lakes in the home belt, all four bands in the other three).
+check(#ids == 28 and ids[1] == "home_fields" and ids[28] == "bandit_camp", "zone_area_ids: 27 kinds + 1 camp")
 local L = SR.leader("confused_bandit_chief")
 check(L and L.zone == DAWN and L.level == 10 and L.respawn == 300 and L.pos == nil, "leader seam (static)")
 check(SR.leader("small_boar") == nil, "no leader for a plain role")

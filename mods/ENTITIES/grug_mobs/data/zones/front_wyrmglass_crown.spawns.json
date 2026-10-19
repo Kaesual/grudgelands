@@ -13,7 +13,19 @@
             "night": [{"role": "last_watch_zombie", "weight": 3}, {"role": "crown_frost_stray", "weight": 1}], "density": "dense"},
           "highland": {"id": "spires", "name": "Wyrmglass Spires",
             "day": [{"role": "crown_crag_eagle", "weight": 3}, {"role": "last_pay_archer", "weight": 1}],
-            "night": [{"role": "rime_pelt_leopard", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "rime_pelt_leopard", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l60", "name": "The Wyrmglass Crown Shallows",
+            "day": [{"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l60", "name": "The Wyrmglass Crown Coastal Waters",
+            "day": [{"role": "stingray_t6", "weight": 1}],
+            "night": [{"role": "stingray_t6", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l60", "name": "The Wyrmglass Crown Lakes",
+            "day": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 3}, {"role": "tortoise_t6", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l60", "name": "The Wyrmglass Crown Rivers",
+            "day": [{"role": "frog_t6", "weight": 1}],
+            "night": [{"role": "frog_t6", "weight": 1}], "density": "sparse"}
         }
       }
     ],

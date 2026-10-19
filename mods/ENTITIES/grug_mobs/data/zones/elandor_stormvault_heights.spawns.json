@@ -12,7 +12,19 @@
             "night": [{"role": "rime_skeleton_stray", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
           "highland": {"id": "eagle_crags", "name": "Stormvault Eagle Crags",
             "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "storm_ridge_ram", "weight": 1}],
-            "night": [{"role": "rime_skeleton_stray", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "rime_skeleton_stray", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l31_33", "name": "Stormvault Heights Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l31_33", "name": "Stormvault Heights Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l31_33", "name": "Stormvault Heights Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l31_33", "name": "Stormvault Heights Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -26,7 +38,19 @@
             "night": "open", "density": "dense"},
           "highland": {"id": "highcrags", "name": "Stormvault Highcrags",
             "day": [{"role": "storm_ridge_ram", "weight": 3}, {"role": "ridge_ibex", "weight": 1}],
-            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l34_37", "name": "Stormvault Heights Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l34_37", "name": "Stormvault Heights Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l34_37", "name": "Stormvault Heights Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l34_37", "name": "Stormvault Heights Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -37,7 +61,19 @@
             "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
           "highland": {"id": "stormcrags", "name": "Stormvault Stormcrags",
             "day": [{"role": "storm_ridge_ram", "weight": 1}],
-            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal", "quest_target": true}
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal", "quest_target": true},
+          "sea_shallows": {"id": "sea_shallows_l38_40", "name": "Stormvault Heights Shallows",
+            "day": [{"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l38_40", "name": "Stormvault Heights Coastal Waters",
+            "day": [{"role": "stingray_t4", "weight": 1}],
+            "night": [{"role": "stingray_t4", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l38_40", "name": "Stormvault Heights Lakes",
+            "day": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 3}, {"role": "tortoise_t4", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l38_40", "name": "Stormvault Heights Rivers",
+            "day": [{"role": "frog_t4", "weight": 1}],
+            "night": [{"role": "frog_t4", "weight": 1}], "density": "sparse"}
         }
       }
     ],

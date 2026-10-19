@@ -9,7 +9,8 @@
 --    below grug_mobs.UNDERGROUND_TOP = -1) spawns up to light 7 or in any
 --    light, has no day_toggle and carries the underground on_spawn; the rows
 --    that ended at -40 now reach up to -1; no surface row reaches below 0
---    except the two water rows.
+--    except the water rows (Kraken, Reed Angelfish, since Round 51 the sharks
+--    and the Tide Goby).
 -- B. spawn_policy_allows at the boundary: an underground family from node
 --    y -2 down, nothing at y -1 (the one layer between surface and
 --    underground rows), the start footprint first, a def-elite (golem) only
@@ -55,8 +56,12 @@ for index, row in ipairs(roster.rows) do
 			"A " .. row.name .. " underground: the underground on_spawn")
 		if row.max_height == TOP then reaching[row.name] = true end
 	else
-		check((row.min_height or 0) >= 0 or row.name == "grug_mobs:kraken" or
-			row.name == "grug_mobs:reed_angelfish",
+		-- The water rows reach below 0 (Round 51 MOBS M2 added the sharks and
+		-- the Tide Goby to the Kraken and the Reed Angelfish).
+		local water_row = ({["grug_mobs:kraken"] = true, ["grug_mobs:reed_angelfish"] = true,
+			["grug_mobs:bay_shark"] = true, ["grug_mobs:abyssal_shark"] = true,
+			["grug_mobs:goby"] = true})[row.name]
+		check((row.min_height or 0) >= 0 or water_row,
 			"A " .. row.name .. " surface row stays above ground: " .. tostring(row.min_height))
 	end
 end

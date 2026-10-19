@@ -3,12 +3,24 @@
 -- lakes'. Atmosphere anywhere in sea water; one Raw Fish per kill (fish loot,
 -- critter fish included), no XP and no quality loot like every critter, and
 -- never a kill target (quests.md Ruling 29). A world slot (data/names.json,
--- the water authority in spawn_policy.lua); its spawning is Round 51 MOBS
--- step M2.
+-- the water authority in spawn_policy.lua) with its own water row below
+-- (Round 51 MOBS M2).
 --
 -- Port of animalworld's goby (MIT code and media, LICENSE-media.md §3): its
 -- model and texture; the behaviour is the Reed Angelfish's
 -- (reed_angelfish.lua). Silent.
+
+-- Sea water of any band, the open sea included (S10: critter fish swim
+-- anywhere), with water at the spot and above it, like the Reed Angelfish's
+-- lake rule; lakes and rivers keep the Reed Angelfish.
+local SEA = {bay = true, belt = true, channel = true, open_sea = true}
+local function in_sea_water(pos)
+	if core.get_node(pos).name ~= "default:water_source" then return false end
+	if core.get_node({x = pos.x, y = pos.y + 1, z = pos.z}).name ~= "default:water_source" then
+		return false
+	end
+	return SEA[grug_zones.water_query_at(pos.x, pos.z) or ""] == true
+end
 
 grug_mobs.register_mob("grug_mobs:goby", {
 	description = "Tide Goby",
@@ -20,6 +32,7 @@ grug_mobs.register_mob("grug_mobs:goby", {
 	_grug_tier = "critter",
 	_grug_xp_reward = 0,
 	_grug_no_quality_loot = true,
+	_grug_spawn_check = in_sea_water,
 
 	-- Water-only movement guard and no climbing (swimmer.lua).
 	fly = true,
@@ -61,4 +74,16 @@ grug_mobs.register_mob("grug_mobs:goby", {
 	water_damage = 0,
 	lava_damage = 4,
 	light_damage = 0,
+})
+
+-- The Reed Angelfish's row and rate, on the sea floor's sand.
+mobs:spawn({
+	name = "grug_mobs:goby",
+	nodes = {"default:water_source"},
+	neighbors = {"default:sand"},
+	interval = 30,
+	chance = 4000,
+	active_object_count = 2,
+	min_height = -30,
+	max_height = 0,
 })

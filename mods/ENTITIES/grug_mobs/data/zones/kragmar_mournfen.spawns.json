@@ -18,7 +18,19 @@
             "night": [{"role": "reed_crocodile", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "mudpools", "name": "Mournfen Mudpools",
             "day": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}],
-            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "sea_shallows": {"id": "sea_shallows_l11_13", "name": "Mournfen Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l11_13", "name": "Mournfen Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l11_13", "name": "Mournfen Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l11_13", "name": "Mournfen Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -35,7 +47,19 @@
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse", "quest_target": true},
           "highland": {"id": "barrows", "name": "Mournfen Barrows",
             "day": "open",
-            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l14_17", "name": "Mournfen Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l14_17", "name": "Mournfen Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l14_17", "name": "Mournfen Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l14_17", "name": "Mournfen Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       },
       {
@@ -52,7 +76,19 @@
             "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "muttering_zombie", "weight": 1}], "density": "sparse"},
           "highland": {"id": "cairns", "name": "Mournfen Cairns",
             "day": "open",
-            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "normal"}
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "normal"},
+          "sea_shallows": {"id": "sea_shallows_l18_20", "name": "Mournfen Shallows",
+            "day": [{"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "sea_deep": {"id": "sea_deep_l18_20", "name": "Mournfen Coastal Waters",
+            "day": [{"role": "stingray_t2", "weight": 1}],
+            "night": [{"role": "stingray_t2", "weight": 1}], "density": "sparse"},
+          "lake": {"id": "lake_l18_20", "name": "Mournfen Lakes",
+            "day": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 3}, {"role": "tortoise_t2", "weight": 1}], "density": "sparse"},
+          "river": {"id": "river_l18_20", "name": "Mournfen Rivers",
+            "day": [{"role": "frog_t2", "weight": 1}],
+            "night": [{"role": "frog_t2", "weight": 1}], "density": "sparse"}
         }
       }
     ],
