@@ -3237,5 +3237,260 @@
     "tint_by_zone": {
       "front_skyglass_canopy": "ember_strong"
     }
+  },
+  {
+    "role": "tortoise_t1",
+    "family": "tortoise",
+    "base": "grug_mobs:tortoise",
+    "display": "Pond Terrapin",
+    "size": 0.75,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      1,
+      10
+    ],
+    "drops": "tortoise",
+    "notes": "Round 51 water family (sea plan S15): neutral amphibian, follows ashore; drop tier T1; water: freshwater and shore (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "tortoise_t2",
+    "family": "tortoise",
+    "base": "grug_mobs:tortoise",
+    "display": "Sandbar Tortoise",
+    "size": 0.82,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      11,
+      20
+    ],
+    "drops": "tortoise",
+    "notes": "Round 51 water family (sea plan S15): neutral amphibian, follows ashore; drop tier T2; water: freshwater and shore (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "tortoise_t3",
+    "family": "tortoise",
+    "base": "grug_mobs:tortoise",
+    "display": "Knobshell Tortoise",
+    "size": 0.91,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      20,
+      30
+    ],
+    "drops": "tortoise",
+    "notes": "Round 51 water family (sea plan S15): neutral amphibian, follows ashore; drop tier T3; water: freshwater and shore (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "tortoise_t4",
+    "family": "tortoise",
+    "base": "grug_mobs:tortoise",
+    "display": "Ridgeshell Tortoise",
+    "size": 1.05,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "tortoise",
+    "notes": "Round 51 water family (sea plan S15): neutral amphibian, follows ashore; drop tier T4; water: freshwater and shore (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "tortoise_t5",
+    "family": "tortoise",
+    "base": "grug_mobs:tortoise",
+    "display": "Ironshell Tortoise",
+    "size": 1.18,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "tortoise",
+    "notes": "Round 51 water family (sea plan S15): neutral amphibian, follows ashore; drop tier T5; water: freshwater (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "tortoise_t6",
+    "family": "tortoise",
+    "base": "grug_mobs:tortoise",
+    "display": "Stoneback Tortoise",
+    "size": 1.3,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "tortoise",
+    "notes": "Round 51 water family (sea plan S15): neutral amphibian, follows ashore; drop tier T6; water: freshwater and shore (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "frog_t1",
+    "family": "frog",
+    "base": "grug_mobs:frog",
+    "display": "Marsh Frog",
+    "size": 0.75,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      1,
+      10
+    ],
+    "drops": "frog",
+    "notes": "Round 51 water family: hostile amphibian, follows ashore; drop tier T1; water: freshwater (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "frog_t2",
+    "family": "frog",
+    "base": "grug_mobs:frog",
+    "display": "Bog Toad",
+    "size": 0.85,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      20
+    ],
+    "drops": "frog",
+    "notes": "Round 51 water family: hostile amphibian, follows ashore; drop tier T2; water: freshwater (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "frog_t3",
+    "family": "frog",
+    "base": "grug_mobs:frog",
+    "display": "Fen Croaker",
+    "size": 0.96,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      30
+    ],
+    "drops": "frog",
+    "notes": "Round 51 water family: hostile amphibian, follows ashore; drop tier T3; water: freshwater (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "frog_t4",
+    "family": "frog",
+    "base": "grug_mobs:frog",
+    "display": "Mire Bullfrog",
+    "size": 1.07,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "frog",
+    "notes": "Round 51 water family: hostile amphibian, follows ashore; drop tier T4; water: freshwater (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "frog_t5",
+    "family": "frog",
+    "base": "grug_mobs:frog",
+    "display": "Wartback Toad",
+    "size": 1.19,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "frog",
+    "notes": "Round 51 water family: hostile amphibian, follows ashore; drop tier T5; water: freshwater (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "frog_t6",
+    "family": "frog",
+    "base": "grug_mobs:frog",
+    "display": "Blackwater Toad",
+    "size": 1.3,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "frog",
+    "notes": "Round 51 water family: hostile amphibian, follows ashore; drop tier T6; water: freshwater (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "stingray_t1",
+    "family": "stingray",
+    "base": "grug_mobs:stingray",
+    "display": "Sand Ray",
+    "size": 0.75,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      1,
+      10
+    ],
+    "drops": "stingray",
+    "notes": "Round 51 water family (S10, S11): hostile pure swimmer, resets when its target leaves the water; drop tier T1; water: belt (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "stingray_t2",
+    "family": "stingray",
+    "base": "grug_mobs:stingray",
+    "display": "Shoal Ray",
+    "size": 0.78,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      20
+    ],
+    "drops": "stingray",
+    "notes": "Round 51 water family (S10, S11): hostile pure swimmer, resets when its target leaves the water; drop tier T2; water: belt (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "stingray_t3",
+    "family": "stingray",
+    "base": "grug_mobs:stingray",
+    "display": "Barbtail Ray",
+    "size": 0.87,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      30
+    ],
+    "drops": "stingray",
+    "notes": "Round 51 water family (S10, S11): hostile pure swimmer, resets when its target leaves the water; drop tier T3; water: belt (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "stingray_t4",
+    "family": "stingray",
+    "base": "grug_mobs:stingray",
+    "display": "Thornback Ray",
+    "size": 1.04,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "stingray",
+    "notes": "Round 51 water family (S10, S11): hostile pure swimmer, resets when its target leaves the water; drop tier T4; water: belt (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
+  },
+  {
+    "role": "stingray_t6",
+    "family": "stingray",
+    "base": "grug_mobs:stingray",
+    "display": "Wyrmwake Ray",
+    "size": 1.3,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "stingray",
+    "notes": "Round 51 water family (S10, S11): hostile pure swimmer, resets when its target leaves the water; drop tier T6; water: belt and channel (tools/r51_names/draft.json). Spawn kinds by water band: MOBS step M2."
   }
 ]
