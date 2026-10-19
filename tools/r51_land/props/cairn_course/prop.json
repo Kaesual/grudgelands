@@ -1,0 +1,64 @@
+{
+  "name": "Cairn, rough stone course",
+  "drop": "default:cobble",
+  "tiles": [
+    "cairn_course_top.png",
+    "cairn_course_bottom.png",
+    "cairn_course_right.png",
+    "cairn_course_left.png",
+    "cairn_course_back.png",
+    "cairn_course_front.png"
+  ],
+  "boxes": [
+    [
+      -6,
+      -8,
+      -5,
+      6,
+      -5,
+      5
+    ],
+    [
+      -7,
+      -7,
+      -3,
+      6,
+      -4,
+      4
+    ],
+    [
+      -5,
+      -4,
+      -6,
+      5,
+      0,
+      5
+    ],
+    [
+      -6,
+      -2,
+      -4,
+      4,
+      1,
+      4
+    ],
+    [
+      -5,
+      1,
+      -4,
+      6,
+      5,
+      5
+    ],
+    [
+      -5,
+      5,
+      -4,
+      5,
+      8,
+      4
+    ]
+  ],
+  "rotate": true,
+  "note": "Stack one or two courses, then cairn_cap, for a compact two- or three-node waymark. Every course reaches the next node."
+}

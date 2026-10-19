@@ -1,0 +1,48 @@
+{
+  "name": "Gravestone, chipped cross crown",
+  "drop": "default:cobble",
+  "tiles": [
+    "gravestone_cross_top.png",
+    "gravestone_cross_bottom.png",
+    "gravestone_cross_right.png",
+    "gravestone_cross_left.png",
+    "gravestone_cross_back.png",
+    "gravestone_cross_front.png"
+  ],
+  "boxes": [
+    [
+      -2,
+      -8,
+      -1,
+      2,
+      2,
+      2
+    ],
+    [
+      -6,
+      -4,
+      -1,
+      5,
+      -1,
+      2
+    ],
+    [
+      -5,
+      -1,
+      -1,
+      4,
+      0,
+      2
+    ],
+    [
+      -1,
+      2,
+      -1,
+      2,
+      4,
+      2
+    ]
+  ],
+  "rotate": true,
+  "note": "Low wayside cross alone, or the crown on gravestone_slab. Keep the same quarter-turn when stacking."
+}

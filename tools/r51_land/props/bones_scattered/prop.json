@@ -1,0 +1,72 @@
+{
+  "name": "Bones, scattered long bones",
+  "drop": "",
+  "tiles": [
+    "bones_scattered_top.png",
+    "bones_scattered_bottom.png",
+    "bones_scattered_right.png",
+    "bones_scattered_left.png",
+    "bones_scattered_back.png",
+    "bones_scattered_front.png"
+  ],
+  "boxes": [
+    [
+      -6,
+      -8,
+      -4,
+      3,
+      -7,
+      -2
+    ],
+    [
+      -7,
+      -8,
+      -5,
+      -5,
+      -6,
+      -1
+    ],
+    [
+      2,
+      -8,
+      -4,
+      4,
+      -6,
+      -1
+    ],
+    [
+      1,
+      -8,
+      1,
+      3,
+      -7,
+      6
+    ],
+    [
+      0,
+      -8,
+      0,
+      4,
+      -6,
+      2
+    ],
+    [
+      1,
+      -8,
+      5,
+      4,
+      -6,
+      7
+    ],
+    [
+      -5,
+      -8,
+      3,
+      -3,
+      -7,
+      5
+    ]
+  ],
+  "rotate": true,
+  "note": "Rare single find or occasional pair; drops nothing like today's bone_pile. The user may prefer grug_mobs:bone. Recommended piece to retain the grug_nodes:bone_pile node name."
+}

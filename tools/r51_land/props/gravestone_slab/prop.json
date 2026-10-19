@@ -1,0 +1,48 @@
+{
+  "name": "Gravestone, weathered stele",
+  "drop": "default:cobble",
+  "tiles": [
+    "gravestone_slab_top.png",
+    "gravestone_slab_bottom.png",
+    "gravestone_slab_right.png",
+    "gravestone_slab_left.png",
+    "gravestone_slab_back.png",
+    "gravestone_slab_front.png"
+  ],
+  "boxes": [
+    [
+      -6,
+      -8,
+      -3,
+      6,
+      -6,
+      3
+    ],
+    [
+      -5,
+      -6,
+      -1,
+      4,
+      3,
+      2
+    ],
+    [
+      -4,
+      3,
+      -1,
+      5,
+      6,
+      2
+    ],
+    [
+      -3,
+      6,
+      -1,
+      4,
+      8,
+      2
+    ]
+  ],
+  "rotate": true,
+  "note": "A rounded stele alone; add gravestone_cross one node above for a taller memorial. Offset courses suggest a lean."
+}
