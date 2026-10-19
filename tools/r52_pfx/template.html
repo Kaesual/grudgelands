@@ -190,7 +190,7 @@ details summary { cursor: pointer; font-size: .86rem; color: var(--muted); }
       <ul>
         <li>Jede Karte steht in <code>tools/r52_pfx/effects.py</code> im Format von <code>particle_effects.lua</code>; eine gewählte neue Karte wird unter ihrer <code>id</code> so registriert, wie sie dort steht (die Lua-Ansicht jeder Karte zeigt es).</li>
         <li><code>tools/r52_pfx/check_limits.lua</code> lädt das echte <code>particles.lua</code> und prüft jede Karte mit <code>particles.check</code>; Karten „behalten“ und „umgefärbt“ vergleicht es Feld für Feld mit dem ausgelieferten Katalog.</li>
-        <li><b>Flächen:</b> <code>area.delayed</code> gibt eine Farbe an Warnung, Fall und Einschlag; jede Flächenfähigkeit nutzt darum nur eine Tönung plus Texturen. Die Karten nennen <code>spec.color</code> und die Effekt-IDs für <code>spec.fall</code> und <code>spec.burst</code>.</li>
+        <li><b>Flächen:</b> <code>area.delayed</code> gäbe ein <code>spec.color</code> an Warnung, Fall und Einschlag zugleich; darum setzt keine Karte es. Jede Fläche nennt ihre eigenen Effekt-IDs für <code>spec.warning</code>, <code>spec.fall</code> und <code>spec.burst</code> (die farbigen Warnungen von Winter Field und Censure sind eigene IDs).</li>
         <li><b>Bereitschaften</b> nutzen den vorhandenen Proc-Ring mit neuer Farbe in <code>grug_core.PROC_COLORS</code>.</li>
         <li><b>Spawner-Bereiche drehen nicht mit:</b> Kasten-Ausdehnung und Geschwindigkeitsbereiche eines Spawners bleiben an der Welt ausgerichtet; jede Karte hält sie richtungsgleich (effects.py prüft das). Was mit der Blickrichtung zeigen muss, ist eine Linie oder einzelne Partikel.</li>
       </ul>

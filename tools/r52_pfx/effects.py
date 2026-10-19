@@ -400,9 +400,9 @@ card("meteor", "warning", "keep", id="area_warning",
      look="Ein Ring aus 20 glühenden Punkten markiert den Einschlag (3 m) und steht die ganze Verzögerung "
           "von 1,5 s. CORE-Bs Warnring, unverändert.",
      emitters=_area_warning, sample={"reach": 3, "time": 1.5}, target=[10, 0, 0],
-     dynamic="reach = the radius (3 m + Broad Impact), time = the delay; spec.color \"#ffb347\" "
-             "(area.delayed passes one colour to warning, fall and impact)",
-     hook="area.delayed (grug_core/area.lua:316): spec.warning default", context=["pfx.meteor.fall"],
+     dynamic="reach = the radius (3 m + Broad Impact), time = the delay; no spec.color (area.delayed "
+             "would pass it to warning, fall and impact alike; the default warning is already #ffb347)",
+     hook="area.delayed (grug_core/area.lua:318): spec.warning default", context=["pfx.meteor.fall"],
      marker={"radius": 3, "at": "target"})
 card("meteor", "fall", "new", id="meteor_fall",
      look="Ein einzelner brennender Brocken fällt schräg aus der Höhe genau zum Ende der Verzögerung auf den "
@@ -435,7 +435,8 @@ card("meteor", "impact", "new", id="meteor_impact",
 card("fire_rain", "warning", "keep", id="area_warning",
      look="Derselbe Warnring wie beim Meteor, auf 5 m: 20 Punkte für 1,5 s.",
      emitters=_area_warning, sample={"reach": 5, "time": 1.5}, target=[10, 0, 0],
-     dynamic="reach = the radius (5 m + Spreading Rain), time = the delay; spec.color \"#ffb347\"",
+     dynamic="reach = the radius (5 m + Spreading Rain), time = the delay; no spec.color (the default "
+             "warning is already #ffb347)",
      hook="area.delayed spec.warning default", context=["pfx.fire_rain.fall"],
      marker={"radius": 5, "at": "target"})
 card("fire_rain", "fall", "new", id="fire_rain_fall",
@@ -511,12 +512,13 @@ card("ice_nova", "cast", "keep", id="ice_nova",
      emitters=TODAY["ice_nova"], sample={"reach": 5},
      dynamic="reach = the nova's radius (5 m + Far Frost)", hook="Ice Nova's cast (kits_mage.lua:205)",
      marker={"radius": 5}, today="genau dieser Effekt")
-card("winter_field", "warning", "keep", id="area_warning",
-     look="Der Warnring auf 4 m, eine Sekunde lang, in Frostblau.",
-     emitters=lambda f: recolor(_area_warning(f), R["pale"]), color=R["pale"],
+card("winter_field", "warning", "new", id="winter_field_warning",
+     look="Der Warnring auf 4 m, eine Sekunde lang, in Frostblau: CORE-Bs Warnring in Frostfarbe.",
+     emitters=lambda f: recolor(_area_warning(f), R["pale"]),
      sample={"reach": 4, "time": 1.0}, target=[10, 0, 0],
-     dynamic="reach = 4 m, time = the delay (1 s); spec.color \"#bfe8ff\"",
-     hook="area.delayed spec.warning default with spec.color", context=["pfx.winter_field.fall"],
+     dynamic="a recolour of area_warning: reach = 4 m, time = the delay (1 s); no spec.color, which "
+             "would repaint the fall and the impact too (area.lua:327-355)",
+     hook="area.delayed spec.warning = \"winter_field_warning\"", context=["pfx.winter_field.fall"],
      marker={"radius": 4, "at": "target"})
 card("winter_field", "fall", "new", id="winter_field_fall",
      look="Ein Schneegestöber: eine Sekunde lang rieseln 36 große Flocken aus bis zu 5 m Höhe in den Kreis, "
@@ -698,12 +700,13 @@ card("word_of_ruin", "hit", "retint", id="word_of_ruin",
           "Gold statt Dunkelviolett.",
      emitters=recolor(TODAY["word_of_ruin"], K["gold"]), hook="kits_priest.lua:266",
      today="dieselbe Form in Dunkelviolett (#6a2a9a)")
-card("censure", "warning", "keep", id="area_warning",
-     look="Der Warnring auf 3 m in hartem Gold, eine Dreiviertelsekunde lang.",
-     emitters=lambda f: recolor(_area_warning(f), K["gold"]), color=K["gold"],
+card("censure", "warning", "new", id="censure_warning",
+     look="Der Warnring auf 3 m in hartem Gold, eine Dreiviertelsekunde lang: CORE-Bs Warnring in Gold.",
+     emitters=lambda f: recolor(_area_warning(f), K["gold"]),
      sample={"reach": 3, "time": 0.75}, target=[8, 0, 0],
-     dynamic="reach = the radius (3 m + Broad Judgment), time = the delay; spec.color \"#ffd257\"",
-     hook="area.delayed spec.warning default with spec.color", context=["pfx.censure.fall"],
+     dynamic="a recolour of area_warning: reach = the radius (3 m + Broad Judgment), time = the delay; "
+             "no spec.color, which would repaint the seal and the impact too (area.lua:327-355)",
+     hook="area.delayed spec.warning = \"censure_warning\"", context=["pfx.censure.fall"],
      marker={"radius": 3, "at": "target"})
 card("censure", "fall", "new", id="censure_fall",
      look="Ein einziges großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung "
