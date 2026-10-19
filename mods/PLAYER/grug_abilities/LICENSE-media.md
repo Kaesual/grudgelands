@@ -64,44 +64,46 @@ restores that concrete bow's ordinary wield image.
 
 The 30 `textures/grug_abilities_fx_<family>_<weapon>[_draw<n>].png` strips (the
 first-person element overlay, round52-class-plan.md C7): own work by GPT-6 Astra
-for Grudgelands, Round 52 lane ARTA drop 03 (2026-10-19), drawn pixel by pixel by
-the generator `tools/r52_art/arta/arta_fx3.py` on branch `r52-arta` (Python/Pillow,
-explicit original geometry; no weapon pixels enter a strip), **CC0-1.0**.
-Provenance and the full drop manifest: `tools/r52_art/arta/README.md` and
-`drop-03/manifest.json` on that branch. Each file is a byte-identical renamed
-copy of the strip the user picked on 2026-10-19 (`r52/picks/arta/picks.md`):
-RGBA, 16 px wide, the family's frame count × 16 px high; the animation is on the
-skill item's definition (`grug_abilities.WEAPON_FX_ANIMATION`).
+for Grudgelands, Round 52 lane ARTA, **CC0-1.0**. Each is the opaque rework (ARTA
+pass 4, drop 04, 2026-10-20; the user accepted all of them) of the strip the user
+picked on 2026-10-19 from drop 03: the generator `tools/r52_art/arta/arta_fx4.py`
+reworks the pick produced by `arta_fx3.py` with opaque pixels only (alpha 0 or
+255; the wield mesh discards alpha below 0.5 and draws the rest opaque). Both
+generators, the drops and their manifests are in `tools/r52_art/arta/`
+(`README.md`). Each file is a byte-identical copy of
+`tools/r52_art/arta/drop-04/<same name>`: RGBA, 16 px wide, the family's frame
+count × 16 px high; the animation is on the skill item's definition
+(`grug_abilities.WEAPON_FX_ANIMATION`).
 
-| Local file | Source (drop-03 on r52-arta) | Pick | SHA-256 |
+| Local file | Source (`tools/r52_art/arta/`) | Rework of the pick (drop-03) | SHA-256 |
 |---|---|---|---|
-| `textures/grug_abilities_fx_bulwark_dagger.png` | `fx/warrior/bulwark_dagger_v1.png` | fx.warrior.bulwark.dagger.v1 "Measured edge" | `b4675aa7d2c2b62b0f3d8eafc151c9821147ddeeda8b914157b06507bc530ffa` |
-| `textures/grug_abilities_fx_bulwark_greataxe.png` | `fx/warrior/bulwark_greataxe_v1.png` | fx.warrior.bulwark.greataxe.v1 "Measured edge" | `77e44d519cef2a24af2f8f16226b3bd191dae230adb6978a740b95602503b771` |
-| `textures/grug_abilities_fx_bulwark_sword.png` | `fx/warrior/bulwark_sword_v2.png` | fx.warrior.bulwark.sword.v2 "Rivet glint" | `86c022ca9f5e05625db245110d7d692fec140f01c4606356d1fb91fdfaea4b3f` |
-| `textures/grug_abilities_fx_ember_dagger.png` | `fx/mage/ember_dagger_v1.png` | fx.mage.ember.dagger.v1 "Candle tongue" | `28f88f808b188c6adbbf995ce2b5d532a83e35c9d1fd841bad71a5058a8b87bc` |
-| `textures/grug_abilities_fx_ember_staff.png` | `fx/mage/ember_staff_v1.png` | fx.mage.ember.staff.v1 "Candle tongue" | `da6bb86a3702fb282b9372c6a455557c929bb3b66317f7c53b051e3c73375eb5` |
-| `textures/grug_abilities_fx_ember_wand.png` | `fx/mage/ember_wand_v1.png` | fx.mage.ember.wand.v1 "Candle tongue" | `ab36fb3c11a112a8d5ef8450dfb50ed5bfa212402dd0419249c46f2b64bfdb33` |
-| `textures/grug_abilities_fx_mercy_dagger.png` | `fx/priest/mercy_dagger_v1.png` | fx.priest.mercy.dagger.v1 "Quiet blessing" | `8e17aff736ebcfadca0387bf655247a7a528ffe334679b2dcbbd485c74d5ef30` |
-| `textures/grug_abilities_fx_mercy_staff.png` | `fx/priest/mercy_staff_v2.png` | fx.priest.mercy.staff.v2 "Sheltered light" | `4b00c603fbd534e49649f46defd8ce2efb7e3e7fc237591cb994f10429b5b8dc` |
-| `textures/grug_abilities_fx_mercy_wand.png` | `fx/priest/mercy_wand_v1.png` | fx.priest.mercy.wand.v1 "Quiet blessing" | `da02e8ad08e9fda7dd894c082e6ff4606c9ecc701919fad4013754acba388975` |
-| `textures/grug_abilities_fx_quarry_bow.png` | `fx/scout/quarry_bow_v1.png` | fx.scout.quarry.bow.v1 "Passing breeze" | `313b1fa0b46e000735a712197b10eb6d5b902a32fa9250f0c4a491664656034f` |
-| `textures/grug_abilities_fx_quarry_bow_draw0.png` | `fx/scout/quarry_bow_draw0_v1.png` | fx.scout.quarry.bow.draw0.v1 "Passing breeze" | `ab7f1a7c7ca0d306cc2391989cb08ce8ec8805becc4b8248194e08a3824aba0c` |
-| `textures/grug_abilities_fx_quarry_bow_draw1.png` | `fx/scout/quarry_bow_draw1_v1.png` | fx.scout.quarry.bow.draw1.v1 "Passing breeze" | `8518c6677a34e03fbee56f3a9130a0aa683dc31363a36c8e57475401847c382e` |
-| `textures/grug_abilities_fx_quarry_bow_draw2.png` | `fx/scout/quarry_bow_draw2_v1.png` | fx.scout.quarry.bow.draw2.v1 "Passing breeze" | `7a416f83079b0354765b752d153440356926f098dffd61928ac9d93599cc1869` |
-| `textures/grug_abilities_fx_quarry_dagger.png` | `fx/scout/quarry_dagger_v1.png` | fx.scout.quarry.dagger.v1 "Passing breeze" | `41bf37af02d4cc9a9d717b7656afab479eafcb3f4ce6154a9cbb7cdd6dd1becc` |
-| `textures/grug_abilities_fx_quarry_sword.png` | `fx/scout/quarry_sword_v1.png` | fx.scout.quarry.sword.v1 "Passing breeze" | `d8f5f67c284d2f44ff2c571cc86e7ac29e35db0f9a55d6cc87a976e5cd5a01ac` |
-| `textures/grug_abilities_fx_reckoning_dagger.png` | `fx/priest/reckoning_dagger_v2.png` | fx.priest.reckoning.dagger.v2 "Golden seal" | `0230bae1264428314a03ba1d33ab8c499bc8c19cdfedb38477f62df26b2260dd` |
-| `textures/grug_abilities_fx_reckoning_staff.png` | `fx/priest/reckoning_staff_v1.png` | fx.priest.reckoning.staff.v1 "White verdict" | `271202b65d7f59138993d468820fb0c035542de0e11f2292ec08032bc234e568` |
-| `textures/grug_abilities_fx_reckoning_wand.png` | `fx/priest/reckoning_wand_v2.png` | fx.priest.reckoning.wand.v2 "Golden seal" | `fb356d488fc4018e7c5960c6ee0896a5419bb74399fad69599e4ac7e9b98c60b` |
-| `textures/grug_abilities_fx_rime_dagger.png` | `fx/mage/rime_dagger_v1.png` | fx.mage.rime.dagger.v1 "Growing frost fern" | `dd0b68415d8868f98fb94091c729e7b6e7d4067087bbf55fb68bc93083aa0d3f` |
-| `textures/grug_abilities_fx_rime_staff.png` | `fx/mage/rime_staff_v1.png` | fx.mage.rime.staff.v1 "Growing frost fern" | `69a72e3371b46915de1cc25e3aa07b58447bda331734d4848e7ee59d9e5ff0ab` |
-| `textures/grug_abilities_fx_rime_wand.png` | `fx/mage/rime_wand_v1.png` | fx.mage.rime.wand.v1 "Growing frost fern" | `99bb5c35f1452c7386c46516c914477eac07213cfc434d1f64f9c852a81b51f3` |
-| `textures/grug_abilities_fx_ruin_dagger.png` | `fx/warrior/ruin_dagger_v1.png` | fx.warrior.ruin.dagger.v1 "Hot cutting edge" | `8088c17ad1793d97eade76fd45292fb1a625f5dd1837a304f8946eedbb257fda` |
-| `textures/grug_abilities_fx_ruin_greataxe.png` | `fx/warrior/ruin_greataxe_v1.png` | fx.warrior.ruin.greataxe.v1 "Hot cutting edge" | `ec88358112a94ffbf67df10b0be41ddb03e02663b8a438be9fc0720a781910b9` |
-| `textures/grug_abilities_fx_ruin_sword.png` | `fx/warrior/ruin_sword_v1.png` | fx.warrior.ruin.sword.v1 "Hot cutting edge" | `84a2a0380096aef8376659fd29f3c0c7730802f83f29de046a3cbb2e84584ac9` |
-| `textures/grug_abilities_fx_veil_bow.png` | `fx/scout/veil_bow_v1.png` | fx.scout.veil.bow.v1 "Fine smoke" | `6314d293e40596c4001a2b302cf7f887562d808d8221928fffac4276459500df` |
-| `textures/grug_abilities_fx_veil_bow_draw0.png` | `fx/scout/veil_bow_draw0_v1.png` | fx.scout.veil.bow.draw0.v1 "Fine smoke" | `c5383fd986d26fc76ac27c29db12bd93f8835ef4d8e21a5bfe6aa37e2f23d67e` |
-| `textures/grug_abilities_fx_veil_bow_draw1.png` | `fx/scout/veil_bow_draw1_v1.png` | fx.scout.veil.bow.draw1.v1 "Fine smoke" | `2d9b8defa53c8a9152484375af95c5a4abf0efbd04e522f86c42a6d7f36b465c` |
-| `textures/grug_abilities_fx_veil_bow_draw2.png` | `fx/scout/veil_bow_draw2_v1.png` | fx.scout.veil.bow.draw2.v1 "Fine smoke" | `dca9f4b5bd745af20508ecf1cc57326e83a9b559898baf9c6100b1e1c79b0b31` |
-| `textures/grug_abilities_fx_veil_dagger.png` | `fx/scout/veil_dagger_v1.png` | fx.scout.veil.dagger.v1 "Fine smoke" | `554be2b04f0e0d02c8be10ee3a0ce7485a0faf09c6c28390b8dcf3e0c5929cfe` |
-| `textures/grug_abilities_fx_veil_sword.png` | `fx/scout/veil_sword_v1.png` | fx.scout.veil.sword.v1 "Fine smoke" | `5534f9229cc304326f4cdfcb491e4ef4e263488c2e30b67385698062b393e3e3` |
+| `textures/grug_abilities_fx_bulwark_dagger.png` | `drop-04/grug_abilities_fx_bulwark_dagger.png` | opaque rework of the user's pick `fx/warrior/bulwark_dagger_v1.png` | `d2b0d0a9be545b16128f37d5b7981aecf64ea88221a703b08e97cab031e258a6` |
+| `textures/grug_abilities_fx_bulwark_greataxe.png` | `drop-04/grug_abilities_fx_bulwark_greataxe.png` | opaque rework of the user's pick `fx/warrior/bulwark_greataxe_v1.png` | `45c85ebb08123bc18b3378817cc3b9bb35203b994c17c234c68299d37341f4c5` |
+| `textures/grug_abilities_fx_bulwark_sword.png` | `drop-04/grug_abilities_fx_bulwark_sword.png` | opaque rework of the user's pick `fx/warrior/bulwark_sword_v2.png` | `10684401876e216e5cc0054faba1d9cad6e30cc207763483e4025e502e94b5e5` |
+| `textures/grug_abilities_fx_ember_dagger.png` | `drop-04/grug_abilities_fx_ember_dagger.png` | opaque rework of the user's pick `fx/mage/ember_dagger_v1.png` | `2aeb862358dfe50cb93fe8e8d56adbba057a62c2a6b2bb6ac3850d90b2e88f43` |
+| `textures/grug_abilities_fx_ember_staff.png` | `drop-04/grug_abilities_fx_ember_staff.png` | opaque rework of the user's pick `fx/mage/ember_staff_v1.png` | `20c5aba593ac462457c73b4a6b812957d2f84cc376ac2de9f952048bdef8cb69` |
+| `textures/grug_abilities_fx_ember_wand.png` | `drop-04/grug_abilities_fx_ember_wand.png` | opaque rework of the user's pick `fx/mage/ember_wand_v1.png` | `04b3ac0b3a920ccb432d373554c28777bc6ac63b6daf27fd53a4d6efef33ce7c` |
+| `textures/grug_abilities_fx_mercy_dagger.png` | `drop-04/grug_abilities_fx_mercy_dagger.png` | opaque rework of the user's pick `fx/priest/mercy_dagger_v1.png` | `1b788bc1a41152d17ff5ee82b747cde083804d38d7ae3015c6801abd4c0e74ce` |
+| `textures/grug_abilities_fx_mercy_staff.png` | `drop-04/grug_abilities_fx_mercy_staff.png` | opaque rework of the user's pick `fx/priest/mercy_staff_v2.png` | `499ae487185231ba1a3389f59eef6e17464cd74474849152ada00059fe4be9c6` |
+| `textures/grug_abilities_fx_mercy_wand.png` | `drop-04/grug_abilities_fx_mercy_wand.png` | opaque rework of the user's pick `fx/priest/mercy_wand_v1.png` | `06cef44d1e38a2a0ca0b361bb5ef5183818385aff200fd27ff3895499c693c51` |
+| `textures/grug_abilities_fx_quarry_bow.png` | `drop-04/grug_abilities_fx_quarry_bow.png` | opaque rework of the user's pick `fx/scout/quarry_bow_v1.png` | `382012128cb753a682ad437a01de24dd25ccb0e78e683311a480529893dd386f` |
+| `textures/grug_abilities_fx_quarry_bow_draw0.png` | `drop-04/grug_abilities_fx_quarry_bow_draw0.png` | opaque rework of the user's pick `fx/scout/quarry_bow_draw0_v1.png` | `3f8dc4063d740b9d8cfb85aa914f26e52e1e5f015178218be91a81b3f29e5596` |
+| `textures/grug_abilities_fx_quarry_bow_draw1.png` | `drop-04/grug_abilities_fx_quarry_bow_draw1.png` | opaque rework of the user's pick `fx/scout/quarry_bow_draw1_v1.png` | `4027fbd9b02cc4cd1cdf89cb2cfcf5f1f56c7a9883da14aa251b9892d5daea9d` |
+| `textures/grug_abilities_fx_quarry_bow_draw2.png` | `drop-04/grug_abilities_fx_quarry_bow_draw2.png` | opaque rework of the user's pick `fx/scout/quarry_bow_draw2_v1.png` | `c308d2200b4178b4f19f915529706af3e642a1c3ad66f01de6913ddbf1808465` |
+| `textures/grug_abilities_fx_quarry_dagger.png` | `drop-04/grug_abilities_fx_quarry_dagger.png` | opaque rework of the user's pick `fx/scout/quarry_dagger_v1.png` | `4d0f46b2db3ff534e94982bc4656ab386eb6035ebec14f0dd1ea01d0cc36c7d8` |
+| `textures/grug_abilities_fx_quarry_sword.png` | `drop-04/grug_abilities_fx_quarry_sword.png` | opaque rework of the user's pick `fx/scout/quarry_sword_v1.png` | `2252106cfdd5c5641d8cfde2a1f5170b2eb5c3615156fcdc26883fb953bd55ce` |
+| `textures/grug_abilities_fx_reckoning_dagger.png` | `drop-04/grug_abilities_fx_reckoning_dagger.png` | opaque rework of the user's pick `fx/priest/reckoning_dagger_v2.png` | `ea3868a8b9469e168ec3858178c4fde40a81a0b651f300284722f7894ff90c0a` |
+| `textures/grug_abilities_fx_reckoning_staff.png` | `drop-04/grug_abilities_fx_reckoning_staff.png` | opaque rework of the user's pick `fx/priest/reckoning_staff_v1.png` | `f1625466a2278bacfa8a5eb411e9a034ea1666a8c5611577a30247b4b14c247c` |
+| `textures/grug_abilities_fx_reckoning_wand.png` | `drop-04/grug_abilities_fx_reckoning_wand.png` | opaque rework of the user's pick `fx/priest/reckoning_wand_v2.png` | `5ab5ceb8ed42823819a33cb42e8d8808e61eda4458e0043dbe1d070062781235` |
+| `textures/grug_abilities_fx_rime_dagger.png` | `drop-04/grug_abilities_fx_rime_dagger.png` | opaque rework of the user's pick `fx/mage/rime_dagger_v1.png` | `1fe7b9b312b361ce439166cd9feb2bf834d82e1597162d75e5e1ec8d4e10aa0d` |
+| `textures/grug_abilities_fx_rime_staff.png` | `drop-04/grug_abilities_fx_rime_staff.png` | opaque rework of the user's pick `fx/mage/rime_staff_v1.png` | `53e0c93b9088569bc6cd785963553b1883ecef8f7f5c92537712066b74670132` |
+| `textures/grug_abilities_fx_rime_wand.png` | `drop-04/grug_abilities_fx_rime_wand.png` | opaque rework of the user's pick `fx/mage/rime_wand_v1.png` | `621fc2b13c164a96d483bbd48dbaa59b4d0e535c34190f1b9ac8d9f0c2c662ce` |
+| `textures/grug_abilities_fx_ruin_dagger.png` | `drop-04/grug_abilities_fx_ruin_dagger.png` | opaque rework of the user's pick `fx/warrior/ruin_dagger_v1.png` | `055fc5978f73fcea058532605e7360486f07bb1a9d7e561ed7543d7351920610` |
+| `textures/grug_abilities_fx_ruin_greataxe.png` | `drop-04/grug_abilities_fx_ruin_greataxe.png` | opaque rework of the user's pick `fx/warrior/ruin_greataxe_v1.png` | `7c8788375b06212e05739ebd7a4b7f906f0c5b97311574b3b90b2d174927c11d` |
+| `textures/grug_abilities_fx_ruin_sword.png` | `drop-04/grug_abilities_fx_ruin_sword.png` | opaque rework of the user's pick `fx/warrior/ruin_sword_v1.png` | `70e34967bcffba3f37c22dc0bd112304c238f73a4d8360899d06cdadb40d73fe` |
+| `textures/grug_abilities_fx_veil_bow.png` | `drop-04/grug_abilities_fx_veil_bow.png` | opaque rework of the user's pick `fx/scout/veil_bow_v1.png` | `cf0fdd3a7bfd9428f378c551f8fec449de1389a792eb10060e1775da2d7ef000` |
+| `textures/grug_abilities_fx_veil_bow_draw0.png` | `drop-04/grug_abilities_fx_veil_bow_draw0.png` | opaque rework of the user's pick `fx/scout/veil_bow_draw0_v1.png` | `ef7f579cb584a660dd80080050ee75b8d9b6afeb1803644ad4105c22247ed9c6` |
+| `textures/grug_abilities_fx_veil_bow_draw1.png` | `drop-04/grug_abilities_fx_veil_bow_draw1.png` | opaque rework of the user's pick `fx/scout/veil_bow_draw1_v1.png` | `7da4a0ec83d60f65ed7b1a7e91f28c948c346faf5ce3fc0b9123b79f4a9348c2` |
+| `textures/grug_abilities_fx_veil_bow_draw2.png` | `drop-04/grug_abilities_fx_veil_bow_draw2.png` | opaque rework of the user's pick `fx/scout/veil_bow_draw2_v1.png` | `5becc3e8329ffe449a9a320e041e3f9e3b674514c0e28304324bbe8559c26703` |
+| `textures/grug_abilities_fx_veil_dagger.png` | `drop-04/grug_abilities_fx_veil_dagger.png` | opaque rework of the user's pick `fx/scout/veil_dagger_v1.png` | `81c3325b3eee9cae87ad67c02b2d03aec9b5cb250a0364eb6c71488b0c14d925` |
+| `textures/grug_abilities_fx_veil_sword.png` | `drop-04/grug_abilities_fx_veil_sword.png` | opaque rework of the user's pick `fx/scout/veil_sword_v1.png` | `181bfdd2386974931aaf49a4e67131c1bee96ba567d4d46b12303a71e872d982` |
