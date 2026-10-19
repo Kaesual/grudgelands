@@ -20,8 +20,11 @@
 -- `swamp_config` (optional, Round 47 lane SW) writes the swamp's pools and
 -- their plants right after the roads, before P9G and world content, so
 -- those see the water (`swamp_writer.lua`).
+-- `wreck_config` (optional, Round 51 lane WRECK) writes the shipwrecks
+-- right after the swamp, before P9G and world content, so the seabed growth
+-- grows round them (`wreck_writer.lua`).
 return function(p9g_config, anchor_config, settlement_configs, roster_keys, world_config,
-		road_writer, arena_writer, swamp_config)
+		road_writer, arena_writer, swamp_config, wreck_config)
 	local function fail(message) error("WP40 R7 successor: " .. message, 0) end
 	if (road_writer ~= nil and (type(road_writer) ~= "table" or
 			type(road_writer.dress) ~= "function")) or
@@ -29,6 +32,8 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 			type(arena_writer.dress) ~= "function")) or
 			(swamp_config ~= nil and (type(swamp_config) ~= "table" or
 			type(swamp_config.new) ~= "function")) or
+			(wreck_config ~= nil and (type(wreck_config) ~= "table" or
+			type(wreck_config.new) ~= "function")) or
 			type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
 			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" or
 			type(settlement_configs) ~= "table" or #settlement_configs < 1 or
@@ -68,6 +73,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 			runtime_mode = dependencies.runtime_mode})
 		local anchors = anchor_config.new(dependencies)
 		local swamp = swamp_config and swamp_config.new(dependencies)
+		local wreck = wreck_config and wreck_config.new(dependencies)
 		local world = assert(world_config).new(dependencies)
 		local settlements = {}
 		for index = 1, #settlement_configs do
@@ -104,6 +110,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 			if not rawequal(self, tail) then fail("settle receiver differs") end
 			if road_writer then road_writer.dress(context) end
 			if swamp then swamp.dress(context) end
+			if wreck then wreck.dress(context) end
 			local p9g_context = {}
 			for _, key in ipairs({"schema", "plan", "generation", "call_mode",
 					"min_x", "min_y", "min_z", "max_x", "max_y", "max_z",

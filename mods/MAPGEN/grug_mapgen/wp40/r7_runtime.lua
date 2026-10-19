@@ -158,6 +158,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local world_factory = dofile(wp40_directory .. "/world_content.lua")
 	-- Round 47 lane SW: the swamp's pools and their plants.
 	local swamp_writer = dofile(wp40_directory .. "/swamp_writer.lua")
+	-- Round 51 lane WRECK: the shipwrecks and their shapes.
+	local wreck_writer = dofile(wp40_directory .. "/wreck_writer.lua")
+	local wreck_shapes = dofile(wp40_directory .. "/wreck_shapes.lua")
 	local consumer_payload_factory = dofile(
 		wp40_directory .. "/r7_consumer_payload.lua")
 	local r7_manifest_factory = dofile(wp40_directory .. "/r7_manifest.lua")
@@ -378,7 +381,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				dofile(wp40_directory .. "/road_writer.lua")(core_api, source),
 				dofile(wp40_directory .. "/arena_writer.lua")(core_api, source,
 					dofile(wp40_directory .. "/arena_layout.lua")),
-				swamp_writer.config(core_api))
+				swamp_writer.config(core_api),
+				wreck_writer.config(core_api, wreck_shapes))
 		end
 		local consumer_payload = consumer_payload_factory(source, sha256_hex)
 		local constructor, session, writer, zones_session, settlement_fixture,
