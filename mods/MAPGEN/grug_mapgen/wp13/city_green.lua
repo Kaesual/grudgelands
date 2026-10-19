@@ -479,7 +479,12 @@ local function loader(directory)
 		-- column, and in a capital lake (`opts.lake`) a lily pad on the water
 		-- or a waterweed rooted in the bed. Never on or beside a street or
 		-- bridge column (no road in the 3 x 3), never on a cell in `taken`
-		-- (the edge's and the trees' cells). Returns {x, y, z, name, param2}.
+		-- (the edge's and the trees' cells). A waterweed is rooted in its bed
+		-- and shows a sand base, so it goes only where `bed_ok(x, y, z)` says
+		-- the bed is natural sand (the writer asks the chunk, as the wild
+		-- lakes' rule does; a cell outside the chunk it may pass, it is not
+		-- written there). Without `bed_ok` (the counting tools) every bed
+		-- passes. Returns {x, y, z, name, param2}.
 		local cover_roles = M.COVER[race]
 		local cover_weight = 0
 		for _, row in ipairs(cover_roles) do cover_weight = cover_weight + row[2] end
@@ -493,7 +498,7 @@ local function loader(directory)
 			return false
 		end
 		local function ckey3(x, y, z) return x .. ":" .. y .. ":" .. z end
-		function green.cover(box, taken)
+		function green.cover(box, taken, bed_ok)
 			local out = {}
 			taken = taken or {}
 			local land, lily, weed = M.LAND_PATCH, M.LILY_PATCH, M.WEED_PATCH
@@ -532,7 +537,8 @@ local function loader(directory)
 									end
 								elseif depth >= 3 and depth <= 10 and
 										dressing.patch_keep(lx, lz, weed.salt, weed.keep) and
-										not taken[ckey3(x, ground, z)] then
+										not taken[ckey3(x, ground, z)] and
+										(not bed_ok or bed_ok(x, ground, z)) then
 									out[#out + 1] = {x = x, y = ground, z = z, name = M.WEED,
 										param2 = min(4, depth - 1) * 16}
 								end

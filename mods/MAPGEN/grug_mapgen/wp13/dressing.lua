@@ -809,8 +809,9 @@ local function loader(directory)
 	-- The thinning waits for the trees: a cover cell the field refuses is
 	-- sown as before and only marked (`drop_later`), so the town greening
 	-- after it (`layout.green`, which keeps its stems off cover) plants the
-	-- same trees as before; `thin_cover` takes the marked cells out once the
-	-- trees stand (a cell something else has written since stays).
+	-- same trees as before; `thin_cover` clears the marked cells to air once
+	-- the trees stand, as the cell was before it was sown (a cell something
+	-- else has written since stays).
 	function M.drop_later(buf, x, y, z)
 		local cell = buf:at(x, y, z)
 		if not cell then return end
@@ -821,7 +822,8 @@ local function loader(directory)
 		local taken = 0
 		for _, drop in ipairs(buf.cover_drops or {}) do
 			local cell = buf:at(drop[1], drop[2], drop[3])
-			if cell and cell.name == drop[4] and buf:remove(drop[1], drop[2], drop[3]) then
+			if cell and cell.name == drop[4] then
+				buf:put(drop[1], drop[2], drop[3], parts.AIR, 0)
 				taken = taken + 1
 			end
 		end

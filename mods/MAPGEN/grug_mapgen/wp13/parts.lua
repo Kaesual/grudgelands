@@ -625,22 +625,6 @@ function Buffer:at(x, y, z)
 	return self.cell[x .. ":" .. y .. ":" .. z]
 end
 
--- Take a cell out again (Round 51 follow-up FT: the ground cover a town
--- thins once its trees stand, `dressing.thin_cover`); `cells()` drops it
--- from the order. Never a town tree's cell. Returns whether one was there.
-function Buffer:remove(x, y, z)
-	local key = x .. ":" .. y .. ":" .. z
-	local cell = self.cell[key]
-	if not cell or (self.grown_wood and self.grown_wood[key]) or
-			(self.grown_leaves and self.grown_leaves[key]) then
-		return false
-	end
-	cell.removed = true
-	self.cell[key] = nil
-	self.removed_cells = true
-	return true
-end
-
 function Buffer:fill(x1, y1, z1, x2, y2, z2, name, param2)
 	for z = z1, z2 do
 		for y = y1, y2 do
@@ -721,12 +705,7 @@ local function settle_cut_trees(self)
 		tree.cut = true
 	end
 	self.cut_trees = {}
-	if removed then self.removed_cells = true end
-end
-
--- Drop the removed cells from the order.
-local function settle_removed(self)
-	if self.removed_cells then
+	if removed then
 		local order, count = {}, 0
 		for index = 1, self.count do
 			local cell = self.order[index]
@@ -736,13 +715,11 @@ local function settle_removed(self)
 			end
 		end
 		self.order, self.count = order, count
-		self.removed_cells = nil
 	end
 end
 
 function Buffer:cells()
 	settle_cut_trees(self)
-	settle_removed(self)
 	return self.order, self.count
 end
 

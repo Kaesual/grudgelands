@@ -1645,7 +1645,16 @@ function M.config(prepared, content, raw_sha256)
 								local cell = cells[cell_index]
 								taken[cell.x .. ":" .. cell.y .. ":" .. cell.z] = true
 							end
-							local cover = state.green.cover(box, taken)
+							-- a waterweed only on a natural sand bed (the cell as
+							-- the chunk holds it; outside the owner it is not
+							-- written anyway)
+							local _, sand = context.production_content("default:sand")
+							local function bed_ok(x, y, z)
+								if not context.inside_owner(x, y, z) then return true end
+								local bed, bed_p2 = context.settled_at(x, y, z)
+								return sand ~= nil and bed == sand and bed_p2 == 0
+							end
+							local cover = state.green.cover(box, taken, bed_ok)
 							for cover_index = 1, #cover do cells[#cells + 1] = cover[cover_index] end
 						end
 					end

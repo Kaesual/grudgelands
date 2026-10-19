@@ -19,7 +19,8 @@
 --      open ground one above the ground, never on or beside a street, in the
 --      core, on a plot with its collar and approach or on a taken cell; the
 --      undead city's few bones; lily pads on a lake's water and weeds in its
---      bed (none without `lake`); every name in `cover_names`; the same on
+--      bed (none without `lake`, none on a bed that is not sand); every
+--      name in `cover_names`; the same on
 --      every load and the same cells when split into mapchunk boxes;
 --   F. one seed's real capitals (the seed fleet's runtime): every capital
 --      gets city ground cover, Kezamba and Lethariel lily pads, and every
@@ -337,6 +338,25 @@ do
 				if c.name == green_module.LILY or c.name == green_module.WEED then dry = dry + 1 end
 			end
 			check(dry == 0, "no lake plants in a capital without a lake (" .. dry .. ")")
+			-- a waterweed only on a natural sand bed (the writer's `bed_ok`):
+			-- sand here only on even local x
+			local function sand(x) return (x - anchor.x) % 2 == 0 end
+			local on_sand, off_sand, lilies_kept = 0, 0, 0
+			for _, c in ipairs(make(race, true).cover(box, taken, function(x) return sand(x) end)) do
+				if c.name == green_module.WEED then
+					if sand(c.x) then on_sand = on_sand + 1 else off_sand = off_sand + 1 end
+				elseif c.name == green_module.LILY then
+					lilies_kept = lilies_kept + 1
+				end
+			end
+			check(on_sand > 0 and off_sand == 0, "waterweed only on a sand bed (" .. on_sand ..
+				" on sand, " .. off_sand .. " off it)")
+			local none = 0
+			for _, c in ipairs(make(race, true).cover(box, taken, function() return false end)) do
+				if c.name == green_module.WEED then none = none + 1 end
+			end
+			check(none == 0 and lilies_kept == lilies, "no sand bed, no waterweed; the lily pads stay (" ..
+				none .. ", " .. lilies_kept .. ")")
 		end
 	end
 end
