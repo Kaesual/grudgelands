@@ -87,6 +87,7 @@ def build(three_base, art_dir):
     page = page.replace("/*SHAPES*/", read(os.path.join(TREE, "shapes.js")))
     page = page.replace("/*TREEGEN*/", read(os.path.join(TREE, "treegen.js")))
     page = page.replace("/*PATCH*/", read(os.path.join(HERE, "patch.js")))
+    page = page.replace("/*MESH*/", read(os.path.join(HERE, "mesh.js")))
     page = page.replace("/*VIEW*/", read(os.path.join(HERE, "view.js")))
     return page, art
 
