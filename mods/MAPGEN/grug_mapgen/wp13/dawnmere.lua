@@ -220,6 +220,8 @@ local function loader(directory)
 		local palette = palettes.new("human")
 		local tile = palettes.new("human", TILE_ROOF)
 		local buf = parts.buffer()
+		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`).
+		buf.tree_share = 2
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
 		-- The same plots in roster order. `placed` is keyed by landmark id, so

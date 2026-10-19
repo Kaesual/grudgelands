@@ -120,6 +120,10 @@ function M.source(key, layout, text, kit)
 		local list = city_edge.names(cfg.race, dims.model)
 		-- the city's trees (Round 47 capital greening, `wp13/city_green.lua`)
 		for _, name in ipairs(city_green.names(cfg.race)) do list[#list + 1] = name end
+		-- its ground cover and lake plants (Round 51 follow-up FT)
+		for _, name in ipairs(city_green.cover_names(cfg.race, cfg.lake ~= nil)) do
+			list[#list + 1] = name
+		end
 		for _, name in ipairs({p.node("ground"), p.node("subsoil"),
 				p.maybe("castle_paving") or p.node("plaza"),
 				p.maybe("castle_wall_stair") or p.node("roof_stair")}) do
@@ -176,7 +180,7 @@ function M.source(key, layout, text, kit)
 			-- column answers the edge uses.
 			green = function(anchor, plots, column)
 				return city_green.new({race = cfg.race, anchor = anchor, layout = layout,
-					plots = plots, column = column})
+					plots = plots, column = column, lake = cfg.lake ~= nil})
 			end,
 		},
 	}

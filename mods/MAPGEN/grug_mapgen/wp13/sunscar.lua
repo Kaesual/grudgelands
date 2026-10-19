@@ -290,6 +290,8 @@ local function loader(directory)
 	return function()
 		local palette = palettes.new("orc")
 		local buf = parts.buffer()
+		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`).
+		buf.tree_share = 2
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
 		local make = {}

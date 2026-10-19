@@ -702,7 +702,8 @@ do
 	end
 	print(("E5: %d town trees standing, %d cut by a later write and taken out"):format(
 		standing, cut))
-	check(standing > 800, "the town trees stand (" .. standing .. ")")
+	-- (Round 51 follow-up FT halved the six starts' trees: 1162 -> 799)
+	check(standing > 700, "the town trees stand (" .. standing .. ")")
 	check(broken == 0, "no later write cuts a town tree's wood (" .. broken .. " cells)")
 end
 
