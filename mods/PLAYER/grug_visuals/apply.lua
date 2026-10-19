@@ -426,6 +426,11 @@ end
 -- see it.
 local ABILITY_GROUP = "grug_ability"
 
+-- function(skill item name, cosmetic hand stack) -> the stack to show, set by
+-- grug_abilities (which depends on this mod) for the skill's element overlay
+-- (Round 52); nil shows the hand as it is.
+grug_visuals.skill_hand = nil
+
 local function shown_item(player)
 	local wielded = player:get_wielded_item()
 	local name = wielded:get_name()
@@ -435,8 +440,12 @@ local function shown_item(player)
 	if core.get_item_group(name, ABILITY_GROUP) > 0 then
 		-- The cosmetic copy retains broken gear even while combat excludes it.
 		local def = core.registered_items[name]
-		return grug_inventory.get_cosmetic_hand(player,
+		local hand = grug_inventory.get_cosmetic_hand(player,
 			def and def._grug_ability_slot or "weapon")
+		-- The skill's element overlay as a still on that weapon, for everyone
+		-- who sees the hand (Round 52; grug_abilities.third_person_hand).
+		local skill_hand = grug_visuals.skill_hand
+		return skill_hand and skill_hand(name, hand) or hand
 	end
 	return wielded
 end

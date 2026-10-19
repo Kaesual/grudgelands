@@ -21,6 +21,7 @@
 #   SEED (default 42), SUFFIX=<text> appended to every file name,
 #   SETTLE=<seconds> before each shot (default 3), MODE=art for one shot (as
 #   a Scout) of each shipped family's real strip instead (the art step),
+#   MODE=third for the third-person still overlay from the front,
 #   XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri). Run it
 #   through the shared queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.

@@ -22,8 +22,11 @@
 --      unpicked draw strip falls back to transparent;
 --   T  third person: the held-item holder (grug_visuals/apply.lua, its two
 --      functions copied out of the source) shows the cosmetic weapon for a
---      selected skill and copies only that stack's keys, so the skill's
---      overlay never reaches it;
+--      selected skill, with the skill's idle strip as a still frame
+--      (grug_abilities.third_person_hand: the weapon's own image as the wield
+--      image, the family's `still` frame) where a strip ships, and the plain
+--      weapon for Strike, an unpicked strip and an empty hand; the animated
+--      strip itself never reaches it;
 --   F  every strip that ships (30 since the art step) is named
 --      <family>_<weapon>[_draw<n>] for a weapon its family's class wields,
 --      has its family's animation, is 16 px wide and `frames` frames high,
@@ -534,17 +537,45 @@ do
 	env.core.registered_items = setmetatable({["grug_abilities:fireball"] =
 		{_grug_ability_slot = "weapon"}}, {__index = registered_items})
 	local shown_item = chunk()
+	-- The shipped grug_abilities answers the holder's seam.
+	local shipped = load_abilities()
+	env.grug_visuals.skill_hand = shipped.third_person_hand
+	local fx = shipped.WEAPON_FX_ANIMATION
 	local p = new_player("t_mage", "mage")
 	hands(p, "grug_gear:staff_iron")
-	local skill = ItemStack("grug_abilities:fireball")
-	skill:get_meta():set_string("wield_overlay", "grug_abilities_fx_ember_staff.png")
-	skill:get_meta():set_string("wield_image", "grug_gear_item_staff_iron.png")
-	p.inv.lists.main[1] = skill
-	local held = shown_item(p)
+	local function held_with(skill_name)
+		local skill = ItemStack(skill_name)
+		skill:get_meta():set_string("wield_overlay", "grug_abilities_fx_ember_staff.png")
+		skill:get_meta():set_string("wield_image", "grug_gear_item_staff_iron.png")
+		p.inv.lists.main[1] = skill
+		local held = shown_item(p)
+		local meta = held and held:get_meta()
+		return held, meta and meta:get_string("wield_overlay") or "", meta and
+			meta:get_string("wield_image") or ""
+	end
+	local held, overlay, image = held_with("grug_abilities:fireball")
 	eq(held and held:get_name(), "grug_gear:staff_iron", "T a selected skill shows the cosmetic weapon")
-	local visual = env.grug_visuals.wield_appearance(held)
-	check(not visual:find("grug_abilities_fx_", 1, true),
-		"T the holder's appearance carries no skill overlay")
+	if fx.ember then
+		eq(overlay, "grug_abilities_fx_ember_staff.png^[verticalframe:" .. fx.ember.frames ..
+			":" .. fx.ember.still, "T ...with ember's staff strip as its still frame")
+		eq(image, "grug_gear_item_staff_iron.png", "T ...drawn through the weapon's own image")
+	end
+	check(not overlay:find("^grug_abilities_fx_[%w_]+%.png$"), "T never the animated strip itself")
+	check(env.grug_visuals.wield_appearance(held):find("verticalframe", 1, true) ~= nil,
+		"T the holder's appearance carries the still")
+	eq(p.hands.weapon:get_meta():get_string("wield_overlay"), "", "T the cosmetic stack is not written")
+	held, overlay = held_with("grug_abilities:strike")
+	eq(held:get_name() .. "|" .. overlay, "grug_gear:staff_iron|", "T Strike: the plain weapon")
+	hands(p, "grug_gear:shield_iron")
+	held, overlay = held_with("grug_abilities:fireball")
+	eq(overlay, "", "T a non-weapon: no overlay")
+	hands(p, nil)
+	held = held_with("grug_abilities:fireball")
+	eq(held, nil, "T an empty slot: nothing in hand")
+	for family, a in pairs(fx) do
+		check(type(a.still) == "number" and a.still >= 0 and a.still < a.frames and a.still % 1 == 0,
+			"T " .. family .. "'s still is one of its frames")
+	end
 end
 
 ------------------------------------------------------------------------------
