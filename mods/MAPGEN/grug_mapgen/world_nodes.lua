@@ -23,12 +23,13 @@ return function(engine, directory, nodes, gathering)
  end
 
  -- A rooted node keeps the water column intact: only the natural sand bed is
- -- replaced, while the special tile grows upward through source water.
+ -- replaced, while the special tile grows upward through source water. The
+ -- bed wears the sand's world-aligned 32 px tile (grug_nodes, Round 51).
  engine.register_node(catalog.freshwater[2], {
   description="Freshwater Waterweed",
   drawtype="plantlike_rooted",
   waving=1,
-  tiles={"default_sand.png"},
+  tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
   special_tiles={{name="default_kelp.png^[colorize:#4F8A52:45",tileable_vertical=true}},
   inventory_image="default_kelp.png^[colorize:#4F8A52:45",
   wield_image="default_kelp.png^[colorize:#4F8A52:45",

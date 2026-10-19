@@ -48,6 +48,7 @@ local ALL_DRY_HOSTS = {
 	{biome = "grug_swamp", support = "grug_nodes:mud_dry"},
 	{biome = "grug_swamp", support = "grug_nodes:mud_mottled"},
 	{biome = "grug_swamp", support = "grug_nodes:mud_with_wet_grass"},
+	{biome = "grug_swamp", support = "grug_nodes:swamp_moss"},
 }
 
 local function host(biome, support, zone)
@@ -55,9 +56,10 @@ local function host(biome, support, zone)
 end
 
 -- The swamp's mixed ground (Round 47 lane SW): every swamp host stands on
--- any of its five grounds, so the swamp's sources keep their habitat.
+-- any of its grounds, so the swamp's sources keep their habitat; Round 51
+-- adds the swamp's own moss ground, which takes the swamp's moss hummocks.
 local SWAMP_GROUND = {"grug_nodes:dirt_with_moss", "grug_nodes:mud", "grug_nodes:mud_dry",
-	"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass"}
+	"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass", "grug_nodes:swamp_moss"}
 local function swamp_hosts(zone)
 	local result = {}
 	for _, support in ipairs(SWAMP_GROUND) do
@@ -186,6 +188,7 @@ local P9G = {
 		host("grug_swamp", "grug_nodes:mud_dry"),
 		host("grug_swamp", "grug_nodes:mud_mottled"),
 		host("grug_swamp", "grug_nodes:mud_with_wet_grass"),
+		host("grug_swamp", "grug_nodes:swamp_moss"),
 	}, "kragmar_speargrass_reach"), "none", "found_only_food", nil, false,
 		"default_pine_bush_sapling.png^[colorize:#9b7653:150"),
 	p9g("wp33_potato_source_v1", "potato", "Potato", 256, {
