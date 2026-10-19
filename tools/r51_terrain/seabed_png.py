@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Round 51 TERRAIN T3: an image from a seabed_render.lua raster.
 
-    python3 tools/r51_terrain/seabed_png.py RASTER OUT.png
+    python3 tools/r51_terrain/seabed_png.py RASTER OUT.png [SCALE]
 
 Land green; bare seabed in blue, darker with depth; seagrass light green,
-kelp dark olive, coral pink.
+kelp dark olive, coral pink. SCALE (default 1) pixels per column.
 """
 import struct
 import sys
@@ -18,17 +18,20 @@ def main():
     with open(sys.argv[1]) as handle:
         width, height = (int(v) for v in handle.readline().split())
         cells = [line.split() for line in handle]
+    scale = int(sys.argv[3]) if len(sys.argv) > 3 else 1
     raw = b""
     for j in range(height):
-        row = bytearray(b"\x00")
+        row = bytearray()
         for i in range(width):
             kind, depth = cells[j * width + i]
             if kind == "bare":
                 k = max(0.3, 1 - int(depth) / 30)
-                row += bytes((int(40 * k), int(120 * k), int(210 * k)))
+                pixel = bytes((int(40 * k), int(120 * k), int(210 * k)))
             else:
-                row += bytes(COLORS[kind])
-        raw += bytes(row)
+                pixel = bytes(COLORS[kind])
+            row += pixel * scale
+        raw += (b"\x00" + bytes(row)) * scale
+    width, height = width * scale, height * scale
 
     def chunk(tag, data):
         return (struct.pack(">I", len(data)) + tag + data +

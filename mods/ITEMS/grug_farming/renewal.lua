@@ -21,7 +21,8 @@
 --               regrows inside an active Claim Stone's claim)
 --   water_plant_alterable(pos)  (optional, Round 51 T3) the same for the
 --               seabed's seagrass and kelp, which also regrow in protected
---               water (grug_core.water_plant_renewal_allowed)
+--               water (grug_core.water_plant_renewal_allowed), and for the
+--               wild lakes' waterweed and waterlily (Round 51 follow-up FW)
 --   random()    uniform [0, 1); trees  bool (setting grug_tree_regrowth)
 --   non_natural array of node names that are not natural (sapling guard)
 return function(api)
@@ -318,25 +319,35 @@ return function(api)
 	-- water) grows back the seagrass or kelp the generator grows there
 	-- (density.seabed, the writer's own rule) when its plain sand bed lies
 	-- under water source again, with the cover class's chance. Coral is not
-	-- renewed. Same per-step sample, no extra one.
+	-- renewed. A wild lake's waterweed comes back the same way and its
+	-- waterlily in the air over the lake's source water (Round 51 follow-up
+	-- FW). Same per-step sample, no extra one.
 	local SEABED_WATER = "default:water_source"
 	local function evaluate_seabed(x, z, positions, budget, forced_roll)
 		if not density.seabed or not api.water_plant_alterable then return "no_ground" end
-		local node, param2, ground = density.seabed(x, z)
+		local node, param2, y, _, surface = density.seabed(x, z)
 		if not node then return "no_ground" end
-		local pos = {x = x, y = ground, z = z}
+		local pos = {x = x, y = y, z = z}
 		if not far_from_players(pos, positions) then return "near_player" end
-		local bed = api.get_node_or_nil(pos)
-		if not bed then return "unloaded" end
-		if bed.name ~= "default:sand" then return "occupied" end
-		local height = param2 > 0 and param2 / 16 or 1
-		budget.left = budget.left - (height + 1)
-		for y = ground + 1, ground + height do
-			local water = api.get_node_or_nil({x = x, y = y, z = z})
+		local here = api.get_node_or_nil(pos)
+		if not here then return "unloaded" end
+		if surface then
+			if here.name ~= "air" then return "occupied" end
+			budget.left = budget.left - 2
+			local water = api.get_node_or_nil({x = x, y = y - 1, z = z})
 			if not water then return "unloaded" end
 			if water.name ~= SEABED_WATER then return "no_water" end
+		else
+			if here.name ~= "default:sand" then return "occupied" end
+			local height = param2 > 0 and param2 / 16 or 1
+			budget.left = budget.left - (height + 1)
+			for wy = y + 1, y + height do
+				local water = api.get_node_or_nil({x = x, y = wy, z = z})
+				if not water then return "unloaded" end
+				if water.name ~= SEABED_WATER then return "no_water" end
+			end
 		end
-		if planner.hard_row_at(x, ground, z) ~= nil then return "hard_row" end
+		if planner.hard_row_at(x, y, z) ~= nil then return "hard_row" end
 		if not api.water_plant_alterable(pos) then return "protected" end
 		local roll = forced_roll or random()
 		if roll >= R.CHANCE.cover then return "roll" end
