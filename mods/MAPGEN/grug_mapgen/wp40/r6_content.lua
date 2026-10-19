@@ -310,7 +310,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 
 	local decorations, decoration_by_id = {}, {}
 	if dense(manifest_values.decorations, "decoration catalog",
-			"fail_content_manifest") ~= 80 then
+			"fail_content_manifest") ~= 81 then
 		fail("fail_content_manifest", "expanded decoration population differs")
 	end
 	for index = 1, #manifest_values.decorations do

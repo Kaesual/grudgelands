@@ -128,6 +128,7 @@ jungle_edge_jungle_tree|grug_jungle_edge|template|treegen:jungle|default:dirt_wi
 jungle_edge_junglegrass|grug_jungle_edge|simple|default:junglegrass|default:dirt_with_rainforest_litter|1|25|none|4
 jungle_junglegrass|grug_deep_jungle;grug_jungle_fringe|simple|default:junglegrass|grug_nodes:dirt_with_canopy_litter|1|20|none|4
 jungle_tree|grug_deep_jungle;grug_jungle_fringe|template|treegen:jungle|grug_nodes:dirt_with_canopy_litter|1|50|center_xz;quarter_turn_rotation|-
+kit_beach_driftwood|grug_beach|template|kitgen:driftwood|default:sand|1|360|quarter_turn_rotation|-
 kit_dwarf_boulder|grug_crags;grug_crags_snowy;grug_pine_hills|template|kitgen:boulder|default:gravel|1|500|quarter_turn_rotation|-
 kit_dwarf_cairn_blocks|grug_crags;grug_crags_snowy;grug_pine_hills|template|kitgen:cairn_blocks|default:gravel|1|4000|quarter_turn_rotation|-
 kit_dwarf_cairn_branches|grug_crags;grug_crags_snowy;grug_pine_hills|template|kitgen:cairn_branches|default:gravel|1|4000|quarter_turn_rotation|-

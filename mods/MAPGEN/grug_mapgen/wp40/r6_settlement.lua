@@ -2962,40 +2962,68 @@ local function settlement_factory()
 									end
 								end
 							end
-							-- THE KIT'S RUNS (Round 51 lane LK, kit_templates.lua): every
-							-- cell's column has kit ground right under the root's level
-							-- and none at it; a cell at or above that level is free (air
-							-- or natural vegetation, no claim but a tree's leaf), a cell
-							-- below it (a sunken course, a crypt step) takes its own
-							-- column's surface top; a run with a parent only with its
-							-- parent. A required run that cannot stand rejects the whole
-							-- structure, so its core stands on level ground or not at all.
+							-- THE KIT'S RUNS (Round 51 lane LK, kit_templates.lua). A
+							-- cell's column stands on kit ground right under the root's
+							-- level (offset 0), one node higher (+1) or one lower (-1),
+							-- with no ground at the level above that; a run takes the
+							-- offset of its columns, which must agree, so a structure
+							-- follows gentle ground column by column like the viewer's
+							-- and a multi-column piece (a log, a doorway) lies level.
+							-- Each cell, so moved, must be free (air or natural
+							-- vegetation, no claim but a tree's leaf); a cell below the
+							-- level (a sunken course, a crypt step) takes its column's
+							-- own surface top. A run with a parent only with its
+							-- parent; a required run that cannot stand rejects the
+							-- whole structure. Kept runs are written moved (below).
 							local kit_kept
 							if row.generated_kit and root_runs and not flags.clipped_owner then
 								local kit_ground = helpers.kit_ground_cids
-								kit_kept = helpers.r8_templates.kept_root_runs(root_runs,
-									function(cell_record)
-										local x, z = root_x + cell_record.x, root_z + cell_record.z
-										local y = root_y + cell_record.y
-										if not (inside_owner(x, root_y - 1, z) and
-												inside_owner(x, root_y, z) and inside_owner(x, y, z)) or
-												not kit_ground[final_data[index_at(x, root_y - 1, z)]] or
-												kit_ground[final_data[index_at(x, root_y, z)]] then
-											return false
-										end
-										local index = index_at(x, y, z)
-										if y < root_y then
-											return occupancy[index] == 0 and intent_opcode[index] >= 1 and
-												intent_opcode[index] <= 4
-										end
-										local class_id = classify(final_data[index], final_param2[index])
-										return (occupancy[index] == 0 or occupancy[index] == -4) and
-											(class_id == CLASS_AIR or class_id == CLASS_NATURAL_VEGETATION)
-									end)
+								local function offset(x, z)
+									if not (inside_owner(x, root_y - 2, z) and inside_owner(x, root_y + 1, z)) then
+										return nil
+									end
+									local ground = kit_ground[final_data[index_at(x, root_y - 1, z)]]
+									local higher = kit_ground[final_data[index_at(x, root_y, z)]]
+									if higher then
+										if kit_ground[final_data[index_at(x, root_y + 1, z)]] then return nil end
+										return 1
+									elseif ground then
+										return 0
+									elseif kit_ground[final_data[index_at(x, root_y - 2, z)]] then
+										return -1
+									end
+									return nil
+								end
+								kit_kept = {}
 								for run_index = 1, #root_runs do
-									if root_runs[run_index].required and not kit_kept[run_index] then
+									local run = root_runs[run_index]
+									local ok = run.parent == 0 or kit_kept[run.parent] == true
+									local shift
+									for part = 1, ok and #run or 0 do
+										local cell_record = run[part]
+										local x, z = root_x + cell_record.x, root_z + cell_record.z
+										local o = offset(x, z)
+										if o == nil or (shift ~= nil and o ~= shift) then ok = false break end
+										shift = o
+										local y = root_y + cell_record.y + o
+										if not inside_owner(x, y, z) then ok = false break end
+										local index = index_at(x, y, z)
+										if cell_record.y < 0 then
+											if occupancy[index] ~= 0 or intent_opcode[index] < 1 or
+													intent_opcode[index] > 4 then ok = false break end
+										else
+											local class_id = classify(final_data[index], final_param2[index])
+											if not ((occupancy[index] == 0 or occupancy[index] == -4) and
+													(class_id == CLASS_AIR or class_id == CLASS_NATURAL_VEGETATION)) then
+												ok = false break
+											end
+										end
+									end
+									kit_kept[run_index] = ok
+									if ok then
+										for part = 1, #run do run[part].y = run[part].y + shift end
+									elseif run.required then
 										flags.insufficient_clearance = true
-										break
 									end
 								end
 							end

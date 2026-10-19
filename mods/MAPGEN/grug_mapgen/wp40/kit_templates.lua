@@ -2,7 +2,7 @@
 -- 12-14; the land viewer tools/r47_sw/land.js `BUILD`, the user's picks of
 -- 2026-10-19): wild graveyards, ruins, the crypt doorway, statues, the
 -- obelisk, fallen logs and stumps, grave mounds, bone finds, boulders,
--- cairns and dead snow-covered pines.
+-- cairns, dead snow-covered pines and the beach's driftwood.
 --
 -- Pure Lua 5.1 / LuaJIT, no engine calls, no globals: the main and the
 -- mapgen environment both `dofile` it (r7_runtime.lua), and so do the
@@ -70,6 +70,7 @@ return function(treegen, trees)
 		gravewood = "grug_trees:gravewood_tree", gw_base = "grug_trees:gravewood_base",
 		gw_branch = "grug_trees:gravewood_branch", gw_twig = "grug_trees:gravewood_twig",
 		jungle = "default:jungletree", silverwood = "grug_trees:silverwood_tree",
+		drift_log = "grug_nodes:driftwood_log", drift_fork = "grug_nodes:driftwood_fork",
 	}
 	M.NODES = N
 	-- A log lying along x (facedir 12; a quarter turn makes it lie along z).
@@ -82,8 +83,9 @@ return function(treegen, trees)
 	M.GROUND = {}
 	for index = 1, #trees.ROOT_GROUND do M.GROUND[index] = trees.ROOT_GROUND[index] end
 	for _, name in ipairs({"default:stone", "default:snowblock", "default:ice",
-			"grug_nodes:mesa_clay", "grug_materials:slate", "grug_materials:basalt",
-			"grug_materials:granite"}) do
+			"grug_nodes:mesa_clay", "grug_nodes:clay_band_chalk", "grug_nodes:clay_band_ochre",
+			"grug_nodes:clay_band_sienna", "grug_nodes:clay_band_umber", "grug_materials:slate",
+			"grug_materials:basalt", "grug_materials:granite"}) do
 		M.GROUND[#M.GROUND + 1] = name
 	end
 	table.sort(M.GROUND)
@@ -272,12 +274,16 @@ return function(treegen, trees)
 		b.put(-1, 2, 0, N.brick)
 		b.put(0, 2, 0, N.brick)
 		if rint(rng, 0, 1) == 1 then b.put(1, 2, 0, N.brick) end
-		b.put(0, -1, -1, N.gravel)
 		b.put(0, -1, 0, N.brick)
 		b.put(0, 0, 0, pick(rng, {N.gravel, N.cobble}))
+		-- the rubble behind the door and the step before it, where the
+		-- ground allows
+		b.run(false, 1)
 		b.put(0, 0, 1, N.cobble)
 		b.put(-1, 0, 1, N.brick)
 		b.put(1, 0, 1, N.brick)
+		b.run(false, 1)
+		b.put(0, -1, -1, N.gravel)
 	end
 
 	-- A log lying along x, its grain along it, now and then a moss carpet
@@ -430,6 +436,18 @@ return function(treegen, trees)
 		end
 	end
 
+	-- Driftwood on the beach (the coordinator, 2026-10-19: the kit places
+	-- it): a bleached log (drops wood), now and then the forked branch
+	-- (drops sticks) beside it.
+	function BUILD.driftwood(b, rng)
+		b.run(true)
+		b.put(0, 0, 0, N.drift_log, rint(rng, 0, 3))
+		if rint(rng, 0, 2) == 0 then
+			b.run(false)
+			b.put(1, 0, 0, N.drift_fork, rint(rng, 0, 3))
+		end
+	end
+
 	-- A pine without needles, its top broken off at 60 % of its height,
 	-- snow on its logs: the generator's pine of `seed` (tree_templates.lua),
 	-- its leaves left out and every cell above the break; stem, limbs and
@@ -497,6 +515,7 @@ return function(treegen, trees)
 		{key = "statue_elves", build = "statue_elves", count = 8, salt = 5118},
 		{key = "silver_log", build = "silver_log", count = 8, salt = 5119},
 		{key = "kapok_log", build = "kapok_log", count = 8, salt = 5120},
+		{key = "driftwood", build = "driftwood", count = 8, salt = 5121},
 	}
 	M.BY_KEY = {}
 	for index = 1, #M.SPECIES do M.BY_KEY[M.SPECIES[index].key] = M.SPECIES[index] end

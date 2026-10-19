@@ -14,7 +14,7 @@
 --      filled, the first run required and on the root, the same bytes for
 --      the same seed, other variants for another world, and the bone finds
 --      all different pictures;
---   E. the closed node roster: 148 rows, every kit node with the decoration
+--   E. the closed node roster: 156 rows, every kit node with the decoration
 --      role;
 --   F. the town side: the bone pile's uses draw from the skeleton set
 --      (dressing.bone_piece, the decor kit's lair pieces, the undead
@@ -22,7 +22,7 @@
 --      Nhal Veyr, Kezamba, Highcourt, Gor Drazhak, and the graves of Dur
 --      Brannoc and Lethariel) builds with the gravestone blocks;
 --   G. the world: one seed's real runtime writes kit chunks (undead, dwarf,
---      orc, elves, jungle) and no kit cell floats: each stands on ground,
+--      orc, elves, jungle, beach) and no kit cell floats: each stands on ground,
 --      on another cell of its structure, or lies sunk in the ground.
 --
 -- Usage (repo root): luajit tools/r51_lk/portable_test.lua [REPO]
@@ -184,7 +184,11 @@ end
 local U = "grug_blight;grug_bone_forest"
 local D = "grug_crags;grug_crags_snowy;grug_pine_hills"
 local E = "grug_elf_forest;grug_deep_forest"
+-- (the driftwood: the viewer's 1/120 counts the sand columns near the
+-- water, about a third of the beach; the row's 1/360 counts every beach
+-- column, `scale` 3)
 local KIT_ROWS = {
+	kit_beach_driftwood = {"beach.driftwood", "grug_beach", "driftwood", "default:sand", 3},
 	kit_dwarf_boulder = {"dwarf.boulder", D, "boulder", "default:gravel"},
 	kit_dwarf_cairn_blocks = {"dwarf.cairn.blocks", D, "cairn_blocks", "default:gravel"},
 	kit_dwarf_cairn_branches = {"dwarf.cairn.branches", D, "cairn_branches", "default:gravel"},
@@ -212,7 +216,7 @@ local kit_rows = 0
 for _, row in ipairs(manifest.decorations) do
 	if row.id:match("^kit_") then kit_rows = kit_rows + 1 end
 end
-check(kit_rows == 21, "21 kit rows")
+check(kit_rows == 22, "22 kit rows")
 for id, want in pairs(KIT_ROWS) do
 	local row = rows[id]
 	check(row ~= nil, id .. " exists")
@@ -221,7 +225,7 @@ for id, want in pairs(KIT_ROWS) do
 		check(row.kind == "template" and row.asset_or_node == "kitgen:" .. want[3], id .. " asset")
 		check(row.host == (want[4] or "grug_nodes:blight_dirt"), id .. " host")
 		local den = viewer_den(want[1])
-		check(den ~= nil and row.numerator == 1 and row.denominator == den,
+		check(den ~= nil and row.numerator == 1 and row.denominator == den * (want[5] or 1),
 			id .. " density 1/" .. tostring(den) .. " as the viewer's " .. want[1])
 		check(row.settlement_class == nil and kit.BY_KEY[want[3]] ~= nil, id .. " computes its class")
 	end
@@ -235,7 +239,7 @@ for name, mask in roster_source:match("local ACCEPTED_R6_ROWS = (%b{})"):gmatch(
 	roster[name] = tonumber(mask)
 	roster_count = roster_count + 1
 end
-check(roster_count == 148, "148 production rows")
+check(roster_count == 156, "156 production rows")
 for name in pairs(kit_names) do
 	local mask = roster[name]
 	check(mask ~= nil and math.floor(mask / 8) % 2 == 1, name .. " has the decoration role")
@@ -312,7 +316,7 @@ local R = dofile(repo .. "/tools/seed_fleet/runtime.lua")(repo, "12345")
 local zones = R.built.zones_session
 local KIT_BIOMES = {grug_blight = true, grug_bone_forest = true, grug_crags = true,
 	grug_crags_snowy = true, grug_pine_hills = true, grug_badlands = true,
-	grug_elf_forest = true, grug_deep_jungle = true}
+	grug_elf_forest = true, grug_deep_jungle = true, grug_beach = true}
 local chunks, seen, per = {}, {}, {}
 for z = -3300, 3300, 96 do
 	for x = -3700, 3700, 96 do

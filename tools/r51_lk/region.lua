@@ -4,8 +4,8 @@
 --
 --   luajit tools/r51_lk/region.lua REPO SEED [CHUNKS_PER_BIOME]
 --
--- Picks, per biome of the five kit zones (undead, dwarf, jungle, elves,
--- orc badlands), the first CHUNKS_PER_BIOME (default 2) land columns of a
+-- Picks, per biome of the kit zones (undead, dwarf, jungle, elves, orc
+-- badlands, beach), the first CHUNKS_PER_BIOME (default 2) land columns of a
 -- coarse grid over the world, plans and writes the chunk holding each, and
 -- prints per zone the CPU seconds of planning and writing, and how many
 -- nodes of each kit name (the land kit's props, cairn shapes and the bone
@@ -23,6 +23,7 @@ local ZONES = {
 	{"jungle", {"grug_deep_jungle", "grug_jungle_fringe", "grug_jungle_edge"}},
 	{"elves", {"grug_elf_forest", "grug_deep_forest"}},
 	{"orc", {"grug_badlands", "grug_badlands_east"}},
+	{"beach", {"grug_beach"}},
 }
 local zone_of, found, chunks, seen = {}, {}, {}, {}
 for _, z in ipairs(ZONES) do
@@ -52,7 +53,8 @@ for name in pairs(R.fake.registered_nodes) do
 			name:find("cairn", 1, true) or name:find("skull", 1, true) or
 			name:find("ribcage", 1, true) or name:find("spine", 1, true) or
 			name:find("bone", 1, true) or name:find("statue", 1, true) or
-			name:find("obelisk", 1, true)) then
+			name:find("obelisk", 1, true) or name:find("driftwood", 1, true)) and
+			not name:find("litter", 1, true) then
 		KIT[R.fake.get_content_id(name)] = name
 	end
 end
