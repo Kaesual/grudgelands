@@ -265,7 +265,8 @@
 				addCuboid(sb, 'solid', px, py, pz, shape.core, st, null);
 				SIDE_ORDER.forEach(function (side) {
 					var sd = SIDE_DIRS[side], nb = nodeAt[(n.x + sd[0]) + ',' + (n.y + sd[1]) + ',' + (n.z + sd[2])];
-					var join = nb ? nb.name.indexOf('cairn:') === 0 :
+					var nd = nb ? L.def(nb.name) : null;
+					var join = nb ? (nd !== null && nd.family === def.family) :
 						(TreeShapes.GROUND_KINDS[def.shape] === true && side === 'bottom' && groundTop(n.x, n.z) >= n.y - 1);
 					if (join) { addCuboid(sb, 'solid', px, py, pz, shape[side], st, null); }
 				});

@@ -124,9 +124,15 @@
 		'new:alpine_windshrub': plant('plants/alpine_windshrub.png'),
 		// the cairn of tree shapes (ruling 13): the tree concept's connected
 		// node boxes (tools/r46_tree/concept/shapes.js) in stone
-		'cairn:base': {draw: 'shape', shape: 'base', tiles: ['default_stone.png']},
-		'cairn:branch': {draw: 'shape', shape: 'branch', tiles: ['default_stone.png']},
-		'cairn:twig': {draw: 'shape', shape: 'twig', tiles: ['default_stone.png']}
+		'cairn:base': {draw: 'shape', shape: 'base', family: 'cairn', tiles: ['default_stone.png']},
+		'cairn:branch': {draw: 'shape', shape: 'branch', family: 'cairn', tiles: ['default_stone.png']},
+		'cairn:twig': {draw: 'shape', shape: 'twig', family: 'cairn', tiles: ['default_stone.png']},
+		// gravewood's own shape pieces (grug_trees, Round 46/47) for stumps
+		'grug_trees:gravewood_tree': {draw: 'log', family: 'gravewood',
+			tiles: ['grug_trees_gravewood_tree_top.png', 'grug_trees_gravewood_tree_top.png', 'grug_trees_gravewood_tree.png']},
+		'grug_trees:gravewood_base': {draw: 'shape', shape: 'base', family: 'gravewood', tiles: ['grug_trees_gravewood_tree.png']},
+		'grug_trees:gravewood_branch': {draw: 'shape', shape: 'branch', family: 'gravewood', tiles: ['grug_trees_gravewood_tree.png']},
+		'grug_trees:gravewood_twig': {draw: 'shape', shape: 'twig', family: 'gravewood', tiles: ['grug_trees_gravewood_tree.png']}
 	};
 	// What digging gives (the kit lists it per block, ruling 7 and round
 	// plan section 3.6): default nodes drop themselves (litters, mud
@@ -134,6 +140,9 @@
 	var DROPS = {
 		'grug_nodes:mesa_clay': 'itself (mesa clay)', 'new:swamp_moss': 'grug_nodes:mud (proposed, as the mud variants)',
 		'cairn:base': 'default:cobble', 'cairn:branch': 'default:cobble', 'cairn:twig': 'default:cobble',
+		'grug_trees:gravewood_tree': 'itself (gravewood log)', 'grug_trees:gravewood_base': 'as today\'s gravewood shapes',
+		'grug_trees:gravewood_branch': 'as today\'s gravewood shapes', 'grug_trees:gravewood_twig': 'as today\'s gravewood shapes',
+		'default:dirt': 'itself (default:dirt)', 'default:gravel': 'itself (default:gravel)',
 		'new:clay_band_ochre': 'grug_nodes:mesa_clay (proposed)', 'new:clay_band_sienna': 'grug_nodes:mesa_clay (proposed)',
 		'new:clay_band_chalk': 'grug_nodes:mesa_clay (proposed)', 'new:clay_band_umber': 'grug_nodes:mesa_clay (proposed)',
 		'default:stone': 'default:cobble', 'default:jungletree': 'itself (jungle log)',
@@ -264,10 +273,19 @@
 			tex: {'grug_nodes:dirt_with_bone_litter': ['grounds/bone_litter_top_32.png', DIRT, DIRT + '^grug_nodes_bone_litter_side.png']}},
 		{key: 'undead.graveyard', zones: ['undead'], name: 'Small wild graveyard: 3–5 crooked gravestones, a broken fence', den: 5000,
 			kit: 'graveyard'},
-		{key: 'undead.ruin', zones: ['undead'], name: 'Mossy ruin remnants (two or three wall pieces)', den: 5000, kit: 'ruinUndead'},
+		{key: 'undead.ruin', zones: ['undead'], name: 'Mossy ruin remnants (two or three wall pieces)', den: 8000, kit: 'ruinUndead'},
+		{key: 'undead.ruin.arch', zones: ['undead'], name: 'Ruin: a broken arch of stone brick', den: 14000, kit: 'ruinArch'},
+		{key: 'undead.ruin.column', zones: ['undead'], name: 'Ruin: a column stub with a fallen drum', den: 12000, kit: 'ruinColumn'},
+		{key: 'undead.ruin.corner', zones: ['undead'], name: 'Ruin: a sunken wall corner, half in the ground', den: 12000, kit: 'ruinCorner'},
+		{key: 'undead.crypt', zones: ['undead'], name: 'A collapsed crypt entrance (stone brick, rubble in a sunken step)', den: 16000,
+			kit: 'crypt'},
+		{key: 'undead.log', zones: ['undead'], name: 'Fallen gravewood log', den: 5000, kit: 'gravewoodLog'},
+		{key: 'undead.stump', zones: ['undead'], name: 'Gravewood stump (log and broken branch shapes)', den: 4000, kit: 'gravewoodStump'},
+		{key: 'undead.grave_mound', zones: ['undead'], name: 'Earth grave mound (default dirt), now and then with a cross', den: 8000,
+			kit: 'graveMound'},
 		{key: 'undead.statue', zones: ['undead'], name: 'Weathered statue, rarely', den: 10000, standin: 'statue blocks', kit: 'statueUndead'},
 		{key: 'undead.obelisk', zones: ['undead'], name: 'Weathered obelisk, rarely (a broken tip on a stone shaft)', den: 10000, kit: 'obelisk'},
-		{key: 'undead.bones', zones: ['undead'], name: 'Skeleton pieces, singly or a pair; replace the bone pile (L8, L9)', den: 1500,
+		{key: 'undead.bones', zones: ['undead'], name: 'Skeleton pieces, singly or a pair; replace the bone pile (L8, L9)', den: 2000,
 			kit: 'bones'},
 		{key: 'undead.town_graveyard', zones: ['undead'], name: 'The towns\' graveyards from the new gravestone blocks (kit view)',
 			kit: 'townGraveyard', kitOnly: true},
@@ -284,8 +302,8 @@
 
 		{key: 'dwarf.boulder', zones: ['dwarf'], name: 'Boulders of 2–4 nodes, stone and mossy cobble', den: 500,
 			biomes: ['grug_crags', 'grug_crags_snowy', 'grug_pine_hills'], kit: 'boulder'},
-		{key: 'dwarf.lichen', zones: ['dwarf'], name: 'Lichen carpet (grey-orange)', den: 12, biomes: ['grug_crags', 'grug_pine_hills'],
-			plant: 'new:lichen'},
+		{key: 'dwarf.lichen', zones: ['dwarf'], name: 'Lichen: small scattered patches on gravel and stone (grey-orange)', den: 450,
+			unit: 'columns, one patch of 2–5', biomes: ['grug_crags', 'grug_pine_hills'], plant: 'new:lichen'},
 		{key: 'dwarf.alpine', zones: ['dwarf'], name: 'Small alpine plants (cushion, windshrub)', den: 40,
 			biomes: ['grug_crags', 'grug_pine_hills'], plant: 'new:alpine_cushion'},
 		{key: 'dwarf.cairn.blocks', zones: ['dwarf'], name: 'Cairn from cairn stone blocks (L13, variant A)', den: 4000,
@@ -645,36 +663,47 @@
 	function top1(w, x, z) { return w.col(x, z).h + 1; }
 
 	var BUILD = {
-		// 3-5 gravestones on a 6 x 5 plot, two rough rows, each a stele, a
-		// low cross or a stele crowned by the cross (one quarter-turn per
-		// stack), turned about; a fence along one side with gaps
+		// a small plot that differs per seed: 2-6 stones in rough rows 2 or 3
+		// apart, a mix leaning to steles or to crosses (a stele, a low cross,
+		// a stele crowned by the cross; one quarter-turn per stack, turned
+		// about), and a fence remnant on 0-2 sides
 		graveyard: function (w, x, z, rng, item) {
-			if (!w.flat(x - 1, z - 1, 7, 6, 1)) { return false; }
+			var gap = G.rint(rng, 2, 3), cols = G.rint(rng, 2, 3), rows = G.rint(rng, 1, 2);
+			var wide = (cols - 1) * gap + 2, deep = (rows - 1) * gap + 2;
+			if (!w.flat(x - 1, z - 1, wide + 2, deep + 2, 1)) { return false; }
+			var lean = G.rint(rng, 0, 2);   // 0 steles, 1 mixed, 2 crosses
 			var spots = [];
-			for (var gz = 0; gz < 2; gz++) {
-				for (var gx = 0; gx < 3; gx++) { spots.push([x + gx * 2 + G.rint(rng, 0, 1), z + gz * 2 + G.rint(rng, 0, 1)]); }
+			for (var gz = 0; gz < rows; gz++) {
+				for (var gx = 0; gx < cols; gx++) { spots.push([x + gx * gap + G.rint(rng, 0, 1), z + gz * gap + G.rint(rng, 0, 1)]); }
 			}
-			var n = G.rint(rng, 3, 5);
-			for (var i = 0; i < 6 && n > 0; i++) {
-				var sp = spots[(i + G.rint(rng, 0, 5)) % 6];
+			var n = Math.min(spots.length, G.rint(rng, 2, 6)), placed = 0;
+			for (var i = 0; i < spots.length && placed < n; i++) {
+				var sp = spots[(i * 5 + G.rint(rng, 0, spots.length - 1)) % spots.length];
 				var y = top1(w, sp[0], sp[1]);
 				if (!w.free(sp[0], y, sp[1])) { continue; }
-				var form = G.rint(rng, 0, 9), turn = pick(rng, [0, 0, 0, 1, 3, 2]);
-				if (form < 3) {
+				var form = G.rint(rng, 0, 9) + (lean - 1) * 3, turn = pick(rng, [0, 0, 0, 1, 3, 2]);
+				if (form >= 7) {
 					w.put(sp[0], y, sp[1], 'prop:gravestone_cross', turn, item);
-				} else if (form < 5) {
+				} else if (form <= 2) {
 					w.put(sp[0], y, sp[1], 'prop:gravestone_slab', turn, item);
 				} else {
 					w.put(sp[0], y, sp[1], 'prop:gravestone_slab', turn, item);
 					w.put(sp[0], y + 1, sp[1], 'prop:gravestone_cross', turn, item);
 				}
-				n--;
+				placed++;
 			}
-			for (var fx = x - 1; fx <= x + 5; fx++) {
-				if (G.rint(rng, 0, 9) < 6) { w.put(fx, top1(w, fx, z - 1), z - 1, 'default:fence_junglewood', 0, item); }
+			var sides = G.rint(rng, 0, 2);
+			if (sides >= 1) {
+				for (var fx = x - 1; fx <= x + wide; fx++) {
+					if (G.rint(rng, 0, 9) < 6) { w.put(fx, top1(w, fx, z - 1), z - 1, 'default:fence_junglewood', 0, item); }
+				}
 			}
-			if (G.rint(rng, 0, 1)) { w.put(x - 1, top1(w, x - 1, z), z, 'default:fence_junglewood', 0, item); }
-			return true;
+			if (sides >= 2) {
+				for (var fz = z; fz <= z + deep; fz++) {
+					if (G.rint(rng, 0, 9) < 5) { w.put(x - 1, top1(w, x - 1, fz), fz, 'default:fence_junglewood', 0, item); }
+				}
+			}
+			return placed > 0;
 		},
 		// a town graveyard as wp13/dressing.lua lays it: graves two apart,
 		// a mossy cobble flagstone with a marker (a wall post, a second one
@@ -785,6 +814,91 @@
 				w.put(x, top1(w, x, z), z, pick(rng, ['prop:skull_human', 'prop:skull_horned', 'prop:ribcage_human', 'prop:spine_animal',
 					'prop:bones_scattered', 'prop:bones_fragments']), G.rint(rng, 0, 3), item);
 			}
+			return true;
+		},
+		// two stone brick piers, one carrying a broken lintel (the other
+		// fallen short), a block lying below
+		ruinArch: function (w, x, z, rng, item) {
+			if (!w.flat(x, z, 4, 2, 0)) { return false; }
+			var y = top1(w, x, z), alongX = G.rint(rng, 0, 1) === 1;
+			var dx = alongX ? 1 : 0, dz = alongX ? 0 : 1, high = G.rint(rng, 3, 4);
+			var mat = function () { return G.rint(rng, 0, 9) < 7 ? 'default:stonebrick' : 'default:mossycobble'; };
+			for (var k = 0; k < high; k++) { w.put(x, y + k, z, mat(), 0, item); }
+			var other = G.rint(rng, 1, high - 1);
+			for (var j = 0; j < other; j++) { w.put(x + 3 * dx, y + j, z + 3 * dz, mat(), 0, item); }
+			w.put(x + dx, y + high - 1, z + dz, mat(), 0, item);
+			w.put(x + 2 * dx, y, z + 2 * dz, mat(), 0, item);
+			return true;
+		},
+		// a stone brick column 1-2 high on a stone block, a drum fallen beside
+		ruinColumn: function (w, x, z, rng, item) {
+			if (!w.flat(x - 1, z - 1, 3, 3, 0)) { return false; }
+			var y = top1(w, x, z);
+			w.put(x, y, z, 'default:stone_block', 0, item);
+			w.put(x, y + 1, z, 'default:stonebrick', 0, item);
+			if (G.rint(rng, 0, 1)) { w.put(x, y + 2, z, 'default:stonebrick', 0, item); }
+			var side = pick(rng, [[1, 0], [-1, 0], [0, 1], [0, -1]]);
+			w.put(x + side[0], top1(w, x + side[0], z + side[1]), z + side[1], 'default:stonebrick', 0, item);
+			w.put(x - side[1], top1(w, x - side[1], z + side[0]), z + side[0], 'grug_nodes:moss_carpet', 0, item);
+			return true;
+		},
+		// an L of mossy wall whose lowest course sits in the ground (the
+		// ground's top turned to wall), 1-2 courses showing
+		ruinCorner: function (w, x, z, rng, item) {
+			if (!w.flat(x, z, 4, 4, 0)) { return false; }
+			var la = G.rint(rng, 3, 4), lb = G.rint(rng, 2, 3);
+			var mat = function () { return G.rint(rng, 0, 9) < 6 ? 'default:mossycobble' : 'default:stonebrick'; };
+			function wall(px, pz, up) {
+				var c = w.col(px, pz);
+				c.top = mat();
+				for (var k = 1; k <= up; k++) { w.put(px, c.h + k, pz, mat(), 0, item); }
+			}
+			for (var i = 0; i < la; i++) { wall(x + i, z, i === 0 ? 2 : G.rint(rng, 0, 1)); }
+			for (var j = 1; j < lb; j++) { wall(x, z + j, G.rint(rng, 0, 1)); }
+			return true;
+		},
+		// a stone brick doorway (two posts, a lintel, a broken end) over a
+		// step sunk one node into the ground, choked with gravel and cobble
+		crypt: function (w, x, z, rng, item) {
+			if (!w.flat(x - 1, z - 1, 5, 4, 0)) { return false; }
+			var y = top1(w, x, z);
+			for (var k = 0; k < 2; k++) {
+				w.put(x - 1, y + k, z, 'default:stonebrick', 0, item);
+				w.put(x + 1, y + k, z, 'default:stonebrick', 0, item);
+			}
+			w.put(x - 1, y + 2, z, 'default:stonebrick', 0, item);
+			w.put(x, y + 2, z, 'default:stonebrick', 0, item);
+			if (G.rint(rng, 0, 1)) { w.put(x + 1, y + 2, z, 'default:stonebrick', 0, item); }
+			// the sunken step in front, and behind the door the rubble
+			var step = w.col(x, z - 1);
+			step.h = step.h - 1;
+			step.top = 'default:gravel';
+			w.col(x, z).top = 'default:stonebrick';
+			w.put(x, y, z, pick(rng, ['default:gravel', 'default:cobble']), 0, item);
+			w.put(x, y, z + 1, 'default:cobble', 0, item);
+			w.put(x - 1, y, z + 1, 'default:stonebrick', 0, item);
+			w.put(x + 1, y, z + 1, 'default:stonebrick', 0, item);
+			return true;
+		},
+		gravewoodLog: function (w, x, z, rng, item) { return BUILD.log(w, x, z, rng, item, 'grug_trees:gravewood_tree', 3, 5); },
+		// a log 1-2 high, its broken top a branch (or twig) shape, a root
+		// base on one side
+		gravewoodStump: function (w, x, z, rng, item) {
+			if (!w.flat(x - 1, z - 1, 3, 3, 0)) { return false; }
+			var y = top1(w, x, z), high = G.rint(rng, 1, 2);
+			for (var k = 0; k < high; k++) { w.put(x, y + k, z, 'grug_trees:gravewood_tree', 0, item); }
+			w.put(x, y + high, z, G.rint(rng, 0, 1) ? 'grug_trees:gravewood_branch' : 'grug_trees:gravewood_twig', 0, item);
+			var side = pick(rng, [[1, 0], [-1, 0], [0, 1], [0, -1]]);
+			w.put(x + side[0], y, z + side[1], 'grug_trees:gravewood_base', 0, item);
+			return true;
+		},
+		// two dirt nodes in a row, a low cross at the head now and then
+		graveMound: function (w, x, z, rng, item) {
+			var alongX = G.rint(rng, 0, 1) === 1, dx = alongX ? 1 : 0, dz = alongX ? 0 : 1;
+			if (!w.flat(x, z, 1 + dx * 2, 1 + dz * 2, 0)) { return false; }
+			w.put(x, top1(w, x, z), z, 'default:dirt', 0, item);
+			w.put(x + dx, top1(w, x + dx, z + dz), z + dz, 'default:dirt', 0, item);
+			if (G.rint(rng, 0, 1)) { w.put(x + 2 * dx, top1(w, x + 2 * dx, z + 2 * dz), z + 2 * dz, 'prop:gravestone_cross', alongX ? 1 : 0, item); }
 			return true;
 		},
 		// 2-4 nodes: two side by side, maybe a third, maybe one on top
@@ -914,6 +1028,8 @@
 	var SOIL_LIKE = {'default:gravel': false, 'default:stone': false, 'default:sand': false, 'default:snowblock': false,
 		'default:ice': false};
 	function soil(c) { return SOIL_LIKE[c.top] === undefined; }
+	// the lichen's texture variants, alternated
+	var LICHEN = ['new:lichen'];
 
 	function proposal(zone, biome, w, opts, seed, s) {
 		var rng = G.newRng(seed, 53), its = ITEMS.filter(function (it) {
@@ -965,7 +1081,8 @@
 			}
 		}
 		// structures first, then bushes, logs and plants
-		var STRUCT = ['undead.graveyard', 'undead.ruin', 'undead.statue', 'undead.obelisk', 'elves.ruin', 'elves.statue',
+		var STRUCT = ['undead.graveyard', 'undead.ruin', 'undead.ruin.arch', 'undead.ruin.column', 'undead.ruin.corner', 'undead.crypt',
+			'undead.statue', 'undead.obelisk', 'undead.grave_mound', 'undead.log', 'undead.stump', 'elves.ruin', 'elves.statue',
 			'dwarf.cairn.blocks', 'dwarf.cairn.branches', 'dwarf.boulder', 'dwarf.dead_pine', 'jungle.log', 'elves.log',
 			'undead.bones', 'orc.bones', 'jungle.bush', 'orc.withered_bush'];
 		STRUCT.forEach(function (key) {
@@ -983,10 +1100,24 @@
 				return mix(px, pz, s + 91) % 2 ? 'new:alpine_cushion' : 'new:alpine_windshrub';
 			}, function (c) { return c.top !== 'default:stone'; });
 		}
+		// lichen in small patches: a patch centre in 1 of den columns, 2-5
+		// carpets within 2 of it, only on gravel and stone, never a carpet
 		if (on['dwarf.lichen']) {
-			sprinkle(w, on['dwarf.lichen'], opts, s, 92, 'new:lichen', function (c) {
-				return c.top === 'default:stone' || c.top === 'default:gravel';
-			});
+			var lp = mult(opts, 'dwarf.lichen') / on['dwarf.lichen'].den;
+			var rocky = function (c) { return c.top === 'default:stone' || c.top === 'default:gravel'; };
+			for (x = 0; x < w.size; x++) {
+				for (z = 0; z < w.size; z++) {
+					if (!rocky(w.cols[x][z]) || chance(x, z, s + 92) >= lp) { continue; }
+					var many = 2 + mix(x, z, s + 93) % 4, got = 0;
+					for (var t = 0; t < 12 && got < many; t++) {
+						var lx = x + G.rint(rng, -2, 2), lz = z + G.rint(rng, -2, 2), lc = w.col(lx, lz);
+						if (lc && rocky(lc) && w.open(lx, lz) && w.put(lx, lc.h + 1, lz, LICHEN[(lx + lz) % LICHEN.length], 0, 'dwarf.lichen')) {
+							got++;
+						}
+					}
+					if (got) { w.count('dwarf.lichen'); }
+				}
+			}
 		}
 		// the beach: papyrus right at the water, driftwood near it, marram
 		// on the dry sand further up
@@ -1088,8 +1219,9 @@
 				list.push({item: it.key, label: 'driftwood log', prop: 'driftwood_log', w: 2});
 				list.push({item: it.key, label: 'driftwood fork', prop: 'driftwood_fork', w: 2});
 			} else if (it.kit && it.kit !== 'liana') {
-				list.push({item: it.key, label: it.name, build: it.kit, w: {graveyard: 8, ruinUndead: 7, ruinElves: 7, kapokLog: 8,
-					silverLog: 6, deadPine: 8, jungleBush: 4, witheredBush: 4, boulder: 3, bones: 3}[it.kit] || 3});
+				list.push({item: it.key, label: it.name, build: it.kit, w: {graveyard: 9, ruinUndead: 7, ruinElves: 7, kapokLog: 8,
+					silverLog: 6, deadPine: 8, jungleBush: 4, witheredBush: 4, boulder: 3, bones: 3, ruinArch: 5, ruinCorner: 5,
+					crypt: 5, gravewoodLog: 6, gravewoodStump: 4, graveMound: 4}[it.kit] || 3});
 			}
 		});
 		// rows of at most ROW nodes, ROW_DEPTH apart (front to back)
