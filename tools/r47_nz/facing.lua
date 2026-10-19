@@ -97,8 +97,9 @@ local ACTIVITY = {
 	-- an altar or shrine is masonry, so rock counts as for `mine`
 	pray = function(name) return name:find("^walls:") or name:find("^doors:") or
 		name:find("candle") or name:find("altar") or stone(name) end,
+	-- (Round 51 lane LK: the graves' markers are the gravestone blocks)
 	mourn = function(name) return name:find("^walls:") or name:find("candle") or
-		name:find("coffin") or name:find("bone") ~= nil end,
+		name:find("coffin") or name:find("bone") or name:find("gravestone") ~= nil end,
 	-- the drill posts (`dressing.drill_post`) are logs
 	spar = function(name) return name:find("fence") or name:find("^wool:") or
 		trunk(name) end,
