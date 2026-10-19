@@ -92,7 +92,6 @@ local ICON, PARTY_ARROW, PLAYER_ARROW = 16, 20, 24
 local RIM_FILL, RIM_EXTENT = 0.85, 21 / 32
 local BEZEL = "grug_map_minimap_bezel.png"
 local BEZEL_PX = 256
-local SEA = "#1c3a52"
 -- Kinds shown (ruling 8; kept in Round 44 by the user); settlements, camps,
 -- kings and dragons are pixels of the base since Round 44.
 local SHOWN = {quest = true, steward = true, service = true, trainer = true,
@@ -794,7 +793,8 @@ function M.install(installed)
 		return
 	end
 	base, view, M.mask = mini, candidate, grug_map.base.MASK
-	BACKGROUND = M.mask .. "^[multiply:" .. SEA
+	-- the sea disc beyond the base: the open sea's colour (base.lua)
+	BACKGROUND = M.mask .. "^[multiply:" .. grug_map.base.OPEN_SEA_HEX
 	-- The claims' frames need grug_housing; claim mode the overlays
 	-- (base.lua) too.
 	housing = rawget(_G, "grug_housing")

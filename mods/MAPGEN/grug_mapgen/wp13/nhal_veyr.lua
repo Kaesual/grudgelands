@@ -910,8 +910,13 @@ local function loader(directory)
 				if hash < 3 then role = "undergrowth"
 				elseif hash < 7 then role = "grass_tuft" end
 				if role and open_ground(x, z) then
-					local name = undead.node(role)
-					buf:put(x, 1, z, name, parts.place_param2(name))
+					if role == "undergrowth" then
+						-- a piece of the skeleton set (Round 51 lane LK)
+						dressing.undergrowth_at(buf, undead, x, 1, z)
+					else
+						local name = undead.node(role)
+						buf:put(x, 1, z, name, parts.place_param2(name))
+					end
 					flora = flora + 1
 				end
 			end

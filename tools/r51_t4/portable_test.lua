@@ -18,7 +18,7 @@
 --      patches, with no snow on it, and no other biome gets ice;
 --   D. the pebbles: about a tenth of the dry coast sand is gravel (top and
 --      shore) in patches, and no column under water changes;
---   E. the roster holds default:ice as a surface row (129 rows) and the
+--   E. the roster holds default:ice as a surface row (174 rows) and the
 --      spawn-region ground lists the four bands.
 --
 -- Usage (repo root): luajit tools/r51_t4/portable_test.lua [REPO]
@@ -304,9 +304,9 @@ end
 do
 	local roster = read(wp40 .. "/r7_content.lua")
 	check(roster:find('{"default:ice", 1},', 1, true) and
-		roster:find("#ACCEPTED_R6_ROWS ~= 129", 1, true) and
-		read(wp40 .. "/r7_p9g.lua"):find("#production.content_names ~= 129", 1, true),
-		"the roster holds default:ice as a surface row and checks 129 rows")
+		roster:find("#ACCEPTED_R6_ROWS ~= 174", 1, true) and
+		read(wp40 .. "/r7_p9g.lua"):find("#production.content_names ~= 174", 1, true),
+		"the roster holds default:ice as a surface row and checks 174 rows")
 	local spawn = read(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions.lua")
 	local ground = spawn:match("local GROUND = (%b{})")
 	local all = ground ~= nil

@@ -172,8 +172,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
 	local template_source_factory = dofile(wp40_directory .. "/r7_template_source.lua")
 	-- The seeded tree generator and the world's tree templates (Round 47).
-	local tree_templates = dofile(wp40_directory .. "/tree_templates.lua")(
-		dofile(wp40_directory .. "/treegen.lua"))
+	local treegen = dofile(wp40_directory .. "/treegen.lua")
+	local tree_templates = dofile(wp40_directory .. "/tree_templates.lua")(treegen)
+	-- The land kit's structures (Round 51 lane LK), templates per world seed
+	-- like the trees.
+	local kit_templates = dofile(wp40_directory .. "/kit_templates.lua")(treegen,
+		tree_templates)
 	local fetch_mapgen_object = core_api.get_mapgen_object
 
 	local r6_module = r6_factory({r5_factory = r5_factory,
@@ -187,7 +191,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		content_factory = r6_content_factory, templates_factory = r6_templates_factory,
 		planner_factory = r6_planner_factory, settlement_factory = r6_settlement_factory,
 		habitat = habitat_registry, tree_templates = tree_templates,
-		swamp_pools = dofile(wp40_directory .. "/swamp_pools.lua")})
+		swamp_pools = dofile(wp40_directory .. "/swamp_pools.lua"),
+		kit_templates = kit_templates})
 	if type(r6_module.new_runtime) ~= "function" or
 			type(r6_module.new_authority) ~= "function" then
 		fail("R6 runtime constructor differs")
@@ -455,6 +460,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			template_counts = (function()
 				local counts = {}
 				for _, row in ipairs(tree_templates.SPECIES) do counts[row.key] = row.count end
+				for _, row in ipairs(kit_templates.SPECIES) do
+					if counts[row.key] then fail("kit and tree species share a key") end
+					counts[row.key] = row.count
+				end
 				return counts
 			end)(),
 			consumer_payload = consumer_payload,

@@ -310,18 +310,20 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 
 	local decorations, decoration_by_id = {}, {}
 	if dense(manifest_values.decorations, "decoration catalog",
-			"fail_content_manifest") ~= 61 then
+			"fail_content_manifest") ~= 99 then
 		fail("fail_content_manifest", "expanded decoration population differs")
 	end
 	for index = 1, #manifest_values.decorations do
 		local row = manifest_values.decorations[index]
-		-- A generated tree (`treegen:<species>`, Round 47 lane TC) carries no
-		-- settlement class: r6_templates.lua computes it from this world's
-		-- variants and `set_template_classes` fills it in before any planner
-		-- or writer reads the rows.
+		-- A generated tree (`treegen:<species>`, Round 47 lane TC) or land kit
+		-- structure (`kitgen:<key>`, Round 51 lane LK) carries no settlement
+		-- class: r6_templates.lua computes it from this world's variants and
+		-- `set_template_classes` fills it in before any planner or writer
+		-- reads the rows.
 		local generated_tree = row.kind == "template" and
 			type(row.asset_or_node) == "string" and
-			row.asset_or_node:match("^treegen:[a-z_]+$") ~= nil
+			(row.asset_or_node:match("^treegen:[a-z_]+$") ~= nil or
+				row.asset_or_node:match("^kitgen:[a-z_]+$") ~= nil)
 		exact_fields(row, {id = true, biomes = true, kind = true, asset_or_node = true,
 			host = true, numerator = true, denominator = true, rule = true,
 			settlement_class = generated_tree and "optional" or true},
@@ -342,7 +344,8 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 		safe_integer(row.numerator, "decoration numerator", 1, 3,
 			"fail_content_manifest")
-		safe_integer(row.denominator, "decoration denominator", 1, 2000,
+		-- (to 16000 since Round 51 lane LK: the land kit's rare structures)
+		safe_integer(row.denominator, "decoration denominator", 1, 16000,
 			"fail_content_manifest")
 		if generated_tree then
 			if row.settlement_class ~= nil then
@@ -646,9 +649,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			end
 		end
 	end
-	-- Papyrus stands at the water (r6_planner rule 3), where the near-water
-	-- material turns the swamp's mud into sand; the reeds root there too.
-	decoration_cover.swamp_papyrus.grug_swamp[content_ref_by_name["default:sand"]] = 1
 	-- The swamp's mixed ground (Round 47 lane SW, tools/r47_sw/DESIGN.md):
 	-- its rows name their hosts here, each with the cover divisor the
 	-- planner thins by (1: every eligible column, 4: a quarter of them), in
@@ -668,7 +668,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			swamp_fern_1 = fern, swamp_fern_2 = fern, swamp_fern_3 = fern,
 			swamp_moss_carpet = {[MUD] = 1, [WET] = 1, [DRY] = 2},
 			swamp_dry_shrub = {[MUD] = 1, [DRY] = 1},
-			swamp_papyrus = {[MUD] = 1, [WET] = 1, ["default:sand"] = 1},
 		}
 	end
 	for id, hosts in pairs(SWAMP_HOSTS) do
@@ -681,6 +680,60 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			cover[require_role(name, 1, p7_classes, "swamp host")] = divisor
 		end
 		biomes.grug_swamp = cover
+	end
+	-- The land kit's structures (Round 51 lane LK, `kitgen:` rows) also
+	-- stand on their biomes' bare gravel and stone (the crags' outcrops, a
+	-- gravel patch in the blight), like the viewer's kit.
+	for _, row in ipairs(decorations) do
+		if row.kind == "template" and row.asset_or_node:match("^kitgen:") then
+			for _, hosts in pairs(decoration_cover[row.id]) do
+				for _, name in ipairs({"default:gravel", "default:stone"}) do
+					hosts[require_role(name, 1, p7_classes, "kit host")] = 1
+				end
+			end
+		end
+	end
+	-- The land plants (Round 51 lane LP, tools/r47_sw/land.js): their hosts
+	-- in place of the row host, the fertile palette and the gravel quarter.
+	-- "soil" is each biome's fertile palette (no gravel: the viewer's plants
+	-- grow on soil); a set names its hosts, each with its cover divisor.
+	local LAND_PLANT_HOSTS
+	do
+		local SAND = {["default:sand"] = 1}
+		local ROCK = {["default:gravel"] = 1, ["default:stone"] = 1}
+		-- gravel and the pine hills' soils, never bare stone
+		local ALPINE = {["default:gravel"] = 1, ["default:dirt_with_coniferous_litter"] = 1,
+			["grug_nodes:dirt_with_forest_litter"] = 1, ["default:dirt_with_grass"] = 1}
+		LAND_PLANT_HOSTS = {
+			jungle_flower_ruby_fan = "soil", jungle_flower_ember_star = "soil",
+			jungle_flower_violet_fan = "soil", elf_flower_blush_star = "soil",
+			elf_flower_lilac_bells = "soil", elf_flower_cream_cups = "soil",
+			jungle_fern_1 = "soil", jungle_fern_2 = "soil", jungle_fern_3 = "soil",
+			jungle_bush = "soil",
+			crags_alpine_cushion = ALPINE, crags_alpine_windshrub = ALPINE,
+			crags_lichen_a = ROCK, crags_lichen_b = ROCK,
+			beach_papyrus = SAND,
+			beach_marram_1 = SAND, beach_marram_2 = SAND, beach_marram_3 = SAND,
+		}
+	end
+	for id, hosts in pairs(LAND_PLANT_HOSTS) do
+		local biomes = decoration_cover[id]
+		if not biomes then
+			fail("fail_content_manifest", "land plant decoration row missing: " .. id)
+		end
+		for biome in pairs(biomes) do
+			local cover = {}
+			if hosts == "soil" then
+				for _, name in ipairs(fertile_palettes[biome] or {}) do
+					cover[require_role(name, 1, p7_classes, "land plant soil")] = 1
+				end
+			else
+				for name, divisor in pairs(hosts) do
+					cover[require_role(name, 1, p7_classes, "land plant host")] = divisor
+				end
+			end
+			biomes[biome] = cover
+		end
 	end
 	function module.decoration_cover(id, biome, support_ref)
 		local biomes = decoration_cover[id]
