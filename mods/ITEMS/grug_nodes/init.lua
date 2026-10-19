@@ -406,3 +406,5 @@ grug_nodes.bind_crop_soil_callbacks = dofile(crop_path .. "/crop_soil.lua")(core
 dofile(crop_path .. "/props.lua")
 -- The Round 51 land plants (flowers, alpine plants, lichen, bush foliage).
 dofile(crop_path .. "/plants.lua")
+-- Round 51 lane WRECK: the shipwreck nodes (before R7 builds its writers).
+dofile(crop_path .. "/wreck.lua")
