@@ -27,7 +27,8 @@ the current rule.
 | Priest graph, skills, formulas and builds | [Priest candidate](priest.md) |
 | Scout graph, skills, formulas and builds | [Scout candidate](scout.md) |
 | Cross-class comparisons and their assumptions | [Balance review](balance.md) |
-| Approved hotbar direction and earlier discussion | [Handoff](../class-redesign-handoff.md#3-user-decisions) |
+| Hotbar layouts A/B | Shipped in 0.50.0: `docs/design/inventory_equipment.md`; earlier discussion in the [handoff](../class-redesign-handoff.md#3-user-decisions) |
+| Rulings of 2026-10-19 (no cast times, one-shot areas, no previews, effects on targets) | [Continuation §4a](continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework); they override this document where they conflict |
 | Decisions still needed | [Class redesign TODO](../../../TODO-design-classes.md) |
 | Currently shipped mechanics | [Classes](../../design/classes.md), [talents](../../design/skill_trees.md), [combat stats](../../design/combat_stats.md) |
 

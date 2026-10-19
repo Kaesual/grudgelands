@@ -107,6 +107,12 @@ under the skill's rules. Tooltips say "automatically affects you and up to
 
 ## 4. Fixed area points and previews
 
+> **Superseded in part (user, 2026-10-19):** there is no preview while
+> aiming and no prepared cast; the anchor is always ground found below the
+> enemy or terrain point, and a cast without ground is refused. See the
+> [class-redesign skill inventory §3a](../planning/class-redesign/skill-inventory.md#3a-area-anchor-always-ground-user-2026-10-19).
+> This section is updated when the rework is implemented.
+
 Meteor, Fire Rain, Winter Field and Censure share one interaction contract:
 
 - A legal enemy under the crosshair provides its position/footpoint as the

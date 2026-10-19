@@ -11,6 +11,9 @@ it records the user's decisions on the two reviews, the adopted
 simplifications and the preparatory planning round (rulings, prepared skills,
 balance corrections, document fixes, engineering ambiguities) that must
 close before any implementation. Its section 5 extends the list below.
+**2026-10-19:** the user's "maximally simple" rulings
+([continuation §4a](docs/planning/class-redesign/continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework))
+override the candidates where they conflict.
 
 The [four-class review package](docs/planning/class-redesign/README.md) now
 contains Warrior, Priest and Scout candidates, Mage corrections and the
@@ -39,38 +42,36 @@ Priest healing returns close to the shipped level
   Scout click/RMB controls, Sprint removal and faster-arrow economy. Reviewed
   numbers are paper tuning, not gameplay acceptance.
 - [Area geometry](docs/planning/class-redesign/implementation-design.md#6-feedback-and-area-geometry):
-  freeze eligible terrain and actor-footpoint conversion (including airborne
-  actors), per-column surface/air selection, vertical allowance, damage volume
-  and per-target cover. Crosshair enemy/terrain anchoring, preview, activation
-  capture, fixed position and refusal on invalid placement are already decided.
-  Set preview representation/update/particle limits with desktop/web evidence;
-  the implementation design's numeric preview budget is provisional.
-- [Arrowfall and Split Shot details](docs/planning/class-redesign/implementation-design.md#arrowfall-settlement-proposal-for-the-implementation-brief):
-  approve the broad facing angle, per-shot integer mana apportionment, partial
-  volley recovery and missed-scheduler-slot handling; for Split Shot settle
-  ammo shortage behavior and deterministic nonplayer identity ties. One aimed
-  initial target, forgiving follow-ups, per-release payment, nearest legal
-  Split Shot secondaries and no payment for unfired arrows are decided.
+  freeze the vertical band and per-target cover of the one-shot area query
+  (simplification 1). There is no preview while aiming
+  ([continuation §4a](docs/planning/class-redesign/continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework));
+  a delayed area shows a short particle warning at the impact point.
+- Arrowfall and Split Shot: the per-release payment, facing cone and
+  secondary-target questions fall away with §4a (one-shot effects, no
+  projectiles at explicitly chosen secondaries); the
+  [skill inventory](docs/planning/class-redesign/skill-inventory.md) holds
+  their simplified versions.
 - [PvP](docs/planning/class-redesign-handoff.md#57-pvp-and-leveling-checks-still-needed):
   settle strongest-only slows, repeated roots, crit eligibility, absorbed-hit
-  triggers and cast commitment/cancellation across classes.
+  triggers (cast commitment/cancellation fell away with §4a).
 - [Ice Cage](docs/planning/class-redesign-handoff.md#58-ice-cage-and-discarded-mage-variants):
   keep Winter Field or choose the cage; if the cage, settle protection,
   displacement and destructible geometry before implementation.
-- [Hotbars](docs/planning/class-redesign-handoff.md#71-hotbar-switching-details):
-  settle combat switching, consumption priority, initial starter placement
-  versus the no-auto-placement rule, and general transformation updates beyond
-  the decided Cold Spark replacement. Do not reopen
-  the user's explicit A/B insertion, cleanup, sorting and dropdown decisions.
-- [Food](docs/planning/class-redesign-handoff.md#72-consumables-belt-and-eating):
-  approve the English label and timed belt-click interaction; settle the
-  remaining hotbar food gesture, placement and cancellation behavior.
-- [Tools](docs/planning/class-redesign-handoff.md#73-tools-and-everyday-layouts):
-  decide shovel removal and axe/hoe combination in light of the second hotbar.
 - [Continuation](docs/planning/class-redesign-handoff.md#8-continuation-and-future-delivery):
   review the four-class overview and resolve the proposals, then choose round
   scope alongside existing carry-overs and settle migration/refund details.
   The user's 2026-10-12 parallel-draft request superseded sequential drafting.
+
+**Not part of the class rework** (§4a item 11). Hotbar A/B shipped in 0.50.0
+(Round 50), including combat switching, consumption order, starter placement
+and the in-place transformation rule (Round 50 ruling 12). Two handoff
+proposals remain separate, unscheduled ideas:
+
+- [Food on the belt](docs/planning/class-redesign-handoff.md#72-consumables-belt-and-eating):
+  eat from the E quick menu's belt with a timed action.
+- [Tools](docs/planning/class-redesign-handoff.md#73-tools-and-everyday-layouts):
+  remove shovels and combine axe and hoe; Hotbar A/B reduced the slot
+  pressure that motivated it.
 
 When these choices are resolved, consolidate approved rules into their topic
 owners, preserve this handoff as provenance and delete this TODO under the

@@ -564,6 +564,9 @@ web sizes; keep the image and button coordinate transformations identical.
 
 ### 7.1 Hotbar switching details
 
+**Shipped in 0.50.0 (Round 50).** The owner is now
+`docs/design/inventory_equipment.md`; this section is provenance only.
+
 Persist the inactive eight stacks and the active A/B label with the player.
 Start existing characters on A with their current hotbar untouched and B empty.
 A switch exchanges the two rows completely, including empty slots. No item
@@ -610,6 +613,9 @@ trigger an unintended action when a form opens.
 
 ### 7.2 Consumables Belt and eating
 
+**Not part of the class rework** (user, 2026-10-19); a separate,
+unscheduled proposal.
+
 Keep the current four belt slots as a first proposal; accept food as well as
 potions and elixirs. Preserve each item's effects and restrictions. A belt
 click must not turn food into an instant combat heal or impose potion
@@ -635,6 +641,9 @@ click must not be implemented by pretending that RMB is still held after the
 menu closes. Review source-stack changes and simultaneous input explicitly.
 
 ### 7.3 Tools and everyday layouts
+
+**Not part of the class rework** (user, 2026-10-19); a separate,
+unscheduled proposal.
 
 The user suggested removing shovels, absorbing their loose-ground function
 into pickaxes, and combining the axe and hoe into a multifunction tool.
