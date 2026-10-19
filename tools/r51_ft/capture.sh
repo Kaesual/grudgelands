@@ -19,6 +19,7 @@
 # Usage: XVFB=/path/to/Xvfb [SEED=<u64>] [REPO=<checkout>] [SUFFIX=_before]
 #   tools/r51_ft/capture.sh OUT_DIR
 #   REPO boots another checkout's game with this probe (a before picture);
+#   ONLY=<label,label> limits the run to those scenes;
 #   WIDTH/HEIGHT (default 1600 x 900), SETTLE=<seconds> before each shot
 #   (default 6), SERVER_TIMEOUT (default 900). Run it through the shared Lua
 #   queue (one boot).
@@ -78,6 +79,7 @@ cat >>"$patchdir/b/minetest.conf" <<CONF
 grug_atmosphere_zones = false
 mobs_spawn = false
 r51ft_settle = $settle
+r51ft_only = ${ONLY:-}
 CONF
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 

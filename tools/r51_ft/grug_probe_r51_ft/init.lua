@@ -18,6 +18,9 @@ local P = "[r51ft] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r51ft_settle") or "") or 6
 local TIME_OF_DAY = 0.42
+-- `r51ft_only` (comma list of scene labels) limits the run to those scenes.
+local ONLY = {}
+for label in (core.settings:get("r51ft_only") or ""):gmatch("[^,%s]+") do ONLY[label] = true end
 
 local function log(msg) core.log("action", P .. msg) end
 
@@ -31,13 +34,15 @@ local SCENES = {
 		shots = {{"wide", 46, 30, 0, 90, 32}, {"ground", 30, 4, 30, 135, 12}}},
 	{label = "C2_kezamba_core", key = "kezamba", r = 60,
 		shots = {{"wide", -46, 30, -20, 270, 32}, {"ground", -30, 4, -30, 315, 12}}},
-	{label = "O1_nhal_veyr_city", key = "nhal_veyr", r = 140, inner = 54,
+	{label = "O1_nhal_veyr_city", key = "nhal_veyr", r = 140, inner = 54, close = {"cover"},
 		shots = {{"east", 60, 22, 0, 270, 26}, {"south", 0, 22, -60, 180, 26}}},
-	{label = "O2_highcourt_city", key = "highcourt", r = 140, inner = 54,
+	{label = "O2_highcourt_city", key = "highcourt", r = 140, inner = 54, close = {"cover"},
 		shots = {{"east", 60, 22, 0, 270, 26}, {"west", -60, 22, 0, 90, 26}}},
 	{label = "L1_kezamba_lake", key = "kezamba", r = 120, inner = 54, lake = {x = 1890, z = 1585},
+		close = {"lily", "weed"},
 		shots = {{"lake", 0, 14, -24, 0, 34}}},
 	{label = "L2_lethariel_lake", key = "lethariel", r = 120, inner = 54, lake = {x = 1880, z = -1400},
+		close = {"lily", "weed"},
 		shots = {{"lake", 0, 14, -24, 0, 34}}},
 }
 
@@ -63,7 +68,8 @@ local order, centers = {}, {}
 
 local function find_spots()
 	for _, scene in ipairs(SCENES) do
-		local a = grug_core.settlement_socket_anchor(scene.key)
+		local a = (next(ONLY) == nil or ONLY[scene.label]) and
+			grug_core.settlement_socket_anchor(scene.key)
 		if a then
 			local c = scene.lake and {x = scene.lake.x, y = a.y, z = scene.lake.z} or a
 			centers[scene.label] = c
@@ -94,9 +100,16 @@ local function survey(scene)
 		counted = function(p) return math.abs(p.x - a.x) > inner or math.abs(p.z - a.z) > inner end
 	end
 	local n = {cover = 0, bones = 0, lily = 0, weed = 0, logs = 0, floating = 0}
+	-- the nearest counted plant of each kind to the scene's middle (a close view)
+	local nearest = {}
+	local function near(kind, p)
+		local d = math.abs(p.x - c.x) + math.abs(p.z - c.z)
+		if not nearest[kind] or d < nearest[kind].d then nearest[kind] = {p = p, d = d} end
+	end
 	for _, p in ipairs(core.find_nodes_in_area(p1, p2, COVER)) do
 		if counted(p) then
 			n.cover = n.cover + 1
+			near("cover", p)
 			local below = core.get_node({x = p.x, y = p.y - 1, z = p.z}).name
 			if below == "air" or liquid(below) then
 				n.floating = n.floating + 1
@@ -111,6 +124,7 @@ local function survey(scene)
 	for _, p in ipairs(core.find_nodes_in_area(p1, p2, {LILY})) do
 		if counted(p) then
 			n.lily = n.lily + 1
+			near("lily", p)
 			local below = core.get_node({x = p.x, y = p.y - 1, z = p.z}).name
 			if not liquid(below) then
 				n.floating = n.floating + 1
@@ -120,7 +134,7 @@ local function survey(scene)
 		end
 	end
 	for _, p in ipairs(core.find_nodes_in_area(p1, p2, {WEED})) do
-		if counted(p) then n.weed = n.weed + 1 end
+		if counted(p) then n.weed = n.weed + 1; near("weed", p) end
 	end
 	for _, p in ipairs(core.find_nodes_in_area(p1, p2, LOGS)) do
 		local below = core.get_node({x = p.x, y = p.y - 1, z = p.z}).name
@@ -144,6 +158,15 @@ local function survey(scene)
 		SHOTS[#SHOTS + 1] = {name = scene.label .. "_" .. s[1],
 			pos = {x = c.x + s[2], y = base_y + s[3], z = c.z + s[4]},
 			yaw = s[5], pitch = s[6], first = index == 1}
+	end
+	-- close views, 7 east and 4 up of the nearest plant, looking west and down
+	for _, kind in ipairs(scene.close or {}) do
+		local hit = nearest[kind]
+		if hit then
+			log("close " .. scene.label .. " " .. kind .. " at " .. core.pos_to_string(hit.p))
+			SHOTS[#SHOTS + 1] = {name = scene.label .. "_close_" .. kind,
+				pos = {x = hit.p.x + 7, y = hit.p.y + 4, z = hit.p.z}, yaw = 90, pitch = 30}
+		end
 	end
 end
 
