@@ -2619,7 +2619,7 @@ var LAND_DATA = {"gathering":[{"biomes":["grug_meadows","grug_savanna"],"image":
 			tex: {'grug_nodes:blight_dirt': ['grounds/blight_dirt_32.png']}},
 		{key: 'undead.ground.bone_litter32', zones: ['undead'], name: 'Bone litter, 2 × 2 (ARTL, L6)',
 			tex: {'grug_nodes:dirt_with_bone_litter': ['grounds/bone_litter_top_32.png', DIRT, DIRT + '^grug_nodes_bone_litter_side.png']}},
-		{key: 'undead.graveyard', zones: ['undead'], name: 'Small wild graveyard: 3–5 crooked gravestones, a broken fence', den: 5000,
+		{key: 'undead.graveyard', zones: ['undead'], name: 'Small wild graveyard: 2–6 crooked gravestones, fence remnants or none (varies per seed)', den: 5000,
 			kit: 'graveyard'},
 		{key: 'undead.ruin', zones: ['undead'], name: 'Mossy ruin remnants (two or three wall pieces)', den: 8000, kit: 'ruinUndead'},
 		{key: 'undead.ruin.arch', zones: ['undead'], name: 'Ruin: a broken arch of stone brick', den: 14000, kit: 'ruinArch'},
@@ -3563,6 +3563,9 @@ var LAND_DATA = {"gathering":[{"biomes":["grug_meadows","grug_savanna"],"image":
 			} else if (it.kit === 'bones') {
 				list.push({item: it.key, label: 'bone find, a humanoid pair', build: 'bones', fresh: 'human', w: 3});
 				list.push({item: it.key, label: 'bone find, an animal pair', build: 'bones', fresh: 'animal', w: 3});
+			} else if (it.kit === 'graveyard') {
+				// three of them: the plot differs per seed
+				for (var g = 1; g <= 3; g++) { list.push({item: it.key, label: 'wild graveyard ' + g, build: 'graveyard', w: 9}); }
 			} else if (it.kit === 'driftwood') {
 				list.push({item: it.key, label: 'driftwood log', prop: 'driftwood_log', w: 2});
 				list.push({item: it.key, label: 'driftwood fork', prop: 'driftwood_fork', w: 2});
