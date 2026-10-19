@@ -1831,6 +1831,12 @@ tools](#player-meta-read-by-external-tools).
   Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
   it as 512 px tiles, plus a normal-size copy for the minimap (scaled down
   in the same pass at high, Round 37; at both qualities since Round 44).
+  Since Round 51 the atlas is ±4050 × ±3600 (normal 1215 × 1080, high
+  3600 × 3200) and the sea is coloured by depth: pass 1 asks
+  `grug_zones.water_query_at` for planned-water pixels only (bay or lake)
+  and counts the open sea's pixels per 16-node cell (blurred into the soft
+  edge); pass 2 reads the depth from the relief grid's floor heights
+  (fixture `tools/r51_map`).
   Since Round 44 the pure `bake.lua` draws the settlement, point-of-interest,
   king and dragon icons and the region names (pixel font, dark halo) into
   the Map tab's image and the small icons alone into the minimap's copy;
