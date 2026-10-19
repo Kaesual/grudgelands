@@ -243,6 +243,43 @@ register("level_up", {
 		exp = {0.35, 0.7}, size = {1.5, 3}}),
 })
 
+-- The delayed one-shot area (Round 52, grug_core/area.lua area.delayed; no
+-- shipped skill plays them yet). Each takes the skill's tint (frame.color)
+-- and the area's radius (frame.reach). The warning: a ring of motes on the
+-- radius at the anchor, each living the whole delay (frame.time, at most
+-- 3 s), the dragon lightning_ring pattern ...
+register("area_warning", function(frame)
+	local life = frame.time or 1.5
+	return {single(20, {at = "target", color = "#ffb347", fade = false,
+		shape = {"disc", {0, 0.15, 0}, frame.reach or 3, true}, exp = {life, life},
+		size = {3, 3}, glow = 12})}
+end, {reach = 3, time = 1.5})
+
+-- ... large motes that fall over the area from frame.height (below the
+-- first solid node above the anchor, area.fall_height) and reach the ground
+-- as the delay ends ...
+register("area_fall", function(frame)
+	local life = frame.time or 1.5
+	local height = frame.height or 12
+	local speed = -height / life
+	return {single(6, {at = "target", color = "#ff7a2a", fade = false,
+		shape = {"disc", {0, height, 0}, 0.6 * (frame.reach or 3), false},
+		vel = {{0, speed, 0}, {0, speed, 0}}, exp = {life, life}, size = {8, 10},
+		glow = 14})}
+end, {reach = 3, time = 1.5, height = 12})
+
+-- ... and the impact: a ground ring out to the radius and a short spray.
+register("area_impact", function(frame)
+	local reach = frame.reach or 3
+	return {
+		single(40, {at = "target", color = "#ffb347", shape = {"disc", {0, 0.2, 0}, 0.4, true},
+			radial = "reach", exp = {0.35, 0.35}, size = {2.5, 3}, glow = 12}),
+		spawner(30, 0.15, {at = "target", color = "#ff7a2a",
+			shape = {"disc", {0, 0.3, 0}, 0.8 * reach, false}, vel = {{-1, 2, -1}, {1, 5, 1}},
+			acc = {0, -9, 0}, exp = {0.5, 0.9}, size = {2, 3.5}, glow = 14}),
+	}
+end, {reach = 3})
+
 ------------------------------------------------------------------------------
 -- Bosses and mob specials (Round 40 PM): the `boss` and `mob` cards of the
 -- accepted catalogue, played from grug_mobs. Looks the catalogue keeps

@@ -1,0 +1,378 @@
+-- Shared helpers for area skills (Round 52, round52-class-plan.md §3
+-- "CORE-B", rulings C3-C5 and D9; class-redesign/skill-inventory.md §2 B4,
+-- B5, the group helper, and §3a the ground anchor). Nothing shipped calls
+-- them yet (D1): Nova, Cinderfall and the splashes keep their plain spheres
+-- until round K rewires them.
+--
+--   area.anchor(player, range, opts)  the ground anchor of a crosshair area
+--   area.ground_below(point, start)   the ground search alone
+--   area.query(anchor, opts)          the targets of a ground-anchored area
+--   area.group(caster, opts)          the recipients of a self-centred group
+--                                     heal (self always included)
+--   area.clear_line(from, to)         walkable-only line of sight
+--   area.fall_height(anchor)          room for falling visuals above it
+--   area.delayed(caster, spec)        one impact after a fixed delay
+--
+-- Relations stay with the caller: a filter or `eligible` predicate is the
+-- abilities' valid_target (grug_core never depends on grug_abilities).
+
+local area = {}
+grug_core.area = area
+
+-- H of §3a: the ground search depth and the half height of the damage band,
+-- one number for both.
+area.H = 3
+area.NO_GROUND = "No ground found."
+-- The warning lives exactly as long as the delay, as single particles whose
+-- lifetime is the delay (the dragon's lightning_ring pattern), and a
+-- particle lives at most particles.lua's MAX_EXPTIME of 3 s.
+area.MAX_DELAY = 3
+-- Falling visuals start at most this high, and below the first solid node
+-- above the anchor (§3a item 5).
+area.CEILING_CAP = 12
+-- Line of sight starts in the middle of the node above the ground (the
+-- anchor is the ground's top face) and ends at a target's body: the middle
+-- of a mob's collision box, or this high above a player's feet.
+local LOS_LIFT = 0.5
+local PLAYER_BODY = 0.9
+-- Falling particles stay half a node below the ceiling; a shorter fall than
+-- MIN_FALL (a crawlspace) shows none.
+local FALL_MARGIN = 0.5
+local MIN_FALL = 1.5
+
+local function round(value)
+	return math.floor(value + 0.5)
+end
+
+-- true / false, or nil where the map is not loaded. An unknown node is
+-- solid, as the engine's default node features are.
+local function walkable_at(x, y, z)
+	local node = core.get_node_or_nil({x = x, y = y, z = z})
+	if not node then
+		return nil
+	end
+	local def = core.registered_nodes[node.name]
+	return def == nil or def.walkable ~= false
+end
+
+-- The anchor's x/z stay the aimed point's, kept inside the searched column
+-- (a hit on a wall face lies on the column's border).
+local function inside(value, centre)
+	return math.max(centre - 0.45, math.min(centre + 0.45, value))
+end
+
+-- The ground under `point` (§3a items 2 and 6): the top of the first
+-- walkable node with a non-walkable node above it, searched straight down
+-- the column of the node `start` (default the node holding `point`; a
+-- terrain hit passes the node on the ray's side of the face it hit), down to
+-- a top at most H metres below `point`. Liquids and plants are not walkable,
+-- so the search looks through them. nil when there is none, or the map is
+-- not loaded there.
+function area.ground_below(point, start)
+	local x = start and start.x or round(point.x)
+	local top = start and start.y or round(point.y)
+	local z = start and start.z or round(point.z)
+	-- The lowest node whose top (y + 0.5) lies within H of the point.
+	local lowest = math.ceil(point.y - area.H - 0.5)
+	local above = walkable_at(x, top + 1, z)
+	for y = top, lowest, -1 do
+		local here = walkable_at(x, y, z)
+		if here == nil or above == nil then
+			return nil
+		end
+		if here and not above then
+			return vector.new(inside(point.x, x), y + 0.5, inside(point.z, z))
+		end
+		above = here
+	end
+	return nil
+end
+
+-- The terrain point of a ray: the first walkable or liquid node it meets
+-- (plants are passed; a liquid surface is a point, so deep water finds no
+-- ground below it). Node-only, so the engine's raycast is the right one
+-- (AGENTS.md "Combat, input and notices").
+local function terrain_point(ray)
+	if not ray.origin or not ray.destination then
+		return nil
+	end
+	for pointed in core.raycast(ray.origin, ray.destination, false, true) do
+		if pointed.type == "node" then
+			local node = core.get_node_or_nil(pointed.under)
+			local def = node and core.registered_nodes[node.name]
+			if def and (def.walkable ~= false or
+					(def.liquidtype or "none") ~= "none") then
+				return pointed.intersection_point, pointed.above
+			end
+		end
+	end
+	return nil
+end
+
+-- The anchor of a crosshair area (§3a items 1-3): a legal enemy under the
+-- crosshair gives its position at this moment, otherwise the terrain hit
+-- does; then the ground below it. Returns anchor, target (the enemy or nil),
+-- or nil, area.NO_GROUND -- a def.cast returns that refusal as it is, so
+-- nothing is paid and no cooldown is armed (grug_abilities.try_cast).
+-- opts.is_enemy(obj): the caller's target rule on top of the combat ray's
+-- own hostile classification (the abilities' valid_target "hostile").
+function area.anchor(player, range, opts)
+	local ray = grug_core.combat_ray(player, range)
+	local target = ray.status == "target" and ray.target or nil
+	if target and opts and opts.is_enemy and not opts.is_enemy(target) then
+		target = nil
+	end
+	local point, start
+	if target then
+		point = target:get_pos()
+	else
+		point, start = terrain_point(ray)
+	end
+	local anchor = point and area.ground_below(point, start)
+	if not anchor then
+		return nil, area.NO_GROUND
+	end
+	return anchor, target
+end
+
+-- Line of sight that only walkable nodes block: grass, flowers, water and
+-- other non-walkable nodes let it through, unlike core.line_of_sight. A
+-- node-only ray (the engine's raycast, as for every node-only ray). An
+-- unknown or unloaded node blocks.
+function area.clear_line(from, to)
+	for pointed in core.raycast(from, to, false, false) do
+		if pointed.type == "node" then
+			local node = core.get_node_or_nil(pointed.under)
+			local def = node and core.registered_nodes[node.name]
+			if not def or def.walkable ~= false then
+				return false
+			end
+		end
+	end
+	return true
+end
+
+-- Where a line of sight ends on an object: the middle of a mob's live
+-- collision box (read without get_properties), or a player's body.
+local function body_point(obj, pos)
+	if obj:is_player() then
+		return vector.offset(pos, 0, PLAYER_BODY, 0)
+	end
+	local ent = obj:get_luaentity()
+	local box = ent and (ent._grug_cbox or (ent.initial_properties and
+		ent.initial_properties.collisionbox) or ent.collisionbox)
+	if type(box) == "table" and box[2] and box[5] then
+		return vector.offset(pos, 0, (box[2] + box[5]) / 2, 0)
+	end
+	return pos
+end
+area.body_point = body_point
+
+-- A stable name for the last tie-break: players by name, entities by their
+-- registered name.
+local function object_key(obj)
+	if obj:is_player() then
+		return "p:" .. obj:get_player_name()
+	end
+	local ent = obj:get_luaentity()
+	return "e:" .. tostring(ent and ent.name or "")
+end
+
+-- Nearest first; ties by height, then x, z, then the key: the same scene
+-- always gives the same order.
+local function nearest_first(a, b)
+	if a.d2 ~= b.d2 then return a.d2 < b.d2 end
+	if a.pos.y ~= b.pos.y then return a.pos.y < b.pos.y end
+	if a.pos.x ~= b.pos.x then return a.pos.x < b.pos.x end
+	if a.pos.z ~= b.pos.z then return a.pos.z < b.pos.z end
+	return a.key < b.key
+end
+
+-- The targets of a ground-anchored area (§3a item 4): objects within
+-- horizontal radius opts.radius of the anchor and within opts.band (default
+-- H) above or below it, accepted by opts.filter(obj), in sight of a point
+-- just above the anchor; nearest first, at most opts.cap (default all).
+-- Line of sight is tested in that order and stops at the cap, so a capped
+-- area casts at most cap rays plus the blocked ones.
+function area.query(anchor, opts)
+	local radius = opts.radius
+	local band = opts.band or area.H
+	local filter, cap = opts.filter, opts.cap
+	local candidates = {}
+	for _, obj in ipairs(core.get_objects_in_area(
+			vector.offset(anchor, -radius, -band, -radius),
+			vector.offset(anchor, radius, band, radius))) do
+		local pos = obj:get_pos()
+		if pos then
+			local dx, dz = pos.x - anchor.x, pos.z - anchor.z
+			local d2 = dx * dx + dz * dz
+			if d2 <= radius * radius and math.abs(pos.y - anchor.y) <= band and
+					(not filter or filter(obj)) then
+				candidates[#candidates + 1] = {obj = obj, pos = pos, d2 = d2,
+					key = object_key(obj)}
+			end
+		end
+	end
+	table.sort(candidates, nearest_first)
+	local eye = vector.offset(anchor, 0, LOS_LIFT, 0)
+	local hits = {}
+	for index = 1, #candidates do
+		if cap and #hits >= cap then
+			break
+		end
+		local candidate = candidates[index]
+		if area.clear_line(eye, body_point(candidate.obj, candidate.pos)) then
+			hits[#hits + 1] = candidate.obj
+		end
+	end
+	return hits
+end
+
+local function hp_share(player)
+	local max_hp = tonumber(player:get_properties().hp_max) or 0
+	if max_hp <= 0 then
+		return 1
+	end
+	return player:get_hp() / max_hp
+end
+
+-- Lowest HP share first; ties nearest first, then by name.
+local function neediest_first(a, b)
+	if a.share ~= b.share then return a.share < b.share end
+	if a.d2 ~= b.d2 then return a.d2 < b.d2 end
+	return a.key < b.key
+end
+
+-- The recipients of a self-centred group heal (skill-inventory.md §3 item
+-- 3): the caster always, plus players within opts.radius (a sphere around
+-- the caster) that opts.eligible(obj) accepts (the abilities' valid_target
+-- "friendly") and the caster can see (walkable-only line of sight, body to
+-- body). At most opts.cap in all, the caster counted; lowest HP share first.
+-- The caster keeps its place whatever its HP, and takes its turn in the
+-- order. Returns a list of players.
+function area.group(caster, opts)
+	local centre = caster:get_pos()
+	local eye = vector.offset(centre, 0, PLAYER_BODY, 0)
+	local others = {}
+	for _, obj in ipairs(core.get_objects_inside_radius(centre, opts.radius)) do
+		if obj ~= caster and obj:is_player() and opts.eligible(obj) then
+			local pos = obj:get_pos()
+			if area.clear_line(eye, vector.offset(pos, 0, PLAYER_BODY, 0)) then
+				local dx, dy, dz = pos.x - centre.x, pos.y - centre.y, pos.z - centre.z
+				others[#others + 1] = {obj = obj, share = hp_share(obj),
+					d2 = dx * dx + dy * dy + dz * dz, key = obj:get_player_name()}
+			end
+		end
+	end
+	table.sort(others, neediest_first)
+	local chosen = {{obj = caster, share = hp_share(caster), d2 = 0,
+		key = caster:get_player_name()}}
+	local room = (opts.cap or #others + 1) - 1
+	for index = 1, math.min(room, #others) do
+		chosen[#chosen + 1] = others[index]
+	end
+	table.sort(chosen, neediest_first)
+	local players = {}
+	for index = 1, #chosen do
+		players[index] = chosen[index].obj
+	end
+	return players
+end
+
+-- How far falling visuals may start above the anchor (§3a item 5): half a
+-- node below the first solid node above it, at most CEILING_CAP. An
+-- unloaded node counts as solid.
+function area.fall_height(anchor)
+	local x, z = round(anchor.x), round(anchor.z)
+	local base = round(anchor.y)
+	for step = 0, area.CEILING_CAP - 1 do
+		if walkable_at(x, base + step, z) ~= false then
+			return math.max(0, base + step - 0.5 - anchor.y - FALL_MARGIN)
+		end
+	end
+	return area.CEILING_CAP
+end
+
+-- Pending impacts per caster: name -> {[entry] = true}, entry.job the
+-- core.after job.
+local pending = {}
+
+-- One impact after a fixed delay (B5, C3, D9). At once: a warning ring of
+-- single particles on the anchor that lives exactly the delay, and large
+-- particles that fall from below the ceiling onto it in that time. After
+-- `delay` seconds: an impact burst and spec.impact(caster, anchor), with the
+-- caster fetched again by name. D9: the caster leaving cancels the impact
+-- (leave callback below); a caster who died still lands it. The impact
+-- finds its targets itself (area.query), so every object is current.
+--   spec.anchor  the ground anchor (area.anchor)
+--   spec.delay   seconds, (0, MAX_DELAY]
+--   spec.impact  function(caster, anchor)
+--   spec.radius  the warning ring's and the burst's reach (metres)
+--   spec.color   tint of every particle (default the effects' own)
+--   spec.warning, spec.fall, spec.burst: particle effect ids (default
+--                area_warning, area_fall, area_impact); false shows none.
+-- core.after, not a globalstep: one engine timer per pending impact, no
+-- per-step work; a cooldown bounds how many a caster can have.
+-- Returns true, or false and a refusal for a malformed spec.
+function area.delayed(caster, spec)
+	local delay = tonumber(spec.delay)
+	if not spec.anchor or type(spec.impact) ~= "function" or not delay or
+			delay <= 0 or delay > area.MAX_DELAY then
+		core.log("warning", "[grug_core] area.delayed: malformed spec")
+		return false, "Invalid area."
+	end
+	local name = caster:get_player_name()
+	local anchor = vector.copy(spec.anchor)
+	local frame = {target = anchor, reach = spec.radius, time = delay,
+		color = spec.color}
+	local play = grug_core.particles.play
+	if spec.warning ~= false then
+		play(spec.warning or "area_warning", frame)
+	end
+	if spec.fall ~= false then
+		local height = area.fall_height(anchor)
+		if height >= MIN_FALL then
+			play(spec.fall or "area_fall", {target = anchor, reach = spec.radius,
+				time = delay, height = height, color = spec.color})
+		end
+	end
+	local entry = {}
+	entry.job = core.after(delay, function()
+		local list = pending[name]
+		if list then
+			list[entry] = nil
+			if next(list) == nil then
+				pending[name] = nil
+			end
+		end
+		local player = core.get_player_by_name(name)
+		if not player then
+			return
+		end
+		if spec.burst ~= false then
+			play(spec.burst or "area_impact", {target = anchor, reach = spec.radius,
+				color = spec.color})
+		end
+		spec.impact(player, anchor)
+	end)
+	pending[name] = pending[name] or {}
+	pending[name][entry] = true
+	return true
+end
+
+-- How many impacts `name` has pending (fixtures and the probe).
+function area.pending_count(name)
+	local count = 0
+	for _ in pairs(pending[name] or {}) do
+		count = count + 1
+	end
+	return count
+end
+
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	for entry in pairs(pending[name] or {}) do
+		entry.job:cancel()
+	end
+	pending[name] = nil
+end)
