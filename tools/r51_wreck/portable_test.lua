@@ -418,7 +418,6 @@ for key in pairs(written) do
 end
 check(inside_water == 0, "no write puts water")
 
-if failures > 0 then error(failures .. " FAILURES of " .. checks .. " checks", 0) end
 -- bed plants (the seabed growth's rooted plants): one standing where a wreck
 -- cell goes is replaced whole, one rooted right under a wreck cell goes back
 -- to sand, so no stem runs through a wreck
@@ -444,4 +443,5 @@ check(under ~= nil and world[wkey(under[1], under[2], under[3])] == SAND,
 	"a bed plant rooted under a wreck cell goes back to sand")
 check(outside == 0, "the plant rule writes inside the owner only")
 
+if failures > 0 then error(failures .. " FAILURES of " .. checks .. " checks", 0) end
 print(("PASS r51_wreck: %d checks; %d wrecks on the synthetic sea"):format(checks, #sites))
