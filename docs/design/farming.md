@@ -172,7 +172,9 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
   ground-cover chance, once the bare `default:sand` bed lies under water
   source again. A renewal sample that finds no open ground (under water) asks
   the seabed instead; no extra sample is taken. Coral patches stay as
-  generated and do not renew.
+  generated and do not renew. A wild lake's waterweed comes back the same
+  way, and its waterlily in the air over the lake's source water (Round 51
+  follow-up; `seabed.lua` `lake_at`); a river's sparse weed does not renew.
 - Every decoration species' rate is multiplied by its altitude class factor
   at the spot, from the same vegetation rule the generator uses
   (`habitat_registry.lua` `vegetation_rule`, [world_zones.md](world_zones.md)
@@ -197,7 +199,8 @@ plants, trees); an expired claim renews like any other ground (Round 25 rulings 
 and 19, `housing.md` §6.4). The one exception to the territory rule is the
 seabed's (Round 51 T3): seagrass and kelp regrow in protected bay, belt and
 channel water too (`grug_core.water_plant_renewal_allowed`), never in the open
-sea, and nothing else passes through it. Other
+sea, and nothing else passes through it (a wild lake's plants ask the same
+function, which answers there by the plain territory rule). Other
 player protection is never consulted. Each class keeps its
 own writer's claim exclusions: resource plants the "gathering" rule (the
 static shapes as trees see them — start towns, capitals, a POI's core and
