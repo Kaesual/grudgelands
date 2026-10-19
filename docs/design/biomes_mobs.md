@@ -1789,7 +1789,7 @@ water query ([spawn_regions.md](spawn_regions.md#water-kinds-round-51)):
 | Lake | lakes and swamp pools | Frog (3 in 4), Tortoise (1 in 4; S15) |
 | River | rivers | Frog |
 | Bay middle | bay water 40+ nodes from dry land and 16+ deep | Bay Shark, L30 (its own row, S12) |
-| Open sea | beyond the belt | Kraken, Abyssal Shark (a third of the Kraken's rate, S13) |
+| Open sea | beyond the belt | Kraken, Abyssal Shark (a rare spawn: a tenth of the Kraken's rate, S13) |
 | Any sea water | bay, belt, channel and open sea, under the surface | Tide Goby (critter, its own row) |
 
 The zone kinds take the belt of the column's level (a channel: its

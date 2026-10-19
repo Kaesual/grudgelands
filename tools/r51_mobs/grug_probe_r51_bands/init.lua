@@ -145,6 +145,25 @@ end
 local WORLD_ROWS = {["grug_mobs:bay_shark"] = true, ["grug_mobs:abyssal_shark"] = true,
 	["grug_mobs:kraken"] = true, ["grug_mobs:goby"] = true}
 local row_tries = {}
+-- The merged water spawn ABM's Lua callbacks (spawn_abms.lua): count and
+-- time over the window (the engine looks the action up per call).
+local abm = {calls = 0, us = 0, counting = false}
+core.register_on_mods_loaded(function()
+	for _, def in ipairs(core.registered_abms) do
+		if def.label == "grug_mobs water spawning" then
+			local action = def.action
+			abm.found = true
+			abm.interval, abm.chance = def.interval, def.chance
+			def.action = function(...)
+				if not abm.counting then return action(...) end
+				local t0 = core.get_us_time()
+				action(...)
+				abm.us = abm.us + (core.get_us_time() - t0)
+				abm.calls = abm.calls + 1
+			end
+		end
+	end
+end)
 core.register_on_mods_loaded(function()
 	local check = mobs.spawn_abm_check
 	mobs.spawn_abm_check = function(self, pos, node, name)
@@ -205,6 +224,11 @@ local function finish()
 	end
 	table.sort(tries)
 	log("world rows: " .. (#tries > 0 and table.concat(tries, ", ") or "no attempt"))
+	abm.counting = false
+	log(("water ABM (interval %s, chance %s): %d callbacks in %d s, %.1f per s, %.1f us per callback, %.1f us per s"):format(
+		tostring(abm.interval), tostring(abm.chance), abm.calls, WINDOW, abm.calls / WINDOW,
+		abm.calls > 0 and abm.us / abm.calls or 0, abm.us / WINDOW))
+	if not abm.found then fail("no merged water spawn ABM") end
 	for _, band in ipairs({"lake", "river", "sea_shallows", "sea_deep"}) do
 		if not per_band[band] then fail("no " .. band .. " spawn in the window") end
 	end
@@ -222,6 +246,7 @@ local function start()
 	core.set_timeofday(0.5)
 	for s = 10, WINDOW, 10 do core.after(s, function() core.set_timeofday(0.5) end) end
 	log(("window: %d s by day"):format(WINDOW))
+	abm.counting = true
 	core.after(WINDOW, finish)
 end
 

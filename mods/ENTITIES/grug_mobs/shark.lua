@@ -133,7 +133,8 @@ grug_mobs.register_mob("grug_mobs:abyssal_shark", shark_def("Abyssal Shark", {
 -- The rows (the merged water ABM, spawn_abms.lua). Like the Kraken, both
 -- appear at the surface (water touching air; mobs_redo spawns one node
 -- above the matched node) and dive (swimmer.lua): the Bay Shark at the
--- Kraken's rate, the Abyssal Shark a seldom spawn at a third of it. Every
+-- Kraken's rate, the Abyssal Shark a rare spawn at a tenth of it (S13 "as
+-- rares"; the coordinator, Round 51 MOBS M2 fix round). Every
 -- water row keeps its top at or above y 0 (a lower top would join the
 -- underground ABM).
 mobs:spawn({
@@ -151,7 +152,7 @@ mobs:spawn({
 	nodes = {"default:water_source"},
 	neighbors = {"air"},
 	interval = 60,
-	chance = 36000,
+	chance = 120000,
 	active_object_count = 1,
 	min_height = -10,
 	max_height = 4,

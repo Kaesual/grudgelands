@@ -798,8 +798,8 @@ for _, name in ipairs({"grug_mobs:bay_shark", "grug_mobs:abyssal_shark", "grug_m
 		end
 	end
 end
-check(rows["grug_mobs:abyssal_shark"].chance >= 3 * 12000,
-	"G the Abyssal Shark is a seldom spawn (a third of the Kraken's rate or less)")
+eq(rows["grug_mobs:abyssal_shark"].chance, 10 * 12000,
+	"G the Abyssal Shark is a rare spawn: a tenth of the Kraken's rate")
 local bands = grug_mobs.shark_bands
 local deep = {x = -5, y = -3, z = 0} -- water below and above (x <= 0, y <= 1)
 local function answer(class, distance, depth) query.class, query.distance, query.depth = class, distance, depth end
