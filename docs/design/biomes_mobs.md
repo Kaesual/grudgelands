@@ -137,6 +137,31 @@ right above it into the end and takes the pieces below it (they drop
 nothing; a protected piece stays). Hanging moss comes back only with its
 tree: it decays with the tree's wood, and the swamp tree has no sapling.
 
+**Land plants (Round 51 lane LP, picked in the land viewer).** Decoration
+only: none glows, none drops anything (land plan rulings 10 and 11, round
+plan §3.6), and none shares a name or a texture with a gathering source.
+- *Lianas* hang under jungle and kapok leaves like the hanging moss: the
+  continuous strand `grug_trees:liana_strand` above the end
+  `grug_trees:liana`, the same dig rule, decaying with jungle wood. The
+  tree carries them (`wp40/tree_templates.lua` `LIANAS`): under about one
+  in eight leaf cells with a free cell below, a run of 2–6, ending at least
+  two nodes above the foot's ground and within the leaf decay reach (3) of
+  the tree's wood, the same on world trees, grown saplings and town trees.
+  They come back only with their tree (a sapling grows its own).
+- *Flowers* (`grug_nodes:flower_*`): ruby fan, ember star and violet fan
+  (strong colours) in the jungle, blush star, lilac bells and cream cups
+  (pastels) in the elf and deep forests.
+- *Alpine plants* (`grug_nodes:alpine_cushion`, `alpine_windshrub`) and
+  *lichen* (`grug_nodes:lichen_carpet`, `lichen_carpet_b`: a 1/16 carpet
+  drawn with alpha clip) in the crags and pine hills, the lichen in small
+  patches on gravel and stone.
+- *Bushes:* the jungle's large-leaved bush and the badlands' withered bush
+  are default's bush and acacia bush shapes wearing
+  `grug_nodes:jungle_bush_leaves` and `grug_nodes:withered_bush_leaves`;
+  the foliage decays with the stem and drops nothing.
+- Default's ferns and marram grass also drop nothing now. Papyrus stays
+  default's (it drops itself, for paper).
+
 ### 1.4 Settlements
 
 Settlement positions use the fixed POI slots in `world_zones.md` §§8/11;
@@ -204,17 +229,17 @@ placeholder.
 |-------|--------------------|--------------------------|-------|
 | grug_meadows | apple (generated) sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[spice T1]` | fields/roads near settlements (WP13) |
 | grug_pine_hills | pine (generated; two rows) (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss on stone `[herb T1]` | scattered boulders (deco) |
-| grug_elf_forest | silverwood + apple mix (generated) (fill 0.007) | pale grass, white flowers; wild berries `[food]`; sunleaf `[spice T1]` | great-silverwood only via settlement schematics |
+| grug_elf_forest | silverwood + apple mix (generated) (fill 0.007) | pale grass, pastel flowers (Round 51); wild berries `[food]`; sunleaf `[spice T1]` | great-silverwood only via settlement schematics |
 | grug_deep_forest | apple + aspen (generated) dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food]`; dragonweed edge `[herb T2]` | dark, high tree density |
-| grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
+| grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`; lichen patches and alpine plants (Round 51) | band-specific nature biome (Dwarf area only) |
 | grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
-| grug_badlands (+ `_east`) | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
+| grug_badlands (+ `_east`) | large_cactus, dead shrub, withered bush (Round 51) | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
 | grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood (generated) dense (fill 0.015), bone piles | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); papyrus lives at the water in the swamp (§2.1) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
-| grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), papyrus_on_dirt, dead bush | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]` | shallow water pools 1–2 deep (mud floor), Round 47 |
-| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
+| grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); large-leaved bushes; papyrus at the warm shores (§2.1) | lianas, ferns and strong-coloured flowers (Round 51); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
+| grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), dead bush (no papyrus since Round 51: the reeds and cattails do that job) | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]` | shallow water pools 1–2 deep (mud floor), Round 47 |
+| grug_beach | — | marram on dry sand (Round 51, every biome's sand shore); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 ### 2.1 WP40 surface and deterministic decoration projection
@@ -236,20 +261,30 @@ contract error rather than a fallback to an engine biome.
 |---|---|---|---|---|
 | `grug_meadows` | `default:dirt_with_grass` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/2000`; bush `1/250`; each grass 1–5 `3/50` |
 | `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50` |
-| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only |
+| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60`; pine bush `3/500` on gravel, shrub band only; Round 51 (also in the pine hills): alpine cushion and windshrub `1/80` each on gravel and the pine hills' soils; lichen a and b `1/14` each on gravel and stone inside a lichen patch (a centre in one of 450 columns, every column within 2 of it) |
 | `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
-| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50` |
+| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; bush `1/250`, shrub band only; each grass 1–3 `1/50`; Round 51 (also in the deep forest): each pastel flower `1/300` on the fertile palette |
 | `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; bush `1/250`, shrub band only; each fern 1–3 `1/50` |
-| `grug_swamp` | `grug_nodes:mud` / 1, mixed with `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` and `grug_nodes:dirt_with_moss` (Round 47) | `grug_nodes:mud` / 2 (3 under a pool) | `grug_nodes:mud` | papyrus `1/50`, only on a dry mud or sand root beside standing water: a wet column (sea, bay, lake or river) within two nodes whose surface lies 0–3 below the root's ground (Round 22 Phase 5), so a swamp grows reeds wherever it has water and none where it has none; replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250`; Round 47: swamp tree `1/120` on every swamp ground; tall grass 3–5 `1/9` each and junglegrass `1/20` on wet grass (a quarter on the muds); ferns 1–3 `1/14` each on moss soil; moss carpet `1/16` on the muds. The pools, the waterlilies on them, reeds rooted in their beds and the bank's reeds, cattails and carpets come from the swamp pass (`wp40/swamp_writer.lua`) |
+| `grug_swamp` | `grug_nodes:mud` / 1, mixed with `grug_nodes:mud_dry`, `grug_nodes:mud_mottled`, `grug_nodes:mud_with_wet_grass` and `grug_nodes:dirt_with_moss` (Round 47) | `grug_nodes:mud` / 2 (3 under a pool) | `grug_nodes:mud` | dry shrub `1/250`; Round 47: swamp tree `1/120` on every swamp ground; tall grass 3–5 `1/9` each and junglegrass `1/20` on wet grass (a quarter on the muds); ferns 1–3 `1/14` each on moss soil; moss carpet `1/16` on the muds. The pools, the waterlilies on them, reeds rooted in their beds and the bank's reeds, cattails and carpets come from the swamp pass (`wp40/swamp_writer.lua`) |
 | `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
-| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
-| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
+| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; withered bush `1/150` (Round 51) |
+| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125`; withered bush `1/150` (Round 51) |
 | `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; bone pile `1/500` |
 | `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; dry shrub `3/200`, shrub band only; bone pile `1/250` |
-| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25` |
-| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
-| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
-| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | none |
+| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25`; the jungle's Round 51 rows (below) |
+| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; Round 51 (all three jungle biomes, on the fertile palette): each fern 1–3 `1/75`, each strong flower `1/300`, large-leaved bush `1/250` (default bush with jungle bush leaves, shrub class) |
+| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20`; the jungle's Round 51 rows |
+| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | each marram 1–3 `1/27` (the sand shores' rows below) |
+
+**Sand shores (Round 51 lane LP).** Dry sand above the water (the coast rule,
+in any biome) hosts two rows of their own, on sand only: papyrus `1/5` as a
+plain stack of 2–4 (a class-3 simple row, no pedestal) on a root beside
+standing water, a wet column (sea, bay, lake or river) within two nodes
+whose surface lies 0–3 below the root's ground, in the warm biomes (the
+three jungles, the savanna and both badlands); and each marram grass 1–3
+`1/27` where no wet column lies within 3, in every biome but the swamp. The
+shore and patch tests are the vegetation rule's (`habitat_registry.lua`
+`water_beside`, `dry_shore`, `rock_patch`), so renewal asks the same.
 
 Every decoration root requires `surface_y >= 1`. Every density above is the
 catalog density; altitude, snow and the forest field scale it per column
