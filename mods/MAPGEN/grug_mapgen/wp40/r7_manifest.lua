@@ -119,6 +119,12 @@ return function(canonical, raw_sha256, settlement_order)
 	-- `aa6e16d73513fa6c...`); the gathering catalog's swamp hosts take the
 	-- swamp moss, which moves the gathering manifest (was
 	-- `2bac7904e80f4687...`).
+	-- Round 51 T4: default:ice joins the production rows (128 -> 129, the
+	-- snowy crags' ice patches), which moves the accepted-content limb (was
+	-- `55003f50fa8905c7...`) and the decoded MTS templates (content refs
+	-- shift; was `ce55b1b08aea44a5...`); the new row and the swamp fern
+	-- rows' host (the swamp moss) move the production semantics (was
+	-- `2f92257ce7b4c5c9...`).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -392,7 +398,7 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"2f92257ce7b4c5c9f781a3a6f4088beca8a0897b51ac703d016ab8dbd7ed857f" or
+				"a4bc88bc8e282d9d987b2259789547f5ea6f8fd06e3221d9c09dba627c1bdbab" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -555,9 +561,9 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"55003f50fa8905c7af1f972e4e93c683f9dd17f2311107e933fb627b94604f22" or
+				"32437bc847b5375990a4a4c99f6c67fc3ccee900dcf6f91955fcd3fc42f84452" or
 			frozen.decoded_templates ~=
-				"ce55b1b08aea44a557ca9eb619810826d50cf7e3faa44fdad4f323c40e049903" or
+				"09a2237629363b70e6fe9057cb8ecd5a98ccdd4494ca0fbce4fe9bfc9dedc1f4" or
 			frozen.wp43_projection ~=
 				"ee08d28c64bdc90ce3e58be7f4c80f8c2381741838b9c075aa75c9fae94f2a80" or
 			frozen.consumer_payload ~=
