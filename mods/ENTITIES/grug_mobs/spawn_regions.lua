@@ -997,8 +997,8 @@ end
 -- (reed_angelfish.lua) stays as it was. Returns the entity, or nil when the
 -- lake is full or the spot does not fit; then the band's kind may spawn.
 SR.LAKE_FISH = "grug_mobs:reed_angelfish"
-SR.LAKE_FISH_CAP = 3
-SR.LAKE_FISH_RADIUS = 24
+SR.LAKE_FISH_CAP = 2
+SR.LAKE_FISH_RADIUS = 32
 function SR.lake_fish(w, depth, players)
 	if (depth or 0) < 2 then
 		return nil

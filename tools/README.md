@@ -1517,5 +1517,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the water attempt (cut out of spawn_regions.lua) and the shark and goby
   rows; `bands.sh OUT_DIR` (one queue slot, the production seed) with
   `grug_probe_r51_bands` counts the water spawns per band at stand-in
-  players over each band and the world rows' attempts.
+  players over each band and the world rows' attempts. Follow-up FM: the
+  fixture adds the steady swimming height (part H, `falling()` cut out of
+  `mobs/api.lua` and simulated with the quarter-second `standing_in`), the
+  frog's swim clip (part I) and the lake fish (part F); `probe.sh` also
+  samples the float height of idle water mobs in a deep pool and chases
+  over a one-node bank; `lakes.sh OUT_DIR` (one queue slot, the production
+  seed) with `grug_probe_r51_lakes` checks every capital's own lakes for
+  columns open to a tortoise or a frog and counts the fish and the spawns
+  at the capitals' lakes and three wild lakes.
 - **Round 51 lane LP** (`r51_lp`): the land plants. `portable_test.lua` (the seed fleet runtime of seed 12345, built as the engine builds it): the plant nodes (drawtype, alpha, no glow, no drops, the picked art byte for byte, decay, the liana pair), every LP row and its hosts and density in the vegetation authority, the plants on written jungle, elf forest, crags and warm-beach chunks (papyrus stacks at the water, marram on dry sand, lichen patches, lianas), their regrowth through renewal, the template lianas, the node roster; `density.lua REPO [SEED] [PER]` counts the plants and the plan and write seconds of the same chunks on any checkout, for before/after comparisons. `capture.sh OUT_DIR` (`XVFB=`) with `grug_probe_r51_lp` the engine look once: sky strips of the plants beside their zones' gathering sources, then the nearest generated jungle, elf forest, crags and warm beach, each counted and shot.

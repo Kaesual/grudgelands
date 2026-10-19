@@ -30,6 +30,10 @@
 --    4 nodes, not the 32-node wander radius); the reach veto refuses players
 --    ashore at acquisition; the Kraken, critters, amphibians and land mobs
 --    are untouched.
+-- E-G (step M2): the recipes' water kinds, the water attempt (since the
+--    Round 51 follow-up FM with the lake fish) and the world rows.
+-- H. (FM) The steady swimming height of mobs/api.lua falling(), simulated.
+-- I. (FM) The frog's swim clip (swimmer.lua install_swim_animation).
 -- Prints "R51 MOBS PORTABLE PASS checks=<n>" or exits 1 listing failures.
 
 local ROOT = arg and arg[1] or "."
@@ -816,9 +820,9 @@ do
 			world.fish = nil
 			return r, fish[1], s
 		end
-		local r1, f1 = lake({"lake", D, 5, nil, 3}, 2)
+		local r1, f1 = lake({"lake", D, 5, nil, 3}, SR.LAKE_FISH_CAP - 1)
 		check(r1 == "spawned_lake_fish" and f1 and f1.name == SR.LAKE_FISH and f1.y == -1,
-			"F a lake 3 deep with 2 fish near: a third two nodes under the surface (" .. tostring(r1) .. ")")
+			"F a lake 3 deep below its fish cap: one more two nodes under the surface (" .. tostring(r1) .. ")")
 		r1, f1 = lake({"lake", D, 5, nil, 2}, 0)
 		check(r1 == "spawned_lake_fish" and f1.y == 0, "F 2 deep: one node under the surface")
 		local r2, f2, k2 = lake({"lake", D, 5, nil, 1}, 0)
@@ -829,7 +833,7 @@ do
 		check(r2 == "player_near" and f2 == nil, "F a player near: no fish, and no kind")
 		r2, f2 = lake({"lake", D, 5, nil, 3}, 0, {protected = true})
 		check(r2 == "spawned_lake_fish" and f2 ~= nil, "F a lake inside a town still gets fish")
-		r2, f2 = lake({"lake", D, 5, nil, 3}, 3, {protected = true})
+		r2, f2 = lake({"lake", D, 5, nil, 3}, SR.LAKE_FISH_CAP, {protected = true})
 		check(r2 == "protected" and f2 == nil, "F ... and never a frog or a tortoise")
 		r2, f2 = lake({"river", D, 8, nil, 3}, 0)
 		check(r2 == "spawned_river" and f2 == nil, "F a river: no fish (river water)")

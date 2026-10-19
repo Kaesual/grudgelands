@@ -892,6 +892,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   above the water; a higher wall stays a wall (the evade keeps its 40-second
   teleport). A mob idle in water (a fight that ended mid-lake, a reset close
   to home) swims toward its home once a second until it stands on land.
+  It swims at one height with its feet half a node under the surface (Round
+  51 follow-up; before, it bobbed out of the water and back about twice a
+  second), at half its land speed as before.
   Leashes, contact timeouts and arena edges are unchanged. Fliers,
   the water swimmers (Kraken, Reed Angelfish, and since Round 51 the
   Stingray family, the sharks and the Tide Goby) and the dragons and their

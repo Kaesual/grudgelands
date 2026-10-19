@@ -339,6 +339,11 @@ path (`spawn_regions.lua` `water_attempt`):
   one of the four directions spawns nothing (T2's small channel patches in a
   belt and the like, and the strip along a zone border in the sea); land
   and the zone's own bay or belt water around it do not count.
+- **Lake fish first** (Round 51 follow-up): a `lake` column at least 2 deep
+  places a Reed Angelfish one or two nodes under the surface while fewer
+  than 2 swim within 32 nodes and no player is near (`SR.lake_fish`; a
+  critter, so no protection, drift, light or density gate); a full lake or
+  a refused spot goes on to the band's kind.
 - Amphibians appear at the surface, pure swimmers one or two nodes under it;
   then the land path's gates (players near, protected surface and claims,
   the drift band for hostiles, light at the surface, density).
@@ -349,7 +354,7 @@ the family's water: the tortoise in `sea_shallows`, the stingray in
 `sea_deep`, the frog (weight 3) with the tortoise (1) in `lake`, the frog in
 `river`; no frog and no stingray in a belt that ends below level 3. All are
 `sparse`. The fixed-level sharks, the Tide Goby, the Kraken and the Reed
-Angelfish keep their own water rows (`biomes_mobs.md` "Round 51 water
+Angelfish (besides the lake fish above) keep their own water rows (`biomes_mobs.md` "Round 51 water
 families").
 
 ## Entry and exit borders (the border rule)
