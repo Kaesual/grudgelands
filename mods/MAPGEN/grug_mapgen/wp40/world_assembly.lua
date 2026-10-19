@@ -56,7 +56,7 @@ return function(wp40_directory, raw_sha256)
 	-- once the layouts are parsed (before any claim or protection query).
 	local capital_protection = dofile(wp40_directory .. "/capital_protection.lua")
 	local simple_map_factory = dofile(wp40_directory .. "/simple_map.lua")(
-		dofile(wp40_directory .. "/zone_field.lua"))
+		dofile(wp40_directory .. "/zone_field.lua"), A.terrain_field)
 	local height_module_factory = dofile(wp40_directory .. "/height.lua")
 	local water_layout_factory = dofile(wp40_directory .. "/water_layout.lua")
 	local water_authored_factory = dofile(wp40_directory .. "/water_authored.lua")

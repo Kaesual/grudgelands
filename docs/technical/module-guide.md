@@ -2167,6 +2167,24 @@ tools](#player-meta-read-by-external-tools).
   `water_class_at`, `territory_rule_at`, `surface_mob_level_at`) and **never**
   the engine biomemap, because the authored surface pass — not climate
   competition — owns logical biome identity.
+  **The water query (Round 51 T2)** is `grug_zones.water_query_at(x, z)` (the
+  zones session, `wp40/zones.lua`; the same function in the mapgen and the
+  main environment). One column, no allocation; it returns six values:
+  `class` (`"lake"`, `"river"`, `"bay"`, `"belt"`, `"channel"` or
+  `"open_sea"`; a swamp pool reads `"lake"`; on dry land it returns `nil`
+  alone), the owning `zone id` (a channel's island's; `nil` for the open
+  sea), the zone's analytic surface `mob level` (`nil` for the open sea),
+  the `distance` to dry land in nodes (for the sea's classes the true coast
+  distance of `simple_map.lua` `coast_distance_at`, the terrain field's
+  16-node chamfer grid read through a spline; for lakes, rivers and pools the
+  nearest dry column, searched up to 16 nodes, so a farther one answers 16),
+  the `depth` (water nodes over the floor) and `protected` (immutable water,
+  sea plan ruling 8: the open sea, and bay, belt and channel water 24 or more
+  nodes off the coast). Outside the world's bounds it answers `"open_sea"`.
+  MOBS's water bands and MAP's water colours read it; the swamp pools are
+  attached by `r6.lua` (`attach_swamp_pools`). The internal water classes
+  (`water_class_at`: `planned_water`, `coastal_shelf` for the belt,
+  `deep_ocean`, `immutable_dragon_channel`) keep their names.
   **R7.6 difficulty seam (2026-09-18):** `simple_map.lua` derives straight
   z-axis progression extents from authored hub rows and the fixed
   Battlegrounds edges, splits each published zone range into three rational
