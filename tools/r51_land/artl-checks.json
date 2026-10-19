@@ -1,0 +1,521 @@
+{
+  "classification": "compatible: art proposals only",
+  "files": {
+    "grounds/swamp_moss_top_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "8f57419cddef422a6c112678c81e6cf1575b9d3eef39108e340df2f42fbd37b3",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 4.125,
+          "inside_mean_rgb_jump": 4.109
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 4.573,
+          "inside_mean_rgb_jump": 3.965
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/swamp_moss_side.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "8015fa162274fcbe9a78c5d16449649decefdd896e07e2eb2188dd30bdf7808b",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 4.542,
+          "inside_mean_rgb_jump": 5.336
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 11.083,
+          "inside_mean_rgb_jump": 6.117
+        }
+      },
+      "period": {
+        "x": 16
+      }
+    },
+    "grounds/silver_litter_top_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "1cfea13c0512cd1b46da105c29cceead69f3724f5c7f6601bbcae61342f875fe",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 6.396,
+          "inside_mean_rgb_jump": 6.55
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 7.073,
+          "inside_mean_rgb_jump": 6.623
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/blight_dirt_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "0b07ac9fcafe98bc13449c8ea3765d1218a0457a431154478d92ebd23097a2ac",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 4.604,
+          "inside_mean_rgb_jump": 5.422
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 5.365,
+          "inside_mean_rgb_jump": 5.235
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/bone_litter_top_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "75697b8bbcc946a660d8d67ff08f60cb8d2ec94b0b2c66bc7eb415ade091f5f4",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 3.875,
+          "inside_mean_rgb_jump": 7.47
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 5.698,
+          "inside_mean_rgb_jump": 7.09
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/mesa_clay_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "11d2d7099ae68fbf09b59af23c5ab3a44aceebfe911c41847d8ac6d171e50ae2",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 5.167,
+          "inside_mean_rgb_jump": 5.535
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 6.396,
+          "inside_mean_rgb_jump": 5.236
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/canopy_litter_top_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "9199363435dc114cd1d4e957ed0dee38d6c72ec3e8d239fb28caa319e8aaa86f",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 4.646,
+          "inside_mean_rgb_jump": 4.388
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 4.25,
+          "inside_mean_rgb_jump": 4.438
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/clay_band_ochre_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "59b185c1eb65e4da1c86463a34e9bf9e9871fc986ddfd5303e2dcc489e363550",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 6.104,
+          "inside_mean_rgb_jump": 5.747
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 6.906,
+          "inside_mean_rgb_jump": 5.498
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/clay_band_sienna_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "d168d7fef88e48f5f6b9fc532876cdcf5da5bd826688a779f9ed7ca031e0a1a2",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 5.021,
+          "inside_mean_rgb_jump": 5.837
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 6.25,
+          "inside_mean_rgb_jump": 5.149
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/clay_band_chalk_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "7fd8db3b4df2346759a2a6c9ec7b75a9529fcb923b4c187e1f412d80602b22e6",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 6.552,
+          "inside_mean_rgb_jump": 5.863
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 4.792,
+          "inside_mean_rgb_jump": 5.948
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/clay_band_umber_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "169a88778d969d21c7ed6d0ace156b4d7a78a7b0fc3d1cf2339d5f4071c1a97a",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 3.771,
+          "inside_mean_rgb_jump": 6.232
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 6.062,
+          "inside_mean_rgb_jump": 5.868
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "grounds/sand_32.png": {
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        255
+      ],
+      "sha256": "80db778b053dee3db822ff3b44ebbeed98eba16ff50f96b58f2d96bc2bbe70bb",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 5.5,
+          "inside_mean_rgb_jump": 5.381
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 3.531,
+          "inside_mean_rgb_jump": 5.397
+        }
+      },
+      "period": {
+        "x": 32,
+        "y": 32
+      }
+    },
+    "plants/liana_strand.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "ae8383807d4921f91bc6bfd80aa326a5990a71579b96de5fe1e618de3891dc89"
+    },
+    "plants/liana_end.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "cdcda95b39d518e8f1edbac8a9c20ba368e2f64b26bf3d5cbb349c10b4a9b97b"
+    },
+    "plants/flower_ruby_fan.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "8d67dbc3f1b85dea67b4a831b645d85a534d235d57c520af622b85166be893cc"
+    },
+    "plants/flower_ember_star.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "c8888cf6e0f31862b1ac6a76d917721baef475ff24b9b2df78bbff526dc876ec"
+    },
+    "plants/flower_violet_fan.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "9456b6afd5c43f2c52198203857ac503d4403afa9474f90e2dc9dce0fd5e78b6"
+    },
+    "plants/flower_blush_star.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "c74fae16abe2b0cacb72b832386c4592f75da66f651b7d84b5ebb08b9f9fa594"
+    },
+    "plants/flower_lilac_bells.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "6946d545d86f2d57764f8ef4a450347de83129a5d3eed719b4c74744909b34e5"
+    },
+    "plants/flower_cream_cups.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "fd57c2bdc573aeb724d999bc4c9361c2b9185550b89709b663bedf839aae4aef"
+    },
+    "plants/withered_bush_leaves.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "47d68adf22153472adc6e40d384dc3e044bd2ce3413df7d54d48fb26fbc36b73",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 51.729,
+          "inside_mean_rgb_jump": 39.888
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 37.521,
+          "inside_mean_rgb_jump": 43.251
+        }
+      },
+      "period": {
+        "x": 16,
+        "y": 16
+      }
+    },
+    "plants/jungle_bush_leaves.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "9b32cd47b235c4b34d304a04e3ead3f1f92e226a25d09511c2c9b617897981f8",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 32.125,
+          "inside_mean_rgb_jump": 23.222
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 14.021,
+          "inside_mean_rgb_jump": 24.049
+        }
+      },
+      "period": {
+        "x": 16,
+        "y": 16
+      }
+    },
+    "plants/lichen_carpet_top.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "ff3feebb1e9c6e14183689f432af53335e7d3cd1730dba8ea222ad75ea3bddd5",
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 47.854,
+          "inside_mean_rgb_jump": 25.163
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 9.458,
+          "inside_mean_rgb_jump": 28.992
+        }
+      },
+      "period": {
+        "x": 16,
+        "y": 16
+      }
+    },
+    "plants/alpine_cushion.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "a59e4b6a6793227bf3fdd3b9a496721ede5ba95550fd241205f483784e2305fe"
+    },
+    "plants/alpine_windshrub.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "0edf250898d36499a94f9921bb560cb67b57d77d4d3612c05ec918d26cafe928"
+    },
+    "preview-grounds.png": {
+      "size": [
+        1600,
+        5494
+      ],
+      "mode": "RGBA",
+      "sha256": "4e7f0e47f28299c10de550fb4cdb5c0354b334da4775144fd8e635139e5228e9"
+    },
+    "preview-plants.png": {
+      "size": [
+        1600,
+        3610
+      ],
+      "mode": "RGBA",
+      "sha256": "24e3795f11efcd60f3a6f2c24bbe40d996cacbe5afcdd6441b3015fb7014bc2d"
+    }
+  },
+  "liana_join": "strand top = strand bottom = end top; end tapers to alpha 0",
+  "seam_method": "Toroidal fields and wrapped stamps; wrap jumps reported for visual audit. Side y is directional. Plantlike silhouettes do not tile.",
+  "preview_note": "Nearest-neighbour orthographic texture studies, not engine screenshots. Crop visual_scale 1.15 is rounded to whole preview pixels. Water context is a flat colour overlay; final appearance belongs to VIEW."
+}
