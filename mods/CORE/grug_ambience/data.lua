@@ -49,55 +49,137 @@ D.call_gap = {90, 240}
 D.crossfade = 3
 D.volume_fade = 0.5
 
+-- Round 52 (round52-ambience-plan.md §1-§2): the region bed follows the
+-- BIOME under the player, bundled into sound groups, instead of the race
+-- zone; three loops play at once (surface, cave, wind) at levels that follow
+-- the height relative to the terrain (D.layers). Zone overrides by
+-- atmosphere mood come before the biome.
+
+-- Biome id (grug_zones.biome_at, the full `grug_` id of
+-- wp40/r7_r6_manifest.lua SURFACE_ROWS) -> sound group. Moving between two
+-- biomes of one group changes nothing.
+D.groups = {
+	grug_meadows = "temperate", grug_deep_forest = "temperate",
+	grug_elf_forest = "temperate", grug_pine_hills = "temperate",
+	grug_savanna = "savanna",
+	grug_deep_jungle = "jungle", grug_jungle_fringe = "jungle", grug_jungle_edge = "jungle",
+	grug_badlands = "badlands", grug_badlands_east = "badlands",
+	grug_swamp = "swamp",
+	grug_crags = "crags",
+	grug_crags_snowy = "crags_snowy",
+	grug_blight = "blight", grug_bone_forest = "blight",
+	grug_beach = "beach",
+}
+
+-- Atmosphere moods that override the biome group: the Battlegrounds, the
+-- dragon islands (with their channels) and the open ocean. An ownerless
+-- column (no biome: the deep ocean) is the ocean as well, also with the
+-- atmosphere layer off.
+D.overrides = {battlegrounds = true, dragon_island = true, ocean = true}
+
 -- Beds: key -> sound names; one is picked at random each time the bed
--- starts and loops until the state changes. Keys rules.lua knows besides
--- the region rows: underwater, underground, underground_deep, sea, stream
--- (no stream and no underwater bed ships: those states fall back to the
--- region bed resp. stay silent; flowing water has its own loop below).
+-- starts and loops until the state changes. Besides the D.region rows:
+-- sea and stream (water near the player; no stream bed ships, so river and
+-- lake water keeps the region bed), the wind layer, the cave layer and its
+-- deep variant. A bed whose files are not shipped yet stays silent (the new
+-- files of §2 come with the user's approval of their cuts; a list left
+-- empty here is filled then).
 D.beds = {
-	human = {"grug_ambience_human_meadow"}, -- S2 B1.1
-	elf = {"grug_ambience_elf_blackbirds", "grug_ambience_elf_forest"}, -- S2 B2.1, B2.3
-	troll = {"grug_ambience_elf_birdsong", "grug_ambience_troll_jungle"}, -- S2 B2.2, B3.1
-	orc = {"grug_ambience_orc_steppe"}, -- S2 B4.4
-	dwarf = {"grug_ambience_orc_wind", "grug_ambience_dwarf_storm"}, -- S2 B4.2, B5.2
-	undead = {"grug_ambience_undead_graveyard", "grug_ambience_undead_lake"}, -- S2 B6.1, B6.3
-	battlegrounds = {"grug_ambience_battlegrounds_gusts"}, -- S2 B7.2
+	temperate = {"grug_ambience_human_meadow", "grug_ambience_elf_forest"}, -- S2 B1.1, B2.3
+	temperate_night = {"grug_ambience_night_forest", "grug_ambience_night_crickets"}, -- S2 B9.1, B9.2
+	savanna = {"grug_ambience_orc_steppe"}, -- S2 B4.4
+	savanna_night = {"grug_ambience_night_crickets"}, -- S2 B9.2
+	jungle = {"grug_ambience_troll_jungle", "grug_ambience_elf_birdsong"}, -- S2 B3.1, B2.2
+	jungle_night = {},
+	badlands = {},
+	badlands_night = {},
+	swamp = {},
+	swamp_night = {},
+	crags = {},
+	crags_snowy = {},
+	blight = {"grug_ambience_undead_lake"}, -- S2 B6.3
+	beach = {"grug_ambience_sea_waves"}, -- S2 B11.1
+	-- Ruling 2: the Battlegrounds get a bed of their own (§2 n_164272).
+	battlegrounds = {},
 	dragon_island = {"grug_ambience_dragon_island_coast"}, -- S2 B8.2
 	-- S2 B11.1: the open ocean, and sea water near the player anywhere.
 	ocean = {"grug_ambience_sea_waves"},
 	sea = {"grug_ambience_sea_waves"},
-	night = {"grug_ambience_night_forest", "grug_ambience_night_crickets"}, -- S2 B9.1, B9.2
-	underground = {"grug_ambience_underground_dungeon", "grug_ambience_underground_dark",
-		"grug_ambience_underground_creepy"}, -- S2 B10.1, B10.3, B10.4
-	underground_deep = {"grug_ambience_underground_crystal"}, -- S2 B10.5, below deep_y only
+	-- The layers (ruling 2: the Battlegrounds' gusts are the wind at height).
+	wind = {"grug_ambience_battlegrounds_gusts"}, -- S2 B7.2
+	cave = {"grug_ambience_underground_dungeon"}, -- S2 B10.1
+	cave_deep = {"grug_ambience_underground_crystal"}, -- S2 B10.5, below deep_y only
 }
 
--- Region beds by atmosphere mood: the day bed and, optionally, the night
--- bed (crickets for the humans, elves, trolls and orcs; the other regions
--- keep their own bed at night). A mood without a row has no bed.
+-- The surface bed by sound key (a group or an override): the day bed and,
+-- optionally, the night bed. A night bed without a shipped file falls back
+-- to the day bed; `night = false` is silence at night (the crags, §6.2). A
+-- key without a row has no bed.
 D.region = {
-	human = {day = "human", night = "night"},
-	elf = {day = "elf", night = "night"},
-	troll = {day = "troll", night = "night"},
-	orc = {day = "orc", night = "night"},
-	dwarf = {day = "dwarf"},
-	undead = {day = "undead"},
+	temperate = {day = "temperate", night = "temperate_night"},
+	savanna = {day = "savanna", night = "savanna_night"},
+	jungle = {day = "jungle", night = "jungle_night"},
+	badlands = {day = "badlands", night = "badlands_night"},
+	swamp = {day = "swamp", night = "swamp_night"},
+	crags = {day = "crags", night = false},
+	crags_snowy = {day = "crags_snowy"},
+	blight = {day = "blight"},
+	beach = {day = "beach"},
 	battlegrounds = {day = "battlegrounds"},
 	dragon_island = {day = "dragon_island"},
 	ocean = {day = "ocean"},
 }
 
--- Below this y the underground bed is the deep one (the Silversteel tier,
+-- The layers' levels (ruling 7, linear throughout), as shares of the bed
+-- level (D.gains.bed times the player's volume, halved in towns), by the
+-- height above the surface reference (grug_core.depth_below_surface: the
+-- terrain, or the water surface over water):
+--   surface  100 % from -0 up to +up_full, 0 % at -down and at +up_zero;
+--   wind     0 % at +from, `level` at +full and above;
+--   peak     the wind on high ground, only within max_depth of the surface
+--            or above it: 0 at the absolute y, `level` at y + ramp (§6.4:
+--            capped at 25 %, starting about 15 nodes below typical peak
+--            tops); the wind layer plays the higher of the two;
+--   cave     only while the cave probe says "cave": 0 at depth `from`,
+--            `level` at depth `full` and below.
+D.layers = {
+	surface = {down = 15, up_full = 10, up_zero = 60},
+	wind = {from = 30, full = 100, level = 0.5},
+	peak = {y = 190, ramp = 15, level = 0.25, max_depth = 4},
+	cave = {from = 4, full = 16, level = 0.4},
+}
+
+-- Seconds over which a layer follows its level (one pass).
+D.layer_fade = 2
+
+-- The cave probe (§3.2 step 6): open air (a node that is not walkable and
+-- no liquid) sampled on a sparse grid round the player's feet: every
+-- `grid_xz` offset on x and z, every `grid_y` offset above the feet. An
+-- unloaded node counts as solid. A share of open nodes at or above
+-- `threshold` is a real cave; a dug tunnel stays below it. The probe runs
+-- only deeper than `min_depth`.
+D.cave = {
+	grid_xz = {-4, -2, 0, 2, 4},
+	grid_y = {-1, 1, 3},
+	threshold = 0.25,
+	min_depth = 4,
+}
+
+-- Below this y the cave layer plays the deep bed (the Silversteel tier,
 -- world.md mining depths).
 D.deep_y = -500
 
 -- Calls: one-shots placed at a random point `distance` nodes from the
 -- player (positional, to that player only), `time` "day", "night" or
--- "any". Thunder has four variants (.1-.4, picked by the engine; R34
--- C11.1-C11.4).
+-- "any", where the player's sound key (a group or a zone override) is in
+-- `keys` or the biome under the player in `biomes`; a call with `surface`
+-- plays only while the surface layer is at least that share. Thunder has
+-- four variants (.1-.4, picked by the engine; R34 C11.1-C11.4). The animal
+-- calls of §3.2 step 8 (crows, hawks, owls, wolves; 24-40 nodes away, only
+-- while the surface layer is at 50 % or more) come with their files.
 D.calls = {
 	thunder = {sound = "grug_ambience_call_thunder", time = "any",
-		moods = {dragon_island = true}, distance = {40, 56}},
+		keys = {dragon_island = true}, distance = {40, 56}},
 }
 
 -- Loops at nodes near the player (positional, to that player only): node

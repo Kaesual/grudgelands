@@ -1,17 +1,21 @@
 -- Ambience and music per player (Round 34 lane S2; round34-plan.md §2.1
 -- rulings 3-6, §4.2). Why: the game was silent outside a few node sounds.
 --
---   * a quiet looped bed per state, to the player only: the region by the
---     atmosphere mood the player already carries (grug_core.get_atmosphere),
---     a night bed after dusk where crickets fit, sea and stream water near
---     the player, under water, the underground and its deep band; in start
---     towns and capitals the bed plays at half gain. A change crossfades
---     (core.sound_fade). Where music plays the bed is silent (Round 35);
---   * sparse calls by mood and time of day, a per-player timer, placed at a
---     point around the player (Round 34: distant thunder on the dragon
---     islands only);
+--   * quiet looped beds to the player only, in three layers since Round 52
+--     (round52-ambience-plan.md): the SURFACE bed by the sound group of the
+--     biome under the player (or a zone override by the atmosphere mood the
+--     player carries: the Battlegrounds, the dragon islands, the open
+--     ocean), a night bed after dusk where one fits, sea water near the
+--     player; the CAVE bed in real caves (a sampled open-air probe tells a
+--     cave from a dug tunnel) and its deep variant; the WIND at height and
+--     on high peaks. Their levels follow the height relative to the terrain
+--     (grug_core.depth_below_surface); in start towns and capitals every
+--     layer plays at half gain. A bed change crossfades (core.sound_fade).
+--     Under water and where music plays (Round 35) every layer is silent;
+--   * sparse calls by sound key and time of day, a per-player timer, placed
+--     at a point around the player (distant thunder on the dragon islands);
 --   * loops at hearths and camp fires and flowing water (never at a water
---     source) near the player: one find_nodes_in_area per pass above ground,
+--     source) near the player: one find_nodes_in_area per pass out of water,
 --     the nearest two of each kind, positional, to that player only (Round
 --     45 PT8: none at forges and anvils). Round 47: both burning furnaces
 --     are their own, quieter kind, and a dug or destroyed one stops at once
@@ -32,19 +36,25 @@
 --   * music and ambience on/off and volume per player in player meta, applied
 --     at once; the Help page's Sound sub-page and /music, /ambience.
 --
--- Round 34 (round34-plan.md §2.2a): a bed per zone, no stream and no
--- underwater bed; data.lua holds every name, so another bed is data only.
+-- Round 34 (round34-plan.md §2.2a): no stream and no underwater bed;
+-- data.lua holds every name, so another bed is data only.
 --
 -- Cost: one pass per player every 2 s, spread over eight slots of 0.25 s
--- (AGENTS.md Round 32): a mood and town lookup, one get_node_raw read for
--- under water (33 when sea or stream beds exist), one find_nodes_in_area
--- above ground, a few sound packets when something changes. grug_ambience.stats holds comparison figures for the
--- report (tools/r34_s2 probe).
+-- (AGENTS.md Round 32): a mood and town lookup, the depth below the surface
+-- (from the player's column memo in grug_core, a zone query only on a new
+-- node column), one get_node_raw read for under water (33 while a sea or
+-- stream bed exists), 75 more for the cave probe only deeper than 4 nodes
+-- and only after a move of 2 nodes or every third pass, one
+-- find_nodes_in_area out of water, a few sound packets when something
+-- changes. grug_ambience.stats and grug_core.depth_stats hold comparison
+-- figures for the reports (tools/r52_amb probe). `/ambience debug` shows a
+-- player their own state in one HUD line.
 --
 -- A /atmosphere preset (atmosphere.lua, admin A/B test) pauses the zone
--- driver: a forced mood drives the bed like the zone would (so each mood's
--- bed can be checked in place); a preset that is no mood (default, off,
--- godrays, hearthpine) keeps the bed the player had.
+-- driver: a forced Battlegrounds, dragon-island or ocean mood overrides the
+-- biome group like the zone would; any other preset leaves the biome group
+-- in charge (since Round 52 a forced `underground` no longer drives the
+-- beds: the depth does; /ambience debug shows it).
 --
 -- Pure rules: rules.lua; names, gains and rotations: data.lua.
 
@@ -91,8 +101,9 @@ grug_ambience.available, grug_ambience.rotations = available, rotations
 -- Comparison figures: passes, their summed microseconds, the node searches,
 -- their microseconds and the positions they returned, sounds started,
 -- pushes.
+-- Round 52: the cave probes and their microseconds.
 local stats = {passes = 0, us = 0, finds = 0, find_us = 0, found = 0, plays = 0,
-	pushes = 0}
+	pushes = 0, probes = 0, probe_us = 0}
 grug_ambience.stats = stats
 
 local function now_seconds()
@@ -104,10 +115,14 @@ end
 -- ---------------------------------------------------------------------------
 
 -- name -> {slot, music_on, music_volume, ambience_on, ambience_volume,
--- bed = {key, handle, gain, want, seen, underwater, music}, emitters =
--- {[hash] = {handle, gain, kind}}, next_call, music = rules music state,
--- track_handle, track_gain, shown_track (the track the minimap's box names)}
+-- layers = {surface, cave, wind} (each a rules layer state plus handle and
+-- gain; the surface one also {want, seen, underwater, music}), sound_key
+-- (the group or override last known), cave = {cave, want, seen, share, px,
+-- py, pz, age}, emitters = {[hash] = {handle, gain, kind}}, next_call, music
+-- = rules music state, track_handle, track_gain, shown_track (the track the
+-- minimap's box names), debug = {id, text} while /ambience debug is on}
 local states = {}
+local LAYERS = {"surface", "cave", "wind"}
 
 local META = {
 	music_off = "grug_ambience:music_off",
@@ -138,23 +153,39 @@ end
 -- Beds, calls and emitters
 -- ---------------------------------------------------------------------------
 
-local function stop_bed(st)
-	local bed = st.bed
-	if bed.handle then fade(bed.handle, bed.gain, 0, D.crossfade) end
-	bed.handle, bed.key, bed.gain, bed.want, bed.seen = nil, nil, 0, nil, 0
-	bed.underwater, bed.music = nil, nil
+-- The layers' sounds. A layer keeps its handle and the gain last sent
+-- (fade() computes the step from it); rules.lua layer_step decides.
+local function new_layer()
+	return {playing = false, level = 0, base = 0, idle = 0, seen = 0, gain = 0}
 end
 
--- Crossfades to bed `key` (false: silence).
-local function switch_bed(name, st, key, gain)
-	local bed = st.bed
-	if bed.handle then fade(bed.handle, bed.gain, 0, D.crossfade) end
-	bed.handle, bed.key, bed.gain = nil, key, gain
-	if key then
-		local sound = R.bed_sound(D, key, available, random)
-		bed.handle = core.sound_play({name = sound, gain = gain},
+local function apply_layer(name, layer, action)
+	if not action then return end
+	local gain = layer.level * layer.base
+	if action == "fade" then
+		fade(layer.handle, layer.gain, gain, D.layer_fade)
+		layer.gain = gain
+		return
+	end
+	-- A sound faded to 0 is deleted by the engine: its handle is dropped.
+	if layer.handle then fade(layer.handle, layer.gain, 0, D.crossfade) end
+	layer.handle, layer.gain = nil, 0
+	if action == "start" or action == "switch" then
+		local sound = R.bed_sound(D, layer.key, available, random)
+		layer.handle = core.sound_play({name = sound, gain = gain},
 			{to_player = name, loop = true, fade = gain / D.crossfade}, false)
+		layer.gain = gain
 		stats.plays = stats.plays + 1
+	end
+end
+
+-- Silences every layer at once (ambience switched off); the next pass with
+-- ambience on starts the beds afresh.
+local function stop_layers(st)
+	for _, id in ipairs(LAYERS) do
+		local layer = st.layers[id]
+		if layer.handle then fade(layer.handle, layer.gain, 0, D.crossfade) end
+		st.layers[id] = new_layer()
 	end
 end
 
@@ -340,6 +371,96 @@ local function probe_water(pos)
 end
 
 -- ---------------------------------------------------------------------------
+-- Cave probe (Round 52 ruling 6, round52-ambience-plan.md §3.2 step 6)
+-- ---------------------------------------------------------------------------
+
+-- Content id -> true for open air: a node a player walks through that is no
+-- liquid (air, plants, torches ...), filled once every node is registered.
+-- `ignore` (an unloaded node) is solid.
+local open_air = {}
+core.register_on_mods_loaded(function()
+	for node, def in pairs(core.registered_nodes) do
+		if node ~= "ignore" and def.walkable == false and
+				(def.liquidtype or "none") == "none" then
+			open_air[core.get_content_id(node)] = true
+		end
+	end
+end)
+
+local GRID_XZ, GRID_Y = D.cave.grid_xz, D.cave.grid_y
+local GRID_COUNT = #GRID_XZ * #GRID_XZ * #GRID_Y
+
+-- The share of open air on the probe's grid round the player's feet: a few
+-- dozen get_node_raw reads, no allocation. A real cave is wide and high
+-- open space; a dug tunnel holds only a line or two of the grid.
+local function cave_share(pos)
+	local x0, y0, z0 = floor(pos.x + 0.5), floor(pos.y + 0.5), floor(pos.z + 0.5)
+	local open = 0
+	for iy = 1, #GRID_Y do
+		local y = y0 + GRID_Y[iy]
+		for ix = 1, #GRID_XZ do
+			local x = x0 + GRID_XZ[ix]
+			for iz = 1, #GRID_XZ do
+				if open_air[get_node_raw(x, y, z0 + GRID_XZ[iz])] then open = open + 1 end
+			end
+		end
+	end
+	return open / GRID_COUNT
+end
+grug_ambience.cave_share = cave_share
+
+-- This pass's cave verdict (the probe only deeper than D.cave.min_depth,
+-- its share reused while the player stays near the last probe; nearer the
+-- surface the verdict resets, and the cave layer is silent there anyway).
+local function cave_pass(st, pos, depth)
+	local c = st.cave
+	if not depth or depth <= D.cave.min_depth then
+		c.cave, c.want, c.seen, c.share, c.px = false, nil, 0, nil, nil
+		return false
+	end
+	if R.probe_due(c, pos) then
+		local started = core.get_us_time()
+		c.share = cave_share(pos)
+		stats.probes = stats.probes + 1
+		stats.probe_us = stats.probe_us + (core.get_us_time() - started)
+	end
+	return R.cave_step(c, c.share, D.cave.threshold)
+end
+
+-- ---------------------------------------------------------------------------
+-- Debug line (/ambience debug, §3.2 step 9)
+-- ---------------------------------------------------------------------------
+
+-- One small HUD text line, top left, for the player who switched it on: the
+-- biome, the sound group, the depth, the cave share and verdict and the
+-- three layers' levels. Sent only when the shown text changed.
+local function show_debug(player, st, biome, depth, levels)
+	local c = st.cave
+	local text = ("ambience: %s / %s | depth %s | cave %s %s | surface %d%% cave %d%% wind %d%%"):format(
+		biome and biome:gsub("^grug_", "") or "-", tostring(st.sound_key or "-"),
+		depth and ("%.1f"):format(depth) or "-",
+		c.share and ("%d%%"):format(floor(c.share * 100 + 0.5)) or "-",
+		c.cave and "cave" or "no", floor(levels[1] * 100 + 0.5),
+		floor(levels[2] * 100 + 0.5), floor(levels[3] * 100 + 0.5))
+	if text ~= st.debug.text then
+		st.debug.text = text
+		player:hud_change(st.debug.id, "text", text)
+	end
+end
+
+local function set_debug(player, st, on)
+	if on and not st.debug then
+		st.debug = {text = "ambience: (next pass)"}
+		st.debug.id = player:hud_add({type = "text", position = {x = 0, y = 0.3},
+			offset = {x = 8, y = 0}, alignment = {x = 1, y = 1}, number = 0xFFFFFF,
+			style = 4, text = st.debug.text, z_index = 100})
+	elseif not on and st.debug then
+		player:hud_remove(st.debug.id)
+		st.debug = nil
+	end
+end
+
+-- ---------------------------------------------------------------------------
 -- Music
 -- ---------------------------------------------------------------------------
 
@@ -420,7 +541,11 @@ end
 -- The per-player pass
 -- ---------------------------------------------------------------------------
 
-local scratch = {}
+local scratch, call_state, levels = {}, {}, {}
+
+-- The cave and wind layers' beds: the deep cave bed below D.deep_y (else
+-- the cave bed), the wind; false when none ships.
+local CAVE_KEYS, DEEP_CAVE_KEYS, WIND_KEYS = {"cave"}, {"cave_deep", "cave"}, {"wind"}
 
 local function evaluate(name, st, now, night)
 	local player = core.get_player_by_name(name)
@@ -432,27 +557,55 @@ local function evaluate(name, st, now, night)
 	local town = location.in_town(name)
 	music_pass(name, st, now)
 	if ambience_audible(st) then
-		local water, underwater = probe_water(pos)
-		scratch.mood, scratch.night, scratch.water = mood, night, water
-		scratch.underwater, scratch.deep = underwater, pos.y < D.deep_y
-		local music = R.music_active(st.music)
-		local wanted = R.bed_wanted(R.pick_bed(D, R.bed_keys(D, scratch), available), music)
-		local gain = R.bed_gain(D, st.ambience_volume, town)
-		if wanted ~= nil and R.bed_should_change(st.bed, wanted, underwater, music) then
-			switch_bed(name, st, wanted, gain)
-		elseif st.bed.handle and gain ~= st.bed.gain then
-			fade(st.bed.handle, st.bed.gain, gain, D.crossfade)
-			st.bed.gain = gain
+		local depth, column
+		if grug_core.depth_below_surface then
+			depth, column = grug_core.depth_below_surface(pos, name)
 		end
+		local biome = column and column.biome
+		local key = R.sound_key(D, mood, column ~= nil, biome)
+		if key ~= nil then st.sound_key = key end
+		local water, underwater = probe_water(pos)
+		local music = R.music_active(st.music)
+		local cave = cave_pass(st, pos, depth)
+		local surface_level, wind_level, cave_level = R.layer_levels(D, depth, pos.y, cave)
+		local base = R.bed_gain(D, st.ambience_volume, town)
+		-- The surface bed: the sound key's bed, the sea, silence under water;
+		-- the beds' hysteresis; music and diving switch at once.
+		scratch.key, scratch.night, scratch.water = st.sound_key, night, water
+		scratch.underwater = underwater
+		local layers = st.layers
+		local surface = layers.surface
+		local wanted = R.bed_wanted(R.pick_bed(D, R.bed_keys(D, scratch), available), music)
+		local surface_key = surface.key
+		if wanted ~= nil and R.bed_should_change(surface, wanted, underwater, music) then
+			surface_key = wanted
+		end
+		apply_layer(name, surface, R.layer_step(surface, surface_key, surface_level, base))
+		-- The cave and the wind: silent under water and where music plays.
+		local quiet = underwater or music
+		local cave_key = not quiet and R.pick_bed(D, pos.y < D.deep_y and DEEP_CAVE_KEYS or CAVE_KEYS,
+			available)
+		apply_layer(name, layers.cave, R.layer_step(layers.cave, cave_key, cave_level, base))
+		local wind_key = not quiet and R.pick_bed(D, WIND_KEYS, available)
+		apply_layer(name, layers.wind, R.layer_step(layers.wind, wind_key, wind_level, base))
 		if now >= st.next_call then
 			st.next_call = now + R.next_call_delay(D, random)
-			local calls = R.eligible_calls(D, scratch, available)
+			call_state.key, call_state.biome, call_state.night = st.sound_key, biome, night
+			call_state.underwater, call_state.underground = underwater, mood == "underground"
+			call_state.surface = surface_level
+			local calls = R.eligible_calls(D, call_state, available)
 			if #calls > 0 then play_call(name, st, pos, calls[random(1, #calls)]) end
 		end
-		if underwater or mood == "underground" then
+		-- Since Round 52 the loops play underground as well (a burning
+		-- furnace in a mine is heard); only under water they stop.
+		if underwater then
 			stop_emitters(st)
 		else
 			update_emitters(name, st, pos)
+		end
+		if st.debug then
+			levels[1], levels[2], levels[3] = surface_level, wind_level, cave_level
+			show_debug(player, st, biome, depth, levels)
 		end
 	end
 	stats.passes = stats.passes + 1
@@ -486,7 +639,8 @@ core.register_on_joinplayer(function(player)
 	local now = now_seconds()
 	join_counter = join_counter + 1
 	local st = {slot = join_counter % R.SLOTS + 1,
-		bed = {gain = 0, seen = 0}, emitters = {},
+		layers = {surface = new_layer(), cave = new_layer(), wind = new_layer()},
+		cave = {seen = 0, age = 0}, emitters = {},
 		next_call = now + R.next_call_delay(D, random)}
 	read_settings(player, st)
 	st.music = R.music_new(music_audible(st))
@@ -538,20 +692,24 @@ function grug_ambience.set(player, channel, on, volume)
 			st.track_gain = gain
 		end
 	elseif not audible then
-		stop_bed(st)
+		stop_layers(st)
 		stop_emitters(st)
 	else
-		-- Gains follow on the next pass (bed) or here (loops); a channel that
-		-- was silent starts its bed on the next pass.
+		-- Gains follow here; a channel that was silent starts its beds on
+		-- the next pass.
 		for _, emitter in pairs(st.emitters) do
 			local gain = emitter_gain(st, emitter.kind)
 			fade(emitter.handle, emitter.gain, gain, D.volume_fade)
 			emitter.gain = gain
 		end
-		if st.bed.handle then
-			local gain = R.bed_gain(D, st.ambience_volume, location.in_town(name))
-			fade(st.bed.handle, st.bed.gain, gain, D.volume_fade)
-			st.bed.gain = gain
+		local base = R.bed_gain(D, st.ambience_volume, location.in_town(name))
+		for _, id in ipairs(LAYERS) do
+			local layer = st.layers[id]
+			if layer.handle then
+				local gain = layer.level * base
+				fade(layer.handle, layer.gain, gain, D.volume_fade)
+				layer.base, layer.gain = base, gain
+			end
 		end
 	end
 	return true
@@ -572,19 +730,29 @@ end
 local COMMAND_HELP = {
 	music = "Music (it plays in the six capitals): switch on or off, or set the " ..
 		"volume in percent (default " .. R.DEFAULT_VOLUME.music .. ")",
-	ambience = "Ambience: switch on or off, or set the volume in percent",
+	ambience = "Ambience: switch on or off, set the volume in percent, or " ..
+		"toggle a debug line (biome, depth, cave, layer levels)",
 }
+local COMMAND_PARAMS = {music = "[on|off|<0-100>]", ambience = "[on|off|<0-100>|debug]"}
 
 for _, channel in ipairs({"music", "ambience"}) do
 	local label = channel == "music" and "Music" or "Ambience"
 	core.register_chatcommand(channel, {
-		params = "[on|off|<0-100>]",
+		params = COMMAND_PARAMS[channel],
 		description = COMMAND_HELP[channel],
 		func = function(name, param)
 			local player = core.get_player_by_name(name)
 			if not player then return false, "Only an online player can change this." end
 			local command = R.parse_command(param)
-			if not command then return false, "Use /" .. channel .. " on, off or 0-100." end
+			if command and command.debug and channel == "ambience" then
+				local st = states[name]
+				if not st then return false, "Only an online player can change this." end
+				set_debug(player, st, not st.debug)
+				return true, "Ambience debug line " .. (st.debug and "on." or "off.")
+			end
+			if not command or command.debug then
+				return false, "Use /" .. channel .. " on, off or 0-100."
+			end
 			if command.on ~= nil or command.volume ~= nil then
 				grug_ambience.set(player, channel, command.on, command.volume)
 			end

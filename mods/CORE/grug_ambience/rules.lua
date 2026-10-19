@@ -1,6 +1,8 @@
 -- Ambience and music rules (Round 34 lane S2; round34-plan.md §2.1 rulings
 -- 3-6, §4.2; Round 35 lane M, round35-plan.md §2.8: music only in the
--- capitals, either music or the bed). PURE Lua: it calls nothing from `core`, so the portable fixture
+-- capitals, either music or the bed; Round 52, round52-ambience-plan.md:
+-- beds by biome group, three layers by the height relative to the terrain,
+-- the cave verdict). PURE Lua: it calls nothing from `core`, so the portable fixture
 -- (tools/r34_s2/portable_test.lua) loads the real file. init.lua is the
 -- runtime around it: the per-player slots, the water and node probes, the
 -- sound calls, the music push and the settings.
@@ -32,14 +34,17 @@ function R.clamp_volume(value)
 	return value
 end
 
--- `/music` and `/ambience`: "" (status), "on", "off" or a volume. Returns
--- {on = bool} or {on = true, volume = n} (a volume above 0 also switches the
--- channel on, 0 switches it off), {} for the status, or nil for a bad word.
+-- `/music` and `/ambience`: "" (status), "on", "off", a volume or "debug"
+-- (Round 52: the ambience's debug line; the music command refuses it).
+-- Returns {on = bool} or {on = true, volume = n} (a volume above 0 also
+-- switches the channel on, 0 switches it off), {debug = true}, {} for the
+-- status, or nil for a bad word.
 function R.parse_command(param)
 	param = (param or ""):match("^%s*(.-)%s*%%?%s*$"):lower()
 	if param == "" then return {} end
 	if param == "on" then return {on = true} end
 	if param == "off" then return {on = false} end
+	if param == "debug" then return {debug = true} end
 	local volume = param:match("^%d+$") and R.clamp_volume(param)
 	if not volume then return nil end
 	return {on = volume > 0, volume = volume}
@@ -51,33 +56,45 @@ function R.audible(on, volume)
 end
 
 -- ---------------------------------------------------------------------------
--- Beds
+-- Sound keys and beds (Round 52: by biome group, round52-ambience-plan.md §2)
 -- ---------------------------------------------------------------------------
 
--- The bed keys to try for a state, best first (an empty list: silence), or
--- nil when the state names no mood at all (a manual non-mood /atmosphere
--- preset such as `godrays`, or `default` before the zone driver ran): the
--- caller then keeps the bed it has. A mood without a data.region row has no
--- bed. `s`: mood (an atmosphere mood or nil), night, water ("sea", "stream"
--- or nil), underwater, deep (the deep underground band).
---   underwater beats everything; the underground mood has no day or night
---   (deep first, then the plain cave beds); sea and stream water near the
---   player override the region bed; the region bed has a night variant where
---   data.region names one, else the day bed plays at night too.
+-- The player's sound key: a zone override by atmosphere mood (data.overrides:
+-- the Battlegrounds, the dragon islands, the open ocean) before the group of
+-- the biome under the player; an ownerless column (`known` but no biome: the
+-- deep ocean) is the ocean, a biome without a group false (no bed). nil
+-- keeps the key the player has: nothing is known yet (no zone authority) or
+-- the player is in the underground mood, which hides the zone (the surface
+-- layer is silent that deep anyway).
+function R.sound_key(data, mood, known, biome)
+	if mood == "underground" then return nil end
+	if mood and data.overrides[mood] then return mood end
+	if not known then return nil end
+	if biome == nil then return "ocean" end
+	return data.groups[biome] or false
+end
+
+-- The bed keys to try for the surface layer, best first (an empty list:
+-- silence), or nil when there is no key yet and no water near the player
+-- (the caller then keeps the bed it has). `s`: key (a sound key, false for
+-- none), night, water ("sea", "stream" or nil), underwater.
+--   underwater beats everything (no underwater bed ships: silence);
+--   sea and stream water near the player override the region bed; the
+--   region bed has a night variant where data.region names one (falling
+--   back to the day bed when that has no shipped file), silence at night
+--   where it says `night = false`, else the day bed plays at night too.
 function R.bed_keys(data, s)
 	if s.underwater then return {"underwater"} end
-	if s.mood == "underground" then
-		if s.deep then return {"underground_deep", "underground"} end
-		return {"underground"}
-	end
-	local row = s.mood and data.region[s.mood]
 	local keys = {}
 	if s.water == "sea" then keys[#keys + 1] = "sea" end
 	if s.water == "stream" then keys[#keys + 1] = "stream" end
+	local row = s.key and data.region[s.key]
 	if row then
-		if s.night and row.night then keys[#keys + 1] = row.night end
-		keys[#keys + 1] = row.day
-	elseif not s.mood and #keys == 0 then
+		if not (s.night and row.night == false) then
+			if s.night and row.night then keys[#keys + 1] = row.night end
+			keys[#keys + 1] = row.day
+		end
+	elseif s.key == nil and #keys == 0 then
 		return nil
 	end
 	return keys
@@ -115,19 +132,20 @@ end
 
 -- Either music or the bed (Round 35): where music plays (R.music_active)
 -- the bed is silent, else the bed the state asks for. `wanted` is
--- pick_bed's result (nil keeps the bed).
+-- pick_bed's result (nil keeps the bed). Since Round 52 the wind and cave
+-- layers are silent there too.
 function R.bed_wanted(wanted, music)
 	if music then return false end
 	return wanted
 end
 
--- Hysteresis: a new bed must be wanted on two passes in a row before it
--- replaces the playing one, so walking along a river bank or a town edge
--- does not swap beds every pass; diving in or coming up changes at once, and
--- so does music starting or ending: the bed and the track then crossfade
--- (the bed over D.crossfade, the track's fade-in or D.music.fade_out), a
--- short fade, never a hard cut.
--- `b` is the player's bed state {key, want, seen, underwater, music};
+-- Hysteresis: a new surface bed must be wanted on two passes in a row
+-- before it replaces the playing one, so walking along a river bank, a town
+-- edge or a biome border does not swap beds every pass; diving in or coming
+-- up changes at once, and so does music starting or ending: the bed and the
+-- track then crossfade (the bed over D.crossfade, the track's fade-in or
+-- D.music.fade_out), a short fade, never a hard cut.
+-- `b` is the surface layer's state {key, want, seen, underwater, music};
 -- `wanted` a key or false (silence); `underwater` and `music` this pass's
 -- flags. Returns true when the bed should change to `wanted` now.
 function R.bed_should_change(b, wanted, underwater, music)
@@ -154,11 +172,146 @@ function R.bed_should_change(b, wanted, underwater, music)
 	return false
 end
 
--- The bed's gain: the base gain, the player's volume, quieter in start
--- towns and capitals (user, round34-plan.md §2.2; in a capital the bed plays
--- only with music off).
+-- The gain of a layer at full level: the base bed gain, the player's
+-- volume, halved in start towns and capitals (user, round34-plan.md §2.2;
+-- in a capital the beds play only with music off).
 function R.bed_gain(data, volume, town)
 	return data.gains.bed * volume / 100 * (town and data.gains.town_bed or 1)
+end
+
+-- ---------------------------------------------------------------------------
+-- Layers (Round 52 ruling 7, §3.2 steps 4, 5 and 11)
+-- ---------------------------------------------------------------------------
+
+-- A layer's level (a share of the bed level) changes the sound only when it
+-- moved by LEVEL_STEP since the level last sent (the dead band: slow climbing
+-- or hovering sends nothing every pass), and a silent layer starts only at
+-- LEVEL_STEP. A layer whose level falls to 0 fades to LEVEL_FLOOR and keeps
+-- its sound; only after FLOOR_PASSES passes in a row at 0 is it stopped
+-- (faded to 0, which deletes the sound), so hovering at a threshold does not
+-- restart loops every 2 s.
+R.LEVEL_STEP = 0.03
+R.LEVEL_FLOOR = 0.01
+R.FLOOR_PASSES = 3
+
+local function clamp01(value)
+	if value < 0 then return 0 end
+	if value > 1 then return 1 end
+	return value
+end
+
+-- The three layers' levels at `depth` nodes below the surface reference
+-- (negative: above it; nil: unknown, then the surface plays alone) for a
+-- player at absolute height `y`; `cave` is the cave probe's verdict.
+-- Returns surface, wind, cave.
+function R.layer_levels(data, depth, y, cave)
+	if depth == nil then return 1, 0, 0 end
+	local L = data.layers
+	local up = -depth
+	local surface
+	if depth >= 0 then
+		surface = 1 - depth / L.surface.down
+	else
+		surface = 1 - (up - L.surface.up_full) / (L.surface.up_zero - L.surface.up_full)
+	end
+	local wind = clamp01((up - L.wind.from) / (L.wind.full - L.wind.from)) * L.wind.level
+	if depth <= L.peak.max_depth then
+		local peak = clamp01((y - L.peak.y) / L.peak.ramp) * L.peak.level
+		if peak > wind then wind = peak end
+	end
+	local cave_level = 0
+	if cave then
+		cave_level = clamp01((depth - L.cave.from) / (L.cave.full - L.cave.from)) * L.cave.level
+	end
+	return clamp01(surface), wind, cave_level
+end
+
+-- One pass of a layer. `l` is the layer's state {key, playing, level, base,
+-- idle}: the bed key of its sound, whether a sound plays, the level and
+-- the full-level gain last sent, the passes in a row at 0. `key` is the bed
+-- it should play now (false: none), `target` its level, `base` the gain at
+-- full level. Updates `l` and returns what the caller does with the sound:
+--   "start"  play `l.key` at l.level * l.base, fading in;
+--   "switch" fade the playing sound out (to 0) and start `l.key` like that;
+--   "fade"   fade the playing sound to l.level * l.base;
+--   "stop"   fade the playing sound to 0 (deleting it);
+--   nil      nothing.
+-- A stopped sound is never faded again: the caller drops its handle.
+function R.layer_step(l, key, target, base)
+	if l.playing and key ~= l.key then
+		l.key = key
+		if key and target >= R.LEVEL_STEP then
+			l.level, l.base, l.idle = target, base, 0
+			return "switch"
+		end
+		l.playing, l.level, l.idle = false, 0, 0
+		return "stop"
+	end
+	l.key = key
+	if not l.playing then
+		if key and target >= R.LEVEL_STEP then
+			l.playing, l.level, l.base, l.idle = true, target, base, 0
+			return "start"
+		end
+		return nil
+	end
+	if target <= 0 then
+		l.idle = l.idle + 1
+		if l.idle >= R.FLOOR_PASSES then
+			l.playing, l.level, l.idle = false, 0, 0
+			return "stop"
+		end
+		if l.level ~= R.LEVEL_FLOOR or base ~= l.base then
+			l.level, l.base = R.LEVEL_FLOOR, base
+			return "fade"
+		end
+		return nil
+	end
+	l.idle = 0
+	if target < R.LEVEL_FLOOR then target = R.LEVEL_FLOOR end
+	if base ~= l.base or math.abs(target - l.level) >= R.LEVEL_STEP then
+		l.level, l.base = target, base
+		return "fade"
+	end
+	return nil
+end
+
+-- ---------------------------------------------------------------------------
+-- The cave probe (Round 52 ruling 6, §3.2 step 6)
+-- ---------------------------------------------------------------------------
+
+-- Whether the probe runs this pass at `pos` (the caller runs it only below
+-- data.cave.min_depth): when it never ran, when the player moved 2 nodes or
+-- more since it last ran, or after 3 passes; otherwise the last share is
+-- reused. `c` is the probe state {px, py, pz, age}.
+function R.probe_due(c, pos)
+	if c.px then
+		local dx, dy, dz = pos.x - c.px, pos.y - c.py, pos.z - c.pz
+		if dx * dx + dy * dy + dz * dz < 4 and c.age < 3 then
+			c.age = c.age + 1
+			return false
+		end
+	end
+	c.px, c.py, c.pz, c.age = pos.x, pos.y, pos.z, 1
+	return true
+end
+
+-- The cave verdict from this pass's open-air share, with the beds'
+-- two-pass hysteresis: a new verdict must come on two passes in a row.
+-- `c` holds {cave, want, seen}. Returns the verdict.
+function R.cave_step(c, share, threshold)
+	local now = share >= threshold
+	if now == (c.cave == true) then
+		c.want, c.seen = nil, 0
+	elseif c.want == now then
+		c.seen = c.seen + 1
+	else
+		c.want, c.seen = now, 1
+	end
+	if c.seen >= 2 then
+		c.cave, c.want, c.seen = now, nil, 0
+	end
+	return c.cave == true
 end
 
 -- ---------------------------------------------------------------------------
@@ -171,13 +324,19 @@ function R.next_call_delay(data, rand)
 end
 
 -- The call ids that fit state `s` and have a shipped sound, sorted, so a
--- seeded random pick is reproducible.
+-- seeded random pick is reproducible. `s`: key (the sound key), biome,
+-- night, underwater, underground (the underground mood), surface (the
+-- surface layer's level). None under water or underground; a call with
+-- `surface` only while the surface layer is at least that level.
 function R.eligible_calls(data, s, available)
 	local list = {}
-	if s.underwater or s.mood == "underground" or not s.mood then return list end
+	if s.underwater or s.underground or not s.key then return list end
 	for id, call in pairs(data.calls) do
 		local time_ok = call.time == "any" or (call.time == "night") == (s.night == true)
-		if time_ok and call.moods[s.mood] and available[call.sound] then
+		local where_ok = (call.keys and call.keys[s.key]) or
+			(call.biomes and s.biome and call.biomes[s.biome])
+		local level_ok = not call.surface or (s.surface or 0) >= call.surface
+		if time_ok and where_ok and level_ok and available[call.sound] then
 			list[#list + 1] = id
 		end
 	end
