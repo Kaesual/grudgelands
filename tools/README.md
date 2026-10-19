@@ -1486,3 +1486,4 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   in the Round 38 proposal format) and the preview page `page.html`
   (`page_local.html` for file://); `check_draft.py` runs the Round 38 name
   gates over today's names plus the draft.
+- **Round 51 lane WRECK** ([`r51_wreck`](r51_wreck/DESIGN.md)): the shipwreck design: four shapes as data (`shapes.py` writes `shapes/*.json` and the node list, `--check`), the preview page (`build.py` writes `wreck.html`, `--check`) and the placement sketch for the build step.
