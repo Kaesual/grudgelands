@@ -96,7 +96,7 @@ blueprints are unchanged by them.
   pad (12 nodes, rounded corners) grows no trees, bushes or resource plants,
   so players see where the protection ends; since Round 36 (W3, the user's
   playtest: the bare ring looked odd) it grows the zone's own one-node ground
-  cover (grass, ferns, dry grass, junglegrass, dry shrubs, bone piles) on a
+  cover (grass, ferns, dry grass, junglegrass, dry shrubs) on a
   seeded share of its columns that rises from a third at the pad to all at
   the band's edge, so the cover thins toward the town; never on the pad, a
   road or its corridor. Right beyond the band the biome's trees, plants and
@@ -896,6 +896,19 @@ from before the pass, and checks the windows, the headroom and the ways
 above over every composition; `tools/r36_w2/portable_test.lua` holds every
 bench of every composition to the rule (no wall ahead it could have its
 back to, no fire or well behind it without something to look at ahead).
+
+**Graves and bones (Round 51).** Every town's grave
+(`dressing.grave`: Stillgrave, Nhal Veyr, Kezamba, Highcourt, Gor Drazhak,
+Dur Brannoc and Lethariel) is a flagstone with a gravestone stele of the
+land kit on it, the older half of a burial ground crowned with the
+gravestone cross, all facing the composition's front; the graveyards stay
+orderly rows two apart, the wild ones small and ruined
+([biomes_mobs.md](biomes_mobs.md) §2.1). Where an undead palette's
+undergrowth, a graveyard's sunken plot or a lair puts bones, a cell hash
+picks a piece of the skeleton set and its turn (`dressing.bone_piece`):
+mostly the scattered long bones (the bone pile) and splinters, now and
+then a skull, a ribcage or an animal's skull or spine. Gravestones drop
+cobblestone, bones nothing.
 
 ## Round 21 ground and access correction
 

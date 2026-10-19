@@ -157,7 +157,9 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
   one total** at the sum of the biome's decoration rates
   ([biomes_mobs.md](biomes_mobs.md) §2.1), thinned per support exactly like the
   planner (gravel at a quarter); the zone's biome palette picks the species by
-  its rates. Bone piles are not vegetation and do not renew.
+  its rates. The land kit's structures (bone finds, graveyards, ruins,
+  boulders, cairns, fallen logs, driftwood; [biomes_mobs.md](biomes_mobs.md)
+  §2.1) are not vegetation and do not renew.
 - *Trees* and *shrubs* (bushes, the blueberry bush included) are two separate
   classes, each counted against its own density by its trunks or stems,
   divided by the marker columns one grown plant of that template has; planted
