@@ -188,9 +188,6 @@ grug_abilities.register_ability({
 	end,
 })
 
--- Active mends: target name -> {ticks, amount, healer}
-local mends = {}
-
 -- Talent-gated (kit tuning 2026-08-06): stays registered, but sync_kit
 -- does not grant it — the Priest's Mercy tree unlocks it in WP11, where Mend
 -- is the Balm chain's keystone (skill_trees.md §2.5). Its display name lives
@@ -226,20 +223,27 @@ grug_abilities.register_ability({
 		if target:get_hp() <= 0 then
 			return false, "Target is dead."
 		end
-		-- Re-casting refreshes duration and snapshot amount.
-		mends[target:get_player_name()] = {
-			ticks = 4,
-			amount = def.values(user).heal,
-			healer = user:get_player_name(),
-			action_id = {},
-		}
-		if grug_core.set_status then
-			grug_core.set_status(target, "mend", {
-				label = def.name,
-				duration = 12,
-				kind = "buff",
-			})
-		end
+		-- A periodic status on the target (class plan C5, D1): four ticks,
+		-- 3, 6, 9 and 12 s after the cast (the status pass fires a tick due
+		-- at expiry). The amount is the cast's snapshot; an offline healer's
+		-- ticks heal as the target itself. Re-casting refreshes duration,
+		-- phase and amount; the status system ends it on death and leave.
+		local amount = def.values(user).heal
+		local healer, action_id = user:get_player_name(), {}
+		grug_core.set_status(target, "mend", {
+			label = def.name,
+			duration = 12,
+			kind = "buff",
+			interval = 3,
+			on_tick = function(player)
+				if player:get_hp() <= 0 then
+					return
+				end
+				grug_core.heal_player(core.get_player_by_name(healer) or player,
+					player, amount, {action_id = action_id})
+				fx("mend", {target = player:get_pos()})
+			end,
+		})
 		-- The cast is the application; the ticks are never contact (ruling 7b).
 		grug_pvp.support_contact(user, target)
 		fx("mend", {target = target:get_pos()})
@@ -247,44 +251,8 @@ grug_abilities.register_ability({
 	end,
 })
 
-local mend_acc = 0
-
-core.register_globalstep(function(dtime)
-	mend_acc = mend_acc + dtime
-	if mend_acc < 3 then
-		return
-	end
-	mend_acc = 0
-	for name, mend in pairs(mends) do
-		local target = core.get_player_by_name(name)
-		if not target or target:get_hp() <= 0 then
-			mends[name] = nil
-			if target and grug_core.clear_status then
-				grug_core.clear_status(target, "mend")
-			end
-		else
-			local healer = core.get_player_by_name(mend.healer) or target
-			grug_core.heal_player(healer, target, mend.amount,
-				{action_id = mend.action_id})
-			fx("mend", {target = target:get_pos()})
-			mend.ticks = mend.ticks - 1
-			if mend.ticks <= 0 then
-				mends[name] = nil
-				if grug_core.clear_status then
-					grug_core.clear_status(target, "mend")
-				end
-			end
-		end
-	end
-end)
-
 core.register_on_leaveplayer(function(player)
-	mends[player:get_player_name()] = nil
 	recompense_ready[player:get_player_name()] = nil
-end)
-
-core.register_on_dieplayer(function(player)
-	mends[player:get_player_name()] = nil
 end)
 
 grug_abilities.register_ability({

@@ -235,11 +235,12 @@ do
 	grug_core.is_stunned = function() return false end
 	local try_cast = assert(loadstring(
 		"local reset_swing_boundary, refuse_mounted_attack, cast_refusal, spend, " ..
-		"arm_cast_interval, play_skill_pose = ...\n" ..
+		"arm_cast_interval, play_skill_pose, occupy_casts = ...\n" ..
 		cut(INIT, "\n(function grug_abilities%.try_cast%(.-\nend)\n", "try_cast"),
 		"=try_cast"))(
 		function() end, function() return false end, function() return refusal end,
-		function() spent = spent + 1 return true end, function() end, play_skill_pose)
+		function() spent = spent + 1 return true end, function() end, play_skill_pose,
+		function() end) -- occupy_casts: the action clock (Round 52 D2)
 	local caster = new_player("caster")
 	local function def(id, kind, ok)
 		return {id = id, kind = kind or "cast", cast = function() return ok ~= false end}

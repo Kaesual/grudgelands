@@ -320,7 +320,9 @@ do
 	local helper = init:match("\n(function grug_abilities%.clear_cooldown%(player, id%).-\nend)\n")
 	check(helper ~= nil, "F clear_cooldown is found in init.lua")
 	local cooldowns = {p = {word_of_ruin = {expiry = 99e6, duration = 12}}}
-	grug_abilities = {}
+	-- clear_cooldown reads the skill's cooldown key (Round 52 D8); the id is
+	-- the key of every skill without a definition here.
+	grug_abilities = {registered = {}}
 	local env = setmetatable({cooldowns = cooldowns}, {__index = _G})
 	local chunk = assert(loadstring(helper))
 	setfenv(chunk, env)()

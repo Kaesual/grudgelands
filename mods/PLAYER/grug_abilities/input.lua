@@ -202,7 +202,8 @@ return function(api)
 			s.failed[def.id] = nil
 			if def.repeat_policy == "once" then s.used = true end
 			s.cast_press = true -- this physical press cast (see M.cast_this_press)
-			api.delay_strike(player)
+			-- Cast -> swing on the action clock (D2): def.occupied_swing.
+			api.delay_strike(player, def)
 			return true
 		end
 		s.failed[def.id] = now

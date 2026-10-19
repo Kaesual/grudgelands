@@ -11,7 +11,8 @@
 --      hard-chain parent), the effect vocabulary tables, the order of the
 --      engine callbacks the files register and the names they export -- is
 --      identical to expected.txt, the dump of main 7813165e before the split
---      (CORE-B adds the window API to the grug_classes export line);
+--      (CORE-B adds the window API to the grug_classes export line,
+--      CORE-A drops Mend's globalstep and die handler from the callback line);
 --   B. no file adds a global;
 --   C. the window glue (D6): a window started before a leave is gone after
 --      the leave callbacks ran, its status icon cleared.

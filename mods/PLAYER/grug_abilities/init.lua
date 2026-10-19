@@ -25,14 +25,23 @@ local swing_input_latch = {} -- player name -> one direct hostile object click
 
 local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
--- player name -> {ability id -> {expiry = us time, duration = seconds}}. The
+-- player name -> {cooldown key -> {expiry = us time, duration = seconds}}. The
 -- duration is stored per cast, not looked up from the def, because the
 -- cooldown overlay needs the value THIS cast used to draw a fraction of it.
+-- The key is the ability's `cooldown_key`: its own id, or its base's for a
+-- transformation (register_ability), so a transform and its base share one.
 local cooldowns = {}
--- Player name -> {ability id -> next accepted cast time in microseconds}.
+-- Player name -> {cooldown key -> next accepted cast time in microseconds}.
 -- This is a server-authoritative input cadence, not a visible cooldown: it
 -- has no cooldown overlay and talents cannot shorten it.
 local cast_intervals = {}
+-- The action clock's cast side (D2): player name -> the us time before which
+-- no cast starts (a cast's or a swing's `occupied_cast`). The swing side is
+-- the weapon clock's `next_due` (swing_progress, strike_delay.lua).
+local cast_clock = {}
+-- Base ability id -> the abilities that transform it (D8), in registration
+-- order. Empty for every shipped ability.
+local transforms_of = {}
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local ready_reticle_huds = {} -- player name -> {id = hud id, visible = bool}
 -- Skill-name line (classes.md §2c) and the throttled wield watcher that feeds
@@ -807,6 +816,42 @@ function grug_abilities.register_ability(def)
 		assert(def.charge == nil or def.charge > 0,
 			"charge must be seconds > 0")
 	end
+	-- The action clock (D2): how long this action occupies the player after
+	-- it. `occupied_cast` (seconds, either kind): no cast starts before it has
+	-- passed. `occupied_swing` (casts only): the next melee swing waits this
+	-- long, "weapon" being one interval of the current melee weapon (a swing's
+	-- own clock is that interval anyway). The defaults are the shipped rule: a
+	-- cast pushes the next swing by one weapon interval, a swing blocks no cast
+	-- and a cast blocks no other cast. A per-skill lock after a cast is not a
+	-- global cooldown (class plan C2).
+	def.occupied_cast = def.occupied_cast or 0
+	assert(type(def.occupied_cast) == "number" and def.occupied_cast >= 0,
+		"occupied_cast must be seconds >= 0")
+	if def.kind == "cast" then
+		def.occupied_swing = def.occupied_swing or "weapon"
+		assert(def.occupied_swing == "weapon" or (type(def.occupied_swing) ==
+			"number" and def.occupied_swing >= 0),
+			"occupied_swing must be seconds >= 0 or \"weapon\"")
+	else
+		assert(def.occupied_swing == nil,
+			"a swing occupies the next swing by its weapon interval")
+	end
+	-- A transformation (D8): `transforms = "<base id>"` replaces its base in
+	-- place on every hotbar layout that holds it (normalize_kit) while it is
+	-- unlocked, and shares the base's cooldown key. With `talent_gated` it
+	-- follows its talent's rank; without, it is its class's basic attack in
+	-- place of a universal ability (Strike). The talents' own `replaces` field
+	-- is unrelated and never read.
+	local base = def.transforms ~= nil and grug_abilities.registered[def.transforms]
+	if def.transforms ~= nil then
+		assert(base, "a transformation names an ability registered before it")
+		assert(def.class and (base.universal or base.class == def.class),
+			"a transformation belongs to its base's class or replaces a universal ability")
+		assert(def.talent_gated or base.universal,
+			"only a class basic attack replaces its base without a talent")
+	end
+	assert(def.cooldown_key == nil, "the cooldown key is derived, not declared")
+	def.cooldown_key = base and base.cooldown_key or def.id
 	def.cost = def.cost or {}
 	-- Which equipment slot's item this ability wears and (from T4 on) swings
 	-- (weapon-slot design C1). "weapon" is the default -- deliberately
@@ -822,6 +867,10 @@ function grug_abilities.register_ability(def)
 	assert(def.slot == "weapon" or def.slot == "offhand" or def.slot == "melee",
 		"ability slot must be \"weapon\", \"offhand\" or \"melee\"")
 	grug_abilities.registered[def.id] = def
+	if base then
+		transforms_of[base.id] = transforms_of[base.id] or {}
+		table.insert(transforms_of[base.id], def)
+	end
 	if def.universal then
 		table.insert(grug_abilities.universal, def)
 	else
@@ -973,7 +1022,7 @@ local cooldown_hud = dofile(core.get_modpath(core.get_current_modname()) ..
 		"/cooldown_math.lua"),
 	ability_of = function(itemname)
 		local def = item_defs[itemname]
-		return def and def.id
+		return def and def.cooldown_key
 	end,
 })
 grug_abilities.cooldown_hud = cooldown_hud
@@ -987,10 +1036,12 @@ grug_abilities.cooldown_hud = cooldown_hud
 -- weapon clock; swing effects use the independent charge timers below.
 --
 
--- Is this ability off cooldown for this player right now?
+-- Is this ability off cooldown for this player right now? Read through its
+-- cooldown key, which a transformation shares with its base.
 function grug_abilities.ready(player, id)
+	local def = grug_abilities.registered[id]
 	local cds = cooldowns[player:get_player_name()]
-	local rec = cds and cds[id]
+	local rec = cds and cds[def and def.cooldown_key or id]
 	return not rec or core.get_us_time() >= rec.expiry
 end
 
@@ -999,7 +1050,7 @@ local function cast_interval_ready(player, def)
 		return true
 	end
 	local records = cast_intervals[player:get_player_name()]
-	local next_cast = records and records[def.id]
+	local next_cast = records and records[def.cooldown_key]
 	return not next_cast or core.get_us_time() >= next_cast
 end
 
@@ -1009,8 +1060,24 @@ local function arm_cast_interval(player, def)
 	end
 	local name = player:get_player_name()
 	cast_intervals[name] = cast_intervals[name] or {}
-	cast_intervals[name][def.id] = core.get_us_time()
+	cast_intervals[name][def.cooldown_key] = core.get_us_time()
 		+ def.cast_interval * 1e6
+end
+
+-- The action clock's cast side (D2): `seconds` from now no cast starts. Never
+-- shortens a running lock; 0 (every shipped skill) writes nothing.
+local function occupy_casts(player, seconds)
+	if seconds <= 0 then
+		return
+	end
+	local name = player:get_player_name()
+	cast_clock[name] = math.max(cast_clock[name] or 0,
+		core.get_us_time() + seconds * 1e6)
+end
+
+local function cast_clock_ready(player)
+	local until_us = cast_clock[player:get_player_name()]
+	return not until_us or core.get_us_time() >= until_us
 end
 
 -- The cooldown this player's cast actually earns. Same reason as get_range
@@ -1044,15 +1111,16 @@ function grug_abilities.arm_cooldown(player, def, duration)
 		duration = duration,
 	}
 	cooldowns[name] = cooldowns[name] or {}
-	cooldowns[name][def.id] = rec
-	cooldown_hud.track(player, def.id, rec)
+	cooldowns[name][def.cooldown_key] = rec
+	cooldown_hud.track(player, def.cooldown_key, rec)
 end
 
 -- End a running cooldown now (Last Word resets Word of Ruin's, Round 35).
 -- The overlay holds the same record and drops it on its next pass.
 function grug_abilities.clear_cooldown(player, id)
+	local def = grug_abilities.registered[id]
 	local cds = cooldowns[player:get_player_name()]
-	local rec = cds and cds[id]
+	local rec = cds and cds[def and def.cooldown_key or id]
 	if rec then
 		rec.expiry = core.get_us_time()
 	end
@@ -1068,8 +1136,8 @@ end
 -- fired proc (kits.lua). Runtime-only, never persisted.
 --
 
--- player name -> {ability id -> {expiry = ready_at us time, duration = s}},
--- the shape of a cooldown record, so the overlay draws both alike.
+-- player name -> {cooldown key -> {expiry = ready_at us time, duration = s}},
+-- the shape and key of a cooldown record, so the overlay draws both alike.
 local charges = {}
 
 function grug_abilities.effective_charge(player, def)
@@ -1088,7 +1156,7 @@ function grug_abilities.charge_ready(player, def)
 		return true
 	end
 	local per_player = charges[player:get_player_name()]
-	local rec = per_player and per_player[def.id]
+	local rec = per_player and per_player[def.cooldown_key]
 	return not rec or core.get_us_time() >= rec.expiry
 end
 
@@ -1103,8 +1171,8 @@ function grug_abilities.reset_charge(player, def)
 	local rec = {expiry = core.get_us_time() + duration * 1e6,
 		duration = duration}
 	charges[name] = charges[name] or {}
-	charges[name][def.id] = rec
-	cooldown_hud.track(player, def.id, rec)
+	charges[name][def.cooldown_key] = rec
+	cooldown_hud.track(player, def.cooldown_key, rec)
 end
 
 -- Authoritative swing clock (classes.md §2b). Native object punches from a
@@ -1365,6 +1433,9 @@ attempt_swing = function(player, selected, held, latched)
 		late = math.min(late, SWING_CATCHUP, fpi * 0.5)
 	end
 	entry.next_due = now + (fpi - late) * 1e6
+	-- Swing -> cast on the action clock (D2): the swing's skill (Strike in the
+	-- fallback) may hold casts back; no shipped skill does.
+	occupy_casts(player, selected.occupied_cast)
 	-- A valid attack hides readiness before any dodge/refusal/callback outcome.
 	set_ready_reticle(player, false)
 	local caps = {
@@ -1473,9 +1544,9 @@ grug_core.register_native_swing_input_handler(function(player, target)
 end)
 
 -- Why `user` cannot cast `def` right now (class, unlock, cooldown, cast
--- interval, resource), or nil when nothing stands in the way. One wording for
--- the dispatcher below and the contextual input gate (input.lua), which asks
--- before it reaches the dispatcher.
+-- interval, the action clock, resource), or nil when nothing stands in the
+-- way. One wording for the dispatcher below and the contextual input gate
+-- (input.lua), which asks before it reaches the dispatcher.
 local function cast_refusal(user, def)
 	-- Universal abilities have no class to be (E1) — without this a Mage
 	-- using the universal Strike was told "You are no Warrior".
@@ -1491,6 +1562,10 @@ local function cast_refusal(user, def)
 	end
 	if not cast_interval_ready(user, def) then
 		return def.name .. " cast interval is not ready."
+	end
+	-- The action clock (D2): an earlier cast or swing still occupies casts.
+	if not cast_clock_ready(user) then
+		return "You are still busy."
 	end
 	local cost = grug_abilities.cost_for(user, def.cost, def.id)
 	if not affordable(user, cost) then
@@ -1553,6 +1628,9 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 	arm_cast_interval(user, def)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))
+	-- Cast -> cast on the action clock (D2); cast -> swing is the caller's
+	-- delay_strike (input.lua), with def.occupied_swing.
+	occupy_casts(user, def.occupied_cast)
 	return true
 end
 
@@ -1950,15 +2028,56 @@ local function in_kit(def, class)
 	return def.universal or def.class == class
 end
 
+-- The transformation (D8) that replaces `def` for this player now: the first
+-- one of the player's class whose talent has a rank, or that needs none (the
+-- class's basic attack in place of a universal ability). nil for every
+-- shipped ability, which nothing transforms.
+local function replacement(player, def, class)
+	local list = transforms_of[def.id]
+	if not list then
+		return nil
+	end
+	for _, form in ipairs(list) do
+		if form.class == class and (not form.talent_gated or
+				grug_classes.talent_rank(player, form.talent or form.id) > 0) then
+			return form
+		end
+	end
+	return nil
+end
+
+-- Owned, and not replaced in place by a transformation this player has.
 function grug_abilities.is_unlocked(player, ability_id)
 	local def = grug_abilities.registered[ability_id]
-	if not def or not in_kit(def, grug_classes.get_class(player)) then
+	local class = grug_classes.get_class(player)
+	if not def or not in_kit(def, class) then
 		return false
 	end
-	if def.talent_gated then
-		return grug_classes.talent_rank(player, def.talent or def.id) > 0
+	if def.talent_gated and
+			grug_classes.talent_rank(player, def.talent or def.id) <= 0 then
+		return false
 	end
-	return true
+	return replacement(player, def, class) == nil
+end
+
+-- What a stack of `def` from this player's own kit becomes (D8): the
+-- unlocked member of its transformation family, found from the family's root
+-- down through the transformations the player has. `def` itself when it is
+-- unlocked; nil when no member is (the stack goes, as before) and for an
+-- ability of another class.
+function grug_abilities.current_form(player, def)
+	local class = grug_classes.get_class(player)
+	if not in_kit(def, class) then
+		return nil
+	end
+	local form = def
+	while form.transforms do
+		form = grug_abilities.registered[form.transforms]
+	end
+	while form and not grug_abilities.is_unlocked(player, form.id) do
+		form = replacement(player, form, class)
+	end
+	return form
 end
 
 function grug_abilities.unlocked_ids(player)
@@ -2022,18 +2141,29 @@ end
 -- Removes every representation that is locked, outside the allowed lists or
 -- a second copy, and refreshes the others. Copies count per hotbar layout
 -- (Round 50): the same skill may lie once on the shown side (main and the
--- bags) and once on the inactive layout.
+-- bags) and once on the inactive layout. A locked stack of a transformation
+-- family (D8) is swapped in place for the family's unlocked member instead,
+-- on either layout (Round 50 ruling 12), after the pass, so a copy the player
+-- already holds wins and a swapped one goes as a second copy; the hotbar's
+-- swaps come before a stray's in a bag.
 function grug_abilities.normalize_kit(player)
 	local inv = player:get_inventory()
 	local hidden = core.global_exists("grug_inventory") and grug_inventory.HOTBAR_STORE
 	local seen, equipment_changed = {shown = {}, hidden = {}}, false
+	local swaps = {}
 	for listname, list in pairs(inv:get_lists()) do
 		local have = listname == hidden and seen.hidden or seen.shown
 		for i, stack in ipairs(list) do
 			local def = item_defs[stack:get_name()]
 			if def then
-				if not allowed_storage(listname) or
-						not grug_abilities.is_unlocked(player, def.id) or have[def.id] then
+				local allowed = allowed_storage(listname)
+				local unlocked = allowed and grug_abilities.is_unlocked(player, def.id)
+				local form = allowed and not unlocked and
+					grug_abilities.current_form(player, def)
+				if form then
+					swaps[#swaps + 1] = {listname = listname, index = i, form = form,
+						have = have}
+				elseif not unlocked or have[def.id] then
 					inv:set_stack(listname, i, ItemStack(""))
 					if equipment_list[listname] then equipment_changed = true end
 				else
@@ -2042,6 +2172,20 @@ function grug_abilities.normalize_kit(player)
 					if fresh and fresh:to_string() ~= stack:to_string() then
 						inv:set_stack(listname, i, fresh)
 					end
+				end
+			end
+		end
+	end
+	for pass = 1, 2 do
+		for _, swap in ipairs(swaps) do
+			if (swap.listname == "main" or swap.listname == hidden) == (pass == 1) then
+				local id = swap.form.id
+				local fresh = not swap.have[id] and grug_abilities.stack_for(player, id)
+				inv:set_stack(swap.listname, swap.index, fresh or ItemStack(""))
+				if fresh then
+					swap.have[id] = true
+					-- The wield watcher names the new skill if it is selected.
+					dirty[player:get_player_name()] = true
 				end
 			end
 		end
@@ -2438,12 +2582,14 @@ core.register_on_dieplayer(function(player)
 	invalidate_target_locks(player)
 	clear_swing_progress(player)
 	cast_intervals[player:get_player_name()] = nil
+	cast_clock[player:get_player_name()] = nil
 	targets[player:get_player_name()] = nil
 end)
 
 core.register_on_respawnplayer(function(player)
 	clear_swing_progress(player)
 	cast_intervals[player:get_player_name()] = nil
+	cast_clock[player:get_player_name()] = nil
 	targets[player:get_player_name()] = nil
 	refill_mana(player)
 	clamp_mana(player)
@@ -2460,6 +2606,7 @@ core.register_on_leaveplayer(function(player)
 	rage[name] = nil
 	cooldowns[name] = nil
 	cast_intervals[name] = nil
+	cast_clock[name] = nil
 	charges[name] = nil
 	targets[name] = nil
 	bar_huds[name] = nil
@@ -2483,7 +2630,8 @@ grug_xp.register_on_level_change(function(player, old_level, new_level)
 	hud_update(player)
 end)
 
--- Generic casts and released arrows share the actual melee deadline.
+-- Generic casts and released arrows share the actual melee deadline:
+-- delay_strike(player[, def]), the action clock's cast -> swing entry.
 grug_abilities.delay_strike = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/strike_delay.lua")(swing_progress)
 
