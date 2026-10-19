@@ -115,6 +115,11 @@ return function(dependencies)
 			local zones_session, planner_source = r5_module.new_source_runtime(
 				full_seed_string, configured_water_level,
 				content_module.r5_manifest_values())
+			-- The water query reads the swamp's pools as lakes (Round 51 T2).
+			if type(zones_session.attach_swamp_pools) == "function" then
+				zones_session.attach_swamp_pools(content_module.swamp_pools(full_seed_string,
+					planner_source))
+			end
 			-- Read-only decoration cover by node name for runtime vegetation
 			-- renewal (vegetation_density.lua): the per-support factor the
 			-- planner budgets each decoration with, 0 where the node is no host.
@@ -154,6 +159,11 @@ return function(dependencies)
 			full_seed_string, configured_water_level,
 			content_module.r5_manifest_values(), content_contract.r5, mapgen_context,
 			runtime_mode and content_contract.classify_runtime or nil)
+		-- The water query reads the swamp's pools as lakes (Round 51 T2).
+		if type(zones_session.attach_swamp_pools) == "function" then
+			zones_session.attach_swamp_pools(content_module.swamp_pools(full_seed_string,
+				planner_source))
+		end
 		local horizontal_module = dependencies.horizontal_factory({
 			source = dependencies.source, schemas = dependencies.schemas,
 			canonical = dependencies.canonical,

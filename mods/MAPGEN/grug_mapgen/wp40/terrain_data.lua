@@ -120,6 +120,12 @@ data.params = {
 	-- grid point of before keeps its position (tools/r51_terrain checks).
 	grid_min_x = -4288, grid_max_x = 4288, grid_min_z = -3840, grid_max_z = 3840,
 	coast_cell = 16,
+	-- The coastal belt (Round 51 T2, sea plan ruling 5): its outer edge lies
+	-- belt_edge +- belt_edge_amp nodes off the coast (noise period
+	-- belt_edge_period); past the shelf its floor deepens by belt_slope per
+	-- node, and the shelf's steepness factor fades out over belt_fade nodes.
+	belt_edge = 300, belt_edge_amp = 50, belt_edge_period = 480,
+	belt_slope = 0.05, belt_fade = 100,
 }
 
 -- D13 landmark fields (world_zones.md §8.4). One or two strong soft fields

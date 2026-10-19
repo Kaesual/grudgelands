@@ -238,11 +238,17 @@ local function zones_factory(dependencies)
 		deep_ocean = true,
 		immutable_dragon_channel = true,
 	}
+	-- Round 51 T2: a dragon channel belongs to its island's zone (ruling 6).
 	local OWNER_CLASSES = {
 		land = true,
 		planned_water = true,
 		coastal_shelf = true,
+		immutable_dragon_channel = true,
 	}
+	-- Bay, belt and channel water this many nodes or more off the true coast
+	-- is immutable like the open sea (Round 51 T2, sea plan ruling 8).
+	local PROTECTED_DISTANCE = assert(source.water and source.water.protected_distance,
+		"WP40 R4 protected water distance missing")
 
 	-- The functional kinds height.lua publishes (anchor fittings); the R5
 	-- bridge, causeway, ford and tunnel kinds went with the route catalog.
@@ -302,6 +308,10 @@ local function zones_factory(dependencies)
 		x = normalize_coordinate(x, label .. " x")
 		z = normalize_coordinate(z, label .. " z")
 		return x, z, x < MIN_X or x > MAX_X or z < MIN_Z or z > MAX_Z
+	end
+
+	local function outside_xz(x, z)
+		return x < MIN_X or x > MAX_X or z < MIN_Z or z > MAX_Z
 	end
 
 	local function normalize_position(position, label)
@@ -614,6 +624,16 @@ local function zones_factory(dependencies)
 			return water_class, macro_region, zone_numeric_id, bay_id, channel_id
 		end
 
+		-- Protected water (Round 51 T2, sea plan ruling 8): the open sea, and
+		-- bay, belt and channel water PROTECTED_DISTANCE nodes or more off the
+		-- true coast (the distance, not the depth). Lakes and rivers are land
+		-- columns of the horizontal world and never protected.
+		local function protected_water(x, z, water_class)
+			if water_class == "deep_ocean" then return true end
+			if water_class == "land" then return false end
+			return horizontal.coast_distance_at(x, z) >= PROTECTED_DISTANCE
+		end
+
 		-- R11 uses squared integer distance so the public level field stays
 		-- deterministic, allocation-free and independent of chunk order.
 		local START_LEVEL_CORE_RADIUS = 100
@@ -800,7 +820,11 @@ local function zones_factory(dependencies)
 		end
 
 		local function surface_level_from_classification(x, z, water_class, owner)
-			if water_class ~= "land" and water_class ~= "planned_water" then
+			-- the belt and a channel carry their zone's level too (Round 51
+			-- T2, rulings 5 and 6); the open sea none
+			if water_class ~= "land" and water_class ~= "planned_water" and
+					water_class ~= "coastal_shelf" and
+					water_class ~= "immutable_dragon_channel" then
 				return nil
 			end
 			local start = start_by_owner[owner]
@@ -1159,10 +1183,8 @@ local function zones_factory(dependencies)
 				"territory query")
 			if not outside and hard_row_at(x, y, z) then return "hard_protected" end
 			local water_class, _, owner = classification_values(x, z, outside)
-			if water_class == "deep_ocean" or
-					water_class == "immutable_dragon_channel" then
-				return "immutable"
-			end
+			-- the whole column, the seabed and below included (ruling 8)
+			if protected_water(x, z, water_class) then return "immutable" end
 			if y <= CONTESTED_DEPTH_Y then return "contested_land" end
 			if not owner then fail("territory owner is absent") end
 			return zone_by_numeric[owner].territory_rule
@@ -1182,6 +1204,8 @@ local function zones_factory(dependencies)
 		function session.pvp_rule_at(position)
 			local x, y, z, outside = normalize_position(position, "PvP query")
 			local water_class, _, owner = classification_values(x, z, outside)
+			-- a channel keeps no PvP rule of its own, like the open sea (its
+			-- island's zone gives it a level, ruling 6, not a PvP rule)
 			if water_class == "deep_ocean" or
 					water_class == "immutable_dragon_channel" then return nil end
 			if y <= CONTESTED_DEPTH_Y then return "contested" end
@@ -1201,8 +1225,7 @@ local function zones_factory(dependencies)
 		function session.mob_level_at(position)
 			local x, y, z, outside = normalize_position(position, "mob-level query")
 			local water_class, _, owner = classification_values(x, z, outside)
-			if water_class == "deep_ocean" or
-					water_class == "immutable_dragon_channel" then return nil end
+			if water_class == "deep_ocean" then return nil end
 			local surface = surface_level_from_classification(x, z, water_class, owner)
 			if y >= 0 then return surface end
 			local depth = depth_level(y)
@@ -1244,6 +1267,96 @@ local function zones_factory(dependencies)
 				return "planned_water"
 			end
 			return water_class
+		end
+
+		-- THE WATER QUERY (Round 51 T2): one column, no allocation. Returns
+		-- class, zone id, mob level, distance to dry land, depth, protected:
+		--   class      "lake", "river", "bay", "belt", "channel" or "open_sea"
+		--              (a swamp pool reads "lake"); nil on dry land, and then
+		--              nothing else
+		--   zone id    the owning zone's id ("front_..." for a channel: its
+		--              island's), nil for the open sea
+		--   mob level  the zone's analytic surface level (an island's for a
+		--              channel), nil for the open sea
+		--   distance   nodes to dry land: for the sea's classes the true coast
+		--              distance (`simple_map.lua` coast_distance_at, a 16-node
+		--              chamfer read through a spline; about 1 us); for lakes,
+		--              rivers and pools only when the third argument is true
+		--              (else nil): the nearest dry column's distance, searched
+		--              in rings up to INLAND_REACH (a farther one answers
+		--              INLAND_REACH), up to about 1,000 column tests, some
+		--              100-250 us, so a per-pixel or per-spawn caller leaves it
+		--              off
+		--   depth      nodes of water over the floor (surface y - floor y)
+		--   protected  true where the water is immutable (ruling 8)
+		-- Outside the world's bounds: "open_sea" over the flat floor.
+		local INLAND_REACH = 16
+		local QUERY_CLASS = {planned_water = "bay", coastal_shelf = "belt",
+			immutable_dragon_channel = "channel", deep_ocean = "open_sea"}
+		local swamp_pools
+		-- The swamp's pools of this world (`swamp_pools.lua`, attached by
+		-- `r6.lua` once its planner source exists); without them no pool reads
+		-- as a lake.
+		function session.attach_swamp_pools(pools)
+			if pools ~= nil and (type(pools) ~= "table" or type(pools.at) ~= "function") then
+				fail("swamp pools differ")
+			end
+			swamp_pools = pools
+		end
+		local function dry_column(x, z)
+			if outside_xz(x, z) then return false end
+			if (classification_values(x, z, false)) ~= "land" then return false end
+			if height.inland_water_at(x, z) ~= nil then return false end
+			return not (swamp_pools and swamp_pools.at(x, z))
+		end
+		local function inland_distance(x, z)
+			local best = INLAND_REACH
+			for r = 1, INLAND_REACH do
+				if r >= best then break end
+				for t = -r, r do
+					for side = 1, 4 do
+						local dx, dz
+						if side == 1 then dx, dz = t, -r
+						elseif side == 2 then dx, dz = t, r
+						elseif side == 3 then dx, dz = -r, t
+						else dx, dz = r, t end
+						-- the corners belong to the rows (sides 1 and 2) only
+						if (side < 3 or (t > -r and t < r)) then
+							local d = math.sqrt(dx * dx + dz * dz)
+							if d < best and dry_column(x + dx, z + dz) then best = d end
+						end
+					end
+				end
+			end
+			return best
+		end
+		function session.water_query_at(x, z, inland_distance_wanted)
+			local outside
+			x, z, outside = normalize_xz(x, z, "water query")
+			if outside then
+				return "open_sea", nil, nil, horizontal.coast_distance_at(x, z),
+					WATER_LEVEL + 23, true
+			end
+			local water_class, _, owner = classification_values(x, z, false)
+			if water_class == "land" then
+				local kind, _, water_y = height.inland_water_at(x, z)
+				local depth
+				if kind then
+					depth = water_y - height.terrain_height_at(x, z)
+				elseif swamp_pools then
+					local _, pool_depth = swamp_pools.at(x, z)
+					if pool_depth then kind, depth = "lake", pool_depth end
+				end
+				if not kind then return nil end
+				return kind, zone_by_numeric[owner].id,
+					surface_level_from_classification(x, z, water_class, owner),
+					inland_distance_wanted and inland_distance(x, z) or nil, depth, false
+			end
+			return QUERY_CLASS[water_class], owner and zone_by_numeric[owner].id or nil,
+				surface_level_from_classification(x, z, water_class, owner),
+				horizontal.coast_distance_at(x, z),
+				WATER_LEVEL - height.terrain_height_at(x, z),
+				protected_water(x, z, water_class)
 		end
 
 		local compatibility = {}

@@ -3,7 +3,8 @@
 -- r7_runtime.lua over the shared world assembly -- inland water, roads,
 -- capitals, every settlement prepared -- and its `build`: the zones session,
 -- the R7 anchor roster and every settlement's configuration), every
--- tributary's junction stretch at most JOIN_MAX nodes, and the per-chunk path
+-- tributary's junction stretch at most JOIN_MAX nodes, no open sea at the rim
+-- of a bay (Round 51 T2), and the per-chunk path
 -- (Round 37, audit MGT-01/MGS-02): a sample of chunks planned and written
 -- through the real `plan_slice` and writer against a fake VoxelManip.
 --
@@ -33,7 +34,8 @@ local t0 = os.clock()
 -- 320 means the snap went astray (a long straight canyon).
 local JOIN_MAX = 320
 -- The sample's map corner: the corner of the world's query bounds.
-local WORLD = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").world_bounds
+local SOURCE = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
+local WORLD = SOURCE.world_bounds
 local X_LIMIT, Z_LIMIT = WORLD.max_x, WORLD.max_z
 
 local R, rivers
@@ -50,6 +52,32 @@ local function build()
 			if d > JOIN_MAX then
 				error(("river %d joins its parent across %.0f nodes (bound %d)")
 					:format(r.id, d, JOIN_MAX), 0)
+			end
+		end
+	end
+	-- No open sea at the rim of a bay (Round 51 T2, sea plan ruling 4): no
+	-- open-sea column within 32 nodes of planned water and 128 of land around
+	-- each bay, every 16 nodes (the open sea begins 250-350 off the coast).
+	local zones = R.built.zones_session
+	local DIRS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}}
+	local function near(x, z, wanted, reach, step)
+		for d = step, reach, step do
+			for _, o in ipairs(DIRS) do
+				if zones.water_class_at(x + o[1] * d, z + o[2] * d) == wanted then return true end
+			end
+		end
+		return false
+	end
+	for _, bay in ipairs(SOURCE.bays) do
+		local cx = bay.centreline[1].x
+		local sign = bay.deep_ocean_side == "min_z" and -1 or 1
+		for zz = 1800, 3300, 16 do
+			for x = cx - 1100, cx + 1100, 16 do
+				local z = sign * zz
+				if zones.water_class_at(x, z) == "deep_ocean" and
+						near(x, z, "planned_water", 32, 16) and near(x, z, "land", 128, 32) then
+					error(("open sea at the rim of %s (%d, %d)"):format(bay.id, x, z), 0)
+				end
 			end
 		end
 	end

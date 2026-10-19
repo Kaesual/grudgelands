@@ -20,6 +20,9 @@ local PUBLIC_METHODS = {
 	"terrain_height_at",
 	"water_class_at",
 	"hard_footprint_in",
+	-- Round 51 T2: the water query (class, zone, level, distance, depth,
+	-- protected) for the water mobs and the map (`wp40/zones.lua`).
+	"water_query_at",
 }
 
 local EXPECTED_RACES = {

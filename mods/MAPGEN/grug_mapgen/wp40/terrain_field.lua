@@ -214,6 +214,106 @@ return function(data)
 
 	local module = {simplex = simplex, WATER = WATER}
 
+	-- Coast distance: a chamfer distance of land_at on a coarse grid (the
+	-- terrain grids' extent, every `coast_cell` nodes), read through a cubic
+	-- B-spline; + on land, - at sea, in nodes. A true distance: the zone
+	-- field's own coast measure is not (seam rule 1). Returns
+	-- {coast_signed = function(x, z)}. Built once per world: the horizontal
+	-- session builds it for the water classes (Round 51 T2) and hands it to
+	-- `new`.
+	function module.coast_grid(land_at)
+		local V = data.params
+		local GX0, GZ0, GX1 = V.grid_min_x, V.grid_min_z, V.grid_max_x
+		local GZ1 = V.grid_max_z
+		local cc = V.coast_cell
+		local cnx = floor((GX1 - GX0) / cc) + 1
+		local cnz = floor((GZ1 - GZ0) / cc) + 1
+		local sdf = {}
+		do
+			local landg, dl, ds = {}, {}, {}
+			local BIG = 1e9
+			for iz = 0, cnz - 1 do
+				for ix = 0, cnx - 1 do
+					local k = iz * cnx + ix
+					local l = land_at(GX0 + ix * cc, GZ0 + iz * cc) and true or false
+					landg[k] = l
+					dl[k] = l and BIG or 0 -- distance to the nearest sea cell
+					ds[k] = l and 0 or BIG -- distance to the nearest land cell
+				end
+			end
+			local D1, D2 = cc, cc * sqrt(2)
+			local function chamfer(d)
+				for iz = 0, cnz - 1 do
+					for ix = 0, cnx - 1 do
+						local k = iz * cnx + ix
+						local v = d[k]
+						if v > 0 then
+							if ix > 0 then v = min(v, d[k - 1] + D1) end
+							if iz > 0 then
+								v = min(v, d[k - cnx] + D1)
+								if ix > 0 then v = min(v, d[k - cnx - 1] + D2) end
+								if ix < cnx - 1 then v = min(v, d[k - cnx + 1] + D2) end
+							end
+							d[k] = v
+						end
+					end
+				end
+				for iz = cnz - 1, 0, -1 do
+					for ix = cnx - 1, 0, -1 do
+						local k = iz * cnx + ix
+						local v = d[k]
+						if v > 0 then
+							if ix < cnx - 1 then v = min(v, d[k + 1] + D1) end
+							if iz < cnz - 1 then
+								v = min(v, d[k + cnx] + D1)
+								if ix < cnx - 1 then v = min(v, d[k + cnx + 1] + D2) end
+								if ix > 0 then v = min(v, d[k + cnx - 1] + D2) end
+							end
+							d[k] = v
+						end
+					end
+				end
+			end
+			chamfer(dl)
+			chamfer(ds)
+			for k = 0, cnx * cnz - 1 do
+				sdf[k] = landg[k] and (dl[k] - cc / 2) or -(ds[k] - cc / 2)
+			end
+		end
+		local function coast_signed(x, z)
+			local u = (x - GX0) / cc
+			local v = (z - GZ0) / cc
+			local iu, iv = floor(u), floor(v)
+			local a0, a1, a2, a3 = bspline(u - iu)
+			local b0, b1, b2, b3 = bspline(v - iv)
+			local ix0 = max(1, min(cnx - 3, iu)) - 1
+			local iz0 = max(1, min(cnz - 3, iv)) - 1
+			local k0 = iz0 * cnx + ix0
+			local k1, k2, k3 = k0 + cnx, k0 + 2 * cnx, k0 + 3 * cnx
+			return b0 * (a0 * sdf[k0] + a1 * sdf[k0 + 1] + a2 * sdf[k0 + 2] + a3 * sdf[k0 + 3])
+				+ b1 * (a0 * sdf[k1] + a1 * sdf[k1 + 1] + a2 * sdf[k1 + 2] + a3 * sdf[k1 + 3])
+				+ b2 * (a0 * sdf[k2] + a1 * sdf[k2 + 1] + a2 * sdf[k2 + 2] + a3 * sdf[k2 + 3])
+				+ b3 * (a0 * sdf[k3] + a1 * sdf[k3 + 1] + a2 * sdf[k3 + 2] + a3 * sdf[k3 + 3])
+		end
+		return {coast_signed = coast_signed}
+	end
+
+	-- The coastal belt's outer edge (Round 51 T2, sea plan ruling 5): its
+	-- distance off the coast at (x, z), `belt_edge` +- `belt_edge_amp` nodes
+	-- along a smooth noise of period `belt_edge_period`. The water classes
+	-- (`simple_map.lua`: belt inside, open sea beyond) and the sea floor (its
+	-- fall to the deep sea starts there) read the same function.
+	function module.belt_edge(seed)
+		local V = data.params
+		local noise = simplex(seed, "belt_edge")
+		local base, amp, period = V.belt_edge, V.belt_edge_amp, V.belt_edge_period
+		return function(x, z)
+			local n = noise(x / period, z / period)
+			if n > 1 then n = 1 elseif n < -1 then n = -1 end
+			return base + amp * n
+		end
+	end
+
 	function module.new(seed, opts)
 		local V = data.params
 		local CH = data.channels
@@ -348,79 +448,11 @@ return function(data)
 			return P
 		end
 
-		-- 2) Coast distance: a chamfer distance of land_at on a coarse grid,
-		-- read through a cubic B-spline. A true distance: the horizontal
-		-- session's own coast measures are not (seam rule 1).
-		local cc = V.coast_cell
-		local cnx = floor((GX1 - GX0) / cc) + 1
-		local cnz = floor((GZ1 - GZ0) / cc) + 1
-		local sdf = {}
-		do
-			local landg, dl, ds = {}, {}, {}
-			local BIG = 1e9
-			for iz = 0, cnz - 1 do
-				for ix = 0, cnx - 1 do
-					local k = iz * cnx + ix
-					local l = land_at(GX0 + ix * cc, GZ0 + iz * cc) and true or false
-					landg[k] = l
-					dl[k] = l and BIG or 0 -- distance to the nearest sea cell
-					ds[k] = l and 0 or BIG -- distance to the nearest land cell
-				end
-			end
-			local D1, D2 = cc, cc * sqrt(2)
-			local function chamfer(d)
-				for iz = 0, cnz - 1 do
-					for ix = 0, cnx - 1 do
-						local k = iz * cnx + ix
-						local v = d[k]
-						if v > 0 then
-							if ix > 0 then v = min(v, d[k - 1] + D1) end
-							if iz > 0 then
-								v = min(v, d[k - cnx] + D1)
-								if ix > 0 then v = min(v, d[k - cnx - 1] + D2) end
-								if ix < cnx - 1 then v = min(v, d[k - cnx + 1] + D2) end
-							end
-							d[k] = v
-						end
-					end
-				end
-				for iz = cnz - 1, 0, -1 do
-					for ix = cnx - 1, 0, -1 do
-						local k = iz * cnx + ix
-						local v = d[k]
-						if v > 0 then
-							if ix < cnx - 1 then v = min(v, d[k + 1] + D1) end
-							if iz < cnz - 1 then
-								v = min(v, d[k + cnx] + D1)
-								if ix < cnx - 1 then v = min(v, d[k + cnx + 1] + D2) end
-								if ix > 0 then v = min(v, d[k + cnx - 1] + D2) end
-							end
-							d[k] = v
-						end
-					end
-				end
-			end
-			chamfer(dl)
-			chamfer(ds)
-			for k = 0, cnx * cnz - 1 do
-				sdf[k] = landg[k] and (dl[k] - cc / 2) or -(ds[k] - cc / 2)
-			end
-		end
-		local function coast_signed(x, z)
-			local u = (x - GX0) / cc
-			local v = (z - GZ0) / cc
-			local iu, iv = floor(u), floor(v)
-			local a0, a1, a2, a3 = bspline(u - iu)
-			local b0, b1, b2, b3 = bspline(v - iv)
-			local ix0 = max(1, min(cnx - 3, iu)) - 1
-			local iz0 = max(1, min(cnz - 3, iv)) - 1
-			local k0 = iz0 * cnx + ix0
-			local k1, k2, k3 = k0 + cnx, k0 + 2 * cnx, k0 + 3 * cnx
-			return b0 * (a0 * sdf[k0] + a1 * sdf[k0 + 1] + a2 * sdf[k0 + 2] + a3 * sdf[k0 + 3])
-				+ b1 * (a0 * sdf[k1] + a1 * sdf[k1 + 1] + a2 * sdf[k1 + 2] + a3 * sdf[k1 + 3])
-				+ b2 * (a0 * sdf[k2] + a1 * sdf[k2 + 1] + a2 * sdf[k2 + 2] + a3 * sdf[k2 + 3])
-				+ b3 * (a0 * sdf[k3] + a1 * sdf[k3 + 1] + a2 * sdf[k3 + 2] + a3 * sdf[k3 + 3])
-		end
+		-- 2) Coast distance (`module.coast_grid`): the horizontal session's
+		-- grid when the caller hands it over (Round 51 T2: the water classes
+		-- read the same distance), else built here from land_at.
+		local coast = opts.coast_grid or module.coast_grid(land_at)
+		local coast_signed = coast.coast_signed
 
 		-- 3) Landmarks: soft fields in rotated local coordinates, bucketed on a
 		-- 128-node grid.
@@ -779,10 +811,18 @@ return function(data)
 		-- runs through the waterline (plan D35): near the water the land's
 		-- blend target slopes down to the water surface (1:8) and the sea floor
 		-- starts just below it and deepens across a shallow shelf (the coral
-		-- depths), then falls away to the deep sea. Gentle coasts shelve
-		-- slowly; short ramps, where the land meets the sea steeply, shelve
-		-- faster. Returns the height and the coast distance.
+		-- depths). Gentle coasts shelve slowly; short ramps, where the land
+		-- meets the sea steeply, shelve faster. Round 51 T2 (sea plan ruling 5):
+		-- past the shelf (SHELF_EDGE) the coastal belt deepens gently, about 1
+		-- node per 20, to about 18 at its organic outer edge (`belt_edge`,
+		-- 250-350 nodes off the coast), and only beyond that edge does the
+		-- floor fall away to the deep sea. The shelf's steepness factor fades
+		-- out across the belt, so the far floor reads no zone parameter (their
+		-- blend is unsteady that far from land). Up to SHELF_EDGE the profile
+		-- is the one before. Returns the height and the coast distance.
 		local BEACH, SHELF, SHELF_NEAR, SHELF_EDGE = 0.12, 0.07, 1.8, 70
+		local BELT_SLOPE, BELT_FADE = V.belt_slope, V.belt_fade
+		local belt_edge = module.belt_edge(seed)
 		local function with_coast(x, z, h, land, cw)
 			local sd = coast_signed(x, z)
 			local steep = smoothstep(0.35, 0.7, nmisc(x / 700 + 91, z / 700 - 13))
@@ -797,10 +837,17 @@ return function(data)
 				local d = sd < 0 and -sd or 0
 				local k = 150 / cw
 				if k < 0.75 then k = 0.75 elseif k > 1.25 then k = 1.25 end
-				local depth = k * (SHELF * d + SHELF_NEAR * (1 - exp(-d / 10)))
-				-- Past the shallow shelf the floor falls away to the deep sea.
-				local off = d - SHELF_EDGE
-				if off > 0 then depth = depth + 0.12 * off * off / (off + 40) end
+				local depth
+				if d <= SHELF_EDGE then
+					depth = k * (SHELF * d + SHELF_NEAR * (1 - exp(-d / 10)))
+				else
+					k = k + (1 - k) * smoothstep(SHELF_EDGE, SHELF_EDGE + BELT_FADE, d)
+					depth = k * (SHELF * SHELF_EDGE + SHELF_NEAR * (1 - exp(-d / 10))) +
+						BELT_SLOPE * (d - SHELF_EDGE)
+					-- Past the belt the floor falls away to the deep sea.
+					local off = d - belt_edge(x, z)
+					if off > 0 then depth = depth + 0.12 * off * off / (off + 40) end
+				end
 				if depth > 31.7 then depth = 31.7 end
 				h = -(0.3 + depth) + 1.5 * nmisc(x / 120, z / 120) * smoothstep(0, 40, d)
 				if h > -0.3 then h = -0.3 end
