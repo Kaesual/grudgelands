@@ -413,18 +413,20 @@ pixel its centre lies in, which takes their mean):
 
 | Quality | Size | Nodes per pixel | Relief grid | Tiles | Download | First render |
 |---|---|---|---|---|---|---|
-| `normal` (default) | 1215×1080 | about 6.7 | 8 nodes | 9 + 9 | about 1.09 + 1.09 MB | about 14 s |
-| `high` | 3600×3200 | 2.25 | 4 nodes | 56 + 9 | about 6.92 + 1.09 MB | about 67 s |
+| `normal` (default) | 1215×1080 | about 6.7 | 8 nodes | 9 + 9 | about 1.07 + 1.09 MB | about 13 s |
+| `high` | 3600×3200 | 2.25 | 4 nodes | 56 + 9 | about 6.77 + 1.25 MB | about 66 s |
 
 Both images cover the atlas, ±4050 × ±3600 nodes since Round 51 (sea plan
 rulings 2 and 3: room for the coastal belt; ±3600 × ±3200 before): normal
 grew with it at the same scale, high kept its pixel count. The Round 51
-figures are offline renders with the real renderer on the user's seed
-(`tools/r27_minimap/render_base.lua`, 2026-10-19, without the baked names
-and icons, the second figure the minimap's copy, the same image here): before
-the round on the same world 1080×960 in 12.0 s (6 tiles, 0.92 MB) and
-3600×3200 in 60.3 s (56 tiles, 6.92 MB); the time grows with the area, the
-depth colouring costs about nothing and compresses as well as before.
+figures are one engine run each on the user's seed (2026-10-19, with the
+region names baked, the second figure the minimap's copy; the Claim Stone
+overlays add about 26 KB). Offline renders with the real renderer on the
+same world (`tools/r27_minimap/render_base.lua`, without names and icons)
+compare: before the round 1080×960 in 12.0 s (6 tiles, 0.92 MB) and
+3600×3200 in 60.3 s (6.92 MB), after it 1215×1080 in 14.0 s (9 tiles,
+1.09 MB) and 3600×3200 in 67.4 s (6.92 MB); the time grows with the area,
+the depth colouring costs about nothing and compresses as well as before.
 
 The older figures are comparisons from one engine run each on the development
 workstation (seed 42, 2026-10-13, Round 47: the world map's image without
