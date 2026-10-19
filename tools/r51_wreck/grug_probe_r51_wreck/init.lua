@@ -23,7 +23,7 @@ local TIME_OF_DAY = 0.5
 local WATER_LEVEL = 1
 local WRECK_NODES = {"grug_nodes:wreck_planks", "grug_nodes:wreck_planks_algae",
 	"grug_nodes:wreck_log", "grug_nodes:wreck_mast", "grug_nodes:wreck_rope",
-	"grug_nodes:wreck_sail", "grug_nodes:wreck_algae"}
+	"grug_nodes:wreck_sail", "grug_nodes:wreck_algae", "default:mossycobble"}
 
 local function log(msg) core.log("action", P .. msg) end
 

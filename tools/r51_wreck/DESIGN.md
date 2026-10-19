@@ -231,10 +231,16 @@ against the sketch in §5, and why:
   (the wreck stays under the surface) and at most 14; a ring 16 round the
   footprint (every 4 nodes) is bay, belt or open-sea water outside the same
   exclusions. The `seabed` layer sits on the lowest sand column.
-- **Counts** (`count.lua`): seed 12345 65 wrecks (hull 17, bow 15, stern 12,
-  debris 21) in 22 zones, seed 42 69 (18, 14, 19, 18) in 21 zones; 1-7 per
-  zone, median 2-3; most at 7-11 deep. The layout of the whole world takes
-  about 0.5 s; a chunk asks at most four cells.
+- **Zone cap** (fix round, coordinator): a zone keeps at most 4 wrecks, its
+  wrecks with the lowest cell hash (`hash(cx, cz, 4)`); a wreck's zone is the
+  water query's at its footprint's middle. The cap needs every wreck of a
+  zone, so the first ask lays out the whole world once per Lua state (0.51
+  s on seed 12345, 0.65 s on seed 42), independent of emerge order; later
+  chunks read the cache. The dragon islands' belts keep their wrecks.
+- **Counts** (`count.lua`): seed 12345 54 wrecks (hull 14, bow 12, stern 9,
+  debris 19) in 22 zones, seed 42 57 (16, 11, 14, 16) in 21 zones; 1-4 per
+  zone, median 2-3; most at 7-11 deep (before the cap: 65 and 69, up to 7
+  a zone).
 - **Nodes** in `grug_nodes/wreck.lua` (§3), ARTS's textures under
   `grug_nodes_wreck_*.png`. They are not R6 roster rows (`r7_content.lua`):
   the roster gates what the R6 rows and P9G place; the successor passes

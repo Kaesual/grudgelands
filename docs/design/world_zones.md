@@ -652,8 +652,10 @@ rewrite records the WP40 model it replaced.
   most 14 nodes of water over it (the shallowest of the spots a cell tries),
   the footprint and a ring 16 nodes round it clear of the shore and of every
   settlement, POI and other non-water claim exclusion; their lowest layers
-  lie in the sand. About 65-70 per world in 21-22 zones (1-7 a zone, median
-  2-3; seeds 12345 and 42). The broken main mast (6 nodes) just breaks the
+  lie in the sand. A zone keeps at most 4 ("a few per coast"; the zone of
+  a wreck's footprint middle). About 55 per world in 21-22 zones (1-4 a
+  zone, median 2-3; seeds 12345 and 42), the dragon islands' belts
+  included. The broken main mast (6 nodes) just breaks the
   surface where the seabed is 9 deep and ends under it deeper down. The
   wreck pass `wp40/wreck_writer.lua` writes them (module guide, "the wreck
   pass"). A bay's

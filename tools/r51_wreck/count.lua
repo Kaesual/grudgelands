@@ -4,7 +4,7 @@
 --
 -- Builds the real runtime of SEED (tools/seed_fleet/runtime.lua), takes the
 -- wreck writer's layout through its harness hook and asks every 256-node
--- cell of the world for its wreck. Prints the wrecks per shape and per
+-- cell of the world for its wreck (after the zone cap). Prints the wrecks per shape and per
 -- owning zone (the zone of the footprint's middle), the zones of the coast
 -- that hold none, the seconds the layout took, and every wreck (shape,
 -- turn, corner, seabed y, depth there), so a probe can visit one. With a

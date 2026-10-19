@@ -19,7 +19,10 @@
 --      protected, outside the claims; never a channel, a lake or the open
 --      sea; the seabed under it within one node; the water over its lowest
 --      column from the shape's height + 1 to 14; the ring 16 round it water
---      (bay, belt, open sea) outside the claims. The four quarter turns
+--      (bay, belt, open sea) outside the claims. A zone keeps at most
+--      ZONE_CAP (the lowest-ranked), the same whichever cell is asked first,
+--      none outside the world's bounds; the pass's own exclusion filter
+--      flags the claims only, not the bay and coast shapes. The four quarter turns
 --      hold the same cells (logs along x and z swapped on an odd turn); the
 --      layout is the same for the same seed and differs for another;
 --   E. the writer on a fake successor context: two neighbouring owners
@@ -168,18 +171,21 @@ local function query(x, z)
 	if x >= 600 and x <= 700 and z >= -300 and z <= -200 then return "lake", "z", 5, nil, 3, false end
 	if z < 0 then return nil end
 	local depth = 1 - ground_at(x, z)
-	if x >= 3000 and x <= 3100 then return "channel", "z", 60, z, 10, z >= 24 end
-	if x >= 1500 and x <= 2300 and z >= 600 and z <= 1200 then return "bay", "z", 5, z, depth, true end
+	-- a zone per 1500 nodes of coast
+	local zone = "zone" .. math.floor(x / 1500)
+	if x >= 3000 and x <= 3100 then return "channel", zone, 60, z, 10, z >= 24 end
+	if x >= 1500 and x <= 2300 and z >= 600 and z <= 1200 then return "bay", zone, 5, z, depth, true end
 	if z >= 400 then return "open_sea", nil, nil, z, depth, true end
-	return "belt", "z", 5, z, depth, z >= 24
+	return "belt", zone, 5, z, depth, z >= 24
 end
 local function excluded(x, z)
 	return (x >= 1000 and x <= 1300 and z >= -200 and z <= 100) or
 		(x >= 4000 and x <= 4200 and z >= 300 and z <= 500)
 end
+local BOUNDS = {min_x = -1024, max_x = 5375, min_z = -512, max_z = 1791}
 local function new_layout(seed)
 	return W.layout(shapes, {seed = seed, water_query = query, ground_at = ground_at,
-		excluded = excluded, water_level = 1})
+		excluded = excluded, water_level = 1, bounds = BOUNDS})
 end
 local layout = new_layout("12345")
 local sites, by_cell = {}, {}
@@ -250,6 +256,53 @@ for s, shape in ipairs(layout.shapes) do
 		check(ok, shapes.shapes[s].key .. " turn " .. t .. " keeps its cells")
 	end
 end
+-- the zone cap: at most ZONE_CAP a zone, the lowest-ranked of the raw ones
+local raw_by_zone, kept_by_zone = {}, {}
+for cz = -2, 6 do
+	for cx = -4, 20 do
+		local raw = layout.raw_site(cx, cz)
+		if raw then
+			local _, zone = query(raw.x + math.floor(raw.w / 2), raw.z + math.floor(raw.d / 2))
+			raw_by_zone[zone] = raw_by_zone[zone] or {}
+			table.insert(raw_by_zone[zone], {cx = cx, cz = cz})
+		end
+		local site = layout.site(cx, cz)
+		if site then
+			kept_by_zone[site.zone] = kept_by_zone[site.zone] or {}
+			table.insert(kept_by_zone[site.zone], site)
+		end
+	end
+end
+local capped, over, wrong_rank = 0, 0, 0
+for zone, raws in pairs(raw_by_zone) do
+	local kept = kept_by_zone[zone] or {}
+	if #kept > W.ZONE_CAP then over = over + 1 end
+	if #kept ~= math.min(#raws, W.ZONE_CAP) then wrong_rank = wrong_rank + 1 end
+	if #raws > W.ZONE_CAP then capped = capped + 1 end
+	-- a dropped raw site ranks above every kept one of its zone
+	local worst = -1
+	for _, site in ipairs(kept) do worst = math.max(worst, site.rank) end
+	for _, r in ipairs(raws) do
+		if not layout.site(r.cx, r.cz) and layout.rank(r.cx, r.cz) < worst then
+			wrong_rank = wrong_rank + 1
+		end
+	end
+end
+check(over == 0, "no zone keeps more than " .. W.ZONE_CAP .. " wrecks")
+check(wrong_rank == 0, "every zone keeps min(raw, cap) wrecks")
+check(capped > 0, "the cap drops wrecks in some zone (" .. capped .. ")")
+-- the same layout whichever cell is asked first
+local backward = new_layout("12345")
+local order_same = true
+for cz = 6, -2, -1 do
+	for cx = 20, -4, -1 do
+		local a, b = backward.site(cx, cz), layout.site(cx, cz)
+		if (a and a.x) ~= (b and b.x) or (a and a.z) ~= (b and b.z) then order_same = false end
+	end
+end
+check(order_same, "the layout does not depend on which cell is asked first")
+check(not layout.site(-40, 0) and not layout.site(0, 40), "no wreck outside the world's bounds")
+
 -- determinism
 local again, other = new_layout("12345"), new_layout("777")
 local same, differs = true, false
@@ -282,10 +335,34 @@ for _, s in ipairs(sites) do
 end
 local split_x = site.x + math.floor(site.w / 2)
 local planner = {column_values_at = function(x, z) return nil, nil, nil, nil, nil, ground_at(x, z) end}
-local horizontal = {lowest_exclusion_value_at = function(x, z) return excluded(x, z) and 1 or nil end}
+-- the horizontal world's exclusions by shape id: the two claims (an
+-- envelope and a POI core) and a bay and a coast shape over the whole sea;
+-- the pass must flag only the claims, so its layout is the direct one's
+local SOURCE = {world_bounds = BOUNDS,
+	claim_exclusion_recipes = {{id = "r_env", kind = "anchor_blend_envelope"},
+		{id = "r_core", kind = "active_core"}, {id = "r_bay", kind = "planned_water"},
+		{id = "r_coast", kind = "coast"}},
+	claim_exclusions = {{id = "town", recipe_id = "r_env"}, {id = "poi", recipe_id = "r_core"},
+		{id = "bay", recipe_id = "r_bay"}, {id = "coast", recipe_id = "r_coast"}}}
+local horizontal = {lowest_exclusion_value_at = function(x, z, value_by_id)
+	local best
+	local function take(id) if value_by_id[id] and (not best or value_by_id[id] < best) then best = value_by_id[id] end end
+	if x >= 1000 and x <= 1300 and z >= -200 and z <= 100 then take("town") end
+	if x >= 4000 and x <= 4200 and z >= 300 and z <= 500 then take("poi") end
+	if z >= 0 then take("bay"); take("coast") end
+	return best
+end}
 local pass = W.config(fake, shapes).new({full_seed_string = "12345",
 	zones_session = {water_query_at = query}, planner_source = planner,
-	horizontal = horizontal, source = {}})
+	horizontal = horizontal, source = SOURCE})
+local filter_same = true
+for cz = -2, 6 do
+	for cx = -4, 20 do
+		local a, b = pass.layout.site(cx, cz), layout.site(cx, cz)
+		if (a and a.x) ~= (b and b.x) or (a and a.z) ~= (b and b.z) then filter_same = false end
+	end
+end
+check(filter_same, "the pass flags only the non-water claims (town, POI), not bay or coast")
 local WATER, SAND = fake.get_content_id("default:water_source"), fake.get_content_id("default:sand")
 local FOREIGN = fake.get_content_id("default:cobble")
 local world, written, outside = {}, {}, 0

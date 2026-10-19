@@ -20,6 +20,11 @@
 --   * a ring MARGIN nodes round the footprint (every 4 nodes) is bay, belt
 --     or open-sea water, outside the same exclusions: the shore, piers,
 --     towns and POIs stay clear by footprint + 16.
+-- A zone keeps at most ZONE_CAP of the wrecks that pass ("a few per coast"):
+-- a wreck's zone is the water query's at its footprint's middle, and of a
+-- zone's wrecks those with the lowest hash of their cell stay. For that the
+-- first ask lays out the whole world (its bounds) once per Lua state, about
+-- half a second; the result is the same whatever chunk asks first.
 -- The shape's `seabed` layer sits on the lowest sand column of the
 -- footprint; the layers below it lie in the sand. Every chunk writes the
 -- part of each wreck inside its own owner (no owner clipping): plain nodes
@@ -39,6 +44,7 @@ M.PROBES = 16           -- hashed spots tried per cell
 M.CHANCE = 50           -- percent of cells that try
 M.MARGIN = 16           -- the clear ring round the footprint
 M.MAX_DEPTH = 14        -- the deepest water over the footprint's lowest column
+M.ZONE_CAP = 4          -- the most wrecks a zone keeps
 -- Shape weights (hull, bow, stern, debris), out of their sum.
 M.WEIGHTS = {3, 2, 2, 3}
 
@@ -90,7 +96,8 @@ end
 -- `deps`: seed (the world's seed string), water_query(x, z) (the zone
 -- authority's water query: class, zone, level, distance, depth, protected),
 -- ground_at(x, z) (the seabed's top node), excluded(x, z) (true inside a
--- claim exclusion that is not plain water or coast), water_level.
+-- claim exclusion that is not plain water or coast), water_level, bounds
+-- (the world's {min_x, max_x, min_z, max_z}: no wreck outside).
 function M.layout(shapes, deps)
 	local SHAPES = turned(shapes)
 	local phase = 0
@@ -135,14 +142,11 @@ function M.layout(shapes, deps)
 	end
 
 	local layout = {}
-	local cache = {}
-	-- The wreck of cell (cx, cz), or false: {shape, turn, x, z (the footprint's
-	-- low corner), y (the lowest seabed node), w, d, key}.
-	function layout.site(cx, cz)
-		local key = cx * 65536 + cz
-		local site = cache[key]
-		if site ~= nil then return site end
-		site = false
+	-- The wreck a cell's own tests give, before the zone cap, or false:
+	-- {shape, turn, x, z (the footprint's low corner), y (the lowest seabed
+	-- node), w, d, key}.
+	function layout.raw_site(cx, cz)
+		local site = false
 		if hash(cx, cz, 1) % 100 < M.CHANCE then
 			local roll, s = hash(cx, cz, 2) % total, 1
 			while roll >= M.WEIGHTS[s] do roll = roll - M.WEIGHTS[s]; s = s + 1 end
@@ -168,8 +172,54 @@ function M.layout(shapes, deps)
 				end
 			end
 		end
-		cache[key] = site
 		return site
+	end
+	-- A cell's rank in its zone's cap (the lower, the likelier kept).
+	function layout.rank(cx, cz) return hash(cx, cz, 4) end
+	-- The whole world's wrecks after the zone cap, laid out once.
+	local cache, cell_x0, cell_x1, cell_z0, cell_z1
+	local function lay_out()
+		local b = deps.bounds
+		cell_x0, cell_x1 = math.floor(b.min_x / M.CELL), math.floor(b.max_x / M.CELL)
+		cell_z0, cell_z1 = math.floor(b.min_z / M.CELL), math.floor(b.max_z / M.CELL)
+		cache = {}
+		local by_zone, zones = {}, {}
+		for cz = cell_z0, cell_z1 do
+			for cx = cell_x0, cell_x1 do
+				local site = layout.raw_site(cx, cz)
+				cache[cx * 65536 + cz] = false
+				if site then
+					site.cx, site.cz, site.rank = cx, cz, layout.rank(cx, cz)
+					local _, zone = query(site.x + math.floor(site.w / 2), site.z + math.floor(site.d / 2))
+					zone = zone or ""
+					site.zone = zone
+					if not by_zone[zone] then
+						by_zone[zone] = {}
+						zones[#zones + 1] = zone
+					end
+					local list = by_zone[zone]
+					list[#list + 1] = site
+				end
+			end
+		end
+		for _, zone in ipairs(zones) do
+			local list = by_zone[zone]
+			table.sort(list, function(a, c)
+				if a.rank ~= c.rank then return a.rank < c.rank end
+				if a.cz ~= c.cz then return a.cz < c.cz end
+				return a.cx < c.cx
+			end)
+			for i = 1, math.min(M.ZONE_CAP, #list) do
+				cache[list[i].cx * 65536 + list[i].cz] = list[i]
+			end
+		end
+	end
+	-- The wreck of cell (cx, cz) after the zone cap, or false (the site table
+	-- also carries cx, cz, zone and rank).
+	function layout.site(cx, cz)
+		if not cache then lay_out() end
+		if cx < cell_x0 or cx > cell_x1 or cz < cell_z0 or cz > cell_z1 then return false end
+		return cache[cx * 65536 + cz]
 	end
 	-- Every wreck whose footprint meets the rectangle.
 	function layout.sites_in(min_x, max_x, min_z, max_z)
@@ -232,7 +282,7 @@ function M.config(core_api, shapes)
 				type(planner) ~= "table" or type(planner.column_values_at) ~= "function" or
 				type(horizontal) ~= "table" or
 				type(horizontal.lowest_exclusion_value_at) ~= "function" or
-				type(source) ~= "table" then
+				type(source) ~= "table" or type(source.world_bounds) ~= "table" then
 			fail("dependency seam differs")
 		end
 		-- The claim exclusions that are not plain water or coast: towns,
@@ -254,6 +304,7 @@ function M.config(core_api, shapes)
 				return horizontal.lowest_exclusion_value_at(x, z, flagged) ~= nil
 			end,
 			water_level = 1,
+			bounds = source.world_bounds,
 		})
 		-- Tools (tools/r51_wreck/count.lua) read the layout of a runtime they
 		-- build through this harness hook; a game never sets it.
