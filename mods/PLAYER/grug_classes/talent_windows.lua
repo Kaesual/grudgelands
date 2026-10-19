@@ -175,7 +175,7 @@ function grug_classes.clear_talent_windows(player)
 			end
 		end
 	end
-	-- The leave cleanup (talents.lua) relies on these two lines.
+	-- The leave cleanup (talents.lua) relies on this line.
 	windows[player:get_player_name()] = nil
 	local name = player:get_player_name()
 	for id in pairs(ready[name] or {}) do
