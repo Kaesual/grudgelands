@@ -29,6 +29,11 @@
 --    bay, belt and channel water is protected from 24 nodes off the coast
 --    (at the surface, the seabed and deep below), the shore and inland water
 --    are not; Stormkelp's shore ground stays open.
+-- D. T3, seabed growth: the rule's depths; chunks written by the real
+--    writer grow coral to 10, seagrass to 14, kelp to 20 under the surface
+--    and nothing in the open sea; the water-plant exception of
+--    grug_core/protection.lua; seagrass and kelp regrow through the real
+--    renewal with the runtime's own vegetation authority.
 -- The comparison that no land moved is tools/r51_terrain/compare.lua (too
 -- slow for a fixture: one runtime and about 250,000 columns per seed and
 -- checkout).
@@ -516,4 +521,191 @@ if shore then
 end
 print(("  T2: %d belt and %d belt-edge columns, %d open-sea columns near bays checked")
 	:format(belt_columns, edge_columns, rim_columns))
+
+-- ---------------------------------------------------------------------------
+-- D. T3: seabed growth (sea plan ruling 7) and its regrowth
+-- ---------------------------------------------------------------------------
+-- D1. The rule (seabed.lua): nothing shallower than 2 or deeper than 20;
+-- coral patches to 10, seagrass to 14, kelp to 20 and always under water.
+local seabed = dofile(wp40 .. "/seabed.lua")("t3-fixture")
+local seen = {}
+for depth = 0, 26 do
+	for z = -300, 300, 7 do
+		for x = -300, 300, 7 do
+			local kind, variant = seabed.at(x, z, depth)
+			if kind then
+				seen[kind] = true
+				check(depth >= 2 and depth <= 20, "D1 growth only 2-20 deep")
+				if kind == "patch" then check(depth <= 10, "D1 coral patches to 10 deep") end
+				if kind == "seagrass" then
+					check(depth <= 14 and variant >= 1 and variant <= 3, "D1 seagrass to 14 deep")
+				end
+				if kind == "kelp" then
+					local h = seabed.kelp_height(x, z, depth)
+					check(h >= 1 and h <= depth - 1 and h <= 15, "D1 kelp stays under water")
+				end
+			end
+		end
+	end
+end
+check(seen.patch and seen.kelp and seen.seagrass, "D1 every kind grows somewhere")
+
+-- D2. Written chunks (the real writer, fake VoxelManip): a belt, a bay, a
+-- channel and an open-sea chunk; every grown bed node stands where the rule
+-- allows, nothing grows in the open sea, and seagrass and kelp grow.
+local fake = R.fake
+local function grown(name)
+	if name:find("^default:coral_") then return "coral" end
+	if name == "default:sand_with_kelp" then return "kelp" end
+	if name:find("^grug_mapgen:seagrass_") then return "seagrass" end
+	return nil
+end
+local totals = {coral = 0, kelp = 0, seagrass = 0}
+local seagrass_column
+for _, class in ipairs({"belt", "bay", "channel", "open_sea"}) do
+	local c = found[class]
+	local ox, oz = R.origin(c[1]), R.origin(c[2])
+	local minp = {x = ox, y = -32, z = oz}
+	local maxp = {x = ox + 79, y = 47, z = oz + 79}
+	local vm = R.new_vm(minp)
+	local plan, generation = R.built.session.plan_slice(minp, maxp)
+	R.built.writer.apply(vm, minp, maxp, plan, generation)
+	local data = vm.written.data or vm.native.data
+	local param2 = vm.written.param2 or vm.native.param2
+	for z = oz, oz + 79 do
+		for x = ox, ox + 79 do
+			local got, _, _, _, depth = Q(x, z)
+			if got and got ~= "lake" and got ~= "river" then
+				local y = 1 - depth
+				if y >= -32 then
+					local i = (z - oz + 16) * 12544 + (y + 32 + 16) * 112 + (x - ox + 16) + 1
+					local kind = grown(fake.get_name_from_content_id(data[i]))
+					if kind then
+						local at = (" (%s at %d, %d, %d deep)"):format(kind, x, z, depth)
+						totals[kind] = totals[kind] + 1
+						check(got ~= "open_sea", "D2 the open sea stays bare" .. at)
+						check(depth >= 2 and depth <= 20, "D2 growth 2-20 deep" .. at)
+						if kind == "coral" then check(depth <= 10, "D2 coral to 10" .. at) end
+						if kind == "seagrass" then
+							check(depth <= 14, "D2 seagrass to 14" .. at)
+							seagrass_column = seagrass_column or {x, z, got}
+						end
+						if kind == "kelp" then
+							check(param2[i] % 16 == 0 and param2[i] / 16 <= depth - 1,
+								"D2 the kelp stays under water" .. at)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+check(totals.seagrass > 0 and totals.kelp > 0, "D2 seagrass and kelp grow")
+
+-- D3. The exception (grug_core/protection.lua, real file, the real zones
+-- session): water plants may regrow in protected bay, belt and channel
+-- water; nothing else does, nor in the open sea; a renewal guard (a claim)
+-- still refuses.
+do
+	local saved_core, saved_grug_core, saved_zones = rawget(_G, "core"),
+		rawget(_G, "grug_core"), rawget(_G, "grug_zones")
+	_G.core = {is_protected = function() return false end}
+	_G.grug_core = {zone_authority_installed = function() return true end}
+	_G.grug_zones = S
+	dofile(repo .. "/mods/CORE/grug_core/protection.lua")
+	local G = _G.grug_core
+	for _, class in ipairs({"bay", "belt", "channel"}) do
+		local probe = probes[class .. 25]
+		local pos = {x = probe[3], y = S.terrain_height_at(probe[3], probe[4]), z = probe[4]}
+		eq(G.natural_renewal_allowed(pos), false, "D3 protected " .. class .. ": no plain renewal")
+		eq(G.water_plant_renewal_allowed(pos), true, "D3 protected " .. class .. ": water plants")
+		local shore = probes[class .. 23]
+		local spos = {x = shore[3], y = S.terrain_height_at(shore[3], shore[4]), z = shore[4]}
+		eq(G.water_plant_renewal_allowed(spos), true, "D3 " .. class .. " shore: water plants")
+	end
+	local sea = found.open_sea
+	eq(G.water_plant_renewal_allowed({x = sea[1], y = -20, z = sea[2]}), false,
+		"D3 not in the open sea")
+	local claim_probe = probes.belt25
+	G.register_natural_renewal_guard(function() return false end)
+	eq(G.water_plant_renewal_allowed({x = claim_probe[3], y = 0, z = claim_probe[4]}), false,
+		"D3 a renewal guard still refuses")
+	_G.core, _G.grug_core, _G.grug_zones = saved_core, saved_grug_core, saved_zones
+end
+
+-- D4. Regrowth (grug_farming/renewal.lua, real file, with the runtime's own
+-- vegetation authority): a bare sand bed where the generator grows seagrass
+-- grows it back under water source, in protected water too; a refused
+-- exception, a missing water column or an occupied bed do not.
+do
+	local native = dofile(wp40 .. "/r7_native.lua")
+	local authority = R.main.build_authority(native.identities())
+	local vegetation = authority.vegetation
+	check(type(vegetation.seabed) == "function", "D4 the authority knows the seabed")
+	local x, z = seagrass_column[1], seagrass_column[2]
+	local node, p2, ground = vegetation.seabed(x, z)
+	check(node ~= nil and node:find("^grug_mapgen:seagrass_") and p2 == 0,
+		"D4 the authority names the seagrass the writer grew")
+	local map, placed = {}, nil
+	local function key(pos) return pos.x .. "," .. pos.y .. "," .. pos.z end
+	local allowed = true
+	local api = {
+		get_node_or_nil = function(pos) return map[key(pos)] end,
+		set_node = function(pos, n) placed = {pos = pos, node = n}; map[key(pos)] = n end,
+		get_natural_light = function() return 15 end,
+		find_nodes_in_area = function() return {} end,
+		find_nodes_in_area_under_air = function() return {} end,
+		get_item_group = function() return 0 end,
+		density = vegetation, planner = authority.planner_source,
+		natural_ground_alterable = function() return false end,
+		water_plant_alterable = function() return allowed end,
+		random = function() return 0.99 end, trees = false, non_natural = {},
+	}
+	local renewal = dofile(repo .. "/mods/ITEMS/grug_farming/renewal.lua")(api)
+	local function reset()
+		map, placed = {}, nil
+		map[key({x = x, y = ground, z = z})] = {name = "default:sand"}
+		for y = ground + 1, 1 do map[key({x = x, y = y, z = z})] = {name = "default:water_source"} end
+	end
+	local far = {{x = x + 500, y = 0, z = z}}
+	reset()
+	eq(renewal.evaluate_seabed(x, z, far, {left = 1000}, 0), "placed", "D4 seagrass regrows")
+	eq(placed and placed.node.name, node, "D4 the same variant")
+	reset()
+	allowed = false
+	eq(renewal.evaluate_seabed(x, z, far, {left = 1000}, 0), "protected",
+		"D4 without the exception nothing regrows")
+	allowed = true
+	reset()
+	map[key({x = x, y = ground + 1, z = z})] = {name = "air"}
+	eq(renewal.evaluate_seabed(x, z, far, {left = 1000}, 0), "no_water",
+		"D4 only under water")
+	reset()
+	map[key({x = x, y = ground, z = z})] = {name = node}
+	eq(renewal.evaluate_seabed(x, z, far, {left = 1000}, 0), "occupied",
+		"D4 a grown bed stays")
+	-- a kelp column of the rule regrows with its height
+	local kx, kz
+	for zz = z - 200, z + 200, 2 do
+		for xx = x - 200, x + 200, 2 do
+			if not kx then
+				local n = vegetation.seabed(xx, zz)
+				if n == "default:sand_with_kelp" then kx, kz = xx, zz end
+			end
+		end
+	end
+	if kx then
+		local kn, kp2, kground = vegetation.seabed(kx, kz)
+		x, z, ground = kx, kz, kground
+		reset()
+		eq(renewal.evaluate_seabed(kx, kz, {{x = kx + 500, y = 0, z = kz}}, {left = 1000}, 0),
+			"placed", "D4 kelp regrows")
+		eq(placed and placed.node.param2, kp2, "D4 at its height")
+		check(kn == "default:sand_with_kelp", "D4 kelp node")
+	else
+		check(false, "D4 a kelp column near the seagrass")
+	end
+end
+print(("  T3: %d seagrass, %d kelp, %d coral beds in four chunks"):format(totals.seagrass,
+	totals.kelp, totals.coral))
 print(("R51 TERRAIN PASS checks=%d"):format(checks))

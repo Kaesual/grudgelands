@@ -1484,6 +1484,10 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   the depth profile, the wreck band, brightness, protection and the channels;
   `mgprof_t2_extra.lua` the coastal and channel chunks; the probe (boot it
   with `SEED=12345`) also reads the query and the protection in the engine.
+  T3, seabed growth: the fixture's part D (the rule's depths, written chunks,
+  the water-plant exception, seagrass and kelp regrowth through the real
+  renewal); `seabed_survey.lua REPO SEED [CHUNKS]` the shares of coral, kelp
+  and seagrass per water class from chunks written by the real writer.
 - **Round 51 lane NAMES** (`r51_names`, design only, no fixture): the water
   families' ladders and names. `survey.sh` (through the Lua queue, 4
   processes) runs `water_survey.lua` per seed: the game's region builder
