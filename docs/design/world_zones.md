@@ -637,7 +637,8 @@ rewrite records the WP40 model it replaced.
   75-100: 8, 100-125: 9, 125-150: 11, 150-175: 12, 175-200: 13, 200-225: 15,
   225-250: 16, 250-275: 17, 275-300: 18, 300-325: 20, 325-350: 22, then
   25-27, 30 and 32 by d = 400. Coral depths (to about 10) reach about 140 off
-  the coast, kelp depths (to about 20) the whole belt. **The wreck band**,
+  the coast, kelp depths (to about 20) the whole belt (seabed growth: §
+  "Round 10 Cooking wild sources, field soil and shallow reefs"). **The wreck band**,
   seabed 8-14 deep, lies about 90-220 off the coast: 3.9-4.1 km² of
   protected belt and bay seabed per world, in 26-28 zones. Daylight drops
   one light level per water node, so seabed deeper than about 12 is nearly
@@ -2262,12 +2263,28 @@ rules retain priority. Authored settlement fields use actual dry/wet farming
 soil, with the existing current-load timer activation and nearby-water rule.
 Capital protection remains effective; editable ground requires no housing.
 
-Shallow reefs use deterministic 16-node reef-cell patches plus column selection,
-only in sea water with bed depth 2–10: the coastal shelf and, since Round 22
-Phase 6, the continental bays. One cell in four carries a small or large coral
-patch, and loose kelp meadows (soft noise-bounded areas, one sand column in
-six, 2–6 tall) grow on sand beds at least three deep. The six default coral variants and rooted
-sand-with-kelp replace eligible natural bed nodes, with their actual rooted
+Shallow reefs use deterministic 16-node reef-cell patches plus column selection.
+**Seabed growth since Round 51 T3** (sea plan ruling 7, `wp40/seabed.lua`, one
+rule shared by the writer and the renewal) grows in the coastal belt, the
+continental bays and the dragon channels, never in the open sea, and nothing
+deeper than 20: one 16-node cell in four carries a small or large **coral
+patch** (beds 2–10 deep); loose **kelp meadows** (soft noise-bounded areas,
+one sand column in six) grow on sand 3–20 deep, 2–6 tall plus one node per
+two nodes of water beyond 6, at most 15 and always under the surface;
+**seagrass meadows** (their own noise, two sand columns in three, the three
+picked variants `grug_mapgen:seagrass_1..3`, one node of blades) grow on sand
+2–14 deep. Coast claim exclusions (bays, island and channel coasts) do not
+keep the seabed bare; settlements, roads and POIs do. Measured on the
+production seed and seed 42 (12 chunks per class, seabed columns 2–20 deep):
+the shelf (the belt's first 80 nodes) coral 2.9–3.0 %, kelp 2.1–2.7 %,
+seagrass 12.6–13.6 %; the belt beyond coral 0.6–0.8 %, kelp 2.5–2.9 %,
+seagrass 8.9–9.5 %; bays coral 0.7–1.4 %, kelp 3.1–4.3 %, seagrass
+11.4–17.3 %; channels coral 1.5–1.7 %, kelp 2.1–2.8 %, seagrass 11.5–13.4 %;
+the open sea none. In the belt beyond the shelf 41–57 % of the kelp stands
+deeper than 12 (in bays 20–81 %), where daylight is nearly gone. Seagrass and kelp regrow
+([farming.md](farming.md) "Wild plant renewal"); coral patches stay as
+generated. The six default coral variants, rooted sand-with-kelp and the
+seagrass replace eligible natural bed nodes, with their actual rooted
 geometry/height semantics. Lakes, rivers, planned freshwater and functional
 surfaces receive no reef content. There is one terrain/VM writer and no competing
 engine decoration pass (except the two native cave sources above) or global

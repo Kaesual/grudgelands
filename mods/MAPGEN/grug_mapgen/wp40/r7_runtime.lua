@@ -374,7 +374,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				r7_anchor_roster_factory, content_set.anchors)
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
 				settlement_configs, settlement_keys,
-				world_factory(world_catalog, content_set.p9g, habitat_registry),
+				world_factory(world_catalog, content_set.p9g, habitat_registry,
+					dofile(wp40_directory .. "/seabed.lua")),
 				dofile(wp40_directory .. "/road_writer.lua")(core_api, source),
 				dofile(wp40_directory .. "/arena_writer.lua")(core_api, source,
 					dofile(wp40_directory .. "/arena_layout.lua")),
@@ -502,6 +503,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					protected_only_floor_at =
 						r6_identity.planner_source.protected_only_floor_at,
 					surface_mob_level_at = public_zones_session.surface_mob_level_at,
+					-- the seabed's regrowth (Round 51 T3): the writer's rule
+					seabed = dofile(wp40_directory .. "/seabed.lua")(full_seed),
+					seagrass_names = world_catalog.seagrass,
 				}),
 				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(
 					r6_identity.planner_source, r6_identity.template_records,
