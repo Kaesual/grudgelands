@@ -1,4 +1,246 @@
-# Round 52 ARTA — drop 01
+# Round 52 ARTA — art drops
+
+## Drop 02 — class and weapon overlays
+
+Delivered 2026-10-19 by GPT-6 Astra on `r52-arta`. **Compatible:** staged
+art proposals and their Python generator only; no runtime, Lua, saved-state
+or `mods/` changes. The user picked the drop-01 tree backgrounds, but did
+not pick its universal overlays. This pass follows the user's request for
+class-specific and weapon-specific effects; `drop-01/` is unchanged.
+The coordinator owns the pick page and later integration; these proposals
+still await the user's picks.
+
+- [Preview](drop-02/preview.png): frame 1 at exactly 8×, four class bands,
+  one row per family and three permitted weapon columns per class. Variants
+  are side by side, with their full selection keys. The bow column contains
+  idle plus three draw-stage subcells within each family row; idle shows
+  both silhouettes. Other columns show iron; their GIFs show every material.
+- [Manifest](drop-02/manifest.json): **48 unique strip records**, each with
+  key, class, family, weapon, stage, variant, path, SHA-256, frames and loop
+  duration. Each record's `gif` object identifies the matching preview and
+  its source images, hashes, licence and enchant sample. Paths are relative
+  to the drop; source and generator paths are relative to the repository.
+  `stage` is `null` for non-bows, `"idle"` or `"draw0"`/`"draw1"`/`"draw2"`
+  for bows. Draw keys use `.bow.draw<n>.v<n>`.
+- [Checks](drop-02/checks.json): media checks and observations for each of
+  the 48 strips, including frame coverage, loop transitions and GIF timing.
+- [Generator](arta_fx2.py): explicit original pixel coordinates and cyclic
+  motion, Python/Pillow, with no copied weapon pixels in the overlay PNGs.
+
+| Class | Families | Allowed weapons | Non-bow strips | Bow strips | Total |
+|---|---|---|---:|---:|---:|
+| Warrior | rage | sword, dagger, greataxe | 6 | 0 | 6 |
+| Scout | wild, shadow | bow, sword, dagger | 8 | 16 | 24 |
+| Mage | fire, frost | staff, wand, dagger | 12 | 0 | 12 |
+| Priest | holy | staff, wand, dagger | 6 | 0 | 6 |
+| **Total** | | | **32** | **16** | **48** |
+
+### Animation and placement
+
+Every strip has **8 vertical 16 × 16 frames**, **16 × 128 RGBA**, with a
+**0.96 s** loop (**120 ms per frame**). All GIFs also encode exactly eight
+120 ms frames and loop forever. Alpha levels are **0, 96, 176, 255**;
+transparent pixels have zero RGB. Each phase has **4–15** visible effect
+pixels. Palette values, geometry and motion are authored in the generator;
+the weapon remains readable through the sparse, mostly translucent effect.
+
+| Weapon | Placement |
+|---|---|
+| Sword | Along the upper blade toward its tip, with small nearby embers or motes; the guard and grip stay clear. |
+| Dagger | A short stroke on the last few blade pixels and a compact tip effect, adapted to the shorter silhouette. |
+| Greataxe | Two independently phased strokes follow the left-upper and right-lower cutting edges; no glow on the haft. |
+| Staff | Around the top head/crystal, with at most a one-pixel descent beside the head; flames lick up its left flank because the head already reaches the top image border. |
+| Wand | A small cluster on the tip, leaving the long lower grip and shaft clear. |
+| Bow | Upper and lower limbs; draw stages also carry an effect on the arrow's forward end/arrowhead. The idle strip fits both silhouettes and contains no invented arrow. Each draw stage has its own placement, leaving all strings and central grips clear. |
+
+| Family | Variant 1 | Variant 2 |
+|---|---|---|
+| rage | Ember edge: crimson edge glow with red embers. | Heartbeat embers: a concentrated pulse with a short ember trail. |
+| wild | Wind and leaf: longer teal streaks with a small green leaf. | Turning leaves: shorter wind strokes and two drifting leaf accents. |
+| shadow | Smoke ribbon: violet-black edge smoke with a faint silver glint. | Silver curls: a smaller edge stroke with a fuller curling smoke cluster. |
+| fire | Flame tongues: two orange-red tongues and one warm spark. | Banked sparks: shorter flames, two sparks and a pulsing base. |
+| frost | Creeping rime: pale-blue edge rime with staggered ice glints. | Crystal motes: rime with a small travelling ice cluster. |
+| holy | Quiet radiance: gold-white motes over a soft pulsing edge. | Orbiting motes: three staggered motes around the head or tip. |
+
+All material sprites, both groups of every `_ench.png`, the idle bows and
+all three draw sprites were inspected. Non-bow GIFs show bronze, iron, steel,
+silversteel, embersteel and abyssal steel side by side, plus the wooden staff
+where it exists, followed by one enchanted iron example. No stone weapon
+sprites exist here. The two-frame `_ench.png` files are **static affix masks**,
+not two alternate full weapon images: both groups are tinted at the shipped
+128 opacity over the base. Sword/greataxe show Strength + Crit; dagger,
+staff and wand show Intelligence + Mana, valid affixes from the shipped
+pools. This preserves the underlying silhouette. The element animation is
+then composited above that enchanted example.
+
+### Reproduction and checks
+
+From the repository root, with Python 3 and Pillow:
+
+```sh
+python3 -I tools/r52_art/arta/arta_fx2.py --out /tmp/arta-fx2-rebuild
+```
+
+The default output is `drop-02/`. The script accepts identical existing
+outputs but refuses different bytes, and explicitly refuses `drop-01/`.
+All media and metadata are deterministic with the same inputs/Pillow.
+No image-generation service, network input or Lua execution is needed.
+
+The completed set was checked for dimensions, RGBA/alpha, eight frames,
+GIF timing, 48 unique keys and the loop seam. Independent hand-traced grip
+and string exclusion maps check every effect pixel in every phase; they
+never clip a misplaced effect into compliance. Every loop is cyclic, with
+no duplicated terminal frame; the last-to-first transition is no larger
+than the largest internal transition in premultiplied RGB plus alpha.
+Family/variant phase origins choose a quiet common transition across that
+family's weapon types. The eight phases, loop boundary, class contact sheet
+and all-material composites were also visually inspected. No fixtures or
+engine runs, as requested; desktop/web acceptance stays with the user.
+
+### Drop 02 media
+
+All 48 new overlay PNGs are original art by **GPT-6 Astra (Grudgelands)**,
+dated **2026-10-19**, dedicated to **CC0 1.0 Universal**, to the extent the
+project holds rights in them:
+<https://creativecommons.org/publicdomain/zero/1.0/>.
+The generator is **GPL-3.0-or-later**. The per-file table below uses `FX2`
+for original pixel geometry and eight-phase motion in `arta_fx2.py`;
+`composite` means alpha layering over the credited sources, nearest-neighbour
+8× scaling, checker background, labels and a fixed palette for each GIF.
+
+Source credits are provenance, not design references:
+
+- Sword, dagger and staff: the weapon-ladder derivations of
+  **minetest_game contributors**, © 2010–2023, **CC BY-SA 3.0 Unported**;
+  the full contributor attribution and source links are retained in the
+  drop-01 media section below and [the source licence](../../../mods/BASE/default/license.txt).
+  All six materials, the wooden staff and the derived enchant masks keep
+  [their weapon provenance](../../../mods/ITEMS/grug_gear/LICENSE-media.md).
+- Greataxe and wand: **Grudgelands**, original Round 12 pixel geometry,
+  **CC0 1.0**, including their derived masks;
+  [generator](../../r12_art/build_assets.py) and
+  [media record](../../../mods/ITEMS/grug_gear/LICENSE-media.md#round-12-wand-and-greataxe-replacement--cc0-10).
+- Idle alder and wood bows: **Lord of the Test contributors**,
+  **CC BY-SA 3.0**, unchanged source sprites
+  `lottthrowing_bow_wood_alder.png` and `lottthrowing_bow_wood.png`, from
+  commit `f164140154945f0b356521ae721a86e9c7a0e0cf`;
+  [source repository](https://github.com/minetest-LOTR/Lord-of-the-Test),
+  [local provenance](../../../mods/ITEMS/grug_gear/LICENSE-media.md#round-11-bows-and-shields--cc-by-sa-30)
+  and [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- Bow draw 0–2: **XSSheep / Pixel Perfection and VoxeLibre contributors**,
+  **CC BY-SA 4.0**, renamed `mcl_bows_bow_0.png` through `_2.png` from
+  commit `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`;
+  [source licence](https://git.minetest.land/VoxeLibre/VoxeLibre/src/commit/c2dbc520ff4e1637072d33b06c3a2404e0f08df7/LEGAL.md),
+  [local provenance](../../../mods/PLAYER/grug_abilities/LICENSE-media.md#bow-draw-stages--cc-by-sa-40)
+  and [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+Composites of sword/dagger/staff/bow, and the mixed `preview.png`, are
+**CC BY-SA 4.0 adaptations**; their new overlay layers remain separately
+available as CC0. Wand/greataxe-only GIFs are wholly **CC0** because those
+source weapons are CC0. `Weapon authors` below means the credits above;
+existing attribution remains in [CREDITS.md](../../../CREDITS.md).
+
+| File (relative to drop-02) | Author | Date | Method | Licence | Bytes |
+|---|---|---|---|---|---:|
+| `fx/warrior/rage_sword_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Ember edge | CC0-1.0 | 196 |
+| `fx/warrior/rage_sword_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 128879 |
+| `fx/warrior/rage_sword_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Heartbeat embers | CC0-1.0 | 215 |
+| `fx/warrior/rage_sword_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 129425 |
+| `fx/warrior/rage_dagger_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Ember edge | CC0-1.0 | 218 |
+| `fx/warrior/rage_dagger_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 117516 |
+| `fx/warrior/rage_dagger_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Heartbeat embers | CC0-1.0 | 257 |
+| `fx/warrior/rage_dagger_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 117996 |
+| `fx/warrior/rage_greataxe_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Ember edge | CC0-1.0 | 336 |
+| `fx/warrior/rage_greataxe_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 124040 |
+| `fx/warrior/rage_greataxe_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Heartbeat embers | CC0-1.0 | 337 |
+| `fx/warrior/rage_greataxe_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 123641 |
+| `fx/scout/wild_bow_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Wind and leaf | CC0-1.0 | 283 |
+| `fx/scout/wild_bow_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 57702 |
+| `fx/scout/wild_bow_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Turning leaves | CC0-1.0 | 320 |
+| `fx/scout/wild_bow_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 57923 |
+| `fx/scout/wild_bow_draw0_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Wind and leaf | CC0-1.0 | 369 |
+| `fx/scout/wild_bow_draw0_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 40777 |
+| `fx/scout/wild_bow_draw0_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Turning leaves | CC0-1.0 | 386 |
+| `fx/scout/wild_bow_draw0_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 41016 |
+| `fx/scout/wild_bow_draw1_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Wind and leaf | CC0-1.0 | 388 |
+| `fx/scout/wild_bow_draw1_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 40396 |
+| `fx/scout/wild_bow_draw1_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Turning leaves | CC0-1.0 | 387 |
+| `fx/scout/wild_bow_draw1_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 40515 |
+| `fx/scout/wild_bow_draw2_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Wind and leaf | CC0-1.0 | 420 |
+| `fx/scout/wild_bow_draw2_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 40751 |
+| `fx/scout/wild_bow_draw2_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Turning leaves | CC0-1.0 | 390 |
+| `fx/scout/wild_bow_draw2_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 41005 |
+| `fx/scout/wild_sword_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Wind and leaf | CC0-1.0 | 219 |
+| `fx/scout/wild_sword_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 129114 |
+| `fx/scout/wild_sword_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Turning leaves | CC0-1.0 | 222 |
+| `fx/scout/wild_sword_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 129737 |
+| `fx/scout/wild_dagger_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Wind and leaf | CC0-1.0 | 276 |
+| `fx/scout/wild_dagger_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 118492 |
+| `fx/scout/wild_dagger_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Turning leaves | CC0-1.0 | 289 |
+| `fx/scout/wild_dagger_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 118678 |
+| `fx/scout/shadow_bow_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Smoke ribbon | CC0-1.0 | 243 |
+| `fx/scout/shadow_bow_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 58604 |
+| `fx/scout/shadow_bow_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Silver curls | CC0-1.0 | 281 |
+| `fx/scout/shadow_bow_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 58215 |
+| `fx/scout/shadow_bow_draw0_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Smoke ribbon | CC0-1.0 | 379 |
+| `fx/scout/shadow_bow_draw0_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 41288 |
+| `fx/scout/shadow_bow_draw0_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Silver curls | CC0-1.0 | 415 |
+| `fx/scout/shadow_bow_draw0_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 41068 |
+| `fx/scout/shadow_bow_draw1_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Smoke ribbon | CC0-1.0 | 379 |
+| `fx/scout/shadow_bow_draw1_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 40802 |
+| `fx/scout/shadow_bow_draw1_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Silver curls | CC0-1.0 | 458 |
+| `fx/scout/shadow_bow_draw1_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 40681 |
+| `fx/scout/shadow_bow_draw2_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Smoke ribbon | CC0-1.0 | 419 |
+| `fx/scout/shadow_bow_draw2_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 41302 |
+| `fx/scout/shadow_bow_draw2_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Silver curls | CC0-1.0 | 495 |
+| `fx/scout/shadow_bow_draw2_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 41071 |
+| `fx/scout/shadow_sword_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Smoke ribbon | CC0-1.0 | 222 |
+| `fx/scout/shadow_sword_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 129655 |
+| `fx/scout/shadow_sword_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Silver curls | CC0-1.0 | 234 |
+| `fx/scout/shadow_sword_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 129930 |
+| `fx/scout/shadow_dagger_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Smoke ribbon | CC0-1.0 | 262 |
+| `fx/scout/shadow_dagger_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 118976 |
+| `fx/scout/shadow_dagger_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Silver curls | CC0-1.0 | 296 |
+| `fx/scout/shadow_dagger_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 118492 |
+| `fx/mage/fire_staff_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Flame tongues | CC0-1.0 | 220 |
+| `fx/mage/fire_staff_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 117539 |
+| `fx/mage/fire_staff_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Banked sparks | CC0-1.0 | 252 |
+| `fx/mage/fire_staff_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 117333 |
+| `fx/mage/fire_wand_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Flame tongues | CC0-1.0 | 256 |
+| `fx/mage/fire_wand_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 111691 |
+| `fx/mage/fire_wand_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Banked sparks | CC0-1.0 | 285 |
+| `fx/mage/fire_wand_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 111977 |
+| `fx/mage/fire_dagger_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Flame tongues | CC0-1.0 | 245 |
+| `fx/mage/fire_dagger_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 119228 |
+| `fx/mage/fire_dagger_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Banked sparks | CC0-1.0 | 288 |
+| `fx/mage/fire_dagger_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 119210 |
+| `fx/mage/frost_staff_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Creeping rime | CC0-1.0 | 216 |
+| `fx/mage/frost_staff_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 115713 |
+| `fx/mage/frost_staff_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Crystal motes | CC0-1.0 | 272 |
+| `fx/mage/frost_staff_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 116960 |
+| `fx/mage/frost_wand_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Creeping rime | CC0-1.0 | 204 |
+| `fx/mage/frost_wand_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 110232 |
+| `fx/mage/frost_wand_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Crystal motes | CC0-1.0 | 294 |
+| `fx/mage/frost_wand_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 111862 |
+| `fx/mage/frost_dagger_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Creeping rime | CC0-1.0 | 200 |
+| `fx/mage/frost_dagger_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 117358 |
+| `fx/mage/frost_dagger_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Crystal motes | CC0-1.0 | 312 |
+| `fx/mage/frost_dagger_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 118959 |
+| `fx/priest/holy_staff_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Quiet radiance | CC0-1.0 | 266 |
+| `fx/priest/holy_staff_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 116592 |
+| `fx/priest/holy_staff_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Orbiting motes | CC0-1.0 | 282 |
+| `fx/priest/holy_staff_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 117057 |
+| `fx/priest/holy_wand_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Quiet radiance | CC0-1.0 | 225 |
+| `fx/priest/holy_wand_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 111447 |
+| `fx/priest/holy_wand_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Orbiting motes | CC0-1.0 | 254 |
+| `fx/priest/holy_wand_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC0-1.0 | 112226 |
+| `fx/priest/holy_dagger_v1.png` | GPT-6 Astra | 2026-10-19 | FX2; Quiet radiance | CC0-1.0 | 253 |
+| `fx/priest/holy_dagger_v1.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 118684 |
+| `fx/priest/holy_dagger_v2.png` | GPT-6 Astra | 2026-10-19 | FX2; Orbiting motes | CC0-1.0 | 272 |
+| `fx/priest/holy_dagger_v2.gif` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 composite | CC-BY-SA-4.0 | 119511 |
+| `preview.png` | GPT-6 Astra; weapon authors | 2026-10-19 | FX2 class contact sheet | CC-BY-SA-4.0 | 76988 |
+
+## Drop 01 — original delivery record
 
 Delivered 2026-10-19 by GPT-6 Astra on `r52-arta`. **Compatible**: art
 candidates and authoring tools only; no game behaviour, Lua, saved state or
@@ -11,7 +253,7 @@ Inputs: [node list](../../../docs/planning/class-redesign/node-list.md)
 C6, C7, C11, D5 and D7. The brief's top accent overrides the older node-list
 wording about light towards the ultimate: the ultimate is on the bottom row.
 
-## Contents
+### Contents
 
 - [Background contact sheet](drop-01/preview-bg.png): all 24 candidates, exactly
   520 × 220 per image, with a mock 7 × 5 grid, pale label proxies and a few
@@ -31,7 +273,7 @@ wording about light towards the ultimate: the ultimate is on the bottom row.
 - [Check receipt](drop-01/checks.json): dimensions, alpha, hashes, per-frame
   coverage, loop seams, GIF duration checks and centre luminance observations.
 
-## Backgrounds
+### Backgrounds
 
 All eight trees use restrained painterly surfaces, atmospheric depth and
 edge silhouettes. Each variant is a separate image-generation call, not a
@@ -51,7 +293,7 @@ exact recipe and source image hash are recorded per file in the manifest.
 | Quarry | A forest edge, grasses, shed antlers and feathers overlook a distant dawn ridge. |
 | Veil | Moonlit alley walls and violet smoke surround a quiet indigo field below a silver crescent. |
 
-## Overlays
+### Overlays
 
 All PNGs are **16 × 128 RGBA**, eight 16 × 16 frames from top to bottom.
 Coordinates are authored directly; no pixels are copied from the weapon
@@ -85,7 +327,7 @@ The GIFs loop forever at the exact proposed duration. `wild_v2.gif` has seven
 encoded frames: two identical 140 ms phases become one 280 ms hold. Its PNG
 still has eight phases; `gif_encoded_frames` records the distinction.
 
-## Reproduction
+### Reproduction
 
 From the repository root, with Python 3 and Pillow installed:
 
@@ -108,7 +350,7 @@ The manifest is assembled by the two scripts and includes their SHA-256
 hashes. Each preserves the other script's entries. Code follows the
 repository's GPL-3.0-or-later licence; original media is dedicated below.
 
-## Checks and handoff
+### Checks and handoff
 
 All 50 media records match their file sizes, dimensions and SHA-256 hashes;
 all original generation files and generator hashes match. Dimensions, alpha,
@@ -120,7 +362,7 @@ with the user and coordinator.
 
 Backgrounds total **4,553,267 bytes**, range **168,242–216,091 bytes** per PNG; the 12 overlay PNGs total **2,947 bytes**. Every background is below the approximate 300 KB guide.
 
-## Media
+### Media
 
 The project dedicates rights it holds in the new background and overlay
 art to **CC0 1.0 Universal**, to the extent such rights exist:

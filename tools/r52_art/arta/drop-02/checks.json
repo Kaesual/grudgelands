@@ -1,0 +1,2045 @@
+{
+  "scope": "Media only; no fixtures, Lua or engine runs",
+  "assets": [
+    {
+      "key": "fx.warrior.rage.sword.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        7,
+        7,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        267648,
+        268912,
+        319232,
+        417979,
+        417979,
+        368288,
+        317968,
+        267648
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.warrior.rage.sword.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        4,
+        5,
+        5,
+        5,
+        4,
+        5,
+        5,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        467035,
+        516091,
+        514094,
+        586754,
+        455696,
+        427872,
+        416080,
+        417344
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.warrior.rage.dagger.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        267648,
+        317968,
+        244992,
+        294683,
+        417979,
+        368288,
+        317968,
+        267648
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.warrior.rage.dagger.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        4,
+        4,
+        5,
+        5,
+        4,
+        5,
+        5,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        335563,
+        426155,
+        514094,
+        465986,
+        400048,
+        427872,
+        367024,
+        244992
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.warrior.rage.greataxe.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        13,
+        13,
+        14,
+        13,
+        14,
+        14,
+        14,
+        13
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        421451,
+        686891,
+        687520,
+        686891,
+        685627,
+        635936,
+        564224,
+        414528
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.warrior.rage.greataxe.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        8,
+        8,
+        10,
+        10,
+        8,
+        8,
+        8,
+        10
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1013420,
+        965915,
+        941966,
+        931122,
+        651632,
+        616048,
+        806784,
+        801133
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.wild.bow.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        8,
+        8,
+        8,
+        8,
+        9,
+        10,
+        9,
+        8
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        891520,
+        891520,
+        760192,
+        880576,
+        935296,
+        854240,
+        793600,
+        760192
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 2
+    },
+    {
+      "key": "fx.scout.wild.bow.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        8,
+        10,
+        9,
+        7,
+        8,
+        8,
+        8,
+        8
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1214208,
+        1285792,
+        992320,
+        1039104,
+        1290816,
+        1290816,
+        1191744,
+        1047040
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 2
+    },
+    {
+      "key": "fx.scout.wild.bow.draw0.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        14,
+        13,
+        15,
+        14,
+        13,
+        14,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1364928,
+        1462848,
+        1393312,
+        1311392,
+        1387392,
+        1419648,
+        1212288,
+        1152544
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.wild.bow.draw0.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        13,
+        15,
+        15,
+        14,
+        15,
+        13,
+        15,
+        13
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1923776,
+        2001312,
+        1781472,
+        1582944,
+        2045664,
+        2110176,
+        1923776,
+        1463200
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.wild.bow.draw1.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        15,
+        13,
+        15,
+        14,
+        13,
+        15,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1398336,
+        1462848,
+        1393312,
+        1393312,
+        1321728,
+        1353984,
+        1212288,
+        1212288
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.wild.bow.draw1.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        14,
+        15,
+        15,
+        14,
+        14,
+        14,
+        15,
+        14
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        2034720,
+        2100384,
+        1781472,
+        1670528,
+        1990944,
+        2044512,
+        2034720,
+        1577920
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.wild.bow.draw2.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        15,
+        14,
+        14,
+        14,
+        13,
+        14,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1464000,
+        1354592,
+        1321728,
+        1207264,
+        1233600,
+        1320576,
+        1212288,
+        1212288
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.wild.bow.draw2.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        14,
+        14,
+        15,
+        14,
+        14,
+        14,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1946592,
+        2034720,
+        1803392,
+        1692448,
+        1869056,
+        1936256,
+        2100384,
+        1656064
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.wild.sword.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        6,
+        6,
+        5,
+        6,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        615680,
+        615680,
+        484352,
+        424608,
+        418688,
+        385280,
+        484352,
+        484352
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.wild.sword.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        5,
+        5,
+        5,
+        5,
+        4,
+        5,
+        5,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        700128,
+        700128,
+        700128,
+        634464,
+        765792,
+        831456,
+        700128,
+        700128
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.wild.dagger.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        353024,
+        353024,
+        353024,
+        353024,
+        243584,
+        243584,
+        353024,
+        353024
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.wild.dagger.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        459360,
+        459360,
+        700128,
+        700128,
+        700128,
+        700128,
+        700128,
+        700128
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.shadow.bow.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        8,
+        8,
+        8,
+        8,
+        9,
+        10,
+        9,
+        8
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        603520,
+        603520,
+        553824,
+        619472,
+        660960,
+        619472,
+        595584,
+        553824
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 2
+    },
+    {
+      "key": "fx.scout.shadow.bow.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        8,
+        8,
+        8,
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        631360,
+        702016,
+        611520,
+        677168,
+        724192,
+        641840,
+        653280,
+        611520
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 2
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw0.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        14,
+        13,
+        15,
+        14,
+        13,
+        14,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        913120,
+        1003344,
+        1000032,
+        970832,
+        959232,
+        995408,
+        810816,
+        785968
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw0.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        15,
+        13,
+        15,
+        13,
+        14,
+        15,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1119568,
+        1191984,
+        1037184,
+        1028592,
+        1102832,
+        1118400,
+        999456,
+        999456
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw1.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        15,
+        13,
+        15,
+        14,
+        13,
+        15,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        972480,
+        986432,
+        1000032,
+        941632,
+        922784,
+        970560,
+        810816,
+        810816
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw1.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        15,
+        14,
+        15,
+        13,
+        15,
+        15,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1226768,
+        1150224,
+        1067504,
+        989200,
+        1201920,
+        1201920,
+        999456,
+        999456
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw2.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        15,
+        14,
+        14,
+        14,
+        13,
+        14,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1038128,
+        1020256,
+        922784,
+        839536,
+        863424,
+        928800,
+        810816,
+        810816
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw2.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        15,
+        13,
+        15,
+        14,
+        14,
+        14,
+        15,
+        15
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        1161120,
+        1097440,
+        1095936,
+        1022640,
+        1036048,
+        1160160,
+        999456,
+        999456
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 1
+    },
+    {
+      "key": "fx.scout.shadow.sword.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        6,
+        6,
+        5,
+        6,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        441856,
+        441856,
+        351360,
+        326512,
+        285712,
+        267840,
+        351360,
+        351360
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.shadow.sword.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        491136,
+        491136,
+        329984,
+        400640,
+        400640,
+        400640,
+        400640,
+        400640
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.shadow.dagger.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        220064,
+        220064,
+        220064,
+        220064,
+        108096,
+        108096,
+        220064,
+        220064
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.scout.shadow.dagger.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        400640,
+        400640,
+        400640,
+        400640,
+        198176,
+        198176,
+        400640,
+        400640
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.fire.staff.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        5,
+        7,
+        7,
+        6,
+        6,
+        6,
+        6,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        212848,
+        379680,
+        329888,
+        255200,
+        317440,
+        404576,
+        219408,
+        40128
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 8
+    },
+    {
+      "key": "fx.mage.fire.staff.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        5,
+        7,
+        6,
+        7,
+        5,
+        6,
+        7,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        623504,
+        627088,
+        675120,
+        640848,
+        528976,
+        642208,
+        442640,
+        476832
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 8
+    },
+    {
+      "key": "fx.mage.fire.wand.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        7,
+        7,
+        5,
+        5,
+        6,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        329888,
+        379680,
+        212848,
+        40128,
+        219408,
+        404576,
+        317440,
+        255200
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.fire.wand.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        6,
+        6,
+        5,
+        7,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        427440,
+        559680,
+        641904,
+        514304,
+        530112,
+        687344,
+        511104,
+        349232
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.fire.dagger.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        7,
+        7,
+        6,
+        6,
+        6,
+        6,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        329888,
+        379680,
+        329888,
+        255200,
+        317440,
+        404576,
+        200400,
+        138160
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.fire.dagger.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        7,
+        7,
+        6,
+        7,
+        5,
+        7,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        589312,
+        657712,
+        705744,
+        641904,
+        593872,
+        687344,
+        574864,
+        476832
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.frost.staff.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        5,
+        6,
+        6,
+        5,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        557536,
+        429376,
+        506085,
+        693482,
+        436938,
+        635210,
+        539093,
+        462384
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 8
+    },
+    {
+      "key": "fx.mage.frost.staff.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        7,
+        8,
+        7,
+        7,
+        7,
+        8,
+        8
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        617920,
+        695600,
+        808608,
+        771344,
+        619856,
+        617920,
+        806288,
+        542560
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 8
+    },
+    {
+      "key": "fx.mage.frost.wand.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        5,
+        5,
+        4,
+        5,
+        5,
+        5,
+        5,
+        4
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        462384,
+        429376,
+        506085,
+        693482,
+        676010,
+        693482,
+        428405,
+        291488
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.frost.wand.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        6,
+        7,
+        7,
+        5,
+        6,
+        7
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        711136,
+        524704,
+        522768,
+        866496,
+        715392,
+        600448,
+        678128,
+        635776
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.frost.dagger.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        462384,
+        540064,
+        616773,
+        693482,
+        676010,
+        693482,
+        539093,
+        367232
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.mage.frost.dagger.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176
+      ],
+      "pixels_per_frame": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        711136,
+        711136,
+        788816,
+        866496,
+        866496,
+        866496,
+        788816,
+        711136
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.priest.holy.staff.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        7,
+        7,
+        6,
+        6,
+        7,
+        7,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        594496,
+        504256,
+        507860,
+        673300,
+        669696,
+        504256,
+        358400,
+        409472
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 8
+    },
+    {
+      "key": "fx.priest.holy.staff.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        8,
+        7,
+        7,
+        8,
+        6,
+        8,
+        8,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        665152,
+        583552,
+        728468,
+        752596,
+        678336,
+        744448,
+        519296,
+        488768
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 8
+    },
+    {
+      "key": "fx.priest.holy.wand.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        5,
+        6,
+        6,
+        5,
+        5,
+        6,
+        6,
+        5
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        484672,
+        669696,
+        673300,
+        507860,
+        504256,
+        594496,
+        429056,
+        319232
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.priest.holy.wand.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        7,
+        5,
+        7,
+        7,
+        5,
+        7,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        499712,
+        583552,
+        893908,
+        657812,
+        583552,
+        673792,
+        508352,
+        539840
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.priest.holy.dagger.v1",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        555328,
+        669696,
+        743956,
+        743956,
+        669696,
+        594496,
+        519296,
+        480128
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    },
+    {
+      "key": "fx.priest.holy.dagger.v2",
+      "alpha_levels": [
+        0,
+        96,
+        176,
+        255
+      ],
+      "pixels_per_frame": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "grip_or_string_pixels": 0,
+      "cyclic_deltas": [
+        705280,
+        819648,
+        893908,
+        893908,
+        819648,
+        744448,
+        669248,
+        630080
+      ],
+      "loop_seam_pass": true,
+      "gif_frames": 8,
+      "gif_frame_ms": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "preview_weapons": 7
+    }
+  ],
+  "class_counts": {
+    "warrior": 6,
+    "scout": 24,
+    "mage": 12,
+    "priest": 6
+  }
+}

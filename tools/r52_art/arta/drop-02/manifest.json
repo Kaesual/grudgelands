@@ -1,0 +1,3971 @@
+{
+  "schema": 2,
+  "lane": "ARTA",
+  "drop": "02",
+  "date": "2026-10-19",
+  "classification": "compatible",
+  "author": "GPT-6 Astra (Grudgelands)",
+  "paths_relative_to": "manifest directory; source paths relative to repository",
+  "animation": {
+    "type": "vertical_frames",
+    "frames": 8,
+    "frame_size": [
+      16,
+      16
+    ],
+    "frame_ms": 120,
+    "loop_s": 0.96,
+    "alpha_levels": [
+      0,
+      96,
+      176,
+      255
+    ]
+  },
+  "preview": {
+    "path": "preview.png",
+    "sha256": "1df1e7186fb8c41894e259b59a1aebb26366087e9e566bf7f93703debf1cb7cf",
+    "license": "CC-BY-SA-4.0"
+  },
+  "assets": [
+    {
+      "key": "fx.warrior.rage.sword.v1",
+      "class": "warrior",
+      "family": "rage",
+      "weapon": "sword",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/warrior/rage_sword_v1.png",
+      "sha256": "a3947e5bd1b0b12ec21c283ea584af0d180d7228eb44598c35b98e386f981082",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Ember edge",
+      "bytes": 196,
+      "gif": {
+        "path": "fx/warrior/rage_sword_v1.gif",
+        "sha256": "379b93f45c6191e7200994f56ab39f64d600240416a5be3c41dd4a39eb8fb14e",
+        "bytes": 128879,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_bronze.png",
+            "sha256": "089082d6a7ec0cd5cd17e523e44f97eabc5f4c2b8518df181a415a1dce31b251",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+            "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_steel.png",
+            "sha256": "f293e8ecce804d85b99aff4e566126473efff50388843f499c2113a3911d267b",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_silversteel.png",
+            "sha256": "6a2b548e237d3b8a7e6e8337c9d3108be68160ef0e66af31626a35dbcd907ff1",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_embersteel.png",
+            "sha256": "cc13e6fd6f8f9bc2fe846185a21f2e3b8de795a24d9801114efce8d0d16cf356",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_abyssal_steel.png",
+            "sha256": "e77f9a37b296c064815b7ac93dbf97b391e89d18868bb244608bd18ff64e2f55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron_ench.png",
+            "sha256": "68ef54c20a29748b0ece127d6927448cf82ff2f294d404babc3a6fb38567b0a2",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.warrior.rage.sword.v2",
+      "class": "warrior",
+      "family": "rage",
+      "weapon": "sword",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/warrior/rage_sword_v2.png",
+      "sha256": "0efdbc4a3ef2cfc1ccb2f44bcc4d47c3f331348ac49c71b74974e773a285b601",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Heartbeat embers",
+      "bytes": 215,
+      "gif": {
+        "path": "fx/warrior/rage_sword_v2.gif",
+        "sha256": "be62ad9fe5e2c0323899a098ccab8613b249e7d0fe495618db8c244a884beb01",
+        "bytes": 129425,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_bronze.png",
+            "sha256": "089082d6a7ec0cd5cd17e523e44f97eabc5f4c2b8518df181a415a1dce31b251",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+            "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_steel.png",
+            "sha256": "f293e8ecce804d85b99aff4e566126473efff50388843f499c2113a3911d267b",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_silversteel.png",
+            "sha256": "6a2b548e237d3b8a7e6e8337c9d3108be68160ef0e66af31626a35dbcd907ff1",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_embersteel.png",
+            "sha256": "cc13e6fd6f8f9bc2fe846185a21f2e3b8de795a24d9801114efce8d0d16cf356",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_abyssal_steel.png",
+            "sha256": "e77f9a37b296c064815b7ac93dbf97b391e89d18868bb244608bd18ff64e2f55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron_ench.png",
+            "sha256": "68ef54c20a29748b0ece127d6927448cf82ff2f294d404babc3a6fb38567b0a2",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.warrior.rage.dagger.v1",
+      "class": "warrior",
+      "family": "rage",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/warrior/rage_dagger_v1.png",
+      "sha256": "aa4591a09116e886ea89eacfc2ce9de0564a8374da079c622872339791654645",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Ember edge",
+      "bytes": 218,
+      "gif": {
+        "path": "fx/warrior/rage_dagger_v1.gif",
+        "sha256": "32f5e60d662d5ad4ff179b45ca0a7ca3bb27d6631ab9013bc0da3db4fc01f36f",
+        "bytes": 117516,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.warrior.rage.dagger.v2",
+      "class": "warrior",
+      "family": "rage",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/warrior/rage_dagger_v2.png",
+      "sha256": "0be42dc5d725b93799dcbdd39abb8895ad1e7aae5c92195102583f4fa2248e01",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Heartbeat embers",
+      "bytes": 257,
+      "gif": {
+        "path": "fx/warrior/rage_dagger_v2.gif",
+        "sha256": "1e273194caba1475f0a43e4fe975c11bf27c4344a1c462632eb93c7b75b7905c",
+        "bytes": 117996,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.warrior.rage.greataxe.v1",
+      "class": "warrior",
+      "family": "rage",
+      "weapon": "greataxe",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/warrior/rage_greataxe_v1.png",
+      "sha256": "0e4aa503f2be3ea2ed53c8baa22a2950133101e9c9dee32308f5dcd93a6845a7",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Ember edge",
+      "bytes": 336,
+      "gif": {
+        "path": "fx/warrior/rage_greataxe_v1.gif",
+        "sha256": "d5de2691de17d33755ea2e8e7283ceda1bb28a7bb96ba80c464c6c0e13dae933",
+        "bytes": 124040,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_bronze.png",
+            "sha256": "33245ca13f17f6e3412aa6f34d8b99a171c4b3c10c8bffda727a6e8ca7242e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_iron.png",
+            "sha256": "1edb9b0445c57aa9da1d8dc0cb9a22088c1a563acd8ab584b3878b432a81c2ed",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_steel.png",
+            "sha256": "bec52035249b27335d701a51bbf9064635a4869ac8f800a65a1309bf7fc305bc",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_silversteel.png",
+            "sha256": "74d4da29b882971c468556e4fe6d76eb78522d63b1e1ad41e5c92964d286dd83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_embersteel.png",
+            "sha256": "9128209c97c5e1f1c09306aafc52e2d90c4cfaa8ccb4f3438194d44fded4cccb",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_abyssal_steel.png",
+            "sha256": "15fdc89a9ec395c66c7d00edaf8dacb16c99c50d6d92e3eb3ff5f338c9ee6c29",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_iron_ench.png",
+            "sha256": "5c922485a957206d6b53a4386240ba7512ecc6572c55c3ba82c67a54dfa70ea7",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.warrior.rage.greataxe.v2",
+      "class": "warrior",
+      "family": "rage",
+      "weapon": "greataxe",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/warrior/rage_greataxe_v2.png",
+      "sha256": "ab7cee633935b948e20a9d16c623faddbcc42013df982b915ec3439ea7e0f974",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Heartbeat embers",
+      "bytes": 337,
+      "gif": {
+        "path": "fx/warrior/rage_greataxe_v2.gif",
+        "sha256": "ddf9e26e4a7f2be1c60a838713874b93098a5eefbe793b1fb0261c818ec7a012",
+        "bytes": 123641,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_bronze.png",
+            "sha256": "33245ca13f17f6e3412aa6f34d8b99a171c4b3c10c8bffda727a6e8ca7242e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_iron.png",
+            "sha256": "1edb9b0445c57aa9da1d8dc0cb9a22088c1a563acd8ab584b3878b432a81c2ed",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_steel.png",
+            "sha256": "bec52035249b27335d701a51bbf9064635a4869ac8f800a65a1309bf7fc305bc",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_silversteel.png",
+            "sha256": "74d4da29b882971c468556e4fe6d76eb78522d63b1e1ad41e5c92964d286dd83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_embersteel.png",
+            "sha256": "9128209c97c5e1f1c09306aafc52e2d90c4cfaa8ccb4f3438194d44fded4cccb",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_abyssal_steel.png",
+            "sha256": "15fdc89a9ec395c66c7d00edaf8dacb16c99c50d6d92e3eb3ff5f338c9ee6c29",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_greataxe_iron_ench.png",
+            "sha256": "5c922485a957206d6b53a4386240ba7512ecc6572c55c3ba82c67a54dfa70ea7",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.v1",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "idle",
+      "variant": 1,
+      "path": "fx/scout/wild_bow_v1.png",
+      "sha256": "144a9418e3c4770acfa104d594394e264013f83f4cc0c5b0b661b6a8ba21e95d",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Wind and leaf",
+      "bytes": 283,
+      "gif": {
+        "path": "fx/scout/wild_bow_v1.gif",
+        "sha256": "31f0006fa109bbfc1737a261f6737ba2c7e7d9442475525a3d7c59d0233fa444",
+        "bytes": 57702,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_alder.png",
+            "sha256": "c5b28bc48c86bcd73f4b1d0fcc0ddf1beea819a6e5754c9ba886f5cb4fd84540",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_wood.png",
+            "sha256": "af139c53ff9b4f81283e4e50a62c95d5cb8cd8139da72179382c59092193afef",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.v2",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "idle",
+      "variant": 2,
+      "path": "fx/scout/wild_bow_v2.png",
+      "sha256": "3c76335c31255d356894321f405b4522fee8ecfb6437c8de6a5273c90506a053",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Turning leaves",
+      "bytes": 320,
+      "gif": {
+        "path": "fx/scout/wild_bow_v2.gif",
+        "sha256": "4b436d6c2ba32db5c0dda4f77e9c44fa7b1bee57b8ed2bdd0dc4ba0f6fe5bfed",
+        "bytes": 57923,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_alder.png",
+            "sha256": "c5b28bc48c86bcd73f4b1d0fcc0ddf1beea819a6e5754c9ba886f5cb4fd84540",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_wood.png",
+            "sha256": "af139c53ff9b4f81283e4e50a62c95d5cb8cd8139da72179382c59092193afef",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.draw0.v1",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "draw0",
+      "variant": 1,
+      "path": "fx/scout/wild_bow_draw0_v1.png",
+      "sha256": "57ec70bceb0070ad4abe26a98f8174b95f0ac5b890a3d43b1ac1fbf1ff93b880",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Wind and leaf",
+      "bytes": 369,
+      "gif": {
+        "path": "fx/scout/wild_bow_draw0_v1.gif",
+        "sha256": "e49396dff3eabfedf6d892df1f974eec7790fb21a9dfffbf601b59f007775573",
+        "bytes": 40777,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+            "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.draw0.v2",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "draw0",
+      "variant": 2,
+      "path": "fx/scout/wild_bow_draw0_v2.png",
+      "sha256": "696ae192cdebf128841a910626a8a8abc295cfaf4522de7d6d24ea8c82855d12",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Turning leaves",
+      "bytes": 386,
+      "gif": {
+        "path": "fx/scout/wild_bow_draw0_v2.gif",
+        "sha256": "46d4901618ce14914144f713e06fef9367a9fdd3b2565cf5414a2c0580fe73e2",
+        "bytes": 41016,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+            "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.draw1.v1",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "draw1",
+      "variant": 1,
+      "path": "fx/scout/wild_bow_draw1_v1.png",
+      "sha256": "fb24d5086c34d3aedacbf3840a7231a8883698df5a3f0925e9ee2fb8c5a4dde8",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Wind and leaf",
+      "bytes": 388,
+      "gif": {
+        "path": "fx/scout/wild_bow_draw1_v1.gif",
+        "sha256": "241c5086fa35b1f15fc6dec10460a675dc538bcb1d9dc7dfa54ffcf373f82b95",
+        "bytes": 40396,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_1.png",
+            "sha256": "78038700c5cbb51f0646b6e7e6720dadb5aa87d46e4490b5097e68010c4bb081",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.draw1.v2",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "draw1",
+      "variant": 2,
+      "path": "fx/scout/wild_bow_draw1_v2.png",
+      "sha256": "90939769ce46f04542b58cd2d0aa11b97deb67b4e7112ced7be4b50f9a65bbd9",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Turning leaves",
+      "bytes": 387,
+      "gif": {
+        "path": "fx/scout/wild_bow_draw1_v2.gif",
+        "sha256": "ce69fa320a3781e2cc0adf6ebf05769eb8112e0365c7603ba0321aa7b5f98f7a",
+        "bytes": 40515,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_1.png",
+            "sha256": "78038700c5cbb51f0646b6e7e6720dadb5aa87d46e4490b5097e68010c4bb081",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.draw2.v1",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "draw2",
+      "variant": 1,
+      "path": "fx/scout/wild_bow_draw2_v1.png",
+      "sha256": "e76f8df42706f4c4ad0ebdc11a118154281eaaa67880a9f4bc7d6aa42ecb1d62",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Wind and leaf",
+      "bytes": 420,
+      "gif": {
+        "path": "fx/scout/wild_bow_draw2_v1.gif",
+        "sha256": "3538bf79c6e2f313ec7d7fb1b90061c1bd9038164bb1a72ba5cb78af69259971",
+        "bytes": 40751,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_2.png",
+            "sha256": "780bc6a09f34c7cd0ae2e0da8d41b043e86cdf8aa1a337757da9e0d6ca300243",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.bow.draw2.v2",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "bow",
+      "stage": "draw2",
+      "variant": 2,
+      "path": "fx/scout/wild_bow_draw2_v2.png",
+      "sha256": "199fd4e5c7aa4fb2db4591b600583ef2d1f7ec2d021425c82e7e319a4df8aeba",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Turning leaves",
+      "bytes": 390,
+      "gif": {
+        "path": "fx/scout/wild_bow_draw2_v2.gif",
+        "sha256": "81338c44432bdfcb1d854be62cecc6b071b18323a03301ac7b82454373f369a1",
+        "bytes": 41005,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_2.png",
+            "sha256": "780bc6a09f34c7cd0ae2e0da8d41b043e86cdf8aa1a337757da9e0d6ca300243",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.wild.sword.v1",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "sword",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/scout/wild_sword_v1.png",
+      "sha256": "f5a5f17f3d4b80854fabff3036c8cce3b42b3af69e8485937c85c0a395086ec7",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Wind and leaf",
+      "bytes": 219,
+      "gif": {
+        "path": "fx/scout/wild_sword_v1.gif",
+        "sha256": "26293e97388e56677b3abe1e6927198de9df4f6ffc11de7411b74496d3a79948",
+        "bytes": 129114,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_bronze.png",
+            "sha256": "089082d6a7ec0cd5cd17e523e44f97eabc5f4c2b8518df181a415a1dce31b251",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+            "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_steel.png",
+            "sha256": "f293e8ecce804d85b99aff4e566126473efff50388843f499c2113a3911d267b",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_silversteel.png",
+            "sha256": "6a2b548e237d3b8a7e6e8337c9d3108be68160ef0e66af31626a35dbcd907ff1",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_embersteel.png",
+            "sha256": "cc13e6fd6f8f9bc2fe846185a21f2e3b8de795a24d9801114efce8d0d16cf356",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_abyssal_steel.png",
+            "sha256": "e77f9a37b296c064815b7ac93dbf97b391e89d18868bb244608bd18ff64e2f55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron_ench.png",
+            "sha256": "68ef54c20a29748b0ece127d6927448cf82ff2f294d404babc3a6fb38567b0a2",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.wild.sword.v2",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "sword",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/scout/wild_sword_v2.png",
+      "sha256": "3daf7aa61c663a1cb499ba5964b6654bedfa4db4965d7945ea4c5d0bb97b8189",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Turning leaves",
+      "bytes": 222,
+      "gif": {
+        "path": "fx/scout/wild_sword_v2.gif",
+        "sha256": "2f51adc6450c2b09dccc5260b3411a3ba1b4e4df55611259c427eead3836f890",
+        "bytes": 129737,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_bronze.png",
+            "sha256": "089082d6a7ec0cd5cd17e523e44f97eabc5f4c2b8518df181a415a1dce31b251",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+            "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_steel.png",
+            "sha256": "f293e8ecce804d85b99aff4e566126473efff50388843f499c2113a3911d267b",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_silversteel.png",
+            "sha256": "6a2b548e237d3b8a7e6e8337c9d3108be68160ef0e66af31626a35dbcd907ff1",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_embersteel.png",
+            "sha256": "cc13e6fd6f8f9bc2fe846185a21f2e3b8de795a24d9801114efce8d0d16cf356",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_abyssal_steel.png",
+            "sha256": "e77f9a37b296c064815b7ac93dbf97b391e89d18868bb244608bd18ff64e2f55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron_ench.png",
+            "sha256": "68ef54c20a29748b0ece127d6927448cf82ff2f294d404babc3a6fb38567b0a2",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.wild.dagger.v1",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/scout/wild_dagger_v1.png",
+      "sha256": "846acffb14cfb572f093af9724006761ae93f56f84f17d8a6678d11466cdcca5",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Wind and leaf",
+      "bytes": 276,
+      "gif": {
+        "path": "fx/scout/wild_dagger_v1.gif",
+        "sha256": "c328e4a3ba98842eeb16b3a88e792a16b64eecfdd39288e64de8fcd88d944b94",
+        "bytes": 118492,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.wild.dagger.v2",
+      "class": "scout",
+      "family": "wild",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/scout/wild_dagger_v2.png",
+      "sha256": "84756c1cb0b95620d006ea5fbe937df923898fc4746d014f1c2b358a87200d15",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Turning leaves",
+      "bytes": 289,
+      "gif": {
+        "path": "fx/scout/wild_dagger_v2.gif",
+        "sha256": "dd774f83acc97f4ff34e74c33c38fd597b8e9af5c66955e5d9023b5f2a2d0562",
+        "bytes": 118678,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.v1",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "idle",
+      "variant": 1,
+      "path": "fx/scout/shadow_bow_v1.png",
+      "sha256": "26169df3d98994a02df66d64bc0837e36ad4dc903b38d062759bc57cf02f773a",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Smoke ribbon",
+      "bytes": 243,
+      "gif": {
+        "path": "fx/scout/shadow_bow_v1.gif",
+        "sha256": "895fbfda72ddf7987f3e4aff39a119080251066122aa410d6a35d16d5df88864",
+        "bytes": 58604,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_alder.png",
+            "sha256": "c5b28bc48c86bcd73f4b1d0fcc0ddf1beea819a6e5754c9ba886f5cb4fd84540",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_wood.png",
+            "sha256": "af139c53ff9b4f81283e4e50a62c95d5cb8cd8139da72179382c59092193afef",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.v2",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "idle",
+      "variant": 2,
+      "path": "fx/scout/shadow_bow_v2.png",
+      "sha256": "0e991e138ddabc38db93ee16440ecb06a6e44a6c441b3bb5834436555739f47e",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Silver curls",
+      "bytes": 281,
+      "gif": {
+        "path": "fx/scout/shadow_bow_v2.gif",
+        "sha256": "6d1a1f75e59bde1e3e468a40f2d29519c833f55aad113b92a53498abe045a582",
+        "bytes": 58215,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_alder.png",
+            "sha256": "c5b28bc48c86bcd73f4b1d0fcc0ddf1beea819a6e5754c9ba886f5cb4fd84540",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_bow_wood.png",
+            "sha256": "af139c53ff9b4f81283e4e50a62c95d5cb8cd8139da72179382c59092193afef",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw0.v1",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "draw0",
+      "variant": 1,
+      "path": "fx/scout/shadow_bow_draw0_v1.png",
+      "sha256": "e314351e1cc1899df9ea9015140b6f607505f1c51cdf0adaf8fc49206470b2fe",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Smoke ribbon",
+      "bytes": 379,
+      "gif": {
+        "path": "fx/scout/shadow_bow_draw0_v1.gif",
+        "sha256": "4df0eb20169928f6daa37e2f685509255bbffdf31274e996e6f29fadda674b7c",
+        "bytes": 41288,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+            "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw0.v2",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "draw0",
+      "variant": 2,
+      "path": "fx/scout/shadow_bow_draw0_v2.png",
+      "sha256": "cb9416824943d903c0dc26592aa033588e6c47f278c5e5801a0bab7376c5308b",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Silver curls",
+      "bytes": 415,
+      "gif": {
+        "path": "fx/scout/shadow_bow_draw0_v2.gif",
+        "sha256": "8d4d61c063dbb63fa28fa54363f7707cbc5f349054fbbed689d0a56d7af1930c",
+        "bytes": 41068,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_0.png",
+            "sha256": "9d4ee971e6a35ba9895381139b96979e60426da8e49e0acd5ed65de2bb9e5229",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw1.v1",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "draw1",
+      "variant": 1,
+      "path": "fx/scout/shadow_bow_draw1_v1.png",
+      "sha256": "7f6d6ae2080b455d22a72cabdfd5269b65602043fe6171784ad602015dd95df5",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Smoke ribbon",
+      "bytes": 379,
+      "gif": {
+        "path": "fx/scout/shadow_bow_draw1_v1.gif",
+        "sha256": "6cc1c6a2a461560d2535ad5c9f892155e793d62a12771d6ee34101c1776bb4c1",
+        "bytes": 40802,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_1.png",
+            "sha256": "78038700c5cbb51f0646b6e7e6720dadb5aa87d46e4490b5097e68010c4bb081",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw1.v2",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "draw1",
+      "variant": 2,
+      "path": "fx/scout/shadow_bow_draw1_v2.png",
+      "sha256": "780d079deb683f1d6940507231e19ea04a623529143d407af9663ca73c6f03bc",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Silver curls",
+      "bytes": 458,
+      "gif": {
+        "path": "fx/scout/shadow_bow_draw1_v2.gif",
+        "sha256": "58e70c26b00ecadf3478f9855dea9651e6a55025d164c5c11d2e0502d37dfcd2",
+        "bytes": 40681,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_1.png",
+            "sha256": "78038700c5cbb51f0646b6e7e6720dadb5aa87d46e4490b5097e68010c4bb081",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw2.v1",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "draw2",
+      "variant": 1,
+      "path": "fx/scout/shadow_bow_draw2_v1.png",
+      "sha256": "b8530164de7feb0c17e2f8bf06f71ecdd358f72f32bcad5ed55e2ce629e1029d",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Smoke ribbon",
+      "bytes": 419,
+      "gif": {
+        "path": "fx/scout/shadow_bow_draw2_v1.gif",
+        "sha256": "0848076ec76913d19987d28d490bf2a46457e3f6b94b88123f749d9cfccd6cb2",
+        "bytes": 41302,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_2.png",
+            "sha256": "780bc6a09f34c7cd0ae2e0da8d41b043e86cdf8aa1a337757da9e0d6ca300243",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.bow.draw2.v2",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "bow",
+      "stage": "draw2",
+      "variant": 2,
+      "path": "fx/scout/shadow_bow_draw2_v2.png",
+      "sha256": "80e606d6747f5914321de513ad236d245d25dfd2bd5da32c5229bfe9be1984c0",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Silver curls",
+      "bytes": 495,
+      "gif": {
+        "path": "fx/scout/shadow_bow_draw2_v2.gif",
+        "sha256": "e3102c66a0bd14cd96ba76d2005c41f4d1d69bc19e071da3297c8a7a238e7733",
+        "bytes": 41071,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_bow_draw_2.png",
+            "sha256": "780bc6a09f34c7cd0ae2e0da8d41b043e86cdf8aa1a337757da9e0d6ca300243",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-4.0"
+          }
+        ],
+        "enchant_stats": null
+      }
+    },
+    {
+      "key": "fx.scout.shadow.sword.v1",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "sword",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/scout/shadow_sword_v1.png",
+      "sha256": "5cfe1dd38d42d675398fd480167b2787f1e830589af6fdbbb69fefd7411a6c18",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Smoke ribbon",
+      "bytes": 222,
+      "gif": {
+        "path": "fx/scout/shadow_sword_v1.gif",
+        "sha256": "cbd1d785198d3f632d7bc2b3cd3d7420834e3a91cc2f5da5c961c8895e9441c5",
+        "bytes": 129655,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_bronze.png",
+            "sha256": "089082d6a7ec0cd5cd17e523e44f97eabc5f4c2b8518df181a415a1dce31b251",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+            "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_steel.png",
+            "sha256": "f293e8ecce804d85b99aff4e566126473efff50388843f499c2113a3911d267b",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_silversteel.png",
+            "sha256": "6a2b548e237d3b8a7e6e8337c9d3108be68160ef0e66af31626a35dbcd907ff1",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_embersteel.png",
+            "sha256": "cc13e6fd6f8f9bc2fe846185a21f2e3b8de795a24d9801114efce8d0d16cf356",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_abyssal_steel.png",
+            "sha256": "e77f9a37b296c064815b7ac93dbf97b391e89d18868bb244608bd18ff64e2f55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron_ench.png",
+            "sha256": "68ef54c20a29748b0ece127d6927448cf82ff2f294d404babc3a6fb38567b0a2",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.shadow.sword.v2",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "sword",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/scout/shadow_sword_v2.png",
+      "sha256": "2f1c80ecebcea3e2ee34186602e06c0923ba8bc0483c30b6740337d22012fbba",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Silver curls",
+      "bytes": 234,
+      "gif": {
+        "path": "fx/scout/shadow_sword_v2.gif",
+        "sha256": "3aca348828cf63b491d82db12ac54a6039c249750a8793572d1624da7bc5e531",
+        "bytes": 129930,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_bronze.png",
+            "sha256": "089082d6a7ec0cd5cd17e523e44f97eabc5f4c2b8518df181a415a1dce31b251",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron.png",
+            "sha256": "dfde030d10e5cb43dd1e6d6293e2a75cbab117405fdc417f2dee529c3d622044",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_steel.png",
+            "sha256": "f293e8ecce804d85b99aff4e566126473efff50388843f499c2113a3911d267b",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_silversteel.png",
+            "sha256": "6a2b548e237d3b8a7e6e8337c9d3108be68160ef0e66af31626a35dbcd907ff1",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_embersteel.png",
+            "sha256": "cc13e6fd6f8f9bc2fe846185a21f2e3b8de795a24d9801114efce8d0d16cf356",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_abyssal_steel.png",
+            "sha256": "e77f9a37b296c064815b7ac93dbf97b391e89d18868bb244608bd18ff64e2f55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_sword_iron_ench.png",
+            "sha256": "68ef54c20a29748b0ece127d6927448cf82ff2f294d404babc3a6fb38567b0a2",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "str",
+          "crit_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.shadow.dagger.v1",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/scout/shadow_dagger_v1.png",
+      "sha256": "baf5ed50b6b95d7bdd5220a23b88c72e81cc678573e961ab309af46977259191",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Smoke ribbon",
+      "bytes": 262,
+      "gif": {
+        "path": "fx/scout/shadow_dagger_v1.gif",
+        "sha256": "072e90b7e56d2c438cfca64c5b6ec92c351d6b36fc3c32d9027d98bdf047492c",
+        "bytes": 118976,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.scout.shadow.dagger.v2",
+      "class": "scout",
+      "family": "shadow",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/scout/shadow_dagger_v2.png",
+      "sha256": "a6ce7f02e4519e6c555dd15a8cdc5809873412bf30d83be0a95084df26379327",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Silver curls",
+      "bytes": 296,
+      "gif": {
+        "path": "fx/scout/shadow_dagger_v2.gif",
+        "sha256": "372db1c463675bc38a72b49c8da4eebf984378dd40c1cd6c9c6e8ca49376038f",
+        "bytes": 118492,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.fire.staff.v1",
+      "class": "mage",
+      "family": "fire",
+      "weapon": "staff",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/mage/fire_staff_v1.png",
+      "sha256": "bc147917ab5b29d8a82636c1f38268a26c173c50aff32bc6a79939c16153fbfb",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Flame tongues",
+      "bytes": 220,
+      "gif": {
+        "path": "fx/mage/fire_staff_v1.gif",
+        "sha256": "d4b01d252205647cfb4cc1313c93eeb5baff2ab4c44926a34effc05d54cd3f9a",
+        "bytes": 117539,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_wood.png",
+            "sha256": "1c16b3a6ca39679d6d567a34c22c0dbb64e2594d0652f7ca99b9733bb23a37d2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_bronze.png",
+            "sha256": "91708f3f6c8974dca77ce6de09a55e4c49f235c78d152d3d1bc5883d23d1c12f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+            "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_steel.png",
+            "sha256": "f97486ff7a2010b979a95614dd9c45486b20f380bbdaabe32d2629558e55d8e7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_silversteel.png",
+            "sha256": "73de201bf4d9e0fbf78c6bef4549624813105be6dd3a946614869cfd609efdc2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_embersteel.png",
+            "sha256": "19b7447aeb96a4398a7c5d9fb8416b739398f12136194be51522c9cd07129571",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_abyssal_steel.png",
+            "sha256": "eea998a7a0cbcadde3d111d0ff680b17d057fc38eb88d664c4c86c7e6ffc0fe4",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron_ench.png",
+            "sha256": "a77f1ed64b3818500a4d80b77dfd2e79c373290dc61dbda8d485817aec4b0f1f",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.fire.staff.v2",
+      "class": "mage",
+      "family": "fire",
+      "weapon": "staff",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/mage/fire_staff_v2.png",
+      "sha256": "10f202eebbc401211e7e36d2510829b715e9ca1be189f2383ce67e2da9825a6a",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Banked sparks",
+      "bytes": 252,
+      "gif": {
+        "path": "fx/mage/fire_staff_v2.gif",
+        "sha256": "688e75ae988e838a343906a1ce187aad783eea05f8fd0758fade7c8d97e1d823",
+        "bytes": 117333,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_wood.png",
+            "sha256": "1c16b3a6ca39679d6d567a34c22c0dbb64e2594d0652f7ca99b9733bb23a37d2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_bronze.png",
+            "sha256": "91708f3f6c8974dca77ce6de09a55e4c49f235c78d152d3d1bc5883d23d1c12f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+            "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_steel.png",
+            "sha256": "f97486ff7a2010b979a95614dd9c45486b20f380bbdaabe32d2629558e55d8e7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_silversteel.png",
+            "sha256": "73de201bf4d9e0fbf78c6bef4549624813105be6dd3a946614869cfd609efdc2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_embersteel.png",
+            "sha256": "19b7447aeb96a4398a7c5d9fb8416b739398f12136194be51522c9cd07129571",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_abyssal_steel.png",
+            "sha256": "eea998a7a0cbcadde3d111d0ff680b17d057fc38eb88d664c4c86c7e6ffc0fe4",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron_ench.png",
+            "sha256": "a77f1ed64b3818500a4d80b77dfd2e79c373290dc61dbda8d485817aec4b0f1f",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.fire.wand.v1",
+      "class": "mage",
+      "family": "fire",
+      "weapon": "wand",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/mage/fire_wand_v1.png",
+      "sha256": "73979eeb028c96de29702e649a012101dae1e9ab45ae57078290da6072e2d1a4",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Flame tongues",
+      "bytes": 256,
+      "gif": {
+        "path": "fx/mage/fire_wand_v1.gif",
+        "sha256": "1aa750bb5a46917a04f7143065490286b5e263de78eb9963bb50bd8ec435a596",
+        "bytes": 111691,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_bronze.png",
+            "sha256": "9801ff009a4204f190fbc97063d52c99d25b811a1206d6303855e16ec92fc98f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron.png",
+            "sha256": "7a60b6afd5472a3648f84ab52a92a785952b48c18347c1d599d988531c00c648",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_steel.png",
+            "sha256": "cacabd9ebd80a58a425f1dba687981f74312b37e9844648d0c38c2e60aa1cf55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_silversteel.png",
+            "sha256": "11a24d0d3ec5247c0d2dd8d613ef48f3fde2afa8cede298a9a4bea82348a6a65",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_embersteel.png",
+            "sha256": "698310133027aaf428e9d757332522ed8cf32c1c3df4034a1c5550fa70aa2a61",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_abyssal_steel.png",
+            "sha256": "539616d42bb747eab60927debdca3bd7b495399abff04fe6d3e5a44bade9cd50",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron_ench.png",
+            "sha256": "25f07b4db92788de4312afd1a33c77ded538e7ba4e687c5148e461f262fc39b0",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.fire.wand.v2",
+      "class": "mage",
+      "family": "fire",
+      "weapon": "wand",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/mage/fire_wand_v2.png",
+      "sha256": "326719b9f3d8b2f8a79e1882026de57bbc7458c47128022a8088bcd36e5415c1",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Banked sparks",
+      "bytes": 285,
+      "gif": {
+        "path": "fx/mage/fire_wand_v2.gif",
+        "sha256": "b85a001dd88c0b5c36dbb20431f97de92df0c5ec4a481fa97a262e4e4b887b05",
+        "bytes": 111977,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_bronze.png",
+            "sha256": "9801ff009a4204f190fbc97063d52c99d25b811a1206d6303855e16ec92fc98f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron.png",
+            "sha256": "7a60b6afd5472a3648f84ab52a92a785952b48c18347c1d599d988531c00c648",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_steel.png",
+            "sha256": "cacabd9ebd80a58a425f1dba687981f74312b37e9844648d0c38c2e60aa1cf55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_silversteel.png",
+            "sha256": "11a24d0d3ec5247c0d2dd8d613ef48f3fde2afa8cede298a9a4bea82348a6a65",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_embersteel.png",
+            "sha256": "698310133027aaf428e9d757332522ed8cf32c1c3df4034a1c5550fa70aa2a61",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_abyssal_steel.png",
+            "sha256": "539616d42bb747eab60927debdca3bd7b495399abff04fe6d3e5a44bade9cd50",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron_ench.png",
+            "sha256": "25f07b4db92788de4312afd1a33c77ded538e7ba4e687c5148e461f262fc39b0",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.fire.dagger.v1",
+      "class": "mage",
+      "family": "fire",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/mage/fire_dagger_v1.png",
+      "sha256": "990e4a6324e1f6503aa99a2121a34ff7f7add5f004109ab5021f99195ebc1b05",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Flame tongues",
+      "bytes": 245,
+      "gif": {
+        "path": "fx/mage/fire_dagger_v1.gif",
+        "sha256": "1b5166c7d1c0f62dd140fbd7838fdcbc394f805a30390741ce2f931a895df295",
+        "bytes": 119228,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.fire.dagger.v2",
+      "class": "mage",
+      "family": "fire",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/mage/fire_dagger_v2.png",
+      "sha256": "31a79d57b6c814e8e11359f14651d3c975926f1610830faeceb7eedfb1f1fb93",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Banked sparks",
+      "bytes": 288,
+      "gif": {
+        "path": "fx/mage/fire_dagger_v2.gif",
+        "sha256": "f788d48bf86bd5943307d8acee713cf4019a8e39f4b6186c2d8bb30bb46a3297",
+        "bytes": 119210,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.frost.staff.v1",
+      "class": "mage",
+      "family": "frost",
+      "weapon": "staff",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/mage/frost_staff_v1.png",
+      "sha256": "ae2ecd00d2832daf70c7eb2cd8c402564581c76d32ff787a6753b8449fbd4917",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Creeping rime",
+      "bytes": 216,
+      "gif": {
+        "path": "fx/mage/frost_staff_v1.gif",
+        "sha256": "76bf398c1c105e181b2ffd9f1592635f4d7f09a5c6f3ab8611799365f0fc5d03",
+        "bytes": 115713,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_wood.png",
+            "sha256": "1c16b3a6ca39679d6d567a34c22c0dbb64e2594d0652f7ca99b9733bb23a37d2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_bronze.png",
+            "sha256": "91708f3f6c8974dca77ce6de09a55e4c49f235c78d152d3d1bc5883d23d1c12f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+            "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_steel.png",
+            "sha256": "f97486ff7a2010b979a95614dd9c45486b20f380bbdaabe32d2629558e55d8e7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_silversteel.png",
+            "sha256": "73de201bf4d9e0fbf78c6bef4549624813105be6dd3a946614869cfd609efdc2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_embersteel.png",
+            "sha256": "19b7447aeb96a4398a7c5d9fb8416b739398f12136194be51522c9cd07129571",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_abyssal_steel.png",
+            "sha256": "eea998a7a0cbcadde3d111d0ff680b17d057fc38eb88d664c4c86c7e6ffc0fe4",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron_ench.png",
+            "sha256": "a77f1ed64b3818500a4d80b77dfd2e79c373290dc61dbda8d485817aec4b0f1f",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.frost.staff.v2",
+      "class": "mage",
+      "family": "frost",
+      "weapon": "staff",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/mage/frost_staff_v2.png",
+      "sha256": "4fd4b3a2ab2dc9f599ccfa7df0fcf0eedb03e6c23eae5511428947dc1e94779f",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Crystal motes",
+      "bytes": 272,
+      "gif": {
+        "path": "fx/mage/frost_staff_v2.gif",
+        "sha256": "b19ad28a85aa140ce66ac711e1aaac1bee8fddc8409800facbca60c57c3560d9",
+        "bytes": 116960,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_wood.png",
+            "sha256": "1c16b3a6ca39679d6d567a34c22c0dbb64e2594d0652f7ca99b9733bb23a37d2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_bronze.png",
+            "sha256": "91708f3f6c8974dca77ce6de09a55e4c49f235c78d152d3d1bc5883d23d1c12f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+            "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_steel.png",
+            "sha256": "f97486ff7a2010b979a95614dd9c45486b20f380bbdaabe32d2629558e55d8e7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_silversteel.png",
+            "sha256": "73de201bf4d9e0fbf78c6bef4549624813105be6dd3a946614869cfd609efdc2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_embersteel.png",
+            "sha256": "19b7447aeb96a4398a7c5d9fb8416b739398f12136194be51522c9cd07129571",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_abyssal_steel.png",
+            "sha256": "eea998a7a0cbcadde3d111d0ff680b17d057fc38eb88d664c4c86c7e6ffc0fe4",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron_ench.png",
+            "sha256": "a77f1ed64b3818500a4d80b77dfd2e79c373290dc61dbda8d485817aec4b0f1f",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.frost.wand.v1",
+      "class": "mage",
+      "family": "frost",
+      "weapon": "wand",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/mage/frost_wand_v1.png",
+      "sha256": "b936c072354ed547c24d1715a44b33c090a3da952950a83ee9e73196f1a41e19",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Creeping rime",
+      "bytes": 204,
+      "gif": {
+        "path": "fx/mage/frost_wand_v1.gif",
+        "sha256": "392da3b570d763528a39661f882892daa564499d2a2d9eb00619cf0fcfdd36ca",
+        "bytes": 110232,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_bronze.png",
+            "sha256": "9801ff009a4204f190fbc97063d52c99d25b811a1206d6303855e16ec92fc98f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron.png",
+            "sha256": "7a60b6afd5472a3648f84ab52a92a785952b48c18347c1d599d988531c00c648",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_steel.png",
+            "sha256": "cacabd9ebd80a58a425f1dba687981f74312b37e9844648d0c38c2e60aa1cf55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_silversteel.png",
+            "sha256": "11a24d0d3ec5247c0d2dd8d613ef48f3fde2afa8cede298a9a4bea82348a6a65",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_embersteel.png",
+            "sha256": "698310133027aaf428e9d757332522ed8cf32c1c3df4034a1c5550fa70aa2a61",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_abyssal_steel.png",
+            "sha256": "539616d42bb747eab60927debdca3bd7b495399abff04fe6d3e5a44bade9cd50",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron_ench.png",
+            "sha256": "25f07b4db92788de4312afd1a33c77ded538e7ba4e687c5148e461f262fc39b0",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.frost.wand.v2",
+      "class": "mage",
+      "family": "frost",
+      "weapon": "wand",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/mage/frost_wand_v2.png",
+      "sha256": "66f21d4180980378f1e52523bffb7e3595a5115f11a86d98e0cb1e5169ea918d",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Crystal motes",
+      "bytes": 294,
+      "gif": {
+        "path": "fx/mage/frost_wand_v2.gif",
+        "sha256": "55b0eb375c5238508e9a2bae0fb984cd18abe9477f2abe5268aaba767445daba",
+        "bytes": 111862,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_bronze.png",
+            "sha256": "9801ff009a4204f190fbc97063d52c99d25b811a1206d6303855e16ec92fc98f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron.png",
+            "sha256": "7a60b6afd5472a3648f84ab52a92a785952b48c18347c1d599d988531c00c648",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_steel.png",
+            "sha256": "cacabd9ebd80a58a425f1dba687981f74312b37e9844648d0c38c2e60aa1cf55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_silversteel.png",
+            "sha256": "11a24d0d3ec5247c0d2dd8d613ef48f3fde2afa8cede298a9a4bea82348a6a65",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_embersteel.png",
+            "sha256": "698310133027aaf428e9d757332522ed8cf32c1c3df4034a1c5550fa70aa2a61",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_abyssal_steel.png",
+            "sha256": "539616d42bb747eab60927debdca3bd7b495399abff04fe6d3e5a44bade9cd50",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron_ench.png",
+            "sha256": "25f07b4db92788de4312afd1a33c77ded538e7ba4e687c5148e461f262fc39b0",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.frost.dagger.v1",
+      "class": "mage",
+      "family": "frost",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/mage/frost_dagger_v1.png",
+      "sha256": "479c15b92412d7ddaac0431714d9c79df8cb13e9a0780778a16f863987783de3",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Creeping rime",
+      "bytes": 200,
+      "gif": {
+        "path": "fx/mage/frost_dagger_v1.gif",
+        "sha256": "d974a77b5d8519df30ac43fc11dfa4e33559c4398c6c8cf37da249110596186f",
+        "bytes": 117358,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.mage.frost.dagger.v2",
+      "class": "mage",
+      "family": "frost",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/mage/frost_dagger_v2.png",
+      "sha256": "65190fcaafa7c3ab69a4462a41a71e982967b720d6a0a70b38382b5a8fda6f5d",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Crystal motes",
+      "bytes": 312,
+      "gif": {
+        "path": "fx/mage/frost_dagger_v2.gif",
+        "sha256": "7ec699d9202ad716c97f6031f9f98e3f637405cee920844d05a450cce439a9bb",
+        "bytes": 118959,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.priest.holy.staff.v1",
+      "class": "priest",
+      "family": "holy",
+      "weapon": "staff",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/priest/holy_staff_v1.png",
+      "sha256": "81b510566842b703c0484b81f78f7d42c740455696c651580ff91b3adb01b905",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Quiet radiance",
+      "bytes": 266,
+      "gif": {
+        "path": "fx/priest/holy_staff_v1.gif",
+        "sha256": "0766765d1b78a326a029c861552700d125c831dbbf28c5a153bd99a25104da89",
+        "bytes": 116592,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_wood.png",
+            "sha256": "1c16b3a6ca39679d6d567a34c22c0dbb64e2594d0652f7ca99b9733bb23a37d2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_bronze.png",
+            "sha256": "91708f3f6c8974dca77ce6de09a55e4c49f235c78d152d3d1bc5883d23d1c12f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+            "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_steel.png",
+            "sha256": "f97486ff7a2010b979a95614dd9c45486b20f380bbdaabe32d2629558e55d8e7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_silversteel.png",
+            "sha256": "73de201bf4d9e0fbf78c6bef4549624813105be6dd3a946614869cfd609efdc2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_embersteel.png",
+            "sha256": "19b7447aeb96a4398a7c5d9fb8416b739398f12136194be51522c9cd07129571",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_abyssal_steel.png",
+            "sha256": "eea998a7a0cbcadde3d111d0ff680b17d057fc38eb88d664c4c86c7e6ffc0fe4",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron_ench.png",
+            "sha256": "a77f1ed64b3818500a4d80b77dfd2e79c373290dc61dbda8d485817aec4b0f1f",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.priest.holy.staff.v2",
+      "class": "priest",
+      "family": "holy",
+      "weapon": "staff",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/priest/holy_staff_v2.png",
+      "sha256": "2fc9bb59268cb590ebf3004d1d264518a948b65271b81660b8997e7a43943c69",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Orbiting motes",
+      "bytes": 282,
+      "gif": {
+        "path": "fx/priest/holy_staff_v2.gif",
+        "sha256": "fe6dca8d5e321f626db1b99dac89e9326b32106a2effa110146e1f1632b17bf7",
+        "bytes": 117057,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_wood.png",
+            "sha256": "1c16b3a6ca39679d6d567a34c22c0dbb64e2594d0652f7ca99b9733bb23a37d2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_bronze.png",
+            "sha256": "91708f3f6c8974dca77ce6de09a55e4c49f235c78d152d3d1bc5883d23d1c12f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron.png",
+            "sha256": "70d9cc7f42580de540bb770a99bf1fe7dde3a9ad661573e2aa840c73a6b68ce0",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_steel.png",
+            "sha256": "f97486ff7a2010b979a95614dd9c45486b20f380bbdaabe32d2629558e55d8e7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_silversteel.png",
+            "sha256": "73de201bf4d9e0fbf78c6bef4549624813105be6dd3a946614869cfd609efdc2",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_embersteel.png",
+            "sha256": "19b7447aeb96a4398a7c5d9fb8416b739398f12136194be51522c9cd07129571",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_abyssal_steel.png",
+            "sha256": "eea998a7a0cbcadde3d111d0ff680b17d057fc38eb88d664c4c86c7e6ffc0fe4",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_staff_iron_ench.png",
+            "sha256": "a77f1ed64b3818500a4d80b77dfd2e79c373290dc61dbda8d485817aec4b0f1f",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.priest.holy.wand.v1",
+      "class": "priest",
+      "family": "holy",
+      "weapon": "wand",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/priest/holy_wand_v1.png",
+      "sha256": "aa7b4695fd2508f9f4954f13f576c56c7bb83ba16edc0bb64d5b7d1adb3fa235",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Quiet radiance",
+      "bytes": 225,
+      "gif": {
+        "path": "fx/priest/holy_wand_v1.gif",
+        "sha256": "cd9746f0e9741212afaa0711a2c46410288b670d12237df833710cf11d7b0b5a",
+        "bytes": 111447,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_bronze.png",
+            "sha256": "9801ff009a4204f190fbc97063d52c99d25b811a1206d6303855e16ec92fc98f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron.png",
+            "sha256": "7a60b6afd5472a3648f84ab52a92a785952b48c18347c1d599d988531c00c648",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_steel.png",
+            "sha256": "cacabd9ebd80a58a425f1dba687981f74312b37e9844648d0c38c2e60aa1cf55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_silversteel.png",
+            "sha256": "11a24d0d3ec5247c0d2dd8d613ef48f3fde2afa8cede298a9a4bea82348a6a65",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_embersteel.png",
+            "sha256": "698310133027aaf428e9d757332522ed8cf32c1c3df4034a1c5550fa70aa2a61",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_abyssal_steel.png",
+            "sha256": "539616d42bb747eab60927debdca3bd7b495399abff04fe6d3e5a44bade9cd50",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron_ench.png",
+            "sha256": "25f07b4db92788de4312afd1a33c77ded538e7ba4e687c5148e461f262fc39b0",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.priest.holy.wand.v2",
+      "class": "priest",
+      "family": "holy",
+      "weapon": "wand",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/priest/holy_wand_v2.png",
+      "sha256": "f79de0b6d672716aa7c324d3741e943de25d2f0499ec97305683fd573ec44a7f",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Orbiting motes",
+      "bytes": 254,
+      "gif": {
+        "path": "fx/priest/holy_wand_v2.gif",
+        "sha256": "17089e69d60651c3b1f2ee85cc508e5fb025f97e92c8427624f96defb643f768",
+        "bytes": 112226,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC0-1.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_bronze.png",
+            "sha256": "9801ff009a4204f190fbc97063d52c99d25b811a1206d6303855e16ec92fc98f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron.png",
+            "sha256": "7a60b6afd5472a3648f84ab52a92a785952b48c18347c1d599d988531c00c648",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_steel.png",
+            "sha256": "cacabd9ebd80a58a425f1dba687981f74312b37e9844648d0c38c2e60aa1cf55",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_silversteel.png",
+            "sha256": "11a24d0d3ec5247c0d2dd8d613ef48f3fde2afa8cede298a9a4bea82348a6a65",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_embersteel.png",
+            "sha256": "698310133027aaf428e9d757332522ed8cf32c1c3df4034a1c5550fa70aa2a61",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_abyssal_steel.png",
+            "sha256": "539616d42bb747eab60927debdca3bd7b495399abff04fe6d3e5a44bade9cd50",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC0-1.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_wand_iron_ench.png",
+            "sha256": "25f07b4db92788de4312afd1a33c77ded538e7ba4e687c5148e461f262fc39b0",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC0-1.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.priest.holy.dagger.v1",
+      "class": "priest",
+      "family": "holy",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 1,
+      "path": "fx/priest/holy_dagger_v1.png",
+      "sha256": "dd8df490ebd413eed76eeccec9001220022a8d76b0b8e9097ebaf639b84297a8",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Quiet radiance",
+      "bytes": 253,
+      "gif": {
+        "path": "fx/priest/holy_dagger_v1.gif",
+        "sha256": "f477fbc12c267d75d05327f8fe084f018e6e8af82648ca98c55bb3626b391823",
+        "bytes": 118684,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    },
+    {
+      "key": "fx.priest.holy.dagger.v2",
+      "class": "priest",
+      "family": "holy",
+      "weapon": "dagger",
+      "stage": null,
+      "variant": 2,
+      "path": "fx/priest/holy_dagger_v2.png",
+      "sha256": "5cc5c60e371c71432b7b962aed071a8da01ea78a0926e45ba1d861c1047cf8d8",
+      "frames": 8,
+      "loop_s": 0.96,
+      "frame_ms": 120,
+      "size": [
+        16,
+        128
+      ],
+      "mode": "RGBA",
+      "license": "CC0-1.0",
+      "title": "Orbiting motes",
+      "bytes": 272,
+      "gif": {
+        "path": "fx/priest/holy_dagger_v2.gif",
+        "sha256": "61e19ef3a195a4c264e47357ced8a66c0230ae09c0cd8585d305d4255b89bce1",
+        "bytes": 119511,
+        "scale": 8,
+        "frames": 8,
+        "loop_s": 0.96,
+        "license": "CC-BY-SA-4.0",
+        "sources": [
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_bronze.png",
+            "sha256": "a257fcf294b983f66a7b55db71c03b07ff076821b4ff0660ae2358f11a91bd5d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron.png",
+            "sha256": "83ecf2f94d4915824b1116b0713d36c6f23b2379d743b63e51240bd7f2841b83",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_steel.png",
+            "sha256": "9e423a25086a1d1f2ad128ed5b5d07cf592b929387b490f4eeb2127441eb9e2f",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_silversteel.png",
+            "sha256": "b747701bfd91e6314e079599f06ba2d93f69a1f7353262ce3eed72860c407e0d",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_embersteel.png",
+            "sha256": "a0821e61129ea8b41d0099bcf8c8aa1d89a5d6542b7b2f955ec3debd54cbc030",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_abyssal_steel.png",
+            "sha256": "a0f4b4566a18acc4e14b46072f063f93920cfc3cf23bee9c29e6aa0f789e30f7",
+            "size": [
+              16,
+              16
+            ],
+            "license": "CC-BY-SA-3.0"
+          },
+          {
+            "path": "mods/ITEMS/grug_gear/textures/grug_gear_item_dagger_iron_ench.png",
+            "sha256": "8d5ecfb4d9d9d2249e627a2c3e52cd4bd2b12f359feb508d08c5356733a0e487",
+            "size": [
+              16,
+              32
+            ],
+            "license": "CC-BY-SA-3.0"
+          }
+        ],
+        "enchant_stats": [
+          "int",
+          "max_mana_percent"
+        ]
+      }
+    }
+  ],
+  "generator": {
+    "path": "tools/r52_art/arta/arta_fx2.py",
+    "sha256": "82e2a25674b3c943a6a7a89af1c46e01880a5b026c7c9f360e920b28037f24fe",
+    "license": "GPL-3.0-or-later"
+  },
+  "preview_enchant_input": {
+    "path": "mods/ITEMS/grug_gear/enchant_colors.lua",
+    "sha256": "5f37112354c805333fbac5d7cd7f04ecc7fd9e5f1f03d5bcd2806bc6c67ae2c2"
+  }
+}
