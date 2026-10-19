@@ -1,7 +1,7 @@
 # Round 51 follow-up — after the user's first GUI look
 
 Coordinator: Claude, 2026-10-19, from the user's GUI feedback on the built Round 51 (main `473d658c`, not pushed).
-Status: **draft**, waiting for the user's "go" and the one decision in §3.
+Status: **started** 2026-10-19; the user chose **B** (animated textures) for §3.
 
 0.51.0 is not pushed yet, so these fixes ship **inside 0.51.0** (still the one map reset; no version bump). The
 round plan's completion gets a "follow-up lanes" block (round workflow §4, post-merge status step).
@@ -48,7 +48,9 @@ files; FM touches mobs only).
   over a few nodes, a few single tufts beyond the edge), so no meadow has a sharp outline; the three variants stay
   mixed. Kelp meadows the same if they show the same hard edge. The renewal rule follows the generator (shared
   rule, as T3 built it).
-- **Animation (item 2):** see §3; FW builds the user's choice for seagrass and kelp.
+- **Animation (item 2):** the user's choice **B** (§3): Astra (lane FA) draws a few sway frames for the three
+  seagrass variants and a kelp texture of our own; the user picks on a page; FW wires them as tile animations
+  (`waving` stays 0).
 - **Wild land lakes (item 8):** a few plants in and on lakes — waterlily pads at the surface near the shore and an
   underwater weed on the bed (use the existing freshwater nodes; find what exists: the swamp's waterlily, the
   freshwater waterweed LG mentions) — at rough densities, regrowing like the other water plants. Swamp pools keep
