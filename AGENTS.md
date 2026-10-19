@@ -12,28 +12,33 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.51.0, Round 51 "Land zones and the sea" (**map
-reset**, no migration step;
-[completion](docs/planning/round51-plan.md#completion-2026-10-19)), on
-main and pushed (`75ea1b4c`, 2026-10-19; production still on 0.50.2): the world bounds ±4190 × ±3740 with the land
-unchanged, bays without specks, a 250–350-node coastal belt, organic
-dragon channels, bay, belt and channel water 24+ off the coast protected
-like the open sea (`grug_zones.water_query_at`), seabed growth and
-shipwrecks, water mobs by band, the map by depth on a ±4050 × ±3600
-atlas; calm 2 × 2 grounds, new plants with regrowth and the land kit
-(ruins, graveyards, cairns, statues, varied bones) in every land zone. Its
-GUI test is open. Before it 0.50.2 (compatible: the Claim Stone preview
-and claims on the minimap) on 0.50.1 and 0.50.0, Round 50 "Hotbar A/B,
-claim containers across map resets" (compatible; the migration tool packs
-claim containers before every map reset, declaration schema 3,
-`map_reset_pass`), pushed (origin/main `fae056c5`); production runs
-0.50.2. Earlier: 0.49.0, Round 49 "Mapgen performance (native first) and
-gameplay polish" (**map reset**; [completion](docs/planning/round49-plan.md#completion-2026-10-16)).
+**Current state:** 0.52.0, Round 52 "Ambience and the class rework
+foundation" (**compatible**, no migration step;
+[completion](docs/planning/round52-plan.md#completion-2026-10-20)), on
+main, not pushed (origin/main `dea1d163`, 0.51.0): ambience beds by biome
+group in three layers (surface, cave, wind) by the height relative to the
+terrain, real caves told from dug tunnels, the underground sky relative to
+the terrain, animal calls, `/ambience debug`; round F of the class rework
+(the shipped classes unchanged except Mend's tick): the action clock, the
+transformation field, readiness windows, the area and group helpers
+(`grug_core.area`), the graph talents as an admin preview
+(`/talent_preview`), the scrolling skill row, the weapon overlay per tree
+and weapon type, the picked art. Its GUI test is open. Before it 0.51.0,
+Round 51 "Land zones and the sea" (**map reset**, no migration step;
+[completion](docs/planning/round51-plan.md#completion-2026-10-19)), pushed
+(`75ea1b4c`, 2026-10-19; production still on 0.50.2). Earlier: 0.50.2
+(compatible: the Claim Stone preview and claims on the minimap) on 0.50.1
+and 0.50.0, Round 50 "Hotbar A/B, claim containers across map resets"
+(compatible; the migration tool packs claim containers before every map
+reset, declaration schema 3, `map_reset_pass`); 0.49.0, Round 49 "Mapgen
+performance (native first) and gameplay polish" (**map reset**;
+[completion](docs/planning/round49-plan.md#completion-2026-10-16)).
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
-47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48, 49
-and 51 and of 0.45.1, 0.49.1, 0.50.0 and 0.50.1 are open. The class redesign
-is parked ([continuation](docs/planning/class-redesign/continuation.md)).
+47 too (2026-10-14); the GUI tests of Rounds 36–38, 40, 41, 43–45, 48, 49,
+51 and 52 and of 0.45.1, 0.49.1, 0.50.0 and 0.50.1 are open. The class
+rework continues with round K
+([delivery plan](docs/planning/class-redesign/delivery-plan.md)).
 Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
@@ -436,6 +441,12 @@ The topic rules below name the one path to use; the
   `grug_ambience/music/` and are pushed on demand.
 - **Downloads:** reuse downloaded material first, access Freesound serially
   with HQ previews only, never delete or move downloaded source material.
+- **Ambience** (Round 52): beds follow the biome group and play in three
+  layers by the depth below `grug_core.depth_below_surface`'s reference;
+  the model (groups, layer curves, the cave probe, the atmosphere's
+  underground band, calls, `/ambience debug`) is in the
+  [module guide](docs/technical/module-guide.md#sound), the rules in
+  [sound.md §4](docs/design/sound.md#4-ambience-beds-grug_ambience).
 
 ### Quests, main line, rift and decor
 
