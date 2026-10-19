@@ -63,11 +63,30 @@ local function lacks(text, part, label)
 end
 
 local H = dofile(repo .. "/tools/r44_ts/harness.lua")(repo)
--- A talent icon and a background that do not ship yet, so both paths of
--- each fallback are drawn (D7).
-local FAKE = {"grug_classes_talent_fire_mastery.png", "grug_classes_tree_ember.png"}
-local G = dofile(repo .. "/tools/r52_graph/graph_loader.lua")(repo, FAKE)
+-- The picked art ships (D7, the art step); one background and one talent
+-- icon are hidden, so both paths of each fallback are still drawn.
+local HIDDEN = {"grug_classes_talent_measured_fuel.png", "grug_classes_tree_rime.png"}
+local G = dofile(repo .. "/tools/r52_graph/graph_loader.lua")(repo, nil, HIDDEN)
 local graph = grug_classes.graph
+
+-- The shipped art (the art step): every tree's background, every modifier
+-- and window node's icon, the redrawn icons of the shipped skills.
+local SHIPPED_SKILLS = {fireball = true, blink = true, ice_nova = true, hold_ground = true,
+	taunt = true, mighty_blow = true, hamstring = true, shield_spell = true, mend = true,
+	word_of_ruin = true, snare_shot = true, opening = true}
+for _, tree_id in ipairs(graph.tree_ids) do
+	eq(G.textures["grug_classes_tree_" .. tree_id .. ".png"] or false, tree_id ~= "rime",
+		"art: the " .. tree_id .. " background ships (Rime hidden here)")
+end
+local icons, texts = 0, 0
+for _, id in ipairs(graph.node_ids) do
+	local def = graph.nodes[id]
+	local want = def.ability and SHIPPED_SKILLS[def.ability] or
+		not def.ability and id ~= "measured_fuel"
+	eq(graph.icon_texture(def) ~= nil, want and true or false, "art: " .. def.code .. "'s icon")
+	if graph.icon_texture(def) then icons = icons + 1 else texts = texts + 1 end
+end
+eq(icons .. "/" .. texts, "85/24", "art: 73 talent and 12 skill icons; 23 new skills and one hidden as text")
 
 --
 -- A. The registry against the node list.
@@ -437,7 +456,7 @@ has(fs, "style[grug_graph_tab_2;bgcolor=#3d3d3d", "E the second not")
 has(fs, "label[5.75,0.45;Sample build: 30 of 30 points]", "E the points in the header row")
 has(fs, "label[9.90,0.45;Read-only preview]", "E the read-only note where the respec sits")
 has(fs, "image[0.25,0.95;13.00,5.50;grug_classes_tree_ember.png]",
-	"E a shipped background fills D5's rectangle")
+	"E the picked background fills D5's rectangle")
 has(fs, "set_focus[grug_graph_focus;true]button[0,0;0,0;grug_graph_focus;]",
 	"E the focus sink")
 has(fs, "textarea[0.25,6.50;13.00,0.65;;;Preview of the new talent trees", "E the strip under it")
@@ -450,8 +469,8 @@ end
 has(fs, ";grug_abilities_skill_fireball.png;" .. field_of("F4") .. ";]",
 	"E Fireball shows its shipped skill icon")
 has(fs, ";grug_classes_talent_fire_mastery.png;" .. field_of("F1") .. ";]",
-	"E a talent node shows its icon once it ships")
-has(fs, ";blank.png;" .. field_of("F2") .. ";Measured Fuel\n3/3]", "E a text node otherwise")
+	"E a talent node shows its picked icon")
+has(fs, ";blank.png;" .. field_of("F2") .. ";Measured Fuel\n3/3]", "E a text node without one")
 has(fs, ";blank.png;" .. field_of("F5") .. ";Flame Lance\n1/1]", "E an unlock without an icon")
 -- The sample build's node states: maxed and ranked (Ember spends 30 of 32).
 has(fs, "style[" .. field_of("F1") .. ",", "E a styled node list")
@@ -472,7 +491,7 @@ eq(table.concat(gate_labels, ","), "0,2,6,12,16,20", "E the gate of each used ro
 G.receive(admin, "grug_classes:talent_preview", {grug_graph_tab_2 = "Rime (30)"})
 fs = G.shown[#G.shown].fs
 has(fs, "style[grug_graph_tab_2;bgcolor=#8a682f", "E a tab click selects Rime")
-has(fs, "box[0.25,0.95;13.00,5.50;#101318c8]", "E Rime has no background yet: the plain one")
+has(fs, "box[0.25,0.95;13.00,5.50;#101318c8]", "E without its background (hidden): the plain one")
 local locked = fs:match("style%[([^%]]-);bgcolor=#2e2e2e")
 eq(locked, field_of("R12"), "E Far Frost, unbought in the sample, is locked")
 has(fs, "tooltip[" .. field_of("R12") .. ";Far Frost (0/3)", "E its tooltip")

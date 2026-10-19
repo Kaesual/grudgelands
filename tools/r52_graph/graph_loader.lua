@@ -4,16 +4,17 @@
 -- them after talents_ui.lua. The engine calls they need beyond the harness
 -- are stubbed and recorded:
 --
---   local G = dofile(repo .. "/tools/r52_graph/graph_loader.lua")(repo, extra)
+--   local G = dofile(repo .. "/tools/r52_graph/graph_loader.lua")(repo, extra, hidden)
 --
 -- `extra` lists texture file names to pretend are shipped, besides the real
--- files of the two texture folders the page looks for. Returns {commands
+-- files of the two texture folders the page looks for; `hidden` lists real
+-- files to pretend are missing (to draw the fallbacks). Returns {commands
 -- (name -> chat command def), shown (every show_formspec call: {name,
 -- formname, fs}), receive (the page's field handler), leave (its leave
 -- handler), privileged (name -> true: who has `server`), textures (the
 -- listing the page saw)}.
 
-return function(repo, extra)
+return function(repo, extra, hidden)
 	local G = {commands = {}, shown = {}, privileged = {}, textures = {}}
 	local saved = {}
 	for _, key in ipairs({"get_modpath", "get_current_modname", "register_chatcommand",
@@ -44,8 +45,10 @@ return function(repo, extra)
 				wanted[#wanted + 1] = "grug_classes_tree_" .. tree_id .. ".png"
 			end
 		end
+		local skip = {}
+		for _, file in ipairs(hidden or {}) do skip[file] = true end
 		for _, file in ipairs(wanted) do
-			if exists(path .. "/" .. file) then list[#list + 1] = file end
+			if not skip[file] and exists(path .. "/" .. file) then list[#list + 1] = file end
 		end
 		for _, file in ipairs(extra or {}) do
 			if file:match("^" .. (mod or "") .. "_") then list[#list + 1] = file end

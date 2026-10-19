@@ -5,8 +5,8 @@
 -- (character creation, SHOT / ack handshake) is the Round 48 HUD probe's.
 --
 -- After the character is made (Accord, Human, Scout) the probe gives it the
--- `server` privilege, opens /talent_preview's page for the Mage and the
--- Scout (both tabs, one selected node) and then shows the Talents & Skills
+-- `server` privilege, opens /talent_preview's page for every class (both
+-- tabs, one selected node) and then shows the Talents & Skills
 -- page as a form of its own (the server cannot open the inventory) with
 -- every registered ability in the skill row -- in this probe only -- at the
 -- start and scrolled. Each view logs "SHOT <name>" after SETTLE seconds.
@@ -38,18 +38,25 @@ local function show_talents(player, scroll)
 	core.show_formspec(NAME, "grug_probe_r52_graph:talents", sfinv.get_formspec(player, context))
 end
 
+local function tab(index)
+	return function(player) receive(player, PREVIEW, {["grug_graph_tab_" .. index] = "x"}) end
+end
+local function open(class_id)
+	return function(player) graph.open_preview(player, class_id) end
+end
+-- Both trees of every class (the art step: the picked backgrounds and icons).
 local SHOTS = {
-	{name = "P1_preview_ember", act = function(player) graph.open_preview(player, "mage") end},
-	{name = "P2_preview_rime", act = function(player)
-		receive(player, PREVIEW, {grug_graph_tab_2 = "Rime"})
-	end},
+	{name = "P1_preview_ember", act = open("mage")},
+	{name = "P2_preview_rime", act = tab(2)},
 	{name = "P3_preview_rime_cold_shock", act = function(player)
 		receive(player, PREVIEW, {[node_field("cold_shock")] = "x"})
 	end},
-	{name = "P4_preview_quarry", act = function(player) graph.open_preview(player, "scout") end},
-	{name = "P5_preview_veil", act = function(player)
-		receive(player, PREVIEW, {grug_graph_tab_2 = "Veil"})
-	end},
+	{name = "P4_preview_bulwark", act = open("warrior")},
+	{name = "P5_preview_ruin", act = tab(2)},
+	{name = "P6_preview_mercy", act = open("priest")},
+	{name = "P7_preview_reckoning", act = tab(2)},
+	{name = "P8_preview_quarry", act = open("scout")},
+	{name = "P9_preview_veil", act = tab(2)},
 	{name = "S1_skills_row_start", act = function(player) show_talents(player, 0) end},
 	{name = "S2_skills_row_scrolled", act = function(player) show_talents(player, 60) end},
 }
