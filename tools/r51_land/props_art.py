@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Round 51 ARTL pass 2. Original pixel/box art, GPT-6 Astra, CC0-1.0.
+"""Round 51 ARTL passes 2 and 3. Original pixel/box art, GPT-6 Astra, CC0-1.0.
 
 python3 -I tools/r51_land/props_art.py [--check]
 Only Pillow is needed. No downloads, source-asset sampling, or game writes.
@@ -27,6 +27,7 @@ NORMALS = ((0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0),
 FONT = dict(runpy.run_path(str(ROOT / "tools/r47_art/swamp/generate.py"))["FONT_ROWS"])
 FONT["_"] = "000/000/000/000/111"
 FONT["="] = "000/111/000/111/000"
+FONT[","] = "000/000/000/010/100"
 PALETTES = {
     "bone": ("81715a", "afa087", "c9bda3", "e0d6bd", "eee5cd"),
     "grave": ("55554f", "6e6e63", "858577", "9b9c8c", "b0b0a0"),
@@ -34,7 +35,10 @@ PALETTES = {
     "silver": ("88877b", "aaa999", "c6c5b2", "d8d7c2", "e5e3d0"),
     "obelisk": ("4c5052", "65696a", "7c8080", "959997", "acb0a9"),
     "wood": ("65665f", "888b81", "a7aba1", "c5c8ba", "dedfd0"),
+    "mourner": ("45494b", "606568", "797e7d", "93978e", "a8ac9f"),
 }
+PASS3_KEYS = ("statue_mourner_base", "statue_mourner_upper",
+              "gravestone_fallen", "gravestone_sunken")
 
 
 def rgba(value):
@@ -83,6 +87,8 @@ def tiles_for(key, boxes, material, seed):
                     continue
                 g = grain(x // 2, y // 2, seed + face)
                 index = 1 if g < 28 else 3 if g > 215 else 2
+                if material == "mourner":
+                    index = 1 if g < 12 else 3 if g > 241 else 2
                 # A restrained, interrupted lip describes the small silhouettes.
                 if y > 0 and not mask.getpixel((x, y - 1)):
                     index = 3
@@ -134,6 +140,24 @@ def paint_details(key, tiles, masks):
         for f in (0, 2, 5):
             mark(tiles, masks, f, [(4, 12), (9, 14), (6, 7), (11, 4)], "a7977a")
             mark(tiles, masks, f, [(5, 12), (10, 14), (7, 7), (12, 4)], "eee5cd")
+    elif key == "gravestone_fallen":
+        # The stele's worn diamond lies on +Y; the exposed break is geometry.
+        stroke(tiles, masks, 0, [(7, 2), (5, 4), (7, 6), (9, 4), (7, 2)], "65665c")
+        stroke(tiles, masks, 0, [(6, 4), (7, 5), (8, 4)], "b0b0a0")
+        stroke(tiles, masks, 0, [(4, 11), (9, 11)], "68695e")
+        mark(tiles, masks, 0, [(5, 13), (6, 13), (8, 13)], "68695e")
+        stroke(tiles, masks, 0, [(11, 2), (10, 3), (11, 5), (10, 6)], "55554f")
+        for f in (0, 4, 5):
+            mark(tiles, masks, f, [(3, 12), (4, 13), (4, 14), (10, 5), (11, 5)], "656b50")
+        stroke(tiles, masks, 0, [(3, 9), (5, 9), (6, 10), (9, 10)], "9b9c8c")
+    elif key == "gravestone_sunken":
+        # Half-buried stele: its diamond is still visible above the wet soil line.
+        for f in (4, 5):
+            stroke(tiles, masks, f, [(9, 9), (7, 11), (9, 13), (11, 11), (9, 9)], "65665c")
+            mark(tiles, masks, f, [(8, 11), (9, 12), (10, 11)], "b0b0a0")
+            stroke(tiles, masks, f, [(12, 9), (11, 10), (12, 12)], "55554f")
+            mark(tiles, masks, f, [(5, 14), (5, 15), (6, 15), (10, 15), (11, 14)], "656b50")
+            mark(tiles, masks, f, [(4, 15), (7, 15), (11, 15)], "565b47")
     elif key.startswith("gravestone"):
         for f in (4, 5):
             stroke(tiles, masks, f, [(10, 1), (9, 3), (10, 4), (9, 6)], "55554f")
@@ -156,6 +180,35 @@ def paint_details(key, tiles, masks):
                 stroke(tiles, masks, f, [(3, y), (6, y), (7, y - 1), (11, y - 1)], "62685f")
                 mark(tiles, masks, f, [(4, y + 1), (5, y + 1)], "adb09f")
         mark(tiles, masks, 0, [(3, 5), (4, 5), (4, 6), (10, 9), (11, 9)], "81876d")
+    elif key.startswith("statue_mourner"):
+        if key.endswith("base"):
+            # Broad robe folds separate the two knees; no face on the lower node.
+            for f in (4, 5):
+                stroke(tiles, masks, f, [(6, 0), (6, 4), (5, 7), (5, 10), (3, 13)], "606568")
+                stroke(tiles, masks, f, [(10, 1), (9, 5), (10, 8), (11, 11)], "606568")
+                stroke(tiles, masks, f, [(7, 1), (7, 5), (6, 8)], "93978e")
+                mark(tiles, masks, f, [(3, 14), (4, 14), (4, 15), (5, 15), (11, 13), (12, 14)], "667057")
+            stroke(tiles, masks, 2, [(10, 5), (9, 7), (10, 8), (10, 10)], "45494b")
+            stroke(tiles, masks, 0, [(4, 10), (5, 11), (5, 13)], "606568")
+            mark(tiles, masks, 0, [(3, 12), (3, 13), (4, 13), (11, 10), (12, 11)], "727b61")
+        else:
+            # A bowed, empty hood above clasped hands; the dark recess is stone.
+            mark(tiles, masks, 5, [(x, y) for x in range(4, 12) for y in range(1, 9)], "797e7d")
+            stroke(tiles, masks, 5, [(5, 3), (4, 5), (4, 8)], "606568")
+            stroke(tiles, masks, 5, [(10, 3), (11, 5), (11, 8)], "93978e")
+            for y, xs in ((4, range(7, 9)), (5, range(6, 10)), (6, range(6, 10)),
+                          (7, range(5, 11)), (8, range(6, 10))):
+                mark(tiles, masks, 5, [(x, y) for x in xs], "383e40")
+            stroke(tiles, masks, 5, [(3, 8), (4, 10), (6, 11)], "606568")
+            stroke(tiles, masks, 5, [(12, 8), (11, 10), (9, 11)], "606568")
+            mark(tiles, masks, 5, [(7, 9), (8, 10), (7, 11)], "606568")
+            mark(tiles, masks, 5, [(6, 9), (8, 9), (9, 10)], "a8ac9f")
+            stroke(tiles, masks, 5, [(9, 2), (8, 3), (9, 4)], "45494b")
+            stroke(tiles, masks, 0, [(7, 6), (8, 7), (8, 9), (9, 10)], "45494b")
+            stroke(tiles, masks, 4, [(7, 5), (8, 7), (7, 10), (9, 13)], "606568")
+            for f in (0, 2, 4):
+                mark(tiles, masks, f, [(10, 7), (11, 7), (11, 8), (12, 9)], "667057")
+                mark(tiles, masks, f, [(10, 8), (12, 8)], "7b8468")
     elif key == "statue_veiled_head":
         # Nearly erased features underneath a heavy hood, no glowing eyes.
         stroke(tiles, masks, 5, [(4, 5), (5, 6), (5, 10), (6, 12)], "88877b")
@@ -286,6 +339,31 @@ def build_props():
         [1, -8, 0, 3, -6, 4], [2, -8, 3, 5, -6, 6],
         [4, -8, 5, 6, -7, 8], [4, -8, -2, 7, -7, 0]],
         "Recommend default:stick for the thin fork, reserving default:wood for driftwood_log.")
+    # Append to preserve the pass-2 material seeds and every existing prop byte.
+    add("statue_mourner_base", "Mourner, kneeling robe and knees", "default:stone", "mourner", [
+        [-6, -8, -6, -1, -4, 2], [1, -8, -6, 6, -4, 2],
+        [-5, -8, 2, 5, -5, 6], [-5, -5, -3, 5, 0, 5],
+        [-4, 0, -2, 4, 4, 4], [-4, 4, -1, 4, 8, 4],
+        [-4, -4, -5, -1, -1, -3], [1, -4, -5, 4, -1, -3],
+        [-3, -3, 4, 3, 1, 5]],
+        "Kneeling dark-stone mourner for undead.statue: put statue_mourner_upper exactly one node above, with the same quarter-turn. Also a broken lower fragment alone.")
+    add("statue_mourner_upper", "Mourner, bowed hood and clasped hands", "default:stone", "mourner", [
+        [-4, -8, -1, 4, -3, 4], [-4, -3, -1, 4, 0, 4],
+        [-5, -2, -1, 5, 1, 3], [-4, -1, -4, 4, 5, 1],
+        [-3, 5, -3, 3, 7, 0], [-3, 3, -5, 3, 5, -4],
+        [-4, -1, -5, -2, 3, -3], [2, -1, -5, 4, 3, -3],
+        [-6, -4, -2, -4, 0, 2], [4, -4, -2, 6, 0, 2],
+        [-5, -5, -3, -2, -3, 0], [2, -5, -3, 5, -3, 0],
+        [-3, -4, -4, 0, -2, -2], [0, -3, -4, 3, -1, -2]],
+        "Bowed hollow hood, clasped hands and mossy cracked shoulders; stack on statue_mourner_base at the same quarter-turn, or stand alone as a broken bust. No glowing features.")
+    add("gravestone_fallen", "Gravestone, fallen split stele", "default:cobble", "grave", [
+        [-5, -8, -7, 4, -6, -2], [-4, -8, -2, 4, -6, -1],
+        [-4, -8, 1, 5, -6, 5], [-3, -8, 5, 4, -6, 7]],
+        "The weathered stele lies in two ground-touching pieces, its diamond face upward and an open break between them; mix with slab, cross and sunken stones.")
+    add("gravestone_sunken", "Gravestone, sunken leaning stele", "default:cobble", "grave", [
+        [-5, -8, -1, 4, -5, 2], [-4, -5, 0, 5, -2, 3],
+        [-2, -2, 1, 4, 0, 4]],
+        "Half-height stele with its foot buried; offset courses lean right and back beneath a narrower crown. Mix with gravestone_slab, gravestone_cross and gravestone_fallen.")
     return props
 
 
@@ -403,7 +481,8 @@ def scene(props, kind):
     r = Renderer((176, 112), (88, 66))
     ground = dict(wild="blight_dirt", town="bone_litter_top", cairn="bone_litter_top",
                   bones="blight_dirt", badlands="mesa_clay", elf="silver_litter_top",
-                  beach="sand", obelisk="blight_dirt")[kind]
+                  beach="sand", obelisk="blight_dirt", wild3="blight_dirt",
+                  mourner_blight="blight_dirt", mourner_bone="bone_litter_top")[kind]
     with Image.open(HERE / "grounds" / (ground + "_32.png")) as source:
         ground_tile = source.convert("RGBA")
     for x in range(-3, 3):
@@ -418,7 +497,23 @@ def scene(props, kind):
     def block(material, x, level, z):
         r.box([-8, -8, -8, 8, 8, 8], [context_tile(material)], (x * 16, level * 16 + 8, z * 16))
 
-    if kind == "wild":
+    if kind == "wild3":
+        put("gravestone_slab", -2, 0, 1)
+        put("gravestone_slab", 0, 0, 1)
+        put("gravestone_cross", 0, 1, 1)
+        put("gravestone_sunken", 2, 0, 0, 1)
+        put("gravestone_fallen", 0, 0, -1, 1)
+        put("gravestone_cross", -2, 0, -1)
+        for x, height in ((-36, 13), (-12, 9), (12, 14)):
+            r.box([-1, 0, -1, 1, height, 1], [context_tile("wood")], (x, 0, 30))
+        r.box([-36, 6, 29, -12, 8, 31], [context_tile("wood")])
+    elif kind in ("mourner_blight", "mourner_bone"):
+        put("statue_mourner_base", -1, 0, 0)
+        put("statue_mourner_upper", -1, 1, 0)
+        # A detached bust, resting on its flat broken waist without a new plinth.
+        put("statue_mourner_upper", 2, 0, 0, 1)
+        put("gravestone_sunken", 1, 0, -1)
+    elif kind == "wild":
         put("gravestone_slab", -2, 0, 0, 0)
         put("gravestone_cross", 0, 0, 1, 1)
         put("gravestone_slab", 2, 0, -1, 0)
@@ -519,6 +614,123 @@ def preview(props):
     return out
 
 
+def lichen_ground(kind):
+    """Original CC0 preview-only rock studies, not replacement game textures."""
+    art = runpy.run_path(str(HERE / "land_art.py"))
+    if kind == "stone":
+        return art["field"](51340, ["626466", "6c6e70", "747779", "7d8082", "87898a"],
+                            16, (.10, .55, .30, .05))
+    out = art["field"](51341, ["62605a", "74716b", "86817a", "959188", "a19c91"],
+                       16, (.20, .58, .18, .04))
+    # Disconnected broken pebble edges, with no larger directional motif.
+    draw = ImageDraw.Draw(out)
+    for x, y in [(1, 1), (9, 2), (5, 8), (12, 11), (1, 13)]:
+        draw.line([(x, y + 1), (x + 1, y), (x + 3, y)], fill=rgba("a29c91"))
+        draw.line([(x, y + 2), (x + 2, y + 3), (x + 3, y + 2)], fill=rgba("6a6761"))
+    return out
+
+
+def lichen_patch(ground, tiles):
+    out = Image.new("RGBA", (64, 64))
+    # Irregular A/B allocation, identical on both substrates; no density claim.
+    allocation = ("aabb", "baab", "abba", "baba")
+    for z in range(4):
+        for x in range(4):
+            out.paste(ground, (x * 16, z * 16))
+            variant = (allocation[z][x] == "b") if len(tiles) == 2 else 0
+            out.alpha_composite(tiles[variant], (x * 16, z * 16))
+    return out
+
+
+def preview_pass3(props):
+    lichens = {}
+    for suffix in ("_v1", "", "_b"):
+        key = "lichen_carpet_top" + suffix
+        with Image.open(HERE / "plants" / (key + ".png")) as image:
+            lichens[key] = image.convert("RGBA")
+    grounds = {kind: lichen_ground(kind) for kind in ("gravel", "stone")}
+    rows = [("LICHEN_CARPET_TOP_V1 / OLD", [lichens["lichen_carpet_top_v1"]]),
+            ("LICHEN_CARPET_TOP / NEW A", [lichens["lichen_carpet_top"]]),
+            ("LICHEN_CARPET_TOP_B / NEW B", [lichens["lichen_carpet_top_b"]]),
+            ("LICHEN_CARPET_TOP + LICHEN_CARPET_TOP_B / MIX", [lichens["lichen_carpet_top"], lichens["lichen_carpet_top_b"]])]
+    prop_start = 1528
+    stack_start = prop_start + len(PASS3_KEYS) * 208
+    scene_start = stack_start + 294
+    scenes = [
+        ("wild3", "WILD GRAVEYARD / FIVE MEMORIALS", "SLAB + CROSS + SUNKEN + FALLEN / DEFAULT:COBBLE"),
+        ("mourner_blight", "UNDEAD.STATUE / MOURNER ON BLIGHT DIRT", "MOURNER_BASE + MOURNER_UPPER / DEFAULT:STONE"),
+        ("mourner_bone", "UNDEAD.STATUE / MOURNER ON BONE LITTER", "MOURNER_BASE + MOURNER_UPPER / DEFAULT:STONE")]
+    out = Image.new("RGBA", (1600, scene_start + len(scenes) * 520))
+    for column, (bg, fg) in enumerate((("eee9dd", "373d35"), ("252d2b", "dddacb"))):
+        ox, color = column * 800, rgba(fg)
+        ImageDraw.Draw(out).rectangle((ox, 0, ox + 799, out.height), fill=rgba(bg))
+        label(out, ox + 24, 20, "LAND REWORK / ARTL PASS 3", color)
+        label(out, ox + 24, 44, "ORIGINAL CC0 / GPT-6 ASTRA / 16 TEXELS PER NODE", color, 1)
+        label(out, ox + 24, 62, "4 X 4 NODES / SAME OCCUPANCY TO COMPARE ART / NOT PLACEMENT DENSITY", color, 1)
+        label(out, ox + 24, 80, "GRAVEL AND STONE: ORIGINAL MATERIAL STUDIES / NOT ENGINE SCREENSHOTS", color, 1)
+        for i, (title, tiles) in enumerate(rows):
+            y = 112 + i * 346
+            label(out, ox + 24, y, title, color, 1)
+            opaque = sum(p[3] == 255 for p in tiles[0].get_flattened_data())
+            label(out, ox + 24, y + 14, "%d OF 256 PIXELS COVERED / ALPHA 0 OR 255" % opaque, color, 1)
+            for j, (kind, ground) in enumerate(grounds.items()):
+                x = ox + 24 + j * 376
+                patch = lichen_patch(ground, tiles)
+                label(out, x, y + 32, kind, color, 1)
+                show(out, patch, x, y + 48, 4)
+                show(out, patch, x + 272, y + 240)
+                label(out, x, y + 314, "4X", color, 1)
+                label(out, x + 272, y + 314, "1X", color, 1)
+        label(out, ox + 24, prop_start - 28, "NEW PROPS / FRONT AND THREE-QUARTER", color)
+        for i, key in enumerate(PASS3_KEYS):
+            prop = props[key]
+            y = prop_start + i * 208
+            for f, x in ((True, 24), (False, 232)):
+                r = Renderer((32, 32), (16, 16), front=f)
+                r.prop(prop)
+                label(out, ox + x, y, "FRONT" if f else "THREE-QUARTER", color, 1)
+                show(out, r.image, ox + x, y + 50)
+                show(out, r.image, ox + x + 48, y + 14, 4)
+                label(out, ox + x, y + 94, "1X", color, 1)
+                label(out, ox + x + 100, y + 143, "4X", color, 1)
+            label(out, ox + 448, y + 4, "FACE STRIPS / 2X", color, 1)
+            for face, tile in enumerate(prop["tiles"]):
+                x = ox + 448 + face * 54
+                label(out, x, y + 28, ("+Y", "-Y", "+X", "-X", "+Z", "-Z")[face], color, 1)
+                swatch = tile.copy()
+                for v in range(16):
+                    for u in range(16):
+                        if not prop["masks"][face].getpixel((u, v)):
+                            swatch.putpixel((u, v), rgba(bg))
+                show(out, swatch, x, y + 44, 2)
+            label(out, ox + 448, y + 94, str(len(prop["spec"]["boxes"])) + " BOXES / OPAQUE", color, 1)
+            label(out, ox + 448, y + 114, prop["spec"]["name"], color, 1)
+            label(out, ox + 24, y + 166, "PROP." + key, color)
+            label(out, ox + 24, y + 187, "DROP: " + prop["spec"]["drop"], color, 1)
+        y = stack_start
+        label(out, ox + 24, y, "UNDEAD.STATUE / TWO-NODE KNEELING MOURNER", color)
+        label(out, ox + 24, y + 20, "PROP.STATUE_MOURNER_BASE + PROP.STATUE_MOURNER_UPPER / DROP: DEFAULT:STONE EACH", color, 1)
+        for front, x in ((True, 24), (False, 400)):
+            r = Renderer((40, 48), (20, 30), front=front)
+            r.prop(props["statue_mourner_base"])
+            r.prop(props["statue_mourner_upper"], (0, 16, 0))
+            label(out, ox + x, y + 40, "FRONT" if front else "THREE-QUARTER", color, 1)
+            show(out, r.image, ox + x, y + 58, 4)
+            show(out, r.image, ox + x + 192, y + 202)
+            label(out, ox + x, y + 262, "4X / WAIST JOINS AT THE NODE BOUNDARY", color, 1)
+            label(out, ox + x + 192, y + 254, "1X", color, 1)
+        for i, (kind, title, drops) in enumerate(scenes):
+            y = scene_start + i * 520
+            label(out, ox + 24, y, title, color, 1)
+            picture = scene(props, kind)
+            show(out, picture, ox + 24, y + 24, 4)
+            show(out, picture, ox + 584, y + 354)
+            label(out, ox + 24, y + 478, "4X", color, 1)
+            label(out, ox + 584, y + 478, "1X", color, 1)
+            label(out, ox + 24, y + 500, drops, color, 1)
+    return out
+
+
 def encoded_png(image):
     stream = io.BytesIO()
     image.save(stream, format="PNG", optimize=False)
@@ -581,7 +793,9 @@ def main():
         outputs[HERE / "props" / key / "prop.json"] = json_bytes(prop["spec"])
         for name, tile in zip(prop["spec"]["tiles"], prop["tiles"]):
             outputs[HERE / "props" / key / name] = encoded_png(tile)
-    outputs[HERE / "preview-props.png"] = encoded_png(preview(props))
+    outputs[HERE / "preview-props.png"] = encoded_png(preview({
+        key: prop for key, prop in props.items() if key not in PASS3_KEYS}))
+    outputs[HERE / "preview-pass3.png"] = encoded_png(preview_pass3(props))
     for path, data in outputs.items():
         if args.check:
             assert path.is_file() and path.read_bytes() == data, "Stale output: " + str(path)
@@ -592,7 +806,9 @@ def main():
     assert {p.name for p in folders} == set(props), "Unexpected prop folder"
     report = {p.name: validate_folder(p) for p in folders}
     record = json_bytes(dict(format="README.md / Prop format", props=report,
-                             preview_sha256=hashlib.sha256(outputs[HERE / "preview-props.png"]).hexdigest()))
+                             classification="compatible: concept art only",
+                             preview_sha256=hashlib.sha256(outputs[HERE / "preview-props.png"]).hexdigest(),
+                             pass3_preview_sha256=hashlib.sha256(outputs[HERE / "preview-pass3.png"]).hexdigest()))
     path = HERE / "props-checks.json"
     if args.check:
         assert path.read_bytes() == record, "Stale props-checks.json"

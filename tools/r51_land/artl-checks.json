@@ -458,15 +458,16 @@
         0,
         255
       ],
-      "sha256": "ff3feebb1e9c6e14183689f432af53335e7d3cd1730dba8ea222ad75ea3bddd5",
+      "sha256": "41277e1864029f04d7d170fdf57713d1776ec48fa1b915cde430e12bff4fabc3",
+      "opaque_pixels": 39,
       "seams": {
         "x": {
-          "wrap_mean_rgb_jump": 47.854,
-          "inside_mean_rgb_jump": 25.163
+          "wrap_mean_rgb_jump": 0.0,
+          "inside_mean_rgb_jump": 26.25
         },
         "y": {
-          "wrap_mean_rgb_jump": 9.458,
-          "inside_mean_rgb_jump": 28.992
+          "wrap_mean_rgb_jump": 0.0,
+          "inside_mean_rgb_jump": 26.492
         }
       },
       "period": {
@@ -497,6 +498,60 @@
         255
       ],
       "sha256": "0edf250898d36499a94f9921bb560cb67b57d77d4d3612c05ec918d26cafe928"
+    },
+    "plants/lichen_carpet_top_v1.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "ff3feebb1e9c6e14183689f432af53335e7d3cd1730dba8ea222ad75ea3bddd5",
+      "opaque_pixels": 181,
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 47.854,
+          "inside_mean_rgb_jump": 25.163
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 9.458,
+          "inside_mean_rgb_jump": 28.992
+        }
+      },
+      "period": {
+        "x": 16,
+        "y": 16
+      }
+    },
+    "plants/lichen_carpet_top_b.png": {
+      "size": [
+        16,
+        16
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "sha256": "af50088ea545b978d66756db0feb2499e5e333874bfe86058014a6d6ce5d4cd9",
+      "opaque_pixels": 39,
+      "seams": {
+        "x": {
+          "wrap_mean_rgb_jump": 19.375,
+          "inside_mean_rgb_jump": 24.8
+        },
+        "y": {
+          "wrap_mean_rgb_jump": 10.146,
+          "inside_mean_rgb_jump": 25.974
+        }
+      },
+      "period": {
+        "x": 16,
+        "y": 16
+      }
     },
     "preview-grounds.png": {
       "size": [
