@@ -739,6 +739,10 @@ do
 	ana._pos.y = 9.5 - 7.5
 	run(2)
 	check(changes == 1 and huds[1].text:find("surface 50%", 1, true), "R a change is sent once")
+	ana._pos.y = 9.5 + 100
+	run(2)
+	check(huds[1].text:find("surface 0% cave 0% wind 50%", 1, true) ~= nil,
+		"R 100 up: the line shows the wind's level: " .. huds[1].text)
 	players.ana.hud_change = real_change
 	ok = commands.ambience.func("ana", "debug")
 	check(ok and huds[1].removed, "R /ambience debug again removes it")

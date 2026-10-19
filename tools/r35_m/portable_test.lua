@@ -19,8 +19,9 @@
 --   R  runtime on a fake engine: a start town gets no music and the town
 --      bed; entering a capital pushes a track of its rotation and silences
 --      the bed in the same pass; music off fades the track out and brings
---      the bed back; leaving fades the music out; default volume 35 %, the
---      Help dropdown in 5 % steps, /music help;
+--      the bed back; leaving fades the music out; Round 52: the wind (up a
+--      tower) goes and returns with the music like the bed; default volume
+--      35 %, the Help dropdown in 5 % steps, /music help;
 --   D  data: one rotation for each of the six capitals, every track known
 --      and shipped, Master of the Feast in none, no region pools, the Help
 --      text.

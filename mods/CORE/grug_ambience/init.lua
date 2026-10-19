@@ -433,7 +433,8 @@ end
 
 -- One small HUD text line, top left, for the player who switched it on: the
 -- biome, the sound group, the depth, the cave share and verdict and the
--- three layers' levels. Sent only when the shown text changed.
+-- three layers' levels (`levels`: surface, cave, wind). Sent only when the
+-- shown text changed.
 local function show_debug(player, st, biome, depth, levels)
 	local c = st.cave
 	local text = ("ambience: %s / %s | depth %s | cave %s %s | surface %d%% cave %d%% wind %d%%"):format(
@@ -604,7 +605,7 @@ local function evaluate(name, st, now, night)
 			update_emitters(name, st, pos)
 		end
 		if st.debug then
-			levels[1], levels[2], levels[3] = surface_level, wind_level, cave_level
+			levels[1], levels[2], levels[3] = surface_level, cave_level, wind_level
 			show_debug(player, st, biome, depth, levels)
 		end
 	end

@@ -139,13 +139,19 @@ D.region = {
 --   peak     the wind on high ground, only within max_depth of the surface
 --            or above it: 0 at the absolute y, `level` at y + ramp (§6.4:
 --            capped at 25 %, starting about 15 nodes below typical peak
---            tops); the wind layer plays the higher of the two;
+--            tops); the wind layer plays the higher of the two. Measured on
+--            seed 12345 (tools/r52_amb engine.sh calib, terrain on a 32-node
+--            grid): the highest sample of each 256-node cell is, for the
+--            snowy crags, 230 in the median (p75 344, p90 463, max 527),
+--            for the crags 125 (p75 284, max 478), for the pine hills only
+--            21 (p90 131, max 157); so the start is 15 below the snowy
+--            crags' typical top, and the pine hills stay below it;
 --   cave     only while the cave probe says "cave": 0 at depth `from`,
 --            `level` at depth `full` and below.
 D.layers = {
 	surface = {down = 15, up_full = 10, up_zero = 60},
 	wind = {from = 30, full = 100, level = 0.5},
-	peak = {y = 190, ramp = 15, level = 0.25, max_depth = 4},
+	peak = {y = 215, ramp = 15, level = 0.25, max_depth = 4},
 	cave = {from = 4, full = 16, level = 0.4},
 }
 
@@ -157,11 +163,17 @@ D.layer_fade = 2
 -- `grid_xz` offset on x and z, every `grid_y` offset above the feet. An
 -- unloaded node counts as solid. A share of open nodes at or above
 -- `threshold` is a real cave; a dug tunnel stays below it. The probe runs
--- only deeper than `min_depth`.
+-- only deeper than `min_depth`. Calibrated in the engine (tools/r52_amb
+-- engine.sh calib, seed 12345, 4,502 standable spots in natural v7 caves
+-- 6-150 nodes down): natural caves read 0.23 at the 5th percentile, 0.43 in
+-- the median, 97 % of the spots at 0.20 or more; a dug 1 x 2 tunnel reads
+-- 0.05-0.09, a 3 x 3 corridor 0.07-0.11 (0.19 at a hall's mouth), a
+-- 17 x 6 x 16 hall 0.24-0.67 (a large dug hall counts as a cave, accepted).
+-- The narrowest natural tunnels (about 3 % of the spots) stay silent.
 D.cave = {
 	grid_xz = {-4, -2, 0, 2, 4},
 	grid_y = {-1, 1, 3},
-	threshold = 0.25,
+	threshold = 0.2,
 	min_depth = 4,
 }
 
