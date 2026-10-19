@@ -2972,7 +2972,7 @@ local function settlement_factory()
 							-- Each cell, so moved, must be free (air or natural
 							-- vegetation, no claim but a tree's leaf); a cell below the
 							-- level (a sunken course, a crypt step) takes its column's
-							-- own surface top. A run with a parent only with its
+							-- own dry surface top (never a bed under water). A run with a parent only with its
 							-- parent; a required run that cannot stand rejects the
 							-- whole structure. Kept runs are written moved (below).
 							local kit_kept
@@ -3009,7 +3009,9 @@ local function settlement_factory()
 										if not inside_owner(x, y, z) then ok = false break end
 										local index = index_at(x, y, z)
 										if cell_record.y < 0 then
-											if occupancy[index] ~= 0 or intent_opcode[index] < 1 or
+											-- a dry surface top only (opcode 1 is the wet bed
+											-- under water)
+											if occupancy[index] ~= 0 or intent_opcode[index] < 2 or
 													intent_opcode[index] > 4 then ok = false break end
 										else
 											local class_id = classify(final_data[index], final_param2[index])

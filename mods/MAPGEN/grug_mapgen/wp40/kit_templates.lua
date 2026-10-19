@@ -222,14 +222,17 @@ return function(treegen, trees)
 	end
 
 	-- Two stone brick piers three apart, the higher carrying a broken
-	-- lintel, the other fallen short; a block lying between them.
+	-- lintel, the other fallen short; a block lying between them. Each pier
+	-- stands on its own ground (one node up or down); the lintel rests on
+	-- its pier at that pier's level.
 	function BUILD.ruin_arch(b, rng)
 		local function mat() return rint(rng, 0, 9) < 7 and N.brick or N.mossy end
 		local high = rint(rng, 3, 4)
 		b.run(true)
 		for k = 0, high - 1 do b.put(0, k, 0, mat()) end
-		for k = 0, rint(rng, 1, high - 1) - 1 do b.put(3, k, 0, mat()) end
 		b.put(1, high - 1, 0, mat())
+		b.run(true)
+		for k = 0, rint(rng, 1, high - 1) - 1 do b.put(3, k, 0, mat()) end
 		b.run(false)
 		b.put(2, 0, 0, mat())
 	end
@@ -264,25 +267,27 @@ return function(treegen, trees)
 
 	-- A stone brick doorway (two posts, a lintel, a broken end) over a
 	-- threshold of brick in the ground, a gravel step before it and the
-	-- doorway choked with gravel and cobble.
+	-- doorway choked with gravel and cobble. The doorway's middle and each
+	-- post stand on their own ground (one node up or down); a post keeps
+	-- its piece of the lintel at its own level, so the left post and the
+	-- middle (which carry the whole lintel) lie level with each other.
 	function BUILD.crypt(b, rng)
-		b.run(true)
-		for k = 0, 1 do
-			b.put(-1, k, 0, N.brick)
-			b.put(1, k, 0, N.brick)
-		end
-		b.put(-1, 2, 0, N.brick)
-		b.put(0, 2, 0, N.brick)
-		if rint(rng, 0, 1) == 1 then b.put(1, 2, 0, N.brick) end
+		local middle = b.run(true)
 		b.put(0, -1, 0, N.brick)
 		b.put(0, 0, 0, pick(rng, {N.gravel, N.cobble}))
+		b.run(true)
+		for k = 0, 2 do b.put(-1, k, 0, N.brick) end
+		b.put(0, 2, 0, N.brick)
+		b.run(true)
+		for k = 0, 1 do b.put(1, k, 0, N.brick) end
+		if rint(rng, 0, 1) == 1 then b.put(1, 2, 0, N.brick) end
 		-- the rubble behind the door and the step before it, where the
 		-- ground allows
-		b.run(false, 1)
+		b.run(false, middle)
 		b.put(0, 0, 1, N.cobble)
 		b.put(-1, 0, 1, N.brick)
 		b.put(1, 0, 1, N.brick)
-		b.run(false, 1)
+		b.run(false, middle)
 		b.put(0, -1, -1, N.gravel)
 	end
 
@@ -319,10 +324,12 @@ return function(treegen, trees)
 		b.put(side[1], 0, side[2], N.gw_base)
 	end
 
-	-- Two dirt nodes in a row, a low cross at the head now and then.
+	-- Two dirt nodes in a row, each on its own ground (one node up or
+	-- down), a low cross at the head now and then.
 	function BUILD.grave_mound(b, rng)
 		b.run(true)
 		b.put(0, 0, 0, N.dirt)
+		b.run(true)
 		b.put(1, 0, 0, N.dirt)
 		if rint(rng, 0, 1) == 1 then
 			b.run(false)

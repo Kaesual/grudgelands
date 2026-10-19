@@ -310,6 +310,21 @@ for _, key in ipairs({"nhal_veyr", "kezamba", "highcourt", "gor_drazhak", "dur_b
 	for _, plot in ipairs(k.plots) do n = n + count_graves(plot.build()) end
 	check(n > 0, key .. "'s graves are gravestones (" .. n .. ")")
 end
+-- Nhal Veyr's own flora walk and the ruins' bones (wp13/nhal_veyr.lua,
+-- wp13/buildings.lua) draw from the set too: more than one piece shows.
+do
+	local k = capital.kit("nhal_veyr")
+	local kinds, seen = 0, {}
+	for _, c in ipairs(k.core.build().cells or {}) do
+		if SET[c.name] and not seen[c.name] then seen[c.name], kinds = true, kinds + 1 end
+	end
+	local stillgrave_kinds, seen2 = 0, {}
+	for _, c in ipairs(stillgrave.cells or {}) do
+		if SET[c.name] and not seen2[c.name] then seen2[c.name], stillgrave_kinds = true, stillgrave_kinds + 1 end
+	end
+	check(kinds >= 4 and stillgrave_kinds >= 4, ("Nhal Veyr's core (%d) and Stillgrave (%d) show " ..
+		"several pieces of the set"):format(kinds, stillgrave_kinds))
+end
 
 -- G. the world --------------------------------------------------------------
 local R = dofile(repo .. "/tools/seed_fleet/runtime.lua")(repo, "12345")
