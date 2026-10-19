@@ -94,8 +94,8 @@ local function check_layout(player, st)
 	end
 end
 
--- Which cooldown key sits in each hotbar slot: one name read per slot, only after
--- an inventory action, a new timer or the periodic check.
+-- Which cooldown key sits in each hotbar slot: one name read per slot, only
+-- after an inventory action, a new timer or the periodic check.
 local function scan(player, st)
 	local inv = player:get_inventory()
 	local slots = {}
@@ -161,7 +161,8 @@ function H.update(player, now)
 end
 
 -- A cooldown or charge started (or restarted) under its cooldown key `id`:
--- `rec` = {expiry, duration}. Shown at once; `now` (us) only for the bench and the fixture.
+-- `rec` = {expiry, duration}. Shown at once; `now` (us) only for the bench
+-- and the fixture.
 function H.track(player, id, rec, now)
 	if not rec or not (rec.duration > 0) then return end
 	local name = player:get_player_name()
