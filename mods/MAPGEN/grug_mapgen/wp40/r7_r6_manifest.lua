@@ -149,9 +149,9 @@ savanna_dry_grass_4|grug_savanna|simple|default:dry_grass_4|default:dry_dirt_wit
 savanna_dry_grass_5|grug_savanna|simple|default:dry_grass_5|default:dry_dirt_with_dry_grass|3|50|one_entry_per_variant|4
 savanna_dry_shrub|grug_savanna|simple|default:dry_shrub|default:dry_dirt_with_dry_grass|1|250|param2_4|4
 swamp_dry_shrub|grug_swamp|simple|default:dry_shrub|grug_nodes:mud|1|250|param2_4|4
-swamp_fern_1|grug_swamp|simple|default:fern_1|grug_nodes:dirt_with_moss|1|14|one_entry_per_variant|4
-swamp_fern_2|grug_swamp|simple|default:fern_2|grug_nodes:dirt_with_moss|1|14|one_entry_per_variant|4
-swamp_fern_3|grug_swamp|simple|default:fern_3|grug_nodes:dirt_with_moss|1|14|one_entry_per_variant|4
+swamp_fern_1|grug_swamp|simple|default:fern_1|grug_nodes:swamp_moss|1|14|one_entry_per_variant|4
+swamp_fern_2|grug_swamp|simple|default:fern_2|grug_nodes:swamp_moss|1|14|one_entry_per_variant|4
+swamp_fern_3|grug_swamp|simple|default:fern_3|grug_nodes:swamp_moss|1|14|one_entry_per_variant|4
 swamp_grass_3|grug_swamp|simple|default:grass_3|grug_nodes:mud_with_wet_grass|1|9|one_entry_per_variant|4
 swamp_grass_4|grug_swamp|simple|default:grass_4|grug_nodes:mud_with_wet_grass|1|9|one_entry_per_variant|4
 swamp_grass_5|grug_swamp|simple|default:grass_5|grug_nodes:mud_with_wet_grass|1|9|one_entry_per_variant|4

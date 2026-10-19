@@ -656,7 +656,9 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	local SWAMP_HOSTS
 	do
 		local MUD, DRY, WET = "grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled"
-		local GRASS, MOSS = "grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss"
+		-- Round 51 T4: the swamp's own moss ground (lane LG's node) in place
+		-- of the moss soil, which stays the elf forest's (land plan ruling 5).
+		local GRASS, MOSS = "grug_nodes:mud_with_wet_grass", "grug_nodes:swamp_moss"
 		local tall = {[GRASS] = 1, [MUD] = 4, [DRY] = 4, [WET] = 4}
 		local fern = {[MOSS] = 1, [WET] = 4}
 		SWAMP_HOSTS = {
@@ -943,13 +945,14 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		local SNOW_FLOOR = habitat.VEGETATION.SNOW_LINE - habitat.VEGETATION.JITTER -
 			habitat.VEGETATION.SNOW_BAND
 		-- The swamp's ground mix (Round 47 lane SW, tools/r47_sw/DESIGN.md):
-		-- today's mud with patches of the lighter mud, wet grass and moss
-		-- soil; the mottled mud in wet hollows and round the pools; a pool
-		-- column keeps plain mud over a filler of 3 (its bed and banks stay
-		-- mud down to the deepest water). Rows per top node and filler depth.
+		-- today's mud with patches of the lighter mud, wet grass and the
+		-- swamp's moss (its own node since Round 51); the mottled mud in wet
+		-- hollows and round the pools; a pool column keeps plain mud over a
+		-- filler of 3 (its bed and banks stay mud down to the deepest water).
+		-- Rows per top node and filler depth.
 		local SWAMP_MUD, SWAMP_DRY = "grug_nodes:mud", "grug_nodes:mud_dry"
 		local SWAMP_WET, SWAMP_GRASS = "grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass"
-		local SWAMP_MOSS = "grug_nodes:dirt_with_moss"
+		local SWAMP_MOSS = "grug_nodes:swamp_moss" -- Round 51 T4 (ruling 5)
 		local swamp_rows = {}
 		for _, name in ipairs({SWAMP_MUD, SWAMP_DRY, SWAMP_WET, SWAMP_GRASS, SWAMP_MOSS}) do
 			swamp_rows[name] = {}

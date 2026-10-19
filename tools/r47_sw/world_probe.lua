@@ -32,7 +32,7 @@ local FLOWING = cid("default:water_flowing")
 local RIVER = cid("default:river_water_source")
 local RIVER_FLOWING = cid("default:river_water_flowing")
 local GROUNDS = {"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-	"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss"}
+	"grug_nodes:mud_with_wet_grass", "grug_nodes:swamp_moss"}
 local PLANTS = {"grug_nodes:reeds", "grug_nodes:cattails", "grug_nodes:mud_with_reeds",
 	"grug_mapgen:freshwater_waterlily", "grug_nodes:moss_carpet", "default:fern_1",
 	"default:fern_2", "default:fern_3", "default:grass_3", "default:grass_4",

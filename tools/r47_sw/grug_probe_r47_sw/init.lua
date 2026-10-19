@@ -97,7 +97,7 @@ local function pool_check(label, when)
 		end
 	end
 	for _, name in ipairs({"grug_nodes:mud", "grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-			"grug_nodes:mud_with_wet_grass", "grug_nodes:dirt_with_moss", "grug_nodes:reeds",
+			"grug_nodes:mud_with_wet_grass", "grug_nodes:swamp_moss", "grug_nodes:reeds",
 			"grug_nodes:cattails", "grug_nodes:mud_with_reeds", "grug_nodes:moss_carpet",
 			"grug_mapgen:freshwater_waterlily", "grug_trees:gravewood_tree",
 			"grug_trees:swamp_leaves", "grug_trees:swamp_hanging_moss"}) do
