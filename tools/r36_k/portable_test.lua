@@ -205,7 +205,9 @@ local mighty = cut(kits, "(local damage = math%.floor%(ctx%.weapon_damage %* mul
 check(mighty ~= nil, "D Mighty Blow keeps flooring the weapon part")
 
 -- E. Crit talent texts.
-local talents = read("mods/PLAYER/grug_classes/talents.lua") ..
+local talents = read("mods/PLAYER/grug_classes/talents_warrior.lua") ..
+	read("mods/PLAYER/grug_classes/talents_mage.lua") ..
+	read("mods/PLAYER/grug_classes/talents_priest.lua") ..
 	read("mods/PLAYER/grug_classes/scout_talents.lua")
 for _, id in ipairs({"keen_edge", "cold_eye", "firebrand", "hard_faith"}) do
 	local text = cut(talents, 'id = "' .. id .. '",.-description = "([^"]*)"', id .. "'s text")

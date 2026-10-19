@@ -229,7 +229,9 @@ end
 local mount_id = read_file("mods/PLAYER/grug_mounts/entity.lua")
 	:match("local STATUS_ID = \"([%w_]+)\"")
 set_ids[mount_id or "?mount"] = "mods/PLAYER/grug_mounts/entity.lua"
-local talents_text = read_file("mods/PLAYER/grug_classes/talents.lua") ..
+local talents_text = read_file("mods/PLAYER/grug_classes/talents_warrior.lua") ..
+	read_file("mods/PLAYER/grug_classes/talents_mage.lua") ..
+	read_file("mods/PLAYER/grug_classes/talents_priest.lua") ..
 	read_file("mods/PLAYER/grug_classes/scout_talents.lua")
 for talent, status_id in pairs(icons.TALENT_WINDOWS) do
 	set_ids[status_id] = "status_icons.lua TALENT_WINDOWS"
