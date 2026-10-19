@@ -37,7 +37,12 @@ DRAFT = HERE / "draft.json"
 
 
 def add_draft_slots(model, draft):
+    # A slot the game already ships (the MOBS lane's world slots since step
+    # M1, its zone slots from step M2) is the inventory's own; only the rest
+    # is added.
     for key, s in sorted(draft["slots"].items()):
+        if key in model.slot_by_key:
+            continue
         model.add_slot({
             "key": key, "zone": s["zone"], "source": "recipe", "name": s["name"],
             "name_source": "r51 draft", "name_where": "tools/r51_names/draft.json",
@@ -46,7 +51,7 @@ def add_draft_slots(model, draft):
             "size": 1.0, "drops": s["family"], "role_levels": list(s["levels"]), "levels": list(s["levels"]),
             "clocks": ["day", "night"]})
     for w in draft["world"]:
-        if w["status"] != "new":
+        if w["status"] != "new" or w["key"] in model.slot_by_key:
             continue
         model.add_slot({
             "key": w["key"], "zone": None, "source": "water", "name": w["name"],
