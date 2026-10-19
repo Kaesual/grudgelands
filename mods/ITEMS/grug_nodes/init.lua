@@ -424,3 +424,6 @@ grug_nodes = {}
 local crop_path = core.get_modpath("grug_nodes")
 grug_nodes.crop_visual = dofile(crop_path .. "/crop_visual.lua")
 grug_nodes.bind_crop_soil_callbacks = dofile(crop_path .. "/crop_soil.lua")(core, default)
+
+-- The Round 51 land plants (flowers, alpine plants, lichen, bush foliage).
+dofile(crop_path .. "/plants.lua")
