@@ -226,11 +226,17 @@
 		return cells;
 	}
 
-	// param2 of a mast cell under the page's mast rule (stumps keep theirs)
+	// param2 of the main mast under the page's mast option (stumps keep
+	// theirs): as in the file (broken, 6 nodes), 8 nodes, the first version's
+	// full 15.9, or set from the depth so its top just reaches the surface.
+	var MAST_OPTIONS = {fixed: null, '8': 128, full: 255};
 	function mastParam2(cell, depth) {
-		if (cell.ch !== 'M' || state.mastRule !== 'depth') { return cell.param2; }
-		var h = (depth - 0.5 + 2) - (cell.y + 0.5);
-		return Math.max(16, Math.min(255, Math.round(16 * h / state.mastScale)));
+		if (cell.ch !== 'M' || state.mastRule === 'fixed') { return cell.param2; }
+		if (state.mastRule === 'surface') {
+			var h = (depth - 0.5 + 1) - (cell.y + 0.5);
+			return Math.max(16, Math.min(255, Math.round(16 * h / state.mastScale)));
+		}
+		return MAST_OPTIONS[state.mastRule];
 	}
 	function extension(cell, depth) {
 		var n = cell.node;
@@ -435,7 +441,7 @@
 		seagrass: params.get('seagrass') !== '0',
 		figure: params.get('figure') !== '0',
 		water: params.get('water') !== '0',
-		mastRule: params.get('mast') === 'depth' ? 'depth' : 'fixed',
+		mastRule: ['8', 'full', 'surface'].indexOf(params.get('mast')) >= 0 ? params.get('mast') : 'fixed',
 		mastScale: parseFloat(params.get('scale')) === 1.5 || parseFloat(params.get('scale')) === 2 ? parseFloat(params.get('scale')) : 1
 	};
 	if (params.get('bare') === '1') {
@@ -483,7 +489,7 @@
 			orbit.target.set(cx, Math.min(eye, 2.5), cz);
 		} else {
 			var dist = (size * 0.95 + 6) / Math.min(1, Math.pow(persp.aspect || 1, 0.8));
-			var yaw = 35 * Math.PI / 180, pitch = 32 * Math.PI / 180;
+			var yaw = (parseFloat(params.get('yaw')) || 35) * Math.PI / 180, pitch = (parseFloat(params.get('pitch')) || 32) * Math.PI / 180;
 			persp.position.set(cx + Math.sin(yaw) * Math.cos(pitch) * dist, cy + Math.sin(pitch) * dist,
 				cz + Math.cos(yaw) * Math.cos(pitch) * dist);
 			orbit.target.set(cx, cy, cz);
@@ -519,7 +525,7 @@
 	function keyTag(key) { return el('span', 'wk-key', key); }
 	function pct(lv) { return Math.round(LUT[Math.max(0, Math.min(15, lv))] / 2.55) + ' %'; }
 	function reachDepth(top) { return Math.ceil(top + 0.5) - 1; }
-	var MAST_NAMES = {M: 'main mast', m: 'foremast stump', k: 'foremast stump', n: 'main mast stump'};
+	var MAST_NAMES = {M: 'main mast, broken', k: 'foremast stump', n: 'main mast stump'};
 
 	function readout(shape) {
 		var box = document.getElementById('reach');
@@ -533,7 +539,7 @@
 		}
 		var masts = lastMasts();
 		if (!masts.length) {
-			box.appendChild(el('p', 'wk-note', 'No mast: the debris field lies flat (its mast is the fallen log row).'));
+			box.appendChild(el('p', 'wk-note', 'No standing mast: the bow\'s foremast is gone; the debris field\'s main mast lies on the sand as a row of logs.'));
 			return;
 		}
 		var t = el('table');
@@ -544,7 +550,7 @@
 			var top = m.ext.top + 0.5;      // over the sand's top (y = -0.5)
 			var over = m.ext.top - (state.depth - 0.5);
 			[MAST_NAMES[m.cell.ch] || 'mast', String(m.param2), (m.ext.scale * m.ext.height).toFixed(1),
-				top.toFixed(1), over > 0 ? over.toFixed(1) + ' above the water' : (-over).toFixed(1) + ' below the surface',
+				top.toFixed(1), Math.abs(over) < 0.05 ? 'its top at the surface' : over > 0 ? over.toFixed(1) + ' above the water' : (-over).toFixed(1) + ' below the surface',
 				'at depths up to ' + reachDepth(m.ext.top)].forEach(function (v) { tr.appendChild(el('td', '', v)); });
 			tb.appendChild(tr);
 		});
@@ -569,36 +575,44 @@
 		return out;
 	}
 
-	// The band table: every shape's tallest mast at visual_scale 1, 1.5 and 2,
-	// and the light of sand and deck at 8, 14 and 20 nodes of water.
+	// The band table: every shape's tallest mast at visual_scale 1, 1.5 and 2
+	// (for the whole hull also the 8-node and the first version's 15.9-node
+	// mast), and the light of sand and deck by depth.
 	function bandTable() {
 		var box = document.getElementById('band');
 		var t = el('table');
-		t.innerHTML = '<thead><tr><th>shape</th><th>mast</th><th>deck over sand</th><th colspan="3">reaches the surface at depths up to (visual_scale 1 / 1.5 / 2)</th></tr></thead>';
+		t.innerHTML = '<thead><tr><th>shape</th><th>mast</th><th>deck over sand</th><th>top over sand</th><th colspan="3">reaches the surface at depths up to (visual_scale 1 / 1.5 / 2)</th></tr></thead>';
 		var tb = el('tbody');
-		SHAPES.forEach(function (shape) {
-			var masts = decode(shape).filter(function (c) { return c.node.name === MAST; });
-			masts.sort(function (a, b) { return b.param2 - a.param2; });
-			if (!masts.length) { return; }
-			var c = masts[0], h = c.param2 / 16;
+		function row(title, name, c, h) {
 			var tr = el('tr');
-			[shape.title, (MAST_NAMES[c.ch] || 'mast') + ', ' + h.toFixed(1), String(c.y + 1)].forEach(function (v) {
+			[title, name + ', ' + h.toFixed(1), String(c.y + 1), (c.y + 1 + h).toFixed(1)].forEach(function (v) {
 				tr.appendChild(el('td', '', v));
 			});
 			[1, 1.5, 2].forEach(function (sc) { tr.appendChild(el('td', '', String(reachDepth(c.y + 0.5 + sc * h)))); });
 			tb.appendChild(tr);
+		}
+		SHAPES.forEach(function (shape) {
+			var masts = decode(shape).filter(function (c) { return c.node.name === MAST; });
+			masts.sort(function (a, b) { return b.param2 - a.param2; });
+			if (!masts.length) { return; }
+			var c = masts[0];
+			row(shape.title, MAST_NAMES[c.ch] || 'mast', c, c.param2 / 16);
+			if (c.ch === 'M') {
+				row(shape.title, 'option: 8 nodes', c, 8);
+				row(shape.title, 'option: whole (first version)', c, 255 / 16);
+			}
 		});
 		t.appendChild(tb);
 		var wrap = el('div', 'wk-tablewrap');
 		wrap.appendChild(t);
 		box.appendChild(wrap);
 		var lt = el('table');
-		lt.innerHTML = '<thead><tr><th>water depth</th><th>sand</th><th>the whole hull\'s deck at the mast (3 over the sand)</th></tr></thead>';
+		lt.innerHTML = '<thead><tr><th>water depth</th><th>sand</th><th>the whole hull\'s deck at the mast (4 over the sand)</th></tr></thead>';
 		var lb = el('tbody');
 		[6, 8, 10, 12, 14, 17, 20].forEach(function (d) {
 			var tr = el('tr');
 			[String(d), 'light ' + Math.max(0, 15 - d) + ' · ' + pct(15 - d),
-				'light ' + Math.max(0, 15 - d + 3) + ' · ' + pct(15 - d + 3)].forEach(function (v) { tr.appendChild(el('td', '', v)); });
+				'light ' + Math.max(0, 15 - d + 4) + ' · ' + pct(15 - d + 4)].forEach(function (v) { tr.appendChild(el('td', '', v)); });
 			lb.appendChild(tr);
 		});
 		lt.appendChild(lb);
@@ -606,10 +620,10 @@
 		wrap2.appendChild(lt);
 		box.appendChild(el('p', 'wk-note', 'Daylight under water, by day, open water above (Luanti: one level less per node; brightness by the default light curve):'));
 		box.appendChild(wrap2);
-		box.appendChild(el('p', '', 'The band the design needs: a seabed 8 to 14 nodes deep (bow 6, debris 4 and deeper), 8 to 12 at its best. ' +
-			'At 8 the whole hull (8 nodes over the sand) is just under the surface; below about 12 the sand is nearly black and the wreck hard to see. ' +
-			'The main mast (15.9 nodes on a deck 3 over the sand) reaches the surface down to 18, so across the band it always stands ' +
-			'5 to 11 nodes into the air; the stumps of the bow and stern stay under water.'));
+		box.appendChild(el('p', '', 'The band the design needs: a seabed 8 to 14 nodes deep (bow from 6, debris from 3), 8 to 12 at its best. ' +
+			'At 8 the whole hull (8 nodes over the sand) lies just under the surface; below about 12 the sand is nearly black and the wreck hard to see. ' +
+			'The goal changes from “a mast above the water” to “a mast near the surface”: the broken main mast (6 nodes on a deck 4 over the sand) ' +
+			'just breaks the surface where the seabed is 8 or 9 deep and ends 1 to 4 nodes under it at 10 to 13; the stern\'s stump (4.5) just reaches it at 8.'));
 	}
 
 	function legend() {
@@ -687,9 +701,10 @@
 		head.appendChild(keyTag('wreck.mast_height'));
 		item.appendChild(head);
 		var ul = el('ul');
-		['As in the file: 15.9 nodes (param2 255, the most leveled allows), at every depth the same.',
-			'visual_scale 1.5 or 2: the engine scales the crossed quads in width and height, so the same param2 gives 23.9 or 31.9 nodes; the pole is drawn 1.5 or 2 times thicker.',
-			'“2 nodes above the water”: the build step sets the mast\'s param2 from the depth at placement, so a mast pokes 2 nodes out of the water wherever it can reach (header: mast).'].forEach(function (t) {
+		['As in the file (default): broken 6 nodes above the deck (param2 96), the same at every depth.',
+			'8 nodes, or the first version\'s whole 15.9 (param2 255, too long by the first look).',
+			'visual_scale 1.5 or 2: the engine scales the crossed quads in width and height, so a param2 gives 1.5 or 2 times the height, the pole drawn thicker.',
+			'“just reaching the surface”: the build step sets the mast\'s param2 from the depth at placement, so its top ends 1 node above the water wherever the deck is near enough.'].forEach(function (t) {
 			ul.appendChild(el('li', '', t));
 		});
 		item.appendChild(ul);

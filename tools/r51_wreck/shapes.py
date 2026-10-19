@@ -54,8 +54,9 @@ PALETTE = {
     "G": {"name": N_ALGAE, "param2": 0},
     "C": {"name": N_BALLAST, "param2": 0},
 }
-# masts per shape: letter -> height in nodes (param2 = 16 * height, at most 255)
-MASTS = {"M": 15.9375, "m": 3.0, "n": 4.5, "k": 2.0}
+# Masts are broken (user, 2026-10-19: the full 15.9-node mast was clearly too
+# long): letter -> height in nodes above the deck (param2 = 16 * height).
+MASTS = {"M": 6.0, "n": 4.5, "k": 2.5}
 for letter, height in MASTS.items():
     PALETTE[letter] = {"name": N_MAST, "param2": min(255, int(round(height * 16)))}
 
@@ -71,35 +72,46 @@ def mix(*values):
     return h / 4294967296.0
 
 
+def noise(seed, a, b):
+    """Smooth value noise in [0, 1) on an integer lattice (ragged, not square,
+    holes)."""
+    ia, ib = math.floor(a), math.floor(b)
+    ta, tb = a - ia, b - ib
+    ta, tb = ta * ta * (3 - 2 * ta), tb * tb * (3 - 2 * tb)
+    c00, c10 = mix(seed, ia, ib), mix(seed, ia + 1, ib)
+    c01, c11 = mix(seed, ia, ib + 1), mix(seed, ia + 1, ib + 1)
+    return (c00 + (c10 - c00) * ta) * (1 - tb) + (c01 + (c11 - c01) * ta) * tb
+
+
 class Hull:
     """The hull form in its own frame: x along the ship, u across, v up from
-    the keel's bottom."""
+    the keel's bottom. It narrows toward bow and stern and toward the keel."""
 
-    def __init__(self, length=20, beam=3.3, depth=4.4, sheer=1.4, castle=(5, 2)):
+    def __init__(self, length=20, beam=3.5, depth=4.6, sheer=1.2, castle=(4, 1)):
         self.length, self.beam, self.depth, self.sheer = length, beam, depth, sheer
         self.castle_len, self.castle_h = castle
 
     def keel(self, x):
         n = self.length - 1
         bow = max(0.0, (x - (n - 6)) / 6.0)
-        stern = max(0.0, (2.0 - x) / 2.0)
-        return 3.0 * bow * bow + 0.5 * stern
+        stern = max(0.0, (2.5 - x) / 2.5)
+        return 3.2 * bow * bow + 1.0 * stern * stern
 
     def deck(self, x):
         n = self.length - 1
         mid = n / 2.0
         d = self.depth + self.sheer * ((x - mid) / mid) ** 2
         bow = max(0.0, (x - 0.7 * n) / (0.3 * n))
-        d += 1.2 * bow * bow            # the bow rises
+        d += 1.0 * bow * bow            # the bow rises
         if x < self.castle_len:
             d += self.castle_h
         return d
 
     def half_width(self, x):
         n = self.length - 1
-        a, b = 0.2 * n, 0.45 * n
+        a, b = 0.25 * n, 0.45 * n
         if x < a:
-            return self.beam * (0.7 + 0.3 * x / a)
+            return self.beam * (0.5 + 0.5 * math.sqrt(x / a))
         if x <= b:
             return self.beam
         t = (x - b) / (n - b)
@@ -108,115 +120,120 @@ class Hull:
     def width_at(self, x, v):
         k, d = self.keel(x), self.deck(x)
         t = min(1.0, max(0.0, (v - k) / max(0.5, d - k)))
-        return max(0.45, self.half_width(x) * t ** 0.38)
+        return max(0.4, self.half_width(x) * t ** 0.7)
 
 
-def hull_cells(hull, heel_deg, seed, keep_x=None, cut=None, holes=(), deck_holes=0.18,
-               rail_loss=0.35):
-    """Rasterize the hull form heeled by heel_deg into {(x, y, z): letter}.
+def hull_cells(hull, heel_deg, pitch_deg, seed, cut=None, holes=(), deck_loss=0.35, rail_loss=0.5):
+    """Rasterize the hull form into {(x, y, z): letter}: a one-block shell of
+    planks (the cells of the form with an open face), the keel and stem in
+    logs, a rib every third station (a log where the shell is, a deck beam
+    across the deck), heeled by heel_deg about the long axis and pitched by
+    pitch_deg (the bow end up), so it sinks unevenly.
 
-    keep_x (lo, hi) keeps that x range; cut = ('above'|'below', x) breaks the
-    hull there with a jagged edge (ribs and keel reach one node further).
-    holes: list of (x0, x1, side, chance) shell regions whose planks go."""
-    heel = math.radians(heel_deg)
+    cut = ('above'|'below', x) breaks the hull there, raggedly (ribs and
+    keel reach further). holes: (x0, x1, side, cover) shell regions where
+    smooth noise takes the planks away, leaving the ribs; deck_loss and
+    rail_loss the share of deck and rail planks gone, in patches."""
+    heel, pitch = math.radians(heel_deg), math.tan(math.radians(pitch_deg))
     cs, sn = math.cos(heel), math.sin(heel)
     axis = hull.depth * 0.45
     L = hull.length
-    zr = int(math.ceil(hull.beam + 4))
-    y0, y1 = -5, int(math.ceil(hull.depth + hull.castle_h + hull.sheer + 5))
+    mid = (L - 1) / 2.0
+    zr = int(math.ceil(hull.beam + 5))
+    y0, y1 = -8, int(math.ceil(hull.depth + hull.castle_h + hull.sheer + 8))
 
-    def frame(y, z):
-        dy = y - axis
+    def frame(x, y, z):
+        dy = y - axis + (x - mid) * pitch * -1.0
         return axis + dy * cs + z * sn, -dy * sn + z * cs   # v, u
 
     def solid(x, y, z):
         if x < 0 or x >= L:
             return False
-        v, u = frame(y, z)
+        v, u = frame(x, y, z)
         if v < hull.keel(x) - 0.5 or v > hull.deck(x) + 0.49:
             return False
         return abs(u) < hull.width_at(x, v) + 0.5
 
     def rail(x, y, z):
-        if x < 0 or x >= L:
+        if x < 1 or x >= L - 1:
             return False
-        v, u = frame(y, z)
+        v, u = frame(x, y, z)
         d = hull.deck(x)
         if not (d + 0.49 < v <= d + 1.49):
             return False
         w = hull.width_at(x, d)
         return w - 0.5 <= abs(u) < w + 0.5
 
-    cells = {}
+    def rib(x):
+        return x % 3 == 1 and 1 < x < L - 3
+
+    cells, kinds = {}, {}
     for x in range(L):
         for y in range(y0, y1):
             for z in range(-zr, zr + 1):
                 if solid(x, y, z):
-                    boundary = any(not solid(x + dx, y + dy, z + dz) for dx, dy, dz in
-                                   ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)))
-                    if not boundary:
+                    if all(solid(x + dx, y + dy, z + dz) for dx, dy, dz in
+                           ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))):
                         continue
-                    v, u = frame(y, z)
+                    v, u = frame(x, y, z)
                     k, d = hull.keel(x), hull.deck(x)
                     w = hull.width_at(x, v)
-                    if abs(u) < 0.75 and v < k + 0.9:
-                        letter = "L" if x < L - 2 else "Y"
-                    elif x % 3 == 1 and 1 < x < L - 3 and v < d - 0.5:
-                        letter = "Y" if abs(u) > w * 0.62 else "Z"
+                    deck = v >= d - 0.5 and abs(u) < hull.width_at(x, d) - 0.5
+                    if abs(u) < 0.7 and v < k + 0.9:
+                        letter, kind = ("L" if x < L - 2 else "Y"), "keel"
                     elif abs(u) < 0.6 and x == L - 1:
-                        letter = "Y"        # the stem
+                        letter, kind = "Y", "keel"          # the stem
+                    elif rib(x) and deck:
+                        letter, kind = "P", "beam"
+                    elif rib(x):
+                        letter, kind = "P", ("rib_side" if abs(u) > w * 0.6 else "rib_floor")
                     else:
-                        letter = "P"
-                    cells[(x, y, z)] = letter
+                        letter, kind = "P", ("deck" if deck else "shell")
+                    cells[(x, y, z)], kinds[(x, y, z)] = letter, kind
                 elif rail(x, y, z):
-                    cells[(x, y, z)] = "P"
-    # the break of a part
+                    cells[(x, y, z)], kinds[(x, y, z)] = "P", "rail"
+    # the stem post stands one node over the bow
+    tip = [p for p in cells if p[0] == L - 1]
+    if tip:
+        top = max(tip, key=lambda p: p[1])
+        cells[(top[0], top[1] + 1, top[2])], kinds[(top[0], top[1] + 1, top[2])] = "Y", "keel"
+    # the break of a part: ragged, ribs and keel reach further
     if cut is not None:
         side, cx = cut
-        for (x, y, z), letter in list(cells.items()):
-            edge = cx + int(mix(seed, 7, y, z) * 3) - 1
-            if letter in "LYZ":
-                edge += 1 if side == "above" else -1
+        for (x, y, z) in list(cells):
+            edge = cx + int(noise(seed + 7, y / 1.7, z / 1.7) * 4) - 1 + int(mix(seed, 7, y, z) * 2)
+            if kinds[(x, y, z)] in ("keel", "rib", "beam"):
+                edge += 2 if side == "above" else -2
             if (side == "above" and x < edge) or (side == "below" and x > edge):
                 del cells[(x, y, z)]
-    if keep_x is not None:
-        for key in [k for k in cells if not keep_x[0] <= k[0] <= keep_x[1]]:
-            del cells[key]
-    # planks lost between the ribs, deck holes, a broken rail
+    # planks lost in patches: shell between the ribs, deck, rail
     for (x, y, z), letter in list(cells.items()):
-        if letter != "P":
+        kind = kinds[(x, y, z)]
+        if letter != "P" or kind in ("beam", "rib_side", "rib_floor"):
             continue
-        v, u = frame(y, z)
-        d = hull.deck(x)
-        is_rail = v > d + 0.49
-        is_deck = not is_rail and v >= d - 0.5 and abs(u) < hull.width_at(x, d) - 0.5
-        r = mix(seed, x, y, z)
-        if is_rail and r < rail_loss:
-            del cells[(x, y, z)]
-        elif is_deck and r < deck_holes:
-            del cells[(x, y, z)]
-        elif not is_deck and not is_rail:
-            for x0, x1, s, chance in holes:
-                if x0 <= x <= x1 and u * s > 0.3 and v > hull.keel(x) + 0.9 and r < chance:
-                    del cells[(x, y, z)]
+        v, u = frame(x, y, z)
+        jitter = 0.22 * (mix(seed, x, y, z) - 0.5)
+        if kind == "rail":
+            gone = noise(seed + 9, x / 2.2, u) + jitter < rail_loss
+        elif kind == "deck":
+            gone = noise(seed + 5, x / 2.6, u / 1.6) + jitter < deck_loss
+        else:
+            gone = False
+            for x0, x1, s, cover in holes:
+                if x0 <= x <= x1 and (s == 0 or u * s > 0.2) and v > hull.keel(x) + 0.9 and \
+                        noise(seed + 3 + s, x / 2.4, v / 1.7) + jitter < cover:
+                    gone = True
                     break
+        if gone:
+            del cells[(x, y, z)]
+    # ribs and deck beams show as logs only where the planking beside them
+    # is gone; under whole planking they stay planks
+    for (x, y, z), letter in list(cells.items()):
+        kind = kinds[(x, y, z)]
+        if kind in ("beam", "rib_side", "rib_floor") and \
+                ((x - 1, y, z) not in cells or (x + 1, y, z) not in cells):
+            cells[(x, y, z)] = "Y" if kind == "rib_side" else "Z"
     return cells, frame
-
-
-def top_deck_cell(cells, frame, hull, x, u_want=0.0, height=1):
-    """The highest deck plank of station x nearest the centre line u_want
-    with `height` nodes of open water above it."""
-    best = None
-    for (cx, y, z), letter in cells.items():
-        if cx != x or letter not in "PA" or not free_above(cells, (cx, y, z), height):
-            continue
-        v, u = frame(y, z)
-        if v > hull.deck(x) + 0.49:
-            continue
-        score = (abs(u - u_want) < 0.8, y, -abs(u - u_want))
-        if best is None or score > best[0]:
-            best = (score, (cx, y, z))
-    return best[1] if best else None
 
 
 def free_above(cells, pos, height=1):
@@ -224,25 +241,97 @@ def free_above(cells, pos, height=1):
     return all((x, y + i, z) not in cells for i in range(1, int(math.ceil(height)) + 1))
 
 
-def algae(cells, seed, sink, share=0.3):
+def floor_of(cells, sink):
+    return min(p[1] for p in cells) + sink
+
+
+def algae(cells, seed, sink, share=0.4):
     """Algae planks on planks whose top is open water (none in the sand)."""
-    floor = min(p[1] for p in cells) + sink
+    floor = floor_of(cells, sink)
     for (x, y, z), letter in list(cells.items()):
         if letter == "P" and y >= floor and (x, y + 1, z) not in cells and \
                 mix(seed, 99, x, y, z) < share:
             cells[(x, y, z)] = "A"
 
 
-def place(cells, pos, letter, height=1):
-    if pos is None or not free_above(cells, pos, height):
-        raise SystemExit("no free water above %s for %s" % (pos, letter))
-    cells[pos] = letter
+def mast(cells, frame, hull, x, letter):
+    """A broken mast on the deck plank or beam of station x nearest the
+    centre line, with open water above for its height."""
+    height = MASTS[letter]
+    best = None
+    for (cx, y, z), l in cells.items():
+        if cx != x or l not in "PAZ" or not free_above(cells, (cx, y, z), height):
+            continue
+        v, u = frame(cx, y, z)
+        if v > hull.deck(x) + 0.49 or v < hull.deck(x) - 1.5:
+            continue
+        score = (-abs(round(u)), y)
+        if best is None or score > best[0]:
+            best = (score, (cx, y, z))
+    if best is None:
+        raise SystemExit("no deck for the mast at station %d" % x)
+    cells[best[1]] = letter
+
+
+def details(cells, seed, sink, wanted):
+    """Rooted details on planks whose top is open water: wanted = [(letter,
+    count)]; algae tufts on algae planks, rope and sail on plain ones; picked
+    by hash, at least three nodes apart."""
+    floor = floor_of(cells, sink)
+    taken = []
+    for n, (letter, count) in enumerate(wanted):
+        base = "A" if letter == "G" else "P"
+        spots = sorted((mix(seed, 31 + n, *p), p) for p, l in cells.items()
+                       if l == base and p[1] >= floor and free_above(cells, p))
+        for _, p in spots:
+            if count == 0:
+                break
+            if all(max(abs(p[0] - q[0]), abs(p[2] - q[2])) >= 3 for q in taken):
+                cells[p] = letter
+                taken.append(p)
+                count -= 1
+
+
+def scatter(cells, seed, sink, box, planks, logs):
+    """Loose planks and a few short logs on and in the sand around a wreck,
+    inside box = (x0, x1, z0, z1), never touching the wreck or each other."""
+    floor = floor_of(cells, sink)
+
+    def clear(x, z):
+        return not any((x + dx, y, z + dz) in cells for dx in (-1, 0, 1) for dz in (-1, 0, 1)
+                       for y in range(floor - 1, floor + 3))
+
+    wreck = set(cells)
+
+    def near(x, z):
+        return any((x + dx, y, z + dz) in wreck for dx in range(-3, 4) for dz in range(-3, 4)
+                   for y in range(floor - 1, floor + 2))
+    x0, x1, z0, z1 = box
+    i = 0
+    while (planks or logs) and i < 2000:
+        i += 1
+        x = x0 + int(mix(seed, i, 1) * (x1 - x0 + 1))
+        z = z0 + int(mix(seed, i, 2) * (z1 - z0 + 1))
+        y = floor if mix(seed, i, 3) < 0.65 else floor - 1   # resting or flush in the sand
+        if logs and i % 2 == 0:
+            along_x = mix(seed, i, 5) < 0.5
+            n = 2 + int(mix(seed, i, 6) * 3)
+            run = [(x + k, z) if along_x else (x, z + k) for k in range(n)]
+            if near(x, z) and all(x0 <= a <= x1 and z0 <= b <= z1 and clear(a, b) for a, b in run):
+                for k, (a, b) in enumerate(run):
+                    cells[(a, y if k < n - 1 else floor - 1, b)] = "L" if along_x else "Z"
+                logs -= 1
+        elif planks and clear(x, z) and near(x, z):
+            cells[(x, y, z)] = "A" if mix(seed, i, 4) < 0.45 else "P"
+            if mix(seed, i, 7) < 0.35 and clear(x + 1, z):
+                cells[(x + 1, floor, z)] = "P"
+            planks -= 1
 
 
 def drop_loose(cells, sink):
     """Remove pieces that hang in the water: keep what connects (by faces or
     edges) to a cell in the sand or resting on it."""
-    floor = min(p[1] for p in cells) + sink
+    floor = floor_of(cells, sink)
     seen = set(p for p in cells if p[1] <= floor)
     todo = list(seen)
     steps = [(dx, dy, dz) for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1)
@@ -286,90 +375,86 @@ def finish(key, title, note, cells, sink):
 
 def shape_hull():
     hull = Hull()
-    cells, frame = hull_cells(hull, 14, 11, holes=[(6, 12, 1, 0.75), (13, 15, -1, 0.4)])
-    algae(cells, 11, 2)
-    place(cells, top_deck_cell(cells, frame, hull, 9, 0.0, 16), "M", 16)
-    place(cells, top_deck_cell(cells, frame, hull, 15), "k", 2)
-    place(cells, top_deck_cell(cells, frame, hull, 17, 0.9), "R")
-    place(cells, top_deck_cell(cells, frame, hull, 2, -1.0), "S")
-    place(cells, top_deck_cell(cells, frame, hull, 12, -1.2), "G")
+    sink = 2
+    cells, frame = hull_cells(hull, 16, 4, 11, holes=[(5, 13, 1, 0.62), (12, 16, -1, 0.42), (2, 5, -1, 0.3)],
+                              deck_loss=0.42)
+    mast(cells, frame, hull, 10, "M")
+    algae(cells, 11, sink)
+    details(cells, 11, sink, [("G", 4), ("R", 2), ("S", 2)])
+    scatter(cells, 12, sink, (-2, 21, -7, 7), 6, 2)
     return finish("wreck.hull", "Whole hull",
-                  "The whole ship, listing a little, two layers in the sand. Planks gone between the ribs "
-                  "amidships on the high side, holes in the deck, the main mast standing.", cells, 2)
+                  "The whole ship, listing to one side, its stern deeper in the sand than its bow. Planking "
+                  "gone in patches so the ribs show, most of the deck gone down to its beams, the main mast "
+                  "broken a few nodes above the deck; loose planks and timbers around it.", cells, sink)
 
 
 def shape_bow():
     hull = Hull()
-    cells, frame = hull_cells(hull, 58, 23, cut=("above", 9), holes=[(9, 13, 1, 0.55)],
-                              deck_holes=0.25)
-    algae(cells, 23, 2, 0.4)
-    place(cells, top_deck_cell(cells, frame, hull, 15), "k", 2)
-    place(cells, top_deck_cell(cells, frame, hull, 18, 0.0), "R")
-    place(cells, top_deck_cell(cells, frame, hull, 12, 1.0), "G")
+    sink = 2
+    cells, frame = hull_cells(hull, 40, -4, 23, cut=("above", 8), holes=[(8, 15, 1, 0.5), (8, 12, -1, 0.35)],
+                              deck_loss=0.5)
+    algae(cells, 23, sink, 0.45)
+    details(cells, 23, sink, [("G", 3), ("R", 1)])
+    scatter(cells, 24, sink, (6, 20, -6, 6), 4, 1)
     return finish("wreck.bow", "Bow part",
-                  "The front half, broken off behind the main mast and fallen on its side; the break shows "
-                  "ribs and keel. A stump of the foremast, a rope end at the bow.", cells, 2)
+                  "The front half, broken off behind the main mast, lying on its side with the nose dug into "
+                  "the sand; the ragged break shows ribs, beams and keel. Planks strewn behind it.", cells, sink)
 
 
 def shape_stern():
     hull = Hull()
-    cells, frame = hull_cells(hull, -16, 37, cut=("below", 9), holes=[(4, 9, -1, 0.6)])
-    algae(cells, 37, 3, 0.35)
-    place(cells, top_deck_cell(cells, frame, hull, 7), "n", 4.5)
-    place(cells, top_deck_cell(cells, frame, hull, 2, 1.0), "S")
-    place(cells, top_deck_cell(cells, frame, hull, 3, -1.0), "S")
-    place(cells, top_deck_cell(cells, frame, hull, 6, 1.2), "G")
+    sink = 2
+    cells, frame = hull_cells(hull, -18, -7, 37, cut=("below", 10), holes=[(4, 10, -1, 0.55), (6, 10, 1, 0.3)],
+                              deck_loss=0.4)
+    mast(cells, frame, hull, 7, "n")
+    algae(cells, 37, sink, 0.4)
+    details(cells, 37, sink, [("S", 2), ("G", 3), ("R", 1)])
+    scatter(cells, 38, sink, (-2, 14, -7, 7), 4, 1)
     return finish("wreck.stern", "Stern part",
-                  "The back half with the raised stern deck, listing the other way, sunk three layers. "
-                  "The broken main mast stands as a stump; sail tatters on the stern rail.", cells, 3)
+                  "The back half with the raised stern deck, listing the other way, its broken end sunk deep "
+                  "into the sand; the main mast a stump, sail tatters on the stern.", cells, sink)
 
 
 def shape_debris():
-    """A field of loose wreckage, laid out by hand (16 x 14). Layer 1 is the
-    first above the sand; layer 0 is sunk (flush with the sand top)."""
+    """A field of loose wreckage, laid out by hand (about 18 x 14). Layer 1 is
+    the first above the sand; layer 0 is sunk (flush with the sand top)."""
     c = {}
 
     def put(x, y, z, letter):
         c[(x, y, z)] = letter
-    # a keel piece flush in the sand with a rib cage rising from it
-    for x in range(2, 9):
+    # a keel piece flush in the sand with a rib cage rising from it, uneven
+    for x in range(2, 10):
         put(x, 0, 4, "L")
-    for x in (3, 6):
-        for s in (-1, 1):
-            put(x, 1, 4 + 2 * s, "Y")
-            put(x, 2, 4 + 2 * s, "Y")
-            put(x, 3, 4 + s, "Y")
+    for x, hs in ((3, (3, 2)), (6, (3, 3)), (9, (2, 1))):
+        for s, h in zip((-1, 1), hs):
+            for y in range(1, h):
+                put(x, y, 4 + 2 * s, "Y")
+            if h >= 3:
+                put(x, h, 4 + s, "Y")
         put(x, 0, 3, "Z")
         put(x, 0, 5, "Z")
-    del c[(6, 3, 3)]            # one rib broken short
+    # a strip of hull planking still on the ribs at the bottom
+    for x in (4, 5, 7):
+        put(x, 1, 2, "A" if x == 5 else "P")
     # the fallen main mast, full logs, half buried towards its foot
-    for x in range(5, 14):
-        put(x, 0 if x < 8 else 1, 10, "L")
-    # loose planks, a hull panel lying flat, a few stacked
-    for x, z in ((10, 2), (11, 2), (11, 3), (12, 3), (13, 5), (1, 9), (2, 10), (2, 11), (9, 12), (14, 9)):
-        put(x, 1, z, "P")
-    for x in range(9, 13):
-        for z in range(6, 8):
-            put(x, 1, z, "P")
-    put(10, 2, 6, "P")
+    for x in range(6, 15):
+        put(x, 0 if x < 9 else 1, 10, "L")
+    # a hull panel lying flat, a few stacked
+    for x in range(11, 15):
+        for z in range(5, 8):
+            if (x, z) not in ((14, 5), (11, 7)):
+                put(x, 1, z, "P")
+    put(12, 2, 6, "P")
     # ballast stones
-    for x, z in ((0, 3), (1, 3), (0, 4), (1, 4), (1, 5)):
+    for x, z in ((0, 3), (1, 3), (0, 4), (1, 4), (1, 5), (0, 6)):
         put(x, 1, z, "C")
     put(1, 2, 4, "C")
-    algae(c, 51, 1, 0.45)
-    # details on single planks
-    c[(10, 1, 7)] = "S"
-    c[(13, 1, 5)] = "R"
-    c[(2, 1, 11)] = "G"
-    c[(12, 1, 3)] = "G"
-    c[(11, 1, 3)] = "A"
-    c[(9, 1, 12)] = "S"
-    c[(4, 1, 10)] = "L"
-    for p in [p for p, l in c.items() if l in "RSG"]:
-        assert free_above(c, p), p
+    algae(c, 51, 1, 0.5)
+    scatter(c, 52, 1, (-1, 14, -1, 13), 9, 2)
+    details(c, 51, 1, [("G", 4), ("S", 2), ("R", 1)])
     return finish("wreck.debris", "Debris field",
-                  "Loose wreckage on the sand: a keel piece with its rib cage, the fallen main mast in full "
-                  "logs, a flat hull panel, loose planks and a heap of ballast stones.", c, 1)
+                  "Loose wreckage on the sand: a keel piece with an uneven rib cage, the fallen main mast in "
+                  "full logs, a flat hull panel, loose planks and timbers, a heap of ballast stones.", c, 1)
 
 
 SHAPES = (shape_hull, shape_bow, shape_stern, shape_debris)
@@ -391,7 +476,7 @@ NODES = [
     {"name": N_MAST, "key": "wreck.mast", "description": "Waterlogged Planks (mast step)", "new": True,
      "drawtype": "plantlike_rooted", "paramtype2": "leveled", "waving": 0, "tiles": ["wreck_planks"] * 3,
      "special": "wreck_mast", "drop": "default:wood",
-     "use": "the deck plank a mast stands on; height = param2 / 16 nodes (main mast 255 = 15.9, stumps 2-4.5)"},
+     "use": "the deck plank a broken mast stands on; height = param2 / 16 nodes (main mast 96 = 6, stumps 2.5-4.5)"},
     {"name": N_ROPE, "key": "wreck.rope", "description": "Waterlogged Planks (rope end)", "new": True,
      "drawtype": "plantlike_rooted", "paramtype2": "none", "waving": 1, "tiles": ["wreck_planks"] * 3,
      "special": "wreck_rope", "drop": "default:wood", "use": "a rope coil on a deck plank, one node"},

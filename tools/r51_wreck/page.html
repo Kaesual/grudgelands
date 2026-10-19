@@ -101,7 +101,7 @@ code { font-size: 12px; }
 		<label><input type="checkbox" id="water"> water</label>
 		<label><input type="checkbox" id="seagrass"> seagrass</label>
 		<label><input type="checkbox" id="figure"> player</label>
-		<label>mast <select id="mast-rule"><option value="fixed">as in the file</option><option value="depth">2 nodes above the water</option></select></label>
+		<label>mast <select id="mast-rule"><option value="fixed">broken, 6 (file)</option><option value="8">8 nodes</option><option value="full">whole, 15.9 (v1)</option><option value="surface">just reaching the surface</option></select></label>
 		<label>visual_scale <select id="mast-scale"><option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option></select></label>
 	</div>
 </div>
@@ -122,7 +122,7 @@ code { font-size: 12px; }
 		<h2>What you see</h2>
 		<ul>
 			<li>Full blocks only: waterlogged planks (two looks), waterlogged logs for keel, stem and ribs, mossy cobble ballast. Water never draws a wall against them.</li>
-			<li>Masts, rope ends, sail tatters and algae tufts are rooted plants: a full plank with two crossed quads above it, drawn in the water without an air pocket. A mast stands only upright, so a mast of a listing hull stands straight and a fallen one is made of logs.</li>
+			<li>Masts (broken off a few nodes above the deck), rope ends, sail tatters and algae tufts are rooted plants: a full plank with two crossed quads above it, drawn in the water without an air pocket. A mast stands only upright, so a mast of a listing hull stands straight and a fallen one is made of logs.</li>
 			<li>The lowest layers lie in the sand; inside the hull is the water (or sand) the world already had there.</li>
 			<li><b>Luanti light</b> lights every face as the client does by day without smooth lighting: the light of the node it faces, one level less per node of water (the top water node 14), through Luanti's default light curve. A rooted extension takes the light of the node just above its base, over its whole height, also where it stands in the air. Off: everything evenly lit, to judge the shapes. Below the surface the view gets the water's tint.</li>
 			<li>Quarter turns come for free at placement; the shapes are not turned diagonally.</li>

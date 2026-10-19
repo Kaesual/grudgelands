@@ -59,7 +59,7 @@
     "wreck_planks",
     "wreck_planks"
    ],
-   "use": "the deck plank a mast stands on; height = param2 / 16 nodes (main mast 255 = 15.9, stumps 2-4.5)",
+   "use": "the deck plank a broken mast stands on; height = param2 / 16 nodes (main mast 96 = 6, stumps 2.5-4.5)",
    "waving": 0
   },
   {
