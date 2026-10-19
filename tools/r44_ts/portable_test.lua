@@ -12,7 +12,9 @@
 --   3. one tab: grug_classes:talents is "Talents & Skills", the old Skills
 --      page is gone; the catalog row (abilities only, no mounts) under the
 --      tree text and above the short inventory, on the hotbar's columns, in
---      a "Skills" box like the Hotbar box (Round 45 playtest);
+--      a "Skills" box like the Hotbar box (Round 45 playtest), its slots in a
+--      horizontal scroll container with room for the bar below (Round 52
+--      C13; the scrolling itself: tools/r52_graph);
 --   4. the hotbar-only rule for each target list (hotbar, main[9..], every
 --      bag, the potion belt, craft, equipment, the quiver), swaps, puts from
 --      the catalog, one copy; mount items keep main and bags; and, on a
@@ -219,7 +221,10 @@ eq(in_table, 1, "one TAB_ORDER entry")
 
 scout.mount_tier = 1
 form = H.render(scout, "grug_classes:talents")
-local list_x, list_y = form:match("list%[detached:grug_skills_scout;catalog;([%d.]+),([%d.]+);8,1;0%]")
+-- Round 52 C13: the list sits at 0,0 in a horizontal scroll container, which
+-- takes the slots' place.
+local list_x, list_y = form:match("scroll_container%[([%d.]+),([%d.]+);[%d.]+,1;" ..
+	"grug_skills_scroll;horizontal;[%d.]+%]list%[detached:grug_skills_scout;catalog;0,0;8,1;0%]")
 check(list_x ~= nil, "the catalog list is on the page")
 check(math.abs(tonumber(list_x) - grug_inventory.VIEW_GEOMETRY.x) < 0.001,
 	"on the hotbar's columns")
@@ -234,8 +239,10 @@ local bx, by, bw, bh, color, lx, ly = form:match(
 bx, by, bw, bh, lx, ly = tonumber(bx), tonumber(by), tonumber(bw), tonumber(bh),
 	tonumber(lx), tonumber(ly)
 if check(bx ~= nil, "the catalog in a Skills box, labelled inside") then
+	-- Round 52 C13: 0.3 higher, for the scrollbar under the slots.
 	check(math.abs(bx - L.box_x) < 0.001 and math.abs(bw - L.box_w) < 0.001 and
-		math.abs(bh - L.slot_box_h) < 0.001, "the Skills box as wide and high as the Hotbar box")
+		math.abs(bh - L.slot_box_h - 0.3) < 0.001,
+		"the Skills box as wide as the Hotbar box, with room for the bar")
 	eq(color, grug_inventory.BOX_COLOR, "the Skills box colour")
 	check(math.abs(lx - tonumber(list_x)) < 0.001 and ly > by and ly < tonumber(list_y),
 		"its label top left above the slots")

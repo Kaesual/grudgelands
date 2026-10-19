@@ -246,6 +246,9 @@ local NODE_STYLES = {
 		"border=false;textcolor=#9a9a9a",
 }
 local CONNECTOR_MET, CONNECTOR_OPEN = "#c9a65a", "#5a5a5a"
+-- The new graph page (talent_graph_ui.lua) draws its nodes and lines alike.
+grug_classes.TALENT_NODE_STYLES = NODE_STYLES
+grug_classes.TALENT_CONNECTOR_COLORS = {met = CONNECTOR_MET, open = CONNECTOR_OPEN}
 
 -- Button field index per talent id (registration order, fixed after load).
 local field_index
@@ -359,9 +362,11 @@ local function talent_content(player, context)
 	end
 	fs[#fs + 1] = table.concat(parts)
 
+	-- The text ends at 7.15, a gap above the skill row, which moved up for
+	-- its scrollbar (Round 52 C13, d5-geometry.md).
 	local description = context.grug_talent_notice
 		or selected_description(player, context)
-	fs[#fs + 1] = ("textarea[0.25,%.2f;13.00,1.15;;;%s]"):format(layout.bottom + 0.35,
+	fs[#fs + 1] = ("textarea[0.25,%.2f;13.00,1.00;;;%s]"):format(layout.bottom + 0.2,
 		esc(description))
 	return table.concat(fs)
 end
@@ -369,14 +374,15 @@ end
 grug_classes.talent_formspec_content = talent_content
 
 -- The skill catalog row under the tree (spec §3.4, Round 44 plan ruling 4):
--- grug_skills, which depends on this mod, installs a function(player, y)
--- that returns its formspec part in real coordinates from y down (its box
--- with the hint beside the label, CATALOG_H high); without it the page ends
--- with the tree and its text. The row ends a gap above the short inventory view's box
--- (grug_inventory.VIEW_GEOMETRY.top, read at build time: this mod does not
--- depend on grug_inventory).
+-- grug_skills, which depends on this mod, installs a function(player, y,
+-- context) that returns its formspec part in real coordinates from y down
+-- (its box with the hint beside the label, CATALOG_H high: the slot row and,
+-- since Round 52 C13, its horizontal scrollbar below it); without it the
+-- page ends with the tree and its text. The row ends a gap above the short
+-- inventory view's box (grug_inventory.VIEW_GEOMETRY.top, read at build
+-- time: this mod does not depend on grug_inventory).
 grug_classes.skill_catalog_row = nil
-local CATALOG_H = 1.5
+local CATALOG_H = 1.8
 
 local function refresh_open_page(player)
 	if sfinv.get_page(player) == PAGE_NAME then
@@ -451,7 +457,7 @@ sfinv.register_page(PAGE_NAME, {
 		local catalog_y = grug_inventory.VIEW_GEOMETRY.top - 0.1 - CATALOG_H
 		return sfinv.make_formspec(player, context,
 			talent_content(player, context) ..
-				(catalog and catalog(player, catalog_y) or ""),
+				(catalog and catalog(player, catalog_y, context) or ""),
 			"short")
 	end,
 	on_player_receive_fields = function(self, player, context, fields)

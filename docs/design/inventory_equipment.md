@@ -777,7 +777,10 @@ Skills** tab (`skill_trees.md` §3.5), on the hotbar's columns in a
 **Skills** box like the Hotbar box (Round 45 playtest), with the short
 inventory right below so tools and food can leave the hotbar. It lists every
 currently unlocked active ability, nothing else: mounts and boats left it
-(they are in the quickbar). Its detached list is an infinite source and an
+(they are in the quickbar). Since Round 52 (C13) the row scrolls
+horizontally, so any number of skills fits: past eight a scrollbar under the
+slots (the box 0.3 higher than the Hotbar box) moves it a slot per step, and
+the position is kept in the sfinv context, so a refresh does not jump back. Its detached list is an infinite source and an
 infinite destination: a drag onto a free hotbar slot copies the skill there
 as a fresh stack, and dragging the carried copy back onto its own icon
 removes that copy (the engine undoes the swap such a drop asks for). The
