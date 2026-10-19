@@ -132,7 +132,7 @@
 	// plan section 3.6): default nodes drop themselves (litters, mud
 	// variants and moss soil their plain ground), plants nothing.
 	var DROPS = {
-		'grug_nodes:mesa_clay': 'itself (mesa clay)', 'new:swamp_moss': 'default:dirt (proposed)',
+		'grug_nodes:mesa_clay': 'itself (mesa clay)', 'new:swamp_moss': 'grug_nodes:mud (proposed, as the mud variants)',
 		'cairn:base': 'default:cobble', 'cairn:branch': 'default:cobble', 'cairn:twig': 'default:cobble',
 		'new:clay_band_ochre': 'grug_nodes:mesa_clay (proposed)', 'new:clay_band_sienna': 'grug_nodes:mesa_clay (proposed)',
 		'new:clay_band_chalk': 'grug_nodes:mesa_clay (proposed)', 'new:clay_band_umber': 'grug_nodes:mesa_clay (proposed)',
