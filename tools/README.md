@@ -1469,4 +1469,7 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   (`portable_test.lua`: the bounds agree in every place and the new ring
   reads as open sea; `compare.lua REPO SEED OUT` dumps the world inside the
   old bounds for a before/after diff, `diff_dumps.py BEFORE AFTER` summarises
-  two dumps).
+  two dumps, `grid_cost.lua REPO SEED [N]` the terrain grids' build time and
+  heap; `mgprof_extra.lua` the edge and ring chunks for `tools/mgprof/run.sh`
+  (`PROBE_EXTRA=`); `grug_probe_r51_terrain` reads the new ring in the engine,
+  `PROBE=` of the smoke boot).
