@@ -1,0 +1,56 @@
+{
+  "name": "Obelisk, fractured stone tip",
+  "drop": "default:stone",
+  "tiles": [
+    "obelisk_broken_tip_top.png",
+    "obelisk_broken_tip_bottom.png",
+    "obelisk_broken_tip_right.png",
+    "obelisk_broken_tip_left.png",
+    "obelisk_broken_tip_back.png",
+    "obelisk_broken_tip_front.png"
+  ],
+  "boxes": [
+    [
+      -6,
+      -8,
+      -6,
+      6,
+      -3,
+      6
+    ],
+    [
+      -5,
+      -3,
+      -5,
+      5,
+      1,
+      5
+    ],
+    [
+      -4,
+      1,
+      -4,
+      4,
+      4,
+      4
+    ],
+    [
+      -3,
+      4,
+      -3,
+      2,
+      6,
+      3
+    ],
+    [
+      -2,
+      6,
+      -1,
+      0,
+      8,
+      2
+    ]
+  ],
+  "rotate": true,
+  "note": "Cracked grey stone for an undead obelisk; the shaft and plinth use ordinary default:stone blocks."
+}

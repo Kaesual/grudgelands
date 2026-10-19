@@ -1,0 +1,56 @@
+{
+  "name": "Bones, broken jaw and splinters",
+  "drop": "",
+  "tiles": [
+    "bones_fragments_top.png",
+    "bones_fragments_bottom.png",
+    "bones_fragments_right.png",
+    "bones_fragments_left.png",
+    "bones_fragments_back.png",
+    "bones_fragments_front.png"
+  ],
+  "boxes": [
+    [
+      -5,
+      -8,
+      -4,
+      -3,
+      -6,
+      1
+    ],
+    [
+      -4,
+      -8,
+      0,
+      1,
+      -6,
+      2
+    ],
+    [
+      0,
+      -8,
+      -3,
+      2,
+      -6,
+      1
+    ],
+    [
+      4,
+      -8,
+      -5,
+      6,
+      -7,
+      -1
+    ],
+    [
+      -1,
+      -8,
+      5,
+      4,
+      -7,
+      6
+    ]
+  ],
+  "rotate": true,
+  "note": "Rare single find or occasional pair; drops nothing like today's bone_pile. The user may prefer grug_mobs:bone."
+}
