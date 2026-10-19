@@ -450,4 +450,7 @@ with what the round added):
 On main `260402b9` after the last merge (coordinator): the full
 `run_fixtures.sh` 221 passed, 0 failed; `check_fresh_server.py` PASS;
 synced to Luanti. This lane: `check_upgrade.py` PASS (0.52.0, compatible,
-against origin/main `dea1d163`). *To be recorded:* the one boot of main.
+against origin/main `dea1d163`). On main `fc37636d` (lane D merged): the full
+`run_fixtures.sh` 221 passed, 0 failed; `check_upgrade.py` and
+`check_fresh_server.py` PASS; one headless boot of main PASS (150 s); synced
+to Luanti. Open: the user's GUI check (both checklists above).

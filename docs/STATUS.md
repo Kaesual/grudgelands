@@ -41,7 +41,10 @@ notes.
   fixtures (6 new); `mods/` +4,509 −1,566 lines in 31 text files, 11 new
   Lua files, 160 media files. The declaration is
   `{"schema": 3, "version": "0.52.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`;
-  a world of 0.51.0 moves on without a step.
+  a world of 0.51.0 moves on without a step. Round-end gates on main
+  `fc37636d`: full fixtures 221/0, `check_upgrade.py` and
+  `check_fresh_server.py` PASS, one headless boot PASS; synced. Open: the
+  user's GUI check.
   - **Ambience (SND, AMB):** beds by biome group instead of the race
     zone, new beds for the badlands, the swamp, the crags, the snowy crags
     and the Battlegrounds, night beds, three layers (surface, cave, wind)
