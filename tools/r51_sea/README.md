@@ -78,6 +78,57 @@ user's pick. The round's placement/reset decisions remain in the sea plan.
 No fixtures or engine runs are required by this lane's brief. Runtime
 appearance on desktop and web remains for the integrating lanes and user.
 
+## FA — swaying seagrass and kelp
+
+Follow-up art by GPT-6 Astra, 2026-10-19, for
+[the follow-up plan, §3 option B](../../docs/planning/round51-followup-plan.md#3-decision-for-the-user-how-seagrass-and-kelp-move).
+The four candidate strips await the user's pick; lane FW owns integration.
+The existing art and shipped textures are unchanged.
+
+| Strip | Frames | PNG size | Proposed loop | Motion |
+| --- | --- | --- | --- | --- |
+| [seagrass_1_anim.png](anim/seagrass_1_anim.png) | 8 | 16 × 128 | 3.2 s | Fine upright blades; the original palette and three bottom rows stay fixed. |
+| [seagrass_2_anim.png](anim/seagrass_2_anim.png) | 8 | 16 × 128 | 3.2 s | The shorter swept bunch, with its own phase on the shared clock. |
+| [seagrass_3_anim.png](anim/seagrass_3_anim.png) | 8 | 16 × 128 | 3.2 s | The open fan, with delayed bends along its blades. |
+| [kelp_anim.png](anim/kelp_anim.png) | 8 | 16 × 128 | 3.2 s | Original olive/yellow-green stalk, sparse alternating leaves and a travelling bend. |
+
+Frames run top to bottom, each **16 × 16**, for `vertical_frames` with
+`aspect_w = 16`, `aspect_h = 16` and `length = 3.2` (400 ms per frame).
+Each strip has eight distinct frames. Source texels move by at most one
+pixel per step, including frame 8 → 1, and stay within one pixel either
+side of their original positions. Diagonal connections are repaired with
+whole pixels; alpha stays 0/255 and transparent RGB stays zero. The three
+seagrass variants retain their exact four-colour palette and stationary
+bottom three rows, with different phases to break up a mixed meadow.
+
+Kelp has equal top and bottom RGBA rows in **every** frame and a continuous
+two-pixel stem across all joins, checked through 15 repeats. Its wave repeats
+once per node; every segment and both preview stalks use the same frame.
+There is no per-segment phase offset or repeated end cap.
+
+[preview.png](anim/preview.png) labels all 32 frames side by side at 4×.
+The three seagrass GIFs are 64 × 64, and [kelp_anim.gif](anim/kelp_anim.gif)
+is a six-node stalk at 4× (64 × 384).
+[meadow.gif](anim/meadow.gif) mixes ten grass tufts and two kelp stalks,
+six and five nodes high, on original sand under an illustrative water tint
+(640 × 496, 4×). These are flat art previews, not engine screenshots.
+All five GIFs loop every 3.2 s with nearest-neighbour pixels and a shared,
+exact palette per GIF, without dithering. All new previews are CC0: they
+use only our own art, sand, water colours and original pixel lettering.
+
+```sh
+python3 -I tools/r51_sea/anim_art.py
+python3 -I tools/r51_sea/anim_art.py --check
+```
+
+The generator writes only the ten files in `anim/`. The check writes
+nothing and verifies the checked-in files against regeneration, dimensions,
+alpha, palette, connected blades/leaves, fixed grass roots, temporal wrap,
+kelp joins, and decoded GIF frames, duration and infinite-loop metadata.
+Every loop's final step changes no more texels than its largest interior
+step. **Compatible, art tooling only**; no fixtures or engine runs for FA.
+The user's selection and the desktop/web runtime checks remain with FW.
+
 ## Media
 
 The project dedicates any rights it holds in the eleven original textures
@@ -99,3 +150,27 @@ Each texture's author is GPT-6 Astra; source: [sea_art.py](sea_art.py).
 | [wreck_sail.png](wreck_sail.png) | Perforated old canvas in hanging strips on a broken peg. | CC0-1.0 |
 | [wreck_algae.png](wreck_algae.png) | A low branching green tuft attached to wreck wood. | CC0-1.0 |
 | [preview.png](preview.png) | Scales, backgrounds, depth tints and placement comparisons; original contributions CC0, referenced default textures retain their licence. | CC BY-SA 3.0 for the composite |
+
+### FA animation media
+
+The project dedicates any rights it holds in every file below to
+[CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
+Author: **GPT-6 Astra**, 2026-10-19. Source for all generated files:
+[anim_art.py](anim_art.py). The grass strips animate our CC0 originals
+listed above; kelp, sand and water are newly authored. The labels reuse
+our CC0 lettering from [sea_art.py](sea_art.py). No third-party artwork
+is included in these files.
+
+| File | Original work / modifications | Exact license |
+| --- | --- | --- |
+| [anim_art.py](anim_art.py) | Authored kelp, deterministic pixel motion, sand, water, preview layout and validation. | CC0-1.0 |
+| [anim/seagrass_1_anim.png](anim/seagrass_1_anim.png) | Eight swaying poses of our fine upright bunch; original colours and roots preserved. | CC0-1.0 |
+| [anim/seagrass_2_anim.png](anim/seagrass_2_anim.png) | Eight swaying poses of our low swept bunch; original colours and roots preserved. | CC0-1.0 |
+| [anim/seagrass_3_anim.png](anim/seagrass_3_anim.png) | Eight swaying poses of our open fan; original colours and roots preserved. | CC0-1.0 |
+| [anim/kelp_anim.png](anim/kelp_anim.png) | New olive stalk and leaves, eight vertically seamless rippling poses. | CC0-1.0 |
+| [anim/preview.png](anim/preview.png) | All animation frames, nearest-neighbour enlargement, checkerboard and original lettering. | CC0-1.0 |
+| [anim/seagrass_1_anim.gif](anim/seagrass_1_anim.gif) | Upright bunch on checkerboard, enlarged 4×, timed loop. | CC0-1.0 |
+| [anim/seagrass_2_anim.gif](anim/seagrass_2_anim.gif) | Swept bunch on checkerboard, enlarged 4×, timed loop. | CC0-1.0 |
+| [anim/seagrass_3_anim.gif](anim/seagrass_3_anim.gif) | Open fan on checkerboard, enlarged 4×, timed loop. | CC0-1.0 |
+| [anim/kelp_anim.gif](anim/kelp_anim.gif) | Six synchronous stalk segments on checkerboard, enlarged 4×, timed loop. | CC0-1.0 |
+| [anim/meadow.gif](anim/meadow.gif) | Mixed grass and two synchronous kelp stalks, original sand/water, tint and labels, enlarged 4×. | CC0-1.0 |
