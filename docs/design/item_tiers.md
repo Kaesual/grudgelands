@@ -852,7 +852,7 @@ All from the shipped code (Round 33 survey, verified by hand):
   (1 + attack speed)`), damage `W + Str/10`; Mighty Blow replaces a due swing
   at 25 rage with `floor(1.5 W) + Str/10`; rage `8 × the weapon's base swing
   interval / 1 s` per landed swing (8 per second for every weapon; Round 46)
-  and +3 per hit taken, one mob hit per second (`grug_abilities/kits.lua`
+  and +3 per hit taken, one mob hit per second (`grug_abilities/kits_warrior.lua`
   `mighty_blow`, `init.lua` `swing_rage`).
 - **Scout:** full-draw Loose `(bow + Dex/10) × 2.25` every
   `2.5 s / (1 + the bow's own attack speed)` (`grug_abilities/scout.lua:63-87,
@@ -863,12 +863,12 @@ All from the shipped code (Round 33 survey, verified by hand):
   46; `grug_core/combat.lua` `spell_base`).
 - **Mage:** Fireball `S + Int/10`, 6 % of P(L) per cast, at most one cast a
   second; the fight's mana is the pool plus 60 s of in-combat regeneration
-  `max(0.25 (1 + 0.15 L), 0.0025 × max mana)` (`kits.lua:545-620`,
+  `max(0.25 (1 + 0.15 L), 0.0025 × max mana)` (`kits_mage.lua` `fireball_values`,
   `init.lua:131-145`).
 - **Priest:** Heal `25 % P(L) × (1 + gear Int / 10 / B(L))` (Round 36;
   `grug_classes/stats.lua` `get_support_factor`, `kits.lua` `support_value`),
   8 % P(L), heals crit ×2 (v2); Smite `1.5 (S + Int/10)`, 5 %, every 2 s
-  (`kits.lua`, `grug_core/combat.lua` `heal_player`).
+  (`kits_priest.lua`, `grug_core/combat.lua` `heal_player`).
 - **Crit** `5 % + 0.05 % Dex + gear`, cap 30 %, ×2 on every swing, spell, arrow
   and heal (v2; before Round 33 0.1 % and ×1.5); **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**
   `min(0.70, R / (R + K))`, `K(L) = 20 + 0.5 min(L, 60) + 8.5 max(L − 60, 0)`

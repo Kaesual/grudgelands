@@ -542,7 +542,7 @@ Normal tier at level L:
   contact run remains `reach × 0.6`, hence **1.8 m** for an ordinary attacker.
   Telegraphs continue to derive their geometry from the live reach; the
   ordinary elite/rare cone therefore reaches **4.5 m** (the swing skills'
-  `range` in `grug_abilities/kits.lua`, the contact run in `mobs/api.lua`,
+  `range` in `grug_abilities/kits.lua` and `kits_warrior.lua`, the contact run in `mobs/api.lua`,
   the cone in `grug_mobs/telegraph.lua`). A mob's reach is the `reach` field
   of its definition in `grug_mobs/<family>.lua` (the villagers in
   `start_villagers.lua`).

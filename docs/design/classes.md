@@ -814,7 +814,7 @@ names were renamed — the Priest's Heal, Shield and Mend and the Mage's Ice
 Nova (§4). Generic words such as Smite, Blink or Sprint stay. The Shield
 spell is an absorb on a player; its tooltip says so, which keeps it apart from
 the offhand shield items. Mend's display name lives on its Mercy keystone
-(`grug_classes/talents.lua`), which the ability reads.
+(`grug_classes/talents_priest.lua`), which the ability reads.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
