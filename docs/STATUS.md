@@ -21,12 +21,13 @@ Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a private
 claude.ai page, Round 50 ART) shows the planning state with the user's
 notes.
 
-- **Round 51 "Land zones and the sea" complete on main, not pushed**
+- **Round 51 "Land zones and the sea" complete and pushed**
   (2026-10-19, version 0.51.0, **map reset**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round51-plan.md#completion-2026-10-19);
   partial plans [land](planning/round51-land-plan.md) and
-  [sea](planning/round51-sea-plan.md)). Main is not pushed (origin/main
-  `fae056c5`, 0.50.2); push only on the user's word. From main `6c1b6139`
+  [sea](planning/round51-sea-plan.md)). Pushed on the user's word on
+  2026-10-19 (origin/main `75ea1b4c`; production still runs 0.50.2 until the
+  host updates with the map reset). From main `6c1b6139`
   (the plans): the art lanes SWART, ARTS and ARTL (three passes), the
   design and page lanes NAMES, VIEW and WRECK's design (each picked by the
   user), then T1 (`fe540a38`), LG (`f4b1322c`), MOBS M1 (`cb93b631`), T2
@@ -1338,8 +1339,8 @@ notes.
   list is [archived](archive/maintenance/findings.md) (its open items are
   fixed in code, D3 moved to the BACKLOG); open design questions are in the BACKLOG
   ([Audit 2026-10 open questions](../BACKLOG.md#audit-2026-10-open-questions)).
-- **Latest game:** main carries 0.51.0 (Round 51, a map reset, not
-  pushed) on 0.50.2, 0.50.1 and 0.50.0 (Round 50, compatible, pushed at
+- **Latest game:** main carries 0.51.0 (Round 51, a map reset,
+  pushed at `75ea1b4c`) on 0.50.2, 0.50.1 and 0.50.0 (Round 50, compatible, pushed at
   origin/main `fae056c5`; the user moved production to 0.50.2 on
   2026-10-17) on 0.49.1 (a compatible fix) on
   0.49.0 (Round 49, a map reset, pushed at origin/main `bc1e6016`)

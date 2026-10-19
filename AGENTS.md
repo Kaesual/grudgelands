@@ -15,7 +15,7 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 **Current state:** 0.51.0, Round 51 "Land zones and the sea" (**map
 reset**, no migration step;
 [completion](docs/planning/round51-plan.md#completion-2026-10-19)), on
-main and not pushed: the world bounds ±4190 × ±3740 with the land
+main and pushed (`75ea1b4c`, 2026-10-19; production still on 0.50.2): the world bounds ±4190 × ±3740 with the land
 unchanged, bays without specks, a 250–350-node coastal belt, organic
 dragon channels, bay, belt and channel water 24+ off the coast protected
 like the open sea (`grug_zones.water_query_at`), seabed growth and
