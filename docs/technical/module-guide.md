@@ -2133,7 +2133,8 @@ tools](#player-meta-read-by-external-tools).
   cells but the dead pine's): the writer (`row.generated_kit`) gives each
   run its columns' common ground offset (0, +1 or -1 against the root's
   level, kit ground `kit_ground_names`), places it where every moved cell
-  is free (a cell below the level takes its column's surface top), and
+  is free (a cell below the level takes its column's dry surface top, never
+  the wet bed), and
   rejects the structure when a `required` run cannot stand; no
   `TREE_SPACING`, no box reservation, only its cells. Kit rows are class
   cover without a factor (`r6_planner.lua` `decoration_kit`, snow

@@ -311,10 +311,14 @@ splinters), or now and then a pair (a skull with its ribcage or spine),
 turned at random: rare, and never one picture repeated. Each structure is
 built per world from its seed like the trees (`wp40/kit_templates.lua`,
 16 graveyards, 32 bone finds, 8–16 variants of the rest) and turned per
-placement. Its core stands on level ground or not at all; its other pieces
-(a stone of a graveyard, a wall column of a ruin, a fence post, the second
-piece of a pair) follow the ground one node up or down or drop out, so
-nothing floats; a sunken course takes its own column's top. The kit keeps
+placement. Every piece follows its own ground one node up or down; a piece
+spanning columns (a log's first three nodes, a crypt post with its lintel)
+lies level. The core pieces (a graveyard's first stone, a crypt's doorway
+and posts, an arch's piers, both nodes of a grave mound) must stand or the
+structure is not placed; the others (a further stone, a wall column of a
+ruin, a fence post, the second piece of a pair) drop out where the ground
+does not allow them, so nothing floats; a sunken course takes its own
+column's dry top, never a bed under water. The kit keeps
 off settlements, roads, POIs and water (the trees' exclusions) and needs
 its whole footprint inside one mapchunk. The rows have no altitude or
 forest factor and stand on snow; they are no vegetation and never renew.
