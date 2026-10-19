@@ -113,6 +113,30 @@ zone classification. Coral, kelp and wild-source details follow
 on sandy sea shore near water (§3.1, §4.2). Registered node/biome names
 must resolve before they are used by ore or decoration definitions.
 
+**Ground textures and nodes (Round 51,
+[land plan](../planning/round51-land-plan.md) rulings 4–6).** The large
+flat grounds wear 32 px textures, world-aligned over 2 × 2 nodes at 16 px
+per node (`align_style = "world"`, `scale = 2`): the tops of silver, bone
+and canopy litter, of the swamp's wet grass, wet mud and dry mud and of both
+moss grounds, and every face of blight dirt, mesa clay, plain mud (the
+rooted reeds' bed too), the clay bands and `default:sand` (retextured by
+override, not a new node, so the crab's shore host stays; the rooted kelp
+and waterweed beds match it). Sides stay 16 px: the litters' overlays, the
+dry mud's side, the calm sides of wet grass and wet mud, and whole moss
+sides for both moss grounds. The forest's `grug_nodes:dirt_with_moss` (moss
+soil) wears a muted moss in place of the old bright one.
+`grug_nodes:swamp_moss` is the swamp's own moss ground: the moss soil's
+groups (soil, natural loose ground), it drops `grug_nodes:mud`, and it
+hosts what the swamp's moss soil hosts (gathering sources, the bog ooze,
+bog fowl and crocodile, spawn-region ground). The badlands' clay bands
+`grug_nodes:clay_band_ochre|sienna|chalk|umber` are loose ground like mesa
+clay and drop `grug_nodes:mesa_clay`. Hanging moss is a run of the
+continuous strand (`grug_trees:swamp_hanging_moss_strand`) above the tapered
+end (`grug_trees:swamp_hanging_moss`): digging a piece turns the strand
+right above it into the end and takes the pieces below it (they drop
+nothing; a protected piece stays). Hanging moss comes back only with its
+tree: it decays with the tree's wood, and the swamp tree has no sapling.
+
 ### 1.4 Settlements
 
 Settlement positions use the fixed POI slots in `world_zones.md` §§8/11;
@@ -1289,9 +1313,10 @@ copies its groups and sounds, keeps its leaves from decaying within 3 nodes
 (radius 3 for every wood, the shapes included) and cannot be placed by a
 player. Twigs join a leaf only above them (the seven woods' leaves and the
 swamp leaves declare `connect_sides = {"bottom"}`; the swamp leaves and
-hanging moss decay to gravewood wood); the base and the twig join the ground only
+hanging moss, strand and end, decay to gravewood wood); the base and the twig join the ground only
 below them (every `group:soil` and `group:sand` node and `default:gravel`
-declare `connect_sides = {"top"}`, 26 nodes with the swamp ground). The
+declare `connect_sides = {"top"}`, 27 nodes with the swamp ground and the
+swamp moss). The
 jungle tree and the jungle pieces wear the jungle bark M (`grug_trees_jungle_bark*.png`, CC0). The
 world generator, saplings and town trees place the pieces (Round 47 lanes TB/TC).
 

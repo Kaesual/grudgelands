@@ -1,11 +1,14 @@
 # Media Origin & Licenses (grug_nodes)
 
-Three groups, listed in their own tables below:
+Four groups, listed in their own tables below:
 
 1. **Biome signature tops (WP18)** — derived works of minetest_game
    textures, CC BY-SA 3.0.
 2. **Own pixel art (WP6)** — original, CC0 1.0.
 3. **Swamp set (Round 47)** — original, CC0 1.0, by GPT-6 Astra.
+4. **Land grounds (Round 51)** — original, CC0 1.0, by GPT-6 Astra and
+   Claude; they replace several files of groups 1 and 3 under the same
+   names.
 
 ## 1. Biome signature tops — derived from minetest_game
 
@@ -30,17 +33,11 @@ preserved.
 
 | File | Derived from | Author | License | Modifications |
 |------|--------------|--------|---------|---------------|
-| `grug_nodes_blight_dirt.png` | `default_dirt.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (desaturated grey-violet `#5f5270`) |
-| `grug_nodes_bone_litter.png` | `default_coniferous_litter.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (ash grey `#9c988c`) |
 | `grug_nodes_bone_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (ash grey `#9c988c`, alpha kept) |
 | `grug_nodes_forest_litter.png` | `default_coniferous_litter.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (deep green `#34502a`) |
 | `grug_nodes_forest_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (deep green `#34502a`, alpha kept) |
-| `grug_nodes_silver_litter.png` | `default_coniferous_litter.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (pale ivory-green `#c3caae`) |
 | `grug_nodes_silver_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (pale ivory-green `#c3caae`, alpha kept) |
-| `grug_nodes_canopy_litter.png` | `default_coniferous_litter.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (deep shade emerald `#1d4433`); exact command: `magick default_coniferous_litter.png -colorspace Gray -gamma 0.693 -fill '#1d4433' -tint 100 grug_nodes_canopy_litter.png` — 0.693 is the gamma that pulls the source's grayscale mean (0.3568) onto the target's Rec709 luma (0.2293), per the recipe above; no `-sigmoidal-contrast` because the gamma is a darkening, not a lift |
-| `grug_nodes_canopy_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | same command and same gamma 0.693 as the tile above (one material, one tint), alpha kept |
-| `grug_nodes_mesa_clay.png` | `default_clay.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (terracotta `#a8563a`) |
-| `grug_nodes_mud.png` | `default_dirt.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (dark brown-green `#3b3e2a`) |
+| `grug_nodes_canopy_litter_side.png` | `default_coniferous_litter_side.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (deep shade emerald `#1d4433`); exact command: `magick default_coniferous_litter_side.png -colorspace Gray -gamma 0.693 -fill '#1d4433' -tint 100 grug_nodes_canopy_litter_side.png` (the gamma pulls the source's grayscale mean onto the target's Rec709 luma, per the recipe above), alpha kept |
 | `grug_nodes_bone_pile.png` | `default_coral_skeleton.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (bone white `#ddd8c9`) and masked down to a 16×16 heap silhouette (own alpha mask) |
 
 ### 1b. Nodes that carry no media of their own
@@ -49,10 +46,13 @@ The authored field soil now belongs to `grug_farming`; this mod no longer
 registers the interim tilled-soil node. Round-10 `grug_nodes:ash_ground` uses
 `default_gravel.png` with runtime colorization `#45403e:145`. The vendored
 README attributes that gravel to sofar (CC0 1.0), derived from Gambit's PixelBOX
-light gravel. `grug_nodes:dirt_with_moss` uses the unchanged shipped
-`default_moss.png`, `default_moss_side.png` and `default_dirt.png`; ownership and
-license remain in `mods/BASE/default/README.txt` / `license.txt` (paramat moss,
-CC BY-SA 3.0). These are texture-name/modifier bindings; no new bitmap is shipped.
+light gravel. `grug_nodes:dirt_with_moss`'s bottom uses the unchanged shipped
+`default_dirt.png` (its top and side are group 4's). These are
+texture-name/modifier bindings; no new bitmap is shipped.
+
+Since Round 51 the tops of blight dirt, bone, silver and canopy litter, mesa
+clay and mud are group 4's files under the same names; the litter sides above
+stay.
 
 ## 2. Own pixel art — CC0 1.0
 
@@ -81,15 +81,50 @@ byte for byte under this mod's texture prefix.
 
 | File | Source file | Author | License | Modifications |
 |------|-------------|--------|---------|---------------|
-| `grug_nodes_mud_dry_top.png` | `tools/r47_art/swamp/mud_dry_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_mud_dry_side.png` | `tools/r47_art/swamp/mud_dry_side.png` | GPT-6 Astra | CC0 1.0 | renamed only |
-| `grug_nodes_mud_mottled_top.png` | `tools/r47_art/swamp/mud_mottled_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
-| `grug_nodes_mud_mottled_side.png` | `tools/r47_art/swamp/mud_mottled_side.png` | GPT-6 Astra | CC0 1.0 | renamed only |
-| `grug_nodes_wet_grass_top.png` | `tools/r47_art/swamp/wet_grass_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
-| `grug_nodes_wet_grass_side.png` | `tools/r47_art/swamp/wet_grass_side.png` | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_moss_carpet_top.png` | `tools/r47_art/swamp/moss_carpet_top.png` | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_reeds.png` | `tools/r47_art/swamp/reeds.png` | GPT-6 Astra | CC0 1.0 | renamed only |
 | `grug_nodes_cattails.png` | `tools/r47_art/swamp/cattails.png` | GPT-6 Astra | CC0 1.0 | renamed only |
 
-`grug_nodes:mud_with_reeds` binds `grug_nodes_mud.png` (section 1) and
-`grug_nodes_reeds.png`; no further bitmap.
+`grug_nodes:mud_with_reeds` binds `grug_nodes_mud.png` (section 4) and
+`grug_nodes_reeds.png`; no further bitmap. Round 51 replaced the dry mud's
+top and the wet mud's and the wet grass's tops and sides with group 4's
+files under the same names.
+
+## 4. Land grounds (Round 51) — CC0 1.0
+
+Original textures for Grudgelands, picked by the user in the Round 51 land
+viewer (`tools/r47_sw/land.html`) and copied byte for byte from
+`tools/r51_land` under this mod's names. No downloaded, traced or recoloured
+third-party pixels. Every 32 × 32 file is drawn world-aligned over 2 × 2
+nodes (`align_style = "world"`, `scale = 2`). Generators and per-file
+records: `tools/r51_land/README.md` ("Media", "SWART", "ARTL pass 1"):
+`swamp_calm.py` (Claude, Opus 5.5, 2026-10-18, from lane ART's CC0
+palettes and hanging moss, commit `8dbeea8d`), `swamp_art.py` (GPT-6 Astra,
+2026-10-18, commit `13c6272c`) and `land_art.py` (GPT-6 Astra, 2026-10-19,
+commit `c16c6bcb`).
+
+**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_nodes_wet_grass_top.png` | `tools/r51_land/swamp/wet_grass_top_calm32.png` (`swamp_calm.py`) | Claude (Opus 5.5) | CC0 1.0 | renamed only |
+| `grug_nodes_wet_grass_side.png` | `tools/r51_land/swamp/wet_grass_side_calm.png` (`swamp_calm.py`) | Claude (Opus 5.5) | CC0 1.0 | renamed only |
+| `grug_nodes_mud_mottled_top.png` | `tools/r51_land/swamp/mud_mottled_top_calm32.png` (`swamp_calm.py`) | Claude (Opus 5.5) | CC0 1.0 | renamed only |
+| `grug_nodes_mud_mottled_side.png` | `tools/r51_land/swamp/mud_mottled_side_calm.png` (`swamp_calm.py`) | Claude (Opus 5.5) | CC0 1.0 | renamed only |
+| `grug_nodes_mud.png` | `tools/r51_land/swamp/mud_top_32.png` (`swamp_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_mud_dry_top.png` | `tools/r51_land/swamp/mud_dry_top_32.png` (`swamp_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_moss_soil_top.png` | `tools/r51_land/swamp/moss_soil_top_32.png` (`swamp_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_moss_soil_side.png` | `tools/r51_land/swamp/moss_soil_side.png` (`swamp_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_swamp_moss_top.png` | `tools/r51_land/grounds/swamp_moss_top_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_swamp_moss_side.png` | `tools/r51_land/grounds/swamp_moss_side.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_silver_litter.png` | `tools/r51_land/grounds/silver_litter_top_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_blight_dirt.png` | `tools/r51_land/grounds/blight_dirt_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_bone_litter.png` | `tools/r51_land/grounds/bone_litter_top_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_canopy_litter.png` | `tools/r51_land/grounds/canopy_litter_top_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_mesa_clay.png` | `tools/r51_land/grounds/mesa_clay_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_clay_band_ochre.png` | `tools/r51_land/grounds/clay_band_ochre_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_clay_band_sienna.png` | `tools/r51_land/grounds/clay_band_sienna_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_clay_band_chalk.png` | `tools/r51_land/grounds/clay_band_chalk_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_clay_band_umber.png` | `tools/r51_land/grounds/clay_band_umber_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_sand.png` | `tools/r51_land/grounds/sand_32.png` (`land_art.py`) | GPT-6 Astra | CC0 1.0 | renamed only; `default:sand`, `default:sand_with_kelp` and `grug_mapgen:freshwater_waterweed` bind it (the vendored `default_sand.png` stays unchanged) |

@@ -2115,7 +2115,11 @@ tools](#player-meta-read-by-external-tools).
   forest density parameter. Saplings
   (`grug_trees/growth.lua`) and the town trees (`wp13/dressing.lua`) use the
   same generator. A change to the generator or the species table moves the
-  sample pins of `tools/r47_tc/portable_test.lua`.
+  sample pins of `tools/r47_tc/portable_test.lua`. Hanging kinds
+  (`tree_templates.lua` `HANGING`, Round 51): a cell of such a kind with one
+  of its kind right below takes the species' strand node, the lowest the end
+  node, in the variants and the grown trees alike; `grug_trees/hanging.lua`
+  keeps a dug run whole.
   **Placement draws** (Round 49): the R6 decoration candidates (rank,
   thinning, cell budget remainder), the P9 rotations, heights, variants and
   template trials, the P9G ranks and remainders and the P8 fill ores draw
