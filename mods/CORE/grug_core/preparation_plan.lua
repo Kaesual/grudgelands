@@ -1,10 +1,13 @@
 -- Immutable mapchunk traversal. Coordinates are nodes; geometry is mapblocks.
 local M = {}
--- Source extent encloses continents, frontier and islands. Add 20 mapblocks
--- of water on every side, then round outward on the actual engine grid.
+-- The map's extent (+-4050 x +-3600 since Round 51 T1, sea plan ruling 2;
+-- +-3600 x +-3200 before) encloses continents, frontier, islands and the
+-- coastal sea. Add 20 mapblocks of water on every side, then round outward on
+-- the actual engine grid; that also covers the world's query bounds
+-- (`grug_mapgen` wp40/source/simple_map.lua world_bounds, +-4190 x +-3740).
 local OCEAN_MARGIN = 20 * 16
-M.bounds = {x_min = -3600 - OCEAN_MARGIN, x_max = 3600 + OCEAN_MARGIN,
-	z_min = -3200 - OCEAN_MARGIN, z_max = 3200 + OCEAN_MARGIN}
+M.bounds = {x_min = -4050 - OCEAN_MARGIN, x_max = 4050 + OCEAN_MARGIN,
+	z_min = -3600 - OCEAN_MARGIN, z_max = 3600 + OCEAN_MARGIN}
 -- Full mode prepares, per horizontal tile, every mapchunk a player walking,
 -- swimming or riding a flying mount can make the engine generate
 -- (docs/design/world_preparation.md, "Full-column extent").

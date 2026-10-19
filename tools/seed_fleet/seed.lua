@@ -32,7 +32,9 @@ local t0 = os.clock()
 -- one step, under 200 for every core but a dragon arena (on the islands), so
 -- 320 means the snap went astray (a long straight canyon).
 local JOIN_MAX = 320
-local X_LIMIT, Z_LIMIT = 3740, 3340
+-- The sample's map corner: the corner of the world's query bounds.
+local WORLD = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").world_bounds
+local X_LIMIT, Z_LIMIT = WORLD.max_x, WORLD.max_z
 
 local R, rivers
 local function build()

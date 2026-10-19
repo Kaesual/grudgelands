@@ -1086,6 +1086,13 @@ local function settlement_factory()
 		local horizontal = dependencies.horizontal
 		local planner_source = dependencies.planner_source
 		local source = dependencies.source
+		-- The world's query bounds (`source/simple_map.lua` world_bounds).
+		local world_bounds = source.world_bounds
+		if type(world_bounds) ~= "table" then
+			fail("fail_settlement", "settlement world bounds missing")
+		end
+		local WORLD_MIN_X, WORLD_MAX_X = world_bounds.min_x, world_bounds.max_x
+		local WORLD_MIN_Z, WORLD_MAX_Z = world_bounds.min_z, world_bounds.max_z
 		local r8_strata = new_r8_strata(full_seed, source)
 		local r24_layers = new_r24_fill_layers(full_seed)
 		local core_api = rawget(_G, "core")
@@ -1892,8 +1899,8 @@ local function settlement_factory()
 			local function inside(x, y, z, oy)
 				return x >= owner_x and x <= owner_x + 79 and y >= oy and
 					y <= oy + 79 and z >= owner_z and z <= owner_z + 79 and
-					x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 and
-					y >= -31000 and y <= 31000
+					x >= WORLD_MIN_X and x <= WORLD_MAX_X and z >= WORLD_MIN_Z and
+					z <= WORLD_MAX_Z and y >= -31000 and y <= 31000
 			end
 			local function reject(subsystem, id, reason)
 				local key = subsystem .. "\0" .. id .. "\0" .. reason
@@ -2690,8 +2697,8 @@ local function settlement_factory()
 			end
 			local function inside_owner(x, y, z)
 				return x >= min_x and x <= max_x and y >= min_y and y <= max_y and
-					z >= min_z and z <= max_z and x >= -3740 and x <= 3740 and
-					z >= -3340 and z <= 3340 and y >= -31000 and y <= 31000
+					z >= min_z and z <= max_z and x >= WORLD_MIN_X and x <= WORLD_MAX_X and
+					z >= WORLD_MIN_Z and z <= WORLD_MAX_Z and y >= -31000 and y <= 31000
 			end
 			local function candidate_fields(candidate)
 				local base = (candidate - 1) * CANDIDATE_STRIDE

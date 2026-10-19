@@ -113,8 +113,12 @@ data.params = {
 	poi_bowl_edge_period = 60,
 	-- Anchor target: mean natural height within this radius, sampled on a grid.
 	target_radius = 200, target_step = 40,
-	-- Grid extent of the precomputed character and coast-distance grids.
-	grid_min_x = -3808, grid_max_x = 3808, grid_min_z = -3424, grid_max_z = 3424,
+	-- Grid extent of the precomputed character and coast-distance grids: the
+	-- world bounds (`source/simple_map.lua` world_bounds) and a margin. Round
+	-- 51 T1 grew them from +-3808 x +-3424 by whole 32-node cells (15 in x,
+	-- 13 in z: at least the 450 and 400 nodes the bounds grew), so every
+	-- grid point of before keeps its position (tools/r51_terrain checks).
+	grid_min_x = -4288, grid_max_x = 4288, grid_min_z = -3840, grid_max_z = 3840,
 	coast_cell = 16,
 }
 

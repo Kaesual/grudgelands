@@ -114,6 +114,13 @@ local function planner_factory()
 			type(identity_holder) ~= "table" or identity_holder.value == nil then
 			fail("fail_source", "planner construction seam differs")
 		end
+		-- The world's query bounds (`source/simple_map.lua` world_bounds).
+		local world_bounds = source.world_bounds
+		if type(world_bounds) ~= "table" then
+			fail("fail_source", "planner world bounds missing")
+		end
+		local WORLD_MIN_X, WORLD_MAX_X = world_bounds.min_x, world_bounds.max_x
+		local WORLD_MIN_Z, WORLD_MAX_Z = world_bounds.min_z, world_bounds.max_z
 		exact_fields(allocator, {new_array = true, new_map = true, grow = true,
 			map_put = true, seal_construction = true, enter_hotpath = true,
 			leave_hotpath = true, metrics = true}, "planner counting allocator")
@@ -402,7 +409,8 @@ local function planner_factory()
 			end
 			for z = start_z, start_z + 15 do
 				for x = start_x, start_x + 15 do
-					if x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 then
+					if x >= WORLD_MIN_X and x <= WORLD_MAX_X and z >= WORLD_MIN_Z and
+							z <= WORLD_MAX_Z then
 						count = count + 1
 						local water_class, zone_numeric, zone_id, biome, _, terrain_y,
 							water_y, surface_kind, surface, support_name, p7_support,
