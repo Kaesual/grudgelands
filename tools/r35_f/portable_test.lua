@@ -15,8 +15,9 @@
 --      darkened and cracked in one balanced modifier, empty stays empty;
 --   H  the empty hand (grug_abilities/init.lua, skin_token and apply_skin
 --      copied out of the source): an empty slot shows wieldhand.png at the
---      hand's scale, written once; a weapon source shows the weapon at its
---      own scale; going back to empty restores the hand;
+--      hand's scale and the transparent element overlay (Round 52), written
+--      once; a weapon source shows the weapon at its own scale; going back to
+--      empty restores the hand;
 --   D  dig sounds (grug_materials/dig_sounds.lua): every grug_resource and
 --      grug_loose node without a dig sound gets the stone or crumbly one, a
 --      node's own dig sound and other groups stay, both files ship (the
@@ -257,18 +258,21 @@ end
 do
 	local source = read(ROOT .. "/mods/PLAYER/grug_abilities/init.lua")
 	local version = tonumber(source:match("\nlocal SKIN_VERSION = (%d+)"))
-	check(version and version >= 4, "H SKIN_VERSION bumped for the hand (got " .. tostring(version) .. ")")
+	check(version and version >= 5, "H SKIN_VERSION bumped for the hand and the overlay (got " .. tostring(version) .. ")")
 	local chunk = {}
 	for _, pattern in ipairs({"\n(local SKIN_TOKEN_KEY = [^\n]+)",
-			"\n(local function skin_token%(src%).-\nend)\n",
+			"\n(local function skin_token%(src, overlay%).-\nend)\n",
 			"\n(local EMPTY_HAND_IMAGE = [^\n]+)", "\n(local EMPTY_HAND_SCALE = [^\n]+)",
-			"\n(local function apply_skin%(stack, def, src%).-\nend)\n"}) do
+			"\n(local function apply_skin%(stack, def, src, weapon%).-\nend)\n"}) do
 		local body = source:match(pattern)
 		check(body ~= nil, "H found in grug_abilities/init.lua: " .. pattern)
 		chunk[#chunk + 1] = body or ""
 	end
 	local code = "local SKIN_VERSION = " .. tostring(version) .. "\n" ..
 		"local function skin_wield_image(src) if src == '' or src:find('BAD', 1, true) then return nil end return src end\n" ..
+		"local NO_OVERLAY = '[combine:16x16'\n" ..
+		"local grug_abilities = {skin_overlay = function(def, weapon) " ..
+		"return weapon and 'fx_' .. weapon .. '.png' or NO_OVERLAY end}\n" ..
 		table.concat(chunk, "\n") .. "\nreturn apply_skin"
 	local apply_skin = assert(loadstring(code))()
 	local stack = ItemStack("grug_abilities:strike")
@@ -277,14 +281,20 @@ do
 	eq(meta:get_string("wield_image"), "wieldhand.png", "H the empty slot shows the bare hand")
 	eq(meta:get_string("wield_scale"), "(1, 1, 2.5)", "H at the hand's scale")
 	eq(meta:get_string("inventory_image"), "", "H the inventory keeps the skill icon")
+	eq(meta:get_string("wield_overlay"), "[combine:16x16", "H the bare hand has the transparent overlay")
 	eq(apply_skin(stack, {}, ""), false, "H the same empty slot writes nothing again")
 	eq(apply_skin(stack, {}, "grug_gear_sword_steel.png"), true, "H a weapon rewrites the skin")
 	eq(meta:get_string("wield_image"), "grug_gear_sword_steel.png", "H the weapon in hand")
 	eq(meta:get_string("wield_scale"), "", "H the weapon at its own scale")
+	eq(apply_skin(stack, {}, "grug_gear_sword_steel.png", "sword"), true, "H a weapon family names an overlay")
+	eq(meta:get_string("wield_overlay"), "fx_sword.png", "H the overlay of the weapon's family")
 	eq(apply_skin(stack, {}, ""), true, "H emptying the slot rewrites the skin")
 	eq(meta:get_string("wield_image"), "wieldhand.png", "H back to the bare hand")
+	eq(meta:get_string("wield_overlay"), "[combine:16x16", "H ...without an overlay")
 	apply_skin(stack, {}, "BAD(")
 	eq(meta:get_string("wield_image"), "", "H an uncomposable source keeps the registered orb")
+	apply_skin(stack, {}, "BAD(", "sword")
+	eq(meta:get_string("wield_overlay"), "[combine:16x16", "H ...without an overlay")
 	check(exists(ROOT .. "/mods/BASE/default/textures/wieldhand.png"), "H wieldhand.png ships")
 end
 

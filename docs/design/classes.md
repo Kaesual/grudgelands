@@ -650,6 +650,13 @@ Revised 2026-09-23, Round 18:
   rule. Swapping equipment refreshes presentation without changing the action icon.
 - Preserve bow draw stages, the cooldown overlay, material-tier weapon appearance
   and honest empty-slot presentation. Icons grant no entitlement or combat power.
+- The selected skill shows an animated element overlay on the first-person
+  weapon (Round 52, class plan C7): one family per talent tree
+  (`grug_abilities.WEAPON_FX`, Strike none), one strip per weapon type the
+  class wields and per bow draw stage, one animation per family on the item
+  definition, the strip's name in the stack meta. An empty slot, Strike and a
+  strip not yet picked show none (a transparent override); a strip ships only
+  once the user picked it. Third person and other players never show it.
 - Existing accepted weapon and armor media are unchanged. The round delivers a
   reviewed active-skill contact sheet and provenance for imported/generated icons.
 

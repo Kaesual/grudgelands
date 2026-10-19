@@ -784,6 +784,65 @@ local function play_skill_pose(player, def)
 	if pose then grug_visuals.play_pose(player, pose) end
 end
 
+-- The element overlay on the first-person weapon (round52-class-plan.md C7):
+-- each skill's family, one per talent tree. Shipped and starter skills take
+-- their thematic tree's family, Strike none; a transformation (`transforms`)
+-- takes its own entry. tools/r52_wfx/portable_test.lua checks every
+-- registered ability is here.
+grug_abilities.WEAPON_FX = {
+	strike = "none",
+	-- Warrior: rage, steel.
+	charge = "ruin", mighty_blow = "ruin", hamstring = "ruin",
+	taunt = "bulwark", hold_ground = "bulwark",
+	-- Scout: wild, shadow.
+	loose = "quarry", snare_shot = "quarry", pinning_shot = "quarry",
+	sidestep = "quarry", sprint = "quarry",
+	opening = "veil",
+	-- Mage: fire, frost.
+	fireball = "ember", cinderfall = "ember",
+	ice_nova = "rime", blink = "rime", glacial_ward = "rime",
+	-- Priest: healing light, judgment.
+	heal = "mercy", shield_spell = "mercy", mend = "mercy",
+	smite = "reckoning", word_of_ruin = "reckoning",
+}
+
+-- Each family's animation, shared by all of its weapon strips, because the
+-- stack meta overrides only the overlay's name and the item definition keeps
+-- the animation (src/inventory.cpp ItemStack::getWieldOverlay). A strip is
+-- `frames` vertical 16 x 16 frames of `frame_length` seconds each, e.g.
+-- `ember = {frames = 8, frame_length = 0.12}`. Filled as the user picks the
+-- strips (D7); a family without an entry shows no overlay.
+grug_abilities.WEAPON_FX_ANIMATION = {}
+
+-- The overlay a skill shows where it has none: a transparent image the client
+-- builds itself, one 16 x 16 frame under any family's animation. An empty
+-- meta string would not override the definition's overlay.
+local NO_OVERLAY = "[combine:16x16"
+grug_abilities.NO_OVERLAY = NO_OVERLAY
+
+-- The strips that ship: grug_abilities_fx_<family>_<weapon>.png, the bow's
+-- draw stages grug_abilities_fx_<family>_bow_draw<stage>.png. A strip is
+-- shown only when its file ships, so nothing unpicked can (D7).
+local fx_strips = {}
+for _, file in ipairs(core.get_dir_list(core.get_modpath(core.get_current_modname()) ..
+		"/textures", false) or {}) do
+	if file:find("^grug_abilities_fx_.+%.png$") then fx_strips[file] = true end
+end
+
+-- The overlay name for `def` over a weapon of grug_gear's family `weapon`
+-- (nil: no weapon shows), at the Scout's draw `stage` (0-2; nil: the idle
+-- bow or any other weapon). The skin pass writes it into the stack meta, the
+-- bow draw (scout.lua) while each stage shows.
+function grug_abilities.skin_overlay(def, weapon, stage)
+	local family = grug_abilities.WEAPON_FX[def.id]
+	if weapon and family and grug_abilities.WEAPON_FX_ANIMATION[family] then
+		local strip = "grug_abilities_fx_" .. family .. "_" .. weapon ..
+			(stage and ("_draw" .. stage) or "") .. ".png"
+		if fx_strips[strip] then return strip end
+	end
+	return NO_OVERLAY
+end
+
 function grug_abilities.register_ability(def)
 	def.repeat_policy = def.repeat_policy or "repeat"
 	assert(def.repeat_policy == "repeat" or def.repeat_policy == "once")
@@ -933,6 +992,14 @@ function grug_abilities.register_ability(def)
 		damage_groups = {fleshy = 0},
 	}
 	tool_def.after_use = function(stack) return stack end
+	-- The element overlay's animation (C7). Its name here is the transparent
+	-- one: the skin pass names the strip for the held weapon per stack.
+	local fx = grug_abilities.WEAPON_FX_ANIMATION[grug_abilities.WEAPON_FX[def.id]]
+	if fx then
+		tool_def.wield_overlay = {name = NO_OVERLAY, animation = {
+			type = "vertical_frames", aspect_w = 16, aspect_h = 16,
+			length = fx.frames * fx.frame_length}}
+	end
 	-- A swing into the air (the client plays it; hits sound on the server).
 	if def.kind == "swing" then
 		tool_def.sound = {punch_use_air = grug_sounds.item_sound("swing")}
@@ -1644,13 +1711,17 @@ end
 -- every inventory write re-sends the whole list to the client (D2/2). Without
 -- it, dragging any item would rewrite four stacks.
 --
--- Shape: "<version>|<wield source>"; an empty slot is "<version>|", so a
--- freshly granted stack of a weaponless character is written once (it shows
--- the bare hand, below) and never again.
+-- Shape: "<version>|<wield source>|<overlay>"; an empty slot is
+-- "<version>||<transparent overlay>", so a freshly granted stack of a
+-- weaponless character is written once (it shows the bare hand, below) and
+-- never again.
 --
 -- The resolved source rather than just the item name is included because a
--- per-stack wield override must update an already-granted ability stack.
-local SKIN_VERSION = 4
+-- per-stack wield override must update an already-granted ability stack. The
+-- overlay name (grug_abilities.skin_overlay) follows the held weapon's family
+-- and the strips that ship, so a newly picked strip reaches every stack.
+-- Version 5 (Round 52): the element overlay.
+local SKIN_VERSION = 5
 local SKIN_TOKEN_KEY = "grug_skin"
 
 -- The equipment list behind each ability slot. This is grug_inventory's
@@ -1697,7 +1768,8 @@ local function def_image(img)
 	return img or ""
 end
 
--- The wield source image of what is in one hand slot. Empty when
+-- The wield source image of what is in one hand slot, and the slot item's
+-- weapon family (grug_gear.weapon_family; nil for anything else). Empty when
 -- there is nothing to wear (an empty slot, or an item with no inventory image
 -- -- a node item). Mirrors the engine's own resolution order: stack meta wins
 -- over the definition (src/inventory.cpp:258-295).
@@ -1731,7 +1803,7 @@ local function slot_source(player, slot)
 	if wield_src == "" then
 		wield_src = inventory_src
 	end
-	return wield_src
+	return wield_src, grug_gear.weapon_family(stack)
 end
 
 -- Would this source survive the client's image-source splitter? Three inputs
@@ -1795,8 +1867,8 @@ local function skin_wield_image(src)
 	return src
 end
 
-local function skin_token(src)
-	return SKIN_VERSION .. "|" .. src
+local function skin_token(src, overlay)
+	return SKIN_VERSION .. "|" .. src .. "|" .. overlay
 end
 
 -- With nothing in the skill's slot the first-person view shows the bare hand,
@@ -1809,13 +1881,15 @@ local EMPTY_HAND_IMAGE = "wieldhand.png"
 local EMPTY_HAND_SCALE = "(1, 1, 2.5)"
 
 -- Skin one ability stack IN PLACE; returns true only when something actually
--- changed, i.e. only when the caller has to spend an inventory write.
+-- changed, i.e. only when the caller has to spend an inventory write. `weapon`
+-- is the slot item's weapon family (slot_source).
 --
--- Touches nothing but the three meta keys: the wear and the Loose draw-time
+-- Touches nothing but the four meta keys: the wear and the Loose draw-time
 -- `range` stay whatever they were.
-local function apply_skin(stack, def, src)
+local function apply_skin(stack, def, src, weapon)
 	local meta = stack:get_meta()
-	local token = skin_token(src)
+	local overlay = grug_abilities.skin_overlay(def, weapon)
+	local token = skin_token(src, overlay)
 	if meta:get_string(SKIN_TOKEN_KEY) == token then
 		return false
 	end
@@ -1828,6 +1902,9 @@ local function apply_skin(stack, def, src)
 	meta:set_string("inventory_image", "")
 	meta:set_string("wield_image", empty and EMPTY_HAND_IMAGE or wield_img or "")
 	meta:set_string("wield_scale", empty and EMPTY_HAND_SCALE or "")
+	-- The element overlay (C7) only over a weapon that shows: the bare hand and
+	-- the orb get the transparent override, as does a skill without a strip.
+	meta:set_string("wield_overlay", wield_img and overlay or NO_OVERLAY)
 	meta:set_string(SKIN_TOKEN_KEY, token)
 	return true
 end
@@ -1858,17 +1935,15 @@ local function apply_swing_caps(stack, def, player)
 end
 
 -- Resolve each hand at most once per pass, and only when a stack actually asks
--- for it. The entry is the {inv, wield} source pair, so one hand is read once
--- even though two images come out of it.
+-- for it: the wield source and the weapon family, both from one read.
 local function skin_source_cache(player)
-	local cache = {}
+	local sources, weapons = {}, {}
 	return function(def)
-		local src = cache[def.slot]
-		if not src then
-			src = slot_source(player, def.slot)
-			cache[def.slot] = src
+		local slot = def.slot
+		if not sources[slot] then
+			sources[slot], weapons[slot] = slot_source(player, slot)
 		end
-		return src
+		return sources[slot], weapons[slot]
 	end
 end
 
