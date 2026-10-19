@@ -1,0 +1,124 @@
+{
+ "key": "wreck.bow",
+ "layers": [
+  [
+   "............",
+   ".PYPP.......",
+   "...P.YP.....",
+   ".PYP.YP.....",
+   "P.YP.Y......",
+   "...PP.......",
+   "............",
+   "............"
+  ],
+  [
+   "..LLLLL.....",
+   ".....LLLL...",
+   ".......PYP..",
+   ".......PY...",
+   "......PPY...",
+   ".....YPP....",
+   "..PPPPP.....",
+   "P.P........."
+  ],
+  [
+   "PAYPPYP.....",
+   ".......LLL..",
+   "..........Y.",
+   ".........AYY",
+   ".........AP.",
+   "AA.AG.P.YP..",
+   ".......AP...",
+   ".......A...."
+  ],
+  [
+   "...APY......",
+   "......PAY...",
+   ".........PAA",
+   "..........AY",
+   "PP.........Y",
+   ".....PAkP.AP",
+   ".........AP.",
+   ".........A.."
+  ],
+  [
+   "............",
+   "PPYPPYA.....",
+   ".......PY...",
+   ".........P..",
+   "..APAAAP..RP",
+   "........A..Y",
+   "..........PY",
+   "...........P"
+  ],
+  [
+   "............",
+   ".AYAP.......",
+   ".....YP.....",
+   "..AP.PPPY...",
+   ".......PPP..",
+   ".........PA.",
+   "..........PY",
+   "...........A"
+  ],
+  [
+   "............",
+   "............",
+   "..AAP.......",
+   "...PAPP.....",
+   "......P.P...",
+   "........AA..",
+   "............",
+   "............"
+  ],
+  [
+   "............",
+   "............",
+   "............",
+   "..PP........",
+   "............",
+   "............",
+   "............",
+   "............"
+  ]
+ ],
+ "note": "The front half, broken off behind the main mast and fallen on its side; the break shows ribs and keel. A stump of the foremast, a rope end at the bow.",
+ "palette": {
+  "A": {
+   "name": "grug_nodes:wreck_planks_algae",
+   "param2": 0
+  },
+  "G": {
+   "name": "grug_nodes:wreck_algae",
+   "param2": 0
+  },
+  "L": {
+   "name": "grug_nodes:wreck_log",
+   "param2": 12
+  },
+  "P": {
+   "name": "grug_nodes:wreck_planks",
+   "param2": 0
+  },
+  "R": {
+   "name": "grug_nodes:wreck_rope",
+   "param2": 0
+  },
+  "Y": {
+   "name": "grug_nodes:wreck_log",
+   "param2": 0
+  },
+  "k": {
+   "name": "grug_nodes:wreck_mast",
+   "param2": 32
+  }
+ },
+ "schema": "grug_r51_wreck_shape_v1",
+ "seabed": 2,
+ "size": {
+  "x": 12,
+  "y": 8,
+  "z": 8
+ },
+ "title": "Bow part"
+}

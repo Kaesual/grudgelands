@@ -1,0 +1,104 @@
+{
+ "key": "wreck.debris",
+ "layers": [
+  [
+   "...............",
+   "...Z..Z........",
+   "..LLLLLLL......",
+   "...Z..Z........",
+   "...............",
+   "...............",
+   "...............",
+   "...............",
+   ".....LLL.......",
+   "...............",
+   "..............."
+  ],
+  [
+   "...Y..Y...PA...",
+   "CC.........AG..",
+   "CC.............",
+   ".C...........R.",
+   "...Y..Y..PPPA..",
+   ".........ASPP..",
+   "...............",
+   ".P............P",
+   "..P.L...LLLLLL.",
+   "..G............",
+   ".........S....."
+  ],
+  [
+   "...Y..Y........",
+   "...............",
+   ".C.............",
+   "...............",
+   "...Y..Y...A....",
+   "...............",
+   "...............",
+   "...............",
+   "...............",
+   "...............",
+   "..............."
+  ],
+  [
+   "...............",
+   "...Y...........",
+   "...............",
+   "...Y..Y........",
+   "...............",
+   "...............",
+   "...............",
+   "...............",
+   "...............",
+   "...............",
+   "..............."
+  ]
+ ],
+ "note": "Loose wreckage on the sand: a keel piece with its rib cage, the fallen main mast in full logs, a flat hull panel, loose planks and a heap of ballast stones.",
+ "palette": {
+  "A": {
+   "name": "grug_nodes:wreck_planks_algae",
+   "param2": 0
+  },
+  "C": {
+   "name": "default:mossycobble",
+   "param2": 0
+  },
+  "G": {
+   "name": "grug_nodes:wreck_algae",
+   "param2": 0
+  },
+  "L": {
+   "name": "grug_nodes:wreck_log",
+   "param2": 12
+  },
+  "P": {
+   "name": "grug_nodes:wreck_planks",
+   "param2": 0
+  },
+  "R": {
+   "name": "grug_nodes:wreck_rope",
+   "param2": 0
+  },
+  "S": {
+   "name": "grug_nodes:wreck_sail",
+   "param2": 0
+  },
+  "Y": {
+   "name": "grug_nodes:wreck_log",
+   "param2": 0
+  },
+  "Z": {
+   "name": "grug_nodes:wreck_log",
+   "param2": 4
+  }
+ },
+ "schema": "grug_r51_wreck_shape_v1",
+ "seabed": 1,
+ "size": {
+  "x": 15,
+  "y": 4,
+  "z": 11
+ },
+ "title": "Debris field"
+}

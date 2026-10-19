@@ -1466,3 +1466,4 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   `core.emerge_area` generated its area (a node set into a chunk not yet
   generated makes the refinement refuse the chunk).
 - **Round 51 lane ARTS** ([`r51_sea`](r51_sea/README.md)): original CC0 seagrass and wreck textures, deterministic Pillow generator (`python3 -I tools/r51_sea/sea_art.py`, `--check`), and the attributed sea-art comparison sheet.
+- **Round 51 lane WRECK** ([`r51_wreck`](r51_wreck/DESIGN.md)): the shipwreck design: four shapes as data (`shapes.py` writes `shapes/*.json` and the node list, `--check`), the preview page (`build.py` writes `wreck.html`, `--check`) and the placement sketch for the build step.

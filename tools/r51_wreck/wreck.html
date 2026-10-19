@@ -1,0 +1,1074 @@
+<title>Shipwreck Shapes</title>
+<style>
+:root {
+	--bg: #eef1f0; --panel: #fbfcfb; --ink: #1f2624; --muted: #5f6b68; --line: #d3dad8;
+	--accent: #2f6d78; --accent-ink: #ffffff; --chip: #e3e9e7; --warn: #8a5a12; --bad: #a33a2a;
+	--pick: #2f7a45; --rework: #9a6a12; --drop: #a33a2a;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--bg: #141a1b; --panel: #1b2223; --ink: #e4ebe9; --muted: #9eaaa7; --line: #2f3a3b;
+		--accent: #6fb7c2; --accent-ink: #0d1415; --chip: #253031; --warn: #e0b25c; --bad: #ef8a78;
+		--pick: #74c08b; --rework: #e0b25c; --drop: #ef8a78;
+	}
+}
+:root[data-theme="dark"] {
+	--bg: #141a1b; --panel: #1b2223; --ink: #e4ebe9; --muted: #9eaaa7; --line: #2f3a3b;
+	--accent: #6fb7c2; --accent-ink: #0d1415; --chip: #253031; --warn: #e0b25c; --bad: #ef8a78;
+	--pick: #74c08b; --rework: #e0b25c; --drop: #ef8a78;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+	font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wk-header { padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
+	display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.wk-header h1 { font-size: 16px; margin: 0 8px 0 0; }
+.wk-group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.wk-group > span { color: var(--muted); font-size: 12px; margin-right: 2px; }
+button { font: inherit; border: 1px solid var(--line); background: var(--chip); color: var(--ink);
+	border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+button.on, button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+	outline: 2px solid var(--accent); outline-offset: 1px; }
+select, input[type=number] { font: inherit; padding: 3px 4px; border: 1px solid var(--line); border-radius: 6px;
+	background: var(--bg); color: var(--ink); }
+input[type=range] { width: 120px; accent-color: var(--accent); }
+label { display: inline-flex; gap: 4px; align-items: center; color: var(--muted); cursor: pointer; font-size: 13px; }
+.wk-main { display: flex; min-height: calc(100vh - 60px); }
+.wk-view { position: relative; flex: 1; min-width: 0; min-height: 420px; overflow: hidden; background: #9ec3d6; }
+.wk-view canvas { display: block; width: 100%; height: 100%; }
+.wk-under { position: absolute; inset: 0; pointer-events: none; background: rgba(30, 60, 90, 0.40); display: none; }
+.wk-tag { position: absolute; left: 8px; bottom: 8px; background: rgba(0,0,0,.55); color: #fff; font-size: 12px;
+	padding: 3px 8px; border-radius: 4px; pointer-events: none; max-width: calc(100% - 16px); }
+.wk-aside { width: 420px; max-width: 45vw; border-left: 1px solid var(--line); background: var(--panel);
+	overflow: auto; padding: 8px 16px 24px; max-height: calc(100vh - 60px); }
+.wk-aside h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 18px 0 6px; }
+.wk-aside p, .wk-aside li { font-size: 13px; }
+.wk-aside ul { padding-left: 18px; margin: 6px 0; }
+.wk-note { color: var(--muted); font-size: 12px; }
+.wk-warn { color: var(--warn); font-size: 12px; }
+.wk-key { font: 11px ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; color: var(--muted);
+	background: var(--chip); border-radius: 4px; padding: 0 4px; white-space: nowrap; }
+.wk-tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 12px; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 3px 5px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+thead th { color: var(--muted); font-weight: 600; }
+.wk-item { border: 1px solid var(--line); border-radius: 8px; padding: 8px; margin: 8px 0; background: var(--bg); }
+.wk-item-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.wk-item-head b { font-size: 13px; }
+.wk-thumbs { display: flex; gap: 3px; }
+.wk-thumbs img { width: 32px; height: 32px; image-rendering: pixelated; border: 1px solid var(--line); background: #2c4b5a; }
+.wk-meta { font-size: 12px; color: var(--muted); margin: 4px 0; }
+.wk-verdicts { display: flex; gap: 4px; margin: 6px 0 4px; flex-wrap: wrap; }
+.wk-verdicts button { padding: 2px 10px; font-size: 12px; }
+.wk-verdicts button[data-v="pick"][aria-pressed="true"] { background: var(--pick); border-color: var(--pick); }
+.wk-verdicts button[data-v="rework"][aria-pressed="true"] { background: var(--rework); border-color: var(--rework); }
+.wk-verdicts button[data-v="drop"][aria-pressed="true"] { background: var(--drop); border-color: var(--drop); }
+.wk-item textarea { width: 100%; min-height: 44px; font: inherit; font-size: 13px; padding: 4px 6px; resize: vertical;
+	border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); }
+.wk-status { font-size: 11px; color: var(--muted); min-height: 1.2em; }
+.wk-status.err { color: var(--bad); }
+#notes-banner { font-size: 12px; color: var(--warn); }
+code { font-size: 12px; }
+@media (max-width: 820px) {
+	.wk-main { flex-direction: column; }
+	.wk-view { flex: none; height: 60vh; min-height: 300px; }
+	.wk-aside { width: auto; max-width: none; max-height: none; border-left: 0; border-top: 1px solid var(--line); }
+}
+</style>
+<!-- Generated by tools/r51_wreck/build.py from page.html, view.js, notes.js,
+     the shape files in tools/r51_wreck/shapes and the textures (ARTS's
+     tools/r51_sea, the repo's default textures). Do not edit. -->
+<div class="wk-header">
+	<h1>Shipwreck shapes</h1>
+	<div class="wk-group" role="group" aria-label="Shape" id="shape-buttons"><span>Shape</span></div>
+	<div class="wk-group" role="group" aria-label="Water depth">
+		<span>Water depth</span>
+		<button id="depth-8" data-depth="8">8</button>
+		<button id="depth-14" data-depth="14">14</button>
+		<button id="depth-20" data-depth="20">20</button>
+		<input type="range" id="depth" min="3" max="26" step="1" aria-label="Water depth in nodes">
+		<span id="depth-value"></span>
+	</div>
+	<div class="wk-group" role="group" aria-label="View">
+		<span>View</span>
+		<button id="view-orbit" data-view="orbit">Orbit</button>
+		<button id="view-top" data-view="top">Top</button>
+		<button id="view-swim" data-view="swim">Swimmer</button>
+	</div>
+	<div class="wk-group">
+		<label><input type="checkbox" id="light"> Luanti light</label>
+		<label><input type="checkbox" id="water"> water</label>
+		<label><input type="checkbox" id="seagrass"> seagrass</label>
+		<label><input type="checkbox" id="figure"> player</label>
+		<label>mast <select id="mast-rule"><option value="fixed">as in the file</option><option value="depth">2 nodes above the water</option></select></label>
+		<label>visual_scale <select id="mast-scale"><option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option></select></label>
+	</div>
+</div>
+<div class="wk-main">
+	<div class="wk-view" id="view"><div class="wk-under" id="under"></div><div class="wk-tag" id="tag"></div></div>
+	<div class="wk-aside">
+		<p id="notes-banner" role="status"></p>
+		<h2>This shape</h2>
+		<div id="shape-note"></div>
+		<div id="reach"></div>
+		<h2>Masts and the water depth</h2>
+		<div id="band"></div>
+		<h2>Nodes, with what each drops</h2>
+		<p class="wk-note">Every texture is ARTS's proposal from <code>tools/r51_sea</code> unless marked “exists”. Sand, water, seagrass and the mossy cobble are context. Judge each detail below; the key next to it names it in chat too.</p>
+		<div id="legend"></div>
+		<h2>Mast height</h2>
+		<div id="mast-question"></div>
+		<h2>What you see</h2>
+		<ul>
+			<li>Full blocks only: waterlogged planks (two looks), waterlogged logs for keel, stem and ribs, mossy cobble ballast. Water never draws a wall against them.</li>
+			<li>Masts, rope ends, sail tatters and algae tufts are rooted plants: a full plank with two crossed quads above it, drawn in the water without an air pocket. A mast stands only upright, so a mast of a listing hull stands straight and a fallen one is made of logs.</li>
+			<li>The lowest layers lie in the sand; inside the hull is the water (or sand) the world already had there.</li>
+			<li><b>Luanti light</b> lights every face as the client does by day without smooth lighting: the light of the node it faces, one level less per node of water (the top water node 14), through Luanti's default light curve. A rooted extension takes the light of the node just above its base, over its whole height, also where it stands in the air. Off: everything evenly lit, to judge the shapes. Below the surface the view gets the water's tint.</li>
+			<li>Quarter turns come for free at placement; the shapes are not turned diagonally.</li>
+		</ul>
+		<p class="wk-note">Orbit: drag to turn, right-drag to pan, wheel to zoom. Swimmer: starts beside the wreck at deck height. Top: drag to pan, wheel to zoom.</p>
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+var WRECK = {"nodes":[{"description":"Waterlogged Planks","drawtype":"normal","drop":"default:wood","key":"wreck.planks","name":"grug_nodes:wreck_planks","new":true,"paramtype2":"none","tiles":["wreck_planks","wreck_planks","wreck_planks"],"use":"hull shell, deck, rail, loose planks"},{"description":"Waterlogged Planks with Algae","drawtype":"normal","drop":"default:wood","key":"wreck.planks_algae","name":"grug_nodes:wreck_planks_algae","new":true,"paramtype2":"none","tiles":["wreck_planks_algae","wreck_planks_algae","wreck_planks_algae"],"use":"planks whose top lies open in the water (about a third)"},{"description":"Waterlogged Log","drawtype":"normal","drop":"default:tree","key":"wreck.log","name":"grug_nodes:wreck_log","new":true,"paramtype2":"facedir","tiles":["wreck_log_top","wreck_log_top","wreck_log"],"use":"keel, stem, ribs, the fallen mast (ARTS recommends its own log over default:tree)"},{"description":"Waterlogged Planks (mast step)","drawtype":"plantlike_rooted","drop":"default:wood","key":"wreck.mast","name":"grug_nodes:wreck_mast","new":true,"paramtype2":"leveled","special":"wreck_mast","tiles":["wreck_planks","wreck_planks","wreck_planks"],"use":"the deck plank a mast stands on; height = param2 / 16 nodes (main mast 255 = 15.9, stumps 2-4.5)","waving":0},{"description":"Waterlogged Planks (rope end)","drawtype":"plantlike_rooted","drop":"default:wood","key":"wreck.rope","name":"grug_nodes:wreck_rope","new":true,"paramtype2":"none","special":"wreck_rope","tiles":["wreck_planks","wreck_planks","wreck_planks"],"use":"a rope coil on a deck plank, one node","waving":1},{"description":"Waterlogged Planks (sail tatters)","drawtype":"plantlike_rooted","drop":"default:wood","key":"wreck.sail","name":"grug_nodes:wreck_sail","new":true,"paramtype2":"none","special":"wreck_sail","tiles":["wreck_planks","wreck_planks","wreck_planks"],"use":"torn sail strips on a rail or loose plank, one node","waving":1},{"description":"Waterlogged Planks with Algae (tuft)","drawtype":"plantlike_rooted","drop":"default:wood","key":"wreck.algae","name":"grug_nodes:wreck_algae","new":true,"paramtype2":"none","special":"wreck_algae","tiles":["wreck_planks_algae","wreck_planks_algae","wreck_planks_algae"],"use":"an algae tuft on an algae plank, one node","waving":1},{"description":"Mossy Cobblestone","drawtype":"normal","drop":"default:mossycobble","key":"wreck.ballast","name":"default:mossycobble","new":false,"paramtype2":"none","tiles":["default_mossycobble","default_mossycobble","default_mossycobble"],"use":"the ballast heap of the debris field (exists)"}],"shapes":[{"key":"wreck.hull","layers":[["....................","....................",".LLLLLLLLLLLLLL.....","LLLLLLLLLLLLLLLL....","....YPPYPPYPPY......","....................","....................","....................","...................."],["....................","....YPPYPPYPPY......","LLLL..........LLL...","L...............LL..","PPPP..........PPY...","...PYPPY..Y..YP.....","....................","....................","...................."],["....................","..PPYPPYPPYPPY......","PP..............YP..","P.................Y.","P...............YP..",".PAPY........YPP....",".....P.Y.PY.........","....................","...................."],[".........PY.........","..PPYPPYP..APY......","PP..............YP..","P.................YY","P................RPY","PP.............PY...","..PPYP.......YP.....",".......Y.PP.........","...................."],[".......YPPYP........","..PPYPP.....PY......","PP..............YP..","P........PP.......PY","P.....P.AMP.PA....PY","P....APPPPPPAAP.YP..",".PPP.PAA..PPPAPP....","....YP..PPPP.P......","...................."],[".....PAPPPAP........","..PPYP.PPPP.PPP.....","PP...PPPPPA.GAPPYA..","P....PP.P..P.PP.P.PP","P....A........PkA..Y","P...Z..........A.PP.","PPP.Y.........APP...","...PYP..P.PAP.......","...................."],[".........A..........","..PPY.APP...APA.....","PP..Y..........PP...","P...Z............PP.","P...Z.............PY","P...Z............AP.","P..PP...........PP..",".PPPP...............","...................."],["....................","..PPY...............","PP.A................","P..PP...............","PPS................Y","PPPPP..............A","AP..................","PAPP................","....P..............."],["....................","...AP...............","PAP.................","AA..................","...................P","....................","....................","....................","...................."],["....................","....P...............","A...................","....................","....................","....................","....................","....................","...................."]],"note":"The whole ship, listing a little, two layers in the sand. Planks gone between the ribs amidships on the high side, holes in the deck, the main mast standing.","palette":{"A":{"name":"grug_nodes:wreck_planks_algae","param2":0},"G":{"name":"grug_nodes:wreck_algae","param2":0},"L":{"name":"grug_nodes:wreck_log","param2":12},"M":{"name":"grug_nodes:wreck_mast","param2":255},"P":{"name":"grug_nodes:wreck_planks","param2":0},"R":{"name":"grug_nodes:wreck_rope","param2":0},"S":{"name":"grug_nodes:wreck_sail","param2":0},"Y":{"name":"grug_nodes:wreck_log","param2":0},"Z":{"name":"grug_nodes:wreck_log","param2":4},"k":{"name":"grug_nodes:wreck_mast","param2":32}},"schema":"grug_r51_wreck_shape_v1","seabed":2,"size":{"x":20,"y":10,"z":9},"title":"Whole hull"},{"key":"wreck.bow","layers":[["............",".PYPP.......","...P.YP.....",".PYP.YP.....","P.YP.Y......","...PP.......","............","............"],["..LLLLL.....",".....LLLL...",".......PYP..",".......PY...","......PPY...",".....YPP....","..PPPPP.....","P.P........."],["PAYPPYP.....",".......LLL..","..........Y.",".........AYY",".........AP.","AA.AG.P.YP..",".......AP...",".......A...."],["...APY......","......PAY...",".........PAA","..........AY","PP.........Y",".....PAkP.AP",".........AP.",".........A.."],["............","PPYPPYA.....",".......PY...",".........P..","..APAAAP..RP","........A..Y","..........PY","...........P"],["............",".AYAP.......",".....YP.....","..AP.PPPY...",".......PPP..",".........PA.","..........PY","...........A"],["............","............","..AAP.......","...PAPP.....","......P.P...","........AA..","............","............"],["............","............","............","..PP........","............","............","............","............"]],"note":"The front half, broken off behind the main mast and fallen on its side; the break shows ribs and keel. A stump of the foremast, a rope end at the bow.","palette":{"A":{"name":"grug_nodes:wreck_planks_algae","param2":0},"G":{"name":"grug_nodes:wreck_algae","param2":0},"L":{"name":"grug_nodes:wreck_log","param2":12},"P":{"name":"grug_nodes:wreck_planks","param2":0},"R":{"name":"grug_nodes:wreck_rope","param2":0},"Y":{"name":"grug_nodes:wreck_log","param2":0},"k":{"name":"grug_nodes:wreck_mast","param2":32}},"schema":"grug_r51_wreck_shape_v1","seabed":2,"size":{"x":12,"y":8,"z":8},"title":"Bow part"},{"key":"wreck.stern","layers":[["...........","...........","...........","...........","....YPPYPP.","LLLLLLLLLL.",".LLLLLLLL..","...........","..........."],["...........","...........","...........","...PYP.YP..","PPPP.......","L..........","LLLL.......","....YPPYPP.","..........."],["...........","...........",".....P.Y...","PPPPY......","P..........","P..........","PP.........","..PPYPPYPP.","..........."],["...........","......P....","..PPY......","PP.........","P..........","P..........","PP.........","..PPYPPYPA.","..........."],["...........","....Y...P..","PPPP.APPA..","P....PPPP..","P.....PnP..","P..........","PP.........","..PPYPPYA..",".........P."],["...........","..PPYP.....","PA..Y......","P...Z......","P..........","P....P.AP..","PP...AG.P..","..PPYPPA.AA",".........A."],["....P......",".PPAA......","P..PP......","P...P......","P...Z......","P...Z......","PPP.Y......","...PYPP.A..","..........."],["...........","PPA........","..P........","PAPSA......","APSPP......","P..AA......","PPP.P......","...PY......","..........."],["...........","PA.........","...........","...........","...........","P..........","PPPA.......","...PA......","..........."],["...........","...........","...........","...........","...........","P..........",".A.........","...........","..........."]],"note":"The back half with the raised stern deck, listing the other way, sunk three layers. The broken main mast stands as a stump; sail tatters on the stern rail.","palette":{"A":{"name":"grug_nodes:wreck_planks_algae","param2":0},"G":{"name":"grug_nodes:wreck_algae","param2":0},"L":{"name":"grug_nodes:wreck_log","param2":12},"P":{"name":"grug_nodes:wreck_planks","param2":0},"S":{"name":"grug_nodes:wreck_sail","param2":0},"Y":{"name":"grug_nodes:wreck_log","param2":0},"Z":{"name":"grug_nodes:wreck_log","param2":4},"n":{"name":"grug_nodes:wreck_mast","param2":72}},"schema":"grug_r51_wreck_shape_v1","seabed":3,"size":{"x":11,"y":10,"z":9},"title":"Stern part"},{"key":"wreck.debris","layers":[["...............","...Z..Z........","..LLLLLLL......","...Z..Z........","...............","...............","...............","...............",".....LLL.......","...............","..............."],["...Y..Y...PA...","CC.........AG..","CC.............",".C...........R.","...Y..Y..PPPA..",".........ASPP..","...............",".P............P","..P.L...LLLLLL.","..G............",".........S....."],["...Y..Y........","...............",".C.............","...............","...Y..Y...A....","...............","...............","...............","...............","...............","..............."],["...............","...Y...........","...............","...Y..Y........","...............","...............","...............","...............","...............","...............","..............."]],"note":"Loose wreckage on the sand: a keel piece with its rib cage, the fallen main mast in full logs, a flat hull panel, loose planks and a heap of ballast stones.","palette":{"A":{"name":"grug_nodes:wreck_planks_algae","param2":0},"C":{"name":"default:mossycobble","param2":0},"G":{"name":"grug_nodes:wreck_algae","param2":0},"L":{"name":"grug_nodes:wreck_log","param2":12},"P":{"name":"grug_nodes:wreck_planks","param2":0},"R":{"name":"grug_nodes:wreck_rope","param2":0},"S":{"name":"grug_nodes:wreck_sail","param2":0},"Y":{"name":"grug_nodes:wreck_log","param2":0},"Z":{"name":"grug_nodes:wreck_log","param2":4}},"schema":"grug_r51_wreck_shape_v1","seabed":1,"size":{"x":15,"y":4,"z":11},"title":"Debris field"}],"textures":{"character":"data:image/png;base64,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","default_mossycobble":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEVIREJlYl9LSEVWaiJcWVZTUE5RTkxZbSVSZh5pZmRfXFpGQ0FPYxtybmxjX11ZVVNLXxeBfXtSUE5ccChFWhKHg4BhdS5DPz3H47ZuAAAAq0lEQVQYGQXBhwGDMBAEsPvuXoHsv2kkpGipJe2aIX1wxiSMVOmUzvMSJpjBBJEo4Mv4kPdbLa1l3ijyfqGkNwBUEGn0gtIkURbZXqzQUTzpsBghqvtwNdg0VsEQMH74AfKr9RwiI2TKu2L1+7YZZgYdzRzPUxKjAZU/0gKopwD1nG9UnwYAdz3uJQ2pjZmBLC9WrKeI5L4/tDS+/WD6gZB2xrIWLgxAPWnwHyLFB+RzXJshAAAAAElFTkSuQmCC","default_sand":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEXY0aHd1qXa06PWz5/TzZzg2ajNx5bHwZDAuonPyZi9t4XJw5J1PvJNAAAAlElEQVQI1wXBMQuCQBgG4LfzQNzuE25X02a1Kxo14aS2Q675oKhokoYGxxpqrh/RXL/Q5wE7QN3KKkDaNDHf7Ct8wmz3JiawllltU+vAKJReoZaIMtHyeVSjkv4fJARgTjHZjgPTO0k765FsC2O6ZwnvGiI5FwJfao/6Rz5y7SYUBwPAIklqeIApvUhffQ6sHL84Vo4pFRpLCRofAQAAAABJRU5ErkJggg==","default_water":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB90lEQVQ4ES2TAXKEIAxFg6KrszfoRXvJ3qC36ExdFcG+x3anNEA+P8lPTB+f318xpohxiJgDmyP2K+K+WdhxiXgd2BLxZN/AVfD6SoohUovIY8SJvbBxAsaWioXkAiix/wbOk+Rg04Q/RY6VTdHhBZEqETKPF86NSEZ7sk4Xvgkf27ggiUIGjYiZ9BrMO1F2QIUMVlAZ0ITPslYsJib8MmQzXSG4ORw8VIcGiDJ7Weog+ImvSA7pxaMD3AqxZY8XnJxjZbnxQbYkjpP1c6dYZpWxtwL/cv9AEvbJEiYiZFkAKd6GDom1c8dVVB7O1M1fFDK4n7KjBwHQ590FOxCs03phP0GruB1K1CRBJtDAXl/Z2Rt0hoBexkmUiqORVnm9dcDdW2UJPz4Gd4NZIDYz3z9utpWogwL5gp86nBBN1giZmai4QlZwyVLxDaxjtwSBpPrAYUsHrKIe7Cu1GnHmoTPhfFTuHTBLpge512PdijazJNt4YBfUpv1HdQ4sMTibwUFGTGSOxcbzq4BtoaVgOsD0r/+U7VQjA0fYUV7Yv78FBOofEsAEO/dRUdl6d4CuDS3MpEKYiNDHGsLHiAZOl3U5WU5ihqjPPA8Vl2OM9N6UedPFc6he+F6DXWBoCqgd9tF2SQJSXSSr3E0baWPNSiH7t2KgLf4AlcjeWGKg7O4AAAAASUVORK5CYII=","seagrass_1":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAnklEQVR42mNgGAUYoH9u0n+aGbJhWw2GOBMuQ3LqvDAU33/+jAGnAci2FibPY1SWl8Bw1d2HL3AbUJg8jxHd6eiumNK0jZGgF2CakF2BbjuyRUzIAticjm47umFM2JyP7nR0vyN7BSMMCpPnofjTI8LqP76AZMKXHrCFOnpAohhQmDyPMafO6/+dWx8YYDQhAzGiBdnJ2MCOFcdQ9AAAHIli+N18Eq4AAAAASUVORK5CYII=","seagrass_2":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAjUlEQVR42mNgGAVDDGzYVvMfr4L+uUn/yZEjqLB/btL/nDqv/0Q7Fd0QfHwmXIqQbbz78AWK5sLkeYwYBhQmz2OEGVKYPI9RWV4Cq8uQDYMbgKwR2SXY/D2laRsjhgHotufUef3fufsGQdtxegEZeERY/b9z6wPD3YcvMGxnYGBgYMSmAVfs7FhxDEM9AOdfWAVSiOg4AAAAAElFTkSuQmCC","seagrass_3":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAp0lEQVR42mNgGAW0BRu21fwnpIYJmdM/NwlFw/3nz0i3FdmQ/rlJ/3PqvP7jswSrAcia0A3E6wUGBgaGwuR5jMryElgNvvvwBe4wQDcd3ekMDAwMU5q2MeL1CrIgzACYGC5vMaE7H5vJHhFWKJoLk+cx4gwDdIDub3Q+IzZNOXVe/+/c+sCgoibAcOfWBwYGBgYGFTUBjHBgYGBgYMFmAEwTjEZnIwMA/I9ZHMTnzpwAAAAASUVORK5CYII=","wreck_algae":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAp0lEQVR42mNgGAWDFFRPTfxPrFomXBIBxSEohsxZU/ofrwHItl6995lBW4kXReH9l28wDMVwAUzBht41jFfvfcYqjtOA1uz5jOguQWbv2nkHaxihuADZZm0lXgZkVyBrRhZnwSZh6meLwmZgYGA4vekwIzavYHhBW4mXQVpVHGe0wdTBAEagmPrZ/ocZ8PT2SwYGBga4gdgCkRGbLTBno4PTmw5jqAcABtVUVo7ODUgAAAAASUVORK5CYII=","wreck_log":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAm0lEQVR42qWSuw6DMAxFbyOxkMWKUAbKwJQ5n5AP4OMzeyZ7pi4dyoAEog1qHh5t5ej4xo9lcR8A0EpiHAieA7SS4DXCTHTpfc+p7yBQWWYiADgB40DFkPh67wCtZK3IaeA51AN4je0GOZWyFABAfff38Z3lYVAbpCj992yAs/NPz5pnW4hFBjl34eycBpTcRdMKnkMacJd4ynIDfUQsFlDB16wAAAAASUVORK5CYII=","wreck_log_top":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA2UlEQVR42qVTuw6DMAx0kVnoYlWoA2Vgyswn8AF8NJ/AzMRAGSpUZSkLAx2qREdIRNXeFj/Od8ac6rpa6Q8wEZGel5+aJYmJTbPKxVuUpULjpHfxbvjEWJKY9LxQN2iqyiJIgkBCxkTT9l4lqMIlswQqFyvr8Xxtisz7ejlbEmsBC6uyoKbtSZKYSnXbkLTd3WshcuWihXHS3gUioqOFHeV2BDgxS2XT5FPDoWno+fASXXlm23g0oUNjlOdKRgKMBz9jyKfKJXhkjFMMawi+PJu/6hvoednVvgHilF4vmM8EUgAAAABJRU5ErkJggg==","wreck_mast":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARUlEQVR42mNkwAEc3Wz/e5qrMjx7+Zbh/qvPDBs37GPEpo6JgUIwBAz48vPvUPcCRQZ8+/F7EHiBh515KAciFwfrEEgHAMQwECDRe/P6AAAAAElFTkSuQmCC","wreck_planks":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA40lEQVR42q2SvQ6CMBSFD6YJC00INhAGE8Mog7Nx4jF8Cx/A19TRxcFAkDShCxMOpnhb+TN6t5770363xzkdDy0A5FWNUioI3wONKODGOa9q48yoUNQN7IgC/tFkDCilAgAI30PIXeMFpVRGM63V4eyzXYsfgm1Wy9m8pVRIk9jQGV3cGKvekbCQFvbWaVIz6wi5a2jC98Aut8fkrWMay7br2bx9/mBDBX28AJAmMc7Xe6cvvuEVvte9SOf+4wPNM8VL/aG/nw0tkFq2b3BRN+8BdsOQN2htyN0XAvVB359PeeQJNz6UQlQEs38AAAAASUVORK5CYII=","wreck_planks_algae":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABVUlEQVR42qWTwU7CQBRFD80QEmntgBXSNBLDisjCtXHF1g/wH/xgSePCBaQhkmqntpgQkuKCzNgWRBLfbub1Te+5c6fx+PSwHQSSWaTYRF940qZc/a5TWb99ZACEKsEPXARA+vKJi8U0W1OvftcxQ+UayQ5hlCAWUcqGJp606TmtioJY5ZXhWOUA5puR7NC4n9xt+UeJm6uLo7yhSszfYpUzHvoVVSJWuZFUZ9VGaZOX8zVeDUnUXS83PZosohSAQSB3h0YJI9kxXojp/P1PTn1IFO5wptnPjJjcXh+Uv8e7AveAX6I8qJndlcUy2+cFGA99nl8XZt/SzVjlxrC0XdBzWmZI83rSNop0by8HlmMBUGTF6TnQPBUf5PH3oK9fhCohbRe4K+vXyB56C8tsjSdtrDK3Tp3m/S0fscrpOS1ClSAGgeTy/IxZpHZ3fEIutFd+4PINWqW6ftjMuOsAAAAASUVORK5CYII=","wreck_rope":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA30lEQVR42mNgGAUY4NjGmv+kqGdCF3jz+h1DZ0Xgf4pcsWlO1n9iDWHCJuiXMo2RWMuwKgz0tfpfmuIE53fP2cewfvMxRqIMOLax5v+b1+8Yrt95DhfTVJFkEBEVYrDyb2HEawCy5vKO9XC5zorA/7gMYUKPAZjmQF+r/8c21vwP9LX6X96xnvH6necMb16/wx+I1+88Z9BUkWRgYGBgSPQ3YDh8/CpDor8B3BvI3sIZBsjORXaVpook1tjBGQsW2uJw/omrLxnWbz7GuGlO1n/08MEJAn2t/sMweiJDpgHae281pgWrKAAAAABJRU5ErkJggg==","wreck_sail":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxklEQVR42t2TsQ2CUBBA3zcOoYmhgxEsLRiAAgsXcABCSJiBhBgmsXAAC0tHgI6QwBbf6ihO/GBi5ZWXf+/e3eXD/8XpGNpv3htdnGdnALp+ACCKU+MCrHVCCnfbDQC368W6QCudqJt2BHX9MILKIrFlkdhZgEQUpyaKU9P1A3XTEh72BL6HhkwCpKsYBb7H/fEEIMsr49yB6JdFYgPfG0f6tIdJA1GW7q5LvAGyvDKirA0WAbSJnnkRQJTnimcN9Gg//wcAL1SqUV9pqOvHAAAAAElFTkSuQmCC"}};
+</script>
+<script>
+// Round 51 lane WRECK: the verdict and note per element (the storage
+// contract of the Round 51 pages). Collection `notes`, document id = the
+// element's key (characters outside letters, digits and `_ - . ~ : @ +` become
+// `_`; no key here has one), fields {key, verdict, text, updatedAt}. One
+// subscription on the collection; a write on blur, on a verdict click, only
+// when something changed and one at a time per document; a document with no
+// text and no verdict is deleted. Without `db` (opened locally, or refused)
+// the notes are read-only. Stored text is untrusted: textContent / .value only.
+/* exported WreckNotes */
+var WreckNotes = (function () {
+	'use strict';
+
+	var VERDICTS = [['pick', 'Pick'], ['rework', 'Rework'], ['drop', 'Drop']];
+	var items = {};          // key -> {verdict, text, saved: {verdict, text}, ui, busy, again}
+	var db = null, writable = false, ready = false;
+
+	function docId(key) { return key.replace(/[^A-Za-z0-9_.~:@+-]/g, '_'); }
+
+	function banner(text) { document.getElementById('notes-banner').textContent = text; }
+
+	function setStatus(it, text, err) {
+		it.ui.status.textContent = text;
+		it.ui.status.classList.toggle('err', !!err);
+	}
+
+	function paint(it) {
+		it.ui.buttons.forEach(function (b) {
+			b.setAttribute('aria-pressed', b.dataset.v === it.verdict ? 'true' : 'false');
+			b.disabled = !writable;
+		});
+		if (document.activeElement !== it.ui.text) { it.ui.text.value = it.text; }
+		it.ui.text.readOnly = !writable;
+	}
+
+	function save(key) {
+		var it = items[key];
+		if (!db || !writable) { return; }
+		if (it.busy) { it.again = true; return; }
+		var verdict = it.verdict, text = it.text;
+		if (verdict === it.saved.verdict && text === it.saved.text) { return; }
+		it.busy = true;
+		setStatus(it, 'Saving…');
+		var ref = db.collection('notes').doc(docId(key));
+		var op = (!verdict && !text.trim()) ? ref.delete() :
+			ref.set({key: key, verdict: verdict, text: text, updatedAt: new Date().toISOString()});
+		op.then(function () {
+			it.saved = {verdict: verdict, text: text};
+			setStatus(it, 'Saved');
+		}, function (e) {
+			var code = e && e.code ? e.code : 'error';
+			if (code === 'invalid_argument' || code === 'not_granted' || code === 'revoked') {
+				writable = false;
+				Object.keys(items).forEach(function (k) { paint(items[k]); });
+				banner('Notes are read-only here: this view may not write them.');
+			}
+			setStatus(it, 'Not saved (' + code + (e && e.message ? ': ' + e.message : '') + ').', true);
+		}).then(function () {
+			it.busy = false;
+			if (it.again) { it.again = false; save(key); }
+		});
+	}
+
+	// One element's verdict buttons, note field and status line, appended to el.
+	function attach(el, key, withVerdict) {
+		var box = document.createElement('div');
+		var ui = {buttons: [], text: null, status: null};
+		if (withVerdict !== false) {
+			var row = document.createElement('div');
+			row.className = 'wk-verdicts';
+			row.setAttribute('role', 'group');
+			row.setAttribute('aria-label', 'Verdict for ' + key);
+			VERDICTS.forEach(function (v) {
+				var b = document.createElement('button');
+				b.type = 'button';
+				b.id = 'verdict-' + docId(key) + '-' + v[0];
+				b.dataset.v = v[0];
+				b.textContent = v[1];
+				b.onclick = function () {
+					var it = items[key];
+					it.verdict = it.verdict === v[0] ? '' : v[0];
+					paint(it);
+					save(key);
+				};
+				ui.buttons.push(b);
+				row.appendChild(b);
+			});
+			box.appendChild(row);
+		}
+		var ta = document.createElement('textarea');
+		ta.id = 'note-' + docId(key);
+		ta.setAttribute('aria-label', 'Note for ' + key);
+		ta.placeholder = 'Note';
+		ta.addEventListener('input', function () { items[key].text = ta.value; });
+		ta.addEventListener('blur', function () { items[key].text = ta.value; save(key); });
+		ui.text = ta;
+		box.appendChild(ta);
+		var st = document.createElement('div');
+		st.className = 'wk-status';
+		st.setAttribute('role', 'status');
+		ui.status = st;
+		box.appendChild(st);
+		el.appendChild(box);
+		var it = items[key];
+		if (!it) {
+			it = items[key] = {verdict: '', text: '', saved: {verdict: '', text: ''}, busy: false, again: false};
+		}
+		it.ui = ui;
+		paint(it);
+	}
+
+	function apply(snap) {
+		snap.docChanges().forEach(function (ch) {
+			var d = ch.type === 'removed' ? null : ch.doc.data();
+			var key = d && typeof d.key === 'string' ? d.key : ch.doc.id;
+			var it = items[key];
+			if (!it) {
+				it = items[key] = {verdict: '', text: '', saved: {verdict: '', text: ''}, busy: false, again: false};
+			}
+			var verdict = d && typeof d.verdict === 'string' ? d.verdict : '';
+			var text = d && typeof d.text === 'string' ? d.text : '';
+			// keep what the viewer is typing; take everything else
+			var typing = it.ui && document.activeElement === it.ui.text && it.text !== it.saved.text;
+			it.saved = {verdict: verdict, text: text};
+			it.verdict = verdict;
+			if (!typing) { it.text = text; }
+			if (it.ui) { paint(it); }
+		});
+	}
+
+	// Rendered first, lit up when db resolves (or stays read-only).
+	function start() {
+		banner('Connecting the notes…');
+		var use = window.claude && typeof window.claude.use === 'function' ? window.claude.use('db') : null;
+		if (!use) {
+			banner('Opened locally: notes are read-only. On the published page you can leave a verdict and a note per shape and detail.');
+			return;
+		}
+		Promise.resolve(use).then(function (handle) {
+			if (!handle) {
+				banner('Notes are read-only in this view. They can be left on the published page.');
+				return;
+			}
+			db = handle;
+			writable = true;
+			ready = true;
+			banner('');
+			Object.keys(items).forEach(function (k) { if (items[k].ui) { paint(items[k]); } });
+			db.collection('notes').onSnapshot(apply, function (e) {
+				banner('Notes stopped updating (' + (e && e.code ? e.code : 'error') + '). Reload the page to see new ones.');
+			});
+		}, function () {
+			banner('Notes are read-only in this view. They can be left on the published page.');
+		});
+	}
+
+	return {attach: attach, start: start, ready: function () { return ready; }};
+})();
+
+</script>
+<script>
+// Round 51 lane WRECK, design step: the three.js side of the wreck page.
+//
+// Draws a shape file (tools/r51_wreck/shapes) on a sand seabed under a chosen
+// depth of water the way the Luanti client meshes it: full cubes with the
+// faces against other full cubes culled, the logs' grain by facedir, rooted
+// plants as a base cube plus two crossed quads above it (drawPlantlike: the
+// quads visual_scale wide and visual_scale * param2 / 16 high, the texture
+// tiled once per param2 / 16 with its top at the top). The cuboid texture
+// coordinates, the facedir tile table and the crossed quads are copied from
+// tools/r47_sw/view.js (which copied them from tools/r46_tree/concept). Luanti's
+// z axis points the other way to three.js's, so z is mirrored.
+//
+// "Luanti light" lights each face with the light of the node it faces, as the
+// client does without smooth lighting (content_mapblock.cpp), the light
+// spread one level less per node from the sunlit air (voxelalgorithms.cpp),
+// through the default light curve (light.cpp set_light_curve with the
+// defaults of builtin/settingtypes.txt) and the face shading of
+// mesh.cpp applyFacesShading. A rooted extension takes the light of the node
+// above its base (drawPlantlikeRootedNode), over its whole height.
+/* global THREE, WRECK, WreckNotes */
+(function () {
+	'use strict';
+
+	// ------------------------------------------------------------ light
+
+	var LUT = (function () {
+		var alpha = 0.0, beta = 1.5, boost = 0.2, center = 0.5, sigma = 0.2;
+		var a = alpha + beta - 2, b = 3 - 2 * alpha - beta, c = alpha;
+		var lut = [0];
+		for (var i = 1; i < 15; i++) {
+			var x = i / 15;
+			var br = ((a * x + b) * x + c) * x + boost * Math.exp(-0.5 * Math.pow((x - center) / sigma, 2));
+			br = Math.max(0, Math.min(1, br));
+			var v = Math.floor(255 * br);
+			if (v <= lut[i - 1]) { v = Math.min(254, lut[i - 1]) + 1; }
+			lut.push(v);
+		}
+		lut.push(255);
+		return lut;
+	})();
+	// face order of a cuboid: top, bottom, right (+x), left (-x), back (+z), front (-z)
+	var FACE_DIRS = [[0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1]];
+	var SHADE = [1.0, 0.447213, 0.670820, 0.670820, 0.836660, 0.836660];
+
+	// mapblock_mesh.cpp getNodeTile rows for facedir 0, 4 and 12: [dir_i] -> tile, rotation
+	var DIR_TO_TILE = {
+		0: [[0, 0], [2, 0], [0, 0], [4, 0], [0, 0], [5, 0], [1, 0], [3, 0]],
+		4: [[0, 0], [2, 3], [5, 0], [0, 2], [0, 0], [1, 0], [4, 2], [3, 1]],
+		12: [[0, 0], [0, 3], [3, 3], [4, 1], [0, 0], [5, 3], [2, 3], [1, 3]]
+	};
+	function faceTiles(tiles, facedir) {
+		var out = [];
+		for (var f = 0; f < 6; f++) {
+			var d = FACE_DIRS[f];
+			var e = (DIR_TO_TILE[facedir] || DIR_TO_TILE[0])[(d[0] + 2 * d[1] + 3 * d[2]) & 7];
+			out.push({tex: tiles[e[0]], rot: e[1]});
+		}
+		return out;
+	}
+
+	// ------------------------------------------------------------ nodes
+
+	var NODES = {};
+	WRECK.nodes.forEach(function (n) { NODES[n.name] = n; });
+	var SAND = {name: 'default:sand', drawtype: 'normal', tiles: ['default_sand', 'default_sand', 'default_sand']};
+	// six tiles (top, bottom, +x, -x, +z, -z) from a node's [top, bottom, side]
+	function sixTiles(n) { var t = n.tiles; return [t[0], t[1], t[2], t[2], t[2], t[2]]; }
+
+	// ------------------------------------------------------------ textures
+
+	var texCache = {};
+	function texture(name) {
+		if (texCache[name]) { return texCache[name]; }
+		var img = new Image();
+		var t = new THREE.Texture(img);
+		img.onload = function () { t.needsUpdate = true; };
+		img.src = WRECK.textures[name];
+		t.magFilter = THREE.NearestFilter;
+		t.minFilter = THREE.NearestFilter;
+		t.generateMipmaps = false;
+		t.wrapS = t.wrapT = THREE.RepeatWrapping;
+		texCache[name] = t;
+		return t;
+	}
+	var matCache = {};
+	function material(name, kind) {
+		var k = name + '|' + kind;
+		if (matCache[k]) { return matCache[k]; }
+		var opts = {map: texture(name), vertexColors: true};
+		if (kind === 'cutout') { opts.alphaTest = 0.5; opts.side = THREE.DoubleSide; }
+		if (kind === 'water') { opts.transparent = true; opts.opacity = 0.72; opts.depthWrite = false; opts.side = THREE.DoubleSide; }
+		if (kind === 'wall') { opts.transparent = true; opts.opacity = 0.45; opts.depthWrite = false; opts.side = THREE.DoubleSide; }
+		matCache[k] = new THREE.MeshBasicMaterial(opts);
+		return matCache[k];
+	}
+
+	// ------------------------------------------------------------ meshing
+
+	function Buckets() { this.map = {}; }
+	Buckets.prototype.get = function (tex, kind) {
+		var k = tex + '|' + kind;
+		if (!this.map[k]) { this.map[k] = {tex: tex, kind: kind, pos: [], col: [], uv: [], idx: []}; }
+		return this.map[k];
+	};
+	Buckets.prototype.build = function (group) {
+		var self = this;
+		Object.keys(this.map).forEach(function (k) {
+			var bk = self.map[k];
+			if (!bk.idx.length) { return; }
+			var g = new THREE.BufferGeometry();
+			g.setAttribute('position', new THREE.Float32BufferAttribute(bk.pos, 3));
+			g.setAttribute('color', new THREE.Float32BufferAttribute(bk.col, 3));
+			g.setAttribute('uv', new THREE.Float32BufferAttribute(bk.uv, 2));
+			g.setIndex(bk.idx);
+			var mesh = new THREE.Mesh(g, material(bk.tex, bk.kind));
+			if (bk.kind === 'water' || bk.kind === 'wall') { mesh.renderOrder = 2; }
+			group.add(mesh);
+		});
+	};
+
+	// Luanti cuboid faces and texture coordinates for a full node at ox, oy, oz;
+	// bright(f) is the face's brightness, skip[f] culls a face.
+	function addCube(buckets, ox, oy, oz, tiles, skip, bright) {
+		var x1 = -0.5, y1 = -0.5, z1 = -0.5, x2 = 0.5, y2 = 0.5, z2 = 0.5;
+		var tx1 = 0, ty1 = 0, tz1 = 0, tx2 = 1, ty2 = 1, tz2 = 1;
+		var txc = [
+			tx1, 1 - tz2, tx2, 1 - tz1,
+			tx1, tz1, tx2, tz2,
+			tz1, 1 - ty2, tz2, 1 - ty1,
+			1 - tz2, 1 - ty2, 1 - tz1, 1 - ty1,
+			1 - tx2, 1 - ty2, 1 - tx1, 1 - ty1,
+			tx1, 1 - ty2, tx2, 1 - ty1
+		];
+		var V = [
+			[[x1, y2, z2, 0, 1], [x2, y2, z2, 2, 1], [x2, y2, z1, 2, 3], [x1, y2, z1, 0, 3]],
+			[[x1, y1, z1, 4, 5], [x2, y1, z1, 6, 5], [x2, y1, z2, 6, 7], [x1, y1, z2, 4, 7]],
+			[[x2, y2, z1, 8, 9], [x2, y2, z2, 10, 9], [x2, y1, z2, 10, 11], [x2, y1, z1, 8, 11]],
+			[[x1, y2, z2, 12, 13], [x1, y2, z1, 14, 13], [x1, y1, z1, 14, 15], [x1, y1, z2, 12, 15]],
+			[[x2, y2, z2, 16, 17], [x1, y2, z2, 18, 17], [x1, y1, z2, 18, 19], [x2, y1, z2, 16, 19]],
+			[[x1, y2, z1, 20, 21], [x2, y2, z1, 22, 21], [x2, y1, z1, 22, 23], [x1, y1, z1, 20, 23]]
+		];
+		for (var f = 0; f < 6; f++) {
+			if (skip[f]) { continue; }
+			var tile = tiles[f];
+			var bk = buckets.get(tile.tex, 'solid');
+			var base = bk.pos.length / 3;
+			var n = FACE_DIRS[f], br = bright(f), pts = [];
+			for (var j = 0; j < 4; j++) {
+				var v = V[f][j];
+				var u = txc[v[3]], w = txc[v[4]], t;
+				if (tile.rot === 1) { t = 1 - w; w = u; u = t; }
+				else if (tile.rot === 2) { u = 1 - u; w = 1 - w; }
+				else if (tile.rot === 3) { t = w; w = 1 - u; u = t; }
+				var p = [ox + v[0], oy + v[1], -(oz + v[2])];
+				pts.push(p);
+				bk.pos.push(p[0], p[1], p[2]);
+				bk.col.push(br, br, br);
+				bk.uv.push(u, 1 - w);
+			}
+			var e1 = [pts[1][0] - pts[0][0], pts[1][1] - pts[0][1], pts[1][2] - pts[0][2]];
+			var e2 = [pts[2][0] - pts[0][0], pts[2][1] - pts[0][1], pts[2][2] - pts[0][2]];
+			var cx = e1[1] * e2[2] - e1[2] * e2[1], cy = e1[2] * e2[0] - e1[0] * e2[2], cz = e1[0] * e2[1] - e1[1] * e2[0];
+			if (cx * n[0] + cy * n[1] - cz * n[2] >= 0) {
+				bk.idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+			} else {
+				bk.idx.push(base, base + 2, base + 1, base, base + 3, base + 2);
+			}
+		}
+	}
+
+	// A rooted extension above the base at ox, oy, oz: two crossed quads at
+	// 46 and -44 degrees, `scale` (visual_scale) wide, scale * height high from
+	// the base's top, the texture tiled `height` times with its top at the top.
+	function addRooted(buckets, tex, ox, oy, oz, scale, height, br) {
+		var bk = buckets.get(tex, 'cutout');
+		var h = scale * height, y0 = oy + 0.5;
+		[46, -44].forEach(function (deg) {
+			var r = deg * Math.PI / 180, s = 0.5 * scale;
+			var dx = Math.cos(r) * s, dz = Math.sin(r) * s;
+			var base = bk.pos.length / 3;
+			var c = [[-dx, y0 + h, -dz, 0, 0], [dx, y0 + h, dz, 1, 0], [dx, y0, dz, 1, height], [-dx, y0, -dz, 0, height]];
+			for (var j = 0; j < 4; j++) {
+				bk.pos.push(ox + c[j][0], c[j][1], -(oz + c[j][2]));
+				bk.col.push(br, br, br);
+				bk.uv.push(c[j][3], 1 - c[j][4]);
+			}
+			bk.idx.push(base, base + 2, base + 1, base, base + 3, base + 2);
+		});
+	}
+
+	// A flat quad set (the water's surface and its cut walls).
+	function addQuad(buckets, tex, kind, pts, uvs, br) {
+		var bk = buckets.get(tex, kind);
+		var base = bk.pos.length / 3;
+		for (var j = 0; j < 4; j++) {
+			bk.pos.push(pts[j][0], pts[j][1], -pts[j][2]);
+			bk.col.push(br[0], br[1], br[2]);
+			bk.uv.push(uvs[j][0], uvs[j][1]);
+		}
+		bk.idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+	}
+
+	// ------------------------------------------------------------ the world
+
+	function hash(x, z, salt) {
+		var h = (x * 374761393 + z * 668265263 + salt * 2246822519) | 0;
+		h = Math.imul(h ^ (h >>> 13), 1274126177);
+		return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+	}
+
+	// The shape's cells in node coordinates: the layer `seabed` at y = 0 (the
+	// first node above the sand), the shape centred on x and z.
+	function decode(shape) {
+		var cells = [], sx = shape.size.x, sz = shape.size.z;
+		var ox = -Math.floor(sx / 2), oz = -Math.floor(sz / 2);
+		shape.layers.forEach(function (rows, ly) {
+			rows.forEach(function (row, z) {
+				for (var x = 0; x < row.length; x++) {
+					var ch = row.charAt(x);
+					if (ch === '.') { continue; }
+					var p = shape.palette[ch];
+					cells.push({ch: ch, node: NODES[p.name], param2: p.param2, x: x + ox, y: ly - shape.seabed, z: z + oz});
+				}
+			});
+		});
+		return cells;
+	}
+
+	// param2 of a mast cell under the page's mast rule (stumps keep theirs)
+	function mastParam2(cell, depth) {
+		if (cell.ch !== 'M' || state.mastRule !== 'depth') { return cell.param2; }
+		var h = (depth - 0.5 + 2) - (cell.y + 0.5);
+		return Math.max(16, Math.min(255, Math.round(16 * h / state.mastScale)));
+	}
+	function extension(cell, depth) {
+		var n = cell.node;
+		if (n.drawtype !== 'plantlike_rooted') { return null; }
+		var scale = n.name === MAST ? state.mastScale : 1;
+		var height = n.paramtype2 === 'leveled' ? mastParam2(cell, depth) / 16 : 1;
+		return {scale: scale, height: height, top: cell.y + 0.5 + scale * height};
+	}
+	var MAST = 'grug_nodes:wreck_mast';
+
+	function buildWorld(shape, depth, group) {
+		var cells = decode(shape);
+		var minX = 0, maxX = 0, minZ = 0, maxZ = 0, maxY = 0;
+		cells.forEach(function (c) {
+			minX = Math.min(minX, c.x); maxX = Math.max(maxX, c.x);
+			minZ = Math.min(minZ, c.z); maxZ = Math.max(maxZ, c.z);
+			maxY = Math.max(maxY, c.y);
+		});
+		var M = 9;
+		var X0 = minX - M, X1 = maxX + M, Z0 = minZ - M, Z1 = maxZ + M, Y0 = -3, Y1 = Math.max(depth, maxY + 1) + 2;
+		var NX = X1 - X0 + 1, NY = Y1 - Y0 + 1, NZ = Z1 - Z0 + 1;
+		function idx(x, y, z) { return ((x - X0) * NY + (y - Y0)) * NZ + (z - Z0); }
+		function inside(x, y, z) { return x >= X0 && x <= X1 && y >= Y0 && y <= Y1 && z >= Z0 && z <= Z1; }
+		// kinds: 0 air, 1 water, 2 sand, 3 wreck
+		var kind = new Uint8Array(NX * NY * NZ), light = new Uint8Array(NX * NY * NZ);
+		var x, y, z;
+		for (x = X0; x <= X1; x++) {
+			for (y = Y0; y <= Y1; y++) {
+				for (z = Z0; z <= Z1; z++) { kind[idx(x, y, z)] = y < 0 ? 2 : (y < depth ? 1 : 0); }
+			}
+		}
+		var at = {};
+		cells.forEach(function (c) { kind[idx(c.x, c.y, c.z)] = 3; at[c.x + ',' + c.y + ',' + c.z] = c; });
+		// light: sunlight down through air, then one level less per node
+		var queue = [];
+		for (var l = 0; l <= 15; l++) { queue.push([]); }
+		for (x = X0; x <= X1; x++) {
+			for (z = Z0; z <= Z1; z++) {
+				for (y = Y1; y >= Y0 && kind[idx(x, y, z)] === 0; y--) {
+					light[idx(x, y, z)] = 15;
+					queue[15].push(idx(x, y, z));
+				}
+			}
+		}
+		var strideX = NY * NZ, strideY = NZ;
+		for (l = 15; l > 1; l--) {
+			var q = queue[l];
+			for (var qi = 0; qi < q.length; qi++) {
+				var i = q[qi];
+				if (light[i] !== l) { continue; }
+				var ix = Math.floor(i / strideX), iy = Math.floor((i % strideX) / strideY), iz = i % strideY;
+				var nb = [[ix + 1, iy, iz], [ix - 1, iy, iz], [ix, iy + 1, iz], [ix, iy - 1, iz], [ix, iy, iz + 1], [ix, iy, iz - 1]];
+				for (var k = 0; k < 6; k++) {
+					var a = nb[k];
+					if (a[0] < 0 || a[0] >= NX || a[1] < 0 || a[1] >= NY || a[2] < 0 || a[2] >= NZ) { continue; }
+					var j = a[0] * strideX + a[1] * strideY + a[2];
+					if (kind[j] >= 2 || light[j] >= l - 1) { continue; }
+					light[j] = l - 1;
+					queue[l - 1].push(j);
+				}
+			}
+		}
+		function lightAt(x, y, z) {
+			if (!inside(x, y, z)) { return y >= depth ? 15 : Math.max(0, 15 - (depth - y)); }
+			return light[idx(x, y, z)];
+		}
+		function opaque(x, y, z) {
+			if (!inside(x, y, z)) { return y < Y0; }
+			return kind[idx(x, y, z)] >= 2;
+		}
+		function bright(lv, f) { return (state.light ? LUT[lv] / 255 : 1) * SHADE[f]; }
+
+		var solid = new Buckets(), plants = new Buckets(), water = new Buckets();
+		function cube(x, y, z, tiles) {
+			addCube(solid, x, y, z, tiles, FACE_DIRS.map(function (d) { return opaque(x + d[0], y + d[1], z + d[2]); }),
+				function (f) { var d = FACE_DIRS[f]; return bright(lightAt(x + d[0], y + d[1], z + d[2]), f); });
+		}
+		// sand, and seagrass on it (context: lane TERRAIN's node)
+		var sandTiles = faceTiles(sixTiles(SAND), 0);
+		for (x = X0; x <= X1; x++) {
+			for (z = Z0; z <= Z1; z++) {
+				for (y = Y0; y < 0; y++) {
+					if (kind[idx(x, y, z)] === 2) { cube(x, y, z, sandTiles); }
+				}
+				if (state.seagrass && depth >= 2 && kind[idx(x, 0, z)] === 1 && kind[idx(x, -1, z)] === 2) {
+					var patch = hash(Math.floor(x / 5), Math.floor(z / 5), 3);
+					var r = hash(x, z, 7);
+					if (r < patch * 0.55 - 0.08) {
+						var g = 1 + Math.floor(hash(x, z, 11) * 3);
+						addRooted(plants, 'seagrass_' + g, x, -1, z, 1, 1, state.light ? LUT[lightAt(x, 0, z)] / 255 : 1);
+					}
+				}
+			}
+		}
+		// the wreck
+		var stats = {masts: []};
+		cells.forEach(function (c) {
+			var facedir = c.node.paramtype2 === 'facedir' ? c.param2 : 0;
+			cube(c.x, c.y, c.z, faceTiles(sixTiles(c.node), facedir));
+			var ext = extension(c, depth);
+			if (ext) {
+				addRooted(plants, c.node.special, c.x, c.y, c.z, ext.scale, ext.height,
+					state.light ? LUT[lightAt(c.x, c.y + 1, c.z)] / 255 : 1);
+				if (c.node.name === MAST) {
+					stats.masts.push({cell: c, ext: ext, param2: mastParam2(c, depth), light: lightAt(c.x, c.y + 1, c.z)});
+				}
+			}
+		});
+		// water: the surface and the cut through the volume at the edge
+		if (depth > 0 && state.water) {
+			var s = depth - 0.5, xa = X0 - 0.5, xb = X1 + 0.5, za = Z0 - 0.5, zb = Z1 + 0.5;
+			var top = state.light ? LUT[14] / 255 : 1;
+			addQuad(water, 'default_water', 'water', [[xa, s, za], [xb, s, za], [xb, s, zb], [xa, s, zb]],
+				[[0, 0], [NX, 0], [NX, NZ], [0, NZ]], [top, top, top]);
+			var wall = [0.55, 0.75, 0.95];
+			var b0 = -0.5;
+			[[[xa, b0, za], [xb, b0, za], [xb, s, za], [xa, s, za], NX], [[xa, b0, zb], [xb, b0, zb], [xb, s, zb], [xa, s, zb], NX],
+				[[xa, b0, za], [xa, b0, zb], [xa, s, zb], [xa, s, za], NZ], [[xb, b0, za], [xb, b0, zb], [xb, s, zb], [xb, s, za], NZ]]
+				.forEach(function (w) {
+					addQuad(water, 'default_water', 'wall', w.slice(0, 4), [[0, 0], [w[4], 0], [w[4], depth], [0, depth]], wall);
+				});
+		}
+		solid.build(group);
+		plants.build(group);
+		water.build(group);
+		stats.box = {minX: minX, maxX: maxX, minZ: minZ, maxZ: maxZ, maxY: maxY, X0: X0, X1: X1, Z0: Z0, Z1: Z1};
+		stats.lightAt = lightAt;
+		stats.cells = cells;
+		return stats;
+	}
+
+	// A 2-node player for scale (the classic 64 x 32 skin layout), from r47_sw.
+	function playerFigure(br) {
+		var group = new THREE.Group();
+		var mat = new THREE.MeshBasicMaterial({map: texture('character'), alphaTest: 0.5, color: new THREE.Color(br, br, br)});
+		function part(w, h, d, u, v, x, y) {
+			var g = new THREE.BoxGeometry(w / 16, h / 16, d / 16);
+			var rects = {
+				px: [u, v + d, d, h], nx: [u + d + w, v + d, d, h],
+				py: [u + d, v, w, d], ny: [u + d + w, v, w, d],
+				pz: [u + d, v + d, w, h], nz: [u + d + w + d, v + d, w, h]
+			};
+			var order = ['nx', 'px', 'py', 'ny', 'pz', 'nz'];
+			var uv = g.attributes.uv;
+			for (var f = 0; f < 6; f++) {
+				var r = rects[order[f]];
+				var u0 = r[0] / 64, u1 = (r[0] + r[2]) / 64, v0 = 1 - r[1] / 32, v1 = 1 - (r[1] + r[3]) / 32;
+				uv.setXY(f * 4 + 0, u0, v0); uv.setXY(f * 4 + 1, u1, v0);
+				uv.setXY(f * 4 + 2, u0, v1); uv.setXY(f * 4 + 3, u1, v1);
+			}
+			var m = new THREE.Mesh(g, mat);
+			m.position.set(x / 16, y / 16, 0);
+			group.add(m);
+		}
+		part(8, 8, 8, 0, 0, 0, 28);
+		part(8, 12, 4, 16, 16, 0, 18);
+		part(4, 12, 4, 40, 16, -6, 18);
+		part(4, 12, 4, 40, 16, 6, 18);
+		part(4, 12, 4, 0, 16, -2, 6);
+		part(4, 12, 4, 0, 16, 2, 6);
+		return group;
+	}
+
+	// ------------------------------------------------------------ scene
+
+	var view = document.getElementById('view');
+	var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
+	renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+	view.insertBefore(renderer.domElement, view.firstChild);
+	var scene = new THREE.Scene();
+	scene.background = new THREE.Color(0x9ec3d6);
+	var persp = new THREE.PerspectiveCamera(55, 1, 0.1, 800);
+	var ortho = new THREE.OrthographicCamera(-30, 30, 30, -30, 0.1, 400);
+	ortho.up.set(0, 0, -1);
+	var orbit = new THREE.OrbitControls(persp, renderer.domElement);
+	orbit.enableDamping = true;
+	var topControls = new THREE.OrbitControls(ortho, renderer.domElement);
+	topControls.enableRotate = false;
+	topControls.screenSpacePanning = true;
+	var content = new THREE.Group();
+	scene.add(content);
+
+	// ------------------------------------------------------------ state
+
+	var params = new URLSearchParams(location.search);
+	var stored = {};
+	try { stored = JSON.parse(localStorage.getItem('r51-wreck-view') || '{}') || {}; } catch (e) { stored = {}; }
+	function pick(name, ok, fallback) {
+		var v = params.get(name);
+		if (v !== null && ok(v)) { return v; }
+		if (stored[name] !== undefined && ok(String(stored[name]))) { return String(stored[name]); }
+		return fallback;
+	}
+	var SHAPES = WRECK.shapes;
+	var shapeNames = SHAPES.map(function (s) { return s.key.split('.')[1]; });
+	function isDepth(v) { var n = parseInt(v, 10); return n >= 3 && n <= 26; }
+	var state = {
+		shape: pick('shape', function (v) { return shapeNames.indexOf(v) >= 0; }, 'hull'),
+		depth: parseInt(pick('depth', isDepth, '14'), 10),
+		view: pick('view', function (v) { return v === 'orbit' || v === 'top' || v === 'swim'; }, 'orbit'),
+		light: pick('light', function (v) { return v === '0' || v === '1'; }, '1') === '1',
+		seagrass: params.get('seagrass') !== '0',
+		figure: params.get('figure') !== '0',
+		water: params.get('water') !== '0',
+		mastRule: params.get('mast') === 'depth' ? 'depth' : 'fixed',
+		mastScale: parseFloat(params.get('scale')) === 1.5 || parseFloat(params.get('scale')) === 2 ? parseFloat(params.get('scale')) : 1
+	};
+	if (params.get('bare') === '1') {
+		document.querySelector('.wk-header').style.display = 'none';
+		document.querySelector('.wk-aside').style.display = 'none';
+		view.style.height = '100vh';
+	}
+	function remember() {
+		try {
+			localStorage.setItem('r51-wreck-view', JSON.stringify({shape: state.shape, depth: state.depth,
+				view: state.view, light: state.light ? 1 : 0}));
+		} catch (e) { /* a convenience only */ }
+	}
+	function currentShape() { return SHAPES[shapeNames.indexOf(state.shape)]; }
+
+	var last = null;
+	function build() {
+		content.children.slice().forEach(function (c) {
+			content.remove(c);
+			c.traverse(function (o) { if (o.geometry) { o.geometry.dispose(); } });
+		});
+		var shape = currentShape();
+		last = buildWorld(shape, state.depth, content);
+		if (state.figure) {
+			var b = last.box;
+			var fx = b.minX - 3, fz = b.maxZ + 2;
+			var fig = playerFigure(state.light ? LUT[last.lightAt(fx, 0, fz)] / 255 : 1);
+			fig.position.set(fx, -0.5, -fz);
+			content.add(fig);
+		}
+		frame();
+		readout(shape);
+		document.getElementById('tag').textContent = shape.title + ' · ' + state.depth + ' nodes of water' +
+			(state.light ? ' · Luanti light (day)' : ' · even light');
+	}
+
+	function frame() {
+		var b = last.box;
+		var cx = (b.minX + b.maxX) / 2, cz = -(b.minZ + b.maxZ) / 2;
+		var size = Math.max(b.maxX - b.minX, b.maxZ - b.minZ) + 1;
+		var cy = Math.min(b.maxY, 6) / 2;
+		if (state.view === 'swim') {
+			var eye = Math.min(state.depth - 1.5, 3.2);
+			persp.position.set(cx - size * 0.25, eye, cz - (b.maxZ - b.minZ) / 2 - size * 0.55 - 4);
+			orbit.target.set(cx, Math.min(eye, 2.5), cz);
+		} else {
+			var dist = (size * 0.95 + 6) / Math.min(1, Math.pow(persp.aspect || 1, 0.8));
+			var yaw = 35 * Math.PI / 180, pitch = 32 * Math.PI / 180;
+			persp.position.set(cx + Math.sin(yaw) * Math.cos(pitch) * dist, cy + Math.sin(pitch) * dist,
+				cz + Math.cos(yaw) * Math.cos(pitch) * dist);
+			orbit.target.set(cx, cy, cz);
+		}
+		orbit.update();
+		topControls.target.set(cx, 0, cz);
+		ortho.position.set(cx, 120, cz);
+		ortho.lookAt(cx, 0, cz);
+		ortho.zoom = 1;
+		topControls.update();
+		fitOrtho();
+		orbit.enabled = state.view !== 'top';
+		topControls.enabled = state.view === 'top';
+	}
+	function fitOrtho() {
+		if (!last) { return; }
+		var b = last.box;
+		var half = Math.max(b.maxX - b.minX, b.maxZ - b.minZ) / 2 + 5;
+		var w = view.clientWidth || 1, h = view.clientHeight || 1, a = w / h;
+		if (a >= 1) { ortho.left = -half * a; ortho.right = half * a; ortho.top = half; ortho.bottom = -half; }
+		else { ortho.left = -half; ortho.right = half; ortho.top = half / a; ortho.bottom = -half / a; }
+		ortho.updateProjectionMatrix();
+	}
+
+	// ------------------------------------------------------------ readout
+
+	function el(tag, cls, text) {
+		var e = document.createElement(tag);
+		if (cls) { e.className = cls; }
+		if (text !== undefined) { e.textContent = text; }
+		return e;
+	}
+	function keyTag(key) { return el('span', 'wk-key', key); }
+	function pct(lv) { return Math.round(LUT[Math.max(0, Math.min(15, lv))] / 2.55) + ' %'; }
+	function reachDepth(top) { return Math.ceil(top + 0.5) - 1; }
+	var MAST_NAMES = {M: 'main mast', m: 'foremast stump', k: 'foremast stump', n: 'main mast stump'};
+
+	function readout(shape) {
+		var box = document.getElementById('reach');
+		box.textContent = '';
+		var s = shape.size;
+		var p = el('p', 'wk-meta', s.x + ' long × ' + s.z + ' wide × ' + s.y + ' high nodes, ' + shape.seabed +
+			(shape.seabed === 1 ? ' layer' : ' layers') + ' in the sand; ' + last.cells.length + ' blocks.');
+		box.appendChild(p);
+		if (s.x > 16 || s.z > 16) {
+			box.appendChild(el('p', 'wk-warn', 'Longer than 16 nodes: the mapgen templates take at most 16 × 64 × 16 today (r6_templates.lua read_source); the build step raises that bound for wrecks or this shape gets shorter (DESIGN.md, Questions).'));
+		}
+		var masts = lastMasts();
+		if (!masts.length) {
+			box.appendChild(el('p', 'wk-note', 'No mast: the debris field lies flat (its mast is the fallen log row).'));
+			return;
+		}
+		var t = el('table');
+		t.innerHTML = '<thead><tr><th>mast</th><th>param2</th><th>long</th><th>top over sand</th><th>here</th><th>reaches the surface</th></tr></thead>';
+		var tb = el('tbody');
+		masts.forEach(function (m) {
+			var tr = el('tr');
+			var top = m.ext.top + 0.5;      // over the sand's top (y = -0.5)
+			var over = m.ext.top - (state.depth - 0.5);
+			[MAST_NAMES[m.cell.ch] || 'mast', String(m.param2), (m.ext.scale * m.ext.height).toFixed(1),
+				top.toFixed(1), over > 0 ? over.toFixed(1) + ' above the water' : (-over).toFixed(1) + ' below the surface',
+				'at depths up to ' + reachDepth(m.ext.top)].forEach(function (v) { tr.appendChild(el('td', '', v)); });
+			tb.appendChild(tr);
+		});
+		t.appendChild(tb);
+		var wrap = el('div', 'wk-tablewrap');
+		wrap.appendChild(t);
+		box.appendChild(wrap);
+		var main = masts[0];
+		box.appendChild(el('p', 'wk-note', 'Light here: the sand ' + pct(15 - state.depth) + ', the deck at the mast ' +
+			pct(main.light) + ' (light ' + main.light + '), so the whole mast is drawn at ' + pct(main.light) +
+			', also where it stands in the air.'));
+	}
+	function lastMasts() {
+		var out = [];
+		last.cells.forEach(function (c) {
+			if (c.node.name === MAST) {
+				out.push({cell: c, ext: extension(c, state.depth), param2: mastParam2(c, state.depth),
+					light: last.lightAt(c.x, c.y + 1, c.z)});
+			}
+		});
+		out.sort(function (a, b) { return b.ext.top - a.ext.top; });
+		return out;
+	}
+
+	// The band table: every shape's tallest mast at visual_scale 1, 1.5 and 2,
+	// and the light of sand and deck at 8, 14 and 20 nodes of water.
+	function bandTable() {
+		var box = document.getElementById('band');
+		var t = el('table');
+		t.innerHTML = '<thead><tr><th>shape</th><th>mast</th><th>deck over sand</th><th colspan="3">reaches the surface at depths up to (visual_scale 1 / 1.5 / 2)</th></tr></thead>';
+		var tb = el('tbody');
+		SHAPES.forEach(function (shape) {
+			var masts = decode(shape).filter(function (c) { return c.node.name === MAST; });
+			masts.sort(function (a, b) { return b.param2 - a.param2; });
+			if (!masts.length) { return; }
+			var c = masts[0], h = c.param2 / 16;
+			var tr = el('tr');
+			[shape.title, (MAST_NAMES[c.ch] || 'mast') + ', ' + h.toFixed(1), String(c.y + 1)].forEach(function (v) {
+				tr.appendChild(el('td', '', v));
+			});
+			[1, 1.5, 2].forEach(function (sc) { tr.appendChild(el('td', '', String(reachDepth(c.y + 0.5 + sc * h)))); });
+			tb.appendChild(tr);
+		});
+		t.appendChild(tb);
+		var wrap = el('div', 'wk-tablewrap');
+		wrap.appendChild(t);
+		box.appendChild(wrap);
+		var lt = el('table');
+		lt.innerHTML = '<thead><tr><th>water depth</th><th>sand</th><th>the whole hull\'s deck at the mast (3 over the sand)</th></tr></thead>';
+		var lb = el('tbody');
+		[6, 8, 10, 12, 14, 17, 20].forEach(function (d) {
+			var tr = el('tr');
+			[String(d), 'light ' + Math.max(0, 15 - d) + ' · ' + pct(15 - d),
+				'light ' + Math.max(0, 15 - d + 3) + ' · ' + pct(15 - d + 3)].forEach(function (v) { tr.appendChild(el('td', '', v)); });
+			lb.appendChild(tr);
+		});
+		lt.appendChild(lb);
+		var wrap2 = el('div', 'wk-tablewrap');
+		wrap2.appendChild(lt);
+		box.appendChild(el('p', 'wk-note', 'Daylight under water, by day, open water above (Luanti: one level less per node; brightness by the default light curve):'));
+		box.appendChild(wrap2);
+		box.appendChild(el('p', '', 'The band the design needs: a seabed 8 to 14 nodes deep (bow 6, debris 4 and deeper), 8 to 12 at its best. ' +
+			'At 8 the whole hull (8 nodes over the sand) is just under the surface; below about 12 the sand is nearly black and the wreck hard to see. ' +
+			'The main mast (15.9 nodes on a deck 3 over the sand) reaches the surface down to 18, so across the band it always stands ' +
+			'5 to 11 nodes into the air; the stumps of the bow and stern stay under water.'));
+	}
+
+	function legend() {
+		var box = document.getElementById('legend');
+		var all = [];
+		WRECK.nodes.forEach(function (n) { all.push(n); });
+		all.forEach(function (n) {
+			var item = el('div', 'wk-item');
+			var head = el('div', 'wk-item-head');
+			var thumbs = el('span', 'wk-thumbs');
+			var seen = {};
+			n.tiles.concat(n.special ? [n.special] : []).forEach(function (tx) {
+				if (seen[tx]) { return; }
+				seen[tx] = true;
+				var img = el('img');
+				img.src = WRECK.textures[tx];
+				img.alt = '';
+				img.title = tx + '.png';
+				thumbs.appendChild(img);
+			});
+			head.appendChild(thumbs);
+			head.appendChild(el('b', '', n.description));
+			head.appendChild(keyTag(n.key));
+			item.appendChild(head);
+			item.appendChild(el('div', 'wk-meta', n.name + ' · ' + n.drawtype +
+				(n.paramtype2 !== 'none' ? ', paramtype2 ' + n.paramtype2 : '') +
+				(n.drawtype === 'plantlike_rooted' ? ', waving ' + n.waving : '') +
+				' · drops ' + n.drop + (n.new ? ' · new node' : ' · exists')));
+			item.appendChild(el('div', 'wk-meta', n.use + '.'));
+			WreckNotes.attach(item, n.key);
+			box.appendChild(item);
+		});
+		var ctx = el('div', 'wk-item');
+		var h2 = el('div', 'wk-item-head');
+		var th = el('span', 'wk-thumbs');
+		['default_sand', 'seagrass_1', 'seagrass_2', 'seagrass_3'].forEach(function (tx) {
+			var img = el('img');
+			img.src = WRECK.textures[tx];
+			img.alt = '';
+			img.title = tx + '.png';
+			th.appendChild(img);
+		});
+		h2.appendChild(th);
+		h2.appendChild(el('b', '', 'Context: sand and seagrass'));
+		ctx.appendChild(h2);
+		ctx.appendChild(el('div', 'wk-meta', 'default:sand (exists); seagrass is lane TERRAIN\'s node with ARTS\'s three textures (picked on the ARTS page), drawn here in loose patches for context only.'));
+		box.appendChild(ctx);
+	}
+
+	function shapeNote() {
+		var box = document.getElementById('shape-note');
+		SHAPES.forEach(function (shape) {
+			var item = el('div', 'wk-item');
+			item.dataset.shape = shape.key.split('.')[1];
+			var head = el('div', 'wk-item-head');
+			head.appendChild(el('b', '', shape.title));
+			head.appendChild(keyTag(shape.key));
+			item.appendChild(head);
+			item.appendChild(el('div', 'wk-meta', shape.note));
+			WreckNotes.attach(item, shape.key);
+			box.appendChild(item);
+		});
+	}
+	function showShapeNote() {
+		Array.prototype.forEach.call(document.querySelectorAll('#shape-note .wk-item'), function (it) {
+			it.style.display = it.dataset.shape === state.shape ? '' : 'none';
+		});
+	}
+
+	function mastQuestion() {
+		var box = document.getElementById('mast-question');
+		var item = el('div', 'wk-item');
+		var head = el('div', 'wk-item-head');
+		head.appendChild(el('b', '', 'How high the main mast stands'));
+		head.appendChild(keyTag('wreck.mast_height'));
+		item.appendChild(head);
+		var ul = el('ul');
+		['As in the file: 15.9 nodes (param2 255, the most leveled allows), at every depth the same.',
+			'visual_scale 1.5 or 2: the engine scales the crossed quads in width and height, so the same param2 gives 23.9 or 31.9 nodes; the pole is drawn 1.5 or 2 times thicker.',
+			'“2 nodes above the water”: the build step sets the mast\'s param2 from the depth at placement, so a mast pokes 2 nodes out of the water wherever it can reach (header: mast).'].forEach(function (t) {
+			ul.appendChild(el('li', '', t));
+		});
+		item.appendChild(ul);
+		WreckNotes.attach(item, 'wreck.mast_height');
+		box.appendChild(item);
+	}
+
+	// ------------------------------------------------------------ ui
+
+	function syncUi() {
+		Array.prototype.forEach.call(document.querySelectorAll('[data-shape-btn]'), function (b) {
+			b.setAttribute('aria-pressed', b.dataset.shapeBtn === state.shape ? 'true' : 'false');
+		});
+		Array.prototype.forEach.call(document.querySelectorAll('[data-depth]'), function (b) {
+			b.setAttribute('aria-pressed', parseInt(b.dataset.depth, 10) === state.depth ? 'true' : 'false');
+		});
+		Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) {
+			b.setAttribute('aria-pressed', b.dataset.view === state.view ? 'true' : 'false');
+		});
+		document.getElementById('depth').value = state.depth;
+		document.getElementById('depth-value').textContent = state.depth + ' nodes';
+		document.getElementById('light').checked = state.light;
+		document.getElementById('seagrass').checked = state.seagrass;
+		document.getElementById('figure').checked = state.figure;
+		document.getElementById('water').checked = state.water;
+		document.getElementById('mast-rule').value = state.mastRule;
+		document.getElementById('mast-scale').value = String(state.mastScale);
+		showShapeNote();
+	}
+	function change(fn) { return function (e) { fn(e); syncUi(); remember(); build(); }; }
+
+	var bar = document.getElementById('shape-buttons');
+	SHAPES.forEach(function (shape, i) {
+		var b = el('button', '', shape.title);
+		b.type = 'button';
+		b.id = 'shape-' + shapeNames[i];
+		b.dataset.shapeBtn = shapeNames[i];
+		b.onclick = change(function () { state.shape = shapeNames[i]; });
+		bar.appendChild(b);
+	});
+	Array.prototype.forEach.call(document.querySelectorAll('[data-depth]'), function (b) {
+		b.onclick = change(function () { state.depth = parseInt(b.dataset.depth, 10); });
+	});
+	document.getElementById('depth').oninput = change(function (e) { state.depth = parseInt(e.target.value, 10); });
+	Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) {
+		b.onclick = change(function () { state.view = b.dataset.view; });
+	});
+	document.getElementById('light').onchange = change(function (e) { state.light = e.target.checked; });
+	document.getElementById('seagrass').onchange = change(function (e) { state.seagrass = e.target.checked; });
+	document.getElementById('figure').onchange = change(function (e) { state.figure = e.target.checked; });
+	document.getElementById('water').onchange = change(function (e) { state.water = e.target.checked; });
+	document.getElementById('mast-rule').onchange = change(function (e) { state.mastRule = e.target.value; });
+	document.getElementById('mast-scale').onchange = change(function (e) { state.mastScale = parseFloat(e.target.value); });
+
+	function resize() {
+		var w = view.clientWidth, h = view.clientHeight;
+		renderer.setSize(w, h);
+		persp.aspect = w / h;
+		persp.updateProjectionMatrix();
+		fitOrtho();
+	}
+	if (window.ResizeObserver) { new ResizeObserver(resize).observe(view); } else { window.addEventListener('resize', resize); }
+
+	var under = document.getElementById('under');
+	function loop() {
+		requestAnimationFrame(loop);
+		if (state.view === 'top') { topControls.update(); } else { orbit.update(); }
+		under.style.display = state.view !== 'top' && state.water && persp.position.y < state.depth - 0.5 ? 'block' : 'none';
+		renderer.render(scene, state.view === 'top' ? ortho : persp);
+	}
+
+	shapeNote();
+	legend();
+	mastQuestion();
+	bandTable();
+	resize();
+	syncUi();
+	build();
+	loop();
+	WreckNotes.start();
+	window.__wreckReady = true;
+})();
+
+</script>

@@ -1,0 +1,133 @@
+{
+ "nodes": [
+  {
+   "description": "Waterlogged Planks",
+   "drawtype": "normal",
+   "drop": "default:wood",
+   "key": "wreck.planks",
+   "name": "grug_nodes:wreck_planks",
+   "new": true,
+   "paramtype2": "none",
+   "tiles": [
+    "wreck_planks",
+    "wreck_planks",
+    "wreck_planks"
+   ],
+   "use": "hull shell, deck, rail, loose planks"
+  },
+  {
+   "description": "Waterlogged Planks with Algae",
+   "drawtype": "normal",
+   "drop": "default:wood",
+   "key": "wreck.planks_algae",
+   "name": "grug_nodes:wreck_planks_algae",
+   "new": true,
+   "paramtype2": "none",
+   "tiles": [
+    "wreck_planks_algae",
+    "wreck_planks_algae",
+    "wreck_planks_algae"
+   ],
+   "use": "planks whose top lies open in the water (about a third)"
+  },
+  {
+   "description": "Waterlogged Log",
+   "drawtype": "normal",
+   "drop": "default:tree",
+   "key": "wreck.log",
+   "name": "grug_nodes:wreck_log",
+   "new": true,
+   "paramtype2": "facedir",
+   "tiles": [
+    "wreck_log_top",
+    "wreck_log_top",
+    "wreck_log"
+   ],
+   "use": "keel, stem, ribs, the fallen mast (ARTS recommends its own log over default:tree)"
+  },
+  {
+   "description": "Waterlogged Planks (mast step)",
+   "drawtype": "plantlike_rooted",
+   "drop": "default:wood",
+   "key": "wreck.mast",
+   "name": "grug_nodes:wreck_mast",
+   "new": true,
+   "paramtype2": "leveled",
+   "special": "wreck_mast",
+   "tiles": [
+    "wreck_planks",
+    "wreck_planks",
+    "wreck_planks"
+   ],
+   "use": "the deck plank a mast stands on; height = param2 / 16 nodes (main mast 255 = 15.9, stumps 2-4.5)",
+   "waving": 0
+  },
+  {
+   "description": "Waterlogged Planks (rope end)",
+   "drawtype": "plantlike_rooted",
+   "drop": "default:wood",
+   "key": "wreck.rope",
+   "name": "grug_nodes:wreck_rope",
+   "new": true,
+   "paramtype2": "none",
+   "special": "wreck_rope",
+   "tiles": [
+    "wreck_planks",
+    "wreck_planks",
+    "wreck_planks"
+   ],
+   "use": "a rope coil on a deck plank, one node",
+   "waving": 1
+  },
+  {
+   "description": "Waterlogged Planks (sail tatters)",
+   "drawtype": "plantlike_rooted",
+   "drop": "default:wood",
+   "key": "wreck.sail",
+   "name": "grug_nodes:wreck_sail",
+   "new": true,
+   "paramtype2": "none",
+   "special": "wreck_sail",
+   "tiles": [
+    "wreck_planks",
+    "wreck_planks",
+    "wreck_planks"
+   ],
+   "use": "torn sail strips on a rail or loose plank, one node",
+   "waving": 1
+  },
+  {
+   "description": "Waterlogged Planks with Algae (tuft)",
+   "drawtype": "plantlike_rooted",
+   "drop": "default:wood",
+   "key": "wreck.algae",
+   "name": "grug_nodes:wreck_algae",
+   "new": true,
+   "paramtype2": "none",
+   "special": "wreck_algae",
+   "tiles": [
+    "wreck_planks_algae",
+    "wreck_planks_algae",
+    "wreck_planks_algae"
+   ],
+   "use": "an algae tuft on an algae plank, one node",
+   "waving": 1
+  },
+  {
+   "description": "Mossy Cobblestone",
+   "drawtype": "normal",
+   "drop": "default:mossycobble",
+   "key": "wreck.ballast",
+   "name": "default:mossycobble",
+   "new": false,
+   "paramtype2": "none",
+   "tiles": [
+    "default_mossycobble",
+    "default_mossycobble",
+    "default_mossycobble"
+   ],
+   "use": "the ballast heap of the debris field (exists)"
+  }
+ ],
+ "schema": "grug_r51_wreck_nodes_v1"
+}
