@@ -14,8 +14,8 @@
 --      filled, the first run required and on the root, the same bytes for
 --      the same seed, other variants for another world, and the bone finds
 --      all different pictures;
---   E. the closed node roster: 156 rows, every kit node with the decoration
---      role;
+--   E. the closed node roster: 173 rows (LP's plants on top), every kit node
+--      with the decoration role;
 --   F. the town side: the bone pile's uses draw from the skeleton set
 --      (dressing.bone_piece, the decor kit's lair pieces, the undead
 --      undergrowth) and every graveyard caller's composition (Stillgrave,
@@ -239,7 +239,8 @@ for name, mask in roster_source:match("local ACCEPTED_R6_ROWS = (%b{})"):gmatch(
 	roster[name] = tonumber(mask)
 	roster_count = roster_count + 1
 end
-check(roster_count == 156, "156 production rows")
+-- lane LP's 17 land plants follow (156 -> 173)
+check(roster_count == 173, "173 production rows")
 for name in pairs(kit_names) do
 	local mask = roster[name]
 	check(mask ~= nil and math.floor(mask / 8) % 2 == 1, name .. " has the decoration role")

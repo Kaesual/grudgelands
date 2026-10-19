@@ -94,7 +94,7 @@ the plant. Neither grows where the terrain guard refuses
 (`grug_core.world_alterable`: towns, capitals, landmarks), so the reed rows of
 a capital's fields stay as built. A rotated cactus piece (`param2` ≥ 4) never
 grows; the generated badlands cacti stand on trunks taller than four pieces and
-so stay as generated, while wild swamp papyrus grows to its cap of four. The
+so stay as generated, while wild shore papyrus grows to its cap of four. The
 Large Cactus Seedling follows the cactus ground and light.
 
 **Saplings** (trees and bushes) grow only by daylight: natural light 13
@@ -220,6 +220,19 @@ the natural count about 1.5 plants (radius 4–24, ±4 nodes high; woody trunks
 integer by a fixed per-patch fraction. At or above the target nothing is
 placed; below it the chance is the class chance × (target − present) / target.
 Shoreline species count at most two eligible supports per box width.
+Round 51: the shore papyrus counts as a shoreline species and by columns (a
+stack of 2–4 is one plant); the lichen counts at most one patch (25 columns)
+of supports, since it grows only inside its patches.
+
+**The Round 51 land plants** (lane LP) are ground cover and renew like the
+grass: the jungle's ferns and strong flowers, the elves' pastel flowers, the
+crags' and pine hills' alpine plants and lichen, the warm shores' papyrus
+(one stalk at the water's edge, which then grows to four) and the marram on
+dry sand, each at its row's density on its row's hosts, at the sites its row
+asks (papyrus beside the water, marram away from it, lichen in its patches).
+The jungle's large-leaved bush and the badlands' withered bush have no
+renewal path (no sapling grows their foliage), and the lianas come back only
+with their tree.
 
 **Trees.** Trees and bushes renew as saplings of the species the biome
 naturally grows (setting `grug_tree_regrowth`, default on), which then grow
@@ -229,8 +242,8 @@ any non-natural node, farm soil or unloaded terrain. Natural nodes are air,
 liquids, generated ground and ores (`grug_natural`), the tree, leaf, sapling,
 flora and fruit families and every node the generator places as vegetation.
 The snowy crags pine and the crags pine bush (gravel), the fallen apple log, the badlands cactus
-and swamp papyrus have no renewal path (the last two grow from their own
-stands, above).
+(it grows from its own stands, above) and the two Round 51 bushes have no
+renewal path.
 
 **Rates** (first version by feel, tuned in playtest; constants in
 `grug_farming/renewal.lua`): each player is serviced once per 5 seconds with

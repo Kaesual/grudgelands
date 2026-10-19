@@ -184,17 +184,24 @@ local function planner_factory()
 		--   `surface_y_at_most_32` (emergent jungle tree): not in a zone of
 		--     mountain relief. Natural jungle land spans y 0-400; only ~10 %
 		--     of it lies at or below 32.
-		--   `surface_y_1_to_4` (swamp papyrus): a dry root beside standing
+		--   `surface_y_1_to_4` (papyrus; Round 51 lane LP: the warm shores'
+		--     beach papyrus, before it the swamp's): a dry root beside standing
 		--     water -- a wet column (sea, bay, lake or river) within two
 		--     nodes whose surface lies at most 3 below the root's ground and
 		--     never above it -- so the reeds follow the water wherever it
-		--     lies and a swamp without water grows none (Round 22 Phase 5).
-		--     The candidate cell must hold water itself, which keeps the
-		--     neighbourhood test off dry cells.
+		--     lies (Round 22 Phase 5; the test is the vegetation rule's
+		--     `water_beside`, which renewal shares). The candidate cell must
+		--     hold water itself, which keeps the neighbourhood test off dry
+		--     cells.
 		--   `stilt_ground` (the swamp tree, Round 47 lane SW): no column within
 		--     2 (square) lies lower than the root's ground or is a pool, so
 		--     every stilt (out 1-2, a corner more) ends on ground; higher
 		--     ground only shortens a stilt (its cells are optional).
+		--   Round 51 lane LP, tested only on a column the row already hosts
+		--   (the vegetation rule's tests, which renewal shares):
+		--   `shore_dry` (marram): no wet column within 3 (dry sand away from
+		--     the water);
+		--   `rock_patch` (lichen): the column lies in a lichen patch.
 		local decoration_biome, decoration_height_rule = {}, {}
 		for index = 1, #decorations do
 			local set = {}
@@ -205,7 +212,9 @@ local function planner_factory()
 				rule:find("surface_y_at_least_60", 1, true) and 1 or
 				(rule:find("surface_y_at_most_32", 1, true) and 2 or
 					(rule:find("surface_y_1_to_4", 1, true) and 3 or
-						(rule:find("stilt_ground", 1, true) and 4 or 0)))
+						(rule:find("stilt_ground", 1, true) and 4 or
+							(rule:find("shore_dry", 1, true) and 5 or
+								(rule:find("rock_patch", 1, true) and 6 or 0)))))
 		end
 		-- Vegetation and altitude (Round 23 Phase 2, habitat_registry.lua):
 		-- each row's class picks one per-column factor; a column is eligible
@@ -465,20 +474,9 @@ local function planner_factory()
 
 		-- True when a wet column within two nodes (square) of (x, z) has its
 		-- surface between `ground - 3` and `ground` (papyrus, rule 3).
+		local column_values_at = planner_source.column_values_at
 		local function water_beside(x, z, ground)
-			for dz = -2, 2 do
-				for dx = -2, 2 do
-					if dx ~= 0 or dz ~= 0 then
-						local _, _, _, _, _, terrain_y, water_y =
-							planner_source.column_values_at(x + dx, z + dz)
-						if water_y and water_y > terrain_y and ground >= water_y and
-								ground <= water_y + 3 then
-							return true
-						end
-					end
-				end
-			end
-			return false
+			return vegetation.water_beside(column_values_at, x, z, ground)
 		end
 
 		-- True when no column within two nodes (square) of (x, z) has its
@@ -577,6 +575,23 @@ local function planner_factory()
 					end
 				end
 			end
+			-- Rules 5 and 6 per column, asked by several rows (the three marram
+			-- grasses, the two lichens): each column's answer once per cell.
+			local site_memo
+			local function site_ok(rule_id, column)
+				site_memo = site_memo or {}
+				local key = rule_id * 1024 + column
+				local known = site_memo[key]
+				if known == nil then
+					if rule_id == 5 then
+						known = vegetation.dry_shore(column_values_at, scratch.x[column], scratch.z[column])
+					else
+						known = vegetation.rock_patch(scratch.x[column], scratch.z[column])
+					end
+					site_memo[key] = known
+				end
+				return known
+			end
 			for catalog = 1, #decorations do
 				local row = decorations[catalog]
 				local height_rule = decoration_height_rule[catalog]
@@ -606,6 +621,9 @@ local function planner_factory()
 						hosts[column] and
 						content.decoration_cover(row.id, scratch.biome[column],
 							content.content_ref(scratch.support_name[column])) or 0
+					if cover > 0 and height_rule >= 5 and not site_ok(height_rule, column) then
+						cover = 0
+					end
 					local factor = cover > 0 and (decoration_kit[catalog] and VEGETATION_ONE or
 						not scratch.snowy[column] and factors[column]) or 0
 					if factor > 0 then

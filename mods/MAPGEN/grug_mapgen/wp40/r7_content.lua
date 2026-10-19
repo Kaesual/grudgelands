@@ -1,4 +1,4 @@
--- Closed R7 production content resolvers: the 156-row production-R6
+-- Closed R7 production content resolvers: the 173-row production-R6
 -- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
@@ -16,6 +16,9 @@
 -- stone block, the three silver sandstones, the junglewood fence):
 -- 128 -> 156; dirt, gravel, mossy cobble and stone, surface rows already,
 -- take the decoration role too (mask 9, as mud), so the kit may place them.
+-- Round 51 lane LP: the land plants (decoration role: six flowers, two
+-- alpine plants, two lichens, two bush foliages, the liana end and strand,
+-- and default's three marram grasses): 156 -> 173.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -180,6 +183,24 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_trees:swamp_hanging_moss", 8},
 		{"grug_trees:swamp_hanging_moss_strand", 8},
 		{"grug_trees:swamp_leaves", 8},
+		-- Round 51 lane LP: the land plants
+		{"default:marram_grass_1", 8},
+		{"default:marram_grass_2", 8},
+		{"default:marram_grass_3", 8},
+		{"grug_nodes:alpine_cushion", 8},
+		{"grug_nodes:alpine_windshrub", 8},
+		{"grug_nodes:flower_blush_star", 8},
+		{"grug_nodes:flower_cream_cups", 8},
+		{"grug_nodes:flower_ember_star", 8},
+		{"grug_nodes:flower_lilac_bells", 8},
+		{"grug_nodes:flower_ruby_fan", 8},
+		{"grug_nodes:flower_violet_fan", 8},
+		{"grug_nodes:jungle_bush_leaves", 8},
+		{"grug_nodes:lichen_carpet", 8},
+		{"grug_nodes:lichen_carpet_b", 8},
+		{"grug_nodes:withered_bush_leaves", 8},
+		{"grug_trees:liana", 8},
+		{"grug_trees:liana_strand", 8},
 	}
 	local P9G_NAMES = {
 		"grug_gathering:corn_source",
@@ -286,7 +307,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 156 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 173 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 

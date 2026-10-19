@@ -111,12 +111,17 @@ return function(hash, content, template_source, generated)
 		fail("generated tree seam differs")
 	end
 
+	-- Round 51 lane LP: the jungle's and the badlands' bushes wear their own
+	-- foliage on the default bush shapes.
 	local function replacement_for(definition, name)
-		if definition.id == "swamp_papyrus" and name == "default:dirt" then
-			return "grug_nodes:mud"
-		elseif definition.id == "deep_forest_apple_log" and
+		if definition.id == "deep_forest_apple_log" and
 				name == "flowers:mushroom_brown" then
 			return "air"
+		elseif definition.id == "jungle_bush" and name == "default:bush_leaves" then
+			return "grug_nodes:jungle_bush_leaves"
+		elseif definition.id == "badlands_withered_bush" and
+				name == "default:acacia_bush_leaves" then
+			return "grug_nodes:withered_bush_leaves"
 		end
 		return name
 	end
@@ -504,8 +509,7 @@ return function(hash, content, template_source, generated)
 				if span_x > 5 or span_z > 5 then computed_class = 1 end
 			end
 			if definition.id == "deep_forest_apple_log" or
-					definition.id == "badlands_large_cactus" or
-					definition.id == "swamp_papyrus" then
+					definition.id == "badlands_large_cactus" then
 				computed_class = 1
 			end
 			if definition.settlement_class ~= computed_class then

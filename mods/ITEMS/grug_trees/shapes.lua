@@ -26,14 +26,16 @@ local S16 = 1 / 16
 -- Wood type -> trunk node, every node that decays to it (`leaves`) and the
 -- leaves a twig joins from below (`joins`; the first is the wood's own leaf,
 -- published as shape_woods[wood].leaves). The apple fruit only shares the
--- decay. Kapok grows from jungle wood; the swamp tree (Round 47 lane SW)
+-- decay. Kapok grows from jungle wood (its lianas decay with it, Round 51
+-- lane LP); the swamp tree (Round 47 lane SW)
 -- from gravewood, so its leaves and hanging moss decay to gravewood wood
 -- and its leaves take the twig too. Every name must be registered before
 -- this file runs (the end of init.lua).
 local WOODS = {
 	{key = "apple", trunk = "default:tree", leaves = {"default:leaves", "default:apple"},
 		joins = {"default:leaves"}},
-	{key = "jungle", trunk = "default:jungletree", leaves = {"default:jungleleaves"},
+	{key = "jungle", trunk = "default:jungletree", leaves = {"default:jungleleaves",
+		"grug_trees:liana", "grug_trees:liana_strand"},
 		joins = {"default:jungleleaves"}},
 	{key = "acacia", trunk = "default:acacia_tree", leaves = {"default:acacia_leaves"},
 		joins = {"default:acacia_leaves"}},

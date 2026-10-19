@@ -10,6 +10,7 @@ Five groups, listed in their own tables below:
    Claude; they replace several files of groups 1 and 3 under the same
    names.
 5. **Land kit props (Round 51)** — original, CC0 1.0, by GPT-6 Astra.
+6. **Land plants (Round 51)** — original, CC0 1.0, by GPT-6 Astra.
 
 ## 1. Biome signature tops — derived from minetest_game
 
@@ -166,3 +167,31 @@ shipped `default_stone.png` and carry no bitmap of their own.
 | `grug_nodes_statue_mourner_base_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/statue_mourner_base/statue_mourner_base_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Mourner, kneeling robe and knees) |
 | `grug_nodes_statue_mourner_upper_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/statue_mourner_upper/statue_mourner_upper_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Mourner, bowed hood and clasped hands) |
 | `grug_nodes_statue_veiled_head_{top,bottom,right,left,back,front}.png` | `tools/r51_land/props/statue_veiled_head/statue_veiled_head_*.png` | GPT-6 Astra | CC0 1.0 | renamed only (Statue, worn veiled head) |
+
+## 6. Land plants (Round 51) — CC0 1.0
+
+Original textures for Grudgelands, picked by the user in the Round 51 land
+viewer (`tools/r47_sw/land.html`) and copied byte for byte from
+`tools/r51_land/plants` under this mod's names. No downloaded, traced or
+recoloured third-party pixels. Generator and per-file records:
+`tools/r51_land/README.md` ("ARTL pass 1", "ARTL pass 3"): `land_art.py`
+(GPT-6 Astra, 2026-10-19; pass 1 commit `c16c6bcb`, the pass 3 lichen
+commit `d799517e`). The flowers and alpine plants are plantlike, the bush
+foliage allfaces, the lichen a carpet drawn with alpha clip.
+
+**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Source file | Author | License | Modifications |
+|------|-------------|--------|---------|---------------|
+| `grug_nodes_flower_ruby_fan.png` | `tools/r51_land/plants/flower_ruby_fan.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_flower_ember_star.png` | `tools/r51_land/plants/flower_ember_star.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_flower_violet_fan.png` | `tools/r51_land/plants/flower_violet_fan.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_flower_blush_star.png` | `tools/r51_land/plants/flower_blush_star.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_flower_lilac_bells.png` | `tools/r51_land/plants/flower_lilac_bells.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_flower_cream_cups.png` | `tools/r51_land/plants/flower_cream_cups.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_alpine_cushion.png` | `tools/r51_land/plants/alpine_cushion.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_alpine_windshrub.png` | `tools/r51_land/plants/alpine_windshrub.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_jungle_bush_leaves.png` | `tools/r51_land/plants/jungle_bush_leaves.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_withered_bush_leaves.png` | `tools/r51_land/plants/withered_bush_leaves.png` (`land_art.py`, pass 1) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_lichen_carpet_top.png` | `tools/r51_land/plants/lichen_carpet_top.png` (`land_art.py`, pass 3) | GPT-6 Astra | CC0 1.0 | renamed only |
+| `grug_nodes_lichen_carpet_top_b.png` | `tools/r51_land/plants/lichen_carpet_top_b.png` (`land_art.py`, pass 3) | GPT-6 Astra | CC0 1.0 | renamed only |

@@ -185,8 +185,9 @@ do
 		classes.blight_dry_shrub == "shrub" and classes.crags_pine_bush == "shrub_band" and
 		classes.deep_forest_bush == "shrub_band" and classes.elf_forest_bush == "shrub_band" and
 		classes.bone_forest_dry_shrub == "shrub_band" and
-		classes.meadows_grass_1 == "cover" and classes.swamp_papyrus == "cover" and
-		classes.badlands_dry_shrub == "cover", "decoration rows map to their classes")
+		classes.meadows_grass_1 == "cover" and classes.beach_papyrus == "cover" and
+		classes.badlands_dry_shrub == "cover" and classes.jungle_bush == "shrub" and
+		classes.badlands_withered_bush == "shrub", "decoration rows map to their classes")
 end
 
 -- 2. Forest field: each zone's mean is one (real zones) --------------------
