@@ -204,6 +204,16 @@ All files MIT, author **Liil/Wilhelmine** (models, textures, animation).
 | `grug_mobs_scorpion.png` | `= textures/texturescorpion.png` | none (`cmp` byte-identical) |
 | `grug_mobs_viper.png` | `= textures/textureviper.png` | none (`cmp` byte-identical) |
 | `grug_mobs_snow_leopard.png` | `= textures/texturesnowleopard.png` | none (`cmp` byte-identical) |
+| `grug_mobs_tortoise.b3d` | `= models/Tortoise.b3d` | none (`cmp` byte-identical; Round 51 water families) |
+| `grug_mobs_frog.b3d` | `= models/Frog.b3d` | none (`cmp` byte-identical; Round 51) |
+| `grug_mobs_stingray.b3d` | `= models/Stingray.b3d` | none (`cmp` byte-identical; Round 51) |
+| `grug_mobs_shark.b3d` | `= models/Shark.b3d` | none (`cmp` byte-identical; Round 51, Bay and Abyssal Shark) |
+| `grug_mobs_goby.b3d` | `= models/Goby.b3d` | none (`cmp` byte-identical; Round 51) |
+| `grug_mobs_tortoise.png` | `= textures/texturetortoise.png` | none (`cmp` byte-identical; Round 51) |
+| `grug_mobs_frog.png` | `= textures/texturefrog.png` | none (`cmp` byte-identical; Round 51) |
+| `grug_mobs_stingray.png` | `= textures/texturestingray.png` | none (`cmp` byte-identical; Round 51) |
+| `grug_mobs_shark.png` | `= textures/textureshark.png` | none (`cmp` byte-identical; Round 51) |
+| `grug_mobs_goby.png` | `= textures/texturegoby.png` | none (`cmp` byte-identical; Round 51) |
 
 ---
 
@@ -476,6 +486,11 @@ false positives here.
 | `grug_mobs_wolf.b3d` | ANIM+BONE+KEYS | 12 | 2904 | 1104 | 1..92 | `wolf.lua` | 0..40 | animated, in range |
 | `grug_mobs_zebra.b3d` | ANIM+BONE+KEYS | 11 | 264 | 2200 | 1..200 | `zebra.lua` | 0..200 | animated, in range |
 | `grug_mobs_zombie.b3d` | ANIM+BONE+KEYS | 7 | 2160 | 847 | 1..121 | `zombie.lua` | 0..59 | animated, in range |
+| `grug_mobs_tortoise.b3d` (Round 51) | ANIM+BONE+KEYS | 18 | 432 | 7200 | 1..400 | `tortoise.lua` | 1..400 | animated, in range |
+| `grug_mobs_frog.b3d` (Round 51) | ANIM+BONE+KEYS | 17 | 408 | 4850 | 1..350 | `frog.lua` | 1..200 | animated, in range |
+| `grug_mobs_stingray.b3d` (Round 51; `ANIM` says 199) | ANIM+BONE+KEYS | 9 | 216 | 2100 | 1..300 | `stingray.lua` | 1..300 | animated, in range |
+| `grug_mobs_shark.b3d` (Round 51) | ANIM+BONE+KEYS | 13 | 312 | 2600 | 1..200 | `shark.lua` | 1..200 | animated, in range |
+| `grug_mobs_goby.b3d` (Round 51) | ANIM+BONE+KEYS | 4 | 96 | 800 | 1..200 | `goby.lua` | 1..200 | animated, in range |
 
 ### 8.1 The one defect the cross-check found: the Kraken
 

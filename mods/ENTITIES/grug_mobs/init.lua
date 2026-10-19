@@ -974,7 +974,7 @@ function grug_mobs.register_mob(name, def)
 	end
 	mobs:register_mob(name, def)
 	if def._grug_swimmer then
-		grug_mobs.install_swimmer_guard(name)
+		grug_mobs.install_swimmer_guard(name, def)
 	end
 	-- An air flier plays its fly clip in the air (flight.lua).
 	grug_mobs.install_flier_animation(name)
@@ -1074,6 +1074,13 @@ dofile(modpath .. "/jungle_ape.lua")
 dofile(modpath .. "/parrot.lua")
 dofile(modpath .. "/kraken.lua")
 dofile(modpath .. "/reed_angelfish.lua")
+-- Round 51: the water families (biomes_mobs.md "Round 51 water families"):
+-- the amphibians and the swimmers; their sub-types come with subtypes.lua.
+dofile(modpath .. "/tortoise.lua")
+dofile(modpath .. "/frog.lua")
+dofile(modpath .. "/stingray.lua")
+dofile(modpath .. "/shark.lua")
+dofile(modpath .. "/goby.lua")
 -- Swamp, shore and war coast + the humanoid camp mechanism
 -- (biomes_mobs.md §3.1/§4, WP6/T7). skeleton_raider.lua reuses the arrow
 -- entity registered by skeleton_archer.lua above, so it must come after it;
