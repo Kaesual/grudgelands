@@ -22,8 +22,8 @@
 --   E. the lianas of this world's jungle and kapok templates and grown trees:
 --      strands above one end, 2-6 long, under leaves, two nodes clear of the
 --      ground, within the leaf decay reach of wood; no other species;
---   F. the closed node roster: 173 rows (LK's kit and LP's 17), LP's with the
---      decoration role.
+--   F. the closed node roster: 174 rows (LK's kit, LP's 17 and T4's ice),
+--      LP's with the decoration role.
 --
 -- Usage (repo root): luajit tools/r51_lp/portable_test.lua [REPO]
 local repo = arg and arg[1] or "."
@@ -509,8 +509,8 @@ for name, m in roster:gmatch('{"([^"]+)", (%d+)}') do
 	total = total + 1
 	mask[name] = tonumber(m)
 end
-check(total == 173 and content:find("#ACCEPTED_R6_ROWS ~= 173", 1, true) ~= nil,
-	"the roster holds 173 rows and checks that count (" .. total .. ")")
+check(total == 174 and content:find("#ACCEPTED_R6_ROWS ~= 174", 1, true) ~= nil,
+	"the roster holds 174 rows and checks that count (" .. total .. ")")
 for _, name in ipairs({"default:marram_grass_1", "default:marram_grass_2", "default:marram_grass_3",
 		"grug_nodes:alpine_cushion", "grug_nodes:alpine_windshrub", "grug_nodes:flower_blush_star",
 		"grug_nodes:flower_cream_cups", "grug_nodes:flower_ember_star", "grug_nodes:flower_lilac_bells",

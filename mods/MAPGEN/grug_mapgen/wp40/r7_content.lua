@@ -1,4 +1,4 @@
--- Closed R7 production content resolvers: the 173-row production-R6
+-- Closed R7 production content resolvers: the 174-row production-R6
 -- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
 -- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
 -- the three decorative rocks (slate, basalt, granite) as surface-role rows
@@ -18,7 +18,8 @@
 -- take the decoration role too (mask 9, as mud), so the kit may place them.
 -- Round 51 lane LP: the land plants (decoration role: six flowers, two
 -- alpine plants, two lichens, two bush foliages, the liana end and strand,
--- and default's three marram grasses): 156 -> 173.
+-- and default's three marram grasses): 156 -> 173. Round 51 T4: the snowy
+-- crags' ice patches (surface role): 173 -> 174.
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -63,6 +64,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"default:grass_4", 8},
 		{"default:grass_5", 8},
 		{"default:gravel", 9},
+		{"default:ice", 1},
 		{"default:junglegrass", 8},
 		{"default:jungleleaves", 8},
 		{"default:jungletree", 8},
@@ -307,7 +309,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 173 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 174 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 

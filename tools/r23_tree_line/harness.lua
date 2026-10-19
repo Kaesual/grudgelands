@@ -65,7 +65,11 @@ function H.new(repo)
 				"default:sand", "default:sandstone", "default:snowblock",
 				-- the swamp's mixed ground (Round 47 lane SW)
 				"grug_nodes:mud_dry", "grug_nodes:mud_mottled",
-				"grug_nodes:mud_with_wet_grass"}) do
+				"grug_nodes:mud_with_wet_grass",
+				-- Round 51 T4: the swamp's moss, the clay bands, the ice patches
+				"grug_nodes:swamp_moss", "grug_nodes:clay_band_ochre",
+				"grug_nodes:clay_band_sienna", "grug_nodes:clay_band_chalk",
+				"grug_nodes:clay_band_umber", "default:ice"}) do
 			surface(name)
 		end
 		for _, name in ipairs(extra_surface_names or {}) do surface(name) end

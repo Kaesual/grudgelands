@@ -16,8 +16,8 @@
 --      piece above becomes the end, the pieces below fall away, a protected
 --      one stays), through the real nodes' after_dig_node; both decay with
 --      gravewood; the world's swamp variants write strands above one end;
---   F. the closed node roster: 145 rows (Round 51 lane LP's plants on top)
---      with LG's six and their roles.
+--   F. the closed node roster: 174 rows (lanes LK, LP and T4 on top) with
+--      LG's six and their roles.
 --
 -- Usage (repo root): luajit tools/r51_lg/portable_test.lua [REPO]
 local repo = arg and arg[1] or "."
@@ -348,10 +348,10 @@ for name, m in roster:gmatch('{"([^"]+)", (%d+)}') do
 	mask[name] = tonumber(m)
 end
 -- (Round 51 lane LK: the land kit's 28 rows follow, 128 -> 156; lane LP's
--- 17 land plants on top, 156 -> 173)
-check(rows == 173 and content:find("#ACCEPTED_R6_ROWS ~= 173", 1, true) ~= nil,
-	"the roster holds 173 rows and checks that count (" .. rows .. ")")
-check(read(wp40 .. "/r7_p9g.lua"):find("#production.content_names ~= 173", 1, true) ~= nil,
+-- 17 land plants on top, 156 -> 173; T4's ice, 173 -> 174)
+check(rows == 174 and content:find("#ACCEPTED_R6_ROWS ~= 174", 1, true) ~= nil,
+	"the roster holds 174 rows and checks that count (" .. rows .. ")")
+check(read(wp40 .. "/r7_p9g.lua"):find("#production.content_names ~= 174", 1, true) ~= nil,
 	"the P9G successor checks the same count")
 check(mask["grug_nodes:swamp_moss"] == 1, "the swamp moss is a surface row")
 for _, colour in ipairs(CLAY) do
