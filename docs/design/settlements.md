@@ -935,7 +935,7 @@ patches and gaps:
   bridge, never on a plot with its collar and approach.
 - **The capital lakes** (Kezamba's cenote, Lethariel's crown lake) get a
   few lily pads on their shallow rim (1–3 deep) and freshwater waterweed on
-  beds 3–10 deep, the wild lakes' bands, outside the core, in the same
+  natural sand beds 3–10 deep, the wild lakes' bands, outside the core, in the same
   patchy way.
 
 ## Round 21 ground and access correction
