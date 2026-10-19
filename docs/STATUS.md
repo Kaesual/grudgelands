@@ -32,7 +32,11 @@ notes.
   user), then T1 (`fe540a38`), LG (`f4b1322c`), MOBS M1 (`cb93b631`), T2
   (`5c8ac48e`), MAP (`89bc91e3`), LK (`a2dccc54`), LP (`1d28d889`), T4
   (`d7cebe4f`), T3 (`c3ee3922`), WRECK's build (`08df9bc9`) and MOBS M2
-  (`08163c89`) merged, then this documentation lane D. Each code lane
+  (`08163c89`) merged, then this documentation lane D. After the user's
+  first GUI look, four follow-up lanes inside 0.51.0: FA's sway strips
+  (`c6fa76ff`), FW water plants (`107124cd`), FT towns (`ef02ae36`) and FM
+  water mobs (`898f64e1`), each reviewed
+  ([follow-up](planning/round51-plan.md#follow-up-lanes-after-the-users-first-gui-look-2026-10-19)). Each code lane
   independently reviewed by Opus (T2 and LK MERGE AFTER FIXES, WRECK with
   a coordinator-ordered fix round and a merge delta MERGE AFTER FIXES,
   every fix delta reviewed again; MOBS M2's rate fix checked by the
