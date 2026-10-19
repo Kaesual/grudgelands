@@ -8,7 +8,8 @@
 -- and a drag of the carried copy back onto its own icon removes that copy
 -- (the engine undoes the swap such a drop asks for and keeps the catalog's
 -- stack). A talent that unlocks an ability leaves it here (Round 50 D1).
--- Mounts and boats are not listed (they move to the quickbar).
+-- Mounts and boats are not listed (they move to the quickbar). The row
+-- scrolls horizontally, so any number of owned skills fits (Round 52 C13).
 local detached = {}
 local slots = {} -- player name -> ability id per catalog slot
 local known = {} -- player name -> set of ability ids at the last rebuild
@@ -18,8 +19,6 @@ local function inv_name(name) return "grug_skills_" .. name end
 local function entries(player)
 	local result = {}
 	for index, id in ipairs(grug_abilities.unlocked_ids(player)) do
-		assert(index <= grug_inventory.HOTBAR_SIZE,
-			"Skills ability row exceeds the decided class-kit limit")
 		result[index] = id
 	end
 	return result
@@ -101,21 +100,76 @@ end
 
 -- The row: the catalog on the hotbar's columns in a "Skills" box like the
 -- Hotbar box (grug_inventory.LAYOUT), the hint beside the box's label. `y`
--- is the box's top, in the page's real coordinates; the row is the Hotbar
--- box's height (1.5).
+-- is the box's top, in the page's real coordinates; the box is the Hotbar
+-- box's height (1.5) plus BAR_H for the scrollbar under the slots.
+--
+-- The scroll position (Round 52 C13): the slots sit in a horizontal
+-- scroll_container as wide as the hotbar's eight; past eight skills a
+-- scrollbar below them moves it a slot per step. The client does not keep
+-- the bar across a resend but sends its value with every event of the form
+-- (grug_inventory/ui.lua keep_scroll), so the hook below keeps it in the
+-- sfinv context and the row echoes it: a talent refresh or a rebuild does
+-- not jump back to the start. A drag works from any position: the list's
+-- slot index does not depend on the scroll.
 local HINT_DX = 1.0 -- the hint starts this far right of the "Skills" label
-local function catalog_row(player, y)
+local SCROLL_FIELD = "grug_skills_scroll"
+local PITCH = 1.25 -- a list slot and its spacing in real coordinates
+local SCROLL_FACTOR = 0.125 -- real units per scrollbar unit: a slot is 10
+local SLOT_STEPS = PITCH / SCROLL_FACTOR
+local BAR_GAP, BAR_SIZE = 0.06, 0.24
+local BAR_H = 0.3 -- the room for the scrollbar under the slots
+local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
+	"largestep=100;thumbsize=1;arrows=default]"
+
+local function catalog_row(player, y, context)
 	grug_skills.guard_detached()
-	fill(player)
+	local rows = fill(player) or {}
 	local layout = grug_inventory.LAYOUT
+	local view_w = grug_inventory.VIEW_GEOMETRY.width
+	local visible = grug_inventory.HOTBAR_SIZE
 	local location = "detached:" .. core.formspec_escape(inv_name(player:get_player_name()))
-	return grug_inventory.area_box(layout.box_x, y, layout.box_w,
-			layout.slot_box_h, "Skills") ..
+	local slots_y = y + layout.label_h
+	local fs = {
+		grug_inventory.area_box(layout.box_x, y, layout.box_w,
+			layout.slot_box_h + BAR_H, "Skills"),
 		("label[%.3f,%.3f;%s]"):format(layout.x + HINT_DX, y + layout.label_h / 2,
 			core.formspec_escape("Drag skills onto the hotbar. Drag one back here " ..
-				"to remove it.")) ..
-		("list[%s;catalog;%.3f,%.3f;8,1;0]"):format(location, layout.x,
-			y + layout.label_h)
+				"to remove it.")),
+	}
+	local max = math.max(0, #rows - visible) * SLOT_STEPS
+	if max > 0 then
+		local stored = context and context.grug_skills_scroll or 0
+		local value = math.max(0, math.min(max, math.floor(stored)))
+		-- The thumb shows the visible share (grug_inventory/ui.lua inventory_view).
+		local thumb = math.max(1, math.floor(visible * (max + 1) / #rows + 0.5))
+		fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=%d;largestep=%d;" ..
+			"thumbsize=%d;arrows=hide]"):format(max, SLOT_STEPS, visible * SLOT_STEPS, thumb)
+		fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.3f,%.3f;horizontal;%s;%d]"):format(layout.x,
+			slots_y + 1 + BAR_GAP, view_w, BAR_SIZE, SCROLL_FIELD, value)
+		fs[#fs + 1] = SCROLLBAR_DEFAULTS
+	end
+	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,1;%s;horizontal;%.3f]"):format(
+		layout.x, slots_y, view_w, SCROLL_FIELD, SCROLL_FACTOR)
+	fs[#fs + 1] = ("list[%s;catalog;0,0;%d,1;0]"):format(location, math.max(visible, #rows))
+	fs[#fs + 1] = "scroll_container_end[]"
+	return table.concat(fs)
+end
+
+-- Keeps the row's scroll value of every event in the sfinv context; a pure
+-- scrollbar event ends here and is not re-sent (the chain of sfinv's hook).
+local previous_handle_scroll = sfinv.handle_scroll
+function sfinv.handle_scroll(player, context, fields)
+	local pure = previous_handle_scroll(player, context, fields)
+	local raw = fields[SCROLL_FIELD]
+	local kind, value
+	if type(raw) == "string" then
+		kind, value = raw:match("^(%u+):(%-?%d+)$")
+	end
+	if kind == "CHG" or kind == "VAL" then
+		context.grug_skills_scroll = math.max(0, tonumber(value))
+		pure = pure or kind == "CHG"
+	end
+	return pure
 end
 
 grug_skills.catalog_row = catalog_row
