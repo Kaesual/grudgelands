@@ -6,7 +6,8 @@
 --
 -- Per kit biome the first column of a coarse grid in that biome that is
 -- land and gentle (the ground 12 nodes away within 4); Stillgrave's anchor
--- for a town graveyard. Each area (RADIUS round it) is emerged, then:
+-- for a town graveyard. Each area (RADIUS round it) is emerged, then, as
+-- soon as it is (it unloads again when nobody is near):
 --   count  every kit node in it, per name;
 --   float  every prop whose node below is air (must be none);
 --   shots  a wide view from above and up to CLOSE close views of distinct
@@ -252,6 +253,9 @@ core.register_globalstep(function(dtime)
 						state.pending = state.pending - 1
 						log(("emerged %s (%.1f s after its request)"):format(label,
 							(core.get_us_time() - t0) / 1e6))
+						-- survey at once: an emerged area unloads again when
+						-- nobody is near it (server_unload_unused_data_timeout)
+						survey(label)
 					end
 				end)
 		end
@@ -259,7 +263,6 @@ core.register_globalstep(function(dtime)
 		if state.pending > 0 then return end
 		log(string.format("emerge done in %.1f s",
 			(core.get_us_time() - state.emerge_started) / 1e6))
-		for _, label in ipairs(order) do survey(label) end
 		hide_hud(player)
 		state.phase = "shoot"
 		state.shot = 1
