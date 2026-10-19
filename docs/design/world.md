@@ -260,18 +260,20 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R3 — Water columns**: classification is analytic in x/z and does not
   change when players fill or drain nodes. Every authored lake, river, marsh
   channel, cenote and the landward part of each bay mask remains planned water
-  in its named zone. The four declared outer bay-mouth caps instead become
-  ownerless `deep_ocean` at warped z = -3000 on Elandor and z = +3000 on
-  Kragmar. The editable nominal `coastal_shelf` is exactly
-  `expanded_land_at(80) and not land_at` and inherits the nearest eligible
-  mainland hub's faction/PvP terrain rights; `deep_ocean` beyond that band and
-  in those four mouth caps is immutable at every y. Dragon-channel masks
-  override the shelf and make their complete columns immutable from world
-  bottom to top. Every exterior-ocean class remains non-flyable, while planned
-  zone water inherits its zone's flight rule. Claims exist only in the
-  eligible home zones (`housing.md` §2). Their planned water may lie in a
-  claim; the shelf is excluded although it belongs to a zone, and the ocean
-  has no zone (Round 25 ruling 23). The islands hold no claims.
+  in its named zone. Each bay ends at its mouth, an organic cut near warped
+  z = -3000 on Elandor and z = +3000 on Kragmar. Beyond the land lies the
+  coastal belt (`coastal_shelf`), 250-350 nodes wide, which belongs to the
+  zone on land and inherits its faction/PvP terrain rights; the open sea
+  (`deep_ocean`) lies beyond it, immutable at every y (Round 51,
+  `world_zones.md` §7.4). The organic dragon channels override the belt and
+  belong to their island. Bay, belt and channel water 24 nodes or more off
+  the coast is protected: immutable at every y like the open sea; nearer,
+  the shore follows its zone's rule. Every exterior-ocean class remains
+  non-flyable, while planned zone water inherits its zone's flight rule.
+  Claims exist only in the eligible home zones (`housing.md` §2). Their
+  planned water may lie in a claim unless it is protected; the belt is
+  excluded although it belongs to a zone, and the ocean has no zone (Round 25
+  ruling 23). The islands hold no claims.
 - **R4 — Natural minerals do not regrow** (revised 2026-09-20): ores and mineral resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
@@ -328,8 +330,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   non-ocean land column, both factions may dig and place at y = −501 and below,
   even beneath a road or active claim. Hard-protected capitals, start towns
   and functional anchors end 80 nodes below their placement height (§2 R1,
-  Round 24 ruling 30), well above this boundary. Deep ocean and immutable
-  dragon channels remain full-column exceptions.
+  Round 24 ruling 30), well above this boundary. Deep ocean and protected
+  water (Round 51) remain full-column exceptions.
 
   Natural resources need the pick of the layer where they first appear, at any
   depth: T1 digs Copper, Tin, Coal, Iron, Quartz and Citrine; T2 Gold,
@@ -366,36 +368,38 @@ occupying a position (`world_zones.md` §7):
   falling-liquid columns. Planned
   water inherits the zone's terrain, PvP and flight rules and can never become
   deep ocean. For Claim Stones it counts as ground of its zone
-  (`housing.md` §2). The four explicitly declared outer bay-mouth caps are
-  excluded from this class and use the deep-ocean rule below.
-- **Coastal shelf:** the nominal exterior band where
-  `expanded_land_at(80) and not land_at` holds around authored positive
-  mainland or island shapes. This is editable under the nearest eligible
-  mainland hub's zone terrain policy. Coral, kelp and wild-source coverage
-  follow `world_zones.md`'s Round 10 rules; further coastal materials and shore
+  (`housing.md` §2). Bay water past a bay's organic mouth belongs to the
+  belt or the open sea below. Bay water 24 nodes or more off the coast is
+  protected (immutable at every y, Round 51).
+- **Coastal belt** (`coastal_shelf`; Round 51, it was an 80-node shelf):
+  the exterior water from the coast out to an organic edge 250-350 nodes off
+  it (`world_zones.md` §7.4). It belongs to the zone on land: its level,
+  faction and PvP rule. Its shore, nearer than 24 nodes to the coast, is
+  editable under that zone's terrain policy; farther out it is protected,
+  immutable at every y. Coral, kelp and wild-source coverage follow
+  `world_zones.md`'s Round 10 rules; further coastal materials and shore
   wildlife retain their own content scope. Although it belongs to a zone, it
-  is never claim ground (Round 25 ruling 23).
-  As exterior water it has no authored surface or guard level. Ordinary
-  `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
-  independently levelled. Below normalized y = 0, shelf caves use the standard
-  capped/rounded depth level alone.
-- **Deep ocean:** every ordinary ocean column beyond the shelf plus the four
-  declared outer bay-mouth caps, immutable at every y. This remains the
+  is never claim ground (Round 25 ruling 23). It has no guard level; its
+  mob level at the surface is its zone's (Round 51), below it the zone's or
+  the depth level, whichever is higher.
+- **Deep ocean (the open sea):** every ocean column beyond the belt and past
+  the bays' mouths, immutable at every y. This remains the
   deliberately deadly open sea patrolled by the Kraken, a level-70
   elite (no drops or XP). It has no ordinary surface, guard or mob-level result: the
   Kraken is a hand-set fixed entity outside those resolvers. Boat acquisition,
   summoning, movement and damage are decided in [boats.md](boats.md);
   what this world-geometry rule owns is the pursuit contract below.
-- **Dragon channels:** separate full-column immutable masks between the
-  mainland and the two offshore islands. They are required boat routes and
+- **Dragon channels:** organic shallow straits between the mainland and the
+  two offshore islands, 9-11 nodes deep (Round 51). They belong to their
+  island's zone (level 60, no PvP rule); their water 24 nodes or more off the
+  coast is protected like the open sea. They are required boat routes and
   carry no Kraken at all. Their warning and
   hard-flight bands come from the same 2D distance field. Each channel carries
   two boat approaches, one northern and one southern, joining its
   Battlegrounds endpoint to two inward-shore island beaches at fixed landing
   points, each with a wooden pier ([boats.md](boats.md) §7.1). Both are
   usable by both factions; their north/south orientation only roughly
-  equalizes travel from Kragmar and Elandor. They have no ordinary surface,
-  guard or mob-level result.
+  equalizes travel from Kragmar and Elandor. They have no guard level.
 
 **Kraken pursuit** (travel plan ruling 7, user 2026-10-02; supersedes
 the residual-allowance model decided 2026-08-13). The deep sea is dangerous
@@ -890,8 +894,9 @@ land do not exist.
   level-31+ zone, a capital zone or the other faction's territory, and keeps
   16 nodes from hard-protected footprints and from POI, village and camp
   cores (Round 25 ruling 27; blend envelopes are no barrier). Lakes, rivers and
-  bay water inside an eligible zone may lie in a claim; the shelf and the
-  ocean may not. There are no housing masks and no coastal
+  bay water inside an eligible zone may lie in a claim, bay water only within
+  24 nodes of the coast (farther out it is protected, Round 51); the belt and
+  the ocean may not. There are no housing masks and no coastal
   housing areas. Claims never overlap but may touch.
 - A placed stone is a draft that protects nothing and crumbles after
   5 minutes unless the owner activates it with 5 lumps; for 12 hours after

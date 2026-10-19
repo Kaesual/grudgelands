@@ -165,9 +165,11 @@ for _, seed in ipairs(seeds) do
 				if sea(x, z) and b >= 0 and b <= 1 then
 					check(node(x, 2, z) == wood[1], ("deck at %d out, %d across: %s"):format(a, b, label))
 				end
-				-- the dragon channel stays untouched (world_zones.md §7.4)
-				check(S.water_class_at(x, z) ~= "immutable_dragon_channel",
-					("pier column %d,%d outside the dragon channel: %s"):format(x, z, label))
+				-- the dragon channel's protected water stays untouched
+				-- (world_zones.md §7.4; Round 51 T2: the organic channel reaches
+				-- the island's shore, whose first 24 nodes are alterable)
+				check(S.territory_rule_at({x = x, y = 2, z = z}) ~= "immutable",
+					("pier column %d,%d outside protected water: %s"):format(x, z, label))
 			end
 		end
 		for _, a in ipairs({10, 7, 4, 1}) do

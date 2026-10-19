@@ -107,7 +107,8 @@ owns shore, hydrology and resource placement. Both deep-jungle and jungle-fringe
 use canopy litter. `grug_badlands_east` remains the ochre component of the Troll
 frontier and Stormscale palettes, not a transfer of Orc cultural ownership.
 
-The coastal habitat follows the authored shelf; planned inland water keeps its
+The coastal habitat follows the coastal belt (Round 51: 250-350 nodes wide,
+`world_zones.md` §7.4); planned inland water keeps its
 zone classification. Coral, kelp and wild-source details follow
 `world_zones.md`'s Round 10 source/reef rules. The recipes' crab roles live
 on sandy sea shore near water (§3.1, §4.2). Registered node/biome names

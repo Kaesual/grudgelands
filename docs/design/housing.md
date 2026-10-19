@@ -65,8 +65,10 @@ or guild land.
     blend envelopes around settlements are no claim barrier.
 
   **Water** (ruling 23): lakes, rivers and bay water inside an eligible zone
-  may lie in a claim. The coastal shelf may not, although it belongs to a
-  zone; the ocean has no zone and may not either (`world.md` §2b).
+  may lie in a claim; bay water 24 nodes or more off the coast is protected
+  (Round 51) and refuses the claim ("protected deep water"). The coastal belt may not,
+  although it belongs to a zone; the ocean has no zone and may not either
+  (`world.md` §2b).
 - **Conservative check.** The placement check may sample coarsely and refuse
   a few legal columns near an edge. It must never let a claim reach into a
   forbidden area. The sampling step is an implementation detail; any tiny
@@ -87,7 +89,7 @@ or guild land.
   the Claim Stone, the minimap shows the ground the rules above forbid for
   that faction in semi-transparent red (other faction, level 1–10 and 31+
   zones, capital zones, land that is not the faction's home, the coastal
-  shelf and the sea, and the settlement cores and hard footprints widened by
+  belt, protected water and the sea, and the settlement cores and hard footprints widened by
   the 16 nodes), every claim (drafts, active and expired) in the same red,
   and the player's own 101 × 101 square in green on the arrow; a switched-off
   minimap appears meanwhile ([world_map.md](world_map.md) "Minimap", claim
