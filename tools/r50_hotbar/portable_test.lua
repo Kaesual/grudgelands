@@ -698,6 +698,8 @@ grug_abilities.is_unlocked = function(_, id) return unlocked[id] == true end
 grug_abilities.stack_for = function(_, id)
 	return unlocked[id] and ItemStack("grug_abilities:" .. id) or nil
 end
+-- No transformation family here (Round 52 D8: tools/r52_bench tests the swap).
+grug_abilities.current_form = function() return nil end
 grug_abilities.registered = {strike = {id = "strike"}, sprint = {id = "sprint"},
 	loose = {id = "loose"}}
 grug_abilities.unlocked_ids = function()

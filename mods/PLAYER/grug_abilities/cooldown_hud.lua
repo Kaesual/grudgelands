@@ -20,7 +20,9 @@
 
 return function(ctx)
 local M = ctx.math
-local ability_of = ctx.ability_of -- item name -> ability id or nil
+-- Item name -> the ability's cooldown key or nil. Timers are keyed by it, so
+-- a transformation (D8) shows its base's running cooldown and vice versa.
+local ability_of = ctx.ability_of
 
 local H = {}
 
@@ -34,7 +36,7 @@ local POSITION = {x = 0.5, y = 1} -- the builtin hotbar's
 -- the layout check polls it. Swappable for the bench and the fixture.
 H.window_info = core.get_player_window_information
 
--- name -> {player, timers = {[id] = rec}, slots = {[slot] = id},
+-- name -> {player, timers = {[key] = rec}, slots = {[slot] = key},
 --          shown = {[slot] = el}, layout, count, check, scan}
 -- el = {pie = hud id, num = hud id, frame, text}
 local states = {}
@@ -92,7 +94,7 @@ local function check_layout(player, st)
 	end
 end
 
--- Which ability sits in each hotbar slot: one name read per slot, only after
+-- Which cooldown key sits in each hotbar slot: one name read per slot, only after
 -- an inventory action, a new timer or the periodic check.
 local function scan(player, st)
 	local inv = player:get_inventory()
@@ -158,8 +160,8 @@ function H.update(player, now)
 	return true
 end
 
--- A cooldown or charge started (or restarted): `rec` = {expiry, duration}.
--- Shown at once; `now` (us) only for the bench and the fixture.
+-- A cooldown or charge started (or restarted) under its cooldown key `id`:
+-- `rec` = {expiry, duration}. Shown at once; `now` (us) only for the bench and the fixture.
 function H.track(player, id, rec, now)
 	if not rec or not (rec.duration > 0) then return end
 	local name = player:get_player_name()

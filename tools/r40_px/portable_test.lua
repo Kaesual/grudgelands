@@ -441,11 +441,14 @@ grug_abilities.effective_cooldown = function() return 1 end
 grug_abilities.CAST_SOUNDS = {}
 grug_classes.registered_classes = {warrior = {name = "Warrior"}, mage = {name = "Mage"},
 	priest = {name = "Priest"}, scout = {name = "Scout"}}
+-- The action clock's two helpers (Round 52 D2): never occupied here.
 assert(loadstring("local reset_swing_boundary, refuse_mounted_attack, cast_interval_ready, " ..
-	"affordable, spend, arm_cast_interval, play_skill_pose = ...\n" .. refusal_src .. "\n" ..
+	"affordable, spend, arm_cast_interval, play_skill_pose, cast_clock_ready, " ..
+	"occupy_casts = ...\n" .. refusal_src .. "\n" ..
 	try_src, "=try_cast"))(
 	function() end, function() return false end, function() return true end,
-	function() return true end, function() return true end, function() end, function() end)
+	function() return true end, function() return true end, function() end, function() end,
+	function() return true end, function() end)
 
 local function cast(id, class, target_ray)
 	grug_classes.get_class = function() return class end

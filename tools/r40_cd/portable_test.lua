@@ -482,9 +482,10 @@ do
 			"charge_fraction", "representation_wear", "grug_charge_bar"}) do
 		check(not src:find(needle, 1, true), "F init.lua no longer has " .. needle)
 	end
-	check(src:find("cooldowns%[name%]%[def%.id%] = rec\n\tcooldown_hud%.track%(player, def%.id, rec%)") ~= nil,
+	-- Under the skill's cooldown key since Round 52 (D8: a transformation shares its base's).
+	check(src:find("cooldowns%[name%]%[def%.cooldown_key%] = rec\n\tcooldown_hud%.track%(player, def%.cooldown_key, rec%)") ~= nil,
 		"F arm_cooldown hands its record to the overlay")
-	check(src:find("charges%[name%]%[def%.id%] = rec\n\tcooldown_hud%.track%(player, def%.id, rec%)") ~= nil,
+	check(src:find("charges%[name%]%[def%.cooldown_key%] = rec\n\tcooldown_hud%.track%(player, def%.cooldown_key, rec%)") ~= nil,
 		"F reset_charge hands its record to the overlay")
 end
 
