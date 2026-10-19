@@ -85,8 +85,9 @@ local WOODS = {
 		{"grug_trees:silverwood_leaves"}},
 	{"gravewood", "grug_trees:gravewood_tree",
 		{"grug_trees:gravewood_leaves", "grug_trees:swamp_leaves"},
+		-- Round 51 lane LG: the hanging moss strand decays with the end
 		{"grug_trees:gravewood_leaves", "grug_trees:swamp_leaves",
-			"grug_trees:swamp_hanging_moss"}},
+			"grug_trees:swamp_hanging_moss", "grug_trees:swamp_hanging_moss_strand"}},
 }
 local JOINED = {}
 for _, wood in ipairs(WOODS) do

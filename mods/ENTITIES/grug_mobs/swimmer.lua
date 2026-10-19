@@ -1,5 +1,7 @@
--- Water swimmers (`_grug_swimmer = true`: Reed Angelfish, Kraken) never move
--- into or rest in a non-water node.
+-- Water swimmers (`_grug_swimmer = true`: Reed Angelfish, Kraken; since Round
+-- 51 the Stingray family, the Bay and Abyssal Sharks and the Tide Goby) never
+-- move into or rest in a non-water node, and a fighting one never picks a
+-- target out of its reach (below; its reset is aggro.lua swimmer_reset).
 --
 -- mobs_redo's swimming (`fly = true`, `fly_in = <water>`) does not hold that on
 -- its own (headless evidence: tools/pt_fixes/lane_c/run.sh; unguarded, fish
@@ -188,6 +190,51 @@ function grug_mobs.swimmer_guard_step(self, dtime)
 	end
 end
 
+--
+-- A swimmer's reach (Round 51, sea plan ruling S11). A target is within reach
+-- while it is in water -- the node at its feet or the one above, so a
+-- swimmer, a diver and a wader all count -- or rides a boat (a grug_mounts
+-- water mount; grug_mounts loads after this mod, so its published state is
+-- read at runtime, as grug_quickbar does). A target on a bank, a beach, a
+-- pier or a cliff is out of reach. Two node reads; the callers ask once a
+-- second (aggro.lua leash_tick) or per candidate of general_attack's
+-- once-a-second scan.
+--
+local function water_at(x, y, z)
+	local node = core.get_node_or_nil({x = floor(x + 0.5), y = floor(y + 0.5),
+		z = floor(z + 0.5)})
+	return node ~= nil and core.get_item_group(node.name, "water") > 0
+end
+
+function grug_mobs.on_boat(target)
+	if not (core.is_player(target) and target:get_attach()) then
+		return false
+	end
+	if not core.global_exists("grug_mounts") then
+		return false
+	end
+	local active = grug_mounts.active
+	local record = active and active[target:get_player_name()]
+	return record ~= nil and record.mode == "water"
+end
+
+function grug_mobs.in_swimmer_reach(target)
+	local pos = target and target:get_pos()
+	if not pos then
+		return false
+	end
+	return water_at(pos.x, pos.y, pos.z) or water_at(pos.x, pos.y + 1, pos.z)
+		or grug_mobs.on_boat(target)
+end
+
+-- The acquisition veto of a swimmer with the ordinary leash (init.lua
+-- `_grug_target_veto`, also honoured by threat and taunt, grug_core
+-- combat.lua): nobody fights a swimmer from the bank that cannot answer
+-- (S10), so it never picks a player out of its reach.
+local function out_of_reach_veto(_, player)
+	return not grug_mobs.in_swimmer_reach(player)
+end
+
 -- Called by grug_mobs.register_mob for a def with `_grug_swimmer = true`,
 -- before mobs:register_mob copies the def.
 function grug_mobs.prepare_swimmer_def(name, def)
@@ -198,9 +245,16 @@ function grug_mobs.prepare_swimmer_def(name, def)
 	assert(def.stepheight == 0, name .. ": a _grug_swimmer must set stepheight = 0")
 end
 
--- Called by grug_mobs.register_mob right after mobs:register_mob.
-function grug_mobs.install_swimmer_guard(name)
+-- Called by grug_mobs.register_mob right after mobs:register_mob, with the
+-- definition it registered.
+function grug_mobs.install_swimmer_guard(name, def)
 	local proto = core.registered_entities[name]
+	-- A swimmer that fights under the ordinary leash takes the reach veto
+	-- above (Round 51 S11; its reset is aggro.lua swimmer_reset). The bespoke
+	-- no-leash Kraken keeps its own rules; a critter acquires nobody anyway.
+	if def.attack_type and not def._grug_no_leash and def.passive ~= true then
+		proto._grug_target_veto = out_of_reach_veto
+	end
 	local fly_in = proto.fly_in
 	local box = proto.initial_properties.collisionbox
 	-- The point mobs_redo's get_nodes reads as standing_in.

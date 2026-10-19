@@ -1,0 +1,97 @@
+{
+  "name": "Skull, horned animal",
+  "drop": "",
+  "tiles": [
+    "skull_horned_top.png",
+    "skull_horned_bottom.png",
+    "skull_horned_right.png",
+    "skull_horned_left.png",
+    "skull_horned_back.png",
+    "skull_horned_front.png"
+  ],
+  "boxes": [
+    [
+      -3,
+      -7,
+      -2,
+      3,
+      -1,
+      4
+    ],
+    [
+      -2,
+      -8,
+      -7,
+      2,
+      -5,
+      -1
+    ],
+    [
+      -2,
+      -5,
+      -4,
+      2,
+      -3,
+      1
+    ],
+    [
+      -2,
+      -1,
+      0,
+      2,
+      0,
+      3
+    ],
+    [
+      -5,
+      -5,
+      2,
+      -3,
+      -2,
+      4
+    ],
+    [
+      3,
+      -5,
+      2,
+      5,
+      -2,
+      4
+    ],
+    [
+      -7,
+      -4,
+      2,
+      -5,
+      -1,
+      4
+    ],
+    [
+      5,
+      -4,
+      2,
+      7,
+      -1,
+      4
+    ],
+    [
+      -7,
+      -2,
+      3,
+      -6,
+      0,
+      5
+    ],
+    [
+      6,
+      -2,
+      3,
+      7,
+      -1,
+      5
+    ]
+  ],
+  "rotate": true,
+  "note": "Rare single find or occasional pair; drops nothing like today's bone_pile. The user may prefer grug_mobs:bone.",
+  "alpha": "clip"
+}

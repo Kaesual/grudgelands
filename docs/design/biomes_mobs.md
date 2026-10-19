@@ -114,6 +114,30 @@ zone classification. Coral, kelp and wild-source details follow
 on sandy sea shore near water (§3.1, §4.2). Registered node/biome names
 must resolve before they are used by ore or decoration definitions.
 
+**Ground textures and nodes (Round 51,
+[land plan](../planning/round51-land-plan.md) rulings 4–6).** The large
+flat grounds wear 32 px textures, world-aligned over 2 × 2 nodes at 16 px
+per node (`align_style = "world"`, `scale = 2`): the tops of silver, bone
+and canopy litter, of the swamp's wet grass, wet mud and dry mud and of both
+moss grounds, and every face of blight dirt, mesa clay, plain mud (the
+rooted reeds' bed too), the clay bands and `default:sand` (retextured by
+override, not a new node, so the crab's shore host stays; the rooted kelp
+and waterweed beds match it). Sides stay 16 px: the litters' overlays, the
+dry mud's side, the calm sides of wet grass and wet mud, and whole moss
+sides for both moss grounds. The forest's `grug_nodes:dirt_with_moss` (moss
+soil) wears a muted moss in place of the old bright one.
+`grug_nodes:swamp_moss` is the swamp's own moss ground: the moss soil's
+groups (soil, natural loose ground), it drops `grug_nodes:mud`, and it
+hosts what the swamp's moss soil hosts (gathering sources, the bog ooze,
+bog fowl and crocodile, spawn-region ground). The badlands' clay bands
+`grug_nodes:clay_band_ochre|sienna|chalk|umber` are loose ground like mesa
+clay and drop `grug_nodes:mesa_clay`. Hanging moss is a run of the
+continuous strand (`grug_trees:swamp_hanging_moss_strand`) above the tapered
+end (`grug_trees:swamp_hanging_moss`): digging a piece turns the strand
+right above it into the end and takes the pieces below it (they drop
+nothing; a protected piece stays). Hanging moss comes back only with its
+tree: it decays with the tree's wood, and the swamp tree has no sapling.
+
 ### 1.4 Settlements
 
 Settlement positions use the fixed POI slots in `world_zones.md` §§8/11;
@@ -1290,9 +1314,10 @@ copies its groups and sounds, keeps its leaves from decaying within 3 nodes
 (radius 3 for every wood, the shapes included) and cannot be placed by a
 player. Twigs join a leaf only above them (the seven woods' leaves and the
 swamp leaves declare `connect_sides = {"bottom"}`; the swamp leaves and
-hanging moss decay to gravewood wood); the base and the twig join the ground only
+hanging moss, strand and end, decay to gravewood wood); the base and the twig join the ground only
 below them (every `group:soil` and `group:sand` node and `default:gravel`
-declare `connect_sides = {"top"}`, 26 nodes with the swamp ground). The
+declare `connect_sides = {"top"}`, 27 nodes with the swamp ground and the
+swamp moss). The
 jungle tree and the jungle pieces wear the jungle bark M (`grug_trees_jungle_bark*.png`, CC0). The
 world generator, saplings and town trees place the pieces (Round 47 lanes TB/TC).
 
@@ -1483,9 +1508,9 @@ The current family classification is:
 
 | Disposition | Existing families and named variants |
 |---|---|
-| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker |
-| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings and the PvP fortress Generals |
-| Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish |
+| Neutral | Boar, Plague Boar, Jungle Boar; Ibex, Tapir, Plains Runner; Stag, Gaunt Stag, Zebra; Mountain Ram; Carrion Crow; Shore Crab, Reef Lurker; Tortoise |
+| Aggressive | Fox; Giant Rat; Bear, Plaguehide Bear; Wolf, Blightfang Wolf; Hyena; Jungle Lynx, Panther, Snow Leopard, Speargrass Tiger; Crag Eagle, Vulture; Crocodile; Jungle Ape; Giant Spider, Jungle Spider, Pale Spider, Spiderling; Serpent, Viper, Scorpion; Blood Bat, Riftwing; Goblin Raider, Goblin Slinger, Goblin Hound, Goblin Miner, Goblin Miner Slinger; Bandit, Bandit Archer, Poacher; Mirefolk; Skeleton Archer, Skeleton Raider, Zombie, Frost Stray, Sun-Dried Husk; Stone Golem, Mesa Golem, Stone Mite, War Construct; Ashen Treant, Gravewood Treant; Bog Ooze, Bog Witch; Wisp, Glowwing, Ember Wisp; Crystal Shard, Lava Flan; Oerkki, Rift Spawn, Dungeon Master; Kraken; Frog, Stingray, Bay Shark, Abyssal Shark; Ice Dragon, Jungle Wyvern, Ice Whelp, Storm Whelp; kings and the PvP fortress Generals |
+| Critter | Rabbit, Hare; Wild Turkey; Parrot, Gull, Song Bird; Cave Bat, Cave Crawler; Bone Weevil, Bog Fowl; Reed Angelfish, Tide Goby |
 | Independent role | Accord/Throng guards, land guards, royal guards, PvP camp captains and the Generals' bodyguards, and peaceful settlement NPCs |
 
 
@@ -1517,10 +1542,10 @@ formats in the design frame §4.1–§4.3. All of it is data in
 `items.json`, `drops.json`), loaded by `grug_mobs/subtypes.lua` after every
 mob file. A missing or empty file means no data, and without data every mob
 behaves as before. The shipped files are copies of the reviewed design
-catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 205 sub-types
-(49 leaders, 10 corrupted, below), 12 tints, 120 items (94 signatures, of
-which 89 new, 24 existing generic materials and 2 quest items) and 24 drop
-families. The catalogue is the
+catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 222 sub-types
+(49 leaders, 10 corrupted, below, and Round 51's 17 water sub-types), 12
+tints, 120 items (94 signatures, of which 89 new, 24 existing generic
+materials and 2 quest items) and 27 drop families. The catalogue is the
 source; edit both together.
 
 **Sub-types.** Each record registers `grug_mobs:<role>` as a copy of its
@@ -1564,7 +1589,11 @@ sub-types burn like the Zombie).
      every zone that uses it. A capital's L20–23 slot counts as tier 3 (the
      user, plan §6 item 11). The world slots (underground casts, water mobs,
      the faction guards, unplaced sub-types; their level comes from the
-     place) are exempt (items 9, 10).
+     place) are exempt (items 9, 10). Since Round 51 a water family that
+     lives in zone water is no world slot: its sub-types are zone slots and
+     bound by this rule (below, "Round 51 water families"); the fixed-level
+     water mobs (Kraken, Bay Shark, Abyssal Shark) and the critter fish stay
+     world slots.
   5. The faction names stay The Accord and The Throng; no name refers to an
      existing game.
 
@@ -1697,3 +1726,56 @@ receives the sorted names of the players the quest kill credit receives
 Code seams for other lanes: `grug_mobs.family_of(name_or_role)`,
 `grug_mobs.subtype(name_or_role)` (the parsed record or nil),
 `grug_mobs.level_band(level)`, `grug_mobs.read_data_json(file)`.
+
+## Round 51 water families
+
+Sea plan rulings S10–S17 and §5 (`docs/planning/round51-sea-plan.md`), the
+families, ladders and names of the NAMES lane accepted by the user
+(2026-10-19; `tools/r51_names/draft.json`). Water is a complement, not a
+second land: five new families next to the crab, the crocodile, the Reed
+Angelfish and the Kraken. Models and textures from animalworld (MIT,
+`grug_mobs/LICENSE-media.md` §3); all of them silent until the user picks
+sounds.
+
+| Family | Disposition | Moves | Sub-types or slot | Fish loot |
+|---|---|---|---|---|
+| Tortoise | neutral (bites back) | amphibian, slow (walk 0.5, run 2) | 6 by drop tier: Pond Terrapin (1–10), Sandbar (11–20), Knobshell (20–30), Ridgeshell (31–40), Ironshell (41–50), Stoneback Tortoise (51–60) | the band's fish 1/1, meat 1/2 |
+| Frog | aggressive | amphibian, hops (run 3.4); bites with its walk frames | 6: Marsh Frog, Bog Toad, Fen Croaker, Mire Bullfrog, Wartback Toad, Blackwater Toad | the band's fish 1/1, meat 1/3 |
+| Stingray | aggressive | pure swimmer (run 3.5) | 5: Sand Ray, Shoal Ray, Barbtail Ray, Thornback Ray, Wyrmwake Ray (no tier 5) | the band's fish 1/1 |
+| Shark | aggressive | pure swimmer | world slots: Bay Shark, fixed L30, normal; Abyssal Shark, fixed L70, elite (1.8 × the Bay Shark, about 2.5 × with the elite ×1.4) | Bay Shark Mire Carp 1/1 ×1–2 and meat; Abyssal Shark Storm Tuna ×3–6 and meat ×3 |
+| Goby | critter | pure swimmer | world slot: Tide Goby, L1 | Raw Fish 1/1 |
+
+- **Amphibians** (tortoise, frog) float and do not fly, like the crocodile:
+  they walk on land, swim at the surface and follow their target through
+  harmless water and up a bank (Round 34, `combat_stats.md` §4 "Mobs in
+  water"). They may live near land (S10).
+- **Pure swimmers** (stingray, sharks, goby) never leave the sea water
+  (`grug_mobs/swimmer.lua`, as the Kraken and the Reed Angelfish). A fighting
+  swimmer never acquires a player out of its reach — neither in water (feet
+  or body in a water node) nor on a boat — and a target that leaves its
+  reach **resets** it (S11): it forgets the fight, heals to full and swims
+  back to its spawn point in deeper water (`combat_stats.md` §4).
+- **Drop tiers and level 20.** The tiers run 1–10, 11–20, 20–30, 31–40,
+  41–50, 51–60: T3 starts at 20 so a capital's L20–23 belt takes the T3 name,
+  and T2 ends at 20 so an L18–20 belt takes the T2 name. Which sub-type a
+  level-20 mob is follows from its belt, never from the level: a belt takes
+  the family's sub-type of the tier that holds most of its levels, the
+  higher on a tie (`tools/r38_names/check_rules.py` `effective_tier`), so an
+  L18–20 belt's kind lists the T2 role and an L20–23 belt's the T3 role; a
+  lone L20 would be T2. Either way a level-20 mob drops band-2 loot
+  (`floor((20 − 1) / 10) + 1`).
+- **Sizes.** The draft's sizes are the shown sizes; the catalogue's sub-type
+  sizes stay within 0.75–1.3 because the bases are enlarged (tortoise 1.1,
+  frog 2.16, stingray 1.15 of the model).
+- **Quest-ready** (S17, sea plan §5): each zone-water family is a ladder of
+  sub-types inside one drop tier each, so its names are the exact kill
+  targets and pass rule 4; the sharks are world slots with one level; the
+  critter fish are never kill targets (their fish count for item
+  objectives). **Until MOBS step M2** places them, no recipe holds a water
+  role: each sub-type is an unplaced world slot named as in the draft, and
+  the new mobs spawn nowhere (`/spawnentity grug_mobs:<role>` shows one).
+  Step M2 adds the water kinds to the zone recipes (hosts by water band:
+  distance to dry land and depth, S10–S12), which turns the draft's zone
+  slots into names (`tools/r38_b1/gen_names.py --proposals
+  tools/r51_names/draft.json`), and the sharks' and the goby's spawn rows
+  (they are water authorities, `spawn_policy.lua`).

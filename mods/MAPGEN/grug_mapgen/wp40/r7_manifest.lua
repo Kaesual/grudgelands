@@ -109,6 +109,16 @@ return function(canonical, raw_sha256, settlement_order)
 	-- ground list, which moves the WP43 projection (was `785f36400419118f...`);
 	-- the gathering catalog's swamp hosts take the mixed ground, which moves
 	-- the gathering manifest (was `56a3daf013148e99...`).
+	-- Round 51 LG: the swamp moss, the four clay bands and the hanging moss
+	-- strand join the production rows (122 -> 128), which moves the
+	-- accepted-content limb (was `6a978d54d87588b0...`), the production
+	-- semantics (was `630445ae282ddbb3...`) and the decoded MTS templates
+	-- (content refs shift with the inserted sorted rows; was
+	-- `2facd3c930837487...`); the swamp moss and the clay bands join the
+	-- natural ground list, which moves the WP43 projection (was
+	-- `aa6e16d73513fa6c...`); the gathering catalog's swamp hosts take the
+	-- swamp moss, which moves the gathering manifest (was
+	-- `2bac7904e80f4687...`).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -377,12 +387,12 @@ return function(canonical, raw_sha256, settlement_order)
 		local gathering = inputs.gathering_manifest
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v3" or
 			gathering.sha256 ~=
-				"2bac7904e80f468713d1312dc6a4e367abdecc35d654392df7ecc7b0ff76c75c" or
+				"1751733095a5cdb18633918ec8a390bb044f0e4e54272ab9ab27aad405e2fcd5" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"630445ae282ddbb35c77a8dd03eddb46df1e3d8c2f276fa3d9f4d26ee487b0ed" or
+				"2f92257ce7b4c5c9f781a3a6f4088beca8a0897b51ac703d016ab8dbd7ed857f" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -545,11 +555,11 @@ return function(canonical, raw_sha256, settlement_order)
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
-				"6a978d54d87588b05de56b5d2fc206f643ae6f4386f95dbe6b3a4eb5eae5c661" or
+				"55003f50fa8905c7af1f972e4e93c683f9dd17f2311107e933fb627b94604f22" or
 			frozen.decoded_templates ~=
-				"2facd3c930837487138e8d4d823da98d698a7ce1213252e6b78f3d40dfe07152" or
+				"ce55b1b08aea44a557ca9eb619810826d50cf7e3faa44fdad4f323c40e049903" or
 			frozen.wp43_projection ~=
-				"aa6e16d73513fa6c783ee025203e766b03154f12607f7889634853bba4370fee" or
+				"ee08d28c64bdc90ce3e58be7f4c80f8c2381741838b9c075aa75c9fae94f2a80" or
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" then
 			fail("frozen source projection differs: accepted=" ..

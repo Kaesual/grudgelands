@@ -1,0 +1,1568 @@
+{
+  "format": "README.md / Prop format",
+  "props": {
+    "bones_fragments": {
+      "name": "Bones, broken jaw and splinters",
+      "drop": "",
+      "boxes": 5,
+      "bounds": [
+        -5,
+        -8,
+        -5,
+        6,
+        -6,
+        6
+      ],
+      "prop_sha256": "3161e989476531ea67adacc53f515b5028fba2715e1f8621383e29c63b37d30e",
+      "images": {
+        "bones_fragments_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "324604f31a4362d2c5df3c7157d6b736aa1f731ab8e3345f5f73cce8f1fcdba2"
+        },
+        "bones_fragments_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "7c3c62c77f56221676db6dfa98d3eb3ecf65ade57a6f06078c84546f5b75c9cb"
+        },
+        "bones_fragments_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e7be9fdace2f9ca11e56456bc4dc8b331b35788994bf491b9299e2836215cdae"
+        },
+        "bones_fragments_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5851f6a04c6ba97c8a9f62da9b9efa32358bb08e5cf2d9497bda84e239e4c3e4"
+        },
+        "bones_fragments_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "f71d03ca1af6868fcf0ff161f790ed0adcca9c386e4decc44c1fec95533c069d"
+        },
+        "bones_fragments_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "41717131359d43a192beb866926f2253284f958541cf7da5f275342ae6f22ede"
+        }
+      }
+    },
+    "bones_scattered": {
+      "name": "Bones, scattered long bones",
+      "drop": "",
+      "boxes": 7,
+      "bounds": [
+        -7,
+        -8,
+        -5,
+        4,
+        -6,
+        7
+      ],
+      "prop_sha256": "cfb3a442e6febd999775ea87d0e0357986f89d2146b7bad386c43605100d6c2e",
+      "images": {
+        "bones_scattered_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e2a6bbd867a6373b3ea58a5615ab3a3f6a5d284f672f4e13f1e21db014597998"
+        },
+        "bones_scattered_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "d49503cb1cd837022c36645b9d352e6363df3b3416a0a39c5405bb6b7966a176"
+        },
+        "bones_scattered_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "b7cfdbda4fd3ede8eea1c2ee8706939565edd530d0557bbaf0bc83480ddde353"
+        },
+        "bones_scattered_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "41ce2dd0d4faf40775a0f628c3e9fecad737b48aafb3d6300a13f86b379e7297"
+        },
+        "bones_scattered_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "b29927b67ebac53ad2414aded01178576fd4575a485ef3d0842a0ed4a127a768"
+        },
+        "bones_scattered_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "09e37f8aed786ee0b9a1e94d1562d9b2ef79a9b4e0737bffa1fea2a53e61dbfe"
+        }
+      }
+    },
+    "cairn_cap": {
+      "name": "Cairn, offset cap stones",
+      "drop": "default:cobble",
+      "boxes": 4,
+      "bounds": [
+        -5,
+        -8,
+        -3,
+        5,
+        1,
+        4
+      ],
+      "prop_sha256": "a3acb7b6bc58d00e1e7704eaccaf3638b445e1da9e58548773050235cef605f8",
+      "images": {
+        "cairn_cap_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "f2cf16be1d00b323bad38e6bc1f1aad4f741c5912b134dd244e4fcf11303cb2a"
+        },
+        "cairn_cap_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "aabe7ea4bd839f2a06d86290bc485ad9efc0d73e7ecf223a5be49cd84754164d"
+        },
+        "cairn_cap_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ec64aa5f14e96a16581b675ff66b6d94ffffbc6cea4e9a9c24933597336d63b0"
+        },
+        "cairn_cap_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "048ecd73abc626c1859d51f085f2e18d5612a7bdc0b5a886e5f56fdfd14bde33"
+        },
+        "cairn_cap_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e49443566695eb3a5ea4fcb14aaaa48c445d52fe2fe7665ea67005a6498fb877"
+        },
+        "cairn_cap_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "bc9988447c6a137bf7634d629376bc0f0c18d9a7c7bce05b93038488ab0a9e2c"
+        }
+      }
+    },
+    "cairn_course": {
+      "name": "Cairn, rough stone course",
+      "drop": "default:cobble",
+      "boxes": 6,
+      "bounds": [
+        -7,
+        -8,
+        -6,
+        6,
+        8,
+        5
+      ],
+      "prop_sha256": "a83ff8dbe7173c0b6b611b781d194003214d0c93ee0cbd23fe17ea8b4db74e42",
+      "images": {
+        "cairn_course_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "55507046c2a9f7b87b88ce6390eea8454af35d01ee5edf363839bc84e0377e1b"
+        },
+        "cairn_course_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "249ab091ffb734482c987847850c8fd0ef2cfb9bc0ab8895e63727f19ccc1011"
+        },
+        "cairn_course_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "947d543146cccb9a894d556733e7ab798a282ed22b3f348b2b192f18f9d778f3"
+        },
+        "cairn_course_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "0a01e5fa6dc202c88b689bbbfad4cbc6613a421ae88fab3a16b6cfecd9c1886b"
+        },
+        "cairn_course_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "8bb072459b77735d8ba6606eb02fae1417efec749314272d3e03d8bb5b87daaa"
+        },
+        "cairn_course_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "907efc72d1ff75b7505e8b8ea5c200e907373e7d9e4521b1338783843c39f74a"
+        }
+      }
+    },
+    "driftwood_fork": {
+      "name": "Driftwood, forked branch",
+      "drop": "default:stick",
+      "boxes": 6,
+      "bounds": [
+        -7,
+        -8,
+        -2,
+        7,
+        -5,
+        8
+      ],
+      "prop_sha256": "c7c760eb02fc70b5c6bc9544d3098b495ad033aee7ed3eb9a9243199b487b479",
+      "images": {
+        "driftwood_fork_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "78df284c2ac2fa7be10a86101df9618dc68ebcd0ca267f2458a82d21571288c8"
+        },
+        "driftwood_fork_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "d533531d3f51512a36aedd05b8e69da5dfe1d0d2b58550a761545a80d3cf0c30"
+        },
+        "driftwood_fork_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "38698fd4e6b7668667b7e43a3c3bd5207b8762f286f8ed11b122f677dec1abb1"
+        },
+        "driftwood_fork_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "921acc01b54efbf291e8f4ab27a875a82bb58f0b795b23cde90a39e86f97b97a"
+        },
+        "driftwood_fork_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "c22980497cf0c489eb043fde35876b85a0bad1aa86102553016866ca1ffd94ea"
+        },
+        "driftwood_fork_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e3a1d986bd801786a7ad9b9395609d40071fea85062ed06eee48d7625fc6f86a"
+        }
+      }
+    },
+    "driftwood_log": {
+      "name": "Driftwood, bleached log",
+      "drop": "default:wood",
+      "boxes": 4,
+      "bounds": [
+        -7,
+        -8,
+        -3,
+        8,
+        -3,
+        4
+      ],
+      "prop_sha256": "a0e6199bcd2d348d4b5ea51c40020d6b8cad442976b7cd0b1ebac44e9722b2b8",
+      "images": {
+        "driftwood_log_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "cc5ec1ef54fb7dd417e624a9faf18894f8edb1b595476ed72f1e086c48f3f643"
+        },
+        "driftwood_log_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "47565351e551f4f40543acc7863f041483a845307073695818bb3e7f01677815"
+        },
+        "driftwood_log_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "41fb2761795b2cdb0cff2ffb1edc8ca174105a2cd4668d15adb9947e66f2630b"
+        },
+        "driftwood_log_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e7929ea4d0ab53027ce123483d8af407cca9bc977349761d4fbc5ae72df9f244"
+        },
+        "driftwood_log_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "7df3c4d5050a751dc605755f08b763a97d47114211cd6402294e7bba2381a5bd"
+        },
+        "driftwood_log_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "eb100782fa2944be80eb079f480129fe5b5322c433b6ce86ef7ca923abbdb921"
+        }
+      }
+    },
+    "gravestone_cross": {
+      "name": "Gravestone, chipped cross crown",
+      "drop": "default:cobble",
+      "boxes": 4,
+      "bounds": [
+        -6,
+        -8,
+        -1,
+        5,
+        4,
+        2
+      ],
+      "prop_sha256": "cafe5a97e6ef5e38a642b6c76d3ca45bccd9677f4b5a0bad11e9da1f8254b85c",
+      "images": {
+        "gravestone_cross_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "c539755e683c2b5ea939ca953c041d4fb65eb80321e878d8058b3a4451f18532"
+        },
+        "gravestone_cross_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "f660728ccd0a8139ab2fb4e2db10c280c10c5b870e6d84dbabd3606e17b0dd24"
+        },
+        "gravestone_cross_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "b10899c3eb24d42824c51090ca919c5bf19707a36a36cf3d8a894c5ff75b806f"
+        },
+        "gravestone_cross_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "426c4af8cf43d3354026f608b77d92a3e7005d5e38fa74f602a6009c924e04cc"
+        },
+        "gravestone_cross_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "56f5accdcf309ad09f92cf8ff316719c53501059aead3e8d1a084fc58426e3b5"
+        },
+        "gravestone_cross_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "82d4b0dd03e2c44efd8fc1b9bc6982b6a29a9f223a334ad43cdb86667994fe0e"
+        }
+      }
+    },
+    "gravestone_fallen": {
+      "name": "Gravestone, fallen split stele",
+      "drop": "default:cobble",
+      "boxes": 4,
+      "bounds": [
+        -5,
+        -8,
+        -7,
+        5,
+        -6,
+        7
+      ],
+      "prop_sha256": "a41523f5266e9c4910d28d2da90cf31b9f2133936de927bacff1156a9d6084c0",
+      "images": {
+        "gravestone_fallen_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "cd4592c455f3a8036c6d24e109f72a6c463f49693f53023673740430f1545ae0"
+        },
+        "gravestone_fallen_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e6726a4d1bfbc6c32eab89d4a05cc88b87f75ba81ed5f5340d48f135a2581003"
+        },
+        "gravestone_fallen_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "b6aae50c9677d8516226b2cc3be33180b6c07ae4d14b9303aaeea9f9cbd77922"
+        },
+        "gravestone_fallen_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "6d04c8e8ed577cfddb9cf294c016f831df17d7c7b065ed98cb4a6c2a2d2112f9"
+        },
+        "gravestone_fallen_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "685a178775ed53c9db982acdc2400f66823a16949570a8020f16b56cb8e501c0"
+        },
+        "gravestone_fallen_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "12d6edf72052068dc0394c33a964dc7f3f9f156bc922e97209d35f8532c8f290"
+        }
+      }
+    },
+    "gravestone_slab": {
+      "name": "Gravestone, weathered stele",
+      "drop": "default:cobble",
+      "boxes": 4,
+      "bounds": [
+        -6,
+        -8,
+        -3,
+        6,
+        8,
+        3
+      ],
+      "prop_sha256": "490b348280062a74f55bd735bfc268a16d3ca164444d3a5fab0cbe55031d4977",
+      "images": {
+        "gravestone_slab_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "398f86d396e213f759fec66075bb0ebe60ad52ce254fb528f4d6b59ae398ade1"
+        },
+        "gravestone_slab_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "34e00347753e7b814ded9f990859c78109d9821e9a7ac8a36f7e57178c0c63cb"
+        },
+        "gravestone_slab_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ce54e505843eaa01cd94239e26e35cee5132aa14380f85913a95ae72e4581e1a"
+        },
+        "gravestone_slab_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ddb57a4e6adc10a1e9082a1413e27588297ef3f151dfb35005f6a841f7f00247"
+        },
+        "gravestone_slab_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "94b352e9bc607eb9faae8c2a8c96abc5e40dae75f015c30af806e8c068ce4a91"
+        },
+        "gravestone_slab_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5579ad54603531ad6e5aebc2508ed031232cebd73cea20876bff5576ead4fea4"
+        }
+      }
+    },
+    "gravestone_sunken": {
+      "name": "Gravestone, sunken leaning stele",
+      "drop": "default:cobble",
+      "boxes": 3,
+      "bounds": [
+        -5,
+        -8,
+        -1,
+        5,
+        0,
+        4
+      ],
+      "prop_sha256": "a660993c60f4388f80aabf5bfead56d48f8353e43c73f9e1beb9ae4b11dfb0dc",
+      "images": {
+        "gravestone_sunken_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "d22965b67b38e05b84b535fa7a5b27f14e4f6e1ae3a1745499ece5eb975e3e77"
+        },
+        "gravestone_sunken_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "86e821732e4d82df15cd0fcc33021ee8630141f440a85bc0c65156cbed4dd589"
+        },
+        "gravestone_sunken_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5e117456196e8e4d72d1d57633fa86a70a9ebab0cb20e32a9eb56b171a764914"
+        },
+        "gravestone_sunken_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "c6a6a6982a4a8959b0090f1236634084cca911e10250365d9f9a6654738372ab"
+        },
+        "gravestone_sunken_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "de182502da8988db26b41539ed611e7f6cfc5c7024d381704f58952d0d8faff3"
+        },
+        "gravestone_sunken_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "cbd15f80cef9971b6163f9b5295ddb338db115f8577ecdc58971ba9507ccb66b"
+        }
+      }
+    },
+    "obelisk_broken_tip": {
+      "name": "Obelisk, fractured stone tip",
+      "drop": "default:stone",
+      "boxes": 5,
+      "bounds": [
+        -6,
+        -8,
+        -6,
+        6,
+        8,
+        6
+      ],
+      "prop_sha256": "b1759329449144618b5b1dcd7cd3a8c64477f0ac90fe7a9863e8640c709b1c86",
+      "images": {
+        "obelisk_broken_tip_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "d908516126240bd0486d59d893388d2b2dc1a0638c60426844f9694c6fa3753b"
+        },
+        "obelisk_broken_tip_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5ab13bc68a5fc0dad7afcdd8fe959dd589b79d35872bdc4b45fe405addd19864"
+        },
+        "obelisk_broken_tip_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "f0eb138cfa63b12bba245ac487600751d2971b7bf71b6dd34a0025557261d838"
+        },
+        "obelisk_broken_tip_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "1535fa61dce2bf2d39c1b83854ddea858d2f121cef3ff44f66cfa8ab9e0abce0"
+        },
+        "obelisk_broken_tip_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "9562418f99a3f390f1d2afe157f759b76aabab9c38ed64d6f409a73035b00f0d"
+        },
+        "obelisk_broken_tip_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "34e21a0af323c13b023c83f723eac303ccf5c53fcccc6247776ea0e18fc82d51"
+        }
+      }
+    },
+    "ribcage_human": {
+      "name": "Ribcage, humanoid",
+      "drop": "",
+      "boxes": 18,
+      "bounds": [
+        -5,
+        -8,
+        -6,
+        5,
+        -2,
+        7
+      ],
+      "prop_sha256": "0289eafc6f4b11ea227be16575a6c0b3bd74297b74589103e9c5e3e70cbb2b93",
+      "images": {
+        "ribcage_human_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "df04687b2b8fc6216642b6ec054b19ad2f61ce45b5f65a3a01794054c6c91bbf"
+        },
+        "ribcage_human_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "dc70facbcff027b1cabed0779a88f3162f361cbd1182827020dbaf3e08d8b7da"
+        },
+        "ribcage_human_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "7875d119d633a5e79331ddb910d1c44ecd6e4d84805eea154b1d4fd1bcddd667"
+        },
+        "ribcage_human_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5d782e01a7b9ec5ba190a8ed551c0625173f9b856070f2997962b244b935eac0"
+        },
+        "ribcage_human_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "9a9c7241906784f3299a9b01f6f5d1c70cbae32d5bcd69ed4fb9314354caf034"
+        },
+        "ribcage_human_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "7eaea2f66fc9012e78976679c9e678e34e197f8a1382a84974473afac38009c0"
+        }
+      }
+    },
+    "skull_horned": {
+      "name": "Skull, horned animal",
+      "drop": "",
+      "boxes": 10,
+      "bounds": [
+        -7,
+        -8,
+        -7,
+        7,
+        0,
+        5
+      ],
+      "prop_sha256": "1a9bb328a560739f0a0ae3f5a9279e3794663c0181507f2cfd43f2af3845673e",
+      "images": {
+        "skull_horned_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            0,
+            255
+          ],
+          "sha256": "265bd5b1cfe70b41387d5efe0315b2cb9e6f5eab9a68a3ad13014cc990c9575b"
+        },
+        "skull_horned_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "9c6302f9a6843278d7bcc9d3e8ee178d46286f1c348bd2db629751d0d2f36d05"
+        },
+        "skull_horned_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "14e2bfee9c3a31cc6945c4914b20a8b01edc8f8a8c727aa0c25cc4370705f405"
+        },
+        "skull_horned_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "fba4f321bb46f29c1a280eeceba69418797c4f9100c99ab0f722314b5edffba8"
+        },
+        "skull_horned_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "6fee65e9f72f757b95be81c9c0611ca89c465281dabf66b035201e353f503956"
+        },
+        "skull_horned_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "0bc0b0fa9b4e4a1bf87e2dff46065831fc991d15587d91fbec3c062c4d0a8e41"
+        }
+      }
+    },
+    "skull_human": {
+      "name": "Skull, humanoid",
+      "drop": "",
+      "boxes": 7,
+      "bounds": [
+        -4,
+        -8,
+        -4,
+        4,
+        0,
+        4
+      ],
+      "prop_sha256": "494f5d62cc646cf50a717d70ab66daa4cc6c4043f2d9fa7e536ea5eb5661fadc",
+      "images": {
+        "skull_human_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "44353c89eac36615651ef46b88c4121cc34d8022c00dc80885d32add5f4061be"
+        },
+        "skull_human_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "71d9a9d2ac20abe23bccc8096f6d14be489576eeb8911e99bdc47a459a59a4eb"
+        },
+        "skull_human_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ef32f83cede629078d16af662194f16616e0f8fbd8d2ed1bf409296b9c543b0b"
+        },
+        "skull_human_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ed90e9592c32fc436bbe53ea3dedc5e85d43c750902886ca645a87455dc9baea"
+        },
+        "skull_human_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "08c9b3f6e537fd392282950f64dff31009c37c9674834bfee05c674d70b299cc"
+        },
+        "skull_human_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            0,
+            255
+          ],
+          "sha256": "2b749384ceeceb0ddd5e1c9eae15dc383a164e9a2acabeabb2c17c18813d249c"
+        }
+      }
+    },
+    "spine_animal": {
+      "name": "Spine, small animal",
+      "drop": "",
+      "boxes": 13,
+      "bounds": [
+        -5,
+        -8,
+        -7,
+        5,
+        -5,
+        7
+      ],
+      "prop_sha256": "082cb9d9342ff7f4b3361127680ceb8a18b455d2bad0c6091e96aa1b3ceefb90",
+      "images": {
+        "spine_animal_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "1ae4a0d51fccb50e27cadc815a7b355fdf46bd4364ba72687eea705cdebf4b39"
+        },
+        "spine_animal_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "4f2ad3be0e6830b98103dae72ebda9ed29590ca3d403cc373a919bb1a83d59f0"
+        },
+        "spine_animal_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "6cf064a20279c415c7385364d497a6c698584273a3ff83e6eed7dbae041eccc1"
+        },
+        "spine_animal_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "93060113fc484b957168f16e7066a1af4a113a0f57062a6d509ab2902e3d37ea"
+        },
+        "spine_animal_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "91932cf5d59327695a8c3b114215ddc480f4ffcd7a5fb7d498d23a48b9da9b05"
+        },
+        "spine_animal_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "10381eaccf2151616ed8ea55613016532d40a2530460d829949d42d5bce1876c"
+        }
+      }
+    },
+    "statue_broken_torso": {
+      "name": "Statue, broken draped torso",
+      "drop": "default:silver_sandstone",
+      "boxes": 8,
+      "bounds": [
+        -7,
+        -8,
+        -4,
+        7,
+        8,
+        3
+      ],
+      "prop_sha256": "00486a9947eddeaf0a4ff1383be0fef515c1ded9b1c428bb38999637c64b2297",
+      "images": {
+        "statue_broken_torso_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "e64abc9d66a1585b89e3b6dc820c24457ed6b5e98a50887f6448b2d9f2cd5eb6"
+        },
+        "statue_broken_torso_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "c9a2599df37472ebfc8716613e802343a1f9c7569030117ca12b48fccdc47d39"
+        },
+        "statue_broken_torso_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ae8987432c75c72dcf4ab8244e4a28e34596dbac683607f4964b1ae399e0e9a1"
+        },
+        "statue_broken_torso_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "bbf13605c53b79e748ca5559cc594e4af2bd55e7f490ad1dd360be2ba8653595"
+        },
+        "statue_broken_torso_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "16ebbf92ef8bc300b432df35c9273c47543aee7eb45c6d871a99457f6e1ce1ba"
+        },
+        "statue_broken_torso_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "1d53df0858b8840e8ee7ce6900b2714f5af34d66942f5828e9eb3a17f580b35e"
+        }
+      }
+    },
+    "statue_mourner_base": {
+      "name": "Mourner, kneeling robe and knees",
+      "drop": "default:stone",
+      "boxes": 9,
+      "bounds": [
+        -6,
+        -8,
+        -6,
+        6,
+        8,
+        6
+      ],
+      "prop_sha256": "8e1fcc3fd84643fd93b7da8b2b9c8670fce4d4d3892799f433e3543bfad427d4",
+      "images": {
+        "statue_mourner_base_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5459b59c24640795fceab8c9a086cdac069fd478c6c87d4278a8bae5e218a2ea"
+        },
+        "statue_mourner_base_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "f10745a1b0b4cde6590111026c8f2df10acb7399e53ca4fed0e978b09d7b0e16"
+        },
+        "statue_mourner_base_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "6dcf6440d91516704d37a09aa05d5777774fce21316a5350a4580169e7a16fd4"
+        },
+        "statue_mourner_base_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "b7cb28ef867e69a79efdee976b3b7dbb065913d68bf4788583189f655cbc8f55"
+        },
+        "statue_mourner_base_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "67c23f63a2dec2c817675db927a35a9f3ce134d8709af0f7aa20fad00a1f8f6b"
+        },
+        "statue_mourner_base_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "2ff6f72535988bab25f5749fa1b2563a26b743c7d82cd9eb160cc6b55607cb05"
+        }
+      }
+    },
+    "statue_mourner_upper": {
+      "name": "Mourner, bowed hood and clasped hands",
+      "drop": "default:stone",
+      "boxes": 14,
+      "bounds": [
+        -6,
+        -8,
+        -5,
+        6,
+        7,
+        4
+      ],
+      "prop_sha256": "d2046586a10107a965549bb991a4fa886c6754bd5ac8b69f17d933fef0b7027b",
+      "images": {
+        "statue_mourner_upper_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "fbf68e717ad5bd67c078616da49aeb3f5d90350cb04fbdd33227c2ed7f82652a"
+        },
+        "statue_mourner_upper_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "ae06b4e6c980dc41bb3e0fe8fa771ddde1ef3e20fcedd42ec8bb0f4d3915676e"
+        },
+        "statue_mourner_upper_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "31d5b00ab4da6b7ea171feca7ca6b1e363dc5c39348b9341e7d68cdc5cd95010"
+        },
+        "statue_mourner_upper_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "41cf938f95d3117e9baa4482778f256386a1b02531c2bf5070fd1257320b1bc6"
+        },
+        "statue_mourner_upper_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "14f5ee63426a474002178cec13b6c5a2a00a518692b8feaadca32663d7d1bfa6"
+        },
+        "statue_mourner_upper_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "9107b935678e99789d49cca395fdee873a1132adfe8d60b496914ae72a08f4ad"
+        }
+      }
+    },
+    "statue_veiled_head": {
+      "name": "Statue, worn veiled head",
+      "drop": "default:silver_sandstone",
+      "boxes": 7,
+      "bounds": [
+        -5,
+        -8,
+        -4,
+        5,
+        6,
+        3
+      ],
+      "prop_sha256": "a1d951f74d1dffbe305df5e8b3dc069a1ddc5181d1a0a5f4c2aa01db95d45c06",
+      "images": {
+        "statue_veiled_head_top.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "0d6cfc65987a3187a5ade90c17803603c1b6d8dd2b7eb429a1e04fe83897ba79"
+        },
+        "statue_veiled_head_bottom.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "db94de702f6f9df6c35653707f30e766f46aa6b8307361b77620ba35390bb4d6"
+        },
+        "statue_veiled_head_right.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "5b988478cb372341fea83eeb4edc1684196dde4306d571ffc2f58aea40cdacca"
+        },
+        "statue_veiled_head_left.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "6373dbc77b2bb036047f5f187990b12bea5c8f799ab877e9fcf564c3ac3bcb02"
+        },
+        "statue_veiled_head_back.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "d8d5550993c3bcaa451584f586fb7e4d8d912e29434382d79532d83b36d92328"
+        },
+        "statue_veiled_head_front.png": {
+          "size": [
+            16,
+            16
+          ],
+          "mode": "RGBA",
+          "alpha": [
+            255
+          ],
+          "sha256": "125319286927ccd74c98d5ffac7accefe6b9efbec8d7101acf13672cd455d338"
+        }
+      }
+    }
+  },
+  "classification": "compatible: concept art only",
+  "preview_sha256": "f9cd3418eb7062be850475b827d8c4eafcfc3f20086751625fcba290510ca0a9",
+  "pass3_preview_sha256": "d71c65012971ce85f37fa1757593ac2acd4fd54742e347da16049e66181a448d"
+}

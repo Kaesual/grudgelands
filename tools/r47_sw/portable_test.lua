@@ -109,7 +109,9 @@ check(carpet.use_texture_alpha == "clip", "the carpet's gaps are see-through")
 local rooted = nodes["grug_nodes:mud_with_reeds"]
 check(rooted.paramtype2 == "leveled" and rooted.special_tiles[1].tileable_vertical == true,
 	"rooted reeds: leveled height, the reed texture tiles up")
-check(rooted.tiles[1] == "grug_nodes_mud.png", "rooted reeds stand in a mud bed")
+-- Round 51 lane LG: the bed wears the mud's world-aligned tile (a table).
+check(type(rooted.tiles[1]) == "table" and rooted.tiles[1].name == "grug_nodes_mud.png",
+	"rooted reeds stand in a mud bed")
 check(nodes["grug_nodes:reeds"].after_dig_node ~= nil, "a reed takes the one above it")
 for _, name in ipairs({"grug_nodes:reeds", "grug_nodes:cattails", "grug_trees:swamp_hanging_moss"}) do
 	check(nodes[name].walkable == false and nodes[name].sunlight_propagates == true, name .. " lets you and light through")

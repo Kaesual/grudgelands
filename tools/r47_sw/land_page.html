@@ -1,0 +1,169 @@
+<title>Land Zone Viewer</title>
+<style>
+:root {
+	--bg: #f2f1ea; --panel: #fcfcf7; --ink: #22241e; --muted: #626558; --line: #d9d8cb;
+	--accent: #3d6a45; --accent-ink: #ffffff; --chip: #e9e8de; --warn: #8a5a12;
+	--pick: #2f6b3a; --rework: #8a5a12; --drop: #9b2f2f; --field: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--bg: #171a17; --panel: #1f231f; --ink: #e8e8dd; --muted: #a6a99b; --line: #343a33;
+		--accent: #79b884; --accent-ink: #10140f; --chip: #2a2f29; --warn: #e0b25c;
+		--pick: #79b884; --rework: #e0b25c; --drop: #e58a7f; --field: #141714;
+	}
+}
+:root[data-theme="dark"] {
+	--bg: #171a17; --panel: #1f231f; --ink: #e8e8dd; --muted: #a6a99b; --line: #343a33;
+	--accent: #79b884; --accent-ink: #10140f; --chip: #2a2f29; --warn: #e0b25c;
+	--pick: #79b884; --rework: #e0b25c; --drop: #e58a7f; --field: #141714;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+	font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+#app { display: flex; flex-direction: column; height: 100vh; }
+header { padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--panel);
+	display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+h1 { font-size: 16px; margin: 0 6px 0 0; letter-spacing: .02em; }
+.group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+button { font: inherit; border: 1px solid var(--line); background: var(--chip); color: var(--ink);
+	border-radius: 6px; padding: 3px 9px; cursor: pointer; }
+button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+	outline: 2px solid var(--accent); outline-offset: 1px; }
+select, input[type=number], textarea { font: inherit; padding: 3px 5px; border: 1px solid var(--line);
+	border-radius: 6px; background: var(--field); color: var(--ink); }
+input[type=number] { width: 84px; }
+label { display: inline-flex; gap: 4px; align-items: center; color: var(--muted); cursor: pointer; }
+main { flex: 1; display: flex; min-height: 0; }
+#view { position: relative; flex: 1; min-width: 0; overflow: hidden; }
+#view canvas { display: block; width: 100%; height: 100%; }
+aside { width: 420px; max-width: 45vw; border-left: 1px solid var(--line); background: var(--panel);
+	overflow: auto; padding: 10px 16px 24px; }
+aside h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; }
+aside h3 { font-size: 14px; margin: 14px 0 4px; }
+p, li { font-size: 13px; }
+ul { padding-left: 18px; margin: 6px 0; }
+.note { color: var(--muted); font-size: 12px; }
+.warn { color: var(--warn); font-size: 12px; }
+code, .key { font: 11px/1.3 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; color: var(--muted); }
+.item { border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; margin: 6px 0; background: var(--bg); }
+.item.off { opacity: .72; }
+.itemhead { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.itemhead label { color: var(--ink); align-items: flex-start; }
+.itemhead input { margin-top: 3px; }
+.badge { font-size: 11px; border: 1px solid var(--warn); color: var(--warn); border-radius: 10px; padding: 0 6px; }
+.badge.art { border-color: var(--line); color: var(--muted); }
+.density { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.density input { width: 130px; }
+.verdict { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 5px; }
+.verdict button { padding: 1px 8px; font-size: 12px; }
+.verdict button.v-pick.on { background: var(--pick); border-color: var(--pick); color: var(--accent-ink); }
+.verdict button.v-rework.on { background: var(--rework); border-color: var(--rework); color: var(--accent-ink); }
+.verdict button.v-drop.on { background: var(--drop); border-color: var(--drop); color: var(--accent-ink); }
+.item textarea { width: 100%; margin-top: 5px; min-height: 30px; resize: vertical; font-size: 13px; }
+.status { font-size: 12px; color: var(--muted); }
+.status.err { color: var(--drop); }
+.drops { font-size: 12px; margin: 2px 0 0 0; padding-left: 16px; }
+.labrow { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 6px; align-items: center; margin: 4px 0; }
+.labrow .thumb { width: 32px; height: 32px; image-rendering: pixelated; border: 1px solid var(--line); background: #6d6d6d; }
+.labrow .labname { font-size: 12px; }
+.labrow select { max-width: 170px; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 12px; width: 100%; }
+th, td { padding: 3px 5px; text-align: right; border-bottom: 1px solid var(--line); }
+tbody th { text-align: left; font-weight: 500; }
+.notelist dt { margin-top: 8px; font-size: 13px; }
+.notelist dd { margin: 2px 0 0 0; font-size: 13px; white-space: pre-wrap; }
+details summary { cursor: pointer; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; }
+body.bare header, body.bare aside { display: none; }
+@media (max-width: 760px) {
+	#app { height: auto; }
+	main { flex-direction: column; }
+	#view { flex: none; height: 62vh; }
+	aside { width: auto; max-width: none; border-left: 0; border-top: 1px solid var(--line); }
+}
+</style>
+<!-- Generated by tools/r47_sw/build.py from land_page.html, land.js, land_view.js,
+     mesh.js, patch.js, tools/r46_tree/concept/shapes.js and treegen.js, the
+     mapgen's rows and the art of tools/r51_land. Do not edit. -->
+<div id="app">
+<header>
+	<h1>Land zones</h1>
+	<div class="group" role="group" aria-label="Zone" id="zones"></div>
+	<div class="group" role="group" aria-label="Show">
+		<button data-mode="patch" id="mode-patch">Patch</button>
+		<button data-mode="kit" id="mode-kit">Kit</button>
+		<button data-mode="plants" id="mode-plants">Plants</button>
+		<button data-mode="notes" id="mode-notes">All notes</button>
+	</div>
+	<div class="group" role="group" aria-label="Compare">
+		<button data-variant="today" id="variant-today">Today</button>
+		<button data-variant="proposal" id="variant-proposal">Proposal</button>
+		<button data-variant="both" id="variant-both">Side by side</button>
+	</div>
+	<div class="group">
+		<label for="biome">biome</label><select id="biome"></select>
+		<button id="prev" aria-label="Previous seed">◀</button>
+		<input type="number" id="seed" min="1" aria-label="Seed" title="Seed; Enter to apply">
+		<button id="next" aria-label="Next seed">▶</button>
+		<button id="regen">New seed</button>
+	</div>
+	<div class="group">
+		<button data-view="orbit" id="view-orbit">Orbit</button>
+		<button data-view="top" id="view-top">Top</button>
+		<label><input type="checkbox" id="show-trees"> trees</label>
+		<label><input type="checkbox" id="show-leaves"> leaves</label>
+		<label><input type="checkbox" id="show-plants"> plants</label>
+		<label><input type="checkbox" id="show-labels"> labels</label>
+		<label><input type="checkbox" id="show-grid"> grid</label>
+		<label for="groundsel">ground</label><select id="groundsel"></select>
+	</div>
+</header>
+<main>
+	<div id="view"></div>
+	<aside>
+		<h2 id="zonetitle">Zone</h2>
+		<p id="zonetext"></p>
+		<p class="note" id="dbline" role="status">Notes: connecting…</p>
+		<div id="panel"></div>
+		<details id="labbox">
+			<summary>Texture lab</summary>
+			<p class="note">Pick a texture per ground slot, or try an own PNG: 16 px is one node, 32 / 64 px are drawn world-aligned over 2 × 2 / 4 × 4 nodes (Luanti's <code>align_style = "world"</code>). The lab changes the proposal side, the kit and the plant row. “ground” in the header covers all dry land with one ground, to judge repetition; the Top view shows it flat.</p>
+			<div id="lab"></div>
+			<p class="warn" id="labmsg" role="status"></p>
+		</details>
+		<div id="readout"></div>
+		<h2>How to use</h2>
+		<ul>
+			<li><b>Patch</b>: a seeded patch of the zone, today's ground mix and decorations (read from the world generator's rows), or the proposal on top of it. Each proposal item has a toggle, a rough density where one is at stake, a verdict and a note.</li>
+			<li><b>Kit</b>: the zone's structures in a row, with the block list and what each block drops. <b>Plants</b>: the zone's gathering plants next to the new plants (ruling 11).</li>
+			<li>The small grey <code>key</code> next to each item names it in chat. A <span class="badge">stand-in</span> is made of today's textures until its art arrives.</li>
+			<li>Orbit: drag to turn, right-drag to pan, wheel to zoom. Top: drag to pan, wheel to zoom.</li>
+		</ul>
+	</aside>
+</main>
+</div>
+<script src="%THREE_BASE%/build/three.min.js"></script>
+<script src="%THREE_BASE%/examples/js/controls/OrbitControls.js"></script>
+<script>
+/*DATA*/
+</script>
+<script>
+/*SHAPES*/
+</script>
+<script>
+/*TREEGEN*/
+</script>
+<script>
+/*PATCH*/
+</script>
+<script>
+/*MESH*/
+</script>
+<script>
+/*LAND*/
+</script>
+<script>
+/*LANDVIEW*/
+</script>

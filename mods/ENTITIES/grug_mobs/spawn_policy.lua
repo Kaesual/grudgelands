@@ -134,10 +134,16 @@ local LOOKALIKE_FAMILY = {
 }
 
 -- Kraken has an independent authority instead of a named-zone mob palette:
--- water_class_at == deep_ocean in kraken.lua.
+-- water_class_at == deep_ocean in kraken.lua. Round 51 adds the fixed-level
+-- sharks and the sea's critter fish (world slots in data/names.json,
+-- tools/r38_names/inventory.py); their spawn rows by water band are MOBS
+-- step M2's.
 local INDEPENDENT_AUTHORITY = {
 	["grug_mobs:kraken"] = true,
 	["grug_mobs:reed_angelfish"] = true,
+	["grug_mobs:bay_shark"] = true,
+	["grug_mobs:abyssal_shark"] = true,
+	["grug_mobs:goby"] = true,
 }
 
 -- Surface rows a spawn-recipe zone keeps beside its critters, in the zones
