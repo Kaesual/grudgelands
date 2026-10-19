@@ -140,6 +140,25 @@ SR.spawn_mob = function(unit, role, g, clock)
 	return ent
 end
 
+-- The world rows' spawn attempts (mobs_redo's custom check, after the
+-- merged water ABM picked the row): per mob, tried and refused.
+local WORLD_ROWS = {["grug_mobs:bay_shark"] = true, ["grug_mobs:abyssal_shark"] = true,
+	["grug_mobs:kraken"] = true, ["grug_mobs:goby"] = true}
+local row_tries = {}
+core.register_on_mods_loaded(function()
+	local check = mobs.spawn_abm_check
+	mobs.spawn_abm_check = function(self, pos, node, name)
+		local refused = check(self, pos, node, name)
+		if WORLD_ROWS[name] then
+			local r = row_tries[name] or {tried = 0, refused = 0}
+			row_tries[name] = r
+			r.tried = r.tried + 1
+			if refused then r.refused = r.refused + 1 end
+		end
+		return refused
+	end
+end)
+
 local function census()
 	for _, point in ipairs(POINTS) do
 		local by, rows = {}, {}
@@ -180,6 +199,12 @@ local function finish()
 	for band, n in pairs(per_band) do bands[#bands + 1] = band .. "=" .. n end
 	table.sort(bands)
 	log("water spawns per band: " .. table.concat(bands, " "))
+	local tries = {}
+	for name, r in pairs(row_tries) do
+		tries[#tries + 1] = ("%s tried %d refused %d"):format(name:sub(11), r.tried, r.refused)
+	end
+	table.sort(tries)
+	log("world rows: " .. (#tries > 0 and table.concat(tries, ", ") or "no attempt"))
 	for _, band in ipairs({"lake", "river", "sea_shallows", "sea_deep"}) do
 		if not per_band[band] then fail("no " .. band .. " spawn in the window") end
 	end
@@ -212,9 +237,11 @@ core.after(2, function()
 	local pending = 0
 	for _, point in ipairs(POINTS) do
 		point.y = 1 -- the sea's surface; a lake's or river's is read after the emerge
-		log(("point %s (%d, %d): %s zone %s level %s, %s from land, %s deep"):format(point.id, point.x,
-			point.z, point.class, tostring(point.zone), tostring(point.level), tostring(point.dist),
-			tostring(point.depth)))
+		log(("point %s (%d, %d): %s zone %s level %s, %s from land, %s deep; Bay Shark band %s, open sea %s"):format(
+			point.id, point.x, point.z, point.class, tostring(point.zone), tostring(point.level),
+			tostring(point.dist), tostring(point.depth),
+			tostring(grug_mobs.shark_bands.bay_middle({x = point.x, y = 2, z = point.z})),
+			tostring(grug_mobs.shark_bands.open_sea({x = point.x, y = 2, z = point.z}))))
 		local top = math.max(1, grug_zones.terrain_height_at(point.x, point.z) + (point.depth or 0))
 		point.y = top
 		local minp = {x = point.x - RADIUS, y = top - 40, z = point.z - RADIUS}

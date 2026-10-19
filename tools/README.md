@@ -1504,4 +1504,9 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   frog and tortoise chasing a probe player ashore and back, the stingray's
   reset, one kill per family and its fish. `capture.sh OUT_DIR` (`XVFB=`,
   two queue slots) with `grug_probe_r51_shots`: screenshots of the
-  line-ups.
+  line-ups. Step M2: `water_kinds.py [--check]` writes the recipes' water
+  kinds from the NAMES draft; the fixture adds the recipes' water kinds,
+  the water attempt (cut out of spawn_regions.lua) and the shark and goby
+  rows; `bands.sh OUT_DIR` (one queue slot, the production seed) with
+  `grug_probe_r51_bands` counts the water spawns per band at stand-in
+  players over each band and the world rows' attempts.
