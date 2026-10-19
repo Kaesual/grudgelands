@@ -132,11 +132,53 @@ local function t2_checks()
 	end
 end
 
+-- Round 51 T3: a seagrass and a kelp column of the runtime's seabed rule
+-- (the vegetation authority) near the Wyrmglass channel, generated, read back.
+local function t3_checks(done)
+	local vegetation = grug_mapgen.wp40.vegetation
+	if type(vegetation.seabed) ~= "function" then
+		failures[#failures + 1] = "no seabed rule"
+		return done()
+	end
+	-- up to six candidates of each kind (a bed of gravel or stone, which the
+	-- writer keeps bare of seagrass and kelp, may refuse one)
+	local wanted, list, matched = {seagrass = 6, kelp = 6}, {}, {}
+	for z = -400, 400, 7 do
+		for x = -2800, -2300, 7 do
+			local node, param2, ground = vegetation.seabed(x, z)
+			local kind = node and (node:find("seagrass") and "seagrass" or "kelp")
+			if kind and wanted[kind] > 0 then
+				wanted[kind] = wanted[kind] - 1
+				list[#list + 1] = {x, ground, z, node, param2, kind}
+			end
+		end
+	end
+	local index = 0
+	local function step()
+		index = index + 1
+		local c = list[index]
+		if not c then
+			expect(matched.seagrass and matched.kelp, "seagrass and kelp where the rule says")
+			return done()
+		end
+		local pos = {x = c[1], y = c[2], z = c[3]}
+		core.emerge_area(pos, pos, function(_, _, remaining)
+			if remaining ~= 0 then return end
+			local node = core.get_node(pos)
+			log(("seabed %d %d %d: %s param2 %d (rule %s %d)"):format(pos.x, pos.y, pos.z,
+				node.name, node.param2, c[4], c[5]))
+			if node.name == c[4] and node.param2 == c[5] then matched[c[6]] = true end
+			core.after(0.5, step)
+		end)
+	end
+	step()
+end
+
 local function check_nodes(index)
 	local c = COLUMNS[index]
 	if not c then
 		t2_checks()
-		return finish()
+		return t3_checks(finish)
 	end
 	local x, z = c[1], c[2]
 	local h = read_column(c)

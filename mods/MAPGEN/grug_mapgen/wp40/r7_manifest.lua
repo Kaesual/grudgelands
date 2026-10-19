@@ -343,12 +343,14 @@ return function(canonical, raw_sha256, settlement_order)
 				settlement_count % 1 ~= 0 or settlement_count < 1 then
 			fail("successor window population differs")
 		end
+		-- the 39 P9G rows (36 before Round 51 T3's seagrass), the two
+		-- anchors, then the settlements
 		return {p9g_min = production_count + 1,
-			p9g_max = production_count + 36,
-			anchor_min = production_count + 37,
-			anchor_max = production_count + 38,
-			settlement_min = production_count + 39,
-			settlement_max = production_count + 38 + settlement_count}
+			p9g_max = production_count + 39,
+			anchor_min = production_count + 40,
+			anchor_max = production_count + 41,
+			settlement_min = production_count + 42,
+			settlement_max = production_count + 41 + settlement_count}
 	end
 	function module.new(inputs)
 		if type(inputs) ~= "table" or getmetatable(inputs) ~= nil then
@@ -412,7 +414,7 @@ return function(canonical, raw_sha256, settlement_order)
 		if inputs.production_content.semantic_digest ~=
 				"c8dc82de1f5cffb129a1f0339f68e9d6e5c424d1602dd05b1968fa9048454a20" or
 				inputs.p9g_content.semantic_digest ~=
-				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
+				"ae1f7662c8270abee5d253ca1a028e2801c9c40159433c6a766e286747ecadb7" then
 			fail("frozen content semantics differ: production=" ..
 				tostring(inputs.production_content.semantic_digest) .. " p9g=" ..
 				tostring(inputs.p9g_content.semantic_digest))
