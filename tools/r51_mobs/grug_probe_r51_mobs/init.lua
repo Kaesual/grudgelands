@@ -609,9 +609,20 @@ local function start_float()
 	end
 end
 local function step_float(t)
-	if t < FLOAT_SETTLE or t > FLOAT_SETTLE + FLOAT_SECONDS then return end
 	for _, f in ipairs(floaters) do
-		if over_pool(f.obj, cell.float.pool) then add_stat(f.st, f.obj, f.ent) end
+		if not f.gone and not f.obj:get_pos() then
+			f.gone = ("gone at t=%.1f (hp %s)"):format(t, tostring(f.ent.health))
+		end
+	end
+	-- The mob that water hurts is sampled from the first second (it dies).
+	if t < 1 or t > FLOAT_SETTLE + FLOAT_SECONDS then return end
+	for _, f in ipairs(floaters) do
+		if (t >= FLOAT_SETTLE or f.name == "grug_mobs:oerkki")
+				and over_pool(f.obj, cell.float.pool) then
+			add_stat(f.st, f.obj, f.ent)
+		elseif f.st.n > 0 and not f.left and f.obj:get_pos() and on_land(f.obj) then
+			f.left = ("left the water at t=%.1f (hp %s)"):format(t, tostring(f.ent.health))
+		end
 		-- A trace of the two amphibians, every half second.
 		if (f.name == "grug_mobs:tortoise_t1" or f.name == "grug_mobs:frog_t1") and f.st.box
 				and t >= (f.next_trace or FLOAT_SETTLE) then
@@ -628,13 +639,18 @@ local function step_float(t)
 end
 local function report_float()
 	for _, f in ipairs(floaters) do
-		log(("float %-22s %s"):format(f.name, stat_line(f.st)))
+		log(("float %-22s %s%s%s"):format(f.name, stat_line(f.st), f.gone and (", " .. f.gone) or "",
+			f.left and (", " .. f.left) or ""))
 		local st = f.st
 		if f.ent._grug_amphibian then
 			check(st.n >= 100 and st.max - st.min <= 0.1 and st.breach == 0,
 				("float %s: one height in the water for %d s (%d samples, range %.2f, breaches %d)"):format(
 					f.name, FLOAT_SECONDS, st.n, st.n > 0 and st.max - st.min or -1, st.breach))
-		elseif not f.swimmer and st.n >= 50 then
+		elseif f.name == "grug_mobs:oerkki" then
+			-- Water hurts it: the old float and its climb hop get it out.
+			check(f.left ~= nil, "float " .. f.name .. ": hurt by water, it climbs out (" ..
+				tostring(f.left or f.gone) .. ")")
+		elseif not f.swimmer and st.n >= 30 then
 			check(st.max - st.min > 0.2 and st.breach >= 5,
 				("float %s: no amphibian, keeps the old float (%d samples, range %.2f, breaches %d)"):format(
 					f.name, st.n, st.max - st.min, st.breach))
