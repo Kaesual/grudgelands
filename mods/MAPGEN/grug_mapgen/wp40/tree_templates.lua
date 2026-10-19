@@ -67,9 +67,12 @@ return function(treegen)
 		-- are optional like leaves: a stilt cell the ground takes is left
 		-- out, so on uneven ground a stilt ends on the higher ground instead
 		-- of refusing the tree (`stilts`).
+		-- Round 51: a moss run is the strand above the end (`moss_strand`,
+		-- HANGING below).
 		{key = "swamp", count = 32, wood = "gravewood",
 			trunk = "grug_trees:gravewood_tree", leaves = "grug_trees:swamp_leaves",
-			moss = "grug_trees:swamp_hanging_moss", stilts = true},
+			moss = "grug_trees:swamp_hanging_moss",
+			moss_strand = "grug_trees:swamp_hanging_moss_strand", stilts = true},
 	}
 	M.BY_KEY = {}
 	for index = 1, #M.SPECIES do
@@ -95,6 +98,8 @@ return function(treegen)
 		"grug_nodes:dirt_with_forest_litter", "grug_nodes:dirt_with_moss",
 		"grug_nodes:dirt_with_silver_litter", "grug_nodes:mud", "grug_nodes:mud_dry",
 		"grug_nodes:mud_mottled", "grug_nodes:mud_with_wet_grass",
+		-- Round 51 lane LG: the swamp's own moss ground (soil)
+		"grug_nodes:swamp_moss",
 	}
 
 	M.STEM, M.LIMB, M.LEAF = 1, 2, 3
@@ -117,12 +122,20 @@ return function(treegen)
 		return flag
 	end
 
+	-- Hanging kinds (Round 51 lane LG): a cell of such a kind with a cell of
+	-- the same kind right below it takes the species' strand node
+	-- (`row[HANGING[kind]]`), the lowest cell of a run its end node
+	-- (`row[kind]`), so a run reads as one continuous curtain (grug_trees
+	-- hanging.lua keeps it whole when dug). Lane LP's lianas join here.
+	M.HANGING = {moss = "moss_strand"}
+
 	-- Every node name a species places, sorted.
 	function M.names(key)
 		local row = M.BY_KEY[key]
 		local list = {row.trunk, row.quarter, row.base, row.branch, row.twig, row.leaves}
 		if row.fruit then list[#list + 1] = row.fruit end
 		if row.moss then list[#list + 1] = row.moss end
+		if row.moss_strand then list[#list + 1] = row.moss_strand end
 		table.sort(list)
 		return list
 	end
@@ -133,6 +146,30 @@ return function(treegen)
 			error("tree templates: " .. row.key .. " has no node for " .. tostring(kind), 0)
 		end
 		return name
+	end
+
+	-- The hanging cells of a generated tree by position ("x,y,z" -> kind),
+	-- nil when the tree has none.
+	local function hanging_cells(tree)
+		local set
+		for index = 1, #tree.nodes do
+			local node = tree.nodes[index]
+			if M.HANGING[node.kind] then
+				set = set or {}
+				set[node.x .. "," .. node.y .. "," .. node.z] = node.kind
+			end
+		end
+		return set
+	end
+
+	-- The node name of one cell: a hanging cell above one of its own kind is
+	-- the strand.
+	local function cell_name(row, node, hanging)
+		local strand = M.HANGING[node.kind]
+		if strand and hanging[node.x .. "," .. (node.y - 1) .. "," .. node.z] == node.kind then
+			return name_of(row, strand)
+		end
+		return name_of(row, node.kind)
 	end
 
 	-- The total of variants every world builds, from the species table.
@@ -180,11 +217,12 @@ return function(treegen)
 			local r = tree.roots[index]
 			root_set[r[1] .. "," .. r[2] .. "," .. r[3]] = true
 		end
+		local hanging = hanging_cells(tree)
 		local cells = {}
 		for index = 1, #tree.nodes do
 			local node = tree.nodes[index]
 			cells[index] = {x = node.x, y = node.y, z = node.z,
-				name = name_of(row, node.kind), param2 = node.rot,
+				name = cell_name(row, node, hanging), param2 = node.rot,
 				flag = flag_of(node, foot),
 				root = root_set[node.x .. "," .. node.y .. "," .. node.z] == true}
 		end
@@ -226,9 +264,10 @@ return function(treegen)
 				x, y, z, name, param2, flag
 			bound(x, y, z)
 		end
+		local hanging = hanging_cells(tree)
 		for index = 1, #tree.nodes do
 			local node = tree.nodes[index]
-			local name = name_of(row, node.kind)
+			local name = cell_name(row, node, hanging)
 			local root_index = roots[node.x .. "," .. node.y .. "," .. node.z]
 			if root_index then
 				v.rx[root_index], v.ry[root_index], v.rz[root_index] =
