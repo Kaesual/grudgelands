@@ -1465,3 +1465,8 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   sample's engine cost. It sets each draft's stone only after
   `core.emerge_area` generated its area (a node set into a chunk not yet
   generated makes the refinement refuse the chunk).
+- **Round 51 lane TERRAIN** (`r51_terrain`): T1, the larger world
+  (`portable_test.lua`: the bounds agree in every place and the new ring
+  reads as open sea; `compare.lua REPO SEED OUT` dumps the world inside the
+  old bounds for a before/after diff, `diff_dumps.py BEFORE AFTER` summarises
+  two dumps).
