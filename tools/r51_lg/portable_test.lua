@@ -346,9 +346,10 @@ for name, m in roster:gmatch('{"([^"]+)", (%d+)}') do
 	rows = rows + 1
 	mask[name] = tonumber(m)
 end
-check(rows == 128 and content:find("#ACCEPTED_R6_ROWS ~= 128", 1, true) ~= nil,
-	"the roster holds 128 rows and checks that count (" .. rows .. ")")
-check(read(wp40 .. "/r7_p9g.lua"):find("#production.content_names ~= 128", 1, true) ~= nil,
+-- (Round 51 lane LK: the land kit's 28 rows follow, 128 -> 156)
+check(rows == 156 and content:find("#ACCEPTED_R6_ROWS ~= 156", 1, true) ~= nil,
+	"the roster holds 156 rows and checks that count (" .. rows .. ")")
+check(read(wp40 .. "/r7_p9g.lua"):find("#production.content_names ~= 156", 1, true) ~= nil,
 	"the P9G successor checks the same count")
 check(mask["grug_nodes:swamp_moss"] == 1, "the swamp moss is a surface row")
 for _, colour in ipairs(CLAY) do
