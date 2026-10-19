@@ -165,15 +165,27 @@ for _, name in ipairs({"tortoise", "frog", "stingray"}) do
 		"A " .. name .. " is not: its family spawns from zone recipes (M2)")
 end
 do
-	local listing = io.popen("cd '" .. ROOT .. "' && ls mods/PLAYER/grug_quests/data/zones/*.json")
-	local named = {}
-	for path in listing:lines() do
-		local text = read(path)
-		for _, word in ipairs({"goby", "Tide Goby", "reed_angelfish", "Reed Angelfish"}) do
-			if text:find(word, 1, true) then named[#named + 1] = path .. ": " .. word end
+	-- Every zone's quest files (the zone ids are the names file's scopes).
+	local zones, named, files = {}, {}, 0
+	for key in pairs(NAMES) do
+		local zone = key:match("^([%w_]+)/")
+		if zone and zone ~= "world" then zones[zone] = true end
+	end
+	for zone in pairs(zones) do
+		for _, suffix in ipairs({".quests.json", ".front.quests.json"}) do
+			local path = "mods/PLAYER/grug_quests/data/zones/" .. zone .. suffix
+			local handle = io.open(ROOT .. "/" .. path, "rb")
+			if handle then
+				files = files + 1
+				local text = handle:read("*a")
+				handle:close()
+				for _, word in ipairs({"goby", "Tide Goby", "reed_angelfish", "Reed Angelfish"}) do
+					if text:find(word, 1, true) then named[#named + 1] = path .. ": " .. word end
+				end
+			end
 		end
 	end
-	listing:close()
+	check(files >= 38, "A the quest files of every zone read (" .. files .. ")")
 	eq(#named, 0, "A no quest names a critter fish " .. table.concat(named, ", "))
 end
 
@@ -564,7 +576,6 @@ do
 end
 
 if failures > 0 then
-	print(("R51 MOBS PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R51 MOBS PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R51 MOBS PORTABLE PASS checks=%d"):format(checks))

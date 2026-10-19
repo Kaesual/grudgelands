@@ -1483,3 +1483,13 @@ is retired since Round 38 (the naming gate is `r38_names/check_rules.py
   in the Round 38 proposal format) and the preview page `page.html`
   (`page_local.html` for file://); `check_draft.py` runs the Round 38 name
   gates over today's names plus the draft.
+- **Round 51 lane MOBS** (`r51_mobs`): step M1, the water mobs
+  (`portable_test.lua`: the sub-types, fish drops and names against the
+  NAMES draft, sub-type selection at every ladder edge with level 20 by its
+  belt, the real registrations, and the swimmer reset in the real leash
+  tick with the reach veto). `probe.sh OUT_DIR` (one queue slot) with
+  `grug_probe_r51_mobs`: every new mob spawned by command in an arena,
+  frog and tortoise chasing a probe player ashore and back, the stingray's
+  reset, one kill per family and its fish. `capture.sh OUT_DIR` (`XVFB=`,
+  two queue slots) with `grug_probe_r51_shots`: screenshots of the
+  line-ups.
