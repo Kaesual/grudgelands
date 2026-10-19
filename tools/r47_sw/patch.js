@@ -278,7 +278,8 @@
 			facts: {columns: count, ground: tops, plants: plants, trees: trees.length}};
 	}
 
-	var api = {generatePatch: generatePatch, RULES: RULES, PLANTS: PLANTS};
+	// the noise is shared with the land viewer's zone patches (land.js)
+	var api = {generatePatch: generatePatch, RULES: RULES, PLANTS: PLANTS, noise: noise, noise2: noise2, mix: mix, roll: roll};
 	if (typeof module !== 'undefined' && module.exports) { module.exports = api; }
 	root.SwampPatch = api;
 })(typeof window !== 'undefined' ? window : this);

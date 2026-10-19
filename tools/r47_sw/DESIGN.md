@@ -236,3 +236,118 @@ carpets (12 %).
   on a fake context), `tools/r47_sw/world_probe.lua` (the real writer over
   the seed fleet's fake VoxelManip), `tools/r47_sw/capture.sh` (engine
   screenshots and the in-engine pool check).
+
+## Round 51: the land viewer (lane VIEW)
+
+`land.html` extends this page into a viewer of every land zone, for the
+user's picks (land plan ruling 1: nothing goes into the game before the
+user has picked it here). The swamp page stays as it is (`swamp.html`);
+both share the mesher (`mesh.js`) and the swamp patch (`patch.js`).
+
+```
+python3 -I tools/r47_sw/build.py [--local FILE]   # swamp.html and land.html (+ a wrapped copy for file://)
+python3 -I tools/r47_sw/build.py --check          # fail if either is stale
+node tools/r47_sw/land_check.js [12]              # the land patches, kit, plant rows and page
+```
+
+`land.html` is page content only (a `<title>`, the `<style>`, the markup,
+the scripts): the publisher wraps it. It inlines the zone data that
+`build.py` reads from the mapgen sources (`SURFACE_ROWS` and
+`DECORATION_ROWS` of `wp40/r7_r6_manifest.lua`, `fertile_palettes` of
+`wp40/r6_content.lua`, the default schematics, the gathering sources of
+`grug_gathering/catalog.lua` with the look `presentation.lua` gives them),
+the props of `tools/r51_land/props` (the prop format of
+`tools/r51_land/README.md`), and every texture the sources name plus all of
+`tools/r51_land/{swamp,grounds,plants}` for the texture lab.
+
+**Views.** A zone switcher (swamp, jungle, undead, dwarf, orc badlands,
+elves, savanna, beach) and a biome per zone; **Patch** (Today, Proposal or
+side by side, a seeded 48 × 48 patch), **Kit** (the zone's structures and
+single blocks in rows, numbered, each with every block and its drop),
+**Plants** (the zone's gathering sources, brown labels, next to its new
+plants, ruling 11) and **All notes**. The texture lab of the swamp page
+(pick or upload a texture per ground slot; 32 / 64 px drawn world-aligned)
+and the "one ground everywhere" switch stay; the lab acts on the proposal
+side. Default: the jungle, proposal on.
+
+**Today's patch** (`land.js`, `generate`): a faithful-enough reading of
+the zone, not a port of the mapgen. Where it simplifies:
+
+- **Relief** is value noise per biome (amplitude and period by eye; the
+  badlands get mesa steps for steep faces, the beach slopes into the sea
+  with a small pool inland). Real terrain, rivers and roads are not
+  modelled.
+- **Ground mix**: `dry_row`'s patch noise and thresholds (palette 1, 2, 3,
+  gravel, stone; the crags' own) on our noise, not the world's; a steep
+  face is stone (a drop of 3 or more) or gravel (2) instead of the rock
+  and lip rows; the snowy crags get their snow dust. The beach is sand
+  within 9 of water (the coast rule) and shingle and rock further up.
+- **Decorations**: every row of the biome with its density
+  (`num / den`) on its host and the biome's fertile palette (gravel at a
+  quarter for low plants), templates first, then simple rows, one per
+  column, in a seeded column order; a template must fit (its wood free).
+  Generated trees are the tree concept's (`treegen.js`), not turned by
+  quarter turns; schematics are anchored on their lowest occupied slice and
+  turned. Rows above y 60 are left out (the patch is low). No P9G
+  gathering sources in the patch (they are in the Plants row).
+- **The swamp** is Round 47's patch (`patch.js`) as it is, plus today's
+  `swamp_papyrus` row (1/50 at the water) as the pedestal of
+  `papyrus_on_dirt.mts`, dirt turned to mud: the defect the plan names.
+- **Drawing**: dry shrubs and grasses as plain X plants (no meshoptions);
+  props turned by facedir move their side tiles and turn the top tile;
+  water is a flat translucent top.
+
+**The proposal** (`ITEMS` in `land.js`): each item has a stable key (shown
+next to it), a toggle, a density slider where a density is at stake (× ¼ …
+× 4 of a guide value set by eye: `den` columns per piece, or a share of the
+ground), a verdict (pick, rework, drop) and a note. Texture items swap a
+node's tiles on the proposal side; the rest place nodes after today's
+content, in free cells: structures at seeded spots (expected count =
+columns / den × multiplier, each spot tried once), plants per column,
+lianas under jungle leaves with open air below (2–6 long, at least one node
+above the ground). The skeleton set replaces the bone pile; the swamp's
+own moss replaces the moss soil there; the clay bands take the faces of
+steep badland columns by height (a 7-node cycle of four colours).
+Lichen (rework after the user's first look, 2026-10-19) lies in small
+patches: a patch centre in 1 of 450 columns, 2–5 carpets within 2 of it,
+only on gravel and stone; the carpet is drawn with alpha clip (the ground
+shows through). The undead got more variety at about the same density:
+the kneeling mourner statue (ARTL pass 3; its bust or base alone now and then), fallen and sunken gravestones in the wild graveyards, ruin variants (a broken arch, a column stub, a sunken wall corner whose
+lowest course is the ground's top, a crypt doorway over a sunken step
+with rubble), fallen gravewood logs, gravewood stumps (a log with
+gravewood's own branch or twig shape on top and a root base beside it),
+earth grave mounds, and wild graveyards that differ per seed (2–6 stones,
+2 or 3 apart, a mix leaning to steles or crosses, a fence on 0–2 sides).
+
+| zone | keys |
+| --- | --- |
+| swamp | `swamp.ground.calm`, `swamp.ground.mud32`, `swamp.moss`, `moss.forest`, `swamp.hanging_moss`, `swamp.papyrus` |
+| jungle | `jungle.ground.canopy32`, `jungle.liana`, `jungle.flower.ruby_fan`, `jungle.flower.ember_star`, `jungle.flower.violet_fan`, `jungle.fern`, `jungle.bush`, `jungle.log` |
+| undead | `gravestone.fallen`, `gravestone.sunken`, `undead.ground.blight32`, `undead.ground.bone_litter32`, `undead.graveyard`, `undead.ruin`, `undead.ruin.arch`, `undead.ruin.column`, `undead.ruin.corner`, `undead.crypt`, `undead.log`, `undead.stump`, `undead.grave_mound`, `undead.statue`, `undead.obelisk`, `undead.bones`, `undead.town_graveyard`, `gravestone.slab`, `gravestone.cross`, `bones.skull_human`, `bones.skull_horned`, `bones.ribcage_human`, `bones.spine_animal`, `bones.scattered`, `bones.fragments` |
+| dwarf | `dwarf.boulder`, `dwarf.lichen`, `dwarf.alpine`, `dwarf.cairn.blocks`, `dwarf.cairn.branches`, `dwarf.ice`, `dwarf.dead_pine` |
+| orc | `orc.ground.mesa32`, `orc.bones`, `orc.withered_bush`, `orc.clay_bands`, the `bones.*` pieces |
+| elves | `elves.ground.silver32`, `moss.forest`, `elves.ruin`, `elves.statue`, `elves.flower.blush_star`, `elves.flower.lilac_bells`, `elves.flower.cream_cups`, `elves.log` |
+| savanna | `savanna.today` (a reference, ruling 15); `orc.ground.mesa32` shows on its clay too |
+| beach | `beach.sand32` (above and under water, the pool bed), `beach.papyrus` (with today's pedestal to compare), `beach.marram`, `beach.driftwood`, `beach.pebbles` |
+
+Art: ARTL's grounds, plants and props (passes 1 to 3); Astra's SWART
+grounds and the calm proposals (`tools/r51_land/swamp`). No stand-ins
+remain; `STANDIN_PROPS` stays for a prop still to come. The lichen
+alternates `lichen_carpet_top` and `_b` by column.
+Built from default nodes: ruins (cobble, mossy cobble, stone brick; silver
+sandstone for the elves), boulders, the obelisk's plinth and shaft, the
+plinths, the fallen logs, the town graveyard's flagstones, the fences. The
+L13 variant B cairn is the tree concept's base, branch and twig node boxes
+in stone. The dead pine is the concept pine without needles, broken off at
+60 % of its height, with a snow layer on its wood.
+
+**Notes** follow the orchestration brief's storage contract: the page
+gets `claude.use("db")` after drawing everything, subscribes once to the
+collection `notes`, one document per key (`{key, verdict, text,
+updatedAt}`; characters a document id may not hold would become `~hex~`,
+no key has one), writes on a verdict click or when a note field is left,
+one write at a time per document and only on a change, deletes a note
+with no text and no verdict, and says inline whether it was saved. Without
+a db (opened from `file://`) the notes are read-only with one line saying
+so; localStorage keeps only the zone and the mode. The "Note this density"
+button adds the slider's density to the note text.
