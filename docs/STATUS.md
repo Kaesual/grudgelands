@@ -2,27 +2,61 @@
 
 Updated 2026-10-20. This is the delivery pointer, not another game specification.
 
-Planning pointer added 2026-10-12: the [class and hotbar redesign
-handoff](planning/class-redesign-handoff.md) preserves the redesign
-discussion and the proposed Mage. This is pre-planning only; the delivery
-state below is unchanged. [Open design choices](../TODO-design-classes.md).
-The [four-class review package](planning/class-redesign/README.md) continues
-that discussion with the three requested class drafts, reviewed Mage amendments
-and a cross-class balancing correction round. It awaits the user's overview
-review. The [implementation design](planning/class-redesign/implementation-design.md)
-now consolidates the planning foundation and links the approved future
-[targeting contract](design/ability_targeting.md). Full numerical/graph
-acceptance and implementation remain pending. HTML previews live in the
-user's home artifact folder, not the repository. **Parked 2026-10-12** as a
-future work package after two reviews; the next round focuses on world
-generation. Resume with the [continuation plan](planning/class-redesign/continuation.md).
-Resumed 2026-10-19: the [delivery plan](planning/class-redesign/delivery-plan.md)
-splits it into round F (the foundation, built in Round 52) and round K
-(the four new classes). Hotbar A/B shipped in 0.50.0. The [Class Redesign
-Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a private
-claude.ai page, Round 50 ART) shows the planning state with the user's
-notes.
+The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
+planned 2026-10-12 to 2026-10-20 in the
+[class redesign package](planning/class-redesign/README.md)) is built:
+round F in Round 52, round K in Round 53 below. Next: the user's playtest
+of the new classes and a short balance fix round. The
+[Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
+private claude.ai page, Round 50 ART) shows the planning state with the
+user's notes.
 
+- **Round 53 "The new classes" complete** (2026-10-20, version 0.53.0,
+  **migrate**, one step 0.53.0;
+  [plan, decisions, numbers and GUI checklist](planning/round53-plan.md#completion-2026-10-20)).
+  Not pushed (pushed only on the user's word; origin/main `e4d5c9d5`,
+  0.52.1). Round K of the class rework: the four new class kits and the
+  eight talent graphs go live with one talent reset. From main `84ea20f0`
+  (the plan): the prep lane SKS (`681913a9`, round 2 `357683f3`), LIVE
+  (`927e2ae3`), HOOKS (`937a1df0`), PRIEST (`cfdfc25f`), MAGE (`20abd7bc`),
+  WARRIOR (`b3b1fb92`), SCOUT (`f14b69b5`) and INTEG (`73b5ca40`, part 1
+  and part 2) merged, then this documentation lane D. Each code lane
+  independently reviewed by Opus (all MERGE; HOOKS' and WARRIOR's review
+  findings fixed and delta-reviewed); the cast sounds picked by the user
+  on two pages. Main has 225 portable fixtures (7 new, 3 retired);
+  `mods/` against 0.52.1 +3,960 −3,678 lines in 48 text files, 4 new and 5
+  removed Lua files, 45 media files added and 19 removed. The declaration
+  is
+  `{"schema": 3, "version": "0.53.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.52.1 runs `tools/migrate.py` before its first start.
+  - **The talents (LIVE):** the graph talents are the live talents, one
+    data file per class, `<tree>_<name>` ids, the store, the accessors,
+    spend and respec, the level-drop reset, `/talents` and the Talents
+    page ([skill_trees.md](design/skill_trees.md)); `/talent_preview`
+    is gone.
+  - **The kits (MAGE, WARRIOR, PRIEST, SCOUT):** two or three starters per
+    class (the Mage's Fiery Spark and the Priest's Smite in Strike's
+    place), the rest from the trees; ground areas on the ground anchor,
+    cones, group heals, readiness windows; the Scout without the bow draw
+    ([classes.md](design/classes.md), [scout.md](design/scout.md),
+    [ability_targeting.md](design/ability_targeting.md)).
+  - **The seams and the content (HOOKS):** family keys on the cast and
+    swing paths, the swing callback, clock seams, the held fallback (K8),
+    the swing's hold on casts (K9), the cone; 25 skill icons, 34 new and 7
+    retinted particle effects, 20 new sound events from the user's picks
+    ([module guide](technical/module-guide.md#combat-and-classes)).
+  - **The step and the clean-up (INTEG):** the step 0.53.0 (talents,
+    stored windows and the retired Cinderfall, Glacial Ward and Pinning
+    Shot cleared; one chat line), HP factors Warrior 1.2, Scout 1.0,
+    Priest 0.8, Mage 0.8, the old talent engine removed, `opts.no_crit` for
+    areas, the held cast's catch-up, Help
+    ([upgrade contract](technical/upgrade-contract.md)).
+  - **Round-end gates** (*to be recorded by the coordinator*): the full
+    fixtures, `check_fresh_server.py` and `check_upgrade.py` on main, the
+    step test, one boot and the sync; this lane's `check_upgrade.py`,
+    `check_fresh_server.py` and `r37_dc` PASS. Its GUI test (desktop and
+    web build, the migration first) is open
+    ([carry-overs](../BACKLOG.md#round-53-carry-overs)).
 - **Round 52 "Ambience and the class rework foundation" complete**
   (2026-10-20, version 0.52.0, **compatible**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round52-plan.md#completion-2026-10-20);
@@ -32,7 +66,7 @@ notes.
   (compatible, the [completion's addendum](planning/round52-plan.md#addendum-0521-2026-10-20)):
   surf at the coast by the map, an underwater bed, start towns by their
   look; lanes COAST and UW, COAST independently reviewed (two delta
-  reviews). Not pushed yet (pushed only on the user's word). From main `7813165e` (the three plans): SPLIT (`e2ab497f`),
+  reviews). Pushed (`e4d5c9d5`, 2026-10-20); its GUI check is open. From main `7813165e` (the three plans): SPLIT (`e2ab497f`),
   SND (`07c7c1bc`), CORE-B (`78895157`), GRAPH (`0fd6d6f5`), AMB
   (`a0d3c032`), CORE-A (`13b579b3`), AMB's file step (`87a4970c`), WFX
   (`890b977e`), the staged art of ARTA (`f18b2db2`) and ARTB (`a23cf211`),
@@ -64,7 +98,7 @@ notes.
     admin preview (`/talent_preview`), the scrolling skill row and the
     animated weapon overlay per talent tree and weapon type
     ([module guide](technical/module-guide.md#combat-and-classes),
-    [skill_trees.md §3.12](design/skill_trees.md#312-the-graph-talents-of-round-k-round-52)).
+    [skill_trees.md §3.12](design/skill_trees.md#312-the-graph-talents-of-round-k-round-52-live-since-round-53)).
   - **Art and design (ARTA, ARTB, PFX):** 8 tree backgrounds, 74 talent
     icons, 19 redrawn skill icons and 30 overlay strips ship; 25 skill
     icons and the 65 particle cards wait for round K.

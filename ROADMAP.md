@@ -19,11 +19,11 @@ remain delivered foundations, with this refinement work still ahead.
   decide more of which abilities a character gains or leaves out. Build
   coherent ability interactions and rotations, and improve balance in group
   play and PvP. The Scout most urgently needs attention to how it feels to play.
-  The four-class rework runs in two rounds
+  The four-class rework ran in two rounds
   ([delivery plan](docs/planning/class-redesign/delivery-plan.md)): round
-  F, the foundation, shipped in 0.52.0 (the building blocks, the new
-  talent trees as an admin preview, the art); round K brings the new kits
-  and talent graphs with an automatic talent reset.
+  F, the foundation, shipped in 0.52.0; round K, the new kits and talent
+  graphs with an automatic talent reset, in 0.53.0. Next: the user's
+  playtest of the new classes and a short balance fix round.
 - **World atmosphere, variety and resources:** review music, sounds and
   icons with care for the details that give each region character. Improve
   areas dominated by wind, add more surface variety, more varied tree shapes
@@ -532,8 +532,18 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   transformations, readiness windows, area and group helpers, Mend on the
   status system, the graph talents as an admin preview, the scrolling
   skill row, the weapon overlay, the picked art and particle design).
-  Complete on 2026-10-20; not pushed (pushed only on the user's word).
-  Next: its GUI test, then round K.
+  Complete on 2026-10-20 and pushed (`67941764`, 0.52.1 `e4d5c9d5`); its
+  GUI test passed on 2026-10-20.
+- [x] **Round 53 "The new classes"**
+  ([completion](docs/planning/round53-plan.md#completion-2026-10-20)),
+  version 0.53.0, **migrate**, one step: round K of the class rework, the
+  four new class kits (two or three starters each, the rest from the
+  trees), the eight talent graphs live on the Talents page with one talent
+  reset, ground areas, cones, group heals and readiness windows, the
+  Scout's bow draw removed, HP factors 0.8/0.8/1.0/1.2, the picked skill
+  icons, effects and sounds. Complete on 2026-10-20; not pushed (pushed
+  only on the user's word). Next: its GUI test and the user's playtest,
+  then a short balance fix round.
 
 ### Remaining work
 
@@ -572,8 +582,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 47](BACKLOG.md#round-47-carry-overs),
   [Round 48](BACKLOG.md#round-48-carry-overs),
   [Round 49](BACKLOG.md#round-49-carry-overs),
-  [Round 51](BACKLOG.md#round-51-carry-overs) and
-  [Round 52](BACKLOG.md#round-52-carry-overs) carry-overs (Round 40: the
+  [Round 51](BACKLOG.md#round-51-carry-overs),
+  [Round 52](BACKLOG.md#round-52-carry-overs) and
+  [Round 53](BACKLOG.md#round-53-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -583,8 +594,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   notes; Round 47: tree, swamp, mining, crafting and map window notes;
   Round 48: mail, plant, price, HUD and step notes; Round 49: mapgen,
   navigation, inventory and tooling notes; Round 51: sea, surface, plant,
-  kit, wreck, map and water-mob notes; Round 52: round K's open points,
-  ambience notes and the parked sounds);
+  kit, wreck, map and water-mob notes; Round 52: ambience notes and the
+  parked sounds; Round 53: the balance fix round, dead talent reads,
+  tool and fixture leftovers and the class GUI notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

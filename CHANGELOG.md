@@ -12,6 +12,54 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.53.0 — the new classes (2026-10-20)
+
+Every class plays anew: new skills, new talent trees and a new Talents
+page. **Migration** needed: the server's host runs the migration tool once
+on the stopped world (last point). No map reset, no new world. Your talent
+points are reset: spend them again; your next respec is free.
+
+- **Your own starting skills:** Warriors start with Strike and Charge,
+  Mages with Fiery Spark and Ice Wave, Priests with Smite and Heal, Scouts
+  with Loose, Sidestep and Sprint. Everything else comes from your
+  talents.
+- **New talent trees,** two per class, drawn as a map on the Talents &
+  Skills page: a click buys a rank, a locked talent says what it needs.
+  They unlock new skills (Flame Lance, Meteor, Rime Mantle, Bellow,
+  Broadstroke, Hearten, Rebuke, Censure, True Draw, Split Shot, Parry,
+  Flourish and more), turn some skills into others in place (Fiery Spark
+  into Cold Spark, Strike into Retort, Loose into Bladecraft …) and end in
+  one ultimate per tree from level 42: Fire Rain, Winter Field, Unbroken,
+  Ruination, Haven, Final Word, Arrowfall or Close Dance. A new skill waits
+  in the skill row until you drag it onto a hotbar.
+- **A free basic attack for everyone,** first on a new character's
+  hotbar; hold the button to keep attacking. If the selected skill cannot
+  act, your basic attack fires once instead.
+- **Every skill is instant.** A heavy one keeps you busy for a moment
+  afterwards, and a weapon swing holds your next skill back by one swing.
+- **Area skills** land on the ground under your crosshair after a short
+  warning (also in caves); aimed at the sky they say "No ground found."
+  and cost nothing. Area hits never crit.
+- **Scouts no longer draw the bow:** Loose shoots at once and keeps
+  shooting while held; with Bladecraft, left click swings your blade and
+  right click shoots.
+- **Health by class:** Warriors have more, Mages and Priests less (×1.2,
+  ×0.8 and ×0.8; Scouts unchanged).
+- **Gone:** Cinderfall, Glacial Ward and Pinning Shot, and every old
+  talent.
+- **New look and sound:** 25 new skill icons, new skill effects in each
+  tree's colours and 20 new skill sounds (Blink has one now).
+- **For the server's host:** stop the server, back the world up, run
+  `python3 tools/migrate.py --world <world directory>` from the new
+  version's checkout and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#1-four-outcomes)).
+  The tool resets every character's talents (all points back), clears the
+  old talent timers and removes the three retired skills from both
+  hotbars and the bags; at the next join each character with a class sees
+  one line, "Your talent points have been reset.". An older world moves
+  to 0.53.0 in one update, crossing every map reset and step in between.
+
 ## 0.52.1 — surf at the coast, a sound under water, towns that sound like they look (2026-10-20)
 
 Three ambience wishes from the 0.52.0 check. **Compatible:** no map reset
