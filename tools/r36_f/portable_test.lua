@@ -594,7 +594,10 @@ do
 	local bonus = 0
 	grug_classes = {get_talent_bonus = function() return bonus end}
 	grug_abilities = {mana_cost = function() return 10 end,
-		effective_charge = function() return 2 end}
+		effective_charge = function() return 2 end,
+		-- Round 53 (HOOKS): no family keys here; the cost as defined.
+		family_bonus = function() return 0 end,
+		effective_cost = function(_, def) return def.cost end}
 	local init = "mods/PLAYER/grug_abilities/init.lua"
 	run(cut(init, "\n(function grug_abilities%.effective_cooldown%(.-\nend)\n",
 		"effective_cooldown"), "effective_cooldown")

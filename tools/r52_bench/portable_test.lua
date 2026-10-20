@@ -3,12 +3,8 @@
 -- dofile chain (strike_delay.lua, cooldown_hud.lua, kits.lua and the class
 -- files, scout.lua, input.lua) in a sandbox over a small fake engine, and the
 -- REAL grug_core/status.lua for Mend. Checks:
---   N  normalize_kit, is_unlocked and unlocked_ids give exactly what main's
---      code gave (a frozen copy of 5e54f1cc's three functions, below) for
---      every shipped kit (warrior, mage, priest, scout, classless), with no
---      talent, each talent-gated skill's talent and all of them, over an
---      inventory holding every skill on both hotbar layouts, in a bag, as a
---      second copy and in a list skills may not live in;
+--   (N, normalize_kit against a frozen copy for every shipped kit, retired
+--      in Round 53: round K replaces the kits; T keeps the rules.)
 --   T  the transformation (D8) with probe definitions only this test
 --      registers: a class basic attack replaces Strike for its class only; a
 --      talent-gated transformation replaces its base on main and on the
@@ -17,13 +13,15 @@
 --      still goes; transform and base share one cooldown key for the
 --      cooldown, the cast interval, the charge and the overlay; the
 --      registration refuses a bad transformation;
---   C  the action clock (D2): every shipped skill gets the defaults
---      (occupied_cast 0, a cast's occupied_swing "weapon", none on a swing);
---      with them a cast blocks no cast and pushes the next swing by one weapon
---      interval, and a swing blocks no cast; a probe cast's occupied_cast
---      refuses other casts ("You are still busy.") through the one
---      cast_refusal the input gate and try_cast share, its occupied_swing
---      sets the swing delay, and a probe swing's occupied_cast holds casts;
+--   C  the action clock (D2, Round 53 K9), on probe skills: a cast gets the
+--      defaults occupied_cast 0 and occupied_swing "weapon", a swing
+--      occupied_cast "weapon" and no occupied_swing; with them a cast blocks
+--      no cast and pushes the next swing by one weapon interval, and a swing
+--      holds casts back for one interval of the current weapon; a probe
+--      cast's occupied_cast refuses other casts ("You are still busy.")
+--      through the one cast_refusal the input gate and try_cast share, its
+--      occupied_swing sets the swing delay, and a probe swing's occupied_cast
+--      holds casts;
 --   M  Mend on set_status (D1): the real status pass ticks it 3, 6, 9 and 12 s
 --      after the cast (4 heals of the cast's snapshot), an offline healer's
 --      ticks heal as the target, a re-cast restarts the phase, death and
@@ -260,155 +258,6 @@ check(input_api and input_api.cast_refusal and input_api.delay_strike,
 	"the input api carries cast_refusal and delay_strike")
 
 ------------------------------------------------------------------------------
--- N: normalize_kit, is_unlocked and unlocked_ids as on main.
-------------------------------------------------------------------------------
--- Main's (5e54f1cc) three functions, frozen: the oracle. Their only inputs
--- are the registry, the class, the talent ranks and the list policy, so the
--- copy runs on the same registry and inventory as the real code.
-local old = {}
-do
-	local function in_kit(def, class)
-		return def.universal or def.class == class
-	end
-	function old.is_unlocked(player, ability_id)
-		local def = G.registered[ability_id]
-		if not def or not in_kit(def, fake_classes.get_class(player)) then
-			return false
-		end
-		if def.talent_gated then
-			return fake_classes.talent_rank(player, def.talent or def.id) > 0
-		end
-		return true
-	end
-	function old.unlocked_ids(player)
-		local result = {}
-		local function append(def)
-			if old.is_unlocked(player, def.id) then
-				result[#result + 1] = def.id
-			end
-		end
-		for _, def in ipairs(G.universal) do append(def) end
-		for _, def in ipairs(G.by_class[fake_classes.get_class(player)] or {}) do
-			append(def)
-		end
-		return result
-	end
-	-- representation_lists() of init.lua, for this engine.
-	local allowed = {main = true, grug_bag1 = true, grug_hotbar_store = true}
-	function old.normalize_kit(player)
-		local inv = player:get_inventory()
-		local hidden = "grug_hotbar_store"
-		local seen = {shown = {}, hidden = {}}
-		for listname, list in pairs(inv:get_lists()) do
-			local have = listname == hidden and seen.hidden or seen.shown
-			for i, stack in ipairs(list) do
-				local def = G.registered[(stack:get_name():match("^grug_abilities:(.+)$"))]
-				if def then
-					if not allowed[listname] or
-							not old.is_unlocked(player, def.id) or have[def.id] then
-						inv:set_stack(listname, i, ItemStack(""))
-					else
-						have[def.id] = true
-						local fresh = G.stack_for(player, def.id)
-						if fresh and fresh:to_string() ~= stack:to_string() then
-							inv:set_stack(listname, i, fresh)
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-local ids = {}
-for id in pairs(G.registered) do ids[#ids + 1] = id end
-table.sort(ids)
-local gated = {} -- class -> talent ids of its talent-gated skills
-for _, id in ipairs(ids) do
-	local def = G.registered[id]
-	if def.talent_gated then
-		gated[def.class] = gated[def.class] or {}
-		table.insert(gated[def.class], def.talent or def.id)
-	end
-end
-eq(#ids, 22, "N every shipped skill is registered: Strike, 5 + 5 + 5 + 6 class skills")
-
--- Every skill on A and (reversed) on B, Strike twice on A, some in a bag,
--- one in a list skills may not live in (craft) and one in an equipment list.
-local function fill(p)
-	local inv = p.inv
-	for _, l in ipairs(LISTS) do
-		for i = 1, 32 do inv.lists[l][i] = ItemStack("") end
-	end
-	for i, id in ipairs(ids) do
-		inv.lists.main[i] = ItemStack("grug_abilities:" .. id)
-		inv.lists.grug_hotbar_store[#ids + 1 - i] = ItemStack("grug_abilities:" .. id)
-	end
-	inv.lists.main[#ids + 1] = ItemStack("grug_abilities:strike")
-	inv.lists.main[#ids + 2] = ItemStack("default:apple")
-	inv.lists.grug_bag1[1] = ItemStack("grug_abilities:mend")
-	inv.lists.grug_bag1[2] = ItemStack("grug_abilities:loose")
-	inv.lists.grug_bag1[3] = ItemStack("grug_abilities:charge")
-	inv.lists.craft[1] = ItemStack("grug_abilities:strike")
-	inv.lists.grug_weapon[1] = ItemStack("grug_abilities:smite")
-end
-local function snapshot(p)
-	local parts = {}
-	for _, l in ipairs(LISTS) do
-		local list = {}
-		for i, s in ipairs(p.inv.lists[l]) do list[i] = s:to_string() end
-		parts[#parts + 1] = l .. ":" .. table.concat(list, ",")
-	end
-	return table.concat(parts, "\n")
-end
-
-local scenarios = 0
-for _, class in ipairs({"warrior", "mage", "priest", "scout", ""}) do
-	local states = {{}}
-	local all = {}
-	for _, talent in ipairs(gated[class] or {}) do
-		states[#states + 1] = {[talent] = 1}
-		all[talent] = 2
-	end
-	states[#states + 1] = all
-	-- Another class's talents change nothing for this one.
-	for other, talents in pairs(gated) do
-		if other ~= class then
-			local foreign = {}
-			for _, t in ipairs(talents) do foreign[t] = 1 end
-			states[#states + 1] = foreign
-		end
-	end
-	for s, ranks in ipairs(states) do
-		local label = ("N %s state %d"):format(class == "" and "classless" or class, s)
-		local p_new = new_player("n_new", class ~= "" and class or nil, ranks)
-		local p_old = new_player("n_old", class ~= "" and class or nil, ranks)
-		local same = true
-		for _, id in ipairs(ids) do
-			if G.is_unlocked(p_new, id) ~= old.is_unlocked(p_old, id) then
-				same = false
-				print("  is_unlocked differs: " .. id)
-			end
-		end
-		check(same, label .. ": is_unlocked as on main for every skill")
-		eq(table.concat(G.unlocked_ids(p_new), ","), table.concat(old.unlocked_ids(p_old), ","),
-			label .. ": unlocked_ids as on main")
-		fill(p_new)
-		fill(p_old)
-		G.normalize_kit(p_new)
-		old.normalize_kit(p_old)
-		local got, want = snapshot(p_new), snapshot(p_old)
-		check(got == want, label .. ": normalize_kit leaves the inventory as main did")
-		if got ~= want then print(got .. "\n--- main:\n" .. want) end
-		-- A second pass changes nothing (idempotent, as before).
-		G.normalize_kit(p_new)
-		eq(snapshot(p_new), got, label .. ": a second normalize_kit changes nothing")
-		scenarios = scenarios + 1
-	end
-end
-check(scenarios >= 20, "N scenarios run: " .. scenarios)
-
-------------------------------------------------------------------------------
 -- T: the transformation (D8), with probe definitions only this test has.
 ------------------------------------------------------------------------------
 local cast_log = {}
@@ -565,16 +414,6 @@ end
 -- C: the action clock (D2).
 ------------------------------------------------------------------------------
 do
-	local defaults = true
-	for _, id in ipairs(ids) do
-		local def = G.registered[id]
-		if def.occupied_cast ~= 0 or (def.kind == "cast" and def.occupied_swing ~= "weapon") or
-				(def.kind == "swing" and def.occupied_swing ~= nil) then
-			defaults = false
-			print("  not the default clock: " .. id)
-		end
-	end
-	check(defaults, "C every shipped skill has the default clock (0; a cast's swing: \"weapon\")")
 
 	-- The swing path under a small fake: a 1.0 s weapon, one hostile in the
 	-- ray that takes the punch.
@@ -598,10 +437,20 @@ do
 	local lance = probe({id = "probe_lance", class = "mage", kind = "cast",
 		occupied_cast = 1.5, occupied_swing = 0.5})
 	local bash = probe({id = "probe_bash", class = "mage", kind = "swing", occupied_cast = 0.8})
+	local plain = probe({id = "probe_plain", class = "mage", kind = "swing"})
+	check(bolt.occupied_cast == 0 and bolt.occupied_swing == "weapon" and
+		plain.occupied_cast == "weapon" and plain.occupied_swing == nil and
+		strike.occupied_cast == "weapon",
+		"C the defaults: a cast 0 and \"weapon\", a swing (Strike too) \"weapon\"")
 
 	check(swings(), "C a swing lands")
 	check(not swings(), "C ...the next waits for the weapon")
-	eq(input_api.cast_refusal(p, bolt), nil, "C a swing (Strike, default 0) blocks no cast")
+	eq(input_api.cast_refusal(p, bolt), "You are still busy.",
+		"C a swing (Strike, default \"weapon\") holds casts back (K9)")
+	wait(0.9)
+	eq(input_api.cast_refusal(p, bolt), "You are still busy.", "C ...for the weapon's interval")
+	wait(0.1)
+	eq(input_api.cast_refusal(p, bolt), nil, "C ...and no longer")
 	check(G.try_cast(p, bolt, nil, function() end), "C a default cast casts")
 	eq(input_api.cast_refusal(p, bolt), nil, "C ...and blocks no other cast")
 	wait(2)

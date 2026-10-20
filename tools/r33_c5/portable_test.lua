@@ -232,10 +232,13 @@ do
 	local _, uses = source:gsub("CRIT_MULTIPLIER%)", "")
 	check(source:find("local CRIT_MULTIPLIER = 2\n", 1, true) ~= nil and uses >= 2 and
 		not source:find("* 1.5)", 1, true), "B ability, heal and melee crits share x2")
-	local kits = read_file("mods/PLAYER/grug_abilities/kits.lua") ..
-		read_file("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
-		read_file("mods/PLAYER/grug_abilities/kits_mage.lua") ..
-		read_file("mods/PLAYER/grug_abilities/kits_priest.lua")
+	-- Every kit file (Round 53: round K's class files come and go).
+	local kits = read_file("mods/PLAYER/grug_abilities/scout.lua")
+	local pipe = assert(io.popen("ls " .. ROOT .. "/mods/PLAYER/grug_abilities/kits*.lua"))
+	for line in pipe:lines() do
+		kits = kits .. read_file("mods/PLAYER/grug_abilities/" .. line:match("([^/]+)$"))
+	end
+	pipe:close()
 	check(not kits:find("math.floor(power / 2)", 1, true) and
 		not kits:find("math.floor(\n\t\t\t\t\tgrug_classes.get_spell_power_bonus", 1, true),
 		"B no early floor of half the spell power")

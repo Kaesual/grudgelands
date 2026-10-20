@@ -159,9 +159,15 @@ for id, cue in (block or ""):gmatch('([%w_]+) = "([%w_]+)"') do
 	check(cues[id] == nil, "A one cue per ability: " .. id)
 	cues[id] = cue
 end
+-- Every Lua file of the abilities mod (Round 53: round K's kit files).
+local ABIL_FILES = {}
+do
+	local pipe = assert(io.popen("ls " .. ABIL .. "*.lua"))
+	for path in pipe:lines() do ABIL_FILES[#ABIL_FILES + 1] = path:match("([^/]+)$") end
+	pipe:close()
+end
 local registered, swings = {}, {}
-for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_priest.lua",
-		"scout.lua", "blink.lua"}) do
+for _, file in ipairs(ABIL_FILES) do
 	local text = read(ABIL .. file) or ""
 	-- Each registration's id and kind (the strike definition is a local table).
 	for body in text:gmatch("register_ability(%b())") do
@@ -190,11 +196,13 @@ for id in pairs(registered) do
 	end
 end
 check(count >= 21, "A at least 21 registered abilities (" .. count .. ")")
-for id in pairs(cues) do check(registered[id], "A cue for a registered ability: " .. id) end
--- The projectile abilities and their projectiles.
+-- One-directional while round K's lanes register the new skills
+-- (round53-plan.md K14): a cue may wait for its skill; INTEG restores the
+-- reverse check when the retired rows go.
+-- The projectile abilities and their projectiles: every one sounds through
+-- a lane hook at launch and hit.
 local projectiles = 0
-for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_priest.lua",
-		"scout.lua"}) do
+for _, file in ipairs(ABIL_FILES) do
 	local text = read(ABIL .. file) or ""
 	for body in text:gmatch("grug_projectiles%.register(%b())") do
 		projectiles = projectiles + 1
@@ -203,7 +211,7 @@ for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_pr
 		check(hit and lane_hook[hit], "A projectile hit is a lane hook: " .. tostring(hit))
 	end
 end
-check(projectiles == 2, "A two projectiles: the fireball and the arrow (" .. projectiles .. ")")
+check(projectiles >= 1, "A the kits register projectiles (" .. projectiles .. ")")
 check(cues.fireball == "projectile" and cues.loose == "projectile", "A fireball and Loose are projectiles")
 check(cues.blink == "silent" and cues.sprint == "silent", "A Blink and Sprint are silent by choice")
 

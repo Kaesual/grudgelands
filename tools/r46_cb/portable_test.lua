@@ -14,14 +14,11 @@
 --      and L60 gives the option-B value, no caster weapon adds 0 (the
 --      user, 2026-10-12: half the base); the real caster lookup reads the Weapon slot's staff or wand
 --      at its effective item level and ignores other weapons;
---   E. the real Fireball and Ice Nova value functions use the spell base, no
---      spell site reads baseline_weapon_damage any more, Smite uses it;
+--   E. no spell site of the kits reads baseline_weapon_damage any more;
 --   F. the staff and wand tooltip line matches the combat value.
---   G. the caster talent amounts (the user's answer of 2026-10-12): the real
---      talent_level_amount gives a Mage or Priest damage key its share of
---      the base hit times spell base / Bw(L): today's numbers with an
---      own-level staff or wand at L1/30/60, scaled with a first-tier weapon
---      and halved without one; Warrior and Scout keys stay on the base hit.
+-- Round 53 (HOOKS, K14): the kit contents of E (the Fireball, Ice Nova and
+-- Smite values) and G (the old caster talent amounts) went with round K's
+-- new kits and talents; each class fixture covers its own spell values.
 --
 -- Usage (repo root): luajit tools/r46_cb/portable_test.lua [REPO]
 local ROOT = arg[1] or "."
@@ -47,11 +44,17 @@ local function cut(text, pattern, label)
 end
 
 local INIT = read("mods/PLAYER/grug_abilities/init.lua")
--- kits.lua and its per-class files (Round 52) as one text.
-local KITS = read("mods/PLAYER/grug_abilities/kits.lua") ..
-	read("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
-	read("mods/PLAYER/grug_abilities/kits_mage.lua") ..
-	read("mods/PLAYER/grug_abilities/kits_priest.lua")
+-- kits.lua and its per-class files (Round 52) as one text, every
+-- kits*.lua and scout.lua (Round 53: the files of round K).
+local KITS = ""
+do
+	local pipe = assert(io.popen("ls " .. ROOT .. "/mods/PLAYER/grug_abilities/kits*.lua"))
+	for line in pipe:lines() do
+		KITS = KITS .. read("mods/PLAYER/grug_abilities/" .. line:match("([^/]+)$"))
+	end
+	pipe:close()
+	KITS = KITS .. read("mods/PLAYER/grug_abilities/scout.lua")
+end
 local COMBAT = read("mods/CORE/grug_core/combat.lua")
 local GEAR = read("mods/ITEMS/grug_gear/init.lua")
 
@@ -167,10 +170,11 @@ grug_core.combat_debug_due = function() return false end
 grug_core.add_threat = function() end
 local spend_ok = true
 core = {log = function() end}
-local finish = assert(loadstring("local spend, swing_rage, play_skill_pose = ...\n" ..
+local finish = assert(loadstring("local spend, swing_rage, play_skill_pose, " ..
+	"grant_swing_gains = ...\n" ..
 	cut(INIT, "\n(local function finish_authoritative_swing%(.-\nend)\n", "finish") ..
 	"\nreturn finish_authoritative_swing", "=finish"))(
-	function() return spend_ok end, swing_rage, function() end)
+	function() return spend_ok end, swing_rage, function() end, function() end)
 equipped = stack_of("sword") -- the context's interval wins over the slot's
 local function settle(proc)
 	granted = {}
@@ -256,31 +260,6 @@ near(grug_abilities.spell_base({}), 0.5 * 15 + 0.5 * 11, "D without grug_items t
 -- E: the spell sites.
 ------------------------------------------------------------------------------
 check(not KITS:find("baseline_weapon_damage", 1, true), "E no spell reads Bw(L) directly")
-local _, uses = KITS:gsub("grug_abilities%.spell_base%(user%)", "")
-check(uses == 3, "E Fireball, Ice Nova and Smite use the spell base (" .. uses .. ")")
-check(KITS:find("local damage = (grug_abilities.spell_base(user)\n" ..
-	"\t\t\t+ grug_classes.get_spell_power_bonus(user)) * 1.5", 1, true) ~= nil,
-	"E Smite's base is the spell base")
-local power, talent = 3, 0
-grug_classes.get_talent_bonus = function() return talent end
-grug_classes.get_spell_power_bonus = function() return power end
-grug_classes.get_spell_damage_percent = function() return 0 end
-local values = assert(loadstring(cut(KITS, "\n(local function spell_damage_value.-\nend)\n",
-	"spell_damage_value") .. "\n" ..
-	cut(KITS, "\n(local function fireball_values%(user%).-\nend)\n", "fireball_values") .. "\n" ..
-	cut(KITS, "\n(local function nova_values%(user%).-\nend)\n", "nova_values") ..
-	"\nreturn fireball_values, nova_values"))
-local fireball_values, nova_values = values()
-level = 60
-grug_items = {effective_ilvl = function(stack) return stack._ilvl end}
-slot = stack_of("staff", {ilvl = 60})
-near(fireball_values({}).damage, 25 + 3, "E an own-level Fireball is today's 28")
-near(nova_values({}).damage, (25 + 3) / 4, "E an own-level Ice Nova is today's 7")
-slot = stack_of("staff", {ilvl = 1})
-near(fireball_values({}).damage, 14.5 + 3, "E a Bronze Staff Fireball at L60")
-near(nova_values({}).damage, (14.5 + 3) / 4, "E a Bronze Staff Ice Nova at L60")
-slot = nil
-near(fireball_values({}).damage, 12.5 + 3, "E a Fireball without a caster weapon at L60")
 
 ------------------------------------------------------------------------------
 -- F: the staff and wand tooltip line.
@@ -299,53 +278,5 @@ check(grug_gear.spell_base_line("sword", 30) == nil and
 	grug_gear.spell_base_line("greataxe", 30) == nil and
 	grug_gear.spell_base_line("dagger", 30) == nil and
 	grug_gear.spell_base_line("bow", 30) == nil, "F no line on other families")
-
-------------------------------------------------------------------------------
--- G: the caster talent amounts.
-------------------------------------------------------------------------------
-grug_xp = {get_level = function() return level end}
-grug_core.armor_k = function(l) return 20 + 0.5 * l end
-assert(loadstring(cut(read("mods/PLAYER/grug_classes/talents.lua"),
-	"\n(local LEVEL_SCALED_KEYS = %b{}.-\nfunction grug_classes%.talent_level_amount" ..
-	"%(player, key, value%).-\nend)\n", "the talent level amounts")))()
-local SPELL = {"fireball_damage_add", "fireball_splash", "whitehot_damage",
-	"cinderfall_damage", "control_damage_add", "smite_damage_add",
-	"smite_damage_while_shielded_add", "word_of_ruin_damage"}
-local spell_set = {}
-for _, key in ipairs(SPELL) do
-	spell_set[key] = true
-	check(grug_classes.TALENT_SPELL_KEYS[key] == true, "G " .. key .. " follows the weapon")
-end
-for key, unit in pairs(grug_classes.TALENT_LEVEL_SCALED_KEYS) do
-	if not spell_set[key] then
-		check(not grug_classes.TALENT_SPELL_KEYS[key], "G " .. key .. " stays on the base hit")
-	end
-end
-grug_items = {effective_ilvl = function(stack) return stack._ilvl end}
-local amount = grug_classes.talent_level_amount
-for _, l in ipairs({1, 30, 60}) do
-	level = l
-	local today = 20 * grug_core.baseline_melee_total(l) / 100
-	local ratio = grug_core.spell_base(l, 1) / grug_core.baseline_weapon_damage(l)
-	for _, key in ipairs(SPELL) do
-		slot = stack_of("wand", {ilvl = l})
-		check(amount({}, key, 20) == today, "G own-level wand " .. key .. " at L" .. l)
-		slot = stack_of("staff", {ilvl = l})
-		check(amount({}, key, 20) == today, "G own-level staff " .. key .. " at L" .. l)
-		slot = stack_of("staff", {ilvl = 1})
-		near(amount({}, key, 20), today * ratio, "G T1 staff " .. key .. " at L" .. l)
-		slot = nil
-		near(amount({}, key, 20), today * 0.5, "G no weapon " .. key .. " at L" .. l)
-	end
-	for _, key in ipairs({"melee_damage_add", "loose_damage_add", "longshot_damage_add"}) do
-		slot = nil
-		check(amount({}, key, 20) == today, "G " .. key .. " unchanged at L" .. l)
-	end
-end
-level = 60
-slot = stack_of("staff", {ilvl = 1})
-near(amount({}, "fireball_damage_add", 20), 20 * 43.7 / 100 * 14.5 / 25,
-	"G Tinder 5/5 with the Bronze Staff at L60")
-check(amount({}, "crit_chance_add", 5) == 5, "G an unscaled key is its value")
 
 print(("R46 CB PASS (%d checks)"):format(checks))

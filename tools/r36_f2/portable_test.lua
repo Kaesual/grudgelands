@@ -209,6 +209,8 @@ local function ready(def) return not cooldown_until[def.id] or clock >= cooldown
 grug_abilities = {
 	registered = defs,
 	is_unlocked = function() return true end,
+	-- Round 53 (HOOKS, K8): the held fallback fires current_form of Strike.
+	current_form = function(_, def) return def end,
 	get_range = function(_, def) return def.id == "fireball" and 20 or 3 end,
 	valid_target = function(_, ref, kind)
 		if kind == "friendly" then return ref.kind == "ally" end

@@ -3,9 +3,9 @@
 -- grug_abilities/init.lua with its whole dofile chain (kits, scout.lua, input)
 -- in a sandbox over a small fake engine, twice: as it ships, and with a test
 -- animation table and test strips patched in (the art step's shape). Checks:
---   M  every registered skill has a family or none, exactly the ruling's
---      mapping (node list §4 note plus Cinderfall, Glacial Ward, Pinning Shot;
---      Strike none); the table lives in init.lua and no kit file names it;
+--   M  every registered skill has a family of its class or none (Strike
+--      none), one-directional in round K (Round 53 K14: a row may wait for
+--      its skill); the table lives in init.lua and no kit file names it;
 --   O  off while no strip ships (the state before the art step): no family
 --      animation, no definition overlay, every skin writes the transparent
 --      override (never an empty string) for a weapon, a bow and an empty
@@ -277,42 +277,40 @@ check(G and G.registered.strike and G.registered.loose and G.WEAPON_FX,
 	"the real init.lua loads with its kits")
 
 ------------------------------------------------------------------------------
--- M: the family of every skill.
+-- M: the family of every skill. One-directional while round K's lanes
+-- register the new skills (round53-plan.md K14): every registered skill has
+-- a family of its class; a row may wait for its skill (HOOKS adds the rows
+-- first, INTEG restores the reverse check when the retired rows go).
 ------------------------------------------------------------------------------
-local EXPECTED = {
-	strike = "none",
-	charge = "ruin", mighty_blow = "ruin", hamstring = "ruin",
-	taunt = "bulwark", hold_ground = "bulwark",
-	heal = "mercy", shield_spell = "mercy", mend = "mercy",
-	smite = "reckoning", word_of_ruin = "reckoning",
-	loose = "quarry", snare_shot = "quarry", sidestep = "quarry", sprint = "quarry",
-	pinning_shot = "quarry",
-	opening = "veil",
-	fireball = "ember", cinderfall = "ember",
-	ice_nova = "rime", blink = "rime", glacial_ward = "rime",
-}
 local ids = {}
 for id in pairs(G.registered) do ids[#ids + 1] = id end
 table.sort(ids)
-eq(#ids, 22, "M every shipped skill is registered")
+check(#ids >= 1, "M the kits register skills")
+eq(G.WEAPON_FX.strike, "none", "M Strike shows no family")
 for _, id in ipairs(ids) do
-	eq(G.WEAPON_FX[id], EXPECTED[id], "M the family of " .. id)
-end
-for id, family in pairs(G.WEAPON_FX) do
-	check(G.registered[id] ~= nil, "M no entry for an unregistered skill: " .. id)
-	check(family == "none" or FAMILY_CLASS[family] ~= nil, "M a known family: " .. id)
+	local family = G.WEAPON_FX[id]
+	check(family ~= nil, "M a family for the registered " .. id)
 	-- A skill's family belongs to its class's trees.
 	local def = G.registered[id]
-	if def and family ~= "none" then
+	if family and family ~= "none" then
 		eq(FAMILY_CLASS[family], def.class, "M " .. id .. "'s family is of its class")
 	end
 end
+for id, family in pairs(G.WEAPON_FX) do
+	check(family == "none" or FAMILY_CLASS[family] ~= nil, "M a known family: " .. id)
+end
 check(init_src:find("\ngrug_abilities%.WEAPON_FX = {") ~= nil,
 	"M the id-keyed table lives in init.lua")
-for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_priest.lua",
-		"scout.lua", "blink.lua"}) do
-	check(not (read(MOD .. file) or ""):find("WEAPON_FX", 1, true),
-		"M no kit file names the table: " .. file)
+do
+	local pipe = assert(io.popen("ls " .. MOD .. "*.lua"))
+	for path in pipe:lines() do
+		local file = path:match("([^/]+)$")
+		if file ~= "init.lua" then
+			check(not (read(MOD .. file) or ""):find("WEAPON_FX", 1, true),
+				"M no kit file names the table: " .. file)
+		end
+	end
+	pipe:close()
 end
 
 ------------------------------------------------------------------------------

@@ -11,9 +11,9 @@
 --      ranges, held clips 20 frames, swing and flinch once; the walk-phase
 --      groups (walk, walk_mine, every held walking twin) and the one-shot
 --      groups;
---   S  pose per skill: Fireball, Smite, Word of Ruin, Cinderfall cast1; Ice
---      Nova, Glacial Ward, Heal, Mend, Shield cast2; Hold Ground block;
---      Mighty Blow swing; nothing else; every named pose has clips;
+--   S  pose per skill: every named pose has clips and Strike poses
+--      nothing (Round 53 K14: one-directional while round K's lanes
+--      register the new skills, no exact table);
 --   T  never on the fallback: a refused cast, a cast whose target check
 --      fails and a swing skill through try_cast play nothing; a successful
 --      cast plays its pose; an authoritative swing without a proc (the Strike
@@ -205,29 +205,24 @@ local INIT = "mods/PLAYER/grug_abilities/init.lua"
 local play_skill_pose = assert(loadstring(cut(INIT,
 	"\n(grug_abilities%.SKILL_POSES = {.-\nend)\n", "SKILL_POSES") ..
 	"\nreturn play_skill_pose", "=SKILL_POSES"))()
+-- One-directional while round K's lanes register the new skills
+-- (round53-plan.md K14): every row names a pose with clips, Strike (the
+-- fallback) poses nothing; no exact table and no count.
 do
-	local want = {
-		fireball = "cast1", smite = "cast1", word_of_ruin = "cast1", cinderfall = "cast1",
-		ice_nova = "cast2", glacial_ward = "cast2", heal = "cast2", mend = "cast2",
-		shield_spell = "cast2", hold_ground = "block", mighty_blow = "swing",
-	}
 	local n = 0
 	for id, pose in pairs(grug_abilities.SKILL_POSES) do
 		n = n + 1
-		eq(pose, want[id], "S pose of " .. id)
-		check(GV.POSE_CLIPS[pose] ~= nil, "S " .. pose .. " has clips")
+		check(GV.POSE_CLIPS[pose] ~= nil, "S " .. id .. "'s pose " .. pose .. " has clips")
 	end
-	eq(n, 11, "S eleven skills pose")
-	for _, id in ipairs({"strike", "charge", "loose", "hamstring", "taunt", "blink",
-			"sidestep", "sprint", "opening", "snare_shot", "pinning_shot"}) do
-		eq(grug_abilities.SKILL_POSES[id], nil, "S " .. id .. " plays no skill pose")
-	end
+	check(n >= 1, "S skills pose")
+	eq(grug_abilities.SKILL_POSES.strike, nil, "S Strike plays no skill pose")
 end
 
 do
 	local refusal, spent, cooled = nil, 0, 0
 	grug_abilities.CAST_SOUNDS = {}
 	grug_abilities.cost_for = function() return {} end
+	grug_abilities.effective_cost = function() return {} end
 	grug_abilities.arm_cooldown = function() cooled = cooled + 1 end
 	grug_abilities.effective_cooldown = function() return 1 end
 	grug_abilities.flash = function() end
@@ -235,12 +230,13 @@ do
 	grug_core.is_stunned = function() return false end
 	local try_cast = assert(loadstring(
 		"local reset_swing_boundary, refuse_mounted_attack, cast_refusal, spend, " ..
-		"arm_cast_interval, play_skill_pose, occupy_casts = ...\n" ..
+		"arm_cast_interval, play_skill_pose, occupy_casts, clock_seconds = ...\n" ..
 		cut(INIT, "\n(function grug_abilities%.try_cast%(.-\nend)\n", "try_cast"),
 		"=try_cast"))(
 		function() end, function() return false end, function() return refusal end,
 		function() spent = spent + 1 return true end, function() end, play_skill_pose,
-		function() end) -- occupy_casts: the action clock (Round 52 D2)
+		function() end, -- occupy_casts: the action clock (Round 52 D2)
+		function() return 0 end) -- clock_seconds (Round 53)
 	local caster = new_player("caster")
 	local function def(id, kind, ok)
 		return {id = id, kind = kind or "cast", cast = function() return ok ~= false end}
@@ -269,10 +265,10 @@ do
 	grug_core.combat_debug_due = function() return false end
 	grug_core.add_threat = function() end
 	local finish = assert(loadstring(
-		"local spend, swing_rage, play_skill_pose = ...\n" ..
+		"local spend, swing_rage, play_skill_pose, grant_swing_gains = ...\n" ..
 		cut(INIT, "\n(local function finish_authoritative_swing%(.-\nend)\n", "finish") ..
 		"\nreturn finish_authoritative_swing", "=finish"))(
-		function() return true end, function() return 8 end, play_skill_pose)
+		function() return true end, function() return 8 end, play_skill_pose, function() end)
 	local function swing(proc, result)
 		return finish({player = caster, proc = proc, proc_cost = {}}, result)
 	end
