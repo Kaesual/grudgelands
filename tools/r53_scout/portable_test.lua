@@ -369,7 +369,8 @@ local fake_grug_core = with_any({
 		end
 	end,
 	deal_ability_damage = function(attacker, target, amount, opts)
-		log.damage[#log.damage + 1] = {attacker = attacker, target = target, amount = amount}
+		log.damage[#log.damage + 1] = {attacker = attacker, target = target, amount = amount,
+			no_crit = opts and opts.no_crit}
 		if target.accept ~= false and opts and opts.on_accepted then
 			opts.on_accepted(amount, false, opts.action_id)
 		end
@@ -978,6 +979,7 @@ do
 	reset_log()
 	check(cast(p, "arrowfall"), "K7 Arrowfall fires")
 	eq(#log.launches, 4, "K7 ... four arrows")
+	check(not log.launches[1].data.no_crit, "K7 Arrowfall may crit (the plan allows it)")
 	eq(p.ammo, 6, "K7 ... four arrows spent")
 	local trails = 0
 	for _, l in ipairs(log.launches) do
@@ -1019,6 +1021,8 @@ do
 	for _, d in ipairs(log.damage) do hit[#hit + 1] = d.target.name end
 	eq(table.concat(hit, ","), "k7,k7_enemy,m2", "K7 the primary, then 2 others: never the primary " ..
 		"again, an unflagged player or an ally")
+	check(not log.damage[1].no_crit and log.damage[2].no_crit and log.damage[3].no_crit,
+		"K7 the primary may crit, the splash hits pass no_crit")
 	eq(log.areas[1] and log.areas[1].opts.radius, 3, "K7 within 3 m of the target")
 	eq(log.areas[1] and log.areas[1].opts.cap, 2, "K7 ... at most 2")
 	local splinters = 0
@@ -1034,6 +1038,7 @@ do
 	hit = {}
 	for _, d in ipairs(log.damage) do hit[#hit + 1] = d.target.name end
 	eq(table.concat(hit, ","), "k7,k7_enemy,m2", "K7 Flourish: the 3 nearest legal hostiles")
+	check(log.damage[1].no_crit and log.damage[3].no_crit, "K7 Flourish's cone hits pass no_crit")
 	local cone = log.areas[1] and log.areas[1].opts
 	check(cone and cone.radius == 3 and cone.angle == 90 and cone.cap == 3, "K7 a 90 degree, 3 m cone")
 	eq(log.fx[1] and log.fx[1].id, "flourish", "K7 ... and its sweep")
