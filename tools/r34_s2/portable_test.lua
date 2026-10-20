@@ -207,6 +207,12 @@ do
 	check(R.sound_key(D, "undead", true, "grug_beach") == nil and
 		R.sound_key(D, "dragon_island", true, "grug_beach") == "dragon_island",
 		"B on the beach: keep the key; the dragon islands' override still wins")
+	-- review F1: a neutral biome keeps a group key but drops an override key
+	check(R.sound_key(D, "undead", true, "grug_beach", "blight") == nil and
+		R.sound_key(D, "undead", true, "grug_beach", "dragon_island") == false and
+		R.sound_key(D, "undead", true, "grug_beach", "ocean") == false and
+		R.surf_mode(D, false) == "blend",
+		"B ashore on a beach from the channel or the ocean: no override bed, the surf by the share")
 	check(R.surf_mode(D, "ocean") == "only" and R.surf_mode(D, "dragon_island") == "none" and
 		R.surf_mode(D, "temperate") == "blend" and R.surf_mode(D, nil) == "blend" and
 		R.surf_mode(D, false) == "blend", "B surf modes: the ocean alone, none on the dragon islands")
@@ -848,6 +854,15 @@ do
 	run(4)
 	check(#plays_to("ana", is_sea) == 1 and #plays_to("ana", named("grug_ambience_human_")) == 0 and
 		#plays_to("ana", named("grug_ambience_elf_")) == 0, "R the ocean's key: the surf alone")
+	-- review F1: from the ocean onto a beach cell 40 inland: the ocean key
+	-- is dropped, so the surf does not play alone far from the sea
+	local ocean_surf = plays_to("ana", is_sea)[1]
+	biome.ana, mood.ana = "grug_beach", "undead"
+	ana._pos.x = -60
+	run(8)
+	check(ocean_surf and last_gain(ocean_surf.handle) == 0 and #plays_to("ana", is_sea) == 1,
+		"R ashore on an inland beach from the ocean: the surf goes (F1)")
+	biome.ana = "grug_meadows"
 	-- the dragon islands keep their own coast bed: no surf beside it
 	mood.ana = "dragon_island"
 	ana._pos.x = -92

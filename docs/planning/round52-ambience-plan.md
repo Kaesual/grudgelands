@@ -628,8 +628,10 @@ inland lakes; a diver hears no zone sound, only an underwater sound.
   (`surf = "none"`). Two memos shared by every player keep the answers.
 - **The beach is neutral.** The beach biome is a palette patch that lies
   mostly far from the sea (seed 12345: 32 of the 44 Gravesalt samples more
-  than 64 nodes from it), so it keeps the key the player brings instead of
-  playing the surf inland; its `beach` row and bed are gone.
+  than 64 nodes from it), so it keeps the group key the player brings
+  instead of playing the surf inland (an override key, the ocean's or a
+  dragon island's, is dropped there: no region bed, the surf by the share);
+  its `beach` row and bed are gone.
 - **Under water** the surface layer plays the `underwater` bed at the full
   bed level at any depth and nothing else plays; until its file ships
   (lane UW's listening page), diving stays silent. Adding

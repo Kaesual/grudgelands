@@ -664,7 +664,7 @@ local function evaluate(name, st, now, night)
 			depth, column = grug_core.depth_below_surface(pos, name)
 		end
 		local biome = column and column.biome
-		local key = R.sound_key(D, mood, column ~= nil, biome)
+		local key = R.sound_key(D, mood, column ~= nil, biome, st.sound_key)
 		if key ~= nil then st.sound_key = key end
 		local water, underwater = probe_water(pos)
 		local music = R.music_active(st.music)

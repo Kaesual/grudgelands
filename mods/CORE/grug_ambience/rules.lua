@@ -67,13 +67,20 @@ end
 -- the player is in the underground mood, which hides the zone (the surface
 -- layer is silent that deep anyway), or the biome is a neutral one
 -- (data.neutral, 0.52.1: the beach, which also lies far inland; the surf
--- comes from the sea share, R.sea_blend).
-function R.sound_key(data, mood, known, biome)
+-- comes from the sea share, R.sea_blend). A neutral biome keeps only a
+-- group key: an override key `current` (the dragon island's coast bed and
+-- no surf, the ocean's surf alone) is dropped for false (no region bed;
+-- the surf by the share), so landing on a beach from the channel or the
+-- deep ocean does not carry them inland.
+function R.sound_key(data, mood, known, biome, current)
 	if mood == "underground" then return nil end
 	if mood and data.overrides[mood] then return mood end
 	if not known then return nil end
 	if biome == nil then return "ocean" end
-	if data.neutral[biome] then return nil end
+	if data.neutral[biome] then
+		if current and data.overrides[current] then return false end
+		return nil
+	end
 	return data.groups[biome] or false
 end
 

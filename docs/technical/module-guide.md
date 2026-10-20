@@ -2636,8 +2636,9 @@ tools](#player-meta-read-by-external-tools).
       `D.groups[biome]` by the full `grug_` biome id (15 biomes in 8
       groups: temperate, savanna, jungle, badlands, swamp, crags,
       crags_snowy, blight); an ownerless column is the ocean; the
-      underground mood and a biome in `D.neutral` (the beach, 0.52.1)
-      keep the last key. `D.region[key]` names the day
+      underground mood keeps the last key; a biome in `D.neutral` (the
+      beach, 0.52.1) keeps the last group key, but an override key
+      (`current`, the fifth argument) turns false there. `D.region[key]` names the day
       and night beds (`night = false`: silence at night, the crags; no
       night row: the day bed at night too).
     - **Four layers** (`st.layers`: surface, sea, cave, wind), each its

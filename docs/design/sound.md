@@ -252,7 +252,9 @@ same for every bed) times the player's volume times each layer's level:
   forest, elf forest and pine hills; savanna; jungle; badlands; swamp;
   crags; snowy crags; blight with the bone forest). The beach biome is
   neutral (0.52.1): it lies mostly far from the sea, so it keeps the bed of
-  the land the player comes from. Moving between biomes of one group
+  the land the player comes from (coming from the open ocean or a
+  dragon-island channel it has no bed of its own, only the surf by the
+  share). Moving between biomes of one group
   changes nothing. A group may have a night bed (night
   insects and owls in the temperate group, night choruses in the jungle,
   frogs and evening in the swamp, crickets in the badlands); the crags are
