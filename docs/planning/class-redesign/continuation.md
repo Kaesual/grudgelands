@@ -10,6 +10,10 @@ corrected.
 
 ## 1. Status: parked future work package
 
+> **Built (2026-10-20):** round F in Round 52, round K in Round 53 (0.53.0,
+> [round 53 plan](../round53-plan.md)). The rest of this file is the
+> planning record.
+
 - **Not part of the next round.** The user moved the next round's focus to
   world generation (seed-dependent POI placement, ore/gem/coal distribution)
   and player-feedback fixes. Player feedback (2026-10-12) ranks other
@@ -189,7 +193,8 @@ reviewed plan; only then are implementation lanes briefed.
    hit taxonomy, Arrowfall timing, Split Shot tie-break and the production
    engine version for `get_guid()`, action clock versus swing clock,
    cancelled preparation, hotbar scrolling, per-class Strike).
-6. **Open choices already in the [TODO](../../../TODO-design-classes.md):**
+6. **Open choices already in the TODO** (the class redesign TODO, deleted
+   in Round 53 after the round 53 plan settled them):
    starters and initial placement, absorbed-hit triggers, repeated roots, Ice
    Cage, Sprint removal, migration and refund. Combat hotbar switching
    shipped with Hotbar A/B (0.50.0); the Arrowfall cone and Split Shot

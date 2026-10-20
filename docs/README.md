@@ -11,7 +11,7 @@ reading every development round.
 | What is still to implement? | [BACKLOG](../BACKLOG.md) |
 | What are the broader goals? | [ROADMAP](../ROADMAP.md) |
 | What decisions remain open? | Root `TODO-*.md` files; [BACKLOG open questions](../BACKLOG.md#audit-2026-10-open-questions) |
-| Where do I resume the class and hotbar redesign discussion? | [Continuation plan](planning/class-redesign/continuation.md) (parked; decisions and next steps), [implementation design](planning/class-redesign/implementation-design.md), [approved future targeting](design/ability_targeting.md), [earlier handoff](planning/class-redesign-handoff.md) and [open choices](../TODO-design-classes.md) |
+| Where is the class rework? | Built in Rounds 52 (round F) and 53 (round K): the shipped rules in [classes](design/classes.md), [talents](design/skill_trees.md), [scout](design/scout.md) and [ability targeting](design/ability_targeting.md); the record in the [round 53 plan](planning/round53-plan.md), the [delivery plan](planning/class-redesign/delivery-plan.md), the [continuation plan](planning/class-redesign/continuation.md) and the [earlier handoff](planning/class-redesign-handoff.md) |
 | How should work be performed? | [AGENTS](../AGENTS.md), then the [round workflow](process/round-workflow.md) (gates, review checklist, [templates](process/round-workflow.md#7-templates)) |
 | Which mod owns a concern? | [Mod ownership map](technical/mod-map.md) |
 | What does a realm website read, and in which format? | [Module guide, "Player meta read by external tools"](technical/module-guide.md#player-meta-read-by-external-tools), [web data export](../tools/web_data/README.md) |

@@ -3,7 +3,10 @@
 Compiled 2026-10-19 from `docs/planning/class-redesign/skill-inventory.md`
 (authoritative), `continuation.md` §4a, the candidates `warrior.md`,
 `priest.md`, `scout.md`, `mage.md` and the handoff §5 (Mage tables), in
-this folder. Documentation only.
+this folder. Documentation only. **Built in Round 53** (0.53.0): the live
+trees, with every node's code id and per-rank values, are
+[skill_trees.md](../../design/skill_trees.md) §2; §2a below lists where the
+shipped values differ from this list.
 
 Applied rulings:
 
@@ -38,11 +41,14 @@ Node types:
 | Rime | Mage | 14 | 33 | 2: Blink, Rime Mantle | 2: Cold Spark, Ice Nova | 1 | 8 | Winter Field |
 | Bulwark | Warrior | 14 | 33 | 2: Hold Ground, Taunt | 2: Retort, Bellow | 0 | 9 | Unbroken |
 | Ruin | Warrior | 14 | 33 | 2: Mighty Blow, Hamstring | 1: Broadstroke | 0 | 10 | Ruination |
-| Mercy | Priest | 13 | 31 | 3: Shield, Mend, Hearten | 0 | 1 | 8 | Haven |
+| Mercy | Priest | 13 | 33 | 3: Shield, Mend, Hearten | 0 | 1 | 8 | Haven |
 | Reckoning | Priest | 14 | 34 | 3: Rebuke, Word of Ruin, Censure | 0 | 0 | 10 | Final Word |
 | Quarry | Scout | 13 | 32 | 3: True Draw, Snare Shot, Split Shot | 0 | 1 | 8 | Arrowfall |
 | Veil | Scout | 14 | 33 | 3: Opening, Parry, Flourish | 1: Bladecraft | 0 | 9 | Close Dance |
-| **Total** | | **109** | **261** | **21** | **6** | **3** | **71** | **8** |
+| **Total** | | **109** | **263** | **21** | **6** | **3** | **71** | **8** |
+
+Mercy has 33 ranks since the user's decision of 2026-10-20 (Warding Faith
+at 5 ranks, §5 point 1); it had 31 when this list was compiled.
 
 Art volume:
 
@@ -84,9 +90,9 @@ Background idea: a frozen lake under a night sky, frost ferns on the edges, and 
 | R4 | Blink | 1 | 2 | — | unlock | Blink: 10 m teleport, 20 s cd, 8 % P | uses the skill icon |
 | R5 | Clear Thought | 3 | 2 | — | modifier | Paid frost/utility spell costs −4/8/12 % | snowflake over a calm eye |
 | R6 | Quick Step | 3 | 6 | R4 | modifier | Blink cd −1/2/3 s | frosted footprint with motion lines |
-| R7 | Rime Mantle | 1 | 6 | — | unlock | Rime Mantle: self armor +0.20K for 6 s, 24 s cd, 10 % P (armor only) | uses the skill icon |
+| R7 | Rime Mantle | 1 | 6 | — | unlock | Rime Mantle: self armor +0.20K **and an absorb of 12 % P** for 6 s, 24 s cd, 10 % P, 0.3 s occupied (the stored calculator change `tuning/mage_rime`; "armor only" before 2026-10-20) | uses the skill icon |
 | R8 | Thick Ice | 3 | 10 | R7 | modifier | Rime Mantle armor +0.04/0.08/0.12K | thick layered ice slab |
-| R9 | Ice Nova | 1 | 12 | — | transform | Ice Wave → Ice Nova: 0.65D r 5 m + fixed 1.75 s root, 18 s cd, 10 % P; shared cd key | uses the skill icon (Ice Nova) |
+| R9 | Ice Nova | 1 | 12 | — | transform | Ice Wave → Ice Nova: 0.65D r 5 m + fixed **2.5 s** root (the stored change; 1.75 s before), 18 s cd, 10 % P; shared cd key | uses the skill icon (Ice Nova) |
 | R10 | Cold Shock | 3 | 12 | R9 + R1 | window | Nova hitting an enemy readies the next Cold Spark within 4 s: +0.25/0.50/0.75D, one charge | jagged frost spark cracking |
 | R11 | Returning Cold | 3 | 12 | — | modifier | Ice Wave/Ice Nova cd −1/2/3 s (shared key) | circular arrow of frost |
 | R12 | Far Frost | 3 | 16 | R9 | modifier | Nova radius +0.25/0.50/0.75 m | expanding ring of frost |
@@ -145,7 +151,7 @@ Background idea: a quiet sanctuary with soft gold light through arches, lilies a
 | M2 | Measured Care | 3 | 0 | — | modifier | Heal, Shield, Mend, Hearten, Haven costs −4/8/12 % | jug pouring a measured stream |
 | M3 | Shield | 1 | 2 | — | unlock | Shield: crosshair ally or self, absorb ~22–25 % P × Q for ~10 s, cd ~12 s; any recast replaces | uses the skill icon |
 | M4 | Gentle Hand | 3 | 2 | — | modifier | Heal amount +2/4/6 pp of P (candidate 22/24/26 % on a 20 % base; rebased on the H1 base) | open palm with a soft glow |
-| M5 | Warding Faith | 3 | 6 | M3 | modifier | Shield absorb +2/4/6 pp of P, raised to include Shelter's folded value (P2 sets it) | shield crowned by a halo |
+| M5 | Warding Faith | **5** | 6 | M3 | modifier | Shield absorb **+2/4/6/8/10 pp** of P: ranks 1–3 keep the old end value, ranks 4–5 carry Shelter's folded value (§5 point 1; round 53 plan §8 Q1) | shield crowned by a halo |
 | M6 | Mend | 1 | 6 | — | unlock | Mend: status on the target, 4 ticks × ~6–8 % P × Q every 3 s; newest cast replaces | uses the skill icon |
 | M7 | Patient Care | 3 | 10 | M6 | modifier | Mend tick +0.5/1.0/1.5 pp of P (rebased on H1) | hourglass dripping golden drops |
 | M8 | Clear Conscience | 3 | 10 | — | window | After Heal/Shield/Mend, the next Smite within 5 s +0.10/0.20/0.30B; ICD 8 s; status icon | clear bell with a light ray |
@@ -219,6 +225,36 @@ Background idea: moonlit alleys and mist, with a crescent moon and drifting smok
 | V13 | Cutting Rhythm | 3 | 20 | V12 | modifier | Close Dance swing bonus +0.05/0.10/0.15 M | three rhythmic slash marks |
 | V14 | Travel Worn | 3 | 6 | — | modifier | Max HP +3/6/9 % P | worn hooded cloak on a road |
 
+## 2a. As shipped in Round 53
+
+Where the shipped values differ from §2 or make a range exact (the
+[round 53 plan](../round53-plan.md) and its completion; the code holds the
+values per rank, [skill_trees.md](../../design/skill_trees.md) §2):
+
+- **Per-rank steps derived from the calculator's totals** (lane LIVE): F9
+  +0.05/0.10/0.15 D on the 0.15 D base; B5 +0.05/0.10/0.15 S on 0.25 S; U8
+  +0.05/0.10/0.15 S on 0.35 S; M11 −0.05/0.10/0.15 off 0.50; RK7 +1/2/3 pp
+  on the 6 % cap; RK10 +0.25/0.50/0.75 m on 3 m; RK12 −0.5/1.0/1.5 s off
+  6 s; M4 +2/4/6, M5 +2/4/6/8/10 and M7 +0.5/1.0/1.5 pp (increments that
+  keep the old end values); B11's slow lasts the 0.75 s stun plus 2 s.
+- **The values the candidates left approximate:** Shield 24 % P × Q for
+  10 s, 12 s cd (M3); Mend 4 ticks of 7 % P × Q (M6); Hearten 15 % P × Q,
+  6 m, cap 4, 20 s cd, 14 % P (M10); Haven 6 ticks of 7 % P × Q every 2 s,
+  8 m, cap 5, 22 % P (M13); Parry's and Close Dance's shields 10 % and
+  15 % of P, not of max HP (V6, V12); Opening's 8 s is a swing charge (V4).
+- **R7** carries the absorb, **R9** the 2.5 s root and the starter Ice Wave
+  a 50 % slow for 3 s (the stored change); Winter Field has no stun.
+- **V11 Shake Loose** clears slows **and roots** (§5 point 6).
+- **Decisions of the round:** areas never crit (Ice Wave, Ice Nova,
+  Meteor, Fire Rain, Winter Field, Fireball's splash, Censure, Flourish,
+  Split Shot's splash); **RK8 Hard Faith** raises only the untalented
+  damage of Rebuke, Word of Ruin and Final Word, not Censure; Cold Shock
+  (R10) has no internal cooldown; Bellow's line of sight starts at the feet
+  + 0.5; Opening's "from behind" is the rear half-plane of the target's
+  facing; Close Dance's bonus reaches every plain blade swing, not
+  Opening's charged hit; Ruination's +2 rage scales with the weapon
+  interval; arrows fly 40 m/s.
+
 ## 3. Active skills needing an icon
 
 "Shipped" means a `grug_abilities_skill_*.png` already exists in `mods/PLAYER/grug_abilities/textures/`. It can be reused or redrawn for a consistent set.
@@ -270,7 +306,7 @@ Background idea: moonlit alleys and mist, with a crescent moon and drifting smok
 | Scout | Flourish | Veil V8 | shadow | no | spinning fan of three blade arcs |
 | Scout | Close Dance | Veil V12, ultimate | shadow | no | twin blades circling a figure in smoke |
 
-The count is 44 skills, of which 19 have a shipped icon and **25 need new icons**. Strike is counted once; it is universal and the Scout may also use it. The shipped icons `cinderfall`, `glacial_ward` and `pinning_shot` have no new skill of their own. Cinderfall and Glacial Ward are reuse candidates; Pinning Shot is retired.
+The count is 44 skills, of which 19 had a shipped icon and **25 needed new icons** (all 44 ship since Round 53: the 19 redrawn in Round 52, the 25 new in Round 53). Strike is counted once; it is universal and the Scout may also use it. The shipped icons `cinderfall`, `glacial_ward` and `pinning_shot` have no new skill of their own. Cinderfall and Glacial Ward are reuse candidates; Pinning Shot is retired.
 
 ## 4. Weapon-overlay element families (6, plus none)
 
@@ -296,7 +332,7 @@ Basic attacks: Fiery Spark is fire, Cold Spark frost, Smite holy, Loose wild, Bl
 
 ## 5. Open points
 
-**Decided (the user, 2026-10-20: "alles wie empfohlen"), for round K:**
+**Decided (the user, 2026-10-20: "alles wie empfohlen"), for round K** (built in Round 53, §2a):
 
 - **Numbers:** the balance calculator's defaults plus its one stored change (`tuning/mage_rime`: Ice Armor absorb 12 % of P, Ice Nova root 2.5 s, Ice Wave slow 50 %) are frozen; fine tuning follows the user's first play test of the new kits.
 - **Point 1:** Warding Faith (M5) gets 5 ranks instead of 3, so Mercy has 33; the folded Shelter value is part of its increments, set with the calculator.

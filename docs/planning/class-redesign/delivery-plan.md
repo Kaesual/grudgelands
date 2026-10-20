@@ -2,7 +2,8 @@
 
 Planning draft, 2026-10-19. **The user confirmed the sequence (sections 2–5)
 and the rulings table (section 6) on 2026-10-19.** Progress: round F done in
-Round 52 (2026-10-20, §4); round K is next. It turns the
+Round 52 (2026-10-20, §4); round K done in Round 53 (2026-10-20, §5); next
+the user's playtest and a short balance fix round. It turns the
 [continuation plan](continuation.md) §5 item 7 and §6 into a concrete
 sequence under the user's "maximally simple" rulings
 ([§4a](continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework))
@@ -43,8 +44,10 @@ frost, holy, rage, wild, shadow; Strike none). **Done in Round 52:** the
 overlays became eight families, one per talent tree (C7 amended twice),
 drawn per weapon type (30 strips); the backgrounds, the 74 talent icons,
 the 19 redrawn skill icons and the strips ship, and the 25 icons of new
-skills wait under `tools/r52_art/artb/` for round K. The text below is the
-original draft.
+skills wait under `tools/r52_art/artb/` for round K. **Round 53** shipped
+the 25 icons of the new skills (lane HOOKS) and the 34 new and 7 retinted
+particle effects of the picked cards. The text below is the original
+draft.
 
 Starts after P4. Astra drafts, the user picks on a review page, nothing
 ships without the pick.
@@ -70,7 +73,7 @@ art, PFX (added during the round) the particle design of the 44 skills,
 all picked by the user. The shipped classes play as before except Mend's
 tick phase; the module guide's
 "[class rework's building blocks](../../technical/module-guide.md#combat-and-classes)"
-and [skill_trees.md §3.12](../../design/skill_trees.md#312-the-graph-talents-of-round-k-round-52)
+and [skill_trees.md §3.12](../../design/skill_trees.md#312-the-graph-talents-of-round-k-round-52-live-since-round-53)
 document the APIs round K builds on. Round K's open points:
 [Round 52 carry-overs](../../../BACKLOG.md#round-52-carry-overs).
 
@@ -104,6 +107,19 @@ their ids stay untouched; the preview writes nothing). The user's GUI check cove
 normal fight per class.
 
 ## 5. Round K: the new classes (migrate)
+
+**Done: Round 53, 0.53.0, migrate** (2026-10-20,
+[completion](../round53-plan.md#completion-2026-10-20)). Wave 1: LIVE (the
+graph goes live), HOOKS (the shared seams, tables, art, effects and the
+picked sounds) and INTEG part 1 (the step, the version, the HP factors);
+wave 2: MAGE, WARRIOR, PRIEST and SCOUT; INTEG part 2 (the old engine
+removed, `no_crit`, the held cast's catch-up); D. Before it the prep lane
+SKS put the cast-sound candidates on a listening page. The shipped rules:
+[classes](../../design/classes.md), [talents](../../design/skill_trees.md),
+[scout](../../design/scout.md), [ability targeting](../../design/ability_targeting.md);
+the open notes: [Round 53 carry-overs](../../../BACKLOG.md#round-53-carry-overs).
+The table below is the original draft; where it differs (LIVE and HOOKS in
+wave 1, INTEG beside them), the round 53 plan wins.
 
 Goal: the four new kits and talent graphs, one migration, then the user's
 playtest.

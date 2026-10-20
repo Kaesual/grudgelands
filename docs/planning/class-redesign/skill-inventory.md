@@ -99,7 +99,7 @@ Aimed Shot at 2.2R) are listed per class below.
 
 Applies to every crosshair area skill (B5: Meteor, Fire Rain, Winter Field,
 Censure). It replaces the preview parts of
-[ability targeting §4](../../design/ability_targeting.md#4-fixed-area-points-and-previews)
+[ability targeting §4](../../design/ability_targeting.md#4-ground-areas-the-ground-anchor)
 and fixes the open geometry questions of the handoff §5.9.
 
 1. **Two ways to aim, one result.** A legal enemy under the crosshair gives

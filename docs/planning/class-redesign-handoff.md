@@ -42,8 +42,9 @@ presentation support the same goal without crowding out gathering and building.
   is assigned here. Do not begin implementation from this handoff alone.
 
 This handoff is the conversation record. During actual planning, approved
-rules move into their existing topic owners; unresolved questions are tracked
-through [the class redesign TODO](../../TODO-design-classes.md). Keep current
+rules move into their existing topic owners; unresolved questions were
+tracked through the class redesign TODO (deleted in Round 53, when the
+[round 53 plan](round53-plan.md) built the rework). Keep current
 delivery information in [STATUS](../STATUS.md). This document does not change
 the current [class kits](../design/classes.md),
 [talent specification](../design/skill_trees.md),
@@ -59,8 +60,9 @@ then buying small numerical improvements, does not deliver the desired growth.
 The present Mage starts with Strike, Fireball, Ice Nova and Blink. The current
 tree gives one point every two levels, 30 at level 60; its first major
 keystone is reachable at level 26 and each tree adds at most one active skill.
-The existing [reachability table](../design/skill_trees.md#13-points-and-the-arithmetic-rulings-1-2-17-and-18)
-explains why substantial changes arrive late.
+The then-current reachability table (now in the
+[WP11 delivery record](../archive/design/skill-trees-wp11-delivery.md#13-points-and-the-arithmetic-rulings-1-2-17-and-18),
+section G) explains why substantial changes arrived late.
 
 The original exploration suggested two class starters beside Strike and
 roughly three or four skill unlocks per tree, with an ultimate at each tree's
@@ -668,7 +670,7 @@ whether separate tools contribute useful gameplay before removing them.
 ## 8 Continuation and future delivery
 
 At the next session, read section 3 first, then the Mage candidate and
-[open questions](../../TODO-design-classes.md). Confirm or revise the Mage's
+the open questions (the class redesign TODO, deleted in Round 53). Confirm or revise the Mage's
 actual nodes, starter count and tuning, then discuss Warrior, Priest and Scout
 one at a time under the shared principles. Do not invent their kits from this
 Mage example.

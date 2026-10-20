@@ -1,5 +1,11 @@
 # Four-class redesign review package
 
+**Built: round F in Round 52 (0.52.0), round K in Round 53 (0.53.0).** The
+shipped rules are [classes](../../design/classes.md),
+[talents](../../design/skill_trees.md), [scout](../../design/scout.md) and
+[ability targeting](../../design/ability_targeting.md); this package is the
+planning record. Round K: [round 53 plan](../round53-plan.md).
+
 **Parked future work package (2026-10-12).** Not part of the next round and
 not to be implemented before a dedicated preparatory planning round has
 closed every open point. Status, the user's decisions on the two reviews and
@@ -69,8 +75,9 @@ remains allowed. The Mage's existing tables/allocations stay in the handoff;
 duplicating those tables as a second editable specification.
 
 [Cross-class balance review](balance.md) records assumptions, comparisons,
-corrections and remaining limits. [Open decisions](../../../TODO-design-classes.md)
-remain open until the user has inspected the overview and selected the design.
+corrections and remaining limits. The open decisions were settled by the
+user's rulings of 2026-10-19 and 2026-10-20 and the round 53 plan; the class
+redesign TODO that listed them was deleted in Round 53.
 
 ## Review and verification receipt
 

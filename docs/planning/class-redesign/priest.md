@@ -112,7 +112,7 @@ layouts. All single-target support ranges are 15 m unless stated otherwise.
 | Censure | Reckoning R9 | 12% P | 18 s; stationary 0.75 s preparation, then 0.75 s fixed warning | Previewed crosshair area anchor within 16 m, captured at preparation start and revalidated at release; horizontal radius 3 m, vertical allowance 2 m; one raw 1.2(W + I) hit to each eligible hostile, maximum four. No DoT or control. |
 | Final Word | Reckoning R13, ultimate | 20% P | 60 s; stationary 1.5 s preparation | 20 m single-target raw 2.8(W + I). A clear preparation cue, no execute threshold, reset, heal or invulnerability. |
 
-Haven and Hearten use the [automatic party selection contract](../../design/ability_targeting.md#3-automatic-party-support).
+Haven and Hearten use the [automatic party selection contract](../../design/ability_targeting.md#3-groups-around-the-caster).
 Their maximum totals are four times the per-recipient amount, not multiplied
 by all nearby allies. No player selects multiple recipients with a cursor.
 
