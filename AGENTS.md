@@ -12,16 +12,23 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.53.1, the fix round of Round 53 (**compatible**, no
-step of its own; [completion](docs/planning/round53-fix-plan.md#completion-2026-10-20):
+**Current state:** 0.54.0, Round 54 "The armor redesign in the game"
+(**compatible**, no step;
+[completion](docs/planning/round54-plan.md#completion-2026-10-21)): armor
+as low-poly boxes in the player and NPC models with one atlas texture, the
+picked art of three lines, opaque pieces, royal armor for kings, royal
+guards and Generals, the Character tab with the held weapon, appearance
+version 2, leather tier 4 named Hardened. It builds on 0.53.1, the fix
+round of Round 53 (**compatible**, no step of its own;
+[completion](docs/planning/round53-fix-plan.md#completion-2026-10-20):
 areas without line of sight, the range line, the flight band and no-fly
 minimap, the same trinket twice, racials, skeleton bows, right-click
 picking, 36 redrawn icons), on 0.53.0, Round 53 "The new classes" (round K
 of the class rework; **migrate**, one step 0.53.0;
-[completion](docs/planning/round53-plan.md#completion-2026-10-20)); both on
-main, not pushed (origin/main `e4d5c9d5`, 0.52.1), pushed together after
-the user's one GUI test on 0.53.1. Round 53 brought the four new class kits and
-the eight talent graphs live (`<tree>_<name>` ids, the Talents page), the
+[completion](docs/planning/round53-plan.md#completion-2026-10-20)). All
+three are on main, not pushed (origin/main `e4d5c9d5`, 0.52.1); they wait
+for the user's GUI test of 0.53.1 and 0.54.0 before the push. Round 53
+brought the four new class kits and the eight talent graphs live (`<tree>_<name>` ids, the Talents page), the
 Scout's bow draw removed, the shared seams (family keys, the swing
 callback, clock seams, the held fallback, cones, `no_crit`), 25 skill
 icons, 41 particle effects and 20 picked skill sounds, HP factors
@@ -40,9 +47,10 @@ performance (native first) and gameplay polish" (**map reset**;
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20; the GUI tests of
-Rounds 36–38, 40, 41, 43–45, 48, 49, 51 and 53 and of 0.45.1, 0.49.1,
-0.50.0, 0.50.1, 0.52.1 and 0.53.1 are open. Next: the GUI test and the user's
-playtest of the new classes, then a short balance fix round
+Rounds 36–38, 40, 41, 43–45, 48, 49, 51, 53 and 54 and of 0.45.1, 0.49.1,
+0.50.0, 0.50.1, 0.52.1 and 0.53.1 are open. Next: the GUI test (0.53.1 and
+0.54.0) and the user's playtest of the new classes, then a short balance
+fix round
 ([delivery plan](docs/planning/class-redesign/delivery-plan.md)).
 Details: [STATUS](docs/STATUS.md).
 
@@ -378,9 +386,22 @@ The topic rules below name the one path to use; the
   player's flag. **An NPC's faction decides whom it serves and its map marker**
   (`grug_factions.serves`/`refuse`), never the place.
 - **Looks** are stored once per player (`grug_visuals.set_look`) and rolled once
-  per NPC; look and enchant art comes from the generators
-  (`tools/wp13/gen_character_visuals.py`, `tools/r31_b/gen_enchant_masks.py
-  --check`). PvP POIs are rules in `grug_mapgen/wp40/r31_pvp_catalog.lua`.
+  per NPC; look art comes from `tools/wp13/gen_character_visuals.py`, the
+  enchant masks of weapons, bows, shields and the spellbook from
+  `tools/r31_b/gen_enchant_masks.py --check`, the armor's from `bake.py`
+  (below). PvP POIs are rules in `grug_mapgen/wp40/r31_pvp_catalog.lua`.
+- **Armor is boxes in the model with one atlas** (Round 54,
+  [armor format](docs/technical/armor-format.md)): the contract
+  (`tools/r54_armor/catalog.py`, `data/catalog.json`, `data/atlas.json`)
+  changes only through a round's coordinator; the worn layers, the armor
+  icons and all their masks are baked by `tools/r54_armor/bake.py` from the
+  picked art in `tools/r54_art/`, never edited by hand. A change to the art,
+  the catalog or the models runs the topic checks: `tools/r54_armor/`
+  `export.py --check`, `atlas.py --check`, `zfight.py`, `check.py --art
+  tools/r54_art/art` and `bake.py --icons-out mods/ITEMS/grug_gear/textures
+  --check`; `tools/r54_art/assemble.py --check` and `ghosts.py --check`;
+  `tools/r33_c3/gen_cloak_model.py --check` (the player and NPC models) and
+  `tools/r40_an/make_poses.py --check`.
 - **Realm websites read player meta** (the contract in the
   [module guide](docs/technical/module-guide.md#player-meta-read-by-external-tools)):
   those keys and the appearance format are not renamed without notice; a
