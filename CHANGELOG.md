@@ -12,6 +12,36 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.53.1 — fixes to the new classes (2026-10-20)
+
+Fixes and wishes from the first look at 0.53.0. **Compatible:** no map
+reset and no migration step of its own; a world still on 0.52 runs the
+0.53.0 step once, as described there.
+
+- **Area skills, cones and group heals** reach everything in their circle
+  and up to 3 m above or below, through walls, step edges and corners; a
+  floor 4 m or more away still stops them.
+- **Tooltips show "Range: N m"** for every aimed skill, your talents and
+  race included.
+- **Flying:** the border warning starts 40 nodes out (was 48) and stays
+  while you are near; on a flying mount the minimap shows where you may
+  not fly in red.
+- **Shields and spellbooks** name the classes that can really use them
+  (shield: Warrior; spellbook: Mage, Priest).
+- **The same trinket twice:** you may wear two copies. Bonuses add up to
+  their cap; Last Light and Reclaimer's Mark fire once, and the second
+  copy strengthens the effect by 5–30 % by its tier.
+- **Races:** zombies and husks leave Undead alone by day and by night
+  unless attacked; Elves get +3 m ability range (was +5); Dwarves' Thick
+  Skin gives +5 % armor rating instead of less fall damage.
+- **Skeleton archers** hold a bow.
+- **Right-click** a ripe blueberry bush or an apple to pick it; left-click
+  still works. Where you may not dig (towns, villages), you may not pick
+  either.
+- **36 skill and talent icons** replaced by simpler ones, readable at small
+  size, weapons in their natural colours; eight of them return to their
+  earlier look.
+
 ## 0.53.0 — the new classes (2026-10-20)
 
 Every class plays anew: new skills, new talent trees and a new Talents

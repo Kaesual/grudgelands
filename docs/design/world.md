@@ -1070,13 +1070,20 @@ territory.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives
-  (implementation: WP19, race registry hook): Dwarf −20% fall damage, applied
-  after the max-HP fall conversion; absorb never applies to fall damage (`combat_stats.md` §2) ·
+  (implementation: WP19, race registry hook): Dwarf "Thick Skin" +5% armor
+  rating (0.53.1; a positive armor total ×1.05 in `raw_armor`, so combat
+  and the Character page read the same number; it replaced −20% fall
+  damage, and fall damage is now the same for every race) ·
   Troll +50% out-of-combat mana regeneration and +50% food healing
-  (instant and per tick; Round 26) · Undead ignored by zombies at night
-  (unless the player attacked that zombie) · Orc +1 rage per hit taken ·
-  Elf +5 m ability range (**ranged/spell abilities only** — melee abilities
-  keep their own reach, `classes.md` §2b) · Human +10% quest XP. Plus **one
+  (instant and per tick; Round 26) · Undead: zombies and husks leave the
+  player alone, day and night, unless attacked (0.53.1; the whole zombie
+  family, the sun-dried husks and every sub-type included; provocation is
+  per mob, so a zombie the player hit fights back; skeletons and other
+  undead are unchanged; before 0.53.1 only zombies, and only at night) ·
+  Orc +1 rage per hit taken ·
+  Elf +3 m ability range (0.53.1, was +5 m; **ranged/spell abilities
+  only** — melee abilities keep their own reach, `classes.md` §2b) · Human
+  +10% quest XP. Plus **one
   race-exclusive vendor per race** (WP7). Implementation state (WP19): the
   troll perk `ooc_regen_mult` (1.5) multiplies out-of-combat mana
   regeneration and food healing (`grug_food.heal_multiplier`, instant and per

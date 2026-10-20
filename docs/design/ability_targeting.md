@@ -6,7 +6,10 @@ rework).** The user approved the first-person targeting direction on
 simple" rulings of 2026-10-19
 ([continuation §4a](../planning/class-redesign/continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework),
 [skill inventory §3a](../planning/class-redesign/skill-inventory.md#3a-area-anchor-always-ground-user-2026-10-19))
-then removed prepared casts, previews, pulses and channels. This file owns
+then removed prepared casts, previews, pulses and channels, and the
+user's ruling of 2026-10-20 (0.53.1,
+[fix plan](../planning/round53-fix-plan.md) ruling 1) removed line of sight
+from every area, cone and group. This file owns
 how the kits' skills pick their targets and places. The kits and numbers
 are [classes](classes.md) §3–§5 and [scout.md](scout.md) §2; the input
 machine (presses, holds, the held fallback) is [classes](classes.md) §2b;
@@ -71,9 +74,11 @@ the crosshair at the release, else to the caster.
 Hearten and Haven are caster-centred group effects (`grug_core.area.group`):
 
 - The caster is always one recipient and keeps its place at full health.
-- The others are players within the radius (a sphere: Hearten 6 m, Haven
-  8 m) that the friendly target check accepts and the caster can see
-  (walkable nodes block, body to body). Aiming does not move the centre or
+- The others are players within the horizontal radius (Hearten 6 m,
+  Haven 8 m) and **±3 m** of the caster's feet (a cylinder, since 0.53.1;
+  before, a sphere) that the friendly target check accepts. There is no
+  line of sight: an ally behind a corner, a wall or a floor inside the band
+  counts. Aiming does not move the centre or
   choose a recipient, and party membership plays no role: any player the
   caster may support counts.
 - At most the cap, the caster counted (Hearten 4, Haven 5), **lowest health
@@ -106,14 +111,14 @@ Meteor, Fire Rain, Winter Field and Censure share one contract
   the radius (at most 12 m up), so an area works in caves.
 - **One impact** after the delay (`area.delayed`, at most 3 s, an engine
   timer, no per-step work): every target the filter accepts within the
-  horizontal radius and **±3 m** of the anchor's height, **in sight of a
-  point 0.5 m above the anchor** (walkable nodes block, grass and water do
-  not), nearest first, at most the skill's cap (Censure 4). The damage is
+  horizontal radius and **±3 m** of the anchor's height, nearest first, at
+  most the skill's cap (Censure 4). The damage is
   the cast's snapshot; the impact cue plays once at the anchor. The caster
   leaving cancels the impact; a caster who died still lands it.
-- **Cover:** an area never reaches through floors or walls. On stairs a
-  target behind a riser above the anchor can stay out of sight of it and
-  is not hit (a GUI check).
+- **No line of sight** (0.53.1): walls, step edges and floors inside the
+  band hide no one. A target behind a riser or a thin wall within the
+  radius and ±3 m is hit; one on a floor 4 m or more above or below the
+  anchor is not.
 - **Input:** the ground areas are offensive self casts, so a press at open
   ground casts; the crosshair shows no skill colour for them. Aimed at
   ground within hand reach, a tap casts and a hold digs (the self-skill tap
@@ -124,15 +129,17 @@ This contract places, removes or destroys no node.
 ## 5. Circles and cones around the caster
 
 - **Circles:** Ice Nova (5 m) and Bellow (6 m) use the ground query around
-  the caster's feet: the horizontal radius, ±3 m of height, in sight of the
-  point 0.5 m above the feet, nearest first.
+  the caster's feet: the horizontal radius and ±3 m of height, nearest
+  first.
 - **Cones** (`grug_core.area.cone`): the targets within the horizontal
   radius and ±3 m of the caster's feet and within the cone's whole opening
-  around the caster's horizontal facing, in sight of the caster's body,
-  nearest first, at most the cap; the caster is never a target. Ice Wave
+  around the caster's horizontal facing, nearest first, at most the cap;
+  the caster is never a target. Ice Wave
   70° and 5 m (every target), Flourish 90° and 3 m (the 3 nearest),
   Broadstroke 100° and 3 m (at most 2 besides its primary target, which the
   swing itself hits).
+- Neither needs line of sight (0.53.1): a wall inside the radius and the
+  band hides no one.
 
 ## 6. Arrowfall
 
@@ -150,8 +157,9 @@ no partial volley.
 
 The player aims at one hostile and looses one arrow (one arrow paid). On
 impact up to **two other hostiles within 3 m of the struck target**, nearest
-first, in sight of it and accepted by the shared target check, take Split
-Shot's smaller hit (splinter particles from the target to each); they need
+first (±3 m in height, no line of sight) and accepted by the shared target
+check, take Split Shot's smaller hit (splinter particles from the target to
+each); they need
 no arrows of their own and are never under the crosshair. Their hits never
 crit. The splinters also fly when the primary hit is dodged.
 

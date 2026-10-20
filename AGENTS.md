@@ -12,16 +12,20 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.53.0, Round 53 "The new classes" (round K of the class
-rework; **migrate**, one step 0.53.0;
-[completion](docs/planning/round53-plan.md#completion-2026-10-20)), on main,
-not pushed (origin/main `e4d5c9d5`, 0.52.1): the four new class kits and
+**Current state:** 0.53.1, the fix round of Round 53 (**compatible**, no
+step of its own; [completion](docs/planning/round53-fix-plan.md#completion-2026-10-20):
+areas without line of sight, the range line, the flight band and no-fly
+minimap, the same trinket twice, racials, skeleton bows, right-click
+picking, 36 redrawn icons), on 0.53.0, Round 53 "The new classes" (round K
+of the class rework; **migrate**, one step 0.53.0;
+[completion](docs/planning/round53-plan.md#completion-2026-10-20)); both on
+main, not pushed (origin/main `e4d5c9d5`, 0.52.1), pushed together after
+the user's one GUI test on 0.53.1. Round 53 brought the four new class kits and
 the eight talent graphs live (`<tree>_<name>` ids, the Talents page), the
 Scout's bow draw removed, the shared seams (family keys, the swing
 callback, clock seams, the held fallback, cones, `no_crit`), 25 skill
 icons, 41 particle effects and 20 picked skill sounds, HP factors
-0.8/0.8/1.0/1.2; the step resets every character's talents. Its GUI test
-is open. Before it 0.52.1 and 0.52.0, Round 52 "Ambience and the class
+0.8/0.8/1.0/1.2; the step resets every character's talents. Before it 0.52.1 and 0.52.0, Round 52 "Ambience and the class
 rework foundation" (**compatible**;
 [completion](docs/planning/round52-plan.md#completion-2026-10-20)), pushed
 (`e4d5c9d5`, 2026-10-20). Earlier: 0.51.0, Round 51 "Land zones and the
@@ -37,7 +41,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20; the GUI tests of
 Rounds 36–38, 40, 41, 43–45, 48, 49, 51 and 53 and of 0.45.1, 0.49.1,
-0.50.0, 0.50.1 and 0.52.1 are open. Next: the GUI test and the user's
+0.50.0, 0.50.1, 0.52.1 and 0.53.1 are open. Next: the GUI test and the user's
 playtest of the new classes, then a short balance fix round
 ([delivery plan](docs/planning/class-redesign/delivery-plan.md)).
 Details: [STATUS](docs/STATUS.md).

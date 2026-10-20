@@ -369,6 +369,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     ladder of Round 45; T1 needs level 1); found items retain their own
     requirement. Common `Usable by`
     tooltip text lists permitted classes; it never changes with the viewer.
+    For hand pieces it comes from the same hand rule that decides equipping
+    (`grug_inventory.hand_accepts`, 0.53.1), so a shield reads "Usable by:
+    Warrior" and a spellbook "Usable by: Mage, Priest"; armour keeps its
+    rank gate, trinkets read "All classes".
     Broken items remain visibly equipped but provide no usable combat weapon.
   - **No migration**: weapons stay valid `main` items and nothing of a
     character's is moved behind its back. A character that owns a
@@ -410,9 +414,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   rating (combat_stats.md §2), so they do not contribute to armor. The
   Unique quality tier keeps the
   ship-the-frame-first strategy on its own; the trinket slots no longer
-  share it. The same registered trinket identity may not occupy both slots;
-  different identities may, with each special's authored two-slot stacking
-  rule controlling their combined effect.
+  share it. Any two trinkets may occupy the slots, the same registered
+  identity twice included (0.53.1); each special's authored two-slot
+  stacking rule controls their combined effect (items_crafting.md §6.2).
 - **Equipment effect channels are separate per stack** (integrated
   2026-08-12; cultural finishes and PvP specials removed in Round 33):
   ordinary equipment has at most one prefix and one suffix, with no repeated

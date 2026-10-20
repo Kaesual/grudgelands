@@ -110,8 +110,15 @@ Core principles:
   ability ItemStack carries the effective description and refreshes on kit
   sync, level change and talent change. Its timing line shows the player's
   effective cooldown (a talent that shortens it, such as Quick Step or
-  Onset, shows in it), the effective cost and range, and a swing skill's
-  effective charge. Strike's
+  Onset, shows in it), the effective cost, and a swing skill's effective
+  charge. Below it a **"Range: N m"** line (0.53.1,
+  [fix plan](../planning/round53-fix-plan.md) ruling 8) names the effective
+  pointing range, range talents and the race bonus included, for the
+  crosshair skills (hostile and friendly target kinds) and the four ground
+  areas (Meteor, Fire Rain, Winter Field, Censure); a skill whose range is
+  a radius around the caster, and every other self skill, shows none. The
+  skill texts carry no pointing-range numbers of their own; radii stay in
+  the text. Strike's
   player-specific rage sentence is additionally resource-gated as decided on
   2026-09-18: only a rage-resource class receives it; mana-resource and
   class-less characters retain the class-neutral swing text (§2b).
@@ -627,9 +634,9 @@ it, including one that has not picked a class yet.
 - **An empty melee slot makes it weak, never uncastable**: it swings for
   the bare-hand baseline. The same holds for every weapon-scaled class
   ability.
-- It is **melee**, so the elf's +5 m ability-range passive (`world.md` §7)
+- It is **melee**, so the elf's +3 m ability-range passive (`world.md` §7)
   does **not** apply to it — that perk is a **ranged/spell** bonus, or an
-  elf would carry an 8 m sword. The melee class abilities (Mighty Blow,
+  elf would carry a 6 m sword. The melee class abilities (Mighty Blow,
   Hamstring) keep their 3 m for the same reason.
 - **Hostile players are valid targets**, through the same friendly-fire
   check, dodge pre-roll and threat report as every other ability.
@@ -713,14 +720,14 @@ weapon interval (§2b "Scheduling").
 | Ability | Unlock | Cost | Cooldown | Effect |
 |---------|--------|------|----------|--------|
 | Strike | universal | free | the weapon interval | The plain swing (§2b "Strike"); 8 rage × the weapon's base interval / 1 s when it lands. |
-| Charge | starter | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away; on arrival within reach 12 % of a base hit (`combat_stats.md` §2), the 15 rage and, on an accepted hit, a 0.75 s stun. A dash that ends out of reach is a miss: the cooldown is spent, nothing else. Kings and dragons are stun-immune. No enemy-memory fallback. Destination, dash and arrival below. Halt (B11) adds a 20/25/30 % slow for the stun and 2 s more, Reach the Fight (U14) 5 rage, Onset (U6) takes up to 1.5 s off the cooldown. |
+| Charge | starter | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away (the base range; the elf's +3 m applies, the tooltip's range line shows it); on arrival within reach 12 % of a base hit (`combat_stats.md` §2), the 15 rage and, on an accepted hit, a 0.75 s stun. A dash that ends out of reach is a miss: the cooldown is spent, nothing else. Kings and dragons are stun-immune. No enemy-memory fallback. Destination, dash and arrival below. Halt (B11) adds a 20/25/30 % slow for the stun and 2 s more, Reach the Fight (U14) 5 rage, Onset (U6) takes up to 1.5 s off the cooldown. |
 | Retort | Bulwark B1, transforms Strike | free | the weapon interval | A full Strike swing. A hostile punch that took the Warrior's health (not dodged, not fully absorbed, not lethal) opens the window `retort` for 4 s, at most every 6 s (internal cooldown), with a grey flash and a status icon; the next landed Retort spends it for +0.25 S (Measured Answer to +0.40) and heals a flat 0.7/1.3/2.0 % P × F with Recover, never a crit. Its readiness lives only in the window, never in a charge or a cost, so a held LMB always swings. |
 | Hold Ground | Bulwark B4 | 25 rage | 24 s | A shield of 12 % P × F for 5 s (Layered Guard +3/6/9 points); no immunity. |
 | Taunt | Bulwark B7 | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4). |
-| Bellow | Bulwark B9, transforms Taunt | free | 8 s (Taunt's) | Every mob within 6 m around the Warrior, in sight (the area query from the feet, `valid_target`), is taunted as by Taunt; refused with no mob in range. |
+| Bellow | Bulwark B9, transforms Taunt | free | 8 s (Taunt's) | Every mob within 6 m and ±3 m around the Warrior (the area query from the feet, no line of sight, `valid_target`) is taunted as by Taunt; refused with no mob in range. |
 | Unbroken *(ultimate)* | Bulwark B12 | 25 rage | 60 s | For 8 s (Enduring Stand up to +1.5 s) +0.5 K armor rating (the status `unbroken`) and a shield of 15 % P × F that ends with it; no immunity. |
 | Mighty Blow | Ruin U1 | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, 1.45 S instead of the plain hit (Heavy Hand +0.05–0.20 S; Finisher +0.08–0.24 S against a target below 30 % health before the swing; Relentless −1 to −3 rage). Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. Without the rage it is a plain swing. |
-| Broadstroke | Ruin U7, transforms Mighty Blow | 25 rage | **swing**, no charge | Mighty Blow's hit, and at most 2 other hostiles in a 100°, 3 m arc in front (nearest first, in sight, `valid_target`) take 0.35 S each (Follow Through to 0.50 S); they may crit and give no rage. |
+| Broadstroke | Ruin U7, transforms Mighty Blow | 25 rage | **swing**, no charge | Mighty Blow's hit, and at most 2 other hostiles in a 100°, 3 m arc in front (nearest first, ±3 m, no line of sight, `valid_target`) take 0.35 S each (Follow Through to 0.50 S); they may crit and give no rage. |
 | Hamstring | Ruin U4 | 10 rage | **swing**, 8 s charge | A full Strike hit; a landed charged proc also slows by 35 % for 3 s (Clean Cut up to +1.5 s). |
 | Ruination *(ultimate)* | Ruin U12 | 20 rage | 60 s | Opens the window `ruination` for 8 s (Long Fury up to +1.5 s): every swing deals ×1.15 (procs and Broadstroke's other targets included) and each landed swing gives 2 more rage × the weapon's base interval / 1 s. |
 
@@ -832,7 +839,7 @@ direct hits may.
 |---------|--------|------|----------|---------:|--------|
 | Fiery Spark | starter, in Strike's place | free | 1 s cast interval | 1 s | The class basic attack: a homing fire bolt at the crosshair target within 20 m, 1.0 D. Shares Strike's key; the held fallback fires it. At most eight per caster in flight. |
 | Ice Wave | starter | 8 % base mana | 12 s | 1 s | A frontal cone (70°, 5 m, `area.cone`): 0.25 D and a 50 % slow for 3 s on every accepted hit. |
-| Fireball | Ember F4 | 6 % | 5 s | 1 s | A homing projectile within 20 m: 1.60 D, and 0.15 D to other hostiles within 2 m of the impact, in its sight, never the primary (Afterglow and Wide Ember add). |
+| Fireball | Ember F4 | 6 % | 5 s | 1 s | A homing projectile within 20 m: 1.60 D, and 0.15 D to other hostiles within 2 m and ±2 m of the impact (no line of sight), never the primary (Afterglow and Wide Ember add). |
 | Flame Lance | Ember F5 | 10 % | 8 s | 1.5 s | A fast homing bolt (35 m/s) within 20 m with a white-hot trail: 2.20 D. Its own launch cue. |
 | Meteor | Ember F8 | 14 % | 18 s | 1 s | A ground area under the crosshair within 20 m ([ability_targeting.md](ability_targeting.md) §4): after 1.5 s with a warning and a fall, 1.40 D to every hostile within 3 m (Broad Impact up to +0.75 m); the impact cue once at the anchor. |
 | Fire Rain *(ultimate)* | Ember F12 | 22 % | 60 s | 1.5 s | The same ground area: after 1.5 s one shower of 2.50 D within 5 m (Spreading Rain up to +0.75 m). |
@@ -897,11 +904,11 @@ the offhand shield items.
 | Heal | starter | 10% base mana | 5 s | Heals 25% P × Q. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
 | Shield | Mercy | 9% | 12 s | Pointed ally → self; absorbs 24% P × Q for 10 s or until consumed; any recast replaces it. |
 | Mend | Mercy | 8% | 12 s | Pointed ally → self; a `mend` status whose four ticks come 3, 6, 9 and 12 s after the cast, each 7% P × Q fixed at the cast; a recast renews it, death and leaving end it. |
-| Hearten | Mercy | 14% | 20 s | You and up to 3 friendly players in sight within 6 m, lowest health share first: 15% P × Q each. |
-| Haven *(ultimate)* | Mercy | 22% | 60 s | You and up to 4 friendly players in sight within 8 m get a `haven` status: 7% P × Q every 2 s, 6 times; it stacks with Mend and keeps ticking outside the circle. |
+| Hearten | Mercy | 14% | 20 s | You and up to 3 friendly players within 6 m and ±3 m (no line of sight), lowest health share first: 15% P × Q each. |
+| Haven *(ultimate)* | Mercy | 22% | 60 s | You and up to 4 friendly players within 8 m and ±3 m (no line of sight) get a `haven` status: 7% P × Q every 2 s, 6 times; it stacks with Mend and keeps ticking outside the circle. |
 | Rebuke | Reckoning | 6% | 6 s | 20 m hit for 1.8 units. |
 | Word of Ruin | Reckoning | 10% | 16 s | 20 m hit for 1.6 units; heals you half the damage dealt, at most 6% P × Q (the pool cap only). |
-| Censure | Reckoning | 12% | 18 s | The ground anchor under the crosshair within 16 m (`ability_targeting.md`, skill inventory §3a; "No ground found." refuses before cost); after a 0.75 s warning one hit of 1.2 units to the 4 nearest hostiles within 3 m (band ±3, in sight of the anchor). |
+| Censure | Reckoning | 12% | 18 s | The ground anchor under the crosshair within 16 m (`ability_targeting.md`, skill inventory §3a; "No ground found." refuses before cost); after a 0.75 s warning one hit of 1.2 units to the 4 nearest hostiles within 3 m (band ±3, no line of sight). |
 | Final Word *(ultimate)* | Reckoning | 20% | 60 s | 20 m hit for 2.8 units. |
 
 Talents: Steady Word and Sharpened Word add +5/10/15% of a base hit to

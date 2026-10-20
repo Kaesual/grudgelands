@@ -416,11 +416,27 @@ warning and forced dismount are separate consumer states derived from
   and forced-dismount rule.
 - A flying mount cannot be summoned in an ocean column. Once per second, the
   visible warning probes the same flight-legality rule as the hard dismount in
-  16 horizontal directions at 1, 2, 4, 8, 16, 32 and 48 nodes. This samples at
-  most 112 columns per rider per second, detects adjacent illegality exactly
-  and resolves the 48-node warning reach to within plus or minus 4 nodes at
-  range. HUD text and one message-feed line warn that crossing will force a dismount;
-  moving clear of every sampled illegal column removes the warning.
+  16 horizontal directions at 1, 2, 4, 8, 16, 32 and 40 nodes (the band is
+  **40 nodes** since 0.53.1, before 48; `grug_mounts.WARNING_WIDTH` in
+  `catalog.lua`). This samples at most 112 columns per rider per second,
+  detects adjacent illegality exactly, and against a straight border shows
+  the warning everywhere within 39 nodes and never beyond 40 (the 16
+  directions). HUD text ("…within 40
+  nodes") and one message-feed line warn that crossing will force a
+  dismount; the warning stays while any probe hits, and moving clear of
+  every sampled illegal column removes it.
+- **One rule:** `grug_mounts.flight_rule` in `grug_mounts/flight.lua`
+  (0.53.1) decides per faction and column; the per-step dismount, the summon
+  check, the warning sweep and the minimap overlay below all ask it.
+- **Minimap no-fly overlay** (0.53.1): while the player sits on a flying
+  mount, the minimap shows that faction's no-fly area in red: enemy home
+  land, the dragon islands and the ocean; bays and lakes that belong to a
+  mainland zone stay clear. It is drawn from the same rule, so overlay and
+  dismount agree on every pixel, rendered once per world and faction and
+  cached like the Claim Stone overlay (`world_map.md`, "Flight mode"). On
+  foot, on a ground mount or a boat it is not shown; a minimap the player
+  switched off stays off (the HUD warning covers the approach). With a
+  Claim Stone held on a flyer both overlays show.
 - Width is spatial, not a timer, so the +100% and +200% flyers receive the same
   boundary. The **first ocean node** is already illegal and dismounts
   immediately at every y, with no grace, slow descent or maximum-trip rule.
@@ -465,7 +481,7 @@ warning and forced dismount are separate consumer states derived from
   - **A flying mount cannot be summoned there.** The mount action is
     refused outright with a message because a deliberate action needs no grace
     period.
-  - The same **48-node legal-side warning band** as the ocean boundary applies.
+  - The same **40-node legal-side warning band** as the ocean boundary applies.
     The first node beyond the line is illegal and hard-dismounts immediately.
     There is no ten-second grace and no 100-node maximum-trip allowance.
 - The two **land** tiers are untouched by this rule, and the two flying

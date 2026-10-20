@@ -97,7 +97,12 @@ as a map on the Talents & Skills page, each ending in an ultimate from
 level 42. Every class has a free basic attack, every skill is instant,
 area skills land on the ground under your crosshair after a short warning,
 and the Scout shoots without drawing the bow. Your talent points are reset
-with the update (the server's host runs the migration tool once).
+with the update (the server's host runs the migration tool once). 0.53.1
+follows at once: area skills and group heals reach past walls and step
+edges, tooltips show each skill's range, a flying mount's minimap shows
+where you may not fly, the same trinket can be worn twice, new racials for
+Undead, Elves and Dwarves, right-click fruit picking and 36 simpler
+icons.
 
 **0.52.0** lets the background sounds follow the landscape and your
 height: one bed for every temperate forest, new beds for the badlands,

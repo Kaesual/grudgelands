@@ -1524,9 +1524,23 @@ generated names remain per-stack metadata.
 | Medallion/ornament | **Mercy Seal**, **Reclaimer's Mark** |
 
 Either generic trinket slot accepts every form; the form grants no stat or
-restriction. The same registered identity may not occupy both slots, even at
-different material tiers. Different identities combine freely. Each special
-defines its own two-slot rule; no consumer invents a default.
+restriction. The same registered identity may occupy both slots (0.53.1, the
+user's ruling of 2026-10-20), at the same or different material tiers;
+different identities combine freely too. Each special defines its own
+two-slot rule; no consumer invents a default:
+
+- **Additive** specials (Manawell, Battlebeat, Mercy Seal, Apothecary Loop)
+  sum every worn copy up to their cap; each cap is twice the T6 value, so
+  two T6 copies double fully.
+- **Strengthened** specials (Last Light, Reclaimer's Mark; until 0.53.1
+  "highest only") fire once: the stronger copy (the higher value, then the
+  higher Rage) gives the effect, and the other copy strengthens it by its
+  own tier's share, **5/10/15/20/25/30 %** for T1–T6 (a T6 Last Light worn
+  with a T1 one: 10 % × 1.05). For Reclaimer's Mark the share applies to
+  the whole restore, HP/Mana % and Rage. One shared cooldown as before.
+  Their tooltip carries the line "Worn twice: the second one strengthens
+  the effect by N%." with the item's own tier share; a stored stack
+  refreshes to it on the existing description path.
 A later boss/quest trinket may use a distinct registered identity with one of
 the same specials; it remains subject to that special's authored two-slot rule.
 
@@ -1535,9 +1549,9 @@ the same specials; it remains subject to that special's authored two-slot rule.
 | Manawell, flat Mana/s | 0.05 | 0.10 | 0.15 | 0.25 | 0.35 | 0.50 | additive, cap 1.00/s |
 | Battlebeat, Rage/accepted hit | 0.25 | 0.50 | 0.75 | 1.00 | 1.50 | 2.00 | additive, cap 4 Rage/hit |
 | Mercy Seal, outgoing healing | 1% | 2% | 3% | 4% | 5% | 6% | additive, cap 12% |
-| Last Light, max-HP absorb | 3% | 4% | 5% | 6% | 8% | 10% | highest only, shared 120 s cooldown |
-| Reclaimer's Mark, max HP/Mana | 1% | 1.5% | 2% | 2.5% | 3% | 4% | highest only, shared 10 s cooldown |
-| Reclaimer's Mark, Rage | 1 | 2 | 3 | 4 | 5 | 6 | same trigger/cooldown as its HP restore |
+| Last Light, max-HP absorb | 3% | 4% | 5% | 6% | 8% | 10% | stronger copy × (1 + the other's share), shared 120 s cooldown |
+| Reclaimer's Mark, max HP/Mana | 1% | 1.5% | 2% | 2.5% | 3% | 4% | stronger copy × (1 + the other's share), shared 10 s cooldown |
+| Reclaimer's Mark, Rage | 1 | 2 | 3 | 4 | 5 | 6 | same trigger/cooldown and strengthening as its HP restore |
 | Apothecary Loop, instant potion amount | 2.5% | 5% | 7.5% | 10% | 12.5% | 15% | additive, cap 30% |
 
 - Manawell piggybacks the existing Mana-regeneration tick.

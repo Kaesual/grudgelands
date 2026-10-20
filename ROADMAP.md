@@ -22,7 +22,8 @@ remain delivered foundations, with this refinement work still ahead.
   The four-class rework ran in two rounds
   ([delivery plan](docs/planning/class-redesign/delivery-plan.md)): round
   F, the foundation, shipped in 0.52.0; round K, the new kits and talent
-  graphs with an automatic talent reset, in 0.53.0. Next: the user's
+  graphs with an automatic talent reset, in 0.53.0, with the fix round
+  0.53.1 from the user's first look. Next: the user's GUI test and
   playtest of the new classes and a short balance fix round.
 - **World atmosphere, variety and resources:** review music, sounds and
   icons with care for the details that give each region character. Improve
@@ -541,9 +542,14 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   trees), the eight talent graphs live on the Talents page with one talent
   reset, ground areas, cones, group heals and readiness windows, the
   Scout's bow draw removed, HP factors 0.8/0.8/1.0/1.2, the picked skill
-  icons, effects and sounds. Complete on 2026-10-20; not pushed (pushed
-  only on the user's word). Next: its GUI test and the user's playtest,
-  then a short balance fix round.
+  icons, effects and sounds. Complete on 2026-10-20. **0.53.1**
+  (compatible, the [fix round](docs/planning/round53-fix-plan.md#completion-2026-10-20)):
+  areas, cones and group heals without line of sight, the range line in
+  tooltips, the 40-node flight band and the no-fly minimap, the same
+  trinket twice, new Undead, Elf and Dwarf racials, skeleton bows,
+  right-click picking and 36 redrawn icons. Both not pushed; pushed
+  together after the user's one GUI test on 0.53.1. Next: that GUI test
+  and the user's playtest, then a short balance fix round.
 
 ### Remaining work
 
@@ -583,8 +589,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 48](BACKLOG.md#round-48-carry-overs),
   [Round 49](BACKLOG.md#round-49-carry-overs),
   [Round 51](BACKLOG.md#round-51-carry-overs),
-  [Round 52](BACKLOG.md#round-52-carry-overs) and
-  [Round 53](BACKLOG.md#round-53-carry-overs) carry-overs (Round 40: the
+  [Round 52](BACKLOG.md#round-52-carry-overs),
+  [Round 53](BACKLOG.md#round-53-carry-overs) and
+  [0.53.1](BACKLOG.md#0531-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -596,7 +603,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   navigation, inventory and tooling notes; Round 51: sea, surface, plant,
   kit, wreck, map and water-mob notes; Round 52: ambience notes and the
   parked sounds; Round 53: the balance fix round, dead talent reads,
-  tool and fixture leftovers and the class GUI notes);
+  tool and fixture leftovers and the class GUI notes; 0.53.1: fruit
+  picking in towns for the user, picking, flight-overlay, trinket and
+  tool notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
