@@ -915,17 +915,16 @@ tools](#player-meta-read-by-external-tools).
     so nothing is paid and no cooldown is armed. `area.query(anchor,
     {radius, band, filter, cap})` returns the objects within the
     horizontal radius and ±`band` (default 3) of the anchor, nearest
-    first (ties by y, x, z, then name), each in sight of the point 0.5
-    above the anchor by `area.clear_line`, a node-only ray that only
-    walkable nodes block (grass and water do not, unlike
-    `core.line_of_sight`), stopping at the cap. `area.cone(caster,
+    first (ties by y, x, z, then name), at most the cap; no line of
+    sight (0.53.1: walls and step edges inside the band hide no one, for
+    every area, cone and group). `area.cone(caster,
     {radius, angle, band, dir, filter, cap})` (Round 53) returns the
     objects within the horizontal radius and ±`band` of the caster's
     feet and within `angle` (the whole opening, degrees) of its
     horizontal facing (`dir`, default the look), accepted by `filter`
     (the abilities' `valid_target` through
-    `grug_abilities.target_filter(player, kind)`) and in sight of the
-    caster's body, nearest first, at most `cap`; the caster never.
+    `grug_abilities.target_filter(player, kind)`), nearest first, at
+    most `cap`; the caster never.
     `area.fall_height(anchor, radius)` is the room for falling visuals:
     half a node below the lowest ceiling over the anchor's column and,
     with a radius, the four columns at 0.6 × the radius around it (a
@@ -939,11 +938,11 @@ tools](#player-meta-read-by-external-tools).
     fetched again by name and the impact queries its targets itself. The
     particle effects are `area_warning`, `area_fall` and `area_impact` in
     `particle_effects.lua` (96 particles per cast at scale 1); no sound.
-  - **The group helper:** `area.group(caster, {radius, cap, eligible})`
-    returns the caster and the players within the radius (a sphere) that
-    `eligible` accepts and the caster can see (walkable-only, body to
-    body), at most `cap` with the caster counted, lowest HP share first,
-    ties by distance and name.
+  - **The group helper:** `area.group(caster, {radius, band, cap,
+    eligible})` returns the caster and the players within the horizontal
+    radius and ±`band` (default 3) of the caster's feet that `eligible`
+    accepts, at most `cap` with the caster counted, lowest HP share
+    first, ties by distance and name.
   - Fixture `tools/r52_core` (the pure functions, the window API, the
     group order, a heal-over-time status that runs on after its target
     left the area) and the engine probe `tools/r52_core/probe.sh` (stairs,

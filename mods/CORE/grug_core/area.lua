@@ -11,12 +11,17 @@
 --                                     heal (self always included)
 --   area.cone(caster, opts)           the targets in a cone in front of the
 --                                     caster (Round 53)
---   area.clear_line(from, to)         walkable-only line of sight
 --   area.fall_height(anchor, radius)  room for falling visuals above it
 --   area.delayed(caster, spec)        one impact after a fixed delay
 --
 -- Relations stay with the caller: a filter or `eligible` predicate is the
 -- abilities' valid_target (grug_core never depends on grug_abilities).
+--
+-- One rule for every area, cone and group (0.53.1, the user's ruling of
+-- 2026-10-20): whatever the filter accepts within the horizontal radius and
+-- the band of H above or below the anchor (a cone: also its opening; a
+-- group: around the caster) is reached. No line of sight: walls, step edges
+-- and floors inside the band hide no one.
 
 local area = {}
 grug_core.area = area
@@ -32,10 +37,8 @@ area.MAX_DELAY = 3
 -- Falling visuals start at most this high, and below the first solid node
 -- above the anchor (§3a item 5).
 area.CEILING_CAP = 12
--- Line of sight starts in the middle of the node above the ground (the
--- anchor is the ground's top face) and ends at a target's body: the middle
--- of a mob's collision box, or this high above a player's feet.
-local LOS_LIFT = 0.5
+-- A target's body: the middle of a mob's collision box, or this high above
+-- a player's feet.
 local PLAYER_BODY = 0.9
 -- Falling particles stay half a node below the ceiling; a shorter fall than
 -- MIN_FALL (a crawlspace) shows none.
@@ -138,24 +141,7 @@ function area.anchor(player, range, opts)
 	return anchor, target
 end
 
--- Line of sight that only walkable nodes block: grass, flowers, water and
--- other non-walkable nodes let it through, unlike core.line_of_sight. A
--- node-only ray (the engine's raycast, as for every node-only ray). An
--- unknown or unloaded node blocks.
-function area.clear_line(from, to)
-	for pointed in core.raycast(from, to, false, false) do
-		if pointed.type == "node" then
-			local node = core.get_node_or_nil(pointed.under)
-			local def = node and core.registered_nodes[node.name]
-			if not def or def.walkable ~= false then
-				return false
-			end
-		end
-	end
-	return true
-end
-
--- Where a line of sight ends on an object: the middle of a mob's live
+-- An object's body point (a beam's end, Rebuke): the middle of a mob's live
 -- collision box (read without get_properties), or a player's body.
 local function body_point(obj, pos)
 	if obj:is_player() then
@@ -193,10 +179,8 @@ end
 
 -- The targets of a ground-anchored area (§3a item 4): objects within
 -- horizontal radius opts.radius of the anchor and within opts.band (default
--- H) above or below it, accepted by opts.filter(obj), in sight of a point
--- just above the anchor; nearest first, at most opts.cap (default all).
--- Line of sight is tested in that order and stops at the cap, so a capped
--- area casts at most cap rays plus the blocked ones.
+-- H) above or below it, accepted by opts.filter(obj); nearest first, at most
+-- opts.cap (default all).
 function area.query(anchor, opts)
 	local radius = opts.radius
 	local band = opts.band or area.H
@@ -217,16 +201,9 @@ function area.query(anchor, opts)
 		end
 	end
 	table.sort(candidates, nearest_first)
-	local eye = vector.offset(anchor, 0, LOS_LIFT, 0)
 	local hits = {}
-	for index = 1, #candidates do
-		if cap and #hits >= cap then
-			break
-		end
-		local candidate = candidates[index]
-		if area.clear_line(eye, body_point(candidate.obj, candidate.pos)) then
-			hits[#hits + 1] = candidate.obj
-		end
+	for index = 1, math.min(cap or #candidates, #candidates) do
+		hits[index] = candidates[index].obj
 	end
 	return hits
 end
@@ -247,21 +224,25 @@ local function neediest_first(a, b)
 end
 
 -- The recipients of a self-centred group heal (skill-inventory.md §3 item
--- 3): the caster always, plus players within opts.radius (a sphere around
--- the caster) that opts.eligible(obj) accepts (the abilities' valid_target
--- "friendly") and the caster can see (walkable-only line of sight, body to
--- body). At most opts.cap in all, the caster counted; lowest HP share first.
--- The caster keeps its place whatever its HP, and takes its turn in the
--- order. Returns a list of players.
+-- 3): the caster always, plus players within horizontal radius opts.radius
+-- of the caster and within opts.band (default H) above or below its feet
+-- that opts.eligible(obj) accepts (the abilities' valid_target "friendly").
+-- At most opts.cap in all, the caster counted; lowest HP share first. The
+-- caster keeps its place whatever its HP, and takes its turn in the order.
+-- Returns a list of players.
 function area.group(caster, opts)
 	local centre = caster:get_pos()
-	local eye = vector.offset(centre, 0, PLAYER_BODY, 0)
+	local radius = opts.radius
+	local band = opts.band or area.H
 	local others = {}
-	for _, obj in ipairs(core.get_objects_inside_radius(centre, opts.radius)) do
-		if obj ~= caster and obj:is_player() and opts.eligible(obj) then
-			local pos = obj:get_pos()
-			if area.clear_line(eye, vector.offset(pos, 0, PLAYER_BODY, 0)) then
-				local dx, dy, dz = pos.x - centre.x, pos.y - centre.y, pos.z - centre.z
+	for _, obj in ipairs(core.get_objects_in_area(
+			vector.offset(centre, -radius, -band, -radius),
+			vector.offset(centre, radius, band, radius))) do
+		local pos = obj ~= caster and obj:is_player() and obj:get_pos()
+		if pos then
+			local dx, dy, dz = pos.x - centre.x, pos.y - centre.y, pos.z - centre.z
+			if dx * dx + dz * dz <= radius * radius and math.abs(dy) <= band and
+					opts.eligible(obj) then
 				others[#others + 1] = {obj = obj, share = hp_share(obj),
 					d2 = dx * dx + dy * dy + dz * dz, key = obj:get_player_name()}
 			end
@@ -288,9 +269,8 @@ end
 -- above or below them and within opts.angle (the whole opening, degrees)
 -- of the caster's horizontal facing (opts.dir, default the look), accepted
 -- by opts.filter(obj) -- the abilities' valid_target, which carries the PvP
--- flag -- and in sight of the caster's body (walkable-only); nearest first,
--- at most opts.cap. One standing inside the caster has no direction and
--- counts. The caster is never a target.
+-- flag; nearest first, at most opts.cap. One standing inside the caster has
+-- no direction and counts. The caster is never a target.
 function area.cone(caster, opts)
 	local centre = caster:get_pos()
 	local radius = opts.radius
@@ -315,16 +295,9 @@ function area.cone(caster, opts)
 		end
 	end
 	table.sort(candidates, nearest_first)
-	local eye = body_point(caster, centre)
 	local hits = {}
-	for index = 1, #candidates do
-		if opts.cap and #hits >= opts.cap then
-			break
-		end
-		local candidate = candidates[index]
-		if area.clear_line(eye, body_point(candidate.obj, candidate.pos)) then
-			hits[#hits + 1] = candidate.obj
-		end
+	for index = 1, math.min(opts.cap or #candidates, #candidates) do
+		hits[index] = candidates[index].obj
 	end
 	return hits
 end

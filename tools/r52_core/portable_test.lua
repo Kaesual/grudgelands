@@ -8,15 +8,15 @@
 --      a flying mob, a wall face, unloaded map;
 --   B  the anchor: an enemy's position, the terrain point through plants
 --      and onto a water surface, a ray miss, the "No ground found." refusal;
---   C  the area query: radius, the +-3 band, the filter, line of sight
---      (stone blocks, grass and water do not), nearest-first order with a
+--   C  the area query: radius, the +-3 band, the filter, no line of sight
+--      (0.53.1: stone hides no one), nearest-first order with a
 --      deterministic tie and the cap;
 --   D  the delayed impact: warning and falling particles live the delay and
 --      the fall starts below the ceiling, the impact runs with the caster
 --      fetched by name, the caster leaving cancels it, a dead caster lands
 --      it, a malformed spec is refused, the particle counts per cast;
 --   E  the group helper: self always, the cap, lowest HP share first, a
---      deterministic tie, range and line of sight;
+--      deterministic tie, range, no line of sight (0.53.1);
 --   F  an area heal as a status: the HoT keeps ticking on a recipient that
 --      left the area (C5), through the real status.lua;
 --   G  readiness windows by any id: open, consume once, expiry, the ICD on
@@ -360,19 +360,15 @@ eq(names(area.query(centre, {radius = 3, filter = filter})), "a,f,e,b",
 eq(names(area.query(centre, {radius = 3, filter = filter, cap = 2})), "a,f", "C the cap")
 eq(names(area.query(centre, {radius = 3})), "friend,a,f,e,b",
 	"C no filter: every object (a tie at 1 m: smaller x first)")
--- Line of sight: a stone pillar between the anchor and "e" blocks it ...
+-- No line of sight (0.53.1, ruling 1; this pinned "stone blocks" before):
+-- a stone pillar between the anchor and "e" hides it no longer.
 set(6, 1, 15, "stone")
 set(6, 2, 15, "stone")
 m_near.pos = vector.new(5, 0.5, 14)
-eq(names(area.query(centre, {radius = 3, filter = filter})), "a,f,b",
-	"C stone blocks the line of sight")
-eq(names(area.query(centre, {radius = 3, filter = filter, cap = 2})), "a,f",
-	"C the cap counts targets in sight")
--- ... grass and water do not.
-set(6, 1, 15, "grass")
-set(6, 2, 15, "water")
 eq(names(area.query(centre, {radius = 3, filter = filter})), "a,f,e,b",
-	"C grass and water do not block")
+	"C stone between the anchor and a target hides it no longer")
+eq(names(area.query(centre, {radius = 3, filter = filter, cap = 2})), "a,f",
+	"C the cap keeps the nearest")
 set(6, 1, 15, nil)
 set(6, 2, 15, nil)
 eq(names(area.query(centre, {radius = 3, band = 1, filter = filter})), "a,f,e",
@@ -508,13 +504,12 @@ eq(names(area.group(healer, {radius = 6, cap = 3, eligible = eligible})),
 healer.hp = 20
 eq(names(area.group(healer, {radius = 6, cap = 1, eligible = eligible})), "healer",
 	"E a cap of one is the caster alone")
--- A wall between the healer and "low".
+-- A wall between the healer and "low" (0.53.1, ruling 1; this pinned "a
+-- wall hides everyone behind it" before): no line of sight.
 fill(6, 1, 25, 6, 2, 25, "stone")
 eq(names(area.group(healer, {radius = 6, cap = 10, eligible = eligible})),
-	"mid,healer", "E a wall hides everyone behind it")
-fill(6, 1, 25, 6, 2, 25, "grass")
-eq(names(area.group(healer, {radius = 6, cap = 10, eligible = eligible})),
-	"low,mid,tie_far,healer,full", "E grass hides no one")
+	"low,mid,tie_far,healer,full", "E a wall hides no one")
+fill(6, 1, 25, 6, 2, 25, nil)
 check(p_out and p_enemy and p_full, "E scene objects exist")
 
 --

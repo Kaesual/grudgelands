@@ -225,7 +225,7 @@ swing grant (Round 46 ruling 9), so every weapon earns the same rage per
 second. Ruination's ×1.15 is a multiplier on every swing (procs included)
 through the swing callback and also reaches Broadstroke's other targets;
 Finisher reads the target's health before the swing. Broadstroke's other
-targets (`area.cone`, nearest first, in sight, the shared target check) may
+targets (`area.cone`, nearest first, the shared target check) may
 crit and give no rage.
 
 ### 2.3 Mage — Ember

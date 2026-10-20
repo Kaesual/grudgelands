@@ -26,9 +26,9 @@
 --      Smite, its 5 s window and 8 s internal cooldown, none without ranks;
 --   A  the areas: Censure's "No ground found." before cost and cooldown, its
 --      ground anchor on flat ground, a stair and in a cave (the falling seal
---      under the ceiling), its 4 nearest in sight within the radius and band,
+--      under the ceiling), its 4 nearest within the radius and band,
 --      the impact cue once; Hearten and Haven pick you plus the neediest
---      allies in sight within their radius; an unflagged enemy player and a
+--      allies within their radius; an unflagged enemy player and a
 --      same-faction player are never area targets, a flagged ally never
 --      healed by an unflagged priest; Haven's ticks;
 --   D  Word of Ruin heals half the damage up to its pool cap, never a crit;
@@ -896,9 +896,11 @@ do
 	run_jobs()
 	local hit_names = {}
 	for _, d in ipairs(log.damage) do hit_names[#hit_names + 1] = d.target.name end
-	eq(table.concat(hit_names, ","), "a_centre,a_near1,a_near2,a_near3",
-		"A the 4 nearest hostiles in sight within 3 m and the band (not the far 5th, " ..
-		"the one outside, the one too high, the one behind stone)")
+	-- 0.53.1 (ruling 1): no line of sight, so the one behind stone (2 m) is
+	-- among the 4 nearest and a_near3 (2.5 m) is the 5th.
+	eq(table.concat(hit_names, ","), "a_centre,a_near1,a_hidden,a_near2",
+		"A the 4 nearest hostiles within 3 m and the band, the one behind stone too " ..
+		"(not the 5th, the far one, the one outside, the one too high)")
 	for _, d in ipairs(log.damage) do
 		eq(d.amount, hit(L, 1.2, 0, 0), "A Censure's hit on " .. d.target.name)
 		check(d.no_crit, "A Censure's hit asks for no crit on " .. d.target.name)
@@ -975,7 +977,7 @@ do
 	eq(#log.damage, 0, "A a caster leaving cancels the impact")
 end
 
--- Hearten and Haven: you plus the neediest allies in sight within reach.
+-- Hearten and Haven: you plus the neediest allies within reach.
 do
 	local L = 40
 	clear_world()
@@ -1006,9 +1008,11 @@ do
 		near(h.amount, share(L, 15), "A Hearten heals 15 % P " .. h.target.name)
 		check(h.no_crit, "A Hearten never crits")
 	end
-	eq(table.concat(names, ","), "g_low,g_lower,g_priest,g_mid",
-		"A Hearten: you and the 3 neediest allies in sight within 6 m, lowest health first " ..
-		"(never the far one, an enemy, a flagged ally of an unflagged priest, one behind stone)")
+	-- 0.53.1 (ruling 1): no line of sight, so the neediest one behind stone
+	-- is healed too.
+	eq(table.concat(names, ","), "g_hidden,g_low,g_lower,g_priest",
+		"A Hearten: you and the 3 neediest allies within 6 m, lowest health first, one behind " ..
+		"stone too (never the far one, an enemy, a flagged ally of an unflagged priest)")
 	eq(#log.contacts, 3, "A Hearten reports support contact per ally")
 	wait(1.5)
 	reset_log()
@@ -1019,8 +1023,8 @@ do
 		check(s.id == "haven" and s.def.interval == 2 and s.def.duration == 12,
 			"A Haven: a haven status, every 2 s for 12 s, on " .. s.target.name)
 	end
-	eq(table.concat(names, ","), "g_low,g_lower,g_priest,g_mid,g_high",
-		"A Haven: you and 4 allies within 8 m")
+	eq(table.concat(names, ","), "g_hidden,g_low,g_lower,g_priest,g_mid",
+		"A Haven: you and 4 allies within 8 m (0.53.1: the one behind stone too)")
 	local rec = log.statuses[1]
 	reset_log()
 	rec.def.on_tick(rec.target)
