@@ -137,14 +137,13 @@ our changes. Derivatives keep their source's licence.
   additions by **MysticTempest** and **kingoscargames** and other VoxeLibre
   contributors, CC BY-SA 4.0; mob and mount models by **22i**,
   GPL-3.0-or-later; the arrow model under VoxeLibre's CC BY-SA 3.0 default;
-  armour trims by **Aeonix_Aeon**, CC BY 4.0; the basalt
-  texture by **Lifora**, CC BY-SA 3.0; the bamboo shoot by **Nicu**, CC BY-SA.
-  Used in `grug_mobs`, `grug_mounts`, `grug_gear`, `grug_visuals` (armour),
+  the basalt texture by **Lifora**, CC BY-SA 3.0; the bamboo shoot by
+  **Nicu**, CC BY-SA. Used in `grug_mobs`, `grug_mounts`, `grug_gear`,
   `grug_materials`, `grug_jobs`, `grug_fishing`, `grug_abilities`,
   `grug_projectiles`, `grug_cooking` and `grug_farming`.
 - **Lord of the Test** (<https://github.com/minetest-LOTR/Lord-of-the-Test>) —
   CC BY-SA 3.0: humanoid skins by **Amaz** and **fishyWET** (`grug_mobs`),
-  cloth armour by **Amaz** and **Flipsels**, bows and shields (`grug_gear`),
+  bows and shields (`grug_gear`),
   bags by **Amaz** (`grug_inventory`); the large bag by **Brett O'Donnell**,
   BSD-3-Clause; the boat models and sail by **deasanta**, WTFPL
   (`grug_mounts`).

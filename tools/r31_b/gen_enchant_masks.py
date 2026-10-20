@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Enchant-colour masks for every weapon and armour texture (Round 31 lane B,
-docs/planning/round31-plan.md section 2.2).
+"""Enchant-colour masks for every weapon, bow, shield and spellbook texture
+(Round 31 lane B, docs/planning/round31-plan.md section 2.2). The armour's
+masks (worn atlas and skin layers, item icons) come from the armour bake,
+tools/r54_armor/bake.py, since Round 54.
 
 For each source texture the script derives two non-overlapping pixel groups
 from the texture's own colour clusters and writes ONE mask file next to it:
@@ -63,22 +65,17 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 GEAR = ROOT / "mods/ITEMS/grug_gear/textures"
-VISUALS = ROOT / "mods/PLAYER/grug_visuals/textures"
 
-# The six material keys per line, as grug_gear.MATERIALS lists them.
+# The six metal keys, as grug_gear.MATERIALS lists them.
 METALS = ["bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"]
-CLOTH = ["patch", "woven", "heavy", "silkweave", "silk", "stormweave"]
-LEATHER = ["light", "cured", "heavy", "scaled", "sleek", "nightscale"]
-LINES = {"metal": METALS, "cloth": CLOTH, "leather": LEATHER}
-SLOTS = ["head", "chest", "legs", "feet"]
 
 
 def sources():
     """(directory, stem, kind) for every texture an enchantable item shows.
 
     Mirrors grug_gear/init.lua: weapon sprites per family and metal, the four
-    bow files (BOW_IMAGE), the six shields, the one spellbook, the 72 armour
-    icons; and grug_visuals' 72 worn overlays (compose.lua OVERLAY).
+    bow files (BOW_IMAGE), the six shields, the one spellbook. (The armour's
+    masks come from tools/r54_armor/bake.py since Round 54.)
     """
     out = []
     for family in ["sword", "dagger", "greataxe", "staff", "wand"]:
@@ -89,24 +86,16 @@ def sources():
     for metal in METALS:
         out.append((GEAR, "grug_gear_shield_" + metal, "item"))
     out.append((GEAR, "grug_gear_spellbook", "item"))
-    for line, grades in LINES.items():
-        for slot in SLOTS:
-            for grade in grades:
-                out.append((GEAR, "grug_gear_item_%s_%s_%s" % (slot, line, grade), "item"))
-    for line, grades in LINES.items():
-        for slot in SLOTS:
-            for grade in grades:
-                out.append((VISUALS, "grug_visuals_%s_%s_%s" % (line, slot, grade), "worn"))
     return out
 
 
 # A group grows until it covers TARGET of the opaque pixels and never passes
-# CAP. Worn overlays take less: on the body all four pieces show at once and
-# at a larger size. `scale` (the preview's smaller variant) multiplies both.
-TARGET = {"item": 0.07, "worn": 0.04}
-CAP = {"item": 0.10, "worn": 0.06}
-MIN_PIXELS = {"item": 4, "worn": 6}
-MIN_SHARE = {"item": 0.03, "worn": 0.015}
+# CAP. `scale` (the preview's smaller variant) multiplies both. (The kind
+# "worn" of the Round 31 armour overlays went with Round 54.)
+TARGET = {"item": 0.07}
+CAP = {"item": 0.10}
+MIN_PIXELS = {"item": 4}
+MIN_SHARE = {"item": 0.03}
 MATERIAL_SPLIT = 0.045  # OKLab chroma distance that separates two materials
 OUTLINE_DARK = 48  # a darkest colour below this brightness is outline anyway
 TONE_FLOOR = 0.6   # darkest pixel of a group multiplies the colour by 0.6

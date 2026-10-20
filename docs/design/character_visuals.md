@@ -306,8 +306,11 @@ item:
 - Trinkets have no texture masks and stay uncoloured.
 - Every enchanting station shows a **legend** of the nine colours.
 
-The masks are generated (`tools/r31_b/gen_enchant_masks.py`, one two-frame
-`<texture>_ench.png` per texture, each under its source texture's licence).
+The masks are generated, one two-frame `<texture>_ench.png` per texture, each
+under its source texture's licence: the weapons', bows', shields' and the
+spellbook's by `tools/r31_b/gen_enchant_masks.py`, the armour's (worn layers
+and item icons) by the armour bake `tools/r54_armor/bake.py` from the art's
+zone pixels.
 
 ## 5b. Cloaks and achievements (Round 33)
 

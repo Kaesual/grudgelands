@@ -1,8 +1,8 @@
 # Media Origin & Licenses (grug_gear)
 
 Two licences live here, and the split is by origin, not by taste: the **armor**
-icons are this project's own CC0 art, and the **weapon** icons are derivatives
-of minetest_game's CC BY-SA 3.0 tool sprites.
+icons are this project's own CC0 art (the Round 54 armor art, below), and the
+**weapon** icons are derivatives of minetest_game's CC BY-SA 3.0 tool sprites.
 
 ## Weapon icons — CC BY-SA 3.0 Unported
 
@@ -54,20 +54,6 @@ double-bit-axe direction; it is not a shipped texture source. Both families
 use one stable silhouette across all six palettes and the diagonal
 bottom-left grip convention.
 
-## R10 armor inventory families
-
-The 72 tier/slot inventory icons replace the former generated placeholders.
-Metal and leather derive from VoxeLibre `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`: base armor textures follow the XSSheep/Pixel Perfection CC BY-SA 4.0 chain; armor trim overlays are by Aeonix_Aeon under CC BY 4.0. Metal selects six familiar material silhouettes; bronze and embersteel
-receive baked copper/red material grades. Leather uses the four dedicated
-`mcl_armor_inv_<part>_leather.png` files and the dedicated 16x16
-`<part>_trim.png` inventory trim, then bakes one of six material palettes.
-
-Cloth derives from complete `lottclothes` sets at Lord of the Test
-`f164140154945f0b356521ae721a86e9c7a0e0cf`, CC BY-SA 3.0. Amaz authored the Elven files and `cloak_mordor`; Flipsels authored the other selected files.
-`tools/r10_art/build_armor_assets.sh` records every exact source-to-output
-mapping and deterministic composition command. The four unsuffixed leather
-icons are byte copies of the Light tier required by the logical catalog.
-
 ## Round 11 bows and shields — CC BY-SA 3.0
 
 Unchanged renamed copies from Lord of the Test commit
@@ -97,7 +83,7 @@ VoxeLibre contributors, CC BY-SA 4.0 per upstream `LEGAL.md`.
 
 ## Round 31 enchant masks — licence of their source
 
-Each `<source>_ench.png` (113 files) is a two-frame greyscale mask that
+Each `<source>_ench.png` (41 files) is a two-frame greyscale mask that
 `tools/r31_b/gen_enchant_masks.py` derives deterministically from the texture
 named by `<source>`: the top frame marks group A, the bottom frame group B,
 with that texture's own shading. A mask carries its source's shapes and
@@ -110,8 +96,6 @@ modification is "pixel-group mask derived by the generator".
 | `grug_gear_item_{greataxe,wand}_<metal>_ench.png` (12) | the Round 12 sprites above | CC0 1.0 |
 | `grug_gear_bow_{lebethron,birch,mallorn,alder}_ench.png`, `grug_gear_shield_<metal>_ench.png` (10) | the Round 11 bows and shields | CC BY-SA 3.0 |
 | `grug_gear_spellbook_ench.png` | the Round 11 book | CC BY-SA 4.0 |
-| `grug_gear_item_<slot>_{metal,leather}_<grade>_ench.png` (48) | the R10 metal and leather icons | as their sources: CC BY-SA 4.0 bases, CC BY 4.0 trims |
-| `grug_gear_item_<slot>_cloth_<grade>_ench.png` (24) | the R10 cloth icons | CC BY-SA 3.0 |
 
 ## Round 45 jewellery icons — CC0 1.0
 
@@ -134,3 +118,27 @@ every tier from 1 through 6.
 | `grug_gear_trinket_apothecary_loop_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; leaf ring, proposal B; `paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `grug_gear_trinket_mercy_seal_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; wing medallion, proposal A; `paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `grug_gear_trinket_reclaimers_mark_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; return-curl medallion, proposal C; `paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## Round 54 armor icons — CC0 1.0
+
+Original, AI-assisted pixel art painted for Grudgelands by **GPT-6 Astra** on
+2026-10-20: hand-placed pixel maps in the armor contract's reference palette
+([armor-format.md](../../../docs/technical/armor-format.md) §6), written with
+**Python/Pillow** by the painters in
+[`tools/r54_art/src/`](../../../tools/r54_art/README.md) (drops `drop-02`
+metal, `drop-03-leather`, `drop-03-cloth`). No image-generation service,
+downloads or third-party source pixels. The project dedicates any rights it
+holds in these files to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). The user picked one of
+two proposals per tier (`tools/r54_art/picks.json`); `tools/r54_art/assemble.py`
+assembles the picks and **`tools/r54_armor/bake.py`** writes the files below
+(the tier's palette swapped in, masks from the art's zone pixels; `bake.py
+--icons-out mods/ITEMS/grug_gear/textures --check` rebuilds them pixel for
+pixel). `<line>` is metal, leather or cloth, `<grade>` a grade key of
+`grug_gear.MATERIALS`.
+
+| Files | Author | Source / tool disclosure | Licence |
+|---|---|---|---|
+| `grug_gear_item_<slot>_<line>_<grade>.png` (72) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the picked icon of the tier, palette-swapped by `bake.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_item_<slot>_<line>_<grade>_ench.png` (72) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; enchant mask derived by `bake.py` from the icon's zone A and B pixels | CC0-1.0 |
+| `grug_gear_item_{head,chest,legs,feet}_metal.png` (4) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the Character page's empty-slot ghosts, copies of the metal T3 (steel) icons by `tools/r54_art/ghosts.py` | CC0-1.0 |

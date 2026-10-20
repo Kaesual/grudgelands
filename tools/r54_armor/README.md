@@ -135,8 +135,9 @@ example fallback of the render tools is not baked) into the game files of
 [armor-format.md §7](../../docs/technical/armor-format.md):
 
 ```sh
-python3 bake.py                                 # test_art/ -> mods/PLAYER/grug_visuals/textures/
-python3 bake.py --check                         # the gate: exit 1 on a missing, extra or different file
+python3 bake.py                                 # the picked art (../r54_art/art) -> mods/PLAYER/grug_visuals/textures/
+python3 bake.py --icons-out ../../mods/ITEMS/grug_gear/textures --check   # the gate (layers and icons): exit 1 on a
+                                                # missing, extra or different file
 python3 bake.py --art DIR --out DIR             # another art directory or output directory
 python3 bake.py --icons-out DIR                 # also the 72 item icons and their masks
 python3 bake.py --sheet OUT.png                 # contact sheet: every grade's layers, zones tinted, icons
@@ -158,15 +159,10 @@ python3 test_bake.py                            # the tool's test on a tiny synt
   --check`; PNG bytes would differ between Pillow/zlib versions). An extra file is a `grug_armor_*.png` in `--out`
   the bake would not write; write mode removes such files. In `--icons-out` only the 144 icon files count.
 
-**Icons on test art** go only to a directory you give (`--icons-out`); the shipped icons in
-`mods/ITEMS/grug_gear/textures/` stay untouched until lane INTEG bakes the picked art. INTEG then:
-
-1. bakes the picked art: `python3 bake.py --art <picked art> --icons-out ../../mods/ITEMS/grug_gear/textures`
-   (atlas and skin layers to the default `--out`, the 72 icons `grug_gear_item_<slot>_<line>_<grade>.png` and their
-   `_ench.png` masks over the old ones, names unchanged); the gate becomes the same command with `--check`;
-2. changes `tools/r31_b/gen_enchant_masks.py`'s `sources()`: drops the 72 armor icons (their masks now come from
-   `bake.py`, and the generator's own masks of the new icons would differ) and the 72 worn overlays
-   `grug_visuals_<line>_<slot>_<grade>` (removed with their masks and the 8 ungraded `grug_visuals_<line>_<slot>.png`);
-   its `--check` then covers the weapons, bows, shields and the spellbook only;
-3. decides on the 12 ungraded icons `grug_gear_item_<slot>_<line>.png` (the Character page's slot ghosts and the
-   leather copies), which the bake does not write.
+**The shipped art** (lane INTEG): the default `--art` is the picked art in
+[`tools/r54_art/art`](../r54_art/README.md); `test_art/` stays for the tools' tests and runs only with `--art`.
+The 72 item icons `grug_gear_item_<slot>_<line>_<grade>.png` and their `_ench.png` masks in
+`mods/ITEMS/grug_gear/textures/` are baked from it too (`--icons-out`, names unchanged), so
+`tools/r31_b/gen_enchant_masks.py` covers the weapons, bows, shields and the spellbook only; the old worn overlays
+`grug_visuals_<line>_<slot>[_<grade>].png`, their masks and the helmet face window are gone. The Character page's
+four slot ghosts `grug_gear_item_<slot>_metal.png` are copies of the metal T3 icons (`tools/r54_art/ghosts.py`).

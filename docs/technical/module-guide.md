@@ -2915,7 +2915,9 @@ tools](#player-meta-read-by-external-tools).
   Enchant colours: `grug_gear/enchant_colors.lua` (`ENCHANT_COLORS`,
   `ENCHANT_OPACITY` 128, `enchant_image`, `enchant_layers`,
   `strip_enchant`; masks `<texture>_ench.png` from
-  `tools/r31_b/gen_enchant_masks.py`, `--check` rebuilds and compares);
+  `tools/r31_b/gen_enchant_masks.py` (weapons, bows, shields, the
+  spellbook) and `tools/r54_armor/bake.py` (the armour), each `--check`
+  rebuilds and compares);
   `grug_items.regenerate_description` (`grug_quality/init.lua`) writes the
   stack's `inventory_image`
   (removed for a plain stack), which the wield entity and dropped items

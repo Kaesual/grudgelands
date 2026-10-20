@@ -11,12 +11,14 @@ makes the art reviewable in the diff instead of only in a binary blob.
 
 Usage:
     python3 tools/gen_mob_item_textures.py \\
-        [outdir [nodes_outdir [gear_outdir [traders_outdir]]]]
+        [outdir [nodes_outdir [traders_outdir]]]
 
 Default outdir:         mods/ENTITIES/grug_mobs/textures    (ICONS)
 Default nodes_outdir:   mods/ITEMS/grug_nodes/textures      (NODE_ICONS)
-Default gear_outdir:    mods/ITEMS/grug_gear/textures       (GEAR_ICONS)
 Default traders_outdir: mods/ENTITIES/grug_traders/textures (TRADER_ICONS)
+
+(The armor icons of grug_gear that lived here went with Round 54: the armor
+art is tools/r54_art, baked by tools/r54_armor/bake.py.)
 """
 
 import os
@@ -574,96 +576,6 @@ WAR_TROPHY = """
 """
 
 
-# ----------------------------------------------------------------- gear art
-# The ARMOR half of grug_gear (items_crafting.md §3.1/§3.8). Four base arts:
-# one per armor slot. The cloth line reuses the SAME four arts with a cloth
-# palette (the FEATHER / BOLT trick above), and the six tiers are tinted at
-# runtime with `^[multiply:<hex>` -- so the armor catalog costs 8 PNGs, not 48.
-# The WEAPON half moved to tools/wp13/gen_weapon_ladder.py in WP13's playtest
-# round 2 (one sprite per family and material, diagonal convention).
-
-ARMOR_HEAD = """
-................
-................
-......oooo......
-....oobbbboo....
-...obbbbbbbbo...
-..obbbbhbbbbbo..
-..obbbbbbbbbbo..
-..oddddbbddddo..
-..obbbbbbbbbbo..
-..obbbbbbbbbbo..
-...obbbbbbbbo...
-...obbo..obbo...
-...oooo..oooo...
-................
-................
-................
-"""
-
-ARMOR_CHEST = """
-................
-..oo........oo..
-.obbo......obbo.
-.obbbo....obbbo.
-.obbbbooooobbbo.
-.obbbbbbbbbbbbo.
-.obbbbbhbbbbbbo.
-.obbbbbbbbbbbbo.
-..obbbbbbbbbbo..
-..obbbbbbbbbbo..
-..obbbbbbbbbbo..
-..obbbbbbbbbbo..
-..obbbbbbbbbbo..
-..obbbbbbbbbbo..
-...oooooooooo...
-................
-"""
-
-ARMOR_LEGS = """
-................
-..oooooooooooo..
-.obbbbbbbbbbbbo.
-.obbbbbbbbbbbbo.
-.obbbbbhbbbbbbo.
-.obbbbbbbbbbbbo.
-.obbbbboobbbbbo.
-.obbbbo..obbbbo.
-.obbbbo..obbbbo.
-.obbbbo..obbbbo.
-.obbbbo..obbbbo.
-.obbbbo..obbbbo.
-.obbbbo..obbbbo.
-.obbbbo..obbbbo.
-..oooo....oooo..
-................
-"""
-
-ARMOR_FEET = """
-................
-................
-....oooooo......
-...obbbbbbo.....
-...obbbbbbo.....
-...obhbbbbo.....
-...obbbbbbo.....
-...obbbbbbo.....
-...obbbbbbo.....
-...obbbbbbooo...
-...obbbbbbbbbo..
-...obbbbbbbbbbo.
-...obbbbbbbbbbo.
-....oooooooooo..
-................
-................
-"""
-
-# Shared palettes for the two armor lines that ship (metal = armor class 3,
-# cloth = 1; leather is Phase 2 and has no art yet).
-ARMOR_METAL = {"o": "#20222a", "b": "#9aa3ad", "h": "#d6dde4", "d": "#12141a"}
-ARMOR_CLOTH = {"o": "#332b3d", "b": "#6f5f8c", "h": "#a394c0", "d": "#221c2a"}
-
-
 # --------------------------------------------------------------- trader art
 # Vendor consumables (grug_traders, items_crafting.md §3.6/§8.2). A round
 # flask with a corked neck: the silhouette has to read as "potion" at 16px
@@ -760,30 +672,10 @@ ICONS = [
      {"o": "#241a13", "p": "#6b4a2a", "c": "#a8323c", "h": "#e8c46a"}),
 ]
 
-# Vendor bracket gear (mods/ITEMS/grug_gear). Twelve files for a 72-item
-# catalog: one art per weapon family, one per armor slot, the armor arts
-# emitted twice (metal + cloth palette). The bracket ladder is a runtime
-# `^[multiply:` tint in grug_gear/init.lua, never a PNG.
-# The four WEAPON arts that used to head this list, and the four ASCII maps
-# behind them, were retired in WP13's playtest round 2: weapons are now one
-# sprite per family AND material, drawn in minetest_game's diagonal convention,
-# and they are generated -- with their own CC BY-SA 3.0 licence trail -- by
-# tools/wp13/gen_weapon_ladder.py.
-GEAR_ICONS = [
-    ("grug_gear_item_head_metal.png", ARMOR_HEAD, ARMOR_METAL),
-    ("grug_gear_item_chest_metal.png", ARMOR_CHEST, ARMOR_METAL),
-    ("grug_gear_item_legs_metal.png", ARMOR_LEGS, ARMOR_METAL),
-    ("grug_gear_item_feet_metal.png", ARMOR_FEET, ARMOR_METAL),
-    ("grug_gear_item_head_cloth.png", ARMOR_HEAD, ARMOR_CLOTH),
-    ("grug_gear_item_chest_cloth.png", ARMOR_CHEST, ARMOR_CLOTH),
-    ("grug_gear_item_legs_cloth.png", ARMOR_LEGS, ARMOR_CLOTH),
-    ("grug_gear_item_feet_cloth.png", ARMOR_FEET, ARMOR_CLOTH),
-]
-
 # Vendor consumables (mods/ENTITIES/grug_traders). One file today: the weak
 # healing potion of items_crafting.md §3.6, the only potion the vendor floor
 # sells. WP10's alchemy potions get their own palettes on the SAME flask art
-# (the FEATHER / armor-line trick above) when they land.
+# (the FEATHER / BOLT trick above) when they land.
 TRADER_ICONS = [
     ("grug_traders_item_potion_healing_weak.png", POTION_FLASK,
      {"o": "#20222a", "c": "#8a5f38", "g": "#cfe0ea", "h": "#ffffff",
@@ -812,24 +704,19 @@ def main():
         os.path.join("mods", "ENTITIES", "grug_mobs", "textures")
     nodes_outdir = sys.argv[2] if len(sys.argv) > 2 else \
         os.path.join("mods", "ITEMS", "grug_nodes", "textures")
-    gear_outdir = sys.argv[3] if len(sys.argv) > 3 else \
-        os.path.join("mods", "ITEMS", "grug_gear", "textures")
-    traders_outdir = sys.argv[4] if len(sys.argv) > 4 else \
+    traders_outdir = sys.argv[3] if len(sys.argv) > 3 else \
         os.path.join("mods", "ENTITIES", "grug_traders", "textures")
-    for d in (outdir, nodes_outdir, gear_outdir, traders_outdir):
+    for d in (outdir, nodes_outdir, traders_outdir):
         if not os.path.isdir(d):
             raise SystemExit("no such directory: " + d)
     for name, art, palette in ICONS:
         print(build(name, art, palette, outdir))
     for name, art, palette in NODE_ICONS:
         print(build(name, art, palette, nodes_outdir))
-    for name, art, palette in GEAR_ICONS:
-        print(build(name, art, palette, gear_outdir))
     for name, art, palette in TRADER_ICONS:
         print(build(name, art, palette, traders_outdir))
-    print("%d icons written to %s, %d to %s, %d to %s, %d to %s"
+    print("%d icons written to %s, %d to %s, %d to %s"
           % (len(ICONS), outdir, len(NODE_ICONS), nodes_outdir,
-             len(GEAR_ICONS), gear_outdir,
              len(TRADER_ICONS), traders_outdir))
 
 
