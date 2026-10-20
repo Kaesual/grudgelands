@@ -53,13 +53,21 @@
 -- built again on a cell change or a claim-set version change and sent only
 -- when its string differs; with no claim near it is the plain map's.
 --
+-- Flight mode (fix 0.53.1 ruling 2; docs/design/mounts.md §4): while a
+-- player with a faction sits on a flying mount (grug_mounts.is_flying), the
+-- cell texture also holds the faction's red no-fly overlay (base.lua
+-- flight_overlay, the dismount's own rule), under any claim layer. The
+-- texture is built again when the mode changes (mounting, dismounting, a
+-- ground mount for a flyer), within the step's cheap test, never by a
+-- globalstep of its own. A switched-off minimap stays off.
+--
 -- Every server step only the cheap test runs (Round 37, audit CORE-04): the
 -- map and its markers are placed again only when the map moved by a whole
 -- screen pixel, the cell, the texture, the markers or the window changed;
 -- the party arrows only then or when a member moved or turned to another of
 -- the 16 heading frames. A player standing still with a still party costs
--- one position read, one wielded-item read and one read of the claim set's
--- version per step.
+-- one position read, one wielded-item read, one read of the claim set's
+-- version and one mount-table read per step.
 
 local atlas = grug_map.atlas
 local layout = grug_core.hud_layout
@@ -134,6 +142,9 @@ local base, view -- set by M.install
 -- too: their tiles by faction and the red.
 local housing, STONE, RADIUS
 local claim_tiles, CLAIM_RED
+-- The no-fly overlays' tiles by faction (set by M.install when base.lua
+-- rendered them).
+local flight_tiles
 local players = {}
 -- Unread letters per online player (M.set_mail_count), kept apart from the
 -- minimap state so a count told before this mod's join callback is kept.
@@ -510,6 +521,15 @@ local function claim_mode(player)
 	return faction and claim_tiles[faction] and faction or nil
 end
 
+-- Flight mode: the faction whose no-fly overlay the player sees while on a
+-- flying mount, or nil (on foot, a ground mount or a boat, no faction, no
+-- overlays).
+local function flight_mode(player)
+	if not flight_tiles or not grug_mounts.is_flying(player) then return nil end
+	local faction = grug_factions.get_faction(player)
+	return faction and flight_tiles[faction] and faction or nil
+end
+
 -- The claim part of the cell texture: the faction's overlay tiles and one
 -- clipped rectangle per claim on the texture, in id order.
 local function claim_layer(state)
@@ -648,7 +668,7 @@ local function update(player, state, slow, window)
 	local claim = claim_mode(player)
 	if not state.enabled and not claim then
 		remove(player, state)
-		state.claim = nil
+		state.claim, state.flight = nil, nil
 		return 0
 	end
 	if not state.hud then create(player, state) end
@@ -660,14 +680,15 @@ local function update(player, state, slow, window)
 	local pos = locate(player:get_player_name(), player)
 	local cx, cy = V.cell(view, pos.x, pos.z)
 	local version = housing and housing.claim_set_version() or nil
+	local flight = flight_mode(player)
 	if cx ~= state.cell_x or cy ~= state.cell_y or claim ~= state.claim or
-			version ~= state.claim_version then
+			version ~= state.claim_version or flight ~= state.flight then
 		if cx ~= state.cell_x or cy ~= state.cell_y then
 			state.cell_x, state.cell_y = cx, cy
 			state.ox, state.oy = V.origin(view, cx, cy)
 			state.near = nil
 		end
-		state.claim, state.claim_version = claim, version
+		state.claim, state.claim_version, state.flight = claim, version, flight
 		-- The recipe is built again; the client gets it only when it differs.
 		local layer
 		if claim then
@@ -675,7 +696,8 @@ local function update(player, state, slow, window)
 		elseif housing then
 			layer = frame_layer(player:get_player_name(), state)
 		end
-		local texture = V.texture(view, state.ox, state.oy, M.mask, layer)
+		local texture = V.texture(view, state.ox, state.oy, M.mask, layer,
+			flight and flight_tiles[flight])
 		if texture ~= state.texture then
 			state.texture = texture
 			M.stats.textures = M.stats.textures + 1
@@ -805,6 +827,7 @@ function M.install(installed)
 			CLAIM_RED = ("#%02x%02x%02x%02x"):format(unpack(grug_map.base.CLAIM_RED))
 		end
 	end
+	flight_tiles = mini.flight
 end
 
 -- False when the world map base or the minimap's mask is missing.
@@ -827,6 +850,12 @@ end
 function M.claim_of(player)
 	local state = players[player:get_player_name()]
 	return state and state.claim
+end
+
+-- The faction whose no-fly overlay the player sees now, or nil.
+function M.flight_of(player)
+	local state = players[player:get_player_name()]
+	return state and state.flight
 end
 
 -- Each player's SLOW refresh has its own phase, so the marker providers are

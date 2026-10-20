@@ -110,7 +110,9 @@ end
 -- in both modes one `[fill` per rectangle of `claim.rects` (V.claim_rect,
 -- V.claim_frame: inside the combined texture, never empty) in its own
 -- `color` or else `claim.color`, before any resize and the mask.
-function V.texture(v, ox, oy, mask, claim)
+-- `flight` (fix 0.53.1; nil: none) are the no-fly overlay's tiles (base.lua
+-- flight_overlay), added after the map's and before the claim layer.
+function V.texture(v, ox, oy, mask, claim, flight)
 	local size = v.combined
 	local parts = {("[combine:%dx%d"):format(size, size)}
 	local function add(tiles)
@@ -122,6 +124,7 @@ function V.texture(v, ox, oy, mask, claim)
 		end
 	end
 	add(v.tiles)
+	if flight then add(flight) end
 	local fills = ""
 	if claim then
 		if claim.tiles then add(claim.tiles) end

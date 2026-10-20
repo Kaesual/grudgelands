@@ -31,12 +31,9 @@ local WATER_REFUSAL = "Only boats can be summoned in water."
 local LAVA_REFUSAL = "Mounts cannot be summoned in lava."
 local GROUND_REFUSAL = "Stand on solid ground to summon this mount."
 local FALL_TOLERANCE = 14
-local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
+-- The warning band (fix 0.53.1: 40 nodes, catalog.lua WARNING_WIDTH).
+local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, grug_mounts.WARNING_WIDTH}
 local WARNING_DIRECTIONS = {}
-local DRAGON_ISLANDS = {
-	front_wyrmglass_crown = true,
-	front_stormscale_summit = true,
-}
 for index = 0, 15 do
 	local angle = index * math.pi / 8
 	WARNING_DIRECTIONS[#WARNING_DIRECTIONS + 1] = {
@@ -54,6 +51,13 @@ end
 
 function grug_mounts.is_mounted(player)
 	return valid_player(player) and active[player:get_player_name()] ~= nil
+end
+
+-- True while the player sits on a flying mount (the minimap's no-fly
+-- overlay, grug_map minimap.lua, asks this every step: one table read).
+function grug_mounts.is_flying(player)
+	local record = valid_player(player) and active[player:get_player_name()]
+	return record and record.flying or false
 end
 
 local function position_node(pos)
@@ -239,44 +243,9 @@ function grug_mounts.dismount(player, reason, hard, skip_animation)
 	return dismount(player, reason, hard, skip_animation, false)
 end
 
--- Zone id -> {island, territory}: the two fields of a zone record the flight
--- rule reads. Zone records never change, and grug_zones.at returns a deep
--- copy of the record on every call, so the rule reads the column's zone id
--- and keeps the rest here.
-local zone_rules = {}
-local function zone_rule(id)
-	local rule = zone_rules[id]
-	if not rule then
-		local zone = grug_zones.get(id)
-		rule = {island = DRAGON_ISLANDS[id] == true,
-			territory = zone and zone.territory_rule}
-		zone_rules[id] = rule
-	end
-	return rule
-end
-
--- The flight rule of one column for one faction.
-local function column_flight_state(faction, x, z)
-	local water = grug_zones.water_class_at(x, z)
-	if water ~= "land" and water ~= "planned_water" then
-		return false, "ocean"
-	end
-	if faction ~= "accord" and faction ~= "throng" then
-		return false, "enemy"
-	end
-	-- Zone ownership is horizontal.  Altitude is handled independently by the
-	-- underground takeoff and y=600 ceiling rules below.
-	local id = grug_zones.id_at(x, z)
-	local rule = id and zone_rule(id)
-	if rule and rule.island then
-		return false, "island"
-	end
-	local territory = rule and rule.territory
-	if territory == "contested_land" or territory == faction .. "_home" then
-		return true, nil
-	end
-	return false, "enemy"
-end
+-- The flight rule lives in flight.lua (grug_mounts.flight_rule), shared
+-- with the minimap's no-fly overlay.
+local column_flight_state = grug_mounts.column_flight_state
 
 function grug_mounts.flight_state(player, pos)
 	return column_flight_state(grug_factions.get_faction(player), pos.x, pos.z)
@@ -298,9 +267,10 @@ end
 
 local function warning_text(kind)
 	if kind == "ocean" then
-		return "Flight boundary: ocean within 48 nodes"
+		return ("Flight boundary: ocean within %d nodes"):format(grug_mounts.WARNING_WIDTH)
 	end
-	return "Flight boundary: restricted territory within 48 nodes"
+	return ("Flight boundary: restricted territory within %d nodes"):format(
+		grug_mounts.WARNING_WIDTH)
 end
 
 local function update_warning(player, record, kind)
