@@ -26,8 +26,11 @@
 -- sends it as `grug_map_mini_*` tiles. Since 0.50.2 the render also makes
 -- one transparent overlay per faction at the minimap base's size, red where
 -- that faction's Claim Stone may not reach (`grug_map_claim_*` tiles,
--- claim_overlay below); the minimap shows it while a stone is held. Nothing
--- else is sent, so the download is the tiles alone.
+-- claim_overlay below); the minimap shows it while a stone is held. Since
+-- 0.53.1 one more per faction, red where that faction's flying mount is
+-- dismounted (`grug_map_flight_*` tiles, flight_overlay below); the minimap
+-- shows it while the player sits on a flying mount. Nothing else is sent,
+-- so the download is the tiles alone.
 
 local M = {}
 
@@ -574,11 +577,73 @@ local function claim_overlay(zones, view, spec, water, owner, claim)
 	return result, asked, feature_queries
 end
 
+-- The no-fly overlay (fix 0.53.1 ruling 2; docs/design/mounts.md §4): per
+-- faction a transparent image at the minimap base's size, red where that
+-- faction's flying mount is dismounted. From pass 1's arrays (no second zone
+-- sampling: the same water_class_at and id_at the rule's column query asks)
+-- through the flight rule itself (`flight.rule`, grug_mounts.flight_rule),
+-- so the overlay and the dismount cannot disagree at a pixel centre. A
+-- minimap pixel is red when the rule refuses the centre column of any render
+-- pixel in it (at normal quality: its own centre); no widening, the flight
+-- warning covers the approach. The ocean is red too: the rule refuses it,
+-- and planned water (bays, lakes) looks like sea on the map but is not.
+-- `flight`: {factions, rule}. Returns {[faction] = tiles with png} and the
+-- number of rule calls.
+M.FLIGHT_PREFIX = "grug_map_flight"
+M.FLIGHT_RED = M.CLAIM_RED
+local FLIGHT_RED = string.char(unpack(M.FLIGHT_RED))
+local function flight_overlay(view, spec, water, owner, flight)
+	local WIDTH, HEIGHT = spec.width, spec.height
+	local w, h = spec.minimap.width, spec.minimap.height
+	local floor = math.floor
+	local column = {}
+	for i = 0, WIDTH - 1 do column[i] = floor((i + 0.5) * w / WIDTH) end
+	local result, asked = {}, 0
+	for _, faction in ipairs(flight.factions) do
+		-- the rule per water class and zone id (pass 1's `false`: no zone)
+		local legal_by, red = {}, {}
+		for j = 0, HEIGHT - 1 do
+			local first = floor((j + 0.5) * h / HEIGHT) * w + 1
+			for i = 0, WIDTH - 1 do
+				local index = j * WIDTH + i + 1
+				local class, id = water[index], owner[index]
+				local by_id = legal_by[class]
+				if not by_id then
+					by_id = {}
+					legal_by[class] = by_id
+				end
+				local legal = by_id[id]
+				if legal == nil then
+					legal = flight.rule(faction, class, id or nil) == true
+					by_id[id] = legal
+					asked = asked + 1
+				end
+				if not legal then red[first + column[i]] = true end
+			end
+		end
+		local tiles = M.tiles(w, h, M.FLIGHT_PREFIX .. "_" .. faction)
+		for _, tile in ipairs(tiles) do
+			local rows = {}
+			for j = tile.y, tile.y + tile.h - 1 do
+				local line, first = {}, j * w + 1
+				for i = tile.x, tile.x + tile.w - 1 do
+					line[#line + 1] = red[first + i] and FLIGHT_RED or CLAIM_CLEAR
+				end
+				rows[#rows + 1] = table.concat(line)
+			end
+			tile.png = core.encode_png(tile.w, tile.h, table.concat(rows), 9)
+		end
+		result[faction] = tiles
+	end
+	return result, asked
+end
+
 -- `layer` ({items, labels, art}, baked_layer below) is baked into both
 -- images, the world map's its names only (Round 47); nil (offline crops)
 -- bakes nothing. `claim` (claim_overlay; nil: none) adds the Claim Stone
--- overlays at the minimap copy's size.
-local function render(zones, view, spec, layer, claim)
+-- overlays at the minimap copy's size, `flight` (flight_overlay; nil: none)
+-- the no-fly overlays.
+local function render(zones, view, spec, layer, claim, flight)
 	local WIDTH, HEIGHT, R = spec.width, spec.height, spec.relief
 	local started = core.get_us_time()
 	local scale_x = (view.max_x - view.min_x) / WIDTH
@@ -784,6 +849,25 @@ local function render(zones, view, spec, layer, claim)
 				"has no claim preview: " .. tostring(result))
 		end
 	end
+	-- Likewise a failed no-fly overlay costs only itself (`flights` nil).
+	local flights
+	if flight and mini then
+		local flight_started = core.get_us_time()
+		local ok, result, calls = pcall(flight_overlay, view, spec, water, owner, flight)
+		if ok then
+			flights = result
+			local bytes = 0
+			for _, tiles in pairs(flights) do
+				for _, tile in ipairs(tiles) do bytes = bytes + #tile.png end
+			end
+			core.log("action", ("[grug_map] rendered the no-fly overlays %dx%d in %.2f s " ..
+				"(%d rule calls, %d bytes)"):format(mini.width, mini.height,
+				(core.get_us_time() - flight_started) / 1e6, calls, bytes))
+		else
+			core.log("error", "[grug_map] no-fly overlays not rendered, the minimap " ..
+				"shows no flight areas: " .. tostring(result))
+		end
+	end
 	core.log("action", ("[grug_map] rendered world map base %dx%d (%s) in %.2f s " ..
 		"(zones/water %.2f s, relief step %d %.2f s, colour %.2f s, bake+encode %.2f s, " ..
 		"%d tiles, %d bytes; minimap copy %s %.2f s, %d bytes, %d icons; baked %d icons " ..
@@ -796,7 +880,7 @@ local function render(zones, view, spec, layer, claim)
 		mini and (mini.width .. "x" .. mini.height) or "none",
 		(copied - coloured + finished - encoded) / 1e6, mini_total, mini_icons,
 		baked.icons, baked.icon_overlaps, baked.names, baked.name_overlaps))
-	return tiles, mini_tiles, overlays
+	return tiles, mini_tiles, overlays, flights
 end
 
 -- The tiles of a width x height base, row by row: {name, col, row, x, y, w,
@@ -966,7 +1050,7 @@ end
 -- does not use (Round 41 ruling 7): after high -> normal the extra base
 -- tiles would otherwise stay (since Round 44 both qualities send the
 -- minimap's own copy under the same six names; since 0.50.2 the Claim Stone
--- overlays too). Only names of the tile patterns this file writes are
+-- overlays too, since 0.53.1 the no-fly overlays). Only names of the tile patterns this file writes are
 -- touched; `lists` are the tile lists in use. Logs the count; a failed
 -- delete is a warning.
 local function remove_stale_tiles(lists)
@@ -976,7 +1060,8 @@ local function remove_stale_tiles(lists)
 	end
 	local patterns = {"^" .. M.BASE_PREFIX .. "_%d+_%d+%.png$",
 		"^" .. M.MINI_PREFIX .. "_%d+_%d+%.png$",
-		"^" .. M.CLAIM_PREFIX .. "_%a+_%d+_%d+%.png$"}
+		"^" .. M.CLAIM_PREFIX .. "_%a+_%d+_%d+%.png$",
+		"^" .. M.FLIGHT_PREFIX .. "_%a+_%d+_%d+%.png$"}
 	local removed = 0
 	for _, name in ipairs(core.get_dir_list(WORLD, false) or {}) do
 		local stale = false
@@ -1023,6 +1108,27 @@ local function claim_rules()
 			tostring(type(world_key) == "table" and world_key.source)}
 end
 
+-- The flight rule for the no-fly overlays (flight_overlay): grug_mounts'
+-- own rule (flight.lua), never a copy; with the text that enters the cache
+-- key: that file's source and the digest of the mapgen tree (the zones'
+-- territory rules, as claim_rules). Nil (no overlays) when grug_mounts or
+-- its rule is missing.
+local function flight_rules()
+	local mounts = rawget(_G, "grug_mounts")
+	if type(mounts) ~= "table" or type(mounts.flight_rule) ~= "function" then return nil end
+	local path = core.get_modpath("grug_mounts")
+	local source = path and read_file(path .. "/flight.lua")
+	if not source then return nil end
+	local mapgen = rawget(_G, "grug_mapgen")
+	local wp40 = type(mapgen) == "table" and mapgen.wp40
+	local world_key = type(wp40) == "table" and wp40.world_key
+	local factions = {}
+	for _, faction in ipairs(grug_core.faction_ids) do factions[#factions + 1] = faction end
+	return {factions = factions, rule = mounts.flight_rule,
+		key = table.concat(factions, ",") .. "\n" .. core.sha256(source) .. "\n" ..
+			tostring(type(world_key) == "table" and world_key.source)}
+end
+
 local function prepare(view)
 	assert(grug_core.zone_authority_installed(), "world authority is not installed")
 	local zones = grug_zones
@@ -1039,27 +1145,39 @@ local function prepare(view)
 	for _, faction in ipairs(claim and claim.factions or {}) do
 		claim_tiles[faction] = M.tiles(mini.width, mini.height, M.CLAIM_PREFIX .. "_" .. faction)
 	end
+	local flight = mini and flight_rules()
+	if mini and not flight then
+		core.log("warning", "[grug_map] no flight rule: the minimap shows no flight areas")
+	end
+	local flight_tiles = {}
+	for _, faction in ipairs(flight and flight.factions or {}) do
+		flight_tiles[faction] = M.tiles(mini.width, mini.height, M.FLIGHT_PREFIX .. "_" .. faction)
+	end
 	-- The quality, its size, the atlas bounds (Round 51) and the minimap
 	-- copy's size enter the key (ruling 3), so switching either re-renders
 	-- both and a cache of an older size rebuilds; so does the baked layer (Round 44:
 	-- its layout, art and font versions and every icon's kind and place) and
-	-- the Claim Stone rules (0.50.2).
+	-- the Claim Stone rules (0.50.2) and the flight rule (0.53.1).
 	local base_key = spec.quality .. "\n" .. spec.width .. "x" .. spec.height .. "\n" ..
 		view.min_x .. "," .. view.min_z .. "," .. view.max_x .. "," .. view.max_z .. "\n" ..
 		M.TILE .. "\n" ..
 		(mini and (mini.width .. "x" .. mini.height) or "-") .. "\n" ..
 		cache_key(zones, view) .. "\n" .. core.sha256(bake.key_text(layer.versions, layer.items))
-	-- The key and the tile lists in use, with the overlays or (claim nil)
-	-- without them.
+	-- The key and the tile lists in use, with the overlays or (claim or
+	-- flight nil) without them.
 	local key, lists
-	local function with_claim()
-		key = core.sha256(base_key .. "\n" .. (claim and core.sha256(claim.key) or "-"))
+	local function with_overlays()
+		key = core.sha256(base_key .. "\n" .. (claim and core.sha256(claim.key) or "-") ..
+			(flight and "\n" .. core.sha256(flight.key) or ""))
 		lists = {tiles, mini_tiles or {}}
 		for _, faction in ipairs(claim and claim.factions or {}) do
 			lists[#lists + 1] = claim_tiles[faction]
 		end
+		for _, faction in ipairs(flight and flight.factions or {}) do
+			lists[#lists + 1] = flight_tiles[faction]
+		end
 	end
-	with_claim()
+	with_overlays()
 	local current = read_file(CACHE_KEY) == key
 	for _, list in ipairs(lists) do
 		for _, tile in ipairs(list) do
@@ -1072,13 +1190,13 @@ local function prepare(view)
 			for _, tile in ipairs(list) do M.add_media(tile.name) end
 		end
 	else
-		local rendered, rendered_mini, overlays = render(zones, view, spec, layer, claim)
-		if claim and not overlays then
-			-- the overlays failed: cache and announce the base without them
-			-- (the next start tries again under the full key)
-			claim = nil
-			with_claim()
-		end
+		local rendered, rendered_mini, overlays, flights = render(zones, view, spec, layer,
+			claim, flight)
+		-- failed overlays: cache and announce the base without them (the
+		-- next start tries again under the full key)
+		if claim and not overlays then claim = nil end
+		if flight and not flights then flight = nil end
+		with_overlays()
 		-- Tile names are shared across qualities: the old key goes before
 		-- the first tile is overwritten and the new one is written last, so
 		-- a crash in between renders again at the next start (ruling 7).
@@ -1087,6 +1205,9 @@ local function prepare(view)
 		for _, tile in ipairs(rendered_mini or {}) do M.add_media(tile.name, tile.png) end
 		for _, faction in ipairs(claim and claim.factions or {}) do
 			for _, tile in ipairs(overlays[faction]) do M.add_media(tile.name, tile.png) end
+		end
+		for _, faction in ipairs(flight and flight.factions or {}) do
+			for _, tile in ipairs(flights[faction]) do M.add_media(tile.name, tile.png) end
 		end
 		assert(core.safe_file_write(CACHE_KEY, key), "cannot write " .. CACHE_KEY)
 	end
@@ -1098,17 +1219,19 @@ local function prepare(view)
 	local result = {quality = spec.quality, width = spec.width, height = spec.height,
 		tiles = tiles,
 		texture = M.combined_texture(spec.width, spec.height, tiles)}
-	-- `claim`: the Claim Stone overlays' tiles by faction (nil without them).
+	-- `claim`: the Claim Stone overlays' tiles by faction, `flight` the no-fly
+	-- overlays' (nil without them).
 	result.minimap = mini and {quality = mini.quality, width = mini.width,
-		height = mini.height, tiles = mini_tiles, claim = claim and claim_tiles or nil} or result
+		height = mini.height, tiles = mini_tiles, claim = claim and claim_tiles or nil,
+		flight = flight and flight_tiles or nil} or result
 	return result
 end
 
 -- Load-time entry point. Returns the base: {quality, width, height, tiles,
 -- texture, minimap} with `texture` what the Map tab shows and `minimap` the
--- base the minimap shows ({quality, width, height, tiles, claim}: its own
--- normal-size variant with the small icons and no names, and the Claim
--- Stone overlays' tiles by faction), or
+-- base the minimap shows ({quality, width, height, tiles, claim, flight}:
+-- its own normal-size variant with the small icons and no names, the Claim
+-- Stone overlays' and the no-fly overlays' tiles by faction), or
 -- {texture = fallback} without tiles if the base is unavailable. Startup
 -- media must be announced while mods load (dynamic_add_media without a
 -- callback), so init.lua calls this; grug_mapgen has installed the world

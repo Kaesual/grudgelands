@@ -457,17 +457,21 @@ middle of a render renders again instead of taking mixed tiles as current
 
 **Tiles.** The base is sent as 512 px tiles (`grug_map_base_<col>_<row>.png`,
 edge tiles smaller), the minimap's copy as
-`grug_map_mini_<col>_<row>.png` and, since 0.50.2, the Claim Stone
-overlays as `grug_map_claim_<faction>_<col>_<row>.png` (both factions to
-every client; [Minimap](#minimap) "Claim mode"), written to the world
-directory and announced as startup media; nothing else of the base is sent.
+`grug_map_mini_<col>_<row>.png`, since 0.50.2 the Claim Stone
+overlays as `grug_map_claim_<faction>_<col>_<row>.png` and since 0.53.1
+the no-fly overlays as `grug_map_flight_<faction>_<col>_<row>.png` (both
+factions to every client; [Minimap](#minimap) "Claim mode", "Flight
+mode"), written to the world directory and announced as startup media;
+nothing else of the base is sent.
 The overlays are rendered and cached with the base; their rules (the
 column rule's source `grug_housing/registry.lua`, its world queries' source
 `grug_housing/api.lua`, the settlement margin and the digest of the mapgen
 tree, which holds the settlement cores' margins and the landmark columns)
-enter the cache key. A failing overlay render costs only the claim preview:
-it logs an error, the base and the minimap are cached and announced without
-the overlays, and the next start tries again. After every
+enter the cache key; for the no-fly overlays the flight rule's source
+(`grug_mounts/flight.lua`) and the same mapgen digest. A failing overlay
+render costs only its own preview: it logs an error, the base and the
+minimap are cached and announced without those overlays, and the next start
+tries again. After every
 render or cache hit, tiles of these names that the current quality does
 not use (after high → normal the 47 extra base tiles, about 5.8 MB) are
 deleted from the world directory and their count is logged; a failed delete
@@ -600,7 +604,8 @@ drawn from the base image above. The gliding version (approved in playtest,
   pixel, the cell, the cell texture, the markers or the window change; the
   party arrows then or when a member comes, goes, moves or turns to another
   of the 16 heading frames. A player standing still with a still party costs
-  one position read and one wielded-item read per step and sends nothing. Static markers are asked from their providers
+  one position read, one wielded-item read and one read of the mount table
+  per step and sends nothing. Static markers are asked from their providers
   on joining, whenever the quest markers may have changed
   (`grug_quests.markers_changed`: a quest change, held objective items as
   the quest tracker sees them every 0.5 s, a level change), and at a check
@@ -697,6 +702,30 @@ drawn from the base image above. The gliding version (approved in playtest,
   per-step cost within the noise (about 1–3 µs per player and step before
   and after); the server reads the claim set's version once per player and
   step, now also without the stone.
+- **Flight mode** (0.53.1, [mounts.md](mounts.md) §4): while a player with
+  a faction sits on a flying mount, the cell texture also holds the
+  faction's no-fly overlay after the map's tiles and before any claim layer:
+  semi-transparent red (Claim mode's red) wherever that faction's flyer is
+  dismounted: enemy home land, the dragon islands and the ocean (bays and
+  lakes inside the coast, which the map draws as water, stay clear). On
+  foot, on a ground mount or a boat, or without a faction the minimap is the
+  normal one. The minimap's per-step check reads the mount table
+  (`grug_mounts.is_flying`), so mounting and dismounting rebuild the cell
+  texture at once (no globalstep of its own); a switched-off minimap stays
+  off. **Overlays:** rendered once per world with the base, one per faction
+  at the minimap base's size, from the render's per-pixel water class and
+  zone (no second sampling) through the dismount's own rule
+  (`grug_mounts.flight_rule`), so overlay and dismount agree at every pixel
+  centre; at high quality a minimap pixel is red when the rule refuses any
+  render pixel centre in it. No widening: the 40-node flight warning covers
+  the approach. Beyond the atlas (the sea disc) nothing is drawn.
+  **Cost** (comparisons; `tools/r531_flight/`, two engine boots on seed
+  42 at normal quality, 2026-10-20): the no-fly overlays render in about
+  0.05 s (210 rule calls: one per faction, water class and zone) beside
+  the Claim Stone overlays' 0.51–0.53 s and the base's 12.3–12.6 s, and add
+  29.2 KB of tiles for both factions (the Claim Stone overlays: 26.5 KB).
+  The per-step cost is one table read per player; the texture string grows
+  by at most four tile entries while flying.
 - **Underground** the minimap keeps showing the surface map.
 - **Switch:** "Show minimap" in the map window (the Map tab until Round 44;
   Luanti has no custom keybinds), stored per player in player meta, on by

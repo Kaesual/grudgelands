@@ -1,6 +1,8 @@
 local blank = "grug_mobs_blank.png"
 
-grug_mounts.WARNING_WIDTH = 48
+-- The flight warning band in nodes (fix 0.53.1 ruling 2: 40, was 48): the
+-- warning sweep's farthest probe and its HUD text (entity.lua).
+grug_mounts.WARNING_WIDTH = 40
 -- One source of truth: full-world preparation sizes its columns from it.
 grug_mounts.FLIGHT_CEILING = grug_core.FLIGHT_CEILING
 

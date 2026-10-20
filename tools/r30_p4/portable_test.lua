@@ -656,12 +656,16 @@ do
 	_G.core = {register_entity = noop, register_on_player_hpchange = noop,
 		register_on_dieplayer = noop, register_on_leaveplayer = noop,
 		register_on_shutdown = noop}
-	_G.grug_mounts = {}
+	-- Fix 0.53.1: the band is catalog.lua's WARNING_WIDTH (40) and the rule
+	-- lives in flight.lua, shared with the minimap's no-fly overlay.
+	_G.grug_mounts = {WARNING_WIDTH = 40}
+	dofile(repo .. "/mods/PLAYER/grug_mounts/flight.lua")
 	dofile(repo .. "/mods/PLAYER/grug_mounts/entity.lua")
 
 	-- The former code (base 451f393b), verbatim apart from the names.
 	local DRAGON = {front_wyrmglass_crown = true, front_stormscale_summit = true}
-	local DIST = {1, 2, 4, 8, 16, 32, 48}
+	-- the farthest probe 40 since fix 0.53.1 (ruling 2: the band is 40 nodes)
+	local DIST = {1, 2, 4, 8, 16, 32, 40}
 	local DIRS = {}
 	for index = 0, 15 do
 		local angle = index * math.pi / 8
