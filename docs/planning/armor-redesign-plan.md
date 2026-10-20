@@ -1,9 +1,12 @@
 # Armor redesign — shapes, layouts and enchant zones
 
 Coordinator: Claude, 2026-10-20, from the user's review of the armor overview page (all 72 pieces, worn and as
-icons). Status: **phase 1 running** (the user's go, 2026-10-20): the three.js prototype for metal is published
-(builder `~/projects/grudgelands-orchestration/armor/proto/build.py`, catalog `catalog.py`, z-fight check `check.py`).
-Placeholder colours only, no art lane until the shapes are settled (the user, 2026-10-20).
+icons). Status: **done** (2026-10-21): phases 1–3 ran outside the repo on 2026-10-20, phases 4 and 5 as
+[Round 54](round54-plan.md) (0.54.0, compatible); what shipped, the picks, the numbers and the GUI checklist are in
+its [completion](round54-plan.md#completion-2026-10-21), the contract in
+[armor-format.md](../technical/armor-format.md). The open questions of §7 were settled there: the catalog is our own
+JSON (`tools/r54_armor/`), rotations go in 22.5° steps (the shipped boxes turn ±22.5°), the cloak rests at 8.5° behind the back panel, and NPCs wear
+every box. This plan is kept as the design history.
 
 Not part of this plan: the particle colour pass (the user reviews the particle page later) and the 0.53.0/0.53.1
 push (after the user's GUI test).

@@ -135,9 +135,42 @@ the boxes it does not use stay transparent, so the model never changes with
 the gear. Chest, legs and feet also paint the body under their boxes (the
 **inner paint**, a skin layer: sleeves, trousers, the lower legs); the helmet
 is boxes only. Each tier's colours are baked into its art (its palette);
-nothing is tinted at runtime. Inventory art and worn art are separate assets
+no tier is tinted at runtime. Inventory art and worn art are separate assets
 made for their respective layouts. A character therefore shows the same
 armor line, slot and material tier that its equipped item names.
+
+- **Shapes** (the user's rulings, 2026-10-20): one catalog of 17 shapes,
+  28 boxes with the mirrored copies (helm, visor, chest, belt, sleeves,
+  bracers, shoulder core, reinforcement, flare and spike, front and back
+  panels, tassets, thighs, knee cops, boot shells, toe caps). Every box is
+  available on every tier of every line; the art chooses per tier by
+  design goals: metal bulkier with each tier, leather layered, cloth smooth
+  and noble through ornament, and at the same tier metal more than leather
+  more than cloth. Tier = the boxes worn, the paint and the palette.
+- **Armor is opaque** (the user, 2026-10-20: transparent texels showed
+  holes, one looked into the hollow box): every face of a worn box is
+  fully painted. The only opening is the helm's **face window**, so the
+  face shows under a helmet; the metal T5 and T6 helmets are closed (the
+  window painted over, a visor in front).
+- **The art** is original, painted by GPT-6 Astra in the armor contract's
+  reference palette and picked by the user per line and tier from two
+  proposals each (2026-10-20): metal T1–T5 "Bastion" and T6
+  "Processional guard", leather "Trail coat" and cloth "Cantor" on every
+  tier (`tools/r54_art/`, baked by `tools/r54_armor/bake.py`).
+- **Tints over armor:** an elite's gold and a rare's violet
+  ([combat_stats.md](combat_stats.md) §3) colour every texture of the
+  character, the armor and the empty weapon card included, so they show
+  over the armor; kings, royal guards and Generals carry none (below). A
+  sub-type's zone tint (the ember tint of two bandit kin, the Coal-Purse
+  Factor and the Ash-Writ Bowman) colours only the skin, so it shows on the
+  face and the inner paint, not on the boxes (a coordinator decision, left
+  as it is).
+- **In the inventory** the Character tab's model is the player model with
+  the character's skin, cloak, armor atlas and the main hand's weapon on
+  the weapon card; it stands still in the first stand frame and turns with
+  the mouse from a three-quarter view from the weapon side (camera rotation
+  0,130; a first version for the user to tune). Character creation keeps
+  `character.b3d` with the race look alone, since nothing is worn there.
 
 A player's model carries four textures: the skin, the cloak, the armour atlas
 and the weapon card (empty in the world, where the hand entity shows the
@@ -411,8 +444,9 @@ are kept per character, and so is the choice.
 
 The user's picks on the animation preview page (round40-plan.md §2.14,
 `tools/r40_an/poses.json`) are clips of the player model, so they cost
-nothing per step on the server and every client plays them. NPCs keep
-`character.b3d` and have none.
+nothing per step on the server and every client plays them. NPCs have
+none (`character.b3d` and, since Round 54, the NPC model carry only the base
+frames 0–220).
 
 - **Clips.** Each pose exists twice: over the standing frame (its name) and
   over the walk cycle (`<pose>_walk`), so a pose taken on the move keeps the
