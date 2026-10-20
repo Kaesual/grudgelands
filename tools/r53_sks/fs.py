@@ -25,6 +25,8 @@ import urllib.request
 from pathlib import Path
 
 OUT = Path.home() / "projects/grudgelands-orchestration/r53/sks-fs"
+REJECTED = {r["fs_id"] for r in json.loads((Path(__file__).resolve().parent / "rejected.json").read_text())
+            if r.get("fs_id")} if (Path(__file__).resolve().parent / "rejected.json").is_file() else set()
 UA = {"User-Agent": "Mozilla/5.0 (grudgelands sound lane; previews only)"}
 
 
@@ -71,6 +73,9 @@ def fetch(items):
     (OUT / "dl").mkdir(parents=True, exist_ok=True)
     for it in items:
         user, sid = it.split("/")
+        if sid in REJECTED:
+            print("skip %s: rejected by the user (rejected.md)" % sid)
+            continue
         if sid in info and (OUT / "dl" / ("fs_%s.mp3" % sid)).is_file():
             continue
         page_url = "https://freesound.org/people/%s/sounds/%s/" % (urllib.parse.quote(user), sid)

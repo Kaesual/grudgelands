@@ -1,0 +1,272 @@
+{
+ "arrowfall_2_fs394004": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:43:33.763Z",
+  "verdict": "pick"
+ },
+ "arrowfall_3_fs574044": {
+  "text": "Klingt wie ein kräftiger Schuss mit Einschlag am Ende",
+  "updatedAt": "2026-10-20T09:43:49.619Z",
+  "verdict": ""
+ },
+ "arrowfall_impact_2_fs205938": {
+  "text": "Eventuell mehrfach abspielen bei mehreren Treffern?",
+  "updatedAt": "2026-10-20T09:44:47.680Z",
+  "verdict": "pick"
+ },
+ "bellow_1_shipped-cast_taunt": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:34:41.817Z",
+  "verdict": "pick"
+ },
+ "bellow_4_fs370203": {
+  "text": "Klingt wie ein \"verstärkter Schild\". ",
+  "updatedAt": "2026-10-20T09:35:30.910Z",
+  "verdict": ""
+ },
+ "broadstroke_1_shipped-swing": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:36:33.905Z",
+  "verdict": "pick"
+ },
+ "censure_1_shipped-cast_holy": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:41:30.378Z",
+  "verdict": "pick"
+ },
+ "censure_2_fs420676": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:40:45.449Z",
+  "verdict": "drop"
+ },
+ "censure_3_fs249817": {
+  "text": "Guter Sound für einen Cast mehrere magischer Geschosse",
+  "updatedAt": "2026-10-20T09:41:11.359Z",
+  "verdict": ""
+ },
+ "censure_4_lrsf-Spell-01": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:41:13.025Z",
+  "verdict": "drop"
+ },
+ "censure_impact_2_fs249814": {
+  "text": "Guter Sound, können wir behalten. Möglicherweise ein Kandidat für \"Single-Target Einschlag, dann herunterfallende kleine Eissplitter\"",
+  "updatedAt": "2026-10-20T09:42:59.280Z",
+  "verdict": ""
+ },
+ "censure_impact_3_fs855910": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:41:50.660Z",
+  "verdict": "pick"
+ },
+ "censure_impact_4_fs413224": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:41:45.373Z",
+  "verdict": "drop"
+ },
+ "close_dance_2_fs442825": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:46:35.954Z",
+  "verdict": "drop"
+ },
+ "close_dance_3_fs523204": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:46:38.028Z",
+  "verdict": "drop"
+ },
+ "close_dance_4_fs657541": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:46:42.544Z",
+  "verdict": "drop"
+ },
+ "cold_spark_2_fs683180": {
+  "text": "Passt nicht zum Cold Spark, aber klingt nach einem \"mächtigen Eis-Einschlag\". Guter Sound.",
+  "updatedAt": "2026-10-20T09:25:18.772Z",
+  "verdict": ""
+ },
+ "cold_spark_3_fs160420": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:25:19.494Z",
+  "verdict": "drop"
+ },
+ "cold_spark_4_fs709888": {
+  "text": "Am Ende etwas kürzen. Die zweite Hälfte klingt wie \"schnell gefrierendes Wasser\", das können wir möglicherweise anderweitig nutzen",
+  "updatedAt": "2026-10-20T09:24:44.299Z",
+  "verdict": "pick"
+ },
+ "final_word_2_fs871781": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:43:17.757Z",
+  "verdict": "pick"
+ },
+ "final_word_4_fs802726": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:43:09.918Z",
+  "verdict": "drop"
+ },
+ "fire_rain_2_fs412558": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:22:13.053Z",
+  "verdict": "pick"
+ },
+ "fire_rain_impact_2_fs182369": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:22:56.660Z",
+  "verdict": "pick"
+ },
+ "flourish_1_shipped-cast_evade": {
+  "text": "Klingt sowohl wie ein Evade als auch wie ein schneller Hieb",
+  "updatedAt": "2026-10-20T09:46:20.893Z",
+  "verdict": ""
+ },
+ "flourish_2_fs60030": {
+  "text": "Guter Swoosh",
+  "updatedAt": "2026-10-20T09:46:53.048Z",
+  "verdict": "pick"
+ },
+ "flourish_3_fs353708": {
+  "text": "Bitte als Sound für Close Dance nutzen",
+  "updatedAt": "2026-10-20T09:47:12.176Z",
+  "verdict": ""
+ },
+ "flourish_4_fs171255": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:45:57.310Z",
+  "verdict": "drop"
+ },
+ "haven_2_fs677773": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:38:46.119Z",
+  "verdict": "drop"
+ },
+ "haven_3_fs844398": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:38:42.880Z",
+  "verdict": "drop"
+ },
+ "haven_4_p0ss-blessing": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:38:53.728Z",
+  "verdict": "drop"
+ },
+ "hearten_1_shipped-cast_heal": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:38:07.245Z",
+  "verdict": "pick"
+ },
+ "hearten_2_fs562292": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:37:57.797Z",
+  "verdict": "drop"
+ },
+ "hearten_3_fs506939": {
+  "text": "Kein schlechter Sound, klingt aber eher nach \"magischem Geschoss\". Wäre eine Option für Rebuke",
+  "updatedAt": "2026-10-20T09:40:23.740Z",
+  "verdict": ""
+ },
+ "hearten_4_p0ss-blessing2": {
+  "text": "Guter Sound. Bitte für \"Haven\" verwenden.",
+  "updatedAt": "2026-10-20T09:39:07.822Z",
+  "verdict": ""
+ },
+ "ice_wave_2_fs691005": {
+  "text": "Klingt eher wie ein Schutz-Zauber eines Kriegers, beispielsweise ein \"verstärkter Schild\" oder so. Bitte für \"Unbroken\" nutzen.",
+  "updatedAt": "2026-10-20T09:36:14.026Z",
+  "verdict": ""
+ },
+ "ice_wave_3_fs263915": {
+  "text": "Klingt wie eine Mischung aus brechendem Holz und knarzendem Eis. Kein schlechter Sound, aber bisher fällt mir kein Anwendungsgebiet ein.",
+  "updatedAt": "2026-10-20T09:27:53.377Z",
+  "verdict": ""
+ },
+ "ice_wave_4_fs685253": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:26:49.050Z",
+  "verdict": "pick"
+ },
+ "meteor_1_shipped-cast_cinderfall": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:20:29.869Z",
+  "verdict": "pick"
+ },
+ "meteor_2_fs592572": {
+  "text": "Diesen Sound bitte als Einschlag-Sound für den Meteor (nicht als Cast-Sound)",
+  "updatedAt": "2026-10-20T09:21:52.255Z",
+  "verdict": "pick"
+ },
+ "parry_2_fs275159": {
+  "text": "Klingt eher wie ein Schmiede-Geräusch",
+  "updatedAt": "2026-10-20T09:45:49.108Z",
+  "verdict": ""
+ },
+ "parry_3_fs334169": {
+  "text": "Perfekter Parry-Sound",
+  "updatedAt": "2026-10-20T09:45:13.799Z",
+  "verdict": "pick"
+ },
+ "parry_4_fs439540": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:45:19.507Z",
+  "verdict": "drop"
+ },
+ "rebuke_1_shipped-cast_holy": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:40:02.822Z",
+  "verdict": "pick"
+ },
+ "rebuke_3_fs641897": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:39:31.365Z",
+  "verdict": "drop"
+ },
+ "rebuke_4_fs430769": {
+  "text": "Kein schlechter Sound, aber Anwendung ist unklar",
+  "updatedAt": "2026-10-20T09:40:00.572Z",
+  "verdict": ""
+ },
+ "rime_mantle_2_fs396447": {
+  "text": "Klingt wie ein \"kleiner Teich, der sehr schnell zufriert\". Passt gut zu Winter Field: Einschlag.",
+  "updatedAt": "2026-10-20T09:30:43.317Z",
+  "verdict": ""
+ },
+ "rime_mantle_3_fs274542": {
+  "text": "Passt eher zu Blink oder ähnlichem, ein klarer Magie-Sound, aber ohne \"Eis-Bezug\"",
+  "updatedAt": "2026-10-20T09:32:30.753Z",
+  "verdict": ""
+ },
+ "rime_mantle_4_fs263913": {
+  "text": "Klingt ähnlich wie Ice 9",
+  "updatedAt": "2026-10-20T09:28:50.477Z",
+  "verdict": ""
+ },
+ "ruination_3_fs807976": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:37:31.790Z",
+  "verdict": "drop"
+ },
+ "ruination_4_lrsf-Spell-04": {
+  "text": "Am ehesten dieser Sound, aber vielleicht finden wir hier noch was besseres",
+  "updatedAt": "2026-10-20T09:37:29.204Z",
+  "verdict": "pick"
+ },
+ "winter_field_2_fs569109": {
+  "text": "",
+  "updatedAt": "2026-10-20T09:33:57.955Z",
+  "verdict": "drop"
+ },
+ "winter_field_3_fs381853": {
+  "text": "Passt ganz gut zum Winter Field Cast, sollte aber etwas gekürzt werden. Bitte dort verwenden.",
+  "updatedAt": "2026-10-20T09:33:54.903Z",
+  "verdict": ""
+ },
+ "winter_field_4_fs844261": {
+  "text": "Könnte zum Feuerstrahl passen",
+  "updatedAt": "2026-10-20T09:34:33.452Z",
+  "verdict": ""
+ },
+ "winter_field_impact_3_fs719973": {
+  "text": "Passt gut zu Rime Mantle, bitte dort verwenden",
+  "updatedAt": "2026-10-20T09:33:13.880Z",
+  "verdict": ""
+ }
+}

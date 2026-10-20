@@ -1,14 +1,14 @@
 -- Round 44 lane TS portable test: the Talents & Skills tab. Loads, through
 -- tools/r44_ts/harness.lua, the REAL sfinv, grug_inventory/ui.lua (frame and
--- views), the talent files, talents_ui.lua and grug_skills, plus the grant
--- code cut out of grug_abilities/init.lua, and checks:
---   1. the tree framework on a small tree with a branch (a node with two
---      parents and two children, two sections): node rectangles, connector
---      segments (down, across, down; one straight segment in a column),
---      every segment between the parent's bottom and the child's top;
---   2. today's data: a class's two trees as two sections of two linear
---      chains, drawn with the connectors before (under) the nodes, one
---      style per node state, a node click buys a rank;
+-- views), the talent files (since Round 53 the graph talents and their page,
+-- talent_graph_ui.lua), talents_ui.lua and grug_skills, plus the grant code
+-- cut out of grug_abilities/init.lua, and checks:
+--   1. (Round 44's tree framework, layout_tree: retired in Round 53 with the
+--      old trees; the graph page's layout is tools/r52_graph's);
+--   2. the class's graph trees on the page: one tab per tree, the
+--      connectors before (under) the nodes, one style per node state, a
+--      node click buys a rank and selects it, a refused click shows the
+--      node's text and the reason, the respec control;
 --   3. one tab: grug_classes:talents is "Talents & Skills", the old Skills
 --      page is gone; the catalog row (abilities only, no mounts) under the
 --      tree text and above the short inventory, on the hotbar's columns, in
@@ -63,97 +63,22 @@ end
 local H = dofile(repo .. "/tools/r44_ts/harness.lua")(repo)
 
 --
--- 1. The framework on a small tree with a branch.
+-- 2. The class's graph trees on the page.
 --
 
-local area = {x = 0, y = 1, w = 10.3, section_gap = 0.3, pad = 0.1, col_gap = 0.2,
-	node_h = 0.8, row_gap = 0.4, line = 0.1}
-local sections = {{id = "left"}, {id = "right"}}
-local nodes = {
-	{id = "a", section = "left", row = 1, col = 1},
-	{id = "b", section = "left", row = 1, col = 2},
-	{id = "c", section = "left", row = 2, col = 1, requires = {"a", "b"}},
-	{id = "d", section = "left", row = 3, col = 1, requires = {"c"}},
-	{id = "e", section = "left", row = 3, col = 2, requires = {"c"}},
-	{id = "f", section = "right", row = 1, col = 1},
-	{id = "g", section = "right", row = 2, col = 1, requires = {"f"}},
-}
-local layout = grug_classes.layout_tree(sections, nodes, area)
-local left, right = layout.sections.left, layout.sections.right
-near(left.w, 5, "sections share the width")
-near(right.x, 5.3, "the second section beside the first")
-near(left.node_w, (5 - 0.2 - 0.2) / 2, "two columns in the left section")
-near(right.node_w, 5 - 0.2, "one column in the right section")
-local function rect(id) return layout.nodes[id] end
-near(rect("a").x, 0.1, "a: column 1")
-near(rect("b").x, 0.1 + left.node_w + 0.2, "b: column 2")
-near(rect("c").y, 1 + 1.2, "c: row 2")
-near(rect("e").y, 1 + 2.4, "e: row 3")
-near(rect("g").x, 5.4, "g in the right section")
-near(layout.bottom, 1 + 3 * 1.2 - 0.4, "the tree's bottom after three rows")
-eq(#layout.connectors, 5, "one connector per requirement")
-
-local by_pair = {}
-for _, connector in ipairs(layout.connectors) do
-	by_pair[connector.from .. ">" .. connector.to] = connector.segments
-	local parent, child = rect(connector.from), rect(connector.to)
-	for index, s in ipairs(connector.segments) do
-		check(s.y >= parent.y + parent.h - 1e-9 and s.y + s.h <= child.y + 1e-9,
-			connector.from .. ">" .. connector.to .. " segment " .. index ..
-			" runs between the parent's bottom and the child's top")
-		check(s.w > 0 and s.h > 0, connector.from .. ">" .. connector.to ..
-			" segment " .. index .. " has a size")
-	end
-end
-local function center(id) return rect(id).x + rect(id).w / 2 end
-local straight = by_pair["a>c"]
-eq(#straight, 1, "a > c: one straight segment in a column")
-near(straight[1].x + straight[1].w / 2, center("a"), "a > c at the column's center")
-near(straight[1].y, rect("a").y + 0.8, "a > c from a's bottom")
-near(straight[1].y + straight[1].h, rect("c").y, "a > c into c's top")
-local bent = by_pair["b>c"]
-eq(#bent, 3, "b > c: down, across, down")
-near(bent[1].x + bent[1].w / 2, center("b"), "down from b's center")
-near(bent[2].y + bent[2].h / 2, rect("c").y - 0.2, "across in the gap above c's row")
-near(bent[2].x, center("c") - 0.05, "the across starts at c's center")
-near(bent[2].x + bent[2].w, center("b") + 0.05, "and ends at b's center")
-near(bent[3].x + bent[3].w / 2, center("c"), "down into c's center")
-near(bent[3].y + bent[3].h, rect("c").y, "ending at c's top")
-eq(#by_pair["c>d"], 1, "c > d straight")
-eq(#by_pair["c>e"], 3, "c > e bends to the second column")
-near(by_pair["c>e"][1].y, rect("c").y + 0.8, "both children leave from c's bottom")
-eq(#by_pair["f>g"], 1, "the right section's chain")
-
---
--- 2. Today's data, rendered.
---
-
-local scout = H.make_player("scout", "scout", 30, "strong_draw=5,cold_eye=4,twin_shot=3,quiver=3")
+local graph = grug_classes.graph
+-- A level-30 Scout with 15 ranks in Quarry.
+local RANKS = "quarry_bowcraft=4,quarry_true_draw=1,quarry_quiver=3,quarry_firm_aim=2," ..
+	"quarry_snare_shot=1,quarry_measured_breath=3,quarry_long_view=1"
+local scout = H.make_player("scout", "scout", 30, RANKS)
 H.join(scout)
-local trees = grug_classes.trees_of_class("scout")
-local data_sections, data_nodes = grug_classes.talent_tree_data(trees)
-eq(#data_sections, 2, "two sections: the class's two trees")
-eq(#data_nodes, 16, "sixteen nodes")
-local data_layout = grug_classes.layout_tree(data_sections, data_nodes)
-local links = 0
-for _, node in ipairs(data_nodes) do
-	local def = grug_classes.registered_talents[node.id]
-	eq(node.row, def.tier, node.id .. ": row = tier")
-	eq(def.chain, grug_classes.registered_trees[def.tree].chains[node.col],
-		node.id .. ": column = chain")
-	eq(#node.requires, def.tier > 1 and 1 or 0, node.id .. ": requires the talent above")
-	if def.above then eq(node.requires[1], def.above.id, node.id .. ": its parent") end
-	links = links + #node.requires
-end
-eq(#data_layout.connectors, links, "a connector per chain link")
-for _, connector in ipairs(data_layout.connectors) do
-	eq(#connector.segments, 1, connector.from .. ">" .. connector.to .. ": straight down its chain")
-end
-check(data_layout.bottom <= 7.0, "the tree ends before the page text")
-
+eq(grug_classes.talent_points_spent(scout), 15, "the stored ranks read back")
 local context = sfinv.get_or_create_context(scout)
 local form = H.render(scout, "grug_classes:talents")
 local page_bytes = #form
+has(form, "grug_graph_tab_1;Quarry (15)]", "a tab per tree with its points: Quarry")
+has(form, "grug_graph_tab_2;Veil (0)]", "and Veil")
+has(form, "label[5.75,0.45;Talent points available: 0 of 15]", "the points")
 local first_node = form:find("image_button[", 1, true)
 local last_box, connector_boxes = 0, 0
 for start, color in form:gmatch("()box%[[^%]]-;(#%x+)%]") do
@@ -162,49 +87,47 @@ for start, color in form:gmatch("()box%[[^%]]-;(#%x+)%]") do
 		last_box = math.max(last_box, start)
 	end
 end
-eq(connector_boxes, 12, "twelve connector boxes")
+check(connector_boxes > 0, "the connectors are drawn")
 check(first_node and last_box < first_node, "the connectors are drawn before the nodes")
 local buttons = 0
-for _ in form:gmatch("image_button%[") do buttons = buttons + 1 end
-eq(buttons, 16, "sixteen node buttons")
-has(form, "blank.png;grug_talent_pick_", "nodes are image buttons")
-has(form, "Twin Shot *\n3/3]", "a node shows its name, mark and rank")
-has(form, "label[0.40,1.23;Quarry — 15 points]", "a section title with its points")
-for _, chain in ipairs({"Draw", "Ranging", "Blade", "Shadow"}) do
-	check(form:find("label%[[%d.]+,1%.63;" .. chain .. "%]") ~= nil, "the column label " .. chain)
-end
-near(data_layout.sections.quarry.columns[2] + 0.05,
-	tonumber(form:match("label%[([%d.]+),1%.63;Ranging%]")), "Ranging over its column")
+for _ in form:gmatch("image_button%[[^%]]-;grug_graph_node_") do buttons = buttons + 1 end
+eq(buttons, #graph.trees.quarry.nodes, "a node button per Quarry node")
 local styles = 0
-for _ in form:gmatch("style%[grug_talent_pick_") do styles = styles + 1 end
+for _ in form:gmatch("style%[grug_graph_node_") do styles = styles + 1 end
 eq(styles, 3, "one style per node state (maxed, ranked, locked)")
-eq(form:find("grug_talent_tree_", 1, true), nil, "no tree switch: both trees at once")
+eq(form:find("grug_talent_pick_", 1, true), nil, "no old tree node")
 
 -- A click on an available node buys a rank and selects it.
 local learner = H.make_player("learner", "scout", 30, "")
 H.join(learner)
 local lctx = sfinv.get_or_create_context(learner)
 H.render(learner, "grug_classes:talents")
-local field
-for index, id in ipairs(grug_classes.talent_ids) do
-	if id == "fine_edge" then field = "grug_talent_pick_" .. index end
-end
-sfinv.pages["grug_classes:talents"]:on_player_receive_fields(learner, lctx, {[field] = "x"})
-eq(grug_classes.talent_rank(learner, "fine_edge"), 1, "the click bought a rank")
-eq(lctx.grug_talent_selected, "fine_edge", "and selected the node")
+local page = sfinv.pages["grug_classes:talents"]
+page:on_player_receive_fields(learner, lctx, {grug_graph_tab_2 = "x"})
+has(learner.formspec, "style[grug_graph_tab_2;bgcolor=#8a682f", "a tab click shows Veil")
+local field = graph.node_field("veil_fine_edge")
+page:on_player_receive_fields(learner, lctx, {[field] = "x"})
+eq(grug_classes.talent_rank(learner, "veil_fine_edge"), 1, "the click bought a rank")
+eq(lctx.grug_talent_selected, "veil_fine_edge", "and selected the node")
 has(learner.formspec, "style[" .. field .. ";bgcolor=#8a682f", "the selected node is gold")
 -- A refused click selects the node and shows its text and the reason.
-local locked_field
-for index, id in ipairs(grug_classes.talent_ids) do
-	if id == "untouchable" then locked_field = "grug_talent_pick_" .. index end
-end
-sfinv.pages["grug_classes:talents"]:on_player_receive_fields(learner, lctx, {[locked_field] = "x"})
-eq(grug_classes.talent_rank(learner, "untouchable"), 0, "a locked node buys nothing")
+local locked_field = graph.node_field("veil_close_dance")
+page:on_player_receive_fields(learner, lctx, {[locked_field] = "x"})
+eq(grug_classes.talent_rank(learner, "veil_close_dance"), 0, "a locked node buys nothing")
 eq(lctx.grug_talent_notice, nil, "no notice replaces the description")
 local line = learner.formspec:match("textarea%[[^;]*;[^;]*;;;(.-)%]")
-has(line, "Untouchable", "the line names the talent")
-has(line, "Below 30% health", "with its text")
-has(line, "needs", "and the reason")
+has(line, "Close Dance", "the line names the talent")
+has(line, "Unlocks Close Dance", "with its text")
+has(line, "needs 20 points in Veil", "and the reason")
+-- The respec control: free first, then confirmed, the points back.
+has(learner.formspec, "grug_talent_respec;Respec: Free]", "the respec button")
+page:on_player_receive_fields(learner, lctx, {grug_talent_respec = "x"})
+has(learner.formspec, "grug_talent_respec_confirm;Confirm]", "a confirm step")
+has(learner.formspec, "Reset every talent rank?", "with its question in the strip")
+page:on_player_receive_fields(learner, lctx, {grug_talent_respec_confirm = "x"})
+eq(grug_classes.talent_points_spent(learner), 0, "the respec returned every point")
+has(learner.formspec, "Talents reset: 1 points returned\\, nothing charged.", "and says so")
+has(learner.formspec, "label[9.90,0.45;No ranks spent]", "nothing left to reset")
 
 --
 -- 3. One tab and the catalog row.
@@ -260,8 +183,8 @@ check(form:find("list[detached:grug_skills_scout", 1, true) >
 -- Round 48 INV: the view prints each element's column, so x is "0.000".
 has(form, "list[current_player;main;0.000,0.000;8,3;8]", "the short inventory below")
 local catalog = H.catalog("scout")
-eq(catalog.inv:get_size("catalog"), 4, "four unlocked abilities, no mount")
-for i = 1, 4 do
+eq(catalog.inv:get_size("catalog"), 5, "five unlocked abilities (True Draw ranked), no mount")
+for i = 1, 5 do
 	check(catalog.inv:get_stack("catalog", i):get_name():match("^grug_abilities:") ~= nil,
 		"catalog slot " .. i .. " is an ability")
 end
@@ -541,12 +464,12 @@ eq(fresh:get_meta():get_int("grug_abilities:initial_kit_given"), 1, "the kit is 
 -- free hotbar slot, a full hotbar or a full inventory alike it waits in the
 -- catalog, and the feed says where to find it.
 local function unlock(name, hotbar_free, item, full_inventory)
-	local p = H.make_player(name, "scout", 30, "quiver=5,fletching=4,strong_draw=3")
+	local p = H.make_player(name, "scout", 30, "quarry_bowcraft=2")
 	H.join(p)
 	fill_hotbar(p, hotbar_free, item)
 	if full_inventory then fill_inventory(p) end
-	local ok = grug_classes.spend_talent(p, "pinning_shot")
-	check(ok, name .. ": Pinning Shot ranked")
+	local ok = grug_classes.spend_talent(p, "quarry_true_draw")
+	check(ok, name .. ": True Draw ranked")
 	return p
 end
 for _, case in ipairs({{"lucky", 4}, {"pushed", nil, "default:apple 99"},
@@ -558,14 +481,13 @@ for _, case in ipairs({{"lucky", 4}, {"pushed", nil, "default:apple 99"},
 	local cat = H.catalog(case[1]).inv
 	local listed = false
 	for i = 1, cat:get_size("catalog") do
-		if cat:get_stack("catalog", i):get_name() == "grug_abilities:pinning_shot" then listed = true end
+		if cat:get_stack("catalog", i):get_name() == "grug_abilities:true_draw" then listed = true end
 	end
 	check(listed, case[1] .. ": the catalog lists the unlocked skill")
 end
 
-print(("bytes: Talents & Skills page (level-30 Scout, 15 ranks) %d"):format(page_bytes))
+print(("bytes: Talents & Skills page (level-30 Scout, 15 ranks in Quarry) %d"):format(page_bytes))
 if failures > 0 then
-	print(("r44_ts: %d checks, %d failures"):format(checks, failures))
-	os.exit(1)
+	error(("r44_ts: %d checks, %d failures"):format(checks, failures), 0)
 end
 print(("r44_ts: %d checks, 0 failures"):format(checks))

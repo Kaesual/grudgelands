@@ -1,29 +1,22 @@
--- Talent trees (docs/design/skill_trees.md, WP11 lane X1: "the model").
+-- Talents (docs/design/skill_trees.md).
 --
--- This file is the registry, the point budget, the two gate kinds, the
--- spend/respec rules, the validating persistence path and the two accessors
--- every consumer reads; the 48 talents of the three shipped classes are DATA
--- in talents_warrior.lua, talents_mage.lua and talents_priest.lua, and the
--- timed-window table lives in talent_windows.lua. Lane X1 ships INERT:
--- registering a talent changes no number by itself; the consumers are the
--- one-line reads lane X2 puts at the sites skill_trees.md §3.8 names.
+-- Since Round 53 (round K, round53-plan.md §4 "LIVE") the live talents are
+-- the GRAPH talents (talent_graph.lua, one data file per class): this file
+-- loads and audits them, stores each character's ranks under
+-- grug_classes:talents in the graph's format, and answers every consumer
+-- through the unchanged accessors (get_talent_bonus, talent_rank, the
+-- points, register_on_talents_changed), the spend and respec rules, the
+-- level-drop reset and the read-only /talents.
 --
--- Shape (§1.1/§1.2): two trees per class, two chains per tree, four tiers per
--- chain. Ranks run 5 / 4 / 3 down a chain, and the capstone has exactly ONE
--- rank (ruling 17), so the capstone's chain is 5+4+3+1 = 13 and the other
--- 5+4+3+3 = 15 -- 28 ranks per tree, 56 per class.
+-- The OLD registry below (WP11 lane X1: register_tree/register_talent, its
+-- vocabulary, the four old data files and their audit) stays loaded and
+-- inert until the round's clean-up (K3): today's kits still read its tables
+-- at load, and no old talent id has a rank any more, so every old key reads
+-- 0 and every old window stays shut.
 --
 -- Points (§1.3, ruling 1): one every two levels, the first at level 2, so
 -- floor(level / 2) and 30 at level 60. Never persisted -- deriving it is what
 -- makes "points available" and "level" incapable of disagreeing.
---
--- Gates (§1.2), and both are needed:
---   * a TIER GATE is points already spent IN THAT TREE -- 0 / 5 / 12 / 20;
---   * a HARD CHAIN is "all ranks of the talent above it, in the same chain".
--- A capstone therefore costs 21 points in its tree (its chain to 12, eight
--- more anywhere in the tree to open the gate, and the capstone itself), which
--- is level 42, and two capstones would cost 42 of the 30 points a character
--- ever sees. Ruling 18's "exactly one capstone" is arithmetic here, not a rule.
 
 local META_TALENTS = "grug_classes:talents"
 
@@ -408,10 +401,8 @@ function grug_classes.audit_talents()
 end
 
 --
--- The 48 talents of the three shipped classes (skill_trees.md §§2.1-2.6).
--- DATA ONLY: every "Modifies" cell of those tables is a consumer elsewhere.
--- Descriptions are player-facing text for the sfinv page; /talents keeps a
--- read-only rank summary without reproducing them.
+-- The old trees' data (skill_trees.md §§2.1-2.6), loaded and inert since
+-- Round 53 (K3): nothing ranks these ids any more.
 --
 
 dofile(core.get_modpath(core.get_current_modname()) .. "/talents_warrior.lua")
@@ -419,17 +410,6 @@ dofile(core.get_modpath(core.get_current_modname()) .. "/talents_mage.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/talents_priest.lua")
 dofile(core.get_modpath(core.get_current_modname()) .. "/scout_talents.lua")
 grug_classes.audit_talents()
-
---
--- Runtime state. One parsed cache per online player (the pattern of
--- grug_abilities' runtime tables), cleared on leave. The timed-window table of
--- §3.2 lives in talent_windows.lua; clear_talent_windows clears it on leave,
--- death and respec (§3.7 group 7 -- and those are the only three lifecycle
--- events left, since ruling 20 removed the class change).
---
-
-local cache = {} -- player name -> {ranks, tree_points, spent, static, windowed}
-local META_UNBROKEN_READY = "grug_classes:unbroken_ready"
 
 -- The points a character of `level` has earned in total: the one rule, also
 -- read by the level-up banner (grug_xp) and the level-change notice below.
@@ -441,7 +421,8 @@ function grug_classes.talent_points_total(player)
 	return grug_classes.talent_points_at(grug_xp.get_level(player))
 end
 
--- Trees of a class, in registration order. Nil class = no trees.
+-- Trees of a class in the OLD registry, in registration order (inert since
+-- Round 53; the page and the store read graph.trees_of_class).
 function grug_classes.trees_of_class(class_id)
 	local list = {}
 	for _, tree_id in ipairs(grug_classes.tree_ids) do
@@ -453,154 +434,74 @@ function grug_classes.trees_of_class(class_id)
 	return list
 end
 
--- Does this talent belong to this class? A hand-edited meta string that gives
--- a Warrior a Mage talent is exactly as invalid as an unknown id.
-local function talent_of_class(def, class_id)
-	return class_id ~= nil and def.class == class_id
-end
-
--- Drop every rank whose tier gate or hard chain is unsatisfied, together with
--- everything below it in its chain. Dropping only ever lowers a tree's point
--- total, so the loop shrinks monotonically and terminates.
 --
--- The gate compares "points in the tree MINUS this talent's own ranks"
--- against the tier gate, which is the order-independent form of "the points
--- already spent when its first rank was bought": a legal build satisfies it
--- at every rank, and a forged one that skipped the gate does not.
-local function enforce_gates(ranks)
-	local talents = grug_classes.registered_talents
-	local gates = grug_classes.TALENT_TIER_GATES
-	while true do
-		local points = {}
-		for id, rank in pairs(ranks) do
-			local def = talents[id]
-			points[def.tree] = (points[def.tree] or 0) + rank
-		end
-		local drop = nil
-		for _, id in ipairs(grug_classes.talent_ids) do
-			local rank = ranks[id]
-			if rank then
-				local def = talents[id]
-				local ok = (points[def.tree] or 0) - rank >= gates[def.tier]
-				if ok and def.tier > 1 then
-					local above = talent_above(def)
-					ok = above ~= nil and (ranks[above.id] or 0) >= above.ranks
-				end
-				if not ok then
-					drop = drop or {}
-					drop[#drop + 1] = id
-				end
-			end
-		end
-		if not drop then
-			return
-		end
-		for _, id in ipairs(drop) do
-			ranks[id] = nil
-		end
-	end
-end
+-- The live talents (Round 53, round K: round53-plan.md §4 "LIVE", K3, K4).
+-- The graph registry, one data file per class and the audit; every accessor
+-- below reads a character's ranks through it.
+--
 
--- Total spent, and the per-tree totals.
-local function totals(ranks)
-	local spent, tree_points = 0, {}
-	for id, rank in pairs(ranks) do
-		local def = grug_classes.registered_talents[id]
-		spent = spent + rank
-		tree_points[def.tree] = (tree_points[def.tree] or 0) + rank
-	end
-	return spent, tree_points
+local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/talent_graph.lua")
+for _, class_id in ipairs({"mage", "warrior", "priest", "scout"}) do
+	dofile(modpath .. "/talent_graph_" .. class_id .. ".lua")
 end
+local graph = grug_classes.graph
+graph.audit()
 
--- The first half of the read path: the stored string, read as far as "is this
--- a rank this character could name". Unknown ids, other classes' talents and
--- over-rank values are already gone here, but no gate and no budget has been
--- applied yet. `parse` below continues from it, and the level-drop chat line
--- reports the total of THIS -- the count after the budget clamp would say how
--- many ranks a level-4 character may hold rather than how many the reset
--- actually took away.
-local function scan_stored_ranks(player)
+--
+-- Runtime state. One parsed cache per online player (the pattern of
+-- grug_abilities' runtime tables), cleared on leave and on every change. The
+-- timed-window table of §3.2 lives in talent_windows.lua;
+-- clear_talent_windows clears it on leave, death and respec.
+--
+-- The store (K4) keeps the meta key grug_classes:talents in the graph's
+-- format, "<node id>=<rank>,...". graph.parse validates it on every read:
+-- unknown ids (every id of the old trees: none carries a tree prefix) and
+-- other classes' nodes are dropped, ranks clamped, gates and prerequisites
+-- enforced, the total refunded down to floor(level / 2), deepest first. A
+-- 0.52 string therefore reads as zero ranks; the 0.53.0 migration step
+-- clears it anyway.
+--
+
+local cache = {} -- player name -> {ranks, spent, tree_points, sums}
+local META_UNBROKEN_READY = "grug_classes:unbroken_ready"
+
+-- The ranks the stored string names for the character's class, clamped per
+-- node but before any gate or budget: the level-drop line reports this --
+-- the count after the budget would say how many ranks a lower level may
+-- hold rather than how many the reset took away.
+local function stored_rank_total(player)
 	local class_id = grug_classes.get_class(player)
 	local raw = player:get_meta():get_string(META_TALENTS) or ""
-	local ranks = {}
-	for id, value in raw:gmatch("(%a[%w_]*)=(%-?%d+)") do
-		local def = grug_classes.registered_talents[id]
-		if def and talent_of_class(def, class_id) then
-			local rank = math.floor(tonumber(value) or 0)
-			if rank > def.ranks then
-				rank = def.ranks
-			end
-			if rank > 0 then
-				ranks[id] = rank
-			end
+	local total = 0
+	for id, value in raw:gmatch("([%a][%w_]*)=(%-?%d+)") do
+		local def = graph.nodes[id]
+		if def and def.class == class_id then
+			total = total + math.max(0, math.min(def.ranks, math.floor(tonumber(value) or 0)))
 		end
 	end
-	return ranks
+	return total
 end
 
--- The read path VALIDATES, it does not trust (§3.3). Unknown ids are dropped,
--- ranks are clamped to the talent's own rank count, a rank whose gate or hard
--- chain is unsatisfied is dropped with everything below it in its chain, and
--- the total is clamped to floor(level / 2) by giving back the deepest ranks
--- first. A hand-edited meta string cannot buy a capstone at level 4.
 local function parse(player)
-	local ranks = scan_stored_ranks(player)
-	enforce_gates(ranks)
-	local budget = grug_classes.talent_points_total(player)
-	local spent = totals(ranks)
-	while spent > budget do
-		-- Deepest tier first, latest registration first inside a tier: the
-		-- refund order has to be a total order or two servers disagree about
-		-- the same forged string.
-		local worst = nil
-		for _, id in ipairs(grug_classes.talent_ids) do
-			if ranks[id] then
-				local def = grug_classes.registered_talents[id]
-				if not worst or def.tier >= worst.tier then
-					worst = def
-				end
-			end
-		end
-		if not worst then
-			break
-		end
-		ranks[worst.id] = ranks[worst.id] - 1
-		if ranks[worst.id] <= 0 then
-			ranks[worst.id] = nil
-		end
-		enforce_gates(ranks)
-		spent = totals(ranks)
-	end
-	local total_spent, tree_points = totals(ranks)
-	-- Pre-summed bonuses, so the consumers on the damage pipeline pay one
-	-- table index. Windowed talents are kept apart: their contribution
-	-- depends on a clock, so it cannot live in a cached sum.
-	--
-	-- Summed in REGISTRATION order, not in `pairs` order: no effect key has
-	-- two contributors on one character today (the three shared keys are
-	-- shared across classes, never inside one), but a float sum whose order
-	-- depends on a hash is a defect waiting for the day one does.
-	local static, windowed = {}, {}
-	for _, id in ipairs(grug_classes.talent_ids) do
+	local ranks = graph.parse(grug_classes.get_class(player),
+		player:get_meta():get_string(META_TALENTS),
+		grug_classes.talent_points_total(player))
+	-- Pre-summed effects, so the consumers on the damage pipeline pay one
+	-- table index. Summed in REGISTRATION order, never in `pairs` order: a
+	-- float sum whose order depends on a hash would let two servers disagree.
+	local tree_points, sums = {}, {}
+	for _, id in ipairs(graph.node_ids) do
 		local rank = ranks[id]
 		if rank then
-			local def = grug_classes.registered_talents[id]
-			if def.window then
-				windowed[#windowed + 1] = def
-			else
-				for key, values in pairs(def.effects) do
-					static[key] = (static[key] or 0) + values[rank]
-				end
+			local def = graph.nodes[id]
+			tree_points[def.tree] = (tree_points[def.tree] or 0) + rank
+			for key, values in pairs(def.effects) do
+				sums[key] = (sums[key] or 0) + values[rank]
 			end
 		end
 	end
-	return {
-		ranks = ranks,
-		spent = total_spent,
-		tree_points = tree_points,
-		static = static,
-		windowed = windowed,
-	}
+	return {ranks = ranks, spent = graph.spent(ranks), tree_points = tree_points, sums = sums}
 end
 
 local function state(player)
@@ -617,57 +518,43 @@ function grug_classes.invalidate_talents(player)
 	cache[player:get_player_name()] = nil
 end
 
-local function serialize(ranks)
-	local parts = {}
-	for _, id in ipairs(grug_classes.talent_ids) do
-		local rank = ranks[id]
-		if rank and rank > 0 then
-			parts[#parts + 1] = id .. "=" .. rank
-		end
-	end
-	return table.concat(parts, ",")
-end
-
-grug_classes.serialize_talents = serialize
-
 -- Timed windows (§3.2): the window runtime lives in talent_windows.lua.
-dofile(core.get_modpath(core.get_current_modname()) .. "/talent_windows.lua")
+dofile(modpath .. "/talent_windows.lua")
 
 --
--- The two accessors every consumer reads (§3.2). get_talent_bonus is the
--- deliberate twin of get_race_perk, down to the grug_core stub override at
--- the bottom of this file.
+-- The accessors every consumer reads. get_talent_bonus is the deliberate
+-- twin of get_race_perk, down to the grug_core stub override at the bottom
+-- of this file.
 --
 
--- Summed bonus of this key over the player's ranked talents; 0 when none.
--- A level-scaled key answers with its amount at the player's level.
+-- The summed rank value of `key` over the player's ranks: a shared key, a
+-- class key or "<family>:<param>" (graph.valid_key); 0 when none. A
+-- level-scaled key (armor_percent_add) answers with its amount at the
+-- player's level.
 function grug_classes.get_talent_bonus(player, key)
 	if not player or not player.is_player or not player:is_player() then
 		return 0
 	end
-	local entry = state(player)
-	local total = entry.static[key] or 0
-	if WINDOW_KEYS[key] then
-		for _, def in ipairs(entry.windowed) do
-			local values = def.effects[key]
-			if values and grug_classes.talent_window_active(player, def.id) then
-				total = total + values[entry.ranks[def.id]]
-			end
-		end
-	end
-	if total ~= 0 and LEVEL_SCALED_KEYS[key] then
-		return grug_classes.talent_level_amount(player, key, total)
+	local total = state(player).sums[key] or 0
+	if total ~= 0 and graph.LEVEL_SCALED_KEYS[key] then
+		return graph.level_amount(key, total, grug_xp.get_level(player))
 	end
 	return total
 end
 
--- 0..5; used by the kit grant, the gates and the UI, never by a numeric
+-- The rank of graph node `talent_id` ("<tree>_<name>"); used by the kit
+-- grant (an ability's `talent`), the gates and the UI, never by a numeric
 -- consumer.
 function grug_classes.talent_rank(player, talent_id)
 	if not player or not player.is_player or not player:is_player() then
 		return 0
 	end
 	return state(player).ranks[talent_id] or 0
+end
+
+-- The player's ranks, {node id = rank}: the parsed cache itself, read only.
+function grug_classes.talent_ranks(player)
+	return state(player).ranks
 end
 
 function grug_classes.talent_points_spent(player)
@@ -677,7 +564,8 @@ end
 -- The central Core modifier has already resolved dodge, pressure, armor and
 -- absorb when this non-modifier callback runs. Trigger only from a surviving
 -- punch whose actual HP loss leaves the Warrior below 20%; environmental and
--- fully absorbed events never open the window.
+-- fully absorbed events never open the window. Inert since Round 53: no
+-- graph node is called "unbroken" (Bulwark's is bulwark_unbroken).
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change >= 0 or reason.type ~= "punch" or
 			grug_classes.talent_rank(player, "unbroken") <= 0 then
@@ -712,13 +600,13 @@ local talents_changed_callbacks = {}
 
 -- func(player) -- called after any change to a character's talents (a spend,
 -- a respec, an admin level drop). The mirror of register_on_class_chosen;
--- grug_abilities re-syncs the kit here once lane X3 grants talent abilities.
+-- grug_abilities re-syncs the kit here.
 function grug_classes.register_on_talents_changed(func)
 	table.insert(talents_changed_callbacks, func)
 end
 
 local function commit(player, ranks)
-	player:get_meta():set_string(META_TALENTS, serialize(ranks))
+	player:get_meta():set_string(META_TALENTS, graph.serialize(ranks))
 	cache[player:get_player_name()] = nil
 	for _, func in ipairs(talents_changed_callbacks) do
 		func(player)
@@ -726,41 +614,21 @@ local function commit(player, ranks)
 end
 
 --
--- Spending, and the refusal reasons the UI shows.
+-- Spending, and the refusal reasons the UI shows: the graph's rules
+-- (graph.spend_refusal), the same texts the read path gives.
 --
 
--- Returns true, or false plus the reason a point cannot go here.
+-- Returns true, or false plus the reason a rank of node `talent_id` cannot
+-- be bought.
 function grug_classes.can_spend_talent(player, talent_id)
-	local def = grug_classes.registered_talents[talent_id]
-	if not def then
-		return false, "No such talent."
-	end
 	local class_id = grug_classes.get_class(player)
 	if not class_id then
 		return false, "You have no class yet."
 	end
-	if not talent_of_class(def, class_id) then
-		return false, def.name .. " belongs to another class."
-	end
-	if grug_classes.talent_points_available(player) < 1 then
-		return false, "No talent points left."
-	end
-	local rank = grug_classes.talent_rank(player, talent_id)
-	if rank >= def.ranks then
-		return false, def.name .. " is already at " .. def.ranks .. "/" ..
-			def.ranks .. "."
-	end
-	local tree = grug_classes.registered_trees[def.tree]
-	local gate = grug_classes.TALENT_TIER_GATES[def.tier]
-	local in_tree = grug_classes.tree_points(player, def.tree) - rank
-	if in_tree < gate then
-		return false, def.name .. " needs " .. gate .. " points in " ..
-			tree.name .. " (you have " .. in_tree .. ")."
-	end
-	local above = talent_above(def)
-	if above and grug_classes.talent_rank(player, above.id) < above.ranks then
-		return false, def.name .. " needs " .. above.name .. " at " ..
-			above.ranks .. "/" .. above.ranks .. "."
+	local reason = graph.spend_refusal(class_id, state(player).ranks, talent_id,
+		grug_classes.talent_points_total(player))
+	if reason then
+		return false, reason
 	end
 	return true
 end
@@ -770,23 +638,19 @@ function grug_classes.spend_talent(player, talent_id)
 	if not ok then
 		return false, reason
 	end
-	local entry = state(player)
-	local ranks = {}
-	for id, rank in pairs(entry.ranks) do
-		ranks[id] = rank
-	end
-	ranks[talent_id] = (ranks[talent_id] or 0) + 1
-	commit(player, ranks)
+	commit(player, (graph.spend(grug_classes.get_class(player), state(player).ranks,
+		talent_id, grug_classes.talent_points_total(player))))
 	return true
 end
 
--- A respec is a FULL reset (ruling 20): every rank to 0, all points back.
--- Pricing and the money transaction live on the sfinv page; this function is
--- the deterministic reset used there and by the free admin level-drop path.
+-- A respec is a FULL reset (ruling 20, graph.reset): every rank to 0, all
+-- points back. Pricing and the money transaction live on the sfinv page;
+-- this function is the deterministic reset used there and by the free
+-- level-drop path.
 function grug_classes.respec(player)
-	local spent = grug_classes.talent_points_spent(player)
+	local cleared, spent = graph.reset(state(player).ranks)
 	grug_classes.clear_talent_windows(player)
-	commit(player, {})
+	commit(player, cleared)
 	return spent
 end
 
@@ -811,10 +675,7 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 		-- few lines up, so talent_points_spent would already have been
 		-- trimmed to floor(new_level / 2) and a big drop would under-report
 		-- what it wiped.
-		local spent = 0
-		for _, rank in pairs(scan_stored_ranks(player)) do
-			spent = spent + rank
-		end
+		local spent = stored_rank_total(player)
 		if spent > 0 then
 			grug_classes.respec(player)
 			grug_core.feed(player, "quest", "Your level dropped: all " .. spent ..
@@ -855,24 +716,15 @@ core.register_on_dieplayer(function(player)
 end)
 
 --
--- Read-only chat summary. Buying ranks and resetting a build live exclusively
--- on the sfinv Talents page; no command can mutate talent state.
+-- Read-only chat summary of the graph. Buying ranks and resetting a build
+-- live exclusively on the sfinv Talents & Skills page; no command can mutate
+-- talent state.
 --
-
-local function tree_line(player, tree)
-	return ("%s [%d]"):format(tree.name, grug_classes.tree_points(player, tree.id))
-end
 
 local function talent_line(player, def)
 	local rank = grug_classes.talent_rank(player, def.id)
-	local mark = " "
-	if def.keystone then
-		mark = "*"
-	elseif def.capstone then
-		mark = "!"
-	end
-	local line = ("  %s %-16s %d/%d  %s"):format(mark, def.id, rank,
-		def.ranks, def.name)
+	local line = ("  %s %-30s %d/%d  %s"):format(def.type == "ultimate" and "!" or " ",
+		def.id, rank, def.ranks, def.name)
 	if rank < def.ranks then
 		local ok, reason = grug_classes.can_spend_talent(player, def.id)
 		if not ok then
@@ -901,18 +753,14 @@ core.register_chatcommand("talents", {
 				grug_classes.talent_points_spent(player),
 				grug_classes.talent_points_available(player)),
 		}
-		for _, tree in ipairs(grug_classes.trees_of_class(class_id)) do
-			lines[#lines + 1] = tree_line(player, tree)
-			for _, chain in ipairs(tree.chains) do
-				for _, def in ipairs(tree.talents) do
-					if def.chain == chain then
-						lines[#lines + 1] = talent_line(player, def)
-					end
-				end
+		for _, tree in ipairs(graph.trees_of_class(class_id)) do
+			lines[#lines + 1] = ("%s [%d]"):format(tree.name,
+				grug_classes.tree_points(player, tree.id))
+			for _, def in ipairs(tree.nodes) do
+				lines[#lines + 1] = talent_line(player, def)
 			end
 		end
-		lines[#lines + 1] =
-			"* keystone, ! capstone. Open the Talents & Skills tab to make changes."
+		lines[#lines + 1] = "! ultimate. Open the Talents & Skills tab to make changes."
 		return true, table.concat(lines, "\n")
 	end,
 })
@@ -926,9 +774,10 @@ core.register_chatcommand("talents", {
 --
 -- Registered HERE rather than from stats.lua, which is dofile'd before this
 -- file and would find no callback to register on; and registered first, so a
--- later consumer (lane X3's sync_kit, which has to take a talent-granted
--- button back on a respec) reads stats that are already current -- the same
--- ordering rule stats.lua states for the equipment-change seam.
+-- later consumer (grug_abilities' kit sync, which has to take a
+-- talent-granted button back on a respec) reads stats that are already
+-- current -- the same ordering rule stats.lua states for the equipment-change
+-- seam.
 --
 -- Deliberately WITHOUT heal_gain: spending a point must not hand out free
 -- health, and apply_stats already clamps current HP down when a respec lowers
