@@ -128,7 +128,7 @@ grug_projectiles.register("fireball", {
 		-- The impact point before a lethal hit can remove the target.
 		local at = point or target:get_pos()
 		direct_hit("fireball", owner, target, data, point, attacker_level)
-		-- The splash: other enemies within 2 m of the impact, in its sight,
+		-- The splash: other enemies within 2 m of the impact (band ±2),
 		-- never the primary target.
 		if at and (data.splash_damage or 0) > 0 then
 			local hostile = target_filter(owner, "hostile")
@@ -198,15 +198,14 @@ grug_abilities.register_ability({
 	-- The Mage's basic attack: replaces the universal Strike in place.
 	transforms = "strike",
 	tags = {"fire"},
-	description = "A free spark of fire at the enemy in your crosshair, up to 20 m;\n" ..
+	description = "A free spark of fire at the enemy in your crosshair;\n" ..
 		"damage scales with your level and your staff or wand.",
 	values = function(user, def)
 		return {damage = damage(user, def or grug_abilities.registered.fiery_spark, 1.0)}
 	end,
 	description_for = function(user, def)
-		return ("A free spark of fire at the enemy in your crosshair, up to %g m:\n" ..
+		return ("A free spark of fire at the enemy in your crosshair:\n" ..
 			"%d damage, from your level and your staff or wand."):format(
-				grug_abilities.get_range(user, def),
 				effective_number(user, def.values(user, def).damage))
 	end,
 	color = "#ffb347",
@@ -268,7 +267,7 @@ grug_abilities.register_ability({
 	target_kind = "hostile",
 	talent_gated = true, talent = "ember_fireball",
 	tags = {"fire"},
-	description = "Hurls a fireball at the enemy in your crosshair, up to 20 m;\n" ..
+	description = "Hurls a fireball at the enemy in your crosshair;\n" ..
 		"it also burns other enemies within 2 m of the impact.",
 	-- Afterglow adds to the hit, Wide Ember to the splash (both in D);
 	-- Fire Mastery raises both.
@@ -281,10 +280,9 @@ grug_abilities.register_ability({
 	end,
 	description_for = function(user, def)
 		local values = def.values(user, def)
-		return ("Hurls a fireball at the enemy in your crosshair, up to %g m:\n" ..
+		return ("Hurls a fireball at the enemy in your crosshair:\n" ..
 			"%d damage, and %d to other enemies within 2 m of the impact."):format(
-				grug_abilities.get_range(user, def), effective_number(user, values.damage),
-				effective_number(user, values.splash))
+				effective_number(user, values.damage), effective_number(user, values.splash))
 	end,
 	color = "#ff8833",
 	cost = {mana_percent = 6},
@@ -306,14 +304,13 @@ grug_abilities.register_ability({
 	target_kind = "hostile",
 	talent_gated = true, talent = "ember_flame_lance",
 	tags = {"fire"},
-	description = "An instant, heavy lance of fire at the enemy in your crosshair, up to 20 m.",
+	description = "An instant, heavy lance of fire at the enemy in your crosshair.",
 	values = function(user, def)
 		return {damage = damage(user, def or grug_abilities.registered.flame_lance, 2.20)}
 	end,
 	description_for = function(user, def)
-		return ("An instant, heavy lance of fire at the enemy in your crosshair,\n" ..
-			"up to %g m: %d damage."):format(grug_abilities.get_range(user, def),
-				effective_number(user, def.values(user, def).damage))
+		return ("An instant, heavy lance of fire at the enemy in your crosshair:\n" ..
+			"%d damage."):format(effective_number(user, def.values(user, def).damage))
 	end,
 	color = "#fff0c8",
 	cost = {mana_percent = 10},
@@ -328,7 +325,7 @@ grug_abilities.register_ability({
 
 -- A ground area at the crosshair (§3a): the anchor now, `spec.delay` later
 -- one impact on every enemy within the radius (area.query: a band of ±3
--- and sight from the anchor), with the picked impact cue once at the anchor.
+-- around the anchor), with the picked impact cue once at the anchor.
 -- No ground: the refusal, before cost and cooldown. The damage is the
 -- cast's; `spec.on_hit(obj)` runs on each accepted hit.
 local function ground_area(user, def, spec)
@@ -367,15 +364,14 @@ grug_abilities.register_ability({
 	target_kind = "self",
 	talent_gated = true, talent = "ember_meteor",
 	tags = {"fire"},
-	description = "Calls a meteor onto the ground in your crosshair, up to 20 m:\n" ..
+	description = "Calls a meteor onto the ground in your crosshair:\n" ..
 		"after 1.5 s it strikes every enemy within 3 m.",
 	values = function(user, def)
 		return {damage = damage(user, def or grug_abilities.registered.meteor, 1.40)}
 	end,
 	description_for = function(user, def)
-		return ("Calls a meteor onto the ground in your crosshair, up to %g m:\n" ..
+		return ("Calls a meteor onto the ground in your crosshair:\n" ..
 			"after 1.5 s it deals %d damage to every enemy within %g m."):format(
-				grug_abilities.get_range(user, def),
 				effective_number(user, def.values(user, def).damage), radius(user, def, 3))
 	end,
 	color = "#d85b2d",
@@ -383,6 +379,8 @@ grug_abilities.register_ability({
 	cooldown = 18,
 	occupied_cast = 1,
 	range = 20,
+	-- A ground area at the crosshair: the tooltip shows the range.
+	range_shown = true,
 	cast = function(user, pointed, def)
 		return ground_area(user, def, {delay = 1.5, radius = radius(user, def, 3),
 			fall = "meteor_fall", burst = "meteor_impact", sound = "meteor_impact"})
@@ -397,15 +395,14 @@ grug_abilities.register_ability({
 	target_kind = "self",
 	talent_gated = true, talent = "ember_fire_rain",
 	tags = {"fire"},
-	description = "Calls a shower of fire onto the ground in your crosshair, up to 20 m:\n" ..
+	description = "Calls a shower of fire onto the ground in your crosshair:\n" ..
 		"after 1.5 s it strikes every enemy within 5 m.",
 	values = function(user, def)
 		return {damage = damage(user, def or grug_abilities.registered.fire_rain, 2.50)}
 	end,
 	description_for = function(user, def)
-		return ("Calls a shower of fire onto the ground in your crosshair, up to %g m:\n" ..
+		return ("Calls a shower of fire onto the ground in your crosshair:\n" ..
 			"after 1.5 s it deals %d damage to every enemy within %g m."):format(
-				grug_abilities.get_range(user, def),
 				effective_number(user, def.values(user, def).damage), radius(user, def, 5))
 	end,
 	color = "#ff5a1f",
@@ -413,6 +410,8 @@ grug_abilities.register_ability({
 	cooldown = 60,
 	occupied_cast = 1.5,
 	range = 20,
+	-- A ground area at the crosshair: the tooltip shows the range.
+	range_shown = true,
 	cast = function(user, pointed, def)
 		return ground_area(user, def, {delay = 1.5, radius = radius(user, def, 5),
 			fall = "fire_rain_fall", burst = "fire_rain_impact", sound = "fire_rain_impact"})
@@ -434,7 +433,7 @@ grug_abilities.register_ability({
 	transforms = "fiery_spark",
 	talent_gated = true, talent = "rime_cold_spark",
 	tags = {"frost"},
-	description = "A free spark of frost at the enemy in your crosshair, up to 20 m;\n" ..
+	description = "A free spark of frost at the enemy in your crosshair;\n" ..
 		"it slows by 12% for 1.5 s.",
 	-- Keen Cold adds to every hit; Cold Shock's window (`shock`, read at the
 	-- launch that spends it) to the next one.
@@ -443,8 +442,8 @@ grug_abilities.register_ability({
 			1.0 + bonus(user, "cold_spark_unit_add") + (shock or 0))}
 	end,
 	description_for = function(user, def)
-		return ("A free spark of frost at the enemy in your crosshair, up to %g m:\n" ..
-			"%d damage and a 12%% slow for 1.5 s."):format(grug_abilities.get_range(user, def),
+		return ("A free spark of frost at the enemy in your crosshair:\n" ..
+			"%d damage and a 12%% slow for 1.5 s."):format(
 				effective_number(user, def.values(user, def).damage))
 	end,
 	color = "#bfe8ff",
@@ -615,15 +614,14 @@ grug_abilities.register_ability({
 	target_kind = "self",
 	talent_gated = true, talent = "rime_winter_field",
 	tags = {"frost"},
-	description = "Freezes the ground in your crosshair, up to 15 m: after 1 s\n" ..
-		"every enemy within 4 m is struck and slowed by 40% for 5 s.",
+	description = "Freezes the ground in your crosshair: after 1 s every enemy\n" ..
+		"within 4 m is struck and slowed by 40% for 5 s.",
 	values = function(user, def)
 		return {damage = damage(user, def or grug_abilities.registered.winter_field, 1.0)}
 	end,
 	description_for = function(user, def)
-		return ("Freezes the ground in your crosshair, up to %g m: after 1 s\n" ..
-			"%d damage and a 40%% slow for 5 s to every enemy within %g m."):format(
-				grug_abilities.get_range(user, def),
+		return ("Freezes the ground in your crosshair: after 1 s %d damage\n" ..
+			"and a 40%% slow for 5 s to every enemy within %g m."):format(
 				effective_number(user, def.values(user, def).damage), radius(user, def, 4))
 	end,
 	color = "#dff4ff",
@@ -631,6 +629,8 @@ grug_abilities.register_ability({
 	cooldown = 60,
 	occupied_cast = 1.5,
 	range = 15,
+	-- A ground area at the crosshair: the tooltip shows the range.
+	range_shown = true,
 	cast = function(user, pointed, def)
 		return ground_area(user, def, {delay = 1, radius = radius(user, def, 4),
 			warning = "winter_field_warning", fall = "winter_field_fall",

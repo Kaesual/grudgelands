@@ -49,7 +49,7 @@ grug_abilities.register_ability({
 	name = "Charge",
 	kind = "cast",
 	target_kind = "hostile",
-	description = "Dash to an enemy up to 12 m away; damage scales with your level\n" ..
+	description = "Dash to an enemy; damage scales with your level\n" ..
 		"generating 15 rage and stunning eligible targets for 0.75 s.",
 	-- 12 % of a base hit before the damage scalar (Round 35): the former flat
 	-- 3 was exactly that at level 30 and faded with every level above it.
@@ -61,7 +61,7 @@ grug_abilities.register_ability({
 	end,
 	description_for = function(user, def)
 		local v = def.values(user)
-		local text = ("Dash to an enemy up to 12 m away, dealing %d damage\n" ..
+		local text = ("Dash to an enemy, dealing %d damage\n" ..
 			"generating %d rage and stunning eligible targets for 0.75 s."):format(
 				effective_number(user, v.damage), v.rage)
 		if v.slow > 0 then
@@ -244,9 +244,9 @@ grug_abilities.register_ability({
 	end,
 })
 
--- Bellow (B9) replaces Taunt in place: every mob within 6 m around you, in
--- sight (area.query around the caster, filtered by valid_target), with
--- Taunt's cooldown key.
+-- Bellow (B9) replaces Taunt in place: every mob within 6 m around you
+-- (area.query around the caster, filtered by valid_target), with Taunt's
+-- cooldown key.
 local BELLOW_RADIUS = 6
 grug_abilities.register_ability({
 	id = "bellow",
@@ -378,7 +378,7 @@ grug_abilities.register_ability({
 	color = "#c84a32",
 	cost = {rage = 25},
 	cost_adjust = blow_cost,
-	-- Melee at 3 m, so the elf's +5 m ability range does not apply (E7).
+	-- Melee at 3 m, so the elf's ability range bonus does not apply (E7).
 	melee = true,
 	range = 3,
 	-- The proc REPLACES the plain hit (classes.md §3), x3 threat.
@@ -393,7 +393,7 @@ grug_abilities.register_ability({
 
 -- Broadstroke (U7) replaces Mighty Blow in place: the same primary hit, and
 -- at most 2 other hostiles in a 100 degree, 3 m arc in front (area.cone,
--- nearest first, in sight, valid_target) take 0.35 S each (Follow Through
+-- nearest first, valid_target) take 0.35 S each (Follow Through
 -- adds); they may crit and gain no rage (ability damage). Ruination's +15 %
 -- reaches them too.
 local BROAD_RADIUS, BROAD_ANGLE, BROAD_CAP, BROAD_SECONDARY = 3, 100, 2, 0.35

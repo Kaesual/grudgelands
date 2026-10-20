@@ -73,7 +73,7 @@ graph.register_tree({
 			description = "Fireball's hit +5/10/15 % of a Spark hit."},
 		{id = "ember_meteor", code = "F8", name = "Meteor", type = "unlock", ability = "meteor",
 			ranks = 1, gate = 12, col = 3, requires = {"ember_fireball"},
-			description = "Unlocks Meteor: strikes the ground up to 20 m away after 1.5 s " ..
+			description = "Unlocks Meteor: strikes the ground in your crosshair after 1.5 s " ..
 				"with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown, 14 % mana."},
 		{id = "ember_wide_ember", code = "F9", name = "Wide Ember", type = "modifier",
 			ranks = 3, gate = 12, col = 2, requires = {"ember_fireball"},
@@ -89,7 +89,7 @@ graph.register_tree({
 			description = "Meteor and Fire Rain cost 5/10/15 % less, on top of Measured Fuel."},
 		{id = "ember_fire_rain", code = "F12", name = "Fire Rain", type = "ultimate",
 			ability = "fire_rain", ranks = 1, gate = 20, col = 3, requires = {"ember_meteor"},
-			description = "Unlocks Fire Rain: one shower on the ground up to 20 m away " ..
+			description = "Unlocks Fire Rain: one shower on the ground in your crosshair " ..
 				"after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, 22 % " ..
 				"mana, 1.5 s recovery."},
 		{id = "ember_spreading_rain", code = "F13", name = "Spreading Rain", type = "modifier",
@@ -153,7 +153,7 @@ graph.register_tree({
 			description = "Ice Nova's radius +0.25/0.50/0.75 m."},
 		{id = "rime_winter_field", code = "R13", name = "Winter Field", type = "ultimate",
 			ability = "winter_field", ranks = 1, gate = 20, col = 3, requires = {"rime_ice_nova"},
-			description = "Unlocks Winter Field: one blast on the ground up to 15 m away " ..
+			description = "Unlocks Winter Field: one blast on the ground in your crosshair " ..
 				"after 1 s, about 100 % of a Spark hit and a 40 % slow for 5 s within 4 m; " ..
 				"60 s cooldown, 18 % mana."},
 		{id = "rime_lasting_armor", code = "R14", name = "Lasting Armor", type = "modifier",

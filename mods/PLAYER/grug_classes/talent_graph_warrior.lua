@@ -79,7 +79,7 @@ graph.register_tree({
 			description = "Dodge chance +2/4/6 %."},
 		{id = "bulwark_taunt", code = "B7", name = "Taunt", type = "unlock", ability = "taunt",
 			ranks = 1, gate = 6, col = 5,
-			description = "Unlocks Taunt: one enemy within 8 m attacks you for 3 s; free, " ..
+			description = "Unlocks Taunt: the enemy in your crosshair attacks you for 3 s; free, " ..
 				"8 s cooldown."},
 		{id = "bulwark_recover", code = "B8", name = "Recover", type = "modifier",
 			ranks = 3, gate = 10, col = 2, requires = {"bulwark_retort"},

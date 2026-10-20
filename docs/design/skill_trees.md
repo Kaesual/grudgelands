@@ -173,7 +173,7 @@ Reading the tables:
 | B4 | **Hold Ground** `bulwark_hold_ground` | unlock `hold_ground` | 1 | 2 | — | Unlocks Hold Ground: a shield of 12 % of a base health pool for 5 s; 25 rage, 24 s cooldown. | — |
 | B5 | **Measured Answer** `bulwark_measured_answer` | modifier | 3 | 6 | B1 | Retort's bonus rises to 30/35/40 % of a Strike hit. | `retort_bonus_add` 0.05/0.1/0.15 |
 | B6 | **Turn the Edge** `bulwark_turn_the_edge` | modifier | 3 | 6 | — | Dodge chance +2/4/6 %. | `dodge_chance_add` 2/4/6 |
-| B7 | **Taunt** `bulwark_taunt` | unlock `taunt` | 1 | 6 | — | Unlocks Taunt: one enemy within 8 m attacks you for 3 s; free, 8 s cooldown. | — |
+| B7 | **Taunt** `bulwark_taunt` | unlock `taunt` | 1 | 6 | — | Unlocks Taunt: the enemy in your crosshair attacks you for 3 s; free, 8 s cooldown. | — |
 | B8 | **Recover** `bulwark_recover` | modifier | 3 | 10 | B1 | A landed Retort heals 0.7/1.3/2.0 % of a base health pool; never critical. | `retort_heal_percent` 0.7/1.3/2 |
 | B9 | **Bellow** `bulwark_bellow` | transform `bellow` | 1 | 12 | B7 | Taunt becomes Bellow: every enemy within 6 m around you; the same cooldown. | — |
 | B10 | **Layered Guard** `bulwark_layered_guard` | modifier | 3 | 12 | B4 | Hold Ground's shield +3/6/9 % of a base health pool. | `hold_ground_absorb_add` 3/6/9 |
@@ -225,7 +225,7 @@ swing grant (Round 46 ruling 9), so every weapon earns the same rage per
 second. Ruination's ×1.15 is a multiplier on every swing (procs included)
 through the swing callback and also reaches Broadstroke's other targets;
 Finisher reads the target's health before the swing. Broadstroke's other
-targets (`area.cone`, nearest first, in sight, the shared target check) may
+targets (`area.cone`, nearest first, the shared target check) may
 crit and give no rage.
 
 ### 2.3 Mage — Ember
@@ -239,11 +239,11 @@ crit and give no rage.
 | F5 | **Flame Lance** `ember_flame_lance` | unlock `flame_lance` | 1 | 6 | — | Unlocks Flame Lance: an instant heavy bolt for 220 % of a Spark hit; 8 s cooldown, 10 % mana, 1.5 s recovery. | — |
 | F6 | **Heat Focus** `ember_heat_focus` | modifier | 3 | 6 | F5 | Flame Lance deals +5/10/15 % damage. | `damage_pct:flame_lance` 5/10/15 |
 | F7 | **Afterglow** `ember_afterglow` | modifier | 3 | 6 | F4 | Fireball's hit +5/10/15 % of a Spark hit. | `fireball_unit_add` 0.05/0.1/0.15 |
-| F8 | **Meteor** `ember_meteor` | unlock `meteor` | 1 | 12 | F4 | Unlocks Meteor: strikes the ground up to 20 m away after 1.5 s with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown, 14 % mana. | — |
+| F8 | **Meteor** `ember_meteor` | unlock `meteor` | 1 | 12 | F4 | Unlocks Meteor: strikes the ground in your crosshair after 1.5 s with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown, 14 % mana. | — |
 | F9 | **Wide Ember** `ember_wide_ember` | modifier | 3 | 12 | F4 | Fireball's splash rises to 20/25/30 % of a Spark hit. | `fireball_splash_unit_add` 0.05/0.1/0.15 |
 | F10 | **Broad Impact** `ember_broad_impact` | modifier | 3 | 12 | F8 | Meteor's radius +0.25/0.50/0.75 m. | `radius_add:meteor` 0.25/0.5/0.75 |
 | F11 | **Controlled Burn** `ember_controlled_burn` | modifier | 3 | 16 | F8 | Meteor and Fire Rain cost 5/10/15 % less, on top of Measured Fuel. | `cost_pct:fire_rain` -5/-10/-15; `cost_pct:meteor` -5/-10/-15 |
-| F12 | **Fire Rain** `ember_fire_rain` | ultimate `fire_rain` | 1 | 20 | F8 | Unlocks Fire Rain: one shower on the ground up to 20 m away after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, 22 % mana, 1.5 s recovery. | — |
+| F12 | **Fire Rain** `ember_fire_rain` | ultimate `fire_rain` | 1 | 20 | F8 | Unlocks Fire Rain: one shower on the ground in your crosshair after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, 22 % mana, 1.5 s recovery. | — |
 | F13 | **Spreading Rain** `ember_spreading_rain` | modifier | 3 | 20 | F12 | Fire Rain's radius +0.25/0.50/0.75 m. | `radius_add:fire_rain` 0.25/0.5/0.75 |
 
 Consumers: `kits_mage.lua` (every Ember skill; the class keys
@@ -270,7 +270,7 @@ Fireball's splash never crit (§2.10).
 | R10 | **Cold Shock** `rime_cold_shock` | window | 3 | 12 | R9, R1 | When Ice Nova hits an enemy, your next Cold Spark within 4 s deals +25/50/75 % of a Spark hit; one charge. | `cold_shock_unit_add` 0.25/0.5/0.75 |
 | R11 | **Returning Cold** `rime_returning_cold` | modifier | 3 | 12 | — | Ice Wave's and Ice Nova's cooldown -1/2/3 s. | `cooldown_sub:ice_nova` 1/2/3; `cooldown_sub:ice_wave` 1/2/3 |
 | R12 | **Far Frost** `rime_far_frost` | modifier | 3 | 16 | R9 | Ice Nova's radius +0.25/0.50/0.75 m. | `radius_add:ice_nova` 0.25/0.5/0.75 |
-| R13 | **Winter Field** `rime_winter_field` | ultimate `winter_field` | 1 | 20 | R9 | Unlocks Winter Field: one blast on the ground up to 15 m away after 1 s, about 100 % of a Spark hit and a 40 % slow for 5 s within 4 m; 60 s cooldown, 18 % mana. | — |
+| R13 | **Winter Field** `rime_winter_field` | ultimate `winter_field` | 1 | 20 | R9 | Unlocks Winter Field: one blast on the ground in your crosshair after 1 s, about 100 % of a Spark hit and a 40 % slow for 5 s within 4 m; 60 s cooldown, 18 % mana. | — |
 | R14 | **Lasting Armor** `rime_lasting_armor` | modifier | 3 | 16 | R7 | Rime Mantle lasts +0.5/1.0/1.5 s. | `duration_add:rime_mantle` 0.5/1/1.5 |
 
 Consumers: `kits_mage.lua` (every Rime skill; `cold_spark_unit_add`,
@@ -320,17 +320,17 @@ window `clear_conscience` opens on a committed Heal, Shield or Mend (5 s, an
 |---|---|---|---:|---:|---|---|---|
 | RK1 | **Sharpened Word** `reckoning_sharpened_word` | modifier | 3 | 0 | — | Smite +5/10/15 % of a base hit; with Steady Word only the higher counts. | `smite_sharpened_add` 0.05/0.1/0.15 |
 | RK2 | **Measured Judgment** `reckoning_measured_judgment` | modifier | 3 | 0 | — | Rebuke, Word of Ruin, Censure and Final Word cost 4/8/12 % less. | `cost_pct:censure` -4/-8/-12; `cost_pct:paid` -4/-8/-12 |
-| RK3 | **Rebuke** `reckoning_rebuke` | unlock `rebuke` | 1 | 2 | — | Unlocks Rebuke: an instant hit up to 20 m away for 180 % of a Smite hit; 6 s cooldown, 6 % mana. | — |
+| RK3 | **Rebuke** `reckoning_rebuke` | unlock `rebuke` | 1 | 2 | — | Unlocks Rebuke: an instant hit at the enemy in your crosshair for 180 % of a Smite hit; 6 s cooldown, 6 % mana. | — |
 | RK4 | **Firm Rebuke** `reckoning_firm_rebuke` | modifier | 3 | 2 | RK3 | Rebuke +10/20/30 % of a base hit. | `rebuke_add` 0.1/0.2/0.3 |
 | RK5 | **Long Reach** `reckoning_long_reach` | modifier | 3 | 6 | — | Smite, Rebuke, Word of Ruin and Final Word reach 1/2/3 m farther. | `range_add:final_word` 1/2/3; `range_add:rebuke` 1/2/3; `range_add:smite` 1/2/3; `range_add:word_of_ruin` 1/2/3 |
 | RK6 | **Word of Ruin** `reckoning_word_of_ruin` | unlock `word_of_ruin` | 1 | 6 | — | Unlocks Word of Ruin: an instant hit for 160 % of a Smite hit that heals you for half the damage, at most 6 % of a base health pool; 16 s cooldown, 10 % mana. | — |
 | RK7 | **Resolute Word** `reckoning_resolute_word` | modifier | 3 | 10 | RK6 | Word of Ruin heals at most 7/8/9 % of a base health pool. | `word_of_ruin_cap_add` 1/2/3 |
 | RK8 | **Hard Faith** `reckoning_hard_faith` | modifier | 3 | 10 | — | Rebuke, Word of Ruin and Final Word deal +3/6/9 % damage. | `damage_pct:paid` 3/6/9 |
-| RK9 | **Censure** `reckoning_censure` | unlock `censure` | 1 | 12 | — | Unlocks Censure: strikes the ground up to 16 m away after 0.75 s with a warning, 120 % of a Smite hit to the 4 nearest within 3 m; 18 s cooldown, 12 % mana. | — |
+| RK9 | **Censure** `reckoning_censure` | unlock `censure` | 1 | 12 | — | Unlocks Censure: strikes the ground in your crosshair after 0.75 s with a warning, 120 % of a Smite hit to the 4 nearest within 3 m; 18 s cooldown, 12 % mana. | — |
 | RK10 | **Broad Judgment** `reckoning_broad_judgment` | modifier | 3 | 12 | RK9 | Censure's radius +0.25/0.50/0.75 m. | `radius_add:censure` 0.25/0.5/0.75 |
 | RK11 | **Deep Resolve** `reckoning_deep_resolve` | modifier | 3 | 12 | — | Max mana +4/8/12 %. | `max_mana_percent_add` 4/8/12 |
 | RK12 | **Press the Verdict** `reckoning_press_the_verdict` | modifier | 3 | 16 | RK3 | Rebuke's cooldown -0.5/1.0/1.5 s. | `cooldown_sub:rebuke` 0.5/1/1.5 |
-| RK13 | **Final Word** `reckoning_final_word` | ultimate `final_word` | 1 | 20 | RK3 | Unlocks Final Word: an instant hit up to 20 m away for 280 % of a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery. | — |
+| RK13 | **Final Word** `reckoning_final_word` | ultimate `final_word` | 1 | 20 | RK3 | Unlocks Final Word: an instant hit at the enemy in your crosshair for 280 % of a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery. | — |
 | RK14 | **Unfinished Sentence** `reckoning_unfinished_sentence` | modifier | 3 | 20 | RK13 | Final Word +10/20/30 % of a base hit. | `final_word_add` 0.1/0.2/0.3 |
 
 Consumers: `kits_priest.lua` (every Reckoning skill and

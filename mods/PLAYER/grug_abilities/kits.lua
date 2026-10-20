@@ -308,8 +308,8 @@ local strike_def = {
 	-- as "you are punching with your fists".
 	color = "#d9d3c0",
 	cost = {}, -- no resource cost: it is what GENERATES the resource
-	-- Melee, so the elf's +5 m ability range does not apply (E7) -- it would
-	-- otherwise hand elves an 8 m sword.
+	-- Melee, so the elf's ability range bonus does not apply (E7) -- it
+	-- would otherwise hand elves a sword of several metres.
 	melee = true,
 	range = 3,
 	-- A blade attack for the family keys (Fine Edge's damage_pct:blade);

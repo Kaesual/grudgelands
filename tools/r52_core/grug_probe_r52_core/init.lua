@@ -4,7 +4,8 @@
 -- A test ability registered HERE (never in mods/): a Mage cast that anchors
 -- with grug_core.area.anchor, schedules grug_core.area.delayed (1.5 s, the
 -- warning and falling particles) and at the impact hits up to four hostiles
--- found by grug_core.area.query (radius 3, band +-3, line of sight), through
+-- found by grug_core.area.query (radius 3, band +-3; no line of sight since
+-- 0.53.1), through
 -- the shipped grug_abilities.try_cast (cost, cooldown, refusals). The cases,
 -- each in its own built scene high above the terrain: stairs, stacked
 -- floors, a cave, shallow and deep water, a flying mob without ground, a
@@ -348,7 +349,7 @@ local function run_cases()
 		for _, hit in ipairs(r2.hits or {}) do
 			if hit.obj == mobs.lower then lower_hit = true end
 		end
-		check(not lower_hit, "stacked floors: the floor hides the mob below")
+		check(not lower_hit, "stacked floors: the mob 4 below is outside the band")
 	end
 
 	-- 3 cave: the caster inside, a mob on the cave floor.
@@ -419,8 +420,9 @@ local function run_group()
 	local list = {}
 	for _, p in ipairs(group) do list[#list + 1] = p:get_player_name() end
 	log("group heal recipients: " .. table.concat(list, ","))
-	check(table.concat(list, ",") == "probe_ally_low,probe_ally_mid,probe_priest",
-		"group: lowest share first, self included, the far and the hidden ally left out")
+	-- 0.53.1 (ruling 1): no line of sight, so the ally behind the wall is in.
+	check(table.concat(list, ",") == "probe_ally_hidden,probe_ally_low,probe_ally_mid,probe_priest",
+		"group: lowest share first, self included, the ally behind the wall too, the far one left out")
 	for _, p in ipairs(group) do
 		grug_core.set_status(p, "mend", {label = "Probe heal", duration = 12, interval = 3,
 			on_tick = function(target) target:set_hp(target:get_hp() + 1) end})

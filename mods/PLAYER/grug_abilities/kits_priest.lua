@@ -102,7 +102,7 @@ grug_abilities.register_ability({
 	name = "Smite",
 	kind = "cast",
 	target_kind = "hostile",
-	description = "Smites an enemy up to 20 m away; free, once a second. Damage " ..
+	description = "Smites the enemy in your crosshair; free, once a second. Damage " ..
 		"scales with your level and your staff or wand.",
 	values = function(user, window)
 		local add = math.max(bonus(user, "smite_steady_add"), bonus(user, "smite_sharpened_add"))
@@ -110,7 +110,7 @@ grug_abilities.register_ability({
 		return {damage = spell_hit(user, grug_abilities.registered.smite, 1, add)}
 	end,
 	description_for = function(user, def)
-		return ("Smites an enemy up to 20 m away for %d damage; free, once a second.\n" ..
+		return ("Smites the enemy in your crosshair for %d damage; free, once a second.\n" ..
 			"Damage scales with your level and your staff or wand."):format(
 				effective_number(user, def.values(user).damage))
 	end,
@@ -270,7 +270,7 @@ grug_abilities.register_ability({
 })
 
 -- The recipients of a self-centred group heal (skill-inventory.md §3 item
--- 3): you always, then the friendly players in sight within `radius`,
+-- 3): you always, then the friendly players within `radius` (band ±3),
 -- lowest health share first, `cap` in all (grug_core.area.group, filtered
 -- through valid_target, which carries the PvP flag).
 local function group_of(user, radius, cap)
@@ -386,14 +386,14 @@ grug_abilities.register_ability({
 	kind = "cast",
 	target_kind = "hostile",
 	tags = {"paid"},
-	description = "An instant hit at an enemy up to 20 m away; damage scales with\n" ..
+	description = "An instant hit at the enemy in your crosshair; damage scales with\n" ..
 		"your level and your staff or wand.",
 	values = function(user)
 		return {damage = spell_hit(user, grug_abilities.registered.rebuke, 1.8,
 			bonus(user, "rebuke_add"))}
 	end,
 	description_for = function(user, def)
-		return ("An instant hit at an enemy up to 20 m away for %d damage."):format(
+		return ("An instant hit at the enemy in your crosshair for %d damage."):format(
 			effective_number(user, def.values(user).damage))
 	end,
 	color = "#ffd257",
@@ -467,10 +467,11 @@ grug_abilities.register_ability({
 
 -- Censure (RK9): the ground anchor under the crosshair (skill-inventory.md
 -- §3a, up to 16 m), a warning and a falling seal for 0.75 s, then one hit to
--- the 4 hostiles nearest the anchor within the radius (band ±3, in sight of
--- the anchor), and the picked impact cue once at the anchor. "No ground
--- found." refuses before cost and cooldown. A self-kind offensive cast like
--- Ice Nova, so a press at open ground casts it (input.lua).
+-- the 4 hostiles nearest the anchor within the radius (band ±3), and the
+-- picked impact cue once at the anchor. "No ground found." refuses before
+-- cost and cooldown. A self-kind offensive cast like Ice Nova, so a press at
+-- open ground casts it (input.lua); its tooltip shows the pointing range
+-- all the same (range_shown).
 local CENSURE_DELAY, CENSURE_CAP = 0.75, 4
 grug_abilities.register_ability({
 	id = "censure",
@@ -481,8 +482,8 @@ grug_abilities.register_ability({
 	name = "Censure",
 	kind = "cast",
 	target_kind = "self",
-	description = "Strikes the ground under your crosshair up to 16 m away: after a\n" ..
-		"short warning it hits the 4 nearest enemies around it.",
+	description = "Strikes the ground under your crosshair: after a short warning\n" ..
+		"it hits the 4 nearest enemies around it.",
 	values = function(user)
 		local def = grug_abilities.registered.censure
 		return {damage = spell_hit(user, def, 1.2, 0),
@@ -490,8 +491,8 @@ grug_abilities.register_ability({
 	end,
 	description_for = function(user, def)
 		local v = def.values(user)
-		return ("Strikes the ground under your crosshair up to 16 m away: after\n" ..
-			"0.75 s it hits the 4 nearest enemies within %g m for %d damage."):format(
+		return ("Strikes the ground under your crosshair: after 0.75 s it hits\n" ..
+			"the 4 nearest enemies within %g m for %d damage."):format(
 				v.radius, effective_number(user, v.damage))
 	end,
 	color = "#ffd257",
@@ -499,6 +500,7 @@ grug_abilities.register_ability({
 	cooldown = 18,
 	occupied_cast = 1,
 	range = 16,
+	range_shown = true,
 	cast = function(user, pointed, def)
 		local area = grug_core.area
 		local anchor, refusal = area.anchor(user, grug_abilities.get_range(user, def),
@@ -534,14 +536,14 @@ grug_abilities.register_ability({
 	kind = "cast",
 	target_kind = "hostile",
 	tags = {"paid"},
-	description = "A heavy instant hit at an enemy up to 20 m away; damage scales\n" ..
+	description = "A heavy instant hit at the enemy in your crosshair; damage scales\n" ..
 		"with your level and your staff or wand.",
 	values = function(user)
 		return {damage = spell_hit(user, grug_abilities.registered.final_word, 2.8,
 			bonus(user, "final_word_add"))}
 	end,
 	description_for = function(user, def)
-		return ("A heavy instant hit at an enemy up to 20 m away for %d damage."):format(
+		return ("A heavy instant hit at the enemy in your crosshair for %d damage."):format(
 			effective_number(user, def.values(user).damage))
 	end,
 	color = "#fff6dd",

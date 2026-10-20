@@ -1181,8 +1181,23 @@ function grug_abilities.description_prefix(player, def)
 		timing = cooldown > 0 and string.format("%g s cooldown", cooldown)
 			or "no cooldown"
 	end
+	-- The pointing range (0.53.1 ruling 8): the one that decides the cast,
+	-- get_range (range talents and the race bonus), for this player; the
+	-- base without one. A self-kind skill shows none -- its `range` is a
+	-- radius around the caster or unused -- unless it aims at the crosshair
+	-- (a ground area: range_shown = true); range_shown = false opts any
+	-- skill out.
+	local range_line = ""
+	local shows_range = def.range_shown
+	if shows_range == nil then
+		shows_range = def.target_kind == "hostile" or def.target_kind == "friendly"
+	end
+	if shows_range then
+		range_line = string.format("Range: %g m\n", player and
+			grug_abilities.get_range(player, def) or def.range or 4)
+	end
 	return def.name .. " (" .. def._grug_owner_line .. ")\n" ..
-		cost_line .. ", " .. timing .. "\n"
+		cost_line .. ", " .. timing .. "\n" .. range_line
 end
 
 -- Apply one player's effective numeric description to an ability stack in

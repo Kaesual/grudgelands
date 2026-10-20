@@ -168,7 +168,7 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 			end,
 		})
 		-- Split Shot: up to 2 other hostiles within 3 m of the struck target
-		-- take its smaller hit, nearest first, in sight of it, through the
+		-- take its smaller hit, nearest first, through the
 		-- shared target check (round53-plan.md §3 PvP); no arrows of their own.
 		if data.splash then
 			local others = grug_core.area.query(tpos, {radius = 3, cap = 2,
@@ -290,10 +290,10 @@ grug_abilities.register_ability({
 	range = 25,
 	cast_interval = loose_interval,
 	values = function(player, def) return loose_values(player, def) end,
-	description = "Looses an arrow at a visible hostile target within 25 m; " ..
+	description = "Looses an arrow at a visible hostile target; " ..
 		"hold to keep shooting. With no arrow left, a foe in reach gets Strike.",
 	description_for = function(player, def)
-		return ("Looses an arrow at a visible hostile target within 25 m: " ..
+		return ("Looses an arrow at a visible hostile target: " ..
 			"%d damage; hold to keep shooting (every %g s). With no arrow left, " ..
 			"a foe in reach gets Strike."):format(
 				shown(player, def.values(player, def).damage),
@@ -489,11 +489,14 @@ grug_abilities.register_ability({
 		"Unlocked via talents.",
 	description_for = function(player)
 		local loose = grug_abilities.registered.loose
+		-- The range line is the blade's; the shot's own range follows here
+		-- (the same get_range that decides it).
 		return ("Left click swings your Melee-slot blade (%d damage); right " ..
-			"click looses an arrow at a visible hostile target (%d damage). " ..
-			"Both share one clock."):format(
+			"click looses an arrow at a visible hostile target up to %g m away " ..
+			"(%d damage). Both share one clock."):format(
 				shown(player, blade_unit(player) * coefficient(player,
 					grug_abilities.registered.bladecraft, 1)),
+				grug_abilities.get_range(player, bladecraft_shot),
 				shown(player, loose_values(player, loose).damage))
 	end,
 })
