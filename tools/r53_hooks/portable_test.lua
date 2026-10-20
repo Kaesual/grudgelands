@@ -573,6 +573,13 @@ do
 	eq(select(2, input_api.cast_refusal(caster_p, zap)), "busy", "K9 ...for the weapon's interval")
 	wait(0.01)
 	eq(input_api.cast_refusal(caster_p, zap), nil, "K9 ...and no longer")
+	-- A late swing keeps the swing clock's catch-up: casts wait only until
+	-- the next swing is due (review F1).
+	check(swing(caster_p, strike) ~= nil, "K9 a late swing lands (0.1 s catch-up)")
+	wait(0.89)
+	eq(select(2, input_api.cast_refusal(caster_p, zap)), "busy", "K9 ...casts wait until the next swing is due")
+	wait(0.02)
+	eq(input_api.cast_refusal(caster_p, zap), nil, "K9 ...0.9 s, not a full interval")
 
 	-- The swing callback.
 	local landed = {}

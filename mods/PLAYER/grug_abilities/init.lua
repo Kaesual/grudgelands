@@ -1295,7 +1295,7 @@ local function arm_cast_interval(player, def)
 end
 
 -- The action clock's cast side (D2): `seconds` from now no cast starts. Never
--- shortens a running lock; 0 (every shipped skill) writes nothing.
+-- shortens a running lock; 0 (a cast's default) writes nothing.
 local function occupy_casts(player, seconds)
 	if seconds <= 0 then
 		return
@@ -1701,9 +1701,11 @@ attempt_swing = function(player, selected, held, latched)
 	entry.next_due = now + (fpi - late) * 1e6
 	-- Swing -> cast on the action clock (D2, round53-plan.md K9): the swing's
 	-- skill (the basic attack in the fallback) holds casts back, by default
-	-- one interval of this weapon.
+	-- until this weapon's next swing is due (one interval less the carried
+	-- lateness, so a fallback swing keeps the catch-up of the swing clock).
 	local occupied = clock_seconds(selected.occupied_cast, player, selected)
-	occupy_casts(player, occupied == "weapon" and fpi or occupied)
+	occupy_casts(player, occupied == "weapon" and (entry.next_due - now) / 1e6
+		or occupied)
 	-- A valid attack hides readiness before any dodge/refusal/callback outcome.
 	set_ready_reticle(player, false)
 	local caps = {
