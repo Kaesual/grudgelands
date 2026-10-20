@@ -35,8 +35,9 @@
 --      one casts), never when the skill is the basic attack or the refusal
 --      is the action clock or the cast interval;
 --   A  the REAL grug_core/area.lua on a fake node map: the facing cone
---      (opening, radius, band, line of sight, the filter, the cap, nearest
---      first, the caster never) and the fall height sampled at 0.6 x the
+--      (opening, radius, band, no line of sight since 0.53.1, the filter,
+--      the cap, nearest first, the caster never) and the fall height
+--      sampled at 0.6 x the
 --      radius under a sloped ceiling (a rising slope or rock beside the area
 --      lower nothing).
 -- Prints "R53 HOOKS PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -411,7 +412,12 @@ do
 			local cooldown = def.cooldown
 			timing = cooldown > 0 and string.format("%g s cooldown", cooldown) or "no cooldown"
 		end
-		return def.name .. " (" .. def._grug_owner_line .. ")\n" .. cost_line .. ", " .. timing .. "\n"
+		-- 0.53.1 (SKILLS, ruling 8): a pointing skill's head ends in its
+		-- range line (Strike: melee, 3 m).
+		local range = def.target_kind ~= "self" and
+			string.format("Range: %g m\n", player and G.get_range(player, def) or def.range) or ""
+		return def.name .. " (" .. def._grug_owner_line .. ")\n" .. cost_line .. ", " .. timing ..
+			"\n" .. range
 	end
 	local shipped = 0
 	-- The kits the class lanes rebuilt are checked by their own fixtures
@@ -530,16 +536,17 @@ do
 	eq(G.effective_cost(p, bolt).mana, 10, "K untalented: 10 % of a 100 pool")
 	eq(G.effective_cooldown(p, bolt), 8, "K untalented: the cooldown as defined")
 	eq(G.get_range(p, bolt), 20, "K untalented: the range as defined")
-	eq(G.description_prefix(p, bolt), "pf_bolt (Caster)\n10% base mana (10 mana), 8 s cooldown\n",
-		"K untalented: today's tooltip line")
+	-- 0.53.1: the head ends in the effective range (ruling 8).
+	eq(G.description_prefix(p, bolt), "pf_bolt (Caster)\n10% base mana (10 mana), 8 s cooldown\n" ..
+		"Range: 20 m\n", "K untalented: today's tooltip line")
 	p.bonus = {["cost_pct:fire"] = -10, ["cost_pct:pf_bolt"] = -5, ["cost_pct:frost"] = -50,
 		["cooldown_sub:pf_bolt"] = 2, ["range_add:fire"] = 3, ["range_add:pf_cold"] = 1}
 	eq(G.family_bonus(p, bolt, "cost_pct"), -15, "K cost_pct by id and by tag, summed")
 	eq(G.effective_cost(p, bolt).mana, 9, "K cost_pct before the mana: 8.5 % of 100 rounds to 9")
 	eq(G.effective_cooldown(p, bolt), 6, "K cooldown_sub off the cooldown")
 	eq(G.get_range(p, bolt), 23, "K range_add on the range")
-	eq(G.description_prefix(p, bolt), "pf_bolt (Caster)\n8.5% base mana (9 mana), 6 s cooldown\n",
-		"K the tooltip shows the player's cost and cooldown")
+	eq(G.description_prefix(p, bolt), "pf_bolt (Caster)\n8.5% base mana (9 mana), 6 s cooldown\n" ..
+		"Range: 23 m\n", "K the tooltip shows the player's cost, cooldown and range")
 	eq(G.family_bonus(p, cold, "cost_pct"), -50, "K a transformation reads its own id and tags")
 	eq(G.get_range(p, cold), 21, "K ...not its base's")
 	p.bonus["cooldown_sub:pf_bolt"] = 20
@@ -1073,17 +1080,19 @@ do
 		return table.concat(out, ",")
 	end
 	local hostile = function(obj) return obj ~= friend end
-	eq(names(area.cone(caster, {radius = 5, angle = 70, filter = hostile})), "inside,edge,ahead",
-		"A a 70° 5 m cone: in front, nearest first; not beside, behind, too far, too high, a friend, behind a wall")
-	eq(names(area.cone(caster, {radius = 5, angle = 100, filter = hostile})), "inside,edge,ahead,wide",
-		"A a 100° cone takes the one 45° off")
+	-- 0.53.1 (ruling 1): no line of sight, so the wall no longer hides "walled".
+	eq(names(area.cone(caster, {radius = 5, angle = 70, filter = hostile})), "inside,edge,ahead,walled",
+		"A a 70° 5 m cone: in front, nearest first, behind a wall too; not beside, behind, too far, " ..
+		"too high, a friend")
+	eq(names(area.cone(caster, {radius = 5, angle = 100, filter = hostile})),
+		"inside,edge,ahead,wide,walled", "A a 100° cone takes the one 45° off")
 	eq(names(area.cone(caster, {radius = 5, angle = 100, filter = hostile, cap = 2})), "inside,edge",
 		"A the cap keeps the nearest")
 	eq(names(area.cone(caster, {radius = 5, angle = 70, filter = hostile, dir = vector.new(0, 0, -1)})),
 		"inside,behind", "A opts.dir turns the cone")
 	eq(names(area.cone(caster, {radius = 5, angle = 70, band = 5, filter = hostile})),
-		"inside,high,edge,ahead", "A a wider band reaches up (nearest by horizontal distance)")
-	local _ = {far, walled}
+		"inside,high,edge,ahead,walled", "A a wider band reaches up (nearest by horizontal distance)")
+	local _ = far
 
 	-- The fall height: the anchor column alone, then sampled at 0.6 x R.
 	local anchor = vector.new(10, -0.5, 10)

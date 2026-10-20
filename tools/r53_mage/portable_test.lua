@@ -1035,7 +1035,9 @@ do
 	check(text:find(tostring(math.floor(1.92 * D(60))), 1, true) and
 		text:find(tostring(math.floor(0.18 * D(60))), 1, true),
 		"L Fireball's tooltip shows its hit and splash at this level")
-	check(R.fiery_spark.description_for(t, R.fiery_spark):find("up to 23 m", 1, true),
+	-- 0.53.1 (ruling 8): the range moved from the text into the head's range line.
+	check(G.description_prefix(t, R.fiery_spark):find("\nRange: 23 m\n", 1, true) and
+		not R.fiery_spark.description_for(t, R.fiery_spark):find("23 m", 1, true),
 		"L Fiery Spark's tooltip shows the range with Far Cast")
 	check(R.meteor.description_for(t, R.meteor):find("within 3.75 m", 1, true),
 		"L Meteor's tooltip shows the radius with Broad Impact")
