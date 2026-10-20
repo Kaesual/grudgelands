@@ -25,6 +25,8 @@ local GAP = 0.3
 local ROW = 0.75
 local LABEL_W = 2.3
 local STEP_W = 0.6
+-- An empty texture slot of the player model (armor-format.md §2).
+local NONE = "blank.png"
 
 local function category_label(race, category)
 	if category == "eyes" and race == "undead" then
@@ -53,13 +55,22 @@ local function formspec(race, look, x, y, w, h)
 		return ""
 	end
 	look = grug_visuals.normalize_look(race, look)
-	local texture = grug_visuals.compose({race = race, look = look}).textures[1]
+	-- The player model (Round 54) in its texture slots {skin, cloak, armor,
+	-- weapon}: the race look, and nothing chosen yet for the rest (the
+	-- engine's transparent blank.png).
+	local textures = {
+		esc(grug_visuals.compose({race = race, look = look}).textures[1]),
+		NONE, NONE, NONE,
+	}
 	local fs = {
-		-- Standing, turned by the mouse only: frames 0..79 are player_api's
-		-- stand animation of character.b3d. The engine rebuilds the model with
-		-- every formspec, so a change resets the turn (accepted, BACKLOG).
-		("model[%.2f,%.2f;%.2f,%.2f;look_preview;character.b3d;%s;0,160;false;true;0,79;30]")
-			:format(x, y, MODEL_W, h, esc(texture)),
+		-- Standing, turned by the mouse only: frames 0..79 are the stand
+		-- animation (player_api's, kept by the player model). The engine
+		-- rebuilds the model with every formspec, so a change resets the turn
+		-- (accepted, BACKLOG). The list's commas stay raw: each texture is
+		-- escaped on its own.
+		("model[%.2f,%.2f;%.2f,%.2f;look_preview;%s;%s;0,160;false;true;0,79;30]")
+			:format(x, y, MODEL_W, h, esc(grug_visuals.PLAYER_MODEL),
+				table.concat(textures, ",")),
 		("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, y, MODEL_W, h,
 			esc("Drag with the mouse to turn your character.")),
 	}

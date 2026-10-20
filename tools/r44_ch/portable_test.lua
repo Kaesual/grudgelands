@@ -123,6 +123,11 @@ lacks(default_fs, "grug_character_3d", "no 3D mode (one Stats mode, Round 45 pla
 local mx, my, mw, mh = default_fs:match("model%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_preview;")
 mx, my, mw, mh = tonumber(mx), tonumber(my), tonumber(mw), tonumber(mh)
 check(mx ~= nil, "the model in the Stats mode")
+-- Round 54: the model comes from grug_visuals' preview seam (the harness's
+-- stand-in): the player model with skin, cloak, armor and an empty weapon
+-- card (tools/r54_view checks the seam, the fallback and the escaping).
+has(default_fs, "grug_preview;grug_visuals_character.b3d;character.png,blank.png,blank.png,blank.png;",
+	"the preview seam's model and four textures")
 has(default_fs, "label[3.95,1.60;Maximum HP: 120]", "the stats right of the model")
 check(mx and mx + mw <= 3.95, "the model ends left of the stats column")
 -- The cloak block: the label over the dropdown, which ends where the model
