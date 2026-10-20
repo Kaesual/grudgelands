@@ -171,10 +171,11 @@ attribution** (see "Armor overlays" above and `grug_gear/LICENSE-media.md`):
 metal and leather CC BY-SA 4.0 bases with CC BY 4.0 trims, cloth CC BY-SA 3.0.
 The modification is "pixel-group mask derived by the generator".
 
-## Round 33 player model with a cloak — CC BY-SA 3.0
+## Player and NPC models (Round 33 cloak, Round 54 armor) — CC BY-SA 3.0
 
 | File | Author | License | Notes |
 |------|--------|---------|-------|
-| `models/grug_visuals_character.b3d` | celeron55, MirceaKitsune, Jordach et al. (player_api `character.b3d`); cloak by the Grudgelands project | CC BY-SA 3.0 (<https://creativecommons.org/licenses/by-sa/3.0/>), as its source | derived from `mods/BASE/player_api/models/character.b3d` (licence: `mods/BASE/player_api/license.txt`) by `tools/r33_c3/gen_cloak_model.py`: a cloak box (second mesh buffer, the model's second texture) and a `Cloak` bone under `Body` with generated keyframes appended; the original mesh, bones and keys are unchanged. The technique follows VoxeLibre's capes; no VoxeLibre data is copied. Players only (character_visuals.md §5b) |
+| `models/grug_visuals_character.b3d` | celeron55, MirceaKitsune, Jordach et al. (player_api `character.b3d`); cloak, armor boxes and weapon card by the Grudgelands project | CC BY-SA 3.0 (<https://creativecommons.org/licenses/by-sa/3.0/>), as its source | derived from `mods/BASE/player_api/models/character.b3d` (licence: `mods/BASE/player_api/license.txt`) by `tools/r33_c3/gen_cloak_model.py`: a cloak box (second mesh buffer, the model's second texture) and a `Cloak` bone under `Body` with generated keyframes appended (Round 33); the Round 40 pose clips; the armor boxes of `tools/r54_armor/data/catalog.json` (third buffer, the armor atlas), the swing bones `Panel_Front` and `Panel_Back` and a weapon card on `Arm_Right` (fourth buffer) (Round 54); the original mesh, bones and keys are unchanged. The cloak technique follows VoxeLibre's capes; no VoxeLibre data is copied. Players (character_visuals.md §5b) |
+| `models/grug_visuals_npc.b3d` | as above | CC BY-SA 3.0, as its source | the same derivation without the cloak and the pose clips (Round 54): the armor boxes, the two swing bones and the weapon card; textures skin, armor, weapon. Armored NPCs (armor-format.md §2) |
 
 The "No cloak" texture is the engine's builtin `blank.png`.
