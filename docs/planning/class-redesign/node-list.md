@@ -306,7 +306,7 @@ Basic attacks: Fiery Spark is fire, Cold Spark frost, Smite holy, Loose wild, Bl
 - **Point 6:** Shake Loose clears roots as well (the existing helper, unfiltered).
 - **Point 7:** Bladecraft stays.
 - **Point 10:** Winter Field without a stun (only if it plays weak); Sprint stays innate; Hearten 20 s cd, 14 % P; starter hotbar: the basic attack in slot 1, then the skills in unlock order.
-- **Migration** (first login after the update): talent reset with a full refund; retired skill items leave both hotbars; Mage and Priest get their class basic attack in place of Strike; one chat message explains the change.
+- **Migration** (first login after the update): talent reset with a full refund; retired skill items leave both hotbars; Mage and Priest get their class basic attack in place of Strike; one short chat message, "Your talent points have been reset.", and nothing more (the user explains the rework in an admin newsletter).
 - **The review notes for round K** (BACKLOG, Round 52 carry-overs) are resolved by the coordinator along the backlog's suggestions.
 
 The points below keep their original wording for the record.
