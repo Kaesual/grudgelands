@@ -1,5 +1,12 @@
 {
   "appearance_limits": {"json_max_bytes": 12288, "texture_max_bytes": 2048},
+  "appearance_v1": {
+    "armor_files": ["grug_visuals_cloth_chest_heavy.png", "grug_visuals_cloth_chest_heavy_ench.png", "grug_visuals_cloth_chest_patch.png", "grug_visuals_cloth_chest_patch_ench.png", "grug_visuals_cloth_chest_silk.png", "grug_visuals_cloth_chest_silk_ench.png", "grug_visuals_cloth_chest_silkweave.png", "grug_visuals_cloth_chest_silkweave_ench.png", "grug_visuals_cloth_chest_stormweave.png", "grug_visuals_cloth_chest_stormweave_ench.png", "grug_visuals_cloth_chest_woven.png", "grug_visuals_cloth_chest_woven_ench.png", "grug_visuals_cloth_feet_heavy.png", "grug_visuals_cloth_feet_heavy_ench.png", "grug_visuals_cloth_feet_patch.png", "grug_visuals_cloth_feet_patch_ench.png", "grug_visuals_cloth_feet_silk.png", "grug_visuals_cloth_feet_silk_ench.png", "grug_visuals_cloth_feet_silkweave.png", "grug_visuals_cloth_feet_silkweave_ench.png", "grug_visuals_cloth_feet_stormweave.png", "grug_visuals_cloth_feet_stormweave_ench.png", "grug_visuals_cloth_feet_woven.png", "grug_visuals_cloth_feet_woven_ench.png", "grug_visuals_cloth_head_heavy.png", "grug_visuals_cloth_head_heavy_ench.png", "grug_visuals_cloth_head_patch.png", "grug_visuals_cloth_head_patch_ench.png", "grug_visuals_cloth_head_silk.png", "grug_visuals_cloth_head_silk_ench.png", "grug_visuals_cloth_head_silkweave.png", "grug_visuals_cloth_head_silkweave_ench.png", "grug_visuals_cloth_head_stormweave.png", "grug_visuals_cloth_head_stormweave_ench.png", "grug_visuals_cloth_head_woven.png", "grug_visuals_cloth_head_woven_ench.png", "grug_visuals_cloth_legs_heavy.png", "grug_visuals_cloth_legs_heavy_ench.png", "grug_visuals_cloth_legs_patch.png", "grug_visuals_cloth_legs_patch_ench.png", "grug_visuals_cloth_legs_silk.png", "grug_visuals_cloth_legs_silk_ench.png", "grug_visuals_cloth_legs_silkweave.png", "grug_visuals_cloth_legs_silkweave_ench.png", "grug_visuals_cloth_legs_stormweave.png", "grug_visuals_cloth_legs_stormweave_ench.png", "grug_visuals_cloth_legs_woven.png", "grug_visuals_cloth_legs_woven_ench.png", "grug_visuals_helmet_window.png", "grug_visuals_leather_chest_cured.png", "grug_visuals_leather_chest_cured_ench.png", "grug_visuals_leather_chest_heavy.png", "grug_visuals_leather_chest_heavy_ench.png", "grug_visuals_leather_chest_light.png", "grug_visuals_leather_chest_light_ench.png", "grug_visuals_leather_chest_nightscale.png", "grug_visuals_leather_chest_nightscale_ench.png", "grug_visuals_leather_chest_scaled.png", "grug_visuals_leather_chest_scaled_ench.png", "grug_visuals_leather_chest_sleek.png", "grug_visuals_leather_chest_sleek_ench.png", "grug_visuals_leather_feet_cured.png", "grug_visuals_leather_feet_cured_ench.png", "grug_visuals_leather_feet_heavy.png", "grug_visuals_leather_feet_heavy_ench.png", "grug_visuals_leather_feet_light.png", "grug_visuals_leather_feet_light_ench.png", "grug_visuals_leather_feet_nightscale.png", "grug_visuals_leather_feet_nightscale_ench.png", "grug_visuals_leather_feet_scaled.png", "grug_visuals_leather_feet_scaled_ench.png", "grug_visuals_leather_feet_sleek.png", "grug_visuals_leather_feet_sleek_ench.png", "grug_visuals_leather_head_cured.png", "grug_visuals_leather_head_cured_ench.png", "grug_visuals_leather_head_heavy.png", "grug_visuals_leather_head_heavy_ench.png", "grug_visuals_leather_head_light.png", "grug_visuals_leather_head_light_ench.png", "grug_visuals_leather_head_nightscale.png", "grug_visuals_leather_head_nightscale_ench.png", "grug_visuals_leather_head_scaled.png", "grug_visuals_leather_head_scaled_ench.png", "grug_visuals_leather_head_sleek.png", "grug_visuals_leather_head_sleek_ench.png", "grug_visuals_leather_legs_cured.png", "grug_visuals_leather_legs_cured_ench.png", "grug_visuals_leather_legs_heavy.png", "grug_visuals_leather_legs_heavy_ench.png", "grug_visuals_leather_legs_light.png", "grug_visuals_leather_legs_light_ench.png", "grug_visuals_leather_legs_nightscale.png", "grug_visuals_leather_legs_nightscale_ench.png", "grug_visuals_leather_legs_scaled.png", "grug_visuals_leather_legs_scaled_ench.png", "grug_visuals_leather_legs_sleek.png", "grug_visuals_leather_legs_sleek_ench.png", "grug_visuals_metal_chest_abyssal_steel.png", "grug_visuals_metal_chest_abyssal_steel_ench.png", "grug_visuals_metal_chest_bronze.png", "grug_visuals_metal_chest_bronze_ench.png", "grug_visuals_metal_chest_embersteel.png", "grug_visuals_metal_chest_embersteel_ench.png", "grug_visuals_metal_chest_iron.png", "grug_visuals_metal_chest_iron_ench.png", "grug_visuals_metal_chest_silversteel.png", "grug_visuals_metal_chest_silversteel_ench.png", "grug_visuals_metal_chest_steel.png", "grug_visuals_metal_chest_steel_ench.png", "grug_visuals_metal_feet_abyssal_steel.png", "grug_visuals_metal_feet_abyssal_steel_ench.png", "grug_visuals_metal_feet_bronze.png", "grug_visuals_metal_feet_bronze_ench.png", "grug_visuals_metal_feet_embersteel.png", "grug_visuals_metal_feet_embersteel_ench.png", "grug_visuals_metal_feet_iron.png", "grug_visuals_metal_feet_iron_ench.png", "grug_visuals_metal_feet_silversteel.png", "grug_visuals_metal_feet_silversteel_ench.png", "grug_visuals_metal_feet_steel.png", "grug_visuals_metal_feet_steel_ench.png", "grug_visuals_metal_head_abyssal_steel.png", "grug_visuals_metal_head_abyssal_steel_ench.png", "grug_visuals_metal_head_bronze.png", "grug_visuals_metal_head_bronze_ench.png", "grug_visuals_metal_head_embersteel.png", "grug_visuals_metal_head_embersteel_ench.png", "grug_visuals_metal_head_iron.png", "grug_visuals_metal_head_iron_ench.png", "grug_visuals_metal_head_silversteel.png", "grug_visuals_metal_head_silversteel_ench.png", "grug_visuals_metal_head_steel.png", "grug_visuals_metal_head_steel_ench.png", "grug_visuals_metal_legs_abyssal_steel.png", "grug_visuals_metal_legs_abyssal_steel_ench.png", "grug_visuals_metal_legs_bronze.png", "grug_visuals_metal_legs_bronze_ench.png", "grug_visuals_metal_legs_embersteel.png", "grug_visuals_metal_legs_embersteel_ench.png", "grug_visuals_metal_legs_iron.png", "grug_visuals_metal_legs_iron_ench.png", "grug_visuals_metal_legs_silversteel.png", "grug_visuals_metal_legs_silversteel_ench.png", "grug_visuals_metal_legs_steel.png", "grug_visuals_metal_legs_steel_ench.png"],
+    "json_max_bytes": 10240,
+    "max_depth": 4,
+    "texture_max_bytes": 2048,
+    "version": 1
+  },
   "appearance_version": 2,
   "classes": [
     {"icon": "mods/PLAYER/grug_classes/textures/grug_class_warrior.png", "id": "warrior", "name": "Warrior"},
@@ -379,36 +386,42 @@
   },
   "races": [
     {
+      "bare_body": "(grug_visuals_skin_mask.png^[multiply:#efcfb0)^grug_visuals_human_body.png^(grug_visuals_eyes_mask.png^[multiply:#2a3c62)^(grug_visuals_human_hair_crop_mask.png^[multiply:#2a2420)^grug_visuals_human_hair_crop.png^(grug_visuals_human_feature_stubble_mask.png^[multiply:#2a2420)^grug_visuals_human_feature_stubble.png",
       "faction": "accord",
       "id": "human",
       "name": "Human",
       "visual_size": {"x": 1, "y": 1, "z": 1}
     },
     {
+      "bare_body": "(grug_visuals_skin_mask.png^[multiply:#ecc2a0)^grug_visuals_dwarf_body.png^(grug_visuals_eyes_mask.png^[multiply:#4a2e16)^(grug_visuals_dwarf_hair_full_mask.png^[multiply:#c45a2c)^grug_visuals_dwarf_hair_full.png^(grug_visuals_dwarf_feature_full_mask.png^[multiply:#c45a2c)^grug_visuals_dwarf_feature_full.png",
       "faction": "accord",
       "id": "dwarf",
       "name": "Dwarf",
       "visual_size": {"x": 0.9, "y": 0.9, "z": 0.9}
     },
     {
+      "bare_body": "(grug_visuals_skin_mask.png^[multiply:#eedec8)^grug_visuals_elf_body.png^(grug_visuals_eyes_mask.png^[multiply:#6c9878)^(grug_visuals_elf_hair_long_mask.png^[multiply:#e4d8a8)^grug_visuals_elf_hair_long.png^(grug_visuals_elf_feature_pointed_mask.png^[multiply:#eedec8)^grug_visuals_elf_feature_pointed.png",
       "faction": "accord",
       "id": "elf",
       "name": "Elf",
       "visual_size": {"x": 1.06, "y": 1.06, "z": 1.06}
     },
     {
+      "bare_body": "(grug_visuals_skin_mask.png^[multiply:#6c9448)^grug_visuals_orc_body.png^(grug_visuals_eyes_mask.png^[multiply:#d04830)^(grug_visuals_orc_hair_topknot_mask.png^[multiply:#222024)^grug_visuals_orc_hair_topknot.png^grug_visuals_orc_feature_tusks_small.png",
       "faction": "throng",
       "id": "orc",
       "name": "Orc",
       "visual_size": {"x": 1.08, "y": 1.08, "z": 1.08}
     },
     {
+      "bare_body": "(grug_visuals_skin_mask.png^[multiply:#608496)^grug_visuals_troll_body.png^(grug_visuals_eyes_mask.png^[multiply:#eec44c)^(grug_visuals_troll_hair_mane_mask.png^[multiply:#2e3a60)^grug_visuals_troll_hair_mane.png^grug_visuals_troll_feature_tusks_small.png",
       "faction": "throng",
       "id": "troll",
       "name": "Troll",
       "visual_size": {"x": 1.12, "y": 1.12, "z": 1.12}
     },
     {
+      "bare_body": "(grug_visuals_skin_mask.png^[multiply:#96a48c)^grug_visuals_undead_body.png^(grug_visuals_eyes_undead_mask.png^[multiply:#c6de70)^(grug_visuals_undead_hair_patchy_mask.png^[multiply:#58525e)^grug_visuals_undead_hair_patchy.png^grug_visuals_undead_feature_jaw.png",
       "faction": "throng",
       "id": "undead",
       "name": "Undead",

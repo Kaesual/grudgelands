@@ -7,9 +7,11 @@ reader of tools/r33_c3/gen_cloak_model.py and writes
 tools/web_data/model/grug_visuals_character.glb:
 
   * one skinned mesh, one primitive per B3D mesh buffer in the model's
-    texture order: "skin" (the body) and "cloak", each with its own material;
+    texture order: "skin" (the body), "cloak", "armor" (the armor boxes,
+    Round 54) and "weapon" (the weapon card), each with its own material;
   * the skeleton (Body, Head, Arm_Left, Arm_Right, Leg_Right, Leg_Left,
-    Cloak) under the root node Player, one bone per vertex as in the B3D;
+    Cloak, Panel_Front, Panel_Back) under the root node Player, one bone per
+    vertex as in the B3D;
   * one animation clip per player_api animation in CLIPS, timed in seconds
     at player_api's animation_speed, every clip starting at 0.
 
@@ -53,7 +55,8 @@ CLIPS = ("stand", "walk")
 # skin, cloak, the armor atlas, the weapon card; armor-format.md §2).
 MATERIALS = ("skin", "cloak", "armor", "weapon")
 COPYRIGHT = ("CC BY-SA 3.0: celeron55, MirceaKitsune, Jordach et al. "
-             "(player_api character.b3d); cloak by the Grudgelands project")
+             "(player_api character.b3d); cloak, armor boxes and weapon card "
+             "by the Grudgelands project")
 
 FLOAT, UBYTE, USHORT = 5126, 5121, 5123
 ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER = 34962, 34963

@@ -293,6 +293,35 @@ local function appearance_contract(gv)
 	}
 end
 
+-- Version 1 of the appearance (up to 0.53.x; Round 54 raised it to 2): a
+-- character who has not joined since keeps such a value, whose body carries
+-- the old armour overlays (README "Version 1 appearances"). Frozen history,
+-- not read from the game, which no longer has it: the two byte caps and the
+-- nesting depth of version 1, and every file a version 1 body named for a
+-- worn piece -- the overlay `grug_visuals_<line>_<slot>_<grade>.png` of every
+-- line, slot and grade (the grade keys of grug_gear.MATERIALS, which item ids
+-- still carry), its enchant mask `..._ench.png` and the helmet's face window.
+-- tools/r54_web checks the list against bodies the old game composed.
+local V1 = {version = 1, texture_max_bytes = 2048, json_max_bytes = 10240, max_depth = 4,
+	helmet_window = "grug_visuals_helmet_window.png"}
+
+local function appearance_v1(gv)
+	local files = {V1.helmet_window}
+	for _, line in ipairs(gv.LINES) do
+		for _, slot in ipairs(gv.SLOTS) do
+			for _, materials in ipairs(grug_gear.MATERIALS) do
+				local stem = "grug_visuals_" .. line .. "_" .. slot .. "_" .. materials[line].key
+				files[#files + 1] = stem .. ".png"
+				files[#files + 1] = stem .. "_ench.png"
+			end
+		end
+	end
+	table.sort(files)
+	return {version = V1.version, texture_max_bytes = V1.texture_max_bytes,
+		json_max_bytes = V1.json_max_bytes, max_depth = V1.max_depth,
+		armor_files = array(files)}
+end
+
 -- Every PNG a stored texture string may name or a modifier may draw: the
 -- files of the grammar's directories (repository paths) and its engine files.
 local function texture_files(root, grammar)
@@ -373,8 +402,10 @@ function M.build(root)
 		for _, id in ipairs(grug_classes.race_ids[faction] or {}) do
 			local def = grug_classes.registered_races[id]
 			local art = assert(gv.RACES[id], "web_data: race " .. id .. " has no art")
+			-- A new character's body: option 1 in every look category,
+			-- nothing worn (the fallback for a body a website cannot use).
 			races[#races + 1] = {id = id, name = def.name, faction = def.faction,
-				visual_size = vec3(art.size)}
+				visual_size = vec3(art.size), bare_body = gv.compose({race = id}).skin}
 		end
 	end
 
@@ -473,6 +504,7 @@ function M.build(root)
 		appearance_version = contract.version,
 		appearance_limits = {texture_max_bytes = contract.texture_max,
 			json_max_bytes = contract.json_max},
+		appearance_v1 = appearance_v1(gv),
 		texture_grammar = plain(contract.grammar),
 		texture_files = texture_files(root, contract.grammar),
 		levels = {max_level = grug_xp.MAX_LEVEL, start_xp = start_xp},

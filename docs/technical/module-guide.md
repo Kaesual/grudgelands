@@ -2993,7 +2993,9 @@ tools](#player-meta-read-by-external-tools).
 
 - **The appearance** (`APPEARANCE_VERSION` 2 since Round 54; version 1 had
   no `textures.armor`, its body carried the old armour overlays, and it is
-  rebuilt at the character's next join): what the game draws, with
+  rebuilt at the character's next join; until then a website shows it
+  without armour, [web export](../../tools/web_data/README.md#version-1-appearances)):
+  what the game draws, with
   the final texture strings, so the website never ports the composition.
   Keys in this order, compact (no whitespace):
 

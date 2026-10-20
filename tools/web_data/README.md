@@ -54,19 +54,56 @@ rounded to ten significant digits.
 | Field | Meaning |
 |---|---|
 | `schema` | Version of this file's format (1). Raised on any incompatible change to `web_data.json`. |
-| `appearance_version` | The `v` of the `grug_visuals:appearance` values this export describes (`grug_visuals.APPEARANCE_VERSION`). A stored value with another `v` is not described by this file. |
+| `appearance_version` | The `v` of the `grug_visuals:appearance` values this export describes (`grug_visuals.APPEARANCE_VERSION`; 2 since Round 54). A stored value with `v` 1 is shown as [below](#version-1-appearances); any other `v` is not described by this file. |
 
 ### Appearance limits and textures
 
 | Field | Meaning |
 |---|---|
-| `appearance_limits.texture_max_bytes` | Maximum length in bytes of every texture string in a stored appearance (body, cloak, hand images). |
+| `appearance_limits.texture_max_bytes` | Maximum length in bytes of every texture string in a stored appearance (body, cloak, armor, hand images). |
 | `appearance_limits.json_max_bytes` | Maximum length in bytes of the whole stored `grug_visuals:appearance` value. |
-| `texture_grammar` | The closed grammar every stored texture string parses under, `grug_visuals.APPEARANCE_TEXTURE` verbatim (the contract section explains it): `max_depth` (parenthesis nesting), `escaped` (false: nothing is escaped), `file` (`charset` and `suffix` of a file name), `dirs` (the repository directories the files come from), `engine_files` (modifier → the engine texture it draws without naming it), `args` (argument kind → its definition: `int` {`pattern`, `signed`, `min_digits`, `max_digits`, `min`, `max`}, `color` {`pattern`, `form`}, `file` {`pattern`, `max_length`}, each with a prose `description`; `pattern` is a Lua pattern of the whole argument, and the explicit limits beside it define each kind fully, so a website implements them without translating Lua patterns), `modifiers` (modifier name → its argument kinds in order). |
+| `texture_grammar` | The closed grammar every stored texture string parses under, `grug_visuals.APPEARANCE_TEXTURE` verbatim (the contract section explains it): `max_depth` (parenthesis nesting; 3 since version 2), `escaped` (false: nothing is escaped), `file` (`charset` and `suffix` of a file name), `dirs` (the repository directories the files come from), `engine_files` (modifier → the engine texture it draws without naming it), `args` (argument kind → its definition: `int` {`pattern`, `signed`, `min_digits`, `max_digits`, `min`, `max`}, `color` {`pattern`, `form`}, `file` {`pattern`, `max_length`}, each with a prose `description`; `pattern` is a Lua pattern of the whole argument, and the explicit limits beside it define each kind fully, so a website implements them without translating Lua patterns), `modifiers` (modifier name → its argument kinds in order). |
 | `texture_files` | Every PNG a stored texture string may name or a modifier may draw, sorted by `name`. `engine: false` entries are the files of `texture_grammar.dirs`, at `path` (repository path); `engine: true` entries are textures the engine itself provides (`texture_grammar.engine_files`, no `path`; the website supplies an equivalent). |
 
 A website parses a stored string with an allow-listed, bounded parser
 against `texture_grammar` and `texture_files` and rejects anything else.
+
+### Version 1 appearances
+
+Round 54 (0.54.0) raised the appearance to version 2: armor is a set of
+boxes in the model with its own texture (`textures.armor`), and the body is
+the skin under it. A character who has not joined since keeps the version 1
+value the old game wrote, until the next join rebuilds it. Its
+`textures.body` carries the old armor overlays (`grug_visuals_<line>_<slot>_<grade>.png`
+and their masks), whose files are gone, under an older, wider grammar
+(4 levels of parentheses, a `[mask:file` modifier for the helmet). Such a
+character is shown **without armor** until the next join:
+
+| Field | Meaning |
+|---|---|
+| `appearance_v1.version` | 1 |
+| `appearance_v1.texture_max_bytes`, `.json_max_bytes` | The byte caps of version 1 (2,048 and 10,240). |
+| `appearance_v1.max_depth` | Parenthesis nesting of version 1 (4). |
+| `appearance_v1.armor_files` | Every file a version 1 body named for a worn piece: the overlays of every line, slot and grade, their `_ench.png` masks and `grug_visuals_helmet_window.png`. Sorted. |
+
+1. **Body.** Reject a body longer than `texture_max_bytes`. Split it at
+   every `^` outside parentheses (count `(` and `)`; reject a body that
+   nests deeper than `max_depth` or does not balance). Drop every part that
+   names a file of `armor_files` (a part names the `[a-z0-9_]+\.png` tokens
+   in it), join the rest with `^`, and validate the result like any
+   version 2 string (`texture_grammar`, `texture_files`). What remains is the
+   race look the game composes for the stored `race` and `look`, except that
+   a character who wore a helmet shows no hair (the old body dropped it
+   under the helmet). If the result does not validate, draw the race's
+   `bare_body`.
+2. **Armor.** There is no `textures.armor`: hide the armor primitive.
+3. **The rest** keeps its meaning: `race`, `look`, `cloak`, `visual_size`,
+   `textures.cloak` and `slots` (hand images included) are read as in
+   version 2, each texture string validated under the current grammar
+   (a hand image that fails falls back to `hand_items.<item>.wield_image`).
+
+`tools/r54_web` holds bodies and whole values the old game composed
+(`v1_samples.lua`) and a fixture that checks this rule against them.
 
 ### Levels
 
@@ -82,7 +119,7 @@ against `texture_grammar` and `texture_files` and rejects anything else.
 | Field | Meaning |
 |---|---|
 | `factions[]` | `id` (the value of `grug_factions:faction`), `name` (display form, "The Accord"), `color` (`#rrggbb`). |
-| `races[]` | `id` (`grug_classes:race`), `name`, `faction` (a faction `id`), `visual_size` (`{x, y, z}`, the race's visual scale of the model; collision and eye height do not change). Grouped by faction in registration order. |
+| `races[]` | `id` (`grug_classes:race`), `name`, `faction` (a faction `id`), `visual_size` (`{x, y, z}`, the race's visual scale of the model; collision and eye height do not change), `bare_body` (the race's skin with option 1 in every look category and nothing worn, as the game composes it: what a website draws when a stored body cannot be used). Grouped by faction in registration order. |
 | `classes[]` | `id` (`grug_classes:class`), `name`, `icon` (repository path of the class icon PNG). |
 
 ### Model
@@ -91,7 +128,7 @@ against `texture_grammar` and `texture_files` and rejects anything else.
 |---|---|
 | `model.b3d` | Repository path of the player model the game uses. |
 | `model.gltf` | Repository path of the same model as glTF binary ([`model/`](model/)). |
-| `model.textures` | The model's texture slots in order: `body` (the appearance's `textures.body`), `cloak` (`textures.cloak`). |
+| `model.textures` | The model's texture slots in order, one per glTF primitive: `body` (the appearance's `textures.body`, the skin under the armor), `cloak` (`textures.cloak`), `armor` (`textures.armor`, the armor atlas), `weapon` (the weapon card: not stored; a website hides it and draws the weapon by `wield`, [model README](model/README.md)). `none`, and a key a stored value does not have, means an empty slot (hide that primitive, or draw it fully transparent). |
 | `model.fps` | Animation frames per second. |
 | `model.animations.stand`, `.walk` | Frame ranges (`start`, `end`, inclusive) in model frames, looped. In the glTF clip of the same name, frame `f` is at `(f − start) / fps` seconds. |
 
