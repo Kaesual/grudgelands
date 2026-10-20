@@ -40,6 +40,21 @@ local identities = {
 
 grug_gear.TRINKETS = identities
 
+-- Two copies of a "highest" special (0.53.1 ruling 4): the stronger copy
+-- fires and the other one strengthens it by its own tier's share, in percent
+-- (grug_trinkets combines them). Published per item as
+-- _grug_trinket_pair_share; the tooltip line below names it.
+local PAIR_SHARE = {5, 10, 15, 20, 25, 30}
+
+-- The tooltip line of a trinket whose special a second copy strengthens, or
+-- nil. Read by the definition below and by grug_gear.describe_stack_base, so
+-- a stored description carries the same line.
+function grug_gear.trinket_pair_line(def)
+	local share = def and tonumber(def._grug_trinket_pair_share)
+	if not share or share <= 0 then return nil end
+	return "Worn twice: the second one strengthens the effect by " .. share .. "%."
+end
+
 function grug_gear.trinket_item(identity, tier)
 	if type(identity) ~= "string" or type(tier) ~= "number" or tier % 1 ~= 0 or
 			tier < 1 or tier > 6 then
@@ -55,10 +70,14 @@ for identity_index = 1, #identities do
 		local rage = identity.rage and identity.rage[tier] or nil
 		local special = identity.line(value, rage)
 		local ilvl = grug_gear.BRACKETS[tier].ilvl
+		local pair_share = identity.stacking == "highest" and PAIR_SHARE[tier] or nil
+		local pair_line = grug_gear.trinket_pair_line(
+			{_grug_trinket_pair_share = pair_share})
 		core.register_craftitem(grug_gear.trinket_item(identity.key, tier), {
 			description = TIER_NAMES[tier] .. " " .. identity.name ..
 				"\nItem level " .. ilvl .. "\n" ..
-				core.colorize("#9aa0a6", special),
+				core.colorize("#9aa0a6", special) ..
+				(pair_line and "\n" .. core.colorize("#9aa0a6", pair_line) or ""),
 			inventory_image = "grug_gear_trinket_" .. identity.key .. "_t" .. tier ..
 				".png",
 			groups = {grug_gear = 1, grug_equip_trinket = 1},
@@ -76,6 +95,7 @@ for identity_index = 1, #identities do
 			_grug_trinket_stacking = identity.stacking,
 			_grug_trinket_cap = identity.cap,
 			_grug_trinket_cooldown = identity.cooldown,
+			_grug_trinket_pair_share = pair_share,
 			_grug_trinket_special = special,
 		})
 	end

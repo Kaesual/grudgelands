@@ -17,8 +17,8 @@
 --      button, every mode, the countdown, the click);
 --   3. shift-click routing through the page's own listring: inventory ->
 --      equipment (empty slot first, then a swap; hotbar and bags as sources;
---      the class hands, two-handed, level, armor-class and unique-trinket
---      rules with their feed lines), equipment -> inventory in the give order
+--      the class hands, two-handed, level and armor-class rules with their
+--      feed lines; the same trinket twice, since 0.53.1), equipment -> inventory in the give order
 --      (main[9..], bags, hotbar last; refused when full), arrows into and out
 --      of a Scout's quiver, anything else unmoved; the routing list stays
 --      empty (a stray item is given back at join); a drag still equips;
@@ -458,7 +458,8 @@ shift(mage, "main", 12)
 eq(H.get(mage, "main", 12), "grug_gear:feet_cloth", "mage: boots above the level stay")
 check(feeds_with("requires level 40") > 0, "mage: the level refusal explains itself")
 
--- Trinkets: the free slot first, then a swap; never two of one identity.
+-- Trinkets: the free slot first, then a swap; two of one identity are
+-- allowed since 0.53.1 (ruling 4, tools/r531_gear checks how they combine).
 local tr = H.player("tr", "priest")
 H.put(tr, "main", 9, "grug_gear:ring_a")
 H.put(tr, "main", 10, "grug_gear:ring_b")
@@ -473,8 +474,8 @@ eq(H.get(tr, "main", 11), "grug_gear:ring_a", "... which takes its cell")
 H.put(tr, "grug_trinket1", 1, "")
 H.put(tr, "main", 12, "grug_gear:ring_b")
 shift(tr, "main", 12)
-eq(H.get(tr, "grug_trinket1", 1), "", "a second copy of an identity skips the free slot")
-eq(H.get(tr, "grug_trinket2", 1), "grug_gear:ring_b", "... and swaps with its twin")
+eq(H.get(tr, "grug_trinket1", 1), "grug_gear:ring_b", "a second copy of an identity takes the free slot")
+eq(H.get(tr, "grug_trinket2", 1), "grug_gear:ring_b", "... next to its twin")
 
 -- The routing list takes nothing by itself; a drag still equips.
 local dr = H.player("dr", "warrior")

@@ -429,7 +429,8 @@ grug_mobs = permissive({})
 grug_xp = {get_level = function() return character_level end}
 grug_sounds = {play = function(event) sounds[#sounds + 1] = event end, CLICK_STYLE = ""}
 
-grug_inventory = {}
+-- 0.53.1: grug_gear.usable_by asks the hand rules (tooltip only here).
+grug_inventory = {hand_accepts = function() return true end}
 loading = "sfinv"
 dofile(ROOT .. "/mods/BASE/sfinv/api.lua")
 sfinv.register_page("sfinv:crafting", {title = "Crafting", get = function() return "" end})
