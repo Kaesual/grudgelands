@@ -26,7 +26,7 @@ the style bible your brief names; the user's own selection (`tiers_example.json`
                   "icon": {"head": "a", "chest": "a", "legs": "a", "feet": "a"}}}}
 ```
 
-A missing `variant` entry means `a`. Tier palettes may be proposed in `art/palettes.json` (same shape as
+A missing `variant` entry means `a`; a tier entry must name its `palette`, and one without `inner` or `icon` has none. Tier palettes may be proposed in `art/palettes.json` (same shape as
 `data/palettes.json`: `{"palettes": {"<name>": {"colors": {"M_HI": "#RRGGBB", ...all 13}}}}`); they are laid
 over `data/palettes.json` by name, and a tier names its palette in `tiers.json`. `--palettes FILE` uses
 another file instead. A line or tier missing from `tiers.json` (or a missing file) falls back to
@@ -55,15 +55,10 @@ the example selection, and both tools say so.
   are seen from outside; top row 0 is the back edge, bottom row 0 the front edge.
 - **Mirrored boxes** (sleeve, bracer, shoulder parts, tasset, thigh, knee, boot, toe) have one sheet. Paint
   it for the character's right side; the left copy shows it mirrored.
-- **Alpha shaping is wanted** (spec §2): rounded corners, chamfers, notches, jagged or filigree edges.
-  Keep edge and corner cut-outs within about 2 px of the edge, and cut **every face sharing that edge** alike
-  (a rounded corner is round from the front and from the side). No holes larger than 2×2 inside a face, unless
-  another worn box lies directly under it (e.g. filigree in the shoulder reinforcement over the shoulder
-  core); the overlap report says which box lies under which. Cutting a face back across its whole width or
-  height (a short skirt) is a shape choice and only reported as information.
-- **Faces are independent.** Transparency in a side face does not remove the top or bottom face; if a skirt
-  ends halfway down, clear the bottom face too or it floats as a thin strip. A transparent pixel shows what
-  is behind it (the inner paint, the race skin or another box).
+- **Armor is opaque** (the user, 2026-10-20): every texel inside a box sheet's faces must be opaque;
+  transparency showed holes in the game (one looks into the hollow box). The only exception is the helm's **face
+  window** (white in `templates/boxes/helm.png`: columns 1–8, rows 1–8 of its front face), which may stay open so
+  the face shows. Shape comes from the boxes you choose and the paint.
 - **Inner paint:** start from `templates/blank/inner_<slot>.png`; `templates/inner/<slot>.png` shows the
   slot's region in green (chest: torso and arm; legs: leg rows 20–27; feet: leg rows 28–31). Head has no
   inner paint.
@@ -108,12 +103,9 @@ lines do not:
 4. `zones seen from the front`: zone A/B pixel counts per line, tier and slot. An approximation: an
    orthographic front view of the rest pose; a zone pixel counts unless the body or a box of the same slot
    hides it; both mirrored copies count; side faces and perspective are ignored.
-5. `alpha shaping`: WARNINGs for cut-outs deeper than 2 px, edges cut on one face only (both faces and
-   sheet positions given), holes larger than 2×2 with no worn box under them (and the tiers where that
-   happens); an INFO line per sheet with its opaque share per face, so filigree can be judged.
-6. `overlap report`: first the catalog-wide table (every pair of boxes, whatever the tiers wear): `A covers
+5. `overlap report`: first the catalog-wide table (every pair of boxes, whatever the tiers wear): `A covers
    B` with the covered texels of B's sheet per face, as a count and a rectangle in B's sheet pixels. Paint
-   there is hidden wherever A is opaque, and A may be largely transparent there. `[moves]` marks boxes on
+   there is hidden under A. `[moves]` marks boxes on
    different bones (e.g. a hip panel over a knee): true in the rest pose only. Then per line and tier the
    pairs your selection wears together (`A>B`; later tiers list the change). A `GEOMETRY NOTE` would be a
    catalog issue (coplanar faces that flicker); report it, do not paint around it.
@@ -132,7 +124,49 @@ lines do not:
 - `templates.py` rewrites `templates/`.
 - `softrender.py` is the software renderer behind `--engine soft` (the default).
 - `make_test_art.py` writes `test_art/` with a `tiers.json` (passes check.py without warnings; letters
-  F/R/L/B or corner flags in OUTLINE mark each face's top-left for orientation; chamfered helm and pauldron
-  corners and filigree in the reinforcement exercise the alpha checks) and `test_art_broken/` (nine
-  deliberate errors and three warning cases).
+  F/R/L/B or corner flags in OUTLINE mark each face's top-left for orientation; an eye band open in the
+  helm's face window) and `test_art_broken/` (twelve deliberate errors).
 - Two proposals for a pick page: two art directories, rendered separately.
+
+## Bake: art to game textures
+
+`bake.py` turns an art directory (the format above, with a `tiers.json` that names **every** line and tier; the
+example fallback of the render tools is not baked) into the game files of
+[armor-format.md §7](../../docs/technical/armor-format.md):
+
+```sh
+python3 bake.py                                 # test_art/ -> mods/PLAYER/grug_visuals/textures/
+python3 bake.py --check                         # the gate: exit 1 on a missing, extra or different file
+python3 bake.py --art DIR --out DIR             # another art directory or output directory
+python3 bake.py --icons-out DIR                 # also the 72 item icons and their masks
+python3 bake.py --sheet OUT.png                 # contact sheet: every grade's layers, zones tinted, icons
+python3 test_bake.py                            # the tool's test on a tiny synthetic art set
+```
+
+- Per line, grade (`grug_gear.MATERIALS`, read from `grug_gear/init.lua`: T1 is the first grade) and slot: the
+  atlas layer `grug_armor_<line>_<grade>_<slot>.png` (128 × 64; every worn box of the slot, its sheet's six face
+  rectangles palette-swapped into its `data/atlas.json` rectangle; a mirrored box has one sheet, so one copy), the
+  skin layer `…_<slot>_skin.png` (64 × 32, chest, legs and feet: the inner paint clipped to the slot's regions)
+  and a mask `…_ench.png` next to each: two frames stacked (frame 0 zone A, frame 1 zone B, grey 255 for
+  A_LIGHT/B_LIGHT and 153 for A_DARK/B_DARK, the 0.6 tone floor of `tools/r31_b/gen_enchant_masks.py`). Every
+  grade gets every file, transparent where the tier paints nothing: 252 files.
+- The zones come from the reference-palette pixels, so they hold whatever colour a tier palette gives zone A or B.
+  Alpha is hard. A missing file, a wrong size, partial alpha or an off-palette colour fails the bake (run
+  `check.py` first); paint outside the faces or the slot's regions is dropped. A tier entry without `inner` has transparent skin layers; with
+  `--icons-out`, a tier entry that names no icon for a slot fails the bake (every item needs its icon).
+- `--check` rebuilds in memory and compares mode, size and pixels with each file (like `gen_enchant_masks.py
+  --check`; PNG bytes would differ between Pillow/zlib versions). An extra file is a `grug_armor_*.png` in `--out`
+  the bake would not write; write mode removes such files. In `--icons-out` only the 144 icon files count.
+
+**Icons on test art** go only to a directory you give (`--icons-out`); the shipped icons in
+`mods/ITEMS/grug_gear/textures/` stay untouched until lane INTEG bakes the picked art. INTEG then:
+
+1. bakes the picked art: `python3 bake.py --art <picked art> --icons-out ../../mods/ITEMS/grug_gear/textures`
+   (atlas and skin layers to the default `--out`, the 72 icons `grug_gear_item_<slot>_<line>_<grade>.png` and their
+   `_ench.png` masks over the old ones, names unchanged); the gate becomes the same command with `--check`;
+2. changes `tools/r31_b/gen_enchant_masks.py`'s `sources()`: drops the 72 armor icons (their masks now come from
+   `bake.py`, and the generator's own masks of the new icons would differ) and the 72 worn overlays
+   `grug_visuals_<line>_<slot>_<grade>` (removed with their masks and the 8 ungraded `grug_visuals_<line>_<slot>.png`);
+   its `--check` then covers the weapons, bows, shields and the spellbook only;
+3. decides on the 12 ungraded icons `grug_gear_item_<slot>_<line>.png` (the Character page's slot ghosts and the
+   leather copies), which the bake does not write.

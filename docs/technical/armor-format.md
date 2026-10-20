@@ -62,10 +62,12 @@ In this order in the model's texture list:
 | `weapon` | per weapon | the weapon card in the hand (inventory view; transparent in the world) |
 
 An empty slot (no armor at all, no weapon shown) is `blank.png`, like the cloak today. The player model carries all
-four slots. Armored NPCs (a visual spec with an `armor_line`: guards and bandits today) use the generated **NPC
-model**: the same body and armor buffer with `skin`, `armor`, `weapon` (no cloak), built from a list of the boxes
-NPCs wear; that list is **every catalog box** for now (NPCs wear every tier). Unarmored humanoid NPCs (kings, royal
-guards, vendors, villagers) keep `character.b3d`.
+four slots. Armored NPCs (a visual spec with an `armor_line`: guards and bandits; and, by the user's ruling of 2026-10-20,
+kings, royal guards and generals in a royal variant of the guards' metal armor) use the generated **NPC model**:
+the same body and armor buffer with `skin`, `armor`, `weapon` (no cloak), built from a list of the boxes NPCs wear;
+that list is **every catalog box** for now (NPCs wear every tier). The royal variant colours zone A with the royal
+cloth colour and zone B gold through the zone masks, so it needs no art of its own. Unarmored humanoid NPCs
+(vendors, villagers) keep `character.b3d`.
 
 The helmet is a box: when a head piece is worn, the race look drops the hair layer as before (the render tool
 draws the bald look then), and the face stays the race's.
@@ -100,12 +102,11 @@ Side faces: row 0 is the top. Front: column 0 is the character's right. Back: co
 Anything outside the six rectangles stays transparent. Faces are independent: transparency in a side face does not
 remove the top or bottom face.
 
-**Alpha shaping** (rounded corners, chamfers, notches, jagged or filigree edges) is wanted, within three rules:
-
-1. Edge and corner cut-outs up to about 2 px deep, the same on every face sharing that edge.
-2. No hole larger than 2 × 2 inside a face (one would look into the hollow box), unless another worn box lies
-   directly under it (the overlap report of `check.py` says where).
-3. Where a box covers another, the upper one may be largely transparent.
+**Armor is opaque** (the user, 2026-10-20: transparency showed holes, since one looks into the hollow box): every
+texel of every face of a box sheet is opaque. The only exception is the helm's **face window**: the texels of its
+front face that lie wholly in front of the head's face (columns 1–8, rows 1–8 of the 10 × 10 front face) may stay
+transparent, so a helmet can leave the face open; the head is directly behind them. Shape comes from the box and
+the paint, not from cut-outs.
 
 ## 5. Inner paint (on the skin)
 
@@ -163,7 +164,7 @@ only the body and the same slot's boxes count as hiding them), so one enchanted 
 piece, not a copy of the 3D shape: one clear silhouette, readable at 32 and 16 px, few details.
 
 **`tiers.json`.** Every box may be used on every tier of every line; the painter chooses by the design goals.
-A missing variant entry means `a`.
+A missing variant entry means `a`; a tier entry must name its `palette`, and one without `inner` or `icon` has none.
 
 ```json
 {"metal": {"T1": {"palette": "bronze", "on": ["helm", "chest", "thigh", "boot"],
@@ -194,8 +195,9 @@ skin region), each with its mask.
 
 From `tools/r54_armor/`:
 
-- `python3 check.py --art <dir>`: file names and sizes, colours, alpha, paint outside faces or regions, missing
-  files per tier, zone counts from the front, alpha-shaping warnings, the overlap report; exit 1 on a violation.
+- `python3 check.py --art <dir>`: file names and sizes, colours, alpha, transparent texels in a face (outside the
+  helm's face window), paint outside faces or regions, missing files per tier, zone counts from the front, the
+  overlap report; exit 1 on a violation.
 - `python3 render.py --art <dir> --out <dir>`: contact sheets per line and race (`--detail` for one tier,
   `--engine soft` by default, sandbox-safe).
 - `python3 export.py --check`, `python3 atlas.py --check`, `python3 zfight.py`: the contract data is current and
