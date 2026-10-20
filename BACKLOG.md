@@ -35,7 +35,7 @@ layouts, resource tables or buff values.
   ([Round 53](#round-53--the-new-classes)); the fix round 0.53.1 followed
   the user's first look (areas without line of sight, the range line,
   racials, the redrawn icons). Next: the user's GUI test of 0.53.1 (with
-  0.54.0's armor redesign), the playtest and a short balance fix round
+  0.54.0's armor redesign and 0.54.1's particle look), the playtest and a short balance fix round
   ([Round 53 carry-overs](#round-53-carry-overs),
   [0.53.1 carry-overs](#0531-carry-overs)).
 - Current owners: [classes](docs/design/classes.md),

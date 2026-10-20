@@ -548,7 +548,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   tooltips, the 40-node flight band and the no-fly minimap, the same
   trinket twice, new Undead, Elf and Dwarf racials, skeleton bows,
   right-click picking and 36 redrawn icons. Both not pushed; pushed
-  together with 0.54.0 after the user's one GUI test. Next: that GUI test
+  together with 0.54.0 and 0.54.1 after the user's one GUI test. Next: that GUI test
   and the user's playtest, then a short balance fix round.
 - [x] **Round 54 "The armor redesign in the game"**
   ([completion](docs/planning/round54-plan.md#completion-2026-10-21)),

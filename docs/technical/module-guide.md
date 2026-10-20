@@ -775,7 +775,10 @@ tools](#player-meta-read-by-external-tools).
 - **Particle effects** (Round 40): every effect is a named emitter list in
   `grug_core/particle_effects.lua`, played by
   `grug_core.particles.play(id, frame)` (`particles.lua`, whose header
-  documents the emitter fields): every skill and proc effect, crits,
+  documents the emitter fields; since the look pass after Round 54 also
+  `mote`, the white mote `grug_core_mote.png` under the tint, `blend =
+  "add"` and `after`, an emitter deferred through `core.after`, which
+  Meteor's and Censure's falls use): every skill and proc effect, crits,
   absorb soaks, the level-up burst and the boss and mob-special effects
   (Round 40 PM: `grug_mobs` plays them from the kings' signature, the
   elite telegraph, the dragons, the Kraken, the mob verbs and families;

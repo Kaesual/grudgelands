@@ -53,9 +53,20 @@
 --           frame.reach (metres from the centre) at the end of its life
 --   attract {origin, strength, kill, at}: a point attractor at `origin` in
 --           the anchor `at` (default the emitter's own), spawners only
---   exp, size  {min, max}; glow 0..14
+--   exp, size  {min, max}; glow 0..14 (self-light in the dark: the engine
+--           adds it to the light at the particle, client/particles.cpp:197;
+--           it lights nothing around it)
 --   color   tints default_item_smoke.png (frame.color overrides it), or tex:
 --           a texture of its own; fade (default true): alpha 1 -> 0
+--   mote    true: the tint goes on grug_core_mote.png, a soft white mote, so
+--           the colour shows as written (the grey smoke puff darkens every
+--           tint to about 56 %); no effect with tex
+--   blend   "add": the particle's colour adds to what is behind it, a light
+--           (the texture table's blend, client/particles.cpp:973); default
+--           "alpha"
+--   after   seconds in [0, MAX_AFTER]: the emitter plays that much later
+--           (core.after, one server step of granularity) with the same frame
+--           and facing; it still counts toward the effect's budget
 -- A spawner's ranges (box extents, vel, acc) stay world-aligned; its centre
 -- and line ends turn with the facing. A single particle turns entirely.
 --
@@ -70,7 +81,10 @@ local MAX_TIME = 1      -- longer spawners go to every player (server.cpp:1739)
 local MAX_COUNT = 128   -- per emitter, before the scale
 local MAX_EXPTIME = 3
 local MAX_SCALE = 2
+local MAX_AFTER = 3
 local SMOKE = "default_item_smoke.png^[multiply:"
+local MOTE = "grug_core_mote.png^[multiply:"
+local BLENDS = {alpha = true, add = true}
 
 -- The scale from a setting string: a number in [0, MAX_SCALE], else 1.
 function particles.parse_scale(value)
@@ -138,6 +152,12 @@ function particles.check(emitters)
 		if e.attached or e.playername then
 			return label .. "never attached, never private"
 		end
+		if e.blend ~= nil and not BLENDS[e.blend] then
+			return label .. "blend must be alpha or add"
+		end
+		if e.after ~= nil and (type(e.after) ~= "number" or e.after < 0 or e.after > MAX_AFTER) then
+			return label .. "after must be in [0, " .. MAX_AFTER .. "]"
+		end
 	end
 	return nil
 end
@@ -179,11 +199,12 @@ local function rand(a, b)
 end
 
 local function texture(e, frame)
-	local name = e.tex or (SMOKE .. (frame.color or e.color))
-	if e.fade == false then
+	local name = e.tex or ((e.mote and MOTE or SMOKE) .. (frame.color or e.color))
+	local blend = e.blend ~= "alpha" and e.blend or nil
+	if e.fade == false and not blend then
 		return name
 	end
-	return {name = name, alpha_tween = {1, 0}}
+	return {name = name, alpha_tween = e.fade ~= false and {1, 0} or nil, blend = blend}
 end
 
 local function shape_radius(shape)
@@ -346,6 +367,14 @@ end
 
 local DEFAULT_DIR = vector.new(1, 0, 0)
 
+local function emit(e, frame, dir, anchor, n)
+	if e.kind == "spawner" then
+		spawner(e, frame, dir, anchor, n)
+	else
+		singles(e, frame, dir, anchor, n)
+	end
+end
+
 -- Plays effect `id` (particle_effects.lua) in `frame` (see the header).
 function particles.play(id, frame)
 	if particles.SCALE <= 0 then
@@ -365,10 +394,10 @@ function particles.play(id, frame)
 		local n = particles.count(e.n)
 		local framed = e.shape[1] == "line" and e.shape[2] == "frame"
 		if (anchor or framed) and n > 0 then
-			if e.kind == "spawner" then
-				spawner(e, frame, dir, anchor, n)
+			if e.after and e.after > 0 then
+				core.after(e.after, emit, e, frame, dir, anchor, n)
 			else
-				singles(e, frame, dir, anchor, n)
+				emit(e, frame, dir, anchor, n)
 			end
 		end
 	end

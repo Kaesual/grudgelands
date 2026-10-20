@@ -9,6 +9,16 @@
   python3 -c 'from PIL import Image; Image.new("RGBA", (1, 1), (255, 255, 255, 255)).save("mods/CORE/grug_core/textures/grug_core_hud_bar.png", optimize=True)'
   ```
 
+- `grug_core_mote.png`: 8×8 soft white mote (full white, alpha 255 in the
+  middle falling to 50 at the rim), generated for this project (own work),
+  **CC0**. The skill particle effects tint it with `^[multiply:`
+  (`grug_core/particles.lua`, the emitter field `mote`), so a colour shows as
+  written. Reproduce with:
+
+  ```sh
+  python3 -c 'from PIL import Image; im = Image.new("RGBA", (8, 8)); im.putdata([(255, 255, 255, (lambda d: 255 if d < 1.6 else 225 if d < 2.6 else 140 if d < 3.3 else 50 if d < 4 else 0)(((x + 0.5 - 4) ** 2 + (y + 0.5 - 4) ** 2) ** 0.5)) for y in range(8) for x in range(8)]); im.save("mods/CORE/grug_core/textures/grug_core_mote.png", optimize=True)'
+  ```
+
 ## Round 26 status icons and frames — CC0
 
 The 27 status emblems below were generated for Grudgelands on 2026-09-29

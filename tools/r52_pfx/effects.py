@@ -6,7 +6,8 @@
 One card per effect moment of a skill (cast, trail, impact, area warning,
 fall and impact, status tick, readiness window, ultimate). A card's emitters
 are written in grug_core/particles.lua's own emitter format (kind, n, time,
-at, shape, vel, acc, radial, attract, exp, size, glow, color or tex, fade), so
+at, shape, vel, acc, radial, attract, exp, size, glow, color or tex, fade, and
+since the look pass mote, blend and after), so
 round K registers a picked card in particle_effects.lua by copying it:
 
     status "keep"    today's catalogue id, unchanged (check_limits.lua proves
@@ -39,6 +40,7 @@ sys.path.insert(0, str(HERE))
 import cost  # noqa: E402
 
 SMOKE = "default_item_smoke.png^[multiply:"
+MOTE = "grug_core_mote.png^[multiply:"
 FIRE = "mobs_fire_particle.png"
 BLOOD = "mobs_blood.png"
 TARGET = [6.0, 0.0, 0.0]
@@ -80,6 +82,54 @@ FAMILIES = {
              "motion": ""},
 }
 T = {k: v["tints"] for k, v in FAMILIES.items()}
+
+# --------------------------------------------------------------------------
+# The look pass (after Round 54; the user's pick on 2026-10-21, "leuchtend +
+# kräftig" for every skill effect, on the R52 page's colour lab). Every card
+# goes through look(): a tinted emitter moves onto the white mote
+# (grug_core_mote.png, `mote`) in its family's vivid tint; every light,
+# spark, magic and fire emitter adds (`blend = "add"`) with glow 14; dust,
+# earth, wood splinters, smoke, mist (MATTE) and blood keep the plain blend
+# and their glow. particle_effects.lua writes the result, so the keep and
+# retint checks still compare like with like. tools/r541_glow tests it.
+# --------------------------------------------------------------------------
+VIVID = {
+    "ember": {"#fff0c8": "#ffd86a", "#ffb347": "#ff9a1a", "#ff8a3a": "#ff5a12"},
+    "rime": {"#bfe8ff": "#4cc3ff", "#f1fbff": "#9fe2ff", "#e6f6ff": "#8fd3ff"},
+    "bulwark": {"#c4ccd6": "#9cbce6", "#e6ebf3": "#dfeaff", "#d0a060": "#f0a030"},
+    "ruin": {"#d8263a": "#ff1f3a", "#c0303f": "#ff2a48", "#e8402a": "#ff4214", "#ff6a4a": "#ff7a1a"},
+    "mercy": {"#ffe08a": "#ffcf2a", "#ffe9a0": "#ffe04a", "#fff0c8": "#ffe680"},
+    "reckoning": {"#fff2c0": "#ffe270", "#ffd257": "#ffb800", "#fff6dd": "#fff0a8"},
+    "quarry": {"#a8c86a": "#98e03a", "#a8e0c0": "#50f0a8", "#f0e6b8": "#ffe680", "#79a65a": "#5cd03a"},
+    "veil": {"#e6ebf3": "#e4e8ff", "#b9a2e6": "#9a66ff"},
+}
+MATTE = {"ember": {"#3a2a22"}, "rime": {"#e6f6ff"}, "ruin": {"#b8a27a"},
+         "quarry": {"#b8a27a", "#c8a878", "#b89a68"}, "veil": {"#5a4a9a"}}
+
+
+def vivid(family, color):
+    return VIVID.get(family, {}).get(color, color)
+
+
+def look(e, family):
+    """One emitter after the look pass (see above)."""
+    e = dict(e)
+    tex = e.get("tex")
+    if tex and tex.startswith("mobs_blood"):
+        return e
+    old = e.get("color")
+    if not tex:
+        e["color"] = vivid(family, old)
+        e["mote"] = True
+    if tex or old not in MATTE.get(family, ()):
+        e["blend"] = "add"
+        e["glow"] = 14
+    return e
+
+
+# Falls that start late and land with the delay: vertical speed in m/s.
+METEOR_FALL_SPEED = 14
+CENSURE_FALL_SPEED = 12
 
 
 def S(n, time, **kw):
@@ -405,13 +455,14 @@ card("meteor", "warning", "keep", id="area_warning",
      hook="area.delayed (grug_core/area.lua:318): spec.warning default", context=["pfx.meteor.fall"],
      marker={"radius": 3, "at": "target"})
 card("meteor", "fall", "new", id="meteor_fall",
-     look="Ein einzelner brennender Brocken fällt schräg aus der Höhe genau zum Ende der Verzögerung auf den "
-          "Punkt: ein großer Kopf und zwei kleiner werdende Glutstücke dahinter, alle gleich schnell, wie ein "
-          "Komet.",
-     emitters=lambda f: _comet(f, FIRE, [14, 9, 5]), sample={"reach": 3, "time": 1.5, "height": 10},
+     look="Ein brennender Brocken stürzt schräg aus der Höhe genau zum Ende der Verzögerung auf den Punkt: ein "
+          "großer Kopf und zwei kleiner werdende Glutstücke dahinter, alle gleich schnell, wie ein Komet. Er "
+          "erscheint erst spät und fällt mit 14 m/s, ohne zu verblassen (überarbeitet am 21.10.).",
+     emitters=lambda f: _comet(f, FIRE, [14, 9, 5], METEOR_FALL_SPEED), sample={"reach": 3, "time": 1.5, "height": 10},
      target=[10, 0, 0],
      dynamic="height = area.fall_height (below the first solid node, at most 12), time = the delay; "
-             "none below 1.5 m (area.lua MIN_FALL)",
+             "none below 1.5 m (area.lua MIN_FALL); it falls at METEOR_FALL_SPEED for "
+             "min(time, height / speed) and starts after the rest of the delay",
      hook="area.delayed spec.fall = \"meteor_fall\"", context=["pfx.meteor.warning"],
      sprite={"name": "Meteor-Brocken", "stand_in": "rock",
              "text": "Ein brennender Gesteinsbrocken (16×16, dunkle Kruste, glühende Risse) für den Kopf; "
@@ -678,10 +729,13 @@ card("haven", "tick", "new", id="haven_tick",
      note="Zwei statt Mends drei, damit beide Heilungen über Zeit auf einem Spieler unterscheidbar bleiben.")
 # ---- Priest · Reckoning --------------------------------------------------
 card("smite", "hit", "new", id="smite_hit",
-     look="Sechs weißgoldene Punkte fallen von oben aufs Ziel, schnell und gerade: der Lichtfall aus Runde 40 "
-          "mit sechs statt 36 Partikeln, ohne Blitzring.",
-     emitters=[P(6, at="target", color=K["fall"], shape=["disc", [0, 3.0, 0], 0.5, False],
-                 vel=[[0, -12, 0], [0, -10, 0]], exp=[0.2, 0.22], size=[2.5, 3.5], glow=14)],
+     look="Eine kleine, harmlosere Final Word: ein kurzer Lichtstrahl schießt aus 3 m Höhe auf das Ziel, unten "
+          "springt ein kleiner goldener Ring auf (etwa 1 m statt 2 m). 13 einzelne Partikel, kein Spawner: Smite "
+          "ist der Grundangriff (überarbeitet am 21.10.).",
+     emitters=[P(5, at="target", color=K["white"], shape=["line", [0, 3.2, 0], [0, 1.6, 0]],
+                 vel=[[0, -9, 0], [0, -9, 0]], exp=[0.16, 0.18], size=[3, 3.5], glow=14),
+               P(8, at="target", color=K["gold"], shape=["disc", [0, 0.15, 0], 0.3, True],
+                 radial=[3, 3.5], exp=[0.25, 0.3], size=[2.5, 2.5], glow=14)],
      hook="Smite's cast (kits_priest.lua:61)",
      today="der Runde-40-Lichtfall: 24 fallende Punkte und ein 12er-Blitzring, zwei Spawner (bei 2 s "
            "Abklingzeit angenommen; jetzt ist Smite der Grundangriff, einmal pro Sekunde)", today_id="smite",
@@ -709,13 +763,12 @@ card("censure", "warning", "new", id="censure_warning",
      hook="area.delayed spec.warning = \"censure_warning\"", context=["pfx.censure.fall"],
      marker={"radius": 3, "at": "target"})
 card("censure", "fall", "new", id="censure_fall",
-     look="Ein einziges großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung "
-          "auf.",
-     emitters=lambda f: [P(1, at="target", color=K["white"], shape=["box", [0, f["height"], 0], [0, f["height"], 0]],
-                           vel=[[0, -f["height"] / f["time"], 0], [0, -f["height"] / f["time"], 0]],
-                           exp=[f["time"], f["time"]], size=[16, 16], glow=14)],
+     look="Ein großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf. Es "
+          "erscheint etwas später und fällt mit 12 m/s, ohne zu verblassen (überarbeitet am 21.10.).",
+     emitters=lambda f: _seal(f, K["white"]),
      sample={"reach": 3, "time": 0.75, "height": 6}, target=[8, 0, 0],
-     dynamic="height = area.fall_height, time = the delay: speed height / time",
+     dynamic="height = area.fall_height, time = the delay: it falls at CENSURE_FALL_SPEED for "
+             "min(time, height / speed) and starts after the rest of the delay",
      hook="area.delayed spec.fall = \"censure_fall\"", context=["pfx.censure.warning"],
      marker={"radius": 3, "at": "target"},
      sprite={"name": "Siegel", "stand_in": "seal",
@@ -839,23 +892,42 @@ card("close_dance", "swing", "new", id="close_dance_swing",
 # --------------------------------------------------------------------------
 # Helpers the card functions use
 # --------------------------------------------------------------------------
-def _comet(f, tex, sizes):
+def _fall_time(f, speed):
+    """How long a fall at `speed` m/s from frame height takes, at most the
+    delay; the rest of the delay is its `after`."""
+    life = f["time"]
+    fall = min(life, f["height"] / speed)
+    return fall, life - fall
+
+
+def _comet(f, tex, sizes, speed):
     """Three single particles in a row along a slanted fall, all at one
-    velocity, so the head reaches the anchor when the delay ends."""
-    h, life = f["height"], f["time"]
+    velocity, that appear late and fall fast so the head reaches the anchor
+    when the delay ends; no fade, so the head lands whole."""
+    h = f["height"]
+    fall, after = _fall_time(f, speed)
     slope = 0.35  # horizontal metres per metre of fall
-    vx, vy = slope * h / life, -h / life
-    speed = math.hypot(vx, vy)
-    ux, uy = -vx / speed, -vy / speed  # back along the path
+    vx, vy = slope * h / fall, -h / fall
+    path = math.hypot(vx, vy)
+    ux, uy = -vx / path, -vy / path  # back along the path
     out = []
     for k, size in enumerate(sizes):
         back = 0.7 * k
         p = [-slope * h + ux * back, h + uy * back, 0]
         p = [round(p[0], 3), round(p[1], 3), 0]
-        out.append(P(1, at="target", tex=tex, shape=["box", p, p],
+        out.append(P(1, at="target", tex=tex, fade=False, after=after, shape=["box", p, p],
                      vel=[[round(vx, 3), round(vy, 3), 0], [round(vx, 3), round(vy, 3), 0]],
-                     exp=[life, life], size=[size, size], glow=14))
+                     exp=[fall, fall], size=[size, size], glow=14))
     return out
+
+
+def _seal(f, color):
+    """Censure's one large seal: straight down at CENSURE_FALL_SPEED, late
+    enough to land with the delay; no fade."""
+    h = f["height"]
+    fall, after = _fall_time(f, CENSURE_FALL_SPEED)
+    return [P(1, at="target", color=color, fade=False, after=after, shape=["box", [0, h, 0], [0, h, 0]],
+              vel=[[0, -h / fall, 0], [0, -h / fall, 0]], exp=[fall, fall], size=[16, 16], glow=14)]
 
 
 # --------------------------------------------------------------------------
@@ -868,7 +940,8 @@ CUT = ("pfx.loose.shot", "pfx.smite.hit", "pfx.fiery_spark.impact", "pfx.hearten
 
 def emitters_of(c):
     em = c["emitters"]
-    return em(c["sample"]) if callable(em) else list(em)
+    ems = em(c["sample"]) if callable(em) else list(em)
+    return [look(e, c["family"]) for e in ems]
 
 
 def check(emitters):
@@ -897,6 +970,10 @@ def check(emitters):
             return lab + "radial reach needs single particles"
         if e.get("attached") or e.get("playername"):
             return lab + "never attached, never private"
+        if e.get("blend", "alpha") not in ("alpha", "add"):
+            return lab + "blend must be alpha or add"
+        if not 0 <= e.get("after", 0) <= 3:
+            return lab + "after must be in [0, 3]"
     return None
 
 
@@ -928,7 +1005,7 @@ def color_of(e, frame):
 
 
 def texture_of(e, frame):
-    return e.get("tex") or SMOKE + color_of(e, frame)
+    return e.get("tex") or (MOTE if e.get("mote") else SMOKE) + color_of(e, frame)
 
 
 def tex_key(e):
@@ -957,7 +1034,9 @@ def to_sim(e, frame, caster, target, delay):
         shape = ["box", add(sh[1]), add(sh[2])]
     else:
         shape = [sh[0], add(sh[1]), sh[2], bool(sh[3])]
-    s = {"kind": e["kind"], "n": e["n"], "time": time if e["kind"] == "spawner" else 0, "delay": delay,
+    after = e.get("after", 0)
+    s = {"kind": e["kind"], "n": e["n"], "time": time if e["kind"] == "spawner" else 0, "delay": delay + after,
+         "after": after, "mote": bool(e.get("mote")), "blend": e.get("blend", "alpha"),
          "shape": shape, "vel": e.get("vel") or [[0, 0, 0], [0, 0, 0]], "acc": e.get("acc") or [0, 0, 0],
          "exp": e["exp"], "size": e["size"], "glow": e.get("glow", 0), "color": color_of(e, frame),
          "texture": texture_of(e, frame), "tex": tex_key(e), "fade": e.get("fade", True),
@@ -1042,7 +1121,7 @@ def main():
         ems = emitters_of(c)
         frame = dict(c["sample"])
         if c["color"]:
-            frame["color"] = c["color"]
+            frame["color"] = vivid(c["family"], c["color"])
         if c["status"] != "none":
             p = check(ems)
             if p:
@@ -1072,7 +1151,7 @@ def main():
             o = by_key[k]
             of = dict(o["sample"])
             if o["color"]:
-                of["color"] = o["color"]
+                of["color"] = vivid(o["family"], o["color"])
             contexts.append({"key": k, "t0": o["t0"],
                              "emitters": [to_sim(e, of, [0, 0, 0], o["target"], 0.0) for e in emitters_of(o)],
                              "flight": o["flight"]})

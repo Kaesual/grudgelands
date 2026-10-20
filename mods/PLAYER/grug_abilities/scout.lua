@@ -18,11 +18,12 @@ local ARROW_PROJECTILE = "scout_arrow"
 -- shots' speed; the draw's faster full-draw arrow is gone with the draw).
 local ARROW_SPEED = 40
 -- The skill-arrow trail's tint per shot (particle_effects.lua "skill_arrow",
--- tools/r52_pfx cards: Loose has none); Arrowfall's first arrow has its own.
+-- tools/r52_pfx cards: Loose has none, the vivid tints since the look pass);
+-- Arrowfall's first arrow has its own.
 local ARROW_TRAILS = {
-	true_draw = {effect = "skill_arrow", color = "#f0e6b8"},
-	snare_shot = {effect = "skill_arrow", color = "#79a65a"},
-	split_shot = {effect = "skill_arrow", color = "#a8c86a"},
+	true_draw = {effect = "skill_arrow", color = "#ffe680"},
+	snare_shot = {effect = "skill_arrow", color = "#5cd03a"},
+	split_shot = {effect = "skill_arrow", color = "#98e03a"},
 	arrowfall = {effect = "arrowfall_trail"},
 }
 -- Loose's held cadence (skill-inventory §4.4): 0.85 s, divided by the bow's
