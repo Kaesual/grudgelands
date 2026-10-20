@@ -423,8 +423,10 @@ do
 		eq(G.get_range(p, def), def.range or 4, "U " .. id .. ": the range as on main")
 		eq(G.description_prefix(p, def), old_prefix(p, def), "U " .. id .. ": the tooltip head as on main")
 		eq(G.description_prefix(nil, def), old_prefix(nil, def), "U " .. id .. ": the item's static head")
+		-- The Priest's kit takes the calculator's occupied times (lane PRIEST,
+		-- tools/r53_priest checks them).
 		if def.kind == "cast" then
-			check(def.occupied_cast == 0 and def.occupied_swing == "weapon",
+			check(def.class == "priest" or def.occupied_cast == 0 and def.occupied_swing == "weapon",
 				"U " .. id .. ": a cast's clock as on main")
 		else
 			eq(def.occupied_cast, "weapon", "U " .. id .. ": a swing holds casts one interval (K9)")

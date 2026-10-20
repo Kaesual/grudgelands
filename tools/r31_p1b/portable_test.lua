@@ -97,8 +97,6 @@ do
 		get_spell_power_bonus = function() return 0 end,
 		get_support_factor = function() return 1 end,
 		talent_rank = function() return 0 end,
-		-- kits.lua reads Mend's display name from its talent keystone.
-		registered_talents = {mend = {name = "Mend"}},
 	}
 	grug_projectiles = {register = function() end}
 	local abilities = {}
@@ -115,7 +113,7 @@ do
 	dofile(repo .. "/mods/PLAYER/grug_abilities/kits.lua")
 	local ids = {"heal", "shield_spell", "mend"}
 	for _, id in ipairs(ids) do check(abilities[id] ~= nil, "H: " .. id .. " registered") end
-	eq(abilities.mend.name, "Mend", "H: Mend takes its display name from the talent keystone")
+	eq(abilities.mend.talent, "mercy_mend", "H: Mend is unlocked by its graph node (Round 53)")
 
 	local function cast(id, user)
 		heals, absorbs, contacts = {}, {}, {}
