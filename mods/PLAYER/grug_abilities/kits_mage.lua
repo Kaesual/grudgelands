@@ -11,7 +11,9 @@
 -- Winter Field) anchor with grug_core.area (skill-inventory.md §3a) and
 -- land once after a fixed delay; Ice Nova and Ice Wave hit once around the
 -- caster. Every area filter is valid_target (K.target_filter), which carries
--- the PvP flag.
+-- the PvP flag. Area hits and Fireball's splash pass `no_crit` (the
+-- calculator models them without crits; combat.lua honours it from INTEG
+-- part 2 on); the direct projectile hits may crit.
 return function(K)
 local mob_ent, effective_number = K.mob_ent, K.effective_number
 local spell_damage_value, fx, facing = K.spell_damage_value, K.fx, K.facing
@@ -133,7 +135,8 @@ grug_projectiles.register("fireball", {
 			for _, obj in ipairs(area.query(at, {radius = 2, band = 2,
 					filter = function(obj) return obj ~= target and hostile(obj) end})) do
 				grug_core.deal_ability_damage(owner, obj, data.splash_damage,
-					{attacker_level = attacker_level, action_id = data.action_id})
+					{attacker_level = attacker_level, action_id = data.action_id,
+						no_crit = true})
 			end
 		end
 	end,
@@ -245,6 +248,7 @@ grug_abilities.register_ability({
 		for _, obj in ipairs(area.cone(user, {radius = radius(user, def, 5), angle = 70,
 				filter = target_filter(user, "hostile")})) do
 			grug_core.deal_ability_damage(user, obj, amount, {action_id = action_id,
+				no_crit = true,
 				on_accepted = function() slow(obj, "ice_wave_slow", 50, 3) end})
 		end
 		fx("ice_wave", {caster = user:get_pos(), dir = facing(user)})
@@ -348,6 +352,7 @@ local function ground_area(user, def, spec)
 			for _, obj in ipairs(area.query(at, {radius = reach,
 					filter = target_filter(caster, "hostile")})) do
 				grug_core.deal_ability_damage(caster, obj, amount, {action_id = action_id,
+					no_crit = true,
 					on_accepted = spec.on_hit and function() spec.on_hit(obj) end})
 			end
 		end,
@@ -579,6 +584,7 @@ grug_abilities.register_ability({
 			local ent = mob_ent(obj)
 			grug_core.deal_ability_damage(user, obj, amount, {
 				action_id = action_id,
+				no_crit = true,
 				on_accepted = function()
 					if obj:is_player() then
 						if obj:get_hp() > 0 and grug_core.set_root(obj, root_time) then

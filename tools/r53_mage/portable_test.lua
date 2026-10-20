@@ -448,6 +448,16 @@ end
 local function fill_mana(p) G.restore_mana(p, 100000) end
 local function fresh_clock() wait(100) end
 local function last(list) return list[#list] end
+-- Each labelled hit's crit flag, in order: note_crit(labels) takes the first
+-- #labels hits of the log.
+local crit_flags = {}
+local function note_crit(labels)
+	for i, label in ipairs(labels) do
+		local hit = log.damage[i]
+		crit_flags[#crit_flags + 1] = label .. ":" ..
+			(hit and hit.opts and hit.opts.no_crit == true and "no_crit" or "crit")
+	end
+end
 
 ------------------------------------------------------------------------------
 -- R: registration.
@@ -763,6 +773,7 @@ do
 	projectiles.fireball.on_hit(p, mob, {damage = 50, splash_damage = 7, action_id = "a"},
 		{x = 0, y = 1, z = 3}, 60)
 	eq(#log.damage, 2, "P Fireball: the hit and one splash")
+	note_crit({"fireball", "fireball_splash"})
 	check(log.damage[1].target == mob and log.damage[1].amount == 50, "P ...the primary hit")
 	check(log.damage[2].target == other and log.damage[2].amount == 7,
 		"P ...the splash on the other enemy only (never the primary, an evading mob, a friend or the caster)")
@@ -793,6 +804,7 @@ do
 	projectiles.fiery_spark.on_hit(p, mob, {damage = 30, action_id = "e"}, {x = 0, y = 1, z = 3}, 60)
 	check(log.fx[1].id == "spark_hit" and log.damage[1].amount == 30, "P Fiery Spark: its card and hit")
 	projectiles.flame_lance.on_hit(p, mob, {damage = 90, action_id = "f"}, {x = 0, y = 1, z = 3}, 60)
+	note_crit({"fiery_spark", "flame_lance"})
 	check(log.fx[2].id == "flame_lance_hit" and log.damage[2].amount == 90, "P Flame Lance: its card and hit")
 end
 
@@ -867,6 +879,7 @@ do
 			eq(targets(), "mob,a_flagged_a_mage", "A " .. id ..
 				": hits the mob and the flagged enemy only")
 			near(log.damage[1].amount, case[8] * D(60), "A " .. id .. ": the damage", 1e-9)
+			note_crit({id})
 		end
 	end
 	-- Winter Field's slow on each hit.
@@ -895,6 +908,7 @@ do
 		"A Ice Wave: a 70 degree cone of 5 m")
 	eq(targets(), "mob,a_flagged_a_wave", "A ...the valid hostiles only")
 	near(log.damage[1].amount, 0.25 * D(60), "A ...0.25D", 1e-9)
+	note_crit({"ice_wave"})
 	s = last(log.mob_slow)
 	check(s and math.abs(s.factor - 0.5) < 1e-9 and s.duration == 3, "A ...a 50 % slow for 3 s (mob)")
 	m = last(log.move)
@@ -923,6 +937,7 @@ do
 	check(q and q.at == p.pos and q.opts.radius == 5.75, "W a circle around the caster (Far Frost 3/3)")
 	eq(targets(), "mob,a_flagged_w_mage", "W ...the valid hostiles only")
 	near(log.damage[1].amount, 0.65 * D(60), "W ...0.65D", 1e-9)
+	note_crit({"ice_nova"})
 	local r = last(log.mob_root)
 	check(r and r.ent == hostile.ent and r.duration == 2.5, "W ...a 2.5 s root on the mob")
 	check(last(log.root) and last(log.root).duration == 2.5, "W ...and on the player")
@@ -1032,6 +1047,12 @@ do
 		" mana), 20 s cooldown\n", "L Blink's head: 8 %, 20 s")
 	eq(R.fiery_spark._grug_timing_line, "1 s cast interval", "L Fiery Spark's timing line")
 end
+
+-- The crit flag (the coordinator, Q1): area hits and Fireball's splash
+-- pass no_crit; the direct projectile hits do not.
+eq(table.concat(crit_flags, ","), "fireball:crit,fireball_splash:no_crit,fiery_spark:crit," ..
+	"flame_lance:crit,meteor:no_crit,fire_rain:no_crit,winter_field:no_crit,ice_wave:no_crit," ..
+	"ice_nova:no_crit", "C no_crit on every area hit and the splash, never on a direct hit")
 
 if failures > 0 then
 	error("R53 MAGE PORTABLE FAIL " .. failures .. " of " .. checks .. " checks")
