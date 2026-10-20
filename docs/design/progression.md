@@ -89,43 +89,43 @@ level-1 mob, not 3×.
 
 Levels must keep delivering *decisions and buttons*, not just stats:
 
-**The trees are decided.**
-[skill_trees.md](skill_trees.md) (revision 2, 2026-09-16) defines
-two trees per class on the cadence below, works the arithmetic out for every
-milestone, and lists every talent, keystone and capstone for all **four**
-classes — the fourth being the Scout ([scout.md](scout.md)).
+**The trees are decided.** [skill_trees.md](skill_trees.md) defines two
+talent trees per class, drawn as graphs (the class rework's round K,
+live since Round 53), works the arithmetic out and lists every node of all
+**four** classes — the fourth being the Scout ([scout.md](scout.md)).
 
-The three bullets below were rewritten on **2026-09-16** by the user's
-rulings; the superseded text is named in the
-[WP11 delivery record](../archive/design/skill-trees-wp11-delivery.md) §5.2.
+The bullets below were rewritten on **2026-09-16** by the user's rulings
+and again for the class rework (the user's rulings of 2026-10-19 and
+2026-10-20, [delivery plan](../planning/class-redesign/delivery-plan.md)
+§6); the superseded texts are named in the
+[WP11 delivery record](../archive/design/skill-trees-wp11-delivery.md) §5.2
+and section G.
 
 - **1 talent point every 2 levels, the first at level 2** (30 points total
-  at 60); a talent tree holds **28 ranks**, so a class holds 56 — you can fill
-  **one whole tree** (28 of the 30 points) or spread over both with one
-  prioritised, and a full tree is never forced (WP11). *(Supersedes "1 talent point every
-  3 levels (20 points total at 60); 2 trees × 5 talents × 3 ranks".)*
-- Each tree carries **two playstyle directions (chains)**, rank counts vary
-  **3-5** by talent strength, and dependencies are of both kinds: points
-  spent in the tree, and hard chains. Per tree: **two keystones and one
-  capstone**, and the capstone hangs on its own chain and has **one rank**.
-  **Per tree at most ONE keystone adds a new active "main skill"** (user
-  rulings 2026-09-16); the other keystone and the capstone **improve or
-  replace** a button the player already has, so no build carries more than two
-  extra hotbar keys. The new skill is the "new ability every ~10 levels" beat
-  (e.g. Mend, the Priest healing tree's keystone). **A character reaches
-  exactly one capstone**: it costs 21 of the 30 points in a single tree, which
-  is level 42, and two would cost 42. *(Supersedes "9 of 10 talents are numeric
-  modifiers; exactly one capstone per tree, unlocked at 8+ points in that
-  tree, and every capstone is a NEW active main skill".)*
-- **New skills come only from the tree**; the base kit granted at class
-  choice stays, and talents improve its numbers. **Respec for money in the
-  talent UI — there is no class trainer and no NPC**; the price is **five
-  minutes of measured reliable net solo income** at the character's bracket
-  (`economy.md` §3/§4.1), and **the first respec of a character is free**. A
-  respec is a **full reset**, and **class change is removed from the game
-  entirely, for admins too**. *(Supersedes "Respec at the class trainer
-  for gold". `economy.md` §4 and `world.md` §3 state the same no-trainer
-  rule.)*
+  at 60). A tree holds 32 to 34 ranks, more than the points, so even a pure
+  build leaves ranks unbought; any split over both trees is legal.
+  *(Supersedes "1 talent point every 3 levels (20 points total at 60); 2
+  trees × 5 talents × 3 ranks" and revision 2's 28-rank trees.)*
+- **New skills come from the trees at gates.** Each class starts with two
+  or three skills of its own (the Warrior Strike and Charge, the Mage Fiery
+  Spark and Ice Wave, the Priest Smite and Heal, the Scout Loose, Sidestep
+  and Sprint). A node's gate is the points already spent in its tree (0, 2,
+  6, 10, 12, 16 or 20, so new rows open at levels 2, 6, 14, 22, 26, 34 and
+  42 at the earliest); each tree unlocks two or three skills, may transform
+  one or two existing ones in place, and ends in **one ultimate** at gate
+  20: the 21st point in the tree, **level 42** at the earliest, and two
+  ultimates would cost 42 of the 30 points. The other nodes improve numbers
+  or open readiness windows. *(Supersedes revision 2's chains,
+  keystones and capstones and "at most one new skill per tree".)*
+- **New skills come only from the trees** and wait in the Talents & Skills
+  catalogue; the player places them on hotbar A or B. **Respec for money in
+  the talent UI — there is no class trainer and no NPC**; the price is
+  **five minutes of measured reliable net solo income** at the character's
+  bracket (`economy.md` §3/§4.1), and **the first respec of a character is
+  free**. A respec is a **full reset**, and **class change is removed from
+  the game entirely, for admins too**. *(Supersedes "Respec at the class
+  trainer for gold". `economy.md` §4 and `world.md` §3 state the same
+  no-trainer rule.)*
 - **Level 20 — Claim Stone:** the Housing Steward in every capital hands out
   the player's one free, soulbound Claim Stone. It claims a 101 × 101 home in
   the player's own level-11–30 home zones while it is fuelled

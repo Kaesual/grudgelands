@@ -1,6 +1,7 @@
 # Class Kits — Resources & Abilities (MVP)
 
-Decided spec (last revised 2026-09-17; established 2026-08-06).
+Decided spec (established 2026-08-06; the kits rebuilt in Round 53, round
+K of the class rework, [round 53 plan](../planning/round53-plan.md)).
 Implementation: WP4 (`grug_abilities`, resource HUD, damage pipeline hooks in
 `grug_core`), WP19 (kit tuning, GCD, target memory), WP35 (§2b's universal
 ability and §2c's ability-item skins), WP38 (§2b's proc model, which retires
@@ -10,11 +11,11 @@ kits in WP11.
 Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 `combat_stats.md` §4.
 
-**The WP11 skill-tree design is decided.**
-[skill_trees.md](skill_trees.md) carries
-two trees per class derived from the kits below, the talents that improve
-their numbers, and the keystones that add new main skills (at most one per
-tree) — Mend among them, as §5 already decided. A **fourth class, the Scout**
+**Since Round 53 every class starts with two or three starters and gains
+the rest of its kit from its two talent trees** ([skill_trees.md](skill_trees.md)
+§1.1: unlocks, transforms and one ultimate per tree). The numbers below are
+the frozen balance calculator's; a talent re-tunes them, and a talented
+skill is the design working, not a bug. A **fourth class, the Scout**
 ([scout.md](scout.md)): leather armour, a bow and a blade. The Scout carries
 its bow in the Weapon slot, shown as "Ranged", and its sword or dagger in the
 offhand, shown as "Melee" (Round 28 ruling 25): bow skills read Ranged,
@@ -23,17 +24,16 @@ item; no class gets a second strike, damage roll or talent axis from the
 other hand. Every class's offhand is class-specific — Warrior a shield, Mage
 and Priest a spellbook ("Caster offhand"), Scout the Melee blade — and both
 hand items always count toward stats (`inventory_equipment.md` §2). The numbers in the
-§3-§5 tables become the **untalented base** values; and by the user's ruling
-of 2026-09-16 the **Warrior's base kit drops to three abilities** (Charge,
-Mighty Blow, Taunt), so that every class starts with Strike plus three:
-**Hamstring leaves §3's table and returns as a talent**, the keystone of the
-Warrior's Ruin tree. The same ruling removes **class changing** from the game
-entirely, admins included.
+§3–§5 tables are the **untalented base** values. The user's ruling of
+2026-09-16 removed **class changing** from the game entirely, admins
+included.
 
 Core principles:
 
-- **Instant abilities + cooldowns, no cast times in the MVP.** Cast bars
-  (and pushback) may come later for selected spells. Travel home, including
+- **Instant abilities + cooldowns, no cast times** (kept by the user's
+  "maximally simple" rulings of 2026-10-19). A heavy skill may instead
+  occupy the next action for a while *after* the cast (§2b "Scheduling",
+  the action clock); every area effect triggers exactly once. Travel home, including
   to a Claim Stone ([housing.md](housing.md) §8), is immediate and uses no
   cast.
 - **Abilities use indestructible, bound inventory representations.** The base
@@ -83,14 +83,21 @@ Core principles:
   Service NPCs, guards and mobs are not player party
   members and cannot receive player heals or shields. `self`
   ignores all pointed and remembered objects and anchors the
-  cast on its user. Strike, Charge, Mighty Blow, Hamstring, Taunt, Fireball and
-  Smite are hostile; Ice Nova and Blink are self; Heal, Shield and Mend
+  cast on its user. Strike and every swing skill, Charge, Taunt and the
+  direct casts and shots (Fiery Spark, Cold Spark, Fireball, Flame
+  Lance, Smite, Rebuke, Word of Ruin, Final Word and the Scout's bow
+  skills) are hostile; Blink, Rime Mantle, Hold Ground, Unbroken,
+  Ruination, Bellow, Hearten, Haven, Sidestep, Sprint, Parry and Close
+  Dance are self, and so are the areas cast as offensive self skills (Ice
+  Wave, Ice Nova, Meteor, Fire Rain, Winter Field, Censure and Flourish:
+  they hit around the caster or at the ground under the crosshair,
+  [ability_targeting.md](ability_targeting.md) §4); Heal, Shield and Mend
   are friendly. A friendly skill's documented self fallback
   remains part of that skill, not a fourth target kind.
-- Three to four abilities per class in the MVP; **new active "main
-  skills" come only from talent keystones**, at most one per tree
-  ([skill_trees.md](skill_trees.md) §2) — talents otherwise improve or
-  replace existing buttons rather than adding many new ones.
+- **Two or three starters per class** (§3–§5, [scout.md](scout.md) §2);
+  every other skill comes from a talent tree, two to four unlocks and one
+  ultimate per tree ([skill_trees.md](skill_trees.md) §1.1). A normal
+  loadout uses four to six skills; owning more is allowed.
 - **Balance constraints** (decided 2026-08-06): party content is sized
   for **2–3 players**, and every encounter must be **beatable without a
   healer** (food/potions as the substitute) — the Priest makes parties
@@ -98,14 +105,13 @@ Core principles:
 - **Numeric ability tooltips are player-specific.** Damage, healing and absorb
   numbers show the effective current-level value before Crit and target-level
   malus. Absorb settlement retains fractional points; its tooltip displays
-  that seam's value rounded down. Smite shows its unshielded damage and, when
-  Warded Wrath is ranked, a separately scaled `(+N while shielded)` suffix;
-  changing only the current shield state does not change its tooltip. The
+  that seam's value rounded down. The
   registered item definition keeps a number-free fallback; the player's
   ability ItemStack carries the effective description and refreshes on kit
   sync, level change and talent change. Its timing line shows the player's
-  effective cooldown (a talent that shortens it, such as Grudge or Swift
-  Word, shows in it) and a swing skill's effective charge. Strike's
+  effective cooldown (a talent that shortens it, such as Quick Step or
+  Onset, shows in it), the effective cost and range, and a swing skill's
+  effective charge. Strike's
   player-specific rage sentence is additionally resource-gated as decided on
   2026-09-18: only a rage-resource class receives it; mana-resource and
   class-less characters retain the class-neutral swing text (§2b).
@@ -130,9 +136,9 @@ Core principles:
 - Mana costs are rounded percentages of the caster's unmodified base pool,
   minimum 1. Full-pool cast counts at L1/L60 are: 5% = **26/19**, 6% =
   **13/16**, 8% = **13/12**, and 10% = **8/9**. Pool enchants and talents do
-  not increase costs. Heal therefore supplies at least 12 casts at
-  either endpoint; four untalented 25% casts equal one neutral health pool
-  before the support factor, leaving capacity for a normal fight and another.
+  not increase costs (cost talents lower them). Heal (10 %) therefore
+  supplies 8 casts at level 1 and 9 at level 60; four untalented 25 % casts
+  equal one neutral health pool before the support factor.
 - **HUD: one thin bar per resource, directly above the hotbar slots**
   (user ruling 2026-09-16, shipped in round 4; it replaces the colored
   resource *line* this bullet used to describe). Every class has exactly one
@@ -153,7 +159,12 @@ Core principles:
 - Ability damage/heals go through `grug_core` helpers that roll **crit**
   (attacker's chance, ×2 since Round 33, for damage and heals) and — for player targets — **dodge**
   (combat_stats §2), then apply via `object:punch` so armor groups and mob
-  death handling (XP, loot) keep working. Ability (cast) punches carry no
+  death handling (XP, loot) keep working. `deal_ability_damage`'s
+  `opts.no_crit` (Round 53) skips the crit roll: area hits and splashes
+  never crit (Ice Wave, Ice Nova, Meteor, Fire Rain, Winter Field,
+  Fireball's splash, Censure, Flourish, Split Shot's splash), as the
+  balance calculator models them; heals pass the same flag to
+  `heal_player` for support that never crits. Ability (cast) punches carry no
   knockback; only Strike and the melee swing skills push a normal mob back
   (combat_stats §3, Round 28 ruling 7). A future knockback skill displaces
   the mob through `grug_mobs.displace_mob`; the `damage_groups.knockback`
@@ -357,8 +368,13 @@ Selected skill and fallback Strike are mutually exclusive in one decision.
 After a successful skill, Strike must wait at least the actual weapon interval,
 without shortening a later existing deadline; after a swing, a cast waits one
 interval of the current melee weapon (the action clock in both directions,
-Round 53 K9). Skill cooldowns/cast intervals
-still apply; no global cooldown is added. Early clicks, release/repress,
+Round 53 K9), and a cast holds the next cast back for its own occupied time
+("You are still busy." on a fresh press inside it). Skill cooldowns/cast
+intervals still apply; no global cooldown is added. A held basic attack with
+a cast interval (Fiery Spark, Cold Spark, Smite, Loose) carries the
+server-step lateness of its last cast, at most 0.1 s and half the
+interval, into its next interval and its own occupied time, so it keeps
+its pace on 0.09 s server steps; a cast after a pause carries nothing. Early clicks, release/repress,
 retargeting and skill swaps cannot reset the weapon clock. Concrete equipped
 weapon changes start a full interval; lag never replays missed attacks.
 
@@ -476,8 +492,9 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
 - **Hostile (red):** the selected skill targets hostiles and its own aim
   authority finds a valid hostile within the skill's effective range: the
   current server ray to `get_range` (swing skills 3 m, Taunt 8, Charge 12,
-  Fireball/Smite 20, Loose 25 or 33 with Longshot, plus the race bonus where
-  it applies) and the skill's target rule, the same predicate a press uses
+  the Mage's and Priest's direct casts 20, the bow skills 25, plus the
+  `range_add` talents such as Far Cast, Long Reach and Long View and the
+  race bonus where it applies) and the skill's target rule, the same predicate a press uses
   (a mob evading home is no target). The overlay reads that authority
   without its side effects: no Target Frame memory, no cast diagnostics.
 - **Red or green only where a press would act:** no skill state while the
@@ -492,8 +509,9 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   This applies with any wielded item, and uses contextual input's own
   classification.
 - A skill state takes precedence over interact. Self-target skills (Blink,
-  Ice Nova, Sprint, ...) have no skill state. Otherwise the plain crosshair
-  shows.
+  Ice Nova, Sprint, ...) have no skill state, the ground areas cast as
+  offensive self skills (Meteor, Fire Rain, Winter Field, Censure) neither.
+  Otherwise the plain crosshair shows.
 - The state is refreshed every 0.15 s from the shared 0.05 s input pass,
   whose input handling and weapon-ready ring stay on every pass (one
   hand-reach ray per player, plus one skill ray while a targeted skill is
@@ -516,20 +534,22 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
 
 ### Rules for hostile casts and projectiles
 
-- Charge, Taunt and Smite require a currently pointed valid hostile within
-  their own range and server-validated line of sight. They never fall back to
+- Charge, Taunt, Smite, Rebuke, Word of Ruin and Final Word require a
+  currently pointed valid hostile within their own range and
+  server-validated line of sight. They never fall back to
   enemy target memory. No valid target means no effect, resource payment or
   cooldown.
-- Fireball and Scout arrows lock a current in-range visible hostile at actual
+- The Mage's projectiles (Fiery Spark, Cold Spark, Fireball, Flame Lance)
+  and Scout arrows lock a current in-range visible hostile at actual
   release, then home for a bounded launch-time flight duration. No target means
   no shot/resource payment. After launch, terrain/characters do not intercept
   and range is not rechecked. Damage resolves once at impact through existing
   defenses; invalid lifecycle/target cancels. See `combat_stats.md` for the
   shared Round 17 contract, also used by non-player projectiles.
-- Fireball retains 6% base mana, 20 m initial range, 20 m/s nominal speed and
-  the spell base (half the level baseline weapon, half the equipped staff or
-  wand at its own item level; combat_stats §2, Round 46) + spell power, with
-  existing talent modifiers.
+- The Mage's projectiles fly 20 m/s (Flame Lance 35 m/s) from a 20 m
+  initial range; their damage is a coefficient of D, the spell base (half
+  the level baseline weapon, half the equipped staff or wand at its own
+  item level; combat_stats §2, Round 46) + spell power (§4).
 - Friendly heals and shields resolve through currently pointed valid in-range
   visible ally → self, with no ally-memory fallback (user ruling 2026-09-24). A hostile, NPC, guard, item or dead player
   is not an eligible ally target. Input routing may consume a drop click for
@@ -588,9 +608,15 @@ it, including one that has not picked a class yet.
 |---------|------|--------|--------|
 | Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + melee attribute/10 (Scout Dex, otherwise Str; fractions count), crit ×2, threat ×1. Grants the Warrior 8 rage × the weapon's base swing interval / 1 s per landed swing (§1, §3); the tooltip shows the equipped weapon's value. Hold or click LMB. |
 
-- **Granted to every class and to a classless character**, and placed
-  **first in the hotbar** so it lands on key 1 for everyone — a fresh
-  character is never standing in the world with no way to fight back.
+- **Granted to every class and to a classless character** — a fresh
+  character is never standing in the world with no way to fight back. Each
+  class's **basic attack** is free and comes first on a new character's
+  hotbar (Round 53 K7): the Warrior's is Strike itself (Retort replaces it
+  in place with Bulwark's first node), the Mage's Fiery Spark and the
+  Priest's Smite replace Strike in place (registered as transforms of it
+  without a talent), and the Scout's Loose stands beside it (Strike comes
+  after the Scout's starters and is the held fallback with no arrow
+  left).
 - **Free**, because it is what *generates* the Warrior's resource.
 - **Tooltip resource gate** (decided 2026-09-18): the sentence
   `Generates <8 + Stoke bonus> rage when it lands.` is rendered only for a
@@ -668,23 +694,35 @@ Revised 2026-09-23, Round 18:
 
 ## 3. Warrior (Rage)
 
-Tank/melee. All Warrior abilities count as tank abilities: **×3 threat**.
+Tank/melee. The Warrior's abilities count as tank abilities: **×3 threat**
+on Charge's hit and on the procs of Mighty Blow, Broadstroke (its other
+targets too) and Hamstring; Taunt and Bellow set the threat directly.
 
-Kit tuning decided 2026-08-06 (implementation: WP19): Mighty Blow became
-the rage DUMP (no cooldown — at the income of the day a cooldown left the
-Warrior permanently rage-capped), Hamstring added as the control tool (in
-an engine where mobs outrun players, the snare is the Warrior's identity).
+Round 53 (round K, `docs/planning/round53-plan.md` §4 WARRIOR) rebuilt the
+kit on the graph talents: two starters, Strike and Charge, and nine skills
+unlocked by the Bulwark and Ruin trees (`grug_classes/talent_graph_warrior.lua`,
+[skill_trees.md](skill_trees.md) §2.1–§2.2). S is a Strike hit (the melee
+weapon's damage plus the melee bonus, before the one scaling pass), P the
+class-neutral base pool, F the support factor, K the level's armor
+constant. Mighty Blow is the rage dump (no cooldown, the rage cost is the
+limiter); Hamstring is the control tool. Every self cast occupies both
+clocks for 0.35 s (no cast and no swing inside it; the swing timer is kept,
+not reset), Charge for 0.75 s; a swing holds the next cast back for one
+weapon interval (§2b "Scheduling").
 
-**The numbers below are the UNTALENTED baseline.** Eighteen WP11 talents
-re-tune exactly these values (`skill_trees.md` §2.10), and a talented Taunt or
-Mighty Blow is the design working, not a bug.
-
-| Ability | Cost | Cooldown | Effect |
-|---------|------|----------|--------|
-| Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away; on arrival within reach 12 % of a base hit (`combat_stats.md` §2; the former flat 3 at level 30), the 15 rage and, on an accepted hit, a 1.5 s stun. A dash that ends out of reach is a miss: the cooldown is spent, nothing else. Kings and dragons are stun-immune. No enemy-memory fallback. Destination, dash and arrival below. |
-| Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
-| Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Mend has been since WP19. |
-| Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4). |
+| Ability | Unlock | Cost | Cooldown | Effect |
+|---------|--------|------|----------|--------|
+| Strike | universal | free | the weapon interval | The plain swing (§2b "Strike"); 8 rage × the weapon's base interval / 1 s when it lands. |
+| Charge | starter | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away; on arrival within reach 12 % of a base hit (`combat_stats.md` §2), the 15 rage and, on an accepted hit, a 0.75 s stun. A dash that ends out of reach is a miss: the cooldown is spent, nothing else. Kings and dragons are stun-immune. No enemy-memory fallback. Destination, dash and arrival below. Halt (B11) adds a 20/25/30 % slow for the stun and 2 s more, Reach the Fight (U14) 5 rage, Onset (U6) takes up to 1.5 s off the cooldown. |
+| Retort | Bulwark B1, transforms Strike | free | the weapon interval | A full Strike swing. A hostile punch that took the Warrior's health (not dodged, not fully absorbed, not lethal) opens the window `retort` for 4 s, at most every 6 s (internal cooldown), with a grey flash and a status icon; the next landed Retort spends it for +0.25 S (Measured Answer to +0.40) and heals a flat 0.7/1.3/2.0 % P × F with Recover, never a crit. Its readiness lives only in the window, never in a charge or a cost, so a held LMB always swings. |
+| Hold Ground | Bulwark B4 | 25 rage | 24 s | A shield of 12 % P × F for 5 s (Layered Guard +3/6/9 points); no immunity. |
+| Taunt | Bulwark B7 | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4). |
+| Bellow | Bulwark B9, transforms Taunt | free | 8 s (Taunt's) | Every mob within 6 m around the Warrior, in sight (the area query from the feet, `valid_target`), is taunted as by Taunt; refused with no mob in range. |
+| Unbroken *(ultimate)* | Bulwark B12 | 25 rage | 60 s | For 8 s (Enduring Stand up to +1.5 s) +0.5 K armor rating (the status `unbroken`) and a shield of 15 % P × F that ends with it; no immunity. |
+| Mighty Blow | Ruin U1 | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, 1.45 S instead of the plain hit (Heavy Hand +0.05–0.20 S; Finisher +0.08–0.24 S against a target below 30 % health before the swing; Relentless −1 to −3 rage). Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. Without the rage it is a plain swing. |
+| Broadstroke | Ruin U7, transforms Mighty Blow | 25 rage | **swing**, no charge | Mighty Blow's hit, and at most 2 other hostiles in a 100°, 3 m arc in front (nearest first, in sight, `valid_target`) take 0.35 S each (Follow Through to 0.50 S); they may crit and give no rage. |
+| Hamstring | Ruin U4 | 10 rage | **swing**, 8 s charge | A full Strike hit; a landed charged proc also slows by 35 % for 3 s (Clean Cut up to +1.5 s). |
+| Ruination *(ultimate)* | Ruin U12 | 20 rage | 60 s | Opens the window `ruination` for 8 s (Long Fury up to +1.5 s): every swing deals ×1.15 (procs and Broadstroke's other targets included) and each landed swing gives 2 more rage × the weapon's base interval / 1 s. |
 
 **Charge destination** (Round 28 ruling 12). The preferred spot is 1.3 m in
 front of the target on the line toward the caster, at the target's feet
@@ -750,7 +788,8 @@ the resource is effectively unlimited". Ruling 25 answers it with **option
 |--------|------|------|
 | a landed full swing | **+8 × base swing interval / 1 s** | was +12. Round 46 ruling 9: dagger 5.6, sword and wand 8, battle axe and staff 11.2, bare hand 7.2 per hit — 8 per second with every weapon. The interval is the weapon's base one: the attack-speed enchant swings faster and so earns more per second. Fractions are kept; the bar shows whole points. Only an authoritative swing (Strike or a swing skill) lands; native tool and fist packets deal nothing and pay nothing. |
 | a hit taken | **+3** | was +4. The orc race passive adds +1 (`world.md` §7). |
-| Charge | +15 | unchanged; it is an engage tool, not income. |
+| Charge | +15 | unchanged; it is an engage tool, not income. Reach the Fight adds 5. |
+| Ruination's window | +2 × base swing interval / 1 s per landed swing | Round 53, scaled like the swing grant (Round 46 ruling 9). |
 | out of combat | **−5 per second** | was −2 per second, on the shared `grug_core.in_combat` state (combat_stats §5). |
 | cap | 100 | unchanged. |
 
@@ -767,25 +806,46 @@ every 3rd sword swing, and a full bar bleeds out in
 still limited by its resource alone — which is what Mighty Blow was built to
 be — but the limit is now something the player feels.
 
-Two WP11 talents lean on this ledger and are calibrated against it: **Stoke**
-(Ruin, +1 rage per landed swing per rank on the 1 s reference, scaled by the
-weapon's interval like the base, so 4/4 restores the old +12 per sword swing) and
-**Spite** (Bulwark, +1 rage per hit taken per rank, so 5/5 reaches +8).
+Ruin's **Stoke** leans on this ledger: +1/2/3 rage per landed swing on the
+1 s reference, scaled by the weapon's interval like the base. **Relentless**
+lowers Mighty Blow's and Broadstroke's 25 by up to 3.
 
 ## 4. Mage (Mana)
 
-Ranged damage; fragile, keeps enemies away.
+Ranged damage; fragile, keeps enemies away. Fire hits hard (Ember), frost
+slows and roots (Rime): kiting with slows is the Mage's advantage.
 
-Kit tuning decided 2026-08-06 (implementation: WP19): Fireball pays with
-mana plus a 1 s cadence instead of a talent-visible cooldown (the former fixed
-5 mana against a 240+ pool was free), Ice
-Nova became the rotation pivot — kiting IS the Mage fantasy here.
+Round 53 (round K, `docs/planning/round53-plan.md` §4 MAGE) rebuilt the kit
+on the graph talents: two starters, Fiery Spark in Strike's place and Ice
+Wave, and nine skills unlocked by the Ember and Rime trees
+(`grug_classes/talent_graph_mage.lua`, [skill_trees.md](skill_trees.md)
+§2.3–§2.4). The numbers are the balance calculator's frozen builds plus its
+one stored change (`tuning/mage_rime`: the Rime Mantle shield, the Nova
+root, the Wave slow). **D** is the untalented Fiery Spark hit, the spell
+base + spell power (`combat_stats.md` §2) before the one level scalar; P is
+the class-neutral base pool, K the level's armor constant. Every cast is
+instant; "occupied" is how long it holds the next cast back, and every cast
+pushes the next swing by one weapon interval (§2b "Scheduling"). Area hits and Fireball's splash never crit; the projectiles'
+direct hits may.
 
-| Ability | Cost | Cooldown | Effect |
-|---------|------|----------|--------|
-| Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Targeted homing projectile, nominal 20 m/s and initial range 20 m; current aim/LOS required at release. The spell base (combat_stats §2) + spell power through the damage fit at impact. No target or input inside the interval costs nothing; at most eight shots per owner/session may be active. |
-| Ice Nova | 10% base mana | 12 s | Deals one quarter of (the spell base + spell power; combat_stats §2), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
-| Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction, never through walls. Escape valve. Targeting below. |
+| Ability | Unlock | Cost | Cooldown | Occupied | Effect |
+|---------|--------|------|----------|---------:|--------|
+| Fiery Spark | starter, in Strike's place | free | 1 s cast interval | 1 s | The class basic attack: a homing fire bolt at the crosshair target within 20 m, 1.0 D. Shares Strike's key; the held fallback fires it. At most eight per caster in flight. |
+| Ice Wave | starter | 8 % base mana | 12 s | 1 s | A frontal cone (70°, 5 m, `area.cone`): 0.25 D and a 50 % slow for 3 s on every accepted hit. |
+| Fireball | Ember F4 | 6 % | 5 s | 1 s | A homing projectile within 20 m: 1.60 D, and 0.15 D to other hostiles within 2 m of the impact, in its sight, never the primary (Afterglow and Wide Ember add). |
+| Flame Lance | Ember F5 | 10 % | 8 s | 1.5 s | A fast homing bolt (35 m/s) within 20 m with a white-hot trail: 2.20 D. Its own launch cue. |
+| Meteor | Ember F8 | 14 % | 18 s | 1 s | A ground area under the crosshair within 20 m ([ability_targeting.md](ability_targeting.md) §4): after 1.5 s with a warning and a fall, 1.40 D to every hostile within 3 m (Broad Impact up to +0.75 m); the impact cue once at the anchor. |
+| Fire Rain *(ultimate)* | Ember F12 | 22 % | 60 s | 1.5 s | The same ground area: after 1.5 s one shower of 2.50 D within 5 m (Spreading Rain up to +0.75 m). |
+| Cold Spark | Rime R1, transforms Fiery Spark | free | 1 s cast interval (Fiery Spark's) | 1 s | A homing frost bolt within 20 m: 1.0 D (Keen Cold +0.03–0.09 D, fire bonuses do not apply) and a 12 % slow for 1.5 s, refreshed, never stacked. Spends Cold Shock's window for its value. Its own launch cue. |
+| Blink | Rime R4 | 8 % | 20 s | — | Teleport up to 10 m in the look direction, never through walls. Escape valve. Targeting below. Its own cast cue since Round 53. |
+| Rime Mantle | Rime R7 | 10 % | 24 s | 0.3 s | For 6 s (Lasting Armor up to +1.5 s) armor +0.20 K (Thick Ice up to +0.12 K; the status `rime_mantle`) and a shield of 12 % P that lasts as long, without the support factor. |
+| Ice Nova | Rime R9, transforms Ice Wave | 10 % | 18 s (Ice Wave's key) | 1 s | 0.65 D to every hostile within 5 m around the Mage (Far Frost up to +0.75 m), then a 2.5 s root on each accepted hit; with Cold Shock ranked the first accepted hit opens the window `cold_shock` (4 s, one charge, no internal cooldown) for the next Cold Spark. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
+| Winter Field *(ultimate)* | Rime R13 | 18 % | 60 s | 1.5 s | A ground area within 15 m: after 1 s with a warning, 1.0 D and a 40 % slow for 5 s within 4 m. No stun. |
+
+Returning Cold (R11) takes up to 3 s off the shared Ice Wave and Ice Nova
+cooldown, Quick Step (R6) up to 3 s off Blink's; Measured Fuel, Controlled
+Burn and Clear Thought lower the costs, Far Cast lengthens both Sparks'
+range.
 
 **Blink targeting** (playtest ruling, 2026-09-28). The look ray runs from the
 eye for the full distance; walkable nodes stop it, non-walkable nodes (plants,
@@ -862,10 +922,10 @@ abilities' `valid_target`, so the PvP flag decides who an area may touch.
 - Warrior shield abilities: none exist and none is scheduled; WP14
   delivered the offhand shields without one (BACKLOG "Audit 2026-10 open
   questions", DP-10).
-- Party buffs and auras (e.g. a party-wide war cry) → later; the skill
-  trees added none. (Shield moved into the base kit with the
-  WP19 kit tuning, §5.) Party frames are implemented under the separate
-  [party contract](parties.md).
+- Party-wide buffs and auras (e.g. a party-wide war cry) → later. Round
+  53's group skills are one-shot effects, not auras: Hearten heals once,
+  Haven places one heal-over-time status, Bellow taunts once. Party frames
+  are implemented under the separate [party contract](parties.md).
 - The Scout has no player poison mechanic and no player poison stat. Its Veil
   tree uses existing dodge, crit, slow and escape mechanics. Mob poison and
   Alchemy's Antivenom remain separate world mechanics. Stealth is deferred in
@@ -875,9 +935,9 @@ abilities' `valid_target`, so the PvP flag decides who an area may touch.
 ### Round 16 control execution
 
 Stun prevents voluntary movement and all new or pending skills, native melee,
-held swings and bow release. Pending input is discarded without catch-up bursts;
+held swings and held casts. Pending input is discarded without catch-up bursts;
 already launched projectiles continue. Gravity is unchanged. Stun and root have
 independent lifetimes; root/slow immunity does not grant stun immunity. Death
-and disconnect clear player control. Nova respects accepted damage/PvP gates
-and movement immunity. Its baseline excludes Fireball-specific talents; Rimebite
-adds 25 % of a spell base hit and half spell power once before spell scaling.
+and disconnect clear player control. Ice Nova's root lands only on an
+accepted hit and respects the PvP gates and movement immunity. Death,
+respawn and leave clear the cast intervals and the action clock.

@@ -7,10 +7,12 @@ idea; **rulings 12 and 14 then cut the class back to its simplest workable
 form**, which is what this file now describes. Round 11 delivered the shared
 gear, leather and visual foundations plus the playable Scout class, four base
 abilities, bow draw flow, talent consumers, starter kit and trader stock.
+**Round 53** (round K of the class rework) rebuilt the kit on the graph
+talents and removed the bow draw: §2 is the current kit.
 
 > **Current class constraint:** keep the Scout as simple as possible. Version 1
-> has no invisibility, poison or traps, and its base kit has four abilities
-> built from existing mechanics. Round 17 arrows lock onto a valid target at
+> has no invisibility, poison or traps, and its kit is built from existing
+> mechanics. Round 17 arrows lock onto a valid target at
 > release and home for a bounded flight.
 >
 > **Ruling 14 (user, 2026-09-16):** the Scout **uses mana**. No new resource.
@@ -364,6 +366,11 @@ are the first things a reviewer asks about, and because both *would* have been
 conflicts if version 1 had stealth (§8).
 
 ## 7. Delivered Round 11 scope
+
+*The Round 11 record. Round 53 replaced the Scout's base kit and its 16
+talents with the kit of §2 and the Quarry and Veil graphs
+([skill_trees.md](skill_trees.md) §2.7–§2.8) and removed the draw; the
+rows below describe what Round 11 delivered.*
 
 ### 7.1 Dependencies and side effects on other work packages
 

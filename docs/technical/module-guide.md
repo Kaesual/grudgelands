@@ -489,17 +489,19 @@ tools](#player-meta-read-by-external-tools).
   `graph.LEVEL_SCALED_KEYS` (`armor_percent_add`), the stored percentage
   times `grug_core.armor_k(L)` at the player's level (`graph.level_amount`,
   which the node tooltip uses per rank), so every consumer adds the amount
-  where it once added a flat value; the talent cache holds only the sums.
-  The old `TALENT_LEVEL_SCALED_KEYS` and `talent_level_amount` stay loaded,
-  read by no live rank, until the round's clean-up. Helpers of
-  that round: `grug_abilities.clear_cooldown(player, id)` (Last Word resets
-  Word of Ruin a step after the cast) and `grug_core.is_rooted(player)`
-  (Opening's held target). **Support factor (Round 36):**
+  where it once added a flat value; the talent cache holds only the sums
+  (the old `TALENT_LEVEL_SCALED_KEYS` and `talent_level_amount` went with
+  the old registry in Round 53). Two helpers of Round 35 stay:
+  `grug_abilities.clear_cooldown(player, id)` (no caller since Round 53)
+  and `grug_core.is_rooted(player)` (Charge's dash). **`opts.no_crit`**
+  (Round 53) on `deal_ability_damage` skips the crit roll (the dodge roll
+  still runs): every area and splash hit passes it, the same flag on
+  `heal_player` keeps support from critting. **Support factor (Round 36):**
   `grug_classes.get_support_factor(player)` (`stats.lua`) is `1 + gear Int /
   10 / B(L)`, gear Int being the Intelligence above the class's own level
   growth; `kits.lua` `support_value` multiplies every pool-derived heal and
   absorb by it (spell power stays the flat damage term), and
-  `spell_damage_value` and Smite return unrounded amounts that
+  `spell_damage_value` and the kits return unrounded amounts that
   `deal_ability_damage` floors once after the level scalar (fixture
   `tools/r36_k`). Abilities = hotbar tools in `grug_abilities` (item `range` =
   targeting range; cooldowns and charges show as the hotbar overlay of
@@ -563,7 +565,8 @@ tools](#player-meta-read-by-external-tools).
   cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**
   (`classes.md` §2b; WP38 base, WP39 target-authority revision decided
-  2026-08-10): Strike, Mighty Blow, Hamstring and Round 11's Opening have `kind = "swing"`
+  2026-08-10): Strike and the swing skills (Retort, Mighty Blow,
+  Broadstroke, Hamstring, Bladecraft, Opening) have `kind = "swing"`
   and **no `on_use`**, keeping the fast first-person held animation. Their
   native enemy packets are input only and return before damage/rage/threat/
   wear/proc. The no-dig pointabilities can mask a ground-level drop, so each
@@ -625,8 +628,8 @@ tools](#player-meta-read-by-external-tools).
   authority the hostile/friendly casts wrap) and `input.aims_at_interactive`,
   and owns the progress ring of eating (`input.lua`, hidden in
   `end_food_hold`): `set_ring(player, fraction, owner)` with owner `"food"`
-  (its `"bow"` owner has had no user since Round 53 deleted the bow draw);
-  the first owner to show it keeps it until it hides it. The
+  (the bow draw's `"bow"` owner and its full frame went with the draw in
+  Round 53); the first owner to show it keeps it until it hides it. The
   game's `crosshair.png`/`object_crosshair.png` are byte-identical on purpose;
   regenerate them with `tools/pt_fixes/lane_b/gen_crosshair_textures.py`.
   Since Round 30 the state overlay refreshes every 0.15 s (input and the
@@ -810,10 +813,10 @@ tools](#player-meta-read-by-external-tools).
   `tools/r40_ch/bench`.
 - **The class rework's building blocks** (Round 52, round F of the
   [delivery plan](../planning/class-redesign/delivery-plan.md);
-  [class plan](../planning/round52-class-plan.md) C1–C13, D1–D9). Every
-  block is built and tested, but no shipped skill uses the new ones yet:
-  the shipped classes play as before except Mend's tick phase (below).
-  Round K wires them into the new kits.
+  [class plan](../planning/round52-class-plan.md) C1–C13, D1–D9), used by
+  the new kits since Round 53 (round K, `kits_mage.lua`, `kits_warrior.lua`,
+  `kits_priest.lua`, `scout.lua`; [classes.md](../design/classes.md)
+  §3–§5, [scout.md](../design/scout.md) §2).
   - **The action clock** (D2, `grug_abilities/init.lua`): every ability
     definition gets `occupied_cast` (seconds ≥ 0; a cast's default 0, a
     swing's default `"weapon"`, one interval of the current melee weapon,
@@ -858,7 +861,8 @@ tools](#player-meta-read-by-external-tools).
     talent (`def.talent` or its own id) has a rank; without a talent it
     may only replace a universal ability, which makes it its class's
     basic attack in place of Strike (register it first in its class
-    file: the initial kit follows `by_class` order). A class's own basic
+    file: the initial kit follows `by_class` order; `register_ability`
+    asserts that such a transform never also sets `basic_attack`). A class's own basic
     attack that replaces nothing sets `basic_attack = true` (the Scout's
     Loose): the initial kit then puts it on key 1, the class's other
     starters after it and the universal abilities last (Round 53 K7). `cooldown_key` is
@@ -869,9 +873,18 @@ tools](#player-meta-read-by-external-tools).
     unlocked member of a family. `normalize_kit` swaps a locked family
     stack in place for that member, on `main` and the inactive layout
     first and then in bags, after its pass, so a copy the player already
-    holds wins (Round 50 ruling 12, class plan C8). No shipped definition
-    sets the field; the talents' own `replaces` field is unrelated and
-    never read.
+    holds wins (Round 50 ruling 12, class plan C8). Since Round 53:
+    Fiery Spark and Smite (of Strike, without a talent), Retort (Strike),
+    Cold Spark (Fiery Spark), Ice Nova (Ice Wave), Bellow (Taunt),
+    Broadstroke (Mighty Blow) and Bladecraft (Loose). **`secondary_cast`**
+    (Round 53, `input.lua`): a selected, unlocked definition that carries
+    one owns an RMB press that is neither food nor an interaction; the
+    press casts it through the same cast gate as a left-click cast, and,
+    held, again whenever its own clock allows (a refusal reports on a fresh
+    press only). Bladecraft's is the Loose shot (`scout.lua`
+    `bladecraft_shot`, never registered: Loose's interval through
+    `cooldown_key = "loose"`, `occupied_swing = "weapon"`, its id
+    Bladecraft's for the unlock check).
   - **Readiness windows** (B8, `grug_classes/talent_windows.lua`): keyed
     by any string id. `grug_classes.open_window(player, id, {duration,
     icd, value, label})` returns true when it opened (false while its ICD
@@ -938,7 +951,11 @@ tools](#player-meta-read-by-external-tools).
     caster, the group heal; its test ability lives only in the probe
     mod).
   - **Round 53 seams for the class kits** (`grug_abilities/init.lua`,
-    round53-plan.md §4 HOOKS). *Family keys:*
+    round53-plan.md §4 HOOKS). *Talent keys:* the graph's
+    `graph.LEVEL_SCALED_KEYS` (only `armor_percent_add`) and the class
+    vocabularies (`graph.register_class_vocabulary`) are
+    [skill_trees.md §3.2](../design/skill_trees.md#32-the-one-hook)'s.
+    *Family keys:*
     `grug_abilities.family_bonus(player, def, family)` sums the graph
     talents' `<family>:<param>` keys over the definition's id and its
     `tags` (a transformation by its own); the cast path applies
@@ -954,6 +971,16 @@ tools](#player-meta-read-by-external-tools).
     returns nil or `{damage_mult, damage_add, rage_add, on_landed}`: raw
     damage × every multiplier + every add before the one scaling pass,
     the rage and `on_landed(player, swing)` only when the swing lands.
+    Users: `kits_warrior.lua` (Ruination's ×1.15 and rage, a readied
+    Retort's bonus and Recover) and `scout.lua` (Close Dance's add on a
+    plain blade swing). *Launch seam* (`grug_projectiles/init.lua`): a
+    spawn's own `params.sound_launch` replaces the projectile's launch cue
+    for that launch (Arrowfall's volley uses it; Cold Spark and Flame Lance
+    register their own projectiles with their own cue). *Clock seams:*
+    `cast_interval`, `occupied_cast` and `occupied_swing` as functions
+    (Loose's affix cadence, Flourish's blade interval) and the K8 fallback
+    and K9 default, above. *The held cast's catch-up:* `CLOCK_CATCHUP`
+    (0.1 s), above.
     *Tables before the kits (K6):* `WEAPON_FX`, `SKILL_POSES` and
     `CAST_SOUNDS` rows of the 25 new skills, their icons, the 34 new
     particle effects and 7 retints of the picked cards
@@ -2165,10 +2192,20 @@ tools](#player-meta-read-by-external-tools).
   equal), and `handlers[version] = {world = fn(marker), character =
   fn(player, marker)}` for a step's online work. A new step adds its version
   here and, when it leaves online work, its handlers (in this file, above the
-  registry: the guard collects them at load) and their fixture. 0.45.0's
-  character handler hands craft-grid and `craftresult` leftovers over (give helper, output
-  area, feet), refreshes first-tier weapons' capabilities and rebuilds gear
-  tooltips (fixture `tools/r45_ms/portable_test.lua`).
+  registry: the guard collects them at load) and their fixture. The
+  declared steps are 0.44.0, 0.45.0, 0.47.0, 0.48.0 and 0.53.0; every one
+  but 0.44.0 leaves a character handler, run at the character's next join
+  before every other join callback. 0.45.0's hands craft-grid and
+  `craftresult` leftovers over (give helper, output area, feet), refreshes
+  first-tier weapons' capabilities and rebuilds gear tooltips (fixture
+  `tools/r45_ms/portable_test.lua`); 0.47.0's rebuilds the stored
+  capabilities of gathering tools (Round 47); 0.48.0's sorts `main[9..]`
+  and the bags into the halved sizes and mails what no longer fits (Round
+  48); 0.53.0's sends a character with a class the one chat line "Your
+  talent points have been reset." and nothing else (Round 53, K11): the
+  locked and transformed skills are the join's own `normalize_kit`, the
+  lower maximum HP the stats' join clamp (fixture
+  `tools/r53_ms/portable_test.lua`).
 - `grug_core/world_version.lua` (`grug_core.world_version`), loaded first in
   `grug_core/init.lua`: the record `world_version`, new-world recognition
   (`is_new_world`), the guard (`decide`: newer world or a step between
@@ -2191,12 +2228,23 @@ tools](#player-meta-read-by-external-tools).
   (`v<major>_<minor>_<patch>.py`; `v0_44_0.py`, the first, removes mount
   items and skills outside the hotbar; `v0_45_0.py` deletes the mixtures,
   empties the craft grid and `craftresult` into free slots and pins the 0.44.0 item level on
-  unmodified gear, [upgrade contract](upgrade-contract.md) §5.8). Python 3.13, standard library; `psycopg` 3 imported only for
+  unmodified gear; `v0_47_0.py` and `v0_48_0.py` only mark every
+  character for their online part; `v0_53_0.py` deletes
+  `grug_classes:talents`, `grug_classes:respec_used`, every
+  `grug_classes:talent_ready:<id>`, `grug_classes:unbroken_ready` and
+  `grug_classes:untouchable_ready`, removes the retired skills
+  `grug_abilities:{cinderfall,glacial_ward,pinning_shot}` from `main`,
+  `grug_hotbar_store` and the bags, writes an inventory only when it
+  changed and marks every character, [upgrade contract](upgrade-contract.md)
+  §5.8). Python 3.13, standard library; `psycopg` 3 imported only for
   PostgreSQL. Unit tests: `tools/r43_mt/test_migrate.py` (the container run
   `tools/r43_mt/container_test.sh`; against a copy of the declaration with
   an empty `migrate` list); end to end with the engine:
   `tools/r43_it/run.sh` (the mechanism) and each step's own test
-  (`tools/r44_ms/run.sh` for 0.44.0, `tools/r45_ms/run.sh` for 0.45.0).
+  (`tools/r44_ms/run.sh` for 0.44.0, `tools/r45_ms/run.sh` for 0.45.0,
+  `tools/r47_ms/run.sh` for 0.47.0, `tools/r48_bags/run.sh` for 0.48.0,
+  `tools/r53_ms/run.sh` for 0.53.0: unit tests and an end-to-end run from a
+  world of the previous release).
 
 ## Fishing
 
