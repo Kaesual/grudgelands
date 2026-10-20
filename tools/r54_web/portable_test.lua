@@ -7,7 +7,8 @@
 -- reads the version 1 bodies the old game composed (v1_samples.lua, written
 -- by gen_v1_samples.lua from 0.53.1). Checks:
 --   A  `appearance_v1`: version 1, its byte caps and depth, `armor_files`
---      sorted, unique, PNG names, none of them a current armour file;
+--      sorted, unique, PNG names, none of them a current armour file or
+--      any file of `texture_files` (Round 54 INTEG removed them all);
 --   S  the samples: every body within version 1's cap and depth, no
 --      top-level modifier; every file a body names is in `armor_files` or a
 --      current texture file; the files the samples name for armour are
@@ -18,6 +19,9 @@
 --      under a dropped helmet; it parses under the current texture grammar,
 --      names only current texture files and stays within the current cap;
 --   B  every race's `bare_body` parses under the grammar with current files;
+--   F  the fallback: a body the rule rejects (too long, nested deeper than
+--      version 1, unbalanced) or whose result does not validate (an unknown
+--      file) draws the race's `bare_body`;
 --   V  the two whole version 1 values: `"v":1`, within version 1's JSON cap;
 --   N  a version 2 composition (every line and grade, enchanted, broken)
 --      never names a file of `armor_files`.
@@ -68,6 +72,9 @@ for index, name in ipairs(v1.armor_files) do
 	check(index == 1 or v1.armor_files[index - 1] < name, "A sorted at " .. name)
 	check(name:match("^grug_armor_") == nil, "A not a current armour file: " .. name)
 	legacy[name] = true
+end
+for _, name in ipairs(v1.armor_files) do
+	check(not current[name], "A removed from the game: " .. name)
 end
 eq(#v1.armor_files, 1 + #gv.LINES * #gv.SLOTS * #grug_gear.MATERIALS * 2, "A file count")
 
@@ -208,6 +215,34 @@ for _, race in ipairs(data.races) do
 	eq(race.bare_body, gv.look_texture(race.id, gv.normalize_look(race.id, nil), {}),
 		"B bare_body is look 1 unworn: " .. race.id)
 end
+
+-- F. The fallback, as the README's rule ends.
+local bare = {}
+for _, race in ipairs(data.races) do bare[race.id] = race.bare_body end
+local function shown_body(body, race)
+	local got = without_armor(body)
+	if got and parse(got) then
+		return got
+	end
+	return bare[race] or bare.human
+end
+local look = "(grug_visuals_skin_mask.png^[multiply:#efcfb0)^grug_visuals_human_body.png"
+check(parse(look), "F the synthetic look itself parses")
+eq(shown_body(look, "human"), look, "F a valid body is kept")
+local negatives = {
+	{"too long", look .. ("^grug_visuals_human_body.png"):rep(80)},
+	{"nested 5 deep", "(((((grug_visuals_human_body.png)))))^" .. look},
+	{"an unbalanced (", "(grug_visuals_skin_mask.png^[multiply:#efcfb0^grug_visuals_human_body.png"},
+	{"an unbalanced )", look .. ")"},
+	{"an unknown file", look .. "^grug_visuals_no_such_layer.png"},
+	{"a version 1 modifier outside an armour part", look .. "^(grug_visuals_human_body.png^[mask:" ..
+		"grug_visuals_skin_mask.png)"},
+}
+for _, case in ipairs(negatives) do
+	eq(shown_body(case[2], "dwarf"), bare.dwarf, "F " .. case[1] .. " draws bare_body")
+end
+eq(shown_body(negatives[2][2], "nobody"), bare.human, "F an unknown race draws human's bare_body")
+check(#negatives[1][2] > v1.texture_max_bytes, "F the long body is over the cap")
 
 -- V. The whole values.
 for _, value in ipairs(samples.values) do

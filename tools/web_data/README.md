@@ -94,8 +94,9 @@ character is shown **without armor** until the next join:
    version 2 string (`texture_grammar`, `texture_files`). What remains is the
    race look the game composes for the stored `race` and `look`, except that
    a character who wore a helmet shows no hair (the old body dropped it
-   under the helmet). If the result does not validate, draw the race's
-   `bare_body`.
+   under the helmet). A rejected body, and a result that does not
+   validate, draws the race's `bare_body` instead (the stored `race`; an
+   unknown race draws `human`'s).
 2. **Armor.** There is no `textures.armor`: hide the armor primitive.
 3. **The rest** keeps its meaning: `race`, `look`, `cloak`, `visual_size`,
    `textures.cloak` and `slots` (hand images included) are read as in
