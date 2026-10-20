@@ -167,13 +167,10 @@ end
 ------------------------------------------------------------------------------
 -- C: the call sites.
 ------------------------------------------------------------------------------
-local PENDING = {click = "the formspec style"}
--- Round 53 (HOOKS): the per-ability launches and the impacts are played by
--- the round-K class kits, which the class lanes write after HOOKS. All four
--- kits play theirs now (MAGE five, PRIEST censure_impact, SCOUT arrowfall_impact).
-for _, event in ipairs({}) do
-	PENDING[event] = "a round-K class kit"
-end
+-- Hooks with no call site on purpose: the formspec style plays the click;
+-- Round 53 retired Glacial Ward, whose cue stays a shipped hook, unused (the
+-- coordinator's ruling for INTEG part 2).
+local PENDING = {click = "the formspec style", cast_frost_ward = "kept, unused (Round 53)"}
 local seen = {}
 local calls = 0
 -- A hooked file plays an event, or (Round 34 S1b) registers a projectile
