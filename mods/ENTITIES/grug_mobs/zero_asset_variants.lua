@@ -84,10 +84,12 @@ local frost_stray = common_ground({
 	view_range = 16,
 	visual = "mesh",
 	mesh = "grug_mobs_skeleton.b3d",
+	-- Slot 3 = the archer's bow (skeleton_archer.lua); the tint is the
+	-- bones' only.
 	textures = {{
 		"grug_mobs_blank.png",
 		"grug_mobs_skeleton.png^[multiply:#a8d8ef",
-		"grug_mobs_blank.png",
+		"grug_gear_bow_wood.png",
 	}},
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.98, 0.3},

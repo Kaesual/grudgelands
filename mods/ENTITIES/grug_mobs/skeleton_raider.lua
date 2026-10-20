@@ -60,13 +60,12 @@ local raider = {
 
 	visual = "mesh",
 	mesh = "grug_mobs_skeleton.b3d",
-	-- THREE texture slots (wp6_model_notes §0.3): 1 = armour, 2 = bones,
-	-- 3 = wielded item. 1 and 3 stay blank until a bow texture is sourced;
-	-- a missing slot would render untextured.
+	-- THREE texture slots (wp6_model_notes §0.3): 1 = armour (blank),
+	-- 2 = bones, 3 = wielded item: the archer's bow (skeleton_archer.lua).
 	textures = {{
 		"grug_mobs_blank.png",
 		"grug_mobs_skeleton_raider.png",
-		"grug_mobs_blank.png",
+		"grug_gear_bow_wood.png",
 	}},
 	-- Mesh scale rule (boar.lua): 20.1 units = 2.01 nodes at size 1 against
 	-- the 1.98 box; upstream uses 1.

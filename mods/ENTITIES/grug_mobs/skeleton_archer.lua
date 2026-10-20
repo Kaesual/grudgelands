@@ -99,12 +99,14 @@ local skeleton = {
 	visual = "mesh",
 	mesh = "grug_mobs_skeleton.b3d",
 	-- THREE texture slots (wp6_model_notes §0.3): 1 = armour, 2 = bones,
-	-- 3 = wielded item. 1 and 3 stay blank until a bow texture is sourced;
-	-- a missing slot would render untextured.
+	-- 3 = wielded item. Slot 1 stays blank (a missing slot would render
+	-- untextured); slot 3 holds grug_gear's shipped starter bow (media are
+	-- global; 0.53.1 ruling 9), as the upstream def puts its bow item there.
+	-- The Skeleton Raider and the Frost Stray hold the same bow.
 	textures = {{
 		"grug_mobs_blank.png",
 		"grug_mobs_skeleton.png",
-		"grug_mobs_blank.png",
+		"grug_gear_bow_wood.png",
 	}},
 	-- Mesh scale rule (boar.lua): 20.1 units = 2.01 nodes at size 1 against
 	-- the 1.98 box; upstream uses 1.
