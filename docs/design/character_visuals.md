@@ -275,8 +275,7 @@ item:
   visual only, their rewards are rolled as before. A future named NPC with gear
   uses the same visual spec field (`weapon_colors`). Ordinary guards, royal
   guards, bandits and the named rares (beasts without gear) stay plain.
-- Trinkets have no texture masks and stay uncoloured; a Scout's bow shows plain
-  while it is being drawn (the draw stages are other shapes).
+- Trinkets have no texture masks and stay uncoloured.
 - Every enchanting station shows a **legend** of the nine colours.
 
 The masks are generated (`tools/r31_b/gen_enchant_masks.py`, one two-frame
@@ -377,7 +376,7 @@ nothing per step on the server and every client plays them. NPCs keep
   | `cast1` | A, palm forward | Fireball, Smite, Word of Ruin; round K's Fiery Spark, Flame Lance, Meteor, Fire Rain, Rebuke, Censure, Final Word | 221–240 | 241–260 |
   | `cast2` | B, arms raised | Ice Nova, Heal, Mend, Shield; round K's Cold Spark, Ice Wave, Rime Mantle, Winter Field, Hearten, Haven | 261–280 | 281–300 |
   | `swing` | B, diagonal cut | a landed Mighty Blow or Broadstroke (round K), once | 301–314 | 315–334 |
-  | `bow` | A, drawn and held | while the Scout's bow is drawn | 335–354 | 355–374 |
+  | `bow` | A, drawn and held | nothing since Round 53 deleted the Scout's bow draw (the clip stays in the model) | 335–354 | 355–374 |
   | `block` | B, shield arm raised | Hold Ground; Unbroken (round K) | 375–394 | 395–414 |
   | `charge` | B, shoulder first | the Charge dash (`charge.lua` starts it and stops it at the stop) | 415–434 | 435–454 |
   | `flinch` | A, light flinch | a hit taken, once | 455–464 | 465–484 |
@@ -389,14 +388,14 @@ nothing per step on the server and every client plays them. NPCs keep
   and the Strike fallback play none). Casts are instant, so `cast1` and
   `cast2` hold **0.6 s** (a second cast extends it); Hold Ground's guard
   holds **1.0 s**, not the whole 8 s buff, because the Warrior fights on
-  under it and a held guard would hide every swing. The bow pose lasts as
-  long as the draw; Charge's as long as the dash. The newest pose replaces a
+  under it and a held guard would hide every swing. Charge's pose lasts as
+  long as the dash. The newest pose replaces a
   running one; a second Mighty Blow restarts `swing`. `swing` starts at
   its frame 4, the top of the swing, because the hit has already landed
   when the pose fires; the blend raises the arm.
 - **The flinch** plays on a hit that does not kill, at most once per
   **1.5 s**, and only over the plain stand, walk and punch animations: never
-  over another pose, the drawn bow, a seat or death.
+  over another pose, a seat or death.
 - **Blend and stride.** Every animation switch of a player blends over
   **0.12 s**, so the arms move into a pose instead of jumping. Switching
   between walking clips (walk, walk-and-punch, a pose's walking twin) keeps

@@ -27,7 +27,19 @@
 local graph = grug_classes.graph
 
 graph.register_class_vocabulary("scout", {
-	keys = {arrow_refund_chance = "grug_abilities/scout.lua Loose settlement"},
+	-- The kit's own numbers (grug_abilities/scout.lua): the adds are shares of
+	-- a base bow hit (R) or a base blade hit (M) per rank.
+	keys = {
+		arrow_refund_chance = "grug_abilities/scout.lua Loose (Quiver, % per shot)",
+		true_draw_add = "grug_abilities/scout.lua True Draw (Firm Aim, R)",
+		split_shot_add = "grug_abilities/scout.lua Split Shot's other hits (Broad Shot, R)",
+		follow_the_line_add = "grug_abilities/scout.lua the Follow the Line window (R)",
+		arrowfall_add = "grug_abilities/scout.lua each Arrowfall arrow (Iron Hail, R)",
+		opening_parry_add = "grug_abilities/scout.lua Opening in Parry's window (Turn the Blade, M)",
+		flourish_add = "grug_abilities/scout.lua Flourish (Wide Edge, M)",
+		close_dance_add = "grug_abilities/scout.lua Close Dance's swing bonus (Cutting Rhythm, M)",
+		sidestep_frees = "grug_classes/scout.lua Sidestep clears slows and roots (Shake Loose)",
+	},
 	params = {"bow", "blade", "loose", "sidestep", "sprint", "true_draw", "snare_shot",
 		"split_shot", "arrowfall", "bladecraft", "opening", "parry", "flourish",
 		"close_dance"},
@@ -54,6 +66,7 @@ graph.register_tree({
 				"6 s cooldown, 6 % mana and 1 arrow, 1.35 s recovery."},
 		{id = "quarry_firm_aim", code = "Q5", name = "Firm Aim", type = "modifier",
 			ranks = 3, gate = 6, col = 2, requires = {"quarry_true_draw"},
+			effects = {true_draw_add = {0.10, 0.20, 0.30}},
 			description = "True Draw +10/20/30 % of a base bow hit."},
 		{id = "quarry_snare_shot", code = "Q6", name = "Snare Shot", type = "unlock",
 			ability = "snare_shot", ranks = 1, gate = 6, col = 4,
@@ -70,6 +83,7 @@ graph.register_tree({
 				"1 arrow."},
 		{id = "quarry_broad_shot", code = "Q9", name = "Broad Shot", type = "modifier",
 			ranks = 3, gate = 12, col = 1, requires = {"quarry_split_shot"},
+			effects = {split_shot_add = {0.05, 0.10, 0.15}},
 			description = "Split Shot's other hits +5/10/15 % of a base bow hit."},
 		{id = "quarry_light_recovery", code = "Q10", name = "Light Recovery",
 			type = "modifier", ranks = 3, gate = 16, col = 2,
@@ -77,6 +91,7 @@ graph.register_tree({
 			description = "Sidestep costs 10/20/30 % less."},
 		{id = "quarry_follow_the_line", code = "Q11", name = "Follow the Line",
 			type = "window", ranks = 3, gate = 16, col = 4, requires = {"quarry_true_draw"},
+			effects = {follow_the_line_add = {0.10, 0.20, 0.30}},
 			description = "A landed True Draw readies your next Loose within 3 s, at any " ..
 				"target: +10/20/30 % of a base bow hit."},
 		{id = "quarry_arrowfall", code = "Q12", name = "Arrowfall", type = "ultimate",
@@ -86,6 +101,7 @@ graph.register_tree({
 				"cooldown, 16 % mana and 4 arrows, 2.5 s recovery."},
 		{id = "quarry_iron_hail", code = "Q13", name = "Iron Hail", type = "modifier",
 			ranks = 3, gate = 20, col = 4, requires = {"quarry_arrowfall"},
+			effects = {arrowfall_add = {0.04, 0.08, 0.12}},
 			description = "Each Arrowfall arrow +4/8/12 % of a base bow hit."},
 	},
 })
@@ -114,7 +130,7 @@ graph.register_tree({
 			description = "Paid blade skills, Parry and Close Dance cost 5/10/15 % less."},
 		{id = "veil_parry", code = "V6", name = "Parry", type = "unlock", ability = "parry",
 			ranks = 1, gate = 6, col = 4,
-			description = "Unlocks Parry: a shield of about 10 % of your max health for 2 s, " ..
+			description = "Unlocks Parry: a shield of 10 % of a base health pool for 2 s, " ..
 				"and Opening's window opens for 3 s; 12 s cooldown, 4 % mana, 0.5 s recovery."},
 		{id = "veil_held_guard", code = "V7", name = "Held Guard", type = "modifier",
 			ranks = 3, gate = 6, col = 5, requires = {"veil_parry"},
@@ -126,22 +142,26 @@ graph.register_tree({
 				"take 80 % of a base blade hit each; 12 s cooldown, 8 % mana."},
 		{id = "veil_wide_edge", code = "V9", name = "Wide Edge", type = "modifier",
 			ranks = 3, gate = 12, col = 1, requires = {"veil_flourish"},
+			effects = {flourish_add = {0.05, 0.10, 0.15}},
 			description = "Flourish +5/10/15 % of a base blade hit per target."},
 		{id = "veil_turn_the_blade", code = "V10", name = "Turn the Blade", type = "modifier",
 			ranks = 3, gate = 12, col = 5, requires = {"veil_opening", "veil_parry"},
+			effects = {opening_parry_add = {0.10, 0.20, 0.30}},
 			description = "Opening in Parry's window +10/20/30 % of a base blade hit."},
 		{id = "veil_shake_loose", code = "V11", name = "Shake Loose", type = "modifier",
-			ranks = 3, gate = 16, col = 2, effects = {["cooldown_sub:sidestep"] = {1, 2, 3}},
+			ranks = 3, gate = 16, col = 2,
+			effects = {["cooldown_sub:sidestep"] = {1, 2, 3}, sidestep_frees = {1, 1, 1}},
 			description = "Sidestep also frees you from slows and roots; its cooldown " ..
 				"-1/2/3 s."},
 		{id = "veil_close_dance", code = "V12", name = "Close Dance", type = "ultimate",
 			ability = "close_dance", ranks = 1, gate = 20, col = 4,
 			requires = {"veil_opening", "veil_parry"},
 			description = "Unlocks Close Dance: for 6 s your blade swings deal +35 % of a " ..
-				"base blade hit, and a shield of about 15 % of your max health; 60 s " ..
+				"base blade hit, and a shield of 15 % of a base health pool; 60 s " ..
 				"cooldown, 14 % mana, 0.25 s recovery."},
 		{id = "veil_cutting_rhythm", code = "V13", name = "Cutting Rhythm", type = "modifier",
 			ranks = 3, gate = 20, col = 5, requires = {"veil_close_dance"},
+			effects = {close_dance_add = {0.05, 0.10, 0.15}},
 			description = "Close Dance's swing bonus +5/10/15 % of a base blade hit."},
 		{id = "veil_travel_worn", code = "V14", name = "Travel Worn", type = "modifier",
 			ranks = 3, gate = 6, col = 1, effects = {max_hp_percent_add = {3, 6, 9}},

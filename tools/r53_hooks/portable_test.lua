@@ -431,10 +431,10 @@ do
 		eq(G.get_range(p, def), def.range or 4, "U " .. id .. ": the range as on main")
 		eq(G.description_prefix(p, def), old_prefix(p, def), "U " .. id .. ": the tooltip head as on main")
 		eq(G.description_prefix(nil, def), old_prefix(nil, def), "U " .. id .. ": the item's static head")
-		-- The Priest's and the Warrior's kits take the calculator's occupied times
-		-- (lanes PRIEST and WARRIOR; tools/r53_priest and tools/r53_warrior check them).
+		-- The reworked kits take the calculator's occupied times (lanes PRIEST,
+		-- WARRIOR and SCOUT; tools/r53_<class> check them; MAGE is skipped above).
 		if def.kind == "cast" then
-			check(def.class == "priest" or def.class == "warrior" or def.occupied_cast == 0 and def.occupied_swing == "weapon",
+			check(def.class == "priest" or def.class == "warrior" or def.class == "scout" or def.occupied_cast == 0 and def.occupied_swing == "weapon",
 				"U " .. id .. ": a cast's clock as on main")
 		else
 			eq(def.occupied_cast, "weapon", "U " .. id .. ": a swing holds casts one interval (K9)")
@@ -830,7 +830,6 @@ do
 		evading_target = function() return false end,
 		support_refused = function() return false end,
 		flash = function(_, message) flashes[#flashes + 1] = message end,
-		cancel_bow_draw = function() end,
 		try_cast = function(_, def)
 			casts[#casts + 1] = def.id
 			return true
@@ -926,12 +925,13 @@ do
 			"F " .. class .. ": a refused swing skill falls back to the cast basic attack")
 	end
 
-	-- Scout: Strike is the basic attack; Loose casts by its own rule.
+	-- Scout: Strike is the basic attack; Loose is an LMB bow cast (Round 53
+	-- SCOUT: the draw is gone).
 	basic = defs.strike
 	refusals = {bolt = {"No arrows.", "cost"}}
 	eq(run("bolt", 1), "casts=- swings=strike flashes=1", "F scout: a refused shot swings Strike")
 	refusals = {}
-	eq(run("loose", 1), "casts=- swings=strike flashes=0", "F scout: Loose's LMB at a foe swings Strike")
+	eq(run("loose", 1), "casts=loose swings=- flashes=0", "F scout: Loose's LMB at a foe shoots")
 end
 
 ------------------------------------------------------------------------------

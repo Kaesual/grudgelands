@@ -4,8 +4,8 @@
 --   luajit tools/r40_an1/portable_test.lua [repo]
 --
 -- Loads the REAL player_api (api.lua, init.lua), grug_visuals' registration
--- (cut from apply.lua) and poses.lua, the REAL Scout bow-draw hook (cut from
--- scout.lua), and, cut from grug_abilities/init.lua, SKILL_POSES with its
+-- (cut from apply.lua) and poses.lua (Round 53: the Scout's bow-draw hook is
+-- gone with the draw), and, cut from grug_abilities/init.lua, SKILL_POSES with its
 -- trigger, try_cast and the authoritative swing's finish. Checks:
 --   R  the registration: every pose and its walking twin with the baked
 --      ranges, held clips 20 frames, swing and flinch once; the walk-phase
@@ -30,9 +30,9 @@
 --      swing: its damage landed already), a second swing restarts it,
 --      a twin switch mid-swing keeps its progress, it ends after its clip;
 --   F  the flinch: on a settled hit; at most one per 1.5 s; never over
---      another pose, the drawn bow, a seat; and the bow's own clips;
---   K  the player's own client: every pose end (expiry, stop_pose, the bow
---      draw's end) answers a `<base>_resume` animation for one step (the
+--      another pose or a seat;
+--   K  the player's own client: every pose end (expiry, stop_pose) answers
+--      a `<base>_resume` animation for one step (the
 --      base's range with the end 1/64 frame short, none of the four local
 --      ones the 5.17 client ignores), then the plain base; the frame offset
 --      carries through.
@@ -119,10 +119,6 @@ assert(loadstring(cut("mods/PLAYER/grug_visuals/apply.lua",
 	"\n(grug_visuals%.PLAYER_MODEL = .-\nend)\n", "player model registration"),
 	"=apply.lua registration"))()
 dofile(ROOT .. "/mods/PLAYER/grug_visuals/poses.lua")
-local draws = {}
-assert(loadstring("local draws = ...\n" .. cut("mods/PLAYER/grug_abilities/scout.lua",
-	"\n(local bow_shown = {}\nplayer_api%.register_control_animation_override%(function.-\nend%))\n",
-	"bow-draw hook"), "=scout.lua hook"))(draws)
 
 local GV = grug_visuals
 local model = player_api.registered_models[GV.PLAYER_MODEL]
@@ -415,7 +411,7 @@ do
 end
 
 ------------------------------------------------------------------------------
--- F: the flinch and the bow.
+-- F: the flinch.
 ------------------------------------------------------------------------------
 do
 	local p = join("tank")
@@ -439,23 +435,6 @@ do
 	GV.flinch(p)
 	step(0.05)
 	eq(anim_of(p), "cast1", "F never over another pose")
-	step(2)
-	draws[p.name] = {}
-	step(0.05)
-	eq(anim_of(p), "bow", "F the drawn bow plays bow")
-	p.controls = {up = true}
-	step(0.05)
-	eq(anim_of(p), "bow_walk", "F ... and bow_walk on the move")
-	near(last(p).start, 355, "F the bow's walking twin from standing starts at its first frame")
-	GV.flinch(p)
-	step(0.05)
-	eq(anim_of(p), "bow_walk", "F never over the drawn bow")
-	draws[p.name] = nil
-	step(0.05)
-	eq(anim_of(p), "walk_resume", "K the draw's end hands back through walk_resume")
-	step(0.05)
-	eq(anim_of(p), "walk", "K ... once")
-	p.controls = {}
 	step(2)
 	player_api.player_attached[p.name] = true
 	GV.flinch(p)

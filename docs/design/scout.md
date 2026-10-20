@@ -66,18 +66,35 @@ commit.
 
 ## 2. Base kit
 
-`classes.md:59` — "Three to four abilities per class in the MVP" — and ruling
-12 names all four and requires each to be built from a mechanic the game
-already runs. Four class abilities plus the universal Strike
-(`strike_def` in `grug_abilities/kits.lua`) put the Scout on keys 1-5, and `skill_trees.md` §3.4's
-ceiling of two talent buttons puts the worst case at 7 of 8.
+Since Round 53 (round K, `docs/planning/round53-plan.md` §4 "SCOUT") the
+Scout starts with **Loose, Sidestep and Sprint** plus the universal Strike
+(`strike_def` in `grug_abilities/kits.lua`); a new character's hotbar is
+Loose, Sidestep, Sprint, Strike (K7). The bow draw is gone: every bow skill
+is an instant shot at the crosshair target, and the heavier ones occupy the
+action clock afterwards instead. R is the bow unit (bow damage + Dexterity
+ranged bonus), M the blade unit (Melee-slot weapon damage + melee bonus), P
+the class-neutral base pool; the numbers are the frozen balance calculator's
+(`grug_abilities/scout.lua`).
 
 | Ability | Kind | Cost | Cooldown | Effect | Existing mechanic it reuses |
 |---|---|---|---|---|---|
-| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the Ranged slot. A **homing** arrow locked to the current crosshair hostile at release, initially within 25 m. Full draw **2.5 s**; damage = (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for draw fraction f (tap ×0.2, half ×0.7125, full ×2.25); nominal speed 40 + 15 f m/s (tap 40, full draw 55) | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`) |
-| **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`hamstring` in `grug_abilities/kits_warrior.lua`) |
-| **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua`) and the timed-window table of `skill_trees.md` §3.2 |
+| **Loose** | cast, the basic attack | 1 arrow | cast interval 0.85 s | Requires a bow in the Ranged slot and a visible hostile within 25 m; LMB looses one **homing** arrow for **0.95 R**, held LMB repeats every 0.85 s, divided by the bow's own attack-speed affix, never below 0.65 s. With no arrow the held fallback swings Strike at a foe in reach | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`); the cast interval of Fireball |
+| **Sidestep** | cast | 6 % base mana | 18 s | Dodge chance **+15** percentage points for 3 s, **inside** the 30 % cap; occupies 0.25 s. Veil's Shake Loose also clears slows and roots and takes up to 3 s off the cooldown | `grug_classes.get_dodge_chance` (`grug_classes/stats.lua`) and the Sidestep window in `grug_classes/scout.lua` |
 | **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
+
+The talent kit (the Quarry and Veil graphs, `grug_classes/talent_graph_scout.lua`):
+
+| Ability | Node | Cost | Cooldown | Occupied | Effect |
+|---|---|---|---|---|---|
+| **True Draw** | Quarry Q4 | 6 % + 1 arrow | 6 s | 1.35 s | 2.2 R; a landed one opens Follow the Line (Q11) for the next Loose |
+| **Snare Shot** | Quarry Q6 | 5 % + 1 arrow | 14 s | 0.85 s | 0.45 R and a 35 % slow for 3 s on a landed hit |
+| **Split Shot** | Quarry Q8 | 8 % + 1 arrow | 10 s | 1.0 s | 0.90 R; up to 2 other hostiles within 3 m of the target take 0.55 R (no arrows of their own) |
+| **Arrowfall** | Quarry Q12, ultimate | 16 % + 4 arrows | 60 s | 2.5 s | four arrows together at the crosshair target, 1.4 R each, crits allowed; refused below four arrows |
+| **Bladecraft** | Veil V1, transforms Loose | free | — | the shared clock | LMB swings the Melee-slot blade (1.0 M); RMB looses the same Loose shot at a hostile, on Loose's interval and the action clock |
+| **Opening** | Veil V4 | 5 % | 8 s charge | the swing | a charged blade swing: 1.35 M, 1.80 M from behind or in Parry's window (which it spends) |
+| **Parry** | Veil V6 | 4 % | 12 s | 0.5 s | a shield of 10 % P for 2 s and Opening's window for 3 s, at the cast |
+| **Flourish** | Veil V8 | 8 % | 12 s | max(1 s, blade interval) | the 3 nearest hostiles in a 90°, 3 m cone in front take 0.80 M |
+| **Close Dance** | Veil V12, ultimate | 14 % | 60 s | 0.25 s | for 6 s every plain blade swing adds 0.35 M, and a shield of 15 % P holds as long |
 
 **Sprint is a rule-breaker in the base kit, and it is the clearest example of
 ruling 10** — "skills may explicitly break the base inequalities… the bigger
@@ -88,9 +105,9 @@ every-fight button." The three decided files that state the opposite pillar
 need one sentence each — `skill_trees.md` §7 task 1 carries that, and it is not
 this lane's to write.
 
-What is deliberately **not** in the base kit: a melee finisher (it is Veil's
-keystone, `skill_trees.md` §2.8), a root (Quarry's keystone), and stealth of
-any kind (§8).
+What is deliberately **not** in the base kit: a melee finisher (Opening, a
+Veil unlock), and stealth of any kind (§8). The Scout has no root since Round
+53 retired Pinning Shot.
 
 ## 3. Bow and ammunition contract
 
@@ -124,26 +141,21 @@ The active contract is:
 
 - `items_crafting.md` §9 defines the active substrate: bow family on the 1H
   weapon curve (8/13/19/24 damage at ilvl 12/27/42/57),
-  **25 m range, 2.5 s full draw** (the bow definition's
-  `_grug_bow_draw_time`), and the affix pool is Dex, Crit, attack/draw speed,
-  HP and Mana. Loose multiplies (bow damage + Dexterity ranged bonus + Strong Draw) by
-  `0.2 + 2.05 f²` of the draw fraction f (user ruling 2026-09-28); Twin Shot's
-  second-arrow percentage and Longshot's +11 % of a base hit apply after it,
-  and the result is floored once after the level scalar (Round 35). Fletching
-  (to 2.0 s at 4/4) and the
-  bow's OWN draw-speed (attack-speed) affix shorten the draw to at least 0.5 s;
-  the Melee blade's affixes do not (Round 28). One bow per material tier,
+  **25 m range**, and the affix pool is Dex, Crit, attack speed, HP and
+  Mana. Every bow skill deals a share of R (bow damage + Dexterity ranged
+  bonus), floored once after the level scalar (Round 35). The bow's OWN
+  attack-speed affix divides Loose's 0.85 s cadence, to at least 0.65 s;
+  the Melee blade's affixes do not (Round 28). The bow definition still
+  carries `_grug_bow_draw_time`, which nothing reads since Round 53. One bow per material tier,
   material-named under §3.0.3. Arrows craft 100 (one stack) per batch from 1
   Bronze Bar + 2 Sticks diagonally, without feathers (Round 21, approved
   2026-09-24; one stack since Round 28). Arrows are Basic recipes; the
   Leatherworker makes bows (Round 45) and owns named bow enchantments. There is no quiver item.
-- `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
-  maximum by holding RMB and releases a targeted homing arrow on RMB release;
-  Loose LMB uses melee Strike or hand digging. Draw affects damage (the curve
-  above) and nominal speed (linear, 40 to 55 m/s); a draw ring at the crosshair shows the
-  fraction (`classes.md` §2b). No valid release-time target means no shot or ammo payment.
-- Drawing or holding a drawn bow is a self-imposed movement stance of ×0.5
-  (`skill_trees.md` §3.9 "Stances"; `grug_core.set_move_stance`).
+- The bow flow since Round 53: Loose is an LMB cast that looses a targeted
+  homing arrow at once (nominal 40 m/s, every bow skill alike); there is no
+  draw, no draw ring and no draw stance. No valid target at the cast means
+  no shot and no ammo payment; Arrowfall's four arrows are spent together or
+  not at all.
 - The six bow identities and their dedicated centre-grip wield pose are
   delivered from licensed LotT arc sprites. The Scout runtime consumes those
   registrations; it does not regenerate their art.
@@ -247,7 +259,7 @@ Ruling 12 in one table. Nothing here is rejected; it is sequenced.
 
 | Left out | Ruling | Where it went |
 |---|---|---|
-| **Invisibility** | 12: "no invisibility in version 1" | §8, whole, with rulings 8's detection rules and the three blocking conflicts it carries. The Veil capstone is **Untouchable** instead (`skill_trees.md` §2.8) — a strong, time-limited dodge window built from a stat the game already rolls |
+| **Invisibility** | 12: "no invisibility in version 1" | §8, whole, with rulings 8's detection rules and the three blocking conflicts it carries. The Veil ultimate is **Close Dance** instead (§2; Round 53 retired the earlier capstone Untouchable) |
 | **Poison** | 7 and 12 | nowhere. `classes.md`'s plan for a Phase-2 melee class is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
 | **Traps** | 12 | nowhere. Ruling 7 allowed them "if cheap"; ruling 12 removed the option, and they were the one idea in the class that needed a placed-entity lifecycle |
 | **A third resource** | 14: the Scout uses mana | nowhere; §1 |
@@ -333,11 +345,9 @@ speed are one system and cannot be tuned separately.
 attacker-level rating formula and 70% reduction cap.
 The Scout's base-kit Sidestep stays inside the 30 % dodge cap and is simply
 clamped — which means a Scout with good gear gets *less* from their own
-button, a real consequence and not a bug. The Veil capstone **Untouchable**
-raises only the dodge cap to 55% for six seconds once every three minutes,
-which is the named, time-limited capstone exception allowed by ruling 10. The
-Character displays the effective Dodge value while it runs; Help explains the
-raised-cap rule.
+button, a real consequence and not a bug. Since Round 53 nothing raises the
+Scout's dodge cap: the earlier Veil capstone Untouchable (the cap to 55 % for
+six seconds) is retired.
 
 ### 6.5 Bow pose and starter — **resolved in Round 11**
 
@@ -423,8 +433,8 @@ anchors. Ruling 12 removed
 invisibility from the Scout's first release; rulings 8's stealth rules and the
 research behind them are kept here **verbatim and complete**, so that the day
 the user wants stealth the design, the seam, the detection arithmetic and the
-three blocking conflicts are already written. The Veil capstone in version 1
-is **Untouchable** (`skill_trees.md` §2.8), not invisibility.
+three blocking conflicts are already written. The Veil ultimate is **Close
+Dance** (§2), not invisibility.
 
 The numbers below were an open decision of an earlier revision of
 `skill_trees.md`; with stealth deferred they are simply undecided and

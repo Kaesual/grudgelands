@@ -169,9 +169,9 @@ end
 ------------------------------------------------------------------------------
 local PENDING = {click = "the formspec style"}
 -- Round 53 (HOOKS): the per-ability launches and the impacts are played by
--- the round-K class kits, which the class lanes write after HOOKS.
--- The Mage's five play in kits_mage.lua (lane MAGE), Censure's in kits_priest.lua (lane PRIEST).
-for _, event in ipairs({"arrowfall_impact"}) do
+-- the round-K class kits, which the class lanes write after HOOKS. All four
+-- kits play theirs now (MAGE five, PRIEST censure_impact, SCOUT arrowfall_impact).
+for _, event in ipairs({}) do
 	PENDING[event] = "a round-K class kit"
 end
 local seen = {}
