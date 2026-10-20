@@ -65,3 +65,6 @@ grug_ambience_call_owl.1.ogg, SND c_ca_owl1, https://freesound.org/people/Brevic
 grug_ambience_call_owl.2.ogg, SND c_ca_owl2, https://freesound.org/people/Anthousai/sounds/398734/ (Anthousai, CC0 1.0)
 grug_ambience_call_wolf.1.ogg, SND c_ca_wolf1, https://freesound.org/people/taure/sounds/380156/ (taure, CC0 1.0)
 grug_ambience_call_wolf.2.ogg, SND c_ca_wolf2, https://freesound.org/people/sandboks/sounds/503516/ (sandboks, CC0 1.0)
+# 0.52.1: the two underwater beds the user picked on the UW page, 2026-10-20 (one pool):
+grug_ambience_underwater_dcsfx.ogg, UW #2 uw_2_dcsfx, https://freesound.org/people/DCSFX/sounds/366159/ (DCSFX, CC0 1.0)
+grug_ambience_underwater_verberne.ogg, UW #4 uw_4_verberne, https://freesound.org/people/Tim_Verberne/sounds/482167/ (Tim_Verberne, CC0 1.0)

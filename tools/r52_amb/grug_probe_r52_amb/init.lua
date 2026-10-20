@@ -431,6 +431,31 @@ local function survey_step(sv)
 	end
 	log(("SURVEY %d lake/river samples; nearest the human start town: %s"):format(#sv.lakes,
 		table.concat(near, "; ")))
+	-- 0.52.1: the start towns' and capitals' cells against their look: the
+	-- biome at the anchor and the biomes on a 4-node grid over the
+	-- 152-node footprint square, by sound group.
+	local D = grug_ambience.data
+	for _, row in ipairs(grug_core.settlement_socket_settlements()) do
+		if row.slot == "start" or row.slot == "capital" then
+			local a = row.anchor
+			local groups, n = {}, 0
+			for dx = -76, 76, 4 do
+				for dz = -76, 76, 4 do
+					local b = grug_zones.biome_at(a.x + dx, a.z + dz)
+					local g = b and (D.groups[b] or (D.neutral and D.neutral[b] and "neutral")) or "-"
+					groups[g] = (groups[g] or 0) + 1
+					n = n + 1
+				end
+			end
+			local list = {}
+			for g, c in pairs(groups) do list[#list + 1] = ("%s %d%%"):format(g, math.floor(100 * c / n + 0.5)) end
+			table.sort(list)
+			local look = D.town_looks and row.slot == "start" and D.town_looks[row.race_id]
+			log(("TOWN %s %s (%s) at %d,%d: anchor biome %s; look %s (%s); footprint groups: %s"):format(
+				row.slot, row.key, row.race_id, a.x, a.z, tostring(grug_zones.biome_at(a.x, a.z)),
+				tostring(look or "-"), look and tostring(D.groups[look]) or "-", table.concat(list, ", ")))
+		end
+	end
 	return true
 end
 

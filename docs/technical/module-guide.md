@@ -2636,7 +2636,11 @@ tools](#player-meta-read-by-external-tools).
       `D.groups[biome]` by the full `grug_` biome id (15 biomes in 8
       groups: temperate, savanna, jungle, badlands, swamp, crags,
       crags_snowy, blight); an ownerless column is the ocean; the
-      underground mood keeps the last key; a biome in `D.neutral` (the
+      underground mood keeps the last key; inside a start town (0.52.1:
+      `location.in_town` and no `capital_of`) the biome is the town's look,
+      `R.start_town_look` with the nearest start anchor of
+      `grug_core.settlement_socket_settlements` within `D.town_reach` 80
+      and `D.town_looks[race]` (the anchors read once); a biome in `D.neutral` (the
       beach, 0.52.1) keeps the last group key, but an override key
       (`current`, the fifth argument) turns false there. `D.region[key]` names the day
       and night beds (`night = false`: silence at night, the crags; no
@@ -2658,7 +2662,7 @@ tools](#player-meta-read-by-external-tools).
       is stopped (a fade to 0, which deletes the sound) only after
       `FLOOR_PASSES` 3 passes at 0. Where music plays every layer is
       silent; under water only the surface layer plays its `underwater`
-      bed (none ships: silence) at level 1 (`R.surface_levels`).
+      bed (a pool of two, 0.52.1) at level 1 (`R.surface_levels`).
     - **The sea layer (0.52.1):** `grug_ambience.sea_share(pos)` returns
       the share of sea columns among `R.sea_points(D)` (49 columns on a
       4-node grid within 16 nodes of the player's grid point) and whether
@@ -2699,7 +2703,7 @@ tools](#player-meta-read-by-external-tools).
     - **`/ambience debug`:** `R.parse_command` accepts `debug`; the
       command toggles one HUD text line for the player who typed it (no
       privilege; left edge, 30 % down) with biome, sound key, depth, cave
-      share and verdict, the sea share and the four levels, sent only when its text
+      share and verdict, the sea share, the surface layer's file and the four levels, sent only when its text
       changed, "ambience: off" while the ambience is off or at 0.
 
 ## UI and formspecs
