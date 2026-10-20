@@ -4,7 +4,9 @@
 -- their single source of truth.
 
 local BASE_ATTR = 10
-local HP_CLASS_FACTOR = {warrior = 1.20, priest = 1.00, mage = 0.90}
+-- Round 53 (round K, the user's ruling of 2026-10-19): every class named,
+-- the Scout too; the `or 1` below only covers a character without a class.
+local HP_CLASS_FACTOR = {warrior = 1.20, priest = 0.80, mage = 0.80, scout = 1.00}
 
 local function round(value)
 	return math.floor(value + 0.5)
