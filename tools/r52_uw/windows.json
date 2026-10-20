@@ -1,0 +1,226 @@
+{
+ "uw_1_fission9": {
+  "key": "uw_1_fission9",
+  "fs": "504641",
+  "source_seconds": 46.86,
+  "window": [
+   14.4,
+   46.4
+  ],
+  "loop": 30.0,
+  "gain_db": 14.6,
+  "unlimited_peak_db": 0.0,
+  "limited": true,
+  "scan": {
+   "start": 14.4,
+   "score": 15.42,
+   "burst": 5.0,
+   "burst_at": 19.9,
+   "seam": 1.4,
+   "mismatch": 0.9,
+   "median": -35.0,
+   "spread": 4.4,
+   "high": 11.9
+  },
+  "seconds": 30.0,
+  "lufs": -20.1,
+  "peak_db": -1.0,
+  "bytes": 159347
+ },
+ "uw_2_dcsfx": {
+  "key": "uw_2_dcsfx",
+  "fs": "366159",
+  "source_seconds": 240.0,
+  "window": [
+   62.9,
+   94.9
+  ],
+  "loop": 30.0,
+  "gain_db": 3.6,
+  "unlimited_peak_db": 0.1,
+  "limited": true,
+  "scan": {
+   "start": 62.9,
+   "score": 10.82,
+   "burst": 4.3,
+   "burst_at": 15.8,
+   "seam": 1.2,
+   "mismatch": 0.1,
+   "median": -23.8,
+   "spread": 4.0,
+   "high": 6.4
+  },
+  "seconds": 30.0,
+  "lufs": -20.1,
+  "peak_db": -1.1,
+  "bytes": 143009
+ },
+ "uw_3_kinoton": {
+  "key": "uw_3_kinoton",
+  "fs": "393819",
+  "source_seconds": 311.18,
+  "window": [
+   237.9,
+   269.9
+  ],
+  "loop": 30.0,
+  "gain_db": 17.5,
+  "unlimited_peak_db": -4.7,
+  "limited": false,
+  "scan": {
+   "start": 237.9,
+   "score": 10.39,
+   "burst": 2.6,
+   "burst_at": 18.3,
+   "seam": 2.2,
+   "mismatch": 0.0,
+   "median": -37.6,
+   "spread": 3.2,
+   "high": 7.9
+  },
+  "seconds": 30.0,
+  "lufs": -20.1,
+  "peak_db": -4.9,
+  "bytes": 175638
+ },
+ "uw_4_verberne": {
+  "key": "uw_4_verberne",
+  "fs": "482167",
+  "source_seconds": 120.0,
+  "window": [
+   14.9,
+   46.9
+  ],
+  "loop": 30.0,
+  "gain_db": 9.0,
+  "unlimited_peak_db": -4.4,
+  "limited": false,
+  "scan": {
+   "start": 14.9,
+   "score": 9.88,
+   "burst": 2.3,
+   "burst_at": 20.7,
+   "seam": 0.0,
+   "mismatch": 0.1,
+   "median": -29.0,
+   "spread": 3.2,
+   "high": 11.7
+  },
+  "seconds": 30.0,
+  "lufs": -20.1,
+  "peak_db": -4.6,
+  "bytes": 181147
+ },
+ "uw_5_merrick": {
+  "key": "uw_5_merrick",
+  "fs": "567347",
+  "source_seconds": 44.0,
+  "window": [
+   8.4,
+   40.4
+  ],
+  "loop": 30.0,
+  "gain_db": -0.2,
+  "unlimited_peak_db": -5.1,
+  "limited": false,
+  "scan": {
+   "start": 8.4,
+   "score": 10.41,
+   "burst": 4.5,
+   "burst_at": 4.7,
+   "seam": 0.1,
+   "mismatch": 0.3,
+   "median": -20.3,
+   "spread": 5.2,
+   "high": 5.9
+  },
+  "seconds": 30.0,
+  "lufs": -20.1,
+  "peak_db": -4.9,
+  "bytes": 232021
+ },
+ "uw_6_jhumbucker": {
+  "key": "uw_6_jhumbucker",
+  "fs": "193822",
+  "source_seconds": 109.57,
+  "window": [
+   9.4,
+   41.4
+  ],
+  "loop": 30.0,
+  "gain_db": 9.7,
+  "unlimited_peak_db": 0.8,
+  "limited": true,
+  "scan": {
+   "start": 9.4,
+   "score": 5.4,
+   "burst": 2.6,
+   "burst_at": 13.7,
+   "seam": 0.0,
+   "mismatch": 0.4,
+   "median": -29.8,
+   "spread": 2.9,
+   "high": 2.0
+  },
+  "seconds": 30.0,
+  "lufs": -20.1,
+  "peak_db": -1.2,
+  "bytes": 93889
+ },
+ "uw_7_cubicapocalypse": {
+  "key": "uw_7_cubicapocalypse",
+  "fs": "195509",
+  "source_seconds": 25.2,
+  "window": [
+   0.4,
+   24.9
+  ],
+  "loop": 22.5,
+  "gain_db": 11.9,
+  "unlimited_peak_db": -3.9,
+  "limited": false,
+  "scan": {
+   "start": 0.4,
+   "score": 7.33,
+   "burst": 2.1,
+   "burst_at": 3.1,
+   "seam": 0.8,
+   "mismatch": 2.1,
+   "median": -31.8,
+   "spread": 2.6,
+   "high": 2.1
+  },
+  "seconds": 22.5,
+  "lufs": -20.1,
+  "peak_db": -3.8,
+  "bytes": 105964
+ },
+ "uw_8_osiruswaltz": {
+  "key": "uw_8_osiruswaltz",
+  "fs": "530167",
+  "source_seconds": 16.11,
+  "window": [
+   0.4,
+   15.8
+  ],
+  "loop": 13.4,
+  "gain_db": 0.2,
+  "unlimited_peak_db": -5.7,
+  "limited": false,
+  "scan": {
+   "start": 0.4,
+   "score": 4.71,
+   "burst": 1.0,
+   "burst_at": 0.9,
+   "seam": 1.0,
+   "mismatch": 1.0,
+   "median": -20.2,
+   "spread": 1.6,
+   "high": 1.8
+  },
+  "seconds": 13.4,
+  "lufs": -20.0,
+  "peak_db": -5.6,
+  "bytes": 49087
+ }
+}
