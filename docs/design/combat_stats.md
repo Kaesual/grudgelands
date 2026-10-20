@@ -1535,7 +1535,11 @@ shows a single-colour particle effect, built from the accepted catalogue
   `VIVID`). Light, spark, magic and fire particles add onto what is behind
   them (`blend = "add"`) with glow 14, so they shine at night and in caves
   and only self-light; dust, earth, wood splinters, smoke, frost mist and
-  blood keep the plain blend. Bosses and mobs keep the Round 40 look.
+  blood keep the plain blend. The same rule covers the boss and mob effects,
+  crits, absorb soaks and the level-up (the user, 2026-10-21): their lights
+  add with glow 14 in more saturated tints, their dust, smoke, wind, webs,
+  leaves and splashes stay plain, and the material textures (blood, rock,
+  bubbles, coloured dust and wind) keep their look.
 - **Smite** (2026-10-21) is a small Final Word: a short beam of five motes
   shoots down from 3.2 m onto the target and a gold ring of eight springs
   out to about 1 m (Final Word: a 7 m column and a ring of 20 to about 2 m).

@@ -12,7 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.54.0, Round 54 "The armor redesign in the game"
+**Current state:** 0.54.1, the particle look pass (**compatible**, no
+step; [STATUS](docs/STATUS.md): every effect on a white mote in vivid
+tints, lights added with glow 14, Smite as a small Final Word, faster
+Meteor and Censure falls), on 0.54.0, Round 54 "The armor redesign in the game"
 (**compatible**, no step;
 [completion](docs/planning/round54-plan.md#completion-2026-10-21)): armor
 as low-poly boxes in the player and NPC models with one atlas texture, the
@@ -26,8 +29,8 @@ minimap, the same trinket twice, racials, skeleton bows, right-click
 picking, 36 redrawn icons), on 0.53.0, Round 53 "The new classes" (round K
 of the class rework; **migrate**, one step 0.53.0;
 [completion](docs/planning/round53-plan.md#completion-2026-10-20)). All
-three are on main, not pushed (origin/main `e4d5c9d5`, 0.52.1); they wait
-for the user's GUI test of 0.53.1 and 0.54.0 before the push. Round 53
+three and 0.54.1 are on main, not pushed (origin/main `e4d5c9d5`, 0.52.1);
+they wait for the user's GUI test of 0.53.1, 0.54.0 and 0.54.1 before the push. Round 53
 brought the four new class kits and the eight talent graphs live (`<tree>_<name>` ids, the Talents page), the
 Scout's bow draw removed, the shared seams (family keys, the swing
 callback, clock seams, the held fallback, cones, `no_crit`), 25 skill

@@ -14,9 +14,12 @@
 --      id, evaluated with its sample frame) tints the mote and adds with glow
 --      14, except the plain dust, earth, wood, smoke and mist colours and the
 --      blood; every other registered effect (bosses, mobs, crits, the absorb
---      soak, the level-up, the unused area defaults) keeps the smoke puff and
---      the plain blend; the four readiness windows and the three arrow
---      trails carry the vivid tints;
+--      soak, the level-up, the area defaults; the user, 2026-10-21) tints the
+--      mote too, its lights add with glow 14 and its dust, smoke, wind,
+--      webs, leaves and splashes stay plain, while the material textures
+--      (blood, rock, bubbles, coloured dust and wind) keep their look; the
+--      four readiness windows and the three arrow trails carry the vivid
+--      tints;
 --   F  meteor_fall and censure_fall over heights and delays: they start
 --      late (after + life = the delay), fall at 14 and 12 m/s (slower only
 --      when the delay is shorter than the fall), do not fade and land on the
@@ -192,12 +195,49 @@ do
 	end
 	check(skill_n >= 50, "C the skill effects found (" .. skill_n .. ")")
 
+	-- The other effects: which ones light up (at least one added emitter) and
+	-- which stay plain throughout.
+	local LIT = {}
+	for _, id in ipairs({"crit", "absorb", "level_up", "area_fall", "area_impact", "king_cleave_windup",
+			"king_cleave", "king_aura", "king_resolve", "elite_windup", "elite_cone", "breath_windup",
+			"breath_burst_rime", "breath_burst_scorch", "breath_trail", "dragon_patch_rime",
+			"dragon_patch_scorch", "lightning_ring", "lightning_strike", "dive_windup", "dive_slam", "enrage",
+			"dragon_return", "depth_windup", "depth_burst", "oerkki_blink", "wisp_blink", "hex_bottle",
+			"rift_spawn_burst"}) do
+		LIT[id] = true
+	end
+	local MATERIAL = {"^mobs_blood", "^grug_mobs_rock%.png$", "^mobs_bubble", "#d8eef4"}
+	local function material(tex)
+		for _, pattern in ipairs(MATERIAL) do
+			if tex:find(pattern) then return true end
+		end
+		return false
+	end
 	local others = 0
 	for id in read("mods/CORE/grug_core/particle_effects.lua"):gmatch('\nregister%("([%w_]+)"') do
 		if not skill[id] then
 			others = others + 1
+			local adds = 0
 			for i, e in ipairs(list_of(id) or {}) do
-				check(not e.mote and e.blend == nil, "C " .. id .. " emitter " .. i .. " keeps the Round 40 look")
+				local label = "C " .. id .. " emitter " .. i
+				if e.tex then
+					if material(e.tex) then
+						check(e.blend == nil, label .. ": the material texture keeps its look")
+					else
+						check(e.blend == "add" and e.glow == 14, label .. ": the coloured light adds, glow 14")
+					end
+				else
+					check(e.mote == true, label .. ": the tint is on the mote")
+				end
+				if e.blend == "add" then
+					adds = adds + 1
+					eq(e.glow, 14, label .. ": an added emitter glows 14")
+				end
+			end
+			if LIT[id] then
+				check(adds > 0, "C " .. id .. " lights up")
+			else
+				eq(adds, 0, "C " .. id .. " stays plain")
 			end
 		end
 	end
@@ -286,8 +326,8 @@ do
 	check(license:find("`grug_core_mote.png`", 1, true) ~= nil, "T it has a licence entry")
 end
 
-if failures > 0 then
-	print(("R541 GLOW PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+if failures == 0 then
+	print(("R541 GLOW PORTABLE PASS checks=%d"):format(checks))
+else
+	error(("R541 GLOW PORTABLE FAIL %d of %d checks"):format(failures, checks), 0)
 end
-print(("R541 GLOW PORTABLE PASS checks=%d"):format(checks))

@@ -96,7 +96,9 @@ bracers, skirts and boots stand out from the body, each tier richer than
 the last, metal bulkiest, leather layered, cloth smooth. Every piece has
 new art and a new icon, skirts swing as you walk, the Character page shows
 your armor and weapon, and kings and their guards wear royal armor. Leather
-tier 4 is now called Hardened.
+tier 4 is now called Hardened. 0.54.1 makes the particle effects glow in
+vivid colours, turns Smite into a small beam of light and lets Meteor and
+Censure fall faster.
 
 **0.53.0** brings the new classes: each class starts with its own two or
 three skills and gains the rest from two new talent trees per class, drawn

@@ -6,13 +6,42 @@ The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the
 [class redesign package](planning/class-redesign/README.md)) is built:
 round F in Round 52, round K in Round 53 below, with its fix round 0.53.1.
-Round 54 followed with the armor redesign (0.54.0). Next: the user's one GUI
-test of 0.53.0, 0.53.1 and 0.54.0 together, then the push, the playtest of
+Round 54 followed with the armor redesign (0.54.0), then the particle look
+pass (0.54.1). Next: the user's one GUI test of 0.53.0, 0.53.1, 0.54.0 and
+0.54.1 together, then the push, the playtest of
 the new classes and a short balance fix round. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **0.54.1 "The particle look" complete** (2026-10-21, **compatible**, no
+  migration step; the user's pick on the
+  [R52 particle page](https://claude.ai/artifact/AwJAjkrb2eiu26m1LsYsXa), a
+  private claude.ai page, "glowing and vivid"; branch `pfx-glow`, one
+  coordinator-built lane, independently reviewed by Opus, no blocker). **Not
+  pushed.** `grug_core/particles.lua` gains the emitter fields `mote` (the
+  tint on the new white `grug_core_mote.png`; the grey smoke puff darkened
+  every tint to about 56 %), `blend` (`"add"`) and `after` (a deferred
+  emitter); every catalogue effect follows one rule
+  ([combat_stats.md](design/combat_stats.md#skill-particle-effects)):
+  lights, sparks, magic and fire add with glow 14 in vivid tints, dust,
+  smoke, mist, wind, webs, leaves and splashes stay plain, material
+  textures (blood, rock, bubbles) keep their look. Smite is a small Final
+  Word (13 single particles), Meteor and Censure fall at 14 and 12 m/s from
+  late in the delay. `tools/r52_pfx/effects.py` carries the look pass, so
+  `r53_hooks` and `check_limits.lua` still compare every card with the
+  catalogue; new fixture `tools/r541_glow`. Budget at 50 players
+  (effects.py): 20.3 → 20.6 KB/s per receiver, alive peak 527 → 537; Smite
+  becomes the largest byte card (1.3 → 2.4 KB/s). Not converted: the direct
+  engine calls outside the catalogue (stun cross, root crystals, food
+  crumbs, the rift's stretches and pulse, the mobs API's own particles).
+  **GUI checklist:** skills by day, at night and in a cave; added particles
+  against a bright sky, snow, over water and behind glass or leaves (the
+  engine adds with the target's alpha); Smite on a dummy; Meteor and Censure
+  under open sky and under a low ceiling (they land with the impact);
+  bosses (kings' wind-ups, dragons' breath, lightning, dive, enrage) and
+  mob specials (wisp, Oerkki, depth pulse, hex bottle, rift spawn); the web
+  build.
 - **Round 54 "The armor redesign in the game" complete** (2026-10-21,
   version 0.54.0, **compatible**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round54-plan.md#completion-2026-10-21);
