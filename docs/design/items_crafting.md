@@ -379,7 +379,7 @@ from `grug_gear`. Consequences, all binding:
   |---|---|---|---|---|---|---|
   | Weapons and metal armor (§3.0.1's metals) | Bronze | Iron | Steel | Silversteel | Embersteel | Abyssal Steel |
   | Cloth armor (§3.5's bolt grades) | Patch | Woven | Heavy | Silkweave | Silk | Stormweave |
-  | Leather armor (§3.4's grades) | Light | Cured | Heavy | Scaled | Sleek | Nightscale |
+  | Leather armor (§3.4's grades) | Light | Cured | Heavy | Hardened | Sleek | Nightscale |
 
   Nouns are Sword / Dagger / Battle Axe / Staff / Wand / Bow, Helm / Chestplate / Greaves /
   Sabatons (metal), Cowl / Robe / Leggings / Slippers (cloth) and Hood /
@@ -387,7 +387,13 @@ from `grug_gear`. Consequences, all binding:
   Battle Axe*, *Silkweave Cowl*, *Iron Helm*. Itemstrings follow the same
   ladder (`grug_gear:sword_bronze`, `grug_gear:head_cloth_silkweave`); the
   full list was pinned by `tools/wp13/gear_catalogue_kat.lua` (retired in
-  Round 22).
+  Round 22). **Leather T4 is Hardened** since Round 54 (*Hardened Jerkin*;
+  scales belong to the top tier, Nightscale): only the name changed, the
+  ids keep the grade key `scaled` (`grug_gear:chest_leather_scaled`, stable
+  ids under the [upgrade contract](../technical/upgrade-contract.md)), and a
+  stack stored under the old name *Scaled …* takes the new one at its next
+  rebuild (an equipment or level change). The leather material of that
+  grade stays *Scaled Hide* (§3.4).
 - **Everyone can craft the base items of every material tier** — tools,
   weapons, armor. This is the deliberate "Minecraft feel", and it is what
   makes mining and smelting worth doing for a player with no crafting
@@ -1220,6 +1226,17 @@ Use a hybrid source strategy: derive mundane bases/tree palettes from
 license-cleared references and adapt the proven per-stack trim/meta
 technique. Every reused asset records file provenance, author, exact license,
 pinned source commit and modifications in the owning `LICENSE-media.md`.
+
+**Armor art (Round 54):** the 72 armor pieces are original art painted for
+the project in one reference palette, the user's picks per line and tier
+(metal "Bastion" T1–T5 and "Processional guard" T6, leather "Trail coat",
+cloth "Cantor"): box sheets worn on the character, inner paint on the skin
+and a 16 px icon per piece, each tier with its own palette, so a tier
+shows by its shapes and colours without a runtime tint. The tool
+`tools/r54_armor/bake.py` turns the art in `tools/r54_art/` into the game's
+files and their enchant masks; the look is
+[character_visuals.md](character_visuals.md) §3, the format
+[armor-format.md](../technical/armor-format.md).
 
 Each of the six gems has exactly four visual roles: natural ore node,
 Rough Gem, Cut Gem and polished non-luminous storage block — **24 roles total**

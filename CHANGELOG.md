@@ -12,6 +12,30 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.54.0 — new armor (2026-10-21)
+
+All armor is redrawn and gets real shapes. **Compatible:** no map reset and
+no migration step; your character takes the new look at its next login.
+
+- **Real shapes:** helmets, shoulder plates, bracers, skirts and boots stand
+  out from the body. Each tier looks bigger and richer than the one below;
+  metal is the bulkiest, leather layered, cloth smooth with ornaments.
+- **New art for all three lines**, every tier in its own colours and with a
+  new icon. Enchant colours sit on the cloth parts (prefix) and the
+  fittings (suffix); a broken piece shows cracked.
+- **Skirts and robes swing** with your legs when you walk, and your cloak
+  hangs a little further back so it never cuts through them.
+- **Helmets** hide the hair; the face shows through the opening, except
+  for the closed metal helmets of the top two tiers.
+- **Character page:** the model wears your armor and holds your weapon.
+- **Guards, bandits and their kin** wear the new armor. Kings, royal guards
+  and the fortress Generals wear royal armor in their people's colours and
+  gold, without the gold elite glow; kings show their crown. The War
+  Commanders wear their faction's colours.
+- **Leather tier 4 is now "Hardened"** (Hardened Hood, Jerkin, Pants,
+  Boots); your items keep working and take the new name after your next
+  equipment change.
+
 ## 0.53.1 — fixes to the new classes (2026-10-20)
 
 Fixes and wishes from the first look at 0.53.0. **Compatible:** no map
