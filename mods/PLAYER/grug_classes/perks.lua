@@ -4,17 +4,20 @@
 -- dependency graph can read perks too).
 --
 -- Perk keys in use:
---   fall_damage_mult        (dwarf 0.8)  — grug_core/combat.lua hp modifier
+--   armor_rating_mult       (dwarf 1.05) — "Thick Skin": the positive armor
+--                           rating total (grug_quality raw_armor, so combat
+--                           and the Character page)
 --   ooc_regen_mult          (troll 1.5)  — out-of-combat mana regen
 --                           (grug_abilities.mana_regen_rate) and food
 --                           healing: instant HP and HP ticks
 --                           (grug_food.heal_multiplier). There is no natural
 --                           HP regen; food is the only HP recovery.
---   zombie_night_truce      (undead)     — zombies drop unprovoked undead
---                           targets at night (grug_mobs)
+--   zombie_truce            (undead)     — the zombie family (zombies,
+--                           husks, every sub-type) drops unprovoked undead
+--                           targets, day and night (grug_mobs)
 --   rage_per_hit_taken_bonus (orc 1)     — extra rage per hit taken
 --                           (grug_abilities)
---   ability_range_bonus     (elf 5)      — added to every ability item's
+--   ability_range_bonus     (elf 3)      — added to every ability item's
 --                           pointing/targeting range (grug_abilities)
 --   quest_xp_mult           (human 1.1)  — via get_xp_bonus below; quest
 --                           turn-ins pass source="quest"

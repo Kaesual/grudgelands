@@ -266,7 +266,11 @@ visits per player and step, independent of world size.
 
 **Apples and blueberries** are not renewal plants: a picked natural apple
 (`param2 = 0`) and picked blueberry leaves regrow through the vendored
-`default` node timers. Ores and other minerals retain [world.md](world.md) R4
+`default` node timers. Since 0.53.1 a ripe blueberry bush and an apple are
+also picked with **right-click**: the pick is the same dig (the same drops,
+protection, tool wear, regrowth and dig callbacks; `grug_gathering/pick.lua`),
+so it works exactly where left-click digging does. Herbs, spices and wood stay
+left-click. Ores and other minerals retain [world.md](world.md) R4
 (the two salts excepted).
 
 ## Water bucket

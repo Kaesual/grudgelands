@@ -626,7 +626,7 @@ position to nearby players.
 `mods/ENTITIES/mobs/api.lua:1874-1882` and `:1903-1917` hold two GRUG PATCH
 vetoes in the same
 target-selection loop that `is_invisible` sits in (`:1874-1877`): the per-entity
-`_grug_ignore_player` hook (the undead night truce) and the per-target
+`_grug_ignore_player` hook (the undead truce) and the per-target
 `_grug_noncombatant` flag (`grug_mobs.noncombatant`, `verbs.lua:724-746`).
 Adding a *third* filter to that loop is cheap — it is already the shape — but
 the **order matters for `continue` semantics**: the loop removes a vetoed

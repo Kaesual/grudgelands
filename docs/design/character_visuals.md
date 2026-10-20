@@ -112,8 +112,8 @@ are the same for every race (fairness, Round 31), and only the visual size
 differs. Visual stature keeps all races within the same two-node door and
 boat-seat geometry. It does not
 change the fall calculation or other combat, building or movement rules.
-Fall damage follows [combat_stats.md](combat_stats.md), including the Dwarf's
-20% reduction after maximum-HP scaling (absorb does not cover fall damage).
+Fall damage follows [combat_stats.md](combat_stats.md), the same for every
+race (absorb does not cover fall damage).
 
 Humanoid **mobs keep the size their own definition sets** (the mirefolk are
 deliberately short, an elite guard is deliberately large). Their scale belongs

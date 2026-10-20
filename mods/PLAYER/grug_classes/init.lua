@@ -180,14 +180,14 @@ grug_classes.register_race({
 grug_classes.register_race({
 	id = "dwarf", name = "Dwarf", faction = "accord",
 	description = "Hardy folk from the pine hills of the west.\n" ..
-		"Passive: -20% fall damage.",
-	perks = {fall_damage_mult = 0.8},
+		"Passive: Thick Skin, +5% armor rating.",
+	perks = {armor_rating_mult = 1.05},
 })
 grug_classes.register_race({
 	id = "elf", name = "Elf", faction = "accord",
 	description = "Keepers of the deep forests in the east.\n" ..
-		"Passive: +5 m ability range.",
-	perks = {ability_range_bonus = 5},
+		"Passive: +3 m ability range.",
+	perks = {ability_range_bonus = 3},
 })
 grug_classes.register_race({
 	id = "orc", name = "Orc", faction = "throng",
@@ -204,8 +204,8 @@ grug_classes.register_race({
 grug_classes.register_race({
 	id = "undead", name = "Undead", faction = "throng",
 	description = "Risen from the blighted lands of the west.\n" ..
-		"Passive: zombies ignore you at night (unless attacked).",
-	perks = {zombie_night_truce = true},
+		"Passive: zombies and husks leave you alone, day and night, unless attacked.",
+	perks = {zombie_truce = true},
 })
 
 local modpath = core.get_modpath(core.get_current_modname())

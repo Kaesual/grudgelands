@@ -13,8 +13,10 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	-- HP/damage/XP and armor come from the level engine (levels.lua); the
 	-- floor keeps the zombie above the boar even in the safe core.
 	_grug_min_level = 3,
-	-- Undead race passive (world.md §7): ignored at night unless provoked.
-	_grug_night_truce_perk = "zombie_night_truce",
+	-- Undead race passive (world.md §7): the zombie family never attacks an
+	-- Undead player on its own, day and night; a zombie the player attacked
+	-- fights back. Every zombie sub-type copies this base def.
+	_grug_truce_perk = "zombie_truce",
 	-- Round 18: ordinary ambient undead share damage-sustained pursuit.
 
 	reach = 3,

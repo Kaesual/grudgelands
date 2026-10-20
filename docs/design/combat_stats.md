@@ -154,11 +154,13 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     Ironbound adds a share of `K(L)` at the character's own level, Rime
     Mantle and Unbroken a status `armor` for their duration (shares of
     `K(L)` as well). The old Unbroken capstone's ×1.65 and its low-HP
-    rating went with the old trees.
+    rating went with the old trees. The one multiplier is the Dwarf's
+    racial "Thick Skin" (0.53.1, world.md §7): a positive total ×1.05,
+    taken in the same rating combat and the Character page read.
   - It applies **only to `reason.type == "punch"`**. There is no
     damage-type system, so that IS the whole definition of "physical":
-    fall damage has its own race perk (world.md §7) and drowning, lava
-    and starvation are never reduced by a breastplate.
+    fall damage, drowning, lava and starvation are never reduced by a
+    breastplate.
   - **Resolution order** for an ordinary punch in the central hp-change
     modifier: **dodge (cancels the hit entirely) → Grudgelands-mob pressure
     fit → armor → absorb shield.**
@@ -171,8 +173,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     only the already-performed armor step. Fall damage is separate: a native
     negative fall change of `r` settles as `ceil(max_hp × r / 20)`. Native zero
     stays zero and there is no 100%-of-pool cap. This preserves the engine's
-    impact-derived input rather than reconstructing block distance. The Dwarf
-    multiplier of 0.8 then rounds up; armor, dodge and the absorb shield never
+    impact-derived input rather than reconstructing block distance (no race
+    changes it since 0.53.1). Armor, dodge and the absorb shield never
     apply (see "Environmental damage" below). For hits, a shield therefore always soaks *post*-mitigation
     damage, i.e. shield points are worth full damage rather than pre-armor
     damage.
@@ -280,7 +282,7 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   participant outside the arena, `world.md` §4b) takes the same path, but
   the absorb shield never soaks it (`grug_core.bypasses_absorb`).
 - Fall damage is the pool conversion in §2 above
-  (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
+  (`ceil(max_hp × r / 20)`), the same for every race.
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is
   punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
   damage** (nor the dragon's wrath, nor the max-HP clamp of an expiring HP

@@ -1611,11 +1611,6 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		if max_hp > 0 then
 			hp_change = -math.ceil(max_hp * -hp_change / 20)
 		end
-		-- Dwarf passive (world.md §7): -20%.
-		local mult = grug_core.get_race_perk(player, "fall_damage_mult")
-		if mult then
-			hp_change = -math.max(1, math.ceil(-hp_change * mult))
-		end
 	end
 	-- Lava (Round 24 ruling 24): the engine's once-per-second node-damage tick
 	-- keeps its cadence, but its flat damage_per_second is REPLACED by 20% of

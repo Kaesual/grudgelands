@@ -76,7 +76,7 @@ Decided 2026-09-14 after the round-A playtest.
 - No mob that can attack players spawns inside a start town — the 128-node
   build envelope plus its 12-node band with rounded corners, the
   hard-protected footprint of [world.md](world.md) §2 R1. Passive critters and prey animals keep
-  spawning there, and the undead night truce is unchanged.
+  spawning there, and the undead truce is unchanged.
 
 ## Start surroundings
 

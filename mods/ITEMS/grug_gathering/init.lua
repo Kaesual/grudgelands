@@ -10,6 +10,8 @@ local registered_nodes = dofile(modpath .. "/nodes.lua")(core, catalog, harvest)
 -- Round 48: the sources' and items' look, overridden outside the hashed
 -- catalog and node files.
 dofile(modpath .. "/presentation.lua")
+-- 0.53.1: apples and ripe blueberry bushes are also picked with right-click.
+dofile(modpath .. "/pick.lua")
 
 function grug_gathering.manifest()
 	return catalog.manifest()
