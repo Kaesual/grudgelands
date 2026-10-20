@@ -2559,11 +2559,13 @@ tools](#player-meta-read-by-external-tools).
     rotation per capital, track lengths, timings),
     `init.lua` the runtime: an eight-slot pass of 0.25 s per player
     (`states[name].slot`, assigned on join); since Round 52 three layers
-    (surface, cave, wind) by `grug_core.depth_below_surface` (defined in
+    (surface, cave, wind; 0.52.1 adds the sea) by
+    `grug_core.depth_below_surface` (defined in
     `grug_core/atmosphere_zones.lua` with its per-player column memo) and
     the cave probe (75 `get_node_raw` reads, only deeper than 4 nodes),
     `/ambience debug`; one `get_node_raw` probe for
-    under water (33 reads while a sea or stream bed exists), one
+    under water (33 reads while a stream bed exists), the sea share
+    (`grug_ambience.sea_share`, below), one
     `find_nodes_in_area` out of water for the fire and flowing-water
     loops (none at forges and anvils since Round 45 PT8) (node names from `D.emitter_nodes` plus every flowing liquid whose
     source is default or river water, filled on `register_on_mods_loaded`).
@@ -2591,8 +2593,9 @@ tools](#player-meta-read-by-external-tools).
     and `tools/r52_amb/engine.sh` (Round 52: a scripted walk, the cave
     calibration, the peak heights; `grug_core.depth_stats` beside it);
     fixtures `tools/r52_amb` (groups, curves, layer steps, cave verdict,
-    depth helper and the atmosphere's underground band), `tools/r34_s2`
-    (beds, layers, calls, loops, files) and `tools/r35_m`
+    depth helper and the atmosphere's underground band, the sea rules),
+    `tools/r34_s2` (beds, layers, the coast and diving, calls, loops,
+    files) and `tools/r35_m`
     (capital music, either music or the bed, settings). The "Now playing"
     box (0.45.1): `R.now_playing(m)` is the track in phase "play";
     `sync_now_playing` compares it with `states[name].shown_track` after each
@@ -2630,14 +2633,16 @@ tools](#player-meta-read-by-external-tools).
       (`spawn_policy.lua`) is a separate, absolute rule.
     - **Sound key:** `R.sound_key(D, mood, known, biome)`: a mood in
       `D.overrides` (Battlegrounds, dragon island, ocean) first, then
-      `D.groups[biome]` by the full `grug_` biome id (16 biomes in 9
+      `D.groups[biome]` by the full `grug_` biome id (15 biomes in 8
       groups: temperate, savanna, jungle, badlands, swamp, crags,
-      crags_snowy, blight, beach); an ownerless column is the ocean; the
-      underground mood keeps the last key. `D.region[key]` names the day
+      crags_snowy, blight); an ownerless column is the ocean; the
+      underground mood keeps the last key; a biome in `D.neutral` (the
+      beach, 0.52.1) keeps the last group key, but an override key
+      (`current`, the fifth argument) turns false there. `D.region[key]` names the day
       and night beds (`night = false`: silence at night, the crags; no
       night row: the day bed at night too).
-    - **Three layers** (`st.layers`: surface, cave, wind), each its own
-      handle. `R.layer_levels(D, depth, y, cave)` gives their levels from
+    - **Four layers** (`st.layers`: surface, sea, cave, wind), each its
+      own handle. `R.layer_levels(D, depth, y, cave)` gives their levels from
       `D.layers`, linear, as shares of the bed gain (`R.bed_gain`: the
       player's volume, halved in towns): the surface 1 from 0 to +10
       above the reference, 0 at 15 below and at 60 above; the wind 0 at
@@ -2651,8 +2656,26 @@ tools](#player-meta-read-by-external-tools).
       `LEVEL_STEP` 0.03, fades only when its level moved by 0.03 (the
       dead band), falls to `LEVEL_FLOOR` 0.01 and keeps its handle, and
       is stopped (a fade to 0, which deletes the sound) only after
-      `FLOOR_PASSES` 3 passes at 0. Under water and where music plays
-      every layer is silent.
+      `FLOOR_PASSES` 3 passes at 0. Where music plays every layer is
+      silent; under water only the surface layer plays its `underwater`
+      bed (none ships: silence) at level 1 (`R.surface_levels`).
+    - **The sea layer (0.52.1):** `grug_ambience.sea_share(pos)` returns
+      the share of sea columns among `R.sea_points(D)` (49 columns on a
+      4-node grid within 16 nodes of the player's grid point) and whether
+      the player's own column is sea, from `grug_zones.water_query_at`
+      (`R.SEA_CLASSES`: bay, belt, channel, open sea; never a lake, a
+      swamp pool or a river). Two memos shared by every player (column ->
+      sea, grid point -> share; emptied together at 65,536 entries) make
+      a known spot two lookups. `R.surf_mode` reads `D.region[key].surf`
+      ("only" for the ocean, "none" for the dragon islands, else blend),
+      `R.sea_blend` gives the surf's share of the surface level (share /
+      `D.sea.full_share` 0.5, 1 on a sea column) and `R.surface_levels`
+      splits it between the region bed and the surf. The share is asked
+      only while the surface level is above 0, out of water and without
+      music. `R.bed_should_change`'s fifth argument (the layer plays
+      nothing) takes a new region key at once. `stats.seas`, `sea_us`,
+      `sea_queries` (memo misses) are the comparison figures
+      (`tools/r52_amb/engine.sh coast`).
     - **Cave probe:** `grug_ambience.cave_share(pos)` reads 75 nodes with
       `get_node_raw` on the grid `D.cave.grid_xz` × `grid_y` (5 × 5 × 3,
       a 2-node stride) round the feet; open air is a node that is neither
@@ -2666,7 +2689,8 @@ tools](#player-meta-read-by-external-tools).
       cave).
     - **Calls:** `R.eligible_calls` matches a `D.calls` row by sound key
       (`keys`) or biome (`biomes`, the wolves' pine hills), time of day
-      and the surface layer's level (`surface`, 0.5 for the animals);
+      and the region bed's level (`surface`, 0.5 for the animals; the
+      surface level minus the surf since 0.52.1);
       none under water or in the underground mood. Animals 24–40 nodes
       away, thunder 40–56, one call per 90–240 s (`D.call_gap`).
     - **Loops underground:** the fire and flowing-water search runs on
@@ -2675,7 +2699,7 @@ tools](#player-meta-read-by-external-tools).
     - **`/ambience debug`:** `R.parse_command` accepts `debug`; the
       command toggles one HUD text line for the player who typed it (no
       privilege; left edge, 30 % down) with biome, sound key, depth, cave
-      share and verdict and the three levels, sent only when its text
+      share and verdict, the sea share and the four levels, sent only when its text
       changed, "ambience: off" while the ambience is off or at 0.
 
 ## UI and formspecs

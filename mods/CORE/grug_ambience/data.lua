@@ -68,8 +68,14 @@ D.groups = {
 	grug_crags = "crags",
 	grug_crags_snowy = "crags_snowy",
 	grug_blight = "blight", grug_bone_forest = "blight",
-	grug_beach = "beach",
 }
+
+-- Biomes that keep the sound key the player brings (0.52.1): the beach is
+-- a palette patch that lies mostly far from the sea (seed 12345, a 32-node
+-- grid: 32 of the 44 Gravesalt samples more than 64 nodes from it), so it
+-- plays the neighbouring land's bed, and the surf comes from the sea share
+-- like on every other coast (D.sea).
+D.neutral = {grug_beach = true}
 
 -- Atmosphere moods that override the biome group: the Battlegrounds, the
 -- dragon islands (with their channels) and the open ocean. An ownerless
@@ -79,10 +85,13 @@ D.overrides = {battlegrounds = true, dragon_island = true, ocean = true}
 
 -- Beds: key -> sound names; one is picked at random each time the bed
 -- starts and loops until the state changes. Besides the D.region rows:
--- sea and stream (water near the player; no stream bed ships, so river and
--- lake water keeps the region bed), the wind layer, the cave layer and its
--- deep variant. Page ids "SND" are the Round 52 cuts the user approved
--- (tools/r52_snd/picks.md, the ambience plan's §4 sources).
+-- the sea layer's surf (D.sea), stream (river water near the player; no
+-- stream bed ships, so river and lake water keeps the region bed),
+-- underwater (the surface layer while the eye is in water; none ships yet,
+-- so diving is silent: a row `underwater = {"grug_ambience_underwater"}`
+-- with its approved file is all it takes), the wind layer, the cave layer
+-- and its deep variant. Page ids "SND" are the Round 52 cuts the user
+-- approved (tools/r52_snd/picks.md, the ambience plan's §4 sources).
 D.beds = {
 	temperate = {"grug_ambience_human_meadow", "grug_ambience_elf_forest"}, -- S2 B1.1, B2.3
 	temperate_night = {"grug_ambience_night_forest", "grug_ambience_night_crickets",
@@ -102,11 +111,10 @@ D.beds = {
 		"grug_ambience_crags_birds_clear"}, -- SND n_393693, n_733782, n_855953
 	crags_snowy = {"grug_ambience_snow_afternoon"}, -- SND c_dw2, day and night (§6.2)
 	blight = {"grug_ambience_undead_lake"}, -- S2 B6.3
-	beach = {"grug_ambience_sea_waves"}, -- S2 B11.1
 	-- Ruling 2: the Battlegrounds get a bed of their own.
 	battlegrounds = {"grug_ambience_battlegrounds_fields"}, -- SND n_164272
 	dragon_island = {"grug_ambience_dragon_island_coast"}, -- S2 B8.2
-	-- S2 B11.1: the open ocean, and sea water near the player anywhere.
+	-- S2 B11.1: the open ocean, and the surf of the sea layer (D.sea).
 	ocean = {"grug_ambience_sea_waves"},
 	sea = {"grug_ambience_sea_waves"},
 	-- The layers (ruling 2: the Battlegrounds' gusts are the wind at height).
@@ -118,7 +126,10 @@ D.beds = {
 -- The surface bed by sound key (a group or an override): the day bed and,
 -- optionally, the night bed. A night bed without a shipped file falls back
 -- to the day bed; `night = false` is silence at night (the crags, §6.2). A
--- key without a row has no bed.
+-- key without a row has no bed. `surf` (0.52.1, rules.lua surf_mode): "only"
+-- where the key is the sea itself (the surf plays alone), "none" where the
+-- key has its own coast bed (the dragon islands: no surf beside it); every
+-- other key blends into the surf at the coast.
 D.region = {
 	temperate = {day = "temperate", night = "temperate_night"},
 	savanna = {day = "savanna", night = "savanna_night"},
@@ -128,11 +139,21 @@ D.region = {
 	crags = {day = "crags", night = false},
 	crags_snowy = {day = "crags_snowy"},
 	blight = {day = "blight"},
-	beach = {day = "beach"},
 	battlegrounds = {day = "battlegrounds"},
-	dragon_island = {day = "dragon_island"},
-	ocean = {day = "ocean"},
+	dragon_island = {day = "dragon_island", surf = "none"},
+	ocean = {day = "ocean", surf = "only"},
 }
+
+-- The sea layer (0.52.1, round52-ambience-plan.md §8): the surf, by the
+-- share of sea columns (grug_zones.water_query_at: bay, belt, channel, open
+-- sea; never a lake, a river or a swamp pool) among the columns every
+-- `step` nodes within `radius` of the player (49 samples). On land the surf
+-- takes share / full_share of the surface level and the region bed the
+-- rest: a straight coast reads about a half at the water line (full surf)
+-- and nothing `radius` nodes inland. On a sea column, boat or swimming or
+-- flying over it, only the surf plays. Both follow the surface layer's
+-- height curve (D.layers.surface).
+D.sea = {step = 4, radius = 16, full_share = 0.5}
 
 -- The layers' levels (ruling 7, linear throughout), as shares of the bed
 -- level (D.gains.bed times the player's volume, halved in towns), by the

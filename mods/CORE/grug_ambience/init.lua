@@ -5,13 +5,17 @@
 --     (round52-ambience-plan.md): the SURFACE bed by the sound group of the
 --     biome under the player (or a zone override by the atmosphere mood the
 --     player carries: the Battlegrounds, the dragon islands, the open
---     ocean), a night bed after dusk where one fits, sea water near the
---     player; the CAVE bed in real caves (a sampled open-air probe tells a
---     cave from a dug tunnel) and its deep variant; the WIND at height and
---     on high peaks. Their levels follow the height relative to the terrain
---     (grug_core.depth_below_surface); in start towns and capitals every
---     layer plays at half gain. A bed change crossfades (core.sound_fade).
---     Under water and where music plays (Round 35) every layer is silent;
+--     ocean), a night bed after dusk where one fits; the SEA layer (0.52.1),
+--     the surf, which takes over the surface level at the coast by the
+--     share of sea columns round the player (the map's water query, so a
+--     lake never plays it); the CAVE bed in real caves (a sampled open-air
+--     probe tells a cave from a dug tunnel) and its deep variant; the WIND
+--     at height and on high peaks. Their levels follow the height relative
+--     to the terrain (grug_core.depth_below_surface); in start towns and
+--     capitals every layer plays at half gain. A bed change crossfades
+--     (core.sound_fade). Where music plays (Round 35) every layer is
+--     silent; under water only the surface layer's underwater bed plays
+--     (silence while none ships);
 --   * sparse calls by sound key and time of day, a per-player timer, placed
 --     at a point around the player (distant thunder on the dragon islands);
 --   * loops at hearths and camp fires and flowing water (never at a water
@@ -42,9 +46,11 @@
 -- Cost: one pass per player every 2 s, spread over eight slots of 0.25 s
 -- (AGENTS.md Round 32): a mood and town lookup, the depth below the surface
 -- (from the player's column memo in grug_core, a zone query only on a new
--- node column), one get_node_raw read for under water (33 while a sea or
--- stream bed exists), 75 more for the cave probe only deeper than 4 nodes
--- and only after a move of 2 nodes or every third pass, one
+-- node column), one get_node_raw read for under water (33 while a stream
+-- bed exists), the sea share where the surface layer is audible (50 table
+-- lookups in a memo shared by every player; a water query only for a
+-- column never asked before), 75 more reads for the cave probe only deeper
+-- than 4 nodes and only after a move of 2 nodes or every third pass, one
 -- find_nodes_in_area out of water, a few sound packets when something
 -- changes. grug_ambience.stats and grug_core.depth_stats hold comparison
 -- figures for the reports (tools/r52_amb probe). `/ambience debug` shows a
@@ -101,9 +107,10 @@ grug_ambience.available, grug_ambience.rotations = available, rotations
 -- Comparison figures: passes, their summed microseconds, the node searches,
 -- their microseconds and the positions they returned, sounds started,
 -- pushes.
--- Round 52: the cave probes and their microseconds.
+-- Round 52: the cave probes and their microseconds. 0.52.1: the sea shares,
+-- their microseconds and the water queries they asked (memo misses).
 local stats = {passes = 0, us = 0, finds = 0, find_us = 0, found = 0, plays = 0,
-	pushes = 0, probes = 0, probe_us = 0}
+	pushes = 0, probes = 0, probe_us = 0, seas = 0, sea_us = 0, sea_queries = 0}
 grug_ambience.stats = stats
 
 local function now_seconds()
@@ -115,14 +122,15 @@ end
 -- ---------------------------------------------------------------------------
 
 -- name -> {slot, music_on, music_volume, ambience_on, ambience_volume,
--- layers = {surface, cave, wind} (each a rules layer state plus handle and
--- gain; the surface one also {want, seen, underwater, music}), sound_key
--- (the group or override last known), cave = {cave, want, seen, share, px,
--- py, pz, age}, deep (the cave layer plays the deep bed), emitters = {[hash] = {handle, gain, kind}}, next_call, music
--- = rules music state, track_handle, track_gain, shown_track (the track the
+-- layers = {surface, sea, cave, wind} (each a rules layer state plus handle
+-- and gain; the surface one also {want, seen, underwater, music}),
+-- sound_key (the group or override last known), cave = {cave, want, seen,
+-- share, px, py, pz, age}, deep (the cave layer plays the deep bed),
+-- emitters = {[hash] = {handle, gain, kind}}, next_call, music = rules
+-- music state, track_handle, track_gain, shown_track (the track the
 -- minimap's box names), debug = {id, text} while /ambience debug is on}
 local states = {}
-local LAYERS = {"surface", "cave", "wind"}
+local LAYERS = {"surface", "sea", "cave", "wind"}
 
 local META = {
 	music_off = "grug_ambience:music_off",
@@ -316,7 +324,10 @@ end
 -- ---------------------------------------------------------------------------
 
 -- Content id -> "sea" (default water) or "stream" (river water: rivers and
--- lakes, r7_content.lua), filled once every node is registered.
+-- lakes, r7_content.lua), filled once every node is registered. Only the
+-- eye's node and the stream reads use it: default water is also the water
+-- of authored lakes and swamp pools, so since 0.52.1 the sea near the
+-- player comes from the map (sea_share below), never from a node.
 local water_kind = {}
 core.register_on_mods_loaded(function()
 	for node, kind in pairs({["default:water_source"] = "sea",
@@ -329,9 +340,8 @@ end)
 
 -- Sixteen columns round the player (eight directions at 3 and 7 nodes),
 -- read one and two nodes below the feet: a bank one or two nodes above the
--- water still hears it. Thresholds: a sixth of the 32 reads sea, or three
--- river reads, make the water bed. Read only when a sea or stream bed
--- exists (none this round).
+-- water still hears it. Three river reads of the 32 make the stream bed.
+-- Read only when a stream bed exists (none ships).
 local RING = {}
 for _, radius in ipairs({3, 7}) do
 	for step = 0, 7 do
@@ -340,35 +350,112 @@ for _, radius in ipairs({3, 7}) do
 			floor(math.sin(angle) * radius + 0.5)}
 	end
 end
-local SEA_READS, STREAM_READS = 6, 3
-local WATER_BEDS = D.beds.sea ~= nil or D.beds.stream ~= nil
+local STREAM_READS = 3
+local STREAM_BED = D.beds.stream ~= nil
 local EYE_HEIGHT = 1.625
 local get_node_raw = core.get_node_raw
 
--- Returns the water near the player ("sea", "stream" or nil) and whether
--- the eye is under water.
+-- Returns the water near the player ("stream" or nil) and whether the eye
+-- is under water (any water: the sea, a lake, a river).
 local function probe_water(pos)
 	local x, y, z = floor(pos.x + 0.5), floor(pos.y + 0.5), floor(pos.z + 0.5)
 	if water_kind[get_node_raw(x, floor(pos.y + EYE_HEIGHT + 0.5), z)] then
 		return nil, true
 	end
-	if not WATER_BEDS then return nil, false end
-	local sea, stream = 0, 0
+	if not STREAM_BED then return nil, false end
+	local stream = 0
 	for index = 1, #RING do
 		local offset = RING[index]
 		for dy = -2, -1 do
-			local kind = water_kind[get_node_raw(x + offset[1], y + dy, z + offset[2])]
-			if kind == "sea" then
-				sea = sea + 1
-			elseif kind == "stream" then
+			if water_kind[get_node_raw(x + offset[1], y + dy, z + offset[2])] == "stream" then
 				stream = stream + 1
 			end
 		end
 	end
-	if sea >= SEA_READS then return "sea", false end
 	if stream >= STREAM_READS then return "stream", false end
 	return nil, false
 end
+
+-- ---------------------------------------------------------------------------
+-- Sea share (0.52.1, round52-ambience-plan.md §8)
+-- ---------------------------------------------------------------------------
+
+-- grug_zones is installed by grug_mapgen after every CORE file has loaded
+-- (grug_core/zone_authority.lua), so it is looked up on first use, like
+-- atmosphere_zones.lua does.
+local zones_api
+local function zone_api()
+	if zones_api then return zones_api end
+	local installed = grug_core.zone_authority_installed
+	if not (installed and installed()) then return nil end
+	zones_api = rawget(_G, "grug_zones")
+	return zones_api
+end
+
+-- Two memos shared by every player, since the world's layout is fixed for
+-- the life of the server and an entry never goes stale: node column ->
+-- whether it is sea (R.SEA_CLASSES), and grid point -> the share round it.
+-- A water query costs some 7-10 us on a column never asked and below 1 us
+-- again (engine.sh coast, seed 12345); a pass whose grid point is known
+-- (standing, or ground walked before) costs two lookups. Both are emptied
+-- at SEA_MEMO_MAX entries together (a few MB at most).
+local SEA_MEMO_MAX = 65536
+local sea_memo, share_memo, sea_memo_count = {}, {}, 0
+local SEA_CLASSES = R.SEA_CLASSES
+
+-- An exact number key per node column: |x|, |z| stay far below 2^24.
+local function column_key(x, z)
+	return (x + 16777216) * 33554432 + (z + 16777216)
+end
+
+-- Counts one new entry, emptying both memos first when they are full.
+local function memo_room()
+	if sea_memo_count >= SEA_MEMO_MAX then sea_memo, share_memo, sea_memo_count = {}, {}, 0 end
+	sea_memo_count = sea_memo_count + 1
+end
+
+local function sea_column(zones, x, z)
+	local key = column_key(x, z)
+	local sea = sea_memo[key]
+	if sea == nil then
+		sea = SEA_CLASSES[zones.water_query_at(x, z) or ""] == true
+		stats.sea_queries = stats.sea_queries + 1
+		memo_room()
+		sea_memo[key] = sea
+	end
+	return sea
+end
+
+local SEA_POINTS = R.sea_points(D)
+local SEA_STEP = D.sea.step
+
+-- The share of sea columns among the samples round `pos` (on a grid of
+-- D.sea.step nodes, so every player near one grid point shares it) and
+-- whether the player's own column is sea; nil while no zone authority
+-- exists.
+local function sea_share(pos)
+	local zones = zone_api()
+	if not zones then return nil end
+	local started = core.get_us_time()
+	local gx, gz = floor(pos.x / SEA_STEP + 0.5) * SEA_STEP, floor(pos.z / SEA_STEP + 0.5) * SEA_STEP
+	local key = column_key(gx, gz)
+	local share = share_memo[key]
+	if not share then
+		local sea = 0
+		for index = 1, #SEA_POINTS do
+			local point = SEA_POINTS[index]
+			if sea_column(zones, gx + point[1], gz + point[2]) then sea = sea + 1 end
+		end
+		share = sea / #SEA_POINTS
+		memo_room()
+		share_memo[key] = share
+	end
+	local on_sea = sea_column(zones, floor(pos.x + 0.5), floor(pos.z + 0.5))
+	stats.seas = stats.seas + 1
+	stats.sea_us = stats.sea_us + (core.get_us_time() - started)
+	return share, on_sea
+end
+grug_ambience.sea_share = sea_share
 
 -- ---------------------------------------------------------------------------
 -- Cave probe (Round 52 ruling 6, round52-ambience-plan.md §3.2 step 6)
@@ -432,8 +519,10 @@ end
 -- ---------------------------------------------------------------------------
 
 -- One small HUD text line, top left, for the player who switched it on: the
--- biome, the sound group, the depth, the cave share and verdict and the
--- three layers' levels (`levels`: surface, cave, wind). Sent only when the
+-- biome, the sound group, the depth, the cave share and verdict, the sea
+-- share ("on" on a sea column, "-" where it is not asked) and the four
+-- layers' levels (`levels`: surface, sea, cave, wind; "surface" is the
+-- region bed's, or the underwater bed's while diving). Sent only when the
 -- shown text changed.
 -- Sends `text` when it differs from the line shown.
 local function set_debug_text(player, st, text)
@@ -446,14 +535,18 @@ end
 -- The line while the ambience is off or at volume 0 (no pass runs then).
 local DEBUG_OFF = "ambience: off"
 
-local function show_debug(player, st, biome, depth, levels)
+local function percent(value) return floor(value * 100 + 0.5) end
+
+local function show_debug(player, st, biome, depth, share, on_sea, levels)
 	local c = st.cave
-	local text = ("ambience: %s / %s | depth %s | cave %s %s | surface %d%% cave %d%% wind %d%%"):format(
+	local text = ("ambience: %s / %s | depth %s | cave %s %s | sea share %s | " ..
+		"surface %d%% sea %d%% cave %d%% wind %d%%"):format(
 		biome and biome:gsub("^grug_", "") or "-", tostring(st.sound_key or "-"),
 		depth and ("%.1f"):format(depth) or "-",
-		c.share and ("%d%%"):format(floor(c.share * 100 + 0.5)) or "-",
-		c.cave and "cave" or "no", floor(levels[1] * 100 + 0.5),
-		floor(levels[2] * 100 + 0.5), floor(levels[3] * 100 + 0.5))
+		c.share and ("%d%%"):format(percent(c.share)) or "-",
+		c.cave and "cave" or "no",
+		on_sea and "on" or share and ("%d%%"):format(percent(share)) or "-",
+		percent(levels[1]), percent(levels[2]), percent(levels[3]), percent(levels[4]))
 	set_debug_text(player, st, text)
 end
 
@@ -552,9 +645,9 @@ end
 
 local scratch, call_state, levels = {}, {}, {}
 
--- The cave and wind layers' beds: the deep cave bed below D.deep_y (else
--- the cave bed), the wind; false when none ships.
-local CAVE_KEYS, DEEP_CAVE_KEYS, WIND_KEYS = {"cave"}, {"cave_deep", "cave"}, {"wind"}
+-- The sea, cave and wind layers' beds: the surf, the deep cave bed below
+-- D.deep_y (else the cave bed), the wind; false when none ships.
+local SEA_KEYS, CAVE_KEYS, DEEP_CAVE_KEYS, WIND_KEYS = {"sea"}, {"cave"}, {"cave_deep", "cave"}, {"wind"}
 
 local function evaluate(name, st, now, night)
 	local player = core.get_player_by_name(name)
@@ -571,27 +664,38 @@ local function evaluate(name, st, now, night)
 			depth, column = grug_core.depth_below_surface(pos, name)
 		end
 		local biome = column and column.biome
-		local key = R.sound_key(D, mood, column ~= nil, biome)
+		local key = R.sound_key(D, mood, column ~= nil, biome, st.sound_key)
 		if key ~= nil then st.sound_key = key end
 		local water, underwater = probe_water(pos)
 		local music = R.music_active(st.music)
 		local cave = cave_pass(st, pos, depth)
 		local surface_level, wind_level, cave_level = R.layer_levels(D, depth, pos.y, cave)
 		local base = R.bed_gain(D, st.ambience_volume, town)
-		-- The surface bed: the sound key's bed, the sea, silence under water;
-		-- the beds' hysteresis; music and diving switch at once.
+		-- The sea share: only where the surf can be heard and blends.
+		local quiet = underwater or music
+		local mode, share, on_sea = R.surf_mode(D, st.sound_key), nil, nil
+		if not quiet and mode == "blend" and surface_level > 0 then
+			share, on_sea = sea_share(pos)
+		end
+		local region_level, sea_level = R.surface_levels(surface_level,
+			R.sea_blend(D, mode, share, on_sea), underwater)
+		-- The surface bed: the sound key's bed, the underwater bed while
+		-- diving; the beds' hysteresis; music and diving switch at once.
 		scratch.key, scratch.night, scratch.water = st.sound_key, night, water
 		scratch.underwater = underwater
 		local layers = st.layers
 		local surface = layers.surface
 		local wanted = R.bed_wanted(R.pick_bed(D, R.bed_keys(D, scratch), available), music)
 		local surface_key = surface.key
-		if wanted ~= nil and R.bed_should_change(surface, wanted, underwater, music) then
+		if wanted ~= nil and R.bed_should_change(surface, wanted, underwater, music,
+				not surface.playing) then
 			surface_key = wanted
 		end
-		apply_layer(name, surface, R.layer_step(surface, surface_key, surface_level, base))
-		-- The cave and the wind: silent under water and where music plays.
-		local quiet = underwater or music
+		apply_layer(name, surface, R.layer_step(surface, surface_key, region_level, base))
+		-- The sea, the cave and the wind: silent under water and where music
+		-- plays.
+		local sea_key = not quiet and R.pick_bed(D, SEA_KEYS, available)
+		apply_layer(name, layers.sea, R.layer_step(layers.sea, sea_key, sea_level, base))
 		st.deep = R.deep_cave(D, st.deep, pos.y)
 		local cave_key = not quiet and R.pick_bed(D, st.deep and DEEP_CAVE_KEYS or CAVE_KEYS, available)
 		apply_layer(name, layers.cave, R.layer_step(layers.cave, cave_key, cave_level, base))
@@ -601,7 +705,8 @@ local function evaluate(name, st, now, night)
 			st.next_call = now + R.next_call_delay(D, random)
 			call_state.key, call_state.biome, call_state.night = st.sound_key, biome, night
 			call_state.underwater, call_state.underground = underwater, mood == "underground"
-			call_state.surface = surface_level
+			-- The region bed's level: no owl over the sea.
+			call_state.surface = region_level
 			local calls = R.eligible_calls(D, call_state, available)
 			if #calls > 0 then play_call(name, st, pos, calls[random(1, #calls)]) end
 		end
@@ -613,8 +718,8 @@ local function evaluate(name, st, now, night)
 			update_emitters(name, st, pos)
 		end
 		if st.debug then
-			levels[1], levels[2], levels[3] = surface_level, cave_level, wind_level
-			show_debug(player, st, biome, depth, levels)
+			levels[1], levels[2], levels[3], levels[4] = region_level, sea_level, cave_level, wind_level
+			show_debug(player, st, biome, depth, share, on_sea, levels)
 		end
 	elseif st.debug then
 		set_debug_text(player, st, DEBUG_OFF)
@@ -650,7 +755,7 @@ core.register_on_joinplayer(function(player)
 	local now = now_seconds()
 	join_counter = join_counter + 1
 	local st = {slot = join_counter % R.SLOTS + 1,
-		layers = {surface = new_layer(), cave = new_layer(), wind = new_layer()},
+		layers = {surface = new_layer(), sea = new_layer(), cave = new_layer(), wind = new_layer()},
 		cave = {seen = 0, age = 0}, emitters = {},
 		next_call = now + R.next_call_delay(D, random)}
 	read_settings(player, st)
@@ -742,7 +847,7 @@ local COMMAND_HELP = {
 	music = "Music (it plays in the six capitals): switch on or off, or set the " ..
 		"volume in percent (default " .. R.DEFAULT_VOLUME.music .. ")",
 	ambience = "Ambience: switch on or off, set the volume in percent, or " ..
-		"toggle a debug line (biome, depth, cave, layer levels)",
+		"toggle a debug line (biome, depth, cave, sea share, layer levels)",
 }
 local COMMAND_PARAMS = {music = "[on|off|<0-100>]", ambience = "[on|off|<0-100>|debug]"}
 
