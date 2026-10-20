@@ -285,8 +285,6 @@ grug_abilities = {
 	evading_target = function() return false end,
 	support_refused = function() return false end,
 	flash = function() end,
-	cancel_bow_draw = function() end,
-	start_bow_draw = function() return true end,
 	try_cast = function(_, def) casts[#casts + 1] = def.id; return true end,
 }
 local function wielded_def()

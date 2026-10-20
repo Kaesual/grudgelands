@@ -31,19 +31,21 @@ local CLASSES = {
 		{id = "hamstring", hold = 2.5}, {id = "taunt", hold = 0.3},
 		{id = "hold_ground", hold = 0.3}, {id = "charge", hold = 0.3},
 	}},
+	-- Round 53: the new kits (the Mage's and the Priest's basic attack
+	-- replaced Strike; Cinderfall, Glacial Ward and Pinning Shot are retired).
 	{class = "mage", hand = {"grug_weapon", "staff"}, phases = {
-		{id = "strike", hold = 3.0}, {id = "fireball", hold = 3.5},
-		{id = "ice_nova", hold = 2.0}, {id = "cinderfall", hold = 0.3},
-		{id = "glacial_ward", hold = 0.3}, {id = "blink", hold = 0.3},
+		{id = "fiery_spark", hold = 3.0}, {id = "fireball", hold = 3.5},
+		{id = "ice_wave", hold = 2.0}, {id = "meteor", hold = 0.3},
+		{id = "rime_mantle", hold = 0.3}, {id = "blink", hold = 0.3},
 	}},
 	{class = "priest", hand = {"grug_weapon", "staff"}, hp = 30, phases = {
-		{id = "strike", hold = 3.0}, {id = "smite", hold = 2.5},
+		{id = "smite", hold = 3.0},
 		{id = "heal", hold = 0.3}, {id = "shield_spell", hold = 0.3},
 		{id = "mend", hold = 0.3, gap = 14}, {id = "word_of_ruin", hold = 0.3},
 	}},
 	{class = "scout", hand = {"grug_offhand", "dagger"}, bow = true, phases = {
 		{id = "strike", hold = 2.5}, {id = "snare_shot", hold = 0.3},
-		{id = "pinning_shot", hold = 0.3}, {id = "opening", hold = 2.5},
+		{id = "true_draw", hold = 0.3}, {id = "opening", hold = 2.5},
 		{id = "sidestep", hold = 0.3}, {id = "sprint", hold = 0.3},
 	}},
 }

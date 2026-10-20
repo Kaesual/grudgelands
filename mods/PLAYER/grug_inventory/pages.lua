@@ -352,8 +352,8 @@ local function stats_content(player)
 		and grug_classes.get_pool_breakdown(player, "mana") or nil
 	local armor = grug_core.get_armor_rating_breakdown and
 		grug_core.get_armor_rating_breakdown(player) or {
-			base = grug_core.get_armor_rating(player), multiplier = 1,
-			result = grug_core.get_armor_rating(player), emergency = 0}
+			base = grug_core.get_armor_rating(player),
+			result = grug_core.get_armor_rating(player)}
 	local armor_reduction = grug_core.armor_reduction(armor.result,
 		grug_core.get_player_level(player), 0.70) * 100
 	local crit = grug_classes.get_crit_chance(player) * 100

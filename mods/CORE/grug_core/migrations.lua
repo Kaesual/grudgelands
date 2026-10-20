@@ -239,6 +239,27 @@ local function character_0_48_0(player)
 	end
 end
 
+--
+-- 0.53.0, the character part. The online part of the migration step 0.53.0
+-- (Round 53, the new classes; tools/migration/steps/v0_53_0.py, which
+-- deletes the stored talents and talent windows and the retired skills
+-- offline and sets the marker on every character; round53-plan.md K11). At
+-- the character's next join, before every other join callback, a character
+-- with a class gets one chat line and nothing else. The skills the new kits
+-- lock or swap are the game's own join's work (grug_abilities
+-- normalize_kit), the lower maximum HP the stats' join (apply_stats clamps).
+-- Safe to run again: it only sends the line. grug_classes loads after
+-- grug_core; its API is looked up at the join.
+
+local TALENTS_RESET = "Your talent points have been reset."
+
+local function character_0_53_0(player)
+	local classes = rawget(_G, "grug_classes")
+	if classes and classes.get_class(player) then
+		core.chat_send_player(player:get_player_name(), TALENTS_RESET)
+	end
+end
+
 grug_core.migrations = {
 	-- The declaration's `migrate` list, ascending: the guard refuses a world
 	-- whose record lies before one of them. tools/check_upgrade.py proves this
@@ -248,6 +269,7 @@ grug_core.migrations = {
 		"0.45.0", -- mixtures deleted, craft grid emptied, item level pinned; a join part
 		"0.47.0", -- gathering tools' stored capabilities rebuilt; a join part
 		"0.48.0", -- bags halved, what no longer fits mailed; a join part
+		"0.53.0", -- talents reset, talent windows and retired skills gone; a join part
 	},
 	-- Online work, only for a step that leaves some:
 	--   handlers["x.y.z"] = {
@@ -258,5 +280,6 @@ grug_core.migrations = {
 		["0.45.0"] = {character = character_0_45_0},
 		["0.47.0"] = {character = character_0_47_0},
 		["0.48.0"] = {character = character_0_48_0},
+		["0.53.0"] = {character = character_0_53_0},
 	},
 }

@@ -196,9 +196,9 @@ for id in pairs(registered) do
 	end
 end
 check(count >= 21, "A at least 21 registered abilities (" .. count .. ")")
--- One-directional while round K's lanes register the new skills
--- (round53-plan.md K14): a cue may wait for its skill; INTEG restores the
--- reverse check when the retired rows go.
+-- And the reverse (round53-plan.md K14, restored by INTEG once the retired
+-- rows went): no cue without its registered skill.
+for id in pairs(cues) do check(registered[id], "A cue for a registered ability: " .. id) end
 -- The projectile abilities and their projectiles: every one sounds through
 -- a lane hook at launch and hit.
 local projectiles = 0

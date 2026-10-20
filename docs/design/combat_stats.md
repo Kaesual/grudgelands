@@ -47,9 +47,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Class-neutral base pool** `P(L)` =
   `round(20 + 5×L + 0.66×L²)`, with `L` clamped to 1–60.
 - **Max HP** = `round(P(L) × class factor × (1 + gear% + talent%))`.
-  Class factors are Warrior **1.20**, Priest **1.00**, Mage **0.90**; the
-  Scout has no factor of its own and takes the default **1.00**
-  (`grug_classes.get_hp_class_factor`).
+  Class factors are Warrior **1.20**, Scout **1.00**, Priest **0.80**,
+  Mage **0.80** (since 0.53.0; `grug_classes.get_hp_class_factor`).
 - **Mana** = `round(P(L) × (1 + gear% + talent%))` for Mage/Priest.
   The Warrior uses flat Rage 0–100. Strength never adds HP and Intelligence
   never adds mana.
@@ -191,10 +190,10 @@ Anchors (computed):
 
 | Level | Base pool | Warrior HP | Priest HP | Mage HP | Caster mana | Warrior Str |
 |------:|----------:|-----------:|----------:|--------:|------------:|------------:|
-| 1 | 26 | 31 | 26 | 23 | 26 | 10 |
-| 10 | 136 | 163 | 136 | 122 | 136 | 37 |
-| 30 | 764 | 917 | 764 | 688 | 764 | 97 |
-| 60 | 2696 | 3235 | 2696 | 2426 | 2696 | 187 |
+| 1 | 26 | 31 | 21 | 21 | 26 | 10 |
+| 10 | 136 | 163 | 109 | 109 | 136 | 37 |
+| 30 | 764 | 917 | 611 | 611 | 764 | 97 |
+| 60 | 2696 | 3235 | 2157 | 2157 | 2696 | 187 |
 
 Crit/dodge are server-side rolls in our own damage pipeline (`grug_core`,
 mcl_damage-style, unified damage reasons). Flat caps, no

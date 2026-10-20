@@ -180,8 +180,7 @@ grug_projectiles.register(ARROW_PROJECTILE, {
 				if opos then
 					grug_core.particles.play("split_shot_splinter", {
 						from = vector.offset(tpos, 0, 1, 0), to = vector.offset(opos, 0, 1, 0)})
-					-- An area hit: no crit, as the calculator models it
-					-- (combat.lua honours no_crit from INTEG part 2 on).
+					-- An area hit: no crit, as the calculator models it.
 					grug_core.deal_ability_damage(owner, obj, data.splash, {
 						attacker_level = attacker_level, action_id = data.action_id,
 						no_crit = true})
@@ -613,8 +612,7 @@ grug_abilities.register_ability({
 		local action = {}
 		for _, obj in ipairs(grug_core.area.cone(user, {radius = 3, angle = 90, cap = 3,
 				filter = grug_abilities.target_filter(user, "hostile")})) do
-			-- An area hit: no crit (the calculator's model, combat.lua's
-			-- no_crit from INTEG part 2 on).
+			-- An area hit: no crit (the calculator's model).
 			grug_core.deal_ability_damage(user, obj, damage, {action_id = action, no_crit = true})
 		end
 		grug_core.particles.play("flourish", {caster = user:get_pos(),

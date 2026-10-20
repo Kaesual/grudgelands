@@ -1,0 +1,31 @@
+PASS  setup   the 0.52.1 commit e4d5c9d5 exported (its game and launcher)
+PASS  setup   boot S (0.52.1): a new world, all six characters joined, were built and left
+PASS  setup   0.52.1 built the five classed characters at level 30 with talents spent, at their race start
+PASS  setup   0.52.1 saved the spent talents, the used respec and the stored talent windows of every classed character (none for walker)
+PASS  setup   0.52.1 saved the retired skills on the shown hotbar, on the other layout and in a bag (mage, sleeper, scout: 8 stacks)
+PASS  setup   0.52.1 saved the Priest holding both Strike and Smite on the shown hotbar
+PASS  guard   boot R (0.53.0): the 0.52.1 world without the tool is refused, naming the step 0.53.0 and the command line
+PASS  guard   the refused start wrote nothing
+PASS  tool    --check: world 0.52.1, due [0.53.0], nothing written
+PASS  tool    migrate: start, step_start, step_done, done; exit 0
+PASS  tool    step 0.53.0: six markers, 16 meta deletions, three inventories
+PASS  step    player meta: the talents, the used respec and every stored talent window gone, the marker on all six, nothing else changed
+PASS  step    inventories: exactly the eight retired skills gone (hotbar, other layout, bag), every other stack as it was
+PASS  step    the record is 0.53.0
+PASS  step    nothing else changed: the characters' meta and item rows and the record
+PASS  tool    --check after: world 0.53.0, nothing due
+PASS  boot    boot A (0.53.0): starts from 0.53.0; five characters joined with the marker and left
+PASS  boot    after the join: every marker cleared
+PASS  chat    each classed character got "Your talent points have been reset." exactly once; walker did not
+PASS  chat    nothing more: no other chat line about talents or the migration
+PASS  talents all points free: nothing spent, the level's 15 points available
+PASS  talents no stored talent window or used respec after the join
+PASS  kit     no retired skill in any list after the join
+PASS  kit     every skill left on either hotbar is unlocked (locked ones gone)
+PASS  hp      class factors 1.2 / 0.8 / 0.8 / 1.0: the Mage's and Priest's maximum lower than at 0.52.1 and their full HP clamped to it; maximum = base pool x factor
+PASS  kit     the game's join swapped the Mage's Strike for Fiery Spark and Ice Nova for Ice Wave on layout A and B; the Priest keeps Smite
+PASS  kit     the Priest's Strike slot is empty (Smite held already; Q4 accepted)
+PASS  boot    saved after boot A: the joined characters' markers gone; sleeper (offline) keeps its marker and its migrated inventory
+PASS  again   boot B: mage joins again: no chat line about the reset, the lists as boot A left them
+
+29 checks, 0 failed

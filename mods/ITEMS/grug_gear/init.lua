@@ -547,9 +547,6 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			_grug_bracket = bracket,
 			_grug_quality = 1,
 			_grug_hands = w.hands,
-			-- Full-draw time, the one owner of the base value; Fletching and
-			-- the draw-speed affix shorten it (grug_abilities/scout.lua).
-			_grug_bow_draw_time = w.bow and 2.5 or nil,
 			_grug_bow_range = w.bow and 25 or nil,
 		})
 		buy_price[itemname] = br.price.weapon

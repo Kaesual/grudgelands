@@ -515,8 +515,7 @@ grug_abilities.register_ability({
 				local action_id = {}
 				for _, obj in ipairs(area.query(at, {radius = v.radius, cap = CENSURE_CAP,
 						filter = target_filter(caster, "hostile")})) do
-					-- Areas never crit (the calculator); combat.lua honours
-					-- no_crit from INTEG's part 2, until then it is ignored.
+					-- Areas never crit (the calculator).
 					grug_core.deal_ability_damage(caster, obj, v.damage,
 						{action_id = action_id, no_crit = true})
 				end

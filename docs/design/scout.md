@@ -145,8 +145,8 @@ The active contract is:
   Mana. Every bow skill deals a share of R (bow damage + Dexterity ranged
   bonus), floored once after the level scalar (Round 35). The bow's OWN
   attack-speed affix divides Loose's 0.85 s cadence, to at least 0.65 s;
-  the Melee blade's affixes do not (Round 28). The bow definition still
-  carries `_grug_bow_draw_time`, which nothing reads since Round 53. One bow per material tier,
+  the Melee blade's affixes do not (Round 28). Its old draw time
+  (`_grug_bow_draw_time`) went with the draw in Round 53. One bow per material tier,
   material-named under §3.0.3. Arrows craft 100 (one stack) per batch from 1
   Bronze Bar + 2 Sticks diagonally, without feathers (Round 21, approved
   2026-09-24; one stack since Round 28). Arrows are Basic recipes; the

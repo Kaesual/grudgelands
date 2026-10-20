@@ -166,8 +166,6 @@ do
 		is_unlocked = function() return true end,
 		get_range = function(_, def) return def.range end,
 		flash = function(_, text) flashes[#flashes + 1] = text end,
-		cancel_bow_draw = function() end,
-		start_bow_draw = function() return true end,
 		support_refused = function(user, obj)
 			return obj ~= nil and obj ~= user and obj:is_player() and obj:get_hp() > 0
 				and grug_factions.same_faction(user, obj)

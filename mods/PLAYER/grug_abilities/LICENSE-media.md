@@ -9,8 +9,8 @@
   final HUD sprite (own work), **CC0**.
 
 - `crosshair.png`, `object_crosshair.png` (byte-identical 21×21),
-  `grug_abilities_draw_ring_00.png` … `_15.png` and
-  `grug_abilities_draw_ring_full.png` (35×35): crosshair and bow draw ring
+  `grug_abilities_draw_ring_00.png` … `_15.png` (35×35): crosshair and
+  progress ring (the bow draw's full frame went with the draw in Round 53)
   drawn procedurally with Pillow by
   `tools/pt_fixes/lane_b/gen_crosshair_textures.py` (own work, 2026-09-28),
   **CC0**. Re-run the script to change them. The eating progress ring uses
@@ -42,9 +42,10 @@ Round 31 renamed four skills; their files are unchanged renamed copies
 `grug_abilities_skill_heal.png`, `_shield_spell.png`, `_mend.png` and
 `_ice_nova.png`.
 Round 52 replaced 19 of these files with redrawn icons (the section "Round 52
-redrawn skill icons" below); only `grug_abilities_skill_cinderfall.png`,
-`_glacial_ward.png` and `_pinning_shot.png` are still the Round 18 art, and
-the manifest's hashes hold for those three only.
+redrawn skill icons" below); the last three Round 18 icons,
+`grug_abilities_skill_cinderfall.png`, `_glacial_ward.png` and
+`_pinning_shot.png`, went with their retired skills in Round 53, so the
+manifest's hashes hold for none of the files any more.
 
 ## Round 52 weapon element overlays — CC0
 

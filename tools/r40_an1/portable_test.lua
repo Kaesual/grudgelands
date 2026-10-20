@@ -201,14 +201,19 @@ local INIT = "mods/PLAYER/grug_abilities/init.lua"
 local play_skill_pose = assert(loadstring(cut(INIT,
 	"\n(grug_abilities%.SKILL_POSES = {.-\nend)\n", "SKILL_POSES") ..
 	"\nreturn play_skill_pose", "=SKILL_POSES"))()
--- One-directional while round K's lanes register the new skills
--- (round53-plan.md K14): every row names a pose with clips, Strike (the
--- fallback) poses nothing; no exact table and no count.
+-- Every row names a pose with clips, Strike (the fallback) poses nothing; no
+-- exact table and no count. The reverse (round53-plan.md K14, restored by
+-- INTEG): every row's skill has a WEAPON_FX row, which tools/r52_wfx M
+-- holds to the registered skills, so no row outlives its skill.
 do
+	local fx = assert(loadstring("local grug_abilities = {}\n" .. cut(INIT,
+		"\n(grug_abilities%.WEAPON_FX = %b{})", "WEAPON_FX") ..
+		"\nreturn grug_abilities.WEAPON_FX", "=WEAPON_FX"))()
 	local n = 0
 	for id, pose in pairs(grug_abilities.SKILL_POSES) do
 		n = n + 1
 		check(GV.POSE_CLIPS[pose] ~= nil, "S " .. id .. "'s pose " .. pose .. " has clips")
+		check(fx[id] ~= nil, "S " .. id .. " is a skill (it has a WEAPON_FX row)")
 	end
 	check(n >= 1, "S skills pose")
 	eq(grug_abilities.SKILL_POSES.strike, nil, "S Strike plays no skill pose")

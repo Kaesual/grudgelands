@@ -192,7 +192,6 @@ grug_abilities = {
 	evading_target = function() return false end,
 	support_refused = function(_, ref) return ref == refused end,
 	flash = function(_, msg) flashes[#flashes + 1] = msg end,
-	cancel_bow_draw = function() end,
 	try_cast = function(_, def)
 		casts[#casts + 1] = def.id
 		cooldown_until[def.id] = clock + 1000000

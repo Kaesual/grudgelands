@@ -40,16 +40,6 @@ register("fireball", {
 		vel = {{-0.6, 0.5, -0.6}, {0.6, 1.5, 0.6}}, exp = {0.8, 1.2}, size = {3, 5}, glow = 0}),
 })
 
--- Smite: no projectile; motes appear 2.5 m above the target, slam down onto
--- it and vanish on contact, and a small flash ring at its feet.
-register("smite", {
-	spawner(24, 0.12, {at = "target", color = "#fff4c2", shape = {"disc", {0, 3.3, 0}, 0.9, false},
-		attract = {origin = {0, 1, 0}, strength = 5, kill = true}, exp = {0.25, 0.3},
-		size = {2, 3}, glow = 14}),
-	spawner(12, 0.05, {at = "target", color = "#ffe9a0", shape = {"disc", {0, 0.15, 0}, 0.3, true},
-		radial = {4, 5}, exp = {0.2, 0.3}, size = {2, 2.5}, glow = 14}),
-})
-
 -- Mighty Blow: a diagonal red slash hanging in front of the warrior (upper
 -- right to lower left), plus today's six blood drops on the target, kept
 -- exactly as they were (no fade).
@@ -121,32 +111,17 @@ register("blink", {
 		radial = {3, 4}, exp = {0.3, 0.4}, size = {2, 2.5}, glow = 12}),
 })
 
--- Cinderfall: embers rain from four metres into the real circle
--- (frame.reach, 3 m without the talent; the box keeps the catalogue's
--- 2.1 m half width per 3 m).
-register("cinderfall", function(frame)
-	local half = 2.1 * (frame.reach or 3) / 3
-	return {spawner(36, 0.4, {at = "target", tex = FIRE,
-		shape = {"box", {-half, 4, -half}, {half, 4, half}},
-		vel = {{-0.3, -10, -0.3}, {0.3, -8, 0.3}}, exp = {0.4, 0.5}, size = {1.5, 2.5},
-		glow = 14})}
-end, {reach = 3})
-
--- Glacial Ward: frost motes appear on a shell around the mage and drift in.
+-- Glacial Ward's frost motes appear on a shell around the mage and drift in;
+-- Rime Mantle plays them (the retired Glacial Ward's id, kept).
 register("glacial_ward", {
 	spawner(20, 0.2, {color = "#bfe8ff", shape = {"sphere", {0, 1, 0}, 1.1, true},
 		attract = {origin = {0, 1, 0}, strength = 2.5, kill = true}, exp = {0.4, 0.5},
 		size = {2, 2.5}, glow = 10}),
 })
 
--- Heal: golden motes rise around the healed player. Hearten's old splash
--- gives each splashed ally four golden-green ones.
+-- Heal: golden motes rise around the healed player.
 register("heal", {
 	spawner(12, 0.1, {at = "target", color = "#ffe08a", shape = {"disc", {0, 0.1, 0}, 0.5, false},
-		vel = {{0, 1.5, 0}, {0, 2.5, 0}}, exp = {0.7, 0.9}, size = {2, 2.5}, glow = 12}),
-})
-register("heal_splash", {
-	spawner(4, 0.1, {at = "target", color = "#d8f0a0", shape = {"disc", {0, 0.1, 0}, 0.5, false},
 		vel = {{0, 1.5, 0}, {0, 2.5, 0}}, exp = {0.7, 0.9}, size = {2, 2.5}, glow = 12}),
 })
 
@@ -174,12 +149,6 @@ register("word_of_ruin", {
 register("snare_hit", {
 	spawner(10, 0.05, {at = "target", color = "#79a65a", shape = {"disc", {0, 0.4, 0}, 0.2, true},
 		radial = {2, 2.5}, exp = {0.4, 0.5}, size = {2, 2.5}, glow = 6}),
-})
-
--- Pinning Shot landed: teal motes drop onto the target's feet.
-register("pinning_hit", {
-	single(8, {at = "target", color = "#4f8f67", shape = {"disc", {0, 1.6, 0}, 0.5, false},
-		vel = {{0, -8, 0}, {0, -6, 0}}, exp = {0.2, 0.25}, size = {2, 2.5}, glow = 8}),
 })
 
 -- Sidestep: a pale-green shimmer around the scout.
@@ -218,9 +187,6 @@ grug_core.PROC_COLORS = {
 	retort = "#c4ccd6",       -- Warrior: Retort's window (a hit taken)
 	clear_conscience = "#fff0c8", -- Priest: Clear Conscience's window
 	follow_the_line = "#a8c86a",  -- Scout: Follow the Line's window
-	whitehot = "#ffcf40",     -- Mage: a critical Fireball
-	last_word = "#a66bd4",    -- Priest: Word of Ruin at low health
-	untouchable = "#a8e0c0",  -- Scout: low-health dodge window
 	last_light = "#ffe9a0",   -- trinket: the low-health shield
 	reclaimer = "#7ae08a",    -- trinket: the kill restore
 }

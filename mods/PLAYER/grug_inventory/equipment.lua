@@ -840,13 +840,9 @@ end
 
 -- Base fallback until grug_quality adds shield and affix rating.
 function grug_core.get_armor_rating(player)
-	local base = grug_inventory.get_equipped_armor(player)
+	return grug_inventory.get_equipped_armor(player)
 		+ grug_classes.get_talent_bonus(player, "armor_percent_add")
 		+ grug_core.status_modifier_sum(player, "armor")
-	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
-		and grug_core.PROTECTION_ARMOR_MULTIPLIER or 1
-	return base * multiplier + grug_classes.get_talent_bonus(player,
-		"armor_rating_add_low_hp")
 end
 
 -- Same stub-override pattern for the two hand slots: grug_core publishes the

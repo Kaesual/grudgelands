@@ -208,7 +208,8 @@ spawners_ok("A trails")
 
 -- Missing anchors skip, unknown ids warn, nothing raises.
 calls = {}
-P.play("smite", {caster = CASTER})
+-- (smite_hit plays at its target; Round 53 retired the old `smite` effect.)
+P.play("smite_hit", {caster = CASTER})
 eq(#calls, 0, "A an effect at a missing target plays nothing")
 P.play("no_such_effect", {caster = CASTER})
 check(#warnings == 1 and warnings[1]:find("no_such_effect", 1, true) ~= nil, "A an unknown effect warns")

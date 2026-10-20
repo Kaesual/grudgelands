@@ -1,0 +1,1070 @@
+{
+ "finish": "every planned character left",
+ "game": "0.53.0",
+ "joins": [
+  {
+   "chat": [
+    {
+     "t": 0,
+     "text": "Your talent points have been reset."
+    },
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.0994s | clients: warrior"
+    }
+   ],
+   "loaded": {
+    "available": 15,
+    "class": "warrior",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "charge",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "mighty_blow",
+      "list": "main",
+      "slot": 3,
+      "unlocked": false
+     },
+     {
+      "id": "taunt",
+      "list": "main",
+      "slot": 4,
+      "unlocked": false
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 1.2,
+     "final": 917,
+     "hp": 917,
+     "hp_max": 20,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:charge",
+      "grug_abilities:mighty_blow",
+      "grug_abilities:taunt",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "1",
+    "meta": {
+     "grug_classes:class": "warrior",
+     "grug_classes:race": "dwarf",
+     "grug_core:migrate:0.53.0": "1"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "warrior",
+   "settled": {
+    "available": 15,
+    "class": "warrior",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "charge",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 1.2,
+     "final": 917,
+     "hp": 917,
+     "hp_max": 917,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:charge",
+      "",
+      "",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "warrior",
+     "grug_classes:race": "dwarf"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   }
+  },
+  {
+   "chat": [
+    {
+     "t": 0,
+     "text": "Your talent points have been reset."
+    },
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 5s | max lag: 0.117s | clients: mage"
+    }
+   ],
+   "loaded": {
+    "available": 15,
+    "class": "mage",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": false
+     },
+     {
+      "id": "fireball",
+      "list": "main",
+      "slot": 2,
+      "unlocked": false
+     },
+     {
+      "id": "ice_nova",
+      "list": "main",
+      "slot": 3,
+      "unlocked": false
+     },
+     {
+      "id": "blink",
+      "list": "main",
+      "slot": 4,
+      "unlocked": false
+     },
+     {
+      "id": "strike",
+      "list": "grug_hotbar_store",
+      "slot": 1,
+      "unlocked": false
+     },
+     {
+      "id": "ice_nova",
+      "list": "grug_hotbar_store",
+      "slot": 2,
+      "unlocked": false
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.8,
+     "final": 611,
+     "hp": 688,
+     "hp_max": 20,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "grug_abilities:strike",
+      "grug_abilities:ice_nova",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:fireball",
+      "grug_abilities:ice_nova",
+      "grug_abilities:blink",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "1",
+    "meta": {
+     "grug_classes:class": "mage",
+     "grug_classes:race": "dwarf",
+     "grug_core:migrate:0.53.0": "1"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "mage",
+   "settled": {
+    "available": 15,
+    "class": "mage",
+    "hotbars": [
+     {
+      "id": "fiery_spark",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "ice_wave",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "fiery_spark",
+      "list": "grug_hotbar_store",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "ice_wave",
+      "list": "grug_hotbar_store",
+      "slot": 2,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.8,
+     "final": 611,
+     "hp": 611,
+     "hp_max": 611,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "grug_abilities:fiery_spark",
+      "grug_abilities:ice_wave",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:fiery_spark",
+      "",
+      "grug_abilities:ice_wave",
+      "",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "mage",
+     "grug_classes:race": "dwarf"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   }
+  },
+  {
+   "chat": [
+    {
+     "t": 0,
+     "text": "Your talent points have been reset."
+    },
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 10s | max lag: 0.111s | clients: priest"
+    }
+   ],
+   "loaded": {
+    "available": 15,
+    "class": "priest",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": false
+     },
+     {
+      "id": "smite",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "heal",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "shield_spell",
+      "list": "main",
+      "slot": 4,
+      "unlocked": false
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.8,
+     "final": 611,
+     "hp": 764,
+     "hp_max": 20,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:smite",
+      "grug_abilities:heal",
+      "grug_abilities:shield_spell",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "1",
+    "meta": {
+     "grug_classes:class": "priest",
+     "grug_classes:race": "dwarf",
+     "grug_core:migrate:0.53.0": "1"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "priest",
+   "settled": {
+    "available": 15,
+    "class": "priest",
+    "hotbars": [
+     {
+      "id": "smite",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "heal",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.8,
+     "final": 611,
+     "hp": 611,
+     "hp_max": 611,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "",
+      "grug_abilities:smite",
+      "grug_abilities:heal",
+      "",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "priest",
+     "grug_classes:race": "dwarf"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   }
+  },
+  {
+   "chat": [
+    {
+     "t": 0,
+     "text": "Your talent points have been reset."
+    },
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 14s | max lag: 0.105s | clients: scout"
+    }
+   ],
+   "loaded": {
+    "available": 15,
+    "class": "scout",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "loose",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "snare_shot",
+      "list": "main",
+      "slot": 3,
+      "unlocked": false
+     },
+     {
+      "id": "sidestep",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     },
+     {
+      "id": "sprint",
+      "list": "main",
+      "slot": 5,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 1,
+     "final": 764,
+     "hp": 764,
+     "hp_max": 20,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:loose",
+      "grug_abilities:snare_shot",
+      "grug_abilities:sidestep",
+      "grug_abilities:sprint",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "1",
+    "meta": {
+     "grug_classes:class": "scout",
+     "grug_classes:race": "dwarf",
+     "grug_core:migrate:0.53.0": "1"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "scout",
+   "settled": {
+    "available": 15,
+    "class": "scout",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "loose",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "sidestep",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     },
+     {
+      "id": "sprint",
+      "list": "main",
+      "slot": 5,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 1,
+     "final": 764,
+     "hp": 764,
+     "hp_max": 764,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:loose",
+      "",
+      "grug_abilities:sidestep",
+      "grug_abilities:sprint",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "scout",
+     "grug_classes:race": "dwarf"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   }
+  },
+  {
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 19s | max lag: 0.1s | clients: walker"
+    }
+   ],
+   "loaded": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 20
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": [
+      ""
+     ],
+     "grug_bag1_content": null,
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "default:apple",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "1",
+    "meta": {
+     "grug_core:migrate:0.53.0": "1"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "walker",
+   "settled": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 26
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": [
+      ""
+     ],
+     "grug_bag1_content": null,
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "default:apple",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   }
+  }
+ ],
+ "leaves": 5,
+ "load": {
+  "from": "0.53.0",
+  "new_world": false
+ },
+ "phase": "after_0.53.0",
+ "registered": {
+  "cinderfall": false,
+  "fiery_spark": true,
+  "glacial_ward": false,
+  "ice_nova": true,
+  "ice_wave": true,
+  "loose": true,
+  "pinning_shot": false,
+  "smite": true,
+  "strike": true
+ }
+}

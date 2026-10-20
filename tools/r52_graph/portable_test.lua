@@ -141,7 +141,7 @@ eq(node("M5").id, "mercy_warding_faith", "A the node list's own example id")
 eq(node("R1").ability, "cold_spark", "A a transform names its ability only")
 eq(node("R1").replaces, nil, "A and no `replaces`")
 eq(node("M3").ability, "shield_spell", "A Shield is today's ability id")
-eq(node("B12").id, "bulwark_unbroken", "A Unbroken's prefix keeps the old passive inert")
+eq(node("B12").id, "bulwark_unbroken", "A Unbroken's id carries its tree prefix")
 -- The vocabulary (D4): shared keys, class keys, families with a class param.
 check(graph.valid_key("warrior", "rage_per_swing_add"), "A a warrior key")
 check(not graph.valid_key("mage", "rage_per_swing_add"), "A not a mage key")
@@ -150,9 +150,7 @@ check(not graph.valid_key("warrior", "damage_pct:fire"), "A not with a warrior")
 check(not graph.valid_key("mage", "fire_damage_pct"), "A an unknown key")
 check(graph.valid_key("scout", "dodge_chance_add"), "A a shared key")
 eq(node("RK8").effects["damage_pct:paid"][3], 9, "A Hard Faith's damage_pct:paid (node list)")
-eq(grug_classes.TALENT_EFFECT_KEYS.rage_per_swing_add ~= nil, true,
-	"A the old EFFECT_KEYS stay loaded (K3)")
-eq(grug_classes.TALENT_EFFECT_KEYS["damage_pct:fire"], nil, "A and gain no graph key")
+eq(grug_classes.TALENT_EFFECT_KEYS, nil, "A the old EFFECT_KEYS are gone (INTEG part 2)")
 -- No player text carries a unit letter of the node list's notation
 -- (round53-plan.md §3): D, S, R, M, B, P, K, Q, F or W+I after a number.
 for _, id in ipairs(graph.node_ids) do

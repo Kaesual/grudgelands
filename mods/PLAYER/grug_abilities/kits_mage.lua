@@ -12,8 +12,8 @@
 -- land once after a fixed delay; Ice Nova and Ice Wave hit once around the
 -- caster. Every area filter is valid_target (K.target_filter), which carries
 -- the PvP flag. Area hits and Fireball's splash pass `no_crit` (the
--- calculator models them without crits; combat.lua honours it from INTEG
--- part 2 on); the direct projectile hits may crit.
+-- calculator models them without crits); the direct projectile hits may
+-- crit.
 return function(K)
 local mob_ent, effective_number = K.mob_ent, K.effective_number
 local spell_damage_value, fx, facing = K.spell_damage_value, K.fx, K.facing

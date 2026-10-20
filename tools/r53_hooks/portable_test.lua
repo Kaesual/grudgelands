@@ -26,8 +26,9 @@
 --      (multiplier and add before the scaling pass, rage and on_landed only
 --      when the swing lands); the clock seams (a function cast_interval,
 --      occupied_cast and occupied_swing; the timing line shows the base);
---      K9 (a swing holds casts back one weapon interval); the refusal
---      reasons; K7 (the basic attack first);
+--      K9 (a swing holds casts back one weapon interval); a held cast's
+--      cadence on 0.09 s passes (INTEG: the bounded lateness carry); the
+--      refusal reasons; K7 (the basic attack first);
 --   F  K8, the held fallback, through the REAL input.lua on a fake engine,
 --      one case per class: a refused skill at a hostile fires the current
 --      basic attack once and silently (a swing basic attack swings, a cast
@@ -414,8 +415,10 @@ do
 	end
 	local shipped = 0
 	-- The kits the class lanes rebuilt are checked by their own fixtures
-	-- (tools/r53_<class>): their numbers and clocks change on purpose.
-	local REWORKED = {mage = true}
+	-- (tools/r53_<class>): their numbers and clocks change on purpose. All
+	-- four classes are rebuilt, so the shipped skill left is the universal
+	-- Strike.
+	local REWORKED = {mage = true, warrior = true, priest = true, scout = true}
 	local function each_shipped(fn)
 		for id, def in pairs(G.registered) do
 			if not REWORKED[def.class] then fn(id, def) end
@@ -431,16 +434,15 @@ do
 		eq(G.get_range(p, def), def.range or 4, "U " .. id .. ": the range as on main")
 		eq(G.description_prefix(p, def), old_prefix(p, def), "U " .. id .. ": the tooltip head as on main")
 		eq(G.description_prefix(nil, def), old_prefix(nil, def), "U " .. id .. ": the item's static head")
-		-- The reworked kits take the calculator's occupied times (lanes PRIEST,
-		-- WARRIOR and SCOUT; tools/r53_<class> check them; MAGE is skipped above).
 		if def.kind == "cast" then
-			check(def.class == "priest" or def.class == "warrior" or def.class == "scout" or def.occupied_cast == 0 and def.occupied_swing == "weapon",
+			check(def.occupied_cast == 0 and def.occupied_swing == "weapon",
 				"U " .. id .. ": a cast's clock as on main")
 		else
 			eq(def.occupied_cast, "weapon", "U " .. id .. ": a swing holds casts one interval (K9)")
 		end
 	end)
-	check(shipped >= 15, "U the shipped kits load (" .. shipped .. ")")
+	check(shipped >= 1 and G.registered.strike and not REWORKED[G.registered.strike.class],
+		"U the shipped skills outside the rebuilt kits load: Strike (" .. shipped .. ")")
 end
 
 local cast_log = {}
@@ -694,6 +696,43 @@ do
 	check(not pcall(probe, {id = "pf_bad_weapon", class = "pc_archer", kind = "cast",
 		occupied_cast = "weapon"}), "K \"weapon\" holds casts only after a swing")
 	local _ = zap
+end
+
+-- Round 53 INTEG (the SCOUT review's note 1): a held cast with an interval
+-- keeps its cadence on 0.09 s input passes: the lateness behind the due time
+-- (at most CLOCK_CATCHUP, 0.1 s) is carried into the interval and the
+-- occupied time; an idle gap and a skill without an interval carry nothing.
+do
+	local spark = probe({id = "pf_spark", class = "pc_caster", kind = "cast", cost = {},
+		cast_interval = 1, occupied_cast = 1})
+	local p = new_player("k_cadence", "pc_caster")
+	local fired, t = {}, 0
+	for _ = 1, 60 do
+		if not input_api.cast_refusal(p, spark) then
+			check(G.try_cast(p, spark, nil, function() end), "K the held spark fires")
+			fired[#fired + 1] = t
+		end
+		wait(0.09)
+		t = t + 0.09
+	end
+	-- Without the carry each cast waits for the next pass after 1 s: 1.08 s.
+	check(#fired >= 6 and (fired[6] - fired[2]) / 4 <= 1.0 + 1e-6,
+		"K held at 0.09 s passes, the spark keeps 1 s per cast (" ..
+		table.concat(fired, ", ") .. ")")
+	wait(1.6) -- idle: well past the due time (the last cast was at most 1 s ago)
+	check(G.try_cast(p, spark, nil, function() end), "K a lone spark after a pause")
+	wait(0.95)
+	eq(select(2, input_api.cast_refusal(p, spark)), "interval",
+		"K ...keeps its full interval (no carry from an idle gap)")
+	wait(0.06)
+	eq(input_api.cast_refusal(p, spark), nil, "K ...then free")
+	local heavy = probe({id = "pf_heavy", class = "pc_caster", kind = "cast", cost = {},
+		occupied_cast = 1})
+	wait(0.05)
+	check(G.try_cast(p, heavy, nil, function() end), "K a cast without an interval")
+	wait(0.99)
+	eq(select(2, input_api.cast_refusal(p, spark)), "busy",
+		"K ...holds casts its full second (it carries nothing)")
 end
 
 -- The refusal reasons the held fallback reads.

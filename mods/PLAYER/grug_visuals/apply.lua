@@ -308,6 +308,8 @@ grug_visuals.POSE_CLIPS = {
 	cast1 = {stand = {x = 221, y = 240}, walk = {x = 241, y = 260}},
 	cast2 = {stand = {x = 261, y = 280}, walk = {x = 281, y = 300}},
 	swing = {stand = {x = 301, y = 314}, walk = {x = 315, y = 334}, once = true},
+	-- The Scout's drawn bow; unused since Round 53 removed the draw. The
+	-- frames stay baked (the model's generator holds this table to them).
 	bow = {stand = {x = 335, y = 354}, walk = {x = 355, y = 374}},
 	block = {stand = {x = 375, y = 394}, walk = {x = 395, y = 414}},
 	charge = {stand = {x = 415, y = 434}, walk = {x = 435, y = 454}},

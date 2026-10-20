@@ -180,6 +180,7 @@ local EVENTS = {
 	cast_taunt = {name = "grug_sounds_cast_taunt", gain = 0.8, distance = 20},
 	cast_guard = {name = "grug_sounds_cast_guard", gain = 0.7},
 	cast_ice_nova = {name = "grug_sounds_cast_ice_nova", gain = 0.7},
+	-- Unused since Round 53 retired Glacial Ward; kept as a shipped cue.
 	cast_frost_ward = {name = "grug_sounds_cast_frost_ward", gain = 0.6},
 	cast_cinderfall = {name = "grug_sounds_cast_cinderfall", gain = 0.8, distance = 20},
 	cast_holy = {name = "grug_sounds_cast_holy", gain = 0.7},

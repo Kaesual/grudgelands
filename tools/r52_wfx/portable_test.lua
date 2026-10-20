@@ -275,10 +275,9 @@ check(G and G.registered.strike and G.registered.loose and G.WEAPON_FX,
 	"the real init.lua loads with its kits")
 
 ------------------------------------------------------------------------------
--- M: the family of every skill. One-directional while round K's lanes
--- register the new skills (round53-plan.md K14): every registered skill has
--- a family of its class; a row may wait for its skill (HOOKS adds the rows
--- first, INTEG restores the reverse check when the retired rows go).
+-- M: the family of every skill: every registered skill has a family of its
+-- class, and every row has its registered skill (round53-plan.md K14: the
+-- reverse check restored by INTEG once the retired rows went).
 ------------------------------------------------------------------------------
 local ids = {}
 for id in pairs(G.registered) do ids[#ids + 1] = id end
@@ -295,6 +294,7 @@ for _, id in ipairs(ids) do
 	end
 end
 for id, family in pairs(G.WEAPON_FX) do
+	check(G.registered[id] ~= nil, "M no entry for an unregistered skill: " .. id)
 	check(family == "none" or FAMILY_CLASS[family] ~= nil, "M a known family: " .. id)
 end
 check(init_src:find("\ngrug_abilities%.WEAPON_FX = {") ~= nil,
@@ -417,9 +417,9 @@ eq(so(R.fireball, "dagger"), NONE, "S an unpicked strip is transparent")
 eq(so(R.fireball, nil), NONE, "S no weapon, no overlay")
 eq(so(R.loose, "bow"), "grug_abilities_fx_quarry_bow.png", "S the idle bow")
 eq(so(R.sprint, "bow"), "grug_abilities_fx_quarry_bow.png", "S every quarry skill on the bow")
-eq(so(R.loose, "bow", 0), "grug_abilities_fx_quarry_bow_draw0.png", "S draw stage 0")
-eq(so(R.loose, "bow", 1), NONE, "S an unpicked draw stage is transparent")
-eq(so(R.loose, "bow", 2), "grug_abilities_fx_quarry_bow_draw2.png", "S draw stage 2")
+-- Round 53: the bow draw and its stage strips are gone; a stray strip file
+-- of a stage is never chosen.
+eq(so(R.loose, "bow", 0), "grug_abilities_fx_quarry_bow.png", "S no draw stage any more")
 eq(so(R.opening, "dagger"), NONE, "S veil without an animation")
 eq(so(R.charge, "sword"), "grug_abilities_fx_ruin_sword.png", "S ruin on a sword")
 eq(so(R.strike, "sword"), NONE, "S Strike none")
@@ -474,6 +474,25 @@ do
 	local before = inv.writes
 	equip()
 	eq(inv.writes - before, 0, "S an unchanged pass writes nothing")
+	-- Round 53 (the draw is gone): a Loose stack a crash saved mid-draw,
+	-- with the draw's stage image, strip and wear under a current token, is
+	-- whole again after the join (normalize_kit's fresh-copy compare). This
+	-- sandbox ranks every talent, so Bladecraft replaces Loose; Sprint, the
+	-- other quarry skill on the bow, stands in for the stack.
+	inv.lists.main[4] = G.stack_for(p, "sprint")
+	local token = inv.lists.main[4]:get_meta():get_string("grug_skin")
+	local drawn = ItemStack(inv.lists.main[4])
+	drawn:get_meta():set_string("wield_image", "grug_abilities_bow_draw_1.png")
+	drawn:get_meta():set_string("wield_overlay", "grug_abilities_fx_quarry_bow_draw1.png")
+	drawn:set_wear(30000)
+	inv.lists.main[4] = drawn
+	G.normalize_kit(p)
+	local healed = inv.lists.main[4]
+	check(healed:get_name() == "grug_abilities:sprint" and healed:get_wear() == 0 and
+		healed:get_meta():get_string("wield_image") == "grug_gear_bow_wood.png" and
+		healed:get_meta():get_string("wield_overlay") == "grug_abilities_fx_quarry_bow.png" and
+		healed:get_meta():get_string("grug_skin") == token,
+		"S a skill stack saved mid-draw is repaired at the join: " .. healed:to_string())
 end
 
 ------------------------------------------------------------------------------

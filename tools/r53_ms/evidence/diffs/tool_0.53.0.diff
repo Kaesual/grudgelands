@@ -1,0 +1,49 @@
+--- before
++++ after
+@@ -17 +16,0 @@
+-'item' | 'mage' | '0:4' | 'grug_abilities:cinderfall'
+@@ -21 +19,0 @@
+-'item' | 'mage' | '23:1' | 'grug_abilities:cinderfall'
+@@ -25 +22,0 @@
+-'item' | 'mage' | '3:2' | 'grug_abilities:glacial_ward'
+@@ -41 +37,0 @@
+-'item' | 'scout' | '0:5' | 'grug_abilities:pinning_shot'
+@@ -47 +42,0 @@
+-'item' | 'scout' | '23:0' | 'grug_abilities:pinning_shot'
+@@ -49 +43,0 @@
+-'item' | 'scout' | '3:3' | 'grug_abilities:pinning_shot'
+@@ -56 +49,0 @@
+-'item' | 'sleeper' | '0:4' | 'grug_abilities:glacial_ward'
+@@ -60 +52,0 @@
+-'item' | 'sleeper' | '23:2' | 'grug_abilities:cinderfall'
+@@ -76,3 +68 @@
+-'meta' | 'mage' | 'grug_classes:respec_used' | '1'
+-'meta' | 'mage' | 'grug_classes:talent_ready:whitehot' | '1792499647'
+-'meta' | 'mage' | 'grug_classes:talents' | 'tinder=3,deep_well=4,deep_chill=4,cold_focus=4'
++'meta' | 'mage' | 'grug_core:migrate:0.53.0' | '1'
+@@ -91,3 +81 @@
+-'meta' | 'priest' | 'grug_classes:respec_used' | '1'
+-'meta' | 'priest' | 'grug_classes:talent_ready:last_word' | '1792499652'
+-'meta' | 'priest' | 'grug_classes:talents' | 'gentle_hand=4,warding_faith=3,sharpened_word=4,hard_faith=4'
++'meta' | 'priest' | 'grug_core:migrate:0.53.0' | '1'
+@@ -106,3 +94 @@
+-'meta' | 'scout' | 'grug_classes:respec_used' | '1'
+-'meta' | 'scout' | 'grug_classes:talents' | 'strong_draw=3,quiver=4,fine_edge=4,light_step=4'
+-'meta' | 'scout' | 'grug_classes:untouchable_ready' | '1792499657'
++'meta' | 'scout' | 'grug_core:migrate:0.53.0' | '1'
+@@ -121,3 +107 @@
+-'meta' | 'sleeper' | 'grug_classes:respec_used' | '1'
+-'meta' | 'sleeper' | 'grug_classes:talent_ready:whitehot' | '1792499661'
+-'meta' | 'sleeper' | 'grug_classes:talents' | 'tinder=3,deep_well=4,deep_chill=4,cold_focus=4'
++'meta' | 'sleeper' | 'grug_core:migrate:0.53.0' | '1'
+@@ -132,0 +117 @@
++'meta' | 'walker' | 'grug_core:migrate:0.53.0' | '1'
+@@ -139,4 +124 @@
+-'meta' | 'warrior' | 'grug_classes:respec_used' | '1'
+-'meta' | 'warrior' | 'grug_classes:talent_ready:ruination' | '1792499643'
+-'meta' | 'warrior' | 'grug_classes:talents' | 'ironbound=4,spite=3,heavy_hand=4,keen_edge=4'
+-'meta' | 'warrior' | 'grug_classes:unbroken_ready' | '1792499643'
++'meta' | 'warrior' | 'grug_core:migrate:0.53.0' | '1'
+@@ -159 +141 @@
+-'storage' | 'grug_core' | 'world_version' | '0.52.1'
++'storage' | 'grug_core' | 'world_version' | '0.53.0'

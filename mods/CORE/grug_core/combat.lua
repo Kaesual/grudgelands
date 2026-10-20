@@ -1,6 +1,3 @@
--- Protection specialization preserves the top-tank target without refinement.
-grug_core.PROTECTION_ARMOR_MULTIPLIER = 1.65
-
 -- Damage pipeline & combat state (docs/design/classes.md §2,
 -- combat_stats.md §2/§4). Ability damage and heals run through the helpers
 -- here so crit/dodge rolls and threat live in one place. WP6 replaced the
@@ -1261,7 +1258,10 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 			return 0
 		end
 	end
-	local critical = math.random() < grug_core.get_crit_chance(attacker)
+	-- opts.no_crit (Round 53): the hit never crits (areas and splashes, as
+	-- the class calculator models them); the dodge roll above still runs.
+	local critical = not opts.no_crit and
+		math.random() < grug_core.get_crit_chance(attacker)
 	if critical then
 		amount = math.floor(amount * CRIT_MULTIPLIER)
 		crit_particles(target:get_pos())
@@ -1324,10 +1324,6 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- tank ability (×3 -> +2×damage) is added on top; ×1 adds nothing.
 	local mult = opts.threat_mult or 1
 	if settlement.accepted and mult ~= 1 then
-		-- Affront (skill_trees.md §2.1) raises the TANK multiplier only: an
-		-- ability that carries no multiplier stays at ×1 and adds nothing.
-		-- This is the cast site; the swing site is grug_abilities/init.lua.
-		mult = mult + grug_core.get_talent_bonus(attacker, "threat_mult_add")
 		local ent = target:get_luaentity()
 		if ent then
 			grug_core.add_threat(ent, attacker, amount * (mult - 1))
@@ -1518,26 +1514,6 @@ function grug_core.get_absorb(player)
 		end
 	end
 	return total
-end
-
--- Turn Aside's dodge rides on the shield that carries it (kits.lua Shield),
--- so its status icon lives exactly as long as a live absorb entry
--- still holds a dodge modifier: consumed, expired and respec-cleared shields
--- all end it (Round 26 ruling 18).
-if grug_core.register_status_source then
-	grug_core.register_status_source(function(player)
-		if not absorbs[player:get_player_name()] or
-				grug_core.get_absorb(player) <= 0 then
-			return nil
-		end
-		local expiry
-		for _, entry in pairs(absorbs[player:get_player_name()] or {}) do
-			if entry.modifiers and (entry.modifiers.dodge_percent or 0) > 0 then
-				expiry = math.max(expiry or 0, entry.expiry)
-			end
-		end
-		return expiry and {{id = "talent_turn_aside", expiry_us = expiry}} or nil
-	end)
 end
 
 local function absorb_particles(pos)

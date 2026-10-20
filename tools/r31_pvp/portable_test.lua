@@ -15,7 +15,7 @@
 --      and a mounted-attack refusal post a combat feed line (Round 32 F3);
 --   T  the can_harm / can_support table;
 --   G  the gate at impact: deal_ability_damage punches nobody unless both
---      enemy players are flagged; the crosshair ray classifies an unflagged
+--      enemy players are flagged; its no_crit option (Round 53) never crits; the crosshair ray classifies an unflagged
 --      enemy as "protected" (no target), a flagged one as hostile;
 --   D  death clears button, contact and location; kill credit to every
 --      enemy with landed damage in the last 15 s, the killing blow to the
@@ -429,6 +429,18 @@ do
 	check(dealt > 0, "G: both flagged: the cast lands")
 	eq(t.punched, 1, "G: one punch")
 	eq(t.hp, hp - dealt, "G: HP lost")
+	-- Round 53 INTEG: opts.no_crit (areas and splashes) never crits, even at
+	-- a 100 % crit chance; the same hit without it crits (x2).
+	do
+		local chance = grug_core.get_crit_chance
+		grug_core.get_crit_chance = function() return 1 end
+		eq(grug_core.deal_ability_damage(a, t, 10, {no_crit = true}), dealt,
+			"G: a no_crit hit at 100 % crit chance does not crit")
+		eq(grug_core.deal_ability_damage(a, t, 10), math.floor(dealt * 2),
+			"G: the same hit without no_crit crits")
+		grug_core.get_crit_chance = chance
+		t.hp = hp - dealt
+	end
 
 	-- C/H: that landed hit was contact for both through the hp-change seam.
 	local sa, st = state(a), state(t)

@@ -92,7 +92,7 @@ def armor_set(line, ilvl):
 
 GROWTH = {"warrior": (3, 0, 1), "mage": (0, 3, 1), "priest": (1, 2, 1),
           "scout": (1, 1, 2)}           # (str, int, dex) per level
-HP_FACTOR = {"warrior": 1.2, "priest": 1.0, "mage": 0.9, "scout": 1.0}
+HP_FACTOR = {"warrior": 1.2, "priest": 0.8, "mage": 0.8, "scout": 1.0}
 ARMOR_LINE = {"warrior": "metal", "scout": "leather", "mage": "cloth",
               "priest": "cloth"}
 
