@@ -44,8 +44,23 @@ Round 31 renamed four skills; their files are unchanged renamed copies
 Round 52 replaced 19 of these files with redrawn icons (the section "Round 52
 redrawn skill icons" below); the last three Round 18 icons,
 `grug_abilities_skill_cinderfall.png`, `_glacial_ward.png` and
-`_pinning_shot.png`, went with their retired skills in Round 53, so the
-manifest's hashes hold for none of the files any more.
+`_pinning_shot.png`, went with their retired skills in Round 53.
+0.53.1 brings eight of them back (the user's picks of 2026-10-20, Round 53
+icon review): each file below is a byte-identical copy of the 0.51 file at
+commit `dea1d163`, and its SHA-256 is again the one the Round 18 manifest
+records under the same id. The manifest's hashes hold for these eight files
+only.
+
+| Local file | Source | Pick | Bytes | SHA-256 |
+|---|---|---|---:|---|
+| `textures/grug_abilities_skill_strike.png` | 0.51 file at `dea1d163`; manifest id `strike` | skill:strike old | 8573 | `968807c4e730a4e07ba1d9a34271dac725def0ea24aa6765476fc223a08dc1e8` |
+| `textures/grug_abilities_skill_hold_ground.png` | 0.51 file at `dea1d163`; manifest id `hold_ground` | skill:hold_ground old | 7848 | `d66bcf76ccba326fd0e8285be9d4f1c4859cb1176c0417cd1ae09895c9ee7fc6` |
+| `textures/grug_abilities_skill_hamstring.png` | 0.51 file at `dea1d163`; manifest id `hamstring` | skill:hamstring old | 6445 | `95d2025c86e9aa5645899e0dfb1019b5c95413922238adfd7c329ff2d80896b2` |
+| `textures/grug_abilities_skill_mend.png` | 0.51 file at `dea1d163`; manifest id `mend` | skill:mend old | 7625 | `ffb8e64c8183611707f7034a89e048f6d4d42424baf164f8bc37339a71e20c5e` |
+| `textures/grug_abilities_skill_shield_spell.png` | 0.51 file at `dea1d163`; manifest id `shield_spell` | skill:shield_spell old | 8234 | `8b88365d5c085f40454edc27118cfd018bc039fdbfeaa48ea0ce1699ff035b6d` |
+| `textures/grug_abilities_skill_word_of_ruin.png` | 0.51 file at `dea1d163`; manifest id `word_of_ruin` | skill:word_of_ruin old | 8932 | `4e26894c4cd55f9c6cdb21e12f32ae053ba4130c92bde1adadcefb7668d2127d` |
+| `textures/grug_abilities_skill_sprint.png` | 0.51 file at `dea1d163`; manifest id `sprint` | skill:sprint old | 7217 | `10497be0c72168ccc0918d8bd3024f4de5fdc2bc17e1420c63009a218c6bcd8e` |
+| `textures/grug_abilities_skill_opening.png` | 0.51 file at `dea1d163`; manifest id `opening` | skill:opening old | 9151 | `3b9ab486e2ed06981a8de9c17f71790fd45a75d6b73ab010184fc08f8c57f5f6` |
 
 ## Round 52 weapon element overlays — CC0
 
@@ -104,29 +119,16 @@ paths and hashes: `tools/r52_art/artb/README.md`, `drop-02/manifest.json` and
 `drop-03/manifest.json`. The project dedicates any rights it holds in these
 images to **CC0-1.0**, to the extent such rights exist. Byte-identical renamed
 copies of the user's picks (2026-10-20). The 25 icons of the skills round K adds follow in the
-next section.
+next section. 0.53.1 replaced 15 of these 19 files (eight with their Round 18
+icon, see above; seven with Round 53 redraws, see "Round 53 redrawn icons"
+below); the four still shipped are listed here.
 
 | Local file | Source (`tools/r52_art/`) | Pick | Bytes | SHA-256 |
 |---|---|---|---:|---|
-| `textures/grug_abilities_skill_strike.png` | `artb/drop-02/skills/skill.strike.png` | skill.strike | 8109 | `5666910678cc705e88fa839373aefa8001029671ebcf6630d2370d79d5ab0587` |
-| `textures/grug_abilities_skill_charge.png` | `artb/drop-02/skills/skill.charge.png` | skill.charge | 9213 | `7a1dc99645ac99335658279640fce1fd64d394df1a8a2fce577b7e8068d6baf4` |
-| `textures/grug_abilities_skill_hold_ground.png` | `artb/drop-02/skills/skill.hold_ground.png` | skill.hold_ground | 9024 | `5433f549236debd96fb6dd30f838f2db6bf01ea87430fad96e86d9f70afaca02` |
-| `textures/grug_abilities_skill_taunt.png` | `artb/drop-02/skills/skill.taunt.png` | skill.taunt | 9188 | `5ed39b5b66ef222d8711869d8627598791ce79f60f9e309ea9359436cdf61a7c` |
-| `textures/grug_abilities_skill_mighty_blow.png` | `artb/drop-02/skills/skill.mighty_blow.png` | skill.mighty_blow | 8683 | `7cda0edb066b8bdb20e082b897b3e301f54163a58a9af8042cfeceab23da8f87` |
-| `textures/grug_abilities_skill_hamstring.png` | `artb/drop-02/skills/skill.hamstring.png` | skill.hamstring | 8113 | `8f233ce93b3e9343362755e1da1de12a508c2ff6b30f5ab99e21fba2799a9060` |
 | `textures/grug_abilities_skill_fireball.png` | `artb/drop-02/skills/skill.fireball.png` | skill.fireball | 7055 | `2ae5bfafdf836ed39786f3a9a2f00e5138ceec5e7f5fc9c0da4f3aa86f650a6f` |
 | `textures/grug_abilities_skill_ice_nova.png` | `artb/drop-02/skills/skill.ice_nova.png` | skill.ice_nova | 9041 | `92176404ec4d4d53b8749caa0a4c5f00e43fa8e290aa9361fc3b49848c7900d5` |
-| `textures/grug_abilities_skill_blink.png` | `artb/drop-02/skills/skill.blink.png` | skill.blink | 9693 | `c57ee52e5b4a7fcb589753756ea20b4be2ea9863dde9ff35eeec8d11f0a2b879` |
 | `textures/grug_abilities_skill_smite.png` | `artb/drop-02/skills/skill.smite.png` | skill.smite | 7323 | `6da52ab3175d0ee5f2b8754bf6e2457e84836d8239a673154cf42444f6e089a7` |
-| `textures/grug_abilities_skill_heal.png` | `artb/drop-02/skills/skill.heal.png` | skill.heal | 8016 | `b5899864a8001a7c01a7153bb84aceddf68deb8f032a1b760b69a10f01f09368` |
-| `textures/grug_abilities_skill_shield_spell.png` | `artb/drop-02/skills/skill.shield_spell.png` | skill.shield_spell | 7681 | `2a1f74181df7ee031a50304c9fd162e2d6fc16b5f324b4dc5f8d1f9de9489388` |
-| `textures/grug_abilities_skill_mend.png` | `artb/drop-02/skills/skill.mend.png` | skill.mend | 8111 | `290145f4c0735a491dbe89d775232517a08aeafb92acfc0f6e629e30e297fd7d` |
-| `textures/grug_abilities_skill_word_of_ruin.png` | `artb/drop-02/skills/skill.word_of_ruin.png` | skill.word_of_ruin | 8964 | `5fcf2834dc18993756ecb5b27137da26215a2230b08d985fbaee8c094d5b9baf` |
-| `textures/grug_abilities_skill_loose.png` | `artb/drop-03/skill.loose_v1.png` | skill.loose.v1 | 7346 | `cde451eff5b15849cd0c510f115af743433291ecba64bb2c8572d482efe25717` |
-| `textures/grug_abilities_skill_sidestep.png` | `artb/drop-02/skills/skill.sidestep.png` | skill.sidestep | 8810 | `335c9ac13b81ddfb326698726d4748d953207d6d36c2614f81d3443ae950f6f6` |
-| `textures/grug_abilities_skill_sprint.png` | `artb/drop-02/skills/skill.sprint.png` | skill.sprint | 9022 | `56e9f05032fd61e85cc79f1da10fe8ce1dec8842ff2315a96e440297f905fb5a` |
 | `textures/grug_abilities_skill_snare_shot.png` | `artb/drop-02/skills/skill.snare_shot.png` | skill.snare_shot | 8255 | `0ad0b911c343bfd7131453bb4366aa2e21b723be522c49c40f5cb25c21063362` |
-| `textures/grug_abilities_skill_opening.png` | `artb/drop-02/skills/skill.opening.png` | skill.opening | 8800 | `a24d39906d16dc7a38e255691ee08465c6f7c584e3ff88e9f405332a931c0d02` |
 
 ## Round 53 skill icons of the new skills — CC0
 
@@ -142,7 +144,8 @@ source paths and hashes: `tools/r52_art/artb/README.md`,
 `drop-02/manifest.json` and `drop-03/manifest.json`. The project dedicates
 any rights it holds in these images to **CC0-1.0**, to the extent such
 rights exist. Byte-identical renamed copies of the user's picks
-(2026-10-20).
+(2026-10-20). 0.53.1 replaced 11 of these 25 files with Round 53 redraws
+(see "Round 53 redrawn icons" below); the 14 still shipped are listed here.
 
 | Local file | Source (`tools/r52_art/`) | Pick | Bytes | SHA-256 |
 |---|---|---|---:|---|
@@ -154,20 +157,48 @@ rights exist. Byte-identical renamed copies of the user's picks
 | `textures/grug_abilities_skill_cold_spark.png` | `artb/drop-02/skills/skill.cold_spark.png` | skill.cold_spark | 8257 | `a2f782a6399d2e48fead4b4be213c822f85a27a1418621549130870f8ed36ecf` |
 | `textures/grug_abilities_skill_rime_mantle.png` | `artb/drop-02/skills/skill.rime_mantle.png` | skill.rime_mantle | 9146 | `86bfaa5522d10359645175e6d9ef48ac467b150e5acd2940a428961ac997897f` |
 | `textures/grug_abilities_skill_winter_field.png` | `artb/drop-02/skills/skill.winter_field.png` | skill.winter_field | 10163 | `a97191451f2cfc5323f8cd1d0117bf6343a666288e83813b974297c719c6882d` |
-| `textures/grug_abilities_skill_retort.png` | `artb/drop-02/skills/skill.retort.png` | skill.retort | 9121 | `4ea839d0d79435890139f0ad82742321cb5e172600419093e3df68f91199c4cb` |
-| `textures/grug_abilities_skill_bellow.png` | `artb/drop-02/skills/skill.bellow.png` | skill.bellow | 9894 | `813e3e0eab16e4515a016e7972be598b23ff5a39ee78b6864d1c180a145635a8` |
 | `textures/grug_abilities_skill_unbroken.png` | `artb/drop-02/skills/skill.unbroken.png` | skill.unbroken | 9074 | `e54e52dfef3f9ac70e9fcb46397fcdc354fabdc5c1c60be0eb75a340fa275eb5` |
-| `textures/grug_abilities_skill_broadstroke.png` | `artb/drop-02/skills/skill.broadstroke.png` | skill.broadstroke | 8785 | `60e797a57ee02b4a83238c238f2ae0517532f105ce29f74814b2d8ef13955793` |
-| `textures/grug_abilities_skill_ruination.png` | `artb/drop-02/skills/skill.ruination.png` | skill.ruination | 9023 | `55411e82b6011b4119653d829c6521c3b6fbfa64777d7641326b2275ae2b23ff` |
 | `textures/grug_abilities_skill_hearten.png` | `artb/drop-02/skills/skill.hearten.png` | skill.hearten | 8992 | `9bbd635b4ac006aab32ceb136007f5d7e9b28bb51737c3e88edec4a70c887ef3` |
 | `textures/grug_abilities_skill_haven.png` | `artb/drop-02/skills/skill.haven.png` | skill.haven | 8711 | `0ab56c71d716dd8a48e42752f4550b7a7328f480a898703125cbf4165ff2da9f` |
-| `textures/grug_abilities_skill_rebuke.png` | `artb/drop-02/skills/skill.rebuke.png` | skill.rebuke | 7789 | `075f07969436f0e5a9807ada4c3f99b68e688da7e4530f614f20b6b3600783a1` |
-| `textures/grug_abilities_skill_censure.png` | `artb/drop-02/skills/skill.censure.png` | skill.censure | 9503 | `82d18d024841d3bae658b87f1e8d5b576bb2a17946c9fa0fc2652aa16d6e0b0b` |
 | `textures/grug_abilities_skill_final_word.png` | `artb/drop-02/skills/skill.final_word.png` | skill.final_word | 8277 | `6db235c3b8f3303af6700f94389d353a30fb0909bf17bcd11baea8bba2e32af1` |
-| `textures/grug_abilities_skill_true_draw.png` | `artb/drop-02/skills/skill.true_draw.png` | skill.true_draw | 8085 | `2ad411ad0749b4ed469f3c782242f449140b351cdd2857f762e1f5805e8cccf4` |
-| `textures/grug_abilities_skill_split_shot.png` | `artb/drop-02/skills/skill.split_shot.png` | skill.split_shot | 8168 | `fdfb97d21bbf63e2df0b2780470e628eff525e6b5bbc345f2437cbe4a6d182da` |
 | `textures/grug_abilities_skill_arrowfall.png` | `artb/drop-02/skills/skill.arrowfall.png` | skill.arrowfall | 7549 | `989391412d0ca4f5919f3f66e34178338f03696a1e43c5d684a6e380a17a4bc3` |
 | `textures/grug_abilities_skill_bladecraft.png` | `artb/drop-03/skill.bladecraft_v3.png` | skill.bladecraft.v3 | 7401 | `d8a495a2ec2e48b33d5fabdb4bdddcbf8ee080a981d488d858dd1b1c679b86dc` |
-| `textures/grug_abilities_skill_parry.png` | `artb/drop-03/skill.parry_v2.png` | skill.parry.v2 | 7144 | `361376923a107f287ad2f7ee57eaaef8566ca84da9c65bfe10af95b61973a33d` |
-| `textures/grug_abilities_skill_flourish.png` | `artb/drop-03/skill.flourish_v1.png` | skill.flourish.v1 | 6062 | `a0c1d1115eda96fd215bdc342762e106d00887cdfb0439920dc955d57a02d3bf` |
-| `textures/grug_abilities_skill_close_dance.png` | `artb/drop-02/skills/skill.close_dance.png` | skill.close_dance | 9882 | `7012b85adbff43758c2502fe824bc552a7b84223ef1bde84febc55df5fef478c` |
+
+## Round 53 redrawn icons (0.53.1) — CC0
+
+18 skill icons redrawn for clarity in Round 53 (lane ICONS) and picked by the
+user on 2026-10-20 (pass 1: drop-01, 108 proposals; pass 2: drop-02, 24
+proposals for the eight icons pass 1 left open). Own work by GPT-6 Astra for
+Grudgelands, style A "Painted embers" simplified. Each proposal was one
+separate call (or a focused edit of the project's own image) of the built-in
+`image_gen.imagegen` tool, no third-party image supplied, reduced with
+Pillow's Lanczos filter to an opaque 64 × 64 8-bit RGB PNG without crop,
+recolouring, compositing or sharpening. Exact prompts, source paintings,
+supplied references, refinement history and hashes:
+`tools/r53_art/icons/README.md`, `drop-01/manifest.json` and
+`drop-02/manifest.json`. The project dedicates any rights it holds in these
+images to **CC0-1.0**, to the extent such rights exist. Each file is a
+byte-identical renamed copy of the user's pick (`tools/r531_art/ship_icons.py`
+copies and checks them); the talent icons of the same pass are in
+`grug_classes`.
+
+| Local file | Source (`tools/r53_art/icons/`) | Pick | Bytes | SHA-256 |
+|---|---|---|---:|---|
+| `textures/grug_abilities_skill_charge.png` | `drop-02/skill__charge_v1.png` | skill:charge pass 2 v1 | 6514 | `151b59f336fd2fa8ef46043243611bf4b0e861bce9bc6de5309042b53e98f70d` |
+| `textures/grug_abilities_skill_bellow.png` | `drop-02/skill__bellow_v3.png` | skill:bellow pass 2 v3 | 9208 | `00bd9b819ff19f0dfbbbac7a975e0faffb19daee5904f6d272e19542b4268c31` |
+| `textures/grug_abilities_skill_retort.png` | `drop-01/skill__retort_v1.png` | skill:retort pass 1 v1 | 7151 | `16ab43c5a6143e56f69f710de1db91460d936f699e26ae484082c86736887f48` |
+| `textures/grug_abilities_skill_taunt.png` | `drop-01/skill__taunt_v1.png` | skill:taunt pass 1 v1 | 8635 | `cde93edc415f4ecda6c663e8cd3650e7886d2296a05ce41a7030b91324f6481c` |
+| `textures/grug_abilities_skill_broadstroke.png` | `drop-02/skill__broadstroke_v1.png` | skill:broadstroke pass 2 v1 | 5994 | `547434e5052c383d65e4a29a62a7f7b9fd2c0c5517f389f44e3415ab38c540c1` |
+| `textures/grug_abilities_skill_mighty_blow.png` | `drop-01/skill__mighty_blow_v1.png` | skill:mighty_blow pass 1 v1 | 8327 | `2354539a99e2f679ea8b0fb87686a7e697d2d13e38d35447d0ba8bec5befbc07` |
+| `textures/grug_abilities_skill_ruination.png` | `drop-01/skill__ruination_v1.png` | skill:ruination pass 1 v1 | 6373 | `acb896d26d5a78865933ef086e4118ed06014125f21ab2c7d3913e60b912318a` |
+| `textures/grug_abilities_skill_blink.png` | `drop-02/skill__blink_v1.png` | skill:blink pass 2 v1 | 7282 | `6dde2149e70dda390b7a6eb4f7340d1851f0285a4d67c91e4f0eaf67ec066f7c` |
+| `textures/grug_abilities_skill_heal.png` | `drop-01/skill__heal_v1.png` | skill:heal pass 1 v1 | 7562 | `b19f912faafc86cc94e143f2e33f0ceb4d5d39f7b6d157e4faa65bd30b78aeab` |
+| `textures/grug_abilities_skill_censure.png` | `drop-01/skill__censure_v1.png` | skill:censure pass 1 v1 | 6329 | `cfc97841c7aee27db07534c7fd6b3f144383921b4e6e8b8fcbfd98788d444733` |
+| `textures/grug_abilities_skill_rebuke.png` | `drop-01/skill__rebuke_v1.png` | skill:rebuke pass 1 v1 | 5763 | `871f99b24d2f6d9e9030a1e4802030b4769d95fb1527553b6349b5a2f35984b3` |
+| `textures/grug_abilities_skill_loose.png` | `drop-01/skill__loose_v1.png` | skill:loose pass 1 v1 | 6452 | `7e6cae4ded82d2a6ef4f805fa926f7108b082c7d9094ca3c95efd0ba1a37f578` |
+| `textures/grug_abilities_skill_sidestep.png` | `drop-01/skill__sidestep_v3.png` | skill:sidestep pass 1 v3 | 7834 | `6a0188078eb3e49e9493d6a846f7fe5f4156b1599bf75e8b296aa9b85bf0c106` |
+| `textures/grug_abilities_skill_split_shot.png` | `drop-01/skill__split_shot_v1.png` | skill:split_shot pass 1 v1 | 6209 | `40983f5e12cbbd8d0afd8799ea3acea6ad639c6fd848571849ad283141c492f9` |
+| `textures/grug_abilities_skill_true_draw.png` | `drop-01/skill__true_draw_v2.png` | skill:true_draw pass 1 v2 | 6428 | `3ee8705125b6b89ec65cb94cccb0b3df3651632823aee93a61d646c375776cfe` |
+| `textures/grug_abilities_skill_close_dance.png` | `drop-02/skill__close_dance_v2.png` | skill:close_dance pass 2 v2 | 8950 | `400bfc30000cf07ea8a021357259b91eef9b6008a43d6c757726e5734787361a` |
+| `textures/grug_abilities_skill_flourish.png` | `drop-01/skill__flourish_v3.png` | skill:flourish pass 1 v3 | 8066 | `81d1b3af0184308518cb3cac18ebb4b14505e894b7cd1fcfe05107817bd1654e` |
+| `textures/grug_abilities_skill_parry.png` | `drop-02/skill__parry_v1.png` | skill:parry pass 2 v1 | 6626 | `0daf4dd1181c2238877762bbd12f4cc39f7f44a743206794abd685b407591813` |

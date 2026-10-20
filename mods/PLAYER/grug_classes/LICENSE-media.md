@@ -65,7 +65,9 @@ third-party image supplied, reduced with Pillow's Lanczos filter to an opaque
 64 × 64 RGB PNG without crop, recolouring or compositing. Prompts, source
 paths and hashes: `tools/r52_art/artb/README.md`, `drop-02/manifest.json` and
 `drop-03/manifest.json`. **CC0-1.0**, as above. Byte-identical renamed copies
-of the user's picks (2026-10-20).
+of the user's picks (2026-10-20). 0.53.1 replaced 10 of these 74 files with
+Round 53 redraws (see "Round 53 redrawn talent icons" below); the 64 still
+shipped are listed here.
 
 | Local file | Source (`tools/r52_art/`) | Pick | Bytes | SHA-256 |
 |---|---|---|---:|---|
@@ -93,17 +95,12 @@ of the user's picks (2026-10-20).
 | `textures/grug_classes_talent_turn_the_edge.png` | `artb/drop-02/talents/talent.turn_the_edge.png` | talent.turn_the_edge | 7728 | `0f86d41bbe0aea44008ffcbdec59e4904d013ca6831b639d44ab01281d35de1e` |
 | `textures/grug_classes_talent_recover.png` | `artb/drop-02/talents/talent.recover.png` | talent.recover | 7631 | `d96e1865164f57b7c616d5f5b1b98f0d6da8fa0fd408a269aaab5b233bf3d1b7` |
 | `textures/grug_classes_talent_layered_guard.png` | `artb/drop-02/talents/talent.layered_guard.png` | talent.layered_guard | 7787 | `3bb4fb1aab96f02dff802e994d1b2f90027ccb9c234259cf7b0505e29d601f4f` |
-| `textures/grug_classes_talent_halt.png` | `artb/drop-02/talents/talent.halt.png` | talent.halt | 8867 | `a19ff42b5f283698134dc44f2f3a7d08e29fc2880c8ca19d9cccc519cc781a7b` |
-| `textures/grug_classes_talent_enduring_stand.png` | `artb/drop-02/talents/talent.enduring_stand.png` | talent.enduring_stand | 8153 | `315bbc93fa2c0b1aca6b815f5d4eabb9395c41bc2966cb9759de9505558c4875` |
 | `textures/grug_classes_talent_gather_yourself.png` | `artb/drop-02/talents/talent.gather_yourself.png` | talent.gather_yourself | 8177 | `c88570a367d4e39b935eaee4e9a4eb0f09ac18234939396baa073153865f5e71` |
 | `textures/grug_classes_talent_heavy_hand.png` | `artb/drop-02/talents/talent.heavy_hand.png` | talent.heavy_hand | 7714 | `31a5219090b6822907d2026702ec5214230b22266d195efda6082e5ff0815334` |
-| `textures/grug_classes_talent_stoke.png` | `artb/drop-02/talents/talent.stoke.png` | talent.stoke | 7633 | `c4fab98cc15ff60c72bae3c475e7b2fe4916da5ff05f15c1515bb9ba2002cb03` |
 | `textures/grug_classes_talent_keen_edge.png` | `artb/drop-02/talents/talent.keen_edge.png` | talent.keen_edge | 7221 | `c432499e2c5507a833c7462614c289dab0060ba7bca7b600dc873f3f009f98e1` |
 | `textures/grug_classes_talent_onset.png` | `artb/drop-02/talents/talent.onset.png` | talent.onset | 8186 | `f76c05a06e11aca584fc634da610af3956efeb47541c04344088d5736731be8e` |
 | `textures/grug_classes_talent_follow_through.png` | `artb/drop-02/talents/talent.follow_through.png` | talent.follow_through | 7488 | `a58887ff6fef737d14b632d239ca9e9d5590b397b5023ef6ede929602441cbd6` |
 | `textures/grug_classes_talent_clean_cut.png` | `artb/drop-02/talents/talent.clean_cut.png` | talent.clean_cut | 7278 | `aa9dc27b13cad08f6ae35405a60a44febf71a984cbfd231110c3184b098336bf` |
-| `textures/grug_classes_talent_finisher.png` | `artb/drop-02/talents/talent.finisher.png` | talent.finisher | 7949 | `38d33e085e7f9faac30749b807e8aa110e4c314a8be395e5e84d5f32befa838c` |
-| `textures/grug_classes_talent_relentless.png` | `artb/drop-02/talents/talent.relentless.png` | talent.relentless | 7630 | `7d9961bfaee5619e1e87006b81f60bfcb1d0a990f0050e09dbd44cc1def5c6c4` |
 | `textures/grug_classes_talent_long_fury.png` | `artb/drop-02/talents/talent.long_fury.png` | talent.long_fury | 7227 | `5a407c60b283f771cd87ba27d41dd845af0dddc3e698106c96e838444fd9621d` |
 | `textures/grug_classes_talent_reach_the_fight.png` | `artb/drop-02/talents/talent.reach_the_fight.png` | talent.reach_the_fight | 7976 | `3542ef6cee0171c91bbb2dbe9121cb2c817c4622a114a6ecd2e90557be1c46ca` |
 | `textures/grug_classes_talent_steady_word.png` | `artb/drop-02/talents/talent.steady_word.png` | talent.steady_word | 7754 | `b0f30c968b3f067bc97f615dde4109a912504aaf1ed3ff0a31fbdbea5bcfa82b` |
@@ -111,14 +108,11 @@ of the user's picks (2026-10-20).
 | `textures/grug_classes_talent_gentle_hand.png` | `artb/drop-02/talents/talent.gentle_hand.png` | talent.gentle_hand | 7547 | `0c5f723e9183c64cc766383bf73b332d64518a0197f7af35bec8d9835afe1a98` |
 | `textures/grug_classes_talent_warding_faith.png` | `artb/drop-02/talents/talent.warding_faith.png` | talent.warding_faith | 7564 | `b8590631fc9bcd0933ab7cda2e2c152ecb16383d130881b3d73e1251793a4252` |
 | `textures/grug_classes_talent_patient_care.png` | `artb/drop-02/talents/talent.patient_care.png` | talent.patient_care | 8468 | `d604d083ea53ff166042f11bd5139fc03b4217c2b9cea9626a23783a4c01c75e` |
-| `textures/grug_classes_talent_clear_conscience.png` | `artb/drop-02/talents/talent.clear_conscience.png` | talent.clear_conscience | 7913 | `05c2627f0938ae05db688304ada311ba778c0c0c8bdb69f967622da458e679ed` |
 | `textures/grug_classes_talent_deep_reserve.png` | `artb/drop-02/talents/talent.deep_reserve.png` | talent.deep_reserve | 7261 | `bae40a4f34df9c622c1a95cc1e27f7ec891dadcba95284119bc454a427f23d71` |
 | `textures/grug_classes_talent_quiet_care.png` | `artb/drop-02/talents/talent.quiet_care.png` | talent.quiet_care | 7339 | `a1c60f3cc9c8c53dca0764359f2146b260899eb676efb9a1f168187890953949` |
-| `textures/grug_classes_talent_lasting_haven.png` | `artb/drop-02/talents/talent.lasting_haven.png` | talent.lasting_haven | 7909 | `e2a80904bf84665127b0a38bbbc0e369c0d7c23b57ba9c743e3c0478bd3df0aa` |
 | `textures/grug_classes_talent_sharpened_word.png` | `artb/drop-02/talents/talent.sharpened_word.png` | talent.sharpened_word | 7991 | `173a1b8fe5899954e1677c8ad44d14b13533d6c8be50053deb22b1be3e2265cc` |
 | `textures/grug_classes_talent_measured_judgment.png` | `artb/drop-02/talents/talent.measured_judgment.png` | talent.measured_judgment | 7905 | `5d25dab4759935c8e056493631b00938ceae00f0de8a4ab0496b7058dc930835` |
 | `textures/grug_classes_talent_firm_rebuke.png` | `artb/drop-02/talents/talent.firm_rebuke.png` | talent.firm_rebuke | 8818 | `73375d1b9fccd46e659c55764ad2353be488968568c8d48ad9217aa33444a23c` |
-| `textures/grug_classes_talent_long_reach.png` | `artb/drop-02/talents/talent.long_reach.png` | talent.long_reach | 7533 | `4d37422840d5ac6f16e241cda4217da1e1ccc4e9f913a0d3d9718af0257c2816` |
 | `textures/grug_classes_talent_resolute_word.png` | `artb/drop-02/talents/talent.resolute_word.png` | talent.resolute_word | 8137 | `6e370e25e1018586f06042526b3ee5b8150d055bfe155c2ce2d4969fea504ab4` |
 | `textures/grug_classes_talent_hard_faith.png` | `artb/drop-02/talents/talent.hard_faith.png` | talent.hard_faith | 8204 | `5e0fc254f03d5d57d6d050e912a241b8bc045061a67c76f5a5dba8db5a9fa944` |
 | `textures/grug_classes_talent_broad_judgment.png` | `artb/drop-02/talents/talent.broad_judgment.png` | talent.broad_judgment | 8299 | `1c29cc3945a4a2988924c052c8097a490cc11fe318f3766d31f571a2d91ca969` |
@@ -140,6 +134,35 @@ of the user's picks (2026-10-20).
 | `textures/grug_classes_talent_held_guard.png` | `artb/drop-02/talents/talent.held_guard.png` | talent.held_guard | 8710 | `e1495da91b3cf535b5f7287575d2a69958d02c7176308ca82f773647e24f9663` |
 | `textures/grug_classes_talent_wide_edge.png` | `artb/drop-02/talents/talent.wide_edge.png` | talent.wide_edge | 7702 | `03b2b0532f2262e10a10d29fa9dbf32adc1b8eaedb49567e3a6273d0025801b8` |
 | `textures/grug_classes_talent_turn_the_blade.png` | `artb/drop-02/talents/talent.turn_the_blade.png` | talent.turn_the_blade | 8037 | `fc7abde661bcb8e1cfeb65a71ff81a7cd5ed37792c996ac2495f15d290f8d572` |
-| `textures/grug_classes_talent_shake_loose.png` | `artb/drop-02/talents/talent.shake_loose.png` | talent.shake_loose | 8529 | `71c09e62120604cb98158978352da83d285d5a0d19df3c1036c7874a6aea733e` |
 | `textures/grug_classes_talent_cutting_rhythm.png` | `artb/drop-02/talents/talent.cutting_rhythm.png` | talent.cutting_rhythm | 8292 | `11bdb2377baf99a739c18d3a516e39a7ec97d559994ee6c1a70a92b7d9d17ed9` |
-| `textures/grug_classes_talent_travel_worn.png` | `artb/drop-02/talents/talent.travel_worn.png` | talent.travel_worn | 8479 | `52954b6e80a55ff109d50a13bb00319eb2f90b73827f72942a67b230f9985b9f` |
+
+## Round 53 redrawn talent icons (0.53.1) — CC0
+
+10 talent icons redrawn for clarity in Round 53 (lane ICONS) and picked by the
+user on 2026-10-20 (pass 1: drop-01; pass 2: drop-02 for Halt and Finisher),
+with the skill icons of the same pass (`grug_abilities/LICENSE-media.md`,
+"Round 53 redrawn icons"). Own work by GPT-6 Astra for Grudgelands, style A
+"Painted embers" simplified, keeping the circular bronze medallion. Each
+proposal was one separate call (or a focused edit of the project's own image)
+of the built-in `image_gen.imagegen` tool, no third-party image supplied,
+reduced with Pillow's Lanczos filter to an opaque 64 × 64 8-bit RGB PNG
+without crop, recolouring, compositing or sharpening. Exact prompts, source
+paintings, supplied references, refinement history and hashes:
+`tools/r53_art/icons/README.md`, `drop-01/manifest.json` and
+`drop-02/manifest.json`. The project dedicates any rights it holds in these
+images to **CC0-1.0**, to the extent such rights exist. Each file is a
+byte-identical renamed copy of the user's pick (`tools/r531_art/ship_icons.py`
+copies and checks them).
+
+| Local file | Source (`tools/r53_art/icons/`) | Pick | Bytes | SHA-256 |
+|---|---|---|---:|---|
+| `textures/grug_classes_talent_enduring_stand.png` | `drop-01/talent__bulwark_enduring_stand_v3.png` | talent:bulwark_enduring_stand pass 1 v3 | 8587 | `c3106d7796b42ee4051356b127c884f3cf457d158161360e51b7dbaf2971a891` |
+| `textures/grug_classes_talent_halt.png` | `drop-02/talent__bulwark_halt_v1.png` | talent:bulwark_halt pass 2 v1 | 7610 | `f80469b2da19221a23c3f3f70b7bc546c80c8b679686118abc4250caef966f06` |
+| `textures/grug_classes_talent_finisher.png` | `drop-02/talent__ruin_finisher_v2.png` | talent:ruin_finisher pass 2 v2 | 7754 | `0e424c2d12694668d6171be3f27cff0bae34d75162caf83051c9189a6a84a340` |
+| `textures/grug_classes_talent_relentless.png` | `drop-01/talent__ruin_relentless_v3.png` | talent:ruin_relentless pass 1 v3 | 8574 | `81f986ef8bce88e2a68d8ba68b29bb011026e1bde19509aa445dec1193312d02` |
+| `textures/grug_classes_talent_stoke.png` | `drop-01/talent__ruin_stoke_v3.png` | talent:ruin_stoke pass 1 v3 | 7342 | `513ddb13c5c93651c37b4e671a05959b693f186421fb993bc4a0eb9a3976e893` |
+| `textures/grug_classes_talent_clear_conscience.png` | `drop-01/talent__mercy_clear_conscience_v1.png` | talent:mercy_clear_conscience pass 1 v1 | 7271 | `0fe49e9b92d39babc7c3fadfe2fb0224ca8b9103eceab9c2d44f3ec31dfc4d2e` |
+| `textures/grug_classes_talent_lasting_haven.png` | `drop-01/talent__mercy_lasting_haven_v1.png` | talent:mercy_lasting_haven pass 1 v1 | 8048 | `111ede38bbf80553f69f629201a38b2dc2ee49a8578627d8dfc146e0757e42c1` |
+| `textures/grug_classes_talent_long_reach.png` | `drop-01/talent__reckoning_long_reach_v3.png` | talent:reckoning_long_reach pass 1 v3 | 7563 | `084bcb42dd1144f5ee934f31b269425b81473826ff46005cf066e2fd3e756e00` |
+| `textures/grug_classes_talent_shake_loose.png` | `drop-01/talent__veil_shake_loose_v1.png` | talent:veil_shake_loose pass 1 v1 | 7743 | `d3c95edbe74eeddaf66c30cd396db2c27ca4a768a32a9dec14fd05be22a83c67` |
+| `textures/grug_classes_talent_travel_worn.png` | `drop-01/talent__veil_travel_worn_v1.png` | talent:veil_travel_worn pass 1 v1 | 8153 | `11c89c58dbd7fd206598f4648511238518bb3815544bb2e58435483780adb6fc` |
