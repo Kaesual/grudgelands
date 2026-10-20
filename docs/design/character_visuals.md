@@ -12,23 +12,27 @@ the settlement side that populates the starts with those NPCs is
 ## 1. One model, six peoples
 
 Every humanoid — player, guard, bandit, vendor, mirefolk — uses the engine's
-`character.b3d` (players wear it with a cloak appended, §5b). A humanoid of a race is **composed** from layers on the one
-64×32 skin, in this order (decided 2026-10-03, Round 31):
+`character.b3d`: players wear it with a cloak, the armour boxes and a weapon
+card appended (§3, §5b), armoured NPCs with the armour boxes (§3), everybody
+else as it is. A humanoid of a race is **composed** from layers on the one
+64×32 skin, in this order (decided 2026-10-03, Round 31; the helmet became a
+box in Round 54):
 
 1. **skin** — the skin tone, then the race's body: face, shading and the race's
    one dress;
 2. **eyes**;
 3. **hairstyle** in a hair colour — left out entirely under a helmet;
 4. **attire** — a royal tabard (kings and royal guards only);
-5. **body armor** — chest (with shoulders and sleeves), legs, feet;
-6. **helmet**, with one shared **face window** cut out of every helmet, so the
-   eyes and the lower face stay visible and the hair is hidden;
-7. **headwear** — a king's crown;
-8. the race's **lower-face feature** (beard, tusks, ears, …), last, so it shows
-   over the helmet.
+5. **body armor** — the inner paint of the chest (with sleeves), legs and
+   feet pieces, under their boxes (§3);
+6. **headwear** — a king's crown;
+7. the race's **lower-face feature** (beard, tusks, ears, …), last.
+
+A worn helmet is a box over the head: the hair is left out under it, and
+the face stays the race's.
 
 A humanoid that is nobody's race (the mirefolk) keeps its own skin with its
-armor over it.
+armor's inner paint over it.
 
 The six dresses keep a people readable at a distance before anything else
 about the character is:
@@ -80,7 +84,8 @@ may be rolled. Royal guards are of their king's race with their own rolled
 look and the royal tabard; a king has one fixed look with the tabard and a
 crown, in his people's royal colours. A PvP fortress's General (Round 31)
 has one fixed look of his fortress's seat race with that race's royal tabard
-and no crown; his bodyguards are a mixed garrison in guard armour.
+and no crown; his bodyguards are a mixed garrison in guard armour. Since
+Round 54 kings, royal guards and Generals wear the **royal armour** (§3).
 
 ## 2. Stature is visual only
 
@@ -121,12 +126,25 @@ to the mob engine, which owns it across tier promotions and world reloads.
 
 ## 3. Visible armor
 
-Three armor lines ship — **cloth**, **leather** and **metal** — and each has one
-overlay per slot and material tier: head, chest, legs and feet. Inventory art
-and worn art are separate assets made for their respective layouts. Every tier
-has a baked material treatment and silhouette details from one coherent source
-family; runtime tinting is not the tier ladder. A character therefore shows the
-same armor line, slot and material tier that its equipped item names.
+Three armor lines ship — **cloth**, **leather** and **metal** — in six
+material tiers per slot: head, chest, legs and feet. Since Round 54 armour is
+**low-poly boxes baked into the character model** (one catalog of boxes for
+every armoured character, [armor format](../technical/armor-format.md)), with
+one **atlas texture**: a worn piece paints its slot's boxes on the atlas, and
+the boxes it does not use stay transparent, so the model never changes with
+the gear. Chest, legs and feet also paint the body under their boxes (the
+**inner paint**, a skin layer: sleeves, trousers, the lower legs); the helmet
+is boxes only. Each tier's colours are baked into its art (its palette);
+nothing is tinted at runtime. Inventory art and worn art are separate assets
+made for their respective layouts. A character therefore shows the same
+armor line, slot and material tier that its equipped item names.
+
+A player's model carries four textures: the skin, the cloak, the armour atlas
+and the weapon card (empty in the world, where the hand entity shows the
+weapon, §4; the inventory's view shows the main hand's weapon on it). An
+armoured NPC wears the **NPC model** — the same body and boxes without the
+cloak, textures skin, armour atlas and weapon card; humanoids without armour
+keep `character.b3d`.
 
 NPCs that have no inventory wear a **whole line at one tier** instead:
 
@@ -135,9 +153,16 @@ NPCs that have no inventory wear a **whole line at one tier** instead:
 | Faction guard | metal line at the tier its own level buys — the elite city watch (60+) is the sixth, Abyssal Steel tier by construction |
 | Bandit | cloth line at the tier its camp's level buys |
 | Vendor | no armor: its race's dress, so a shopkeeper never reads as a guard |
-| Royal guard | no armor: the royal tabard over the race's dress |
-| King | no armor: the royal tabard and a crown |
+| Royal guard, General | the royal armour (below) with its helmet, over the royal tabard |
+| King | the royal armour without a helmet, so his face and crown show, over the royal tabard |
 | Mirefolk | its own fish-folk skin, no armor |
+
+The **royal armour** (the user, 2026-10-20: "kings and royal guards need the
+new model"; a first version, tuned by the user) is the guards' metal line at
+the tier its wearer's level buys (the sixth for every king, royal guard and
+General), with every piece's cloth parts (zone A: tabard panels, padding) in
+the people's royal cloth colour and its fittings (zone B) in gold, drawn at
+full strength through the same zone masks the enchant colours use (§5a).
 
 ## 4. The weapon in hand
 
@@ -225,10 +250,9 @@ weapon**; only a Scout's Melee skill puts the offhand blade into the hand
   writing the model's texture list independently is the failure this replaces.
 - Composition uses **texture modifiers only**. Nothing is generated per frame,
   no image is built at runtime, and the web build needs no exception. Every
-  armor piece sits in its own parentheses, so a piece's own modifier (the
-  Silversteel correction, a crack, its enchant colours) never reaches
-  the layers under it; a helmet's own layers are cut by the face window with
-  it.
+  armor piece sits in its own parentheses, on the atlas and on the skin, so
+  a piece's own modifier (a crack, its enchant or royal colours) never
+  reaches the layers under it.
 - A character whose look has not changed **writes no texture**: equipping a
   trinket, opening the inventory or taking a hit costs no update. The stature
   is re-asserted every time instead, because the scale is not this system's
@@ -254,12 +278,14 @@ Decided 2026-10-03 (round31-plan.md §2.2 and §6 item 7, approved variant N).
 Enchantments show on gear as small **accents**, never as a repaint of the base
 item:
 
-- Every weapon, offhand and armour texture, and every worn armour overlay, has
+- Every weapon, offhand and armour texture, and every worn armour file (each
+  atlas and skin layer, Round 54: zone A and zone B of the armour art), has
   two non-overlapping pixel groups: **group A** (a highlight or edge stripe of
   the main material) takes the **prefix** stat's colour, **group B** (a fitting:
   grip wrap, guard, strap, hem, rim) the **suffix** stat's colour. Each group is
-  a thin connected stripe of about 7 % of an inventory icon and 4 % of a worn
-  overlay; lone pixels are never coloured.
+  a thin connected stripe of about 7 % of an inventory icon; lone pixels are
+  never coloured. On worn armour the groups are the art's zones A and B
+  ([armor format](../technical/armor-format.md) §6).
 - Each of the nine affix stats has one fixed colour (`grug_gear.ENCHANT_COLORS`):
   Strength deep red, Dexterity mint green, Intelligence indigo, maximum HP
   rose, maximum Mana sky blue, Crit yellow, attack speed orange, Dodge
@@ -268,13 +294,14 @@ item:
 - The colour shows on the **inventory icon**, the item **in hand** (first and
   third person) and a **dropped** item, through the stack's own
   `inventory_image`, and on the **armour worn on the body** (each piece's
-  layers inside that piece's parentheses; a helmet's are cut by the face
-  window with it; a broken piece cracks with its colours). A plain item has no
+  layers inside that piece's parentheses, on its boxes and its inner paint;
+  a broken piece cracks with its colours). A plain item has no
   image of its own and looks exactly as before.
 - **Kings** hold their weapon in fixed colours of their weapon's pool; this is
   visual only, their rewards are rolled as before. A future named NPC with gear
-  uses the same visual spec field (`weapon_colors`). Ordinary guards, royal
-  guards, bandits and the named rares (beasts without gear) stay plain.
+  uses the same visual spec field (`weapon_colors`). Ordinary guards, bandits
+  and the named rares (beasts without gear) stay plain; the royal armour's
+  colours (§3) are not enchant colours.
 - Trinkets have no texture masks and stay uncoloured.
 - Every enchanting station shows a **legend** of the nine colours.
 
@@ -508,6 +535,6 @@ less than one second. No fitted shell or persistent decorative entity is used.
 
 Cosmetic hand attachments retain broken equipped items, drawn drained of
 colour, darkened and cracked (Round 35); combat eligibility remains disabled.
-The broken look of worn armor affects only the broken slot's texture layer, not skin or intact equipment. Repair removes the overlay
+The broken look of worn armor affects only the broken piece's layers (its boxes and its inner paint), not skin or intact equipment. Repair removes the overlay
 and preserves the item's current enchantment appearance (its enchant colours,
 §5a).

@@ -2880,12 +2880,29 @@ tools](#player-meta-read-by-external-tools).
 
 - **Looks and enchant colours (Round 31):** `grug_visuals/looks.lua` (pure)
   holds the option tables per race, `normalize_look`, `roll_look`,
-  `look_from_seed`, `npc_look` and `look_texture` (layer order, the helmet
-  face window `HELMET_WINDOW`); the art comes from
+  `look_from_seed`, `npc_look` and `look_texture` (layer order; a worn
+  helmet drops the hair); the art comes from
   `tools/wp13/gen_character_visuals.py`. `apply.lua` stores a player's look
   once in meta `grug_visuals:look` (`set_look` refuses a second write) and
   builds `player_spec`; `compose.lua` puts every armour piece in its own
-  parentheses and keys its cache on every normalized input. NPCs keep
+  parentheses and keys its cache on every normalized input. Since Round 54
+  armour is boxes in the model with one atlas
+  ([armor format](armor-format.md)): `compose` returns `skin` (the look with
+  each worn chest, legs and feet piece's skin layer
+  `grug_armor_<line>_<grade>_<slot>_skin.png`) and `armor` (the worn pieces'
+  atlas layers `grug_armor_<line>_<grade>_<slot>.png` overlaid, `ARMOR_NONE`
+  = `blank.png` without any; file names in `grug_visuals.ARMOR_ART`), and
+  `textures`, an entity's whole list: `{skin, armor, WEAPON_NONE}` for a
+  spec with `armor_line` (the NPC model `grug_visuals.NPC_MODEL` =
+  `grug_visuals_npc.b3d`, set as the mesh of the guard, bandit and boss
+  definitions), `{skin}` otherwise (`character.b3d`). A `royal` spec with
+  armour gets the royal variant (zones A and B in `ROYAL[race].cloth` and
+  `ROYAL_GOLD` through the zone masks; a king no helmet). `apply_entity`
+  writes the list when compose's key differs from the entity's
+  `_grug_visual_key` (saved in staticdata). `grug_visuals.preview(player)`
+  returns `{mesh = PLAYER_MODEL, textures = {skin, cloak, armor, weapon}}`
+  for the inventory view, the weapon the main hand's cosmetic item's image
+  (`hand_image`) or `blank.png`. NPCs keep
   `_grug_look_seed` in their staticdata; `npc_race(entity, faction, opts)`
   gives the settlement's race, or with `{mixed = true}` /
   `_grug_mixed_race` a race of the faction (fortress garrisons).
@@ -2900,8 +2917,13 @@ tools](#player-meta-read-by-external-tools).
   stack's `inventory_image`
   (removed for a plain stack), which the wield entity and dropped items
   use; `grug_visuals/enchant.lua` turns worn affixes into compose's
-  `armor_layers`; NPC specs may carry `weapon_colors` (kings, Generals).
-  Fixtures `tools/r31_a` (incl. the equal hitbox), `tools/r31_b`; rules
+  `armor_enchant` (`{slot = {prefix, suffix}}`; compose lays each piece's
+  colours over its atlas and skin layer with that file's own mask);
+  `armor_layers[slot]` is an extra skin-space layer inside a piece's skin
+  layer (the War Commander's tabard); NPC specs may carry `weapon_colors`
+  (kings, Generals).
+  Fixtures `tools/r31_a` (incl. the equal hitbox), `tools/r31_b`,
+  `tools/r54_game`; rules
   [character_visuals.md](../design/character_visuals.md).
 
 ## Cloaks and achievements
@@ -2910,8 +2932,11 @@ tools](#player-meta-read-by-external-tools).
   `grug_visuals/models/grug_visuals_character.b3d`, `character.b3d` with a
   cloak box on a keyed `Cloak` bone and its own mesh buffer appended
   (`tools/r33_c3/gen_cloak_model.py`, `--check` rebuilds and compares and the
-  build proves the legs never cross the cloak); NPCs keep `character.b3d`.
-  The player texture list is `{skin, cloak}`: `grug_visuals.apply` writes it
+  build proves the legs never cross the cloak; Round 54 appends the armour
+  boxes and the weapon card); armoured NPCs wear the NPC model, the others
+  `character.b3d`.
+  The player texture list is `{skin, cloak, armor, weapon}` (the weapon card
+  `blank.png` in the world): `grug_visuals.apply` writes it
   with the cloak from the one `register_cloak_source(fn)`, `fn(player) ->
   texture, selected id` (no cloak: builtin `blank.png`), the texture part
   of the redraw key, the id part of the stored appearance. `mods/PLAYER/
@@ -2958,15 +2983,18 @@ tools](#player-meta-read-by-external-tools).
   | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a new server or a migration step ([upgrade contract](upgrade-contract.md) §1) |
   | `grug_visuals:appearance` | compact JSON string | the format below; missing: no apply yet (the first join writes it) | `grug_visuals.apply` (`apply.lua`, built in the pure `appearance.lua`) |
 
-- **The appearance** (`APPEARANCE_VERSION` 1): what the game draws, with
+- **The appearance** (`APPEARANCE_VERSION` 2 since Round 54; version 1 had
+  no `textures.armor`, its body carried the old armour overlays, and it is
+  rebuilt at the character's next join): what the game draws, with
   the final texture strings, so the website never ports the composition.
   Keys in this order, compact (no whitespace):
 
   ```json
-  {"v":1,"race":"dwarf","look":{"tone":2,"hair":3,"style":1,"eyes":2,"feature":4},
+  {"v":2,"race":"dwarf","look":{"tone":2,"hair":3,"style":1,"eyes":2,"feature":4},
    "cloak":"hunter_2","visual_size":{"x":0.9,"y":0.9,"z":0.9},
    "textures":{"body":"(grug_visuals_skin_mask.png^[multiply:#d8a07c)^grug_visuals_dwarf_body.png^…",
-     "cloak":"grug_achievements_cloak_hunter_2.png"},
+     "cloak":"grug_achievements_cloak_hunter_2.png",
+     "armor":"((grug_armor_leather_sleek_chest.png^(grug_armor_leather_sleek_chest_ench.png^[verticalframe:2:0^…))^[hsl:0:-80:-35^[cracko:1:4)"},
    "slots":{"chest":{"item":"grug_gear:chest_leather_sleek","broken":true,"enchant":["dex"]},
      "mainhand":{"item":"grug_gear:bow_embersteel","broken":false,
        "enchant":["dex","attack_speed_percent"],"pose":"bow",
@@ -2981,7 +3009,11 @@ tools](#player-meta-read-by-external-tools).
   (`catalog.lua`) or `none`; `textures.cloak` its texture or `none` (the game
   then draws the builtin `blank.png`). `visual_size` is the race's stature on
   all three axes (`grug_visuals.RACES`). `textures.body` is the model's first
-  texture, `textures.cloak` its second. `slots` holds the equipment slots
+  texture (the skin under the armour boxes), `textures.cloak` its second,
+  `textures.armor` its third (the armour atlas of the worn pieces, `none`
+  when nothing is worn: the game then draws `blank.png`); the fourth, the
+  weapon card, is empty in the world and not stored (the main hand's image
+  is `slots.mainhand.image`). `slots` holds the equipment slots
   `head`, `chest`, `legs`, `feet`, `mainhand` (the Weapon slot; a Scout's
   bow) and `offhand` (a shield, a spellbook, a Scout's melee blade), each
   `{"item", "broken", "enchant"}`; an empty slot is absent. `enchant` lists
@@ -3010,10 +3042,10 @@ tools](#player-meta-read-by-external-tools).
   bare and under the worst armour, every cloak and every hand item plain,
   enchanted and broken): every texture string is at most
   `grug_visuals.APPEARANCE_TEXTURE_MAX` = 2,048 bytes (measured worst case
-  1,382, a body; a hand image 268, a cloak 44) and the whole value at most
-  `APPEARANCE_JSON_MAX` = 4 × 2,048 + `APPEARANCE_JSON_OVERHEAD` 2,048 =
-  10,240 bytes (measured upper bound 2,964, 1,002 outside the texture
-  strings). Every texture string parses under the **closed grammar**
+  1,164, a body; the armour atlas 1,062, a hand image 268, a cloak 44) and
+  the whole value at most `APPEARANCE_JSON_MAX` = 5 × 2,048 +
+  `APPEARANCE_JSON_OVERHEAD` 2,048 = 12,288 bytes (measured upper bound
+  3,819, 1,013 outside the texture strings). Every texture string parses under the **closed grammar**
   `grug_visuals.APPEARANCE_TEXTURE` (`appearance.lua`, the one definition):
 
   ```
@@ -3022,7 +3054,7 @@ tools](#player-meta-read-by-external-tools).
   modifier = name { ":" argument }
   ```
 
-  Groups nest at most 4 deep (`max_depth`); nothing is escaped (no `\`, and
+  Groups nest at most 3 deep (`max_depth`; 4 and `[mask` in version 1); nothing is escaped (no `\`, and
   no file name or argument contains `^ : ( ) [`). A file is
   `[a-z0-9_]+\.png` and exists in `mods/PLAYER/grug_visuals/textures`
   (skin, look and armour layers), `mods/PLAYER/grug_achievements/textures`
@@ -3030,6 +3062,6 @@ tools](#player-meta-read-by-external-tools).
   masks). The modifiers with their arguments (`int`: an optional `-` and 1–3
   digits, −999..999; `color`: `#rrggbb`, lowercase hex; each kind's Lua
   pattern and limits are data in `APPEARANCE_TEXTURE.args`): `[colorize:color:int`,
-  `[cracko:int:int`, `[hsl:int:int:int`, `[mask:file`, `[multiply:color`,
+  `[cracko:int:int`, `[hsl:int:int:int`, `[multiply:color`,
   `[opacity:int`, `[verticalframe:int:int`. `[cracko` draws the engine's
   `crack_anylength.png` (listed as `engine_files`), which no string names.
