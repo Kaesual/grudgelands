@@ -1,17 +1,63 @@
 # Project status
 
-Updated 2026-10-20. This is the delivery pointer, not another game specification.
+Updated 2026-10-21. This is the delivery pointer, not another game specification.
 
 The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the
 [class redesign package](planning/class-redesign/README.md)) is built:
 round F in Round 52, round K in Round 53 below, with its fix round 0.53.1.
-Next: the user's one GUI test of 0.53.0 and 0.53.1 together, then the push,
-the playtest of the new classes and a short balance fix round. The
+Round 54 followed with the armor redesign (0.54.0). Next: the user's one GUI
+test of 0.53.0, 0.53.1 and 0.54.0 together, then the push, the playtest of
+the new classes and a short balance fix round. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 54 "The armor redesign in the game" complete** (2026-10-21,
+  version 0.54.0, **compatible**, no migration step;
+  [plan, decisions, numbers and GUI checklist](planning/round54-plan.md#completion-2026-10-21);
+  background in the [armor redesign plan](planning/armor-redesign-plan.md),
+  the contract in [armor-format.md](technical/armor-format.md)). **Not
+  pushed** (origin/main `e4d5c9d5`, 0.52.1): 0.53.0, 0.53.1 and 0.54.0
+  wait for the user's GUI test and are pushed on the user's word; synced to
+  the user's Luanti only after the round is complete. From main `8bc91967`
+  (CONTRACT: the plan, the box catalog, the atlas, the render/check tool,
+  four addenda up to `b3fa6eb2`): BAKE (`62100720`), MODEL (`6a8b4028`),
+  GAME (`a278cc34`, shots `5722b8fd`, the royals' no-tint `7ed8ffce`), VIEW
+  (`0a4fb774`), WEB (`a14d4420`) and INTEG (`8fbf9c09`) merged, then this
+  documentation lane D; a WEB2 follow-up (README and fixture notes, the
+  handoff renders with the final art) runs after it. Each code lane
+  independently reviewed by Opus (BAKE, VIEW, WEB, INTEG MERGE; MODEL and
+  GAME MERGE AFTER FIXES, fixed and re-reviewed); the art painted by GPT-6
+  Astra in three drops and picked by the user. Main has 233 portable
+  fixtures (4 new); `mods/` against 0.53.1 +480 −220 lines in 18 text
+  files, 252 PNGs added, 161 removed and 148 replaced, the player model
+  replaced and the NPC model added. The declaration is
+  `{"schema": 3, "version": "0.54.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.53.1 moves on without a step.
+  - **The model (MODEL):** 28 armour boxes (17 shapes) in one buffer with
+    one 128 × 64 atlas, front and back panels on swing bones, a weapon card
+    in the right hand; the player model 192 → 872 vertices, the NPC model
+    848; the cloak rests at 8.5° behind the back panel
+    ([character_visuals.md §3, §5b](design/character_visuals.md#3-visible-armor)).
+  - **The art (ART, BAKE, INTEG):** metal "Bastion" T1–T5 and "Processional
+    guard" T6, leather "Trail coat", cloth "Cantor"; opaque pieces with the
+    helm's face window; `tools/r54_armor/bake.py` bakes the layers, icons
+    and masks from `tools/r54_art/`; the old armour overlays are gone.
+  - **The game (GAME, VIEW):** players wear skin, cloak, armour atlas and
+    weapon card, armoured NPCs the NPC model; the royal armour for kings
+    (no helmet), royal guards and Generals, untinted; the War Commanders in
+    faction colours; appearance version 2; leather T4 Hardened with its ids
+    kept ([items_crafting.md](design/items_crafting.md)); the Character
+    tab shows the armour and the held weapon.
+  - **The web (WEB):** the four-primitive `.glb`, version 1 appearances
+    shown without armour, the kaesual handoff (outside the repo).
+  - **Gates:** each code lane's full fixture run (229–232/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.52.1 and against
+    0.53.1) and `check_fresh_server.py` PASS. The round end on main (full
+    fixtures, one boot, the sync) is the coordinator's. Its GUI test
+    (desktop and web build, after the 0.53.x checklists) is open
+    ([carry-overs](../BACKLOG.md#round-54-carry-overs)).
 - **Round 53 "The new classes" complete** (2026-10-20, version 0.53.0,
   **migrate**, one step 0.53.0;
   [plan, decisions, numbers and GUI checklist](planning/round53-plan.md#completion-2026-10-20)).

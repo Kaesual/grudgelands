@@ -548,8 +548,18 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   tooltips, the 40-node flight band and the no-fly minimap, the same
   trinket twice, new Undead, Elf and Dwarf racials, skeleton bows,
   right-click picking and 36 redrawn icons. Both not pushed; pushed
-  together after the user's one GUI test on 0.53.1. Next: that GUI test
+  together with 0.54.0 after the user's one GUI test. Next: that GUI test
   and the user's playtest, then a short balance fix round.
+- [x] **Round 54 "The armor redesign in the game"**
+  ([completion](docs/planning/round54-plan.md#completion-2026-10-21)),
+  version 0.54.0, **compatible**, no step: armour as low-poly boxes in the
+  player and NPC models with one atlas texture
+  ([armor format](docs/technical/armor-format.md)), the swing panels and
+  the weapon card, original art for the three lines picked by the user,
+  opaque pieces, the royal armour for kings, royal guards and Generals,
+  the Character tab with the held weapon, appearance version 2 and the web
+  `.glb`, leather T4 named Hardened. Complete on 2026-10-21, not pushed;
+  pushed with 0.53.x after the user's GUI test.
 
 ### Remaining work
 
@@ -590,8 +600,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 49](BACKLOG.md#round-49-carry-overs),
   [Round 51](BACKLOG.md#round-51-carry-overs),
   [Round 52](BACKLOG.md#round-52-carry-overs),
-  [Round 53](BACKLOG.md#round-53-carry-overs) and
-  [0.53.1](BACKLOG.md#0531-carry-overs) carry-overs (Round 40: the
+  [Round 53](BACKLOG.md#round-53-carry-overs),
+  [0.53.1](BACKLOG.md#0531-carry-overs) and
+  [Round 54](BACKLOG.md#round-54-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -605,7 +616,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   parked sounds; Round 53: the balance fix round, dead talent reads,
   tool and fixture leftovers and the class GUI notes; 0.53.1: fruit
   picking in towns for the user, picking, flight-overlay, trinket and
-  tool notes);
+  tool notes; Round 54: the off-hand card, contract z-fighting, clearance,
+  web version 1 and tool notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
