@@ -24,6 +24,8 @@
 --      on character.b3d);
 --   R  the royal armour: kings without a helmet, royal guards with it, zone
 --      A in the royal colour and zone B gold under any enchant colours;
+--   T  no elite or boss tint on kings, royal guards and Generals (real
+--      grug_mobs/levels.lua), every other elite keeps its tint;
 --   A  the stored appearance version 2: `textures.armor`, "none" when bare;
 --   H  leather tier 4 "Hardened": the grade name, the four item
 --      descriptions, a stack stored under the old base name renamed on its
@@ -567,6 +569,45 @@ do
 		"R within the stored cap")
 	print(("royal: king %d bytes, royal guard %d bytes (all textures)"):format(
 		#king.skin + #king.armor + #V.WEAPON_NONE, #guard.skin + #guard.armor + #V.WEAPON_NONE))
+end
+
+------------------------------------------------------------------------------
+-- T. No tier tint on kings, royal guards and Generals (the user, 2026-10-20),
+-- through the real grug_mobs/levels.lua; every other elite keeps its tint.
+------------------------------------------------------------------------------
+do
+	core.settings = {get = function() return nil end}
+	local saved_mobs = grug_mobs
+	grug_mobs = {}
+	dofile(ROOT .. "/mods/ENTITIES/grug_mobs/levels.lua")
+	local L = grug_mobs
+	grug_mobs = saved_mobs
+	local function entity(prototype)
+		local props = {}
+		local object = {set_properties = function(_, p) for k, v in pairs(p) do props[k] = v end end}
+		return setmetatable({object = object, _grug_tier = "elite", props = props},
+			{__index = prototype}), props
+	end
+	local list = {"skin.png", "armor.png", "blank.png"}
+	local elite, elite_props = entity({})
+	L.set_base_texture(elite, list)
+	check(has(elite_props.textures[2], "^[colorize:#ffa800:80"), "T an elite guard keeps the gold tint")
+	local king, king_props = entity({_grug_no_tint = true})
+	L.set_base_texture(king, list)
+	eq(table.concat(king_props.textures, ","), "skin.png,armor.png,blank.png",
+		"T a royal prototype: no tint")
+	eq(king._grug_base_texture, list, "T the pristine list kept")
+	local boss = entity({_grug_no_tint = true})
+	boss._grug_tier = "rare"
+	L.set_base_texture(boss, list)
+	eq(boss.base_texture[1], "skin.png", "T no rare tint either")
+	local bosses = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/bosses.lua")
+	check(has(bosses, '["grug_mobs:king_" .. race_id]._grug_no_tint = true') and
+		has(bosses, '["grug_mobs:royal_guard_" .. race_id]._grug_no_tint = true') and
+		has(bosses, "core.registered_entities[name]._grug_no_tint = true -- as a king's"),
+		"T kings, royal guards and Generals are flagged")
+	local _, count = bosses:gsub("_grug_no_tint = true", "")
+	eq(count, 3, "T only those three (the General's bodyguards keep the guards' tint)")
 end
 
 ------------------------------------------------------------------------------

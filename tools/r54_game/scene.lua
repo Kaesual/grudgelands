@@ -135,6 +135,12 @@ function scene.setup(player)
 		npc_fig(0, PI / 2, WALK, npc.royal, "grug_gear:sword_abyssal_steel"),
 		npc_fig(2.0, 0, STAND, npc.general_guard, "grug_gear:sword_abyssal_steel")}))
 
+	-- Since the user's ruling of 2026-10-20 the royals carry no tier tint.
+	shot("N5_king_royalguards_untinted_front", WIDE, 0.05, figures({
+		npc_fig(-2.0, PI, STAND, npc.king, "grug_gear:greataxe_abyssal_steel"),
+		npc_fig(0, PI * 0.85, STAND, npc.royal, "grug_gear:sword_abyssal_steel"),
+		npc_fig(2.0, PI, STAND, npc.general_guard, "grug_gear:sword_abyssal_steel")}))
+
 	-- The tints over the armor: the guard plain (its own tier), with the
 	-- elite and with the boss tint of grug_mobs/levels.lua on every texture.
 	if npc.guard then

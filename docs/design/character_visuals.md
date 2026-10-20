@@ -164,6 +164,8 @@ the tier its wearer's level buys (the sixth for every king, royal guard and
 General), with every piece's cloth parts (zone A: tabard panels, padding) in
 the people's royal cloth colour and its fittings (zone B) in gold, drawn at
 full strength through the same zone masks the enchant colours use (§5a).
+Kings, royal guards and Generals carry no elite tint over it (the user,
+2026-10-20): their size, the crown and the royal colours mark them.
 
 ## 4. The weapon in hand
 
