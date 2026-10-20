@@ -813,10 +813,14 @@ tools](#player-meta-read-by-external-tools).
   the shipped classes play as before except Mend's tick phase (below).
   Round K wires them into the new kits.
   - **The action clock** (D2, `grug_abilities/init.lua`): every ability
-    definition gets `occupied_cast` (seconds ≥ 0, default 0, either kind)
-    and every cast `occupied_swing` (seconds ≥ 0, or `"weapon"`, the
-    default: one interval of the current melee weapon; a swing may not set
-    it, its own clock is that interval). Three directions: **cast → swing**
+    definition gets `occupied_cast` (seconds ≥ 0; a cast's default 0, a
+    swing's default `"weapon"`, one interval of the current melee weapon,
+    Round 53 K9) and every cast `occupied_swing` (seconds ≥ 0, or
+    `"weapon"`, the default; a swing may not set it, its own clock is that
+    interval). Each of them and `cast_interval` may instead be a
+    `function(player, def)` returning the value (Round 53, Loose's affix
+    cadence); called without a player it returns the base, which the
+    timing line shows and the registration checks. Three directions: **cast → swing**
     is `grug_abilities.delay_strike(player[, def])` (`strike_delay.lua`,
     called by `input.lua` after a cast and, without a def, by the Scout's
     bow release), which pushes the melee clock's `next_due` and never
@@ -828,10 +832,17 @@ tools](#player-meta-read-by-external-tools).
     cleared on death, respawn and leave. `cast_refusal`, shared by the
     input gate and `try_cast`, refuses with "You are still busy." while
     it runs (after the cooldown and cast-interval checks, before the
-    cost); a held repeat stays quiet like every other refusal. The
-    defaults are today's rule: a cast pushes the next swing by one weapon
-    interval, a swing blocks no cast, a cast blocks no other cast. A
-    per-skill lock is no global cooldown (C2). PvE bench
+    cost); a held repeat stays quiet like every other refusal. Its second
+    result names the reason (`class`, `locked`, `cooldown`, `interval`,
+    `busy`, `cost`). The defaults: a cast pushes the next swing by one
+    weapon interval and blocks no other cast, a swing holds casts back for
+    one weapon interval (Round 53 K9). A per-skill lock is no global
+    cooldown (C2). **The held fallback** (Round 53 K8, `input.lua`): a
+    skill that cannot act on the hostile a press aims at fires the
+    player's current basic attack (`current_form` of Strike) once,
+    silently, a swing through the swing, a cast through `try_cast`; none
+    when the skill is that basic attack or the refusal is `busy` or
+    `interval`. PvE bench
     `tools/r52_bench` (per-action records of each class, main against a
     branch).
   - **The transformation** (D8): `transforms = "<base id>"` on the ability
@@ -840,7 +851,10 @@ tools](#player-meta-read-by-external-tools).
     talent (`def.talent` or its own id) has a rank; without a talent it
     may only replace a universal ability, which makes it its class's
     basic attack in place of Strike (register it first in its class
-    file: the initial kit follows `by_class` order). `cooldown_key` is
+    file: the initial kit follows `by_class` order). A class's own basic
+    attack that replaces nothing sets `basic_attack = true` (the Scout's
+    Loose): the initial kit then puts it on key 1, the class's other
+    starters after it and the universal abilities last (Round 53 K7). `cooldown_key` is
     derived, never declared: the base's key, else the own id; cooldowns,
     cast intervals, charges and the cooldown overlay all key on it, so a
     form and its base share one cooldown. `is_unlocked` is false for a
@@ -861,7 +875,9 @@ tools](#player-meta-read-by-external-tools).
     runs on `core.get_us_time` in memory and outlives death, respec and a
     relog within one server run; `clear_talent_windows` (leave, death,
     respec) ends the open windows and drops run-out ICDs. Icons come from
-    `grug_core.status_icons.WINDOWS` (empty until round K). Today's
+    `grug_core.status_icons.WINDOWS` (Round 53: `cold_shock`, `retort`,
+    `clear_conscience`, `follow_the_line`, `parry`, `ruination` and
+    `close_dance`, each showing the status of its own id). Today's
     talent windows and their trigger cooldowns (`talent_trigger_ready`,
     `os.time` in the player-meta key `grug_classes:talent_ready:<id>`)
     are unchanged (D1).
@@ -882,9 +898,19 @@ tools](#player-meta-read-by-external-tools).
     first (ties by y, x, z, then name), each in sight of the point 0.5
     above the anchor by `area.clear_line`, a node-only ray that only
     walkable nodes block (grass and water do not, unlike
-    `core.line_of_sight`), stopping at the cap. `area.fall_height(anchor)`
-    is the room for falling visuals: half a node below the first solid
-    node above the anchor's column, at most 12. `area.delayed(caster,
+    `core.line_of_sight`), stopping at the cap. `area.cone(caster,
+    {radius, angle, band, dir, filter, cap})` (Round 53) returns the
+    objects within the horizontal radius and ±`band` of the caster's
+    feet and within `angle` (the whole opening, degrees) of its
+    horizontal facing (`dir`, default the look), accepted by `filter`
+    (the abilities' `valid_target` through
+    `grug_abilities.target_filter(player, kind)`) and in sight of the
+    caster's body, nearest first, at most `cap`; the caster never.
+    `area.fall_height(anchor, radius)` is the room for falling visuals:
+    half a node below the lowest ceiling over the anchor's column and,
+    with a radius, the four columns at 0.6 × the radius around it (a
+    slope rising into a column and rock beside the area lower nothing),
+    at most 12; `area.delayed` passes its radius. `area.delayed(caster,
     {anchor, delay, impact, radius, color, warning, fall, burst})` plays
     the warning ring (single particles that live exactly the delay) and
     the falling particles at once and runs `impact(caster, anchor)` after
@@ -904,6 +930,28 @@ tools](#player-meta-read-by-external-tools).
     stacked floors, a cave, shallow and deep water, a flying mob, a dead
     caster, the group heal; its test ability lives only in the probe
     mod).
+  - **Round 53 seams for the class kits** (`grug_abilities/init.lua`,
+    round53-plan.md §4 HOOKS). *Family keys:*
+    `grug_abilities.family_bonus(player, def, family)` sums the graph
+    talents' `<family>:<param>` keys over the definition's id and its
+    `tags` (a transformation by its own); the cast path applies
+    `cost_pct` (`effective_cost`, through `cost_for`'s percentage, then
+    the definition's `cost_adjust(player, def, cost)`), `cooldown_sub`
+    (`effective_cooldown`) and `range_add` (`get_range`), the tooltip
+    shows them; the swing path charges a proc the same `effective_cost`
+    and adds the plain swing's `damage_pct` as a share of its untalented
+    damage (Strike is tagged `blade`); a kit reads `damage_pct`,
+    `radius_add` and `duration_add` through the same helper (`K.family_bonus`).
+    *The swing callback:* `grug_abilities.register_on_swing(func)`, from a
+    class file; `func(player, {def, proc, target, weapon_damage, fpi})`
+    returns nil or `{damage_mult, damage_add, rage_add, on_landed}`: raw
+    damage × every multiplier + every add before the one scaling pass,
+    the rage and `on_landed(player, swing)` only when the swing lands.
+    *Tables before the kits (K6):* `WEAPON_FX`, `SKILL_POSES` and
+    `CAST_SOUNDS` rows of the 25 new skills, their icons, the 34 new
+    particle effects and 7 retints of the picked cards
+    (`tools/r52_pfx`), the window proc colours and the status and window
+    rows. Fixture `tools/r53_hooks`.
   - **Mend on the status system** (D1, `kits_priest.lua`): a
     `grug_core.set_status` with `interval = 3`, `duration = 12` and an
     `on_tick`, so its four ticks come 3, 6, 9 and 12 s after the cast
@@ -2544,7 +2592,9 @@ tools](#player-meta-read-by-external-tools).
     `grug_abilities.CAST_SOUNDS` in `try_cast` (every registered ability
     must be listed: a cue, `"weapon"`, `"projectile"` or `"silent"`),
     projectiles through `sound_launch`/`sound_hit` on
-    `grug_projectiles.register`, melee hits through
+    `grug_projectiles.register` (a spawn's own `params.sound_launch`
+    replaces the launch cue for that launch, Round 53), the round-K impacts
+    (`meteor_impact` ...) from the class kits, melee hits through
     `grug_core.melee_hit_sound(player)` (by `_grug_weapon_family`), voices
     through `voices.lua`, gear breaking through `grug_repair/runtime.lua`
     `announce_break` (Round 35: in the gear, tool and hoe wear paths, once

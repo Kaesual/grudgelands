@@ -1496,21 +1496,26 @@ shows a single-colour particle effect, built from the accepted catalogue
   the launch line over the flight time, tinted per skill; Charge a dust ring
   around the target on arrival (the dash's dust trail is
   `grug_abilities.charge_dust`); Hamstring a red cut across the legs; Taunt
-  motes above the target; Bellow an orange ring out to its radius; Hold
-  Ground a rising golden ring; Blink an implosion where the mage leaves and a
+  motes above the target; Bellow a steel-grey ring out to its radius; Hold
+  Ground a rising bronze ring; Blink an implosion where the mage leaves and a
   burst where it arrives; Cinderfall embers raining into its real circle;
   Glacial Ward frost motes drifting onto a shell; Heal rising motes (Hearten:
   four on each splashed ally); Shield a pale-gold shell; Mend three rising
-  motes on the cast and on each tick; Word of Ruin violet motes streaming
+  motes on the cast and on each tick; Word of Ruin gold motes streaming
   from the target to the priest; the landed Snare Shot a green ring at the
   legs, the landed Pinning Shot teal motes dropping onto the feet; Sidestep
   a pale-green shimmer; Sprint a dust kick behind the scout; the landed
-  Opening a white flash. **Procs** (Ruination, Unbroken, Whitehot, Last
+  Opening a white flash. Round 53 retints Taunt, Bellow, Hold Ground,
+  Blink, Heal, Mend and Word of Ruin to their tree's colours and registers
+  the new skills' effects, the picked cards of `tools/r52_pfx`, for the
+  class kits. **Procs** (Ruination, Unbroken, the readiness windows Cold
+  Shock, Retort, Clear Conscience and Follow the Line, Whitehot, Last
   Word, Untouchable, the Last Light and Reclaimer trinkets) share one flash,
   a ring of eight motes rising around the player, in a colour per proc
   (`grug_core.PROC_COLORS`). Critical hits, absorb soaks and the level-up
   burst keep their look.
-- **Budget:** at most 64 particles per occurrence (Ice Nova); every spawner
+- **Budget:** at most 76 particles per occurrence (Fire Rain's impact,
+  Round 53; Ice Nova 64); every spawner
   is unattached and lives at most 1 s, so only players near the effect
   receive it; rings that mark a radius are single particles placed on the
   exact circle. Per-effect and busy-fight server costs:

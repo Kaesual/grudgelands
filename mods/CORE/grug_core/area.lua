@@ -9,8 +9,10 @@
 --   area.query(anchor, opts)          the targets of a ground-anchored area
 --   area.group(caster, opts)          the recipients of a self-centred group
 --                                     heal (self always included)
+--   area.cone(caster, opts)           the targets in a cone in front of the
+--                                     caster (Round 53)
 --   area.clear_line(from, to)         walkable-only line of sight
---   area.fall_height(anchor)          room for falling visuals above it
+--   area.fall_height(anchor, radius)  room for falling visuals above it
 --   area.delayed(caster, spec)        one impact after a fixed delay
 --
 -- Relations stay with the caller: a filter or `eligible` predicate is the
@@ -280,18 +282,101 @@ function area.group(caster, opts)
 	return players
 end
 
--- How far falling visuals may start above the anchor (§3a item 5): half a
--- node below the first solid node above it, at most CEILING_CAP. An
--- unloaded node counts as solid.
-function area.fall_height(anchor)
-	local x, z = round(anchor.x), round(anchor.z)
-	local base = round(anchor.y)
-	for step = 0, area.CEILING_CAP - 1 do
-		if walkable_at(x, base + step, z) ~= false then
-			return math.max(0, base + step - 0.5 - anchor.y - FALL_MARGIN)
+-- The targets of a facing cone (round53-plan.md §4 HOOKS: Ice Wave 70° 5 m,
+-- Broadstroke 100° 3 m, Flourish 90° 3 m): objects within horizontal
+-- radius opts.radius of the caster's feet, within opts.band (default H)
+-- above or below them and within opts.angle (the whole opening, degrees)
+-- of the caster's horizontal facing (opts.dir, default the look), accepted
+-- by opts.filter(obj) -- the abilities' valid_target, which carries the PvP
+-- flag -- and in sight of the caster's body (walkable-only); nearest first,
+-- at most opts.cap. One standing inside the caster has no direction and
+-- counts. The caster is never a target.
+function area.cone(caster, opts)
+	local centre = caster:get_pos()
+	local radius = opts.radius
+	local band = opts.band or area.H
+	local dir = opts.dir or core.yaw_to_dir(caster:get_look_horizontal())
+	local cos_half = math.cos(math.rad(opts.angle / 2))
+	local candidates = {}
+	for _, obj in ipairs(core.get_objects_in_area(
+			vector.offset(centre, -radius, -band, -radius),
+			vector.offset(centre, radius, band, radius))) do
+		local pos = obj ~= caster and obj:get_pos()
+		if pos then
+			local dx, dz = pos.x - centre.x, pos.z - centre.z
+			local d2 = dx * dx + dz * dz
+			local len = math.sqrt(d2)
+			if d2 <= radius * radius and math.abs(pos.y - centre.y) <= band and
+					(len < 0.01 or (dx * dir.x + dz * dir.z) / len >= cos_half) and
+					opts.filter(obj) then
+				candidates[#candidates + 1] = {obj = obj, pos = pos, d2 = d2,
+					key = object_key(obj)}
+			end
 		end
 	end
-	return area.CEILING_CAP
+	table.sort(candidates, nearest_first)
+	local eye = body_point(caster, centre)
+	local hits = {}
+	for index = 1, #candidates do
+		if opts.cap and #hits >= opts.cap then
+			break
+		end
+		local candidate = candidates[index]
+		if area.clear_line(eye, body_point(candidate.obj, candidate.pos)) then
+			hits[#hits + 1] = candidate.obj
+		end
+	end
+	return hits
+end
+
+-- The first solid (or unloaded) node in column x/z from `base` up, within
+-- CEILING_CAP; nil when there is none. `skip_ground`: first rise past the
+-- solid nodes at the bottom (a slope climbing into this column), so the
+-- ceiling is the first solid above open air; a column solid all the way up
+-- is rock beside the area and gives nil.
+local function ceiling_of(x, base, z, skip_ground)
+	local step = 0
+	if skip_ground then
+		while step < area.CEILING_CAP and walkable_at(x, base + step, z) ~= false do
+			step = step + 1
+		end
+		if step >= area.CEILING_CAP then
+			return nil
+		end
+	end
+	for s = step, area.CEILING_CAP - 1 do
+		if walkable_at(x, base + s, z) ~= false then
+			return base + s
+		end
+	end
+	return nil
+end
+
+-- How far falling visuals may start above the anchor (§3a item 5): half a
+-- node below the first solid node above it, at most CEILING_CAP. An
+-- unloaded node counts as solid. With `radius` the lowest ceiling over the
+-- anchor and four points at 0.6 x radius around it (the falling disc's
+-- reach), so a sloped cave ceiling never starts a fall inside rock.
+local SAMPLE = 0.6
+function area.fall_height(anchor, radius)
+	local x, z = round(anchor.x), round(anchor.z)
+	local base = round(anchor.y)
+	local ceiling = ceiling_of(x, base, z, false)
+	if radius and radius > 0 then
+		local r = SAMPLE * radius
+		for _, offset in ipairs({{r, 0}, {-r, 0}, {0, r}, {0, -r}}) do
+			local top = ceiling_of(round(anchor.x + offset[1]), base,
+				round(anchor.z + offset[2]), true)
+			if top and (not ceiling or top < ceiling) then
+				ceiling = top
+			end
+		end
+	end
+	if not ceiling then
+		return area.CEILING_CAP
+	end
+	return math.min(area.CEILING_CAP,
+		math.max(0, ceiling - 0.5 - anchor.y - FALL_MARGIN))
 end
 
 -- Pending impacts per caster: name -> {[entry] = true}, entry.job the
@@ -331,7 +416,7 @@ function area.delayed(caster, spec)
 		play(spec.warning or "area_warning", frame)
 	end
 	if spec.fall ~= false then
-		local height = area.fall_height(anchor)
+		local height = area.fall_height(anchor, spec.radius)
 		if height >= MIN_FALL then
 			play(spec.fall or "area_fall", {target = anchor, reach = spec.radius,
 				time = delay, height = height, color = spec.color})

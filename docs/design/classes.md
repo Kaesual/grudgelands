@@ -247,14 +247,14 @@ differs:
   the start rule above decides gather or combat, except that a combat lock
   keeps its foe while that foe is not gone for the new skill's reach (a
   miss beside it still digs nothing). The new skill then acts as on a fresh
-  press: an attacking skill casts or swings (Strike if it is not
-  ready), a self or support skill fires once where a fresh press would (at
+  press: an attacking skill casts or swings (the basic attack if it is not
+  ready, below), a self or support skill fires once where a fresh press would (at
   a hostile, an ally or air; while a combat lock is kept, also at a node
   beside the foe), Loose strikes. Besides the
   wait, two things differ from a real press: it reports nothing (refusals and "Evading"; a
   held press stays quiet), and it has no tap window, so a gather hold digs
   on at once and a quick release casts nothing. Cooldowns, resources and the
-  weapon clock are untouched (back to a skill on cooldown only strikes). A
+  weapon clock are untouched (back to a skill on cooldown only falls back). A
   switch to an ordinary tool or an empty slot ends the skill mode (both
   stacks point again, the tool or hand digs natively); a switch back is
   decided again. Digging goes on in both directions: the client keeps its
@@ -286,12 +286,17 @@ Strike, and the selected spell's authored range. Solid terrain and
 intervening objects (dropped items excepted) matter.
 
 - **Hostile:** use the selected applicable ready skill immediately. If it is
-  unavailable (including cooldown, resources or applicability), use ordinary
-  melee Strike when in range. Holding repeats at the appropriate clocks;
-  once the selected skill is ready it takes precedence again. A selected
-  self or support skill fires only on the fresh press (an applicable heal
-  here targets self, never the hostile or a remembered ally); held, the
-  hold strikes.
+  unavailable (including cooldown, resources or applicability), the
+  player's basic attack fires once instead, silently (Round 53 K8): the
+  current form of Strike, which swings when it is a swing (Strike, Retort)
+  and casts when it is a cast (a Mage's or Priest's basic attack). There is
+  no fallback when the selected skill is that basic attack, or when the
+  refusal is the action clock or the cast interval: the hold then waits, so
+  a cast is never woven between swings. Holding repeats at the appropriate
+  clocks; once the selected skill is ready it takes precedence again. A
+  selected self or support skill fires only on the fresh press (an
+  applicable heal here targets self, never the hostile or a remembered
+  ally); held, the hold attacks with the basic attack.
 - **Friendly player:** use an applicable heal/support action on the eligible
   ally a fresh press aims at, repeated while held on that ally. No Strike
   fallback or attack through that ally. An offensive self skill (Ice Nova,
@@ -350,7 +355,9 @@ Crack feedback may begin during click arbitration, but removal may not.
 
 Selected skill and fallback Strike are mutually exclusive in one decision.
 After a successful skill, Strike must wait at least the actual weapon interval,
-without shortening a later existing deadline. Skill cooldowns/cast intervals
+without shortening a later existing deadline; after a swing, a cast waits one
+interval of the current melee weapon (the action clock in both directions,
+Round 53 K9). Skill cooldowns/cast intervals
 still apply; no global cooldown is added. Early clicks, release/repress,
 retargeting and skill swaps cannot reset the weapon clock. Concrete equipped
 weapon changes start a full interval; lag never replays missed attacks.
@@ -422,8 +429,8 @@ decision, the single empty-space or tap cast of a press, or the RMB press that
 starts a bow draw. Held repeats never report, nor does the decision of a press
 carried across a hotbar switch. The same message shows at most
 once per second per player; a different message shows at once (Round 28
-ruling 13). A refused skill on a hostile still falls back to Strike, as
-before.
+ruling 13). A refused skill on a hostile falls back to the basic attack
+(Hostile, above).
 
 ### Cancellation and native-client limits
 
@@ -621,7 +628,10 @@ and equipment changes never recreate a deleted representation. Losing a
 talent removes its representation.
 
 At initial character creation, the base abilities occupy the first hotbar
-slots in kit order: Strike on key 1, then the remaining class abilities; the
+slots in kit order: the class's basic attack on key 1 (Strike, or the class
+basic attack that replaces it), then the remaining class abilities; a class
+whose own basic attack replaces nothing (`basic_attack = true`) gets it on
+key 1 and Strike after its other starters (Round 53 K7); the
 starter supplies lie on hotbar slots 7 (apples) and 8 (torches), Round 49
 ruling 10. Existing carried items are preserved. This startup arrangement
 does not reorder the player's inventory on joins or talent changes. A later

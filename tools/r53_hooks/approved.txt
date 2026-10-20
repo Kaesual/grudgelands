@@ -1,0 +1,25 @@
+# Round 53 lane HOOKS: files the user approved (file name, page reference, source).
+# The user's final assignments of 2026-10-20 (tools/r53_sks/assignments.json, its
+# "confirmed" block: the SKS listening page and its control page
+# https://claude.ai/artifact/Qbsxv8V8p5FCW82rnRq4Fa); each file is the candidate's
+# out/ file, copied unchanged.
+grug_sounds_meteor_impact.ogg, R53 SKS meteor_2_fs592572 (meteor_impact), https://freesound.org/people/magnuswaker/sounds/592572/ (magnuswaker, CC0 1.0; tools/r53_sks/out/meteor_2_fs592572.ogg sha256 adb8c47d3d1bd676)
+grug_sounds_cast_fire_rain.ogg, R53 SKS fire_rain_2_fs412558 (fire_rain), https://freesound.org/people/GrimGrum/sounds/412558/ (GrimGrum, CC0 1.0; tools/r53_sks/out/fire_rain_2_fs412558.ogg sha256 45bd9103be925fbc)
+grug_sounds_fire_rain_impact.ogg, R53 SKS fire_rain_impact_2_fs182369 (fire_rain_impact), https://freesound.org/people/kingsrow/sounds/182369/ (kingsrow, CC0 1.0; tools/r53_sks/out/fire_rain_impact_2_fs182369.ogg sha256 69961c64f4646577)
+grug_sounds_cold_spark_launch.ogg, R53 SKS cold_spark_5_fs709888-short (cold_spark), https://freesound.org/people/lotteria001/sounds/709888/ (lotteria001, CC0 1.0; tools/r53_sks/out/cold_spark_5_fs709888-short.ogg sha256 3dfc0b266ef5ea8d)
+grug_sounds_cast_ice_wave.ogg, R53 SKS ice_wave_4_fs685253 (ice_wave), https://freesound.org/people/antonsoederberg/sounds/685253/ (antonsoederberg, CC0 1.0; tools/r53_sks/out/ice_wave_4_fs685253.ogg sha256 780b0c0790f60507)
+grug_sounds_cast_rime_mantle.ogg, R53 SKS winter_field_impact_3_fs719973 (rime_mantle), https://freesound.org/people/InMotionAudio/sounds/719973/ (InMotionAudio, CC0 1.0; tools/r53_sks/out/winter_field_impact_3_fs719973.ogg sha256 41877cd572210153)
+grug_sounds_cast_winter_field.ogg, R53 SKS winter_field_5_fs381853-short (winter_field), https://freesound.org/people/sqeeeek/sounds/381853/ (sqeeeek, CC0 1.0; tools/r53_sks/out/winter_field_5_fs381853-short.ogg sha256 d4d9ed47350c9c3c)
+grug_sounds_winter_field_impact.ogg, R53 SKS rime_mantle_2_fs396447 (winter_field_impact), https://freesound.org/people/hz37/sounds/396447/ (hz37, CC0 1.0; tools/r53_sks/out/rime_mantle_2_fs396447.ogg sha256 8411b6bf6d77ff0d)
+grug_sounds_cast_unbroken.ogg, R53 SKS ice_wave_2_fs691005 (unbroken), https://freesound.org/people/DustyWind/sounds/691005/ (DustyWind, CC0 1.0; tools/r53_sks/out/ice_wave_2_fs691005.ogg sha256 e4d1366e459e97f4)
+grug_sounds_cast_ruination.ogg, R53 SKS ruination_4_lrsf-Spell-04 (ruination), https://opengameart.org/content/fantasy-sound-effects-library (Little Robot Sound Factory (www.littlerobotsoundfactory.com), CC BY 3.0; tools/r53_sks/out/ruination_4_lrsf-Spell-04.ogg sha256 0241c8a192c7c723)
+grug_sounds_cast_haven.ogg, R53 SKS hearten_4_p0ss-blessing2 (haven), https://opengameart.org/content/spell-sounds-starter-pack (p0ss, CC BY-SA 3.0; tools/r53_sks/out/hearten_4_p0ss-blessing2.ogg sha256 a1527d123cc607bf)
+grug_sounds_censure_impact.ogg, R53 SKS censure_impact_3_fs855910 (censure_impact), https://freesound.org/people/nicorico_120/sounds/855910/ (nicorico_120, CC0 1.0; tools/r53_sks/out/censure_impact_3_fs855910.ogg sha256 d25768033d3e39a4)
+grug_sounds_cast_final_word.ogg, R53 SKS final_word_2_fs871781 (final_word), https://freesound.org/people/CAT-FOX_ALEX/sounds/871781/ (CAT-FOX_ALEX, CC0 1.0; tools/r53_sks/out/final_word_2_fs871781.ogg sha256 04c27c5c84b4dde0)
+grug_sounds_cast_arrowfall.ogg, R53 SKS arrowfall_2_fs394004 (arrowfall), https://freesound.org/people/DigPro120/sounds/394004/ (DigPro120, CC0 1.0; tools/r53_sks/out/arrowfall_2_fs394004.ogg sha256 3b30764eb3e5e929)
+grug_sounds_arrowfall_impact.ogg, R53 SKS arrowfall_impact_2_fs205938 (arrowfall_impact), https://freesound.org/people/Twisted_Euphoria/sounds/205938/ (Twisted_Euphoria, CC0 1.0; tools/r53_sks/out/arrowfall_impact_2_fs205938.ogg sha256 fa70e563009e3d93)
+grug_sounds_cast_parry.ogg, R53 SKS parry_3_fs334169 (parry), https://freesound.org/people/loudernoises/sounds/334169/ (loudernoises, CC0 1.0; tools/r53_sks/out/parry_3_fs334169.ogg sha256 c689fd1007a6d2bb)
+grug_sounds_cast_flourish.ogg, R53 SKS flourish_2_fs60030 (flourish), https://freesound.org/people/qubodup/sounds/60030/ (qubodup, CC0 1.0; tools/r53_sks/out/flourish_2_fs60030.ogg sha256 7ef0318b47edab3a)
+grug_sounds_cast_close_dance.ogg, R53 SKS flourish_3_fs353708 (close_dance), https://freesound.org/people/SamsterBirdies/sounds/353708/ (SamsterBirdies, CC0 1.0; tools/r53_sks/out/flourish_3_fs353708.ogg sha256 09e84c68b62c520f)
+grug_sounds_cast_blink.ogg, R53 SKS rime_mantle_3_fs274542 (blink), Low Ice shimmer FX.wav (B3_Sound) (Low Ice shimmer FX.wav (B3_Sound), CC0 1.0; tools/r53_sks/out/rime_mantle_3_fs274542.ogg sha256 d625292298157fa4)
+grug_sounds_flame_lance_launch.ogg, R53 SKS winter_field_4_fs844261 (flame_lance), Subzero Frost Loop (qubodup) (Subzero Frost Loop (qubodup), CC0 1.0; tools/r53_sks/out/winter_field_4_fs844261.ogg sha256 93a1115e605825a3)

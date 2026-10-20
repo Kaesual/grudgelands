@@ -41,6 +41,11 @@ local function skill(id)
 	return "grug_abilities_skill_" .. id .. ".png"
 end
 
+-- A talent node's own icon (grug_classes, the id without its tree prefix).
+local function talent(id)
+	return "grug_classes_talent_" .. id .. ".png"
+end
+
 -- id -> {kind = frame category, name, detail, icon = texture,
 --        variants = {name -> texture}}
 -- A variant picks the picture only; the frame always follows the id's kind.
@@ -86,6 +91,27 @@ icons.STATUS = {
 	mend = def("buff", "Heal over time", "Heals every 3 s", skill("mend")),
 	-- One generic shield for every absorb source (user decision).
 	shield = def("buff", "Shield", "Absorbs damage", art("shield")),
+	-- Round 53: the new skills' own statuses (an absorb they add shows
+	-- `shield`) ...
+	rime_mantle = def("buff", "Rime Mantle", "Extra armor rating",
+		skill("rime_mantle")),
+	unbroken = def("buff", "Unbroken", "Extra armor rating", skill("unbroken")),
+	haven = def("buff", "Haven", "Heals every 2 s", skill("haven")),
+	-- ... and the readiness windows of WINDOWS below: a granting node shows
+	-- its skill's icon, any other node its talent icon.
+	cold_shock = def("buff", "Cold Shock", "Your next Cold Spark hits harder",
+		talent("cold_shock")),
+	retort = def("buff", "Retort", "Your next Retort hits harder",
+		skill("retort")),
+	clear_conscience = def("buff", "Clear Conscience",
+		"Your next Smite hits harder", talent("clear_conscience")),
+	follow_the_line = def("buff", "Follow the Line",
+		"Your next Loose hits harder", talent("follow_the_line")),
+	parry = def("buff", "Parry", "Opening hits harder", skill("parry")),
+	ruination = def("buff", "Ruination",
+		"Swings hit harder and build more rage", skill("ruination")),
+	close_dance = def("buff", "Close Dance", "Blade swings hit harder",
+		skill("close_dance")),
 
 	-- Talent windows (skill_trees.md section 3.2).
 	talent_unbroken = def("buff", "Unbroken", "Extra armor rating",
@@ -156,9 +182,18 @@ icons.TALENT_WINDOWS = {
 -- The readiness windows of the window API by any id (Round 52, B8:
 -- grug_classes.open_window in talent_windows.lua), window id -> status id.
 -- An open window shows its status with the window's expiry; consuming or
--- clearing the window removes it. Empty until round K adds its windows; each
--- status id needs its entry in STATUS above (the portable fixture checks).
-icons.WINDOWS = {}
+-- clearing the window removes it. Each status id needs its entry in STATUS
+-- above (the portable fixture checks). Round 53: each window shows the
+-- status of its own id.
+icons.WINDOWS = {
+	cold_shock = "cold_shock",
+	retort = "retort",
+	clear_conscience = "clear_conscience",
+	follow_the_line = "follow_the_line",
+	parry = "parry",
+	ruination = "ruination",
+	close_dance = "close_dance",
+}
 
 -- Row order: buffs, then debuffs, then neutral states; inside one kind by id,
 -- so an icon keeps its place while others come and go.

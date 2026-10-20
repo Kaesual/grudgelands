@@ -122,9 +122,10 @@ end
 -- Both sound lanes ship into this mod: lane S1b's picks (combat and
 -- creatures) are listed in tools/r34_s1b/approved.txt, Round 35 lane F's
 -- break sound in tools/r35_f/approved.txt and Round 37 lane SN's dragon
--- return and Rift Spawn cues in tools/r37_sn/approved.txt.
+-- return and Rift Spawn cues in tools/r37_sn/approved.txt, Round 53 lane
+-- HOOKS's new class skill cues in tools/r53_hooks/approved.txt.
 local approved = {}
-for _, lane in ipairs({"r34_s1a", "r34_s1b", "r35_f", "r37_sn"}) do
+for _, lane in ipairs({"r34_s1a", "r34_s1b", "r35_f", "r37_sn", "r53_hooks"}) do
 	local approved_text = read(ROOT .. "/tools/" .. lane .. "/approved.txt")
 	check(approved_text ~= nil, "E tools/" .. lane .. "/approved.txt exists")
 	for line in (approved_text or ""):gmatch("[^\n]+") do
@@ -167,6 +168,12 @@ end
 -- C: the call sites.
 ------------------------------------------------------------------------------
 local PENDING = {click = "the formspec style"}
+-- Round 53 (HOOKS): the per-ability launches and the impacts are played by
+-- the round-K class kits, which the class lanes write after HOOKS.
+for _, event in ipairs({"cold_spark_launch", "flame_lance_launch", "meteor_impact",
+		"fire_rain_impact", "winter_field_impact", "censure_impact", "arrowfall_impact"}) do
+	PENDING[event] = "a round-K class kit"
+end
 local seen = {}
 local calls = 0
 -- A hooked file plays an event, or (Round 34 S1b) registers a projectile

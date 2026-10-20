@@ -14,19 +14,22 @@
 --      the caster), every spawner unattached, public and 0 < time <= 1 (a
 --      trail's frame time clamped), and the budget of every catalogue
 --      effect (the check passes, at most 100 particles per occurrence).
---   B  the fallback rule (§2.4): the REAL kits.lua and scout.lua, and the
---      REAL finish_authoritative_swing, cast_refusal and try_cast cut out of
---      grug_abilities/init.lua, under stubs. Strike has no cast and no proc,
---      so it can play nothing; a swing skill's proc preparation
---      (proc_swing) plays nothing, only its post does, and the settlement
+--   B  the fallback rule (§2.4): the REAL kits.lua (Strike) and the REAL
+--      finish_authoritative_swing, cast_refusal and try_cast cut out of
+--      grug_abilities/init.lua, under stubs, on probe skills (Round 53: the
+--      kits change in round K; each class fixture covers its own skills).
+--      Strike has no cast and no proc, so it can play nothing; a proc's
+--      preparation plays nothing, only its post does, and the settlement
 --      runs the post only for a committed, landed proc -- the Strike
 --      fallback (no proc), a miss and a cancel play nothing; a cast on
 --      cooldown never reaches the cast and plays nothing; a refused cast
---      (no target, no room) plays nothing; a cast that fires plays its
---      effect once. The REAL grug_projectiles plays a skill arrow's trail
---      only for a launch that is final (a rolled-back batch has none).
---   C  every effect id the game plays (grug_core.particles.play, kits.lua's
---      fx, grug_core.proc_flash, the arrow trails) is in the catalogue.
+--      (no target) plays nothing; a cast that fires plays its effect once.
+--      The REAL grug_projectiles plays a skill arrow's trail only for a
+--      launch that is final (a rolled-back batch has none).
+--   C  every effect id the game plays (grug_core.particles.play, the kits'
+--      fx, an area's warning, fall and burst, grug_core.proc_flash, the
+--      arrow trails) is in the catalogue, scanned file by file and site by
+--      site with no count.
 -- Prints "R40 PX PORTABLE PASS checks=<n>" or the failures (exit 1).
 
 local ROOT = arg and arg[1] or "."
@@ -167,13 +170,13 @@ ring_check("A Frostbind's nova at 8 m", 8, 48)
 
 -- The proc flash: 8 on the 0.6 m circle, in the proc's colour.
 calls = {}
-grug_core.proc_flash({get_pos = function() return CASTER end}, "untouchable")
+grug_core.proc_flash({get_pos = function() return CASTER end}, "last_light")
 eq(#calls, 8, "A the proc flash is 8 single motes")
 for i, c in ipairs(calls) do
 	local dx, dz = c.def.pos.x - CASTER.x, c.def.pos.z - CASTER.z
 	near(math.sqrt(dx * dx + dz * dz), 0.6, "A proc mote " .. i .. " on the 0.6 m circle")
-	check(c.def.texture.name:find(grug_core.PROC_COLORS.untouchable, 1, true) ~= nil,
-		"A proc mote " .. i .. " in Untouchable's colour")
+	check(c.def.texture.name:find(grug_core.PROC_COLORS.last_light, 1, true) ~= nil,
+		"A proc mote " .. i .. " in Last Light's colour")
 end
 
 -- The facing: Mighty Blow's slash from local (1.2, 2, -0.5) turns with the
@@ -215,10 +218,13 @@ check(#warnings == 1 and warnings[1]:find("no_such_effect", 1, true) ~= nil, "A 
 local FRAME = {caster = CASTER, target = vector.new(16, 5, -20), dir = vector.new(1, 0, 0),
 	from = vector.new(10, 6.5, -20), to = vector.new(30, 6, -20), time = 0.6, reach = 10,
 	color = "#ffffff"}
-local IDS = {"ice_nova", "fireball", "smite", "mighty_blow", "skill_arrow", "charge_ring",
-	"charge_dust", "hamstring", "taunt", "bellow", "hold_ground", "blink", "cinderfall",
-	"glacial_ward", "heal", "heal_splash", "shield_spell", "mend", "word_of_ruin", "snare_hit",
-	"pinning_hit", "sidestep", "sprint", "opening", "proc", "crit", "absorb", "level_up"}
+-- Every effect the catalogue registers (Round 53: read from the file, so
+-- round K's new and removed effects need no list here).
+local IDS = {}
+for id in read("mods/CORE/grug_core/particle_effects.lua"):gmatch('\nregister%("([%w_]+)"') do
+	IDS[#IDS + 1] = id
+end
+check(#IDS >= 28, "A the catalogue's effects found (" .. #IDS .. ")")
 local per_effect = {}
 for _, id in ipairs(IDS) do
 	local effect = P.registered(id)
@@ -369,7 +375,11 @@ grug_factions = {same_faction = function() return false end}
 grug_sounds = {play = function() end}
 player_api = {register_control_animation_override = function() end}
 local abilities = {}
-grug_abilities = {
+-- Round 53 (HOOKS, round53-plan.md K14): the class kits change in round K,
+-- so B tests the rule on probe skills, not on the shipped kits; the kit
+-- files are still loaded (every class file through kits.lua) and Strike is
+-- still checked. Any other register_* seam a kit calls at load is a no-op.
+grug_abilities = setmetatable({
 	register_ability = function(def) abilities[def.id] = def end,
 	get_range = function(_, def) return def.range or 4 end,
 	set_target = function() end,
@@ -377,14 +387,17 @@ grug_abilities = {
 		return kind == "hostile" and obj == mob
 	end,
 	charge_destination = function() return vector.new(0, 0, 4.7) end,
-	-- Round 40 CH: the dash starts here and plays the ring on arrival
-	-- (charge.lua, tools/r40_ch covers it): nothing plays at the cast.
 	charge_dash = function() return true end,
 	blink_destination = function() return vector.new(0, 0, 10) end,
 	add_rage = function() end,
 	crosshair = {set_ring = function() end},
 	input = {hold_range = function() end},
-}
+	family_bonus = function() return 0 end,
+	target_filter = function() return function() return false end end,
+}, {__index = function(_, key)
+	if type(key) == "string" and key:match("^register_") then return function() end end
+	return nil
+end})
 assert(loadfile(ROOT .. "/mods/PLAYER/grug_abilities/kits.lua"))()
 assert(loadfile(ROOT .. "/mods/PLAYER/grug_abilities/scout.lua"))()
 
@@ -393,107 +406,83 @@ local strike = abilities.strike
 check(strike ~= nil and strike.cast == nil and strike.proc_swing == nil,
 	"B Strike has no cast and no proc: it plays nothing")
 
--- The settlement: the REAL finish_authoritative_swing.
+-- The settlement: the REAL finish_authoritative_swing, on a probe swing
+-- skill whose post plays an effect, as every proc's does.
 local init = read("mods/PLAYER/grug_abilities/init.lua")
 local finish_src = init:match("\n(local function finish_authoritative_swing%(context, result%).-\nend)\n")
 check(finish_src ~= nil, "B finish_authoritative_swing found in init.lua")
-local spent = 0
-local finish = assert(loadstring("local spend, swing_rage, play_skill_pose = ...\n" .. finish_src ..
-	"\nreturn finish_authoritative_swing", "=finish"))(
-	function() spent = spent + 1; return true end, function() return 8 end,
-	function() end) -- the pose (lane AN1) has its own fixture
+local finish = assert(loadstring("local spend, swing_rage, play_skill_pose, grant_swing_gains = ...\n" ..
+	finish_src .. "\nreturn finish_authoritative_swing", "=finish"))(
+	function() return true end, function() return 8 end,
+	function() end, -- the pose (lane AN1) has its own fixture
+	function() end) -- the swing callbacks (tools/r53_hooks)
 grug_abilities.reset_charge = function() end
-
--- Each swing skill's preparation plays nothing; its post plays its effect.
-for _, case in ipairs({{"mighty_blow", "mighty_blow"}, {"hamstring", "hamstring"},
-		{"opening", "opening"}}) do
-	local id, effect = case[1], case[2]
-	local def = abilities[id]
+do
+	local probe = {id = "probe_swing", kind = "swing",
+		proc_swing = function()
+			return 20, 1, function() grug_core.particles.play("opening", {}) end
+		end}
 	reset_played()
-	mob.yaw = 0 -- the mob faces away from the caster: Opening is from behind
-	local damage, threat, post = def.proc_swing(caster, mob,
+	local damage, threat, post = probe.proc_swing(caster, mob,
 		{weapon_damage = 10, melee_bonus = 0, melee_damage_add = 0, fpi = 1})
-	check(damage ~= nil and type(post) == "function", "B " .. id .. " prepares a proc with a post")
-	eq(played_ids(), "", "B " .. id .. ": the proc preparation plays nothing")
+	eq(played_ids(), "", "B a proc's preparation plays nothing")
 	local function settle(proc, result)
 		reset_played()
 		finish({player = caster, proc = proc, proc_cost = {}, post = post, threat_mult = threat or 1}, result)
 		return played_ids()
 	end
+	check(damage ~= nil, "B the probe prepares a proc")
 	eq(settle(nil, {landed = true, grant_rage = true}), "",
-		"B " .. id .. ": the Strike fallback (no proc) plays nothing")
-	eq(settle(def, {landed = false}), "", "B " .. id .. ": a missed proc plays nothing")
-	eq(settle(def, {landed = true, cancelled = true}), "", "B " .. id .. ": a cancelled proc plays nothing")
-	eq(settle(def, {landed = true}), effect, "B " .. id .. ": a landed proc plays " .. effect .. " once")
+		"B the Strike fallback (no proc) plays nothing")
+	eq(settle(probe, {landed = false}), "", "B a missed proc plays nothing")
+	eq(settle(probe, {landed = true, cancelled = true}), "", "B a cancelled proc plays nothing")
+	eq(settle(probe, {landed = true}), "opening", "B a landed proc plays its effect once")
 end
 
--- The cast dispatcher: the REAL cast_refusal and try_cast.
+-- The cast dispatcher: the REAL cast_refusal and try_cast, on a probe cast
+-- that plays its effect when it fires and refuses without a target.
 local refusal_src = init:match("\n(local function cast_refusal%(user, def%).-\nend)\n")
 local try_src = init:match("\n(function grug_abilities%.try_cast%(user, def, pointed_thing, notify%).-\nend)\n")
 check(refusal_src ~= nil and try_src ~= nil, "B cast_refusal and try_cast found in init.lua")
 local ready = true
 grug_abilities.is_unlocked = function() return true end
 grug_abilities.ready = function() return ready end
-grug_abilities.cost_for = function() return {} end
+grug_abilities.effective_cost = function() return {} end
 grug_abilities.flash = function() end
 grug_abilities.arm_cooldown = function() end
 grug_abilities.effective_cooldown = function() return 1 end
 grug_abilities.CAST_SOUNDS = {}
-grug_classes.registered_classes = {warrior = {name = "Warrior"}, mage = {name = "Mage"},
-	priest = {name = "Priest"}, scout = {name = "Scout"}}
--- The action clock's two helpers (Round 52 D2): never occupied here.
+grug_classes.registered_classes = {probe = {name = "Probe"}}
+-- The action clock's helpers (Round 52 D2): never occupied here.
 assert(loadstring("local reset_swing_boundary, refuse_mounted_attack, cast_interval_ready, " ..
 	"affordable, spend, arm_cast_interval, play_skill_pose, cast_clock_ready, " ..
-	"occupy_casts = ...\n" .. refusal_src .. "\n" ..
+	"occupy_casts, clock_seconds = ...\n" .. refusal_src .. "\n" ..
 	try_src, "=try_cast"))(
 	function() end, function() return false end, function() return true end,
 	function() return true end, function() return true end, function() end, function() end,
-	function() return true end, function() end)
-
-local function cast(id, class, target_ray)
-	grug_classes.get_class = function() return class end
+	function() return true end, function() end, function(value) return value end)
+local probe_cast = {id = "probe_cast", name = "Probe", kind = "cast", class = "probe",
+	target_kind = "hostile", cost = {}, cooldown = 1, occupied_cast = 0,
+	cast = function()
+		if ray.status ~= "target" then return false, "No target." end
+		grug_core.particles.play("heal", {})
+		return true
+	end}
+local function cast(target_ray)
+	grug_classes.get_class = function() return "probe" end
 	ray = target_ray
 	reset_played()
-	grug_abilities.try_cast(caster, abilities[id], nil, function() end)
+	grug_abilities.try_cast(caster, probe_cast, nil, function() end)
 	return played_ids()
 end
 local HIT = {status = "target", target = mob, reason = "target", distance = 6, range = 20,
 	pointed = {intersection_point = vector.new(0, 1, 6)}}
 local MISS = {status = "aim_miss", reason = "empty"}
-local CASTS = {
-	{"charge", "warrior", ""}, {"taunt", "warrior", "taunt"},
-	{"hold_ground", "warrior", "hold_ground"}, {"ice_nova", "mage", "ice_nova"},
-	{"blink", "mage", "blink"}, {"cinderfall", "mage", "cinderfall"},
-	{"glacial_ward", "mage", "glacial_ward"}, {"smite", "priest", "smite"},
-	{"heal", "priest", "heal"}, {"shield_spell", "priest", "shield_spell"},
-	{"mend", "priest", "mend"}, {"word_of_ruin", "priest", "word_of_ruin"},
-	{"sidestep", "scout", "sidestep"}, {"sprint", "scout", "sprint"},
-}
-mob.entity.attack_type = "dogfight"
-mob.entity.do_attack = function() end
-grug_core.taunt = function() return true end
-for _, case in ipairs(CASTS) do
-	local id, class, effect = case[1], case[2], case[3]
-	ready = false
-	eq(cast(id, class, HIT), "", "B " .. id .. " on cooldown plays nothing")
-	ready = true
-	eq(cast(id, class, HIT), effect, "B " .. id .. " that fires plays " .. effect .. " once")
-end
--- Refused casts (no target in the crosshair, no room) play nothing.
-for _, id in ipairs({"charge", "taunt", "cinderfall", "smite", "word_of_ruin"}) do
-	local class = ({charge = "warrior", taunt = "warrior", cinderfall = "mage"})[id] or "priest"
-	eq(cast(id, class, MISS), "", "B a refused " .. id .. " (no target) plays nothing")
-end
-grug_abilities.charge_destination = function() return nil end
-eq(cast("charge", "warrior", HIT), "", "B a Charge without room plays nothing")
-grug_abilities.blink_destination = function() return nil end
-eq(cast("blink", "mage", HIT), "", "B a Blink without room plays nothing")
-
--- Bellow: the ring only when the area taunt affected someone.
-grug_classes.get_talent_bonus = function(_, key) return key == "taunt_radius" and 8 or 0 end
-eq(cast("taunt", "warrior", HIT), "", "B a Bellow that reaches nobody plays nothing")
-core.get_objects_inside_radius = function() return {mob} end
-eq(cast("taunt", "warrior", HIT), "bellow", "B a Bellow that taunts plays its ring")
+ready = false
+eq(cast(HIT), "", "B a cast on cooldown plays nothing")
+ready = true
+eq(cast(MISS), "", "B a refused cast (no target) plays nothing")
+eq(cast(HIT), "heal", "B a cast that fires plays its effect once")
 
 -- The skill-arrow trail: the REAL grug_projectiles plays it once a launch is
 -- final -- a batch whose commit fails (no arrow consumed) rolls back without
@@ -550,6 +539,18 @@ do
 	reset_played()
 	check(grug_projectiles.spawn("arrow", launch(nil)), "B a launch without a trail flies")
 	eq(played_ids(), "", "B a launch without a trail plays nothing")
+	-- Round 53: a launch may name its own launch cue (Cold Spark and Flame
+	-- Lance), else the definition's plays.
+	local cues = {}
+	grug_sounds.play = function(event) cues[#cues + 1] = event end
+	grug_projectiles.register("cued", {speed = 40, max_distance = 25, on_hit = function() end,
+		sound_launch = "fireball_launch"})
+	grug_projectiles.spawn("cued", launch(nil))
+	local own = launch(nil)
+	own.sound_launch = "cold_spark_launch"
+	grug_projectiles.spawn("cued", own)
+	eq(table.concat(cues, ","), "fireball_launch,cold_spark_launch",
+		"B a launch's own sound_launch replaces the definition's for that launch")
 	reset_played()
 	ray = MISS
 	check(not grug_projectiles.spawn("arrow", launch(TRAIL)), "B a launch with no target is refused")
@@ -560,41 +561,50 @@ end
 -- C: every played id is in the catalogue.
 ------------------------------------------------------------------------------
 P = load_helper(nil)
-local FILES = {"mods/PLAYER/grug_abilities/kits.lua", "mods/PLAYER/grug_abilities/kits_warrior.lua",
-	"mods/PLAYER/grug_abilities/kits_mage.lua", "mods/PLAYER/grug_abilities/kits_priest.lua",
-	"mods/PLAYER/grug_abilities/scout.lua",
-	"mods/PLAYER/grug_abilities/charge.lua",
-	"mods/CORE/grug_core/combat.lua", "mods/CORE/grug_core/particle_effects.lua",
-	"mods/ENTITIES/grug_projectiles/init.lua", "mods/PLAYER/grug_xp/init.lua"}
+-- Round 53 (HOOKS): every Lua file of the abilities and classes mods (the
+-- class kits change in round K, files come and go) plus the other players
+-- of effects; an area's warning, fall and burst ids (area.delayed) count.
+local function lua_files(dir)
+	local list = {}
+	local pipe = assert(io.popen("ls " .. ROOT .. "/" .. dir .. "/*.lua"))
+	for line in pipe:lines() do
+		list[#list + 1] = dir .. "/" .. line:match("([^/]+)$")
+	end
+	pipe:close()
+	return list
+end
+local FILES = lua_files("mods/PLAYER/grug_abilities")
+for _, path in ipairs(lua_files("mods/PLAYER/grug_classes")) do FILES[#FILES + 1] = path end
+for _, path in ipairs({"mods/CORE/grug_core/combat.lua", "mods/CORE/grug_core/particle_effects.lua",
+		"mods/ENTITIES/grug_projectiles/init.lua", "mods/PLAYER/grug_xp/init.lua"}) do
+	FILES[#FILES + 1] = path
+end
 local seen = 0
 for _, path in ipairs(FILES) do
 	local text = read(path)
-	for id in text:gmatch('particles%.play%("([%w_]+)"') do
-		seen = seen + 1
-		check(P.registered(id) ~= nil, "C " .. path .. " plays a catalogue effect: " .. id)
-	end
-	for id in text:gmatch('fx%("([%w_]+)"') do
-		seen = seen + 1
-		check(P.registered(id) ~= nil, "C " .. path .. " plays a catalogue effect: " .. id)
-	end
-	for id in text:gmatch('effect = "([%w_]+)"') do
-		seen = seen + 1
-		check(P.registered(id) ~= nil, "C " .. path .. " trails a catalogue effect: " .. id)
+	for _, pattern in ipairs({'particles%.play%("([%w_]+)"', 'fx%("([%w_]+)"',
+			'%f[%w_]effect = "([%w_]+)"', '%f[%w_]warning = "([%w_]+)"',
+			'%f[%w_]fall = "([%w_]+)"', '%f[%w_]burst = "([%w_]+)"'}) do
+		for id in text:gmatch(pattern) do
+			seen = seen + 1
+			check(P.registered(id) ~= nil, "C " .. path .. " plays a catalogue effect: " .. id)
+		end
 	end
 end
 check(seen >= 25, "C the scan found the game's effect calls (" .. seen .. ")")
-local PROC_FILES = {"mods/PLAYER/grug_abilities/kits_warrior.lua",
-	"mods/PLAYER/grug_abilities/kits_mage.lua", "mods/PLAYER/grug_abilities/kits_priest.lua",
-	"mods/PLAYER/grug_classes/scout.lua",
-	"mods/PLAYER/grug_classes/talents.lua", "mods/PLAYER/grug_trinkets/init.lua"}
+-- Every proc flash site of the game names a proc with a colour, site by
+-- site (no count: round K adds and removes them).
 local procs = 0
-for _, path in ipairs(PROC_FILES) do
+local pipe = assert(io.popen("grep -rl --include=*.lua proc_flash " .. ROOT .. "/mods"))
+for line in pipe:lines() do
+	local path = line:sub(#ROOT + 2)
 	for proc in read(path):gmatch('proc_flash%([%w_]+, "([%w_]+)"%)') do
 		procs = procs + 1
 		check(grug_core.PROC_COLORS[proc] ~= nil, "C " .. path .. " flashes a known proc: " .. proc)
 	end
 end
-eq(procs, 7, "C the seven proc sites flash")
+pipe:close()
+check(procs >= 1, "C the scan found the proc flash sites (" .. procs .. ")")
 
 print(("%d checks, %d failures"):format(checks, failures))
 if failures > 0 then

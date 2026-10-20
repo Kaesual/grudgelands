@@ -1,9 +1,8 @@
 -- Round 36 lane K portable test (class fine-tuning, round36-plan.md §2.12,
 -- the user's picks of 2026-10-05). Loads the REAL grug_classes/stats.lua, the
 -- real fit block and damage settlement of grug_core/combat.lua, the real
--- support/spell helpers, Fireball's and Smite's values cut out of
--- grug_abilities/kits.lua and the real enchant curves of grug_quality, and
--- checks:
+-- support/spell helpers cut out of grug_abilities/kits.lua and the real
+-- enchant curves of grug_quality, and checks:
 --   A. the support factor: 1 + gear Int / 10 / B(L), where gear Int is the
 --      Intelligence above the class's own level growth; exactly 1 without
 --      Intelligence gear (Priest and Mage), and support_value feeds it;
@@ -15,10 +14,11 @@
 --      level 60 / 65 / 70, and the Scout's full damage set lands in the band
 --      (45-60 % at item level 60, no higher than the Warrior at 65 and 70);
 --   D. spells floor once after the level scalar: spell_damage_value keeps
---      fractions, Fireball and Smite settle to 337 and 437 at level 60
---      (339 and 439 with the old pre-scalar rounding), Smite's inner rounding
---      is gone;
---   E. "(30% cap holds)" on Keen Edge, Cold Eye, Firebrand and Hard Faith.
+--      fractions, and a fractional spell value (today's level-60 Fireball,
+--      43.7) settles to 337 (339 with the old pre-scalar rounding).
+-- Round 53 (HOOKS, K14): the kit and talent contents (Fireball's and
+-- Smite's values, Mighty Blow's floor, the old talent texts of E) went with
+-- round K's new kits; each class fixture covers its own skills.
 --
 -- Usage (repo root): luajit tools/r36_k/portable_test.lua [REPO]
 local ROOT = arg[1] or "."
@@ -99,19 +99,12 @@ local function enchant(stat, ilvl)
 	return math.max(curve.minimum, math.floor(raw * factor + 0.5) / factor)
 end
 
--- The real helpers and values of kits.lua and its per-class files (Round 52).
-local kits = read("mods/PLAYER/grug_abilities/kits.lua") ..
-	read("mods/PLAYER/grug_abilities/kits_warrior.lua") ..
-	read("mods/PLAYER/grug_abilities/kits_mage.lua") ..
-	read("mods/PLAYER/grug_abilities/kits_priest.lua")
+-- The real helpers of kits.lua (the shared part).
+local kits = read("mods/PLAYER/grug_abilities/kits.lua")
 local helpers = cut(kits, "(local function spell_damage_value%(player, amount%).-\nend\n.-" ..
 	"local function support_value%(player, percent%).-\nend)\n", "spell_damage_value and support_value")
-local fireball = cut(kits, "(local function fireball_values%(user%).-\nend)\n", "fireball_values")
-local smite = cut(kits, 'id = "smite",.-\n\tvalues = (function%(user, assume_shielded%).-\n\tend),',
-	"Smite's values")
-local spell_damage_value, support_value, fireball_values, smite_values = assert(loadstring(
-	helpers .. "\n" .. fireball .. "\nreturn spell_damage_value, support_value, fireball_values, " ..
-	smite))()
+local spell_damage_value, support_value = assert(loadstring(
+	helpers .. "\nreturn spell_damage_value, support_value"))()
 grug_classes.get_spell_damage_percent = function() return 0 end
 grug_core.get_absorb = function() return 0 end
 
@@ -189,29 +182,8 @@ check(gains[65][1] <= gains[65][2] + 0.025 and gains[70][1] <= gains[70][2] + 1e
 -- D. Spells floor once after the level scalar.
 near(spell_damage_value({}, 43.7), 43.7, "D spell_damage_value keeps the fraction")
 local mage60 = {class = "mage", level = 60}
-local priest60 = {class = "priest", level = 60}
-check(grug_core.scale_player_damage(mage60, nil, fireball_values(mage60).damage) == 337,
-	"D Fireball at level 60 settles to 337 (339 rounded first)")
+check(grug_core.scale_player_damage(mage60, nil, 43.7) == 337,
+	"D a level-60 spell value of 43.7 settles to 337 (339 rounded first)")
 check(grug_core.scale_player_damage(mage60, nil, 44) == 339, "D the old pre-rounded value was 339")
-near(smite_values(priest60, false).damage, (25 + 12.8) * 1.5, "D Smite keeps its fraction", 1e-9)
-check(grug_core.scale_player_damage(priest60, nil, smite_values(priest60, false).damage) == 437,
-	"D Smite at level 60 settles to 437 (439 rounded first)")
-priest60.talents = {smite_damage_add = 0.2 * B(60)}
-near(smite_values(priest60, false).damage, (25 + 12.8) * 1.5 + 0.2 * B(60),
-	"D Smite plus Sharpened Word, no rounding in between", 1e-9)
-check(not smite:find("+ 0.5", 1, true), "D Smite's inner rounding is gone")
-local mighty = cut(kits, "(local damage = math%.floor%(ctx%.weapon_damage %* mult%) %+ ctx%.melee_bonus)",
-	"Mighty Blow's weapon floor")
-check(mighty ~= nil, "D Mighty Blow keeps flooring the weapon part")
-
--- E. Crit talent texts.
-local talents = read("mods/PLAYER/grug_classes/talents_warrior.lua") ..
-	read("mods/PLAYER/grug_classes/talents_mage.lua") ..
-	read("mods/PLAYER/grug_classes/talents_priest.lua") ..
-	read("mods/PLAYER/grug_classes/scout_talents.lua")
-for _, id in ipairs({"keen_edge", "cold_eye", "firebrand", "hard_faith"}) do
-	local text = cut(talents, 'id = "' .. id .. '",.-description = "([^"]*)"', id .. "'s text")
-	check(text:find("(30% cap holds)", 1, true) ~= nil, "E " .. id .. " says the cap holds")
-end
 
 print("R36 K PORTABLE PASS checks=" .. checks)

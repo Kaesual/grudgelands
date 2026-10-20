@@ -11,7 +11,7 @@
 --      ship in grug_sounds/sounds (the fuse as three variants), are mono and
 --      are on tools/r37_sn/approved.txt; every file on that list ships and is
 --      played by one of these specs; every .ogg in grug_sounds/sounds is on
---      one of the four approval lists (the approval gate);
+--      one of the approval lists (the approval gate);
 --   W  the wiring: the dragon's return warning plays dragon_return at the lair
 --      and no raw mobs_spell; the Rift Spawn's fuse is the rift_fuse event
 --      (mobs_redo's mob_sound routes grug_sounds events) and its burst plays
@@ -136,7 +136,7 @@ for file in pairs(mine) do
 	check(played_by[file] ~= nil, "E approved file is played by an SN cue: " .. file)
 end
 local all = {}
-for _, lane in ipairs({"r34_s1a", "r34_s1b", "r35_f", "r37_sn"}) do
+for _, lane in ipairs({"r34_s1a", "r34_s1b", "r35_f", "r37_sn", "r53_hooks"}) do
 	for file in pairs(approved_of(lane)) do all[file] = true end
 end
 for file in pairs(shipped) do
