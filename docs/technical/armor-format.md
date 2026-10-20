@@ -11,7 +11,10 @@ Armor is a set of low-poly boxes baked into the character model, one catalog for
 that a piece does not use is hidden by texture alpha (0), so the model never changes with the gear.
 
 - **Units:** skin pixels. One pixel is 0.525 model units (0.0525 nodes; the 32 px character is 1.68 nodes tall).
-  Rest pose, y up from the soles, +z forward (the face), the character's right is −x.
+  Rest pose, y up from the soles, +z forward (the face), the character's right is −x (right-handed, as the
+  render tool and three.js). The `.b3d` mesh space is left-handed, with the character's right at **+x**: a catalog
+  point (x, y, z) is the model point 0.525 × (−x, y, z), and that x flip reverses the triangle winding (so does
+  the mirrored copy's).
 - **Catalog:** 17 shapes, 28 boxes with the mirrored copies, 864 vertices with the body and the cloak (24 per
   box). Budget for the player model: 45 boxes. `python3 tools/r54_armor/zfight.py` checks that no two boxes (body
   included, all bones, rest pose) have same-facing faces closer than 0.25 px.
@@ -58,8 +61,14 @@ In this order in the model's texture list:
 | `armor` | 128 × 64 | the armor atlas (§3) |
 | `weapon` | per weapon | the weapon card in the hand (inventory view; transparent in the world) |
 
-Unarmored humanoid NPCs keep `character.b3d`; armored NPCs use the same generated model as players, filtered to the
-boxes NPCs wear.
+An empty slot (no armor at all, no weapon shown) is `blank.png`, like the cloak today. The player model carries all
+four slots. Armored NPCs (a visual spec with an `armor_line`: guards and bandits today) use the generated **NPC
+model**: the same body and armor buffer with `skin`, `armor`, `weapon` (no cloak), built from a list of the boxes
+NPCs wear; that list is **every catalog box** for now (NPCs wear every tier). Unarmored humanoid NPCs (kings, royal
+guards, vendors, villagers) keep `character.b3d`.
+
+The helmet is a box: when a head piece is worn, the race look drops the hair layer as before (the render tool
+draws the bald look then), and the face stays the race's.
 
 ## 3. The armor atlas
 
@@ -169,12 +178,16 @@ leather light … nightscale, cloth patch … stormweave).
 
 Written by the bake from the art, the palettes, `tiers.json` and the atlas; read by `grug_visuals`. `<grade>` is
 the game's grade key (`grug_gear.MATERIALS`; leather T4 keeps the key `scaled` under the display name Hardened).
+The atlas and skin layers and their masks go to `mods/PLAYER/grug_visuals/textures/`, the icons stay in
+`mods/ITEMS/grug_gear/textures/`. Every line, grade and slot gets its files, empty (transparent) where the tier
+paints nothing: 72 atlas layers (head, chest, legs, feet) and 54 skin layers (chest, legs, feet; the head has no
+skin region), each with its mask.
 
 | File | Content |
 |---|---|
 | `grug_armor_<line>_<grade>_<slot>.png` | atlas layer, 128 × 64, only this slot's boxes painted |
 | `grug_armor_<line>_<grade>_<slot>_skin.png` | skin layer, 64 × 32, the slot's inner paint |
-| `…_ench.png` next to each | the enchant mask: zone A and zone B pixels, derived from the art, never drawn separately |
+| `…_ench.png` next to each | the enchant mask in today's format (grey + alpha, two frames stacked: frame 0 zone A for the prefix colour, frame 1 zone B for the suffix colour, grey from the art's shading), derived from the zone pixels, never drawn separately |
 | `grug_gear_item_<slot>_<line>_<grade>.png` | the item icon (+ its mask), names unchanged |
 
 ## 8. Checks
