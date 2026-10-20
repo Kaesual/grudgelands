@@ -342,7 +342,8 @@ local fake_grug_core = with_any({
 	get_absorb = function() return 0 end,
 	deal_ability_damage = function(attacker, target, amount, opts)
 		local scaled = scale_damage(attacker, target, amount)
-		log.damage[#log.damage + 1] = {target = target, amount = scaled, raw = amount}
+		log.damage[#log.damage + 1] = {target = target, amount = scaled, raw = amount,
+			no_crit = opts and opts.no_crit}
 		if opts and opts.on_accepted then opts.on_accepted(scaled, false, opts.action_id or {}) end
 		return scaled
 	end,
@@ -900,6 +901,7 @@ do
 		"the one outside, the one too high, the one behind stone)")
 	for _, d in ipairs(log.damage) do
 		eq(d.amount, hit(L, 1.2, 0, 0), "A Censure's hit on " .. d.target.name)
+		check(d.no_crit, "A Censure's hit asks for no crit on " .. d.target.name)
 	end
 	check(#log.sounds >= 1, "A sounds played")
 	local impacts = 0
