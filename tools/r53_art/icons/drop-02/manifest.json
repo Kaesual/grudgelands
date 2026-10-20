@@ -1,0 +1,1344 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "author": "GPT-6 Astra",
+  "tool": "built-in image_gen.imagegen; one prompt and call per image",
+  "style": "A / Painted embers, simplified",
+  "license": "CC0-1.0",
+  "upgrade": "compatible",
+  "status": "proposals, awaiting the user's selection",
+  "pass": 2,
+  "previous_drop": "../drop-01/manifest.json",
+  "generation_calls": 29,
+  "old_revision": "dea1d163",
+  "comparison_references": [
+    {
+      "key": "skill:bellow",
+      "tree": "Bulwark",
+      "current": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_bellow.png",
+        "sha256": "813e3e0eab16e4515a016e7972be598b23ff5a39ee78b6864d1c180a145635a8",
+        "git_blob": "6af196bd50fd102e396af24069370d1e0b8585ef",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__bellow_v1.png",
+          "sha256": "7e50735222da50f6875b81682f6f07e9841df1cc7ecca918746694954a50c1b3",
+          "git_blob": "4e5ff7a64552640f0ed2b5ae4c6d6742eebea9e0"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__bellow_v2.png",
+          "sha256": "91c6c1907ce8c856e245e698c8e01f8ed39065af628652ca19e469bc7022d0ee",
+          "git_blob": "7c02ab6d427e65fd6a83db58114c83ab3ce72f14"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__bellow_v3.png",
+          "sha256": "7f55d4f7b39bc56f8933d60818a9b8e150b65cd99c0d8371f3331646fce733d7",
+          "git_blob": "9952d7125c7beac86cbecd1b68d65f1e8f6a5e32"
+        }
+      ]
+    },
+    {
+      "key": "skill:blink",
+      "tree": "Rime",
+      "current": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_blink.png",
+        "sha256": "c57ee52e5b4a7fcb589753756ea20b4be2ea9863dde9ff35eeec8d11f0a2b879",
+        "git_blob": "7a43ef4334325970929ccfbe53f3c9f3ca26ef6d",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__blink_v1.png",
+          "sha256": "8ea86140246ed3a32a205b0d6d7ca5b6918e8d4f6dbf56a3d9bcf5033fb15463",
+          "git_blob": "d55d03978386f19f0486deb2f4d5ed488cedd777"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__blink_v2.png",
+          "sha256": "8387a575af121400ef43691d5210f7866f1861622a04905d006075f2c934e418",
+          "git_blob": "277073d9db1ee255efe2d7c9a01d6ea9ac8edfc6"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__blink_v3.png",
+          "sha256": "daf5587f9a766c1809826129cd29a0552fb3082d74b5866b211e485d5c11f0f2",
+          "git_blob": "729dab067572af9b596efc3ef6774bfc78531ba6"
+        }
+      ],
+      "old": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_blink.png",
+        "sha256": "0c231530724b473acfc9c7f4d8c84500b574aee6f3f06143818d322695c36f91",
+        "git_blob": "6bd265f218d9da4c983574ec1ea5d468f2c8e2ed",
+        "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+      }
+    },
+    {
+      "key": "skill:broadstroke",
+      "tree": "Ruin",
+      "current": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_broadstroke.png",
+        "sha256": "60e797a57ee02b4a83238c238f2ae0517532f105ce29f74814b2d8ef13955793",
+        "git_blob": "9843fb959aebe492537af1765b7ca5f2b11dd7a7",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__broadstroke_v1.png",
+          "sha256": "e86300118b0ec855b548dc3c11e72b8979060044469e26bb855e841ec7b761d7",
+          "git_blob": "5f8fc5abe0b7ccb004a01088e1f2dfbf0b728410"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__broadstroke_v2.png",
+          "sha256": "68fa16bc5c9e68c046ab78deb58256a43f172c2dcf31b0ec3a88b5c3bbdbbaf1",
+          "git_blob": "a8db2dc0079a76565cd52803b9a5ae47a5b2d92e"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__broadstroke_v3.png",
+          "sha256": "a77cd4c879ac20b979687d647cc0ee1ef1ff9e16d76597a8865d61f42b2dd92a",
+          "git_blob": "4d9b173b8fa7b2b5dba0a3349f436a08e66af37c"
+        }
+      ]
+    },
+    {
+      "key": "skill:charge",
+      "tree": "Ruin",
+      "current": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_charge.png",
+        "sha256": "7a1dc99645ac99335658279640fce1fd64d394df1a8a2fce577b7e8068d6baf4",
+        "git_blob": "a40277ed572af4603d8d37844d79537ae0afc255",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__charge_v1.png",
+          "sha256": "8ca2f7650b538ccb827d48a3aeecede6d7d0f1d0683fcef9ee3e174529a9bb1b",
+          "git_blob": "2fd5cb11deae07606e5d12096a64c5c2a39d9b2f"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__charge_v2.png",
+          "sha256": "bba690337c35c1aa49b4264f5ff3fcbec1b9f9d0eb98c53d99dece0892b9c55f",
+          "git_blob": "817be40ade1f5bb22fc60020e36390c4ea53b8a1"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__charge_v3.png",
+          "sha256": "bda631c501a22741a809a73f99ef76f323390442a5c4770b5377ddfcad5ca8c7",
+          "git_blob": "00d7b03ba6c7e649f268ec8729f1eb2722d5a765"
+        }
+      ],
+      "old": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_charge.png",
+        "sha256": "6fea5cafa56296e0d9933d3d16b613b5b271296c464d4e91abdaa3d4f978f72b",
+        "git_blob": "e04c4d4528a01a5baa78d4fa395a001d29bec6dc",
+        "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+      }
+    },
+    {
+      "key": "skill:close_dance",
+      "tree": "Veil",
+      "current": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_close_dance.png",
+        "sha256": "7012b85adbff43758c2502fe824bc552a7b84223ef1bde84febc55df5fef478c",
+        "git_blob": "c9588efdb3bf3637d9bf0235529c51032a8a5bcc",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__close_dance_v1.png",
+          "sha256": "fd79b8f86c52849295b776c3f92c056702648a3d82a8e7ffeb078a15877c4efe",
+          "git_blob": "435962bc1cf25d9480ce555222511dec9c3b9d0f"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__close_dance_v2.png",
+          "sha256": "403c952ef0256a9357a054c8d1828157e06c3a30bcc76bb63bd563830182124e",
+          "git_blob": "89d1bb1bdb505d34ab61a40107590d2c67a86696"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__close_dance_v3.png",
+          "sha256": "92c1e84af97768e71efb601304804f3deb70afbcb34fffd2247a9cdb165439c8",
+          "git_blob": "700a3a175c7b405fedcb855bc746f3391b5c2995"
+        }
+      ]
+    },
+    {
+      "key": "skill:parry",
+      "tree": "Veil",
+      "current": {
+        "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_parry.png",
+        "sha256": "361376923a107f287ad2f7ee57eaaef8566ca84da9c65bfe10af95b61973a33d",
+        "git_blob": "d1224ea4f8d855d6a8922a25b5396b900f066d96",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__parry_v1.png",
+          "sha256": "a04a66a3a5ab5682f53553c4d7e6f8878be03e411d85d79f8f0f6416ab7badf8",
+          "git_blob": "e1aa2578fba5768c766e615fac47551d4e5965c3"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__parry_v2.png",
+          "sha256": "5f65d1d9977d1c3687404507af6483f275f2cb2d06ffbcc6fcac57c1ced98c52",
+          "git_blob": "bf38f48cebe74e0ba16d62b2cf9587036d14a087"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__parry_v3.png",
+          "sha256": "9e20b0c8df0a7e208867fc49a6c7549e8059c55d2c2a846ab72b81affcc1ac08",
+          "git_blob": "4ffb82655b28cb7236f34b78802ab0c663f79236"
+        }
+      ]
+    },
+    {
+      "key": "talent:bulwark_halt",
+      "tree": "Bulwark",
+      "current": {
+        "path": "mods/PLAYER/grug_classes/textures/grug_classes_talent_halt.png",
+        "sha256": "a19ff42b5f283698134dc44f2f3a7d08e29fc2880c8ca19d9cccc519cc781a7b",
+        "git_blob": "2626ae9737e911045d0afff5bb04c5ab63cac638",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/talent__bulwark_halt_v1.png",
+          "sha256": "fe3f07e1ea962f77e8a7d2432e936a48ff4d170623bfd8462cbf4a79dbb2b27e",
+          "git_blob": "9afc1f9e57eecd28a8cd5fbfcef4b2b42303f2e8"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/talent__bulwark_halt_v2.png",
+          "sha256": "92599e5233d8566c396f84f6be09921a3b22f7bf4cc7e25debcf5c8069ec3a20",
+          "git_blob": "e165033f51b78421f4227ba4330d793de7dd1d4f"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/talent__bulwark_halt_v3.png",
+          "sha256": "5bf1658b99cf6325890e48908f0d5375e981550ab9180dddea3bb372e66d6323",
+          "git_blob": "2442a13bab89001f21963fb0dbc4085456418acc"
+        }
+      ]
+    },
+    {
+      "key": "talent:ruin_finisher",
+      "tree": "Ruin",
+      "current": {
+        "path": "mods/PLAYER/grug_classes/textures/grug_classes_talent_finisher.png",
+        "sha256": "38d33e085e7f9faac30749b807e8aa110e4c314a8be395e5e84d5f32befa838c",
+        "git_blob": "fde19677c7d870e3fc952b334488755269643301",
+        "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+      },
+      "pass1": [
+        {
+          "path": "tools/r53_art/icons/drop-01/talent__ruin_finisher_v1.png",
+          "sha256": "9d7577048c55243c74cacff4c631a6bc5376da5bc9d64a58ca5fd6033c3e8da4",
+          "git_blob": "82d4c2485e9ddb198666b6e7cb50bb2f68c7634f"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/talent__ruin_finisher_v2.png",
+          "sha256": "e307687ad525b1cdee9385c1e6fb89394dbb150bde8f619fd983ee826a10cfe7",
+          "git_blob": "2b02f0658282694af2fbda66894b60213bff7db4"
+        },
+        {
+          "path": "tools/r53_art/icons/drop-01/talent__ruin_finisher_v3.png",
+          "sha256": "7689cd20b1624c85115b61385dca942aaef93eecde2a181edb88f121fd85c91e",
+          "git_blob": "c8e606327b7b016f07d907788b35ef2636dae0b5"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "key": "skill:bellow",
+      "variant": "v1",
+      "tree": "Bulwark",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Bulwark: flat slate #171D26 field; steel #99A3AE, bronze #B08A4D accent. Subject and composition: Reference image is the character design to preserve: the SAME frontal helmeted warrior with a squared steel brow, natural tan face, wide open roaring mouth, steel shoulders and upper chest. Remove ALL arcs beside the helmet and ears. Keep the head entirely clear against flat slate. Show the roar as ONE broad bronze elliptical shock ring around the WHOLE BUST at lower shoulder/chest height, like a ground ring viewed slightly from above: back half behind shoulders, front half across lower chest. Wide clean clearance from the head, no halo. Warrior fills 78% of the square. No hand. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__bellow_v3.png",
+          "sha256": "7f55d4f7b39bc56f8933d60818a9b8e150b65cd99c0d8371f3331646fce733d7",
+          "git_blob": "9952d7125c7beac86cbecd1b68d65f1e8f6a5e32"
+        }
+      ],
+      "path": "skill__bellow_v1.png",
+      "sha256": "9bfdd06d20f05293e42080fe823566484f699abd37c6464d2bcc77906fd3117a",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-1f5f9ede-1183-4466-9a71-8771106e3091.png",
+        "sha256": "d0f8a38def5e00c6ebaf3a3d9b9632bb4d6b043f60afac686bf75636533fcd50",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:bellow",
+      "variant": "v2",
+      "tree": "Bulwark",
+      "prompt": "Use case: precise-object-edit. Refine this project-owned BELLOW icon. Preserve the SAME front-facing roaring warrior, steel helmet, natural tan face, broad steel shoulders and slate field. Replace the three rigid gold triangles BELOW the chin with ONE single compact semi-translucent BRONZE ROAR BURST originating unmistakably INSIDE THE OPEN MOUTH and projecting outward toward the viewer. It is a broad fan of sound/light widening slightly downwards across only the upper chest, with a bright ivory-bronze core at the mouth and a soft luminous outer edge. Make this ONE connected light shape, NOT three solid objects or triangular panels. The burst occupies at most the central lower third of the square; the mouth contour, cheeks, helmet and both shoulders remain readable. Three value masses, natural steel, no separate rays, no halo, arcs, dust, sparks, glyphs or text. Keep upper-left light, painted faceted masses, restrained glow and opaque square output for 64x64 reduction.",
+      "reference": [
+        {
+          "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-303ce1da-2d38-4c22-b4d5-f0c9bbef1af1.png",
+          "sha256": "f8724a9e28a67a627e21fea7e3667797f51a6a89e2416edf4729e0c99403c44b",
+          "git_blob": "b6d3389924c48c6fcc320cf344a228369ce83333"
+        }
+      ],
+      "path": "skill__bellow_v2.png",
+      "sha256": "c24804695234b0161f6deb2b3c6796e97c2101781464011c9f0c158dd7478ef5",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-7c9c75a8-b95c-4d2d-a682-3955c5b9bad8.png",
+        "sha256": "345c5afa9d6a01685fa3489f099791571db991a80f0bfb1d20fc71d120ce1c5c",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": [
+        {
+          "key": "skill:bellow",
+          "variant": "v2",
+          "tree": "Bulwark",
+          "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Bulwark: flat slate #171D26 field; steel #99A3AE, bronze #B08A4D accent. Subject and composition: Reference image is the character design to preserve: the SAME frontal helmeted warrior with squared steel brow, natural tan face, wide open roaring mouth, steel shoulders and upper chest. Remove ALL arcs beside the helmet and ears. Instead ONE compact broad bronze roar cone projects out of the mouth TOWARD THE VIEWER and slightly downward: a widening fan with just three large angular rays, not concentric rings. Keep the face and the steel shoulders clearly readable around the fan. Head clear against slate; no halo, no hands. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+          "reference": [
+            {
+              "path": "tools/r53_art/icons/drop-01/skill__bellow_v3.png",
+              "sha256": "7f55d4f7b39bc56f8933d60818a9b8e150b65cd99c0d8371f3331646fce733d7",
+              "git_blob": "9952d7125c7beac86cbecd1b68d65f1e8f6a5e32"
+            }
+          ],
+          "path": "skill__bellow_v2.png",
+          "sha256": "26aa0671d67fc7bd1377a3c0d64ac2dc97a66fc1af012f91022c2229394b9888",
+          "source": {
+            "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-303ce1da-2d38-4c22-b4d5-f0c9bbef1af1.png",
+            "sha256": "f8724a9e28a67a627e21fea7e3667797f51a6a89e2416edf4729e0c99403c44b",
+            "size": [
+              1254,
+              1254
+            ]
+          },
+          "processing": {
+            "library": "Pillow",
+            "version": "12.3.0",
+            "convert": "RGB",
+            "resize": [
+              64,
+              64
+            ],
+            "resampling": "Image.Resampling.LANCZOS",
+            "crop": null,
+            "recolour": false,
+            "sharpen": false,
+            "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+          },
+          "previous_versions": []
+        }
+      ]
+    },
+    {
+      "key": "skill:bellow",
+      "variant": "v3",
+      "tree": "Bulwark",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Bulwark: flat slate #171D26 field; steel #99A3AE, bronze #B08A4D accent. Subject and composition: Reference image is the character design to preserve: the SAME frontal helmeted warrior with squared steel brow, natural tan face, wide open roaring mouth, steel shoulders and upper chest. Remove ALL sound arcs and rings. ONE broad bronze radial glow fills the background behind the ENTIRE bust, widest at shoulder level, with just four broad soft-edged rays extending outward. The warrior remains sharply silhouetted in front, the steel face planes bright and readable. No thin halo, no head-hugging arcs, no hands. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__bellow_v3.png",
+          "sha256": "7f55d4f7b39bc56f8933d60818a9b8e150b65cd99c0d8371f3331646fce733d7",
+          "git_blob": "9952d7125c7beac86cbecd1b68d65f1e8f6a5e32"
+        }
+      ],
+      "path": "skill__bellow_v3.png",
+      "sha256": "00bd9b819ff19f0dfbbbac7a975e0faffb19daee5904f6d272e19542b4268c31",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-51ca0f9f-82ed-49db-b8b1-e7e649522562.png",
+        "sha256": "51bb37beecd8d443f9c4f96823e10a5d268115de29840964540fc88f25d36b00",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:blink",
+      "variant": "v1",
+      "tree": "Rime",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Rime: flat navy #0A1930 field; pale blue #A5D9F2 and cold white #F1FBFF effect. Subject and composition: Reference is the project's 0.51 teleport icon: preserve its clear two-portal composition, but change violet to pale ice blue and white on navy. TWO upright narrow pointed portal slits, one left and one right, with thick simple frosty crystal edges. A faint plain humanoid afterimage stands upright inside the LEFT slit; a bright plain luminous humanoid silhouette steps upright out of the RIGHT slit toward the right. Right figure is 65% canvas tall, left afterimage similarly tall but dim. ONE broad straight icy motion streak connects them at waist height. Figures have plain round heads, no facial details, equipment, hat, hood, beard, staff, robe fabric or ghost-crystal bodies. Keep only a few chunky crystal corners on the portals, no scattering shards. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_blink.png",
+          "sha256": "0c231530724b473acfc9c7f4d8c84500b574aee6f3f06143818d322695c36f91",
+          "git_blob": "6bd265f218d9da4c983574ec1ea5d468f2c8e2ed",
+          "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+        }
+      ],
+      "path": "skill__blink_v1.png",
+      "sha256": "6dde2149e70dda390b7a6eb4f7340d1851f0285a4d67c91e4f0eaf67ec066f7c",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-961cb1d0-ae41-4a91-964f-2b17e7a1f131.png",
+        "sha256": "9a651e02e87eb198d920a26dbac399c622215bb471705e7359c533a64bed455d",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:blink",
+      "variant": "v2",
+      "tree": "Rime",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Rime: flat navy #0A1930 field; pale blue #A5D9F2 and cold white #F1FBFF effect. Subject and composition: Reference is the project's 0.51 teleport icon: preserve two upright portals and fading-left/bright-right figures, replacing all violet with pale ice blue and white on navy. Portals are tall narrow rounded door-like openings with two broad bevelled ICE edges and a flat top facet, not circles. One faint upright humanoid silhouette on the LEFT, one bright upright plain luminous silhouette on the RIGHT stepping toward the viewer, one knee slightly forward and arms down. Figures at least 65% canvas tall, featureless round heads, no costume. ONE broad gently ascending ribbon of blue light joins the portals across their middle. No wizard, hat, beard, staff, hood, crystal person, violet or small particles. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_blink.png",
+          "sha256": "0c231530724b473acfc9c7f4d8c84500b574aee6f3f06143818d322695c36f91",
+          "git_blob": "6bd265f218d9da4c983574ec1ea5d468f2c8e2ed",
+          "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+        }
+      ],
+      "path": "skill__blink_v2.png",
+      "sha256": "5fd7a85fadeed663e0932888e3ccba3444e944332807cc5e156c51eb02a93247",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-2b974648-2bb1-42e9-a965-a8abacae55da.png",
+        "sha256": "8925f62820736ac24d5963ab5222cc41966f81627047e9f99b32dcba5a24abd2",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:blink",
+      "variant": "v3",
+      "tree": "Rime",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Rime: flat navy #0A1930 field; pale blue #A5D9F2 and cold white #F1FBFF effect. Subject and composition: Reference is the project's 0.51 teleport icon: preserve left departure and right arrival, recoloured exclusively in pale blue and cold white over navy. TWO tall narrow asymmetrical ice fissures with simple three-facet frosty edges. A faint upright plain human silhouette on the left stands with arms down; a bright upright luminous silhouette emerges on the right in a long rightward stride, head upright, one arm bent forward. Each figure at least 60% tall with plain round head and no costume detail. ONE thick low sweeping ice-blue crescent streak curves from the left portal to the right figure's hips. No wizard costume, hat, beard, staff, hood, crouch, crystal ghost, violet, shards or spark clouds. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_blink.png",
+          "sha256": "0c231530724b473acfc9c7f4d8c84500b574aee6f3f06143818d322695c36f91",
+          "git_blob": "6bd265f218d9da4c983574ec1ea5d468f2c8e2ed",
+          "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+        }
+      ],
+      "path": "skill__blink_v3.png",
+      "sha256": "423fa97c22a446ab880bcabbf6806e8e15f2761ea4197844295584d31ba173e2",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-1555f59a-bf39-49a4-b1f5-f97e74933e54.png",
+        "sha256": "2f5d4a0771fb13561d64837db32421a86cfd829b357427ff4458f67661a124b6",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:broadstroke",
+      "variant": "v1",
+      "tree": "Ruin",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: ONE large broad STEEL SWORD at the START of a very wide left-to-right swing: plain small brass guard and brown grip at lower left, long silver blade rises toward upper left in a clear diagonal. ONE huge shallow horizontal CRIMSON crescent stretches from the sword across almost the full width to the right, like a wide sweeping cut seen from the front, its central band well below the blade. Steel stays neutral silver with one white edge, clean dark clearance separates the silver blade from the red effect. No figure, enemy, axe, extra weapon or top-down view. No impact sparks. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": null,
+      "path": "skill__broadstroke_v1.png",
+      "sha256": "547434e5052c383d65e4a29a62a7f7b9fd2c0c5517f389f44e3415ab38c540c1",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-3f121e3b-0385-47e9-ae4c-9553d216d9c5.png",
+        "sha256": "a0e202e57cee8291fc327817182e534c3a46835fb6df5ed0fe0924a1ed4c2b07",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:broadstroke",
+      "variant": "v2",
+      "tree": "Ruin",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: ONE large broad STEEL SWORD at the MIDDLE of a wide sweeping attack: hilt at lower centre, silver blade slants gently up-right through the centre, fully broadside and clearly readable. ONE very wide flattened CRIMSON crescent sweeps horizontally behind the blade from far left to far right, spanning 90% of the square, its arc kept mostly in the lower half with clean dark gaps. Plain small brass guard, brown grip, neutral silver blade and one white edge. A single short pale impact spark at the crescent's far right. No person, axe, enemies, red steel, circular vortex or top-down view. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": null,
+      "path": "skill__broadstroke_v2.png",
+      "sha256": "87b9b0f76990fa2c23a569be2467ce9ea975aa7bb9174cef3d057d5b580f4b37",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-ecbefbdc-e003-45ad-a708-4300a4a468dd.png",
+        "sha256": "32579f6e8864577c57218a058bcb560b899066015f807652e04a60320e37b6d0",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:broadstroke",
+      "variant": "v3",
+      "tree": "Ruin",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: ONE large broad STEEL SWORD at the END of a wide swing: simple brass hilt and brown grip at lower right, long silver blade points almost horizontally toward upper left, a gentle rising diagonal. ONE very wide thick CRIMSON crescent trails behind it, crossing the lower front from left to right and curling upward ONLY at the right endpoint near the hilt. A clean open dark gap separates the silver blade and the red crescent along most of their length. Broad silver blade, one white cutting edge, no red tint. No person, axe, target, second sword, vortex or top-down view. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": null,
+      "path": "skill__broadstroke_v3.png",
+      "sha256": "ae9b0fe17b48e0449bc35d337ad2149c192212558866f8007cf5ac4849f79860",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-63004008-95cc-4cf5-a095-ca03428d2669.png",
+        "sha256": "bea2bfa1d8848c2b56c12dbe1e0e347d54c4accb815c66034cfbb158c3c9c0c0",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:charge",
+      "variant": "v1",
+      "tree": "Ruin",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: Reference is the project's 0.51 CHARGE. Preserve its chunky close-up armoured shoulder/upper body rushing to the RIGHT like a battering ram, same size and side view, tucked helmet at right, large leading shoulder and bent lower arm. Change the all-gold armour to neutral cool STEEL GREY and silver, with only one tiny bronze collar trim. Exactly THREE large parallel CRIMSON speed streaks trail LEFT, with small hot-white tips at the armour. Flat near-black Ruin field, no dust, fire cloud, scenery or red-painted armour. Rush nearly horizontal; plain broad plates without rivets or engraving. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_charge.png",
+          "sha256": "6fea5cafa56296e0d9933d3d16b613b5b271296c464d4e91abdaa3d4f978f72b",
+          "git_blob": "e04c4d4528a01a5baa78d4fa395a001d29bec6dc",
+          "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+        }
+      ],
+      "path": "skill__charge_v1.png",
+      "sha256": "151b59f336fd2fa8ef46043243611bf4b0e861bce9bc6de5309042b53e98f70d",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-089e0847-0540-4439-9877-207664c13b24.png",
+        "sha256": "174d40f1bbf90280fb179c98e6cc8018b902ef3dd166d1b146cb90f27d8839c7",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:charge",
+      "variant": "v2",
+      "tree": "Ruin",
+      "prompt": "Use case: precise-object-edit. Edit the supplied project-owned CHARGE painting. Keep the same large steel-grey shoulder, steel helmet, small bronze trims, bent arm, faceted style, flat near-black field and crimson/white palette. Correct TWO things: (1) Exactly THREE speed streaks, separate thick straight parallel wedges trailing LEFT; remove the entire bottom fourth streak and restore flat black there. All three streaks have broad hot-white cores and crimson edges, with wide empty gaps between them. No extra wisps or smaller marks. (2) Tilt the compact armoured upper body and its three streaks so the rush goes slightly UPWARD to the RIGHT, helmet at upper right and bent fist lower right, a clearly rising diagonal instead of the downward slope. Neutral silver armour, natural bronze trims only, no red paint. Keep simple chunky 0.51 composition, no scenery, text, glyphs, border or particles. ONE square opaque image for 64x64 Lanczos reduction.",
+      "reference": [
+        {
+          "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-46158d67-8715-4a13-bd84-3cb21778bea2.png",
+          "sha256": "929bca565111cc256229a5117271748fd98d5402df4c0c631fbc3bf8f0e73b2f",
+          "git_blob": "c38b520c2294b7c9eb7f5cd3b61b0a8ca423dd95"
+        }
+      ],
+      "path": "skill__charge_v2.png",
+      "sha256": "82849bfa8bc85a0b6220813a1a26f4ae2396873f73ad920ffb018b3d03392e9e",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-93fe1c2a-e305-4cba-894e-24f55ed404f4.png",
+        "sha256": "698b8240b618df3a7a90098191ec250e420871ce3711beadebbb654edd69537d",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": [
+        {
+          "key": "skill:charge",
+          "variant": "v2",
+          "tree": "Ruin",
+          "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: Reference is the project's 0.51 CHARGE. Keep its compact battering-ram shoulder and tucked helmet silhouette rushing RIGHT, filling 80% of square. Rush at a slightly upward angle toward upper right; helmet sits behind the leading large shoulder, a bent steel arm below. Armour is 90% neutral silver/steel, small muted bronze rim only on shoulder and cuff. Exactly THREE broad speed streaks trail toward lower left: HOT WHITE cores with crimson outer edges, clearly separate from armour by their shape. No gold streaks, red armour, dust, flames, rivets or scenery. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+          "reference": [
+            {
+              "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_charge.png",
+              "sha256": "6fea5cafa56296e0d9933d3d16b613b5b271296c464d4e91abdaa3d4f978f72b",
+              "git_blob": "e04c4d4528a01a5baa78d4fa395a001d29bec6dc",
+              "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+            }
+          ],
+          "path": "skill__charge_v2.png",
+          "sha256": "4db18d05e8adf36c7df86df58c822ea53289dbfc45633ab1cb1de7096c893bfe",
+          "source": {
+            "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-46158d67-8715-4a13-bd84-3cb21778bea2.png",
+            "sha256": "929bca565111cc256229a5117271748fd98d5402df4c0c631fbc3bf8f0e73b2f",
+            "size": [
+              1254,
+              1254
+            ]
+          },
+          "processing": {
+            "library": "Pillow",
+            "version": "12.3.0",
+            "convert": "RGB",
+            "resize": [
+              64,
+              64
+            ],
+            "resampling": "Image.Resampling.LANCZOS",
+            "crop": null,
+            "recolour": false,
+            "sharpen": false,
+            "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+          },
+          "previous_versions": []
+        }
+      ]
+    },
+    {
+      "key": "skill:charge",
+      "variant": "v3",
+      "tree": "Ruin",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: Reference is the project's 0.51 CHARGE. Keep the chunky close-up shoulder, tucked helmet and bent forearm as one compact upper-body battering ram rushing RIGHT. Make the rush slightly downward-right, shoulder leading and helmet tucked low. Armour remains predominantly matte STEEL GREY with broad silver light facets; muted bronze only on the short collar and cuff, less than 10% of armour. Exactly THREE broad mostly CRIMSON streaks trail upper-left; the middle streak has one thick white-hot centre. Near-black field, no gold streaks, red-painted armour, dust, scattered sparks, fine plate detail or scenery. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_abilities/textures/grug_abilities_skill_charge.png",
+          "sha256": "6fea5cafa56296e0d9933d3d16b613b5b271296c464d4e91abdaa3d4f978f72b",
+          "git_blob": "e04c4d4528a01a5baa78d4fa395a001d29bec6dc",
+          "revision": "dea1d163865fbabc223c7004de6467596f9392e0"
+        }
+      ],
+      "path": "skill__charge_v3.png",
+      "sha256": "4a740a8c6ecce06b89514245e27b44c52f10fba50f5dddc31d321707bb281a55",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-2ec972dd-c27c-4cbe-be4c-1ac5be8f6386.png",
+        "sha256": "a09f64f4061e878812e5710bb734d1c0bf0159a41d50927481ebc0ec5568cdf6",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:close_dance",
+      "variant": "v1",
+      "tree": "Veil",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Veil: flat indigo-black #100F22 field; violet #8162B1 accent, natural silver #DFE4ED metal. Subject and composition: Reference is the fighter and bright violet-silver ring to preserve. Keep the LARGE crisp fighter in brown leather and dark trousers, tan natural skin, wide balanced stance, 82% canvas tall. EXACTLY ONE short broad silver blade in the hand on the LEFT side of the image, extended up-left along the ring. The other arm on the RIGHT extends outward with a visibly EMPTY open hand in guard, no object at all. ONE thick bright violet-silver circular blade trail behind the whole figure, plain unbroken light along the empty-hand side. Clear dark negative space between body and ring. No second blade, off-hand weapon, sheath, mist or tiny figure. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__close_dance_v1.png",
+          "sha256": "fd79b8f86c52849295b776c3f92c056702648a3d82a8e7ffeb078a15877c4efe",
+          "git_blob": "435962bc1cf25d9480ce555222511dec9c3b9d0f"
+        }
+      ],
+      "path": "skill__close_dance_v1.png",
+      "sha256": "67c67836109028bc5ea5054c48c7174b106c481c63d001b1e83d3473693e3b15",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-224a5ccc-37be-4df0-aecd-41a346ceb62d.png",
+        "sha256": "6af47c1209a92a02ddbfa0accfffaa24531bae19b6b221a2066efef70c37eaa3",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:close_dance",
+      "variant": "v2",
+      "tree": "Veil",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Veil: flat indigo-black #100F22 field; violet #8162B1 accent, natural silver #DFE4ED metal. Subject and composition: Reference is the fighter and bright violet-silver ring to preserve. ONE large front-facing fighter from knees up, brown leather torso, natural tan arms and face, dark trousers, filling 85% height. EXACTLY ONE short SILVER blade with brass hilt held high on the RIGHT side of the image, pointing upward along the upper-right ring. The other hand is visibly EMPTY, open and held across the chest in a guarding gesture. ONE bright violet-silver circular blade trail behind shoulders and hips, broad dark clearance. Simplify the leather into plain masses. No second blade, other weapon, hood, mist, folds or fine detail. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__close_dance_v2.png",
+          "sha256": "403c952ef0256a9357a054c8d1828157e06c3a30bcc76bb63bd563830182124e",
+          "git_blob": "89d1bb1bdb505d34ab61a40107590d2c67a86696"
+        }
+      ],
+      "path": "skill__close_dance_v2.png",
+      "sha256": "400bfc30000cf07ea8a021357259b91eef9b6008a43d6c757726e5734787361a",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-2c16ede5-3115-4cf7-ba52-ca268d3f09aa.png",
+        "sha256": "30ce32b6c4bc542ab6db1e6b1b00504005cae34b73dfc811ea2297e098d4b3ec",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:close_dance",
+      "variant": "v3",
+      "tree": "Veil",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Veil: flat indigo-black #100F22 field; violet #8162B1 accent, natural silver #DFE4ED metal. Subject and composition: Reference is the fighter and bright violet-silver ring to preserve. ONE large crisp fighter side-lunging LEFT, plain brown leather and dark trousers, natural tan face/arms, figure 82% tall. EXACTLY ONE broad short SILVER blade extends to the LEFT in the leading hand at shoulder height. Trailing arm extends RIGHT with an unmistakably EMPTY open hand, palm sideways. ONE bright thick violet-silver blade-trail ring surrounds the fighter, the right side is clearly just light with no metal or hilt. Wide gaps between limbs, ring and body. No second blade, off-hand weapon, sheath, mist or little figure. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "tools/r53_art/icons/drop-01/skill__close_dance_v3.png",
+          "sha256": "92c1e84af97768e71efb601304804f3deb70afbcb34fffd2247a9cdb165439c8",
+          "git_blob": "700a3a175c7b405fedcb855bc746f3391b5c2995"
+        }
+      ],
+      "path": "skill__close_dance_v3.png",
+      "sha256": "5660a8ef9f374011c7e48e795ada00d1d2942ae7f394da54ef0432aabed610f4",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-e24596e1-2028-43cd-b97a-c96995c37f10.png",
+        "sha256": "d0d41d5ef60d5a6edb4492fa46d9f7a53d6cded7c0eef63e9eb3ff0e2d64dfe6",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:parry",
+      "variant": "v1",
+      "tree": "Veil",
+      "prompt": "Use case: precise-object-edit. Edit the supplied project-owned PARRY painting. Keep exactly the two neutral silver weapons, the small brass hilt, the open dark gap, their positions and angles and the flat indigo field. Change ONLY the violet curved deflection effect: remove its ARROWHEAD completely. The effect must be one smooth thick luminous violet crescent streak, a clean curved brush stroke with gently tapering ends; NO arrow, arrowhead, chevron, symbol or glyph. The crescent follows the displaced enemy blade without crossing either weapon. Preserve bright neutral steel, broad three-value painted masses and the large dagger. No text, UI, border, particles or other effect. ONE square opaque image for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-766089e4-5f04-4037-a1cb-92d11e6bd662.png",
+          "sha256": "84df2285919d7f84280b52e196e4080313ef12d16dd9f0b15fbc4fe868434003",
+          "git_blob": "20272d93cc1c5039b34da56656249de1f0fea465"
+        }
+      ],
+      "path": "skill__parry_v1.png",
+      "sha256": "0daf4dd1181c2238877762bbd12f4cc39f7f44a743206794abd685b407591813",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-12a045c8-f829-480c-94f8-06bd75134c05.png",
+        "sha256": "36fcdc0f377151532b90e3079d528987f1fa8ab3441091714ac7151541841690",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": [
+        {
+          "key": "skill:parry",
+          "variant": "v1",
+          "tree": "Veil",
+          "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Veil: flat indigo-black #100F22 field; violet #8162B1 accent, natural silver #DFE4ED metal. Subject and composition: Show REDIRECTION as one very simple action emblem. ONE short broad silver dagger with small brass hilt rises from lower left toward the centre. An incoming plain steel blade in the upper-right quadrant has ALREADY BEEN KNOCKED outward, points away toward upper right and does NOT cross or overlap the dagger. A broad dark V-shaped gap separates the two blades. ONE thick violet curved deflection trail bends away from the dagger's edge toward the displaced enemy blade. No hands or figures: the displaced blade is the enemy's, never a second wielded weapon. Flat indigo field, high contrast steel. No X of blades, contact spark cloud, violet metal or ward ring. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+          "reference": null,
+          "path": "skill__parry_v1.png",
+          "sha256": "9459e7ee509fcf15b56383422644dcebb3982a9ae58b3b833a0a3be3574f3ed6",
+          "source": {
+            "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-766089e4-5f04-4037-a1cb-92d11e6bd662.png",
+            "sha256": "84df2285919d7f84280b52e196e4080313ef12d16dd9f0b15fbc4fe868434003",
+            "size": [
+              1254,
+              1254
+            ]
+          },
+          "processing": {
+            "library": "Pillow",
+            "version": "12.3.0",
+            "convert": "RGB",
+            "resize": [
+              64,
+              64
+            ],
+            "resampling": "Image.Resampling.LANCZOS",
+            "crop": null,
+            "recolour": false,
+            "sharpen": false,
+            "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+          },
+          "previous_versions": []
+        }
+      ]
+    },
+    {
+      "key": "skill:parry",
+      "variant": "v2",
+      "tree": "Veil",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Veil: flat indigo-black #100F22 field; violet #8162B1 accent, natural silver #DFE4ED metal. Subject and composition: A short-lived WARD: one large natural tan forearm enters diagonally from lower left, with one simple brown leather cuff and ONE silver dagger with a brass hilt gripped upright, the hand clearly lit and readable. In front of the forearm to the RIGHT is ONE small broad rounded shield of translucent violet-silver light, like a solid simple light plate, not a thin arc. One clean white diagonal glancing notch on its upper-right edge suggests a hit sliding away; NO second weapon, enemy or attacker appears. Plain three-value masses, broad negative space, no inscriptions, hand texture, purple steel or smoke. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": null,
+      "path": "skill__parry_v2.png",
+      "sha256": "e087517555c6c55fc66695b3532e34d7795c3d58f6cbc0566e88c155bc61c12f",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-a95901da-38c1-4da9-9649-878284552177.png",
+        "sha256": "c3e066c64176b41f92aa4bbedf184b252e47bee0f768c299ac6eb139f6cbdccc",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "skill:parry",
+      "variant": "v3",
+      "tree": "Veil",
+      "prompt": "Use case: precise-object-edit. Edit the supplied project-owned PARRY painting. Preserve the displaced silver enemy blade at upper left, the bright silver dagger with brass hilt at lower right, the large central dark opening and the single tiny glint on the dagger point. Change ONLY the curved violet trail in upper left: remove its ARROWHEAD completely and turn the effect into one short smooth broad violet-silver crescent swipe behind the displaced blade, tapering naturally at both ends. No arrow, arrowhead, chevron, symbol or glyph. Keep weapons fully separated, not touching or crossed, no hands, no second wielded weapon. Neutral steel, dark flat indigo, broad painted masses and restrained glow; no text, UI, frame or tiny particles. ONE square opaque image for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-b69eb39e-97cc-47bc-8c54-039ba4eeec42.png",
+          "sha256": "ef99f3c9731351656794870154764dbd2975c2306baca894be0944b23095fb71",
+          "git_blob": "24172132f198e005a1fc0970e5056563f0edb768"
+        }
+      ],
+      "path": "skill__parry_v3.png",
+      "sha256": "4f8c887021efb97b6fe96d8c26f9649badc84a5da87bfa3ca322e2e45535d723",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-ad504df7-ef02-41bc-9702-4bf3b0e5eb3c.png",
+        "sha256": "40b66a29aabf5950be6d61ed4a23e08a5eeeb106d5e72ba92ba7b323dbdc235c",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": [
+        {
+          "key": "skill:parry",
+          "variant": "v3",
+          "tree": "Veil",
+          "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Skill framing: full square artwork, NO border, frame or medallion. Veil: flat indigo-black #100F22 field; violet #8162B1 accent, natural silver #DFE4ED metal. Subject and composition: BLOCK THEN OPENING: a single broad steel enemy blade has been knocked sideways into the TOP LEFT corner, its broken motion shown by ONE short violet hooked deflection trail behind it. The Scout's ONE short bright SILVER dagger with brass hilt waits at lower right pointing diagonally upward into a very large EMPTY central gap. The two blades are far apart and never cross or touch. A single restrained violet-white glint at the dagger tip marks the newly open path. No hands, figures, second wielded weapon, spark cloud, X silhouette, purple steel or shield arc. Simple readable asymmetrical composition. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+          "reference": null,
+          "path": "skill__parry_v3.png",
+          "sha256": "a205797ca71b411373e0bd06fd6278e40fc66dabaf03b17d738313a7f6a40adb",
+          "source": {
+            "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-b69eb39e-97cc-47bc-8c54-039ba4eeec42.png",
+            "sha256": "ef99f3c9731351656794870154764dbd2975c2306baca894be0944b23095fb71",
+            "size": [
+              1254,
+              1254
+            ]
+          },
+          "processing": {
+            "library": "Pillow",
+            "version": "12.3.0",
+            "convert": "RGB",
+            "resize": [
+              64,
+              64
+            ],
+            "resampling": "Image.Resampling.LANCZOS",
+            "crop": null,
+            "recolour": false,
+            "sharpen": false,
+            "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+          },
+          "previous_versions": []
+        }
+      ]
+    },
+    {
+      "key": "talent:bulwark_halt",
+      "variant": "v1",
+      "tree": "Bulwark",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Talent framing: one plain circular bronze medallion 91% of square wide, simple rim 3 final pixels thick, outside corners dark charcoal. Motif fills 60-85% of interior, stays INSIDE the rim. Bulwark: flat slate #171D26 field; steel #99A3AE, bronze #B08A4D accent. Subject and composition: Reference is the CURRENT project's halt icon, used ONLY to preserve the hand's SIDE perspective. Simplify drastically. One steel gauntlet raised upright in STOP, seen FROM THE SIDE, palm facing RIGHT toward an unseen oncoming foe, NOT toward the viewer. Four straight fingers held together form a narrow upright finger stack with just two broad divisions, thumb protrudes clearly to the right at mid-palm. Wrist and a SHORT PIECE OF STEEL FOREARM/VAMBRACE enter from the lower-left inner edge, all within the bronze medallion. Hand is narrow in profile, not a wide palm. Slate field, no effect, no dust, sleeve, straps, engraving or small joints. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_classes/textures/grug_classes_talent_halt.png",
+          "sha256": "a19ff42b5f283698134dc44f2f3a7d08e29fc2880c8ca19d9cccc519cc781a7b",
+          "git_blob": "2626ae9737e911045d0afff5bb04c5ab63cac638",
+          "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+        }
+      ],
+      "path": "talent__bulwark_halt_v1.png",
+      "sha256": "f80469b2da19221a23c3f3f70b7bc546c80c8b679686118abc4250caef966f06",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-a0f5509c-9ec5-420d-a12a-e4d572d15cfb.png",
+        "sha256": "a44beca79ac8a5765fe73cfee4a979b4f112dc34dc0b0eddafb04df7b34549aa",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "talent:bulwark_halt",
+      "variant": "v2",
+      "tree": "Bulwark",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Talent framing: one plain circular bronze medallion 91% of square wide, simple rim 3 final pixels thick, outside corners dark charcoal. Motif fills 60-85% of interior, stays INSIDE the rim. Bulwark: flat slate #171D26 field; steel #99A3AE, bronze #B08A4D accent. Subject and composition: Reference is the CURRENT project's halt icon for the SIDE-VIEW stop-hand perspective. Draw one simple steel gauntlet in mirrored SIDE PROFILE: palm faces LEFT at an invisible foe, straight fingers vertical and together, visible thumb projecting left, hand never faces the viewer. A short broad steel vambrace enters from lower right of the medallion, wrist bends enough to keep fingers strictly upright. ONE short thick bronze shock arc stands in front of the LEFT-facing palm with a wide dark gap. Hand and forearm fill 80% of medallion interior, no overlap with rim. No dust, front-facing palm, waving tilt, folds, straps or tiny joints. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_classes/textures/grug_classes_talent_halt.png",
+          "sha256": "a19ff42b5f283698134dc44f2f3a7d08e29fc2880c8ca19d9cccc519cc781a7b",
+          "git_blob": "2626ae9737e911045d0afff5bb04c5ab63cac638",
+          "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+        }
+      ],
+      "path": "talent__bulwark_halt_v2.png",
+      "sha256": "287dec0a2ff78e622fee4955f19d3b15bbc694c5634ef6f095256765fb35c4aa",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-5ae1e3c1-2772-4216-be9a-f2a0f5c31166.png",
+        "sha256": "8e235cd43662d2e1d49956832f916af3cf339eb38f69ec1bea6c1b5cb8719892",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "talent:bulwark_halt",
+      "variant": "v3",
+      "tree": "Bulwark",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Talent framing: one plain circular bronze medallion 91% of square wide, simple rim 3 final pixels thick, outside corners dark charcoal. Motif fills 60-85% of interior, stays INSIDE the rim. Bulwark: flat slate #171D26 field; steel #99A3AE, bronze #B08A4D accent. Subject and composition: Reference is the CURRENT project's halt icon for the SIDE-VIEW stop-hand perspective. One large silver-steel gauntlet in clear SIDE PROFILE faces RIGHT, fingers held straight UP together, visible thumb projecting right. Short plain steel forearm enters from the bottom-centre of the medallion and leans slightly forward to the right; the wrist keeps the fingers vertical, emphatic STOP rather than a wave. ONE small thick bronze oval impact ring floats in front of the right-facing palm, separated from it. Hand plus wrist plus visible short vambrace is one clear chunky silhouette, within the rim. No frontal palm, dust, sand, cloth, straps, engraving or fine finger joints. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "mods/PLAYER/grug_classes/textures/grug_classes_talent_halt.png",
+          "sha256": "a19ff42b5f283698134dc44f2f3a7d08e29fc2880c8ca19d9cccc519cc781a7b",
+          "git_blob": "2626ae9737e911045d0afff5bb04c5ab63cac638",
+          "revision": "a53abbf27d6ce7f3adbf19d338a86d6acb275008"
+        }
+      ],
+      "path": "talent__bulwark_halt_v3.png",
+      "sha256": "de70c6ac3407e7e0deb8287d1859b06fcc68df62e084311ea718fa101a6ee859",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-aca26ae1-0347-4bb3-979f-2e70f0d19d12.png",
+        "sha256": "bb9e69edaff83311da5214bc551ea15263ea0d3db293d610b61b5e0ef4944a03",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "talent:ruin_finisher",
+      "variant": "v1",
+      "tree": "Ruin",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Talent framing: one plain circular bronze medallion 91% of square wide, simple rim 3 final pixels thick, outside corners dark charcoal. Motif fills 60-85% of interior, stays INSIDE the rim. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: The LAST DEFENCE BREAKS: ONE round enemy shield has already lost two thirds of its body, leaving a large recognisable crescent-shaped last THIRD of thick BROWN WOOD with a simple steel rim in the lower-right interior. ONE large neutral silver STEEL axe head on a short brown wooden haft cuts diagonally down through that remaining shield piece. Three chunky masses only: steel axe, brown shield remnant, dark field. ONE small crimson contact wedge where the last piece splits. Everything large, fully inside the bronze medallion, no helmet, skull, character, debris cloud, red weapon, engraving or UI. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": null,
+      "path": "talent__ruin_finisher_v1.png",
+      "sha256": "1fffb9bb86eec7711da734fb883319dbbf8671b28f2f11c66a1258cd75e71fc1",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-265ac5a3-be66-4fdd-9381-7d76ce537fed.png",
+        "sha256": "f63442d7e4df7d12cdc8568623a0a9f1964e1cd2477e8f460cfbe2fac47bfb3b",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    },
+    {
+      "key": "talent:ruin_finisher",
+      "variant": "v2",
+      "tree": "Ruin",
+      "prompt": "Use case: precise-object-edit. Refine this project-owned FINISHER talent icon for 32-pixel readability. Preserve the circular bronze medallion, descending neutral silver blade, large heart-shaped dying crystal and single central black crack. Keep TOP TWO THIRDS of the heart dark and only BOTTOM THIRD glowing crimson. Simplify the heart into just THREE BIG FLAT FACETS, remove all crystal texture and small fragment detail. Raise the value of the dark upper facets to a muted mid-dark burgundy-grey and add ONE broad soft pale dusty-red upper-left edge facet so the TWO HEART LOBES remain recognisable in greyscale against the near-black field. The bottom-third glow stays clearly brighter than the top, bright crimson with one restrained pale core. No new light beams, sparks, shards, symbols, text, skull, helmet or UI. Natural silver blade, crimson crystal accent, plain bronze rim, broad faceted painting, one square opaque image for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": [
+        {
+          "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-2f27c321-7028-4c95-97a1-ed258f336931.png",
+          "sha256": "7eefeec30276091dc20a5c2ecaa64aaa7dad3915d05bbdc06f96558f23920eac",
+          "git_blob": "537863910d2d743e247c42b80536a3133e3964a9"
+        }
+      ],
+      "path": "talent__ruin_finisher_v2.png",
+      "sha256": "0e424c2d12694668d6171be3f27cff0bae34d75162caf83051c9189a6a84a340",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-3429e274-9efa-4422-9dfa-de9a2687b5a1.png",
+        "sha256": "46412ea09c5fd318a809a1dcb6aa07490df0ac16218b771e69ab10a335931c98",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": [
+        {
+          "key": "talent:ruin_finisher",
+          "variant": "v2",
+          "tree": "Ruin",
+          "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Talent framing: one plain circular bronze medallion 91% of square wide, simple rim 3 final pixels thick, outside corners dark charcoal. Motif fills 60-85% of interior, stays INSIDE the rim. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: The LAST LIFE FADES: ONE large heart-shaped crimson crystal is mostly spent, its TOP TWO THIRDS nearly black burgundy, one broad black crack, only the BOTTOM THIRD still dimly glowing crimson. One broad neutral SILVER STEEL blade edge descends diagonally from upper left onto the heart, stopping at the crack as the final blow. Simple two-lobed heart silhouette, three broad crystal facets maximum, no scattering fragments. Large clean dark gap around motif inside bronze medallion; steel stays bright natural silver, crimson limited to the dying heart accent. No hilt detail, helmet, skull, person, health bar, UI, lettering or red-painted blade. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+          "reference": null,
+          "path": "talent__ruin_finisher_v2.png",
+          "sha256": "fba0e7826e9b129a4d58a2f8808e53e7ad15c7df7ae81d3a185ea551fe0fea36",
+          "source": {
+            "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-2f27c321-7028-4c95-97a1-ed258f336931.png",
+            "sha256": "7eefeec30276091dc20a5c2ecaa64aaa7dad3915d05bbdc06f96558f23920eac",
+            "size": [
+              1254,
+              1254
+            ]
+          },
+          "processing": {
+            "library": "Pillow",
+            "version": "12.3.0",
+            "convert": "RGB",
+            "resize": [
+              64,
+              64
+            ],
+            "resampling": "Image.Resampling.LANCZOS",
+            "crop": null,
+            "recolour": false,
+            "sharpen": false,
+            "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+          },
+          "previous_versions": []
+        }
+      ]
+    },
+    {
+      "key": "talent:ruin_finisher",
+      "variant": "v3",
+      "tree": "Ruin",
+      "prompt": "Use case: stylized-concept. Create ONE square opaque MMO-inspired ability/talent icon. Style A / Painted embers, simplified: broad faceted painted masses, upper-left lighting, deep matte shadows, restrained glow, extremely simplified few LARGE shapes. Three value masses: dark field, mid object, light highlight/effect. The object must be immediately recognisable at 32 pixels and retain its shape and natural main colour as a 16-pixel blob. At final 64 pixels, meaningful edges and gaps at least 2 pixels, details at least 3 pixels except one highlight. Main subject occupies 60-85 percent of usable area. Natural object colours: silver-grey steel blades and armour, brown wooden shafts and leather, brass/bronze fittings, natural tan skin, ivory bone, iron-grey chains. Tree colours belong ONLY in field, motion, light or effect, NEVER tint an object. At most 2-3 main colours plus the stated accent; preserve strong greyscale contrast. Simple front/side view or a clear diagonal, no foreshortening or knots. No scenery, surface grain, dust, smoke, mist, engraving, rivets, fur, folds, fine scratches, tiny spark clouds, writing, lettering, numerals, punctuation, watermark, UI or multiple panels. Only the explicitly requested motif elements and meaningful symbols below are allowed. Talent framing: one plain circular bronze medallion 91% of square wide, simple rim 3 final pixels thick, outside corners dark charcoal. Motif fills 60-85% of interior, stays INSIDE the rim. Ruin: flat near-black #140E15 field; crimson #B52F3B effect, pale hot edge only. Subject and composition: The FIGHT IS OVER: ONE enemy SWORD snapped into exactly TWO large steel pieces separated by a broad dark gap. The lower piece retains a plain brass crossguard and short brown grip, leaning up-right from lower left; its thick broken silver blade ends just below centre. The upper silver blade fragment falls toward upper right, tilted away so the two pieces no longer align. ONE small crimson spark at the break is the only effect. Strong readable broken-sword silhouette, neutral silver metal, plain brown grip, quiet black field inside bronze medallion. No other weapon, helmet, skull, person, tiny shards, health bar, lettering or red-painted steel. Output ONE square opaque painting for whole-image Lanczos reduction to 64x64 RGB.",
+      "reference": null,
+      "path": "talent__ruin_finisher_v3.png",
+      "sha256": "86f46d68dbf2b9bf6c34f3f4b58ee4b19dbd4b34a4b99e84a860b0b2af270e77",
+      "source": {
+        "path": "/home/jan/.codex/generated_images/01a159a2-8f98-7f61-94a4-098370742c8d/exec-f818bc1c-089d-4cff-96d2-4df8bdfd8eb2.png",
+        "sha256": "6beefd70112af9ed367c57f0efd861861a8fa3bd94ab94b32a2986fd7ecef57d",
+        "size": [
+          1254,
+          1254
+        ]
+      },
+      "processing": {
+        "library": "Pillow",
+        "version": "12.3.0",
+        "convert": "RGB",
+        "resize": [
+          64,
+          64
+        ],
+        "resampling": "Image.Resampling.LANCZOS",
+        "crop": null,
+        "recolour": false,
+        "sharpen": false,
+        "output": "PNG, 8-bit RGB, no alpha, optimize=True; source metadata omitted"
+      },
+      "previous_versions": []
+    }
+  ],
+  "previews": [
+    {
+      "path": "preview.png",
+      "sha256": "9316c5c5e9e91e7d42a5a9d7c0a354467848e51e96559acff0778c09dd26d53b",
+      "size": [
+        1550,
+        1144
+      ],
+      "rows": [
+        "skill:bellow",
+        "skill:blink",
+        "skill:broadstroke",
+        "skill:charge",
+        "skill:close_dance",
+        "skill:parry",
+        "talent:bulwark_halt",
+        "talent:ruin_finisher"
+      ],
+      "sizes": [
+        64,
+        32,
+        16
+      ],
+      "greyscale_size": 32,
+      "columns": [
+        "current",
+        "0.51 where requested",
+        "pass1 v1",
+        "pass1 v2",
+        "pass1 v3",
+        "pass2 v1",
+        "pass2 v2",
+        "pass2 v3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "skill:strike": [
+    "A broad silver sword from lower left to upper right inside one sweeping warm ivory and amber crescent; small plain brass hilt, no person. Preserve the 0.51 diagonal sword and curling arc composition.",
+    "One broad straight silver sword angled from lower right to upper left, simple short brass crossguard and brown grip, with ONE warm amber crescent sweeping above and to its right. White blade edge; wide dark gap between steel blade and amber motion arc.",
+    "One wide silver sword nearly horizontal, rising gently from a simple brass hilt at lower left to a broad tip at upper right; ONE short thick amber crescent passes below the blade like a powerful low swing. Large open dark space separates blade and arc."
+  ],
+  "skill:charge": [
+    "The 0.51 motif and composition: a close-up bronze armoured shoulder with a steel helmet behind it, leaning and rushing RIGHT like a battering ram. Exactly three broad crimson speed streaks trail left, with tiny hot white tips. Armour stays natural bronze and steel, silhouette fills 80 percent; no dust.",
+    "A large SIDE VIEW steel helmet and upper torso charging LEFT, shoulder thrust forward. Three clean horizontal crimson speed streaks trail to the right. Natural tan cheek through a simple open visor, plain silver shoulder plate, no individual scales or rivets.",
+    "A single large bronze shoulder and bent steel forearm driving diagonally toward upper right as one compact battering-ram silhouette; a small steel helmet tucked behind the shoulder. Three thick short crimson streaks trail down-left. Close-up, no distant full body."
+  ],
+  "skill:hold_ground": [
+    "The 0.51 layout, strictly frontal: one large upright steel kite shield with a broad plain bronze rim, its point planted on a small solid ground ridge; two SMALL steel and brown leather boots peek equally from behind its lower left and lower right. Shield dominates. No perspective tilt or ornament.",
+    "Strictly FRONT VIEW of one broad rectangular steel tower shield with a plain bronze rim and gently rounded top, standing upright on a single dark ground bar. No person, no legs. One small warm bronze glow at the grounded foot, with a white upper-left steel edge.",
+    "Strictly frontal, one round steel shield with a bronze outer rim and a simple broad central steel boss, planted upright; two brown leather boot toes barely show below. Heavy symmetric stance, slate field. No straps, lettering, engraving or oblique view."
+  ],
+  "skill:taunt": [
+    "One helmeted warrior HEAD AND SHOULDERS, cropped bust filling 75 percent, in clear right-facing PROFILE shouting at one unseen foe on the RIGHT. Steel open-face helmet with plain bronze brow, natural tan face, mouth a single dark open shape, broad matching steel shoulder plates. Exactly TWO thick bronze sound arcs leave the mouth to the right only; no rings around the body. This is the base warrior design for Bellow v1.",
+    "One large STEEL gauntlet in a palm-up beckoning COME CLOSER gesture, fingers curling toward viewer; four fingers read as two broad folded masses, thumb distinct, open palm clear. Front-side simple view, short cropped wrist, no sleeve. One short bronze inward curling motion arc above fingers, no words.",
+    "One broad steel shield FRONT VIEW with a single plain silver sword held diagonally alongside it, the sword's flat striking the shield's RIGHT rim. One bold bronze contact spark and a short outward bronze sound arc on the right, a single directed challenge emblem. No hand, no warrior, no tangled crossing."
+  ],
+  "skill:bellow": [
+    "Use the supplied Taunt v1 warrior as the exact helmet, shoulder armour, tan face and bust-scale design reference. Rotate that SAME bust to nearly FRONTAL: broad steel shoulders symmetric, open-face steel helmet with bronze brow, mouth open roaring. Replace Taunt's directional sound arcs with TWO thick nearly COMPLETE bronze sound rings radiating ALL AROUND the head and shoulders. Keep broad natural steel planes and silhouette family; no gauntlet.",
+    "A large FRONT VIEW warrior bust, plain round steel helmet, open tan face and broad bronze shoulder plates; chest cropped at lower edge, mouth open roaring. ONE strong circular bronze-orange sound wave surrounds both sides and top of the bust with broad dark clearance. No hair detail, no gauntlet, no directional-only waves.",
+    "A close frontal helmeted warrior head and upper chest filling 70 percent, steel helmet with a simple squared brow and two broad steel shoulders; natural face, open mouth. THREE thick separated bronze wave segments on EACH side arranged as a single expanding all-around ring. Symmetric radial shout, no hand or secondary figure."
+  ],
+  "skill:retort": [
+    "Transform the supplied Strike v1. KEEP EXACTLY the sword's outer silhouette, broad silver blade, plain brass hilt, lower-left to upper-right angle, scale and position. Replace its amber slash with ONE broad BRONZE curved RETURN ARROW, clearly hooked back toward the sword tip, with a simple large arrowhead. Slate field; dark gap between blade and return arc. No shield, no extra sword, no stacked grey arcs.",
+    "Transform supplied Strike v2. KEEP EXACTLY the silver sword's silhouette, hilt, lower-right to upper-left angle, size and position. Change the motion effect to one bold bronze U-shaped returning swing arc to the sword's right, ending in ONE clear triangular arrowhead near the upper tip. Slate background, broad dark separation, no shield.",
+    "Transform supplied Strike v3. KEEP EXACTLY the broad silver blade silhouette and gently rising almost horizontal angle, hilt at left, tip right, scale and position. Below it, ONE wide bronze hook-shaped counter-swing arrow turns upward at the right. Dark gap, plain slate field, no other weapon or shield."
+  ],
+  "talent:bulwark_halt": [
+    "One large STEEL gauntlet, perfectly UPRIGHT open palm directly facing viewer, all five fingers up and clearly separated with wide gaps, thumb splayed left. Plain broad palm, short wrist ending above rim. At most one thin plain bronze shock ring behind palm. No tilted fingers, dust, sleeve or rivet detail.",
+    "A single upright FRONT-FACING open steel gauntlet filling the medallion, four broad straight fingers above one broad palm, thumb out to the RIGHT; a plain bronze wrist band. No effect and no extra object; emphatic STOP hand silhouette without text.",
+    "One open steel gauntlet palm forward, upright and centred, wrist cropped, fingers spaced widely; palm very broad and bright, fingertips form a simple stepped arch. ONE bronze semicircular shock halo behind the upper hand, clearly separated. No fabric or dust."
+  ],
+  "talent:bulwark_enduring_stand": [
+    "Two armoured boots STRICT FRONT VIEW, planted side by side: broad silver-steel toes, brown leather shafts. Behind and between them ONE upright hourglass with bright ivory glass and glowing GOLD sand, taller than the boot shafts and separated by a dark gap. Boots natural steel/brown, hourglass distinct gold/ivory. No shield or perspective tilt.",
+    "Two simple tall brown leather boots with broad steel toe caps, FRONT VIEW symmetric stance occupying the lower two-thirds. A large clean ivory-and-gold hourglass rises directly between and behind the boots, its narrow waist visible in their wide gap. Flat slate field, no straps, no tiny buckles.",
+    "Two squat steel armoured boots face straight forward, slightly wider apart, brown cuffs, white upper edges. ONE bright GOLD-sand hourglass behind them on the centre axis, its ivory glass shoulders visible ABOVE the boots. Strict frontal view, no ground texture, no shield."
+  ],
+  "skill:mighty_blow": [
+    "The 0.51 impact composition, replacing its hammer with a TWO-HANDED AXE: a huge broad single crescent STEEL axe head, on a thick BROWN WOODEN haft descending diagonally from upper left toward lower right, crashes into one small dark stone split into TWO chunky halves at the bottom. ONE compact crimson impact burst with a hot white centre. Head in lower centre dominates; long plain haft visible. Never a hammer or sword. This axe is the reference for Broadstroke v1.",
+    "A heavy TWO-HANDED AXE with a wide symmetric double-bit SILVER STEEL head and a straight thick BROWN wooden haft, held almost VERTICAL, drops blade-down onto one small cracked steel shield at the bottom. One bold crimson wedge-shaped impact burst. Large natural steel axe, no hands, no ornamental fittings. This weapon design is shared by Broadstroke v2.",
+    "A heavy TWO-HANDED bearded AXE, single angular trapezoid STEEL blade with a long lower beard and short square rear poll, on a thick BROWN wooden haft angled from upper right toward lower left. The blade crashes into one low flat stone, cleaving it into two broad pieces. ONE short crimson impact fan. Natural silver blade clearly separated. Shared axe for Broadstroke v3."
+  ],
+  "skill:broadstroke": [
+    "Use supplied Mighty Blow v1 as the EXACT WEAPON DESIGN reference: preserve its single crescent steel axe head and thick brown wooden haft. Swing the SAME two-handed axe HORIZONTALLY across the front, long haft left-to-right with head at right, side-on. ONE wide crimson crescent below/behind the weapon spans the square, broad dark gap, at most three short white impact ticks. No stone, enemies or figures.",
+    "Use supplied Mighty Blow v2 as exact weapon reference: SAME symmetric double-bit silver-steel axe head and straight thick brown wooden haft. Show a HORIZONTAL wide swing toward the LEFT, axe head left and wooden haft across centre to right. ONE wide crimson crescent behind its lower half, one white tip glint. No hammer, sword, people, target silhouettes or debris.",
+    "Use supplied Mighty Blow v3 as exact weapon reference: SAME angular bearded steel axe head, square poll and thick brown wooden haft. Axe sweeps HORIZONTALLY from left to right, head right, its broad blade fully readable side-on above ONE thick wide crimson crescent. No impact object, figures or red-painted metal."
+  ],
+  "skill:hamstring": [
+    "The 0.51 motif and composition: a large BROWN LEATHER boot and bent lower leg, simple SIDE VIEW toe pointing right. ONE crisp horizontal crimson cutting ring wraps behind the ankle; oval ring has a broad dark gap from brown boot, no blood. Boot L-shape clearly readable, no straps or fine armour.",
+    "One large plain brown leather boot SIDE VIEW toe pointing LEFT, heel clearly visible at right. One short SILVER blade approaches low behind the heel from the right with ONE short crimson cut arc at the ankle. No hand, blood, figure or extra trails; boot dominates.",
+    "A single large brown leather boot with tan sole in SIDE VIEW, toe right, ankle slightly bent. ONE bold crimson hooked cutting crescent passes behind the heel and terminates just below the ankle, leaving a clear dark gap. Close-up L-shaped boot, no metal greaves, no textures."
+  ],
+  "skill:ruination": [
+    "One plain broad SILVER STEEL sword held upright, simple bronze hilt and brown grip at bottom. The bright natural steel blade is IN FRONT OF one large dark-crimson three-point rage aura, separated by dark outlines. Single centered weapon fills 80 percent. White upper-left edge; no lightning, red metal or hand.",
+    "One heavy TWO-HANDED AXE upright, large single crescent steel head, brown wooden haft, no hand. ONE bold crimson flame-shaped aura behind the head, its outer contour clearly wider than steel and much darker. Silver weapon, restrained pale-hot aura tips, black field. No hammer.",
+    "One large frontal roaring WARRIOR HEAD in a plain silver-steel open helmet, natural tan face, one dark open mouth, shoulders cropped away. ONE broad crimson rage halo wreathes the outside of the helmet while face stays natural and bright. No weapon, smoke, fine hair or ornate helmet."
+  ],
+  "talent:ruin_stoke": [
+    "One large silver-steel blade strikes diagonally down-right into the base of ONE bold crimson flame, the flame rising from that impact. Blade stays silver, plain small bronze hilt and brown grip. Flame is a single three-lobed silhouette, no separate sparks, coals or bellows.",
+    "ONE big deep-crimson flame rises above a broad horizontal silver blade, as if the swing feeds the flame upward. Blade crosses lower third, brown grip and small brass guard to left, flame fills upper half. One white contact glint; no bellows, coals, smoke or second weapon.",
+    "One upright broad steel short sword, plain bronze hilt at bottom, with ONE thick crimson flame growing from its left edge and curling upward beside it. Separate silver and crimson silhouettes with a dark gap except at one white contact point. No fire-painted blade."
+  ],
+  "talent:ruin_finisher": [
+    "A large simple already cracked STEEL helmet FRONT VIEW fills the lower half, ONE heavy TWO-HANDED AXE with broad single crescent silver head and brown wood haft descends into its crown. ONE deep black crack in helmet, ONE crimson contact spark. Axe and helmet readable separately; no red metal, no rays or fine armour.",
+    "A large frontal STEEL helmet split into TWO chunky halves with a deep dark gap; the broad symmetric double-bit STEEL axe head is embedded at top centre, brown wooden haft rising upright. One small crimson spark at the split. Simple finishing blow, helmet not tiny.",
+    "A single angular bearded STEEL axe head on a brown wood haft comes diagonally down-left onto a large front-facing steel helmet with ONE pre-existing dark zigzag crack. ONE crimson contact wedge marks the decisive impact. No person, debris, rays, hammer or red-painted metal."
+  ],
+  "talent:ruin_relentless": [
+    "ONE large single-crescent STEEL two-handed axe with a BROWN wooden haft, diagonal lower-left to upper-right. Behind it exactly THREE broad separated CRIMSON swing arcs in succession, a clear repeated-swing rhythm. No extra axes, chain, smoke, particles or red-tinted steel.",
+    "ONE symmetric double-bit SILVER STEEL axe head with a thick BROWN wooden haft horizontal across centre. Exactly THREE bold crimson parallel sweep crescents curve behind and below it, with wide dark gaps. One axe keeps swinging, no other object.",
+    "ONE angular bearded STEEL axe on brown wood, nearly vertical on the right half. Exactly THREE thick crimson motion arcs curve from left to upper right behind it, each separate and simple. Axe head dominates inside medallion; no chains, duplicate axes or red metal."
+  ],
+  "skill:blink": [
+    "The 0.51 teleport layout in RIME colours: TWO upright PALE-BLUE portal slits, faint upright mage afterimage on left and a BRIGHT LARGE mage stepping out on right, connected by ONE broad horizontal blue motion streak. The right mage is at least 65 percent canvas tall: long ivory robe, simple pointed hat, brown wooden staff; upright, never hooded or crouched. Left is only a plain fading silhouette of the same mage. No crystals, violet, landscape or small distant figures.",
+    "ONE large upright MAGE steps sideways RIGHT through a tall narrow pale-blue portal oval: plain ivory long robe, pointed hat, one straight BROWN wooden staff, natural face as one small tan plane. Figure 75 percent tall. A broad short icy-blue motion streak extends LEFT from the portal, without a second figure. Navy field, no hood or ice shards.",
+    "ONE large front-facing MAGE, upright in a plain light-grey long robe and broad pointed hat, brown staff clearly beside body, one foot stepping out of a pale-blue vertical portal slit on the LEFT. ONE short broad pale-blue horizontal teleport trail behind the waist, dark navy field. Figure 80 percent tall, no crouching, hood, crystals or purple."
+  ],
+  "skill:heal": [
+    "The 0.51 motif and composition: TWO simple cupped hands in NATURAL warm tan skin, palms up from lower corners, holding ONE large luminous GOLD healing PLUS with equal thick arms at centre. Warm gold and ivory glow only. Hands and plus read as one healing emblem. No heart, flame, fingers clutter or teal.",
+    "Two natural TAN hands cupped together in a shallow bowl at lower centre, holding one large thick GOLD healing plus higher in the square. Exactly this variant uses the old TEAL glow behind the gold plus, on warm-brown field. Simplified fingers as broad grouped shapes, clear empty gaps, no heart or flame.",
+    "TWO natural light-brown cupped hands in a simple SIDE VIEW, one foreground and one behind, gently lifting ONE broad luminous IVORY healing plus with a warm GOLD rim; plus slightly upper right. Warm-brown flat field, soft gold glow, no teal, heart or fire."
+  ],
+  "skill:mend": [
+    "The 0.51 composition: ONE warm glowing amber HEART at centre, wrapped by a circular arrow made from exactly TWO broad unfurling NATURAL GREEN leaves. Green is the sole permitted leaf-colour exception for this icon's three variants. Large clear heart lobes, thick smooth leaf shapes with no veins; no stitches, drips or blood.",
+    "ONE large warm ivory-and-amber heart slightly above centre, surrounded by exactly TWO broad GOLD leaves curling clockwise into a circular healing arrow. Dark-brown gaps between heart and leaves, arrowheads formed by broad leaf tips. No green, veins, stitches or dripping.",
+    "ONE broad glowing warm heart sits in a U-shaped cradle of TWO GOLD leaves; their large curled tips turn back inward at upper sides to suggest repeated healing. Nearly symmetric open circular composition, dark gaps, no green, stitches, leaf veins or droplets."
+  ],
+  "skill:shield_spell": [
+    "The 0.51 motif and composition: ONE large ROUND translucent GOLD bubble enclosing one bright upright person silhouette, ivory head and simple outstretched arms and legs, figure at least 60 percent canvas tall. Bubble upper rim bright, interior mostly dark warm brown, figure clearly separate. No physical shield, dome, ground, scenery or architecture.",
+    "One luminous upright IVORY person silhouette, large rounded head and simple straight arms held slightly away from torso, inside a huge round GOLD bubble. Bubble is a clean circle with a brighter left rim and dark clear centre. Figure almost fills inside, no landscape or physical shield.",
+    "One bright simple standing person in SIDE VIEW, head and body fully legible at 65 percent canvas height, surrounded by one thick-rimmed round translucent GOLD protective sphere. Warm-brown field, white top glint. No ground, dome, physical armour shield, scenery or extra people."
+  ],
+  "talent:mercy_clear_conscience": [
+    "ONE broad IVORY healing plus at lower centre transforms upward into a single hard GOLD lightning bolt above it, a clean joined vertical healing-to-strike emblem. Bolt uses the kept Smite language, thick jagged diagonal planes. Wide dark spaces around arms, warm-brown field. No bell, hand, letters or extra sparks.",
+    "One large warm GOLD healing plus on the left merges through a short ivory glow into ONE sharp ivory-and-gold lightning bolt rising to upper right. Two simple connected shapes, heal becomes strike; bolt clearly angular, no fire, bell or hands.",
+    "A single broad IVORY healing plus in lower half, ONE thick GOLD lightning bolt grows vertically from its top arm; clear stepped zigzag, distinct values between soft ivory heal and gold strike. No bell, fingers, words or texture."
+  ],
+  "talent:mercy_lasting_haven": [
+    "ONE clean GOLD arch with two broad plain columns, inspired by the kept Haven icon but extremely simplified; inside the arch exactly THREE separate soft IVORY-GOLD light drops in a horizontal row, large enough to read. Dark warm-brown field, open bright sanctuary, no stone cave or doorway bars.",
+    "Exactly THREE stacked gentle GOLD healing pulse crescents, top small, middle medium, bottom wide, each separated by a generous dark gap; warm ivory cores. No arch, building, cave or bars. One simple repeated-heal emblem.",
+    "ONE broad smooth GOLD rounded arch on two short columns, enclosing exactly THREE large ivory-gold light drops stacked VERTICALLY with dark spacing. Open warm-brown centre, bright friendly light, no masonry, barred gate, cave or ornate columns."
+  ],
+  "skill:rebuke": [
+    "ONE sharp GOLD-WHITE light spear flies diagonally from lower left toward upper right. Long straight crisp central shard, broad pointed head, ONE short crimson trail behind it and a tiny white triangular hit burst at the tip as one continuous projectile effect. No hand, fingers, flame shape or vertical lightning.",
+    "ONE large angular GOLD light shard, white central facet, flies diagonally DOWN-RIGHT from upper left with ONE short thick crimson comet-like motion trail. Shard stays straight and spear-shaped with a broad triangular point; one small compact contact flash at lower right. No flame tongues, hand or lightning zigzag.",
+    "ONE broad IVORY-WHITE spear of light crosses from lower left to upper right on a shallow diagonal; GOLD edge facets, short crimson tail, single bright wedge at the tip. Crisp geometric projectile, no physical shaft, hand, flame, vertical bolt or dust."
+  ],
+  "skill:word_of_ruin": [
+    "The 0.51 motif and front composition: ONE very large IVORY BONE skull, two broad dark empty eye sockets, simplified jaw with no individual tiny teeth. ONE bright jagged CRIMSON crack splits forehead down to jaw, edged with a single gold glint. Natural bone, dark umber-black field. No crystal fragments or swirls.",
+    "ONE large IVORY BONE skull in slight side view, still facing mostly forward, large dark eye sockets and simple jaw. ONE deep jagged crack across forehead and cheek glows VIOLET-MAGENTA: exactly this variant retains the old accent colour, but skull stays ivory, never purple. No gold or crimson effect, shards or smoke.",
+    "ONE broad front-facing IVORY skull with simplified open dark jaw and two wide empty sockets. ONE diagonal zigzag GOLD-white fracture travels from upper left forehead to lower right jaw, with a restrained deep-crimson edge inside the crack. Skull occupies 80 percent, no flying fragments."
+  ],
+  "skill:censure": [
+    "ONE thick vertical GOLD-WHITE column of light strikes from the TOP into a large glowing GOLD ground ring, seen as a clean flat ellipse at bottom. Marked spot THEN downward strike, no letters in the ring, no ground scenery. Black-umber field, at most a restrained crimson edge at contact.",
+    "ONE heavy GOLD lightning bolt drops vertically into the centre of ONE thick horizontal GOLD ellipse marking the ground, simple white impact centre. Bolt dominates upper half, ring lower third, distinct dark gaps. No gavel, seal stamp, flame, runes or numbers.",
+    "ONE large GOLD elliptical ground target ring, with exactly FOUR short thick GOLD-WHITE straight bolts descending from above into four points on its edge. Simple symmetric marked area strike, no extra figures, text, symbols, ground texture, fire or stamp."
+  ],
+  "talent:reckoning_long_reach": [
+    "ONE long straight GOLD-WHITE ray crosses the entire medallion on a shallow ascending diagonal from lower left to upper right, ending at one small but bold plain GOLD target ring near the right rim. Wide dark gap around ring, no letters, hands, flame or tiny marks.",
+    "ONE sharp GOLD-WHITE light shard pointing RIGHT with a very long straight gold trail across the medallion, and exactly TWO broad perpendicular range ticks beneath the trail. One extended shot, no hand, extra rays, text, numeral or crimson smoke.",
+    "ONE long thin but BOLD GOLD-WHITE beam stretches horizontally across the centre to a simple small GOLD target circle on the right; the beam starts with a broad ivory pulse on left and narrows cleanly. No hand, scenery, letters, extra rays or glowing dust."
+  ],
+  "skill:loose": [
+    "The 0.51 motif and layout: ONE large arrow flying diagonally to UPPER RIGHT, BROWN wooden shaft, broad SILVER STEEL arrowhead, IVORY fletching at lower left. Exactly TWO clean pale-GREEN speed trails behind, no bow. Broad recognisable parts, flat forest field, no foliage or feather barbs.",
+    "ONE large arrow flies diagonally from lower RIGHT toward upper LEFT, plain brown shaft, broad leaf-shaped STEEL head with white edge, two chunky ivory fletching vanes. ONE short pale-green curved speed sweep behind it; no bow or target.",
+    "ONE large BROWN-shaft arrow on a steep upward-right diagonal, oversized plain triangular SILVER head, broad ivory fletching. TWO short bold parallel green speed streaks trail behind left. Light swift shot, no impact cone, target, bow, foliage or tiny feather lines."
+  ],
+  "skill:sidestep": [
+    "ONE large hooded scout in a clear sideways dodge RIGHT, figure 80 percent canvas tall, plain BROWN tunic and muted green hood in broad masses, natural tan face. ONE flat dark-green afterimage displaced LEFT and ONE simple curved pale-green motion streak below hips. No grass, leaves, folds, texture, tiny figure or weapons.",
+    "ONE large hooded scout dodges LEFT in a wide side lunge, BROWN leather torso and simple muted green hood, natural face, full figure at least 75 percent tall. ONE pale-green curved motion arc sweeps from right to left behind waist, one flat dark-green trailing afterimage. No scenery, textures, wind flecks or weapons.",
+    "Close-up of ONE hooded scout from knees upward, leaning sharply RIGHT in a sideways evasion, natural tan face, plain ochre-brown clothing with dark green hood. ONE broad flat afterimage behind LEFT and a short green hook-shaped movement arc. Large clear figure, no folds, leaves or particles."
+  ],
+  "skill:sprint": [
+    "ONE large BROWN LEATHER boot and cropped lower leg in running stride RIGHT, clear L silhouette, toe extended, no straps. Exactly THREE bold clean GREEN speed streaks trail LEFT. Simple side view, tan sole, forest field, no wind texture or green-painted boot.",
+    "ONE large brown leather boot SIDE VIEW running LEFT, heel raised and toe reaching forward, lower leg cropped at top-right. THREE thick horizontal green streaks extend right behind the heel. Plain warm tan sole, no buckles, laces or grass.",
+    "ONE close-up tan-brown leather boot kicking back diagonally toward upper RIGHT, clear bent ankle and strong L shape, dark brown sole. THREE short thick green speed bars trail down-left, no folds, straps, wind swirls or green object tint."
+  ],
+  "skill:true_draw": [
+    "ONE very thick BROWN wooden arrow with oversized SILVER broadhead hits the centre of ONE simple GREEN target ring on the RIGHT, flying straight horizontally left-to-right. Large IVORY fletching at left, ONE compact pale-green impact cone at contact. Heavy sure shot, not a light diagonal Loose arrow. No bow or foliage.",
+    "ONE massive thick BROWN-shaft arrow flies HORIZONTALLY to the RIGHT, oversized triangular STEEL head, ivory fletching, ONE bold pale-GREEN shock cone at the tip. Foreground arrow fills 85 percent width. No target, bow, diagonals, leaves or many streaks.",
+    "ONE heavy arrow flies horizontally LEFT into the centre of a single upright GREEN target circle at left. Thick brown shaft, broad steel head, chunky ivory tail, ONE large white-green contact spark. Simple profile impact, no bow, scenery, diagonal light shot or target texture."
+  ],
+  "skill:split_shot": [
+    "ONE incoming horizontal arrow path from LEFT forks at centre into exactly THREE outgoing arrows: large main arrow continues RIGHT, two smaller arrows angle UP-RIGHT and DOWN-RIGHT. BROWN shafts, STEEL tips, ivory tails, GREEN trails form one clear branching fork with wide dark gaps. No wood target, fan from above or scattered arrows.",
+    "ONE brown incoming arrow rises from BOTTOM centre and splits into exactly THREE: main arrow continues straight UP, two smaller arrows branch upper-left and upper-right. Broad STEEL arrowheads, green branching trails join at one obvious central split. No raining arrows, object being cut or foliage.",
+    "ONE arrow trajectory enters from lower LEFT and forks in the middle: main thick arrow continues diagonally upper-RIGHT, two smaller arrows diverge more upward and more rightward. Exactly THREE large silver heads on brown shafts with simple green connected fork trails. No target or splitting wood, no descending fan."
+  ],
+  "skill:opening": [
+    "The 0.51 motif and layout: ONE bright SILVER dagger with plain GOLD-BRASS hilt at upper left stabs down-right into ONE wide dark gap between TWO broad DARK PURPLE armour plates. ONE small gold contact burst at gap. Dagger is large, natural silver, clearly brighter than plates. No hand, purple blade, engravings or texture.",
+    "ONE broad SILVER dagger thrusts HORIZONTALLY from left into a clearly open vertical gap between two dark indigo armour plates on right. Simple brass hilt, short brown grip, ONE small violet-white contact flash in gap. Blade occupies most width, no hand or tinted steel.",
+    "ONE wide SILVER dagger points vertically DOWN from a plain brass hilt at top into the dark notch between two broad dark-violet shoulder plates at bottom. ONE sharp small gold spark in notch. Simple front view, steel white edge, no person, hand, engraving or violet metal."
+  ],
+  "skill:parry": [
+    "TWO broad blades form ONE clear defensive crossed silhouette: your short SILVER dagger with a plain brass hilt rises from lower left to upper right and catches one incoming dark STEEL blade from upper left. ONE large white spark at their single contact; faint violet ward accent behind. No hand, multiple arcs, purple blades or tiny details.",
+    "ONE large SILVER dagger held UPRIGHT, plain brass hilt and brown grip at bottom. ONE thick VIOLET-SILVER ward arc flares on its RIGHT side, with one large white impact spark at the arc's centre. Clear defensive contact, no hand, second blade or mist.",
+    "ONE short broad SILVER dagger with brass hilt slopes up-left from bottom right, deflecting one plain GREY steel blade descending from upper right; blades make a wide open V, touching only at ONE bright white-violet contact spark near top centre. No fingers, smoke or violet-tinted steel."
+  ],
+  "skill:flourish": [
+    "Close-up ONE forearm in a plain DARK BROWN leather sleeve and glove enters from lower left, holding a short broad SILVER blade pointing right. Blade draws ONE huge wide VIOLET-SILVER crescent across the FRONT, distinct from steel by dark gap and violet hue. Forearm and weapon fill 80 percent, no full figure, mist or leather folds.",
+    "Close-up ONE dark-brown leather gloved forearm enters from right and sweeps a short broad SILVER blade LEFT across centre. ONE thick violet crescent sweeps beneath and ahead of the blade, white leading edge, clear separation. Large wrist and weapon, no distant figure, rivets or smoke.",
+    "ONE large fighter UPPER BODY with a striking arm fills 80 percent canvas, plain brown leather torso, dark hood and natural face. Arm sweeps a short SILVER sword horizontally RIGHT, drawing ONE broad violet-silver crescent in FRONT. No legs, second weapon, distant silhouettes, mist or folds."
+  ],
+  "skill:close_dance": [
+    "ONE large crisp dark fighter silhouette, 80 percent tall, in a broad balanced stance with TWO bright SILVER short blades held out to either side. ONE bright VIOLET-SILVER circular blade trail surrounds the figure behind, with wide dark space separating body from ring. Near-flat indigo-black field, no mist, smoke or tiny details.",
+    "ONE large FRONT-FACING fighter from knees upward, natural tan face, plain ochre-brown leather torso and dark trousers, TWO SILVER short blades angled upward on either side. ONE violet-silver trail ring behind shoulders and hips, figure brightly separated. No hood obscuring face, smoke or texture.",
+    "ONE large fighter silhouette side-lunging LEFT, body at least 75 percent tall, two broad SILVER short blades extending in opposite clear directions. ONE thick bright VIOLET-SILVER ring behind body, dark crisp figure against ring, broad empty spaces. No mist, extra people or fine armour."
+  ],
+  "talent:veil_shake_loose": [
+    "Exactly FOUR large IRON-GREY oval chain links stretch diagonally lower-left to upper-right and SNAP in the middle. Two separated halves with a broad black gap, ONE bright WHITE-SILVER spark at break. Violet only a faint backdrop glow, links natural grey, no smoke, texture or extra links.",
+    "Exactly FOUR chunky SILVER-IRON chain links run HORIZONTALLY across medallion, broken at centre into two clearly separated pairs. ONE bold white spark occupies the dark break. Broad open link holes remain readable, indigo-black background, no purple metal or mist.",
+    "Exactly THREE very large IRON-GREY chain links on a near-vertical diagonal, middle link split OPEN into two halves, ONE white contact spark at the opening. Large dark holes in links, faint violet field only. No smoke, tiny debris or purple chains."
+  ],
+  "talent:veil_travel_worn": [
+    "ONE large hooded traveller in a plain OCHRE-BROWN cloak, front view, staff of natural BROWN WOOD beside body, two worn brown boot toes below. Figure fills 80 percent medallion interior, stands on ONE small light tan road bar with no landscape. Indigo-black field, faint violet rim light only. No purple cloak, folds or distant scene.",
+    "ONE large worn BROWN cloak draped over a single matching leather boot as one compact travel-kit silhouette, hood at top and broad L-shaped boot below. Warm ochre lit edges and one simple plain patch, no texture or stitching. Indigo field, restrained violet backdrop glow, no landscape.",
+    "ONE close-up hooded traveller from knees upward in a plain tan-OCHRE cloak, natural brown wooden staff upright at LEFT, face a broad tan shadow plane. Large bright cloak against dark indigo field, one worn hem notch only, no folds, landscape, fine detail or violet-tinted clothing."
+  ]
+}
