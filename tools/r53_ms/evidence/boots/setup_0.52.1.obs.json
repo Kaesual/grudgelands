@@ -32,7 +32,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.1s | clients: warrior"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.0994s | clients: warrior"
     }
    ],
    "loaded": {
@@ -192,9 +192,9 @@
      "grug_classes:class": "warrior",
      "grug_classes:race": "dwarf",
      "grug_classes:respec_used": "1",
-     "grug_classes:talent_ready:ruination": "1792492374",
+     "grug_classes:talent_ready:ruination": "1792499643",
      "grug_classes:talents": "ironbound=4,spite=3,heavy_hand=4,keen_edge=4",
-     "grug_classes:unbroken_ready": "1792492374"
+     "grug_classes:unbroken_ready": "1792499643"
     },
     "sizes": {
      "grug_bag1": 1,
@@ -277,7 +277,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 4s | max lag: 0.14s | clients: mage"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 5s | max lag: 0.179s | clients: mage"
     }
    ],
    "loaded": {
@@ -461,7 +461,7 @@
      "grug_classes:class": "mage",
      "grug_classes:race": "dwarf",
      "grug_classes:respec_used": "1",
-     "grug_classes:talent_ready:whitehot": "1792492378",
+     "grug_classes:talent_ready:whitehot": "1792499647",
      "grug_classes:talents": "tinder=3,deep_well=4,deep_chill=4,cold_focus=4"
     },
     "sizes": {
@@ -515,7 +515,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 9s | max lag: 0.159s | clients: priest"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 9s | max lag: 0.17s | clients: priest"
     }
    ],
    "loaded": {
@@ -675,7 +675,7 @@
      "grug_classes:class": "priest",
      "grug_classes:race": "dwarf",
      "grug_classes:respec_used": "1",
-     "grug_classes:talent_ready:last_word": "1792492383",
+     "grug_classes:talent_ready:last_word": "1792499652",
      "grug_classes:talents": "gentle_hand=4,warding_faith=3,sharpened_word=4,hard_faith=4"
     },
     "sizes": {
@@ -735,7 +735,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 14s | max lag: 0.151s | clients: scout"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 14s | max lag: 0.16s | clients: scout"
     }
    ],
    "loaded": {
@@ -914,7 +914,7 @@
      "grug_classes:race": "dwarf",
      "grug_classes:respec_used": "1",
      "grug_classes:talents": "strong_draw=3,quiver=4,fine_edge=4,light_step=4",
-     "grug_classes:untouchable_ready": "1792492388"
+     "grug_classes:untouchable_ready": "1792499657"
     },
     "sizes": {
      "grug_bag1": 1,
@@ -967,7 +967,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 18s | max lag: 0.143s | clients: sleeper"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 19s | max lag: 0.152s | clients: sleeper"
     }
    ],
    "loaded": {
@@ -1133,7 +1133,7 @@
      "grug_classes:class": "mage",
      "grug_classes:race": "dwarf",
      "grug_classes:respec_used": "1",
-     "grug_classes:talent_ready:whitehot": "1792492392",
+     "grug_classes:talent_ready:whitehot": "1792499661",
      "grug_classes:talents": "tinder=3,deep_well=4,deep_chill=4,cold_focus=4"
     },
     "sizes": {
@@ -1161,7 +1161,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 23s | max lag: 0.14s | clients: walker"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 23s | max lag: 0.145s | clients: walker"
     }
    ],
    "loaded": {

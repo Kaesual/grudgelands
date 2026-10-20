@@ -6,7 +6,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.1s | clients: mage"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.0994s | clients: mage"
     }
    ],
    "loaded": {
@@ -14,37 +14,25 @@
     "class": "mage",
     "hotbars": [
      {
-      "id": "strike",
+      "id": "fiery_spark",
       "list": "main",
       "slot": 1,
       "unlocked": true
      },
      {
-      "id": "fireball",
-      "list": "main",
-      "slot": 2,
-      "unlocked": true
-     },
-     {
-      "id": "ice_nova",
+      "id": "ice_wave",
       "list": "main",
       "slot": 3,
       "unlocked": true
      },
      {
-      "id": "blink",
-      "list": "main",
-      "slot": 4,
-      "unlocked": true
-     },
-     {
-      "id": "strike",
+      "id": "fiery_spark",
       "list": "grug_hotbar_store",
       "slot": 1,
       "unlocked": true
      },
      {
-      "id": "ice_nova",
+      "id": "ice_wave",
       "list": "grug_hotbar_store",
       "slot": 2,
       "unlocked": true
@@ -70,8 +58,8 @@
       "default:torch"
      ],
      "grug_hotbar_store": [
-      "grug_abilities:strike",
-      "grug_abilities:ice_nova",
+      "grug_abilities:fiery_spark",
+      "grug_abilities:ice_wave",
       "",
       "",
       "",
@@ -80,10 +68,10 @@
       ""
      ],
      "main": [
-      "grug_abilities:strike",
-      "grug_abilities:fireball",
-      "grug_abilities:ice_nova",
-      "grug_abilities:blink",
+      "grug_abilities:fiery_spark",
+      "",
+      "grug_abilities:ice_wave",
+      "",
       "",
       "",
       "default:apple",
@@ -133,37 +121,25 @@
     "class": "mage",
     "hotbars": [
      {
-      "id": "strike",
+      "id": "fiery_spark",
       "list": "main",
       "slot": 1,
       "unlocked": true
      },
      {
-      "id": "fireball",
-      "list": "main",
-      "slot": 2,
-      "unlocked": true
-     },
-     {
-      "id": "ice_nova",
+      "id": "ice_wave",
       "list": "main",
       "slot": 3,
       "unlocked": true
      },
      {
-      "id": "blink",
-      "list": "main",
-      "slot": 4,
-      "unlocked": true
-     },
-     {
-      "id": "strike",
+      "id": "fiery_spark",
       "list": "grug_hotbar_store",
       "slot": 1,
       "unlocked": true
      },
      {
-      "id": "ice_nova",
+      "id": "ice_wave",
       "list": "grug_hotbar_store",
       "slot": 2,
       "unlocked": true
@@ -189,8 +165,8 @@
       "default:torch"
      ],
      "grug_hotbar_store": [
-      "grug_abilities:strike",
-      "grug_abilities:ice_nova",
+      "grug_abilities:fiery_spark",
+      "grug_abilities:ice_wave",
       "",
       "",
       "",
@@ -199,10 +175,10 @@
       ""
      ],
      "main": [
-      "grug_abilities:strike",
-      "grug_abilities:fireball",
-      "grug_abilities:ice_nova",
-      "grug_abilities:blink",
+      "grug_abilities:fiery_spark",
+      "",
+      "grug_abilities:ice_wave",
+      "",
       "",
       "",
       "default:apple",
@@ -255,13 +231,13 @@
  },
  "phase": "again_0.53.0",
  "registered": {
-  "cinderfall": true,
-  "fiery_spark": false,
-  "glacial_ward": true,
+  "cinderfall": false,
+  "fiery_spark": true,
+  "glacial_ward": false,
   "ice_nova": true,
-  "ice_wave": false,
+  "ice_wave": true,
   "loose": true,
-  "pinning_shot": true,
+  "pinning_shot": false,
   "smite": true,
   "strike": true
  }

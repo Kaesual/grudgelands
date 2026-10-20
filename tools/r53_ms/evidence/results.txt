@@ -23,8 +23,9 @@ PASS  talents no stored talent window or used respec after the join
 PASS  kit     no retired skill in any list after the join
 PASS  kit     every skill left on either hotbar is unlocked (locked ones gone)
 PASS  hp      class factors 1.2 / 0.8 / 0.8 / 1.0: the Mage's and Priest's maximum lower than at 0.52.1 and their full HP clamped to it; maximum = base pool x factor
-PASS  kit     before the class lanes: the Mage's Strike and Ice Nova stay on A and B
+PASS  kit     the game's join swapped the Mage's Strike for Fiery Spark and Ice Nova for Ice Wave on layout A and B; the Priest keeps Smite
+PASS  kit     the Priest's Strike slot is empty (Smite held already; Q4 accepted)
 PASS  boot    saved after boot A: the joined characters' markers gone; sleeper (offline) keeps its marker and its migrated inventory
 PASS  again   boot B: mage joins again: no chat line about the reset, the lists as boot A left them
 
-28 checks, 0 failed
+29 checks, 0 failed

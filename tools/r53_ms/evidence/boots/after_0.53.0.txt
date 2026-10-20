@@ -1,9 +1,9 @@
 launcher: staged probe: grug_probe_r53_ms
-seconds: 36, exit 0
+seconds: 37, exit 0
 joins: ['warrior logged in (protocol 52), stayed 4.0 s', 'mage logged in (protocol 52), stayed 4.0 s', 'priest logged in (protocol 52), stayed 4.0 s', 'scout logged in (protocol 52), stayed 4.0 s', 'walker logged in (protocol 52), stayed 4.0 s']
 --- log lines
 ACTION[Main]: [grug_core] world version 0.53.0, game 0.53.0: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33894.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:35877.
 ACTION[Server]: warrior [127.0.0.1] joins game. List of players: warrior
 ACTION[Server]: [r53_ms_probe] joined warrior
 ACTION[Server]: [grug_core] migration 0.53.0: warrior's online work is done

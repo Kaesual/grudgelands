@@ -10,7 +10,7 @@
     },
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.1s | clients: warrior"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.0994s | clients: warrior"
     }
    ],
    "loaded": {
@@ -33,13 +33,13 @@
       "id": "mighty_blow",
       "list": "main",
       "slot": 3,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "taunt",
       "list": "main",
       "slot": 4,
-      "unlocked": true
+      "unlocked": false
      }
     ],
     "hp": {
@@ -136,18 +136,6 @@
       "list": "main",
       "slot": 2,
       "unlocked": true
-     },
-     {
-      "id": "mighty_blow",
-      "list": "main",
-      "slot": 3,
-      "unlocked": true
-     },
-     {
-      "id": "taunt",
-      "list": "main",
-      "slot": 4,
-      "unlocked": true
      }
     ],
     "hp": {
@@ -182,8 +170,8 @@
      "main": [
       "grug_abilities:strike",
       "grug_abilities:charge",
-      "grug_abilities:mighty_blow",
-      "grug_abilities:taunt",
+      "",
+      "",
       "",
       "",
       "default:apple",
@@ -236,7 +224,7 @@
     },
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 4s | max lag: 0.14s | clients: mage"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 5s | max lag: 0.117s | clients: mage"
     }
    ],
    "loaded": {
@@ -247,37 +235,37 @@
       "id": "strike",
       "list": "main",
       "slot": 1,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "fireball",
       "list": "main",
       "slot": 2,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "ice_nova",
       "list": "main",
       "slot": 3,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "blink",
       "list": "main",
       "slot": 4,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "strike",
       "list": "grug_hotbar_store",
       "slot": 1,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "ice_nova",
       "list": "grug_hotbar_store",
       "slot": 2,
-      "unlocked": true
+      "unlocked": false
      }
     ],
     "hp": {
@@ -364,37 +352,25 @@
     "class": "mage",
     "hotbars": [
      {
-      "id": "strike",
+      "id": "fiery_spark",
       "list": "main",
       "slot": 1,
       "unlocked": true
      },
      {
-      "id": "fireball",
-      "list": "main",
-      "slot": 2,
-      "unlocked": true
-     },
-     {
-      "id": "ice_nova",
+      "id": "ice_wave",
       "list": "main",
       "slot": 3,
       "unlocked": true
      },
      {
-      "id": "blink",
-      "list": "main",
-      "slot": 4,
-      "unlocked": true
-     },
-     {
-      "id": "strike",
+      "id": "fiery_spark",
       "list": "grug_hotbar_store",
       "slot": 1,
       "unlocked": true
      },
      {
-      "id": "ice_nova",
+      "id": "ice_wave",
       "list": "grug_hotbar_store",
       "slot": 2,
       "unlocked": true
@@ -420,8 +396,8 @@
       "default:torch"
      ],
      "grug_hotbar_store": [
-      "grug_abilities:strike",
-      "grug_abilities:ice_nova",
+      "grug_abilities:fiery_spark",
+      "grug_abilities:ice_wave",
       "",
       "",
       "",
@@ -430,10 +406,10 @@
       ""
      ],
      "main": [
-      "grug_abilities:strike",
-      "grug_abilities:fireball",
-      "grug_abilities:ice_nova",
-      "grug_abilities:blink",
+      "grug_abilities:fiery_spark",
+      "",
+      "grug_abilities:ice_wave",
+      "",
       "",
       "",
       "default:apple",
@@ -486,7 +462,7 @@
     },
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 9s | max lag: 0.132s | clients: priest"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 10s | max lag: 0.111s | clients: priest"
     }
    ],
    "loaded": {
@@ -497,7 +473,7 @@
       "id": "strike",
       "list": "main",
       "slot": 1,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "smite",
@@ -515,7 +491,7 @@
       "id": "shield_spell",
       "list": "main",
       "slot": 4,
-      "unlocked": true
+      "unlocked": false
      }
     ],
     "hp": {
@@ -602,12 +578,6 @@
     "class": "priest",
     "hotbars": [
      {
-      "id": "strike",
-      "list": "main",
-      "slot": 1,
-      "unlocked": true
-     },
-     {
       "id": "smite",
       "list": "main",
       "slot": 2,
@@ -617,12 +587,6 @@
       "id": "heal",
       "list": "main",
       "slot": 3,
-      "unlocked": true
-     },
-     {
-      "id": "shield_spell",
-      "list": "main",
-      "slot": 4,
       "unlocked": true
      }
     ],
@@ -656,10 +620,10 @@
       ""
      ],
      "main": [
-      "grug_abilities:strike",
+      "",
       "grug_abilities:smite",
       "grug_abilities:heal",
-      "grug_abilities:shield_spell",
+      "",
       "",
       "",
       "default:apple",
@@ -712,7 +676,7 @@
     },
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 14s | max lag: 0.125s | clients: scout"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 14s | max lag: 0.105s | clients: scout"
     }
    ],
    "loaded": {
@@ -735,7 +699,7 @@
       "id": "snare_shot",
       "list": "main",
       "slot": 3,
-      "unlocked": true
+      "unlocked": false
      },
      {
       "id": "sidestep",
@@ -846,12 +810,6 @@
       "unlocked": true
      },
      {
-      "id": "snare_shot",
-      "list": "main",
-      "slot": 3,
-      "unlocked": true
-     },
-     {
       "id": "sidestep",
       "list": "main",
       "slot": 4,
@@ -896,7 +854,7 @@
      "main": [
       "grug_abilities:strike",
       "grug_abilities:loose",
-      "grug_abilities:snare_shot",
+      "",
       "grug_abilities:sidestep",
       "grug_abilities:sprint",
       "",
@@ -946,7 +904,7 @@
    "chat": [
     {
      "t": 0,
-     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 18s | max lag: 0.119s | clients: walker"
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 19s | max lag: 0.1s | clients: walker"
     }
    ],
    "loaded": {
@@ -1099,13 +1057,13 @@
  },
  "phase": "after_0.53.0",
  "registered": {
-  "cinderfall": true,
-  "fiery_spark": false,
-  "glacial_ward": true,
+  "cinderfall": false,
+  "fiery_spark": true,
+  "glacial_ward": false,
   "ice_nova": true,
-  "ice_wave": false,
+  "ice_wave": true,
   "loose": true,
-  "pinning_shot": true,
+  "pinning_shot": false,
   "smite": true,
   "strike": true
  }
