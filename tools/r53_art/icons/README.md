@@ -1,8 +1,9 @@
 # Round 53 ICONS — clarity redraw proposals
 
 Prepared 2026-10-20 by GPT-6 Astra on `r53-icons`.
-This drop contains **108 proposals: three variants for each of 26 skill icons
-and 10 talent icons**. They await the user's selection.
+The first drop contains **108 proposals: three variants for each of 26 skill
+icons and 10 talent icons**. The user's selection and the eight remaining
+redraws are recorded in the pass-2 section below.
 
 Upgrade classification: **compatible**. This is staged media and its packaging.
 No shipped assets, Lua or earlier drops change. No fixtures, engine runs,
@@ -63,7 +64,76 @@ textures were also checked against `main` and matched.
 The user makes the final selection; later integration owns desktop and
 web runtime checks.
 
-## Reproducing packaging
+## Pass 2 — eight redraws
+
+Prepared 2026-10-20 by GPT-6 Astra. The user's comparison-page picks decided
+28 of the 36 icons: 13 × pass-1 v1, 1 × v2, 6 × v3 and 8 × the 0.51 icon.
+This second drop contains **24 new proposals, eight icons × v1–v3**, for the
+remaining choices. These are proposals awaiting selection, not shipped art.
+Upgrade classification: **compatible**; staged media and packaging only.
+
+- [Pass-2 manifest and exact prompts](drop-02/manifest.json) record every
+  final hash, source painting, supplied reference, processing step and
+  `previous_versions` receipt.
+- [Pass-2 comparison](drop-02/preview.png) has one row per icon: current
+  snapshot, 0.51 for Blink and Charge, the three pass-1 references, then the
+  three new proposals. Clearly separated group headers distinguish the two
+  passes. Every image appears at actual 64, 32 and 16 px plus 32 px
+  greyscale; view at 100%.
+- [Pass-2 composition briefs](briefs-pass2.json) and
+  [packaging/audit script](build_pass2.py) keep this pass separate.
+
+| Icon | v1 | v2 | v3 |
+|---|---|---|---|
+| Bellow | Bronze shock ring at chest height | Connected bronze roar fan from the mouth | Broad bronze radial glow behind the bust |
+| Blink | Pointed ice slits and a straight transit trail | Bevelled portals, curved ribbon, forward step | Jagged ice slits, low sweeping trail, rightward stride |
+| Broadstroke | Sword at the left/start of a wide crimson sweep | Sword across the middle of the sweep | Sword finishing across the upper span, trail below |
+| Charge | Nearly horizontal steel shoulder, crimson-dominant streaks | Upward rush, white-hot streak cores, small bronze trims | Downward rush, predominantly crimson streaks |
+| Close Dance | Blade to the left, empty open hand to the right | Raised blade to the right, empty hand guarding the chest | Leftward lunge, one forward blade and empty trailing hand |
+| Parry | Separate deflected blade and a curved redirect trail | Lit forearm with one dagger behind a violet light ward | Enemy blade knocked wide, clear central opening and dagger-tip glint |
+| Halt | Right-facing side view, no effect | Left-facing side view with short shock arc | Forward right-facing side view with impact ring |
+| Finisher | Axe splitting the last remnant of a wooden shield | Descending steel blade and almost-spent cracked heart crystal | Sword broken into two separated pieces |
+
+The built-in `image_gen.imagegen` tool made **29 individual calls**: 24
+initial paintings and five focused refinements (Bellow v2, Charge v2,
+Parry v1/v3 and Finisher v2). Each call used one exact prompt for one image.
+The refinements clarify the mouth origin of the roar, restore exactly three
+Charge streaks and an upward rush, remove unintended arrowheads from Parry,
+and simplify and brighten the heart silhouette for the greyscale check.
+Earlier versions remain documented under `previous_versions`; their source
+paintings remain at the tool's original output paths.
+
+Only project-owned images were supplied: pass-1 Bellow v3, the corresponding
+Close Dance variants, the current Halt icon, and Blink/Charge extracted with
+`git show dea1d163:<path>`. Refinements used their own preceding generated
+painting. Source and reference SHA-256 hashes and git blob identifiers are
+recorded. The current comparison is pinned to `a53abbf2`; the pass-1 files
+and all earlier drops remain unchanged.
+
+Processing is whole-image RGB conversion and Lanczos reduction to 64 × 64,
+with no crop, recolouring, compositing or sharpening. Only the comparison
+sheet combines images and labels. Each final asset is opaque 8-bit RGB.
+The requested teleport departure/arrival pair and finishing/deflection
+motifs form single action emblems; no extra people or scene are introduced.
+Every Scout figure holds exactly one weapon.
+
+All 24 final icons were visually inspected at 64/32/16 px and in greyscale
+at 32 px. The delivery audit checks the exact eight-by-three roster, PNG
+IHDR/mode/opacity, unique hashes, source reductions, supplied references,
+five refinement histories, comparison pixels and all 25 new media rows.
+No fixtures, Lua, `mods/` edits, agents, merges or pushes belong to this pass.
+The user chooses the final variants; integration owns later runtime checks.
+
+Pass-2 commands, all with `python3 -I tools/r53_art/icons/build_pass2.py`:
+`check` audits the committed delivery; `preview` rebuilds the comparison from
+its manifest; `prepare` creates source references and jobs in
+`/tmp/grudgelands-r53-icons-pass2`; `package` consumes the individually
+recorded `receipt_*.json` files there. Generation itself is a separate
+built-in-tool operation. Repackaging needs the original generated sources;
+the audit still checks committed assets and immutable receipts if those
+local sources are no longer available.
+
+## Reproducing pass-1 packaging
 
 `python3 -I tools/r53_art/icons/build_drop.py check` audits committed
 deliverables without regenerating art and also checks cached originals
@@ -198,3 +268,28 @@ exist. Comparison sheets include this project's existing CC0 icons.
 | `drop-01/preview-4.png` | GPT-6 Astra | 2026-10-20 | Pillow comparison of listed proposals and project-owned CC0 icons | **CC0-1.0** |
 | `drop-01/preview-5.png` | GPT-6 Astra | 2026-10-20 | Pillow comparison of listed proposals and project-owned CC0 icons | **CC0-1.0** |
 | `drop-01/preview-6.png` | GPT-6 Astra | 2026-10-20 | Pillow comparison of listed proposals and project-owned CC0 icons | **CC0-1.0** |
+| `drop-02/skill__bellow_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__bellow_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__bellow_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__blink_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__blink_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__blink_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__broadstroke_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__broadstroke_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__broadstroke_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__charge_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__charge_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__charge_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__close_dance_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__close_dance_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__close_dance_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__parry_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__parry_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/skill__parry_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/talent__bulwark_halt_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/talent__bulwark_halt_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/talent__bulwark_halt_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/talent__ruin_finisher_v1.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/talent__ruin_finisher_v2.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/talent__ruin_finisher_v3.png` | GPT-6 Astra | 2026-10-20 | Built-in imagegen; individual prompt in manifest; RGB + Lanczos | **CC0-1.0** |
+| `drop-02/preview.png` | GPT-6 Astra | 2026-10-20 | Pillow comparison of listed proposals and project-owned CC0 icons | **CC0-1.0** |
