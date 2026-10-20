@@ -1,11 +1,14 @@
 --- before
 +++ after
-@@ -176,0 +177 @@
+@@ -176,0 +177,2 @@
 +'meta' | 'hoarder' | 'grug_core:migrate:0.48.0' | '1'
-@@ -179,0 +181 @@
++'meta' | 'hoarder' | 'grug_core:migrate:0.53.0' | '1'
+@@ -179,0 +182,2 @@
 +'meta' | 'light' | 'grug_core:migrate:0.48.0' | '1'
-@@ -182,0 +185 @@
++'meta' | 'light' | 'grug_core:migrate:0.53.0' | '1'
+@@ -182,0 +187,2 @@
 +'meta' | 'sleeper' | 'grug_core:migrate:0.48.0' | '1'
-@@ -190 +193 @@
++'meta' | 'sleeper' | 'grug_core:migrate:0.53.0' | '1'
+@@ -190 +196 @@
 -'storage' | 'grug_core' | 'world_version' | '0.47.0'
-+'storage' | 'grug_core' | 'world_version' | '0.48.0'
++'storage' | 'grug_core' | 'world_version' | '0.53.0'

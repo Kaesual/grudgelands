@@ -1,6 +1,6 @@
 {
  "finish": "every planned character left",
- "game": "0.48.0",
+ "game": "0.53.0",
  "joins": [
   {
    "loaded": {
@@ -213,7 +213,6 @@
       "grug_inventory:bag_great"
      ],
      "grug_bag1_content": [
-      "default:cobble 14 0 \"\\u0001r48_probe\\u000213\\u0003\"",
       "default:cobble 22 0 \"\\u0001r48_probe\\u0002141\\u0003\"",
       "default:cobble 24 0 \"\\u0001r48_probe\\u0002143\\u0003\"",
       "default:cobble 26 0 \"\\u0001r48_probe\\u0002145\\u0003\"",
@@ -228,13 +227,13 @@
       "default:cobble 24 0 \"\\u0001r48_probe\\u000223\\u0003\"",
       "default:cobble 26 0 \"\\u0001r48_probe\\u000225\\u0003\"",
       "default:cobble 28 0 \"\\u0001r48_probe\\u000227\\u0003\"",
-      "default:cobble 30 0 \"\\u0001r48_probe\\u000229\\u0003\""
+      "default:cobble 30 0 \"\\u0001r48_probe\\u000229\\u0003\"",
+      "default:cobble 32 0 \"\\u0001r48_probe\\u000231\\u0003\""
      ],
      "grug_bag2": [
       "grug_inventory:bag_leather_rucksack"
      ],
      "grug_bag2_content": [
-      "default:cobble 32 0 \"\\u0001r48_probe\\u000231\\u0003\"",
       "default:cobble 34 0 \"\\u0001r48_probe\\u000233\\u0003\"",
       "default:cobble 36 0 \"\\u0001r48_probe\\u000235\\u0003\"",
       "default:cobble 38 0 \"\\u0001r48_probe\\u000237\\u0003\"",
@@ -249,13 +248,13 @@
       "default:cobble 54 0 \"\\u0001r48_probe\\u000253\\u0003\"",
       "default:cobble 56 0 \"\\u0001r48_probe\\u000255\\u0003\"",
       "default:cobble 58 0 \"\\u0001r48_probe\\u000257\\u0003\"",
-      "default:cobble 60 0 \"\\u0001r48_probe\\u000259\\u0003\""
+      "default:cobble 60 0 \"\\u0001r48_probe\\u000259\\u0003\"",
+      "default:cobble 6 0 \"\\u0001r48_probe\\u00025\\u0003\""
      ],
      "grug_bag3": [
       "grug_inventory:bag_great"
      ],
      "grug_bag3_content": [
-      "default:cobble 6 0 \"\\u0001r48_probe\\u00025\\u0003\"",
       "default:cobble 2 0 \"\\u0001r48_probe\\u000261\\u0003\"",
       "default:cobble 4 0 \"\\u0001r48_probe\\u000263\\u0003\"",
       "default:cobble 6 0 \"\\u0001r48_probe\\u000265\\u0003\"",
@@ -270,13 +269,13 @@
       "default:cobble 22 0 \"\\u0001r48_probe\\u000281\\u0003\"",
       "default:cobble 24 0 \"\\u0001r48_probe\\u000283\\u0003\"",
       "default:cobble 26 0 \"\\u0001r48_probe\\u000285\\u0003\"",
-      "default:cobble 28 0 \"\\u0001r48_probe\\u000287\\u0003\""
+      "default:cobble 28 0 \"\\u0001r48_probe\\u000287\\u0003\"",
+      "default:cobble 30 0 \"\\u0001r48_probe\\u000289\\u0003\""
      ],
      "grug_bag4": [
       "grug_inventory:bag_leather_rucksack"
      ],
      "grug_bag4_content": [
-      "default:cobble 30 0 \"\\u0001r48_probe\\u000289\\u0003\"",
       "default:cobble 32 0 \"\\u0001r48_probe\\u000291\\u0003\"",
       "default:cobble 34 0 \"\\u0001r48_probe\\u000293\\u0003\"",
       "default:cobble 36 0 \"\\u0001r48_probe\\u000295\\u0003\"",
@@ -291,7 +290,8 @@
       "default:dirt 11 0 \"\\u0001r48_probe\\u000210\\u0003\"",
       "default:dirt 51 0 \"\\u0001r48_probe\\u0002110\\u0003\"",
       "default:dirt 53 0 \"\\u0001r48_probe\\u0002112\\u0003\"",
-      "default:dirt 55 0 \"\\u0001r48_probe\\u0002114\\u0003\""
+      "default:dirt 55 0 \"\\u0001r48_probe\\u0002114\\u0003\"",
+      "grug_housing:claim_stone"
      ],
      "main": [
       "default:torch 20",
@@ -325,7 +325,7 @@
       "default:cobble 16 0 \"\\u0001r48_probe\\u0002135\\u0003\"",
       "default:cobble 18 0 \"\\u0001r48_probe\\u0002137\\u0003\"",
       "default:cobble 20 0 \"\\u0001r48_probe\\u0002139\\u0003\"",
-      "grug_housing:claim_stone"
+      "default:cobble 14 0 \"\\u0001r48_probe\\u000213\\u0003\""
      ]
     },
     "marker": "",
@@ -485,7 +485,7 @@
  ],
  "leaves": 2,
  "load": {
-  "from": "0.48.0",
+  "from": "0.53.0",
   "new_world": false
  },
  "phase": "after_0.48.0"

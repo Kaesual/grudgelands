@@ -53,6 +53,12 @@ from migration import codec, data, world as worldmod  # noqa: E402
 OLD = "6a8afb9f"           # origin/main at 0.47.0
 OLD_VERSION = "0.47.0"
 NEW_VERSION = "0.48.0"
+# Round 53: the later declared steps (0.53.0 on) run in the same tool run and
+# start the world at their version; this step's own checks stay as they were.
+DECLARED = json.loads((REPO / "tools" / "web_data" / "upgrade.json").read_text())["migrate"]
+DUE = [v for v in DECLARED if tuple(map(int, v.split("."))) > (0, 47, 0)]
+LAST = DUE[-1]
+LATER = {"grug_core:migrate:" + v for v in DUE if v != NEW_VERSION}
 PROBE = HERE / "grug_probe_r48_bags"
 it.PROBE = PROBE
 it.EVIDENCE_LINE = re.compile(it.EVIDENCE_LINE.pattern + r"|\[r48_bags_probe\]")
@@ -207,37 +213,38 @@ def scenario(run):
     it.LAUNCHER = REPO / "tools" / "luanti_headless.sh"
     r = it.boot(run, w, "refused_%s" % NEW_VERSION)
     check("guard", "boot R (%s): the 0.47.0 world without the tool is refused, naming the "
-                   "step 0.48.0 and the command line" % NEW_VERSION,
-          it.refused_with(r, "This world is at version %s and needs the migration step %s "
+                   "step%s %s and the command line" % (it.GAME, "s" if len(DUE) > 1 else "",
+                                                       ", ".join(DUE)),
+          it.refused_with(r, "This world is at version %s and needs the migration %s "
                              "before this game's version %s can start it"
-                          % (OLD_VERSION, NEW_VERSION, NEW_VERSION),
+                          % (OLD_VERSION, it.steps_text(DUE), it.GAME),
                           "python3 tools/migrate.py --world %s" % w), "rc %d" % r.rc)
     check("guard", "the refused start wrote nothing", it.dump(w) == dump_before)
 
     # The tool.
     rc, ev = tool(run, "check_before", w, check_mode=True)
     done = it.last(ev)
-    check("tool", "--check: world %s, due [%s], nothing written" % (OLD_VERSION, NEW_VERSION),
+    check("tool", "--check: world %s, due %s, nothing written" % (OLD_VERSION, DUE),
           rc == 0 and done.get("world_version") == OLD_VERSION
-          and done.get("due") == [NEW_VERSION] and it.dump(w) == dump_before,
+          and done.get("due") == DUE and it.dump(w) == dump_before,
           "exit %d %s" % (rc, json.dumps(done)))
     rc, ev = tool(run, "migrate", w)
     kinds = [e.get("event") for e in ev]
     step_done = next((e for e in ev if e.get("event") == "step_done"), {})
-    check("tool", "migrate: start, step_start, step_done, done; exit 0",
-          rc == 0 and kinds == ["start", "step_start", "step_done", "done"]
-          and it.last(ev).get("applied") == [NEW_VERSION], "exit %d %s" % (rc, kinds))
+    check("tool", "migrate: start, step_start and step_done per due step, done; exit 0",
+          rc == 0 and kinds == ["start"] + ["step_start", "step_done"] * len(DUE) + ["done"]
+          and it.last(ev).get("applied") == DUE, "exit %d %s" % (rc, kinds))
     check("tool", "step 0.48.0 wrote three markers and nothing else",
           step_done.get("step") == NEW_VERSION and step_done.get("counts") == {
               "characters": 3, "player_meta": 0, "inventories": 0, "positions": 0,
               "privileges": 0, "mod_storage": 0, "markers": 3}, json.dumps(step_done))
     after = state(w)
     check("step", "every character carries the marker; inventories and the other meta "
-                  "unchanged; the record is %s" % NEW_VERSION,
+                  "unchanged (the later steps' markers aside); the record is %s" % LAST,
           all(after[n]["meta"].get(MARKER) == "1" and after[n]["inv"] == before[n]["inv"]
-              and {k: v for k, v in after[n]["meta"].items() if k != MARKER}
+              and {k: v for k, v in after[n]["meta"].items() if k != MARKER and k not in LATER}
               == before[n]["meta"] for n in CHARACTERS)
-          and it.storage(w, "grug_core").get("world_version") == NEW_VERSION)
+          and it.storage(w, "grug_core").get("world_version") == LAST)
     dump_after = it.dump(w)
     it.world_diff(run, "tool_0.48.0", dump_before, dump_after)
     changed = sorted(set(dump_before) ^ set(dump_after))
@@ -247,8 +254,8 @@ def scenario(run):
                           for line in changed), json.dumps(changed[:6]))
     rc, ev = tool(run, "check_after", w, check_mode=True)
     done = it.last(ev)
-    check("tool", "--check after: world %s, nothing due" % NEW_VERSION,
-          rc == 0 and done.get("world_version") == NEW_VERSION and done.get("due") == [],
+    check("tool", "--check after: world %s, nothing due" % LAST,
+          rc == 0 and done.get("world_version") == LAST and done.get("due") == [],
           "exit %d %s" % (rc, json.dumps(done)))
 
     # Boot A: the new game on the migrated world.
@@ -258,8 +265,8 @@ def scenario(run):
     hoarder = joins.get("hoarder") or {}
     loaded, settled = hoarder.get("loaded") or {}, hoarder.get("settled") or {}
     check("boot", "boot A (%s): starts from %s; hoarder and light joined with the marker "
-                  "and left" % (NEW_VERSION, NEW_VERSION),
-          a.rc == 0 and (obs.get("load") or {}).get("from") == NEW_VERSION
+                  "and left" % (it.GAME, LAST),
+          a.rc == 0 and (obs.get("load") or {}).get("from") == LAST
           and obs.get("leaves") == 2 and loaded.get("marker") == "1"
           and ((joins.get("light") or {}).get("loaded") or {}).get("marker") == "1",
           "rc %d %s %s" % (a.rc, json.dumps(obs.get("load")), a.joins))
@@ -276,10 +283,12 @@ def scenario(run):
           len(kept) == 88 and all(kept), "%d cells, %d full" % (len(kept), sum(map(bool, kept))))
     check("boot", "after the join: the hotbar untouched",
           (lists.get("main") or [])[:8] == ((loaded.get("lists") or {}).get("main") or [])[:8])
-    stone = [i for i, item in enumerate(lists.get("main") or []) if
-             item.startswith("grug_housing:claim_stone")]
-    check("boot", "after the join: the Claim Stone in main[9..]",
-          len(stone) == 1 and stone[0] >= 8, json.dumps(stone))
+    # Since Round 50 INV the Claim Stone may lie in every carried list (main
+    # and the bags), so the sort may put it into a bag: once, off the hotbar.
+    stone = [(name, i) for name in CARRIED for i, item in enumerate(lists.get(name) or [])
+             if item.startswith("grug_housing:claim_stone")]
+    check("boot", "after the join: the Claim Stone once in main[9..] or a bag",
+          len(stone) == 1 and (stone[0][0] != "main" or stone[0][1] >= 8), json.dumps(stone))
     check("boot", "after the join: one feed line naming 16 letters",
           len(settled.get("feed") or []) == 1 and "16 letters" in settled["feed"][0],
           json.dumps(settled.get("feed")))

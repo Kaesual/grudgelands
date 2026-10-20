@@ -254,6 +254,19 @@
       ""
      ]
     },
+    "grug_hotbar_store": {
+     "size": 8,
+     "stacks": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
     "grug_inbox": {
      "size": 1,
      "stacks": [
@@ -327,14 +340,14 @@
     "main": {
      "size": 32,
      "stacks": [
-      "grug_abilities:strike 1 0 \"\\u0001wield_image\\u0002grug_gear_item_sword_bronze.png\\u0003grug_skin\\u00024|grug_gear_item_sword_bronze.png\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|1\\u0003description\\u0002Strike (every class)\\nfree, no charge\\nA full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates 8 rage when it lands.\\u0003\"",
-      "grug_abilities:charge 1 0 \"\\u0001wield_image\\u0002grug_gear_item_sword_bronze.png\\u0003grug_skin\\u00024|grug_gear_item_sword_bronze.png\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|1\\u0003description\\u0002Charge (Warrior)\\nfree, 10 s cooldown\\nDash to an enemy up to 12 m away, dealing 1 damage\\ngenerating 15 rage and stunning eligible targets for 1.5 s.\\u0003\"",
+      "grug_abilities:strike 1 0 \"\\u0001wield_overlay\\u0002[combine:16x16\\u0003wield_image\\u0002grug_gear_item_sword_bronze.png\\u0003grug_skin\\u00025|grug_gear_item_sword_bronze.png|[combine:16x16\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|1\\u0003description\\u0002Strike (every class)\\nfree, no charge\\nA full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates 8 rage when it lands.\\u0003\"",
+      "grug_abilities:charge 1 0 \"\\u0001wield_overlay\\u0002grug_abilities_fx_ruin_sword.png\\u0003wield_image\\u0002grug_gear_item_sword_bronze.png\\u0003grug_skin\\u00025|grug_gear_item_sword_bronze.png|grug_abilities_fx_ruin_sword.png\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|1\\u0003description\\u0002Charge (Warrior)\\nfree, 10 s cooldown\\nDash to an enemy up to 12 m away, dealing 1 damage\\ngenerating 15 rage and stunning eligible targets for 1.5 s.\\u0003\"",
       "",
       "default:apple 5",
       "",
       "",
       "",
-      "grug_abilities:taunt 1 0 \"\\u0001wield_image\\u0002grug_gear_item_sword_bronze.png\\u0003grug_skin\\u00024|grug_gear_item_sword_bronze.png\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|1\\u0003description\\u0002Taunt (Warrior)\\nfree, 8 s cooldown\\nForces the target mob to attack you.\\u0003\"",
+      "grug_abilities:taunt 1 0 \"\\u0001wield_overlay\\u0002grug_abilities_fx_bulwark_sword.png\\u0003wield_image\\u0002grug_gear_item_sword_bronze.png\\u0003grug_skin\\u00025|grug_gear_item_sword_bronze.png|grug_abilities_fx_bulwark_sword.png\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":1.0,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|1\\u0003description\\u0002Taunt (Warrior)\\nfree, 8 s cooldown\\nForces the target mob to attack you.\\u0003\"",
       "default:apple 5",
       "grug_materials:pick_steel 1 1234 \"\\u0001description\\u0002\\u001b(c@#FFFFFF)\\u001b(T@default)Steel Pickaxe\\u001bE\\u001b(c@#fff)\\nRequires level 15\\nUsable by: All classes\\nDurability: 982 / 1000\\u0003grug_quality\\u00021\\u0003grug_base_name\\u0002\\u001b(T@default)Steel Pickaxe\\u001bE\\u0003\"",
       "default:torch 23",
@@ -586,6 +599,19 @@
       ""
      ]
     },
+    "grug_hotbar_store": {
+     "size": 8,
+     "stacks": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
     "grug_inbox": {
      "size": 1,
      "stacks": [
@@ -659,7 +685,7 @@
     "main": {
      "size": 32,
      "stacks": [
-      "grug_abilities:strike 1 0 \"\\u0001wield_image\\u0002wieldhand.png\\u0003wield_scale\\u0002(1, 1, 2.5)\\u0003grug_skin\\u00024|\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":0.89999997615814209,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|0.89999997615814209\\u0003description\\u0002Strike (every class)\\nfree, no charge\\nA full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.\\u0003\"",
+      "grug_abilities:strike 1 0 \"\\u0001wield_overlay\\u0002[combine:16x16\\u0003wield_image\\u0002wieldhand.png\\u0003wield_scale\\u0002(1, 1, 2.5)\\u0003grug_skin\\u00025||[combine:16x16\\u0003tool_capabilities\\u0002{\\\"damage_groups\\\":{\\\"fleshy\\\":0},\\\"full_punch_interval\\\":0.89999997615814209,\\\"groupcaps\\\":{\\\"dig_immediate\\\":{\\\"maxlevel\\\":0,\\\"times\\\":[null,null,0.30000001192092896,0.30000001192092896],\\\"uses\\\":0}},\\\"max_drop_level\\\":0,\\\"punch_attack_uses\\\":0}\\u0003grug_swing_caps\\u00023|0.89999997615814209\\u0003description\\u0002Strike (every class)\\nfree, no charge\\nA full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam.\\u0003\"",
       "",
       "",
       "",
@@ -698,17 +724,18 @@
  ],
  "leaves": 2,
  "load": {
-  "from": "0.48.0",
-  "game": "0.48.0",
+  "from": "0.53.0",
+  "game": "0.53.0",
   "new_world": false,
   "steps": [
    "0.44.0",
    "0.45.0",
    "0.47.0",
-   "0.48.0"
+   "0.48.0",
+   "0.53.0"
   ]
  },
- "phase": "after_0.48.0",
+ "phase": "after_0.53.0",
  "registrations": {
   "aliases": null,
   "groups": {
