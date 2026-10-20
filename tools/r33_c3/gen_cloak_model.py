@@ -855,7 +855,9 @@ def build(kind="player"):
         # per engine frame (file frame = engine frame + 1), exactly as poses.json
         # holds them; the source's keys stay as they are.
         layout, pose_bones = pose_layout()
-        source_bones = [b for b in pose_bones if b != "Cloak"]
+        # poses.json also bakes the cloak (the preview page's base clip); the
+        # generator keys the cloak by its own rule, so only the source's bones.
+        source_bones = [b for b in pose_bones if find_node(root, b) is not None]
         for name in source_bones:
             chunk = kid(find_node(root, name), "KEYS")
             rows = []
@@ -973,8 +975,8 @@ def check_clearance(info):
     corner in a twisting walking pose clip, which may overlap a leg by
     TWIST_WALK_OVERLAP. Returns per frame the closest gaps {cloak, front,
     back, cloak_back} (model units, negative for a tolerated overlap; the
-    cloak/back panel gap is reported, not required) and the sit range's
-    lowest cloak hem."""
+    cloak must clear the back panel, hanging behind it) and the sit
+    range's lowest cloak hem."""
     rig = Rig(info["root"])
     boxes = collision_boxes(info["box_ids"])
     legs = [(name, label, c) for name in ("Leg_Right", "Leg_Left") for label, c in boxes[name]]
@@ -1022,6 +1024,10 @@ def check_clearance(info):
             row[key] = closest
         if "cloak" in placed_now:
             row["cloak_back"] = gap(placed_now["cloak"], placed_now["back"])
+            if row["cloak_back"] <= 0:
+                raise SystemExit("gen_cloak_model: the cloak meets the back panel at frame %d "
+                                 "(cloak %.1f, back panel %.1f)" % (
+                                     frame, info["curves"]["cloak"][frame], info["curves"]["back"][frame]))
             if SIT_R[0] <= frame <= SIT_R[1]:
                 low = min(p[1] for p in placed_now["cloak"])
                 sit_low = low if sit_low is None else min(sit_low, low)
