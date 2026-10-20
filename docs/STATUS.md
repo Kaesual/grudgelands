@@ -26,8 +26,8 @@ user's notes.
   ([combat_stats.md](design/combat_stats.md#skill-particle-effects)):
   lights, sparks, magic and fire add with glow 14 in vivid tints (colours
   mob code passes stay), dust, smoke, mist, wind, webs, leaves and splashes
-  stay plain, material textures (blood, rock, bubbles, opaque snow, coloured
-  smoke) keep their look. Smite is a small Final
+  stay plain, material textures (blood, rock, bubbles, opaque snow, the rift
+  spawn's smoke, wind and dust) keep their look. Smite is a small Final
   Word (13 single particles), Meteor and Censure fall at 14 and 12 m/s from
   late in the delay. `tools/r52_pfx/effects.py` carries the look pass, so
   `r53_hooks` and `check_limits.lua` still compare every card with the

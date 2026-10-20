@@ -18,7 +18,7 @@ local FIRE = "mobs_fire_particle.png"
 -- extended the look to every other effect on 2026-10-21 (bosses, mobs, crits,
 -- the absorb soak, the level-up, the area defaults): the same rule, with
 -- pale or dull light tints in this file made more saturated, the material
--- textures (rock, bubbles, opaque snow, coloured smoke, dust and wind)
+-- textures (rock, bubbles, opaque snow, the rift spawn's smoke, dust and wind)
 -- unchanged and the colours mob code passes in frame.color (bosses.lua
 -- KIT_COLORS, boss_dragons.lua BREATH_COLORS, arrow impacts) as they are.
 local function lit(def)

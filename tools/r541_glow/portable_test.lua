@@ -17,7 +17,7 @@
 --      soak, the level-up, the area defaults; the user, 2026-10-21) tints the
 --      mote too, its lights add with glow 14 and its dust, smoke, wind,
 --      webs, leaves and splashes stay plain, while the material textures
---      (blood, rock, bubbles, opaque snow, coloured smoke, dust and wind)
+--      (blood, rock, bubbles, opaque snow, the rift spawn's smoke, dust and wind)
 --      keep their look; the
 --      four readiness windows and the three arrow trails carry the vivid
 --      tints;

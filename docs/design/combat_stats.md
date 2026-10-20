@@ -1540,7 +1540,7 @@ shows a single-colour particle effect, built from the accepted catalogue
   add with glow 14 (the catalogue's pale tints made more saturated; colours
   the mob code passes, such as a king's kit or a dragon's breath, stay),
   their dust, smoke, wind, webs, leaves and splashes stay plain, and the
-  material textures (blood, rock, bubbles, opaque snow, coloured smoke, dust
+  material textures (blood, rock, bubbles, opaque snow, the rift spawn's smoke, dust
   and wind) keep their look.
 - **Smite** (2026-10-21) is a small Final Word: a short beam of five motes
   shoots down from 3.2 m onto the target and a gold ring of eight springs
