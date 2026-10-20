@@ -195,7 +195,7 @@ mixed tiers, prefix and suffix colours; four versions, the last one with all thr
 so there was no ART pass 2.
 
 Main has 233 portable fixtures (4 new: `r54_model`, `r54_game`, `r54_view`, `r54_web`) and the Python test
-`tools/r54_armor/test_bake.py`. `mods/` against 0.53.1: +480 −220 lines in 18 text files (no new Lua file), 252
+`tools/r54_armor/test_bake.py`. `mods/` against 0.53.1 (at `8fbf9c09`, before lane D's comment edit): +480 −220 lines in 18 text files (no new Lua file), 252
 PNGs added, 161 removed, 148 replaced, the player model replaced and the NPC model added.
 
 ### Decisions during the round
@@ -248,9 +248,10 @@ PNGs added, 161 removed, 148 replaced, the player model replaced and the NPC mod
 - **WEB** proved the `.glb` with `tools/r54_model/capture.sh MODELS=` (the r39_wg probe is a GUI mod) and lists the
   version 1 armour files explicitly; INTEG found `gen_character_visuals.py` has no `--check` (gate: rerun, clean
   `git status`).
-- A follow-up **WEB2** (Low 1 and 2 of the WEB review, a path note, the handoff shots re-rendered with the final art,
-  `web_data.json` regenerated) runs after this lane; it touches only `tools/web_data/README.md`, `tools/r54_web/` and
-  the handoff, and its merge triggers the post-merge status step.
+- A follow-up **WEB2** (`5311eac5`, merged `9ab1b40c` before lane D): Low 1 and 2 of the WEB review (the v1 fallback
+  wording in `tools/web_data/README.md`, fixture section F with negative v1 bodies and the removed old files), the
+  handoff's references to the Round 50 kaesual documents, and the handoff shots re-rendered with the final art
+  (outside the repo); `web_data.json` unchanged (145,084 B, current).
 
 ### Numbers worth keeping
 
@@ -264,7 +265,7 @@ All measured unless marked.
 | `tools/web_data/web_data.json` | 122,259 B | 145,084 B |
 | Worn armour files (`grug_visuals`) | 153 files, 56,433 B (overlays, masks, helmet window) | 252 files, 70,882 B (72 atlas layers, 54 skin layers, a mask each) |
 | Armour icons (`grug_gear`) | 156 files, 35,377 B | 148 files, 28,170 B (72 icons, 72 masks, 4 ghosts) |
-| `mods/` (git-tracked bytes) | 67,459,300 B | 67,679,440 B |
+| `mods/` (git-tracked bytes) | 67,459,300 B | 67,679,440 B (at `8fbf9c09`) |
 
 - **Texture bytes per character** (all textures, GAME's fixture on compose's output): a bare player 324 → 342; a
   player in metal T3 417 → 496; the worst case 1,426 → 2,186 (skin 1,071, armour 1,062, cloak 44, weapon 9); an
@@ -278,7 +279,7 @@ All measured unless marked.
   Closest leg gaps (model units) standing 0.30 / 0.43 / 0.90, walking 0.14 / 0.14 / 0.90; tolerated overlaps in
   twisting walk poses: `swing_walk` −0.11, `bow_walk` −0.10, `charge_walk` −0.44 (about 0.8 px, the front panel's top
   corner in the thigh).
-- **Art in the repo:** `tools/r54_art/art` 120,321 B (264 PNGs and 2 JSON), the painters 108,542 B. `bake.py` runs in
+- **Art in the repo:** `tools/r54_art/art` 79,361 B (264 PNGs and 2 JSON, git-tracked bytes), the painters 92,158 B. `bake.py` runs in
   well under a second, `assemble.py --check` in about 0.3 s.
 - **Vertex skinning:** on Luanti ≥ 5.16 with OpenGL3 the GPU skins; older drivers skin every vertex on the CPU,
   hidden boxes included (872 instead of 192 per player; a comparison, not a target).
@@ -304,7 +305,6 @@ differently:
 
 - **For the user:** the Character tab's figure size and angle, the cloak's new angle and the look of every line in
   the GUI test (below); the kaesual site after the kaesual agent's update.
-- **WEB2** is still running (see Deviations); its merge after lane D gets the post-merge status step.
 - The reviews' and reports' notes are in the [Round 54 carry-overs](../../BACKLOG.md#round-54-carry-overs).
 
 ### GUI checklist (Round 54)
@@ -340,7 +340,8 @@ checklists (one test). An existing character first, so its old appearance and st
    or level-up.
 9. **NPCs in a town and a camp:** guards in metal by level, bandits in cloth, vendors without armour; a king (crown
    and face, no helmet), royal guards and a fortress General in their people's royal colours and gold, **untinted**;
-   the War Commanders in their faction's colours (Accord blue with brass, Throng red with gold-brown).
+   the War Commanders in their faction's colours (Accord blue with brass, Throng red with gold-brown; they are
+   elites, so their colours show under the gold elite tint).
 10. **Tints over armour:** an elite guard's gold and a rare's violet over the whole figure, armour included; the ember
     sub-types (Coal-Purse Factor, Ash-Writ Bowman) tinted on skin only.
 11. **Web:** `/glb_probe` in a test world shows the `.glb` like the `.b3d` with armour and panels; after the kaesual

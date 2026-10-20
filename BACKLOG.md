@@ -2886,8 +2886,7 @@ The items the user decides in the GUI test are in the
 - **Version 1 on the web** (WEB): a character who wore a helmet and has not
   logged in since 0.54.0 shows bald until the next login (the hair would
   need the per-race look tables in the export); pre-0.53.1 version 1
-  bodies were not sampled (they fall back to the bare race look); the
-  handoff names Round 50 files as if they lay beside it (WEB2).
+  bodies were not sampled (they fall back to the bare race look).
 - **Tools:** `tools/gen_mob_item_textures.py` would rewrite five
   `grug_mobs` icons that `42a43917` replaced (pre-existing; INTEG review);
   `tools/wp13/gen_character_visuals.py` has no `--check` (gate: rerun,

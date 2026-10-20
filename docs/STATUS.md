@@ -25,12 +25,12 @@ user's notes.
   four addenda up to `b3fa6eb2`): BAKE (`62100720`), MODEL (`6a8b4028`),
   GAME (`a278cc34`, shots `5722b8fd`, the royals' no-tint `7ed8ffce`), VIEW
   (`0a4fb774`), WEB (`a14d4420`) and INTEG (`8fbf9c09`) merged, then this
-  documentation lane D; a WEB2 follow-up (README and fixture notes, the
-  handoff renders with the final art) runs after it. Each code lane
+  documentation lane D; the WEB2 follow-up (`9ab1b40c`: README and fixture
+  notes, the handoff renders with the final art) merged before it. Each code lane
   independently reviewed by Opus (BAKE, VIEW, WEB, INTEG MERGE; MODEL and
   GAME MERGE AFTER FIXES, fixed and re-reviewed); the art painted by GPT-6
   Astra in three drops and picked by the user. Main has 233 portable
-  fixtures (4 new); `mods/` against 0.53.1 +480 −220 lines in 18 text
+  fixtures (4 new); `mods/` against 0.53.1 (at `8fbf9c09`) +480 −220 lines in 18 text
   files, 252 PNGs added, 161 removed and 148 replaced, the player model
   replaced and the NPC model added. The declaration is
   `{"schema": 3, "version": "0.54.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
