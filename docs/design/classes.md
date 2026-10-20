@@ -823,26 +823,43 @@ torches, liquids) do not.
 
 ## 5. Priest (Mana)
 
-Healer/support with a solo damage tool.
-
-Kit tuning decided 2026-08-06 (implementation: WP19): **Shield replaces
-Mend** in the base kit (an absorb plays differently from a second heal and
-makes the Priest useful BEFORE damage lands; our central hp-change modifier
-makes absorbs nearly free to build). Mend moves into the talent tree.
+Healer/support with a solo damage tool. Round 53 (round K,
+`docs/planning/round53-plan.md` §4 PRIEST) rebuilt the kit on the graph
+talents: two starters, Smite and Heal, and eight skills unlocked by the Mercy
+and Reckoning trees (`grug_classes/talent_graph_priest.lua`). The numbers are
+the balance calculator's frozen builds; P is the class-neutral base pool,
+Q the support factor (gear Intelligence, `combat_stats.md` §2), one unit the
+spell base plus spell power before the damage fit. Every cast is instant and
+occupies the next cast for 1 s (Heal, Hearten, Haven and Final Word 1.5 s);
+support, its ticks and Word of Ruin's heal never crit.
 
 Skill names (Round 31 user ruling): skills that carried another game's exact
 names were renamed — the Priest's Heal, Shield and Mend and the Mage's Ice
 Nova (§4). Generic words such as Smite, Blink or Sprint stay. The Shield
 spell is an absorb on a player; its tooltip says so, which keeps it apart from
-the offhand shield items. Mend's display name lives on its Mercy keystone
-(`grug_classes/talents_priest.lua`), which the ability reads.
+the offhand shield items.
 
-| Ability | Cost | Cooldown | Effect |
-|---------|------|----------|--------|
-| Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (the spell base + spell power; combat_stats §2), then the damage fit. Solo viability. |
-| Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool times the support factor (gear Intelligence, `combat_stats.md` §2; exactly 25% without Intelligence gear). Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
-| Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool times the support factor for 15 s or until consumed. |
-| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool times the support factor every 3 s for 12 s: a status on the target (since Round 52) whose four ticks come 3, 6, 9 and 12 s after the cast, each for the amount the cast fixed; a recast renews it, death and leaving end it. Unlocked via the Mercy tree (WP11). |
+| Ability | Unlock | Cost | Cooldown | Effect |
+|---------|--------|------|----------|--------|
+| Smite | starter, in Strike's place | free | 1 s cast interval | The class basic attack: current-crosshair 20 m hit for 1 unit, no enemy-memory fallback. Shares Strike's key; the held fallback fires it. |
+| Heal | starter | 10% base mana | 5 s | Heals 25% P × Q. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
+| Shield | Mercy | 9% | 12 s | Pointed ally → self; absorbs 24% P × Q for 10 s or until consumed; any recast replaces it. |
+| Mend | Mercy | 8% | 12 s | Pointed ally → self; a `mend` status whose four ticks come 3, 6, 9 and 12 s after the cast, each 7% P × Q fixed at the cast; a recast renews it, death and leaving end it. |
+| Hearten | Mercy | 14% | 20 s | You and up to 3 friendly players in sight within 6 m, lowest health share first: 15% P × Q each. |
+| Haven *(ultimate)* | Mercy | 22% | 60 s | You and up to 4 friendly players in sight within 8 m get a `haven` status: 7% P × Q every 2 s, 6 times; it stacks with Mend and keeps ticking outside the circle. |
+| Rebuke | Reckoning | 6% | 6 s | 20 m hit for 1.8 units. |
+| Word of Ruin | Reckoning | 10% | 16 s | 20 m hit for 1.6 units; heals you half the damage dealt, at most 6% P × Q (the pool cap only). |
+| Censure | Reckoning | 12% | 18 s | The ground anchor under the crosshair within 16 m (`ability_targeting.md`, skill inventory §3a; "No ground found." refuses before cost); after a 0.75 s warning one hit of 1.2 units to the 4 nearest hostiles within 3 m (band ±3, in sight of the anchor). |
+| Final Word *(ultimate)* | Reckoning | 20% | 60 s | 20 m hit for 2.8 units. |
+
+Talents: Steady Word and Sharpened Word add +5/10/15% of a base hit to
+Smite and are max-combined; Clear Conscience opens a 5 s window after Heal,
+Shield or Mend (8 s internal cooldown) that the next Smite spends for
++10/20/30% of a base hit; Gentle Hand, Warding Faith (5 ranks, +2 to +10
+points) and Patient Care add pool points; Lasting Haven adds 1-3 ticks; Hard
+Faith adds 3/6/9% to Rebuke, Word of Ruin and Final Word; Measured Care and
+Measured Judgment cut their skills' costs. Every area and group filter is the
+abilities' `valid_target`, so the PvP flag decides who an area may touch.
 
 ## 6. Explicitly deferred
 
