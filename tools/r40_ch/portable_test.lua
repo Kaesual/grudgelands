@@ -14,8 +14,9 @@
 --      exactly, and nothing is refused (a stop is the miss rule's).
 --   B  the REAL charge.lua on a fake engine that moves the carrier like a
 --      non-physical entity (pos += v dt + a dt^2/2, then on_step): the
---      arrival (rage 15, one damage call with threat x3, the stun, the ring
---      at the target) only within reach of the re-fetched target and only
+--      arrival (rage 15, one damage call with threat x3, the 0.75 s stun,
+--      the ring at the target; Round 53: Reach the Fight's +5 rage and
+--      Halt's slow for the stun and 2 s more, before the stun) only within reach of the re-fetched target and only
 --      when the relation check still passes; the miss rules (target gone
 --      out of reach, the rim of a wide hole, rooted at the cast); the
 --      cancellations (stun, root, death, logout, travel's seam) land
@@ -446,7 +447,7 @@ end
 local rec
 local function reset()
 	rec = {rage = 0, damage = {}, stuns = {}, mob_stuns = {}, rings = {}, dust = {},
-		poses = {}, valid = {}}
+		poses = {}, valid = {}, slows = {}, mods = {}}
 end
 reset()
 local stunned, rooted, relation = {}, {}, true
@@ -461,10 +462,21 @@ grug_core = {
 		return amount
 	end,
 	set_stun = function(target, d) rec.stuns[#rec.stuns + 1] = {target = target, d = d} end,
+	set_move_modifier = function(target, name, effect, d)
+		rec.mods[#rec.mods + 1] = {target = target, name = name, speed = effect.speed, d = d,
+			before_stun = #rec.stuns == 0}
+	end,
 	is_stunned = function(p) return stunned[p:get_player_name()] == true end,
 	is_rooted = function(p) return rooted[p:get_player_name()] == true end,
 }
-grug_mobs = {stun = function(ent, d) rec.mob_stuns[#rec.mob_stuns + 1] = {ent = ent, d = d} end}
+grug_mobs = {stun = function(ent, d) rec.mob_stuns[#rec.mob_stuns + 1] = {ent = ent, d = d} end,
+	slow = function(ent, d, factor)
+		rec.slows[#rec.slows + 1] = {ent = ent, d = d, factor = factor,
+			before_stun = #rec.mob_stuns == 0}
+	end}
+-- The Warrior's talents on arrival (Round 53): Reach the Fight, Halt.
+local bonus = {}
+grug_classes = {get_talent_bonus = function(_, key) return bonus[key] or 0 end}
 grug_visuals = {
 	start_pose = function(_, pose) rec.poses[#rec.poses + 1] = "start:" .. pose end,
 	stop_pose = function(_, pose) rec.poses[#rec.poses + 1] = "stop:" .. pose end,
@@ -555,7 +567,8 @@ do
 	check(rec.rage == 15, "B1 15 rage on arrival")
 	check(#rec.damage == 1 and rec.damage[1].amount == 7 and rec.damage[1].threat == 3 and
 		rec.damage[1].target == mob, "B1 one damage call, threat x3")
-	check(#rec.mob_stuns == 1 and rec.mob_stuns[1].d == 1.5, "B1 the 1.5 s stun on the mob")
+	check(#rec.mob_stuns == 1 and rec.mob_stuns[1].d == 0.75, "B1 the 0.75 s stun on the mob")
+	check(#rec.slows == 0 and #rec.mods == 0, "B1 no slow without Halt")
 	check(#rec.rings == 1 and dist(rec.rings[1], mob.pos) < 1e-9, "B1 the ring at the target")
 	check(rec.valid[1] and rec.valid[1].kind == "hostile" and rec.valid[1].target == mob,
 		"B1 the relation is asked again on arrival")
@@ -867,6 +880,37 @@ do
 	check(placed and dist(placed.pos, drop.p0) < 1e-9 and rec.rage == 0,
 		"B11 let go on the drop's takeoff (" .. (placed and ("%.2f, %.2f"):format(placed.pos.x,
 			placed.pos.y) or "nowhere") .. "), a miss")
+end
+
+-- B12 (Round 53): Reach the Fight's +5 rage; Halt slows by its rank's
+-- share for the stun and 2 s more, set before the stun, on a mob and on a
+-- player; a miss lands neither.
+do
+	bonus = {charge_rage_add = 5, charge_slow_percent = 30}
+	local pl, mob = setup(nil, "w12")
+	dash(pl, mob)
+	run_out()
+	check(rec.rage == 20, "B12 Reach the Fight: 20 rage on arrival")
+	local slow = rec.slows[1]
+	check(#rec.slows == 1 and slow.ent == mob.ent and math.abs(slow.d - 2.75) < 1e-9 and
+		math.abs(slow.factor - 0.7) < 1e-9 and slow.before_stun and
+		rec.mob_stuns[1] and rec.mob_stuns[1].d == 0.75,
+		"B12 Halt 3: the mob at 70 % speed for 2.75 s, set before the 0.75 s stun")
+	pl = setup(nil, "w12b")
+	local foe = new_player("foe12", {x = 12, y = -0.5, z = 0})
+	dash(pl, foe)
+	run_out()
+	local mod = rec.mods[1]
+	check(#rec.mods == 1 and mod.target == foe and mod.name == "halt" and
+		math.abs(mod.speed + 0.3) < 1e-9 and math.abs(mod.d - 2.75) < 1e-9 and mod.before_stun and
+		rec.stuns[1] and rec.stuns[1].d == 0.75,
+		"B12 Halt on a player: -30 % speed for 2.75 s, then the 0.75 s stun")
+	pl, mob = setup(nil, "w12c")
+	relation = false
+	dash(pl, mob)
+	run_out()
+	check(rec.rage == 0 and #rec.slows == 0 and #rec.mob_stuns == 0, "B12 a miss: no rage, no slow")
+	bonus = {}
 end
 
 print(("%d checks, %d failures"):format(checks, failures))

@@ -41,7 +41,9 @@ return function(path, REACH)
 local max, min = math.max, math.min
 
 local CARRIER = "grug_abilities:charge_carrier"
-local RAGE, STUN = 15, 1.5 -- classes.md §3, the Charge row
+-- classes.md §3, the Charge row; round53-plan.md §4 WARRIOR: a 0.75 s stun,
+-- and Halt's slow runs on for HALT_AFTER seconds after it.
+local RAGE, STUN, HALT_AFTER = 15, 0.75, 2
 -- The Body lead (model ahead, camera following; third person and other
 -- players only, the engine draws no own model in first person): 0.5 m on
 -- dashes of at least 3 m, the probe's recommendation. It moves between the
@@ -156,14 +158,25 @@ local function arrive(run, player, pos)
 	end
 	run.hit = true
 	grug_core.particles.play("charge_ring", {target = target:get_pos()})
-	grug_abilities.add_rage(player, RAGE)
+	-- Reach the Fight adds rage; Halt slows for the stun and HALT_AFTER more
+	-- (a mob's slow clock runs during its stun, grug_mobs.tick_speed_effects).
+	grug_abilities.add_rage(player, RAGE +
+		grug_classes.get_talent_bonus(player, "charge_rage_add"))
+	local halt = grug_classes.get_talent_bonus(player, "charge_slow_percent") / 100
 	grug_core.deal_ability_damage(player, target, run.def.values(player).damage,
 		{threat_mult = 3, on_accepted = function()
 			if target:is_player() then
+				if halt > 0 then
+					grug_core.set_move_modifier(target, "halt", {speed = -halt},
+						STUN + HALT_AFTER)
+				end
 				grug_core.set_stun(target, STUN)
 			else
 				local ent = target:get_luaentity()
-				if ent and ent._cmi_is_mob then grug_mobs.stun(ent, STUN) end
+				if ent and ent._cmi_is_mob then
+					if halt > 0 then grug_mobs.slow(ent, STUN + HALT_AFTER, 1 - halt) end
+					grug_mobs.stun(ent, STUN)
+				end
 			end
 		end})
 	return true

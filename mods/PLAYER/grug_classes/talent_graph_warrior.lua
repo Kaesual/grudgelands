@@ -30,8 +30,23 @@
 
 local graph = grug_classes.graph
 
+-- The class keys hold a node's per-rank value in the unit its consumer
+-- multiplies: S (a Strike hit, the weapon's damage plus the melee bonus,
+-- before the one scaling pass), % of the base pool (times the support
+-- factor), percent or rage.
 graph.register_class_vocabulary("warrior", {
-	keys = {rage_per_swing_add = "grug_abilities/init.lua the swing rage sites"},
+	keys = {
+		rage_per_swing_add = "grug_abilities/init.lua the swing rage sites",
+		retort_bonus_add = "kits_warrior.lua Retort: S on its readied swing",
+		retort_heal_percent = "kits_warrior.lua Retort: % of the base pool healed",
+		hold_ground_absorb_add = "kits_warrior.lua Hold Ground: % of the base pool",
+		charge_slow_percent = "charge.lua arrival: the slow after the stun",
+		charge_rage_add = "charge.lua arrival: rage",
+		mighty_blow_unit_add = "kits_warrior.lua Mighty Blow and Broadstroke: S",
+		finisher_unit_add = "kits_warrior.lua Mighty Blow and Broadstroke: S below 30 % health",
+		mighty_blow_cost_sub = "kits_warrior.lua Mighty Blow and Broadstroke: rage off",
+		broadstroke_secondary_add = "kits_warrior.lua Broadstroke: S on each other target",
+	},
 	params = {"strike", "charge", "retort", "hold_ground", "taunt", "bellow",
 		"unbroken", "mighty_blow", "hamstring", "broadstroke", "ruination"},
 })
@@ -57,6 +72,7 @@ graph.register_tree({
 				"5 s; 25 rage, 24 s cooldown."},
 		{id = "bulwark_measured_answer", code = "B5", name = "Measured Answer",
 			type = "modifier", ranks = 3, gate = 6, col = 1, requires = {"bulwark_retort"},
+			effects = {retort_bonus_add = {0.05, 0.1, 0.15}},
 			description = "Retort's bonus rises to 30/35/40 % of a Strike hit."},
 		{id = "bulwark_turn_the_edge", code = "B6", name = "Turn the Edge", type = "modifier",
 			ranks = 3, gate = 6, col = 4, effects = {dodge_chance_add = {2, 4, 6}},
@@ -67,6 +83,7 @@ graph.register_tree({
 				"8 s cooldown."},
 		{id = "bulwark_recover", code = "B8", name = "Recover", type = "modifier",
 			ranks = 3, gate = 10, col = 2, requires = {"bulwark_retort"},
+			effects = {retort_heal_percent = {0.7, 1.3, 2}},
 			description = "A landed Retort heals 0.7/1.3/2.0 % of a base health pool; " ..
 				"never critical."},
 		{id = "bulwark_bellow", code = "B9", name = "Bellow", type = "transform",
@@ -75,9 +92,10 @@ graph.register_tree({
 				"same cooldown."},
 		{id = "bulwark_layered_guard", code = "B10", name = "Layered Guard", type = "modifier",
 			ranks = 3, gate = 12, col = 4, requires = {"bulwark_hold_ground"},
+			effects = {hold_ground_absorb_add = {3, 6, 9}},
 			description = "Hold Ground's shield +3/6/9 % of a base health pool."},
 		{id = "bulwark_halt", code = "B11", name = "Halt", type = "modifier",
-			ranks = 3, gate = 12, col = 1,
+			ranks = 3, gate = 12, col = 1, effects = {charge_slow_percent = {20, 25, 30}},
 			description = "Charge's arrival also slows by 20/25/30 % for the stun and 2 s more."},
 		{id = "bulwark_unbroken", code = "B12", name = "Unbroken", type = "ultimate",
 			ability = "unbroken", ranks = 1, gate = 20, col = 3, requires = {"bulwark_hold_ground"},
@@ -106,6 +124,7 @@ graph.register_tree({
 				"have 25 rage, else a plain swing; no cooldown of its own."},
 		{id = "ruin_heavy_hand", code = "U2", name = "Heavy Hand", type = "modifier",
 			ranks = 4, gate = 0, col = 4, requires = {"ruin_mighty_blow"},
+			effects = {mighty_blow_unit_add = {0.05, 0.1, 0.15, 0.2}},
 			description = "Mighty Blow and Broadstroke hit +5/10/15/20 % of a Strike hit."},
 		{id = "ruin_stoke", code = "U3", name = "Stoke", type = "modifier",
 			ranks = 3, gate = 0, col = 2, effects = {rage_per_swing_add = {1, 2, 3}},
@@ -113,7 +132,7 @@ graph.register_tree({
 		{id = "ruin_hamstring", code = "U4", name = "Hamstring", type = "unlock",
 			ability = "hamstring", ranks = 1, gate = 2, col = 5,
 			description = "Unlocks Hamstring: a swing for a full Strike hit that slows by " ..
-				"35 % for 3 s; 10 rage, 8 s cooldown."},
+				"35 % for 3 s; 10 rage, recharges in 8 s."},
 		{id = "ruin_keen_edge", code = "U5", name = "Keen Edge", type = "modifier",
 			ranks = 3, gate = 6, col = 1, effects = {crit_chance_add = {2, 4, 6}},
 			description = "Critical chance +2/4/6 %."},
@@ -126,6 +145,7 @@ graph.register_tree({
 				"in a 100 degree, 3 m arc take 35 % of a Strike hit, critical hits allowed."},
 		{id = "ruin_follow_through", code = "U8", name = "Follow Through", type = "modifier",
 			ranks = 3, gate = 10, col = 2, requires = {"ruin_broadstroke"},
+			effects = {broadstroke_secondary_add = {0.05, 0.1, 0.15}},
 			description = "Broadstroke's other targets take 40/45/50 % of a Strike hit."},
 		{id = "ruin_clean_cut", code = "U9", name = "Clean Cut", type = "modifier",
 			ranks = 3, gate = 10, col = 5, requires = {"ruin_hamstring"},
@@ -133,10 +153,12 @@ graph.register_tree({
 			description = "Hamstring's slow lasts +0.5/1.0/1.5 s."},
 		{id = "ruin_finisher", code = "U10", name = "Finisher", type = "modifier",
 			ranks = 3, gate = 12, col = 4, requires = {"ruin_mighty_blow"},
+			effects = {finisher_unit_add = {0.08, 0.16, 0.24}},
 			description = "Mighty Blow and Broadstroke hit +8/16/24 % of a Strike hit " ..
 				"against a target below 30 % health."},
 		{id = "ruin_relentless", code = "U11", name = "Relentless", type = "modifier",
 			ranks = 3, gate = 16, col = 2, requires = {"ruin_mighty_blow"},
+			effects = {mighty_blow_cost_sub = {1, 2, 3}},
 			description = "Mighty Blow and Broadstroke cost 1/2/3 rage less."},
 		{id = "ruin_ruination", code = "U12", name = "Ruination", type = "ultimate",
 			ability = "ruination", ranks = 1, gate = 20, col = 3, requires = {"ruin_mighty_blow"},
@@ -147,7 +169,7 @@ graph.register_tree({
 			effects = {["duration_add:ruination"] = {0.5, 1, 1.5}},
 			description = "Ruination lasts +0.5/1.0/1.5 s."},
 		{id = "ruin_reach_the_fight", code = "U14", name = "Reach the Fight", type = "modifier",
-			ranks = 1, gate = 12, col = 1,
+			ranks = 1, gate = 12, col = 1, effects = {charge_rage_add = {5}},
 			description = "Charge's arrival gives 5 more rage."},
 	},
 })
