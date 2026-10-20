@@ -498,4 +498,6 @@ The user's GUI check of 0.52.0 passed; three ambience wishes became
    bed. Hearthpine at night: the pine-hills look makes the wolf call
    eligible there.
 
-Gates on main after the merges: see the round-end line below.
+Gates on main `d30d812f` (0.52.1): full fixtures 221/0, `check_upgrade.py`
+(0.52.1 against origin/main) and `check_fresh_server.py` PASS, one headless
+boot PASS (150 s); synced.
