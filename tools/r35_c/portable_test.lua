@@ -326,11 +326,6 @@ check(grug_classes.registered_classes.scout ~= nil, "the Scout is a registered c
 
 current_mod = "grug_visuals"
 grug_visuals = {}
--- apply.lua and compose.lua (not loaded) name the player model and its empty
--- slots; Round 54: the preview uses them.
-grug_visuals.PLAYER_MODEL = "grug_visuals_character.b3d"
-grug_visuals.CLOAK_NONE = "blank.png"
-grug_visuals.ARMOR_NONE, grug_visuals.WEAPON_NONE = "blank.png", "blank.png"
 dofile(repo .. "/mods/PLAYER/grug_visuals/looks.lua")
 grug_visuals.compose = function(spec)
 	return {textures = {"skin_" .. spec.race .. "_" .. grug_visuals.look_string(spec.look)}}
@@ -366,16 +361,13 @@ local FAILED = "The area could not be loaded \226\128\147 press I to try again"
 local WAITING = "Preparing the world \226\128\147 press I to see progress"
 local BACKDROP = "bgcolor[#080808FF;both;#000000FF]"
 
--- The look a window shows, from the preview's skin texture (Round 54: the
--- player model, then blank cloak, armor and weapon slots).
-local PREVIEW_TAIL = ",blank%.png,blank%.png,blank%.png;"
+-- The look a window shows, from the preview's texture.
 local function preview_look(form)
-	local look = (form or ""):match("grug_visuals_character%.b3d;skin_%a+_([%d\\,]-)" ..
-		PREVIEW_TAIL)
-	return look and (look:gsub("\\", ""))
+	return (form or ""):match("character%.b3d;skin_%a+_([%d\\,]+);") and
+		form:match("character%.b3d;skin_%a+_([%d\\,]+);"):gsub("\\", "")
 end
 local function preview_race(form)
-	return (form or ""):match("grug_visuals_character%.b3d;skin_(%a+)_")
+	return (form or ""):match("character%.b3d;skin_(%a+)_")
 end
 
 --
@@ -470,8 +462,6 @@ eq(rolls, rolls_before + 1, "B choosing a race rolls a look")
 form = a.inventory_formspec
 eq(preview_race(form), "human", "B the preview shows the human")
 check(has(form, "0,160;false;true;0,79;30]"), "B mouse rotation on, auto-rotation off")
-check(form:match("model%[[^%]]-;look_preview;grug_visuals_character%.b3d;skin_human_[%d\\,]-" ..
-	PREVIEW_TAIL) ~= nil, "B the player model with the look and blank cloak, armor, weapon")
 check(has(form, "style[race_human;bgcolor=#8a6a1e;font=bold]"), "B the chosen race is highlighted")
 check(has(form, "class_warrior") and has(form, "class_scout"), "B the class row appears")
 check(not has(form, "create_character"), "B Create inactive without a class")

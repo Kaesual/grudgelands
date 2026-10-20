@@ -53,23 +53,17 @@ local function formspec(race, look, x, y, w, h)
 		return ""
 	end
 	look = grug_visuals.normalize_look(race, look)
-	-- The player model (Round 54) in its texture slots {skin, cloak, armor,
-	-- weapon}: the race look, and nothing chosen yet for the rest (the empty
-	-- slots, armor-format.md §2).
-	local textures = {
-		esc(grug_visuals.compose({race = race, look = look}).textures[1]),
-		esc(grug_visuals.CLOAK_NONE), esc(grug_visuals.ARMOR_NONE),
-		esc(grug_visuals.WEAPON_NONE),
-	}
+	local texture = grug_visuals.compose({race = race, look = look}).textures[1]
 	local fs = {
-		-- Standing, turned by the mouse only: frames 0..79 are the stand
-		-- animation (player_api's, kept by the player model). The engine
-		-- rebuilds the model with every formspec, so a change resets the turn
-		-- (accepted, BACKLOG). The list's commas stay raw: each texture is
-		-- escaped on its own.
-		("model[%.2f,%.2f;%.2f,%.2f;look_preview;%s;%s;0,160;false;true;0,79;30]")
-			:format(x, y, MODEL_W, h, esc(grug_visuals.PLAYER_MODEL),
-				table.concat(textures, ",")),
+		-- Standing, turned by the mouse only: frames 0..79 are player_api's
+		-- stand animation of character.b3d. The engine rebuilds the model with
+		-- every formspec, so a change resets the turn (accepted, BACKLOG).
+		-- Round 54: deliberately NOT the player model. Nothing is worn here,
+		-- and the engine frames a model[] by its mesh's bounding box, which
+		-- the player model's armor boxes and weapon card widen: the same
+		-- look on character.b3d draws about half again as large.
+		("model[%.2f,%.2f;%.2f,%.2f;look_preview;character.b3d;%s;0,160;false;true;0,79;30]")
+			:format(x, y, MODEL_W, h, esc(texture)),
 		("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, y, MODEL_W, h,
 			esc("Drag with the mouse to turn your character.")),
 	}
