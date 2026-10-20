@@ -240,6 +240,29 @@ def instances(boxes):
     return out
 
 
+# ---------- opacity (the user, 2026-10-20: armor is opaque; only the helm's face stays open) ----------
+FACE_RECT = (-4.0, 24.0, 4.0, 32.0)   # the head's front face (x0, y0, x1, y1), skin pixels
+
+
+def open_window(b):
+    """Sheet pixels that may be transparent: the texels of the helm's front face lying wholly in front of the
+    head's front face (the face opening; the head is directly behind, so it leaves no hole). Empty for every
+    other box."""
+    if b["id"] != "helm":
+        return set()
+    fx, fy, fw, fh = b["faces"]["front"]
+    x0, y0, _, x1, y1, _ = b["box"]
+    hx0, hy0, hx1, hy1 = FACE_RECT
+    out = set()
+    for r in range(fh):
+        for c in range(fw):
+            tx0, tx1 = x0 + c * (x1 - x0) / fw, x0 + (c + 1) * (x1 - x0) / fw
+            ty1, ty0 = y1 - r * (y1 - y0) / fh, y1 - (r + 1) * (y1 - y0) / fh
+            if tx0 >= hx0 - 1e-9 and tx1 <= hx1 + 1e-9 and ty0 >= hy0 - 1e-9 and ty1 <= hy1 + 1e-9:
+                out.add((fx + c, fy + r))
+    return out
+
+
 # ---------- art files ----------
 def box_file(art, line, box_id, variant):
     return Path(art) / line / f"{box_id}_{variant}.png"

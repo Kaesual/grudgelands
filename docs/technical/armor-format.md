@@ -100,12 +100,11 @@ Side faces: row 0 is the top. Front: column 0 is the character's right. Back: co
 Anything outside the six rectangles stays transparent. Faces are independent: transparency in a side face does not
 remove the top or bottom face.
 
-**Alpha shaping** (rounded corners, chamfers, notches, jagged or filigree edges) is wanted, within three rules:
-
-1. Edge and corner cut-outs up to about 2 px deep, the same on every face sharing that edge.
-2. No hole larger than 2 × 2 inside a face (one would look into the hollow box), unless another worn box lies
-   directly under it (the overlap report of `check.py` says where).
-3. Where a box covers another, the upper one may be largely transparent.
+**Armor is opaque** (the user, 2026-10-20: transparency showed holes, since one looks into the hollow box): every
+texel of every face of a box sheet is opaque. The only exception is the helm's **face window**: the texels of its
+front face that lie wholly in front of the head's face (columns 1–8, rows 1–8 of the 10 × 10 front face) may stay
+transparent, so a helmet can leave the face open; the head is directly behind them. Shape comes from the box and
+the paint, not from cut-outs.
 
 ## 5. Inner paint (on the skin)
 
@@ -194,8 +193,9 @@ skin region), each with its mask.
 
 From `tools/r54_armor/`:
 
-- `python3 check.py --art <dir>`: file names and sizes, colours, alpha, paint outside faces or regions, missing
-  files per tier, zone counts from the front, alpha-shaping warnings, the overlap report; exit 1 on a violation.
+- `python3 check.py --art <dir>`: file names and sizes, colours, alpha, transparent texels in a face (outside the
+  helm's face window), paint outside faces or regions, missing files per tier, zone counts from the front, the
+  overlap report; exit 1 on a violation.
 - `python3 render.py --art <dir> --out <dir>`: contact sheets per line and race (`--detail` for one tier,
   `--engine soft` by default, sandbox-safe).
 - `python3 export.py --check`, `python3 atlas.py --check`, `python3 zfight.py`: the contract data is current and
