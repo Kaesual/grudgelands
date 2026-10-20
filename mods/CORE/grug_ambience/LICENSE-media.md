@@ -8,6 +8,10 @@ own pages; the CC BY credits use the composers' attribution wording.
 Round 52 lane SND added the cuts the user approved on the SND page on
 2026-10-19 (`tools/r52_snd/picks.md`; licence and author re-verified from the
 stored source-page records); the six beds the user dropped left the game.
+0.52.1 added the two underwater beds the user picked on the UW listening
+page on 2026-10-20 (`tools/r52_uw/picks.md` on lane UW's branch, #2 and #4;
+licence, no GenAI tag and author re-verified on the source page twice that
+day); both ship as one pool so they can be compared in game.
 
 | File | Title | Author | Source | License | Modifications |
 |---|---|---|---|---|---|
@@ -53,6 +57,8 @@ stored source-page records); the six beds the user dropped left the game.
 | `sounds/grug_ambience_undead_lake.ogg` | Lake At Night.aif | timgormly | [https://freesound.org/people/timgormly/sounds/148318/](https://freesound.org/people/timgormly/sounds/148318/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | HQ preview (128 kbit MP3); excerpt 5.0-37.0 s, looped with a 2 s crossfade, 60 Hz high-pass, levelled to -20 LUFS, mono Ogg |
 | `sounds/grug_ambience_underground_crystal.ogg` | Dark Sahara Egypt | szegvari | [https://freesound.org/people/szegvari/sounds/557552/](https://freesound.org/people/szegvari/sounds/557552/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | HQ preview (128 kbit MP3); excerpt 19.7-51.7 s, looped with a 2 s crossfade, 60 Hz high-pass, levelled to -20 LUFS, mono Ogg |
 | `sounds/grug_ambience_underground_dungeon.ogg` | Dark Dungeon Ambience | Kinoton | [https://freesound.org/people/Kinoton/sounds/516566/](https://freesound.org/people/Kinoton/sounds/516566/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | HQ preview (128 kbit MP3); excerpt 45.0-77.0 s, looped with a 2 s crossfade, 60 Hz high-pass, levelled to -20 LUFS, mono Ogg |
+| `sounds/grug_ambience_underwater_dcsfx.ogg` | Underwater [Loop] AMB.wav | DCSFX | [https://freesound.org/people/DCSFX/sounds/366159/](https://freesound.org/people/DCSFX/sounds/366159/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | HQ preview (MP3); excerpt 62.9-94.9 s, looped with a 2 s crossfade (30 s loop), 60 Hz high-pass, levelled to -20 LUFS, peaks limited to -1 dBFS, mono Ogg |
+| `sounds/grug_ambience_underwater_verberne.ogg` | Underwater Ambience.wav | Tim_Verberne | [https://freesound.org/people/Tim_Verberne/sounds/482167/](https://freesound.org/people/Tim_Verberne/sounds/482167/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | HQ preview (MP3); excerpt 14.9-46.9 s, looped with a 2 s crossfade (30 s loop), 60 Hz high-pass, levelled to -20 LUFS, mono Ogg |
 | `music/grug_music_a_dragons_lullaby.ogg` | A Dragon's Lullaby | Scott Buckley; credit: "'A Dragon's Lullaby' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au" | [https://www.scottbuckley.com.au/library/a-dragons-lullaby-2023/](https://www.scottbuckley.com.au/library/a-dragons-lullaby-2023/) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | converted to Ogg Vorbis (stereo, q1), levelled to -18 LUFS |
 | `music/grug_music_achaidh_cheide.ogg` | Achaidh Cheide | Kevin MacLeod; credit: "Achaidh Cheide" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 License, http://creativecommons.org/licenses/by/4.0/ | [https://incompetech.com/music/royalty-free/](https://incompetech.com/music/royalty-free/) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | converted to Ogg Vorbis (stereo, q1), levelled to -18 LUFS |
 | `music/grug_music_fantasy_orchestral_theme.ogg` | Fantasy Orchestral Theme | joth | [https://opengameart.org/content/fantasy-orchestral-theme](https://opengameart.org/content/fantasy-orchestral-theme) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to Ogg Vorbis (stereo, q1), levelled to -18 LUFS |

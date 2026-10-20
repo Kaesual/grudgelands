@@ -84,12 +84,27 @@ function R.sound_key(data, mood, known, biome, current)
 	return data.groups[biome] or false
 end
 
+-- The biome a start town looks like (0.52.1): `towns` is a list of the
+-- start towns' anchors {race, x, z}; the nearest one within
+-- data.town_reach of (x, z) names it through data.town_looks[race] (the
+-- ground its composition lays). nil outside every start town's reach.
+function R.start_town_look(data, towns, x, z)
+	local best, best_d2 = nil, data.town_reach * data.town_reach
+	for index = 1, #towns do
+		local town = towns[index]
+		local dx, dz = town.x - x, town.z - z
+		local d2 = dx * dx + dz * dz
+		if d2 <= best_d2 then best, best_d2 = town, d2 end
+	end
+	return best and data.town_looks[best.race] or nil
+end
+
 -- The bed keys to try for the surface layer, best first (an empty list:
 -- silence), or nil when there is no key yet and no stream near the player
 -- (the caller then keeps the bed it has). `s`: key (a sound key, false for
 -- none), night, water ("stream" or nil), underwater.
---   underwater beats everything: the `underwater` bed, silence while none
---   ships (the caller plays it at the full bed level, R.surface_levels);
+--   underwater beats everything: the `underwater` bed (the caller plays it
+--   at the full bed level, R.surface_levels);
 --   stream water near the player overrides the region bed (no stream bed
 --   ships); the region bed has a night variant where data.region names one
 --   (falling back to the day bed when that has no shipped file), silence at

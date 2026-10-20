@@ -228,7 +228,7 @@ overrides the biome group like the zone would; any other preset leaves the
 biome in charge (since Round 52 a forced `underground` no longer drives the
 beds). `/ambience debug` toggles a one-line HUD readout for the player who
 types it: biome, sound group, depth, cave share and verdict, the sea share
-("on" on a sea column), the four layers' levels ("ambience: off" while the
+("on" on a sea column), the file the surface layer plays, the four layers' levels ("ambience: off" while the
 ambience is off).
 
 ### 4.2 Which bed
@@ -240,8 +240,9 @@ same for every bed) times the player's volume times each layer's level:
 
 - **Under water** (the eye in water, the sea, a lake or a river): only the
   surface layer's underwater bed, at the full bed level at any depth; no
-  other layer, call or loop. No underwater bed ships yet, so diving is
-  silent; adding its row to `D.beds` is all it takes.
+  other layer, call or loop. Two underwater beds (the user's picks, 0.52.1)
+  form one pool: each dive starts one at random, so both can be compared
+  (`/ambience debug` names the file that plays).
 - **The surf at the coast** (0.52.1, §4.2b): the sea layer takes over the
   surface level by the share of sea around the player; the region bed
   plays the rest. Lakes, rivers and swamp pools never play it. River and
@@ -260,6 +261,12 @@ same for every bed) times the player's volume times each layer's level:
   frogs and evening in the swamp, crickets in the badlands); the crags are
   silent at night, the snowy crags keep their afternoon bed. The
   Battlegrounds have their own bed ("Abandoned Fields").
+- **Start towns sound like they look** (0.52.1): inside a start town the
+  key is the group of the biome its ground is (`D.town_looks`, from the
+  race palette's ground: the dwarves' pine hills, the humans' meadows, the
+  elves' elf forest, the undead's blight, the orcs' savanna, the trolls'
+  jungle), not of the biome cell it stands on (a start town may sit on a
+  swamp cell). Leaving the town is an ordinary bed change.
 - **The levels follow the height relative to the surface** (the terrain, or
   the water surface over water; buildings and towers do not count),
   linearly: the surface bed 100 % from the ground up to +10, 0 % at −15 and

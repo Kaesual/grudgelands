@@ -14,8 +14,9 @@
 --     to the terrain (grug_core.depth_below_surface); in start towns and
 --     capitals every layer plays at half gain. A bed change crossfades
 --     (core.sound_fade). Where music plays (Round 35) every layer is
---     silent; under water only the surface layer's underwater bed plays
---     (silence while none ships);
+--     silent; under water only the surface layer's underwater bed plays.
+--     A start town sounds like it looks (0.52.1): its key is the group of
+--     the biome its ground is (data.town_looks), not of the cell under it;
 --   * sparse calls by sound key and time of day, a per-player timer, placed
 --     at a point around the player (distant thunder on the dragon islands);
 --   * loops at hearths and camp fires and flowing water (never at a water
@@ -40,8 +41,8 @@
 --   * music and ambience on/off and volume per player in player meta, applied
 --     at once; the Help page's Sound sub-page and /music, /ambience.
 --
--- Round 34 (round34-plan.md §2.2a): no stream and no underwater bed;
--- data.lua holds every name, so another bed is data only.
+-- Round 34 (round34-plan.md §2.2a): no stream bed (0.52.1: an underwater
+-- pool); data.lua holds every name, so another bed is data only.
 --
 -- Cost: one pass per player every 2 s, spread over eight slots of 0.25 s
 -- (AGENTS.md Round 32): a mood and town lookup, the depth below the surface
@@ -177,12 +178,13 @@ local function apply_layer(name, layer, action)
 	end
 	-- A sound faded to 0 is deleted by the engine: its handle is dropped.
 	if layer.handle then fade(layer.handle, layer.gain, 0, D.crossfade) end
-	layer.handle, layer.gain = nil, 0
+	layer.handle, layer.gain, layer.sound = nil, 0, nil
 	if action == "start" or action == "switch" then
 		local sound = R.bed_sound(D, layer.key, available, random)
 		layer.handle = core.sound_play({name = sound, gain = gain},
 			{to_player = name, loop = true, fade = gain / D.crossfade}, false)
-		layer.gain = gain
+		-- The file of a pool that plays (the debug line names it).
+		layer.gain, layer.sound = gain, sound
 		stats.plays = stats.plays + 1
 	end
 end
@@ -522,8 +524,10 @@ end
 -- biome, the sound group, the depth, the cave share and verdict, the sea
 -- share ("on" on a sea column, "-" where it is not asked) and the four
 -- layers' levels (`levels`: surface, sea, cave, wind; "surface" is the
--- region bed's, or the underwater bed's while diving). Sent only when the
--- shown text changed.
+-- region bed's, or the underwater bed's while diving), and the file the
+-- surface layer plays (0.52.1: which of a pool, e.g. the two underwater
+-- beds). The biome is the start town's look there, marked "(town)". Sent
+-- only when the shown text changed.
 -- Sends `text` when it differs from the line shown.
 local function set_debug_text(player, st, text)
 	if text ~= st.debug.text then
@@ -537,11 +541,13 @@ local DEBUG_OFF = "ambience: off"
 
 local function percent(value) return floor(value * 100 + 0.5) end
 
-local function show_debug(player, st, biome, depth, share, on_sea, levels)
+local function show_debug(player, st, biome, look, depth, share, on_sea, levels)
 	local c = st.cave
-	local text = ("ambience: %s / %s | depth %s | cave %s %s | sea share %s | " ..
+	local bed = st.layers.surface.sound
+	local text = ("ambience: %s%s / %s | bed %s | depth %s | cave %s %s | sea share %s | " ..
 		"surface %d%% sea %d%% cave %d%% wind %d%%"):format(
-		biome and biome:gsub("^grug_", "") or "-", tostring(st.sound_key or "-"),
+		biome and biome:gsub("^grug_", "") or "-", look and " (town)" or "",
+		tostring(st.sound_key or "-"), bed and bed:gsub("^grug_ambience_", "") or "-",
 		depth and ("%.1f"):format(depth) or "-",
 		c.share and ("%d%%"):format(percent(c.share)) or "-",
 		c.cave and "cave" or "no",
@@ -645,6 +651,29 @@ end
 
 local scratch, call_state, levels = {}, {}, {}
 
+-- The start towns' anchors {race, x, z} (rules.lua start_town_look),
+-- read once from the settlement registry, which grug_mapgen fills at load.
+local start_towns
+
+-- The biome the start town round `pos` looks like, or nil: only inside a
+-- town (grug_map's location, sampled every second) that is no capital.
+local function town_look(name, pos, town)
+	if not town or location.capital_of(name) then return nil end
+	if not start_towns then
+		local list = {}
+		local rows = grug_core.settlement_socket_settlements and
+			grug_core.settlement_socket_settlements() or {}
+		for _, row in ipairs(rows) do
+			if row.slot == "start" and D.town_looks[row.race_id] then
+				list[#list + 1] = {race = row.race_id, x = row.anchor.x, z = row.anchor.z}
+			end
+		end
+		if #list == 0 then return nil end
+		start_towns = list
+	end
+	return R.start_town_look(D, start_towns, pos.x, pos.z)
+end
+
 -- The sea, cave and wind layers' beds: the surf, the deep cave bed below
 -- D.deep_y (else the cave bed), the wind; false when none ships.
 local SEA_KEYS, CAVE_KEYS, DEEP_CAVE_KEYS, WIND_KEYS = {"sea"}, {"cave"}, {"cave_deep", "cave"}, {"wind"}
@@ -663,8 +692,10 @@ local function evaluate(name, st, now, night)
 		if grug_core.depth_below_surface then
 			depth, column = grug_core.depth_below_surface(pos, name)
 		end
-		local biome = column and column.biome
-		local key = R.sound_key(D, mood, column ~= nil, biome, st.sound_key)
+		-- A start town sounds like it looks, not like the cell under it.
+		local look = town_look(name, pos, town)
+		local biome = look or (column and column.biome)
+		local key = R.sound_key(D, mood, column ~= nil or look ~= nil, biome, st.sound_key)
 		if key ~= nil then st.sound_key = key end
 		local water, underwater = probe_water(pos)
 		local music = R.music_active(st.music)
@@ -719,7 +750,7 @@ local function evaluate(name, st, now, night)
 		end
 		if st.debug then
 			levels[1], levels[2], levels[3], levels[4] = region_level, sea_level, cave_level, wind_level
-			show_debug(player, st, biome, depth, share, on_sea, levels)
+			show_debug(player, st, biome, look, depth, share, on_sea, levels)
 		end
 	elseif st.debug then
 		set_debug_text(player, st, DEBUG_OFF)

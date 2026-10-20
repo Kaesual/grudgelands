@@ -633,10 +633,16 @@ inland lakes; a diver hears no zone sound, only an underwater sound.
   dragon island's, is dropped there: no region bed, the surf by the share);
   its `beach` row and bed are gone.
 - **Under water** the surface layer plays the `underwater` bed at the full
-  bed level at any depth and nothing else plays; until its file ships
-  (lane UW's listening page), diving stays silent. Adding
-  `D.beds.underwater = {"grug_ambience_underwater"}` with the approved file
-  is all it takes.
+  bed level at any depth and nothing else plays. The user picked two
+  candidates of lane UW's page (#2 DCSFX, #4 Tim_Verberne, 2026-10-20); both
+  ship as one pool (`grug_ambience_underwater_dcsfx`, `_verberne`), one at
+  random per dive, to compare in game (`/ambience debug` names the file).
+- **Start towns sound like they look** (the user, 2026-10-20: a human start
+  town on a swamp cell played frogs): inside a start town the sound key is
+  the group of the biome its composition's ground is (`D.town_looks`, the
+  race palette's `ground` matched to the biome with that top node), not of
+  the cell under it. On seed 12345 only Sunscar differs (45 % badlands cells
+  under a dry-grass town: now savanna) and Stillgrave slightly (5 % swamp).
 - **Small fixes on the way:** a surface layer that plays nothing takes a
   new key at once (coming ashore no longer starts the old key's bed for a
   pass); animal calls follow the region bed's level, so no owls over the
@@ -644,5 +650,6 @@ inland lakes; a diver hears no zone sound, only an underwater sound.
 
 GUI check (0.52.1): walk from 40 nodes inland to the water and out on a
 boat (the surf rises over the last 16 nodes, the region bed fades); stand
-on a cliff over the sea; swim in an inland lake (no surf); dive (silence
-until the underwater file ships); `/ambience debug` shows the share.
+on a cliff over the sea; swim in an inland lake (no surf); dive (one of
+two underwater beds, one per dive); a start town on a foreign cell plays
+its own look; `/ambience debug` shows the share and the playing file.

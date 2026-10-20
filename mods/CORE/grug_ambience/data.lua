@@ -70,6 +70,27 @@ D.groups = {
 	grug_blight = "blight", grug_bone_forest = "blight",
 }
 
+-- Start towns sound like they look (0.52.1, the user, 2026-10-20): inside a
+-- start town (grug_map's location: a town, not a capital) the sound key is
+-- the group of the biome its composition's ground is, whatever biome cell
+-- the town stands on (a start town can sit in a swamp cell). The ground is
+-- the race palette's `ground` role (grug_mapgen wp13/palette.lua, laid by
+-- each composition over the town), matched to the biome whose top node it
+-- is (wp40/r7_r6_manifest.lua SURFACE_ROWS); the orcs' dry grass is the
+-- savanna's (its top is the dry-dirt variant). tools/r34_s2 derives the
+-- table from those files. The nearest start anchor within town_reach
+-- (the footprint's farthest corner: a 128-node square plus a 12-node band
+-- with rounded corners, simple_map.lua, about 102.5 nodes) is the town.
+D.town_looks = {
+	dwarf = "grug_pine_hills", -- dirt with coniferous litter
+	human = "grug_meadows", -- dirt with grass
+	elf = "grug_elf_forest", -- dirt with silver litter
+	undead = "grug_blight", -- blight dirt
+	orc = "grug_savanna", -- dirt with dry grass
+	troll = "grug_jungle_edge", -- dirt with rainforest litter
+}
+D.town_reach = 103
+
 -- Biomes that keep the sound key the player brings (0.52.1): the beach is
 -- a palette patch that lies mostly far from the sea (seed 12345, a 32-node
 -- grid: 32 of the 44 Gravesalt samples more than 64 nodes from it), so it
@@ -87,10 +108,9 @@ D.overrides = {battlegrounds = true, dragon_island = true, ocean = true}
 -- starts and loops until the state changes. Besides the D.region rows:
 -- the sea layer's surf (D.sea), stream (river water near the player; no
 -- stream bed ships, so river and lake water keeps the region bed),
--- underwater (the surface layer while the eye is in water; none ships yet,
--- so diving is silent: a row `underwater = {"grug_ambience_underwater"}`
--- with its approved file is all it takes), the wind layer, the cave layer
--- and its deep variant. Page ids "SND" are the Round 52 cuts the user
+-- underwater (the surface layer while the eye is in water, at the full bed
+-- level, nothing else playing), the wind layer, the cave layer and its deep
+-- variant. Page ids "SND" are the Round 52 cuts the user
 -- approved (tools/r52_snd/picks.md, the ambience plan's §4 sources).
 D.beds = {
 	temperate = {"grug_ambience_human_meadow", "grug_ambience_elf_forest"}, -- S2 B1.1, B2.3
@@ -117,6 +137,9 @@ D.beds = {
 	-- S2 B11.1: the open ocean, and the surf of the sea layer (D.sea).
 	ocean = {"grug_ambience_sea_waves"},
 	sea = {"grug_ambience_sea_waves"},
+	-- 0.52.1: the user's two picks of the UW page (#2, #4), one pool, so a
+	-- dive starts one of them at random and both can be compared in game.
+	underwater = {"grug_ambience_underwater_dcsfx", "grug_ambience_underwater_verberne"},
 	-- The layers (ruling 2: the Battlegrounds' gusts are the wind at height).
 	wind = {"grug_ambience_battlegrounds_gusts"}, -- S2 B7.2
 	cave = {"grug_ambience_underground_dungeon"}, -- S2 B10.1

@@ -199,7 +199,45 @@ do
 		for _, n in ipairs(names) do if dropped[n] then named_dropped[#named_dropped + 1] = n end end
 	end
 	check(#named_dropped == 0, "B no dropped file is named (ruling 9): " .. table.concat(named_dropped, ","))
-	check(D.beds.underground == nil and D.beds.underwater == nil, "B no underground or underwater bed key")
+	-- 0.52.1: the user's two underwater picks ship as one pool (UW page #2, #4).
+	check(D.beds.underground == nil and names_of("underwater") ==
+		"grug_ambience_underwater_dcsfx,grug_ambience_underwater_verberne",
+		"B no underground bed; the underwater pool is the two picks")
+	local picked = {}
+	for seed = 1, 40 do picked[R.bed_sound(D, "underwater", AVAILABLE, seeded(seed))] = true end
+	check(picked.grug_ambience_underwater_dcsfx and picked.grug_ambience_underwater_verberne,
+		"B a dive starts either underwater bed")
+	-- 0.52.1: start towns sound like they look. D.town_looks is derived from
+	-- the race palette's ground (wp13/palette.lua) and the biome whose top
+	-- node it is (wp40/r7_r6_manifest.lua); the orcs' dry grass is the savanna's.
+	local palette = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp13/palette.lua")
+	local manifest = io.open(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua"):read("*a")
+	local top_of = {}
+	for id, top in (manifest:match("local SURFACE_ROWS = %[%[\n(.-)%]%]") or ""):gmatch("([%w_]+)|([^|]+)|") do
+		top_of[top] = top_of[top] or id
+	end
+	local ALIAS = {["default:dirt_with_dry_grass"] = "grug_savanna"}
+	local races = 0
+	for race, look in pairs(D.town_looks) do
+		races = races + 1
+		local ground = palette.races[race] and palette.races[race].ground
+		local derived = ground and (top_of[ground] or ALIAS[ground])
+		check(derived == look and D.groups[look] ~= nil,
+			"B the " .. race .. " start town looks like " .. tostring(derived) .. " (" .. tostring(ground) .. ")")
+	end
+	check(races == 6, "B a look for every race's start town")
+	local COMPOSITION = {dwarf = "hearthpine", human = "dawnmere", elf = "silverleaf",
+		undead = "stillgrave", orc = "sunscar", troll = "kapok"}
+	for race, town in pairs(COMPOSITION) do
+		local text = io.open(repo .. "/mods/MAPGEN/grug_mapgen/wp13/" .. town .. ".lua"):read("*a")
+		check(text:find('palettes.new("' .. race .. '"', 1, true) ~= nil,
+			"B " .. town .. " lays the " .. race .. " palette")
+	end
+	local towns = {{race = "human", x = 0, z = 0}, {race = "orc", x = 1000, z = 0}}
+	check(R.start_town_look(D, towns, 30, -40) == "grug_meadows" and
+		R.start_town_look(D, towns, 1060, 0) == "grug_savanna" and
+		R.start_town_look(D, towns, 500, 0) == nil and D.town_reach == 103,
+		"B the nearest start town within 80 nodes names the look, none beyond")
 	-- 0.52.1: the beach (mostly far from the sea) keeps the key the player brings;
 	-- the open ocean is the surf alone, the dragon islands keep their coast bed.
 	check(D.neutral.grug_beach and D.groups.grug_beach == nil and D.region.beach == nil and
@@ -491,6 +529,10 @@ do
 	end})
 	rawset(_G, "grug_core", {
 		zone_authority_installed = function() return true end,
+		settlement_socket_settlements = function()
+			return {{key = "dawnmere", slot = "start", race_id = "human", anchor = {x = 5000, y = 10, z = 0}},
+				{key = "highcourt", slot = "capital", race_id = "human", anchor = {x = 9000, y = 10, z = 0}}}
+		end,
 		atmosphere_moods = {human = true, elf = true, dwarf = true, undead = true, orc = true,
 			troll = true, battlegrounds = true, dragon_island = true, ocean = true,
 			underground = true},
@@ -544,6 +586,12 @@ do
 	local function named(prefix) return function(s) return is_bed(s) and s.spec.name:find(prefix, 1, true) == 1 end end
 	local is_wind = named("grug_ambience_battlegrounds_gusts")
 	local is_cave = function(s) return named("grug_ambience_underground_")(s) end
+	local function fades_of_early(handle)
+		local last
+		for _, f in ipairs(fades) do if f.handle == handle then last = f.gain end end
+		return last
+	end
+	local last_gain = fades_of_early
 	local function fades_of(handle)
 		local list = {}
 		for _, f in ipairs(fades) do if f.handle == handle then list[#list + 1] = f end end
@@ -598,26 +646,31 @@ do
 		if f.handle == day_handle and f.gain == 0 then faded = true end
 	end
 	check(faded, "R the day bed fades out (crossfade)")
-	-- under water: the eye node is water; no underwater bed ships, so silence
+	-- under water: the eye node is water; 0.52.1: the night bed stops at
+	-- once and one of the two underwater beds plays at the full bed level
+	local is_uw = named("grug_ambience_underwater_")
+	local function land_beds() return plays_to("ana", function(s) return is_bed(s) and not is_uw(s) end) end
 	node_at["0,11,0"] = 10
 	fades = {}
-	local count = #plays_to("ana", is_bed)
+	local count = #land_beds()
 	run(2)
 	local night_off = false
 	for _, f in ipairs(fades) do if f.handle == beds[2].handle and f.gain == 0 then night_off = true end end
-	check(night_off and #plays_to("ana", is_bed) == count, "R under water: the bed stops at once, silence")
+	local uw = plays_to("ana", is_uw)
+	check(night_off and #land_beds() == count and #uw == 1 and near(uw[1].spec.gain, FULL) and
+		uw[1].params.loop, "R under water: the bed stops at once, an underwater bed at full")
 	node_at["0,11,0"] = nil
 	run(2)
-	beds = plays_to("ana", is_bed)
-	check(#beds == count + 1 and beds[#beds].spec.name:find("^grug_ambience_night_") ~= nil,
-		"R surfacing: the night bed again")
+	beds = land_beds()
+	check(#beds == count + 1 and beds[#beds].spec.name:find("^grug_ambience_night_") ~= nil and
+		last_gain(uw[1].handle) == 0, "R surfacing: the underwater bed stops, the night bed again")
 	-- at night the elf forest is in the same group: nothing restarts; the
 	-- jungle is another group: a crossfade after two passes
 	biome.ana = "grug_elf_forest"
 	mood.ana = "elf"
 	fades = {}
 	run(4)
-	check(#fades == 0 and #plays_to("ana", is_bed) == count + 1,
+	check(#fades == 0 and #land_beds() == count + 1,
 		"R into the elf forest at night: the same temperate night bed goes on")
 	timeofday = 0.5
 	biome.ana = "grug_deep_jungle"
@@ -760,10 +813,6 @@ do
 
 	-- the coast (0.52.1, round52-ambience-plan.md §8): by day in the meadows
 	local is_sea = named("grug_ambience_sea_waves")
-	local function last_gain(handle)
-		local f = fades_of(handle)
-		return f[#f] and f[#f].gain
-	end
 	local function region_beds()
 		return plays_to("ana", function(s) return is_bed(s) and not is_sea(s) and not is_wind(s) and not is_cave(s) end)
 	end
@@ -823,16 +872,13 @@ do
 	check(huds[#huds].text:find("sea share on | surface 0% sea 100%", 1, true) ~= nil,
 		"R on the water the line says so: " .. huds[#huds].text)
 	commands.ambience.func("ana", "debug")
-	-- diving: with an underwater bed (a stub row, no file ships) only it
-	-- plays, at the full bed level at any depth; nothing else
-	-- (init.lua's own data table: grug_ambience.data)
-	A.data.beds.underwater = {"grug_ambience_underwater"}
-	A.available.grug_ambience_underwater = true
+	-- diving: the underwater bed (0.52.1: the user's two picks, one pool)
+	-- alone, at the full bed level at any depth; nothing else
 	node_at["-101,11,0"] = 10
 	fades, sounds = {}, {}
 	run(2)
 	local dive = plays_to("ana")
-	check(#dive == 1 and dive[1].spec.name == "grug_ambience_underwater" and dive[1].params.loop and
+	check(#dive == 1 and is_uw(dive[1]) and dive[1].params.loop and
 		near(dive[1].spec.gain, FULL) and last_gain(surf[1].handle) == 0,
 		"R diving: the underwater bed alone at the full bed level, the surf stops")
 	ana._pos.y, node_at["-101,-9,0"] = 9.5 - 20, 10
@@ -845,7 +891,6 @@ do
 	local back = plays_to("ana", is_sea)
 	check(dive[1] and last_gain(dive[1].handle) == 0 and #back == 1 and near(back[1].spec.gain, FULL),
 		"R surfacing: the underwater bed stops, the surf is back")
-	A.data.beds.underwater, A.available.grug_ambience_underwater = nil, nil
 	-- the open ocean's key: the surf alone even far from a sea column
 	ana._pos.x = 0
 	run(8)
@@ -887,6 +932,30 @@ do
 		"R at an inland lake of default water: the meadow bed, no surf")
 	open_default, node_at["300,11,0"] = 0, nil
 	ana._pos.x = 0
+	run(8)
+	-- 0.52.1: a start town on a swamp cell sounds like its meadow ground
+	local is_swamp = named("grug_ambience_swamp_")
+	local is_meadow = function(sn) return named("grug_ambience_human_meadow")(sn) or
+		named("grug_ambience_elf_forest")(sn) end
+	ana._pos.x, biome.ana, mood.ana = 5000, "grug_swamp", "human"
+	in_town.ana = true
+	fades, sounds = {}, {}
+	run(6)
+	check(#plays_to("ana", is_swamp) == 0 and #plays_to("ana", is_bed) == 0,
+		"R in the human start town on a swamp cell: the temperate bed goes on, no frogs")
+	in_town.ana = nil
+	run(6)
+	check(#plays_to("ana", is_swamp) == 1, "R out of the town on the same cell: the swamp bed")
+	in_town.ana = true
+	sounds = {}
+	run(6)
+	check(#plays_to("ana", is_meadow) == 1 and #plays_to("ana", is_swamp) == 0,
+		"R back into the start town: the meadow bed again")
+	ana._pos.x = 5200
+	sounds = {}
+	run(6)
+	check(#plays_to("ana", is_swamp) == 1, "R a town far from every start anchor (a capital): the cell's bed")
+	ana._pos.x, biome.ana, in_town.ana = 0, "grug_meadows", nil
 	run(8)
 	huds = {} -- the debug checks below count their HUD ids from 1
 
