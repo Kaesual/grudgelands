@@ -1528,6 +1528,20 @@ shows a single-colour particle effect, built from the accepted catalogue
   motes rising around the player, in a colour per proc
   (`grug_core.PROC_COLORS`). Critical hits, absorb soaks and the level-up
   burst keep their look.
+- **The look** (after Round 54, the user's pick on 2026-10-21: "glowing and
+  vivid"): every skill and proc effect tints a soft white mote
+  (`grug_core_mote.png`) instead of the grey smoke puff, which darkened every
+  colour to about half, in its tree's vivid tint (`tools/r52_pfx/effects.py`
+  `VIVID`). Light, spark, magic and fire particles add onto what is behind
+  them (`blend = "add"`) with glow 14, so they shine at night and in caves
+  and only self-light; dust, earth, wood splinters, smoke, frost mist and
+  blood keep the plain blend. Bosses and mobs keep the Round 40 look.
+- **Smite** (2026-10-21) is a small Final Word: a short beam of five motes
+  shoots down from 3.2 m onto the target and a gold ring of eight springs
+  out to about 1 m (Final Word: a 7 m column and a ring of 20 to about 2 m).
+- **Falls** (2026-10-21): Meteor's comet and Censure's seal appear late in
+  the delay and fall at 14 and 12 m/s, landing with the impact; neither fades
+  on the way down. A low ceiling shortens the fall, never the delay.
 - **Budget:** at most 76 particles per occurrence (Fire Rain's impact,
   Round 53; Ice Nova 64); every spawner
   is unattached and lives at most 1 s, so only players near the effect

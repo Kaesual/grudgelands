@@ -48,6 +48,7 @@
       0
      ],
      "at": "target",
+     "blend": "add",
      "exp": [
       0.3,
       0.45
@@ -84,7 +85,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(5, {acc = {0, -9, 0}, at = \"target\", exp = {0.3, 0.45}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {1.2, 1.8}, tex = \"mobs_fire_particle.png\", vel = {{-1.5, 0.5, -1.5}, {1.5, 2.5, 1.5}}}),\n}",
+   "lua_text": "{\n\tsingle(5, {acc = {0, -9, 0}, at = \"target\", blend = \"add\", exp = {0.3, 0.45}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {1.2, 1.8}, tex = \"mobs_fire_particle.png\", vel = {{-1.5, 0.5, -1.5}, {1.5, 2.5, 1.5}}}),\n}",
    "marker": null,
    "moment": "impact",
    "n": 1,
@@ -100,7 +101,9 @@
       -9,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": null,
@@ -111,6 +114,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": false,
      "n": 5,
      "pull": null,
      "radial": null,
@@ -199,9 +203,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 4,
-    "spawner_wire": 1324,
+    "spawner_wire": 1320,
     "spawners": 2,
-    "wire": 1324,
+    "wire": 1320,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -226,6 +230,7 @@
       0
      ],
      "at": "target",
+     "blend": "add",
      "exp": [
       0.4,
       0.8
@@ -271,6 +276,7 @@
      ],
      "glow": 0,
      "kind": "spawner",
+     "mote": true,
      "n": 10,
      "shape": [
       "sphere",
@@ -301,7 +307,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(28, 0.05, {acc = {0, -12, 0}, at = \"target\", exp = {0.4, 0.8}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.2, false}, size = {1, 2}, tex = \"mobs_fire_particle.png\", vel = {{-5, 1, -5}, {5, 6, 5}}}),\n\tspawner(10, 0.1, {at = \"target\", color = \"#3a2a22\", exp = {0.8, 1.2}, glow = 0, shape = {\"sphere\", {0, 1, 0}, 0.4, false}, size = {3, 5}, vel = {{-0.6, 0.5, -0.6}, {0.6, 1.5, 0.6}}}),\n}",
+   "lua_text": "{\n\tspawner(28, 0.05, {acc = {0, -12, 0}, at = \"target\", blend = \"add\", exp = {0.4, 0.8}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.2, false}, size = {1, 2}, tex = \"mobs_fire_particle.png\", vel = {{-5, 1, -5}, {5, 6, 5}}}),\n\tspawner(10, 0.1, {at = \"target\", color = \"#3a2a22\", exp = {0.8, 1.2}, glow = 0, mote = true, shape = {\"sphere\", {0, 1, 0}, 0.4, false}, size = {3, 5}, vel = {{-0.6, 0.5, -0.6}, {0.6, 1.5, 0.6}}}),\n}",
    "marker": null,
    "moment": "impact",
    "n": 2,
@@ -317,7 +323,9 @@
       -12,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": {
@@ -343,6 +351,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": false,
      "n": 28,
      "pull": null,
      "radial": null,
@@ -383,7 +392,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "alpha",
      "color": "#3a2a22",
      "delay": 0.0,
      "engine": {
@@ -409,6 +420,7 @@
      "fade": true,
      "glow": 0,
      "kind": "spawner",
+     "mote": true,
      "n": 10,
      "pull": null,
      "radial": null,
@@ -428,7 +440,7 @@
       5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#3a2a22",
+     "texture": "grug_core_mote.png^[multiply:#3a2a22",
      "time": 0.1,
      "vel": [
       [
@@ -518,6 +530,7 @@
    "look": "Eine weißglühende Flammenspur entlang der Flugbahn: die Lanze zieht für einen Augenblick eine gerade Feuerlinie, die sofort verglüht.",
    "lua": [
     {
+     "blend": "add",
      "exp": [
       0.2,
       0.3
@@ -549,7 +562,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(24, \"frame\", {exp = {0.2, 0.3}, glow = 14, shape = {\"line\", \"frame\"}, size = {2, 3}, tex = \"mobs_fire_particle.png\", vel = {{-0.3, -0.1, -0.3}, {0.3, 0.4, 0.3}}}),\n}",
+   "lua_text": "{\n\tspawner(24, \"frame\", {blend = \"add\", exp = {0.2, 0.3}, glow = 14, shape = {\"line\", \"frame\"}, size = {2, 3}, tex = \"mobs_fire_particle.png\", vel = {{-0.3, -0.1, -0.3}, {0.3, 0.4, 0.3}}}),\n}",
    "marker": null,
    "moment": "trail",
    "n": 3,
@@ -577,7 +590,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": {
@@ -603,6 +618,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": false,
      "n": 24,
      "pull": null,
      "radial": null,
@@ -670,7 +686,9 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
        "delay": 0.0,
        "engine": {
@@ -696,6 +714,7 @@
        "fade": true,
        "glow": 14,
        "kind": "spawner",
+       "mote": false,
        "n": 24,
        "pull": null,
        "radial": null,
@@ -750,17 +769,17 @@
     "i2": 15.682136000000002,
     "life": 0.2699,
     "lua_us": 4.8,
-    "marginal": 295,
+    "marginal": 291,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 410,
-    "zstd_us": 4.672
+    "wire": 406,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "ember",
@@ -780,13 +799,15 @@
       0
      ],
      "at": "target",
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffd86a",
      "exp": [
       0.2,
       0.35
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "sphere",
@@ -816,7 +837,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {acc = {0, -6, 0}, at = \"target\", color = \"#fff0c8\", exp = {0.2, 0.35}, glow = 14, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {2, 3}, vel = {{-3, 0, -3}, {3, 3, 3}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {acc = {0, -6, 0}, at = \"target\", blend = \"add\", color = \"#ffd86a\", exp = {0.2, 0.35}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {2, 3}, vel = {{-3, 0, -3}, {3, 3, 3}}}),\n}",
    "marker": null,
    "moment": "impact",
    "n": 4,
@@ -832,8 +853,10 @@
       -6,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffd86a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -843,6 +866,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -862,7 +886,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#fff0c8",
+     "texture": "grug_core_mote.png^[multiply:#ffd86a",
      "time": 0,
      "vel": [
       [
@@ -907,17 +931,20 @@
         0,
         0
        ],
+       "after": 0.7857142857142857,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
-       "delay": 0.0,
+       "delay": 0.7857142857142857,
        "engine": null,
        "exp": [
-        1.5,
-        1.5
+        0.7142857142857143,
+        0.7142857142857143
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -944,13 +971,13 @@
        "time": 0,
        "vel": [
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ],
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ]
        ]
@@ -961,17 +988,20 @@
         0,
         0
        ],
+       "after": 0.7857142857142857,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
-       "delay": 0.0,
+       "delay": 0.7857142857142857,
        "engine": null,
        "exp": [
-        1.5,
-        1.5
+        0.7142857142857143,
+        0.7142857142857143
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -998,13 +1028,13 @@
        "time": 0,
        "vel": [
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ],
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ]
        ]
@@ -1015,17 +1045,20 @@
         0,
         0
        ],
+       "after": 0.7857142857142857,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
-       "delay": 0.0,
+       "delay": 0.7857142857142857,
        "engine": null,
        "exp": [
-        1.5,
-        1.5
+        0.7142857142857143,
+        0.7142857142857143
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -1052,13 +1085,13 @@
        "time": 0,
        "vel": [
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ],
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ]
        ]
@@ -1076,17 +1109,17 @@
     "i2": 600.0,
     "life": 1.5,
     "lua_us": 12.0,
-    "marginal": 172,
+    "marginal": 168,
     "particles": 20,
     "peak": 20.0,
-    "rx_us": 11.83,
+    "rx_us": 11.79,
     "single_events": 1,
     "singles": 20,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 287,
-    "zstd_us": 5.83
+    "wire": 283,
+    "zstd_us": 5.79
    },
    "dynamic": "reach = the radius (3 m + Broad Impact), time = the delay; no spec.color (area.delayed would pass it to warning, fall and impact alike; the default warning is already #ffb347)",
    "family": "ember",
@@ -1101,14 +1134,16 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffb347",
+     "blend": "add",
+     "color": "#ff9a1a",
      "exp": [
       1.5,
       1.5
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "shape": [
       "disc",
@@ -1126,7 +1161,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(20, {at = \"target\", color = \"#ffb347\", exp = {1.5, 1.5}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 3, true}, size = {3, 3}}),\n}",
+   "lua_text": "{\n\tsingle(20, {at = \"target\", blend = \"add\", color = \"#ff9a1a\", exp = {1.5, 1.5}, fade = false, glow = 14, mote = true, shape = {\"disc\", {0, 0.15, 0}, 3, true}, size = {3, 3}}),\n}",
    "marker": {
     "at": "target",
     "radius": 3
@@ -1148,8 +1183,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffb347",
+     "blend": "add",
+     "color": "#ff9a1a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -1157,8 +1194,9 @@
       1.5
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "pull": null,
      "radial": null,
@@ -1178,7 +1216,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffb347",
+     "texture": "grug_core_mote.png^[multiply:#ff9a1a",
      "time": 0,
      "vel": [
       [
@@ -1223,8 +1261,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#ffb347",
+       "blend": "add",
+       "color": "#ff9a1a",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -1232,8 +1272,9 @@
         1.5
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -1253,7 +1294,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#ffb347",
+       "texture": "grug_core_mote.png^[multiply:#ff9a1a",
        "time": 0,
        "vel": [
         [
@@ -1277,11 +1318,11 @@
    "cost": {
     "check_us": 0.03,
     "dg": 3,
-    "i1": 4.5,
-    "i2": 13.5,
-    "life": 1.5,
+    "i1": 2.16,
+    "i2": 6.48,
+    "life": 0.7200000000000001,
     "lua_us": 1.7999999999999998,
-    "marginal": 36,
+    "marginal": 42,
     "particles": 3,
     "peak": 3.0,
     "rx_us": 12.862499999999999,
@@ -1290,10 +1331,10 @@
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 381,
+    "wire": 387,
     "zstd_us": 11.962499999999999
    },
-   "dynamic": "height = area.fall_height (below the first solid node, at most 12), time = the delay; none below 1.5 m (area.lua MIN_FALL)",
+   "dynamic": "height = area.fall_height (below the first solid node, at most 12), time = the delay; none below 1.5 m (area.lua MIN_FALL); it falls at METEOR_FALL_SPEED for min(time, height / speed) and starts after the rest of the delay",
    "family": "ember",
    "family_de": "Feuer",
    "family_name": "Ember",
@@ -1302,14 +1343,17 @@
    "hook": "area.delayed spec.fall = \"meteor_fall\"",
    "id": "meteor_fall",
    "key": "pfx.meteor.fall",
-   "look": "Ein einzelner brennender Brocken fällt schräg aus der Höhe genau zum Ende der Verzögerung auf den Punkt: ein großer Kopf und zwei kleiner werdende Glutstücke dahinter, alle gleich schnell, wie ein Komet.",
+   "look": "Ein brennender Brocken stürzt schräg aus der Höhe genau zum Ende der Verzögerung auf den Punkt: ein großer Kopf und zwei kleiner werdende Glutstücke dahinter, alle gleich schnell, wie ein Komet. Er erscheint erst spät und fällt mit 14 m/s, ohne zu verblassen (überarbeitet am 21.10.).",
    "lua": [
     {
+     "after": 0.7857142857142857,
      "at": "target",
+     "blend": "add",
      "exp": [
-      1.5,
-      1.5
+      0.7142857142857143,
+      0.7142857142857143
      ],
+     "fade": false,
      "glow": 14,
      "kind": "single",
      "n": 1,
@@ -1333,23 +1377,26 @@
      "tex": "mobs_fire_particle.png",
      "vel": [
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ],
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ]
      ]
     },
     {
+     "after": 0.7857142857142857,
      "at": "target",
+     "blend": "add",
      "exp": [
-      1.5,
-      1.5
+      0.7142857142857143,
+      0.7142857142857143
      ],
+     "fade": false,
      "glow": 14,
      "kind": "single",
      "n": 1,
@@ -1373,23 +1420,26 @@
      "tex": "mobs_fire_particle.png",
      "vel": [
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ],
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ]
      ]
     },
     {
+     "after": 0.7857142857142857,
      "at": "target",
+     "blend": "add",
      "exp": [
-      1.5,
-      1.5
+      0.7142857142857143,
+      0.7142857142857143
      ],
+     "fade": false,
      "glow": 14,
      "kind": "single",
      "n": 1,
@@ -1413,19 +1463,19 @@
      "tex": "mobs_fire_particle.png",
      "vel": [
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ],
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ]
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(1, {at = \"target\", exp = {1.5, 1.5}, glow = 14, shape = {\"box\", {-3.5, 10, 0}, {-3.5, 10, 0}}, size = {14, 14}, tex = \"mobs_fire_particle.png\", vel = {{2.333, -6.667, 0}, {2.333, -6.667, 0}}}),\n\tsingle(1, {at = \"target\", exp = {1.5, 1.5}, glow = 14, shape = {\"box\", {-3.731, 10.661, 0}, {-3.731, 10.661, 0}}, size = {9, 9}, tex = \"mobs_fire_particle.png\", vel = {{2.333, -6.667, 0}, {2.333, -6.667, 0}}}),\n\tsingle(1, {at = \"target\", exp = {1.5, 1.5}, glow = 14, shape = {\"box\", {-3.962, 11.321, 0}, {-3.962, 11.321, 0}}, size = {5, 5}, tex = \"mobs_fire_particle.png\", vel = {{2.333, -6.667, 0}, {2.333, -6.667, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(1, {after = 0.7857142857, at = \"target\", blend = \"add\", exp = {0.7142857143, 0.7142857143}, fade = false, glow = 14, shape = {\"box\", {-3.5, 10, 0}, {-3.5, 10, 0}}, size = {14, 14}, tex = \"mobs_fire_particle.png\", vel = {{4.9, -14, 0}, {4.9, -14, 0}}}),\n\tsingle(1, {after = 0.7857142857, at = \"target\", blend = \"add\", exp = {0.7142857143, 0.7142857143}, fade = false, glow = 14, shape = {\"box\", {-3.731, 10.661, 0}, {-3.731, 10.661, 0}}, size = {9, 9}, tex = \"mobs_fire_particle.png\", vel = {{4.9, -14, 0}, {4.9, -14, 0}}}),\n\tsingle(1, {after = 0.7857142857, at = \"target\", blend = \"add\", exp = {0.7142857143, 0.7142857143}, fade = false, glow = 14, shape = {\"box\", {-3.962, 11.321, 0}, {-3.962, 11.321, 0}}, size = {5, 5}, tex = \"mobs_fire_particle.png\", vel = {{4.9, -14, 0}, {4.9, -14, 0}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 3
@@ -1448,17 +1498,20 @@
       0,
       0
      ],
+     "after": 0.7857142857142857,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
-     "delay": 0.0,
+     "delay": 0.7857142857142857,
      "engine": null,
      "exp": [
-      1.5,
-      1.5
+      0.7142857142857143,
+      0.7142857142857143
      ],
-     "fade": true,
+     "fade": false,
      "glow": 14,
      "kind": "single",
+     "mote": false,
      "n": 1,
      "pull": null,
      "radial": null,
@@ -1485,13 +1538,13 @@
      "time": 0,
      "vel": [
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ],
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ]
      ]
@@ -1502,17 +1555,20 @@
       0,
       0
      ],
+     "after": 0.7857142857142857,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
-     "delay": 0.0,
+     "delay": 0.7857142857142857,
      "engine": null,
      "exp": [
-      1.5,
-      1.5
+      0.7142857142857143,
+      0.7142857142857143
      ],
-     "fade": true,
+     "fade": false,
      "glow": 14,
      "kind": "single",
+     "mote": false,
      "n": 1,
      "pull": null,
      "radial": null,
@@ -1539,13 +1595,13 @@
      "time": 0,
      "vel": [
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ],
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ]
      ]
@@ -1556,17 +1612,20 @@
       0,
       0
      ],
+     "after": 0.7857142857142857,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
-     "delay": 0.0,
+     "delay": 0.7857142857142857,
      "engine": null,
      "exp": [
-      1.5,
-      1.5
+      0.7142857142857143,
+      0.7142857142857143
      ],
-     "fade": true,
+     "fade": false,
      "glow": 14,
      "kind": "single",
+     "mote": false,
      "n": 1,
      "pull": null,
      "radial": null,
@@ -1593,13 +1652,13 @@
      "time": 0,
      "vel": [
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ],
       [
-       2.333,
-       -6.667,
+       4.9,
+       -14.0,
        0
       ]
      ]
@@ -1638,8 +1697,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#ffb347",
+       "blend": "add",
+       "color": "#ff9a1a",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -1647,8 +1708,9 @@
         1.5
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -1668,7 +1730,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#ffb347",
+       "texture": "grug_core_mote.png^[multiply:#ff9a1a",
        "time": 0,
        "vel": [
         [
@@ -1696,17 +1758,20 @@
         0,
         0
        ],
+       "after": 0.7857142857142857,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
-       "delay": 0.0,
+       "delay": 0.7857142857142857,
        "engine": null,
        "exp": [
-        1.5,
-        1.5
+        0.7142857142857143,
+        0.7142857142857143
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -1733,13 +1798,13 @@
        "time": 0,
        "vel": [
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ],
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ]
        ]
@@ -1750,17 +1815,20 @@
         0,
         0
        ],
+       "after": 0.7857142857142857,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
-       "delay": 0.0,
+       "delay": 0.7857142857142857,
        "engine": null,
        "exp": [
-        1.5,
-        1.5
+        0.7142857142857143,
+        0.7142857142857143
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -1787,13 +1855,13 @@
        "time": 0,
        "vel": [
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ],
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ]
        ]
@@ -1804,17 +1872,20 @@
         0,
         0
        ],
+       "after": 0.7857142857142857,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
-       "delay": 0.0,
+       "delay": 0.7857142857142857,
        "engine": null,
        "exp": [
-        1.5,
-        1.5
+        0.7142857142857143,
+        0.7142857142857143
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -1841,13 +1912,13 @@
        "time": 0,
        "vel": [
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ],
         [
-         2.333,
-         -6.667,
+         4.9,
+         -14.0,
          0
         ]
        ]
@@ -1865,17 +1936,17 @@
     "i2": 825.4529249999999,
     "life": 0.3953365384615385,
     "lua_us": 21.08,
-    "marginal": 366,
+    "marginal": 362,
     "particles": 52,
     "peak": 52.0,
-    "rx_us": 19.588,
+    "rx_us": 19.524,
     "single_events": 1,
     "singles": 32,
     "spawner_dg": 2,
     "spawner_wire": 653,
     "spawners": 1,
-    "wire": 1134,
-    "zstd_us": 6.9879999999999995
+    "wire": 1130,
+    "zstd_us": 6.9239999999999995
    },
    "dynamic": "reach = the radius (ring lands on it; spray disc 0.8 x reach)",
    "family": "ember",
@@ -1890,13 +1961,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffb347",
+     "blend": "add",
+     "color": "#ff9a1a",
      "exp": [
       0.3,
       0.3
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 32,
      "radial": "reach",
      "shape": [
@@ -1921,6 +1994,7 @@
       0
      ],
      "at": "target",
+     "blend": "add",
      "exp": [
       0.4,
       0.7
@@ -1958,7 +2032,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(32, {at = \"target\", color = \"#ffb347\", exp = {0.3, 0.3}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {3, 3}}),\n\tspawner(20, 0.1, {acc = {0, -9, 0}, at = \"target\", exp = {0.4, 0.7}, glow = 14, shape = {\"disc\", {0, 0.3, 0}, 2.4, false}, size = {2, 3.5}, tex = \"mobs_fire_particle.png\", vel = {{-1.5, 2, -1.5}, {1.5, 5, 1.5}}}),\n}",
+   "lua_text": "{\n\tsingle(32, {at = \"target\", blend = \"add\", color = \"#ff9a1a\", exp = {0.3, 0.3}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {3, 3}}),\n\tspawner(20, 0.1, {acc = {0, -9, 0}, at = \"target\", blend = \"add\", exp = {0.4, 0.7}, glow = 14, shape = {\"disc\", {0, 0.3, 0}, 2.4, false}, size = {2, 3.5}, tex = \"mobs_fire_particle.png\", vel = {{-1.5, 2, -1.5}, {1.5, 5, 1.5}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 3
@@ -1979,8 +2053,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffb347",
+     "blend": "add",
+     "color": "#ff9a1a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -1988,8 +2064,9 @@
       0.3
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 32,
      "pull": null,
      "radial": null,
@@ -2009,7 +2086,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffb347",
+     "texture": "grug_core_mote.png^[multiply:#ff9a1a",
      "time": 0,
      "vel": [
       [
@@ -2030,7 +2107,9 @@
       -9,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": {
@@ -2060,6 +2139,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": false,
      "n": 20,
      "pull": null,
      "radial": null,
@@ -2142,7 +2222,9 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
        "delay": 0.0,
        "engine": {
@@ -2168,6 +2250,7 @@
        "fade": true,
        "glow": 14,
        "kind": "spawner",
+       "mote": false,
        "n": 40,
        "pull": null,
        "radial": null,
@@ -2218,17 +2301,17 @@
     "i2": 600.0,
     "life": 1.5,
     "lua_us": 12.0,
-    "marginal": 176,
+    "marginal": 172,
     "particles": 20,
     "peak": 20.0,
-    "rx_us": 11.83,
+    "rx_us": 11.79,
     "single_events": 1,
     "singles": 20,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 291,
-    "zstd_us": 5.83
+    "wire": 287,
+    "zstd_us": 5.79
    },
    "dynamic": "reach = the radius (5 m + Spreading Rain), time = the delay; no spec.color (the default warning is already #ffb347)",
    "family": "ember",
@@ -2243,14 +2326,16 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffb347",
+     "blend": "add",
+     "color": "#ff9a1a",
      "exp": [
       1.5,
       1.5
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "shape": [
       "disc",
@@ -2268,7 +2353,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(20, {at = \"target\", color = \"#ffb347\", exp = {1.5, 1.5}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 5, true}, size = {3, 3}}),\n}",
+   "lua_text": "{\n\tsingle(20, {at = \"target\", blend = \"add\", color = \"#ff9a1a\", exp = {1.5, 1.5}, fade = false, glow = 14, mote = true, shape = {\"disc\", {0, 0.15, 0}, 5, true}, size = {3, 3}}),\n}",
    "marker": {
     "at": "target",
     "radius": 5
@@ -2290,8 +2375,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffb347",
+     "blend": "add",
+     "color": "#ff9a1a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -2299,8 +2386,9 @@
       1.5
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "pull": null,
      "radial": null,
@@ -2320,7 +2408,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffb347",
+     "texture": "grug_core_mote.png^[multiply:#ff9a1a",
      "time": 0,
      "vel": [
       [
@@ -2365,8 +2453,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#ffb347",
+       "blend": "add",
+       "color": "#ff9a1a",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -2374,8 +2464,9 @@
         1.5
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -2395,7 +2486,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#ffb347",
+       "texture": "grug_core_mote.png^[multiply:#ff9a1a",
        "time": 0,
        "vel": [
         [
@@ -2448,6 +2539,7 @@
    "lua": [
     {
      "at": "target",
+     "blend": "add",
      "exp": [
       0.5,
       0.5
@@ -2488,7 +2580,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(40, 1, {at = \"target\", exp = {0.5, 0.5}, glow = 14, shape = {\"box\", {-3.5, 8, -3.5}, {3.5, 8, 3.5}}, size = {4, 6}, tex = \"mobs_fire_particle.png\", vel = {{0, -16, 0}, {0, -16, 0}}}),\n}",
+   "lua_text": "{\n\tspawner(40, 1, {at = \"target\", blend = \"add\", exp = {0.5, 0.5}, glow = 14, shape = {\"box\", {-3.5, 8, -3.5}, {3.5, 8, 3.5}}, size = {4, 6}, tex = \"mobs_fire_particle.png\", vel = {{0, -16, 0}, {0, -16, 0}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 5
@@ -2511,7 +2603,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": {
@@ -2537,6 +2631,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": false,
      "n": 40,
      "pull": null,
      "radial": null,
@@ -2604,8 +2699,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#ffb347",
+       "blend": "add",
+       "color": "#ff9a1a",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -2613,8 +2710,9 @@
         1.5
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -2634,7 +2732,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#ffb347",
+       "texture": "grug_core_mote.png^[multiply:#ff9a1a",
        "time": 0,
        "vel": [
         [
@@ -2662,7 +2760,9 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
+       "blend": "add",
        "color": "#ffffff",
        "delay": 0.0,
        "engine": {
@@ -2688,6 +2788,7 @@
        "fade": true,
        "glow": 14,
        "kind": "spawner",
+       "mote": false,
        "n": 40,
        "pull": null,
        "radial": null,
@@ -2738,17 +2839,17 @@
     "i2": 2148.554144,
     "life": 0.5133263157894736,
     "lua_us": 25.88,
-    "marginal": 602,
+    "marginal": 598,
     "particles": 76,
     "peak": 76.0,
-    "rx_us": 22.759999999999998,
+    "rx_us": 22.68,
     "single_events": 1,
     "singles": 40,
     "spawner_dg": 2,
     "spawner_wire": 653,
     "spawners": 1,
-    "wire": 1421,
-    "zstd_us": 7.76
+    "wire": 1417,
+    "zstd_us": 7.68
    },
    "dynamic": "reach = the radius",
    "family": "ember",
@@ -2763,13 +2864,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ff8a3a",
+     "blend": "add",
+     "color": "#ff5a12",
      "exp": [
       0.35,
       0.35
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "radial": "reach",
      "shape": [
@@ -2794,6 +2897,7 @@
       0
      ],
      "at": "target",
+     "blend": "add",
      "exp": [
       0.5,
       0.9
@@ -2831,7 +2935,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(40, {at = \"target\", color = \"#ff8a3a\", exp = {0.35, 0.35}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.5, true}, size = {3, 3.5}}),\n\tspawner(36, 0.15, {acc = {0, -9, 0}, at = \"target\", exp = {0.5, 0.9}, glow = 14, shape = {\"disc\", {0, 0.3, 0}, 4, false}, size = {2.5, 4}, tex = \"mobs_fire_particle.png\", vel = {{-2, 3, -2}, {2, 6, 2}}}),\n}",
+   "lua_text": "{\n\tsingle(40, {at = \"target\", blend = \"add\", color = \"#ff5a12\", exp = {0.35, 0.35}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.5, true}, size = {3, 3.5}}),\n\tspawner(36, 0.15, {acc = {0, -9, 0}, at = \"target\", blend = \"add\", exp = {0.5, 0.9}, glow = 14, shape = {\"disc\", {0, 0.3, 0}, 4, false}, size = {2.5, 4}, tex = \"mobs_fire_particle.png\", vel = {{-2, 3, -2}, {2, 6, 2}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 5
@@ -2852,8 +2956,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ff8a3a",
+     "blend": "add",
+     "color": "#ff5a12",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -2861,8 +2967,9 @@
       0.35
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "pull": null,
      "radial": null,
@@ -2882,7 +2989,7 @@
       3.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ff8a3a",
+     "texture": "grug_core_mote.png^[multiply:#ff5a12",
      "time": 0,
      "vel": [
       [
@@ -2903,7 +3010,9 @@
       -9,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": {
@@ -2933,6 +3042,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": false,
      "n": 36,
      "pull": null,
      "radial": null,
@@ -2996,17 +3106,17 @@
     "i2": 38.8080625,
     "life": 0.39435000000000003,
     "lua_us": 6.0,
-    "marginal": 362,
+    "marginal": 358,
     "particles": 10,
     "peak": 10.0,
-    "rx_us": 7.865,
+    "rx_us": 7.845,
     "single_events": 1,
     "singles": 10,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 477,
-    "zstd_us": 4.865
+    "wire": 473,
+    "zstd_us": 4.845
    },
    "dynamic": "",
    "family": "rime",
@@ -3020,13 +3130,15 @@
    "look": "Ein Fächer aus Frostflocken fährt vor dem Magier über den 70°-Kegel und verlischt am 5-m-Rand.",
    "lua": [
     {
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       0.38,
       0.42
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 10,
      "shape": [
       "box",
@@ -3059,7 +3171,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(10, {color = \"#bfe8ff\", exp = {0.38, 0.42}, glow = 10, shape = {\"box\", {0.4, 1, -0.2}, {0.6, 1.3, 0.2}}, size = {2.5, 3.5}, vel = {{9, -0.5, -6}, {12, 0.5, 6}}}),\n}",
+   "lua_text": "{\n\tsingle(10, {blend = \"add\", color = \"#4cc3ff\", exp = {0.38, 0.42}, glow = 14, mote = true, shape = {\"box\", {0.4, 1, -0.2}, {0.6, 1.3, 0.2}}, size = {2.5, 3.5}, vel = {{9, -0.5, -6}, {12, 0.5, 6}}}),\n}",
    "marker": {
     "cone": [
      5,
@@ -3080,8 +3192,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -3089,8 +3203,9 @@
       0.42
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 10,
      "pull": null,
      "radial": null,
@@ -3113,7 +3228,7 @@
       3.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0,
      "vel": [
       [
@@ -3161,17 +3276,17 @@
     "i2": 6.414479,
     "life": 0.424825,
     "lua_us": 2.4,
-    "marginal": 152,
+    "marginal": 148,
     "particles": 4,
     "peak": 4.0,
-    "rx_us": 5.486,
+    "rx_us": 5.478,
     "single_events": 1,
     "singles": 4,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 267,
-    "zstd_us": 4.286
+    "wire": 263,
+    "zstd_us": 4.278
    },
    "dynamic": "",
    "family": "rime",
@@ -3195,13 +3310,15 @@
       0
      ],
      "at": "target",
-     "color": "#f1fbff",
+     "blend": "add",
+     "color": "#9fe2ff",
      "exp": [
       0.35,
       0.5
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 4,
      "shape": [
       "sphere",
@@ -3231,7 +3348,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(4, {acc = {0, -4, 0}, at = \"target\", color = \"#f1fbff\", exp = {0.35, 0.5}, glow = 10, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {1.5, 2}, vel = {{-1, 0.3, -1}, {1, 1.5, 1}}}),\n}",
+   "lua_text": "{\n\tsingle(4, {acc = {0, -4, 0}, at = \"target\", blend = \"add\", color = \"#9fe2ff\", exp = {0.35, 0.5}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 0.15, false}, size = {1.5, 2}, vel = {{-1, 0.3, -1}, {1, 1.5, 1}}}),\n}",
    "marker": null,
    "moment": "impact",
    "n": 12,
@@ -3247,8 +3364,10 @@
       -4,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#f1fbff",
+     "blend": "add",
+     "color": "#9fe2ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -3256,8 +3375,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 4,
      "pull": null,
      "radial": null,
@@ -3277,7 +3397,7 @@
       2
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#f1fbff",
+     "texture": "grug_core_mote.png^[multiply:#9fe2ff",
      "time": 0,
      "vel": [
       [
@@ -3325,17 +3445,17 @@
     "i2": 27.310072,
     "life": 0.44305,
     "lua_us": 4.8,
-    "marginal": 194,
+    "marginal": 190,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 309,
-    "zstd_us": 4.672
+    "wire": 305,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "rime",
@@ -3349,13 +3469,15 @@
    "look": "Cold Shock bereit (eine Nova hat getroffen): der bekannte Bereitschaftsring aus acht Punkten steigt um den Magier auf, in Frostblau.",
    "lua": [
     {
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       0.4,
       0.5
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "disc",
@@ -3385,7 +3507,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {color = \"#bfe8ff\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {blend = \"add\", color = \"#4cc3ff\", exp = {0.4, 0.5}, glow = 14, mote = true, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
    "marker": null,
    "moment": "window",
    "n": 13,
@@ -3401,8 +3523,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -3410,8 +3534,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -3431,7 +3556,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0,
      "vel": [
       [
@@ -3482,9 +3607,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 4,
-    "spawner_wire": 1472,
+    "spawner_wire": 1464,
     "spawners": 2,
-    "wire": 1472,
+    "wire": 1464,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -3508,13 +3633,15 @@
       ],
       "strength": 3
      },
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       0.3,
       0.4
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "shape": [
       "sphere",
@@ -3534,13 +3661,15 @@
     },
     {
      "at": "target",
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       0.3,
       0.4
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "radial": [
       3,
@@ -3563,7 +3692,7 @@
      "time": 0.05
     }
    ],
-   "lua_text": "{\n\tspawner(14, 0.1, {attract = {kill = true, origin = {0, 1, 0}, strength = 3}, color = \"#bfe8ff\", exp = {0.3, 0.4}, glow = 12, shape = {\"sphere\", {0, 1, 0}, 1, true}, size = {2, 2.5}}),\n\tspawner(14, 0.05, {at = \"target\", color = \"#bfe8ff\", exp = {0.3, 0.4}, glow = 12, radial = {3, 4}, shape = {\"sphere\", {0, 1, 0}, 0.2, false}, size = {2, 2.5}}),\n}",
+   "lua_text": "{\n\tspawner(14, 0.1, {attract = {kill = true, origin = {0, 1, 0}, strength = 3}, blend = \"add\", color = \"#4cc3ff\", exp = {0.3, 0.4}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 1, true}, size = {2, 2.5}}),\n\tspawner(14, 0.05, {at = \"target\", blend = \"add\", color = \"#4cc3ff\", exp = {0.3, 0.4}, glow = 14, mote = true, radial = {3, 4}, shape = {\"sphere\", {0, 1, 0}, 0.2, false}, size = {2, 2.5}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 14,
@@ -3579,8 +3708,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -3607,8 +3738,9 @@
       0.4
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "pull": {
       "kill": true,
@@ -3637,7 +3769,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0.1,
      "vel": [
       [
@@ -3658,8 +3790,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -3682,8 +3816,9 @@
       0.4
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "pull": {
       "kill": false,
@@ -3712,7 +3847,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0.05,
      "vel": [
       [
@@ -3763,9 +3898,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 736,
+    "spawner_wire": 732,
     "spawners": 1,
-    "wire": 736,
+    "wire": 732,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -3789,13 +3924,15 @@
       ],
       "strength": 2.5
      },
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       0.4,
       0.5
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "shape": [
       "sphere",
@@ -3814,7 +3951,7 @@
      "time": 0.2
     }
    ],
-   "lua_text": "{\n\tspawner(20, 0.2, {attract = {kill = true, origin = {0, 1, 0}, strength = 2.5}, color = \"#bfe8ff\", exp = {0.4, 0.5}, glow = 10, shape = {\"sphere\", {0, 1, 0}, 1.1, true}, size = {2, 2.5}}),\n}",
+   "lua_text": "{\n\tspawner(20, 0.2, {attract = {kill = true, origin = {0, 1, 0}, strength = 2.5}, blend = \"add\", color = \"#4cc3ff\", exp = {0.4, 0.5}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 1.1, true}, size = {2, 2.5}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 15,
@@ -3830,8 +3967,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -3858,8 +3997,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "pull": {
       "kill": true,
@@ -3888,7 +4028,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0.2,
      "vel": [
       [
@@ -3932,17 +4072,17 @@
     "i2": 1402.546144,
     "life": 0.4299,
     "lua_us": 31.059999999999995,
-    "marginal": 528,
+    "marginal": 524,
     "particles": 64,
     "peak": 64.0,
-    "rx_us": 25.932,
+    "rx_us": 25.836,
     "single_events": 1,
     "singles": 48,
     "spawner_dg": 2,
-    "spawner_wire": 736,
+    "spawner_wire": 732,
     "spawners": 1,
-    "wire": 1430,
-    "zstd_us": 8.532
+    "wire": 1422,
+    "zstd_us": 8.436
    },
    "dynamic": "reach = the nova's radius (5 m + Far Frost)",
    "family": "rime",
@@ -3956,13 +4096,15 @@
    "look": "Ein flacher Ring aus Frostflocken schießt bis an den 5-m-Rand, darunter ein langsamer Nebel. Unverändert aus Runde 40; die Wurzelkristalle an jedem festgehaltenen Gegner bleiben auch.",
    "lua": [
     {
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       0.34,
       0.34
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 48,
      "radial": "reach",
      "shape": [
@@ -3981,13 +4123,14 @@
      ]
     },
     {
-     "color": "#e6f6ff",
+     "color": "#8fd3ff",
      "exp": [
       0.6,
       0.8
      ],
      "glow": 4,
      "kind": "spawner",
+     "mote": true,
      "n": 16,
      "radial": [
       3,
@@ -4010,7 +4153,7 @@
      "time": 0.1
     }
    ],
-   "lua_text": "{\n\tsingle(48, {color = \"#bfe8ff\", exp = {0.34, 0.34}, glow = 10, radial = \"reach\", shape = {\"disc\", {0, 0.25, 0}, 0.4, true}, size = {2.5, 2.5}}),\n\tspawner(16, 0.1, {color = \"#e6f6ff\", exp = {0.6, 0.8}, glow = 4, radial = {3, 5}, shape = {\"disc\", {0, 0.15, 0}, 0.6, false}, size = {4, 6}}),\n}",
+   "lua_text": "{\n\tsingle(48, {blend = \"add\", color = \"#4cc3ff\", exp = {0.34, 0.34}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.25, 0}, 0.4, true}, size = {2.5, 2.5}}),\n\tspawner(16, 0.1, {color = \"#8fd3ff\", exp = {0.6, 0.8}, glow = 4, mote = true, radial = {3, 5}, shape = {\"disc\", {0, 0.15, 0}, 0.6, false}, size = {4, 6}}),\n}",
    "marker": {
     "radius": 5
    },
@@ -4030,8 +4173,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -4039,8 +4184,9 @@
       0.34
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 48,
      "pull": null,
      "radial": null,
@@ -4060,7 +4206,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0,
      "vel": [
       [
@@ -4081,8 +4227,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#e6f6ff",
+     "blend": "alpha",
+     "color": "#8fd3ff",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -4111,6 +4259,7 @@
      "fade": true,
      "glow": 4,
      "kind": "spawner",
+     "mote": true,
      "n": 16,
      "pull": {
       "kill": false,
@@ -4139,7 +4288,7 @@
       6
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#e6f6ff",
+     "texture": "grug_core_mote.png^[multiply:#8fd3ff",
      "time": 0.1,
      "vel": [
       [
@@ -4184,8 +4333,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#f1fbff",
+       "blend": "add",
+       "color": "#9fe2ff",
        "delay": 0.0,
        "engine": {
         "pos": [
@@ -4208,8 +4359,9 @@
         1.6
        ],
        "fade": true,
-       "glow": 8,
+       "glow": 14,
        "kind": "spawner",
+       "mote": true,
        "n": 36,
        "pull": null,
        "radial": null,
@@ -4232,7 +4384,7 @@
         4
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#f1fbff",
+       "texture": "grug_core_mote.png^[multiply:#9fe2ff",
        "time": 1,
        "vel": [
         [
@@ -4260,17 +4412,17 @@
     "i2": 400.0,
     "life": 1.0,
     "lua_us": 12.0,
-    "marginal": 172,
+    "marginal": 168,
     "particles": 20,
     "peak": 20.0,
-    "rx_us": 11.83,
+    "rx_us": 11.79,
     "single_events": 1,
     "singles": 20,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 287,
-    "zstd_us": 5.83
+    "wire": 283,
+    "zstd_us": 5.79
    },
    "dynamic": "a recolour of area_warning: reach = 4 m, time = the delay (1 s); no spec.color, which would repaint the fall and the impact too (area.lua:327-355)",
    "family": "rime",
@@ -4285,14 +4437,16 @@
    "lua": [
     {
      "at": "target",
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       1.0,
       1.0
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "shape": [
       "disc",
@@ -4310,7 +4464,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(20, {at = \"target\", color = \"#bfe8ff\", exp = {1, 1}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 4, true}, size = {3, 3}}),\n}",
+   "lua_text": "{\n\tsingle(20, {at = \"target\", blend = \"add\", color = \"#4cc3ff\", exp = {1, 1}, fade = false, glow = 14, mote = true, shape = {\"disc\", {0, 0.15, 0}, 4, true}, size = {3, 3}}),\n}",
    "marker": {
     "at": "target",
     "radius": 4
@@ -4332,8 +4486,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -4341,8 +4497,9 @@
       1.0
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "pull": null,
      "radial": null,
@@ -4362,7 +4519,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0,
      "vel": [
       [
@@ -4407,8 +4564,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#bfe8ff",
+       "blend": "add",
+       "color": "#4cc3ff",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -4416,8 +4575,9 @@
         1.0
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -4437,7 +4597,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+       "texture": "grug_core_mote.png^[multiply:#4cc3ff",
        "time": 0,
        "vel": [
         [
@@ -4472,9 +4632,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "height = min(area.fall_height, 5); the box spans 0.7 x reach",
@@ -4490,13 +4650,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#f1fbff",
+     "blend": "add",
+     "color": "#9fe2ff",
      "exp": [
       1.2,
       1.6
      ],
-     "glow": 8,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 36,
      "shape": [
       "box",
@@ -4530,7 +4692,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(36, 1, {at = \"target\", color = \"#f1fbff\", exp = {1.2, 1.6}, glow = 8, shape = {\"box\", {-2.8, 5, -2.8}, {2.8, 5, 2.8}}, size = {3, 4}, vel = {{-0.4, -4, -0.4}, {0.4, -3, 0.4}}}),\n}",
+   "lua_text": "{\n\tspawner(36, 1, {at = \"target\", blend = \"add\", color = \"#9fe2ff\", exp = {1.2, 1.6}, glow = 14, mote = true, shape = {\"box\", {-2.8, 5, -2.8}, {2.8, 5, 2.8}}, size = {3, 4}, vel = {{-0.4, -4, -0.4}, {0.4, -3, 0.4}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 4
@@ -4553,8 +4715,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#f1fbff",
+     "blend": "add",
+     "color": "#9fe2ff",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -4577,8 +4741,9 @@
       1.6
      ],
      "fade": true,
-     "glow": 8,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 36,
      "pull": null,
      "radial": null,
@@ -4601,7 +4766,7 @@
       4
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#f1fbff",
+     "texture": "grug_core_mote.png^[multiply:#9fe2ff",
      "time": 1,
      "vel": [
       [
@@ -4650,8 +4815,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#bfe8ff",
+       "blend": "add",
+       "color": "#4cc3ff",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -4659,8 +4826,9 @@
         1.0
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -4680,7 +4848,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+       "texture": "grug_core_mote.png^[multiply:#4cc3ff",
        "time": 0,
        "vel": [
         [
@@ -4708,8 +4876,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#f1fbff",
+       "blend": "add",
+       "color": "#9fe2ff",
        "delay": 0.0,
        "engine": {
         "pos": [
@@ -4732,8 +4902,9 @@
         1.6
        ],
        "fade": true,
-       "glow": 8,
+       "glow": 14,
        "kind": "spawner",
+       "mote": true,
        "n": 36,
        "pull": null,
        "radial": null,
@@ -4756,7 +4927,7 @@
         4
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#f1fbff",
+       "texture": "grug_core_mote.png^[multiply:#9fe2ff",
        "time": 1,
        "vel": [
         [
@@ -4784,17 +4955,17 @@
     "i2": 1840.37462,
     "life": 0.787446875,
     "lua_us": 25.88,
-    "marginal": 603,
+    "marginal": 599,
     "particles": 64,
     "peak": 64.0,
-    "rx_us": 22.759999999999998,
+    "rx_us": 22.68,
     "single_events": 1,
     "singles": 40,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 1440,
-    "zstd_us": 7.76
+    "wire": 1432,
+    "zstd_us": 7.68
    },
    "dynamic": "reach = the radius",
    "family": "rime",
@@ -4809,13 +4980,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "exp": [
       0.35,
       0.35
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "radial": "reach",
      "shape": [
@@ -4835,13 +5008,14 @@
     },
     {
      "at": "target",
-     "color": "#e6f6ff",
+     "color": "#8fd3ff",
      "exp": [
       1.2,
       1.8
      ],
      "glow": 6,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "shape": [
       "disc",
@@ -4872,7 +5046,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(40, {at = \"target\", color = \"#bfe8ff\", exp = {0.35, 0.35}, glow = 10, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {2.5, 3}}),\n\tspawner(24, 0.2, {at = \"target\", color = \"#e6f6ff\", exp = {1.2, 1.8}, glow = 6, shape = {\"disc\", {0, 0.15, 0}, 3.2, false}, size = {4, 6}, vel = {{-0.3, 0.1, -0.3}, {0.3, 0.4, 0.3}}}),\n}",
+   "lua_text": "{\n\tsingle(40, {at = \"target\", blend = \"add\", color = \"#4cc3ff\", exp = {0.35, 0.35}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {2.5, 3}}),\n\tspawner(24, 0.2, {at = \"target\", color = \"#8fd3ff\", exp = {1.2, 1.8}, glow = 6, mote = true, shape = {\"disc\", {0, 0.15, 0}, 3.2, false}, size = {4, 6}, vel = {{-0.3, 0.1, -0.3}, {0.3, 0.4, 0.3}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 4
@@ -4893,8 +5067,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#bfe8ff",
+     "blend": "add",
+     "color": "#4cc3ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -4902,8 +5078,9 @@
       0.35
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "pull": null,
      "radial": null,
@@ -4923,7 +5100,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#bfe8ff",
+     "texture": "grug_core_mote.png^[multiply:#4cc3ff",
      "time": 0,
      "vel": [
       [
@@ -4944,8 +5121,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#e6f6ff",
+     "blend": "alpha",
+     "color": "#8fd3ff",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -4974,6 +5153,7 @@
      "fade": true,
      "glow": 6,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "pull": null,
      "radial": null,
@@ -4993,7 +5173,7 @@
       6
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#e6f6ff",
+     "texture": "grug_core_mote.png^[multiply:#8fd3ff",
      "time": 0.2,
      "vel": [
       [
@@ -5078,17 +5258,17 @@
     "i2": 27.37334,
     "life": 0.44402500000000006,
     "lua_us": 4.8,
-    "marginal": 191,
+    "marginal": 187,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 306,
-    "zstd_us": 4.672
+    "wire": 302,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "bulwark",
@@ -5102,13 +5282,15 @@
    "look": "Retort bereit (ein Treffer hat Leben gekostet): der Bereitschaftsring in Stahlgrau.",
    "lua": [
     {
-     "color": "#c4ccd6",
+     "blend": "add",
+     "color": "#9cbce6",
      "exp": [
       0.4,
       0.5
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "disc",
@@ -5138,7 +5320,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {color = \"#c4ccd6\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {blend = \"add\", color = \"#9cbce6\", exp = {0.4, 0.5}, glow = 14, mote = true, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
    "marker": null,
    "moment": "window",
    "n": 21,
@@ -5154,8 +5336,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#c4ccd6",
+     "blend": "add",
+     "color": "#9cbce6",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -5163,8 +5347,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -5184,7 +5369,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#c4ccd6",
+     "texture": "grug_core_mote.png^[multiply:#9cbce6",
      "time": 0,
      "vel": [
       [
@@ -5228,17 +5413,17 @@
     "i2": 6.46615125,
     "life": 0.196325,
     "lua_us": 3.5999999999999996,
-    "marginal": 225,
+    "marginal": 221,
     "particles": 6,
     "peak": 6.0,
-    "rx_us": 6.279,
+    "rx_us": 6.2669999999999995,
     "single_events": 1,
     "singles": 6,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 340,
-    "zstd_us": 4.479
+    "wire": 336,
+    "zstd_us": 4.467
    },
    "dynamic": "",
    "family": "bulwark",
@@ -5258,13 +5443,15 @@
       0
      ],
      "at": "target",
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#dfeaff",
      "exp": [
       0.15,
       0.25
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "shape": [
       "sphere",
@@ -5294,7 +5481,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(6, {acc = {0, -8, 0}, at = \"target\", color = \"#e6ebf3\", exp = {0.15, 0.25}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.1, false}, size = {1.2, 1.8}, vel = {{-2.5, -0.5, -2.5}, {2.5, 2.5, 2.5}}}),\n}",
+   "lua_text": "{\n\tsingle(6, {acc = {0, -8, 0}, at = \"target\", blend = \"add\", color = \"#dfeaff\", exp = {0.15, 0.25}, glow = 14, mote = true, shape = {\"sphere\", {0, 1.1, 0}, 0.1, false}, size = {1.2, 1.8}, vel = {{-2.5, -0.5, -2.5}, {2.5, 2.5, 2.5}}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 22,
@@ -5310,8 +5497,10 @@
       -8,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#dfeaff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -5321,6 +5510,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "pull": null,
      "radial": null,
@@ -5340,7 +5530,7 @@
       1.8
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#e6ebf3",
+     "texture": "grug_core_mote.png^[multiply:#dfeaff",
      "time": 0,
      "vel": [
       [
@@ -5395,9 +5585,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -5412,13 +5602,15 @@
    "look": "Ein Bronzering um die Füße, der langsam aufsteigt: die Form aus Runde 40 in Bronze statt Gold.",
    "lua": [
     {
-     "color": "#d0a060",
+     "blend": "add",
+     "color": "#f0a030",
      "exp": [
       0.7,
       0.9
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "shape": [
       "disc",
@@ -5449,7 +5641,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(24, 0.1, {color = \"#d0a060\", exp = {0.7, 0.9}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 1, true}, size = {2, 2.5}, vel = {{0, 0.5, 0}, {0, 1.2, 0}}}),\n}",
+   "lua_text": "{\n\tspawner(24, 0.1, {blend = \"add\", color = \"#f0a030\", exp = {0.7, 0.9}, glow = 14, mote = true, shape = {\"disc\", {0, 0.1, 0}, 1, true}, size = {2, 2.5}, vel = {{0, 0.5, 0}, {0, 1.2, 0}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 23,
@@ -5465,8 +5657,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#d0a060",
+     "blend": "add",
+     "color": "#f0a030",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -5493,8 +5687,9 @@
       0.9
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "pull": null,
      "radial": null,
@@ -5514,7 +5709,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#d0a060",
+     "texture": "grug_core_mote.png^[multiply:#f0a030",
      "time": 0.1,
      "vel": [
       [
@@ -5556,17 +5751,17 @@
     "i2": 20.47844925,
     "life": 0.602375,
     "lua_us": 3.5999999999999996,
-    "marginal": 221,
+    "marginal": 217,
     "particles": 6,
     "peak": 6.0,
-    "rx_us": 6.279,
+    "rx_us": 6.2669999999999995,
     "single_events": 1,
     "singles": 6,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 336,
-    "zstd_us": 4.479
+    "wire": 332,
+    "zstd_us": 4.467
    },
    "dynamic": "",
    "family": "bulwark",
@@ -5581,13 +5776,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#d0a060",
+     "blend": "add",
+     "color": "#f0a030",
      "exp": [
       0.5,
       0.7
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "shape": [
       "box",
@@ -5620,7 +5817,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(6, {at = \"target\", color = \"#d0a060\", exp = {0.5, 0.7}, glow = 12, shape = {\"box\", {-0.2, 2.1, -0.2}, {0.2, 2.3, 0.2}}, size = {2.5, 3}, vel = {{-0.2, 1.2, -0.2}, {0.2, 2, 0.2}}}),\n}",
+   "lua_text": "{\n\tsingle(6, {at = \"target\", blend = \"add\", color = \"#f0a030\", exp = {0.5, 0.7}, glow = 14, mote = true, shape = {\"box\", {-0.2, 2.1, -0.2}, {0.2, 2.3, 0.2}}, size = {2.5, 3}, vel = {{-0.2, 1.2, -0.2}, {0.2, 2, 0.2}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 24,
@@ -5636,8 +5833,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#d0a060",
+     "blend": "add",
+     "color": "#f0a030",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -5645,8 +5844,9 @@
       0.7
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "pull": null,
      "radial": null,
@@ -5669,7 +5869,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#d0a060",
+     "texture": "grug_core_mote.png^[multiply:#f0a030",
      "time": 0,
      "vel": [
       [
@@ -5713,17 +5913,17 @@
     "i2": 640.0,
     "life": 0.4,
     "lua_us": 24.0,
-    "marginal": 451,
+    "marginal": 447,
     "particles": 40,
     "peak": 40.0,
-    "rx_us": 19.759999999999998,
+    "rx_us": 19.68,
     "single_events": 1,
     "singles": 40,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 617,
-    "zstd_us": 7.76
+    "wire": 613,
+    "zstd_us": 7.68
    },
    "dynamic": "reach = the Bellow radius (6 m)",
    "family": "bulwark",
@@ -5737,13 +5937,15 @@
    "look": "Ein stahlgrauer Stoßring läuft am Boden vom Krieger bis an den 6-m-Rand.",
    "lua": [
     {
-     "color": "#c4ccd6",
+     "blend": "add",
+     "color": "#9cbce6",
      "exp": [
       0.4,
       0.4
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "radial": "reach",
      "shape": [
@@ -5762,7 +5964,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(40, {color = \"#c4ccd6\", exp = {0.4, 0.4}, glow = 10, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {2.5, 2.5}}),\n}",
+   "lua_text": "{\n\tsingle(40, {blend = \"add\", color = \"#9cbce6\", exp = {0.4, 0.4}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.4, true}, size = {2.5, 2.5}}),\n}",
    "marker": {
     "radius": 6
    },
@@ -5782,8 +5984,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#c4ccd6",
+     "blend": "add",
+     "color": "#9cbce6",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -5791,8 +5995,9 @@
       0.4
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "pull": null,
      "radial": null,
@@ -5812,7 +6017,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#c4ccd6",
+     "texture": "grug_core_mote.png^[multiply:#9cbce6",
      "time": 0,
      "vel": [
       [
@@ -5863,9 +6068,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 4,
-    "spawner_wire": 1472,
+    "spawner_wire": 1464,
     "spawners": 2,
-    "wire": 1472,
+    "wire": 1464,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -5889,13 +6094,15 @@
       ],
       "strength": 3
      },
-     "color": "#c4ccd6",
+     "blend": "add",
+     "color": "#9cbce6",
      "exp": [
       0.3,
       0.35
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 22,
      "shape": [
       "sphere",
@@ -5914,13 +6121,15 @@
      "time": 0.15
     },
     {
-     "color": "#d0a060",
+     "blend": "add",
+     "color": "#f0a030",
      "exp": [
       0.35,
       0.45
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 16,
      "radial": [
       3,
@@ -5943,7 +6152,7 @@
      "time": 0.05
     }
    ],
-   "lua_text": "{\n\tspawner(22, 0.15, {attract = {kill = true, origin = {0, 1, 0}, strength = 3}, color = \"#c4ccd6\", exp = {0.3, 0.35}, glow = 12, shape = {\"sphere\", {0, 1, 0}, 1.2, true}, size = {2, 3}}),\n\tspawner(16, 0.05, {color = \"#d0a060\", exp = {0.35, 0.45}, glow = 10, radial = {3, 4}, shape = {\"disc\", {0, 0.1, 0}, 0.5, true}, size = {2.5, 3}}),\n}",
+   "lua_text": "{\n\tspawner(22, 0.15, {attract = {kill = true, origin = {0, 1, 0}, strength = 3}, blend = \"add\", color = \"#9cbce6\", exp = {0.3, 0.35}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 1.2, true}, size = {2, 3}}),\n\tspawner(16, 0.05, {blend = \"add\", color = \"#f0a030\", exp = {0.35, 0.45}, glow = 14, mote = true, radial = {3, 4}, shape = {\"disc\", {0, 0.1, 0}, 0.5, true}, size = {2.5, 3}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 26,
@@ -5959,8 +6168,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#c4ccd6",
+     "blend": "add",
+     "color": "#9cbce6",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -5987,8 +6198,9 @@
       0.35
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 22,
      "pull": {
       "kill": true,
@@ -6017,7 +6229,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#c4ccd6",
+     "texture": "grug_core_mote.png^[multiply:#9cbce6",
      "time": 0.15,
      "vel": [
       [
@@ -6038,8 +6250,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#d0a060",
+     "blend": "add",
+     "color": "#f0a030",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -6066,8 +6280,9 @@
       0.45
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 16,
      "pull": {
       "kill": false,
@@ -6096,7 +6311,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#d0a060",
+     "texture": "grug_core_mote.png^[multiply:#f0a030",
      "time": 0.05,
      "vel": [
       [
@@ -6160,7 +6375,9 @@
         0,
         0
        ],
+       "after": 0,
        "attract": "point",
+       "blend": "alpha",
        "color": "#b8a27a",
        "delay": 0.0,
        "engine": {
@@ -6190,6 +6407,7 @@
        "fade": true,
        "glow": 0,
        "kind": "spawner",
+       "mote": true,
        "n": 14,
        "pull": {
         "kill": false,
@@ -6218,7 +6436,7 @@
         4
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#b8a27a",
+       "texture": "grug_core_mote.png^[multiply:#b8a27a",
        "time": 0.05,
        "vel": [
         [
@@ -6253,9 +6471,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "line frame.from..frame.to over frame.time (grug_abilities.charge_dust)",
@@ -6277,6 +6495,7 @@
      ],
      "glow": 0,
      "kind": "spawner",
+     "mote": true,
      "n": 18,
      "shape": [
       "line",
@@ -6301,7 +6520,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(18, \"frame\", {color = \"#b8a27a\", exp = {0.4, 0.7}, glow = 0, shape = {\"line\", \"frame\"}, size = {2.5, 4}, vel = {{-0.5, 0.3, -0.5}, {0.5, 1.2, 0.5}}}),\n}",
+   "lua_text": "{\n\tspawner(18, \"frame\", {color = \"#b8a27a\", exp = {0.4, 0.7}, glow = 0, mote = true, shape = {\"line\", \"frame\"}, size = {2.5, 4}, vel = {{-0.5, 0.3, -0.5}, {0.5, 1.2, 0.5}}}),\n}",
    "marker": null,
    "moment": "dash",
    "n": 27,
@@ -6329,7 +6548,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "alpha",
      "color": "#b8a27a",
      "delay": 0.0,
      "engine": {
@@ -6355,6 +6576,7 @@
      "fade": true,
      "glow": 0,
      "kind": "spawner",
+     "mote": true,
      "n": 18,
      "pull": null,
      "radial": null,
@@ -6377,7 +6599,7 @@
       4
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "texture": "grug_core_mote.png^[multiply:#b8a27a",
      "time": 0.5,
      "vel": [
       [
@@ -6423,7 +6645,9 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
+       "blend": "alpha",
        "color": "#b8a27a",
        "delay": 0.0,
        "engine": {
@@ -6449,6 +6673,7 @@
        "fade": true,
        "glow": 0,
        "kind": "spawner",
+       "mote": true,
        "n": 18,
        "pull": null,
        "radial": null,
@@ -6471,7 +6696,7 @@
         4
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#b8a27a",
+       "texture": "grug_core_mote.png^[multiply:#b8a27a",
        "time": 0.5,
        "vel": [
         [
@@ -6506,9 +6731,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 736,
+    "spawner_wire": 732,
     "spawners": 1,
-    "wire": 736,
+    "wire": 732,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -6531,6 +6756,7 @@
      ],
      "glow": 0,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "radial": [
       4,
@@ -6553,7 +6779,7 @@
      "time": 0.05
     }
    ],
-   "lua_text": "{\n\tspawner(14, 0.05, {at = \"target\", color = \"#b8a27a\", exp = {0.3, 0.45}, glow = 0, radial = {4, 5}, shape = {\"disc\", {0, 0.1, 0}, 0.5, true}, size = {3, 4}}),\n}",
+   "lua_text": "{\n\tspawner(14, 0.05, {at = \"target\", color = \"#b8a27a\", exp = {0.3, 0.45}, glow = 0, mote = true, radial = {4, 5}, shape = {\"disc\", {0, 0.1, 0}, 0.5, true}, size = {3, 4}}),\n}",
    "marker": null,
    "moment": "arrival",
    "n": 28,
@@ -6569,7 +6795,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
+     "blend": "alpha",
      "color": "#b8a27a",
      "delay": 0.0,
      "engine": {
@@ -6599,6 +6827,7 @@
      "fade": true,
      "glow": 0,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "pull": {
       "kill": false,
@@ -6627,7 +6856,7 @@
       4
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "texture": "grug_core_mote.png^[multiply:#b8a27a",
      "time": 0.05,
      "vel": [
       [
@@ -6676,9 +6905,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 4,
-    "spawner_wire": 1316,
+    "spawner_wire": 1312,
     "spawners": 2,
-    "wire": 1316,
+    "wire": 1312,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -6693,13 +6922,15 @@
    "look": "Eine rote Diagonale hängt vor dem Krieger und verlischt in einer Drittelsekunde, dazu die sechs Blutstropfen am Ziel. Unverändert.",
    "lua": [
     {
-     "color": "#d8263a",
+     "blend": "add",
+     "color": "#ff1f3a",
      "exp": [
       0.3,
       0.4
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "shape": [
       "line",
@@ -6763,7 +6994,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(20, 0.08, {color = \"#d8263a\", exp = {0.3, 0.4}, glow = 10, shape = {\"line\", {1.2, 2, -0.5}, {1.2, 0.6, 0.6}}, size = {3, 4}}),\n\tspawner(6, 0.2, {at = \"target\", exp = {0.3, 0.7}, fade = false, glow = 10, shape = {\"box\", {-0.5, 0, -0.5}, {0.5, 1, 0.5}}, size = {1.5, 3}, tex = \"mobs_blood.png\", vel = {{-2, 0, -2}, {2, 3, 2}}}),\n}",
+   "lua_text": "{\n\tspawner(20, 0.08, {blend = \"add\", color = \"#ff1f3a\", exp = {0.3, 0.4}, glow = 14, mote = true, shape = {\"line\", {1.2, 2, -0.5}, {1.2, 0.6, 0.6}}, size = {3, 4}}),\n\tspawner(6, 0.2, {at = \"target\", exp = {0.3, 0.7}, fade = false, glow = 10, shape = {\"box\", {-0.5, 0, -0.5}, {0.5, 1, 0.5}}, size = {1.5, 3}, tex = \"mobs_blood.png\", vel = {{-2, 0, -2}, {2, 3, 2}}}),\n}",
    "marker": null,
    "moment": "swing",
    "n": 29,
@@ -6779,8 +7010,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#d8263a",
+     "blend": "add",
+     "color": "#ff1f3a",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -6803,8 +7036,9 @@
       0.4
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "pull": null,
      "radial": null,
@@ -6827,7 +7061,7 @@
       4
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#d8263a",
+     "texture": "grug_core_mote.png^[multiply:#ff1f3a",
      "time": 0.08,
      "vel": [
       [
@@ -6848,7 +7082,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "alpha",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": {
@@ -6874,6 +7110,7 @@
      "fade": false,
      "glow": 10,
      "kind": "spawner",
+     "mote": false,
      "n": 6,
      "pull": null,
      "radial": null,
@@ -6947,9 +7184,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -6964,13 +7201,15 @@
    "look": "Ein waagrechter roter Hieb läuft in 0,12 s von links nach rechts über die ganze Front. Ohne die sechs extra Blutstropfen von Mighty Blow: die Gegner bluten bei jedem Treffer ohnehin.",
    "lua": [
     {
-     "color": "#d8263a",
+     "blend": "add",
+     "color": "#ff1f3a",
      "exp": [
       0.3,
       0.4
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 22,
      "shape": [
       "line",
@@ -6992,7 +7231,7 @@
      "time": 0.12
     }
    ],
-   "lua_text": "{\n\tspawner(22, 0.12, {color = \"#d8263a\", exp = {0.3, 0.4}, glow = 10, shape = {\"line\", {1.4, 1.2, 1.9}, {1.4, 1, -1.9}}, size = {3, 4}}),\n}",
+   "lua_text": "{\n\tspawner(22, 0.12, {blend = \"add\", color = \"#ff1f3a\", exp = {0.3, 0.4}, glow = 14, mote = true, shape = {\"line\", {1.4, 1.2, 1.9}, {1.4, 1, -1.9}}, size = {3, 4}}),\n}",
    "marker": {
     "cone": [
      3,
@@ -7013,8 +7252,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#d8263a",
+     "blend": "add",
+     "color": "#ff1f3a",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -7037,8 +7278,9 @@
       0.4
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 22,
      "pull": null,
      "radial": null,
@@ -7061,7 +7303,7 @@
       4
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#d8263a",
+     "texture": "grug_core_mote.png^[multiply:#ff1f3a",
      "time": 0.12,
      "vel": [
       [
@@ -7123,17 +7365,17 @@
     "i2": 9.417942,
     "life": 0.2698,
     "lua_us": 3.5999999999999996,
-    "marginal": 139,
+    "marginal": 135,
     "particles": 6,
     "peak": 6.0,
-    "rx_us": 6.279,
+    "rx_us": 6.2669999999999995,
     "single_events": 1,
     "singles": 6,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 254,
-    "zstd_us": 4.479
+    "wire": 250,
+    "zstd_us": 4.467
    },
    "dynamic": "",
    "family": "ruin",
@@ -7148,13 +7390,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#c0303f",
+     "blend": "add",
+     "color": "#ff2a48",
      "exp": [
       0.25,
       0.3
      ],
-     "glow": 8,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "shape": [
       "line",
@@ -7175,7 +7419,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(6, {at = \"target\", color = \"#c0303f\", exp = {0.25, 0.3}, glow = 8, shape = {\"line\", {-0.4, 0.4, -0.3}, {0.4, 0.35, 0.3}}, size = {2.5, 3}}),\n}",
+   "lua_text": "{\n\tsingle(6, {at = \"target\", blend = \"add\", color = \"#ff2a48\", exp = {0.25, 0.3}, glow = 14, mote = true, shape = {\"line\", {-0.4, 0.4, -0.3}, {0.4, 0.35, 0.3}}, size = {2.5, 3}}),\n}",
    "marker": null,
    "moment": "swing",
    "n": 31,
@@ -7191,8 +7435,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#c0303f",
+     "blend": "add",
+     "color": "#ff2a48",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -7200,8 +7446,9 @@
       0.3
      ],
      "fade": true,
-     "glow": 8,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "pull": null,
      "radial": null,
@@ -7224,7 +7471,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#c0303f",
+     "texture": "grug_core_mote.png^[multiply:#ff2a48",
      "time": 0,
      "vel": [
       [
@@ -7275,9 +7522,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -7292,13 +7539,15 @@
    "look": "Eine rote Lohe schießt um die Füße des Kriegers hoch: 30 heiße Funken, die steil aufsteigen und verglühen.",
    "lua": [
     {
-     "color": "#e8402a",
+     "blend": "add",
+     "color": "#ff4214",
      "exp": [
       0.35,
       0.55
      ],
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "shape": [
       "disc",
@@ -7329,7 +7578,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(30, 0.2, {color = \"#e8402a\", exp = {0.35, 0.55}, glow = 14, shape = {\"disc\", {0, 0.1, 0}, 0.7, false}, size = {2, 3}, vel = {{0, 2.5, 0}, {0, 4.5, 0}}}),\n}",
+   "lua_text": "{\n\tspawner(30, 0.2, {blend = \"add\", color = \"#ff4214\", exp = {0.35, 0.55}, glow = 14, mote = true, shape = {\"disc\", {0, 0.1, 0}, 0.7, false}, size = {2, 3}, vel = {{0, 2.5, 0}, {0, 4.5, 0}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 32,
@@ -7345,8 +7594,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#e8402a",
+     "blend": "add",
+     "color": "#ff4214",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -7375,6 +7626,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "pull": null,
      "radial": null,
@@ -7394,7 +7646,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#e8402a",
+     "texture": "grug_core_mote.png^[multiply:#ff4214",
      "time": 0.2,
      "vel": [
       [
@@ -7457,8 +7709,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#e8402a",
+       "blend": "add",
+       "color": "#ff4214",
        "delay": 0.0,
        "engine": {
         "pos": [
@@ -7487,6 +7741,7 @@
        "fade": true,
        "glow": 14,
        "kind": "spawner",
+       "mote": true,
        "n": 30,
        "pull": null,
        "radial": null,
@@ -7506,7 +7761,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#e8402a",
+       "texture": "grug_core_mote.png^[multiply:#ff4214",
        "time": 0.2,
        "vel": [
         [
@@ -7534,17 +7789,17 @@
     "i2": 2.5220103750000002,
     "life": 0.2963,
     "lua_us": 1.7999999999999998,
-    "marginal": 119,
+    "marginal": 115,
     "particles": 3,
     "peak": 3.0,
-    "rx_us": 5.089499999999999,
+    "rx_us": 5.083499999999999,
     "single_events": 1,
     "singles": 3,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 234,
-    "zstd_us": 4.1895
+    "wire": 230,
+    "zstd_us": 4.1834999999999996
    },
    "dynamic": "",
    "family": "ruin",
@@ -7564,13 +7819,15 @@
       0
      ],
      "at": "target",
-     "color": "#ff6a4a",
+     "blend": "add",
+     "color": "#ff7a1a",
      "exp": [
       0.25,
       0.35
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 3,
      "shape": [
       "sphere",
@@ -7600,7 +7857,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(3, {acc = {0, -6, 0}, at = \"target\", color = \"#ff6a4a\", exp = {0.25, 0.35}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.2, false}, size = {1.5, 2}, vel = {{-1, 0.5, -1}, {1, 2, 1}}}),\n}",
+   "lua_text": "{\n\tsingle(3, {acc = {0, -6, 0}, at = \"target\", blend = \"add\", color = \"#ff7a1a\", exp = {0.25, 0.35}, glow = 14, mote = true, shape = {\"sphere\", {0, 1.1, 0}, 0.2, false}, size = {1.5, 2}, vel = {{-1, 0.5, -1}, {1, 2, 1}}}),\n}",
    "marker": null,
    "moment": "swing",
    "n": 33,
@@ -7616,8 +7873,10 @@
       -6,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ff6a4a",
+     "blend": "add",
+     "color": "#ff7a1a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -7627,6 +7886,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 3,
      "pull": null,
      "radial": null,
@@ -7646,7 +7906,7 @@
       2
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ff6a4a",
+     "texture": "grug_core_mote.png^[multiply:#ff7a1a",
      "time": 0,
      "vel": [
       [
@@ -7698,9 +7958,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -7716,13 +7976,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "exp": [
       0.7,
       0.9
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 12,
      "shape": [
       "disc",
@@ -7753,7 +8015,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(12, 0.1, {at = \"target\", color = \"#ffe08a\", exp = {0.7, 0.9}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 0.5, false}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.5, 0}}}),\n}",
+   "lua_text": "{\n\tspawner(12, 0.1, {at = \"target\", blend = \"add\", color = \"#ffcf2a\", exp = {0.7, 0.9}, glow = 14, mote = true, shape = {\"disc\", {0, 0.1, 0}, 0.5, false}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.5, 0}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 34,
@@ -7769,8 +8031,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -7797,8 +8061,9 @@
       0.9
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 12,
      "pull": null,
      "radial": null,
@@ -7818,7 +8083,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffe08a",
+     "texture": "grug_core_mote.png^[multiply:#ffcf2a",
      "time": 0.1,
      "vel": [
       [
@@ -7869,9 +8134,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -7887,13 +8152,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffe9a0",
+     "blend": "add",
+     "color": "#ffe04a",
      "exp": [
       0.35,
       0.45
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 18,
      "shape": [
       "sphere",
@@ -7912,7 +8179,7 @@
      "time": 0.05
     }
    ],
-   "lua_text": "{\n\tspawner(18, 0.05, {at = \"target\", color = \"#ffe9a0\", exp = {0.35, 0.45}, glow = 12, shape = {\"sphere\", {0, 1, 0}, 0.9, true}, size = {2, 2.5}}),\n}",
+   "lua_text": "{\n\tspawner(18, 0.05, {at = \"target\", blend = \"add\", color = \"#ffe04a\", exp = {0.35, 0.45}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 0.9, true}, size = {2, 2.5}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 35,
@@ -7928,8 +8195,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffe9a0",
+     "blend": "add",
+     "color": "#ffe04a",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -7956,8 +8225,9 @@
       0.45
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 18,
      "pull": null,
      "radial": null,
@@ -7977,7 +8247,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffe9a0",
+     "texture": "grug_core_mote.png^[multiply:#ffe04a",
      "time": 0.05,
      "vel": [
       [
@@ -8021,17 +8291,17 @@
     "i2": 5.965698375,
     "life": 0.6972,
     "lua_us": 1.7999999999999998,
-    "marginal": 83,
+    "marginal": 79,
     "particles": 3,
     "peak": 3.0,
-    "rx_us": 5.089499999999999,
+    "rx_us": 5.083499999999999,
     "single_events": 1,
     "singles": 3,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 198,
-    "zstd_us": 4.1895
+    "wire": 194,
+    "zstd_us": 4.1834999999999996
    },
    "dynamic": "",
    "family": "mercy",
@@ -8046,13 +8316,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "exp": [
       0.6,
       0.8
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 3,
      "shape": [
       "disc",
@@ -8082,7 +8354,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(3, {at = \"target\", color = \"#ffe08a\", exp = {0.6, 0.8}, glow = 12, shape = {\"disc\", {0, 0.6, 0}, 0.4, false}, size = {2, 2.5}, vel = {{0, 1.2, 0}, {0, 1.8, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(3, {at = \"target\", blend = \"add\", color = \"#ffcf2a\", exp = {0.6, 0.8}, glow = 14, mote = true, shape = {\"disc\", {0, 0.6, 0}, 0.4, false}, size = {2, 2.5}, vel = {{0, 1.2, 0}, {0, 1.8, 0}}}),\n}",
    "marker": null,
    "moment": "tick",
    "n": 36,
@@ -8098,8 +8370,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -8107,8 +8381,9 @@
       0.8
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 3,
      "pull": null,
      "radial": null,
@@ -8128,7 +8403,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffe08a",
+     "texture": "grug_core_mote.png^[multiply:#ffcf2a",
      "time": 0,
      "vel": [
       [
@@ -8173,17 +8448,17 @@
     "i2": 27.509564,
     "life": 0.44577500000000003,
     "lua_us": 4.8,
-    "marginal": 189,
+    "marginal": 185,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 304,
-    "zstd_us": 4.672
+    "wire": 300,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "mercy",
@@ -8197,13 +8472,15 @@
    "look": "Clear Conscience bereit (nach Heal, Shield oder Mend): der Bereitschaftsring in Elfenbein.",
    "lua": [
     {
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffe680",
      "exp": [
       0.4,
       0.5
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "disc",
@@ -8233,7 +8510,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {color = \"#fff0c8\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {blend = \"add\", color = \"#ffe680\", exp = {0.4, 0.5}, glow = 14, mote = true, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
    "marker": null,
    "moment": "window",
    "n": 37,
@@ -8249,8 +8526,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffe680",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -8258,8 +8537,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -8279,7 +8559,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#fff0c8",
+     "texture": "grug_core_mote.png^[multiply:#ffe680",
      "time": 0,
      "vel": [
       [
@@ -8323,17 +8603,17 @@
     "i2": 288.0,
     "life": 0.5,
     "lua_us": 14.399999999999999,
-    "marginal": 294,
+    "marginal": 290,
     "particles": 24,
     "peak": 24.0,
-    "rx_us": 13.415999999999999,
+    "rx_us": 13.367999999999999,
     "single_events": 1,
     "singles": 24,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 409,
-    "zstd_us": 6.215999999999999
+    "wire": 405,
+    "zstd_us": 6.168
    },
    "dynamic": "reach = 6 m",
    "family": "mercy",
@@ -8347,13 +8627,15 @@
    "look": "Ein weicher Goldring breitet sich vom Priester bis an den 6-m-Rand aus: so weit reicht die Heilung.",
    "lua": [
     {
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "exp": [
       0.5,
       0.5
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 24,
      "radial": "reach",
      "shape": [
@@ -8372,7 +8654,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(24, {color = \"#ffe08a\", exp = {0.5, 0.5}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.3, 0}, 0.4, true}, size = {2.5, 2.5}}),\n}",
+   "lua_text": "{\n\tsingle(24, {blend = \"add\", color = \"#ffcf2a\", exp = {0.5, 0.5}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.3, 0}, 0.4, true}, size = {2.5, 2.5}}),\n}",
    "marker": {
     "radius": 6
    },
@@ -8392,8 +8674,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -8401,8 +8685,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 24,
      "pull": null,
      "radial": null,
@@ -8422,7 +8707,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffe08a",
+     "texture": "grug_core_mote.png^[multiply:#ffcf2a",
      "time": 0,
      "vel": [
       [
@@ -8467,8 +8752,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#ffe08a",
+       "blend": "add",
+       "color": "#ffcf2a",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -8476,8 +8763,9 @@
         0.5
        ],
        "fade": true,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 24,
        "pull": null,
        "radial": null,
@@ -8497,7 +8785,7 @@
         2.5
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#ffe08a",
+       "texture": "grug_core_mote.png^[multiply:#ffcf2a",
        "time": 0,
        "vel": [
         [
@@ -8525,17 +8813,17 @@
     "i2": 10.568798,
     "life": 0.6946500000000001,
     "lua_us": 2.4,
-    "marginal": 108,
+    "marginal": 104,
     "particles": 4,
     "peak": 4.0,
-    "rx_us": 5.486,
+    "rx_us": 5.478,
     "single_events": 1,
     "singles": 4,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 223,
-    "zstd_us": 4.286
+    "wire": 219,
+    "zstd_us": 4.278
    },
    "dynamic": "",
    "family": "mercy",
@@ -8550,13 +8838,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "exp": [
       0.6,
       0.8
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 4,
      "shape": [
       "disc",
@@ -8586,7 +8876,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(4, {at = \"target\", color = \"#ffe08a\", exp = {0.6, 0.8}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 0.4, false}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(4, {at = \"target\", blend = \"add\", color = \"#ffcf2a\", exp = {0.6, 0.8}, glow = 14, mote = true, shape = {\"disc\", {0, 0.1, 0}, 0.4, false}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
    "marker": null,
    "moment": "recipient",
    "n": 39,
@@ -8602,8 +8892,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -8611,8 +8903,9 @@
       0.8
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 4,
      "pull": null,
      "radial": null,
@@ -8632,7 +8925,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffe08a",
+     "texture": "grug_core_mote.png^[multiply:#ffcf2a",
      "time": 0,
      "vel": [
       [
@@ -8694,17 +8987,17 @@
     "i2": 2635.8103480000004,
     "life": 0.775328125,
     "lua_us": 25.88,
-    "marginal": 454,
+    "marginal": 450,
     "particles": 64,
     "peak": 64.0,
-    "rx_us": 22.759999999999998,
+    "rx_us": 22.68,
     "single_events": 1,
     "singles": 40,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 1291,
-    "zstd_us": 7.76
+    "wire": 1283,
+    "zstd_us": 7.68
    },
    "dynamic": "reach = 8 m",
    "family": "mercy",
@@ -8718,13 +9011,15 @@
    "look": "Eine Säule aus warmem Licht steigt um den Priester auf, während ein Ring aus Elfenbein bis an den 8-m-Rand läuft.",
    "lua": [
     {
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffe680",
      "exp": [
       0.7,
       0.7
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "radial": "reach",
      "shape": [
@@ -8743,13 +9038,15 @@
      ]
     },
     {
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "exp": [
       0.8,
       1.0
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "shape": [
       "disc",
@@ -8780,7 +9077,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(40, {color = \"#fff0c8\", exp = {0.7, 0.7}, glow = 12, radial = \"reach\", shape = {\"disc\", {0, 0.3, 0}, 0.5, true}, size = {3, 3}}),\n\tspawner(24, 0.3, {color = \"#ffe08a\", exp = {0.8, 1}, glow = 12, shape = {\"disc\", {0, 0.1, 0}, 1, false}, size = {2, 3}, vel = {{0, 2, 0}, {0, 3.5, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(40, {blend = \"add\", color = \"#ffe680\", exp = {0.7, 0.7}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.3, 0}, 0.5, true}, size = {3, 3}}),\n\tspawner(24, 0.3, {blend = \"add\", color = \"#ffcf2a\", exp = {0.8, 1}, glow = 14, mote = true, shape = {\"disc\", {0, 0.1, 0}, 1, false}, size = {2, 3}, vel = {{0, 2, 0}, {0, 3.5, 0}}}),\n}",
    "marker": {
     "radius": 8
    },
@@ -8800,8 +9097,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffe680",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -8809,8 +9108,9 @@
       0.7
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 40,
      "pull": null,
      "radial": null,
@@ -8830,7 +9130,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#fff0c8",
+     "texture": "grug_core_mote.png^[multiply:#ffe680",
      "time": 0,
      "vel": [
       [
@@ -8851,8 +9151,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffe08a",
+     "blend": "add",
+     "color": "#ffcf2a",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -8879,8 +9181,9 @@
       1.0
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "pull": null,
      "radial": null,
@@ -8900,7 +9203,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffe08a",
+     "texture": "grug_core_mote.png^[multiply:#ffcf2a",
      "time": 0.3,
      "vel": [
       [
@@ -8944,17 +9247,17 @@
     "i2": 2.6590477499999996,
     "life": 0.696975,
     "lua_us": 1.2,
-    "marginal": 59,
+    "marginal": 55,
     "particles": 2,
     "peak": 2.0,
-    "rx_us": 4.693,
+    "rx_us": 4.688999999999999,
     "single_events": 1,
     "singles": 2,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 174,
-    "zstd_us": 4.093
+    "wire": 170,
+    "zstd_us": 4.0889999999999995
    },
    "dynamic": "",
    "family": "mercy",
@@ -8969,13 +9272,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffe680",
      "exp": [
       0.6,
       0.8
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 2,
      "shape": [
       "disc",
@@ -9005,7 +9310,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(2, {at = \"target\", color = \"#fff0c8\", exp = {0.6, 0.8}, glow = 12, shape = {\"disc\", {0, 0.8, 0}, 0.35, false}, size = {2, 2.5}, vel = {{0, 1, 0}, {0, 1.5, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(2, {at = \"target\", blend = \"add\", color = \"#ffe680\", exp = {0.6, 0.8}, glow = 14, mote = true, shape = {\"disc\", {0, 0.8, 0}, 0.35, false}, size = {2, 2.5}, vel = {{0, 1, 0}, {0, 1.5, 0}}}),\n}",
    "marker": null,
    "moment": "tick",
    "n": 41,
@@ -9021,8 +9326,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#fff0c8",
+     "blend": "add",
+     "color": "#ffe680",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -9030,8 +9337,9 @@
       0.8
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 2,
      "pull": null,
      "radial": null,
@@ -9051,7 +9359,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#fff0c8",
+     "texture": "grug_core_mote.png^[multiply:#ffe680",
      "time": 0,
      "vel": [
       [
@@ -9090,23 +9398,23 @@
    "class": "priest",
    "context": [],
    "cost": {
-    "check_us": 0.06,
-    "dg": 1,
-    "i1": 1.2291,
-    "i2": 7.284681000000001,
-    "life": 0.20485,
-    "lua_us": 3.5999999999999996,
-    "marginal": 153,
-    "particles": 6,
-    "peak": 6.0,
-    "rx_us": 6.279,
+    "check_us": 0.13,
+    "dg": 2,
+    "i1": 2.97785,
+    "i2": 33.95982225,
+    "life": 0.22906538461538462,
+    "lua_us": 7.8,
+    "marginal": 267,
+    "particles": 13,
+    "peak": 13.0,
+    "rx_us": 12.9285,
     "single_events": 1,
-    "singles": 6,
+    "singles": 13,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 268,
-    "zstd_us": 4.479
+    "wire": 497,
+    "zstd_us": 9.0285
    },
    "dynamic": "",
    "family": "reckoning",
@@ -9117,47 +9425,83 @@
    "hook": "Smite's cast (kits_priest.lua:61)",
    "id": "smite_hit",
    "key": "pfx.smite.hit",
-   "look": "Sechs weißgoldene Punkte fallen von oben aufs Ziel, schnell und gerade: der Lichtfall aus Runde 40 mit sechs statt 36 Partikeln, ohne Blitzring.",
+   "look": "Eine kleine, harmlosere Final Word: ein kurzer Lichtstrahl schießt aus 3 m Höhe auf das Ziel, unten springt ein kleiner goldener Ring auf (etwa 1 m statt 2 m). 13 einzelne Partikel, kein Spawner: Smite ist der Grundangriff (überarbeitet am 21.10.).",
    "lua": [
     {
      "at": "target",
-     "color": "#fff2c0",
+     "blend": "add",
+     "color": "#fff0a8",
      "exp": [
-      0.2,
-      0.22
+      0.16,
+      0.18
      ],
      "glow": 14,
      "kind": "single",
-     "n": 6,
+     "mote": true,
+     "n": 5,
      "shape": [
-      "disc",
+      "line",
       [
        0,
-       3.0,
+       3.2,
        0
       ],
-      0.5,
-      false
+      [
+       0,
+       1.6,
+       0
+      ]
      ],
      "size": [
-      2.5,
+      3,
       3.5
      ],
      "vel": [
       [
        0,
-       -12,
+       -9,
        0
       ],
       [
        0,
-       -10,
+       -9,
        0
       ]
      ]
+    },
+    {
+     "at": "target",
+     "blend": "add",
+     "color": "#ffb800",
+     "exp": [
+      0.25,
+      0.3
+     ],
+     "glow": 14,
+     "kind": "single",
+     "mote": true,
+     "n": 8,
+     "radial": [
+      3,
+      3.5
+     ],
+     "shape": [
+      "disc",
+      [
+       0,
+       0.15,
+       0
+      ],
+      0.3,
+      true
+     ],
+     "size": [
+      2.5,
+      2.5
+     ]
     }
    ],
-   "lua_text": "{\n\tsingle(6, {at = \"target\", color = \"#fff2c0\", exp = {0.2, 0.22}, glow = 14, shape = {\"disc\", {0, 3, 0}, 0.5, false}, size = {2.5, 3.5}, vel = {{0, -12, 0}, {0, -10, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(5, {at = \"target\", blend = \"add\", color = \"#fff0a8\", exp = {0.16, 0.18}, glow = 14, mote = true, shape = {\"line\", {0, 3.2, 0}, {0, 1.6, 0}}, size = {3, 3.5}, vel = {{0, -9, 0}, {0, -9, 0}}}),\n\tsingle(8, {at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.25, 0.3}, glow = 14, mote = true, radial = {3, 3.5}, shape = {\"disc\", {0, 0.15, 0}, 0.3, true}, size = {2.5, 2.5}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 42,
@@ -9173,47 +9517,110 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#fff2c0",
+     "blend": "add",
+     "color": "#fff0a8",
      "delay": 0.0,
      "engine": null,
      "exp": [
-      0.2,
-      0.22
+      0.16,
+      0.18
      ],
      "fade": true,
      "glow": 14,
      "kind": "single",
-     "n": 6,
+     "mote": true,
+     "n": 5,
      "pull": null,
      "radial": null,
+     "reach": null,
+     "shape": [
+      "line",
+      [
+       6.0,
+       3.2,
+       0.0
+      ],
+      [
+       6.0,
+       1.6,
+       0.0
+      ]
+     ],
+     "size": [
+      3,
+      3.5
+     ],
+     "tex": "smoke",
+     "texture": "grug_core_mote.png^[multiply:#fff0a8",
+     "time": 0,
+     "vel": [
+      [
+       0,
+       -9,
+       0
+      ],
+      [
+       0,
+       -9,
+       0
+      ]
+     ]
+    },
+    {
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "after": 0,
+     "attract": null,
+     "blend": "add",
+     "color": "#ffb800",
+     "delay": 0.0,
+     "engine": null,
+     "exp": [
+      0.25,
+      0.3
+     ],
+     "fade": true,
+     "glow": 14,
+     "kind": "single",
+     "mote": true,
+     "n": 8,
+     "pull": null,
+     "radial": [
+      3,
+      3.5
+     ],
      "reach": null,
      "shape": [
       "disc",
       [
        6.0,
-       3.0,
+       0.15,
        0.0
       ],
-      0.5,
-      false
+      0.3,
+      true
      ],
      "size": [
       2.5,
-      3.5
+      2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#fff2c0",
+     "texture": "grug_core_mote.png^[multiply:#ffb800",
      "time": 0,
      "vel": [
       [
        0,
-       -12,
+       0,
        0
       ],
       [
        0,
-       -10,
+       0,
        0
       ]
      ]
@@ -9276,9 +9683,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "line frame.from (the priest's hand: eye height minus a little) .. frame.to (the target's body)",
@@ -9293,13 +9700,15 @@
    "look": "Ein goldener Splitter zuckt aus der Hand des Priesters ins Ziel: eine Spur, die in 0,08 s von der Hand zum Gegner wandert und sofort erlischt.",
    "lua": [
     {
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "exp": [
       0.12,
       0.18
      ],
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "shape": [
       "line",
@@ -9324,7 +9733,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(14, 0.08, {color = \"#ffd257\", exp = {0.12, 0.18}, glow = 14, shape = {\"line\", \"frame\"}, size = {2, 3}, vel = {{-0.2, -0.2, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
+   "lua_text": "{\n\tspawner(14, 0.08, {blend = \"add\", color = \"#ffb800\", exp = {0.12, 0.18}, glow = 14, mote = true, shape = {\"line\", \"frame\"}, size = {2, 3}, vel = {{-0.2, -0.2, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 43,
@@ -9351,8 +9760,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -9377,6 +9788,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 14,
      "pull": null,
      "radial": null,
@@ -9399,7 +9811,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffd257",
+     "texture": "grug_core_mote.png^[multiply:#ffb800",
      "time": 0.08,
      "vel": [
       [
@@ -9450,9 +9862,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 736,
+    "spawner_wire": 732,
     "spawners": 1,
-    "wire": 736,
+    "wire": 732,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -9478,13 +9890,15 @@
       ],
       "strength": 2
      },
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "exp": [
       0.6,
       0.7
      ],
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 16,
      "shape": [
       "sphere",
@@ -9503,7 +9917,7 @@
      "time": 0.3
     }
    ],
-   "lua_text": "{\n\tspawner(16, 0.3, {at = \"target\", attract = {at = \"caster\", kill = true, origin = {0, 1.2, 0}, strength = 2}, color = \"#ffd257\", exp = {0.6, 0.7}, glow = 6, shape = {\"sphere\", {0, 1, 0}, 0.5, false}, size = {2, 2.5}}),\n}",
+   "lua_text": "{\n\tspawner(16, 0.3, {at = \"target\", attract = {at = \"caster\", kill = true, origin = {0, 1.2, 0}, strength = 2}, blend = \"add\", color = \"#ffb800\", exp = {0.6, 0.7}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 0.5, false}, size = {2, 2.5}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 44,
@@ -9519,8 +9933,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -9543,8 +9959,9 @@
       0.7
      ],
      "fade": true,
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 16,
      "pull": {
       "kill": true,
@@ -9573,7 +9990,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffd257",
+     "texture": "grug_core_mote.png^[multiply:#ffb800",
      "time": 0.3,
      "vel": [
       [
@@ -9618,17 +10035,20 @@
         0,
         0
        ],
+       "after": 0.25,
        "attract": null,
-       "color": "#fff6dd",
-       "delay": 0.0,
+       "blend": "add",
+       "color": "#fff0a8",
+       "delay": 0.25,
        "engine": null,
        "exp": [
-        0.75,
-        0.75
+        0.5,
+        0.5
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -9651,17 +10071,17 @@
         16
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#fff6dd",
+       "texture": "grug_core_mote.png^[multiply:#fff0a8",
        "time": 0,
        "vel": [
         [
          0,
-         -8.0,
+         -12.0,
          0
         ],
         [
          0,
-         -8.0,
+         -12.0,
          0
         ]
        ]
@@ -9679,17 +10099,17 @@
     "i2": 300.0,
     "life": 0.75,
     "lua_us": 12.0,
-    "marginal": 174,
+    "marginal": 170,
     "particles": 20,
     "peak": 20.0,
-    "rx_us": 11.83,
+    "rx_us": 11.79,
     "single_events": 1,
     "singles": 20,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 289,
-    "zstd_us": 5.83
+    "wire": 285,
+    "zstd_us": 5.79
    },
    "dynamic": "a recolour of area_warning: reach = the radius (3 m + Broad Judgment), time = the delay; no spec.color, which would repaint the seal and the impact too (area.lua:327-355)",
    "family": "reckoning",
@@ -9704,14 +10124,16 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "exp": [
       0.75,
       0.75
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "shape": [
       "disc",
@@ -9729,7 +10151,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(20, {at = \"target\", color = \"#ffd257\", exp = {0.75, 0.75}, fade = false, glow = 12, shape = {\"disc\", {0, 0.15, 0}, 3, true}, size = {3, 3}}),\n}",
+   "lua_text": "{\n\tsingle(20, {at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.75, 0.75}, fade = false, glow = 14, mote = true, shape = {\"disc\", {0, 0.15, 0}, 3, true}, size = {3, 3}}),\n}",
    "marker": {
     "at": "target",
     "radius": 3
@@ -9751,8 +10173,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -9760,8 +10184,9 @@
       0.75
      ],
      "fade": false,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 20,
      "pull": null,
      "radial": null,
@@ -9781,7 +10206,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffd257",
+     "texture": "grug_core_mote.png^[multiply:#ffb800",
      "time": 0,
      "vel": [
       [
@@ -9826,8 +10251,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#ffd257",
+       "blend": "add",
+       "color": "#ffb800",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -9835,8 +10262,9 @@
         0.75
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -9856,7 +10284,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#ffd257",
+       "texture": "grug_core_mote.png^[multiply:#ffb800",
        "time": 0,
        "vel": [
         [
@@ -9880,23 +10308,23 @@
    "cost": {
     "check_us": 0.01,
     "dg": 1,
-    "i1": 0.75,
-    "i2": 0.75,
-    "life": 0.75,
+    "i1": 0.5,
+    "i2": 0.5,
+    "life": 0.5,
     "lua_us": 0.6,
-    "marginal": 25,
+    "marginal": 21,
     "particles": 1,
     "peak": 1.0,
-    "rx_us": 4.2965,
+    "rx_us": 4.2945,
     "single_events": 1,
     "singles": 1,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 140,
-    "zstd_us": 3.9964999999999997
+    "wire": 136,
+    "zstd_us": 3.9945
    },
-   "dynamic": "height = area.fall_height, time = the delay: speed height / time",
+   "dynamic": "height = area.fall_height, time = the delay: it falls at CENSURE_FALL_SPEED for min(time, height / speed) and starts after the rest of the delay",
    "family": "reckoning",
    "family_de": "Richtendes Gold",
    "family_name": "Reckoning",
@@ -9905,17 +10333,21 @@
    "hook": "area.delayed spec.fall = \"censure_fall\"",
    "id": "censure_fall",
    "key": "pfx.censure.fall",
-   "look": "Ein einziges großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf.",
+   "look": "Ein großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf. Es erscheint etwas später und fällt mit 12 m/s, ohne zu verblassen (überarbeitet am 21.10.).",
    "lua": [
     {
+     "after": 0.25,
      "at": "target",
-     "color": "#fff6dd",
+     "blend": "add",
+     "color": "#fff0a8",
      "exp": [
-      0.75,
-      0.75
+      0.5,
+      0.5
      ],
+     "fade": false,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 1,
      "shape": [
       "box",
@@ -9937,18 +10369,18 @@
      "vel": [
       [
        0,
-       -8.0,
+       -12.0,
        0
       ],
       [
        0,
-       -8.0,
+       -12.0,
        0
       ]
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(1, {at = \"target\", color = \"#fff6dd\", exp = {0.75, 0.75}, glow = 14, shape = {\"box\", {0, 6, 0}, {0, 6, 0}}, size = {16, 16}, vel = {{0, -8, 0}, {0, -8, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(1, {after = 0.25, at = \"target\", blend = \"add\", color = \"#fff0a8\", exp = {0.5, 0.5}, fade = false, glow = 14, mote = true, shape = {\"box\", {0, 6, 0}, {0, 6, 0}}, size = {16, 16}, vel = {{0, -12, 0}, {0, -12, 0}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 3
@@ -9971,17 +10403,20 @@
       0,
       0
      ],
+     "after": 0.25,
      "attract": null,
-     "color": "#fff6dd",
-     "delay": 0.0,
+     "blend": "add",
+     "color": "#fff0a8",
+     "delay": 0.25,
      "engine": null,
      "exp": [
-      0.75,
-      0.75
+      0.5,
+      0.5
      ],
-     "fade": true,
+     "fade": false,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 1,
      "pull": null,
      "radial": null,
@@ -10004,17 +10439,17 @@
       16
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#fff6dd",
+     "texture": "grug_core_mote.png^[multiply:#fff0a8",
      "time": 0,
      "vel": [
       [
        0,
-       -8.0,
+       -12.0,
        0
       ],
       [
        0,
-       -8.0,
+       -12.0,
        0
       ]
      ]
@@ -10053,8 +10488,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#ffd257",
+       "blend": "add",
+       "color": "#ffb800",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -10062,8 +10499,9 @@
         0.75
        ],
        "fade": false,
-       "glow": 12,
+       "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 20,
        "pull": null,
        "radial": null,
@@ -10083,7 +10521,7 @@
         3
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#ffd257",
+       "texture": "grug_core_mote.png^[multiply:#ffb800",
        "time": 0,
        "vel": [
         [
@@ -10111,17 +10549,20 @@
         0,
         0
        ],
+       "after": 0.25,
        "attract": null,
-       "color": "#fff6dd",
-       "delay": 0.0,
+       "blend": "add",
+       "color": "#fff0a8",
+       "delay": 0.25,
        "engine": null,
        "exp": [
-        0.75,
-        0.75
+        0.5,
+        0.5
        ],
-       "fade": true,
+       "fade": false,
        "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -10144,17 +10585,17 @@
         16
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#fff6dd",
+       "texture": "grug_core_mote.png^[multiply:#fff0a8",
        "time": 0,
        "vel": [
         [
          0,
-         -8.0,
+         -12.0,
          0
         ],
         [
          0,
-         -8.0,
+         -12.0,
          0
         ]
        ]
@@ -10172,17 +10613,17 @@
     "i2": 307.2,
     "life": 0.3,
     "lua_us": 19.2,
-    "marginal": 364,
+    "marginal": 360,
     "particles": 32,
     "peak": 32.0,
-    "rx_us": 16.588,
+    "rx_us": 16.524,
     "single_events": 1,
     "singles": 32,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 479,
-    "zstd_us": 6.9879999999999995
+    "wire": 475,
+    "zstd_us": 6.9239999999999995
    },
    "dynamic": "reach = the radius",
    "family": "reckoning",
@@ -10197,13 +10638,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "exp": [
       0.3,
       0.3
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 32,
      "radial": "reach",
      "shape": [
@@ -10222,7 +10665,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(32, {at = \"target\", color = \"#ffd257\", exp = {0.3, 0.3}, glow = 14, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.3, true}, size = {3, 3}}),\n}",
+   "lua_text": "{\n\tsingle(32, {at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.3, 0.3}, glow = 14, mote = true, radial = \"reach\", shape = {\"disc\", {0, 0.2, 0}, 0.3, true}, size = {3, 3}}),\n}",
    "marker": {
     "at": "target",
     "radius": 3
@@ -10243,8 +10686,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -10254,6 +10699,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 32,
      "pull": null,
      "radial": null,
@@ -10273,7 +10719,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffd257",
+     "texture": "grug_core_mote.png^[multiply:#ffb800",
      "time": 0,
      "vel": [
       [
@@ -10324,9 +10770,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 4,
-    "spawner_wire": 1407,
+    "spawner_wire": 1399,
     "spawners": 2,
-    "wire": 1407,
+    "wire": 1399,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -10342,13 +10788,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#fff6dd",
+     "blend": "add",
+     "color": "#fff0a8",
      "exp": [
       0.2,
       0.3
      ],
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 26,
      "shape": [
       "line",
@@ -10371,13 +10819,15 @@
     },
     {
      "at": "target",
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "exp": [
       0.25,
       0.35
      ],
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "radial": [
       5,
@@ -10400,7 +10850,7 @@
      "time": 0.05
     }
    ],
-   "lua_text": "{\n\tspawner(26, 0.1, {at = \"target\", color = \"#fff6dd\", exp = {0.2, 0.3}, glow = 14, shape = {\"line\", {0, 7, 0}, {0, 0.2, 0}}, size = {4, 5}}),\n\tspawner(20, 0.05, {at = \"target\", color = \"#ffd257\", exp = {0.25, 0.35}, glow = 14, radial = {5, 6}, shape = {\"disc\", {0, 0.15, 0}, 0.4, true}, size = {2.5, 3}}),\n}",
+   "lua_text": "{\n\tspawner(26, 0.1, {at = \"target\", blend = \"add\", color = \"#fff0a8\", exp = {0.2, 0.3}, glow = 14, mote = true, shape = {\"line\", {0, 7, 0}, {0, 0.2, 0}}, size = {4, 5}}),\n\tspawner(20, 0.05, {at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.25, 0.35}, glow = 14, mote = true, radial = {5, 6}, shape = {\"disc\", {0, 0.15, 0}, 0.4, true}, size = {2.5, 3}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 48,
@@ -10416,8 +10866,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#fff6dd",
+     "blend": "add",
+     "color": "#fff0a8",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -10442,6 +10894,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 26,
      "pull": null,
      "radial": null,
@@ -10464,7 +10917,7 @@
       5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#fff6dd",
+     "texture": "grug_core_mote.png^[multiply:#fff0a8",
      "time": 0.1,
      "vel": [
       [
@@ -10485,8 +10938,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#ffd257",
+     "blend": "add",
+     "color": "#ffb800",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -10515,6 +10970,7 @@
      "fade": true,
      "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "pull": {
       "kill": false,
@@ -10543,7 +10999,7 @@
       3
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffd257",
+     "texture": "grug_core_mote.png^[multiply:#ffb800",
      "time": 0.05,
      "vel": [
       [
@@ -10666,17 +11122,17 @@
     "i2": 27.329704000000003,
     "life": 0.4441,
     "lua_us": 4.8,
-    "marginal": 191,
+    "marginal": 187,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 306,
-    "zstd_us": 4.672
+    "wire": 302,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "quarry",
@@ -10690,13 +11146,15 @@
    "look": "Follow the Line bereit (ein True Draw hat getroffen): der Bereitschaftsring in Grün.",
    "lua": [
     {
-     "color": "#a8c86a",
+     "blend": "add",
+     "color": "#98e03a",
      "exp": [
       0.4,
       0.5
      ],
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "disc",
@@ -10726,7 +11184,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {color = \"#a8c86a\", exp = {0.4, 0.5}, glow = 12, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {blend = \"add\", color = \"#98e03a\", exp = {0.4, 0.5}, glow = 14, mote = true, shape = {\"disc\", {0, 0.3, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 1.5, 0}, {0, 2.2, 0}}}),\n}",
    "marker": null,
    "moment": "window",
    "n": 50,
@@ -10742,8 +11200,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#a8c86a",
+     "blend": "add",
+     "color": "#98e03a",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -10751,8 +11211,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 12,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -10772,7 +11233,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#a8c86a",
+     "texture": "grug_core_mote.png^[multiply:#98e03a",
      "time": 0,
      "vel": [
       [
@@ -10817,17 +11278,17 @@
     "i2": 24.394992000000002,
     "life": 0.39735,
     "lua_us": 4.8,
-    "marginal": 231,
+    "marginal": 227,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 346,
-    "zstd_us": 4.672
+    "wire": 342,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "quarry",
@@ -10841,13 +11302,15 @@
    "look": "Ein blassgrünes Flimmern um den Späher. Unverändert.",
    "lua": [
     {
-     "color": "#a8e0c0",
+     "blend": "add",
+     "color": "#50f0a8",
      "exp": [
       0.35,
       0.45
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "sphere",
@@ -10877,7 +11340,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {color = \"#a8e0c0\", exp = {0.35, 0.45}, glow = 10, shape = {\"sphere\", {0, 1, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 0.2, 0}, {0, 0.6, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {blend = \"add\", color = \"#50f0a8\", exp = {0.35, 0.45}, glow = 14, mote = true, shape = {\"sphere\", {0, 1, 0}, 0.6, true}, size = {2, 2.5}, vel = {{0, 0.2, 0}, {0, 0.6, 0}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 51,
@@ -10893,8 +11356,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#a8e0c0",
+     "blend": "add",
+     "color": "#50f0a8",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -10902,8 +11367,9 @@
       0.45
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -10923,7 +11389,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#a8e0c0",
+     "texture": "grug_core_mote.png^[multiply:#50f0a8",
      "time": 0,
      "vel": [
       [
@@ -10968,17 +11434,17 @@
     "i2": 29.780536,
     "life": 0.49705,
     "lua_us": 4.8,
-    "marginal": 287,
+    "marginal": 283,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 402,
-    "zstd_us": 4.672
+    "wire": 398,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "quarry",
@@ -10999,6 +11465,7 @@
      ],
      "glow": 0,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "box",
@@ -11031,7 +11498,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {color = \"#b8a27a\", exp = {0.4, 0.6}, glow = 0, shape = {\"box\", {-0.6, 0.05, -0.3}, {-0.2, 0.2, 0.3}}, size = {3, 4}, vel = {{-2, 0.5, -0.5}, {-1, 1.5, 0.5}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {color = \"#b8a27a\", exp = {0.4, 0.6}, glow = 0, mote = true, shape = {\"box\", {-0.6, 0.05, -0.3}, {-0.2, 0.2, 0.3}}, size = {3, 4}, vel = {{-2, 0.5, -0.5}, {-1, 1.5, 0.5}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 52,
@@ -11047,7 +11514,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "alpha",
      "color": "#b8a27a",
      "delay": 0.0,
      "engine": null,
@@ -11058,6 +11527,7 @@
      "fade": true,
      "glow": 0,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -11080,7 +11550,7 @@
       4
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#b8a27a",
+     "texture": "grug_core_mote.png^[multiply:#b8a27a",
      "time": 0,
      "vel": [
       [
@@ -11131,9 +11601,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "line frame.from..frame.to over the flight time; frame.color per shot (ARROW_TRAILS)",
@@ -11152,13 +11622,15 @@
    "look": "Die Pfeilspur aus Runde 40 in hellem Gold-Elfenbein: der voll gespannte Schuss glänzt.",
    "lua": [
     {
-     "color": "#f0e6b8",
+     "blend": "add",
+     "color": "#ffe680",
      "exp": [
       0.3,
       0.45
      ],
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "shape": [
       "line",
@@ -11183,7 +11655,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(30, \"frame\", {color = \"#f0e6b8\", exp = {0.3, 0.45}, glow = 6, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
+   "lua_text": "{\n\tspawner(30, \"frame\", {blend = \"add\", color = \"#ffe680\", exp = {0.3, 0.45}, glow = 14, mote = true, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
    "marker": null,
    "moment": "trail",
    "n": 53,
@@ -11211,8 +11683,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#f0e6b8",
+     "blend": "add",
+     "color": "#ffe680",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -11235,8 +11709,9 @@
       0.45
      ],
      "fade": true,
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "pull": null,
      "radial": null,
@@ -11259,7 +11734,7 @@
       1.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#f0e6b8",
+     "texture": "grug_core_mote.png^[multiply:#ffe680",
      "time": 0.55,
      "vel": [
       [
@@ -11310,9 +11785,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "as True Draw",
@@ -11331,13 +11806,15 @@
    "look": "Die Pfeilspur in Grün, wie heute.",
    "lua": [
     {
-     "color": "#79a65a",
+     "blend": "add",
+     "color": "#5cd03a",
      "exp": [
       0.3,
       0.45
      ],
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "shape": [
       "line",
@@ -11362,7 +11839,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(30, \"frame\", {color = \"#79a65a\", exp = {0.3, 0.45}, glow = 6, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
+   "lua_text": "{\n\tspawner(30, \"frame\", {blend = \"add\", color = \"#5cd03a\", exp = {0.3, 0.45}, glow = 14, mote = true, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
    "marker": null,
    "moment": "trail",
    "n": 54,
@@ -11390,8 +11867,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#79a65a",
+     "blend": "add",
+     "color": "#5cd03a",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -11414,8 +11893,9 @@
       0.45
      ],
      "fade": true,
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "pull": null,
      "radial": null,
@@ -11438,7 +11918,7 @@
       1.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#79a65a",
+     "texture": "grug_core_mote.png^[multiply:#5cd03a",
      "time": 0.62,
      "vel": [
       [
@@ -11483,8 +11963,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#79a65a",
+       "blend": "add",
+       "color": "#5cd03a",
        "delay": 0.0,
        "engine": {
         "pos": null,
@@ -11507,8 +11989,9 @@
         0.45
        ],
        "fade": true,
-       "glow": 6,
+       "glow": 14,
        "kind": "spawner",
+       "mote": true,
        "n": 30,
        "pull": null,
        "radial": null,
@@ -11531,7 +12014,7 @@
         1.5
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#79a65a",
+       "texture": "grug_core_mote.png^[multiply:#5cd03a",
        "time": 0.62,
        "vel": [
         [
@@ -11570,9 +12053,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 736,
+    "spawner_wire": 732,
     "spawners": 1,
-    "wire": 736,
+    "wire": 732,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -11588,13 +12071,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#79a65a",
+     "blend": "add",
+     "color": "#5cd03a",
      "exp": [
       0.4,
       0.5
      ],
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 10,
      "radial": [
       2,
@@ -11617,7 +12102,7 @@
      "time": 0.05
     }
    ],
-   "lua_text": "{\n\tspawner(10, 0.05, {at = \"target\", color = \"#79a65a\", exp = {0.4, 0.5}, glow = 6, radial = {2, 2.5}, shape = {\"disc\", {0, 0.4, 0}, 0.2, true}, size = {2, 2.5}}),\n}",
+   "lua_text": "{\n\tspawner(10, 0.05, {at = \"target\", blend = \"add\", color = \"#5cd03a\", exp = {0.4, 0.5}, glow = 14, mote = true, radial = {2, 2.5}, shape = {\"disc\", {0, 0.4, 0}, 0.2, true}, size = {2, 2.5}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 55,
@@ -11633,8 +12118,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": "point",
-     "color": "#79a65a",
+     "blend": "add",
+     "color": "#5cd03a",
      "delay": 0.0,
      "engine": {
       "pos": [
@@ -11661,8 +12148,9 @@
       0.5
      ],
      "fade": true,
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 10,
      "pull": {
       "kill": false,
@@ -11691,7 +12179,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#79a65a",
+     "texture": "grug_core_mote.png^[multiply:#5cd03a",
      "time": 0.05,
      "vel": [
       [
@@ -11742,9 +12230,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "as True Draw",
@@ -11763,13 +12251,15 @@
    "look": "Die Pfeilspur in Wiesengrün.",
    "lua": [
     {
-     "color": "#a8c86a",
+     "blend": "add",
+     "color": "#98e03a",
      "exp": [
       0.3,
       0.45
      ],
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "shape": [
       "line",
@@ -11794,7 +12284,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(30, \"frame\", {color = \"#a8c86a\", exp = {0.3, 0.45}, glow = 6, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
+   "lua_text": "{\n\tspawner(30, \"frame\", {blend = \"add\", color = \"#98e03a\", exp = {0.3, 0.45}, glow = 14, mote = true, shape = {\"line\", \"frame\"}, size = {1, 1.5}, vel = {{-0.2, -0.1, -0.2}, {0.2, 0.2, 0.2}}}),\n}",
    "marker": null,
    "moment": "trail",
    "n": 56,
@@ -11822,8 +12312,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#a8c86a",
+     "blend": "add",
+     "color": "#98e03a",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -11846,8 +12338,9 @@
       0.45
      ],
      "fade": true,
-     "glow": 6,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 30,
      "pull": null,
      "radial": null,
@@ -11870,7 +12363,7 @@
       1.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#a8c86a",
+     "texture": "grug_core_mote.png^[multiply:#98e03a",
      "time": 0.5,
      "vel": [
       [
@@ -11915,8 +12408,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#a8c86a",
+       "blend": "add",
+       "color": "#98e03a",
        "delay": 0.0,
        "engine": {
         "pos": null,
@@ -11939,8 +12434,9 @@
         0.45
        ],
        "fade": true,
-       "glow": 6,
+       "glow": 14,
        "kind": "spawner",
+       "mote": true,
        "n": 30,
        "pull": null,
        "radial": null,
@@ -11963,7 +12459,7 @@
         1.5
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#a8c86a",
+       "texture": "grug_core_mote.png^[multiply:#98e03a",
        "time": 0.5,
        "vel": [
         [
@@ -11995,17 +12491,17 @@
     "i2": 6.574596875,
     "life": 0.27080000000000004,
     "lua_us": 3.0,
-    "marginal": 180,
+    "marginal": 176,
     "particles": 5,
     "peak": 5.0,
-    "rx_us": 5.8825,
+    "rx_us": 5.8725,
     "single_events": 1,
     "singles": 5,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 295,
-    "zstd_us": 4.3825
+    "wire": 291,
+    "zstd_us": 4.3725
    },
    "dynamic": "line frame.from (the struck target) .. frame.to (one secondary), once per secondary",
    "family": "quarry",
@@ -12026,6 +12522,7 @@
      ],
      "glow": 4,
      "kind": "single",
+     "mote": true,
      "n": 5,
      "shape": [
       "line",
@@ -12049,7 +12546,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(5, {color = \"#c8a878\", exp = {0.25, 0.3}, glow = 4, shape = {\"line\", \"frame\"}, size = {1.5, 2}, vel = {{-0.3, 0, -0.3}, {0.3, 0.5, 0.3}}}),\n}",
+   "lua_text": "{\n\tsingle(5, {color = \"#c8a878\", exp = {0.25, 0.3}, glow = 4, mote = true, shape = {\"line\", \"frame\"}, size = {1.5, 2}, vel = {{-0.3, 0, -0.3}, {0.3, 0.5, 0.3}}}),\n}",
    "marker": null,
    "moment": "splinter",
    "n": 57,
@@ -12076,7 +12573,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "alpha",
      "color": "#c8a878",
      "delay": 0.0,
      "engine": null,
@@ -12087,6 +12586,7 @@
      "fade": true,
      "glow": 4,
      "kind": "single",
+     "mote": true,
      "n": 5,
      "pull": null,
      "radial": null,
@@ -12109,7 +12609,7 @@
       2
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#c8a878",
+     "texture": "grug_core_mote.png^[multiply:#c8a878",
      "time": 0,
      "vel": [
       [
@@ -12160,9 +12660,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "line frame.from..frame.to over the flight time; played once for the volley",
@@ -12181,13 +12681,15 @@
    "look": "Die vier Pfeile fliegen zusammen: eine einzige, dichtere und breitere Spur für die ganze Salve.",
    "lua": [
     {
-     "color": "#f0e6b8",
+     "blend": "add",
+     "color": "#ffe680",
      "exp": [
       0.3,
       0.45
      ],
-     "glow": 8,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 40,
      "shape": [
       "line",
@@ -12212,7 +12714,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(40, \"frame\", {color = \"#f0e6b8\", exp = {0.3, 0.45}, glow = 8, shape = {\"line\", \"frame\"}, size = {1.5, 2.2}, vel = {{-0.4, -0.2, -0.4}, {0.4, 0.4, 0.4}}}),\n}",
+   "lua_text": "{\n\tspawner(40, \"frame\", {blend = \"add\", color = \"#ffe680\", exp = {0.3, 0.45}, glow = 14, mote = true, shape = {\"line\", \"frame\"}, size = {1.5, 2.2}, vel = {{-0.4, -0.2, -0.4}, {0.4, 0.4, 0.4}}}),\n}",
    "marker": null,
    "moment": "trail",
    "n": 58,
@@ -12240,8 +12742,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#f0e6b8",
+     "blend": "add",
+     "color": "#ffe680",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -12264,8 +12768,9 @@
       0.45
      ],
      "fade": true,
-     "glow": 8,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 40,
      "pull": null,
      "radial": null,
@@ -12288,7 +12793,7 @@
       2.2
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#f0e6b8",
+     "texture": "grug_core_mote.png^[multiply:#ffe680",
      "time": 0.45,
      "vel": [
       [
@@ -12333,8 +12838,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#f0e6b8",
+       "blend": "add",
+       "color": "#ffe680",
        "delay": 0.0,
        "engine": {
         "pos": null,
@@ -12357,8 +12864,9 @@
         0.45
        ],
        "fade": true,
-       "glow": 8,
+       "glow": 14,
        "kind": "spawner",
+       "mote": true,
        "n": 40,
        "pull": null,
        "radial": null,
@@ -12381,7 +12889,7 @@
         2.2
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#f0e6b8",
+       "texture": "grug_core_mote.png^[multiply:#ffe680",
        "time": 0.45,
        "vel": [
         [
@@ -12420,9 +12928,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -12450,6 +12958,7 @@
      ],
      "glow": 2,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "shape": [
       "sphere",
@@ -12480,7 +12989,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(24, 0.08, {acc = {0, -10, 0}, at = \"target\", color = \"#b89a68\", exp = {0.4, 0.7}, glow = 2, shape = {\"sphere\", {0, 0.5, 0}, 0.3, false}, size = {1.5, 2.5}, vel = {{-3, 1, -3}, {3, 5, 3}}}),\n}",
+   "lua_text": "{\n\tspawner(24, 0.08, {acc = {0, -10, 0}, at = \"target\", color = \"#b89a68\", exp = {0.4, 0.7}, glow = 2, mote = true, shape = {\"sphere\", {0, 0.5, 0}, 0.3, false}, size = {1.5, 2.5}, vel = {{-3, 1, -3}, {3, 5, 3}}}),\n}",
    "marker": null,
    "moment": "impact",
    "n": 59,
@@ -12496,7 +13005,9 @@
       -10,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "alpha",
      "color": "#b89a68",
      "delay": 0.0,
      "engine": {
@@ -12522,6 +13033,7 @@
      "fade": true,
      "glow": 2,
      "kind": "spawner",
+     "mote": true,
      "n": 24,
      "pull": null,
      "radial": null,
@@ -12541,7 +13053,7 @@
       2.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#b89a68",
+     "texture": "grug_core_mote.png^[multiply:#b89a68",
      "time": 0.08,
      "vel": [
       [
@@ -12628,17 +13140,17 @@
     "i2": 5.8237875,
     "life": 0.16979999999999998,
     "lua_us": 3.5999999999999996,
-    "marginal": 216,
+    "marginal": 212,
     "particles": 6,
     "peak": 6.0,
-    "rx_us": 6.279,
+    "rx_us": 6.2669999999999995,
     "single_events": 1,
     "singles": 6,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 331,
-    "zstd_us": 4.479
+    "wire": 327,
+    "zstd_us": 4.467
    },
    "dynamic": "",
    "family": "veil",
@@ -12653,6 +13165,7 @@
    "lua": [
     {
      "at": "target",
+     "blend": "add",
      "color": "#ffffff",
      "exp": [
       0.15,
@@ -12660,6 +13173,7 @@
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "shape": [
       "sphere",
@@ -12689,7 +13203,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(6, {at = \"target\", color = \"#ffffff\", exp = {0.15, 0.2}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.15, false}, size = {1.5, 2}, vel = {{-2, -1, -2}, {2, 2, 2}}}),\n}",
+   "lua_text": "{\n\tsingle(6, {at = \"target\", blend = \"add\", color = \"#ffffff\", exp = {0.15, 0.2}, glow = 14, mote = true, shape = {\"sphere\", {0, 1.1, 0}, 0.15, false}, size = {1.5, 2}, vel = {{-2, -1, -2}, {2, 2, 2}}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 61,
@@ -12705,7 +13219,9 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
+     "blend": "add",
      "color": "#ffffff",
      "delay": 0.0,
      "engine": null,
@@ -12716,6 +13232,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "pull": null,
      "radial": null,
@@ -12735,7 +13252,7 @@
       2
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#ffffff",
+     "texture": "grug_core_mote.png^[multiply:#ffffff",
      "time": 0,
      "vel": [
       [
@@ -12779,17 +13296,17 @@
     "i2": 11.388716,
     "life": 0.19482500000000003,
     "lua_us": 4.8,
-    "marginal": 291,
+    "marginal": 287,
     "particles": 8,
     "peak": 8.0,
-    "rx_us": 7.071999999999999,
+    "rx_us": 7.055999999999999,
     "single_events": 1,
     "singles": 8,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 406,
-    "zstd_us": 4.672
+    "wire": 402,
+    "zstd_us": 4.656
    },
    "dynamic": "",
    "family": "veil",
@@ -12803,13 +13320,15 @@
    "look": "Wo zwei Klingen sich treffen, sprüht vor dem Späher auf Handhöhe ein kurzer Silberfunke.",
    "lua": [
     {
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#e4e8ff",
      "exp": [
       0.15,
       0.25
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "shape": [
       "box",
@@ -12842,7 +13361,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(8, {color = \"#e6ebf3\", exp = {0.15, 0.25}, glow = 14, shape = {\"box\", {0.6, 1.2, -0.1}, {0.7, 1.4, 0.1}}, size = {1.2, 1.8}, vel = {{-1, -0.5, -2}, {1, 2, 2}}}),\n}",
+   "lua_text": "{\n\tsingle(8, {blend = \"add\", color = \"#e4e8ff\", exp = {0.15, 0.25}, glow = 14, mote = true, shape = {\"box\", {0.6, 1.2, -0.1}, {0.7, 1.4, 0.1}}, size = {1.2, 1.8}, vel = {{-1, -0.5, -2}, {1, 2, 2}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 62,
@@ -12858,8 +13377,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#e4e8ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -12869,6 +13390,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 8,
      "pull": null,
      "radial": null,
@@ -12891,7 +13413,7 @@
       1.8
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#e6ebf3",
+     "texture": "grug_core_mote.png^[multiply:#e4e8ff",
      "time": 0,
      "vel": [
       [
@@ -12946,9 +13468,9 @@
     "single_events": 0,
     "singles": 0,
     "spawner_dg": 2,
-    "spawner_wire": 671,
+    "spawner_wire": 667,
     "spawners": 1,
-    "wire": 671,
+    "wire": 667,
     "zstd_us": 0.0
    },
    "dynamic": "",
@@ -12963,13 +13485,15 @@
    "look": "Ein schneller violetter Schwung läuft in 0,1 s über die 90°-Front vor dem Späher.",
    "lua": [
     {
-     "color": "#b9a2e6",
+     "blend": "add",
+     "color": "#9a66ff",
      "exp": [
       0.25,
       0.35
      ],
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 18,
      "shape": [
       "line",
@@ -12991,7 +13515,7 @@
      "time": 0.1
     }
    ],
-   "lua_text": "{\n\tspawner(18, 0.1, {color = \"#b9a2e6\", exp = {0.25, 0.35}, glow = 10, shape = {\"line\", {1.5, 1.2, 1.5}, {1.5, 1, -1.5}}, size = {2.5, 3.5}}),\n}",
+   "lua_text": "{\n\tspawner(18, 0.1, {blend = \"add\", color = \"#9a66ff\", exp = {0.25, 0.35}, glow = 14, mote = true, shape = {\"line\", {1.5, 1.2, 1.5}, {1.5, 1, -1.5}}, size = {2.5, 3.5}}),\n}",
    "marker": {
     "cone": [
      3,
@@ -13012,8 +13536,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#b9a2e6",
+     "blend": "add",
+     "color": "#9a66ff",
      "delay": 0.0,
      "engine": {
       "pos": null,
@@ -13036,8 +13562,9 @@
       0.35
      ],
      "fade": true,
-     "glow": 10,
+     "glow": 14,
      "kind": "spawner",
+     "mote": true,
      "n": 18,
      "pull": null,
      "radial": null,
@@ -13060,7 +13587,7 @@
       3.5
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#b9a2e6",
+     "texture": "grug_core_mote.png^[multiply:#9a66ff",
      "time": 0.1,
      "vel": [
       [
@@ -13104,17 +13631,17 @@
     "i2": 351.8495955,
     "life": 0.6619692307692306,
     "lua_us": 5.859999999999999,
-    "marginal": 154,
+    "marginal": 150,
     "particles": 26,
     "peak": 26.0,
-    "rx_us": 9.279,
+    "rx_us": 9.267,
     "single_events": 1,
     "singles": 6,
     "spawner_dg": 2,
-    "spawner_wire": 736,
+    "spawner_wire": 732,
     "spawners": 1,
-    "wire": 1005,
-    "zstd_us": 4.479
+    "wire": 997,
+    "zstd_us": 4.467
    },
    "dynamic": "",
    "family": "veil",
@@ -13140,6 +13667,7 @@
      ],
      "glow": 2,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "radial": [
       1.5,
@@ -13162,13 +13690,15 @@
      "time": 0.15
     },
     {
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#e4e8ff",
      "exp": [
       0.3,
       0.45
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "shape": [
       "disc",
@@ -13198,7 +13728,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tspawner(20, 0.15, {acc = {0, -0.5, 0}, color = \"#5a4a9a\", exp = {0.6, 0.9}, glow = 2, radial = {1.5, 2.5}, shape = {\"disc\", {0, 0.3, 0}, 0.6, false}, size = {4, 6}}),\n\tsingle(6, {color = \"#e6ebf3\", exp = {0.3, 0.45}, glow = 14, shape = {\"disc\", {0, 0.4, 0}, 0.6, false}, size = {1.2, 1.6}, vel = {{0, 1.5, 0}, {0, 2.5, 0}}}),\n}",
+   "lua_text": "{\n\tspawner(20, 0.15, {acc = {0, -0.5, 0}, color = \"#5a4a9a\", exp = {0.6, 0.9}, glow = 2, mote = true, radial = {1.5, 2.5}, shape = {\"disc\", {0, 0.3, 0}, 0.6, false}, size = {4, 6}}),\n\tsingle(6, {blend = \"add\", color = \"#e4e8ff\", exp = {0.3, 0.45}, glow = 14, mote = true, shape = {\"disc\", {0, 0.4, 0}, 0.6, false}, size = {1.2, 1.6}, vel = {{0, 1.5, 0}, {0, 2.5, 0}}}),\n}",
    "marker": null,
    "moment": "cast",
    "n": 64,
@@ -13214,7 +13744,9 @@
       -0.5,
       0
      ],
+     "after": 0,
      "attract": "point",
+     "blend": "alpha",
      "color": "#5a4a9a",
      "delay": 0.0,
      "engine": {
@@ -13244,6 +13776,7 @@
      "fade": true,
      "glow": 2,
      "kind": "spawner",
+     "mote": true,
      "n": 20,
      "pull": {
       "kill": false,
@@ -13272,7 +13805,7 @@
       6
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#5a4a9a",
+     "texture": "grug_core_mote.png^[multiply:#5a4a9a",
      "time": 0.15,
      "vel": [
       [
@@ -13293,8 +13826,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#e4e8ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -13304,6 +13839,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 6,
      "pull": null,
      "radial": null,
@@ -13323,7 +13859,7 @@
       1.6
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#e6ebf3",
+     "texture": "grug_core_mote.png^[multiply:#e4e8ff",
      "time": 0,
      "vel": [
       [
@@ -13368,7 +13904,9 @@
         -0.5,
         0
        ],
+       "after": 0,
        "attract": "point",
+       "blend": "alpha",
        "color": "#5a4a9a",
        "delay": 0.0,
        "engine": {
@@ -13398,6 +13936,7 @@
        "fade": true,
        "glow": 2,
        "kind": "spawner",
+       "mote": true,
        "n": 20,
        "pull": {
         "kill": false,
@@ -13426,7 +13965,7 @@
         6
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#5a4a9a",
+       "texture": "grug_core_mote.png^[multiply:#5a4a9a",
        "time": 0.15,
        "vel": [
         [
@@ -13447,8 +13986,10 @@
         0,
         0
        ],
+       "after": 0,
        "attract": null,
-       "color": "#e6ebf3",
+       "blend": "add",
+       "color": "#e4e8ff",
        "delay": 0.0,
        "engine": null,
        "exp": [
@@ -13458,6 +13999,7 @@
        "fade": true,
        "glow": 14,
        "kind": "single",
+       "mote": true,
        "n": 6,
        "pull": null,
        "radial": null,
@@ -13477,7 +14019,7 @@
         1.6
        ],
        "tex": "smoke",
-       "texture": "default_item_smoke.png^[multiply:#e6ebf3",
+       "texture": "grug_core_mote.png^[multiply:#e4e8ff",
        "time": 0,
        "vel": [
         [
@@ -13505,17 +14047,17 @@
     "i2": 0.6475650000000001,
     "life": 0.16965,
     "lua_us": 1.2,
-    "marginal": 79,
+    "marginal": 75,
     "particles": 2,
     "peak": 2.0,
-    "rx_us": 4.693,
+    "rx_us": 4.688999999999999,
     "single_events": 1,
     "singles": 2,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 194,
-    "zstd_us": 4.093
+    "wire": 190,
+    "zstd_us": 4.0889999999999995
    },
    "dynamic": "",
    "family": "veil",
@@ -13530,13 +14072,15 @@
    "lua": [
     {
      "at": "target",
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#e4e8ff",
      "exp": [
       0.15,
       0.2
      ],
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 2,
      "shape": [
       "sphere",
@@ -13566,7 +14110,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(2, {at = \"target\", color = \"#e6ebf3\", exp = {0.15, 0.2}, glow = 14, shape = {\"sphere\", {0, 1.1, 0}, 0.15, false}, size = {1.2, 1.6}, vel = {{-1.5, 0, -1.5}, {1.5, 1.5, 1.5}}}),\n}",
+   "lua_text": "{\n\tsingle(2, {at = \"target\", blend = \"add\", color = \"#e4e8ff\", exp = {0.15, 0.2}, glow = 14, mote = true, shape = {\"sphere\", {0, 1.1, 0}, 0.15, false}, size = {1.2, 1.6}, vel = {{-1.5, 0, -1.5}, {1.5, 1.5, 1.5}}}),\n}",
    "marker": null,
    "moment": "swing",
    "n": 65,
@@ -13582,8 +14126,10 @@
       0,
       0
      ],
+     "after": 0,
      "attract": null,
-     "color": "#e6ebf3",
+     "blend": "add",
+     "color": "#e4e8ff",
      "delay": 0.0,
      "engine": null,
      "exp": [
@@ -13593,6 +14139,7 @@
      "fade": true,
      "glow": 14,
      "kind": "single",
+     "mote": true,
      "n": 2,
      "pull": null,
      "radial": null,
@@ -13612,7 +14159,7 @@
       1.6
      ],
      "tex": "smoke",
-     "texture": "default_item_smoke.png^[multiply:#e6ebf3",
+     "texture": "grug_core_mote.png^[multiply:#e4e8ff",
      "time": 0,
      "vel": [
       [
@@ -13693,38 +14240,38 @@
  },
  "dominant": [
   {
+   "alive": 14.55,
+   "bytes": 2428.9,
+   "key": "pfx.smite.hit"
+  },
+  {
    "alive": 24.0,
-   "bytes": 1677.5,
+   "bytes": 1667.5,
    "key": "pfx.heal.cast"
   },
   {
    "alive": 33.49,
-   "bytes": 1655.0,
+   "bytes": 1650.0,
    "key": "pfx.fireball.impact"
   },
   {
    "alive": 9.85,
-   "bytes": 1548.2,
+   "bytes": 1525.0,
    "key": "pfx.cold_spark.impact"
   },
   {
    "alive": 15.97,
-   "bytes": 1397.9,
+   "bytes": 1389.6,
    "key": "pfx.broadstroke.swing"
   },
   {
-   "alive": 6.01,
-   "bytes": 1309.8,
-   "key": "pfx.smite.hit"
-  },
-  {
    "alive": 6.52,
-   "bytes": 920.0,
+   "bytes": 915.0,
    "key": "pfx.charge.arrival"
   },
   {
    "alive": 12.52,
-   "bytes": 838.8,
+   "bytes": 833.8,
    "key": "pfx.charge.dash"
   },
   {
@@ -13734,65 +14281,65 @@
   },
   {
    "alive": 2.19,
-   "bytes": 698.9,
+   "bytes": 694.8,
    "key": "pfx.rebuke.hit"
   },
   {
    "alive": 11.7,
-   "bytes": 698.9,
+   "bytes": 694.8,
    "key": "pfx.true_draw.trail"
   }
  ],
  "dominant_alive": [
   {
    "alive": 33.49,
-   "bytes": 1655.0,
+   "bytes": 1650.0,
    "key": "pfx.fireball.impact"
   },
   {
    "alive": 24.0,
-   "bytes": 1677.5,
+   "bytes": 1667.5,
    "key": "pfx.heal.cast"
   },
   {
    "alive": 15.97,
-   "bytes": 1397.9,
+   "bytes": 1389.6,
    "key": "pfx.broadstroke.swing"
   },
   {
+   "alive": 14.55,
+   "bytes": 2428.9,
+   "key": "pfx.smite.hit"
+  },
+  {
    "alive": 12.52,
-   "bytes": 838.8,
+   "bytes": 833.8,
    "key": "pfx.charge.dash"
   },
   {
    "alive": 12.5,
-   "bytes": 482.0,
+   "bytes": 478.9,
    "key": "pfx.bellow.cast"
   },
   {
    "alive": 11.7,
-   "bytes": 698.9,
+   "bytes": 694.8,
    "key": "pfx.true_draw.trail"
   },
   {
    "alive": 10.42,
-   "bytes": 99.6,
+   "bytes": 98.3,
    "key": "pfx.meteor.warning"
   },
   {
    "alive": 9.85,
-   "bytes": 1548.2,
+   "bytes": 1525.0,
    "key": "pfx.cold_spark.impact"
   },
   {
    "alive": 9.55,
-   "bytes": 496.5,
+   "bytes": 493.7,
    "key": "pfx.ice_nova.cast"
-  },
-  {
-   "alive": 7.14,
-   "bytes": 393.7,
-   "key": "pfx.meteor.impact"
   }
  ],
  "families": {
@@ -13977,111 +14524,111 @@
  },
  "scenarios": {
   "20@0.5": {
-   "bytes": 7595.544,
+   "bytes": 7659.441,
    "datagrams": 25.985,
-   "mean": 58.927,
-   "out_bytes": 151910.887,
+   "mean": 60.457,
+   "out_bytes": 153188.811,
    "packets": 18.548,
-   "peak": 132.504,
-   "server_us": 2557.782,
-   "single_bytes": 2526.867,
-   "spawner_bytes": 5068.678,
-   "started": 126.568
+   "peak": 134.812,
+   "server_us": 2825.043,
+   "single_bytes": 2616.372,
+   "spawner_bytes": 5043.069,
+   "started": 133.41
   },
   "20@1.0": {
-   "bytes": 8844.633,
+   "bytes": 8998.034,
    "datagrams": 25.985,
-   "mean": 117.855,
-   "out_bytes": 176892.662,
+   "mean": 120.914,
+   "out_bytes": 179960.686,
    "packets": 18.548,
-   "peak": 265.009,
-   "server_us": 2557.782,
-   "single_bytes": 3775.955,
-   "spawner_bytes": 5068.678,
-   "started": 253.135
+   "peak": 269.623,
+   "server_us": 2825.043,
+   "single_bytes": 3954.965,
+   "spawner_bytes": 5043.069,
+   "started": 266.819
   },
   "20@1.0 uncut": {
-   "bytes": 14062.177,
+   "bytes": 13994.724,
    "datagrams": 42.274,
-   "mean": 177.493,
-   "out_bytes": 281243.534,
+   "mean": 177.134,
+   "out_bytes": 279894.476,
    "packets": 26.541,
-   "peak": 368.32,
-   "server_us": 2625.871,
-   "single_bytes": 3192.885,
-   "spawner_bytes": 10869.292,
+   "peak": 367.936,
+   "server_us": 2622.288,
+   "single_bytes": 3151.041,
+   "spawner_bytes": 10843.683,
    "started": 398.091
   },
   "50@0.5": {
-   "bytes": 17072.194,
+   "bytes": 17231.935,
    "datagrams": 48.296,
-   "mean": 147.319,
-   "out_bytes": 853609.71,
+   "mean": 151.142,
+   "out_bytes": 861596.733,
    "packets": 29.703,
-   "peak": 263.654,
-   "server_us": 15685.586,
-   "single_bytes": 4400.5,
-   "spawner_bytes": 12671.694,
-   "started": 316.419
+   "peak": 268.708,
+   "server_us": 17325.179,
+   "single_bytes": 4624.262,
+   "spawner_bytes": 12607.673,
+   "started": 333.524
   },
   "50@1.0": {
-   "bytes": 20761.583,
+   "bytes": 21145.086,
    "datagrams": 59.407,
-   "mean": 294.637,
-   "out_bytes": 1038079.14,
+   "mean": 302.285,
+   "out_bytes": 1057254.285,
    "packets": 29.703,
-   "peak": 527.308,
-   "server_us": 15685.586,
-   "single_bytes": 8089.888,
-   "spawner_bytes": 12671.694,
-   "started": 632.839
+   "peak": 537.415,
+   "server_us": 17325.179,
+   "single_bytes": 8537.413,
+   "spawner_bytes": 12607.673,
+   "started": 667.049
   },
   "50@1.0 uncut": {
-   "bytes": 33892.523,
+   "bytes": 33723.891,
    "datagrams": 100.887,
-   "mean": 443.734,
-   "out_bytes": 1694626.147,
+   "mean": 442.834,
+   "out_bytes": 1686194.537,
    "packets": 50.444,
-   "peak": 745.456,
-   "server_us": 16090.591,
-   "single_bytes": 6719.293,
-   "spawner_bytes": 27173.23,
+   "peak": 744.519,
+   "server_us": 16068.197,
+   "single_bytes": 6614.683,
+   "spawner_bytes": 27109.208,
    "started": 995.227
   },
   "5@0.5": {
-   "bytes": 1992.999,
+   "bytes": 2008.973,
    "datagrams": 7.315,
-   "mean": 14.732,
-   "out_bytes": 9964.994,
+   "mean": 15.114,
+   "out_bytes": 10044.865,
    "packets": 5.455,
-   "peak": 51.52,
-   "server_us": 174.889,
-   "single_bytes": 725.829,
-   "spawner_bytes": 1267.169,
-   "started": 31.642
+   "peak": 52.292,
+   "server_us": 193.132,
+   "single_bytes": 748.206,
+   "spawner_bytes": 1260.767,
+   "started": 33.352
   },
   "5@1.0": {
-   "bytes": 2305.271,
+   "bytes": 2343.621,
    "datagrams": 7.315,
-   "mean": 29.464,
-   "out_bytes": 11526.355,
+   "mean": 30.228,
+   "out_bytes": 11718.107,
    "packets": 5.455,
-   "peak": 103.041,
-   "server_us": 174.889,
-   "single_bytes": 1038.102,
-   "spawner_bytes": 1267.169,
-   "started": 63.284
+   "peak": 104.583,
+   "server_us": 193.132,
+   "single_bytes": 1082.854,
+   "spawner_bytes": 1260.767,
+   "started": 66.705
   },
   "5@1.0 uncut": {
-   "bytes": 3515.544,
+   "bytes": 3498.681,
    "datagrams": 10.569,
-   "mean": 44.373,
-   "out_bytes": 17577.721,
+   "mean": 44.283,
+   "out_bytes": 17493.405,
    "packets": 6.635,
-   "peak": 139.786,
-   "server_us": 180.172,
-   "single_bytes": 798.221,
-   "spawner_bytes": 2717.323,
+   "peak": 139.685,
+   "server_us": 179.948,
+   "single_bytes": 787.76,
+   "spawner_bytes": 2710.921,
    "started": 99.523
   }
  },

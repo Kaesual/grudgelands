@@ -91,6 +91,9 @@ local function fake_core()
 		add_particlespawner = function(def) calls[#calls + 1] = {kind = "spawner", def = def} end,
 		yaw_to_dir = function(yaw) return vector.new(-math.sin(yaw), 0, math.cos(yaw)) end,
 		log = function(level, text) warnings[#warnings + 1] = level .. " " .. text end,
+		-- A deferred emitter (`after`, the 0.54.1 falls) plays at once here, so
+		-- the per-effect counts include it (tools/r541_glow tests the delay).
+		after = function(_, fn, ...) fn(...) end,
 	}
 end
 local function load_helper(value)

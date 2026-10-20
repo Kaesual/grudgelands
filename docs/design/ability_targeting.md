@@ -108,7 +108,9 @@ Meteor, Fire Rain, Winter Field and Censure share one contract
   few particles at the impact point lives exactly the delay (Meteor and
   Fire Rain 1.5 s, Winter Field 1 s, Censure 0.75 s), and falling visuals
   start below the lowest ceiling over the anchor and four points at 0.6 ×
-  the radius (at most 12 m up), so an area works in caves.
+  the radius (at most 12 m up), so an area works in caves. Meteor's and
+  Censure's falls start late in the delay and land with the impact
+  ([skill particle effects](combat_stats.md#skill-particle-effects)).
 - **One impact** after the delay (`area.delayed`, at most 3 s, an engine
   timer, no per-step work): every target the filter accepts within the
   horizontal radius and **±3 m** of the anchor's height, nearest first, at
