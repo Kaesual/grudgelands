@@ -326,8 +326,11 @@ check(grug_classes.registered_classes.scout ~= nil, "the Scout is a registered c
 
 current_mod = "grug_visuals"
 grug_visuals = {}
--- apply.lua (not loaded) names the player model; Round 54: the preview uses it.
+-- apply.lua and compose.lua (not loaded) name the player model and its empty
+-- slots; Round 54: the preview uses them.
 grug_visuals.PLAYER_MODEL = "grug_visuals_character.b3d"
+grug_visuals.CLOAK_NONE = "blank.png"
+grug_visuals.ARMOR_NONE, grug_visuals.WEAPON_NONE = "blank.png", "blank.png"
 dofile(repo .. "/mods/PLAYER/grug_visuals/looks.lua")
 grug_visuals.compose = function(spec)
 	return {textures = {"skin_" .. spec.race .. "_" .. grug_visuals.look_string(spec.look)}}

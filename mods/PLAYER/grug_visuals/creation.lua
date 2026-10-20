@@ -25,8 +25,6 @@ local GAP = 0.3
 local ROW = 0.75
 local LABEL_W = 2.3
 local STEP_W = 0.6
--- An empty texture slot of the player model (armor-format.md §2).
-local NONE = "blank.png"
 
 local function category_label(race, category)
 	if category == "eyes" and race == "undead" then
@@ -56,11 +54,12 @@ local function formspec(race, look, x, y, w, h)
 	end
 	look = grug_visuals.normalize_look(race, look)
 	-- The player model (Round 54) in its texture slots {skin, cloak, armor,
-	-- weapon}: the race look, and nothing chosen yet for the rest (the
-	-- engine's transparent blank.png).
+	-- weapon}: the race look, and nothing chosen yet for the rest (the empty
+	-- slots, armor-format.md §2).
 	local textures = {
 		esc(grug_visuals.compose({race = race, look = look}).textures[1]),
-		NONE, NONE, NONE,
+		esc(grug_visuals.CLOAK_NONE), esc(grug_visuals.ARMOR_NONE),
+		esc(grug_visuals.WEAPON_NONE),
 	}
 	local fs = {
 		-- Standing, turned by the mouse only: frames 0..79 are the stand

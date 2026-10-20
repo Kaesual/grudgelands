@@ -14,7 +14,10 @@
 --      registry before the player model exists;
 --   D. the order the refresh relies on: grug_inventory loads after
 --      grug_visuals (optional_depends), so grug_visuals' equipment-change
---      pass is registered, and runs, before the page's refresh.
+--      pass is registered, and runs, before the page's refresh;
+--   E. the REAL seam (grug_visuals.preview cut from apply.lua, hand_image
+--      from appearance.lua) gives what the stand-in gives: the mesh, an
+--      empty card bare-handed, the sword's and the bow's image.
 --
 -- Usage (repo root): luajit tools/r54_view/portable_test.lua [repo]
 
@@ -208,6 +211,59 @@ check((", " .. optional .. ","):find("[ ,]grug_visuals[ ,]") ~= nil,
 local visuals_conf = io.open(repo .. "/mods/PLAYER/grug_visuals/mod.conf"):read("*a")
 check(not visuals_conf:find("grug_inventory", 1, true),
 	"D grug_visuals does not depend on grug_inventory (no cycle)")
+
+--
+-- E. The real seam matches the stand-in (once grug_visuals has it): its
+-- function and hand_image are cut from the game's files and run against the
+-- real equipment.lua; compose and player_spec are stubbed (the composed
+-- strings are lane GAME's, tools/r54_game).
+--
+
+local function source(path)
+	local file = io.open(repo .. path)
+	local text = file and file:read("*a") or ""
+	if file then file:close() end
+	return text
+end
+local apply_src = source("/mods/PLAYER/grug_visuals/apply.lua")
+local preview_src = apply_src:match("\n(function grug_visuals%.preview%(player%).-\nend)\n")
+if preview_src then
+	local appearance_src = source("/mods/PLAYER/grug_visuals/appearance.lua")
+	local hand_src = appearance_src:match("\n(local function image_name%(image%).-\nend)\n") ..
+		"\n" .. appearance_src:match("\n(function grug_visuals%.hand_image%(stack%).-\nend)\n")
+	local compose_src = source("/mods/PLAYER/grug_visuals/compose.lua")
+	local real = {
+		PLAYER_MODEL = apply_src:match('grug_visuals%.PLAYER_MODEL = "([^"]+)"'),
+		CLOAK_NONE = apply_src:match('grug_visuals%.CLOAK_NONE = "([^"]+)"'),
+		WEAPON_NONE = compose_src:match('grug_visuals%.WEAPON_NONE = "([^"]+)"'),
+	}
+	local saved = {}
+	for key, value in pairs(real) do saved[key], grug_visuals[key] = grug_visuals[key], value end
+	saved.compose, saved.player_spec = grug_visuals.compose, grug_visuals.player_spec
+	grug_visuals.player_spec = function() return {} end
+	grug_visuals.compose = function() return {skin = "skin.png", armor = "armor.png"} end
+	-- cloak_source is the file's local: nil here, the "No cloak" path.
+	assert(loadstring(hand_src, "hand_image"))()
+	assert(loadstring(preview_src, "preview"))()
+	eq(real.PLAYER_MODEL, H.PREVIEW_MESH, "E the real seam's mesh is the stand-in's")
+	local rb = H.player("rb", "warrior", {16})
+	same_list(model_element(H.page(rb, "stats")).textures,
+		{"skin.png", real.CLOAK_NONE, "armor.png", "blank.png"},
+		"E the real seam bare-handed: skin, no cloak, armor, a blank card")
+	H.put(rb, "grug_weapon", 1, "grug_gear:sword_steel")
+	H.equipment_change(rb, "grug_weapon")
+	eq(model_element(rb.formspec or H.page(rb, "stats")).textures[4],
+		"grug_gear_item_sword_steel.png", "E the real seam: the sword on the card")
+	local rs = H.player("rs", "scout", {16})
+	H.put(rs, "grug_weapon", 1, "grug_gear:bow_bronze")
+	H.equipment_change(rs, "grug_weapon")
+	eq(model_element(H.page(rs, "stats")).textures[4],
+		"grug_gear_item_bow_bronze.png^[hsl:-20,10,0", "E the real seam: the Scout's bow")
+	for key, value in pairs(saved) do grug_visuals[key] = value end
+	grug_visuals.preview = harness_preview
+else
+	print("r54_view: E skipped (grug_visuals.preview not in apply.lua yet)")
+end
 
 if failures > 0 then
 	error(("r54_view: %d/%d failures"):format(failures, checks), 0)
