@@ -68,6 +68,15 @@ grug_sounds.HOOKS = {
 	"cast_frost_ward", "cast_cinderfall", "cast_holy", "cast_heal",
 	"cast_shield", "cast_shadow", "cast_evade",
 	"fireball_launch", "fireball_hit", "bow_shot", "arrow_hit",
+	-- Round 53: the new class skills' picks (tools/r53_hooks/approved.txt):
+	-- casts, the per-ability projectile launches, and the impacts their
+	-- class kits play at an area's anchor or an arrow's hit.
+	"cast_blink", "cast_fire_rain", "cast_ice_wave", "cast_rime_mantle",
+	"cast_winter_field", "cast_unbroken", "cast_ruination", "cast_haven",
+	"cast_final_word", "cast_arrowfall", "cast_parry", "cast_flourish",
+	"cast_close_dance", "cold_spark_launch", "flame_lance_launch",
+	"meteor_impact", "fire_rain_impact", "winter_field_impact",
+	"censure_impact", "arrowfall_impact",
 	-- Mob voices by family (grug_mobs.VOICES), played by mobs_redo's mob_sound.
 	"voice_humanoid_damage", "voice_humanoid_death",
 	"voice_goblin_war_cry", "voice_goblin_damage", "voice_goblin_death",
@@ -103,7 +112,7 @@ grug_sounds.HOOKS = {
 -- Silent by the user's choice (plan §2.2a), so without a call site: quest
 -- accept and progress, talent, achievement, drops, mount summon and dismount,
 -- respawn, zone banner, PvP off and any automatic PvP flag change; in combat
--- crit, Blink, Sprint, the Carrion Crow's roaming call and the wind-up of
+-- crit, Sprint, the Carrion Crow's roaming call and the wind-up of
 -- every elite but the humanoids and the dragons (S1b). Enchant keeps its hook without a sound.
 
 -- The user's picks (tools/r34_s1a/approved.txt). Files are peak-normalised
@@ -182,6 +191,33 @@ local EVENTS = {
 	fireball_hit = {name = "grug_sounds_fireball_hit", gain = 0.7, pitch = 0.05},
 	bow_shot = {name = "grug_sounds_bow_shot", gain = 0.6, pitch = 0.05},
 	arrow_hit = {name = "grug_sounds_arrow_hit", gain = 0.7, distance = 12, pitch = 0.05},
+	-- Round 53 (tools/r53_hooks/approved.txt): gains like the shipped casts;
+	-- the ultimates and the area impacts are heard as far as Cinderfall was.
+	-- Blink has a cue since the user's pick of 2026-10-20. The impacts have
+	-- no interval: an area's plays at a position (every position shares the
+	-- "pos" key) and Arrowfall's once per hitting arrow (at most 4, a small
+	-- pitch spread), so none drops another.
+	cast_blink = {name = "grug_sounds_cast_blink", gain = 0.6},
+	cast_fire_rain = {name = "grug_sounds_cast_fire_rain", gain = 0.8, distance = 20},
+	cast_ice_wave = {name = "grug_sounds_cast_ice_wave", gain = 0.7},
+	cast_rime_mantle = {name = "grug_sounds_cast_rime_mantle", gain = 0.6},
+	cast_winter_field = {name = "grug_sounds_cast_winter_field", gain = 0.8, distance = 20},
+	cast_unbroken = {name = "grug_sounds_cast_unbroken", gain = 0.7},
+	cast_ruination = {name = "grug_sounds_cast_ruination", gain = 0.7},
+	cast_haven = {name = "grug_sounds_cast_haven", gain = 0.7, distance = 20},
+	cast_final_word = {name = "grug_sounds_cast_final_word", gain = 0.8, distance = 20},
+	cast_arrowfall = {name = "grug_sounds_cast_arrowfall", gain = 0.7},
+	cast_parry = {name = "grug_sounds_cast_parry", gain = 0.6, pitch = 0.05},
+	cast_flourish = {name = "grug_sounds_cast_flourish", gain = 0.6, pitch = 0.05},
+	cast_close_dance = {name = "grug_sounds_cast_close_dance", gain = 0.7},
+	cold_spark_launch = {name = "grug_sounds_cold_spark_launch", gain = 0.6, pitch = 0.05},
+	flame_lance_launch = {name = "grug_sounds_flame_lance_launch", gain = 0.6, pitch = 0.05},
+	meteor_impact = {name = "grug_sounds_meteor_impact", gain = 0.8, distance = 20, interval = 0},
+	fire_rain_impact = {name = "grug_sounds_fire_rain_impact", gain = 0.8, distance = 20, interval = 0},
+	winter_field_impact = {name = "grug_sounds_winter_field_impact", gain = 0.8, distance = 20, interval = 0},
+	censure_impact = {name = "grug_sounds_censure_impact", gain = 0.8, distance = 20, interval = 0},
+	arrowfall_impact = {name = "grug_sounds_arrowfall_impact", gain = 0.7, distance = 12,
+		pitch = 0.05, interval = 0},
 	-- Voices. Humans, zombies and mummies share one hurt sound (R34 C7.1).
 	voice_humanoid_damage = {name = "grug_sounds_voice_humanoid_damage", gain = 0.6, interval = 1.5, pitch = 0.08},
 	voice_humanoid_death = {name = "grug_sounds_voice_humanoid_death", gain = 0.7},

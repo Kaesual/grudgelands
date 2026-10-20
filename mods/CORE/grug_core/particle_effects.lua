@@ -91,32 +91,33 @@ register("hamstring", {
 		exp = {0.25, 0.3}, size = {2.5, 3}, glow = 8}),
 })
 
--- Taunt: a few orange motes jump up above the target's head.
+-- Taunt: a few bronze motes jump up above the target's head (the Bulwark
+-- tint since Round 53, tools/r52_pfx retint).
 register("taunt", {
-	single(6, {at = "target", color = "#ff8a3a", shape = {"box", {-0.2, 2.1, -0.2}, {0.2, 2.3, 0.2}},
+	single(6, {at = "target", color = "#d0a060", shape = {"box", {-0.2, 2.1, -0.2}, {0.2, 2.3, 0.2}},
 		vel = {{-0.2, 1.2, -0.2}, {0.2, 2, 0.2}}, exp = {0.5, 0.7}, size = {2.5, 3}, glow = 12}),
 })
 
--- Bellow (Taunt's area talent): an orange shock ring along the ground out to
--- the Bellow radius (frame.reach; 20 m/s in the catalogue for 8 m).
+-- Bellow (Taunt's area transform): a steel-grey shock ring along the ground
+-- out to the Bellow radius (frame.reach; 20 m/s in the catalogue for 8 m).
 register("bellow", {
-	single(40, {color = "#ff8a3a", shape = {"disc", {0, 0.2, 0}, 0.4, true}, radial = "reach",
+	single(40, {color = "#c4ccd6", shape = {"disc", {0, 0.2, 0}, 0.4, true}, radial = "reach",
 		exp = {0.4, 0.4}, size = {2.5, 2.5}, glow = 10}),
 })
 
--- Hold Ground: a golden ring of motes at the feet that rises slowly.
+-- Hold Ground: a bronze ring of motes at the feet that rises slowly.
 register("hold_ground", {
-	spawner(24, 0.1, {color = "#e8c06a", shape = {"disc", {0, 0.1, 0}, 1, true},
+	spawner(24, 0.1, {color = "#d0a060", shape = {"disc", {0, 0.1, 0}, 1, true},
 		vel = {{0, 0.5, 0}, {0, 1.2, 0}}, exp = {0.7, 0.9}, size = {2, 2.5}, glow = 12}),
 })
 
--- Blink: violet motes rush into the spot the mage leaves (caster) and burst
+-- Blink: frost motes rush into the spot the mage leaves (caster) and burst
 -- at the arrival point (target).
 register("blink", {
-	spawner(14, 0.1, {color = "#b06aff", shape = {"sphere", {0, 1, 0}, 1, true},
+	spawner(14, 0.1, {color = "#bfe8ff", shape = {"sphere", {0, 1, 0}, 1, true},
 		attract = {origin = {0, 1, 0}, strength = 3, kill = true}, exp = {0.3, 0.4},
 		size = {2, 2.5}, glow = 12}),
-	spawner(14, 0.05, {at = "target", color = "#b06aff", shape = {"sphere", {0, 1, 0}, 0.2, false},
+	spawner(14, 0.05, {at = "target", color = "#bfe8ff", shape = {"sphere", {0, 1, 0}, 0.2, false},
 		radial = {3, 4}, exp = {0.3, 0.4}, size = {2, 2.5}, glow = 12}),
 })
 
@@ -138,10 +139,10 @@ register("glacial_ward", {
 		size = {2, 2.5}, glow = 10}),
 })
 
--- Heal: golden-green motes rise around the healed player; Hearten's splash
--- gives each splashed ally four of them.
+-- Heal: golden motes rise around the healed player. Hearten's old splash
+-- gives each splashed ally four golden-green ones.
 register("heal", {
-	spawner(12, 0.1, {at = "target", color = "#d8f0a0", shape = {"disc", {0, 0.1, 0}, 0.5, false},
+	spawner(12, 0.1, {at = "target", color = "#ffe08a", shape = {"disc", {0, 0.1, 0}, 0.5, false},
 		vel = {{0, 1.5, 0}, {0, 2.5, 0}}, exp = {0.7, 0.9}, size = {2, 2.5}, glow = 12}),
 })
 register("heal_splash", {
@@ -155,16 +156,16 @@ register("shield_spell", {
 		exp = {0.35, 0.45}, size = {2, 2.5}, glow = 12}),
 })
 
--- Mend: three motes rise from the player on the cast and on each tick.
+-- Mend: three golden motes rise from the player on the cast and on each tick.
 register("mend", {
-	single(3, {at = "target", color = "#d8f0a0", shape = {"disc", {0, 0.6, 0}, 0.4, false},
+	single(3, {at = "target", color = "#ffe08a", shape = {"disc", {0, 0.6, 0}, 0.4, false},
 		vel = {{0, 1.2, 0}, {0, 1.8, 0}}, exp = {0.6, 0.8}, size = {2, 2.5}, glow = 12}),
 })
 
--- Word of Ruin: dark violet motes peel off the target and stream to the
+-- Word of Ruin: judging gold motes peel off the target and stream to the
 -- priest's chest (an attractor at the caster).
 register("word_of_ruin", {
-	spawner(16, 0.3, {at = "target", color = "#6a2a9a", shape = {"sphere", {0, 1, 0}, 0.5, false},
+	spawner(16, 0.3, {at = "target", color = "#ffd257", shape = {"sphere", {0, 1, 0}, 0.5, false},
 		attract = {at = "caster", origin = {0, 1.2, 0}, strength = 2, kill = true},
 		exp = {0.6, 0.7}, size = {2, 2.5}, glow = 6}),
 })
@@ -206,10 +207,17 @@ register("proc", {
 		vel = {{0, 1.5, 0}, {0, 2.2, 0}}, exp = {0.4, 0.5}, size = {2, 2.5}, glow = 12}),
 })
 
--- One colour per proc (the talent windows and trinket specials that fire).
+-- One colour per proc (the readiness windows and trinket specials that
+-- fire). Round 53 reuses `ruination` and `unbroken` for the new skills of
+-- those names and adds the four windows the picked cards tint
+-- (tools/r52_pfx: Cold Shock, Retort, Clear Conscience, Follow the Line).
 grug_core.PROC_COLORS = {
-	ruination = "#ff5a3a",    -- Warrior: Mighty Blow's window
-	unbroken = "#e8c06a",     -- Warrior: low-health armor window
+	ruination = "#ff5a3a",    -- Warrior: Ruination
+	unbroken = "#e8c06a",     -- Warrior: Unbroken
+	cold_shock = "#bfe8ff",   -- Mage: Cold Shock's window (a Nova hit)
+	retort = "#c4ccd6",       -- Warrior: Retort's window (a hit taken)
+	clear_conscience = "#fff0c8", -- Priest: Clear Conscience's window
+	follow_the_line = "#a8c86a",  -- Scout: Follow the Line's window
 	whitehot = "#ffcf40",     -- Mage: a critical Fireball
 	last_word = "#a66bd4",    -- Priest: Word of Ruin at low health
 	untouchable = "#a8e0c0",  -- Scout: low-health dodge window
@@ -279,6 +287,269 @@ register("area_impact", function(frame)
 			acc = {0, -9, 0}, exp = {0.5, 0.9}, size = {2, 3.5}, glow = 14}),
 	}
 end, {reach = 3})
+
+------------------------------------------------------------------------------
+-- The new skills of round K (Round 53, round53-plan.md §4 HOOKS): the 34
+-- "new" cards the user picked in Round 52 (tools/r52_pfx/effects.py, its
+-- data.json and emitters.lua; "keep" cards play the entries above and the
+-- seven "retint" cards changed their colour there). Each is registered under
+-- the card's `id` as written; a card that reads the frame (the radius, the
+-- delay, the fall height) is a function, the effects.py one in Lua, with the
+-- card's sample frame. The class lanes play a card where its `hook` says.
+-- tools/r53_hooks/portable_test.lua checks every one against its card.
+------------------------------------------------------------------------------
+
+local function round3(value)
+	return math.floor(value * 1000 + 0.5) / 1000
+end
+
+-- A fall that is one comet (effects.py _comet): `sizes` single particles in
+-- a row along a slanted path, all at one velocity, so the head reaches the
+-- anchor as the delay (frame.time) ends, from frame.height.
+local function comet(frame, tex, sizes)
+	local height, life = frame.height or 10, frame.time or 1.5
+	local slope = 0.35 -- horizontal metres per metre of fall
+	local vx, vy = slope * height / life, -height / life
+	local speed = math.sqrt(vx * vx + vy * vy)
+	local ux, uy = -vx / speed, -vy / speed -- back along the path
+	local out = {}
+	for k, size in ipairs(sizes) do
+		local back = 0.7 * (k - 1)
+		local p = {round3(-slope * height + ux * back), round3(height + uy * back), 0}
+		out[#out + 1] = single(1, {at = "target", tex = tex, shape = {"box", p, p},
+			vel = {{round3(vx), round3(vy), 0}, {round3(vx), round3(vy), 0}},
+			exp = {life, life}, size = {size, size}, glow = 14})
+	end
+	return out
+end
+
+-- The area warning ring of area_warning in another colour (Winter Field,
+-- Censure), under its own id: spec.color would repaint the fall and the
+-- burst too (area.delayed).
+local function warning_ring(color)
+	return function(frame)
+		local life = frame.time or 1.5
+		return {single(20, {at = "target", color = color, fade = false,
+			shape = {"disc", {0, 0.15, 0}, frame.reach or 3, true}, exp = {life, life},
+			size = {3, 3}, glow = 12})}
+	end
+end
+
+-- Mage, Ember. Fiery Spark's hit: five embers that fall back.
+register("spark_hit", {
+	single(5, {at = "target", tex = FIRE, shape = {"sphere", {0, 1, 0}, 0.15, false},
+		vel = {{-1.5, 0.5, -1.5}, {1.5, 2.5, 1.5}}, acc = {0, -9, 0}, exp = {0.3, 0.45},
+		size = {1.2, 1.8}, glow = 14}),
+})
+-- Flame Lance: a white-hot line along the flight (grug_projectiles' trail,
+-- frame.from to frame.to over frame.time) and a short bright hit.
+register("flame_lance_trail", {
+	spawner(24, "frame", {tex = FIRE, shape = {"line", "frame"},
+		vel = {{-0.3, -0.1, -0.3}, {0.3, 0.4, 0.3}}, exp = {0.2, 0.3}, size = {2, 3}, glow = 14}),
+})
+register("flame_lance_hit", {
+	single(8, {at = "target", color = "#fff0c8", shape = {"sphere", {0, 1, 0}, 0.15, false},
+		vel = {{-3, 0, -3}, {3, 3, 3}}, acc = {0, -6, 0}, exp = {0.2, 0.35}, size = {2, 3},
+		glow = 14}),
+})
+-- Meteor (area.delayed: the default warning, this fall and burst): one comet
+-- of three fire particles, then a ring to the radius and a spray.
+register("meteor_fall", function(frame)
+	return comet(frame, FIRE, {14, 9, 5})
+end, {reach = 3, time = 1.5, height = 10})
+register("meteor_impact", function(frame)
+	local reach = frame.reach or 3
+	return {
+		single(32, {at = "target", color = "#ffb347", shape = {"disc", {0, 0.2, 0}, 0.4, true},
+			radial = "reach", exp = {0.3, 0.3}, size = {3, 3}, glow = 12}),
+		spawner(20, 0.1, {at = "target", tex = FIRE, shape = {"disc", {0, 0.3, 0}, 0.8 * reach, false},
+			vel = {{-1.5, 2, -1.5}, {1.5, 5, 1.5}}, acc = {0, -9, 0}, exp = {0.4, 0.7},
+			size = {2, 3.5}, glow = 14}),
+	}
+end, {reach = 3})
+-- Fire Rain: one second of flames falling straight over 0.7 x the radius
+-- from at most 8 m, then the large burst.
+register("fire_rain_fall", function(frame)
+	local half = 0.7 * (frame.reach or 5)
+	local height = math.min(frame.height or 8, 8)
+	return {spawner(40, 1, {at = "target", tex = FIRE,
+		shape = {"box", {-half, height, -half}, {half, height, half}},
+		vel = {{0, -2 * height, 0}, {0, -2 * height, 0}}, exp = {0.5, 0.5}, size = {4, 6},
+		glow = 14})}
+end, {reach = 5, time = 1.5, height = 8})
+register("fire_rain_impact", function(frame)
+	local reach = frame.reach or 5
+	return {
+		single(40, {at = "target", color = "#ff8a3a", shape = {"disc", {0, 0.2, 0}, 0.5, true},
+			radial = "reach", exp = {0.35, 0.35}, size = {3, 3.5}, glow = 12}),
+		spawner(36, 0.15, {at = "target", tex = FIRE, shape = {"disc", {0, 0.3, 0}, 0.8 * reach, false},
+			vel = {{-2, 3, -2}, {2, 6, 2}}, acc = {0, -9, 0}, exp = {0.5, 0.9}, size = {2.5, 4},
+			glow = 14}),
+	}
+end, {reach = 5})
+
+-- Mage, Rime. Ice Wave: a fan of frost flakes over the cone in front (single
+-- particles, whose velocity turns with the facing).
+register("ice_wave", {
+	single(10, {color = "#bfe8ff", shape = {"box", {0.4, 1, -0.2}, {0.6, 1.3, 0.2}},
+		vel = {{9, -0.5, -6}, {12, 0.5, 6}}, exp = {0.38, 0.42}, size = {2.5, 3.5}, glow = 10}),
+})
+register("cold_spark_hit", {
+	single(4, {at = "target", color = "#f1fbff", shape = {"sphere", {0, 1, 0}, 0.15, false},
+		vel = {{-1, 0.3, -1}, {1, 1.5, 1}}, acc = {0, -4, 0}, exp = {0.35, 0.5}, size = {1.5, 2},
+		glow = 10}),
+})
+-- Winter Field: a frost warning ring, a slow flurry from at most 5 m over
+-- 0.7 x the radius, a frost ring and a low mist.
+register("winter_field_warning", warning_ring("#bfe8ff"), {reach = 4, time = 1})
+register("winter_field_fall", function(frame)
+	local half = 0.7 * (frame.reach or 4)
+	local height = math.min(frame.height or 5, 5)
+	return {spawner(36, 1, {at = "target", color = "#f1fbff",
+		shape = {"box", {-half, height, -half}, {half, height, half}},
+		vel = {{-0.4, -4, -0.4}, {0.4, -3, 0.4}}, exp = {1.2, 1.6}, size = {3, 4}, glow = 8})}
+end, {reach = 4, time = 1, height = 8})
+register("winter_field_impact", function(frame)
+	local reach = frame.reach or 4
+	return {
+		single(40, {at = "target", color = "#bfe8ff", shape = {"disc", {0, 0.2, 0}, 0.4, true},
+			radial = "reach", exp = {0.35, 0.35}, size = {2.5, 3}, glow = 10}),
+		spawner(24, 0.2, {at = "target", color = "#e6f6ff",
+			shape = {"disc", {0, 0.15, 0}, 0.8 * reach, false},
+			vel = {{-0.3, 0.1, -0.3}, {0.3, 0.4, 0.3}}, exp = {1.2, 1.8}, size = {4, 6}, glow = 6}),
+	}
+end, {reach = 4})
+
+-- Warrior, Bulwark. Retort's readied swing landing: steel-white sparks.
+register("retort_hit", {
+	single(6, {at = "target", color = "#e6ebf3", shape = {"sphere", {0, 1.1, 0}, 0.1, false},
+		vel = {{-2.5, -0.5, -2.5}, {2.5, 2.5, 2.5}}, acc = {0, -8, 0}, exp = {0.15, 0.25},
+		size = {1.2, 1.8}, glow = 14}),
+})
+-- Unbroken: steel motes pulled onto the warrior and a bronze ring outward.
+register("unbroken", {
+	spawner(22, 0.15, {color = "#c4ccd6", shape = {"sphere", {0, 1, 0}, 1.2, true},
+		attract = {origin = {0, 1, 0}, strength = 3, kill = true}, exp = {0.3, 0.35},
+		size = {2, 3}, glow = 12}),
+	spawner(16, 0.05, {color = "#d0a060", shape = {"disc", {0, 0.1, 0}, 0.5, true},
+		radial = {3, 4}, exp = {0.35, 0.45}, size = {2.5, 3}, glow = 10}),
+})
+
+-- Warrior, Ruin. Broadstroke: a wide horizontal crimson slash in front.
+register("broadstroke", {
+	spawner(22, 0.12, {color = "#d8263a", shape = {"line", {1.4, 1.2, 1.9}, {1.4, 1, -1.9}},
+		exp = {0.3, 0.4}, size = {3, 4}, glow = 10}),
+})
+-- Ruination: a column of flaring embers on the cast, three hot sparks on
+-- each landed swing while it runs.
+register("ruination", {
+	spawner(30, 0.2, {color = "#e8402a", shape = {"disc", {0, 0.1, 0}, 0.7, false},
+		vel = {{0, 2.5, 0}, {0, 4.5, 0}}, exp = {0.35, 0.55}, size = {2, 3}, glow = 14}),
+})
+register("ruination_swing", {
+	single(3, {at = "target", color = "#ff6a4a", shape = {"sphere", {0, 1.1, 0}, 0.2, false},
+		vel = {{-1, 0.5, -1}, {1, 2, 1}}, acc = {0, -6, 0}, exp = {0.25, 0.35}, size = {1.5, 2},
+		glow = 14}),
+})
+
+-- Priest, Mercy. Hearten: a golden ring to frame.reach, four motes on each
+-- recipient.
+register("hearten", {
+	single(24, {color = "#ffe08a", shape = {"disc", {0, 0.3, 0}, 0.4, true}, radial = "reach",
+		exp = {0.5, 0.5}, size = {2.5, 2.5}, glow = 12}),
+})
+register("hearten_recipient", {
+	single(4, {at = "target", color = "#ffe08a", shape = {"disc", {0, 0.1, 0}, 0.4, false},
+		vel = {{0, 1.5, 0}, {0, 2.2, 0}}, exp = {0.6, 0.8}, size = {2, 2.5}, glow = 12}),
+})
+-- Haven: an ivory ring to frame.reach and rising gold, then two motes on
+-- each of the status' ticks.
+register("haven", {
+	single(40, {color = "#fff0c8", shape = {"disc", {0, 0.3, 0}, 0.5, true}, radial = "reach",
+		exp = {0.7, 0.7}, size = {3, 3}, glow = 12}),
+	spawner(24, 0.3, {color = "#ffe08a", shape = {"disc", {0, 0.1, 0}, 1, false},
+		vel = {{0, 2, 0}, {0, 3.5, 0}}, exp = {0.8, 1}, size = {2, 3}, glow = 12}),
+})
+register("haven_tick", {
+	single(2, {at = "target", color = "#fff0c8", shape = {"disc", {0, 0.8, 0}, 0.35, false},
+		vel = {{0, 1, 0}, {0, 1.5, 0}}, exp = {0.6, 0.8}, size = {2, 2.5}, glow = 12}),
+})
+
+-- Priest, Reckoning. Smite as the basic attack: six motes slam down onto
+-- the target.
+register("smite_hit", {
+	single(6, {at = "target", color = "#fff2c0", shape = {"disc", {0, 3, 0}, 0.5, false},
+		vel = {{0, -12, 0}, {0, -10, 0}}, exp = {0.2, 0.22}, size = {2.5, 3.5}, glow = 14}),
+})
+-- Rebuke: a gold line from the priest's hand (frame.from) to the target's
+-- body (frame.to).
+register("rebuke", {
+	spawner(14, 0.08, {color = "#ffd257", shape = {"line", "frame"},
+		vel = {{-0.2, -0.2, -0.2}, {0.2, 0.2, 0.2}}, exp = {0.12, 0.18}, size = {2, 3}, glow = 14}),
+})
+-- Censure: a gold warning ring, one large seal falling from frame.height
+-- in the delay, a gold ring to the radius.
+register("censure_warning", warning_ring("#ffd257"), {reach = 3, time = 0.75})
+register("censure_fall", function(frame)
+	local height, life = frame.height or 6, frame.time or 0.75
+	return {single(1, {at = "target", color = "#fff6dd",
+		shape = {"box", {0, height, 0}, {0, height, 0}},
+		vel = {{0, -height / life, 0}, {0, -height / life, 0}}, exp = {life, life},
+		size = {16, 16}, glow = 14})}
+end, {reach = 3, time = 0.75, height = 6})
+register("censure_impact", {
+	single(32, {at = "target", color = "#ffd257", shape = {"disc", {0, 0.2, 0}, 0.3, true},
+		radial = "reach", exp = {0.3, 0.3}, size = {3, 3}, glow = 14}),
+})
+-- Final Word: a white column falls onto the target, a gold ring bursts.
+register("final_word", {
+	spawner(26, 0.1, {at = "target", color = "#fff6dd", shape = {"line", {0, 7, 0}, {0, 0.2, 0}},
+		exp = {0.2, 0.3}, size = {4, 5}, glow = 14}),
+	spawner(20, 0.05, {at = "target", color = "#ffd257", shape = {"disc", {0, 0.15, 0}, 0.4, true},
+		radial = {5, 6}, exp = {0.25, 0.35}, size = {2.5, 3}, glow = 14}),
+})
+
+-- Scout, Quarry. Split Shot: a few splinters along frame.from (the struck
+-- target) to frame.to (one secondary), once per secondary.
+register("split_shot_splinter", {
+	single(5, {color = "#c8a878", shape = {"line", "frame"},
+		vel = {{-0.3, 0, -0.3}, {0.3, 0.5, 0.3}}, exp = {0.25, 0.3}, size = {1.5, 2}, glow = 4}),
+})
+-- Arrowfall: one trail for the volley along the flight, an earth spray where
+-- the first arrow lands.
+register("arrowfall_trail", {
+	spawner(40, "frame", {color = "#f0e6b8", shape = {"line", "frame"},
+		vel = {{-0.4, -0.2, -0.4}, {0.4, 0.4, 0.4}}, exp = {0.3, 0.45}, size = {1.5, 2.2},
+		glow = 8}),
+})
+register("arrowfall_impact", {
+	spawner(24, 0.08, {at = "target", color = "#b89a68", shape = {"sphere", {0, 0.5, 0}, 0.3, false},
+		vel = {{-3, 1, -3}, {3, 5, 3}}, acc = {0, -10, 0}, exp = {0.4, 0.7}, size = {1.5, 2.5},
+		glow = 2}),
+})
+
+-- Scout, Veil. Parry: silver sparks off the blade in front.
+register("parry", {
+	single(8, {color = "#e6ebf3", shape = {"box", {0.6, 1.2, -0.1}, {0.7, 1.4, 0.1}},
+		vel = {{-1, -0.5, -2}, {1, 2, 2}}, exp = {0.15, 0.25}, size = {1.2, 1.8}, glow = 14}),
+})
+-- Flourish: a violet slash across the cone in front.
+register("flourish", {
+	spawner(18, 0.1, {color = "#b9a2e6", shape = {"line", {1.5, 1.2, 1.5}, {1.5, 1, -1.5}},
+		exp = {0.25, 0.35}, size = {2.5, 3.5}, glow = 10}),
+})
+-- Close Dance: sinking smoke and silver glints on the cast, two glints on
+-- each landed blade swing while it runs.
+register("close_dance", {
+	spawner(20, 0.15, {color = "#5a4a9a", shape = {"disc", {0, 0.3, 0}, 0.6, false},
+		radial = {1.5, 2.5}, acc = {0, -0.5, 0}, exp = {0.6, 0.9}, size = {4, 6}, glow = 2}),
+	single(6, {color = "#e6ebf3", shape = {"disc", {0, 0.4, 0}, 0.6, false},
+		vel = {{0, 1.5, 0}, {0, 2.5, 0}}, exp = {0.3, 0.45}, size = {1.2, 1.6}, glow = 14}),
+})
+register("close_dance_swing", {
+	single(2, {at = "target", color = "#e6ebf3", shape = {"sphere", {0, 1.1, 0}, 0.15, false},
+		vel = {{-1.5, 0, -1.5}, {1.5, 1.5, 1.5}}, exp = {0.15, 0.2}, size = {1.2, 1.6}, glow = 14}),
+})
 
 ------------------------------------------------------------------------------
 -- Bosses and mob specials (Round 40 PM): the `boss` and `mob` cards of the

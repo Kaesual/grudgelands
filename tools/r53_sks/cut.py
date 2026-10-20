@@ -7,7 +7,8 @@ Python 3 standard library plus ffmpeg/ffprobe (libvorbis). Reads ROWS below,
 the sources through sources.py (orchestration folder, read only: ffmpeg reads,
 never writes there) and pool.json from scan.py (each source's measured span).
 Writes out/<key>.ogg, cuts.json (measured per candidate), picks.md and
-license-rows.md.
+license-rows.md. Round 2: candidates in rejected.json (the user's "raus") are
+skipped and their old cuts removed; DERIVED adds the re-cuts the user asked for.
 
 Cut like the shipped cast cues (mods/CORE/grug_sounds/LICENSE-media.md):
 mono Ogg Vorbis q3, 44.1 kHz, start silence trimmed (the window starts at the
@@ -36,6 +37,10 @@ SCAN = runpy.run_path(str(HERE / "scan.py"))
 source, SHIPPED, ORCH = SRC["source"], SRC["SHIPPED"], SRC["ORCH"]
 OUT = HERE / "out"
 POOL = json.loads((HERE / "pool.json").read_text())
+# Candidates the user rejected ("raus", round 1): never cut or proposed again (rejected.md).
+_REJ = json.loads((HERE / "rejected.json").read_text()) if (HERE / "rejected.json").is_file() else []
+REJECTED_KEYS = {r["key"] for r in _REJ}
+REJECTED_SRC_IDS = {r["fs_id"] for r in _REJ if r.get("fs_id")}
 
 PEAK_DB = -3.0
 MAX_DUR = 2.5
@@ -55,6 +60,8 @@ EVENTS = {
 
 def fs(i):
     hits = [k for k in POOL if k.endswith("/fs_%s.mp3" % i)]
+    if len(hits) == 0 and str(i) in REJECTED_SRC_IDS:
+        return "r53/sks-fs/dl/fs_%s.mp3" % i      # rejected and deleted; never cut again
     if len(hits) != 1:
         sys.exit("Freesound %s: %d pool entries" % (i, len(hits)))
     return hits[0]
@@ -206,6 +213,15 @@ ROWS = [
      [C(fs(442825)), C(fs(523204)), C(fs(657541), 0.3, 2.2)]),
 ]
 
+# Re-cuts the user asked for in round 1 (ratings-r1.json): row, n, source, start, length,
+# fade, the note. They are cut like the others but are not candidates on the first page.
+DERIVED = [
+    ("cold_spark", 5, "fs709888-short", 709888, 0.2, 0.8, 0.2,
+     "cold_spark_4_fs709888: \"Am Ende etwas kürzen.\""),
+    ("winter_field", 5, "fs381853-short", 381853, 0.4, 1.1, 0.3,
+     "winter_field_3_fs381853: \"... sollte aber etwas gekürzt werden.\""),
+]
+
 # Skills that keep the shared weapon or projectile sound (no row; German reason).
 KEEP = [
     ("Magier", "Ember", "Fiery Spark", "fiery_spark", "Geschoss-Sound",
@@ -302,6 +318,8 @@ def main():
         rkey, skill, kind, cls, tree, name, effect, why, reuse, cands = row
         for n, cand in enumerate([C("shipped:" + reuse)] + cands, 1):
             key = "%s_%d_%s" % (rkey, n, tag(cand["src"]))
+            if key in REJECTED_KEYS:
+                continue
             if args.only and rkey not in args.only and key in old:
                 res[key] = old[key]
                 continue
@@ -310,6 +328,13 @@ def main():
             res[key] = {"row": rkey, "n": n, "src": cand["src"], **m, **how}
             print("%-44s %5.2fs peak %5.1f rms %5.1f cen %5d fl %.2f" % (key, m["dur"], m["peak_db"], m["rms_db"],
                                                                        m["centroid"], m["flatness"]))
+    for rkey, n, tg, fid, start, dur, fade, why in DERIVED:
+        key = "%s_%d_%s" % (rkey, n, tg)
+        if not (args.only and rkey not in args.only and key in old):
+            path, how = cut(C(fs(fid), start, dur, fade), key)
+            res[key] = {"row": rkey, "n": n, "src": fs(fid), **measure(path), **how, "derived": why}
+        else:
+            res[key] = old[key]
     for f in OUT.glob("*.ogg"):
         if f.stem not in res:
             f.unlink()      # a renamed candidate's old cut (our own output only)

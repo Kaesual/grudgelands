@@ -239,6 +239,8 @@ local defs = {
 grug_abilities = {
 	registered = defs,
 	is_unlocked = function() return true end,
+	-- Round 53 (HOOKS, K8): the held fallback fires current_form of Strike.
+	current_form = function(_, def) return def end,
 	get_range = function(_, def) return def.id == "fireball" and 20 or 3 end,
 	-- The real predicate refuses a mob evading home (Round 36 §2.14.1); the
 	-- combat ray above still reports it as a hostile target, as the real one

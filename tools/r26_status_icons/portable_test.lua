@@ -145,6 +145,11 @@ local EXPECTED_KIND = {
 	poisoned = "debuff", slowed = "debuff", rooted = "debuff",
 	stunned = "debuff", scorched = "debuff", dragon_wrath = "debuff",
 	in_combat = "neutral", pvp_tagged = "neutral", pvp_contested = "neutral",
+	-- Round 53 (HOOKS): the new skills' statuses and readiness windows.
+	rime_mantle = "buff", unbroken = "buff", haven = "buff",
+	cold_shock = "buff", retort = "buff", clear_conscience = "buff",
+	follow_the_line = "buff", parry = "buff", ruination = "buff",
+	close_dance = "buff",
 }
 
 local function texture_ok(name, label)

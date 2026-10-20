@@ -19,7 +19,7 @@
 -- passes never fires, a further switch restarts the wait, digging never
 -- waits.
 --   S  combat holds switched to every kind of item (attack cast and swing,
---      self, support, movement, the bow, a cooldown, a tool, an empty slot
+--      self, support, movement, Loose, a cooldown, a tool, an empty slot
 --      and back, a miss beside the foe, an evading foe, a scroll through a
 --      self skill, switching back to a skill on cooldown, the settle window);
 --   D  digging holds switched both ways (empty hand, a tool, attack, self
@@ -209,6 +209,8 @@ local function ready(def) return not cooldown_until[def.id] or clock >= cooldown
 grug_abilities = {
 	registered = defs,
 	is_unlocked = function() return true end,
+	-- Round 53 (HOOKS, K8): the held fallback fires current_form of Strike.
+	current_form = function(_, def) return def end,
 	get_range = function(_, def) return def.id == "fireball" and 20 or 3 end,
 	valid_target = function(_, ref, kind)
 		if kind == "friendly" then return ref.kind == "ally" end
@@ -217,8 +219,6 @@ grug_abilities = {
 	evading_target = function(_, ref) return ref.kind == "mob" and alive(ref) and ref.evading == true end,
 	support_refused = function() return false end,
 	flash = function(_, message) flashes[#flashes + 1] = message end,
-	cancel_bow_draw = function() end,
-	start_bow_draw = function() return true end,
 	try_cast = function(_, def)
 		casts[#casts + 1] = def.id
 		if def.cooldown then cooldown_until[def.id] = clock + def.cooldown * 1000000 end
@@ -364,12 +364,12 @@ do -- S4-S6 Strike -> a self or support skill at the foe: one cast, then the hol
 	end
 end
 
-do -- S7 Strike -> Loose: Loose's left button is Strike.
+do -- S7 Strike -> Loose: Loose's left button shoots (Round 53: the draw is gone).
 	local m = new_mob("s7")
 	fighting(m)
 	switch("loose")
 	case("S7", "Strike->Loose at foe: " .. seen())
-	check(#casts == 0 and list(swings) == "strike" and range0("loose"), "S7 Loose strikes, combat goes on")
+	check(casts[1] == "loose" and #swings == 0 and range0("loose"), "S7 Loose shoots, combat goes on")
 	release()
 end
 

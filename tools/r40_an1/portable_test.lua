@@ -4,16 +4,16 @@
 --   luajit tools/r40_an1/portable_test.lua [repo]
 --
 -- Loads the REAL player_api (api.lua, init.lua), grug_visuals' registration
--- (cut from apply.lua) and poses.lua, the REAL Scout bow-draw hook (cut from
--- scout.lua), and, cut from grug_abilities/init.lua, SKILL_POSES with its
+-- (cut from apply.lua) and poses.lua (Round 53: the Scout's bow-draw hook is
+-- gone with the draw), and, cut from grug_abilities/init.lua, SKILL_POSES with its
 -- trigger, try_cast and the authoritative swing's finish. Checks:
 --   R  the registration: every pose and its walking twin with the baked
 --      ranges, held clips 20 frames, swing and flinch once; the walk-phase
 --      groups (walk, walk_mine, every held walking twin) and the one-shot
 --      groups;
---   S  pose per skill: Fireball, Smite, Word of Ruin, Cinderfall cast1; Ice
---      Nova, Glacial Ward, Heal, Mend, Shield cast2; Hold Ground block;
---      Mighty Blow swing; nothing else; every named pose has clips;
+--   S  pose per skill: every named pose has clips and Strike poses
+--      nothing (Round 53 K14: one-directional while round K's lanes
+--      register the new skills, no exact table);
 --   T  never on the fallback: a refused cast, a cast whose target check
 --      fails and a swing skill through try_cast play nothing; a successful
 --      cast plays its pose; an authoritative swing without a proc (the Strike
@@ -30,9 +30,9 @@
 --      swing: its damage landed already), a second swing restarts it,
 --      a twin switch mid-swing keeps its progress, it ends after its clip;
 --   F  the flinch: on a settled hit; at most one per 1.5 s; never over
---      another pose, the drawn bow, a seat; and the bow's own clips;
---   K  the player's own client: every pose end (expiry, stop_pose, the bow
---      draw's end) answers a `<base>_resume` animation for one step (the
+--      another pose or a seat;
+--   K  the player's own client: every pose end (expiry, stop_pose) answers
+--      a `<base>_resume` animation for one step (the
 --      base's range with the end 1/64 frame short, none of the four local
 --      ones the 5.17 client ignores), then the plain base; the frame offset
 --      carries through.
@@ -119,10 +119,6 @@ assert(loadstring(cut("mods/PLAYER/grug_visuals/apply.lua",
 	"\n(grug_visuals%.PLAYER_MODEL = .-\nend)\n", "player model registration"),
 	"=apply.lua registration"))()
 dofile(ROOT .. "/mods/PLAYER/grug_visuals/poses.lua")
-local draws = {}
-assert(loadstring("local draws = ...\n" .. cut("mods/PLAYER/grug_abilities/scout.lua",
-	"\n(local bow_shown = {}\nplayer_api%.register_control_animation_override%(function.-\nend%))\n",
-	"bow-draw hook"), "=scout.lua hook"))(draws)
 
 local GV = grug_visuals
 local model = player_api.registered_models[GV.PLAYER_MODEL]
@@ -205,29 +201,24 @@ local INIT = "mods/PLAYER/grug_abilities/init.lua"
 local play_skill_pose = assert(loadstring(cut(INIT,
 	"\n(grug_abilities%.SKILL_POSES = {.-\nend)\n", "SKILL_POSES") ..
 	"\nreturn play_skill_pose", "=SKILL_POSES"))()
+-- One-directional while round K's lanes register the new skills
+-- (round53-plan.md K14): every row names a pose with clips, Strike (the
+-- fallback) poses nothing; no exact table and no count.
 do
-	local want = {
-		fireball = "cast1", smite = "cast1", word_of_ruin = "cast1", cinderfall = "cast1",
-		ice_nova = "cast2", glacial_ward = "cast2", heal = "cast2", mend = "cast2",
-		shield_spell = "cast2", hold_ground = "block", mighty_blow = "swing",
-	}
 	local n = 0
 	for id, pose in pairs(grug_abilities.SKILL_POSES) do
 		n = n + 1
-		eq(pose, want[id], "S pose of " .. id)
-		check(GV.POSE_CLIPS[pose] ~= nil, "S " .. pose .. " has clips")
+		check(GV.POSE_CLIPS[pose] ~= nil, "S " .. id .. "'s pose " .. pose .. " has clips")
 	end
-	eq(n, 11, "S eleven skills pose")
-	for _, id in ipairs({"strike", "charge", "loose", "hamstring", "taunt", "blink",
-			"sidestep", "sprint", "opening", "snare_shot", "pinning_shot"}) do
-		eq(grug_abilities.SKILL_POSES[id], nil, "S " .. id .. " plays no skill pose")
-	end
+	check(n >= 1, "S skills pose")
+	eq(grug_abilities.SKILL_POSES.strike, nil, "S Strike plays no skill pose")
 end
 
 do
 	local refusal, spent, cooled = nil, 0, 0
 	grug_abilities.CAST_SOUNDS = {}
 	grug_abilities.cost_for = function() return {} end
+	grug_abilities.effective_cost = function() return {} end
 	grug_abilities.arm_cooldown = function() cooled = cooled + 1 end
 	grug_abilities.effective_cooldown = function() return 1 end
 	grug_abilities.flash = function() end
@@ -235,12 +226,13 @@ do
 	grug_core.is_stunned = function() return false end
 	local try_cast = assert(loadstring(
 		"local reset_swing_boundary, refuse_mounted_attack, cast_refusal, spend, " ..
-		"arm_cast_interval, play_skill_pose, occupy_casts = ...\n" ..
+		"arm_cast_interval, play_skill_pose, occupy_casts, clock_seconds = ...\n" ..
 		cut(INIT, "\n(function grug_abilities%.try_cast%(.-\nend)\n", "try_cast"),
 		"=try_cast"))(
 		function() end, function() return false end, function() return refusal end,
 		function() spent = spent + 1 return true end, function() end, play_skill_pose,
-		function() end) -- occupy_casts: the action clock (Round 52 D2)
+		function() end, -- occupy_casts: the action clock (Round 52 D2)
+		function() return 0 end) -- clock_seconds (Round 53)
 	local caster = new_player("caster")
 	local function def(id, kind, ok)
 		return {id = id, kind = kind or "cast", cast = function() return ok ~= false end}
@@ -269,10 +261,10 @@ do
 	grug_core.combat_debug_due = function() return false end
 	grug_core.add_threat = function() end
 	local finish = assert(loadstring(
-		"local spend, swing_rage, play_skill_pose = ...\n" ..
+		"local spend, swing_rage, play_skill_pose, grant_swing_gains = ...\n" ..
 		cut(INIT, "\n(local function finish_authoritative_swing%(.-\nend)\n", "finish") ..
 		"\nreturn finish_authoritative_swing", "=finish"))(
-		function() return true end, function() return 8 end, play_skill_pose)
+		function() return true end, function() return 8 end, play_skill_pose, function() end)
 	local function swing(proc, result)
 		return finish({player = caster, proc = proc, proc_cost = {}}, result)
 	end
@@ -419,7 +411,7 @@ do
 end
 
 ------------------------------------------------------------------------------
--- F: the flinch and the bow.
+-- F: the flinch.
 ------------------------------------------------------------------------------
 do
 	local p = join("tank")
@@ -443,23 +435,6 @@ do
 	GV.flinch(p)
 	step(0.05)
 	eq(anim_of(p), "cast1", "F never over another pose")
-	step(2)
-	draws[p.name] = {}
-	step(0.05)
-	eq(anim_of(p), "bow", "F the drawn bow plays bow")
-	p.controls = {up = true}
-	step(0.05)
-	eq(anim_of(p), "bow_walk", "F ... and bow_walk on the move")
-	near(last(p).start, 355, "F the bow's walking twin from standing starts at its first frame")
-	GV.flinch(p)
-	step(0.05)
-	eq(anim_of(p), "bow_walk", "F never over the drawn bow")
-	draws[p.name] = nil
-	step(0.05)
-	eq(anim_of(p), "walk_resume", "K the draw's end hands back through walk_resume")
-	step(0.05)
-	eq(anim_of(p), "walk", "K ... once")
-	p.controls = {}
 	step(2)
 	player_api.player_attached[p.name] = true
 	GV.flinch(p)

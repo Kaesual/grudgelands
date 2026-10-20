@@ -155,10 +155,18 @@ formspecs that drop the prepend. The client plays it at the file's own level
   hand mobs_redo's punch), on mobs and on players; an absorb shield taking a
   hit (not a damage-over-time tick); dodge; a player's death.
 - **Abilities:** one cue per theme at the caster (`CAST_SOUNDS`): Charge,
-  Taunt, Hold Ground; Ice Nova, Glacial Ward, Cinderfall; Smite, Heal and
-  Mend, Shield, Word of Ruin; Sidestep. Fireball and the Scout's shots sound
-  through their projectile at launch and at the hit; the weapon swings sound
-  through the hit.
+  Taunt, Hold Ground; Ice Nova; Smite, Heal and Mend, Shield, Word of Ruin;
+  Sidestep. Fiery Spark, Fireball and the Scout's shots sound through their
+  projectile at launch and at the hit; the weapon swings sound
+  through the hit. Round 53 adds the user's picks for the new skills
+  (`tools/r53_sks` assignments, `tools/r53_hooks/approved.txt`): casts of
+  their own for Blink, Ice Wave, Rime Mantle, Winter Field, Fire Rain,
+  Unbroken, Ruination, Haven, Final Word, Arrowfall, Parry, Flourish and
+  Close Dance (Meteor, Bellow, Hearten, Rebuke and Censure keep a shipped
+  cue, Broadstroke the swing); Cold Spark and Flame Lance launch with cues
+  of their own and hit with the Fireball's; the impacts of Meteor, Fire
+  Rain, Winter Field and Censure play once at the area's anchor, Arrowfall's
+  once per hitting arrow (at most four, a small pitch spread).
 - **Mob voices** (§3.4), **bosses** (§3.5).
 
 ### 3.3 Silent by the user's choice
@@ -166,7 +174,7 @@ formspecs that drop the prepend. The client plays it at the file's own level
 Quest accept and quest progress, talent learned, achievement, enchant (its
 hook stays, without a sound, and may get one later), blue, gold, bag and boss
 drops, mount summon and dismount, respawn, the zone banner, every automatic
-PvP flag change, critical hits, Blink, Sprint, and every refusal or
+PvP flag change, critical hits, Sprint (Blink until Round 53), and every refusal or
 error (no refusal cue). *Why:* fewer layers, so the sounds that remain can be
 told apart in play; a refusal already shows its reason as text.
 

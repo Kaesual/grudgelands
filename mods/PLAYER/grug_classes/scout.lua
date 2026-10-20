@@ -1,6 +1,6 @@
--- Scout class and runtime windows (docs/design/scout.md).
+-- Scout class and its Sidestep window (docs/design/scout.md).
 
-local META_UNTOUCHABLE_READY = "grug_classes:untouchable_ready"
+local SIDESTEP_DURATION = 3
 local sidestep_expiry = {}
 
 grug_classes.register_class({
@@ -14,11 +14,13 @@ grug_classes.register_class({
 	armor_rank = 2,
 })
 
--- Sidestep is a base ability, so its fixed +15 percentage points do not live
--- in the talent registry. Shake Loose adds movement immunity to this same
--- four-second window; Untouchable uses the talent registry's timed bonus.
+-- Sidestep is a base ability, so its fixed +15 percentage points of dodge
+-- live here, for 3 s (round53-plan.md §3). Shake Loose (Veil V11, the class
+-- key sidestep_frees) also clears the slows and roots on the Scout at the
+-- cast (the existing helper, roots included: the user's ruling); no
+-- immunity follows.
 function grug_classes.start_sidestep(player)
-	local expiry = core.get_us_time() + 4e6
+	local expiry = core.get_us_time() + SIDESTEP_DURATION * 1e6
 	sidestep_expiry[player:get_player_name()] = expiry
 	-- The status icon shares the window's expiry; death and leave clear both.
 	if grug_core.set_status then
@@ -26,9 +28,8 @@ function grug_classes.start_sidestep(player)
 			label = "Sidestep", expiry_us = expiry,
 		})
 	end
-	if grug_classes.get_talent_bonus(player, "root_slow_immunity") > 0 then
+	if grug_classes.get_talent_bonus(player, "sidestep_frees") > 0 then
 		grug_core.clear_negative_move_modifiers(player)
-		grug_core.set_move_immunity(player, 4)
 	end
 end
 
@@ -46,35 +47,10 @@ function grug_classes.get_scout_dodge_add(player)
 	return grug_classes.sidestep_active(player) and 15 or 0
 end
 
-function grug_classes.get_scout_dodge_cap(player)
-	return math.max(30,
-		grug_classes.get_talent_bonus(player, "dodge_cap_override"))
+-- Sidestep stays inside the ordinary dodge cap.
+function grug_classes.get_scout_dodge_cap()
+	return 30
 end
-
--- The central HP modifier has already resolved dodge, armor and absorb when
--- this callback runs. Only a surviving hostile punch that crosses below 30%
--- starts the six-second window; its 180-second cooldown persists through a
--- reconnect and is not reset by death.
-core.register_on_player_hpchange(function(player, hp_change, reason)
-	if hp_change >= 0 or reason.type ~= "punch" or
-			grug_classes.talent_rank(player, "untouchable") <= 0 then
-		return
-	end
-	local hp_after = player:get_hp() + hp_change
-	local properties = player:get_properties() or {}
-	local max_hp = tonumber(properties.hp_max) or 0
-	if hp_after <= 0 or max_hp <= 0 or hp_after >= max_hp * 0.30 then
-		return
-	end
-	local now = os.time()
-	local meta = player:get_meta()
-	if now < (tonumber(meta:get_string(META_UNTOUCHABLE_READY)) or 0) then
-		return
-	end
-	meta:set_string(META_UNTOUCHABLE_READY, tostring(now + 180))
-	grug_classes.start_talent_window(player, "untouchable", 6)
-	grug_core.proc_flash(player, "untouchable")
-end, false)
 
 local function clear_runtime(player)
 	sidestep_expiry[player:get_player_name()] = nil

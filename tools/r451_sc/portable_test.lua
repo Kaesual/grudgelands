@@ -183,6 +183,8 @@ local cooldown_until = {}
 grug_abilities = {
 	registered = defs,
 	is_unlocked = function() return true end,
+	-- Round 53 (HOOKS, K8): the held fallback fires current_form of Strike.
+	current_form = function(_, def) return def end,
 	get_range = function() return 20 end,
 	valid_target = function(_, ref, kind)
 		return (ref == mob and kind == "hostile") or (ref == ally and kind == "friendly")

@@ -169,7 +169,42 @@ function grug_abilities.mana_cost(player, percent)
 	return math.max(1, math.floor(base * percent / 100 + 0.5))
 end
 
-function grug_abilities.cost_for(player, cost, ability_id)
+-- The family keys of the graph talents (round53-plan.md §4 HOOKS,
+-- grug_classes talent_graph.lua KEY_FAMILIES): `<family>:<param>` summed
+-- over a definition's own id and each of its `tags` ("fire", "paid", "bow",
+-- "blade" ...). A transformation is read by its own id and tags, so its
+-- base's modifiers do not carry over (a key meant for both names both ids).
+-- The cast path reads cost_pct, cooldown_sub and range_add here, the swing
+-- path cost_pct and damage_pct; a kit reads damage_pct, radius_add and
+-- duration_add (and any other family) through this one helper. The keys are
+-- built once per definition and family.
+local FAMILY_KEYS = setmetatable({}, {__mode = "k"})
+function grug_abilities.family_bonus(player, def, family)
+	local per_def = FAMILY_KEYS[def]
+	if not per_def then
+		per_def = {}
+		FAMILY_KEYS[def] = per_def
+	end
+	local keys = per_def[family]
+	if not keys then
+		keys = {family .. ":" .. def.id}
+		for _, tag in ipairs(def.tags or {}) do
+			keys[#keys + 1] = family .. ":" .. tag
+		end
+		per_def[family] = keys
+	end
+	local total = 0
+	for i = 1, #keys do
+		total = total + grug_classes.get_talent_bonus(player, keys[i])
+	end
+	return total
+end
+
+-- `cost_pct` (optional) changes the cost by that many percent (negative is
+-- cheaper): a base-mana share before it becomes mana, a flat amount
+-- rounded to whole points. Without it the cost is today's exactly.
+function grug_abilities.cost_for(player, cost, ability_id, cost_pct)
+	local scale = 1 + (cost_pct or 0) / 100
 	if cost.mana_percent then
 		local percent = cost.mana_percent
 		if ability_id == "fireball" and
@@ -179,7 +214,32 @@ function grug_abilities.cost_for(player, cost, ability_id)
 				grug_classes.get_talent_bonus(player, "smite_absorb") > 0 then
 			percent = 6
 		end
-		return {mana = grug_abilities.mana_cost(player, percent)}
+		return {mana = grug_abilities.mana_cost(player, percent * scale)}
+	end
+	if scale ~= 1 then
+		local scaled = {}
+		for resource, amount in pairs(cost) do
+			scaled[resource] = math.max(0, math.floor(amount * scale + 0.5))
+		end
+		return scaled
+	end
+	return cost
+end
+
+-- What `def` costs this player now, on the cast and the swing path alike:
+-- its cost with the family key cost_pct (cost_for), then the definition's
+-- own adjustment, `def.cost_adjust(player, def, cost)`, which returns the
+-- cost to pay (Relentless' rage off Mighty Blow and Broadstroke). It gets a
+-- copy, never the definition's table.
+function grug_abilities.effective_cost(player, def)
+	local cost = grug_abilities.cost_for(player, def.cost, def.id,
+		grug_abilities.family_bonus(player, def, "cost_pct"))
+	if def.cost_adjust then
+		local copy = {}
+		for resource, amount in pairs(cost) do
+			copy[resource] = amount
+		end
+		cost = def.cost_adjust(player, def, copy) or copy
 	end
 	return cost
 end
@@ -300,6 +360,16 @@ function grug_abilities.valid_target(user, obj, target_kind)
 	return hostile_mob(user, ent) and not evading(ent)
 end
 
+-- valid_target as the filter of an area, group, cone or splash
+-- (round53-plan.md §3 PvP): every such filter goes through it, so the PvP
+-- flag decides who an area may touch. `target_kind` "hostile" or
+-- "friendly".
+function grug_abilities.target_filter(user, target_kind)
+	return function(obj)
+		return grug_abilities.valid_target(user, obj, target_kind)
+	end
+end
+
 -- A mob that would be a valid hostile for `user` but is evading home now: the
 -- press at it answers "Evading" (grug_mobs.evade_notice) instead of silence.
 function grug_abilities.evading_target(user, obj)
@@ -324,7 +394,8 @@ end
 -- representations keep a separate four-node hand interaction/digging reach.
 -- Melee explicitly opts out of the ranged race bonus.
 function grug_abilities.get_range(player, def)
-	local base = def.range or 4
+	local base = (def.range or 4)
+		+ grug_abilities.family_bonus(player, def, "range_add")
 	if def.range_talent then
 		base = base + grug_classes.get_talent_bonus(player, def.range_talent)
 	end
@@ -747,23 +818,45 @@ local ability_on_secondary_use_now = wielded_now(ability_on_secondary_use)
 -- abilities sound through their projectile's launch and hit
 -- (grug_projectiles.register); "weapon" skills are swings: their tool plays
 -- the swing into the air on the client and the hit sounds by weapon kind
--- (grug_core.melee_hit_sound); "silent" is the user's choice (Blink, Sprint).
+-- (grug_core.melee_hit_sound); "silent" is the user's choice (Sprint; Blink
+-- until Round 53).
 -- tools/r34_s1b/portable_test.lua checks every registered ability is here.
+-- Round 53 (round53-plan.md K6): the new skills' rows come before the class
+-- lanes register them, from the user's assignments (tools/r53_sks
+-- assignments.json): a pick ships as a cue of its own (cast_<id>), a
+-- "shipped" choice keeps that cue. A new projectile sounds through its
+-- projectile (Fiery Spark the fireball's pair, Cold Spark and Flame Lance
+-- their own launches cold_spark_launch and flame_lance_launch with the
+-- fireball's hit; True Draw and Split Shot the arrow's pair); Arrowfall
+-- has a cast cue. The impacts (meteor_impact, fire_rain_impact,
+-- winter_field_impact, censure_impact, arrowfall_impact) are the class
+-- kits' to play.
 grug_abilities.CAST_SOUNDS = {
 	strike = "weapon", mighty_blow = "weapon", hamstring = "weapon",
-	opening = "weapon",
+	opening = "weapon", retort = "weapon", broadstroke = "weapon",
+	bladecraft = "weapon",
 	fireball = "projectile", loose = "projectile", snare_shot = "projectile",
-	pinning_shot = "projectile",
+	pinning_shot = "projectile", fiery_spark = "projectile",
+	cold_spark = "projectile", flame_lance = "projectile",
+	true_draw = "projectile", split_shot = "projectile",
 	-- Warrior.
 	charge = "cast_charge", taunt = "cast_taunt", hold_ground = "cast_guard",
+	bellow = "cast_taunt", unbroken = "cast_unbroken", ruination = "cast_ruination",
 	-- Mage: frost, the arcane blink, fire.
 	ice_nova = "cast_ice_nova", glacial_ward = "cast_frost_ward",
-	blink = "silent", cinderfall = "cast_cinderfall",
+	blink = "cast_blink", cinderfall = "cast_cinderfall",
+	ice_wave = "cast_ice_wave", rime_mantle = "cast_rime_mantle",
+	winter_field = "cast_winter_field", meteor = "cast_cinderfall",
+	fire_rain = "cast_fire_rain",
 	-- Priest: holy, healing, the shield, shadow.
 	smite = "cast_holy", heal = "cast_heal", mend = "cast_heal",
 	shield_spell = "cast_shield", word_of_ruin = "cast_shadow",
+	hearten = "cast_heal", haven = "cast_haven", rebuke = "cast_holy",
+	censure = "cast_holy", final_word = "cast_final_word",
 	-- Scout.
-	sidestep = "cast_evade", sprint = "silent",
+	sidestep = "cast_evade", sprint = "silent", parry = "cast_parry",
+	flourish = "cast_flourish", close_dance = "cast_close_dance",
+	arrowfall = "cast_arrowfall",
 }
 
 -- The pose clip each skill plays when it really fires (Round 40, round40-plan
@@ -771,12 +864,20 @@ grug_abilities.CAST_SOUNDS = {
 -- skill's proc when it lands. A refused cast and the Strike fallback (a
 -- swing without a proc) play none. Charge's pose follows its dash (charge.lua,
 -- grug_visuals.start_pose/stop_pose), the Scout's drawn bow is scout.lua's.
+-- Round 53 (K6): a new cast poses like its family's casts (Ember and
+-- Reckoning cast1, Rime and Mercy cast2, Unbroken Bulwark's guard), the
+-- Warrior's and the Scout's other skills none, Broadstroke swings.
 grug_abilities.SKILL_POSES = {
 	fireball = "cast1", smite = "cast1", word_of_ruin = "cast1",
-	cinderfall = "cast1",
+	cinderfall = "cast1", fiery_spark = "cast1", flame_lance = "cast1",
+	meteor = "cast1", fire_rain = "cast1", rebuke = "cast1", censure = "cast1",
+	final_word = "cast1",
 	ice_nova = "cast2", glacial_ward = "cast2", heal = "cast2", mend = "cast2",
-	shield_spell = "cast2",
-	hold_ground = "block", mighty_blow = "swing",
+	shield_spell = "cast2", ice_wave = "cast2", cold_spark = "cast2",
+	rime_mantle = "cast2", winter_field = "cast2", hearten = "cast2",
+	haven = "cast2",
+	hold_ground = "block", unbroken = "block", mighty_blow = "swing",
+	broadstroke = "swing",
 }
 
 local function play_skill_pose(player, def)
@@ -793,17 +894,26 @@ grug_abilities.WEAPON_FX = {
 	strike = "none",
 	-- Warrior: rage, steel.
 	charge = "ruin", mighty_blow = "ruin", hamstring = "ruin",
-	taunt = "bulwark", hold_ground = "bulwark",
+	broadstroke = "ruin", ruination = "ruin",
+	taunt = "bulwark", hold_ground = "bulwark", retort = "bulwark",
+	bellow = "bulwark", unbroken = "bulwark",
 	-- Scout: wild, shadow.
 	loose = "quarry", snare_shot = "quarry", pinning_shot = "quarry",
-	sidestep = "quarry", sprint = "quarry",
-	opening = "veil",
+	sidestep = "quarry", sprint = "quarry", true_draw = "quarry",
+	split_shot = "quarry", arrowfall = "quarry",
+	opening = "veil", bladecraft = "veil", parry = "veil", flourish = "veil",
+	close_dance = "veil",
 	-- Mage: fire, frost.
-	fireball = "ember", cinderfall = "ember",
+	fireball = "ember", cinderfall = "ember", fiery_spark = "ember",
+	flame_lance = "ember", meteor = "ember", fire_rain = "ember",
 	ice_nova = "rime", blink = "rime", glacial_ward = "rime",
+	cold_spark = "rime", ice_wave = "rime", rime_mantle = "rime",
+	winter_field = "rime",
 	-- Priest: healing light, judgment.
-	heal = "mercy", shield_spell = "mercy", mend = "mercy",
-	smite = "reckoning", word_of_ruin = "reckoning",
+	heal = "mercy", shield_spell = "mercy", mend = "mercy", hearten = "mercy",
+	haven = "mercy",
+	smite = "reckoning", word_of_ruin = "reckoning", rebuke = "reckoning",
+	censure = "reckoning", final_word = "reckoning",
 }
 
 -- Each family's animation, shared by all of its weapon strips, because the
@@ -871,11 +981,30 @@ function grug_abilities.register_ability(def)
 	-- action with a cast function and a cooldown; a SWING skill's click IS
 	-- a weapon swing — it has no cast and no cooldown, only an optional
 	-- charge timer and an optional proc_swing (defined in kits.lua).
+	-- `tags` (optional): the family-key params this ability answers to besides
+	-- its id (grug_abilities.family_bonus).
+	assert(def.tags == nil or type(def.tags) == "table", "tags must be a list")
+	for _, tag in ipairs(def.tags or {}) do
+		assert(type(tag) == "string" and tag:match("^[a-z][a-z0-9_]*$"),
+			"a tag is a lower-case word")
+	end
+	-- A clock value (cast_interval, occupied_cast, occupied_swing) may be a
+	-- function(player, def) returning seconds, for a per-player value (Loose's
+	-- affix cadence, round53-plan.md §4 HOOKS). Called without a player it
+	-- returns the base: the timing line shows that, and it is checked here.
+	local function clock_base(value)
+		if type(value) == "function" then
+			return value(nil, def)
+		end
+		return value
+	end
 	if def.kind == "cast" then
 		assert(def.cast and def.cooldown ~= nil,
 			"a cast ability needs cast and cooldown")
-		assert(def.cast_interval == nil or def.cast_interval > 0,
+		local interval = clock_base(def.cast_interval)
+		assert(interval == nil or (type(interval) == "number" and interval > 0),
 			"a cast interval must be seconds > 0")
+		def._grug_base_cast_interval = interval
 		assert(def.charge == nil,
 			"charge timers belong to swing abilities")
 	else
@@ -885,22 +1014,28 @@ function grug_abilities.register_ability(def)
 			"charge must be seconds > 0")
 	end
 	-- The action clock (D2): how long this action occupies the player after
-	-- it. `occupied_cast` (seconds, either kind): no cast starts before it has
-	-- passed. `occupied_swing` (casts only): the next melee swing waits this
-	-- long, "weapon" being one interval of the current melee weapon (a swing's
-	-- own clock is that interval anyway). The defaults are the shipped rule: a
-	-- cast pushes the next swing by one weapon interval, a swing blocks no cast
-	-- and a cast blocks no other cast. A per-skill lock after a cast is not a
-	-- global cooldown (class plan C2).
-	def.occupied_cast = def.occupied_cast or 0
-	assert(type(def.occupied_cast) == "number" and def.occupied_cast >= 0,
-		"occupied_cast must be seconds >= 0")
+	-- it. `occupied_cast` (either kind): no cast starts before it has passed.
+	-- `occupied_swing` (casts only): the next melee swing waits this long.
+	-- "weapon" is one interval of the current melee weapon. The defaults: a
+	-- cast pushes the next swing by one weapon interval and blocks no other
+	-- cast; a swing holds casts back for one weapon interval (round53-plan.md
+	-- K9, the rule in both directions), and the swing's own clock is that
+	-- interval anyway. A per-skill lock after a cast is not a global cooldown
+	-- (class plan C2).
 	if def.kind == "cast" then
+		def.occupied_cast = def.occupied_cast or 0
+		local occupied = clock_base(def.occupied_cast)
+		assert(type(occupied) == "number" and occupied >= 0,
+			"occupied_cast must be seconds >= 0")
 		def.occupied_swing = def.occupied_swing or "weapon"
-		assert(def.occupied_swing == "weapon" or (type(def.occupied_swing) ==
-			"number" and def.occupied_swing >= 0),
+		local swing = clock_base(def.occupied_swing)
+		assert(swing == "weapon" or (type(swing) == "number" and swing >= 0),
 			"occupied_swing must be seconds >= 0 or \"weapon\"")
 	else
+		def.occupied_cast = def.occupied_cast or "weapon"
+		local occupied = clock_base(def.occupied_cast)
+		assert(occupied == "weapon" or (type(occupied) == "number" and occupied >= 0),
+			"occupied_cast must be seconds >= 0 or \"weapon\"")
 		assert(def.occupied_swing == nil,
 			"a swing occupies the next swing by its weapon interval")
 	end
@@ -919,6 +1054,8 @@ function grug_abilities.register_ability(def)
 			"only a class basic attack replaces its base without a talent")
 	end
 	assert(def.cooldown_key == nil, "the cooldown key is derived, not declared")
+	assert(not def.basic_attack or (def.class and not def.transforms),
+		"basic_attack marks a class ability that replaces nothing")
 	def.cooldown_key = base and base.cooldown_key or def.id
 	def.cost = def.cost or {}
 	-- Which equipment slot's item this ability wears and (from T4 on) swings
@@ -956,7 +1093,7 @@ function grug_abilities.register_ability(def)
 	if def.kind == "swing" then
 		cd_line = def.charge and (def.charge .. " s charge") or "no charge"
 	elseif def.cast_interval then
-		cd_line = string.format("%g s cast interval", def.cast_interval)
+		cd_line = string.format("%g s cast interval", def._grug_base_cast_interval)
 	else
 		cd_line = (def.cooldown > 0 and (def.cooldown .. " s cooldown"))
 			or "no cooldown"
@@ -1019,25 +1156,38 @@ end
 
 function grug_abilities.description_prefix(player, def)
 	local cost_line
+	-- With a player: the cost the player pays (the family key cost_pct and
+	-- the definition's own adjustment, effective_cost), the base-mana share
+	-- after cost_pct.
+	local cost = def.cost
+	if player and not cost.mana_percent then
+		cost = grug_abilities.effective_cost(player, def)
+	end
 	if def.cost.mana_percent then
-		cost_line = string.format("%g%% base mana", def.cost.mana_percent)
+		local percent = def.cost.mana_percent
+		if player then
+			percent = percent * (1 +
+				grug_abilities.family_bonus(player, def, "cost_pct") / 100)
+		end
+		cost_line = string.format("%g%% base mana", percent)
 		if player then
 			cost_line = cost_line .. " (" ..
-				grug_abilities.mana_cost(player, def.cost.mana_percent) .. " mana)"
+				grug_abilities.mana_cost(player, percent) .. " mana)"
 		end
 	elseif def.cost.mana then
-		cost_line = def.cost.mana .. " mana"
+		cost_line = cost.mana .. " mana"
 	elseif def.cost.rage then
-		cost_line = def.cost.rage .. " rage"
+		cost_line = cost.rage .. " rage"
 	else
 		cost_line = "free"
 	end
 	local timing = def._grug_timing_line
 	if player and def.kind == "swing" and def.charge then
 		timing = grug_abilities.effective_charge(player, def) .. " s charge"
-	elseif player and def.cooldown_talent and not def.cast_interval then
-		-- The cooldown this player's cast earns (Second Skin, Swift Word,
-		-- Grudge, Quick Step ...); refreshed with every talent change.
+	elseif player and def.kind == "cast" and not def.cast_interval then
+		-- The cooldown this player's cast earns (the family key cooldown_sub,
+		-- Second Skin, Swift Word, Grudge, Quick Step ...); refreshed with
+		-- every talent change.
 		local cooldown = grug_abilities.effective_cooldown(player, def)
 		timing = cooldown > 0 and string.format("%g s cooldown", cooldown)
 			or "no cooldown"
@@ -1130,6 +1280,16 @@ local function cast_interval_ready(player, def)
 	return not next_cast or core.get_us_time() >= next_cast
 end
 
+-- A clock value of `def` for this player (register_ability): seconds, a
+-- function(player, def) returning them, or "weapon" (the caller resolves it).
+local function clock_seconds(value, player, def)
+	if type(value) == "function" then
+		return value(player, def)
+	end
+	return value
+end
+grug_abilities.clock_seconds = clock_seconds
+
 local function arm_cast_interval(player, def)
 	if not def.cast_interval then
 		return
@@ -1137,11 +1297,11 @@ local function arm_cast_interval(player, def)
 	local name = player:get_player_name()
 	cast_intervals[name] = cast_intervals[name] or {}
 	cast_intervals[name][def.cooldown_key] = core.get_us_time()
-		+ def.cast_interval * 1e6
+		+ clock_seconds(def.cast_interval, player, def) * 1e6
 end
 
 -- The action clock's cast side (D2): `seconds` from now no cast starts. Never
--- shortens a running lock; 0 (every shipped skill) writes nothing.
+-- shortens a running lock; 0 (a cast's default) writes nothing.
 local function occupy_casts(player, seconds)
 	if seconds <= 0 then
 		return
@@ -1160,16 +1320,18 @@ end
 -- above: `cooldown` in a kit table is a load-time constant with no player in
 -- scope, so the talents that shorten one (Grudge, Onset, Quick Step, Swift
 -- Word, Second Skin, Slip Away -- skill_trees.md §3.2) are read HERE, at the one
--- arm_cooldown(user, def, def.cooldown) call the game has. Without a ranked
--- talent this returns def.cooldown exactly.
+-- arm_cooldown(user, def, def.cooldown) call the game has, with the family
+-- key cooldown_sub (Round 53). Without a ranked talent this returns
+-- def.cooldown exactly.
 function grug_abilities.effective_cooldown(player, def)
-	local cooldown = def.cooldown or 0
+	local cooldown = (def.cooldown or 0)
+		- grug_abilities.family_bonus(player, def, "cooldown_sub")
 	if def.cooldown_talent then
 		cooldown = cooldown
 			- grug_classes.get_talent_bonus(player, def.cooldown_talent)
-		if cooldown < 0 then
-			cooldown = 0
-		end
+	end
+	if cooldown < 0 then
+		cooldown = 0
 	end
 	return cooldown
 end
@@ -1306,6 +1468,22 @@ local function selected_swing_def(player)
 		grug_abilities.is_unlocked(player, def.id)) and def or nil
 end
 
+-- What every landed swing gains (round53-plan.md §4 HOOKS, the swing
+-- callback): a class file registers func(player, swing) from its own file;
+-- `swing` is {def = the swing's definition (Strike in the fallback), proc =
+-- the definition whose proc fires on it or nil, target, weapon_damage, fpi}.
+-- It returns nil or {damage_mult, damage_add, rage_add, on_landed}: the
+-- multipliers and adds change the swing's raw damage before its one scaling
+-- pass (raw x every mult + every add, proc damage included), rage_add is
+-- granted when the swing lands, and on_landed(player, swing) runs then
+-- (consume a window, play an effect). The functions decide themselves
+-- whether a window is open; nothing here keeps state. Called once per due
+-- swing, never for a native packet.
+local swing_callbacks = {}
+function grug_abilities.register_on_swing(func)
+	swing_callbacks[#swing_callbacks + 1] = func
+end
+
 -- Proc preparation still uses the two-phase grug_core seam because mobs_redo
 -- can reject a punch through do_punch or CMI after damage was calculated. The
 -- context is now one whole authoritative swing, never a native packet
@@ -1338,8 +1516,23 @@ local function prepare_authoritative_swing(player, target, token)
 		proc = swing.proc,
 		proc_cost = swing.proc_cost,
 		post = swing.post,
+		gains = swing.gains,
 	}
 	return context
+end
+
+-- The swing callbacks' landed part: their rage and their on_landed hooks.
+local function grant_swing_gains(context)
+	local gains = context.gains
+	if not gains then
+		return
+	end
+	if gains.rage_add > 0 then
+		grug_abilities.add_rage(context.player, gains.rage_add)
+	end
+	for _, on_landed in ipairs(gains.on_landed) do
+		on_landed(context.player, gains.swing)
+	end
 end
 
 local function finish_authoritative_swing(context, result)
@@ -1374,6 +1567,7 @@ local function finish_authoritative_swing(context, result)
 			grug_abilities.add_rage(context.player,
 				swing_rage(context.player, context.base_fpi))
 		end
+		grant_swing_gains(context)
 		grant_battlebeat()
 		return false
 	end
@@ -1387,6 +1581,7 @@ local function finish_authoritative_swing(context, result)
 			grug_abilities.add_rage(context.player,
 				swing_rage(context.player, context.base_fpi))
 		end
+		grant_swing_gains(context)
 		grant_battlebeat()
 		return false
 	end
@@ -1406,6 +1601,7 @@ local function finish_authoritative_swing(context, result)
 		grug_abilities.add_rage(context.player,
 			swing_rage(context.player, context.base_fpi))
 	end
+	grant_swing_gains(context)
 	grant_battlebeat()
 	return true
 end
@@ -1509,9 +1705,13 @@ attempt_swing = function(player, selected, held, latched)
 		late = math.min(late, SWING_CATCHUP, fpi * 0.5)
 	end
 	entry.next_due = now + (fpi - late) * 1e6
-	-- Swing -> cast on the action clock (D2): the swing's skill (Strike in the
-	-- fallback) may hold casts back; no shipped skill does.
-	occupy_casts(player, selected.occupied_cast)
+	-- Swing -> cast on the action clock (D2, round53-plan.md K9): the swing's
+	-- skill (the basic attack in the fallback) holds casts back, by default
+	-- until this weapon's next swing is due (one interval less the carried
+	-- lateness, so a fallback swing keeps the catch-up of the swing clock).
+	local occupied = clock_seconds(selected.occupied_cast, player, selected)
+	occupy_casts(player, occupied == "weapon" and (entry.next_due - now) / 1e6
+		or occupied)
 	-- A valid attack hides readiness before any dodge/refusal/callback outcome.
 	set_ready_reticle(player, false)
 	local caps = {
@@ -1524,7 +1724,11 @@ attempt_swing = function(player, selected, held, latched)
 	local melee_bonus = grug_classes.get_melee_bonus(player)
 	local melee_damage_add = grug_classes.get_talent_bonus(player,
 		"melee_damage_add")
+	-- The plain swing's damage_pct by the swing definition's id and tags
+	-- (Fine Edge on Strike and Bladecraft): a share of its untalented damage.
+	local damage_pct = grug_abilities.family_bonus(player, selected, "damage_pct")
 	local raw_damage = weapon_damage + melee_bonus + melee_damage_add
+		+ (weapon_damage + melee_bonus) * damage_pct / 100
 	local proc
 	local proc_cost
 	local post
@@ -1532,8 +1736,9 @@ attempt_swing = function(player, selected, held, latched)
 	-- Selection is read live at this actual due swing. An unavailable or
 	-- unaffordable proc stays armed and the ordinary swing still lands. Its
 	-- replacement amount is assembled before the transaction crosses the
-	-- scalar, so even Mighty Blow has exactly one scaling pass.
-	local selected_cost = grug_abilities.cost_for(player, selected.cost)
+	-- scalar, so even Mighty Blow has exactly one scaling pass. Its cost is
+	-- the one the cast path charges (effective_cost).
+	local selected_cost = grug_abilities.effective_cost(player, selected)
 	if selected.proc_swing
 			and grug_abilities.charge_ready(player, selected)
 			and affordable(player, selected_cost) then
@@ -1558,6 +1763,27 @@ attempt_swing = function(player, selected, held, latched)
 				+ grug_classes.get_talent_bonus(player, "threat_mult_add")
 		end
 	end
+	-- The swing callbacks (register_on_swing): their multipliers and adds on
+	-- the raw damage, their rage and hooks for the landing.
+	local gains
+	if #swing_callbacks > 0 then
+		local swing = {def = selected, proc = proc, target = target,
+			weapon_damage = weapon_damage, fpi = fpi}
+		local mult, add = 1, 0
+		for _, callback in ipairs(swing_callbacks) do
+			local gain = callback(player, swing)
+			if gain then
+				mult = mult * (gain.damage_mult or 1)
+				add = add + (gain.damage_add or 0)
+				if gain.rage_add or gain.on_landed then
+					gains = gains or {swing = swing, rage_add = 0, on_landed = {}}
+					gains.rage_add = gains.rage_add + (gain.rage_add or 0)
+					gains.on_landed[#gains.on_landed + 1] = gain.on_landed
+				end
+			end
+		end
+		raw_damage = raw_damage * mult + add
+	end
 	local transaction = {
 		weapon_damage = weapon_damage,
 		fpi = fpi,
@@ -1567,6 +1793,7 @@ attempt_swing = function(player, selected, held, latched)
 		proc = proc,
 		proc_cost = proc_cost,
 		post = post,
+		gains = gains,
 		threat_mult = threat_mult,
 		-- The complete gear + flat Strength amount crosses the one player-level
 		-- scalar and target-level malus here, before the punch can reach crit
@@ -1622,30 +1849,32 @@ end)
 -- Why `user` cannot cast `def` right now (class, unlock, cooldown, cast
 -- interval, the action clock, resource), or nil when nothing stands in the
 -- way. One wording for the dispatcher below and the contextual input gate
--- (input.lua), which asks before it reaches the dispatcher.
+-- (input.lua), which asks before it reaches the dispatcher. The second
+-- result names the reason ("class", "locked", "cooldown", "interval",
+-- "busy", "cost"): the held fallback skips "interval" and "busy" (K8).
 local function cast_refusal(user, def)
 	-- Universal abilities have no class to be (E1) — without this a Mage
 	-- using the universal Strike was told "You are no Warrior".
 	if not def.universal and grug_classes.get_class(user) ~= def.class then
 		return "You are no " ..
-			grug_classes.registered_classes[def.class].name .. "."
+			grug_classes.registered_classes[def.class].name .. ".", "class"
 	end
 	if not grug_abilities.is_unlocked(user, def.id) then
-		return "This skill is not unlocked."
+		return "This skill is not unlocked.", "locked"
 	end
 	if not grug_abilities.ready(user, def.id) then
-		return def.name .. " is not ready."
+		return def.name .. " is not ready.", "cooldown"
 	end
 	if not cast_interval_ready(user, def) then
-		return def.name .. " cast interval is not ready."
+		return def.name .. " cast interval is not ready.", "interval"
 	end
 	-- The action clock (D2): an earlier cast or swing still occupies casts.
 	if not cast_clock_ready(user) then
-		return "You are still busy."
+		return "You are still busy.", "busy"
 	end
-	local cost = grug_abilities.cost_for(user, def.cost, def.id)
+	local cost = grug_abilities.effective_cost(user, def)
 	if not affordable(user, cost) then
-		return "Not enough " .. (cost.mana and "mana" or "rage") .. "."
+		return "Not enough " .. (cost.mana and "mana" or "rage") .. ".", "cost"
 	end
 	return nil
 end
@@ -1678,7 +1907,7 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 		notice(refusal)
 		return
 	end
-	local effective_cost = grug_abilities.cost_for(user, def.cost, def.id)
+	local effective_cost = grug_abilities.effective_cost(user, def)
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
 	-- cooldown. def is passed through for the target-lock helpers
 	-- (range checks). The cast succeeded, so it arms the one cooldown it
@@ -1706,7 +1935,7 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 		grug_abilities.effective_cooldown(user, def))
 	-- Cast -> cast on the action clock (D2); cast -> swing is the caller's
 	-- delay_strike (input.lua), with def.occupied_swing.
-	occupy_casts(user, def.occupied_cast)
+	occupy_casts(user, clock_seconds(def.occupied_cast, user, def))
 	return true
 end
 
@@ -2322,6 +2551,37 @@ local function carries(inv, ability_id)
 	return false
 end
 
+-- The kit's order on the hotbar (round53-plan.md K7): the class's basic
+-- attack in slot 1, then the other starters in file order. A basic attack
+-- that transforms Strike takes Strike's place at the front by itself (the
+-- universal abilities come first); a class whose own basic attack replaces
+-- nothing marks it `basic_attack = true` (the Scout's Loose), and then the
+-- class's abilities come first and the universal ones after them.
+local function kit_order(player)
+	local ids = grug_abilities.unlocked_ids(player)
+	local first
+	for _, id in ipairs(ids) do
+		if grug_abilities.registered[id].basic_attack then
+			first = id
+			break
+		end
+	end
+	if not first then
+		return ids
+	end
+	local class_ids, universal_ids = {first}, {}
+	for _, id in ipairs(ids) do
+		local list = grug_abilities.registered[id].universal and universal_ids or class_ids
+		if id ~= first then
+			list[#list + 1] = id
+		end
+	end
+	for _, id in ipairs(universal_ids) do
+		class_ids[#class_ids + 1] = id
+	end
+	return class_ids
+end
+
 local function grant_initial_kit(player)
 	local inv = player:get_inventory()
 	local meta = player:get_meta()
@@ -2329,7 +2589,7 @@ local function grant_initial_kit(player)
 	local complete = true
 	local hotbar = grug_inventory.HOTBAR_SIZE
 	local pending = {} -- kit slot taken: after every free kit slot is filled
-	for index, ability_id in ipairs(grug_abilities.unlocked_ids(player)) do
+	for index, ability_id in ipairs(kit_order(player)) do
 		local def = grug_abilities.registered[ability_id]
 		if not def.talent_gated then
 			local stack = grug_abilities.stack_for(player, ability_id)
@@ -2750,7 +3010,7 @@ grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 		if not grug_abilities.charge_ready(player, def) then
 			return def.name .. " is not ready."
 		end
-		local cost = grug_abilities.cost_for(player, def.cost, def.id)
+		local cost = grug_abilities.effective_cost(player, def)
 		if not affordable(player, cost) then
 			return "Not enough " .. (cost.mana and "mana" or "rage") .. "."
 		end

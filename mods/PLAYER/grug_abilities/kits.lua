@@ -312,6 +312,9 @@ local strike_def = {
 	-- otherwise hand elves an 8 m sword.
 	melee = true,
 	range = 3,
+	-- A blade attack for the family keys (Fine Edge's damage_pct:blade);
+	-- only the Scout's vocabulary names the tag.
+	tags = {"blade"},
 }
 grug_abilities.register_ability(strike_def)
 
@@ -345,6 +348,10 @@ local K = {
 	talent_rank_value = talent_rank_value,
 	fx = fx,
 	facing = facing,
+	-- Round 53: the family keys (damage_pct, radius_add, duration_add ...)
+	-- and the area filter.
+	family_bonus = grug_abilities.family_bonus,
+	target_filter = grug_abilities.target_filter,
 }
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits_warrior.lua")(K)
 dofile(core.get_modpath(core.get_current_modname()) .. "/kits_mage.lua")(K)

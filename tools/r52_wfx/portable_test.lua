@@ -3,9 +3,9 @@
 -- grug_abilities/init.lua with its whole dofile chain (kits, scout.lua, input)
 -- in a sandbox over a small fake engine, twice: as it ships, and with a test
 -- animation table and test strips patched in (the art step's shape). Checks:
---   M  every registered skill has a family or none, exactly the ruling's
---      mapping (node list §4 note plus Cinderfall, Glacial Ward, Pinning Shot;
---      Strike none); the table lives in init.lua and no kit file names it;
+--   M  every registered skill has a family of its class or none (Strike
+--      none), one-directional in round K (Round 53 K14: a row may wait for
+--      its skill); the table lives in init.lua and no kit file names it;
 --   O  off while no strip ships (the state before the art step): no family
 --      animation, no definition overlay, every skin writes the transparent
 --      override (never an empty string) for a weapon, a bow and an empty
@@ -17,18 +17,16 @@
 --      unpicked strip, an empty slot, a non-weapon and Strike; the token
 --      changes with the overlay, so a newly picked strip rewrites the stack
 --      once and an unchanged pass writes nothing;
---   D  the Scout's draw (the real start/step/cancel): each draw stage shows
---      its own strip, the idle bow's comes back after the draw, and an
---      unpicked draw strip falls back to transparent;
+--   (D, the Scout's draw stages, retired in Round 53: the draw is gone.)
 --   T  third person: the held-item holder (grug_visuals/apply.lua, its two
 --      functions copied out of the source) shows the cosmetic weapon for a
 --      selected skill and copies only that stack's keys, so the skill's
 --      overlay never reaches it;
---   F  every strip that ships (30 since the art step) is named
---      <family>_<weapon>[_draw<n>] for a weapon its family's class wields,
---      has its family's animation, is 16 px wide and `frames` frames high,
---      and has a LICENSE-media.md row; an animated family ships every strip
---      of its class's weapons and the bow's draw stages, and the shipped skin
+--   F  every strip that ships (24 since Round 53 deleted the six draw
+--      stages) is named <family>_<weapon> for a weapon its family's class
+--      wields, has its family's animation, is 16 px wide and `frames` frames
+--      high, and has a LICENSE-media.md row; an animated family ships every
+--      strip of its class's weapons, no draw stage, and the shipped skin
 --      names them.
 --
 -- Usage (repo root): luajit tools/r52_wfx/portable_test.lua [repo]
@@ -277,42 +275,40 @@ check(G and G.registered.strike and G.registered.loose and G.WEAPON_FX,
 	"the real init.lua loads with its kits")
 
 ------------------------------------------------------------------------------
--- M: the family of every skill.
+-- M: the family of every skill. One-directional while round K's lanes
+-- register the new skills (round53-plan.md K14): every registered skill has
+-- a family of its class; a row may wait for its skill (HOOKS adds the rows
+-- first, INTEG restores the reverse check when the retired rows go).
 ------------------------------------------------------------------------------
-local EXPECTED = {
-	strike = "none",
-	charge = "ruin", mighty_blow = "ruin", hamstring = "ruin",
-	taunt = "bulwark", hold_ground = "bulwark",
-	heal = "mercy", shield_spell = "mercy", mend = "mercy",
-	smite = "reckoning", word_of_ruin = "reckoning",
-	loose = "quarry", snare_shot = "quarry", sidestep = "quarry", sprint = "quarry",
-	pinning_shot = "quarry",
-	opening = "veil",
-	fireball = "ember", cinderfall = "ember",
-	ice_nova = "rime", blink = "rime", glacial_ward = "rime",
-}
 local ids = {}
 for id in pairs(G.registered) do ids[#ids + 1] = id end
 table.sort(ids)
-eq(#ids, 22, "M every shipped skill is registered")
+check(#ids >= 1, "M the kits register skills")
+eq(G.WEAPON_FX.strike, "none", "M Strike shows no family")
 for _, id in ipairs(ids) do
-	eq(G.WEAPON_FX[id], EXPECTED[id], "M the family of " .. id)
-end
-for id, family in pairs(G.WEAPON_FX) do
-	check(G.registered[id] ~= nil, "M no entry for an unregistered skill: " .. id)
-	check(family == "none" or FAMILY_CLASS[family] ~= nil, "M a known family: " .. id)
+	local family = G.WEAPON_FX[id]
+	check(family ~= nil, "M a family for the registered " .. id)
 	-- A skill's family belongs to its class's trees.
 	local def = G.registered[id]
-	if def and family ~= "none" then
+	if family and family ~= "none" then
 		eq(FAMILY_CLASS[family], def.class, "M " .. id .. "'s family is of its class")
 	end
 end
+for id, family in pairs(G.WEAPON_FX) do
+	check(family == "none" or FAMILY_CLASS[family] ~= nil, "M a known family: " .. id)
+end
 check(init_src:find("\ngrug_abilities%.WEAPON_FX = {") ~= nil,
 	"M the id-keyed table lives in init.lua")
-for _, file in ipairs({"kits.lua", "kits_warrior.lua", "kits_mage.lua", "kits_priest.lua",
-		"scout.lua", "blink.lua"}) do
-	check(not (read(MOD .. file) or ""):find("WEAPON_FX", 1, true),
-		"M no kit file names the table: " .. file)
+do
+	local pipe = assert(io.popen("ls " .. MOD .. "*.lua"))
+	for path in pipe:lines() do
+		local file = path:match("([^/]+)$")
+		if file ~= "init.lua" then
+			check(not (read(MOD .. file) or ""):find("WEAPON_FX", 1, true),
+				"M no kit file names the table: " .. file)
+		end
+	end
+	pipe:close()
 end
 
 ------------------------------------------------------------------------------
@@ -406,7 +402,8 @@ local function anim_of(id)
 		o.animation.aspect_h .. " " .. string.format("%.2f", o.animation.length)) or "none"
 end
 eq(anim_of("fireball"), NONE .. " vertical_frames 16x16 0.96", "S fireball: ember's animation")
-eq(anim_of("cinderfall"), NONE .. " vertical_frames 16x16 0.96", "S cinderfall shares it")
+-- Round 53: Cinderfall is retired; Meteor is another ember skill.
+eq(anim_of("meteor"), NONE .. " vertical_frames 16x16 0.96", "S meteor shares it")
 eq(anim_of("loose"), NONE .. " vertical_frames 16x16 1.20", "S loose: quarry's own tempo")
 eq(anim_of("charge"), NONE .. " vertical_frames 16x16 0.40", "S charge: ruin's")
 eq(anim_of("ice_nova"), "none", "S rime without an animation has no definition overlay")
@@ -415,7 +412,7 @@ eq(anim_of("strike"), "none", "S Strike has none")
 local so = G.skin_overlay
 local R = G.registered
 eq(so(R.fireball, "staff"), "grug_abilities_fx_ember_staff.png", "S ember on a staff")
-eq(so(R.cinderfall, "wand"), "grug_abilities_fx_ember_wand.png", "S ember on a wand")
+eq(so(R.meteor, "wand"), "grug_abilities_fx_ember_wand.png", "S ember on a wand")
 eq(so(R.fireball, "dagger"), NONE, "S an unpicked strip is transparent")
 eq(so(R.fireball, nil), NONE, "S no weapon, no overlay")
 eq(so(R.loose, "bow"), "grug_abilities_fx_quarry_bow.png", "S the idle bow")
@@ -434,7 +431,9 @@ do
 	hands(p, "grug_gear:staff_iron")
 	local got = skins(p)
 	eq(got.fireball, "grug_abilities_fx_ember_staff.png", "S the skin writes the staff strip")
-	eq(got.strike, NONE, "S Strike's skin is transparent")
+	-- Round 53: the Mage's basic attack replaces Strike (so(R.strike) above
+	-- keeps Strike's transparent overlay checked).
+	eq(got.strike, nil, "S the Mage holds no Strike")
 	eq(got.blink, NONE, "S rime is off")
 	hands(p, "grug_gear:dagger_iron")
 	eq(skins(p).fireball, NONE, "S the dagger strip is not picked")
@@ -475,41 +474,6 @@ do
 	local before = inv.writes
 	equip()
 	eq(inv.writes - before, 0, "S an unchanged pass writes nothing")
-end
-
-------------------------------------------------------------------------------
--- D: the Scout's draw stages (the real start, step and cancel).
-------------------------------------------------------------------------------
-do
-	local p = new_player("d_scout", "scout")
-	players2[p.name] = p
-	hands(p, "grug_gear:bow_wood", "grug_gear:dagger_iron")
-	p.inv.lists.main[1] = G.stack_for(p, "loose")
-	local function shown()
-		local meta = p.inv.lists.main[1]:get_meta()
-		return meta:get_string("wield_image") .. " " .. meta:get_string("wield_overlay")
-	end
-	eq(shown(), "grug_gear_bow_wood.png grug_abilities_fx_quarry_bow.png", "D the idle bow")
-	local ok = G.start_bow_draw(p)
-	check(ok, "D the draw starts")
-	eq(shown(), "grug_abilities_bow_draw_0.png grug_abilities_fx_quarry_bow_draw0.png",
-		"D stage 0 shows its strip")
-	p.controls = {place = true}
-	local function advance(seconds)
-		for _ = 1, math.floor(seconds / 0.05 + 0.5) do
-			now_us = now_us + 50000
-			for _, fn in ipairs(hooks2.globalstep or {}) do fn(0.05) end
-		end
-	end
-	advance(1.0)
-	eq(shown(), "grug_abilities_bow_draw_1.png " .. NONE, "D stage 1: its strip is not picked")
-	advance(1.6)
-	eq(shown(), "grug_abilities_bow_draw_2.png grug_abilities_fx_quarry_bow_draw2.png",
-		"D stage 2 shows its strip")
-	G.cancel_bow_draw(p)
-	eq(shown(), "grug_gear_bow_wood.png grug_abilities_fx_quarry_bow.png",
-		"D the idle strip comes back after the draw")
-	eq(p.inv.lists.main[1]:get_wear(), 0, "D the draw's wear is reset too")
 end
 
 ------------------------------------------------------------------------------
@@ -567,7 +531,7 @@ do
 		end
 		local class = family and FAMILY_CLASS[family]
 		check(class and CLASS_WEAPONS[class][weapon], "F a family and a weapon its class wields: " .. file)
-		check(not stage or (weapon == "bow" and tonumber(stage) <= 2), "F draw stages only on the bow: " .. file)
+		check(not stage, "F no draw stage ships (Round 53: the draw is gone): " .. file)
 		local a = family and anim[family]
 		check(a ~= nil, "F its family is animated: " .. file)
 		local png = read(MOD .. "textures/" .. file) or ""
@@ -580,16 +544,11 @@ do
 		if a then eq(height, a.frames * 16, "F " .. a.frames .. " frames high: " .. file) end
 		check(license:find(file, 1, true) ~= nil, "F a LICENSE-media.md row: " .. file)
 	end
-	-- A family that ships has every strip of its class's weapons (and the
-	-- bow's draw stages), and the shipped skin names them.
+	-- A family that ships has every strip of its class's weapons, and the
+	-- shipped skin names them.
 	for family in pairs(anim) do
 		for weapon in pairs(CLASS_WEAPONS[FAMILY_CLASS[family]] or {}) do
 			local names = {"grug_abilities_fx_" .. family .. "_" .. weapon .. ".png"}
-			if weapon == "bow" then
-				for n = 0, 2 do
-					names[#names + 1] = "grug_abilities_fx_" .. family .. "_bow_draw" .. n .. ".png"
-				end
-			end
 			for _, name in ipairs(names) do
 				local found = false
 				for _, file in ipairs(shipped) do found = found or file == name end
@@ -600,8 +559,8 @@ do
 	if anim.ember then
 		eq(real.skin_overlay(real.registered.fireball, "staff"), "grug_abilities_fx_ember_staff.png",
 			"F as shipped, Fireball over a staff shows ember's staff strip")
-		eq(real.skin_overlay(real.registered.loose, "bow", 1), anim.quarry and
-			"grug_abilities_fx_quarry_bow_draw1.png" or NONE, "F as shipped, Loose's draw stage 1")
+		eq(real.skin_overlay(real.registered.loose, "bow"), anim.quarry and
+			"grug_abilities_fx_quarry_bow.png" or NONE, "F as shipped, Loose shows quarry's bow strip")
 		eq(real.skin_overlay(real.registered.strike, "sword"), NONE, "F as shipped, Strike none")
 	end
 	print(("F %d strips ship, %d families animated"):format(#shipped, (function()

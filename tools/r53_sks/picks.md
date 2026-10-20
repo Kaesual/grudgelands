@@ -24,8 +24,8 @@ The verdict column is left for the coordinator.
 | Fire Rain (Einschlag) | `fire_rain_impact_4_fs234555` | [Swoosh Explosion (Freesound 234555, HQ preview, 128 kbit MP3)](https://freesound.org/people/Electroviolence/sounds/234555/), Electroviolence | CC0 1.0 | 2.40 | -2.9 | |
 | Cold Spark (Abschuss) | `cold_spark_1_shipped-fireball_launch` | grug_sounds_fireball_launch.ogg (shipped event `fireball_launch`) | as shipped | 1.01 | -3.6 | |
 | Cold Spark (Abschuss) | `cold_spark_2_fs683180` | [Iceball (Freesound 683180, HQ preview, 128 kbit MP3)](https://freesound.org/people/NearTheAtmoshphere/sounds/683180/), NearTheAtmoshphere | CC0 1.0 | 0.81 | -3.7 | |
-| Cold Spark (Abschuss) | `cold_spark_3_fs160420` | [iceSpell.wav (Freesound 160420, HQ preview, 128 kbit MP3)](https://freesound.org/people/Relenzo2/sounds/160420/), Relenzo2 | CC0 1.0 | 0.62 | -3.3 | |
 | Cold Spark (Abschuss) | `cold_spark_4_fs709888` | [Ice Magic Arrow_type 01 (Freesound 709888, HQ preview, 128 kbit MP3)](https://freesound.org/people/lotteria001/sounds/709888/), lotteria001 | CC0 1.0 | 1.60 | -2.9 | |
+| Cold Spark (Abschuss) | `cold_spark_5_fs709888-short` | [Ice Magic Arrow_type 01 (Freesound 709888, HQ preview, 128 kbit MP3)](https://freesound.org/people/lotteria001/sounds/709888/), lotteria001 | CC0 1.0 | 0.80 | -2.9 | |
 | Ice Wave | `ice_wave_1_shipped-cast_ice_nova` | grug_sounds_cast_ice_nova.ogg (shipped event `cast_ice_nova`) | as shipped | 1.00 | -2.8 | |
 | Ice Wave | `ice_wave_2_fs691005` | [Icy Magic Cast (Freesound 691005, HQ preview, 128 kbit MP3)](https://freesound.org/people/DustyWind/sounds/691005/), DustyWind | CC0 1.0 | 1.20 | -2.9 | |
 | Ice Wave | `ice_wave_3_fs263915` | [Ice 9 (Freesound 263915, HQ preview, 128 kbit MP3)](https://freesound.org/people/JarredGibb/sounds/263915/), JarredGibb | CC0 1.0 | 1.90 | -3.0 | |
@@ -35,9 +35,9 @@ The verdict column is left for the coordinator.
 | Rime Mantle | `rime_mantle_3_fs274542` | [Low Ice shimmer FX.wav (Freesound 274542, HQ preview, 128 kbit MP3)](https://freesound.org/people/B3_Sound/sounds/274542/), B3_Sound | CC0 1.0 | 2.00 | -3.0 | |
 | Rime Mantle | `rime_mantle_4_fs263913` | [Ice 2 (Freesound 263913, HQ preview, 128 kbit MP3)](https://freesound.org/people/JarredGibb/sounds/263913/), JarredGibb | CC0 1.0 | 1.90 | -2.8 | |
 | Winter Field | `winter_field_1_shipped-cast_ice_nova` | grug_sounds_cast_ice_nova.ogg (shipped event `cast_ice_nova`) | as shipped | 1.00 | -2.8 | |
-| Winter Field | `winter_field_2_fs569109` | [Short Wind/Air Woosh | A gust of wind (Freesound 569109, HQ preview, 128 kbit MP3)](https://freesound.org/people/NIKOKnecht/sounds/569109/), NIKOKnecht | CC0 1.0 | 2.20 | -2.8 | |
 | Winter Field | `winter_field_3_fs381853` | [wind_gust_short_sqeeeek.wav (Freesound 381853, HQ preview, 128 kbit MP3)](https://freesound.org/people/sqeeeek/sounds/381853/), sqeeeek | CC0 1.0 | 1.60 | -2.9 | |
 | Winter Field | `winter_field_4_fs844261` | [Subzero Frost Loop (Freesound 844261, HQ preview, 128 kbit MP3)](https://freesound.org/people/qubodup/sounds/844261/), qubodup | CC0 1.0 | 2.20 | -3.0 | |
+| Winter Field | `winter_field_5_fs381853-short` | [wind_gust_short_sqeeeek.wav (Freesound 381853, HQ preview, 128 kbit MP3)](https://freesound.org/people/sqeeeek/sounds/381853/), sqeeeek | CC0 1.0 | 1.10 | -3.2 | |
 | Winter Field (Einschlag) | `winter_field_impact_1_shipped-ice_break` | grug_sounds_ice_break.ogg (shipped event `ice_break`) | as shipped | 1.98 | -3.7 | |
 | Winter Field (Einschlag) | `winter_field_impact_2_fs422633` | [Break something (ice/glass/...) (Freesound 422633, HQ preview, 128 kbit MP3)](https://freesound.org/people/Aurelon/sounds/422633/), Aurelon | CC0 1.0 | 0.50 | -3.3 | |
 | Winter Field (Einschlag) | `winter_field_impact_3_fs719973` | [ICEBrk_Break04_InMotionAudio_FREESampleSunday (Freesound 719973, HQ preview, 128 kbit MP3)](https://freesound.org/people/InMotionAudio/sounds/719973/), InMotionAudio | CC0 1.0 | 0.55 | -2.5 | |
@@ -56,32 +56,22 @@ The verdict column is left for the coordinator.
 | Broadstroke | `broadstroke_4_fs171321` | [Fast Swoosh.wav (Freesound 171321, HQ preview, 128 kbit MP3)](https://freesound.org/people/swidmark/sounds/171321/), swidmark | CC0 1.0 | 1.00 | -3.6 | |
 | Ruination | `ruination_1_shipped-cast_guard` | grug_sounds_cast_guard.ogg (shipped event `cast_guard`) | as shipped | 0.57 | -4.0 | |
 | Ruination | `ruination_2_fs701308` | [Hit reverb (dark) (Freesound 701308, HQ preview, 128 kbit MP3)](https://freesound.org/people/xkeril/sounds/701308/), xkeril | CC0 1.0 | 2.50 | -3.4 | |
-| Ruination | `ruination_3_fs807976` | [bass rumble - deepwhoosh 1 (Freesound 807976, HQ preview, 128 kbit MP3)](https://freesound.org/people/Logicogonist/sounds/807976/), Logicogonist | CC0 1.0 | 1.50 | -3.0 | |
 | Ruination | `ruination_4_lrsf-Spell-04` | [Spell_04](https://opengameart.org/content/fantasy-sound-effects-library), Little Robot Sound Factory (www.littlerobotsoundfactory.com) | CC BY 3.0 | 2.20 | -2.9 | |
 | Hearten | `hearten_1_shipped-cast_heal` | grug_sounds_cast_heal.ogg (shipped event `cast_heal`) | as shipped | 1.57 | -4.0 | |
-| Hearten | `hearten_2_fs562292` | [Heal - Rpg (Freesound 562292, HQ preview, 128 kbit MP3)](https://freesound.org/people/colorsCrimsonTears/sounds/562292/), colorsCrimsonTears | CC0 1.0 | 1.20 | -2.9 | |
 | Hearten | `hearten_3_fs506939` | [Magic spell (small positive) (Freesound 506939, HQ preview, 128 kbit MP3)](https://freesound.org/people/Nakhas/sounds/506939/), Nakhas | CC0 1.0 | 1.75 | -3.3 | |
 | Hearten | `hearten_4_p0ss-blessing2` | [blessing2](https://opengameart.org/content/spell-sounds-starter-pack), p0ss | CC BY-SA 3.0 | 1.80 | -3.0 | |
 | Haven | `haven_1_shipped-cast_heal` | grug_sounds_cast_heal.ogg (shipped event `cast_heal`) | as shipped | 1.57 | -4.0 | |
-| Haven | `haven_2_fs677773` | [healing wave (Freesound 677773, HQ preview, 128 kbit MP3)](https://freesound.org/people/sounagix/sounds/677773/), sounagix | CC0 1.0 | 2.40 | -2.9 | |
-| Haven | `haven_3_fs844398` | [Mysterious Sparkle Flourish (Freesound 844398, HQ preview, 128 kbit MP3)](https://freesound.org/people/SkySpeira/sounds/844398/), SkySpeira | CC0 1.0 | 2.40 | -3.2 | |
-| Haven | `haven_4_p0ss-blessing` | [blessing](https://opengameart.org/content/spell-sounds-starter-pack), p0ss | CC BY-SA 3.0 | 2.50 | -2.9 | |
 | Rebuke | `rebuke_1_shipped-cast_holy` | grug_sounds_cast_holy.ogg (shipped event `cast_holy`) | as shipped | 1.60 | -3.0 | |
 | Rebuke | `rebuke_2_fs406063` | [Magic Strike.wav (Freesound 406063, HQ preview, 128 kbit MP3)](https://freesound.org/people/Aleks41/sounds/406063/), Aleks41 | CC0 1.0 | 1.90 | -2.8 | |
-| Rebuke | `rebuke_3_fs641897` | [Light Magic - [Rpg] 1 (Freesound 641897, HQ preview, 128 kbit MP3)](https://freesound.org/people/colorsCrimsonTears/sounds/641897/), colorsCrimsonTears | CC0 1.0 | 0.63 | -3.3 | |
 | Rebuke | `rebuke_4_fs430769` | [Magical Hit (Freesound 430769, HQ preview, 128 kbit MP3)](https://freesound.org/people/SailorErick/sounds/430769/), SailorErick | CC0 1.0 | 2.30 | -3.1 | |
 | Censure | `censure_1_shipped-cast_holy` | grug_sounds_cast_holy.ogg (shipped event `cast_holy`) | as shipped | 1.60 | -3.0 | |
-| Censure | `censure_2_fs420676` | [Spell Cast / Buff / High Tone (Freesound 420676, HQ preview, 128 kbit MP3)](https://freesound.org/people/SypherZent/sounds/420676/), SypherZent | CC0 1.0 | 0.75 | -3.1 | |
 | Censure | `censure_3_fs249817` | [Magic Missiles.wav (Freesound 249817, HQ preview, 128 kbit MP3)](https://freesound.org/people/spookymodem/sounds/249817/), spookymodem | CC0 1.0 | 2.00 | -2.8 | |
-| Censure | `censure_4_lrsf-Spell-01` | [Spell_01](https://opengameart.org/content/fantasy-sound-effects-library), Little Robot Sound Factory (www.littlerobotsoundfactory.com) | CC BY 3.0 | 1.00 | -3.3 | |
 | Censure (Einschlag) | `censure_impact_1_shipped-cast_holy` | grug_sounds_cast_holy.ogg (shipped event `cast_holy`) | as shipped | 1.60 | -3.0 | |
 | Censure (Einschlag) | `censure_impact_2_fs249814` | [Hitting Wall.wav (Freesound 249814, HQ preview, 128 kbit MP3)](https://freesound.org/people/spookymodem/sounds/249814/), spookymodem | CC0 1.0 | 1.60 | -3.0 | |
 | Censure (Einschlag) | `censure_impact_3_fs855910` | [Powerful impact (Freesound 855910, HQ preview, 128 kbit MP3)](https://freesound.org/people/nicorico_120/sounds/855910/), nicorico_120 | CC0 1.0 | 2.50 | -3.1 | |
-| Censure (Einschlag) | `censure_impact_4_fs413224` | [Energy impact 4 (Freesound 413224, HQ preview, 128 kbit MP3)](https://freesound.org/people/ihitokage/sounds/413224/), ihitokage | CC0 1.0 | 1.42 | -3.0 | |
 | Final Word | `final_word_1_shipped-cast_holy` | grug_sounds_cast_holy.ogg (shipped event `cast_holy`) | as shipped | 1.60 | -3.0 | |
 | Final Word | `final_word_2_fs871781` | [Random Spell Design 1 (Freesound 871781, HQ preview, 128 kbit MP3)](https://freesound.org/people/CAT-FOX_ALEX/sounds/871781/), CAT-FOX_ALEX | CC0 1.0 | 2.00 | -3.0 | |
 | Final Word | `final_word_3_fs592042` | [Metal Impact (Freesound 592042, HQ preview, 128 kbit MP3)](https://freesound.org/people/Kierham/sounds/592042/), Kierham | CC0 1.0 | 2.50 | -3.0 | |
-| Final Word | `final_word_4_fs802726` | [Magic - Gingling effect (Freesound 802726, HQ preview, 128 kbit MP3)](https://freesound.org/people/Vrymaa/sounds/802726/), Vrymaa | CC0 1.0 | 2.50 | -3.1 | |
 | Arrowfall | `arrowfall_1_shipped-bow_shot` | grug_sounds_bow_shot.ogg (shipped event `bow_shot`) | as shipped | 0.90 | -3.3 | |
 | Arrowfall | `arrowfall_2_fs394004` | [Arrows Fly By.mp3 (Freesound 394004, HQ preview, 128 kbit MP3)](https://freesound.org/people/DigPro120/sounds/394004/), DigPro120 | CC0 1.0 | 1.40 | -3.1 | |
 | Arrowfall | `arrowfall_3_fs574044` | [Arrow.mp3 (Freesound 574044, HQ preview, 128 kbit MP3)](https://freesound.org/people/thecrow_br/sounds/574044/), thecrow_br | CC0 1.0 | 1.00 | -3.5 | |
@@ -93,12 +83,7 @@ The verdict column is left for the coordinator.
 | Parry | `parry_1_shipped-cast_evade` | grug_sounds_cast_evade.ogg (shipped event `cast_evade`) | as shipped | 0.11 | -3.2 | |
 | Parry | `parry_2_fs275159` | [Sword Clash.wav (Freesound 275159, HQ preview, 128 kbit MP3)](https://freesound.org/people/Bird_man/sounds/275159/), Bird_man | CC0 1.0 | 0.55 | -3.9 | |
 | Parry | `parry_3_fs334169` | [Sword Clash (Freesound 334169, HQ preview, 128 kbit MP3)](https://freesound.org/people/loudernoises/sounds/334169/), loudernoises | CC0 1.0 | 0.52 | -2.8 | |
-| Parry | `parry_4_fs439540` | [Hilt clang!.wav (Freesound 439540, HQ preview, 128 kbit MP3)](https://freesound.org/people/ethanchase7744/sounds/439540/), ethanchase7744 | CC0 1.0 | 0.44 | -3.2 | |
 | Flourish | `flourish_1_shipped-cast_evade` | grug_sounds_cast_evade.ogg (shipped event `cast_evade`) | as shipped | 0.11 | -3.2 | |
 | Flourish | `flourish_2_fs60030` | [Swosh / Whoosh / Air Cut (Freesound 60030, HQ preview, 128 kbit MP3)](https://freesound.org/people/qubodup/sounds/60030/), qubodup | CC0 1.0 | 0.44 | -3.1 | |
 | Flourish | `flourish_3_fs353708` | [Sword Swings (Freesound 353708, HQ preview, 128 kbit MP3)](https://freesound.org/people/SamsterBirdies/sounds/353708/), SamsterBirdies | CC0 1.0 | 1.48 | -3.0 | |
-| Flourish | `flourish_4_fs171255` | [Sliding Trailer Woosh (Freesound 171255, HQ preview, 128 kbit MP3)](https://freesound.org/people/qubodup/sounds/171255/), qubodup | CC0 1.0 | 1.43 | -3.3 | |
 | Close Dance | `close_dance_1_shipped-cast_evade` | grug_sounds_cast_evade.ogg (shipped event `cast_evade`) | as shipped | 0.11 | -3.2 | |
-| Close Dance | `close_dance_2_fs442825` | [Dark Magic Loop (Freesound 442825, HQ preview, 128 kbit MP3)](https://freesound.org/people/qubodup/sounds/442825/), qubodup | CC0 1.0 | 1.33 | -3.4 | |
-| Close Dance | `close_dance_3_fs523204` | [Magic Spell 09.wav (Freesound 523204, HQ preview, 128 kbit MP3)](https://freesound.org/people/LilMati/sounds/523204/), LilMati | CC0 1.0 | 1.30 | -2.9 | |
-| Close Dance | `close_dance_4_fs657541` | [Crystal Magic - Dark Spell Rise (Freesound 657541, HQ preview, 128 kbit MP3)](https://freesound.org/people/LilMati/sounds/657541/), LilMati | CC0 1.0 | 2.20 | -3.7 | |

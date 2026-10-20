@@ -16,8 +16,8 @@
 --    and Help (help.lua, every sub-page). Each focuses a harmless button
 --    when opened and after a tab click; without its set_focus the engine
 --    would focus an element that eats the key (the bug this lane fixes).
---    Also the new talent page's admin preview (Round 52, its own window:
---    talent_graph_ui.lua through tools/r52_graph/graph_loader.lua).
+--    Since Round 53 the Talents page is the graph page (talent_graph_ui.lua)
+--    and the admin preview is gone.
 -- B. The written book's read view (the vendored default craftitems.lua).
 -- S. Every set_focus[] of these windows names an element that is no field
 --    or textarea of the same file.
@@ -113,34 +113,26 @@ eq(focused("set_focus[f;true]field[0,0;2,1;f;F;]button[0,2;1,1;b;B]"), "field:f"
 local H = dofile(repo .. "/tools/r44_ts/harness.lua")(repo)
 local TABS = "sfinv_nav_tabs"
 
--- Talents & Skills: a scout with ranks (respec button) and a fresh one.
-for _, case in ipairs({{"ranked", "strong_draw=5,cold_eye=4"}, {"fresh", ""}}) do
+-- Talents & Skills: a scout with ranks (respec button) and a fresh one;
+-- since Round 53 the graph page with its tabs, whose sink is
+-- grug_graph_focus (talent_graph_ui.lua).
+for _, case in ipairs({{"ranked", "quarry_bowcraft=4,quarry_true_draw=1"}, {"fresh", ""}}) do
 	local player = H.make_player("t_" .. case[1], "scout", 30, case[2])
 	H.join(player)
 	local fs = H.render(player, "grug_classes:talents")
 	check(fs:find("textarea[", 1, true) ~= nil, "I Talents " .. case[1] .. ": the text line is there")
-	harmless(fs, "button:grug_talent_focus", "I Talents " .. case[1], {tab = TABS})
-	check(fs:find("button[0,0;0,0;grug_talent_focus;]", 1, true) ~= nil,
+	harmless(fs, "button:grug_graph_focus", "I Talents " .. case[1], {tab = TABS})
+	check(fs:find("button[0,0;0,0;grug_graph_focus;]", 1, true) ~= nil,
 		"I Talents " .. case[1] .. ": the focus button has no size and no label")
 end
+local fresh = core.get_player_by_name("t_fresh")
 local sink_handled = sfinv.pages["grug_classes:talents"]:on_player_receive_fields(
-	core.get_player_by_name("t_fresh"), sfinv.get_or_create_context(core.get_player_by_name("t_fresh")),
-	{grug_talent_focus = ""})
+	fresh, sfinv.get_or_create_context(fresh), {grug_graph_focus = ""})
 check(not sink_handled, "I Talents: pressing the focus button (Space, Enter) does nothing")
-
--- The talent preview (Round 52 D3): a window of its own, with the same
--- read-only strip under its trees; opened new, then re-shown on a tab click.
-do
-	local G = dofile(repo .. "/tools/r52_graph/graph_loader.lua")(repo)
-	G.privileged.t_admin = true
-	local admin = H.make_player("t_admin", "mage", 30, "")
-	G.commands.talent_preview.func("t_admin", "mage")
-	local fs = G.shown[#G.shown].fs
-	check(fs:find("textarea[", 1, true) ~= nil, "I Talent preview: the text strip is there")
-	harmless(fs, "button:grug_graph_focus", "I Talent preview", {new_form = true})
-	G.receive(admin, "grug_classes:talent_preview", {grug_graph_tab_2 = "x"})
-	harmless(G.shown[#G.shown].fs, "button:grug_graph_focus", "I Talent preview, second tab")
-end
+-- The second tree's tab, re-shown on a tab click: the same sink.
+sfinv.pages["grug_classes:talents"]:on_player_receive_fields(fresh,
+	sfinv.get_or_create_context(fresh), {grug_graph_tab_2 = "x"})
+harmless(fresh.formspec, "button:grug_graph_focus", "I Talents, second tab", {tab = TABS})
 
 -- Party & PvP and Help on the same stub world, with their neighbours stubbed.
 local function load_mod(mod, path, file)

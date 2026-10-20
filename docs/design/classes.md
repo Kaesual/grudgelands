@@ -247,14 +247,14 @@ differs:
   the start rule above decides gather or combat, except that a combat lock
   keeps its foe while that foe is not gone for the new skill's reach (a
   miss beside it still digs nothing). The new skill then acts as on a fresh
-  press: an attacking skill casts or swings (Strike if it is not
-  ready), a self or support skill fires once where a fresh press would (at
+  press: an attacking skill casts or swings (the basic attack if it is not
+  ready, below), a self or support skill fires once where a fresh press would (at
   a hostile, an ally or air; while a combat lock is kept, also at a node
   beside the foe), Loose strikes. Besides the
   wait, two things differ from a real press: it reports nothing (refusals and "Evading"; a
   held press stays quiet), and it has no tap window, so a gather hold digs
   on at once and a quick release casts nothing. Cooldowns, resources and the
-  weapon clock are untouched (back to a skill on cooldown only strikes). A
+  weapon clock are untouched (back to a skill on cooldown only falls back). A
   switch to an ordinary tool or an empty slot ends the skill mode (both
   stacks point again, the tool or hand digs natively); a switch back is
   decided again. Digging goes on in both directions: the client keeps its
@@ -286,12 +286,17 @@ Strike, and the selected spell's authored range. Solid terrain and
 intervening objects (dropped items excepted) matter.
 
 - **Hostile:** use the selected applicable ready skill immediately. If it is
-  unavailable (including cooldown, resources or applicability), use ordinary
-  melee Strike when in range. Holding repeats at the appropriate clocks;
-  once the selected skill is ready it takes precedence again. A selected
-  self or support skill fires only on the fresh press (an applicable heal
-  here targets self, never the hostile or a remembered ally); held, the
-  hold strikes.
+  unavailable (including cooldown, resources or applicability), the
+  player's basic attack fires once instead, silently (Round 53 K8): the
+  current form of Strike, which swings when it is a swing (Strike, Retort)
+  and casts when it is a cast (a Mage's or Priest's basic attack). There is
+  no fallback when the selected skill is that basic attack, or when the
+  refusal is the action clock or the cast interval: the hold then waits, so
+  a cast is never woven between swings. Holding repeats at the appropriate
+  clocks; once the selected skill is ready it takes precedence again. A
+  selected self or support skill fires only on the fresh press (an
+  applicable heal here targets self, never the hostile or a remembered
+  ally); held, the hold attacks with the basic attack.
 - **Friendly player:** use an applicable heal/support action on the eligible
   ally a fresh press aims at, repeated while held on that ally. No Strike
   fallback or attack through that ally. An offensive self skill (Ice Nova,
@@ -350,7 +355,9 @@ Crack feedback may begin during click arbitration, but removal may not.
 
 Selected skill and fallback Strike are mutually exclusive in one decision.
 After a successful skill, Strike must wait at least the actual weapon interval,
-without shortening a later existing deadline. Skill cooldowns/cast intervals
+without shortening a later existing deadline; after a swing, a cast waits one
+interval of the current melee weapon (the action clock in both directions,
+Round 53 K9). Skill cooldowns/cast intervals
 still apply; no global cooldown is added. Early clicks, release/repress,
 retargeting and skill swaps cannot reset the weapon clock. Concrete equipped
 weapon changes start a full interval; lag never replays missed attacks.
@@ -373,21 +380,22 @@ self; already-applied periodic effects retain their original recipient.
 
 A short RMB interaction opens the aimed NPC, door, container or other normal
 interactive target. An interaction owns that press until release and cancels
-pending item actions; it cannot also launch a bow. Food is the exception
+pending item actions; it cannot also fire a right-click shot. Food is the exception
 described below: a food press decides click versus hold first. Interaction
 reach remains 4 m even with a long-range spell selected.
 
-Loose is the explicit exception to LMB casting: **LMB uses melee Strike or hand
-digging; hold RMB to draw, release RMB to shoot.** Its tooltip states both.
-While the bow is drawn or held drawn, walk speed is ×0.5 and the Loose item's
-pointing range is zero (the same zero range an LMB combat hold uses;
-whichever ends first leaves it to the other), so held RMB shows no repeated
-place swing (one swing on the very press may remain). A full draw takes the
-bow's 2.5 s (Fletching and the draw-speed affix shorten it); a ring around the
-crosshair fills in sixteenths while drawing, turns gold at full draw and
-disappears on every end of the draw (release, cancel, stun, item or weapon
-change, death, leave). Other instant bow skills retain their LMB casts and
-authored ammo/cooldowns.
+Loose is an ordinary LMB cast since Round 53 (the bow draw is deleted): a
+press at a visible hostile looses one arrow, a held press repeats on its cast
+interval (0.85 s, divided by the bow's own attack-speed affix, never below
+0.65 s), and with no arrow left the held fallback swings Strike at a foe in
+reach. **Bladecraft** (Veil V1), which replaces Loose in place, is the one
+skill with a right-click action: **LMB swings the Melee-slot blade, RMB looses
+the same Loose shot** at a hostile, on Loose's interval and the action clock
+(a shot pushes the next swing by one weapon interval, a swing holds the shot
+back as long). Its RMB press is neither food nor an interaction (an
+interactive target within 4 m still opens instead); held, it shoots again
+whenever its clock allows. Other bow skills are LMB casts with their own
+ammunition and cooldowns.
 
 Food owns its whole RMB press, whatever it points at (ruling 2026-09-28). A
 release the server sees within 0.35 s of the press is a **click** (0.45.1,
@@ -404,13 +412,13 @@ visual, no slowdown); a click in combat still places or interacts. While
 eating, the wielded item hides, the food's image shows large at the bottom
 centre behind the HUD and bobs, crumbs fly from the head every 0.2 s, the
 eating sound loops at half gain and walk speed is ×0.35. The crosshair
-progress ring (the bow draw ring's frames, tinted green, never the gold full
-frame) appears when the hold is confirmed at 0.35 s and fills with held time
+progress ring (the old bow draw ring's frames, tinted green, never the gold
+full frame) appears when the hold is confirmed at 0.35 s and fills with held time
 / 1.5 s; it disappears on every end of eating (release, portion eaten,
 cancel, stun, item or slot change, death, leave) and never appears on a
 combat refusal. Release before 1.5 s
-eats nothing; one press eats at most one serving. Active RMB food/draw
-suppresses LMB combat/digging. Seeds, buckets, hoes, fishing, mounts and
+eats nothing; one press eats at most one serving. An active RMB press (food
+or Bladecraft's shot) suppresses LMB combat/digging. Seeds, buckets, hoes, fishing, mounts and
 ordinary placed items retain their own context-appropriate actions.
 
 ### Failure messages
@@ -418,38 +426,28 @@ ordinary placed items retain their own context-appropriate actions.
 A skill that cannot act says why in the red flash line ("Fireball is not
 ready.", "Not enough mana.", "No room to blink.", "Not enough room at
 target.", "You need an arrow.", ...) — on a fresh press only: the key-down
-decision, the single empty-space or tap cast of a press, or the RMB press that
-starts a bow draw. Held repeats never report, nor does the decision of a press
+decision, the single empty-space or tap cast of a press, or the RMB press of
+Bladecraft's shot. Held repeats never report, nor does the decision of a press
 carried across a hotbar switch. The same message shows at most
 once per second per player; a different message shows at once (Round 28
-ruling 13). A refused skill on a hostile still falls back to Strike, as
-before.
+ruling 13). A refused skill on a hostile falls back to the basic attack
+(Hostile, above).
 
 ### Cancellation and native-client limits
 
 Stun and death cancel pending actions. An item swap drops the old item's
-pending actions (a tap, a bow draw, eating); an LMB held across it goes on
+pending actions (a tap, eating); an LMB held across it goes on
 with the new item (hold modes above). Our own NPC/node interactions
 cancel before opening. Native inventory, pause, chat and focus loss are observed
-as ordinary release: they may launch a drawn bow or resolve a pending short
-skill click (accepted; no client changes are required or promised).
+as ordinary release: they may resolve a pending short skill click (accepted; no client changes are required or promised).
 
 A release and a new press that both fall between two control reports (under
 roughly 90 ms at the default server step) are invisible in the control
 state; the native item call a new press sends is the evidence instead (the
 client sends an empty-air or object call on the press edge only). Food uses
 it too: such a call during a food press settles that press and starts a new
-one. **The bow** (Round 41 ruling 5): the first native
-call after a draw starts belongs to the starting press; a later empty-air or
-object call during a live draw is a new press. It fires the drawn arrow at
-once with the draw time it has, and while the button stays held a new arrow
-is drawn within the same hold. A draw started this way that ends within
-**0.2 s** is cancelled silently (no arrow, no ammunition), so one quick tap
-never fires two arrows; its end counts at the last server step that still
-saw the button down (or at a further such press), not when the server
-notices the release. Node calls (a press that began on a node, the engine's
-place repeats) never count. A tap from rest is unchanged: it fires one weak
-arrow.
+one. (The bow draw's missed-release rule of Round 41 went with the draw in
+Round 53.)
 
 ### The weapon-ready reticle
 
@@ -506,9 +504,9 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   and sends a HUD packet only when it changes. Its server-driven latency is
   accepted.
 - Layering, bottom to top: engine crosshair, state overlay (z 1), weapon-ready
-  ring (z 2), progress ring (z 3). The progress ring is one element shared by
-  the bow draw and eating: whichever shows it first owns it until it hides it,
-  and neither can show or hide it over the other.
+  ring (z 2), progress ring (z 3). The progress ring is eating's (its other
+  owner, the bow draw, is gone since Round 53): whichever owner shows it first
+  owns it until it hides it.
 - The engine draws the crosshair at integer scale `floor(hud_scaling x
   display density)`; a Lua image element uses the unrounded factor. The
   overlay and draw ring therefore scale by `floor(f) / f` of the client's
@@ -621,7 +619,10 @@ and equipment changes never recreate a deleted representation. Losing a
 talent removes its representation.
 
 At initial character creation, the base abilities occupy the first hotbar
-slots in kit order: Strike on key 1, then the remaining class abilities; the
+slots in kit order: the class's basic attack on key 1 (Strike, or the class
+basic attack that replaces it), then the remaining class abilities; a class
+whose own basic attack replaces nothing (`basic_attack = true`) gets it on
+key 1 and Strike after its other starters (Round 53 K7); the
 starter supplies lie on hotbar slots 7 (apples) and 8 (torches), Round 49
 ruling 10. Existing carried items are preserved. This startup arrangement
 does not reorder the player's inventory on joins or talent changes. A later
@@ -648,12 +649,13 @@ Revised 2026-09-23, Round 18:
 - First-person wield and third-person held presentation still use the equipped
   weapon (or the ability's declared equipment source); utilities follow the same
   rule. Swapping equipment refreshes presentation without changing the action icon.
-- Preserve bow draw stages, the cooldown overlay, material-tier weapon appearance
+- Preserve the cooldown overlay, material-tier weapon appearance
   and honest empty-slot presentation. Icons grant no entitlement or combat power.
 - The selected skill shows an animated element overlay on the first-person
   weapon (Round 52, class plan C7): one family per talent tree
   (`grug_abilities.WEAPON_FX`, Strike none), one strip per weapon type the
-  class wields and per bow draw stage, one animation per family on the item
+  class wields (Round 53 deleted the bow's draw-stage strips with the draw),
+  one animation per family on the item
   definition, the strip's name in the stack meta. An empty slot, Strike and a
   strip not yet picked show none (a transparent override); a strip ships only
   once the user picked it. Third person and other players never show it (the
@@ -813,26 +815,43 @@ torches, liquids) do not.
 
 ## 5. Priest (Mana)
 
-Healer/support with a solo damage tool.
-
-Kit tuning decided 2026-08-06 (implementation: WP19): **Shield replaces
-Mend** in the base kit (an absorb plays differently from a second heal and
-makes the Priest useful BEFORE damage lands; our central hp-change modifier
-makes absorbs nearly free to build). Mend moves into the talent tree.
+Healer/support with a solo damage tool. Round 53 (round K,
+`docs/planning/round53-plan.md` §4 PRIEST) rebuilt the kit on the graph
+talents: two starters, Smite and Heal, and eight skills unlocked by the Mercy
+and Reckoning trees (`grug_classes/talent_graph_priest.lua`). The numbers are
+the balance calculator's frozen builds; P is the class-neutral base pool,
+Q the support factor (gear Intelligence, `combat_stats.md` §2), one unit the
+spell base plus spell power before the damage fit. Every cast is instant and
+occupies the next cast for 1 s (Heal, Hearten, Haven and Final Word 1.5 s);
+support, its ticks and Word of Ruin's heal never crit.
 
 Skill names (Round 31 user ruling): skills that carried another game's exact
 names were renamed — the Priest's Heal, Shield and Mend and the Mage's Ice
 Nova (§4). Generic words such as Smite, Blink or Sprint stay. The Shield
 spell is an absorb on a player; its tooltip says so, which keeps it apart from
-the offhand shield items. Mend's display name lives on its Mercy keystone
-(`grug_classes/talents_priest.lua`), which the ability reads.
+the offhand shield items.
 
-| Ability | Cost | Cooldown | Effect |
-|---------|------|----------|--------|
-| Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (the spell base + spell power; combat_stats §2), then the damage fit. Solo viability. |
-| Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool times the support factor (gear Intelligence, `combat_stats.md` §2; exactly 25% without Intelligence gear). Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
-| Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool times the support factor for 15 s or until consumed. |
-| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool times the support factor every 3 s for 12 s: a status on the target (since Round 52) whose four ticks come 3, 6, 9 and 12 s after the cast, each for the amount the cast fixed; a recast renews it, death and leaving end it. Unlocked via the Mercy tree (WP11). |
+| Ability | Unlock | Cost | Cooldown | Effect |
+|---------|--------|------|----------|--------|
+| Smite | starter, in Strike's place | free | 1 s cast interval | The class basic attack: current-crosshair 20 m hit for 1 unit, no enemy-memory fallback. Shares Strike's key; the held fallback fires it. |
+| Heal | starter | 10% base mana | 5 s | Heals 25% P × Q. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
+| Shield | Mercy | 9% | 12 s | Pointed ally → self; absorbs 24% P × Q for 10 s or until consumed; any recast replaces it. |
+| Mend | Mercy | 8% | 12 s | Pointed ally → self; a `mend` status whose four ticks come 3, 6, 9 and 12 s after the cast, each 7% P × Q fixed at the cast; a recast renews it, death and leaving end it. |
+| Hearten | Mercy | 14% | 20 s | You and up to 3 friendly players in sight within 6 m, lowest health share first: 15% P × Q each. |
+| Haven *(ultimate)* | Mercy | 22% | 60 s | You and up to 4 friendly players in sight within 8 m get a `haven` status: 7% P × Q every 2 s, 6 times; it stacks with Mend and keeps ticking outside the circle. |
+| Rebuke | Reckoning | 6% | 6 s | 20 m hit for 1.8 units. |
+| Word of Ruin | Reckoning | 10% | 16 s | 20 m hit for 1.6 units; heals you half the damage dealt, at most 6% P × Q (the pool cap only). |
+| Censure | Reckoning | 12% | 18 s | The ground anchor under the crosshair within 16 m (`ability_targeting.md`, skill inventory §3a; "No ground found." refuses before cost); after a 0.75 s warning one hit of 1.2 units to the 4 nearest hostiles within 3 m (band ±3, in sight of the anchor). |
+| Final Word *(ultimate)* | Reckoning | 20% | 60 s | 20 m hit for 2.8 units. |
+
+Talents: Steady Word and Sharpened Word add +5/10/15% of a base hit to
+Smite and are max-combined; Clear Conscience opens a 5 s window after Heal,
+Shield or Mend (8 s internal cooldown) that the next Smite spends for
++10/20/30% of a base hit; Gentle Hand, Warding Faith (5 ranks, +2 to +10
+points) and Patient Care add pool points; Lasting Haven adds 1-3 ticks; Hard
+Faith adds 3/6/9% to Rebuke, Word of Ruin and Final Word; Measured Care and
+Measured Judgment cut their skills' costs. Every area and group filter is the
+abilities' `valid_target`, so the PvP flag decides who an area may touch.
 
 ## 6. Explicitly deferred
 
@@ -850,7 +869,7 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
 - The Scout has no player poison mechanic and no player poison stat. Its Veil
   tree uses existing dodge, crit, slow and escape mechanics. Mob poison and
   Alchemy's Antivenom remain separate world mechanics. Stealth is deferred in
-  [scout.md](scout.md) §8; the current Veil capstone is Untouchable.
+  [scout.md](scout.md) §8; the Veil ultimate is Close Dance.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.
 
 ### Round 16 control execution

@@ -294,8 +294,9 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   9 / 11 % more at levels 30 / 45 / 60); one Intelligence enchant adds
   2.4–5.5 % (formerly 0.2–2.1 %), the Mage's Intelligence column, and a full
   Intelligence set +35 % at item level 60 and +44 % at 70 (formerly +13 % /
-  +17 %). Heal, Hearten's splash, Mend, Shield, Recompense and the Mage's
-  Glacial Ward share the factor.
+  +17 %). Heal, Hearten's splash, Mend, Shield and Recompense share the
+  factor; the Mage's Rime Mantle shield (Round 53) is a flat 12 % of the
+  pool without it.
 - **Mana's curve starts higher than HP's:** at low levels the flat part of
   in-combat regeneration dominates small pools, so the same percentage would
   be worth less there; with its own curve Mana meets the target from T1.
