@@ -1,64 +1,47 @@
--- Disposable engine probe (Round 52 lane GRAPH): the new talent page's admin
--- preview and the Talents & Skills page with a scrolled skill row, for
--- screenshots. Never shipped: tools/r52_graph/capture.sh stages it through
--- tools/luanti_headless.sh and connects one real client. The driver
+-- Disposable engine probe (Round 52 lane GRAPH, live page since Round 53):
+-- the Talents & Skills page with the graph trees and a scrolled skill row,
+-- for screenshots. Never shipped: tools/r52_graph/capture.sh stages it
+-- through tools/luanti_headless.sh and connects one real client. The driver
 -- (character creation, SHOT / ack handshake) is the Round 48 HUD probe's.
 --
--- After the character is made (Accord, Human, Scout) the probe gives it the
--- `server` privilege, opens /talent_preview's page for every class (both
--- tabs, one selected node) and then shows the Talents & Skills
--- page as a form of its own (the server cannot open the inventory) with
--- every registered ability in the skill row -- in this probe only -- at the
--- start and scrolled. Each view logs "SHOT <name>" after SETTLE seconds.
+-- After the character is made (Accord, Human, Scout) at level 60 with the
+-- Quarry sample build, the probe shows the Talents & Skills page as a form
+-- of its own (the server cannot open the inventory): the Quarry tab, the
+-- Veil tab, a selected node, then every registered ability in the skill row
+-- -- in this probe only -- at the start and scrolled. Each view logs
+-- "SHOT <name>" after SETTLE seconds.
 local P = "[r52graph] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r52graph_settle") or "") or 3
 local function log(msg) core.log("action", P .. msg) end
 
 local graph = grug_classes.graph
-local PREVIEW = "grug_classes:talent_preview"
+local PAGE = "grug_classes:talents"
+local FORM = "grug_probe_r52_graph:talents"
 
-local function receive(player, formname, fields)
-	for _, fn in ipairs(core.registered_on_player_receive_fields) do
-		if fn(player, formname, fields) then return end
-	end
-end
-
-local function node_field(id)
-	for index, node_id in ipairs(graph.node_ids) do
-		if node_id == id then return "grug_graph_node_" .. index end
-	end
-end
-
-local function show_talents(player, scroll)
-	core.close_formspec(NAME, PREVIEW)
+local function show(player, scroll)
 	local context = sfinv.get_or_create_context(player)
-	context.page = "grug_classes:talents"
-	context.grug_skills_scroll = scroll
-	core.show_formspec(NAME, "grug_probe_r52_graph:talents", sfinv.get_formspec(player, context))
+	context.page = PAGE
+	context.grug_skills_scroll = scroll or 0
+	core.show_formspec(NAME, FORM, sfinv.get_formspec(player, context))
 end
 
-local function tab(index)
-	return function(player) receive(player, PREVIEW, {["grug_graph_tab_" .. index] = "x"}) end
+-- A page field as the page would receive it, then the page re-shown.
+local function press(field)
+	return function(player)
+		local context = sfinv.get_or_create_context(player)
+		context.page = PAGE
+		sfinv.pages[PAGE]:on_player_receive_fields(player, context, {[field] = "x"})
+		show(player)
+	end
 end
-local function open(class_id)
-	return function(player) graph.open_preview(player, class_id) end
-end
--- Both trees of every class (the art step: the picked backgrounds and icons).
+
 local SHOTS = {
-	{name = "P1_preview_ember", act = open("mage")},
-	{name = "P2_preview_rime", act = tab(2)},
-	{name = "P3_preview_rime_cold_shock", act = function(player)
-		receive(player, PREVIEW, {[node_field("cold_shock")] = "x"})
-	end},
-	{name = "P4_preview_bulwark", act = open("warrior")},
-	{name = "P5_preview_ruin", act = tab(2)},
-	{name = "P6_preview_mercy", act = open("priest")},
-	{name = "P7_preview_reckoning", act = tab(2)},
-	{name = "P8_preview_quarry", act = open("scout")},
-	{name = "P9_preview_veil", act = tab(2)},
-	{name = "S1_skills_row_start", act = function(player) show_talents(player, 0) end},
-	{name = "S2_skills_row_scrolled", act = function(player) show_talents(player, 60) end},
+	{name = "P1_page_quarry", act = function(player) show(player) end},
+	{name = "P2_page_veil", act = press("grug_graph_tab_2")},
+	{name = "P3_page_veil_selected", act = press(graph.node_field("veil_close_dance"))},
+	{name = "S1_skills_row_start", act = function(player) show(player, 0) end},
+	{name = "S2_skills_row_scrolled", act = function(player) show(player, 60) end},
 }
 
 -- Every registered ability counts as owned for the probe's character, so the
@@ -114,9 +97,10 @@ core.register_globalstep(function(dtime)
 		end
 		core.close_formspec(NAME, "")
 		player:set_physics_override({gravity = 0, speed = 0, jump = 0})
-		local privs = core.get_player_privs(NAME)
-		privs.server = true
-		core.set_player_privs(NAME, privs)
+		grug_xp.set_xp(player, grug_xp.xp_for_level(60))
+		player:get_meta():set_string("grug_classes:talents",
+			graph.serialize(graph.trees.quarry.example_ranks))
+		grug_classes.invalidate_talents(player)
 		own_everything()
 		grug_skills.rebuild(player)
 		log(("skill row: %d skills"):format(#grug_abilities.unlocked_ids(player)))

@@ -498,7 +498,8 @@ kept the former flat value at the middle of the levels where the talent can
 be held (tier 1 level 30, tier 2 35, tier 3 45, tier 4 50); the user then
 raised Whitehot (16 → 30 %) and Rimebite (13 → 25 %). The talent tooltip
 shows every rank's amount at the viewer's level (damage after the scalar,
-before crit). The derivation and tables are in `tools/r35_b/numbers.py`.
+before crit). The derivation and tables were `tools/r35_b/numbers.py`
+(retired in Round 53 with the old trees).
 
 Healing and absorb talents instead add percentage points to the ability's
 class-neutral base-pool share; the support factor (gear Intelligence over a
@@ -541,6 +542,13 @@ New names follow AGENTS.md "Naming".
 
 ## 3. Data model and seams
 
+> **Since Round 53** the live talents are the graph talents of §3.12: the
+> store, the accessors, spend and respec, the level-drop reset, `/talents`
+> and the Talents & Skills page read the graph. The old registry, its data
+> and its window API below stay loaded and inert until the round's
+> clean-up; §3.1–§3.5 describe them (§3.5's tree framework, `layout_tree`,
+> is gone: the page is §3.12's).
+
 ### 3.1 Where talents live
 
 `grug_classes` owns the talents: it owns the class registry and the per-player
@@ -559,11 +567,10 @@ edge.
   framework (§3.5) and the paid respec
   (`grug_classes.buy_respec`); for these `grug_classes` depends on `sfinv` and
   `grug_money`.
-- `grug_classes/talent_graph.lua`, `talent_graph_preview.lua` and
-  `talent_graph_ui.lua` (Round 52): the graph registry of round K with its
-  rules and audit, the eight new trees as preview data, and the new page
-  with the admin command `/talent_preview` (§3.12). Nothing live reads
-  them.
+- `grug_classes/talent_graph.lua`, `talent_graph_{mage,warrior,priest,scout}.lua`
+  and `talent_graph_ui.lua` (Round 52, live since Round 53): the graph
+  registry with its rules and audit, one data file per class, and the page
+  (§3.12); `talents.lua` loads and audits them and stores the ranks.
 
 Registration mirrors `register_class`:
 
@@ -915,15 +922,24 @@ grug_core.get_absorb(target)        -- the total
 Writers: the Priest's Shield, Glacial Ward, Hold Ground, Recompense and the
 Last Light Locket's trinket special (`items_crafting.md` §6.2).
 
-### 3.12 The graph talents of round K (Round 52)
+### 3.12 The graph talents of round K (Round 52, live since Round 53)
 
 Round 52 ([class plan](../planning/round52-class-plan.md) C6, C12, D3–D5,
-D7) built the talent engine and page of the class rework **beside** the
-registry above. Nothing live reads them: the shipped trees, their stored
-string and today's page stay until round K, which switches over with the
-new kits and gives every character an automatic talent reset. The trees are
-the eight of the [node list](../planning/class-redesign/node-list.md): 109
-nodes, 31–34 ranks per tree.
+D7) built the talent engine and page of the class rework beside the old
+registry; Round 53 ([plan](../planning/round53-plan.md) §4 "LIVE", K3–K5)
+made them the live talents. The trees are the eight of the
+[node list](../planning/class-redesign/node-list.md): 109 nodes, 32–34
+ranks per tree (Warding Faith at 5 ranks, so Mercy has 33).
+
+**The store** (`talents.lua`): the meta key `grug_classes:talents` holds
+the graph's string, read through `graph.parse` at the character's class and
+level; an old id (no tree prefix) reads as no rank. `get_talent_bonus`
+sums a key over the ranks (a shared key, a class key or
+`<family>:<param>`; `armor_percent_add` answers in rating points at the
+player's level, `graph.level_amount`), `talent_rank` takes a node id,
+spending and the full reset go through `graph.spend` and `graph.reset`,
+and the level-drop reset, the "point earned" line and `/talents` read the
+graph. Respec prices are unchanged (§1.4).
 
 **The data format** (`grug_classes.graph`, `talent_graph.lua`):
 
@@ -936,22 +952,23 @@ graph.register_class_vocabulary("mage", {
 graph.register_tree({
     id = "ember", class = "mage", name = "Ember", description = "…",
     ranks = 32,                        -- the declared rank total, audited
-    example = "F1x4 F4 F2x3 …",        -- a worked 30-point build (the preview)
+    example = "F1x4 F4 F2x3 …",        -- a worked 30-point build, audited
     nodes = {
-        {id = "fire_mastery", code = "F1", name = "Fire Mastery",
+        {id = "ember_fire_mastery", code = "F1", name = "Fire Mastery",
          type = "modifier", ranks = 4, gate = 0, col = 3,
          effects = {["damage_pct:fire"] = {5, 10, 15, 20}},
          description = "…"},
-        {id = "fireball", code = "F4", name = "Fireball", type = "unlock",
+        {id = "ember_fireball", code = "F4", name = "Fireball", type = "unlock",
          ability = "fireball", ranks = 1, gate = 2, col = 3,
-         requires = {"fire_mastery"}, description = "…"},
+         requires = {"ember_fire_mastery"}, description = "…"},
         …
     },
 })
 graph.audit()
 ```
 
-- **A node** has an id (its name in snake_case), the node list's `code`,
+- **A node** has an id `<tree>_<name>` (Round 53; the codes stay in the
+  docs), the node list's `code`,
   a `type` (`modifier`, `window`, `unlock`, `transform` or `ultimate`), a
   rank count, a **gate** (one of `graph.GATE_ROWS`: 0, 2, 6, 10, 12, 16,
   20; the page draws one row per gate), a column `col` 1–5, any number of
@@ -991,34 +1008,34 @@ graph.audit()
   30 points, the declared rank total (and more than 30, so no tree can be
   bought out), the vocabulary and the sample build.
 
-**The preview** (D3): `/talent_preview [mage|warrior|priest|scout]`
-(privilege `server`; default the admin's own class) opens the new page
-read-only with the class's two trees, each showing its sample build. The
-state (class, tab, selected node, the builds) lives in memory for the open
-form; nothing writes `grug_classes:talents`. The data is one file,
-`talent_graph_preview.lua`; round K replaces it with one data file per
-class.
+The data is one file per class, `talent_graph_<class>.lua` (Round 53;
+Round 52's preview file and its admin command `/talent_preview` are gone).
 
-**The page** (`graph.page_content`, real coordinates of the sfinv frame,
-so round K can put it into Talents & Skills; D5,
-`graph.PAGE`):
+**The page** (`graph.page_content`, in Talents & Skills since Round 53, in
+the real coordinates of the sfinv frame; D5, `graph.PAGE`):
 
 - one inner tab per tree, as buttons in the header row (y 0.15–0.75,
-  2.6 wide) beside the points text: the selected style of the Character
-  page's mode buttons; the tab lives in the form context, never stored;
+  2.6 wide) beside the points text and the respec control: the selected
+  style of the Character page's mode buttons; the tab lives in the sfinv
+  context, never stored; a click on a node buys a rank or, refused,
+  selects it with the reason;
 - the tab content rectangle **13 × 5.5** at (0.25, 0.95): the tree's
   background `grug_classes_tree_<tree>.png` (1040 × 440 px, 80 px per
   unit) or a plain dark box while none ships; seven gate rows of 0.6-high
   nodes with 0.18 between them, centred, the gate number at the left;
   five columns 2.16 wide;
 - connection lines of `box[]` segments (0.06 thick) under the nodes,
-  orthogonal like `layout_tree`'s, gold once the parent has a rank;
-- a node shows its icon (`grug_classes_talent_<node>.png`, or for a
-  granting node its skill's `grug_abilities_skill_<ability>.png`) with
+  orthogonal (down, across in the gap above the child's row, down), gold
+  once the parent has a rank;
+- a node shows its icon (`grug_classes_talent_<name>.png`, named by the
+  id without its tree prefix, K5; for a granting node its skill's
+  `grug_abilities_skill_<ability>.png`) with
   its rank beside it, or its name and rank as text while no icon ships;
-  its look follows today's node styles, and the tooltip names the effect
-  and, when locked, the reason;
-- the selected node's text in a strip at 6.50–7.15, above the skill row.
+  its look follows the node styles, and the tooltip names the effect (for
+  armor and the pools with every rank's amount at the viewer's level) and,
+  when locked, the reason;
+- the selected node's text (or the hint, or a respec notice) in a strip at
+  6.50–7.15, above the skill row.
 
 The art shipped with the user's picks of 2026-10-19/20 (D7): the eight
 backgrounds and the 74 talent icons; the granting nodes of skills that do

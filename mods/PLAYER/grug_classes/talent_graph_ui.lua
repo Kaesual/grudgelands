@@ -84,7 +84,7 @@ end
 --
 -- The layout: rows by gate, columns from the data, an icon node square and
 -- centred in its column, a text node as wide as the column. Connectors run
--- orthogonally like layout_tree's (talents_ui.lua): down from the parent's
+-- orthogonally (Round 44's tree framework did the same): down from the parent's
 -- bottom, across in the gap above the child's row, down into the child's
 -- top (one segment in one column); a prerequisite in the same row is one
 -- horizontal segment between the facing edges.

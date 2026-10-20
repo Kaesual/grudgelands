@@ -1,21 +1,23 @@
 -- Round 44 lane TS: the shared stub world of tools/r44_ts. Loads the REAL
 -- vendored sfinv (mods/BASE/sfinv/api.lua), grug_inventory/ui.lua (the
--- frame and the views), grug_classes/talents.lua (with scout_talents.lua,
--- the 64 shipped talents), grug_classes/talents_ui.lua and grug_skills
+-- frame and the views), grug_classes/talents.lua (since Round 53 with the
+-- graph talents it loads: talent_graph.lua and the four class files),
+-- grug_classes/talents_ui.lua, talent_graph_ui.lua and grug_skills
 -- (init.lua, bound_items.lua, page.lua) of the repository `repo` under a
--- small `core` stub, the way the mods load in the game. It also works on an
--- older tree that still has separate Talents and Skills pages, so
--- page_bytes.lua can measure before and after with the same stubs.
+-- small `core` stub, the way the mods load in the game.
 --
---   local H = dofile("tools/r44_ts/harness.lua")(repo)
+--   local H = dofile("tools/r44_ts/harness.lua")(repo, hidden)
 --
--- returns {player = make_player(name, class, level, talents), render(player,
--- page), allow (the player-inventory allow callbacks), catalog(name) (the
--- detached catalog: lists and callbacks), abilities (the stub ability list),
--- run_after()}.
+-- `hidden` lists texture files to pretend are missing (to draw the page's
+-- fallbacks); the page otherwise sees the real files of the two texture
+-- folders it looks in. Returns {make_player(name, class, level, talents),
+-- render(player, page), allow (the player-inventory allow callbacks),
+-- catalog(name) (the detached catalog: lists and callbacks), abilities (the
+-- stub ability list), textures (the file listing the page saw), registered,
+-- commands (name -> chat command def), run_after()}.
 
-return function(repo)
-	local H = {}
+return function(repo, hidden)
+	local H = {textures = {}, commands = {}}
 
 	local function fs_escape(text)
 		return (tostring(text):gsub("\\", "\\\\"):gsub("%]", "\\]"):gsub("%[", "\\[")
@@ -174,7 +176,7 @@ return function(repo)
 		register_on_leaveplayer = noop,
 		register_on_dieplayer = noop,
 		register_on_player_hpchange = noop,
-		register_chatcommand = noop,
+		register_chatcommand = function(name, def) H.commands[name] = def end,
 		register_globalstep = noop,
 		register_on_player_receive_fields = function(fn)
 			table.insert(registered.receive, fn)
@@ -264,12 +266,13 @@ return function(repo)
 		end,
 	}
 
-	-- The ability catalogue: a scout's six, two of them talent-gated.
+	-- The ability catalogue: a scout's six, two of them talent-gated by
+	-- graph nodes (round53-plan.md §3: `talent = "<tree>_<name>"`).
 	local abilities = {
 		{id = "strike", name = "Strike"}, {id = "sprint", name = "Sprint"},
 		{id = "loose", name = "Loose"}, {id = "snare_shot", name = "Snare Shot"},
-		{id = "pinning_shot", name = "Pinning Shot", talent = "pinning_shot"},
-		{id = "opening", name = "Opening", talent = "opening"},
+		{id = "true_draw", name = "True Draw", talent = "quarry_true_draw"},
+		{id = "opening", name = "Opening", talent = "veil_opening"},
 	}
 	H.abilities = abilities
 	local ability_def = {}
@@ -361,6 +364,40 @@ return function(repo)
 	-- Round 50: the views' A/B switch reads the shown layout (storage.lua).
 	function grug_inventory.active_hotbar() return "A" end
 	load("grug_classes", "PLAYER/grug_classes", {"talents.lua", "talents_ui.lua"})
+	-- The page lists its two texture folders once at load: every file it
+	-- could look for that exists there, minus `hidden`.
+	local skip = {}
+	for _, file in ipairs(hidden or {}) do skip[file] = true end
+	function core.get_dir_list(path)
+		local mod = path:match("/([%w_]+)/textures$")
+		local graph, list, wanted = grug_classes.graph, {}, {}
+		for _, id in ipairs(graph.node_ids) do
+			local def = graph.nodes[id]
+			if mod == "grug_abilities" and def.ability then
+				wanted[#wanted + 1] = "grug_abilities_skill_" .. def.ability .. ".png"
+			elseif mod == "grug_classes" and not def.ability then
+				wanted[#wanted + 1] = "grug_classes_talent_" .. def.icon_name .. ".png"
+			end
+		end
+		if mod == "grug_classes" then
+			for _, tree_id in ipairs(graph.tree_ids) do
+				wanted[#wanted + 1] = "grug_classes_tree_" .. tree_id .. ".png"
+			end
+		end
+		for _, file in ipairs(wanted) do
+			local handle = not skip[file] and io.open(path .. "/" .. file, "rb")
+			if handle then
+				handle:close()
+				list[#list + 1] = file
+				H.textures[file] = true
+			end
+		end
+		return list
+	end
+	local get_modpath = core.get_modpath
+	core.get_modpath = function(mod) return repo .. "/mods/PLAYER/" .. mod end
+	load("grug_classes", "PLAYER/grug_classes", {"talent_graph_ui.lua"})
+	core.get_modpath = get_modpath
 	load("grug_inventory", "PLAYER/grug_inventory", {"ui.lua"})
 	load("grug_skills", "PLAYER/grug_skills", {"init.lua"})
 	for _, fn in ipairs(registered.mods_loaded) do fn() end
