@@ -847,7 +847,10 @@ the real coordinates of the sfinv frame; D5, `graph.PAGE`):
 
 The art shipped with the user's picks of 2026-10-19/20 (D7): the eight
 backgrounds and the 74 talent icons in Round 52, the 25 icons of the new
-skills in Round 53, so every node shows an icon.
+skills in Round 53, so every node shows an icon. 0.53.1 replaced 36 of
+them with the user's picks of the Round 53 clarity redraw (2026-10-20): 26
+skill icons, eight of them the 0.51 icons again, and 10 talent icons (the
+`LICENSE-media.md` of `grug_abilities` and `grug_classes`).
 
 ## 4. Implementation lanes (archived)
 
