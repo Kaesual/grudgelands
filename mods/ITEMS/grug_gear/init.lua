@@ -100,6 +100,13 @@ end
 --                and cloth as universal base armor; Leatherworkers refine
 --                these base items through their profession recipes.
 --
+-- A grade's `key` is part of its item ids and of the armor art's file names
+-- and never changes; its `name` is only the description. Leather tier 4 is
+-- named Hardened since Round 54 (scales belong to the top tier) and keeps the
+-- key `scaled`, so the ids `grug_gear:<slot>_leather_scaled` stay (stable
+-- ids, upgrade-contract.md); grug_quality renames stacks stored under the old
+-- name. (No braces in this comment: tools/r45_rg reads the table below by
+-- balanced braces.)
 grug_gear.MATERIALS = {
 	{metal = {key = "bronze", name = "Bronze"},
 		cloth = {key = "patch", name = "Patch"},
@@ -112,7 +119,7 @@ grug_gear.MATERIALS = {
 		leather = {key = "heavy", name = "Heavy"}},
 	{metal = {key = "silversteel", name = "Silversteel"},
 		cloth = {key = "silkweave", name = "Silkweave"},
-		leather = {key = "scaled", name = "Scaled"}},
+		leather = {key = "scaled", name = "Hardened"}},
 	{metal = {key = "embersteel", name = "Embersteel"},
 		cloth = {key = "silk", name = "Silk"},
 		leather = {key = "sleek", name = "Sleek"}},
@@ -121,15 +128,13 @@ grug_gear.MATERIALS = {
 		leather = {key = "nightscale", name = "Nightscale"}},
 }
 
--- Published, not local: grug_visuals tints the armor OVERLAYS on the player
--- model with the same six colours, and a second copy of this table would
--- drift the moment one of them is retuned.
---
--- WEAPONS NO LONGER USE IT. Every weapon family now ships one sprite per
--- material (`tools/wp13/gen_weapon_ladder.py`), so a Bronze Sword is bronze
--- because it is drawn bronze, not because a grey sprite is multiplied. The
--- tint survives for the two armor lines, which still share one silhouette per
--- slot -- `[multiply:#ffffff` is a no-op, so the sixth tier shows untinted art.
+-- Six bracket colours, published for the two consumers that colour one
+-- shared image per tier with them: the spellbook's image below and the
+-- profession recipes' metal rods (grug_professions/base_recipes.lua). Neither
+-- weapons nor armour use it: every weapon family ships one sprite per
+-- material (`tools/wp13/gen_weapon_ladder.py`), and the armour art carries
+-- each tier's palette (Round 54, docs/technical/armor-format.md).
+-- `[multiply:#ffffff` is a no-op, so the sixth tier shows the untinted image.
 grug_gear.BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a",
 	"#e8dcb0", "#ffffff"}
 local BRACKET_TINT = grug_gear.BRACKET_TINT

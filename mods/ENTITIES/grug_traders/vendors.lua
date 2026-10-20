@@ -212,7 +212,7 @@ end
 --
 -- Registered into the placement engine's restyle list, which exists for
 -- exactly this class of ordering problem; `apply_entity` compares
--- `_grug_visual_skin` and does nothing when the composed skin is already
+-- `_grug_visual_key` and does nothing when the composed look is already
 -- right. The rolled look is kept, so the redraw changes only the race.
 --
 -- The race a vendor is drawn as: a race vendor's own; a Quartermaster's the

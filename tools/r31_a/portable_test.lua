@@ -12,16 +12,18 @@
 --      seed stay in range and reach every option; an NPC rolls ONCE and
 --      keeps its look; the seed derivation is pinned;
 --   D. layer order (§2.1.3): skin -> eyes -> hairstyle -> attire -> body
---      armour -> helmet with the face window -> headwear -> feature; a helmet
---      drops the hairstyle;
---   E. compose: every armour piece in its own parentheses (the Silversteel
---      `^[hsl` never reaches the skin), lane B's `armor_layers` inside the
---      piece and, for the helmet, under the face window; the cache key moves
---      with every input; royal attire; the explicit-skin path; the
---      worst-case string length;
+--      armour (inner paint) -> headwear -> feature; a helmet (a box of the
+--      model since Round 54) drops the hairstyle and draws nothing on the
+--      skin;
+--   E. compose: every armour piece in its own parentheses on the skin and on
+--      the armor atlas (no runtime tint any more), the enchant colours and
+--      lane B's `armor_layers` inside the piece; the cache key moves with
+--      every input; royal attire; the explicit-skin path; the worst-case
+--      string lengths;
 --   F. equal hitbox (§2.1.4): after player_api's model and grug_visuals'
 --      apply, every race has the same collision box, selection box and eye
---      height, and only the visual size differs;
+--      height, and only the visual size differs; the player model's four
+--      textures;
 --   G. the stored look: set once, immutable, read back through player_spec.
 -- Prints "R31 A PORTABLE PASS checks=<n> worst=<length>" or the failures.
 
@@ -113,8 +115,10 @@ grug_gear = {
 		return "grug_gear:" .. family .. "_" .. grug_gear.MATERIALS[bracket].metal.key
 	end,
 }
--- The real crack wrapper, so the broken path is the shipped one.
+-- The real crack wrapper and enchant colours, so the broken and coloured
+-- paths are the shipped ones.
 dofile(ROOT .. "/mods/ITEMS/grug_gear/permissions.lua")
+dofile(ROOT .. "/mods/ITEMS/grug_gear/enchant_colors.lua")
 local function new_meta()
 	local store = {}
 	return {
@@ -196,7 +200,7 @@ local function name(file)
 	named[file] = true
 	check(exists(file), "texture exists: " .. file)
 end
-for _, file in ipairs({grug_visuals.SKIN_MASK, grug_visuals.HELMET_WINDOW,
+for _, file in ipairs({grug_visuals.SKIN_MASK,
 		"grug_visuals_tabard_mask.png", "grug_visuals_tabard_trim_mask.png",
 		"grug_visuals_tabard.png", "grug_visuals_crown.png"}) do
 	name(file)
@@ -231,7 +235,7 @@ for file in license:gmatch("\n| `(grug_visuals_[%w_]+%.png)` |") do
 	local layer = file:match("^grug_visuals_%l+_body%.png$") or
 		file:match("^grug_visuals_%l+_hair_") or file:match("^grug_visuals_%l+_feature_") or
 		file:match("_mask%.png$") or file:match("^grug_visuals_tabard") or
-		file == grug_visuals.HELMET_WINDOW or file == "grug_visuals_crown.png"
+		file == "grug_visuals_crown.png"
 	if layer then
 		check(named[file] == true, "licensed layer file named by looks.lua: " .. file)
 	end
@@ -332,8 +336,7 @@ eq(grug_visuals.npc_race({_grug_start = "capital_troll", _grug_visual_race = "or
 ------------------------------------------------------------------------------
 -- D. Layer order.
 ------------------------------------------------------------------------------
-local HELM = "(grug_visuals_metal_head_steel.png)"
-local CHEST = "(grug_visuals_metal_chest_steel.png)"
+local CHEST = "(grug_armor_metal_steel_chest_skin.png)"
 for _, race in ipairs(races) do
 	local def = LOOKS[race]
 	local attire, headwear = grug_visuals.royal_attire(race, true)
@@ -368,16 +371,15 @@ for _, race in ipairs(races) do
 		end
 
 		local helmed = grug_visuals.look_texture(race, look,
-			{body = {CHEST}, helmet = HELM, headwear = headwear})
+			{body = {CHEST}, helmet = true, headwear = headwear})
 		eq(position(helmed, style.mask), -1, race .. " helmet hides the hair mask")
 		eq(position(helmed, style.detail), -1, race .. " helmet hides the hair")
-		local window = position(helmed, "(" .. HELM .. "^[mask:" ..
-			grug_visuals.HELMET_WINDOW .. ")")
-		check(window > position(helmed, CHEST), race .. " helmet after body armour")
-		check(position(helmed, headwear[1]) > window, race .. " headwear after the helmet")
+		check(not has(helmed, "[mask:"), race .. " no face window: the helmet is a box")
+		check(position(helmed, headwear[1]) > position(helmed, CHEST),
+			race .. " headwear after body armour")
 		check(position(helmed, feature.detail) > position(helmed, headwear[1]),
-			race .. " " .. feature.id .. " over helmet and headwear")
-		check(position(helmed, def.eyes_mask) < window, race .. " eyes under the helmet")
+			race .. " " .. feature.id .. " over the headwear")
+		check(position(helmed, def.eyes_mask) > 0, race .. " eyes under a helmet too")
 	end
 end
 
@@ -411,18 +413,46 @@ local function top_level(textstring)
 	return parts
 end
 
--- Silversteel (bracket 4): its hsl correction stays inside its piece.
+-- Round 54: every piece in its own parentheses on both textures, no tint at
+-- runtime (the palettes carry the tiers), no modifier at the top level.
 for _, spec in ipairs({
 	{race = "human", armor_line = "metal", bracket = 4},
 	{skin = "grug_mobs_mirefolk.png", armor_line = "metal", bracket = 4},
 	{race = "orc", armor = {head = "test:metal_head_4", chest = "test:metal_chest_4"},
 		armor_broken = {chest = true}},
 }) do
-	local texture = grug_visuals.compose(spec).textures[1]
-	check(has(texture, "[hsl:0:-90:5"), "silversteel correction present")
-	for _, part in ipairs(top_level(texture)) do
-		check(part:sub(1, 1) ~= "[", "no top-level modifier in " .. texture:sub(1, 60))
+	local result = grug_visuals.compose(spec)
+	for _, texture in ipairs({result.skin, result.armor}) do
+		check(not has(texture, "[hsl:0:-90:5"), "no silversteel correction any more")
+		for _, part in ipairs(top_level(texture)) do
+			check(part:sub(1, 1) ~= "[", "no top-level modifier in " .. texture:sub(1, 60))
+			check(part:sub(1, 1) == "(" or not part:find("grug_armor_", 1, true),
+				"an armour layer only inside its parentheses: " .. part:sub(1, 60))
+		end
 	end
+end
+do
+	local result = grug_visuals.compose({race = "human", armor_line = "metal", bracket = 6})
+	eq(result.armor, "(grug_armor_metal_abyssal_steel_head.png)^" ..
+		"(grug_armor_metal_abyssal_steel_chest.png)^(grug_armor_metal_abyssal_steel_legs.png)^" ..
+		"(grug_armor_metal_abyssal_steel_feet.png)", "the atlas: four slot layers in slot order")
+	check(has(result.skin, "^(grug_armor_metal_abyssal_steel_chest_skin.png)^" ..
+		"(grug_armor_metal_abyssal_steel_legs_skin.png)^(grug_armor_metal_abyssal_steel_feet_skin.png)"),
+		"the skin: the inner paint of chest, legs and feet")
+	check(not has(result.skin, "_head"), "no head layer on the skin")
+	eq(#result.textures, 3, "an armored NPC: skin, armor, weapon")
+	eq(result.textures[1], result.skin, "NPC list: the skin first")
+	eq(result.textures[2], result.armor, "NPC list: the armor second")
+	eq(result.textures[3], grug_visuals.WEAPON_NONE, "NPC list: an empty weapon card")
+	local plain = grug_visuals.compose({race = "human"})
+	eq(plain.armor, grug_visuals.ARMOR_NONE, "nothing worn: an empty armor texture")
+	eq(#plain.textures, 1, "an unarmored NPC: the skin alone")
+	local dressed = grug_visuals.compose({race = "human", armor = {head = "test:metal_head_6",
+		chest = "test:metal_chest_6", legs = "test:metal_legs_6", feet = "test:metal_feet_6"}})
+	eq(dressed.armor, result.armor, "a player's set draws the NPC's atlas")
+	eq(dressed.skin, result.skin, "and the NPC's skin")
+	check(dressed.key ~= result.key, "but the player's own cache entry (its own list)")
+	eq(#dressed.textures, 1, "no NPC list without armor_line")
 end
 
 -- The key moves with every input, and the same spec is the same entry.
@@ -434,6 +464,9 @@ local function copy(t)
 		out[k] = type(v) == "table" and copy(v) or v
 	end
 	return out
+end
+local function drawn(result)
+	return result.skin .. "\n" .. result.armor
 end
 local reference = grug_visuals.compose(base)
 check(grug_visuals.compose(copy(base)) == reference, "same spec, same cache entry")
@@ -449,7 +482,11 @@ local variants = {
 	function(s) s.armor.chest = "test:metal_chest_4" end,
 	function(s) s.armor_broken = {head = true} end,
 	function(s) s.armor_layers = {chest = "(x_mask.png^[multiply:#123456)"} end,
-	function(s) s.armor_layers = {head = "(x_mask.png^[multiply:#123456)"} end,
+	-- (the head has no skin layer to carry extra layers)
+	function(s) s.armor_layers = {head = "(x_mask.png^[multiply:#123456)"}; return "same" end,
+	function(s) s.armor_enchant = {head = {prefix = "str"}} end,
+	function(s) s.armor_enchant = {chest = {suffix = "dex"}} end,
+	function(s) s.armor_enchant = {chest = {prefix = "dex"}} end,
 	-- (the weapon is the wield entity, not the skin)
 	function(s) s.weapon = "w:axe"; return "same" end,
 }
@@ -459,7 +496,7 @@ for index, change in ipairs(variants) do
 	local same = change(spec) == "same"
 	local result = grug_visuals.compose(spec)
 	check(not keys[result.key], "variant " .. index .. " has its own key")
-	check((result.textures[1] == reference.textures[1]) == same, "variant " .. index ..
+	check((drawn(result) == drawn(reference)) == same, "variant " .. index ..
 		(same and " draws the same" or " draws differently"))
 	keys[result.key] = true
 end
@@ -472,18 +509,37 @@ eq(grug_visuals.compose({race = "orc"}).key,
 	grug_visuals.compose({race = "orc", look = {tone = 1, hair = 1, style = 1, eyes = 1,
 		feature = 1}}).key, "no look is the first look")
 
--- Lane B's seam: inside the piece's parentheses, under the face window.
-local layered = grug_visuals.compose({race = "human", armor = {head = "test:metal_head_2",
-	chest = "test:metal_chest_2"}, armor_layers = {head = "(hA.png^[multiply:#aa0000)",
-	chest = "(cA.png^[multiply:#00aa00)"}}).textures[1]
-check(has(layered, "(grug_visuals_metal_chest_iron.png^(cA.png^[multiply:#00aa00))"),
-	"chest layers inside the chest piece")
-check(has(layered, "((grug_visuals_metal_head_iron.png^(hA.png^[multiply:#aa0000))^[mask:" ..
-	grug_visuals.HELMET_WINDOW .. ")"), "helmet layers cut by the face window")
+-- Colours and extra layers inside the piece's parentheses, each file with
+-- its own mask; a broken piece cracks with them.
+local function ench(file, prefix, suffix)
+	return grug_gear.enchant_layers(file, prefix, suffix)
+end
+local coloured = grug_visuals.compose({race = "human", armor = {head = "test:metal_head_2",
+	chest = "test:metal_chest_2"}, armor_enchant = {head = {prefix = "str", suffix = "dex"},
+	chest = {suffix = "int"}}, armor_layers = {chest = "(cA.png^[multiply:#00aa00)"}})
+check(has(coloured.armor, "(grug_armor_metal_iron_head.png^" ..
+	ench("grug_armor_metal_iron_head.png", "str", "dex") .. ")"), "helmet colours on its atlas layer")
+check(has(coloured.armor, "grug_armor_metal_iron_head_ench.png^[verticalframe:2:0"),
+	"the atlas layer's own mask, prefix frame")
+check(has(coloured.armor, "(grug_armor_metal_iron_chest.png^" ..
+	ench("grug_armor_metal_iron_chest.png", nil, "int") .. ")"), "chest colours on its atlas layer")
+check(not has(coloured.armor, "cA.png"), "extra layers stay off the atlas")
+check(has(coloured.skin, "(grug_armor_metal_iron_chest_skin.png^" ..
+	ench("grug_armor_metal_iron_chest_skin.png", nil, "int") .. "^(cA.png^[multiply:#00aa00))"),
+	"chest colours, then the extra layers, inside the chest's skin layer")
+check(has(coloured.skin, "grug_armor_metal_iron_chest_skin_ench.png^[verticalframe:2:1"),
+	"the skin layer's own mask, suffix frame")
 local broken = grug_visuals.compose({race = "human", armor = {chest = "test:metal_chest_2"},
-	armor_broken = {chest = true}, armor_layers = {chest = "(cA.png)"}}).textures[1]
-check(has(broken, "((grug_visuals_metal_chest_iron.png^(cA.png))" .. grug_gear.BROKEN_MODIFIER .. ")"),
-	"a broken piece cracks with its layers")
+	armor_broken = {chest = true}, armor_enchant = {chest = {prefix = "str"}}})
+check(has(broken.armor, "((grug_armor_metal_iron_chest.png^" ..
+	ench("grug_armor_metal_iron_chest.png", "str") .. ")" .. grug_gear.BROKEN_MODIFIER .. ")"),
+	"a broken piece cracks with its colours on the atlas")
+check(has(broken.skin, "((grug_armor_metal_iron_chest_skin.png^" ..
+	ench("grug_armor_metal_iron_chest_skin.png", "str") .. ")" .. grug_gear.BROKEN_MODIFIER .. ")"),
+	"and on the skin")
+eq(grug_visuals.compose({race = "human", armor = {chest = "test:metal_chest_2"},
+	armor_enchant = {chest = {prefix = "", suffix = 7}}}).armor, "(grug_armor_metal_iron_chest.png)",
+	"no colour without a stat")
 
 -- Royal attire.
 local king = grug_visuals.compose({race = "orc", look = grug_visuals.KING_LOOKS.orc,
@@ -500,37 +556,36 @@ check(not has(royal_guard, "crown"), "a royal guard has no crown")
 local fish = grug_visuals.compose({skin = "grug_mobs_mirefolk.png"})
 eq(fish.textures[1], "grug_mobs_mirefolk.png", "an explicit skin stays itself")
 eq(fish.visual_size, nil, "an explicit skin has no stature")
+local armored_fish = grug_visuals.compose({skin = "grug_mobs_mirefolk.png", armor_line = "cloth",
+	bracket = 1})
+eq(armored_fish.skin, "grug_mobs_mirefolk.png^(grug_armor_cloth_patch_chest_skin.png)^" ..
+	"(grug_armor_cloth_patch_legs_skin.png)^(grug_armor_cloth_patch_feet_skin.png)",
+	"an explicit skin under the inner paint")
 
--- Worst case: the longest overlays that exist in their longest runtime form
--- (Silversteel's hsl, broken), plus two tinted layers per piece for lane B.
-local worst, worst_label = 0, ""
-local function lane_b(slot)
-	local out = {}
-	for _, group in ipairs({"a", "b"}) do
-		out[#out + 1] = "(grug_visuals_metal_" .. slot .. "_abyssal_steel_enchant_" ..
-			group .. ".png^[multiply:#a0b0c0)"
-	end
-	return table.concat(out, "^")
-end
+-- Worst case: every piece in its longest runtime form (both colours, broken),
+-- the royal tabard, every look; the skin and the atlas separately.
+local worst, worst_label, worst_armor = 0, "", 0
+local all_colours = {prefix = "max_mana_percent", suffix = "attack_speed_percent"}
 for _, race_id in ipairs(races) do
 	local def = LOOKS[race_id]
 	for style = 1, #def.styles do
 		for feature = 1, #def.features do
-			for _, with_helmet in ipairs({false, true}) do
-				local spec = {race = race_id, look = {style = style, feature = feature},
-					armor = {chest = "test:metal_chest_4", legs = "test:metal_legs_4",
-						feet = "test:metal_feet_4"},
-					armor_broken = {head = true, chest = true, legs = true, feet = true},
-					armor_layers = {head = lane_b("head"), chest = lane_b("chest"),
-						legs = lane_b("legs"), feet = lane_b("feet")},
-					royal = "guard"}
-				if with_helmet then
-					spec.armor.head = "test:metal_head_4"
-				end
-				local length = #grug_visuals.compose(spec).textures[1]
-				if length > worst then
-					worst, worst_label = length, race_id .. " " .. def.styles[style].id ..
-						" " .. def.features[feature].id .. (with_helmet and " helmet" or "")
+			for _, line in ipairs(grug_visuals.LINES) do
+				for bracket = 1, 6 do
+					local spec = {race = race_id, look = {style = style, feature = feature},
+						armor = {}, armor_broken = {}, armor_enchant = {}, royal = "guard",
+						armor_layers = {chest = "grug_mobs_commander_accord_overlay.png"}}
+					for _, slot in ipairs(grug_visuals.SLOTS) do
+						spec.armor[slot] = "test:" .. line .. "_" .. slot .. "_" .. bracket
+						spec.armor_broken[slot] = true
+						spec.armor_enchant[slot] = all_colours
+					end
+					local result = grug_visuals.compose(spec)
+					if #result.skin > worst then
+						worst, worst_label = #result.skin, race_id .. " " .. def.styles[style].id ..
+							" " .. def.features[feature].id .. " " .. line .. bracket
+					end
+					worst_armor = math.max(worst_armor, #result.armor)
 				end
 			end
 		end
@@ -538,7 +593,8 @@ for _, race_id in ipairs(races) do
 end
 -- The engine serializes a texture with serializeString16 (65535 bytes);
 -- "well inside" is read as below 4 KiB.
-check(worst < 4096, "worst-case texture string " .. worst .. " below 4096")
+check(worst < 4096, "worst-case skin string " .. worst .. " below 4096")
+check(worst_armor < 4096, "worst-case armor string " .. worst_armor .. " below 4096")
 
 ------------------------------------------------------------------------------
 -- F. Equal hitbox: player_api's model, then grug_visuals' apply, per race.
@@ -581,6 +637,12 @@ for _, race_id in ipairs(races) do
 	}
 	eq(props.visual_size and props.visual_size.x, grug_visuals.RACES[race_id].stature,
 		race_id .. " visual size is its stature")
+	eq(props.mesh, grug_visuals.PLAYER_MODEL, race_id .. " wears the player model")
+	local list = props.textures or {}
+	eq(#list, 4, race_id .. " skin, cloak, armor and weapon")
+	eq(list[2], grug_visuals.CLOAK_NONE, race_id .. " no cloak")
+	eq(list[3], grug_visuals.ARMOR_NONE, race_id .. " no armor")
+	eq(list[4], grug_visuals.WEAPON_NONE, race_id .. " an empty weapon card")
 end
 for _, race_id in ipairs(races) do
 	eq(boxes[race_id].collision, boxes.human.collision, race_id .. " collision box")
@@ -612,4 +674,4 @@ if failures > 0 then
 	error("R31 A PORTABLE FAIL failures=" .. failures .. " checks=" .. checks)
 end
 print("R31 A PORTABLE PASS checks=" .. checks .. " worst=" .. worst ..
-	" (" .. worst_label .. ")")
+	" (" .. worst_label .. ") armor=" .. worst_armor)

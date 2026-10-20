@@ -18,21 +18,24 @@
 grug_visuals.APPEARANCE_META = "grug_visuals:appearance"
 
 -- Raised on any change to the format (and documented in the contract).
-grug_visuals.APPEARANCE_VERSION = 1
+-- 2 (Round 54): `textures.armor`, the armor atlas of the worn pieces, and
+-- `textures.body` is the skin under the armor boxes (a version 1 body carried
+-- the armor overlays). A stored version 1 value is rebuilt at the next join.
+grug_visuals.APPEARANCE_VERSION = 2
 
--- Bytes per stored texture string (body, cloak, either hand image). The worst
--- case tools/r39_wm measures -- every armour slot filled, enchanted in both
--- channels and broken, the longest look, the longest cloak and hand image --
--- is 1,382 bytes (the body; a hand image 268, a cloak 44); the cap leaves
--- about half again as much.
+-- Bytes per stored texture string (body, cloak, armor, either hand image).
+-- The worst case tools/r39_wm measures -- every armour slot filled, enchanted
+-- in both channels and broken, the longest look, the longest cloak and hand
+-- image -- is 1,164 bytes (the body; the armor atlas 1,062, a hand image 268,
+-- a cloak 44; Round 54); the cap leaves about three quarters again as much.
 grug_visuals.APPEARANCE_TEXTURE_MAX = 2048
 
--- Bytes for the whole JSON value: four texture strings at the cap plus a fixed
+-- Bytes for the whole JSON value: five texture strings at the cap plus a fixed
 -- overhead of 2,048 bytes for everything else (keys, ids, item names, the
 -- look, the enchant ids). The measured upper bound -- the longest of every
--- part at once -- is 2,964 bytes, 1,002 of them outside the texture strings.
+-- part at once -- is 3,819 bytes, 1,013 of them outside the texture strings.
 grug_visuals.APPEARANCE_JSON_OVERHEAD = 2048
-grug_visuals.APPEARANCE_JSON_MAX = 4 * grug_visuals.APPEARANCE_TEXTURE_MAX +
+grug_visuals.APPEARANCE_JSON_MAX = 5 * grug_visuals.APPEARANCE_TEXTURE_MAX +
 	grug_visuals.APPEARANCE_JSON_OVERHEAD
 
 --
@@ -45,11 +48,13 @@ grug_visuals.APPEARANCE_JSON_MAX = 4 * grug_visuals.APPEARANCE_TEXTURE_MAX +
 -- `^` overlays the next part on what came before; `^[name:...` applies a
 -- modifier to everything before it in the same chain; parentheses group, at
 -- most `max_depth` deep. Nothing is ever escaped: no `\` occurs, and no file
--- name or argument contains `^ : ( ) [`. A `mask` argument is a file name; a
--- `cracko` draws the engine's crack texture, which no string names.
+-- name or argument contains `^ : ( ) [`. A `cracko` draws the engine's crack
+-- texture, which no string names. Version 2 (Round 54) dropped `mask` and one
+-- level of nesting with the helmet's face window: the grammar is exactly
+-- what the current strings use (tools/r39_wm asserts both directions).
 --
 grug_visuals.APPEARANCE_TEXTURE = {
-	max_depth = 4,
+	max_depth = 3,
 	escaped = false,
 	-- A file is a PNG name of these characters with this suffix, and exists in
 	-- one of `dirs` (paths relative to the game's root).
@@ -78,7 +83,6 @@ grug_visuals.APPEARANCE_TEXTURE = {
 		colorize = {"color", "int"},
 		cracko = {"int", "int"},
 		hsl = {"int", "int", "int"},
-		mask = {"file"},
 		multiply = {"color"},
 		opacity = {"int"},
 		verticalframe = {"int", "int"},
@@ -179,7 +183,7 @@ end
 
 -- The appearance as a plain table, the JSON's shape. `result` is compose's
 -- for `spec`; `cloak_texture` nil or CLOAK_NONE and `cloak_id` nil both mean
--- no cloak.
+-- no cloak; no armor worn is "none" too.
 function grug_visuals.appearance(spec, result, cloak_texture, cloak_id)
 	-- The race the body is drawn as (compose's fallback for none or unknown).
 	local race = spec.race
@@ -208,7 +212,8 @@ function grug_visuals.appearance(spec, result, cloak_texture, cloak_id)
 		look = grug_visuals.normalize_look(race, spec.look),
 		cloak = type(cloak_id) == "string" and cloak_id ~= "" and cloak_id or "none",
 		visual_size = {x = size.x, y = size.y, z = size.z},
-		textures = {body = result.textures[1], cloak = cloak_texture},
+		textures = {body = result.skin, cloak = cloak_texture,
+			armor = result.armor ~= grug_visuals.ARMOR_NONE and result.armor or "none"},
 		slots = slots,
 	}
 end
@@ -267,7 +272,8 @@ function grug_visuals.appearance_json(data)
 		',"visual_size":{"x":', json_number(size.x), ',"y":', json_number(size.y),
 		',"z":', json_number(size.z), "}",
 		',"textures":{"body":', json_string(data.textures.body),
-		',"cloak":', json_string(data.textures.cloak), "}",
+		',"cloak":', json_string(data.textures.cloak),
+		',"armor":', json_string(data.textures.armor), "}",
 		',"slots":{', table.concat(slots, ","), "}}",
 	})
 end

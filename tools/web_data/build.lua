@@ -398,7 +398,7 @@ function M.build(root)
 	-- The player model: the file, its texture slots and the two frame ranges.
 	local model_def = assert(player_api.registered_models[gv.PLAYER_MODEL],
 		"web_data: the player model is not registered")
-	assert(#model_def.textures == 2, "web_data: the player model has not two textures")
+	assert(#model_def.textures == 4, "web_data: the player model has not four textures")
 	local b3d = MODS.grug_visuals .. "/models/" .. gv.PLAYER_MODEL
 	assert(exists(root .. "/" .. b3d), "web_data: missing " .. b3d)
 	local animations = {}
@@ -409,7 +409,7 @@ function M.build(root)
 	local model = {
 		b3d = b3d,
 		gltf = "tools/web_data/model/" .. gv.PLAYER_MODEL:gsub("%.b3d$", ".glb"),
-		textures = array({"body", "cloak"}),
+		textures = array({"body", "cloak", "armor", "weapon"}),
 		fps = model_def.animation_speed,
 		animations = animations,
 	}

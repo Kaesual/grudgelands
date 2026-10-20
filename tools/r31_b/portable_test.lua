@@ -12,14 +12,15 @@
 --      one layer per affix naming the item's own mask; layers alone for the
 --      worn seam; strip_enchant takes them off again;
 --   C. every enchantable item (weapons, offhands, armour; never a trinket) is
---      flagged for masks and every worn overlay has its mask file;
+--      flagged for masks and every worn armour file (Round 54: each atlas
+--      layer and skin layer, grug_visuals.ARMOR_ART) has its mask file;
 --   D. per-stack image: grug_quality writes the image whenever affixes are
 --      set (a loot roll, an enchant operation) and removes it when they are
 --      cleared (a crafted output); a plain stack never gets the key; a broken
 --      stack whose uncracked image is unchanged is not rewritten;
---   E. body colours: armor_layers from worn pieces, inside each piece's
---      parentheses of the composed skin, the helmet's under its face window;
---      a plain set composes exactly as before (same key, same texture);
+--   E. body colours: armor_enchant from worn pieces, inside each piece's
+--      parentheses on the armor atlas and the skin, each file with its own
+--      mask; a plain set composes exactly as before (same key, same texture);
 --   F. NPC weapons: weapon_colors gives an item string with the image, plain
 --      without; every king's fixed colours come from its weapon's pool;
 --   G. the station legend: nine swatches in the table's colours (Round 45:
@@ -28,10 +29,11 @@
 --
 --   luajit tools/r31_b/portable_test.lua [REPO]
 --   luajit tools/r31_b/portable_test.lua REPO emit OPACITY PAIR...
---     (for the preview page: one line per item / worn overlay and pair,
+--     (for the preview page: one line per item / worn atlas layer and pair,
 --      "item<TAB>name<TAB>pair<TAB>texture" and
 --      "worn<TAB>line<TAB>slot<TAB>bracket<TAB>pair<TAB>texture",
---      PAIR as prefix:suffix with "-" for none)
+--      PAIR as prefix:suffix with "-" for none; a body line is the skin
+--      only since Round 54, the armour boxes are the atlas)
 -- Prints "R31 B PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -160,9 +162,10 @@ for name, def in pairs(registered) do
 end
 table.sort(items)
 
--- What compose appends inside a worn piece's parentheses.
-local function worn_layer(overlay, prefix, suffix, broken)
-	local piece = enchant_image(overlay, prefix, suffix)
+-- A worn piece's layer as compose draws it: the file with its colours in its
+-- own parentheses, cracked as a whole.
+local function worn_layer(file, prefix, suffix, broken)
+	local piece = enchant_image(file, prefix, suffix)
 	if broken then piece = grug_gear.broken_image(piece) end
 	return "^(" .. piece .. ")"
 end
@@ -191,11 +194,11 @@ if MODE == "emit" then
 	end
 	for _, line in ipairs(grug_visuals.LINES) do
 		for _, slot in ipairs(grug_visuals.SLOTS) do
-			for bracket, overlay in ipairs(grug_visuals.OVERLAY[line][slot]) do
+			for bracket, art in ipairs(grug_visuals.ARMOR_ART[line][slot]) do
 				for _, pair in ipairs(pairs_wanted) do
 					local prefix, suffix = split_pair(pair)
 					print("worn\t" .. line .. "\t" .. slot .. "\t" .. bracket .. "\t" ..
-						pair .. "\t" .. worn_layer(overlay, prefix, suffix, false):sub(2))
+						pair .. "\t" .. worn_layer(art.atlas, prefix, suffix, false):sub(2))
 				end
 			end
 		end
@@ -212,9 +215,9 @@ if MODE == "emit" then
 				worn[slot] = {name = armor[slot], affixes = affixes}
 			end
 			local result = grug_visuals.compose({race = body.race, armor = armor,
-				armor_layers = grug_visuals.armor_layers(worn)})
+				armor_enchant = grug_visuals.armor_enchants(worn)})
 			print("body\t" .. body.race .. "\t" .. body.line .. "\t" .. body.bracket .. "\t" ..
-				pair .. "\t" .. result.textures[1])
+				pair .. "\t" .. result.skin)
 		end
 	end
 	return
@@ -302,20 +305,25 @@ for name, def in pairs(registered) do
 end
 check(trinkets > 0, "trinkets registered and left uncoloured")
 
-local overlay_count, longest_slot = 0, {}
+local atlas_count, skin_count, longest_slot = 0, 0, {}
 for _, line in ipairs(grug_visuals.LINES) do
 	for _, slot in ipairs(grug_visuals.SLOTS) do
-		for _, overlay in ipairs(grug_visuals.OVERLAY[line][slot]) do
-			overlay_count = overlay_count + 1
-			local mask = stem_of(overlay) .. "_ench.png"
-			check(file_exists(ROOT .. "/mods/PLAYER/grug_visuals/textures/" .. mask),
-				line .. " " .. slot .. ": " .. mask)
-			local piece = worn_layer(overlay, "attack_speed_percent", "max_mana_percent", true)
-			if #piece > (longest_slot[slot] or 0) then longest_slot[slot] = #piece end
+		for _, art in ipairs(grug_visuals.ARMOR_ART[line][slot]) do
+			local length = 0
+			for _, file in ipairs({art.atlas, art.skin}) do
+				local mask = stem_of(file) .. "_ench.png"
+				check(file_exists(ROOT .. "/mods/PLAYER/grug_visuals/textures/" .. mask),
+					line .. " " .. slot .. ": " .. mask)
+				length = length + #worn_layer(file, "attack_speed_percent", "max_mana_percent", true)
+			end
+			atlas_count = atlas_count + 1
+			skin_count = skin_count + (art.skin and 1 or 0)
+			if length > (longest_slot[slot] or 0) then longest_slot[slot] = length end
 		end
 	end
 end
-check(overlay_count == 72, "72 worn overlays (got " .. overlay_count .. ")")
+check(atlas_count == 72, "72 worn atlas layers (got " .. atlas_count .. ")")
+check(skin_count == 54, "54 worn skin layers (got " .. skin_count .. ")")
 
 ------------------------------------------------------------------------------
 -- D. Per-stack image through grug_quality.
@@ -402,32 +410,41 @@ do
 		chest = {name = "grug_gear:chest_metal_steel",
 			affixes = {{channel = "suffix", stat = "max_hp_percent"}}},
 		legs = {name = "grug_gear:legs_metal_steel", affixes = {}},
+		feet = {name = "grug_gear:feet_metal_steel", affixes = {{channel = "prefix", stat = "nonsense"}}},
 	}
-	local layers = grug_visuals.armor_layers(worn)
-	check(layers and layers.head and layers.chest and not layers.legs and not layers.feet,
-		"layers only for enchanted pieces")
+	local enchants = grug_visuals.armor_enchants(worn)
+	check(enchants and enchants.head and enchants.chest and not enchants.legs and not enchants.feet,
+		"colours only for enchanted pieces with known stats")
+	check(enchants.head.prefix == "str" and enchants.head.suffix == "armor_rating" and
+		enchants.chest.prefix == nil and enchants.chest.suffix == "max_hp_percent",
+		"prefix and suffix per piece")
 	local armor = {head = worn.head.name, chest = worn.chest.name, legs = worn.legs.name}
 	local plain = grug_visuals.compose({race = "dwarf", armor = armor})
 	local none = grug_visuals.compose({race = "dwarf", armor = armor,
-		armor_layers = grug_visuals.armor_layers({legs = worn.legs})})
+		armor_enchant = grug_visuals.armor_enchants({legs = worn.legs})})
 	check(none == plain, "a plain set composes exactly as before")
-	local dressed = grug_visuals.compose({race = "dwarf", armor = armor, armor_layers = layers})
+	local dressed = grug_visuals.compose({race = "dwarf", armor = armor, armor_enchant = enchants})
 	check(dressed.key ~= plain.key, "enchanted set has its own key")
-	local texture = dressed.textures[1]
-	local head = grug_visuals.OVERLAY.metal.head[3]
-	local chest = grug_visuals.OVERLAY.metal.chest[3]
-	check(texture:find("((" .. head .. "^" .. layers.head .. ")^[mask:", 1, true) ~= nil,
-		"helmet colours sit inside the helmet, under the face window")
-	check(texture:find("(" .. chest .. "^" .. layers.chest .. ")", 1, true) ~= nil,
-		"chest colours sit inside the chest piece")
-	check(layers.chest == grug_gear.enchant_layers(chest, nil, "max_hp_percent"),
-		"worn layers use the overlay's mask")
-	local broken = grug_visuals.compose({race = "dwarf", armor = armor, armor_layers = layers,
+	local art = grug_visuals.ARMOR_ART.metal
+	local head, chest = art.head[3], art.chest[3]
+	check(dressed.armor:find("(" .. head.atlas .. "^" ..
+		grug_gear.enchant_layers(head.atlas, "str", "armor_rating") .. ")", 1, true) ~= nil,
+		"helmet colours sit inside the helmet's atlas layer")
+	check(dressed.armor:find("(" .. chest.atlas .. "^" ..
+		grug_gear.enchant_layers(chest.atlas, nil, "max_hp_percent") .. ")", 1, true) ~= nil,
+		"chest colours sit inside the chest's atlas layer")
+	check(dressed.skin:find("(" .. chest.skin .. "^" ..
+		grug_gear.enchant_layers(chest.skin, nil, "max_hp_percent") .. ")", 1, true) ~= nil,
+		"chest colours sit inside the chest's skin layer, with its own mask")
+	check(not dressed.skin:find(head.atlas:sub(1, -5) .. "_ench", 1, true),
+		"no helmet colours on the skin")
+	local broken = grug_visuals.compose({race = "dwarf", armor = armor, armor_enchant = enchants,
 		armor_broken = {chest = true}})
-	check(broken.textures[1]:find("((" .. chest .. "^" .. layers.chest .. ")" .. grug_gear.BROKEN_MODIFIER, 1, true)
-		~= nil, "a broken piece cracks together with its colours")
-	check(grug_visuals.armor_layer("grug_gear:sword_steel", "chest", "str", nil) == nil,
-		"a non-armour item has no worn layers")
+	check(broken.armor:find("((" .. chest.atlas .. "^" ..
+		grug_gear.enchant_layers(chest.atlas, nil, "max_hp_percent") .. ")" ..
+		grug_gear.BROKEN_MODIFIER, 1, true) ~= nil, "a broken piece cracks together with its colours")
+	check(grug_visuals.armor_enchant("grug_gear:sword_steel", "str", nil) == nil,
+		"a non-armour item has no worn colours")
 end
 
 ------------------------------------------------------------------------------
@@ -492,8 +509,8 @@ local plain_slots = 0
 for _, slot in ipairs(grug_visuals.SLOTS) do
 	local longest = 0
 	for _, line in ipairs(grug_visuals.LINES) do
-		for _, overlay in ipairs(grug_visuals.OVERLAY[line][slot]) do
-			longest = math.max(longest, #overlay + 3)
+		for _, art in ipairs(grug_visuals.ARMOR_ART[line][slot]) do
+			longest = math.max(longest, #art.atlas + 3 + (art.skin and #art.skin + 3 or 0))
 		end
 	end
 	plain_slots = plain_slots + longest
@@ -501,8 +518,8 @@ end
 local enchanted_slots = 0
 for _, slot in ipairs(grug_visuals.SLOTS) do enchanted_slots = enchanted_slots + longest_slot[slot] end
 print(("lengths: item image worst %d chars (%s, both affixes, broken); armour pieces " ..
-	"worst %d chars all four enchanted and broken against %d plain (the look layers " ..
-	"come on top)"):format(longest_item, longest_item_name, enchanted_slots, plain_slots))
+	"worst %d chars all four enchanted and broken against %d plain, atlas and skin layers " ..
+	"together (the look layers come on top)"):format(longest_item, longest_item_name, enchanted_slots, plain_slots))
 
 if failures > 0 then
 	error(("R31 B PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)

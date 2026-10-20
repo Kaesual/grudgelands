@@ -287,12 +287,15 @@ function grug_visuals.set_look(player, look)
 end
 
 --
--- THE PLAYER MODEL WITH A CLOAK (character_visuals.md §5b). Players wear
+-- THE PLAYER MODEL (character_visuals.md §3, §5b). Players wear
 -- `grug_visuals_character.b3d`: player_api's `character.b3d` with a cloak box
--- on its own bone and its own mesh buffer appended
--- (tools/r33_c3/gen_cloak_model.py), so its texture list is {skin, cloak}.
--- NPCs keep `character.b3d`. Same animations, boxes and eye height as the
--- base model, read from player_api's own registration, plus the pose clips.
+-- on its own bone, the armor boxes and the weapon card appended, each part
+-- its own mesh buffer (tools/r33_c3/gen_cloak_model.py, Round 54's armor in
+-- docs/technical/armor-format.md), so its texture list is {skin, cloak,
+-- armor, weapon}; the weapon card is empty in the world, where the wield
+-- entity shows the weapon. Armored NPCs wear NPC_MODEL below, everybody else
+-- `character.b3d`. Same animations, boxes and eye height as the base model,
+-- read from player_api's own registration, plus the pose clips.
 --
 grug_visuals.PLAYER_MODEL = "grug_visuals_character.b3d"
 -- The engine's builtin transparent texture: the cloak buffer alpha-tests to
@@ -354,13 +357,22 @@ do
 	end
 	player_api.register_model(grug_visuals.PLAYER_MODEL, {
 		animation_speed = base.animation_speed,
-		textures = {base.textures[1], grug_visuals.CLOAK_NONE},
+		textures = {base.textures[1], grug_visuals.CLOAK_NONE, grug_visuals.ARMOR_NONE,
+			grug_visuals.WEAPON_NONE},
 		animations = animations,
 		collisionbox = table.copy(base.collisionbox),
 		stepheight = base.stepheight,
 		eye_height = base.eye_height,
 	})
 end
+
+-- The model of an ARMORED NPC (a visual spec with `armor_line`: guards,
+-- captains, commanders, General bodyguards, bandits and their kin): the
+-- player model's body and armor boxes without the cloak, texture list {skin,
+-- armor, weapon} (compose's `textures` for such a spec). The NPC definitions
+-- name it as their mesh, so it survives every reactivation; NPC animation
+-- tables use only character.b3d's frames, which it keeps.
+grug_visuals.NPC_MODEL = "grug_visuals_npc.b3d"
 
 -- The one source of the cloak a player wears: a function(player) -> texture
 -- or nil, and the selected cloak's id (grug_achievements installs it). Read on
@@ -397,7 +409,7 @@ function grug_visuals.player_spec(player)
 		look = grug_visuals.get_look(player),
 		armor = armor, armor_broken = armor_broken,
 		-- Enchant colours on the worn pieces (enchant.lua; nil when plain).
-		armor_layers = grug_visuals.armor_layers(worn),
+		armor_enchant = grug_visuals.armor_enchants(worn),
 		weapon = weapon and weapon:get_name() or nil,
 		-- For the stored appearance only (appearance.lua); compose reads none
 		-- of them: the worn pieces with their affixes and both hand-slot
@@ -463,10 +475,11 @@ function grug_visuals.apply(player)
 	if entry.key ~= key then
 		entry.key = key
 		-- player_api owns the texture list of the player model; going through
-		-- it is what keeps its own bookkeeping (and the character-page preview,
-		-- which reads the live object properties) correct. A new table: the
-		-- composed one is compose's read-only cache entry.
-		player_api.set_textures(player, {result.textures[1], cloak})
+		-- it is what keeps its own bookkeeping correct. A new table: the
+		-- composed one is compose's read-only cache entry. The weapon card
+		-- stays empty in the world (the wield entity holds the weapon).
+		player_api.set_textures(player, {result.skin, cloak, result.armor,
+			grug_visuals.WEAPON_NONE})
 	end
 	if result.visual_size then
 		-- VISUAL ONLY. collisionbox and eye_height stay with player_api's
@@ -497,6 +510,27 @@ function grug_visuals.apply(player)
 	end
 	sync_wield(entry, player, shown_item(player), result.stature)
 	return result
+end
+
+--
+-- THE PREVIEW SEAM (round54-plan.md §3): what the inventory's Character tab
+-- draws in its model[] -- the player model and its four textures, the
+-- current look with the main hand's cosmetic weapon on the weapon card (its
+-- image as its stack shows it, enchanted or broken; empty without one).
+-- Composed from the same state `apply` reads, not from the live object, so
+-- it never depends on the order of the refresh hooks. A fresh table.
+--
+--     grug_visuals.preview(player)
+--     -> {mesh = PLAYER_MODEL, textures = {skin, cloak, armor, weapon}}
+--
+function grug_visuals.preview(player)
+	local result = grug_visuals.compose(grug_visuals.player_spec(player))
+	local cloak = cloak_source and cloak_source(player) or nil
+	local weapon = grug_inventory.get_cosmetic_weapon(player)
+	local image = weapon and grug_visuals.hand_image(weapon) or ""
+	return {mesh = grug_visuals.PLAYER_MODEL, textures = {result.skin,
+		cloak or grug_visuals.CLOAK_NONE, result.armor,
+		image ~= "" and image or grug_visuals.WEAPON_NONE}}
 end
 
 --
@@ -563,14 +597,13 @@ grug_classes.register_on_class_chosen(function(player)
 	grug_visuals.apply(player)
 end)
 
--- REGISTERED BEFORE grug_inventory's single page-refresh consumer, and that
--- ordering is load-bearing: the Character page renders the player's LIVE object
--- properties (pages.lua preview_model), so a refresh that runs before this
--- write shows the previous look until the next equip. grug_inventory therefore
--- carries `optional_depends = grug_visuals` -- the edge goes exactly one way,
--- because a mutual optional_depends is a dependency cycle. AGENTS.md allows
--- exactly one page-refresh consumer, so the fix is the order, not a second
--- refresh.
+-- Registered before grug_inventory's single page-refresh consumer
+-- (grug_inventory carries `optional_depends = grug_visuals`; the edge goes
+-- exactly one way, because a mutual optional_depends is a dependency cycle).
+-- Since Round 54 the Character page draws `grug_visuals.preview`, which
+-- composes from the player's state and not from the live object, so the
+-- page no longer depends on this order; the world look is written here first
+-- all the same. AGENTS.md allows exactly one page-refresh consumer.
 grug_core.register_on_equipment_change(function(player, listname, reason)
 	-- Pure wear does not change the look; the break that does is a full change.
 	if (listname and IRRELEVANT_LIST[listname]) or reason == "durability_metadata" then
@@ -691,9 +724,14 @@ end
 -- installed AS that pristine list rather than written over the tinted one.
 -- Without it the plain write below is correct for an untiered NPC (a vendor).
 --
--- `_grug_visual_skin` is a plain string field and therefore survives in
--- staticdata: after the first activation the composed list is already what
--- mob_activate restored, and the re-application is skipped.
+-- `_grug_visual_key` (compose's `digest`, a content digest of the whole
+-- list) is a plain string field and therefore survives in staticdata: after
+-- the first activation the composed list is already what mob_activate
+-- restored, and the re-application is skipped. A digest of the OUTPUT, not
+-- compose's key of the inputs: a retuned colour or file changes the list under
+-- the same key, and a saved NPC must be redrawn then. `_grug_visual_skin` was
+-- the field before Round 54 (the skin alone); an NPC saved with it is redrawn
+-- once and drops it.
 function grug_visuals.apply_entity(entity, cfg, write_textures)
 	if not entity or not entity.object then
 		return nil
@@ -702,9 +740,9 @@ function grug_visuals.apply_entity(entity, cfg, write_textures)
 	if not result then
 		return nil
 	end
-	local texture = result.textures[1]
-	if entity._grug_visual_skin ~= texture then
-		entity._grug_visual_skin = texture
+	if entity._grug_visual_key ~= result.digest then
+		entity._grug_visual_key = result.digest
+		entity._grug_visual_skin = nil
 		if write_textures then
 			write_textures(entity, result.textures)
 		else
@@ -730,7 +768,7 @@ core.register_on_mods_loaded(function()
 	end
 	local count = grug_visuals.index_armor(core.registered_items)
 	core.log("action", "[grug_visuals] " .. count ..
-		" armor pieces indexed for overlays, " ..
+		" armor pieces indexed for the armor art, " ..
 		#grug_visuals.LINES .. " art lines x " .. #grug_visuals.SLOTS ..
 		" slots")
 
@@ -772,7 +810,7 @@ core.register_on_mods_loaded(function()
 			table.sort(unknown)
 			core.log("error", "[grug_visuals] equipment list(s) " ..
 				table.concat(unknown, ", ") ..
-				" do not exist -- the armor overlay would never update")
+				" do not exist -- the worn armor would never update")
 		end
 	end
 end)

@@ -220,9 +220,12 @@ combat may follow its target in).
   line's optional party fight in that camp; the captain stays its solo
   target. His name lives in `pvp_names.json` (`commanders`): War Commander
   Greyvow in the Accord camp, War Commander Stonegrudge in the Throng camp
-  (the Round 36 story bible). He looks like a guard of the camp's race with
-  his faction's tabard (`grug_mobs_commander_<faction>_overlay.png`) over
-  skin and chest armour, under the helmet.
+  (the Round 36 story bible). He looks like a guard of the camp's race in
+  his faction's colours (Round 54): the armour's cloth parts in his tabard's
+  colour and its fittings in its trim, the way the royal armour is coloured
+  ([character_visuals.md](character_visuals.md) §3), with his faction's
+  tabard (`grug_mobs_commander_<faction>_overlay.png`) on the skin under the
+  chest armour.
 - Own-faction players find shelter: the guards treat them as friends; enemy
   guards are hostile. Kiting enemy guards to an own camp is accepted.
 

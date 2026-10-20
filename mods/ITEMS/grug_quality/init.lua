@@ -372,9 +372,20 @@ local function generated_name(base_name, affixes)
 	return name
 end
 
+-- Leather tier 4 is "Hardened" since Round 54 under its old item ids
+-- (grug_gear.MATERIALS); a stack stored with the old base name takes the new
+-- one at its next rebuild (every gear stack a player carries is rebuilt on
+-- the next equipment or level change, grug_gear's tooltip refresh).
+local RENAMED_BASE = {pattern = "_leather_scaled$", old = "Scaled ", new = "Hardened "}
+
 local function ensure_base_name(stack)
 	local meta = stack:get_meta()
 	local name = meta:get_string("grug_base_name")
+	if name:sub(1, #RENAMED_BASE.old) == RENAMED_BASE.old and
+			stack:get_name():find(RENAMED_BASE.pattern) then
+		name = RENAMED_BASE.new .. name:sub(#RENAMED_BASE.old + 1)
+		meta:set_string("grug_base_name", name)
+	end
 	if name ~= "" then return name end
 	local def = stack:get_definition() or {}
 	name = first_line(def.description)

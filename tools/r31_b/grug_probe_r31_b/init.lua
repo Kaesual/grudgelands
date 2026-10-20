@@ -89,21 +89,20 @@ local function stage_body(done)
 		worn[slot] = {name = item, affixes = grug_items.get_affixes(stack)}
 		armor[slot] = item
 	end
-	local layers = grug_visuals.armor_layers(worn)
+	local enchants = grug_visuals.armor_enchants(worn)
 	local object = core.add_entity(vector.add(POS, {x = 2, y = 0, z = 0}), "grug_probe_r31_b:dummy")
 	check(object ~= nil, "body entity added")
 	if not object then return done() end
 	local entity = object:get_luaentity()
 	local result = grug_visuals.apply_entity(entity, {race = "orc", armor = armor,
-		armor_layers = layers, weapon_family = "dagger",
+		armor_enchant = enchants, weapon_family = "dagger",
 		weapon_colors = {prefix = "dex", suffix = "crit_percent"}})
 	local texture = object:get_properties().textures[1]
 	local count = select(2, texture:gsub("_ench%.png", ""))
 	check(result and texture == result.textures[1], "body texture applied")
-	check(count >= 4, "body wears the colour layers (" .. count .. " layers)")
-	for slot, layer in pairs(layers) do
-		check(texture:find(layer, 1, true) ~= nil, "body: " .. slot .. " layer present")
-	end
+	-- (Round 54: the skin carries the colours of chest, legs and feet; the
+	-- helmet's are on the armor atlas of an armored model)
+	check(count >= 3, "body wears the colour layers (" .. count .. " layers)")
 	log("body texture " .. #texture .. " chars, " .. count .. " colour layers")
 	core.after(1, function()
 		local wield = entity._grug_wield_obj
@@ -134,7 +133,7 @@ local function stage_king(done)
 		local item = wield and wield:get_properties().wield_item or ""
 		if item ~= "" or tries > 10 then
 			log(("king: entity %s, skin %s, wield %s"):format(tostring(entity ~= nil),
-				tostring(entity and entity._grug_visual_skin and #entity._grug_visual_skin),
+				tostring(entity and entity._grug_visual_key and #entity._grug_visual_key),
 				tostring(wield ~= nil)))
 			check(item:find("_ench.png", 1, true) ~= nil, "king's sword is coloured: " .. item)
 			if entity then object:remove() end
