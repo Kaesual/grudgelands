@@ -756,6 +756,24 @@ do
 	input_api.swing(q, R.mighty_blow)
 	t = transactions[before + 1]
 	near(t.scaled_damage, 1.45 * 1.15 * S, "K4 Mighty Blow in the window: 1.45 S x 1.15", 1)
+	-- Review F1 (Round 46 ruling 9): Ruination's +2 scales with the base
+	-- interval, so a dagger (0.7 s) and a battle axe (1.4 s) gain the same
+	-- rage per second in the window.
+	local per_second = {}
+	for _, weapon in ipairs({{"dagger", 0.7}, {"axe", 1.4}}) do
+		local w = new_player("k4_" .. weapon[1], {level = 60})
+		rank(w, {ruin_ruination = 1})
+		G.add_rage(w, 20)
+		G.try_cast(w, R.ruination, nil, function() end)
+		G.base_swing_interval = function() return weapon[2] end
+		local tr = swing(w, R.strike, mob)
+		land(w, tr, mob)
+		per_second[#per_second + 1] = G.get_rage(w) / weapon[2]
+		near(G.get_rage(w), (8 + 2) * weapon[2], "K4 Ruination with a " .. weapon[1] ..
+			": (8 + 2) x " .. weapon[2] .. " rage per landed swing")
+		G.base_swing_interval = function() return 1.0 end
+	end
+	near(per_second[1], per_second[2], "K4 ...the same rage per second with a dagger and a battle axe")
 	rank(q, {ruin_mighty_blow = 1, ruin_ruination = 1, ruin_long_fury = 1})
 	near(8 + G.family_bonus(q, R.ruination, "duration_add"), 8.5, "K4 Long Fury 1: 8.5 s")
 	wait(10)

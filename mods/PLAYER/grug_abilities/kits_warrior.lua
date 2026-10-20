@@ -37,7 +37,7 @@ local function percent(coef)
 end
 
 -- Ruination's window (below): +15 % on every swing while it is open.
-local RUINATION_MULT = 1.15
+local RUINATION_MULT, RUINATION_RAGE = 1.15, 2
 
 --
 -- Charge (starter). The dash and its arrival (damage, rage, the 0.75 s stun,
@@ -531,7 +531,11 @@ grug_abilities.register_on_swing(function(player, swing)
 	if retort then
 		mult = mult * (1 + retort_bonus(player))
 	end
-	return {damage_mult = mult, rage_add = ruination and 2 or 0,
+	-- Ruination's +2 scales with the weapon's base interval like every swing
+	-- grant (Round 46 ruling 9): the same rage per second with any weapon.
+	local rage = ruination and RUINATION_RAGE * grug_abilities.base_swing_interval(player)
+		/ grug_abilities.RAGE_SWING_REFERENCE or 0
+	return {damage_mult = mult, rage_add = rage,
 		on_landed = function(user)
 			if retort and grug_classes.consume_window(user, "retort") then
 				local heal = retort_heal(user)
