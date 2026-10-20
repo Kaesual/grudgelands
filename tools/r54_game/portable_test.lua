@@ -397,8 +397,8 @@ do
 		"V before any apply: the full answer")
 	eq(early.props.textures, nil, "V before any apply: nothing applied yet")
 	check(has(first.textures[1], V.LOOKS.elf.styles[1].mask), "V before any apply: the race look")
-	equip(early, "grug_chest", ItemStack(grug_gear.armor_item("chest", "leather", 2)))
-	early.props.textures = nil
+	early:get_inventory():set_stack("grug_chest", 1,
+		ItemStack(grug_gear.armor_item("chest", "leather", 2)))
 	check(has(V.preview(early).textures[3], "grug_armor_leather_cured_chest.png"),
 		"V the worn chest from the inventory, not from the object")
 	local bob = new_player("bob", "dwarf")
