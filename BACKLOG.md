@@ -32,9 +32,12 @@ layouts, resource tables or buff values.
   ([delivery plan](docs/planning/class-redesign/delivery-plan.md)); Round
   52 built round F, the foundation, and Round 53 round K, the four new kits
   and talent graphs with an automatic talent reset
-  ([Round 53](#round-53--the-new-classes)). Next: the user's playtest and a
-  short balance fix round
-  ([Round 53 carry-overs](#round-53-carry-overs)).
+  ([Round 53](#round-53--the-new-classes)); the fix round 0.53.1 followed
+  the user's first look (areas without line of sight, the range line,
+  racials, the redrawn icons). Next: the user's GUI test of 0.53.1, the
+  playtest and a short balance fix round
+  ([Round 53 carry-overs](#round-53-carry-overs),
+  [0.53.1 carry-overs](#0531-carry-overs)).
 - Current owners: [classes](docs/design/classes.md),
   [talents](docs/design/skill_trees.md), [Scout](docs/design/scout.md),
   [combat](docs/design/combat_stats.md) and [PvP](docs/design/pvp.md).
@@ -2704,6 +2707,16 @@ independently reviewed by Opus, the cast sounds picked by the user. Version
   20 sound events ([module guide](docs/technical/module-guide.md#combat-and-classes)).
 - **The step and the clean-up** (INTEG): the step 0.53.0, HP factors, the
   old talent engine removed, `opts.no_crit`, the held cast's catch-up.
+- **0.53.1, the fix round** (compatible, no step of its own;
+  [fix plan and completion](docs/planning/round53-fix-plan.md#completion-2026-10-20)):
+  areas, cones and group heals without line of sight; "Range: N m" in the
+  tooltips; the 40-node flight band and the minimap's no-fly overlay on a
+  flyer; shield and spellbook tooltips from the equip rule; the same
+  trinket twice; the undead truce day and night (husks too), Elf +3 m,
+  Dwarf +5 % armor rating; skeleton bows; right-click picking; the 36
+  redrawn icons. Lanes ART, FLIGHT, SKILLS, GEAR and RACE, each reviewed
+  independently. Built, not pushed; pushed together with 0.53.0 after the
+  user's one GUI test.
 
 ### Round 53 carry-overs
 
@@ -2722,7 +2735,8 @@ The items the user decides in the GUI test are in the
 - **The icon comparison page** (https://claude.ai/artifact/1H3qCwSvudKN8gXShJs2X8,
   `r53/icons/`, notes per skill, talent and tree): 36 icons marked for a
   redraw (too detailed at small size; weapons tinted instead of natural
-  colours); an Astra redraw round with 3 variants each and a pick page follow.
+  colours). **Done in 0.53.1:** two Astra passes, two pick pages, all 36
+  shipped (lane ART).
 - **Dead reads of keys no node carries** (INTEG): `melee_damage_add`,
   `rage_per_hit_taken_add` and `combat_mana_regen_add`
   (`grug_abilities/init.lua`), `crit_chance_add_window`,
@@ -2754,8 +2768,8 @@ The items the user decides in the GUI test are in the
 - **Combat notes** (reviews, no severity): Haven's node text (M13,
   `talent_graph_priest.lua`) omits its 22 % mana cost (`kits_priest.lua`); Split Shot's splinters also fly
   when the primary hit is dodged (accepted: the node list says "on
-  impact"); Bellow's `range = 6` takes the elf's +5 ability range in the
-  tooltip and the pointing range while its circle stays 6 m; the clock
+  impact"); Bellow's `range = 6` took the elf's +5 ability range in the
+  tooltip (0.53.1: a self skill shows no range line); the clock
   carry is measured against the interval's due time, so a future skill
   whose occupied time exceeds its interval by up to 0.1 s would have its
   held cadence trimmed to the interval (no shipped skill), and a late held
@@ -2768,11 +2782,12 @@ The items the user decides in the GUI test are in the
   a respec or death" is refuted on main).
 - **Probes:** WARRIOR's "step3" and "walled" dummies were misplaced, so the
   line of sight past a step edge or a pillar is fixture-checked only
-  (`r53_hooks`); Finisher is fixture-checked only; no warrior probe log is
+  (`r53_hooks`; moot since 0.53.1 removed the line of sight); Finisher is fixture-checked only; no warrior probe log is
   kept beside the report. The step 0.53.0 ran on SQLite only (the
   PostgreSQL path is the shared `data.py` API that `r45_ms` proves).
 - **For the GUI check** (in the checklist): the stairs riser blocks an
-  area's line of sight from the anchor (MAGE probe); a tap casts a ground
+  area's line of sight from the anchor (MAGE probe; superseded in 0.53.1:
+  areas have no line of sight); a tap casts a ground
   area aimed within hand reach and a hold digs; a cast within one swing
   interval says "You are still busy." (K9); the unit words of the node
   texts ("a Spark hit", "a base bow hit" …) for the user to refine.
@@ -2783,6 +2798,44 @@ The items the user decides in the GUI test are in the
   [tools](docs/planning/class-redesign-handoff.md#73-tools-and-everyday-layouts)
   (remove shovels, combine axe and hoe; Hotbar A/B reduced the slot
   pressure that motivated it).
+
+### 0.53.1 carry-overs
+
+**Noted 2026-10-20** ([completion](docs/planning/round53-fix-plan.md#completion-2026-10-20)),
+the 0.53.1 reviews' and reports' notes (theoretical or accepted, no
+severity). The items the user decides in the GUI test are in the
+[GUI checklist](docs/planning/round53-fix-plan.md#gui-checklist-0531).
+
+- **Open, for the user:** fruit picking in towns. A right-click pick is
+  protected exactly like a dig, so town and village orchards (Dawnmere,
+  the human capital green) cannot be picked. Recommended: keep; the
+  alternative is a fruit-only exception inside `grug_gathering/pick.lua`.
+- **Picking side effects** (RACE review): ripe fruit within 4 m counts as
+  an interactive node for right-click, so a Scout's Loose aimed at it picks
+  instead of shooting, and a held block + right-click picks (Shift +
+  right-click places). The picker hears no dig sound (the engine's
+  `node_dig` leaves the digger out, its client predicts the sound); no new
+  sound without the sound gate.
+- **Flight overlay** (FLIGHT review and report): `grug_map/minimap.lua`
+  `flight_mode` reads the faction from player meta every step while flying
+  (cache it on the mount record; `world_map.md` "one table read per
+  player" understates it); `grug_mounts.column_flight_state` reads the
+  zone id before the rule checks the faction; `r29_b` and `r44_qb` load
+  `entity.lua` without `flight.lua` (they pass and never call the rule);
+  no red on the sea disc beyond the atlas edge; the Map tab has no flight
+  layer. The map source's channel records still carry
+  `warning_width=48` (`wp40/source/simple_map.lua`), which no game code
+  reads (the band is `grug_mounts.WARNING_WIDTH`, 40).
+- **Areas** (SKILLS): Fireball's splash keeps its ±2 band (radius 2)
+  while every other area uses ±3; one number if wanted.
+- **Trinkets and gear** (GEAR): the legacy meta `grug_trinket_special` is
+  still only read, never written (before 0.53.1 too); the `r33_c5` and
+  `r45_eu` stubs of `grug_inventory.hand_accepts` always return true (they
+  only build tooltips).
+- **Tools** (ART): `tools/r52_art/artb/build_drop.py --check` has failed
+  since Round 52 shipped the Fireball and Smite icons ("Shipped comparison
+  assets differ"; true on main before 0.53.1); `tools/r53_art` has no
+  `tools/README.md` line.
 
 ### Audit 2026-10 open questions
 

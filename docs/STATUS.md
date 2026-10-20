@@ -5,8 +5,9 @@ Updated 2026-10-20. This is the delivery pointer, not another game specification
 The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the
 [class redesign package](planning/class-redesign/README.md)) is built:
-round F in Round 52, round K in Round 53 below. Next: the user's playtest
-of the new classes and a short balance fix round. The
+round F in Round 52, round K in Round 53 below, with its fix round 0.53.1.
+Next: the user's one GUI test of 0.53.0 and 0.53.1 together, then the push,
+the playtest of the new classes and a short balance fix round. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
@@ -57,6 +58,27 @@ user's notes.
     `check_fresh_server.py` and `r37_dc` PASS. Its GUI test (desktop and
     web build, the migration first) is open
     ([carry-overs](../BACKLOG.md#round-53-carry-overs)).
+  - **0.53.1, the fix round** (2026-10-20, **compatible**, no step of its
+    own, the 0.53.0 step stays declared;
+    [fix plan, decisions, numbers and GUI checklist](planning/round53-fix-plan.md#completion-2026-10-20)),
+    from the user's first look at 0.53.0. From main `4e8a177d`: ART
+    (`272cf9e6`, the 36 picked icons), FLIGHT (`ad1157eb`, the 40-node band,
+    one shared flight rule, the minimap's no-fly overlay on a flyer), SKILLS
+    (`144a7cc9`, areas, cones and groups without line of sight, the
+    "Range: N m" tooltip line), GEAR (`8e146dfe`, hand tooltips from the
+    equip rule, the same trinket twice) and RACE (`2c5ecbc2`, the undead
+    truce day and night with husks, Elf +3 m, Dwarf +5 % armor rating,
+    skeleton bows, right-click picking) merged, then this lane D. Each lane
+    independently reviewed by Opus (all MERGE; SKILLS' text finding fixed
+    in a delta). Main has 229 portable fixtures (4 new); `mods/` against
+    0.53.0 +645 −334 lines in 35 text files, 2 new Lua files, 36 PNGs
+    replaced. The declaration is
+    `{"schema": 3, "version": "0.53.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+    Lane D: `r37_dc`, `check_upgrade.py` and `check_fresh_server.py` PASS.
+    **Built, awaiting the user's GUI test** (one test on 0.53.1, the 0.53.0
+    migration and the Round 53 checklist first); 0.53.0 and 0.53.1 are
+    pushed together on the user's word. Open for the user: fruit picking
+    in towns ([0.53.1 carry-overs](../BACKLOG.md#0531-carry-overs)).
 - **Round 52 "Ambience and the class rework foundation" complete**
   (2026-10-20, version 0.52.0, **compatible**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round52-plan.md#completion-2026-10-20);
