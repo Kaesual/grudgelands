@@ -273,6 +273,8 @@ local function load(path) dofile(ROOT .. "/" .. path) end
 grug_mounts = {}
 load("mods/PLAYER/grug_mounts/catalog.lua")
 load("mods/PLAYER/grug_mounts/state.lua")
+-- fix 0.53.1: the flight rule lives in flight.lua (init.lua loads it here)
+load("mods/PLAYER/grug_mounts/flight.lua")
 load("mods/PLAYER/grug_mounts/entity.lua")
 load("mods/PLAYER/grug_mounts/trainer.lua")
 load("mods/PLAYER/grug_mounts/shipwright.lua")

@@ -223,6 +223,8 @@ grug_classes = {
 dofile(ROOT .. "/mods/CORE/grug_sounds/init.lua")
 grug_mounts = {}
 dofile(ROOT .. "/mods/PLAYER/grug_mounts/catalog.lua")
+-- fix 0.53.1: the flight rule lives in flight.lua (init.lua loads it first)
+dofile(ROOT .. "/mods/PLAYER/grug_mounts/flight.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_mounts/entity.lua")
 local CONTROLLER = registered_entities["grug_mounts:mount"]
 local S = grug_sounds
