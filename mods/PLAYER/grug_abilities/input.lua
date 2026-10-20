@@ -91,8 +91,8 @@ return function(api)
 	end
 	-- Zero pointing range on the held skill stack (tool.cpp getToolRange
 	-- reads meta "range"): the client then points at nothing, so it neither
-	-- digs, cracks nor punches. Owners ("combat": an LMB combat hold, "bow":
-	-- a Loose draw) share the one meta key; the stack points again once the
+	-- digs, cracks nor punches. Its owners (today one: "combat", an LMB
+	-- combat hold) share the one meta key; the stack points again once the
 	-- last owner lets go. Written with set_wielded_item(stack, true): sent at
 	-- once and without the wield-change animation a meta change would play.
 	local ranges = {} -- player name -> {owners = {}, list, index, item}
@@ -140,7 +140,6 @@ return function(api)
 		end_food_hold(player)
 		end_mode(player, s)
 		s.pending, s.dig, s.right, s.food, s.settle = nil, nil, nil, nil, nil
-		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
 	end
 	-- ... and latch the cancellation until both buttons are released.
 	local function cancel(player, s)
@@ -175,9 +174,9 @@ return function(api)
 	local function support(def)
 		return def and (def.target_kind == "self" or def.target_kind == "friendly")
 	end
-	-- Can this press still try a cast of def (Loose casts by RMB only)?
+	-- Can this press still try a cast of def?
 	local function castable(def, s)
-		return def and def.id ~= "loose" and def.kind == "cast" and
+		return def and def.kind == "cast" and
 			(def.repeat_policy ~= "once" or not s.used)
 	end
 	local function silent() end
@@ -244,8 +243,6 @@ return function(api)
 		end
 	end
 	local function combat_reach(player, def)
-		-- Loose's LMB is Strike or hand digging; its bow range is RMB's.
-		if def.id == "loose" then return HAND_RANGE end
 		return math.max(HAND_RANGE, Q.get_range(player, def))
 	end
 	-- A hostile this hold may fight: what combat accepts, range aside. It is
@@ -302,8 +299,12 @@ return function(api)
 		local def = node and core.registered_nodes[node.name]
 		return def ~= nil and type(def.on_rightclick) == "function"
 	end
+	-- A selected skill's right-click cast (`def.secondary_cast`: Bladecraft's
+	-- Loose shot, scout.lua) owns an RMB press that is neither food nor an
+	-- interaction: it fires on the press and, held, again whenever its own
+	-- clock allows, through the same cast gate as a left-click cast.
 	local function right_begin(player, s, def, hit, distance)
-		s.pending, s.dig, s.bow_native = nil, nil, nil
+		s.pending, s.dig = nil, nil
 		if not def and is_food(player:get_wielded_item():get_name()) then
 			-- Food owns the whole press, interactive target or not (user ruling
 			-- 2026-09-28): a release seen before TAP_US is a click, performed on
@@ -312,10 +313,8 @@ return function(api)
 			s.right, s.food = "food", new_food_press(core.get_us_time())
 		elseif interactive(hit, distance) then
 			s.right = "interaction"
-		elseif def and def.id == "loose" then
-			s.right = "bow"
-			local ok, err = Q.start_bow_draw(player)
-			if not ok then report(player, s, err) end
+		elseif def and def.secondary_cast then
+			s.right = "shot"
 		else
 			s.right = "other"
 		end
@@ -574,18 +573,22 @@ return function(api)
 		if def and not (s.mode == "combat" and down and not right) then
 			hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def)))
 		end
-		if right and not s.rmb then right_begin(player, s, def, hit, distance) end
+		local fresh_right = right and not s.rmb
+		if fresh_right then right_begin(player, s, def, hit, distance) end
 		if right and s.right == "food" then food_hold(player, s) end
+		if right and s.right == "shot" and def and def.secondary_cast then
+			cast(player, def.secondary_cast, s, hit, fresh_right)
+		end
 		if right then
 			s.pending, s.dig, s.down, s.rmb = nil, nil, down, true
 			return
 		end
 		if s.rmb then
-			-- Bow release is settled by the existing Scout draw loop. Native
-			-- inventory/pause/GUI releases are indistinguishable and accepted.
+			-- Native inventory/pause/GUI releases are indistinguishable and
+			-- accepted.
 			release_right(player, s)
 			s.rmb, s.down = false, down
-			return -- Scout settles the release before another weapon action.
+			return -- The release step takes no other weapon action.
 		end
 		if down and def then
 			local reach = combat_reach(player, def)
@@ -663,8 +666,6 @@ return function(api)
 		return state(player).right
 	end
 	function M.cancel(player) cancel(player, state(player)) end
-	-- The bow draw (scout.lua) is the other owner of the zero pointing range.
-	function M.hold_range(player, owner, on) hold_range(player, owner, on) end
 	-- Crosshair feedback (crosshair.lua): is the first thing within hand reach
 	-- something a press would interact with? The same ray and classification
 	-- an RMB press uses, plus a dropped item (the LMB pickup of `activate`).
@@ -693,7 +694,6 @@ return function(api)
 		local s = state(player)
 		end_food_hold(player)
 		s.pending, s.dig, s.right, s.food, s.rmb = nil, nil, "interaction", nil, true
-		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
 	end
 	-- A food item's native on_place/on_secondary_use (press and the engine's
 	-- repeat_place_time repeats). True: contextual input owns the press and
@@ -733,28 +733,8 @@ return function(api)
 		return false
 	end
 	-- A skill item's native on_place/on_secondary_use (init.lua): the step a
-	-- right_action runs, plus the bow's missed release (Round 41 ruling 5),
-	-- the food rule above applied to a live draw. A drawn bow points at
-	-- nothing (hold_range), and the client sends an empty-air or object call
-	-- on the press edge only, so the first native call after a draw starts
-	-- belongs to the starting press (it may also be the call that starts it),
-	-- and a later object or empty-air call during the live draw is a new press
-	-- whose release fell between two control snapshots: the drawn arrow flies
-	-- now and the same hold draws again (scout.lua renew_bow_draw). Node calls
-	-- (a press that began on a node, the engine's place repeats) never count.
-	-- Returns the press's RMB owner, as right_action does.
-	function M.right_native(player, pointed)
-		M.step(player)
-		local s = state(player)
-		if s.right == "bow" and Q.scout_draw_active(player) then
-			if s.bow_native and (not pointed or pointed.type ~= "node") then
-				local ok, err = Q.renew_bow_draw(player)
-				if not ok then report(player, s, err) end
-			end
-			s.bow_native = true
-		end
-		return s.right
-	end
+	-- right_action runs. Returns the press's RMB owner, as right_action does.
+	M.right_native = M.right_action
 	-- Entity right-clicks reach the entity directly on press (engine
 	-- INTERACT_PLACE). A food-owned press defers them to the click on release,
 	-- so holding food at an NPC or trader eats instead of interacting.

@@ -11,16 +11,16 @@
 --   M  messages (ruling 13): a refusal shows on a fresh press only, never on
 --      held repeats; the same message at most once per second, another
 --      message at once; the cast-gate, swing-gate, try_cast, tap, empty-air
---      and bow-start refusals all reach the flash line; held retries of a
---      failed cast at most every 0.25 s.
+--      and right-click shot (Bladecraft, Round 53) refusals all reach the
+--      flash line; held retries of a failed cast at most every 0.25 s.
 --   L  LMB mode at key-down (ruling 14, Round 32): combat on a mob (plants
 --      never hide it); gather otherwise (a hand-diggable or protected node,
 --      a dropped item, air, a node bare hands cannot dig); combat holds
 --      zero the pointing range once and never dig, gather holds never swing;
 --      the grace for a native press; slot change (the old stack; a held press
---      goes on with the new item, tools/r36_f2), leave and join restore; the
---      bow shares the zero range. The Round 32 gather -> combat switch within
---      a hold is tools/r32_f2's.
+--      goes on with the new item, tools/r36_f2), leave and join restore;
+--      Loose's LMB reaches its bow range (Round 53: the draw is gone). The
+--      Round 32 gather -> combat switch within a hold is tools/r32_f2's.
 -- Prints "R28 A4 PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -381,8 +381,11 @@ local defs = {
 	blink = {id = "blink", kind = "cast", target_kind = "self", name = "Blink",
 		repeat_policy = "once"},
 	loose = {id = "loose", kind = "cast", target_kind = "hostile", name = "Loose"},
+	-- Round 53: Bladecraft's right click looses a shot (scout.lua).
+	bladecraft = {id = "bladecraft", kind = "swing", target_kind = "hostile",
+		name = "Bladecraft", secondary_cast = {id = "bladecraft_shot", kind = "cast",
+			target_kind = "hostile", name = "Bladecraft"}},
 }
-local bow_error
 grug_abilities = {
 	registered = defs,
 	is_unlocked = function() return true end,
@@ -393,11 +396,6 @@ grug_abilities = {
 	evading_target = function() return false end,
 	support_refused = function() return false end,
 	flash = function(_, msg) flashes[#flashes + 1] = msg end,
-	cancel_bow_draw = function() end,
-	start_bow_draw = function()
-		if bow_error then return false, bow_error end
-		return true
-	end,
 	try_cast = function(_, def, _, notify)
 		casts[#casts + 1] = def.id
 		local r = try_cast_result[def.id]
@@ -583,18 +581,26 @@ do -- M4 self skill: empty-air press and the node tap.
 	refusals.blink = nil
 end
 
-do -- M5 bow start refusal on the RMB press.
-	select("loose")
-	bow_error = "You need an arrow."
-	aim()
+do -- M5 a right-click shot's refusal on the RMB press (Bladecraft).
+	select("bladecraft")
+	try_cast_result.bladecraft_shot = {ok = false, message = "You need an arrow."}
+	aim(MOB_HIT)
 	controls.place = true
 	step()
-	check(#flashes == 1 and flashes[1] == "You need an arrow.", "M5 bow start refusal shows")
+	check(#flashes == 1 and flashes[1] == "You need an arrow.", "M5 the shot's refusal shows")
 	hold(5)
 	check(#flashes == 1, "M5 held RMB stays silent")
+	check(count(casts, "bladecraft_shot") >= 2 and #swings == 0,
+		"M5 held RMB retries the shot, never a swing")
 	controls.place = false
 	step()
-	bow_error = nil
+	try_cast_result.bladecraft_shot = nil
+	reset_log()
+	controls.place = true
+	step()
+	check(casts[1] == "bladecraft_shot" and #flashes == 0, "M5 a ready shot fires on the press")
+	controls.place = false
+	step()
 end
 
 ------------------------------------------------------------------------------
@@ -739,12 +745,12 @@ do -- L10 a protected wall in a town: gather (the hint path); Blink's tap there.
 	protected[pkey(NODE_HIT.under)] = nil
 end
 
-do -- L11 Loose's LMB reach is hand reach, not the bow range.
+do -- L11 Loose's LMB reaches its bow range (Round 53: an LMB bow cast).
 	select("loose")
 	aim(FAR_MOB)
 	press()
 	hold(3)
-	check(#swings == 0, "L11 Loose: no Strike at a mob 10 m away")
+	check(#swings == 0 and casts[1] == "loose", "L11 Loose shoots a mob 10 m away")
 	release()
 	hold(4)
 	select("strike") -- the fake gives every other skill 20 m
@@ -796,27 +802,6 @@ do -- L7 a slot change mid-hold restores the old stack.
 	release()
 	hold(4)
 	wield_index = 1
-end
-
-do -- L8 the bow draw and a combat hold share the zero range.
-	select("loose")
-	aim(MOB_HIT)
-	press()
-	input.hold_range(player, "bow", true)
-	check(range_of(1) == "0", "L8 both owners: zero range")
-	release()
-	hold(4) -- LMB ends; the bow still draws
-	check(range_of(1) == "0", "L8 LMB release keeps the bow's zero range")
-	input.hold_range(player, "bow", false)
-	check(range_of(1) == "", "L8 the last owner restores the range")
-	input.hold_range(player, "bow", true)
-	aim(NODE_HIT)
-	press() -- gather press while drawing: the bow keeps its range
-	release()
-	hold(4)
-	check(range_of(1) == "0", "L8 a gather press never clears the bow's range")
-	input.hold_range(player, "bow", false)
-	check(range_of(1) == "", "L8 bow release restores")
 end
 
 do -- L9 leave restores; join clears every saved zero range.

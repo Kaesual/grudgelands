@@ -46,28 +46,11 @@ redrawn skill icons" below); only `grug_abilities_skill_cinderfall.png`,
 `_glacial_ward.png` and `_pinning_shot.png` are still the Round 18 art, and
 the manifest's hashes hold for those three only.
 
-## Bow draw stages — CC BY-SA 4.0
-
-The three draw-stage sprites are unchanged renamed copies from VoxeLibre
-commit `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`. They are based on the
-XSSheep / Pixel Perfection texture set and licensed CC BY-SA 4.0 under
-VoxeLibre's top-level `LEGAL.md`; `mods/ITEMS/mcl_bows/README.txt` points its
-textures to those license notes.
-
-| Local file | Upstream source | Treatment |
-|---|---|---|
-| `textures/grug_abilities_bow_draw_0.png` | `textures/mcl_bows_bow_0.png` | unchanged renamed copy |
-| `textures/grug_abilities_bow_draw_1.png` | `textures/mcl_bows_bow_1.png` | unchanged renamed copy |
-| `textures/grug_abilities_bow_draw_2.png` | `textures/mcl_bows_bow_2.png` | unchanged renamed copy |
-
-At runtime the Scout applies the equipped bow family's existing color grade
-and any bracket modifier to the selected stage. Ending or cancelling the draw
-restores that concrete bow's ordinary wield image.
-
 ## Round 52 weapon element overlays — CC0
 
-The 30 `textures/grug_abilities_fx_<family>_<weapon>[_draw<n>].png` strips (the
-first-person element overlay, round52-class-plan.md C7): own work by GPT-6 Astra
+The 24 `textures/grug_abilities_fx_<family>_<weapon>.png` strips (the
+first-person element overlay, round52-class-plan.md C7; Round 53 deleted the
+six bow draw-stage strips with the draw): own work by GPT-6 Astra
 for Grudgelands, Round 52 lane ARTA, **CC0-1.0**. Each is the opaque rework (ARTA
 pass 4, drop 04, 2026-10-20; the user accepted all of them) of the strip the user
 picked on 2026-10-19 from drop 03: the generator `tools/r52_art/arta/arta_fx4.py`
@@ -91,9 +74,6 @@ count × 16 px high; the animation is on the skill item's definition
 | `textures/grug_abilities_fx_mercy_staff.png` | `drop-04/grug_abilities_fx_mercy_staff.png` | opaque rework of the user's pick `fx/priest/mercy_staff_v2.png` | `499ae487185231ba1a3389f59eef6e17464cd74474849152ada00059fe4be9c6` |
 | `textures/grug_abilities_fx_mercy_wand.png` | `drop-04/grug_abilities_fx_mercy_wand.png` | opaque rework of the user's pick `fx/priest/mercy_wand_v1.png` | `06cef44d1e38a2a0ca0b361bb5ef5183818385aff200fd27ff3895499c693c51` |
 | `textures/grug_abilities_fx_quarry_bow.png` | `drop-04/grug_abilities_fx_quarry_bow.png` | opaque rework of the user's pick `fx/scout/quarry_bow_v1.png` | `382012128cb753a682ad437a01de24dd25ccb0e78e683311a480529893dd386f` |
-| `textures/grug_abilities_fx_quarry_bow_draw0.png` | `drop-04/grug_abilities_fx_quarry_bow_draw0.png` | opaque rework of the user's pick `fx/scout/quarry_bow_draw0_v1.png` | `3f8dc4063d740b9d8cfb85aa914f26e52e1e5f015178218be91a81b3f29e5596` |
-| `textures/grug_abilities_fx_quarry_bow_draw1.png` | `drop-04/grug_abilities_fx_quarry_bow_draw1.png` | opaque rework of the user's pick `fx/scout/quarry_bow_draw1_v1.png` | `4027fbd9b02cc4cd1cdf89cb2cfcf5f1f56c7a9883da14aa251b9892d5daea9d` |
-| `textures/grug_abilities_fx_quarry_bow_draw2.png` | `drop-04/grug_abilities_fx_quarry_bow_draw2.png` | opaque rework of the user's pick `fx/scout/quarry_bow_draw2_v1.png` | `c308d2200b4178b4f19f915529706af3e642a1c3ad66f01de6913ddbf1808465` |
 | `textures/grug_abilities_fx_quarry_dagger.png` | `drop-04/grug_abilities_fx_quarry_dagger.png` | opaque rework of the user's pick `fx/scout/quarry_dagger_v1.png` | `4d0f46b2db3ff534e94982bc4656ab386eb6035ebec14f0dd1ea01d0cc36c7d8` |
 | `textures/grug_abilities_fx_quarry_sword.png` | `drop-04/grug_abilities_fx_quarry_sword.png` | opaque rework of the user's pick `fx/scout/quarry_sword_v1.png` | `2252106cfdd5c5641d8cfde2a1f5170b2eb5c3615156fcdc26883fb953bd55ce` |
 | `textures/grug_abilities_fx_reckoning_dagger.png` | `drop-04/grug_abilities_fx_reckoning_dagger.png` | opaque rework of the user's pick `fx/priest/reckoning_dagger_v2.png` | `ea3868a8b9469e168ec3858178c4fde40a81a0b651f300284722f7894ff90c0a` |
@@ -106,9 +86,6 @@ count × 16 px high; the animation is on the skill item's definition
 | `textures/grug_abilities_fx_ruin_greataxe.png` | `drop-04/grug_abilities_fx_ruin_greataxe.png` | opaque rework of the user's pick `fx/warrior/ruin_greataxe_v1.png` | `7c8788375b06212e05739ebd7a4b7f906f0c5b97311574b3b90b2d174927c11d` |
 | `textures/grug_abilities_fx_ruin_sword.png` | `drop-04/grug_abilities_fx_ruin_sword.png` | opaque rework of the user's pick `fx/warrior/ruin_sword_v1.png` | `70e34967bcffba3f37c22dc0bd112304c238f73a4d8360899d06cdadb40d73fe` |
 | `textures/grug_abilities_fx_veil_bow.png` | `drop-04/grug_abilities_fx_veil_bow.png` | opaque rework of the user's pick `fx/scout/veil_bow_v1.png` | `cf0fdd3a7bfd9428f378c551f8fec449de1389a792eb10060e1775da2d7ef000` |
-| `textures/grug_abilities_fx_veil_bow_draw0.png` | `drop-04/grug_abilities_fx_veil_bow_draw0.png` | opaque rework of the user's pick `fx/scout/veil_bow_draw0_v1.png` | `ef7f579cb584a660dd80080050ee75b8d9b6afeb1803644ad4105c22247ed9c6` |
-| `textures/grug_abilities_fx_veil_bow_draw1.png` | `drop-04/grug_abilities_fx_veil_bow_draw1.png` | opaque rework of the user's pick `fx/scout/veil_bow_draw1_v1.png` | `7da4a0ec83d60f65ed7b1a7e91f28c948c346faf5ce3fc0b9123b79f4a9348c2` |
-| `textures/grug_abilities_fx_veil_bow_draw2.png` | `drop-04/grug_abilities_fx_veil_bow_draw2.png` | opaque rework of the user's pick `fx/scout/veil_bow_draw2_v1.png` | `5becc3e8329ffe449a9a320e041e3f9e3b674514c0e28304324bbe8559c26703` |
 | `textures/grug_abilities_fx_veil_dagger.png` | `drop-04/grug_abilities_fx_veil_dagger.png` | opaque rework of the user's pick `fx/scout/veil_dagger_v1.png` | `81c3325b3eee9cae87ad67c02b2d03aec9b5cb250a0364eb6c71488b0c14d925` |
 | `textures/grug_abilities_fx_veil_sword.png` | `drop-04/grug_abilities_fx_veil_sword.png` | opaque rework of the user's pick `fx/scout/veil_sword_v1.png` | `181bfdd2386974931aaf49a4e67131c1bee96ba567d4d46b12303a71e872d982` |
 

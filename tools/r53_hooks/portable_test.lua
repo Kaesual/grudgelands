@@ -423,7 +423,12 @@ do
 		eq(G.get_range(p, def), def.range or 4, "U " .. id .. ": the range as on main")
 		eq(G.description_prefix(p, def), old_prefix(p, def), "U " .. id .. ": the tooltip head as on main")
 		eq(G.description_prefix(nil, def), old_prefix(nil, def), "U " .. id .. ": the item's static head")
-		if def.kind == "cast" then
+		-- Round 53 SCOUT: the Scout's casts take their calculator clocks
+		-- (tools/r53_scout checks them).
+		if def.kind == "cast" and def.class == "scout" then
+			check(def.occupied_cast ~= nil and def.occupied_swing ~= nil,
+				"U " .. id .. ": a Scout cast has its clock")
+		elseif def.kind == "cast" then
 			check(def.occupied_cast == 0 and def.occupied_swing == "weapon",
 				"U " .. id .. ": a cast's clock as on main")
 		else
@@ -820,7 +825,6 @@ do
 		evading_target = function() return false end,
 		support_refused = function() return false end,
 		flash = function(_, message) flashes[#flashes + 1] = message end,
-		cancel_bow_draw = function() end,
 		try_cast = function(_, def)
 			casts[#casts + 1] = def.id
 			return true
@@ -916,12 +920,13 @@ do
 			"F " .. class .. ": a refused swing skill falls back to the cast basic attack")
 	end
 
-	-- Scout: Strike is the basic attack; Loose casts by its own rule.
+	-- Scout: Strike is the basic attack; Loose is an LMB bow cast (Round 53
+	-- SCOUT: the draw is gone).
 	basic = defs.strike
 	refusals = {bolt = {"No arrows.", "cost"}}
 	eq(run("bolt", 1), "casts=- swings=strike flashes=1", "F scout: a refused shot swings Strike")
 	refusals = {}
-	eq(run("loose", 1), "casts=- swings=strike flashes=0", "F scout: Loose's LMB at a foe swings Strike")
+	eq(run("loose", 1), "casts=loose swings=- flashes=0", "F scout: Loose's LMB at a foe shoots")
 end
 
 ------------------------------------------------------------------------------

@@ -17,18 +17,16 @@
 --      unpicked strip, an empty slot, a non-weapon and Strike; the token
 --      changes with the overlay, so a newly picked strip rewrites the stack
 --      once and an unchanged pass writes nothing;
---   D  the Scout's draw (the real start/step/cancel): each draw stage shows
---      its own strip, the idle bow's comes back after the draw, and an
---      unpicked draw strip falls back to transparent;
+--   (D, the Scout's draw stages, retired in Round 53: the draw is gone.)
 --   T  third person: the held-item holder (grug_visuals/apply.lua, its two
 --      functions copied out of the source) shows the cosmetic weapon for a
 --      selected skill and copies only that stack's keys, so the skill's
 --      overlay never reaches it;
---   F  every strip that ships (30 since the art step) is named
---      <family>_<weapon>[_draw<n>] for a weapon its family's class wields,
---      has its family's animation, is 16 px wide and `frames` frames high,
---      and has a LICENSE-media.md row; an animated family ships every strip
---      of its class's weapons and the bow's draw stages, and the shipped skin
+--   F  every strip that ships (24 since Round 53 deleted the six draw
+--      stages) is named <family>_<weapon> for a weapon its family's class
+--      wields, has its family's animation, is 16 px wide and `frames` frames
+--      high, and has a LICENSE-media.md row; an animated family ships every
+--      strip of its class's weapons, no draw stage, and the shipped skin
 --      names them.
 --
 -- Usage (repo root): luajit tools/r52_wfx/portable_test.lua [repo]
@@ -476,41 +474,6 @@ do
 end
 
 ------------------------------------------------------------------------------
--- D: the Scout's draw stages (the real start, step and cancel).
-------------------------------------------------------------------------------
-do
-	local p = new_player("d_scout", "scout")
-	players2[p.name] = p
-	hands(p, "grug_gear:bow_wood", "grug_gear:dagger_iron")
-	p.inv.lists.main[1] = G.stack_for(p, "loose")
-	local function shown()
-		local meta = p.inv.lists.main[1]:get_meta()
-		return meta:get_string("wield_image") .. " " .. meta:get_string("wield_overlay")
-	end
-	eq(shown(), "grug_gear_bow_wood.png grug_abilities_fx_quarry_bow.png", "D the idle bow")
-	local ok = G.start_bow_draw(p)
-	check(ok, "D the draw starts")
-	eq(shown(), "grug_abilities_bow_draw_0.png grug_abilities_fx_quarry_bow_draw0.png",
-		"D stage 0 shows its strip")
-	p.controls = {place = true}
-	local function advance(seconds)
-		for _ = 1, math.floor(seconds / 0.05 + 0.5) do
-			now_us = now_us + 50000
-			for _, fn in ipairs(hooks2.globalstep or {}) do fn(0.05) end
-		end
-	end
-	advance(1.0)
-	eq(shown(), "grug_abilities_bow_draw_1.png " .. NONE, "D stage 1: its strip is not picked")
-	advance(1.6)
-	eq(shown(), "grug_abilities_bow_draw_2.png grug_abilities_fx_quarry_bow_draw2.png",
-		"D stage 2 shows its strip")
-	G.cancel_bow_draw(p)
-	eq(shown(), "grug_gear_bow_wood.png grug_abilities_fx_quarry_bow.png",
-		"D the idle strip comes back after the draw")
-	eq(p.inv.lists.main[1]:get_wear(), 0, "D the draw's wear is reset too")
-end
-
-------------------------------------------------------------------------------
 -- T: third person shows only the cosmetic weapon.
 ------------------------------------------------------------------------------
 do
@@ -565,7 +528,7 @@ do
 		end
 		local class = family and FAMILY_CLASS[family]
 		check(class and CLASS_WEAPONS[class][weapon], "F a family and a weapon its class wields: " .. file)
-		check(not stage or (weapon == "bow" and tonumber(stage) <= 2), "F draw stages only on the bow: " .. file)
+		check(not stage, "F no draw stage ships (Round 53: the draw is gone): " .. file)
 		local a = family and anim[family]
 		check(a ~= nil, "F its family is animated: " .. file)
 		local png = read(MOD .. "textures/" .. file) or ""
@@ -578,16 +541,11 @@ do
 		if a then eq(height, a.frames * 16, "F " .. a.frames .. " frames high: " .. file) end
 		check(license:find(file, 1, true) ~= nil, "F a LICENSE-media.md row: " .. file)
 	end
-	-- A family that ships has every strip of its class's weapons (and the
-	-- bow's draw stages), and the shipped skin names them.
+	-- A family that ships has every strip of its class's weapons, and the
+	-- shipped skin names them.
 	for family in pairs(anim) do
 		for weapon in pairs(CLASS_WEAPONS[FAMILY_CLASS[family]] or {}) do
 			local names = {"grug_abilities_fx_" .. family .. "_" .. weapon .. ".png"}
-			if weapon == "bow" then
-				for n = 0, 2 do
-					names[#names + 1] = "grug_abilities_fx_" .. family .. "_bow_draw" .. n .. ".png"
-				end
-			end
 			for _, name in ipairs(names) do
 				local found = false
 				for _, file in ipairs(shipped) do found = found or file == name end
@@ -598,8 +556,8 @@ do
 	if anim.ember then
 		eq(real.skin_overlay(real.registered.fireball, "staff"), "grug_abilities_fx_ember_staff.png",
 			"F as shipped, Fireball over a staff shows ember's staff strip")
-		eq(real.skin_overlay(real.registered.loose, "bow", 1), anim.quarry and
-			"grug_abilities_fx_quarry_bow_draw1.png" or NONE, "F as shipped, Loose's draw stage 1")
+		eq(real.skin_overlay(real.registered.loose, "bow"), anim.quarry and
+			"grug_abilities_fx_quarry_bow.png" or NONE, "F as shipped, Loose shows quarry's bow strip")
 		eq(real.skin_overlay(real.registered.strike, "sword"), NONE, "F as shipped, Strike none")
 	end
 	print(("F %d strips ship, %d families animated"):format(#shipped, (function()
