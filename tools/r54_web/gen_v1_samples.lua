@@ -161,8 +161,14 @@ do
 		slots[slot] = {item = item(slot, "metal", 6), broken = slot == "chest",
 			enchant = {STATS[1], STATS[9]}}
 	end
-	slots.mainhand = {item = "grug_gear:sword_abyssal_steel", broken = false, enchant = {},
-		pose = "edge_down", image = "grug_gear_item_sword_abyssal_steel.png"}
+	local sword = "grug_gear:sword_abyssal_steel"
+	local def = core.registered_items[sword]
+	slots.mainhand = {item = sword, broken = false, enchant = {},
+		pose = gv.pose_for(sword, function(name, g)
+			local d = core.registered_items[name]
+			return d and d.groups and d.groups[g] or 0
+		end, def._grug_wield_pose),
+		image = def._grug_world_wield_image or def.wield_image or def.inventory_image}
 	values[2] = {label = sample.label .. ", a sword", json = value(sample, slots,
 		"hunter_2", "grug_achievements_cloak_hunter_2.png")}
 end
