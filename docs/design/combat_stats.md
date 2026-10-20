@@ -680,7 +680,9 @@ Normal tier at level L:
   elites/rares signal via **scale + tint** — elite `visual_size` ×1.4
   (Round 28 ruling 9; model, collision and selection box scale together),
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
-  violet `#a64dff:90`, nametag prefix `★ ` — plus the `!! ` prefix while
+  violet `#a64dff:90`, nametag prefix `★ ` (kings, royal guards and Generals
+  carry no tint since Round 54: they read by size, crown and royal colours;
+  the user, 2026-10-20) — plus the `!! ` prefix while
   a wind-up runs. **Elites AND rares telegraph** (both tiers, no def
   opt-in): 2 s wind-up (stop, `!!` nametag, particle burst; a sound only
   where the mob's voice family names one — the user keeps it to humanoid

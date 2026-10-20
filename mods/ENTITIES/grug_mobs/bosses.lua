@@ -798,6 +798,9 @@ for race, row in pairs(RACES) do
 	-- mobs_redo copies a field whitelist; its do_states reads this from the
 	-- prototype (GRUG PATCH, Round 41 MOB): no random walk from the seat.
 	core.registered_entities["grug_mobs:king_" .. race_id]._grug_no_wander = true
+	-- No elite tint over the royal armour (levels.lua tier_tint; the user,
+	-- 2026-10-20), here and on the royal guards and Generals below.
+	core.registered_entities["grug_mobs:king_" .. race_id]._grug_no_tint = true
 	local guard = grug_mobs.guard_definition(row.faction,
 		grug_mobs.names.required("royal_guard_" .. race_id), "character.png")
 	local base_tick = guard.do_custom
@@ -822,6 +825,7 @@ for race, row in pairs(RACES) do
 	end
 	guard.on_die = function(self) grug_mobs.royal_guard_died(self) end
 	grug_mobs.register_mob("grug_mobs:royal_guard_" .. race_id, guard)
+	core.registered_entities["grug_mobs:royal_guard_" .. race_id]._grug_no_tint = true
 end
 
 -- Round 31: the two fortress Generals (pvp-plan ruling 17; "Generals respawn
@@ -866,6 +870,7 @@ for faction, race in pairs(GENERALS) do
 	grug_mobs.register_mob(name, general)
 	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)
 	core.registered_entities[name]._grug_no_wander = true -- as a king's
+	core.registered_entities[name]._grug_no_tint = true -- as a king's
 
 	local bodyguard = garrison.bodyguard_entity(faction_id)
 	local guard = grug_mobs.guard_definition(faction_id,

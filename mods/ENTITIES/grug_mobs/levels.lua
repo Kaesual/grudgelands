@@ -287,6 +287,17 @@ local function tint_textures(textures, tint)
 	return out
 end
 
+-- The tier's tint for this mob, or nil. A prototype with `_grug_no_tint`
+-- (kings, royal guards and Generals, bosses.lua: the user, 2026-10-20 --
+-- they read by size, crown and royal colours, which a tint would muddy)
+-- keeps its scale but never the tint.
+local function tier_tint(self, tier)
+	if self._grug_no_tint then
+		return nil
+	end
+	return tier_def(tier).tint
+end
+
 -- Idempotent, and correct across tier CHANGES: the pristine texture list is
 -- remembered once (so colorize never stacks) and the scale is applied
 -- relative to the scale already in place — mobs:scale_mob(..., true)
@@ -310,7 +321,7 @@ local function apply_tier_visuals(self)
 		self._grug_base_texture = self.base_texture
 	end
 	local textures = self._grug_base_texture
-	local tint = tier_def(tier).tint
+	local tint = tier_tint(self, tier)
 	if textures and tint then
 		textures = tint_textures(textures, tint)
 	end
@@ -335,7 +346,7 @@ function grug_mobs.set_base_texture(self, textures)
 		return
 	end
 	self._grug_base_texture = textures
-	local tint = tier_def(self._grug_tier or "normal").tint
+	local tint = tier_tint(self, self._grug_tier or "normal")
 	local out = textures
 	if tint then
 		out = tint_textures(textures, tint)
