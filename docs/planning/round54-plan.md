@@ -351,6 +351,6 @@ checklists (one test). An existing character first, so its old appearance and st
 
 Lane D on its branch from `8fbf9c09`: `r37_dc` PASS, `check_upgrade.py` PASS (against origin/main `e4d5c9d5`, 0.52.1,
 and against `d18840a6`, 0.53.1), `check_fresh_server.py` PASS, `export.lua --check` current, the armour topic checks
-PASS, the docs link check (the lane report). Each code lane ran the full `run_fixtures.sh` once (BAKE 229/0, MODEL
+PASS, the docs link check (the lane report), the full `run_fixtures.sh` 233/0 (once). Each code lane ran the full `run_fixtures.sh` once (BAKE 229/0, MODEL
 230/0, GAME 231/0, VIEW 232/0, WEB 232/0, INTEG 231/0). The round end on main (full fixtures, `check_upgrade.py`,
 `check_fresh_server.py`, one boot, the sync) is the coordinator's.

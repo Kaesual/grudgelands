@@ -54,7 +54,7 @@ user's notes.
     shown without armour, the kaesual handoff (outside the repo).
   - **Gates:** each code lane's full fixture run (229–232/0); this lane's
     `r37_dc`, `check_upgrade.py` (against origin/main 0.52.1 and against
-    0.53.1) and `check_fresh_server.py` PASS. The round end on main (full
+    0.53.1), `check_fresh_server.py` PASS and the full fixtures 233/0. The round end on main (full
     fixtures, one boot, the sync) is the coordinator's. Its GUI test
     (desktop and web build, after the 0.53.x checklists) is open
     ([carry-overs](../BACKLOG.md#round-54-carry-overs)).
