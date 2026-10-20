@@ -162,7 +162,7 @@ only the body and the same slot's boxes count as hiding them), so one enchanted 
 piece, not a copy of the 3D shape: one clear silhouette, readable at 32 and 16 px, few details.
 
 **`tiers.json`.** Every box may be used on every tier of every line; the painter chooses by the design goals.
-A missing variant entry means `a`.
+A missing variant entry means `a`; a tier entry must name its `palette`, and one without `inner` or `icon` has none.
 
 ```json
 {"metal": {"T1": {"palette": "bronze", "on": ["helm", "chest", "thigh", "boot"],

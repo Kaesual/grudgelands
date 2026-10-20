@@ -393,19 +393,22 @@ def load_tiers(cat, pals, art):
                 if bid not in box_ids:
                     errors.append(f"{where}: unknown box '{bid}' in 'on' (boxes: {', '.join(sorted(box_ids))})")
             on = [b["id"] for b in cat["boxes"] if b["id"] in on]          # catalog order, known ids only
-            pal = T.get("palette", ex["palette"])
-            if pal not in pals["palettes"]:
+            pal = T.get("palette")
+            if pal is None:
+                errors.append(f"{where}: no 'palette'")
+                pal = ex["palette"]
+            elif pal not in pals["palettes"]:
                 errors.append(f"{where}: unknown palette '{pal}' (palettes.json: {', '.join(pals['palettes'])})")
                 pal = ex["palette"]
             variant = T.get("variant") or {}
             for bid in variant:
                 if bid not in box_ids:
                     errors.append(f"{where}: 'variant' names unknown box '{bid}'")
-            inner = T.get("inner", ex["inner"]) or {}
+            inner = T.get("inner") or {}         # a tier entry without 'inner' has none (no example fallback)
             for slot in inner:
                 if slot not in INNER_SLOTS:
                     errors.append(f"{where}: 'inner' slot '{slot}' unknown (inner slots: {', '.join(INNER_SLOTS)})")
-            icon = T.get("icon", ex["icon"]) or {}
+            icon = T.get("icon") or {}         # a tier entry without 'icon' has none (no example fallback)
             for slot in icon:
                 if slot not in SLOTS:
                     errors.append(f"{where}: 'icon' slot '{slot}' unknown (slots: {', '.join(SLOTS)})")

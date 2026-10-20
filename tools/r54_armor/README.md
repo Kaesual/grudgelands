@@ -26,7 +26,7 @@ the style bible your brief names; the user's own selection (`tiers_example.json`
                   "icon": {"head": "a", "chest": "a", "legs": "a", "feet": "a"}}}}
 ```
 
-A missing `variant` entry means `a`. Tier palettes may be proposed in `art/palettes.json` (same shape as
+A missing `variant` entry means `a`; a tier entry must name its `palette`, and one without `inner` or `icon` has none. Tier palettes may be proposed in `art/palettes.json` (same shape as
 `data/palettes.json`: `{"palettes": {"<name>": {"colors": {"M_HI": "#RRGGBB", ...all 13}}}}`); they are laid
 over `data/palettes.json` by name, and a tier names its palette in `tiers.json`. `--palettes FILE` uses
 another file instead. A line or tier missing from `tiers.json` (or a missing file) falls back to
