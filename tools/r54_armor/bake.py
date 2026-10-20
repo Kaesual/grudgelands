@@ -29,7 +29,8 @@ mods/ITEMS/grug_gear/init.lua). Alpha is hard (0 or 255); the zones come from
 the reference-palette pixels, so a palette that gives zone A the same colour as
 the metal still yields the right mask.
 
-  python3 bake.py                               bake test_art/ into grug_visuals
+  python3 bake.py                               bake the picked art (tools/r54_art/
+                                                art) into grug_visuals
   python3 bake.py --art DIR [--out DIR]         another art directory or output
   python3 bake.py --icons-out DIR               also write the 72 icons + masks
   python3 bake.py --check [--art ...] [...]     rebuild in memory; exit 1 on a
@@ -53,7 +54,7 @@ TOOL = L.TOOL
 ROOT = TOOL.parents[1]
 GAME_OUT = ROOT / "mods/PLAYER/grug_visuals/textures"
 MATERIALS_LUA = ROOT / "mods/ITEMS/grug_gear/init.lua"
-TEST_ART = TOOL / "test_art"
+ART = ROOT / "tools/r54_art/art"         # the picked art (Round 54 lane INTEG)
 PREFIX = "grug_armor_"
 SKIN_SIZE = (64, 32)
 ICON_SIZE = (16, 16)
@@ -316,7 +317,7 @@ def contact_sheet(files, icon_files, path):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--art", default=str(TEST_ART), help="art directory (default: test_art/)")
+    ap.add_argument("--art", default=str(ART), help="art directory (default: tools/r54_art/art)")
     ap.add_argument("--out", default=str(GAME_OUT), help="atlas and skin layers (default: grug_visuals/textures)")
     ap.add_argument("--icons-out", help="also bake the 72 item icons and their masks into this directory")
     ap.add_argument("--check", action="store_true", help="compare instead of writing; exit 1 on a difference")
