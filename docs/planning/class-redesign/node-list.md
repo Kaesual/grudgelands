@@ -306,7 +306,7 @@ values per rank, [skill_trees.md](../../design/skill_trees.md) §2):
 | Scout | Flourish | Veil V8 | shadow | no | spinning fan of three blade arcs |
 | Scout | Close Dance | Veil V12, ultimate | shadow | no | twin blades circling a figure in smoke |
 
-The count is 44 skills, of which 19 had a shipped icon and **25 needed new icons** (all 44 ship since Round 53: the 19 redrawn in Round 52, the 25 new in Round 53). Strike is counted once; it is universal and the Scout may also use it. The shipped icons `cinderfall`, `glacial_ward` and `pinning_shot` have no new skill of their own. Cinderfall and Glacial Ward are reuse candidates; Pinning Shot is retired.
+The count is 44 skills, of which 19 had a shipped icon and **25 needed new icons** (all 44 ship since Round 53: the 19 redrawn in Round 52, the 25 new in Round 53). Strike is counted once; it is universal and the Scout may also use it. The shipped icons `cinderfall`, `glacial_ward` and `pinning_shot` went with their retired skills in Round 53.
 
 ## 4. Weapon-overlay element families (6, plus none)
 

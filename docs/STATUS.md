@@ -51,9 +51,9 @@ user's notes.
     Priest 0.8, Mage 0.8, the old talent engine removed, `opts.no_crit` for
     areas, the held cast's catch-up, Help
     ([upgrade contract](technical/upgrade-contract.md)).
-  - **Round-end gates** (*to be recorded by the coordinator*): the full
-    fixtures, `check_fresh_server.py` and `check_upgrade.py` on main, the
-    step test, one boot and the sync; this lane's `check_upgrade.py`,
+  - **Round-end gates** on main `7c314b1d`: full fixtures 225/0,
+    `check_fresh_server.py` and `check_upgrade.py` PASS, the step test's
+    e2e 29/29, one boot PASS (150 s), synced; this lane's `check_upgrade.py`,
     `check_fresh_server.py` and `r37_dc` PASS. Its GUI test (desktop and
     web build, the migration first) is open
     ([carry-overs](../BACKLOG.md#round-53-carry-overs)).

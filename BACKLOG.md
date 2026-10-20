@@ -2720,8 +2720,9 @@ The items the user decides in the GUI test are in the
   carry the support factor where the calculator assumes 1; Charge's 0.75 s
   is the calculator's estimate; arrows fly the shipped 40 m/s.
 - **The icon comparison page** (https://claude.ai/artifact/1H3qCwSvudKN8gXShJs2X8,
-  `r53/icons/`, notes per skill, talent and tree) for a possible later
-  redraw; nothing follows yet.
+  `r53/icons/`, notes per skill, talent and tree): 36 icons marked for a
+  redraw (too detailed at small size; weapons tinted instead of natural
+  colours); an Astra redraw round with 3 variants each and a pick page follow.
 - **Dead reads of keys no node carries** (INTEG): `melee_damage_add`,
   `rage_per_hit_taken_add` and `combat_mana_regen_add`
   (`grug_abilities/init.lua`), `crit_chance_add_window`,
@@ -2750,7 +2751,8 @@ The items the user decides in the GUI test are in the
   it), `PROC_COLORS` `unbroken` and `ruination` (no caller), the `bow` pose
   clip in the player model (drop it with the next model regeneration,
   `gen_cloak_model.py --check` holds `POSE_CLIPS` to it).
-- **Combat notes** (reviews, no severity): Split Shot's splinters also fly
+- **Combat notes** (reviews, no severity): Haven's node text (M13,
+  `talent_graph_priest.lua`) omits its 22 % mana cost (`kits_priest.lua`); Split Shot's splinters also fly
   when the primary hit is dodged (accepted: the node list says "on
   impact"); Bellow's `range = 6` takes the elf's +5 ability range in the
   tooltip and the pointing range while its circle stays 6 m; the clock

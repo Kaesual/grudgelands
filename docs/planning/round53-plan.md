@@ -786,8 +786,10 @@ talent-window emblems).
   `cast_frost_ward` cue (a hook without a call site), the `bow` pose clip
   (unused until the next model regeneration). The poses: Unbroken `block`;
   Bellow, Ruination, Parry, Flourish and Close Dance none.
-- The icon comparison page (https://claude.ai/artifact/1H3qCwSvudKN8gXShJs2X8)
-  for a possible later redraw; nothing follows yet.
+- The icon comparison page (https://claude.ai/artifact/1H3qCwSvudKN8gXShJs2X8):
+  the user marked 36 icons (26 skills, 10 talents) for a redraw (too detailed
+  at small size; weapons tinted instead of natural colours); an Astra redraw
+  round with 3 variants each runs after the round (`r53/astra-icons/`).
 
 ### Deviations from the plan
 
@@ -976,10 +978,13 @@ world copied before the tool; logins `warrior`, `mage`, `priest`,
 
 ### Round-end gates
 
-*To be recorded by the coordinator on main after this lane merges:* the
-full `run_fixtures.sh` (INTEG part 2's run: 223 passed, 2 failed, both since
-fixed or owned by this lane: `r34_s1a`, rerun PASS, and `r37_dc`, green with
-this lane's CHANGELOG entry), `check_fresh_server.py` and `check_upgrade.py`,
-INTEG's step test (`tools/r53_ms/run.sh`), one headless boot, the sync and
-the user's GUI test. This lane: `r37_dc` PASS, `check_upgrade.py` and
-`check_fresh_server.py` PASS, the docs link check (the lane report).
+On main `7c314b1d` (every lane merged, lane D included): the full
+`run_fixtures.sh` 225 passed, 0 failed; `check_upgrade.py` (0.53.0 against
+origin/main) and `check_fresh_server.py` PASS; one headless boot PASS
+(150 s); synced to Luanti. INTEG's step test (`tools/r53_ms/run.sh`): e2e
+29/29 on INTEG's final branch, unchanged since. Earlier, on main `73b5ca40`
+(INTEG merged, before lane D): full fixtures 224/1 (only `r37_dc`, waiting
+for the CHANGELOG entry), `check_upgrade.py` and `check_fresh_server.py`
+PASS, boot PASS. Lane D: `r37_dc` PASS, `check_upgrade.py` and
+`check_fresh_server.py` PASS, the docs link check (the lane report). Open:
+the user's GUI test.
