@@ -404,7 +404,8 @@ local function anim_of(id)
 		o.animation.aspect_h .. " " .. string.format("%.2f", o.animation.length)) or "none"
 end
 eq(anim_of("fireball"), NONE .. " vertical_frames 16x16 0.96", "S fireball: ember's animation")
-eq(anim_of("cinderfall"), NONE .. " vertical_frames 16x16 0.96", "S cinderfall shares it")
+-- Round 53: Cinderfall is retired; Meteor is another ember skill.
+eq(anim_of("meteor"), NONE .. " vertical_frames 16x16 0.96", "S meteor shares it")
 eq(anim_of("loose"), NONE .. " vertical_frames 16x16 1.20", "S loose: quarry's own tempo")
 eq(anim_of("charge"), NONE .. " vertical_frames 16x16 0.40", "S charge: ruin's")
 eq(anim_of("ice_nova"), "none", "S rime without an animation has no definition overlay")
@@ -413,7 +414,7 @@ eq(anim_of("strike"), "none", "S Strike has none")
 local so = G.skin_overlay
 local R = G.registered
 eq(so(R.fireball, "staff"), "grug_abilities_fx_ember_staff.png", "S ember on a staff")
-eq(so(R.cinderfall, "wand"), "grug_abilities_fx_ember_wand.png", "S ember on a wand")
+eq(so(R.meteor, "wand"), "grug_abilities_fx_ember_wand.png", "S ember on a wand")
 eq(so(R.fireball, "dagger"), NONE, "S an unpicked strip is transparent")
 eq(so(R.fireball, nil), NONE, "S no weapon, no overlay")
 eq(so(R.loose, "bow"), "grug_abilities_fx_quarry_bow.png", "S the idle bow")
@@ -432,7 +433,9 @@ do
 	hands(p, "grug_gear:staff_iron")
 	local got = skins(p)
 	eq(got.fireball, "grug_abilities_fx_ember_staff.png", "S the skin writes the staff strip")
-	eq(got.strike, NONE, "S Strike's skin is transparent")
+	-- Round 53: the Mage's basic attack replaces Strike (so(R.strike) above
+	-- keeps Strike's transparent overlay checked).
+	eq(got.strike, nil, "S the Mage holds no Strike")
 	eq(got.blink, NONE, "S rime is off")
 	hands(p, "grug_gear:dagger_iron")
 	eq(skins(p).fireball, NONE, "S the dagger strip is not picked")
