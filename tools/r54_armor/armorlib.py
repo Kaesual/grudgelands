@@ -240,6 +240,29 @@ def instances(boxes):
     return out
 
 
+# ---------- opacity (the user, 2026-10-20: armor is opaque; only the helm's face stays open) ----------
+FACE_RECT = (-4.0, 24.0, 4.0, 32.0)   # the head's front face (x0, y0, x1, y1), skin pixels
+
+
+def open_window(b):
+    """Sheet pixels that may be transparent: the texels of the helm's front face lying wholly in front of the
+    head's front face (the face opening; the head is directly behind, so it leaves no hole). Empty for every
+    other box."""
+    if b["id"] != "helm":
+        return set()
+    fx, fy, fw, fh = b["faces"]["front"]
+    x0, y0, _, x1, y1, _ = b["box"]
+    hx0, hy0, hx1, hy1 = FACE_RECT
+    out = set()
+    for r in range(fh):
+        for c in range(fw):
+            tx0, tx1 = x0 + c * (x1 - x0) / fw, x0 + (c + 1) * (x1 - x0) / fw
+            ty1, ty0 = y1 - r * (y1 - y0) / fh, y1 - (r + 1) * (y1 - y0) / fh
+            if tx0 >= hx0 - 1e-9 and tx1 <= hx1 + 1e-9 and ty0 >= hy0 - 1e-9 and ty1 <= hy1 + 1e-9:
+                out.add((fx + c, fy + r))
+    return out
+
+
 # ---------- art files ----------
 def box_file(art, line, box_id, variant):
     return Path(art) / line / f"{box_id}_{variant}.png"
@@ -370,19 +393,22 @@ def load_tiers(cat, pals, art):
                 if bid not in box_ids:
                     errors.append(f"{where}: unknown box '{bid}' in 'on' (boxes: {', '.join(sorted(box_ids))})")
             on = [b["id"] for b in cat["boxes"] if b["id"] in on]          # catalog order, known ids only
-            pal = T.get("palette", ex["palette"])
-            if pal not in pals["palettes"]:
+            pal = T.get("palette")
+            if pal is None:
+                errors.append(f"{where}: no 'palette'")
+                pal = ex["palette"]
+            elif pal not in pals["palettes"]:
                 errors.append(f"{where}: unknown palette '{pal}' (palettes.json: {', '.join(pals['palettes'])})")
                 pal = ex["palette"]
             variant = T.get("variant") or {}
             for bid in variant:
                 if bid not in box_ids:
                     errors.append(f"{where}: 'variant' names unknown box '{bid}'")
-            inner = T.get("inner", ex["inner"]) or {}
+            inner = T.get("inner") or {}         # a tier entry without 'inner' has none (no example fallback)
             for slot in inner:
                 if slot not in INNER_SLOTS:
                     errors.append(f"{where}: 'inner' slot '{slot}' unknown (inner slots: {', '.join(INNER_SLOTS)})")
-            icon = T.get("icon", ex["icon"]) or {}
+            icon = T.get("icon") or {}         # a tier entry without 'icon' has none (no example fallback)
             for slot in icon:
                 if slot not in SLOTS:
                     errors.append(f"{where}: 'icon' slot '{slot}' unknown (slots: {', '.join(SLOTS)})")

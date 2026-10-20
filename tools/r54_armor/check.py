@@ -14,12 +14,12 @@ Violations (exit code 1 if any):
   - colours outside the reference palette; partial alpha (only 0 or 255);
   - paint outside the six face rectangles of a box sheet, or outside the
     slot's skin regions on an inner sheet;
+  - a transparent texel inside a box sheet's faces (armor is opaque; only the
+    helm's face window may be open);
   - per line, tier and slot fewer than 6 zone A or 3 zone B pixels seen from
     the front (an approximation, see the zone section of the output).
-Warnings (printed, exit code unchanged): a sheet no tier uses; edge or corner
-cut-outs deeper than 2 px; a cut on one face of an edge but not on the other;
-holes larger than 2x2 inside a face with no worn box directly under them.
-Information: opaque coverage per sheet; the overlap report (catalog-wide which
+Warnings (printed, exit code unchanged): a sheet no tier uses.
+Information: the overlap report (catalog-wide which
 box can cover which, and the pairs each tier wears together).
 """
 import argparse
@@ -90,6 +90,18 @@ def face_cells(b):
 NAME = re.compile(r"^([a-z_]+)_([a-z0-9]+)\.png$")
 
 
+def check_opaque(rep, rel, im, b):
+    """Every texel of every face is opaque (the user, 2026-10-20: no transparency in armor, it shows holes);
+    the only exception is the helm's face window (armorlib.open_window)."""
+    px = im.load()
+    window = L.open_window(b)
+    holes = [(x, y) for x, y in sorted(face_cells(b), key=lambda q: (q[1], q[0]))
+             if px[x, y][3] < 128 and (x, y) not in window]
+    if holes:
+        rep.v(f"{rel}: {len(holes)} transparent texel(s) inside the faces at {coords(holes)} (sheet pixels; armor "
+              f"is opaque, only the helm's face window may be open)")
+
+
 def check_files(cat, art, lines, rep):
     """Returns {(kind, line, key, variant): Image} for every valid-size file."""
     byid = {b["id"]: b for b in cat["boxes"]}
@@ -129,6 +141,7 @@ def check_files(cat, art, lines, rep):
                           f"(box {key}: w {W}, h {H}, d {D} texels; 2d+2w by d+h)")
                     continue
                 check_pixels(rep, rel, im, face_cells(b), "the six face rectangles")
+                check_opaque(rep, rel, im, b)
             elif kind == "inner":
                 if im.size != (64, 32):
                     rep.v(f"{rel}: size {im.width}x{im.height}, expected 64x32")
@@ -427,150 +440,6 @@ def overlap_report(cat, lines, cov, zf):
             prev = pairs
 
 
-# ---------- alpha shaping (spec §2) ----------
-CUT_DEPTH = 2      # edge and corner cut-outs up to 2 px deep
-HOLE_MAX = 2       # holes inside a face up to 2x2 px
-UNDER_GAP = 1.0    # a worn box at most this far behind a face counts as "directly under" it
-
-
-def face_opaque(im, b, face):
-    fx, fy, fw, fh = b["faces"][face]
-    px = im.load()
-    return [[px[fx + x, fy + y][3] >= 128 for x in range(fw)] for y in range(fh)]
-
-
-def transparent_parts(op):
-    """4-connected components of transparent texels: [(set of (x, y), touches the border)]."""
-    H, W = len(op), len(op[0])
-    seen, out = set(), []
-    for y0 in range(H):
-        for x0 in range(W):
-            if op[y0][x0] or (x0, y0) in seen:
-                continue
-            comp, stack, border = set(), [(x0, y0)], False
-            seen.add((x0, y0))
-            while stack:
-                x, y = stack.pop()
-                comp.add((x, y))
-                if x in (0, W - 1) or y in (0, H - 1):
-                    border = True
-                for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
-                    if 0 <= nx < W and 0 <= ny < H and not op[ny][nx] and (nx, ny) not in seen:
-                        seen.add((nx, ny))
-                        stack.append((nx, ny))
-            out.append((comp, border))
-    return out
-
-
-def edge_mismatches(b, im):
-    """{(face A, face B): [(A sheet pos, B sheet pos, A opaque)]} where the two faces sharing an
-    edge disagree (one transparent, the other opaque) on the texels along that edge."""
-    box = b["box"]
-    ops = {f: face_opaque(im, b, f) for f in b["faces"]}
-    res = defaultdict(list)
-    for fa, (ax, ay, aw, ah) in b["faces"].items():
-        for ty in range(ah):
-            for tx in range(aw):
-                sides = []
-                if tx == 0:
-                    sides.append((0.0, (ty + 0.5) / ah))
-                if tx == aw - 1:
-                    sides.append((1.0, (ty + 0.5) / ah))
-                if ty == 0:
-                    sides.append(((tx + 0.5) / aw, 0.0))
-                if ty == ah - 1:
-                    sides.append(((tx + 0.5) / aw, 1.0))
-                for u, v in sides:
-                    p = L.face_point(box, fa, u, v)
-                    for fb in L.faces_at(box, p):
-                        if fb <= fa:
-                            continue
-                        bx, by, bw, bh = b["faces"][fb]
-                        ub, vb = L.face_uv(box, fb, p)
-                        sx = min(bw - 1, max(0, int(math.floor(ub * bw))))
-                        sy = min(bh - 1, max(0, int(math.floor(vb * bh))))
-                        oa, ob = ops[fa][ty][tx], ops[fb][sy][sx]
-                        if oa != ob:
-                            res[(fa, fb)].append(((ax + tx, ay + ty), (bx + sx, by + sy), oa))
-    return res
-
-
-def hole_under_fraction(cat, b, face, comp, worn):
-    """Smallest fraction (over the box's copies) of hole texels with a worn box directly under them."""
-    fx, fy, fw, fh = b["faces"][face]
-    others = [i for i in L.instances([x for x in cat["boxes"] if x["id"] in worn and x["id"] != b["id"]])]
-    worst = 1.0
-    for inst in L.instances([b]):
-        n = inst.dir_to_world(L.FACE_NORMAL[face])
-        inward = (-n[0], -n[1], -n[2])
-        hits = 0
-        for x, y in comp:
-            p = inst.to_world(L.face_point(b["box"], face, (x + 0.5) / fw, (y + 0.5) / fh))
-            if any(o.contains_segment(p, inward, UNDER_GAP) for o in others):
-                hits += 1
-        worst = min(worst, hits / len(comp))
-    return worst
-
-
-def check_alpha(cat, lines, good, rep):
-    print("== alpha shaping (spec §2: cuts <= 2 px deep, matched on both faces of an edge, no large holes) ==")
-    byid = {b["id"]: b for b in cat["boxes"]}
-    for line in lines:
-        users = defaultdict(list)
-        for tid, T in cat["tiers"][line].items():
-            for bid in T["on"]:
-                users[(bid, L.tier_variant(T, bid))].append(tid)
-        for (kind, ln, bid, v), im in sorted(good.items()):
-            if kind != "box" or ln != line:
-                continue
-            b = byid[bid]
-            rel = f"{line}/{bid}_{v}.png"
-            tids = users.get((bid, v), [])
-            infos, cover = [], []
-            tot_op = tot = 0
-            for face, (fx, fy, fw, fh) in b["faces"].items():
-                op = face_opaque(im, b, face)
-                n_op = sum(map(sum, op))
-                tot_op += n_op
-                tot += fw * fh
-                cover.append(f"{face} {round(100 * n_op / (fw * fh))}")
-                if n_op == 0:
-                    infos.append(f"{face} fully transparent")
-                    continue
-                for comp, border in transparent_parts(op):
-                    xs, ys = [x for x, _ in comp], [y for _, y in comp]
-                    span = f"x{fx + min(xs)}-{fx + max(xs)} y{fy + min(ys)}-{fy + max(ys)}"
-                    if border:
-                        full_row = any(all((x, y) in comp for x in range(fw)) for y in set(ys))
-                        full_col = any(all((x, y) in comp for y in range(fh)) for x in set(xs))
-                        if full_row or full_col:
-                            infos.append(f"{face} cut back across the whole face ({span})")
-                            continue
-                        depth = max(min(x, y, fw - 1 - x, fh - 1 - y) for x, y in comp) + 1
-                        if depth > CUT_DEPTH:
-                            rep.w(f"{rel}: {face}: edge cut-out {depth} px deep (> {CUT_DEPTH}) at {span} "
-                                  f"(sheet pixels)")
-                    elif max(xs) - min(xs) + 1 > HOLE_MAX or max(ys) - min(ys) + 1 > HOLE_MAX:
-                        if not tids:
-                            rep.w(f"{rel}: {face}: hole {len(comp)} px at {span}, larger than 2x2 "
-                                  f"(sheet not used by any tier, so nothing lies under it)")
-                            continue
-                        bad = [t for t in tids if hole_under_fraction(
-                            cat, b, face, comp, set(cat["tiers"][line][t]["on"])) < 0.5]
-                        if bad:
-                            rep.w(f"{rel}: {face}: hole {len(comp)} px at {span}, larger than 2x2, with no worn box "
-                                  f"directly under it in {', '.join(bad)} (looks into the hollow box)")
-                        else:
-                            infos.append(f"{face} hole {span} over a worn box (ok)")
-            for (fa, fb), lst in sorted(edge_mismatches(b, im).items()):
-                ex = "; ".join(f"{fa}({a[0]},{a[1]}) {'opaque' if oa else 'cut'} vs {fb}({c[0]},{c[1]}) "
-                               f"{'cut' if oa else 'opaque'}" for a, c, oa in lst[:3])
-                rep.w(f"{rel}: edge {fa}/{fb}: {len(lst)} texel(s) cut on one face only, e.g. {ex} "
-                      f"(sheet pixels; cut both or neither)")
-            print(f"  INFO {rel}: opaque {round(100 * tot_op / tot)}% ({', '.join(cover)})"
-                  + (f"; {'; '.join(infos)}" if infos else ""))
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--art", required=True)
@@ -596,7 +465,6 @@ def main():
     good = check_files(cat, a.art, lines, rep)
     check_missing(cat, a.art, lines, good, rep)
     check_zones(cat, a.art, lines, good, rep)
-    check_alpha(cat, lines, good, rep)
     if not a.quiet_overlaps:
         cov, zf = coverage(cat)
         overlap_report(cat, lines, cov, zf)

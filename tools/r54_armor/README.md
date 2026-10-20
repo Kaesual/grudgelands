@@ -26,7 +26,7 @@ the style bible your brief names; the user's own selection (`tiers_example.json`
                   "icon": {"head": "a", "chest": "a", "legs": "a", "feet": "a"}}}}
 ```
 
-A missing `variant` entry means `a`. Tier palettes may be proposed in `art/palettes.json` (same shape as
+A missing `variant` entry means `a`; a tier entry must name its `palette`, and one without `inner` or `icon` has none. Tier palettes may be proposed in `art/palettes.json` (same shape as
 `data/palettes.json`: `{"palettes": {"<name>": {"colors": {"M_HI": "#RRGGBB", ...all 13}}}}`); they are laid
 over `data/palettes.json` by name, and a tier names its palette in `tiers.json`. `--palettes FILE` uses
 another file instead. A line or tier missing from `tiers.json` (or a missing file) falls back to
@@ -55,15 +55,10 @@ the example selection, and both tools say so.
   are seen from outside; top row 0 is the back edge, bottom row 0 the front edge.
 - **Mirrored boxes** (sleeve, bracer, shoulder parts, tasset, thigh, knee, boot, toe) have one sheet. Paint
   it for the character's right side; the left copy shows it mirrored.
-- **Alpha shaping is wanted** (spec §2): rounded corners, chamfers, notches, jagged or filigree edges.
-  Keep edge and corner cut-outs within about 2 px of the edge, and cut **every face sharing that edge** alike
-  (a rounded corner is round from the front and from the side). No holes larger than 2×2 inside a face, unless
-  another worn box lies directly under it (e.g. filigree in the shoulder reinforcement over the shoulder
-  core); the overlap report says which box lies under which. Cutting a face back across its whole width or
-  height (a short skirt) is a shape choice and only reported as information.
-- **Faces are independent.** Transparency in a side face does not remove the top or bottom face; if a skirt
-  ends halfway down, clear the bottom face too or it floats as a thin strip. A transparent pixel shows what
-  is behind it (the inner paint, the race skin or another box).
+- **Armor is opaque** (the user, 2026-10-20): every texel inside a box sheet's faces must be opaque;
+  transparency showed holes in the game (one looks into the hollow box). The only exception is the helm's **face
+  window** (white in `templates/boxes/helm.png`: columns 1–8, rows 1–8 of its front face), which may stay open so
+  the face shows. Shape comes from the boxes you choose and the paint.
 - **Inner paint:** start from `templates/blank/inner_<slot>.png`; `templates/inner/<slot>.png` shows the
   slot's region in green (chest: torso and arm; legs: leg rows 20–27; feet: leg rows 28–31). Head has no
   inner paint.
@@ -108,12 +103,9 @@ lines do not:
 4. `zones seen from the front`: zone A/B pixel counts per line, tier and slot. An approximation: an
    orthographic front view of the rest pose; a zone pixel counts unless the body or a box of the same slot
    hides it; both mirrored copies count; side faces and perspective are ignored.
-5. `alpha shaping`: WARNINGs for cut-outs deeper than 2 px, edges cut on one face only (both faces and
-   sheet positions given), holes larger than 2×2 with no worn box under them (and the tiers where that
-   happens); an INFO line per sheet with its opaque share per face, so filigree can be judged.
-6. `overlap report`: first the catalog-wide table (every pair of boxes, whatever the tiers wear): `A covers
+5. `overlap report`: first the catalog-wide table (every pair of boxes, whatever the tiers wear): `A covers
    B` with the covered texels of B's sheet per face, as a count and a rectangle in B's sheet pixels. Paint
-   there is hidden wherever A is opaque, and A may be largely transparent there. `[moves]` marks boxes on
+   there is hidden under A. `[moves]` marks boxes on
    different bones (e.g. a hip panel over a knee): true in the rest pose only. Then per line and tier the
    pairs your selection wears together (`A>B`; later tiers list the change). A `GEOMETRY NOTE` would be a
    catalog issue (coplanar faces that flicker); report it, do not paint around it.
@@ -132,9 +124,8 @@ lines do not:
 - `templates.py` rewrites `templates/`.
 - `softrender.py` is the software renderer behind `--engine soft` (the default).
 - `make_test_art.py` writes `test_art/` with a `tiers.json` (passes check.py without warnings; letters
-  F/R/L/B or corner flags in OUTLINE mark each face's top-left for orientation; chamfered helm and pauldron
-  corners and filigree in the reinforcement exercise the alpha checks) and `test_art_broken/` (nine
-  deliberate errors and three warning cases).
+  F/R/L/B or corner flags in OUTLINE mark each face's top-left for orientation; an eye band open in the
+  helm's face window) and `test_art_broken/` (twelve deliberate errors).
 - Two proposals for a pick page: two art directories, rendered separately.
 
 ## Bake: art to game textures

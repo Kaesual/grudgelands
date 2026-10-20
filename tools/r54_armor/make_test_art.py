@@ -13,17 +13,15 @@ top-left texel corner. Seen from outside, the glyph must read correctly on the
 right-hand (or only) copy and mirrored on the mirrored left copy.
 
 The clean set also writes tiers.json (the example selection plus a pauldron on
-metal T1, since every box may be used on every tier) and exercises alpha
-shaping that passes: chamfered corners on the helm and the pauldron (cut alike
-on all three faces of the corner) and filigree holes in the shoulder
-reinforcement over the shoulder core.
+metal T1, since every box may be used on every tier). Every face is opaque
+except an eye band in the helm's face window (the one allowed opening).
 
 The broken set is a copy of the clean set with deliberate errors (wrong sheet
 size, off-palette colour, partial alpha, paint outside the faces and outside
 the slot region, an icon of the wrong size, a missing file, an unknown file
-name, a slot whose zones were removed, an unknown box in tiers.json) and three
-warning cases (an edge cut on one face only, a 4 px deep notch, a hole with
-nothing under it).
+name, a slot whose zones were removed, an unknown box in tiers.json,
+transparent texels in the sleeve and the chest faces, a hole in the helm front
+outside its face window).
 """
 import argparse
 import json
@@ -47,7 +45,6 @@ FACE_LETTER = {"front": "F", "right": "R", "left": "L", "back": "B"}
 # per box: (zone A first row, zone B row) on the front face; default (H // 2, H // 2 - 2)
 ZONE_ROWS = {"boot": (3, 2), "thigh": (1, 0), "knee": (1, 0), "toe": (1, 0), "belt": (1, 0),
              "panel_f": (3, 1), "panel_b": (3, 1)}
-SKIRT_ROWS = 6     # the hip panels are painted as a short skirt (rows 0-5), transparent below
 
 
 def mark(px, fx, fy, fw, fh, letter):
@@ -102,11 +99,6 @@ def box_sheet(b, line):
                     px[fx + x, fy + rb] = C["B_LIGHT" if x != x0 + 1 else "B_DARK"]
         if face in FACE_LETTER:
             mark(px, fx, fy, fw, fh, FACE_LETTER[face])
-        if b["id"] in ("panel_f", "panel_b") and face != "top":
-            # short skirt: the sides end at SKIRT_ROWS, so the bottom face (which would float) goes too
-            for y in range(0 if face == "bottom" else SKIRT_ROWS, fh):
-                for x in range(fw):
-                    px[fx + x, fy + y] = (0, 0, 0, 0)
     return im
 
 
@@ -177,37 +169,15 @@ def icon(slot, line):
     return im
 
 
-# alpha shaping in the clean set: rounded (chamfered) box corners, cut alike on all three faces of the
-# corner, and filigree holes in the shoulder reinforcement where the shoulder core lies under it
-ROUND = {"helm": [(-1, 1, -1), (1, 1, -1), (-1, 1, 1), (1, 1, 1)], "pauldron": [(-1, 1, -1), (-1, 1, 1)]}
-FILIGREE = {"reinforce": {"front": [(2, 2), (3, 2), (4, 2), (2, 3), (4, 3)],
-                          "right": [(2, 2), (3, 2), (4, 2), (2, 3), (4, 3)],
-                          "top": [(2, 2), (3, 2), (4, 2), (2, 4), (3, 4), (4, 4)]}}
-
-
-def round_corner(px, b, signs):
-    """Cut the box vertex (signs: -1 = min, +1 = max per axis) on all three faces meeting there:
-    the corner texel and its two neighbours along the face edges (an L, 1 px deep)."""
-    box = b["box"]
-    vtx = tuple(box[i + 3] if signs[i] > 0 else box[i] for i in range(3))
-    for face in L.faces_at(box, vtx):
-        fx, fy, fw, fh = b["faces"][face]
-        u, v = L.face_uv(box, face, vtx)
-        cu, cv = (fw - 1 if u > 0.5 else 0), (fh - 1 if v > 0.5 else 0)
-        for ty in range(fh):
-            for tx in range(fw):
-                if abs(tx - cu) + abs(ty - cv) <= 1:
-                    px[fx + tx, fy + ty] = (0, 0, 0, 0)
-
-
 def shape(im, b):
-    px = im.load()
-    for signs in ROUND.get(b["id"], []):
-        round_corner(px, b, signs)
-    for face, holes in FILIGREE.get(b["id"], {}).items():
-        fx, fy, _, _ = b["faces"][face]
-        for x, y in holes:
-            px[fx + x, fy + y] = (0, 0, 0, 0)
+    """The helm's face window: an eye band (rows 3-5 of the window) left open."""
+    win = L.open_window(b)
+    if win:
+        px = im.load()
+        ys = sorted({y for _, y in win})
+        for x, y in win:
+            if y in ys[2:5] and px[x, y][:3] not in (L.ZONE_A | L.ZONE_B):
+                px[x, y] = (0, 0, 0, 0)
     return im
 
 
@@ -298,8 +268,8 @@ def write_broken(clean, out):
     t = json.loads((out / "tiers.json").read_text())
     t["metal"]["T6"]["on"].append("crest")
     (out / "tiers.json").write_text(json.dumps(t, indent=1))
-    # warnings (exit code unchanged): an edge cut on the sleeve front only (not on the top face), a 4 px deep
-    # notch and a 3x3 hole with nothing under it in the chest back
+    # 10-12 transparency: a corner cut on the sleeve front, a notch and a hole in the chest back, a hole in the
+    # helm front outside its face window
     sl = next(b for b in L.load_catalog()["boxes"] if b["id"] == "sleeve")
     im = Image.open(m / "sleeve_a.png").convert("RGBA")
     fx, fy, fw, fh = sl["faces"]["front"]
@@ -314,7 +284,14 @@ def write_broken(clean, out):
         for y in range(4, 7):
             im.putpixel((fx + x, fy + y), (0, 0, 0, 0))
     im.save(m / "chest_a.png")
-    print("wrote broken set to", out, "(9 deliberate errors and 3 warning cases in metal/ and tiers.json)")
+    # (helm_a.png already has the wrong size, so the helm hole goes into the leather helm)
+    hl = next(b for b in L.load_catalog()["boxes"] if b["id"] == "helm")
+    lp = out / "leather" / "helm_a.png"
+    im = Image.open(lp).convert("RGBA")
+    fx, fy, fw, fh = hl["faces"]["front"]
+    im.putpixel((fx, fy + fh - 1), (0, 0, 0, 0))
+    im.save(lp)
+    print("wrote broken set to", out, "(12 deliberate errors in metal/, leather/ and tiers.json)")
 
 
 def main():
