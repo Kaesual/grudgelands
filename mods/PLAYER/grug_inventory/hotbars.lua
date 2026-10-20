@@ -14,7 +14,7 @@
 --    mod's: the engine stops at the first allow callback that answers, and
 --    equipment.lua and bags.lua answer for their own slots.
 -- A switch first runs the register_on_hotbar_switch callbacks (grug_abilities
--- cancels a pending cast, eating, the bow's draw and held input there, so a
+-- cancels a pending cast, eating and held input there, so a
 -- fresh press is needed), then swaps and re-sends the inventory page. One
 -- switch per HOTBAR_SWITCH_US: an anti-spam limit, not a cooldown.
 --

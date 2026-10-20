@@ -141,7 +141,7 @@ end
 -- expires on its own clock, so a 3 s immunity does not swallow a 7 s web.
 --
 -- STANCES (user ruling 2026-09-28, playtest fix): a self-imposed stance --
--- eating, drawing or holding a drawn bow -- is a speed FACTOR applied after
+-- eating (the bow draw was one until Round 53) -- is a speed FACTOR applied after
 -- the clamped sum: speed = clamp(clamp(1 + Sum) * Product(stances)). It is
 -- not a debuff, so immunity does not discard it, and it scales Sprint and
 -- every other positive modifier with the rest of the sum. Jump is untouched.
