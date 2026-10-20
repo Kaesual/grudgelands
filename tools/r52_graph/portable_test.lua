@@ -70,10 +70,7 @@ local G = dofile(repo .. "/tools/r52_graph/graph_loader.lua")(repo, nil, HIDDEN)
 local graph = grug_classes.graph
 
 -- The shipped art (the art step): every tree's background, every modifier
--- and window node's icon, the redrawn icons of the shipped skills.
-local SHIPPED_SKILLS = {fireball = true, blink = true, ice_nova = true, hold_ground = true,
-	taunt = true, mighty_blow = true, hamstring = true, shield_spell = true, mend = true,
-	word_of_ruin = true, snare_shot = true, opening = true}
+-- and window node's icon, every skill's icon.
 for _, tree_id in ipairs(graph.tree_ids) do
 	eq(G.textures["grug_classes_tree_" .. tree_id .. ".png"] or false, tree_id ~= "rime",
 		"art: the " .. tree_id .. " background ships (Rime hidden here)")
@@ -81,12 +78,13 @@ end
 local icons, texts = 0, 0
 for _, id in ipairs(graph.node_ids) do
 	local def = graph.nodes[id]
-	local want = def.ability and SHIPPED_SKILLS[def.ability] or
+	-- Round 53 (HOOKS): the 25 new skills' icons ship too.
+	local want = def.ability and true or
 		not def.ability and id ~= "measured_fuel"
 	eq(graph.icon_texture(def) ~= nil, want and true or false, "art: " .. def.code .. "'s icon")
 	if graph.icon_texture(def) then icons = icons + 1 else texts = texts + 1 end
 end
-eq(icons .. "/" .. texts, "85/24", "art: 73 talent and 12 skill icons; 23 new skills and one hidden as text")
+eq(icons .. "/" .. texts, "108/1", "art: 73 talent and 35 skill icons; one hidden as text")
 
 --
 -- A. The registry against the node list.
@@ -471,7 +469,8 @@ has(fs, ";grug_abilities_skill_fireball.png;" .. field_of("F4") .. ";]",
 has(fs, ";grug_classes_talent_fire_mastery.png;" .. field_of("F1") .. ";]",
 	"E a talent node shows its picked icon")
 has(fs, ";blank.png;" .. field_of("F2") .. ";Measured Fuel\n3/3]", "E a text node without one")
-has(fs, ";blank.png;" .. field_of("F5") .. ";Flame Lance\n1/1]", "E an unlock without an icon")
+has(fs, ";grug_abilities_skill_flame_lance.png;" .. field_of("F5") .. ";]",
+	"E a new skill's unlock shows its icon (Round 53)")
 -- The sample build's node states: maxed and ranked (Ember spends 30 of 32).
 has(fs, "style[" .. field_of("F1") .. ",", "E a styled node list")
 local maxed = fs:match("style%[([^%]]-);bgcolor=#5c4a2a")
