@@ -127,3 +127,46 @@ lines do not:
   F/R/L/B or corner flags in OUTLINE mark each face's top-left for orientation; an eye band open in the
   helm's face window) and `test_art_broken/` (twelve deliberate errors).
 - Two proposals for a pick page: two art directories, rendered separately.
+
+## Bake: art to game textures
+
+`bake.py` turns an art directory (the format above, with a `tiers.json` that names **every** line and tier; the
+example fallback of the render tools is not baked) into the game files of
+[armor-format.md §7](../../docs/technical/armor-format.md):
+
+```sh
+python3 bake.py                                 # test_art/ -> mods/PLAYER/grug_visuals/textures/
+python3 bake.py --check                         # the gate: exit 1 on a missing, extra or different file
+python3 bake.py --art DIR --out DIR             # another art directory or output directory
+python3 bake.py --icons-out DIR                 # also the 72 item icons and their masks
+python3 bake.py --sheet OUT.png                 # contact sheet: every grade's layers, zones tinted, icons
+python3 test_bake.py                            # the tool's test on a tiny synthetic art set
+```
+
+- Per line, grade (`grug_gear.MATERIALS`, read from `grug_gear/init.lua`: T1 is the first grade) and slot: the
+  atlas layer `grug_armor_<line>_<grade>_<slot>.png` (128 × 64; every worn box of the slot, its sheet's six face
+  rectangles palette-swapped into its `data/atlas.json` rectangle; a mirrored box has one sheet, so one copy), the
+  skin layer `…_<slot>_skin.png` (64 × 32, chest, legs and feet: the inner paint clipped to the slot's regions)
+  and a mask `…_ench.png` next to each: two frames stacked (frame 0 zone A, frame 1 zone B, grey 255 for
+  A_LIGHT/B_LIGHT and 153 for A_DARK/B_DARK, the 0.6 tone floor of `tools/r31_b/gen_enchant_masks.py`). Every
+  grade gets every file, transparent where the tier paints nothing: 252 files.
+- The zones come from the reference-palette pixels, so they hold whatever colour a tier palette gives zone A or B.
+  Alpha is hard. A missing file, a wrong size, partial alpha or an off-palette colour fails the bake (run
+  `check.py` first); paint outside the faces or the slot's regions is dropped. A tier entry without `inner` has transparent skin layers; with
+  `--icons-out`, a tier entry that names no icon for a slot fails the bake (every item needs its icon).
+- `--check` rebuilds in memory and compares mode, size and pixels with each file (like `gen_enchant_masks.py
+  --check`; PNG bytes would differ between Pillow/zlib versions). An extra file is a `grug_armor_*.png` in `--out`
+  the bake would not write; write mode removes such files. In `--icons-out` only the 144 icon files count.
+
+**Icons on test art** go only to a directory you give (`--icons-out`); the shipped icons in
+`mods/ITEMS/grug_gear/textures/` stay untouched until lane INTEG bakes the picked art. INTEG then:
+
+1. bakes the picked art: `python3 bake.py --art <picked art> --icons-out ../../mods/ITEMS/grug_gear/textures`
+   (atlas and skin layers to the default `--out`, the 72 icons `grug_gear_item_<slot>_<line>_<grade>.png` and their
+   `_ench.png` masks over the old ones, names unchanged); the gate becomes the same command with `--check`;
+2. changes `tools/r31_b/gen_enchant_masks.py`'s `sources()`: drops the 72 armor icons (their masks now come from
+   `bake.py`, and the generator's own masks of the new icons would differ) and the 72 worn overlays
+   `grug_visuals_<line>_<slot>_<grade>` (removed with their masks and the 8 ungraded `grug_visuals_<line>_<slot>.png`);
+   its `--check` then covers the weapons, bows, shields and the spellbook only;
+3. decides on the 12 ungraded icons `grug_gear_item_<slot>_<line>.png` (the Character page's slot ghosts and the
+   leather copies), which the bake does not write.

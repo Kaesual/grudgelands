@@ -171,6 +171,24 @@ attribution** (see "Armor overlays" above and `grug_gear/LICENSE-media.md`):
 metal and leather CC BY-SA 4.0 bases with CC BY 4.0 trims, cloth CC BY-SA 3.0.
 The modification is "pixel-group mask derived by the generator".
 
+## Round 54 test art, replaced by lane INTEG — CC0 1.0
+
+Synthetic stand-in armor art, so the game code can compose the new armor
+before the picked art exists; lane INTEG of Round 54 bakes the picked art over
+these files. The source is `tools/r54_armor/test_art/`, written by
+**`tools/r54_armor/make_test_art.py`** (own synthetic art of this project, no
+third-party pixel); **`tools/r54_armor/bake.py`** turns it into the files below
+(palette swap per tier, layout of `tools/r54_armor/data/atlas.json`) and
+rebuilds them pixel for pixel (`bake.py --check` compares mode, size and pixels). `<grade>` is the grade key of
+`grug_gear.MATERIALS`.
+
+| File | Author | License | Notes |
+|------|--------|---------|-------|
+| `grug_armor_<line>_<grade>_<slot>.png` (72 files) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: atlas layer 128 × 64, the slot's worn boxes |
+| `grug_armor_<line>_<grade>_<slot>_ench.png` (72 files) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: enchant mask of the atlas layer (zone A frame, zone B frame) |
+| `grug_armor_<line>_<grade>_<slot>_skin.png` (54 files: chest, legs, feet) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: skin layer 64 × 32, the slot's inner paint |
+| `grug_armor_<line>_<grade>_<slot>_skin_ench.png` (54 files) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: enchant mask of the skin layer |
+
 ## Round 33 player model with a cloak — CC BY-SA 3.0
 
 | File | Author | License | Notes |
