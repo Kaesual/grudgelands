@@ -91,6 +91,8 @@ do
 		set_status = function() end,
 		-- Round 40: the casts play their effects through the particle helper.
 		particles = {play = function() end, facing = function() end},
+		-- Round 53 WARRIOR (stub only): Retort's readiness hook at load.
+		register_on_settled_incoming_hit = function() end,
 	}
 	grug_classes = {
 		get_talent_bonus = function() return 0 end,
@@ -104,6 +106,7 @@ do
 	local abilities = {}
 	grug_abilities = {
 		register_ability = function(def) abilities[def.id] = def end,
+		register_on_swing = function() end, -- Round 53 WARRIOR (stub only)
 		get_range = function(_, def) return def.range or 4 end,
 		set_target = function() end,
 		valid_target = function(user, obj, kind)
