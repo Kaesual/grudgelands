@@ -73,9 +73,10 @@ To create a local world or host a server, see
 1. **Create your character:** choose your faction, people, class and look.
 2. **Meet your first quest giver:** a yellow `!` means a new quest;
    a yellow `?` means one is ready to hand in. Right-click to talk.
-3. **Choose a combat skill:** your starter weapon is already equipped.
-   Open **Talents & Skills** in your inventory, drag a skill onto the
-   hotbar, select it and left-click a creature.
+3. **Fight:** your starter weapon is equipped and your class's basic
+   attack sits on key 1: select it and left-click a creature, or hold the
+   button. Skills you unlock with talents wait in **Talents & Skills** in
+   your inventory; drag them onto the hotbar.
 4. **Find your way:** press `Z` for **Map & Quests** and select a quest
    to see its targets. Press `E` for the quickbar: mounts, boats, your
    potion belt and Return home.
@@ -90,15 +91,22 @@ and its profession trainers.
 
 ## Current state
 
+**0.53.0** brings the new classes: each class starts with its own two or
+three skills and gains the rest from two new talent trees per class, drawn
+as a map on the Talents & Skills page, each ending in an ultimate from
+level 42. Every class has a free basic attack, every skill is instant,
+area skills land on the ground under your crosshair after a short warning,
+and the Scout shoots without drawing the bow. Your talent points are reset
+with the update (the server's host runs the migration tool once).
+
 **0.52.0** lets the background sounds follow the landscape and your
 height: one bed for every temperate forest, new beds for the badlands,
 the swamp, the crags, the snowy crags and the Battlegrounds, night
 choruses, a soft wind only high up, a quiet bed in real caves and
 silence in the tunnels you dig, and animals calling now and then. It also
 lays the groundwork for the class update: the skill row scrolls, most
-skill icons are redrawn, the selected skill shows a small glow on your
-weapon, and Mend heals counting from your own cast. Your classes and
-talents play as before. No map reset is needed.
+skill icons are redrawn and the selected skill shows a small glow on your
+weapon; 0.52.1 adds the surf at the coast and a sound under water.
 
 **0.51.0** brought the land zones and the sea: a larger sea with a wide
 coastal belt, natural bays and shallow dragon channels, coral, kelp and
@@ -109,19 +117,14 @@ new plants, ruins, graveyards, cairns, statues and varied bones). It
 needed a map reset; characters keep their level, gear, inventory and
 quests.
 
-**0.50.0** added a second hotbar layout (A and B) and packs the containers
-of your housing claim at a map reset into the Claim Stone's Belongings
-tab; 0.50.2 shows on the minimap where a Claim Stone may go and names the
-claims you stand in.
-
 Read the [changelog](CHANGELOG.md) for changes and upgrade requirements,
 and the [project status](docs/STATUS.md) for delivery and playtest progress.
 
-**What I want to improve next:** the foundations are playable, but classes
-and talents still feel like a first draft, and leveling needs more meaningful
-choices. I'm working toward stronger class identities and better group and
-PvP balance, richer sound and scenery, more varied and useful crafting, and
-quests that teach the game more naturally. These are the next priorities;
+**What I want to improve next:** the new classes need a first playtest and
+a balance pass, and leveling needs more meaningful choices. I'm working
+toward stronger class identities and better group and PvP balance, richer
+sound and scenery, more varied and useful crafting, and quests that teach
+the game more naturally. These are the next priorities;
 the [roadmap](ROADMAP.md#next-priorities--deepening-the-playable-game) has the
 direction and planned follow-up work.
 
@@ -271,7 +274,7 @@ investigations and delivery records.
 | Area | Design documents |
 |------|------------------|
 | World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns and capitals; [story](docs/design/story.md): factions and the campaign. |
-| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [future targeting](docs/design/ability_targeting.md): approved redesign interactions; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
+| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags and crafting stations; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |

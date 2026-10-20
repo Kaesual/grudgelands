@@ -100,7 +100,7 @@ existing contract; secondary splash needs its own impact-centered cover check.
 Warnings do not follow a moving target. The conceptual one-second action
 does not replace the delayed impact/warning durations in the spell tables.
 
-The [approved area interaction](../../design/ability_targeting.md#4-fixed-area-points-and-previews)
+The [approved area interaction](../../design/ability_targeting.md#4-ground-areas-the-ground-anchor)
 now resolves the former free-cursor ambiguity: preview while selected, capture
 enemy footpoint or eligible terrain on activation, and refuse invalid placement
 without payment. Radius/height/cover geometry remains a planning dependency;

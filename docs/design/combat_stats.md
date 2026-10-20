@@ -16,10 +16,9 @@ Core principles:
   stats/enchantments. The former "1 skill point per level" in this line was
   superseded by that ruling, together with `progression.md` §2's earlier "1
   point every 3 levels"; the trees the points are spent in are
-  [skill_trees.md](skill_trees.md) (decided revision 2). Named, bounded
-  rule-breakers may exceed a stat cap only where that design explicitly says
-  so; Round 11 has delivered Unbroken's armor-rating multiplier and emergency
-  window under the unchanged universal 70% reduction cap.
+  [skill_trees.md](skill_trees.md) (the graph talents since Round 53). No
+  talent raises a stat cap or multiplies the armor rating since Round 53;
+  every cap below holds for everyone.
 - **One readable level curve**: player pools and normal-mob HP share the
   rounded `20 + 5L + 0.66L²` base. Class factors, percentages and gear form
   visible secondary axes; level itself does not hide inside attributes.
@@ -72,12 +71,16 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   instead of 15 at level 30 and 14.5 instead of 25 at level 60. No usable
   caster weapon in the slot (empty, another family, broken) adds 0: the
   spell base is the level half alone, half of today's (the user,
-  2026-10-12; Mage and Priest start with the Bronze Staff). Fireball, Ice Nova and Smite add spell power to it
-  (`grug_core.spell_base`). The Mage's and Priest's talent damage terms
-  follow it as percentages of a **spell base hit** `B(L) × S / Bw(L)`:
-  exactly today's with an own-level staff or wand, scaled like the spell
-  with an older one, half without one (the user, 2026-10-12). Warrior and
-  Scout talent terms stay on `B(L)`; healing keeps the support factor.
+  2026-10-12; Mage and Priest start with the Bronze Staff). Every Mage and
+  Priest damage spell adds spell power to it (`grug_core.spell_base`): that
+  sum is the Mage's unit D (the untalented Fiery Spark hit) and the
+  Priest's spell unit, and each spell is a coefficient of it (classes.md
+  §4, §5). The Priest's talent adds "of a base hit" are `B(L) × S / Bw(L)`,
+  a **spell base hit**: exactly `B(L)` with an own-level staff or wand,
+  scaled like the spell with an older one, half without one (the user,
+  2026-10-12). The Warrior's and the Scout's talent adds are shares of their
+  units S, R and M ([skill_trees.md](skill_trees.md) §2.10); healing keeps
+  the support factor.
 - **Support factor** (Round 36) = `1 + gear Int / 10 / B(L)` on
   pool-derived healing and absorbs, where gear Int is the Intelligence above
   the class's own level growth (`grug_classes.get_support_factor`). Gear
@@ -93,13 +96,13 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   exactly). Damage assembles weapon/ability,
   attribute and talent terms before this scalar and floors once at
   settlement; a positive authored damage value settles to at least 1.
-  `B(L)` is also "a base hit": talent damage terms (and Charge's 12 %) are
-  percentages of it, so they keep their share at every level
-  ([skill_trees.md](skill_trees.md) §2.10, Round 35); a caster's terms use
-  the spell base hit above (Round 46).
+  `B(L)` is also "a base hit": Charge's 12 % and the Priest's talent adds
+  are shares of it, so they keep their share at every level
+  ([skill_trees.md](skill_trees.md) §2.10, Round 35); the Priest's adds
+  use the spell base hit above (Round 46).
 - **Support values are already level-derived and are never level-scaled a
-  second time.** Heal and Shield are each 25% of `P(L)`; each Mend tick
-  is 8%. Multiply that pool share by the support factor, then pass the
+  second time.** Heal is 25 % of `P(L)`, Shield 24 %, each Mend tick 7 %
+  (Round 53, before talents). Multiply that pool share by the support factor, then pass the
   resulting absolute amount unchanged through `scale_player_value` and the
   existing `heal_player`/`add_absorb` seams. Percentage consumables likewise
   derive once from the relevant final pool and bypass the damage scalar.
@@ -123,7 +126,12 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   player level − 5))`. It is part of the same final damage multiplication and
   is floored only once with the level scalar (`grug_core.level_malus`).
 - **Crit** = 5% + 0.05%×Dex, **cap 30%**; a crit deals **×2** damage, and a
-  healing crit heals ×2 (Round 33, [item_tiers.md](item_tiers.md) §1.0)
+  healing crit heals ×2 (Round 33, [item_tiers.md](item_tiers.md) §1.0).
+  Area hits and splashes never crit (`deal_ability_damage`'s
+  `opts.no_crit`, Round 53: Ice Wave, Ice Nova, Meteor, Fire Rain, Winter
+  Field, Fireball's splash, Censure, Flourish, Split Shot's splash), nor do
+  the Priest's support, Word of Ruin's heal and Retort's Recover
+  ([classes.md](classes.md) §2).
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
 - Player armor is a numerical **rating** evaluated against the attacker's
   level. It is not itself a percentage; endgame plate and shields remain useful
@@ -142,12 +150,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     player's character level in PvP, or the immutable attacker level stamped
     onto a projectile. Unattributed and environmental damage has no attacker
     level and bypasses armor.
-  - **Bulwark specialization:** learning the mutually exclusive 21-point
-    Unbroken capstone multiplies the final aggregated rating by **1.65**. Its
-    existing low-HP trigger then adds **33 % of `K(L)` at the Warrior's own
-    level as rating after that multiplier** (about 15 at level 50) for 8
-    seconds, at most once per 180 seconds. It never raises the 70% cap, so it
-    counts most against stronger foes.
+  - **Talents and skills add rating, never multiply it** (since Round 53):
+    Ironbound adds a share of `K(L)` at the character's own level, Rime
+    Mantle and Unbroken a status `armor` for their duration (shares of
+    `K(L)` as well). The old Unbroken capstone's ×1.65 and its low-HP
+    rating went with the old trees.
   - It applies **only to `reason.type == "punch"`**. There is no
     damage-type system, so that IS the whole definition of "physical":
     fall damage has its own race perk (world.md §7) and drowning, lava
@@ -207,7 +214,7 @@ reduction evaluated against the player's own character level. General formulas,
 cap rules and multiplier explanations belong to Help, not the Talents header.
 This same-level display does not change with the selected target or the
 last attacker.
-Unbroken does not override the reduction cap.
+No talent or skill overrides the reduction cap.
 
 The Character page shows concise maximum HP and mana, or HP and fixed Rage,
 without a pool/armor derivation panel. The HUD bars display current pool values. The Help page owns
@@ -336,6 +343,10 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   hold/click-spam have identical maximum DPS. At most one attack starts per
   pass. Normal server-step lateness is carried phase-faithfully into the next
   interval, capped at 0.1 s and half the FPI; lag never replays a backlog.
+  Since Round 53 a held cast with a cast interval (the casters' basic
+  attacks and Loose) carries the same bounded lateness (`CLOCK_CATCHUP`)
+  into its next interval and its own occupied time; a cast after a pause
+  carries nothing ([classes.md](classes.md) §2b "Scheduling").
 - **Readiness waits for the current ray.** Once the interval expires, the
   weapon remains ready. While LMB stays held, a due pass raycasts from the
   current server eye position along the current look direction to the selected
@@ -377,9 +388,13 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   mob-level malus when the target is a mob) → one crit → armor → integer
   damage → one dodge → one absorb →
   HP**. mobs_redo commits the proc
-  only after `do_punch` and CMI accept. Mighty Blow remains exactly
-  `floor(weapon × 1.5) + melee bonus` before crit; Hamstring is the ordinary
-  full swing plus its 50% slow, paid/applied only after HP damage lands.
+  only after `do_punch` and CMI accept. Mighty Blow (and Broadstroke's
+  primary) is 1.45 × (weapon + melee bonus) plus its talents before crit;
+  Hamstring is the ordinary full swing plus its 35 % slow, paid/applied
+  only after HP damage lands. The swing callback (`register_on_swing`,
+  Round 53) multiplies or adds to the raw damage before the one scaling
+  pass (Ruination ×1.15, a readied Retort, Close Dance) and grants its rage
+  and effects only on a landed swing ([classes.md](classes.md) §3).
 - **Authoritative entry is claim-once.** One opaque token identifies the exact
   attacker and ray-selected target. The matching mob/PvP entry claims it once;
   callback-triggered reentrant punches on the same or another target are
@@ -389,8 +404,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   after `do_punch` and CMI accept, immediately before health subtraction.
 ### Hostile casts and projectiles (shipped with WP39)
 
-- **Hostile direct casts require current aim.** Charge, Taunt and Smite accept
-  only a currently pointed valid hostile within their individual range and a
+- **Hostile direct casts require current aim.** Charge, Taunt, Smite,
+  Rebuke, Word of Ruin and Final Word accept only a currently pointed valid hostile within their individual range and a
   server line-of-sight check. Enemy target memory is never a fallback. Failure
   to acquire a target spends no resource and arms no cooldown. Friendly
   heal/shield casts resolve through currently pointed valid in-range visible
@@ -401,9 +416,11 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   no stale enemy memory and no valid target means no shot or mana/ammo payment.
   Mob/boss/guard missiles lock their valid attack target under the same initial
   range/line-of-sight rule. Smite stays immediate; area skills stay area skills.
-- Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
-  range**, **20 m/s nominal speed**, the spell base + spell power and
-  its existing talent effects. Scout arrows have no draw since Round 53: every
+- The Mage's projectiles (Fiery Spark, Cold Spark, Fireball, Flame Lance)
+  fly from a **20 m initial range** at **20 m/s** (Flame Lance 35 m/s) for a
+  coefficient of the spell base + spell power ([classes.md](classes.md) §4);
+  the basic attacks keep a 1 s cast interval, Fireball a 5 s cooldown.
+  Scout arrows have no draw since Round 53: every
   bow skill is an instant shot for a share of R (bow damage + Dexterity
   ranged bonus; Loose 0.95 R, its held cadence 0.85 s divided by the bow's
   own attack-speed affix, never below 0.65 s), floored once after the level
@@ -1180,11 +1197,10 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
-  `ooc_regen_mult` perk. In combat the untalented base rate is
+  `ooc_regen_mult` perk. In combat the base rate is
   **`max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)`**; the Troll
-  perk does not apply. Cold Focus multiplies whichever in-combat term wins by
-  **`1 + 2 × bonus`**: +40 % per rank since Round 35 (rank 5 triples the
-  combat rate). Trinket mana regeneration (`grug_core.trinket_mana_regen`)
+  perk does not apply, and no talent changes it since Round 53 (the old
+  Cold Focus went with the old trees). Trinket mana regeneration (`grug_core.trinket_mana_regen`)
   adds on top in and out of combat; it and the other trinket specials
   (Battlebeat rage, the Reclaimer's Mark, Last Light) are owned by
   `items_crafting.md` §6.2
@@ -1481,32 +1497,31 @@ shows a single-colour particle effect, built from the accepted catalogue
   that opened, an arrow launch that committed. Never on the Strike fallback
   of a skill on cooldown, without charge or without its resource, and
   never on a refused cast. **Strike** has no effect.
-- **The effects:** Ice Nova (and Frostbind's ranged nova) a flat frost ring
-  out to the nova's radius over a slower mist; Fireball an ember splash and a
-  dark puff on impact (Brand's splash shows through it); Smite no projectile,
-  holy motes falling onto the target and a flash ring at its feet; Mighty
+- **The effects:** Ice Nova a flat frost ring out to the nova's radius over
+  a slower mist; Fireball an ember splash and a dark puff on impact; Mighty
   Blow a red slash hanging diagonally in front of the warrior plus the six
-  blood drops; True Draw, Snare Shot and Split Shot a trail along the launch
-  line over the flight time, tinted per skill (Loose none since Round 53,
-  Arrowfall's own on its first arrow); Charge a dust ring
-  around the target on arrival (the dash's dust trail is
-  `grug_abilities.charge_dust`); Hamstring a red cut across the legs; Taunt
-  motes above the target; Bellow a steel-grey ring out to its radius; Hold
-  Ground a rising bronze ring; Blink an implosion where the mage leaves and a
-  burst where it arrives; Cinderfall embers raining into its real circle;
-  Glacial Ward frost motes drifting onto a shell; Heal rising motes (Hearten:
-  four on each splashed ally); Shield a pale-gold shell; Mend three rising
-  motes on the cast and on each tick; Word of Ruin gold motes streaming
-  from the target to the priest; the landed Snare Shot a green ring at the
-  legs; Sidestep
-  a pale-green shimmer; Sprint a dust kick behind the scout; the landed
-  Opening a white flash. Round 53 retints Taunt, Bellow, Hold Ground,
-  Blink, Heal, Mend and Word of Ruin to their tree's colours and registers
-  the new skills' effects, the picked cards of `tools/r52_pfx`, for the
-  class kits. **Procs** (Ruination, Unbroken, the readiness windows Cold
-  Shock, Retort, Clear Conscience and Follow the Line, Whitehot, Last
-  Word, Untouchable, the Last Light and Reclaimer trinkets) share one flash,
-  a ring of eight motes rising around the player, in a colour per proc
+  blood drops; True Draw, Snare Shot and Split Shot a trail along the
+  launch line over the flight time, tinted per skill (Loose none since Round
+  53, Arrowfall's own on its first arrow); Charge a dust ring around the
+  target on arrival (the dash's dust trail is `grug_abilities.charge_dust`);
+  Hamstring a red cut across the legs; Taunt motes above the target; Bellow
+  a steel-grey ring out to its radius; Hold Ground a rising bronze ring;
+  Blink an implosion where the mage leaves and a burst where it arrives;
+  Rime Mantle frost motes drifting onto a shell (Glacial Ward's former
+  effect, kept under its id `glacial_ward`); Heal rising motes; Shield a
+  pale-gold shell; Mend three rising motes on the cast and on each tick;
+  Word of Ruin gold motes streaming from the target to the priest; the
+  landed Snare Shot a green ring at the legs; Sidestep a pale-green
+  shimmer; Sprint a dust kick behind the scout; the landed Opening a white
+  flash. Round 53 retinted Taunt, Bellow, Hold Ground, Blink, Heal, Mend
+  and Word of Ruin to their tree's colours and plays the picked cards of
+  `tools/r52_pfx` for every other new skill, each registered under its
+  card's id (the cast, the flight, the impact, a window's swing, a ground
+  area's warning, fall and burst through `area.delayed`). **Procs** (the
+  readiness windows Cold Shock, Retort, Clear Conscience and Follow the
+  Line, the Last Light and Reclaimer trinkets; the colours of Ruination and
+  Unbroken stay registered with no caller) share one flash, a ring of eight
+  motes rising around the player, in a colour per proc
   (`grug_core.PROC_COLORS`). Critical hits, absorb soaks and the level-up
   burst keep their look.
 - **Budget:** at most 76 particles per occurrence (Fire Rain's impact,

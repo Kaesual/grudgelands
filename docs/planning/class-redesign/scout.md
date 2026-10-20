@@ -118,7 +118,7 @@ At a normal release, reserve its projectiles and atomically spend arrows/mana,
 start cooldown and settle the action receipt. Allocation failure spends nothing.
 Arrowfall is the per-shot exception: later releases retain its first target
 with the approved forgiving facing check and pay only their own resources.
-See [ability targeting](../../design/ability_targeting.md#5-arrowfall) and the
+See [ability targeting](../../design/ability_targeting.md#6-arrowfall) and the
 [settlement proposal](implementation-design.md#arrowfall-settlement-proposal-for-the-implementation-brief).
 An interrupted committed action never refunds costs or resets recovery.
 Melee skills commit through the existing accepted melee-action boundary;
@@ -150,7 +150,7 @@ arrow before Quiver savings; specials other than Loose receive no savings.
 | Flourish | Up to 3 hostiles in a frontal 90° cone, each 0.80 M | 0.25 s visible preparation; total max(1.0 s, blade interval); 12 s cooldown; 8% P | 3 m; per-target current permission/cover; no displacement |
 | Close Dance, Veil ultimate | For 5 s, next 3 landed basic blade attacks gain +0.35 M each; first eligible direct incoming hit reduced 30% | 60 s cooldown; 14% P; 0.25 s action | No haste; no slow immunity; reduction does not add to Parry, strongest consumes both if simultaneous |
 
-Arrowfall follows the approved [single-acquisition volley contract](../../design/ability_targeting.md#5-arrowfall).
+Arrowfall follows the approved [single-acquisition volley contract](../../design/ability_targeting.md#6-arrowfall).
 The Scout cannot retarget remaining arrows, perform melee or fire Loose during
 the occupied action. Moving is allowed at the stated stance; deliberate other
 actions cancel remaining releases without resetting committed recovery.

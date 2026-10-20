@@ -1,190 +1,131 @@
-# Skill Trees (Talents) — WP11
+# Skill Trees (Talents)
 
-**Decided design, revision 2 of 2026-09-16, implemented.** Four classes each
-have two trees with two chains. Characters gain 30 points, each tree contains
-28 ranks, and one capstone is reachable. The model, the talent consumers, the
-Talents page, the respec and the level-up notice shipped in Rounds 11 and 12
-and on 2026-09-17 (WP11 lanes X1–X4, the Scout's trees in Round 11); Round 35
-made every damage and armour talent level-proof (§2.10) and applied the
-user's picks from a review of all talents (2026-10-05); Round 36 added the
-support factor. The tables below carry the current values. Round 52 built
-the graph talents of the class rework beside them (§3.12): admins can
-preview them, players keep these trees until round K switches over with an
-automatic talent reset.
+**Decided design, live since Round 53 (0.53.0, round K of the class
+rework).** Each of the four classes has two talent trees, drawn as graphs:
+nodes on seven gate rows, joined by prerequisites, with one ultimate per
+tree. A character earns 30 points by level 60; every tree holds more ranks
+than that. The trees are the eight of the
+[node list](../planning/class-redesign/node-list.md) under the user's
+decisions of 2026-10-20 ([round 53 plan](../planning/round53-plan.md) §2);
+Round 52 built the engine and the page beside the old trees (§3.12), Round
+53 made them live with one talent reset for every character (the 0.53.0
+migration step, [upgrade contract](../technical/upgrade-contract.md)).
 
-- "Ruling N" means the user's rulings of 2026-09-16, summarised in §5.
+- The kits the talents act on are [classes.md](classes.md) §3–§5 and
+  [scout.md](scout.md) §2; the numbers are the frozen balance calculator's
+  (round 53 plan §3 "Numbers").
 - Code is cited by symbol (a function, a registration, a field), never by
   line number.
-- The delivery history — the old citation layer at `70dda602`, the talent
-  name audit, the KAT, the file table, the lanes, the full ruling texts with
-  what each replaced and the closed task list — is archived in the
-  [WP11 delivery record](../archive/design/skill-trees-wp11-delivery.md).
+- The trees of revision 2 (two chains per tree, keystones and capstones, 64
+  talents, Rounds 11–52) and their delivery history — the talent name audit,
+  the KAT, the file table, the lanes, the full ruling texts and the closed
+  task list — are archived in the
+  [WP11 delivery record](../archive/design/skill-trees-wp11-delivery.md)
+  (section G holds the last text of the old trees).
 
 Companion file: [scout.md](scout.md), the fourth class (kit, armour, bow,
 stealth deferred). Its two trees live here in §2.7/§2.8 so that all four
-classes' talent tables stay in one place under one arithmetic.
+classes' talents stay in one place under one arithmetic.
 
 ---
 
 ## 1. The shape
 
-### 1.1 Four classes, two trees, two chains per tree
+### 1.1 Four classes, two trees each
 
-Four classes ship; the fourth, **Scout**, was delivered in Round 11 (ruling 7,
-[scout.md](scout.md)). Each class has two trees, and **each tree holds two
-rough playstyle directions, called chains** (ruling 2). A chain is a straight
-line of four talents: two numeric, then a keystone, then either the capstone
-or a finisher.
+| Class | Tree | Direction | Nodes | Ranks | Skills it grants (T = transform) | Ultimate |
+|---|---|---|---:|---:|---|---|
+| Warrior | **Bulwark** | guard | 14 | 33 | Retort (T of Strike), Hold Ground, Taunt, Bellow (T of Taunt) | Unbroken |
+| Warrior | **Ruin** | rage damage | 14 | 33 | Mighty Blow, Hamstring, Broadstroke (T of Mighty Blow) | Ruination |
+| Mage | **Ember** | fire damage | 13 | 32 | Fireball, Flame Lance, Meteor | Fire Rain |
+| Mage | **Rime** | frost control | 14 | 33 | Cold Spark (T of Fiery Spark), Blink, Rime Mantle, Ice Nova (T of Ice Wave) | Winter Field |
+| Priest | **Mercy** | support | 13 | 33 | Shield, Mend, Hearten | Haven |
+| Priest | **Reckoning** | judgment | 14 | 34 | Rebuke, Word of Ruin, Censure | Final Word |
+| Scout | **Quarry** | the bow | 13 | 32 | True Draw, Snare Shot, Split Shot | Arrowfall |
+| Scout | **Veil** | the blade | 14 | 33 | Bladecraft (T of Loose), Opening, Parry, Flourish | Close Dance |
 
-| Class | Tree | Direction | Chain A | Chain B |
-|---|---|---|---|---|
-| Warrior | **Bulwark** | take hits and hold attention | **Wall** — mitigation | **Anvil** — threat and control |
-| Warrior | **Ruin** | spend rage for damage | **Hammer** — big hits | **Lash** — crit and snare |
-| Mage | **Ember** | fire damage | **Blaze** — single target | **Cinder** — area and reach |
-| Mage | **Rime** | control and survival | **Frost** — roots and slows | **Ward** — mana, escape, absorb |
-| Priest | **Mercy** | keeping others up | **Balm** — direct and over-time heals | **Aegis** — absorbs and avoidance |
-| Priest | **Reckoning** | solo damage and self-sufficiency | **Word** — the Smite line | **Wrath** — crit and self-repair |
-| Scout | **Quarry** | the bow | **Draw** — shot power | **Ranging** — reach, ammo, movement |
-| Scout | **Veil** | the blade and the shadow | **Blade** — melee damage | **Shadow** — avoidance and stealth |
+**109 nodes, 263 ranks.** Every class starts with its own starters and
+needs no talent for them: the Warrior Strike and Charge, the Mage Fiery
+Spark and Ice Wave, the Priest Smite and Heal, the Scout Loose, Sidestep
+and Sprint (plus the universal Strike; [classes.md](classes.md) §2d). Every
+other skill comes from a tree.
 
-The tree names are decided: ruling 5 kept Bulwark, Ruin, Ember, Rime, Mercy
-and Reckoning, ruling 27 named Quarry and Veil. The Priest's healing tree is
-**Mercy** (formerly "Holy"; renamed everywhere). Talent names follow §2.11.
+The tree names are decided (ruling 5 kept Bulwark, Ruin, Ember, Rime, Mercy
+and Reckoning, ruling 27 named Quarry and Veil). Node names follow §2.11.
 
-### 1.2 Tiers, gates and hard chains
+### 1.2 Nodes, gates and prerequisites
 
-Both dependency kinds ruling 2 asks for are used:
+Each node has a **type**:
 
-- A **tier gate** is points already spent *in that tree* (not in that tier).
-- A **hard chain** is "all ranks in the talent above it, in the same chain".
+- **modifier:** a number on an existing skill or stat;
+- **window:** its ranks feed a readiness window (§3.2);
+- **unlock:** grants a skill into the Talents & Skills catalogue and places
+  nothing on a hotbar (Round 50 D1, class plan C8);
+- **transform:** replaces a skill in place on hotbars A and B and shares
+  its cooldown (§3.4);
+- **ultimate:** the tree's one unlock at the last gate.
 
-| Tier | Contents | Tier gate (points in this tree) | Hard chain |
-|---|---|---|---|
-| 1 | one entry talent per chain, **5 ranks** | 0 | — |
-| 2 | one talent per chain, **4 ranks** | 5 | tier-1 talent of the same chain at 5/5 |
-| 3 | one **keystone** per chain, **3 ranks** | 12 | tier-2 talent of the same chain at 4/4 |
-| 4 | the **capstone** on its chain (**1 rank**), a finisher on the other (**3 ranks**) | 20 | tier-3 talent of the same chain at 3/3 |
+A granting node (unlock, transform, ultimate) has one rank; a modifier or
+window node has one to five.
 
-Rank counts vary by talent strength exactly as ruling 2 asks: **5 / 4 / 3** down
-a chain, and the capstone is **one rank** (ruling 17): a capstone is one
-strong effect or one replacement, and what gates it is its chain plus the
-points in the tree, not a ladder of its own — the variety ruling 2 asks for
-is already carried by the 5/4/3 above it.
+A node's **gate** is the number of points already spent in its tree before
+its first rank: 0, 2, 6, 10, 12, 16 or 20, one row of the page each. With one
+point every two levels the rows open at levels 2, 6, 14, 22, 26, 34 and 42 at
+the earliest. Exactly: a node's gate counts the ranks of the tree's nodes
+with a **lower** gate, so two nodes of one row never pay for each other
+(`graph.structure_refusal`, the same text on the spend and the read path:
+"Meteor needs 12 points in Ember (you have 8).").
 
-Per tree that is **8 talents and 13 + 15 = 28 ranks**; per class **16 talents
-and 56 ranks**. Twenty-eight is ruling 2's "about 30", and it means a player
-who fills one tree completely still has **2 points** to place elsewhere.
+A node may have **prerequisites** (`requires`), nodes of the same tree and
+of no higher gate; each needs **one** rank, never a full chain ("Opening
+needs a rank in Bladecraft."). A transform's later nodes require the
+transform (Keen Cold requires Cold Spark), an ultimate requires the unlock
+it grows from.
 
-The two gate kinds interact deliberately:
+### 1.3 Points and the arithmetic
 
-- The tier-2 gate (5) is exactly the cost of maxing a tier-1 talent, so a
-  player who commits to one chain opens tier 2 at the moment the hard chain
-  lets them through it. No dead point.
-- The tier-3 gate (12) is **three more than a single chain costs**
-  (5 + 4 = 9), so a keystone cannot be rushed on one chain alone: three
-  points have to go into the tree's other direction first. That is what makes
-  a tree read as a tree rather than as two unrelated ladders.
-- The tier-4 gate (20) is **eight more than a chain's first three talents**
-  (5 + 4 + 3 = 12), so a capstone needs most of the other chain as well —
-  and that is what makes ruling 18's "one capstone per character" true by
-  arithmetic rather than by a rule. §1.3 works it out.
-
-### 1.3 Points, and the arithmetic (rulings 1, 2, 17 and 18)
-
-- **One point every two levels, the first at level 2**: levels 2, 4, 6, …, 60.
-  The point count at level L is `floor(L / 2)`
+- **One point every two levels, the first at level 2** (ruling 1): levels
+  2, 4, 6, …, 60. The point count at level L is `floor(L / 2)`
   (`grug_classes.talent_points_at`); at level 60 that is **30 points**.
-- **Ranks per tree: 28** (13 on the capstone's chain, 15 on the other).
-  **Ranks per class: 56.**
-- **A full tree costs 28 of the 30 points**, so a "pure" build finishes its
-  tree at level 56 and still has two points to place. A full tree is never
+  Points are never stored, so they cannot disagree with the level.
+- **A tree holds 32 to 34 ranks**, more than the 30 points, so even a pure
+  build leaves ranks unbought (the audit asserts it). A full tree is never
   forced: every split is legal.
-- Ruling 1's "two thirds was a rough guideline, slight deviation is fine" is
-  what this uses: the fraction is now half the class, or one tree of two.
+- **An ultimate costs 21 points in its tree:** its gate is 20, so it is the
+  21st point at the earliest, at **level 42**. Two ultimates would cost 42
+  of 30 points; a mixed build may take neither. This is arithmetic, not a
+  rule.
+- Each tree carries a **sample build** (`example`, a legal 30-point order in
+  node codes) that the load-time audit buys rank by rank; the fixtures use
+  it (§3.12).
 
-Worked reachability, per tree, counting points **in that tree**:
-
-| Milestone | Cost in the tree | Total points | Character level |
-|---|---|---|---|
-| tier-1 talent maxed (5/5) | 5 | 5 | 10 |
-| tier-2 talent maxed (4/4) | 9 | 9 | 18 |
-| **first keystone**, rank 1 | 9 on the chain + 3 in the other chain (gate 12) + 1 | 13 | **26** |
-| first keystone maxed (3/3) | 15 | 15 | 30 |
-| **second keystone**, rank 1 (same tree) | both chains through tier 2 (18) + 1 + 1 | 20 | **40** |
-| **the capstone** (its only rank) | its chain to 12 + 8 elsewhere in the tree (gate 20) + 1 | **21** | **42** |
-| **the whole tree** | 28 | 28 | **56** |
-
-#### One capstone per character, by arithmetic (ruling 18)
-
-The user's ruling is that a level-60 character holds **exactly one** capstone,
-and that this must follow **implicitly from the tree's requirements** rather
-than from a rule that says so. It does, and these are the numbers:
-
-- **A capstone costs 21 points in its tree.** Its chain must be complete
-  through the keystone (`5 + 4 + 3 = 12`), the tier-4 gate needs 20 points in
-  the tree, so 8 must go into the other chain (`5 + 3`), and the capstone
-  itself is the 21st. There is no cheaper order: the hard chain fixes the 12
-  and the gate fixes the 20.
-- **21 of 30 is 70 % of everything the game hands out** — comfortably more
-  than the half ruling 18 asks for.
-- **Two capstones are impossible**: `21 + 21 = 42 > 30`. Not discouraged —
-  arithmetically out of reach, with 12 points missing.
-- **The first capstone lands at level 42**, inside ruling 18's 40-44 target.
-  Level 40 would need a 20-point capstone and level 44 a 22-point one, so the
-  gate has one point of slack in either direction if playtesting wants it.
-- The remaining **9 points** go wherever the player likes: the second tree's
-  first chain through its keystone (13 is out of reach, but 9 buys a maxed
-  tier-1 and a maxed tier-2), or depth at home.
-
-What the common splits buy:
-
-| Split | What it reaches |
-|---|---|
-| **28 / 2** (pure) | both keystones, the capstone and every rank of one tree — **one** new button, one replaced button, the capstone, and 2 points parked |
-| **21 / 9** | the capstone plus one maxed keystone; the second tree gets a maxed tier-1 and tier-2 pair but no keystone |
-| **20 / 10** | **both** keystones of the prioritised tree at rank 1 (both chains through tier 2 = 18, then one point in each) — **no capstone**, one point short |
-| **15 / 15** | one chain through its keystone in **each** tree — up to **two** new buttons, one per tree, and no capstone |
-| **13 / 13** (+4 spare) | one keystone in each tree at rank 1, four points free — the cheapest route to both new buttons, at level 52 |
-
-The 20/10 row is the interesting one: a player who wants *both* of a tree's
-keystones spends exactly the 20 that opens tier 4 and then has nothing left
-for the capstone in that tree. Breadth and the capstone are a real choice, and
-the point that decides it is the 21st.
-
-**No build can hold more than two new hotbar buttons.** Ruling 13 puts at most
-one new-skill keystone in each tree, so the ceiling is one per tree and both
-are reachable at 13 + 13 = 26 points — **both new buttons by level 52, with 4
-spare**. Every other keystone and every capstone changes a button the player
-already has, or no button at all. §3.4 works the budget out per class: the
-worst case is **6 of 8** keys for Warrior, Mage and Priest and **7 of 8** for
-the Scout.
+There is no hotbar budget rule any more: a normal loadout uses four to six
+skills, and owning more is allowed (the delivery plan's §6). The skills
+wait in the catalogue and the player places them on hotbar A or B.
 
 Death costs no XP (Round 18); dying never removes talent points.
 
 ### 1.4 Respec, and no class change (rulings 4, 20, 22)
 
-- **Where: in the talent UI itself** (the Talents & Skills page, §3.5). There is no
-  class trainer and no NPC (ruling 4).
-- **What: a full reset.** Ruling 20 — a respec sets every rank to 0 and
-  returns all 30 points. No partial or single-tree respec: one button, one
-  price, nothing to argue about over which half was refunded.
-- **Price (ruling 22):** **five minutes of measured reliable net solo income
-  at the character's own bracket**, rounded by `economy.md` §4.1's rule, **and
-  the first respec of a character is free**. Because bracket income rises on
-  the same approximate ×2.5 tier index as everything else (`economy.md` §3),
-  the price rises with level without a hand-written table. The free first
-  respec is the safety net for a mis-clicked first point at level 2, when the
-  character has no money at all. The six bracket prices are
-  `grug_classes.RESPEC_PRICES`, listed in [economy.md](economy.md) §4 (the
-  price owner) and checked by `tools/r29_e4/income.py --check`; the purchase
-  is `grug_classes.buy_respec`, which takes the money before the reset.
-- **There is no class change at all (ruling 20).** Not for players, and **not
-  for admins**: "equipment would be a problem otherwise". A respec re-spends
-  talents; nothing in the game changes a character's class (§3.10).
-- **A level drop resets talents completely and for free** (ruling 20's
-  simplest form): rather than blocking spends or refunding cheapest-first,
-  the talent state is wiped and every point returned
-  (`grug_classes.on_level_change_talents`). Only a direct `grug_xp.set_xp`
+- **Where: on the Talents & Skills page itself.** There is no class
+  trainer and no NPC (ruling 4).
+- **What: a full reset** (ruling 20, `graph.reset`): every rank to 0, all
+  points back. No partial or single-tree respec.
+- **Price (ruling 22):** **five minutes of measured reliable net solo
+  income at the character's own bracket**, rounded by `economy.md` §4.1's
+  rule, **and the first respec of a character is free**. The six bracket
+  prices are `grug_classes.RESPEC_PRICES` (15, 35, 75, 200, 550 and 1200
+  copper), listed in [economy.md](economy.md) §4 (the price owner) and
+  checked by `tools/r29_e4/income.py --check`; the purchase is
+  `grug_classes.buy_respec`, which takes the money before the reset. The
+  0.53.0 migration step cleared every character's
+  `grug_classes:respec_used`, so the first respec after the talent reset
+  is free again (round 53 plan §8 Q3).
+- **There is no class change at all (ruling 20).** Not for players, and
+  **not for admins** (§3.10).
+- **A level drop resets talents completely and for free**
+  (`grug_classes.on_level_change_talents`): the talent state is wiped and
+  every point returned, with one feed line. Only a direct `grug_xp.set_xp`
   call can lower a level; the `/xp` command only grants a positive amount.
 
 ---
@@ -193,348 +134,337 @@ Death costs no XP (Round 18); dying never removes talent points.
 
 Reading the tables:
 
-- **Chain** is the direction inside the tree (§1.1); **Tier** carries its gate
-  from §1.2, and every talent below tier 1 additionally needs all ranks of the
-  talent above it in its own chain.
-- **Ranks** is the number of ranks and the per-rank progression.
-- **Kind** is what a tier-3 or tier-4 talent *is*, under ruling 13:
-  - **new skill** — a new hotbar button and a new `grug_abilities`
-    registration. **At most one per tree**, so a build can never hold more
-    than two.
-  - **replaces** — an existing button keeps its key and changes what it does.
-    No registration, no key; the talent is read inside the shipped ability's
-    own body.
-  - **effect** — a passive or triggered effect with no button at all. Every
-    capstone is one of these last two.
-  - **rule-breaker** — additionally marked `‼`. Ruling 10 permits a talent to
-    break a base inequality (mob 4.6 > player 4.0, a stat cap, immunity to
-    roots); the **limit is stated in the same cell** and is the price.
-- **Effect** is written in the vocabulary of `combat_stats.md` §1/§2/§4 —
-  armor rating, crit chance, dodge chance, max HP, max mana, rage, spell
-  power, threat, absorb, root and slow duration. **No talent introduces a new
-  mitigation term**, and no talent introduces a new *mechanic*: every one is
-  a number, a duration or a flag on machinery the game already runs.
-- **Modifies** names the code site that reads the talent. **A kit table's
-  `cooldown`, `charge`, `range` and `max_distance` fields are evaluated once
-  at load time with no player in scope**, so talents that re-tune those hook
-  a central per-player seam instead — §3.2 lists them. `kits.lua` is
-  `grug_abilities/kits.lua` with its per-class files `kits_warrior.lua`,
-  `kits_mage.lua` and `kits_priest.lua`; "the Taunt cast" means that
-  ability's registration there.
-- **Key** is the effect key in `grug_classes/talents.lua` (§3.2).
+- **Code** is the node list's code (the docs' name; Reckoning is RK1–RK14
+  so it does not collide with Rime's R1–R14, and Mercy keeps the gap of the
+  cut M12 Shelter). The code id beside the name is `<tree>_<name>`; its
+  talent icon is `grug_classes_talent_<name>.png`, a granting node shows
+  its skill's icon.
+- **Effect** is the node's player text from the data, as the page shows
+  it: no unit letters.
+- **Keys** are the effect keys with their value per rank (§3.2): shared
+  stat keys, the class's own keys, and the family keys
+  `<family>:<param>`, which reach every skill whose id or tag is the param.
+  Tags: Mage `fire` (Fiery Spark, Fireball, Flame Lance, Meteor, Fire Rain)
+  and `frost` (Ice Wave, Cold Spark, Blink, Rime Mantle, Ice Nova, Winter
+  Field); Priest `support` (Heal, Shield, Mend, Hearten, Haven) and `paid`
+  (Rebuke, Word of Ruin, Final Word; Censure is named by its id); Scout
+  `bow` (Loose, True Draw, Snare Shot, Split Shot, Arrowfall, Bladecraft's
+  right-click shot) and `blade` (Bladecraft, Opening, Parry, Flourish,
+  Close Dance, and Strike); the Warrior's skills carry no tag.
+- **Units in the code** (round 53 plan §3): **D** the Mage's untalented
+  Fiery Spark hit (spell base + spell power, "a Spark hit"); **S** a Strike
+  hit (melee weapon damage + melee bonus); **R** and **M** the Scout's base
+  bow hit (bow damage + Dexterity bonus) and base blade hit (Melee-slot
+  weapon + melee bonus); the Priest's "Smite hit" is its spell unit (spell
+  base + spell power) and its "base hit" `B(L)` scaled like the spell by the
+  caster weapon (§2.10); **P** the class-neutral base pool, **Q** the
+  support factor, **K** the level's armor constant `grug_core.armor_k(L)`.
+  A unit add ("+0.05 D") is a class key holding the coefficient; the kit
+  multiplies it by its unit. `damage_pct` is a percentage of the skill's
+  untalented damage, applied once.
 
 ### 2.1 Warrior — Bulwark
 
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **Ironbound** | Wall | 1 | 5 | — | armor rating +3 / 6 / 9 / 12 / 15 % of `K(L)` (§2.10): +1.5 … 7.5 at level 60, about +1 … 5 at level 30 | the armor-rating aggregate, `grug_core.get_armor_rating` | `armor_percent_add` |
-| 2 | **Weathered** | Wall | 2 | 4 | — | max HP +2.5 / 5 / 7.5 / 10% of the class base pool | `grug_classes.get_pool_breakdown` | `max_hp_percent_add` |
-| 3 | **Hold Ground** *(keystone)* | Wall | 3 | 3 | **new skill** ‼ | cast, 25 rage, self; absorbs 20% / 30% / 40% of the class-neutral base pool for 8 s, **and for those 8 s the Warrior cannot be rooted or slowed**. *Limit: 8 s, **60 s cooldown**.* | new (`hold_ground` in `kits.lua`); `grug_core.add_absorb`; the immunity is the movement aggregator's (`grug_core.set_move_immunity`, §3.9) | `hold_ground_absorb` |
-| 4 | **Unbroken** *(capstone)* | Wall | 4 | **1** | **effect** ‼ | permanently multiplies total armor rating by **1.65** after the Warrior commits 21 points to Bulwark. The first hit in **180 s** that would take the Warrior below 20% max HP then adds **33 % of `K(L)` as rating after the multiplier** (about 15 at level 50, §2.10) for 8 s. The universal 70% reduction cap remains, so the capstone counts most against stronger foes. | `grug_core.get_armor_rating` (the ×1.65 is `grug_core.PROTECTION_ARMOR_MULTIPLIER` while ranked) plus the low-HP trigger in `talents.lua`'s hp-change hook | `armor_rating_add_low_hp` |
-| 5 | **Spite** | Anvil | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 rage per hit taken (base 3) | the hit-taken rage grant in `grug_abilities/init.lua` (its hp-change hook) | `rage_per_hit_taken_add` |
-| 6 | **Affront** | Anvil | 2 | 4 | — | tank-ability threat ×3 → ×3.25 / 3.5 / 3.75 / 4.0 | casts in `grug_core.deal_ability_damage`; authoritative swings in `grug_abilities/init.lua`'s `attempt_swing` | `threat_mult_add` |
-| 7 | **Bellow** *(keystone)* | Anvil | 3 | 3 | **replaces Taunt** | Taunt stops being single-target: it forces **every** hostile mob within 6 / 8 / 10 m onto the Warrior for its 3 s, same key, same 8 s cooldown | the Taunt cast, run over a hostile-radius loop | `taunt_radius` |
-| 8 | **Grudge** | Anvil | 4 | 3 | — | Taunt cooldown 8 s → 7 / 6 / 5 s | `grug_abilities.effective_cooldown` (Taunt's `cooldown_talent`) | `taunt_cooldown_sub` |
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| B1 | **Retort** `bulwark_retort` | transform `retort` | 1 | 0 | — | Strike becomes Retort: when a hostile hit takes your health, your next swing within 4 s deals +25 % of a Strike hit; 6 s internal cooldown. | — |
+| B2 | **Ironbound** `bulwark_ironbound` | modifier | 4 | 0 | — | Armor +4/8/12/16 % of the level's armor constant. | `armor_percent_add` 4/8/12/16 |
+| B3 | **Weathered** `bulwark_weathered` | modifier | 3 | 0 | — | Max health +3/6/9 %. | `max_hp_percent_add` 3/6/9 |
+| B4 | **Hold Ground** `bulwark_hold_ground` | unlock `hold_ground` | 1 | 2 | — | Unlocks Hold Ground: a shield of 12 % of a base health pool for 5 s; 25 rage, 24 s cooldown. | — |
+| B5 | **Measured Answer** `bulwark_measured_answer` | modifier | 3 | 6 | B1 | Retort's bonus rises to 30/35/40 % of a Strike hit. | `retort_bonus_add` 0.05/0.1/0.15 |
+| B6 | **Turn the Edge** `bulwark_turn_the_edge` | modifier | 3 | 6 | — | Dodge chance +2/4/6 %. | `dodge_chance_add` 2/4/6 |
+| B7 | **Taunt** `bulwark_taunt` | unlock `taunt` | 1 | 6 | — | Unlocks Taunt: one enemy within 8 m attacks you for 3 s; free, 8 s cooldown. | — |
+| B8 | **Recover** `bulwark_recover` | modifier | 3 | 10 | B1 | A landed Retort heals 0.7/1.3/2.0 % of a base health pool; never critical. | `retort_heal_percent` 0.7/1.3/2 |
+| B9 | **Bellow** `bulwark_bellow` | transform `bellow` | 1 | 12 | B7 | Taunt becomes Bellow: every enemy within 6 m around you; the same cooldown. | — |
+| B10 | **Layered Guard** `bulwark_layered_guard` | modifier | 3 | 12 | B4 | Hold Ground's shield +3/6/9 % of a base health pool. | `hold_ground_absorb_add` 3/6/9 |
+| B11 | **Halt** `bulwark_halt` | modifier | 3 | 12 | — | Charge's arrival also slows by 20/25/30 % for the stun and 2 s more. | `charge_slow_percent` 20/25/30 |
+| B12 | **Unbroken** `bulwark_unbroken` | ultimate `unbroken` | 1 | 20 | B4 | Unlocks Unbroken: for 8 s, armor +50 % of the level's armor constant and a shield of 15 % of a base health pool; 25 rage, 60 s cooldown. | — |
+| B13 | **Enduring Stand** `bulwark_enduring_stand` | modifier | 3 | 20 | B12 | Unbroken lasts +0.5/1.0/1.5 s. | `duration_add:unbroken` 0.5/1/1.5 |
+| B14 | **Gather Yourself** `bulwark_gather_yourself` | modifier | 3 | 16 | B4 | Hold Ground's cooldown -1/2/3 s. | `cooldown_sub:hold_ground` 1/2/3 |
 
-Hold Ground is Bulwark's one new button and the tree's one rule-breaker
-besides the capstone. Its break is the useful one for a tank: a Warrior who
-has committed to holding a spot cannot be kited off it for eight seconds. Its
-absorb stacks with the Priest's Shield and every other absorb (ruling 23,
-§3.11).
-
-Weathered's 2.5% per rank (Round 35; 1.5% before, the conversion of the
-former flat ranks) adds 5 HP at its first reachable rank at level 12.
+Consumers: `kits_warrior.lua` (Retort, Hold Ground, Taunt, Bellow, Unbroken
+and the class keys `retort_bonus_add`, `retort_heal_percent`,
+`hold_ground_absorb_add`), `charge.lua` (Halt's `charge_slow_percent`), the
+shared stat keys (`grug_quality` raw armor, `stats.lua`). Retort is Strike
+with a readiness window: a hostile punch that took health (the settled-hit
+hook: not dodged, not fully absorbed, not lethal, not the Warrior's own)
+opens the window `retort` for 4 s with a 6 s internal cooldown, and the next
+landed Retort spends it for ×(1 + bonus) and Recover's flat heal, never a
+crit; its readiness lives only in the window and the swing callback, never
+in a charge or a cost, so a held LMB always swings (K8). Hold Ground and
+Unbroken grant no immunity. The node id `bulwark_unbroken` keeps the old
+low-health passive's `talent_rank(player, "unbroken")` at 0 by its prefix
+(the passive itself went in Round 53).
 
 ### 2.2 Warrior — Ruin
 
-**Ruling 19 removes Hamstring from the Warrior's base kit** so that every
-class starts with Strike plus three, and it says the skill "may return later
-through a keystone". It does: **Hamstring is Ruin's new-skill keystone**, one
-of the keystones whose ability was registered before WP11 (the `hamstring`
-registration in `kits.lua`, `talent_gated` like Mend's). That makes
-Broadstroke a replacement rather than a registration, and it cuts the Lash
-chain so that nothing below tier 3 modifies a skill the player may not have
-yet.
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| U1 | **Mighty Blow** `ruin_mighty_blow` | unlock `mighty_blow` | 1 | 0 | — | Unlocks Mighty Blow: a swing for 145 % of a Strike hit when you have 25 rage, else a plain swing; no cooldown of its own. | — |
+| U2 | **Heavy Hand** `ruin_heavy_hand` | modifier | 4 | 0 | U1 | Mighty Blow and Broadstroke hit +5/10/15/20 % of a Strike hit. | `mighty_blow_unit_add` 0.05/0.1/0.15/0.2 |
+| U3 | **Stoke** `ruin_stoke` | modifier | 3 | 0 | — | +1/2/3 rage per full swing. | `rage_per_swing_add` 1/2/3 |
+| U4 | **Hamstring** `ruin_hamstring` | unlock `hamstring` | 1 | 2 | — | Unlocks Hamstring: a swing for a full Strike hit that slows by 35 % for 3 s; 10 rage, recharges in 8 s. | — |
+| U5 | **Keen Edge** `ruin_keen_edge` | modifier | 3 | 6 | — | Critical chance +2/4/6 %. | `crit_chance_add` 2/4/6 |
+| U6 | **Onset** `ruin_onset` | modifier | 3 | 6 | — | Charge's cooldown -0.5/1.0/1.5 s. | `cooldown_sub:charge` 0.5/1/1.5 |
+| U7 | **Broadstroke** `ruin_broadstroke` | transform `broadstroke` | 1 | 6 | U1 | Mighty Blow becomes Broadstroke: the same hit, and up to 2 others in a 100 degree, 3 m arc take 35 % of a Strike hit, critical hits allowed. | — |
+| U8 | **Follow Through** `ruin_follow_through` | modifier | 3 | 10 | U7 | Broadstroke's other targets take 40/45/50 % of a Strike hit. | `broadstroke_secondary_add` 0.05/0.1/0.15 |
+| U9 | **Clean Cut** `ruin_clean_cut` | modifier | 3 | 10 | U4 | Hamstring's slow lasts +0.5/1.0/1.5 s. | `duration_add:hamstring` 0.5/1/1.5 |
+| U10 | **Finisher** `ruin_finisher` | modifier | 3 | 12 | U1 | Mighty Blow and Broadstroke hit +8/16/24 % of a Strike hit against a target below 30 % health. | `finisher_unit_add` 0.08/0.16/0.24 |
+| U11 | **Relentless** `ruin_relentless` | modifier | 3 | 16 | U1 | Mighty Blow and Broadstroke cost 1/2/3 rage less. | `mighty_blow_cost_sub` 1/2/3 |
+| U12 | **Ruination** `ruin_ruination` | ultimate `ruination` | 1 | 20 | U1 | Unlocks Ruination: for 8 s your swings deal +15 % damage and each landed swing gives 2 more rage; 20 rage, 60 s cooldown. | — |
+| U13 | **Long Fury** `ruin_long_fury` | modifier | 3 | 20 | U12 | Ruination lasts +0.5/1.0/1.5 s. | `duration_add:ruination` 0.5/1/1.5 |
+| U14 | **Reach the Fight** `ruin_reach_the_fight` | modifier | 1 | 12 | — | Charge's arrival gives 5 more rage. | `charge_rage_add` 5 |
 
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **Heavy Hand** | Hammer | 1 | 5 | — | Mighty Blow ×1.5 → ×1.6 / 1.7 / 1.8 / 1.9 / 2.0 weapon damage | the Mighty Blow proc in `kits.lua` | `mighty_blow_multiplier_add` |
-| 2 | **Stoke** | Hammer | 2 | 4 | — | +1 / 2 / 3 / 4 rage per landed authoritative swing (base 8); base and bonus are per 1 s of the weapon's base swing interval (Round 46), so per second every weapon gains the same | the swing rage in `grug_abilities/init.lua` (`swing_rage`) and its authoritative callers | `rage_per_swing_add` |
-| 3 | **Broadstroke** *(keystone)* | Hammer | 3 | 3 | **replaces Mighty Blow** | Mighty Blow also strikes every other hostile within 3 m for **half** its total, rounded down, at ×3 threat — the game's first melee cleave, on the key Mighty Blow already occupies | the Mighty Blow proc plus a hostile-radius loop | `mighty_blow_cleave` |
-| 4 | **Ruination** *(capstone)* | Hammer | 4 | **1** | **effect** ‼ | a landed Mighty Blow grants **15 s** of crit chance **+20 percentage points** with the 30 % crit cap raised to **50 %**. *Limit: 15 s, **60 s cooldown** on the trigger.* | `grug_classes.get_crit_chance_raw` and the cap in `grug_classes.get_crit_chance` | `crit_chance_add_window`, `crit_cap_override` |
-| 5 | **Keen Edge** | Lash | 1 | 5 | — | +2 / 4 / 6 / 8 / 10 percentage points crit chance (30 % cap holds) | `grug_classes.get_crit_chance_raw` | `crit_chance_add` |
-| 6 | **Onset** | Lash | 2 | 4 | — | Charge cooldown 10 s → 9 / 8 / 7 / 6 s | `grug_abilities.effective_cooldown` (Charge's `cooldown_talent`) | `charge_cooldown_sub` |
-| 7 | **Hamstring** *(keystone)* | Lash | 3 | 3 | **new skill** *(registered before WP11)* | the shipped ability: 10 rage, a 6 s charge, and on a charged proc a 50 % slow for 5 s exactly as `classes.md` §3 specifies. Ranks 2 and 3 lengthen the slow to **6 / 7 s** | the Hamstring proc in `kits.lua`; the grant gate is its `talent_gated = true` | `hamstring_slow_add` |
-| 8 | **Tendon Cut** | Lash | 4 | 3 | ‼ | Hamstring's charged proc **roots** for 2 / 2.5 / 3 s before its slow begins — a root off an ordinary swing. *Limit: **12 s internal cooldown**, independent of the charge.* | the Hamstring proc, using the shared root machinery (`grug_mobs.root` on mobs, `grug_core.set_root` on players) | `hamstring_root` |
-
-Ruin's chain totals are the asymmetry §1.2 describes: Hammer
-`5 + 4 + 3 + 1 = 13` because it carries the one-rank capstone, Lash
-`5 + 4 + 3 + 3 = 15`.
-
-Broadstroke needs no new timing machinery: it rides the authoritative swing
-exactly as Mighty Blow already does (`classes.md` §2b), and Mighty Blow's rage
-cost is what keeps it off every swing. Tendon Cut is Ruin's one rule-breaker
-besides the capstone, on a timer deliberately independent of the charge.
-
-**Charge is no longer the untouched ability.** Onset re-tunes its cooldown,
-and Affront (§2.1) raises the threat multiplier it passes (Charge's
-`threat_mult = 3`, read in `grug_core.deal_ability_damage`). Its 12 m reach,
-its 12 % of a base hit and its 15 rage are untouched by any talent.
-
-**Rage is a limiter.** Stoke adds to it, Heavy Hand and Broadstroke spend it;
-all three are calibrated against the rage ledger of ruling 25 (`classes.md`
-§3: +8 per landed swing on the 1 s reference interval, i.e. 8 per second
-with every weapon, +3 per hit taken, −5/s out of combat).
+Consumers: `kits_warrior.lua` (Mighty Blow, Broadstroke, Hamstring,
+Ruination and `mighty_blow_unit_add`, `finisher_unit_add`,
+`mighty_blow_cost_sub` through `cost_adjust`, `broadstroke_secondary_add`),
+`charge.lua` (`charge_rage_add`), `grug_abilities/init.lua` (Stoke's
+`rage_per_swing_add` in `swing_rage`). Stoke and Ruination's +2 rage scale
+with the weapon's base swing interval over the 1 s reference like every
+swing grant (Round 46 ruling 9), so every weapon earns the same rage per
+second. Ruination's ×1.15 is a multiplier on every swing (procs included)
+through the swing callback and also reaches Broadstroke's other targets;
+Finisher reads the target's health before the swing. Broadstroke's other
+targets (`area.cone`, nearest first, in sight, the shared target check) may
+crit and give no rage.
 
 ### 2.3 Mage — Ember
 
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **Tinder** | Blaze | 1 | 5 | — | Fireball's `spell base + spell power` raw value gains 4 / 8 / 12 / 16 / 20 % of a spell base hit before the damage fit (§2.10) | the Fireball values in `kits.lua` | `fireball_damage_add` |
-| 2 | **Firebrand** | Blaze | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance (30 % cap holds) | `grug_classes.get_crit_chance_raw` | `crit_chance_add` |
-| 3 | **Brand** *(keystone)* | Blaze | 3 | 3 | **replaces Fireball** | Fireball's impact splashes `6 / 9 / 12 % of a spell base hit + spell power / 2` to every other hostile within 2 m. Same key, same 6% base-mana cost, same 1 s cast interval, same homing flight | the Fireball projectile's on-hit plus its radius loop | `fireball_splash` |
-| 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+30 % of a spell base hit**. *Limit: 8 s, **60 s cooldown** on the trigger.* | the central cost seam `grug_abilities.cost_for` and the Fireball values | `whitehot_window`, `whitehot_damage` |
-| 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes.get_pool_breakdown` | `max_mana_percent_add` |
-| 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball acquisition range 20 m → 21.5 / 23 / 24.5 / 26 m at release; no later range expiry | `grug_abilities.get_range` (Fireball's `range_talent`) and the current combat ray at release; the flight distance at Fireball's spawn call | `fireball_range_add` |
-| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first solid contact or actor the crosshair ray meets, dealing `15 / 20 / 25 % of a spell base hit + spell power` to every hostile within 3 m of it | new (`cinderfall` in `kits.lua`); `grug_core.combat_ray` plus the radius loop | `cinderfall_damage` |
-| 8 | **Ashfall** | Cinder | 4 | 3 | — | Cinderfall's radius 3 m → 4 / 5 / 6 m | the Cinderfall registration | `cinderfall_radius_add` |
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| F1 | **Fire Mastery** `ember_fire_mastery` | modifier | 4 | 0 | — | All fire damage +5/10/15/20 %. | `damage_pct:fire` 5/10/15/20 |
+| F2 | **Measured Fuel** `ember_measured_fuel` | modifier | 3 | 0 | — | Paid fire spells cost 4/8/12 % less. | `cost_pct:fire` -4/-8/-12 |
+| F3 | **Far Cast** `ember_far_cast` | modifier | 3 | 0 | — | Fiery Spark and Cold Spark reach 1/2/3 m farther. | `range_add:cold_spark` 1/2/3; `range_add:fiery_spark` 1/2/3 |
+| F4 | **Fireball** `ember_fireball` | unlock `fireball` | 1 | 2 | F1 | Unlocks Fireball: 160 % of a Spark hit, and 15 % to others within 2 m; 5 s cooldown, 6 % mana, 1 s recovery. | — |
+| F5 | **Flame Lance** `ember_flame_lance` | unlock `flame_lance` | 1 | 6 | — | Unlocks Flame Lance: an instant heavy bolt for 220 % of a Spark hit; 8 s cooldown, 10 % mana, 1.5 s recovery. | — |
+| F6 | **Heat Focus** `ember_heat_focus` | modifier | 3 | 6 | F5 | Flame Lance deals +5/10/15 % damage. | `damage_pct:flame_lance` 5/10/15 |
+| F7 | **Afterglow** `ember_afterglow` | modifier | 3 | 6 | F4 | Fireball's hit +5/10/15 % of a Spark hit. | `fireball_unit_add` 0.05/0.1/0.15 |
+| F8 | **Meteor** `ember_meteor` | unlock `meteor` | 1 | 12 | F4 | Unlocks Meteor: strikes the ground up to 20 m away after 1.5 s with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown, 14 % mana. | — |
+| F9 | **Wide Ember** `ember_wide_ember` | modifier | 3 | 12 | F4 | Fireball's splash rises to 20/25/30 % of a Spark hit. | `fireball_splash_unit_add` 0.05/0.1/0.15 |
+| F10 | **Broad Impact** `ember_broad_impact` | modifier | 3 | 12 | F8 | Meteor's radius +0.25/0.50/0.75 m. | `radius_add:meteor` 0.25/0.5/0.75 |
+| F11 | **Controlled Burn** `ember_controlled_burn` | modifier | 3 | 16 | F8 | Meteor and Fire Rain cost 5/10/15 % less, on top of Measured Fuel. | `cost_pct:fire_rain` -5/-10/-15; `cost_pct:meteor` -5/-10/-15 |
+| F12 | **Fire Rain** `ember_fire_rain` | ultimate `fire_rain` | 1 | 20 | F8 | Unlocks Fire Rain: one shower on the ground up to 20 m away after 1.5 s, about 250 % of a Spark hit within 5 m; 60 s cooldown, 22 % mana, 1.5 s recovery. | — |
+| F13 | **Spreading Rain** `ember_spreading_rain` | modifier | 3 | 20 | F12 | Fire Rain's radius +0.25/0.50/0.75 m. | `radius_add:fire_rain` 0.25/0.5/0.75 |
 
-Far Cast increases acquisition reach only. Once released, Fireball follows its
-locked target for the launch-distance-derived flight duration, even if the target
-moves beyond that reach (see `combat_stats.md`, “Hostile casts and projectiles”). Ember takes **no** rule-breaker
-besides its capstone — see §2.9's note on the bounded pass.
+Consumers: `kits_mage.lua` (every Ember skill; the class keys
+`fireball_unit_add` and `fireball_splash_unit_add` in D) and the shared
+cast path (the family keys). Fire Mastery's `damage_pct:fire` raises a
+skill's whole coefficient once; Measured Fuel and Controlled Burn add up
+(Meteor at full ranks costs 14 % × 0.73). Meteor and Fire Rain are ground
+areas ([ability_targeting.md](ability_targeting.md) §4); their hits and
+Fireball's splash never crit (§2.10).
 
 ### 2.4 Mage — Rime
 
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **Deep Chill** | Frost | 1 | 5 | — | Ice Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | the Ice Nova cast in `kits.lua` | `ice_nova_root_add` |
-| 2 | **Hoarfrost** | Frost | 2 | 4 | — | Ice Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | the Ice Nova cast | `ice_nova_slow_add` |
-| 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Ice Nova** | Ice Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | the Ice Nova cast body and its radius origin | `ice_nova_ranged` |
-| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | Ice Nova adds `25 % of a spell base hit + spell power / 2` to its quarter-Fireball baseline before spell scaling, once per accepted hit | the Ice Nova cast | `control_damage_add` |
-| 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration ×1.4 / ×1.8 / ×2.2 / ×2.6 / ×3.0 (the base rate is `max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)` mana/s, combat_stats.md §5) | `grug_abilities.mana_regen_rate` | `combat_mana_regen_add` |
-| 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities.effective_cooldown` (Blink's `cooldown_talent`) — **not** the registration constant | `blink_cooldown_sub` |
-| 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool times the support factor (gear Intelligence) for 10 s | new (`glacial_ward` in `kits.lua`); `grug_core.add_absorb` | `glacial_ward_absorb` |
-| 8 | **Far Step** | Ward | 4 | 3 | — | Blink distance 10 m → 12 / 14 / 16 m | the Blink cast body (player in scope) | `blink_distance_add` |
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| R1 | **Cold Spark** `rime_cold_spark` | transform `cold_spark` | 1 | 0 | — | Fiery Spark becomes Cold Spark: a free frost bolt for a full Spark hit that slows by 12 % for 1.5 s; fire bonuses do not apply. | — |
+| R2 | **Mana Reserve** `rime_mana_reserve` | modifier | 4 | 0 | — | Max mana +5/10/15/20 %. | `max_mana_percent_add` 5/10/15/20 |
+| R3 | **Keen Cold** `rime_keen_cold` | modifier | 3 | 0 | R1 | Cold Spark +3/6/9 % of a Spark hit; the slow stays 12 %. | `cold_spark_unit_add` 0.03/0.06/0.09 |
+| R4 | **Blink** `rime_blink` | unlock `blink` | 1 | 2 | — | Unlocks Blink: a 10 m teleport; 20 s cooldown, 8 % mana. | — |
+| R5 | **Clear Thought** `rime_clear_thought` | modifier | 3 | 2 | — | Paid frost and utility spells cost 4/8/12 % less. | `cost_pct:frost` -4/-8/-12 |
+| R6 | **Quick Step** `rime_quick_step` | modifier | 3 | 6 | R4 | Blink's cooldown -1/2/3 s. | `cooldown_sub:blink` 1/2/3 |
+| R7 | **Rime Mantle** `rime_rime_mantle` | unlock `rime_mantle` | 1 | 6 | — | Unlocks Rime Mantle: for 6 s, armor +20 % of the level's armor constant and a shield of 12 % of a base health pool; 24 s cooldown, 10 % mana. | — |
+| R8 | **Thick Ice** `rime_thick_ice` | modifier | 3 | 10 | R7 | Rime Mantle's armor +4/8/12 % of the level's armor constant. | `rime_mantle_armor_add` 0.04/0.08/0.12 |
+| R9 | **Ice Nova** `rime_ice_nova` | transform `ice_nova` | 1 | 12 | — | Ice Wave becomes Ice Nova: 65 % of a Spark hit within 5 m around you and a 2.5 s root; 18 s cooldown, 10 % mana; the cooldown is shared. | — |
+| R10 | **Cold Shock** `rime_cold_shock` | window | 3 | 12 | R9, R1 | When Ice Nova hits an enemy, your next Cold Spark within 4 s deals +25/50/75 % of a Spark hit; one charge. | `cold_shock_unit_add` 0.25/0.5/0.75 |
+| R11 | **Returning Cold** `rime_returning_cold` | modifier | 3 | 12 | — | Ice Wave's and Ice Nova's cooldown -1/2/3 s. | `cooldown_sub:ice_nova` 1/2/3; `cooldown_sub:ice_wave` 1/2/3 |
+| R12 | **Far Frost** `rime_far_frost` | modifier | 3 | 16 | R9 | Ice Nova's radius +0.25/0.50/0.75 m. | `radius_add:ice_nova` 0.25/0.5/0.75 |
+| R13 | **Winter Field** `rime_winter_field` | ultimate `winter_field` | 1 | 20 | R9 | Unlocks Winter Field: one blast on the ground up to 15 m away after 1 s, about 100 % of a Spark hit and a 40 % slow for 5 s within 4 m; 60 s cooldown, 18 % mana. | — |
+| R14 | **Lasting Armor** `rime_lasting_armor` | modifier | 3 | 16 | R7 | Rime Mantle lasts +0.5/1.0/1.5 s. | `duration_add:rime_mantle` 0.5/1/1.5 |
 
-Rime also takes no rule-breaker besides its capstone, and its capstone does
-not break one either — Rimebite is simply a strong effect. Glacial Ward and
-Shield stack like every absorb (ruling 23, §3.11).
+Consumers: `kits_mage.lua` (every Rime skill; `cold_spark_unit_add`,
+`cold_shock_unit_add` in D, `rime_mantle_armor_add` in K). Cold Spark
+transforms Fiery Spark and shares its clock, Ice Nova transforms Ice Wave
+and shares its cooldown, so Returning Cold names both. Cold Shock opens the
+window `cold_shock` (4 s, one charge, no internal cooldown: the Nova's own
+cooldown spaces it) when an Ice Nova hit is accepted; the next Cold Spark
+that launches spends it. Rime Mantle is an armor status plus a flat 12 % P
+shield (the stored calculator change `tuning/mage_rime`), without the
+support factor. Ice Wave, Ice Nova and Winter Field never crit.
 
 ### 2.5 Priest — Mercy
 
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **Gentle Hand** | Balm | 1 | 5 | — | Heal's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | the Heal cast in `kits.lua` | `heal_add` |
-| 2 | **Quiet Steps** | Balm | 2 | 4 | — | heal threat factor 0.5 → 0.45 / 0.40 / 0.35 / 0.30 (`combat_stats.md` §4) | `grug_core.add_heal_threat` (against `grug_core.HEAL_THREAT_FACTOR`) | `heal_threat_factor_sub` |
-| 3 | **Mend** *(keystone)* | Balm | 3 | 3 | **new skill** *(registered before WP11)* | the shipped ability, granted at rank 1 exactly as `classes.md` §5 specifies (6% base mana, 8 s cooldown, 8% of the base pool times the support factor every 3 s for 12 s); ranks 2 and 3 raise the tick to 9% and 10% | the Mend cast in `kits.lua`; the grant gate is `talent_gated = true` | `mend_tick_add` |
-| 4 | **Hearten** *(capstone)* | Balm | 4 | **1** | **replaces Heal** | Heal also heals every **other** ally within 8 m for **65 %** of the amount. Same key, same 8% base-mana cost, same 4 s cooldown — the Priest's group heal, without a group-heal button | the Heal cast plus its radius loop | `heal_splash` |
-| 5 | **Warding Faith** | Aegis | 1 | 5 | — | Shield's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | the Shield cast in `kits.lua` | `shield_absorb_add` |
-| 6 | **Deep Reserve** | Aegis | 2 | 4 | — | max mana +3 / 6 / 9 / 12 % | `grug_classes.get_pool_breakdown` | `max_mana_percent_add` |
-| 7 | **Turn Aside** *(keystone)* | Aegis | 3 | 3 | **replaces Shield** | while the shield holds (at most its 15 s), its target's dodge chance is +10 / 15 / 20 percentage points, **inside** the 30 % cap. Same key, same cost — the shield now buys avoidance as well as absorption | the Shield cast (an absorb modifier, `dodge_percent`) and `grug_classes.get_dodge_chance_raw` | `dodge_chance_window` |
-| 8 | **Second Skin** | Aegis | 4 | 3 | — | Shield cooldown 10 s → 9 / 8 / 7 s (Round 35; it lengthened the shield before, which a consumed shield never used) | `grug_abilities.effective_cooldown` (Shield's `cooldown_talent`) | `shield_cooldown_sub` |
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| M1 | **Steady Word** `mercy_steady_word` | modifier | 3 | 0 | — | Smite +5/10/15 % of a base hit; with Sharpened Word only the higher counts. | `smite_steady_add` 0.05/0.1/0.15 |
+| M2 | **Measured Care** `mercy_measured_care` | modifier | 3 | 0 | — | Heal, Shield, Mend, Hearten and Haven cost 4/8/12 % less. | `cost_pct:support` -4/-8/-12 |
+| M3 | **Shield** `mercy_shield` | unlock `shield_spell` | 1 | 2 | — | Unlocks Shield: you or the ally under your crosshair gets a shield of 24 % of a base health pool for 10 s; 12 s cooldown; a new cast replaces it. | — |
+| M4 | **Gentle Hand** `mercy_gentle_hand` | modifier | 3 | 2 | — | Heal +2/4/6 % of a base health pool. | `heal_share_add` 2/4/6 |
+| M5 | **Warding Faith** `mercy_warding_faith` | modifier | 5 | 6 | M3 | Shield +2/4/6/8/10 % of a base health pool. | `shield_share_add` 2/4/6/8/10 |
+| M6 | **Mend** `mercy_mend` | unlock `mend` | 1 | 6 | — | Unlocks Mend: heals the target 4 times, 7 % of a base health pool every 3 s; the newest cast replaces it. | — |
+| M7 | **Patient Care** `mercy_patient_care` | modifier | 3 | 10 | M6 | Mend's ticks +0.5/1.0/1.5 % of a base health pool. | `mend_share_add` 0.5/1/1.5 |
+| M8 | **Clear Conscience** `mercy_clear_conscience` | window | 3 | 10 | — | After Heal, Shield or Mend your next Smite within 5 s deals +10/20/30 % of a base hit; 8 s internal cooldown. | `clear_conscience_add` 0.1/0.2/0.3 |
+| M9 | **Deep Reserve** `mercy_deep_reserve` | modifier | 3 | 12 | — | Max mana +4/8/12 %. | `max_mana_percent_add` 4/8/12 |
+| M10 | **Hearten** `mercy_hearten` | unlock `hearten` | 1 | 12 | — | Unlocks Hearten: you and up to 3 allies within 6 m, lowest health first, heal 15 % of a base health pool each; 20 s cooldown, 14 % mana, 1.5 s recovery. | — |
+| M11 | **Quiet Care** `mercy_quiet_care` | modifier | 3 | 12 | — | Your healing draws 45/40/35 % threat instead of 50 %. | `heal_threat_factor_sub` 0.05/0.1/0.15 |
+| M13 | **Haven** `mercy_haven` | ultimate `haven` | 1 | 20 | M10 | Unlocks Haven: you and up to 4 allies within 8 m heal 6 times, 7 % of a base health pool every 2 s; 60 s cooldown, 1.5 s recovery. | — |
+| M14 | **Lasting Haven** `mercy_lasting_haven` | modifier | 3 | 20 | M13 | Haven heals 1/2/3 more times. | `duration_add:haven` 2/4/6 |
 
-Mend is Mercy's **keystone**, registered before WP11 and `talent_gated`;
-`classes.md` §5 lists its base values.
+Consumers: `kits_priest.lua` (every Mercy skill and the class keys
+`smite_steady_add`, `heal_share_add`, `shield_share_add`, `mend_share_add`,
+`clear_conscience_add`), `grug_core/combat.lua` (Quiet Care's
+`heal_threat_factor_sub` in `add_heal_threat`). Gentle Hand, Warding Faith
+and Patient Care add percentage points to the base shares (Heal 25 %,
+Shield 24 %, Mend 7 % of P), so the full ranks give Heal 31 %, Shield 34 %
+(Warding Faith has five ranks, round 53 plan §8 Q1) and Mend 8.5 %; the
+support factor Q multiplies the result. Steady Word and Sharpened Word are
+two keys the kit max-combines: only the higher counts. Clear Conscience's
+window `clear_conscience` opens on a committed Heal, Shield or Mend (5 s, an
+8 s internal cooldown) and the next Smite spends it. Lasting Haven's
+`duration_add:haven` of 2/4/6 s is one to three more ticks of 2 s.
 
 ### 2.6 Priest — Reckoning
 
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **Sharpened Word** | Word | 1 | 5 | — | Smite's `1.5 × (spell base + spell power)` raw value gains 4 / 8 / 12 / 16 / 20 % of a spell base hit before the damage fit (§2.10) | the Smite values in `kits.lua` | `smite_damage_add` |
-| 2 | **Swift Word** | Word | 2 | 4 | — | Smite cooldown 2 s → 1.9 / 1.8 / 1.7 / 1.6 s | `grug_abilities.effective_cooldown` (Smite's `cooldown_talent`) — **not** the registration constant | `smite_cooldown_sub` |
-| 3 | **Word of Ruin** *(keystone)* | Word | 3 | 3 | **new skill** | cast, 8% base mana, 12 s cooldown, 20 m; `18 / 24 / 30 % of a spell base hit + spell power` damage, healing the Priest for 50 % of it | new (`word_of_ruin` in `kits.lua`); `grug_core.deal_ability_damage` returns the post-crit amount, healed back with `grug_core.heal_player(…, {no_crit = true})` | `word_of_ruin_damage` |
-| 4 | **Last Word** *(capstone)* | Word | 4 | **1** | **effect** ‼ | while the Priest is below 25 % max HP, Word of Ruin's drain heals for **150 %** of the damage dealt — above the 100 % the pipeline otherwise allows — and the trigger resets Word of Ruin's cooldown, so a second cast drains inside the window. *Limit: 12 s per trigger, **180 s cooldown**.* | the drain half of the Word of Ruin registration | `drain_ratio_override` |
-| 5 | **Hard Faith** | Wrath | 1 | 5 | — | +2 / 4 / 6 / 8 / 10 percentage points crit chance (30 % cap holds) | `grug_classes.get_crit_chance_raw` | `crit_chance_add` |
-| 6 | **Warded Wrath** | Wrath | 2 | 4 | — | while the Priest carries an absorb shield, Smite deals `+4 / 8 / 12 / 16 % of a spell base hit` | the Smite values, gated on `grug_core.get_absorb(user) > 0` | `smite_damage_while_shielded_add` |
-| 7 | **Recompense** *(keystone)* | Wrath | 3 | 3 | **replaces Smite** | Smite costs 6% instead of 5% base mana and grants the Priest an absorb of 6% / 9% / 12% of the class-neutral base pool times the support factor on a landed cast at most once every 6 s (internal cooldown, Round 35), refreshing rather than stacking. Same key — the solo nuke becomes the solo sustain | Smite settlement, `grug_abilities.cost_for` and `grug_core.add_absorb` | `smite_absorb` |
-| 8 | **Hardened** | Wrath | 4 | 3 | — | max HP +2 / 4 / 6% of the class base pool | `grug_classes.get_pool_breakdown` | `max_hp_percent_add` |
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| RK1 | **Sharpened Word** `reckoning_sharpened_word` | modifier | 3 | 0 | — | Smite +5/10/15 % of a base hit; with Steady Word only the higher counts. | `smite_sharpened_add` 0.05/0.1/0.15 |
+| RK2 | **Measured Judgment** `reckoning_measured_judgment` | modifier | 3 | 0 | — | Rebuke, Word of Ruin, Censure and Final Word cost 4/8/12 % less. | `cost_pct:censure` -4/-8/-12; `cost_pct:paid` -4/-8/-12 |
+| RK3 | **Rebuke** `reckoning_rebuke` | unlock `rebuke` | 1 | 2 | — | Unlocks Rebuke: an instant hit up to 20 m away for 180 % of a Smite hit; 6 s cooldown, 6 % mana. | — |
+| RK4 | **Firm Rebuke** `reckoning_firm_rebuke` | modifier | 3 | 2 | RK3 | Rebuke +10/20/30 % of a base hit. | `rebuke_add` 0.1/0.2/0.3 |
+| RK5 | **Long Reach** `reckoning_long_reach` | modifier | 3 | 6 | — | Smite, Rebuke, Word of Ruin and Final Word reach 1/2/3 m farther. | `range_add:final_word` 1/2/3; `range_add:rebuke` 1/2/3; `range_add:smite` 1/2/3; `range_add:word_of_ruin` 1/2/3 |
+| RK6 | **Word of Ruin** `reckoning_word_of_ruin` | unlock `word_of_ruin` | 1 | 6 | — | Unlocks Word of Ruin: an instant hit for 160 % of a Smite hit that heals you for half the damage, at most 6 % of a base health pool; 16 s cooldown, 10 % mana. | — |
+| RK7 | **Resolute Word** `reckoning_resolute_word` | modifier | 3 | 10 | RK6 | Word of Ruin heals at most 7/8/9 % of a base health pool. | `word_of_ruin_cap_add` 1/2/3 |
+| RK8 | **Hard Faith** `reckoning_hard_faith` | modifier | 3 | 10 | — | Rebuke, Word of Ruin and Final Word deal +3/6/9 % damage. | `damage_pct:paid` 3/6/9 |
+| RK9 | **Censure** `reckoning_censure` | unlock `censure` | 1 | 12 | — | Unlocks Censure: strikes the ground up to 16 m away after 0.75 s with a warning, 120 % of a Smite hit to the 4 nearest within 3 m; 18 s cooldown, 12 % mana. | — |
+| RK10 | **Broad Judgment** `reckoning_broad_judgment` | modifier | 3 | 12 | RK9 | Censure's radius +0.25/0.50/0.75 m. | `radius_add:censure` 0.25/0.5/0.75 |
+| RK11 | **Deep Resolve** `reckoning_deep_resolve` | modifier | 3 | 12 | — | Max mana +4/8/12 %. | `max_mana_percent_add` 4/8/12 |
+| RK12 | **Press the Verdict** `reckoning_press_the_verdict` | modifier | 3 | 16 | RK3 | Rebuke's cooldown -0.5/1.0/1.5 s. | `cooldown_sub:rebuke` 0.5/1/1.5 |
+| RK13 | **Final Word** `reckoning_final_word` | ultimate `final_word` | 1 | 20 | RK3 | Unlocks Final Word: an instant hit up to 20 m away for 280 % of a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery. | — |
+| RK14 | **Unfinished Sentence** `reckoning_unfinished_sentence` | modifier | 3 | 20 | RK13 | Final Word +10/20/30 % of a base hit. | `final_word_add` 0.1/0.2/0.3 |
 
-Word of Ruin's drain is specified as "50 % of the damage dealt **before the
-target's armor**": `deal_ability_damage` returns the amount the ability
-published, taken before the central modifier applies armor and the absorb
-shield to a *player* target. Against a mob it is exactly what landed.
+Consumers: `kits_priest.lua` (every Reckoning skill and
+`smite_sharpened_add`, `rebuke_add`, `word_of_ruin_cap_add`,
+`final_word_add`). Hard Faith's `damage_pct:paid` raises only the
+untalented part of Rebuke, Word of Ruin and Final Word, not their talent
+adds and not Censure (the frozen calculator); Measured Judgment discounts
+all four. A "base hit" add follows the caster weapon like the spell (an
+own-level staff or wand keeps it, no caster weapon halves it). Word of
+Ruin heals half the damage it dealt, at most its pool cap (6 % P × Q plus
+Resolute Word), never a crit. Censure is a ground area (0.75 s, the 4
+nearest within its radius) and never crits.
 
-Hardened's 2% per rank (Round 35; 0.3% before, the conversion of a former flat
-+4 HP that left it a dead pick) adds 28 HP at its first reachable rank at level 42.
+### 2.7 Scout — Quarry
 
-### 2.7 Scout — Quarry (implemented in Round 11)
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| Q1 | **Bowcraft** `quarry_bowcraft` | modifier | 4 | 0 | — | Bow attacks deal +5/10/15/20 % damage, Arrowfall included. | `damage_pct:bow` 5/10/15/20 |
+| Q2 | **Quiver** `quarry_quiver` | modifier | 3 | 0 | — | Loose has a 10/20/30 % chance to keep its arrow. | `arrow_refund_chance` 10/20/30 |
+| Q3 | **Measured Breath** `quarry_measured_breath` | modifier | 3 | 0 | — | Paid bow skills cost 5/10/15 % less. | `cost_pct:bow` -5/-10/-15 |
+| Q4 | **True Draw** `quarry_true_draw` | unlock `true_draw` | 1 | 2 | — | Unlocks True Draw: an instant shot for 220 % of a base bow hit; 6 s cooldown, 6 % mana and 1 arrow, 1.35 s recovery. | — |
+| Q5 | **Firm Aim** `quarry_firm_aim` | modifier | 3 | 6 | Q4 | True Draw +10/20/30 % of a base bow hit. | `true_draw_add` 0.1/0.2/0.3 |
+| Q6 | **Snare Shot** `quarry_snare_shot` | unlock `snare_shot` | 1 | 6 | — | Unlocks Snare Shot: an instant shot for 45 % of a base bow hit that slows by 35 % for 3 s; 14 s cooldown, 5 % mana and 1 arrow, 0.85 s recovery. | — |
+| Q7 | **Long View** `quarry_long_view` | modifier | 3 | 10 | — | Bow skills reach 1/2/3 m farther. | `range_add:bow` 1/2/3 |
+| Q8 | **Split Shot** `quarry_split_shot` | unlock `split_shot` | 1 | 12 | — | Unlocks Split Shot: one arrow for 90 % of a base bow hit; up to 2 others within 3 m of the target take 55 %; 10 s cooldown, 8 % mana and 1 arrow. | — |
+| Q9 | **Broad Shot** `quarry_broad_shot` | modifier | 3 | 12 | Q8 | Split Shot's other hits +5/10/15 % of a base bow hit. | `split_shot_add` 0.05/0.1/0.15 |
+| Q10 | **Light Recovery** `quarry_light_recovery` | modifier | 3 | 16 | — | Sidestep costs 10/20/30 % less. | `cost_pct:sidestep` -10/-20/-30 |
+| Q11 | **Follow the Line** `quarry_follow_the_line` | window | 3 | 16 | Q4 | A landed True Draw readies your next Loose within 3 s, at any target: +10/20/30 % of a base bow hit. | `follow_the_line_add` 0.1/0.2/0.3 |
+| Q12 | **Arrowfall** `quarry_arrowfall` | ultimate `arrowfall` | 1 | 20 | Q4 | Unlocks Arrowfall: 4 arrows at once at the target under your crosshair, each 140 % of a base bow hit, critical hits allowed; 60 s cooldown, 16 % mana and 4 arrows, 2.5 s recovery. | — |
+| Q13 | **Iron Hail** `quarry_iron_hail` | modifier | 3 | 20 | Q12 | Each Arrowfall arrow +4/8/12 % of a base bow hit. | `arrowfall_add` 0.04/0.08/0.12 |
 
-The Scout's kit, resource, armour, bow and the **deferred stealth work** are
-[scout.md](scout.md); its two trees are here so that §1.3's arithmetic covers
-all four classes. The Scout's talents are read in `grug_abilities/scout.lua`
-and `grug_classes/scout.lua`, so the Modifies column is dropped.
+The Scout's kit, resource, armour, bow and the **deferred stealth work**
+are [scout.md](scout.md). Consumers: `grug_abilities/scout.lua` (every bow
+skill and `arrow_refund_chance`, `true_draw_add`, `split_shot_add`,
+`follow_the_line_add`, `arrowfall_add`, all shares of R). Bowcraft's
+`damage_pct:bow` applies once to each bow skill, Arrowfall included. Follow
+the Line opens the window `follow_the_line` (3 s) on a landed True Draw; the
+next Loose (or Bladecraft's right-click shot) at any target spends it.
+Split Shot's two other targets take their smaller hit without arrows of
+their own and never crit; Arrowfall's four arrows may crit.
 
-Ruling 12 makes the Scout **as simple as possible**: no invisibility in
-version 1, no poison, no traps, and every talent built from a mechanic the
-game already runs.
+### 2.8 Scout — Veil
 
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Key |
-|---|---|---|---|---|---|---|---|
-| 1 | **Strong Draw** | Draw | 1 | 5 | — | Loose damage `+4 / 8 / 12 / 16 / 20 % of a base hit`, before the draw multiplier | `loose_damage_add` |
-| 2 | **Cold Eye** | Draw | 2 | 4 | — | +2 / 4 / 6 / 8 percentage points crit chance (30 % cap holds) | `crit_chance_add` |
-| 3 | **Twin Shot** *(keystone)* | Draw | 3 | 3 | **replaces Loose** | a full draw looses two arrows, the second for `40 / 50 / 60 %` damage; costs 2 arrows. Same key | `loose_second_arrow` |
-| 4 | **Longshot** *(capstone)* | Draw | 4 | **1** | **replaces Loose** | Loose's range 25 m → **33 m**, and a hit landed beyond 25 m deals **+11 % of a base hit** | `loose_range_add`, `longshot_damage_add` |
-| 5 | **Quiver** | Ranging | 1 | 5 | — | Loose's arrow is not consumed 10 / 20 / 30 / 40 / 50 % of the time | `arrow_refund_chance` |
-| 6 | **Fletching** | Ranging | 2 | 4 | — | Loose's draw time 2.5 s → 2.375 / 2.25 / 2.125 / 2.0 s (subtracts 0.125 / 0.25 / 0.375 / 0.5 s before the draw-speed affix divides; 0.5 s floor) | `draw_time_sub` |
-| 7 | **Pinning Shot** *(keystone)* | Ranging | 3 | 3 | **new skill** ‼ | cast, **12% base mana + 1 arrow**, 25 m; roots the pointed hostile for 2 / 2.5 / 3 s — a root at bow range, which no class has. *Limit: **30 s cooldown**.* | `pinning_root` |
-| 8 | **Shifting Weight** | Ranging | 4 | 3 | — | +2 / 4 / 6 percentage points dodge chance | `dodge_chance_add` |
+| Code | Node | Type | Ranks | Gate | Requires | Effect | Keys |
+|---|---|---|---:|---:|---|---|---|
+| V1 | **Bladecraft** `veil_bladecraft` | transform `bladecraft` | 1 | 0 | — | Loose becomes Bladecraft: left click swings your blade, right click looses an instant shot at an enemy; both share one clock. | — |
+| V2 | **Fine Edge** `veil_fine_edge` | modifier | 4 | 0 | — | Blade attacks deal +8/16/24/32 % damage. | `damage_pct:blade` 8/16/24/32 |
+| V3 | **Light Step** `veil_light_step` | modifier | 3 | 0 | — | Dodge chance +1/2/3 %. | `dodge_chance_add` 1/2/3 |
+| V4 | **Opening** `veil_opening` | unlock `opening` | 1 | 2 | V1 | Unlocks Opening: your next swing deals 135 % of a base blade hit, 180 % from behind or in Parry's window; 8 s cooldown, 5 % mana. | — |
+| V5 | **Deep Focus** `veil_deep_focus` | modifier | 3 | 2 | — | Paid blade skills, Parry and Close Dance cost 5/10/15 % less. | `cost_pct:blade` -5/-10/-15 |
+| V6 | **Parry** `veil_parry` | unlock `parry` | 1 | 6 | — | Unlocks Parry: a shield of 10 % of a base health pool for 2 s, and Opening's window opens for 3 s; 12 s cooldown, 4 % mana, 0.5 s recovery. | — |
+| V7 | **Held Guard** `veil_held_guard` | modifier | 3 | 6 | V6 | Parry's window and shield last +0.25/0.50/0.75 s. | `duration_add:parry` 0.25/0.5/0.75 |
+| V8 | **Flourish** `veil_flourish` | unlock `flourish` | 1 | 12 | V1 | Unlocks Flourish: an instant 90 degree, 3 m sweep; the 3 nearest take 80 % of a base blade hit each; 12 s cooldown, 8 % mana. | — |
+| V9 | **Wide Edge** `veil_wide_edge` | modifier | 3 | 12 | V8 | Flourish +5/10/15 % of a base blade hit per target. | `flourish_add` 0.05/0.1/0.15 |
+| V10 | **Turn the Blade** `veil_turn_the_blade` | modifier | 3 | 12 | V4, V6 | Opening in Parry's window +10/20/30 % of a base blade hit. | `opening_parry_add` 0.1/0.2/0.3 |
+| V11 | **Shake Loose** `veil_shake_loose` | modifier | 3 | 16 | — | Sidestep also frees you from slows and roots; its cooldown -1/2/3 s. | `cooldown_sub:sidestep` 1/2/3; `sidestep_frees` 1/1/1 |
+| V12 | **Close Dance** `veil_close_dance` | ultimate `close_dance` | 1 | 20 | V4, V6 | Unlocks Close Dance: for 6 s your blade swings deal +35 % of a base blade hit, and a shield of 15 % of a base health pool; 60 s cooldown, 14 % mana, 0.25 s recovery. | — |
+| V13 | **Cutting Rhythm** `veil_cutting_rhythm` | modifier | 3 | 20 | V12 | Close Dance's swing bonus +5/10/15 % of a base blade hit. | `close_dance_add` 0.05/0.1/0.15 |
+| V14 | **Travel Worn** `veil_travel_worn` | modifier | 3 | 6 | — | Max health +3/6/9 %. | `max_hp_percent_add` 3/6/9 |
 
-### 2.8 Scout — Veil (implemented in Round 11)
-
-| # | Talent | Chain | Tier | Ranks | Kind | Effect | Key |
-|---|---|---|---|---|---|---|---|
-| 1 | **Fine Edge** | Blade | 1 | 5 | — | +4 / 8 / 12 / 16 / 20 % of a base hit on a landed authoritative swing | `melee_damage_add` |
-| 2 | **Deep Focus** | Blade | 2 | 4 | — | max resource +3 / 6 / 9 / 12 % | `max_mana_percent_add` |
-| 3 | **Opening** *(keystone)* | Blade | 3 | 3 | **new skill** | swing, **15% base mana**, 12 s charge; on a landed swing taken from **behind** the target (a yaw comparison, no new state) or at a rooted or stunned target (Round 35), `floor(weapon damage × 2.2 / 2.5 / 2.8) + melee bonus` | `opening_multiplier` |
-| 4 | **Follow Through** | Blade | 4 | 3 | — | Opening's charge 12 s → 10 / 8 / 6 s | `opening_charge_sub` |
-| 5 | **Light Step** | Shadow | 1 | 5 | — | +1 / 2 / 3 / 4 / 5 percentage points dodge chance | `dodge_chance_add` |
-| 6 | **Slip Away** | Shadow | 2 | 4 | — | Sidestep's cooldown 30 s → 26 / 22 / 18 / 14 s | `sidestep_cooldown_sub` |
-| 7 | **Shake Loose** *(keystone)* | Shadow | 3 | 3 | **replaces Sidestep** ‼ | Sidestep also clears every slow and root on the Scout, and for its 4 s the Scout cannot be slowed or rooted again. Same key. *Limit: 4 s, on Sidestep's own **30 s cooldown** (and Slip Away shortens it, which is the trade).* | `root_slow_immunity` |
-| 8 | **Untouchable** *(capstone)* | Shadow | 4 | **1** | **effect** ‼ | when the Scout drops below 30 % max HP: dodge chance **+25** percentage points **and the 30 % dodge cap rises to 55 %**, for 6 s. *Limit: 6 s, **180 s cooldown**.* | `dodge_chance_window`, `dodge_cap_override` |
-
-**Untouchable replaces version 1's invisibility capstone** (ruling 12). The
-invisibility rulings, the detection-roll design and the full conflict analysis
-are kept intact in [scout.md](scout.md) §8, "Deferred: stealth v2" — nothing is
-lost, it is simply not in the first version. Untouchable is what a "pure Veil"
-build gets instead: a six-second window in which a leather class survives a
-burst that would kill it, built from the dodge stat the game already rolls.
+Consumers: `grug_abilities/scout.lua` (every blade skill and
+`opening_parry_add`, `flourish_add`, `close_dance_add`, shares of M) and
+`grug_classes/scout.lua` (Shake Loose's `sidestep_frees`). Fine Edge's
+`damage_pct:blade` reaches Strike and Bladecraft's swing as well (the swing
+path applies it to the plain swing by the definition's tags). Parry opens
+Opening's window `parry` at the cast (no hit detection); Opening is
+empowered from behind (the target's rear half-plane) **or** in that window,
+one bonus, never two, and Turn the Blade adds only in the window. Close
+Dance's window `close_dance` adds its share to every plain blade swing
+(Strike, Bladecraft, an uncharged Opening) through the swing callback, not
+to Opening's charged hit; Flourish never crits.
 
 ### 2.9 Count
 
-| | Per tree | Per class | All four classes |
-|---|---|---|---|
-| Talents | 8 | 16 | **64** |
-| Ranks | **28** (13 + 15) | 56 | **224** |
-| Talents that are neither keystone nor capstone | 5 | 10 | **40** (39 plain numerics plus the rule-breaking finisher Tendon Cut) |
-| Keystones | 2 | 4 | **16** |
-| …of which **add a new skill** (ruling 13: at most one per tree) | 1 | 2 | **8** |
-| …of which **replace an existing skill** | 1 | 2 | **8** (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Twin Shot, Shake Loose) |
-| Capstones (never a new skill, **one rank** — ruling 17) | 1 | 2 | **8** |
-| …effects | — | — | **6** (Unbroken, Ruination, Whitehot, Rimebite, Last Word, Untouchable) |
-| …replacements | — | — | **2** (Hearten, Longshot) |
+| | Nodes | Ranks | Unlocks | Transforms | Windows | Modifiers | Ultimate |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Bulwark | 14 | 33 | 2 | 2 | 0 | 9 | 1 |
+| Ruin | 14 | 33 | 2 | 1 | 0 | 10 | 1 |
+| Ember | 13 | 32 | 3 | 0 | 0 | 9 | 1 |
+| Rime | 14 | 33 | 2 | 2 | 1 | 8 | 1 |
+| Mercy | 13 | 33 | 3 | 0 | 1 | 8 | 1 |
+| Reckoning | 14 | 34 | 3 | 0 | 0 | 10 | 1 |
+| Quarry | 13 | 32 | 3 | 0 | 1 | 8 | 1 |
+| Veil | 14 | 33 | 3 | 1 | 0 | 9 | 1 |
+| **Total** | **109** | **263** | **21** | **6** | **3** | **71** | **8** |
 
-**New-skill keystones: 8 across all four classes**, one per tree — Hold
-Ground, Hamstring, Cinderfall, Glacial Ward, Mend, Word of Ruin, Pinning
-Shot, Opening. Mend and Hamstring were registered before WP11, Pinning Shot
-and Opening came with the Scout in Round 11, and WP11 added Hold Ground,
-Cinderfall, Glacial Ward and Word of Ruin. **Sixteen of the twenty-four
-keystones and capstones** — the ten replacements and the six effects — need
-no registration at all: a replacement deepens a button the player already
-knows instead of adding another.
+The 74 modifier and window nodes have their own talent icons; the 35
+granting nodes show their skill's icon. The 25 skills new in Round 53 and
+the 19 redrawn ones make 44 skill icons ([node list](../planning/class-redesign/node-list.md) §3).
 
-**Hotbar budget** (ruling 13's second half, and ruling 19's): a new skill is
-one per tree and no build reaches more than one per tree, so **no build
-exceeds base kit + 2 keys** — and since ruling 19 takes Hamstring out of the
-Warrior's base kit, **Warrior, Mage and Priest start with Strike + 3 and top
-out at 6 of 8**, the Scout at 7 of 8. §3.4 works it out per class.
+### 2.10 Level-proof values
 
-**Rule-breakers** (ruling 10), all with their limit in the cell:
+A flat "+N" added before the damage scalar fades with level (Round 35,
+the user's ruling of 2026-10-05), so every talent value is a share of
+something that already grows with the level:
 
-| Tree | Rule-breaker besides the capstone | Capstone breaks a rule? |
-|---|---|---|
-| Bulwark | **Hold Ground** — root/slow immunity, 8 s, 60 s cd | yes — Unbroken permanently multiplies total rating ×1.65 after the exclusive 21-point commitment; its emergency window (33 % of `K(L)` as rating) lasts 8 s / 180 s |
-| Ruin | **Tendon Cut** — root off a swing, 12 s internal cd | yes — Ruination, crit cap → 50 %, 15 s / 60 s |
-| Ember | none | yes — Whitehot, half mana cost, 8 s / 60 s |
-| Rime | none | no |
-| Mercy | none | no |
-| Reckoning | none | yes — Last Word, drain > 100 % and a Word of Ruin reset, 12 s / 180 s |
-| Quarry | **Pinning Shot** — a root at 25 m, 30 s cd | no (Longshot is a plain replacement) |
-| Veil | **Shake Loose** — root/slow immunity, 4 s, 30 s cd | yes — Untouchable, dodge cap → 55 %, 6 s / 180 s |
+- **Damage** adds are coefficients of the class's unit (D, S, R, M, a Smite
+  hit), which the one level scalar of `deal_ability_damage` or the swing
+  scales once; `damage_pct` is a share of the untalented damage. The
+  Priest's "base hit" adds are `B(L)` of the damage fit
+  (`grug_core.baseline_melee_total`, [combat_stats.md](combat_stats.md) §2)
+  times the caster weapon's spell base over an own-level one's, so an
+  own-level staff or wand keeps the number and none halves it (Round 46).
+- **Armor** is the one level-scaled shared key: `armor_percent_add` stores
+  a percentage of `K(L)` and `get_talent_bonus` answers with the rating at
+  the player's level (`graph.LEVEL_SCALED_KEYS`, `graph.level_amount`);
+  Rime Mantle's and Unbroken's armor is a share of `K(L)` in their kits.
+- **Healing and absorbs** add percentage points to a share of the
+  class-neutral base pool P; the support factor Q (gear Intelligence over a
+  base hit, Round 36) multiplies the result where the kit uses it, and the
+  damage scalar never touches it. The Warrior's absorbs and Recover use
+  the support factor as well; Rime Mantle's, Parry's and Close Dance's
+  shields are flat shares of P.
 
-The pass is bounded at **at most** one per tree, not exactly one, and it was
-used **twice in the six original-class trees**. Rime, Mercy and Ember took
-none because their fantasies did not need one, and leaving headroom is
-cheaper than inventing breaks.
+The node tooltip on the page shows the armor and pool amounts at the
+viewer's level for every rank.
 
-**Effect keys**, counted from the code (`grug_classes/talents_warrior.lua`,
-`talents_mage.lua`, `talents_priest.lua` and `scout_talents.lua`): every
-talent carries at least one key; **68 key cells, 60 distinct**. Four keys are shared across classes — `crit_chance_add` (all
-four), `max_mana_percent_add` (Mage, Priest, Scout), `max_hp_percent_add`
-(Warrior, Priest) and `dodge_chance_window` (Turn Aside, Untouchable) — and
-`dodge_chance_add` appears twice, both on the Scout (Shifting Weight, Light
-Step). Every key must be in the closed vocabulary (§3.1).
-
-### 2.10 Two consequences of touching shipped numbers
-
-**The decided ability tables are *base* values.** `classes.md` §3–§5 state
-their numbers flatly (Mighty Blow is exactly floor(weapon damage × 1.5),
-Hamstring charges 6 s and slows for 5 s, Taunt runs 8 s, Ice Nova roots 4 s
-then slows 3 s, Blink teleports 10 m, Smite has a 2 s cooldown, Heal uses 25%
-of the base pool, Shield lasts 15 s). **Eighteen talents re-tune exactly
-these numbers.** Improving existing buttons is what talents are for, so those
-tables are the **untalented baseline** (`classes.md` says so), and a talented
-Taunt is the design working, not a bug.
-
-**Level-proof values (Round 35, user ruling 2026-10-05).** A flat "+N" added
-before the damage scalar fades with level (Tinder's +5 was +43 % of a
-Fireball at level 10 and +11 % at level 60). Every damage and armour talent
-therefore states a **percentage of a level reference**, and
-`grug_classes.get_talent_bonus` returns the amount at the player's level
-(`talent_level_amount`, the keys in `TALENT_LEVEL_SCALED_KEYS`), so each
-consumer still adds it where it added the flat value:
-
-- **damage — % of a base hit:** `B(L)` of the damage fit
-  (`grug_core.baseline_melee_total`, `combat_stats.md` §2), the raw same-level
-  hit before the scalar; a same-level Fireball with an own-level staff or wand and no other gear is
-  exactly 100 %,
-  and after the scalar a base hit is one eighth of the base pool (17 / 95 /
-  337 damage at levels 10 / 30 / 60). Strong Draw, Longshot, Fine Edge;
-  Charge's base damage (12 %) follows the same rule;
-- **caster damage — % of a spell base hit** (Round 46, the user's answer of
-  2026-10-12): `B(L) × spell base / Bw(L)` (`combat_stats.md` §2), the base
-  hit scaled like the spell by the staff or wand. With an own-level staff or
-  wand it is exactly the base hit; a first-tier weapon gives 0.58 of it at
-  level 60, no caster weapon 0.5 (`grug_classes.TALENT_SPELL_KEYS`,
-  `spell_weapon_ratio`). Tinder, Brand, Whitehot, Cinderfall, Rimebite,
-  Sharpened Word, Warded Wrath, Word of Ruin;
-- **armour — % of `K(L)`** at the character's own level, the rating that halves
-  a same-level hit: Ironbound and Unbroken's emergency rating.
-
-The amounts do not grow with gear, like the flat values they replace (the
-caster amounts only follow the staff or wand like their spell), so the
-itemization ceiling of `combat_stats.md` §2 stays separate. Each percentage
-kept the former flat value at the middle of the levels where the talent can
-be held (tier 1 level 30, tier 2 35, tier 3 45, tier 4 50); the user then
-raised Whitehot (16 → 30 %) and Rimebite (13 → 25 %). The talent tooltip
-shows every rank's amount at the viewer's level (damage after the scalar,
-before crit). The derivation and tables were `tools/r35_b/numbers.py`
-(retired in Round 53 with the old trees).
-
-Healing and absorb talents instead add percentage points to the ability's
-class-neutral base-pool share; the support factor (gear Intelligence over a
-base hit, `combat_stats.md` §2, Round 36) multiplies the result and
-`scale_player_value` remains an identity. Applying the damage scalar to
-those completed support values would double their level growth.
-
-**Nine talents deliberately break a decided rule, and every one states its
-price.** Ruling 10 is what permits it — "skills may explicitly break the base
-inequalities; that is what skills are for (Blink and a dodge roll already do).
-The bigger the break, the stronger the limit, usually cooldown or duration."
-All nine are listed in §2.9 with their limits — four rule-breakers besides a
-capstone, and five capstones that break one. Two break a **cap**: Ruination
-(crit → 50 % for 15 s every 60 s) and Untouchable (dodge → 55 % for 6 s). Unbroken instead
-multiplies raw armor rating while preserving the universal 70% reduction cap.
-Four
-break an **immunity or control rule** (Hold Ground, Shake Loose, Tendon Cut,
-Pinning Shot), one breaks a **resource cost** (Whitehot) and one a **healing
-ratio** (Last Word). The Scout's base-kit Sprint is a tenth, and it is not a
-talent — [scout.md](scout.md) §2 carries it.
-
-`combat_stats.md` §2 owns the armor formula and the named Crit/Dodge cap
-exceptions. Character shows resulting armor rating and Damage reduction (same-level);
-Help explains Unbroken's multiplier and cap rules. Talents contains only build
-selection, descriptions and purchases (Round 19). Talents that are *not* marked `‼` stay inside every cap, so
-Turn Aside's +20 dodge is clamped at 30 % like any gear roll.
+**Crit.** Areas never crit (`opts.no_crit` of `deal_ability_damage`, the
+calculator's model): Ice Wave, Ice Nova, Meteor, Fire Rain, Winter Field,
+Fireball's splash, Censure, Flourish and Split Shot's splash. Direct hits,
+Arrowfall's arrows and Broadstroke's other targets may crit. Healing,
+shields and Word of Ruin's heal never crit. Every cap of
+[combat_stats.md](combat_stats.md) §2 holds: no node raises a cap or
+grants an immunity.
 
 ### 2.11 Names (rulings 5 and 21)
 
-Every talent name passed the name audit of 2026-09-16 (ruling 5: talent names
-must not remind of an existing game; ruling 21: the overall picture matters,
-single common words are not protected). The tree names stay by ruling 5. Round
-31 renamed the shipped abilities whose names matched another game's; the
-current names are Heal, Shield and Mend (Priest) and Ice Nova (Mage). The
-audit, its confidence labels and the names it recorded but kept are in the
+Talent names must not remind of an existing game (ruling 5), and the
+overall picture matters, single common words are not protected (ruling
+21). The tree names stay by ruling 5. Generic genre words stay (Hamstring,
+Smite, Rebuke, Blink, Fireball, Taunt, Split Shot, Ice Nova, Censure); the
+user decided the names of the node list on 2026-10-19 and 2026-10-20 (True
+Draw, Rime Mantle, Iron Hail and Lasting Armor final). The audit of the
+former names is in the
 [delivery record](../archive/design/skill-trees-wp11-delivery.md) section C.
 New names follow AGENTS.md "Naming".
 
@@ -542,275 +472,149 @@ New names follow AGENTS.md "Naming".
 
 ## 3. Data model and seams
 
-> **Since Round 53** the live talents are the graph talents of §3.12: the
-> store, the accessors, spend and respec, the level-drop reset, `/talents`
-> and the Talents & Skills page read the graph. The old registry, its data
-> and its window API below stay loaded and inert until the round's
-> clean-up; §3.1–§3.5 describe them (§3.5's tree framework, `layout_tree`,
-> is gone: the page is §3.12's).
-
 ### 3.1 Where talents live
 
-`grug_classes` owns the talents: it owns the class registry and the per-player
-derived stats every numeric talent touches, and both `grug_inventory` and
-`grug_abilities` depend on it, so both read talents without a new dependency
-edge.
+`grug_classes` owns the talents: it owns the class registry and the
+per-player derived stats every numeric talent touches, and both
+`grug_inventory` and `grug_abilities` depend on it.
 
-- `grug_classes/talents.lua`: the registry, the point budget, both gate
-  kinds, spend and respec, persistence and the accessors.
-- `grug_classes/talents_warrior.lua`, `talents_mage.lua` and
-  `talents_priest.lua`: the 48 talents of Warrior, Mage and Priest as data.
-- `grug_classes/talent_windows.lua`: the timed-window table and the
-  readiness windows by any id (§3.2).
-- `grug_classes/scout_talents.lua`: the Scout's 16 talents.
-- `grug_classes/talents_ui.lua`: the Talents & Skills page with the tree
-  framework (§3.5) and the paid respec
-  (`grug_classes.buy_respec`); for these `grug_classes` depends on `sfinv` and
-  `grug_money`.
-- `grug_classes/talent_graph.lua`, `talent_graph_{mage,warrior,priest,scout}.lua`
-  and `talent_graph_ui.lua` (Round 52, live since Round 53): the graph
-  registry with its rules and audit, one data file per class, and the page
-  (§3.12); `talents.lua` loads and audits them and stores the ranks.
-
-Registration mirrors `register_class`:
-
-```lua
-grug_classes.register_tree({
-    id = "bulwark", class = "warrior", name = "Bulwark",
-    chains = {"wall", "anvil"},          -- exactly two, ruling 2
-    capstone_chain = "wall",             -- which chain carries the capstone
-})
-
-grug_classes.register_talent({
-    id = "ironbound", tree = "bulwark", chain = "wall", tier = 1,
-    name = "Ironbound",
-    effects = {armor_percent_add = {3, 6, 9, 12, 15}},  -- one value per rank
-})
-
-grug_classes.register_talent({
-    id = "hold_ground", tree = "bulwark", chain = "wall", tier = 3,
-    keystone = true,                     -- exactly one per chain, tier 3
-    ability = "hold_ground",             -- the grug_abilities id it grants
-    effects = {hold_ground_absorb = {20, 30, 40}},
-})
-```
-
-`register_talent` asserts the shape at load time the way `register_ability`
-does: tier in 1..4, a keystone only in tier 3, a capstone only in tier 4 and
-on its tree's capstone chain, one value per rank, and every effect key present
-in the closed vocabulary (`grug_classes.TALENT_EFFECT_KEYS`).
-`grug_classes.audit_talents` then checks the counts once after load: eight
-talents and 28 ranks per tree, one keystone per chain, one capstone per tree,
-two trees per class, and every windowed talent's keys in the window table. A
-typo is a startup failure, never a silently inert talent.
+- `grug_classes/talent_graph.lua` (`grug_classes.graph`): the registry, the
+  vocabulary, the rules (gates, prerequisites, spend, reset, parse) and the
+  load-time audit (§3.12).
+- `grug_classes/talent_graph_{mage,warrior,priest,scout}.lua`: one data
+  file per class, its vocabulary and its two trees.
+- `grug_classes/talents.lua`: loads and audits the graph, the point budget,
+  the store and its cache, the accessors, spend and respec, the level-drop
+  reset and the read-only `/talents`.
+- `grug_classes/talent_graph_ui.lua` and `talents_ui.lua`: the page
+  (`graph.page_content`) in the Talents & Skills tab and the paid respec
+  (`grug_classes.buy_respec`); for these `grug_classes` depends on `sfinv`
+  and `grug_money`.
+- `grug_classes/talent_windows.lua`: the readiness windows (§3.2).
 
 ### 3.2 The one hook
 
 ```lua
--- Summed bonus of this key over the player's ranked talents; 0 when none.
--- A level-scaled key answers with its amount at the player's level (§2.10).
+-- The summed rank value of `key` over the player's ranks: a shared key, a
+-- class key or "<family>:<param>"; 0 when none. A level-scaled key
+-- (armor_percent_add) answers with its amount at the player's level.
 function grug_classes.get_talent_bonus(player, key)
 ```
 
 It is the deliberate twin of `grug_classes.get_race_perk`, down to the stub
-override for mods below `grug_classes` in the dependency graph
-(`grug_core.get_talent_bonus`).
+override for mods below `grug_classes` (`grug_core.get_talent_bonus`). A
+node's `effects` hold the value at each rank, not an increment per rank; the
+parsed cache pre-sums them in registration order, so a read is one table
+index.
 
-Every numeric talent in §2 is one call to this function at the site its
-**Modifies** column names, and nothing else. **The site is not always in
-`kits.lua`.** A kit table's `cooldown`, `charge`, `range` and `max_distance`
-fields are evaluated **once at load time**, with no player in scope: a
-per-player read written there would change the number for everybody. Those
-talents name their key in the ability definition instead, and one central
-per-player seam reads it:
+- **Shared keys** (`graph.SHARED_KEYS`): `armor_percent_add`,
+  `max_hp_percent_add`, `max_mana_percent_add`, `crit_chance_add` and
+  `dodge_chance_add`, read by `grug_quality`'s raw armor and `stats.lua`.
+- **Class keys** (`graph.register_class_vocabulary`, one call per class):
+  each names its consumer, which reads it in the kit (§2's tables).
+- **Family keys** (`graph.KEY_FAMILIES`: `damage_pct`, `cost_pct`,
+  `cooldown_sub`, `radius_add`, `duration_add`, `range_add`) with a param
+  the class registered, a tag or an ability id.
+  `grug_abilities.family_bonus(player, def, family)` sums a family over the
+  definition's id and its tags (a transformation by its own). The shared
+  cast path applies `cost_pct` (`effective_cost`, then the definition's
+  `cost_adjust`), `cooldown_sub` (`effective_cooldown`, never below 0) and
+  `range_add` (`get_range`), and the tooltip shows them; the swing path
+  charges a proc the same `effective_cost` and adds `damage_pct` to the
+  plain swing; a kit reads `damage_pct`, `radius_add` and `duration_add`
+  itself.
 
-| Seam | Ability field | Talents |
-|---|---|---|
-| `grug_abilities.effective_cooldown` | `cooldown_talent` | Grudge, Onset, Quick Step, Swift Word, Second Skin, Slip Away |
-| `grug_abilities.effective_charge` | `charge_talent` | Follow Through |
-| `grug_abilities.get_range` | `range_talent` | Far Cast (also the flight distance at Fireball's spawn call), Longshot |
-| `grug_abilities.cost_for` | — (by ability id) | Whitehot (Fireball 3 % in its window), Recompense (Smite 6 %) |
+A second accessor answers unlock questions:
+`grug_classes.talent_rank(player, node_id)` (the kit grant, the gates and
+the UI, never a numeric consumer); `grug_classes.talent_ranks(player)`
+returns the cached ranks table itself, read only.
 
-Every other numeric talent sits inside a function body with the player in
-scope (for example `grug_classes.get_crit_chance_raw` adds `crit_chance_add`).
+**Readiness windows** (`talent_windows.lua`, keyed by any id):
+`grug_classes.open_window(player, id, {duration, icd, value, label})`,
+`get_window`, `consume_window` and `window_icd_ready`; the internal cooldown
+runs on the monotonic clock in memory, and leave, death and respec end the
+open windows (`clear_talent_windows`). Each shows its status icon
+(`grug_core.status_icons.WINDOWS`). The seven windows: `cold_shock` (Cold
+Shock), `retort` (Retort), `clear_conscience` (Clear Conscience),
+`follow_the_line` (Follow the Line), `parry` (Parry), `ruination`
+(Ruination) and `close_dance` (Close Dance). A window node's ranks set the
+window's value (Cold Shock, Clear Conscience, Follow the Line); Parry,
+Ruination and Close Dance open theirs at their cast, Retort on a hit taken.
 
-A second, smaller accessor answers unlock questions:
-
-```lua
--- 0..5; used by the kit grant, the gates and the UI, never by a numeric consumer.
-function grug_classes.talent_rank(player, talent_id)
-```
-
-**Timed windows.** **Eight talents** are not a constant summed bonus but a
-bounded window: **Hold Ground** (its root/slow immunity), **Unbroken**,
-**Ruination**, **Whitehot**, **Turn Aside**, **Last Word**, **Shake Loose**
-and **Untouchable**. Four are triggered by a condition rather than by a
-button (Unbroken, Ruination, Whitehot, Last Word), which is a start time the
-talent code sets, not a new mechanism. The Scout's base-kit **Sidestep** and
-**Sprint** use the same table without being talents ([scout.md](scout.md)
-§2). `get_talent_bonus` returns 0 for a window key that is not running (the
-keys in `grug_classes.TALENT_WINDOW_KEYS`), so a consumer needs no second
-accessor. The windows live in one per-player expiry table in `talent_windows.lua`
-(`start_talent_window`, `talent_window_active`), cleared on leave, death and
-respec (`clear_talent_windows`); that table is the single place a talent
-window lives. Beside it, the same file holds the readiness windows of the
-class rework (Round 52, not used by a shipped talent yet): keyed by any id,
-opened with an optional internal cooldown on the monotonic clock
-(`open_window`), spent by the next qualifying attack (`consume_window`),
-with a status icon from `grug_core.status_icons.WINDOWS`. Today's trigger
-cooldowns (`talent_trigger_ready`) keep their `os.time` player-meta clock.
+**The swing callback** (`grug_abilities.register_on_swing`, from a class
+file) is how a class's windows reach every landed swing: a damage
+multiplier or add before the one scaling pass, extra rage and an
+`on_landed` hook, the last two only when the swing lands
+([module guide](../technical/module-guide.md#combat-and-classes)).
 
 ### 3.3 Persistence
 
-- One player-meta **string** key, `grug_classes:talents`, holding `id=rank`
-  pairs separated by commas: `ironbound=4,grudge=1`. A string keeps it to one
-  key instead of sixty-four, and it stays human-readable for `/talents`
-  debugging.
-- One player-meta **integer** key, `grug_classes:respec_used`, is 0 until the
-  first successful reset and 1 thereafter. It persists across reconnects so
-  the free reset is granted once per character; paid resets leave it at 1.
-- Parsed once per join into a per-player runtime cache, invalidated on spend,
-  respec, a level change, the first class pick and leave.
-- **The read path validates, it does not trust.** Unknown ids are dropped,
-  ranks are clamped to the talent's own rank count, a rank whose tier gate or
-  hard chain is not satisfied is dropped **together with everything below it
-  in its chain**, and the total spent is clamped to `floor(level / 2)`. A
-  hand-edited meta string therefore cannot buy a capstone at level 4.
-- No point balance is persisted. Points available are always derived
-  (`grug_classes.talent_points_available` from the level), never stored, so
-  the two can never disagree.
+- One player-meta **string** key, `grug_classes:talents`, holding the
+  graph's `<node id>=<rank>` pairs in registration order, separated by
+  commas: `ember_fire_mastery=4,ember_fireball=1`. The key kept its name
+  from the old trees; their ids carry no tree prefix, so a 0.52 string reads
+  as no rank at all, and the 0.53.0 step deleted it anyway.
+- One player-meta **integer** key, `grug_classes:respec_used`, 0 until the
+  first successful reset and 1 thereafter (the 0.53.0 step cleared it).
+- Parsed into a per-player runtime cache, invalidated on spend, respec, a
+  level change, the first class pick and leave.
+- **The read path validates, it does not trust** (`graph.parse`): unknown
+  ids and other classes' nodes are dropped, ranks clamped to the node's
+  count, gates and prerequisites enforced, and the total refunded down to
+  `floor(level / 2)`, deepest first (the highest gate, then the latest
+  registration), so two servers agree. A hand-edited string cannot buy an
+  ultimate at level 4.
+- No point balance is persisted; the readiness windows and their internal
+  cooldowns live in memory only.
 
-### 3.4 Granting a new skill, and replacing an existing one
+### 3.4 Granting and transforming a skill
 
-A newly ranked active-skill talent adds its ability to the skill catalogue and places nothing (Round 50 D1: the player chooses the hotbar layout, A or B, and the slot): it waits in the catalogue, and the message feed says "<Skill> unlocked. Drag it from Talents & Skills onto your hotbar." (Round 44: skills live on the hotbar only, `inventory_equipment.md` §6). Full respec removes representations that are no longer unlocked. Re-ranking grants the ability the same way. Passive and replacement talents remain read-only information and never create dummy items.
+A newly ranked unlock or ultimate adds its ability to the Talents & Skills
+catalogue and places nothing (Round 50 D1, class plan C8): the message feed
+says "<Skill> unlocked. Drag it from Talents & Skills onto your hotbar."
+Each granting node's ability is an ordinary `grug_abilities` registration
+with `talent_gated = true` and `talent = "<node id>"`; the shared
+`grug_abilities.is_unlocked(player, id)` predicate checks the class and a
+positive rank, and catalogue listing, recovery, normalization and actual
+cast or swing execution all use it. A forged or stale representation never
+grants an ability.
 
-**Two mechanisms, and ruling 13 makes the second one carry most of the
-design.**
+**A transform** is an ability with `transforms = "<base id>"`: while its
+node has a rank it replaces the base in place on hotbars A and B (and in
+bags), shares the base's cooldown key, and `is_unlocked` is false for the
+replaced base; a respec swaps it back. A class's own basic attack is a
+transform of the universal Strike without a talent (Fiery Spark, Smite);
+the Scout's Loose replaces nothing and is marked `basic_attack = true`.
 
-**A new skill** is an ordinary `grug_abilities` registration with
-`talent_gated = true` and its owning talent ID. The shared
-`grug_abilities.is_unlocked(player, id)` predicate checks class membership and
-positive talent rank; catalogue listing, recovery, normalization and actual
-cast/swing execution all use that authority. Possessing a forged or stale
-representation never grants an ability.
-
-A talent-granted ability appears in the Talents & Skills catalogue; the
-player drags it onto a hotbar layout (Round 50 D1).
-Registration order determines catalogue order but never moves an existing
-hotbar item. Under ruling 13 at most two such abilities exist per build.
-Base-kit insertion occurs once at character creation; later unlocks never
-need a free slot outside the hotbar and never use one.
-
-**A replacement** (the eight replacing keystones and the two replacing
-capstones) is **not** a registration and touches none of the above. The
-shipped ability keeps its id, its key, its icon and its registration; the
-talent is a read inside its own `cast` or `proc_swing` body, exactly like
-every numeric talent in §2 — Bellow is a radius the Taunt body reads, Hearten
-is a loop the Heal body runs, Frostbind is where Ice Nova takes its
-origin from. Of the **twenty-four** keystones and capstones, **sixteen** — the
-ten replacements and the six effects — cost zero new registrations, zero new
-items and zero grant logic.
-
-Talent spending and respec invoke `grug_abilities.normalize_kit(player)`.
-This removes stale or duplicate representations and refreshes surviving item
-metadata without filling discarded slots. The skill catalogue refreshes its
-entitlement list and announces new entries; it places none (Round 50 D1). Replacements need no additional
-item: the next cast reads the current talent rank.
-
-**Hotbar budget** (`classes.md` §2b reserves keys 1-8). Under rulings 13 and
-19 the ceiling is **base kit + 2**. Warrior, Mage and Priest start with
-**Strike + 3**; Scout's explicitly approved four class abilities give it
-**Strike + 4**:
-
-| Class | Base kit | Max new buttons | Worst case |
-|---|---|---|---|
-| Warrior | Strike + 3 — Charge, Mighty Blow, Taunt; **Hamstring left the base kit with ruling 19** and returns as Ruin's keystone | 2 (Hold Ground, Hamstring) | **6 of 8** |
-| Mage | Strike + 3 (`classes.md` §4) | 2 (Cinderfall, Glacial Ward) | 6 of 8 |
-| Priest | Strike + 3 (`classes.md` §5) | 2 (Mend, Word of Ruin) | 6 of 8 |
-| Scout | Strike + 4 ([scout.md](scout.md) §2) | 2 (Pinning Shot, Opening) | **7 of 8** |
-
-Two keys stay free in the original three classes; Scout keeps at least one
-free key. No Warrior shield ability exists (`classes.md` §6); if one comes,
-`register_ability` already carries the `slot = "offhand"` plumbing. All four
-classes remain inside the eight-key hotbar; Scout's extra base skill does not
-add an extra talent-button allowance.
-
-**A Warrior who takes neither Ruin keystone has no snare.** That is the cost
-of ruling 19, and it should be visible rather than discovered: Hamstring is
-the Warrior's control tool (in an engine where mobs outrun players, the snare
-is the Warrior's identity, `classes.md` §3), and a Bulwark-only Warrior now
-reaches level 26 before that identity is available at all. The
-counter-argument the ruling rests on is that a Warrior who wants the snare
-gets it **and** its ranks in one 13-point commitment, instead of being handed
-it at level 1 and then re-tuning it with three separate talents.
+Spending, respec and every join call `grug_abilities.normalize_kit(player)`:
+it removes stale or locked representations, swaps transforms in place and
+refreshes surviving item metadata without filling discarded slots. A
+transform the player already holds in a bag wins, and the locked base on
+the hotbar is then removed instead of swapped. Modifier nodes need no item:
+the next cast reads the current rank.
 
 ### 3.5 UI
 
-Since Round 44 (`ui-crafting-rework-plan.md` ruling 7 and §3.4) one tab,
-**Talents & Skills**, registered from `grug_classes/talents_ui.lua`, shows
-the class's talent trees; `grug_skills` adds the skill catalogue row under
-them (`inventory_equipment.md` §6; since the Round 45 playtest in a
-"Skills" box like the Hotbar box, right above the short inventory) and the
-shared frame the short inventory (the hotbar and two scrolling rows) below. The page uses real coordinates.
+Since Round 44 one tab, **Talents & Skills**, shows the class's talents;
+`grug_skills` adds the skill catalogue row under them in a "Skills" box,
+scrolling sideways once it holds more than eight skills (Round 52), and the
+shared frame the short inventory below. Since Round 53 the talents are the
+graph page (`graph.page_content`, §3.12): one inner tab per tree, the
+tree's background, the nodes on their gate rows with their connection
+lines, buy on click, the refusal reason of a locked node, the respec
+control with its price and an inline confirmation.
 
-- **Tree framework** (`grug_classes.layout_tree`): a tree is a list of
-  sections (with optional column labels) and a list of nodes `{id, section,
-  row, col, requires = {…}}`. Sections sit side by side, nodes are image
-  buttons at their row and column, and every requirement is a connector of
-  `box[]` segments drawn before (under) the nodes, orthogonal: down from the
-  parent, across in the gap above the child's row, down into the child. A
-  node may have several parents and children. Today's data
-  (`grug_classes.talent_tree_data`) gives two sections, the class's two trees
-  side by side, each chain a column labelled with its name, each tier a row
-  and the talent above in the chain the one requirement; a connector is gold
-  once its parent has every rank.
-
-```
-+--------------------------------------------------------------------+
-| Inventory | Character | Talents & Skills | Crafting | ...  (tabs)  |
-+--------------------------------------------------------------------+
-| Scout talents   Talent points available: 3 of 15  [ Respec: Free ] |
-| +- Quarry — 12 points -----------+ +- Veil — 0 points ------------+ |
-| | Draw           | Ranging       | | Blade         | Shadow       | |
-| | Strong Draw    | Quiver        | | Fine Edge     | Light Step   | |
-| |     5/5        |   3/5         | |    0/5        |    0/5       | |
-| |       |               |        | |      |               |       | |
-| | Cold Eye  4/4  | Fletching 0/4 | | ...                          | |
-| | ... four rows, one per tier    | |                              | |
-| +--------------------------------+ +------------------------------+ |
-| (the selected talent's text, or a notice)                          |
-| Drag skills onto the hotbar. Drag one back here to remove it.      |
-| Skills  [Strike][Sprint][Loose][Snare Shot]                        |
-| (two inventory rows, scrolling; then the hotbar)                   |
-+--------------------------------------------------------------------+
-```
-
-- A node shows the talent's name, `*` for a keystone or `**` for the
-  capstone, and its rank. Its look tells the state: buyable (green), every
-  rank bought, some ranks but not buyable now, locked (dimmed); the selected
-  node is gold. Hover explains the effect and, when locked, the reason
-  ("needs 12 points in Bulwark" or "needs Weathered 4/4").
-- Clicking an available talent immediately spends one point for one rank;
-  clicking another node selects it and shows its text and the reason in the
-  line below the trees. There is no preselection click or purchase
-  confirmation.
-- The **Respec button lives here** (ruling 4) with its price in the label and
-  an inline confirmation prompt, since there is no NPC to host the transaction.
-- Fixed numeric button fields map only to registered talents of the
-  submitting PlayerRef's own class. Names and descriptions are escaped with
-  `core.formspec_escape`; no player name or free-text field enters a purchase.
-- Combat statistics are on Character, not Talents. The freed space belongs to
-  tree controls, ranks and wrapped descriptions. Effective Character values
-  include active effects; Help explains caps, multipliers and exceptions.
-- Round 18 supplies semantic action icons for active talent abilities as well
-  as base skills (`classes.md` §2c). Passive talent-tree artwork remains outside
-  that action-icon scope.
-- `/talents` is a read-only rank summary; no command changes talent state.
-- **The skill row scrolls** (Round 52, class plan C13): past eight skills a
-  horizontal scrollbar under the slots moves the row
-  ([inventory_equipment.md §6](inventory_equipment.md#6-the-skill-catalog-and-bound-representations)).
-  The row's box grew 0.3 for the bar, so the selected talent's text above
-  it is 1.0 high and ends at 7.15.
+- A click on an available node spends one point for one rank at once;
+  there is no preselection or purchase confirmation. A click on a node
+  that cannot be bought selects it and shows its text and the reason in
+  the strip above the skill row.
+- Fixed button fields map only to the nodes of the submitting player's own
+  class; names and descriptions are escaped; no free-text field enters a
+  purchase.
+- Combat statistics are on Character, not Talents; Help explains caps and
+  formulas.
+- `/talents` is a read-only rank summary (node ids, ranks and the refusal
+  of each locked node); no command changes talent state.
 
 ### 3.6 Level-up flow
 
@@ -831,23 +635,29 @@ the free full reset of §1.4 instead.
 
 The WP11 KAT plan (eight test groups and their mutation proofs) is in the
 [delivery record](../archive/design/skill-trees-wp11-delivery.md) §3.7. The
-load-time asserts of §3.1 enforce the shape; the current fixtures are listed
-in [tools/README.md](../../tools/README.md).
+load-time audit of §3.12 enforces the graph's shape; the current fixtures
+(`tools/r53_live` for the store, the accessors and the page, one
+`tools/r53_<class>` per class) are listed in
+[tools/README.md](../../tools/README.md).
 
 ### 3.8 What changes where (archived)
 
 The WP11 file table is in the
 [delivery record](../archive/design/skill-trees-wp11-delivery.md) §3.8; the
-consumer of each talent is its Modifies cell in §2.
+consumers of the graph's keys are named in §2 and in each class key's
+vocabulary entry.
 
 ### 3.9 The movement aggregator (ruling 11)
 
 Talents and skills that change movement go through one central aggregator,
 `grug_core/movement.lua`; it is the only writer of the player's
-`physics_override` speed and jump. Hold Ground and Shake Loose set a
-root/slow immunity, the Scout's Sprint adds a speed modifier, and Tendon Cut,
-Pinning Shot and Ice Nova apply roots. The rules (ruling 11, combination by
-ruling 26):
+`physics_override` speed and jump. The Scout's Sprint adds a speed
+modifier, the slows of Ice Wave, Cold Spark, Winter Field, Hamstring,
+Charge's Halt and Snare Shot add negative ones, Ice Nova roots, and Shake
+Loose clears the negative modifiers and roots on the Scout at Sidestep's
+cast (`clear_negative_move_modifiers`). No skill grants movement immunity
+since Round 53 (Hold Ground's went with the old trees). The rules (ruling
+11, combination by ruling 26):
 
 - Each system registers a **named** modifier with its **own duration**;
   effects overlap freely.
@@ -865,8 +675,8 @@ ruling 26):
   after the sum: `speed = clamp(clamp(1 + Σ speed, 0.1, 1.5) × Π stances,
   0.1, 1.5)`. Immunity does not discard a stance (it is not a debuff), Shake
   Loose's negative clear keeps it, and it scales Sprint and every other
-  positive modifier. Jump is not affected. Current stances: eating ×0.35
-  (`grug_food`) and drawing or holding a drawn bow ×0.5 (Scout Loose); each
+  positive modifier. Jump is not affected. The current stance: eating ×0.35
+  (`grug_food`; the bow draw's ×0.5 went with the draw in Round 53); each
   owner clears its stance on every end path, and death and leave drop the
   whole record.
 - Charge's stun is separate: it sets speed and jump to zero and blocks
@@ -899,37 +709,35 @@ Absorbs are **named contributions with independent durations** in one
 aggregator, never "a new shield replaces the old" (`grug_core.add_absorb`):
 
 ```lua
-grug_core.add_absorb(target, "shield_spell", amount, 15)
-grug_core.add_absorb(target, "hold_ground", amount, 8)
+grug_core.add_absorb(target, "shield_spell", amount, 10)
+grug_core.add_absorb(target, "hold_ground", amount, 5)
 grug_core.get_absorb(target)        -- the total
 ```
 
 - **Soak order: shortest remaining duration first**, so a shield about to
   expire is the one that is spent.
 - **Re-casting the same name refreshes that contribution** and does not add a
-  second one, so Recompense tops its own shield up (at most once every 6 s)
-  rather than stacking a dozen.
+  second one, so a recast Shield replaces its own contribution rather than
+  stacking.
 - **The total is capped at the target's maximum HP**: a new contribution
   absorbs at most what the others leave below that cap.
-- `grug_core.get_absorb(player)` returns the sum, so Warded Wrath's "while the
-  Priest carries an absorb shield" gate (§2.6) and the central hp-change
-  modifier's soak read one number.
-- Contributions are cleared on death and leave. A contribution can carry a
-  caster-owned talent modifier (Turn Aside's dodge), which respec, death and
-  leave of the caster remove (`grug_core.clear_absorb_modifiers`); the absorb
-  itself keeps its lifetime.
+- `grug_core.get_absorb(player)` returns the sum, which the central
+  hp-change modifier's soak and the `shield` status read.
+- Contributions are cleared on death and leave.
 
-Writers: the Priest's Shield, Glacial Ward, Hold Ground, Recompense and the
-Last Light Locket's trinket special (`items_crafting.md` §6.2).
+Writers: the Priest's Shield, the Warrior's Hold Ground and Unbroken, the
+Mage's Rime Mantle, the Scout's Parry and Close Dance, and the Last Light
+Locket's trinket special (`items_crafting.md` §6.2). Each shows as the one
+`shield` status icon.
 
 ### 3.12 The graph talents of round K (Round 52, live since Round 53)
 
 Round 52 ([class plan](../planning/round52-class-plan.md) C6, C12, D3–D5,
 D7) built the talent engine and page of the class rework beside the old
 registry; Round 53 ([plan](../planning/round53-plan.md) §4 "LIVE", K3–K5)
-made them the live talents. The trees are the eight of the
-[node list](../planning/class-redesign/node-list.md): 109 nodes, 32–34
-ranks per tree (Warding Faith at 5 ranks, so Mercy has 33).
+made them the live talents. The trees are the eight of §2: 109 nodes,
+32–34 ranks per tree (Warding Faith at 5 ranks, so Mercy has 33). This
+section is the engine and the page; §1–§3.5 are the rules they enforce.
 
 **The store** (`talents.lua`): the meta key `grug_classes:talents` holds
 the graph's string, read through `graph.parse` at the character's class and
@@ -985,8 +793,8 @@ graph.audit()
   lanes never edit one shared list: D4), and the families
   `<family>:<param>` (`damage_pct`, `cost_pct`, `cooldown_sub`,
   `radius_add`, `duration_add`, `range_add`) whose param is a tag or an
-  ability id the class registered. Today's `EFFECT_KEYS` and `WINDOW_KEYS`
-  are unchanged.
+  ability id the class registered (the old registry's `EFFECT_KEYS` and
+  `WINDOW_KEYS` went with it in Round 53).
 - **The gate rule:** a node's gate counts the ranks in its tree's nodes of
   a **lower** gate. For a build bought in order that is the points spent
   in the tree; on a stored string it also rejects nodes of one gate that
@@ -1038,8 +846,8 @@ the real coordinates of the sfinv frame; D5, `graph.PAGE`):
   6.50–7.15, above the skill row.
 
 The art shipped with the user's picks of 2026-10-19/20 (D7): the eight
-backgrounds and the 74 talent icons; the granting nodes of skills that do
-not exist yet stay text until round K.
+backgrounds and the 74 talent icons in Round 52, the 25 icons of the new
+skills in Round 53, so every node shows an icon.
 
 ## 4. Implementation lanes (archived)
 
@@ -1052,19 +860,27 @@ the [delivery record](../archive/design/skill-trees-wp11-delivery.md) §4.
 
 ## 5. The user's rulings (2026-09-16)
 
-The binding frame of this design, one line each. The full texts, the order in
-which they were given and what each replaced are in the
-[delivery record](../archive/design/skill-trees-wp11-delivery.md) §5.
+The binding frame of the WP11 design, one line each. The full texts, the
+order in which they were given and what each replaced are in the
+[delivery record](../archive/design/skill-trees-wp11-delivery.md) §5. **Round
+K (Round 53) replaced the tree shape:** rulings 2, 3, 13, 17, 18 and 19 are
+superseded by the graph of §1 under the user's rulings of 2026-10-19 and
+2026-10-20 ([continuation §4a](../planning/class-redesign/continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework),
+[delivery plan](../planning/class-redesign/delivery-plan.md) §6,
+[round 53 plan](../planning/round53-plan.md) §2); the others stand.
 
 1. **Talent points:** one every 2 levels, the first at level 2, so 30 at
    level 60; "two thirds" was a rough guideline (§1.3).
-2. **Tree size:** about 30 ranks per tree, two playstyle directions (chains)
-   per tree, both gate kinds (points in the tree and hard chains), rank
-   counts 3–5 by strength; a full tree is not forced (§1.1, §1.2).
-3. **Keystones and capstones:** per tree two keystones and one capstone; the
-   capstone hangs on its own chain (§1.2, §2).
+2. *(Superseded in Round 53.)* **Tree size:** about 30 ranks per tree, two
+   playstyle directions (chains) per tree, both gate kinds (points in the
+   tree and hard chains), rank counts 3–5 by strength; a full tree is not
+   forced. Now: 32–34 ranks, gates and one-rank prerequisites (§1.2).
+3. *(Superseded in Round 53.)* **Keystones and capstones:** per tree two
+   keystones and one capstone. Now: unlocks, transforms and one ultimate
+   per tree (§1.1).
 4. **No class trainer:** new skills come only from the tree; the base kit at
-   class choice stays; respec for money in the talent UI, no NPC (§1.4, §3.5).
+   class choice stays (since Round 53 each class's own starters, §1.1);
+   respec for money in the talent UI, no NPC (§1.4, §3.5).
 5. **Names:** the tree names stay; talent names must not remind of an existing
    game (§2.11).
 6. *(Coordinator cap proposal, superseded the same day by ruling 10.)*
@@ -1077,27 +893,32 @@ which they were given and what each replaced are in the
    base-kit ability ([scout.md](scout.md) §2).
 10. **Rule-breaking with limits:** skills may break the base inequalities
     (mob speed over player speed, stat caps, roots); the bigger the break, the
-    stronger the limit. Capstones and rule-breaker talents may exceed caps,
-    time-limited; Sprint stays usable in combat on a long cooldown (§2.9,
-    §2.10).
+    stronger the limit. Sprint stays usable in combat on a long cooldown
+    ([scout.md](scout.md) §2). Since Round 53 no talent exceeds a cap
+    (§2.10).
 11. **Speed ownership:** one central aggregator with named modifiers and
     their own durations; a root is a hard flag; mounts stay outside (§3.9).
 12. **The Scout as simple as possible:** no invisibility in version 1, no
-    poison, no traps, a base kit of four from existing mechanics
+    poison, no traps, a base kit from existing mechanics
     ([scout.md](scout.md)). Its "arrows ballistic, Fireball straight" half was
     overridden in Round 17: arrows and Fireball home on the release-time target.
-13. **Per tree at most one keystone adds a new skill;** the other keystone
-    improves or replaces a skill; the capstone is an effect or a replacement
-    (§2, §2.9).
+13. *(Superseded in Round 53.)* **Per tree at most one keystone adds a new
+    skill;** the other keystone improves or replaces a skill; the capstone is
+    an effect or a replacement. Now: each tree unlocks two to four skills and
+    one ultimate (§1.1).
 14. **The Scout uses mana** ([scout.md](scout.md) §1).
 15. **HUD:** a thin, point-accurate life bar and one mana-or-rage bar above
     the hotbar instead of hearts (`classes.md` §1).
 16. *(A user finding — rage fills too fast — answered by ruling 25.)*
-17. **A capstone has one rank** (§1.2).
-18. **One capstone per level-60 character,** following implicitly from the
-    tree's requirements, the first around level 40–44 (§1.3).
-19. **Every class starts with Strike plus three;** Hamstring leaves the
-    Warrior's base kit and returns as Ruin's keystone (§2.2).
+17. *(Superseded in Round 53.)* **A capstone has one rank.** Now every
+    granting node, the ultimate included, has one rank (§1.2).
+18. *(Kept in spirit by Round 53.)* **One capstone per level-60 character,**
+    following implicitly from the tree's requirements, the first around
+    level 40–44: one ultimate, at level 42 at the earliest (§1.3).
+19. *(Superseded in Round 53.)* **Every class starts with Strike plus
+    three;** Hamstring leaves the Warrior's base kit and returns as Ruin's
+    keystone. Now: each class's own starters (§1.1), Hamstring a Ruin
+    unlock (§2.2).
 20. **No class change at all,** admins included; a respec is a full reset; a
     level drop resets talents for free (§1.4, §3.10).
 21. **Names: the overall picture matters;** single common words are not
@@ -1124,9 +945,11 @@ which they were given and what each replaced are in the
 
 ## 6. Open decisions
 
-None in this file. Open questions about talents (for example the "Word"
-names, BACKLOG DP-06) are in [BACKLOG](../../BACKLOG.md) under "Audit
-2026-10 open questions". The closed decision record of revision 2 is in the
+None in this file. The balance fix round after the user's first playtest
+of the new kits and the round's open notes are in
+[BACKLOG](../../BACKLOG.md#round-53-carry-overs) "Round 53 carry-overs";
+open questions about talents (for example the "Word" names, BACKLOG DP-06)
+under "Audit 2026-10 open questions". The closed decision record of revision 2 is in the
 [delivery record](../archive/design/skill-trees-wp11-delivery.md) §6.
 
 ## 7. Tasks (closed)

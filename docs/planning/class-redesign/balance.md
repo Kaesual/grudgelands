@@ -180,8 +180,9 @@ but it must not be the excuse for making a specialization miserable alone.
 ## What remains for the user's design review and later validation
 
 The user is reviewing identities, starters, talent structure, transforms,
-ultimate roles and costs. Shared unresolved choices remain in
-[TODO-design-classes](../../../TODO-design-classes.md): strongest-only slows,
+ultimate roles and costs. Shared unresolved choices remained in the class
+redesign TODO (deleted in Round 53, when the round 53 plan had settled
+them): strongest-only slows,
 coordinated roots/stuns, hotbar switching, initial placement, area geometry,
 Ice Cage and migration/refund policy. In particular, the Scout's proposed
 Sprint removal, click/RMB controls, faster-arrow economy and the Priest's

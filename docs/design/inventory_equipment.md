@@ -672,9 +672,11 @@ the Round 19 top-centre text list:
   generic food icon), elixirs, draughts, mounts (land or flight; an untimed
   status, so the row caption is empty and the tier name and "+N% speed"
   appear only on the Effects tab), one shield icon for every absorb source,
-  move immunity, Sprint, Sidestep and Mend (their skill icons), the six
-  talent windows (Unbroken, Ruination, Whitehot, Turn Aside, Last Word,
-  Untouchable), poisoned, slowed (one icon for every slow), rooted, stunned
+  move immunity, Sprint, Sidestep and Mend (their skill icons), Rime
+  Mantle, Unbroken and Haven, the seven readiness windows of Round 53 (Cold
+  Shock, Retort, Clear Conscience, Follow the Line, Parry, Ruination, Close
+  Dance; a window shows its skill's icon, a window node's its talent
+  icon), poisoned, slowed (one icon for every slow), rooted, stunned
   and scorched (1.5 s per Dragon Scorch tick); the neutral (gold) PvP flag
   (Round 31, `grug_pvp/hud.lua`, a status source read from
   `grug_pvp.state`): "Contested Territory" or "Enemy Territory" (untimed)

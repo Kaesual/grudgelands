@@ -28,13 +28,13 @@ layouts, resource tables or buff values.
   including how their mechanics work together in group play and PvP.
   A working ability implementation alone does not settle class feel or
   balance.
-- **The class rework is under way:** parked on 2026-10-12, planned again
-  on 2026-10-19 ([delivery plan](docs/planning/class-redesign/delivery-plan.md));
-  Round 52 built round F, its foundation (the building blocks, the graph
-  talents as an admin preview, the art; [Round 52](#round-52--ambience-and-the-class-rework-foundation)).
-  Round K brings the four new kits and talent graphs with an automatic
-  talent reset; its open points are in the
-  [Round 52 carry-overs](#round-52-carry-overs).
+- **The class rework is built:** planned 2026-10-12 to 2026-10-20
+  ([delivery plan](docs/planning/class-redesign/delivery-plan.md)); Round
+  52 built round F, the foundation, and Round 53 round K, the four new kits
+  and talent graphs with an automatic talent reset
+  ([Round 53](#round-53--the-new-classes)). Next: the user's playtest and a
+  short balance fix round
+  ([Round 53 carry-overs](#round-53-carry-overs)).
 - Current owners: [classes](docs/design/classes.md),
   [talents](docs/design/skill_trees.md), [Scout](docs/design/scout.md),
   [combat](docs/design/combat_stats.md) and [PvP](docs/design/pvp.md).
@@ -2069,8 +2069,8 @@ severity).
   talent tooltip says "with your staff or wand" with an empty slot (the
   number is right; GUI checklist); `combat_stats.md:76` is one unwrapped
   line; `tools/r46_cb` stubs a broken or unequippable staff instead of
-  testing it; `r35_b`/`r36_k` `numbers.py` keep the old flat rage model
-  (historical printouts).
+  testing it; `r35_b`/`r36_k` `numbers.py` kept the old flat rage model
+  (both retired in Round 53).
 - **Repair** (RP): `tools/r451_tr/portable_test.lua:460` still builds a
   `{kind="station"}` repair form through its stubs; the
   `grug_quality/init.lua:455-456` comment names "the station's repair
@@ -2556,8 +2556,8 @@ severity). The items the user decides in the GUI test are in the
 
 ### Round 52 — ambience and the class rework foundation
 
-**Delivered 2026-10-20; not pushed (pushed only on the user's word); GUI
-test open** ([completion](docs/planning/round52-plan.md#completion-2026-10-20),
+**Delivered 2026-10-20; pushed (`67941764`, 0.52.1 `e4d5c9d5`); the GUI
+test of 0.52.0 passed on 2026-10-20** ([completion](docs/planning/round52-plan.md#completion-2026-10-20),
 plan [round52-plan.md](docs/planning/round52-plan.md), partial plans
 [ambience](docs/planning/round52-ambience-plan.md) and
 [class foundation](docs/planning/round52-class-plan.md)); every code lane
@@ -2576,14 +2576,20 @@ picked by the user. Version 0.52.0, **compatible**, no migration step.
   group helper, Mend on the status system, the graph talents as an admin
   preview, the scrolling skill row, the weapon overlay, the art and the
   particle design ([module guide](docs/technical/module-guide.md#combat-and-classes),
-  [skill_trees.md §3.12](docs/design/skill_trees.md#312-the-graph-talents-of-round-k-round-52)).
+  [skill_trees.md §3.12](docs/design/skill_trees.md#312-the-graph-talents-of-round-k-round-52-live-since-round-53)).
   The audit's CMB-13 (Mend's shared tick phase) is fixed.
 
 ### Round 52 carry-overs
 
 **Noted 2026-10-20** ([completion](docs/planning/round52-plan.md#completion-2026-10-20)),
 the reviews' and reports' notes (theoretical or accepted, no severity),
-the parked sounds and round K's open points. The items the user decides
+the parked sounds and round K's open points. **The five "Round K" items and
+the weapon overlay's `depends` note were resolved in Round 53** (the
+[round 53 plan](docs/planning/round53-plan.md) turned each into a lane
+goal; `/talent_preview` and the preview's sample-build notes went with the
+preview, `reach_cost` was fixed, `graph_loader.lua` deleted, the 25 icons
+ship, Cinderfall, Glacial Ward and Pinning Shot are retired, the draw
+strips are deleted). The items the user decides
 in the GUI test are in the
 [GUI checklist](docs/planning/round52-plan.md#gui-checklist-round-52).
 
@@ -2677,6 +2683,104 @@ in the GUI test are in the
   Battlegrounds drops that override key too (docs name only ocean and
   dragon islands); the r34_s2 runtime line labelled "(a capital)" tests
   only the reach (its `capital_of` stub returns nil).
+
+### Round 53 — the new classes
+
+**Delivered 2026-10-20; not pushed (pushed only on the user's word); GUI
+test open** ([completion](docs/planning/round53-plan.md#completion-2026-10-20),
+plan [round53-plan.md](docs/planning/round53-plan.md)); every code lane
+independently reviewed by Opus, the cast sounds picked by the user. Version
+0.53.0, **migrate**, one step 0.53.0. Round K of the
+[class rework](docs/planning/class-redesign/delivery-plan.md):
+
+- **The talents** (LIVE): the graph talents live, one data file per class,
+  `<tree>_<name>` ids, the Talents page ([skill_trees.md](docs/design/skill_trees.md)).
+- **The kits** (MAGE, WARRIOR, PRIEST, SCOUT): two or three starters per
+  class, the rest from the trees; the Scout's bow draw removed
+  ([classes.md](docs/design/classes.md), [scout.md](docs/design/scout.md),
+  [ability_targeting.md](docs/design/ability_targeting.md)).
+- **The seams and the content** (HOOKS, SKS): family keys, the swing
+  callback, clock seams, the held fallback, cones; 25 icons, 41 effects,
+  20 sound events ([module guide](docs/technical/module-guide.md#combat-and-classes)).
+- **The step and the clean-up** (INTEG): the step 0.53.0, HP factors, the
+  old talent engine removed, `opts.no_crit`, the held cast's catch-up.
+
+### Round 53 carry-overs
+
+**Noted 2026-10-20** ([completion](docs/planning/round53-plan.md#completion-2026-10-20)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the GUI test are in the
+[GUI checklist](docs/planning/round53-plan.md#gui-checklist-round-53).
+
+- **The balance fix round** after the user's first playtest of the new
+  kits, in the user's iteration style (a first version by feel, the user
+  names the fixes; delivery plan §5). Known numbers to look at: Rebuke and
+  Final Word sit 1.3 % and 0.9 % under the calculator at level 60 (Hard
+  Faith on the untalented part only); the Warrior's absorbs and Recover
+  carry the support factor where the calculator assumes 1; Charge's 0.75 s
+  is the calculator's estimate; arrows fly the shipped 40 m/s.
+- **The icon comparison page** (https://claude.ai/artifact/1H3qCwSvudKN8gXShJs2X8,
+  `r53/icons/`, notes per skill, talent and tree) for a possible later
+  redraw; nothing follows yet.
+- **Dead reads of keys no node carries** (INTEG): `melee_damage_add`,
+  `rage_per_hit_taken_add` and `combat_mana_regen_add`
+  (`grug_abilities/init.lua`), `crit_chance_add_window`,
+  `dodge_chance_window` and `crit_cap_override` (`stats.lua`), the
+  absorb-modifier plumbing (`absorb_modifier`, `clear_absorb_modifiers`)
+  that only Turn Aside used, `cost_for`'s `ability_id` parameter,
+  `_grug_bow_range`; also (D) the ability fields `cooldown_talent`,
+  `range_talent` and `charge_talent`, which `effective_cooldown`,
+  `get_range` and `effective_charge` still read and no definition sets,
+  `grug_abilities.clear_cooldown` without a caller, and the status
+  `move_immune` ("Unstoppable"), which no skill sets since Round 53.
+- **Stale comments in code** (D): `grug_core/area.lua`'s header says
+  nothing shipped calls the helpers (the kits do since Round 53).
+- **Tools and fixtures:** the `pt_fixes` probes (`lane_b`
+  `grug_probe_crosshair`) still call the removed draw API; the `r18_art` and
+  `r26_icons` manifests list deleted files (`r26_icons/prepare.py` the old
+  `talent_*` emblems); the crosshair generator
+  (`tools/pt_fixes/lane_b/gen_crosshair_textures.py`) still writes the
+  ring's full frame; `tools/r44_ch/harness.lua` still stubs
+  `PROTECTION_ARMOR_MULTIPLIER`; the `tools/r33_ds` models (item_tiers.md Appendix A, the
+  class check and the crit-talent table) predate round K;
+  `tools/r53_hooks/approved.txt`'s Blink and Flame Lance lines repeat the
+  title in the URL and author fields (LICENSE-media has them right).
+- **Kept on purpose:** the `cast_frost_ward` cue (a hook without a call
+  site, Glacial Ward's), the `glacial_ward` effect id (Rime Mantle plays
+  it), `PROC_COLORS` `unbroken` and `ruination` (no caller), the `bow` pose
+  clip in the player model (drop it with the next model regeneration,
+  `gen_cloak_model.py --check` holds `POSE_CLIPS` to it).
+- **Combat notes** (reviews, no severity): Split Shot's splinters also fly
+  when the primary hit is dodged (accepted: the node list says "on
+  impact"); Bellow's `range = 6` takes the elf's +5 ability range in the
+  tooltip and the pointing range while its circle stays 6 m; the clock
+  carry is measured against the interval's due time, so a future skill
+  whose occupied time exceeds its interval by up to 0.1 s would have its
+  held cadence trimmed to the interval (no shipped skill), and a late held
+  cast lets a different cast start up to min(0.1 s, half its occupied
+  time) sooner, once; `grug_classes.talent_ranks` returns the cache
+  itself (read only; a caller that writes it corrupts it until the next
+  invalidation); granting-node texts repeat their skills' numbers, so a
+  balance change edits both; an open readiness window ends on death,
+  respec and leave (`clear_talent_windows`; the WARRIOR review's "survives
+  a respec or death" is refuted on main).
+- **Probes:** WARRIOR's "step3" and "walled" dummies were misplaced, so the
+  line of sight past a step edge or a pillar is fixture-checked only
+  (`r53_hooks`); Finisher is fixture-checked only; no warrior probe log is
+  kept beside the report. The step 0.53.0 ran on SQLite only (the
+  PostgreSQL path is the shared `data.py` API that `r45_ms` proves).
+- **For the GUI check** (in the checklist): the stairs riser blocks an
+  area's line of sight from the anchor (MAGE probe); a tap casts a ground
+  area aimed within hand reach and a hold digs; a cast within one swing
+  interval says "You are still busy." (K9); the unit words of the node
+  texts ("a Spark hit", "a base bow hit" …) for the user to refine.
+- **Unscheduled ideas from the class handoff** (moved here from the
+  deleted `TODO-design-classes.md`; not part of the class rework, §4a item
+  11): [food on the belt](docs/planning/class-redesign-handoff.md#72-consumables-belt-and-eating)
+  (eat from the E quick menu's belt with a timed action) and
+  [tools](docs/planning/class-redesign-handoff.md#73-tools-and-everyday-layouts)
+  (remove shovels, combine axe and hoe; Hotbar A/B reduced the slot
+  pressure that motivated it).
 
 ### Audit 2026-10 open questions
 

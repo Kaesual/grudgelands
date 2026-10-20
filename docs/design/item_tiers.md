@@ -66,7 +66,10 @@ drops and crowned items only).
 
 - **Crit talents** are worth about twice as much: each crit point now adds
   about 1 % damage instead of 0.5 %; Round 35 then doubled their points to 2
-  per rank ([skill_trees.md](skill_trees.md)). The Warrior's Ruination window
+  per rank. *(The Round 33 record: the talents named here and in the table
+  below are revision 2's, retired in Round 53; today's crit talents are Keen
+  Edge, 2/4/6 points, and the class trees carry no crit window,
+  [skill_trees.md](skill_trees.md) §2.10.)* The Warrior's Ruination window
   (+20 points, cap 50 %, since Round 35 15 s every 60 s) rises from +9 % to
   +18 % damage while it lasts; a capstone burst, still bounded by its 50 %
   cap. Whitehot (triggered by a Fireball crit) fires a little later on
@@ -294,9 +297,10 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   9 / 11 % more at levels 30 / 45 / 60); one Intelligence enchant adds
   2.4–5.5 % (formerly 0.2–2.1 %), the Mage's Intelligence column, and a full
   Intelligence set +35 % at item level 60 and +44 % at 70 (formerly +13 % /
-  +17 %). Heal, Hearten's splash, Mend, Shield and Recompense share the
-  factor; the Mage's Rime Mantle shield (Round 53) is a flat 12 % of the
-  pool without it.
+  +17 %). Heal, Shield, Mend, Hearten and Haven share the factor (since
+  Round 53 also the Warrior's Hold Ground, Unbroken and Recover); the Mage's
+  Rime Mantle shield and the Scout's Parry and Close Dance shields are flat
+  shares of the pool without it.
 - **Mana's curve starts higher than HP's:** at low levels the flat part of
   in-combat regeneration dominates small pools, so the same percentage would
   be worth less there; with its own curve Mana meets the target from T1.
@@ -847,7 +851,12 @@ column shows a player in gold gear). Mount and respec prices move by less than
 
 ## Appendix A: the models
 
-All from the shipped code (Round 33 survey, verified by hand):
+All from the shipped code of the Round 33 survey, verified by hand then;
+the `tools/r33_ds` scripts still use them. Round 53 replaced the class kits
+(Mighty Blow 1.45 S, Loose 0.95 R every 0.85 s without a draw, Fiery
+Spark as the Mage's held attack, Smite free every second, Heal 10 % for
+25 %: [classes.md](classes.md) §3–§5, [scout.md](scout.md) §2), so the
+class check below is a Round 33 record until the scripts follow:
 
 - **Warrior:** Strike on the weapon's swing clock (`full_punch_interval /
   (1 + attack speed)`), damage `W + Str/10`; Mighty Blow replaces a due swing

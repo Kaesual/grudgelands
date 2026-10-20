@@ -166,7 +166,10 @@ formspecs that drop the prepend. The client plays it at the file's own level
   cue, Broadstroke the swing); Cold Spark and Flame Lance launch with cues
   of their own and hit with the Fireball's; the impacts of Meteor, Fire
   Rain, Winter Field and Censure play once at the area's anchor, Arrowfall's
-  once per hitting arrow (at most four, a small pitch spread).
+  once per hitting arrow (at most four, a small pitch spread). Arrowfall's
+  four arrows sound through its one cast cue, never four bow shots. The
+  retired Glacial Ward's cue `cast_frost_ward` still ships, a hook without
+  a call site.
 - **Mob voices** (§3.4), **bosses** (§3.5).
 
 ### 3.3 Silent by the user's choice

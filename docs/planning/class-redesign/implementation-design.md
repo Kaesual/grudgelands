@@ -5,8 +5,15 @@ candidates fit together, how their abilities work with first-person input,
 and what a coordinator must settle before assigning implementation lanes.
 It is not a round plan or permission to change the running game.
 
-**Status:** the user supports the redesign direction and approved the
-first-person targeting changes. Exact talent graphs, numerical balance and
+**Status:** built in Round 53 (0.53.0, round K;
+[round 53 plan](../round53-plan.md)). The user's "maximally simple" rulings
+of 2026-10-19 ([continuation §4a](continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework))
+**supersede §5, §6 and §10** (prepared casts, recipient retention, area
+previews, Arrowfall installments and their acceptance cases); the shipped
+rules are [ability targeting](../../design/ability_targeting.md),
+[classes](../../design/classes.md) and [talents](../../design/skill_trees.md).
+The rest is the planning record. Before that: the user supports the
+redesign direction and approved the first-person targeting changes. Exact talent graphs, numerical balance and
 the remaining choices have not received blanket final acceptance. This
 documentation change is **compatible**; eventual talent and skill replacement
 needs its own saved-state/migration assessment.
@@ -29,7 +36,7 @@ the current rule.
 | Cross-class comparisons and their assumptions | [Balance review](balance.md) |
 | Hotbar layouts A/B | Shipped in 0.50.0: `docs/design/inventory_equipment.md`; earlier discussion in the [handoff](../class-redesign-handoff.md#3-user-decisions) |
 | Rulings of 2026-10-19 (no cast times, one-shot areas, no previews, effects on targets) | [Continuation §4a](continuation.md#4a-user-rulings-of-2026-10-19-a-maximally-simple-rework); they override this document where they conflict |
-| Decisions still needed | [Class redesign TODO](../../../TODO-design-classes.md) |
+| Decisions still needed | none: the round 53 plan settled them; the class redesign TODO was deleted in Round 53 |
 | Currently shipped mechanics | [Classes](../../design/classes.md), [talents](../../design/skill_trees.md), [combat stats](../../design/combat_stats.md) |
 
 Do not copy numerical talent tables into lane briefs as a separately editable
@@ -168,6 +175,12 @@ class needs a cursor-controlled target list.
 
 ## 5. Cast lifecycle and resource transactions
 
+> **Superseded (the user, 2026-10-19; built so in Round 53):** no cast
+> times and no preparation; every skill is instant and may occupy the next
+> action afterwards; Arrowfall pays once for four arrows at once. See
+> [ability targeting](../../design/ability_targeting.md) and
+> [classes §2b](../../design/classes.md#scheduling-and-effect-boundaries).
+
 The targeting contract and class timing tables are complementary. A skill
 must have an explicit activation, preparation if any, release/commit,
 recovery and cancellation lifecycle. Integrate these into the existing
@@ -248,6 +261,11 @@ the single cast cost. No free shots from ammo-saving talents are assumed
 unless their final wording explicitly applies to this paid skill.
 
 ## 6. Feedback and area geometry
+
+> **Superseded (the user, 2026-10-19; built so in Round 53):** no aiming
+> preview and no recipient cue; a ground area anchors on the ground and
+> shows a short warning at the impact point
+> ([ability targeting §4](../../design/ability_targeting.md#4-ground-areas-the-ground-anchor)).
 
 Friendly support needs a visible selected-recipient cue; a pending Heal
 keeps that name through the cast and shows a clear failure if release is
@@ -341,7 +359,8 @@ The coordinator should prepare the delivery rounds in this order (refined by
 the [continuation plan](continuation.md#6-implementation-outline-for-the-later-delivery-rounds)), without assigning
 a round number or replacing existing carry-overs here:
 
-1. Freeze the [remaining decisions](../../../TODO-design-classes.md): final
+1. Freeze the remaining decisions (the class redesign TODO, deleted in
+   Round 53 once the round 53 plan had settled them): final
    class tables, geometry, Arrowfall tolerance/payment/timing details,
    Split Shot ammo shortage/ties, shared control and input choices.
 2. Define the shared target/cast/settlement interfaces before parallel class
@@ -360,6 +379,12 @@ not choose refunds, migration version, reset or new-server behavior. No push,
 runtime sync or release is authorized by the design handoff.
 
 ## 10. Acceptance cases for later implementation
+
+> **Superseded (Round 53):** these cases test the prepared casts and
+> previews of §5 and §6. The shipped kits are tested by the class fixtures
+> `tools/r53_{mage,warrior,priest,scout}`, `tools/r53_hooks` and
+> `tools/r53_live` ([tools/README.md](../../../tools/README.md)) and the
+> round's GUI checklist ([round 53 plan](../round53-plan.md#gui-checklist-round-53)).
 
 Portable fixtures should exercise the real shared state transitions and
 settlement paths, not a second simplified implementation of the rules.

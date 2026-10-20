@@ -2,7 +2,9 @@
 
 Draft, 2026-10-20, written by Opus on the coordinator's brief (`r53/plan-draft-brief.md`).
 The independent review (`r53/plan-review.md`, READY AFTER FIXES) is worked in; see the table
-at the end. **Status: started 2026-10-20 on the user's "go"** (questions answered in §8).
+at the end. **Status: started 2026-10-20 on the user's "go"** (questions answered in §8);
+**complete 2026-10-20** ([completion](#completion-2026-10-20): what shipped, decisions,
+numbers and the GUI checklist).
 
 **Start state:** main at the **0.52.1 release commit, pushed** (§7).
 
@@ -695,3 +697,289 @@ Every finding was re-checked against main (now `f3a251db`: 0.52.1's ambience mer
 | L11 | — | confirmed | GUI 1, 3, 8 lines |
 | L12 | `r34_s1b:200-202` lane hooks | confirmed | K6 projectile pairs |
 | Q2 | coordinator: SKS page under way | changed | K6 fills `CAST_SOUNDS` from the picks; Q2 removed |
+
+## Completion (2026-10-20)
+
+Every planned lane and the prep lane SKS are merged on main; this lane D
+(this section, the design docs and the status owners) follows on main
+`73b5ca40` (INTEG, merged last). **0.53.0 is migrate, one declared step**
+(`tools/migration/steps/v0_53_0.py`): the talent string changes meaning, the
+stored talent windows go, three skills are retired. Nothing in world
+generation changes and nothing writes world nodes. **Push:** not pushed;
+origin/main stays at `e4d5c9d5` (0.52.1) until the user's word.
+
+### Lanes
+
+Main's first-parent merges from `84ea20f0` (this plan), in order. Every code
+lane was reviewed independently by Opus; the sounds were picked by the user
+on two pages.
+
+| Lane | Merge (lane tip) | What | Review |
+|---|---|---|---|
+| SKS | `681913a9` (`482b1ef9`) | cast-sound candidates for the new skills: 24 rows, 96 candidates, the listening page (`tools/r53_sks`) | the user rated it (54 notes) |
+| LIVE | `927e2ae3` (`31249e32`) | the graph goes live: one data file per class, `<tree>_<name>` ids, the store, the accessors, spend, respec, level drop, `/talents`, the page; `/talent_preview` and the preview file gone; `reach_cost` fixed | MERGE (backlog notes) |
+| SKS round 2 | `357683f3` (`6b37cbb0`) | the user's assignments, 17 rejections, 25 annotations, the control page; the user's confirmation (Blink and Flame Lance redone) | the user: all 24 rows and 5 questions keep, 2 redo |
+| HOOKS | `937a1df0` (`088b92dc`) | family keys on both paths, the swing callback, clock seams, K8, K9, K7, `area.cone`, `fall_height` at 0.6 R, the K6 rows, 25 icons, 34 new and 7 retinted effects, the window rows, 20 new sound events, the projectile launch seam | MERGE (F1 K9 lock and F3 fixed; delta MERGE) |
+| PRIEST | `cfdfc25f` (`05263176`) | the Priest kit (Smite, Heal, Shield, Mend, Hearten, Haven, Rebuke, Word of Ruin, Censure, Final Word), its class keys | MERGE (backlog notes) |
+| MAGE | `20abd7bc` (`8f12ed5b`) | the Mage kit (Fiery Spark, Ice Wave, Fireball, Flame Lance, Meteor, Fire Rain, Cold Spark, Blink, Rime Mantle, Ice Nova, Winter Field), its class keys; `no_crit` on areas | MERGE (no fixes) |
+| WARRIOR | `b3b1fb92` (`979e124e`) | the Warrior kit (Charge, Retort, Hold Ground, Taunt, Bellow, Unbroken, Mighty Blow, Broadstroke, Hamstring, Ruination), `charge.lua`'s arrival, its class keys | MERGE (F1 Ruination's rage by the weapon interval fixed; delta MERGE) |
+| SCOUT | `f14b69b5` (`feb20acb`) | the Scout kit without the bow draw (Loose, Sidestep, Sprint, True Draw, Snare Shot, Split Shot, Arrowfall, Bladecraft, Opening, Parry, Flourish, Close Dance), `secondary_cast`, the draw art deleted | MERGE (backlog notes) |
+| INTEG | `73b5ca40` (`97e818a1`, part 1 `9e16a0a1`) | part 1: the step 0.53.0, the chat line, the version, the HP factors, `tools/r53_ms`; part 2: the old talent engine, the retired rows, effects and icons removed, `opts.no_crit`, the held cast's catch-up, the reverse checks, Help | part 1 MERGE (two nits, fixed `eaefcb05`); part 2 MERGE |
+| D | this section | the design docs, the module guide, the planning files, STATUS, CHANGELOG, BACKLOG, ROADMAP, README, the AGENTS pointer; `TODO-design-classes.md` deleted | independent docs review |
+
+Main has 225 portable fixtures (7 new: `r53_live`, `r53_hooks`, `r53_ms`,
+`r53_mage`, `r53_warrior`, `r53_priest`, `r53_scout`; 3 retired: `r35_b`,
+`r52_split`, `r41_sc`). `mods/` against 0.52.1: +3,960 −3,678 lines in 48
+text files; 4 new Lua files (`talent_graph_{mage,warrior,priest,scout}.lua`),
+5 removed (`talents_{warrior,mage,priest}.lua`, `scout_talents.lua`,
+`talent_graph_preview.lua`); 45 media files added (25 skill icons, 20
+sounds) and 19 removed (the icons of the three retired skills, the three
+draw sprites, the six draw strips, the draw ring's full frame, six old
+talent-window emblems).
+
+### Decisions during the round
+
+**The user** (plan §8 and the two sound pages):
+
+1. Warding Faith ranks 4–5: +8/+10 points (Shield 34 % P × Q at 5/5).
+2. A free respec after the reset: the step clears `respec_used`.
+3. The Priest's emptied Strike slot is accepted (no Smite move).
+4. The reset's chat line is only "Your talent points have been reset."
+5. **Sounds:** 20 new cues from the SKS page and the control page
+   (`tools/r53_sks/assignments.md`): casts of their own for Blink (no
+   longer silent), Ice Wave, Rime Mantle, Winter Field, Fire Rain,
+   Unbroken, Ruination, Haven, Final Word, Arrowfall, Parry, Flourish and
+   Close Dance; launch cues for Cold Spark and Flame Lance; impacts for
+   Meteor, Fire Rain, Winter Field and Censure (once at the anchor) and
+   Arrowfall (once per hitting arrow, at most four). Meteor, Bellow,
+   Hearten, Rebuke and Censure keep a shipped cast cue, Broadstroke the
+   swing. 17 sounds rejected (`rejected.md`), 25 annotations kept for later
+   (`annotations.md`).
+
+**The coordinator** (HANDOVER, answers to lane questions):
+
+- Areas never crit: `opts.no_crit` on `deal_ability_damage` (INTEG), passed
+  by Ice Wave, Ice Nova, Meteor, Fire Rain, Winter Field, Fireball's
+  splash, Censure, Flourish and Split Shot's splash; Broadstroke's other
+  targets and Arrowfall's arrows may crit.
+- Held basic-attack casts carry bounded lateness (`CLOCK_CATCHUP`, 0.1 s and
+  half the clock) into their interval **and** their occupied time.
+- Ruination's +2 rage scales with the weapon interval (Round 46 ruling 9).
+- Fiery Spark and Smite are Strike transforms without a talent, not
+  `basic_attack = true` (the registration assert; plan §3); the Scout's
+  Loose is `basic_attack = true`.
+- Ground areas are offensive self casts (a hostile cast never fires at
+  terrain), so the crosshair shows no colour for them.
+- Rime Mantle: a flat 12 % P shield plus the armor, without the support
+  factor. No internal cooldown on Cold Shock (the Nova's cooldown spaces
+  it).
+- Hard Faith raises only the untalented damage of Rebuke, Word of Ruin and
+  Final Word, not Censure (the frozen calculator); Rebuke and Final Word
+  then sit 1.3 % and 0.9 % under the calculator at level 60.
+- Bellow's line of sight starts at the feet + 0.5; arrows fly 40 m/s (the
+  shipped speed); Opening's "from behind" is the shipped rear half-plane;
+  Close Dance's bonus does not reach Opening's charged hit.
+- K8/K9 as built: a cast within one swing interval says "You are still
+  busy."; a support skill held at a hostile falls back to the basic attack.
+- Kept ids and art: the `glacial_ward` effect id (Rime Mantle plays it),
+  `PROC_COLORS` `unbroken` and `ruination` (no caller), the
+  `cast_frost_ward` cue (a hook without a call site), the `bow` pose clip
+  (unused until the next model regeneration). The poses: Unbroken `block`;
+  Bellow, Ruination, Parry, Flourish and Close Dance none.
+- The icon comparison page (https://claude.ai/artifact/1H3qCwSvudKN8gXShJs2X8)
+  for a possible later redraw; nothing follows yet.
+
+### Deviations from the plan
+
+- **HOOKS** added a one-line seam outside its files on the coordinator's
+  word: a projectile spawn's `params.sound_launch` (`grug_projectiles`).
+  MAGE then registered Cold Spark and Flame Lance as projectiles of their
+  own (own sprite and launch cue) instead of using it; Arrowfall's volley
+  uses it to sound once.
+- **MAGE and PRIEST** refuted their briefs' "`basic_attack = true`" on
+  Fiery Spark and Smite (an assert forbids it on a transform, plan §3 says
+  neither is set); both are Strike transforms and K7 still puts them in
+  slot 1.
+- **PRIEST** fixed `r46_cb` late (the base-hit add's caster-weapon ratio
+  over `spell_base(L, L)`, numerically identical).
+- **INTEG** deleted beyond its list what the new kits made dead: Affront's
+  threat sites, `armor_rating_add_low_hp`, the Unbroken ×1.65 armor in
+  `grug_quality` and `equipment.lua`, Turn Aside's status source and
+  `PROTECTION_ARMOR_MULTIPLIER`, the `smite` and `heal_splash` effects and
+  `cost_for`'s Smite case; it kept what the coordinator named (above). The
+  scout review's crash-saved Loose stack needs no `SKIN_VERSION` bump: the
+  join's `normalize_kit` repairs it (refuted, `r52_wfx` S proves it).
+- **SKS** added rows the brief did not name (Censure's impact, Cold Spark's
+  launch); the user kept them.
+
+### Numbers worth keeping
+
+- **Probes (K13, measured, one run per class):** every coefficient equals the
+  calculator's. Mage (level 60, D = 42.2): Fiery Spark 1.0 (1.2 full),
+  Ice Wave 0.25, Fireball 2.10 with splash 0.36, Flame Lance 2.97, Meteor
+  1.68, Fire Rain 3.0, Cold Spark 1.09 (1.84 in Cold Shock), Ice Nova 0.65,
+  Winter Field 1.0; Rime Mantle 0.320 K and 0.120 P for 7.5 s; Meteor at the
+  sky refused "No ground found." with nothing paid; in a cave both mobs hit
+  (fall height 2.5); on stairs a mob one step up behind the riser not hit.
+  Warrior (level 60, a bracket-1 sword): Retort 1.00 S, 1.40 S readied,
+  Recover 0.02 P; Hold Ground 0.21 P with a 21 s cooldown at full ranks;
+  Unbroken +0.5 K and 0.15 P for 9.5 s; Charge 40 damage (12 % of a base
+  hit), a 0.75 s stun, +15 rage (+20 and an 8.5 s cooldown in the Ruin
+  build); Broadstroke 1.65
+  S and 2 × 0.50 S, a third capped; Hamstring ×0.65 for 4.5 s; Ruination
+  ×1.15 and +13 rage per swing (8 + 3 + 2); Bellow 6 m; stairs and a cave
+  taunted. Priest (level 31, `r53/reports/priest-probe.txt`): Smite 88,
+  Rebuke 160, Word of Ruin 142 healing 48, Final Word 249, Heal 202.25,
+  Shield 194.16, Mend 4 × 56.63, Hearten 121.35, Haven 6 × 56.63, Censure
+  106 on a stair and in a cave. Scout (`scout-probe.txt`): Loose 0.95,
+  True Draw 2.20, Snare Shot 0.45, Split Shot 0.90 and 0.55, Arrowfall 4 ×
+  1.40, Bladecraft 1.00 and 0.95, Opening 1.80, Flourish 2 × 0.80, Close
+  Dance swings 1.35, shields 10 and 15 % P.
+- **The held cadence** (fixture clock, INTEG, measured): a held Fiery Spark
+  (1 s interval and occupied) on 0.09 s passes fires every 0.99 s instead of
+  1.08 s; Loose in the scout probe before the catch-up 0.906 s instead of
+  0.85 s (about 6 % less damage per second, the reason for the carry).
+- **Page bytes** (LIVE, measured with the real sfinv frame): the level-30
+  Scout page with 15 ranks and a node selected 7,138 → 7,110; level 60 with
+  a sample build 6,498–6,895; one tree's content 4,617–5,297.
+- **`r31_pvp` micro run** (best µs, before → after per lane, measured on a
+  loaded machine): within noise on every path; for example HOOKS
+  `valid_target` on a mob 0.133 → 0.119, the player punch chain 17.89 →
+  18.79; WARRIOR the mob punch chain 15.99 → 16.82 (Retort's hook); no lane
+  touched a measured path beyond a few table reads.
+- **HP** (measured in the e2e): Mage and Priest at level 30 from 688 and
+  764 to 611, clamped at the join; Warrior 917, Scout 764.
+- **e2e** of the step from a real 0.52.1 world: 29/29 (6 characters, 16
+  meta deletions, 3 inventories, 6 markers; the kit swaps active).
+- **Particles:** at most 76 per occurrence (Fire Rain's impact), Ice Nova 64;
+  the 62 cards pass `check_limits.lua`.
+
+### Classification
+
+**Migrate**, one declared step, 0.53.0:
+`{"schema": 3, "version": "0.53.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+A world on 0.52.1 needs the tool before the start (the guard refuses it,
+naming the step and the command). Saved state the step changes offline,
+for every character: it deletes `grug_classes:talents`,
+`grug_classes:respec_used`, every `grug_classes:talent_ready:<id>`,
+`grug_classes:unbroken_ready` and `grug_classes:untouchable_ready`; it
+removes `grug_abilities:{cinderfall,glacial_ward,pinning_shot}` from
+`main`, `grug_hotbar_store` and the bags; it sets the marker
+`grug_core:migrate:0.53.0`. Online, the marker's handler sends the one chat
+line; the join's `normalize_kit` swaps Strike for Fiery Spark and Ice Nova
+for Ice Wave (Mage) and removes skills that are now locked; `apply_stats`
+clamps HP to the new factors. `grug_classes:talents` keeps its key and holds
+`<tree>_<name>=rank`; the readiness windows and their internal cooldowns
+live in memory only. HOOKS, PRIEST and WARRIOR were compatible on their
+own, MAGE and SCOUT migrate (retired items), LIVE migrate (the string's
+meaning).
+
+### Open notes
+
+The reviews' and reports' notes, the dead reads INTEG listed and the
+balance fix round after the user's playtest are in the
+[Round 53 carry-overs](../../BACKLOG.md#round-53-carry-overs). The
+[delivery plan](class-redesign/delivery-plan.md) marks round K done.
+
+### GUI checklist (Round 53)
+
+Desktop and the web build, on the synced game. Worlds: a **copy of the
+production world**; INTEG's e2e world
+`~/projects/grudgelands-orchestration/r53/worlds/r53_ms_0.52.1` (a 0.52.1
+world copied before the tool; logins `warrior`, `mage`, `priest`,
+`scout`, `sleeper` (an offline Mage) and `walker` (no class), password
+`it-<name>`); and a fresh world.
+
+1. **Migration (first):**
+   1. Start the 0.52.1 copy under 0.53.0 without the tool: refused, naming
+      the step 0.53.0 and the command.
+   2. Server stopped: `python3 tools/migrate.py --world <copy> --check`,
+      then without `--check`, then start.
+   3. Join each character:
+      - the chat line "Your talent points have been reset." once, and
+        nothing else (walker: none; a second join: none);
+      - all points free (15 at level 30); the first respec is free again;
+      - Cinderfall, Glacial Ward and Pinning Shot gone from A, B and the
+        bags;
+      - Mage: Strike → Fiery Spark and Ice Nova → Ice Wave, on layout A
+        **and B**; Fireball and Blink gone until bought;
+      - Priest: Strike's slot empty, Smite kept where it was;
+      - locked skills gone from the hotbars (Mighty Blow, Taunt, Hamstring,
+        Hold Ground, Snare Shot, Opening, Mend …);
+      - Mage and Priest max HP lower (611 at level 30), current HP clamped.
+2. **New character** per class: the basic attack in slot 1, then the
+   starters (Warrior Strike, Charge; Mage Fiery Spark, Ice Wave; Priest
+   Smite, Heal; Scout Loose, Sidestep, Sprint, Strike).
+3. **Talents page** per class:
+   - two tabs with points, background, icons (every node, the new skill
+     icons too) and lines;
+   - a click buys; a locked click shows the gate or prerequisite reason in
+     the strip;
+   - an unlock lands in the skill row, not the hotbar;
+   - a transform swaps in place on A and B; a respec swaps it back;
+   - respec Free, then the bracket price, Confirm and Cancel;
+   - 30 points reach one ultimate;
+   - node texts without unit letters; Ironbound, Weathered and the mana
+     nodes show amounts at your level;
+   - `/talents` lists node ids; the page fits above the skill row (web
+     too).
+4. **Mage:** a held Fiery Spark fires about every second, other casts wait
+   1 s; the Ice Wave cone and its 50 % slow; the Fireball splash hits others,
+   never the target; Flame Lance's white-hot trail and 1.5 s busy; Meteor,
+   Fire Rain and Winter Field: warning, fall, impact and impact sound, also
+   in a cave and on a slope; **on stairs** a target one step up behind the
+   riser is not hit (the line of sight from the anchor; acceptable?); "No
+   ground found." at the sky; aimed at ground within hand reach a tap casts
+   and holding digs; Cold Spark's own launch sound and light slow; the 2.5 s
+   Nova root, Cold Shock's icon and proc ring, then a harder Cold Spark;
+   Rime Mantle's armor and the Shield icon; Blink (20 s, now with a sound);
+   Winter Field.
+5. **Warrior:** Charge (0.75 s stun, Halt's slow, +5 rage with Reach the
+   Fight); Retort: a hit that costs HP gives a grey flash and an icon for
+   4 s, the next Retort hits harder and heals, dodged or absorbed hits
+   ready nothing, at most every 6 s; Hold Ground and Unbroken: armor and a
+   shield, no immunity; Taunt (gated) and Bellow's 6 m ring; Mighty Blow and
+   Broadstroke (at most 2 others in front, never an unflagged player);
+   Hamstring's 35 % slow; Ruination +15 % with an icon, and **with a dagger
+   and with a battle axe** about the same rage per second; **a cast within
+   one swing interval after a swing says "You are still busy."** and waits at
+   most one swing (K9).
+6. **Priest:** Smite once a second, free; Heal on self and an ally; Shield;
+   Mend; Hearten and Haven with several players (an enemy and a flagged ally
+   skipped), Haven ticking outside the circle; Rebuke; Word of Ruin's
+   self-heal; Censure: warning, seal, ring, sound, "No ground found." at the
+   sky, a cave, a slope; Final Word; Clear Conscience: a flash, then a harder
+   Smite; Heal held at a mob → Smite.
+7. **Scout:** Loose held shoots every ~0.85 s with **no draw, no draw ring
+   and no slowdown**; an empty quiver → Strike at a foe in reach;
+   Bladecraft replaces Loose on A and B: LMB swings, RMB shoots (also held),
+   a swing right after a shot waits one interval; Sidestep 3 s, with Shake
+   Loose it frees from slows and roots; True Draw keeps you busy 1.35 s;
+   Snare Shot slows; Split Shot splinters to 2 others (also when the
+   primary dodges); Arrowfall plays one sound and up to 4 thuds and is
+   refused with 3 arrows; Opening from behind and after Parry; Flourish hits
+   3; Close Dance's shield and its swing marks.
+8. **Every class:**
+   - the held cadence of Fiery Spark, Smite and Loose at about the
+     calculator's pace;
+   - occupied times after heavy casts, and no "You are still busy." spam;
+   - a refused paid cast falls back once to the basic attack (K8);
+   - **areas never crit**: Meteor, Fire Rain, Winter Field, Ice Wave, Ice
+     Nova, Fireball's splash, Censure, Flourish, Split Shot's splash;
+   - areas never hit an unflagged player or an ally;
+   - tooltips show current-level numbers;
+   - overlays, icons and cast sounds; Taunt, Bellow, Hold Ground, Blink,
+     Heal, Mend and Word of Ruin in their new colours;
+   - **no bow-draw ring**, and no Whitehot, Last Word or Untouchable icons;
+   - the Help lines ("Skills and combat") read right.
+9. **Load:** a few players fighting, desktop and web.
+
+### Round-end gates
+
+*To be recorded by the coordinator on main after this lane merges:* the
+full `run_fixtures.sh` (INTEG part 2's run: 223 passed, 2 failed, both since
+fixed or owned by this lane: `r34_s1a`, rerun PASS, and `r37_dc`, green with
+this lane's CHANGELOG entry), `check_fresh_server.py` and `check_upgrade.py`,
+INTEG's step test (`tools/r53_ms/run.sh`), one headless boot, the sync and
+the user's GUI test. This lane: `r37_dc` PASS, `check_upgrade.py` and
+`check_fresh_server.py` PASS, the docs link check (the lane report).
