@@ -3,6 +3,10 @@
 
 python3 -I tools/r53_sks/build_page.py   (after cut.py; standard library only)
 
+Round 2: candidates the user rejected are gone (rejected.md) and the re-cuts
+(cut.py DERIVED) are not shown; the numbers #n are renumbered accordingly, the
+keys (and so the stored ratings) are unchanged.
+
 Writes page/index.html: page content only (title, style, markup, script; the
 publisher wraps it), every candidate .ogg from out/ inlined as base64, so the
 page needs no files beside it. Also writes page/local.html, the same page in a
@@ -71,7 +75,8 @@ def rows():
     out, n = [], 0
     for rkey, skill, kind, cls, tree, name, effect, why, reuse, _cands in ROWS:
         cands = []
-        for key, c in sorted(((k, v) for k, v in CUTS.items() if v["row"] == rkey), key=lambda kv: kv[1]["n"]):
+        for key, c in sorted(((k, v) for k, v in CUTS.items() if v["row"] == rkey and not v.get("derived")),
+                         key=lambda kv: kv[1]["n"]):
             n += 1
             if c["copied"]:
                 ev = c["src"].split(":", 1)[1]
