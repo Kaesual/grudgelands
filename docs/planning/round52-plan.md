@@ -453,4 +453,9 @@ synced to Luanti. This lane: `check_upgrade.py` PASS (0.52.0, compatible,
 against origin/main `dea1d163`). On main `fc37636d` (lane D merged): the full
 `run_fixtures.sh` 221 passed, 0 failed; `check_upgrade.py` and
 `check_fresh_server.py` PASS; one headless boot of main PASS (150 s); synced
-to Luanti. Open: the user's GUI check (both checklists above).
+to Luanti. The user's GUI check (2026-10-20): both checklists pass; the
+snowy crags stay without hawks and wolves. Two ambience wishes from the
+check go to 0.52.1: at the coast and over the sea the bed blends into the
+surf (not over inland lakes; ordinary-water lakes and pools trigger the sea
+bed today, and its 7-node probe misses high coasts), and diving gets an
+underwater bed of its own (picked on a listening page; today silence).

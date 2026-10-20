@@ -296,6 +296,21 @@ Basic attacks: Fiery Spark is fire, Cold Spark frost, Smite holy, Loose wild, Bl
 
 ## 5. Open points
 
+**Decided (the user, 2026-10-20: "alles wie empfohlen"), for round K:**
+
+- **Numbers:** the balance calculator's defaults plus its one stored change (`tuning/mage_rime`: Ice Armor absorb 12 % of P, Ice Nova root 2.5 s, Ice Wave slow 50 %) are frozen; fine tuning follows the user's first play test of the new kits.
+- **Point 1:** Warding Faith (M5) gets 5 ranks instead of 3, so Mercy has 33; the folded Shelter value is part of its increments, set with the calculator.
+- **Point 2:** M4, M5 and M7 become increments that keep each old end value (neither stronger nor weaker).
+- **Point 3:** code talent ids are descriptive (`<tree>_<name>`, e.g. `mercy_warding_faith`); letter codes (RK1, M5) stay in the docs only.
+- **Point 5:** True Draw, Rime Mantle, Iron Hail and Lasting Armor are final.
+- **Point 6:** Shake Loose clears roots as well (the existing helper, unfiltered).
+- **Point 7:** Bladecraft stays.
+- **Point 10:** Winter Field without a stun (only if it plays weak); Sprint stays innate; Hearten 20 s cd, 14 % P; starter hotbar: the basic attack in slot 1, then the skills in unlock order.
+- **Migration** (first login after the update): talent reset with a full refund; retired skill items leave both hotbars; Mage and Priest get their class basic attack in place of Strike; one chat message explains the change.
+- **The review notes for round K** (BACKLOG, Round 52 carry-overs) are resolved by the coordinator along the backlog's suggestions.
+
+The points below keep their original wording for the record.
+
 1. **Mercy has 31 ranks after the Shelter cut.** Pure Mercy at 30 points then leaves only 1 rank unbought, where the candidate meant pure builds to leave real omissions. The candidate's pure-Mercy order also spent 3 points on M12, and those need a new home. Options: accept, or give Warding Faith more ranks. Its folded Shelter value is not yet a number either (P2).
 2. **Mercy support modifiers M4, M5 and M7** were written as absolute shares on the old bases (Heal 20 %, Shield 18 %, Mend 4 %). Under H1 they are re-expressed here as increments, which P2 must freeze.
 3. **Node-id scheme.** Reckoning is written RK1–RK14 to end the clash with Rime R1–R14, and Mercy keeps the M12 gap. The class lanes need the final scheme and the code talent ids. Old ids are reused with new meanings, and the migration resets them anyway.
