@@ -184,14 +184,15 @@ return function(api)
 	-- `fresh`: this attempt is the press's own decision (key-down, its
 	-- single empty-space or tap cast), so a refusal is reported; held
 	-- repeats stay silent, and so does a fresh decision `quiet` marks (a
-	-- press carried across a hotbar switch).
+	-- press carried across a hotbar switch). A refusal returns false and its
+	-- reason (init.lua cast_refusal: "cooldown", "interval", "busy" ...).
 	local function cast(player, def, s, hit, fresh, quiet)
 		if not castable(def, s) then return false end
 		local loud = fresh and not quiet
-		local refusal = api.cast_refusal(player, def)
+		local refusal, why = api.cast_refusal(player, def)
 		if refusal then
 			if loud then report(player, s, refusal) end
-			return false
+			return false, why
 		end
 		local now = core.get_us_time()
 		s.failed = s.failed or {}
@@ -225,6 +226,23 @@ return function(api)
 	-- refuses); gather never attacks. A hotbar switch while held keeps the
 	-- press and decides it again for the new item (see step).
 	local FLEE_REACH = 2
+	-- The held fallback (round53-plan.md K8): a skill that cannot act on the
+	-- hostile it aims at fires the player's current basic attack once,
+	-- silently, instead: `current_form` of Strike, which swings when it is a
+	-- swing (Strike, Retort) and goes through cast() when it is a cast (Fiery
+	-- Spark, Smite). None when the skill is that basic attack itself, or when
+	-- the refusal is the action clock or the cast interval (`why`): a busy
+	-- player waits, so a cast is never woven between swings.
+	local function fallback(player, s, def, hit, why)
+		if why == "busy" or why == "interval" then return end
+		local basic = Q.current_form(player, Q.registered.strike)
+		if not basic or basic == def then return end
+		if basic.kind == "swing" then
+			api.swing(player, basic)
+		else
+			cast(player, basic, s, hit, false)
+		end
+	end
 	local function combat_reach(player, def)
 		-- Loose's LMB is Strike or hand digging; its bow range is RMB's.
 		if def.id == "loose" then return HAND_RANGE end
@@ -411,12 +429,18 @@ return function(api)
 				if def.kind == "swing" then
 					local refusal = api.swing_refusal(player, def)
 					if refusal and fresh and not carried then report(player, s, refusal) end
-					api.swing(player, refusal and Q.registered.strike or def)
+					if refusal then
+						fallback(player, s, def, hit)
+					else
+						api.swing(player, def)
+					end
 				-- A self or support skill fires once per fresh press; held, the
-				-- hold strikes.
-				elseif (support(def) and not def.offensive and not fresh) or
-						not cast(player, def, s, hit, fresh, carried) then
-					api.swing(player, Q.registered.strike)
+				-- hold attacks with the basic attack.
+				elseif support(def) and not def.offensive and not fresh then
+					fallback(player, s, def, hit)
+				else
+					local ok, why = cast(player, def, s, hit, fresh, carried)
+					if not ok then fallback(player, s, def, hit, why) end
 				end
 				return
 			end
