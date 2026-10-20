@@ -1537,9 +1537,11 @@ shows a single-colour particle effect, built from the accepted catalogue
   and only self-light; dust, earth, wood splinters, smoke, frost mist and
   blood keep the plain blend. The same rule covers the boss and mob effects,
   crits, absorb soaks and the level-up (the user, 2026-10-21): their lights
-  add with glow 14 in more saturated tints, their dust, smoke, wind, webs,
-  leaves and splashes stay plain, and the material textures (blood, rock,
-  bubbles, coloured dust and wind) keep their look.
+  add with glow 14 (the catalogue's pale tints made more saturated; colours
+  the mob code passes, such as a king's kit or a dragon's breath, stay),
+  their dust, smoke, wind, webs, leaves and splashes stay plain, and the
+  material textures (blood, rock, bubbles, opaque snow, coloured smoke, dust
+  and wind) keep their look.
 - **Smite** (2026-10-21) is a small Final Word: a short beam of five motes
   shoots down from 3.2 m onto the target and a gold ring of eight springs
   out to about 1 m (Final Word: a 7 m column and a ring of 20 to about 2 m).

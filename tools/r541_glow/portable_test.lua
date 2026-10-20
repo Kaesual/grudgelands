@@ -17,7 +17,8 @@
 --      soak, the level-up, the area defaults; the user, 2026-10-21) tints the
 --      mote too, its lights add with glow 14 and its dust, smoke, wind,
 --      webs, leaves and splashes stay plain, while the material textures
---      (blood, rock, bubbles, coloured dust and wind) keep their look; the
+--      (blood, rock, bubbles, opaque snow, coloured smoke, dust and wind)
+--      keep their look; the
 --      four readiness windows and the three arrow trails carry the vivid
 --      tints;
 --   F  meteor_fall and censure_fall over heights and delays: they start
@@ -200,13 +201,12 @@ do
 	local LIT = {}
 	for _, id in ipairs({"crit", "absorb", "level_up", "area_fall", "area_impact", "king_cleave_windup",
 			"king_cleave", "king_aura", "king_resolve", "elite_windup", "elite_cone", "breath_windup",
-			"breath_burst_rime", "breath_burst_scorch", "breath_trail", "dragon_patch_rime",
-			"dragon_patch_scorch", "lightning_ring", "lightning_strike", "dive_windup", "dive_slam", "enrage",
-			"dragon_return", "depth_windup", "depth_burst", "oerkki_blink", "wisp_blink", "hex_bottle",
-			"rift_spawn_burst"}) do
+			"breath_burst_scorch", "breath_trail", "dragon_patch_scorch", "lightning_ring", "lightning_strike", "dive_windup", "dive_slam", "enrage",
+			"dragon_return", "depth_windup", "depth_burst", "oerkki_blink", "wisp_blink", "hex_bottle"}) do
 		LIT[id] = true
 	end
-	local MATERIAL = {"^mobs_blood", "^grug_mobs_rock%.png$", "^mobs_bubble", "#d8eef4"}
+	local MATERIAL = {"^mobs_blood", "^grug_mobs_rock%.png$", "^mobs_bubble", "#d8eef4", "^default_snow",
+		"^mobs_tnt_smoke"}
 	local function material(tex)
 		for _, pattern in ipairs(MATERIAL) do
 			if tex:find(pattern) then return true end

@@ -17,9 +17,10 @@ local FIRE = "mobs_fire_particle.png"
 -- skill colours are the families' vivid tints (effects.py VIVID). The user
 -- extended the look to every other effect on 2026-10-21 (bosses, mobs, crits,
 -- the absorb soak, the level-up, the area defaults): the same rule, with
--- pale or dull light tints made more saturated here, the material textures
--- (rock, bubbles, coloured dust and wind) unchanged and the colours mob code
--- passes in frame.color as they are.
+-- pale or dull light tints in this file made more saturated, the material
+-- textures (rock, bubbles, opaque snow, coloured smoke, dust and wind)
+-- unchanged and the colours mob code passes in frame.color (bosses.lua
+-- KIT_COLORS, boss_dragons.lua BREATH_COLORS, arrow impacts) as they are.
 local function lit(def)
 	if not def.tex then
 		def.mote = true
@@ -224,7 +225,7 @@ function grug_core.proc_flash(player, proc)
 	end
 end
 
--- Unchanged looks moved onto the helper: the critical hit's gold sparks and
+-- Round 40's looks moved onto the helper, lit since 0.54.1: the critical hit's gold sparks and
 -- the absorb shield's soak (combat.lua), the level-up burst (grug_xp).
 register("crit", {
 	spawner(8, 0.15, lit({at = "target", color = "#ffd100", fade = false,
@@ -629,8 +630,8 @@ register("king_resolve", {
 		vel = {{0, 1.5, 0}, {0, 2.5, 0}}, exp = {0.6, 0.8}, size = {2.5, 3}})),
 })
 
--- Every elite's and rare's wind-up (telegraph.lua): today's orange smoke
--- burst, kept ...
+-- Every elite's and rare's wind-up (telegraph.lua): the orange burst of
+-- Round 40, lit since 0.54.1 ...
 register("elite_windup", {
 	spawner(24, 0.4, lit({color = "#ff5a1e", fade = false,
 		shape = {"box", {-0.7, 0.2, -0.7}, {0.7, 1.8, 0.7}}, vel = {{-0.5, 1, -0.5}, {0.5, 3, 0.5}},
@@ -656,13 +657,16 @@ register("breath_windup", {
 		size = {2.5, 3.5}})),
 })
 
--- The breath's muzzle burst (54 motes), kept, frost or fire.
-local function breath_burst(tex)
-	return {spawner(54, 0.35, lit({tex = tex, fade = false, shape = {"box", {-2, 0, -2}, {2, 3, 2}},
-		vel = {{-3, 0.5, -3}, {3, 5, 3}}, exp = {0.4, 1.6}, size = {2, 6}}))}
+-- The breath's muzzle burst (54 motes), frost or fire.
+-- The frost one stays plain: the snow texture is opaque, so added it would
+-- clip to white squares by day.
+local function breath_burst(tex, glows)
+	local def = {tex = tex, fade = false, shape = {"box", {-2, 0, -2}, {2, 3, 2}},
+		vel = {{-3, 0.5, -3}, {3, 5, 3}}, exp = {0.4, 1.6}, size = {2, 6}, glow = 10}
+	return {spawner(54, 0.35, glows and lit(def) or def)}
 end
-register("breath_burst_rime", breath_burst("default_snow.png^[colorize:#8ee8ff:120"))
-register("breath_burst_scorch", breath_burst("default_item_smoke.png^[colorize:#ff7338:210"))
+register("breath_burst_rime", breath_burst("default_snow.png^[colorize:#8ee8ff:120", false))
+register("breath_burst_scorch", breath_burst("default_item_smoke.png^[colorize:#ff7338:210", true))
 
 -- A breath bolt's trail: one mote per call at the bolt (caster); the bolt
 -- plays it up to 12 times (boss_dragons.lua TUNING.trail_particles, under
@@ -672,11 +676,12 @@ register("breath_trail", {
 		vel = {{-0.3, -0.3, -0.3}, {0.3, 0.3, 0.3}}, exp = {0.3, 0.5}, size = {3, 4}})),
 })
 
--- A breath bolt's ground patch (rime or scorch), kept.
+-- A breath bolt's ground patch (rime or scorch); the rime stays plain (the
+-- opaque snow texture).
 register("dragon_patch_rime", {
-	spawner(36, 0.25, lit({tex = "default_snow.png^[colorize:#8ee8ff:120", fade = false,
+	spawner(36, 0.25, {tex = "default_snow.png^[colorize:#8ee8ff:120", fade = false,
 		shape = {"box", {-1, 0, -1}, {1, 0.5, 1}}, vel = {{-1, 0.2, -1}, {1, 1.5, 1}},
-		exp = {0.4, 1.2}, size = {1.5, 3.5}})),
+		exp = {0.4, 1.2}, size = {1.5, 3.5}, glow = 8}),
 })
 register("dragon_patch_scorch", {
 	spawner(36, 0.25, lit({tex = "default_item_smoke.png^[colorize:#ff5a20:210", fade = false,
@@ -684,7 +689,7 @@ register("dragon_patch_scorch", {
 		exp = {0.4, 1.2}, size = {1.5, 3.5}})),
 })
 
--- Stormscale's lightning: the warning ring, kept (32 motes on the exact
+-- Stormscale's lightning: the warning ring (32 motes on the exact
 -- circle of frame.reach for the wind-up, frame.time) ...
 register("lightning_ring", function(frame)
 	local life = frame.time or 1.5
@@ -718,7 +723,7 @@ register("gust_release", {
 		radial = "reach", exp = {0.39, 0.39}, size = {3.5, 3.5}, glow = 6})),
 })
 
--- The take-off dust and the dive's wind-up, kept.
+-- The take-off dust (plain) and the dive's wind-up (lit since 0.54.1).
 register("dragon_takeoff", {
 	spawner(48, 0.4, {tex = "default_item_smoke.png^[colorize:#d8eef4:130", fade = false,
 		shape = {"box", {-4, 0, -4}, {4, 3, 4}}, vel = {{-3, 0.5, -3}, {3, 5, 3}},
@@ -745,7 +750,7 @@ register("enrage", {
 		vel = {{-3, 0.5, -3}, {3, 5, 3}}, exp = {0.4, 1.6}, size = {2, 6}})),
 })
 
--- A dragon's return warning (bosses.lua), kept: a golden column of 180 motes
+-- A dragon's return warning (bosses.lua): a golden column of 180 motes
 -- over 8 s at the lair, played as eight 1 s pieces in a row (frame.piece
 -- 1..8: four of 23 and four of 22), so only nearby players receive it.
 register("dragon_return", function(frame)
@@ -840,8 +845,8 @@ register("treant_aura", {
 		vel = {{-0.3, -0.8, -0.3}, {0.3, -0.5, 0.3}}, exp = {1.8, 2.2}, size = {2.5, 3}, glow = 0})),
 })
 
--- The Oerkki's blink: a violet puff where it leaves (caster) and today's
--- puff where it arrives (target, kept).
+-- The Oerkki's blink: a violet puff where it leaves (caster) and a smaller
+-- one where it arrives (target).
 register("oerkki_blink", {
 	spawner(12, 0.2, lit({color = "#8a3cff", shape = {"box", {-0.5, 0, -0.5}, {0.5, 1, 0.5}},
 		vel = {{-2, 0, -2}, {2, 3, 2}}, exp = {0.3, 0.7}, size = {1.5, 3}})),
@@ -865,14 +870,14 @@ register("projectile_impact", {
 		size = {1.5, 2}, glow = 0})),
 })
 
--- Unchanged looks moved onto the helper: the Bog Witch's hex bottle and the
+-- Round 40's looks moved onto the helper: the Bog Witch's hex bottle (lit since 0.54.1) and the
 -- Rift Spawn's burst.
 register("hex_bottle", {
 	spawner(16, 0.25, lit({at = "target", color = "#9a3cff", fade = false,
 		shape = {"box", {-0.4, 0, -0.4}, {0.4, 1.4, 0.4}}, exp = {0.2, 0.6}, size = {1, 2.5}})),
 })
 register("rift_spawn_burst", {
-	spawner(32, 0.25, lit({tex = "mobs_tnt_smoke.png^[colorize:#6d36b5:70", fade = false,
+	spawner(32, 0.25, {tex = "mobs_tnt_smoke.png^[colorize:#6d36b5:70", fade = false,
 		shape = {"box", {-0.5, 0, -0.5}, {0.5, 1.5, 0.5}}, vel = {{-3, 0, -3}, {3, 5, 3}},
-		exp = {0.3, 0.8}, size = {2, 5}})),
+		exp = {0.3, 0.8}, size = {2, 5}, glow = 5}),
 })

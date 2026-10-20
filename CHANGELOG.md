@@ -20,9 +20,9 @@ The particle effects get stronger colours and shine in the dark.
 - **Glowing and vivid:** every skill and proc effect shows its colour as
   intended instead of a greyish brown: holy gold, fire orange, frost blue.
   Lights, sparks, magic and fire shine at night and in caves without
-  lighting up their surroundings; dust, smoke, mist and blood stay as they
-  were. Boss and monster effects, critical hits, absorbed hits and the
-  level-up burst glow the same way.
+  lighting up their surroundings; dust, smoke, mist and blood don't glow.
+  Boss and monster effects, critical hits, absorbed hits and the level-up
+  burst glow the same way.
 - **Smite** now looks like a small Final Word: a short beam of light
   strikes the target and a small golden ring springs from its feet.
 - **Meteor and Censure** fall faster: the burning rock and the seal of light
