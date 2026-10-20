@@ -236,7 +236,7 @@ do
 	local towns = {{race = "human", x = 0, z = 0}, {race = "orc", x = 1000, z = 0}}
 	check(R.start_town_look(D, towns, 30, -40) == "grug_meadows" and
 		R.start_town_look(D, towns, 1060, 0) == "grug_savanna" and
-		R.start_town_look(D, towns, 500, 0) == nil and D.town_reach == 80,
+		R.start_town_look(D, towns, 500, 0) == nil and D.town_reach == 103,
 		"B the nearest start town within 80 nodes names the look, none beyond")
 	-- 0.52.1: the beach (mostly far from the sea) keeps the key the player brings;
 	-- the open ocean is the surf alone, the dragon islands keep their coast bed.

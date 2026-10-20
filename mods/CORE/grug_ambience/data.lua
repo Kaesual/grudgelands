@@ -79,7 +79,8 @@ D.groups = {
 -- is (wp40/r7_r6_manifest.lua SURFACE_ROWS); the orcs' dry grass is the
 -- savanna's (its top is the dry-dirt variant). tools/r34_s2 derives the
 -- table from those files. The nearest start anchor within town_reach
--- (half the start town's 152-node footprint, rounded up) is the town.
+-- (the footprint's farthest corner: a 128-node square plus a 12-node band
+-- with rounded corners, simple_map.lua, about 102.5 nodes) is the town.
 D.town_looks = {
 	dwarf = "grug_pine_hills", -- dirt with coniferous litter
 	human = "grug_meadows", -- dirt with grass
@@ -88,7 +89,7 @@ D.town_looks = {
 	orc = "grug_savanna", -- dirt with dry grass
 	troll = "grug_jungle_edge", -- dirt with rainforest litter
 }
-D.town_reach = 80
+D.town_reach = 103
 
 -- Biomes that keep the sound key the player brings (0.52.1): the beach is
 -- a palette patch that lies mostly far from the sea (seed 12345, a 32-node
