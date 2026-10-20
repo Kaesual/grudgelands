@@ -1,0 +1,209 @@
+{
+ "_source": "the user's saved selections, 2026-10-20 (crest and hood point dropped)",
+ "metal": {
+  "T1": [
+   "helm",
+   "chest",
+   "thigh",
+   "boot"
+  ],
+  "T2": [
+   "helm",
+   "chest",
+   "belt",
+   "pauldron",
+   "thigh",
+   "boot"
+  ],
+  "T3": [
+   "helm",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "sleeve",
+   "pauldron",
+   "thigh",
+   "boot"
+  ],
+  "T4": [
+   "helm",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "tasset",
+   "sleeve",
+   "bracer",
+   "pauldron",
+   "thigh",
+   "boot",
+   "toe"
+  ],
+  "T5": [
+   "helm",
+   "visor",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "tasset",
+   "sleeve",
+   "bracer",
+   "pauldron",
+   "reinforce",
+   "flare",
+   "thigh",
+   "knee",
+   "boot",
+   "toe"
+  ],
+  "T6": [
+   "helm",
+   "visor",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "tasset",
+   "sleeve",
+   "bracer",
+   "pauldron",
+   "reinforce",
+   "flare",
+   "spike",
+   "thigh",
+   "knee",
+   "boot",
+   "toe"
+  ]
+ },
+ "leather": {
+  "T1": [
+   "helm",
+   "chest",
+   "thigh",
+   "boot"
+  ],
+  "T2": [
+   "helm",
+   "chest",
+   "belt",
+   "pauldron",
+   "thigh",
+   "boot"
+  ],
+  "T3": [
+   "helm",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "sleeve",
+   "pauldron",
+   "thigh",
+   "boot"
+  ],
+  "T4": [
+   "helm",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "sleeve",
+   "bracer",
+   "pauldron",
+   "thigh",
+   "boot"
+  ],
+  "T5": [
+   "helm",
+   "visor",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "tasset",
+   "sleeve",
+   "bracer",
+   "pauldron",
+   "thigh",
+   "knee",
+   "boot"
+  ],
+  "T6": [
+   "helm",
+   "visor",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "tasset",
+   "sleeve",
+   "bracer",
+   "pauldron",
+   "thigh",
+   "knee",
+   "boot"
+  ]
+ },
+ "cloth": {
+  "T1": [
+   "helm",
+   "chest",
+   "thigh",
+   "boot"
+  ],
+  "T2": [
+   "helm",
+   "chest",
+   "belt",
+   "thigh",
+   "boot"
+  ],
+  "T3": [
+   "helm",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "sleeve",
+   "thigh",
+   "boot"
+  ],
+  "T4": [
+   "helm",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "sleeve",
+   "thigh",
+   "boot"
+  ],
+  "T5": [
+   "helm",
+   "visor",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "tasset",
+   "sleeve",
+   "thigh",
+   "boot"
+  ],
+  "T6": [
+   "helm",
+   "visor",
+   "chest",
+   "belt",
+   "panel_f",
+   "panel_b",
+   "tasset",
+   "sleeve",
+   "thigh",
+   "boot"
+  ]
+ }
+}

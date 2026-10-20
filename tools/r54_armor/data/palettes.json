@@ -1,0 +1,380 @@
+{
+ "_doc": "Tier palettes: reference colour name -> tier colour. Placeholder values expanded from proto/catalog.py PALETTES; the coordinator tunes them. GLOW = M_LIGHT where a palette has no glow.",
+ "reference": {
+  "M_HI": "#F0F0F0",
+  "M_LIGHT": "#C8C8C8",
+  "M_MID": "#A0A0A0",
+  "M_DARK": "#787878",
+  "M_DEEP": "#505050",
+  "OUTLINE": "#282828",
+  "ACC_LIGHT": "#A07850",
+  "ACC_DARK": "#6E5034",
+  "A_LIGHT": "#E07070",
+  "A_DARK": "#B04848",
+  "B_LIGHT": "#70A0E0",
+  "B_DARK": "#4870B0",
+  "GLOW": "#FFC040"
+ },
+ "palettes": {
+  "bronze": {
+   "name": "Bronze",
+   "line": "metal",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#F0CC9E",
+    "M_LIGHT": "#E8B06A",
+    "M_MID": "#B97A3C",
+    "M_DARK": "#7A4A22",
+    "M_DEEP": "#553418",
+    "OUTLINE": "#311E0E",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#D8B860",
+    "B_DARK": "#9C8445",
+    "GLOW": "#E8B06A"
+   }
+  },
+  "iron": {
+   "name": "Eisen",
+   "line": "metal",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#D9D7D3",
+    "M_LIGHT": "#C4C2BC",
+    "M_MID": "#8F8D88",
+    "M_DARK": "#55534F",
+    "M_DEEP": "#3B3A37",
+    "OUTLINE": "#222120",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#B89A5A",
+    "B_DARK": "#846F41",
+    "GLOW": "#C4C2BC"
+   }
+  },
+  "steel": {
+   "name": "Stahl",
+   "line": "metal",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#EAEDF1",
+    "M_LIGHT": "#DFE4EA",
+    "M_MID": "#A6AEB8",
+    "M_DARK": "#646D78",
+    "M_DEEP": "#464C54",
+    "OUTLINE": "#282C30",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#C8B070",
+    "B_DARK": "#907F51",
+    "GLOW": "#DFE4EA"
+   }
+  },
+  "silversteel": {
+   "name": "Silberstahl",
+   "line": "metal",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#FFFFFF",
+    "M_LIGHT": "#FFFFFF",
+    "M_MID": "#D2D8E2",
+    "M_DARK": "#8E98A8",
+    "M_DEEP": "#636A76",
+    "OUTLINE": "#393D43",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#E8EEF8",
+    "B_DARK": "#A7ABB3",
+    "GLOW": "#FFFFFF"
+   }
+  },
+  "embersteel": {
+   "name": "Glutstahl",
+   "line": "metal",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#B39A92",
+    "M_LIGHT": "#8A6458",
+    "M_MID": "#4E3530",
+    "M_DARK": "#2A1A18",
+    "M_DEEP": "#1D1211",
+    "OUTLINE": "#110A0A",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#FF9A3C",
+    "B_DARK": "#B86F2B",
+    "GLOW": "#FFB347"
+   }
+  },
+  "abyssal_steel": {
+   "name": "Abgrundstahl",
+   "line": "metal",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#9E94B6",
+    "M_LIGHT": "#6A5A8E",
+    "M_MID": "#352C4A",
+    "M_DARK": "#17131F",
+    "M_DEEP": "#100D16",
+    "OUTLINE": "#09080C",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#A58CF0",
+    "B_DARK": "#7765AD",
+    "GLOW": "#6A5A8E"
+   }
+  },
+  "light": {
+   "name": "Leichtes Leder",
+   "line": "leather",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#DCC3A9",
+    "M_LIGHT": "#C9A27A",
+    "M_MID": "#A37B52",
+    "M_DARK": "#6E4E30",
+    "M_DEEP": "#4D3722",
+    "OUTLINE": "#2C1F13",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#B8A070",
+    "B_DARK": "#847351",
+    "GLOW": "#C9A27A"
+   }
+  },
+  "cured": {
+   "name": "Gegerbtes Leder",
+   "line": "leather",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#C6A98F",
+    "M_LIGHT": "#A87A52",
+    "M_MID": "#835A38",
+    "M_DARK": "#553820",
+    "M_DEEP": "#3B2716",
+    "OUTLINE": "#22160D",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#C0A060",
+    "B_DARK": "#8A7345",
+    "GLOW": "#A87A52"
+   }
+  },
+  "heavy_leather": {
+   "name": "Schweres Leder",
+   "line": "leather",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#AB9480",
+    "M_LIGHT": "#7E5A3C",
+    "M_MID": "#5E4029",
+    "M_DARK": "#3A2616",
+    "M_DEEP": "#291B0F",
+    "OUTLINE": "#170F09",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#C8A464",
+    "B_DARK": "#907648",
+    "GLOW": "#7E5A3C"
+   }
+  },
+  "hardened": {
+   "name": "Hartleder (T4, neuer Name)",
+   "line": "leather",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#B3947F",
+    "M_LIGHT": "#8A5A3A",
+    "M_MID": "#6A3E26",
+    "M_DARK": "#40220F",
+    "M_DEEP": "#2D180A",
+    "OUTLINE": "#1A0E06",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#D0B070",
+    "B_DARK": "#967F51",
+    "GLOW": "#8A5A3A"
+   }
+  },
+  "sleek": {
+   "name": "Glattleder",
+   "line": "leather",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#A9ACB4",
+    "M_LIGHT": "#7A808C",
+    "M_MID": "#4F545E",
+    "M_DARK": "#2C2F36",
+    "M_DEEP": "#1F2126",
+    "OUTLINE": "#121316",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#C0C8D0",
+    "B_DARK": "#8A9096",
+    "GLOW": "#7A808C"
+   }
+  },
+  "nightscale": {
+   "name": "Nachtschuppe",
+   "line": "leather",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#9590AC",
+    "M_LIGHT": "#5C5480",
+    "M_MID": "#332D4E",
+    "M_DARK": "#18152A",
+    "M_DEEP": "#110F1D",
+    "OUTLINE": "#0A0811",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#9A8CD8",
+    "B_DARK": "#6F659C",
+    "GLOW": "#5C5480"
+   }
+  },
+  "patch": {
+   "name": "Flickenstoff",
+   "line": "cloth",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#C6BDAE",
+    "M_LIGHT": "#A89A82",
+    "M_MID": "#857862",
+    "M_DARK": "#5A5040",
+    "M_DEEP": "#3F382D",
+    "OUTLINE": "#24201A",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#A08860",
+    "B_DARK": "#736245",
+    "GLOW": "#A89A82"
+   }
+  },
+  "woven": {
+   "name": "Webstoff",
+   "line": "cloth",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#B6C1AA",
+    "M_LIGHT": "#8FA07C",
+    "M_MID": "#6C7C5A",
+    "M_DARK": "#48543A",
+    "M_DEEP": "#323B29",
+    "OUTLINE": "#1D2217",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#C8B880",
+    "B_DARK": "#90845C",
+    "GLOW": "#8FA07C"
+   }
+  },
+  "heavy_cloth": {
+   "name": "Schwerer Stoff",
+   "line": "cloth",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#A5B2C9",
+    "M_LIGHT": "#7488AC",
+    "M_MID": "#53668A",
+    "M_DARK": "#34425E",
+    "M_DEEP": "#242E42",
+    "OUTLINE": "#151A26",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#D8C890",
+    "B_DARK": "#9C9068",
+    "GLOW": "#7488AC"
+   }
+  },
+  "silkweave": {
+   "name": "Seidenwebart",
+   "line": "cloth",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#F3EDE2",
+    "M_LIGHT": "#ECE4D2",
+    "M_MID": "#D2C6AC",
+    "M_DARK": "#A0947A",
+    "M_DEEP": "#706855",
+    "OUTLINE": "#403B31",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#C09040",
+    "B_DARK": "#8A682E",
+    "GLOW": "#ECE4D2"
+   }
+  },
+  "silk": {
+   "name": "Seide",
+   "line": "cloth",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#FFFFFF",
+    "M_LIGHT": "#FFFFFF",
+    "M_MID": "#E6E6F0",
+    "M_DARK": "#B4B4C8",
+    "M_DEEP": "#7E7E8C",
+    "OUTLINE": "#484850",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#E0B850",
+    "B_DARK": "#A1843A",
+    "GLOW": "#FFFFFF"
+   }
+  },
+  "stormweave": {
+   "name": "Sturmgewebe",
+   "line": "cloth",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#8995B9",
+    "M_LIGHT": "#4A5C94",
+    "M_MID": "#2C3A6A",
+    "M_DARK": "#18203E",
+    "M_DEEP": "#11162B",
+    "OUTLINE": "#0A0D19",
+    "ACC_LIGHT": "#8A5E3A",
+    "ACC_DARK": "#5E3C22",
+    "A_LIGHT": "#B9A888",
+    "A_DARK": "#90836A",
+    "B_LIGHT": "#D8E4FF",
+    "B_DARK": "#9CA4B8",
+    "GLOW": "#4A5C94"
+   }
+  }
+ }
+}
