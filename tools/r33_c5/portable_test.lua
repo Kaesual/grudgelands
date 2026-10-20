@@ -514,6 +514,8 @@ do
 		is_equipment_list = function(list) return list:find("^grug_") ~= nil and
 			not list:find("^grug_bag_") end,
 		equipment_changed = function() equipment_changed = equipment_changed + 1 end,
+		-- 0.53.1: grug_gear.usable_by asks the hand rules (tooltip only here).
+		hand_accepts = function() return true end,
 	}
 	grug_money = nil
 	dofile(ROOT .. "/mods/PLAYER/grug_money/init.lua")
