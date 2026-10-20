@@ -371,14 +371,31 @@ are kept per character, and so is the choice.
   Earning a tier posts a line to the message feed.
 - **On the model:** a cloak hangs from the shoulders to just above the knee.
   It is a thin box behind the body on its own bone, keyed per animation
-  frame, the technique of VoxeLibre's capes. It sways a little standing,
-  swings out up to 30 degrees with the legs while walking (and never through
-  them) and lies back over the seat when sitting. It costs nothing per step,
-  every player sees it, and it scales with the race's stature. Players wear
+  frame, the technique of VoxeLibre's capes. It stands a little off the back
+  and sways standing (8.5 to 11.5 degrees), swings out with the legs while
+  walking (and never through them) and lies back over the seat when
+  sitting. Since Round 54 it hangs **behind the armor's back panel** and
+  never swings less than it, so walking takes it out to the back panel's
+  53 to 58 degrees (30 before). It costs nothing per step, every player sees
+  it, and it scales with the race's stature. Players wear
   `grug_visuals_character.b3d`, which is `character.b3d` with the cloak
   appended (`tools/r33_c3/gen_cloak_model.py`, which also checks the leg
   clearance). The cloak is the model's **second texture**, so the skin
-  composition is unchanged. NPCs keep `character.b3d`.
+  composition is unchanged. Round 54 appends the armor boxes (the third
+  texture, the armor atlas), the front and back panels on their own swing
+  bones and the weapon card in the right hand (the fourth texture), and
+  writes the NPC model `grug_visuals_npc.b3d`, the same without the cloak
+  and the pose clips ([armor format](../technical/armor-format.md) §2).
+  Unarmored NPCs keep `character.b3d`.
+- **Armor panels and weapon card (Round 54):** the front and back panels
+  (skirt, tabard, robe) hang from the belt and swing away from the legs:
+  front 0.06 rad plus 1.2 times the forward leg's angle, back 0.06 rad
+  plus 1.1 times the backward leg's, plus a fifth of the torso's twist in a
+  pose. Sitting, both hang straight down (the seated thighs pass through
+  the belt line, so the front panel hides inside them). The weapon card is
+  a two-sided square where the hand's wield entity holds a diagonal tool at
+  stature 1; the world shows it transparent and the inventory view shows
+  the held item on it.
 - **Texture format:** 32×32. Columns 0–15 are the outer face seen from
   behind (the image's left is the character's left), shoulder at the top.
   Columns 16–31 are the lining seen from the front. The cloak's thin edges

@@ -49,9 +49,9 @@ PLAYER_API = REPO / "mods/BASE/player_api/init.lua"
 TARGET = REPO / "tools/web_data/model/grug_visuals_character.glb"
 
 CLIPS = ("stand", "walk")
-# One material per mesh buffer, in the texture order of grug_visuals'
-# registration (apply.lua: textures = {skin, cloak}).
-MATERIALS = ("skin", "cloak")
+# One material per mesh buffer, in the model's texture order (Round 54:
+# skin, cloak, the armor atlas, the weapon card; armor-format.md §2).
+MATERIALS = ("skin", "cloak", "armor", "weapon")
 COPYRIGHT = ("CC BY-SA 3.0: celeron55, MirceaKitsune, Jordach et al. "
              "(player_api character.b3d); cloak by the Grudgelands project")
 

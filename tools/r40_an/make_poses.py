@@ -259,7 +259,18 @@ def load_rig():
     data = bg.SOURCE.read_bytes()
     root = b3d.parse(data, 0, len(data))
     player = b3d.find_node(root, "Player")
-    bones = bg.bones_of(player)
+    # The posed skeleton: player_api's bones and the cloak. The armor's swing
+    # bones (Round 54, Panel_Front/Panel_Back) follow the legs by their own
+    # rule in gen_cloak_model.py and are not part of a pose.
+    source = b3d.SOURCE.read_bytes()
+    posed = {b3d.node_name(chunk) for chunk, _ in
+             bg.bones_of(b3d.find_node(b3d.parse(source, 0, len(source)), "Player"))} | {"Cloak"}
+    every = bg.bones_of(player)
+    keep = [i for i, (chunk, _) in enumerate(every) if b3d.node_name(chunk) in posed]
+    if any(parent is not None and parent not in keep for i, (_, parent) in enumerate(every) if i in keep):
+        raise SystemExit("make_poses: a posed bone hangs under an unposed one")
+    bones = [(chunk, None if parent is None else keep.index(parent))
+             for i, (chunk, parent) in enumerate(every) if i in keep]
     names = [b3d.node_name(chunk) for chunk, _ in bones]
     keys = [bg.node_keys(chunk) for chunk, _ in bones]
     binds = [bg.node_trs(chunk) for chunk, _ in bones]
