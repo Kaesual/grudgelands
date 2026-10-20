@@ -26,6 +26,15 @@
 local graph = grug_classes.graph
 
 graph.register_class_vocabulary("mage", {
+	-- Coefficients of D, the untalented Spark hit (kits_mage.lua), and of
+	-- the level's armor constant K for Rime Mantle's armor.
+	keys = {
+		fireball_unit_add = "grug_abilities/kits_mage.lua Fireball's hit",
+		fireball_splash_unit_add = "grug_abilities/kits_mage.lua Fireball's splash",
+		cold_spark_unit_add = "grug_abilities/kits_mage.lua Cold Spark",
+		cold_shock_unit_add = "grug_abilities/kits_mage.lua Ice Nova (the window's value)",
+		rime_mantle_armor_add = "grug_abilities/kits_mage.lua Rime Mantle (K)",
+	},
 	params = {"fire", "frost", "fiery_spark", "ice_wave", "fireball", "flame_lance",
 		"meteor", "fire_rain", "cold_spark", "blink", "rime_mantle", "ice_nova",
 		"winter_field"},
@@ -60,6 +69,7 @@ graph.register_tree({
 			description = "Flame Lance deals +5/10/15 % damage."},
 		{id = "ember_afterglow", code = "F7", name = "Afterglow", type = "modifier",
 			ranks = 3, gate = 6, col = 2, requires = {"ember_fireball"},
+			effects = {fireball_unit_add = {0.05, 0.10, 0.15}},
 			description = "Fireball's hit +5/10/15 % of a Spark hit."},
 		{id = "ember_meteor", code = "F8", name = "Meteor", type = "unlock", ability = "meteor",
 			ranks = 1, gate = 12, col = 3, requires = {"ember_fireball"},
@@ -67,6 +77,7 @@ graph.register_tree({
 				"with a warning, 140 % of a Spark hit within 3 m; 18 s cooldown, 14 % mana."},
 		{id = "ember_wide_ember", code = "F9", name = "Wide Ember", type = "modifier",
 			ranks = 3, gate = 12, col = 2, requires = {"ember_fireball"},
+			effects = {fireball_splash_unit_add = {0.05, 0.10, 0.15}},
 			description = "Fireball's splash rises to 20/25/30 % of a Spark hit."},
 		{id = "ember_broad_impact", code = "F10", name = "Broad Impact", type = "modifier",
 			ranks = 3, gate = 12, col = 4, requires = {"ember_meteor"},
@@ -103,6 +114,7 @@ graph.register_tree({
 			description = "Max mana +5/10/15/20 %."},
 		{id = "rime_keen_cold", code = "R3", name = "Keen Cold", type = "modifier",
 			ranks = 3, gate = 0, col = 3, requires = {"rime_cold_spark"},
+			effects = {cold_spark_unit_add = {0.03, 0.06, 0.09}},
 			description = "Cold Spark +3/6/9 % of a Spark hit; the slow stays 12 %."},
 		{id = "rime_blink", code = "R4", name = "Blink", type = "unlock", ability = "blink",
 			ranks = 1, gate = 2, col = 3,
@@ -120,6 +132,7 @@ graph.register_tree({
 				"constant and a shield of 12 % of a base health pool; 24 s cooldown, 10 % mana."},
 		{id = "rime_thick_ice", code = "R8", name = "Thick Ice", type = "modifier",
 			ranks = 3, gate = 10, col = 4, requires = {"rime_rime_mantle"},
+			effects = {rime_mantle_armor_add = {0.04, 0.08, 0.12}},
 			description = "Rime Mantle's armor +4/8/12 % of the level's armor constant."},
 		{id = "rime_ice_nova", code = "R9", name = "Ice Nova", type = "transform",
 			ability = "ice_nova", ranks = 1, gate = 12, col = 3,
@@ -127,6 +140,7 @@ graph.register_tree({
 				"you and a 2.5 s root; 18 s cooldown, 10 % mana; the cooldown is shared."},
 		{id = "rime_cold_shock", code = "R10", name = "Cold Shock", type = "window",
 			ranks = 3, gate = 12, col = 2, requires = {"rime_ice_nova", "rime_cold_spark"},
+			effects = {cold_shock_unit_add = {0.25, 0.50, 0.75}},
 			description = "When Ice Nova hits an enemy, your next Cold Spark within 4 s " ..
 				"deals +25/50/75 % of a Spark hit; one charge."},
 		{id = "rime_returning_cold", code = "R11", name = "Returning Cold", type = "modifier",

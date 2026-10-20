@@ -164,7 +164,7 @@ end
 ------------------------------------------------------------------------------
 local tools, input_api = {}, nil
 local registered_classes = {warrior = {name = "Warrior"}, mage = {name = "Mage"},
-	priest = {name = "Priest"}, scout = {name = "Scout"}}
+	priest = {name = "Priest"}, scout = {name = "Scout"}, pc_caster = {name = "Caster"}}
 local function with_any(t)
 	return setmetatable(t, {__index = function() return any() end})
 end
@@ -293,13 +293,15 @@ refused({id = "probe_bad5", class = "warrior", kind = "swing", occupied_swing = 
 refused({id = "probe_bad6", class = "mage", kind = "cast", occupied_cast = -1},
 	"a negative occupied_cast")
 
--- The Mage's basic attack in place of Strike, its talent transformation, a
+-- A caster's basic attack in place of Strike, its talent transformation, a
 -- Warrior's talent swing in place of Strike and a talent transformation of
--- Taunt (one cooldown key with it).
-local spark = probe({id = "probe_spark", class = "mage", kind = "cast",
+-- Taunt (one cooldown key with it). Round 53: the probe caster is a class of
+-- its own, since the real Mage's Fiery Spark now replaces Strike.
+local spark = probe({id = "probe_spark", class = "pc_caster", kind = "cast",
 	transforms = "strike", cast_interval = 1})
-local cold = probe({id = "probe_cold_spark", class = "mage", kind = "cast",
+local cold = probe({id = "probe_cold_spark", class = "pc_caster", kind = "cast",
 	talent_gated = true, transforms = "probe_spark", cast_interval = 1})
+probe({id = "probe_wave", class = "pc_caster", kind = "cast"})
 local retort = probe({id = "probe_retort", class = "warrior", kind = "swing",
 	talent_gated = true, transforms = "strike", charge = 6})
 local bellow = probe({id = "probe_bellow", class = "warrior", kind = "cast",
@@ -310,17 +312,17 @@ eq(spark.cooldown_key .. "," .. cold.cooldown_key .. "," .. retort.cooldown_key 
 eq(G.registered.taunt.cooldown_key, "taunt", "T a shipped skill's key is its id")
 
 do
-	local mage = new_player("t_mage", "mage", {})
+	local mage = new_player("t_mage", "pc_caster", {})
 	local warrior = new_player("t_warrior", "warrior", {})
 	check(not G.is_unlocked(mage, "strike") and G.is_unlocked(mage, "probe_spark") and
 		not G.is_unlocked(mage, "probe_cold_spark"),
 		"T the Mage's basic attack replaces Strike for the Mage")
 	check(G.is_unlocked(warrior, "strike") and not G.is_unlocked(warrior, "probe_spark"),
 		"T ...and only for the Mage")
-	eq(table.concat(G.unlocked_ids(mage), ","), "fireball,ice_nova,blink,probe_spark",
+	eq(table.concat(G.unlocked_ids(mage), ","), "probe_spark,probe_wave",
 		"T the Mage's skill list: no Strike, the basic attack in its place in the kit")
 	mage.ranks.probe_cold_spark = 1
-	eq(table.concat(G.unlocked_ids(mage), ","), "fireball,ice_nova,blink,probe_cold_spark",
+	eq(table.concat(G.unlocked_ids(mage), ","), "probe_cold_spark,probe_wave",
 		"T a ranked transformation replaces its base in the list")
 	mage.ranks.probe_cold_spark = nil
 
@@ -328,11 +330,11 @@ do
 	local inv = mage.inv
 	for _, l in ipairs(LISTS) do for i = 1, 32 do inv.lists[l][i] = ItemStack("") end end
 	inv.lists.main[1] = ItemStack("grug_abilities:strike")
-	inv.lists.main[2] = ItemStack("grug_abilities:fireball")
+	inv.lists.main[2] = ItemStack("grug_abilities:probe_wave")
 	inv.lists.grug_hotbar_store[3] = ItemStack("grug_abilities:strike")
 	inv.lists.grug_bag1[4] = ItemStack("grug_abilities:strike")
 	G.normalize_kit(mage)
-	eq(row(inv, "main"):sub(1, 22), "probe_spark,fireball,,", "T class pick: Strike becomes the basic attack in its slot on A")
+	eq(row(inv, "main"):sub(1, 24), "probe_spark,probe_wave,,", "T class pick: Strike becomes the basic attack in its slot on A")
 	eq(inv.lists.grug_hotbar_store[3].name, "grug_abilities:probe_spark", "T ...and on B, same index")
 	eq(inv.lists.grug_bag1[4].name, "", "T ...a stray copy in a bag goes as a second copy")
 	mage.ranks.probe_cold_spark = 1
@@ -340,7 +342,7 @@ do
 	eq(inv.lists.main[1].name .. "|" .. inv.lists.grug_hotbar_store[3].name,
 		"grug_abilities:probe_cold_spark|grug_abilities:probe_cold_spark",
 		"T a talent rank swaps the base in place on A and B")
-	eq(inv.lists.main[2].name, "grug_abilities:fireball", "T ...the other skills stay")
+	eq(inv.lists.main[2].name, "grug_abilities:probe_wave", "T ...the other skills stay")
 	mage.ranks.probe_cold_spark = nil
 	G.normalize_kit(mage)
 	eq(inv.lists.main[1].name .. "|" .. inv.lists.grug_hotbar_store[3].name,

@@ -374,8 +374,8 @@ nothing per step on the server and every client plays them. NPCs keep
 
   | Pose | Picked | Plays on | Standing | Walking |
   | --- | --- | --- | --- | --- |
-  | `cast1` | A, palm forward | Fireball, Smite, Word of Ruin, Cinderfall; round K's Fiery Spark, Flame Lance, Meteor, Fire Rain, Rebuke, Censure, Final Word | 221–240 | 241–260 |
-  | `cast2` | B, arms raised | Ice Nova, Glacial Ward, Heal, Mend, Shield; round K's Cold Spark, Ice Wave, Rime Mantle, Winter Field, Hearten, Haven | 261–280 | 281–300 |
+  | `cast1` | A, palm forward | Fireball, Smite, Word of Ruin; round K's Fiery Spark, Flame Lance, Meteor, Fire Rain, Rebuke, Censure, Final Word | 221–240 | 241–260 |
+  | `cast2` | B, arms raised | Ice Nova, Heal, Mend, Shield; round K's Cold Spark, Ice Wave, Rime Mantle, Winter Field, Hearten, Haven | 261–280 | 281–300 |
   | `swing` | B, diagonal cut | a landed Mighty Blow or Broadstroke (round K), once | 301–314 | 315–334 |
   | `bow` | A, drawn and held | while the Scout's bow is drawn | 335–354 | 355–374 |
   | `block` | B, shield arm raised | Hold Ground; Unbroken (round K) | 375–394 | 395–414 |

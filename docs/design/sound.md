@@ -155,9 +155,9 @@ formspecs that drop the prepend. The client plays it at the file's own level
   hand mobs_redo's punch), on mobs and on players; an absorb shield taking a
   hit (not a damage-over-time tick); dodge; a player's death.
 - **Abilities:** one cue per theme at the caster (`CAST_SOUNDS`): Charge,
-  Taunt, Hold Ground; Ice Nova, Glacial Ward, Cinderfall; Smite, Heal and
-  Mend, Shield, Word of Ruin; Sidestep. Fireball and the Scout's shots sound
-  through their projectile at launch and at the hit; the weapon swings sound
+  Taunt, Hold Ground; Ice Nova; Smite, Heal and Mend, Shield, Word of Ruin;
+  Sidestep. Fiery Spark, Fireball and the Scout's shots sound through their
+  projectile at launch and at the hit; the weapon swings sound
   through the hit. Round 53 adds the user's picks for the new skills
   (`tools/r53_sks` assignments, `tools/r53_hooks/approved.txt`): casts of
   their own for Blink, Ice Wave, Rime Mantle, Winter Field, Fire Rain,
