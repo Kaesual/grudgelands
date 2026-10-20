@@ -21,6 +21,8 @@
 --   V  the two whole version 1 values: `"v":1`, within version 1's JSON cap;
 --   N  a version 2 composition (every line and grade, enchanted, broken)
 --      never names a file of `armor_files`.
+--   T  the handoff's test character (test_character.json, scene.lua) is
+--      current (gen_test_character.lua --check).
 -- Prints "R54 WEB PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -233,6 +235,12 @@ for _, line in ipairs(gv.LINES) do
 		check(result.armor ~= gv.ARMOR_NONE, "N the set draws armour: " .. line .. bracket)
 	end
 end
+
+-- T. The test character.
+local status = os.execute("luajit " .. ROOT .. "/tools/r54_web/gen_test_character.lua " ..
+	ROOT .. " --check >/dev/null")
+check(status == 0 or status == true, "T test_character.json and scene.lua are current " ..
+	"(run luajit tools/r54_web/gen_test_character.lua)")
 
 if failures > 0 then
 	error(("R54 WEB PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)

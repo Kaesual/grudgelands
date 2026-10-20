@@ -151,6 +151,9 @@ singleplayer has). Three nodes ahead, facing you, stand the glTF model
 your current textures (skin, cloak, armor, the empty weapon card) and size;
 every 4 seconds both switch between stand and walk. They should look the
 same: body, cloak, armor, the swinging panels, both clips. A headless shot
-of the same comparison (Round 54) is taken by `tools/r54_web/capture.sh`.
+of the same comparison (Round 54, the test character of
+`tools/r54_web/test_character.json`) is taken by `tools/r54_model/capture.sh`
+with `SCENE=tools/r54_web/scene.lua` and `MODELS=` a folder holding this
+`.glb` (`tools/r54_web/gen_test_character.lua` says how).
 `/glb_probe clear` removes them; they are never saved. Remove the
 `worldmods/grug_glb_probe` folder afterwards.

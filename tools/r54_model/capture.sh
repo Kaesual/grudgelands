@@ -24,7 +24,9 @@
 #   WIDTH/HEIGHT (default 1600 x 900), GUI=<gui_scaling> (default 1),
 #   SEED (default 42), SUFFIX=<text> appended to every file name,
 #   SETTLE=<seconds> before each shot (default 6), XVFB_DRIVERS=<Mesa DRI
-#   dir for Xvfb's GLX> (default /usr/lib64/dri). Run it through the shared
+#   dir for Xvfb's GLX> (default /usr/lib64/dri), MODELS=<dir> whose files
+#   are copied into the staged probe's models/ (extra meshes a scene names,
+#   e.g. the web export's .glb; tools/r54_web). Run it through the shared
 #   Lua queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
@@ -74,6 +76,10 @@ probe="$probedir/grug_probe_r54_model"
 cp -a "$here/grug_probe_r54_model" "$probe"
 mkdir -p "$probe/textures"
 [[ -n "${SCENE:-}" ]] && cp "$SCENE" "$probe/scene.lua"
+if [[ -n "${MODELS:-}" ]]; then
+	mkdir -p "$probe/models"
+	cp "$MODELS"/* "$probe/models/"
+fi
 python3 "$here/naive_atlas.py" --art "$art" --line "$line" --tier "$tier" \
 	--name r54model_T6 --out "$probe/textures"
 python3 "$here/naive_atlas.py" --art "$art" --line "$line" --tier "$tier" --palette steel \
