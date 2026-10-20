@@ -316,8 +316,8 @@ checklists (one test). An existing character first, so its old appearance and st
 1. **Every line and tier** (metal, leather, cloth, T1–T6) worn by several races, standing, walking and in the pose
    clips (cast, swing, block, charge, flinch): the shapes grow with the tier, metal bulkier than leather bulkier
    than cloth; the inner paint (sleeves, trousers, lower legs) shows under the boxes; no holes in the boxes.
-2. **Helmets:** the hair is hidden under every helmet and the face shows; metal T1–T4 open, T5 and T6 closed by the
-   visor.
+2. **Helmets:** the hair is hidden under every helmet and the face shows through the face window; metal T1–T4 open,
+   T5 and T6 closed (window painted over, visor in front).
 3. **Mixed tiers and lines** (a metal chest with cloth legs, T1 boots with a T6 chest) and **prefix and suffix
    colours** on every slot: zone A (cloth) and zone B (fittings) of each enchanted piece, on its boxes and its inner
    paint, the neighbours untouched.

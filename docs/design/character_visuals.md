@@ -135,7 +135,7 @@ the boxes it does not use stay transparent, so the model never changes with
 the gear. Chest, legs and feet also paint the body under their boxes (the
 **inner paint**, a skin layer: sleeves, trousers, the lower legs); the helmet
 is boxes only. Each tier's colours are baked into its art (its palette);
-nothing is tinted at runtime. Inventory art and worn art are separate assets
+no tier is tinted at runtime. Inventory art and worn art are separate assets
 made for their respective layouts. A character therefore shows the same
 armor line, slot and material tier that its equipped item names.
 
@@ -150,7 +150,8 @@ armor line, slot and material tier that its equipped item names.
 - **Armor is opaque** (the user, 2026-10-20: transparent texels showed
   holes, one looked into the hollow box): every face of a worn box is
   fully painted. The only opening is the helm's **face window**, so the
-  face shows under a helmet; metal T5 and T6 close it with a visor.
+  face shows under a helmet; the metal T5 and T6 helmets are closed (the
+  window painted over, a visor in front).
 - **The art** is original, painted by GPT-6 Astra in the armor contract's
   reference palette and picked by the user per line and tier from two
   proposals each (2026-10-20): metal T1–T5 "Bastion" and T6
