@@ -354,10 +354,12 @@ end
 -- units a character, a small web window's font against its slots).
 local MODEL = {x = 0.4, y = 1.35, w = 3.3, h = BOX_BOTTOM - 0.25 - 1.35}
 -- The view (Round 54, a first version for the user to tune): the camera's
--- rotation (x, y in degrees), then continuous rotation off, the mouse turns
+-- rotation (x, y in degrees; a three-quarter view from the weapon side, so
+-- the card held forward shows its length -- head-on, as at 0,160 before, it
+-- is foreshortened to a stub), then continuous rotation off, the mouse turns
 -- the model, and no frame range or speed: the model stands still in frame 0,
 -- the first frame of the stand animation.
-local MODEL_VIEW = "0,160"
+local MODEL_VIEW = "0,130"
 local STAT_X, STAT_Y, STAT_STEP = 3.95, 1.6, 0.5
 local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.15 - STAT_X
 local STAT_CHARS = math.floor(STAT_W / 0.15)

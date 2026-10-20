@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Round 54 lane VIEW: engine screenshots of the character creation preview
-# and the Character tab's 3D view (metal T6 with a sword, the same from
-# another camera rotation, cloth T1 bare-handed, leather T3 with a bow);
+# and the Character tab's 3D view (metal T6 with a sword, cloth T1
+# bare-handed, leather T3 with a bow, each also from a second camera
+# rotation, the `_alt` shots);
 # tools/r54_view/grug_probe_r54_view drives them.
 #
 # The method and isolation of tools/r49_inv/capture.sh (copied, names

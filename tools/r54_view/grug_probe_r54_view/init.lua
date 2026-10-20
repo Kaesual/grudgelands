@@ -135,9 +135,16 @@ local SHOTS = {
 		wear(player, "cloth", 1, nil)
 		show_character(player)
 	end},
+	{name = "V2_cloth_t1_bare_alt", run = function(player)
+		show_character(player, ALT_ROTATION)
+	end},
+	-- A bow in the main hand list (the Scout's Ranged slot is that list).
 	{name = "V3_leather_t3_bow", run = function(player)
 		wear(player, "leather", 3, grug_gear.weapon_item("bow", 3))
 		show_character(player)
+	end},
+	{name = "V3_leather_t3_bow_alt", run = function(player)
+		show_character(player, ALT_ROTATION)
 	end},
 }
 
