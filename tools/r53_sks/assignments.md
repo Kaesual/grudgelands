@@ -40,3 +40,13 @@ sound for this row; default = neither. Open points are in the questions below.
 - **flame_lance**: Eine Notiz sagt, ein Ton „könnte zum Feuerstrahl passen“. Flame Lance hat bisher keinen eigenen Ton (Geschoss-Ton wie der Feuerball). Notes: `winter_field_4_fs844261` (—) „Könnte zum Feuerstrahl passen“. Recommended: Nur als Anmerkung aufbewahren; Flame Lance behält den Geschoss-Ton, bis du einen eigenen Abschuss-Ton für sie willst.
 - **blink**: Eine Notiz sagt, ein Ton „passt eher zu Blink“. Blink ist heute absichtlich stumm. Notes: `rime_mantle_3_fs274542` (—) „Passt eher zu Blink oder ähnlichem, ein klarer Magie-Sound, aber ohne "Eis-Bezug"“. Recommended: Nur als Anmerkung aufbewahren; Blink bleibt stumm, bis du ihm ausdrücklich einen Ton gibst.
 - **ruination_better**: Ruination: der Favorit ist „am ehesten dieser Sound, aber vielleicht finden wir hier noch was besseres“. Notes: `ruination_4_lrsf-Spell-04` (pick) „Am ehesten dieser Sound, aber vielleicht finden wir hier noch was besseres“. Recommended: Spell_04 jetzt zuweisen; eine Suche nach einem besseren Ton kann eine spätere Hörseite liefern.
+
+## Confirmed by the user (control page, 2026-10-20)
+
+All 24 rows: keep. Questions: Meteor, Rebuke, Arrowfall repeat (once per hitting arrow, at most 4, small pitch
+spread — the SCOUT lane builds it), Unbroken, Ruination: keep (the recommendation). Two changes ("redo"):
+
+| Row | Ability | Cue | Choice | Basis |
+|---|---|---|---|---|
+| blink | blink | cast | `rime_mantle_3_fs274542` (Low Ice shimmer FX, B3_Sound, CC0 1.0) | „Bitte als Blink-Sound nutzen“ |
+| flame_lance | flame_lance | projectile launch | `winter_field_4_fs844261` (Subzero Frost Loop, qubodup, CC0 1.0) | „Bitte als Geschoss-Ton nutzen“ |
