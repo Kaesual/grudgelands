@@ -972,7 +972,7 @@ end
 -- not. `_grug_noncombatant` splits the family instead, and a GRUG PATCH in
 -- general_attack's own candidate filter drops such an entity before any
 -- distance or line-of-sight work -- the same site and the same shape as the
--- `_grug_ignore_player` hook the undead night truce already uses, which is
+-- `_grug_ignore_player` hook the undead zombie truce already uses, which is
 -- what lets the mob pick the next-closest viable target instead of
 -- re-acquiring the vetoed one forever.
 --

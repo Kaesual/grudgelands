@@ -930,7 +930,7 @@ world copied before the tool; logins `warrior`, `mage`, `priest`,
    never the target; Flame Lance's white-hot trail and 1.5 s busy; Meteor,
    Fire Rain and Winter Field: warning, fall, impact and impact sound, also
    in a cave and on a slope; **on stairs** a target one step up behind the
-   riser is not hit (the line of sight from the anchor; acceptable?); "No
+   riser is hit (since 0.53.1 areas have no line of sight); "No
    ground found." at the sky; aimed at ground within hand reach a tap casts
    and holding digs; Cold Spark's own launch sound and light slow; the 2.5 s
    Nova root, Cold Shock's icon and proc ring, then a harder Cold Spark;

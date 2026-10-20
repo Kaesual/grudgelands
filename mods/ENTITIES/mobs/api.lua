@@ -1816,7 +1816,7 @@ function mob_class:general_attack()
 			or is_invisible(self, objs[n]:get_player_name())
 			or is_peaceful_player(objs[n])
 			-- GRUG PATCH: per-entity player-target veto hook, set at runtime by
-			-- grug_mobs (undead night truce, WP19). Filtering here (instead of
+			-- grug_mobs (undead zombie truce, WP19). Filtering here (instead of
 			-- stop_attack in a wrapper) lets the mob pick the next-closest
 			-- viable player instead of re-acquiring the vetoed one forever.
 			or (self._grug_ignore_player and self:_grug_ignore_player(objs[n]))

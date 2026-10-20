@@ -1531,8 +1531,8 @@ end)
 --
 -- Central damage modifier for players: punch combat marking and dodge,
 -- same-level-fitted mob pressure, equipped-armor mitigation for physical hits
--- that have not already applied it, pool scaling of fall and lava damage with
--- race mitigation for dwarf fall damage, then the absorb shield (never for
+-- that have not already applied it, pool scaling of fall and lava damage,
+-- then the absorb shield (never for
 -- fall, lava or drowning). Runs as an hp-change modifier so a dodge cancels
 -- the whole committed hit and absorbs are consumed after mitigation but
 -- before HP. Pool shares live in environment_damage.lua.

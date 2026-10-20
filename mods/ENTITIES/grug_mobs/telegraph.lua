@@ -104,7 +104,7 @@ local function resolve(self)
 		-- Players this mob may not target at all are not collateral either:
 		-- the SAME veto general_attack consumes (init.lua's
 		-- `_grug_ignore_player` — own-faction/factionless players for a
-		-- faction NPC, unprovoked truce players at night). Without it an
+		-- faction NPC, unprovoked truce players). Without it an
 		-- elite GUARD would slam its own faction's players standing next to
 		-- it, which no acquisition path would ever have allowed.
 		if pp and p:get_hp() > 0

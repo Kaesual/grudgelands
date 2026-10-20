@@ -121,7 +121,7 @@ merges, in order:
 
 | Lane | Merge (lane tip) | What | Review |
 |---|---|---|---|
-| ART | `272cf9e6` (`fe2d53eb`) | the 36 picked icons (26 skills, 10 talents: 20 from drop-01, 8 from drop-02, 8 `old` 0.51 files from `dea1d163`) byte-identical over the shipped files; licence rows in both `LICENSE-media.md`; `tools/r531_art/ship_icons.py` (`apply`, `check`, `rows`, `sheet`) | MERGE (no findings) |
+| ART | `272cf9e6` (`fe2d53eb`) | the 36 picked icons (26 skills, 10 talents: 20 from drop-01, 8 from drop-02, 8 `old` 0.51 files from `dea1d163`) byte-identical over the shipped files; licence rows in both `LICENSE-media.md`; `tools/r531_art/ship_icons.py` (`apply`, `check`, `rows`, `sheet`) | MERGE (no findings; one backlog note) |
 | FLIGHT | `ad1157eb` (`010da19b`) | band 40 (`grug_mounts.WARNING_WIDTH`, now the single source), the shared rule `grug_mounts.flight_rule` in the new `grug_mounts/flight.lua`, the minimap's no-fly overlay on a flyer (`flight_overlay` in `grug_map/base.lua`, `flight_mode` in the minimap) | MERGE (a doc line for D, backlog notes) |
 | SKILLS | `144a7cc9` (`b60e52be`) | no line of sight in `area.query`, `area.cone` and `area.group` (`clear_line` deleted); the group is the same ±3 cylinder; the "Range: N m" tooltip line from `get_range`; the pointing-range literals out of the skill texts, then (review Low 1, delta `b60e52be`) out of the talent texts too ("in your crosshair") | MERGE; the text delta checked by the coordinator |
 | GEAR | `8e146dfe` (`597c8d21`) | `usable_by` for hand pieces from `grug_inventory.hand_accepts` (the equip rule); the unique-trinket block and `grug_trinkets`' second uniqueness guard (`effects.seen`) removed; the pair share 5–30 % and its tooltip line | MERGE (backlog notes) |
@@ -206,7 +206,8 @@ Desktop and the web build, on the synced game, in **one** test of 0.53.1: first 
 [Round 53 GUI checklist](round53-plan.md#gui-checklist-round-53) (world
 `~/projects/grudgelands-orchestration/r53/worlds/r53_ms_0.52.1`, logins `warrior`, `mage`, `priest`, `scout`, `sleeper`,
 `walker`, password `it-<name>`; a copy of the production world; a fresh world), then this list. Round 53 item 4's stair
-case changes with 0.53.1: a target one step up behind the riser **is** hit now (item 1 below).
+case changes with 0.53.1: a target one step up behind the riser **is** hit now (item 1 below). Round 53 item 8 means the skills' colours,
+not their icons (0.53.1 brought back the 0.51 icons of Hold Ground, Mend and Word of Ruin, item 9 below).
 
 1. **Areas without line of sight:** Meteor, Fire Rain and Censure on stairs, in a cave and next to a wall: everything
    within the radius and ±3 m is hit, also behind the step edge and through a thin wall; a target on a floor 4 m or
@@ -222,7 +223,8 @@ case changes with 0.53.1: a target one step up behind the riser **is** hit now (
 4. **Undead:** zombies and husks ignore you by day and by night until you hit one; skeletons still attack.
 5. **Elf and the range line:** ranges +3; tooltips show "Range: N m" with talents (Fiery Spark 20 m, 23 with Far Cast
    3/3, +3 for an Elf); Strike stays 3 m for an Elf; Hold Ground, Ice Nova and Hearten show no range line; Meteor,
-   Fire Rain, Winter Field and Censure show theirs.
+   Fire Rain, Winter Field and Censure show theirs; Bladecraft's range line shows 3 m and its text names the shot's
+   range (25 m, +3 for an Elf).
 6. **Dwarf:** the Character page shows a 5 % higher armor rating (one decimal); fall damage is normal.
 7. **Skeleton bows:** Skeleton Archer, Skeleton Raider and Frost Stray hold a bow while drawing (upright in front of
    the body), at the hip while standing.
