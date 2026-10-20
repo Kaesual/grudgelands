@@ -179,7 +179,7 @@ these files. The source is `tools/r54_armor/test_art/`, written by
 **`tools/r54_armor/make_test_art.py`** (own synthetic art of this project, no
 third-party pixel); **`tools/r54_armor/bake.py`** turns it into the files below
 (palette swap per tier, layout of `tools/r54_armor/data/atlas.json`) and
-rebuilds them byte for byte (`bake.py --check`). `<grade>` is the grade key of
+rebuilds them pixel for pixel (`bake.py --check` compares mode, size and pixels). `<grade>` is the grade key of
 `grug_gear.MATERIALS`.
 
 | File | Author | License | Notes |

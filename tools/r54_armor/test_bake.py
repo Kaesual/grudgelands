@@ -39,6 +39,9 @@ REF = {name: L.hex_rgb(h) for _, name, h, _ in L.REFERENCE}
 # a test palette with 13 distinct colours (and differing from the reference)
 PAL = {name: "#%02X%02X%02X" % (10 + 15 * i, 200 - 13 * i, (37 * i) % 256)
        for i, name in enumerate(L.REF_NAMES)}
+# a second palette for metal T3, so a bake that takes another tier's palette fails
+PAL2 = {name: "#%02X%02X%02X" % (240 - 11 * i, 20 + 17 * i, (90 + 41 * i) % 256)
+        for i, name in enumerate(L.REF_NAMES)}
 GRADES = B.grades()
 
 
@@ -80,8 +83,9 @@ def make_art(root):
             "inner": {s: "a" for s in L.INNER_SLOTS}, "icon": {s: "a" for s in L.SLOTS}}
     tiers = {ln: {t: dict(tier) for t in L.TIER_IDS} for ln in L.LINES}
     tiers["metal"]["T2"] = dict(tier, on=[], inner={})
+    tiers["metal"]["T3"] = dict(tier, palette="test2")
     (root / "tiers.json").write_text(json.dumps(tiers))
-    (root / "palettes.json").write_text(json.dumps({"palettes": {"test": {"colors": PAL}}}))
+    (root / "palettes.json").write_text(json.dumps({"palettes": {"test": {"colors": PAL}, "test2": {"colors": PAL2}}}))
 
 
 def opaque(im):
@@ -126,6 +130,10 @@ def main():
         # every reference colour at its texel, in the tier palette's colour
         for i, n in enumerate(L.REF_NAMES):
             ok(chest.getpixel((ax + i, ay)) == L.hex_rgb(PAL[n]) + (255,), f"colour {n} at its atlas texel")
+        # each tier its own palette: metal T3 uses the second one
+        chest3 = files[f"grug_armor_metal_{GRADES['metal'][2]}_chest.png"]
+        for i, n in enumerate(L.REF_NAMES):
+            ok(chest3.getpixel((ax + i, ay)) == L.hex_rgb(PAL2[n]) + (255,), f"metal T3 colour {n} from its palette")
         # zones in the right frame, light 255 / dark 153; other colours unmasked
         for i, n in enumerate(L.REF_NAMES):
             top, bottom = mask.getpixel((ax + i, ay)), mask.getpixel((ax + i, ay + 64))
@@ -194,6 +202,22 @@ def main():
         ok(r.returncode == 0 and "1 removed" in r.stdout and not (out / "grug_armor_old_thing.png").exists(),
            "write removes the stale grug_armor file: " + r.stdout)
         ok(run("--art", art, "--out", out, "--icons-out", iout, "--check").returncode == 0, "check after rewrite")
+
+        # a tier entry without 'inner' and 'icon' (armorlib.load_tiers: it has none): transparent
+        # skin layers; an icon bake refuses it, since every item needs its icon
+        raw = json.loads((art / "tiers.json").read_text())
+        del raw["leather"]["T2"]["inner"], raw["leather"]["T2"]["icon"]
+        (art / "tiers.json").write_text(json.dumps(raw))
+        plain, _ = B.bake(art)
+        for s in L.INNER_SLOTS:
+            ok(not opaque(plain[f"grug_armor_leather_{GRADES['leather'][1]}_{s}_skin.png"]),
+               f"leather T2 without 'inner': {s} skin layer transparent")
+        ok(opaque(plain[f"grug_armor_leather_{GRADES['leather'][1]}_chest.png"]), "leather T2 still wears its boxes")
+        try:
+            B.bake(art, icons=True)
+            ok(False, "an icon bake of a tier without 'icon' fails")
+        except B.BakeError as e:
+            ok("leather T2 names no icon for head" in str(e), "icon bake names the tier without icons: " + str(e))
 
         # broken art fails the bake with the reason
         (art / "metal" / "sleeve_a.png").unlink()

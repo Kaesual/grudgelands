@@ -152,7 +152,8 @@ python3 test_bake.py                            # the tool's test on a tiny synt
   grade gets every file, transparent where the tier paints nothing: 252 files.
 - The zones come from the reference-palette pixels, so they hold whatever colour a tier palette gives zone A or B.
   Alpha is hard. A missing file, a wrong size, partial alpha or an off-palette colour fails the bake (run
-  `check.py` first); paint outside the faces or the slot's regions is dropped.
+  `check.py` first); paint outside the faces or the slot's regions is dropped. A tier entry without `inner` has transparent skin layers; with
+  `--icons-out`, a tier entry that names no icon for a slot fails the bake (every item needs its icon).
 - `--check` rebuilds in memory and compares mode, size and pixels with each file (like `gen_enchant_masks.py
   --check`; PNG bytes would differ between Pillow/zlib versions). An extra file is a `grug_armor_*.png` in `--out`
   the bake would not write; write mode removes such files. In `--icons-out` only the 144 icon files count.
