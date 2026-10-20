@@ -311,7 +311,8 @@ eq(G.registered.taunt.cooldown_key, "taunt", "T a shipped skill's key is its id"
 
 do
 	local mage = new_player("t_mage", "mage", {})
-	local warrior = new_player("t_warrior", "warrior", {})
+	-- Round 53 WARRIOR: Taunt is Bulwark's unlock (bulwark_taunt) now.
+	local warrior = new_player("t_warrior", "warrior", {bulwark_taunt = 1})
 	check(not G.is_unlocked(mage, "strike") and G.is_unlocked(mage, "probe_spark") and
 		not G.is_unlocked(mage, "probe_cold_spark"),
 		"T the Mage's basic attack replaces Strike for the Mage")

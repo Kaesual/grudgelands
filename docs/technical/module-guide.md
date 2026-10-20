@@ -612,8 +612,10 @@ tools](#player-meta-read-by-external-tools).
   action. The accepted transaction stays
   exact attacker+ray-target and claim-once; the mobs_redo/PvP finish seam pays
   cost, resets charge, grants rage and applies post-effects only on its existing
-  accepted/HP-loss conditions. Mighty Blow remains
-  `floor(weapon*1.5)+melee bonus`; Hamstring remains a 50% slow.
+  accepted/HP-loss conditions. Since Round 53 Mighty Blow (and Broadstroke's
+  primary) is 1.45 x (weapon + melee bonus) plus Heavy Hand and Finisher,
+  Hamstring a 35% slow, and the Warrior's windows (Retort, Ruination) reach
+  every swing through `grug_abilities.register_on_swing` (`kits_warrior.lua`).
   WP39's binary small gold crosshair ring is shown once while a selected
   swing is weapon-ready, hidden on a valid attempt, absent for non-swings, no
   smooth progress and no inventory writes; a weapon swap follows the new
