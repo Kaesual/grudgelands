@@ -482,13 +482,16 @@ tools](#player-meta-read-by-external-tools).
   fraction (`Str/10`, floored once at the end); the damage-fit reference
   `grug_core.baseline_melee_total(level)` keeps it unfloored too (Round 34
   F2) and is public since Round 35: it is the base hit `B(L)` of the
-  level-proof talents. **Talent values (Round 35, skill_trees.md §2.10):**
-  `grug_classes.get_talent_bonus(player, key)` returns, for a key in
-  `grug_classes.TALENT_LEVEL_SCALED_KEYS`, the stored percentage times
-  `B(L)` (damage) or `grug_core.armor_k(L)` (armour) at the player's level
-  (`talent_level_amount`, which the talent tooltip uses per rank), so every
-  consumer adds the amount where it once added a flat value, before the one
-  damage scalar; the talent cache holds only the percentage sums. Helpers of
+  level-proof talents. **Talent values (Round 35, skill_trees.md §2.10;
+  the graph talents since Round 53, §3.12):**
+  `grug_classes.get_talent_bonus(player, key)` sums a key over the
+  character's graph ranks and returns, for a key in
+  `graph.LEVEL_SCALED_KEYS` (`armor_percent_add`), the stored percentage
+  times `grug_core.armor_k(L)` at the player's level (`graph.level_amount`,
+  which the node tooltip uses per rank), so every consumer adds the amount
+  where it once added a flat value; the talent cache holds only the sums.
+  The old `TALENT_LEVEL_SCALED_KEYS` and `talent_level_amount` stay loaded,
+  read by no live rank, until the round's clean-up. Helpers of
   that round: `grug_abilities.clear_cooldown(player, id)` (Last Word resets
   Word of Ruin a step after the cast) and `grug_core.is_rooted(player)`
   (Opening's held target). **Support factor (Round 36):**
