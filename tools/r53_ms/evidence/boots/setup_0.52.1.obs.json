@@ -1,0 +1,1314 @@
+{
+ "finish": "every planned character left",
+ "game": "0.52.1",
+ "joins": [
+  {
+   "build": {
+    "class": "warrior",
+    "faction": "accord",
+    "layout": [
+     {
+      "item": "grug_inventory:bag_small",
+      "list": "grug_bag1",
+      "role": "keep",
+      "slot": 1
+     },
+     {
+      "item": "default:torch",
+      "list": "grug_bag1_content",
+      "role": "keep",
+      "slot": 4
+     }
+    ],
+    "race": "dwarf",
+    "spawn": {
+     "x": -1800,
+     "y": 36,
+     "z": -2550
+    },
+    "spent": 15
+   },
+   "built_ok": true,
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.1s | clients: warrior"
+    }
+   ],
+   "loaded": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 20
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": null,
+     "grug_bag1_content": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 0,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 0,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "warrior",
+   "settled": {
+    "available": 0,
+    "class": "warrior",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "charge",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "mighty_blow",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "taunt",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 1.2,
+     "final": 917,
+     "hp": 917,
+     "hp_max": 917,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:charge",
+      "grug_abilities:mighty_blow",
+      "grug_abilities:taunt",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "warrior",
+     "grug_classes:race": "dwarf",
+     "grug_classes:respec_used": "1",
+     "grug_classes:talent_ready:ruination": "1792492374",
+     "grug_classes:talents": "ironbound=4,spite=3,heavy_hand=4,keen_edge=4",
+     "grug_classes:unbroken_ready": "1792492374"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 15
+   }
+  },
+  {
+   "build": {
+    "class": "mage",
+    "faction": "accord",
+    "layout": [
+     {
+      "item": "grug_inventory:bag_small",
+      "list": "grug_bag1",
+      "role": "keep",
+      "slot": 1
+     },
+     {
+      "item": "default:torch",
+      "list": "grug_bag1_content",
+      "role": "keep",
+      "slot": 4
+     },
+     {
+      "item": "grug_abilities:cinderfall",
+      "list": "main",
+      "role": "remove",
+      "slot": 5
+     },
+     {
+      "item": "grug_abilities:strike",
+      "list": "grug_hotbar_store",
+      "role": "strike_b",
+      "slot": 1
+     },
+     {
+      "item": "grug_abilities:ice_nova",
+      "list": "grug_hotbar_store",
+      "role": "ice_nova_b",
+      "slot": 2
+     },
+     {
+      "item": "grug_abilities:glacial_ward",
+      "list": "grug_hotbar_store",
+      "role": "remove",
+      "slot": 3
+     },
+     {
+      "item": "grug_abilities:cinderfall",
+      "list": "grug_bag1_content",
+      "role": "remove",
+      "slot": 2
+     },
+     {
+      "item": "grug_abilities:strike",
+      "list": "main",
+      "role": "strike_a",
+      "slot": 1
+     },
+     {
+      "item": "grug_abilities:ice_nova",
+      "list": "main",
+      "role": "ice_nova_a",
+      "slot": 3
+     }
+    ],
+    "race": "dwarf",
+    "spawn": {
+     "x": -1800,
+     "y": 36,
+     "z": -2550
+    },
+    "spent": 15
+   },
+   "built_ok": true,
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 4s | max lag: 0.14s | clients: mage"
+    }
+   ],
+   "loaded": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 20
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": null,
+     "grug_bag1_content": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 0,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 0,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "mage",
+   "settled": {
+    "available": 0,
+    "class": "mage",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "fireball",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "ice_nova",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "blink",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     },
+     {
+      "id": "cinderfall",
+      "list": "main",
+      "slot": 5,
+      "unlocked": false
+     },
+     {
+      "id": "strike",
+      "list": "grug_hotbar_store",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "ice_nova",
+      "list": "grug_hotbar_store",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "glacial_ward",
+      "list": "grug_hotbar_store",
+      "slot": 3,
+      "unlocked": false
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.9,
+     "final": 688,
+     "hp": 688,
+     "hp_max": 688,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "grug_abilities:cinderfall",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "grug_abilities:strike",
+      "grug_abilities:ice_nova",
+      "grug_abilities:glacial_ward",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:fireball",
+      "grug_abilities:ice_nova",
+      "grug_abilities:blink",
+      "grug_abilities:cinderfall",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "mage",
+     "grug_classes:race": "dwarf",
+     "grug_classes:respec_used": "1",
+     "grug_classes:talent_ready:whitehot": "1792492378",
+     "grug_classes:talents": "tinder=3,deep_well=4,deep_chill=4,cold_focus=4"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 15
+   }
+  },
+  {
+   "build": {
+    "class": "priest",
+    "faction": "accord",
+    "layout": [
+     {
+      "item": "grug_inventory:bag_small",
+      "list": "grug_bag1",
+      "role": "keep",
+      "slot": 1
+     },
+     {
+      "item": "default:torch",
+      "list": "grug_bag1_content",
+      "role": "keep",
+      "slot": 4
+     },
+     {
+      "item": "grug_abilities:strike",
+      "list": "main",
+      "role": "strike_a",
+      "slot": 1
+     },
+     {
+      "item": "grug_abilities:smite",
+      "list": "main",
+      "role": "smite_a",
+      "slot": 2
+     }
+    ],
+    "race": "dwarf",
+    "spawn": {
+     "x": -1800,
+     "y": 36,
+     "z": -2550
+    },
+    "spent": 15
+   },
+   "built_ok": true,
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 9s | max lag: 0.159s | clients: priest"
+    }
+   ],
+   "loaded": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 20
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": null,
+     "grug_bag1_content": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 0,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 0,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "priest",
+   "settled": {
+    "available": 0,
+    "class": "priest",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "smite",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "heal",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "shield_spell",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 1,
+     "final": 764,
+     "hp": 764,
+     "hp_max": 764,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:smite",
+      "grug_abilities:heal",
+      "grug_abilities:shield_spell",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "priest",
+     "grug_classes:race": "dwarf",
+     "grug_classes:respec_used": "1",
+     "grug_classes:talent_ready:last_word": "1792492383",
+     "grug_classes:talents": "gentle_hand=4,warding_faith=3,sharpened_word=4,hard_faith=4"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 15
+   }
+  },
+  {
+   "build": {
+    "class": "scout",
+    "faction": "accord",
+    "layout": [
+     {
+      "item": "grug_inventory:bag_small",
+      "list": "grug_bag1",
+      "role": "keep",
+      "slot": 1
+     },
+     {
+      "item": "default:torch",
+      "list": "grug_bag1_content",
+      "role": "keep",
+      "slot": 4
+     },
+     {
+      "item": "grug_abilities:pinning_shot",
+      "list": "main",
+      "role": "remove",
+      "slot": 6
+     },
+     {
+      "item": "grug_abilities:pinning_shot",
+      "list": "grug_hotbar_store",
+      "role": "remove",
+      "slot": 4
+     },
+     {
+      "item": "grug_abilities:pinning_shot",
+      "list": "grug_bag1_content",
+      "role": "remove",
+      "slot": 1
+     }
+    ],
+    "race": "dwarf",
+    "spawn": {
+     "x": -1800,
+     "y": 36,
+     "z": -2550
+    },
+    "spent": 15
+   },
+   "built_ok": true,
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 14s | max lag: 0.151s | clients: scout"
+    }
+   ],
+   "loaded": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 20
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": null,
+     "grug_bag1_content": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 0,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 0,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "scout",
+   "settled": {
+    "available": 0,
+    "class": "scout",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "loose",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "snare_shot",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "sidestep",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     },
+     {
+      "id": "sprint",
+      "list": "main",
+      "slot": 5,
+      "unlocked": true
+     },
+     {
+      "id": "pinning_shot",
+      "list": "main",
+      "slot": 6,
+      "unlocked": false
+     },
+     {
+      "id": "pinning_shot",
+      "list": "grug_hotbar_store",
+      "slot": 4,
+      "unlocked": false
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 1,
+     "final": 764,
+     "hp": 764,
+     "hp_max": 764,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "grug_abilities:pinning_shot",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "grug_abilities:pinning_shot",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:loose",
+      "grug_abilities:snare_shot",
+      "grug_abilities:sidestep",
+      "grug_abilities:sprint",
+      "grug_abilities:pinning_shot",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "scout",
+     "grug_classes:race": "dwarf",
+     "grug_classes:respec_used": "1",
+     "grug_classes:talents": "strong_draw=3,quiver=4,fine_edge=4,light_step=4",
+     "grug_classes:untouchable_ready": "1792492388"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 15
+   }
+  },
+  {
+   "build": {
+    "class": "mage",
+    "faction": "accord",
+    "layout": [
+     {
+      "item": "grug_inventory:bag_small",
+      "list": "grug_bag1",
+      "role": "keep",
+      "slot": 1
+     },
+     {
+      "item": "default:torch",
+      "list": "grug_bag1_content",
+      "role": "keep",
+      "slot": 4
+     },
+     {
+      "item": "grug_abilities:glacial_ward",
+      "list": "main",
+      "role": "remove",
+      "slot": 5
+     },
+     {
+      "item": "grug_abilities:cinderfall",
+      "list": "grug_bag1_content",
+      "role": "remove",
+      "slot": 3
+     }
+    ],
+    "race": "dwarf",
+    "spawn": {
+     "x": -1800,
+     "y": 36,
+     "z": -2550
+    },
+    "spent": 15
+   },
+   "built_ok": true,
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 18s | max lag: 0.143s | clients: sleeper"
+    }
+   ],
+   "loaded": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 20
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": null,
+     "grug_bag1_content": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 0,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 0,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "sleeper",
+   "settled": {
+    "available": 0,
+    "class": "mage",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "fireball",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "ice_nova",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "blink",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     },
+     {
+      "id": "glacial_ward",
+      "list": "main",
+      "slot": 5,
+      "unlocked": false
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.9,
+     "final": 688,
+     "hp": 688,
+     "hp_max": 688,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "grug_abilities:cinderfall",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:fireball",
+      "grug_abilities:ice_nova",
+      "grug_abilities:blink",
+      "grug_abilities:glacial_ward",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "mage",
+     "grug_classes:race": "dwarf",
+     "grug_classes:respec_used": "1",
+     "grug_classes:talent_ready:whitehot": "1792492392",
+     "grug_classes:talents": "tinder=3,deep_well=4,deep_chill=4,cold_focus=4"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 15
+   }
+  },
+  {
+   "build": {
+    "class": "",
+    "layout": [
+     {
+      "item": "default:apple",
+      "list": "main",
+      "role": "keep",
+      "slot": 9
+     }
+    ]
+   },
+   "built_ok": true,
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 23s | max lag: 0.14s | clients: walker"
+    }
+   ],
+   "loaded": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 20
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": null,
+     "grug_bag1_content": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 0,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 0,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "walker",
+   "settled": {
+    "available": 0,
+    "class": "",
+    "hotbars": null,
+    "hp": {
+     "hp": 20,
+     "hp_max": 26
+    },
+    "level": 1,
+    "lists": {
+     "grug_bag1": [
+      ""
+     ],
+     "grug_bag1_content": null,
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "default:apple",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": null,
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 0,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   }
+  }
+ ],
+ "leaves": 6,
+ "load": {
+  "from": "0.52.1",
+  "new_world": true
+ },
+ "phase": "setup_0.52.1",
+ "registered": {
+  "cinderfall": true,
+  "fiery_spark": false,
+  "glacial_ward": true,
+  "ice_nova": true,
+  "ice_wave": false,
+  "loose": true,
+  "pinning_shot": true,
+  "smite": true,
+  "strike": true
+ }
+}

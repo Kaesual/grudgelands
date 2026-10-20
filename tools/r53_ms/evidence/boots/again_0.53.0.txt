@@ -1,0 +1,11 @@
+launcher: staged probe: grug_probe_r53_ms
+seconds: 17, exit 0
+joins: ['mage logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.53.0, game 0.53.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33894.
+ACTION[Server]: mage [127.0.0.1] joins game. List of players: mage
+ACTION[Server]: [r53_ms_probe] joined mage
+ACTION[Server]: [r53_ms_probe] left mage
+ACTION[Server]: mage leaves game. List of players: 
+ACTION[Server]: [r53_ms_probe] observations written: every planned character left

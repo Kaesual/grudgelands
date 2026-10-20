@@ -1,0 +1,32 @@
+launcher: staged probe: grug_probe_r53_ms
+seconds: 36, exit 0
+joins: ['warrior logged in (protocol 52), stayed 4.0 s', 'mage logged in (protocol 52), stayed 4.0 s', 'priest logged in (protocol 52), stayed 4.0 s', 'scout logged in (protocol 52), stayed 4.0 s', 'walker logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.53.0, game 0.53.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33894.
+ACTION[Server]: warrior [127.0.0.1] joins game. List of players: warrior
+ACTION[Server]: [r53_ms_probe] joined warrior
+ACTION[Server]: [grug_core] migration 0.53.0: warrior's online work is done
+ACTION[Server]: [r53_ms_probe] left warrior
+ACTION[Server]: warrior leaves game. List of players: 
+ACTION[Server]: mage [127.0.0.1] joins game. List of players: mage
+ACTION[Server]: [r53_ms_probe] joined mage
+ACTION[Server]: [grug_core] migration 0.53.0: mage's online work is done
+ACTION[Server]: [r53_ms_probe] left mage
+ACTION[Server]: mage leaves game. List of players: 
+ACTION[Server]: priest [127.0.0.1] joins game. List of players: priest
+ACTION[Server]: [r53_ms_probe] joined priest
+ACTION[Server]: [grug_core] migration 0.53.0: priest's online work is done
+ACTION[Server]: [r53_ms_probe] left priest
+ACTION[Server]: priest leaves game. List of players: 
+ACTION[Server]: scout [127.0.0.1] joins game. List of players: scout
+ACTION[Server]: [r53_ms_probe] joined scout
+ACTION[Server]: [grug_core] migration 0.53.0: scout's online work is done
+ACTION[Server]: [r53_ms_probe] left scout
+ACTION[Server]: scout leaves game. List of players: 
+ACTION[Server]: walker [127.0.0.1] joins game. List of players: walker
+ACTION[Server]: [r53_ms_probe] joined walker
+ACTION[Server]: [grug_core] migration 0.53.0: walker's online work is done
+ACTION[Server]: [r53_ms_probe] left walker
+ACTION[Server]: walker leaves game. List of players: 
+ACTION[Server]: [r53_ms_probe] observations written: every planned character left

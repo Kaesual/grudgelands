@@ -1,0 +1,268 @@
+{
+ "finish": "every planned character left",
+ "game": "0.53.0",
+ "joins": [
+  {
+   "chat": [
+    {
+     "t": 0,
+     "text": "# Server: version: 5.17.0 | game: Grudgelands | uptime: 0s | max lag: 0.1s | clients: mage"
+    }
+   ],
+   "loaded": {
+    "available": 15,
+    "class": "mage",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "fireball",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "ice_nova",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "blink",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     },
+     {
+      "id": "strike",
+      "list": "grug_hotbar_store",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "ice_nova",
+      "list": "grug_hotbar_store",
+      "slot": 2,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.8,
+     "final": 611,
+     "hp": 611,
+     "hp_max": 20,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "grug_abilities:strike",
+      "grug_abilities:ice_nova",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:fireball",
+      "grug_abilities:ice_nova",
+      "grug_abilities:blink",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "mage",
+     "grug_classes:race": "dwarf"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   },
+   "name": "mage",
+   "settled": {
+    "available": 15,
+    "class": "mage",
+    "hotbars": [
+     {
+      "id": "strike",
+      "list": "main",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "fireball",
+      "list": "main",
+      "slot": 2,
+      "unlocked": true
+     },
+     {
+      "id": "ice_nova",
+      "list": "main",
+      "slot": 3,
+      "unlocked": true
+     },
+     {
+      "id": "blink",
+      "list": "main",
+      "slot": 4,
+      "unlocked": true
+     },
+     {
+      "id": "strike",
+      "list": "grug_hotbar_store",
+      "slot": 1,
+      "unlocked": true
+     },
+     {
+      "id": "ice_nova",
+      "list": "grug_hotbar_store",
+      "slot": 2,
+      "unlocked": true
+     }
+    ],
+    "hp": {
+     "base": 764,
+     "factor": 0.8,
+     "final": 611,
+     "hp": 611,
+     "hp_max": 611,
+     "talent": 0
+    },
+    "level": 30,
+    "lists": {
+     "grug_bag1": [
+      "grug_inventory:bag_small"
+     ],
+     "grug_bag1_content": [
+      "",
+      "",
+      "",
+      "default:torch"
+     ],
+     "grug_hotbar_store": [
+      "grug_abilities:strike",
+      "grug_abilities:ice_nova",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "grug_abilities:strike",
+      "grug_abilities:fireball",
+      "grug_abilities:ice_nova",
+      "grug_abilities:blink",
+      "",
+      "",
+      "default:apple",
+      "default:torch",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "marker": "",
+    "meta": {
+     "grug_classes:class": "mage",
+     "grug_classes:race": "dwarf"
+    },
+    "sizes": {
+     "grug_bag1": 1,
+     "grug_bag1_content": 4,
+     "grug_hotbar_store": 8,
+     "main": 32
+    },
+    "spent": 0
+   }
+  }
+ ],
+ "leaves": 1,
+ "load": {
+  "from": "0.53.0",
+  "new_world": false
+ },
+ "phase": "again_0.53.0",
+ "registered": {
+  "cinderfall": true,
+  "fiery_spark": false,
+  "glacial_ward": true,
+  "ice_nova": true,
+  "ice_wave": false,
+  "loose": true,
+  "pinning_shot": true,
+  "smite": true,
+  "strike": true
+ }
+}

@@ -1,0 +1,38 @@
+launcher: staged probe: grug_probe_r53_ms
+seconds: 75, exit 0
+joins: ['warrior registered (protocol 52), stayed 4.0 s', 'mage registered (protocol 52), stayed 4.0 s', 'priest registered (protocol 52), stayed 4.0 s', 'scout registered (protocol 52), stayed 4.0 s', 'sleeper registered (protocol 52), stayed 4.0 s', 'walker registered (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.52.1 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.52.1 (a new world), game 0.52.1: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33894.
+ACTION[Server]: warrior [127.0.0.1] joins game. List of players: warrior
+ACTION[Server]: [r53_ms_probe] joined warrior
+ACTION[Server]: [r53_ms_probe] built warrior
+ACTION[Server]: [r53_ms_probe] left warrior
+ACTION[Server]: warrior leaves game. List of players: 
+ACTION[Server]: mage [127.0.0.1] joins game. List of players: mage
+ACTION[Server]: [r53_ms_probe] joined mage
+ACTION[Server]: [r53_ms_probe] built mage
+ACTION[Server]: [r53_ms_probe] left mage
+ACTION[Server]: mage leaves game. List of players: 
+ACTION[Server]: priest [127.0.0.1] joins game. List of players: priest
+ACTION[Server]: [r53_ms_probe] joined priest
+ACTION[Server]: [r53_ms_probe] built priest
+ACTION[Server]: [r53_ms_probe] left priest
+ACTION[Server]: priest leaves game. List of players: 
+ACTION[Server]: scout [127.0.0.1] joins game. List of players: scout
+ACTION[Server]: [r53_ms_probe] joined scout
+ACTION[Server]: [r53_ms_probe] built scout
+ACTION[Server]: [r53_ms_probe] left scout
+ACTION[Server]: scout leaves game. List of players: 
+ACTION[Server]: sleeper [127.0.0.1] joins game. List of players: sleeper
+ACTION[Server]: [r53_ms_probe] joined sleeper
+ACTION[Server]: [r53_ms_probe] built sleeper
+ACTION[Server]: [r53_ms_probe] left sleeper
+ACTION[Server]: sleeper leaves game. List of players: 
+ACTION[Server]: walker [127.0.0.1] joins game. List of players: walker
+ACTION[Server]: [r53_ms_probe] joined walker
+ACTION[Server]: [r53_ms_probe] built walker
+ACTION[Server]: [r53_ms_probe] left walker
+ACTION[Server]: walker leaves game. List of players: 
+ACTION[Server]: [r53_ms_probe] observations written: every planned character left
