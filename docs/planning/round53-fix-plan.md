@@ -1,7 +1,7 @@
 # Round 53 fix round — 0.53.1
 
 Coordinator: Claude, 2026-10-20, from the user's feedback on the built Round 53 (main `3c45c726`, 0.53.0, not
-pushed). Status: **planned**.
+pushed). Status: **planned**, the user's answers complete (2026-10-20); starts on the user's "go".
 
 0.53.0 is not pushed. 0.53.1 (**compatible**, no step of its own) is built on top, the user runs **one** GUI test on
 0.53.1 (the 0.53.0 migration first, [Round 53 GUI checklist](round53-plan.md#gui-checklist-round-53) plus §5 here),
@@ -21,8 +21,12 @@ and both are pushed together.
 3. **Shield and spellbook tooltips** name the classes that can really equip them (shield: Warrior; spellbook: Mage,
    Priest), from the same rule that decides equipping.
 4. **The same trinket in both slots is allowed** ("aus meiner Sicht darf man das gleiche Schmuckstück in beiden Slots
-   tragen"), different tiers too; each special's two-slot rule (additive with a cap, or highest only) applies to the
-   pair.
+   tragen"), different tiers too. Simple bonuses add as today (Manawell, Battlebeat, Mercy Seal, Apothecary: their
+   caps are twice the T6 value, so two equal ones double fully). The two effect specials (Last Light, Reclaimer's
+   Mark: "highest only, shared cooldown") fire once: the stronger copy gives the effect and **the other copy
+   strengthens it by 5/10/15/20/25/30 % by its tier (T1–T6)**; one shared cooldown as today. This applies to any two
+   trinkets with the same special. Their tooltip says "Worn twice: the second one strengthens the effect by N %."
+   (the user, 2026-10-20: "Ja, Schmuckstücke mit Verstärkung").
 5. **Undead:** zombies — the whole zombie family including the sun-dried husks and all sub-types — never attack an
    Undead player on their own, day and night; a zombie the player attacked fights back as today. Skeletons and other
    undead are unchanged. The racial text says so.
@@ -35,9 +39,9 @@ and both are pushed together.
    a bow in the hand (the mesh's wield slot, today blank) — a shipped bow texture, no new art.
 10. **Pick fruit with right-click:** blueberry bushes and apples are picked with right-click (the bush/tree stays,
     the same regrowth as today); left-click digging keeps working; herbs, spices and wood stay left-click.
-11. **Icons:** the 28 icons the user picked on the pick page ship; the 8 sent back (Bellow, Blink, Broadstroke,
-    Charge, Close Dance, Parry, Halt, Finisher) go through an Astra pass 2 and a second small pick page; whatever is
-    picked before the GUI test ships in 0.53.1, the rest keeps today's icon.
+11. **Icons:** all 36 redrawn icons the user picked ship (pick page 1: 28; pick page 2 after an Astra pass 2: the
+    other 8, all decided — "diesmal sind keine mehr offen, ich bin zufrieden"). The sources per key are in
+    `~/projects/grudgelands-orchestration/r53/astra-icons/decisions.md` (pass 1 and pass 2 tables).
 
 ## 2. Lanes
 
@@ -65,16 +69,17 @@ stays declared). ART merges last before D so the docs see the final icon set.
 - **FLIGHT:** band 40; the overlay rendered once per world per faction from the same zone data as the dismount rule
   (one shared function, so overlay and rule cannot disagree), cached like the claim overlay; a flight layer shown
   only while mounted on a flyer, folded into the existing minimap rebuild; report startup render time and media size.
-- **GEAR:** `usable_by` derived from `HAND_RULES`; stored descriptions refreshed; the unique-trinket block removed,
-  each special's two-slot rule checked with the same identity twice (fixture per special); a refusal that remains
-  gets a feed message.
+- **GEAR:** `usable_by` derived from `HAND_RULES`; stored descriptions refreshed; the unique-trinket block removed;
+  simple specials add (fixture: two equal T6 double, the cap holds); Last Light and Reclaimer's Mark: the stronger
+  copy's effect × (1 + the other copy's tier share 5–30 %), one shared cooldown, the tooltip line (fixture per
+  tier pairing); a refusal that remains gets a feed message.
 - **RACE:** the truce as ruling 5 (no clock, the whole zombie family by one flag on the family's base defs and the
   husk family); the racial text; dwarf +5 % armor rating in `raw_armor` (combat and Character page); the fall perk
   removed; skeleton bows (headless capture to check orientation; if the shipped bow looks wrong on the mesh's plane,
   stop and report before any new art); right-click picking for blueberry bushes and apples (the bush/apple node
   changes exactly as when dug today; protection: picking is allowed where digging the node would be — report what
   that means in towns).
-- **ART:** copy the 28 (and later the pass-2) picks over the shipped files (byte-identical to the drop files; for
+- **ART:** copy all 36 picks (decisions.md, pass 1 and pass 2) over the shipped files (byte-identical to the drop files; for
   "old" the 0.51 file from `dea1d163`), licence rows updated, the three retired icons stay deleted.
 - **D:** as the table.
 
