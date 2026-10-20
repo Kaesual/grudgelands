@@ -37,9 +37,9 @@ PLAYER_API = REPO / "mods/BASE/player_api/init.lua"
 
 # The clips the glb must carry; any other clip must be a player_api animation.
 REQUIRED_CLIPS = ("stand", "walk")
-# Material names per primitive: the texture order of grug_visuals'
-# registration (apply.lua: textures = {skin, cloak}).
-MATERIALS = ("skin", "cloak")
+# Material names per primitive: the model's texture order (Round 54: skin,
+# cloak, the armor atlas, the weapon card; armor-format.md §2).
+MATERIALS = ("skin", "cloak", "armor", "weapon")
 
 # Model units (10 = one node). Measured deviations are about 1e-6; a clip
 # read one frame off moves the stand pose by about 0.015.
