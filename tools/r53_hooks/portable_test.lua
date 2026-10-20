@@ -414,7 +414,8 @@ do
 		end
 		-- 0.53.1 (SKILLS, ruling 8): a pointing skill's head ends in its
 		-- range line (Strike: melee, 3 m).
-		local range = def.target_kind ~= "self" and
+		local shows = def.range_shown == nil and def.target_kind ~= "self" or def.range_shown
+		local range = shows and
 			string.format("Range: %g m\n", player and G.get_range(player, def) or def.range) or ""
 		return def.name .. " (" .. def._grug_owner_line .. ")\n" .. cost_line .. ", " .. timing ..
 			"\n" .. range

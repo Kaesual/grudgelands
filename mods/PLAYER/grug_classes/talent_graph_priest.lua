@@ -135,8 +135,8 @@ graph.register_tree({
 			description = "Rebuke, Word of Ruin, Censure and Final Word cost 4/8/12 % less."},
 		{id = "reckoning_rebuke", code = "RK3", name = "Rebuke", type = "unlock",
 			ability = "rebuke", ranks = 1, gate = 2, col = 3,
-			description = "Unlocks Rebuke: an instant hit up to 20 m away for 180 % of a " ..
-				"Smite hit; 6 s cooldown, 6 % mana."},
+			description = "Unlocks Rebuke: an instant hit at the enemy in your crosshair for " ..
+				"180 % of a Smite hit; 6 s cooldown, 6 % mana."},
 		{id = "reckoning_firm_rebuke", code = "RK4", name = "Firm Rebuke", type = "modifier",
 			ranks = 3, gate = 2, col = 4, requires = {"reckoning_rebuke"},
 			effects = {rebuke_add = {0.1, 0.2, 0.3}},
@@ -160,7 +160,7 @@ graph.register_tree({
 			description = "Rebuke, Word of Ruin and Final Word deal +3/6/9 % damage."},
 		{id = "reckoning_censure", code = "RK9", name = "Censure", type = "unlock",
 			ability = "censure", ranks = 1, gate = 12, col = 4,
-			description = "Unlocks Censure: strikes the ground up to 16 m away after " ..
+			description = "Unlocks Censure: strikes the ground in your crosshair after " ..
 				"0.75 s with a warning, 120 % of a Smite hit to the 4 nearest within 3 m; " ..
 				"18 s cooldown, 12 % mana."},
 		{id = "reckoning_broad_judgment", code = "RK10", name = "Broad Judgment",
@@ -176,8 +176,8 @@ graph.register_tree({
 			description = "Rebuke's cooldown -0.5/1.0/1.5 s."},
 		{id = "reckoning_final_word", code = "RK13", name = "Final Word", type = "ultimate",
 			ability = "final_word", ranks = 1, gate = 20, col = 3, requires = {"reckoning_rebuke"},
-			description = "Unlocks Final Word: an instant hit up to 20 m away for 280 % of " ..
-				"a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery."},
+			description = "Unlocks Final Word: an instant hit at the enemy in your crosshair " ..
+				"for 280 % of a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery."},
 		{id = "reckoning_unfinished_sentence", code = "RK14", name = "Unfinished Sentence",
 			type = "modifier", ranks = 3, gate = 20, col = 4,
 			requires = {"reckoning_final_word"}, effects = {final_word_add = {0.1, 0.2, 0.3}},
