@@ -34,8 +34,26 @@
 
 local graph = grug_classes.graph
 
+-- The class keys: a "base hit" add is a coefficient of the base hit (the
+-- kit multiplies it by grug_core.baseline_melee_total at the player's level,
+-- following the caster weapon like the spell it adds to); a share is
+-- percentage points of the base pool before the support factor. Steady Word
+-- and Sharpened Word are two keys the kit max-combines (round53-plan.md §3).
+-- `paid` tags Rebuke, Word of Ruin and Final Word (Hard Faith's damage);
+-- Censure is named by id where Measured Judgment discounts it.
 graph.register_class_vocabulary("priest", {
-	keys = {heal_threat_factor_sub = "grug_core/combat.lua add_heal_threat"},
+	keys = {
+		heal_threat_factor_sub = "grug_core/combat.lua add_heal_threat",
+		smite_steady_add = "grug_abilities/kits_priest.lua Smite (base hit, max with Sharpened Word)",
+		smite_sharpened_add = "grug_abilities/kits_priest.lua Smite (base hit, max with Steady Word)",
+		heal_share_add = "grug_abilities/kits_priest.lua Heal (pool points)",
+		shield_share_add = "grug_abilities/kits_priest.lua Shield (pool points)",
+		mend_share_add = "grug_abilities/kits_priest.lua Mend's tick (pool points)",
+		clear_conscience_add = "grug_abilities/kits_priest.lua Clear Conscience (base hit)",
+		rebuke_add = "grug_abilities/kits_priest.lua Rebuke (base hit)",
+		word_of_ruin_cap_add = "grug_abilities/kits_priest.lua Word of Ruin's heal cap (pool points)",
+		final_word_add = "grug_abilities/kits_priest.lua Final Word (base hit)",
+	},
 	params = {"support", "paid", "smite", "heal", "shield_spell", "mend", "hearten",
 		"haven", "rebuke", "word_of_ruin", "censure", "final_word"},
 })
@@ -47,7 +65,7 @@ graph.register_tree({
 	example = "M1x3 M3 M2x2 M6 M4x3 M5x3 M10 M8x3 M9x3 M13 M7x3 M5x2 M2 M14x3",
 	nodes = {
 		{id = "mercy_steady_word", code = "M1", name = "Steady Word", type = "modifier",
-			ranks = 3, gate = 0, col = 2,
+			ranks = 3, gate = 0, col = 2, effects = {smite_steady_add = {0.05, 0.1, 0.15}},
 			description = "Smite +5/10/15 % of a base hit; with Sharpened Word only the " ..
 				"higher counts."},
 		{id = "mercy_measured_care", code = "M2", name = "Measured Care", type = "modifier",
@@ -59,10 +77,11 @@ graph.register_tree({
 				"shield of 24 % of a base health pool for 10 s; 12 s cooldown; a new cast " ..
 				"replaces it."},
 		{id = "mercy_gentle_hand", code = "M4", name = "Gentle Hand", type = "modifier",
-			ranks = 3, gate = 2, col = 4,
+			ranks = 3, gate = 2, col = 4, effects = {heal_share_add = {2, 4, 6}},
 			description = "Heal +2/4/6 % of a base health pool."},
 		{id = "mercy_warding_faith", code = "M5", name = "Warding Faith", type = "modifier",
 			ranks = 5, gate = 6, col = 2, requires = {"mercy_shield"},
+			effects = {shield_share_add = {2, 4, 6, 8, 10}},
 			description = "Shield +2/4/6/8/10 % of a base health pool."},
 		{id = "mercy_mend", code = "M6", name = "Mend", type = "unlock", ability = "mend",
 			ranks = 1, gate = 6, col = 4,
@@ -70,9 +89,11 @@ graph.register_tree({
 				"pool every 3 s; the newest cast replaces it."},
 		{id = "mercy_patient_care", code = "M7", name = "Patient Care", type = "modifier",
 			ranks = 3, gate = 10, col = 4, requires = {"mercy_mend"},
+			effects = {mend_share_add = {0.5, 1, 1.5}},
 			description = "Mend's ticks +0.5/1.0/1.5 % of a base health pool."},
 		{id = "mercy_clear_conscience", code = "M8", name = "Clear Conscience",
 			type = "window", ranks = 3, gate = 10, col = 2,
+			effects = {clear_conscience_add = {0.1, 0.2, 0.3}},
 			description = "After Heal, Shield or Mend your next Smite within 5 s deals " ..
 				"+10/20/30 % of a base hit; 8 s internal cooldown."},
 		{id = "mercy_deep_reserve", code = "M9", name = "Deep Reserve", type = "modifier",
@@ -93,6 +114,7 @@ graph.register_tree({
 				"7 % of a base health pool every 2 s; 60 s cooldown, 1.5 s recovery."},
 		{id = "mercy_lasting_haven", code = "M14", name = "Lasting Haven", type = "modifier",
 			ranks = 3, gate = 20, col = 4, requires = {"mercy_haven"},
+			effects = {["duration_add:haven"] = {2, 4, 6}},
 			description = "Haven heals 1/2/3 more times."},
 	},
 })
@@ -104,11 +126,12 @@ graph.register_tree({
 	nodes = {
 		{id = "reckoning_sharpened_word", code = "RK1", name = "Sharpened Word",
 			type = "modifier", ranks = 3, gate = 0, col = 2,
+			effects = {smite_sharpened_add = {0.05, 0.1, 0.15}},
 			description = "Smite +5/10/15 % of a base hit; with Steady Word only the " ..
 				"higher counts."},
 		{id = "reckoning_measured_judgment", code = "RK2", name = "Measured Judgment",
 			type = "modifier", ranks = 3, gate = 0, col = 4,
-			effects = {["cost_pct:paid"] = {-4, -8, -12}},
+			effects = {["cost_pct:paid"] = {-4, -8, -12}, ["cost_pct:censure"] = {-4, -8, -12}},
 			description = "Rebuke, Word of Ruin, Censure and Final Word cost 4/8/12 % less."},
 		{id = "reckoning_rebuke", code = "RK3", name = "Rebuke", type = "unlock",
 			ability = "rebuke", ranks = 1, gate = 2, col = 3,
@@ -116,6 +139,7 @@ graph.register_tree({
 				"Smite hit; 6 s cooldown, 6 % mana."},
 		{id = "reckoning_firm_rebuke", code = "RK4", name = "Firm Rebuke", type = "modifier",
 			ranks = 3, gate = 2, col = 4, requires = {"reckoning_rebuke"},
+			effects = {rebuke_add = {0.1, 0.2, 0.3}},
 			description = "Rebuke +10/20/30 % of a base hit."},
 		{id = "reckoning_long_reach", code = "RK5", name = "Long Reach", type = "modifier",
 			ranks = 3, gate = 6, col = 2,
@@ -129,10 +153,11 @@ graph.register_tree({
 				"16 s cooldown, 10 % mana."},
 		{id = "reckoning_resolute_word", code = "RK7", name = "Resolute Word",
 			type = "modifier", ranks = 3, gate = 10, col = 4, requires = {"reckoning_word_of_ruin"},
+			effects = {word_of_ruin_cap_add = {1, 2, 3}},
 			description = "Word of Ruin heals at most 7/8/9 % of a base health pool."},
 		{id = "reckoning_hard_faith", code = "RK8", name = "Hard Faith", type = "modifier",
 			ranks = 3, gate = 10, col = 2, effects = {["damage_pct:paid"] = {3, 6, 9}},
-			description = "Paid attack spells deal +3/6/9 % damage; Smite is unchanged."},
+			description = "Rebuke, Word of Ruin and Final Word deal +3/6/9 % damage."},
 		{id = "reckoning_censure", code = "RK9", name = "Censure", type = "unlock",
 			ability = "censure", ranks = 1, gate = 12, col = 4,
 			description = "Unlocks Censure: strikes the ground up to 16 m away after " ..
@@ -155,7 +180,7 @@ graph.register_tree({
 				"a Smite hit; 60 s cooldown, 20 % mana, 1.5 s recovery."},
 		{id = "reckoning_unfinished_sentence", code = "RK14", name = "Unfinished Sentence",
 			type = "modifier", ranks = 3, gate = 20, col = 4,
-			requires = {"reckoning_final_word"},
+			requires = {"reckoning_final_word"}, effects = {final_word_add = {0.1, 0.2, 0.3}},
 			description = "Final Word +10/20/30 % of a base hit."},
 	},
 })

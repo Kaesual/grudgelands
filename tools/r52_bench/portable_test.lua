@@ -533,7 +533,7 @@ do
 		heals[#heals + 1] = {healer = healer:get_player_name(), target = target:get_player_name(),
 			amount = amount, at = now_us, action = opts and opts.action_id}
 	end
-	local healer, target = new_player("m_priest", "priest", {mend = 1}), new_player("m_ally", "priest")
+	local healer, target = new_player("m_priest", "priest", {mercy_mend = 1}), new_player("m_ally", "priest")
 	online = {healer, target}
 	local mend = G.registered.mend
 	local values = mend.values
