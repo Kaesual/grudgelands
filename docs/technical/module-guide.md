@@ -559,8 +559,8 @@ tools](#player-meta-read-by-external-tools).
   dropped), and the stats, look, Character page and ability mana/HUD/
   description/skin consumers return at once; grug_repair writes only the
   tooltip's "Durability: N / M" line (`grug_repair.refresh_durability`).
-  Held swings and bow draws refresh their usable same-item snapshot without
-  restarting cadence; actual swaps and broken/unbroken transitions still reset.
+  Held swings refresh their usable same-item snapshot without restarting
+  cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**
   (`classes.md` §2b; WP38 base, WP39 target-authority revision decided
   2026-08-10): Strike, Mighty Blow, Hamstring and Round 11's Opening have `kind = "swing"`
@@ -621,10 +621,10 @@ tools](#player-meta-read-by-external-tools).
   separate overlay (`grug_abilities/crosshair.lua`, `classes.md` §2b "Crosshair
   feedback"): it reads `grug_abilities.aimed_target` (the side-effect-free aim
   authority the hostile/friendly casts wrap) and `input.aims_at_interactive`,
-  and owns the progress ring shared by the bow draw (`scout.lua`, hidden in
-  `reset_draw_stack`) and eating (`input.lua`, hidden in `end_food_hold`):
-  `set_ring(player, fraction, owner)` with owner `"bow"` or `"food"`; the
-  first owner to show it keeps it until it hides it. The
+  and owns the progress ring of eating (`input.lua`, hidden in
+  `end_food_hold`): `set_ring(player, fraction, owner)` with owner `"food"`
+  (its `"bow"` owner has had no user since Round 53 deleted the bow draw);
+  the first owner to show it keeps it until it hides it. The
   game's `crosshair.png`/`object_crosshair.png` are byte-identical on purpose;
   regenerate them with `tools/pt_fixes/lane_b/gen_crosshair_textures.py`.
   Since Round 30 the state overlay refreshes every 0.15 s (input and the
@@ -822,8 +822,8 @@ tools](#player-meta-read-by-external-tools).
     cadence); called without a player it returns the base, which the
     timing line shows and the registration checks. Three directions: **cast → swing**
     is `grug_abilities.delay_strike(player[, def])` (`strike_delay.lua`,
-    called by `input.lua` after a cast and, without a def, by the Scout's
-    bow release), which pushes the melee clock's `next_due` and never
+    called by `input.lua` after a cast, Bladecraft's right-click shot
+    included), which pushes the melee clock's `next_due` and never
     shortens it; **cast → cast** and **swing → cast** are `occupy_casts`
     after a successful `try_cast` and when a swing finds its valid target
     and consumes its interval (the selected skill's value, Strike's in the
@@ -969,8 +969,8 @@ tools](#player-meta-read-by-external-tools).
     16 × 16 vertical frames}`. The skin pass (`apply_skin`,
     `skin_overlay(def, weapon, stage)`) writes the strip
     `grug_abilities_fx_<family>_<weapon>.png` for the held weapon type
-    into the stack meta (`_bow_draw<n>` while a draw stage shows, written
-    by `scout.lua` with the draw image): the engine's meta overrides
+    into the stack meta (the `stage` argument and its `_draw<n>` names are
+    unused since Round 53 deleted the bow draw): the engine's meta overrides
     only the overlay's name and keeps the definition's animation
     (`ItemStack::getWieldOverlay`, `src/inventory.cpp`). An empty slot,
     Strike, a weapon without a strip and a strip that does not ship get

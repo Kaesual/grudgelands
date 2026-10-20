@@ -380,21 +380,22 @@ self; already-applied periodic effects retain their original recipient.
 
 A short RMB interaction opens the aimed NPC, door, container or other normal
 interactive target. An interaction owns that press until release and cancels
-pending item actions; it cannot also launch a bow. Food is the exception
+pending item actions; it cannot also fire a right-click shot. Food is the exception
 described below: a food press decides click versus hold first. Interaction
 reach remains 4 m even with a long-range spell selected.
 
-Loose is the explicit exception to LMB casting: **LMB uses melee Strike or hand
-digging; hold RMB to draw, release RMB to shoot.** Its tooltip states both.
-While the bow is drawn or held drawn, walk speed is ×0.5 and the Loose item's
-pointing range is zero (the same zero range an LMB combat hold uses;
-whichever ends first leaves it to the other), so held RMB shows no repeated
-place swing (one swing on the very press may remain). A full draw takes the
-bow's 2.5 s (Fletching and the draw-speed affix shorten it); a ring around the
-crosshair fills in sixteenths while drawing, turns gold at full draw and
-disappears on every end of the draw (release, cancel, stun, item or weapon
-change, death, leave). Other instant bow skills retain their LMB casts and
-authored ammo/cooldowns.
+Loose is an ordinary LMB cast since Round 53 (the bow draw is deleted): a
+press at a visible hostile looses one arrow, a held press repeats on its cast
+interval (0.85 s, divided by the bow's own attack-speed affix, never below
+0.65 s), and with no arrow left the held fallback swings Strike at a foe in
+reach. **Bladecraft** (Veil V1), which replaces Loose in place, is the one
+skill with a right-click action: **LMB swings the Melee-slot blade, RMB looses
+the same Loose shot** at a hostile, on Loose's interval and the action clock
+(a shot pushes the next swing by one weapon interval, a swing holds the shot
+back as long). Its RMB press is neither food nor an interaction (an
+interactive target within 4 m still opens instead); held, it shoots again
+whenever its clock allows. Other bow skills are LMB casts with their own
+ammunition and cooldowns.
 
 Food owns its whole RMB press, whatever it points at (ruling 2026-09-28). A
 release the server sees within 0.35 s of the press is a **click** (0.45.1,
@@ -411,13 +412,13 @@ visual, no slowdown); a click in combat still places or interacts. While
 eating, the wielded item hides, the food's image shows large at the bottom
 centre behind the HUD and bobs, crumbs fly from the head every 0.2 s, the
 eating sound loops at half gain and walk speed is ×0.35. The crosshair
-progress ring (the bow draw ring's frames, tinted green, never the gold full
-frame) appears when the hold is confirmed at 0.35 s and fills with held time
+progress ring (the old bow draw ring's frames, tinted green, never the gold
+full frame) appears when the hold is confirmed at 0.35 s and fills with held time
 / 1.5 s; it disappears on every end of eating (release, portion eaten,
 cancel, stun, item or slot change, death, leave) and never appears on a
 combat refusal. Release before 1.5 s
-eats nothing; one press eats at most one serving. Active RMB food/draw
-suppresses LMB combat/digging. Seeds, buckets, hoes, fishing, mounts and
+eats nothing; one press eats at most one serving. An active RMB press (food
+or Bladecraft's shot) suppresses LMB combat/digging. Seeds, buckets, hoes, fishing, mounts and
 ordinary placed items retain their own context-appropriate actions.
 
 ### Failure messages
@@ -425,8 +426,8 @@ ordinary placed items retain their own context-appropriate actions.
 A skill that cannot act says why in the red flash line ("Fireball is not
 ready.", "Not enough mana.", "No room to blink.", "Not enough room at
 target.", "You need an arrow.", ...) — on a fresh press only: the key-down
-decision, the single empty-space or tap cast of a press, or the RMB press that
-starts a bow draw. Held repeats never report, nor does the decision of a press
+decision, the single empty-space or tap cast of a press, or the RMB press of
+Bladecraft's shot. Held repeats never report, nor does the decision of a press
 carried across a hotbar switch. The same message shows at most
 once per second per player; a different message shows at once (Round 28
 ruling 13). A refused skill on a hostile falls back to the basic attack
@@ -435,28 +436,18 @@ ruling 13). A refused skill on a hostile falls back to the basic attack
 ### Cancellation and native-client limits
 
 Stun and death cancel pending actions. An item swap drops the old item's
-pending actions (a tap, a bow draw, eating); an LMB held across it goes on
+pending actions (a tap, eating); an LMB held across it goes on
 with the new item (hold modes above). Our own NPC/node interactions
 cancel before opening. Native inventory, pause, chat and focus loss are observed
-as ordinary release: they may launch a drawn bow or resolve a pending short
-skill click (accepted; no client changes are required or promised).
+as ordinary release: they may resolve a pending short skill click (accepted; no client changes are required or promised).
 
 A release and a new press that both fall between two control reports (under
 roughly 90 ms at the default server step) are invisible in the control
 state; the native item call a new press sends is the evidence instead (the
 client sends an empty-air or object call on the press edge only). Food uses
 it too: such a call during a food press settles that press and starts a new
-one. **The bow** (Round 41 ruling 5): the first native
-call after a draw starts belongs to the starting press; a later empty-air or
-object call during a live draw is a new press. It fires the drawn arrow at
-once with the draw time it has, and while the button stays held a new arrow
-is drawn within the same hold. A draw started this way that ends within
-**0.2 s** is cancelled silently (no arrow, no ammunition), so one quick tap
-never fires two arrows; its end counts at the last server step that still
-saw the button down (or at a further such press), not when the server
-notices the release. Node calls (a press that began on a node, the engine's
-place repeats) never count. A tap from rest is unchanged: it fires one weak
-arrow.
+one. (The bow draw's missed-release rule of Round 41 went with the draw in
+Round 53.)
 
 ### The weapon-ready reticle
 
@@ -513,9 +504,9 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   and sends a HUD packet only when it changes. Its server-driven latency is
   accepted.
 - Layering, bottom to top: engine crosshair, state overlay (z 1), weapon-ready
-  ring (z 2), progress ring (z 3). The progress ring is one element shared by
-  the bow draw and eating: whichever shows it first owns it until it hides it,
-  and neither can show or hide it over the other.
+  ring (z 2), progress ring (z 3). The progress ring is eating's (its other
+  owner, the bow draw, is gone since Round 53): whichever owner shows it first
+  owns it until it hides it.
 - The engine draws the crosshair at integer scale `floor(hud_scaling x
   display density)`; a Lua image element uses the unrounded factor. The
   overlay and draw ring therefore scale by `floor(f) / f` of the client's
@@ -658,12 +649,13 @@ Revised 2026-09-23, Round 18:
 - First-person wield and third-person held presentation still use the equipped
   weapon (or the ability's declared equipment source); utilities follow the same
   rule. Swapping equipment refreshes presentation without changing the action icon.
-- Preserve bow draw stages, the cooldown overlay, material-tier weapon appearance
+- Preserve the cooldown overlay, material-tier weapon appearance
   and honest empty-slot presentation. Icons grant no entitlement or combat power.
 - The selected skill shows an animated element overlay on the first-person
   weapon (Round 52, class plan C7): one family per talent tree
   (`grug_abilities.WEAPON_FX`, Strike none), one strip per weapon type the
-  class wields and per bow draw stage, one animation per family on the item
+  class wields (Round 53 deleted the bow's draw-stage strips with the draw),
+  one animation per family on the item
   definition, the strip's name in the stack meta. An empty slot, Strike and a
   strip not yet picked show none (a transparent override); a strip ships only
   once the user picked it. Third person and other players never show it (the
@@ -860,7 +852,7 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
 - The Scout has no player poison mechanic and no player poison stat. Its Veil
   tree uses existing dodge, crit, slow and escape mechanics. Mob poison and
   Alchemy's Antivenom remain separate world mechanics. Stealth is deferred in
-  [scout.md](scout.md) §8; the current Veil capstone is Untouchable.
+  [scout.md](scout.md) §8; the Veil ultimate is Close Dance.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.
 
 ### Round 16 control execution
