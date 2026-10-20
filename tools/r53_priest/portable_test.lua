@@ -634,6 +634,15 @@ do
 	eq(dmg(both, v(both, "smite").damage), hit(L, 1, 0, 0.15), "T both Smite words: the higher, not the sum")
 	both = with({mercy_steady_word = 3, reckoning_sharpened_word = 3})
 	eq(dmg(both, v(both, "smite").damage), hit(L, 1, 0, 0.15), "T both full: still +0.15")
+	-- Without a caster weapon the spell base and the base-hit add both halve
+	-- (Round 46: the talent part follows the caster weapon like the spell).
+	local spell_base = G.spell_base
+	G.spell_base = function(p) return fake_grug_core.spell_base(p.level, nil) end
+	local bare = with({mercy_steady_word = 3})
+	eq(dmg(bare, v(bare, "smite").damage),
+		math.max(1, math.floor((W(L) / 2 + (10 + 2 * (L - 1)) / 10 + 0.15 * B(L) / 2) * S(L))),
+		"T no caster weapon: Steady Word's add halves with the spell base")
+	G.spell_base = spell_base
 	-- Measured Care and Measured Judgment.
 	for rank, pct in pairs({[1] = -4, [3] = -12}) do
 		local care = with({mercy_measured_care = rank})

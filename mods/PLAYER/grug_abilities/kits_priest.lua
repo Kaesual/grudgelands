@@ -41,15 +41,16 @@ end
 
 -- A talent's "+N of a base hit": the coefficient times the same-level base
 -- hit (grug_core.baseline_melee_total), following the caster weapon like the
--- spell it adds to (Round 46: an own-level staff or wand keeps the number, no
--- caster weapon halves it). Levels clamp to 1-60, as every level-proof value.
+-- spell it adds to (Round 46: the spell base over an own-level weapon's, so an
+-- own-level staff or wand keeps the number and no caster weapon halves it).
+-- Levels clamp to 1-60, as every level-proof value.
 local function base_hit_add(user, coefficient)
 	if coefficient == 0 then
 		return 0
 	end
 	local level = math.max(1, math.min(60, math.floor(grug_core.get_player_level(user))))
 	return coefficient * grug_core.baseline_melee_total(level)
-		* grug_abilities.spell_base(user) / grug_core.baseline_weapon_damage(level)
+		* grug_abilities.spell_base(user) / grug_core.spell_base(level, level)
 end
 
 -- A hostile hit's raw damage before the level scalar: `coefficient` spell
