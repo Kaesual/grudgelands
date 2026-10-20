@@ -34,7 +34,7 @@ end
 -- Shared player-facing and talent-consumer conversion for pool percentages.
 -- `hp` means the character's class-adjusted base HP; `neutral` and `mana`
 -- mean the class-neutral pool. The percent is explicit so callers may preview
--- any rank; pool_talent_amount supplies the current-effect lookup when needed.
+-- any rank.
 function grug_classes.pool_percent_amount(player, pool, percent)
 	local factor = pool == "hp" and grug_classes.get_hp_class_factor(player) or 1
 	return round(grug_classes.get_base_pool(player) * factor

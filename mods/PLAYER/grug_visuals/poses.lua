@@ -10,7 +10,7 @@
 -- answers the walking twin while the player moves, and ends an expired row.
 --
 -- Precedence: the newest pose replaces the running one; a flinch never
--- replaces anything (another pose, the Scout's drawn bow, a seat).
+-- replaces anything (another pose, a seat).
 --
 -- The end of a pose answers a `<base>_resume` animation for one step
 -- (apply.lua): the player's own client ignores the plain base animation and
@@ -53,7 +53,7 @@ local function moving(controls)
 end
 
 -- The animation that hands a pose back to player_api's own choice, as
--- player_api would pick it (scout.lua's bow hook uses it too).
+-- player_api would pick it.
 function grug_visuals.resume_animation(controls)
 	local acting = controls.LMB or controls.RMB
 	if moving(controls) then
@@ -149,7 +149,7 @@ function grug_visuals.current_pose(player)
 end
 
 -- A light flinch on a hit taken: rate-limited, and only over player_api's own
--- animations, never over another pose, the drawn bow, a seat or death.
+-- animations, never over another pose, a seat or death.
 function grug_visuals.flinch(player)
 	local name = player:get_player_name()
 	if active[name] or player_api.player_attached[name] then return end

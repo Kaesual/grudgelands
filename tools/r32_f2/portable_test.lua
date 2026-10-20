@@ -253,8 +253,6 @@ grug_abilities = {
 	-- An ally the PvP flag forbids supporting (Round 31 ruling 9).
 	support_refused = function(_, ref) return ref.kind == "refused" end,
 	flash = function() end,
-	cancel_bow_draw = function() end,
-	start_bow_draw = function() return true end,
 	try_cast = function(_, def)
 		casts[#casts + 1] = def.id
 		return true

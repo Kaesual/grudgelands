@@ -21,7 +21,7 @@
 --      left the area (C5), through the real status.lua;
 --   G  readiness windows by any id: open, consume once, expiry, the ICD on
 --      the monotonic clock (kept through death, dropped once run out), the
---      status icon, and today's talent_trigger_ready untouched (D1).
+--      status icon; the old talent_trigger_ready is gone (Round 53).
 --
 -- Usage (repo root): luajit tools/r52_core/portable_test.lua [REPO]
 local ROOT = arg[1] or "."
@@ -590,17 +590,9 @@ eq(grug_classes.window_icd_ready(w, "test_window"), true,
 grug_classes.clear_talent_windows(w)
 eq(grug_classes.open_window(w, "test_window", {duration = 1}), true,
 	"G a run-out ICD is pruned and the window opens")
--- D1: today's talent trigger clock is untouched (os.time in player meta).
-local meta = {}
-w.get_meta = function()
-	return {get_string = function(_, k) return meta[k] or "" end,
-		set_string = function(_, k, v) meta[k] = v end}
-end
-eq(grug_classes.talent_trigger_ready(w, "ruination", 60), true, "G today's trigger fires")
-check(tonumber(meta["grug_classes:talent_ready:ruination"]) ~= nil and
-	tonumber(meta["grug_classes:talent_ready:ruination"]) >= os.time() + 59,
-	"G and stores its os.time ICD in player meta")
-eq(grug_classes.talent_trigger_ready(w, "ruination", 60), false, "G its ICD holds")
+-- D1's old talent trigger clock (os.time in player meta) went with the old
+-- talents (Round 53 INTEG part 2).
+eq(grug_classes.talent_trigger_ready, nil, "G the old talent trigger clock is gone")
 
 print(("r52_core portable test: %d checks, %d failures"):format(checks, failures))
 if failures > 0 then error(failures .. " failure(s)") end

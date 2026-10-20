@@ -113,20 +113,6 @@ icons.STATUS = {
 	close_dance = def("buff", "Close Dance", "Blade swings hit harder",
 		skill("close_dance")),
 
-	-- Talent windows (skill_trees.md section 3.2).
-	talent_unbroken = def("buff", "Unbroken", "Extra armor rating",
-		art("talent_unbroken")),
-	talent_ruination = def("buff", "Ruination", "+20 crit chance",
-		art("talent_ruination")),
-	talent_whitehot = def("buff", "Whitehot", "Cheaper, stronger Fireball",
-		art("talent_whitehot")),
-	talent_turn_aside = def("buff", "Turn Aside",
-		"Extra dodge while the shield holds", art("talent_turn_aside")),
-	talent_last_word = def("buff", "Last Word", "Word of Ruin drain heals 150%",
-		art("talent_last_word")),
-	talent_untouchable = def("buff", "Untouchable", "+25 dodge chance",
-		art("talent_untouchable")),
-
 	-- Hostile effects. One slow icon for every slow (user decision).
 	poisoned = def("debuff", "Poisoned", "Damage over time", art("poisoned")),
 	slowed = def("debuff", "Slowed", "Movement speed reduced", art("slowed")),
@@ -165,19 +151,6 @@ function icons.remaining_text(remaining_us, untimed)
 	end
 	return math.ceil(seconds / 3600) .. " h left"
 end
-
--- The talent windows that become statuses, talent id -> status id. Hold
--- Ground's window is not listed: what the player sees of it is the shield and
--- the movement immunity, both of which have their own status. Turn Aside is
--- not a started window but a modifier riding on a shield, so combat.lua
--- reports talent_turn_aside itself.
-icons.TALENT_WINDOWS = {
-	unbroken = "talent_unbroken",
-	ruination = "talent_ruination",
-	whitehot = "talent_whitehot",
-	last_word = "talent_last_word",
-	untouchable = "talent_untouchable",
-}
 
 -- The readiness windows of the window API by any id (Round 52, B8:
 -- grug_classes.open_window in talent_windows.lua), window id -> status id.

@@ -1,6 +1,6 @@
 -- Shared successful-action boundary, the action clock's cast -> swing side
 -- (D2): the next melee swing waits `def.occupied_swing` seconds, by default
--- ("weapon", or no def: the Scout's bow release) one interval of the current
+-- ("weapon", or no def) one interval of the current
 -- melee weapon. A function(player, def) gives a per-player value (Round 53).
 -- Never shortens an existing melee deadline.
 return function(progress)

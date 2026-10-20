@@ -71,9 +71,8 @@ function grug_gear.enchant_image(image, prefix, suffix)
 end
 
 -- The image without its colour layers: for art drawn from an item's image
--- string on another shape (the Scout's bow draw stages), where the item's
--- masks do not fit. A broken stack's image is wrapped for its cracks and
--- comes back unchanged (the bow refuses broken stacks before this).
+-- string on another shape, where the item's masks do not fit. A broken
+-- stack's image is wrapped for its cracks and comes back unchanged.
 function grug_gear.strip_enchant(image)
 	if image:sub(1, 1) == "(" then return image end
 	local mask = mask_of(image)

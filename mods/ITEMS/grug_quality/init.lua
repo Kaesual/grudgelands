@@ -1096,18 +1096,8 @@ local function raw_armor(player)
 	local equipment_bonus = grug_items.get_equipment_armor_rating_bonus(player)
 	local talent = grug_classes.get_talent_bonus(player, "armor_percent_add")
 	local status = grug_core.status_modifier_sum(player, "armor")
-	local before_unbroken = base + (affixes.armor_rating or 0) +
-		equipment_bonus + talent + status
-	local multiplier = grug_classes.talent_rank(player, "unbroken") > 0
-		and grug_core.PROTECTION_ARMOR_MULTIPLIER or 1
-	local emergency = grug_classes.get_talent_bonus(player,
-		"armor_rating_add_low_hp")
-	return before_unbroken * multiplier + emergency, {
-		base = before_unbroken,
-		multiplier = multiplier,
-		emergency = emergency,
-		result = before_unbroken * multiplier + emergency,
-	}
+	local total = base + (affixes.armor_rating or 0) + equipment_bonus + talent + status
+	return total, {base = total, result = total}
 end
 
 grug_core.get_armor_rating = raw_armor

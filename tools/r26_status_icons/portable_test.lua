@@ -10,8 +10,9 @@
 --   * frame kinds match the user decisions (buff / debuff / neutral), and a
 --     registered id keeps its kind whatever the caller passes;
 --   * every status id the game sets (set_status literals, the mount constant,
---     status-source ids, talent windows, readiness windows) is registered,
---     and every talent window names a real talent;
+--     status-source ids, readiness windows) is registered, and the readiness
+--     windows and the windows the kits open match both ways (Round 53: the
+--     old talent windows are gone);
 --   * countdown / value captions, the food item-image path and its fallback;
 --   * the row: order, hidden values, the ten-slot limit (debuffs kept first),
 --     GUI-scaled captions, expiry, movement
@@ -139,9 +140,6 @@ local EXPECTED_KIND = {
 	alchemy_cave = "buff", mount = "buff",
 	move_immune = "buff", scout_sprint = "buff", sidestep = "buff",
 	mend = "buff", shield = "buff",
-	talent_unbroken = "buff", talent_ruination = "buff",
-	talent_whitehot = "buff", talent_turn_aside = "buff",
-	talent_last_word = "buff", talent_untouchable = "buff",
 	poisoned = "debuff", slowed = "debuff", rooted = "debuff",
 	stunned = "debuff", scorched = "debuff", dragon_wrath = "debuff",
 	in_combat = "neutral", pvp_tagged = "neutral", pvp_contested = "neutral",
@@ -234,20 +232,25 @@ end
 local mount_id = read_file("mods/PLAYER/grug_mounts/entity.lua")
 	:match("local STATUS_ID = \"([%w_]+)\"")
 set_ids[mount_id or "?mount"] = "mods/PLAYER/grug_mounts/entity.lua"
-local talents_text = read_file("mods/PLAYER/grug_classes/talents_warrior.lua") ..
-	read_file("mods/PLAYER/grug_classes/talents_mage.lua") ..
-	read_file("mods/PLAYER/grug_classes/talents_priest.lua") ..
-	read_file("mods/PLAYER/grug_classes/scout_talents.lua")
-for talent, status_id in pairs(icons.TALENT_WINDOWS) do
-	set_ids[status_id] = "status_icons.lua TALENT_WINDOWS"
-	check(talents_text:find("id = \"" .. talent .. "\"", 1, true) ~= nil,
-		"talent window " .. talent .. " is a registered talent")
-end
+-- The old talent windows' table went with the old talents (Round 53).
+eq(icons.TALENT_WINDOWS, nil, "no old talent window table")
 -- The readiness windows by any id (Round 52, grug_classes.open_window): a
--- table of window id -> status id, each a registered status.
+-- table of window id -> status id, each a registered status, and both ways
+-- with the windows the kits open (open_window(player, "<id>", ...)).
 check(type(icons.WINDOWS) == "table", "the readiness window table exists")
+local opened = {}
+for _, file in ipairs(lines_of("ls mods/PLAYER/grug_abilities/*.lua")) do
+	for id in read_file(file):gmatch("open_window%(%s*[%w_]+%s*,%s*\"([%w_]+)\"") do
+		opened[id] = file
+	end
+end
 for window, status_id in pairs(icons.WINDOWS or {}) do
 	set_ids[status_id] = "status_icons.lua WINDOWS (" .. window .. ")"
+	check(opened[window] ~= nil, "readiness window " .. window .. " is opened by a kit")
+end
+for window, file in pairs(opened) do
+	check((icons.WINDOWS or {})[window] ~= nil, "the window " .. window .. " (" .. file ..
+		") has a WINDOWS row")
 end
 local used = 0
 for id, file in pairs(set_ids) do
@@ -264,8 +267,7 @@ check(read_file("mods/ENTITIES/grug_mobs/verbs.lua"):find(
 for _, expected in ipairs({"food", "elixir", "alchemy_swiftness",
 		"alchemy_cave", "mount", "scout_sprint", "sidestep", "mend", "shield",
 		"poisoned", "scorched", "dragon_wrath", "stunned", "rooted", "slowed", "move_immune",
-		"talent_turn_aside", "talent_unbroken", "talent_ruination",
-		"talent_whitehot", "talent_last_word", "talent_untouchable"}) do
+		"rime_mantle", "unbroken", "haven"}) do
 	check(set_ids[expected] ~= nil, "status " .. expected .. " is set somewhere")
 end
 

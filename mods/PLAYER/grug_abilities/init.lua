@@ -203,18 +203,12 @@ end
 -- `cost_pct` (optional) changes the cost by that many percent (negative is
 -- cheaper): a base-mana share before it becomes mana, a flat amount
 -- rounded to whole points. Without it the cost is today's exactly.
+-- `ability_id` is kept for the callers; since Round 53 no cost depends on it
+-- (the old Whitehot and Recompense cases went with the old talents).
 function grug_abilities.cost_for(player, cost, ability_id, cost_pct)
 	local scale = 1 + (cost_pct or 0) / 100
 	if cost.mana_percent then
-		local percent = cost.mana_percent
-		if ability_id == "fireball" and
-				grug_classes.talent_window_active(player, "whitehot") then
-			percent = 3
-		elseif ability_id == "smite" and
-				grug_classes.get_talent_bonus(player, "smite_absorb") > 0 then
-			percent = 6
-		end
-		return {mana = grug_abilities.mana_cost(player, percent * scale)}
+		return {mana = grug_abilities.mana_cost(player, cost.mana_percent * scale)}
 	end
 	if scale ~= 1 then
 		local scaled = {}
@@ -591,7 +585,7 @@ grug_abilities.notify = show_skill_name
 
 -- Binary weapon-ready overlay (classes.md §2b). Lua HUD elements are drawn
 -- after the builtin crosshair (src/client/render/plain.cpp:48-52); z_index 2
--- orders it above the crosshair state overlay (z 1) and below the bow draw
+-- orders it above the crosshair state overlay (z 1) and below the eating
 -- ring (z 3, both crosshair.lua), and above the conventional z_index-0
 -- gameplay HUD. Only a changed boolean sends a HUD packet. This is never an
 -- inventory bar.
@@ -662,7 +656,7 @@ end
 -- callbacks and nodemeta forms. The fallback ray includes actors so it cannot
 -- reach a door through an NPC; native object clicks remain engine-dispatched.
 -- Interaction is limited to hand reach, independent of spell range, and owns
--- the current RMB press so it cannot also draw a bow or consume food.
+-- the current RMB press so it cannot also consume food.
 -- Sneaking retains the ordinary node-placement bypass rule.
 --
 local NODE_INTERACT_RANGE = 4
@@ -791,8 +785,7 @@ end
 -- slot (serverpackethandler.cpp INTERACT_PLACE / INTERACT_ACTIVATE ->
 -- PlayerSAO::setWieldedItem), and their `itemstack` is a copy taken before
 -- they ran. Returned as it came, it would undo what contextual input wrote to
--- the wielded stack during the call: the zero pointing range and the draw
--- stage of a bow draw this press started, renewed or ended (Round 41). The
+-- the wielded stack during the call: the zero pointing range (Round 41). The
 -- stack as it is now goes back instead; another stack a node's on_rightclick
 -- returned is kept.
 local function wielded_now(callback)
@@ -836,15 +829,15 @@ grug_abilities.CAST_SOUNDS = {
 	opening = "weapon", retort = "weapon", broadstroke = "weapon",
 	bladecraft = "weapon",
 	fireball = "projectile", loose = "projectile", snare_shot = "projectile",
-	pinning_shot = "projectile", fiery_spark = "projectile",
+	fiery_spark = "projectile",
 	cold_spark = "projectile", flame_lance = "projectile",
 	true_draw = "projectile", split_shot = "projectile",
 	-- Warrior.
 	charge = "cast_charge", taunt = "cast_taunt", hold_ground = "cast_guard",
 	bellow = "cast_taunt", unbroken = "cast_unbroken", ruination = "cast_ruination",
 	-- Mage: frost, the arcane blink, fire.
-	ice_nova = "cast_ice_nova", glacial_ward = "cast_frost_ward",
-	blink = "cast_blink", cinderfall = "cast_cinderfall",
+	ice_nova = "cast_ice_nova",
+	blink = "cast_blink",
 	ice_wave = "cast_ice_wave", rime_mantle = "cast_rime_mantle",
 	winter_field = "cast_winter_field", meteor = "cast_cinderfall",
 	fire_rain = "cast_fire_rain",
@@ -863,16 +856,16 @@ grug_abilities.CAST_SOUNDS = {
 -- §2.14; grug_visuals/poses.lua): a cast skill when try_cast succeeds, a swing
 -- skill's proc when it lands. A refused cast and the Strike fallback (a
 -- swing without a proc) play none. Charge's pose follows its dash (charge.lua,
--- grug_visuals.start_pose/stop_pose), the Scout's drawn bow is scout.lua's.
+-- grug_visuals.start_pose/stop_pose).
 -- Round 53 (K6): a new cast poses like its family's casts (Ember and
 -- Reckoning cast1, Rime and Mercy cast2, Unbroken Bulwark's guard), the
 -- Warrior's and the Scout's other skills none, Broadstroke swings.
 grug_abilities.SKILL_POSES = {
 	fireball = "cast1", smite = "cast1", word_of_ruin = "cast1",
-	cinderfall = "cast1", fiery_spark = "cast1", flame_lance = "cast1",
+	fiery_spark = "cast1", flame_lance = "cast1",
 	meteor = "cast1", fire_rain = "cast1", rebuke = "cast1", censure = "cast1",
 	final_word = "cast1",
-	ice_nova = "cast2", glacial_ward = "cast2", heal = "cast2", mend = "cast2",
+	ice_nova = "cast2", heal = "cast2", mend = "cast2",
 	shield_spell = "cast2", ice_wave = "cast2", cold_spark = "cast2",
 	rime_mantle = "cast2", winter_field = "cast2", hearten = "cast2",
 	haven = "cast2",
@@ -898,15 +891,15 @@ grug_abilities.WEAPON_FX = {
 	taunt = "bulwark", hold_ground = "bulwark", retort = "bulwark",
 	bellow = "bulwark", unbroken = "bulwark",
 	-- Scout: wild, shadow.
-	loose = "quarry", snare_shot = "quarry", pinning_shot = "quarry",
+	loose = "quarry", snare_shot = "quarry",
 	sidestep = "quarry", sprint = "quarry", true_draw = "quarry",
 	split_shot = "quarry", arrowfall = "quarry",
 	opening = "veil", bladecraft = "veil", parry = "veil", flourish = "veil",
 	close_dance = "veil",
 	-- Mage: fire, frost.
-	fireball = "ember", cinderfall = "ember", fiery_spark = "ember",
+	fireball = "ember", fiery_spark = "ember",
 	flame_lance = "ember", meteor = "ember", fire_rain = "ember",
-	ice_nova = "rime", blink = "rime", glacial_ward = "rime",
+	ice_nova = "rime", blink = "rime",
 	cold_spark = "rime", ice_wave = "rime", rime_mantle = "rime",
 	winter_field = "rime",
 	-- Priest: healing light, judgment.
@@ -939,8 +932,7 @@ grug_abilities.WEAPON_FX_ANIMATION = {
 local NO_OVERLAY = "[combine:16x16"
 grug_abilities.NO_OVERLAY = NO_OVERLAY
 
--- The strips that ship: grug_abilities_fx_<family>_<weapon>.png, the bow's
--- draw stages grug_abilities_fx_<family>_bow_draw<stage>.png. A strip is
+-- The strips that ship: grug_abilities_fx_<family>_<weapon>.png. A strip is
 -- shown only when its file ships, so nothing unpicked can (D7).
 local fx_strips = {}
 for _, file in ipairs(core.get_dir_list(core.get_modpath(core.get_current_modname()) ..
@@ -949,14 +941,11 @@ for _, file in ipairs(core.get_dir_list(core.get_modpath(core.get_current_modnam
 end
 
 -- The overlay name for `def` over a weapon of grug_gear's family `weapon`
--- (nil: no weapon shows), at the Scout's draw `stage` (0-2; nil: the idle
--- bow or any other weapon). The skin pass writes it into the stack meta, the
--- bow draw (scout.lua) while each stage shows.
-function grug_abilities.skin_overlay(def, weapon, stage)
+-- (nil: no weapon shows). The skin pass writes it into the stack meta.
+function grug_abilities.skin_overlay(def, weapon)
 	local family = grug_abilities.WEAPON_FX[def.id]
 	if weapon and family and grug_abilities.WEAPON_FX_ANIMATION[family] then
-		local strip = "grug_abilities_fx_" .. family .. "_" .. weapon ..
-			(stage and ("_draw" .. stage) or "") .. ".png"
+		local strip = "grug_abilities_fx_" .. family .. "_" .. weapon .. ".png"
 		if fx_strips[strip] then return strip end
 	end
 	return NO_OVERLAY
@@ -1290,25 +1279,55 @@ local function clock_seconds(value, player, def)
 end
 grug_abilities.clock_seconds = clock_seconds
 
+-- A held cast lands on the next input pass after its interval ran out, and
+-- the pass runs only on an engine step (often 0.09 s): armed from `now`, a
+-- 0.85 s Loose became a 0.906 s Loose (Round 53 SCOUT review). As the swing
+-- clock does (SWING_CATCHUP below), a skill with a cast interval carries the
+-- lateness behind its previous due time into the next one, on its interval
+-- and on its own occupied time, bounded by CLOCK_CATCHUP and half the clock.
+-- Unlike the swing clock, a cast later than that bound (an idle gap, not a
+-- held repeat) carries nothing, so a lone cast keeps its full clock; a skill
+-- without an interval never carries.
+local CLOCK_CATCHUP = 0.1
+
+local function carried_lateness(due_us, now, seconds)
+	if not due_us or now <= due_us then
+		return 0
+	end
+	local late = (now - due_us) / 1e6
+	if late > CLOCK_CATCHUP or late > seconds * 0.5 then
+		return 0
+	end
+	return late
+end
+
+-- Arms the interval; returns the lateness it carried (seconds, 0 without an
+-- interval), for the cast's occupied time.
 local function arm_cast_interval(player, def)
 	if not def.cast_interval then
-		return
+		return 0
 	end
 	local name = player:get_player_name()
 	cast_intervals[name] = cast_intervals[name] or {}
-	cast_intervals[name][def.cooldown_key] = core.get_us_time()
-		+ clock_seconds(def.cast_interval, player, def) * 1e6
+	local now = core.get_us_time()
+	local seconds = clock_seconds(def.cast_interval, player, def)
+	local late = carried_lateness(cast_intervals[name][def.cooldown_key], now, seconds)
+	cast_intervals[name][def.cooldown_key] = now + (seconds - late) * 1e6
+	return late
 end
 
 -- The action clock's cast side (D2): `seconds` from now no cast starts. Never
--- shortens a running lock; 0 (a cast's default) writes nothing.
-local function occupy_casts(player, seconds)
+-- shortens a running lock; 0 (a cast's default) writes nothing. `late` (the
+-- lateness a held cast carried on its interval, at most half of `seconds`)
+-- comes off the lock, so a held cast keeps its cadence on both clocks.
+local function occupy_casts(player, seconds, late)
 	if seconds <= 0 then
 		return
 	end
 	local name = player:get_player_name()
+	late = math.min(late or 0, seconds * 0.5)
 	cast_clock[name] = math.max(cast_clock[name] or 0,
-		core.get_us_time() + seconds * 1e6)
+		core.get_us_time() + (seconds - late) * 1e6)
 end
 
 local function cast_clock_ready(player)
@@ -1434,7 +1453,7 @@ swing_progress = {}
 -- permanently from `now`: otherwise a 1.0 s weapon at dtime 0.09 becomes a
 -- 1.08 s weapon. The cap prevents a long lag/range/LOS gap from turning into a
 -- backlog burst.
-local SWING_CATCHUP = 0.1
+local SWING_CATCHUP = CLOCK_CATCHUP
 
 -- Cast/wield boundaries use reset_swing_boundary below and preserve the
 -- weapon clock.
@@ -1756,12 +1775,6 @@ attempt_swing = function(player, selected, held, latched)
 			threat_mult = proc_threat or 1
 			post = proc_post
 		end
-		-- Affront raises a tank multiplier only; the cast-side equivalent stays
-		-- in grug_core/combat.lua's deal_ability_damage.
-		if threat_mult ~= 1 then
-			threat_mult = threat_mult
-				+ grug_classes.get_talent_bonus(player, "threat_mult_add")
-		end
 	end
 	-- The swing callbacks (register_on_swing): their multipliers and adds on
 	-- the raw damage, their rage and hooks for the landing.
@@ -1930,12 +1943,12 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 		grug_sounds.play(cue, user)
 	end
 	play_skill_pose(user, def)
-	arm_cast_interval(user, def)
+	local late = arm_cast_interval(user, def)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))
 	-- Cast -> cast on the action clock (D2); cast -> swing is the caller's
 	-- delay_strike (input.lua), with def.occupied_swing.
-	occupy_casts(user, clock_seconds(def.occupied_cast, user, def))
+	occupy_casts(user, clock_seconds(def.occupied_cast, user, def), late)
 	return true
 end
 
@@ -1958,7 +1971,10 @@ end
 -- per-stack wield override must update an already-granted ability stack. The
 -- overlay name (grug_abilities.skin_overlay) follows the held weapon's family
 -- and the strips that ship, so a newly picked strip reaches every stack.
--- Version 5 (Round 52): the element overlay.
+-- Version 5 (Round 52): the element overlay. A skill stack the retired bow
+-- draw left mid-draw (a crash: a stage image, strip and wear under a current
+-- token) needs no new version: the join's normalize_kit compares it with a
+-- fresh copy and replaces it (tools/r52_wfx S).
 local SKIN_VERSION = 5
 local SKIN_TOKEN_KEY = "grug_skin"
 
@@ -2122,8 +2138,8 @@ local EMPTY_HAND_SCALE = "(1, 1, 2.5)"
 -- changed, i.e. only when the caller has to spend an inventory write. `weapon`
 -- is the slot item's weapon family (slot_source).
 --
--- Touches nothing but the four meta keys: the wear and the Loose draw-time
--- `range` stay whatever they were.
+-- Touches nothing but the four meta keys: the wear and the pointing `range`
+-- stay whatever they were.
 local function apply_skin(stack, def, src, weapon)
 	local meta = stack:get_meta()
 	local overlay = grug_abilities.skin_overlay(def, weapon)
@@ -2988,8 +3004,8 @@ grug_abilities.charge_destination = destinations.charge
 dofile(core.get_modpath(core.get_current_modname()) .. "/charge.lua")(
 	dofile(core.get_modpath(core.get_current_modname()) .. "/charge_path.lua"),
 	destinations.charge_reach)
--- Crosshair state overlay and the progress ring; scout.lua (bow draw) and
--- input.lua (eating) drive the ring.
+-- Crosshair state overlay and the progress ring; input.lua (eating) drives
+-- the ring.
 grug_abilities.crosshair = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/crosshair.lua")({
 	selected = function(player) return item_defs[player:get_wielded_item():get_name()] end,
@@ -3021,8 +3037,8 @@ grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 })
 
 -- A hotbar switch (Round 50 ruling 3, grug_inventory/hotbars.lua), before
--- the rows change hands: like a stun, it cancels a pending cast, eating, the
--- bow's draw (its stage image is reset on the leaving copy) and held input,
+-- the rows change hands: like a stun, it cancels a pending cast, eating and
+-- held input,
 -- latched until a fresh press, and ends a held swing loop while keeping the
 -- weapon's due time (so switching never swings sooner). Cooldowns and paid
 -- costs stay. The wield watcher and the cooldown overlay read the new row on

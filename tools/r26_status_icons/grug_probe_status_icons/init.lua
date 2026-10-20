@@ -7,9 +7,9 @@
 -- ready, waits for the class (applied at the arrival teleport), then starts
 -- statuses through the real game paths where one exists:
 --   food        grug_food.eat with a real Bread stack (item image icon)
---   shield      grug_core.add_absorb with a Turn Aside dodge modifier
---               (shield + talent_turn_aside from the combat.lua source)
---   untouchable grug_classes.start_talent_window
+--   shield      grug_core.add_absorb
+--   ruination   grug_classes.open_window, a readiness window (Round 53: the
+--               old talent windows and Turn Aside are gone)
 --   slowed      grug_core.set_move_modifier "mob_web" (movement source)
 --   rooted      grug_core.set_root (movement source)
 --   combat      grug_core.mark_in_combat, renewed every second
@@ -90,9 +90,8 @@ local function stage(player)
 	log("food status " .. tostring(grug_core.get_status(player, "food") ~= nil))
 	grug_core.set_status(player, "elixir", {label = "Elixir of Focus III",
 		duration = 900, variant = "focus", detail = "+5% maximum Mana"})
-	grug_core.add_absorb(player, "shield_spell", 60, LONG, player, {},
-		{dodge_percent = 10})
-	grug_classes.start_talent_window(player, "untouchable", LONG)
+	grug_core.add_absorb(player, "shield_spell", 60, LONG, player)
+	grug_classes.open_window(player, "ruination", {duration = LONG, label = "Ruination"})
 	grug_core.set_move_modifier(player, "mob_web", {speed = -0.4}, LONG)
 	grug_core.set_root(player, LONG)
 	grug_core.set_status(player, "poisoned", {label = "Poisoned", duration = 42})

@@ -16,16 +16,15 @@
 --   the colour shows exactly where a press would act (Round 36 §2.14.1);
 --   otherwise interact (light blue) when contextual input would interact
 --   with the first thing within hand reach (`input.aims_at_interactive`);
--- * one progress ring, one frame per sixteenth, shared by two owners: the
---   bow draw (scout.lua; warm white, a gold frame when full) and eating
---   (contextual input's food hold; the same frames tinted green, no full
---   frame). Each owner hides it on every one of its end paths.
+-- * one progress ring, one frame per sixteenth, for eating (contextual
+--   input's food hold; the frames tinted green). Its owner hides it on every
+--   one of its end paths. Round 53 removed its other owner, the bow draw.
 --
 -- The state overlay is refreshed every 0.15 s from the 0.05 s input pass
 -- (init.lua; Round 30, perf review #8), the progress ring by its owners, and
 -- either sends a HUD packet only when the drawn texture changes. The
 -- weapon-ready ring (init.lua, still every pass) sits between the two: state
--- overlay z 1, ready ring z 2, progress ring (bow draw or eating) z 3.
+-- overlay z 1, ready ring z 2, progress ring (eating) z 3.
 --
 -- Integer scale. The engine draws the crosshair at floor(hud_scaling x display
 -- density) (src/client/hud.cpp drawCrosshair) but a Lua image element at the
@@ -41,16 +40,14 @@ return function(api)
 		interact = "crosshair.png^[multiply:#7fd4ff",
 	}
 	local RING_FRAMES = 16
-	local RING_FULL = "grug_abilities_draw_ring_full.png"
-	-- Per-owner frame tint; only the bow has a full frame.
-	local RING_TINT = {bow = "", food = "^[multiply:#7de36a"}
+	-- Per-owner frame tint.
+	local RING_TINT = {food = "^[multiply:#7de36a"}
 	C.Z_STATE, C.Z_READY, C.Z_RING = 1, 2, 3
 	-- player name -> {state = hud rec, ring = hud rec, ring_owner = owner?}
 	local huds = {}
 
 	local function ring_texture(frame, owner)
 		if frame == nil then return "" end
-		if frame == "full" then return RING_FULL end
 		return ("grug_abilities_draw_ring_%02d.png"):format(frame) .. RING_TINT[owner]
 	end
 
@@ -186,25 +183,19 @@ return function(api)
 		show(player, rec.state, state and STATE_TEXTURE[state] or "")
 	end
 
-	-- Progress ring for `owner` ("bow" or "food"): `fraction` in [0, 1]
+	-- Progress ring for `owner` (today only "food"): `fraction` in [0, 1]
 	-- shows it, nil hides it. The single element belongs to one owner at a
 	-- time: a free ring is claimed by the first show, a hide by any other
 	-- owner is a no-op, and a show by another owner is refused (false) until
-	-- the current owner hides it. Owners that keep calling while active (the
-	-- bow draw loop, the eating step) therefore take the ring over on their
-	-- next call once it is free, and neither can clear the other's frames.
+	-- the current owner hides it.
 	function C.set_ring(player, fraction, owner)
 		local rec = huds[player:get_player_name()]
 		if not rec or not RING_TINT[owner] then return false end
 		if rec.ring_owner and rec.ring_owner ~= owner then return false end
 		local frame
 		if fraction then
-			if fraction >= 1 and owner == "bow" then
-				frame = "full"
-			else
-				frame = math.max(0, math.min(RING_FRAMES - 1,
-					math.floor(fraction * RING_FRAMES)))
-			end
+			frame = math.max(0, math.min(RING_FRAMES - 1,
+				math.floor(fraction * RING_FRAMES)))
 			rec.ring_owner = owner
 		else
 			rec.ring_owner = nil

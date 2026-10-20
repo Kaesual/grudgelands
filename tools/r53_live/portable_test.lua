@@ -11,8 +11,8 @@
 --      forged stored string loses exactly those ranks); no class; a full
 --      budget;
 --   C. a 0.52 string (the old trees' ids) reads as zero ranks: no point
---      spent, every old key 0, every old talent id rank 0; the old registry
---      stays loaded and inert (K3), the old Unbroken passive too;
+--      spent, every old key 0, every old talent id rank 0; the old registry,
+--      its window API and the Unbroken passive are gone (INTEG part 2);
 --   D. the accessors: get_talent_bonus sums shared keys, class keys and
 --      "<family>:<param>" keys over the ranks; armor_percent_add at levels
 --      10 and 60 equals the rank's % x armor_k; talent_rank on node ids;
@@ -191,16 +191,16 @@ for id in OLD:gmatch("([%a_]+)=") do
 	eq(grug_classes.talent_rank(veteran, id), 0, "C old id " .. id .. " has no rank")
 end
 eq(stored(veteran), OLD, "C reading never rewrites the string (the migration step clears it)")
-check(grug_classes.registered_talents.mend ~= nil and grug_classes.registered_talents.mend.name == "Mend",
-	"C the old registry stays loaded (kits_priest.lua reads Mend's name at load)")
-check(grug_classes.registered_trees.bulwark ~= nil, "C its trees too")
-eq(grug_classes.try_trigger_talent_window(veteran, "ruination", 15, 60), false,
-	"C the old window API answers, inert")
--- The old Unbroken passive reads talent_rank(player, "unbroken"): the graph's
--- node is bulwark_unbroken, so it stays shut.
+-- INTEG part 2 deleted the old registry and its window API (K3 ended).
+for _, old in ipairs({"registered_talents", "registered_trees", "register_talent",
+		"register_tree", "audit_talents", "TALENT_EFFECT_KEYS", "talent_level_amount",
+		"start_talent_window", "try_trigger_talent_window", "talent_trigger_ready",
+		"talent_window_active"}) do
+	eq(grug_classes[old], nil, "C the old " .. old .. " is gone")
+end
 local guard = player("c_unbroken", "warrior", 60, graph.serialize(graph.trees.bulwark.example_ranks))
 eq(grug_classes.talent_rank(guard, "bulwark_unbroken"), 1, "C Bulwark's Unbroken is ranked")
-eq(grug_classes.talent_rank(guard, "unbroken"), 0, "C the old passive's id is not")
+eq(grug_classes.talent_rank(guard, "unbroken"), 0, "C an old id has no rank")
 
 --
 -- D. The accessors.

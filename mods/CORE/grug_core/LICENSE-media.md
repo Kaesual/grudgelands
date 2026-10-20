@@ -54,12 +54,6 @@ says 29; only the explicitly requested IDs are included.
 | `textures/grug_status_mount_water.png` | GPT-6 Astra (Grudgelands), own work, Round 29; generated with OpenAI's built-in `image_gen.imagegen`, no third-party source images. Wooden rowboat, oar and blue waves; nearest-neighbour 64×64 RGBA export with the flat `#151f2d` plate normalized and the frame area left clear; no baked frame | CC0-1.0 |
 | `textures/grug_status_shield.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_move_immune.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_talent_unbroken.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_talent_ruination.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_talent_whitehot.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_talent_turn_aside.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_talent_last_word.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_talent_untouchable.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_poisoned.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_slowed.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_rooted.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |

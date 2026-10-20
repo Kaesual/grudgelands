@@ -831,7 +831,12 @@ tools](#player-meta-read-by-external-tools).
     and consumes its interval (the selected skill's value, Strike's in the
     fallback), a per-player time
     on `core.get_us_time` that never shortens a running lock and is
-    cleared on death, respawn and leave. `cast_refusal`, shared by the
+    cleared on death, respawn and leave. A cast with a `cast_interval`
+    (the held basic attacks) carries the lateness behind its previous
+    due time, at most 0.1 s (`CLOCK_CATCHUP`) and half the clock, into
+    its interval and its own occupied time, so a held cast keeps its
+    cadence on 0.09 s passes; a later cast (an idle gap) and a cast
+    without an interval carry nothing (Round 53 INTEG). `cast_refusal`, shared by the
     input gate and `try_cast`, refuses with "You are still busy." while
     it runs (after the cooldown and cast-interval checks, before the
     cost); a held repeat stays quiet like every other refusal. Its second
@@ -879,10 +884,10 @@ tools](#player-meta-read-by-external-tools).
     respec) ends the open windows and drops run-out ICDs. Icons come from
     `grug_core.status_icons.WINDOWS` (Round 53: `cold_shock`, `retort`,
     `clear_conscience`, `follow_the_line`, `parry`, `ruination` and
-    `close_dance`, each showing the status of its own id). Today's
+    `close_dance`, each showing the status of its own id). The old
     talent windows and their trigger cooldowns (`talent_trigger_ready`,
-    `os.time` in the player-meta key `grug_classes:talent_ready:<id>`)
-    are unchanged (D1).
+    `os.time` in `grug_classes:talent_ready:<id>`) went with the old
+    talents in Round 53; the 0.53.0 migration step deleted the keys.
   - **Area helpers** (`grug_core/area.lua`, `grug_core.area`; C3, C4,
     D9; the ground anchor of
     [skill inventory §3a](../planning/class-redesign/skill-inventory.md)).
@@ -969,10 +974,9 @@ tools](#player-meta-read-by-external-tools).
     `{frames, frame_length}`, and an animated family's skill item
     definition carries `wield_overlay = {name = NO_OVERLAY, animation =
     16 × 16 vertical frames}`. The skin pass (`apply_skin`,
-    `skin_overlay(def, weapon, stage)`) writes the strip
+    `skin_overlay(def, weapon)`) writes the strip
     `grug_abilities_fx_<family>_<weapon>.png` for the held weapon type
-    into the stack meta (the `stage` argument and its `_draw<n>` names are
-    unused since Round 53 deleted the bow draw): the engine's meta overrides
+    into the stack meta: the engine's meta overrides
     only the overlay's name and keeps the definition's animation
     (`ItemStack::getWieldOverlay`, `src/inventory.cpp`). An empty slot,
     Strike, a weapon without a strip and a strip that does not ship get

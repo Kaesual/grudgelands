@@ -318,13 +318,6 @@ local strike_def = {
 }
 grug_abilities.register_ability(strike_def)
 
-local function talent_rank_value(user, talent_id, effect_key, fallback)
-	local def = grug_classes.registered_talents[talent_id]
-	local rank = grug_classes.talent_rank(user, talent_id)
-	local values = def and def.effects and def.effects[effect_key]
-	return values and values[rank] or fallback
-end
-
 --
 -- The class kits, one file per class (Round 52): kits_warrior.lua,
 -- kits_mage.lua and kits_priest.lua. Each returns a function that takes the
@@ -345,7 +338,6 @@ local K = {
 	effective_support_number = effective_support_number,
 	spell_damage_value = spell_damage_value,
 	support_value = support_value,
-	talent_rank_value = talent_rank_value,
 	fx = fx,
 	facing = facing,
 	-- Round 53: the family keys (damage_pct, radius_add, duration_add ...)
