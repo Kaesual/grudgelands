@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Round 52 lane GRAPH: screenshots of the new talent page's admin preview
-# (/talent_preview: Ember, Rime with a selected node, Quarry, Veil) and of
-# the Talents & Skills page with its skill row at the start and scrolled
-# (C13), at the default desktop GUI scale.
+# Round 52 lane GRAPH, live page since Round 53: screenshots of the Talents &
+# Skills page with the graph trees (a level-60 Scout with the Quarry sample
+# build: the Quarry tab, the Veil tab, a selected node) and with its skill
+# row at the start and scrolled (C13), at the default desktop GUI scale.
 #
 # Same method and isolation as tools/r48_hud/capture.sh: the server boots
 # through tools/luanti_headless.sh with the disposable probe

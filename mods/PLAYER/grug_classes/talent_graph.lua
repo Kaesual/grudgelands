@@ -1,17 +1,19 @@
 -- The graph talent registry (Round 52 lane GRAPH, round52-class-plan.md §3
--- "GRAPH", rulings C6 and C12, decisions D3 and D4). It is built BESIDE
--- today's registry (talents.lua) and nothing live reads it in Round 52: only
--- the admin preview (talent_graph_ui.lua) and the fixtures do. Round K
--- switches the Talents page and the stored talents over to it, with an
--- automatic talent reset for every character.
+-- "GRAPH", rulings C6 and C12, decisions D3 and D4), live since Round 53
+-- (round K, round53-plan.md §4 "LIVE"): talents.lua stores and reads every
+-- character's ranks through it, and the Talents & Skills page draws it
+-- (talent_graph_ui.lua). The data is one file per class,
+-- talent_graph_<class>.lua; talents.lua loads the four and runs the audit.
 --
 -- A class has two trees; a tree is a graph of nodes. Each node has
+--   * an ID "<tree>_<name>" (round K: descriptive ids, codes in the docs
+--     only); its talent icon is named after <name> (K5);
 --   * a GATE: the points already spent in its tree before its first rank,
 --     one of GATE_ROWS (the page draws one row per gate);
 --   * any number of PREREQUISITES (`requires`), each needing ONE rank -- not
---     a full chain as today's hard chain does;
+--     a full chain as the old trees' hard chain did;
 --   * a TYPE: "modifier" or "window" (numbers on existing skills; a window
---     node opens a readiness window in round K), or "unlock", "transform" or
+--     node's ranks feed a readiness window), or "unlock", "transform" or
 --     "ultimate", which grant the ability `ability` and have one rank. A
 --     transform's ability carries the ability-side `transforms` field (D8);
 --     this registry names the ability id only, never the old skill. The
@@ -69,6 +71,22 @@ graph.SHARED_KEYS = {
 	crit_chance_add = "percentage points (stats.lua get_crit_chance)",
 	dodge_chance_add = "percentage points (stats.lua dodge)",
 }
+-- Level-proof keys (skill_trees.md §2.10): the stored value is a percentage
+-- of a level reference, and get_talent_bonus answers with the amount at the
+-- player's level. Only armor: % of grug_core.armor_k(level), the rating that
+-- halves a same-level hit, which the consumers add as raw rating points.
+graph.LEVEL_SCALED_KEYS = {armor_percent_add = "armor"}
+
+-- The amount `value` of `key` is worth at `level` (the value itself for a key
+-- that is not level-scaled).
+function graph.level_amount(key, value, level)
+	if graph.LEVEL_SCALED_KEYS[key] == "armor" then
+		level = math.max(1, math.min(60, math.floor(tonumber(level) or 1)))
+		return value * grug_core.armor_k(level) / 100
+	end
+	return value
+end
+
 graph.KEY_FAMILIES = {
 	damage_pct = "% of the untalented damage of the skills the param names",
 	cost_pct = "% change of their cost (negative is cheaper)",
@@ -127,7 +145,12 @@ function graph.register_tree(def)
 	for _, node in ipairs(def.nodes) do
 		assert(node.id and node.code and node.name,
 			"incomplete node in " .. def.id .. ": " .. tostring(node.id))
+		-- "<tree>_<name>": the name part names the talent icon (K5).
+		local prefix = def.id .. "_"
+		assert(node.id:sub(1, #prefix) == prefix and #node.id > #prefix,
+			"node " .. node.id .. " is not named " .. prefix .. "<name>")
 		assert(not graph.nodes[node.id], "duplicate node id " .. node.id)
+		node.icon_name = node.id:sub(#prefix + 1)
 		assert(not graph.codes[node.code], "duplicate node code " .. node.code)
 		node.tree = def.id
 		node.class = def.class
@@ -334,8 +357,9 @@ for index, gate in ipairs(graph.GATE_ROWS) do GATE_ROW[gate] = index end
 graph.GATE_ROW = GATE_ROW
 
 -- The fewest points with which `target` gets its first rank: buy its missing
--- ancestors as soon as their gate allows, other ranks (lowest gate first)
--- while a gate waits. Nil when nothing is buyable before it.
+-- ancestors as soon as their gate allows, any other rank (lowest gate first;
+-- further ranks of a bought ancestor count too) while a gate waits. Nil when
+-- nothing is buyable before it.
 local function reach_cost(tree, target)
 	local needed, stack = {[target.id] = true}, {target}
 	while #stack > 0 do
@@ -350,10 +374,12 @@ local function reach_cost(tree, target)
 	local ranks, total = {}, 0
 	while not ranks[target.id] do
 		local pick
+		-- Pass 2 runs only when every missing ancestor is refused, so it
+		-- never picks one of them; it fills with any other open rank.
 		for pass = 1, 2 do
 			for _, def in ipairs(tree.nodes) do
 				local wanted = pass == 1 and needed[def.id] and not ranks[def.id]
-					or pass == 2 and not needed[def.id] and (ranks[def.id] or 0) < def.ranks
+					or pass == 2 and (ranks[def.id] or 0) < def.ranks
 				if wanted and not structure_refusal(ranks, def) and
 						(not pick or def.gate < pick.gate) then
 					pick = def
@@ -439,7 +465,7 @@ function graph.audit()
 				graph.POINTS_MAX .. " points")
 			def.reach_cost = cost
 		end
-		-- The sample build the preview shows (D3): a legal order in this tree.
+		-- The sample build (D3; the fixtures buy it): a legal order in this tree.
 		if tree.example then
 			local built, reason = graph.apply_order(tree.class, tree.example, graph.POINTS_MAX)
 			assert(built, label .. " sample build: " .. tostring(reason))
