@@ -9,7 +9,8 @@
 -- off in one of eight directions (BORDER) and one with ocean 24 nodes off
 -- (COAST), using the flight rule itself (grug_mounts.column_flight_state).
 -- For each shot it moves the player, mounts the Master flyer 20 nodes above
--- the ground, a ground mount on it or nothing, waits SETTLE seconds and logs
+-- the ground, a ground mount on it or nothing (MOUNT_DELAY seconds after the
+-- move), waits SETTLE seconds and logs
 -- "SHOT <name>" and a CHECK line (flight mode, no-fly tiles in the cell
 -- texture, the flight warning's text).
 local P = "[r531flight] "
@@ -74,16 +75,24 @@ local SHOTS = {
 	{name = "F4_on_foot_border", spot = "border"},
 }
 
-local function show(player, shot)
+-- The player is moved first and held in the air (gravity 0); the mount
+-- comes MOUNT_DELAY seconds later, once the blocks there are active (a
+-- mount spawned into a block not yet loaded is deactivated at once and the
+-- rider falls).
+local MOUNT_DELAY = 3
+local function place(player, shot)
 	grug_mounts.dismount(player, nil, true)
+	player:set_physics_override({gravity = 0, speed = 0, jump = 0})
 	local spot = state.spots[shot.spot]
 	local ground = math.max(grug_zones.terrain_height_at(spot.x, spot.z), 1)
-	local pos = {x = spot.x + 0.5, y = ground + (shot.mount == 4 and 20 or 1.5), z = spot.z + 0.5}
-	player:set_pos(pos)
-	if shot.mount then
-		local ok, err = grug_mounts.spawn_entity(player, shot.mount, pos)
-		log(("%s: mount %d %s"):format(shot.name, shot.mount, ok and "ok" or tostring(err)))
-	end
+	state.pos = {x = spot.x + 0.5, y = ground + (shot.mount == 4 and 20 or 1.5), z = spot.z + 0.5}
+	player:set_pos(state.pos)
+end
+
+local function mount(player, shot)
+	if not shot.mount then return end
+	local ok, err = grug_mounts.spawn_entity(player, shot.mount, state.pos)
+	log(("%s: mount %d %s"):format(shot.name, shot.mount, ok and "ok" or tostring(err)))
 end
 
 local function warning_text(player)
@@ -131,9 +140,11 @@ core.register_globalstep(function(dtime)
 			core.request_shutdown("probe done", false, 0)
 			return
 		end
-		if state.waited == 0 then show(player, shot) end
+		if state.waited == 0 then place(player, shot) end
+		local before = state.waited
 		state.waited = state.waited + step
-		if not state.logged and state.waited >= SETTLE then
+		if before < MOUNT_DELAY and state.waited >= MOUNT_DELAY then mount(player, shot) end
+		if not state.logged and state.waited >= MOUNT_DELAY + SETTLE then
 			state.logged = true
 			local texture = grug_map.minimap.texture_of(player) or ""
 			local tiles = 0
