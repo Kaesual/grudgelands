@@ -329,6 +329,10 @@ function grug_gear.describe_stack_base(stack, ilvl)
 		if ilvl then trinket_lines[#trinket_lines + 1] = "Item level " .. ilvl end
 		if special == "" then return trinket_lines, {} end
 		trinket_lines[#trinket_lines + 1] = core.colorize(STAT_COLOR, special)
+		local pair_line = grug_gear.trinket_pair_line(def)
+		if pair_line then
+			trinket_lines[#trinket_lines + 1] = core.colorize(STAT_COLOR, pair_line)
+		end
 		return trinket_lines, {trinket_special = special}
 	end
 	local lines = {}

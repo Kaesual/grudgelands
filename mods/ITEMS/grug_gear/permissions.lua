@@ -31,16 +31,30 @@ function grug_gear.can_equip_weapon(player, stack)
  return grug_gear.class_can_use_weapon(grug_classes.get_class(player), stack)
 end
 
+-- "Usable by" names the classes that can really equip the piece. Hand pieces
+-- (weapons, shields, spellbooks) ask the rule that decides equipping them,
+-- grug_inventory.hand_accepts over HAND_RULES (either hand), so the tooltip
+-- cannot drift from the slots; armour asks its armour-class rank; anything
+-- else (trinkets) is for every class. Called at runtime and from on_mods_loaded,
+-- after grug_inventory has loaded.
 function grug_gear.usable_by(stack)
  local def = stack:get_definition() or {}
  local groups = def.groups or {}
- local family = grug_gear.weapon_family(stack)
+ local hand = (groups.grug_equip_weapon or 0) > 0 or
+  (groups.grug_equip_offhand or 0) > 0
+ local hand_accepts = hand and grug_inventory.hand_accepts
  local rank = groups.grug_armor_class or 0
  local names = {}
  for _, class in ipairs(CLASS_ORDER) do
   local armor_rank = class == "warrior" and 3 or class == "scout" and 2 or 1
-  if (family and CLASS_WEAPONS[class][family]) or
-    (not family and (groups.grug_equip_weapon or 0) == 0 and rank <= armor_rank) then
+  local usable
+  if hand then
+   usable = hand_accepts(class, "grug_weapon", stack) or
+    hand_accepts(class, "grug_offhand", stack)
+  else
+   usable = rank <= armor_rank
+  end
+  if usable then
    names[#names + 1] = CLASS_NAMES[class]
   end
  end

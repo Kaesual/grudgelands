@@ -18,14 +18,19 @@ local function finite_nonnegative(value)
 	return value
 end
 
+-- Each worn copy counts, the same trinket twice included (0.53.1 ruling 4).
+-- "additive" specials sum up to their cap. A "highest" special fires once:
+-- the stronger copy (the higher value, then the higher Rage; equal copies
+-- either) gives the effect, and each other copy strengthens it by its own
+-- tier's share (_grug_trinket_pair_share, percent). Its cooldown is the
+-- special's one shared cooldown.
 local function add_effect(effects, definition)
-	local identity = definition._grug_trinket_identity
 	local kind = definition._grug_trinket_kind
-	if type(identity) ~= "string" or identity == "" or
-			type(kind) ~= "string" or kind == "" or effects.seen[identity] then
+	if type(definition._grug_trinket_identity) ~= "string" or
+			definition._grug_trinket_identity == "" or
+			type(kind) ~= "string" or kind == "" then
 		return
 	end
-	effects.seen[identity] = true
 	local value = finite_nonnegative(definition._grug_trinket_value)
 	local stacking = definition._grug_trinket_stacking
 	local current = effects[kind]
@@ -41,21 +46,41 @@ local function add_effect(effects, definition)
 		end
 		effects[kind] = current
 	elseif stacking == "highest" then
-		local rage = finite_nonnegative(definition._grug_trinket_rage)
-		if not current or value > current.value or
-				(value == current.value and rage > (current.rage or 0)) then
-			effects[kind] = {
-				value = value,
-				rage = rage,
-				cooldown = finite_nonnegative(definition._grug_trinket_cooldown),
-			}
+		local copy = {
+			value = value,
+			rage = finite_nonnegative(definition._grug_trinket_rage),
+			cooldown = finite_nonnegative(definition._grug_trinket_cooldown),
+			share = finite_nonnegative(definition._grug_trinket_pair_share),
+		}
+		local copies = current and current.copies or {}
+		copies[#copies + 1] = copy
+		local strongest = copies[1]
+		for index = 2, #copies do
+			local candidate = copies[index]
+			if candidate.value > strongest.value or
+					(candidate.value == strongest.value and
+					candidate.rage > strongest.rage) then
+				strongest = candidate
+			end
 		end
+		local factor = 1
+		for index = 1, #copies do
+			if copies[index] ~= strongest then
+				factor = factor + copies[index].share / 100
+			end
+		end
+		effects[kind] = {
+			value = strongest.value * factor,
+			rage = strongest.rage * factor,
+			cooldown = strongest.cooldown,
+			copies = copies,
+		}
 	end
 end
 
 local function rebuild(player)
 	local name = player:get_player_name()
-	local effects = {seen = {}}
+	local effects = {}
 	local inventory = player:get_inventory()
 	if inventory then
 		for index = 1, #TRINKET_LISTS do

@@ -460,8 +460,11 @@ tools](#player-meta-read-by-external-tools).
 - **Trinkets**: `grug_trinkets` owns the six special consumers and rebuilds an
   event-driven per-character equipment cache through the equipment-change seam;
   hot mana/heal/hit/kill/potion paths read that cache and never rescan slots.
-  The same trinket identity cannot occupy both slots. Last Light uses one
-  shared 120-second cooldown and maximum shield lifetime.
+  The same trinket may occupy both slots (0.53.1): additive specials sum up
+  to their cap; a "highest" special (Last Light, Reclaimer's Mark) fires once
+  from the stronger copy, strengthened by the other copy's tier share
+  (`_grug_trinket_pair_share`, 5–30 %). Last Light uses one shared 120-second
+  cooldown and maximum shield lifetime.
 
 ## Combat and classes
 
