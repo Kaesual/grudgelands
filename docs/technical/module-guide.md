@@ -2911,6 +2911,12 @@ tools](#player-meta-read-by-external-tools).
   cloak box on a keyed `Cloak` bone and its own mesh buffer appended
   (`tools/r33_c3/gen_cloak_model.py`, `--check` rebuilds and compares and the
   build proves the legs never cross the cloak); NPCs keep `character.b3d`.
+  Since Round 54 the same generator appends the armor buffer, the swing
+  bones `Panel_Front`/`Panel_Back` and the weapon card on `Arm_Right`
+  (texture slots skin, cloak, armor, weapon) and writes the armored NPC
+  model `grug_visuals_npc.b3d` (skin, armor, weapon); the build also proves
+  the panels clear the legs and checks the rest pose for z-fighting
+  ([armor format](armor-format.md); fixture `tools/r54_model`).
   The player texture list is `{skin, cloak}`: `grug_visuals.apply` writes it
   with the cloak from the one `register_cloak_source(fn)`, `fn(player) ->
   texture, selected id` (no cloak: builtin `blank.png`), the texture part
