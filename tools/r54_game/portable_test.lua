@@ -218,7 +218,7 @@ local V = grug_visuals
 ------------------------------------------------------------------------------
 -- Fake players.
 ------------------------------------------------------------------------------
-local function new_player(name, race)
+local function new_player(name, race, no_join)
 	local fields, lists, props = {}, {}, {}
 	local meta = new_meta(fields)
 	local inv = {}
@@ -242,7 +242,9 @@ local function new_player(name, race)
 	function player:set_animation() end
 	function player:set_local_animation() end
 	function player:hud_add() return 1 end
-	for _, row in ipairs(joins) do row.fn(player) end
+	if not no_join then
+		for _, row in ipairs(joins) do row.fn(player) end
+	end
 	return player
 end
 local function equip(player, list, stack)
@@ -387,6 +389,18 @@ do
 	eq(image, V.hand_image(slot_copy(ada, "grug_weapon")), "V the hand image")
 	equip(ada, "grug_weapon", ItemStack(""))
 	eq(V.preview(ada).textures[4], V.WEAPON_NONE, "V no weapon: an empty card")
+	-- A player the join apply has not reached yet (sfinv may build the page
+	-- first): composed from the player's state, never nil.
+	local early = new_player("early", "elf", true)
+	local first = V.preview(early)
+	check(first ~= nil and first.mesh == V.PLAYER_MODEL and #first.textures == 4,
+		"V before any apply: the full answer")
+	eq(early.props.textures, nil, "V before any apply: nothing applied yet")
+	check(has(first.textures[1], V.LOOKS.elf.styles[1].mask), "V before any apply: the race look")
+	equip(early, "grug_chest", ItemStack(grug_gear.armor_item("chest", "leather", 2)))
+	early.props.textures = nil
+	check(has(V.preview(early).textures[3], "grug_armor_leather_cured_chest.png"),
+		"V the worn chest from the inventory, not from the object")
 	local bob = new_player("bob", "dwarf")
 	local bare = V.preview(bob)
 	eq(bare.textures[2], V.CLOAK_NONE, "V no cloak")

@@ -597,14 +597,13 @@ grug_classes.register_on_class_chosen(function(player)
 	grug_visuals.apply(player)
 end)
 
--- REGISTERED BEFORE grug_inventory's single page-refresh consumer, and that
--- ordering is load-bearing: the Character page renders the player's LIVE object
--- properties (pages.lua preview_model), so a refresh that runs before this
--- write shows the previous look until the next equip. grug_inventory therefore
--- carries `optional_depends = grug_visuals` -- the edge goes exactly one way,
--- because a mutual optional_depends is a dependency cycle. AGENTS.md allows
--- exactly one page-refresh consumer, so the fix is the order, not a second
--- refresh.
+-- Registered before grug_inventory's single page-refresh consumer
+-- (grug_inventory carries `optional_depends = grug_visuals`; the edge goes
+-- exactly one way, because a mutual optional_depends is a dependency cycle).
+-- Since Round 54 the Character page draws `grug_visuals.preview`, which
+-- composes from the player's state and not from the live object, so the
+-- page no longer depends on this order; the world look is written here first
+-- all the same. AGENTS.md allows exactly one page-refresh consumer.
 grug_core.register_on_equipment_change(function(player, listname, reason)
 	-- Pure wear does not change the look; the break that does is a full change.
 	if (listname and IRRELEVANT_LIST[listname]) or reason == "durability_metadata" then
