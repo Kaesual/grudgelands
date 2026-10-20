@@ -223,8 +223,7 @@ local function guard_def(faction, description, texture)
 		visual = "mesh",
 		-- The NPC model with the armor boxes (Round 54): a definition field,
 		-- so every activation has it (mobs_redo restores the textures from
-		-- staticdata, never the mesh). A guard whose visual drops the armor
-		-- (the royal guards, bosses.lua) sets character.b3d back.
+		-- staticdata, never the mesh).
 		mesh = "grug_visuals_npc.b3d",
 		textures = {{texture, "blank.png", "blank.png"}},
 		-- The player's own geometry (wp6_model_notes §5): the mesh measures
@@ -327,8 +326,14 @@ end
 -- garrison's (start_npcs.lua install_garrison), so the elite x1.4 scale
 -- adds to the leader's. He holds his post beside the captain, respawns
 -- like a captain and counts as one in grug_pvp. His look is the camp race's
--- guard with his own tabard (story bible §3) over skin and chest armour,
--- under the helmet: grug_visuals' layer seam of the chest piece.
+-- guard in his faction's colours (Round 54): the armour's cloth zone in his
+-- tabard's colour, its fittings in its trim (grug_visuals' `armor_colors`),
+-- with his own tabard (story bible §3) on the skin under the chest piece
+-- (the chest layer seam `armor_layers`).
+local COMMANDER_COLORS = {
+	accord = {a = "#253d58", b = "#b99451"},
+	throng = {a = "#58262d", b = "#cf9844"},
+}
 for _, faction in ipairs({"accord", "throng"}) do
 	local name = garrison.commander_entity(faction)
 	local tabard = "grug_mobs_commander_" .. faction .. "_overlay.png"
@@ -339,6 +344,7 @@ for _, faction in ipairs({"accord", "throng"}) do
 	def._grug_visual = function(self)
 		local spec = guard_look(self)
 		spec.armor_layers = {chest = tabard}
+		spec.armor_colors = COMMANDER_COLORS[faction]
 		return spec
 	end
 	local size = grug_mobs.LEADER.size

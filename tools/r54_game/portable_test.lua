@@ -438,7 +438,7 @@ do
 	check(has(result.armor, "grug_armor_metal_steel_chest.png"), "E level 30: the steel set")
 	eq(guard.base_texture[3], V.WEAPON_NONE, "E an empty weapon card")
 	eq(guard._grug_visual_skin, nil, "E the pre-Round-54 field is dropped")
-	eq(guard._grug_visual_key, result.key, "E the key is kept")
+	eq(guard._grug_visual_key, result.digest, "E the content digest is kept")
 	V.apply_entity(guard, spec, write_textures)
 	eq(writes, 1, "E the same look: no rewrite")
 	-- A change in the armor alone (the skin under a full set changes with the
@@ -458,6 +458,34 @@ do
 	eq(guard.base_texture[2], before_armor, "E the commander's layer stays off the atlas")
 	check(has(guard.base_texture[1], "grug_mobs_commander_accord_overlay.png"),
 		"E the commander's layer on the skin")
+	-- Same key, changed output (a colour retuned in a later version: the
+	-- saved NPC comes back with its old list and a fresh compose cache).
+	local royal = new_entity()
+	local royal_spec = {race = "dwarf", royal = "guard", armor_line = "metal", level = 60}
+	local w0 = writes
+	V.apply_entity(royal, royal_spec, write_textures)
+	local old_key = V.compose(royal_spec).key
+	V.apply_entity(royal, royal_spec, write_textures)
+	eq(writes, w0 + 1, "E royal guard: one write for the same output")
+	local gold = V.ROYAL_GOLD
+	V.ROYAL_GOLD = "#c0c0c0"
+	for key in pairs(V.cache) do V.cache[key] = nil end
+	eq(V.compose(royal_spec).key, old_key, "E a retuned colour keeps the compose key")
+	V.apply_entity(royal, royal_spec, write_textures)
+	eq(writes, w0 + 2, "E same key, changed output: redrawn")
+	check(has(royal.base_texture[2], "[multiply:#c0c0c0"), "E the retuned colour drawn")
+	V.ROYAL_GOLD = gold
+	for key in pairs(V.cache) do V.cache[key] = nil end
+	-- The War Commander's faction colours (armor_colors).
+	local guard_src_cmd = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/guard.lua")
+	check(has(guard_src_cmd, "spec.armor_colors = COMMANDER_COLORS[faction]"),
+		"E the War Commander's spec carries his faction colours")
+	local cmd = V.compose({race = "human", armor_line = "metal", level = 60,
+		armor_colors = {a = "#253D58", b = "#b99451"}})
+	check(has(cmd.armor, "[verticalframe:2:0^[multiply:#253d58)") and
+		has(cmd.armor, "[verticalframe:2:1^[multiply:#b99451)"), "E commander zones A and B, lowercased")
+	check(not has(V.compose({race = "human", armor_line = "metal", level = 60,
+		armor_colors = {a = "red", b = "#b99451"}}).armor, "[multiply:"), "E a malformed colour: plain")
 	-- The plain write without the grug_mobs seam (a vendor): one texture.
 	local vendor = new_entity()
 	V.apply_entity(vendor, {race = "elf"})

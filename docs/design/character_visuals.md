@@ -151,6 +151,7 @@ NPCs that have no inventory wear a **whole line at one tier** instead:
 | NPC | Wears |
 | --- | --- |
 | Faction guard | metal line at the tier its own level buys — the elite city watch (60+) is the sixth, Abyssal Steel tier by construction |
+| War Commander | the guard's armour in his faction's colours: cloth parts in his tabard's colour, fittings in its trim |
 | Bandit | cloth line at the tier its camp's level buys |
 | Vendor | no armor: its race's dress, so a shopkeeper never reads as a guard |
 | Royal guard, General | the royal armour (below) with its helmet, over the royal tabard |

@@ -724,11 +724,14 @@ end
 -- installed AS that pristine list rather than written over the tinted one.
 -- Without it the plain write below is correct for an untiered NPC (a vendor).
 --
--- `_grug_visual_key` (compose's key, which covers every texture of the list)
--- is a plain string field and therefore survives in staticdata: after the
--- first activation the composed list is already what mob_activate restored,
--- and the re-application is skipped. `_grug_visual_skin` was the field before
--- Round 54 (the skin alone); an NPC saved with it is redrawn once and drops it.
+-- `_grug_visual_key` (compose's `digest`, a content digest of the whole
+-- list) is a plain string field and therefore survives in staticdata: after
+-- the first activation the composed list is already what mob_activate
+-- restored, and the re-application is skipped. A digest of the OUTPUT, not
+-- compose's key of the inputs: a retuned colour or file changes the list under
+-- the same key, and a saved NPC must be redrawn then. `_grug_visual_skin` was
+-- the field before Round 54 (the skin alone); an NPC saved with it is redrawn
+-- once and drops it.
 function grug_visuals.apply_entity(entity, cfg, write_textures)
 	if not entity or not entity.object then
 		return nil
@@ -737,8 +740,8 @@ function grug_visuals.apply_entity(entity, cfg, write_textures)
 	if not result then
 		return nil
 	end
-	if entity._grug_visual_key ~= result.key then
-		entity._grug_visual_key = result.key
+	if entity._grug_visual_key ~= result.digest then
+		entity._grug_visual_key = result.digest
 		entity._grug_visual_skin = nil
 		if write_textures then
 			write_textures(entity, result.textures)

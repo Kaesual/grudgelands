@@ -2897,9 +2897,12 @@ tools](#player-meta-read-by-external-tools).
   `grug_visuals_npc.b3d`, set as the mesh of the guard, bandit and boss
   definitions), `{skin}` otherwise (`character.b3d`). A `royal` spec with
   armour gets the royal variant (zones A and B in `ROYAL[race].cloth` and
-  `ROYAL_GOLD` through the zone masks; a king no helmet). `apply_entity`
-  writes the list when compose's key differs from the entity's
-  `_grug_visual_key` (saved in staticdata). `grug_visuals.preview(player)`
+  `ROYAL_GOLD` through the zone masks; a king no helmet); `armor_colors =
+  {a, b}` sets the zone colours of any spec (the War Commander's faction
+  colours). `apply_entity` writes the list when compose's `digest` (a
+  content digest of the list, not its input key, so a retuned colour reaches
+  saved NPCs) differs from the entity's `_grug_visual_key` (saved in
+  staticdata). `grug_visuals.preview(player)`
   returns `{mesh = PLAYER_MODEL, textures = {skin, cloak, armor, weapon}}`
   for the inventory view, the weapon the main hand's cosmetic item's image
   (`hand_image`) or `blank.png`. NPCs keep

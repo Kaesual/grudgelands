@@ -225,11 +225,14 @@ end
 -- that piece's skin layer -- "(<skin layer>^<colours>^<layers>)" -- the War
 -- Commander's tabard over his chest piece. Both are part of the cache key.
 --
--- ROYAL ARMOUR (Round 54): a `royal` spec that wears armour (kings, royal
--- guards and Generals, in the guards' metal line) gets the royal variant --
--- every piece's zone A in the people's royal cloth colour and zone B in
--- ROYAL_GOLD, full strength through the same zone masks, under any enchant
--- colours -- and a king wears no helmet box, so his face and crown show.
+-- ZONE COLOURS (Round 54): `armor_colors = {a = "#rrggbb", b = "#rrggbb"}`
+-- lays every piece's zone A (cloth: tabard panels, padding) and zone B
+-- (fittings) in those colours, full strength through the same zone masks,
+-- under any enchant colours (the War Commander's faction colours). A `royal`
+-- spec that wears armour (kings, royal guards and Generals, in the guards'
+-- metal line) gets them by default as the royal variant -- zone A in the
+-- people's royal cloth colour, zone B in ROYAL_GOLD -- and a king wears no
+-- helmet box, so his face and crown show.
 --
 -- Composition is texture modifiers only, every armour piece in its own
 -- parentheses (a piece's colours and cracks must never reach what lies under
@@ -252,9 +255,8 @@ end
 
 local ROYAL_KINDS = {guard = true, king = true}
 
--- The royal variant's zone colours over one baked file: each zone's mask
--- frame (`<stem>_ench.png`, frame 0 zone A, frame 1 zone B) shaded in the
--- colour at full strength.
+-- Zone colours over one baked file: each zone's mask frame (`<stem>_ench.png`,
+-- frame 0 zone A, frame 1 zone B) shaded in the colour at full strength.
 local function zone_layers(file, a, b)
 	local mask = file:sub(1, -5) .. "_ench.png"
 	return "(" .. mask .. "^[verticalframe:2:0^[multiply:" .. a .. ")^(" ..
@@ -264,10 +266,10 @@ end
 -- One piece's layer: the baked file with the piece's colours (and, on the
 -- skin, the extra layers), cracked as a whole when broken, in its own
 -- parentheses.
-local function piece_layer(file, piece, extra, royal)
+local function piece_layer(file, piece, extra, zones)
 	local out = file
-	if royal then
-		out = out .. "^" .. zone_layers(file, royal.cloth, grug_visuals.ROYAL_GOLD)
+	if zones then
+		out = out .. "^" .. zone_layers(file, zones.a, zones.b)
 	end
 	if piece.prefix or piece.suffix then
 		local colours = grug_gear.enchant_layers(file, piece.prefix, piece.suffix)
@@ -282,6 +284,26 @@ local function piece_layer(file, piece, extra, royal)
 		out = grug_gear.broken_image(out)
 	end
 	return "(" .. out .. ")"
+end
+
+local function is_colour(value)
+	return type(value) == "string" and value:match("^#%x%x%x%x%x%x$") ~= nil
+end
+
+-- A content digest of a texture list (its length and two 32-bit polynomial
+-- hashes): what an entity keeps to know its drawn list is current. Compose's
+-- key covers the INPUTS; a retuned colour, file or modifier changes the output
+-- under the same key, and only a digest of the output catches that on an NPC
+-- whose list came back from staticdata. Computed once per cache entry.
+local function digest(textures)
+	local text = table.concat(textures, "\n")
+	local h1, h2 = 0, 5381
+	for index = 1, #text do
+		local byte = text:byte(index)
+		h1 = (h1 * 31 + byte) % 4294967296
+		h2 = (h2 * 33 + byte) % 4294967291
+	end
+	return #text .. ":" .. string.format("%08x%08x", h1, h2)
 end
 
 local function stat_or_nil(value)
@@ -357,6 +379,18 @@ function grug_visuals.compose(spec)
 		pieces[1] = nil
 	end
 
+	-- Zone colours: the spec's, else the royal variant's (armour only).
+	-- (Only the spec's colours enter the key: the royal ones follow from
+	-- `royal` and the race, which it covers.)
+	local zones, own_zones = nil, nil
+	local colors = spec.armor_colors
+	if type(colors) == "table" and is_colour(colors.a) and is_colour(colors.b) then
+		zones = {a = colors.a:lower(), b = colors.b:lower()}
+		own_zones = zones
+	elseif royal and grug_visuals.ROYAL[race] then
+		zones = {a = grug_visuals.ROYAL[race].cloth, b = grug_visuals.ROYAL_GOLD}
+	end
+
 	-- Weapon: a plain item name, or the family shorthand at the set's bracket.
 	local weapon = spec.weapon
 	if type(weapon) ~= "string" or weapon == "" then
@@ -375,7 +409,8 @@ function grug_visuals.compose(spec)
 	-- docs/research/luanti-lua.md matches `"|"` even inside a string.
 	local key = (race or "-") .. ";" .. (skin or "-") .. ";" ..
 		(look and grug_visuals.look_string(look) or "-") .. ";" .. (royal or "-") ..
-		";" .. (line_default and "npc" or "-")
+		";" .. (line_default and "npc" or "-") .. ";" ..
+		(own_zones and own_zones.a .. "," .. own_zones.b or "-")
 	for index = 1, #SLOTS do
 		local piece = pieces[index]
 		local part = "-"
@@ -400,15 +435,14 @@ function grug_visuals.compose(spec)
 	-- Every piece in its own parentheses, on the atlas and (but the head) on
 	-- the skin.
 	local atlas, inner, helmet = {}, {}, false
-	local royal_colours = royal and grug_visuals.ROYAL[race] or nil
 	for index, slot in ipairs(SLOTS) do
 		local piece = pieces[index]
 		if piece then
 			helmet = helmet or slot == "head"
 			local art = ARMOR_ART[LINE_ART[piece.line]][slot][piece.bracket]
-			atlas[#atlas + 1] = piece_layer(art.atlas, piece, nil, royal_colours)
+			atlas[#atlas + 1] = piece_layer(art.atlas, piece, nil, zones)
 			if art.skin then
-				inner[#inner + 1] = piece_layer(art.skin, piece, piece.layers, royal_colours)
+				inner[#inner + 1] = piece_layer(art.skin, piece, piece.layers, zones)
 			end
 		end
 	end
@@ -439,6 +473,7 @@ function grug_visuals.compose(spec)
 	else
 		result.textures = {texture}
 	end
+	result.digest = digest(result.textures)
 	cache[key] = result
 	return result
 end

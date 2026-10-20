@@ -348,7 +348,7 @@ local held = shown(npc_obj)
 if check(held ~= nil, "N the NPC holds the block") then
 	near(held.props.visual_size.x, 0.32 * 0.7, "N block at 70 %")
 end
-npc._grug_visual_skin = nil
+npc._grug_visual_key = nil
 V.apply_entity(npc, {race = "human", weapon = "default:pick_steel"})
 held = shown(npc_obj)
 if check(held ~= nil, "N the NPC holds the pickaxe") then
