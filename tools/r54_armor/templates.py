@@ -132,6 +132,9 @@ def box_templates(cat, out):
                     cells[(x, y)] = FACE_TINT[face]
             labels.append((fx, fy, fw, fh, face, SHORT[face]))
         hatched, covers = hid[b["id"]]
+        window = L.open_window(b)
+        for xy in window:
+            cells[xy] = (255, 255, 255)       # white: the helm's face window, the only texels that may stay open
         body = grid_image(SW, SH, cells, labels, hatched)
         used = sorted({ln + " " + t for ln in L.LINES for t, T in cat["tiers"][ln].items() if b["id"] in T["on"]})
         rot = f", rotated {b['rot'][1]} deg about {b['rot'][0]}" if b["rot"] else ""
@@ -141,7 +144,9 @@ def box_templates(cat, out):
             f"slot {b['slot']}, bone {b['bone']}" + ("; MIRRORED: the left copy shows this sheet mirrored "
                                                     "(paint the right-hand copy)" if b["mirror"] else ""),
         ] + [f"{face:6s} at ({fx},{fy}) {fw}x{fh}: {ORIENT[face]}" for face, (fx, fy, fw, fh) in b["faces"].items()] + [
-            "light checker = outside the faces, must stay transparent; hatched = another box covers these texels "
+            "every face texel must be opaque (no transparency in armor)" + (
+                "; WHITE = the face window: these texels may stay transparent (the face shows through)" if window
+                else "") + "; light checker = outside the faces, must stay transparent; hatched = another box covers these texels "
             "when both are worn (hidden wherever the cover is opaque; check.py's overlap report has the details "
             "for your tiers.json)",
             "can be covered by: " + ("; ".join(f"{a} ({', '.join(f)})" for a, f in covers) or "nothing"),

@@ -1,5 +1,5 @@
 {
- "_doc": "test selection (make_test_art.py): the example from proto/tiers.json; metal T1 adds the pauldron",
+ "_doc": "test selection (make_test_art.py): the example from tiers_example.json; metal T1 adds the pauldron",
  "metal": {
   "T1": {
    "palette": "bronze",
