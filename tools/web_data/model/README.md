@@ -2,9 +2,12 @@
 
 `grug_visuals_character.glb` is the player model of the game
 (`mods/PLAYER/grug_visuals/models/grug_visuals_character.b3d`: player_api's
-`character.b3d` with the Round 33 cloak) converted to binary glTF 2.0 for the
+`character.b3d` with the Round 33 cloak and the Round 54 armor boxes and
+weapon card) converted to binary glTF 2.0 for the
 realm website (Round 39, [plan](../../../docs/planning/round39-web-data-plan.md)
-§4.3). The game itself keeps using the `.b3d`. Licence and authors:
+§4.3). The game itself keeps using the `.b3d`. The armored NPCs' model
+(`grug_visuals_npc.b3d`, Round 54) is not converted: the website shows
+player characters only. Licence and authors:
 [LICENSE-media.md](LICENSE-media.md) (CC BY-SA 3.0).
 
 | File | What |
@@ -27,27 +30,49 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
 
 - **Coordinates.** glTF's own: right-handed, +y up, the feet on y = 0,
   **10 units = 1 node** (the character is 17.0 units tall without the
-  race's visual size), the character **faces −z** (turn it 180° about y to
+  race's visual size; the armor boxes reach from 0.26 below the soles to
+  17.19), the character **faces −z** (turn it 180° about y to
   face a camera on +z). Luanti's glTF loader mirrors z, so in the engine
   this file is exactly the `.b3d`: any engine-space point, also one given in
   a bone's local frame (an attachment offset), is `(x, y, −z)` here, and an
   engine rotation matrix `R` is `S·R·S` with `S = diag(1, 1, −1)`.
-- **Mesh.** One skinned mesh `Character` on the root node `Player` with two
+- **Mesh.** One skinned mesh `Character` on the root node `Player` with four
   primitives in the game's texture order (a stock loader such as three.js
-  makes two meshes of them):
+  makes four meshes of them):
 
   | # | Material | Vertices | Triangles | Texture (`grug_visuals:appearance`) |
   |---|---|---|---|---|
   | 0 | `skin` | 168 | 84 | `textures.body`, 64×32 |
   | 1 | `cloak` | 24 | 12 | `textures.cloak`, 32×32; `none` = hide the primitive |
+  | 2 | `armor` | 672 | 336 | `textures.armor`, the armor atlas, 128×64; `none` (or a version 1 value, which has no `textures.armor`) = hide the primitive |
+  | 3 | `weapon` | 8 | 4 | the weapon card: not stored; hide the primitive (below) |
 
   The file holds **no images**: Luanti warns on them, and the website
   composes the textures itself. Draw them with nearest filtering, UV origin
   top left (in three.js `flipY = false`, as for any glTF texture) and alpha
-  test 0.5 (both materials are `alphaMode: MASK`); the transparent pixels are
-  holes (the hat layer, an empty cloak).
+  test 0.5 (every material is `alphaMode: MASK`, cutoff 0.5: a hard cut-out,
+  no blending); the transparent pixels are holes (the hat layer, an empty
+  cloak, every armor box the worn pieces do not use).
+
+  The **armor** primitive is every box of the armor catalog
+  (`tools/r54_armor/data/catalog.json`, 28 boxes of 24 vertices) at once,
+  each rigid on its bone; the atlas decides which show (a box a worn piece
+  does not use is transparent), so the mesh never changes with the gear.
+  The layout of the atlas is
+  [armor-format.md](../../../docs/technical/armor-format.md) §3. The
+  **weapon** primitive is a two-sided square on `Arm_Right` where the game's
+  hand entity holds a diagonal tool at stature 1, UV 0..1 over the whole
+  image; the game leaves it transparent in the world (the hand entity draws
+  the weapon) and fills it only in the inventory's 3D view, which cannot
+  attach entities. A website keeps drawing the weapon with the hand
+  attachment of `web_data.json` (`wield`, per race and pose) and **hides the
+  card** (or gives it a transparent texture); putting the hand image on the
+  card as well would show the weapon twice, and the card is right only for
+  the `tool` pose at stature 1.
 - **Skeleton.** `Body` (root) with `Head`, `Arm_Left`, `Arm_Right`,
-  `Leg_Right`, `Leg_Left` and `Cloak`, names as in the game (`Arm_Right` is
+  `Leg_Right`, `Leg_Left`, `Cloak` and the two swing bones `Panel_Front`
+  and `Panel_Back` (hinged at the belt; the front and back armor panels
+  swing with the legs, keyed in every clip), names as in the game (`Arm_Right` is
   the hand bone `grug_visuals/wield_geometry.lua` attaches to). Every vertex
   hangs on exactly one bone with weight 1.
 - **Clips.** One named animation per player_api animation, each starting at
@@ -123,7 +148,9 @@ cp tools/web_data/model/grug_visuals_character.glb "$W/worldmods/grug_glb_probe/
 Join the world and type `/glb_probe` (needs the `server` privilege, which
 singleplayer has). Three nodes ahead, facing you, stand the glTF model
 (left, nametag `glb: …`) and the game's `.b3d` (right, `b3d: …`), both in
-your current skin, cloak and size; every 4 seconds both switch between
-stand and walk. They should look the same: body, cloak, both clips.
+your current textures (skin, cloak, armor, the empty weapon card) and size;
+every 4 seconds both switch between stand and walk. They should look the
+same: body, cloak, armor, the swinging panels, both clips. A headless shot
+of the same comparison (Round 54) is taken by `tools/r54_web/capture.sh`.
 `/glb_probe clear` removes them; they are never saved. Remove the
 `worldmods/grug_glb_probe` folder afterwards.

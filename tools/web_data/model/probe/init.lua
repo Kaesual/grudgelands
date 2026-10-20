@@ -4,9 +4,10 @@
 --
 --   /glb_probe        spawns two models three nodes in front of the caller,
 --                     facing them: the glTF model on the left, the game's
---                     .b3d on the right, both with the caller's skin, cloak
---                     and visual size; they switch stand <-> walk together
---                     every SWITCH seconds (the nametag names the clip)
+--                     .b3d on the right, both with the caller's textures
+--                     (skin, cloak, armor, weapon card) and visual size;
+--                     they switch stand <-> walk together every SWITCH
+--                     seconds (the nametag names the clip)
 --   /glb_probe clear  removes them (they are never saved either)
 --
 -- The .glb carries one named clip per animation, timed in seconds, so it plays
@@ -46,7 +47,7 @@ core.register_entity("grug_glb_probe:model", {
 	initial_properties = {
 		visual = "mesh",
 		mesh = MODEL_GLB,
-		textures = {"blank.png", "blank.png"},
+		textures = {"blank.png", "blank.png", "blank.png", "blank.png"},
 		collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
 		physical = false,
 		static_save = false,
