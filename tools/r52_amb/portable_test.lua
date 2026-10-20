@@ -25,7 +25,13 @@
 --   C  calls by sound key and time, the surface level and the wolves'
 --      biome sub-group (the rows of §3.2 step 8 on a test table, since
 --      their files come with the user's approval);
---   P  the /ambience debug word.
+--   P  the /ambience debug word;
+--   W  the sea (0.52.1, round52-ambience-plan.md §8): the sea's classes of the
+--      water query, the 49 sample columns, the blend on a straight coast
+--      (full at the water line, nothing 20 nodes inland), the surf modes
+--      and the levels (the underwater bed at the full bed level). The
+--      runtime (the share from the map, lakes never sea, the height curve,
+--      the underwater stub row) is checked in tools/r34_s2 block R.
 -- Prints "R52 AMB PORTABLE PASS checks=<n>" or the failures (exit 1).
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -54,11 +60,16 @@ do
 		grug_jungle_fringe = "jungle", grug_jungle_edge = "jungle", grug_badlands = "badlands",
 		grug_badlands_east = "badlands", grug_swamp = "swamp", grug_crags = "crags",
 		grug_crags_snowy = "crags_snowy", grug_blight = "blight", grug_bone_forest = "blight",
-		grug_beach = "beach",
 	}
+	-- 0.52.1 (§8): the beach is neutral, it keeps the key the player brings.
+	local NEUTRAL = {grug_beach = true}
 	for _, id in ipairs(biomes) do
-		check(D.groups[id] ~= nil and D.groups[id] == WANT[id],
-			"G " .. id .. " -> " .. tostring(D.groups[id]) .. " (§2: " .. tostring(WANT[id]) .. ")")
+		if NEUTRAL[id] then
+			check(D.neutral[id] == true and D.groups[id] == nil, "G " .. id .. " is neutral (0.52.1)")
+		else
+			check(D.groups[id] ~= nil and D.groups[id] == WANT[id],
+				"G " .. id .. " -> " .. tostring(D.groups[id]) .. " (§2: " .. tostring(WANT[id]) .. ")")
+		end
 	end
 	local count = 0
 	for id, group in pairs(D.groups) do
@@ -66,7 +77,7 @@ do
 		check(D.region[group] ~= nil, "G group " .. group .. " has a bed row")
 		check(id:sub(1, 5) == "grug_", "G keyed by the full biome id: " .. id)
 	end
-	check(count == 16, "G no group for a biome the world does not have")
+	check(count == 15, "G no group for a biome the world does not have")
 	for mood in pairs(D.overrides) do check(D.region[mood] ~= nil, "G override " .. mood .. " has a row") end
 end
 
@@ -375,6 +386,52 @@ do
 	local c = R.parse_command(" Debug ")
 	check(c and c.debug == true and c.on == nil and c.volume == nil, "P debug")
 	check(R.parse_command("debugx") == nil and R.parse_command("50").volume == 50, "P other words unchanged")
+end
+
+-- ---------------------------------------------------------------------------
+-- W  the sea (0.52.1)
+-- ---------------------------------------------------------------------------
+do
+	local classes = {}
+	for class in pairs(R.SEA_CLASSES) do classes[#classes + 1] = class end
+	table.sort(classes)
+	check(table.concat(classes, ",") == "bay,belt,channel,open_sea",
+		"W the sea is bay, belt, channel and open sea: " .. table.concat(classes, ","))
+	check(not R.SEA_CLASSES.lake and not R.SEA_CLASSES.river, "W a lake, a river, a swamp pool: never the sea")
+	check(D.sea.step == 4 and D.sea.radius == 16 and D.sea.full_share == 0.5, "W 4-node grid, 16 nodes, full at a half")
+	local points = R.sea_points(D)
+	local seen, inside, centre = {}, true, false
+	for _, p in ipairs(points) do
+		local k = p[1] .. "," .. p[2]
+		if seen[k] or p[1] % 4 ~= 0 or p[2] % 4 ~= 0 or p[1] ^ 2 + p[2] ^ 2 > 256 then inside = false end
+		seen[k] = true
+		if p[1] == 0 and p[2] == 0 then centre = true end
+	end
+	check(#points == 49 and inside and centre, "W 49 distinct columns on the grid within 16 nodes")
+	-- a straight coast: the sea from x = 0 on, the player's grid point d nodes inland
+	local function blend_at(d)
+		local sea = 0
+		for _, p in ipairs(points) do if -d + p[1] >= 0 then sea = sea + 1 end end
+		return R.sea_blend(D, "blend", sea / #points, false)
+	end
+	local profile, falling = {}, true
+	for d = 4, 20, 4 do
+		profile[#profile + 1] = ("%d:%.2f"):format(d, blend_at(d))
+		if d > 4 and blend_at(d) > blend_at(d - 4) then falling = false end
+	end
+	check(falling and blend_at(4) >= 0.8 and blend_at(8) > 0.4 and blend_at(16) < 0.1 and blend_at(20) == 0,
+		"W a straight coast: the surf falls from the water line to nothing 20 inland: " .. table.concat(profile, " "))
+	check(R.sea_blend(D, "blend", 0.25, false) == 0.5 and R.sea_blend(D, "blend", 0.7, false) == 1 and
+		R.sea_blend(D, "blend", 0, false) == 0, "W the blend is share / full_share, capped")
+	check(R.sea_blend(D, "blend", 0, true) == 1, "W on a sea column (a narrow bay too): the surf alone")
+	check(R.sea_blend(D, "blend", nil, nil) == 0, "W no share (no authority, deep down): no surf")
+	check(R.sea_blend(D, "only", nil, nil) == 1 and R.sea_blend(D, "none", 1, true) == 0,
+		"W the open ocean: the surf alone; the dragon islands: never")
+	local r, w = R.surface_levels(0.8, 0.25, false)
+	check(math.abs(r - 0.6) < 1e-9 and math.abs(w - 0.2) < 1e-9, "W the blend splits the surface level")
+	r, w = R.surface_levels(0, 1, true)
+	check(r == 1 and w == 0, "W under water: the surface layer at the full bed level, no surf")
+	check(D.region.ocean.surf == "only" and D.region.dragon_island.surf == "none", "W the rows' surf modes")
 end
 
 if #failures > 0 then

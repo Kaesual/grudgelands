@@ -5,6 +5,8 @@
 # Usage: tools/r52_amb/engine.sh MODE OUT_DIR [TIMEOUT_SECONDS]
 #   MODE  walk   the passes on a scripted walk: surface, mine, tower, flight
 #         calib  the cave-probe calibration and the peak heights
+#         coast  (0.52.1) inland and across a coast, the share profile, the
+#                water query's cost, the beach and lake survey
 #   SEED=<unsigned decimal> is forwarded (default 12345).
 #   LAUNCHER="<command> [args]" replaces tools/luanti_headless.sh, e.g. the
 #   round's measuring-run semaphore with its label.
@@ -19,7 +21,7 @@ repo="${REPO:-$(cd "$here/../.." && pwd -P)}"
 mode="${1:?usage: engine.sh MODE OUT_DIR [TIMEOUT_SECONDS]}"
 out="${2:?usage: engine.sh MODE OUT_DIR [TIMEOUT_SECONDS]}"
 timeout_s="${3:-330}"
-[[ "$mode" == walk || "$mode" == calib ]] || { echo "MODE must be walk or calib" >&2; exit 2; }
+[[ "$mode" == walk || "$mode" == calib || "$mode" == coast ]] || { echo "MODE must be walk, calib or coast" >&2; exit 2; }
 mkdir -p "$out"
 out="$(cd "$out" && pwd -P)"
 root="$(mktemp -d /tmp/grudgelands-headless.r52-amb-XXXXXX)"

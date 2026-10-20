@@ -25,6 +25,15 @@
 --            probe's cost against a 9 x 5 x 9 find_nodes_in_area counting
 --            air; then the peak heights: terrain and biome on a 32-node grid
 --            over the world, per biome and per 256-node cell.
+--   "coast"  (0.52.1) the "surface" phase of `walk`, then a "coast" phase:
+--            the stand-ins walk lines across the coast nearest the human
+--            start town (40 nodes inland to 40 out over the water, 4
+--            nodes/s, 5 apart); the same figures, plus the sea shares and
+--            their water queries; then the share profile across that coast
+--            (0.52.1 runtime only), the water query's cost on land and sea
+--            columns, and a 32-node survey of the world: how far the beach
+--            biome lies from the sea, by zone, and the lakes nearest the
+--            start town. Works on the tree before 0.52.1 too.
 --   "shots"  for tools/r52_amb/capture.sh with one real client ("grugcap"):
 --            the debug line on, the player frozen at each calibration case
 --            (the ground, 60 up, the dug 1 x 2 tunnel, 3 x 3 corridor and
@@ -165,6 +174,12 @@ local function report(phase, seconds)
 		"cave probes %s, %s us each"):format(phase, s.passes, per(s.us, s.passes), s.finds,
 		per(s.find_us, s.finds), per(s.found, s.finds), tostring(s.probes or "-"),
 		s.probes and ("%.1f"):format(per(s.probe_us, s.probes)) or "-"))
+	if s.seas then
+		log(("%s sea shares %d, %.1f us each, water queries (memo misses) %d"):format(phase, s.seas,
+			per(s.sea_us, s.seas), s.sea_queries))
+	else
+		log(phase .. " sea share absent (before 0.52.1)")
+	end
 	local d = grug_core.depth_stats
 	if d then
 		log(("%s depth calls %d, memo hits %d (%.1f %%), column computations %d, %.1f us each"):format(
@@ -261,7 +276,47 @@ local center, site, ground, my
 local ring = {}
 local emerge_left = 0
 
-local WALK_PHASES = {"surface", "mine", "tower", "flight"}
+local WALK_PHASES = MODE == "coast" and {"surface", "coast"} or {"surface", "mine", "tower", "flight"}
+
+-- ---------------------------------------------------------------- the coast (0.52.1)
+-- The sea's classes of grug_zones.water_query_at (lakes, rivers and swamp
+-- pools are land for the surf).
+local SEA = {bay = true, belt = true, channel = true, open_sea = true}
+local function sea_class(x, z)
+	return SEA[grug_zones.water_query_at(math.floor(x + 0.5), math.floor(z + 0.5)) or ""] == true
+end
+-- The nearest coast from `c` on 16 rays (8-node steps, up to 2500), refined
+-- to the last land node: {x, z, dx, dz, r} with (dx, dz) pointing to the sea.
+local coast
+local function find_coast(c)
+	local best
+	for k = 0, 15 do
+		local a = k / 16 * 2 * math.pi
+		local dx, dz = math.cos(a), math.sin(a)
+		for r = 8, 2500, 8 do
+			if best and r >= best.r then break end
+			if sea_class(c.x + dx * r, c.z + dz * r) then
+				local rr = r
+				while rr > 0 and sea_class(c.x + dx * (rr - 1), c.z + dz * (rr - 1)) do rr = rr - 1 end
+				best = {r = rr, x = c.x + dx * (rr - 1), z = c.z + dz * (rr - 1), dx = dx, dz = dz}
+				break
+			end
+		end
+	end
+	return best
+end
+-- Stand-in i on its line across the coast: u = -40 (inland) .. +40 (sea),
+-- 4 nodes/s, back and forth, lines 5 nodes apart.
+local function coast_point(i, t)
+	local o = (i - (NFAKE + 1) / 2) * 5
+	local u = (t * 4 + i * 7) % 160
+	if u > 80 then u = 160 - u end
+	u = u - 40
+	local x = coast.x + coast.dx * u - coast.dz * o
+	local z = coast.z + coast.dz * u + coast.dx * o
+	local h = grug_zones.terrain_height_at(math.floor(x + 0.5), math.floor(z + 0.5))
+	return {x = x, y = math.max(h, 1) + 0.5, z = z}
+end
 
 local function place_walk(phase, t)
 	for i, p in ipairs(fake_list) do
@@ -282,10 +337,101 @@ local function place_walk(phase, t)
 			local h = heights[(i - 1) % #heights + 1]
 			local a = t * 0.3 + i
 			p._pos = {x = site.x - 30 + 2 * math.cos(a), y = ground + h, z = site.z - 30 + 2 * math.sin(a)}
+		elseif phase == "coast" then
+			p._pos = coast_point(i, t)
 		else
 			p._pos = {x = site.x - 600 + t * 20, y = 150, z = site.z - 800 + i * 100}
 		end
 	end
+end
+
+-- After the coast phase: the share profile across the coast (only with
+-- the 0.52.1 runtime), the water query's cost on land and on sea columns.
+local function coast_report()
+	if grug_ambience.sea_share then
+		local row = {}
+		for u = -40, 40, 4 do
+			local x, z = coast.x + coast.dx * u, coast.z + coast.dz * u
+			local share, on = grug_ambience.sea_share({x = x, y = 2, z = z})
+			row[#row + 1] = ("%d:%.2f%s"):format(u, share, on and "*" or "")
+		end
+		log("coast SHARE across the coast (u: nodes towards the sea, * on a sea column) " ..
+			table.concat(row, " "))
+	end
+	local function bench(cx, cz, label)
+		local n, t0, sea = 0, core.get_us_time(), 0
+		for dx = -20, 19 do
+			for dz = -20, 19 do
+				if sea_class(cx + dx * 3, cz + dz * 3) then sea = sea + 1 end
+				n = n + 1
+			end
+		end
+		local t1 = core.get_us_time()
+		for dx = -20, 19 do
+			for dz = -20, 19 do
+				if sea_class(cx + dx * 3, cz + dz * 3) then sea = sea + 1 end
+			end
+		end
+		local t2 = core.get_us_time()
+		log(("COST water_query_at %s: %d columns, %d of them sea; first read %.2f us, again %.2f us each"):format(
+			label, n, sea / 2, (t1 - t0) / n, (t2 - t1) / n))
+	end
+	bench(site.x, site.z, "inland (the walk site)")
+	bench(coast.x + coast.dx * 60, coast.z + coast.dz * 60, "at sea (60 off the coast)")
+	bench(coast.x, coast.z, "at the coast")
+end
+
+-- The beach biome and the lakes on a 32-node grid over the world: how far
+-- each beach sample lies from the sea (a sea column within 16 or 64 nodes on
+-- eight rays), by zone; the lake samples nearest to the human start town.
+local SV_STEP = 32
+local SV = {minx = -4190, maxx = 4190, minz = -3740, maxz = 3740}
+local function sea_within(x, z, from, to, step)
+	for k = 0, 7 do
+		local a = k / 8 * 2 * math.pi
+		for r = from, to, step do
+			if sea_class(x + math.cos(a) * r, z + math.sin(a) * r) then return true end
+		end
+	end
+	return false
+end
+local function survey_step(sv)
+	if not sv.init then sv.init, sv.x, sv.z = true, SV.minx, SV.minz end
+	local budget = 1200
+	while budget > 0 and sv.x <= SV.maxx do
+		local x, z = sv.x, sv.z
+		local class = grug_zones.water_query_at(x, z)
+		if class == "lake" or class == "river" then
+			local dx, dz = x - center.x, z - center.z
+			sv.lakes[#sv.lakes + 1] = {x = x, z = z, class = class, d = math.sqrt(dx * dx + dz * dz)}
+		elseif class == nil and grug_zones.biome_at(x, z) == "grug_beach" then
+			local zone = grug_zones.id_at(x, z) or "-"
+			local row = sv.beach[zone] or {n = 0, near = 0, mid = 0}
+			sv.beach[zone] = row
+			row.n = row.n + 1
+			if sea_within(x, z, 4, 16, 4) then row.near = row.near + 1
+			elseif sea_within(x, z, 24, 64, 8) then row.mid = row.mid + 1 end
+		end
+		sv.n = sv.n + 1
+		sv.z = sv.z + SV_STEP
+		if sv.z > SV.maxz then sv.z, sv.x = SV.minz, sv.x + SV_STEP end
+		budget = budget - 1
+	end
+	if sv.x <= SV.maxx then return false end
+	log(("SURVEY %d samples in %.1f s"):format(sv.n, (core.get_us_time() - sv.started) / 1e6))
+	for zone, row in pairs(sv.beach) do
+		log(("SURVEY beach in %s: %d samples, sea within 16: %d, within 64: %d, farther: %d"):format(zone,
+			row.n, row.near, row.mid, row.n - row.near - row.mid))
+	end
+	table.sort(sv.lakes, function(a, b) return a.d < b.d end)
+	local near = {}
+	for i = 1, math.min(5, #sv.lakes) do
+		local l = sv.lakes[i]
+		near[#near + 1] = ("%s %d,%d (%.0f)"):format(l.class, l.x, l.z, l.d)
+	end
+	log(("SURVEY %d lake/river samples; nearest the human start town: %s"):format(#sv.lakes,
+		table.concat(near, "; ")))
+	return true
 end
 
 local function walk_step(dtime)
@@ -312,8 +458,18 @@ local function walk_step(dtime)
 			emerge_left = 1
 			core.emerge_area({x = site.x - 120, y = my - 8, z = site.z - 120},
 				{x = site.x + 60, y = ground + 8, z = site.z + 64}, function(_, _, remaining)
-					if remaining == 0 then emerge_left = 0 end
+					if remaining == 0 then emerge_left = emerge_left - 1 end
 				end)
+			if MODE == "coast" then
+				coast = find_coast(center)
+				log(("coast %d,%d (%.0f nodes from the start town), towards the sea %.2f,%.2f"):format(
+					math.floor(coast.x + 0.5), math.floor(coast.z + 0.5), coast.r, coast.dx, coast.dz))
+				emerge_left = emerge_left + 1
+				core.emerge_area({x = coast.x - 90, y = -24, z = coast.z - 90},
+					{x = coast.x + 90, y = 48, z = coast.z + 90}, function(_, _, remaining)
+						if remaining == 0 then emerge_left = emerge_left - 1 end
+					end)
+			end
 			state.phase, state.phase_t = "emerge", 0
 		end
 	elseif state.phase == "emerge" then
@@ -341,6 +497,12 @@ local function walk_step(dtime)
 			core.set_timeofday(0.5)
 			state.phase, state.phase_t = "run", 0
 		end
+	elseif state.phase == "survey" then
+		if survey_step(state.survey) then
+			log("RESULT DONE")
+			state.phase = "done"
+			core.request_shutdown("r52 amb probe done", false, 0)
+		end
 	elseif state.phase == "run" then
 		local name = WALK_PHASES[state.index]
 		place_walk(name, SETTLE + state.phase_t)
@@ -349,6 +511,10 @@ local function walk_step(dtime)
 			state.index = state.index + 1
 			if WALK_PHASES[state.index] then
 				state.phase, state.phase_t = "settle", 0
+			elseif MODE == "coast" then
+				coast_report()
+				state.phase, state.survey = "survey", {n = 0, beach = {},
+					lakes = {}, started = core.get_us_time()}
 			else
 				log("RESULT DONE")
 				state.phase = "done"
@@ -663,7 +829,7 @@ end
 core.register_globalstep(function(dtime)
 	state.t = state.t + dtime
 	state.phase_t = state.phase_t + dtime
-	if MODE == "walk" then walk_step(dtime)
+	if MODE == "walk" or MODE == "coast" then walk_step(dtime)
 	elseif MODE == "shots" then shots_step(dtime)
 	else calib_step() end
 end)

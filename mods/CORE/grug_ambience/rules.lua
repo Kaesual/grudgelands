@@ -63,30 +63,35 @@ end
 -- the Battlegrounds, the dragon islands, the open ocean) before the group of
 -- the biome under the player; an ownerless column (`known` but no biome: the
 -- deep ocean) is the ocean, a biome without a group false (no bed). nil
--- keeps the key the player has: nothing is known yet (no zone authority) or
+-- keeps the key the player has: nothing is known yet (no zone authority),
 -- the player is in the underground mood, which hides the zone (the surface
--- layer is silent that deep anyway).
+-- layer is silent that deep anyway), or the biome is a neutral one
+-- (data.neutral, 0.52.1: the beach, which also lies far inland; the surf
+-- comes from the sea share, R.sea_blend).
 function R.sound_key(data, mood, known, biome)
 	if mood == "underground" then return nil end
 	if mood and data.overrides[mood] then return mood end
 	if not known then return nil end
 	if biome == nil then return "ocean" end
+	if data.neutral[biome] then return nil end
 	return data.groups[biome] or false
 end
 
 -- The bed keys to try for the surface layer, best first (an empty list:
--- silence), or nil when there is no key yet and no water near the player
+-- silence), or nil when there is no key yet and no stream near the player
 -- (the caller then keeps the bed it has). `s`: key (a sound key, false for
--- none), night, water ("sea", "stream" or nil), underwater.
---   underwater beats everything (no underwater bed ships: silence);
---   sea and stream water near the player override the region bed; the
---   region bed has a night variant where data.region names one (falling
---   back to the day bed when that has no shipped file), silence at night
---   where it says `night = false`, else the day bed plays at night too.
+-- none), night, water ("stream" or nil), underwater.
+--   underwater beats everything: the `underwater` bed, silence while none
+--   ships (the caller plays it at the full bed level, R.surface_levels);
+--   stream water near the player overrides the region bed (no stream bed
+--   ships); the region bed has a night variant where data.region names one
+--   (falling back to the day bed when that has no shipped file), silence at
+--   night where it says `night = false`, else the day bed plays at night
+--   too. Since 0.52.1 the sea is no bed of this layer but a layer of its
+--   own (R.sea_blend).
 function R.bed_keys(data, s)
 	if s.underwater then return {"underwater"} end
 	local keys = {}
-	if s.water == "sea" then keys[#keys + 1] = "sea" end
 	if s.water == "stream" then keys[#keys + 1] = "stream" end
 	local row = s.key and data.region[s.key]
 	if row then
@@ -147,8 +152,11 @@ end
 -- D.music.fade_out), a short fade, never a hard cut.
 -- `b` is the surface layer's state {key, want, seen, underwater, music};
 -- `wanted` a key or false (silence); `underwater` and `music` this pass's
--- flags. Returns true when the bed should change to `wanted` now.
-function R.bed_should_change(b, wanted, underwater, music)
+-- flags; `silent` true when the layer plays no sound now (0.52.1: then a
+-- new key is taken at once, nothing would crossfade: e.g. coming ashore
+-- after the surf played alone, the old key's bed must not start for a
+-- pass). Returns true when the bed should change to `wanted` now.
+function R.bed_should_change(b, wanted, underwater, music, silent)
 	underwater, music = underwater == true, music == true
 	local flipped = underwater ~= (b.underwater == true) or music ~= (b.music == true)
 	b.underwater, b.music = underwater, music
@@ -156,7 +164,7 @@ function R.bed_should_change(b, wanted, underwater, music)
 		b.want, b.seen = nil, 0
 		return false
 	end
-	if b.key == nil or flipped then
+	if b.key == nil or flipped or silent then
 		b.want, b.seen = nil, 0
 		return true
 	end
@@ -274,6 +282,62 @@ function R.layer_step(l, key, target, base)
 		return "fade"
 	end
 	return nil
+end
+
+-- ---------------------------------------------------------------------------
+-- The sea (0.52.1, round52-ambience-plan.md §8)
+-- ---------------------------------------------------------------------------
+
+-- The classes of grug_zones.water_query_at that are the sea. A lake, a
+-- river, a swamp pool (class "lake") and dry land (nil) are land for the
+-- surf, whatever their size and whatever water node they hold.
+R.SEA_CLASSES = {bay = true, belt = true, channel = true, open_sea = true}
+
+-- The sample columns round the player: every `data.sea.step` nodes on x and
+-- z, within `data.sea.radius` of the player's grid point (49 for 4 and 16).
+-- A list of {dx, dz}.
+function R.sea_points(data)
+	local step, radius = data.sea.step, data.sea.radius
+	local reach = math.floor(radius / step)
+	local list = {}
+	for i = -reach, reach do
+		for j = -reach, reach do
+			if (i * step) ^ 2 + (j * step) ^ 2 <= radius * radius then
+				list[#list + 1] = {i * step, j * step}
+			end
+		end
+	end
+	return list
+end
+
+-- How the sound key's region bed meets the sea: "only" (the key is the sea
+-- itself: the open ocean; the surf plays alone), "none" (the dragon
+-- islands keep their own coast bed) or "blend" (every other key, and none).
+function R.surf_mode(data, key)
+	local row = key and data.region[key]
+	return row and row.surf or "blend"
+end
+
+-- The surf's share of the surface level (0 to 1). `share` is the share of
+-- sea columns among the samples (nil: unknown, no surf), `on_sea` whether
+-- the player's own column is sea. On the water (or over it) only the surf
+-- plays; on land the surf rises with the share and is full at
+-- data.sea.full_share (a straight coast reads about a half at the water
+-- line and nothing 16 nodes inland).
+function R.sea_blend(data, mode, share, on_sea)
+	if mode == "only" then return 1 end
+	if mode == "none" or share == nil then return 0 end
+	if on_sea then return 1 end
+	return clamp01(share / data.sea.full_share)
+end
+
+-- The region bed's and the surf's levels from the surface level and the
+-- blend; under water the surface layer plays the underwater bed at the full
+-- bed level (no height curve: a diver hears it at any depth) and the surf
+-- is silent.
+function R.surface_levels(surface, blend, underwater)
+	if underwater then return 1, 0 end
+	return surface * (1 - blend), surface * blend
 end
 
 -- ---------------------------------------------------------------------------

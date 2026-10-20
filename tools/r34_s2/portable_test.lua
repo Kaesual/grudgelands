@@ -22,7 +22,11 @@
 --      three layers by the depth (Round 52): the surface bed fading down a
 --      shaft to the floor and stopped after three passes, the dead band,
 --      no restart when hovering at a threshold, the cave bed only in open
---      air and its deep variant, the wind at height; emitters started and
+--      air and its deep variant, the wind at height; the coast (0.52.1):
+--      the surf blending in by the map's sea share, alone on the water,
+--      never at an inland lake whatever water it holds, following the
+--      height curve, the ocean and dragon-island rows, the underwater bed
+--      (a stub row) alone at the full bed level; emitters started and
 --      faded, underground too; the debug line; no music outside a
 --      capital; the ambience settings through the Help page fields and the
 --      chat command;
@@ -75,7 +79,7 @@ local TD = {gains = D.gains,
 		ocean = {day = "ocean"}, battlegrounds = {day = "battlegrounds"}},
 	groups = {grug_meadows = "temperate", grug_elf_forest = "temperate", grug_crags = "crags",
 		grug_crags_snowy = "crags_snowy"},
-	overrides = {battlegrounds = true, dragon_island = true, ocean = true},
+	overrides = {battlegrounds = true, dragon_island = true, ocean = true}, neutral = {},
 	calls = {owl = {sound = "o", time = "night", keys = {temperate = true}},
 		crow = {sound = "c", time = "day", keys = {battlegrounds = true}},
 		thunder = {sound = "t", time = "any", keys = {dragon_island = true}}},
@@ -97,7 +101,8 @@ do
 	local function first(s) return R.pick_bed(TD, keys(s), TA) end
 	check(first({key = "temperate", underwater = true, water = "sea"}) == "underwater",
 		"B underwater beats everything")
-	check(first({key = "temperate", water = "sea"}) == "sea", "B sea near the player")
+	-- 0.52.1: the sea is a layer of its own (block R, "the coast"), never the surface bed.
+	check(first({key = "temperate", water = "sea"}) == "temperate", "B sea water is no surface bed (0.52.1)")
 	check(first({key = "temperate", water = "stream", night = true}) == "stream", "B stream beats night")
 	check(first({key = "temperate", night = true}) == "temperate_night", "B night bed")
 	check(first({key = "temperate"}) == "temperate", "B day bed")
@@ -105,11 +110,11 @@ do
 		"B a key without a night row keeps its bed")
 	check(first({key = "crags", night = true}) == false and first({key = "crags"}) == "crags",
 		"B crags: the day bed, silence at night")
-	check(first({key = "crags", night = true, water = "sea"}) == "sea", "B crags at night still hear the sea")
+	check(first({key = "crags", night = true, water = "stream"}) == "stream", "B crags at night still hear a stream")
 	check(first({key = "savanna"}) == false and first({key = false}) == false,
 		"B a key without a row, or none: silence")
 	check(R.bed_keys(TD, {key = nil}) == nil, "B no key yet: keep the bed")
-	check(first({key = nil, water = "sea"}) == "sea", "B no key yet still hears the sea")
+	check(first({key = nil, water = "stream"}) == "stream", "B no key yet still hears a stream")
 	local some = {}
 	for k, v in pairs(TA) do some[k] = v end
 	some.n1 = nil
@@ -136,17 +141,20 @@ do
 	b.key = "temperate"
 	check(R.bed_should_change(b, false, true) == true and b.underwater == true,
 		"B diving into silence changes at once")
+	b.key = false
+	check(R.bed_should_change(b, "temperate", true, false, true) == true,
+		"B a layer playing nothing takes a new bed at once (0.52.1)")
 	check(math.abs(R.bed_gain(D, 100, true) - D.gains.bed * D.gains.town_bed) < 1e-9 and
 		math.abs(R.bed_gain(D, 50, false) - D.gains.bed * 0.5) < 1e-9, "B gain: volume and town")
 
 	-- the shipped data (Round 52 file step: every group has its approved beds)
 	local function real(key, night) return R.pick_bed(D, R.bed_keys(D, {key = key, night = night}), AVAILABLE) end
 	local day = {temperate = "temperate", savanna = "savanna", jungle = "jungle", badlands = "badlands",
-		swamp = "swamp", crags = "crags", crags_snowy = "crags_snowy", blight = "blight", beach = "beach",
+		swamp = "swamp", crags = "crags", crags_snowy = "crags_snowy", blight = "blight",
 		battlegrounds = "battlegrounds", dragon_island = "dragon_island", ocean = "ocean"}
 	local night = {temperate = "temperate_night", savanna = "savanna_night", jungle = "jungle_night",
 		badlands = "badlands_night", swamp = "swamp_night", crags = false, crags_snowy = "crags_snowy",
-		blight = "blight", beach = "beach", battlegrounds = "battlegrounds",
+		blight = "blight", battlegrounds = "battlegrounds",
 		dragon_island = "dragon_island", ocean = "ocean"}
 	for k, want in pairs(day) do
 		check(real(k) == want, "B day bed for " .. k .. ": " .. tostring(real(k)))
@@ -173,7 +181,8 @@ do
 		badlands = {"badlands_crickets", "badlands_quiet"}, badlands_night = {"badlands_crickets"},
 		swamp = {"swamp_frogs"}, swamp_night = {"night_tropical", "swamp_evening", "swamp_frogs"},
 		crags = {"crags_birds", "crags_birds_clear", "crags_mountain"}, crags_snowy = {"snow_afternoon"},
-		blight = {"undead_lake"}, beach = {"sea_waves"}, battlegrounds = {"battlegrounds_fields"},
+		blight = {"undead_lake"}, battlegrounds = {"battlegrounds_fields"},
+		ocean = {"sea_waves"}, sea = {"sea_waves"},
 	}
 	for key, list in pairs(want) do
 		local full = {}
@@ -191,6 +200,16 @@ do
 	end
 	check(#named_dropped == 0, "B no dropped file is named (ruling 9): " .. table.concat(named_dropped, ","))
 	check(D.beds.underground == nil and D.beds.underwater == nil, "B no underground or underwater bed key")
+	-- 0.52.1: the beach (mostly far from the sea) keeps the key the player brings;
+	-- the open ocean is the surf alone, the dragon islands keep their coast bed.
+	check(D.neutral.grug_beach and D.groups.grug_beach == nil and D.region.beach == nil and
+		D.beds.beach == nil, "B the beach is neutral, no beach row (0.52.1)")
+	check(R.sound_key(D, "undead", true, "grug_beach") == nil and
+		R.sound_key(D, "dragon_island", true, "grug_beach") == "dragon_island",
+		"B on the beach: keep the key; the dragon islands' override still wins")
+	check(R.surf_mode(D, "ocean") == "only" and R.surf_mode(D, "dragon_island") == "none" and
+		R.surf_mode(D, "temperate") == "blend" and R.surf_mode(D, nil) == "blend" and
+		R.surf_mode(D, false) == "blend", "B surf modes: the ocean alone, none on the dragon islands")
 	check(D.gains.bed == 0.2, "B every bed at gain 0.2")
 end
 
@@ -218,10 +237,10 @@ do
 	end
 	table.sort(by_day)
 	table.sort(by_night)
-	check(table.concat(by_day, " ") == "badlands=hawk battlegrounds=crow beach= blight=crow crags=hawk " ..
+	check(table.concat(by_day, " ") == "badlands=hawk battlegrounds=crow blight=crow crags=hawk " ..
 		"crags_snowy= dragon_island=thunder jungle= ocean= savanna= swamp= temperate=",
 		"C by day: crows, hawks, thunder: " .. table.concat(by_day, " "))
-	check(table.concat(by_night, " ") == "badlands= battlegrounds= beach= blight= crags=wolf " ..
+	check(table.concat(by_night, " ") == "badlands= battlegrounds= blight= crags=wolf " ..
 		"crags_snowy= dragon_island=thunder jungle= ocean= savanna= swamp= temperate=owl",
 		"C by night: owls, wolves, thunder: " .. table.concat(by_night, " "))
 	check(real({key = "temperate", biome = "grug_pine_hills", night = true, surface = 1}) == "owl,wolf" and
@@ -452,7 +471,20 @@ do
 	-- biome under the player; the stand-in counts its calls.
 	local ref, biome = {}, {}
 	local depth_calls = 0
+	-- 0.52.1: a stand-in zone authority for the sea share. The sea west of
+	-- x = -100 (a coastal belt), an inland lake from x = 200 to 400; every
+	-- other column dry land. The players of the other checks stay near x = 0
+	-- or far east, more than 16 nodes from both.
+	local water_queries = 0
+	rawset(_G, "grug_zones", {water_query_at = function(x, z)
+		water_queries = water_queries + 1
+		assert(x == math.floor(x) and z == math.floor(z), "the sea share asks whole node columns")
+		if x <= -100 then return "belt", "zone_coast", 10, -100 - x, 4, false end
+		if x >= 200 and x <= 400 and z >= -100 and z <= 100 then return "lake", "zone_lake", 10, nil, 6, false end
+		return nil
+	end})
 	rawset(_G, "grug_core", {
+		zone_authority_installed = function() return true end,
 		atmosphere_moods = {human = true, elf = true, dwarf = true, undead = true, orc = true,
 			troll = true, battlegrounds = true, dragon_island = true, ocean = true,
 			underground = true},
@@ -720,6 +752,129 @@ do
 	ana._pos.y = 9.5
 	run(8)
 
+	-- the coast (0.52.1, round52-ambience-plan.md §8): by day in the meadows
+	local is_sea = named("grug_ambience_sea_waves")
+	local function last_gain(handle)
+		local f = fades_of(handle)
+		return f[#f] and f[#f].gain
+	end
+	local function region_beds()
+		return plays_to("ana", function(s) return is_bed(s) and not is_sea(s) and not is_wind(s) and not is_cave(s) end)
+	end
+	timeofday = 0.5
+	ana._pos.x = -60 -- 40 nodes inland
+	-- off and on: the beds start afresh, so the region bed's handle is known
+	commands.ambience.func("ana", "off")
+	commands.ambience.func("ana", "on")
+	fades, sounds = {}, {}
+	run(4)
+	local region = region_beds()[1]
+	check(#region_beds() == 1 and region.spec.name:find("^grug_ambience_[he]") ~= nil and
+		near(region.spec.gain, FULL), "R the meadow bed plays inland at full")
+	check(#plays_to("ana", is_sea) == 0, "R 40 nodes from the sea: no surf")
+	local before_queries = water_queries
+	run(4)
+	check(water_queries == before_queries, "R standing still: the map is asked nothing (the memo)")
+	-- 8 nodes inland: 13 of the 49 samples are sea, the surf at 13/49 / 0.5
+	local blend = 13 / 49 / D.sea.full_share
+	ana._pos.x = -92
+	run(2)
+	local surf = plays_to("ana", is_sea)
+	check(#surf == 1 and near(surf[1].spec.gain, blend * FULL) and surf[1].params.loop and
+		not surf[1].params.pos and surf[1].params.to_player == "ana",
+		"R 8 nodes from the sea: the surf loops at its share (" .. (surf[1] and surf[1].spec.gain or "-") .. ")")
+	check(near(last_gain(region.handle), (1 - blend) * FULL), "R and the region bed fades to the rest")
+	-- a cliff top at the same place: the terrain is the reference, it still hears it
+	ref.ana, ana._pos.y = 40, 40.5
+	run(4)
+	check(#plays_to("ana", is_sea) == 1 and near(last_gain(region.handle), (1 - blend) * FULL),
+		"R on a cliff top within the reach: the same blend")
+	ref.ana, ana._pos.y = 9, 9.5
+	-- on the water (a boat, swimming at the surface): only the surf
+	ana._pos.x = -101
+	run(2)
+	check(near(last_gain(surf[1].handle), FULL) and near(last_gain(region.handle), R.LEVEL_FLOOR * FULL),
+		"R on the water: the surf at full, the region bed to the floor")
+	run(4)
+	check(last_gain(region.handle) == 0 and #plays_to("ana", is_sea) == 1,
+		"R and the region bed stops after three passes; the surf goes on")
+	-- flying over the sea: the surf follows the surface curve (50 % at +35)
+	ana._pos.y = 9.5 + 35
+	run(2)
+	check(near(last_gain(surf[1].handle), 0.5 * FULL), "R 35 over the sea: the surf at 50 %")
+	ana._pos.y = 9.5
+	run(2)
+	-- the debug line names the share and both levels
+	commands.ambience.func("ana", "debug")
+	ana._pos.x = -92
+	run(2)
+	local line = huds[#huds].text
+	check(line:find("sea share 27%", 1, true) and
+		line:find(("surface %d%% sea %d%%"):format(math.floor((1 - blend) * 100 + 0.5),
+			math.floor(blend * 100 + 0.5)), 1, true), "R the debug line: sea share and both levels: " .. line)
+	ana._pos.x = -101
+	run(2)
+	check(huds[#huds].text:find("sea share on | surface 0% sea 100%", 1, true) ~= nil,
+		"R on the water the line says so: " .. huds[#huds].text)
+	commands.ambience.func("ana", "debug")
+	-- diving: with an underwater bed (a stub row, no file ships) only it
+	-- plays, at the full bed level at any depth; nothing else
+	-- (init.lua's own data table: grug_ambience.data)
+	A.data.beds.underwater = {"grug_ambience_underwater"}
+	A.available.grug_ambience_underwater = true
+	node_at["-101,11,0"] = 10
+	fades, sounds = {}, {}
+	run(2)
+	local dive = plays_to("ana")
+	check(#dive == 1 and dive[1].spec.name == "grug_ambience_underwater" and dive[1].params.loop and
+		near(dive[1].spec.gain, FULL) and last_gain(surf[1].handle) == 0,
+		"R diving: the underwater bed alone at the full bed level, the surf stops")
+	ana._pos.y, node_at["-101,-9,0"] = 9.5 - 20, 10
+	fades = {}
+	run(6)
+	check(#plays_to("ana") == 1 and #fades == 0, "R 20 down: the underwater bed unchanged, nothing else")
+	node_at["-101,11,0"], node_at["-101,-9,0"] = nil, nil
+	ana._pos.y = 9.5
+	run(2)
+	local back = plays_to("ana", is_sea)
+	check(dive[1] and last_gain(dive[1].handle) == 0 and #back == 1 and near(back[1].spec.gain, FULL),
+		"R surfacing: the underwater bed stops, the surf is back")
+	A.data.beds.underwater, A.available.grug_ambience_underwater = nil, nil
+	-- the open ocean's key: the surf alone even far from a sea column
+	ana._pos.x = 0
+	run(8)
+	mood.ana = "ocean"
+	fades, sounds = {}, {}
+	run(4)
+	check(#plays_to("ana", is_sea) == 1 and #plays_to("ana", named("grug_ambience_human_")) == 0 and
+		#plays_to("ana", named("grug_ambience_elf_")) == 0, "R the ocean's key: the surf alone")
+	-- the dragon islands keep their own coast bed: no surf beside it
+	mood.ana = "dragon_island"
+	ana._pos.x = -92
+	fades, sounds = {}, {}
+	run(8)
+	local isle = plays_to("ana", named("grug_ambience_dragon_island_coast"))
+	check(#isle == 1 and near(last_gain(isle[1].handle) or isle[1].spec.gain, FULL) and
+		#plays_to("ana", is_sea) == 0, "R a dragon-island coast: its own bed at full, no surf: " ..
+		#isle .. " " .. tostring(isle[1] and (last_gain(isle[1].handle) or isle[1].spec.gain)) .. " " ..
+		#plays_to("ana", is_sea))
+	-- an inland lake of default water: water under and round the feet, the
+	-- map says lake: never the surf (the node probe of 0.52.0 played it)
+	mood.ana = "human"
+	ana._pos.x = 300
+	open_default = 10
+	node_at["300,11,0"] = AIR
+	fades, sounds = {}, {}
+	run(6)
+	local lake_beds = plays_to("ana", is_bed)
+	check(#plays_to("ana", is_sea) == 0 and #lake_beds == 1 and
+		lake_beds[1].spec.name:find("^grug_ambience_[he]") ~= nil,
+		"R at an inland lake of default water: the meadow bed, no surf")
+	open_default, node_at["300,11,0"] = 0, nil
+	ana._pos.x = 0
+	run(8)
+	huds = {} -- the debug checks below count their HUD ids from 1
+
 	-- emitters: an anvil, a furnace and flowing water near the player, a
 	-- forge far away, a water source next to the player (never a loop; since
 	-- Round 45 PT8 neither the anvil nor the forge)
@@ -777,7 +932,8 @@ do
 	check(changes == 1 and huds[1].text:find("surface 50%", 1, true), "R a change is sent once")
 	ana._pos.y = 9.5 + 100
 	run(2)
-	check(huds[1].text:find("surface 0% cave 0% wind 50%", 1, true) ~= nil,
+	-- 0.52.1: the line also names the sea layer's level.
+	check(huds[1].text:find("surface 0% sea 0% cave 0% wind 50%", 1, true) ~= nil,
 		"R 100 up: the line shows the wind's level: " .. huds[1].text)
 	players.ana.hud_change = real_change
 	ok = commands.ambience.func("ana", "debug")

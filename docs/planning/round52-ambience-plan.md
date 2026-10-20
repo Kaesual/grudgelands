@@ -606,3 +606,41 @@ Paths: `sound-r52/dl/fs_<id>.mp3` (n_) and `r34/listen/dl/fs_<id>.mp3`
 10. A burning furnace in a mine is audible.
 11. Capital with music on: no bed and no wind; music off: half-gain bed.
 12. `/ambience debug` shows biome, group, depth, cave share and levels.
+
+## 8. 0.52.1: the surf at the coast and the underwater bed (lane COAST)
+
+The user's wish from the GUI check of 0.52.0 (2026-10-20): at the coast and
+over the sea the region bed blends into sea surf, only there and never over
+inland lakes; a diver hears no zone sound, only an underwater sound.
+
+- **Sea or land by the map.** 0.52.0 counted default water round the feet as
+  the sea, but authored lakes and swamp pools hold default water too, and a
+  cliff or a tower missed it. Now the sea is the classes `bay`, `belt`,
+  `channel` and `open_sea` of `grug_zones.water_query_at`
+  (`R.SEA_CLASSES`); lakes, swamp pools, rivers and dry land never are.
+- **A fourth layer, the sea.** The pass samples 49 columns on a 4-node grid
+  within 16 nodes of the player (`D.sea`). On land the surf takes
+  share / 0.5 of the surface level and the region bed the rest (a straight
+  coast: full surf at the water line, about half 8 nodes inland, nothing
+  16–20 inland); on a sea column only the surf plays. Both follow the
+  surface layer's height curve. The ocean's key plays the surf alone
+  (`surf = "only"`), the dragon islands keep their own coast bed
+  (`surf = "none"`). Two memos shared by every player keep the answers.
+- **The beach is neutral.** The beach biome is a palette patch that lies
+  mostly far from the sea (seed 12345: 32 of the 44 Gravesalt samples more
+  than 64 nodes from it), so it keeps the key the player brings instead of
+  playing the surf inland; its `beach` row and bed are gone.
+- **Under water** the surface layer plays the `underwater` bed at the full
+  bed level at any depth and nothing else plays; until its file ships
+  (lane UW's listening page), diving stays silent. Adding
+  `D.beds.underwater = {"grug_ambience_underwater"}` with the approved file
+  is all it takes.
+- **Small fixes on the way:** a surface layer that plays nothing takes a
+  new key at once (coming ashore no longer starts the old key's bed for a
+  pass); animal calls follow the region bed's level, so no owls over the
+  sea; `/ambience debug` shows the sea share and the sea layer's level.
+
+GUI check (0.52.1): walk from 40 nodes inland to the water and out on a
+boat (the surf rises over the last 16 nodes, the region bed fades); stand
+on a cliff over the sea; swim in an inland lake (no surf); dive (silence
+until the underwater file ships); `/ambience debug` shows the share.

@@ -220,31 +220,40 @@ player already carries (`grug_core.get_atmosphere`), the depth below the
 surface and the biome under the player (`grug_core.depth_below_surface`,
 from a per-player column memo: a zone query only on a new node column), day
 or night from the world clock, the town flag and the capital of the location
-sampler (`grug_map.location.in_town`, `capital_of`), one water probe, the
-cave probe (§4.2a) and, out of water, one node search for the loops (§4.4).
+sampler (`grug_map.location.in_town`, `capital_of`), one water probe (the
+eye in water), the sea share (§4.2b), the cave probe (§4.2a) and, out of
+water, one node search for the loops (§4.4).
 A forced `/atmosphere` Battlegrounds, dragon-island or ocean preset
 overrides the biome group like the zone would; any other preset leaves the
 biome in charge (since Round 52 a forced `underground` no longer drives the
 beds). `/ambience debug` toggles a one-line HUD readout for the player who
-types it: biome, sound group, depth, cave share and verdict, the three
-layers' levels ("ambience: off" while the ambience is off).
+types it: biome, sound group, depth, cave share and verdict, the sea share
+("on" on a sea column), the four layers' levels ("ambience: off" while the
+ambience is off).
 
 ### 4.2 Which bed
 
-Round 52 ([plan](../planning/round52-ambience-plan.md)): up to three looped
-beds per player, to that player only — the **surface** bed, the **cave**
-bed and the **wind** — at the bed gain (the same for every bed) times the
-player's volume times each layer's level:
+Round 52 ([plan](../planning/round52-ambience-plan.md)): up to four looped
+beds per player, to that player only — the **surface** bed, the **sea**
+(the surf, 0.52.1), the **cave** bed and the **wind** — at the bed gain (the
+same for every bed) times the player's volume times each layer's level:
 
-- **Under water** (the eye in water): no bed; ambience is silent.
-- **Sea water near the player** (default water around the feet): the sea bed,
-  over the surface bed. River and lake water has no bed of its own.
+- **Under water** (the eye in water, the sea, a lake or a river): only the
+  surface layer's underwater bed, at the full bed level at any depth; no
+  other layer, call or loop. No underwater bed ships yet, so diving is
+  silent; adding its row to `D.beds` is all it takes.
+- **The surf at the coast** (0.52.1, §4.2b): the sea layer takes over the
+  surface level by the share of sea around the player; the region bed
+  plays the rest. Lakes, rivers and swamp pools never play it. River and
+  lake water has no bed of its own.
 - **The surface bed by sound key:** a zone override by mood (the
   Battlegrounds, the dragon islands, the open ocean), else the sound group
   of the biome under the player (`D.groups`: temperate for meadows, deep
   forest, elf forest and pine hills; savanna; jungle; badlands; swamp;
-  crags; snowy crags; blight with the bone forest; beach). Moving between
-  biomes of one group changes nothing. A group may have a night bed (night
+  crags; snowy crags; blight with the bone forest). The beach biome is
+  neutral (0.52.1): it lies mostly far from the sea, so it keeps the bed of
+  the land the player comes from. Moving between biomes of one group
+  changes nothing. A group may have a night bed (night
   insects and owls in the temperate group, night choruses in the jungle,
   frogs and evening in the swamp, crickets in the badlands); the crags are
   silent at night, the snowy crags keep their afternoon bed. The
@@ -267,7 +276,8 @@ player's volume times each layer's level:
 A new surface bed must be wanted on two passes in a row before it replaces
 the playing one (walking a shore, a town edge or a biome border does not swap
 beds every pass); diving in or surfacing changes at once, and so does music
-starting or ending. A bed change crossfades over 3 s; a level change fades
+starting or ending, and a surface layer that plays nothing (on the water,
+where the surf plays alone) takes the new bed at once. A bed change crossfades over 3 s; a level change fades
 over one pass (2 s) and is sent only when it moved by 3 % of the bed level. A
 layer whose level falls to 0 fades to 1 % and is stopped only after three
 passes there, so hovering at a threshold does not restart loops. Which file
@@ -283,6 +293,23 @@ passes in a row is a cave. The probe runs only deeper than 4 nodes and
 again only after a move of 2 nodes or every third pass. A large dug hall
 counts as a cave.
 
+### 4.2b The surf (0.52.1)
+
+Sea or land comes from the map, not from the water node (default water is
+also the water of lakes and swamp pools): `grug_zones.water_query_at`
+classes `bay`, `belt`, `channel` and `open_sea` are the sea; `lake`
+(swamp pools too), `river` and dry land are not. The pass samples 49
+columns on a 4-node grid within 16 nodes of the player (`D.sea`); on land
+the surf takes share / 0.5 of the surface level and the region bed the
+rest, so on a straight coast the surf is full at the water line, about half
+8 nodes inland and gone 16–20 nodes inland. On a sea column (a boat,
+swimming, flying over it) only the surf plays. Both follow the surface
+layer's height curve: a cliff top over the sea still hears it, flying high
+fades it. The open ocean's key plays the surf alone; the dragon islands
+keep their own coast bed and no surf. The answers are kept in memos shared
+by every player (the map never changes), so a known spot costs two table
+lookups and new ground some 7–10 µs per new column.
+
 ### 4.3 Calls
 
 One-shot calls at a point around the player, to that player, at most one
@@ -290,7 +317,7 @@ per 90–240 s, by sound key (a group or a zone override) and time of day,
 none under water or underground. **Distant thunder on the dragon islands**
 (four variants, 40–56 nodes away, day and night). Animal calls (Round 52,
 two variants each, 24–40 nodes away, only while the surface bed is at 50 %
-or more): **crows** by day on the Battlegrounds and in the blight, **hawks**
+or more; since 0.52.1 the region bed's share, so no owl calls over the sea): **crows** by day on the Battlegrounds and in the blight, **hawks**
 by day in the crags and badlands, **owls** at night in the temperate group,
 **wolves** at night in the crags and the pine hills.
 
