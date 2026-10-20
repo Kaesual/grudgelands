@@ -171,10 +171,29 @@ attribution** (see "Armor overlays" above and `grug_gear/LICENSE-media.md`):
 metal and leather CC BY-SA 4.0 bases with CC BY 4.0 trims, cloth CC BY-SA 3.0.
 The modification is "pixel-group mask derived by the generator".
 
-## Round 33 player model with a cloak — CC BY-SA 3.0
+## Round 54 test art, replaced by lane INTEG — CC0 1.0
+
+Synthetic stand-in armor art, so the game code can compose the new armor
+before the picked art exists; lane INTEG of Round 54 bakes the picked art over
+these files. The source is `tools/r54_armor/test_art/`, written by
+**`tools/r54_armor/make_test_art.py`** (own synthetic art of this project, no
+third-party pixel); **`tools/r54_armor/bake.py`** turns it into the files below
+(palette swap per tier, layout of `tools/r54_armor/data/atlas.json`) and
+rebuilds them pixel for pixel (`bake.py --check` compares mode, size and pixels). `<grade>` is the grade key of
+`grug_gear.MATERIALS`.
 
 | File | Author | License | Notes |
 |------|--------|---------|-------|
-| `models/grug_visuals_character.b3d` | celeron55, MirceaKitsune, Jordach et al. (player_api `character.b3d`); cloak by the Grudgelands project | CC BY-SA 3.0 (<https://creativecommons.org/licenses/by-sa/3.0/>), as its source | derived from `mods/BASE/player_api/models/character.b3d` (licence: `mods/BASE/player_api/license.txt`) by `tools/r33_c3/gen_cloak_model.py`: a cloak box (second mesh buffer, the model's second texture) and a `Cloak` bone under `Body` with generated keyframes appended; the original mesh, bones and keys are unchanged. The technique follows VoxeLibre's capes; no VoxeLibre data is copied. Players only (character_visuals.md §5b) |
+| `grug_armor_<line>_<grade>_<slot>.png` (72 files) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: atlas layer 128 × 64, the slot's worn boxes |
+| `grug_armor_<line>_<grade>_<slot>_ench.png` (72 files) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: enchant mask of the atlas layer (zone A frame, zone B frame) |
+| `grug_armor_<line>_<grade>_<slot>_skin.png` (54 files: chest, legs, feet) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: skin layer 64 × 32, the slot's inner paint |
+| `grug_armor_<line>_<grade>_<slot>_skin_ench.png` (54 files) | Grudgelands project | CC0 1.0 | generator, Round 54 test art: enchant mask of the skin layer |
+
+## Player and NPC models (Round 33 cloak, Round 54 armor) — CC BY-SA 3.0
+
+| File | Author | License | Notes |
+|------|--------|---------|-------|
+| `models/grug_visuals_character.b3d` | celeron55, MirceaKitsune, Jordach et al. (player_api `character.b3d`); cloak, armor boxes and weapon card by the Grudgelands project | CC BY-SA 3.0 (<https://creativecommons.org/licenses/by-sa/3.0/>), as its source | derived from `mods/BASE/player_api/models/character.b3d` (licence: `mods/BASE/player_api/license.txt`) by `tools/r33_c3/gen_cloak_model.py`: a cloak box (second mesh buffer, the model's second texture) and a `Cloak` bone under `Body` with generated keyframes appended (Round 33); the Round 40 pose clips; the armor boxes of `tools/r54_armor/data/catalog.json` (third buffer, the armor atlas), the swing bones `Panel_Front` and `Panel_Back` and a weapon card on `Arm_Right` (fourth buffer) (Round 54); the original mesh, bones and keys are unchanged. The cloak technique follows VoxeLibre's capes; no VoxeLibre data is copied. Players (character_visuals.md §5b) |
+| `models/grug_visuals_npc.b3d` | as above | CC BY-SA 3.0, as its source | the same derivation without the cloak and the pose clips (Round 54): the armor boxes, the two swing bones and the weapon card; textures skin, armor, weapon. Armored NPCs (armor-format.md §2) |
 
 The "No cloak" texture is the engine's builtin `blank.png`.

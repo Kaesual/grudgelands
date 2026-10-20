@@ -606,14 +606,18 @@ local function king_def(race, row)
 		-- turns, and no random walks either (`_grug_no_wander`, published on
 		-- the prototype below); king_tick walks him back after a fight.
 		randomly_turn = false,
-		visual = "mesh", mesh = "character.b3d",
+		-- The NPC model with the armor boxes (Round 54, grug_visuals.NPC_MODEL;
+		-- skin, armor, weapon card).
+		visual = "mesh", mesh = "grug_visuals_npc.b3d",
 		-- The definition fallback of a build without grug_visuals; with it, a
 		-- king wears his people's royal tabard and crown over his one fixed
-		-- look (round31-plan.md §2.1.6).
-		textures = {{"character.png"}},
+		-- look (round31-plan.md §2.1.6) and, since Round 54, the royal armour:
+		-- the guards' metal line at his level's tier in his people's royal
+		-- colours and gold, without a helmet (grug_visuals.compose).
+		textures = {{"character.png", "blank.png", "blank.png"}},
 		_grug_visual = function(self)
 			return {race = race, look = grug_visuals.KING_LOOKS[race],
-				royal = "king", level = self._grug_level,
+				royal = "king", armor_line = "metal", level = self._grug_level,
 				weapon_family = row.weapon, weapon_colors = row.colors}
 		end,
 		-- The king is the tallest figure in his hall (Round 28 ruling 9):
@@ -805,10 +809,12 @@ for race, row in pairs(RACES) do
 	guard._grug_no_leash = true
 	guard._grug_leash_range = nil
 	-- The king's people, each guard with a look of its own, in the royal
-	-- tabard (round31-plan.md §2.1.6).
+	-- tabard (round31-plan.md §2.1.6) and, since Round 54, the royal armour
+	-- with its helmet (grug_visuals.compose) on the guard chassis' NPC model.
 	guard._grug_visual = function(self)
 		return {race = race_id, look = grug_visuals.npc_look(self, race_id),
-			royal = "guard", level = self._grug_level, weapon_family = "sword"}
+			royal = "guard", armor_line = "metal", level = self._grug_level,
+			weapon_family = "sword"}
 	end
 	guard.do_custom = function(self, dtime)
 		self._grug_royal_race = self._grug_royal_race or race_id
@@ -843,7 +849,8 @@ for faction, race in pairs(GENERALS) do
 	general.description = garrison.general_name(faction_id)
 	general._grug_visual = function(self)
 		return {race = race_id, look = GENERAL_LOOKS[faction_id], royal = "guard",
-			level = self._grug_level, weapon_family = RACES[race_id].weapon,
+			armor_line = "metal", level = self._grug_level,
+			weapon_family = RACES[race_id].weapon,
 			-- His seat king's fixed weapon colours (visual only, lane B).
 			weapon_colors = RACES[race_id].colors}
 	end

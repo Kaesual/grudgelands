@@ -70,7 +70,7 @@ core.register_globalstep(function(dtime)
 		if ent then
 			local before = textures(bandit)
 			expect(before:find("#B4472A", 1, true) ~= nil, "tinted on activation: " .. before:sub(-60))
-			ent._grug_visual_skin = nil -- force the recompose a bracket change would cause
+			ent._grug_visual_key = nil -- force the recompose a bracket change would cause
 			grug_mobs.relevel(ent, ent._grug_level == 41 and 50 or 41)
 			local after = textures(bandit)
 			expect(after:find("#B4472A", 1, true) ~= nil, "still tinted after the relevel: " .. after:sub(-60))
