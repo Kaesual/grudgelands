@@ -58,6 +58,10 @@ local function formspec(race, look, x, y, w, h)
 		-- Standing, turned by the mouse only: frames 0..79 are player_api's
 		-- stand animation of character.b3d. The engine rebuilds the model with
 		-- every formspec, so a change resets the turn (accepted, BACKLOG).
+		-- Round 54: deliberately NOT the player model. Nothing is worn here,
+		-- and the engine frames a model[] by its mesh's bounding box, which
+		-- the player model's armor boxes and weapon card widen: the same
+		-- look on character.b3d draws about half again as large.
 		("model[%.2f,%.2f;%.2f,%.2f;look_preview;character.b3d;%s;0,160;false;true;0,79;30]")
 			:format(x, y, MODEL_W, h, esc(texture)),
 		("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, y, MODEL_W, h,

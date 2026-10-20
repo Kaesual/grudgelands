@@ -23,7 +23,7 @@ end
 H.fs_escape = fs_escape
 
 local callbacks = {allow = {}, action = {}, join = {}, mods_loaded = {},
-	receive = {}, class_chosen = {}}
+	receive = {}, class_chosen = {}, equipment = {}}
 local window_info = {}
 H.window_info = window_info
 core = {
@@ -189,7 +189,7 @@ grug_core = {
 		return player.level >= required, required, player.level
 	end,
 	status_modifier_sum = function() return 0 end,
-	register_on_equipment_change = function() end,
+	register_on_equipment_change = function(f) table.insert(callbacks.equipment, f) end,
 	register_on_status_modifiers_changed = function() end,
 	status_effects = function() return H.status_effects end,
 	status_icons = {remaining_text = function(us) return ("%dm"):format(
@@ -311,9 +311,21 @@ sfinv.set_player_inventory_formspec = function(player, context)
 	return real_set(player, context)
 end
 
--- grug_achievements (its seams as tools/r33_c3 stubs them).
+-- grug_achievements (its seams as tools/r33_c3 stubs them), and since Round
+-- 54 the inventory view's preview seam (round54-plan.md §3) in its exact
+-- shape: the player model with {skin, cloak, armor, weapon}, the weapon slot
+-- the main hand's image (here its definition's inventory_image) or blank.png.
+-- A test may replace `grug_visuals.preview`, or set it nil for the fallback
+-- to the live properties.
 grug_jobs = {register_on_award_progress = function() end}
+H.PREVIEW_MESH = "grug_visuals_character.b3d"
 grug_visuals = {register_cloak_source = function() end, apply = function() end}
+function grug_visuals.preview(player)
+	local weapon = grug_inventory.get_cosmetic_weapon(player)
+	local def = weapon and core.registered_items[weapon:get_name()]
+	return {mesh = H.PREVIEW_MESH, textures = {"character.png", "blank.png",
+		"blank.png", def and def.inventory_image or "blank.png"}}
+end
 grug_mobs = {register_on_eligible_kill = function() end,
 	register_on_boss_kill = function() end, subtype = function() return nil end,
 	registered_cadence = {}}
@@ -502,6 +514,14 @@ function H.shift(player, fs, list, index)
 		end
 	end
 	return target.list
+end
+
+-- An equipment change announced the game's way: grug_inventory drops its
+-- caches and notifies, then grug_core runs every registered consumer (the
+-- Character page's refresh among them) in registration order.
+function H.equipment_change(player, listname, reason)
+	grug_inventory.equipment_changed(player, listname, reason)
+	for _, f in ipairs(callbacks.equipment) do f(player, listname, reason) end
 end
 
 -- A rejoin of an existing player: every join callback again.

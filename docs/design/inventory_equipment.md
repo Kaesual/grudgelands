@@ -106,7 +106,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   ruling 6 and §3.3; real coordinates): top left the **mode box**, top right
   the **gear box**, both ending a gap above the short inventory view's box.
   The mode buttons switch the box only, the choice is runtime context (never
-  stored): **Stats** (the default: the model on the left; right of it the
+  stored): **Stats** (the default: the model on the left, wearing the
+  character's armor and cloak and holding the main hand's weapon on the
+  model's weapon card, the off-hand not drawn, turned with the mouse
+  (Round 54); right of it the
   stats and the Claim Stone status, and at the foot the cloak picker,
   bottom-aligned with the model, "Cloaks unlock through achievements." as
   its tooltip; 3D and Stats are one mode since the Round

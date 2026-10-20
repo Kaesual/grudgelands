@@ -22,7 +22,18 @@ local function esc_texture_list(textures)
 	return table.concat(escaped, ",")
 end
 
--- The player model as it should be previewed.
+-- The player model as it should be previewed: mesh and texture list.
+--
+-- Round 54: grug_visuals' preview seam answers first (plan §3): the player
+-- model with {skin, cloak, armor, weapon}, the weapon slot carrying the main
+-- hand's image on the model's weapon card (transparent in the world, where
+-- the wield entity shows the weapon). model[] applies no bone overrides, so
+-- the head-look turn and the attached wield entity never show here; the card
+-- is what makes the weapon visible. grug_visuals is an optional dependency,
+-- and loads before this mod when present, so its equipment-change pass has
+-- run before the page refresh below asks again.
+--
+-- Without the seam (grug_visuals absent): the live properties.
 --
 -- Race: sfinv builds the inventory formspec in its own register_on_joinplayer
 -- (sfinv/api.lua:149-153) and player_api applies the model in its own
@@ -37,6 +48,11 @@ end
 local DEFAULT_MODEL = "character.b3d"
 
 local function preview_model(player)
+	local visuals = rawget(_G, "grug_visuals")
+	if visuals and visuals.preview then
+		local view = visuals.preview(player)
+		return view.mesh, view.textures
+	end
 	local props = player:get_properties()
 	if props.visual == "mesh" and props.mesh and props.mesh ~= "" and
 			props.textures and #props.textures > 0 then
@@ -337,6 +353,13 @@ end
 -- tab. The column is about 4 units wide: lines wrap at STAT_CHARS (0.15
 -- units a character, a small web window's font against its slots).
 local MODEL = {x = 0.4, y = 1.35, w = 3.3, h = BOX_BOTTOM - 0.25 - 1.35}
+-- The view (Round 54, a first version for the user to tune): the camera's
+-- rotation (x, y in degrees; a three-quarter view from the weapon side, so
+-- the card held forward shows its length -- head-on, as at 0,160 before, it
+-- is foreshortened to a stub), then continuous rotation off, the mouse turns
+-- the model, and no frame range or speed: the model stands still in frame 0,
+-- the first frame of the stand animation.
+local MODEL_VIEW = "0,130"
 local STAT_X, STAT_Y, STAT_STEP = 3.95, 1.6, 0.5
 local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.15 - STAT_X
 local STAT_CHARS = math.floor(STAT_W / 0.15)
@@ -367,8 +390,9 @@ local function stats_content(player)
 		("Dodge: %.1f%%"):format(dodge),
 	}
 	local fs = {
-		("model[%.2f,%.2f;%.2f,%.2f;grug_preview;%s;%s;0,160]"):format(MODEL.x,
-			MODEL.y, MODEL.w, MODEL.h, esc(mesh), esc_texture_list(textures)),
+		("model[%.2f,%.2f;%.2f,%.2f;grug_preview;%s;%s;%s]"):format(MODEL.x,
+			MODEL.y, MODEL.w, MODEL.h, esc(mesh), esc_texture_list(textures),
+			MODEL_VIEW),
 	}
 	for index, line in ipairs(lines) do
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
@@ -535,7 +559,7 @@ sfinv.register_page(CHARACTER_PAGE, {
 		local achievements = rawget(_G, "grug_achievements")
 		if achievements then
 			-- A new cloak redraws the character first, then the page, whose
-			-- preview reads the live model.
+			-- preview reads the cloak the character now wears.
 			if fields.grug_cloak and
 					achievements.choose_cloak_by_name(player, fields.grug_cloak) then
 				sfinv.set_player_inventory_formspec(player, context)
