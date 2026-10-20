@@ -1,0 +1,364 @@
+{
+ "palettes": {
+  "bronze": {
+   "name": "Bronze",
+   "line": "metal",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#F6D49A",
+    "M_LIGHT": "#DEAE6B",
+    "M_MID": "#B78145",
+    "M_DARK": "#80532F",
+    "M_DEEP": "#543924",
+    "OUTLINE": "#30261F",
+    "ACC_LIGHT": "#98724B",
+    "ACC_DARK": "#58412D",
+    "A_LIGHT": "#C9B998",
+    "A_DARK": "#8B7D64",
+    "B_LIGHT": "#DFC184",
+    "B_DARK": "#997849",
+    "GLOW": "#DEAE6B"
+   }
+  },
+  "iron": {
+   "name": "Eisen",
+   "line": "metal",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#E2E1DA",
+    "M_LIGHT": "#BCBDB8",
+    "M_MID": "#8E938F",
+    "M_DARK": "#5C6360",
+    "M_DEEP": "#3B4441",
+    "OUTLINE": "#242D2B",
+    "ACC_LIGHT": "#8C7052",
+    "ACC_DARK": "#51402E",
+    "A_LIGHT": "#BDB9A6",
+    "A_DARK": "#777D70",
+    "B_LIGHT": "#C0AB74",
+    "B_DARK": "#806D47",
+    "GLOW": "#BCBDB8"
+   }
+  },
+  "steel": {
+   "name": "Stahl",
+   "line": "metal",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#F0F4F6",
+    "M_LIGHT": "#C8D8E0",
+    "M_MID": "#91A7B5",
+    "M_DARK": "#5E7586",
+    "M_DEEP": "#3C5264",
+    "OUTLINE": "#222F3E",
+    "ACC_LIGHT": "#8A7053",
+    "ACC_DARK": "#4D3B2C",
+    "A_LIGHT": "#B5BAB9",
+    "A_DARK": "#6E8287",
+    "B_LIGHT": "#D6C48C",
+    "B_DARK": "#8F8055",
+    "GLOW": "#C8D8E0"
+   }
+  },
+  "silversteel": {
+   "name": "Silberstahl",
+   "line": "metal",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#FFFFFF",
+    "M_LIGHT": "#E2EAF1",
+    "M_MID": "#B6C5D6",
+    "M_DARK": "#7C91AB",
+    "M_DEEP": "#4D627E",
+    "OUTLINE": "#29384D",
+    "ACC_LIGHT": "#7E6756",
+    "ACC_DARK": "#45394A",
+    "A_LIGHT": "#BCC5D7",
+    "A_DARK": "#7585A1",
+    "B_LIGHT": "#EBF0FA",
+    "B_DARK": "#A3B5D2",
+    "GLOW": "#E2EAF1"
+   }
+  },
+  "embersteel": {
+   "name": "Glutstahl",
+   "line": "metal",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#E1BA94",
+    "M_LIGHT": "#A27963",
+    "M_MID": "#624B43",
+    "M_DARK": "#403437",
+    "M_DEEP": "#2C252C",
+    "OUTLINE": "#1B1C26",
+    "ACC_LIGHT": "#74513B",
+    "ACC_DARK": "#3C2D27",
+    "A_LIGHT": "#B98061",
+    "A_DARK": "#714F44",
+    "B_LIGHT": "#F0AE60",
+    "B_DARK": "#B66B3B",
+    "GLOW": "#FFC375"
+   }
+  },
+  "abyssal_steel": {
+   "name": "Abgrundstahl",
+   "line": "metal",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#C2B6DA",
+    "M_LIGHT": "#8A7DA6",
+    "M_MID": "#514760",
+    "M_DARK": "#342E44",
+    "M_DEEP": "#242134",
+    "OUTLINE": "#171B28",
+    "ACC_LIGHT": "#60516B",
+    "ACC_DARK": "#312C3F",
+    "A_LIGHT": "#9B8FAF",
+    "A_DARK": "#5D566F",
+    "B_LIGHT": "#C5AFE8",
+    "B_DARK": "#8572AB",
+    "GLOW": "#8A7DA6"
+   }
+  },
+  "light": {
+   "name": "Light",
+   "line": "leather",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#D7B994",
+    "M_LIGHT": "#C6A27A",
+    "M_MID": "#A37B52",
+    "M_DARK": "#795638",
+    "M_DEEP": "#573C28",
+    "OUTLINE": "#33291F",
+    "ACC_LIGHT": "#936B45",
+    "ACC_DARK": "#59402A",
+    "A_LIGHT": "#D8CCB0",
+    "A_DARK": "#A09378",
+    "B_LIGHT": "#BEA475",
+    "B_DARK": "#826B45",
+    "GLOW": "#C6A27A"
+   }
+  },
+  "cured": {
+   "name": "Cured",
+   "line": "leather",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#C19871",
+    "M_LIGHT": "#B08660",
+    "M_MID": "#88603F",
+    "M_DARK": "#60412B",
+    "M_DEEP": "#432E20",
+    "OUTLINE": "#2D241C",
+    "ACC_LIGHT": "#9B7651",
+    "ACC_DARK": "#49301E",
+    "A_LIGHT": "#C8B898",
+    "A_DARK": "#94836A",
+    "B_LIGHT": "#C5A773",
+    "B_DARK": "#887047",
+    "GLOW": "#B08660"
+   }
+  },
+  "heavy_leather": {
+   "name": "Heavy leather",
+   "line": "leather",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#AD8764",
+    "M_LIGHT": "#937052",
+    "M_MID": "#6C4D35",
+    "M_DARK": "#4C3526",
+    "M_DEEP": "#35271D",
+    "OUTLINE": "#241E19",
+    "ACC_LIGHT": "#96714F",
+    "ACC_DARK": "#422D20",
+    "A_LIGHT": "#B7A588",
+    "A_DARK": "#7F725D",
+    "B_LIGHT": "#CBAA76",
+    "B_DARK": "#8D7049",
+    "GLOW": "#937052"
+   }
+  },
+  "hardened": {
+   "name": "Hardened",
+   "line": "leather",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#B98C66",
+    "M_LIGHT": "#A17450",
+    "M_MID": "#7D4E31",
+    "M_DARK": "#573623",
+    "M_DEEP": "#3A281C",
+    "OUTLINE": "#271E18",
+    "ACC_LIGHT": "#A48158",
+    "ACC_DARK": "#462C1B",
+    "A_LIGHT": "#BAA687",
+    "A_DARK": "#867258",
+    "B_LIGHT": "#D2B17A",
+    "B_DARK": "#917148",
+    "GLOW": "#A17450"
+   }
+  },
+  "sleek": {
+   "name": "Sleek",
+   "line": "leather",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#ACA5A2",
+    "M_LIGHT": "#8D8887",
+    "M_MID": "#646268",
+    "M_DARK": "#44434B",
+    "M_DEEP": "#302F38",
+    "OUTLINE": "#211F28",
+    "ACC_LIGHT": "#8F7963",
+    "ACC_DARK": "#484039",
+    "A_LIGHT": "#B2ABA7",
+    "A_DARK": "#7D777B",
+    "B_LIGHT": "#C1B7AD",
+    "B_DARK": "#827B80",
+    "GLOW": "#8D8887"
+   }
+  },
+  "nightscale": {
+   "name": "Nightscale",
+   "line": "leather",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#AAA0B9",
+    "M_LIGHT": "#82788F",
+    "M_MID": "#51495F",
+    "M_DARK": "#373143",
+    "M_DEEP": "#272232",
+    "OUTLINE": "#1B1923",
+    "ACC_LIGHT": "#83717A",
+    "ACC_DARK": "#40323F",
+    "A_LIGHT": "#ADA1B8",
+    "A_DARK": "#776884",
+    "B_LIGHT": "#BAA6D3",
+    "B_DARK": "#817096",
+    "GLOW": "#82788F"
+   }
+  },
+  "patch": {
+   "name": "Flickenstoff",
+   "line": "cloth",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#C5B9A2",
+    "M_LIGHT": "#A99B82",
+    "M_MID": "#8C7E67",
+    "M_DARK": "#6C604E",
+    "M_DEEP": "#4E4439",
+    "OUTLINE": "#302D28",
+    "ACC_LIGHT": "#997A55",
+    "ACC_DARK": "#604C36",
+    "A_LIGHT": "#CBBE9E",
+    "A_DARK": "#A3977C",
+    "B_LIGHT": "#B09A70",
+    "B_DARK": "#857352",
+    "GLOW": "#A99B82"
+   }
+  },
+  "woven": {
+   "name": "Webstoff",
+   "line": "cloth",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#BDCAA9",
+    "M_LIGHT": "#9EAF89",
+    "M_MID": "#7D9068",
+    "M_DARK": "#5E714E",
+    "M_DEEP": "#43543A",
+    "OUTLINE": "#2D382A",
+    "ACC_LIGHT": "#9A7D53",
+    "ACC_DARK": "#604C34",
+    "A_LIGHT": "#D8D0AF",
+    "A_DARK": "#ABA685",
+    "B_LIGHT": "#D2C08C",
+    "B_DARK": "#9B895E",
+    "GLOW": "#9EAF89"
+   }
+  },
+  "heavy_cloth": {
+   "name": "Schwerer Stoff",
+   "line": "cloth",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#A5B5CE",
+    "M_LIGHT": "#8095B6",
+    "M_MID": "#607A9D",
+    "M_DARK": "#465C7D",
+    "M_DEEP": "#32445F",
+    "OUTLINE": "#242F44",
+    "ACC_LIGHT": "#8B7558",
+    "ACC_DARK": "#514331",
+    "A_LIGHT": "#E2D8BA",
+    "A_DARK": "#B1AA91",
+    "B_LIGHT": "#DEC993",
+    "B_DARK": "#A39465",
+    "GLOW": "#8095B6"
+   }
+  },
+  "silkweave": {
+   "name": "Seidenwebart",
+   "line": "cloth",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#F9F2E1",
+    "M_LIGHT": "#EBE1CA",
+    "M_MID": "#CFC2A5",
+    "M_DARK": "#A99A7C",
+    "M_DEEP": "#796C57",
+    "OUTLINE": "#403B33",
+    "ACC_LIGHT": "#A18A63",
+    "ACC_DARK": "#6A543D",
+    "A_LIGHT": "#A15B58",
+    "A_DARK": "#773D42",
+    "B_LIGHT": "#C8A158",
+    "B_DARK": "#95713D",
+    "GLOW": "#EBE1CA"
+   }
+  },
+  "silk": {
+   "name": "Seide",
+   "line": "cloth",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#FFFFFF",
+    "M_LIGHT": "#F4F3F7",
+    "M_MID": "#DADDEB",
+    "M_DARK": "#B2B6CD",
+    "M_DEEP": "#7D869E",
+    "OUTLINE": "#414960",
+    "ACC_LIGHT": "#A18CAA",
+    "ACC_DARK": "#655776",
+    "A_LIGHT": "#788CBD",
+    "A_DARK": "#506697",
+    "B_LIGHT": "#E4C26D",
+    "B_DARK": "#AF8B43",
+    "GLOW": "#F4F3F7"
+   }
+  },
+  "stormweave": {
+   "name": "Sturmgewebe",
+   "line": "cloth",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#879ACA",
+    "M_LIGHT": "#6079A9",
+    "M_MID": "#394F7F",
+    "M_DARK": "#2A3B62",
+    "M_DEEP": "#1C2A49",
+    "OUTLINE": "#141F35",
+    "ACC_LIGHT": "#65779E",
+    "ACC_DARK": "#33415F",
+    "A_LIGHT": "#ACBEDD",
+    "A_DARK": "#748BAE",
+    "B_LIGHT": "#E3ECFF",
+    "B_DARK": "#A7BCDD",
+    "GLOW": "#6079A9"
+   }
+  }
+ }
+}
