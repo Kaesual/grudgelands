@@ -620,9 +620,6 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 				end
 				local armor_image = "grug_gear_item_" .. slot.key .. "_" ..
 					line.key .. "_" .. grade.key .. ".png"
-				if line.key == "metal" and grade.key == "silversteel" then
-					armor_image = armor_image .. "^[hsl:0:-90:5"
-				end
 				core.register_tool(itemname, {
 					tool_capabilities = {full_punch_interval=1.4, damage_groups={fleshy=0},
 						groupcaps={}, punch_attack_uses=0},

@@ -1,0 +1,26 @@
+{
+ "metal": {
+  "T1": {"drop": "drop-02", "prop": "p1"},
+  "T2": {"drop": "drop-02", "prop": "p1"},
+  "T3": {"drop": "drop-02", "prop": "p1"},
+  "T4": {"drop": "drop-02", "prop": "p1"},
+  "T5": {"drop": "drop-02", "prop": "p1"},
+  "T6": {"drop": "drop-02", "prop": "p2"}
+ },
+ "leather": {
+  "T1": {"drop": "drop-03-leather", "prop": "p1"},
+  "T2": {"drop": "drop-03-leather", "prop": "p1"},
+  "T3": {"drop": "drop-03-leather", "prop": "p1"},
+  "T4": {"drop": "drop-03-leather", "prop": "p1"},
+  "T5": {"drop": "drop-03-leather", "prop": "p1"},
+  "T6": {"drop": "drop-03-leather", "prop": "p1"}
+ },
+ "cloth": {
+  "T1": {"drop": "drop-03-cloth", "prop": "p1"},
+  "T2": {"drop": "drop-03-cloth", "prop": "p1"},
+  "T3": {"drop": "drop-03-cloth", "prop": "p1"},
+  "T4": {"drop": "drop-03-cloth", "prop": "p1"},
+  "T5": {"drop": "drop-03-cloth", "prop": "p1"},
+  "T6": {"drop": "drop-03-cloth", "prop": "p1"}
+ }
+}

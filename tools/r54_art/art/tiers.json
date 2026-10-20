@@ -1,0 +1,688 @@
+{
+ "metal": {
+  "T1": {
+   "palette": "bronze",
+   "on": [
+    "helm",
+    "chest",
+    "thigh",
+    "boot"
+   ],
+   "variant": {
+    "helm": "a",
+    "chest": "a",
+    "thigh": "a",
+    "boot": "a"
+   },
+   "inner": {
+    "chest": "a",
+    "legs": "a",
+    "feet": "a"
+   },
+   "icon": {
+    "head": "a",
+    "chest": "a",
+    "legs": "a",
+    "feet": "a"
+   }
+  },
+  "T2": {
+   "palette": "iron",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "pauldron",
+    "thigh",
+    "boot"
+   ],
+   "variant": {
+    "helm": "b",
+    "chest": "b",
+    "belt": "b",
+    "pauldron": "b",
+    "thigh": "b",
+    "boot": "b"
+   },
+   "inner": {
+    "chest": "b",
+    "legs": "b",
+    "feet": "b"
+   },
+   "icon": {
+    "head": "b",
+    "chest": "b",
+    "legs": "b",
+    "feet": "b"
+   }
+  },
+  "T3": {
+   "palette": "steel",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "sleeve",
+    "bracer",
+    "pauldron",
+    "thigh",
+    "knee",
+    "boot"
+   ],
+   "variant": {
+    "helm": "c",
+    "chest": "c",
+    "belt": "c",
+    "sleeve": "c",
+    "bracer": "c",
+    "pauldron": "c",
+    "thigh": "c",
+    "knee": "c",
+    "boot": "c"
+   },
+   "inner": {
+    "chest": "c",
+    "legs": "c",
+    "feet": "c"
+   },
+   "icon": {
+    "head": "c",
+    "chest": "c",
+    "legs": "c",
+    "feet": "c"
+   }
+  },
+  "T4": {
+   "palette": "silversteel",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "sleeve",
+    "bracer",
+    "pauldron",
+    "reinforce",
+    "thigh",
+    "knee",
+    "boot",
+    "toe"
+   ],
+   "variant": {
+    "helm": "d",
+    "chest": "d",
+    "belt": "d",
+    "sleeve": "d",
+    "bracer": "d",
+    "pauldron": "d",
+    "reinforce": "d",
+    "thigh": "d",
+    "knee": "d",
+    "boot": "d",
+    "toe": "d"
+   },
+   "inner": {
+    "chest": "d",
+    "legs": "d",
+    "feet": "d"
+   },
+   "icon": {
+    "head": "d",
+    "chest": "d",
+    "legs": "d",
+    "feet": "d"
+   }
+  },
+  "T5": {
+   "palette": "embersteel",
+   "on": [
+    "helm",
+    "visor",
+    "chest",
+    "belt",
+    "panel_f",
+    "panel_b",
+    "sleeve",
+    "bracer",
+    "pauldron",
+    "reinforce",
+    "thigh",
+    "knee",
+    "boot",
+    "toe"
+   ],
+   "variant": {
+    "helm": "e",
+    "visor": "e",
+    "chest": "e",
+    "belt": "e",
+    "panel_f": "e",
+    "panel_b": "e",
+    "sleeve": "e",
+    "bracer": "e",
+    "pauldron": "e",
+    "reinforce": "e",
+    "thigh": "e",
+    "knee": "e",
+    "boot": "e",
+    "toe": "e"
+   },
+   "inner": {
+    "chest": "e",
+    "legs": "e",
+    "feet": "e"
+   },
+   "icon": {
+    "head": "e",
+    "chest": "e",
+    "legs": "e",
+    "feet": "e"
+   }
+  },
+  "T6": {
+   "palette": "abyssal_steel",
+   "on": [
+    "helm",
+    "visor",
+    "chest",
+    "belt",
+    "panel_f",
+    "panel_b",
+    "sleeve",
+    "bracer",
+    "pauldron",
+    "reinforce",
+    "flare",
+    "thigh",
+    "knee",
+    "boot",
+    "toe"
+   ],
+   "variant": {
+    "helm": "f",
+    "visor": "f",
+    "chest": "f",
+    "belt": "f",
+    "panel_f": "f",
+    "panel_b": "f",
+    "sleeve": "f",
+    "bracer": "f",
+    "pauldron": "f",
+    "reinforce": "f",
+    "flare": "f",
+    "thigh": "f",
+    "knee": "f",
+    "boot": "f",
+    "toe": "f"
+   },
+   "inner": {
+    "chest": "f",
+    "legs": "f",
+    "feet": "f"
+   },
+   "icon": {
+    "head": "f",
+    "chest": "f",
+    "legs": "f",
+    "feet": "f"
+   }
+  }
+ },
+ "leather": {
+  "T1": {
+   "palette": "light",
+   "on": [
+    "helm",
+    "chest",
+    "boot"
+   ],
+   "variant": {
+    "helm": "a",
+    "chest": "a",
+    "boot": "a"
+   },
+   "inner": {
+    "chest": "a",
+    "legs": "a",
+    "feet": "a"
+   },
+   "icon": {
+    "head": "a",
+    "chest": "a",
+    "legs": "a",
+    "feet": "a"
+   }
+  },
+  "T2": {
+   "palette": "cured",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "thigh",
+    "boot"
+   ],
+   "variant": {
+    "helm": "b",
+    "chest": "b",
+    "belt": "b",
+    "thigh": "b",
+    "boot": "b"
+   },
+   "inner": {
+    "chest": "b",
+    "legs": "b",
+    "feet": "b"
+   },
+   "icon": {
+    "head": "b",
+    "chest": "b",
+    "legs": "b",
+    "feet": "b"
+   }
+  },
+  "T3": {
+   "palette": "heavy_leather",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_b",
+    "sleeve",
+    "thigh",
+    "boot"
+   ],
+   "variant": {
+    "helm": "c",
+    "chest": "c",
+    "belt": "c",
+    "panel_b": "c",
+    "sleeve": "c",
+    "thigh": "c",
+    "boot": "c"
+   },
+   "inner": {
+    "chest": "c",
+    "legs": "c",
+    "feet": "c"
+   },
+   "icon": {
+    "head": "c",
+    "chest": "c",
+    "legs": "c",
+    "feet": "c"
+   }
+  },
+  "T4": {
+   "palette": "hardened",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_b",
+    "sleeve",
+    "bracer",
+    "thigh",
+    "boot"
+   ],
+   "variant": {
+    "helm": "d",
+    "chest": "d",
+    "belt": "d",
+    "panel_b": "d",
+    "sleeve": "d",
+    "bracer": "d",
+    "thigh": "d",
+    "boot": "d"
+   },
+   "inner": {
+    "chest": "d",
+    "legs": "d",
+    "feet": "d"
+   },
+   "icon": {
+    "head": "d",
+    "chest": "d",
+    "legs": "d",
+    "feet": "d"
+   }
+  },
+  "T5": {
+   "palette": "sleek",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_b",
+    "sleeve",
+    "bracer",
+    "pauldron",
+    "thigh",
+    "knee",
+    "boot"
+   ],
+   "variant": {
+    "helm": "e",
+    "chest": "e",
+    "belt": "e",
+    "panel_b": "e",
+    "sleeve": "e",
+    "bracer": "e",
+    "pauldron": "e",
+    "thigh": "e",
+    "knee": "e",
+    "boot": "e"
+   },
+   "inner": {
+    "chest": "e",
+    "legs": "e",
+    "feet": "e"
+   },
+   "icon": {
+    "head": "e",
+    "chest": "e",
+    "legs": "e",
+    "feet": "e"
+   }
+  },
+  "T6": {
+   "palette": "nightscale",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_f",
+    "panel_b",
+    "sleeve",
+    "bracer",
+    "pauldron",
+    "thigh",
+    "knee",
+    "boot"
+   ],
+   "variant": {
+    "helm": "f",
+    "chest": "f",
+    "belt": "f",
+    "panel_f": "f",
+    "panel_b": "f",
+    "sleeve": "f",
+    "bracer": "f",
+    "pauldron": "f",
+    "thigh": "f",
+    "knee": "f",
+    "boot": "f"
+   },
+   "inner": {
+    "chest": "f",
+    "legs": "f",
+    "feet": "f"
+   },
+   "icon": {
+    "head": "f",
+    "chest": "f",
+    "legs": "f",
+    "feet": "f"
+   }
+  }
+ },
+ "cloth": {
+  "T1": {
+   "palette": "patch",
+   "on": [
+    "helm",
+    "chest",
+    "boot"
+   ],
+   "variant": {
+    "helm": "a",
+    "chest": "a",
+    "boot": "a"
+   },
+   "inner": {
+    "chest": "a",
+    "legs": "a",
+    "feet": "a"
+   },
+   "icon": {
+    "head": "a",
+    "chest": "a",
+    "legs": "a",
+    "feet": "a"
+   }
+  },
+  "T2": {
+   "palette": "woven",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "boot"
+   ],
+   "variant": {
+    "helm": "b",
+    "chest": "b",
+    "belt": "b",
+    "boot": "b"
+   },
+   "inner": {
+    "chest": "b",
+    "legs": "b",
+    "feet": "b"
+   },
+   "icon": {
+    "head": "b",
+    "chest": "b",
+    "legs": "b",
+    "feet": "b"
+   }
+  },
+  "T3": {
+   "palette": "heavy_cloth",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_f",
+    "panel_b",
+    "sleeve",
+    "boot"
+   ],
+   "variant": {
+    "helm": "c",
+    "chest": "c",
+    "belt": "c",
+    "sleeve": "c",
+    "panel_f": "c",
+    "panel_b": "c",
+    "boot": "c"
+   },
+   "inner": {
+    "chest": "c",
+    "legs": "c",
+    "feet": "c"
+   },
+   "icon": {
+    "head": "c",
+    "chest": "c",
+    "legs": "c",
+    "feet": "c"
+   }
+  },
+  "T4": {
+   "palette": "silkweave",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_f",
+    "panel_b",
+    "sleeve",
+    "boot"
+   ],
+   "variant": {
+    "helm": "d",
+    "chest": "d",
+    "belt": "d",
+    "sleeve": "d",
+    "panel_f": "d",
+    "panel_b": "d",
+    "boot": "d"
+   },
+   "inner": {
+    "chest": "d",
+    "legs": "d",
+    "feet": "d"
+   },
+   "icon": {
+    "head": "d",
+    "chest": "d",
+    "legs": "d",
+    "feet": "d"
+   }
+  },
+  "T5": {
+   "palette": "silk",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_f",
+    "panel_b",
+    "sleeve",
+    "boot"
+   ],
+   "variant": {
+    "helm": "e",
+    "chest": "e",
+    "belt": "e",
+    "sleeve": "e",
+    "panel_f": "e",
+    "panel_b": "e",
+    "boot": "e"
+   },
+   "inner": {
+    "chest": "e",
+    "legs": "e",
+    "feet": "e"
+   },
+   "icon": {
+    "head": "e",
+    "chest": "e",
+    "legs": "e",
+    "feet": "e"
+   }
+  },
+  "T6": {
+   "palette": "stormweave",
+   "on": [
+    "helm",
+    "chest",
+    "belt",
+    "panel_f",
+    "panel_b",
+    "sleeve",
+    "boot"
+   ],
+   "variant": {
+    "helm": "f",
+    "chest": "f",
+    "belt": "f",
+    "sleeve": "f",
+    "panel_f": "f",
+    "panel_b": "f",
+    "boot": "f"
+   },
+   "inner": {
+    "chest": "f",
+    "legs": "f",
+    "feet": "f"
+   },
+   "icon": {
+    "head": "f",
+    "chest": "f",
+    "legs": "f",
+    "feet": "f"
+   }
+  }
+ },
+ "_source": {
+  "metal": {
+   "T1": {
+    "drop": "drop-02",
+    "prop": "p1"
+   },
+   "T2": {
+    "drop": "drop-02",
+    "prop": "p1"
+   },
+   "T3": {
+    "drop": "drop-02",
+    "prop": "p1"
+   },
+   "T4": {
+    "drop": "drop-02",
+    "prop": "p1"
+   },
+   "T5": {
+    "drop": "drop-02",
+    "prop": "p1"
+   },
+   "T6": {
+    "drop": "drop-02",
+    "prop": "p2"
+   }
+  },
+  "leather": {
+   "T1": {
+    "drop": "drop-03-leather",
+    "prop": "p1"
+   },
+   "T2": {
+    "drop": "drop-03-leather",
+    "prop": "p1"
+   },
+   "T3": {
+    "drop": "drop-03-leather",
+    "prop": "p1"
+   },
+   "T4": {
+    "drop": "drop-03-leather",
+    "prop": "p1"
+   },
+   "T5": {
+    "drop": "drop-03-leather",
+    "prop": "p1"
+   },
+   "T6": {
+    "drop": "drop-03-leather",
+    "prop": "p1"
+   }
+  },
+  "cloth": {
+   "T1": {
+    "drop": "drop-03-cloth",
+    "prop": "p1"
+   },
+   "T2": {
+    "drop": "drop-03-cloth",
+    "prop": "p1"
+   },
+   "T3": {
+    "drop": "drop-03-cloth",
+    "prop": "p1"
+   },
+   "T4": {
+    "drop": "drop-03-cloth",
+    "prop": "p1"
+   },
+   "T5": {
+    "drop": "drop-03-cloth",
+    "prop": "p1"
+   },
+   "T6": {
+    "drop": "drop-03-cloth",
+    "prop": "p1"
+   }
+  }
+ }
+}

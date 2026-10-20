@@ -364,13 +364,6 @@ def main():
         for name, line, bracket in HELMETS_SHOWN:
             reqs.append(("%s-helm-%s" % (race, name), race, [1, 1, 1, 1, 1],
                          "%s:%d" % (line, bracket), None))
-    window_races = [("human", [1, 3, 1, 1, 2]), ("dwarf", [2, 1, 1, 1, 1]),
-                    ("troll", [1, 1, 1, 1, 3])]
-    for race, look in window_races:
-        reqs.append(("win-%s-plain" % race, race, look, None, None))
-        for line, bracket, tier in helmets:
-            reqs.append(("win-%s-%s-%d" % (race, line, bracket), race, look,
-                         "%s:%d" % (line, bracket), None))
     steps_look = [2, 1, 1, 1, 3]
     reqs.append(("steps-nohelm", "dwarf", steps_look, "metal:3:nohead", None))
     reqs.append(("steps-helm", "dwarf", steps_look, "metal:3", None))
@@ -472,26 +465,8 @@ def main():
                "".join(cells)))
 
     # ---- 2. face window ---------------------------------------------------------
-    add("<h2>2. Helm-Fenster an allen Helmen</h2>")
-    add("<p>Gesicht von vorn, links der Helm einfach darübergelegt (Frisur "
-        "darunter, Merkmal verdeckt), rechts wie das Spiel ihn jetzt "
-        "zusammensetzt.</p>")
-    for race, look in window_races:
-        fname = FEATURE_DE[race][look[4] - 1]
-        add("<h3>%s, %s</h3>" % (RACE_DE[race], fname))
-        cells = []
-        for line, bracket, tier in helmets:
-            base = render(got["win-%s-%s-%d" % (race, line, bracket)][0])
-            helmet = "grug_visuals_%s_head_%s.png" % (line, tier)
-            if tier == "silversteel":
-                helmet += "^[hsl:0:-90:5"
-            before = blit(render(got["win-%s-plain" % race][0]),
-                          render(helmet))
-            pair = Image.new("RGBA", (8 * 2 + 1, 8), (0, 0, 0, 0))
-            pair.alpha_composite(face(before), (0, 0))
-            pair.alpha_composite(face(base), (9, 0))
-            cells.append(cell(pair, 7, "%s %s" % (line, tier)))
-        add('<div class="grid">%s</div>' % "".join(cells))
+    # (Round 31's helmet face window on the old helmet overlays; both went
+    # with Round 54, the helmet is a box in the model now.)
 
     # ---- 3. races -----------------------------------------------------------
     add("<h2>3. Optionen je Volk</h2>")

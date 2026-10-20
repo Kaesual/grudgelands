@@ -2,8 +2,9 @@
 """Generate the character-visuals art for `character.b3d`: the look layers
 (round31-plan.md §2.1 -- skin, the race dress, eyes, hairstyles and lower-face
 features as engine-coloured masks plus detail, see
-mods/PLAYER/grug_visuals/looks.lua), the royal tabard and crown, the helmet
-face window and the eight WP13 armor overlays.
+mods/PLAYER/grug_visuals/looks.lua) and the royal tabard and crown. (The
+helmet face window and the WP13 armor overlays went with Round 54: armor is
+boxes in the model now, baked by tools/r54_armor/bake.py.)
 
 All art is original work of this project (CC0 1.0, the licence every other
 own-art mod in this tree uses -- see mods/PLAYER/grug_visuals/LICENSE-media.md)
@@ -38,9 +39,8 @@ SEED = 20260914
 # --------------------------------------------------------------------------
 HEAD = {"top": (8, 0, 8, 8), "bottom": (16, 0, 8, 8), "right": (0, 8, 8, 8),
         "front": (8, 8, 8, 8), "left": (16, 8, 8, 8), "back": (24, 8, 8, 8)}
-# The "hat" layer: a slightly larger cube around the head. Hair, beards,
-# helmets and hoods live here, which is what lets an overlay cover a helmet
-# over hair without touching the face underneath.
+# The "hat" layer: a slightly larger cube around the head. Hair, beards and
+# the crown live here, over the face without touching it.
 HAT = {"top": (40, 0, 8, 8), "bottom": (48, 0, 8, 8), "right": (32, 8, 8, 8),
        "front": (40, 8, 8, 8), "left": (48, 8, 8, 8), "back": (56, 8, 8, 8)}
 TORSO = {"top": (20, 16, 8, 4), "bottom": (28, 16, 8, 4),
@@ -145,143 +145,6 @@ EYE_WHITE = (238, 240, 232)
 
 
 # --------------------------------------------------------------------------
-# Armor overlays. Transparent everywhere they do not cover, drawn in the
-# bracket-6 ("Grand") colour so `^[multiply:<bracket tint>` darkens them down
-# the ladder exactly the way grug_gear tints its item images -- #ffffff, the
-# bracket-6 tint, is a no-op.
-# --------------------------------------------------------------------------
-def shade(col, factor):
-    """Darken a palette entry so legs and feet read apart from the chest even
-    after the bracket tint has multiplied everything by the same colour."""
-    return tuple(min(255, int(round(v * factor))) for v in col[:3]) + \
-        (col[3] if len(col) > 3 else 255,)
-
-
-def shaded_line(line, factor):
-    return dict((k, shade(v, factor)) for k, v in LINES[line].items())
-
-
-LINES = {
-    "metal": dict(base=(196, 202, 212), dark=(146, 154, 168),
-                  light=(232, 238, 246), trim=(178, 146, 74),
-                  rivet=(112, 118, 132)),
-    "cloth": dict(base=(150, 128, 196), dark=(112, 92, 158),
-                  light=(186, 168, 222), trim=(204, 186, 118),
-                  rivet=(84, 68, 120)),
-}
-
-
-def overlay_head(line):
-    c = LINES[line]
-    image = canvas()
-    p = Paint(image, SEED + 11 + len(line))
-    p.fill(HAT["top"], c["base"])
-    p.box(HAT["top"][0] + 3, HAT["top"][1], 2, 8, c["light"])
-    for face in ("right", "left", "back"):
-        p.fill(HAT[face], c["base"])
-        p.edges(HAT[face], c["dark"])
-    if line == "metal":
-        # Helm: full brow band, open face, nasal bar.
-        p.box(HAT["front"][0], HAT["front"][1], 8, 3, c["base"])
-        p.row(HAT["front"], 2, c["dark"], 0, 8)
-        p.box(HAT["front"][0] + 3, HAT["front"][1] + 3, 2, 3, c["base"])
-        p.box(HAT["front"][0] + 3, HAT["front"][1] + 5, 2, 1, c["dark"])
-        for face in ("right", "left", "back"):
-            p.row(HAT[face], 5, c["trim"], 0, 8)
-        p.box(HAT["right"][0] + 1, HAT["right"][1] + 2, 1, 1, c["rivet"])
-        p.box(HAT["left"][0] + 6, HAT["left"][1] + 2, 1, 1, c["rivet"])
-    else:
-        # Cowl: a brim over the brow, the face left open, a longer back.
-        p.box(HAT["front"][0], HAT["front"][1], 8, 3, c["base"])
-        p.row(HAT["front"], 2, c["dark"], 0, 8)
-        for face in ("right", "left"):
-            p.box(HAT[face][0], HAT[face][1] + 6, 8, 2, (0, 0, 0, 0))
-        p.row(HAT["back"], 7, c["dark"], 0, 8)
-        p.box(HAT["top"][0] + 3, HAT["top"][1] + 6, 2, 2, c["trim"])
-    return image
-
-
-def overlay_chest(line):
-    c = LINES[line]
-    image = canvas()
-    p = Paint(image, SEED + 22 + len(line))
-    for face in SIDES:
-        p.fill(TORSO[face], c["base"])
-        p.speckle(TORSO[face], c["dark"], c["light"], 0.05)
-        p.edges(TORSO[face], c["dark"])
-    p.fill(TORSO["top"], c["light"])
-    p.fill(TORSO["bottom"], c["dark"])
-    if line == "metal":
-        # Breastplate: centre ridge, waist band, pauldrons on the shoulders.
-        p.box(TORSO["front"][0] + 3, TORSO["front"][1], 2, 12, c["light"])
-        p.row(TORSO["front"], 8, c["trim"], 0, 8)
-        p.row(TORSO["back"], 8, c["trim"], 0, 8)
-        p.box(TORSO["front"][0] + 1, TORSO["front"][1] + 1, 1, 1, c["rivet"])
-        p.box(TORSO["front"][0] + 6, TORSO["front"][1] + 1, 1, 1, c["rivet"])
-        sleeve = 5
-    else:
-        # Robe: a lighter yoke, a girdle, long sleeves.
-        p.box(TORSO["front"][0] + 2, TORSO["front"][1], 4, 3, c["light"])
-        p.row(TORSO["front"], 7, c["trim"], 0, 8)
-        p.row(TORSO["back"], 7, c["trim"], 0, 8)
-        p.row(TORSO["front"], 11, c["dark"], 0, 8)
-        p.row(TORSO["back"], 11, c["dark"], 0, 8)
-        sleeve = 9
-    p.fill(ARM["top"], c["light"])
-    for face in SIDES:
-        region = ARM[face]
-        p.box(region[0], region[1], region[2], sleeve, c["base"])
-        p.speckle((region[0], region[1], region[2], sleeve),
-                  c["dark"], c["light"], 0.05)
-        p.box(region[0], region[1] + sleeve - 1, region[2], 1, c["dark"])
-    return image
-
-
-def overlay_legs(line):
-    c = shaded_line(line, 0.86)
-    image = canvas()
-    p = Paint(image, SEED + 33 + len(line))
-    p.fill(LEG["top"], c["light"])
-    for face in SIDES:
-        region = LEG[face]
-        p.box(region[0], region[1], region[2], 8, c["base"])
-        p.speckle((region[0], region[1], region[2], 8),
-                  c["dark"], c["light"], 0.05)
-        p.box(region[0], region[1], region[2], 1, c["trim"])
-        if line == "metal":
-            p.box(region[0], region[1] + 5, region[2], 2, c["light"])
-            p.box(region[0], region[1] + 7, region[2], 1, c["dark"])
-        else:
-            p.box(region[0], region[1] + 7, region[2], 1, c["dark"])
-        p.box(region[0], region[1], 1, 8, c["dark"])
-        p.box(region[0] + region[2] - 1, region[1], 1, 8, c["dark"])
-    return image
-
-
-def overlay_feet(line):
-    c = shaded_line(line, 0.70)
-    image = canvas()
-    p = Paint(image, SEED + 44 + len(line))
-    p.fill(LEG["bottom"], c["dark"])
-    top = 8 if line == "metal" else 9
-    for face in SIDES:
-        region = LEG[face]
-        h = 12 - top
-        p.box(region[0], region[1] + top, region[2], h, c["base"])
-        p.speckle((region[0], region[1] + top, region[2], h),
-                  c["dark"], c["light"], 0.05)
-        p.box(region[0], region[1] + top, region[2], 1, c["trim"])
-        p.box(region[0], region[1] + 11, region[2], 1, c["dark"])
-        p.box(region[0], region[1] + top, 1, h, c["dark"])
-        p.box(region[0] + region[2] - 1, region[1] + top, 1, h, c["dark"])
-    return image
-
-
-OVERLAYS = {"head": overlay_head, "chest": overlay_chest,
-            "legs": overlay_legs, "feet": overlay_feet}
-
-
-# --------------------------------------------------------------------------
 # Round 31 appearance layers (round31-plan.md §2.1). A character is what a
 # player chooses: a skin TONE, EYES, a HAIRSTYLE in a hair colour, and the
 # race's lower-face FEATURE, over the race's one dress. Colours are NOT baked in: a
@@ -312,9 +175,10 @@ WARPAINT = (140, 28, 24, 255)
 ELF_MARK = (64, 150, 140, 255)
 BEAD = (200, 160, 60, 255)
 
-# The helmet face window, in the hat layer's front face: columns 1..6 and
-# rows 3..7 (eyes, nose, mouth, chin). Cut from every helmet at composition,
-# so the eyes and every head-layer pixel of a feature must sit inside it.
+# The face window, in the hat layer's front face: columns 1..6 and rows 3..7
+# (eyes, nose, mouth, chin). The eyes and every head-layer pixel of a feature
+# sit inside it (Round 31: it was cut from every helmet overlay; the Round 54
+# helmet box opens at most the whole face, armor-format.md section 4).
 FACE_WINDOW = (1, 3, 6, 5)
 
 
@@ -486,15 +350,6 @@ def layer_eyes(undead):
     else:
         p.box(f[0] + 2, f[1] + 3, 1, 2, white)
         p.box(f[0] + 5, f[1] + 3, 1, 2, white)
-    return image
-
-
-# --- the helmet face window (a [mask: white keeps, transparent cuts) ------
-def layer_helmet_window():
-    image = Image.new("RGBA", (W, H), (255, 255, 255, 255))
-    p = Paint(image, 0)
-    x0, y0, w, h = FACE_WINDOW
-    p.box(HAT["front"][0] + x0, HAT["front"][1] + y0, w, h, (0, 0, 0, 0))
     return image
 
 
@@ -971,7 +826,6 @@ def build_layers():
     out = {"grug_visuals_skin_mask.png": layer_skin_mask(),
            "grug_visuals_eyes_mask.png": layer_eyes(False),
            "grug_visuals_eyes_undead_mask.png": layer_eyes(True),
-           "grug_visuals_helmet_window.png": layer_helmet_window(),
            "grug_visuals_crown.png": layer_crown()}
     (out["grug_visuals_tabard_mask.png"], out["grug_visuals_tabard_trim_mask.png"],
      out["grug_visuals_tabard.png"]) = layer_tabard()
@@ -997,7 +851,7 @@ def check_layer_alpha(layers):
     """Every combination a look can make, drawn with white for every colour:
     the result must be fully opaque or fully transparent at every pixel (see
     the section comment), and the eyes and every head-front pixel of a
-    feature must lie inside the helmet face window."""
+    feature must lie inside the face window."""
     problems = []
     base = Image.alpha_composite(layers["grug_visuals_skin_mask.png"],
                                  Image.new("RGBA", (W, H), (0, 0, 0, 0)))
@@ -1051,66 +905,6 @@ def check_layer_alpha(layers):
     return problems
 
 
-# What each overlay is REQUIRED to cover, per face, as
-# (box group, faces, rule, value). Rules:
-#   "full"    every pixel of the face is opaque,
-#   "min"     at least `value` opaque pixels,
-#   "open"    between 1 and full-1 -- the face is partly covered ON PURPOSE.
-#
-# Asserted by the generator on every run, because "the back of the chestpiece
-# is missing" is a claim a flat front render can neither prove nor disprove,
-# and one measurement settles it for good. The "open" rules are just as
-# load-bearing as the "full" ones: a helmet that covers the whole face is as
-# wrong as a chestplate with no back.
-REQUIRED_COVER = {
-    "chest": [
-        (TORSO, ("top", "bottom", "right", "front", "left", "back"), "full", 0),
-        (ARM, ("top",), "full", 0),
-        (ARM, ("right", "front", "left", "back"), "min", 16),
-    ],
-    "legs": [
-        (LEG, ("top",), "full", 0),
-        (LEG, ("right", "front", "left", "back"), "min", 32),
-    ],
-    "feet": [
-        (LEG, ("bottom",), "full", 0),
-        (LEG, ("right", "front", "left", "back"), "min", 12),
-    ],
-    "head": [
-        (HAT, ("top", "back"), "full", 0),
-        # The cowl ends above the jaw, so its side faces are deliberately short.
-        (HAT, ("right", "left"), "min", 48),
-        # The face stays visible: a brow band, never a closed helmet.
-        (HAT, ("front",), "open", 0),
-    ],
-}
-
-
-def check_coverage(overlays):
-    """Returns a list of complaint strings; empty means every overlay covers
-    exactly the faces its slot promises, and leaves open the ones it must."""
-    problems = []
-    for (line, slot), image in sorted(overlays.items()):
-        px = image.load()
-        for group, faces, rule, value in REQUIRED_COVER[slot]:
-            for face in faces:
-                x, y, w, h = group[face]
-                total = w * h
-                opaque = sum(1 for j in range(y, y + h)
-                             for i in range(x, x + w) if px[i, j][3] > 0)
-                bad = None
-                if rule == "full" and opaque != total:
-                    bad = "must be fully covered"
-                elif rule == "min" and opaque < value:
-                    bad = "must cover at least %d" % value
-                elif rule == "open" and not (0 < opaque < total):
-                    bad = "must be partly open"
-                if bad:
-                    problems.append("%s_%s %s: %s (%d/%d opaque)"
-                                    % (line, slot, face, bad, opaque, total))
-    return problems
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--textures", type=Path,
@@ -1118,32 +912,15 @@ def main():
     args = parser.parse_args()
     args.textures.mkdir(parents=True, exist_ok=True)
 
-    written = []
-    overlays = {}
-    for line in sorted(LINES):
-        for slot in ("head", "chest", "legs", "feet"):
-            image = OVERLAYS[slot](line)
-            overlays[line, slot] = image
-            path = args.textures / ("grug_visuals_%s_%s.png" % (line, slot))
-            image.save(path, optimize=True)
-            written.append(path)
-
-    for path in written:
-        print(path)
-
     layers = build_layers()
     for name in sorted(layers):
         path = args.textures / name
         layers[name].save(path, optimize=True)
         print(path)
 
-    problems = check_coverage(overlays)
+    problems = check_layer_alpha(layers)
     for problem in problems:
-        print("COVERAGE: " + problem)
-    layer_problems = check_layer_alpha(layers)
-    for problem in layer_problems:
         print("LAYERS: " + problem)
-    problems = problems + layer_problems
 
     return 1 if problems else 0
 
