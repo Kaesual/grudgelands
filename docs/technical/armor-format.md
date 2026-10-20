@@ -62,10 +62,12 @@ In this order in the model's texture list:
 | `weapon` | per weapon | the weapon card in the hand (inventory view; transparent in the world) |
 
 An empty slot (no armor at all, no weapon shown) is `blank.png`, like the cloak today. The player model carries all
-four slots. Armored NPCs (a visual spec with an `armor_line`: guards and bandits today) use the generated **NPC
-model**: the same body and armor buffer with `skin`, `armor`, `weapon` (no cloak), built from a list of the boxes
-NPCs wear; that list is **every catalog box** for now (NPCs wear every tier). Unarmored humanoid NPCs (kings, royal
-guards, vendors, villagers) keep `character.b3d`.
+four slots. Armored NPCs (a visual spec with an `armor_line`: guards and bandits; and, by the user's ruling of 2026-10-20,
+kings, royal guards and generals in a royal variant of the guards' metal armor) use the generated **NPC model**:
+the same body and armor buffer with `skin`, `armor`, `weapon` (no cloak), built from a list of the boxes NPCs wear;
+that list is **every catalog box** for now (NPCs wear every tier). The royal variant colours zone A with the royal
+cloth colour and zone B gold through the zone masks, so it needs no art of its own. Unarmored humanoid NPCs
+(vendors, villagers) keep `character.b3d`.
 
 The helmet is a box: when a head piece is worn, the race look drops the hair layer as before (the render tool
 draws the bald look then), and the face stays the race's.
