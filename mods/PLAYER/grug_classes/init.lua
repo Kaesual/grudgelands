@@ -212,11 +212,9 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/scout.lua")
 dofile(modpath .. "/stats.lua")
 dofile(modpath .. "/perks.lua")
+-- talents.lua loads the graph talents (talent_graph.lua and one
+-- talent_graph_<class>.lua per class) before it reads any rank.
 dofile(modpath .. "/talents.lua")
 dofile(modpath .. "/talents_ui.lua")
--- The new talent trees, beside today's (Round 52 D3): read only by the
--- admin preview until round K.
-dofile(modpath .. "/talent_graph.lua")
-dofile(modpath .. "/talent_graph_preview.lua")
 dofile(modpath .. "/talent_graph_ui.lua")
 dofile(modpath .. "/selection.lua")

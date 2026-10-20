@@ -1,15 +1,11 @@
--- The new Talents page (Round 52 lane GRAPH, C6, D3, D5, D7): one inner tab
--- per tree, the tree's background (or a plain one) in the tab content
--- rectangle, the graph's connection lines as box[] segments under the nodes,
--- nodes with their icon or, without one, their name. In Round 52 only the
--- read-only admin preview (/talent_preview, privilege `server`) shows it,
--- with each tree's sample build held in the form's context; nothing here
--- writes player meta. Round K puts graph.page_content into Talents & Skills
--- in place of today's trees: it uses the sfinv frame's coordinates and ends
--- above the skill row (d5-geometry.md).
+-- The Talents page (Round 52 lane GRAPH, C6, D3, D5, D7; live since Round
+-- 53): one inner tab per tree, the tree's background (or a plain one) in the
+-- tab content rectangle, the graph's connection lines as box[] segments
+-- under the nodes, nodes with their icon or, without one, their name.
+-- talents_ui.lua puts graph.page_content into Talents & Skills: it uses the
+-- sfinv frame's coordinates and ends above the skill row (d5-geometry.md).
 
 local graph = grug_classes.graph
-local PREVIEW_FORM = "grug_classes:talent_preview"
 
 local function esc(text)
 	return core.formspec_escape(tostring(text or ""))
@@ -39,11 +35,45 @@ for _, mod in ipairs({"grug_classes", "grug_abilities"}) do
 	end
 end
 
--- A granting node shows its skill's icon, any other node its own talent icon.
+-- A granting node shows its skill's icon, any other node its own talent
+-- icon, named after the id without its tree prefix (K5:
+-- ember_fire_mastery -> grug_classes_talent_fire_mastery.png).
 function graph.icon_texture(def)
 	local file = def.ability and "grug_abilities_skill_" .. def.ability .. ".png"
-		or "grug_classes_talent_" .. def.id .. ".png"
+		or "grug_classes_talent_" .. def.icon_name .. ".png"
 	return shipped[file] and file or nil
+end
+
+-- A node's text for `viewer`: its description, and for a shared key whose
+-- size depends on the level (armor, the pools) every rank's amount at the
+-- viewer's level, through the same rules the consumers read.
+local POOL_KEYS = {max_hp_percent_add = {"hp", "HP"}, max_mana_percent_add = {"mana", "mana"}}
+local function amount_text(value)
+	if value >= 10 then
+		return tostring(math.floor(value + 0.5))
+	end
+	return (("%.1f"):format(value):gsub("%.0$", ""))
+end
+function graph.node_text(viewer, def)
+	local parts = {}
+	for key, values in pairs(def.effects) do
+		local pool = POOL_KEYS[key]
+		if graph.LEVEL_SCALED_KEYS[key] then
+			for _, value in ipairs(values) do
+				parts[#parts + 1] = "+" .. amount_text(graph.level_amount(key, value,
+					grug_xp.get_level(viewer)))
+			end
+			return ("%s At your level: %s armor rating."):format(def.description,
+				table.concat(parts, " / "))
+		elseif pool then
+			for _, value in ipairs(values) do
+				parts[#parts + 1] = ("+%d %s"):format(
+					grug_classes.pool_percent_amount(viewer, pool[1], value), pool[2])
+			end
+			return ("%s At your level: %s."):format(def.description, table.concat(parts, " / "))
+		end
+	end
+	return def.description
 end
 
 function graph.background_texture(tree)
@@ -111,20 +141,21 @@ end
 -- Node field index per node id (registration order, fixed after load).
 local field_index = {}
 for index, id in ipairs(graph.node_ids) do field_index[id] = index end
-local function node_field(id)
+function graph.node_field(id)
 	return "grug_graph_node_" .. field_index[id]
 end
 
 -- One node: its state (a key of TALENT_NODE_STYLES, or "selected"), field
 -- and formspec part (the button, the rank beside an icon, the tooltip).
-local function node_formspec(view, def, rect)
-	local field = node_field(def.id)
+local function node_formspec(viewer, view, def, rect)
+	local field = graph.node_field(def.id)
 	local rank = view.ranks[def.id] or 0
 	local reason = graph.spend_refusal(def.class, view.ranks, def.id, view.budget)
 	local state = view.selected == def.id and "selected"
 		or not reason and "buyable" or rank >= def.ranks and "maxed"
 		or rank > 0 and "ranked" or "locked"
-	local tooltip = ("%s (%d/%d) — %s"):format(def.name, rank, def.ranks, def.description)
+	local tooltip = ("%s (%d/%d) — %s"):format(def.name, rank, def.ranks,
+		graph.node_text(viewer, def))
 	if reason and rank < def.ranks then
 		tooltip = tooltip .. " Locked: " .. reason
 	end
@@ -146,9 +177,9 @@ local function node_formspec(view, def, rect)
 	return state, field, table.concat(parts)
 end
 
-local function strip_text(view)
+local function strip_text(viewer, view)
 	local def = view.selected and graph.nodes[view.selected]
-	if not def then
+	if view.notice or not def then
 		return view.notice or view.hint or ""
 	end
 	local rank = view.ranks[def.id] or 0
@@ -156,14 +187,15 @@ local function strip_text(view)
 	local status = rank >= def.ranks and "Maximum rank reached." or reason or
 		view.buy_text or ""
 	return ("%s — rank %d/%d: %s  %s"):format(def.name, rank, def.ranks,
-		def.description, status)
+		graph.node_text(viewer, def), status)
 end
 
 -- The page's content in real coordinates. view = {trees (the class's
 -- trees), tab (index of the shown one), ranks ({node id = rank}, both
--- trees), budget, selected (node id or nil), notice, hint, buy_text,
+-- trees), budget, selected (node id or nil), notice (wins over the selected
+-- node's text), hint, buy_text,
 -- points_text, header (formspec for the header's right part: the respec
--- control, or the preview's note)}.
+-- control)}.
 function graph.page_content(viewer, view)
 	local page = graph.PAGE
 	local tree = view.trees[view.tab]
@@ -209,7 +241,7 @@ function graph.page_content(viewer, view)
 	end
 	local by_state, parts = {}, {}
 	for _, def in ipairs(tree.nodes) do
-		local state, field, part = node_formspec(view, def, layout.nodes[def.id])
+		local state, field, part = node_formspec(viewer, view, def, layout.nodes[def.id])
 		by_state[state] = by_state[state] or {}
 		table.insert(by_state[state], field)
 		parts[#parts + 1] = part
@@ -225,104 +257,6 @@ function graph.page_content(viewer, view)
 	end
 	fs[#fs + 1] = table.concat(parts)
 	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(page.x, page.strip_y,
-		page.w, page.strip_h, esc(strip_text(view)))
+		page.w, page.strip_h, esc(strip_text(viewer, view)))
 	return table.concat(fs)
 end
-
---
--- The admin preview (D3). Its state lives in this table, per viewer, until
--- the form closes or the viewer leaves: the class, the tab, the selected
--- node and the sample builds (both trees' in one table). It never touches
--- player meta, so grug_classes:talents is never written.
---
-local contexts = {}
-local PREVIEW_HINT = "Preview of the new talent trees, read only: each tab " ..
-	"shows its sample build. Click a talent to read it. D, S, R, M, B: the " ..
-	"class's base hits; P: the pool; K: the armor constant."
-
-local function preview_formspec(viewer, ctx)
-	local trees = graph.trees_of_class(ctx.class)
-	return "formspec_version[6]size[13.50,7.40]" .. graph.page_content(viewer, {
-		trees = trees, tab = ctx.tab, ranks = ctx.ranks, budget = graph.POINTS_MAX,
-		selected = ctx.selected, hint = PREVIEW_HINT,
-		points_text = ("Sample build: %d of %d points"):format(
-			graph.tree_points(ctx.ranks, trees[ctx.tab].id), graph.POINTS_MAX),
-		header = "label[9.90,0.45;" .. esc("Read-only preview") .. "]",
-	})
-end
-
-local function show_preview(viewer)
-	local ctx = contexts[viewer:get_player_name()]
-	core.show_formspec(viewer:get_player_name(), PREVIEW_FORM,
-		preview_formspec(viewer, ctx))
-end
-
--- Opens the preview of `class_id`'s trees; returns false plus a reason when
--- there are none.
-function graph.open_preview(viewer, class_id)
-	local trees = graph.trees_of_class(class_id)
-	if #trees == 0 then
-		return false
-	end
-	local ranks = {}
-	for _, tree in ipairs(trees) do
-		for id, rank in pairs(tree.example_ranks or {}) do ranks[id] = rank end
-	end
-	contexts[viewer:get_player_name()] = {class = class_id, tab = 1, ranks = ranks}
-	show_preview(viewer)
-	return true
-end
-
-core.register_chatcommand("talent_preview", {
-	params = "[mage|warrior|priest|scout]",
-	description = "Preview the new talent trees (read only)",
-	privs = {server = true},
-	func = function(name, param)
-		local viewer = core.get_player_by_name(name)
-		if not viewer then
-			return false, "You must be online."
-		end
-		local class_id = param:match("^%s*(%S+)") or grug_classes.get_class(viewer) or
-			graph.trees[graph.tree_ids[1]].class
-		if not graph.open_preview(viewer, class_id) then
-			return false, "No new trees for '" .. class_id ..
-				"'. Use mage, warrior, priest or scout."
-		end
-		return true
-	end,
-})
-
-core.register_on_player_receive_fields(function(viewer, formname, fields)
-	if formname ~= PREVIEW_FORM then
-		return false
-	end
-	local name = viewer:get_player_name()
-	local ctx = contexts[name]
-	if not ctx or not core.check_player_privs(name, {server = true}) then
-		return true
-	end
-	if fields.quit then
-		contexts[name] = nil
-		return true
-	end
-	local trees = graph.trees_of_class(ctx.class)
-	for index in ipairs(trees) do
-		if fields["grug_graph_tab_" .. index] then
-			ctx.tab, ctx.selected = index, nil
-			show_preview(viewer)
-			return true
-		end
-	end
-	for _, def in ipairs(trees[ctx.tab].nodes) do
-		if fields[node_field(def.id)] then
-			ctx.selected = def.id
-			show_preview(viewer)
-			return true
-		end
-	end
-	return true
-end)
-
-core.register_on_leaveplayer(function(viewer)
-	contexts[viewer:get_player_name()] = nil
-end)
