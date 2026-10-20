@@ -521,7 +521,7 @@ skip its due steps.
   `tools/r45_ms/portable_test.lua`, 0.47.0's `tools/r47_ms/run.sh` with
   `tools/r47_ms/portable_test.lua`, 0.48.0's `tools/r48_bags/run.sh` with
   `tools/r48_bags/portable_test.lua`, 0.53.0's `tools/r53_ms/run.sh` with
-`tools/r53_ms/portable_test.lua` (§5.8). A tool run on a world before a
+  `tools/r53_ms/portable_test.lua` (§5.8). A tool run on a world before a
   step also runs every later declared step, so an older step's exact checks
   read a copy migrated by that step alone (the tool in-process, pinned to its
   checkout), and the mechanism's checks leave the declared steps' markers

@@ -248,7 +248,7 @@ def scenario(run):
     dump_after = it.dump(w)
     it.world_diff(run, "tool_0.48.0", dump_before, dump_after)
     changed = sorted(set(dump_before) ^ set(dump_after))
-    check("step", "nothing else changed: the three meta rows and the record",
+    check("step", "nothing else changed: the characters' meta rows (the markers) and the record",
           changed and all(re.match(r"'meta' \| '(hoarder|light|sleeper)' \|", line)
                           or line.startswith("'storage' | 'grug_core' | 'world_version' |")
                           for line in changed), json.dumps(changed[:6]))
