@@ -105,7 +105,7 @@ end
 ------------------------------------------------------------------------------
 -- The sandbox: vector, stacks, players.
 ------------------------------------------------------------------------------
-vector = {}
+local vector = {}
 function vector.new(x, y, z)
 	if type(x) == "table" then return {x = x.x, y = x.y, z = x.z} end
 	return {x = x or 0, y = y or 0, z = z or 0}
@@ -907,7 +907,7 @@ do
 	dmg = R.opening.proc_swing(o, back, ctx)
 	near(dmg, m * 1.80, "K6 from behind: 1.80 M, no Turn the Blade")
 	cast(o, "parry")
-	local post
+	local post, _
 	dmg, _, post = R.opening.proc_swing(o, front, ctx)
 	near(dmg, m * (1.80 + 0.20), "K6 in Parry's window: 1.80 M plus Turn the Blade")
 	check(GC.get_window(o, "parry") ~= nil, "K6 ... the preparation spends nothing")
@@ -1166,7 +1166,6 @@ do
 end
 
 if failures > 0 then
-	print(("R53 SCOUT PORTABLE FAIL %d of %d checks"):format(failures, checks))
-	os.exit(1)
+	error(("R53 SCOUT PORTABLE FAIL %d of %d checks"):format(failures, checks), 0)
 end
 print("R53 SCOUT PORTABLE PASS checks=" .. checks)
