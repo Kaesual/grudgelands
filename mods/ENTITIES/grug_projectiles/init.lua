@@ -184,7 +184,9 @@ local function orient_to_velocity(object, velocity)
 end
 
 -- params = {owner=PlayerRef, origin=vector, direction=vector, data=table,
---           speed=number?, max_distance=number?}. The ephemeral lock retains
+--           speed=number?, max_distance=number?, sound_launch=event?}.
+-- `sound_launch` replaces the definition's launch cue for this one launch
+-- (Round 53: Cold Spark and Flame Lance on a shared projectile). The ephemeral lock retains
 -- exact runtime identities; only initialization data passes through serialization.
 local function spawn_one(id, params)
 	local def = definitions[id]
@@ -255,7 +257,8 @@ local function spawn_one(id, params)
 		return false
 	end
 	debug_event(owner_name, "spawn", id, speed, max_distance)
-	if def.sound_launch then grug_sounds.play(def.sound_launch, owner) end
+	local launch_cue = params.sound_launch or def.sound_launch
+	if launch_cue then grug_sounds.play(launch_cue, owner) end
 	return object
 end
 

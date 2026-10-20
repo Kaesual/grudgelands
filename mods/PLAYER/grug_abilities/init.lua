@@ -818,14 +818,19 @@ local ability_on_secondary_use_now = wielded_now(ability_on_secondary_use)
 -- abilities sound through their projectile's launch and hit
 -- (grug_projectiles.register); "weapon" skills are swings: their tool plays
 -- the swing into the air on the client and the hit sounds by weapon kind
--- (grug_core.melee_hit_sound); "silent" is the user's choice (Blink, Sprint).
+-- (grug_core.melee_hit_sound); "silent" is the user's choice (Sprint; Blink
+-- until Round 53).
 -- tools/r34_s1b/portable_test.lua checks every registered ability is here.
 -- Round 53 (round53-plan.md K6): the new skills' rows come before the class
--- lanes register them. A new projectile sounds through a shipped lane-hook
--- pair unless a cue was picked (Fiery Spark, Cold Spark and Flame Lance the
--- fireball's, True Draw, Split Shot and Arrowfall the arrow's); a new cast
--- plays its pick from the listening page (tools/r53_sks), else that page's
--- proposal 1, a shipped cue.
+-- lanes register them, from the user's assignments (tools/r53_sks
+-- assignments.json): a pick ships as a cue of its own (cast_<id>), a
+-- "shipped" choice keeps that cue. A new projectile sounds through its
+-- projectile (Fiery Spark the fireball's pair, Cold Spark and Flame Lance
+-- their own launches cold_spark_launch and flame_lance_launch with the
+-- fireball's hit; True Draw and Split Shot the arrow's pair); Arrowfall
+-- has a cast cue. The impacts (meteor_impact, fire_rain_impact,
+-- winter_field_impact, censure_impact, arrowfall_impact) are the class
+-- kits' to play.
 grug_abilities.CAST_SOUNDS = {
 	strike = "weapon", mighty_blow = "weapon", hamstring = "weapon",
 	opening = "weapon", retort = "weapon", broadstroke = "weapon",
@@ -833,24 +838,25 @@ grug_abilities.CAST_SOUNDS = {
 	fireball = "projectile", loose = "projectile", snare_shot = "projectile",
 	pinning_shot = "projectile", fiery_spark = "projectile",
 	cold_spark = "projectile", flame_lance = "projectile",
-	true_draw = "projectile", split_shot = "projectile", arrowfall = "projectile",
+	true_draw = "projectile", split_shot = "projectile",
 	-- Warrior.
 	charge = "cast_charge", taunt = "cast_taunt", hold_ground = "cast_guard",
-	bellow = "cast_taunt", unbroken = "cast_guard", ruination = "cast_guard",
+	bellow = "cast_taunt", unbroken = "cast_unbroken", ruination = "cast_ruination",
 	-- Mage: frost, the arcane blink, fire.
 	ice_nova = "cast_ice_nova", glacial_ward = "cast_frost_ward",
-	blink = "silent", cinderfall = "cast_cinderfall",
-	ice_wave = "cast_ice_nova", rime_mantle = "cast_frost_ward",
-	winter_field = "cast_ice_nova", meteor = "cast_cinderfall",
-	fire_rain = "cast_cinderfall",
+	blink = "cast_blink", cinderfall = "cast_cinderfall",
+	ice_wave = "cast_ice_wave", rime_mantle = "cast_rime_mantle",
+	winter_field = "cast_winter_field", meteor = "cast_cinderfall",
+	fire_rain = "cast_fire_rain",
 	-- Priest: holy, healing, the shield, shadow.
 	smite = "cast_holy", heal = "cast_heal", mend = "cast_heal",
 	shield_spell = "cast_shield", word_of_ruin = "cast_shadow",
-	hearten = "cast_heal", haven = "cast_heal", rebuke = "cast_holy",
-	censure = "cast_holy", final_word = "cast_holy",
+	hearten = "cast_heal", haven = "cast_haven", rebuke = "cast_holy",
+	censure = "cast_holy", final_word = "cast_final_word",
 	-- Scout.
-	sidestep = "cast_evade", sprint = "silent", parry = "cast_evade",
-	flourish = "cast_evade", close_dance = "cast_evade",
+	sidestep = "cast_evade", sprint = "silent", parry = "cast_parry",
+	flourish = "cast_flourish", close_dance = "cast_close_dance",
+	arrowfall = "cast_arrowfall",
 }
 
 -- The pose clip each skill plays when it really fires (Round 40, round40-plan

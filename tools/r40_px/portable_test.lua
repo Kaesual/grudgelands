@@ -539,6 +539,18 @@ do
 	reset_played()
 	check(grug_projectiles.spawn("arrow", launch(nil)), "B a launch without a trail flies")
 	eq(played_ids(), "", "B a launch without a trail plays nothing")
+	-- Round 53: a launch may name its own launch cue (Cold Spark and Flame
+	-- Lance), else the definition's plays.
+	local cues = {}
+	grug_sounds.play = function(event) cues[#cues + 1] = event end
+	grug_projectiles.register("cued", {speed = 40, max_distance = 25, on_hit = function() end,
+		sound_launch = "fireball_launch"})
+	grug_projectiles.spawn("cued", launch(nil))
+	local own = launch(nil)
+	own.sound_launch = "cold_spark_launch"
+	grug_projectiles.spawn("cued", own)
+	eq(table.concat(cues, ","), "fireball_launch,cold_spark_launch",
+		"B a launch's own sound_launch replaces the definition's for that launch")
 	reset_played()
 	ray = MISS
 	check(not grug_projectiles.spawn("arrow", launch(TRAIL)), "B a launch with no target is refused")

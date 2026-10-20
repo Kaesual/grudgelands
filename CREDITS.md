@@ -63,14 +63,17 @@ Library" (https://opengameart.org/content/fantasy-sound-effects-library),
 licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/);
 converted to mono Ogg, cut and normalised: the level-up and quest-complete
 jingles, the crown and money cues, the Shield and Ice Nova spells, the
-dragon's growl, wind-up, death and wrath, and the goblin voices.
+dragon's growl, wind-up, death and wrath, the goblin voices, and the
+Ruination cast (`Spell_04`, `grug_sounds_cast_ruination.ogg`, Round 53).
 
 **p0ss** — CC BY-SA 3.0. "freeze2" from the "Spell Sounds Starter Pack" by
 p0ss (https://opengameart.org/content/spell-sounds-starter-pack), licensed
 under CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/);
 converted to mono Ogg, cut to 2.5 s, normalised (Glacial Ward,
-`grug_sounds_cast_frost_ward.ogg`). This modified file is shared under the
-same licence.
+`grug_sounds_cast_frost_ward.ogg`). "blessing2" from the same pack,
+converted to mono Ogg, cut and normalised (the Haven cast,
+`grug_sounds_cast_haven.ogg`, Round 53). These modified files are shared
+under the same licence.
 
 **celeron55 (Minetest Game)** — CC BY-SA 3.0. The lava-cooling hiss
 `default_cool_lava.1-3.ogg` of the Minetest Game `default` mod

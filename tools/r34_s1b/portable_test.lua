@@ -213,7 +213,8 @@ for _, file in ipairs(ABIL_FILES) do
 end
 check(projectiles >= 1, "A the kits register projectiles (" .. projectiles .. ")")
 check(cues.fireball == "projectile" and cues.loose == "projectile", "A fireball and Loose are projectiles")
-check(cues.blink == "silent" and cues.sprint == "silent", "A Blink and Sprint are silent by choice")
+-- Round 53: Blink has the user's pick (cast_blink, 2026-10-20); Sprint stays silent.
+check(cues.blink == "cast_blink" and cues.sprint == "silent", "A Blink's pick, Sprint silent by choice")
 
 ------------------------------------------------------------------------------
 -- H: the hit by weapon kind and the vendored patches.
@@ -292,7 +293,7 @@ end
 for _, event in ipairs(lane_hooks) do
 	check(EVENTS[event] ~= nil, "F hook has the user's pick: " .. event)
 end
-for _, name in ipairs({"crit", "cast_blink", "cast_sprint", "voice_crow_random"}) do
+for _, name in ipairs({"crit", "cast_sprint", "voice_crow_random"}) do
 	check(not hooks[name] and not EVENTS[name], "F silent by choice, no hook: " .. name)
 end
 check(EVENTS.hit_fist and EVENTS.hit_fist.name == "mobs_punch", "F the fist keeps mobs_punch")

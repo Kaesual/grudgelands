@@ -468,9 +468,42 @@ do
 	end
 	eq(G.SKILL_POSES.broadstroke, "swing", "K6 Broadstroke swings")
 	for _, id in ipairs({"fiery_spark", "cold_spark", "flame_lance", "true_draw",
-			"split_shot", "arrowfall"}) do
+			"split_shot"}) do
 		eq(G.CAST_SOUNDS[id], "projectile", "K6 " .. id .. " sounds through its projectile")
 	end
+	-- The user's assignments (tools/r53_sks/assignments.json): a "shipped:"
+	-- choice keeps that cue, a pick is its own hook with an approved file.
+	local assignments = read("tools/r53_sks/assignments.json") or ""
+	local approved = read("tools/r53_hooks/approved.txt") or ""
+	local n = 0
+	local list = assignments:match('"assignments": (%b[])') or ""
+	for body in list:gmatch("%b{}") do
+		local ability = body:match('"ability": "([%w_]+)"')
+		local cue = body:match('"cue": "([^"]+)"')
+		local choice = body:match('"choice": "([^"]+)"')
+		if ability and cue and choice then
+			n = n + 1
+			local shipped = choice:match("^shipped:(.+)$")
+			local event = cue == "cast" and "cast_" .. ability or
+				cue == "impact" and ability .. "_impact" or
+				cue == "projectile launch" and ability .. "_launch" or nil
+			if shipped then
+				local want = shipped == "swing" and "weapon" or shipped
+				eq(G.CAST_SOUNDS[ability], want, "K6 " .. ability .. " keeps the shipped " .. shipped)
+			elseif check(event and hooks[event], "K6 the hook of " .. ability .. "'s " .. cue) then
+				if cue == "cast" then
+					eq(G.CAST_SOUNDS[ability], event, "K6 " .. ability .. " casts with its pick")
+				end
+				check(approved:find("grug_sounds_" .. event .. ".ogg, R53 SKS " .. choice, 1, true),
+					"K6 " .. event .. " is the approved file " .. choice)
+				local shipped_file = read("mods/CORE/grug_sounds/sounds/grug_sounds_" .. event .. ".ogg")
+				check(shipped_file ~= nil and shipped_file ==
+					read("tools/r53_sks/out/" .. choice .. ".ogg"),
+					"K6 grug_sounds_" .. event .. ".ogg is the pick's file unchanged")
+			end
+		end
+	end
+	eq(n, 26, "K6 the 26 assignments")
 end
 
 -- The family keys on the cast path.

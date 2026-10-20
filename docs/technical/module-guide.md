@@ -2592,7 +2592,9 @@ tools](#player-meta-read-by-external-tools).
     `grug_abilities.CAST_SOUNDS` in `try_cast` (every registered ability
     must be listed: a cue, `"weapon"`, `"projectile"` or `"silent"`),
     projectiles through `sound_launch`/`sound_hit` on
-    `grug_projectiles.register`, melee hits through
+    `grug_projectiles.register` (a spawn's own `params.sound_launch`
+    replaces the launch cue for that launch, Round 53), the round-K impacts
+    (`meteor_impact` ...) from the class kits, melee hits through
     `grug_core.melee_hit_sound(player)` (by `_grug_weapon_family`), voices
     through `voices.lua`, gear breaking through `grug_repair/runtime.lua`
     `announce_break` (Round 35: in the gear, tool and hoe wear paths, once
