@@ -495,7 +495,7 @@ rewrite records the WP40 model it replaced.
   channel belongs to its island's zone (its level 60) but carries no PvP rule.
   The two channels are roughly 200 water nodes wide between mainland and
   island land; the construction self-check (§7.1) requires at least 104. Each
-  shore contributes a 48-node flight-warning band (`mounts.md` §4.1). Its
+  shore contributes a 40-node flight-warning band (`mounts.md` §4.1). Its
   middle is protected water, so filling, bridging or tunnelling through it is
   impossible.
 - **Island approaches.** Each island keeps two boat approaches, one northern
