@@ -167,11 +167,11 @@ local function read_npcs(anchor)
 	local out = {}
 	for _, object in ipairs(core.get_objects_inside_radius(anchor, 120)) do
 		local entity = object:get_luaentity()
-		if entity and entity._grug_visual_skin and entity._grug_start and
+		if entity and entity._grug_visual_key and entity._grug_start and
 				entity._grug_socket then
 			out[entity._grug_start .. "/" .. tostring(entity._grug_socket)] = {
 				name = entity.name, seed = entity._grug_look_seed,
-				skin = entity._grug_visual_skin}
+				skin = (object:get_properties().textures or {})[1] or ""}
 		end
 	end
 	return out

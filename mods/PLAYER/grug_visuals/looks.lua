@@ -19,13 +19,13 @@
 --   2. eyes     the race's iris (undead: glow) mask in the chosen colour;
 --   3. hair     the hairstyle mask in the hair colour and its detail --
 --               dropped entirely under a helmet, which hides it;
---   (attire: a royal tabard; body armour: chest, legs, feet -- body boxes
---   only, no head pixel)
---   4. helmet   with the shared face window cut out, so the eyes and the
---               lower face stay visible through every helmet;
+--   (attire: a royal tabard; body armour: the inner paint of chest, legs
+--   and feet -- body regions only, no head pixel; the helmet is a box of the
+--   model since Round 54, docs/technical/armor-format.md §2, so the face
+--   stays the race's)
 --   (headwear: a king's crown)
---   5. feature  the race's lower-face feature (beard, tusks, ears, ...),
---               last, so it shows over the helmet.
+--   4. feature  the race's lower-face feature (beard, tusks, ears, ...),
+--               last.
 --
 
 local P = "grug_visuals_"
@@ -33,11 +33,9 @@ local P = "grug_visuals_"
 -- The shared layers. The skin mask covers the whole base body (head, torso,
 -- arms, legs); the dress in each race's body file covers the clothed part.
 local SKIN_MASK = P .. "skin_mask.png"
-local HELMET_WINDOW = P .. "helmet_window.png"
 local EYES_MASK = P .. "eyes_mask.png"
 
 grug_visuals.SKIN_MASK = SKIN_MASK
-grug_visuals.HELMET_WINDOW = HELMET_WINDOW
 
 -- The five categories in the order a look lists them, with the dialog's
 -- label for each.
@@ -163,6 +161,12 @@ local ROYAL = {
 	troll = {cloth = "#22768e", trim = "#cceeec"},
 }
 grug_visuals.ROYAL = ROYAL
+
+-- The royal armour (Round 54): kings, royal guards and Generals wear the
+-- guards' metal line with its zone A (cloth: tabard panels, padding) in the
+-- people's royal cloth colour and its zone B (fittings) in this gold, through
+-- the zone masks of the baked files (compose.lua).
+grug_visuals.ROYAL_GOLD = "#d8a838"
 
 -- A king's one fixed look per people (§2.1.6): the same face every time he
 -- appears, chosen to read as the eldest of his court.
@@ -327,9 +331,9 @@ end
 -- optional and every entry arrives as a finished overlay string from the
 -- caller (compose.lua):
 --   attire    clothing over the race dress (a royal tabard);
---   body      body armour, chest, legs, feet;
---   helmet    the head overlay -- the face window is cut from it here, so
---             anything inside it (lane B's colour layers) is cut as well;
+--   body      body armour, chest, legs, feet (their inner paint);
+--   helmet    true when a head piece is worn: the hair is dropped (the
+--             helmet itself is a box of the model, not a skin layer);
 --   headwear  over the head, under the feature (a king's crown).
 function grug_visuals.look_texture(race, look, parts)
 	local def = LOOKS[race]
@@ -349,9 +353,6 @@ function grug_visuals.look_texture(race, look, parts)
 		for _, overlay in ipairs(list) do
 			out[#out + 1] = overlay
 		end
-	end
-	if parts.helmet then
-		out[#out + 1] = "(" .. parts.helmet .. "^[mask:" .. HELMET_WINDOW .. ")"
 	end
 	for _, overlay in ipairs(parts.headwear or {}) do
 		out[#out + 1] = overlay

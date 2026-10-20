@@ -1,6 +1,6 @@
 {
-  "appearance_limits": {"json_max_bytes": 10240, "texture_max_bytes": 2048},
-  "appearance_version": 1,
+  "appearance_limits": {"json_max_bytes": 12288, "texture_max_bytes": 2048},
+  "appearance_version": 2,
   "classes": [
     {"icon": "mods/PLAYER/grug_classes/textures/grug_class_warrior.png", "id": "warrior", "name": "Warrior"},
     {"icon": "mods/PLAYER/grug_classes/textures/grug_class_mage.png", "id": "mage", "name": "Mage"},
@@ -36,7 +36,7 @@
     "grug_gear:chest_leather_heavy": {"inventory_image": "grug_gear_item_chest_leather_heavy.png", "name": "Heavy Jerkin"},
     "grug_gear:chest_leather_light": {"inventory_image": "grug_gear_item_chest_leather_light.png", "name": "Light Jerkin"},
     "grug_gear:chest_leather_nightscale": {"inventory_image": "grug_gear_item_chest_leather_nightscale.png", "name": "Nightscale Jerkin"},
-    "grug_gear:chest_leather_scaled": {"inventory_image": "grug_gear_item_chest_leather_scaled.png", "name": "Scaled Jerkin"},
+    "grug_gear:chest_leather_scaled": {"inventory_image": "grug_gear_item_chest_leather_scaled.png", "name": "Hardened Jerkin"},
     "grug_gear:chest_leather_sleek": {"inventory_image": "grug_gear_item_chest_leather_sleek.png", "name": "Sleek Jerkin"},
     "grug_gear:chest_metal_abyssal_steel": {"inventory_image": "grug_gear_item_chest_metal_abyssal_steel.png", "name": "Abyssal Steel Chestplate"},
     "grug_gear:chest_metal_bronze": {"inventory_image": "grug_gear_item_chest_metal_bronze.png", "name": "Bronze Chestplate"},
@@ -60,7 +60,7 @@
     "grug_gear:feet_leather_heavy": {"inventory_image": "grug_gear_item_feet_leather_heavy.png", "name": "Heavy Boots"},
     "grug_gear:feet_leather_light": {"inventory_image": "grug_gear_item_feet_leather_light.png", "name": "Light Boots"},
     "grug_gear:feet_leather_nightscale": {"inventory_image": "grug_gear_item_feet_leather_nightscale.png", "name": "Nightscale Boots"},
-    "grug_gear:feet_leather_scaled": {"inventory_image": "grug_gear_item_feet_leather_scaled.png", "name": "Scaled Boots"},
+    "grug_gear:feet_leather_scaled": {"inventory_image": "grug_gear_item_feet_leather_scaled.png", "name": "Hardened Boots"},
     "grug_gear:feet_leather_sleek": {"inventory_image": "grug_gear_item_feet_leather_sleek.png", "name": "Sleek Boots"},
     "grug_gear:feet_metal_abyssal_steel": {"inventory_image": "grug_gear_item_feet_metal_abyssal_steel.png", "name": "Abyssal Steel Sabatons"},
     "grug_gear:feet_metal_bronze": {"inventory_image": "grug_gear_item_feet_metal_bronze.png", "name": "Bronze Sabatons"},
@@ -84,7 +84,7 @@
     "grug_gear:head_leather_heavy": {"inventory_image": "grug_gear_item_head_leather_heavy.png", "name": "Heavy Hood"},
     "grug_gear:head_leather_light": {"inventory_image": "grug_gear_item_head_leather_light.png", "name": "Light Hood"},
     "grug_gear:head_leather_nightscale": {"inventory_image": "grug_gear_item_head_leather_nightscale.png", "name": "Nightscale Hood"},
-    "grug_gear:head_leather_scaled": {"inventory_image": "grug_gear_item_head_leather_scaled.png", "name": "Scaled Hood"},
+    "grug_gear:head_leather_scaled": {"inventory_image": "grug_gear_item_head_leather_scaled.png", "name": "Hardened Hood"},
     "grug_gear:head_leather_sleek": {"inventory_image": "grug_gear_item_head_leather_sleek.png", "name": "Sleek Hood"},
     "grug_gear:head_metal_abyssal_steel": {"inventory_image": "grug_gear_item_head_metal_abyssal_steel.png", "name": "Abyssal Steel Helm"},
     "grug_gear:head_metal_bronze": {"inventory_image": "grug_gear_item_head_metal_bronze.png", "name": "Bronze Helm"},
@@ -108,7 +108,7 @@
     "grug_gear:legs_leather_heavy": {"inventory_image": "grug_gear_item_legs_leather_heavy.png", "name": "Heavy Pants"},
     "grug_gear:legs_leather_light": {"inventory_image": "grug_gear_item_legs_leather_light.png", "name": "Light Pants"},
     "grug_gear:legs_leather_nightscale": {"inventory_image": "grug_gear_item_legs_leather_nightscale.png", "name": "Nightscale Pants"},
-    "grug_gear:legs_leather_scaled": {"inventory_image": "grug_gear_item_legs_leather_scaled.png", "name": "Scaled Pants"},
+    "grug_gear:legs_leather_scaled": {"inventory_image": "grug_gear_item_legs_leather_scaled.png", "name": "Hardened Pants"},
     "grug_gear:legs_leather_sleek": {"inventory_image": "grug_gear_item_legs_leather_sleek.png", "name": "Sleek Pants"},
     "grug_gear:legs_metal_abyssal_steel": {"inventory_image": "grug_gear_item_legs_metal_abyssal_steel.png", "name": "Abyssal Steel Greaves"},
     "grug_gear:legs_metal_bronze": {"inventory_image": "grug_gear_item_legs_metal_bronze.png", "name": "Bronze Greaves"},
@@ -375,7 +375,7 @@
     "b3d": "mods/PLAYER/grug_visuals/models/grug_visuals_character.b3d",
     "fps": 30,
     "gltf": "tools/web_data/model/grug_visuals_character.glb",
-    "textures": ["body", "cloak"]
+    "textures": ["body", "cloak", "armor", "weapon"]
   },
   "races": [
     {
@@ -990,12 +990,11 @@
     "engine_files": {"cracko": "crack_anylength.png"},
     "escaped": false,
     "file": {"charset": "a-z0-9_", "suffix": ".png"},
-    "max_depth": 4,
+    "max_depth": 3,
     "modifiers": {
       "colorize": ["color", "int"],
       "cracko": ["int", "int"],
       "hsl": ["int", "int", "int"],
-      "mask": ["file"],
       "multiply": ["color"],
       "opacity": ["int"],
       "verticalframe": ["int", "int"]

@@ -1,12 +1,11 @@
 --
 -- The pure half of grug_visuals (docs/research/wp13-character-visuals-contract.md
--- §2, docs/design/character_visuals.md).
+-- §2, docs/design/character_visuals.md, docs/technical/armor-format.md).
 --
--- ONE function composes what a humanoid on `character.b3d` looks like --
--- players and mobs alike -- so the two can never fight over the model's
--- texture list. It is pure, deterministic and cached by its own key string:
--- the same spec always yields the same table, and the same table is handed
--- back on a repeat call.
+-- ONE function composes what a humanoid looks like -- players and mobs alike
+-- -- so the two can never fight over the model's texture list. It is pure,
+-- deterministic and cached by its own key string: the same spec always yields
+-- the same table, and the same table is handed back on a repeat call.
 --
 -- CALLERS MUST TREAT THE RESULT AS READ-ONLY. It is the cache entry, not a
 -- copy; the engine copies `textures` into the object properties, which is the
@@ -74,9 +73,14 @@ for id, race in pairs(RACES) do
 end
 
 --
--- Armor overlays. Three independent art lines x four slots x six material
--- tiers. Tier identity is baked into the media so source silhouettes, trim and
--- material treatment stay aligned with each inventory icon.
+-- Armor art (Round 54, docs/technical/armor-format.md §2, §7). Armor is a set
+-- of low-poly boxes baked into the character model with one atlas texture: a
+-- worn piece draws its slot's ATLAS LAYER into the model's `armor` texture
+-- and, for chest, legs and feet, its INNER PAINT (the skin layer) onto the
+-- skin under the boxes. Three lines x four slots x six material tiers, baked
+-- by tools/r54_armor; the palettes carry each tier's colours, so no piece is
+-- tinted at runtime. A box a piece does not use is transparent in its layer,
+-- so the model never changes with the gear.
 --
 grug_visuals.SLOTS = {"head", "chest", "legs", "feet"}
 grug_visuals.LINES = {"cloth", "leather", "metal"}
@@ -88,22 +92,28 @@ local LINE_ART = {cloth = "cloth", leather = "leather", metal = "metal"}
 grug_visuals.ARMOR_RANK_LINE = ARMOR_RANK_LINE
 grug_visuals.LINE_ART = LINE_ART
 
-local OVERLAY = {}
+-- The model's armor and weapon slots when nothing is worn or shown: the
+-- engine's builtin transparent texture, like the cloak's "No cloak".
+grug_visuals.ARMOR_NONE = "blank.png"
+grug_visuals.WEAPON_NONE = "blank.png"
+
+-- ARMOR_ART[line][slot][bracket] = {atlas = file, skin = file or nil}: the
+-- baked files of a piece (armor-format.md §7, named by the grade's key; the
+-- head has no skin region, so no skin layer). Each has its enchant mask
+-- `<stem>_ench.png` next to it.
+local ARMOR_ART = {}
 for _, line in ipairs(grug_visuals.LINES) do
-	OVERLAY[line] = {}
+	ARMOR_ART[line] = {}
 	for _, slot in ipairs(SLOTS) do
-		OVERLAY[line][slot] = {}
+		ARMOR_ART[line][slot] = {}
 		for bracket, materials in ipairs(grug_gear.MATERIALS) do
-			local texture = "grug_visuals_" .. line .. "_" .. slot .. "_" ..
-				materials[line].key .. ".png"
-			if line == "metal" and materials[line].key == "silversteel" then
-				texture = texture .. "^[hsl:0:-90:5"
-			end
-			OVERLAY[line][slot][bracket] = texture
+			local stem = "grug_armor_" .. line .. "_" .. materials[line].key .. "_" .. slot
+			ARMOR_ART[line][slot][bracket] = {atlas = stem .. ".png",
+				skin = slot ~= "head" and stem .. "_skin.png" or nil}
 		end
 	end
 end
-grug_visuals.OVERLAY = OVERLAY
+grug_visuals.ARMOR_ART = ARMOR_ART
 
 --
 -- Bracket resolution. `bracket` wins; `level` is the shorthand a mob uses
@@ -178,7 +188,16 @@ end
 --     grug_visuals.compose{race = "dwarf", look = {tone = 2, ...},
 --         armor = {head = itemname_or_nil, chest = ..., legs = ..., feet = ...},
 --         weapon = itemname_or_nil}
---     -> {textures = {...}, visual_size = {x=,y=,z=}, weapon = ..., key = ...}
+--     -> {skin = ..., armor = ..., textures = {...}, visual_size = {x=,y=,z=},
+--         stature = ..., weapon = ..., key = ...}
+--
+-- `skin` is the 64x32 skin (the race look with the worn pieces' inner paint),
+-- `armor` the atlas texture of the worn pieces (ARMOR_NONE without any). The
+-- model's texture list is the caller's: a player wears skin, cloak, armor and
+-- weapon (apply.lua); `textures` is an entity's whole list -- skin, armor and
+-- an empty weapon card for an ARMORED NPC (a spec with `armor_line`, on the
+-- NPC model grug_visuals_npc.b3d), the skin alone for anybody else (on
+-- character.b3d).
 --
 -- A race is drawn from its look layers (looks.lua, round31-plan.md §2.1):
 --   * `look`        the five option indices (normalized here; missing means
@@ -198,15 +217,24 @@ end
 -- `armor.torso` is accepted as a spelling of `armor.chest` (the contract's §2
 -- signature says `torso`, every slot, group and list in the game says `chest`).
 --
--- THE SEAM FOR COLOUR LAYERS ON ARMOUR (lane B, round31-plan.md §2.2):
--- `armor_layers[slot]` is a modifier string appended INSIDE that piece's
--- parentheses -- "(<overlay>^<layers>)" -- so it colours that piece and
--- nothing under it, a helmet's layers are cut by the face window together
--- with the helmet, and the string is part of the cache key.
+-- ENCHANT COLOURS ON ARMOUR (round31-plan.md §2.2): `armor_enchant[slot] =
+-- {prefix = stat, suffix = stat}` colours that piece through the masks of
+-- its own files (grug_gear.enchant_layers), inside the piece's parentheses
+-- on the skin and on the atlas alike (enchant.lua builds it from the worn
+-- stacks). `armor_layers[slot]` is an extra skin-space string appended inside
+-- that piece's skin layer -- "(<skin layer>^<colours>^<layers>)" -- the War
+-- Commander's tabard over his chest piece. Both are part of the cache key.
+--
+-- ROYAL ARMOUR (Round 54): a `royal` spec that wears armour (kings, royal
+-- guards and Generals, in the guards' metal line) gets the royal variant --
+-- every piece's zone A in the people's royal cloth colour and zone B in
+-- ROYAL_GOLD, full strength through the same zone masks, under any enchant
+-- colours -- and a king wears no helmet box, so his face and crown show.
 --
 -- Composition is texture modifiers only, every armour piece in its own
--- parentheses (a piece's own `^[hsl` must never reach the skin under it), so
--- there is nothing per frame and nothing the web build has to do differently.
+-- parentheses (a piece's colours and cracks must never reach what lies under
+-- it), so there is nothing per frame and nothing the web build has to do
+-- differently.
 --
 local cache = {}
 local warned_race = {}
@@ -223,6 +251,42 @@ local function warn_unknown_race(race)
 end
 
 local ROYAL_KINDS = {guard = true, king = true}
+
+-- The royal variant's zone colours over one baked file: each zone's mask
+-- frame (`<stem>_ench.png`, frame 0 zone A, frame 1 zone B) shaded in the
+-- colour at full strength.
+local function zone_layers(file, a, b)
+	local mask = file:sub(1, -5) .. "_ench.png"
+	return "(" .. mask .. "^[verticalframe:2:0^[multiply:" .. a .. ")^(" ..
+		mask .. "^[verticalframe:2:1^[multiply:" .. b .. ")"
+end
+
+-- One piece's layer: the baked file with the piece's colours (and, on the
+-- skin, the extra layers), cracked as a whole when broken, in its own
+-- parentheses.
+local function piece_layer(file, piece, extra, royal)
+	local out = file
+	if royal then
+		out = out .. "^" .. zone_layers(file, royal.cloth, grug_visuals.ROYAL_GOLD)
+	end
+	if piece.prefix or piece.suffix then
+		local colours = grug_gear.enchant_layers(file, piece.prefix, piece.suffix)
+		if colours then
+			out = out .. "^" .. colours
+		end
+	end
+	if extra then
+		out = out .. "^" .. extra
+	end
+	if piece.broken then
+		out = grug_gear.broken_image(out)
+	end
+	return "(" .. out .. ")"
+end
+
+local function stat_or_nil(value)
+	return type(value) == "string" and value ~= "" and value or nil
+end
 
 function grug_visuals.compose(spec)
 	if type(spec) ~= "table" then
@@ -259,6 +323,7 @@ function grug_visuals.compose(spec)
 	local pieces = {}
 	local armor = type(spec.armor) == "table" and spec.armor or nil
 	local layers = type(spec.armor_layers) == "table" and spec.armor_layers or {}
+	local enchants = type(spec.armor_enchant) == "table" and spec.armor_enchant or {}
 	for index, slot in ipairs(SLOTS) do
 		local itemname = nil
 		if armor then
@@ -279,8 +344,17 @@ function grug_visuals.compose(spec)
 		if piece then
 			local extra = layers[slot]
 			piece.layers = type(extra) == "string" and extra ~= "" and extra or nil
+			local enchant = enchants[slot]
+			if type(enchant) == "table" then
+				piece.prefix = stat_or_nil(enchant.prefix)
+				piece.suffix = stat_or_nil(enchant.suffix)
+			end
 		end
 		pieces[index] = piece
+	end
+	-- A king wears no helmet (SLOTS[1]): his face and crown show.
+	if royal == "king" then
+		pieces[1] = nil
 	end
 
 	-- Weapon: a plain item name, or the family shorthand at the set's bracket.
@@ -300,12 +374,21 @@ function grug_visuals.compose(spec)
 	-- Semicolon, not a pipe: a hand-run bitwise-operator grep sweep of
 	-- docs/research/luanti-lua.md matches `"|"` even inside a string.
 	local key = (race or "-") .. ";" .. (skin or "-") .. ";" ..
-		(look and grug_visuals.look_string(look) or "-") .. ";" .. (royal or "-")
+		(look and grug_visuals.look_string(look) or "-") .. ";" .. (royal or "-") ..
+		";" .. (line_default and "npc" or "-")
 	for index = 1, #SLOTS do
 		local piece = pieces[index]
-		key = key .. ";" .. (piece and (piece.line .. piece.bracket ..
-			(piece.broken and "!" or "") .. (piece.layers and "+" .. piece.layers or ""))
-			or "-")
+		local part = "-"
+		if piece then
+			part = piece.line .. piece.bracket .. (piece.broken and "!" or "")
+			if piece.prefix or piece.suffix then
+				part = part .. "*" .. (piece.prefix or "") .. "," .. (piece.suffix or "")
+			end
+			if piece.layers then
+				part = part .. "+" .. piece.layers
+			end
+		end
+		key = key .. ";" .. part
 	end
 	key = key .. ";" .. (weapon or "-")
 
@@ -314,48 +397,48 @@ function grug_visuals.compose(spec)
 		return hit
 	end
 
-	-- Every piece in its own parentheses: "(overlay^layers)", cracked as a
-	-- whole when broken.
-	local strings = {}
+	-- Every piece in its own parentheses, on the atlas and (but the head) on
+	-- the skin.
+	local atlas, inner, helmet = {}, {}, false
+	local royal_colours = royal and grug_visuals.ROYAL[race] or nil
 	for index, slot in ipairs(SLOTS) do
 		local piece = pieces[index]
 		if piece then
-			local overlay = OVERLAY[LINE_ART[piece.line]][slot][piece.bracket]
-			if piece.layers then
-				overlay = overlay .. "^" .. piece.layers
+			helmet = helmet or slot == "head"
+			local art = ARMOR_ART[LINE_ART[piece.line]][slot][piece.bracket]
+			atlas[#atlas + 1] = piece_layer(art.atlas, piece, nil, royal_colours)
+			if art.skin then
+				inner[#inner + 1] = piece_layer(art.skin, piece, piece.layers, royal_colours)
 			end
-			if piece.broken then
-				overlay = grug_gear.broken_image(overlay)
-			end
-			strings[slot] = "(" .. overlay .. ")"
 		end
 	end
 
 	local texture
 	if skin then
 		texture = skin
-		for _, slot in ipairs(SLOTS) do
-			if strings[slot] then
-				texture = texture .. "^" .. strings[slot]
-			end
+		for _, layer in ipairs(inner) do
+			texture = texture .. "^" .. layer
 		end
 	else
 		local attire, headwear = nil, nil
 		if royal then
 			attire, headwear = grug_visuals.royal_attire(race, royal == "king")
 		end
-		local body = {}
-		for _, slot in ipairs(SLOTS) do
-			if slot ~= "head" and strings[slot] then
-				body[#body + 1] = strings[slot]
-			end
-		end
+		-- The helmet is a box (armor-format.md §2): under it the hair is
+		-- dropped, and the face stays the race's.
 		texture = grug_visuals.look_texture(race, look, {attire = attire,
-			body = body, helmet = strings.head, headwear = headwear})
+			body = inner, helmet = helmet, headwear = headwear})
 	end
+	local armor_texture = #atlas > 0 and table.concat(atlas, "^") or
+		grug_visuals.ARMOR_NONE
 
-	local result = {textures = {texture}, visual_size = size,
+	local result = {skin = texture, armor = armor_texture, visual_size = size,
 		stature = stature, weapon = weapon, key = key}
+	if line_default then
+		result.textures = {texture, armor_texture, grug_visuals.WEAPON_NONE}
+	else
+		result.textures = {texture}
+	end
 	cache[key] = result
 	return result
 end

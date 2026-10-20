@@ -10,12 +10,13 @@
 -- also what gives it its `_grug_home` and `_grug_camp_pos` — and with them
 -- the idle roam cap of §4a (aggro.lua).
 --
--- MESH: `character.b3d`, the engine/MTG player model, referenced BY NAME.
+-- MESH: `grug_visuals_npc.b3d` (Round 54), grug_visuals' NPC model: the
+-- engine/MTG player model `character.b3d` with the armor boxes, its texture
+-- list skin, armor, weapon card (grug_visuals.NPC_MODEL), referenced BY NAME.
 -- Luanti's media namespace is FLAT — every mod's media is served under its
--- bare file name, so a mob in grug_mobs may point at a mesh that physically
--- lives in mods/BASE/player_api/models without copying it (wp6_model_notes
--- §5: "Do not copy it into grug_mobs; just reference mesh = 'character.b3d'").
--- grug_mobs declares player_api in mod.conf `depends` so the relationship is
+-- bare file name, so a mob in grug_mobs may point at a mesh another mod ships
+-- without copying it (wp6_model_notes §5). grug_mobs declares player_api in
+-- mod.conf `depends` (the frames are character.b3d's) so the relationship is
 -- visible in the dependency graph, even though media transfer would work
 -- without it.
 --
@@ -75,14 +76,20 @@ function grug_mobs.bandit_def(description)
 		view_range = 14,
 
 		visual = "mesh",
-		mesh = "character.b3d",
+		-- The NPC model with the armor boxes (Round 54), a definition field so
+		-- every activation has it (mobs_redo restores textures, never the
+		-- mesh). A bandit kin without the composed look (the Poacher) sets
+		-- character.b3d back.
+		mesh = "grug_visuals_npc.b3d",
 		-- TWO texture sets, not two registrations: mobs_redo picks one at random
 		-- per spawned mob (api.lua:3689-3715, `def.textures[random(#def.textures)]`),
 		-- which is exactly wp6_model_notes §5's "second skin so a camp is not
 		-- four clones" — and it costs camps.lua nothing, it passes no texture.
+		-- The composed look replaces both; the armor and weapon slots of this
+		-- fallback are empty.
 		textures = {
-			{"grug_mobs_bandit_1.png"},
-			{"grug_mobs_bandit_2.png"},
+			{"grug_mobs_bandit_1.png", "blank.png", "blank.png"},
+			{"grug_mobs_bandit_2.png", "blank.png", "blank.png"},
 		},
 		-- WP13 character visuals: outlaws of every people, in the cloth line at the
 		-- bracket their camp's level buys, with a dagger in hand. The race is rolled

@@ -70,10 +70,12 @@
 --   * owner stays "" — nobody owns a guard, and mobs_redo's owner checks
 --     (general_attack, follow) must never match a real player name.
 --
--- MESH: `character.b3d`, the engine/MTG player model, referenced BY NAME —
--- Luanti's media namespace is flat, so a mob in grug_mobs may point at a mesh
--- that physically lives in mods/BASE/player_api/models without copying it
--- (wp6_model_notes §5). Same geometry/animation block as bandit.lua.
+-- MESH: `grug_visuals_npc.b3d` (Round 54), grug_visuals' NPC model: the
+-- engine/MTG player model's body and frames with the armor boxes, referenced
+-- BY NAME — Luanti's media namespace is flat, so a mob in grug_mobs may point
+-- at a mesh another mod ships (wp6_model_notes §5). Its texture list is skin,
+-- armor, weapon card (grug_visuals.NPC_MODEL). Same geometry/animation block
+-- as bandit.lua.
 --
 
 -- world.md §1: "elite city watch (60+)". The auto-promotion runs on the
@@ -141,7 +143,7 @@ end
 -- that settlement's race, any other guard (an outpost's) rolls a race of its
 -- faction once; each rolls its own look once (grug_visuals.npc_race and
 -- npc_look). The old per-faction PNGs remain the definition fallback for a
--- build without grug_visuals.
+-- build without grug_visuals, with empty armor and weapon slots.
 
 -- One def per faction; everything except description/texture/_grug_faction is
 -- shared, so the two guards can never drift apart.
@@ -219,8 +221,12 @@ local function guard_def(faction, description, texture)
 		-- No day_toggle / docile_by_day: a watch stands day AND night.
 
 		visual = "mesh",
-		mesh = "character.b3d",
-		textures = {{texture}},
+		-- The NPC model with the armor boxes (Round 54): a definition field,
+		-- so every activation has it (mobs_redo restores the textures from
+		-- staticdata, never the mesh). A guard whose visual drops the armor
+		-- (the royal guards, bosses.lua) sets character.b3d back.
+		mesh = "grug_visuals_npc.b3d",
+		textures = {{texture, "blank.png", "blank.png"}},
 		-- The player's own geometry (wp6_model_notes §5): the mesh measures
 		-- 17.0 units = 1.70 nodes at size 1, which is the player collisionbox
 		-- height.

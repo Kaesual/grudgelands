@@ -16,11 +16,12 @@
 --      loadout; a hand slot's item, broken state and enchant update it; no
 --      write when nothing changed (also across a rejoin); the wielded item
 --      never appears;
---   G  the closed texture grammar: every body (every race and look, bare and
---      under the worst armour), every cloak and every hand image (every item,
---      plain, enchanted, broken) parses under grug_visuals.APPEARANCE_TEXTURE,
---      names only files in its directories and stays within
---      APPEARANCE_TEXTURE_MAX; the worst-case JSON within APPEARANCE_JSON_MAX.
+--   G  the closed texture grammar: every body and armor atlas (every race
+--      and look, bare and under the worst armour; every piece), every cloak
+--      and every hand image (every item, plain, enchanted, broken) parses
+--      under grug_visuals.APPEARANCE_TEXTURE, names only files in its
+--      directories and stays within APPEARANCE_TEXTURE_MAX; the worst-case
+--      JSON within APPEARANCE_JSON_MAX.
 -- Prints the measured maxima and "R39 WM PORTABLE PASS checks=<n>", or the
 -- failures.
 
@@ -488,7 +489,7 @@ local function grammar_error(text)
 end
 
 -- One stored string: grammar and cap, longest per kind remembered.
-local longest = {body = "", cloak = "", hand = ""}
+local longest = {body = "", cloak = "", hand = "", armor = ""}
 local function texture_ok(kind, text, label)
 	local why = grammar_error(text)
 	if not check(why == nil, "G " .. label .. " parses: " .. tostring(why) .. " in " .. text) then
@@ -572,9 +573,10 @@ local function shape_ok(data, label)
 	check(type(data.cloak) == "string" and (data.cloak == "none" or book.cloak[data.cloak] ~= nil),
 		label .. " cloak id")
 	eq(data.visual_size.x, V.RACES[data.race].stature, label .. " visual size")
-	eq(count_keys(data.textures), 2, label .. " two textures")
+	eq(count_keys(data.textures), 3, label .. " three textures")
 	texture_ok("body", data.textures.body, label .. " body")
 	if data.textures.cloak ~= "none" then texture_ok("cloak", data.textures.cloak, label .. " cloak") end
+	if data.textures.armor ~= "none" then texture_ok("armor", data.textures.armor, label .. " armor") end
 	for slot, entry in pairs(data.slots) do
 		local hand = slot == "mainhand" or slot == "offhand"
 		check(hand or slot == "head" or slot == "chest" or slot == "legs" or slot == "feet",
@@ -605,6 +607,7 @@ do
 	eq(count_keys(data.slots), 0, "A empty: no slot")
 	eq(data.cloak, "none", "A empty: no cloak")
 	eq(data.textures.cloak, "none", "A empty: no cloak texture")
+	eq(data.textures.armor, "none", "A empty: no armor texture")
 
 	local dee = new_player("dee", "dwarf")
 	dee:get_meta():set_string("grug_visuals:look", "2,3,1,2,4")
@@ -615,7 +618,7 @@ do
 	eq(data.look.feature, 4, "A plain: the stored look")
 	eq(data.visual_size.y, 0.9, "A plain: dwarf stature")
 	eq(writes.dee[META], 1, "A plain: written once on join")
-	eq(data.textures.body, V.compose(V.player_spec(dee)).textures[1], "A plain: the composed body")
+	eq(data.textures.body, V.compose(V.player_spec(dee)).skin, "A plain: the composed body")
 	EXAMPLES.plain = text
 
 	-- Nothing changed: no write, also not across a rejoin.
@@ -659,6 +662,11 @@ do
 		"A full: the plain shield image")
 	eq(#data.slots.head.enchant, 0, "A full: plain pieces have no enchant")
 	eq(data.slots.head.broken, false, "A full: nothing broken")
+	local full = V.compose(V.player_spec(eve))
+	eq(data.textures.body, full.skin, "A full: the composed skin")
+	eq(data.textures.armor, full.armor, "A full: the composed armor atlas")
+	check(data.textures.armor:find(V.ARMOR_ART.metal.head[4].atlas, 1, true) ~= nil,
+		"A full: the helmet on the atlas")
 
 	-- Broken and enchanted armour; the hand slots change item, state, enchant.
 	local before = writes.eve[META]
@@ -666,8 +674,10 @@ do
 	data = shape_ok(stored(eve), "A broken")
 	eq(data.slots.head.broken, true, "A broken: the helmet")
 	eq(table.concat(data.slots.head.enchant, ","), "str,dex", "A enchanted: prefix, then suffix")
-	check(data.textures.body:find(grug_gear.BROKEN_MODIFIER, 1, true) ~= nil, "A broken: cracked body")
-	check(data.textures.body:find("_ench.png^[verticalframe", 1, true) ~= nil, "A enchanted: colour layers")
+	-- (the helmet is a box: its cracks and colours are on the atlas alone)
+	check(data.textures.armor:find(grug_gear.BROKEN_MODIFIER, 1, true) ~= nil, "A broken: cracked armor")
+	check(data.textures.armor:find("_ench.png^[verticalframe", 1, true) ~= nil, "A enchanted: colour layers")
+	check(data.textures.body:find(grug_gear.BROKEN_MODIFIER, 1, true) == nil, "A broken: the skin intact")
 	eq(writes.eve[META], before + 1, "A one equipment change, one write")
 	local function hand_change(list, stack, label)
 		local old = eve:get_meta():get_string(META)
@@ -793,8 +803,9 @@ local function body_of(race, look, pieces)
 		broken[slot] = piece.broken
 		worn[slot] = {name = piece.name, affixes = affixes}
 	end
-	return V.compose({race = race, look = look, armor = armor, armor_broken = broken,
-		armor_layers = V.armor_layers(worn)}).textures[1]
+	local result = V.compose({race = race, look = look, armor = armor, armor_broken = broken,
+		armor_enchant = V.armor_enchants(worn)})
+	return result.skin, result.armor
 end
 local worst = {}
 local base_length = #body_of("human", nil, {})
@@ -807,10 +818,13 @@ for _, slot in ipairs(V.SLOTS) do
 				for _, pair in ipairs(PAIRS) do
 					for _, broken in ipairs({false, true}) do
 						local piece = {name = name, prefix = pair[1], suffix = pair[2], broken = broken}
-						local body = body_of("human", nil, {[slot] = piece})
-						texture_ok("body", body, name .. " " .. tostring(pair[1]) .. "/" ..
-							tostring(pair[2]) .. (broken and " broken" or ""))
-						local length = #body - base_length
+						local body, armor = body_of("human", nil, {[slot] = piece})
+						local label = name .. " " .. tostring(pair[1]) .. "/" ..
+							tostring(pair[2]) .. (broken and " broken" or "")
+						texture_ok("body", body, label)
+						texture_ok("armor", armor, label .. " armor")
+						-- The worst piece of a slot: skin and atlas together.
+						local length = #body - base_length + #armor
 						if length > best_length then best, best_length = piece, length end
 					end
 				end
@@ -828,7 +842,9 @@ for race, def in pairs(V.LOOKS) do
 		for eyes = 1, #o.eyes do for feature = 1, #o.feature do
 			local look = {tone = tone, hair = hair, style = style, eyes = eyes, feature = feature}
 			texture_ok("body", body_of(race, look, {}), race .. " bare")
-			texture_ok("body", body_of(race, look, worst_body_set), race .. " worst set")
+			local body, armor = body_of(race, look, worst_body_set)
+			texture_ok("body", body, race .. " worst set")
+			texture_ok("armor", armor, race .. " worst set armor")
 			texture_ok("body", body_of(race, look, no_helmet), race .. " worst set, no helmet")
 			bodies = bodies + 3
 		end end
@@ -872,18 +888,19 @@ do
 	local json = V.appearance_json({v = V.APPEARANCE_VERSION, race = longest_race,
 		look = {tone = 10, hair = 10, style = 10, eyes = 10, feature = 10},
 		cloak = longest_cloak_id, visual_size = {x = 1.12, y = 1.12, z = 1.12},
-		textures = {body = longest.body, cloak = longest.cloak}, slots = slots})
+		textures = {body = longest.body, cloak = longest.cloak, armor = longest.armor},
+		slots = slots})
 	local ok = pcall(json_decode, json)
 	check(ok, "G the worst-case JSON parses")
-	local textures = #longest.body + #longest.cloak + 2 * #longest.hand
+	local textures = #longest.body + #longest.cloak + #longest.armor + 2 * #longest.hand
 	check(#json <= V.APPEARANCE_JSON_MAX, "G the worst-case JSON within APPEARANCE_JSON_MAX")
-	eq(V.APPEARANCE_JSON_MAX, 4 * V.APPEARANCE_TEXTURE_MAX + V.APPEARANCE_JSON_OVERHEAD,
-		"G APPEARANCE_JSON_MAX is four texture caps and the overhead")
+	eq(V.APPEARANCE_JSON_MAX, 5 * V.APPEARANCE_TEXTURE_MAX + V.APPEARANCE_JSON_OVERHEAD,
+		"G APPEARANCE_JSON_MAX is five texture caps and the overhead")
 	check(#json - textures <= V.APPEARANCE_JSON_OVERHEAD,
 		"G the overhead within the fixed allowance")
-	print(("measured: body %d, cloak %d, hand %d bytes (cap %d); JSON %d bytes, %d outside "
-		.. "the texture strings (cap %d); depth %d; %d bodies, %d hand items"):format(
-		#longest.body, #longest.cloak, #longest.hand, V.APPEARANCE_TEXTURE_MAX, #json,
+	print(("measured: body %d, armor %d, cloak %d, hand %d bytes (cap %d); JSON %d bytes, %d "
+		.. "outside the texture strings (cap %d); depth %d; %d bodies, %d hand items"):format(
+		#longest.body, #longest.armor, #longest.cloak, #longest.hand, V.APPEARANCE_TEXTURE_MAX, #json,
 		#json - textures, V.APPEARANCE_JSON_MAX, max_depth_seen, bodies, #hand_items))
 	local names = {}
 	for name in pairs(used_modifiers) do names[#names + 1] = name end

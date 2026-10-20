@@ -26,6 +26,8 @@ poacher._grug_spawn_check = function(pos)
 	end
 	return true
 end
+-- No armor without the composed look: the plain player model (Round 54).
+poacher.mesh = "character.b3d"
 poacher.textures = {{"grug_mobs_bandit_2.png^[multiply:#6b5948"}}
 poacher.attack_type = "dogshoot"
 poacher.arrow = "grug_mobs:arrow_entity"
