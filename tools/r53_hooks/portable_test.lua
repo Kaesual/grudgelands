@@ -12,6 +12,9 @@
 --      of their size;
 --   S  the new statuses and the seven readiness windows have status rows
 --      whose icons ship;
+--   U  in the same sandbox, every shipped skill without talents keeps
+--      main's cost, cooldown, range, tooltip head and cast clock; only a
+--      swing now holds casts back one weapon interval (K9);
 --   K  the REAL grug_abilities/init.lua with its whole dofile chain in a
 --      sandbox (the tools/r52_bench pattern), on probe definitions:
 --      the K6 rows of the 25 new skills (a family of their class, a pose
@@ -381,6 +384,54 @@ setfenv(assert(loadfile(ROOT .. "/mods/PLAYER/grug_abilities/init.lua")), env)()
 local G = env.grug_abilities
 check(G and G.registered.strike and input_api and melee_prepare and melee_finish,
 	"K the real init.lua loads with its kits, input and melee handlers")
+
+-- U: every shipped skill unchanged without talents, except K9. The oracle is
+-- main's (681913a9) tooltip head and cost, range and cooldown rules.
+do
+	local function old_prefix(player, def)
+		local cost_line
+		if def.cost.mana_percent then
+			cost_line = string.format("%g%% base mana", def.cost.mana_percent)
+			if player then
+				cost_line = cost_line .. " (" ..
+					G.mana_cost(player, def.cost.mana_percent) .. " mana)"
+			end
+		elseif def.cost.mana then
+			cost_line = def.cost.mana .. " mana"
+		elseif def.cost.rage then
+			cost_line = def.cost.rage .. " rage"
+		else
+			cost_line = "free"
+		end
+		local timing = def._grug_timing_line
+		if player and def.kind == "swing" and def.charge then
+			timing = G.effective_charge(player, def) .. " s charge"
+		elseif player and def.cooldown_talent and not def.cast_interval then
+			local cooldown = def.cooldown
+			timing = cooldown > 0 and string.format("%g s cooldown", cooldown) or "no cooldown"
+		end
+		return def.name .. " (" .. def._grug_owner_line .. ")\n" .. cost_line .. ", " .. timing .. "\n"
+	end
+	local shipped = 0
+	for id, def in pairs(G.registered) do
+		shipped = shipped + 1
+		local p = new_player("u_" .. id, def.class or "warrior")
+		local same = G.effective_cost(p, def)
+		local old = G.cost_for(p, def.cost, def.id)
+		check(same.mana == old.mana and same.rage == old.rage, "U " .. id .. ": the cost as on main")
+		eq(G.effective_cooldown(p, def), def.cooldown or 0, "U " .. id .. ": the cooldown as on main")
+		eq(G.get_range(p, def), def.range or 4, "U " .. id .. ": the range as on main")
+		eq(G.description_prefix(p, def), old_prefix(p, def), "U " .. id .. ": the tooltip head as on main")
+		eq(G.description_prefix(nil, def), old_prefix(nil, def), "U " .. id .. ": the item's static head")
+		if def.kind == "cast" then
+			check(def.occupied_cast == 0 and def.occupied_swing == "weapon",
+				"U " .. id .. ": a cast's clock as on main")
+		else
+			eq(def.occupied_cast, "weapon", "U " .. id .. ": a swing holds casts one interval (K9)")
+		end
+	end
+	check(shipped >= 20, "U the shipped kits load (" .. shipped .. ")")
+end
 
 local cast_log = {}
 local function probe(def)
