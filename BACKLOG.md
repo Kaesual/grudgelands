@@ -2669,6 +2669,15 @@ in the GUI test are in the
 - **Checks** (pre-existing): `check_lua.sh` sweep 5 flags `io.popen` and
   `os.exit` in older tool fixtures.
 
+- **0.52.1 ambience** (COAST reviews, no severity): the new `silent` argument
+  skips the two-pass hysteresis for any silent surface layer (a little
+  start/stop churn possible at a crags-at-night border); `sea_share` asks
+  the player column's water query again (memoised; reusing it needs the
+  class in the `atmosphere_zones.lua` column record); a beach next to the
+  Battlegrounds drops that override key too (docs name only ocean and
+  dragon islands); the r34_s2 runtime line labelled "(a capital)" tests
+  only the reach (its `capital_of` stub returns nil).
+
 ### Audit 2026-10 open questions
 
 **Open, for the user** (collected 2026-10-05 from the

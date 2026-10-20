@@ -459,3 +459,43 @@ check go to 0.52.1: at the coast and over the sea the bed blends into the
 surf (not over inland lakes; ordinary-water lakes and pools trigger the sea
 bed today, and its 7-node probe misses high coasts), and diving gets an
 underwater bed of its own (picked on a listening page; today silence).
+
+### Addendum 0.52.1 (2026-10-20)
+
+The user's GUI check of 0.52.0 passed; three ambience wishes became
+0.52.1 (compatible), two Opus lanes from main `89131375`:
+
+- **COAST** (`e55da56b`, review fix `6bb66df2`, round 3 `6f21c249`, the
+  coordinator's G1 value `68aff344`): sea or not comes from the map's water
+  query (`bay`, `belt`, `channel`, `open_sea`), sampled on 49 columns on a
+  4-node grid within 16 nodes and memoised for all players; a fourth layer
+  `sea` takes share ÷ 0.5 of the surface level, capped, the region bed the
+  rest; only the surf on sea columns; the beach biome is neutral (the
+  user, 2026-10-20: "okay"); a neutral biome drops an override key; calls
+  follow the region level. Underwater: `D.beds.underwater`, the user's two
+  picks as one pool. Start towns: `D.town_looks` by race from the race
+  palette's ground node, the nearest start anchor within 103 nodes while in
+  a town and not a capital. Independent review MERGE AFTER FIXES (F1), delta
+  MERGE, second delta MERGE AFTER FIXES (G1: reach 80 → 103, applied by the
+  coordinator as the reviewer specified). Measured pass cost on seed 12345,
+  16 walking stand-ins, fresh ground every pass: inland 35 → 71 µs, coast
+  33 → 70 µs (comparison only).
+- **UW** (`7df00d7c`): eight CC0 underwater beds on a listening page; the
+  user picked #2 (DCSFX, 366159) and #4 (Tim_Verberne, 482167)
+  ([picks](../../tools/r52_uw/picks.md)).
+
+**GUI checklist (0.52.1):**
+
+1. Walk from inland to the coast: the surf rises over the last ~16 nodes,
+   full at the water line; on a cliff top above the sea it is still heard;
+   flying high it fades with the bed.
+2. A boat or swimming on the sea: only the surf. On an inland lake, a
+   pond or a swamp pool: the landscape's bed, no surf.
+3. Dive: only the underwater bed; `/ambience debug` names which of the two
+   files plays; surfacing brings the bed back.
+4. The human start town (and Sunscar, the orc town): the look's bed
+   everywhere inside, corners included; outside the town the landscape's
+   bed. Hearthpine at night: the pine-hills look makes the wolf call
+   eligible there.
+
+Gates on main after the merges: see the round-end line below.

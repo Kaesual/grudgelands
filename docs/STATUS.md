@@ -27,9 +27,12 @@ notes.
   (2026-10-20, version 0.52.0, **compatible**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round52-plan.md#completion-2026-10-20);
   partial plans [ambience](planning/round52-ambience-plan.md) and
-  [class foundation](planning/round52-class-plan.md)). Not pushed
-  (pushed only on the user's word); origin/main stays at `dea1d163`
-  (0.51.0). From main `7813165e` (the three plans): SPLIT (`e2ab497f`),
+  [class foundation](planning/round52-class-plan.md)). Pushed
+  (`67941764`); the user's GUI check passed on 2026-10-20. **0.52.1**
+  (compatible, the [completion's addendum](planning/round52-plan.md#addendum-0521-2026-10-20)):
+  surf at the coast by the map, an underwater bed, start towns by their
+  look; lanes COAST and UW, COAST independently reviewed (two delta
+  reviews). Not pushed yet (pushed only on the user's word). From main `7813165e` (the three plans): SPLIT (`e2ab497f`),
   SND (`07c7c1bc`), CORE-B (`78895157`), GRAPH (`0fd6d6f5`), AMB
   (`a0d3c032`), CORE-A (`13b579b3`), AMB's file step (`87a4970c`), WFX
   (`890b977e`), the staged art of ARTA (`f18b2db2`) and ARTB (`a23cf211`),
@@ -40,7 +43,7 @@ notes.
   and the particle cards picked by the user. Main has 221 portable
   fixtures (6 new); `mods/` +4,509 −1,566 lines in 31 text files, 11 new
   Lua files, 160 media files. The declaration is
-  `{"schema": 3, "version": "0.52.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`;
+  `{"schema": 3, "version": "0.52.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0"], "map_reset_pass": "0.50.0"}`;
   a world of 0.51.0 moves on without a step. Round-end gates on main
   `fc37636d`: full fixtures 221/0, `check_upgrade.py` and
   `check_fresh_server.py` PASS, one headless boot PASS; synced. Open: the

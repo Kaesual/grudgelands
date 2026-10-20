@@ -12,6 +12,26 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.52.1 — surf at the coast, a sound under water, towns that sound like they look (2026-10-20)
+
+Three ambience wishes from the 0.52.0 check. **Compatible:** no map reset
+and no migration step; characters keep everything.
+
+- **Surf at the coast:** within about 16 nodes of the sea the landscape's
+  bed blends into the sea surf, full at the water line; on the water and
+  over the open sea only the surf plays. Whether water is sea now comes
+  from the map, so lakes, ponds, swamp pools and rivers inland never play
+  the surf, and a cliff top above the sea still hears it. Beaches no
+  longer play the surf by themselves (many lie far inland); they keep the
+  bed of the land around them. No owls or other calls over the sea.
+- **Under water:** diving plays a calm underwater bed (two recordings the
+  user picked, one at random per dive) and nothing else.
+- **Start towns:** a start town sounds like its own ground, whatever
+  landscape lies under it: the human, elf and dwarf towns the temperate
+  meadow and forest bed, the orc town the savanna, the troll town the
+  jungle, the undead town the blight.
+- `/ambience debug` shows the sea share, both levels and the playing file.
+
 ## 0.52.0 — ambience by landscape and height, the class rework's groundwork (2026-10-20)
 
 The background sounds follow the landscape under you and your height above
