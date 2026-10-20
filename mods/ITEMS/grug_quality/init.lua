@@ -1097,6 +1097,12 @@ local function raw_armor(player)
 	local talent = grug_classes.get_talent_bonus(player, "armor_percent_add")
 	local status = grug_core.status_modifier_sum(player, "armor")
 	local total = base + (affixes.armor_rating or 0) + equipment_bonus + talent + status
+	-- The Dwarf's "Thick Skin" (world.md §7): +5% of a positive total, here
+	-- so combat and the Character page read the same number.
+	local mult = grug_core.get_race_perk(player, "armor_rating_mult")
+	if mult and total > 0 then
+		total = total * mult
+	end
 	return total, {base = total, result = total}
 end
 

@@ -330,7 +330,7 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, crit_pos)
 	-- its captured visual waits for acceptance.
 	grug_core.emit_melee_crit(crit_pos)
 	-- Provocation memory (runtime only, self.temp is never persisted): the
-	-- undead night truce excludes players who attacked this mob.
+	-- undead truce excludes players who attacked this mob.
 	self.temp = self.temp or {}
 	self.temp.grug_provoked = self.temp.grug_provoked or {}
 	self.temp.grug_provoked[hitter:get_player_name()] = true
@@ -536,13 +536,6 @@ function grug_mobs.tick_speed_effects(self, dtime)
 	self._grug_slow_factor = nil
 end
 
--- Night window matching mobs_redo's day_toggle convention
--- (day = timeofday in (4500, 19500) of 24000).
-function grug_mobs.is_night()
-	local tod = core.get_timeofday()
-	return tod <= 0.1875 or tod >= 0.8125
-end
-
 --
 -- Put an object down so its FEET land on `pos`, not its origin.
 --
@@ -745,8 +738,9 @@ function grug_mobs.register_mob(name, def)
 	}
 	local faction = def._grug_faction
 	-- Race-perk key (world.md §7): players holding this perk are dropped
-	-- as targets at night unless they provoked the mob (undead passive).
-	local night_truce = def._grug_night_truce_perk
+	-- as targets, day and night, unless they provoked the mob (the undead
+	-- passive; the zombie family's base defs carry it, sub-types copy it).
+	local truce_perk = def._grug_truce_perk
 	if def._grug_spawn_domains then
 		spawn_domains[name] = grug_mobs.compile_spawn_domains(
 			def._grug_spawn_domains, name)
@@ -813,11 +807,10 @@ function grug_mobs.register_mob(name, def)
 		end
 	end
 
-	-- Does the night truce currently protect this player from this mob?
-	-- (truce perk race, night time, and the player has not provoked THIS mob)
+	-- Does the truce currently protect this player from this mob?
+	-- (truce perk race, and the player has not provoked THIS mob; no clock)
 	local function truce_active(self, player)
-		return grug_mobs.is_night()
-			and grug_core.get_race_perk(player, night_truce) ~= nil
+		return grug_core.get_race_perk(player, truce_perk) ~= nil
 			and not (self.temp and self.temp.grug_provoked
 				and self.temp.grug_provoked[player:get_player_name()])
 	end
@@ -936,12 +929,12 @@ function grug_mobs.register_mob(name, def)
 				-- A bespoke actor's own veto: a dragon ignores players
 				-- outside its arena (boss_dragons.lua).
 				return grug_mobs.gave_up_on(s, player)
-					or (night_truce and truce_active(s, player))
+					or (truce_perk and truce_active(s, player))
 					or faction_veto(s, player)
 					or (s._grug_target_veto ~= nil and s._grug_target_veto(s, player))
 			end
 		end
-		if night_truce then
+		if truce_perk then
 			-- Belt and braces for acquisition paths that bypass
 			-- general_attack (group_attack pile-ons, do_attack calls):
 			-- drop unprovoked truce players again.

@@ -126,6 +126,9 @@ local husk = common_ground({
 	clock = "night",
 	type = "monster",
 	_grug_min_level = 3,
+	-- The zombie family's undead truce (zombie.lua); every husk sub-type
+	-- copies this base def.
+	_grug_truce_perk = "zombie_truce",
 	-- In Sunscar from band 2 of the start-zone gradient (L4+, Round 24
 	-- ruling 26; the Husk quest is level 5).
 	_grug_spawn_check = function(pos)
