@@ -249,7 +249,9 @@ abyssal_steel; `offhand.grades()`).
 
 ## 9. Reference points
 
-From the current `params.json`, the same numbers as the page's own transforms (checked to 4 decimals). The
+From the contract's first `params.json` (2026-10-21, commit cf7c6ce3; `tools/r55_model/test_frames.py` keeps a
+copy, since the live file changes with the user's tuning), the same numbers as the page's own transforms
+(checked to 4 decimals). The
 shield at step 2 (size 1.0), at rest, the front's top centre (0, T, front(0)) and its point (0, B, front(0)):
 (10.849, 19.46, 0.855) and (10.849, 6.46, 0.855). With the Block key [90, 0, 0] (order XYZ) about the pivot
 (8, 13, 0), before the arm moves: (10.849, 12.145, 6.46) and (10.849, 12.145, −6.54), the top forwards, so

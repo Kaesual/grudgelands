@@ -183,17 +183,12 @@ ZFIGHT_MIN_EXTENT = 0.1 * PX   # a thinner overlap is a sub-texel sliver
 # +-4.5 from 23.5), 0.13 px outside the chest shell's sides where the shell
 # rises above the shoulders; a tasset's top corner, turned up by its 22.5
 # degrees, shares the arm's front and back planes (z +-2) for 0.19 px.
-# Round 55 (MODEL report, a question to the coordinator): the body card at
-# params.json's draft z -3 px lies 0.02 px behind the bracers' back faces
-# (z -3) and 0.23 px from the reinforce boxes' (z -3.25) where they overlap;
-# a body card at z <= -3.52 clears both, and these entries go once the
-# parameters do. The wings' bottom edge starts at the cloak's hem (y 8) and
-# now inside the cloak (the hinge inset of format doc §3.4), so for the
-# inset's 0.17 px it shares the plane of the cloak's bottom face: a sliver
-# seen only from below (also a question to the coordinator).
+# Round 55: the wings' bottom edge starts at the cloak's hem (y 8) and inside
+# the cloak (the hinge inset of format doc §3.4), so for the inset's 0.17 px it
+# shares the plane of the cloak's bottom face: a sliver seen only from below,
+# accepted by the coordinator. (The body card's draft z -3 px z-fought the
+# bracers and reinforce boxes; params.json moved it to -3.55, clear of both.)
 KNOWN_ZFIGHT = {("chest", "hat"), ("arm", "tasset"), ("arm_l", "tasset_l"),
-                ("back_body", "bracer"), ("back_body", "bracer_l"),
-                ("back_body", "reinforce"), ("back_body", "reinforce_l"),
                 ("cloak", "wing_l"), ("cloak", "wing_r")}
 
 # --- Round 55: the offhand ---------------------------------------------------------
