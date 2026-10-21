@@ -12,6 +12,30 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.55.0 — shields, spellbooks and the Supporter Cloak (2026-10-21)
+
+Your character now carries its offhand gear where everyone can see it.
+**Compatible:** no map reset and no migration step; your character takes
+the new look at its next login.
+
+- **Shields and spellbooks in the hand:** a Warrior holds the shield on
+  the left arm and raises it in front of the chest for Hold Ground and
+  Unbroken; it grows a little with the tier. Mages and Priests hold their
+  spellbook open in the left hand and lift it for frost and healing spells.
+  Enchant colours and cracks show on both, as on armor.
+- **The Scout's second weapon** hangs on the back as a flat image: the
+  bow while you fight with the blade, the blade while you shoot, on your
+  cloak when you wear one.
+- **New shield and spellbook art:** every tier has its own shield and
+  spellbook, in the hand and as a new icon; shields and spellbooks you
+  already own take the new look too.
+- **The Supporter Cloak**, the first cloak with wings, for players who
+  helped shape the game early on. It is not earned by playing: a server
+  admin grants it with `/achievement grant <player> supporter` (and takes
+  it back with `revoke`), even while the player is offline.
+- The server setting **"Show shields, spellbooks and back weapons on
+  characters"** turns the new look off again.
+
 ## 0.54.1 — glowing particle effects (2026-10-21)
 
 The particle effects get stronger colours and shine in the dark.
