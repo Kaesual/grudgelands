@@ -1,0 +1,31 @@
+{
+  "_doc": "Every number of the offhand look (docs/technical/offhand-format.md section 2). Skin pixels and degrees in the armor catalog frame at rest: x = the character's left, y up from the soles, z forward. Exported by the Offhand-Werkstatt; validate with `python3 tools/r55_offhand/offhand.py --check`.",
+  "format": 1,
+  "shield": {
+    "shape": {"width": 10, "height": 13, "top": 0.42, "shoulder": 0.45, "taper": 0.75, "ridge": 1.5, "thick": 1},
+    "boss": {"radius": 1.25, "height": 1, "lift": 0.15},
+    "sizes": [0.85, 0.92, 1.0],
+    "tier_step": {"1": 0, "2": 0, "3": 1, "4": 1, "5": 2, "6": 2},
+    "place": {"bone": "Offhand_Shield", "pos": [8.5, 14, 0], "rot": [0, 70, 0], "order": "YXZ"}
+  },
+  "book": {
+    "shape": {"width": 5.5, "height": 7, "pages": 2.5, "cover": 0.5, "open": 150, "inset": 0.4, "spine_min": 0.3},
+    "ribbon": {"x0": 0.05, "x1": 0.45, "below": 2.5, "into": 0.4, "half_depth": 0.2},
+    "place": {"bone": "Offhand_Book", "pos": [7.9886, 13.5792, 0], "rot": [0, 180, 45], "order": "YXZ"}
+  },
+  "back": {"bone": "Body", "size": 12, "pos": [0, 18, -3.4], "rot": [0, 180, 0], "order": "YXZ"},
+  "wings": {"width": 3, "angle": 20, "drop": 0, "thick": 0.35},
+  "bones": {
+    "Offhand_Shield": {
+      "pivot": [8, 13, 0],
+      "clips": {
+        "block": {"rot": [90, 0, 0], "order": "XYZ"},
+        "block_walk": {"rot": [90, 0, 0], "order": "XYZ"}
+      }
+    },
+    "Offhand_Book": {
+      "pivot": [8, 13, 0],
+      "clips": {}
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+ "shield": {
+  "T1": {
+   "palette": "bronze",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T2": {
+   "palette": "iron",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T3": {
+   "palette": "steel",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T4": {
+   "palette": "silversteel",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T5": {
+   "palette": "embersteel",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T6": {
+   "palette": "abyssal_steel",
+   "variant": "a",
+   "icon": "a"
+  }
+ },
+ "book": {
+  "T1": {
+   "palette": "patch",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T2": {
+   "palette": "woven",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T3": {
+   "palette": "heavy_cloth",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T4": {
+   "palette": "silkweave",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T5": {
+   "palette": "silk",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T6": {
+   "palette": "stormweave",
+   "variant": "a",
+   "icon": "a"
+  }
+ }
+}
