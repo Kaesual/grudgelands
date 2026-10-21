@@ -117,7 +117,8 @@ half at z < 0, page tops at +y. With p = pages / 2, c = cover, w = width, h = he
 
 "Turned" is a rotation about the y axis (order Y, §2.1) that opens the book: with open = 150 the halves stand
 75° each side of the spread's centre, which faces +x. The readable pages are `pages_f`'s back face and
-`pages_b`'s front face; seen by the reader, `pages_b` is the left page. 62 triangles.
+`pages_b`'s front face; seen by the reader (from +x, page tops up), `pages_f` is the left page and `pages_b` the
+right page. 62 triangles.
 
 ### 3.3 Back cards (`back`)
 
@@ -140,7 +141,7 @@ along the cloak's side in the cloak's middle plane (z = −2.524 px, the cloak b
 y = 24 − drop, **inset** into the cloak by e = thick / 2 · sin(angle) + 0.05 px: x = ±(3.905 − e) (3.905 px is the
 cloak's half-width of 2.05 model units; `offhand.wing_hinge_x`). The third corner lies `width` + e px outwards from
 the hinge's bottom. The wing is `thick` px thick about that plane (at most 0.65, inside the cloak's own 0.667 px):
-an outer face, a lining, and two edge quads (the bottom edge and the slanted edge; none along the hinge), 8
+an outer face, a lining, and two edge quads (the bottom edge and the slanted edge; none along the hinge), 6
 triangles. It is then turned about the hinge line by `angle` degrees so that its outer edge moves **forwards**,
 towards the body's side. The inset keeps the turned wing's hinge edge inside the cloak, so no gap opens between
 cloak and wing and the cloak's side face covers the seam (the user's report of 2026-10-21: a hinge exactly on the

@@ -14,7 +14,7 @@ the back face ACC_DARK (wood) with an ACC_LIGHT strap and glyph B. Texels
 wholly outside the outline stay transparent. Book: covers A_DARK outside with zone B
 corners, ACC_DARK elsewhere; pages M_HI with M_DARK lines on the readable
 face; spine ACC_DARK with a B_DARK band; ribbon A_LIGHT. Glyphs F (front
-cover), B (back cover) and L (the readable pages' left page) where a face is
+cover), B (back cover) and R (the reader's right page) where a face is
 big enough. Plus the 16 x 16 icons, a wings test texture and tiers.json.
 """
 import argparse
@@ -32,7 +32,7 @@ import armorlib as L  # noqa: E402
 
 C = {n: L.hex_rgb(h) + (255,) for _, n, h, _ in L.REFERENCE}
 GLYPH = {"F": ["###", "#..", "##.", "#..", "#.."], "B": ["##.", "#.#", "##.", "#.#", "##."],
-         "L": ["#..", "#..", "#..", "#..", "###"]}
+         "R": ["##.", "#.#", "##.", "#.#", "#.#"]}
 METAL_PALETTES = ("bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel")
 CLOTH_PALETTES = ("patch", "woven", "heavy_cloth", "silkweave", "silk", "stormweave")
 
@@ -115,7 +115,7 @@ def book_sheet(box_id, sheet):
         if outer:
             glyph(px, fx, fy, fw, fh, "F" if box_id == "cover_f" else "B")
         if readable and box_id == "pages_b":
-            glyph(px, fx, fy, fw, fh, "L")
+            glyph(px, fx, fy, fw, fh, "R")
     return im
 
 
