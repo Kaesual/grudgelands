@@ -202,9 +202,10 @@ def main():
             ok(opaque(lay, SHEETS[b]["rect"]) == cells, "book %s: %s opaque on its faces only" % (tier, b))
         for s in ("shield_0", "shield_1", "shield_2", "card"):
             ok(not opaque(lay, SHEETS[s]["rect"]), "book %s: %s transparent" % (tier, s))
-        # a left-out face has no texels: pages_f's right face would sit at the sheet's (0, D)
+        # a left-out face has no texels: pages_f's front face would sit at the sheet's (D, D)
         px, py = SHEETS["pages_f"]["rect"][:2]
-        ok(lay.getpixel((px, py + 1)) == (0, 0, 0, 0), "book %s: pages_f's left-out right face transparent" % tier)
+        d = SHEETS["pages_f"]["faces"]["top"][3]           # the box's depth in texels
+        ok(lay.getpixel((px + d, py + d)) == (0, 0, 0, 0), "book %s: pages_f's left-out front face transparent" % tier)
         # samples, derived from make_test_art's rules: the outer covers (A_DARK, B_LIGHT corners, glyph F or
         # B or its corner flag), the inner covers ACC_DARK, the readable pages (glyph R on pages_b), the
         # spine's B_DARK band, the ribbon A_LIGHT

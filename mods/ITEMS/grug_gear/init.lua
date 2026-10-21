@@ -130,16 +130,15 @@ grug_gear.MATERIALS = {
 		leather = {key = "nightscale", name = "Nightscale"}},
 }
 
--- Six bracket colours, published for the two consumers that colour one
--- shared image per tier with them: the spellbook's image below and the
--- profession recipes' metal rods (grug_professions/base_recipes.lua). Neither
--- weapons nor armour use it: every weapon family ships one sprite per
--- material (`tools/wp13/gen_weapon_ladder.py`), and the armour art carries
--- each tier's palette (Round 54, docs/technical/armor-format.md).
+-- Six bracket colours, published for the profession recipes' metal rods
+-- (grug_professions/base_recipes.lua), which colour one shared image per tier
+-- with them. Neither weapons nor armour use it: every weapon family ships one
+-- sprite per material (`tools/wp13/gen_weapon_ladder.py`), and the armour art
+-- carries each tier's palette (Round 54, docs/technical/armor-format.md). The
+-- spellbooks' icons have it baked in since Round 55 (book_image below).
 -- `[multiply:#ffffff` is a no-op, so the sixth tier shows the untinted image.
 grug_gear.BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a",
 	"#e8dcb0", "#ffffff"}
-local BRACKET_TINT = grug_gear.BRACKET_TINT
 
 -- Round 11 presentation is kept beside the catalog it dresses. These are
 -- licensed inventory sprites, not gameplay identities or recipe routing.
@@ -158,7 +157,14 @@ local SHIELD_IMAGE = {
 	"grug_gear_shield_embersteel.png^[colorize:#9f2418:112",
 	"grug_gear_shield_abyssal_steel.png",
 }
-local BOOK_IMAGE = "grug_gear_spellbook.png"
+-- One spellbook icon per tier, named by the metal grade (Round 55,
+-- docs/technical/offhand-format.md §7), so the finish step's painted icons
+-- drop in by file. Until then each is the shared `grug_gear_spellbook.png`
+-- with the old per-bracket tint (`[colorize:<BRACKET_TINT>:48`) baked in,
+-- written by tools/r55_game/book_icons.py, with the shared mask copied.
+local function book_image(metal)
+	return "grug_gear_spellbook_" .. metal.key .. ".png"
+end
 
 -- Item description (§6.1): name, item level, then the BASE stat line -- the
 -- number the item actually contributes, so a player can compare two pieces
@@ -595,7 +601,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			groupcaps={}, punch_attack_uses=0},
 		description = describe(metal.name, "Spellbook", br.ilvl,
 			"+" .. mana .. "% maximum Mana"),
-		inventory_image = BOOK_IMAGE .. "^[colorize:" .. BRACKET_TINT[bracket] .. ":48",
+		inventory_image = book_image(metal),
 		_grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1},
 		stack_max = 1, _grug_max_mana_percent = mana, _grug_ilvl = br.ilvl,

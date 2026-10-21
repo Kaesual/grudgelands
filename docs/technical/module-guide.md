@@ -2895,8 +2895,9 @@ tools](#player-meta-read-by-external-tools).
   `grug_armor_<line>_<grade>_<slot>_skin.png`) and `armor` (the worn pieces'
   atlas layers `grug_armor_<line>_<grade>_<slot>.png` overlaid, `ARMOR_NONE`
   = `blank.png` without any; file names in `grug_visuals.ARMOR_ART`), and
-  `textures`, an entity's whole list: `{skin, armor, WEAPON_NONE}` for a
-  spec with `armor_line` (the NPC model `grug_visuals.NPC_MODEL` =
+  `textures`, an entity's whole list: `{skin, armor, WEAPON_NONE,
+  OFFHAND_NONE, BACK_NONE}` for a spec with `armor_line` (the last two since
+  Round 55, blank; the NPC model `grug_visuals.NPC_MODEL` =
   `grug_visuals_npc.b3d`, set as the mesh of the guard, bandit and boss
   definitions), `{skin}` otherwise (`character.b3d`). A `royal` spec with
   armour gets the royal variant (zones A and B in `ROYAL[race].cloth` and
@@ -2906,9 +2907,26 @@ tools](#player-meta-read-by-external-tools).
   content digest of the list, not its input key, so a retuned colour reaches
   saved NPCs) differs from the entity's `_grug_visual_key` (saved in
   staticdata). `grug_visuals.preview(player)`
-  returns `{mesh = PLAYER_MODEL, textures = {skin, cloak, armor, weapon}}`
-  for the inventory view, the weapon the main hand's cosmetic item's image
-  (`hand_image`) or `blank.png`. NPCs keep
+  returns `{mesh = PLAYER_MODEL, textures = {skin, cloak, armor, weapon,
+  offhand, back, wings}}` for the inventory view, the weapon the main hand's
+  cosmetic item's image (`hand_image`) or `blank.png`. **The offhand look**
+  (Round 55, [offhand format](offhand-format.md)) sits behind the setting
+  `grug_offhand_visuals` (default false; `grug_visuals.OFFHAND_VISUALS`,
+  read once in `init.lua`, part of compose's key): off, the offhand, back
+  and wings slots are `blank.png` (`OFFHAND_NONE`, `BACK_NONE`,
+  `WINGS_NONE`). On, compose's `offhand_item`, `offhand_broken` and
+  `offhand_enchant` (from `player_spec`; `enchant.lua`'s
+  `offhand_enchant`) draw a shield's or spellbook's layer
+  `grug_offhand_<shield|book>_<grade>.png` (`offhand_appearance`, indexed
+  with the armour) into `result.offhand`, coloured and cracked as an armour
+  layer; a Scout's back card is the inventory image of the equipped weapon
+  the hand does not show (the Melee blade when the hand shows the bow -- a
+  bow skill, the bow item, the Character tab's weapon card -- else the bow;
+  `apply.lua`, rewritten by the wield poll when it changes, never stored),
+  drawn by `back_card(image, on_cloak)` into the 32 × 16 back slot's left
+  half (the cloak's card) when a cloak is worn, else the right half (the
+  body's card), escaped for `[combine`;
+  the wings come from the cloak source. NPCs keep
   `_grug_look_seed` in their staticdata; `npc_race(entity, faction, opts)`
   gives the settlement's race, or with `{mixed = true}` /
   `_grug_mixed_race` a race of the faction (fortress garrisons).
@@ -2931,7 +2949,7 @@ tools](#player-meta-read-by-external-tools).
   layer (the War Commander's tabard); NPC specs may carry `weapon_colors`
   (kings, Generals).
   Fixtures `tools/r31_a` (incl. the equal hitbox), `tools/r31_b`,
-  `tools/r54_game`; rules
+  `tools/r54_game`, `tools/r55_game`; rules
   [character_visuals.md](../design/character_visuals.md).
 
 ## Cloaks and achievements
@@ -2948,10 +2966,12 @@ tools](#player-meta-read-by-external-tools).
   panels clear the legs and checks the rest pose for z-fighting
   ([armor format](armor-format.md); fixture `tools/r54_model`). Armored NPCs
   wear the NPC model, the others `character.b3d`.
-  The player texture list is `{skin, cloak, armor, weapon}` (the weapon card
-  `blank.png` in the world): `grug_visuals.apply` writes it
+  The player texture list is `{skin, cloak, armor, weapon, offhand, back,
+  wings}` (the weapon card `blank.png` in the world, the last three Round
+  55's offhand look): `grug_visuals.apply` writes it
   with the cloak from the one `register_cloak_source(fn)`, `fn(player) ->
-  texture, selected id` (no cloak: builtin `blank.png`), the texture part
+  texture, selected id, wing texture` (no cloak: builtin `blank.png`; a
+  catalogue row's optional `wings`, none yet), the textures part
   of the redraw key, the id part of the stored appearance. `mods/PLAYER/
   grug_achievements` owns the rest: `core.lua` (pure: counters, tiers,
   unlocked cloaks and the selected cloak in player meta, i.e. per
@@ -2996,7 +3016,9 @@ tools](#player-meta-read-by-external-tools).
   | `grug_xp:level` | decimal integer string | `1` .. `60` (`grug_xp.MAX_LEVEL`); missing: level 1 | `grug_xp`: `set_int` in `set_xp` (every XP change; `add_xp` goes through it) and on every join, derived from `grug_xp:xp` with the current curve. XP stays the authority; `get_level` never reads this key. A realm moved across a curve change needs a new server or a migration step ([upgrade contract](upgrade-contract.md) §1) |
   | `grug_visuals:appearance` | compact JSON string | the format below; missing: no apply yet (the first join writes it) | `grug_visuals.apply` (`apply.lua`, built in the pure `appearance.lua`) |
 
-- **The appearance** (`APPEARANCE_VERSION` 2 since Round 54; version 1 had
+- **The appearance** (`APPEARANCE_VERSION` 3 since Round 55, which added
+  `textures.offhand` and `textures.wings`; a version 2 value is rebuilt at
+  the character's next join. Version 1 had
   no `textures.armor`, its body carried the old armour overlays, and it is
   rebuilt at the character's next join; until then a website shows it
   without armour, [web export](../../tools/web_data/README.md#version-1-appearances)):
@@ -3005,11 +3027,12 @@ tools](#player-meta-read-by-external-tools).
   Keys in this order, compact (no whitespace):
 
   ```json
-  {"v":2,"race":"dwarf","look":{"tone":2,"hair":3,"style":1,"eyes":2,"feature":4},
+  {"v":3,"race":"dwarf","look":{"tone":2,"hair":3,"style":1,"eyes":2,"feature":4},
    "cloak":"hunter_2","visual_size":{"x":0.9,"y":0.9,"z":0.9},
    "textures":{"body":"(grug_visuals_skin_mask.png^[multiply:#d8a07c)^grug_visuals_dwarf_body.png^…",
      "cloak":"grug_achievements_cloak_hunter_2.png",
-     "armor":"((grug_armor_leather_sleek_chest.png^(grug_armor_leather_sleek_chest_ench.png^[verticalframe:2:0^…))^[hsl:0:-80:-35^[cracko:1:4)"},
+     "armor":"((grug_armor_leather_sleek_chest.png^(grug_armor_leather_sleek_chest_ench.png^[verticalframe:2:0^…))^[hsl:0:-80:-35^[cracko:1:4)",
+     "offhand":"none","wings":"none"},
    "slots":{"chest":{"item":"grug_gear:chest_leather_sleek","broken":true,"enchant":["dex"]},
      "mainhand":{"item":"grug_gear:bow_embersteel","broken":false,
        "enchant":["dex","attack_speed_percent"],"pose":"bow",
@@ -3028,7 +3051,13 @@ tools](#player-meta-read-by-external-tools).
   `textures.armor` its third (the armour atlas of the worn pieces, `none`
   when nothing is worn: the game then draws `blank.png`); the fourth, the
   weapon card, is empty in the world and not stored (the main hand's image
-  is `slots.mainhand.image`). `slots` holds the equipment slots
+  is `slots.mainhand.image`). `textures.offhand` is the fifth (a shield's
+  or spellbook's layer, [offhand format](offhand-format.md) §5, §7) and
+  `textures.wings` the seventh (the cloak's wing texture), each `none` when
+  empty and always `none` while the setting `grug_offhand_visuals` is off;
+  the sixth, the Scout's back card, is not stored (it follows the hotbar):
+  a reader derives it as the bow (`slots.mainhand`), the blade
+  (`slots.offhand`) when the bow is shown in the hand. `slots` holds the equipment slots
   `head`, `chest`, `legs`, `feet`, `mainhand` (the Weapon slot; a Scout's
   bow) and `offhand` (a shield, a spellbook, a Scout's melee blade), each
   `{"item", "broken", "enchant"}`; an empty slot is absent. `enchant` lists
@@ -3043,24 +3072,24 @@ tools](#player-meta-read-by-external-tools).
   shows for an item whose own wield image is turned for the first-person
   hand), else the definition's `wield_image`, else the stack meta's
   `inventory_image`, else the definition's; enchant colours and the broken
-  look included. The offhand is stored though the game does not draw it beside
-  the weapon yet; the item a player holds (a pickaxe, a skill's slot item)
+  look included. The offhand slot is stored whether or not the offhand look
+  draws it; the item a player holds (a pickaxe, a skill's slot item)
   is never stored, and trinkets have no visual.
 - **When it is written:** `apply` runs on join, respawn, race and class
   choice, the stored look, every equipment change but pure wear and
   trinkets, a cloak choice and a dismount; it compares a small key
-  (compose's key, the cloak, the armour's item names and enchant ids, both
+  (compose's key, the cloak and its wings, the armour's item names and enchant ids, both
   hand slots' item, broken state, enchant ids and image) and builds the
   JSON only when that changed, then writes it only when it differs from the
   stored value. The wield poll never writes it.
 - **Guarantees** (asserted by `tools/r39_wm` over every look of every race
-  bare and under the worst armour, every cloak and every hand item plain,
-  enchanted and broken): every texture string is at most
+  bare and under the worst armour, every cloak, every hand item and every
+  offhand layer plain, enchanted and broken): every texture string is at most
   `grug_visuals.APPEARANCE_TEXTURE_MAX` = 2,048 bytes (measured worst case
-  1,164, a body; the armour atlas 1,062, a hand image 268, a cloak 44) and
-  the whole value at most `APPEARANCE_JSON_MAX` = 5 × 2,048 +
-  `APPEARANCE_JSON_OVERHEAD` 2,048 = 12,288 bytes (measured upper bound
-  3,819, 1,013 outside the texture strings). Every texture string parses under the **closed grammar**
+  1,164, a body; the armour atlas 1,062, a hand image 268, an offhand layer
+  258, a cloak 44) and the whole value at most `APPEARANCE_JSON_MAX` =
+  7 × 2,048 + `APPEARANCE_JSON_OVERHEAD` 2,048 = 16,384 bytes (measured
+  upper bound 4,145, 1,037 outside the texture strings). Every texture string parses under the **closed grammar**
   `grug_visuals.APPEARANCE_TEXTURE` (`appearance.lua`, the one definition):
 
   ```

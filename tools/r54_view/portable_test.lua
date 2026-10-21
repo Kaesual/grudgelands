@@ -236,20 +236,26 @@ if preview_src then
 		PLAYER_MODEL = apply_src:match('grug_visuals%.PLAYER_MODEL = "([^"]+)"'),
 		CLOAK_NONE = apply_src:match('grug_visuals%.CLOAK_NONE = "([^"]+)"'),
 		WEAPON_NONE = compose_src:match('grug_visuals%.WEAPON_NONE = "([^"]+)"'),
+		-- Round 55: the offhand look's slots (off here: the setting's default).
+		BACK_NONE = compose_src:match('grug_visuals%.BACK_NONE = "([^"]+)"'),
+		WINGS_NONE = compose_src:match('grug_visuals%.WINGS_NONE = "([^"]+)"'),
 	}
 	local saved = {}
 	for key, value in pairs(real) do saved[key], grug_visuals[key] = grug_visuals[key], value end
 	saved.compose, saved.player_spec = grug_visuals.compose, grug_visuals.player_spec
 	grug_visuals.player_spec = function() return {} end
-	grug_visuals.compose = function() return {skin = "skin.png", armor = "armor.png"} end
+	grug_visuals.compose = function()
+		return {skin = "skin.png", armor = "armor.png", offhand = "blank.png"}
+	end
 	-- cloak_source is the file's local: nil here, the "No cloak" path.
 	assert(loadstring(hand_src, "hand_image"))()
 	assert(loadstring(preview_src, "preview"))()
 	eq(real.PLAYER_MODEL, H.PREVIEW_MESH, "E the real seam's mesh is the stand-in's")
 	local rb = H.player("rb", "warrior", {16})
 	same_list(model_element(H.page(rb, "stats")).textures,
-		{"skin.png", real.CLOAK_NONE, "armor.png", "blank.png"},
-		"E the real seam bare-handed: skin, no cloak, armor, a blank card")
+		{"skin.png", real.CLOAK_NONE, "armor.png", "blank.png", "blank.png", real.BACK_NONE,
+			real.WINGS_NONE},
+		"E the real seam bare-handed: skin, no cloak, armor, a blank card, blank offhand look")
 	H.put(rb, "grug_weapon", 1, "grug_gear:sword_steel")
 	H.equipment_change(rb, "grug_weapon")
 	eq(model_element(rb.formspec or H.page(rb, "stats")).textures[4],

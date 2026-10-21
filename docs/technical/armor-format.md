@@ -62,7 +62,8 @@ In this order in the model's texture list:
 | `weapon` | per weapon | the weapon card in the hand (inventory view; transparent in the world) |
 
 An empty slot (no armor at all, no weapon shown) is `blank.png`, like the cloak today. The player model carries all
-four slots. Armored NPCs (a visual spec with an `armor_line`: guards and bandits; and, by the user's ruling of 2026-10-20,
+four slots. Round 55 appends the offhand, back and wings slots after them (NPCs: offhand and back;
+[offhand-format.md](offhand-format.md) §5). Armored NPCs (a visual spec with an `armor_line`: guards and bandits; and, by the user's ruling of 2026-10-20,
 kings, royal guards and generals in a royal variant of the guards' metal armor) use the generated **NPC model**:
 the same body and armor buffer with `skin`, `armor`, `weapon` (no cloak), built from a list of the boxes NPCs wear;
 that list is **every catalog box** for now (NPCs wear every tier). The royal variant colours zone A with the royal

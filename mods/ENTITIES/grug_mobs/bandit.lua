@@ -12,7 +12,8 @@
 --
 -- MESH: `grug_visuals_npc.b3d` (Round 54), grug_visuals' NPC model: the
 -- engine/MTG player model `character.b3d` with the armor boxes, its texture
--- list skin, armor, weapon card (grug_visuals.NPC_MODEL), referenced BY NAME.
+-- list skin, armor, weapon card, offhand, back (grug_visuals.NPC_MODEL; the
+-- last two blank since Round 55), referenced BY NAME.
 -- Luanti's media namespace is FLAT — every mod's media is served under its
 -- bare file name, so a mob in grug_mobs may point at a mesh another mod ships
 -- without copying it (wp6_model_notes §5). grug_mobs declares player_api in
@@ -85,11 +86,11 @@ function grug_mobs.bandit_def(description)
 		-- per spawned mob (api.lua:3689-3715, `def.textures[random(#def.textures)]`),
 		-- which is exactly wp6_model_notes §5's "second skin so a camp is not
 		-- four clones" — and it costs camps.lua nothing, it passes no texture.
-		-- The composed look replaces both; the armor and weapon slots of this
-		-- fallback are empty.
+		-- The composed look replaces both; the armor, weapon, offhand and back
+		-- slots of this fallback are empty.
 		textures = {
-			{"grug_mobs_bandit_1.png", "blank.png", "blank.png"},
-			{"grug_mobs_bandit_2.png", "blank.png", "blank.png"},
+			{"grug_mobs_bandit_1.png", "blank.png", "blank.png", "blank.png", "blank.png"},
+			{"grug_mobs_bandit_2.png", "blank.png", "blank.png", "blank.png", "blank.png"},
 		},
 		-- WP13 character visuals: outlaws of every people, in the cloth line at the
 		-- bracket their camp's level buys, with a dagger in hand. The race is rolled

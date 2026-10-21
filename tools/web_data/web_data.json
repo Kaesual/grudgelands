@@ -1,5 +1,5 @@
 {
-  "appearance_limits": {"json_max_bytes": 12288, "texture_max_bytes": 2048},
+  "appearance_limits": {"json_max_bytes": 16384, "texture_max_bytes": 2048},
   "appearance_v1": {
     "armor_files": ["grug_visuals_cloth_chest_heavy.png", "grug_visuals_cloth_chest_heavy_ench.png", "grug_visuals_cloth_chest_patch.png", "grug_visuals_cloth_chest_patch_ench.png", "grug_visuals_cloth_chest_silk.png", "grug_visuals_cloth_chest_silk_ench.png", "grug_visuals_cloth_chest_silkweave.png", "grug_visuals_cloth_chest_silkweave_ench.png", "grug_visuals_cloth_chest_stormweave.png", "grug_visuals_cloth_chest_stormweave_ench.png", "grug_visuals_cloth_chest_woven.png", "grug_visuals_cloth_chest_woven_ench.png", "grug_visuals_cloth_feet_heavy.png", "grug_visuals_cloth_feet_heavy_ench.png", "grug_visuals_cloth_feet_patch.png", "grug_visuals_cloth_feet_patch_ench.png", "grug_visuals_cloth_feet_silk.png", "grug_visuals_cloth_feet_silk_ench.png", "grug_visuals_cloth_feet_silkweave.png", "grug_visuals_cloth_feet_silkweave_ench.png", "grug_visuals_cloth_feet_stormweave.png", "grug_visuals_cloth_feet_stormweave_ench.png", "grug_visuals_cloth_feet_woven.png", "grug_visuals_cloth_feet_woven_ench.png", "grug_visuals_cloth_head_heavy.png", "grug_visuals_cloth_head_heavy_ench.png", "grug_visuals_cloth_head_patch.png", "grug_visuals_cloth_head_patch_ench.png", "grug_visuals_cloth_head_silk.png", "grug_visuals_cloth_head_silk_ench.png", "grug_visuals_cloth_head_silkweave.png", "grug_visuals_cloth_head_silkweave_ench.png", "grug_visuals_cloth_head_stormweave.png", "grug_visuals_cloth_head_stormweave_ench.png", "grug_visuals_cloth_head_woven.png", "grug_visuals_cloth_head_woven_ench.png", "grug_visuals_cloth_legs_heavy.png", "grug_visuals_cloth_legs_heavy_ench.png", "grug_visuals_cloth_legs_patch.png", "grug_visuals_cloth_legs_patch_ench.png", "grug_visuals_cloth_legs_silk.png", "grug_visuals_cloth_legs_silk_ench.png", "grug_visuals_cloth_legs_silkweave.png", "grug_visuals_cloth_legs_silkweave_ench.png", "grug_visuals_cloth_legs_stormweave.png", "grug_visuals_cloth_legs_stormweave_ench.png", "grug_visuals_cloth_legs_woven.png", "grug_visuals_cloth_legs_woven_ench.png", "grug_visuals_helmet_window.png", "grug_visuals_leather_chest_cured.png", "grug_visuals_leather_chest_cured_ench.png", "grug_visuals_leather_chest_heavy.png", "grug_visuals_leather_chest_heavy_ench.png", "grug_visuals_leather_chest_light.png", "grug_visuals_leather_chest_light_ench.png", "grug_visuals_leather_chest_nightscale.png", "grug_visuals_leather_chest_nightscale_ench.png", "grug_visuals_leather_chest_scaled.png", "grug_visuals_leather_chest_scaled_ench.png", "grug_visuals_leather_chest_sleek.png", "grug_visuals_leather_chest_sleek_ench.png", "grug_visuals_leather_feet_cured.png", "grug_visuals_leather_feet_cured_ench.png", "grug_visuals_leather_feet_heavy.png", "grug_visuals_leather_feet_heavy_ench.png", "grug_visuals_leather_feet_light.png", "grug_visuals_leather_feet_light_ench.png", "grug_visuals_leather_feet_nightscale.png", "grug_visuals_leather_feet_nightscale_ench.png", "grug_visuals_leather_feet_scaled.png", "grug_visuals_leather_feet_scaled_ench.png", "grug_visuals_leather_feet_sleek.png", "grug_visuals_leather_feet_sleek_ench.png", "grug_visuals_leather_head_cured.png", "grug_visuals_leather_head_cured_ench.png", "grug_visuals_leather_head_heavy.png", "grug_visuals_leather_head_heavy_ench.png", "grug_visuals_leather_head_light.png", "grug_visuals_leather_head_light_ench.png", "grug_visuals_leather_head_nightscale.png", "grug_visuals_leather_head_nightscale_ench.png", "grug_visuals_leather_head_scaled.png", "grug_visuals_leather_head_scaled_ench.png", "grug_visuals_leather_head_sleek.png", "grug_visuals_leather_head_sleek_ench.png", "grug_visuals_leather_legs_cured.png", "grug_visuals_leather_legs_cured_ench.png", "grug_visuals_leather_legs_heavy.png", "grug_visuals_leather_legs_heavy_ench.png", "grug_visuals_leather_legs_light.png", "grug_visuals_leather_legs_light_ench.png", "grug_visuals_leather_legs_nightscale.png", "grug_visuals_leather_legs_nightscale_ench.png", "grug_visuals_leather_legs_scaled.png", "grug_visuals_leather_legs_scaled_ench.png", "grug_visuals_leather_legs_sleek.png", "grug_visuals_leather_legs_sleek_ench.png", "grug_visuals_metal_chest_abyssal_steel.png", "grug_visuals_metal_chest_abyssal_steel_ench.png", "grug_visuals_metal_chest_bronze.png", "grug_visuals_metal_chest_bronze_ench.png", "grug_visuals_metal_chest_embersteel.png", "grug_visuals_metal_chest_embersteel_ench.png", "grug_visuals_metal_chest_iron.png", "grug_visuals_metal_chest_iron_ench.png", "grug_visuals_metal_chest_silversteel.png", "grug_visuals_metal_chest_silversteel_ench.png", "grug_visuals_metal_chest_steel.png", "grug_visuals_metal_chest_steel_ench.png", "grug_visuals_metal_feet_abyssal_steel.png", "grug_visuals_metal_feet_abyssal_steel_ench.png", "grug_visuals_metal_feet_bronze.png", "grug_visuals_metal_feet_bronze_ench.png", "grug_visuals_metal_feet_embersteel.png", "grug_visuals_metal_feet_embersteel_ench.png", "grug_visuals_metal_feet_iron.png", "grug_visuals_metal_feet_iron_ench.png", "grug_visuals_metal_feet_silversteel.png", "grug_visuals_metal_feet_silversteel_ench.png", "grug_visuals_metal_feet_steel.png", "grug_visuals_metal_feet_steel_ench.png", "grug_visuals_metal_head_abyssal_steel.png", "grug_visuals_metal_head_abyssal_steel_ench.png", "grug_visuals_metal_head_bronze.png", "grug_visuals_metal_head_bronze_ench.png", "grug_visuals_metal_head_embersteel.png", "grug_visuals_metal_head_embersteel_ench.png", "grug_visuals_metal_head_iron.png", "grug_visuals_metal_head_iron_ench.png", "grug_visuals_metal_head_silversteel.png", "grug_visuals_metal_head_silversteel_ench.png", "grug_visuals_metal_head_steel.png", "grug_visuals_metal_head_steel_ench.png", "grug_visuals_metal_legs_abyssal_steel.png", "grug_visuals_metal_legs_abyssal_steel_ench.png", "grug_visuals_metal_legs_bronze.png", "grug_visuals_metal_legs_bronze_ench.png", "grug_visuals_metal_legs_embersteel.png", "grug_visuals_metal_legs_embersteel_ench.png", "grug_visuals_metal_legs_iron.png", "grug_visuals_metal_legs_iron_ench.png", "grug_visuals_metal_legs_silversteel.png", "grug_visuals_metal_legs_silversteel_ench.png", "grug_visuals_metal_legs_steel.png", "grug_visuals_metal_legs_steel_ench.png"],
     "json_max_bytes": 10240,
@@ -7,7 +7,7 @@
     "texture_max_bytes": 2048,
     "version": 1
   },
-  "appearance_version": 2,
+  "appearance_version": 3,
   "classes": [
     {"icon": "mods/PLAYER/grug_classes/textures/grug_class_warrior.png", "id": "warrior", "name": "Warrior"},
     {"icon": "mods/PLAYER/grug_classes/textures/grug_class_mage.png", "id": "mage", "name": "Mage"},
@@ -147,12 +147,12 @@
     "grug_gear:shield_iron": {"inventory_image": "grug_gear_shield_iron.png^[hsl:0:-100:-12", "name": "Iron Shield"},
     "grug_gear:shield_silversteel": {"inventory_image": "grug_gear_shield_silversteel.png", "name": "Silversteel Shield"},
     "grug_gear:shield_steel": {"inventory_image": "grug_gear_shield_steel.png", "name": "Steel Shield"},
-    "grug_gear:spellbook_abyssal_steel": {"inventory_image": "grug_gear_spellbook.png^[colorize:#ffffff:48", "name": "Abyssal Steel Spellbook"},
-    "grug_gear:spellbook_bronze": {"inventory_image": "grug_gear_spellbook.png^[colorize:#8a7f6a:48", "name": "Bronze Spellbook"},
-    "grug_gear:spellbook_embersteel": {"inventory_image": "grug_gear_spellbook.png^[colorize:#e8dcb0:48", "name": "Embersteel Spellbook"},
-    "grug_gear:spellbook_iron": {"inventory_image": "grug_gear_spellbook.png^[colorize:#a89478:48", "name": "Iron Spellbook"},
-    "grug_gear:spellbook_silversteel": {"inventory_image": "grug_gear_spellbook.png^[colorize:#d8cc9a:48", "name": "Silversteel Spellbook"},
-    "grug_gear:spellbook_steel": {"inventory_image": "grug_gear_spellbook.png^[colorize:#c0b088:48", "name": "Steel Spellbook"},
+    "grug_gear:spellbook_abyssal_steel": {"inventory_image": "grug_gear_spellbook_abyssal_steel.png", "name": "Abyssal Steel Spellbook"},
+    "grug_gear:spellbook_bronze": {"inventory_image": "grug_gear_spellbook_bronze.png", "name": "Bronze Spellbook"},
+    "grug_gear:spellbook_embersteel": {"inventory_image": "grug_gear_spellbook_embersteel.png", "name": "Embersteel Spellbook"},
+    "grug_gear:spellbook_iron": {"inventory_image": "grug_gear_spellbook_iron.png", "name": "Iron Spellbook"},
+    "grug_gear:spellbook_silversteel": {"inventory_image": "grug_gear_spellbook_silversteel.png", "name": "Silversteel Spellbook"},
+    "grug_gear:spellbook_steel": {"inventory_image": "grug_gear_spellbook_steel.png", "name": "Steel Spellbook"},
     "grug_gear:staff_abyssal_steel": {"inventory_image": "grug_gear_item_staff_abyssal_steel.png", "name": "Abyssal Steel Staff"},
     "grug_gear:staff_bronze": {"inventory_image": "grug_gear_item_staff_bronze.png", "name": "Bronze Staff"},
     "grug_gear:staff_embersteel": {"inventory_image": "grug_gear_item_staff_embersteel.png", "name": "Embersteel Staff"},
@@ -274,27 +274,27 @@
       "wield_scale": {"x": 1, "y": 1, "z": 1}
     },
     "grug_gear:spellbook_abyssal_steel": {
-      "wield_image": "grug_gear_spellbook.png^[colorize:#ffffff:48",
+      "wield_image": "grug_gear_spellbook_abyssal_steel.png",
       "wield_scale": {"x": 1, "y": 1, "z": 1}
     },
     "grug_gear:spellbook_bronze": {
-      "wield_image": "grug_gear_spellbook.png^[colorize:#8a7f6a:48",
+      "wield_image": "grug_gear_spellbook_bronze.png",
       "wield_scale": {"x": 1, "y": 1, "z": 1}
     },
     "grug_gear:spellbook_embersteel": {
-      "wield_image": "grug_gear_spellbook.png^[colorize:#e8dcb0:48",
+      "wield_image": "grug_gear_spellbook_embersteel.png",
       "wield_scale": {"x": 1, "y": 1, "z": 1}
     },
     "grug_gear:spellbook_iron": {
-      "wield_image": "grug_gear_spellbook.png^[colorize:#a89478:48",
+      "wield_image": "grug_gear_spellbook_iron.png",
       "wield_scale": {"x": 1, "y": 1, "z": 1}
     },
     "grug_gear:spellbook_silversteel": {
-      "wield_image": "grug_gear_spellbook.png^[colorize:#d8cc9a:48",
+      "wield_image": "grug_gear_spellbook_silversteel.png",
       "wield_scale": {"x": 1, "y": 1, "z": 1}
     },
     "grug_gear:spellbook_steel": {
-      "wield_image": "grug_gear_spellbook.png^[colorize:#c0b088:48",
+      "wield_image": "grug_gear_spellbook_steel.png",
       "wield_scale": {"x": 1, "y": 1, "z": 1}
     },
     "grug_gear:staff_abyssal_steel": {
@@ -382,7 +382,7 @@
     "b3d": "mods/PLAYER/grug_visuals/models/grug_visuals_character.b3d",
     "fps": 30,
     "gltf": "tools/web_data/model/grug_visuals_character.glb",
-    "textures": ["body", "cloak", "armor", "weapon"]
+    "textures": ["body", "cloak", "armor", "weapon", "offhand", "back", "wings"]
   },
   "races": [
     {
@@ -959,7 +959,19 @@
     {"engine": false, "name": "grug_gear_shield_steel.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_shield_steel.png"},
     {"engine": false, "name": "grug_gear_shield_steel_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_shield_steel_ench.png"},
     {"engine": false, "name": "grug_gear_spellbook.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook.png"},
+    {"engine": false, "name": "grug_gear_spellbook_abyssal_steel.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_abyssal_steel.png"},
+    {"engine": false, "name": "grug_gear_spellbook_abyssal_steel_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_abyssal_steel_ench.png"},
+    {"engine": false, "name": "grug_gear_spellbook_bronze.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_bronze.png"},
+    {"engine": false, "name": "grug_gear_spellbook_bronze_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_bronze_ench.png"},
+    {"engine": false, "name": "grug_gear_spellbook_embersteel.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_embersteel.png"},
+    {"engine": false, "name": "grug_gear_spellbook_embersteel_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_embersteel_ench.png"},
     {"engine": false, "name": "grug_gear_spellbook_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_ench.png"},
+    {"engine": false, "name": "grug_gear_spellbook_iron.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_iron.png"},
+    {"engine": false, "name": "grug_gear_spellbook_iron_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_iron_ench.png"},
+    {"engine": false, "name": "grug_gear_spellbook_silversteel.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_silversteel.png"},
+    {"engine": false, "name": "grug_gear_spellbook_silversteel_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_silversteel_ench.png"},
+    {"engine": false, "name": "grug_gear_spellbook_steel.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_steel.png"},
+    {"engine": false, "name": "grug_gear_spellbook_steel_ench.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_spellbook_steel_ench.png"},
     {"engine": false, "name": "grug_gear_trinket_apothecary_loop_t1.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_trinket_apothecary_loop_t1.png"},
     {"engine": false, "name": "grug_gear_trinket_apothecary_loop_t2.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_trinket_apothecary_loop_t2.png"},
     {"engine": false, "name": "grug_gear_trinket_apothecary_loop_t3.png", "path": "mods/ITEMS/grug_gear/textures/grug_gear_trinket_apothecary_loop_t3.png"},

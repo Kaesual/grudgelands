@@ -116,6 +116,39 @@ end
 grug_visuals.ARMOR_ART = ARMOR_ART
 
 --
+-- The offhand look (Round 55, docs/technical/offhand-format.md §5, §7). The
+-- model's three new slots when nothing is shown, and the only thing in them
+-- while `grug_visuals.OFFHAND_VISUALS` (the setting grug_offhand_visuals,
+-- init.lua) is off: the builtin transparent texture, like ARMOR_NONE.
+--
+grug_visuals.OFFHAND_NONE = "blank.png"
+grug_visuals.BACK_NONE = "blank.png"
+grug_visuals.WINGS_NONE = "blank.png"
+
+-- The back slot (32 x 16) holds two cards: the left half is the card on the
+-- cloak, shown when a cloak is worn, the right half the card on the body
+-- (offhand-format.md §5). `image` (a 16 x 16 item image, any texture string)
+-- goes into the half `on_cloak` names, escaped as `[combine` requires
+-- (`\`, `^` and `:`; lua_api.md "Escaping"); BACK_NONE stays BACK_NONE.
+function grug_visuals.back_card(image, on_cloak)
+	if image == nil or image == grug_visuals.BACK_NONE then
+		return grug_visuals.BACK_NONE
+	end
+	local escaped = image:gsub("\\", "\\\\"):gsub("%^", "\\^"):gsub(":", "\\:")
+	return "[combine:32x16:" .. (on_cloak and "0" or "16") .. ",0=" .. escaped
+end
+
+-- The offhand item's atlas layer: a shield's or a spellbook's baked layer of
+-- its tier, named by the bracket's metal grade (a shield's layer paints only
+-- the shield copy of its tier's size step), with its enchant mask
+-- `<stem>_ench.png` next to it. The item group decides which.
+local OFFHAND_KIND = {grug_shield = "shield", grug_spellbook = "book"}
+
+function grug_visuals.offhand_file(kind, bracket)
+	return "grug_offhand_" .. kind .. "_" .. grug_gear.MATERIALS[bracket].metal.key .. ".png"
+end
+
+--
 -- Bracket resolution. `bracket` wins; `level` is the shorthand a mob uses
 -- because its own level is an engine-owned runtime value (grug_mobs/levels.lua)
 -- and nobody should re-derive the ten-level ladder by hand.
@@ -151,9 +184,18 @@ grug_visuals.normalize_bracket = normalize_bracket
 local armor_appearance = {}
 grug_visuals.armor_appearance = armor_appearance
 
+-- The offhand items the model draws (Round 55), indexed in the same pass:
+-- `offhand_appearance[name] = {kind = "shield" or "book", bracket = n,
+-- file = its atlas layer}` for every item of the groups in OFFHAND_KIND.
+local offhand_appearance = {}
+grug_visuals.offhand_appearance = offhand_appearance
+
 function grug_visuals.index_armor(items)
 	for name in pairs(armor_appearance) do
 		armor_appearance[name] = nil
+	end
+	for name in pairs(offhand_appearance) do
+		offhand_appearance[name] = nil
 	end
 	-- Every cached composition was built against the OLD index; a re-index
 	-- that kept them would hand back a skin the registry no longer describes.
@@ -177,6 +219,13 @@ function grug_visuals.index_armor(items)
 					bracket = normalize_bracket(def._grug_bracket, nil)}
 				count = count + 1
 			end
+			for group, kind in pairs(OFFHAND_KIND) do
+				if (groups[group] or 0) > 0 then
+					local bracket = normalize_bracket(def._grug_bracket, nil)
+					offhand_appearance[name] = {kind = kind, bracket = bracket,
+						file = grug_visuals.offhand_file(kind, bracket)}
+				end
+			end
 		end
 	end
 	return count
@@ -188,16 +237,19 @@ end
 --     grug_visuals.compose{race = "dwarf", look = {tone = 2, ...},
 --         armor = {head = itemname_or_nil, chest = ..., legs = ..., feet = ...},
 --         weapon = itemname_or_nil}
---     -> {skin = ..., armor = ..., textures = {...}, visual_size = {x=,y=,z=},
---         stature = ..., weapon = ..., key = ...}
+--     -> {skin = ..., armor = ..., offhand = ..., textures = {...},
+--         visual_size = {x=,y=,z=}, stature = ..., weapon = ..., key = ...}
 --
 -- `skin` is the 64x32 skin (the race look with the worn pieces' inner paint),
--- `armor` the atlas texture of the worn pieces (ARMOR_NONE without any). The
--- model's texture list is the caller's: a player wears skin, cloak, armor and
--- weapon (apply.lua); `textures` is an entity's whole list -- skin, armor and
--- an empty weapon card for an ARMORED NPC (a spec with `armor_line`, on the
--- NPC model grug_visuals_npc.b3d), the skin alone for anybody else (on
--- character.b3d).
+-- `armor` the atlas texture of the worn pieces (ARMOR_NONE without any),
+-- `offhand` the offhand slot's texture (OFFHAND_NONE without a shield or
+-- spellbook, and always while the offhand look is off). The model's texture
+-- list is the caller's: a player wears skin, cloak, armor, weapon, offhand,
+-- back and wings (apply.lua); `textures` is an entity's whole list -- skin,
+-- armor, an empty weapon card and empty offhand and back slots for an
+-- ARMORED NPC (a spec with `armor_line`, on the NPC model
+-- grug_visuals_npc.b3d; using the two new slots is a later choice), the skin
+-- alone for anybody else (on character.b3d).
 --
 -- A race is drawn from its look layers (looks.lua, round31-plan.md §2.1):
 --   * `look`        the five option indices (normalized here; missing means
@@ -233,6 +285,13 @@ end
 -- metal line) gets them by default as the royal variant -- zone A in the
 -- people's royal cloth colour, zone B in ROYAL_GOLD -- and a king wears no
 -- helmet box, so his face and crown show.
+--
+-- THE OFFHAND ITEM (Round 55, offhand-format.md §5): `offhand_item` (an item
+-- name), `offhand_broken` and `offhand_enchant = {prefix = stat, suffix =
+-- stat}` draw a shield's or spellbook's atlas layer into `offhand`, coloured
+-- and cracked exactly as a worn piece's atlas layer; any other item draws
+-- nothing. While `grug_visuals.OFFHAND_VISUALS` is off the three fields are
+-- ignored (and stay out of the key); the setting itself is part of the key.
 --
 -- Composition is texture modifiers only, every armour piece in its own
 -- parentheses (a piece's colours and cracks must never reach what lies under
@@ -403,6 +462,21 @@ function grug_visuals.compose(spec)
 		weapon = grug_gear.weapon_item(spec.weapon_family, bracket_default)
 	end
 
+	-- The offhand item: only with the offhand look on, only a shield or a
+	-- spellbook.
+	local visuals_on = grug_visuals.OFFHAND_VISUALS == true
+	local offhand_entry = visuals_on and type(spec.offhand_item) == "string" and
+		offhand_appearance[spec.offhand_item] or nil
+	local offhand = nil
+	if offhand_entry then
+		offhand = {file = offhand_entry.file, broken = spec.offhand_broken == true}
+		local enchant = spec.offhand_enchant
+		if type(enchant) == "table" then
+			offhand.prefix = stat_or_nil(enchant.prefix)
+			offhand.suffix = stat_or_nil(enchant.suffix)
+		end
+	end
+
 	-- The key covers every normalized input, and nothing else: two specs that
 	-- differ only in a field the composition ignores share one cache entry.
 	-- Semicolon, not a pipe: a hand-run bitwise-operator grep sweep of
@@ -425,7 +499,13 @@ function grug_visuals.compose(spec)
 		end
 		key = key .. ";" .. part
 	end
-	key = key .. ";" .. (weapon or "-")
+	key = key .. ";" .. (weapon or "-") .. ";" .. (visuals_on and "offhand" or "-")
+	if offhand then
+		key = key .. ";" .. offhand.file .. (offhand.broken and "!" or "")
+		if offhand.prefix or offhand.suffix then
+			key = key .. "*" .. (offhand.prefix or "") .. "," .. (offhand.suffix or "")
+		end
+	end
 
 	local hit = cache[key]
 	if hit then
@@ -465,11 +545,15 @@ function grug_visuals.compose(spec)
 	end
 	local armor_texture = #atlas > 0 and table.concat(atlas, "^") or
 		grug_visuals.ARMOR_NONE
+	-- The offhand layer in its own parentheses, as a worn piece's.
+	local offhand_texture = offhand and piece_layer(offhand.file, offhand) or
+		grug_visuals.OFFHAND_NONE
 
-	local result = {skin = texture, armor = armor_texture, visual_size = size,
-		stature = stature, weapon = weapon, key = key}
+	local result = {skin = texture, armor = armor_texture, offhand = offhand_texture,
+		visual_size = size, stature = stature, weapon = weapon, key = key}
 	if line_default then
-		result.textures = {texture, armor_texture, grug_visuals.WEAPON_NONE}
+		result.textures = {texture, armor_texture, grug_visuals.WEAPON_NONE,
+			grug_visuals.OFFHAND_NONE, grug_visuals.BACK_NONE}
 	else
 		result.textures = {texture}
 	end
