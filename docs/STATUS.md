@@ -8,7 +8,8 @@ planned 2026-10-12 to 2026-10-20 in the
 round F in Round 52, round K in Round 53 below, with its fix round 0.53.1.
 Round 54 followed with the armor redesign (0.54.0), then the particle look
 pass (0.54.1); 0.53.0 to 0.54.1 were pushed together on 2026-10-21
-(origin/main `abfb30ce`). Round 55 (0.55.0) puts the offhand into the model.
+(origin/main `abfb30ce`); the user accepted their GUI checklists
+(2026-10-21). Round 55 (0.55.0) puts the offhand into the model.
 Next: the user's GUI test of 0.55.0 and the push, the playtest of the new
 classes and a short balance fix round. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
