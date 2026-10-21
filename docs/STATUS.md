@@ -9,13 +9,39 @@ round F in Round 52, round K in Round 53 below, with its fix round 0.53.1.
 Round 54 followed with the armor redesign (0.54.0), then the particle look
 pass (0.54.1); 0.53.0 to 0.54.1 were pushed together on 2026-10-21
 (origin/main `abfb30ce`); the user accepted their GUI checklists
-(2026-10-21). Round 55 (0.55.0) puts the offhand into the model.
-Next: the user's GUI test of 0.55.0 and the push, the playtest of the new
+(2026-10-21). Round 55 (0.55.0) puts the offhand into the model; 0.55.1
+adds the admin debug command `/prof`.
+Next: the user's GUI test of 0.55.0 and 0.55.1 and the push, the playtest of the new
 classes and a short balance fix round. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **0.55.1 "The profession debug command" complete** (2026-10-21,
+  **compatible**, no migration step; the user's request; branch
+  `prof-admin`, one coordinator-built lane, independently reviewed by Opus,
+  no blocker). **Not pushed**; it goes with 0.55.0. New
+  `grug_jobs/admin.lua`: `/prof show|set|learn|unlearn|clear <player> ...`
+  (`server` privilege, online players only, the name always given;
+  [professions.md §1.6](design/professions.md#16-the-prof-debug-command)).
+  `state.lua` gains `admin_set` (the tier capped at `character_tier`, the
+  answer names the cap; the tier's crafts start at 0; a replaced primary
+  dropped as by unlearn, named in both lines) and `admin_unlearn`
+  (secondaries too; Cooking returns at the next join); both share
+  `unlearn`'s new `drop_progression`, which leaves the trainer's unlearn
+  unchanged. Each change sends the target one chat line and writes an
+  action log line; `show` neither. New fixture `tools/r551_prof`; the
+  learn/unlearn fixtures `r33_c2`, `r45_eu`, `r45_jb` and `r45_st` pass
+  unchanged. One review (one minor finding and two nits, all fixed) and two
+  delta reviews (the fixes; `/prof show` replacing `/prof <player>` at the
+  user's request): nothing left.
+  **GUI checklist:** `/prof show` on yourself; `/prof set <you> 1
+  weaponsmith T6` at a level below 51 (the capped tier and the note), the
+  Crafting tab updates at once; set slot 1 to another primary while a
+  Weaponsmith job runs (the job ends without XP, the replaced note);
+  `/prof set <you> cooking 3`; `/prof unlearn <you> cooking`, relog
+  (Cooking T1 again); a second player gets the chat line; a player without
+  `server` is refused.
 - **Round 55 "The offhand look" complete** (2026-10-21, version 0.55.0,
   **compatible**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round55-plan.md#completion-2026-10-21);

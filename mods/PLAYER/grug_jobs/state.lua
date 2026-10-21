@@ -79,6 +79,17 @@ function grug_jobs.learn(player, profession, quiet)
 	return true, text
 end
 
+-- A profession leaves the character (unlearn, /prof): its progression goes,
+-- a running job of it finishes without XP (lane JB) and an item left in the
+-- enchant/upgrade slot comes back (lane EU). The slot or flag is the caller's.
+local function drop_progression(player, profession)
+	local meta = player:get_meta()
+	set_int(meta, META_LEVEL .. profession, 0)
+	set_int(meta, META_CRAFTS .. profession, 0)
+	if grug_jobs.forfeit_job_xp then grug_jobs.forfeit_job_xp(player, profession) end
+	if grug_jobs.return_operation_target then grug_jobs.return_operation_target(player) end
+end
+
 function grug_jobs.unlearn(player, profession)
 	local definition = grug_jobs.PROFESSIONS[profession]
 	if not definition or not grug_jobs.has(player, profession) then
@@ -92,12 +103,7 @@ function grug_jobs.unlearn(player, profession)
 		local key = META_PRIMARY .. slot
 		if meta:get_string(key) == profession then set_string(meta, key, "") end
 	end
-	set_int(meta, META_LEVEL .. profession, 0)
-	set_int(meta, META_CRAFTS .. profession, 0)
-	-- A running job of this profession finishes without XP (lane JB).
-	if grug_jobs.forfeit_job_xp then grug_jobs.forfeit_job_xp(player, profession) end
-	-- An item left in the enchant/upgrade slot comes back (lane EU).
-	if grug_jobs.return_operation_target then grug_jobs.return_operation_target(player) end
+	drop_progression(player, profession)
 	local text = "Unlearned " .. definition.name .. "; its progression was lost."
 	message(player, text)
 	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
@@ -242,6 +248,66 @@ function grug_jobs.can_craft_recipe(player, recipe)
 		return false, grug_jobs.PROFESSIONS[recipe.profession].name ..
 			" tier " .. recipe.tier .. " required."
 	end
+	return true
+end
+
+-- The debug/admin seams of /prof (admin.lua). Both are silent (the command
+-- tells admin and target) and refresh the Crafting tab.
+--
+-- A profession at a tier: a primary into `slot` (the primary there before is
+-- dropped as by unlearn; one already in the other slot is refused), a
+-- secondary with `slot` nil. The tier is capped at the character's band
+-- (character_tier): an admin never grants more than play could reach. The
+-- tier's crafts start at 0. Returns true, the tier set and the primary it
+-- replaced (nil: none), or false and why.
+function grug_jobs.admin_set(player, profession, tier, slot)
+	local definition = grug_jobs.PROFESSIONS[profession]
+	if not definition then return false, "Unknown profession." end
+	local meta = player:get_meta()
+	local before
+	if definition.class == "primary" then
+		if slot == nil or slot < 1 or slot > PRIMARY_SLOTS then
+			return false, definition.name .. " goes into slot 1 or 2."
+		end
+		for other = 1, PRIMARY_SLOTS do
+			if other ~= slot and meta:get_string(META_PRIMARY .. other) == profession then
+				return false, definition.name .. " is already in slot " .. other .. "."
+			end
+		end
+		before = meta:get_string(META_PRIMARY .. slot)
+		if before ~= "" and before ~= profession then
+			drop_progression(player, before)
+		else
+			before = nil
+		end
+		set_string(meta, META_PRIMARY .. slot, profession)
+	else
+		if slot ~= nil then return false, definition.name .. " takes no slot." end
+		set_int(meta, META_LEARNED .. profession, 1)
+	end
+	local granted = math.max(1, math.min(tier, grug_jobs.character_tier(player), 6))
+	set_int(meta, META_LEVEL .. profession, granted)
+	set_int(meta, META_CRAFTS .. profession, 0)
+	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
+	return true, granted, before
+end
+
+-- Any learned profession leaves, secondaries too (Cooking comes back at the
+-- next join, grug_cooking). Returns whether it was learned.
+function grug_jobs.admin_unlearn(player, profession)
+	local definition = grug_jobs.PROFESSIONS[profession]
+	if not definition or not grug_jobs.has(player, profession) then return false end
+	local meta = player:get_meta()
+	if definition.class == "primary" then
+		for slot = 1, PRIMARY_SLOTS do
+			local key = META_PRIMARY .. slot
+			if meta:get_string(key) == profession then set_string(meta, key, "") end
+		end
+	else
+		set_int(meta, META_LEARNED .. profession, 0)
+	end
+	drop_progression(player, profession)
+	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
 	return true
 end
 
