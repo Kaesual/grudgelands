@@ -11,8 +11,12 @@ tier colour (so the F and B glyphs read unmirrored); on the character the
 shield's front shows from the character's left; the cloak card shows when a
 cloak is worn, the body card when none is, and the body card hides under a
 cloak; a cloak wing shows its wing texture's texel; missing art is a checker
-and listed; a render is deterministic; a whole sheet renders.
+and listed; a tiers.json without some tiers or an item renders those as a
+checker, listed; a render is deterministic; a whole sheet renders; the
+README's painter table gives the live sheet sizes.
 """
+import json
+import re
 import shutil
 import sys
 import tempfile
@@ -212,6 +216,44 @@ def test_missing_and_sheets():
         ok(p.exists(), "detail sheet")
 
 
+def test_partial_tiers():
+    """Only shield T1 in tiers.json: every other tier and the whole book are a checker, listed."""
+    with tempfile.TemporaryDirectory(prefix="r55-render-test-") as tmp:
+        art = Path(tmp) / "art"
+        shutil.copytree(ART, art)
+        tiers = json.loads((art / "tiers.json").read_text())
+        (art / "tiers.json").write_text(json.dumps({"shield": {"T1": tiers["shield"]["T1"]}}))
+        a = R.Art(art)
+        layer, _, missing = a.layer("shield", "T1")
+        ok(not missing, "partial tiers.json: shield T1 lists %s" % missing)
+        for item, tid in (("shield", "T4"), ("book", "T1"), ("book", "T6")):
+            layer, icon, missing = a.layer(item, tid)
+            ok(missing == ["no tiers.json entry"], "partial tiers.json: %s %s lists %s" % (item, tid, missing))
+            sid = "shield_%d" % O.tier_step(a.params, int(tid[1])) if item == "shield" else "cover_f"
+            x, y, _, _ = a.sheets[sid]["faces"]["front"]
+            ok(layer.getpixel((x, y)) in R.CHECK and icon.getpixel((0, 0)) in R.CHECK,
+               "partial tiers.json: %s %s not a checker" % (item, tid))
+            ok(a.label(item, tid)[0] == "(no tiers.json entry)", "partial tiers.json: %s %s label" % (item, tid))
+        out = Path(tmp) / "out"
+        out.mkdir()
+        for item in ("shield", "book"):
+            p, miss = R.contact_sheet(MODEL, a, R.Look(a, "human"), item, ["T1", "T2"], out)
+            ok(p.exists() and miss["T2"] == ["no tiers.json entry"], "partial tiers.json: %s sheet" % item)
+
+
+def test_readme_sizes():
+    """The painter's table in README.md names the live sheet sizes (it went stale once)."""
+    text = (TOOL / "README.md").read_text()
+
+    def row(start):
+        line = next((ln for ln in text.splitlines() if ln.startswith(start)), "")
+        return re.findall(r"(\d+) × (\d+)", line.rsplit("|", 2)[-2] if line.count("|") > 2 else "")
+    want = [tuple(str(v) for v in A.sheets["shield_0"]["rect"][2:])]
+    ok(row("| `art/shield/") == want, "README: shield size %s, the atlas %s" % (row("| `art/shield/"), want))
+    want = [tuple(str(v) for v in A.sheets[b]["rect"][2:]) for b in O.BOOK_BOXES]
+    ok(row("| `art/book/") == want, "README: book sizes %s, the atlas %s" % (row("| `art/book/"), want))
+
+
 def test_deterministic():
     layer, _, _ = A.layer("book", "T2")
     look = R.Look(A, "elf", cloak="test", back=str(R.DEFAULT_BACK))
@@ -222,7 +264,7 @@ def test_deterministic():
 
 def main():
     for t in (test_winding, test_layers_equal_bake, test_shield_alone, test_shield_on_character, test_back_cards,
-              test_wings, test_missing_and_sheets, test_deterministic):
+              test_wings, test_missing_and_sheets, test_partial_tiers, test_readme_sizes, test_deterministic):
         t()
     for f in FAILS:
         print("FAIL", f)

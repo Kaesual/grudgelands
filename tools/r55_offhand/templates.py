@@ -98,8 +98,9 @@ def shield_template(model, params, atlas, out):
         tint = FACE_TINT["front" if side == "front" else "back"]
         opaque = O.shield_texels(shape, side)
         for cx, cy in opaque:
-            # a border texel (a neighbour outside the outline or the sheet): the rim samples it
-            border = any((cx + dx, cy + dy) not in opaque for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+            # a front border texel (a neighbour outside the outline or the sheet): the rim samples it
+            border = side == "front" and any((cx + dx, cy + dy) not in opaque
+                                             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
             cells[(x_off + cx, cy)] = darker(tint) if border else tint
             if (x_off + cx, cy) not in seen:
                 hatched.add((x_off + cx, cy))
@@ -143,9 +144,10 @@ def shield_template(model, params, atlas, out):
         "purple square = the boss's base (a %g px pyramid on the front, painted with the texels under it)"
         % (shape["ridge"], boss["height"] if boss else 0) if boss else
         "red line = the outline; blue dashes = the ridge (the front bulges %g px along it)" % shape["ridge"],
-        "tinted = must be OPAQUE (every texel the outline contains or crosses); darker = the border texels: the "
-        "rim (%g px thick) and the slanted edges sample them, so they colour the shield's edge too; light checker "
-        "= never sampled, leave transparent" % shape["thick"],
+        "tinted = must be OPAQUE (every texel the outline contains or crosses); darker = the FRONT's border "
+        "texels: the rim (%g px thick) and the slanted edges sample them, so they colour the shield's edge too "
+        "(the back's border is only seen from behind); light checker = never sampled, leave transparent"
+        % shape["thick"],
         "zones: at least 6 zone A and 3 zone B texels on the FRONT (the bake counts the front's opaque texels)",
         "hatched = not seen on any size copy in the visibility pass (Stand, mid-walk, Block; 26 directions): hidden "
         "by the arm or the shield itself; paint it, but plainly",
@@ -184,10 +186,10 @@ BOOK_MEANING = {
     ("spine", "back"): ("spine's side beside the back cover's spine edge", "b"),
     ("spine", "top"): ("head of the spine (top end)", "T"),
     ("spine", "bottom"): ("tail of the spine (bottom end)", "Bt"),
-    ("ribbon", "front"): ("ribbon, front side", "F"),
-    ("ribbon", "back"): ("ribbon, back side", "B"),
-    ("ribbon", "left"): ("ribbon, fore-edge side", "L"),
-    ("ribbon", "right"): ("ribbon, spine side", "R"),
+    ("ribbon", "front"): ("ribbon, side towards the left page", "F"),
+    ("ribbon", "back"): ("ribbon, side towards the right page", "B"),
+    ("ribbon", "left"): ("ribbon, side facing the reader (not turned: +x is the spread's centre)", "L"),
+    ("ribbon", "right"): ("ribbon, side facing the spine", "R"),
     ("ribbon", "bottom"): ("ribbon's end", "Bt"),
 }
 # armor-format.md section 4 orientation in the book's closed frame (x = towards the
@@ -352,6 +354,9 @@ def cloak_template(params, out):
 # --- main -----------------------------------------------------------------------------
 def write(out):
     if out.exists():
+        other = [p for p in out.rglob("*") if p.is_file() and p.suffix != ".png"]
+        if other:
+            raise SystemExit("templates: %s holds other files (%s); refusing to replace it" % (out, other[0]))
         shutil.rmtree(out)
     (out / "blank").mkdir(parents=True)
     params, atlas, _ = B.load_contract()

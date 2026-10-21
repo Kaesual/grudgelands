@@ -30,7 +30,7 @@ from the repository root (the tools find their own data). The full rules are
 | File | What | Size now |
 |---|---|---|
 | `art/shield/<variant>.png` | the shield: FRONT in the left half, BACK in the right half | 22 × 13 |
-| `art/book/<box>_<variant>.png` | one sheet per book box: `cover_f`, `cover_b`, `pages_f`, `pages_b`, `spine`, `ribbon` | 12 × 7, 12 × 7, 10 × 6, 10 × 6, 8 × 9, 4 × 4 |
+| `art/book/<box>_<variant>.png` | one sheet per book box: `cover_f`, `cover_b`, `pages_f`, `pages_b`, `spine`, `ribbon` | 12 × 7, 12 × 7, 10 × 6, 10 × 6, 4 × 7, 4 × 4 |
 | `art/icons/shield_<variant>.png`, `art/icons/book_<variant>.png` | inventory icons | 16 × 16 |
 | `art/tiers.json` | per item and tier T1–T6: `palette`, `variant` (one id, or for the book a map box → id), `icon` | |
 | `art/palettes.json` (optional) | proposed tier palettes, laid over `tools/r54_armor/data/palettes.json` by name | |
@@ -65,7 +65,7 @@ python3 tools/r55_offhand/bake.py --art art --out out/bake --icons-out out/bake 
 python3 tools/r55_offhand/render.py --art art --out out              # all sheets: shield, book, cloak (about 2 s)
 python3 tools/r55_offhand/render.py --art art --item shield --tiers T5 --detail --out out   # one tier large
 python3 tools/r55_offhand/render.py --art art --item book --race troll --armor cloth:T4 --out out
-python3 tools/r55_offhand/render.py --art art --item shield --cloak supporter --back art/bow.png --out out
+python3 tools/r55_offhand/render.py --art art --item shield --cloak supporter --back mods/ITEMS/grug_gear/textures/grug_gear_bow_wood.png --out out
 ```
 
 Options: `--item shield|book|cloak|all`, `--tiers T1,T3`, `--race human,dwarf,elf,orc,troll,undead` (the

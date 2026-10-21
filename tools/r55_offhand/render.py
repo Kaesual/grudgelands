@@ -293,6 +293,10 @@ class Art:
                           for item, pals, sheets in (("shield", METAL_PALETTES, ("shield",)),
                                                      ("book", CLOTH_PALETTES, O.BOOK_BOXES))}
             self.tier_source = "DEFAULT selection (no art/tiers.json: variant a, the test art's palettes)"
+        for item, sheets in (("shield", ("shield",)), ("book", O.BOOK_BOXES)):
+            for tid in L.TIER_IDS:          # a tier tiers.json leaves out: a checker, listed
+                self.tiers.setdefault(item, {}).setdefault(tid, {
+                    "palette": None, "variant": {s: "a" for s in sheets}, "icon": None, "absent": True})
         warnings = []
         try:
             B.bake(self.art, icons=True, warnings=warnings)
@@ -317,9 +321,15 @@ class Art:
         built as bake.py builds it; a missing file, a wrong size and
         off-palette or partial-alpha texels show the checker."""
         tier = self.tiers[item][tid]
+        n = L.TIER_IDS.index(tid) + 1
+        if tier.get("absent"):
+            ids = ["shield_%d" % O.tier_step(self.params, n)] if item == "shield" else O.BOOK_BOXES
+            img = Image.new("RGBA", self.size, (0, 0, 0, 0))
+            checker_cells(img, {(x, y) for s in ids for fx, fy, fw, fh in self.sheets[s]["faces"].values()
+                                for y in range(fy, fy + fh) for x in range(fx, fx + fw)})
+            return img, L.checker(O.ICON_SIZE, cell=4), ["no tiers.json entry"]
         colors = self.colors(tier["palette"])
         missing = [] if tier["palette"] in self.pals["palettes"] else ["palette %s unknown" % tier["palette"]]
-        n = L.TIER_IDS.index(tid) + 1
         if item == "shield":
             pieces = [("shield_%d" % O.tier_step(self.params, n), "shield_0",
                        B.shield_file(self.art, tier["variant"]["shield"]))]
@@ -363,7 +373,8 @@ class Art:
         tier = self.tiers[item][tid]
         variants = sorted(set(tier["variant"].values()))
         v = variants[0] if len(variants) == 1 else ", ".join("%s %s" % kv for kv in sorted(tier["variant"].items()))
-        lines = ["palette %s" % tier["palette"], "variant %s, icon %s" % (v, tier["icon"])]
+        lines = (["(no tiers.json entry)"] if tier.get("absent") else
+                 ["palette %s" % tier["palette"], "variant %s, icon %s" % (v, tier["icon"])])
         if item == "shield":
             n = L.TIER_IDS.index(tid) + 1
             step = O.tier_step(self.params, n)
