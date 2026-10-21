@@ -124,10 +124,12 @@ def build_scene(cat, tier, stature, walk):
 
 
 # ---------- rasteriser ----------
-def camera(dirv, dist, w, h):
+def camera(dirv, dist, w, h, target=(0.0, 17.5, 0.0), fov=30.0):
+    """Perspective camera looking at `target` from `dist` along `dirv` (the
+    Round 55 offhand render passes its own target and field of view)."""
     d = np.array(dirv, float)
     d /= np.linalg.norm(d)
-    tgt = np.array([0.0, 17.5, 0.0])
+    tgt = np.array(target, float)
     pos = tgt + d * dist
     f = tgt - pos
     f /= np.linalg.norm(f)
@@ -138,7 +140,7 @@ def camera(dirv, dist, w, h):
     side /= np.linalg.norm(side)
     sun = d * 40 + side * 25 + np.array([0.0, 45.0, 0.0])
     sun /= np.linalg.norm(sun)
-    return {"pos": pos, "f": f, "r": r, "u": u, "t": math.tan(math.radians(15)), "w": w, "h": h, "sun": sun}
+    return {"pos": pos, "f": f, "r": r, "u": u, "t": math.tan(math.radians(fov / 2)), "w": w, "h": h, "sun": sun}
 
 
 def project(cam, p):
