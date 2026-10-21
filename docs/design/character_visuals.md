@@ -428,10 +428,11 @@ are kept per character, and so is the choice.
   ([offhand format](../technical/offhand-format.md)): the shield three times
   (one copy per size step) and an open spellbook on the bones
   `Offhand_Shield` and `Offhand_Book` under the left arm, keyed per pose
-  clip (the fifth texture, the offhand atlas), a back card on the body (the
-  sixth, an item image) and two optional wings on the cloak's sides (the
-  seventh, player model only); the NPC model carries the offhand and the
-  back card. Every part is always in the model and shows only when its slot
+  clip (the fifth texture, the offhand atlas), two back cards, one riding
+  the cloak and one on the body (the sixth texture, an item image in the
+  half of the card that shows), and two optional wings on the cloak's sides
+  (the seventh, player model only); the NPC model carries the offhand and
+  the body card. Every part is always in the model and shows only when its slot
   has a texture.
   Unarmored NPCs keep `character.b3d`.
 - **Armor panels and weapon card (Round 54):** the front and back panels

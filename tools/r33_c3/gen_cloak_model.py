@@ -181,12 +181,14 @@ ZFIGHT_MIN_EXTENT = 0.1 * PX   # a thinner overlap is a sub-texel sliver
 # +-4.5 from 23.5), 0.13 px outside the chest shell's sides where the shell
 # rises above the shoulders; a tasset's top corner, turned up by its 22.5
 # degrees, shares the arm's front and back planes (z +-2) for 0.19 px.
-# Round 55 (MODEL report, a question to the coordinator): the back card at
-# params.json's draft z -3.4 px faces backwards 0.17 px from the reinforce
-# boxes' back faces (z -3.25) where they overlap on the shoulders; a card at
-# z <= -3.52 clears them, and these entries go once the parameters do.
+# Round 55 (MODEL report, a question to the coordinator): the body card at
+# params.json's draft z -3 px lies 0.02 px behind the bracers' back faces
+# (z -3) and 0.23 px from the reinforce boxes' (z -3.25) where they overlap;
+# a body card at z <= -3.52 clears both, and these entries go once the
+# parameters do.
 KNOWN_ZFIGHT = {("chest", "hat"), ("arm", "tasset"), ("arm_l", "tasset_l"),
-                ("back", "reinforce"), ("back", "reinforce_l")}
+                ("back_body", "bracer"), ("back_body", "bracer_l"),
+                ("back_body", "reinforce"), ("back_body", "reinforce_l")}
 
 # --- Round 55: the offhand ---------------------------------------------------------
 OFFHAND_BONES = oh.BONES     # Offhand_Shield, Offhand_Book: children of Arm_Left
@@ -1115,13 +1117,18 @@ def build(kind="player", contract=None):
         ids = [first + i for i, label in enumerate(part.labels) if offhand_bone_of(params, label) == name]
         pivot_local, keys = offhand_keys(rig, kind, layout, params, name, frame_count)
         arm.kids.append(offhand_bone(name, pivot_local, keys, ids))
-    # the back card: on Body or the cloak (the NPC model has no cloak: Body)
-    part = om.back_card(params, CARD_GAP / PX)
+    # the back cards: the cloak card on the Cloak, the body card on Body (the
+    # NPC model has no cloak: the body card only)
+    part = om.Part()
+    for card in (("cloak", "body") if kind == "player" else ("body",)):
+        part.extend(om.back_card(params, CARD_GAP / PX, card))
     verts, tris = model_part(part)
     first, last = append_buffer(mesh, vrts, verts, tris, last)
-    back_bone = params["back"]["bone"] if kind == "player" else "Body"
-    kid(find_node(root, back_bone), "BONE").raw += b"".join(
-        struct.pack("<if", first + i, 1.0) for i in range(len(verts)))
+    for card, bone in oh.BACK_CARDS.items():
+        if "back_" + card not in part.labels:
+            continue
+        kid(find_node(root, bone), "BONE").raw += b"".join(
+            struct.pack("<if", first + i, 1.0) for i, label in enumerate(part.labels) if label == "back_" + card)
     buffers["back"] = (len(verts), len(tris))
     labels += part.labels
     parts["back"] = (first, part)
@@ -1142,7 +1149,7 @@ def build(kind="player", contract=None):
         curves["cloak"] = cloak
     return out, {"kind": kind, "root": root, "curves": curves, "layout": layout,
                  "buffers": buffers, "box_ids": box_ids, "twisted_walk": twisted_walk,
-                 "labels": labels, "params": params, "parts": parts, "back_bone": back_bone}
+                 "labels": labels, "params": params, "parts": parts}
 
 
 # --- the checks on a built model -------------------------------------------------
@@ -1413,8 +1420,10 @@ def offhand_clearance(info):
     """{item: {clip: (gap px, engine frame, box)}}: the closest distance of
     the offhand parts per clip (negative = overlap, a separating-axis lower
     bound as the cloak's leg gaps): each shield copy and the book against the
-    body and every armor box, the back card against every box and the cloak,
-    the wings against the arms and the shoulder boxes."""
+    body and every armor box; the body card against every box, the boxes on
+    the torso and the back panel ("torso") and the swinging cloak; the cloak
+    card against the cloak it rides; the wings against the arms and the
+    shoulder boxes."""
     rig = Rig(info["root"])
     params = info["params"]
     boxes = [(bone, label, c) for bone, rows in collision_boxes(info["box_ids"]).items() for label, c in rows]
@@ -1422,7 +1431,8 @@ def offhand_clearance(info):
         boxes.append(("Cloak", "cloak", cloak_corners()))
     shoulder = {"arm", "sleeve", "bracer", "pauldron", "reinforce", "flare", "spike"}
     targets = {"all": [b for b in boxes if b[1] != "cloak"], "cloak": [b for b in boxes if b[1] == "cloak"],
-               "arms": [b for b in boxes if b[1].replace("_l", "") in shoulder]}
+               "arms": [b for b in boxes if b[1].replace("_l", "") in shoulder],
+               "torso": [b for b in boxes if b[0] in ("Body", "Panel_Back")]}
     items = []      # (item, target set, bone, points, axes)
     for name, (_, part) in info["parts"].items():
         for piece in part.pieces:
@@ -1430,14 +1440,17 @@ def offhand_clearance(info):
             if name == "offhand":
                 item, bone, against = (label if label.startswith("shield_") else "book",
                                        offhand_bone_of(params, label), ("all",))
+            elif name == "back" and label == "back_body":
+                item, bone, against = "back_body", "Body", ("all", "torso", "cloak")
             elif name == "back":
-                item, bone, against = "back", info["back_bone"], ("all", "cloak")
+                item, bone, against = "back_cloak", "Cloak", ("cloak",)
             else:
                 item, bone, against = "wings", "Cloak", ("arms",)
             points = [to_model(part.verts[i][0]) for i in piece]
             normals, edges = convex_axes(points)
             for which in against:
-                items.append((item if which != "cloak" else "back/cloak", which, bone, points, normals, edges))
+                tag = item if which in ("all", "arms") or item == "back_cloak" else item + "/" + which
+                items.append((tag, which, bone, points, normals, edges))
     box_axes_rest = {id(c): box_axes(c) for _, _, c in boxes}
     out = {}
     for name, first, last, _ in clip_ranges(info["kind"], info["layout"]):
@@ -1532,7 +1545,8 @@ def report_clearance(info):
     """The offhand clearance table: per clip and part the closest gap in skin
     pixels (negative = overlap), its engine frame and the box."""
     table = offhand_clearance(info)
-    items = [k for k in ("shield_0", "shield_1", "shield_2", "book", "back", "back/cloak", "wings") if k in table]
+    items = [k for k in ("shield_0", "shield_1", "shield_2", "book", "back_body", "back_body/torso",
+                         "back_body/cloak", "back_cloak", "wings") if k in table]
     print("  offhand clearance (skin px, negative = overlap; gap@frame box):")
     print("  %-12s %s" % ("clip", "".join("%-22s" % k for k in items)))
     for name, _, _, _ in clip_ranges(info["kind"], info["layout"]):

@@ -47,7 +47,7 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   | 2 | `armor` | 672 | 336 | `textures.armor`, the armor atlas, 128×64; `none` (or a version 1 value, which has no `textures.armor`) = hide the primitive |
   | 3 | `weapon` | 8 | 4 | the weapon card: not stored; hide the primitive (below) |
   | 4 | `offhand` | 316 | 158 | the offhand atlas, 64×64 (three shield copies and the open book); **transparent by default** (below) |
-  | 5 | `back` | 8 | 4 | the back card, an item image; **transparent by default** |
+  | 5 | `back` | 16 | 8 | the two back cards (cloak card u 0..0.5, body card u 0.5..1 of a 32×16 texture); **transparent by default** |
   | 6 | `wings` | 28 | 12 | a cloak's wing texture, 16×32; **transparent by default** |
 
   The file holds **no images**: Luanti warns on them, and the website
@@ -80,9 +80,11 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   step, each sampling its own region of the offhand atlas, and the open
   spellbook, on the bones `Offhand_Shield` and `Offhand_Book`; the texture
   (a baked layer, format doc §7) paints only the copy of its size, the
-  rest of the atlas is transparent. The **back** card is a two-sided
-  square on `Body` (UV 0..1 over an item image), the **wings** two
-  triangles on `Cloak`. To show one, give it its texture **and** set its
+  rest of the atlas is transparent. The **back** primitive is two
+  two-sided squares, one on `Cloak` and one on `Body`, sampling the left
+  and the right half of a 32×16 texture (the item image in the half of the
+  card that shows, offhand-format.md §5); the **wings** are two triangles
+  on `Cloak`. To show one, give it its texture **and** set its
   material's base colour alpha to 1 (in three.js:
   `mesh.material.map = texture; mesh.material.opacity = 1;
   mesh.material.needsUpdate = true`, the GLTFLoader puts that alpha into

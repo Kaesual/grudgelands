@@ -4,7 +4,7 @@ MODEL; docs/technical/offhand-format.md §2, §9).
 
 Builds the player and NPC models in memory with tools/r33_c3/gen_cloak_model.py
 from REFERENCE (the CONTRACT's params.json, 2026-10-21, whose numbers §9 of the
-format doc quotes) and from variants of it, and reads every position back
+format doc quotes; the back cards as of main 7e2df348) and from variants of it, and reads every position back
 through the engine's B3D maths (gen_cloak_model.Rig), in the catalog frame:
 
   R  §9's reference points to 1e-3 px: the size-2 shield's top centre and
@@ -51,7 +51,8 @@ REFERENCE = {
         "ribbon": {"x0": 0.05, "x1": 0.45, "below": 2.5, "into": 0.4, "half_depth": 0.2},
         "place": {"bone": "Offhand_Book", "pos": [7.9886, 13.5792, 0], "rot": [0, 180, 45], "order": "YXZ"},
     },
-    "back": {"bone": "Body", "size": 12, "pos": [0, 18, -3.4], "rot": [0, 180, 0], "order": "YXZ"},
+    "back": {"size": 12, "body": {"pos": [0, 18, -3], "rot": [0, 180, 0], "order": "YXZ"},
+             "cloak": {"pos": [0, 18, -3.25], "rot": [0, 180, 0], "order": "YXZ"}},
     "wings": {"width": 3, "angle": 20, "drop": 0, "thick": 0.35},
     "bones": {
         "Offhand_Shield": {"pivot": [8, 13, 0], "clips": {

@@ -5,8 +5,10 @@
 -- the wings) set directly on the player and NPC models, in Stand, Walk,
 -- Block, Cast 1 and Sit from the front, the left (the shield side) and three
 -- quarters; close-ups for the orientation glyphs (F on the shield front, B
--- on its back, F/B on the covers, L on the left page); the back card with a
--- sword image; the wings on a test cloak; and the capture player's own model
+-- on its back, F/B on the covers, L on the left page); the back cards with a
+-- sword image (the body card without a cloak, the cloak card with one: the
+-- image in that card's half of the 32 x 16 back texture); the wings on a
+-- test cloak; and the capture player's own model
 -- as the game composes it today (4 textures on the 7-buffer model). The
 -- camera looks along +z; a figure at yaw pi faces it, at pi/2 shows its left.
 local PLAYER, NPC = "grug_visuals_character.b3d", "grug_visuals_npc.b3d"
@@ -15,6 +17,9 @@ local ARMOR = "r54model_steel_atlas.png"
 local CLOAK = "grug_achievements_cloak_boaring_work_1.png"
 local SWORD = "grug_gear_item_sword_steel.png"
 local BOW = "grug_gear_bow_wood.png"
+-- the back texture (offhand-format.md §5): the cloak card's half left, the body card's right
+local function on_body(image) return "[combine:32x16:16,0=" .. image end
+local function on_cloak(image) return "[combine:32x16:0,0=" .. image end
 local SHIELD0, SHIELD2 = "r55model_shield0.png", "r55model_shield2.png"
 local BOOK, WINGS = "r55model_book.png", "r55model_wings.png"
 local B = "blank.png"
@@ -70,16 +75,19 @@ add({name = "O3_shield_close_block_front", cam = NEAR, pitch = 0.3, figures = on
 add({name = "O4_shield_close_back_inner", cam = NEAR, pitch = 0.3, figures = one(s2, 0, PI * 0.25)})
 add({name = "O5_book_close_left", cam = NEAR, pitch = 0.3, figures = one(bk, 0, PI / 2)})
 add({name = "O6_book_close_3q", cam = NEAR, pitch = 0.3, figures = one(bk, 0, PI * 0.75)})
-add({name = "O7_book_close_above", cam = {0, 2.2, -1.2}, pitch = 0.9, figures = one(bk, 0, PI * 0.75)})
+add({name = "O7_book_close_above", cam = {0.42, 0.5, -0.55}, pitch = 0.94, figures = one(bk, 0, PI)})
 add({name = "O8_book_close_outer_back", cam = NEAR, pitch = 0.3, figures = one(bk, 0, PI * 0.35)})
 
--- the back card with a sword image (and a bow), with and without a cloak
-local sword = player({back = SWORD})
+-- the back cards with a sword image (and a bow): the body card without a
+-- cloak, the cloak card with one
+local sword = player({back = on_body(SWORD)})
 add({name = "K1_back_sword_back_side_walk", cam = FAR, pitch = 0.18, figures = three(sword,
 	{{0, 0}, {0, PI / 2}, {172, PI * 0.25}})})
 add({name = "K2_back_sword_cloak_back_side_walk", cam = FAR, pitch = 0.18,
-	figures = three(player({back = SWORD, cloak = CLOAK}), {{0, 0}, {0, PI / 2}, {172, PI * 0.25}})})
-add({name = "K3_back_close_back", cam = NEAR, pitch = 0.2, figures = one(player({back = BOW}), 0, 0)})
+	figures = three(player({back = on_cloak(SWORD), cloak = CLOAK}), {{0, 0}, {0, PI / 2}, {172, PI * 0.25}})})
+add({name = "K3_back_body_close_back", cam = NEAR, pitch = 0.2, figures = one(player({back = on_body(BOW)}), 0, 0)})
+add({name = "K4_back_cloak_close_back", cam = NEAR, pitch = 0.2,
+	figures = one(player({back = on_cloak(BOW), cloak = CLOAK}), 0, 0)})
 
 -- the wings on a test cloak
 local winged = player({cloak = CLOAK, wings = WINGS})
@@ -96,7 +104,7 @@ add({name = "A1_armor_shield_book_stand_block_3q", cam = FAR, pitch = 0.18, figu
 	{230, PI * 0.75, PLAYER, player({armor = ARMOR, offhand = BOOK})}})})
 
 -- the NPC model: {skin, armor, weapon, offhand, back}
-local npc_s = {SKIN, ARMOR, B, SHIELD2, SWORD}
+local npc_s = {SKIN, ARMOR, B, SHIELD2, on_body(SWORD)}
 add({name = "N1_npc_shield_front_walk_back", cam = FAR, pitch = 0.18, figures = three(npc_s,
 	{{0, PI, NPC}, {172, PI / 2, NPC}, {0, 0, NPC}})})
 

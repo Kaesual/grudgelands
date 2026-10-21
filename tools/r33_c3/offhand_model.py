@@ -306,17 +306,25 @@ def book(params, atlas, face_point):
     return part.mapped(point, direction)
 
 
-# --- the back card (§3.3) --------------------------------------------------------------
-def back_card(params, gap):
-    """Two triangle pairs, each `gap` px off the card's plane to its own side;
-    the side facing the card's +z shows the image unmirrored. Label back."""
+# --- the back cards (§3.3) -------------------------------------------------------------
+BACK_U = {"cloak": (0.0, 0.5), "body": (0.5, 1.0)}   # each card's half of the 32 x 16 back texture
+
+
+def back_card(params, gap, card):
+    """The `card` ("cloak" or "body") at rest: two triangle pairs, each `gap`
+    px off the card's plane to its own side; the side facing the card's +z
+    shows the image unmirrored, from its half of the back texture. Label
+    back_<card>."""
     half = params["back"]["size"] / 2
-    corners = (((-half, half), (0, 0)), ((half, half), (1, 0)), ((half, -half), (1, 1)), ((-half, -half), (0, 1)))
+    u0, u1 = BACK_U[card]
+    corners = (((-half, half), (u0, 0)), ((half, half), (u1, 0)), ((half, -half), (u1, 1)),
+               ((-half, -half), (u0, 1)))
     part = Part()
     for side in (1, -1):
-        part.face("back", [(x, y, side * gap) for (x, y), _ in corners], [uv for _, uv in corners], (0, 0, side))
+        part.face("back_" + card, [(x, y, side * gap) for (x, y), _ in corners], [uv for _, uv in corners],
+                  (0, 0, side))
     part.piece(0)
-    point, direction = placed(params["back"])
+    point, direction = placed(params["back"][card])
     return part.mapped(point, direction)
 
 

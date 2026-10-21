@@ -14,9 +14,10 @@
 --      offhand, back. The offhand buffer (three shield copies of 28
 --      triangles plus the optional 4-triangle boss, the book's 62) rides
 --      only the two offhand bones, each with vertices, its UVs inside the
---      atlas; the back card is 8 vertices and 4 triangles on Body (the
---      player's may ride the Cloak), UV 0..1 over the whole image; the
---      player's wings are 2 x 6 triangles on the Cloak;
+--      atlas; the back buffer is the body card on Body (8 vertices, 4
+--      triangles, the right half of the 32 x 16 back texture, u 0.5..1) and,
+--      in the player model, the cloak card on the Cloak (the left half,
+--      u 0..0.5), v 0..1; the player's wings are 2 x 6 triangles on the Cloak;
 --   K  a key in every frame of both offhand bones (player 0-484, NPC
 --      0-220, as many as Body's), the identity on the single frames
 --      between player_api's ranges;
@@ -190,17 +191,28 @@ for _, case in ipairs({
 	end
 	eq(outside, 0, "U " .. name .. ": offhand UVs outside the atlas")
 	bones, n, seen = buffer_bones(model, off + 1)
-	eq(n, 8, "U " .. name .. ": back card vertices")
-	eq(#(model.buffers[off + 1] or {}), 4, "U " .. name .. ": back card triangles")
+	local cards = is_player and 2 or 1
+	eq(n, 8 * cards, "U " .. name .. ": back card vertices (" .. cards .. " cards)")
+	eq(#(model.buffers[off + 1] or {}), 4 * cards, "U " .. name .. ": back card triangles")
+	eq(bones.Body, 8, "U " .. name .. ": the body card rides Body")
+	if is_player then eq(bones.Cloak, 8, "U player: the cloak card rides the Cloak") end
 	check(only(bones, is_player and {Body = true, Cloak = true} or {Body = true}),
-		"U " .. name .. ": the back card rides " .. (is_player and "Body or the Cloak" or "Body"))
+		"U " .. name .. ": the back cards ride Body and the Cloak only")
+	-- each card's corners: its half of the back texture, once per side
 	local corners = {}
 	for v in pairs(seen) do
 		local uv = model.verts[v + 1].uv
-		corners[uv[1] .. "," .. uv[2]] = (corners[uv[1] .. "," .. uv[2]] or 0) + 1
+		local key = model.weights[v] .. ":" .. uv[1] .. "," .. uv[2]
+		corners[key] = (corners[key] or 0) + 1
 	end
-	check(corners["0,0"] == 2 and corners["1,0"] == 2 and corners["1,1"] == 2 and corners["0,1"] == 2,
-		"U " .. name .. ": the back card's UVs are the image's corners, once per side")
+	local function card_ok(bone, u0, u1)
+		return corners[bone .. ":" .. u0 .. ",0"] == 2 and corners[bone .. ":" .. u1 .. ",0"] == 2 and
+			corners[bone .. ":" .. u1 .. ",1"] == 2 and corners[bone .. ":" .. u0 .. ",1"] == 2
+	end
+	check(card_ok("Body", 0.5, 1), "U " .. name .. ": the body card samples u 0.5..1, v 0..1")
+	if is_player then
+		check(card_ok("Cloak", 0, 0.5), "U player: the cloak card samples u 0..0.5, v 0..1")
+	end
 	if is_player then
 		bones, n = buffer_bones(model, 7)
 		eq(#model.buffers[7], 12, "U player: wings triangles (2 x 6)")
