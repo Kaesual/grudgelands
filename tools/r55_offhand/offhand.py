@@ -310,9 +310,8 @@ def validate(p):
     _shape("book.shape", bk.get("shape", {}), (
         ("width", 1, 12), ("height", 1, 14), ("pages", 0.25, 6), ("cover", 0.1, 2), ("open", 0, 180),
         ("inset", 0, 2), ("spine_min", 0, 2)), errors)
-    if bk.get("ribbon") is not None:
-        _shape("book.ribbon", bk["ribbon"], (("x0", -1, 8), ("x1", -1, 8), ("below", 0, 8), ("into", 0, 4),
-                                             ("half_depth", 0.05, 2)), errors)
+    _shape("book.ribbon", bk.get("ribbon") or {}, (("x0", -1, 8), ("x1", -1, 8), ("below", 0, 8), ("into", 0, 4),
+                                                   ("half_depth", 0.05, 2)), errors)
     _placement("book.place", bk.get("place"), BONES, errors)
     back = p.get("back", {})
     _placement("back", back, BACK_BONES, errors)
