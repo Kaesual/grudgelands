@@ -26,7 +26,7 @@ local SCOUT = {
 	"(grug_armor_leather_scaled_head.png)^(grug_armor_leather_scaled_chest.png)^(grug_armor_leather_scaled_legs.png)^(grug_armor_leather_scaled_feet.png)",
 	"blank.png",
 	"blank.png",
-	"[combine:32x16:0,0=grug_gear_item_sword_silversteel.png",
+	"[combine:32x16:0,0=grug_gear_item_sword_silversteel.png\\^[transformR180",
 	"blank.png",
 }
 local SCOUT_NO_CLOAK = {
@@ -35,7 +35,7 @@ local SCOUT_NO_CLOAK = {
 	"(grug_armor_leather_scaled_head.png)^(grug_armor_leather_scaled_chest.png)^(grug_armor_leather_scaled_legs.png)^(grug_armor_leather_scaled_feet.png)",
 	"blank.png",
 	"blank.png",
-	"[combine:32x16:16,0=grug_gear_item_sword_silversteel.png",
+	"[combine:32x16:16,0=grug_gear_item_sword_silversteel.png\\^[transformR180",
 	"blank.png",
 }
 local SCOUT_WINGS = {}

@@ -190,7 +190,7 @@ size copy samples its own sheet, so the copy of a tier's size step shows and the
 | Slot | Size | Content |
 |---|---|---|
 | `offhand` | the atlas, 64 × 64 | the shield's or spellbook's baked layer (§7) with its enchant overlay; `blank.png` when empty |
-| `back` | 32 × 16 | the Scout's non-held weapon's 16 × 16 inventory image in the **left** half when a cloak is worn (the cloak card), in the **right** half otherwise (the body card), the other half transparent: `[combine:32x16:0,0=<image>` or `[combine:32x16:16,0=<image>` (the image escaped for `[combine`); `blank.png` when no card shows. NPCs: the right half |
+| `back` | 32 × 16 | the Scout's non-held weapon's 16 × 16 inventory image in the **left** half when a cloak is worn (the cloak card), in the **right** half otherwise (the body card), the other half transparent: `[combine:32x16:0,0=<image>^[transformR180` or `[combine:32x16:16,0=<image>^[transformR180` (the image turned 180° so the grip points up, since 2026-10-21; escaped for `[combine`); `blank.png` when no card shows. NPCs: the right half |
 | `wings` | 16 × 32 | the cloak's wing texture (§6); `blank.png` for a cloak without wings |
 
 ## 6. Painted art

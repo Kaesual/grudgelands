@@ -483,9 +483,9 @@ local function combine_parts(texture)
 end
 do
 	eq(V.back_card(V.BACK_NONE, true), V.BACK_NONE, "B no card: blank")
-	eq(V.back_card("grug_gear_bow_birch.png", true), "[combine:32x16:0,0=grug_gear_bow_birch.png",
-		"B with a cloak: the left half")
-	eq(V.back_card("grug_gear_bow_birch.png", false), "[combine:32x16:16,0=grug_gear_bow_birch.png",
+	eq(V.back_card("grug_gear_bow_birch.png", true), "[combine:32x16:0,0=grug_gear_bow_birch.png\\^[transformR180",
+		"B with a cloak: the left half, turned 180 degrees (grip up, 2026-10-21)")
+	eq(V.back_card("grug_gear_bow_birch.png", false), "[combine:32x16:16,0=grug_gear_bow_birch.png\\^[transformR180",
 		"B without: the right half")
 	local tricky = "((grug_gear_bow_birch.png^[hsl:0:-20:16^(grug_gear_bow_birch_ench.png^" ..
 		"[verticalframe:2:0^[multiply:#20dea2^[opacity:128))^[hsl:0:-80:-35^[cracko:1:4)"
@@ -493,9 +493,9 @@ do
 	local parts = combine_parts(card)
 	check(parts ~= nil and parts.w == 32 and parts.h == 16 and parts.x == 16 and parts.y == 0,
 		"B a 32 x 16 combine, the image at 16,0")
-	eq(parts and parts.image, tricky, "B the escaped image reads back exactly")
+	eq(parts and parts.image, tricky .. "^[transformR180", "B the escaped image reads back exactly, turned")
 	check(not card:sub(#"[combine:32x16:16,0=" + 1):find("[^\\][%^:]"), "B every ^ and : escaped")
-	eq(combine_parts(V.back_card("a\\b.png", true)).image, "a\\b.png", "B a backslash escaped too")
+	eq(combine_parts(V.back_card("a\\b.png", true)).image, "a\\b.png^[transformR180", "B a backslash escaped too")
 end
 
 ------------------------------------------------------------------------------

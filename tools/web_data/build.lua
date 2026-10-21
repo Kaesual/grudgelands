@@ -391,18 +391,20 @@ local function offhand_look(root, gv, items)
 		:match('\nlocal BACK_CARD_CLASS = "([%w_]+)"')
 	assert(class, "web_data: apply.lua names no BACK_CARD_CLASS")
 	local function card(on_cloak)
-		local w, h, x, y = gv.back_card("x.png", on_cloak)
-			:match("^%[combine:(%d+)x(%d+):(%d+),(%d+)=x%.png$")
-		assert(w and y == "0", "web_data: grug_visuals.back_card wrote an unknown form")
-		return tonumber(w), tonumber(h), tonumber(x)
+		local w, h, x, y, rest = gv.back_card("x.png", on_cloak)
+			:match("^%[combine:(%d+)x(%d+):(%d+),(%d+)=x%.png(.*)$")
+		-- the image may be turned (counter-clockwise, as [transformR<deg>)
+		local turn = rest == "" and "0" or rest and rest:match("^\\%^%[transformR(%d+)$")
+		assert(w and y == "0" and turn, "web_data: grug_visuals.back_card wrote an unknown form")
+		return tonumber(w), tonumber(h), tonumber(x), tonumber(turn)
 	end
-	local width, height, cloak_x = card(true)
-	local body_width, body_height, body_x = card(false)
-	assert(width == body_width and height == body_height,
-		"web_data: the two back cards differ in size")
+	local width, height, cloak_x, rotate = card(true)
+	local body_width, body_height, body_x, body_rotate = card(false)
+	assert(width == body_width and height == body_height and rotate == body_rotate,
+		"web_data: the two back cards differ in size or turn")
 	return {setting = OFFHAND_SETTING, enabled = enabled, layers = layers,
 		back_card = {class = class, width = width, height = height,
-			cloak_x = cloak_x, body_x = body_x}}
+			cloak_x = cloak_x, body_x = body_x, rotate = rotate}}
 end
 
 local function vec3(v)

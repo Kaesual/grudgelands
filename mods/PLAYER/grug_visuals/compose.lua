@@ -128,12 +128,15 @@ grug_visuals.WINGS_NONE = "blank.png"
 -- The back slot (32 x 16) holds two cards: the left half is the card on the
 -- cloak, shown when a cloak is worn, the right half the card on the body
 -- (offhand-format.md §5). `image` (a 16 x 16 item image, any texture string)
--- goes into the half `on_cloak` names, escaped as `[combine` requires
--- (`\`, `^` and `:`; lua_api.md "Escaping"); BACK_NONE stays BACK_NONE.
+-- goes into the half `on_cloak` names, turned 180 degrees so the grip points
+-- up over the right shoulder (the user, 2026-10-21; the sprites hold the grip
+-- bottom-left), escaped as `[combine` requires (`\`, `^` and `:`; lua_api.md
+-- "Escaping"); BACK_NONE stays BACK_NONE.
 function grug_visuals.back_card(image, on_cloak)
 	if image == nil or image == grug_visuals.BACK_NONE then
 		return grug_visuals.BACK_NONE
 	end
+	image = image .. "^[transformR180"
 	local escaped = image:gsub("\\", "\\\\"):gsub("%^", "\\^"):gsub(":", "\\:")
 	return "[combine:32x16:" .. (on_cloak and "0" or "16") .. ",0=" .. escaped
 end

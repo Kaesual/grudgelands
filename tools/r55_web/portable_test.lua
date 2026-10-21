@@ -117,6 +117,7 @@ eq(card.width, 32, "K back texture width")
 eq(card.height, 16, "K back texture height")
 eq(card.cloak_x, 0, "K the cloak's card is the left half")
 eq(card.body_x, 16, "K the body's card is the right half")
+eq(card.rotate, 180, "K the image turned 180 degrees, grip up (2026-10-21)")
 local function png_size(path)
 	local text = read(path)
 	if not text or text:sub(2, 4) ~= "PNG" then return nil end

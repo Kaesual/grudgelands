@@ -216,7 +216,7 @@ in 0.54.x, apart from the new shield and spellbook item icons.
 | `offhand_look.setting` | The setting's name, `grug_offhand_visuals`. |
 | `offhand_look.enabled` | The setting's default at this commit (`true` since 0.55.0). While it is false, a website draws **no** offhand, back card or wings: hide the three primitives. The stored `textures.offhand` and `textures.wings` are `none` then anyway; the back card, which no value stores, is what needs this field. A realm whose operator sets the setting otherwise departs from this default, which the export cannot see. |
 | `offhand_look.layers.shield`, `.book` | The baked offhand atlas layer of each bracket, index 0 = bracket 1 to index 5 = bracket 6 (the item `grug_gear:shield_<grade>` or `grug_gear:spellbook_<grade>` of that bracket's metal grade), the files a stored `textures.offhand` names. Each has its enchant mask `<stem>_ench.png` beside it. The files ship since 0.55.0 and `texture_files` lists them with their paths like any other file; no stored value names them while the setting is off. |
-| `offhand_look.back_card` | The Scout's back card: `class` (the `grug_classes:class` that carries one), `width` × `height` (the back texture, 32 × 16), `cloak_x` and `body_x` (the column where the 16 × 16 image goes: the left half is the card on the cloak, the right half the card on the body). |
+| `offhand_look.back_card` | The Scout's back card: `class` (the `grug_classes:class` that carries one), `width` × `height` (the back texture, 32 × 16), `cloak_x` and `body_x` (the column where the 16 × 16 image goes: the left half is the card on the cloak, the right half the card on the body), `rotate` (degrees counter-clockwise the image is turned before it goes in: 180 since 0.55.0, so the grip points up over the right shoulder). |
 
 While `enabled` is true:
 
@@ -245,8 +245,9 @@ While `enabled` is true:
   `textures.cloak` is not `none` (the game decides by the cloak's texture,
   not its id), else at `body_x`, row 0. The other half stays
   transparent, so only the card on the cloak or only the one on the body
-  shows. Put it on the `back` primitive. The game builds the same texture
-  as `[combine:32x16:<x>,0=<image>`; `[combine` is outside the grammar,
+  shows. Turn the image by `rotate` degrees first (180: the grip up). Put it
+  on the `back` primitive. The game builds the same texture
+  as `[combine:32x16:<x>,0=<image>^[transformR180` (the image escaped); `[combine` is outside the grammar,
   so a website composes it itself. In the world the game's card follows
   what the player holds at that moment (a bow skill puts the blade on the
   back, anything else the bow); a website shows one fixed view.

@@ -385,7 +385,7 @@
     "textures": ["body", "cloak", "armor", "weapon", "offhand", "back", "wings"]
   },
   "offhand_look": {
-    "back_card": {"body_x": 16, "class": "scout", "cloak_x": 0, "height": 16, "width": 32},
+    "back_card": {"body_x": 16, "class": "scout", "cloak_x": 0, "height": 16, "rotate": 180, "width": 32},
     "enabled": true,
     "layers": {
       "book": ["grug_offhand_book_bronze.png", "grug_offhand_book_iron.png", "grug_offhand_book_steel.png", "grug_offhand_book_silversteel.png", "grug_offhand_book_embersteel.png", "grug_offhand_book_abyssal_steel.png"],
