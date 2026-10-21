@@ -68,20 +68,22 @@ local function set(target, target_name, words)
 		slot, profession, tier = parse_slot(words[3]), find_profession(words[4]),
 			parse_tier(words[5])
 		if not slot then return false, "Slot must be 1 or 2." end
-	elseif #words == 4 then
+	elseif #words == 4 and not parse_slot(words[3]) then
 		profession, tier = find_profession(words[3]), parse_tier(words[4])
 	else
 		return false, USAGE
 	end
 	if not profession then return false, "Unknown profession." end
 	if not tier then return false, "Tier must be 1 to 6 (or T1 to T6)." end
-	local ok, granted = grug_jobs.admin_set(target, profession, tier, slot)
+	local ok, granted, replaced = grug_jobs.admin_set(target, profession, tier, slot)
 	if not ok then return false, granted end
 	local name = profession_name(profession)
 	local what = slot and ("slot " .. slot .. " to " .. name) or name
-	return true, ("%s: set %s T%d.%s"):format(target_name, what, granted,
+	local lost = replaced and (" (replaced %s; its progression was lost)")
+		:format(profession_name(replaced)) or ""
+	return true, ("%s: set %s T%d%s.%s"):format(target_name, what, granted, lost,
 		cap_note(target, target_name, tier, granted)),
-		("An admin set %s%s tier %d."):format(what, slot and "" or " to", granted)
+		("An admin set %s%s tier %d%s."):format(what, slot and "" or " to", granted, lost)
 end
 
 local function clear(target, target_name, words)
@@ -148,7 +150,7 @@ core.register_chatcommand("prof", {
 	func = function(name, param)
 		local words = {}
 		for word in param:gmatch("%S+") do words[#words + 1] = word end
-		if #words == 1 then
+		if #words == 1 and not ACTIONS[words[1]:lower()] then
 			local target = core.get_player_by_name(words[1])
 			if not target then return false, "Player is not online: " .. words[1] end
 			return true, show(target, words[1])

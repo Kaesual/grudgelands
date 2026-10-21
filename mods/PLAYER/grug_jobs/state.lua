@@ -258,11 +258,13 @@ end
 -- dropped as by unlearn; one already in the other slot is refused), a
 -- secondary with `slot` nil. The tier is capped at the character's band
 -- (character_tier): an admin never grants more than play could reach. The
--- tier's crafts start at 0. Returns true and the tier set, or false and why.
+-- tier's crafts start at 0. Returns true, the tier set and the primary it
+-- replaced (nil: none), or false and why.
 function grug_jobs.admin_set(player, profession, tier, slot)
 	local definition = grug_jobs.PROFESSIONS[profession]
 	if not definition then return false, "Unknown profession." end
 	local meta = player:get_meta()
+	local before
 	if definition.class == "primary" then
 		if slot == nil or slot < 1 or slot > PRIMARY_SLOTS then
 			return false, definition.name .. " goes into slot 1 or 2."
@@ -272,8 +274,12 @@ function grug_jobs.admin_set(player, profession, tier, slot)
 				return false, definition.name .. " is already in slot " .. other .. "."
 			end
 		end
-		local before = meta:get_string(META_PRIMARY .. slot)
-		if before ~= "" and before ~= profession then drop_progression(player, before) end
+		before = meta:get_string(META_PRIMARY .. slot)
+		if before ~= "" and before ~= profession then
+			drop_progression(player, before)
+		else
+			before = nil
+		end
 		set_string(meta, META_PRIMARY .. slot, profession)
 	else
 		if slot ~= nil then return false, definition.name .. " takes no slot." end
@@ -283,7 +289,7 @@ function grug_jobs.admin_set(player, profession, tier, slot)
 	set_int(meta, META_LEVEL .. profession, granted)
 	set_int(meta, META_CRAFTS .. profession, 0)
 	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
-	return true, granted
+	return true, granted, before
 end
 
 -- Any learned profession leaves, secondaries too (Cooking comes back at the
