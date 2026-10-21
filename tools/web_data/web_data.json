@@ -386,7 +386,7 @@
   },
   "offhand_look": {
     "back_card": {"body_x": 16, "class": "scout", "cloak_x": 0, "height": 16, "width": 32},
-    "enabled": false,
+    "enabled": true,
     "layers": {
       "book": ["grug_offhand_book_bronze.png", "grug_offhand_book_iron.png", "grug_offhand_book_steel.png", "grug_offhand_book_silversteel.png", "grug_offhand_book_embersteel.png", "grug_offhand_book_abyssal_steel.png"],
       "shield": ["grug_offhand_shield_bronze.png", "grug_offhand_shield_iron.png", "grug_offhand_shield_steel.png", "grug_offhand_shield_silversteel.png", "grug_offhand_shield_embersteel.png", "grug_offhand_shield_abyssal_steel.png"]

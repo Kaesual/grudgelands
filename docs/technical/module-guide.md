@@ -2911,7 +2911,8 @@ tools](#player-meta-read-by-external-tools).
   offhand, back, wings}}` for the inventory view, the weapon the main hand's
   cosmetic item's image (`hand_image`) or `blank.png`. **The offhand look**
   (Round 55, [offhand format](offhand-format.md)) sits behind the setting
-  `grug_offhand_visuals` (default false; `grug_visuals.OFFHAND_VISUALS`,
+  `grug_offhand_visuals` (default true since 0.55.0, the off switch;
+  `grug_visuals.OFFHAND_VISUALS`,
   read once in `init.lua`, part of compose's key): off, the offhand, back
   and wings slots are `blank.png` (`OFFHAND_NONE`, `BACK_NONE`,
   `WINGS_NONE`). On, compose's `offhand_item`, `offhand_broken` and

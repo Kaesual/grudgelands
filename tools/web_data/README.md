@@ -207,16 +207,15 @@ Round 55 built three parts into the model
 - the Scout's second weapon on a flat card on the back;
 - wings on a cloak.
 
-The game draws them only while the setting `grug_offhand_visuals` is on.
-It is off by default until the poses are final (the art arrived with the
-round's finish step), and while it is off every character looks as in
-0.54.x, apart from the new shield and spellbook item icons.
+The game draws them while the setting `grug_offhand_visuals` is on, its
+default since 0.55.0. A server that turns it off draws every character as
+in 0.54.x, apart from the new shield and spellbook item icons.
 
 | Field | Meaning |
 |---|---|
 | `offhand_look.setting` | The setting's name, `grug_offhand_visuals`. |
-| `offhand_look.enabled` | The setting's default at this commit (`false` in 0.55.0). While it is false, a website draws **no** offhand, back card or wings: hide the three primitives. The stored `textures.offhand` and `textures.wings` are `none` then anyway; the back card, which no value stores, is what needs this field. A realm whose operator sets the setting otherwise departs from this default, which the export cannot see. |
-| `offhand_look.layers.shield`, `.book` | The baked offhand atlas layer of each bracket, index 0 = bracket 1 to index 5 = bracket 6 (the item `grug_gear:shield_<grade>` or `grug_gear:spellbook_<grade>` of that bracket's metal grade), the files a stored `textures.offhand` names. Each has its enchant mask `<stem>_ench.png` beside it. The files ship since the finish step's art and `texture_files` lists them with their paths like any other file; no stored value names them while `enabled` is false (the setting being off). |
+| `offhand_look.enabled` | The setting's default at this commit (`true` since 0.55.0). While it is false, a website draws **no** offhand, back card or wings: hide the three primitives. The stored `textures.offhand` and `textures.wings` are `none` then anyway; the back card, which no value stores, is what needs this field. A realm whose operator sets the setting otherwise departs from this default, which the export cannot see. |
+| `offhand_look.layers.shield`, `.book` | The baked offhand atlas layer of each bracket, index 0 = bracket 1 to index 5 = bracket 6 (the item `grug_gear:shield_<grade>` or `grug_gear:spellbook_<grade>` of that bracket's metal grade), the files a stored `textures.offhand` names. Each has its enchant mask `<stem>_ench.png` beside it. The files ship since 0.55.0 and `texture_files` lists them with their paths like any other file; no stored value names them while the setting is off. |
 | `offhand_look.back_card` | The Scout's back card: `class` (the `grug_classes:class` that carries one), `width` × `height` (the back texture, 32 × 16), `cloak_x` and `body_x` (the column where the 16 × 16 image goes: the left half is the card on the cloak, the right half the card on the body). |
 
 While `enabled` is true:

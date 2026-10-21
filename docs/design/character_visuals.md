@@ -177,10 +177,10 @@ atlas, the weapon card (empty in the world, where the hand entity shows the
 weapon, §4; the inventory's view shows the main hand's weapon on it) and,
 since Round 55, the offhand (a shield or spellbook), the back card (a
 Scout's second weapon) and the cloak's wings
-([offhand format](../technical/offhand-format.md)); the last three stay
-empty while the setting `grug_offhand_visuals` is off (the default until the
-offhand poses are final; the picked art ships since the Round 55 finish, the
-item icons in use already). An armoured NPC wears the **NPC model** — the same
+([offhand format](../technical/offhand-format.md); what they show: §4,
+"The offhand and the back"); the last three stay empty while the setting
+`grug_offhand_visuals` is off (on by default since 0.55.0). An armoured NPC
+wears the **NPC model** — the same
 body and boxes without the cloak, textures skin, armour atlas, weapon card,
 offhand and back (the last two empty for now); humanoids without armour
 keep `character.b3d`.
@@ -282,9 +282,41 @@ nodes with a wield image, tools, craftitems) keep the full size. The rule
 mirrors the engine's own wielditem choice (`wield_geometry.lua`) and holds for
 NPCs too; the first-person hand is the engine's and is unchanged.
 
-One entity per character, never more. The **offhand is not drawn beside the
-weapon**; only a Scout's Melee skill puts the offhand blade into the hand
-(case 1 above).
+One entity per character, never more. The **offhand is not a second hand
+entity**: a shield or spellbook is part of the model (below), and only a
+Scout's Melee skill puts the offhand blade into the hand (case 1 above).
+
+**The offhand and the back** (Round 55, 0.55.0; the user's rulings and
+poses of 2026-10-21, the picked art of GPT-6 Astra; numbers in
+`tools/r55_offhand/params.json`, the rules in the
+[offhand format](../technical/offhand-format.md)). The setting
+`grug_offhand_visuals` turns the look on (the default) or off (characters
+as in 0.54.1, the new item icons kept):
+
+- a **Warrior's shield** in the offhand slot is held on the left arm:
+  one heater shape with a ridge and a boss that grows with the tier in
+  **three sizes**, 85 % at T1–T2, 92 % at T3–T4 and the full 10.5 × 13
+  skin pixels at T5–T6, painted per tier. In the **Block** pose (standing
+  and walking) it stands upright in front of the chest;
+- a **Mage's or Priest's spellbook** lies open (136°) in the left hand,
+  spine on the palm and pages tilted towards the head, one model for every
+  tier with its tier's paint; **Cast 2** (standing and walking) lifts it;
+- both show their **enchant colours** and the **broken** crack as worn
+  armour does (§5a);
+- a **Scout** carries its equipped weapon that the hand does not show as a
+  flat **card on the back** with the item's image: the melee blade while
+  the hand shows the bow (a bow skill, the bow itself), otherwise the bow.
+  The card hangs on the cloak when one is worn, else on the body; a Scout
+  without a bow equipped shows none. It follows the hotbar through the
+  one-second poll (§5) and is never stored. Other classes carry no back
+  weapon;
+- a cloak with **wings** (§5b) shows them;
+- the **Character tab** shows the shield or the book and the wings, and a
+  Scout's bow on the weapon card with the blade on the back;
+- **first person** shows neither shield nor book (the engine's own hand is
+  unchanged);
+- **NPCs** carry the offhand and the body card in their model, empty for
+  now.
 
 ## 5. Rules that hold everywhere
 
@@ -427,8 +459,8 @@ are kept per character, and so is the choice.
   Grudgelands early on."), whose **Supporter Cloak** (GPT-6 Astra's, picked
   by the user 2026-10-21) is the first cloak with **wings**, a 16 × 32
   texture for the cloak's two wing pieces ([offhand
-  format](../technical/offhand-format.md) §3.4, §6), shown only while the
-  setting `grug_offhand_visuals` is on.
+  format](../technical/offhand-format.md) §3.4, §6), shown while the
+  setting `grug_offhand_visuals` is on (the default).
 - The Character page has an **Achievements** mode: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, one column of seven per page (Round 44).
