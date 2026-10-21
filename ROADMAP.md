@@ -568,8 +568,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   ([offhand format](docs/technical/offhand-format.md)), the picked shield
   and spellbook art with one icon per tier, appearance version 3, manual
   achievements with `/achievement grant|revoke` and the Supporter Cloak.
-  Complete on 2026-10-21, not pushed; waits for the user's GUI test.
-  0.55.1 (**compatible**) adds the admin debug command `/prof`
+  Complete on 2026-10-21; GUI-accepted and pushed with 0.55.1 the same day,
+  which runs in production. 0.55.1 (**compatible**) adds the admin debug command `/prof`
   ([professions.md](docs/design/professions.md#16-the-prof-debug-command)).
 
 ### Remaining work

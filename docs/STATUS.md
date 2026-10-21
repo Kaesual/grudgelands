@@ -10,9 +10,10 @@ Round 54 followed with the armor redesign (0.54.0), then the particle look
 pass (0.54.1); 0.53.0 to 0.54.1 were pushed together on 2026-10-21
 (origin/main `abfb30ce`); the user accepted their GUI checklists
 (2026-10-21). Round 55 (0.55.0) puts the offhand into the model; 0.55.1
-adds the admin debug command `/prof`.
-Next: the user's GUI test of 0.55.0 and 0.55.1 and the push, the playtest of the new
-classes and a short balance fix round. The
+adds the admin debug command `/prof`. Both passed the user's GUI test, were
+pushed on 2026-10-21 (origin/main `52996c44`) and 0.55.1 runs in
+production. Next: the playtest of the new classes and a short balance fix
+round. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
@@ -20,7 +21,8 @@ user's notes.
 - **0.55.1 "The profession debug command" complete** (2026-10-21,
   **compatible**, no migration step; the user's request; branch
   `prof-admin`, one coordinator-built lane, independently reviewed by Opus,
-  no blocker). **Not pushed**; it goes with 0.55.0. New
+  no blocker). **Pushed** together on 2026-10-21 after the user's GUI test (origin/main
+  `52996c44`); 0.55.1 deployed to production by the user (2026-10-21). New
   `grug_jobs/admin.lua`: `/prof show|set|learn|unlearn|clear <player> ...`
   (`server` privilege, online players only, the name always given;
   [professions.md §1.6](design/professions.md#16-the-prof-debug-command)).
@@ -45,10 +47,13 @@ user's notes.
 - **Round 55 "The offhand look" complete** (2026-10-21, version 0.55.0,
   **compatible**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round55-plan.md#completion-2026-10-21);
-  the contract in [offhand-format.md](technical/offhand-format.md)). **Not
-  pushed** (origin/main `abfb30ce`, 0.54.1): 0.55.0 waits for the user's GUI
-  test and is pushed on the user's word; synced to the user's Luanti only
-  after the round. From main `cf7c6ce3` (the plan and CONTRACT, ten contract
+  the contract in [offhand-format.md](technical/offhand-format.md)).
+  **Pushed** together on 2026-10-21 after the user's GUI test (origin/main
+  `52996c44`); 0.55.1 deployed to production by the user (2026-10-21). After the round end
+  gates, two small fixes by the user's word: the Character tab's weapon card
+  mirrored across its long axis (`985d3e19`) and the Scout's back card turned
+  180 degrees, grip up (`29ced647`, exported as `back_card.rotate`), with an
+  independent delta review (OK). From main `cf7c6ce3` (the plan and CONTRACT, ten contract
   fixes up to `dbd05bd3`): BAKE (`8568017d`, `b99c0b3a`), MODEL
   (`283e8a43`), the user's params (`b88245aa`, `4fa0ab2e`, `93e6aad8`), GAME
   (`6532a1c7`), SUPPORTER (`a0b77cf9`), WEB (`cd218892`), VIEWER

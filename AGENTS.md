@@ -23,8 +23,8 @@ a card on the back (on the cloak when one is worn), cloak wings, manual
 achievements (`/achievement grant|revoke`) with the Supporter Cloak, the
 picked shield and spellbook art with one icon per tier, appearance version
 3 and the setting `grug_offhand_visuals` (on by default; the off switch).
-Both on main, **not pushed** (origin/main `abfb30ce`, 0.54.1); they wait
-for the user's GUI test. Before it, pushed together on 2026-10-21: 0.54.1, the
+Both GUI-accepted and **pushed** on 2026-10-21 (origin/main `52996c44`);
+0.55.1 runs in production. Before them, pushed together on 2026-10-21: 0.54.1, the
 particle look pass (**compatible**; [STATUS](docs/STATUS.md)), 0.54.0,
 Round 54 "The armor redesign in the game" (**compatible**;
 [completion](docs/planning/round54-plan.md#completion-2026-10-21): armor
@@ -49,10 +49,10 @@ performance (native first) and gameplay polish" (**map reset**;
 [completion](docs/planning/round49-plan.md#completion-2026-10-16)).
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
-47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20; the GUI tests of
-Rounds 36–38, 40, 41, 43–45, 48, 49, 51 and 53–55 and of 0.45.1, 0.49.1,
-0.50.0, 0.50.1, 0.52.1, 0.53.1 and 0.54.1 are not recorded as passed. Next:
-the GUI test of 0.55.0 and 0.55.1, the push, then the user's playtest of the new
+47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
+0.53.1, 0.54.1 and 0.55.1 on 2026-10-21; the GUI tests of Rounds 36–38, 40,
+41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
+are not recorded as passed. Next: the user's playtest of the new
 classes and a short balance fix round
 ([delivery plan](docs/planning/class-redesign/delivery-plan.md)).
 Details: [STATUS](docs/STATUS.md).

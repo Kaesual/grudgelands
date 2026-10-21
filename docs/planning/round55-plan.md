@@ -287,8 +287,8 @@ time:
 All code lanes are merged on main and independently reviewed (Opus); the art came from GPT-6 Astra in one drop
 and the user's picks; this lane D (the setting on, this section, the docs and the status owners) follows on main
 `47e1c98f`. **0.55.0 is compatible:** no migration step, item ids unchanged. Nothing in world generation changes.
-**Push:** not pushed; origin/main stays at `abfb30ce` (0.54.1, pushed 2026-10-21); 0.55.0 waits for the user's GUI
-test. **Sync:** on the user's word after the round.
+**Push:** after the user's GUI test (accepted), 0.55.0 and 0.55.1 pushed together on 2026-10-21 (origin/main
+`52996c44`); 0.55.1 deployed to production by the user. **Sync:** by the user after the round.
 
 The finish step (§7) ran **inside this round** instead of as 0.55.1: the user's final params, Astra's picked art,
 the Supporter Cloak and the setting's default (lane D) all ship in 0.55.0 (the user, option b: "release everything
