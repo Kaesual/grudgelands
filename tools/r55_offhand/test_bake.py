@@ -12,7 +12,7 @@ zones (frame 0 A, frame 1 B, light 255, dark 153); palettes.json laid over by
 name; a book variant map; the icons and their masks; determinism; --check
 finding a missing, a changed and an extra file (and write removing the
 extra); the broken set failing with the expected messages and writing
-nothing; a hole in a texel the outline only crosses; a missing art
+nothing; a hole in a texel the outline only crosses; blank sheets; a missing art
 directory; make_broken_art.py --check.
 """
 import json
@@ -256,6 +256,19 @@ def main():
             ok("1 transparent texel(s) the outline contains or crosses (front face) at (%d,%d)" % cut in str(e),
                "the crossed edge hole is named: %s" % e)
         shutil.copy(ART / "shield" / "a.png", art2 / "shield" / "a.png")
+        # a blank sheet of the right size is not "already reported": its rules apply (review finding)
+        for rel, what in (("shield/a.png", "the outline contains or crosses (front face)"),
+                          ("book/spine_a.png", "in a face"), ("book/pages_f_a.png", "in a face")):
+            keep = (art2 / rel).read_bytes()
+            Image.new("RGBA", Image.open(art2 / rel).size, (0, 0, 0, 0)).save(art2 / rel)
+            try:
+                B.bake(art2)
+                ok(False, "a blank %s fails the bake" % rel)
+            except B.BakeError as e:
+                ok("%s: " % rel in str(e) and what in str(e)
+                   and (rel != "shield/a.png" or "0 zone A (at least 6)" in str(e)),
+                   "a blank %s is named with its holes (and the shield's zones): %s" % (rel, e))
+            (art2 / rel).write_bytes(keep)
         bl = f2[O.layer_file("book", GRADES[1])]
         ok(bl.getpixel((fx + 1, fy + 1)) == rgba(TIERS["book"]["T2"]["palette"], "A_LIGHT"), "book T2 cover_f from variant b")
         ok(f2[O.mask_file(O.layer_file("book", GRADES[1]))].getpixel((fx + 1, fy + 1)) == (255, 255),

@@ -16,7 +16,7 @@
   },
   "T4": {
    "palette": "silversteel",
-   "variant": "a",
+   "variant": "e",
    "icon": "a"
   },
   "T5": {
@@ -58,7 +58,10 @@
   },
   "T5": {
    "palette": "silk",
-   "variant": "a",
+   "variant": {
+    "spine": "e",
+    "pages_f": "e"
+   },
    "icon": "a"
   },
   "T6": {

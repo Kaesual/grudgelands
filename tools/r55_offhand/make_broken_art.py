@@ -21,6 +21,8 @@ The errors (ERRORS below lists the message each one must produce):
   10 tiers.json: shield T2 an unknown palette, shield T3 no palette, book T3
      missing, an unknown tier T7, book T1 a variant for an unknown box
   11 wings_big.png: a wing texture of the wrong size
+  12 blank sheets at the right size: shield/e.png (shield T4: holes on both
+     faces and no zones), book/spine_e.png and pages_f_e.png (book T5: holes)
 And one warning: paint outside the spine sheet's faces (dropped).
 """
 import argparse
@@ -62,6 +64,11 @@ ERRORS = [
     (10, "shield: unknown tier 'T7'"),
     (10, "book T1: 'variant' names unknown box 'clasp'"),
     (11, "wings_big.png: size 32x32, expected 16x32"),
+    (12, "shield/e.png: 116 transparent texel(s) the outline contains or crosses (front face)"),
+    (12, "shield/e.png: 116 transparent texel(s) the outline contains or crosses (back face)"),
+    (12, "shield/e.png (shield T4, size step 1): 0 zone A (at least 6), 0 zone B (at least 3)"),
+    (12, "book/spine_e.png: 78 transparent texel(s) in a face"),
+    (12, "book/pages_f_e.png: 46 transparent texel(s) in a face"),
 ]
 WARNING = "book/spine_a.png: 1 pixel(s) outside the faces at (0,0) (dropped)"
 
@@ -112,6 +119,10 @@ def write(out):
     edit(bk / "cover_b_a.png", cover_b)
     # 7 an icon of the wrong size
     Image.open(out / "icons/book_a.png").resize((32, 32), Image.Resampling.NEAREST).save(out / "icons/book_a.png")
+    # 12 blank sheets of the right size (read fine, nothing painted)
+    for name, like in (("shield/e.png", "shield/a.png"), ("book/spine_e.png", "book/spine_a.png"),
+                       ("book/pages_f_e.png", "book/pages_f_a.png")):
+        Image.new("RGBA", Image.open(out / like).size, (0, 0, 0, 0)).save(out / name)
     # 11 a wing texture of the wrong size
     Image.open(out / "wings_test.png").resize((32, 32), Image.Resampling.NEAREST).save(out / "wings_big.png")
     # 8 a missing file, 9 an unknown file name
@@ -128,6 +139,8 @@ def write(out):
     del t["shield"]["T3"]["palette"]
     t["shield"]["T5"]["variant"] = "c"
     t["shield"]["T6"]["variant"] = "b"
+    t["shield"]["T4"]["variant"] = "e"
+    t["book"]["T5"]["variant"] = {"spine": "e", "pages_f": "e"}
     t["shield"]["T7"] = dict(t["shield"]["T6"])
     del t["book"]["T3"]
     t["book"]["T1"]["variant"] = {"clasp": "a"}

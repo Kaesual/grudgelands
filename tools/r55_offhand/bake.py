@@ -105,18 +105,20 @@ def icon_art(art, item, v):
 
 def read_grid(path, size, errors):
     """({(x, y): reference name} of a reference-palette PNG's opaque pixels,
-    the set of painted pixels off the palette or with partial alpha)."""
+    the set of painted pixels off the palette or with partial alpha, whether
+    the file was read at its size). A file not read is already an error; one
+    read but blank is not, its rules still apply."""
     if not path.exists():
         errors.append("missing %s" % path)
-        return {}, set()
+        return {}, set(), False
     try:
         im = Image.open(path).convert("RGBA")
     except Exception as e:  # noqa: BLE001
         errors.append("%s: cannot read (%s)" % (path, e))
-        return {}, set()
+        return {}, set(), False
     if im.size != tuple(size):
         errors.append("%s: size %dx%d, expected %dx%d" % (path, im.width, im.height, size[0], size[1]))
-        return {}, set()
+        return {}, set(), False
     px = im.load()
     grid, off, partial = {}, [], []
     for y in range(im.height):
@@ -135,7 +137,7 @@ def read_grid(path, size, errors):
         errors.append("%s: %d pixel(s) off the reference palette at %s" % (path, len(off), coords(off)))
     if partial:
         errors.append("%s: %d pixel(s) with partial alpha (only 0 or 255) at %s" % (path, len(partial), coords(partial)))
-    return grid, set(off) | set(partial)
+    return grid, set(off) | set(partial), True
 
 
 def unknown_files(art, errors):
@@ -338,7 +340,7 @@ def bake(art, icons=False, warnings=None):
     s0 = sheets["shield_0"]
     shield_faces = local_faces(s0)
     inside = shield_cells(params, shield_faces)
-    cache = {}
+    cache, read = {}, set()                # read: the paths read at their size
 
     def sheet_grid(sheet_id, path):
         """A validated sheet grid (rules checked once per file)."""
@@ -346,9 +348,10 @@ def bake(art, icons=False, warnings=None):
             return cache[path]
         sh = sheets[sheet_id]
         faces = local_faces(sh)
-        grid, bad = read_grid(path, sh["rect"][2:], errors)
+        grid, bad, ok = read_grid(path, sh["rect"][2:], errors)
         painted = set(grid) | bad          # bad pixels are reported once, not again as holes
-        if painted:
+        if ok:
+            read.add(path)
             if sheet_id.startswith("shield"):
                 for face, cells in inside.items():
                     check_opaque(path, painted, cells, "the outline contains or crosses (%s face)" % face, errors)
@@ -381,18 +384,19 @@ def bake(art, icons=False, warnings=None):
                 grid = sheet_grid("shield_0", path)
                 pieces = [("shield_%d" % step, grid)]
                 zones = zone_count(grid, inside["front"])
-                seen = ("shield_%d" % step,)
+                seen = [path]
                 where = "%s (shield %s, size step %d)" % (path, tid, step)
             else:
-                pieces = [(box, sheet_grid(box, book_file(art, box, tier["variant"][box]))) for box in O.BOOK_BOXES]
+                paths = {box: book_file(art, box, tier["variant"][box]) for box in O.BOOK_BOXES}
+                pieces = [(box, sheet_grid(box, paths[box])) for box in O.BOOK_BOXES]
                 zones = {"A": 0, "B": 0}
                 for box, face in BOOK_SEEN:
                     fx, fy, fw, fh = local_faces(sheets[box])[face]
                     for z, c in zone_count(dict(pieces)[box], rect_cells(fx, fy, fw, fh)).items():
                         zones[z] += c
-                seen = [box for box, _ in BOOK_SEEN]
+                seen = [paths[box] for box, _ in BOOK_SEEN]
                 where = "book %s (outer covers and readable pages)" % tid
-            if all(dict(pieces)[s] for s in seen):
+            if all(p in read for p in seen):     # a file not read is already an error
                 check_zones(where, zones, errors)
             for sheet_id, grid in pieces:
                 ox, oy = sheets[sheet_id]["rect"][:2]
