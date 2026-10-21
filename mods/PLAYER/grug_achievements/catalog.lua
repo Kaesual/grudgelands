@@ -14,6 +14,12 @@
 -- tab's tooltip. An optional `faction` ("accord" or "throng") gives a row to
 -- that faction's characters only: the others never see or earn it (nor does
 -- a character without a faction yet); a row without it is everyone's.
+-- `manual = true` (Round 55) marks a row an admin grants and revokes with
+-- /achievement instead of a counter: it has no `counter` (core.lua uses
+-- manual:<id>), no `faction`, one tier `at = 1` with `text_one`, and its
+-- cloak (if any) is unlocked by no other tier; the tab lists it only once
+-- granted. A cloak may carry `wings`, a 16x32 texture for the cloak's two
+-- optional wing pieces (offhand-format.md §5).
 -- Names, flavour and cloak names are GPT-6 Astra's proposals
 -- (Round 33); the selection and tiers are the user's (2026-10-04). Counters:
 --   kill:animal           every wild animal: critters and hostile beasts,
@@ -33,6 +39,7 @@
 --                         counts once, so `at = 1` reads "completed")
 --   quest_tag:<tag>       turn-ins of quests whose `tags` list the tag, e.g.
 --                         every quest of a questline (Round 36)
+--   manual:<id>           a manual row's own, 1 while granted (Round 55)
 --
 return {
 	defaults = {"none", "plain_grey"},

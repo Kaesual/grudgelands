@@ -106,6 +106,9 @@ core = {
 	colorize = function(_, text) return text end,
 	log = function(level, text) logs[#logs + 1] = level .. " " .. text end,
 	register_on_dieplayer = function(fn) die = fn end,
+	-- Round 55: the /achievement command and its offline queue (tools/r55_supporter).
+	register_chatcommand = function() end,
+	get_mod_storage = function() return new_meta() end,
 }
 ItemStack = function(text)
 	local count = tonumber(tostring(text):match("%s(%d+)$")) or 1

@@ -2978,8 +2978,9 @@ tools](#player-meta-read-by-external-tools).
   character), `catalog.lua` (data: 20 achievements, tier N of `<id>`
   unlocks cloak `<id>_N` (the three of Round 36 a cloak of its own name),
   an optional `faction` hides and withholds a row from the other faction
-  (the faction from `grug_core.get_player_faction`), defaults `none` and
-  `plain_grey`), `creatures.lua`
+  (the faction from `grug_core.get_player_faction`), `manual = true`
+  marks a row granted by `/achievement` instead of a counter (Round 55,
+  none yet), defaults `none` and `plain_grey`), `creatures.lua`
   (pure: wild animals, zombies, families, named leaders by role, rares by
   registry id; a load audit logs any unclassified mob) and `init.lua` (the
   hooks, the Achievements mode body and the cloak dropdown that
@@ -2990,8 +2991,15 @@ tools](#player-meta-read-by-external-tools).
   `settle_boss`), `grug_pvp.register_on_stat`,
   `grug_jobs.register_on_award_progress`, `register_on_dieplayer` and, since
   Round 36, `grug_quests.register_on_turn_in` (an optional dependency:
-  `quest:<id>`, `quest_tag:<tag>`); each is O(1) per event. Cloak textures are 32×32 (outer face left, lining
-  right). Fixture `tools/r33_c3`; rules
+  `quest:<id>`, `quest_tag:<tag>`); each is O(1) per event. A manual row's
+  counter is `manual:<id>`: `/achievement grant|revoke <player> <id>`
+  (`server`) sets it to 1 and settles (`R.grant`) or clears counter, tier,
+  cloak and a worn selection (`R.revoke`); for a player who is offline the
+  action waits in the mod storage key `queue:<player>`
+  (`<id>=grant,<id>=revoke`) and the join hook applies it once, before the
+  join's settle pass. The tab lists rows through `R.shown_list` (the
+  faction rule, and a manual row only once granted). Cloak textures are 32×32 (outer face left, lining
+  right). Fixtures `tools/r33_c3`, `tools/r55_supporter`; rules
   [character_visuals.md](../design/character_visuals.md) §5b.
 
 ## Player meta read by external tools

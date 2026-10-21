@@ -361,7 +361,7 @@ No cloak. Every other cloak is unlocked only by an **achievement**. Both lists
 are kept per character, and so is the choice.
 
 - **Achievements** count something the character did; each tier is earned
-  once, never taken back, and unlocks its own cloak (tier N of achievement
+  once, never taken back (a manual one excepted, below), and unlocks its own cloak (tier N of achievement
   `<id>` unlocks cloak `<id>_N`; the three Round 36 achievements unlock a
   cloak named after itself). The set (user's picks, 2026-10-04; names,
   flavour and cloak names by GPT-6 Astra; the Round 36 three from the main
@@ -406,6 +406,22 @@ are kept per character, and so is the choice.
   (in creation) sees and earns only the shared ones. Every Name Accounted
   For is The Accord's, Our Oaths Are Ours The Throng's; The Last Claim
   Denied is shared.
+- **Manual achievements** (the user, 2026-10-21, Round 55): a catalogue row
+  with `manual = true` is never earned by playing; an admin grants it, e.g.
+  a premium cloak for players who played early and kept giving feedback.
+  It has no counter of its own (internally `manual:<id>`, 1 while granted),
+  one tier at 1, no faction, and its cloak is unlocked by no other tier.
+  `/achievement grant <player> <id>` and `/achievement revoke <player> <id>`
+  (privilege `server`) accept only manual rows and refuse every other
+  ("Hunter is earned by playing, not granted"); there is no command for
+  counters. A grant settles as any earning (the feed line, the cloak); a
+  revoke takes the tier and the cloak back, and a character wearing that
+  cloak falls back to No cloak. For a player who is offline the action is
+  queued in mod storage and applied once at the next join (a later action
+  on the same achievement replaces the earlier); the command says so, and
+  every grant and revoke is logged. A manual achievement is **hidden until
+  granted**: the tab never lists it as an open goal, nor counts it in its
+  pages. No manual row ships yet.
 - The Character page has an **Achievements** mode: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, one column of seven per page (Round 44).
