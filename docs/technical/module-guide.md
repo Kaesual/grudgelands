@@ -3018,7 +3018,9 @@ tools](#player-meta-read-by-external-tools).
 
 - **The appearance** (`APPEARANCE_VERSION` 3 since Round 55, which added
   `textures.offhand` and `textures.wings`; a version 2 value is rebuilt at
-  the character's next join. Version 1 had
+  the character's next join, and until then a website reads it as version 3
+  with both `none`, [web export](../../tools/web_data/README.md#version-2-appearances).
+  Version 1 had
   no `textures.armor`, its body carried the old armour overlays, and it is
   rebuilt at the character's next join; until then a website shows it
   without armour, [web export](../../tools/web_data/README.md#version-1-appearances)):
@@ -3057,7 +3059,8 @@ tools](#player-meta-read-by-external-tools).
   empty and always `none` while the setting `grug_offhand_visuals` is off;
   the sixth, the Scout's back card, is not stored (it follows the hotbar):
   a reader derives it as the bow (`slots.mainhand`), the blade
-  (`slots.offhand`) when the bow is shown in the hand. `slots` holds the equipment slots
+  (`slots.offhand`) when the bow is shown in the hand
+  ([web export](../../tools/web_data/README.md#the-offhand-look)). `slots` holds the equipment slots
   `head`, `chest`, `legs`, `feet`, `mainhand` (the Weapon slot; a Scout's
   bow) and `offhand` (a shield, a spellbook, a Scout's melee blade), each
   `{"item", "broken", "enchant"}`; an empty slot is absent. `enchant` lists
