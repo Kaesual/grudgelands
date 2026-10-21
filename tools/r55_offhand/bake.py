@@ -29,9 +29,9 @@ the bake with every problem found and writes nothing:
     variant(s) (a book map names known boxes) and, for an icon bake, its icon;
   - file names (shield/<variant>.png, book/<box>_<variant>.png,
     icons/shield|book_<variant>.png; tiers.json, palettes.json and the optional
-    wing texture wings_<id>.png at the top) and the files the tiers need;
-  - sizes (the atlas sheets, icons 16 x 16; a wing texture 16 x 32, size
-    only, not baked), the reference palette only, alpha 0 or 255;
+    cloak_<id>.png and wings_<id>.png at the top) and the files the tiers need;
+  - sizes (the atlas sheets, icons 16 x 16; a cloak 32 x 32 and its wings
+    16 x 32, size only, not baked), the reference palette only, alpha 0 or 255;
   - opaque: every shield texel the outline contains or crosses (front and
     back, offhand.shield_texels) and every texel of a book face;
   - zones: per item and tier at least 6 zone A and 3 zone B texels on the
@@ -78,7 +78,10 @@ ZONE_OF = {"A_LIGHT": "A", "A_DARK": "A", "B_LIGHT": "B", "B_DARK": "B"}
 BOOK_SEEN = (("cover_f", "front"), ("cover_b", "back"), ("pages_f", "back"), ("pages_b", "front"))
 ID = re.compile(r"^[a-z0-9]+$")
 TOP_FILES = ("tiers.json", "palettes.json")
-WINGS = re.compile(r"^wings_[a-z0-9]+\.png$")     # a cloak's wing texture: size-checked, not baked
+# Optional cloak textures at the top (format doc section 6): size-checked, not baked.
+CLOAK_SIZE = (32, 32)
+TOP_TEXTURES = {"cloak": (CLOAK_SIZE, "a cloak texture"), "wings": (O.WINGS_SIZE, "a wing texture")}
+TOP_TEXTURE = re.compile(r"^(cloak|wings)_[a-z0-9]+\.png$")
 
 
 class BakeError(Exception):
@@ -151,17 +154,18 @@ def unknown_files(art, errors):
         rel = p.relative_to(art)
         parts, name = rel.parts, p.name
         if len(parts) == 1:
-            ok = name in TOP_FILES or WINGS.match(name)
-            if WINGS.match(name):
+            m = TOP_TEXTURE.match(name)
+            ok = name in TOP_FILES or m
+            if m:
+                want, what = TOP_TEXTURES[m.group(1)]
                 try:
                     with Image.open(p) as im:
                         size = im.size
                 except Exception as e:  # noqa: BLE001
                     errors.append("%s: cannot read (%s)" % (p, e))
                 else:
-                    if size != O.WINGS_SIZE:
-                        errors.append("%s: size %dx%d, expected %dx%d (a wing texture, not baked)"
-                                      % ((p,) + size + O.WINGS_SIZE))
+                    if size != want:
+                        errors.append("%s: size %dx%d, expected %dx%d (%s, not baked)" % ((p,) + size + want + (what,)))
         elif len(parts) == 2 and parts[0] == "shield":
             ok = name.endswith(".png") and ID.match(name[:-4])
         elif len(parts) == 2 and parts[0] == "book":
@@ -176,7 +180,7 @@ def unknown_files(art, errors):
             unknown.add(p)
             errors.append("%s: unknown file name (expected shield/<variant>.png, book/<box>_<variant>.png "
                           "with box %s, icons/shield_<variant>.png or icons/book_<variant>.png; at the top "
-                          "tiers.json, palettes.json, wings_<id>.png)" % (p, ", ".join(O.BOOK_BOXES)))
+                          "tiers.json, palettes.json, cloak_<id>.png, wings_<id>.png)" % (p, ", ".join(O.BOOK_BOXES)))
     return unknown
 
 

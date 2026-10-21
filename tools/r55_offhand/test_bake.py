@@ -32,6 +32,7 @@ import make_broken_art as MB  # noqa: E402
 import offhand as O  # noqa: E402
 
 L = B.L
+MT = MB.MT          # this folder's make_test_art (the glyph rule)
 FAILS = []
 
 
@@ -116,6 +117,27 @@ def check_layer(files, item, tier, grade, palette, art=ART, label=""):
     return lay, mask
 
 
+def glyph_cells(fx, fy, fw, fh, letter):
+    """The texels make_test_art.glyph paints OUTLINE: the letter one texel in
+    from the face's top left when the face is at least 5 x 7, else the corner."""
+    if fw >= 5 and fh >= 7:
+        return {(fx + 1 + c, fy + 1 + r) for r, row in enumerate(MT.GLYPH[letter]) for c, ch in enumerate(row)
+                if ch == "#"}
+    return {(fx, fy)}
+
+
+def sample(lay, mask, palette, p, name, what):
+    """One atlas texel: the palette's colour of `name` and its mask texels."""
+    ok(lay.getpixel(p) == rgba(palette, name), "%s: %s at %s" % (what, name, p))
+    g = GREY.get(name)
+    top, bottom = mask.getpixel(p), mask.getpixel((p[0], p[1] + SIZE[1]))
+    if g is None:
+        ok(top[1] == 0 and bottom[1] == 0, "%s: %s at %s in no mask frame" % (what, name, p))
+    else:
+        hit, miss = (top, bottom) if g[0] == 0 else (bottom, top)
+        ok(hit == (g[1], 255) and miss[1] == 0, "%s: %s at %s in mask frame %d at %d" % (what, name, p, g[0], g[1]))
+
+
 def run(*args):
     return subprocess.run([sys.executable, str(TOOL / "bake.py"), *map(str, args)], capture_output=True, text=True)
 
@@ -142,19 +164,31 @@ def main():
                 ok(not opaque(lay, SHEETS["shield_%d" % other]["rect"]), "shield %s: shield_%d transparent" % (tier, other))
         for b in O.BOOK_BOXES + ("card",):
             ok(not opaque(lay, SHEETS[b]["rect"]), "shield %s: %s transparent" % (tier, b))
-        # samples: the top-left border texel, the F glyph on the front, the B glyph on the back
-        fx, fy = SHEETS["shield_%d" % step]["faces"]["front"][:2]
-        bx, by = SHEETS["shield_%d" % step]["faces"]["back"][:2]
-        for (x, y), n_ in (((fx, fy), "M_DARK"), ((fx + 2, fy + 1), "OUTLINE"), ((fx + 4, fy + 1), "OUTLINE"),
-                           ((fx + 2, fy + 5), "OUTLINE"), ((bx + 2, by + 1), "OUTLINE"), ((bx + 4, by + 2), "OUTLINE"),
-                           ((bx, by), "M_DEEP")):
-            ok(lay.getpixel((x, y)) == rgba(pal, n_), "shield %s sample %s at (%d,%d)" % (tier, n_, x, y))
-        ok(lay.getpixel((fx, fy + 12)) == (0, 0, 0, 0), "shield %s: outside the outline stays transparent" % tier)
-        # zone samples: the shoulder band (zone A) and the boss texels (zone B) in their frames
-        ok(mask.getpixel((fx + 1, fy + 5)) == (255, 255), "shield %s: A_LIGHT in frame 0 at 255" % tier)
-        ok(mask.getpixel((fx + 1, fy + 6)) == (153, 255), "shield %s: A_DARK in frame 0 at 153" % tier)
-        ok(mask.getpixel((fx + 3, fy + 5 + SIZE[1])) == (255, 255), "shield %s: B_LIGHT in frame 1 at 255" % tier)
-        ok(mask.getpixel((fx + 4, fy + 4 + SIZE[1])) == (153, 255), "shield %s: B_DARK in frame 1 at 153" % tier)
+        # samples, derived from make_test_art's rules (so any params.json works): the F glyph on the front
+        # and the B glyph on the back (or their corner flags), a texel wholly outside the outline, each zone
+        fa, ba = SHEETS["shield_%d" % step]["faces"]["front"], SHEETS["shield_%d" % step]["faces"]["back"]
+        W, H = fa[2:]
+        glyph_f = {(fa[0] + x, fa[1] + y) for x, y in glyph_cells(1, 0, W - 1, H, "F")}
+        glyph_b = {(ba[0] + x - W, ba[1] + y) for x, y in glyph_cells(W + 1, 0, W - 1, H, "B")}
+        for p in sorted(glyph_f | glyph_b):
+            sample(lay, mask, pal, p, "OUTLINE", "shield %s glyph" % tier)
+        if W - 1 >= 5 and H >= 7:          # letters, not corner flags: a front/back swap would show
+            ok(glyph_f != {(x - ba[0] + fa[0], y) for x, y in glyph_b}, "the F and B glyphs differ")
+        outside = sorted({(fa[0] + c, fa[1] + r) for r in range(H) for c in range(W)}
+                         - {(fa[0] + c, fa[1] + r) for c, r in O.shield_texels(PARAMS["shield"]["shape"], "front")}
+                         - glyph_f)
+        ok(outside and all(lay.getpixel(p) == (0, 0, 0, 0) for p in outside),
+           "shield %s: texels wholly outside the outline stay transparent" % tier)
+        front_art = art_names(ART / "shield" / "a.png")
+        for zone in GREY:
+            at = sorted((x, y) for (x, y), nm in front_art.items() if nm == zone and x < W)
+            if at:
+                sample(lay, mask, pal, (fa[0] + at[0][0], fa[1] + at[0][1]), zone, "shield %s zone" % tier)
+        ok({nm for (x, _), nm in front_art.items() if x < W} >= {"A_LIGHT", "A_DARK", "B_LIGHT"},
+           "the test art's shield front carries zone A and B texels")
+        back_mask = [p for p in opaque(mask) if ba[0] <= p[0] < ba[0] + W and
+                     (ba[1] <= p[1] < ba[1] + H or ba[1] + SIZE[1] <= p[1] < ba[1] + SIZE[1] + H)]
+        ok(not back_mask, "shield %s: the back (no zones in the test art) has no mask texels" % tier)
     ok(steps == {0, 1, 2}, "the test tiers use all three size steps: %s" % steps)
 
     # --- books: every box in its rectangle, only its faces ----------------------------------
@@ -171,17 +205,33 @@ def main():
         # a left-out face has no texels: pages_f's right face would sit at the sheet's (0, D)
         px, py = SHEETS["pages_f"]["rect"][:2]
         ok(lay.getpixel((px, py + 1)) == (0, 0, 0, 0), "book %s: pages_f's left-out right face transparent" % tier)
-        cf, cb = SHEETS["cover_f"]["faces"]["front"], SHEETS["cover_b"]["faces"]["back"]
-        pb, sp, rb = SHEETS["pages_b"]["faces"]["front"], SHEETS["spine"]["faces"]["front"], SHEETS["ribbon"]["faces"]["front"]
-        for (x, y), n_ in (((cf[0], cf[1]), "B_LIGHT"), ((cf[0] + 1, cf[1] + 1), "OUTLINE"),
-                           ((cf[0] + 3, cf[1] + 1), "OUTLINE"), ((cb[0] + 1, cb[1] + 1), "OUTLINE"),
-                           ((cb[0] + 3, cb[1] + 2), "OUTLINE"), ((cb[0] + 1, cb[1] + 2), "OUTLINE"),
-                           ((cf[0] + 3, cf[1] + 4), "A_DARK"), ((pb[0], pb[1]), "OUTLINE"),
-                           ((pb[0] + 1, pb[1] + 1), "M_DARK"), ((sp[0], sp[1] + sp[3] // 2), "B_DARK"),
-                           ((rb[0], rb[1]), "A_LIGHT")):
-            ok(lay.getpixel((x, y)) == rgba(pal, n_), "book %s sample %s at (%d,%d)" % (tier, n_, x, y))
-        ok(mask.getpixel((cf[0], cf[1] + SIZE[1])) == (255, 255), "book %s: cover corner B_LIGHT frame 1" % tier)
-        ok(mask.getpixel((cf[0] + 3, cf[1] + 4)) == (153, 255), "book %s: cover A_DARK frame 0" % tier)
+        # samples, derived from make_test_art's rules: the outer covers (A_DARK, B_LIGHT corners, glyph F or
+        # B or its corner flag), the inner covers ACC_DARK, the readable pages (glyph R on pages_b), the
+        # spine's B_DARK band, the ribbon A_LIGHT
+        for box, face, letter in (("cover_f", "front", "F"), ("cover_b", "back", "B")):
+            fx, fy, fw, fh = SHEETS[box]["faces"][face]
+            gl = glyph_cells(fx, fy, fw, fh, letter)
+            for p in sorted(gl):
+                sample(lay, mask, pal, p, "OUTLINE", "book %s %s glyph" % (tier, box))
+            corners = {(fx, fy), (fx + fw - 1, fy), (fx, fy + fh - 1), (fx + fw - 1, fy + fh - 1)}
+            for p in sorted(corners - gl):
+                sample(lay, mask, pal, p, "B_LIGHT", "book %s %s corner" % (tier, box))
+            rest = sorted({(x, y) for y in range(fy, fy + fh) for x in range(fx, fx + fw)} - corners - gl)
+            if rest:
+                sample(lay, mask, pal, rest[len(rest) // 2], "A_DARK", "book %s %s" % (tier, box))
+            inner = SHEETS[box]["faces"]["back" if face == "front" else "front"]
+            sample(lay, mask, pal, tuple(inner[:2]), "ACC_DARK", "book %s %s inside" % (tier, box))
+        fx, fy, fw, fh = SHEETS["pages_b"]["faces"]["front"]
+        for p in sorted(glyph_cells(fx, fy, fw, fh, "R")):
+            sample(lay, mask, pal, p, "OUTLINE", "book %s pages_b glyph" % tier)
+        fx, fy, fw, fh = SHEETS["pages_f"]["faces"]["back"]
+        sample(lay, mask, pal, (fx, fy), "M_HI", "book %s pages_f" % tier)
+        if fw > 2 and fh > 1:
+            sample(lay, mask, pal, (fx + 1, fy + 1), "M_DARK", "book %s pages_f line" % tier)
+        fx, fy, fw, fh = SHEETS["spine"]["faces"]["front"]
+        sample(lay, mask, pal, (fx, fy + fh // 2), "B_DARK", "book %s spine band" % tier)
+        fx, fy = SHEETS["ribbon"]["faces"]["front"][:2]
+        sample(lay, mask, pal, (fx, fy), "A_LIGHT", "book %s ribbon" % tier)
 
     # --- icons ---------------------------------------------------------------------------
     for item, art_name in (("shield", "shield_a.png"), ("book", "book_a.png")):
@@ -270,11 +320,11 @@ def main():
                    "a blank %s is named with its holes (and the shield's zones): %s" % (rel, e))
             (art2 / rel).write_bytes(keep)
         bl = f2[O.layer_file("book", GRADES[1])]
-        ok(bl.getpixel((fx + 1, fy + 1)) == rgba(TIERS["book"]["T2"]["palette"], "A_LIGHT"), "book T2 cover_f from variant b")
-        ok(f2[O.mask_file(O.layer_file("book", GRADES[1]))].getpixel((fx + 1, fy + 1)) == (255, 255),
+        ok(bl.getpixel((fx, fy)) == rgba(TIERS["book"]["T2"]["palette"], "A_LIGHT"), "book T2 cover_f from variant b")
+        ok(f2[O.mask_file(O.layer_file("book", GRADES[1]))].getpixel((fx, fy)) == (255, 255),
            "book T2 variant b's zone in the mask")
         cbx, cby = SHEETS["cover_b"]["faces"]["back"][:2]
-        ok(bl.getpixel((cbx + 1, cby + 1)) == files[O.layer_file("book", GRADES[1])].getpixel((cbx + 1, cby + 1)),
+        ok(bl.getpixel((cbx, cby)) == files[O.layer_file("book", GRADES[1])].getpixel((cbx, cby)),
            "book T2 cover_b still variant a")
 
         # --- the command line: write, check, a missing, a changed and an extra file ---------
@@ -306,12 +356,13 @@ def main():
         r = run("--art", TOOL / "test_art_broken", "--out", tmp / "out2", "--icons-out", tmp / "icons2")
         ok(r.returncode == 1 and r.stdout.startswith("BAKE FAIL") and not (tmp / "out2").exists()
            and not (tmp / "icons2").exists(), "broken art fails and writes nothing")
-        for n, frag in MB.ERRORS:
+        want = MB.expected()
+        for n, frag in want:
             ok(frag in r.stdout, "broken error %d: %r not in the output" % (n, frag))
         ok(MB.WARNING in r.stdout, "broken: the warning %r" % MB.WARNING)
         violations = [ln for ln in r.stdout.splitlines()[1:] if not ln.startswith("WARNING")]
-        ok(len(violations) == len(MB.ERRORS) - 1, "broken: %d violations, expected %d (no double reports):\n%s"
-           % (len(violations), len(MB.ERRORS) - 1, "\n".join(violations)))
+        ok(len(violations) == len(want) - 1, "broken: %d violations, expected %d (no double reports):\n%s"
+           % (len(violations), len(want) - 1, "\n".join(violations)))
         # an icon bake needs every tier's icon
         t = json.loads((art2 / "tiers.json").read_text())
         del t["shield"]["T4"]["icon"]
