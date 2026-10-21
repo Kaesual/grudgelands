@@ -1,6 +1,7 @@
 -- /prof, the debug/admin command for professions: show, set, learn and
--- unlearn an online player's professions, always `/prof <action> <player>`. The tier is capped at the
--- character's band (state.lua `admin_set`); the target gets one chat line.
+-- unlearn an online player's professions, always `/prof <action> <player>`.
+-- The tier is capped at the character's band (state.lua `admin_set`); each
+-- change sends the target one chat line.
 
 local USAGE = "Usage: /prof show <player> | /prof set <player> <1|2> <profession> <tier>" ..
 	" | /prof set <player> <cooking|alchemy> <tier> | /prof clear <player> <1|2>" ..
