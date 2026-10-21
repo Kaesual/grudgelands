@@ -732,7 +732,10 @@ end)
 -- Apply the player-specific effective line to one concrete weapon stack.
 -- Item level already changes the weapon's authored base damage; there is no
 -- second ilvl multiplier here or in the combat pipeline. Returns true only
--- when the caller has a changed ItemStack copy to write or hand on.
+-- when the caller has a changed ItemStack copy to write or hand on: also
+-- when only the image changed, as for a stack enchanted or broken under an
+-- older registered image (0.54.1's tinted shields and shared spellbook,
+-- Round 55), which regenerate_description redraws from the current one.
 function grug_gear.initialize_weapon_tooltip(stack, player)
 	local class_api = rawget(_G, "grug_classes")
 	local xp_api = rawget(_G, "grug_xp")
@@ -741,6 +744,8 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 	end
 	local meta = stack:get_meta()
 	local original_description = meta:get_string("description")
+	local original_image = meta:get_string("inventory_image")
+	local original_wield = meta:get_string("wield_image")
 	local repair = rawget(_G, "grug_repair")
 	local appearance_changed = repair and repair.refresh_appearance(stack) or false
 	local quality_api = rawget(_G, "grug_items")
@@ -748,6 +753,9 @@ function grug_gear.initialize_weapon_tooltip(stack, player)
 			type(quality_api.regenerate_description) == "function" then
 		quality_api.regenerate_description(stack, player)
 	end
+	appearance_changed = appearance_changed or
+		meta:get_string("inventory_image") ~= original_image or
+		meta:get_string("wield_image") ~= original_wield
 	if repair and repair.eligible(stack) then
 		local description = meta:get_string("description")
 		if description == "" then description = (stack:get_definition() or {}).description or "" end
