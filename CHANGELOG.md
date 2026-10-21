@@ -12,6 +12,18 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.55.1 — the profession debug command (2026-10-21)
+
+For server admins. **Compatible:** no map reset and no migration step.
+
+- **`/prof`** shows and sets an online player's professions, for testing:
+  `/prof show <player>`, `/prof set <player> 1 weaponsmith T6` (or
+  `/prof set <player> cooking 3` for Cooking and Alchemy), `/prof learn`,
+  `/prof unlearn` and `/prof clear <player> <slot>`. The tier never goes
+  above what the character's level allows: a level 12 character asked for
+  T6 gets T2, and the answer says so. A profession it replaces loses its
+  progress, as at a trainer. The player gets one chat line about it.
+
 ## 0.55.0 — shields, spellbooks and the Supporter Cloak (2026-10-21)
 
 Your character now carries its offhand gear where everyone can see it.
