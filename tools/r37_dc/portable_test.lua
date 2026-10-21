@@ -116,6 +116,8 @@ local SETTINGS = {
 	"grug_prepare_full_world (Prepare full world before entry) bool false",
 	"grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool false",
 	"grug_map_quality (World map quality) enum normal normal,high",
+	-- Round 55: the offhand look, built dark (grug_visuals/init.lua).
+	"grug_offhand_visuals (Show shields, spellbooks and back weapons on characters) bool false",
 	"grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10",
 	"grug_particle_scale (Particle amount scale) float 1.0 0 2",
 	"grug_tree_regrowth (Regrow trees from saplings) bool true",
