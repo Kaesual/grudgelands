@@ -9,7 +9,8 @@ shipped; test_bake.py checks that the bake refuses it with these messages.
 The errors (ERRORS below lists the message each one must produce):
    1 shield/b.png (shield T6) has the wrong size
    2 shield/a.png: an off-palette colour and a partial alpha on the front
-   3 shield/a.png: a transparent texel inside the outline on the back
+   3 shield/a.png: a transparent texel inside the outline on the back, and one
+     on the front that the outline only crosses (the rim samples it)
    4 shield/c.png (shield T5): no zone texels, below the zone minimum
    5 book/cover_b_a.png: a hole in the back cover's outside
    6 book/cover_f_n.png, cover_b_n.png (book T4): covers without zones, so the
@@ -19,6 +20,7 @@ The errors (ERRORS below lists the message each one must produce):
    9 book/clasp_a.png: an unknown file name
   10 tiers.json: shield T2 an unknown palette, shield T3 no palette, book T3
      missing, an unknown tier T7, book T1 a variant for an unknown box
+  11 wings_big.png: a wing texture of the wrong size
 And one warning: paint outside the spine sheet's faces (dropped).
 """
 import argparse
@@ -45,7 +47,8 @@ ERRORS = [
     (1, "shield/b.png: size 21x13, expected 20x13"),
     (2, "shield/a.png: 1 pixel(s) off the reference palette at (4,8)"),
     (2, "shield/a.png: 1 pixel(s) with partial alpha (only 0 or 255) at (5,8)"),
-    (3, "shield/a.png: 1 transparent texel(s) inside the outline (back face) at (14,9)"),
+    (3, "shield/a.png: 1 transparent texel(s) the outline contains or crosses (back face) at (14,9)"),
+    (3, "shield/a.png: 1 transparent texel(s) the outline contains or crosses (front face) at (9,7)"),
     (4, "shield/c.png (shield T5, size step 2): 0 zone A (at least 6), 0 zone B (at least 3)"),
     (5, "book/cover_b_a.png: 1 transparent texel(s) in a face at (11,4)"),
     (6, "book T4 (outer covers and readable pages): 0 zone A (at least 6), 0 zone B (at least 3)"),
@@ -58,6 +61,7 @@ ERRORS = [
     (10, "book T3: no entry"),
     (10, "shield: unknown tier 'T7'"),
     (10, "book T1: 'variant' names unknown box 'clasp'"),
+    (11, "wings_big.png: size 32x32, expected 16x32"),
 ]
 WARNING = "book/spine_a.png: 1 pixel(s) outside the faces at (0,0) (dropped)"
 
@@ -88,11 +92,13 @@ def write(out):
     shutil.copy(sh / "a.png", sh / "c.png")
     edit(sh / "c.png", no_zones)
 
-    # 2, 3 off-palette, partial alpha on the front; a hole inside the outline on the back
+    # 2, 3 off-palette, partial alpha on the front; a hole inside the outline on the back, and one on the
+    # front's slanted edge, in a texel the outline only crosses (its centre lies outside)
     def shield_a(im, px):
         px[4, 8] = (0x12, 0x34, 0x56, 255)
         px[5, 8] = C["M_MID"][:3] + (128,)
         px[14, 9] = (0, 0, 0, 0)
+        px[9, 7] = (0, 0, 0, 0)
     edit(sh / "a.png", shield_a)
 
     # 6 covers without zones for book T4 (before 5 touches cover_b_a.png)
@@ -106,6 +112,8 @@ def write(out):
     edit(bk / "cover_b_a.png", cover_b)
     # 7 an icon of the wrong size
     Image.open(out / "icons/book_a.png").resize((32, 32), Image.Resampling.NEAREST).save(out / "icons/book_a.png")
+    # 11 a wing texture of the wrong size
+    Image.open(out / "wings_test.png").resize((32, 32), Image.Resampling.NEAREST).save(out / "wings_big.png")
     # 8 a missing file, 9 an unknown file name
     (bk / "ribbon_a.png").unlink()
     shutil.copy(bk / "spine_a.png", bk / "clasp_a.png")

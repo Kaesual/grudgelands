@@ -28,15 +28,15 @@ the bake with every problem found and writes nothing:
   - tiers.json: both items, tiers T1..T6, each with a known palette, its
     variant(s) (a book map names known boxes) and, for an icon bake, its icon;
   - file names (shield/<variant>.png, book/<box>_<variant>.png,
-    icons/shield|book_<variant>.png; tiers.json, palettes.json and the unbaked
-    wing texture wings*.png at the top) and the files the tiers need;
-  - sizes (the atlas sheets, icons 16 x 16), the reference palette only,
-    alpha 0 or 255;
-  - opaque: every texel whose centre lies inside the shield outline (front and
-    back) and every texel of a book face;
-  - zones: per item and tier at least 6 zone A and 3 zone B texels where it
-    faces (the shield's front inside the outline; the book's outer covers and
-    readable pages).
+    icons/shield|book_<variant>.png; tiers.json, palettes.json and the optional
+    wing texture wings_<id>.png at the top) and the files the tiers need;
+  - sizes (the atlas sheets, icons 16 x 16; a wing texture 16 x 32, size
+    only, not baked), the reference palette only, alpha 0 or 255;
+  - opaque: every shield texel the outline contains or crosses (front and
+    back, offhand.shield_texels) and every texel of a book face;
+  - zones: per item and tier at least 6 zone A and 3 zone B texels on the
+    faces it turns outwards (the shield's front texels; the book's cover_f
+    front, cover_b back, pages_f back and pages_b front).
 Warnings (exit code unchanged): an art file no tier uses, paint outside a
 book sheet's faces (dropped).
 
@@ -78,7 +78,7 @@ ZONE_OF = {"A_LIGHT": "A", "A_DARK": "A", "B_LIGHT": "B", "B_DARK": "B"}
 BOOK_SEEN = (("cover_f", "front"), ("cover_b", "back"), ("pages_f", "back"), ("pages_b", "front"))
 ID = re.compile(r"^[a-z0-9]+$")
 TOP_FILES = ("tiers.json", "palettes.json")
-WINGS = re.compile(r"^wings[a-z0-9_]*\.png$")     # the cloak's wing texture: allowed, not baked
+WINGS = re.compile(r"^wings_[a-z0-9]+\.png$")     # a cloak's wing texture: size-checked, not baked
 
 
 class BakeError(Exception):
@@ -150,6 +150,16 @@ def unknown_files(art, errors):
         parts, name = rel.parts, p.name
         if len(parts) == 1:
             ok = name in TOP_FILES or WINGS.match(name)
+            if WINGS.match(name):
+                try:
+                    with Image.open(p) as im:
+                        size = im.size
+                except Exception as e:  # noqa: BLE001
+                    errors.append("%s: cannot read (%s)" % (p, e))
+                else:
+                    if size != O.WINGS_SIZE:
+                        errors.append("%s: size %dx%d, expected %dx%d (a wing texture, not baked)"
+                                      % ((p,) + size + O.WINGS_SIZE))
         elif len(parts) == 2 and parts[0] == "shield":
             ok = name.endswith(".png") and ID.match(name[:-4])
         elif len(parts) == 2 and parts[0] == "book":
@@ -164,7 +174,7 @@ def unknown_files(art, errors):
             unknown.add(p)
             errors.append("%s: unknown file name (expected shield/<variant>.png, book/<box>_<variant>.png "
                           "with box %s, icons/shield_<variant>.png or icons/book_<variant>.png; at the top "
-                          "tiers.json, palettes.json, wings*.png)" % (p, ", ".join(O.BOOK_BOXES)))
+                          "tiers.json, palettes.json, wings_<id>.png)" % (p, ", ".join(O.BOOK_BOXES)))
     return unknown
 
 
@@ -232,62 +242,14 @@ def load_tiers(art, pals, errors, icons):
 
 
 # --- the rules (format doc section 6) ----------------------------------------------------
-def _inside(poly, x, y):
-    hit = False
-    for (x0, y0), (x1, y1) in zip(poly, poly[1:] + poly[:1]):
-        if (y0 > y) != (y1 > y) and x < x0 + (y - y0) * (x1 - x0) / (y1 - y0):
-            hit = not hit
-    return hit
-
-
 def shield_cells(params, faces):
-    """{face: set of sheet texels (x, y)} whose centre lies inside the outline;
-    the front seen from the front, the back from behind (format doc section 4)."""
+    """{face: set of sheet texels} the outline contains or crosses
+    (offhand.shield_texels): the face, the rim and the slanted edges sample
+    them, so they must be opaque (format doc sections 4 and 6)."""
     shape = params["shield"]["shape"]
-    poly, lv = O.shield_outline(shape)
-    W = lv["W"]
     out = {}
     for face, (fx, fy, fw, fh) in faces.items():
-        cells = set()
-        for r in range(fh):
-            for c in range(fw):
-                u = (c + 0.5) / fw
-                x = -W + 2 * W * u if face == "front" else W - 2 * W * u
-                y = lv["T"] - (r + 0.5) / fh * shape["height"]
-                if _inside(poly, x, y):
-                    cells.add((fx + c, fy + r))
-        out[face] = cells
-    return out
-
-
-def _crosses(a, b, c, r):
-    """Does the segment a-b pass through the open texel square (c, r)?"""
-    t0, t1 = 0.0, 1.0
-    for k, lo in ((0, c), (1, r)):
-        d = b[k] - a[k]
-        if abs(d) < 1e-12:
-            if not lo < a[k] < lo + 1:
-                return False
-            continue
-        ta, tb = (lo - a[k]) / d, (lo + 1 - a[k]) / d
-        t0, t1 = max(t0, min(ta, tb)), min(t1, max(ta, tb))
-    return t1 - t0 > 1e-9
-
-
-def shield_edge_cells(params, faces):
-    """{face: sheet texels the outline passes through}: the rim and the face's
-    slanted edges sample them (advisory; the contract's rule is the centre)."""
-    shape = params["shield"]["shape"]
-    poly, lv = O.shield_outline(shape)
-    W, H = lv["W"], shape["height"]
-    out = {}
-    for face, (fx, fy, fw, fh) in faces.items():
-        def tex(p):
-            u = (p[0] + W) / (2 * W) if face == "front" else (W - p[0]) / (2 * W)
-            return (u * fw, (lv["T"] - p[1]) / H * fh)
-        pts = [tex(p) for p in poly]
-        out[face] = {(fx + c, fy + r) for r in range(fh) for c in range(fw)
-                     if any(_crosses(a, b, c, r) for a, b in zip(pts, pts[1:] + pts[:1]))}
+        out[face] = {(fx + c, fy + r) for c, r in O.shield_texels(shape, face)}
     return out
 
 
@@ -376,7 +338,6 @@ def bake(art, icons=False, warnings=None):
     s0 = sheets["shield_0"]
     shield_faces = local_faces(s0)
     inside = shield_cells(params, shield_faces)
-    edges = shield_edge_cells(params, shield_faces)
     cache = {}
 
     def sheet_grid(sheet_id, path):
@@ -390,12 +351,7 @@ def bake(art, icons=False, warnings=None):
         if painted:
             if sheet_id.startswith("shield"):
                 for face, cells in inside.items():
-                    check_opaque(path, painted, cells, "inside the outline (%s face)" % face, errors)
-                    edge = sorted((p for p in edges[face] - cells if p not in painted), key=lambda q: (q[1], q[0]))
-                    if edge:
-                        warnings.append("%s: %d transparent texel(s) the outline crosses (%s face) at %s: the rim "
-                                        "and the slanted edges sample them, so they show as notches"
-                                        % (path, len(edge), face, coords(edge, 6)))
+                    check_opaque(path, painted, cells, "the outline contains or crosses (%s face)" % face, errors)
             else:
                 face_set = set().union(*(rect_cells(*r) for r in faces.values()))
                 check_opaque(path, painted, face_set, "in a face", errors)

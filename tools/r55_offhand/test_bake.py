@@ -12,7 +12,8 @@ zones (frame 0 A, frame 1 B, light 255, dark 153); palettes.json laid over by
 name; a book variant map; the icons and their masks; determinism; --check
 finding a missing, a changed and an extra file (and write removing the
 extra); the broken set failing with the expected messages and writing
-nothing; a missing art directory; make_broken_art.py --check.
+nothing; a hole in a texel the outline only crosses; a missing art
+directory; make_broken_art.py --check.
 """
 import json
 import shutil
@@ -230,24 +231,31 @@ def main():
         ok(lay.getpixel((fx0, fy0)) == L.hex_rgb(test_pal["M_DARK"]) + (255,), "palettes.json overrides bronze")
         ok(f2[O.layer_file("shield", GRADES[1])].tobytes() == files[O.layer_file("shield", GRADES[1])].tobytes(),
            "other palettes unchanged")
-        # the advisory notch warning: texels the outline crosses, painted -> none; one cleared -> named
-        faces = B.local_faces(SHEETS["shield_0"])
-        edges, inside = B.shield_edge_cells(PARAMS, faces), B.shield_cells(PARAMS, faces)
+        # a hole in a texel the outline only crosses (its centre outside) is a violation: the rim samples it
+        shape = PARAMS["shield"]["shape"]
+        poly, lv = O.shield_outline(shape)
+        fw, fh = SHEETS["shield_0"]["faces"]["front"][2:]
+
+        def centre_inside(c, r):
+            x, y = -lv["W"] + 2 * lv["W"] * (c + 0.5) / fw, lv["T"] - (r + 0.5) / fh * shape["height"]
+            hit = False
+            for (x0, y0), (x1, y1) in zip(poly, poly[1:] + poly[:1]):
+                if (y0 > y) != (y1 > y) and x < x0 + (y - y0) * (x1 - x0) / (y1 - y0):
+                    hit = not hit
+            return hit
+        crossed = sorted(t for t in O.shield_texels(shape, "front") if not centre_inside(*t))
+        ok(crossed, "the outline crosses some front texels without containing their centre")
         sh = Image.open(art2 / "shield" / "a.png").convert("RGBA")
-        for p in edges["front"] | edges["back"]:
-            if not sh.getpixel(p)[3]:
-                sh.putpixel(p, L.hex_rgb("#787878") + (255,))
-        sh.save(art2 / "shield" / "a.png")
-        warn = []
-        B.bake(art2, warnings=warn)
-        ok(not any("outline crosses" in w for w in warn), "no notch warning once the crossed texels are painted")
-        cut = min(edges["front"] - inside["front"])
+        cut = crossed[0]
         sh.putpixel(cut, (0, 0, 0, 0))
         sh.save(art2 / "shield" / "a.png")
-        warn = []
-        B.bake(art2, warnings=warn)
-        ok(any("1 transparent texel(s) the outline crosses (front face) at (%d,%d)" % cut in w for w in warn),
-           "the notch warning names the cleared texel %s: %s" % (cut, warn))
+        try:
+            B.bake(art2)
+            ok(False, "a hole in a crossed edge texel fails the bake")
+        except B.BakeError as e:
+            ok("1 transparent texel(s) the outline contains or crosses (front face) at (%d,%d)" % cut in str(e),
+               "the crossed edge hole is named: %s" % e)
+        shutil.copy(ART / "shield" / "a.png", art2 / "shield" / "a.png")
         bl = f2[O.layer_file("book", GRADES[1])]
         ok(bl.getpixel((fx + 1, fy + 1)) == rgba(TIERS["book"]["T2"]["palette"], "A_LIGHT"), "book T2 cover_f from variant b")
         ok(f2[O.mask_file(O.layer_file("book", GRADES[1]))].getpixel((fx + 1, fy + 1)) == (255, 255),

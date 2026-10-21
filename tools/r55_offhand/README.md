@@ -47,12 +47,12 @@ baked only into temp directories or a test-only probe mod (never into `mods/`).
   files, 24 icon files. Only the face rectangles of `data/atlas.json` are copied; palettes are the armor's
   `tools/r54_armor/data/palettes.json` with the art's optional `palettes.json` laid over by name.
 - **Validation** before anything is written; every violation is listed and the exit code is 1: `tiers.json` (both
-  items, T1–T6, a known palette, variants, the icon for an icon bake), unknown or missing files, sizes, the
-  reference palette, alpha 0 or 255, transparent texels whose centre lies inside the shield outline or in a book
-  face, and per item and tier at least 6 zone A and 3 zone B texels (the shield's front inside the outline; the
-  book's outer covers and readable pages). Warnings do not fail: an art file no tier uses, paint outside a book
-  sheet's faces (dropped), and transparent shield texels the outline crosses (their centre lies outside, but the
-  rim and the slanted edges sample them, so they show as notches; paint them).
+  items, T1–T6, a known palette, variants, the icon for an icon bake), unknown or missing files, sizes (an
+  optional `wings_<id>.png` is checked for its 16 × 32 size only and not baked), the reference palette, alpha 0
+  or 255, transparent shield texels the outline contains or crosses (`offhand.shield_texels`: the rim and the
+  slanted edges sample them) or book face texels, and per item and tier at least 6 zone A and 3 zone B texels
+  (the shield's front; the book's `cover_f` front, `cover_b` back, `pages_f` back and `pages_b` front). Warnings
+  do not fail: an art file no tier uses, paint outside a book sheet's faces (dropped).
 - `--check` rebuilds in memory and compares mode, size and pixels; an extra file is a `grug_offhand_*.png` in
   `--out` the bake would not write (write mode removes such files). In `--icons-out` only the bake's own icon files
   count.
