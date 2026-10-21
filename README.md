@@ -91,6 +91,13 @@ and its profession trainers.
 
 ## Current state
 
+**0.55.0** shows your offhand gear on your character: a Warrior's shield
+on the left arm, raised in front of the chest to block and a little bigger
+with each tier, a Mage's or Priest's spellbook open in the left hand, and
+the Scout's second weapon on the back. Shields and spellbooks have new art
+and an icon per tier. The Supporter Cloak, the first cloak with wings, is
+granted by a server admin to players who helped shape the game early on.
+
 **0.54.0** redraws all armor with real shapes: helmets, shoulder plates,
 bracers, skirts and boots stand out from the body, each tier richer than
 the last, metal bulkiest, leather layered, cloth smooth. Every piece has

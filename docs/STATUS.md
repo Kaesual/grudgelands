@@ -7,19 +7,72 @@ planned 2026-10-12 to 2026-10-20 in the
 [class redesign package](planning/class-redesign/README.md)) is built:
 round F in Round 52, round K in Round 53 below, with its fix round 0.53.1.
 Round 54 followed with the armor redesign (0.54.0), then the particle look
-pass (0.54.1). Next: the user's one GUI test of 0.53.0, 0.53.1, 0.54.0 and
-0.54.1 together, then the push, the playtest of
-the new classes and a short balance fix round. The
+pass (0.54.1); 0.53.0 to 0.54.1 were pushed together on 2026-10-21
+(origin/main `abfb30ce`). Round 55 (0.55.0) puts the offhand into the model.
+Next: the user's GUI test of 0.55.0 and the push, the playtest of the new
+classes and a short balance fix round. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 55 "The offhand look" complete** (2026-10-21, version 0.55.0,
+  **compatible**, no migration step;
+  [plan, decisions, numbers and GUI checklist](planning/round55-plan.md#completion-2026-10-21);
+  the contract in [offhand-format.md](technical/offhand-format.md)). **Not
+  pushed** (origin/main `abfb30ce`, 0.54.1): 0.55.0 waits for the user's GUI
+  test and is pushed on the user's word; synced to the user's Luanti only
+  after the round. From main `cf7c6ce3` (the plan and CONTRACT, ten contract
+  fixes up to `dbd05bd3`): BAKE (`8568017d`, `b99c0b3a`), MODEL
+  (`283e8a43`), the user's params (`b88245aa`, `4fa0ab2e`, `93e6aad8`), GAME
+  (`6532a1c7`), SUPPORTER (`a0b77cf9`), WEB (`cd218892`), VIEWER
+  (`78547e04`), FINISH (`c23d8ceb`) and STACKS (`47e1c98f`) merged, then
+  this documentation lane D, which also turned the setting on. Each code
+  lane independently reviewed by Opus (MODEL, GAME, SUPPORTER, WEB, FINISH,
+  STACKS MERGE; BAKE and VIEWER MERGE AFTER FIXES, delta-reviewed MERGE);
+  the art painted by GPT-6 Astra in one drop and picked by the user. Main
+  has 239 portable fixtures (5 new); `mods/` against 0.54.1 +663 −128 lines
+  in 16 text files, 38 PNGs added, 12 replaced, both models replaced. The
+  declaration is
+  `{"schema": 3, "version": "0.55.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.54.1 moves on without a step.
+  - **The model (MODEL, params):** the bones `Offhand_Shield` and
+    `Offhand_Book` under `Arm_Left`, keyed per pose clip from
+    `tools/r55_offhand/params.json` (the user's tuning on the
+    Offhand-Werkstatt); three shield copies (85 / 92 / 100 % by tier), the
+    open book, two back cards (cloak and body) and cloak wings; the player
+    model 872 → 1,240 vertices, the NPC model 848 → 1,180, the `.glb`
+    88,900 → 120,440 B with 7 primitives
+    ([character_visuals.md §4](design/character_visuals.md#4-the-weapon-in-hand)).
+  - **The game (GAME, STACKS):** the offhand layer with enchant colours and
+    cracks, the Scout's back card (the equipped weapon the hand does not
+    show, via the wield poll, never stored), the wings, appearance version
+    3, the setting `grug_offhand_visuals` (on by default since lane D, the
+    off switch); old enchanted or broken shields and spellbooks take the
+    new art at their next refresh.
+  - **The art (BAKE, VIEWER, FINISH):** `tools/r55_offhand/bake.py` and
+    `render.py`, the painter's templates; the picked art in `tools/r55_art/`
+    baked into 24 offhand layers and 24 icons with their masks (one
+    spellbook icon per tier, untinted shields).
+  - **Achievements (SUPPORTER, FINISH):** manual rows,
+    `/achievement grant|revoke <player> <id>` (privilege `server`, offline
+    queue), the Supporter achievement and the Supporter Cloak with wings
+    ([character_visuals.md §5b](design/character_visuals.md#5b-cloaks-and-achievements-round-33)).
+  - **The web (WEB):** `offhand_look` in `web_data.json` (`enabled` true),
+    the version 2 rule, the back card rule; the kaesual addendum (outside
+    the repo) to pass on.
+  - **Gates:** each code lane's full fixture run (234–239/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.54.1),
+    `check_fresh_server.py`, the offhand topic checks and the full fixtures
+    (the lane report). The round end on main (full fixtures, one boot, the
+    sync) is the coordinator's. Its GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-55-carry-overs)).
 - **0.54.1 "The particle look" complete** (2026-10-21, **compatible**, no
   migration step; the user's pick on the
   [R52 particle page](https://claude.ai/artifact/AwJAjkrb2eiu26m1LsYsXa), a
   private claude.ai page, "glowing and vivid"; branch `pfx-glow`, one
-  coordinator-built lane, independently reviewed by Opus, no blocker). **Not
-  pushed.** `grug_core/particles.lua` gains the emitter fields `mote` (the
+  coordinator-built lane, independently reviewed by Opus, no blocker).
+  **Pushed** on the user's word with 0.53.0 to 0.54.0 (origin/main
+  `abfb30ce`, 2026-10-21). `grug_core/particles.lua` gains the emitter fields `mote` (the
   tint on the new white `grug_core_mote.png`; the grey smoke puff darkened
   every tint to about 56 %), `blend` (`"add"`) and `after` (a deferred
   emitter); every catalogue effect follows one rule
@@ -52,10 +105,9 @@ user's notes.
   version 0.54.0, **compatible**, no migration step;
   [plan, decisions, numbers and GUI checklist](planning/round54-plan.md#completion-2026-10-21);
   background in the [armor redesign plan](planning/armor-redesign-plan.md),
-  the contract in [armor-format.md](technical/armor-format.md)). **Not
-  pushed** (origin/main `e4d5c9d5`, 0.52.1): 0.53.0, 0.53.1 and 0.54.0
-  wait for the user's GUI test and are pushed on the user's word; synced to
-  the user's Luanti only after the round is complete. From main `8bc91967`
+  the contract in [armor-format.md](technical/armor-format.md)).
+  **Pushed** with 0.53.0, 0.53.1 and 0.54.1 (origin/main `abfb30ce`,
+  2026-10-21). From main `8bc91967`
   (CONTRACT: the plan, the box catalog, the atlas, the render/check tool,
   four addenda up to `b3fa6eb2`): BAKE (`62100720`), MODEL (`6a8b4028`),
   GAME (`a278cc34`, shots `5722b8fd`, the royals' no-tint `7ed8ffce`), VIEW
@@ -96,8 +148,8 @@ user's notes.
 - **Round 53 "The new classes" complete** (2026-10-20, version 0.53.0,
   **migrate**, one step 0.53.0;
   [plan, decisions, numbers and GUI checklist](planning/round53-plan.md#completion-2026-10-20)).
-  Not pushed (pushed only on the user's word; origin/main `e4d5c9d5`,
-  0.52.1). Round K of the class rework: the four new class kits and the
+  Pushed with 0.53.1, 0.54.0 and 0.54.1 (origin/main `abfb30ce`,
+  2026-10-21). Round K of the class rework: the four new class kits and the
   eight talent graphs go live with one talent reset. From main `84ea20f0`
   (the plan): the prep lane SKS (`681913a9`, round 2 `357683f3`), LIVE
   (`927e2ae3`), HOOKS (`937a1df0`), PRIEST (`cfdfc25f`), MAGE (`20abd7bc`),
@@ -157,8 +209,8 @@ user's notes.
     `{"schema": 3, "version": "0.53.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
     Lane D: `r37_dc`, `check_upgrade.py` and `check_fresh_server.py` PASS.
     **Built, awaiting the user's GUI test** (one test on 0.53.1, the 0.53.0
-    migration and the Round 53 checklist first); 0.53.0 and 0.53.1 are
-    pushed together on the user's word. Open for the user: fruit picking
+    migration and the Round 53 checklist first); pushed with 0.54.1
+    (`abfb30ce`, 2026-10-21). Open for the user: fruit picking
     in towns ([0.53.1 carry-overs](../BACKLOG.md#0531-carry-overs)).
 - **Round 52 "Ambience and the class rework foundation" complete**
   (2026-10-20, version 0.52.0, **compatible**, no migration step;

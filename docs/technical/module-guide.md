@@ -2911,7 +2911,8 @@ tools](#player-meta-read-by-external-tools).
   offhand, back, wings}}` for the inventory view, the weapon the main hand's
   cosmetic item's image (`hand_image`) or `blank.png`. **The offhand look**
   (Round 55, [offhand format](offhand-format.md)) sits behind the setting
-  `grug_offhand_visuals` (default false; `grug_visuals.OFFHAND_VISUALS`,
+  `grug_offhand_visuals` (default true since 0.55.0, the off switch;
+  `grug_visuals.OFFHAND_VISUALS`,
   read once in `init.lua`, part of compose's key): off, the offhand, back
   and wings slots are `blank.png` (`OFFHAND_NONE`, `BACK_NONE`,
   `WINGS_NONE`). On, compose's `offhand_item`, `offhand_broken` and
@@ -2965,23 +2966,29 @@ tools](#player-meta-read-by-external-tools).
   slots skin, cloak, armor, weapon) and writes the armored NPC model
   `grug_visuals_npc.b3d` (skin, armor, weapon); the build also proves the
   panels clear the legs and checks the rest pose for z-fighting
-  ([armor format](armor-format.md); fixture `tools/r54_model`). Armored NPCs
-  wear the NPC model, the others `character.b3d`.
+  ([armor format](armor-format.md); fixture `tools/r54_model`). Since
+  Round 55 it also appends, from `tools/r55_offhand/params.json`, the bones
+  `Offhand_Shield` and `Offhand_Book` under `Arm_Left` with three shield
+  copies and the open book (the `offhand` buffer), the two back cards (on
+  `Cloak` and on `Body`; the NPC model the body card only) and the cloak
+  wings (player only) ([offhand format](offhand-format.md); fixture
+  `tools/r55_model`). Armored NPCs wear the NPC model, the others
+  `character.b3d`.
   The player texture list is `{skin, cloak, armor, weapon, offhand, back,
   wings}` (the weapon card `blank.png` in the world, the last three Round
   55's offhand look): `grug_visuals.apply` writes it
   with the cloak from the one `register_cloak_source(fn)`, `fn(player) ->
   texture, selected id, wing texture` (no cloak: builtin `blank.png`; a
-  catalogue row's optional `wings`, none yet), the textures part
+  catalogue row's optional `wings`, the Supporter Cloak's), the textures part
   of the redraw key, the id part of the stored appearance. `mods/PLAYER/
   grug_achievements` owns the rest: `core.lua` (pure: counters, tiers,
   unlocked cloaks and the selected cloak in player meta, i.e. per
-  character), `catalog.lua` (data: 20 achievements, tier N of `<id>`
+  character), `catalog.lua` (data: 21 achievements, tier N of `<id>`
   unlocks cloak `<id>_N` (the three of Round 36 a cloak of its own name),
   an optional `faction` hides and withholds a row from the other faction
   (the faction from `grug_core.get_player_faction`), `manual = true`
   marks a row granted by `/achievement` instead of a counter (Round 55,
-  none yet), defaults `none` and `plain_grey`), `creatures.lua`
+  `supporter`), defaults `none` and `plain_grey`), `creatures.lua`
   (pure: wild animals, zombies, families, named leaders by role, rares by
   registry id; a load audit logs any unclassified mob) and `init.lua` (the
   hooks, the Achievements mode body and the cloak dropdown that

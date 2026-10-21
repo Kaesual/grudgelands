@@ -12,33 +12,31 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.54.1, the particle look pass (**compatible**, no
-step; [STATUS](docs/STATUS.md): tinted effects on a white mote in vivid
-tints, lights added with glow 14, Smite as a small Final Word, faster
-Meteor and Censure falls), on 0.54.0, Round 54 "The armor redesign in the game"
-(**compatible**, no step;
-[completion](docs/planning/round54-plan.md#completion-2026-10-21)): armor
-as low-poly boxes in the player and NPC models with one atlas texture, the
-picked art of three lines, opaque pieces, royal armor for kings, royal
-guards and Generals, the Character tab with the held weapon, appearance
-version 2, leather tier 4 named Hardened. It builds on 0.53.1, the fix
-round of Round 53 (**compatible**, no step of its own;
-[completion](docs/planning/round53-fix-plan.md#completion-2026-10-20):
-areas without line of sight, the range line, the flight band and no-fly
-minimap, the same trinket twice, racials, skeleton bows, right-click
-picking, 36 redrawn icons), on 0.53.0, Round 53 "The new classes" (round K
-of the class rework; **migrate**, one step 0.53.0;
-[completion](docs/planning/round53-plan.md#completion-2026-10-20)). All
-three and 0.54.1 are on main, not pushed (origin/main `e4d5c9d5`, 0.52.1);
-they wait for the user's GUI test of 0.53.1, 0.54.0 and 0.54.1 before the push. Round 53
-brought the four new class kits and the eight talent graphs live (`<tree>_<name>` ids, the Talents page), the
-Scout's bow draw removed, the shared seams (family keys, the swing
-callback, clock seams, the held fallback, cones, `no_crit`), 25 skill
-icons, 41 particle effects and 20 picked skill sounds, HP factors
-0.8/0.8/1.0/1.2; the step resets every character's talents. Before it 0.52.1 and 0.52.0, Round 52 "Ambience and the class
-rework foundation" (**compatible**;
-[completion](docs/planning/round52-plan.md#completion-2026-10-20)), pushed
-(`e4d5c9d5`, 2026-10-20). Earlier: 0.51.0, Round 51 "Land zones and the
+**Current state:** 0.55.0, Round 55 "The offhand look" (**compatible**,
+no step;
+[completion](docs/planning/round55-plan.md#completion-2026-10-21)): a
+Warrior's shield (three sizes by tier) and a caster's open spellbook in the
+left hand on two new bones under the left arm, the Scout's second weapon as
+a card on the back (on the cloak when one is worn), cloak wings, manual
+achievements (`/achievement grant|revoke`) with the Supporter Cloak, the
+picked shield and spellbook art with one icon per tier, appearance version
+3 and the setting `grug_offhand_visuals` (on by default; the off switch).
+On main, **not pushed** (origin/main `abfb30ce`, 0.54.1); it waits for the
+user's GUI test. Before it, pushed together on 2026-10-21: 0.54.1, the
+particle look pass (**compatible**; [STATUS](docs/STATUS.md)), 0.54.0,
+Round 54 "The armor redesign in the game" (**compatible**;
+[completion](docs/planning/round54-plan.md#completion-2026-10-21): armor
+as low-poly boxes in the models with one atlas texture, appearance version
+2), 0.53.1, the fix round of Round 53 (**compatible**;
+[completion](docs/planning/round53-fix-plan.md#completion-2026-10-20)), and
+0.53.0, Round 53 "The new classes" (round K of the class rework;
+**migrate**, one step 0.53.0;
+[completion](docs/planning/round53-plan.md#completion-2026-10-20): the
+four new class kits and the eight talent graphs, the step resets every
+character's talents). Before them 0.52.1 and 0.52.0, Round 52 "Ambience
+and the class rework foundation" (**compatible**;
+[completion](docs/planning/round52-plan.md#completion-2026-10-20)).
+Earlier: 0.51.0, Round 51 "Land zones and the
 sea" (**map reset**;
 [completion](docs/planning/round51-plan.md#completion-2026-10-19)); 0.50.2
 (compatible: the Claim Stone preview and claims on the minimap) on 0.50.1
@@ -50,10 +48,10 @@ performance (native first) and gameplay polish" (**map reset**;
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20; the GUI tests of
-Rounds 36–38, 40, 41, 43–45, 48, 49, 51, 53 and 54 and of 0.45.1, 0.49.1,
-0.50.0, 0.50.1, 0.52.1, 0.53.1 and 0.54.1 are open. Next: the GUI test
-(0.53.1, 0.54.0 and 0.54.1) and the user's playtest of the new classes, then a short balance
-fix round
+Rounds 36–38, 40, 41, 43–45, 48, 49, 51 and 53–55 and of 0.45.1, 0.49.1,
+0.50.0, 0.50.1, 0.52.1, 0.53.1 and 0.54.1 are not recorded as passed. Next:
+the GUI test of 0.55.0, the push, then the user's playtest of the new
+classes and a short balance fix round
 ([delivery plan](docs/planning/class-redesign/delivery-plan.md)).
 Details: [STATUS](docs/STATUS.md).
 
@@ -390,9 +388,10 @@ The topic rules below name the one path to use; the
   (`grug_factions.serves`/`refuse`), never the place.
 - **Looks** are stored once per player (`grug_visuals.set_look`) and rolled once
   per NPC; look art comes from `tools/wp13/gen_character_visuals.py`, the
-  enchant masks of weapons, bows, shields and the spellbook from
-  `tools/r31_b/gen_enchant_masks.py --check`, the armor's from `bake.py`
-  (below). PvP POIs are rules in `grug_mapgen/wp40/r31_pvp_catalog.lua`.
+  enchant masks of weapons, bows and the old shared spellbook image from
+  `tools/r31_b/gen_enchant_masks.py --check`, the armor's and the offhand's
+  from their `bake.py` (below). PvP POIs are rules in
+  `grug_mapgen/wp40/r31_pvp_catalog.lua`.
 - **Armor is boxes in the model with one atlas** (Round 54,
   [armor format](docs/technical/armor-format.md)): the contract
   (`tools/r54_armor/catalog.py`, `data/catalog.json`, `data/atlas.json`)
@@ -405,6 +404,24 @@ The topic rules below name the one path to use; the
   --check`; `tools/r54_art/assemble.py --check` and `ghosts.py --check`;
   `tools/r33_c3/gen_cloak_model.py --check` (the player and NPC models) and
   `tools/r40_an/make_poses.py --check`.
+- **The offhand look is parts of the model with one atlas** (Round 55,
+  [offhand format](docs/technical/offhand-format.md)): the shield and the
+  open spellbook on the bones `Offhand_Shield` and `Offhand_Book`, the
+  Scout's back cards and the cloak wings, behind the setting
+  `grug_offhand_visuals` (on by default). The contract
+  (`tools/r55_offhand/params.json`, `offhand.py`, `data/atlas.json`,
+  `test_art/`) changes only through a round's coordinator; the worn layers,
+  the shield and spellbook icons and their masks are baked by
+  `tools/r55_offhand/bake.py` from the picked art in `tools/r55_art/`, never
+  edited by hand. A change to the art, the params or the models runs the
+  topic checks: `python3 tools/r55_offhand/offhand.py --check`,
+  `bake.py --icons-out mods/ITEMS/grug_gear/textures --check`,
+  `test_bake.py` and `test_render.py` there,
+  `python3 tools/r55_art/assemble.py --check`,
+  `tools/r33_c3/gen_cloak_model.py --check` (the bones, parts and z-fight
+  groups), `tools/r55_model/test_frames.py`, the web `.glb` checks below,
+  and on a dev machine `tools/r55_offhand/templates.py --check` (the
+  painter's templates; it depends on Pillow's default font).
 - **Realm websites read player meta** (the contract in the
   [module guide](docs/technical/module-guide.md#player-meta-read-by-external-tools)):
   those keys and the appearance format are not renamed without notice; a

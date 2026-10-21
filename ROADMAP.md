@@ -547,9 +547,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   areas, cones and group heals without line of sight, the range line in
   tooltips, the 40-node flight band and the no-fly minimap, the same
   trinket twice, new Undead, Elf and Dwarf racials, skeleton bows,
-  right-click picking and 36 redrawn icons. Both not pushed; pushed
-  together with 0.54.0 and 0.54.1 after the user's one GUI test. Next: that GUI test
-  and the user's playtest, then a short balance fix round.
+  right-click picking and 36 redrawn icons. Pushed together with 0.54.0
+  and 0.54.1 on 2026-10-21 (`abfb30ce`). Next: the user's playtest, then
+  a short balance fix round.
 - [x] **Round 54 "The armor redesign in the game"**
   ([completion](docs/planning/round54-plan.md#completion-2026-10-21)),
   version 0.54.0, **compatible**, no step: armour as low-poly boxes in the
@@ -558,8 +558,17 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   the weapon card, original art for the three lines picked by the user,
   opaque pieces, the royal armour for kings, royal guards and Generals,
   the Character tab with the held weapon, appearance version 2 and the web
-  `.glb`, leather T4 named Hardened. Complete on 2026-10-21, not pushed;
-  pushed with 0.53.x after the user's GUI test.
+  `.glb`, leather T4 named Hardened. Complete on 2026-10-21; pushed with
+  0.53.x and 0.54.1 (`abfb30ce`, 2026-10-21).
+- [x] **Round 55 "The offhand look"**
+  ([completion](docs/planning/round55-plan.md#completion-2026-10-21)),
+  version 0.55.0, **compatible**, no step: the shield (three sizes by tier)
+  and the open spellbook on two new bones under the left arm, the Scout's
+  second weapon as a card on the back or the cloak, cloak wings
+  ([offhand format](docs/technical/offhand-format.md)), the picked shield
+  and spellbook art with one icon per tier, appearance version 3, manual
+  achievements with `/achievement grant|revoke` and the Supporter Cloak.
+  Complete on 2026-10-21, not pushed; waits for the user's GUI test.
 
 ### Remaining work
 
@@ -601,8 +610,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 51](BACKLOG.md#round-51-carry-overs),
   [Round 52](BACKLOG.md#round-52-carry-overs),
   [Round 53](BACKLOG.md#round-53-carry-overs),
-  [0.53.1](BACKLOG.md#0531-carry-overs) and
-  [Round 54](BACKLOG.md#round-54-carry-overs) carry-overs (Round 40: the
+  [0.53.1](BACKLOG.md#0531-carry-overs),
+  [Round 54](BACKLOG.md#round-54-carry-overs) and
+  [Round 55](BACKLOG.md#round-55-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -617,7 +627,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   tool and fixture leftovers and the class GUI notes; 0.53.1: fruit
   picking in towns for the user, picking, flight-overlay, trinket and
   tool notes; Round 54: the off-hand card, contract z-fighting, clearance,
-  web version 1 and tool notes);
+  web version 1 and tool notes; Round 55: back cards for other classes,
+  NPC offhands, model, bake, achievement-command and tool notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

@@ -12,7 +12,7 @@
 --      (72 atlas layers, 54 skin layers, each with its mask) and that every
 --      one exists in grug_visuals/textures;
 --   P  players: the model's textures {skin, cloak, armor, weapon} (and since
---      Round 55 the offhand look's three, blank by default), a
+--      Round 55 the offhand look's three, blank: the look stays unset), a
 --      metal T6 and a cloth T1 set, an enchanted and a broken piece, the
 --      hair under a helmet, the weapon card empty in the world;
 --   V  the preview seam grug_visuals.preview(player): the player model, the

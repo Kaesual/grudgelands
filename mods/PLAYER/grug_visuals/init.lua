@@ -18,10 +18,10 @@ grug_visuals = {}
 
 -- The offhand look (Round 55, docs/technical/offhand-format.md): the shield
 -- or spellbook in the left hand, the Scout's back weapon and cloak wings.
--- Built dark: with this off (the default until the poses are final; the
--- picked art ships since the finish step) every new texture slot is
--- blank.png and every character looks as in 0.54.1. Read once, here; compose's cache key carries it.
-grug_visuals.OFFHAND_VISUALS = core.settings:get_bool("grug_offhand_visuals", false)
+-- On by default since 0.55.0; the setting stays the off switch: with it off
+-- every new texture slot is blank.png and every character looks as in
+-- 0.54.1. Read once, here; compose's cache key carries it.
+grug_visuals.OFFHAND_VISUALS = core.settings:get_bool("grug_offhand_visuals", true)
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/looks.lua")

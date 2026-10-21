@@ -82,6 +82,9 @@ grug_classes = {
 	race_ids = {accord = {"human", "dwarf", "elf"}, throng = {"orc", "troll", "undead"}},
 	registered_races = {},
 	get_race = function(player) return race_of[player] end,
+	-- The offhand look is on by default since 0.55.0: apply asks for the
+	-- Scout's back card; these players have no class, so no card.
+	get_class = function() return nil end,
 	register_on_race_chosen = function(fn) callbacks.race[#callbacks.race + 1] = fn end,
 	register_on_class_chosen = function(fn) callbacks.class[#callbacks.class + 1] = fn end,
 	register_look_panel = function(panel) callbacks.look_panel = panel end,

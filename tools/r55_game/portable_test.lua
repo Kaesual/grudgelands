@@ -348,7 +348,7 @@ do
 end
 
 ------------------------------------------------------------------------------
--- O. The look off (the default): 0.54.1 plus blanks.
+-- O. The look off (the off switch; on is the default since 0.55.0): 0.54.1 plus blanks.
 ------------------------------------------------------------------------------
 local OFF_LISTS = {}
 do

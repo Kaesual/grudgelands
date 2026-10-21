@@ -1,6 +1,6 @@
 # Round 55 — offhand, back weapon and cloak wings in the model (0.55.0)
 
-Coordinator: Claude, 2026-10-21. Status: **running** (the user's go 2026-10-21; CONTRACT committed with this plan).
+Coordinator: Claude, 2026-10-21. Status: **complete** ([completion](#completion-2026-10-21)); the user's go 2026-10-21, CONTRACT committed with this plan.
 
 The user (2026-10-21): "Wäre es möglich, in einer kleinen Runde schon mal alles einzubauen und vorzubereiten, so dass
 alles fertig ist, sobald Design und Posen-Positionen ausgearbeitet sind?" This round builds the whole pipeline with
@@ -281,3 +281,191 @@ time:
    - a pick page as in Round 54.
 3. `bake.py` runs on the picked art into `mods/`, licence rows are added, the setting's default turns on, and D writes
    the release.
+
+## Completion (2026-10-21)
+
+All code lanes are merged on main and independently reviewed (Opus); the art came from GPT-6 Astra in one drop
+and the user's picks; this lane D (the setting on, this section, the docs and the status owners) follows on main
+`47e1c98f`. **0.55.0 is compatible:** no migration step, item ids unchanged. Nothing in world generation changes.
+**Push:** not pushed; origin/main stays at `abfb30ce` (0.54.1, pushed 2026-10-21); 0.55.0 waits for the user's GUI
+test. **Sync:** on the user's word after the round.
+
+The finish step (§7) ran **inside this round** instead of as 0.55.1: the user's final params, Astra's picked art,
+the Supporter Cloak and the setting's default (lane D) all ship in 0.55.0 (the user, option b: "release everything
+together").
+
+### Lanes
+
+Worktrees and branches `r55-<lane>`. Main's first-parent commits, in order (lane tip in brackets):
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| CONTRACT | `cf7c6ce3`; fixes `57551665`, `bcfc243c`, `7e2df348`, `23ff2174`, `990fc9a5`, `8ef99b14`, `42ddeeab`, `1d4b930f`, `c6af0e14`, `dbd05bd3` | this plan, `tools/r55_offhand/` (`params.json`, `offhand.py`, `data/atlas.json`, test art), [offhand-format.md](../technical/offhand-format.md); fixes: the ribbon required; crossed shield texels opaque, zone faces, `wings_<id>.png`; two back cards; the wing hinge inset; `pages_b` the right page, 6 wing triangles; half-texel edge UVs; `cloak_<id>.png`; the open book closed at the spine; `icon_palette`; §7 the baked spellbook icons | coordinator (reviewed with MODEL) |
+| BAKE | `8568017d` (`a2281f6d`), `b99c0b3a` (`7d708271`) | `tools/r55_offhand/bake.py` (art → offhand atlas layers, icons and masks per tier, `--check`), `test_bake.py`, `make_broken_art.py` and the broken set; then `test_bake.py` independent of `params.json` and `cloak_<id>.png` | MERGE AFTER FIXES (a blank sheet passed), delta reviews MERGE |
+| MODEL | `283e8a43` (`d92f801c`) | `tools/r33_c3/gen_cloak_model.py` with `offhand_model.py`: the bones `Offhand_Shield` and `Offhand_Book` under `Arm_Left` keyed in every frame (player 485, NPC 221) with steadiness, three shield copies with boss, the open book, two back cards, wings; exclusive z-fight groups; `--check`; the 7-primitive `.glb`; `tools/r55_model` | MERGE (Low: the body card's z-fight, moved in the params commit; `entry_at` backlog) |
+| params | `b88245aa`, `4fa0ab2e`, `93e6aad8` | the user's tuning from the Offhand-Werkstatt: shapes and Stand (body card z −3.55); the shield pivot and Block, the book in Cast 2; the book's placement and Block with a shift | coordinator (data only) |
+| GAME | `6532a1c7` (`265bd4e5`) | `grug_visuals`: the offhand layer through `piece_layer`, the back card (the equipped weapon the hand does not show, 32 × 16 `[combine`, rewritten by the wield poll), the wings from the cloak source, the setting in compose's key, appearance version 3, 7 player and 5 NPC slots; `grug_mobs` lists; `tools/r55_game` (fixture, capture, 21 shots) | MERGE (README conflict and a comment fixed in the merge) |
+| SUPPORTER | `a0b77cf9` (`1a05bfaf`) | `grug_achievements`: `manual = true` rows, `/achievement grant|revoke <player> <id>` (privilege `server`), the offline queue in mod storage, hidden until granted; `tools/r55_supporter` | MERGE, no findings |
+| WEB | `cd218892` (`31671930`), wording `935179d0` | `offhand_look` in `web_data.json`, the version 2 rule, the back card rule for the site, the `.glb` docs, `tools/r55_web`; the kaesual addendum (outside the repo) | MERGE (wording fixed by the coordinator) |
+| VIEWER | `78547e04` (`692bd483`) | `tools/r55_offhand/render.py` (the real b3d with the art, contact/detail/cloak sheets), `templates.py` and `templates/`, `test_render.py`; the book spine prototype behind `1d4b930f` | MERGE AFTER FIXES (partial `tiers.json`, README sizes, rim texels), delta MERGE |
+| FINISH | `c23d8ceb` (`9172fe05`) | `tools/r55_art/` (the picked art, `assemble.py --check`); 24 offhand layers and 24 icons with masks baked into `grug_visuals` and `grug_gear` (untinted registration), the Supporter rows, cloak and wings, licences; `book_icons.py` retired; the Caster-offhand ghost the steel book | MERGE (old enchanted/broken stacks → STACKS) |
+| STACKS | `47e1c98f` (`497c716b`) | `grug_gear`'s `initialize_weapon_tooltip` counts an image change, so old enchanted or broken shields and spellbooks take the current art at the next refresh; `tools/r55_stacks` | MERGE, no findings |
+| D | this section | the setting on by default, the version 0.55.0, the design docs, AGENTS, STATUS, CHANGELOG, BACKLOG, ROADMAP, README; the stale templates regenerated | independent review (the setting as a logic delta) |
+
+**PAGE** (coordinator, outside the repo): the
+[Offhand-Werkstatt](https://claude.ai/artifact/C4vmLYnNR5Mm5HG4LFv9Db), the user's tuning page: the back card, the
+export in `params.json`'s format (from v10 only the diff against the repo), the real model's primitives from the
+`.glb`, per-pose shift sliders. **ART** (GPT-6 Astra, drop-01, outside the repo): two proposals, P1 "Standard &
+Ledger" and P2 "Brace & Seal", 112 own CC0 PNGs including the icons (drawn freely, not adapted from the old
+third-party icons), 0 bake violations. **PICK:** the [pick page](https://claude.ai/artifact/RmCbkJp9QJpjn5abBv2HS3).
+
+Main has 239 portable fixtures (5 new: `r55_model`, `r55_game`, `r55_supporter`, `r55_web`, `r55_stacks`) and the
+Python tests `tools/r55_offhand/test_bake.py`, `test_render.py` and `tools/r55_model/test_frames.py`. `mods/`
+against 0.54.1 (at lane D's last commit): +663 −128 lines in 16 text files (no new Lua file), 38 PNGs added
+(11,364 B), 12 replaced (the shield icons and masks, 4,528 → 2,718 B), none removed, both models replaced
+(measured, `git diff abfb30ce`).
+
+### Decisions during the round
+
+**The user** (HANDOVER):
+
+- **Two back cards** (2026-10-21): on the cloak when one is worn, else on the back; one 32 × 16 `back` texture picks
+  the card by its half (contract `7e2df348`).
+- **The cloak/wing gap:** the wing's hinge sits inside the cloak by e = thick / 2 · sin(angle) + 0.05 px, thick at
+  most 0.65 px (contract `23ff2174`).
+- **A first premium cloak with wings**, granted by an admin: the name **Supporter Cloak** (not "Mantle of the First
+  Road"); grant and revoke **only for manual achievements**, kept simple (no counter command, no revoke of earned
+  ones).
+- **The picks** (2026-10-21, `offhand-art/pick/picks-2026-10-21.json`): shields T1–T3 P2, T4–T6 P1; book paint P1
+  except T3 P2, every book icon P2 (with its palette, `icon_palette`); the Supporter Cloak P1. The icons are
+  simple pixel art, drawn freely (CC0).
+- **The poses** (Offhand-Werkstatt exports): the shield pivot at y 14.5; Block and Block walking [84, −51, −8]
+  (order XYZ) with the shift [−1, −2.25, 0]; the book in Cast 2 and Cast 2 walking [50, 0, 0]; the book's placement;
+  "nothing more to tune".
+- **Old enchanted or broken shields and spellbooks** (the FINISH review's finding): fixed (option b, lane STACKS).
+- **Release everything together** as 0.55.0 with the finish (option b), no push before art, picks and poses.
+
+**The coordinator** (answers to lane questions; each built as stated): the back card shows the equipped weapon the
+hand does not show, also on the Character tab (the blade there, the bow on the weapon card) and on the website (the
+site draws `slots.mainhand`); a Scout holding a bow item shows the blade; the body card at z −3.55 (no z-fight with
+the bracers); the wing hem coplanar with the cloak hem accepted; `gen_enchant_masks.py` keeps the old shared
+spellbook image (version 2 values name it); the Caster-offhand ghost is the steel spellbook icon; manual rows with a
+faction refused; the revoke feed line "Achievement removed: X"; the offline queue keyed on the name.
+
+### Deviations from the plan
+
+- **The book spine** (VIEWER Q1): the contract's spine was the closed book's, which left a wedge open in the gutter;
+  the spine became a plate behind the open halves and the page blocks keep their gutter faces (contract
+  `1d4b930f`, 66 triangles).
+- **The finish inside the round** (§7 allowed it), so the CHANGELOG describes the visible look, not "nothing
+  visible yet".
+- **Lanes the plan did not list:** VIEWER (the painter's render tool and templates, asked for by the user), SUPPORTER
+  (the manual achievements), FINISH (the art into the game) and STACKS (added after the FINISH review).
+- **The icons** were drawn freely by Astra (CC0) instead of adapting the old CC BY-SA shield and book icons; the old
+  rows left the licence files and CREDITS credits Lord of the Test for bows only.
+- **Lane D regenerated `tools/r55_offhand/templates/`**: `templates.py --check` had failed on main since `93e6aad8`
+  moved the book (the hatching of `book_cover_f` and `book_pages_f`, 87 and 71 pixels).
+
+### Numbers worth keeping
+
+All measured unless marked.
+
+| | before (0.54.1) | after (0.55.0) |
+|---|---|---|
+| Player model `grug_visuals_character.b3d` | 872 vertices / 436 triangles; 239,802 B | 1,240 / 618 (+ offhand 162 triangles, back 8, wings 12); 299,586 B |
+| NPC model `grug_visuals_npc.b3d` | 848 / 424; 124,344 B | 1,180 / 590 (+ offhand 162, body card 4); 159,252 B |
+| Web `.glb` | 88,900 B, 4 primitives | 120,440 B, 7 primitives (offhand, back and wings alpha 0 by default) |
+| `tools/web_data/web_data.json` | 145,084 B | 151,196 B |
+| Offhand files in `mods/` | — | 24 layers and masks in `grug_visuals` (8,401 B), 12 spellbook icons and masks (2,552 B), the Supporter cloak and wings (411 B) |
+| Shield icons and masks (`grug_gear`) | 12 files, 4,528 B | 12 files, 2,718 B |
+
+- **Texture bytes per player** (`r55_game` section M on compose's output, all seven slots; 0.54.1 → look off → look
+  on): bare 342 → 369 → 369; Warrior metal T3 with a T3 shield 496 → 523 → 545 (offhand 31); Warrior T6 fully
+  enchanted 1,977 → 2,004 → 2,224 (offhand 229); Warrior T6 enchanted and broken 2,180 → 2,207 → 2,456 (offhand 258,
+  the worst offhand); Scout T5 with an enchanted bow 510 → 537 → 773 (back 245); the Scout worst case (a broken
+  enchanted bow, a cloak) 2,159 → 2,186 → 2,457 (back 280). The Supporter wings 43 B. An armoured NPC 483 → 501.
+- **Stored appearance** (version 3): the worst case 4,145 B (`r39_wm`, 1,037 outside the texture strings); caps
+  2,048 per string and 7 × 2,048 + 2,048 = 16,384 for the JSON (12,288 before). The web test Warrior with an
+  enchanted T6 shield 1,785 B, the Scout 1,328 B.
+- **Runtime:** no new globalstep; the one-second wield poll costs one boolean test for everyone but a Scout with the
+  look on, who adds one or two cosmetic hand reads and one string compare per second; a card change re-sends the
+  seven-texture list at most once per second. An old shield or spellbook stack's refresh reads 4 more meta strings.
+- **Clearance** (MODEL, skin px, negative = overlap, SAT lower bounds; first params): shields against the left bracer
+  −0.97 / −0.87 / −0.76 standing; the final Block keys −0.36 to −0.57 against the bracer (as standing; `93e6aad8`); the
+  book's worst −2.37 (a tasset in walk); the cloak card +0.37 from the cloak in every frame.
+- **Stand-frame bounding box** (MODEL): x and y unchanged (±6.657, −0.262..17.194), z min −2.740 → −3.027 (the body
+  card); the Character tab's figure size is the user's to judge.
+- **Art in the repo:** `tools/r55_art/art` 58 files (56 PNG, 2 JSON), 20,144 B tracked; the painter templates 20 PNGs
+  (VIEWER: about 505 KB). `bake.py` runs in about 0.05 s, `render.py` on the whole art directory in about 1.6 s.
+
+### Classification
+
+**Compatible**, no step:
+`{"schema": 3, "version": "0.55.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+A world on 0.54.1 moves on without a step. The setting turned on changes no format: every character is recomposed
+once (the setting is in compose's key) and the version 3 appearance, already written with the setting off, now
+names the offhand and wing files. Saved state read or written differently:
+
+- player meta `grug_visuals:appearance` becomes version 3 (`textures.offhand`, `textures.wings`) at a player's next
+  join; a version 2 value reads as version 3 with both `none`;
+- armoured NPC staticdata: five textures and a new `_grug_visual_key` digest, so each saved NPC redraws once;
+- stack meta of old enchanted or broken shields and spellbooks (`inventory_image`, `wield_image`,
+  `_grug_broken_base_*`, `_grug_broken_drawn_*`) is rewritten to the current art at the next refresh (join,
+  equipment or level change, `give`);
+- new: player meta `grug_achievements:n:manual:<id>` and the existing tier, cloak and selection keys on a grant; mod
+  storage `queue:<player>` for offline grants and revokes, removed at the join.
+
+### Open notes
+
+- **For the user:** the look with the setting on (below), the Character tab's figure size, the wings' size from
+  behind, the shield's slight overlap with the bracer; the kaesual site after its update (the addendum
+  `r55/kaesual-offhand-addendum.md` to pass on, `offhand_look.enabled` is now true).
+- The contract doc's §1 still says only what "off" does; the coordinator may add "(on by default since 0.55.0)".
+- The reviews' and reports' notes are in the [Round 55 carry-overs](../../BACKLOG.md#round-55-carry-overs).
+
+### GUI checklist (Round 55)
+
+Desktop and the web build, on the synced game. An existing 0.54.1 character first (with old enchanted and broken
+shields and spellbooks), so its old appearance and stacks meet the new code.
+
+1. **The look on (the default):** every character is redrawn once at its join; nothing else changes for a class
+   without an offhand item.
+2. **Shields T1, T3 and T6** on a Warrior, several races: the three sizes (T1–T2 small, T3–T4 middle, T5–T6 full),
+   the face outwards, standing, walking, sitting; **Block** (Hold Ground, Unbroken) standing and walking: the
+   shield upright in front of the chest, judged by eye against the armour (a slight overlap with the left bracer is
+   known); enchanted (zone A and B colours) and broken.
+3. **Spellbooks T1, T3 and T6** on a Mage and a Priest: open in the left hand, pages towards the head; **Cast 2**
+   (frost and healing spells) standing and walking lifts it; enchanted and broken.
+4. **The Scout's back card**, with and without a cloak (the card on the cloak, else on the body): a bow skill or the
+   bow in hand puts the blade on the back; Strike, a pickaxe or a torch puts the bow there; the card follows the
+   hotbar within about a second; a Scout without a bow shows no card; an **enchanted and a broken bow** on the back.
+5. **The Supporter Cloak:** `/achievement grant <you> supporter` (privilege `server`): a feed line, the row in the
+   Achievements tab, the cloak in the dropdown; worn, its **wings** standing and walking (judge their size from
+   behind and at three-quarter); `/achievement revoke <you> supporter`: the row and the cloak go, a worn cloak falls
+   back to No cloak; a grant to an **offline** character, then join as it: applied once; `/achievement grant <you>
+   hunter`: refused.
+6. **Old stacks after the update:** an enchanted Iron and Embersteel shield, an enchanted spellbook and a broken
+   enchanted shield from 0.54.1, in the bags and in the offhand slot: after the join they show the new icon with
+   their enchant colours (no grey or red cast, no old book), the broken one cracked; also in the hand and on the
+   Character tab.
+7. **Icons:** the new shield and spellbook icons at 16 and 32 px in the inventory, shop and loot, plain, enchanted
+   and broken; the Caster-offhand slot ghost (the darkened steel book).
+8. **Character tab:** the shield or book on the figure, the wings, a Scout's bow on the weapon card with the blade
+   on the back; judge the figure's size (hidden parts count in the engine's camera fit).
+9. **First person** shows neither shield nor book (expected).
+10. **NPCs:** guards, bandits and kings look as in 0.54.1 (their offhand and back slots are empty), each redrawn once.
+11. **The setting off** (`grug_offhand_visuals = false`, a restart): players, NPCs and the web look as in 0.54.1,
+    apart from the new item icons; the Supporter Cloak without wings.
+12. **Web:** before the kaesual update the site looks as in 0.54.x (the three new primitives are transparent); after
+    it, the test characters of the addendum, a Warrior's shield, a caster's book, a Scout's card (the blade, as the
+    site draws the bow in the hand) and the Supporter wings; a character not logged in since 0.54.x (version 2) shows
+    no offhand. `/glb_probe` still shows the `.glb` like the `.b3d`.
+
+### Round-end gates
+
+Lane D on its branch from `47e1c98f`: `r37_dc` PASS, `check_upgrade.py` PASS (against origin/main `abfb30ce`,
+0.54.1), `check_fresh_server.py` PASS, `export.lua --check` current, the offhand and armour topic checks PASS
+(`templates.py --check` after the regeneration), the full `run_fixtures.sh` and one boot with the setting at its new
+default (the lane report). Each code lane ran the full `run_fixtures.sh` once (BAKE 234/0, MODEL 235/0, GAME 236/0,
+VIEWER 237/0, SUPPORTER 237/0, WEB 237/0, FINISH 238/0, STACKS 239/0). The round end on main (full fixtures,
+`check_upgrade.py`, `check_fresh_server.py`, one boot, the sync) is the coordinator's.

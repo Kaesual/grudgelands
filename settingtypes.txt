@@ -82,12 +82,11 @@ grug_map_quality (World map quality) enum normal normal,high
 
 [Characters]
 
-#    (Developers) Show the offhand look on characters: the shield or
-#    spellbook in the left hand, the Scout's second weapon on the back and
-#    the wings of cloaks that have them. Not finished yet (placeholder art);
-#    off keeps every character as before. Read when the server starts;
-#    restart after a change.
-grug_offhand_visuals (Show shields, spellbooks and back weapons on characters) bool false
+#    Show the offhand look on characters: the shield or spellbook in the
+#    left hand, the Scout's second weapon on the back and the wings of
+#    cloaks that have them. Off draws characters without them, as before
+#    0.55.0. Read when the server starts; restart after a change.
+grug_offhand_visuals (Show shields, spellbooks and back weapons on characters) bool true
 
 [Combat]
 
