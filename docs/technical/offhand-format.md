@@ -211,7 +211,9 @@ The painter's files, in one art directory (the test set: `tools/r55_offhand/test
  "book": {"T1": {"palette": "patch", "variant": {"cover_f": "a", "pages_f": "b"}, "icon": "a"}}}
 ```
 
-A `variant` is one id for every sheet of the item or a map per book box (missing boxes mean `a`). Tier `T<n>`
+A `variant` is one id for every sheet of the item or a map per book box (missing boxes mean `a`). An optional
+`icon_palette` colours the tier's icon with another palette than its sheets (`palette`), for an icon picked from a
+different proposal than the paint; without it the icon takes `palette`. Tier `T<n>`
 is bracket n, whose item is `grug_gear:shield_<grade>` or `grug_gear:spellbook_<grade>`.
 
 - **Palette and zones** as armor-format.md §6: the 13 reference colours plus full transparency, alpha 0 or
