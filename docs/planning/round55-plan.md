@@ -463,7 +463,9 @@ shields and spellbooks), so its old appearance and stacks meet the new code.
 7. **Icons:** the new shield and spellbook icons at 16 and 32 px in the inventory, shop and loot, plain, enchanted
    and broken; the Caster-offhand slot ghost (the darkened steel book).
 8. **Character tab:** the shield or book on the figure, the wings, a Scout's bow on the weapon card with the blade
-   on the back; judge the figure's size (hidden parts count in the engine's camera fit).
+   on the back; judge the figure's size (hidden parts count in the engine's camera fit); the weapon card's image
+   mirrored across its long axis (the user's fix of 2026-10-21: the bow's string and a staff's head point up, the
+   grip stays in the fist).
 9. **First person** shows neither shield nor book (expected).
 10. **NPCs:** guards, bandits and kings look as in 0.54.1 (their offhand and back slots are empty), each redrawn once.
 11. **The setting off** (`grug_offhand_visuals = false`, a restart): players, NPCs and the web look as in 0.54.1,

@@ -258,13 +258,14 @@ if preview_src then
 		"E the real seam bare-handed: skin, no cloak, armor, a blank card, blank offhand look")
 	H.put(rb, "grug_weapon", 1, "grug_gear:sword_steel")
 	H.equipment_change(rb, "grug_weapon")
+	-- the card mirrors its image across the anti-diagonal (the Character tab, 2026-10-21)
 	eq(model_element(rb.formspec or H.page(rb, "stats")).textures[4],
-		"grug_gear_item_sword_steel.png", "E the real seam: the sword on the card")
+		"grug_gear_item_sword_steel.png^[transformFYR90", "E the real seam: the sword on the card")
 	local rs = H.player("rs", "scout", {16})
 	H.put(rs, "grug_weapon", 1, "grug_gear:bow_bronze")
 	H.equipment_change(rs, "grug_weapon")
 	eq(model_element(H.page(rs, "stats")).textures[4],
-		"grug_gear_item_bow_bronze.png^[hsl:-20,10,0", "E the real seam: the Scout's bow")
+		"grug_gear_item_bow_bronze.png^[hsl:-20,10,0^[transformFYR90", "E the real seam: the Scout's bow")
 	for key, value in pairs(saved) do grug_visuals[key] = value end
 	grug_visuals.preview = harness_preview
 else

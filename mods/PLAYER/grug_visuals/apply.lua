@@ -610,6 +610,12 @@ end
 --         offhand, back, wings}}
 --
 function grug_visuals.preview(player)
+	-- The card's image mirrored across its anti-diagonal (the user,
+	-- 2026-10-21: in the Character tab the bow's string and the staff's head
+	-- pointed down). The anti-diagonal is the sprite's long axis (grip
+	-- bottom-left, tip top-right, wield_geometry.lua), so the grip stays in the
+	-- fist; `FYR90` is that mirror.
+	local card_flip = "^[transformFYR90"
 	local result = grug_visuals.compose(grug_visuals.player_spec(player))
 	local visuals_on = grug_visuals.OFFHAND_VISUALS == true
 	local cloak, wings
@@ -624,7 +630,7 @@ function grug_visuals.preview(player)
 		grug_visuals.back_card(back_image(player, weapon),
 			cloak ~= grug_visuals.CLOAK_NONE) or grug_visuals.BACK_NONE
 	return {mesh = grug_visuals.PLAYER_MODEL, textures = {result.skin, cloak, result.armor,
-		image ~= "" and image or grug_visuals.WEAPON_NONE, result.offhand, back,
+		image ~= "" and image .. card_flip or grug_visuals.WEAPON_NONE, result.offhand, back,
 		visuals_on and wings or grug_visuals.WINGS_NONE}}
 end
 

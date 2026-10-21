@@ -638,7 +638,8 @@ do
 	V.apply(pat)
 	local preview = V.preview(pat)
 	eq(#preview.textures, 7, "P seven textures")
-	eq(preview.textures[4], "grug_gear_item_sword_steel.png", "P the sword on the weapon card")
+	-- the card mirrors its image across the anti-diagonal (the Character tab, 2026-10-21)
+	eq(preview.textures[4], "grug_gear_item_sword_steel.png^[transformFYR90", "P the sword on the weapon card")
 	eq(preview.textures[5], "(grug_offhand_shield_abyssal_steel.png)", "P the shield")
 	eq(preview.textures[6], V.BACK_NONE, "P a Warrior: no back card")
 	eq(preview.textures[7], WINGS, "P the wings")
@@ -651,7 +652,7 @@ do
 	local scout_preview = V.preview(SCOUT)
 	local bow_raw = slot_copy(SCOUT, "grug_weapon"):get_meta():get_string("inventory_image")
 	local blade_raw = slot_copy(SCOUT, "grug_offhand"):get_meta():get_string("inventory_image")
-	eq(scout_preview.textures[4], V.hand_image(slot_copy(SCOUT, "grug_weapon")), "P the bow on the card")
+	eq(scout_preview.textures[4], V.hand_image(slot_copy(SCOUT, "grug_weapon")) .. "^[transformFYR90", "P the bow on the card")
 	check(has(scout_preview.textures[4], bow_raw), "P ... the equipped bow")
 	eq(scout_preview.textures[6], V.back_card(blade_raw, false), "P the Scout's blade on the back (no cloak)")
 	cloak_of[SCOUT] = CLOAK

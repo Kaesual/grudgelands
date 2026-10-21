@@ -388,13 +388,14 @@ do
 	for index = 1, 3 do
 		eq(preview.textures[index], ada.props.textures[index], "V texture " .. index .. " as applied")
 	end
-	eq(preview.textures[4], "grug_gear_item_sword_abyssal_steel.png", "V the sword on the weapon card")
+	-- the card mirrors its image across the anti-diagonal (the Character tab, 2026-10-21)
+	eq(preview.textures[4], "grug_gear_item_sword_abyssal_steel.png^[transformFYR90", "V the sword on the weapon card")
 	check(V.preview(ada) ~= preview and V.preview(ada).textures ~= preview.textures, "V a fresh table")
 	equip(ada, "grug_weapon", gear_stack("grug_gear:sword_abyssal_steel", "str", nil, true))
 	local image = V.preview(ada).textures[4]
 	check(has(image, "grug_gear_item_sword_abyssal_steel_ench.png") and
 		has(image, grug_gear.BROKEN_MODIFIER), "V an enchanted, broken sword as its stack shows")
-	eq(image, V.hand_image(slot_copy(ada, "grug_weapon")), "V the hand image")
+	eq(image, V.hand_image(slot_copy(ada, "grug_weapon")) .. "^[transformFYR90", "V the hand image, mirrored")
 	equip(ada, "grug_weapon", ItemStack(""))
 	eq(V.preview(ada).textures[4], V.WEAPON_NONE, "V no weapon: an empty card")
 	-- A player the join apply has not reached yet (sfinv may build the page
