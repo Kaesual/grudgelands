@@ -38,7 +38,8 @@ CARD_RESERVE = 16        # a free 16 x 16 rectangle for a later off-hand weapon 
 WINGS_SIZE = (16, 32)    # the wing texture (section 6)
 ICON_SIZE = (16, 16)
 BONES = ("Offhand_Shield", "Offhand_Book")
-BACK_BONES = ("Body", "Cloak")
+BACK_CARDS = {"body": "Body", "cloak": "Cloak"}   # card -> bone (format doc §3.3)
+BACK_SIZE = (32, 16)     # the back texture: the cloak card left, the body card right
 # Every clip the generator keys (player_api's ranges and the Round 40 pose
 # clips, gen_cloak_model.py BASE_RANGES and PICKS); the NPC model has only the
 # first six.
@@ -131,6 +132,50 @@ def shield_outline(shape):
     k = shape["taper"]
     pts = [(-W, T), (0, T), (W, T), (W, S), (W * k, M), (0, B), (-W * k, M), (-W, S)]
     return pts, {"T": T, "S": S, "M": M, "B": B, "W": W}
+
+
+def _clip_area(poly, x0, y0, x1, y1):
+    """Area of a polygon clipped to the rectangle (Sutherland-Hodgman)."""
+    def clip(pts, inside, cut):
+        out = []
+        for a, b in zip(pts, pts[1:] + pts[:1]):
+            if inside(b):
+                if not inside(a):
+                    out.append(cut(a, b))
+                out.append(b)
+            elif inside(a):
+                out.append(cut(a, b))
+        return out
+
+    def at_x(c):
+        return lambda a, b: (c, a[1] + (b[1] - a[1]) * (c - a[0]) / (b[0] - a[0]))
+
+    def at_y(c):
+        return lambda a, b: (a[0] + (b[0] - a[0]) * (c - a[1]) / (b[1] - a[1]), c)
+    pts = list(poly)
+    for inside, cut in ((lambda p: p[0] >= x0, at_x(x0)), (lambda p: p[0] <= x1, at_x(x1)),
+                        (lambda p: p[1] >= y0, at_y(y0)), (lambda p: p[1] <= y1, at_y(y1))):
+        if not pts:
+            return 0.0
+        pts = clip(pts, inside, cut)
+    return abs(sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(pts, pts[1:] + pts[:1]))) / 2 if pts else 0.0
+
+
+def shield_texels(shape, side):
+    """{(column, row)} of a shield face's texels the outline contains or crosses
+    with positive area (format doc §6: they must be opaque; the rest is never
+    sampled). `side` is "front" (column 0 at -x) or "back" (column 0 at +x)."""
+    poly, lv = shield_outline(shape)
+    W, H = texels(shape["width"]), texels(shape["height"])
+    sx, sy = 2 * lv["W"] / W, shape["height"] / H
+    out = set()
+    for cy in range(H):
+        y1 = lv["T"] - cy * sy
+        for cx in range(W):
+            x0 = -lv["W"] + cx * sx if side == "front" else lv["W"] - (cx + 1) * sx
+            if _clip_area(poly, x0, y1 - sy, x0 + sx, y1) > 1e-9:
+                out.add((cx, cy))
+    return out
 
 
 def shield_front_z(shape, x):
@@ -238,7 +283,7 @@ def _placement(where, pl, bones, errors):
     if not isinstance(pl, dict):
         errors.append("%s: not an object" % where)
         return
-    if pl.get("bone") not in bones:
+    if bones is not None and pl.get("bone") not in bones:
         errors.append("%s.bone: %r, expected one of %s" % (where, pl.get("bone"), ", ".join(bones)))
     for key in ("pos", "rot"):
         if not _vec(pl.get(key)):
@@ -310,14 +355,18 @@ def validate(p):
     _shape("book.shape", bk.get("shape", {}), (
         ("width", 1, 12), ("height", 1, 14), ("pages", 0.25, 6), ("cover", 0.1, 2), ("open", 0, 180),
         ("inset", 0, 2), ("spine_min", 0, 2)), errors)
-    if bk.get("ribbon") is not None:
-        _shape("book.ribbon", bk["ribbon"], (("x0", -1, 8), ("x1", -1, 8), ("below", 0, 8), ("into", 0, 4),
-                                             ("half_depth", 0.05, 2)), errors)
+    _shape("book.ribbon", bk.get("ribbon") or {}, (("x0", -1, 8), ("x1", -1, 8), ("below", 0, 8), ("into", 0, 4),
+                                                   ("half_depth", 0.05, 2)), errors)
     _placement("book.place", bk.get("place"), BONES, errors)
     back = p.get("back", {})
-    _placement("back", back, BACK_BONES, errors)
+    for card in BACK_CARDS:
+        _placement("back.%s" % card, back.get(card), None, errors)
+        if isinstance(back.get(card), dict) and set(back[card]) - {"pos", "rot", "order"}:
+            errors.append("back.%s: unknown key(s) %s" % (card, ", ".join(sorted(set(back[card]) - {"pos", "rot", "order"}))))
     if not _num(back.get("size"), 2, 32):
         errors.append("back.size: expected a number in [2, 32]")
+    if set(back) - {"size", "body", "cloak"}:
+        errors.append("back: unknown key(s) %s" % ", ".join(sorted(set(back) - {"size", "body", "cloak"})))
     _shape("wings", p.get("wings", {}), (("width", 0.5, 8), ("angle", -10, 90), ("drop", 0, 12),
                                          ("thick", 0.05, 1)), errors)
     bones = p.get("bones", {})

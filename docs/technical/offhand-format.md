@@ -13,7 +13,7 @@ live in [`tools/r55_offhand/`](../../tools/r55_offhand/README.md); `offhand.py` 
 |---|---|---|---|
 | shield, three size copies | `Offhand_Shield` (child of `Arm_Left`) | `offhand` | a Warrior's shield in the offhand slot; its texture paints only the copy of its size |
 | open spellbook | `Offhand_Book` (child of `Arm_Left`) | `offhand` | a Mage's or Priest's spellbook in the offhand slot |
-| back card | `Body` (or `Cloak`, §3.3) | `back` | a Scout: the weapon not in the hand (plan §4 GAME) |
+| back card, twice | one on `Cloak`, one on `Body` (§3.3) | `back` | a Scout: the weapon not in the hand (plan §4 GAME); on the cloak card when a cloak is worn, else on the body card |
 | two wings | `Cloak` | `wings` | a cloak that has a wing texture (player model only) |
 
 Every part is always in the model; an empty slot is `blank.png`, so nothing shows (the armor atlas trick). With
@@ -46,14 +46,15 @@ same as a three.js `Euler` with that order string). The angles are always listed
 
 ### 2.2 Items
 
-`shield.place`, `book.place` and `back` are placements `{bone, pos, rot, order}`: an item point q in the item's
+`shield.place`, `book.place` (`{bone, pos, rot, order}`) and `back.body`, `back.cloak` (`{pos, rot, order}`; their
+bones are fixed, §3.3) are placements: an item point q in the item's
 own frame (§3) lies at rest at `pos + R · (scale · q)`. The placement is **independent of the bone's pivot**:
 moving a pivot changes how the item turns, never where it rests.
 
 - `shield.sizes`: the three size steps (draft 0.85, 0.92, 1.0), each a copy of the shield scaled about its own
   origin; `shield.tier_step`: bracket "1" … "6" → step 0, 1 or 2.
-- `back.size`: the card's edge in skin pixels; `back.bone`: `Body` (rigid on the back) or `Cloak` (rides the
-  cloak's swing). The NPC model has no `Cloak` bone and uses `Body` with the same rest placement.
+- `back.size`: the edge of both cards in skin pixels; `back.body` places the card on `Body` (rigid on the back),
+  `back.cloak` the card on `Cloak` (rides the cloak's swing, just outside the cloak).
 
 ### 2.3 Bones and clips
 
@@ -118,13 +119,19 @@ half at z < 0, page tops at +y. With p = pages / 2, c = cover, w = width, h = he
 75° each side of the spread's centre, which faces +x. The readable pages are `pages_f`'s back face and
 `pages_b`'s front face; seen by the reader, `pages_b` is the left page. 62 triangles.
 
-### 3.3 Back card (`back`)
+### 3.3 Back cards (`back`)
 
-A square of `size` px centred on the card frame's origin, in its x–y plane: x = the image's u (to the right),
-y = the image's up (v runs down). Two-sided like the weapon card (each pair of triangles a hair off the plane
-to its own side, `gen_cloak_model.CARD_GAP`); the side facing +z shows the image unmirrored. UV 0..1 over the
-whole image: the `back` slot holds the item's inventory image as it is. Default: centred on the upper back,
-rot [0, 180, 0], so the card faces backwards and a diagonal weapon icon reads the right way from behind.
+Two cards, the user's ruling of 2026-10-21: the **cloak card** on `Cloak` (placed by `back.cloak`) shows the weapon
+when a cloak is worn, the **body card** on `Body` (placed by `back.body`) when none is; the texture decides which
+(§5), as with the shield's size copies. The NPC model has no cloak and carries only the body card.
+
+Each card is a square of `size` px centred on the card frame's origin, in its x–y plane: x = the image's u (to the
+right), y = the image's up (v runs down). Two-sided like the weapon card (each pair of triangles a hair off the
+plane to its own side, `gen_cloak_model.CARD_GAP`); the side facing +z shows the image unmirrored. UVs: the cloak
+card samples the left half of the 32 × 16 `back` texture (u 0..0.5), the body card the right half (u 0.5..1),
+v 0..1. Default: both centred on the upper back, rot [0, 180, 0], so the card faces backwards and a diagonal weapon
+icon reads the right way from behind; the body card behind the chest armor and the belt, the cloak card just
+outside the cloak's outer face at rest.
 
 ### 3.4 Wings (`wings`, player model only)
 
@@ -155,7 +162,8 @@ tex(n) = floor(n + 0.5), at least 1. A face left out (§3.2) has no rectangle.
 **Shield UVs.** The front samples its rectangle by orthographic projection onto the shield's x–y plane:
 column = (x + W) / 2W across, row = (T − y) / H down (column 0 at −x, as seen from the front). The back is
 seen from behind: column = (W − x) / 2W. The **rim** takes the front face's border texels: both ends of a rim
-quad use the front UV of their outline point (as the cloak's edges). The boss uses the front's projection. Each
+quad use the front UV of their outline point (as the cloak's edges), so it samples the texels the outline
+crosses, which §6 therefore requires opaque. The boss uses the front's projection. Each
 size copy samples its own sheet, so the copy of a tier's size step shows and the others stay transparent.
 
 **Book UVs.** Each box face samples its face rectangle in the orientation of armor-format.md §4
@@ -171,7 +179,7 @@ size copy samples its own sheet, so the copy of a tier's size step shows and the
 | Slot | Size | Content |
 |---|---|---|
 | `offhand` | the atlas, 64 × 64 | the shield's or spellbook's baked layer (§7) with its enchant overlay; `blank.png` when empty |
-| `back` | the item image | the Scout's non-held weapon's inventory image; `blank.png` otherwise |
+| `back` | 32 × 16 | the Scout's non-held weapon's 16 × 16 inventory image in the **left** half when a cloak is worn (the cloak card), in the **right** half otherwise (the body card), the other half transparent: `[combine:32x16:0,0=<image>` or `[combine:32x16:16,0=<image>` (the image escaped for `[combine`); `blank.png` when no card shows. NPCs: the right half |
 | `wings` | 16 × 32 | the cloak's wing texture (§6); `blank.png` for a cloak without wings |
 
 ## 6. Painted art
@@ -183,6 +191,7 @@ The painter's files, in one art directory (the test set: `tools/r55_offhand/test
 | `shield/<variant>.png` | a shield sheet: front left, back right | 2 · tex(width) × tex(height) = 20 × 13 |
 | `book/<box>_<variant>.png` | a book box sheet, `box` as in §3.2 | per box (`data/atlas.json` `rect`) |
 | `icons/shield_<variant>.png`, `icons/book_<variant>.png` | inventory icons | 16 × 16 |
+| `wings_<id>.png` (optional) | a wing texture for a cloak (below); checked for size only, not baked | 16 × 32 |
 | `tiers.json` | per item and tier: palette, variant(s), icon | |
 | `palettes.json` (optional) | proposed tier palettes, laid over the armor's `data/palettes.json` by name | |
 
@@ -196,10 +205,11 @@ is bracket n, whose item is `grug_gear:shield_<grade>` or `grug_gear:spellbook_<
 
 - **Palette and zones** as armor-format.md §6: the 13 reference colours plus full transparency, alpha 0 or
   255; zone A (A_LIGHT, A_DARK) takes the prefix colour, zone B (B_LIGHT, B_DARK) the suffix colour. Each
-  item shows, seen from where it faces (the shield's front, the book's covers and pages), at least 6 zone A and
-  3 zone B texels.
-- **Opaque:** every texel inside the shield outline (front and back) and every texel of a book face is opaque.
-  Texels outside the outline are never sampled; leave them transparent. Shape comes from the geometry and the
+  item shows at least 6 zone A and 3 zone B texels on the faces it turns outwards: the shield's front; the
+  book's `cover_f` front, `cover_b` back, `pages_f` back and `pages_b` front faces.
+- **Opaque:** every shield texel (front and back) that the outline contains **or crosses** (any overlap with
+  positive area; the rim and the slanted edges sample those) and every texel of a book face is opaque. Texels
+  wholly outside the outline are never sampled; leave them transparent. Shape comes from the geometry and the
   paint, not from cut-outs.
 - **Orientation:** the shield front as seen from the front, its back as seen from behind; book faces as
   armor-format.md §4 in the closed frame (the front cover's outside is `cover_f`'s front face, the back

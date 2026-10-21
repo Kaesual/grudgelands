@@ -39,6 +39,8 @@ Every non-trivial lane gets an independent Opus review (§5).
    Two bones rather than one shared bone (decided after the plan review): six clips play for every class, and each
    item gets its own keys in all of them.
 4. **Scout:** the weapon that is **not** in the hand hangs on the back as a flat 2D card showing the item's image.
+   Added 2026-10-21 during the round: the card is in the model **twice**, on the cloak (shown when a cloak is worn)
+   and on the back (shown otherwise); one 32 × 16 `back` texture picks the card by its half (format doc §3.3, §5).
 5. **Cloak wings:** two optional triangular pieces on the cloak's sides, angled slightly towards the body (the cloak
    then reads as a trapezoid). They are meant for future premium cloaks. Normal cloaks stay exactly as they are.
 6. Low poly with a little detail. Parameters and positions are tuned on the preview page. Textures and icons come later
