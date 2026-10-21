@@ -38,8 +38,11 @@ PLAYER_API = REPO / "mods/BASE/player_api/init.lua"
 # The clips the glb must carry; any other clip must be a player_api animation.
 REQUIRED_CLIPS = ("stand", "walk")
 # Material names per primitive: the model's texture order (Round 54: skin,
-# cloak, the armor atlas, the weapon card; armor-format.md §2).
-MATERIALS = ("skin", "cloak", "armor", "weapon")
+# cloak, the armor atlas, the weapon card; armor-format.md §2; Round 55: the
+# offhand atlas, the back card, the wings; offhand-format.md §5). The Round 55
+# ones are transparent by default (base colour alpha 0), the others opaque.
+MATERIALS = ("skin", "cloak", "armor", "weapon", "offhand", "back", "wings")
+TRANSPARENT = ("offhand", "back", "wings")
 
 # Model units (10 = one node). Measured deviations are about 1e-6; a clip
 # read one frame off moves the stand pose by about 0.015.
@@ -632,6 +635,9 @@ def main():
         fail("bones: glb %s, b3d %s" % (got_bones, want_bones))
     if "Cloak" not in got_bones:
         fail("bones: no Cloak bone")
+    for name in ("Offhand_Shield", "Offhand_Book"):
+        if got_bones.get(name) != "Arm_Left":
+            fail("bones: %s is not under Arm_Left" % name)
 
     # Primitives: counts, vertices, UVs, normals, winding, weights, materials.
     prims = glb.get("meshes")[nodes[mesh_node]["mesh"]]["primitives"]
@@ -706,6 +712,10 @@ def main():
             mat = mats[prim["material"]]
             if mat.get("name") != (MATERIALS[k] if k < len(MATERIALS) else None):
                 fail("%s: material %r, want %r" % (where, mat.get("name"), MATERIALS[k:k + 1]))
+            alpha = mat.get("pbrMetallicRoughness", {}).get("baseColorFactor", [1, 1, 1, 1])[3]
+            if alpha != (0 if mat.get("name") in TRANSPARENT else 1):
+                fail("%s: base colour alpha %s (%s by default)" % (
+                    where, alpha, "transparent" if mat.get("name") in TRANSPARENT else "opaque"))
             tex = mat.get("pbrMetallicRoughness", {}).get("baseColorTexture")
             slot = tex["index"] if tex else k   # Luanti's texture slot
             if slot != k:

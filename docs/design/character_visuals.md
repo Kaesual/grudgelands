@@ -424,6 +424,16 @@ are kept per character, and so is the choice.
   bones and the weapon card in the right hand (the fourth texture), and
   writes the NPC model `grug_visuals_npc.b3d`, the same without the cloak
   and the pose clips ([armor format](../technical/armor-format.md) §2).
+  Round 55 appends the offhand look from `tools/r55_offhand/params.json`
+  ([offhand format](../technical/offhand-format.md)): the shield three times
+  (one copy per size step) and an open spellbook on the bones
+  `Offhand_Shield` and `Offhand_Book` under the left arm, keyed per pose
+  clip (the fifth texture, the offhand atlas), two back cards, one riding
+  the cloak and one on the body (the sixth texture, an item image in the
+  half of the card that shows), and two optional wings on the cloak's sides
+  (the seventh, player model only); the NPC model carries the offhand and
+  the body card. Every part is always in the model and shows only when its slot
+  has a texture.
   Unarmored NPCs keep `character.b3d`.
 - **Armor panels and weapon card (Round 54):** the front and back panels
   (skirt, tabard, robe) hang from the belt and swing away from the legs:
