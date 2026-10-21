@@ -297,9 +297,10 @@ end
 -- docs/technical/offhand-format.md), so its texture list is {skin, cloak,
 -- armor, weapon, offhand, back, wings}; the weapon card is empty in the
 -- world, where the wield entity shows the weapon, and the last three are
--- blank while the offhand look is off. Armored NPCs wear NPC_MODEL below, everybody else
--- `character.b3d`. Same animations, boxes and eye height as the base model,
--- read from player_api's own registration, plus the pose clips.
+-- blank while the offhand look is off. Armored NPCs wear NPC_MODEL below,
+-- everybody else `character.b3d`. Same animations, boxes and eye height as
+-- the base model, read from player_api's own registration, plus the pose
+-- clips.
 --
 grug_visuals.PLAYER_MODEL = "grug_visuals_character.b3d"
 -- The engine's builtin transparent texture: the cloak buffer alpha-tests to
@@ -375,9 +376,9 @@ end
 -- captains, commanders, General bodyguards, bandits and their kin): the
 -- player model's body, armor boxes and offhand parts without the cloak,
 -- texture list {skin, armor, weapon, offhand, back} (compose's `textures` for
--- such a spec). The NPC definitions
--- name it as their mesh, so it survives every reactivation; NPC animation
--- tables use only character.b3d's frames, which it keeps.
+-- such a spec). The NPC definitions name it as their mesh, so it survives
+-- every reactivation; NPC animation tables use only character.b3d's frames,
+-- which it keeps.
 grug_visuals.NPC_MODEL = "grug_visuals_npc.b3d"
 
 -- The one source of the cloak a player wears: a function(player) -> texture
@@ -529,7 +530,8 @@ local function write_textures(player, entry, back)
 		grug_visuals.WEAPON_NONE, base.offhand, back, base.wings})
 end
 
--- Compose and apply. Cheap on a no-op: one compose (cached) and one compare.
+-- Compose and apply. Cheap on a no-op: one compose (cached) and a few
+-- compares.
 function grug_visuals.apply(player)
 	if not player or not player.is_player or not player:is_player() then
 		return

@@ -172,11 +172,16 @@ armor line, slot and material tier that its equipped item names.
   0,130; a first version for the user to tune). Character creation keeps
   `character.b3d` with the race look alone, since nothing is worn there.
 
-A player's model carries four textures: the skin, the cloak, the armour atlas
-and the weapon card (empty in the world, where the hand entity shows the
-weapon, §4; the inventory's view shows the main hand's weapon on it). An
-armoured NPC wears the **NPC model** — the same body and boxes without the
-cloak, textures skin, armour atlas and weapon card; humanoids without armour
+A player's model carries seven textures: the skin, the cloak, the armour
+atlas, the weapon card (empty in the world, where the hand entity shows the
+weapon, §4; the inventory's view shows the main hand's weapon on it) and,
+since Round 55, the offhand (a shield or spellbook), the back card (a
+Scout's second weapon) and the cloak's wings
+([offhand format](../technical/offhand-format.md)); the last three stay
+empty while the setting `grug_offhand_visuals` is off (the default until the
+offhand art is picked). An armoured NPC wears the **NPC model** — the same
+body and boxes without the cloak, textures skin, armour atlas, weapon card,
+offhand and back (the last two empty for now); humanoids without armour
 keep `character.b3d`.
 
 NPCs that have no inventory wear a **whole line at one tier** instead:
