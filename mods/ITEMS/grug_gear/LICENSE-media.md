@@ -78,7 +78,7 @@ VoxeLibre contributors, CC BY-SA 4.0 per upstream `LEGAL.md`.
 
 | Local file | Upstream source | Treatment |
 |---|---|---|
-| `grug_gear_spellbook.png` | `mcl_enchanting_book_enchanted.png` | unchanged copy; no item shows it since Round 55 (the per-tier icons below), only the Character page's empty Caster-offhand ghost and appearances stored before 0.55.0 |
+| `grug_gear_spellbook.png` | `mcl_enchanting_book_enchanted.png` | unchanged copy; nothing in the game shows it since Round 55 (the per-tier icons below; the Caster-offhand ghost is the steel icon); kept for appearances stored before 0.55.0 |
 | `grug_gear_arrow.png` | `mcl_bows_arrow_inv.png` | unchanged copy |
 
 ## Round 31 enchant masks — licence of their source

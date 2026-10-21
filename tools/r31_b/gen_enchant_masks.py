@@ -76,10 +76,9 @@ def sources():
     """(directory, stem, kind) for every texture an enchantable item shows.
 
     Mirrors grug_gear/init.lua: weapon sprites per family and metal, the four
-    bow files (BOW_IMAGE), and the shared spellbook image, which no item shows
-    since Round 55 but the Character page's empty Caster-offhand ghost and
-    version 2 appearances (tools/web_data/README.md) still name, with its
-    mask. (The armour's masks come from tools/r54_armor/bake.py since Round
+    bow files (BOW_IMAGE), and the shared spellbook image, which nothing in
+    the game shows since Round 55 but version 2 appearances
+    (tools/web_data/README.md) still name, with its mask. (The armour's masks come from tools/r54_armor/bake.py since Round
     54, the shield and per-tier spellbook icons' from tools/r55_offhand/bake.py
     since Round 55.)
     """
