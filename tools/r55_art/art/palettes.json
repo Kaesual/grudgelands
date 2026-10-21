@@ -1,0 +1,333 @@
+{
+ "palettes": {
+  "p1_abyssal_steel": {
+   "name": "Abyssal Steel",
+   "line": "metal",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#C2B6DA",
+    "M_LIGHT": "#8A7DA6",
+    "M_MID": "#514760",
+    "M_DARK": "#342E44",
+    "M_DEEP": "#242134",
+    "OUTLINE": "#171B28",
+    "ACC_LIGHT": "#98734F",
+    "ACC_DARK": "#5D4432",
+    "A_LIGHT": "#514863",
+    "A_DARK": "#302C42",
+    "B_LIGHT": "#C5AFE8",
+    "B_DARK": "#8572AB",
+    "GLOW": "#8A7DA6"
+   }
+  },
+  "p1_book_abyssal_steel": {
+   "name": "Abyssal Steel binding",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#50445F",
+    "A_DARK": "#322B42",
+    "B_LIGHT": "#C5AFE8",
+    "B_DARK": "#8572AB",
+    "GLOW": "#B7A0C7"
+   }
+  },
+  "p1_book_bronze": {
+   "name": "Bronze binding",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#966B46",
+    "A_DARK": "#654831",
+    "B_LIGHT": "#DEAE6B",
+    "B_DARK": "#80532F",
+    "GLOW": "#AC6453"
+   }
+  },
+  "p1_book_embersteel": {
+   "name": "Embersteel binding",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#875542",
+    "A_DARK": "#57382E",
+    "B_LIGHT": "#F0AE60",
+    "B_DARK": "#B66B3B",
+    "GLOW": "#D18E53"
+   }
+  },
+  "p1_book_iron": {
+   "name": "Iron binding",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#68725B",
+    "A_DARK": "#424E3C",
+    "B_LIGHT": "#BCBDB8",
+    "B_DARK": "#5C6360",
+    "GLOW": "#A46955"
+   }
+  },
+  "p1_book_silversteel": {
+   "name": "Silversteel binding",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#6B6583",
+    "A_DARK": "#47435F",
+    "B_LIGHT": "#E2EAF1",
+    "B_DARK": "#7C91AB",
+    "GLOW": "#A75B63"
+   }
+  },
+  "p1_embersteel": {
+   "name": "Embersteel",
+   "line": "metal",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#E1BA94",
+    "M_LIGHT": "#A27963",
+    "M_MID": "#624B43",
+    "M_DARK": "#403437",
+    "M_DEEP": "#2C252C",
+    "OUTLINE": "#1B1C26",
+    "ACC_LIGHT": "#98734F",
+    "ACC_DARK": "#5D4432",
+    "A_LIGHT": "#865245",
+    "A_DARK": "#573730",
+    "B_LIGHT": "#F0AE60",
+    "B_DARK": "#B66B3B",
+    "GLOW": "#FFC375"
+   }
+  },
+  "p1_silversteel": {
+   "name": "Silversteel",
+   "line": "metal",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#FFFFFF",
+    "M_LIGHT": "#E2EAF1",
+    "M_MID": "#B6C5D6",
+    "M_DARK": "#7C91AB",
+    "M_DEEP": "#4D627E",
+    "OUTLINE": "#29384D",
+    "ACC_LIGHT": "#98734F",
+    "ACC_DARK": "#5D4432",
+    "A_LIGHT": "#67738B",
+    "A_DARK": "#434E66",
+    "B_LIGHT": "#EBF0FA",
+    "B_DARK": "#A3B5D2",
+    "GLOW": "#E2EAF1"
+   }
+  },
+  "p2_book_abyssal_steel": {
+   "name": "Abyssal Steel binding",
+   "tier": "T6",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#413A52",
+    "A_DARK": "#292436",
+    "B_LIGHT": "#C5AFE8",
+    "B_DARK": "#8572AB",
+    "GLOW": "#B7A0C7"
+   }
+  },
+  "p2_book_bronze": {
+   "name": "Bronze binding",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#846346",
+    "A_DARK": "#594332",
+    "B_LIGHT": "#DEAE6B",
+    "B_DARK": "#80532F",
+    "GLOW": "#AC6453"
+   }
+  },
+  "p2_book_embersteel": {
+   "name": "Embersteel binding",
+   "tier": "T5",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#674A42",
+    "A_DARK": "#422F2E",
+    "B_LIGHT": "#F0AE60",
+    "B_DARK": "#B66B3B",
+    "GLOW": "#D18E53"
+   }
+  },
+  "p2_book_iron": {
+   "name": "Iron binding",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#726354",
+    "A_DARK": "#4E453D",
+    "B_LIGHT": "#BCBDB8",
+    "B_DARK": "#5C6360",
+    "GLOW": "#A46955"
+   }
+  },
+  "p2_book_silversteel": {
+   "name": "Silversteel binding",
+   "tier": "T4",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#526475",
+    "A_DARK": "#344556",
+    "B_LIGHT": "#E2EAF1",
+    "B_DARK": "#7C91AB",
+    "GLOW": "#A75B63"
+   }
+  },
+  "p2_book_steel": {
+   "name": "Steel binding",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#F2E8CF",
+    "M_LIGHT": "#D9CAA8",
+    "M_MID": "#B7A587",
+    "M_DARK": "#81735C",
+    "M_DEEP": "#514735",
+    "OUTLINE": "#2C2926",
+    "ACC_LIGHT": "#A58259",
+    "ACC_DARK": "#684B35",
+    "A_LIGHT": "#596A65",
+    "A_DARK": "#394C47",
+    "B_LIGHT": "#C8D8E0",
+    "B_DARK": "#5E7586",
+    "GLOW": "#B17B52"
+   }
+  },
+  "p2_bronze": {
+   "name": "Bronze",
+   "line": "metal",
+   "tier": "T1",
+   "colors": {
+    "M_HI": "#F6D49A",
+    "M_LIGHT": "#DEAE6B",
+    "M_MID": "#B78145",
+    "M_DARK": "#80532F",
+    "M_DEEP": "#543924",
+    "OUTLINE": "#30261F",
+    "ACC_LIGHT": "#98734F",
+    "ACC_DARK": "#5D4432",
+    "A_LIGHT": "#8C7755",
+    "A_DARK": "#60523D",
+    "B_LIGHT": "#DFC184",
+    "B_DARK": "#997849",
+    "GLOW": "#DEAE6B"
+   }
+  },
+  "p2_iron": {
+   "name": "Iron",
+   "line": "metal",
+   "tier": "T2",
+   "colors": {
+    "M_HI": "#E2E1DA",
+    "M_LIGHT": "#BCBDB8",
+    "M_MID": "#8E938F",
+    "M_DARK": "#5C6360",
+    "M_DEEP": "#3B4441",
+    "OUTLINE": "#242D2B",
+    "ACC_LIGHT": "#98734F",
+    "ACC_DARK": "#5D4432",
+    "A_LIGHT": "#697263",
+    "A_DARK": "#444E43",
+    "B_LIGHT": "#C0AB74",
+    "B_DARK": "#806D47",
+    "GLOW": "#BCBDB8"
+   }
+  },
+  "p2_steel": {
+   "name": "Steel",
+   "line": "metal",
+   "tier": "T3",
+   "colors": {
+    "M_HI": "#F0F4F6",
+    "M_LIGHT": "#C8D8E0",
+    "M_MID": "#91A7B5",
+    "M_DARK": "#5E7586",
+    "M_DEEP": "#3C5264",
+    "OUTLINE": "#222F3E",
+    "ACC_LIGHT": "#98734F",
+    "ACC_DARK": "#5D4432",
+    "A_LIGHT": "#596D72",
+    "A_DARK": "#39494F",
+    "B_LIGHT": "#D6C48C",
+    "B_DARK": "#8F8055",
+    "GLOW": "#C8D8E0"
+   }
+  }
+ }
+}
