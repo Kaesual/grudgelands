@@ -57,13 +57,27 @@ Round 54 (lane MODEL) adds the armor and the weapon card:
     sets it to blank.png in the world (the wield entity shows the weapon
     there) and to the held item's image in the inventory view, whose model[]
     element has no attachments.
-Texture slots: the player model {skin, cloak, armor, weapon}; the NPC model
-`grug_visuals_npc.b3d` {skin, armor, weapon}: the same body, armor (the boxes
-of NPC_BOXES) and card, no cloak, player_api's frames 0-220 only.
+Round 55 (lane MODEL, round55-plan.md §4 MODEL) adds the offhand look, every
+number from tools/r55_offhand/params.json (docs/technical/offhand-format.md;
+the geometry and key maths in offhand_model.py next to this file):
+  * the OFFHAND buffer: the shield three times (one copy per size step,
+    each sampling its own sheet of the offhand atlas, so a texture shows one
+    copy) and the open book, on two bones under Arm_Left, `Offhand_Shield`
+    and `Offhand_Book`, keyed here in every frame of every range from the
+    parameter file (identity where a clip has no entry and between ranges;
+    poses.json knows nothing of them);
+  * the BACK card, a two-sided square on Body (or the cloak) showing an
+    item image, and the two cloak WINGS on the Cloak bone (player only).
+  Every part is always in the model; an empty slot is blank.png.
+Texture slots: the player model {skin, cloak, armor, weapon, offhand, back,
+wings}; the NPC model `grug_visuals_npc.b3d` {skin, armor, weapon, offhand,
+back}: the same body, armor (the boxes of NPC_BOXES), card, offhand and back
+card, no cloak and no wings, player_api's frames 0-220 only.
 
     python3 tools/r33_c3/gen_cloak_model.py           # write both models
     python3 tools/r33_c3/gen_cloak_model.py --check   # compare, exit 1 if stale
-    python3 tools/r33_c3/gen_cloak_model.py --report  # counts, swings and gaps
+    python3 tools/r33_c3/gen_cloak_model.py --report  # counts, swings and gaps,
+                                                      # the offhand clearance
 
 Pure Python 3, no third-party module.
 """
@@ -75,6 +89,9 @@ import struct
 import sys
 from pathlib import Path
 
+import offhand_model as om  # noqa: E402  (Round 55: the offhand parts, the contract's offhand.py)
+
+oh = om.oh
 REPO = Path(__file__).resolve().parents[2]
 SOURCE = REPO / "mods/BASE/player_api/models/character.b3d"
 TARGET = REPO / "mods/PLAYER/grug_visuals/models/grug_visuals_character.b3d"
@@ -164,7 +181,26 @@ ZFIGHT_MIN_EXTENT = 0.1 * PX   # a thinner overlap is a sub-texel sliver
 # +-4.5 from 23.5), 0.13 px outside the chest shell's sides where the shell
 # rises above the shoulders; a tasset's top corner, turned up by its 22.5
 # degrees, shares the arm's front and back planes (z +-2) for 0.19 px.
-KNOWN_ZFIGHT = {("chest", "hat"), ("arm", "tasset"), ("arm_l", "tasset_l")}
+# Round 55 (MODEL report, a question to the coordinator): the back card at
+# params.json's draft z -3.4 px faces backwards 0.17 px from the reinforce
+# boxes' back faces (z -3.25) where they overlap on the shoulders; a card at
+# z <= -3.52 clears them, and these entries go once the parameters do.
+KNOWN_ZFIGHT = {("chest", "hat"), ("arm", "tasset"), ("arm_l", "tasset_l"),
+                ("back", "reinforce"), ("back", "reinforce_l")}
+
+# --- Round 55: the offhand ---------------------------------------------------------
+OFFHAND_BONES = oh.BONES     # Offhand_Shield, Offhand_Book: children of Arm_Left
+
+
+def exclusive(label):
+    """The exclusive group of the z-fight check (round55-plan.md §3): the
+    three shield copies and the book never show together, so a pair of two
+    different members is skipped (the book's own boxes still meet each other)."""
+    if label.startswith("shield_"):
+        return label
+    if label.startswith("book_"):
+        return "book"
+    return None
 
 
 # --- b3d chunk tree ----------------------------------------------------------
@@ -830,10 +866,137 @@ def swing_bone(name, pivot, body, first, count, curve, sign):
     ])
 
 
-def build(kind="player"):
-    """One model: "player" (skin, cloak, armor, weapon; the pose clips) or
-    "npc" (skin, armor, weapon; player_api's frames only). Returns the bytes
-    and what the checks need."""
+# --- Round 55: the offhand parts in the model -------------------------------------
+def offhand_contract():
+    """(params, atlas) of the contract: params.json validated, data/atlas.json
+    current (offhand.py --check's two conditions)."""
+    try:
+        params = oh.load()
+    except oh.ContractError as e:
+        raise SystemExit("gen_cloak_model: %s" % e)
+    atlas = json.loads(oh.ATLAS.read_text())
+    if atlas != json.loads(json.dumps(oh.pack(params))):
+        raise SystemExit("gen_cloak_model: tools/r55_offhand/data/atlas.json is stale "
+                         "(python3 tools/r55_offhand/offhand.py --check)")
+    return params, atlas
+
+
+def model_part(part):
+    """An offhand_model Part (catalog frame) as model vertices and triangles:
+    to_model flips x, so every triangle turns over; asserted outward."""
+    verts = [(to_model(p), (-n[0], n[1], n[2]), uv) for p, n, uv in part.verts]
+    tris = []
+    for a, b, c in part.tris:
+        p = [verts[i][0] for i in (a, c, b)]
+        n = cross(tuple(p[1][k] - p[0][k] for k in range(3)), tuple(p[2][k] - p[0][k] for k in range(3)))
+        if dot(n, verts[a][1]) <= 0:
+            raise SystemExit("gen_cloak_model: inward triangle on %s" % part.labels[a])
+        tris.append((a, c, b))
+    return verts, tris
+
+
+def rotation(m):
+    """The 3x3 rotation (rows) of a column-major 4x4."""
+    return tuple(tuple(m[4 * c + r] for c in range(3)) for r in range(3))
+
+
+def flip(r):
+    """A catalog rotation as a model rotation: F * R * F, F = diag(-1, 1, 1)."""
+    f = (-1, 1, 1)
+    return tuple(tuple(f[i] * r[i][j] * f[j] for j in range(3)) for i in range(3))
+
+
+def file_quat(r):
+    """The KEYS/NODE quaternion (w, x, y, z) whose quat_matrix is the model
+    rotation r: Irrlicht's matrix is the standard one of the conjugate."""
+    w, x, y, z = om.quat_from_matrix(r)
+    return (w, -x, -y, -z)
+
+
+def clip_ranges(kind, layout):
+    """[(name, first, last, period)] of every clip the model plays: player_api's
+    ranges loop over last - first frames (the engine wraps there, AnimSpec),
+    a held pose clip too (its last frame repeats its first), a one-shot holds
+    its last key (period None)."""
+    out = [(name, a, b, b - a) for name, (a, b) in BASE_RANGES]
+    if kind == "player":
+        out += [(c["name"], c["first"], c["last"], None if c["once"] else c["last"] - c["first"])
+                for c in layout]
+    return out
+
+
+def arm_motion(rig, frame):
+    """A_f: Arm_Left's rotation relative to Body at an engine frame, from rest
+    (model frame), as a standard quaternion."""
+    body = rotation(rig.skin("Body", frame + 1))
+    arm = rotation(rig.skin("Arm_Left", frame + 1))
+    return om.quat_from_matrix(om.mat_mul(om.transpose(body), arm))
+
+
+def offhand_pose(params, bone, entry, i, period, arm_q=None, mean=None):
+    """The model-space rest transform of an offhand bone's key at clip frame i:
+    (pivot + t, R) with an item point v going to pivot + t + R (v - pivot)
+    before the arm carries it (format doc §2.3). With steadiness the rotation
+    is A_f^-1 * slerp(A_f, mean, s) * R, so the item turns as
+    Body_f * slerp(A_f, mean, s) * R while its pivot still follows the arm."""
+    rot, pos = om.entry_at(entry, i, period)
+    r = flip(oh.euler(rot, entry["order"]))
+    s = entry.get("steady", 0)
+    if s:
+        r = om.mat_mul(om.transpose(om.quat_matrix(arm_q)),
+                       om.mat_mul(om.quat_matrix(om.slerp(arm_q, mean, s)), r))
+    pivot = to_model(params["bones"][bone]["pivot"])
+    return om.add(pivot, to_model(pos)), r
+
+
+def offhand_keys(rig, kind, layout, params, bone, frame_count):
+    """(pivot in Arm_Left's frame, [(position, file quaternion)] per engine
+    frame) of an offhand bone: identity where no clip entry applies."""
+    arm_bind = rig.bind("Arm_Left")
+    rb = rotation(arm_bind)
+    pivot_local = apply(inverse_rigid(arm_bind), to_model(params["bones"][bone]["pivot"]))
+    keys = [(pivot_local, (1.0, 0.0, 0.0, 0.0))] * frame_count
+    for name, first, last, period in clip_ranges(kind, layout):
+        entry = params["bones"][bone]["clips"].get(name)
+        if not entry:
+            continue
+        arm_q = mean = None
+        if entry.get("steady", 0):
+            arm_q = {f: arm_motion(rig, f) for f in range(first, last + 1)}
+            mean = om.quat_mean([arm_q[f] for f in range(first, last + 1)])
+        for f in range(first, last + 1):
+            at, r = offhand_pose(params, bone, entry, f - first, period, arm_q and arm_q[f], mean)
+            # into Arm_Left's frame: L = G_bind^-1 * M * G_bind, with M the
+            # model-space transform above and G_bind the arm's bind
+            local_r = om.mat_mul(om.transpose(rb), om.mat_mul(r, rb))
+            local_at = apply(inverse_rigid(arm_bind), at)
+            keys[f] = (local_at, file_quat(local_r))
+    return pivot_local, keys
+
+
+def offhand_bone(name, pivot_local, keys, ids):
+    """A NODE under Arm_Left: bind at the pivot with no turn, weight 1 on
+    `ids`, one key per file frame."""
+    bone = struct.pack("<10f", *pivot_local, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+    weights = b"".join(struct.pack("<if", i, 1.0) for i in ids)
+    rows = b"".join(struct.pack("<i10f", f + 1, *pos, 1.0, 1.0, 1.0, *q) for f, (pos, q) in enumerate(keys))
+    return Chunk("NODE", name.encode() + b"\0" + bone, [
+        Chunk("BONE", raw=weights),
+        Chunk("KEYS", raw=struct.pack("<i", 7) + rows),
+    ])
+
+
+def offhand_bone_of(params, label):
+    """The bone an offhand vertex rides: its item's placement bone."""
+    return params["shield" if label.startswith("shield_") else "book"]["place"]["bone"]
+
+
+def build(kind="player", contract=None):
+    """One model: "player" (skin, cloak, armor, weapon, offhand, back, wings;
+    the pose clips) or "npc" (skin, armor, weapon, offhand, back; player_api's
+    frames only). `contract` = (params, atlas) of the offhand, default the
+    committed ones. Returns the bytes and what the checks need."""
+    params, oatlas = contract or offhand_contract()
     data = SOURCE.read_bytes()
     root = parse(data, 0, len(data))
     player = find_node(root, "Player")
@@ -935,13 +1098,51 @@ def build(kind="player"):
     buffers["weapon"] = (len(verts), len(tris))
     labels += ["weapon"] * len(verts)
 
+    # Round 55: the offhand buffer (three shield copies and the book) on the
+    # two offhand bones under Arm_Left, keyed in every frame.
+    parts = {}
+    part = om.Part()
+    for step in range(len(params["shield"]["sizes"])):
+        part.extend(om.shield_copy(params, oatlas, step))
+    part.extend(om.book(params, oatlas, face_point))
+    verts, tris = model_part(part)
+    first, last = append_buffer(mesh, vrts, verts, tris, last)
+    buffers["offhand"] = (len(verts), len(tris))
+    labels += part.labels
+    parts["offhand"] = (first, part)
+    arm = find_node(root, "Arm_Left")
+    for name in OFFHAND_BONES:
+        ids = [first + i for i, label in enumerate(part.labels) if offhand_bone_of(params, label) == name]
+        pivot_local, keys = offhand_keys(rig, kind, layout, params, name, frame_count)
+        arm.kids.append(offhand_bone(name, pivot_local, keys, ids))
+    # the back card: on Body or the cloak (the NPC model has no cloak: Body)
+    part = om.back_card(params, CARD_GAP / PX)
+    verts, tris = model_part(part)
+    first, last = append_buffer(mesh, vrts, verts, tris, last)
+    back_bone = params["back"]["bone"] if kind == "player" else "Body"
+    kid(find_node(root, back_bone), "BONE").raw += b"".join(
+        struct.pack("<if", first + i, 1.0) for i in range(len(verts)))
+    buffers["back"] = (len(verts), len(tris))
+    labels += part.labels
+    parts["back"] = (first, part)
+    if kind == "player":
+        # the wings, hinged on the cloak's sides
+        part = om.wings(params, HALF_W / PX, (Z_IN + Z_OUT) / 2 / PX, (TOP - LENGTH) / PX, TOP / PX)
+        verts, tris = model_part(part)
+        first, last = append_buffer(mesh, vrts, verts, tris, last)
+        kid(find_node(root, "Cloak"), "BONE").raw += b"".join(
+            struct.pack("<if", first + i, 1.0) for i in range(len(verts)))
+        buffers["wings"] = (len(verts), len(tris))
+        labels += part.labels
+        parts["wings"] = (first, part)
+
     out = b"".join(chunk.encode() for chunk in root)
     curves = {"front": front, "back": back}
     if kind == "player":
         curves["cloak"] = cloak
     return out, {"kind": kind, "root": root, "curves": curves, "layout": layout,
                  "buffers": buffers, "box_ids": box_ids, "twisted_walk": twisted_walk,
-                 "labels": labels}
+                 "labels": labels, "params": params, "parts": parts, "back_bone": back_bone}
 
 
 # --- the checks on a built model -------------------------------------------------
@@ -1099,6 +1300,8 @@ def zfight(info):
         for lb, pb, nb in tris[i + 1:]:
             if la == lb or dot(na, nb) < 0.9999:
                 continue
+            if exclusive(la) and exclusive(lb) and exclusive(la) != exclusive(lb):
+                continue  # never shown together (round55-plan.md §3)
             distance = abs(dot(na, tuple(pb[0][k] - pa[0][k] for k in range(3))))
             if distance >= ZFIGHT_GAP - 1e-4:  # float32 positions
                 continue
@@ -1125,6 +1328,159 @@ def zfight(info):
                 if key not in found or distance < found[key][0]:
                     found[key] = (distance, extent)
     return found
+
+
+def check_offhand(info):
+    """The written offhand keys, read back through the engine's B3D maths
+    (Rig), do what the format doc says (§2.3): at the first and the middle
+    frame of every clip, each vertex of an offhand bone lies where Arm_Left
+    carries pivot + t + R (v - pivot) (R with the steadiness folded in;
+    identity without an entry). Returns the worst deviation (model units)."""
+    rig = Rig(info["root"])
+    params = info["params"]
+    _, part = info["parts"]["offhand"]
+    worst = 0.0
+    for bone in OFFHAND_BONES:
+        points = [to_model(part.verts[i][0]) for i, label in enumerate(part.labels)
+                  if offhand_bone_of(params, label) == bone]
+        if not points:
+            continue
+        pivot = to_model(params["bones"][bone]["pivot"])
+        for name, first, last, period in clip_ranges(info["kind"], info["layout"]):
+            entry = params["bones"][bone]["clips"].get(name)
+            arm_q = mean = None
+            if entry and entry.get("steady", 0):
+                arm_q = {f: arm_motion(rig, f) for f in range(first, last + 1)}
+                mean = om.quat_mean([arm_q[f] for f in range(first, last + 1)])
+            for f in sorted({first, (first + last) // 2}):
+                arm = rig.skin("Arm_Left", f + 1)
+                skin = rig.skin(bone, f + 1)
+                if entry:
+                    at, r = offhand_pose(params, bone, entry, f - first, period, arm_q and arm_q[f], mean)
+                else:
+                    at, r = pivot, ((1, 0, 0), (0, 1, 0), (0, 0, 1))
+                for v in points:
+                    want = apply(arm, om.add(at, om.mat_vec(r, om.sub(v, pivot))))
+                    got = apply(skin, v)
+                    worst = max(worst, max(abs(a - b) for a, b in zip(want, got)))
+    if worst > 1e-4:
+        raise SystemExit("gen_cloak_model: the %s model's offhand keys move the items %.2g off the "
+                         "format doc's rule" % (info["kind"], worst))
+    return worst
+
+
+# --- the offhand clearance (reported, not gated) ---------------------------------------
+def convex_axes(points):
+    """Face normals of the convex hull of a few points (brute force over
+    triples) and the edge directions between them (crosses of face normal
+    pairs): with a box's axes and edges, the separating-axis candidates."""
+    normals = []
+    n = len(points)
+    for i in range(n):
+        for j in range(i + 1, n):
+            for k in range(j + 1, n):
+                c = cross(om.sub(points[j], points[i]), om.sub(points[k], points[i]))
+                length = math.sqrt(dot(c, c))
+                if length < 1e-9:
+                    continue
+                c = om.scale(c, 1 / length)
+                side = [dot(c, om.sub(p, points[i])) for p in points]
+                if (max(side) <= 1e-6 or min(side) >= -1e-6) and \
+                        not any(abs(dot(c, m)) > 1 - 1e-9 for m in normals):
+                    normals.append(c)
+    edges = []
+    for a in range(len(normals)):
+        for b in range(a + 1, len(normals)):
+            e = cross(normals[a], normals[b])
+            if dot(e, e) > 1e-12:
+                edges.append(om.unit(e))
+    return normals, edges
+
+
+def sat_gap(pa, pb, axes):
+    """The widest separation of two convex point sets along the axes
+    (negative: the smallest overlap), as gap() does for two boxes."""
+    best = None
+    for axis in axes:
+        sa = [dot(p, axis) for p in pa]
+        sb = [dot(p, axis) for p in pb]
+        sep = max(min(sb) - max(sa), min(sa) - max(sb))
+        best = sep if best is None else max(best, sep)
+    return best
+
+
+def offhand_clearance(info):
+    """{item: {clip: (gap px, engine frame, box)}}: the closest distance of
+    the offhand parts per clip (negative = overlap, a separating-axis lower
+    bound as the cloak's leg gaps): each shield copy and the book against the
+    body and every armor box, the back card against every box and the cloak,
+    the wings against the arms and the shoulder boxes."""
+    rig = Rig(info["root"])
+    params = info["params"]
+    boxes = [(bone, label, c) for bone, rows in collision_boxes(info["box_ids"]).items() for label, c in rows]
+    if info["kind"] == "player":
+        boxes.append(("Cloak", "cloak", cloak_corners()))
+    shoulder = {"arm", "sleeve", "bracer", "pauldron", "reinforce", "flare", "spike"}
+    targets = {"all": [b for b in boxes if b[1] != "cloak"], "cloak": [b for b in boxes if b[1] == "cloak"],
+               "arms": [b for b in boxes if b[1].replace("_l", "") in shoulder]}
+    items = []      # (item, target set, bone, points, axes)
+    for name, (_, part) in info["parts"].items():
+        for piece in part.pieces:
+            label = part.labels[piece[0]]
+            if name == "offhand":
+                item, bone, against = (label if label.startswith("shield_") else "book",
+                                       offhand_bone_of(params, label), ("all",))
+            elif name == "back":
+                item, bone, against = "back", info["back_bone"], ("all", "cloak")
+            else:
+                item, bone, against = "wings", "Cloak", ("arms",)
+            points = [to_model(part.verts[i][0]) for i in piece]
+            normals, edges = convex_axes(points)
+            for which in against:
+                items.append((item if which != "cloak" else "back/cloak", which, bone, points, normals, edges))
+    box_axes_rest = {id(c): box_axes(c) for _, _, c in boxes}
+    out = {}
+    for name, first, last, _ in clip_ranges(info["kind"], info["layout"]):
+        for f in range(first, last + 1):
+            skins = {}
+
+            def skin(bone):
+                if bone not in skins:
+                    skins[bone] = rig.skin(bone, f + 1)
+                return skins[bone]
+            placed_boxes = {}
+            for item, which, bone, points, normals, edges in items:
+                if not targets[which]:
+                    continue
+                m = skin(bone)
+                pa = [apply(m, p) for p in points]
+                na = [turn(m, n) for n in normals]
+                ea = [turn(m, e) for e in edges]
+                ca = tuple(sum(p[k] for p in pa) / len(pa) for k in range(3))
+                ra = max(math.dist(p, ca) for p in pa)
+                order = []
+                for bone_b, label, corners in targets[which]:
+                    key = (bone_b, label)
+                    if key not in placed_boxes:
+                        mb = skin(bone_b)
+                        pb = [apply(mb, p) for p in corners]
+                        cb = tuple(sum(p[k] for p in pb) / 8 for k in range(3))
+                        axes_b = [om.unit(turn(mb, a)) for a in box_axes_rest[id(corners)]]
+                        placed_boxes[key] = (pb, cb, max(math.dist(p, cb) for p in pb), axes_b)
+                    pb, cb, rb, axes_b = placed_boxes[key]
+                    order.append((math.dist(ca, cb) - ra - rb, label, pb, axes_b))
+                order.sort(key=lambda row: row[0])
+                best = out.setdefault(item, {}).get(name)
+                for bound, label, pb, axes_b in order:
+                    if best is not None and bound > best[0] * PX:
+                        break
+                    axes = na + axes_b + [cross(a, e) for a in axes_b for e in ea]
+                    axes = [om.unit(a) for a in axes if dot(a, a) > 1e-12]
+                    g = sat_gap(pa, pb, axes) / PX
+                    if best is None or g < best[0]:
+                        best = (g, f, label)
+                out[item][name] = best
+    return out
 
 
 def frame_name(frame, layout):
@@ -1162,6 +1518,31 @@ def report(info, gaps):
         print("  %-12s %3d-%3d   %s  %s" % (name, a, b, swings, "  ".join(closest)))
 
 
+def stand_bounds(root):
+    """The bounding box (min xyz, max xyz; model units) of every vertex at
+    engine frame 0, hidden geometry included: what the engine's camera fit
+    of a model[] element measures (the Character tab)."""
+    rig = Rig(root)
+    _, raw, bone_of = vertex_labels(root)
+    pos = [apply(rig.skin(bone_of[i], 1), raw[i][0:3]) for i in range(len(raw))]
+    return [min(p[k] for p in pos) for k in range(3)] + [max(p[k] for p in pos) for k in range(3)]
+
+
+def report_clearance(info):
+    """The offhand clearance table: per clip and part the closest gap in skin
+    pixels (negative = overlap), its engine frame and the box."""
+    table = offhand_clearance(info)
+    items = [k for k in ("shield_0", "shield_1", "shield_2", "book", "back", "back/cloak", "wings") if k in table]
+    print("  offhand clearance (skin px, negative = overlap; gap@frame box):")
+    print("  %-12s %s" % ("clip", "".join("%-22s" % k for k in items)))
+    for name, _, _, _ in clip_ranges(info["kind"], info["layout"]):
+        cells = []
+        for k in items:
+            g, f, label = table[k][name]
+            cells.append("%-22s" % ("%6.2f@%d %s" % (g, f, label)))
+        print("  %-12s %s" % (name, "".join(cells)))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--check", action="store_true",
@@ -1174,6 +1555,7 @@ def main():
     for kind, target in (("player", TARGET), ("npc", NPC_TARGET)):
         out, info = build(kind)
         gaps, sit_low = check_clearance(info)
+        check_offhand(info)
         found = zfight(info)
         for (a, b), (distance, extent) in sorted(found.items()):
             if (a, b) not in KNOWN_ZFIGHT:
@@ -1183,6 +1565,10 @@ def main():
         built[kind] = (out, info, gaps, sit_low, target)
         if args.report:
             report(info, gaps)
+            box = stand_bounds(info["root"])
+            print("  stand frame 0 bounding box (model units): x %.3f..%.3f, y %.3f..%.3f, z %.3f..%.3f" % (
+                box[0], box[3], box[1], box[4], box[2], box[5]))
+            report_clearance(info)
             print("  file %d bytes; z-fight in the rest pose: %s" % (len(out), ", ".join(
                 "%s/%s %.3f apart over %.3f%s" % (a, b, d, e, " (known)" if (a, b) in KNOWN_ZFIGHT else "")
                 for (a, b), (d, e) in sorted(found.items())) or "none"))
