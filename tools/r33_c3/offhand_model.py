@@ -329,11 +329,18 @@ def back_card(params, gap, card):
 
 
 # --- the wings (§3.4, §6) --------------------------------------------------------------
-def wings(params, hinge_x, mid_z, hem_y, top_y):
-    """Both wings at rest (the cloak's hinge line x = +-hinge_x, z = mid_z,
-    from hem_y up to top_y - drop); labels wing_l (the character's left,
-    +x) and wing_r, the mirror image showing the same texels."""
+def wings(params, cloak_x, mid_z, hem_y, top_y):
+    """Both wings at rest: the hinge line at z = mid_z from hem_y up to
+    top_y - drop, inset into the cloak (side faces at x = +-cloak_x) by
+    e = thick / 2 * sin(angle) + 0.05 px (offhand.wing_hinge_x), the outer
+    corner width + e out from the hinge's bottom; labels wing_l (the
+    character's left, +x) and wing_r, the mirror image showing the same
+    texels."""
     w = params["wings"]
+    if abs(cloak_x - oh.CLOAK_HALF_W) > 1e-9:
+        raise SystemExit("offhand_model: the cloak's half-width differs from offhand.CLOAK_HALF_W")
+    hinge_x = oh.wing_hinge_x(w)
+    span = w["width"] + (cloak_x - hinge_x)
     y0, y1 = hem_y, top_y - w["drop"]
     tw, th = WING_TEX
     outer_rect = (0, 0, tw // 2, th)          # in texels of the 16 x 32 image
@@ -351,13 +358,13 @@ def wings(params, hinge_x, mid_z, hem_y, top_y):
     corners = ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0))      # hinge top, hinge bottom, outer corner
 
     def at(a, b, dz):
-        return (hinge_x + a * w["width"], y1 - b * (y1 - y0), mid_z + dz)
+        return (hinge_x + a * span, y1 - b * (y1 - y0), mid_z + dz)
     out_z, in_z = -w["thick"] / 2, w["thick"] / 2
     left = Part()
     left.face("wing_l", [at(a, b, out_z) for a, b in corners], [uv(a, b) for a, b in corners], (0, 0, -1))
     left.face("wing_l", [at(a, b, in_z) for a, b in corners], [uv(a, b, True) for a, b in corners], (0, 0, 1))
     # the triangle's centre in its plane; the two edge quads face away from it
-    centre = ((3 * hinge_x + w["width"]) / 3, (y1 + 2 * y0) / 3, mid_z)
+    centre = ((3 * hinge_x + span) / 3, (y1 + 2 * y0) / 3, mid_z)
     for (a0, b0), (a1, b1) in ((corners[1], corners[2]), (corners[2], corners[0])):
         pts = [at(a0, b0, out_z), at(a1, b1, out_z), at(a1, b1, in_z), at(a0, b0, in_z)]
         uvs = [uv(a0, b0, edge=True), uv(a1, b1, edge=True), uv(a1, b1, edge=True), uv(a0, b0, edge=True)]

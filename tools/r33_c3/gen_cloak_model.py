@@ -187,10 +187,14 @@ ZFIGHT_MIN_EXTENT = 0.1 * PX   # a thinner overlap is a sub-texel sliver
 # params.json's draft z -3 px lies 0.02 px behind the bracers' back faces
 # (z -3) and 0.23 px from the reinforce boxes' (z -3.25) where they overlap;
 # a body card at z <= -3.52 clears both, and these entries go once the
-# parameters do.
+# parameters do. The wings' bottom edge starts at the cloak's hem (y 8) and
+# now inside the cloak (the hinge inset of format doc §3.4), so for the
+# inset's 0.17 px it shares the plane of the cloak's bottom face: a sliver
+# seen only from below (also a question to the coordinator).
 KNOWN_ZFIGHT = {("chest", "hat"), ("arm", "tasset"), ("arm_l", "tasset_l"),
                 ("back_body", "bracer"), ("back_body", "bracer_l"),
-                ("back_body", "reinforce"), ("back_body", "reinforce_l")}
+                ("back_body", "reinforce"), ("back_body", "reinforce_l"),
+                ("cloak", "wing_l"), ("cloak", "wing_r")}
 
 # --- Round 55: the offhand ---------------------------------------------------------
 OFFHAND_BONES = oh.BONES     # Offhand_Shield, Offhand_Book: children of Arm_Left
@@ -1543,6 +1547,48 @@ def stand_bounds(root):
     return [min(p[k] for p in pos) for k in range(3)] + [max(p[k] for p in pos) for k in range(3)]
 
 
+def wing_seam(info):
+    """The wing against the cloak it rides (format doc §3.4), per checked
+    engine frame (stand 0 and walk 178) in the cloak's own frame:
+    `hinge`, how deep the wing's hinge edge lies inside the cloak's side
+    face (px; positive = no gap between cloak and wing), and `faces`, the
+    smallest margin of the wing inside the cloak's outer and lining faces
+    over the part of the wing within the cloak's width (px; negative = it
+    pokes through)."""
+    rig = Rig(info["root"])
+    _, part = info["parts"]["wings"]
+    half = HALF_W
+    out = {}
+    for frame in (STAND[0], 178):
+        inv = inverse_rigid(rig.skin("Cloak", frame + 1))
+        hinge = faces = None
+        for piece in part.pieces:
+            # the wing's corners skinned to the frame, back in the cloak's rest frame
+            pts = [apply(inv, apply(rig.skin("Cloak", frame + 1), to_model(part.verts[i][0]))) for i in piece]
+            pts = [(abs(p[0]), p[1], p[2]) for p in pts]          # both wings as the left one
+            corners = []
+            for p in pts:
+                if not any(math.dist(p, q) < 1e-9 for q in corners):
+                    corners.append(p)
+            inner = sorted(corners, key=lambda p: p[0])
+            # the hinge edge: the corners nearest the cloak's centre line
+            hinge_pts = [p for p in corners if p[0] <= inner[3][0] + 1e-9][:4]
+            depth = min(half - p[0] for p in hinge_pts)
+            hinge = depth if hinge is None else min(hinge, depth)
+            # the wing within the cloak's width: corners inside plus edge crossings
+            inside = [p for p in corners if p[0] <= half]
+            for a in range(len(corners)):
+                for b in range(a + 1, len(corners)):
+                    p, q = corners[a], corners[b]
+                    if (p[0] - half) * (q[0] - half) < 0:
+                        t = (half - p[0]) / (q[0] - p[0])
+                        inside.append(tuple(p[k] + (q[k] - p[k]) * t for k in range(3)))
+            margin = min(min(p[2] - Z_OUT, Z_IN - p[2]) for p in inside)
+            faces = margin if faces is None else min(faces, margin)
+        out[frame] = (hinge / PX, faces / PX)
+    return out
+
+
 def report_clearance(info):
     """The offhand clearance table: per clip and part the closest gap in skin
     pixels (negative = overlap), its engine frame and the box."""
@@ -1585,6 +1631,10 @@ def main():
             print("  stand frame 0 bounding box (model units): x %.3f..%.3f, y %.3f..%.3f, z %.3f..%.3f" % (
                 box[0], box[3], box[1], box[4], box[2], box[5]))
             report_clearance(info)
+            if "wings" in info["parts"]:
+                print("  wings on the cloak: " + "; ".join(
+                    "frame %d: hinge edge %.3f px inside the cloak's side, %.3f px inside its outer and "
+                    "lining faces" % (f, h, m) for f, (h, m) in sorted(wing_seam(info).items())))
             print("  file %d bytes; z-fight in the rest pose: %s" % (len(out), ", ".join(
                 "%s/%s %.3f apart over %.3f%s" % (a, b, d, e, " (known)" if (a, b) in KNOWN_ZFIGHT else "")
                 for (a, b), (d, e) in sorted(found.items())) or "none"))

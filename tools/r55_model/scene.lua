@@ -96,6 +96,9 @@ add({name = "W1_wings_back_side_front3q", cam = FAR, pitch = 0.18, figures = thr
 add({name = "W2_wings_walk_back3q_side_sit", cam = FAR, pitch = 0.18, figures = three(winged,
 	{{172, PI * 0.25}, {182, -PI / 2}, {100, PI / 2}})})
 add({name = "W3_wings_close_back", cam = NEAR, pitch = 0.2, figures = one(winged, 0, 0)})
+-- the seam between cloak and wing (the hinge inset, format doc §3.4)
+add({name = "W4_wings_seam_close_back3q", cam = {0, 0.5, -1.4}, pitch = 0.25, figures = one(winged, 0, PI * 0.2)})
+add({name = "W5_wings_seam_close_walk", cam = {0, 0.5, -1.4}, pitch = 0.25, figures = one(winged, 178, PI * 0.15)})
 
 -- with the armor (metal, steel palette): clearance by eye
 add({name = "A1_armor_shield_book_stand_block_3q", cam = FAR, pitch = 0.18, figures = three(nil, {
