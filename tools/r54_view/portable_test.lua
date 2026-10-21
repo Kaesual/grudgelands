@@ -236,7 +236,7 @@ if preview_src then
 		PLAYER_MODEL = apply_src:match('grug_visuals%.PLAYER_MODEL = "([^"]+)"'),
 		CLOAK_NONE = apply_src:match('grug_visuals%.CLOAK_NONE = "([^"]+)"'),
 		WEAPON_NONE = compose_src:match('grug_visuals%.WEAPON_NONE = "([^"]+)"'),
-		-- Round 55: the offhand look's slots (off here: the setting's default).
+		-- Round 55: the offhand look's slots (off here: OFFHAND_VISUALS unset).
 		BACK_NONE = compose_src:match('grug_visuals%.BACK_NONE = "([^"]+)"'),
 		WINGS_NONE = compose_src:match('grug_visuals%.WINGS_NONE = "([^"]+)"'),
 	}
