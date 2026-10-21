@@ -103,22 +103,26 @@ the centre line in the plane of the back rim, at the grip.
 ### 3.2 Spellbook (`book.shape`, `book.ribbon`)
 
 Frame (the **closed** book): the spine along y at x = 0, the pages towards +x, the front half at z > 0, the back
-half at z < 0, page tops at +y. With p = pages / 2, c = cover, w = width, h = height, i = inset
+half at z < 0, page tops at +y. With p = pages / 2, c = cover, w = width, h = height, i = inset,
+t = max(c, spine_min), a = open / 2, b = (p + c) · sin a and d = max((p + c) · cos a, t / 2)
 (`offhand.book_boxes`):
 
 | Box | Extent (x0, y0, z0)–(x1, y1, z1) | Faces left out | Turned |
 |---|---|---|---|
 | `cover_f` | (0, −h/2, p)–(w, h/2, p + c) | | −open / 2 |
 | `cover_b` | (0, −h/2, −p − c)–(w, h/2, −p) | | +open / 2 |
-| `pages_f` | (0, −h/2 + i, 0)–(w − i, h/2 − i, p) | right (spine side), front (against the cover) | −open / 2 |
-| `pages_b` | (0, −h/2 + i, −p)–(w − i, h/2 − i, 0) | right, back | +open / 2 |
-| `spine` | (−max(c, spine_min), −h/2, −p − c)–(0, h/2, p + c) | | 0 |
+| `pages_f` | (0, −h/2 + i, 0)–(w − i, h/2 − i, p) | front (against the cover) | −open / 2 |
+| `pages_b` | (0, −h/2 + i, −p)–(w − i, h/2 − i, 0) | back (against the cover) | +open / 2 |
+| `spine` | (−b − t, −h/2, −d)–(−b, h/2, d) | | 0 |
 | `ribbon` | (x0, −h/2 − below, −half_depth)–(x1, −h/2 + into, half_depth) | top | 0 |
 
 "Turned" is a rotation about the y axis (order Y, §2.1) that opens the book: with open = 150 the halves stand
 75° each side of the spread's centre, which faces +x. The readable pages are `pages_f`'s back face and
 `pages_b`'s front face; seen by the reader (from +x, page tops up), `pages_f` is the left page and `pages_b` the
-right page. 62 triangles.
+right page. The spine is not turned: it is the plate behind the open halves, t thick, that joins the two covers'
+spine edges (they end at x = −b, z = ±(p + c) · cos a), so the gutter between the halves is closed from behind;
+closed (open = 0) it is the closed book's spine, flat open (180) a strip t wide behind the join. The page blocks
+keep their spine-side (right) faces, which close each block and line the groove between the halves. 66 triangles.
 
 ### 3.3 Back cards (`back`)
 
