@@ -1,4 +1,4 @@
--- /prof portable test (after Round 55: the professions debug command,
+-- 0.55.1 /prof portable test (the professions debug command,
 -- grug_jobs/admin.lua and state.lua's admin_set/admin_unlearn). Loads the
 -- REAL registry.lua, state.lua and admin.lua under small stubs and checks:
 --   A. the command: `server` privilege, online targets only, the usage;
@@ -11,7 +11,7 @@
 --      clear empties a slot;
 --   D. show, the target's chat line (none for oneself) and the action log.
 --
--- Usage (repo root): luajit tools/r55_prof/portable_test.lua [REPO]
+-- Usage (repo root): luajit tools/r551_prof/portable_test.lua [REPO]
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 local repo = arg[1] or "."
@@ -264,7 +264,7 @@ run("set admin 1 weaponsmith 9")
 eq(#logs, count, "D a refused call is not logged")
 check(refreshed > 0, "D the Crafting tab is refreshed")
 
-local summary = ("R55 PROF PORTABLE %s checks=%d failures=%d"):format(
+local summary = ("R551 PROF PORTABLE %s checks=%d failures=%d"):format(
 	failures == 0 and "PASS" or "FAIL", checks, failures)
 print(summary)
 if failures > 0 then os.exit(1) end

@@ -97,6 +97,8 @@ with each tier, a Mage's or Priest's spellbook open in the left hand, and
 the Scout's second weapon on the back. Shields and spellbooks have new art
 and an icon per tier. The Supporter Cloak, the first cloak with wings, is
 granted by a server admin to players who helped shape the game early on.
+0.55.1 gives server admins `/prof` to set a player's professions for
+testing.
 
 **0.54.0** redraws all armor with real shapes: helmets, shoulder plates,
 bracers, skirts and boots stand out from the body, each tier richer than
