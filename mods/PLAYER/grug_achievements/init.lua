@@ -349,8 +349,8 @@ end
 
 -- The cloak's texture, its id and its wing texture (Round 55,
 -- docs/technical/offhand-format.md §6): a catalogue row may carry `wings`, a
--- 16 x 32 texture for the two optional wing pieces (meant for future premium
--- cloaks; no cloak has one yet). grug_visuals shows it only with the offhand
+-- 16 x 32 texture for the two optional wing pieces (premium cloaks; the
+-- Supporter Cloak is the first). grug_visuals shows it only with the offhand
 -- look on.
 grug_visuals.register_cloak_source(function(player)
 	local meta = player:get_meta()

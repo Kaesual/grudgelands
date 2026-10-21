@@ -230,8 +230,9 @@ end
 grug_visuals.index_armor(registered)
 local V = grug_visuals
 local CLOAK = "grug_achievements_cloak_plain_grey.png"
--- A wing texture stand-in: no cloak has one yet (any file does for the slot).
-local WINGS = "grug_achievements_cloak_hunter_1.png"
+-- A wing texture: the Supporter Cloak's (the stub source pairs it with the
+-- plain grey cloak; any file does for the slot).
+local WINGS = "grug_achievements_cloak_supporter_wings.png"
 local cloak_of, wings_of = {}, {}
 V.register_cloak_source(function(player)
 	return cloak_of[player], cloak_of[player] and "plain_grey" or nil, wings_of[player]

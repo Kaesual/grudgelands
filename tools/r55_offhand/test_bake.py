@@ -402,7 +402,7 @@ def main():
             ok(False, "an icon bake of a tier without 'icon' fails")
         except B.BakeError as e:
             ok("shield T4: names no 'icon'" in str(e), "icon bake names the tier: %s" % e)
-        # the default art directory is absent until the finish step: a clear error
+        # an absent art directory: a clear error
         r = run("--art", tmp / "r55_art_absent", "--out", tmp / "out3")
         ok(r.returncode == 1 and "no art directory" in r.stdout and not (tmp / "out3").exists(),
            "absent art: " + r.stdout)

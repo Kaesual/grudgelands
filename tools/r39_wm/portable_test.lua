@@ -22,9 +22,8 @@
 --      Round 55, every offhand layer (every shield and spellbook with the
 --      offhand look on, plain, enchanted, broken) parses under
 --      grug_visuals.APPEARANCE_TEXTURE, names only files in its directories
---      (the offhand layers' baked names, offhand-format.md §7, count as in
---      grug_visuals/textures until the finish step bakes them) and stays
---      within APPEARANCE_TEXTURE_MAX; the worst-case JSON (version 3, seven
+--      (the offhand layers baked since the Round 55 finish included) and
+--      stays within APPEARANCE_TEXTURE_MAX; the worst-case JSON (version 3, seven
 --      texture strings) within APPEARANCE_JSON_MAX.
 -- Prints the measured maxima and "R39 WM PORTABLE PASS checks=<n>", or the
 -- failures.
@@ -405,25 +404,12 @@ end
 ------------------------------------------------------------------------------
 local used_modifiers, used_files, max_depth_seen = {}, {}, 0
 local file_dir = {}
--- The offhand layers and their masks (offhand-format.md §7) are baked into
--- grug_visuals/textures by the Round 55 finish step; until then their
--- contract names count as there.
-local PENDING_DIR = "mods/PLAYER/grug_visuals/textures"
-local pending = {}
-for bracket = 1, #grug_gear.MATERIALS do
-	for _, kind in ipairs({"shield", "book"}) do
-		local file = V.offhand_file(kind, bracket)
-		pending[file] = true
-		pending[file:sub(1, -5) .. "_ench.png"] = true
-	end
-end
 local function file_known(name)
 	if file_dir[name] == nil then
 		file_dir[name] = false
 		for _, dir in ipairs(TEX.dirs) do
 			if file_exists(ROOT .. "/" .. dir .. "/" .. name) then file_dir[name] = dir end
 		end
-		if not file_dir[name] and pending[name] then file_dir[name] = PENDING_DIR end
 	end
 	return file_dir[name]
 end
