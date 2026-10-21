@@ -41,6 +41,9 @@ the new look at its next login.
 - **New shield and spellbook art:** every tier has its own shield and
   spellbook, in the hand and as a new icon; shields and spellbooks you
   already own take the new look too.
+- **Simpler armor icons:** all 72 armor icons are redrawn with one bold,
+  clear shape each, so helmets, chest pieces, leg armor and boots are easy
+  to tell apart even in the small inventory slots.
 - **The Supporter Cloak**, the first cloak with wings, for players who
   helped shape the game early on. It is not earned by playing: a server
   admin grants it with `/achievement grant <player> supporter` (and takes

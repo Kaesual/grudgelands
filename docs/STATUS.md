@@ -53,12 +53,14 @@ user's notes.
   (`283e8a43`), the user's params (`b88245aa`, `4fa0ab2e`, `93e6aad8`), GAME
   (`6532a1c7`), SUPPORTER (`a0b77cf9`), WEB (`cd218892`), VIEWER
   (`78547e04`), FINISH (`c23d8ceb`) and STACKS (`47e1c98f`) merged, then
-  this documentation lane D, which also turned the setting on. Each code
+  this documentation lane D, which also turned the setting on, and ICONS
+  (the redrawn armor icons, branch `r55-icons`). Each code
   lane independently reviewed by Opus (MODEL, GAME, SUPPORTER, WEB, FINISH,
   STACKS MERGE; BAKE and VIEWER MERGE AFTER FIXES, delta-reviewed MERGE);
-  the art painted by GPT-6 Astra in one drop and picked by the user. Main
-  has 239 portable fixtures (5 new); `mods/` against 0.54.1 +663 −128 lines
-  in 16 text files, 38 PNGs added, 12 replaced, both models replaced. The
+  the art painted by GPT-6 Astra in one drop and picked by the user, the
+  armor icons in two more drops. Main
+  has 239 portable fixtures (5 new); `mods/` against 0.54.1 +679 −140 lines
+  in 16 text files, 38 PNGs added, 160 replaced, both models replaced. The
   declaration is
   `{"schema": 3, "version": "0.55.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
   a world of 0.54.1 moves on without a step.
@@ -80,6 +82,10 @@ user's notes.
     `render.py`, the painter's templates; the picked art in `tools/r55_art/`
     baked into 24 offhand layers and 24 icons with their masks (one
     spellbook icon per tier, untinted shields).
+  - **The armor icons (ICONS):** all 72 redrawn simpler by GPT-6 Astra in
+    two drops and picked per line and slot by the user (2026-10-21), laid
+    over `tools/r54_art/art/` under the same names and baked with their
+    masks and the four slot ghosts; the armor sheets are unchanged.
   - **Achievements (SUPPORTER, FINISH):** manual rows,
     `/achievement grant|revoke <player> <id>` (privilege `server`, offline
     queue), the Supporter achievement and the Supporter Cloak with wings

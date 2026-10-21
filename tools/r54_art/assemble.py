@@ -14,9 +14,16 @@ tier the drop and proposal the user picked (2026-10-20: whole tiers). A tier
 copies every file its tiers.json entry names from that proposal (the drops
 give each tier its own variant letter, a..f = T1..T6, so no names collide);
 art/tiers.json gets the picked tier entries (and the picks under "_source"),
-art/palettes.json the picked tiers' palettes. The check compares PNGs by mode,
-size and pixels (PNG bytes differ between Pillow/zlib versions) and the JSON
-files by content.
+art/palettes.json the picked tiers' palettes.
+
+The icons were redrawn in Round 55 (lane ICONS): src/icons-<drop>/paint.py
+paint only icons (reading the picked tiers.json, passed as --art), and
+picks.json's "icons" section names per line, slot and tier the icon drop and
+proposal (2026-10-21). Each picked icon is laid over the tier's icon file
+after the tier copy, under the same name; nothing else changes, and the icon
+picks stay out of tiers.json. The check compares PNGs by mode, size and
+pixels (PNG bytes differ between Pillow/zlib versions) and the JSON files by
+content.
 """
 import argparse
 import json
@@ -40,15 +47,16 @@ ART = HERE / "art"
 PICKS = HERE / "picks.json"
 
 
-def paint(work):
-    """Run every drop's painter on a copy under `work`; -> {drop: drop dir}."""
+def paint(work, pattern, *args):
+    """Run the painters src/<pattern>/paint.py on copies under `work`;
+    -> {drop: drop dir}."""
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
     drops = {}
-    for painter in sorted(SRC.glob("*/paint.py")):
+    for painter in sorted(SRC.glob(f"{pattern}/paint.py")):
         drop = work / painter.parent.name
         (drop / "src").mkdir(parents=True)
         shutil.copyfile(painter, drop / "src" / "paint.py")
-        r = subprocess.run([sys.executable, str(drop / "src" / "paint.py"), "--tool", str(TOOL)],
+        r = subprocess.run([sys.executable, str(drop / "src" / "paint.py"), *map(str, args)],
                            cwd=work, env=env, capture_output=True, text=True)
         if r.returncode:
             sys.exit(f"{painter}: exit {r.returncode}\n{r.stdout}{r.stderr}")
@@ -78,8 +86,20 @@ def assemble(drops, picks):
                 if files.get(rel, data) != data:
                     sys.exit(f"{rel}: two picked proposals write different files under the same name")
                 files[rel] = data
-    tiers["_source"] = picks
+    tiers["_source"] = {line: picks[line] for line in L.LINES}
     return files, tiers, palettes
+
+
+def lay_icons(files, tiers, drops, picks):
+    """Lay each picked icon over the tier's icon file (same name) in `files`."""
+    for line in L.LINES:
+        for slot, by_tier in picks[line].items():
+            for tid in L.TIER_IDS:
+                pick = by_tier[tid]
+                rel = f"{line}/icons/{slot}_{tiers[line][tid]['icon'][slot]}.png"
+                if rel not in files:
+                    sys.exit(f"{line} {slot} {tid}: the picked tier has no icon {rel}")
+                files[rel] = (drops[pick["drop"]] / pick["prop"] / rel).read_bytes()
 
 
 def dump(obj):
@@ -126,7 +146,11 @@ def main():
     a = ap.parse_args()
     picks = json.loads(PICKS.read_text())
     with tempfile.TemporaryDirectory(prefix="r54_art.") as tmp:
-        files, tiers, palettes = assemble(paint(Path(tmp)), picks)
+        work = Path(tmp)
+        files, tiers, palettes = assemble(paint(work, "drop-*", "--tool", TOOL), picks)
+        (work / "picked").mkdir()
+        (work / "picked" / "tiers.json").write_text(dump(tiers))
+        lay_icons(files, tiers, paint(work, "icons-*", "--art", work / "picked"), picks["icons"])
     if a.check:
         problems = check(files, tiers, palettes)
         for p in problems:

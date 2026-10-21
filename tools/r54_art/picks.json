@@ -22,5 +22,109 @@
   "T4": {"drop": "drop-03-cloth", "prop": "p1"},
   "T5": {"drop": "drop-03-cloth", "prop": "p1"},
   "T6": {"drop": "drop-03-cloth", "prop": "p1"}
+ },
+ "icons": {
+  "metal": {
+   "head": {
+    "T1": {"drop": "icons-drop-02", "prop": "p1"},
+    "T2": {"drop": "icons-drop-02", "prop": "p1"},
+    "T3": {"drop": "icons-drop-02", "prop": "p1"},
+    "T4": {"drop": "icons-drop-02", "prop": "p1"},
+    "T5": {"drop": "icons-drop-02", "prop": "p1"},
+    "T6": {"drop": "icons-drop-02", "prop": "p1"}
+   },
+   "chest": {
+    "T1": {"drop": "icons-drop-01", "prop": "p1"},
+    "T2": {"drop": "icons-drop-01", "prop": "p1"},
+    "T3": {"drop": "icons-drop-01", "prop": "p1"},
+    "T4": {"drop": "icons-drop-01", "prop": "p1"},
+    "T5": {"drop": "icons-drop-01", "prop": "p1"},
+    "T6": {"drop": "icons-drop-01", "prop": "p1"}
+   },
+   "legs": {
+    "T1": {"drop": "icons-drop-01", "prop": "p1"},
+    "T2": {"drop": "icons-drop-01", "prop": "p1"},
+    "T3": {"drop": "icons-drop-01", "prop": "p1"},
+    "T4": {"drop": "icons-drop-01", "prop": "p1"},
+    "T5": {"drop": "icons-drop-01", "prop": "p1"},
+    "T6": {"drop": "icons-drop-01", "prop": "p1"}
+   },
+   "feet": {
+    "T1": {"drop": "icons-drop-02", "prop": "p2"},
+    "T2": {"drop": "icons-drop-02", "prop": "p2"},
+    "T3": {"drop": "icons-drop-02", "prop": "p2"},
+    "T4": {"drop": "icons-drop-02", "prop": "p2"},
+    "T5": {"drop": "icons-drop-02", "prop": "p2"},
+    "T6": {"drop": "icons-drop-02", "prop": "p2"}
+   }
+  },
+  "leather": {
+   "head": {
+    "T1": {"drop": "icons-drop-02", "prop": "p1"},
+    "T2": {"drop": "icons-drop-02", "prop": "p1"},
+    "T3": {"drop": "icons-drop-02", "prop": "p1"},
+    "T4": {"drop": "icons-drop-02", "prop": "p1"},
+    "T5": {"drop": "icons-drop-02", "prop": "p1"},
+    "T6": {"drop": "icons-drop-02", "prop": "p1"}
+   },
+   "chest": {
+    "T1": {"drop": "icons-drop-01", "prop": "p1"},
+    "T2": {"drop": "icons-drop-01", "prop": "p1"},
+    "T3": {"drop": "icons-drop-01", "prop": "p1"},
+    "T4": {"drop": "icons-drop-01", "prop": "p1"},
+    "T5": {"drop": "icons-drop-01", "prop": "p1"},
+    "T6": {"drop": "icons-drop-01", "prop": "p1"}
+   },
+   "legs": {
+    "T1": {"drop": "icons-drop-02", "prop": "p1"},
+    "T2": {"drop": "icons-drop-02", "prop": "p1"},
+    "T3": {"drop": "icons-drop-02", "prop": "p1"},
+    "T4": {"drop": "icons-drop-02", "prop": "p1"},
+    "T5": {"drop": "icons-drop-02", "prop": "p1"},
+    "T6": {"drop": "icons-drop-02", "prop": "p1"}
+   },
+   "feet": {
+    "T1": {"drop": "icons-drop-02", "prop": "p2"},
+    "T2": {"drop": "icons-drop-02", "prop": "p2"},
+    "T3": {"drop": "icons-drop-02", "prop": "p2"},
+    "T4": {"drop": "icons-drop-02", "prop": "p2"},
+    "T5": {"drop": "icons-drop-02", "prop": "p2"},
+    "T6": {"drop": "icons-drop-02", "prop": "p2"}
+   }
+  },
+  "cloth": {
+   "head": {
+    "T1": {"drop": "icons-drop-02", "prop": "p2"},
+    "T2": {"drop": "icons-drop-02", "prop": "p2"},
+    "T3": {"drop": "icons-drop-02", "prop": "p2"},
+    "T4": {"drop": "icons-drop-02", "prop": "p2"},
+    "T5": {"drop": "icons-drop-02", "prop": "p2"},
+    "T6": {"drop": "icons-drop-02", "prop": "p2"}
+   },
+   "chest": {
+    "T1": {"drop": "icons-drop-02", "prop": "p1"},
+    "T2": {"drop": "icons-drop-02", "prop": "p1"},
+    "T3": {"drop": "icons-drop-02", "prop": "p1"},
+    "T4": {"drop": "icons-drop-02", "prop": "p1"},
+    "T5": {"drop": "icons-drop-02", "prop": "p1"},
+    "T6": {"drop": "icons-drop-02", "prop": "p1"}
+   },
+   "legs": {
+    "T1": {"drop": "icons-drop-02", "prop": "p1"},
+    "T2": {"drop": "icons-drop-02", "prop": "p1"},
+    "T3": {"drop": "icons-drop-02", "prop": "p1"},
+    "T4": {"drop": "icons-drop-02", "prop": "p1"},
+    "T5": {"drop": "icons-drop-02", "prop": "p1"},
+    "T6": {"drop": "icons-drop-02", "prop": "p1"}
+   },
+   "feet": {
+    "T1": {"drop": "icons-drop-02", "prop": "p2"},
+    "T2": {"drop": "icons-drop-02", "prop": "p2"},
+    "T3": {"drop": "icons-drop-02", "prop": "p2"},
+    "T4": {"drop": "icons-drop-02", "prop": "p2"},
+    "T5": {"drop": "icons-drop-02", "prop": "p2"},
+    "T6": {"drop": "icons-drop-02", "prop": "p2"}
+   }
+  }
  }
 }

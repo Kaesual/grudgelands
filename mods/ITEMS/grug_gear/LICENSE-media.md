@@ -1,8 +1,8 @@
 # Media Origin & Licenses (grug_gear)
 
 Two licences live here, and the split is by origin, not by taste: the **armor**,
-shield and spellbook icons are this project's own CC0 art (the Round 54 armor
-art and the Round 55 offhand art, below), and the **weapon** icons are
+shield and spellbook icons are this project's own CC0 art (the armor icons
+redrawn in Round 55 and the Round 55 offhand art, below), and the **weapon** icons are
 derivatives of minetest_game's CC BY-SA 3.0 tool sprites.
 
 ## Weapon icons — CC BY-SA 3.0 Unported
@@ -119,19 +119,23 @@ every tier from 1 through 6.
 | `grug_gear_trinket_mercy_seal_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; wing medallion, proposal A; `paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `grug_gear_trinket_reclaimers_mark_t{1..6}.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; return-curl medallion, proposal C; `paint_art.py` (Python/Pillow) | CC0-1.0 |
 
-## Round 54 armor icons — CC0 1.0
+## Round 55 armor icons — CC0 1.0
 
 Original, AI-assisted pixel art painted for Grudgelands by **GPT-6 Astra** on
-2026-10-20: hand-placed pixel maps in the armor contract's reference palette
+2026-10-21, redrawn simpler over the Round 54 armor art: hand-placed pixel maps
+in the armor contract's reference palette
 ([armor-format.md](../../../docs/technical/armor-format.md) §6), written with
-**Python/Pillow** by the painters in
-[`tools/r54_art/src/`](../../../tools/r54_art/README.md) (drops `drop-02`
-metal, `drop-03-leather`, `drop-03-cloth`). No image-generation service,
-downloads or third-party source pixels. The project dedicates any rights it
-holds in these files to **CC0 1.0 Universal**
-(<https://creativecommons.org/publicdomain/zero/1.0/>). The user picked one of
-two proposals per tier (`tools/r54_art/picks.json`); `tools/r54_art/assemble.py`
-assembles the picks and **`tools/r54_armor/bake.py`** writes the files below
+**Python/Pillow** by the painters of the two armor-icon drops in
+[`tools/r54_art/src/`](../../../tools/r54_art/README.md) (`icons-drop-01`, all
+72 icons in two proposals; `icons-drop-02`, the 54 icons of nine rows in two
+proposals after the user's feedback). No image-generation service, downloads or
+third-party source pixels. The project dedicates any rights it holds in these
+files to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). The user picked whole
+rows on 2026-10-21 (the `icons` section of `tools/r54_art/picks.json`: metal
+chest, metal legs and leather chest from drop 01 P1, the nine other rows from
+drop 02); `tools/r54_art/assemble.py` lays the picked icons over the Round 54
+art's icon files and **`tools/r54_armor/bake.py`** writes the files below
 (the tier's palette swapped in, masks from the art's zone pixels; `bake.py
 --icons-out mods/ITEMS/grug_gear/textures --check` rebuilds them pixel for
 pixel). `<line>` is metal, leather or cloth, `<grade>` a grade key of
@@ -139,9 +143,9 @@ pixel). `<line>` is metal, leather or cloth, `<grade>` a grade key of
 
 | Files | Author | Source / tool disclosure | Licence |
 |---|---|---|---|
-| `grug_gear_item_<slot>_<line>_<grade>.png` (72) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the picked icon of the tier, palette-swapped by `bake.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_item_<slot>_<line>_<grade>.png` (72) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the picked icon of the row and tier (Round 55 icon drops), palette-swapped by `bake.py` (Python/Pillow) | CC0-1.0 |
 | `grug_gear_item_<slot>_<line>_<grade>_ench.png` (72) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; enchant mask derived by `bake.py` from the icon's zone A and B pixels | CC0-1.0 |
-| `grug_gear_item_{head,chest,legs,feet}_metal.png` (4) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the Character page's empty-slot ghosts, copies of the metal T3 (steel) icons by `tools/r54_art/ghosts.py` | CC0-1.0 |
+| `grug_gear_item_{head,chest,legs,feet}_metal.png` (4) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the Character page's empty-slot ghosts, copies of the metal T3 (steel) icons (head drop 02 P1, chest and legs drop 01 P1, feet drop 02 P2) by `tools/r54_art/ghosts.py` | CC0-1.0 |
 
 ## Round 55 shield and spellbook icons — CC0 1.0
 

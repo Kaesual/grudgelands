@@ -319,6 +319,17 @@ export in `params.json`'s format (from v10 only the diff against the repo), the 
 Ledger" and P2 "Brace & Seal", 112 own CC0 PNGs including the icons (drawn freely, not adapted from the old
 third-party icons), 0 bake violations. **PICK:** the [pick page](https://claude.ai/artifact/RmCbkJp9QJpjn5abBv2HS3).
 
+**ICONS** (Opus, after lane D; branch `r55-icons`, art and bake `eb19cd65`): the user found the Round 54 armor
+icons too detailed for pixel art and had all 72 redrawn simpler by GPT-6 Astra (outside the repo,
+`armor-icons/`), with the new shield and spellbook icons as the model. Drop 01 drew all 72 in two proposals;
+the user kept metal chest, metal legs and leather chest from its P1 and asked for the rest again: helmets must
+read as helmets, boots as boots, and trousers need a trouser shape. Drop 02 redrew those nine rows in two
+proposals, and the user picked whole rows (2026-10-21): metal head P1, metal feet P2, leather head P1, leather
+legs P1, leather feet P2, cloth head P2, cloth chest P1, cloth legs P1, cloth feet P2. `tools/r54_art/` gained
+both icon painters (`src/icons-*`), an `icons` section in `picks.json` and the icon step in `assemble.py`; only
+the 72 icons in `art/` changed, the 144 baked icons and masks and the four slot ghosts follow (148 files,
+28,170 → 26,827 B, measured), every baked file equal to Astra's own check bake. All CC0.
+
 Main has 239 portable fixtures (5 new: `r55_model`, `r55_game`, `r55_supporter`, `r55_web`, `r55_stacks`) and the
 Python tests `tools/r55_offhand/test_bake.py`, `test_render.py` and `tools/r55_model/test_frames.py`. `mods/`
 against 0.54.1 (at lane D's last commit): +663 −128 lines in 16 text files (no new Lua file), 38 PNGs added
@@ -461,6 +472,8 @@ shields and spellbooks), so its old appearance and stacks meet the new code.
     site draws the bow in the hand) and the Supporter wings; a character not logged in since 0.54.x (version 2) shows
     no offhand; an old character's stored appearance shows the new offhand images after its join and the next
    export. `/glb_probe` still shows the `.glb` like the `.b3d`.
+13. **Armor icons** (ICONS): the 72 new armor icons at 16 and 32 px in the inventory, shop and loot, plain,
+    enchanted and broken; the Character tab's four empty-slot ghosts (the darkened metal T3 icons).
 
 ### Round-end gates
 

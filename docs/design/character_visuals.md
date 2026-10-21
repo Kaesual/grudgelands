@@ -156,7 +156,9 @@ armor line, slot and material tier that its equipped item names.
   reference palette and picked by the user per line and tier from two
   proposals each (2026-10-20): metal T1–T5 "Bastion" and T6
   "Processional guard", leather "Trail coat" and cloth "Cantor" on every
-  tier (`tools/r54_art/`, baked by `tools/r54_armor/bake.py`).
+  tier (`tools/r54_art/`, baked by `tools/r54_armor/bake.py`); the
+  inventory icons were redrawn simpler in Round 55 and picked per line and
+  slot (2026-10-21).
 - **Tints over armor:** an elite's gold and a rare's violet
   ([combat_stats.md](combat_stats.md) §3) colour every texture of the
   character, the armor and the empty weapon card included, so they show
