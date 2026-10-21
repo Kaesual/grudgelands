@@ -607,14 +607,14 @@ local function king_def(race, row)
 		-- the prototype below); king_tick walks him back after a fight.
 		randomly_turn = false,
 		-- The NPC model with the armor boxes (Round 54, grug_visuals.NPC_MODEL;
-		-- skin, armor, weapon card).
+		-- skin, armor, weapon card, offhand, back).
 		visual = "mesh", mesh = "grug_visuals_npc.b3d",
 		-- The definition fallback of a build without grug_visuals; with it, a
 		-- king wears his people's royal tabard and crown over his one fixed
 		-- look (round31-plan.md §2.1.6) and, since Round 54, the royal armour:
 		-- the guards' metal line at his level's tier in his people's royal
 		-- colours and gold, without a helmet (grug_visuals.compose).
-		textures = {{"character.png", "blank.png", "blank.png"}},
+		textures = {{"character.png", "blank.png", "blank.png", "blank.png", "blank.png"}},
 		_grug_visual = function(self)
 			return {race = race, look = grug_visuals.KING_LOOKS[race],
 				royal = "king", armor_line = "metal", level = self._grug_level,

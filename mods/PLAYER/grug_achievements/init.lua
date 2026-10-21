@@ -261,9 +261,15 @@ function grug_achievements.select_cloak(player, id)
 	return true
 end
 
+-- The cloak's texture, its id and its wing texture (Round 55,
+-- docs/technical/offhand-format.md §6): a catalogue row may carry `wings`, a
+-- 16 x 32 texture for the two optional wing pieces (meant for future premium
+-- cloaks; no cloak has one yet). grug_visuals shows it only with the offhand
+-- look on.
 grug_visuals.register_cloak_source(function(player)
 	local meta = player:get_meta()
-	return R.cloak_texture(book, meta), R.selected(book, meta)
+	local id = R.selected(book, meta)
+	return R.cloak_texture(book, meta), id, book.cloak[id].wings
 end)
 
 -- The Character page's cloak picker (Stats mode, beside the model). Items are

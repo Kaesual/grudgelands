@@ -100,6 +100,8 @@ core = {
 	get_us_time = function() return 0 end,
 	get_connected_players = function() return {} end,
 	get_current_modname = function() return "grug_visuals" end,
+	-- grug_visuals/init.lua reads grug_offhand_visuals (Round 55): the default.
+	settings = {get_bool = function(_, _, default) return default end},
 	register_entity = function() end,
 	register_globalstep = function() end,
 	register_on_joinplayer = function(fn) callbacks.join[#callbacks.join + 1] = fn end,

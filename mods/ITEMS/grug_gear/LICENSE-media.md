@@ -79,6 +79,7 @@ VoxeLibre contributors, CC BY-SA 4.0 per upstream `LEGAL.md`.
 | Local file | Upstream source | Treatment |
 |---|---|---|
 | `grug_gear_spellbook.png` | `mcl_enchanting_book_enchanted.png` | native per-tier color grade |
+| `grug_gear_spellbook_{bronze,iron,steel,silversteel,embersteel,abyssal_steel}.png` | `mcl_enchanting_book_enchanted.png` (via `grug_gear_spellbook.png`) | Round 55: one icon per tier, the per-bracket color grade (`grug_gear.BRACKET_TINT`, ratio 48) baked in by `tools/r55_game/book_icons.py` |
 | `grug_gear_arrow.png` | `mcl_bows_arrow_inv.png` | unchanged copy |
 
 ## Round 31 enchant masks — licence of their source
@@ -96,6 +97,7 @@ modification is "pixel-group mask derived by the generator".
 | `grug_gear_item_{greataxe,wand}_<metal>_ench.png` (12) | the Round 12 sprites above | CC0 1.0 |
 | `grug_gear_bow_{lebethron,birch,mallorn,alder}_ench.png`, `grug_gear_shield_<metal>_ench.png` (10) | the Round 11 bows and shields | CC BY-SA 3.0 |
 | `grug_gear_spellbook_ench.png` | the Round 11 book | CC BY-SA 4.0 |
+| `grug_gear_spellbook_<metal>_ench.png` (6, Round 55) | byte copies of `grug_gear_spellbook_ench.png` (`tools/r55_game/book_icons.py`) | CC BY-SA 4.0 |
 
 ## Round 45 jewellery icons — CC0 1.0
 

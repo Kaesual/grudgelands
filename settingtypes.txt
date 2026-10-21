@@ -80,6 +80,15 @@ grug_mapgen_terrain_audit (Log capital plot terrain findings at start) bool fals
 #    and removes the tiles of the other quality.
 grug_map_quality (World map quality) enum normal normal,high
 
+[Characters]
+
+#    (Developers) Show the offhand look on characters: the shield or
+#    spellbook in the left hand, the Scout's second weapon on the back and
+#    the wings of cloaks that have them. Not finished yet (placeholder art);
+#    off keeps every character as before. Read when the server starts;
+#    restart after a change.
+grug_offhand_visuals (Show shields, spellbooks and back weapons on characters) bool false
+
 [Combat]
 
 #    Multiplier for all damage from creatures and NPCs, including damage over
