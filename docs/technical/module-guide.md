@@ -2921,7 +2921,10 @@ tools](#player-meta-read-by-external-tools).
   with the armour) into `result.offhand`, coloured and cracked as an armour
   layer; a Scout's back card is the inventory image of the hand slot whose
   weapon is not shown (the Melee blade under a bow skill, else the bow;
-  `apply.lua`, rewritten by the wield poll when it changes, never stored);
+  `apply.lua`, rewritten by the wield poll when it changes, never stored),
+  drawn by `back_card(image, on_cloak)` into the 32 × 16 back slot's left
+  half (the cloak's card) when a cloak is worn, else the right half (the
+  body's card), escaped for `[combine`;
   the wings come from the cloak source. NPCs keep
   `_grug_look_seed` in their staticdata; `npc_race(entity, faction, opts)`
   gives the settlement's race, or with `{mixed = true}` /

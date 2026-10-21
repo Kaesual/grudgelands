@@ -21,10 +21,15 @@
 --   O  the look off: every player list is 0.54.1's four plus three blanks,
 --      compose ignores the offhand fields (the same cache entry), NPC lists
 --      0.54.1's three plus two blanks with the digest over all five;
+--   B  the back slot's two cards (format doc §5): `back_card` puts the image
+--      into the left half (the cloak's card) or the right (the body's) of a
+--      32 x 16 `[combine`, escaped as the engine unescapes it;
 --   S  the Scout's back card through the real wield poll: nothing held, a
 --      bow skill, a melee skill, a bow skill again, a pickaxe, each changing
 --      the card and rewriting the texture list exactly once; an unchanged
---      poll writes nothing; a Warrior and a Scout with the look off never;
+--      poll writes nothing; a cloak put on and taken off moves the card to
+--      the other half (one rewrite each); a Warrior and a Scout with the look
+--      off never;
 --   W  the wings from a stub cloak source: on with a wing texture, blank
 --      without one and with the look off;
 --   P  the Character tab's preview: seven textures, the offhand layer, the
@@ -446,6 +451,48 @@ do
 end
 
 ------------------------------------------------------------------------------
+-- B. The back slot's two cards.
+------------------------------------------------------------------------------
+-- The engine's reading of a `[combine` part (src/client/imagesource.cpp:
+-- Strfnd next_esc(":", '\\') then unescape_string): split at the first
+-- unescaped ":", drop each escaping backslash.
+local function combine_parts(texture)
+	local w, h, x, y, rest = texture:match("^%[combine:(%d+)x(%d+):(%d+),(%d+)=(.*)$")
+	if not w then return nil end
+	local out, index = {}, 1
+	while index <= #rest do
+		local char = rest:sub(index, index)
+		if char == "\\" then
+			out[#out + 1] = rest:sub(index + 1, index + 1)
+			index = index + 2
+		elseif char == ":" then
+			return nil -- a second part: the image was cut
+		else
+			out[#out + 1] = char
+			index = index + 1
+		end
+	end
+	return {w = tonumber(w), h = tonumber(h), x = tonumber(x), y = tonumber(y),
+		image = table.concat(out)}
+end
+do
+	eq(V.back_card(V.BACK_NONE, true), V.BACK_NONE, "B no card: blank")
+	eq(V.back_card("grug_gear_bow_birch.png", true), "[combine:32x16:0,0=grug_gear_bow_birch.png",
+		"B with a cloak: the left half")
+	eq(V.back_card("grug_gear_bow_birch.png", false), "[combine:32x16:16,0=grug_gear_bow_birch.png",
+		"B without: the right half")
+	local tricky = "((grug_gear_bow_birch.png^[hsl:0:-20:16^(grug_gear_bow_birch_ench.png^" ..
+		"[verticalframe:2:0^[multiply:#20dea2^[opacity:128))^[hsl:0:-80:-35^[cracko:1:4)"
+	local card = V.back_card(tricky, false)
+	local parts = combine_parts(card)
+	check(parts ~= nil and parts.w == 32 and parts.h == 16 and parts.x == 16 and parts.y == 0,
+		"B a 32 x 16 combine, the image at 16,0")
+	eq(parts and parts.image, tricky, "B the escaped image reads back exactly")
+	check(not card:sub(#"[combine:32x16:16,0=" + 1):find("[^\\][%^:]"), "B every ^ and : escaped")
+	eq(combine_parts(V.back_card("a\\b.png", true)).image, "a\\b.png", "B a backslash escaped too")
+end
+
+------------------------------------------------------------------------------
 -- S. The Scout's back card through the poll.
 ------------------------------------------------------------------------------
 local SCOUT
@@ -460,10 +507,12 @@ do
 	local sword = gear_stack(grug_gear.weapon_item("sword", 3), nil, nil, true)
 	equip(scout, "grug_weapon", bow)
 	equip(scout, "grug_offhand", sword)
-	local bow_image = bow:get_meta():get_string("inventory_image")
-	local sword_image = sword:get_meta():get_string("inventory_image")
-	check(has(bow_image, "_ench.png") and has(sword_image, grug_gear.BROKEN_MODIFIER),
+	local bow_raw = bow:get_meta():get_string("inventory_image")
+	local sword_raw = sword:get_meta():get_string("inventory_image")
+	check(has(bow_raw, "_ench.png") and has(sword_raw, grug_gear.BROKEN_MODIFIER),
 		"S the stacks carry their own images (enchanted bow, broken sword)")
+	-- No cloak: the body's card, the right half.
+	local bow_image, sword_image = V.back_card(bow_raw, false), V.back_card(sword_raw, false)
 	eq(list_of(scout)[6], bow_image, "S nothing held: the bow on the back, as its stack shows it")
 	local steps = {
 		{"test:bow_skill", sword_image, "a bow skill: the sword on the back"},
@@ -502,6 +551,23 @@ do
 	equip(scout, "grug_offhand", ItemStack(""))
 	eq(list_of(scout)[6], V.BACK_NONE, "S no blade: an empty card")
 	equip(scout, "grug_offhand", sword)
+	-- A cloak moves the card to the cloak's half, and back without it.
+	cloak_of[scout] = CLOAK
+	local before_cloak = scout.writes
+	V.apply(scout)
+	eq(list_of(scout)[6], V.back_card(sword_raw, true), "S a cloak: the card on the cloak (left half)")
+	eq(scout.writes, before_cloak + 1, "S a cloak: one rewrite")
+	poll()
+	eq(scout.writes, before_cloak + 1, "S a cloak: the next poll writes nothing")
+	scout._wielded = ItemStack("test:strike")
+	poll()
+	eq(list_of(scout)[6], V.back_card(bow_raw, true), "S a cloak and a melee skill: the bow, left")
+	cloak_of[scout] = nil
+	V.apply(scout)
+	eq(list_of(scout)[6], V.back_card(bow_raw, false), "S the cloak off: the body's card (right half)")
+	eq(scout.writes, before_cloak + 3, "S the cloak off: one rewrite")
+	scout._wielded = ItemStack("test:bow_skill")
+	poll()
 	-- Not a Scout: the poll never writes.
 	local wade = new_player("wade", "human", "warrior")
 	connected[2] = wade
@@ -573,8 +639,11 @@ do
 	-- The Scout: the bow on the back (no skill is held in the tab).
 	SCOUT._wielded = ItemStack("test:bow_skill")
 	local scout_preview = V.preview(SCOUT)
-	eq(scout_preview.textures[6], slot_copy(SCOUT, "grug_weapon"):get_meta():get_string("inventory_image"),
-		"P the Scout's bow on the back")
+	local bow_raw = slot_copy(SCOUT, "grug_weapon"):get_meta():get_string("inventory_image")
+	eq(scout_preview.textures[6], V.back_card(bow_raw, false), "P the Scout's bow on the back (no cloak)")
+	cloak_of[SCOUT] = CLOAK
+	eq(V.preview(SCOUT).textures[6], V.back_card(bow_raw, true), "P with a cloak: on the cloak's card")
+	cloak_of[SCOUT] = nil
 	set_look(nil)
 	local off = V.preview(pat)
 	eq(table.concat(off.textures, ",", 5), "blank.png,blank.png,blank.png", "P the look off: blank")
@@ -676,6 +745,12 @@ do
 		wear_set(p, "leather", 5)
 		equip(p, "grug_weapon", gear_stack(grug_gear.weapon_item("bow", 6), pair[1], pair[2]))
 		equip(p, "grug_offhand", gear_stack(grug_gear.weapon_item("sword", 6), pair[1], pair[2], true))
+	end))
+	row("Scout worst: broken enchanted bow, cloak", dress("m_scout_worst", "scout", function(p)
+		wear_set(p, "leather", 6, pair[1], pair[2], true)
+		equip(p, "grug_weapon", gear_stack(grug_gear.weapon_item("bow", 6), pair[1], pair[2], true))
+		equip(p, "grug_offhand", gear_stack(grug_gear.weapon_item("sword", 6), pair[1], pair[2], true))
+		cloak_of[p] = "grug_achievements_cloak_wyvernslayer_3.png"
 	end))
 	local npc = V.compose({race = "troll", armor_line = "metal", bracket = 6})
 	print(("armored NPC T6: %d bytes (0.54.1: %d)"):format(lengths(npc.textures),

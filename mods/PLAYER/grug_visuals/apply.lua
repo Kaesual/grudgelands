@@ -481,7 +481,9 @@ end
 --
 -- THE SCOUT'S BACK CARD (Round 55, offhand-format.md §1, §3.3; the user's
 -- rulings in round55-plan.md §2): the Scout's weapon that is NOT in the
--- hand, its inventory image on a flat card on the back. A bow skill (an
+-- hand, its inventory image on a flat card on the back: on the cloak's card
+-- when a cloak is worn, else on the body's (grug_visuals.back_card, the two
+-- halves of the back slot). A bow skill (an
 -- ability on the "weapon" slot, the Ranged bow) holds the bow, so the Melee
 -- blade goes on the back; Strike and every other melee skill hold the blade,
 -- and anything else held (a pickaxe, a torch, nothing) leaves the bow on the
@@ -497,7 +499,7 @@ local function back_slot(ability_slot)
 	return ability_slot == "weapon" and "offhand" or "weapon"
 end
 
--- The card's texture: the item in hand slot `slot` as its stack's inventory
+-- The card's image: the item in hand slot `slot` as its stack's inventory
 -- image shows it (enchant colours and cracks are in the stack's own meta),
 -- BACK_NONE for an empty slot.
 local function back_image(player, slot)
@@ -515,8 +517,9 @@ end
 
 -- Writes the player model's texture list when the composed part (look,
 -- armor, offhand, cloak and wings: `entry.base` under `entry.base_key`) or
--- the back card changed. player_api keeps the table it is given, so every
--- write is a new one; the poll below swaps the back card alone through here.
+-- the back card's image changed; a cloak taken on or off moves the card to
+-- the other half. player_api keeps the table it is given, so every write is
+-- a new one; the poll below swaps the back card alone through here.
 local function write_textures(player, entry, back)
 	if entry.written_key == entry.base_key and entry.back == back then
 		return
@@ -527,7 +530,8 @@ local function write_textures(player, entry, back)
 	-- The weapon card stays empty in the world (the wield entity holds the
 	-- weapon).
 	player_api.set_textures(player, {base.skin, base.cloak, base.armor,
-		grug_visuals.WEAPON_NONE, base.offhand, back, base.wings})
+		grug_visuals.WEAPON_NONE, base.offhand,
+		grug_visuals.back_card(back, base.cloak ~= grug_visuals.CLOAK_NONE), base.wings})
 end
 
 -- Compose and apply. Cheap on a no-op: one compose (cached) and a few
@@ -601,7 +605,8 @@ end
 -- current look with the main hand's cosmetic weapon on the weapon card (its
 -- image as its stack shows it, enchanted or broken; empty without one).
 -- With the offhand look on, the offhand item, the cloak's wings and, for a
--- Scout, the bow on the back (no skill is held in the tab). Composed from
+-- Scout, the bow on the back (no skill is held in the tab; on the cloak's
+-- card when a cloak is worn). Composed from
 -- the same state `apply` reads, not from the live object, so it never
 -- depends on the order of the refresh hooks. A fresh table.
 --
@@ -619,10 +624,11 @@ function grug_visuals.preview(player)
 	end
 	local weapon = grug_inventory.get_cosmetic_weapon(player)
 	local image = weapon and grug_visuals.hand_image(weapon) or ""
+	cloak = cloak or grug_visuals.CLOAK_NONE
 	local back = visuals_on and grug_classes.get_class(player) == BACK_CARD_CLASS and
-		back_image(player, back_slot(nil)) or grug_visuals.BACK_NONE
-	return {mesh = grug_visuals.PLAYER_MODEL, textures = {result.skin,
-		cloak or grug_visuals.CLOAK_NONE, result.armor,
+		grug_visuals.back_card(back_image(player, back_slot(nil)),
+			cloak ~= grug_visuals.CLOAK_NONE) or grug_visuals.BACK_NONE
+	return {mesh = grug_visuals.PLAYER_MODEL, textures = {result.skin, cloak, result.armor,
 		image ~= "" and image or grug_visuals.WEAPON_NONE, result.offhand, back,
 		visuals_on and wings or grug_visuals.WINGS_NONE}}
 end
