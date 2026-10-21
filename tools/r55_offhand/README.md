@@ -35,6 +35,11 @@ python3 tools/r55_offhand/test_bake.py                  # the tool's test on tes
 python3 tools/r55_offhand/make_broken_art.py [--check]  # rewrite (check) test_art_broken/ from test_art/
 ```
 
+`params.json` is retuned (and replaced at the finish), so the test pins no position: its samples follow
+`make_test_art.py`'s rules on the live atlas, and `make_broken_art.py` places its errors and derives the
+expected messages (`expected()`) from the live parameters. After a retune, rerun `make_test_art.py`, then
+`make_broken_art.py`.
+
 Until the finish step there is no picked art: the default `--art` fails with a clear message, and the test art is
 baked only into temp directories or a test-only probe mod (never into `mods/`).
 
@@ -48,7 +53,7 @@ baked only into temp directories or a test-only probe mod (never into `mods/`).
   `tools/r54_armor/data/palettes.json` with the art's optional `palettes.json` laid over by name.
 - **Validation** before anything is written; every violation is listed and the exit code is 1: `tiers.json` (both
   items, T1–T6, a known palette, variants, the icon for an icon bake), unknown or missing files, sizes (an
-  optional `wings_<id>.png` is checked for its 16 × 32 size only and not baked), the reference palette, alpha 0
+  optional `cloak_<id>.png`, 32 × 32, and `wings_<id>.png`, 16 × 32, are checked for their size only and not baked), the reference palette, alpha 0
   or 255, transparent shield texels the outline contains or crosses (`offhand.shield_texels`: the rim and the
   slanted edges sample them) or book face texels, and per item and tier at least 6 zone A and 3 zone B texels
   (the shield's front; the book's `cover_f` front, `cover_b` back, `pages_f` back and `pages_b` front). Warnings
