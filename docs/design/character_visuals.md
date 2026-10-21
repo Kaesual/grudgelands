@@ -423,6 +423,7 @@ are kept per character, and so is the choice.
   | Every Name Accounted For | complete The Accord's main questline (`quest:accord_main_final`); cloak Mantle of the Unburnt Roll | 1 |
   | Our Oaths Are Ours | complete The Throng's main questline (`quest:throng_main_final`); cloak The Unbought Banner | 1 |
   | The Last Claim Denied | defeat the rift boss, Isquarre the Tithe-Eater (`boss:rift`); cloak Mantle of the Broken Due | 1 |
+  | Supporter | granted by an admin (manual, below); cloak Supporter Cloak, with wings | 1 |
 
   "Wild animals" are every animal mob, critters and hostile beasts included,
   but no humanoid, construct, spirit or slime, and not the dragons or their

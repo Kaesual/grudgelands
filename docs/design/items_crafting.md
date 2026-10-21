@@ -1238,6 +1238,19 @@ files and their enchant masks; the look is
 [character_visuals.md](character_visuals.md) §3, the format
 [armor-format.md](../technical/armor-format.md).
 
+**Shield and spellbook art (Round 55):** the six shields and six spellbooks
+are original art painted for the project by GPT-6 Astra in the offhand
+contract's reference palette and picked by the user per tier from two
+proposals (2026-10-21): one icon per tier for each, a shield shape and an
+open book worn in the left hand, each tier with its own palette and no
+runtime tint (the Iron and Embersteel shields and the spellbooks lost
+their registration tints). `tools/r55_offhand/bake.py` turns the art in
+`tools/r55_art/` into the icons, the worn layers and their enchant masks;
+an enchanted or broken stack from before 0.55.0 takes the new icon when
+its holder next logs in (a stack in a chest once it is carried again). The look is
+[character_visuals.md](character_visuals.md) §4, the format
+[offhand-format.md](../technical/offhand-format.md).
+
 Each of the six gems has exactly four visual roles: natural ore node,
 Rough Gem, Cut Gem and polished non-luminous storage block — **24 roles total**
 before equipment overlays. Signature woods receive a full tree/build palette
