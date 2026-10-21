@@ -155,7 +155,8 @@ tex(n) = floor(n + 0.5), at least 1. A face left out (§3.2) has no rectangle.
 **Shield UVs.** The front samples its rectangle by orthographic projection onto the shield's x–y plane:
 column = (x + W) / 2W across, row = (T − y) / H down (column 0 at −x, as seen from the front). The back is
 seen from behind: column = (W − x) / 2W. The **rim** takes the front face's border texels: both ends of a rim
-quad use the front UV of their outline point (as the cloak's edges). The boss uses the front's projection. Each
+quad use the front UV of their outline point (as the cloak's edges), so it samples the texels the outline
+crosses, which §6 therefore requires opaque. The boss uses the front's projection. Each
 size copy samples its own sheet, so the copy of a tier's size step shows and the others stay transparent.
 
 **Book UVs.** Each box face samples its face rectangle in the orientation of armor-format.md §4
@@ -183,6 +184,7 @@ The painter's files, in one art directory (the test set: `tools/r55_offhand/test
 | `shield/<variant>.png` | a shield sheet: front left, back right | 2 · tex(width) × tex(height) = 20 × 13 |
 | `book/<box>_<variant>.png` | a book box sheet, `box` as in §3.2 | per box (`data/atlas.json` `rect`) |
 | `icons/shield_<variant>.png`, `icons/book_<variant>.png` | inventory icons | 16 × 16 |
+| `wings_<id>.png` (optional) | a wing texture for a cloak (below); checked for size only, not baked | 16 × 32 |
 | `tiers.json` | per item and tier: palette, variant(s), icon | |
 | `palettes.json` (optional) | proposed tier palettes, laid over the armor's `data/palettes.json` by name | |
 
@@ -196,10 +198,11 @@ is bracket n, whose item is `grug_gear:shield_<grade>` or `grug_gear:spellbook_<
 
 - **Palette and zones** as armor-format.md §6: the 13 reference colours plus full transparency, alpha 0 or
   255; zone A (A_LIGHT, A_DARK) takes the prefix colour, zone B (B_LIGHT, B_DARK) the suffix colour. Each
-  item shows, seen from where it faces (the shield's front, the book's covers and pages), at least 6 zone A and
-  3 zone B texels.
-- **Opaque:** every texel inside the shield outline (front and back) and every texel of a book face is opaque.
-  Texels outside the outline are never sampled; leave them transparent. Shape comes from the geometry and the
+  item shows at least 6 zone A and 3 zone B texels on the faces it turns outwards: the shield's front; the
+  book's `cover_f` front, `cover_b` back, `pages_f` back and `pages_b` front faces.
+- **Opaque:** every shield texel (front and back) that the outline contains **or crosses** (any overlap with
+  positive area; the rim and the slanted edges sample those) and every texel of a book face is opaque. Texels
+  wholly outside the outline are never sampled; leave them transparent. Shape comes from the geometry and the
   paint, not from cut-outs.
 - **Orientation:** the shield front as seen from the front, its back as seen from behind; book faces as
   armor-format.md §4 in the closed frame (the front cover's outside is `cover_f`'s front face, the back
