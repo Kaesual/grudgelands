@@ -408,13 +408,14 @@ class Art:
 
 
 def back_texture(img, on_cloak):
-    """The 32 x 16 back texture (format doc §5): the image in the left half
-    (the cloak card) when a cloak is worn, else in the right half (the body card)."""
+    """The 32 x 16 back texture (format doc §5): the image, turned 180 degrees
+    as the game turns it (grip up), in the left half (the cloak card) when a
+    cloak is worn, else in the right half (the body card)."""
     out = Image.new("RGBA", O.BACK_SIZE, (0, 0, 0, 0))
     im = img.convert("RGBA")
     if im.size != (16, 16):
         im = im.resize((16, 16), Image.Resampling.NEAREST)
-    out.paste(im, (0 if on_cloak else 16, 0))
+    out.paste(im.rotate(180), (0 if on_cloak else 16, 0))
     return out
 
 
