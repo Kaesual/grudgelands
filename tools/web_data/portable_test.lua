@@ -155,9 +155,9 @@ local model = data.model
 check(exists(model.b3d), "M the .b3d exists")
 check(exists(model.gltf), "M the .glb exists (lane WG)")
 check(is_int(model.fps) and model.fps > 0, "M frame rate")
-check(#model.textures == 4 and model.textures[1] == "body" and model.textures[2] == "cloak" and
-	model.textures[3] == "armor" and model.textures[4] == "weapon",
-	"M texture slots body, cloak, armor, weapon")
+-- Round 55 added the offhand look's three slots (lane WEB documents them).
+check(table.concat(model.textures, ",") == "body,cloak,armor,weapon,offhand,back,wings",
+	"M texture slots body, cloak, armor, weapon, offhand, back, wings")
 for _, name in ipairs({"stand", "walk"}) do
 	local range = model.animations[name]
 	check(range and is_int(range.start) and is_int(range["end"]) and

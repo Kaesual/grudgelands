@@ -15,7 +15,8 @@
 -- image as the extruded mesh, so a Bronze Sword arrives drawn bronze and no
 -- texture of ours is involved at all.
 --
--- The offhand is deliberately absent (contract §1, "offhand later").
+-- The offhand item is no wield entity: since Round 55 a shield or spellbook
+-- is part of the model (its offhand slot, compose.lua), like the armor.
 --
 local WIELD_ENTITY = "grug_visuals:wield"
 
@@ -235,8 +236,9 @@ local IRRELEVANT_LIST = {
 	grug_trinket2 = true,
 }
 
--- player name -> {key, appearance_key, stature, _grug_wield_obj,
--- _grug_wield_item, _grug_wield_stature, _grug_wield_pose, _grug_wield_scale}
+-- player name -> {base_key, base, written_key, back, back_card,
+-- appearance_key, stature, _grug_wield_obj, _grug_wield_item,
+-- _grug_wield_stature, _grug_wield_pose, _grug_wield_scale}
 local players = {}
 
 local function player_entry(name)
@@ -291,9 +293,11 @@ end
 -- `grug_visuals_character.b3d`: player_api's `character.b3d` with a cloak box
 -- on its own bone, the armor boxes and the weapon card appended, each part
 -- its own mesh buffer (tools/r33_c3/gen_cloak_model.py, Round 54's armor in
--- docs/technical/armor-format.md), so its texture list is {skin, cloak,
--- armor, weapon}; the weapon card is empty in the world, where the wield
--- entity shows the weapon. Armored NPCs wear NPC_MODEL below, everybody else
+-- docs/technical/armor-format.md, Round 55's offhand parts in
+-- docs/technical/offhand-format.md), so its texture list is {skin, cloak,
+-- armor, weapon, offhand, back, wings}; the weapon card is empty in the
+-- world, where the wield entity shows the weapon, and the last three are
+-- blank while the offhand look is off. Armored NPCs wear NPC_MODEL below, everybody else
 -- `character.b3d`. Same animations, boxes and eye height as the base model,
 -- read from player_api's own registration, plus the pose clips.
 --
@@ -358,7 +362,8 @@ do
 	player_api.register_model(grug_visuals.PLAYER_MODEL, {
 		animation_speed = base.animation_speed,
 		textures = {base.textures[1], grug_visuals.CLOAK_NONE, grug_visuals.ARMOR_NONE,
-			grug_visuals.WEAPON_NONE},
+			grug_visuals.WEAPON_NONE, grug_visuals.OFFHAND_NONE, grug_visuals.BACK_NONE,
+			grug_visuals.WINGS_NONE},
 		animations = animations,
 		collisionbox = table.copy(base.collisionbox),
 		stepheight = base.stepheight,
@@ -368,16 +373,18 @@ end
 
 -- The model of an ARMORED NPC (a visual spec with `armor_line`: guards,
 -- captains, commanders, General bodyguards, bandits and their kin): the
--- player model's body and armor boxes without the cloak, texture list {skin,
--- armor, weapon} (compose's `textures` for such a spec). The NPC definitions
+-- player model's body, armor boxes and offhand parts without the cloak,
+-- texture list {skin, armor, weapon, offhand, back} (compose's `textures` for
+-- such a spec). The NPC definitions
 -- name it as their mesh, so it survives every reactivation; NPC animation
 -- tables use only character.b3d's frames, which it keeps.
 grug_visuals.NPC_MODEL = "grug_visuals_npc.b3d"
 
 -- The one source of the cloak a player wears: a function(player) -> texture
--- or nil, and the selected cloak's id (grug_achievements installs it). Read on
--- every apply; the texture is part of the redraw key below, the id part of the
--- stored appearance (appearance.lua).
+-- or nil, the selected cloak's id and, since Round 55, the cloak's wing
+-- texture or nil (offhand-format.md §6; grug_achievements installs it). Read
+-- on every apply; the textures are part of the redraw key below, the id and
+-- the textures part of the stored appearance (appearance.lua).
 local cloak_source = nil
 
 function grug_visuals.register_cloak_source(fn)
@@ -404,6 +411,16 @@ function grug_visuals.player_spec(player)
 	end
 	-- Cosmetic inventory reads preserve broken equipment independently of combat.
 	local weapon = grug_inventory.get_cosmetic_weapon(player)
+	local offhand = grug_inventory.get_cosmetic_offhand(player)
+	-- The offhand item drawn in the model (compose's offhand fields), read
+	-- only while the offhand look is on.
+	local offhand_item, offhand_broken, offhand_enchant
+	if grug_visuals.OFFHAND_VISUALS == true and offhand then
+		offhand_item = offhand:get_name()
+		offhand_broken = grug_core.equipment_is_broken(offhand)
+		offhand_enchant = grug_visuals.offhand_enchant(offhand_item,
+			grug_visuals.affix_pair(items and items.get_affixes(offhand) or nil))
+	end
 	return {
 		race = grug_classes.get_race(player),
 		look = grug_visuals.get_look(player),
@@ -411,12 +428,14 @@ function grug_visuals.player_spec(player)
 		-- Enchant colours on the worn pieces (enchant.lua; nil when plain).
 		armor_enchant = grug_visuals.armor_enchants(worn),
 		weapon = weapon and weapon:get_name() or nil,
+		offhand_item = offhand_item, offhand_broken = offhand_broken,
+		offhand_enchant = offhand_enchant,
 		-- For the stored appearance only (appearance.lua); compose reads none
 		-- of them: the worn pieces with their affixes and both hand-slot
 		-- stacks, never the wielded item.
 		worn = worn,
 		mainhand = weapon,
-		offhand = grug_inventory.get_cosmetic_offhand(player),
+		offhand = offhand,
 	}
 end
 
@@ -438,6 +457,9 @@ end
 -- source of melee damage (inventory_equipment.md §2), but it is not what the
 -- character is DOING, and a player who selects a torch or a shovel expects to
 -- see it.
+--
+-- The second value is the hand slot of a held ability ("weapon", "offhand"
+-- or "melee"), nil for anything else: the Scout's back card follows it.
 local ABILITY_GROUP = "grug_ability"
 
 local function shown_item(player)
@@ -449,10 +471,62 @@ local function shown_item(player)
 	if core.get_item_group(name, ABILITY_GROUP) > 0 then
 		-- The cosmetic copy retains broken gear even while combat excludes it.
 		local def = core.registered_items[name]
-		return grug_inventory.get_cosmetic_hand(player,
-			def and def._grug_ability_slot or "weapon")
+		local slot = def and def._grug_ability_slot or "weapon"
+		return grug_inventory.get_cosmetic_hand(player, slot), slot
 	end
 	return wielded
+end
+
+--
+-- THE SCOUT'S BACK CARD (Round 55, offhand-format.md §1, §3.3; the user's
+-- rulings in round55-plan.md §2): the Scout's weapon that is NOT in the
+-- hand, its inventory image on a flat card on the back. A bow skill (an
+-- ability on the "weapon" slot, the Ranged bow) holds the bow, so the Melee
+-- blade goes on the back; Strike and every other melee skill hold the blade,
+-- and anything else held (a pickaxe, a torch, nothing) leaves the bow on the
+-- back. Only Scouts, only with the offhand look on. Not stored in the
+-- appearance, which would change on every hotbar swap: readers derive it
+-- the same way, and the Character tab shows the bow on the back.
+--
+local BACK_CARD_CLASS = "scout"
+
+-- The hand slot whose item goes on the back, from the held ability's slot
+-- (shown_item's second value; nil when no ability is held).
+local function back_slot(ability_slot)
+	return ability_slot == "weapon" and "offhand" or "weapon"
+end
+
+-- The card's texture: the item in hand slot `slot` as its stack's inventory
+-- image shows it (enchant colours and cracks are in the stack's own meta),
+-- BACK_NONE for an empty slot.
+local function back_image(player, slot)
+	local stack = grug_inventory.get_cosmetic_hand(player, slot)
+	if not stack or stack:is_empty() then
+		return grug_visuals.BACK_NONE
+	end
+	local image = stack:get_meta():get_string("inventory_image")
+	if image == "" then
+		local def = core.registered_items[stack:get_name()]
+		image = def and type(def.inventory_image) == "string" and def.inventory_image or ""
+	end
+	return image ~= "" and image or grug_visuals.BACK_NONE
+end
+
+-- Writes the player model's texture list when the composed part (look,
+-- armor, offhand, cloak and wings: `entry.base` under `entry.base_key`) or
+-- the back card changed. player_api keeps the table it is given, so every
+-- write is a new one; the poll below swaps the back card alone through here.
+local function write_textures(player, entry, back)
+	if entry.written_key == entry.base_key and entry.back == back then
+		return
+	end
+	entry.written_key = entry.base_key
+	entry.back = back
+	local base = entry.base
+	-- The weapon card stays empty in the world (the wield entity holds the
+	-- weapon).
+	player_api.set_textures(player, {base.skin, base.cloak, base.armor,
+		grug_visuals.WEAPON_NONE, base.offhand, back, base.wings})
 end
 
 -- Compose and apply. Cheap on a no-op: one compose (cached) and one compare.
@@ -466,21 +540,27 @@ function grug_visuals.apply(player)
 	local result = grug_visuals.compose(spec)
 	-- Remembered for the poll below, which has no composed result of its own.
 	entry.stature = result.stature
-	local cloak, cloak_id
+	local visuals_on = grug_visuals.OFFHAND_VISUALS == true
+	local cloak, cloak_id, wings
 	if cloak_source then
-		cloak, cloak_id = cloak_source(player)
+		cloak, cloak_id, wings = cloak_source(player)
 	end
 	cloak = cloak or grug_visuals.CLOAK_NONE
-	local key = result.key .. ";" .. cloak
-	if entry.key ~= key then
-		entry.key = key
+	wings = visuals_on and wings or grug_visuals.WINGS_NONE
+	local base_key = result.key .. ";" .. cloak .. ";" .. wings
+	if entry.base_key ~= base_key then
+		entry.base_key = base_key
 		-- player_api owns the texture list of the player model; going through
-		-- it is what keeps its own bookkeeping correct. A new table: the
-		-- composed one is compose's read-only cache entry. The weapon card
-		-- stays empty in the world (the wield entity holds the weapon).
-		player_api.set_textures(player, {result.skin, cloak, result.armor,
-			grug_visuals.WEAPON_NONE})
+		-- it is what keeps its own bookkeeping correct (write_textures). The
+		-- composed table is compose's read-only cache entry, so the parts are
+		-- kept here.
+		entry.base = {skin = result.skin, cloak = cloak, armor = result.armor,
+			offhand = result.offhand, wings = wings}
 	end
+	local shown, ability_slot = shown_item(player)
+	entry.back_card = visuals_on and grug_classes.get_class(player) == BACK_CARD_CLASS
+	write_textures(player, entry, entry.back_card and
+		back_image(player, back_slot(ability_slot)) or grug_visuals.BACK_NONE)
 	if result.visual_size then
 		-- VISUAL ONLY. collisionbox and eye_height stay with player_api's
 		-- model/animation classes, which is why a tall elf still fits through a
@@ -498,39 +578,51 @@ function grug_visuals.apply(player)
 	-- covers what the drawn skin does not (the offhand, the hand items'
 	-- enchants and broken state, the cloak id). The first pass after a join
 	-- builds it and writes only if the stored value differs.
-	local appearance_key = grug_visuals.appearance_key(spec, result.key, cloak, cloak_id)
+	local appearance_key = grug_visuals.appearance_key(spec, result.key, cloak, cloak_id,
+		wings)
 	if entry.appearance_key ~= appearance_key then
 		entry.appearance_key = appearance_key
 		local json = grug_visuals.appearance_json(
-			grug_visuals.appearance(spec, result, cloak, cloak_id))
+			grug_visuals.appearance(spec, result, cloak, cloak_id, wings))
 		local meta = player:get_meta()
 		if meta:get_string(grug_visuals.APPEARANCE_META) ~= json then
 			meta:set_string(grug_visuals.APPEARANCE_META, json)
 		end
 	end
-	sync_wield(entry, player, shown_item(player), result.stature)
+	sync_wield(entry, player, shown, result.stature)
 	return result
 end
 
 --
 -- THE PREVIEW SEAM (round54-plan.md §3): what the inventory's Character tab
--- draws in its model[] -- the player model and its four textures, the
+-- draws in its model[] -- the player model and its seven textures, the
 -- current look with the main hand's cosmetic weapon on the weapon card (its
 -- image as its stack shows it, enchanted or broken; empty without one).
--- Composed from the same state `apply` reads, not from the live object, so
--- it never depends on the order of the refresh hooks. A fresh table.
+-- With the offhand look on, the offhand item, the cloak's wings and, for a
+-- Scout, the bow on the back (no skill is held in the tab). Composed from
+-- the same state `apply` reads, not from the live object, so it never
+-- depends on the order of the refresh hooks. A fresh table.
 --
 --     grug_visuals.preview(player)
---     -> {mesh = PLAYER_MODEL, textures = {skin, cloak, armor, weapon}}
+--     -> {mesh = PLAYER_MODEL, textures = {skin, cloak, armor, weapon,
+--         offhand, back, wings}}
 --
 function grug_visuals.preview(player)
 	local result = grug_visuals.compose(grug_visuals.player_spec(player))
-	local cloak = cloak_source and cloak_source(player) or nil
+	local visuals_on = grug_visuals.OFFHAND_VISUALS == true
+	local cloak, wings
+	if cloak_source then
+		local _
+		cloak, _, wings = cloak_source(player)
+	end
 	local weapon = grug_inventory.get_cosmetic_weapon(player)
 	local image = weapon and grug_visuals.hand_image(weapon) or ""
+	local back = visuals_on and grug_classes.get_class(player) == BACK_CARD_CLASS and
+		back_image(player, back_slot(nil)) or grug_visuals.BACK_NONE
 	return {mesh = grug_visuals.PLAYER_MODEL, textures = {result.skin,
 		cloak or grug_visuals.CLOAK_NONE, result.armor,
-		image ~= "" and image or grug_visuals.WEAPON_NONE}}
+		image ~= "" and image or grug_visuals.WEAPON_NONE, result.offhand, back,
+		visuals_on and wings or grug_visuals.WINGS_NONE}}
 end
 
 --
@@ -544,7 +636,10 @@ end
 -- One second per player, throttled the AGENTS.md way. The work per player is
 -- one `get_wielded_item`, one group lookup and one string compare; everything
 -- expensive (compose, the texture list, the entity write) is behind the
--- unchanged-item compare inside `sync_wield`.
+-- unchanged-item compare inside `sync_wield`. A Scout with the offhand look
+-- on adds one cosmetic hand read and one compare for the back card; the
+-- texture list is rewritten only when the card changes (a hotbar swap
+-- between a bow skill and anything else).
 local WIELD_POLL = 1.0
 local poll_accumulator = 0
 
@@ -559,7 +654,11 @@ core.register_globalstep(function(dtime)
 		if entry then
 			-- `entry.stature` is written by apply(); before the first apply
 			-- there is no entry at all, so this cannot race the join hook.
-			sync_wield(entry, player, shown_item(player), entry.stature)
+			local shown, ability_slot = shown_item(player)
+			sync_wield(entry, player, shown, entry.stature)
+			if entry.back_card then
+				write_textures(player, entry, back_image(player, back_slot(ability_slot)))
+			end
 		end
 	end
 end)

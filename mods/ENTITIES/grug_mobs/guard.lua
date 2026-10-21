@@ -74,8 +74,8 @@
 -- engine/MTG player model's body and frames with the armor boxes, referenced
 -- BY NAME — Luanti's media namespace is flat, so a mob in grug_mobs may point
 -- at a mesh another mod ships (wp6_model_notes §5). Its texture list is skin,
--- armor, weapon card (grug_visuals.NPC_MODEL). Same geometry/animation block
--- as bandit.lua.
+-- armor, weapon card, offhand, back (grug_visuals.NPC_MODEL; the last two
+-- blank since Round 55). Same geometry/animation block as bandit.lua.
 --
 
 -- world.md §1: "elite city watch (60+)". The auto-promotion runs on the
@@ -225,7 +225,7 @@ local function guard_def(faction, description, texture)
 		-- so every activation has it (mobs_redo restores the textures from
 		-- staticdata, never the mesh).
 		mesh = "grug_visuals_npc.b3d",
-		textures = {{texture, "blank.png", "blank.png"}},
+		textures = {{texture, "blank.png", "blank.png", "blank.png", "blank.png"}},
 		-- The player's own geometry (wp6_model_notes §5): the mesh measures
 		-- 17.0 units = 1.70 nodes at size 1, which is the player collisionbox
 		-- height.

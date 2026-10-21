@@ -213,6 +213,9 @@ local function load_game(root)
 		end,
 		get_current_modname = function() return current end,
 		colorize = function(_, text) return text end,
+		-- grug_visuals/init.lua reads grug_offhand_visuals (Round 55): the
+		-- default, as on a server that never set it.
+		settings = {get_bool = function(_, _, default) return default end},
 		register_item = function(name, def) items[name] = def end,
 		register_tool = function(name, def) items[name] = def end,
 		register_craftitem = function(name, def) items[name] = def end,
@@ -429,7 +432,7 @@ function M.build(root)
 	-- The player model: the file, its texture slots and the two frame ranges.
 	local model_def = assert(player_api.registered_models[gv.PLAYER_MODEL],
 		"web_data: the player model is not registered")
-	assert(#model_def.textures == 4, "web_data: the player model has not four textures")
+	assert(#model_def.textures == 7, "web_data: the player model has not seven textures")
 	local b3d = MODS.grug_visuals .. "/models/" .. gv.PLAYER_MODEL
 	assert(exists(root .. "/" .. b3d), "web_data: missing " .. b3d)
 	local animations = {}
@@ -440,7 +443,7 @@ function M.build(root)
 	local model = {
 		b3d = b3d,
 		gltf = "tools/web_data/model/" .. gv.PLAYER_MODEL:gsub("%.b3d$", ".glb"),
-		textures = array({"body", "cloak", "armor", "weapon"}),
+		textures = array({"body", "cloak", "armor", "weapon", "offhand", "back", "wings"}),
 		fps = model_def.animation_speed,
 		animations = animations,
 	}

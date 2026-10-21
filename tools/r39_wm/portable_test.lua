@@ -17,11 +17,15 @@
 --      write when nothing changed (also across a rejoin); the wielded item
 --      never appears;
 --   G  the closed texture grammar: every body and armor atlas (every race
---      and look, bare and under the worst armour; every piece), every cloak
---      and every hand image (every item, plain, enchanted, broken) parses
---      under grug_visuals.APPEARANCE_TEXTURE, names only files in its
---      directories and stays within APPEARANCE_TEXTURE_MAX; the worst-case
---      JSON within APPEARANCE_JSON_MAX.
+--      and look, bare and under the worst armour; every piece), every cloak,
+--      every hand image (every item, plain, enchanted, broken) and, since
+--      Round 55, every offhand layer (every shield and spellbook with the
+--      offhand look on, plain, enchanted, broken) parses under
+--      grug_visuals.APPEARANCE_TEXTURE, names only files in its directories
+--      (the offhand layers' baked names, offhand-format.md §7, count as in
+--      grug_visuals/textures until the finish step bakes them) and stays
+--      within APPEARANCE_TEXTURE_MAX; the worst-case JSON (version 3, seven
+--      texture strings) within APPEARANCE_JSON_MAX.
 -- Prints the measured maxima and "R39 WM PORTABLE PASS checks=<n>", or the
 -- failures.
 
@@ -195,7 +199,7 @@ dofile(ROOT .. "/mods/ITEMS/grug_repair/service.lua")
 dofile(ROOT .. "/mods/ITEMS/grug_repair/presentation.lua")
 
 -- grug_achievements' pure rules on the real catalogue: the cloak source its
--- init.lua installs (texture and selected id).
+-- init.lua installs (texture, selected id and, since Round 55, the wings).
 local R = dofile(ROOT .. "/mods/PLAYER/grug_achievements/core.lua")
 local book = R.build(dofile(ROOT .. "/mods/PLAYER/grug_achievements/catalog.lua"))
 
@@ -240,11 +244,13 @@ grug_visuals.index_armor(registered)
 grug_visuals.register_cloak_source(function(player)
 	-- The body of grug_achievements' registration (checked against it below).
 	local meta = player:get_meta()
-	return R.cloak_texture(book, meta), R.selected(book, meta)
+	local id = R.selected(book, meta)
+	return R.cloak_texture(book, meta), id, book.cloak[id].wings
 end)
 check(read_file(ROOT .. "/mods/PLAYER/grug_achievements/init.lua"):find(
-	"return R.cloak_texture(book, meta), R.selected(book, meta)", 1, true) ~= nil,
-	"grug_achievements' cloak source returns the texture and the selected id")
+	"\tlocal id = R.selected(book, meta)\n\treturn R.cloak_texture(book, meta), id, book.cloak[id].wings",
+	1, true) ~= nil,
+	"grug_achievements' cloak source returns the texture, the selected id and the wings")
 
 current_mod = "grug_xp"
 grug_xp = nil
@@ -399,12 +405,25 @@ end
 ------------------------------------------------------------------------------
 local used_modifiers, used_files, max_depth_seen = {}, {}, 0
 local file_dir = {}
+-- The offhand layers and their masks (offhand-format.md §7) are baked into
+-- grug_visuals/textures by the Round 55 finish step; until then their
+-- contract names count as there.
+local PENDING_DIR = "mods/PLAYER/grug_visuals/textures"
+local pending = {}
+for bracket = 1, #grug_gear.MATERIALS do
+	for _, kind in ipairs({"shield", "book"}) do
+		local file = V.offhand_file(kind, bracket)
+		pending[file] = true
+		pending[file:sub(1, -5) .. "_ench.png"] = true
+	end
+end
 local function file_known(name)
 	if file_dir[name] == nil then
 		file_dir[name] = false
 		for _, dir in ipairs(TEX.dirs) do
 			if file_exists(ROOT .. "/" .. dir .. "/" .. name) then file_dir[name] = dir end
 		end
+		if not file_dir[name] and pending[name] then file_dir[name] = PENDING_DIR end
 	end
 	return file_dir[name]
 end
@@ -489,7 +508,7 @@ local function grammar_error(text)
 end
 
 -- One stored string: grammar and cap, longest per kind remembered.
-local longest = {body = "", cloak = "", hand = "", armor = ""}
+local longest = {body = "", cloak = "", hand = "", armor = "", offhand = "", wings = ""}
 local function texture_ok(kind, text, label)
 	local why = grammar_error(text)
 	if not check(why == nil, "G " .. label .. " parses: " .. tostring(why) .. " in " .. text) then
@@ -573,10 +592,14 @@ local function shape_ok(data, label)
 	check(type(data.cloak) == "string" and (data.cloak == "none" or book.cloak[data.cloak] ~= nil),
 		label .. " cloak id")
 	eq(data.visual_size.x, V.RACES[data.race].stature, label .. " visual size")
-	eq(count_keys(data.textures), 3, label .. " three textures")
+	eq(count_keys(data.textures), 5, label .. " five textures")
 	texture_ok("body", data.textures.body, label .. " body")
-	if data.textures.cloak ~= "none" then texture_ok("cloak", data.textures.cloak, label .. " cloak") end
-	if data.textures.armor ~= "none" then texture_ok("armor", data.textures.armor, label .. " armor") end
+	for _, kind in ipairs({"cloak", "armor", "offhand", "wings"}) do
+		check(type(data.textures[kind]) == "string", label .. " " .. kind .. " texture")
+		if data.textures[kind] ~= "none" then
+			texture_ok(kind, data.textures[kind], label .. " " .. kind)
+		end
+	end
 	for slot, entry in pairs(data.slots) do
 		local hand = slot == "mainhand" or slot == "offhand"
 		check(hand or slot == "head" or slot == "chest" or slot == "legs" or slot == "feet",
@@ -713,7 +736,8 @@ do
 	equip(fay, "grug_offhand", gear_stack("grug_gear:spellbook_iron", "max_mana_percent", "int"))
 	data = shape_ok(stored(fay), "A spellbook")
 	eq(data.slots.offhand.item, "grug_gear:spellbook_iron", "A spellbook stored")
-	check(data.slots.offhand.image:find("grug_gear_spellbook_ench.png", 1, true) ~= nil,
+	-- One icon per tier since Round 55, each with its mask.
+	check(data.slots.offhand.image:find("grug_gear_spellbook_iron_ench.png", 1, true) ~= nil,
 		"A the enchanted spellbook image")
 	before = writes.fay[META]
 	check(R.select(book, fay:get_meta(), "plain_grey"), "A a default cloak selectable")
@@ -785,9 +809,33 @@ for _, name in ipairs(hand_items) do
 	end
 end
 
--- Cloaks: every texture of the catalogue.
+-- Cloaks: every texture of the catalogue, and every wing texture (none has
+-- one yet: the longest cloak file stands in for the worst case below).
 for _, cloak in ipairs(book.cloaks) do
 	if cloak.texture then texture_ok("cloak", cloak.texture, "cloak " .. cloak.id) end
+	if cloak.wings then texture_ok("wings", cloak.wings, "wings " .. cloak.id) end
+end
+if longest.wings == "" then longest.wings = longest.cloak end
+
+-- The offhand layers (Round 55): every shield and spellbook, plain, every
+-- enchant pair, broken, with the offhand look on.
+do
+	V.OFFHAND_VISUALS = true
+	local count = 0
+	for name in pairs(V.offhand_appearance) do
+		for _, pair in ipairs(PAIRS) do
+			for _, broken in ipairs({false, true}) do
+				local layer = V.compose({race = "human", offhand_item = name, offhand_broken = broken,
+					offhand_enchant = V.offhand_enchant(name, pair[1], pair[2])}).offhand
+				texture_ok("offhand", layer, name .. " layer " .. tostring(pair[1]) .. "/" ..
+					tostring(pair[2]) .. (broken and " broken" or ""))
+				count = count + 1
+			end
+		end
+	end
+	V.OFFHAND_VISUALS = nil
+	for key in pairs(V.cache) do V.cache[key] = nil end
+	eq(count, 12 * #PAIRS * 2, "G every shield and spellbook layer checked")
 end
 
 -- Bodies. The worst piece per slot first (the longest string any item,
@@ -888,19 +936,22 @@ do
 	local json = V.appearance_json({v = V.APPEARANCE_VERSION, race = longest_race,
 		look = {tone = 10, hair = 10, style = 10, eyes = 10, feature = 10},
 		cloak = longest_cloak_id, visual_size = {x = 1.12, y = 1.12, z = 1.12},
-		textures = {body = longest.body, cloak = longest.cloak, armor = longest.armor},
+		textures = {body = longest.body, cloak = longest.cloak, armor = longest.armor,
+			offhand = longest.offhand, wings = longest.wings},
 		slots = slots})
 	local ok = pcall(json_decode, json)
 	check(ok, "G the worst-case JSON parses")
-	local textures = #longest.body + #longest.cloak + #longest.armor + 2 * #longest.hand
+	local textures = #longest.body + #longest.cloak + #longest.armor + 2 * #longest.hand +
+		#longest.offhand + #longest.wings
 	check(#json <= V.APPEARANCE_JSON_MAX, "G the worst-case JSON within APPEARANCE_JSON_MAX")
-	eq(V.APPEARANCE_JSON_MAX, 5 * V.APPEARANCE_TEXTURE_MAX + V.APPEARANCE_JSON_OVERHEAD,
-		"G APPEARANCE_JSON_MAX is five texture caps and the overhead")
+	eq(V.APPEARANCE_JSON_MAX, 7 * V.APPEARANCE_TEXTURE_MAX + V.APPEARANCE_JSON_OVERHEAD,
+		"G APPEARANCE_JSON_MAX is seven texture caps and the overhead")
 	check(#json - textures <= V.APPEARANCE_JSON_OVERHEAD,
 		"G the overhead within the fixed allowance")
-	print(("measured: body %d, armor %d, cloak %d, hand %d bytes (cap %d); JSON %d bytes, %d "
-		.. "outside the texture strings (cap %d); depth %d; %d bodies, %d hand items"):format(
-		#longest.body, #longest.armor, #longest.cloak, #longest.hand, V.APPEARANCE_TEXTURE_MAX, #json,
+	print(("measured: body %d, armor %d, cloak %d, hand %d, offhand %d, wings %d bytes (cap %d); "
+		.. "JSON %d bytes, %d outside the texture strings (cap %d); depth %d; %d bodies, %d hand items"):format(
+		#longest.body, #longest.armor, #longest.cloak, #longest.hand, #longest.offhand,
+		#longest.wings, V.APPEARANCE_TEXTURE_MAX, #json,
 		#json - textures, V.APPEARANCE_JSON_MAX, max_depth_seen, bodies, #hand_items))
 	local names = {}
 	for name in pairs(used_modifiers) do names[#names + 1] = name end

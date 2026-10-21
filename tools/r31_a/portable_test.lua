@@ -22,8 +22,8 @@
 --      string lengths;
 --   F. equal hitbox (§2.1.4): after player_api's model and grug_visuals'
 --      apply, every race has the same collision box, selection box and eye
---      height, and only the visual size differs; the player model's four
---      textures;
+--      height, and only the visual size differs; the player model's seven
+--      textures (four before Round 55);
 --   G. the stored look: set once, immutable, read back through player_spec.
 -- Prints "R31 A PORTABLE PASS checks=<n> worst=<length>" or the failures.
 
@@ -63,6 +63,8 @@ core = {
 	get_us_time = function() return 0 end,
 	get_connected_players = function() return {} end,
 	get_current_modname = function() return "grug_visuals" end,
+	-- grug_visuals/init.lua reads grug_offhand_visuals (Round 55): the default.
+	settings = {get_bool = function(_, _, default) return default end},
 	register_entity = function() end,
 	register_globalstep = function() end,
 	register_on_joinplayer = function(fn) callbacks.join[#callbacks.join + 1] = fn end,
@@ -440,10 +442,13 @@ do
 		"(grug_armor_metal_abyssal_steel_legs_skin.png)^(grug_armor_metal_abyssal_steel_feet_skin.png)"),
 		"the skin: the inner paint of chest, legs and feet")
 	check(not has(result.skin, "_head"), "no head layer on the skin")
-	eq(#result.textures, 3, "an armored NPC: skin, armor, weapon")
+	-- Round 55: the NPC model's offhand and back slots, blank.
+	eq(#result.textures, 5, "an armored NPC: skin, armor, weapon, offhand, back")
 	eq(result.textures[1], result.skin, "NPC list: the skin first")
 	eq(result.textures[2], result.armor, "NPC list: the armor second")
 	eq(result.textures[3], grug_visuals.WEAPON_NONE, "NPC list: an empty weapon card")
+	eq(result.textures[4] .. "," .. result.textures[5], "blank.png,blank.png",
+		"NPC list: empty offhand and back")
 	local plain = grug_visuals.compose({race = "human"})
 	eq(plain.armor, grug_visuals.ARMOR_NONE, "nothing worn: an empty armor texture")
 	eq(#plain.textures, 1, "an unarmored NPC: the skin alone")
@@ -639,10 +644,13 @@ for _, race_id in ipairs(races) do
 		race_id .. " visual size is its stature")
 	eq(props.mesh, grug_visuals.PLAYER_MODEL, race_id .. " wears the player model")
 	local list = props.textures or {}
-	eq(#list, 4, race_id .. " skin, cloak, armor and weapon")
+	-- Round 55: seven slots, the offhand, back and wings blank by default.
+	eq(#list, 7, race_id .. " skin, cloak, armor, weapon, offhand, back and wings")
 	eq(list[2], grug_visuals.CLOAK_NONE, race_id .. " no cloak")
 	eq(list[3], grug_visuals.ARMOR_NONE, race_id .. " no armor")
 	eq(list[4], grug_visuals.WEAPON_NONE, race_id .. " an empty weapon card")
+	eq(table.concat(list, ",", 5), "blank.png,blank.png,blank.png",
+		race_id .. " the offhand look's slots blank")
 end
 for _, race_id in ipairs(races) do
 	eq(boxes[race_id].collision, boxes.human.collision, race_id .. " collision box")

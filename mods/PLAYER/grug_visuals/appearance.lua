@@ -21,21 +21,28 @@ grug_visuals.APPEARANCE_META = "grug_visuals:appearance"
 -- 2 (Round 54): `textures.armor`, the armor atlas of the worn pieces, and
 -- `textures.body` is the skin under the armor boxes (a version 1 body carried
 -- the armor overlays). A stored version 1 value is rebuilt at the next join.
-grug_visuals.APPEARANCE_VERSION = 2
+-- 3 (Round 55): `textures.offhand`, the offhand slot (a shield's or
+-- spellbook's atlas layer), and `textures.wings`, the cloak's wing texture;
+-- both `none` when empty and while the offhand look is off. The Scout's
+-- back card is not stored (readers derive it: offhand-format.md §1). A
+-- stored version 2 value is rebuilt at the next join, as version 1 was.
+grug_visuals.APPEARANCE_VERSION = 3
 
--- Bytes per stored texture string (body, cloak, armor, either hand image).
--- The worst case tools/r39_wm measures -- every armour slot filled, enchanted
--- in both channels and broken, the longest look, the longest cloak and hand
--- image -- is 1,164 bytes (the body; the armor atlas 1,062, a hand image 268,
--- a cloak 44; Round 54); the cap leaves about three quarters again as much.
+-- Bytes per stored texture string (body, cloak, armor, offhand, wings, either
+-- hand image). The worst case tools/r39_wm measures -- every armour slot
+-- filled, enchanted in both channels and broken, the longest look, the
+-- longest cloak and hand image -- is 1,164 bytes (the body; the armor atlas
+-- 1,062, a hand image 268, a cloak 44; Round 54); the cap leaves about three
+-- quarters again as much.
 grug_visuals.APPEARANCE_TEXTURE_MAX = 2048
 
--- Bytes for the whole JSON value: five texture strings at the cap plus a fixed
--- overhead of 2,048 bytes for everything else (keys, ids, item names, the
--- look, the enchant ids). The measured upper bound -- the longest of every
--- part at once -- is 3,819 bytes, 1,013 of them outside the texture strings.
+-- Bytes for the whole JSON value: seven texture strings at the cap plus a
+-- fixed overhead of 2,048 bytes for everything else (keys, ids, item names,
+-- the look, the enchant ids). The measured upper bound -- the longest of
+-- every part at once -- is 3,819 bytes, 1,013 of them outside the texture
+-- strings (Round 54, five strings).
 grug_visuals.APPEARANCE_JSON_OVERHEAD = 2048
-grug_visuals.APPEARANCE_JSON_MAX = 5 * grug_visuals.APPEARANCE_TEXTURE_MAX +
+grug_visuals.APPEARANCE_JSON_MAX = 7 * grug_visuals.APPEARANCE_TEXTURE_MAX +
 	grug_visuals.APPEARANCE_JSON_OVERHEAD
 
 --
@@ -52,6 +59,9 @@ grug_visuals.APPEARANCE_JSON_MAX = 5 * grug_visuals.APPEARANCE_TEXTURE_MAX +
 -- texture, which no string names. Version 2 (Round 54) dropped `mask` and one
 -- level of nesting with the helmet's face window: the grammar is exactly
 -- what the current strings use (tools/r39_wm asserts both directions).
+-- Version 3 (Round 55) adds two strings under the same grammar: the offhand
+-- layer (its files in grug_visuals/textures, coloured and cracked as an
+-- armor layer) and the cloak's wings (a file in grug_achievements/textures).
 --
 grug_visuals.APPEARANCE_TEXTURE = {
 	max_depth = 3,
@@ -161,12 +171,14 @@ end
 
 -- THE KEY: everything the stored value depends on beyond compose's own key
 -- (which already covers race, look, the armour's line, tier, broken state
--- and colour layers) -- the cloak, the armour's item names and enchant ids,
--- and both hand slots. apply.lua compares it on every pass and builds the
--- JSON only when it changed. `spec` is player_spec's.
-function grug_visuals.appearance_key(spec, compose_key, cloak_texture, cloak_id)
+-- and colour layers, the offhand layer and the offhand look's setting) --
+-- the cloak and its wings, the armour's item names and enchant ids, and both
+-- hand slots. apply.lua compares it on every pass and builds the JSON only
+-- when it changed. `spec` is player_spec's.
+function grug_visuals.appearance_key(spec, compose_key, cloak_texture, cloak_id,
+		wings_texture)
 	local key = compose_key .. ";" .. tostring(cloak_texture) .. ";" ..
-		tostring(cloak_id)
+		tostring(cloak_id) .. ";" .. tostring(wings_texture)
 	local worn = spec.worn or {}
 	for _, slot in ipairs(grug_visuals.SLOTS) do
 		local piece = worn[slot]
@@ -183,8 +195,10 @@ end
 
 -- The appearance as a plain table, the JSON's shape. `result` is compose's
 -- for `spec`; `cloak_texture` nil or CLOAK_NONE and `cloak_id` nil both mean
--- no cloak; no armor worn is "none" too.
-function grug_visuals.appearance(spec, result, cloak_texture, cloak_id)
+-- no cloak; no armor worn is "none" too, and so are no offhand layer and no
+-- wings (`wings_texture` nil or WINGS_NONE; apply.lua passes WINGS_NONE
+-- while the offhand look is off).
+function grug_visuals.appearance(spec, result, cloak_texture, cloak_id, wings_texture)
 	-- The race the body is drawn as (compose's fallback for none or unknown).
 	local race = spec.race
 	if grug_visuals.RACES[race] == nil then
@@ -206,6 +220,9 @@ function grug_visuals.appearance(spec, result, cloak_texture, cloak_id)
 	if cloak_texture == nil or cloak_texture == grug_visuals.CLOAK_NONE then
 		cloak_texture = "none"
 	end
+	if wings_texture == nil or wings_texture == grug_visuals.WINGS_NONE then
+		wings_texture = "none"
+	end
 	return {
 		v = grug_visuals.APPEARANCE_VERSION,
 		race = race,
@@ -213,7 +230,9 @@ function grug_visuals.appearance(spec, result, cloak_texture, cloak_id)
 		cloak = type(cloak_id) == "string" and cloak_id ~= "" and cloak_id or "none",
 		visual_size = {x = size.x, y = size.y, z = size.z},
 		textures = {body = result.skin, cloak = cloak_texture,
-			armor = result.armor ~= grug_visuals.ARMOR_NONE and result.armor or "none"},
+			armor = result.armor ~= grug_visuals.ARMOR_NONE and result.armor or "none",
+			offhand = result.offhand ~= grug_visuals.OFFHAND_NONE and result.offhand or "none",
+			wings = wings_texture},
 		slots = slots,
 	}
 end
@@ -273,7 +292,9 @@ function grug_visuals.appearance_json(data)
 		',"z":', json_number(size.z), "}",
 		',"textures":{"body":', json_string(data.textures.body),
 		',"cloak":', json_string(data.textures.cloak),
-		',"armor":', json_string(data.textures.armor), "}",
+		',"armor":', json_string(data.textures.armor),
+		',"offhand":', json_string(data.textures.offhand),
+		',"wings":', json_string(data.textures.wings), "}",
 		',"slots":{', table.concat(slots, ","), "}}",
 	})
 end

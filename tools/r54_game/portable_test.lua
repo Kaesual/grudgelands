@@ -11,12 +11,14 @@
 --   N  the baked file names of armor-format.md §7 per line, grade and slot
 --      (72 atlas layers, 54 skin layers, each with its mask) and that every
 --      one exists in grug_visuals/textures;
---   P  players: the model's four textures {skin, cloak, armor, weapon}, a
+--   P  players: the model's textures {skin, cloak, armor, weapon} (and since
+--      Round 55 the offhand look's three, blank by default), a
 --      metal T6 and a cloth T1 set, an enchanted and a broken piece, the
 --      hair under a helmet, the weapon card empty in the world;
 --   V  the preview seam grug_visuals.preview(player): the player model, the
---      same four textures with the main hand's image on the weapon card;
---   E  armored NPCs: three textures through grug_mobs' write seam, the write
+--      same textures with the main hand's image on the weapon card;
+--   E  armored NPCs: three textures (five since Round 55, the offhand and
+--      back slots blank) through grug_mobs' write seam, the write
 --      guard on compose's key (no rewrite for the same look, a rewrite for a
 --      changed armor alone, the pre-Round-54 skin field dropped), unarmored
 --      NPCs one texture; the definitions' meshes (guards, bandits, kings,
@@ -26,7 +28,8 @@
 --      A in the royal colour and zone B gold under any enchant colours;
 --   T  no elite or boss tint on kings, royal guards and Generals (real
 --      grug_mobs/levels.lua), every other elite keeps its tint;
---   A  the stored appearance version 2: `textures.armor`, "none" when bare;
+--   A  the stored appearance (version 3 since Round 55): `textures.armor`,
+--      "none" when bare;
 --   H  leather tier 4 "Hardened": the grade name, the four item
 --      descriptions, a stack stored under the old base name renamed on its
 --      next rebuild, nothing else renamed;
@@ -311,7 +314,10 @@ end
 -- P. Players.
 ------------------------------------------------------------------------------
 local model = player_api.registered_models[V.PLAYER_MODEL]
-eq(#model.textures, 4, "P the player model registers four textures")
+-- Round 55: seven slots; the offhand look's three are blank (tools/r55_game).
+eq(#model.textures, 7, "P the player model registers seven textures")
+eq(table.concat(model.textures, ",", 5), "blank.png,blank.png,blank.png",
+	"P registered offhand, back and wings empty")
 eq(model.textures[2], V.CLOAK_NONE, "P registered cloak empty")
 eq(model.textures[3], V.ARMOR_NONE, "P registered armor empty")
 eq(model.textures[4], V.WEAPON_NONE, "P registered weapon card empty")
@@ -323,7 +329,7 @@ ada:get_meta():set_string("grug_visuals:look", "1,2,1,1,1")
 for _, row in ipairs(joins) do row.fn(ada) end
 local list = ada.props.textures
 eq(ada.props.mesh, V.PLAYER_MODEL, "P the player model")
-eq(#list, 4, "P bare: four textures")
+eq(#list, 7, "P bare: seven textures (Round 55)")
 eq(list[3], V.ARMOR_NONE, "P bare: no armor")
 eq(list[4], V.WEAPON_NONE, "P bare: an empty weapon card")
 local hair = V.LOOKS.human.styles[1].mask
@@ -378,7 +384,7 @@ eq(ada.props.textures[2], CLOAK, "P the cloak is the second texture")
 do
 	local preview = V.preview(ada)
 	eq(preview.mesh, V.PLAYER_MODEL, "V the player model")
-	eq(#preview.textures, 4, "V four textures")
+	eq(#preview.textures, 7, "V seven textures (Round 55)")
 	for index = 1, 3 do
 		eq(preview.textures[index], ada.props.textures[index], "V texture " .. index .. " as applied")
 	end
@@ -395,7 +401,7 @@ do
 	-- first): composed from the player's state, never nil.
 	local early = new_player("early", "elf", true)
 	local first = V.preview(early)
-	check(first ~= nil and first.mesh == V.PLAYER_MODEL and #first.textures == 4,
+	check(first ~= nil and first.mesh == V.PLAYER_MODEL and #first.textures == 7,
 		"V before any apply: the full answer")
 	eq(early.props.textures, nil, "V before any apply: nothing applied yet")
 	check(has(first.textures[1], V.LOOKS.elf.styles[1].mask), "V before any apply: the race look")
@@ -434,7 +440,9 @@ do
 	end
 	local result = V.apply_entity(guard, spec, write_textures)
 	eq(writes, 1, "E the first draw writes")
-	eq(#guard.base_texture, 3, "E an armored NPC: skin, armor, weapon")
+	eq(#guard.base_texture, 5, "E an armored NPC: skin, armor, weapon, offhand, back (Round 55)")
+	eq(guard.base_texture[4] .. "," .. guard.base_texture[5], "blank.png,blank.png",
+		"E the offhand and back slots empty")
 	eq(guard.base_texture[1], result.skin, "E the skin first")
 	eq(guard.base_texture[2], result.armor, "E the armor second")
 	check(has(result.armor, "grug_armor_metal_steel_chest.png"), "E level 30: the steel set")
@@ -494,22 +502,24 @@ do
 	eq(#vendor.props.textures, 1, "E an unarmored NPC: the skin alone")
 
 	-- The definitions: the armored chassis on the NPC model, every texture
-	-- list with three entries; the unarmored ones back on character.b3d.
+	-- list with five entries (three before Round 55); the unarmored ones back
+	-- on character.b3d.
 	local NPC = V.NPC_MODEL
 	eq(NPC, "grug_visuals_npc.b3d", "E the NPC model's name")
 	local guard_src = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/guard.lua")
-	check(has(guard_src, 'mesh = "' .. NPC .. '",\n\t\ttextures = {{texture, "blank.png", "blank.png"}},'),
-		"E guard_def: the NPC model, three textures")
+	local BLANKS = '"blank.png", "blank.png", "blank.png", "blank.png"'
+	check(has(guard_src, 'mesh = "' .. NPC .. '",\n\t\ttextures = {{texture, ' .. BLANKS .. '}},'),
+		"E guard_def: the NPC model, five textures")
 	check(not has(guard_src, '"character.b3d"'), "E guard.lua names no character.b3d")
 	local bandit_src = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/bandit.lua")
 	check(has(bandit_src, 'mesh = "' .. NPC .. '",') and
-		has(bandit_src, '{"grug_mobs_bandit_1.png", "blank.png", "blank.png"},') and
-		has(bandit_src, '{"grug_mobs_bandit_2.png", "blank.png", "blank.png"},'),
-		"E bandit_def: the NPC model, three textures per set")
+		has(bandit_src, '{"grug_mobs_bandit_1.png", ' .. BLANKS .. '},') and
+		has(bandit_src, '{"grug_mobs_bandit_2.png", ' .. BLANKS .. '},'),
+		"E bandit_def: the NPC model, five textures per set")
 	check(not has(bandit_src, 'mesh = "character.b3d"'), "E bandit.lua names no character.b3d mesh")
 	local bosses = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/bosses.lua")
 	check(has(bosses, 'visual = "mesh", mesh = "' .. NPC .. '",') and
-		has(bosses, 'textures = {{"character.png", "blank.png", "blank.png"}},'),
+		has(bosses, 'textures = {{"character.png", ' .. BLANKS .. '}},'),
 		"E kings and Generals (king_def) on the NPC model")
 	check(not has(bosses, '"character.b3d"'), "E bosses.lua names no character.b3d")
 	local poacher = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/zero_asset_variants.lua")
@@ -545,7 +555,7 @@ do
 		weapon_family = "sword"})
 	local plain = V.compose({race = "orc", armor_line = "metal", level = 60})
 	local cloth = V.ROYAL.orc.cloth
-	eq(#king.textures, 3, "R a king on the NPC model")
+	eq(#king.textures, 5, "R a king on the NPC model (five textures since Round 55)")
 	check(not has(king.armor, "_head"), "R a king wears no helmet")
 	check(has(king.skin, V.LOOKS.orc.styles[V.KING_LOOKS.orc.style].mask), "R a king shows his hair")
 	check(has(king.skin, "grug_visuals_crown.png"), "R and his crown")
@@ -611,20 +621,22 @@ do
 end
 
 ------------------------------------------------------------------------------
--- A. The stored appearance, version 2.
+-- A. The stored appearance (version 2 in Round 54, version 3 since Round 55:
+-- tools/r55_game checks the offhand and wings strings).
 ------------------------------------------------------------------------------
 do
-	eq(V.APPEARANCE_VERSION, 2, "A version 2")
+	eq(V.APPEARANCE_VERSION, 3, "A version 3")
 	local stored = ada:get_meta():get_string(V.APPEARANCE_META)
-	check(has(stored, '{"v":2,'), "A the stored value is version 2")
+	check(has(stored, '{"v":3,'), "A the stored value is version 3")
 	local result = V.compose(V.player_spec(ada))
 	check(has(stored, ',"textures":{"body":"' .. result.skin .. '","cloak":"' .. CLOAK ..
-		'","armor":"' .. result.armor .. '"},'), "A body, cloak and armor in order")
+		'","armor":"' .. result.armor .. '","offhand":"none","wings":"none"},'),
+		"A body, cloak and armor in order")
 	local bob = new_player("bob2", "dwarf")
-	check(has(bob:get_meta():get_string(V.APPEARANCE_META), '"cloak":"none","armor":"none"}'),
-		"A no armor: none")
-	eq(V.APPEARANCE_JSON_MAX, 5 * V.APPEARANCE_TEXTURE_MAX + V.APPEARANCE_JSON_OVERHEAD,
-		"A five texture strings")
+	check(has(bob:get_meta():get_string(V.APPEARANCE_META),
+		'"cloak":"none","armor":"none","offhand":"none","wings":"none"}'), "A no armor: none")
+	eq(V.APPEARANCE_JSON_MAX, 7 * V.APPEARANCE_TEXTURE_MAX + V.APPEARANCE_JSON_OVERHEAD,
+		"A seven texture strings")
 end
 
 ------------------------------------------------------------------------------
@@ -693,7 +705,8 @@ do
 				end
 				local result = V.compose({race = race, look = {style = style, feature = feature},
 					armor = armor, armor_broken = broken, armor_enchant = enchant})
-				local length = #result.skin + #result.armor + 44 + #V.WEAPON_NONE
+				local length = #result.skin + #result.armor + 44 + #V.WEAPON_NONE +
+					#V.OFFHAND_NONE + #V.BACK_NONE + #V.WINGS_NONE
 				if length > worst then
 					worst, worst_skin, worst_armor = length, #result.skin, #result.armor
 				end
