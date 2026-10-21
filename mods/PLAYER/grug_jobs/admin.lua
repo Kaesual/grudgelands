@@ -1,8 +1,8 @@
 -- /prof, the debug/admin command for professions: show, set, learn and
--- unlearn an online player's professions by name. The tier is capped at the
+-- unlearn an online player's professions, always `/prof <action> <player>`. The tier is capped at the
 -- character's band (state.lua `admin_set`); the target gets one chat line.
 
-local USAGE = "Usage: /prof <player> | /prof set <player> <1|2> <profession> <tier>" ..
+local USAGE = "Usage: /prof show <player> | /prof set <player> <1|2> <profession> <tier>" ..
 	" | /prof set <player> <cooking|alchemy> <tier> | /prof clear <player> <1|2>" ..
 	" | /prof learn <player> <profession> [tier] | /prof unlearn <player> <profession>"
 
@@ -38,7 +38,8 @@ local function tier_text(player, profession)
 		or "max")
 end
 
-local function show(target, target_name)
+local function show(target, target_name, words)
+	if #words ~= 2 then return false, "Usage: /prof show <player>" end
 	local parts = {}
 	for slot = 1, grug_jobs.PRIMARY_SLOTS do
 		local profession = grug_jobs.primary_at(target, slot)
@@ -49,7 +50,7 @@ local function show(target, target_name)
 		parts[#parts + 1] = grug_jobs.has(target, profession) and
 			tier_text(target, profession) or (profession_name(profession) .. " not learned")
 	end
-	return ("%s, character level %d (eligible up to T%d): %s."):format(target_name,
+	return true, ("%s, character level %d (eligible up to T%d): %s."):format(target_name,
 		grug_xp.get_level(target), grug_jobs.character_tier(target),
 		table.concat(parts, ", "))
 end
@@ -141,26 +142,22 @@ local function unlearn(target, target_name, words)
 		("An admin removed %s; its progression was lost."):format(profession_name(profession))
 end
 
-local ACTIONS = {set = set, clear = clear, learn = learn, unlearn = unlearn}
+local ACTIONS = {show = show, set = set, clear = clear, learn = learn, unlearn = unlearn}
 
 core.register_chatcommand("prof", {
-	params = "<player> | set|clear|learn|unlearn <player> ...",
+	params = "show|set|clear|learn|unlearn <player> ...",
 	description = "Show or set an online player's professions (debug)",
 	privs = {server = true},
 	func = function(name, param)
 		local words = {}
 		for word in param:gmatch("%S+") do words[#words + 1] = word end
-		if #words == 1 and not ACTIONS[words[1]:lower()] then
-			local target = core.get_player_by_name(words[1])
-			if not target then return false, "Player is not online: " .. words[1] end
-			return true, show(target, words[1])
-		end
 		local action = ACTIONS[(words[1] or ""):lower()]
 		if not action or not words[2] then return false, USAGE end
 		local target = core.get_player_by_name(words[2])
 		if not target then return false, "Player is not online: " .. words[2] end
 		local ok, text, notice = action(target, words[2], words)
-		if ok then
+		-- show changes nothing: no log line, no target line.
+		if ok and action ~= show then
 			core.log("action", ("[grug_jobs] %s ran /prof %s: %s"):format(name, param, text))
 			if notice and words[2] ~= name then core.chat_send_player(words[2], notice) end
 		end

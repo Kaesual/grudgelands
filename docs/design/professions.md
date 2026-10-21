@@ -322,9 +322,10 @@ material/profession repair remains later work
 ### 1.6 The `/prof` debug command
 
 A server administrator (`server` privilege) can show and change an online
-player's professions by name, for debugging (`grug_jobs/admin.lua`):
+player's professions, always as `/prof <action> <player> ...`, for debugging
+(`grug_jobs/admin.lua`):
 
-- `/prof <player>`: both slots, Cooking and Alchemy with tier and crafts, the
+- `/prof show <player>`: both slots, Cooking and Alchemy with tier and crafts, the
   character level and the highest tier it is eligible for.
 - `/prof set <player> <1|2> <profession> <tier>` puts a primary into a slot at
   a tier (`T6` or `6`); `/prof set <player> <cooking|alchemy> <tier>` sets a
