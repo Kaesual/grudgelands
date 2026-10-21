@@ -134,6 +134,10 @@ return {
 			texture = "grug_achievements_cloak_unbought_banner.png"},
 		{id = "broken_due", name = "Mantle of the Broken Due",
 			texture = "grug_achievements_cloak_broken_due.png"},
+		-- Round 55: the first cloak with wings, GPT-6 Astra's (tools/r55_art).
+		{id = "supporter", name = "Supporter Cloak",
+			texture = "grug_achievements_cloak_supporter.png",
+			wings = "grug_achievements_cloak_supporter_wings.png"},
 	},
 	achievements = {
 		-- U1
@@ -241,5 +245,11 @@ return {
 			text_one = "Defeat Isquarre the Tithe-Eater.",
 			flavour = "The collector came for both armies. You sent him away empty.",
 			tiers = {{at = 1, cloak = "broken_due"}}},
+		-- Round 55: granted by an admin (/achievement) to the players who
+		-- helped shape the game early on; hidden until granted.
+		{id = "supporter", name = "Supporter", manual = true,
+			text_one = "Helped shape Grudgelands early on.",
+			flavour = "You walked these roads before they had names.",
+			tiers = {{at = 1, cloak = "supporter"}}},
 	},
 }

@@ -27,6 +27,8 @@ leaves out has no rectangle). The art is validated first; any violation fails
 the bake with every problem found and writes nothing:
   - tiers.json: both items, tiers T1..T6, each with a known palette, its
     variant(s) (a book map names known boxes) and, for an icon bake, its icon;
+    an optional icon_palette (a known palette) colours the icon instead of
+    the palette (an icon picked from another proposal than the paint);
   - file names (shield/<variant>.png, book/<box>_<variant>.png,
     icons/shield|book_<variant>.png; tiers.json, palettes.json and the optional
     cloak_<id>.png and wings_<id>.png at the top) and the files the tiers need;
@@ -185,8 +187,9 @@ def unknown_files(art, errors):
 
 
 def load_tiers(art, pals, errors, icons):
-    """{item: {tier: {palette, variant {sheet: id}, icon}}} from <art>/tiers.json;
-    every item and tier must be there (no fallback is baked)."""
+    """{item: {tier: {palette, variant {sheet: id}, icon, icon_palette}}} from
+    <art>/tiers.json; every item and tier must be there (no fallback is baked).
+    icon_palette is None when the tier names none (or an unknown one, an error)."""
     path = Path(art) / "tiers.json"
     try:
         raw = json.loads(path.read_text())
@@ -214,13 +217,20 @@ def load_tiers(art, pals, errors, icons):
                 errors.append("%s: no entry" % where)
                 continue
             for key in T:
-                if key not in ("palette", "variant", "icon") and not key.startswith("_"):
-                    errors.append("%s: unknown key '%s' (palette, variant, icon)" % (where, key))
+                if key not in ("palette", "variant", "icon", "icon_palette") and not key.startswith("_"):
+                    errors.append("%s: unknown key '%s' (palette, variant, icon, icon_palette)" % (where, key))
             pal = T.get("palette")
             if pal is None:
                 errors.append("%s: no 'palette'" % where)
             elif pal not in pals["palettes"]:
                 errors.append("%s: unknown palette '%s' (palettes: %s)" % (where, pal, ", ".join(pals["palettes"])))
+            # An icon picked from another proposal than the paint keeps that
+            # proposal's colours (format doc section 6); the sheets never use it.
+            icon_pal = T.get("icon_palette")
+            if icon_pal is not None and not (isinstance(icon_pal, str) and icon_pal in pals["palettes"]):
+                errors.append("%s: unknown icon_palette %r (palettes: %s)"
+                              % (where, icon_pal, ", ".join(pals["palettes"])))
+                icon_pal = None
             sheets = ("shield",) if item == "shield" else O.BOOK_BOXES
             v = T.get("variant", "a")
             if isinstance(v, str):
@@ -243,8 +253,13 @@ def load_tiers(art, pals, errors, icons):
                 icon = None
             if icon is None and icons:
                 errors.append("%s: names no 'icon' (an icon bake needs every tier's icon)" % where)
-            out[item][tid] = {"palette": pal, "variant": variant, "icon": icon}
+            out[item][tid] = {"palette": pal, "variant": variant, "icon": icon, "icon_palette": icon_pal}
     return out
+
+
+def icon_colors(pals, tier):
+    """The colours of a tier's icon: its icon_palette, else its palette."""
+    return pals["palettes"][tier.get("icon_palette") or tier["palette"]]["colors"]
 
 
 # --- the rules (format doc section 6) ----------------------------------------------------
@@ -417,7 +432,7 @@ def bake(art, icons=False, warnings=None):
                 grid = icon_grid(icon_art(art, item, tier["icon"]))
                 if icons:
                     name = O.icon_file(item, grade)
-                    icon_files[name] = layer_image(grid, O.ICON_SIZE, colors)
+                    icon_files[name] = layer_image(grid, O.ICON_SIZE, icon_colors(pals, tier))
                     icon_files[O.mask_file(name)] = mask_image(grid, O.ICON_SIZE)
     for d in ("shield", "book", "icons"):
         for p in sorted((art / d).glob("*.png")):

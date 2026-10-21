@@ -143,7 +143,7 @@ our changes. Derivatives keep their source's licence.
   `grug_projectiles`, `grug_cooking` and `grug_farming`.
 - **Lord of the Test** (<https://github.com/minetest-LOTR/Lord-of-the-Test>) —
   CC BY-SA 3.0: humanoid skins by **Amaz** and **fishyWET** (`grug_mobs`),
-  bows and shields (`grug_gear`),
+  bows (`grug_gear`),
   bags by **Amaz** (`grug_inventory`); the large bag by **Brett O'Donnell**,
   BSD-3-Clause; the boat models and sail by **deasanta**, WTFPL
   (`grug_mounts`).

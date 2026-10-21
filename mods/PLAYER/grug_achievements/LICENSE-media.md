@@ -74,3 +74,24 @@ All three files are 32×32 RGBA and fully opaque: outer face in columns
 | `grug_achievements_cloak_unburnt_roll.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Mantle of the Unburnt Roll; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `grug_achievements_cloak_unbought_banner.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; The Unbought Banner; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `grug_achievements_cloak_broken_due.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Mantle of the Broken Due; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## The Supporter Cloak — Round 55
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-21 (art drop `drop-01`, proposal p1, picked by the user on
+2026-10-21): flat colour bands and a small seed emblem written with
+Python/Pillow by the painter kept at `tools/r55_art/src/drop-01/paint.py`; no
+image-generation service, downloaded art or third-party source pixels. The
+project dedicates any rights it holds in these originals to CC0-1.0.
+`tools/r55_art/assemble.py` copies them here from `tools/r55_art/art/`
+(`cloak_supporter.png`, `wings_supporter.png`) and its `--check` compares them.
+
+The cloak is 32×32 RGBA, fully opaque, in the format above. The wings are
+16×32 RGBA (offhand-format.md §6): columns 0–7 the left wing's outer face seen
+from behind, columns 8–15 its lining seen from the front; only the triangle on
+and below the diagonal is painted and sampled; the right wing mirrors it.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `grug_achievements_cloak_supporter.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Supporter Cloak (proposal p1, midnight with a seed emblem); `tools/r55_art/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_supporter_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the Supporter Cloak's wings, their bands continuing the cloak's; `tools/r55_art/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |

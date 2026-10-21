@@ -169,6 +169,31 @@ grade key of `grug_gear.MATERIALS`.
 | `grug_armor_<line>_<grade>_<slot>_skin.png` (54 files: chest, legs, feet) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py` (Python/Pillow): skin layer 64 × 32, the slot's inner paint |
 | `grug_armor_<line>_<grade>_<slot>_skin_ench.png` (54 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py`: enchant mask of the skin layer |
 
+## Round 55 offhand layers — CC0 1.0
+
+Original, AI-assisted pixel art painted for Grudgelands by **GPT-6 Astra** on
+2026-10-21: hand-placed pixel maps in the offhand contract's reference palette
+([offhand-format.md](../../../docs/technical/offhand-format.md) §6), written
+with **Python/Pillow** by the painter in
+[`tools/r55_art/src/drop-01/`](../../../tools/r55_art/README.md) (art drop
+`drop-01`, proposals p1 "Standard & Ledger" and p2 "Brace & Seal"); the icons
+are drawn freely, not adapted. No image-generation service, downloads or
+third-party source pixels. The project dedicates any rights it holds in these
+files to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). The user picked paint
+and icon separately per item and tier on 2026-10-21
+(`tools/r55_art/picks.json`); `tools/r55_art/assemble.py` assembles the picks
+into `tools/r55_art/art/` and **`tools/r55_offhand/bake.py`** turns it into the files below (palette swap per tier, layout of
+`tools/r55_offhand/data/atlas.json`) and rebuilds them pixel for pixel
+(`bake.py --check` compares mode, size and pixels). `<grade>` is the grade key
+of `grug_gear.MATERIALS`.
+
+| File | Author | License | Notes |
+|------|--------|---------|-------|
+| `grug_offhand_shield_<grade>.png` (6 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py` (Python/Pillow): offhand atlas layer 64 × 64, the tier's shield in the sheet of its size step |
+| `grug_offhand_book_<grade>.png` (6 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py` (Python/Pillow): offhand atlas layer 64 × 64, the open spellbook's six box sheets |
+| `grug_offhand_{shield,book}_<grade>_ench.png` (12 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py`: enchant mask of the atlas layer (zone A frame, zone B frame) |
+
 ## Player and NPC models (Round 33 cloak, Round 54 armor) — CC BY-SA 3.0
 
 | File | Author | License | Notes |

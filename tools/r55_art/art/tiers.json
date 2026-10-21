@@ -1,0 +1,129 @@
+{
+ "shield": {
+  "T1": {
+   "palette": "p2_bronze",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T2": {
+   "palette": "p2_iron",
+   "variant": "b",
+   "icon": "b"
+  },
+  "T3": {
+   "palette": "p2_steel",
+   "variant": "c",
+   "icon": "c"
+  },
+  "T4": {
+   "palette": "p1_silversteel",
+   "variant": "d",
+   "icon": "d"
+  },
+  "T5": {
+   "palette": "p1_embersteel",
+   "variant": "e",
+   "icon": "e"
+  },
+  "T6": {
+   "palette": "p1_abyssal_steel",
+   "variant": "f",
+   "icon": "f"
+  }
+ },
+ "book": {
+  "T1": {
+   "palette": "p1_book_bronze",
+   "variant": "a",
+   "icon": "a",
+   "icon_palette": "p2_book_bronze"
+  },
+  "T2": {
+   "palette": "p1_book_iron",
+   "variant": "b",
+   "icon": "b",
+   "icon_palette": "p2_book_iron"
+  },
+  "T3": {
+   "palette": "p2_book_steel",
+   "variant": "c",
+   "icon": "c"
+  },
+  "T4": {
+   "palette": "p1_book_silversteel",
+   "variant": "d",
+   "icon": "d",
+   "icon_palette": "p2_book_silversteel"
+  },
+  "T5": {
+   "palette": "p1_book_embersteel",
+   "variant": "e",
+   "icon": "e",
+   "icon_palette": "p2_book_embersteel"
+  },
+  "T6": {
+   "palette": "p1_book_abyssal_steel",
+   "variant": "f",
+   "icon": "f",
+   "icon_palette": "p2_book_abyssal_steel"
+  }
+ },
+ "_source": {
+  "drop": "drop-01",
+  "shield": {
+   "T1": {
+    "art": "p2",
+    "icon": "p2"
+   },
+   "T2": {
+    "art": "p2",
+    "icon": "p2"
+   },
+   "T3": {
+    "art": "p2",
+    "icon": "p2"
+   },
+   "T4": {
+    "art": "p1",
+    "icon": "p1"
+   },
+   "T5": {
+    "art": "p1",
+    "icon": "p1"
+   },
+   "T6": {
+    "art": "p1",
+    "icon": "p1"
+   }
+  },
+  "book": {
+   "T1": {
+    "art": "p1",
+    "icon": "p2"
+   },
+   "T2": {
+    "art": "p1",
+    "icon": "p2"
+   },
+   "T3": {
+    "art": "p2",
+    "icon": "p2"
+   },
+   "T4": {
+    "art": "p1",
+    "icon": "p2"
+   },
+   "T5": {
+    "art": "p1",
+    "icon": "p2"
+   },
+   "T6": {
+    "art": "p1",
+    "icon": "p2"
+   }
+  },
+  "cloak": {
+   "supporter": "p1"
+  }
+ }
+}

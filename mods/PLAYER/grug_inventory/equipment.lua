@@ -50,7 +50,7 @@ local STAFF_GHOST = "grug_gear_item_staff_steel.png" .. DIM
 local CASTER_RULES = {
 	weapon = {label = "Weapon", ghost = STAFF_GHOST},
 	offhand = {label = "Caster offhand", group = "grug_spellbook",
-		ghost = "grug_gear_spellbook.png" .. DIM,
+		ghost = "grug_gear_spellbook_steel.png" .. DIM,
 		hint = "the Caster offhand holds a spellbook"},
 }
 grug_inventory.HAND_RULES = {

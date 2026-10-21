@@ -1,8 +1,9 @@
 # Media Origin & Licenses (grug_gear)
 
-Two licences live here, and the split is by origin, not by taste: the **armor**
-icons are this project's own CC0 art (the Round 54 armor art, below), and the
-**weapon** icons are derivatives of minetest_game's CC BY-SA 3.0 tool sprites.
+Two licences live here, and the split is by origin, not by taste: the **armor**,
+shield and spellbook icons are this project's own CC0 art (the Round 54 armor
+art and the Round 55 offhand art, below), and the **weapon** icons are
+derivatives of minetest_game's CC BY-SA 3.0 tool sprites.
 
 ## Weapon icons — CC BY-SA 3.0 Unported
 
@@ -54,7 +55,7 @@ double-bit-axe direction; it is not a shipped texture source. Both families
 use one stable silhouette across all six palettes and the diagonal
 bottom-left grip convention.
 
-## Round 11 bows and shields — CC BY-SA 3.0
+## Round 11 bows — CC BY-SA 3.0
 
 Unchanged renamed copies from Lord of the Test commit
 `f164140154945f0b356521ae721a86e9c7a0e0cf`. Upstream identifies otherwise
@@ -68,7 +69,6 @@ license. Native texture modifiers provide the noted material grades.
 | `grug_gear_bow_birch.png` | `lottthrowing_bow_wood_birch.png` | unchanged Iron; HSL-brightened Steel; violet Abyssal Steel |
 | `grug_gear_bow_mallorn.png` | `lottthrowing_bow_wood_mallorn.png` | unchanged Silversteel |
 | `grug_gear_bow_alder.png` | `lottthrowing_bow_wood_alder.png` | warm Embersteel grade |
-| `grug_gear_shield_{bronze,iron,steel,silversteel,embersteel,abyssal_steel}.png` | `lottarmor_inv_shield_{bronze,copper,steel,silver,gold,galvorn}.png` | renamed copies; Iron receives a dull-grey HSL grade and Embersteel a red color grade at registration |
 
 ## Round 11 book and arrow — CC BY-SA 4.0
 
@@ -78,13 +78,12 @@ VoxeLibre contributors, CC BY-SA 4.0 per upstream `LEGAL.md`.
 
 | Local file | Upstream source | Treatment |
 |---|---|---|
-| `grug_gear_spellbook.png` | `mcl_enchanting_book_enchanted.png` | native per-tier color grade |
-| `grug_gear_spellbook_{bronze,iron,steel,silversteel,embersteel,abyssal_steel}.png` | `mcl_enchanting_book_enchanted.png` (via `grug_gear_spellbook.png`) | Round 55: one icon per tier, the per-bracket color grade (`grug_gear.BRACKET_TINT`, ratio 48) baked in by `tools/r55_game/book_icons.py` |
+| `grug_gear_spellbook.png` | `mcl_enchanting_book_enchanted.png` | unchanged copy; nothing in the game shows it since Round 55 (the per-tier icons below; the Caster-offhand ghost is the steel icon); kept for appearances stored before 0.55.0 |
 | `grug_gear_arrow.png` | `mcl_bows_arrow_inv.png` | unchanged copy |
 
 ## Round 31 enchant masks — licence of their source
 
-Each `<source>_ench.png` (41 files) is a two-frame greyscale mask that
+Each `<source>_ench.png` (35 files) is a two-frame greyscale mask that
 `tools/r31_b/gen_enchant_masks.py` derives deterministically from the texture
 named by `<source>`: the top frame marks group A, the bottom frame group B,
 with that texture's own shading. A mask carries its source's shapes and
@@ -95,9 +94,8 @@ modification is "pixel-group mask derived by the generator".
 |---|---|---|
 | `grug_gear_item_{sword,dagger,staff}_<metal>_ench.png` (18) | the weapon sprites above | CC BY-SA 3.0 |
 | `grug_gear_item_{greataxe,wand}_<metal>_ench.png` (12) | the Round 12 sprites above | CC0 1.0 |
-| `grug_gear_bow_{lebethron,birch,mallorn,alder}_ench.png`, `grug_gear_shield_<metal>_ench.png` (10) | the Round 11 bows and shields | CC BY-SA 3.0 |
+| `grug_gear_bow_{lebethron,birch,mallorn,alder}_ench.png` (4) | the Round 11 bows | CC BY-SA 3.0 |
 | `grug_gear_spellbook_ench.png` | the Round 11 book | CC BY-SA 4.0 |
-| `grug_gear_spellbook_<metal>_ench.png` (6, Round 55) | byte copies of `grug_gear_spellbook_ench.png` (`tools/r55_game/book_icons.py`) | CC BY-SA 4.0 |
 
 ## Round 45 jewellery icons — CC0 1.0
 
@@ -144,3 +142,29 @@ pixel). `<line>` is metal, leather or cloth, `<grade>` a grade key of
 | `grug_gear_item_<slot>_<line>_<grade>.png` (72) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the picked icon of the tier, palette-swapped by `bake.py` (Python/Pillow) | CC0-1.0 |
 | `grug_gear_item_<slot>_<line>_<grade>_ench.png` (72) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; enchant mask derived by `bake.py` from the icon's zone A and B pixels | CC0-1.0 |
 | `grug_gear_item_{head,chest,legs,feet}_metal.png` (4) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the Character page's empty-slot ghosts, copies of the metal T3 (steel) icons by `tools/r54_art/ghosts.py` | CC0-1.0 |
+
+## Round 55 shield and spellbook icons — CC0 1.0
+
+Original, AI-assisted pixel art painted for Grudgelands by **GPT-6 Astra** on
+2026-10-21: hand-placed pixel maps in the offhand contract's reference palette
+([offhand-format.md](../../../docs/technical/offhand-format.md) §6), written
+with **Python/Pillow** by the painter in
+[`tools/r55_art/src/drop-01/`](../../../tools/r55_art/README.md) (art drop
+`drop-01`, proposals p1 "Standard & Ledger" and p2 "Brace & Seal"); the icons
+are drawn freely, not adapted. No image-generation service, downloads or
+third-party source pixels. The project dedicates any rights it holds in these
+files to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>). The user picked paint
+and icon separately per item and tier on 2026-10-21
+(`tools/r55_art/picks.json`); `tools/r55_art/assemble.py` assembles the picks
+into `tools/r55_art/art/` and **`tools/r55_offhand/bake.py`** writes the files below (the tier's palette swapped in, or the
+icon proposal's palette where the icon comes from the other proposal than the
+paint; masks from the art's zone pixels; `bake.py --icons-out
+mods/ITEMS/grug_gear/textures --check` rebuilds them pixel for pixel).
+`<grade>` is a metal grade key of `grug_gear.MATERIALS`.
+
+| Files | Author | Source / tool disclosure | Licence |
+|---|---|---|---|
+| `grug_gear_shield_<grade>.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the picked shield icon of the tier, palette-swapped by `bake.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_spellbook_<grade>.png` (6) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the picked spellbook icon of the tier, palette-swapped by `bake.py` (Python/Pillow) | CC0-1.0 |
+| `grug_gear_shield_<grade>_ench.png`, `grug_gear_spellbook_<grade>_ench.png` (12) | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; enchant mask derived by `bake.py` from the icon's zone A and B pixels | CC0-1.0 |

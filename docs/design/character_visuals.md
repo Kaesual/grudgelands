@@ -179,7 +179,8 @@ since Round 55, the offhand (a shield or spellbook), the back card (a
 Scout's second weapon) and the cloak's wings
 ([offhand format](../technical/offhand-format.md)); the last three stay
 empty while the setting `grug_offhand_visuals` is off (the default until the
-offhand art is picked). An armoured NPC wears the **NPC model** — the same
+offhand poses are final; the picked art ships since the Round 55 finish, the
+item icons in use already). An armoured NPC wears the **NPC model** — the same
 body and boxes without the cloak, textures skin, armour atlas, weapon card,
 offhand and back (the last two empty for now); humanoids without armour
 keep `character.b3d`.
@@ -347,10 +348,11 @@ item:
 - Every enchanting station shows a **legend** of the nine colours.
 
 The masks are generated, one two-frame `<texture>_ench.png` per texture, each
-under its source texture's licence: the weapons', bows', shields' and the
-spellbook's by `tools/r31_b/gen_enchant_masks.py`, the armour's (worn layers
-and item icons) by the armour bake `tools/r54_armor/bake.py` from the art's
-zone pixels.
+under its source texture's licence: the weapons' and bows' by
+`tools/r31_b/gen_enchant_masks.py`, the armour's (worn layers and item icons)
+by the armour bake `tools/r54_armor/bake.py` and the shields' and spellbooks'
+(offhand layers and item icons, Round 55) by the offhand bake
+`tools/r55_offhand/bake.py`, both from the art's zone pixels.
 
 ## 5b. Cloaks and achievements (Round 33)
 
@@ -421,7 +423,12 @@ are kept per character, and so is the choice.
   on the same achievement replaces the earlier); the command says so, and
   every grant and revoke is logged. A manual achievement is **hidden until
   granted**: the tab never lists it as an open goal, nor counts it in its
-  pages. No manual row ships yet.
+  pages. One manual row ships (Round 55): **Supporter** ("Helped shape
+  Grudgelands early on."), whose **Supporter Cloak** (GPT-6 Astra's, picked
+  by the user 2026-10-21) is the first cloak with **wings**, a 16 × 32
+  texture for the cloak's two wing pieces ([offhand
+  format](../technical/offhand-format.md) §3.4, §6), shown only while the
+  setting `grug_offhand_visuals` is on.
 - The Character page has an **Achievements** mode: each achievement with its
   next cloak (dimmed until earned), its condition and its progress, a
   tooltip with the flavour line, one column of seven per page (Round 44).

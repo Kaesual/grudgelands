@@ -32,7 +32,7 @@ from the repository root (the tools find their own data). The full rules are
 | `art/shield/<variant>.png` | the shield: FRONT in the left half, BACK in the right half | 22 × 13 |
 | `art/book/<box>_<variant>.png` | one sheet per book box: `cover_f`, `cover_b`, `pages_f`, `pages_b`, `spine`, `ribbon` | 12 × 7, 12 × 7, 10 × 6, 10 × 6, 4 × 7, 4 × 4 |
 | `art/icons/shield_<variant>.png`, `art/icons/book_<variant>.png` | inventory icons | 16 × 16 |
-| `art/tiers.json` | per item and tier T1–T6: `palette`, `variant` (one id, or for the book a map box → id), `icon` | |
+| `art/tiers.json` | per item and tier T1–T6: `palette`, `variant` (one id, or for the book a map box → id), `icon`, optionally `icon_palette` (the icon in another palette) | |
 | `art/palettes.json` (optional) | proposed tier palettes, laid over `tools/r54_armor/data/palettes.json` by name | |
 | `art/cloak_<id>.png`, `art/wings_<id>.png` (optional) | a cloak (outer face left, lining right) and its wings | 32 × 32, 16 × 32 |
 
@@ -115,8 +115,8 @@ python3 tools/r55_offhand/make_broken_art.py [--check]  # rewrite (check) test_a
 expected messages (`expected()`) from the live parameters. After a retune, rerun `make_test_art.py`, then
 `make_broken_art.py`.
 
-Until the finish step there is no picked art: the default `--art` fails with a clear message, and the test art is
-baked only into temp directories or a test-only probe mod (never into `mods/`).
+The default `--art` is the picked art, `tools/r55_art/art` ([its README](../r55_art/README.md), since the finish
+step); the test art is baked only into temp directories or a test-only probe mod (never into `mods/`).
 
 - Per bracket grade (`offhand.grades()`, T1 the first): `grug_offhand_shield_<grade>.png` (the atlas size; the
   tier's shield sheet palette-swapped into the sheet `shield_<step>` of its size step, `params.json` `tier_step`;
@@ -127,7 +127,8 @@ baked only into temp directories or a test-only probe mod (never into `mods/`).
   files, 24 icon files. Only the face rectangles of `data/atlas.json` are copied; palettes are the armor's
   `tools/r54_armor/data/palettes.json` with the art's optional `palettes.json` laid over by name.
 - **Validation** before anything is written; every violation is listed and the exit code is 1: `tiers.json` (both
-  items, T1–T6, a known palette, variants, the icon for an icon bake), unknown or missing files, sizes (an
+  items, T1–T6, a known palette, variants, the icon for an icon bake, an optional `icon_palette` that is a known
+  palette and colours the icon only), unknown or missing files, sizes (an
   optional `cloak_<id>.png`, 32 × 32, and `wings_<id>.png`, 16 × 32, are checked for their size only and not baked), the reference palette, alpha 0
   or 255, transparent shield texels the outline contains or crosses (`offhand.shield_texels`: the rim and the
   slanted edges sample them) or book face texels, and per item and tier at least 6 zone A and 3 zone B texels

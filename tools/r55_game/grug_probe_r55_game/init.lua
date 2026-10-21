@@ -16,6 +16,15 @@
 --
 -- The setting grug_offhand_visuals comes from the staged minetest.conf
 -- (capture.sh OFFHAND=true or false); the probe logs what the game read.
+--
+-- Another lane's shots (capture.sh SCENE=, staged as scene.lua; Round 55
+-- FINISH): scene.lua returns function(api) -> {on = fn() -> shots, off =
+-- fn() -> shots, real_cloaks = true|nil}, the lists built after the items
+-- are found. With real_cloaks the stub cloak source is not
+-- installed (grug_achievements' own one serves) and a look's `cloak_id`
+-- ("none" by default) is selected through grug_achievements.select_cloak. A
+-- shot may carry `before(player)` (run once before it is set up) and
+-- `formspec` (a function returning a formspec shown instead of figures).
 local P = "[r55game] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r55game_settle") or "") or 4
@@ -103,6 +112,7 @@ local function find_items()
 end
 
 -- Gear, class, hotbar item and cloak, then the real apply.
+local SCENE
 local function dress(player, look)
 	local inv = player:get_inventory()
 	player:get_meta():set_string("grug_classes:class", look.class)
@@ -114,6 +124,9 @@ local function dress(player, look)
 	inv:set_stack("main", player:get_wield_index(), look.held or "")
 	stub.cloak = look.cloak and CLOAK or nil
 	stub.wings = look.wings and WINGS or nil
+	if SCENE and SCENE.real_cloaks then
+		grug_achievements.select_cloak(player, look.cloak_id or "none")
+	end
 	grug_inventory.equipment_changed(player)
 	grug_visuals.apply(player)
 	local props = player:get_properties()
@@ -289,6 +302,17 @@ end
 
 local SHOTS
 
+-- The api a staged scene.lua gets (see the header).
+local scene_path = core.get_modpath(core.get_current_modname()) .. "/scene.lua"
+local scene_file = io.open(scene_path, "r")
+if scene_file then
+	scene_file:close()
+	SCENE = dofile(scene_path)({log = log, items = ITEMS, warrior = warrior, scout = scout,
+		shield = shield, book = book, frames = {stand = STAND, walk = WALK, block = BLOCK,
+		cast = CAST, sit = SIT}, cams = {wide = WIDE, far = FAR, near = NEAR}, back_view = BACK_VIEW,
+		name = NAME})
+end
+
 core.register_globalstep(function(dtime)
 	state.clock = state.clock + dtime
 	if state.clock < 0.2 then return end
@@ -311,13 +335,17 @@ core.register_globalstep(function(dtime)
 		player:set_armor_groups({immortal = 1})
 		player:hud_set_flags({hotbar = false, healthbar = false, crosshair = false,
 			wielditem = false, breathbar = false, minimap = false, minimap_radar = false})
-		grug_visuals.register_cloak_source(function()
-			return stub.cloak, stub.cloak and "plain_grey" or nil, stub.wings
-		end)
+		if not (SCENE and SCENE.real_cloaks) then
+			grug_visuals.register_cloak_source(function()
+				return stub.cloak, stub.cloak and "plain_grey" or nil, stub.wings
+			end)
+		end
 		find_items()
 		log("setting grug_offhand_visuals read as " .. tostring(grug_visuals.OFFHAND_VISUALS))
 		SHOTS = {}
-		for _, shot in ipairs(grug_visuals.OFFHAND_VISUALS and shots_on() or shots_off()) do
+		local list = SCENE and (grug_visuals.OFFHAND_VISUALS and SCENE.on() or SCENE.off()) or
+			(grug_visuals.OFFHAND_VISUALS and shots_on() or shots_off())
+		for _, shot in ipairs(list) do
 			if shot.name:sub(1, #ONLY) == ONLY then SHOTS[#SHOTS + 1] = shot end
 		end
 		local at = vector.round(player:get_pos())
@@ -344,16 +372,24 @@ core.register_globalstep(function(dtime)
 			return
 		end
 		if state.waited == 0 then
-			if shot.tab then
+			if shot.before then
+				shot.before(player)
+			end
+			if shot.formspec then
+				clear()
+				player:set_pos(vec(FAR))
+				core.show_formspec(NAME, "grug_probe_r55_game:scene", shot.formspec())
+			elseif shot.tab then
 				clear()
 				player:set_pos(vec(FAR))
 				show_character(player, shot.tab, shot.rotation)
 			else
 				core.close_formspec(NAME, "grug_probe_r55_game:character")
+				core.close_formspec(NAME, "grug_probe_r55_game:scene")
 				place(player, shot)
 			end
 		end
-		if not shot.tab then
+		if not shot.tab and not shot.formspec then
 			player:set_pos(vec(shot.cam))
 			player:set_look_horizontal(shot.yaw or 0)
 			player:set_look_vertical(shot.pitch or 0)

@@ -134,8 +134,8 @@ grug_gear.MATERIALS = {
 -- (grug_professions/base_recipes.lua), which colour one shared image per tier
 -- with them. Neither weapons nor armour use it: every weapon family ships one
 -- sprite per material (`tools/wp13/gen_weapon_ladder.py`), and the armour art
--- carries each tier's palette (Round 54, docs/technical/armor-format.md). The
--- spellbooks' icons have it baked in since Round 55 (book_image below).
+-- carries each tier's palette (Round 54, docs/technical/armor-format.md), as
+-- do the shield and spellbook icons (Round 55, offhand_image below).
 -- `[multiply:#ffffff` is a no-op, so the sixth tier shows the untinted image.
 grug_gear.BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a",
 	"#e8dcb0", "#ffffff"}
@@ -150,20 +150,12 @@ local BOW_IMAGE = {
 	"grug_gear_bow_alder.png^[colorize:#b94a24:38",
 	"grug_gear_bow_birch.png^[colorize:#69458c:92",
 }
-local SHIELD_IMAGE = {
-	"grug_gear_shield_bronze.png",
-	"grug_gear_shield_iron.png^[hsl:0:-100:-12",
-	"grug_gear_shield_steel.png", "grug_gear_shield_silversteel.png",
-	"grug_gear_shield_embersteel.png^[colorize:#9f2418:112",
-	"grug_gear_shield_abyssal_steel.png",
-}
--- One spellbook icon per tier, named by the metal grade (Round 55,
--- docs/technical/offhand-format.md §7), so the finish step's painted icons
--- drop in by file. Until then each is the shared `grug_gear_spellbook.png`
--- with the old per-bracket tint (`[colorize:<BRACKET_TINT>:48`) baked in,
--- written by tools/r55_game/book_icons.py, with the shared mask copied.
-local function book_image(metal)
-	return "grug_gear_spellbook_" .. metal.key .. ".png"
+-- One shield and one spellbook icon per tier, named by the metal grade, as
+-- they are painted (Round 55, docs/technical/offhand-format.md §7): the
+-- picked art of tools/r55_art, baked with the tier's palette and its enchant
+-- mask by tools/r55_offhand/bake.py; no tint at registration.
+local function offhand_image(kind, metal)
+	return "grug_gear_" .. kind .. "_" .. metal.key .. ".png"
 end
 
 -- Item description (§6.1): name, item level, then the BASE stat line -- the
@@ -586,7 +578,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			groupcaps={}, punch_attack_uses=0},
 		description = describe(metal.name, "Shield", br.ilvl,
 			shield_rating .. " armor rating"),
-		inventory_image = SHIELD_IMAGE[bracket], _grug_enchant_masks = true,
+		inventory_image = offhand_image("shield", metal), _grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1},
 		stack_max = 1, _grug_armor = shield_rating, _grug_ilvl = br.ilvl,
 		_grug_req_level = grug_gear.required_level(br.ilvl),
@@ -601,7 +593,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			groupcaps={}, punch_attack_uses=0},
 		description = describe(metal.name, "Spellbook", br.ilvl,
 			"+" .. mana .. "% maximum Mana"),
-		inventory_image = book_image(metal),
+		inventory_image = offhand_image("spellbook", metal),
 		_grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1},
 		stack_max = 1, _grug_max_mana_percent = mana, _grug_ilvl = br.ilvl,

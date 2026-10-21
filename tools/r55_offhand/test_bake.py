@@ -12,7 +12,8 @@ zones (frame 0 A, frame 1 B, light 255, dark 153); palettes.json laid over by
 name; a book variant map; the icons and their masks; determinism; --check
 finding a missing, a changed and an extra file (and write removing the
 extra); the broken set failing with the expected messages and writing
-nothing; a hole in a texel the outline only crosses; blank sheets; a missing art
+nothing; a hole in a texel the outline only crosses; blank sheets;
+icon_palette (the icon only, an unknown one failing); a missing art
 directory; make_broken_art.py --check.
 """
 import json
@@ -328,6 +329,33 @@ def main():
         ok(bl.getpixel((cbx, cby)) == files[O.layer_file("book", GRADES[1])].getpixel((cbx, cby)),
            "book T2 cover_b still variant a")
 
+        # --- icon_palette: the icon in another palette, the sheets never --------------------
+        keep = (art2 / "tiers.json").read_text()
+        t = json.loads(keep)
+        t["shield"]["T3"]["icon_palette"] = "bronze"                    # the test palette laid over above
+        (art2 / "tiers.json").write_text(json.dumps(t))
+        f3, i3 = B.bake(art2, icons=True)
+        names = art_names(art2 / "icons" / "shield_a.png")
+        ic = i3[O.icon_file("shield", GRADES[2])]
+        ok(all(ic.getpixel(p) == L.hex_rgb(test_pal[nm]) + (255,) for p, nm in names.items()),
+           "icon_palette colours the shield T3 icon")
+        ok(i3[O.mask_file(O.icon_file("shield", GRADES[2]))].tobytes()
+           == icons[O.mask_file(O.icon_file("shield", GRADES[2]))].tobytes(), "icon_palette leaves the mask")
+        ok(f3[O.layer_file("shield", GRADES[2])].tobytes() == files[O.layer_file("shield", GRADES[2])].tobytes(),
+           "icon_palette never colours the sheets")
+        ok(i3[O.icon_file("shield", GRADES[3])].tobytes() == icons[O.icon_file("shield", GRADES[3])].tobytes(),
+           "a tier without icon_palette keeps its palette's icon")
+        t["shield"]["T3"]["icon_palette"] = "no_such_palette"
+        t["book"]["T5"]["icon_palette"] = ["bronze"]
+        (art2 / "tiers.json").write_text(json.dumps(t))
+        try:
+            B.bake(art2, icons=True)
+            ok(False, "an unknown icon_palette fails the bake")
+        except B.BakeError as e:
+            ok("shield T3: unknown icon_palette 'no_such_palette'" in str(e)
+               and "book T5: unknown icon_palette ['bronze']" in str(e), "unknown icon_palette named: %s" % e)
+        (art2 / "tiers.json").write_text(keep)
+
         # --- the command line: write, check, a missing, a changed and an extra file ---------
         out, iout = tmp / "out", tmp / "icons"
         r = run("--art", ART, "--out", out, "--icons-out", iout)
@@ -374,7 +402,7 @@ def main():
             ok(False, "an icon bake of a tier without 'icon' fails")
         except B.BakeError as e:
             ok("shield T4: names no 'icon'" in str(e), "icon bake names the tier: %s" % e)
-        # the default art directory is absent until the finish step: a clear error
+        # an absent art directory: a clear error
         r = run("--art", tmp / "r55_art_absent", "--out", tmp / "out3")
         ok(r.returncode == 1 and "no art directory" in r.stdout and not (tmp / "out3").exists(),
            "absent art: " + r.stdout)

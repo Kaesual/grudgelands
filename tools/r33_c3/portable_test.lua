@@ -32,13 +32,15 @@
 --      what the character does not own;
 --   F  the dropdown lists owned cloaks with the selected one marked; the
 --      page's resubmission of the same name changes nothing, a new name
---      selects and redraws; the tab pages its 20 achievements;
+--      selects and redraws; the tab pages its 20 achievements (the manual
+--      Supporter row is hidden until granted);
 --   C  every mob grug_mobs registers in the source (and every sub-type base)
 --      is classified, the lists are disjoint, every family, role and rare id
 --      exists in the source, every catalogue counter is one a hook produces,
---      every cloak has its texture file and the 44 Astra ids are exactly the
---      catalogue's textured cloaks (Round 36 added three, one per main-line
---      achievement, named after the cloak);
+--      every cloak has its texture file (and its wings file) and the 45
+--      Astra ids are exactly the catalogue's textured cloaks (Round 36 added
+--      three, one per main-line achievement, named after the cloak; Round 55
+--      the Supporter Cloak with wings, its manual row's);
 --   G  the faction rule (Round 36): a row with a `faction` is listed, paged,
 --      settled and earned only for that faction's characters; a character
 --      without a faction yet sees and earns only the shared rows.
@@ -435,11 +437,12 @@ for group, ids in pairs(C.RARE_GROUPS) do
 			"C rare group " .. group .. " id " .. id .. " exists")
 	end
 end
--- Every catalogue counter is one a hook produces.
+-- Every catalogue counter is one a hook produces (a manual row's is
+-- manual:<id>, which /achievement sets; Round 55).
 for _, ach in ipairs(book.achievements) do
-	local c = ach.counter
-	local ok = c == "kill:animal" or c == "kill:zombie" or c:find("^boss:") or
-		c:find("^pvp:guards$") or c == "craft:cooking" or c == "craft:alchemist" or
+	local c = ach.counter or (ach.manual and R.MANUAL .. ach.id)
+	local ok = (ach.manual and c == R.MANUAL .. ach.id) or
+		c == "kill:animal" or c == "kill:zombie" or c:find("^boss:") or c:find("^pvp:guards$") or c == "craft:cooking" or c == "craft:alchemist" or
 		c == "death:fall" or c:find("^quest:[a-z][a-z0-9_]*$") or c:find("^quest_tag:[a-z][a-z0-9_]*$")
 	local family = c:match("^kill:family:(.+)$")
 	local group = c:match("^kill:group:(.+)$")
@@ -448,8 +451,9 @@ for _, ach in ipairs(book.achievements) do
 		(rare and C.RARE_GROUPS[rare])
 	check(ok, "C counter " .. c .. " of " .. ach.id .. " is produced by a hook")
 end
--- Every textured cloak has its file, and the ids are exactly Astra's 44.
-local ASTRA = {"plain_grey", "unburnt_roll", "unbought_banner", "broken_due"}
+-- Every textured cloak has its file (and its wings file, if any), and the ids
+-- are exactly Astra's 45 (Round 55 added the Supporter Cloak).
+local ASTRA = {"plain_grey", "unburnt_roll", "unbought_banner", "broken_due", "supporter"}
 for _, row in ipairs({{"hunter", 3}, {"kingslayer", 3}, {"wyvernslayer", 3},
 		{"dragonslayer", 3}, {"honored", 3}, {"zombie_slayer", 3}, {"boaring_work", 3},
 		{"rat_race", 2}, {"suppers_ready", 3}, {"bottle_service", 3}, {"loose_bones", 3},
@@ -466,22 +470,28 @@ for _, cloak in ipairs(book.cloaks) do
 		check(handle ~= nil, "C texture file of " .. cloak.id)
 		if handle then handle:close() end
 	end
+	if cloak.wings then
+		eq(cloak.wings, "grug_achievements_cloak_" .. cloak.id .. "_wings.png", "C wings name of " .. cloak.id)
+		local handle = io.open(repo .. "/mods/PLAYER/grug_achievements/textures/" .. cloak.wings)
+		check(handle ~= nil, "C wings file of " .. cloak.id)
+		if handle then handle:close() end
+	end
 end
-eq(#ASTRA, 44, "C Astra's list")
+eq(#ASTRA, 45, "C Astra's list")
 for _, id in ipairs(ASTRA) do check(textured[id], "C catalogue has " .. id) end
 local count = 0
 for _ in pairs(textured) do count = count + 1 end
-eq(count, 44, "C no cloak beyond Astra's list")
--- Tier N of an achievement unlocks <id>_N; the Round 36 three unlock their
--- one cloak by its own name (story bible §6).
+eq(count, 45, "C no cloak beyond Astra's list")
+-- Tier N of an achievement unlocks <id>_N; the Round 36 three and Round 55's
+-- Supporter unlock their one cloak by its own name (story bible §6).
 local NAMED = {every_name_accounted_for = "unburnt_roll", our_oaths_are_ours = "unbought_banner",
-	last_claim_denied = "broken_due"}
+	last_claim_denied = "broken_due", supporter = "supporter"}
 for _, ach in ipairs(book.achievements) do
 	for t, tier in ipairs(ach.tiers) do
 		eq(tier.cloak, NAMED[ach.id] or (ach.id .. "_" .. t), "C " .. ach.id .. " tier " .. t .. " cloak")
 	end
 end
-eq(#book.achievements, 20, "C twenty achievements")
+eq(#book.achievements, 21, "C twenty-one achievements")
 
 -- G: the faction rule.
 do

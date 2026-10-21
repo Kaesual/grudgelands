@@ -15,7 +15,9 @@
 # Usage: XVFB=/path/to/Xvfb tools/r55_game/capture.sh OUT_DIR
 #   OFFHAND=true|false (default true) the setting in the staged game's
 #   minetest.conf, ONLY=<prefix> only the shots whose names start with it,
-#   ART=<art dir> (default tools/r55_offhand/test_art),
+#   ART=<art dir> (default tools/r55_offhand/test_art), SCENE=<file> another
+#   lane's shots (staged as the probe's scene.lua; the format is in the
+#   probe's init.lua),
 #   WIDTH/HEIGHT (default 1600 x 900), GUI=<gui_scaling> (default 1), SEED
 #   (default 42), SUFFIX=<text> appended to every file name, SETTLE=<seconds>
 #   before each shot (default 4), XVFB_DRIVERS (default /usr/lib64/dri).
@@ -68,7 +70,8 @@ probe="$probedir/grug_probe_r55_game"
 cp -a "$here/grug_probe_r55_game" "$probe"
 mkdir -p "$probe/textures"
 python3 "$repo/tools/r55_offhand/bake.py" --art "$art" --out "$probe/textures"
-cp "$art/wings_test.png" "$probe/textures/r55game_wings_test.png"
+[[ -f "$art/wings_test.png" ]] && cp "$art/wings_test.png" "$probe/textures/r55game_wings_test.png"
+[[ -n "${SCENE:-}" ]] && cp "$SCENE" "$probe/scene.lua"
 
 # The probe's settings, as a patch to the staged game's minetest.conf: no
 # mob spawns and the settle time.

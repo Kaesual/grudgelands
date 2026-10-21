@@ -5,7 +5,7 @@
 
 Follows the live params.json (no pinned position). Proves: the model's
 triangles wind as the renderer culls them; every tier's offhand layer and icon
-equal bake.py's own output; the shield alone, flat lit, shows every inner front
+equal bake.py's own output (the test art and the picked art); the shield alone, flat lit, shows every inner front
 texel from the front and every inner back texel from behind in its painted
 tier colour (so the F and B glyphs read unmirrored); on the character the
 shield's front shows from the character's left; the cloak card shows when a
@@ -71,16 +71,19 @@ def test_winding():
 
 
 def test_layers_equal_bake():
-    files, icons = B.bake(ART, icons=True)
-    for item in ("shield", "book"):
-        for n, tid in enumerate(L.TIER_IDS):
-            grade = A.grades[n]
-            layer, icon, missing = A.layer(item, tid)
-            ok(not missing, "layer %s %s: unexpected missing %s" % (item, tid, missing))
-            want = files[O.layer_file(item, grade)]
-            ok(layer.tobytes() == want.tobytes(), "layer %s %s differs from bake.py's" % (item, tid))
-            want = icons[O.icon_file(item, grade)]
-            ok(icon.tobytes() == want.tobytes(), "icon %s %s differs from bake.py's" % (item, tid))
+    """The test art, and the picked art (tools/r55_art/art, whose book icons
+    carry an icon_palette)."""
+    for art, a in ((ART, A), (B.ART, R.Art(B.ART))):
+        files, icons = B.bake(art, icons=True)
+        for item in ("shield", "book"):
+            for n, tid in enumerate(L.TIER_IDS):
+                grade = a.grades[n]
+                layer, icon, missing = a.layer(item, tid)
+                ok(not missing, "layer %s %s %s: unexpected missing %s" % (art.name, item, tid, missing))
+                want = files[O.layer_file(item, grade)]
+                ok(layer.tobytes() == want.tobytes(), "layer %s %s %s differs from bake.py's" % (art.name, item, tid))
+                want = icons[O.icon_file(item, grade)]
+                ok(icon.tobytes() == want.tobytes(), "icon %s %s %s differs from bake.py's" % (art.name, item, tid))
 
 
 def test_shield_alone():

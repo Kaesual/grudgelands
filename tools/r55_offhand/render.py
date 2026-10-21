@@ -360,8 +360,8 @@ class Art:
             path = B.icon_art(self.art, item, tier["icon"])
             errors = []
             cells, off, ok = B.read_grid(path, O.ICON_SIZE, errors)
-            if ok:
-                icon = B.layer_image(cells, O.ICON_SIZE, colors)
+            if ok:            # an icon_palette (format doc section 6) colours the icon only
+                icon = B.layer_image(cells, O.ICON_SIZE, self.colors(tier.get("icon_palette") or tier["palette"]))
                 checker_cells(icon, off)
                 if off:
                     missing.append("%s (%d off-palette texels)" % (self.rel(path), len(off)))
@@ -374,7 +374,8 @@ class Art:
         variants = sorted(set(tier["variant"].values()))
         v = variants[0] if len(variants) == 1 else ", ".join("%s %s" % kv for kv in sorted(tier["variant"].items()))
         lines = (["(no tiers.json entry)"] if tier.get("absent") else
-                 ["palette %s" % tier["palette"], "variant %s, icon %s" % (v, tier["icon"])])
+                 ["palette %s" % tier["palette"], "variant %s, icon %s%s" % (
+                     v, tier["icon"], " (%s)" % tier["icon_palette"] if tier.get("icon_palette") else "")])
         if item == "shield":
             n = L.TIER_IDS.index(tid) + 1
             step = O.tier_step(self.params, n)
