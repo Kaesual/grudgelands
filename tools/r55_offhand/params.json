@@ -11,7 +11,7 @@
   "book": {
     "shape": {"width": 4.5, "height": 6, "pages": 2.5, "cover": 0.25, "open": 136, "inset": 0.4, "spine_min": 0.3},
     "ribbon": {"x0": 0.05, "x1": 0.45, "below": 2.5, "into": 0.4, "half_depth": 0.2},
-    "place": {"bone": "Offhand_Book", "pos": [7.3079, 13.3422, 3.5575], "rot": [-7.3623, 121.1908, 54.6658], "order": "YXZ"}
+    "place": {"bone": "Offhand_Book", "pos": [7.5586, 12.0446, 3.8713], "rot": [-5.4796, 118.4479, 65.8828], "order": "YXZ"}
   },
   "back": {
     "size": 12,
@@ -28,8 +28,8 @@
     "Offhand_Shield": {
       "pivot": [8, 14.5, 0],
       "clips": {
-        "block": {"rot": [90, -41, -5], "order": "XYZ"},
-        "block_walk": {"rot": [90, -41, -5], "order": "XYZ"}
+        "block": {"rot": [84, -51, -8], "order": "XYZ", "pos": [-1, -2.25, 0]},
+        "block_walk": {"rot": [84, -51, -8], "order": "XYZ", "pos": [-1, -2.25, 0]}
       }
     },
     "Offhand_Book": {
