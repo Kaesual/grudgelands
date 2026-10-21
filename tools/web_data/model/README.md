@@ -2,8 +2,8 @@
 
 `grug_visuals_character.glb` is the player model of the game
 (`mods/PLAYER/grug_visuals/models/grug_visuals_character.b3d`: player_api's
-`character.b3d` with the Round 33 cloak and the Round 54 armor boxes and
-weapon card) converted to binary glTF 2.0 for the
+`character.b3d` with the Round 33 cloak, the Round 54 armor boxes and
+weapon card, and the Round 55 offhand, back card and cloak wings) converted to binary glTF 2.0 for the
 realm website (Round 39, [plan](../../../docs/planning/round39-web-data-plan.md)
 §4.3). The game itself keeps using the `.b3d`. The armored NPCs' model
 (`grug_visuals_npc.b3d`, Round 54) is not converted: the website shows
@@ -36,9 +36,9 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   this file is exactly the `.b3d`: any engine-space point, also one given in
   a bone's local frame (an attachment offset), is `(x, y, −z)` here, and an
   engine rotation matrix `R` is `S·R·S` with `S = diag(1, 1, −1)`.
-- **Mesh.** One skinned mesh `Character` on the root node `Player` with four
+- **Mesh.** One skinned mesh `Character` on the root node `Player` with seven
   primitives in the game's texture order (a stock loader such as three.js
-  makes four meshes of them):
+  makes seven meshes of them):
 
   | # | Material | Vertices | Triangles | Texture (`grug_visuals:appearance`) |
   |---|---|---|---|---|
@@ -46,6 +46,9 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   | 1 | `cloak` | 24 | 12 | `textures.cloak`, 32×32; `none` = hide the primitive |
   | 2 | `armor` | 672 | 336 | `textures.armor`, the armor atlas, 128×64; `none` (or a version 1 value, which has no `textures.armor`) = hide the primitive |
   | 3 | `weapon` | 8 | 4 | the weapon card: not stored; hide the primitive (below) |
+  | 4 | `offhand` | 316 | 158 | the offhand atlas, 64×64 (three shield copies and the open book); **transparent by default** (below) |
+  | 5 | `back` | 8 | 4 | the back card, an item image; **transparent by default** |
+  | 6 | `wings` | 28 | 12 | a cloak's wing texture, 16×32; **transparent by default** |
 
   The file holds **no images**: Luanti warns on them, and the website
   composes the textures itself. Draw them with nearest filtering, UV origin
@@ -69,10 +72,28 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   card** (or gives it a transparent texture); putting the hand image on the
   card as well would show the weapon twice, and the card is right only for
   the `tool` pose at stature 1.
+
+  The three Round 55 primitives ([offhand-format.md](../../../docs/technical/offhand-format.md))
+  are **transparent by default**: their materials' `baseColorFactor` alpha
+  is 0, so a site that does not know them draws nothing (alpha test 0.5).
+  The **offhand** primitive is the shield three times, one copy per size
+  step, each sampling its own region of the offhand atlas, and the open
+  spellbook, on the bones `Offhand_Shield` and `Offhand_Book`; the texture
+  (a baked layer, format doc §7) paints only the copy of its size, the
+  rest of the atlas is transparent. The **back** card is a two-sided
+  square on `Body` (UV 0..1 over an item image), the **wings** two
+  triangles on `Cloak`. To show one, give it its texture **and** set its
+  material's base colour alpha to 1 (in three.js:
+  `mesh.material.map = texture; mesh.material.opacity = 1;
+  mesh.material.needsUpdate = true`, the GLTFLoader puts that alpha into
+  `opacity`). Luanti reads only a material's texture index, so these
+  factors change nothing in the game.
 - **Skeleton.** `Body` (root) with `Head`, `Arm_Left`, `Arm_Right`,
   `Leg_Right`, `Leg_Left`, `Cloak` and the two swing bones `Panel_Front`
   and `Panel_Back` (hinged at the belt; the front and back armor panels
-  swing with the legs, keyed in every clip), names as in the game (`Arm_Right` is
+  swing with the legs, keyed in every clip), and under `Arm_Left` the two
+  offhand bones `Offhand_Shield` and `Offhand_Book` (keyed in every clip
+  from the offhand parameters), names as in the game (`Arm_Right` is
   the hand bone `grug_visuals/wield_geometry.lua` attaches to). Every vertex
   hangs on exactly one bone with weight 1.
 - **Clips.** One named animation per player_api animation, each starting at
