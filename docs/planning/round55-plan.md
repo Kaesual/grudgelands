@@ -371,7 +371,8 @@ faction refused; the revoke feed line "Achievement removed: X"; the offline queu
 - **The finish inside the round** (§7 allowed it), so the CHANGELOG describes the visible look, not "nothing
   visible yet".
 - **Lanes the plan did not list:** VIEWER (the painter's render tool and templates, asked for by the user), SUPPORTER
-  (the manual achievements), FINISH (the art into the game) and STACKS (added after the FINISH review).
+  (the manual achievements), FINISH (the art into the game), STACKS (added after the FINISH review) and ICONS (the user's redrawn armor
+  icons, two Astra drops).
 - **The icons** were drawn freely by Astra (CC0) instead of adapting the old CC BY-SA shield and book icons; the old
   rows left the licence files and CREDITS credits Lord of the Test for bows only.
 - **Lane D regenerated `tools/r55_offhand/templates/`**: `templates.py --check` had failed on main since `93e6aad8`
@@ -473,7 +474,8 @@ shields and spellbooks), so its old appearance and stacks meet the new code.
     no offhand; an old character's stored appearance shows the new offhand images after its join and the next
    export. `/glb_probe` still shows the `.glb` like the `.b3d`.
 13. **Armor icons** (ICONS): the 72 new armor icons at 16 and 32 px in the inventory, shop and loot, plain,
-    enchanted and broken; the Character tab's four empty-slot ghosts (the darkened metal T3 icons).
+    enchanted and broken; the Character tab's four empty-slot ghosts (the darkened metal T3 icons); the capital's
+    product displays (Armorsmith, Tailor, Leatherworker) show the new chest icons.
 
 ### Round-end gates
 
