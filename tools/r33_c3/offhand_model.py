@@ -9,7 +9,7 @@ z forward; armor-format.md §1); gen_cloak_model.py converts to the model
 
   * the shield, one copy per size step (format doc §3.1, UVs §4);
   * the open book's six boxes (§3.2, UVs §4);
-  * the back card (§3.3) and the two cloak wings (§3.4, UVs §6);
+  * the two back cards (§3.3) and the two cloak wings (§3.4, UVs §6);
   * a bone key's rotation and translation at a clip frame (§2.3) and the
     quaternion helpers the steadiness needs.
 

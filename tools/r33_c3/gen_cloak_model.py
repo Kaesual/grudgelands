@@ -66,8 +66,10 @@ the geometry and key maths in offhand_model.py next to this file):
     and `Offhand_Book`, keyed here in every frame of every range from the
     parameter file (identity where a clip has no entry and between ranges;
     poses.json knows nothing of them);
-  * the BACK card, a two-sided square on Body (or the cloak) showing an
-    item image, and the two cloak WINGS on the Cloak bone (player only).
+  * the BACK buffer, two two-sided cards showing an item image, one riding
+    the Cloak and one on Body (the NPC model: the body card only), each
+    sampling its half of the back texture, and the two cloak WINGS on the
+    Cloak bone (player only).
   Every part is always in the model; an empty slot is blank.png.
 Texture slots: the player model {skin, cloak, armor, weapon, offhand, back,
 wings}; the NPC model `grug_visuals_npc.b3d` {skin, armor, weapon, offhand,
