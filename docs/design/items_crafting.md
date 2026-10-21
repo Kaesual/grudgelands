@@ -1232,7 +1232,10 @@ the project in one reference palette, the user's picks per line and tier
 (metal "Bastion" T1–T5 and "Processional guard" T6, leather "Trail coat",
 cloth "Cantor"): box sheets worn on the character, inner paint on the skin
 and a 16 px icon per piece, each tier with its own palette, so a tier
-shows by its shapes and colours without a runtime tint. The tool
+shows by its shapes and colours without a runtime tint. The 72 icons were
+redrawn simpler in Round 55 (one bold silhouette per slot that reads at
+16 px, picked by the user per line and slot from two icon drops,
+2026-10-21) under the same file names and tier palettes. The tool
 `tools/r54_armor/bake.py` turns the art in `tools/r54_art/` into the game's
 files and their enchant masks; the look is
 [character_visuals.md](character_visuals.md) §3, the format
