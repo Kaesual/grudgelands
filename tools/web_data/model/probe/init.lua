@@ -5,7 +5,7 @@
 --   /glb_probe        spawns two models three nodes in front of the caller,
 --                     facing them: the glTF model on the left, the game's
 --                     .b3d on the right, both with the caller's textures
---                     (skin, cloak, armor, weapon card) and visual size;
+--                     (every slot of the player model) and visual size;
 --                     they switch stand <-> walk together every SWITCH
 --                     seconds (the nametag names the clip)
 --   /glb_probe clear  removes them (they are never saved either)

@@ -46,9 +46,9 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   | 1 | `cloak` | 24 | 12 | `textures.cloak`, 32×32; `none` = hide the primitive |
   | 2 | `armor` | 672 | 336 | `textures.armor`, the armor atlas, 128×64; `none` (or a version 1 value, which has no `textures.armor`) = hide the primitive |
   | 3 | `weapon` | 8 | 4 | the weapon card: not stored; hide the primitive (below) |
-  | 4 | `offhand` | 324 | 162 | the offhand atlas, 64×64 (three shield copies and the open book); **transparent by default** (below) |
-  | 5 | `back` | 16 | 8 | the two back cards (cloak card u 0..0.5, body card u 0.5..1 of a 32×16 texture); **transparent by default** |
-  | 6 | `wings` | 28 | 12 | a cloak's wing texture, 16×32; **transparent by default** |
+  | 4 | `offhand` | 324 | 162 | `textures.offhand`, the offhand atlas, 64×64 (three shield copies and the open book); **transparent by default** (below) |
+  | 5 | `back` | 16 | 8 | the Scout's back card: not stored, derived ([web export](../README.md#the-offhand-look)); the two cards sample the cloak card u 0..0.5, the body card u 0.5..1 of a 32×16 texture; **transparent by default** |
+  | 6 | `wings` | 28 | 12 | `textures.wings`, a cloak's wing texture, 16×32; **transparent by default** |
 
   The file holds **no images**: Luanti warns on them, and the website
   composes the textures itself. Draw them with nearest filtering, UV origin
@@ -88,8 +88,22 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   material's base colour alpha to 1 (in three.js:
   `mesh.material.map = texture; mesh.material.opacity = 1;
   mesh.material.needsUpdate = true`, the GLTFLoader puts that alpha into
-  `opacity`). Luanti reads only a material's texture index, so these
-  factors change nothing in the game.
+  `opacity`). A website that builds its own materials instead of the
+  loader's must hide the three itself (`mesh.visible = false`) while they
+  are empty. Luanti reads only a material's texture index, so these
+  factors change nothing in the game. When to show which, and the back
+  card's texture, is the web export's
+  [offhand look](../README.md#the-offhand-look) (none at all while its
+  `enabled` is false). Each back card faces backwards with the image
+  upright, so it reads the right way from behind; the card in the half
+  the texture leaves transparent stays invisible. The wings are two-sided
+  by their geometry (an outer face and a lining; the right wing shows the
+  left wing's texels mirrored, offhand-format.md §6). The file has only
+  `stand` and `walk` (below), and the offhand parameters
+  (`tools/r55_offhand/params.json`) key neither today: in both the shield
+  and the book ride `Arm_Left` rigidly, as in the game in those clips (a
+  later key there reaches the file with the next rebuild). The raised shield of Block and the book of Cast are skill
+  poses the file does not carry.
 - **Skeleton.** `Body` (root) with `Head`, `Arm_Left`, `Arm_Right`,
   `Leg_Right`, `Leg_Left`, `Cloak` and the two swing bones `Panel_Front`
   and `Panel_Back` (hinged at the belt; the front and back armor panels
@@ -171,7 +185,8 @@ cp tools/web_data/model/grug_visuals_character.glb "$W/worldmods/grug_glb_probe/
 Join the world and type `/glb_probe` (needs the `server` privilege, which
 singleplayer has). Three nodes ahead, facing you, stand the glTF model
 (left, nametag `glb: …`) and the game's `.b3d` (right, `b3d: …`), both in
-your current textures (skin, cloak, armor, the empty weapon card) and size;
+your current textures (skin, cloak, armor, the empty weapon card and the
+offhand look's three slots) and size;
 every 4 seconds both switch between stand and walk. They should look the
 same: body, cloak, armor, the swinging panels, both clips. A headless shot
 of the same comparison (Round 54, the test character of

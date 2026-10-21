@@ -30,7 +30,8 @@ tools/run_fixtures.sh web_data              # the fixture: current + shape
 
 Regenerate after any change to factions, races, classes, the XP curve, the
 player model's frames, the wield geometry, equippable items, the appearance
-constants or the texture directories; the fixture
+constants, the texture directories, or the offhand look's setting default
+or back card (the finish step's art and setting change both); the fixture
 (`tools/web_data/portable_test.lua`, part of `tools/run_fixtures.sh`) fails
 while the committed file is stale.
 
@@ -54,19 +55,41 @@ rounded to ten significant digits.
 | Field | Meaning |
 |---|---|
 | `schema` | Version of this file's format (1). Raised on any incompatible change to `web_data.json`. |
-| `appearance_version` | The `v` of the `grug_visuals:appearance` values this export describes (`grug_visuals.APPEARANCE_VERSION`; 2 since Round 54). A stored value with `v` 1 is shown as [below](#version-1-appearances); any other `v` is not described by this file. |
+| `appearance_version` | The `v` of the `grug_visuals:appearance` values this export describes (`grug_visuals.APPEARANCE_VERSION`; 3 since Round 55). A stored value with `v` 2 is shown as [below](#version-2-appearances), one with `v` 1 as [further below](#version-1-appearances); any other `v` is not described by this file. |
 
 ### Appearance limits and textures
 
 | Field | Meaning |
 |---|---|
-| `appearance_limits.texture_max_bytes` | Maximum length in bytes of every texture string in a stored appearance (body, cloak, armor, hand images). |
+| `appearance_limits.texture_max_bytes` | Maximum length in bytes of every texture string in a stored appearance (body, cloak, armor, offhand, wings, hand images). |
 | `appearance_limits.json_max_bytes` | Maximum length in bytes of the whole stored `grug_visuals:appearance` value. |
 | `texture_grammar` | The closed grammar every stored texture string parses under, `grug_visuals.APPEARANCE_TEXTURE` verbatim (the contract section explains it): `max_depth` (parenthesis nesting; 3 since version 2), `escaped` (false: nothing is escaped), `file` (`charset` and `suffix` of a file name), `dirs` (the repository directories the files come from), `engine_files` (modifier → the engine texture it draws without naming it), `args` (argument kind → its definition: `int` {`pattern`, `signed`, `min_digits`, `max_digits`, `min`, `max`}, `color` {`pattern`, `form`}, `file` {`pattern`, `max_length`}, each with a prose `description`; `pattern` is a Lua pattern of the whole argument, and the explicit limits beside it define each kind fully, so a website implements them without translating Lua patterns), `modifiers` (modifier name → its argument kinds in order). |
 | `texture_files` | Every PNG a stored texture string may name or a modifier may draw, sorted by `name`. `engine: false` entries are the files of `texture_grammar.dirs`, at `path` (repository path); `engine: true` entries are textures the engine itself provides (`texture_grammar.engine_files`, no `path`; the website supplies an equivalent). |
 
 A website parses a stored string with an allow-listed, bounded parser
 against `texture_grammar` and `texture_files` and rejects anything else.
+
+### Version 2 appearances
+
+Round 55 (0.55.0) raised the appearance to version 3, which adds
+`textures.offhand` and `textures.wings` ([below](#the-offhand-look)) and
+changes nothing else: the grammar, the per-string cap and every other field
+are the same, and the JSON cap grew to make room (12,288 bytes in version
+2). A character who has not joined since keeps the version 2 value 0.54.x
+wrote, until the next join rebuilds it. **Read a version 2 value as a
+version 3 value whose `textures.offhand` and `textures.wings` are `none`**
+(a missing key already means an empty slot, so a reader that treats both
+keys that way needs no version check). Everything else is read and
+validated as in version 3, under the current limits and grammar; the back
+card does not depend on the version. Every string a version 2 value holds
+still validates: the one image Round 55 replaced, the spellbook's shared
+`grug_gear_spellbook.png` (a version 2 spellbook's hand image is
+`grug_gear_spellbook.png^[colorize:#rrggbb:48`, with its masks when
+enchanted), stays in the game and in `texture_files`.
+
+`tools/r55_web` checks the rule against the value 0.54.1 wrote for the
+Round 54 test character: read this way, it is exactly the version 3 value
+the current game writes for that character.
 
 ### Version 1 appearances
 
@@ -102,6 +125,7 @@ character is shown **without armor** until the next join:
    `textures.cloak` and `slots` (hand images included) are read as in
    version 2, each texture string validated under the current grammar
    (a hand image that fails falls back to `hand_items.<item>.wield_image`).
+   As in version 2, there is no offhand and no wings.
 
 `tools/r54_web` holds bodies and whole values the old game composed
 (`v1_samples.lua`) and a fixture that checks this rule against them.
@@ -129,7 +153,7 @@ character is shown **without armor** until the next join:
 |---|---|
 | `model.b3d` | Repository path of the player model the game uses. |
 | `model.gltf` | Repository path of the same model as glTF binary ([`model/`](model/)). |
-| `model.textures` | The model's texture slots in order, one per glTF primitive: `body` (the appearance's `textures.body`, the skin under the armor), `cloak` (`textures.cloak`), `armor` (`textures.armor`, the armor atlas), `weapon` (the weapon card: not stored; a website hides it and draws the weapon by `wield`, [model README](model/README.md)). `none`, and a key a stored value does not have, means an empty slot (hide that primitive, or draw it fully transparent). |
+| `model.textures` | The model's texture slots in order, one per glTF primitive: `body` (the appearance's `textures.body`, the skin under the armor), `cloak` (`textures.cloak`), `armor` (`textures.armor`, the armor atlas), `weapon` (the weapon card: not stored; a website hides it and draws the weapon by `wield`, [model README](model/README.md)), `offhand` (`textures.offhand`, a shield's or spellbook's offhand atlas layer), `back` (the Scout's back card: not stored, the website derives it) and `wings` (`textures.wings`, a cloak's wings); the last three only as [the offhand look](#the-offhand-look) says. `none`, and a key a stored value does not have, means an empty slot (hide that primitive, or draw it fully transparent). |
 | `model.fps` | Animation frames per second. |
 | `model.animations.stand`, `.walk` | Frame ranges (`start`, `end`, inclusive) in model frames, looped. In the glTF clip of the same name, frame `f` is at `(f − start) / fps` seconds. |
 
@@ -170,8 +194,60 @@ Frames and units, as the engine applies them (derivation:
   per-race values already contain the compensation that makes the item equally large in every
   hand (`size` = 0.32 / stature).
 
-The offhand is stored in the appearance but not drawn by the game yet; there
-is no offhand attachment.
+The offhand item has no attachment: the game draws a shield or spellbook
+as part of the model, while the offhand look is on
+([below](#the-offhand-look)).
+
+### The offhand look
+
+Round 55 built three parts into the model
+([offhand format](../../docs/technical/offhand-format.md)):
+
+- a shield or an open spellbook in the left hand;
+- the Scout's second weapon on a flat card on the back;
+- wings on a cloak.
+
+The game draws them only while the setting `grug_offhand_visuals` is on.
+It is off by default until the final art arrives (the round's finish step),
+and while it is off every character looks as in 0.54.x.
+
+| Field | Meaning |
+|---|---|
+| `offhand_look.setting` | The setting's name, `grug_offhand_visuals`. |
+| `offhand_look.enabled` | The setting's default at this commit (`false` in 0.55.0). While it is false, a website draws **no** offhand, back card or wings: hide the three primitives. The stored `textures.offhand` and `textures.wings` are `none` then anyway; the back card, which no value stores, is what needs this field. A realm whose operator sets the setting otherwise departs from this default, which the export cannot see. |
+| `offhand_look.layers.shield`, `.book` | The baked offhand atlas layer of each bracket, index 0 = bracket 1 to index 5 = bracket 6 (the item `grug_gear:shield_<grade>` or `grug_gear:spellbook_<grade>` of that bracket's metal grade), the files a stored `textures.offhand` names. Each has its enchant mask `<stem>_ench.png` beside it. The files arrive with the finish step's art. Until then they are not in `texture_files` (and no stored value names them, the setting being off); from the commit that ships them, `texture_files` lists them with their paths like any other file, and `enabled` becomes true. |
+| `offhand_look.back_card` | The Scout's back card: `class` (the `grug_classes:class` that carries one), `width` × `height` (the back texture, 32 × 16), `cloak_x` and `body_x` (the column where the 16 × 16 image goes: the left half is the card on the cloak, the right half the card on the body). |
+
+While `enabled` is true:
+
+- **`textures.offhand`** (`none` = empty) is drawn on the `offhand`
+  primitive. It is an atlas string of the same kind as `textures.armor`:
+  64 × 64, the same grammar, the layer in its own parentheses with the same
+  enchant colours and broken wrapper. The model carries the shield three
+  times, once per size step, and the layer paints only the copy of its
+  tier's size; the rest of the atlas is transparent.
+- **`textures.wings`** (`none` = empty) is a cloak's wing file (16 × 32),
+  drawn on the `wings` primitive. No cloak has wings yet.
+- **The back card** is never stored; derive it. Only a character whose
+  `grug_classes:class` is `back_card.class` has one. The card shows the
+  Scout's equipped weapon that the hand does **not** show. A Scout's bow
+  is `slots.mainhand` and the melee blade `slots.offhand`.
+  - A website that draws `slots.mainhand` in the hand (the hand attachment,
+    `wield`) shows `slots.offhand` on the card. This is the game's
+    Character tab. There is no card unless both slots are stored.
+  - A website that draws no hand item shows `slots.mainhand` on the card,
+    and no card without it.
+
+  The texture is a transparent `width` × `height` image. Draw the slot's
+  `image` (16 × 16; validated like any hand image, falling back to
+  `hand_items.<item>.wield_image`) at column `cloak_x` when the stored
+  `cloak` is not `none`, else at `body_x`, row 0. The other half stays
+  transparent, so only the card on the cloak or only the one on the body
+  shows. Put it on the `back` primitive. The game builds the same texture
+  as `[combine:32x16:<x>,0=<image>`; `[combine` is outside the grammar,
+  so a website composes it itself. In the world the game's card follows
+  what the player holds at that moment (a bow skill puts the blade on the
+  back, anything else the bow); a website shows one fixed view.
 
 ### Items
 

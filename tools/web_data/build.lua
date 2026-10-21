@@ -349,6 +349,62 @@ local function texture_files(root, grammar)
 	return array(files)
 end
 
+-- The offhand look (Round 55, docs/technical/offhand-format.md; README "The
+-- offhand look"): whether the game draws it, the baked layer files a stored
+-- `textures.offhand` names, and the Scout's back card, which no appearance
+-- stores. `enabled` is the setting's default at this commit (the stub in
+-- load_game answers every get_bool with its default, as a server that never
+-- set it), checked against the default settingtypes.txt states. `layers`
+-- comes from the game's own offhand index (index_armor: item group and
+-- bracket), one file per kind and bracket; the files ship with the finish
+-- step's art, and texture_files lists them from then on. The back card's
+-- class is apply.lua's local, its texture size and the two halves are what
+-- grug_visuals.back_card writes.
+local OFFHAND_SETTING = "grug_offhand_visuals"
+
+local function offhand_look(root, gv, items)
+	local default = read(root .. "/settingtypes.txt"):match("\n" ..
+		OFFHAND_SETTING .. " %b() bool (%a+)")
+	assert(default, "web_data: settingtypes.txt has no bool " .. OFFHAND_SETTING)
+	local enabled = gv.OFFHAND_VISUALS == true
+	assert(tostring(enabled) == default, "web_data: grug_visuals.OFFHAND_VISUALS (" ..
+		tostring(enabled) .. ") is not the default settingtypes.txt gives " ..
+		OFFHAND_SETTING .. " (" .. default .. ")")
+
+	gv.index_armor(items)
+	local layers = {}
+	for name, entry in pairs(gv.offhand_appearance) do
+		local list = layers[entry.kind] or array()
+		layers[entry.kind] = list
+		assert(list[entry.bracket] == nil or list[entry.bracket] == entry.file,
+			"web_data: two offhand layers for " .. entry.kind .. " bracket " ..
+			entry.bracket .. " (" .. name .. ")")
+		list[entry.bracket] = entry.file
+	end
+	for kind, list in pairs(layers) do
+		for bracket = 1, #grug_gear.BRACKETS do
+			assert(list[bracket], "web_data: no " .. kind .. " layer for bracket " .. bracket)
+		end
+	end
+
+	local class = read(root .. "/" .. MODS.grug_visuals .. "/apply.lua")
+		:match('\nlocal BACK_CARD_CLASS = "([%w_]+)"')
+	assert(class, "web_data: apply.lua names no BACK_CARD_CLASS")
+	local function card(on_cloak)
+		local w, h, x, y = gv.back_card("x.png", on_cloak)
+			:match("^%[combine:(%d+)x(%d+):(%d+),(%d+)=x%.png$")
+		assert(w and y == "0", "web_data: grug_visuals.back_card wrote an unknown form")
+		return tonumber(w), tonumber(h), tonumber(x)
+	end
+	local width, height, cloak_x = card(true)
+	local body_width, body_height, body_x = card(false)
+	assert(width == body_width and height == body_height,
+		"web_data: the two back cards differ in size")
+	return {setting = OFFHAND_SETTING, enabled = enabled, layers = layers,
+		back_card = {class = class, width = width, height = height,
+			cloak_x = cloak_x, body_x = body_x}}
+end
+
 local function vec3(v)
 	return {x = v.x, y = v.y, z = v.z}
 end
@@ -515,6 +571,7 @@ function M.build(root)
 		races = races,
 		classes = classes,
 		model = model,
+		offhand_look = offhand_look(root, gv, items),
 		wield = wield,
 		hand_items = hand_items,
 		equippable_items = equippable,
