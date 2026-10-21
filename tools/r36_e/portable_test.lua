@@ -115,6 +115,10 @@ core = {
 	register_entity = function(name, def) entities[name] = def end,
 	register_on_player_hpchange = function(fn) hp_callbacks[#hp_callbacks + 1] = fn end,
 	register_on_joinplayer = function(fn) joins[#joins + 1] = fn end,
+	-- Round 55: grug_achievements' offline queue (an empty mod storage).
+	get_mod_storage = function()
+		return {get_string = function() return "" end, set_string = function() end}
+	end,
 	-- Blocks high above the ground are not loaded (out of the active range);
 	-- `unloaded` unloads everything.
 	get_node_or_nil = function(pos)

@@ -49,6 +49,10 @@ core = {
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
 	add_item = function(_, stack) H.dropped[#H.dropped + 1] = ItemStack(stack):to_string() end,
 	after = function() end,
+	-- Round 55: grug_achievements' offline queue (an empty mod storage).
+	get_mod_storage = function()
+		return {get_string = function() return "" end, set_string = function() end}
+	end,
 }
 setmetatable(core, {__index = function(_, key)
 	if type(key) == "string" and key:match("^register_") then return function() end end
