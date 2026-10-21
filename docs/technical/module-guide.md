@@ -122,7 +122,11 @@ tools](#player-meta-read-by-external-tools).
 - **Professions**: `grug_jobs` owns the exact six primaries — Weaponsmith,
   Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith — plus the
   secondaries Cooking and Alchemy (`alchemist`; Round 33), two primary slots,
-  player-meta progression and the recipe registry.
+  player-meta progression and the recipe registry. The debug command `/prof`
+  (`grug_jobs/admin.lua`, `professions.md` §1.6) writes through
+  `state.lua`'s `admin_set(player, profession, tier, slot)` (the tier capped
+  at `character_tier`) and `admin_unlearn(player, profession)`; both share
+  `unlearn`'s `drop_progression` (job XP forfeited, target slot returned).
 - **The recipe registry** (Round 45, `grug_jobs/registry.lua`): every craft is
   a record `{id, output, count, ingredients = {{item = name | group = name,
   n}, ...}, area, profession, tier, time, station, progress}`; `area` is

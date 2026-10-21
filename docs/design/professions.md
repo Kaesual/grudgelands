@@ -319,6 +319,28 @@ material/profession repair remains later work
 - Profession progression requires exact equality of recipe tier and current
   effective profession tier.
 
+### 1.6 The `/prof` debug command
+
+A server administrator (`server` privilege) can show and change an online
+player's professions by name, for debugging (`grug_jobs/admin.lua`):
+
+- `/prof <player>`: both slots, Cooking and Alchemy with tier and crafts, the
+  character level and the highest tier it is eligible for.
+- `/prof set <player> <1|2> <profession> <tier>` puts a primary into a slot at
+  a tier (`T6` or `6`); `/prof set <player> <cooking|alchemy> <tier>` sets a
+  secondary. A primary it replaces is lost as by unlearning; one already in
+  the other slot is refused.
+- `/prof learn <player> <profession> [tier]` learns into the first free slot;
+  `/prof unlearn <player> <profession>` removes any learned profession,
+  secondaries included (Cooking returns at the next join); `/prof clear
+  <player> <1|2>` empties a slot.
+
+The tier is capped at the character's band (§1.1: one tier per ten levels),
+so the command never grants more than play could reach; the answer names the
+cap ("only eligible for T2 (character level 12)"). The tier's crafts start at
+0. The target gets one chat line (none when the administrator names
+themselves), and each change is an action log line.
+
 ## 2. MVP roster — six primaries and two secondaries, cut by material
 
 Two free main professions per player, unchanged, plus the two secondaries
