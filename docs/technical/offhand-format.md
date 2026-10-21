@@ -244,7 +244,7 @@ abyssal_steel; `offhand.grades()`).
 | `grug_offhand_shield_<grade>.png` | `grug_visuals/textures` | atlas layer: the tier's shield sheet in the sheet of its size step, the rest transparent |
 | `grug_offhand_book_<grade>.png` | `grug_visuals/textures` | atlas layer: the book's sheets, the rest transparent |
 | `grug_gear_shield_<grade>.png` | `grug_gear/textures` | shield icon (today's names) |
-| `grug_gear_spellbook_<grade>.png` | `grug_gear/textures` | spellbook icon, one per tier (until the finish: today's image with today's tint, written by GAME) |
+| `grug_gear_spellbook_<grade>.png` | `grug_gear/textures` | spellbook icon, one per tier (the picked art since the finish; `--icons-out`) |
 | `…_ench.png` next to each | | the enchant mask in the armor's format: grey + alpha, two frames stacked (frame 0 zone A, frame 1 zone B; light 255, dark 153) |
 
 ## 8. Checks
