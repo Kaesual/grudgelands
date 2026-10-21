@@ -46,7 +46,7 @@ Both are Python 3 standard library. Rerun the converter whenever the `.b3d`
   | 1 | `cloak` | 24 | 12 | `textures.cloak`, 32×32; `none` = hide the primitive |
   | 2 | `armor` | 672 | 336 | `textures.armor`, the armor atlas, 128×64; `none` (or a version 1 value, which has no `textures.armor`) = hide the primitive |
   | 3 | `weapon` | 8 | 4 | the weapon card: not stored; hide the primitive (below) |
-  | 4 | `offhand` | 316 | 158 | the offhand atlas, 64×64 (three shield copies and the open book); **transparent by default** (below) |
+  | 4 | `offhand` | 324 | 162 | the offhand atlas, 64×64 (three shield copies and the open book); **transparent by default** (below) |
   | 5 | `back` | 16 | 8 | the two back cards (cloak card u 0..0.5, body card u 0.5..1 of a 32×16 texture); **transparent by default** |
   | 6 | `wings` | 28 | 12 | a cloak's wing texture, 16×32; **transparent by default** |
 

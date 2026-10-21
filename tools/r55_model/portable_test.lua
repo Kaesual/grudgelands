@@ -12,7 +12,7 @@
 --   U  the buffers in the contract's texture order: player skin, cloak,
 --      armor, weapon, offhand, back, wings; NPC skin, armor, weapon,
 --      offhand, back. The offhand buffer (three shield copies of 28
---      triangles plus the optional 4-triangle boss, the book's 62) rides
+--      triangles plus the optional 4-triangle boss, the book's 66) rides
 --      only the two offhand bones, each with vertices, its UVs inside the
 --      atlas; the back buffer is the body card on Body (8 vertices, 4
 --      triangles, the right half of the 32 x 16 back texture, u 0.5..1) and,
@@ -182,8 +182,8 @@ for _, case in ipairs({
 	check((bones.Offhand_Shield or 0) > 0 and (bones.Offhand_Book or 0) > 0,
 		"U " .. name .. ": both offhand bones carry vertices")
 	local tris = #(model.buffers[off] or {})
-	check(tris == 3 * 28 + 62 or tris == 3 * 32 + 62, "U " .. name .. ": offhand triangles " .. tris ..
-		" (three shields of 28, with the boss 32, and the book's 62)")
+	check(tris == 3 * 28 + 66 or tris == 3 * 32 + 66, "U " .. name .. ": offhand triangles " .. tris ..
+		" (three shields of 28, with the boss 32, and the book's 66)")
 	local outside = 0
 	for v in pairs(seen) do
 		local uv = model.verts[v + 1].uv

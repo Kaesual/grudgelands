@@ -51,7 +51,7 @@ ORDERS = ("XYZ", "XZY", "YXZ", "YZX", "ZXY", "ZYX")
 FACES = ("top", "bottom", "right", "front", "left", "back")
 # The book's boxes in the closed frame (section 3.2): faces each one leaves out.
 BOOK_BOXES = ("cover_f", "cover_b", "pages_f", "pages_b", "spine", "ribbon")
-BOOK_SKIP = {"pages_f": ("right", "front"), "pages_b": ("right", "back"), "ribbon": ("top",)}
+BOOK_SKIP = {"pages_f": ("front",), "pages_b": ("back",), "ribbon": ("top",)}
 
 
 class ContractError(Exception):
@@ -188,15 +188,20 @@ def shield_front_z(shape, x):
 def book_boxes(shape, ribbon):
     """{box: (x0, y0, z0, x1, y1, z1)} of the book in its CLOSED frame (section
     3.2): the spine along y at x = 0, the front half at z > 0, the back half at
-    z < 0, page tops at +y. The halves then open about the y axis (book_turn)."""
+    z < 0, page tops at +y. The halves then open about the y axis (book_turn);
+    the spine is not turned: it is the plate behind the open halves that joins
+    the covers' spine edges (at x = -(p + c) sin(open / 2), z = +-(p + c)
+    cos(open / 2)), at least spine_min thick each way."""
     w, h, p, c, i = shape["width"], shape["height"], shape["pages"] / 2, shape["cover"], shape["inset"]
     sp = max(c, shape["spine_min"])
+    a = math.radians(shape["open"] / 2)
+    back, half = (p + c) * math.sin(a), max((p + c) * math.cos(a), sp / 2)
     return {
         "cover_f": (0, -h / 2, p, w, h / 2, p + c),
         "cover_b": (0, -h / 2, -p - c, w, h / 2, -p),
         "pages_f": (0, -h / 2 + i, 0, w - i, h / 2 - i, p),
         "pages_b": (0, -h / 2 + i, -p, w - i, h / 2 - i, 0),
-        "spine": (-sp, -h / 2, -p - c, 0, h / 2, p + c),
+        "spine": (-back - sp, -h / 2, -half, -back, h / 2, half),
         "ribbon": (ribbon["x0"], -h / 2 - ribbon["below"], -ribbon["half_depth"],
                    ribbon["x1"], -h / 2 + ribbon["into"], ribbon["half_depth"]),
     }
