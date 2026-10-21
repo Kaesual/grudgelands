@@ -30,6 +30,11 @@
 -- `faction` (catalog.lua) is never shown to, settled for or earned by a
 -- character of the other faction or one without a faction yet.
 --
+-- A manual achievement (catalog.lua `manual = true`, Round 55) is never
+-- earned by playing: an admin grants or revokes it with /achievement (the
+-- `server` privilege), for a player who is offline at the next join. The tab
+-- lists it only once granted.
+--
 -- Public API:
 --   grug_achievements.add(player, counter[, amount])  count and settle
 --   grug_achievements.select_cloak(player, id) -> bool
@@ -47,6 +52,7 @@ local modpath = core.get_modpath(core.get_current_modname())
 local R = dofile(modpath .. "/core.lua")
 local C = dofile(modpath .. "/creatures.lua")
 local book = R.build(dofile(modpath .. "/catalog.lua"))
+local storage = core.get_mod_storage()
 
 grug_achievements.rules = R
 grug_achievements.creatures = C
@@ -123,8 +129,88 @@ function grug_achievements.add(player, counter, amount)
 	counter_changed(player, counter)
 end
 
+--
+-- Manual achievements and /achievement
+--
+
+-- Grant or revoke manual achievement `ach` for an online player; returns
+-- whether anything changed.
+local function apply_manual(player, ach, action)
+	local meta = player:get_meta()
+	if action == "grant" then
+		local rows = R.grant(book, meta, ach)
+		if #rows > 0 then
+			announce(player, rows)
+		end
+		return #rows > 0
+	end
+	local had, worn = R.revoke(book, meta, ach)
+	if had then
+		grug_core.feed(player, "notice", "Achievement removed: " .. ach.name,
+			"achievement:" .. ach.id .. ":1")
+	end
+	if worn then
+		grug_visuals.apply(player)
+	end
+	grug_inventory.refresh_character(player)
+	return had
+end
+
+local PAST = {grant = "granted", revoke = "revoked"}
+
+core.register_chatcommand("achievement", {
+	params = "grant|revoke <player> <achievement id>",
+	description = "Grant or revoke a manual achievement (queued for a " ..
+		"player who is offline)",
+	privs = {server = true},
+	func = function(name, param)
+		local action, target, id = (param or ""):match("^%s*(%a+)%s+(%S+)%s+(%S+)%s*$")
+		if not PAST[action] then
+			return false, "Usage: /achievement grant|revoke <player> <achievement id>"
+		end
+		local ach = book.achievement[id]
+		if not ach then
+			return false, "Unknown achievement: " .. id
+		end
+		if not ach.manual then
+			return false, ach.name .. " is earned by playing, not " .. PAST[action] .. "."
+		end
+		local player = core.get_player_by_name(target)
+		if not player then
+			if not core.player_exists(target) then
+				return false, "No player named " .. target .. "."
+			end
+			R.queue(storage, target, id, action)
+			core.log("action", ("[grug_achievements] %s queued: %s %s for %s " ..
+				"(offline)"):format(name, action, id, target))
+			return true, target .. " is offline: " .. ach.name .. " will be " ..
+				PAST[action] .. " at their next join."
+		end
+		local changed = apply_manual(player, ach, action)
+		core.log("action", ("[grug_achievements] %s %s %s for %s%s"):format(name,
+			action, id, target, changed and "" or " (no change)"))
+		if not changed then
+			return true, action == "grant" and (target .. " already has " .. ach.name .. ".")
+				or (target .. " does not have " .. ach.name .. ".")
+		end
+		return true, ach.name .. " " .. PAST[action] .. " for " .. target .. "."
+	end,
+})
+
 core.register_on_joinplayer(function(player)
 	local meta = player:get_meta()
+	-- Grants and revokes queued while the player was offline, once; an id
+	-- the catalogue no longer has as manual is dropped.
+	local name = player:get_player_name()
+	for _, entry in ipairs(R.take_queue(storage, name)) do
+		local ach = book.achievement[entry.id]
+		if ach and ach.manual and PAST[entry.action] then
+			local changed = apply_manual(player, ach, entry.action)
+			core.log("action", ("[grug_achievements] queued %s of %s applied " ..
+				"for %s%s"):format(entry.action, entry.id, name,
+				changed and "" or " (no change)"))
+		end
+	end
 	for _, ach in ipairs(R.visible_list(book, faction_of(player))) do
 		local rows = R.settle(book, meta, ach, value_of(player, ach.counter))
 		if #rows > 0 then
@@ -359,7 +445,11 @@ function grug_achievements.row(player, ach)
 end
 
 -- Only the character's own achievements are listed and paged: a row of the
--- other faction is never shown.
+-- other faction is never shown, a manual one only once granted.
+local function shown_list(player)
+	return R.shown_list(book, player:get_meta(), faction_of(player))
+end
+
 local function page_count(list)
 	return math.max(1, math.ceil(#list / PER_PAGE))
 end
@@ -367,7 +457,7 @@ end
 -- `area` is the mode area {x, y, w, h}: the rows from its top, the pager at
 -- its foot.
 function grug_achievements.character_achievements_formspec(player, context, area)
-	local list = R.visible_list(book, faction_of(player))
+	local list = shown_list(player)
 	local pages = page_count(list)
 	local page = math.max(1, math.min(context.grug_achievements_page or 1, pages))
 	context.grug_achievements_page = page
@@ -409,7 +499,7 @@ function grug_achievements.handle_tab_fields(player, context, fields)
 		local page = (context.grug_achievements_page or 1) +
 			(fields.grug_ach_next and 1 or -1)
 		context.grug_achievements_page = math.max(1, math.min(page,
-			page_count(R.visible_list(book, faction_of(player)))))
+			page_count(shown_list(player))))
 		sfinv.set_player_inventory_formspec(player, context)
 		return true
 	end
