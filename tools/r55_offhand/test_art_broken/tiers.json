@@ -1,0 +1,73 @@
+{
+ "shield": {
+  "T1": {
+   "palette": "bronze",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T2": {
+   "palette": "tin",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T3": {
+   "variant": "a",
+   "icon": "a"
+  },
+  "T4": {
+   "palette": "silversteel",
+   "variant": "e",
+   "icon": "a"
+  },
+  "T5": {
+   "palette": "embersteel",
+   "variant": "c",
+   "icon": "a"
+  },
+  "T6": {
+   "palette": "abyssal_steel",
+   "variant": "b",
+   "icon": "a"
+  },
+  "T7": {
+   "palette": "abyssal_steel",
+   "variant": "b",
+   "icon": "a"
+  }
+ },
+ "book": {
+  "T1": {
+   "palette": "patch",
+   "variant": {
+    "clasp": "a"
+   },
+   "icon": "a"
+  },
+  "T2": {
+   "palette": "woven",
+   "variant": "a",
+   "icon": "a"
+  },
+  "T4": {
+   "palette": "silkweave",
+   "variant": {
+    "cover_f": "n",
+    "cover_b": "n"
+   },
+   "icon": "a"
+  },
+  "T5": {
+   "palette": "silk",
+   "variant": {
+    "spine": "e",
+    "pages_f": "e"
+   },
+   "icon": "a"
+  },
+  "T6": {
+   "palette": "stormweave",
+   "variant": "a",
+   "icon": "a"
+  }
+ }
+}

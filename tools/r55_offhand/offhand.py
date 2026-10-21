@@ -38,7 +38,8 @@ CARD_RESERVE = 16        # a free 16 x 16 rectangle for a later off-hand weapon 
 WINGS_SIZE = (16, 32)    # the wing texture (section 6)
 ICON_SIZE = (16, 16)
 BONES = ("Offhand_Shield", "Offhand_Book")
-BACK_BONES = ("Body", "Cloak")
+BACK_CARDS = {"body": "Body", "cloak": "Cloak"}   # card -> bone (format doc §3.3)
+BACK_SIZE = (32, 16)     # the back texture: the cloak card left, the body card right
 # Every clip the generator keys (player_api's ranges and the Round 40 pose
 # clips, gen_cloak_model.py BASE_RANGES and PICKS); the NPC model has only the
 # first six.
@@ -282,7 +283,7 @@ def _placement(where, pl, bones, errors):
     if not isinstance(pl, dict):
         errors.append("%s: not an object" % where)
         return
-    if pl.get("bone") not in bones:
+    if bones is not None and pl.get("bone") not in bones:
         errors.append("%s.bone: %r, expected one of %s" % (where, pl.get("bone"), ", ".join(bones)))
     for key in ("pos", "rot"):
         if not _vec(pl.get(key)):
@@ -358,9 +359,14 @@ def validate(p):
                                                    ("half_depth", 0.05, 2)), errors)
     _placement("book.place", bk.get("place"), BONES, errors)
     back = p.get("back", {})
-    _placement("back", back, BACK_BONES, errors)
+    for card in BACK_CARDS:
+        _placement("back.%s" % card, back.get(card), None, errors)
+        if isinstance(back.get(card), dict) and set(back[card]) - {"pos", "rot", "order"}:
+            errors.append("back.%s: unknown key(s) %s" % (card, ", ".join(sorted(set(back[card]) - {"pos", "rot", "order"}))))
     if not _num(back.get("size"), 2, 32):
         errors.append("back.size: expected a number in [2, 32]")
+    if set(back) - {"size", "body", "cloak"}:
+        errors.append("back: unknown key(s) %s" % ", ".join(sorted(set(back) - {"size", "body", "cloak"})))
     _shape("wings", p.get("wings", {}), (("width", 0.5, 8), ("angle", -10, 90), ("drop", 0, 12),
                                          ("thick", 0.05, 1)), errors)
     bones = p.get("bones", {})
