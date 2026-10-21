@@ -133,6 +133,50 @@ def shield_outline(shape):
     return pts, {"T": T, "S": S, "M": M, "B": B, "W": W}
 
 
+def _clip_area(poly, x0, y0, x1, y1):
+    """Area of a polygon clipped to the rectangle (Sutherland-Hodgman)."""
+    def clip(pts, inside, cut):
+        out = []
+        for a, b in zip(pts, pts[1:] + pts[:1]):
+            if inside(b):
+                if not inside(a):
+                    out.append(cut(a, b))
+                out.append(b)
+            elif inside(a):
+                out.append(cut(a, b))
+        return out
+
+    def at_x(c):
+        return lambda a, b: (c, a[1] + (b[1] - a[1]) * (c - a[0]) / (b[0] - a[0]))
+
+    def at_y(c):
+        return lambda a, b: (a[0] + (b[0] - a[0]) * (c - a[1]) / (b[1] - a[1]), c)
+    pts = list(poly)
+    for inside, cut in ((lambda p: p[0] >= x0, at_x(x0)), (lambda p: p[0] <= x1, at_x(x1)),
+                        (lambda p: p[1] >= y0, at_y(y0)), (lambda p: p[1] <= y1, at_y(y1))):
+        if not pts:
+            return 0.0
+        pts = clip(pts, inside, cut)
+    return abs(sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(pts, pts[1:] + pts[:1]))) / 2 if pts else 0.0
+
+
+def shield_texels(shape, side):
+    """{(column, row)} of a shield face's texels the outline contains or crosses
+    with positive area (format doc §6: they must be opaque; the rest is never
+    sampled). `side` is "front" (column 0 at -x) or "back" (column 0 at +x)."""
+    poly, lv = shield_outline(shape)
+    W, H = texels(shape["width"]), texels(shape["height"])
+    sx, sy = 2 * lv["W"] / W, shape["height"] / H
+    out = set()
+    for cy in range(H):
+        y1 = lv["T"] - cy * sy
+        for cx in range(W):
+            x0 = -lv["W"] + cx * sx if side == "front" else lv["W"] - (cx + 1) * sx
+            if _clip_area(poly, x0, y1 - sy, x0 + sx, y1) > 1e-9:
+                out.add((cx, cy))
+    return out
+
+
 def shield_front_z(shape, x):
     """z of the front face at x (the ridge runs down x = 0); the back face is
     `thick` lower. The frame's origin lies in the plane of the back rim."""
