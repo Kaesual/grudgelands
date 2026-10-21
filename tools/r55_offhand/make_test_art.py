@@ -7,10 +7,11 @@ it is baked only into a test-only mod.
   python3 make_test_art.py [--out test_art]
 
 Shield sheet: the front face M_MID inside the outline with the ridge column
-M_LIGHT, the border texels (which the rim samples) M_DARK, a zone A band
+M_LIGHT, every texel the outline contains or crosses painted, the border texels
+(which the rim samples) M_DARK, a zone A band
 across the shoulder, zone B texels round the boss, glyph F at the top left;
 the back face ACC_DARK (wood) with an ACC_LIGHT strap and glyph B. Texels
-outside the outline stay transparent. Book: covers A_DARK outside with zone B
+wholly outside the outline stay transparent. Book: covers A_DARK outside with zone B
 corners, ACC_DARK elsewhere; pages M_HI with M_DARK lines on the readable
 face; spine ACC_DARK with a B_DARK band; ribbon A_LIGHT. Glyphs F (front
 cover), B (back cover) and L (the readable pages' left page) where a face is
@@ -63,13 +64,14 @@ def shield_sheet(params):
     boss = params["shield"].get("boss")
     by = (lv["T"] + lv["B"]) / 2 + (lv["T"] - (lv["T"] + lv["B"]) / 2) * (boss["lift"] if boss else 0)
     for side, x_off in (("front", 0), ("back", W)):
+        painted = O.shield_texels(shape, side)
         cells = {}
         for cy in range(H):
             for cx in range(W):
                 u = (cx + 0.5) / W
                 x = (-lv["W"] + 2 * lv["W"] * u) if side == "front" else (lv["W"] - 2 * lv["W"] * u)
                 y = lv["T"] - (cy + 0.5) / H * shape["height"]
-                cells[(cx, cy)] = (inside(poly, x, y), x, y)
+                cells[(cx, cy)] = ((cx, cy) in painted, x, y)
         for (cx, cy), (inn, x, y) in cells.items():
             if not inn:
                 continue
