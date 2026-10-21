@@ -167,7 +167,9 @@ tex(n) = floor(n + 0.5), at least 1. A face left out (§3.2) has no rectangle.
 column = (x + W) / 2W across, row = (T − y) / H down (column 0 at −x, as seen from the front). The back is
 seen from behind: column = (W − x) / 2W. The **rim** takes the front face's border texels: both ends of a rim
 quad use the front UV of their outline point (as the cloak's edges), so it samples the texels the outline
-crosses, which §6 therefore requires opaque. The boss uses the front's projection. Each
+crosses, which §6 therefore requires opaque. Edge UVs that would fall on a sheet's boundary (the rim along
+the outline's outer columns and rows, the wings' edges) are pulled half a texel inwards, so nearest sampling
+never picks the neighbouring sheet (the shield front's right edge would otherwise read the back sheet). The boss uses the front's projection. Each
 size copy samples its own sheet, so the copy of a tier's size step shows and the others stay transparent.
 
 **Book UVs.** Each box face samples its face rectangle in the orientation of armor-format.md §4
