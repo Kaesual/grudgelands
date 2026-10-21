@@ -23,6 +23,10 @@ FINISH of Round 55 ([plan](../../docs/planning/round55-plan.md)).
   proposal's icon, and, when the two differ, `icon_palette` = the icon proposal's palette for that tier, so every
   icon shows exactly as on the pick page. The drop's `notes.md` is not art and stays out; `art/tiers.json` records
   the picks under `_source`.
+- `scene.lua`: the capture scene of this lane for `tools/r55_game/capture.sh` (`SCENE=tools/r55_art/scene.lua
+  ART=tools/r55_art/art OFFHAND=true|false`): shields and books at T1, T3 and T6, the Scout's back card, the
+  Supporter Cloak with its wings granted through the real `/achievement grant`, the Character tab, and the twelve
+  icons plain, enchanted and broken, all composed by the game itself.
 
 ```sh
 python3 tools/r55_art/assemble.py --check   # art/ equals painter + picks (pixels, JSON content); exit 1 if not
