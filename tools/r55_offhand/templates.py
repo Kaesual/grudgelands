@@ -170,16 +170,18 @@ BOOK_MEANING = {
     ("cover_b", "bottom"): ("back cover's bottom edge", "Bt"),
     ("pages_f", "back"): ("the LEFT page, readable (row 0 = the page top, column 0 = its outer edge)", "LEFT"),
     ("pages_f", "left"): ("fore-edge of the left page block (the page edges)", "edge"),
+    ("pages_f", "right"): ("gutter edge of the left page block: lines the groove between the halves", "gut"),
     ("pages_f", "top"): ("top edge of the left page block", "T"),
     ("pages_f", "bottom"): ("bottom edge of the left page block", "Bt"),
     ("pages_b", "front"): ("the RIGHT page, readable (row 0 = the page top, column 0 = the gutter)", "RIGHT"),
     ("pages_b", "left"): ("fore-edge of the right page block (the page edges)", "edge"),
+    ("pages_b", "right"): ("gutter edge of the right page block: lines the groove between the halves", "gut"),
     ("pages_b", "top"): ("top edge of the right page block", "T"),
     ("pages_b", "bottom"): ("bottom edge of the right page block", "Bt"),
     ("spine", "right"): ("spine OUTSIDE (lies on the palm)", "OUT"),
-    ("spine", "left"): ("spine inside: the gutter between the open halves", "in"),
-    ("spine", "front"): ("spine's end beside the front cover", "f"),
-    ("spine", "back"): ("spine's end beside the back cover", "b"),
+    ("spine", "left"): ("spine inside: closes the groove between the open halves from behind", "in"),
+    ("spine", "front"): ("spine's side beside the front cover's spine edge", "f"),
+    ("spine", "back"): ("spine's side beside the back cover's spine edge", "b"),
     ("spine", "top"): ("head of the spine (top end)", "T"),
     ("spine", "bottom"): ("tail of the spine (bottom end)", "Bt"),
     ("ribbon", "front"): ("ribbon, front side", "F"),
@@ -198,8 +200,6 @@ BOOK_ORIENT = {
     "top": "from above: column 0 = the spine side, row 0 = the back half",
     "bottom": "from below: column 0 = the spine side, row 0 = the front half",
 }
-SKIPPED = {"pages_f": "right (spine side) and front (against the front cover)",
-           "pages_b": "right (spine side) and back (against the back cover)", "ribbon": "top (inside the book)"}
 
 
 def book_templates(model, params, atlas, out):
@@ -231,9 +231,9 @@ def book_templates(model, params, atlas, out):
             lines.append("%-6s at (%d,%d) %dx%d: %s%s - %s; seen %d/%d" % (
                 face, fx, fy, fw, fh, text, " [ZONES COUNT HERE]" if (box, face) in counted else "",
                 BOOK_ORIENT[face], n, fw * fh))
-        if box in SKIPPED:
-            lines.append("no texels for the %s face%s: the model leaves %s out" % (
-                SKIPPED[box], "s" if " and " in SKIPPED[box] else "", "them" if " and " in SKIPPED[box] else "it"))
+        if O.BOOK_SKIP.get(box):
+            lines.append("no texels for the %s face (the model leaves it out: it lies against another box)"
+                         % " and ".join(O.BOOK_SKIP[box]))
         lines += [
             "gold = a face that counts for the zone minimum (per tier at least 6 zone A and 3 zone B texels on the "
             "covers' outsides and the two readable pages together)",
