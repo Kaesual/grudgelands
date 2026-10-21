@@ -82,7 +82,7 @@ version 3 value whose `textures.offhand` and `textures.wings` are `none`**
 keys that way needs no version check). Everything else is read and
 validated as in version 3, under the current limits and grammar; the back
 card does not depend on the version. Every string a version 2 value holds
-still validates: the one image Round 55 replaced, the spellbook's shared
+still validates: the one image Round 55 stopped using, the spellbook's shared
 `grug_gear_spellbook.png` (a version 2 spellbook's hand image is
 `grug_gear_spellbook.png^[colorize:#rrggbb:48`, with its masks when
 enchanted), stays in the game and in `texture_files`.
