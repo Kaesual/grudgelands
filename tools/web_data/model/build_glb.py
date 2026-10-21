@@ -8,10 +8,15 @@ tools/web_data/model/grug_visuals_character.glb:
 
   * one skinned mesh, one primitive per B3D mesh buffer in the model's
     texture order: "skin" (the body), "cloak", "armor" (the armor boxes,
-    Round 54) and "weapon" (the weapon card), each with its own material;
+    Round 54), "weapon" (the weapon card), "offhand" (the three shield
+    copies and the book), "back" (the back card) and "wings" (Round 55),
+    each with its own material; the Round 55 primitives' materials are
+    transparent by default (TRANSPARENT), so a site that does not know them
+    shows nothing;
   * the skeleton (Body, Head, Arm_Left, Arm_Right, Leg_Right, Leg_Left,
-    Cloak, Panel_Front, Panel_Back) under the root node Player, one bone per
-    vertex as in the B3D;
+    Cloak, Panel_Front, Panel_Back, and under Arm_Left Offhand_Shield and
+    Offhand_Book) under the root node Player, one bone per vertex as in the
+    B3D;
   * one animation clip per player_api animation in CLIPS, timed in seconds
     at player_api's animation_speed, every clip starting at 0.
 
@@ -52,11 +57,15 @@ TARGET = REPO / "tools/web_data/model/grug_visuals_character.glb"
 
 CLIPS = ("stand", "walk")
 # One material per mesh buffer, in the model's texture order (Round 54:
-# skin, cloak, the armor atlas, the weapon card; armor-format.md §2).
-MATERIALS = ("skin", "cloak", "armor", "weapon")
+# skin, cloak, the armor atlas, the weapon card, armor-format.md §2; Round 55:
+# the offhand atlas, the back card, the wings, offhand-format.md §5).
+MATERIALS = ("skin", "cloak", "armor", "weapon", "offhand", "back", "wings")
+# Materials whose base colour alpha is 0: invisible until a site sets it to 1
+# along with a texture (README "What the file contains").
+TRANSPARENT = ("offhand", "back", "wings")
 COPYRIGHT = ("CC BY-SA 3.0: celeron55, MirceaKitsune, Jordach et al. "
-             "(player_api character.b3d); cloak, armor boxes and weapon card "
-             "by the Grudgelands project")
+             "(player_api character.b3d); cloak, armor boxes, weapon card, "
+             "offhand, back card and wings by the Grudgelands project")
 
 FLOAT, UBYTE, USHORT = 5126, 5121, 5123
 ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER = 34962, 34963
@@ -262,9 +271,11 @@ def build():
                                               ELEMENT_ARRAY_BUFFER)})
     gl["meshes"] = [{"name": "Character", "primitives": primitives}]
     # Textures come from the game (Lua) or the website, never from the file:
-    # Luanti warns on images. Alpha-tested like Luanti's entities.
+    # Luanti warns on images. Alpha-tested like Luanti's entities; Luanti
+    # reads only a material's texture index (CGLTFMeshFileLoader.cpp), so the
+    # transparent ones change nothing in the engine.
     gl["materials"] = [{"name": name, "alphaMode": "MASK", "alphaCutoff": 0.5,
-                        "pbrMetallicRoughness": {"baseColorFactor": [1, 1, 1, 1],
+                        "pbrMetallicRoughness": {"baseColorFactor": [1, 1, 1, 0 if name in TRANSPARENT else 1],
                                                  "metallicFactor": 0, "roughnessFactor": 1}}
                        for name in MATERIALS]
 

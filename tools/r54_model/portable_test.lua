@@ -10,7 +10,9 @@
 --      under Body; the player model has the Cloak under Body, the NPC model
 --      none; every vertex rides exactly one bone with weight 1;
 --   U  the buffers in the texture order: player skin, cloak, armor, weapon;
---      NPC skin, armor, weapon; the frame counts (player 0-484, NPC 0-220);
+--      NPC skin, armor, weapon (the first buffers: Round 55's offhand, back
+--      and wings follow, tools/r55_model); the frame counts (player 0-484,
+--      NPC 0-220);
 --      every armor UV inside the 128x64 atlas;
 --   S  the swing sign in every frame of every played clip (player_api's
 --      stand, sit, lay, walk, mine, walk_mine and the pose clips): a swung
@@ -145,10 +147,23 @@ local player = load_model("mods/PLAYER/grug_visuals/models/grug_visuals_characte
 local npc = load_model("mods/PLAYER/grug_visuals/models/grug_visuals_npc.b3d")
 
 -- --- B and U --------------------------------------------------------------------
-local function count_tris(model)
+-- Triangles per buffer of the first `n` buffers (Round 55 appends three).
+local function count_tris(model, n)
 	local out = {}
-	for i, tris in ipairs(model.buffers) do out[i] = #tris end
+	for i = 1, math.min(n, #model.buffers) do out[i] = #model.buffers[i] end
 	return table.concat(out, ",")
+end
+-- Vertices the first `n` buffers use.
+local function count_verts(model, n)
+	local seen, count = {}, 0
+	for i = 1, math.min(n, #model.buffers) do
+		for _, tri in ipairs(model.buffers[i]) do
+			for _, v in ipairs(tri) do
+				if not seen[v] then seen[v], count = true, count + 1 end
+			end
+		end
+	end
+	return count
 end
 local function frames(model)
 	local n = 0
@@ -177,7 +192,7 @@ for _, case in ipairs({
 		if not (list and #list == 1 and list[1].w == 1) then loose = loose + 1 end
 	end
 	eq(loose, 0, "B " .. name .. ": vertices not on exactly one bone with weight 1")
-	eq(count_tris(model), tris, "U " .. name .. ": triangles per buffer in texture order")
+	eq(count_tris(model, cloak and 4 or 3), tris, "U " .. name .. ": triangles per buffer in texture order")
 	eq(frames(model), frame_count, "U " .. name .. ": keyed frames")
 	-- the armor buffer: its vertices' UVs inside the atlas
 	local outside, armor_tris = 0, model.buffers[cloak and 3 or 2]
@@ -189,8 +204,10 @@ for _, case in ipairs({
 	end
 	eq(outside, 0, "U " .. name .. ": armor UVs outside the atlas")
 end
-eq(#player.verts, 872, "U player vertices: 168 body, 24 cloak, 672 armor, 8 card")
-eq(#npc.verts, 848, "U npc vertices: 168 body, 672 armor, 8 card")
+-- Round 55 appends the offhand, back and wings buffers: these count the
+-- first four (player) and three (NPC) buffers' vertices only.
+eq(count_verts(player, 4), 872, "U player vertices: 168 body, 24 cloak, 672 armor, 8 card")
+eq(count_verts(npc, 3), 848, "U npc vertices: 168 body, 672 armor, 8 card")
 
 -- --- S: the swing sign ------------------------------------------------------------
 -- A swing bone's hem: the mean of its lowest vertices at bind (model space).

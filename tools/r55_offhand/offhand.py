@@ -212,6 +212,16 @@ def book_turn(shape, box):
     return 0.0
 
 
+CLOAK_HALF_W = 2.05 / 0.525   # the cloak's half-width in skin pixels (gen_cloak_model.HALF_W)
+
+
+def wing_hinge_x(wings):
+    """|x| of the wings' hinge line (format doc §3.4): the cloak's side, inset by
+    thick / 2 * sin(angle) + 0.05 px so the turned wing starts inside the cloak."""
+    e = wings["thick"] / 2 * math.sin(math.radians(abs(wings["angle"]))) + 0.05
+    return CLOAK_HALF_W - e
+
+
 # --- sheets and the atlas (section 4) -------------------------------------------------
 def texels(size):
     return max(1, int(math.floor(size + 0.5)))
@@ -368,7 +378,7 @@ def validate(p):
     if set(back) - {"size", "body", "cloak"}:
         errors.append("back: unknown key(s) %s" % ", ".join(sorted(set(back) - {"size", "body", "cloak"})))
     _shape("wings", p.get("wings", {}), (("width", 0.5, 8), ("angle", -10, 90), ("drop", 0, 12),
-                                         ("thick", 0.05, 1)), errors)
+                                         ("thick", 0.05, 0.65)), errors)
     bones = p.get("bones", {})
     if sorted(bones) != sorted(BONES):
         errors.append("bones: expected exactly %s" % ", ".join(BONES))

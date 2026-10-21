@@ -117,7 +117,8 @@ half at z < 0, page tops at +y. With p = pages / 2, c = cover, w = width, h = he
 
 "Turned" is a rotation about the y axis (order Y, §2.1) that opens the book: with open = 150 the halves stand
 75° each side of the spread's centre, which faces +x. The readable pages are `pages_f`'s back face and
-`pages_b`'s front face; seen by the reader, `pages_b` is the left page. 62 triangles.
+`pages_b`'s front face; seen by the reader (from +x, page tops up), `pages_f` is the left page and `pages_b` the
+right page. 62 triangles.
 
 ### 3.3 Back cards (`back`)
 
@@ -136,12 +137,15 @@ outside the cloak's outer face at rest.
 ### 3.4 Wings (`wings`, player model only)
 
 Each wing is a flat triangle hinged on a side edge of the cloak, on the `Cloak` bone. The hinge line runs
-along the cloak's side (x = ±3.905 px, the cloak's half-width of 2.05 model units) in the cloak's middle plane
-(z = −2.524 px, the cloak box's centre), from the hem (y = 8) to y = 24 − drop. The third corner lies `width`
-px outwards from the hinge's bottom. The wing is `thick` px thick about that plane: an outer face, a lining,
-and two edge quads (the bottom edge and the slanted edge; none along the hinge), 8 triangles. It is then
-turned about the hinge line by `angle` degrees so that its outer edge moves **forwards**, towards the body's
-side. The right wing is the mirror image of the left.
+along the cloak's side in the cloak's middle plane (z = −2.524 px, the cloak box's centre), from the hem (y = 8) to
+y = 24 − drop, **inset** into the cloak by e = thick / 2 · sin(angle) + 0.05 px: x = ±(3.905 − e) (3.905 px is the
+cloak's half-width of 2.05 model units; `offhand.wing_hinge_x`). The third corner lies `width` + e px outwards from
+the hinge's bottom. The wing is `thick` px thick about that plane (at most 0.65, inside the cloak's own 0.667 px):
+an outer face, a lining, and two edge quads (the bottom edge and the slanted edge; none along the hinge), 6
+triangles. It is then turned about the hinge line by `angle` degrees so that its outer edge moves **forwards**,
+towards the body's side. The inset keeps the turned wing's hinge edge inside the cloak, so no gap opens between
+cloak and wing and the cloak's side face covers the seam (the user's report of 2026-10-21: a hinge exactly on the
+cloak's edge opens a thin wedge once the wing is turned). The right wing is the mirror image of the left.
 
 ## 4. The offhand atlas and the UVs
 
@@ -163,7 +167,9 @@ tex(n) = floor(n + 0.5), at least 1. A face left out (§3.2) has no rectangle.
 column = (x + W) / 2W across, row = (T − y) / H down (column 0 at −x, as seen from the front). The back is
 seen from behind: column = (W − x) / 2W. The **rim** takes the front face's border texels: both ends of a rim
 quad use the front UV of their outline point (as the cloak's edges), so it samples the texels the outline
-crosses, which §6 therefore requires opaque. The boss uses the front's projection. Each
+crosses, which §6 therefore requires opaque. Edge UVs that would fall on a sheet's boundary (the rim along
+the outline's outer columns and rows, the wings' edges) are pulled half a texel inwards, so nearest sampling
+never picks the neighbouring sheet (the shield front's right edge would otherwise read the back sheet). The boss uses the front's projection. Each
 size copy samples its own sheet, so the copy of a tier's size step shows and the others stay transparent.
 
 **Book UVs.** Each box face samples its face rectangle in the orientation of armor-format.md §4
