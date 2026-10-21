@@ -241,7 +241,8 @@ While `enabled` is true:
   The texture is a transparent `width` × `height` image. Draw the slot's
   `image` (16 × 16; validated like any hand image, falling back to
   `hand_items.<item>.wield_image`) at column `cloak_x` when the stored
-  `cloak` is not `none`, else at `body_x`, row 0. The other half stays
+  `textures.cloak` is not `none` (the game decides by the cloak's texture,
+  not its id), else at `body_x`, row 0. The other half stays
   transparent, so only the card on the cloak or only the one on the body
   shows. Put it on the `back` primitive. The game builds the same texture
   as `[combine:32x16:<x>,0=<image>`; `[combine` is outside the grammar,
