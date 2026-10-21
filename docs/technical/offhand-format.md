@@ -136,12 +136,15 @@ outside the cloak's outer face at rest.
 ### 3.4 Wings (`wings`, player model only)
 
 Each wing is a flat triangle hinged on a side edge of the cloak, on the `Cloak` bone. The hinge line runs
-along the cloak's side (x = ±3.905 px, the cloak's half-width of 2.05 model units) in the cloak's middle plane
-(z = −2.524 px, the cloak box's centre), from the hem (y = 8) to y = 24 − drop. The third corner lies `width`
-px outwards from the hinge's bottom. The wing is `thick` px thick about that plane: an outer face, a lining,
-and two edge quads (the bottom edge and the slanted edge; none along the hinge), 8 triangles. It is then
-turned about the hinge line by `angle` degrees so that its outer edge moves **forwards**, towards the body's
-side. The right wing is the mirror image of the left.
+along the cloak's side in the cloak's middle plane (z = −2.524 px, the cloak box's centre), from the hem (y = 8) to
+y = 24 − drop, **inset** into the cloak by e = thick / 2 · sin(angle) + 0.05 px: x = ±(3.905 − e) (3.905 px is the
+cloak's half-width of 2.05 model units; `offhand.wing_hinge_x`). The third corner lies `width` + e px outwards from
+the hinge's bottom. The wing is `thick` px thick about that plane (at most 0.65, inside the cloak's own 0.667 px):
+an outer face, a lining, and two edge quads (the bottom edge and the slanted edge; none along the hinge), 8
+triangles. It is then turned about the hinge line by `angle` degrees so that its outer edge moves **forwards**,
+towards the body's side. The inset keeps the turned wing's hinge edge inside the cloak, so no gap opens between
+cloak and wing and the cloak's side face covers the seam (the user's report of 2026-10-21: a hinge exactly on the
+cloak's edge opens a thin wedge once the wing is turned). The right wing is the mirror image of the left.
 
 ## 4. The offhand atlas and the UVs
 
