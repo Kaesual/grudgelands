@@ -17,7 +17,8 @@ live in [`tools/r55_offhand/`](../../tools/r55_offhand/README.md); `offhand.py` 
 | two wings | `Cloak` | `wings` | a cloak that has a wing texture (player model only) |
 
 Every part is always in the model; an empty slot is `blank.png`, so nothing shows (the armor atlas trick). With
-the setting `grug_offhand_visuals` off, the game writes `blank.png` into all three new slots.
+the setting `grug_offhand_visuals` off (on by default since 0.55.0), the game writes `blank.png` into all three new
+slots.
 
 ## 2. `params.json`
 

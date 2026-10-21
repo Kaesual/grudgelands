@@ -1247,7 +1247,8 @@ runtime tint (the Iron and Embersteel shields and the spellbooks lost
 their registration tints). `tools/r55_offhand/bake.py` turns the art in
 `tools/r55_art/` into the icons, the worn layers and their enchant masks;
 an enchanted or broken stack from before 0.55.0 takes the new icon when
-its holder next logs in (a stack in a chest once it is carried again). The look is
+its holder next logs in (a stack in a chest once it is in a player's inventory at
+the next refresh: join, equipment or level change). The look is
 [character_visuals.md](character_visuals.md) §4, the format
 [offhand-format.md](../technical/offhand-format.md).
 

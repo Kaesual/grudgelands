@@ -443,7 +443,7 @@ shields and spellbooks), so its old appearance and stacks meet the new code.
    Achievements tab, the cloak in the dropdown; worn, its **wings** standing and walking (judge their size from
    behind and at three-quarter); `/achievement revoke <you> supporter`: the row and the cloak go, a worn cloak falls
    back to No cloak; a grant to an **offline** character, then join as it: applied once; `/achievement grant <you>
-   hunter`: refused.
+   hunter`: refused; `/achievement grant <you> nope`: "Unknown achievement".
 6. **Old stacks after the update:** an enchanted Iron and Embersteel shield, an enchanted spellbook and a broken
    enchanted shield from 0.54.1, in the bags and in the offhand slot: after the join they show the new icon with
    their enchant colours (no grey or red cast, no old book), the broken one cracked; also in the hand and on the
@@ -459,7 +459,8 @@ shields and spellbooks), so its old appearance and stacks meet the new code.
 12. **Web:** before the kaesual update the site looks as in 0.54.x (the three new primitives are transparent); after
     it, the test characters of the addendum, a Warrior's shield, a caster's book, a Scout's card (the blade, as the
     site draws the bow in the hand) and the Supporter wings; a character not logged in since 0.54.x (version 2) shows
-    no offhand. `/glb_probe` still shows the `.glb` like the `.b3d`.
+    no offhand; an old character's stored appearance shows the new offhand images after its join and the next
+   export. `/glb_probe` still shows the `.glb` like the `.b3d`.
 
 ### Round-end gates
 

@@ -2959,6 +2959,10 @@ The items the user decides in the GUI test are in the
 - **Kept on purpose:** `gen_enchant_masks.py` still covers the shared
   `grug_gear_spellbook.png`, which only version 2 appearances name; the
   `r44_ch` harness stand-in still returns four textures.
+- **Bake and fixture details** (BAKE report, STACKS review): `bake.py`'s
+  write mode removes every `grug_offhand_*.png` in `--out` that it did
+  not bake; the `r55_stacks` stack stub's `to_string` returns only the
+  item name (no meta), so the fixture cannot see a meta-only change in it.
 - **Tools:** `tools/bin/luac51` is missing in fresh worktrees
   (`check_lua.sh` needs `GRUG_LUA51_PARSER` or a copy of the main
   checkout's `tools/bin`).
