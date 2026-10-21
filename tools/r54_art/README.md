@@ -39,6 +39,9 @@ of Round 54 ([plan](../../docs/planning/round54-plan.md)).
 - `scene.lua`: the capture scene of this lane for `tools/r54_model/capture.sh` (`SCENE=`): the three lines at
   T1, T3 and T6 on two races standing and walking, an enchanted and a broken piece, armored NPCs and the
   inventory icons in a grid, all composed by the game itself.
+- `icons_scene.lua`: Round 55 lane ICONS's capture scene for `tools/r55_game/capture.sh` (`SCENE=tools/r54_art/icons_scene.lua
+  ART=tools/r55_art/art`): the 72 armor icons as the game draws them (large, about 32 and 16 px), each line's T3
+  pieces enchanted and broken, the four slot ghosts, and the Character tab of an unarmored Warrior and Mage.
 
 ```sh
 python3 tools/r54_art/assemble.py --check   # art/ equals painters + picks (pixels, JSON content); exit 1 if not
