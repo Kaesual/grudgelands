@@ -458,9 +458,6 @@ end
 -- source of melee damage (inventory_equipment.md §2), but it is not what the
 -- character is DOING, and a player who selects a torch or a shovel expects to
 -- see it.
---
--- The second value is the hand slot of a held ability ("weapon", "offhand"
--- or "melee"), nil for anything else: the Scout's back card follows it.
 local ABILITY_GROUP = "grug_ability"
 
 local function shown_item(player)
@@ -472,8 +469,8 @@ local function shown_item(player)
 	if core.get_item_group(name, ABILITY_GROUP) > 0 then
 		-- The cosmetic copy retains broken gear even while combat excludes it.
 		local def = core.registered_items[name]
-		local slot = def and def._grug_ability_slot or "weapon"
-		return grug_inventory.get_cosmetic_hand(player, slot), slot
+		return grug_inventory.get_cosmetic_hand(player,
+			def and def._grug_ability_slot or "weapon")
 	end
 	return wielded
 end
@@ -483,27 +480,25 @@ end
 -- rulings in round55-plan.md §2): the Scout's weapon that is NOT in the
 -- hand, its inventory image on a flat card on the back: on the cloak's card
 -- when a cloak is worn, else on the body's (grug_visuals.back_card, the two
--- halves of the back slot). A bow skill (an
--- ability on the "weapon" slot, the Ranged bow) holds the bow, so the Melee
--- blade goes on the back; Strike and every other melee skill hold the blade,
--- and anything else held (a pickaxe, a torch, nothing) leaves the bow on the
--- back. Only Scouts, only with the offhand look on. Not stored in the
--- appearance, which would change on every hotbar swap: readers derive it
--- the same way, and the Character tab shows the bow on the back.
+-- halves of the back slot). One rule, by what the hand shows compared with
+-- the two equipped weapons: the hand shows the bow (a bow skill, the bow
+-- item itself, the Character tab's weapon card) -> the Melee blade goes on
+-- the back; it shows the blade or neither (a melee skill, a pickaxe, a
+-- torch, nothing) -> the bow. Only Scouts, only with the offhand look on.
+-- Not stored in the appearance, which would change on every hotbar swap:
+-- readers derive it the same way.
 --
 local BACK_CARD_CLASS = "scout"
 
--- The hand slot whose item goes on the back, from the held ability's slot
--- (shown_item's second value; nil when no ability is held).
-local function back_slot(ability_slot)
-	return ability_slot == "weapon" and "offhand" or "weapon"
-end
-
--- The card's image: the item in hand slot `slot` as its stack's inventory
--- image shows it (enchant colours and cracks are in the stack's own meta),
+-- The card's image for `shown` (the stack the hand shows, or nil): the
+-- equipped weapon the hand does not show, as its stack's inventory image
+-- shows it (enchant colours and cracks are in the stack's own meta),
 -- BACK_NONE for an empty slot.
-local function back_image(player, slot)
-	local stack = grug_inventory.get_cosmetic_hand(player, slot)
+local function back_image(player, shown)
+	local stack = grug_inventory.get_cosmetic_hand(player, "weapon")
+	if shown and stack and shown:get_name() == stack:get_name() then
+		stack = grug_inventory.get_cosmetic_hand(player, "offhand")
+	end
 	if not stack or stack:is_empty() then
 		return grug_visuals.BACK_NONE
 	end
@@ -563,10 +558,10 @@ function grug_visuals.apply(player)
 		entry.base = {skin = result.skin, cloak = cloak, armor = result.armor,
 			offhand = result.offhand, wings = wings}
 	end
-	local shown, ability_slot = shown_item(player)
+	local shown = shown_item(player)
 	entry.back_card = visuals_on and grug_classes.get_class(player) == BACK_CARD_CLASS
-	write_textures(player, entry, entry.back_card and
-		back_image(player, back_slot(ability_slot)) or grug_visuals.BACK_NONE)
+	write_textures(player, entry, entry.back_card and back_image(player, shown) or
+		grug_visuals.BACK_NONE)
 	if result.visual_size then
 		-- VISUAL ONLY. collisionbox and eye_height stay with player_api's
 		-- model/animation classes, which is why a tall elf still fits through a
@@ -605,8 +600,8 @@ end
 -- current look with the main hand's cosmetic weapon on the weapon card (its
 -- image as its stack shows it, enchanted or broken; empty without one).
 -- With the offhand look on, the offhand item, the cloak's wings and, for a
--- Scout, the bow on the back (no skill is held in the tab; on the cloak's
--- card when a cloak is worn). Composed from
+-- Scout, the weapon the card does not show on the back (the blade under the
+-- bow; on the cloak's card when a cloak is worn). Composed from
 -- the same state `apply` reads, not from the live object, so it never
 -- depends on the order of the refresh hooks. A fresh table.
 --
@@ -626,7 +621,7 @@ function grug_visuals.preview(player)
 	local image = weapon and grug_visuals.hand_image(weapon) or ""
 	cloak = cloak or grug_visuals.CLOAK_NONE
 	local back = visuals_on and grug_classes.get_class(player) == BACK_CARD_CLASS and
-		grug_visuals.back_card(back_image(player, back_slot(nil)),
+		grug_visuals.back_card(back_image(player, weapon),
 			cloak ~= grug_visuals.CLOAK_NONE) or grug_visuals.BACK_NONE
 	return {mesh = grug_visuals.PLAYER_MODEL, textures = {result.skin, cloak, result.armor,
 		image ~= "" and image or grug_visuals.WEAPON_NONE, result.offhand, back,
@@ -645,9 +640,9 @@ end
 -- one `get_wielded_item`, one group lookup and one string compare; everything
 -- expensive (compose, the texture list, the entity write) is behind the
 -- unchanged-item compare inside `sync_wield`. A Scout with the offhand look
--- on adds one cosmetic hand read and one compare for the back card; the
--- texture list is rewritten only when the card changes (a hotbar swap
--- between a bow skill and anything else).
+-- on adds one or two cosmetic hand reads and a compare for the back card;
+-- the texture list is rewritten only when the card changes (a hotbar swap
+-- between showing the bow and anything else).
 local WIELD_POLL = 1.0
 local poll_accumulator = 0
 
@@ -662,10 +657,10 @@ core.register_globalstep(function(dtime)
 		if entry then
 			-- `entry.stature` is written by apply(); before the first apply
 			-- there is no entry at all, so this cannot race the join hook.
-			local shown, ability_slot = shown_item(player)
+			local shown = shown_item(player)
 			sync_wield(entry, player, shown, entry.stature)
 			if entry.back_card then
-				write_textures(player, entry, back_image(player, back_slot(ability_slot)))
+				write_textures(player, entry, back_image(player, shown))
 			end
 		end
 	end

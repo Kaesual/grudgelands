@@ -25,7 +25,8 @@
 --      into the left half (the cloak's card) or the right (the body's) of a
 --      32 x 16 `[combine`, escaped as the engine unescapes it;
 --   S  the Scout's back card through the real wield poll: nothing held, a
---      bow skill, a melee skill, a bow skill again, a pickaxe, each changing
+--      bow skill, a melee skill, a bow skill again, a pickaxe, the bow item,
+--      the blade item, each changing
 --      the card and rewriting the texture list exactly once; an unchanged
 --      poll writes nothing; a cloak put on and taken off moves the card to
 --      the other half (one rewrite each); a Warrior and a Scout with the look
@@ -33,7 +34,7 @@
 --   W  the wings from a stub cloak source: on with a wing texture, blank
 --      without one and with the look off;
 --   P  the Character tab's preview: seven textures, the offhand layer, the
---      Scout's bow on the back, the wings;
+--      Scout's blade on the back (the bow is on the card), the wings;
 --   A  the stored appearance version 3: `offhand` and `wings` ("none" when
 --      empty and with the look off), a stored version 2 value rebuilt at
 --      the next join, the caps (seven texture strings);
@@ -519,6 +520,9 @@ do
 		{"test:strike", bow_image, "a melee skill: the bow on the back"},
 		{"test:bow_skill", sword_image, "a bow skill again: the sword"},
 		{"test:pickaxe", bow_image, "a pickaxe: the bow"},
+		-- The rule compares what the hand shows with the equipped weapons.
+		{bow:get_name(), sword_image, "the bow item itself held: the sword"},
+		{sword:get_name(), bow_image, "the blade item itself held: the bow"},
 	}
 	for _, step in ipairs(steps) do
 		scout._wielded = ItemStack(step[1])
@@ -534,7 +538,7 @@ do
 	scout._wielded = ItemStack("")
 	local before = scout.writes
 	poll()
-	eq(scout.writes, before, "S empty hands after the pickaxe: the bow stays, no write")
+	eq(scout.writes, before, "S empty hands after the blade: the bow stays, no write")
 	-- The rest of the list rides along unchanged.
 	local applied = table.copy(list_of(scout))
 	scout._wielded = ItemStack("test:bow_skill")
@@ -636,13 +640,17 @@ do
 	for _, index in ipairs({1, 2, 3, 5, 7}) do
 		eq(preview.textures[index], list_of(pat)[index], "P texture " .. index .. " as applied")
 	end
-	-- The Scout: the bow on the back (no skill is held in the tab).
-	SCOUT._wielded = ItemStack("test:bow_skill")
+	-- The Scout: the weapon card shows the bow, so the blade is on the back,
+	-- whatever the hotbar holds.
+	SCOUT._wielded = ItemStack("test:strike")
 	local scout_preview = V.preview(SCOUT)
 	local bow_raw = slot_copy(SCOUT, "grug_weapon"):get_meta():get_string("inventory_image")
-	eq(scout_preview.textures[6], V.back_card(bow_raw, false), "P the Scout's bow on the back (no cloak)")
+	local blade_raw = slot_copy(SCOUT, "grug_offhand"):get_meta():get_string("inventory_image")
+	eq(scout_preview.textures[4], V.hand_image(slot_copy(SCOUT, "grug_weapon")), "P the bow on the card")
+	check(has(scout_preview.textures[4], bow_raw), "P ... the equipped bow")
+	eq(scout_preview.textures[6], V.back_card(blade_raw, false), "P the Scout's blade on the back (no cloak)")
 	cloak_of[SCOUT] = CLOAK
-	eq(V.preview(SCOUT).textures[6], V.back_card(bow_raw, true), "P with a cloak: on the cloak's card")
+	eq(V.preview(SCOUT).textures[6], V.back_card(blade_raw, true), "P with a cloak: on the cloak's card")
 	cloak_of[SCOUT] = nil
 	set_look(nil)
 	local off = V.preview(pat)

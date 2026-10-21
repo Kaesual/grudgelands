@@ -2919,8 +2919,9 @@ tools](#player-meta-read-by-external-tools).
   `offhand_enchant`) draw a shield's or spellbook's layer
   `grug_offhand_<shield|book>_<grade>.png` (`offhand_appearance`, indexed
   with the armour) into `result.offhand`, coloured and cracked as an armour
-  layer; a Scout's back card is the inventory image of the hand slot whose
-  weapon is not shown (the Melee blade under a bow skill, else the bow;
+  layer; a Scout's back card is the inventory image of the equipped weapon
+  the hand does not show (the Melee blade when the hand shows the bow -- a
+  bow skill, the bow item, the Character tab's weapon card -- else the bow;
   `apply.lua`, rewritten by the wield poll when it changes, never stored),
   drawn by `back_card(image, on_cloak)` into the 32 × 16 back slot's left
   half (the cloak's card) when a cloak is worn, else the right half (the
@@ -3055,8 +3056,8 @@ tools](#player-meta-read-by-external-tools).
   `textures.wings` the seventh (the cloak's wing texture), each `none` when
   empty and always `none` while the setting `grug_offhand_visuals` is off;
   the sixth, the Scout's back card, is not stored (it follows the hotbar):
-  a reader derives it as the bow (`slots.mainhand`) unless a bow skill is
-  held. `slots` holds the equipment slots
+  a reader derives it as the bow (`slots.mainhand`), the blade
+  (`slots.offhand`) when the bow is shown in the hand. `slots` holds the equipment slots
   `head`, `chest`, `legs`, `feet`, `mainhand` (the Weapon slot; a Scout's
   bow) and `offhand` (a shield, a spellbook, a Scout's melee blade), each
   `{"item", "broken", "enchant"}`; an empty slot is absent. `enchant` lists
