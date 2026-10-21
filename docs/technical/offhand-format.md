@@ -194,10 +194,11 @@ The painter's files, in one art directory (the test set: `tools/r55_offhand/test
 
 | File | What | Size |
 |---|---|---|
-| `shield/<variant>.png` | a shield sheet: front left, back right | 2 · tex(width) × tex(height) = 20 × 13 |
+| `shield/<variant>.png` | a shield sheet: front left, back right | 2 · tex(width) × tex(height) (22 × 13 now) |
 | `book/<box>_<variant>.png` | a book box sheet, `box` as in §3.2 | per box (`data/atlas.json` `rect`) |
 | `icons/shield_<variant>.png`, `icons/book_<variant>.png` | inventory icons | 16 × 16 |
-| `wings_<id>.png` (optional) | a wing texture for a cloak (below); checked for size only, not baked | 16 × 32 |
+| `cloak_<id>.png` (optional) | a cloak texture in the cloak's own 32 × 32 format (outer face left, lining right; [character_visuals.md](../design/character_visuals.md) §5b), e.g. the Supporter cloak; size-checked, not baked | 32 × 32 |
+| `wings_<id>.png` (optional) | the wing texture of the cloak with the same `<id>` (below); size-checked, not baked | 16 × 32 |
 | `tiers.json` | per item and tier: palette, variant(s), icon | |
 | `palettes.json` (optional) | proposed tier palettes, laid over the armor's `data/palettes.json` by name | |
 
