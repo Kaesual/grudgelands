@@ -12,8 +12,9 @@
 -- The setting is `grug_visuals.OFFHAND_VISUALS` (init.lua reads
 -- grug_offhand_visuals into it); this test switches it. Checks:
 --   N  the offhand layers' names (format doc §7) for every shield and
---      spellbook, the six per-tier spellbook icons and masks
---      (tools/r55_game/book_icons.py) registered and on disk;
+--      spellbook, the six per-tier shield and spellbook icons and masks
+--      (the picked art, tools/r55_offhand/bake.py) registered without a
+--      tint and on disk;
 --   C  composition with the look on: a Warrior's shield at each size step's
 --      tiers, a Mage's and a Priest's spellbook, a Scout's blade (nothing),
 --      no offhand, a broken and an enchanted shield (exactly as an armor
@@ -327,12 +328,15 @@ do
 		eq(book and book.file, "grug_offhand_book_" .. grade .. ".png", "N book T" .. bracket .. " layer")
 		eq(shield and shield.kind, "shield", "N shield kind")
 		eq(book and book.kind, "book", "N book kind")
-		local icon = "grug_gear_spellbook_" .. grade .. ".png"
-		eq(registered[BOOK(bracket)].inventory_image, icon, "N spellbook T" .. bracket .. " icon file")
-		check(file_exists(GEAR .. icon) and file_exists(GEAR .. icon:sub(1, -5) .. "_ench.png"),
-			"N " .. icon .. " and its mask ship")
-		check(grug_gear.has_enchant_masks(registered[BOOK(bracket)]), "N spellbook T" .. bracket ..
-			" takes enchant colours")
+		for _, pair in ipairs({{"shield", SHIELD(bracket)}, {"spellbook", BOOK(bracket)}}) do
+			local kind, item = pair[1], pair[2]
+			local icon = "grug_gear_" .. kind .. "_" .. grade .. ".png"
+			eq(registered[item].inventory_image, icon, "N " .. kind .. " T" .. bracket .. " icon file")
+			check(file_exists(GEAR .. icon) and file_exists(GEAR .. icon:sub(1, -5) .. "_ench.png"),
+				"N " .. icon .. " and its mask ship")
+			check(grug_gear.has_enchant_masks(registered[item]), "N " .. kind .. " T" .. bracket ..
+				" takes enchant colours")
+		end
 	end
 	local count = 0
 	for _ in pairs(V.offhand_appearance) do count = count + 1 end

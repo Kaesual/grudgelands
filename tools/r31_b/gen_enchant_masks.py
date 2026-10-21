@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Enchant-colour masks for every weapon, bow, shield and spellbook texture
-(Round 31 lane B, docs/planning/round31-plan.md section 2.2). The armour's
-masks (worn atlas and skin layers, item icons) come from the armour bake,
-tools/r54_armor/bake.py, since Round 54.
+"""Enchant-colour masks for every weapon and bow texture and the shared
+spellbook image (Round 31 lane B, docs/planning/round31-plan.md section 2.2).
+The armour's masks (worn atlas and skin layers, item icons) come from the
+armour bake, tools/r54_armor/bake.py, since Round 54; the shield and
+spellbook icons' masks from the offhand bake, tools/r55_offhand/bake.py,
+since Round 55.
 
 For each source texture the script derives two non-overlapping pixel groups
 from the texture's own colour clusters and writes ONE mask file next to it:
@@ -74,8 +76,12 @@ def sources():
     """(directory, stem, kind) for every texture an enchantable item shows.
 
     Mirrors grug_gear/init.lua: weapon sprites per family and metal, the four
-    bow files (BOW_IMAGE), the six shields, the one spellbook. (The armour's
-    masks come from tools/r54_armor/bake.py since Round 54.)
+    bow files (BOW_IMAGE), and the shared spellbook image, which no item shows
+    since Round 55 but the Character page's empty Caster-offhand ghost and
+    version 2 appearances (tools/web_data/README.md) still name, with its
+    mask. (The armour's masks come from tools/r54_armor/bake.py since Round
+    54, the shield and per-tier spellbook icons' from tools/r55_offhand/bake.py
+    since Round 55.)
     """
     out = []
     for family in ["sword", "dagger", "greataxe", "staff", "wand"]:
@@ -83,8 +89,6 @@ def sources():
             out.append((GEAR, "grug_gear_item_%s_%s" % (family, metal), "item"))
     for bow in ["lebethron", "birch", "mallorn", "alder"]:
         out.append((GEAR, "grug_gear_bow_" + bow, "item"))
-    for metal in METALS:
-        out.append((GEAR, "grug_gear_shield_" + metal, "item"))
     out.append((GEAR, "grug_gear_spellbook", "item"))
     return out
 
