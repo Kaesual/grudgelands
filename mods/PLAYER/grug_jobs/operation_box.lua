@@ -244,6 +244,7 @@ local function enchant_build(player, view)
 		y = y + 1.95
 	end
 	local enabled = chosen ~= nil and plan ~= nil and job == nil
+	local away = chosen and chosen.station and not grug_jobs.station_nearby(player, chosen.station)
 	if chosen then
 		y = grug_jobs._ingredient_rows(fs, {ingredients = chosen.ingredients}, view.counts, 1,
 			y) + 0.1
@@ -259,7 +260,7 @@ local function enchant_build(player, view)
 					n(y - top), esc(plan.warning))
 			end
 		end
-		if chosen.station and not grug_jobs.station_nearby(player, chosen.station) then
+		if away then
 			enabled = false
 			y = wrapped_labels(fs, X, y, W, station_warning(chosen), WARN, NOTE_STEP)
 		end
@@ -267,7 +268,7 @@ local function enchant_build(player, view)
 	if st.note then y = wrapped_labels(fs, X, y, W, st.note, NOTE, NOTE_STEP) end
 	-- The XP hint at the station only: away from it the station's line
 	-- takes its room.
-	if chosen and (not chosen.station or grug_jobs.station_nearby(player, chosen.station)) then
+	if chosen and not away then
 		local hint, color = grug_jobs._xp_hint(player, chosen)
 		if hint then wrapped_labels(fs, X, y, W, hint, color, NOTE_STEP) end
 	end
