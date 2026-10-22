@@ -170,9 +170,10 @@ local function frames(model)
 	for _ in pairs(model.nodes.Body.keys) do n = n + 1 end
 	return n
 end
+-- Round 56 (lane HOOD): the armor buffer gains the hood, 8 faces = 32 vertices, 16 triangles.
 for _, case in ipairs({
-	{"player", player, "84,12,336,4", 485, true},
-	{"npc", npc, "84,336,4", 221, false},
+	{"player", player, "84,12,352,4", 485, true},
+	{"npc", npc, "84,352,4", 221, false},
 }) do
 	local name, model, tris, frame_count, cloak = case[1], case[2], case[3], case[4], case[5]
 	local body = model.nodes.Body
@@ -206,8 +207,8 @@ for _, case in ipairs({
 end
 -- Round 55 appends the offhand, back and wings buffers: these count the
 -- first four (player) and three (NPC) buffers' vertices only.
-eq(count_verts(player, 4), 872, "U player vertices: 168 body, 24 cloak, 672 armor, 8 card")
-eq(count_verts(npc, 3), 848, "U npc vertices: 168 body, 672 armor, 8 card")
+eq(count_verts(player, 4), 904, "U player vertices: 168 body, 24 cloak, 704 armor (672 boxes, 32 hood), 8 card")
+eq(count_verts(npc, 3), 880, "U npc vertices: 168 body, 704 armor (672 boxes, 32 hood), 8 card")
 
 -- --- S: the swing sign ------------------------------------------------------------
 -- A swing bone's hem: the mean of its lowest vertices at bind (model space).

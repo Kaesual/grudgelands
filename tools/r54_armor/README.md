@@ -36,6 +36,7 @@ the example selection, and both tools say so.
 | File | What | Size |
 |---|---|---|
 | `art/<line>/<box>_<variant>.png` | one box sheet: the six faces of a catalog box | per box, see `templates/boxes/<box>.png` |
+| `art/<line>/hood_<variant>.png` | the hood's sheet: its eight polygon faces (Round 56) | 64×12, see `templates/parts/hood.png` |
 | `art/<line>/inner/<slot>_<variant>.png` | inner paint on the skin, `slot` = chest, legs or feet | 64×32 |
 | `art/<line>/icons/<slot>_<variant>.png` | inventory icon, `slot` = head, chest, legs or feet | 16×16 |
 
@@ -56,9 +57,22 @@ the example selection, and both tools say so.
 - **Mirrored boxes** (sleeve, bracer, shoulder parts, tasset, thigh, knee, boot, toe) have one sheet. Paint
   it for the character's right side; the left copy shows it mirrored.
 - **Armor is opaque** (the user, 2026-10-20): every texel inside a box sheet's faces must be opaque;
-  transparency showed holes in the game (one looks into the hollow box). The only exception is the helm's **face
+  transparency showed holes in the game (one looks into the hollow box). The exceptions are the helm's **face
   window** (white in `templates/boxes/helm.png`: columns 1–8, rows 1–8 of its front face), which may stay open so
-  the face shows. Shape comes from the boxes you choose and the paint.
+  the face shows, and its **chin strip** (pale blue: the front face's bottom row), which stays transparent on every
+  cloth head piece and on leather T1–T5 (Round 56 ruling 17; leather T6, the veil, and metal keep it opaque).
+  Shape comes from the boxes you choose and the paint.
+- **The hood** (Round 56, [armor-format.md §1a](../../docs/technical/armor-format.md#1a-polygon-parts-round-56)):
+  a polygon part of the head slot, wedges on top of and behind the helm, worn only together with the helm. Paint
+  it for cloth and leather (metal leaves it out of `on`): name `hood` in the tier's `on` list (and `variant`, as
+  for a box) and paint `<line>/hood_<variant>.png` at 64×12, starting from `templates/blank/hood.png`.
+  `templates/parts/hood.png` shows the eight face rectangles (`T.*` the top wedge, `B.*` the back wedge, `J.*`
+  the joint between them), each face's polygon outlined, and its orientation: seen from outside, columns run to
+  the viewer's right; row 0 is the top (on the near-horizontal top faces `T.top` and `J.top`, the back edge).
+  Every texel of every face rectangle must be opaque: the **hatched** texels lie outside the polygon and are
+  **bleed**, painted like their neighbours so a slanted edge never samples a transparent texel. Paint outside
+  the rectangles stays transparent. The hood has no front-facing face, so it adds nothing to the head's zone
+  count from the front.
 - **Inner paint:** start from `templates/blank/inner_<slot>.png`; `templates/inner/<slot>.png` shows the
   slot's region in green (chest: torso and arm; legs: leg rows 20–27; feet: leg rows 28–31). Head has no
   inner paint.
@@ -125,7 +139,21 @@ lines do not:
 - `softrender.py` is the software renderer behind `--engine soft` (the default).
 - `make_test_art.py` writes `test_art/` with a `tiers.json` (passes check.py without warnings; letters
   F/R/L/B or corner flags in OUTLINE mark each face's top-left for orientation; an eye band open in the
-  helm's face window) and `test_art_broken/` (twelve deliberate errors).
+  helm's face window, the chin strip open on cloth and leather T1–T5, a placeholder hood on every cloth and
+  leather tier) and `test_art_broken/` (seventeen deliberate errors).
+- **Polygon parts** (Round 56, spec §1a): `catalog.py` names each part's schema file (`POLY_PARTS`; the hood:
+  `tools/r56_hood/hood.json`), `polypart.py` validates it (planar convex faces wound outward, a closed shell with
+  the helm, no face on the helm, no coplanar overlap, UVs in their rects, rects disjoint in the sheet, the unwrap
+  orientation and texel sizes, symmetry in x) and `export.py` writes it into `data/catalog.json` under `parts`
+  (`--check` fails on any schema problem, so a new export from the hood page cannot break the model).
+  `atlas.py` places part sheets whole below the boxes (every box keeps its place), `zfight.py` checks their
+  faces, `bake.py` and both renderers draw them, `templates.py` writes `templates/parts/<part>.png`.
+- **The hood finish step** (after the user's art pick): the picked hood sheets (and repainted helms) enter
+  `tools/r54_art/art` through `tools/r54_art/assemble.py` like any picked art (a drop's painter under
+  `tools/r54_art/src/` and the picks; a hood sheet is a file like a box sheet, and the picked `tiers.json` names
+  `hood` on the cloth and leather tiers); then `check.py --art ../r54_art/art`, `bake.py --icons-out
+  ../../mods/ITEMS/grug_gear/textures` and `../r54_art/ghosts.py --check`, as for any art change. The models
+  already carry the hood, so only the baked head layers change.
 - Two proposals for a pick page: two art directories, rendered separately.
 
 ## Bake: art to game textures

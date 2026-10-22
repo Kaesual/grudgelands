@@ -12,16 +12,27 @@ faces big enough, otherwise a corner flag (an L of three pixels) in the face's
 top-left texel corner. Seen from outside, the glyph must read correctly on the
 right-hand (or only) copy and mirrored on the mirrored left copy.
 
+Polygon parts (Round 56, the hood): every face's whole rect painted (bleed
+included), shaded by its facing (up light, sides mid, down and back dark), a
+zone A stripe and zone B pixels on the larger faces, and a corner flag in
+OUTLINE at each rect's top-left texel.
+
 The clean set also writes tiers.json (the example selection plus a pauldron on
-metal T1, since every box may be used on every tier). Every face is opaque
-except an eye band in the helm's face window (the one allowed opening).
+metal T1, since every box may be used on every tier; the hood on every cloth
+and leather tier, and leather T6 on its own helm variant b, the veil, whose
+chin strip stays closed). Every face is opaque except an eye band in the
+helm's face window and, on the chin-strip tiers (cloth, leather T1-T5; Round
+56 ruling 17), the helm front face's bottom row.
 
 The broken set is a copy of the clean set with deliberate errors (wrong sheet
 size, off-palette colour, partial alpha, paint outside the faces and outside
 the slot region, an icon of the wrong size, a missing file, an unknown file
 name, a slot whose zones were removed, an unknown box in tiers.json,
 transparent texels in the sleeve and the chest faces, a hole in the helm front
-outside its face window).
+outside its face window; Round 56: an open chin strip on the veil helm of
+leather T6, a hole in a hood face's bleed, hood paint outside its faces, a
+tier that wears the hood without the helm, and a cloth helm without zone B on
+its front, more than the chin strip's one-pixel allowance).
 """
 import argparse
 import json
@@ -169,8 +180,35 @@ def icon(slot, line):
     return im
 
 
-def shape(im, b):
-    """The helm's face window: an eye band (rows 3-5 of the window) left open."""
+def part_sheet(p):
+    """A polygon part's placeholder sheet: each face's whole rect (bleed included), shaded by its facing."""
+    im = Image.new("RGBA", tuple(p["sheet"]), (0, 0, 0, 0))
+    px = im.load()
+    for f in p["polys"]:
+        fx, fy, fw, fh = f["rect"]
+        ny, nz = f["normal"][1], f["normal"][2]
+        base = "M_LIGHT" if ny > 0.5 else "M_DARK" if ny < -0.5 or nz < -0.9 else "M_MID"
+        for y in range(fh):
+            for x in range(fw):
+                c = base
+                if fw >= 6 and fh >= 6 and y in (fh // 2, fh // 2 + 1):
+                    c = "A_LIGHT" if y == fh // 2 else "A_DARK"         # zone A stripe
+                elif fw >= 6 and fh >= 6 and y == fh // 2 - 2 and x >= fw - 3:
+                    c = "B_LIGHT"                                         # zone B pixels
+                elif fh > 2 and y == 0:
+                    c = "M_HI"
+                px[fx + x, fy + y] = C[c]
+        px[fx, fy] = C["OUTLINE"]                                         # corner flag: the rect's top-left
+        if fw > 1:
+            px[fx + 1, fy] = C["OUTLINE"]
+        if fh > 1:
+            px[fx, fy + 1] = C["OUTLINE"]
+    return im
+
+
+def shape(im, b, chin=False):
+    """The helm's face window: an eye band (rows 3-5 of the window) left open; with `chin`, the chin strip (the
+    front face's bottom row, Round 56 ruling 17) too."""
     win = L.open_window(b)
     if win:
         px = im.load()
@@ -178,16 +216,24 @@ def shape(im, b):
         for x, y in win:
             if y in ys[2:5] and px[x, y][:3] not in (L.ZONE_A | L.ZONE_B):
                 px[x, y] = (0, 0, 0, 0)
+        for x, y in (L.chin_row(b) if chin else ()):
+            px[x, y] = (0, 0, 0, 0)
     return im
 
 
 def test_tiers(cat):
-    """The example selection in the spec §7 shape, plus one free choice: a plain shoulder piece on metal T1."""
-    t = {"_doc": "test selection (make_test_art.py): the example from tiers_example.json; metal T1 adds the pauldron"}
+    """The example selection in the spec §7 shape, plus free choices: a plain shoulder piece on metal T1, the hood
+    on every cloth and leather tier (Round 56), leather T6 on the helm variant b (the veil: chin strip closed)."""
+    t = {"_doc": "test selection (make_test_art.py): the example from tiers_example.json; metal T1 adds the pauldron, "
+                 "cloth and leather add the hood, leather T6 wears helm variant b"}
     for line in L.LINES:
         t[line] = {tid: {"palette": T["palette"], "on": list(T["on"]), "variant": dict(T["variant"]),
                          "inner": dict(T["inner"]), "icon": dict(T["icon"])} for tid, T in cat["tiers"][line].items()}
     t["metal"]["T1"]["on"].append("pauldron")
+    for line in ("cloth", "leather"):
+        for T in t[line].values():
+            T["on"].append("hood")
+    t["leather"]["T6"]["variant"]["helm"] = "b"
     return t
 
 
@@ -204,11 +250,16 @@ def write_clean(cat, out):
         for tier in tiers[line].values():
             for kind, key, v, _ in L.expected_files(cat, out, line, tier):
                 {"box": need_box, "inner": need_inner, "icon": need_icon}[kind].add((key, v))
-        byid = {b["id"]: b for b in cat["boxes"]}
+        byid = {b["id"]: b for b in L.pieces(cat)}
         for bid, v in sorted(need_box):
             p = L.box_file(out, line, bid, v)
             p.parent.mkdir(parents=True, exist_ok=True)
-            shape(box_sheet(byid[bid], line), byid[bid]).save(p)
+            b = byid[bid]
+            if b.get("kind") == "poly":
+                part_sheet(b).save(p)
+            else:
+                users = [tid for tid, T in tiers[line].items() if bid in T["on"] and L.tier_variant(T, bid) == v]
+                shape(box_sheet(b, line), b, chin=L.chin_open(line, users)).save(p)
             n += 1
         for slot, v in sorted(need_inner):
             p = L.inner_file(out, line, slot, v)
@@ -289,9 +340,40 @@ def write_broken(clean, out):
     lp = out / "leather" / "helm_a.png"
     im = Image.open(lp).convert("RGBA")
     fx, fy, fw, fh = hl["faces"]["front"]
-    im.putpixel((fx, fy + fh - 1), (0, 0, 0, 0))
+    im.putpixel((fx, fy + fh - 2), (0, 0, 0, 0))          # column 0: outside the window, above the chin strip
     im.save(lp)
-    print("wrote broken set to", out, "(12 deliberate errors in metal/, leather/ and tiers.json)")
+    # Round 56: 13 the chin strip open on the veil helm (leather T6 wears variant b; ruling 17 keeps it closed)
+    lp = out / "leather" / "helm_b.png"
+    im = Image.open(lp).convert("RGBA")
+    for xy in L.chin_row(hl):
+        im.putpixel(xy, (0, 0, 0, 0))
+    im.save(lp)
+    # 14-15 the hood: a hole in the bleed of T.top (the rect's top-left corner lies outside the polygon) and paint
+    # outside every face rect
+    hood = next(p for p in L.load_catalog()["parts"] if p["id"] == "hood")
+    hp = out / "cloth" / "hood_a.png"
+    im = Image.open(hp).convert("RGBA")
+    fx, fy, fw, fh = hood["faces"]["T.top"]
+    im.putpixel((fx, fy + 2), (0, 0, 0, 0))               # left of the slanted edge: bleed, not polygon
+    cells = {(x, y) for fx, fy, fw, fh in hood["faces"].values() for x in range(fx, fx + fw) for y in range(fy, fy + fh)}
+    free = next((x, y) for y in range(im.height) for x in range(im.width) if (x, y) not in cells)
+    im.putpixel(free, C["M_MID"])
+    im.save(hp)
+    # 16 a tier that wears the hood without the helm (cloth T2)
+    t = json.loads((out / "tiers.json").read_text())
+    t["cloth"]["T2"]["on"].remove("helm")
+    (out / "tiers.json").write_text(json.dumps(t, indent=1))
+    # 17 the cloth helm loses every zone B pixel of its front face: its chin strip is open, but zone B 0 < 3 is more
+    # than the strip's one-pixel allowance, so cloth T1, T3 and T4 head stay violations
+    cp = out / "cloth" / "helm_a.png"
+    im = Image.open(cp).convert("RGBA")
+    fx, fy, fw, fh = hl["faces"]["front"]
+    for y in range(fy, fy + fh):
+        for x in range(fx, fx + fw):
+            if im.getpixel((x, y))[3] and im.getpixel((x, y))[:3] in L.ZONE_B:
+                im.putpixel((x, y), C["M_MID"])
+    im.save(cp)
+    print("wrote broken set to", out, "(17 deliberate errors in metal/, leather/, cloth/ and tiers.json)")
 
 
 def main():

@@ -13,6 +13,11 @@ templates/inner/<slot>.png    the 64x32 skin at 8x: the slot's region bright, th
 templates/palette.png         the 13 reference colours with index, name, hex.
 templates/blank/<box>.png     exact-size transparent box sheets to paint into;
 templates/blank/inner_<slot>.png, templates/blank/icon.png likewise.
+templates/parts/<part>.png    a polygon part's sheet at 8x (Round 56, spec
+                              section 1a): each face's rect tinted, the polygon
+                              outlined, the bleed texels (inside the rect,
+                              outside the polygon) hatched; legend with each
+                              face's orientation; templates/blank/<part>.png.
 """
 import argparse
 import shutil
@@ -135,6 +140,9 @@ def box_templates(cat, out):
         window = L.open_window(b)
         for xy in window:
             cells[xy] = (255, 255, 255)       # white: the helm's face window, the only texels that may stay open
+        chin = L.chin_row(b)
+        for xy in chin:
+            cells[xy] = (200, 230, 255)       # pale blue: the chin strip, open on cloth and leather T1-T5
         body = grid_image(SW, SH, cells, labels, hatched)
         used = sorted({ln + " " + t for ln in L.LINES for t, T in cat["tiers"][ln].items() if b["id"] in T["on"]})
         rot = f", rotated {b['rot'][1]} deg about {b['rot'][0]}" if b["rot"] else ""
@@ -146,7 +154,9 @@ def box_templates(cat, out):
         ] + [f"{face:6s} at ({fx},{fy}) {fw}x{fh}: {ORIENT[face]}" for face, (fx, fy, fw, fh) in b["faces"].items()] + [
             "every face texel must be opaque (no transparency in armor)" + (
                 "; WHITE = the face window: these texels may stay transparent (the face shows through)" if window
-                else "") + "; light checker = outside the faces, must stay transparent; hatched = another box covers these texels "
+                else "") + ("; PALE BLUE = the chin strip (Round 56 ruling 17): transparent on every cloth head piece "
+                            "and on leather T1-T5, opaque on leather T6 (the veil) and metal" if chin else
+                            "") + "; light checker = outside the faces, must stay transparent; hatched = another box covers these texels "
             "when both are worn (hidden wherever the cover is opaque; check.py's overlap report has the details "
             "for your tiers.json)",
             "can be covered by: " + ("; ".join(f"{a} ({', '.join(f)})" for a, f in covers) or "nothing"),
@@ -155,6 +165,66 @@ def box_templates(cat, out):
         ]
         compose_wrapped(f"{b['id']} - {b['label_en']} ({b['label']})", lines, body).save(out / "boxes" / f"{b['id']}.png")
         Image.new("RGBA", (SW, SH), (0, 0, 0, 0)).save(out / "blank" / f"{b['id']}.png")
+
+
+def part_templates(cat, out):
+    """The polygon parts' sheets at 8x: each face's rect tinted, the texels whose centre lies inside the polygon
+    brighter, the bleed hatched, the polygon outlined (spec §1a)."""
+    tints = [(250, 226, 160), (170, 205, 245), (245, 185, 185), (180, 235, 180), (215, 190, 240),
+             (205, 190, 150), (160, 225, 220), (240, 205, 170)]
+    for p in cat.get("parts", []):
+        SW, SH = p["sheet"]
+        cells, labels, bleed = {}, [], set()
+        for i, f in enumerate(p["polys"]):
+            fx, fy, fw, fh = f["rect"]
+            poly = f["uv"]
+            for y in range(fy, fy + fh):
+                for x in range(fx, fx + fw):
+                    cells[(x, y)] = tints[i % len(tints)]
+                    if not inside(poly, (x + 0.5, y + 0.5)):
+                        bleed.add((x, y))
+            labels.append((fx, fy, fw, fh, f["name"], f["name"].split(".")[-1][:1].upper()))
+        body = grid_image(SW, SH, cells, labels, bleed)
+        d = ImageDraw.Draw(body)
+        for f in p["polys"]:
+            pts = [(u * S, v * S) for u, v in f["uv"]]
+            d.line(pts + pts[:1], fill=(200, 0, 120), width=2)
+        used = sorted({ln + " " + t for ln in L.LINES for t, T in cat["tiers"][ln].items() if p["id"] in T["on"]})
+        lines = [f"polygon part, sheet {SW}x{SH} px (spec section 1a); slot {p['slot']}, bone {p['bone']}; "
+                 f"worn only together with the {p['shell']} (it closes the part); file <line>/{p['id']}_<variant>.png",
+                 "every texel of every face's rect must be opaque when the part is worn: HATCHED texels lie outside "
+                 "the polygon (magenta outline) and are bleed, painted like their neighbours so a diagonal edge never "
+                 "samples a transparent texel; light checker = outside every rect, must stay transparent; a tier "
+                 "that does not wear the part leaves the whole sheet transparent (metal: ruling 15)"]
+        for f in p["polys"]:
+            fx, fy, fw, fh = f["rect"]
+            n = f["normal"]
+            where = ("up" if n[1] > 0.954 else "down" if n[1] < -0.954 else
+                     " ".join(w for w, c in (("right", -n[0]), ("left", n[0]), ("front", n[2]), ("back", -n[2]),
+                                             ("up", n[1]), ("down", -n[1])) if c > 0.3))
+            top = ("row 0 = BACK edge" if n[1] > 0.954 else "row 0 = FRONT edge" if n[1] < -0.954 else
+                   "row 0 = top")
+            lines.append(f"{f['name']:8s} at ({fx},{fy}) {fw}x{fh}: faces {where}; seen from outside, columns run "
+                         f"to the viewer's right, {top}")
+        lines.append("the example selection wears it in: " + (", ".join(used) if used else "no tier (cloth and "
+                     "leather tiers name it in their tiers.json 'on' list, always with the helm)"))
+        compose_wrapped(f"{p['id']} - {p['label_en']} ({p['label']})", lines, body).save(out / "parts" / f"{p['id']}.png")
+        Image.new("RGBA", (SW, SH), (0, 0, 0, 0)).save(out / "blank" / f"{p['id']}.png")
+
+
+def inside(poly, q):
+    """Is the point q inside the convex polygon (any winding)?"""
+    sign = 0
+    for i in range(len(poly)):
+        a, b = poly[i], poly[(i + 1) % len(poly)]
+        c = (b[0] - a[0]) * (q[1] - a[1]) - (b[1] - a[1]) * (q[0] - a[0])
+        if abs(c) < 1e-9:
+            continue
+        if sign == 0:
+            sign = 1 if c > 0 else -1
+        elif (c > 0) != (sign > 0):
+            return False
+    return True
 
 
 SKIN_PARTS = [  # name, uv origin, (w, h, d), note for the right/left faces
@@ -232,10 +302,11 @@ def main():
     out = Path(a.out)
     if out.exists():
         shutil.rmtree(out)
-    for sub in ("boxes", "inner", "blank"):
+    for sub in ("boxes", "inner", "blank", "parts"):
         (out / sub).mkdir(parents=True)
     cat = L.load_catalog()
     box_templates(cat, out)
+    part_templates(cat, out)
     inner_templates(cat, out)
     palette_sheet(out)
     print("wrote", out, sum(1 for _ in out.rglob("*.png")), "png")

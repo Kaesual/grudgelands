@@ -24,6 +24,12 @@ after the tier copy, under the same name; nothing else changes, and the icon
 picks stay out of tiers.json. The check compares PNGs by mode, size and
 pixels (PNG bytes differ between Pillow/zlib versions) and the JSON files by
 content.
+
+Round 56 (lane HOOD, ruling 17): the chin strip, the helm front face's bottom
+row, is cleared on the helm sheet of every cloth tier and of leather T1-T5
+(armorlib.CHIN_TIERS) after the tier copy; leather T6 (the veil) and metal
+keep theirs. A helm sheet shared by a chin-strip tier and another tier stops
+the assembly. A painter that already leaves the strip open is unaffected.
 """
 import argparse
 import json
@@ -102,6 +108,28 @@ def lay_icons(files, tiers, drops, picks):
                 files[rel] = (drops[pick["drop"]] / pick["prop"] / rel).read_bytes()
 
 
+def clear_chin(files, tiers):
+    """Clear the chin strip (armorlib.chin_row) on the helm sheets of the chin-strip tiers (Round 56 ruling 17)."""
+    from io import BytesIO
+    helm = next(b for b in L.load_catalog()["boxes"] if b["id"] == "helm")
+    for line in L.LINES:
+        users = {}
+        for tid, T in tiers[line].items():
+            if "helm" in T["on"]:
+                users.setdefault(f"{line}/helm_{L.tier_variant(T, 'helm')}.png", []).append(tid)
+        for rel, tids in sorted(users.items()):
+            if not L.chin_open(line, tids):
+                if any(t in L.CHIN_TIERS.get(line, ()) for t in tids):
+                    sys.exit(f"{rel}: worn by {', '.join(tids)}: chin-strip and closed tiers share one helm sheet")
+                continue
+            im = Image.open(BytesIO(files[rel])).convert("RGBA")
+            for xy in L.chin_row(helm):
+                im.putpixel(xy, (0, 0, 0, 0))
+            buf = BytesIO()
+            im.save(buf, format="PNG")
+            files[rel] = buf.getvalue()
+
+
 def dump(obj):
     return json.dumps(obj, indent=1, ensure_ascii=False) + "\n"
 
@@ -148,6 +176,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="r54_art.") as tmp:
         work = Path(tmp)
         files, tiers, palettes = assemble(paint(work, "drop-*", "--tool", TOOL), picks)
+        clear_chin(files, tiers)
         (work / "picked").mkdir()
         (work / "picked" / "tiers.json").write_text(dump(tiers))
         lay_icons(files, tiers, paint(work, "icons-*", "--art", work / "picked"), picks["icons"])

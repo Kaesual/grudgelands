@@ -47,6 +47,10 @@ Round 54 (lane MODEL) adds the armor and the weapon card:
     face samples its rectangle in the sheet orientation of armor-format.md
     §4). A box a piece does not wear is transparent in the atlas, so the
     model never changes with the gear;
+    Round 56 (lane HOOD) appends the catalog's polygon parts (armor-format.md
+    §1a; the hood) to the same buffer, rigid on their bone: each convex face
+    fanned from its first vertex with its own normal, UVs = the part's atlas
+    offset plus the face's uv from its schema file;
   * two SWING BONES under Body, `Panel_Front` and `Panel_Back`, hinged at
     the belt, for the front and back panels (skirt, tabard, robe), keyed in
     every frame from the legs (panel_swing below); the cloak never swings
@@ -154,11 +158,12 @@ BONE_NODE = {"body": "Body", "head": "Head", "arm_r": "Arm_Right", "arm_l": "Arm
              "leg_r": "Leg_Right", "leg_l": "Leg_Left",
              "panel_f": "Panel_Front", "panel_b": "Panel_Back"}
 SWING_BONES = ("panel_f", "panel_b")
-# The boxes NPCs wear (armor-format.md §2): every catalog box for now, since
-# NPCs wear every tier. A box left out here is simply not in the NPC model.
+# The boxes and polygon parts NPCs wear (armor-format.md §1a, §2): every
+# catalog box and part for now, since NPCs wear every tier (bandits wear
+# cloth). One left out here is simply not in the NPC model.
 NPC_BOXES = ("helm", "visor", "chest", "belt", "panel_f", "panel_b", "tasset",
              "sleeve", "bracer", "pauldron", "reinforce", "flare", "spike",
-             "thigh", "knee", "boot", "toe")
+             "thigh", "knee", "boot", "toe", "hood")
 FACES = ("top", "bottom", "right", "front", "left", "back")
 FACE_NORMAL = {"front": (0, 0, 1), "back": (0, 0, -1), "right": (-1, 0, 0), "left": (1, 0, 0),
                "top": (0, 1, 0), "bottom": (0, -1, 0)}
@@ -698,6 +703,10 @@ def box_corners(box, mirrored, coords=None):
     return [placed(box, mirrored, c) for c in corners_of(x0, x1, y0, y1, z0, z1)]
 
 
+def cat_bone(name):
+    return json.loads(CATALOG.read_text())["bones"][name]
+
+
 def catalog():
     cat = json.loads(CATALOG.read_text())
     atlas = json.loads(ATLAS.read_text())
@@ -707,8 +716,9 @@ def catalog():
 def armor_geometry(box_ids):
     """The armor buffer: per catalog box (catalog order) and instance, six
     faces of 4 vertices with their own normals and the atlas UVs of the
-    box's sheet. Returns (verts, tris, bones) with bones[i] the catalog
-    bone of vertex i."""
+    box's sheet; then each polygon part (catalog order, part_geometry).
+    Returns (verts, tris, bones, labels) with bones[i] the catalog bone of
+    vertex i and labels[i] its box or part (`_l` for a left copy)."""
     cat, atlas = catalog()
     aw, ah = atlas["size"]
     verts, tris, bones = [], [], []
@@ -737,7 +747,32 @@ def armor_geometry(box_ids):
                     if dot(n, normal) <= 0:
                         raise SystemExit("gen_cloak_model: inward triangle on %s %s" % (box["id"], face))
                     tris.append(tuple(base + i for i in tri))
-    return verts, tris, bones
+    labels = [label for box in cat["boxes"] if box["id"] in box_ids
+              for _, mirrored in instances(box) for label in [box["id"] + ("_l" if mirrored else "")] * 24]
+    for part in cat.get("parts", []):
+        if part["id"] not in box_ids:
+            continue
+        pverts, ptris = model_part(part_geometry(part, atlas))
+        base = len(verts)
+        verts += pverts
+        tris += [tuple(base + i for i in t) for t in ptris]
+        bones += [part["bone"]] * len(pverts)
+        labels += [part["id"]] * len(pverts)
+    return verts, tris, bones, labels
+
+
+def part_geometry(part, atlas):
+    """A polygon part (armor-format.md §1a) as an offhand_model Part in the
+    catalog frame: per face its points, its UVs (the part's atlas offset
+    plus the face's uv) and its outward normal; Part.face fans it from its
+    first vertex and winds each triangle along the normal."""
+    aw, ah = atlas["size"]
+    ox, oy = atlas["parts"][part["id"]]["rect"][:2]
+    out = om.Part()
+    for f in part["polys"]:
+        out.face(part["id"], [tuple(part["vertices"][i]) for i in f["v"]],
+                 [((ox + u) / aw, (oy + v) / ah) for u, v in f["uv"]], tuple(f["normal"]))
+    return out
 
 
 def wield_numbers():
@@ -1071,15 +1106,12 @@ def build(kind="player", contract=None):
 
     # The armor buffer: rigid boxes join their bone's BONE chunk with weight
     # 1; the two panels get their swing bones.
-    box_ids = NPC_BOXES if kind == "npc" else tuple(b["id"] for b in catalog()[0]["boxes"])
-    verts, tris, bones = armor_geometry(box_ids)
+    cat = catalog()[0]
+    box_ids = NPC_BOXES if kind == "npc" else tuple(b["id"] for b in cat["boxes"] + cat.get("parts", []))
+    verts, tris, bones, armor_labels = armor_geometry(box_ids)
     first, last = append_buffer(mesh, vrts, verts, tris, last)
     buffers["armor"] = (len(verts), len(tris))
-    cat = catalog()[0]
-    for box in cat["boxes"]:
-        if box["id"] in box_ids:
-            for _, mirrored in instances(box):
-                labels += [box["id"] + ("_l" if mirrored else "")] * 24
+    labels += armor_labels
     for bone in ("body", "head", "arm_r", "arm_l", "leg_r", "leg_l"):
         weights = b"".join(struct.pack("<if", first + i, 1.0) for i, b in enumerate(bones) if b == bone)
         if weights:
@@ -1497,6 +1529,72 @@ def offhand_clearance(info):
     return out
 
 
+def hood_card_clearance(info):
+    """{card: {clip: (gap px, engine frame, face)}}: the closest distance of
+    the polygon parts' faces (the hood, on Head) to each back card per clip
+    (negative = overlap, a separating-axis lower bound as in
+    offhand_clearance: the face's normal and edges, the card's hull axes and
+    their crosses). Reported, not gated (armor-format.md §1a: the offhand
+    clearance leaves the polygon parts out, the lane reports this number).
+    The key "nod <deg>" holds the stand clip's first frame with the head
+    pitched by the head look's clamp (head_look.lua: 50 degrees down, 60
+    up; positive turns the face up), about the Head pivot."""
+    rig = Rig(info["root"])
+    pivot = to_model(cat_bone("head"))
+    cat, _ = catalog()
+    faces = []
+    for part in cat.get("parts", []):
+        if part["id"] not in info["box_ids"]:
+            continue
+        for f in part["polys"]:
+            pts = [to_model(part["vertices"][i]) for i in f["v"]]
+            edges = [om.unit(om.sub(pts[(i + 1) % len(pts)], pts[i])) for i in range(len(pts))]
+            faces.append((part["id"] + "." + f["name"], BONE_NODE[part["bone"]], pts,
+                          om.unit(cross(edges[0], edges[1])), edges))
+    if not faces:
+        return {}
+    _, back = info["parts"]["back"]
+    cards = []
+    for piece in back.pieces:
+        label = back.labels[piece[0]]
+        points = [to_model(back.verts[i][0]) for i in piece]
+        normals, edges = convex_axes(points)
+        cards.append((label, oh.BACK_CARDS[label[len("back_"):]], points, normals, edges))
+    out = {}
+
+    def nod(deg):
+        """The head look's pitch about the Head pivot in bind space (model
+        units; the x flip leaves a turn about x as it is)."""
+        c, s_ = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+
+        def point(p):
+            y, z = p[1] - pivot[1], p[2] - pivot[2]
+            return (p[0], pivot[1] + y * c + z * s_, pivot[2] - y * s_ + z * c)
+
+        def direction(d):
+            return (d[0], d[1] * c + d[2] * s_, -d[1] * s_ + d[2] * c)
+        return point, direction
+    runs = [(name, f, nod(0)) for name, first, last, _ in clip_ranges(info["kind"], info["layout"])
+            for f in range(first, last + 1)]
+    runs += [("nod %+d" % deg, STAND[0], nod(deg)) for deg in (-50, 60)]
+    for name, f, (point, direction) in runs:
+        for label, bone_b, points, normals, edges in cards:
+            mb = rig.skin(bone_b, f + 1)
+            pb = [apply(mb, p) for p in points]
+            nb = [turn(mb, n) for n in normals]
+            eb = [turn(mb, e) for e in edges]
+            for fname, bone_a, pts, n, ea in faces:
+                ma = rig.skin(bone_a, f + 1)
+                pa = [apply(ma, point(p)) for p in pts]
+                axes = [turn(ma, direction(n))] + nb + [cross(turn(ma, direction(a)), b) for a in ea for b in eb]
+                axes = [om.unit(a) for a in axes if dot(a, a) > 1e-12]
+                g = sat_gap(pa, pb, axes) / PX
+                best = out.setdefault(label, {}).get(name)
+                if best is None or g < best[0]:
+                    out[label][name] = (g, f, fname)
+    return out
+
+
 def frame_name(frame, layout):
     for name, (a, b) in BASE_RANGES:
         if a <= frame <= b:
@@ -1626,6 +1724,14 @@ def main():
             print("  stand frame 0 bounding box (model units): x %.3f..%.3f, y %.3f..%.3f, z %.3f..%.3f" % (
                 box[0], box[3], box[1], box[4], box[2], box[5]))
             report_clearance(info)
+            hood = hood_card_clearance(info)
+            for card, table in sorted(hood.items()):
+                rest = table["stand"]
+                low = min(((k, v) for k, v in table.items() if not k.startswith("nod")), key=lambda kv: kv[1][0])
+                print("  polygon parts to %s (skin px, negative = overlap): stand %.2f (%s); closest %.2f in %s "
+                      "at frame %d (%s); head nod -50 %.2f (%s), +60 %.2f (%s)" % (
+                          card, rest[0], rest[2], low[1][0], low[0], low[1][1], low[1][2], table["nod -50"][0],
+                          table["nod -50"][2], table["nod +60"][0], table["nod +60"][2]))
             if "wings" in info["parts"]:
                 print("  wings on the cloak: " + "; ".join(
                     "frame %d: hinge edge %.3f px inside the cloak's side, %.3f px inside its outer and "

@@ -7,10 +7,11 @@ tiers.json, optional palettes.json), data/palettes.json and data/atlas.json,
 and writes the files of section 7 for every line, grade and slot:
 
   grug_armor_<line>_<grade>_<slot>.png        atlas layer, 128 x 64: the slot's
-                                              worn boxes, each sheet palette-
-                                              swapped into its atlas rectangle
-                                              (face rectangles only; a mirrored
-                                              box has one sheet, so one copy)
+                                              worn boxes and polygon parts, each
+                                              sheet palette-swapped into its
+                                              atlas rectangle (face rectangles
+                                              only; a mirrored box has one
+                                              sheet, so one copy)
   grug_armor_<line>_<grade>_<slot>_skin.png   skin layer, 64 x 32 (chest, legs,
                                               feet): the tier's inner paint,
                                               clipped to the slot's regions
@@ -155,7 +156,8 @@ def bake(art, icons=False):
     errors = []
     pals, tiers = load_selection(cat, art, errors)
     grade_keys = grades()
-    by_slot = {s: [b for b in cat["boxes"] if b["slot"] == s] for s in L.SLOTS}
+    by_slot = {s: [b for b in L.pieces(cat) if b["slot"] == s] for s in L.SLOTS}   # boxes, then polygon parts
+    places = dict(atlas["boxes"], **atlas.get("parts", {}))
     regions = {s: L.skin_region_mask(cat, s) for s in L.INNER_SLOTS}
     cache = {}
 
@@ -176,7 +178,7 @@ def bake(art, icons=False):
                     if b["id"] not in tier["on"]:
                         continue
                     sheet = grid(L.box_file(art, ln, b["id"], L.tier_variant(tier, b["id"])), b["sheet"])
-                    ox, oy = atlas["boxes"][b["id"]]["rect"][:2]
+                    ox, oy = places[b["id"]]["rect"][:2]
                     for fx, fy, fw, fh in b["faces"].values():
                         for y in range(fy, fy + fh):
                             for x in range(fx, fx + fw):

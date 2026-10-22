@@ -15,10 +15,17 @@ Violations (exit code 1 if any):
   - paint outside the six face rectangles of a box sheet, or outside the
     slot's skin regions on an inner sheet;
   - a transparent texel inside a box sheet's faces (armor is opaque; only the
-    helm's face window may be open);
+    helm's face window may be open, and the helm's chin strip on the cloth and
+    leather tiers of Round 56 ruling 17) or inside a polygon part's face
+    rectangles (the texels outside the polygon are bleed, painted too);
+  - a tier that wears a polygon part without the box that closes it (the hood
+    without the helm);
   - per line, tier and slot fewer than 6 zone A or 3 zone B pixels seen from
     the front (an approximation, see the zone section of the output).
-Warnings (printed, exit code unchanged): a sheet no tier uses.
+Warnings (printed, exit code unchanged): a sheet no tier uses; zone B exactly
+one pixel short on a head piece whose chin strip is open (the strip took zone
+pixels; the hood art lane repaints these helms; a larger shortfall stays a
+violation); a front-facing polygon face (not counted).
 Information: the overlap report (catalog-wide which
 box can cover which, and the pairs each tier wears together).
 """
@@ -90,21 +97,25 @@ def face_cells(b):
 NAME = re.compile(r"^([a-z_]+)_([a-z0-9]+)\.png$")
 
 
-def check_opaque(rep, rel, im, b):
+def check_opaque(rep, rel, im, b, chin=False):
     """Every texel of every face is opaque (the user, 2026-10-20: no transparency in armor, it shows holes);
-    the only exception is the helm's face window (armorlib.open_window)."""
+    the exceptions are the helm's face window (armorlib.open_window) and, when `chin`, the helm's chin strip
+    (armorlib.chin_row, Round 56 ruling 17). A polygon part's face owns its whole rect (the texels outside the
+    polygon are bleed), so every texel of every rect is opaque."""
     px = im.load()
-    window = L.open_window(b)
+    window = L.open_window(b) | (L.chin_row(b) if chin else set())
     holes = [(x, y) for x, y in sorted(face_cells(b), key=lambda q: (q[1], q[0]))
              if px[x, y][3] < 128 and (x, y) not in window]
     if holes:
+        what = ("a polygon part's face owns its whole rect, bleed included" if b.get("kind") == "poly" else
+                "only the helm's face window may be open" + (", and its chin strip" if chin else ""))
         rep.v(f"{rel}: {len(holes)} transparent texel(s) inside the faces at {coords(holes)} (sheet pixels; armor "
-              f"is opaque, only the helm's face window may be open)")
+              f"is opaque, {what})")
 
 
 def check_files(cat, art, lines, rep):
     """Returns {(kind, line, key, variant): Image} for every valid-size file."""
-    byid = {b["id"]: b for b in cat["boxes"]}
+    byid = {b["id"]: b for b in L.pieces(cat)}
     good = {}
     print("== files ==")
     nfiles = 0
@@ -123,7 +134,7 @@ def check_files(cat, art, lines, rep):
             if not m or kind is None or (kind == "box" and key not in byid) or \
                     (kind == "inner" and key not in L.INNER_SLOTS) or (kind == "icon" and key not in L.SLOTS):
                 rep.v(f"{rel}: unknown file name (expected <box>_<variant>.png, inner/<chest|legs|feet>_<variant>.png "
-                      f"or icons/<head|chest|legs|feet>_<variant>.png; boxes: {', '.join(byid)})")
+                      f"or icons/<head|chest|legs|feet>_<variant>.png; boxes and parts: {', '.join(byid)})")
                 continue
             nfiles += 1
             var = m.group(2)
@@ -136,12 +147,18 @@ def check_files(cat, art, lines, rep):
             if kind == "box":
                 b = byid[key]
                 if list(im.size) != b["sheet"]:
+                    if b.get("kind") == "poly":
+                        rep.v(f"{rel}: sheet size {im.width}x{im.height}, expected {b['sheet'][0]}x{b['sheet'][1]} "
+                              f"(polygon part {key}: the sheet of its schema file {b['source']})")
+                        continue
                     W, H, D = b["texels"]
                     rep.v(f"{rel}: sheet size {im.width}x{im.height}, expected {b['sheet'][0]}x{b['sheet'][1]} "
                           f"(box {key}: w {W}, h {H}, d {D} texels; 2d+2w by d+h)")
                     continue
-                check_pixels(rep, rel, im, face_cells(b), "the six face rectangles")
-                check_opaque(rep, rel, im, b)
+                users = [t for t, T in cat["tiers"][line].items() if key in T["on"] and L.tier_variant(T, key) == var]
+                check_pixels(rep, rel, im, face_cells(b), "the face rectangles" if b.get("kind") == "poly"
+                             else "the six face rectangles")
+                check_opaque(rep, rel, im, b, chin=L.chin_open(line, users))
             elif kind == "inner":
                 if im.size != (64, 32):
                     rep.v(f"{rel}: size {im.width}x{im.height}, expected 64x32")
@@ -252,7 +269,7 @@ class FrontLayer:
 def zone_counts(cat, tier, sheets, inner):
     """{slot: {"A": n, "B": n}} visible zone texels from the front, rest pose."""
     byid = {b["id"]: b for b in cat["boxes"]}
-    on = [byid[i] for i in tier["on"]]
+    on = [byid[i] for i in tier["on"] if i in byid]      # the boxes (polygon parts: check_zones)
     layers = []
     for inst in L.instances(on):
         if inst.rot and inst.rot[0] != "z":
@@ -297,8 +314,16 @@ def check_zones(cat, art, lines, good, rep):
           "  (by the texel centre) behind the body or a worn box of the SAME slot do not count; boxes of other\n"
           "  slots are ignored (each piece must show its zones when worn on its own; a robe may cover the boots).\n"
           "  Both mirrored copies count. Perspective, side faces and the walk are ignored. Minimum per slot:\n"
-          "  A >= 6, B >= 3.")
-    byid = {b["id"]: b for b in cat["boxes"]}
+          "  A >= 6, B >= 3. Polygon parts count with their slot through front-facing faces only (none on the\n"
+          "  hood: it adds nothing from the front). Zone B exactly one short on a head piece whose chin strip is\n"
+          "  open (Round 56 ruling 17: the strip took zone pixels) is a WARNING until the hood art repaints it.")
+    byid = {b["id"]: b for b in L.pieces(cat)}
+    front_facing = {p["id"]: [f["name"] for f in p["polys"] if f["normal"][2] >= 0.954] for p in cat.get("parts", [])}
+    for pid, names in front_facing.items():
+        if names:
+            rep.w(f"polygon part {pid}: front-facing faces {', '.join(names)} are not counted (the zone count "
+                  f"knows box fronts only)")
+    helm = byid.get("helm")
     for line in lines:
         rows = []
         for tid, tier in cat["tiers"][line].items():
@@ -331,8 +356,17 @@ def check_zones(cat, art, lines, good, rep):
                 cells.append(f"{slot} A{c['A']} B{c['B']}")
                 low = [z for z in ("A", "B") if c[z] < ZONE_MIN[z]]
                 if low:
-                    rep.v(f"{line} {tid} {slot}: " + ", ".join(f"zone {z} {c[z]} < {ZONE_MIN[z]}" for z in low) +
-                          " seen from the front (approximation)")
+                    msg = f"{line} {tid} {slot}: " + ", ".join(f"zone {z} {c[z]} < {ZONE_MIN[z]}" for z in low) + \
+                        " seen from the front (approximation)"
+                    # the chin strip's own effect (Round 56 ruling 17): zone B one pixel short on a head piece whose
+                    # strip is open is a warning until the hood art repaints the helm; anything more is a violation
+                    sheet = sheets.get("helm")
+                    if slot == "head" and low == ["B"] and c["B"] == ZONE_MIN["B"] - 1 and sheet is not None and \
+                            L.chin_open(line, [tid]) and all(sheet.getpixel(xy)[3] < 128 for xy in L.chin_row(helm)):
+                        rep.w(msg + "; the open chin strip took zone pixels (Round 56 ruling 17), the hood art "
+                                    "repaints this helm")
+                    else:
+                        rep.v(msg)
             rows.append(f"  {line} {tid}: " + " | ".join(cells))
         print("\n".join(rows))
 
@@ -410,7 +444,8 @@ def overlap_report(cat, lines, cov, zf):
     print("== overlap report (information, rest pose; mirrored copies included) ==")
     print(f"  'A covers B: face ...' = those texels of B's sheet lie inside A or at most {COVER_GAP} px behind A's\n"
           "  surface, so A hides them wherever A is opaque. Rectangles are in B's sheet pixels (x0-x1, y0-y1).\n"
-          "  [moves] = different bones (e.g. a hip panel and a leg): true in the rest pose only.")
+          "  [moves] = different bones (e.g. a hip panel and a leg): true in the rest pose only. Boxes only:\n"
+          "  the polygon parts are not in this report (zfight.py checks their faces).")
     byid = {b["id"]: b for b in cat["boxes"]}
     print(f"  -- catalog: which box can cover which ({len(cov)} pairs, whatever the tiers wear) --")
     for (a, bid) in sorted(cov, key=lambda k: ([x["id"] for x in cat["boxes"]].index(k[1]), k[0])):

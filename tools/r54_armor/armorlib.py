@@ -50,6 +50,13 @@ def load_catalog():
     return json.loads((DATA / "catalog.json").read_text())
 
 
+def pieces(cat):
+    """Every catalog box, then every polygon part (spec §1a): the things a tier wears, in catalog order. A part
+    entry carries the box keys the sheet tools read (id, slot, bone, sheet, `faces` = name -> rect, mirror False)
+    plus `kind` "poly", `vertices` and `polys` (its faces with vertex indices, uv and normal)."""
+    return list(cat["boxes"]) + list(cat.get("parts", []))
+
+
 def load_palettes(art=None, path=None):
     """-> (palettes, notes, errors). The base is data/palettes.json; palettes
     from `path` (or, without one, <art>/palettes.json when it exists) are laid
@@ -263,6 +270,27 @@ def open_window(b):
     return out
 
 
+# ---------- the chin strip (Round 56 ruling 17) ----------
+# The helm front face's bottom row may stay transparent on every cloth head piece and on the leather ones without
+# a veil (T1-T5); leather T6 and metal stay opaque there (the user, 2026-10-22).
+CHIN_TIERS = {"cloth": ("T1", "T2", "T3", "T4", "T5", "T6"), "leather": ("T1", "T2", "T3", "T4", "T5")}
+
+
+def chin_row(b):
+    """Sheet pixels of the helm front face's bottom row; empty for every other box."""
+    if b["id"] != "helm":
+        return set()
+    fx, fy, fw, fh = b["faces"]["front"]
+    return {(fx + c, fy + fh - 1) for c in range(fw)}
+
+
+def chin_open(line, tids):
+    """May a helm sheet worn by these tiers of `line` leave its chin strip open? Yes when every tier wearing it is
+    a chin-strip tier (a sheet no tier wears: when the line has chin-strip tiers)."""
+    allowed = CHIN_TIERS.get(line, ())
+    return bool(allowed) and all(t in allowed for t in tids)
+
+
 # ---------- art files ----------
 def box_file(art, line, box_id, variant):
     return Path(art) / line / f"{box_id}_{variant}.png"
@@ -362,7 +390,7 @@ def load_tiers(cat, pals, art):
     except Exception as e:  # noqa: BLE001
         errors.append(f"tiers.json: cannot read ({e}); using the example selection")
         return {ln: {t: dict(v) for t, v in example[ln].items()} for ln in LINES}, notes, errors
-    box_ids = {b["id"] for b in cat["boxes"]}
+    box_ids = {b["id"] for b in pieces(cat)}       # boxes and polygon parts
     out = {}
     for key in raw:
         if key not in LINES and not key.startswith("_"):
@@ -392,7 +420,11 @@ def load_tiers(cat, pals, art):
             for bid in on:
                 if bid not in box_ids:
                     errors.append(f"{where}: unknown box '{bid}' in 'on' (boxes: {', '.join(sorted(box_ids))})")
-            on = [b["id"] for b in cat["boxes"] if b["id"] in on]          # catalog order, known ids only
+            on = [b["id"] for b in pieces(cat) if b["id"] in on]           # catalog order, known ids only
+            for part in cat.get("parts", []):
+                if part["id"] in on and part["shell"] not in on:
+                    errors.append(f"{where}: names '{part['id']}' without '{part['shell']}' (the {part['id']} has no "
+                                  f"faces inside the {part['shell']} shell, so alone it would be hollow; spec §1a)")
             pal = T.get("palette")
             if pal is None:
                 errors.append(f"{where}: no 'palette'")
