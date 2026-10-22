@@ -59,14 +59,11 @@
 
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
-	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
-	local troll = dofile(directory .. "/troll_parts.lua")(directory)
-	local handles = dofile(directory .. "/troll_palette.lua")()
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("kezamba")
 	local mask = dofile(directory .. "/kezamba_lagoon.lua")()
 
 	local M = {}
@@ -116,9 +113,11 @@ local function loader(directory)
 		{-44, 6, -40, 24, "lane", "z"},
 	}
 
-	-- The plot roster. `make` is the generator, `module` the library it comes
-	-- from, `x`/`z` the pad anchor of the rotated footprint, `turns` the
-	-- rotation, `handle` which palette handle it is built with.
+	-- The plot roster. `template` is the building template (Round 56,
+	-- docs/technical/building-template-format.md), `x`/`z` the pad anchor of
+	-- the rotated footprint, `turns` the rotation, `handle` the roster palette
+	-- it is built with (`building_templates/layouts/kezamba.roster`: `town`
+	-- the plain troll timber, `basalt` the civic stone).
 	local PLOTS = {
 		-- 1. The king's hall, east of the throne approach with its great door
 		-- looking west onto it. It is NOT on the axis, and that was the
@@ -128,9 +127,8 @@ local function loader(directory)
 		-- the hall stays where the gorge put it: an off-axis hall facing its
 		-- own approach is a better forecourt than a symmetrical one, and
 		-- re-centring it would move the whole south quarter.
-		{id = "kings_hall", module = "capitals", make = "king_hall",
+		{id = "kings_hall", template = "kezamba_kings_hall",
 			x = 8, z = -42, turns = 3, handle = "basalt",
-			spec = {w = 23, d = 23, rise = 6},
 			drop = {waypoint = true}},
 
 		-- 2. The moot house: a stilt hall STRADDLING THE LAKE'S WEST BANK, its
@@ -139,59 +137,43 @@ local function loader(directory)
 		-- building the contract's troll row is about, and it is the reason the
 		-- lake is left alone rather than filled. `turns = 1` puts the flight at
 		-- the -x end, which is the bank.
-		{id = "moot_house", module = "troll", make = "stilt_hall",
+		{id = "moot_house", template = "kezamba_moot_house",
 			x = -24, z = 30, turns = 1, handle = "basalt",
-			spec = {w = 11, d = 11, deck = 4, spur = 6,
-				patrol_group = WATCH, order = 3},
 			water = true, land_rows = 4},
 
 		-- 3. The cauldron court: the troll market, in the south-west corner.
-		{id = "cauldron_court", module = "troll", make = "cauldron_court",
-			x = -46, z = -46, turns = 0, handle = "troll",
-			spec = {size = 15, patrol_group = WATCH, order = 1}},
+		{id = "cauldron_court", template = "kezamba_cauldron_court",
+			x = -46, z = -46, turns = 0, handle = "town"},
 
 		-- 4. The shaman's shrine, on the pad's north-west shoulder. It carries
 		-- this capital's one quest shell.
-		{id = "shrine", module = "troll", make = "shaman_shrine",
-			x = -46, z = 26, turns = 0, handle = "troll",
-			spec = {size = 13, patrol_group = WATCH, order = 5}},
+		{id = "shrine", template = "kezamba_shrine",
+			x = -46, z = 26, turns = 0, handle = "town"},
 
 		-- 5. The carvers' yard, on the west avenue's south flank.
-		{id = "carver_yard", module = "troll", make = "carver_yard",
-			x = -46, z = -16, turns = 0, handle = "troll",
-			spec = {size = 13}},
+		{id = "carver_yard", template = "kezamba_carver_yard",
+			x = -46, z = -16, turns = 0, handle = "town"},
 
 		-- 6. The granary and the pack stable of the east quarter.
-		{id = "granary", module = "capitals", make = "granary",
-			x = 6, z = -16, turns = 1, handle = "troll",
-			spec = {w = 11, d = 15, wall_h = 5}},
-		{id = "stable", module = "capitals", make = "stable",
-			x = 35, z = -45, turns = 1, handle = "troll",
-			spec = {w = 15, d = 11, wall_h = 5}},
+		{id = "granary", template = "kezamba_granary",
+			x = 6, z = -16, turns = 1, handle = "town"},
+		{id = "stable", template = "kezamba_stable",
+			x = 35, z = -45, turns = 1, handle = "town"},
 
 		-- 7. Four houses on the outer ground.
-		{id = "gate_house_south", module = "buildings", make = "cottage",
-			x = 24, z = -16, turns = 1, handle = "troll",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
-		{id = "lane_house", module = "buildings", make = "cottage",
-			x = 36, z = -24, turns = 1, handle = "troll",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
-				infill = true, shutters = true}},
-		{id = "west_house", module = "buildings", make = "cottage",
-			x = -29, z = -44, turns = 1, handle = "troll",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "saltbox",
-				ridge_axis = "x", infill = true, fancy_bed = true}},
-		{id = "shore_house", module = "buildings", make = "cottage",
-			x = -44, z = 4, turns = 1, handle = "troll",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "x", infill = true, shutters = true}},
+		{id = "gate_house_south", template = "kezamba_gate_house_south",
+			x = 24, z = -16, turns = 1, handle = "town"},
+		{id = "lane_house", template = "kezamba_lane_house",
+			x = 36, z = -24, turns = 1, handle = "town"},
+		{id = "west_house", template = "kezamba_west_house",
+			x = -29, z = -44, turns = 1, handle = "town"},
+		{id = "shore_house", template = "kezamba_shore_house",
+			x = -44, z = 4, turns = 1, handle = "town"},
 
 		-- 8. The trade shed on the market walk, where the two royal vendors
 		-- stand.
-		{id = "trade_shed", module = "buildings", make = "shed",
-			x = -20, z = -14, turns = 0, handle = "troll",
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}}},
+		{id = "trade_shed", template = "kezamba_trade_shed",
+			x = -20, z = -14, turns = 0, handle = "town"},
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
@@ -214,13 +196,11 @@ local function loader(directory)
 	-- Round 22); this file is the civic core.
 
 	function M.core()
-		local timber = palettes.new("troll")
-		local basalt = palettes.new("troll", handles.BASALT)
-		local by_handle = {troll = timber, basalt = basalt}
+		local timber = CAPITAL.palettes.town
 		local buf = parts.buffer()
 		local doorways, rooms, sockets = {}, {}, {}
 		local placed, inside_by_id, plot_order = {}, {}, {}
-		local claimed = {}
+		local claimed, stamped = {}, {}
 
 		local DECK = timber.node("path")              -- junglewood boardwalk
 		local PAVE = timber.maybe("castle_paving") or timber.node("plaza")
@@ -386,17 +366,7 @@ local function loader(directory)
 
 		-- 4. THE PLOTS.
 		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			local module = capitals
-			if plot.module == "buildings" then module = buildings
-			elseif plot.module == "troll" then module = troll end
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 kezamba: no generator " .. plot.make, 0)
-			end
-			local part = generator(by_handle[plot.handle], spec)
+			local part = CAPITAL.part(plot.template, plot.id, plot.handle)
 			local turns = plot.turns % 4
 			local rw = (turns % 2 == 1) and part.d or part.w
 			local rd = (turns % 2 == 1) and part.w or part.d
@@ -502,25 +472,24 @@ local function loader(directory)
 					top = a.top, closed = a.closed, id = plot.id,
 				}
 			end
-			local overrides = {}
-			if type(plot.socket_overrides) == "function" then
-				overrides = plot.socket_overrides(placed[plot.id])
-			end
+			-- The building's own sockets; a socket point without a role is the
+			-- position of one of the composition's own sockets.
+			templates.collect_sockets(stamped, points, plot.id)
 			for _, entry in ipairs(points.sockets or {}) do
-				local drop = plot.drop and plot.drop[entry.role]
+				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
-					local override = overrides[entry.id] or {}
 					sockets[#sockets + 1] = {id = entry.id, role = entry.role,
-						x = override.x or entry.x, y = override.y or entry.y,
-						z = override.z or entry.z,
-						face = override.face or entry.face,
+						x = entry.x, y = entry.y, z = entry.z,
+						face = entry.face,
 						group = entry.group, order = entry.order,
 						kind = entry.kind, activity = entry.activity,
 						spawn = entry.spawn,
-						tags = override.tags or entry.tags}
+						tags = entry.tags}
 				end
 			end
 		end
+
+		templates.all_used(stamped, "kezamba")
 
 		-- 5. THE QUAY. Every pad column on the water's edge that the city has
 		-- not already built on gets a course of basalt kerb, which is what

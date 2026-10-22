@@ -28,7 +28,7 @@
 -- block of both would cost a plot thousands of cells of buried stone.
 --
 -- A PLOT NEED NOT BE A BUILDING. A roster row that carries `yard` instead of
--- `module`/`make` builds the same thing without a part in the middle of it --
+-- `template` builds the same thing without a part in the middle of it --
 -- the same ground course, skirt, clear and sockets, plus whatever its own
 -- `decorate` plants on it. That is what a grove, a garden, a pond or a
 -- mourning ground is, and it is the same builder because the reason a plot
@@ -43,12 +43,10 @@
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local services = dofile(directory .. "/capital_services.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
-	local elf = dofile(directory .. "/elf_parts.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("lethariel")
 
 	local M = {}
 
@@ -63,34 +61,20 @@ local function loader(directory)
 	-- doorway.
 	M.MIN_CLEAR = 8
 
-	local handles = elf.handles()
-
-	local function merged(...)
-		local out = {}
-		for _, source in ipairs({...}) do
-			for key, value in pairs(source) do out[key] = value end
-		end
-		return out
-	end
+	-- The two palettes are the roster's (`building_templates/layouts/
+	-- lethariel.roster`): `elf` the city's, `pale` the civic quarter's.
 
 	-- The plot's own ground area: the part's extent grown by the margin on
 	-- every side and then clamped into the lot's own reach, so the
 	-- doorstep path and the lanterns stand on the plot and not beside it.
+	-- The extent is the template's `extent` (the building's non-air cells as
+	-- its generator built them, format doc §4.1), turned with the part.
 	local function ground_area(part, ox, oz, turns, margin, reach)
-		local order, count = part.buffer:cells()
-		local x0, x1, z0, z1
-		for index = 1, count do
-			local cell = order[index]
-			if cell.name ~= parts.AIR then
-				local rx, rz = parts.rotate_footprint(cell.x, cell.z,
-					part.w, part.d, turns)
-				local x, z = ox + rx, oz + rz
-				if x0 == nil or x < x0 then x0 = x end
-				if x1 == nil or x > x1 then x1 = x end
-				if z0 == nil or z < z0 then z0 = z end
-				if z1 == nil or z > z1 then z1 = z end
-			end
-		end
+		local e = part.extent
+		local ax, az = parts.rotate_footprint(e[1], e[2], part.w, part.d, turns)
+		local bx, bz = parts.rotate_footprint(e[3], e[4], part.w, part.d, turns)
+		local x0, x1 = ox + math.min(ax, bx), ox + math.max(ax, bx)
+		local z0, z1 = oz + math.min(az, bz), oz + math.max(az, bz)
 		reach = reach or M.REACH
 		local function clamp(value)
 			if value < -reach then return -reach end
@@ -164,39 +148,26 @@ local function loader(directory)
 
 	-- Build one plot from its roster row.
 	--
-	-- The row: `id`, `module` ("capitals", "buildings" or "elf"), `make` (the
-	-- generator), `spec` (its arguments), and optionally `turns`, `margin`,
-	-- `roof` ("pale"), `garden`, `order` (its waypoint in the district loop),
-	-- `decorate`, `extra_sockets` and `socket_overrides`.
+	-- The row: `id`, `template` (its building template, Round 56), and
+	-- optionally `turns`, `margin`, `roof` ("pale"), `garden`, `order` (its
+	-- waypoint in the district loop), `decorate`, `extra_sockets` and
+	-- `socket_overrides`.
 	function M.build(plot, context)
 		context = context or {}
 		local watch = plot.patrol_group or context.patrol_group
-		local palette = handles.elf
-		local roof_palette
-		if plot.roof == "pale" then roof_palette = handles.pale end
-		if plot.handle == "pale" then palette = handles.pale end
-		local spec = {}
-		for key, value in pairs(plot.spec or {}) do spec[key] = value end
-		spec.id = plot.id
-		if services.service("lethariel", plot.id) == "riding" then
-			spec.w, spec.d, spec.open_shelter = 21, 17, true
-		end
-		if roof_palette then spec.roof_palette = roof_palette end
+		local main = plot.handle == "pale" and "pale" or "elf"
+		local palette = CAPITAL.palettes[main]
+		local roof = plot.roof == "pale" and "pale" or nil
+		-- The riding service's stable is an open shelter (its template is
+		-- the 21 x 17 one), re-stamped over the plot's own lamps below.
+		local open_shelter = services.service("lethariel", plot.id) == "riding"
 		local part, turns, rw, rd, ox, oz
 		local x0, z0, x1, z1
 		if plot.yard then
 			turns, rw, rd, ox, oz = 0, 1, 1, 0, 0
 			x0, z0, x1, z1 = yard_area(plot)
 		else
-			local module = capitals
-			if plot.module == "buildings" then module = buildings end
-			if plot.module == "elf" then module = elf end
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 lethariel plot: no generator " ..
-					tostring(plot.make), 0)
-			end
-			part = generator(palette, spec)
+			part = CAPITAL.part(plot.template, plot.id, main, roof)
 			-- The part is centred on the plot origin, which is also the
 			-- reference column: the terrain height under the middle of the
 			-- plot is the height the whole plot is levelled to. A quarter turn
@@ -288,8 +259,7 @@ local function loader(directory)
 		-- where a socket would otherwise be published into a wall.
 		local area = {x0 = x0, z0 = z0, x1 = x1, z1 = z1, ox = ox, oz = oz,
 			pw = rw, pd = rd, peak = peak, clear_to = clear_to,
-			dressing = dressing, parts = parts, elf = elf,
-			handles = handles, merged = merged}
+			dressing = dressing, parts = parts}
 		if type(plot.decorate) == "function" then
 			plot.decorate(buf, palette, area)
 		end
@@ -339,20 +309,15 @@ local function loader(directory)
 			entry.dir = {x = dx, z = dz}
 		end
 
-		if spec.open_shelter then
+		if open_shelter then
 			-- Generic shopfront lamps/benches must not become extra shelter
 			-- posts or intrude into the open stable's public approach.
 			buf:clear(x0, 1, z0, x1, clear_to, z1)
 			parts.stamp(buf, part, ox, 0, oz, turns)
 		end
 		services.decorate("lethariel", plot.id, buf, palette, sockets, area)
-		-- 6c. Every closed room's small touches (Round 36 decor kit): a
-		-- barrel or a pot by the door, flowers under the windows, a wood pile
-		-- or a barrel against a side wall; never on a socket or the cell
-		-- before it.
-		decor.dress_rooms(buf, palette, decor.rooms_from_corners(points.room_corner),
-			points.doors or {}, sockets, {palette.node("foundation"),
-				palette.node("path"), palette.maybe("ground_straw")})
+		-- (Every closed room's small touches, the Round 36 decor kit, are the
+		-- template's own since Round 56.)
 		parts.resolve_panes(buf)
 
 		-- Round 47 town greening: the race's trees on the plot's open wild

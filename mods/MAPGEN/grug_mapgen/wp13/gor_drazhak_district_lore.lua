@@ -27,12 +27,12 @@ local function loader(directory)
 		-- this capital's second quest shell, which `capitals.temple` publishes
 		-- three nodes inside its own door. The user's playtest-round-2 ruling
 		-- is that the elder stands ON THE DOORSTEP and shows the street his
-		-- face, so this plot moves the shell one node outside the door and tags
-		-- it `door`, which is what turns an NPC round
-		-- (`grug_mobs/start_npcs.lua`, `socket_face_yaw`).
-		{id = "bone_spirit_hall", module = "capitals", make = "temple",
+		-- face, so the shell stands one node outside the door, tagged `door`,
+		-- which is what turns an NPC round (`grug_mobs/start_npcs.lua`,
+		-- `socket_face_yaw`): a point of the temple's template since Round 56,
+		-- this row's socket override before.
+		{id = "bone_spirit_hall", template = "gor_drazhak_bone_spirit_hall",
 			order = 1, handle = "ors",
-			spec = {w = 13, d = 19, wall_h = 7, rise = 5},
 			-- ONE NODE IN FROM THE PLOT EDGE, not two. A plot's ground
 			-- rectangle is the part's own extent grown by the margin, so
 			-- `x0 + 2` is exactly the column the part's EAVE stands in: a totem
@@ -43,10 +43,6 @@ local function loader(directory)
 				local dressing = area.dressing
 				dressing.totem(buf, palette, area.x0 + 1, area.z0 + 3, 5)
 				dressing.totem(buf, palette, area.x1 - 1, area.z0 + 3, 5)
-			end,
-			socket_overrides = function(area)
-				return {bone_spirit_hall_quest = {x = 0, z = area.oz - 1,
-					face = 0, tags = {"door"}}}
 			end,
 			extra_sockets = function(area)
 				return {
@@ -150,9 +146,8 @@ local function loader(directory)
 		-- 5. THE BONE READER'S HALL: the library of this race, which keeps its
 		-- record in carved bone rather than in books. The scriptorium generator
 		-- publishes the two desk spots.
-		{id = "bone_reader_hall", module = "capitals", make = "scriptorium",
+		{id = "bone_reader_hall", template = "gor_drazhak_bone_reader_hall",
 			order = 5, handle = "ors",
-			spec = {w = 13, d = 17, wall_h = 6},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.totem(buf, palette, area.x0 + 2, area.z1 - 2, 4)
@@ -168,11 +163,8 @@ local function loader(directory)
 
 		-- 6. THE HERB HOUSE: the healer's, with the beds of dry-country
 		-- planting she keeps outside her door.
-		{id = "bone_herb_house", module = "buildings", make = "cottage",
+		{id = "bone_herb_house", template = "gor_drazhak_bone_herb_house",
 			order = 6, margin = 4,
-			parapet = {y = 6},
-			spec = {w = 9, d = 11, wall_h = 4, roof = "flat_deck",
-				infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.planter(buf, palette, area.x0 + 1, area.z1 - 3,
@@ -205,9 +197,8 @@ local function loader(directory)
 			end},
 
 		-- 7. THE ANCESTOR STORE: where the bones and the trophies are kept.
-		{id = "bone_store", module = "capitals", make = "granary",
+		{id = "bone_store", template = "gor_drazhak_bone_store",
 			order = 7, handle = "ors",
-			spec = {w = 11, d = 15, wall_h = 5},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.totem(buf, palette, area.x0 + 2, area.z1 - 2, 4)
@@ -220,11 +211,8 @@ local function loader(directory)
 			end},
 
 		-- 8. THE SHAMAN'S HOUSE.
-		{id = "bone_shaman_house", module = "buildings", make = "cottage",
+		{id = "bone_shaman_house", template = "gor_drazhak_plot_bazaar_house",
 			order = 8,
-			parapet = {y = 6},
-			spec = {w = 11, d = 9, wall_h = 4, roof = "flat_deck",
-				infill = true, fancy_bed = true},
 			-- Clear of the deck ring for the same reason the spirit hall's
 			-- totems are clear of the temple's eave: the breastwork stands on
 			-- the column at `x1 - 2`, and it is written BEFORE the dressing.
@@ -244,8 +232,8 @@ local function loader(directory)
 		-- envelope -- measured on three worlds, section 1 of
 		-- the pre-Round-22 lot tables -- and a city on one keeps its water in
 		-- a tank.
-		{id = "bone_ash_court", module = "capitals", make = "well_court",
-			order = 9, spec = {size = 11},
+		{id = "bone_ash_court", template = "highcourt_well_court",
+			order = 9,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.totem(buf, palette, area.x0 + 2, area.z0 + 2, 4)

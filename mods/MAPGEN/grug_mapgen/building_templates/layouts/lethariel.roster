@@ -1,0 +1,45 @@
+grudgelands-town-roster 1
+# The templates and palettes the capital's code places (frozen in Round 56):
+# the civic core's buildings and every district plot's.
+town lethariel
+race elf
+
+palette elf race=elf crop=default:junglegrass crop_soil=grug_farming:soil hedge=grug_trees:silverwood_leaves hedge_stem=grug_trees:silverwood_tree water=default:river_water_source
+palette pale race=elf castle_wall=default:silver_sandstone_brick castle_wall_slab=stairs:slab_silver_sandstone_brick castle_wall_stair=stairs:stair_silver_sandstone_brick crop=default:junglegrass crop_soil=grug_farming:soil hedge=grug_trees:silverwood_leaves hedge_stem=grug_trees:silverwood_tree roof_ridge=default:silver_sandstone_brick roof_slab=stairs:slab_silver_sandstone_brick roof_stair=stairs:stair_silver_sandstone_brick roof_stair_inner=stairs:stair_inner_silver_sandstone_brick roof_stair_outer=stairs:stair_outer_silver_sandstone_brick water=default:river_water_source
+
+use lethariel_kings_hall count=1 main=pale
+use lethariel_gate_south count=3 main=pale
+use lethariel_market count=1 main=elf
+use lethariel_colonnade_west count=1 main=pale
+use lethariel_colonnade_east count=1 main=pale
+use highcourt_statue count=1 main=pale
+use highcourt_well_court count=1 main=pale
+use lethariel_star_hall count=1 main=pale
+use lethariel_sacred_grove count=1 main=elf
+use lethariel_mere_shrine count=1 main=pale
+use lethariel_bough_west count=2 main=elf
+use lethariel_bough_east count=2 main=elf
+use dur_brannoc_market_house count=1 main=elf
+use dur_brannoc_south_house count=1 main=elf
+use dur_brannoc_lane_house count=1 main=elf
+use dur_brannoc_plaza_house count=1 main=elf
+use lethariel_market_granary count=1 main=elf roof=pale
+use highcourt_market_stable count=1 main=elf
+use lethariel_market_bowyer count=3 main=elf
+use lethariel_market_weaver count=1 main=elf roof=pale
+use highcourt_well_court count=2 main=elf
+use lethariel_market_watch count=1 main=elf roof=pale
+use lethariel_market_grove count=4 main=elf
+use lethariel_market_orchard count=1 main=elf
+use lethariel_market_bakehouse count=1 main=elf
+use lethariel_martial_barracks count=1 main=elf roof=pale
+use highcourt_martial_drill_yard count=1 main=elf
+use lethariel_martial_hall count=2 main=elf roof=pale
+use lethariel_martial_stable count=1 main=elf
+use lethariel_martial_store count=1 main=elf
+use lethariel_martial_lodge count=2 main=elf
+use lethariel_plot_mere_shrine count=1 main=elf
+use lethariel_mere_lore_hall count=1 main=elf roof=pale
+use lethariel_homes_terrace_east count=1 main=elf
+use lethariel_homes_longhouse count=1 main=elf
+use lethariel_homes_feast_hall count=1 main=elf roof=pale

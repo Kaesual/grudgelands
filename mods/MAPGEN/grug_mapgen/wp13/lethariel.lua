@@ -46,12 +46,11 @@
 
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
-	local elf = dofile(directory .. "/elf_parts.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("lethariel")
 
 	local M = {}
 
@@ -124,8 +123,9 @@ local function loader(directory)
 		return true
 	end
 
-	-- The civic roof and the two handles, from this capital's own parts file.
-	local handles = elf.handles()
+	-- The two palettes are the roster's (`building_templates/layouts/
+	-- lethariel.roster`): `elf` is the city, `pale` the civic quarter -- the
+	-- same palette under the pale roof and the pale masonry.
 
 	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
 	-- everything above its paving but the waystone and its mailbox.
@@ -167,9 +167,11 @@ local function loader(directory)
 		{-16, -44, -14, -42, "lane"},
 	}
 
-	-- The plot roster. `make` is the generator, `module` the library it comes
-	-- from, `x`/`z` the pad anchor of the rotated footprint, `turns` the
-	-- rotation, `palette` and `roof` which handle it is built and roofed with.
+	-- The plot roster. `template` is the building template (Round 56,
+	-- docs/technical/building-template-format.md), `x`/`z` the pad anchor of
+	-- the rotated footprint, `turns` the rotation, `palette` and `roof` the
+	-- roster palettes it is built and roofed with. The hall of stars'
+	-- template carries its elder's doorstep.
 	--
 	-- `drop` and `recast` are the socket policy of the sockets contract: a
 	-- part cannot know how many of a thing a CAPITAL may have -- one throne,
@@ -181,31 +183,23 @@ local function loader(directory)
 		-- north of the crossing at Lethariel is the mere: the dry ground on
 		-- the axis runs out at z = 21 and a 36-node hall does not fit in it.
 		-- So the approach is the SOUTH avenue and the hall looks across it.
-		{id = "kings_hall", module = "capitals", make = "king_hall",
+		{id = "kings_hall", template = "lethariel_kings_hall",
 			x = -41, z = -40, turns = 3, palette = "pale", roof = "pale",
-			spec = {w = 31, d = 27, rise = 7},
 			drop = {waypoint = true}},
 
 		-- 2. The three inner gates. Lethariel has no curtain wall, so these
 		-- are the civic precinct's own gates and the fourth "gate" is the
 		-- quay: the north avenue leaves the pad over water.
-		{id = "gate_south", module = "capitals", make = "gatehouse",
-			x = -6, z = -RADIUS, turns = 0, palette = "pale", roof = "pale",
-			spec = {patrol_group = "lethariel_gate_south_tower",
-				deck_group = "lethariel_gate_south_tower", order = 2}},
-		{id = "gate_west", module = "capitals", make = "gatehouse",
-			x = -RADIUS, z = -6, turns = 1, palette = "pale", roof = "pale",
-			spec = {patrol_group = "lethariel_gate_west_tower",
-				deck_group = "lethariel_gate_west_tower", order = 2}},
-		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 43, z = -6, turns = 3, palette = "pale", roof = "pale",
-			spec = {patrol_group = "lethariel_gate_east_tower",
-				deck_group = "lethariel_gate_east_tower", order = 2}},
+		{id = "gate_south", template = "lethariel_gate_south",
+			x = -6, z = -RADIUS, turns = 0, palette = "pale", roof = "pale"},
+		{id = "gate_west", template = "lethariel_gate_south",
+			x = -RADIUS, z = -6, turns = 1, palette = "pale", roof = "pale"},
+		{id = "gate_east", template = "lethariel_gate_south",
+			x = 43, z = -6, turns = 3, palette = "pale", roof = "pale"},
 
 		-- 3. The market square, east of the approach in the south quarter.
-		{id = "market", module = "capitals", make = "market_square",
+		{id = "market", template = "lethariel_market",
 			x = 14, z = -46, turns = 0, palette = "elf",
-			spec = {size = 21},
 			drop = {waypoint = true},
 			-- A booth without a trader is a flair NPC's work spot, and its id
 			-- has to say booth: `market_vendor_1` with the role `idle` is a
@@ -216,78 +210,57 @@ local function loader(directory)
 		-- 4. The two colonnades flanking the throne approach -- the
 		-- contract's own word for this race, and the piece that makes the
 		-- approach a processional rather than a road.
-		{id = "colonnade_west", module = "capitals", make = "colonnade",
-			x = -9, z = -31, turns = 1, palette = "pale",
-			spec = {len = 15, patrol_group = WATCH, order = 1}},
-		{id = "colonnade_east", module = "capitals", make = "colonnade",
-			x = 6, z = -31, turns = 3, palette = "pale",
-			spec = {len = 15, patrol_group = WATCH, order = 6}},
+		{id = "colonnade_west", template = "lethariel_colonnade_west",
+			x = -9, z = -31, turns = 1, palette = "pale"},
+		{id = "colonnade_east", template = "lethariel_colonnade_east",
+			x = 6, z = -31, turns = 3, palette = "pale"},
 
 		-- 5. The civic furniture: the king's statue north-east of the
 		-- crossing and the fountain court in the west quarter.
-		{id = "statue", module = "capitals", make = "statue_plinth",
-			x = 6, z = 4, turns = 0, palette = "pale", spec = {}},
-		{id = "fountain_court", module = "capitals", make = "well_court",
-			x = -44, z = 8, turns = 0, palette = "pale", spec = {size = 11}},
+		{id = "statue", template = "highcourt_statue",
+			x = 6, z = 4, turns = 0, palette = "pale"},
+		{id = "fountain_court", template = "highcourt_well_court",
+			x = -44, z = 8, turns = 0, palette = "pale"},
 
 		-- 6. THE HALL OF STARS: the capital library's temple, in the west
 		-- quarter, and where this capital's core quest shell stands.
-		{id = "star_hall", module = "capitals", make = "temple",
-			x = -31, z = 6, turns = 0, palette = "pale", roof = "pale",
-			spec = {w = 13, d = 19, wall_h = 7, rise = 5},
-			-- The temple publishes its own quest shell, and a capital has
-			-- exactly one. It is MOVED AND RETAGGED: `capitals.temple` stands
-			-- it three nodes inside its own door, in the nave, where a
-			-- shrine's keeper belongs and a quest-giver does not. The user's
-			-- playtest-round-2 ruling is that the elder stands on the doorstep
-			-- and shows the street his face, so this plot puts him one node
-			-- outside the door on the temple walk and tags him `door`.
-			socket_overrides = function(placed)
-				return {star_hall_quest = {x = placed.x + 6,
-					z = placed.z - 1, face = 0, tags = {"door"}}}
-			end},
+		-- The temple publishes its own quest shell, and a capital has exactly
+		-- one. It stands on the doorstep, one node outside the door on the
+		-- temple walk, tagged `door` (the user's playtest-round-2 ruling): a
+		-- point of the temple's template since Round 56, this row's socket
+		-- override before.
+		{id = "star_hall", template = "lethariel_star_hall",
+			x = -31, z = 6, turns = 0, palette = "pale", roof = "pale"},
 
 		-- 7. THE SACRED GROVE, the east quarter and this capital's signature:
 		-- standing silverwood inside the civic core, which is what the WP40
 		-- profile `terraced_grove` means when a city is built in it.
-		{id = "sacred_grove", module = "capitals", make = "grove",
-			x = 25, z = 8, turns = 0, palette = "elf",
-			spec = {size = 17, kind = "columnar", height = 9}},
+		{id = "sacred_grove", template = "lethariel_sacred_grove",
+			x = 25, z = 8, turns = 0, palette = "elf"},
 		-- The shrine at the head of the grove walk.
-		{id = "mere_shrine", module = "elf", make = "shrine",
-			x = 16, z = 12, turns = 0, palette = "pale",
-			spec = {size = 9, rise = 5}},
+		{id = "mere_shrine", template = "lethariel_mere_shrine",
+			x = 16, z = 12, turns = 0, palette = "pale"},
 
 		-- 8. Two BOUGH HOUSES: the tree platforms of this race, one either
 		-- side of the city.
-		{id = "bough_west", module = "elf", make = "tree_platform",
-			x = -16, z = 8, turns = 0, palette = "elf",
-			spec = {size = 11, deck = 7, wall_h = 3}},
-		{id = "bough_east", module = "elf", make = "tree_platform",
-			x = 34, z = -22, turns = 0, palette = "elf",
-			spec = {size = 11, deck = 6, wall_h = 3}},
+		{id = "bough_west", template = "lethariel_bough_west",
+			x = -16, z = 8, turns = 0, palette = "elf"},
+		{id = "bough_east", template = "lethariel_bough_east",
+			x = 34, z = -22, turns = 0, palette = "elf"},
 
 		-- 9. The citizens' quarter: four houses on the outer ground. The
 		-- cottages keep the generator's own door side (`z-`) and are TURNED
 		-- to face their ground instead: the `home` kit furnishes the cell
 		-- behind every other wall and only the z- doorway is authored clear
 		-- of it.
-		{id = "quay_house", module = "buildings", make = "cottage",
-			x = -43, z = 25, turns = 1, palette = "elf",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
-		{id = "south_house", module = "buildings", make = "cottage",
-			x = 38, z = -46, turns = 1, palette = "elf",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
-				infill = true, shutters = true}},
-		{id = "plaza_house", module = "buildings", make = "cottage",
-			x = 38, z = -34, turns = 1, palette = "elf",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "saltbox",
-				ridge_axis = "x", infill = true, fancy_bed = true}},
-		{id = "shore_house", module = "buildings", make = "cottage",
-			x = -46, z = 37, turns = 3, palette = "elf",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "x", infill = true, shutters = true}},
+		{id = "quay_house", template = "dur_brannoc_market_house",
+			x = -43, z = 25, turns = 1, palette = "elf"},
+		{id = "south_house", template = "dur_brannoc_south_house",
+			x = 38, z = -46, turns = 1, palette = "elf"},
+		{id = "plaza_house", template = "dur_brannoc_lane_house",
+			x = 38, z = -34, turns = 1, palette = "elf"},
+		{id = "shore_house", template = "dur_brannoc_plaza_house",
+			x = -46, z = 37, turns = 3, palette = "elf"},
 
 	}
 
@@ -317,13 +290,12 @@ local function loader(directory)
 	-- Round 22); this file is the civic core.
 
 	function M.core()
-		local elf_palette = handles.elf
-		local pale = handles.pale
-		local by_handle = {elf = elf_palette, pale = pale}
+		local elf_palette = CAPITAL.palettes.elf
+		local pale = CAPITAL.palettes.pale
 		local buf = parts.buffer()
 		local doorways, rooms, sockets = {}, {}, {}
 		local placed, inside_by_id, plot_order = {}, {}, {}
-		local claimed = {}
+		local claimed, stamped = {}, {}
 
 		local AVENUE = elf_palette.maybe("castle_paving") or
 			elf_palette.node("plaza")
@@ -509,18 +481,8 @@ local function loader(directory)
 
 		-- 5. The plots.
 		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			if plot.roof then spec.roof_palette = by_handle[plot.roof] end
-			local module = capitals
-			if plot.module == "buildings" then module = buildings end
-			if plot.module == "elf" then module = elf end
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 lethariel: no generator " .. plot.make, 0)
-			end
-			local part = generator(by_handle[plot.palette], spec)
+			local part = CAPITAL.part(plot.template, plot.id, plot.palette,
+				plot.roof)
 			-- Two plots may not share a cell. `parts.stamp` writes; it does
 			-- not ask, so a plot laid over another cuts a silent hole in the
 			-- first and the pad still builds. Overwriting the STREETS and the
@@ -581,26 +543,23 @@ local function loader(directory)
 					top = a.top, closed = a.closed, id = plot.id,
 				}
 			end
-			local overrides = {}
-			if type(plot.socket_overrides) == "function" then
-				overrides = plot.socket_overrides(placed[plot.id])
-			end
+			-- The building's own sockets; a socket point without a role is the
+			-- position of one of the composition's own sockets.
+			templates.collect_sockets(stamped, points, plot.id)
 			for _, entry in ipairs(points.sockets or {}) do
-				local drop = plot.drop and plot.drop[entry.role]
+				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
 					local recast = plot.recast and plot.recast[entry.role]
-					local override = overrides[entry.id] or {}
 					local out = {id = entry.id, role = entry.role,
-						x = override.x or entry.x, y = override.y or entry.y,
-						z = override.z or entry.z,
-						face = override.face or entry.face,
+						x = entry.x, y = entry.y, z = entry.z,
+						face = entry.face,
 						group = entry.group,
 						order = entry.order, kind = entry.kind,
 						activity = entry.activity,
 						-- `spawn` travels with the socket: a generator that
 						-- publishes a spare must not lose it here.
 						spawn = entry.spawn,
-						tags = override.tags or entry.tags}
+						tags = entry.tags}
 					if recast then
 						out.role = recast.role
 						out.tags = recast.tags
@@ -614,6 +573,8 @@ local function loader(directory)
 				end
 			end
 		end
+
+		templates.all_used(stamped, "lethariel")
 
 		-- 6. The two royal booths of the contract's `vendor` pair, on the
 		-- market walk. This is where the two fixed vendor offsets of

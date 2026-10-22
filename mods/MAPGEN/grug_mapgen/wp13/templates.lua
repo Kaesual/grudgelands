@@ -2,8 +2,10 @@
 -- docs/technical/building-template-format.md).
 --
 -- A town building is a text file in `../building_templates/templates/`, and a
--- town's placements are its layout in `../building_templates/layouts/`. This
--- module reads both when a town composition loads, refuses a malformed file
+-- town's placements are its layout in `../building_templates/layouts/` (a
+-- start town) or are made by its own code from a roster of the templates
+-- and palettes it uses (a capital, `<town>.roster`). This
+-- module reads them when a town composition loads, refuses a malformed file
 -- right there (file, line and reason, so the server stops at load and never
 -- mid-generation), and turns one placement into a part exactly like a
 -- building generator's result: `{buffer, w, d, points, peak, ...meta}` in the
@@ -22,6 +24,7 @@ local function loader(directory)
 	M.ROOT = directory .. "/../building_templates"
 	M.TEMPLATE_MAGIC = "grudgelands-building-template 1"
 	M.LAYOUT_MAGIC = "grudgelands-town-layout 1"
+	M.ROSTER_MAGIC = "grudgelands-town-roster 1"
 
 	local DECLARED = {}
 	for _, role in ipairs(palettes.required) do DECLARED[role] = "required" end
@@ -305,6 +308,12 @@ local function loader(directory)
 			t.legend[key] = entry
 			t.legend_order[#t.legend_order + 1] = key
 		end
+		-- the channels its roles name (format doc §3.2), for a roster's use key
+		t.channels = {}
+		for _, key in ipairs(t.legend_order) do
+			local channel = t.legend[key].channel
+			if channel then t.channels[channel] = true end
+		end
 		for _, key in ipairs(t.legend_order) do
 			local entry = t.legend[key]
 			local function defined(ref, what)
@@ -414,17 +423,21 @@ local function loader(directory)
 		return t
 	end
 
-	-- Parse one town layout file.
-	function M.parse_layout(text, path)
+	-- Parse one town layout file, or with `roster` one capital's roster
+	-- (format doc §4): the same `town`, `race` and `palette` lines, then
+	-- `use <template> count=<n> [main=<palette>] [<channel>=<palette> ...]`
+	-- lines instead of placements.
+	function M.parse_layout(text, path, roster)
 		local lines = lines_of(text, path)
 		local function fail(line, reason)
 			error(path .. ":" .. (line and line.number or "?") .. ": " .. reason, 0)
 		end
-		if not lines[1] or lines[1].text ~= M.LAYOUT_MAGIC then
-			fail(lines[1], "the first line must be '" .. M.LAYOUT_MAGIC .. "'")
+		local magic = roster and M.ROSTER_MAGIC or M.LAYOUT_MAGIC
+		if not lines[1] or lines[1].text ~= magic then
+			fail(lines[1], "the first line must be '" .. magic .. "'")
 		end
 		local layout = {path = path, palettes = {}, palette_order = {}, places = {},
-			by_id = {}}
+			by_id = {}, uses = {}, use_by_key = {}}
 		for index = 2, #lines do
 			local line = lines[index]
 			if not comment_or_blank(line.text) then
@@ -452,7 +465,40 @@ local function loader(directory)
 						overrides = #order > 0 and overrides or nil, order = order,
 						line = line.number}
 					layout.palette_order[#layout.palette_order + 1] = name
-				elseif head == "place" and #list >= 7 and list[2]:match("^[a-z0-9_]+$") then
+				elseif roster and head == "use" and #list >= 3 and
+						list[2]:match("^[a-z0-9_]+$") then
+					local use = {template = list[2], channels = {}, channel_order = {},
+						line = line.number}
+					for i = 3, #list do
+						local key, value = list[i]:match("^([%a_][%w_]*)=(.+)$")
+						if not key then fail(line, "bad use field " .. list[i]) end
+						if key == "count" then
+							if use.count then fail(line, "count given twice") end
+							use.count = integer(value)
+							if not use.count or use.count < 1 then
+								fail(line, "count must be a positive integer")
+							end
+						elseif key == "main" then
+							if use.main then fail(line, "main given twice") end
+							use.main = value
+						elseif key == "template" or key == "x" or key == "y" or key == "z" or
+								key == "turns" or key == "lift" then
+							fail(line, "a roster places nothing: " .. key .. "=")
+						else
+							if use.channels[key] then fail(line, "channel " .. key .. " given twice") end
+							use.channels[key] = value
+							use.channel_order[#use.channel_order + 1] = key
+						end
+					end
+					if not use.count then fail(line, "a use line needs count=") end
+					use.key = M.use_key(use.template, use.main, use.channels)
+					if layout.use_by_key[use.key] then
+						fail(line, "the use " .. use.key .. " is given twice")
+					end
+					layout.use_by_key[use.key] = use
+					layout.uses[#layout.uses + 1] = use
+				elseif not roster and head == "place" and #list >= 7 and
+						list[2]:match("^[a-z0-9_]+$") then
 					local place = {id = list[2], channels = {}, channel_order = {},
 						line = line.number}
 					for i = 3, #list do
@@ -486,18 +532,35 @@ local function loader(directory)
 		if not layout.town or not layout.race then
 			fail(lines[1], "a layout names its town and race")
 		end
-		for _, place in ipairs(layout.places) do
-			local function known(name, what)
-				if not layout.palettes[name] then
-					fail({number = place.line}, what .. " names the undefined palette " .. name)
+		for _, list in ipairs({layout.places, layout.uses}) do
+			for _, place in ipairs(list) do
+				local function known(name, what)
+					if not layout.palettes[name] then
+						fail({number = place.line}, what .. " names the undefined palette " .. name)
+					end
 				end
-			end
-			if place.main then known(place.main, "main=") end
-			for _, channel in ipairs(place.channel_order) do
-				known(place.channels[channel], channel .. "=")
+				if place.main then known(place.main, "main=") end
+				for _, channel in ipairs(place.channel_order) do
+					known(place.channels[channel], channel .. "=")
+				end
 			end
 		end
 		return layout
+	end
+
+	-- A placement's palettes as one key, the way a roster's use line names
+	-- them: the template, `main=` (when not the town's race palette) and the
+	-- channels in name order.
+	function M.use_key(template, main, channels)
+		local out = {template}
+		if main then out[#out + 1] = "main=" .. main end
+		local names = {}
+		for channel in pairs(channels) do names[#names + 1] = channel end
+		table.sort(names)
+		for _, channel in ipairs(names) do
+			out[#out + 1] = channel .. "=" .. channels[channel]
+		end
+		return table.concat(out, " ")
 	end
 
 	-- The node and param2 a legend entry resolves to for one placement, in the
@@ -645,19 +708,147 @@ local function loader(directory)
 		return town
 	end
 
+	-- A capital (Round 56 lane FREEZE-CAPITALS): its roster's named palettes
+	-- and every template the roster lists, each parsed once, here at load.
+	-- The capital's own code places its buildings (the core's composition and
+	-- the plot planner stay algorithmic, ruling 20) and names the template and
+	-- the palettes of each: `capital.part(template, id, main, roof)` builds
+	-- one, `main` and `roof` naming roster palettes (`main` nil: the race
+	-- palette `town`); every other channel the template uses resolves to the
+	-- roster palette of its own name. The placement must be one of the
+	-- roster's use lines (template and palettes), so the roster cannot drift
+	-- from the code; `capital.used` counts the placements per use line.
+	function M.capital(id)
+		local path = M.ROOT .. "/layouts/" .. id .. ".roster"
+		local roster = M.parse_layout(read(path), path, true)
+		if roster.town ~= id then
+			error(path .. ":1: the roster is for " .. roster.town .. ", not " .. id, 0)
+		end
+		local capital = {id = id, race = roster.race, roster = roster, palettes = {},
+			templates = {}, used = {}}
+		for _, name in ipairs(roster.palette_order) do
+			local spec = roster.palettes[name]
+			capital.palettes[name] = palettes.new(spec.race, spec.overrides)
+		end
+		if not capital.palettes.town then
+			capital.palettes.town = palettes.new(roster.race)
+		end
+		for _, use in ipairs(roster.uses) do
+			local t = capital.templates[use.template]
+			if not t then
+				local file = M.ROOT .. "/templates/" .. use.template .. ".tpl"
+				t = M.parse_template(read(file), file, use.template)
+				capital.templates[use.template] = t
+			end
+			local race = use.main and roster.palettes[use.main].race or roster.race
+			local covered = false
+			for _, listed in ipairs(t.races) do
+				if listed == race then covered = true end
+			end
+			if not covered then
+				error(path .. ":" .. use.line .. ": the template " .. t.name ..
+					" does not list the race " .. race, 0)
+			end
+			for channel in pairs(t.channels) do
+				if not use.channels[channel] then
+					error(path .. ":" .. use.line .. ": the template " .. t.name ..
+						" uses the channel " .. channel .. ", which the line does not name", 0)
+				end
+			end
+			for channel in pairs(use.channels) do
+				if not t.channels[channel] then
+					error(path .. ":" .. use.line .. ": the template " .. t.name ..
+						" has no channel " .. channel, 0)
+				end
+			end
+		end
+		function capital.part(template, place_id, main, roof)
+			local t = capital.templates[template]
+			if not t then
+				error("building templates: " .. id .. " places " .. tostring(template) ..
+					", which its roster does not list", 0)
+			end
+			main = main or "town"
+			local channels = {}
+			for channel in pairs(t.channels) do
+				if channel == "roof" then
+					channels.roof = roof or error("building templates: " .. id .. "'s " ..
+						place_id .. " (" .. template .. ") needs a roof palette", 0)
+				else
+					channels[channel] = channel
+				end
+			end
+			local key = M.use_key(template, main ~= "town" and main or nil, channels)
+			if not roster.use_by_key[key] then
+				error("building templates: " .. id .. "'s " .. place_id .. " is '" .. key ..
+					"', which its roster (" .. path .. ") does not list", 0)
+			end
+			capital.used[key] = (capital.used[key] or 0) + 1
+			local race = roster.palettes[main] and roster.palettes[main].race or roster.race
+			return M.part(t, place_id, race, function(channel)
+				if channel == nil then return capital.palettes[main] end
+				return capital.palettes[channels[channel]]
+			end)
+		end
+		return capital
+	end
+
+	-- The stamped points a town takes positions from (format doc §3.4): the
+	-- `sockets` points of a stamp result that carry no role (a template point
+	-- of a town's own entry carries only its id and face; a socket the
+	-- building itself publishes carries its role), recorded with the
+	-- building that stamped them.
+	function M.collect_sockets(stamped, points, building)
+		for _, point in ipairs(points.sockets or {}) do
+			if point.role == nil then
+				if stamped[point.id] then
+					error("building templates: the socket point " .. point.id .. " is in " ..
+						stamped[point.id].building .. " and in " .. building, 0)
+				end
+				stamped[point.id] = {point = point, building = building}
+			end
+		end
+		return stamped
+	end
+
+	-- The stamped point of the town entry `id`, which the entry says stands
+	-- at `building`, or an error (also when another building has it).
+	function M.stamped_point(stamped, id, building, town)
+		local entry = stamped[id]
+		if not entry then
+			error("building templates: " .. town .. "'s socket " .. id ..
+				" is not a point of " .. building, 0)
+		end
+		if entry.building ~= building then
+			error("building templates: " .. town .. "'s socket " .. id ..
+				" names " .. building .. " but is a point of " .. entry.building, 0)
+		end
+		entry.used = true
+		return entry.point
+	end
+
+	-- Every stamped town point must have its town entry.
+	function M.all_used(stamped, town)
+		local ids = {}
+		for id, entry in pairs(stamped) do
+			if not entry.used then ids[#ids + 1] = id end
+		end
+		if #ids > 0 then
+			table.sort(ids)
+			error("building templates: " .. town .. " has no socket " ..
+				table.concat(ids, ", ") .. " for its building's point", 0)
+		end
+	end
+
 	-- A town's socket list in its authored order (format doc §3.4): an entry
 	-- that names its `building` takes its position and facing from that
 	-- building's stamped `sockets` point of the same id; every other entry is
-	-- the town's own. `stamped` maps a socket id to its stamped point.
+	-- the town's own. `stamped` is what `collect_sockets` gathered.
 	function M.sockets(authored, stamped, town)
-		local out, used = {}, {}
+		local out = {}
 		for index, socket in ipairs(authored) do
 			if socket.building then
-				local point = stamped[socket.id]
-				if not point then
-					error("building templates: " .. town .. "'s socket " .. socket.id ..
-						" is not a point of " .. socket.building, 0)
-				end
+				local point = M.stamped_point(stamped, socket.id, socket.building, town)
 				local copy = {}
 				for key, value in pairs(socket) do
 					if key ~= "building" then copy[key] = value end
@@ -665,18 +856,12 @@ local function loader(directory)
 				local dx, dz = parts.facedir_step(point.face)
 				copy.x, copy.y, copy.z, copy.dir = point.x, point.y, point.z,
 					{x = dx, z = dz}
-				used[socket.id] = true
 				out[index] = copy
 			else
 				out[index] = socket
 			end
 		end
-		for id in pairs(stamped) do
-			if not used[id] then
-				error("building templates: " .. town .. " has no socket " .. id ..
-					" for its building's point", 0)
-			end
-		end
+		M.all_used(stamped, town)
 		return out
 	end
 

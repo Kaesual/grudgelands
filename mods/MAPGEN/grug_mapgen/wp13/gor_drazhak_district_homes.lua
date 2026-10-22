@@ -20,46 +20,18 @@
 
 local function loader(directory)
 	local plots = dofile(directory .. "/gor_drazhak_plot.lua")(directory)
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
 
 	local M = {}
 
 	local WATCH = "gor_drazhak_warren_watch"
-
-	-- THE ROUND LODGE. `buildings.build` takes rectangles, and the union of a
-	-- tall narrow one with a short wide one is an octagon: the four corner
-	-- cells of the square are never built, and every wall cell that falls
-	-- strictly inside the other rectangle is opened, so the two blocks are one
-	-- room. It is registered into the roster's own generator table rather than
-	-- into `buildings.lua`, which is not this lane's file.
-	local function round_lodge(palette, spec)
-		local w, d = spec.w or 11, spec.d or 11
-		local wall_h = spec.wall_h or 5
-		return buildings.build(palette, {
-			id = spec.id, overhang = 1, infill = true,
-			blocks = {
-				{x0 = 1, z0 = 0, x1 = w - 2, z1 = d - 1, wall_h = wall_h,
-					roof = "flat_deck", kit = "home",
-					kit_spec = {hearth_x = w - 3, hearth_z = 1,
-						hearth_face = 3}},
-				{x0 = 0, z0 = 1, x1 = w - 1, z1 = d - 2, wall_h = wall_h,
-					roof = "flat_deck"},
-			},
-			chimneys = {{x = w - 2, z = 1}},
-			doors = {{side = "z-", index = math.floor(w / 2)}},
-			inside = {x = 3, y = 1, z = d - 3},
-		})
-	end
 
 	local PLOTS = {
 		-- 1. THE CLAN LONGHOUSE, the biggest dwelling of the quarter. Door
 		-- index 6, single leaf: the `store` kit stands its roof posts on the
 		-- odd cells of the gable's inner run, so a centred door on an
 		-- eleven-wide longhouse would open onto a post.
-		{id = "warren_clan_house", module = "buildings", make = "longhouse",
+		{id = "warren_clan_house", template = "gor_drazhak_warren_clan_house",
 			order = 1, handle = "ors",
-			spec = {w = 13, d = 17, wall_h = 5, door_side = "z-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.standard(buf, palette, area.x0 + 2, area.z0 + 2, 5)
@@ -83,10 +55,8 @@ local function loader(directory)
 		-- is the plan Sunscar Camp's chief's lodge already proves. What makes
 		-- this one the chief's is its height and its stone: six courses of ors
 		-- block where the clan lodges are four of adobe.
-		{id = "warren_round_lodge", module = "homes", make = "round_lodge",
+		{id = "warren_round_lodge", template = "gor_drazhak_warren_round_lodge",
 			order = 2, handle = "ors",
-			parapet = {y = 8, grow = 0},
-			spec = {w = 9, d = 9, wall_h = 6},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.standard(buf, palette, area.x0 + 2, area.z1 - 2, 4)
@@ -135,11 +105,8 @@ local function loader(directory)
 
 		-- 4-6. THREE CLAN DWELLINGS, each a different plan so a terrace of
 		-- flat decks is not a terrace of one house repeated.
-		{id = "warren_house_spear", module = "buildings", make = "cottage",
+		{id = "warren_house_spear", template = "gor_drazhak_warren_house_spear",
 			order = 4,
-			parapet = {y = 6},
-			spec = {w = 11, d = 9, wall_h = 4, roof = "flat_deck",
-				infill = true, shutters = true},
 			extra_sockets = function(area)
 				return {
 					plots.idle("spear_step", area.x1 - 3, area.z1 - 2, 2,
@@ -147,10 +114,8 @@ local function loader(directory)
 				}
 			end},
 
-		{id = "warren_house_tusk", module = "homes", make = "round_lodge",
+		{id = "warren_house_tusk", template = "gor_drazhak_warren_house_tusk",
 			order = 5,
-			parapet = {y = 6, grow = 0},
-			spec = {w = 9, d = 9, wall_h = 4},
 			extra_sockets = function(area)
 				return {
 					plots.idle("tusk_step", area.x0 + 3, area.z1 - 2, 2,
@@ -158,11 +123,8 @@ local function loader(directory)
 				}
 			end},
 
-		{id = "warren_house_bone", module = "buildings", make = "cottage",
+		{id = "warren_house_bone", template = "gor_drazhak_warren_house_bone",
 			order = 6, margin = 3,
-			parapet = {y = 7},
-			spec = {w = 9, d = 11, wall_h = 5, roof = "flat_deck",
-				infill = true, fancy_bed = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.bale_stack(buf, palette, area.x0 + 2, area.z1 - 2, 2)
@@ -179,9 +141,8 @@ local function loader(directory)
 
 		-- 7. THE WEAVER'S SHED: the hides and the cloth the quarter makes, on
 		-- racks under an open roof.
-		{id = "warren_weaver", module = "buildings", make = "shed",
+		{id = "warren_weaver", template = "gor_drazhak_bazaar_tannery",
 			order = 7, margin = 4,
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-"}},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.drying_rack(buf, palette, area.x0 + 3, area.z1 - 3,
@@ -208,9 +169,8 @@ local function loader(directory)
 			end},
 
 		-- 8. THE STORE LODGE: the quarter's own grain and dried meat.
-		{id = "warren_store", module = "capitals", make = "granary",
+		{id = "warren_store", template = "gor_drazhak_warren_store",
 			order = 8, handle = "ors",
-			spec = {w = 11, d = 15, wall_h = 5},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.counter(buf, palette, area.x0 + 2, area.z1 - 2, 3,
@@ -371,7 +331,6 @@ local function loader(directory)
 		plots = PLOTS,
 		fill = FILL,
 		fill_reaches = {11, 11, 8, 5},
-		generators = {round_lodge = round_lodge},
 	})
 
 	return M

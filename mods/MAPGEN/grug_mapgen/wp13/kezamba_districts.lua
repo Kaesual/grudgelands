@@ -174,16 +174,14 @@ local function loader(directory)
 	local shore = {
 		key = "shore", role = "market_trades", patrol_group = SHORE,
 		plots = {
-			{id = "shore_market", module = "troll", make = "cauldron_court",
-				order = 1, spec = {size = 15},
+			{id = "shore_market", template = "kezamba_shore_market",
+				order = 1,
 				extra_sockets = function(area)
 					return {vendor("brewer", "brewer", area.x0 + 2, area.z0 + 2, 0),
 						spare("market", area.x1 - 2, area.z0 + 2, 0)}
 				end},
-			{id = "shore_butcher", module = "buildings", make = "workshop",
+			{id = "shore_butcher", template = "kezamba_shore_butcher",
 				order = 2, turns = 3,
-				spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-					door_index = 6, infill = true},
 				decorate = function(buf, palette, area)
 					shopfront(buf, palette, area)
 					area.dressing.wood_pile(buf, palette, area.x0 + 1,
@@ -195,10 +193,8 @@ local function loader(directory)
 						work("butcher_block", "chop", area.x0 + 1,
 							area.z0 + 1, 0)}
 				end},
-			{id = "shore_tailor", module = "buildings", make = "cottage",
+			{id = "shore_tailor", template = "kezamba_shore_tailor",
 				order = 3, turns = 1,
-				spec = {w = 11, d = 11, wall_h = 5, roof = "gable",
-					ridge_axis = "x", infill = true, shutters = true},
 				decorate = function(buf, palette, area)
 					shopfront(buf, palette, area)
 					area.dressing.bench(buf, palette, area.x0 + 1, area.z0 + 3,
@@ -210,8 +206,8 @@ local function loader(directory)
 						work("tailor_bench", "sit", area.x0 + 2, area.z0 + 3,
 							0, {"bench"}, 2)}
 				end},
-			{id = "shore_store", module = "capitals", make = "granary",
-				order = 4, spec = {w = 11, d = 15, wall_h = 5},
+			{id = "shore_store", template = "kezamba_shore_store",
+				order = 4,
 				extra_sockets = function(area)
 					return {spare("store", area.x1 - 2, area.z0 + 2, 0)}
 				end},
@@ -225,9 +221,8 @@ local function loader(directory)
 			-- counter (any solid node at waist height)", the smokehouse has
 			-- one, and that is the reading that is true of what stands there.
 			-- A later package that wants a curer adds `cure` to section 8.2.
-			{id = "shore_smokehouse", module = "buildings", make = "shed",
+			{id = "shore_smokehouse", template = "kezamba_trade_shed",
 				order = 5,
-				spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}},
 				decorate = function(buf, palette, area)
 					racks(buf, palette, area)
 					shopfront(buf, palette, area)
@@ -238,21 +233,18 @@ local function loader(directory)
 						{id = "smoke_idle", role = "idle", x = area.x1 - 2,
 							z = area.z0 + 1, face = 0, tags = {"work"}}}
 				end},
-			{id = "shore_carvers", module = "troll", make = "carver_yard",
-				order = 6, spec = {size = 15}},
-			{id = "shore_well", module = "capitals", make = "well_court",
-				order = 7, spec = {size = 11}, margin = 4, garden = true},
-			{id = "shore_watch", module = "capitals", make = "barracks",
-				order = 8, spec = {w = 15, d = 21, wall_h = 5,
-					patrol_group = SHORE, order = 9},
+			{id = "shore_carvers", template = "kezamba_shore_carvers",
+				order = 6},
+			{id = "shore_well", template = "highcourt_well_court",
+				order = 7, margin = 4, garden = true},
+			{id = "shore_watch", template = "kezamba_shore_watch",
+				order = 8,
 				extra_sockets = function(area)
 					return {guard_post("shore_gate", area.x0 + 2,
 						area.z0 + 2, 0)}
 				end},
-			{id = "shore_house", module = "buildings", make = "longhouse",
-				order = 10,
-				spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-					door_index = 4, infill = true}},
+			{id = "shore_house", template = "kezamba_plot_shore_house",
+				order = 10},
 		},
 		fill = {
 			{id = "shore_vineyard", yard = {}, order = 11,
@@ -292,11 +284,8 @@ local function loader(directory)
 	-- ------------------------------------------------------------------
 
 	local VINE = "kezamba_vine_watch"
-	local function cottage(id, order, roof, axis, extra)
-		local row = {id = id, module = "buildings", make = "cottage",
-			order = order, turns = 1,
-			spec = {w = 11, d = 11, wall_h = 5, roof = roof, ridge_axis = axis,
-				infill = true, shutters = true}}
+	local function cottage(id, template, order, extra)
+		local row = {id = id, template = template, order = order, turns = 1}
 		for key, value in pairs(extra or {}) do row[key] = value end
 		return row
 	end
@@ -304,21 +293,17 @@ local function loader(directory)
 	local vine = {
 		key = "vine", role = "residential_cultural", patrol_group = VINE,
 		plots = {
-			cottage("vine_house_a", 1, "gable", "x"),
-			cottage("vine_house_b", 2, "hip", "x"),
-			cottage("vine_house_c", 3, "saltbox", "x"),
-			cottage("vine_house_d", 4, "gable", "z"),
-			{id = "vine_longhouse", module = "buildings", make = "longhouse",
+			cottage("vine_house_a", "kezamba_vine_house_a", 1),
+			cottage("vine_house_b", "kezamba_vine_house_b", 2),
+			cottage("vine_house_c", "kezamba_vine_house_c", 3),
+			cottage("vine_house_d", "kezamba_vine_house_d", 4),
+			{id = "vine_longhouse", template = "kezamba_plot_shore_house",
 				order = 5,
-				spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-					door_index = 4, infill = true},
 				extra_sockets = function(area)
 					return {spare("longhouse", area.x1 - 2, area.z0 + 2, 0)}
 				end},
-			{id = "vine_herbalist", module = "buildings", make = "cottage",
+			{id = "vine_herbalist", template = "kezamba_vine_herbalist",
 				order = 6, turns = 1,
-				spec = {w = 11, d = 11, wall_h = 5, roof = "hip",
-					infill = true, shutters = true},
 				decorate = function(buf, palette, area)
 					shopfront(buf, palette, area)
 					area.dressing.flower_bed(buf, palette, area.x0 + 1,
@@ -336,8 +321,8 @@ local function loader(directory)
 							area.z0 + 1, 0),
 						work("physic", "tend", area.x0 + 2, area.z1 - 5, 0)}
 				end},
-			{id = "vine_moot", module = "capitals", make = "colonnade",
-				order = 7, spec = {len = 15, patrol_group = VINE, order = 8},
+			{id = "vine_moot", template = "kezamba_vine_moot",
+				order = 7,
 				-- A colonnade is a roof on pillars and has nothing to sit on,
 				-- so the bench comes with the plot. `sit` sits ON the seat --
 				-- a seat is a walkable node -- which is why the socket is at
@@ -351,10 +336,10 @@ local function loader(directory)
 					return {work("moot_sit", "sit", area.x0 + 3, area.z0 + 2,
 						2, {"bench"}, 2)}
 				end},
-			{id = "vine_well", module = "capitals", make = "well_court",
-				order = 9, spec = {size = 11}, margin = 4, garden = true},
-			{id = "vine_store", module = "capitals", make = "granary",
-				order = 10, spec = {w = 11, d = 15, wall_h = 5}},
+			{id = "vine_well", template = "highcourt_well_court",
+				order = 9, margin = 4, garden = true},
+			{id = "vine_store", template = "kezamba_shore_store",
+				order = 10},
 		},
 		fill = {
 			{id = "vine_common", yard = {}, order = 11, decorate = crop_field,
@@ -402,22 +387,18 @@ local function loader(directory)
 	local canopy = {
 		key = "canopy", role = "martial_garrison", patrol_group = CANOPY,
 		plots = {
-			{id = "canopy_barracks_a", module = "capitals", make = "barracks",
-				order = 1, spec = {w = 15, d = 21, wall_h = 5,
-					patrol_group = CANOPY, order = 12},
+			{id = "canopy_barracks_a", template = "kezamba_canopy_barracks_a",
+				order = 1,
 				extra_sockets = function(area)
 					return {guard_post("canopy_a", area.x0 + 2, area.z0 + 2, 0)}
 				end},
-			{id = "canopy_barracks_b", module = "capitals", make = "barracks",
-				order = 2, spec = {w = 15, d = 21, wall_h = 5,
-					patrol_group = CANOPY, order = 13},
+			{id = "canopy_barracks_b", template = "kezamba_canopy_barracks_b",
+				order = 2,
 				extra_sockets = function(area)
 					return {guard_post("canopy_b", area.x0 + 2, area.z0 + 2, 0)}
 				end},
-			{id = "canopy_armoury", module = "buildings", make = "workshop",
+			{id = "canopy_armoury", template = "kezamba_shore_butcher",
 				order = 3, turns = 3,
-				spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-					door_index = 6, infill = true},
 				decorate = function(buf, palette, area)
 					shopfront(buf, palette, area)
 					-- THE FORGE, on the FEATURE row z0 + 3, like every other
@@ -434,29 +415,27 @@ local function loader(directory)
 						{id = "armoury_idle", role = "idle", x = area.x1 - 2,
 							z = area.z0 + 2, face = 0, tags = {"work"}}}
 				end},
-			{id = "canopy_watchpost", module = "buildings", make = "watchpost",
-				order = 4, spec = {w = 9, d = 9, wall_h = 5},
+			{id = "canopy_watchpost", template = "kezamba_canopy_watchpost",
+				order = 4,
 				extra_sockets = function(area)
 					return {guard_post("canopy_tower", area.x0 + 2,
 						area.z0 + 2, 0)}
 				end},
-			{id = "canopy_stable", module = "capitals", make = "stable",
-				order = 5, spec = {w = 15, d = 11, wall_h = 5}},
-			{id = "canopy_store", module = "capitals", make = "granary",
-				order = 6, spec = {w = 11, d = 15, wall_h = 5}},
-			{id = "canopy_hall", module = "buildings", make = "longhouse",
+			{id = "canopy_stable", template = "highcourt_market_stable",
+				order = 5},
+			{id = "canopy_store", template = "kezamba_shore_store",
+				order = 6},
+			{id = "canopy_hall", template = "kezamba_plot_shore_house",
 				order = 7,
-				spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-					door_index = 4, infill = true},
 				extra_sockets = function(area)
 					return {spare("canopy_hall", area.x1 - 2, area.z0 + 2, 0)}
 				end},
-			cottage("canopy_house_a", 8, "gable", "x"),
-			cottage("canopy_house_b", 9, "hip", "x"),
-			{id = "canopy_carvers", module = "troll", make = "carver_yard",
-				order = 10, spec = {size = 15}},
-			{id = "canopy_well", module = "capitals", make = "well_court",
-				order = 11, spec = {size = 11}, margin = 4, garden = true},
+			cottage("canopy_house_a", "kezamba_vine_house_a", 8),
+			cottage("canopy_house_b", "kezamba_vine_house_b", 9),
+			{id = "canopy_carvers", template = "kezamba_shore_carvers",
+				order = 10},
+			{id = "canopy_well", template = "highcourt_well_court",
+				order = 11, margin = 4, garden = true},
 		},
 		fill = {
 			{id = "canopy_muster", yard = {}, order = 14,
@@ -500,16 +479,15 @@ local function loader(directory)
 	local totem = {
 		key = "totem", role = "lore_spiritual", patrol_group = TOTEM,
 		plots = {
-			{id = "totem_scriptorium", module = "capitals",
-				make = "scriptorium", order = 1,
-				spec = {w = 13, d = 17, wall_h = 6},
+			{id = "totem_scriptorium", template = "kezamba_totem_scriptorium",
+				order = 1,
 				extra_sockets = function(area)
 					return {spare("scriptorium", area.x1 - 2, area.z0 + 2, 0)}
 				end},
-			{id = "totem_carvers", module = "troll", make = "carver_yard",
-				order = 2, spec = {size = 15}},
-			{id = "totem_shrine", module = "capitals", make = "temple",
-				order = 3, spec = {w = 13, d = 19, wall_h = 7, rise = 5},
+			{id = "totem_carvers", template = "kezamba_shore_carvers",
+				order = 2},
+			{id = "totem_shrine", template = "kezamba_totem_shrine",
+				order = 3,
 				-- A CAPITAL HAS EXACTLY ONE QUEST SHELL and the core's shrine
 				-- carries it (`wp13/kezamba.lua`), so the temple's own is
 				-- dropped here rather than the shared generator being edited.
@@ -531,15 +509,13 @@ local function loader(directory)
 					return {work("shrine_pray", "pray", area.x0 + 2,
 						area.z0 + 2, 0)}
 				end},
-			{id = "totem_hall", module = "buildings", make = "longhouse",
-				order = 4,
-				spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-					door_index = 4, infill = true}},
-			cottage("totem_house_a", 5, "gable", "x"),
-			{id = "totem_store", module = "capitals", make = "granary",
-				order = 6, spec = {w = 11, d = 15, wall_h = 5}},
-			{id = "totem_well", module = "capitals", make = "well_court",
-				order = 7, spec = {size = 11}, margin = 4, garden = true},
+			{id = "totem_hall", template = "kezamba_plot_shore_house",
+				order = 4},
+			cottage("totem_house_a", "kezamba_vine_house_a", 5),
+			{id = "totem_store", template = "kezamba_shore_store",
+				order = 6},
+			{id = "totem_well", template = "highcourt_well_court",
+				order = 7, margin = 4, garden = true},
 		},
 		fill = {
 			{id = "totem_graves", yard = {}, order = 8,

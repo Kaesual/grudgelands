@@ -35,10 +35,8 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. The barracks: the generator publishes its guard post, its muster
 		-- idle spot and waypoint 1 of the loop, so this row carries no `order`.
-		{id = "watch_barracks", module = "capitals", make = "barracks",
+		{id = "watch_barracks", template = "nhal_veyr_watch_barracks",
 			handle = "crypt", roof = "vault",
-			spec = {w = 17, d = 21, wall_h = 6, patrol_group = WATCH,
-				order = 1},
 			extra_sockets = function(area)
 				return {
 					plots.guard_post("gate_west", area.x0 + 2, area.z0 + 3, 0),
@@ -48,19 +46,16 @@ local function loader(directory)
 		-- 2. The captain's hall, where the watch is read its orders: hip
 		-- roofed under the vault so it reads as civic from the lane rather
 		-- than as the biggest cottage in the district.
-		{id = "watch_captain_hall", module = "buildings", make = "hall",
-			handle = "crypt", roof = "vault", order = 2,
-			spec = {w = 15, d = 17, wall_h = 5, infill = true}},
+		{id = "watch_captain_hall", template = "nhal_veyr_watch_captain_hall",
+			handle = "crypt", roof = "vault", order = 2},
 		-- 3. The armoury. A workshop, turned, opening in its x- wall for the
 		-- reason the market's bonesmith records: the `workshop` kit stands the
 		-- forge's cauldrons on the odd cells of the z- gable's inner run, so a
 		-- door there would open onto a hearth. The anvil on the apron is the
 		-- `smith` feature, named rather than taken from `workbench`, which in
 		-- this palette is the bone carver's bench.
-		{id = "watch_armoury", module = "buildings", make = "workshop",
+		{id = "watch_armoury", template = "nhal_veyr_watch_armoury",
 			order = 3, turns = 3,
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, "grug_decor:cottages_anvil")
 			end,
@@ -68,8 +63,8 @@ local function loader(directory)
 				return {plots.work("anvil", "smith", area.x0 + 3, area.z0, 0)}
 			end},
 		-- 4. The dead-cart stables.
-		{id = "watch_stables", module = "capitals", make = "stable",
-			order = 4, spec = {w = 15, d = 13, wall_h = 5}},
+		{id = "watch_stables", template = "nhal_veyr_watch_stables",
+			order = 4},
 		-- 5. The drill yard. The watchpost is the piece that makes it a yard
 		-- and not a field: a guard room with a fighting deck over it, with
 		-- five nodes of open ground all round for the posts and the standards.
@@ -78,8 +73,8 @@ local function loader(directory)
 		-- two readings the contract's `spar` allows ("another `spar` socket or
 		-- a training dummy"). They stand two nodes apart on the yard's own
 		-- axis, which is inside the three the feature rule allows.
-		{id = "watch_drill_yard", module = "buildings", make = "watchpost",
-			order = 5, margin = 5, spec = {},
+		{id = "watch_drill_yard", template = "nhal_veyr_watch_drill_yard",
+			order = 5, margin = 5,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, spot in ipairs({{area.x0 + 2, area.z1 - 2},
@@ -102,14 +97,12 @@ local function loader(directory)
 			end},
 		-- 6. The quartermaster's store. Door index 6, single leaf, for the
 		-- roof-post reason the market's charnel store records.
-		{id = "watch_quartermaster", module = "buildings", make = "longhouse",
-			order = 6,
-			spec = {w = 13, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 6, infill = true}},
+		{id = "watch_quartermaster", template = "nhal_veyr_watch_quartermaster",
+			order = 6},
 		-- 7. The cart shed: open on two sides, the wagon and the barrels under
 		-- it and the rest of the load on the apron.
-		{id = "watch_cart_shed", module = "buildings", make = "shed",
-			order = 7, margin = 4, spec = {w = 13, d = 9, wall_h = 4},
+		{id = "watch_cart_shed", template = "highcourt_service_yard",
+			order = 7, margin = 4,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.wagon(buf, palette, area.x0 + 3, area.z1 - 3, "x")
@@ -117,14 +110,13 @@ local function loader(directory)
 				dressing.wood_pile(buf, palette, area.x0 + 2, area.z0 + 2, 3, "x")
 			end},
 		-- 8. The serjeant's house.
-		{id = "watch_serjeant_house", module = "buildings", make = "cottage",
-			order = 8,
-			spec = {w = 11, d = 7, wall_h = 4, roof = "hip", infill = true}},
+		{id = "watch_serjeant_house", template = "nhal_veyr_watch_serjeant_house",
+			order = 8},
 		-- 9. The watch tower at the district's far corner, turned a quarter so
 		-- its door faces the lane rather than repeating the drill yard's post,
 		-- and the second of the district's spare wander spots.
-		{id = "watch_tower", module = "buildings", make = "watchpost",
-			order = 9, turns = 1, spec = {},
+		{id = "watch_tower", template = "nhal_veyr_watch_tower",
+			order = 9, turns = 1,
 			extra_sockets = function(area)
 				return {
 					plots.guard_post("tower_foot", area.ox - 1, area.z0 + 3, 0),
@@ -232,8 +224,8 @@ local function loader(directory)
 			end},
 		-- 3. THE PYRE COURT, where the watch burns its own: the candle court
 		-- of `undead_parts.lua` with two keeping the vigil at its altar.
-		{id = "watch_pyre_court", module = "undead", make = "candle_court",
-			margin = 3, spec = {size = 11},
+		{id = "watch_pyre_court", template = "nhal_veyr_market_candle_court",
+			margin = 3,
 			extra_sockets = function(area)
 				return {
 					plots.work("vigil_south", "pray",

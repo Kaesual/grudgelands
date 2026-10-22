@@ -43,12 +43,11 @@
 
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
-	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("gor_drazhak")
 
 	local M = {}
 
@@ -62,19 +61,12 @@ local function loader(directory)
 	-- through a wall.
 	local WATCH = "gor_drazhak_watch"
 
-	-- THE SECOND PALETTE HANDLE, the same one the district plots use: ors
-	-- block in place of adobe for the civic buildings, which is the contract's
+	-- THE SECOND PALETTE, the same one the district plots use: ors block in
+	-- place of adobe for the civic buildings, which is the contract's
 	-- "ors-stone base courses" carried up the whole wall of a building that is
-	-- meant to read as the warlord's and not as a dwelling.
-	local ORS = {
-		wall = "grug_decor:darkage_ors_block",
-		wall_infill = "grug_decor:darkage_adobe",
-	}
-
-	-- The warlord hall's own dimensions, in one place, so the floor this
-	-- composition lays inside it cannot be left behind by a hall of another
-	-- size. `base`, `arcade` and `dais` are `capitals.king_hall`'s own.
-	local HALL = {w = 31, d = 27, rise = 7, base = 2, arcade = 5, dais = 9}
+	-- meant to read as the warlord's and not as a dwelling: the roster's `ors`
+	-- (`building_templates/layouts/gor_drazhak.roster`); `town` is the plain
+	-- orc palette.
 
 	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
 	-- everything above its paving but the waystone and its mailbox. x1 is 11 and not 8, for
@@ -138,10 +130,12 @@ local function loader(directory)
 		{17, -40, 19, -38, "lane"},
 	}
 
-	-- The plot roster. `make` is the generator, `module` the library it comes
-	-- from, `x`/`z` the pad anchor of the rotated footprint, `turns` the
-	-- rotation, `palette` which handle it is built with, `parapet` the deck
-	-- ring a flat-roofed plot gets.
+	-- The plot roster. `template` is the building template (Round 56,
+	-- docs/technical/building-template-format.md), `x`/`z` the pad anchor of
+	-- the rotated footprint, `turns` the rotation, `palette` the roster palette
+	-- it is built with. The templates carry what the core used to add
+	-- afterwards: the hall's floor bands and braziers, every dwelling's deck
+	-- breastwork and the skull hall elder's doorstep.
 	--
 	-- `drop` and `recast` are the socket policy of the sockets contract, and
 	-- they exist because a part cannot know how many of a thing a CAPITAL may
@@ -150,35 +144,25 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. THE WARLORD HALL, on the axis, its great door looking down the
 		-- approach to the south gate and over the fighting platform.
-		{id = "warlord_hall", module = "capitals", make = "king_hall",
+		{id = "warlord_hall", template = "gor_drazhak_warlord_hall",
 			x = -15, z = 9, turns = 0, palette = "ors",
-			spec = {w = HALL.w, d = HALL.d, rise = HALL.rise},
 			drop = {waypoint = true}},
 
 		-- 2. The four inner gatehouses, where the avenues leave the precinct.
 		-- The rampart is 209 nodes further out, so these are the citadel's own
 		-- gates and not the city's.
-		{id = "gate_south", module = "capitals", make = "gatehouse",
-			x = -6, z = -RADIUS, turns = 0, palette = "ors",
-			spec = {patrol_group = "gor_drazhak_gate_south_tower",
-				deck_group = "gor_drazhak_gate_south_tower", order = 2}},
-		{id = "gate_west", module = "capitals", make = "gatehouse",
-			x = -RADIUS, z = -6, turns = 1, palette = "ors",
-			spec = {patrol_group = "gor_drazhak_gate_west_tower",
-				deck_group = "gor_drazhak_gate_west_tower", order = 2}},
-		{id = "gate_north", module = "capitals", make = "gatehouse",
-			x = -6, z = 43, turns = 2, palette = "ors",
-			spec = {patrol_group = "gor_drazhak_gate_north_tower",
-				deck_group = "gor_drazhak_gate_north_tower", order = 2}},
-		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 43, z = -6, turns = 3, palette = "ors",
-			spec = {patrol_group = "gor_drazhak_gate_east_tower",
-				deck_group = "gor_drazhak_gate_east_tower", order = 2}},
+		{id = "gate_south", template = "gor_drazhak_gate_south",
+			x = -6, z = -RADIUS, turns = 0, palette = "ors"},
+		{id = "gate_west", template = "gor_drazhak_gate_south",
+			x = -RADIUS, z = -6, turns = 1, palette = "ors"},
+		{id = "gate_north", template = "gor_drazhak_gate_south",
+			x = -6, z = 43, turns = 2, palette = "ors"},
+		{id = "gate_east", template = "gor_drazhak_gate_south",
+			x = 43, z = -6, turns = 3, palette = "ors"},
 
 		-- 3. The great bazaar square, west of the approach.
-		{id = "bazaar_square", module = "capitals", make = "market_square",
-			x = -35, z = -28, turns = 0, palette = "orc",
-			spec = {size = 25},
+		{id = "bazaar_square", template = "highcourt_market",
+			x = -35, z = -28, turns = 0, palette = "town",
 			drop = {waypoint = true},
 			-- A booth without a trader is a flair NPC's work spot, and its id
 			-- has to say booth: `market_vendor_1` with the role `idle` is a
@@ -187,85 +171,60 @@ local function loader(directory)
 				from = "_vendor_", to = "_booth_"}}},
 
 		-- 4. The two colonnades flanking the approach.
-		{id = "colonnade_west", module = "capitals", make = "colonnade",
-			x = -9, z = -21, turns = 1, palette = "orc",
-			spec = {len = 15, patrol_group = WATCH, order = 1}},
-		{id = "colonnade_east", module = "capitals", make = "colonnade",
-			x = 4, z = -21, turns = 3, palette = "orc",
-			spec = {len = 15, patrol_group = WATCH, order = 6}},
+		{id = "colonnade_west", template = "gor_drazhak_colonnade_west",
+			x = -9, z = -21, turns = 1, palette = "town"},
+		{id = "colonnade_east", template = "gor_drazhak_colonnade_east",
+			x = 4, z = -21, turns = 3, palette = "town"},
 
 		-- 5. The civic furniture: the warlord's statue east of the crossing and
 		-- the cistern court in the west quarter. A mesa shelf has no standing
 		-- water anywhere in its envelope (measured on three worlds before
 		-- Round 22) -- so the city's water is a tank and
 		-- the well court is what stands over it.
-		{id = "statue", module = "capitals", make = "statue_plinth",
-			x = 12, z = -11, turns = 0, palette = "orc", spec = {}},
-		{id = "cistern_court", module = "capitals", make = "well_court",
-			x = -45, z = 9, turns = 0, palette = "orc", spec = {size = 11}},
+		{id = "statue", template = "highcourt_statue",
+			x = 12, z = -11, turns = 0, palette = "town"},
+		{id = "cistern_court", template = "highcourt_well_court",
+			x = -45, z = 9, turns = 0, palette = "town"},
 
 		-- 6. THE SKULL HALL: the capital library's temple, in the west quarter,
 		-- and where this capital's first quest shell stands.
-		{id = "skull_hall", module = "capitals", make = "temple",
-			x = -44, z = 22, turns = 0, palette = "ors",
-			spec = {w = 13, d = 19, wall_h = 7, rise = 5},
-			-- The temple publishes its own quest shell. It is MOVED AND
-			-- RETAGGED here: `capitals.temple` stands it three nodes inside its
-			-- own door, in the nave, where a shrine's keeper belongs and a
-			-- quest-giver does not. The user's playtest-round-2 ruling is that
-			-- the elder stands on the doorstep and shows the street his face,
-			-- so this plot puts him one node outside the door on the temple
-			-- walk and tags him `door`, which is what turns an NPC round
-			-- (`grug_mobs/start_npcs.lua`, `socket_face_yaw`). Both halves are
-			-- here and not in `capitals.lua` because the generator cannot know
-			-- which of its walls this composition puts to a lane.
-			socket_overrides = function(placed)
-				return {skull_hall_quest = {x = placed.x + 6,
-					z = placed.z - 1, face = 0, tags = {"door"}}}
-			end},
+		-- The temple publishes its own quest shell; it stands on the doorstep,
+		-- one node outside the door on the temple walk, tagged `door`, which
+		-- is what turns an NPC round (`grug_mobs/start_npcs.lua`,
+		-- `socket_face_yaw`; the user's playtest-round-2 ruling): a point of
+		-- the temple's template since Round 56, this row's socket override
+		-- before.
+		{id = "skull_hall", template = "gor_drazhak_skull_hall",
+			x = -44, z = 22, turns = 0, palette = "ors"},
 
 		-- 7. The muster court's own buildings: the host's store and the beast
 		-- shed, both standing on the red sand.
-		{id = "host_store", module = "capitals", make = "granary",
-			x = 24, z = 8, turns = 0, palette = "ors",
-			spec = {w = 11, d = 15, wall_h = 5}},
-		{id = "beast_shed", module = "buildings", make = "shed",
-			x = 24, z = 27, turns = 0, palette = "orc",
+		{id = "host_store", template = "gor_drazhak_host_store",
+			x = 24, z = 8, turns = 0, palette = "ors"},
+		{id = "beast_shed", template = "highcourt_service_yard",
+			x = 24, z = 27, turns = 0, palette = "town",
 			-- x 24..36, z 27..35: the north half of the court, which leaves
 			-- the band at z 23..26 clear for the muster ground.
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}}},
+			},
 
 		-- 8. THE WAR COUNCIL HOUSE, in the south-east corner: the bone record
 		-- of the clans, which is this race's archive.
-		{id = "council_house", module = "capitals", make = "scriptorium",
-			x = 29, z = -46, turns = 2, palette = "ors",
-			spec = {w = 13, d = 17, wall_h = 6}},
+		{id = "council_house", template = "gor_drazhak_council_house",
+			x = 29, z = -46, turns = 2, palette = "ors"},
 
 		-- 9. The clans' quarter: four dwellings on the outer ground, every one
 		-- flat decked behind its own breastwork. The cottages keep the
 		-- generator's own door side (`z-`) and are TURNED to face their ground
 		-- instead: the `home` kit furnishes the cell behind every other wall
 		-- and only the z- doorway is authored clear of it.
-		{id = "bazaar_house", module = "buildings", make = "cottage",
-			x = -45, z = -20, turns = 3, palette = "orc",
-			parapet = {y = 6},
-			spec = {w = 9, d = 9, wall_h = 4, roof = "flat_deck",
-				infill = true, shutters = true}},
-		{id = "south_house", module = "buildings", make = "cottage",
-			x = -41, z = -41, turns = 1, palette = "orc",
-			parapet = {y = 6},
-			spec = {w = 9, d = 9, wall_h = 4, roof = "flat_deck",
-				infill = true}},
-		{id = "lane_house", module = "buildings", make = "cottage",
-			x = 37, z = -17, turns = 1, palette = "orc",
-			parapet = {y = 7},
-			spec = {w = 9, d = 9, wall_h = 5, roof = "flat_deck",
-				infill = true, fancy_bed = true}},
-		{id = "plaza_house", module = "buildings", make = "cottage",
-			x = 9, z = -46, turns = 1, palette = "orc",
-			parapet = {y = 6},
-			spec = {w = 9, d = 9, wall_h = 4, roof = "flat_deck",
-				infill = true, shutters = true}},
+		{id = "bazaar_house", template = "gor_drazhak_bazaar_house",
+			x = -45, z = -20, turns = 3, palette = "town"},
+		{id = "south_house", template = "gor_drazhak_south_house",
+			x = -41, z = -41, turns = 1, palette = "town"},
+		{id = "lane_house", template = "gor_drazhak_lane_house",
+			x = 37, z = -17, turns = 1, palette = "town"},
+		{id = "plaza_house", template = "gor_drazhak_bazaar_house",
+			x = 9, z = -46, turns = 1, palette = "town"},
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
@@ -315,13 +274,13 @@ local function loader(directory)
 	-- Round 22); this file is the civic core.
 
 	function M.core()
-		local orc = palettes.new("orc")
-		local ors = palettes.new("orc", ORS)
-		local handles = {orc = orc, ors = ors}
+		local orc = CAPITAL.palettes.town
+		local ors = CAPITAL.palettes.ors
 		local buf = parts.buffer()
 		local doorways, rooms, sockets = {}, {}, {}
 		local placed, inside_by_id, plot_order = {}, {}, {}
-		local claimed = {}
+		local claimed, stamped = {}, {}
+		local deck_rings = 0
 
 		-- The court paving of the avenues and the cobble of the lanes, each
 		-- resolved the way `capitals.lua` resolves it: the capital vocabulary
@@ -429,15 +388,8 @@ local function loader(directory)
 
 		-- 4. The plots.
 		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			local module = (plot.module == "capitals") and capitals or buildings
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 gor drazhak: no generator " .. plot.make, 0)
-			end
-			local part = generator(handles[plot.palette], spec)
+			local part = CAPITAL.part(plot.template, plot.id, plot.palette,
+				plot.roof)
 			-- Two plots may not share a cell. `parts.stamp` writes; it does not
 			-- ask, so a plot laid over another cuts a silent hole in the first
 			-- and the pad still builds -- the shape of defect that cost
@@ -461,7 +413,10 @@ local function loader(directory)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak}
+				d = footprint.d, peak = part.peak, nave_floor = part.nave_floor}
+			-- every dwelling wears its deck's breastwork, a part of its
+			-- template (`parapet_columns`, the ring's columns)
+			if part.parapet_columns then deck_rings = deck_rings + 1 end
 			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors or {}) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
@@ -482,26 +437,23 @@ local function loader(directory)
 					top = a.top, closed = a.closed, id = plot.id,
 				}
 			end
-			local overrides = {}
-			if type(plot.socket_overrides) == "function" then
-				overrides = plot.socket_overrides(placed[plot.id])
-			end
+			-- The building's own sockets; a socket point without a role is the
+			-- position of one of the composition's own sockets.
+			templates.collect_sockets(stamped, points, plot.id)
 			for _, entry in ipairs(points.sockets or {}) do
-				local drop = plot.drop and plot.drop[entry.role]
+				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
 					local recast = plot.recast and plot.recast[entry.role]
-					local override = overrides[entry.id] or {}
 					local out = {id = entry.id, role = entry.role,
-						x = override.x or entry.x, y = override.y or entry.y,
-						z = override.z or entry.z,
-						face = override.face or entry.face,
+						x = entry.x, y = entry.y, z = entry.z,
+						face = entry.face,
 						group = entry.group,
 						order = entry.order, kind = entry.kind,
 						activity = entry.activity,
 						-- `spawn` travels with the socket: a generator that
 						-- publishes a spare must not lose it here.
 						spawn = entry.spawn,
-						tags = override.tags or entry.tags}
+						tags = entry.tags}
 					if recast then
 						out.role = recast.role
 						out.tags = recast.tags
@@ -515,73 +467,10 @@ local function loader(directory)
 			end
 		end
 
-		-- 4b. THE BREASTWORKS over the flat decks. Every dwelling of this
-		-- capital wears one; the ring is written over the finished pad rather
-		-- than by the generator, because a deck's ring has to break where
-		-- another building's eave passes over it and only the pad knows that.
-		local deck_rings = 0
-		for _, plot in ipairs(PLOTS) do
-			if plot.parapet then
-				local spot = placed[plot.id]
-				local ring = breastwork(buf, handles[plot.palette],
-					spot.x - 1, spot.z - 1, spot.x + spot.w, spot.z + spot.d,
-					plot.parapet.y)
-				if ring < 16 then
-					error("wp13 gor drazhak: the breastwork of " .. plot.id ..
-						" found only " .. ring .. " columns of deck", 0)
-				end
-				deck_rings = deck_rings + 1
-			end
-		end
-
-		-- 5. The hall's floor: an ors-stone edging either side of the carpet
-		-- and a band across the nave at every arcade bay, with braziers between
-		-- the bays. The generator owns the architecture; what a twenty-five-node
-		-- nave of one paving material needs is a floor somebody drew.
-		local nave = {}
-		do
-			local hall = placed.warlord_hall
-			local floor_y = HALL.base
-			local west = hall.x + HALL.arcade + 1
-			local east = hall.x + HALL.w - 2 - HALL.arcade
-			local carpet_from = hall.z + 1
-			local carpet_to = hall.z + HALL.d - HALL.dais - 1
-			local centre = hall.x + math.floor((HALL.w - 1) / 2)
-			local paving_name = ors.maybe("castle_paving") or ors.node("plaza")
-			local function inlay_floor(x, z)
-				local cell = buf:at(x, floor_y, z)
-				if cell == nil or cell.name ~= paving_name then
-					error("wp13 gor drazhak: the hall's floor at " .. x .. "," ..
-						z .. " is " .. (cell and cell.name or "air") ..
-						", not the paving this band is laid into", 0)
-				end
-				buf:put(x, floor_y, z, ORS_BLOCK)
-				nave[#nave + 1] = {x = x, z = z}
-			end
-			for z = carpet_from, carpet_to do
-				inlay_floor(centre - 2, z)
-				inlay_floor(centre + 2, z)
-			end
-			for z = carpet_from + 3, carpet_to, 4 do
-				for x = west, east do
-					if x < centre - 2 or x > centre + 2 then
-						inlay_floor(x, z)
-					end
-				end
-			end
-			for _, z in ipairs({carpet_from + 5, carpet_to - 4}) do
-				for _, x in ipairs({centre - 4, centre + 4}) do
-					for level = floor_y + 1, floor_y + 2 do
-						local cell = buf:at(x, level, z)
-						if cell ~= nil and cell.name ~= parts.AIR then
-							error("wp13 gor drazhak: the brazier at " .. x ..
-								"," .. z .. " stands in " .. cell.name, 0)
-						end
-					end
-					parts.floor_torch(buf, orc, x, floor_y + 1, z)
-				end
-			end
-		end
+		-- 4b. The dwellings' deck breastworks and 5. the hall's floor bands
+		-- and braziers are their templates' own (Round 56).
+		templates.all_used(stamped, "gor_drazhak")
+		local nave_floor = placed.warlord_hall.nave_floor
 
 		-- 5b. THE FIGHTING PLATFORM, in front of the hall's great door.
 		--
@@ -1092,7 +981,7 @@ local function loader(directory)
 				deck_rings = deck_rings,
 				acacias = trees,
 				outcrops = outcrops,
-				nave_floor = #nave,
+				nave_floor = nave_floor,
 				platform_cells = platform_cells,
 			},
 		}

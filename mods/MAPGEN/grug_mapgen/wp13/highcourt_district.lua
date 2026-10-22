@@ -48,10 +48,10 @@ local function loader(directory)
 	-- carry theirs inside `spec` instead, because their generator publishes
 	-- the waypoint itself (`barracks`, `orchard_edge`).
 	local PLOTS = {
-		{id = "market_granary", module = "capitals", make = "granary",
-			order = 1, spec = {w = 11, d = 15, wall_h = 5}},
-		{id = "market_stable", module = "capitals", make = "stable",
-			order = 2, spec = {w = 15, d = 11, wall_h = 5}},
+		{id = "market_granary", template = "highcourt_market_granary",
+			order = 1},
+		{id = "market_stable", template = "highcourt_market_stable",
+			order = 2},
 		-- The workshop opens in its x- wall, like Dawnmere's smithy, and the
 		-- PLOT is turned so that wall faces the street. Its z- gable cannot
 		-- carry the door: the `workshop` interior kit stands the forge's
@@ -65,10 +65,8 @@ local function loader(directory)
 		-- the shopfront. The anvil is the human palette's `workbench`, which
 		-- is `grug_decor:cottages_anvil` and is the node the sockets
 		-- contract's `smith` activity names.
-		{id = "market_workshop", module = "buildings", make = "workshop",
+		{id = "market_workshop", template = "highcourt_market_workshop",
 			order = 3, turns = 3,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("workbench"))
 				shop_counter(buf, palette, area)
@@ -88,9 +86,8 @@ local function loader(directory)
 		-- stands on, and the one that reads as needlework rather than as
 		-- swinging a hammer. The socket's y is 2: the seat is a walkable node
 		-- and the tailor sits ON it.
-		{id = "market_counting_house", module = "capitals",
-			make = "scriptorium", order = 4, roof = "slate",
-			spec = {w = 13, d = 17, wall_h = 6},
+		{id = "market_counting_house", template = "highcourt_market_counting_house",
+			order = 4, roof = "slate",
 			decorate = function(buf, palette, area)
 				area.dressing.bench(buf, palette, area.x0 + 3, area.z0 + 1,
 					2, 2, "x")
@@ -108,26 +105,23 @@ local function loader(directory)
 		-- buys is planted. On the first render it was a paved square with a
 		-- well on it standing in a field, which is what a court with a
 		-- two-node verge looks like from outside.
-		{id = "market_well", module = "capitals", make = "well_court",
-			order = 5, margin = 5, garden = true, spec = {size = 11}},
-		{id = "market_watch", module = "capitals", make = "barracks",
-			roof = "slate",
-			spec = {w = 15, d = 21, wall_h = 5, patrol_group = WATCH,
-				order = 6}},
+		{id = "market_well", template = "highcourt_well_court",
+			order = 5, margin = 5, garden = true},
+		{id = "market_watch", template = "highcourt_market_watch",
+			roof = "slate"},
 		-- The grove and the store carry the district's two SPARE wander
 		-- spots: idle positions a walking NPC may use as a destination and
 		-- which the placement engine is meant not to staff with an
 		-- inhabitant of its own (see `highcourt_plot.spare`). They stand in
 		-- the back corners of the plot's own ground ring, which is the one
 		-- part of a plot no generator and no dressing writes to.
-		{id = "market_grove", module = "capitals", make = "grove",
+		{id = "market_grove", template = "highcourt_market_grove",
 			order = 7,
-			spec = {size = 15, kind = "broadleaf", height = 6},
 			extra_sockets = function(area)
 				return {plots.spare("grove", area.x0 + 1, area.z1 - 1, 2)}
 			end},
-		{id = "market_orchard", module = "capitals", make = "orchard_edge",
-			spec = {len = 21, d = 11, patrol_group = WATCH, order = 8}},
+		{id = "market_orchard", template = "highcourt_market_orchard",
+			},
 		-- Door index 4, single leaf: the `store` kit stands its roof posts
 		-- on the odd cells of the gable's inner run, so an eleven-wide
 		-- longhouse's centred door opens onto a post (see the same note in
@@ -136,10 +130,8 @@ local function loader(directory)
 		-- which is what the contract's `chop` activity names, so the butcher
 		-- swinging a cleaver at it is the same animation the woodcutter in
 		-- the orchard uses and the same feature rule.
-		{id = "market_store", module = "buildings", make = "longhouse",
+		{id = "market_store", template = "highcourt_market_store",
 			order = 10,
-			spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("tree_log"))
 				shop_counter(buf, palette, area)

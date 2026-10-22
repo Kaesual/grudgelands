@@ -316,9 +316,7 @@ local function loader(directory)
 					top = a.top + lift, closed = a.closed, id = place.id,
 				}
 			end
-			for _, point in ipairs(points.sockets or {}) do
-				stamped_sockets[point.id] = point
-			end
+			templates.collect_sockets(stamped_sockets, points, place.id)
 		end
 		local sockets = templates.sockets(SOCKETS, stamped_sockets, "silverleaf")
 

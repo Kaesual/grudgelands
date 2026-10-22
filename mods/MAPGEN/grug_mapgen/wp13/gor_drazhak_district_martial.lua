@@ -29,10 +29,8 @@ local function loader(directory)
 		-- 1. THE BARRACKS. Its own generator publishes the guard post, the
 		-- muster idle spot and waypoint 1 of the loop, so this row carries no
 		-- `order` of its own.
-		{id = "war_barracks", module = "capitals", make = "barracks",
+		{id = "war_barracks", template = "gor_drazhak_war_barracks",
 			handle = "ors",
-			spec = {w = 15, d = 19, wall_h = 6, patrol_group = WATCH,
-				order = 1},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.standard(buf, palette, area.x0 + 2, area.z0 + 2, 5)
@@ -101,11 +99,8 @@ local function loader(directory)
 		-- `workshop` kit stands the forge's cauldrons on the odd cells of the
 		-- z- gable's inner run and the chimney on that wall's middle cell, so
 		-- the door opens in the x- wall.
-		{id = "war_armoury", module = "buildings", make = "workshop",
+		{id = "war_armoury", template = "gor_drazhak_war_armoury",
 			order = 3, turns = 3, margin = 3, handle = "ors",
-			parapet = {y = 7},
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5, roof = "flat_deck",
-				door_side = "x-", door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				buf:put(area.x0 + 3, 1, area.z1 - 3, palette.node("workbench"))
@@ -124,9 +119,8 @@ local function loader(directory)
 
 		-- 4. THE BEAST PEN: the wargs and the pack beasts. A stable with
 		-- straw, rails and hay outside it.
-		{id = "war_beast_pen", module = "capitals", make = "stable",
+		{id = "war_beast_pen", template = "highcourt_market_stable",
 			order = 4, margin = 4,
-			spec = {w = 15, d = 11, wall_h = 5},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.fence_line(buf, palette, area.x0 + 1, area.z1 - 3,
@@ -151,8 +145,8 @@ local function loader(directory)
 		-- 5. THE DRILL YARD. The watchpost is what makes it a yard and not a
 		-- field: a guard room with a fighting deck over it, with five nodes of
 		-- open ground all round for the posts, the standards and the billets.
-		{id = "war_drill_yard", module = "buildings", make = "watchpost",
-			order = 5, margin = 5, spec = {},
+		{id = "war_drill_yard", template = "gor_drazhak_war_drill_yard",
+			order = 5, margin = 5,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, spot in ipairs({{area.x0 + 2, area.z1 - 2},
@@ -180,10 +174,8 @@ local function loader(directory)
 		-- 6. THE QUARTERMASTER'S STORE. Door index 6, single leaf: the `store`
 		-- kit stands its roof posts on the odd cells of the gable's inner run,
 		-- so a centred door on an eleven-wide longhouse opens onto a post.
-		{id = "war_quartermaster", module = "buildings", make = "longhouse",
+		{id = "war_quartermaster", template = "gor_drazhak_war_quartermaster",
 			order = 6, handle = "ors",
-			spec = {w = 13, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.counter(buf, palette, area.x1 - 4, area.z1 - 2, 3,
@@ -199,9 +191,8 @@ local function loader(directory)
 
 		-- 7. THE WAIN SHED: open on two sides, the war carts and the barrels
 		-- under it and the rest of the load on the apron.
-		{id = "war_wain_shed", module = "buildings", make = "shed",
+		{id = "war_wain_shed", template = "highcourt_service_yard",
 			order = 7, margin = 4,
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.wagon(buf, palette, area.x0 + 3, area.z1 - 3, "x")
@@ -217,11 +208,8 @@ local function loader(directory)
 			end},
 
 		-- 8. THE WAR CHIEF'S HOUSE.
-		{id = "war_chief_house", module = "buildings", make = "cottage",
+		{id = "war_chief_house", template = "gor_drazhak_plot_bazaar_house",
 			order = 8,
-			parapet = {y = 6},
-			spec = {w = 11, d = 9, wall_h = 4, roof = "flat_deck",
-				infill = true, fancy_bed = true},
 			extra_sockets = function(area)
 				return {
 					plots.idle("chief_step", area.x1 - 3, area.z1 - 2, 2,
@@ -232,8 +220,8 @@ local function loader(directory)
 		-- 9. THE WATCH TOWER at the district's far corner, turned a quarter so
 		-- its door faces the lane rather than repeating the drill yard's post,
 		-- and the district's second spare.
-		{id = "war_watch_tower", module = "buildings", make = "watchpost",
-			order = 9, turns = 1, spec = {},
+		{id = "war_watch_tower", template = "gor_drazhak_war_watch_tower",
+			order = 9, turns = 1,
 			extra_sockets = function(area)
 				return {
 					plots.guard_post("tower_foot", area.ox - 1,

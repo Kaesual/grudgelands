@@ -1,0 +1,49 @@
+grudgelands-town-roster 1
+# The templates and palettes the capital's code places (frozen in Round 56):
+# the civic core's buildings and every district plot's.
+town dur_brannoc
+race dwarf
+
+palette town race=dwarf
+palette slate race=dwarf roof_ridge=grug_decor:darkage_slate_tile roof_slab=grug_decor:darkage_slate_tile_slab roof_stair=grug_decor:darkage_slate_tile_stair roof_stair_inner=grug_decor:darkage_slate_tile_stair_inner roof_stair_outer=grug_decor:darkage_slate_tile_stair_outer
+
+use dur_brannoc_kings_hall count=1 main=slate
+use dur_brannoc_gate_south count=4
+use highcourt_market count=1
+use dur_brannoc_colonnade_west count=1
+use dur_brannoc_colonnade_east count=1
+use highcourt_statue count=1
+use highcourt_well_court count=4
+use dur_brannoc_ancestor_hall count=1 roof=slate
+use dur_brannoc_great_forge count=1
+use highcourt_service_yard count=3
+use dur_brannoc_masons_guild count=1 roof=slate
+use dur_brannoc_market_house count=1
+use dur_brannoc_south_house count=1
+use dur_brannoc_lane_house count=1
+use dur_brannoc_plaza_house count=1
+use dur_brannoc_forge_charcoal count=1
+use highcourt_market_stable count=1
+use dur_brannoc_forge_smithy count=1
+use dur_brannoc_forge_guild_house count=1 roof=slate
+use dur_brannoc_forge_watch count=1 roof=slate
+use dur_brannoc_forge_copse count=1
+use dur_brannoc_forge_ore_yard count=1
+use dur_brannoc_forge_store count=1
+use dur_brannoc_garrison_barracks count=1 roof=slate
+use dur_brannoc_garrison_muster_hall count=1 roof=slate
+use dur_brannoc_garrison_armoury count=3
+use dur_brannoc_garrison_drill_yard count=1
+use dur_brannoc_garrison_stable count=1
+use dur_brannoc_garrison_quartermaster count=2
+use dur_brannoc_garrison_serjeant count=2
+use dur_brannoc_garrison_watch_tower count=3
+use dur_brannoc_deep_hall_of_record count=1 roof=slate
+use dur_brannoc_deep_scriptorium count=1 roof=slate
+use dur_brannoc_deep_memory_hall count=1 roof=slate
+use dur_brannoc_terrace_market count=1
+use dur_brannoc_terrace_alehouse count=1 roof=slate
+use dur_brannoc_terrace_bakehouse count=1
+use dur_brannoc_terrace_long_house count=1
+use dur_brannoc_terrace_cottage_west count=1
+use dur_brannoc_terrace_cottage_east count=1

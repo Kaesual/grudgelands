@@ -1,0 +1,57 @@
+grudgelands-town-roster 1
+# The templates and palettes the capital's code places (frozen in Round 56):
+# the civic core's buildings and every district plot's.
+town nhal_veyr
+race undead
+
+palette town race=undead
+palette crypt race=undead ceiling=grug_decor:castle_dungeon_stone floor=grug_decor:castle_pavement_brick wall=grug_decor:castle_dungeon_stone wall_accent=default:obsidianbrick
+palette vault race=undead roof_ridge=default:stonebrick roof_slab=stairs:slab_stonebrick roof_stair=stairs:stair_stonebrick roof_stair_inner=stairs:stair_inner_stonebrick roof_stair_outer=stairs:stair_outer_stonebrick
+palette crypt_vault race=undead ceiling=grug_decor:castle_dungeon_stone floor=grug_decor:castle_pavement_brick roof_ridge=default:stonebrick roof_slab=stairs:slab_stonebrick roof_stair=stairs:stair_stonebrick roof_stair_inner=stairs:stair_inner_stonebrick roof_stair_outer=stairs:stair_outer_stonebrick wall=grug_decor:castle_dungeon_stone wall_accent=default:obsidianbrick
+
+use nhal_veyr_mausoleum count=1 main=crypt roof=crypt_vault
+use nhal_veyr_gate_south count=4 main=crypt
+use highcourt_market count=1
+use nhal_veyr_colonnade_west count=1 main=crypt
+use nhal_veyr_colonnade_east count=1 main=crypt
+use highcourt_statue count=1 main=crypt
+use highcourt_well_court count=4
+use nhal_veyr_vigil_hall count=1 main=crypt roof=crypt_vault
+use dur_brannoc_great_forge count=1
+use highcourt_service_yard count=2
+use nhal_veyr_bonesmith_guild count=1 main=crypt roof=crypt_vault
+use dur_brannoc_market_house count=1
+use dur_brannoc_south_house count=1
+use nhal_veyr_lane_house count=1
+use dur_brannoc_plaza_house count=1
+use nhal_veyr_fallen_house count=1
+use nhal_veyr_market_bone_store count=1 main=crypt roof=crypt_vault
+use highcourt_market_stable count=1
+use nhal_veyr_market_bonesmith count=3
+use nhal_veyr_market_shroud_house count=1 main=crypt roof=crypt_vault
+use nhal_veyr_market_watch count=1 main=crypt roof=crypt_vault
+use nhal_veyr_market_copse count=2
+use nhal_veyr_market_physic count=1
+use nhal_veyr_market_charnel count=1
+use nhal_veyr_market_candle_court count=4
+use nhal_veyr_watch_barracks count=1 main=crypt roof=crypt_vault
+use nhal_veyr_watch_captain_hall count=2 main=crypt roof=crypt_vault
+use nhal_veyr_watch_armoury count=1
+use nhal_veyr_watch_stables count=1
+use nhal_veyr_watch_drill_yard count=1
+use nhal_veyr_watch_quartermaster count=1
+use nhal_veyr_watch_serjeant_house count=1
+use nhal_veyr_watch_tower count=1
+use nhal_veyr_vigil_ossuary count=1 main=crypt roof=crypt_vault
+use nhal_veyr_vigil_scriptorium count=1 main=crypt roof=crypt_vault
+use nhal_veyr_vigil_mausoleum_west count=1 main=crypt roof=crypt_vault
+use nhal_veyr_vigil_mausoleum_east count=1 main=crypt roof=crypt_vault
+use nhal_veyr_vigil_watch count=2 main=crypt roof=crypt_vault
+use nhal_veyr_vigil_ruin_close_ruin_1 count=1
+use nhal_veyr_vigil_ruin_close_ruin_2 count=1
+use nhal_veyr_homes_gate_house count=1
+use nhal_veyr_homes_lane_house count=1
+use nhal_veyr_homes_terrace_house count=1
+use nhal_veyr_homes_corner_house count=1
+use nhal_veyr_homes_fallen_west count=1
+use nhal_veyr_homes_fallen_east count=1

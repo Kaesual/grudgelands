@@ -38,8 +38,8 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. The hall of record: the district's temple, which publishes the
 		-- quest socket of the sockets contract wherever it stands.
-		{id = "deep_hall_of_record", module = "capitals", make = "temple",
-			order = 1, roof = "slate", spec = {w = 13, d = 17, wall_h = 6},
+		{id = "deep_hall_of_record", template = "dur_brannoc_deep_hall_of_record",
+			order = 1, roof = "slate",
 			decorate = function(buf, palette, area)
 				-- A candle on the apron, which is the `pray` rule's own "an
 				-- altar, a candle or a grave marker". A torch stands on an
@@ -55,8 +55,8 @@ local function loader(directory)
 				}
 			end},
 		-- 2. The scriptorium: where what is cut in stone is first written down.
-		{id = "deep_scriptorium", module = "capitals", make = "scriptorium",
-			order = 2, roof = "slate", spec = {w = 13, d = 17, wall_h = 6},
+		{id = "deep_scriptorium", template = "dur_brannoc_deep_scriptorium",
+			order = 2, roof = "slate",
 			decorate = function(buf, palette, area)
 				area.dressing.bench(buf, palette, area.x0 + 3, area.z0 + 1,
 					2, 2, "x")
@@ -79,9 +79,8 @@ local function loader(directory)
 		-- quarter. The kinds are where they belong now: the mason at the
 		-- carvers' (plot 4), the embalmer here, and the forge quarter's store
 		-- sells through its own smith.
-		{id = "deep_memory_hall", module = "buildings", make = "hall",
+		{id = "deep_memory_hall", template = "dur_brannoc_deep_memory_hall",
 			roof = "slate", order = 3,
-			spec = {w = 15, d = 17, wall_h = 5, infill = true},
 			decorate = function(buf, palette, area)
 				area.dwarf.barrow_line(buf, palette, area.x0 + 2, area.z0 + 1,
 					3, "x", true)
@@ -98,10 +97,8 @@ local function loader(directory)
 		-- 4. The carvers' workshop, turned and opening in its x- wall like
 		-- every workshop of this capital, with the blocks it works on the
 		-- apron and the mason who sells the work at the counter.
-		{id = "deep_carvers", module = "buildings", make = "workshop",
+		{id = "deep_carvers", template = "dur_brannoc_garrison_armoury",
 			order = 4, turns = 3,
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				area.dwarf.cut_blocks(buf, palette, area.x0 + 2, area.z0 + 1,
 					4, "x")
@@ -117,8 +114,8 @@ local function loader(directory)
 			end},
 		-- 5. The lantern court: the quarter's public ground, five nodes wider
 		-- all round than a building's plot and planted in the ring that buys.
-		{id = "deep_lantern_court", module = "capitals", make = "well_court",
-			order = 5, margin = 5, garden = true, spec = {size = 11},
+		{id = "deep_lantern_court", template = "highcourt_well_court",
+			order = 5, margin = 5, garden = true,
 			extra_sockets = function(area)
 				return {
 					plots.work("lantern_bench", "sit", -1, area.z1 - 2, 2,
@@ -127,18 +124,15 @@ local function loader(directory)
 				}
 			end},
 		-- 6. The archive: the racks the rolls are kept on.
-		{id = "deep_archive", module = "buildings", make = "longhouse",
-			order = 6,
-			spec = {w = 13, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 6, infill = true}},
+		{id = "deep_archive", template = "dur_brannoc_garrison_quartermaster",
+			order = 6},
 		-- 7. The keeper's house.
-		{id = "deep_keeper", module = "buildings", make = "cottage",
-			order = 7,
-			spec = {w = 11, d = 7, wall_h = 4, roof = "hip", infill = true}},
+		{id = "deep_keeper", template = "dur_brannoc_garrison_serjeant",
+			order = 7},
 		-- 8. The lamp store, four nodes of yard: the oil and the stands that
 		-- light the barrow terrace.
-		{id = "deep_lamp_store", module = "buildings", make = "shed",
-			order = 8, margin = 4, spec = {w = 13, d = 9, wall_h = 4},
+		{id = "deep_lamp_store", template = "highcourt_service_yard",
+			order = 8, margin = 4,
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 2, 1, area.z0 + 1, palette.node("tree_log"))
 				area.dressing.crates(buf, palette, area.x1 - 3, area.z0 + 1, 2)
@@ -149,8 +143,8 @@ local function loader(directory)
 				}
 			end},
 		-- 9. The quarter's watch, and its second spare.
-		{id = "deep_watch", module = "buildings", make = "watchpost",
-			order = 9, turns = 1, spec = {},
+		{id = "deep_watch", template = "dur_brannoc_garrison_watch_tower",
+			order = 9, turns = 1,
 			extra_sockets = function(area)
 				return {
 					plots.spare("deep_watch", area.x1 - 2, area.z1 - 2, 2),

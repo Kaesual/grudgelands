@@ -36,7 +36,7 @@
 -- and landmarks, plus `reference` and the `sockets` of the NPC contract.
 --
 -- A PLOT NEED NOT BE A BUILDING. A roster row that carries `yard` instead of
--- `module`/`make` builds the same thing without a part in the middle of it:
+-- `template` builds the same thing without a part in the middle of it:
 -- the same ground course, the same foundation skirt, the same cleared
 -- airspace, the same sockets -- and whatever its own `decorate` plants on it.
 -- That is what a graveyard field, a bone yard, a ruin close or a candle court
@@ -55,14 +55,10 @@ local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local services = dofile(directory .. "/capital_services.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
-	-- This capital's own two parts, addressed by a roster row as
-	-- `module = "undead"` beside the library's "capitals" and "buildings".
-	local undead = dofile(directory .. "/undead_parts.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("nhal_veyr")
 
 	local M = {}
 
@@ -79,83 +75,25 @@ local function loader(directory)
 	-- the well court, the wain shed -- and changes no cell of theirs.
 	M.MIN_CLEAR = 8
 
-	-- The two handles of this capital, exactly as `nhal_veyr.lua` binds them
-	-- for the core, so a district building and a civic one are dressed the same
-	-- way wherever they stand.
-	--
-	-- CRYPT is the masonry handle: the contract's section 2.4 line for Nhal
-	-- Veyr is "dungeon stone and obsidian brick, mausoleum core", and the
-	-- Stillgrave palette this capital is built on is a TIMBER palette -- its
-	-- `wall` is gravewood board, because a hamlet of the Hollow is boards on an
-	-- obsidian footing. A crypt, an ossuary and a mausoleum are not boards, so
-	-- the handle rebinds the four fabric roles to the castle kit's dungeon
-	-- stone over obsidian brick and lays their floors in castle pavement.
-	-- Rebinding a handle rather than writing a second generator is the same
-	-- move Highcourt's white stone is.
-	--
-	-- `post` and `beam` are NOT rebound, and that is the one line in this table
-	-- worth arguing about. A masonry column would be the obvious fifth role and
-	-- the castle kit ships one -- but `pillar` is a three-piece NODEBOX family,
-	-- and `post` is what `dressing.path_light` stacks a lamp standard out of
-	-- and what `parts.floor_torch` demands an opaque full cube of. Rebinding it
-	-- turns every lamp on a crypt plot into a torch standing on a pillar it
-	-- cannot stand on, which is a construction-time error and was one. A tomb's
-	-- own candle standards are written in masonry at their own call site
-	-- (`undead_parts.mausoleum`), where the cube is known.
-	M.CRYPT = {
-		wall = "grug_decor:castle_dungeon_stone",
-		wall_accent = "default:obsidianbrick",
-		floor = "grug_decor:castle_pavement_brick",
-		ceiling = "grug_decor:castle_dungeon_stone",
-	}
-	-- And the roof to go over it: DRESSED STONE BRICK, a mid grey.
-	--
-	-- Pale and not black, and that is a render's verdict rather than a taste.
-	-- The first version roofed a crypt in the same dungeon stone its walls are
-	-- built of and the mausoleum came out of the engine as one unbroken black
-	-- mass with a lantern on top -- the "big cottage" defect Highcourt's slate
-	-- fixed, in reverse. A grey lid over black walls is what makes a tomb read
-	-- as a tomb from the end of an avenue.
-	--
-	-- `stairs:` and not the castle kit's own shapes, and this is the second
-	-- thing the attempt taught: `grug_decor.register_shapes` gives its stairs
-	-- NO paramtype2, so `parts.put` refuses them outright -- a roof stair has
-	-- to carry a facedir or the rasteriser cannot turn it. The `stairs` mod's
-	-- families do, which is why every roof in this library comes from one.
-	M.VAULT = {
-		roof_stair = "stairs:stair_stonebrick",
-		roof_stair_outer = "stairs:stair_outer_stonebrick",
-		roof_stair_inner = "stairs:stair_inner_stonebrick",
-		roof_slab = "stairs:slab_stonebrick",
-		roof_ridge = "default:stonebrick",
-	}
-
-	local function merged(...)
-		local out = {}
-		for _, source in ipairs({...}) do
-			for key, value in pairs(source) do out[key] = value end
-		end
-		return out
-	end
+	-- The crypt masonry (`crypt`: the civic stone, with `post` and `beam`
+	-- left unbound on purpose, a lamp standard and a floor torch stack on
+	-- them), the vault roof over it (`vault`, dressed stone brick, a mid grey
+	-- over black walls so a tomb reads as a tomb from the end of an avenue)
+	-- and both (`crypt_vault`) are the roster's palettes
+	-- (`building_templates/layouts/nhal_veyr.roster`); `town` is the plain
+	-- undead palette.
 
 	-- The plot's own ground area: the part's extent grown by two nodes on
 	-- every side and then clamped into the envelope, so the
 	-- doorstep path and the lamps stand on the plot and not beside it.
+	-- The extent is the template's `extent` (the building's non-air cells as
+	-- its generator built them, format doc §4.1), turned with the part.
 	local function ground_area(part, ox, oz, turns, margin, reach)
-		local order, count = part.buffer:cells()
-		local x0, x1, z0, z1
-		for index = 1, count do
-			local cell = order[index]
-			if cell.name ~= parts.AIR then
-				local rx, rz = parts.rotate_footprint(cell.x, cell.z,
-					part.w, part.d, turns)
-				local x, z = ox + rx, oz + rz
-				if x0 == nil or x < x0 then x0 = x end
-				if x1 == nil or x > x1 then x1 = x end
-				if z0 == nil or z < z0 then z0 = z end
-				if z1 == nil or z > z1 then z1 = z end
-			end
-		end
+		local e = part.extent
+		local ax, az = parts.rotate_footprint(e[1], e[2], part.w, part.d, turns)
+		local bx, bz = parts.rotate_footprint(e[3], e[4], part.w, part.d, turns)
+		local x0, x1 = ox + math.min(ax, bx), ox + math.max(ax, bx)
+		local z0, z1 = oz + math.min(az, bz), oz + math.max(az, bz)
 		-- A plot on a FILL lot is clamped to that lot's own reach and not to
 		-- the district lot's 13: the fill lots are four deliberately different
 		-- sizes and a building that overran one would be a building the lot
@@ -221,11 +159,12 @@ local function loader(directory)
 
 	-- Build one plot from its roster row.
 	--
-	-- The row: `id`, `module` ("capitals" or "buildings"), `make` (the
-	-- generator), `spec` (its arguments), and optionally `turns` (quarter
-	-- turns of the part on its own plot), `margin` (extra ground all round),
-	-- `handle` ("undead" or "crypt"), `roof` ("vault"), `garden`, `order` (its
-	-- waypoint in the district loop), `decorate` and `extra_sockets`.
+	-- The row: `id`, `template` (its building template, Round 56), and
+	-- optionally `turns` (quarter turns of the part on its own plot), `margin`
+	-- (extra ground all round), `handle` ("undead" or "crypt"), `roof`
+	-- ("vault"), `garden`, `order` (its waypoint in the district loop),
+	-- `decorate` and `extra_sockets`.
+	--
 	-- A YARD: the open-ground plot of playtest round 3. It is the roster row's
 	-- own half-extent, which is the fill lot's reach or less, and a peak of
 	-- zero, because nothing of the composition's own stands above the ground
@@ -249,41 +188,22 @@ local function loader(directory)
 	function M.build(plot, context)
 		context = context or {}
 		local watch = plot.patrol_group or context.patrol_group
-		local base = palettes.new("undead")
-		local palette = base
-		if plot.handle == "crypt" then
-			palette = palettes.new("undead", M.CRYPT)
-		end
-		local roof_palette
+		local main = plot.handle == "crypt" and "crypt" or "town"
+		local palette = CAPITAL.palettes[main]
+		local roof
 		if plot.roof == "vault" then
-			if plot.handle == "crypt" then
-				roof_palette = palettes.new("undead", merged(M.CRYPT, M.VAULT))
-			else
-				roof_palette = palettes.new("undead", M.VAULT)
-			end
+			roof = plot.handle == "crypt" and "crypt_vault" or "vault"
 		end
-		local spec = {}
-		for key, value in pairs(plot.spec or {}) do spec[key] = value end
-		spec.id = plot.id
-		if services.service("nhal_veyr", plot.id) == "riding" then
-			spec.w, spec.d, spec.open_shelter = 21, 17, true
-		end
-		if roof_palette then spec.roof_palette = roof_palette end
+		-- The riding service's stable is an open shelter (its template is
+		-- the 21 x 17 one), re-stamped over the plot's own lamps below.
+		local open_shelter = services.service("nhal_veyr", plot.id) == "riding"
 		local part, turns, rw, rd, ox, oz
 		local x0, z0, x1, z1
 		if plot.yard then
 			turns, rw, rd, ox, oz = 0, 1, 1, 0, 0
 			x0, z0, x1, z1 = yard_area(plot)
 		else
-			local module = buildings
-			if plot.module == "capitals" then module = capitals end
-			if plot.module == "undead" then module = undead end
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 nhal veyr district: no generator " ..
-					tostring(plot.make), 0)
-			end
-			part = generator(palette, spec)
+			part = CAPITAL.part(plot.template, plot.id, main, roof)
 			-- The part is centred on the plot origin, which is also the
 			-- reference column: the terrain height under the middle of the
 			-- plot is the height the whole plot is levelled to. A quarter turn
@@ -382,15 +302,16 @@ local function loader(directory)
 		-- ground rectangle, and it runs BEFORE the sockets are collected so a
 		-- piece of dressing can stand where a socket would otherwise be
 		-- published into a wall.
-		-- The four generator modules travel in the area table beside the
-		-- dressing, because a yard's own `decorate` may want to STAMP a part on
-		-- open ground -- the vigil district's ruin close puts two of
-		-- `buildings.ruin`'s half-standing shells on one lot -- and a roster
-		-- reaching for `dofile` of its own would load the library twice.
+		-- `part` travels in the area table beside the dressing, because a
+		-- yard's own `decorate` may STAMP a building on open ground -- the vigil
+		-- district's ruin close puts two half-standing ruin shells on one lot --
+		-- and those are this capital's templates too.
 		local area = {x0 = x0, z0 = z0, x1 = x1, z1 = z1, ox = ox, oz = oz,
 			pw = rw, pd = rd, peak = peak, clear_to = clear_to,
 			dressing = dressing, parts = parts, palettes = palettes,
-			buildings = buildings, capitals = capitals, undead = undead}
+			-- a further building a roster's dressing stamps (the ruin close),
+			-- from this capital's templates in the plot's own palette
+			part = function(template, id) return CAPITAL.part(template, id, main) end}
 		if type(plot.decorate) == "function" then
 			plot.decorate(buf, palette, area)
 		end
@@ -455,20 +376,15 @@ local function loader(directory)
 			entry.dir = {x = dx, z = dz}
 		end
 
-		if spec.open_shelter then
+		if open_shelter then
 			-- Generic shopfront lamps/benches must not become extra shelter
 			-- posts or intrude into the open stable's public approach.
 			buf:clear(x0, 1, z0, x1, clear_to, z1)
 			parts.stamp(buf, part, ox, 0, oz, turns)
 		end
 		services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
-		-- 6c. Every closed room's small touches (Round 36 decor kit): a
-		-- barrel or a pot by the door, flowers under the windows, a wood pile
-		-- or a barrel against a side wall; never on a socket or the cell
-		-- before it.
-		decor.dress_rooms(buf, palette, decor.rooms_from_corners(points.room_corner),
-			points.doors or {}, sockets, {palette.node("foundation"),
-				palette.node("path"), palette.maybe("ground_straw")})
+		-- (Every closed room's small touches, the Round 36 decor kit, are the
+		-- template's own since Round 56.)
 		parts.resolve_panes(buf)
 
 		-- Round 47 town greening: the race's trees on the plot's open wild

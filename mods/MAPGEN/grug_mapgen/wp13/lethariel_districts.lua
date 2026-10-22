@@ -76,21 +76,19 @@ local function loader(directory)
 
 	local MARKET = {
 		-- 1. The grain hall.
-		{id = "market_granary", module = "capitals", make = "granary",
-			order = 1, roof = "pale", spec = {w = 11, d = 15, wall_h = 5}},
+		{id = "market_granary", template = "lethariel_market_granary",
+			order = 1, roof = "pale"},
 		-- 2. The stable, for the beasts the avenues carry.
-		{id = "market_stable", module = "capitals", make = "stable",
-			order = 2, spec = {w = 15, d = 11, wall_h = 5}},
+		{id = "market_stable", template = "highcourt_market_stable",
+			order = 2},
 		-- 3. THE BOWYER'S, the first of this race's own trades. The workshop
 		-- opens in its x- wall (the `workshop` interior kit stands its
 		-- cauldrons on the odd cells of the z- gable's inner run, so a door
 		-- there opens onto a hearth) and the PLOT is turned so that wall
 		-- faces the street. The stave on the apron is a silverwood log, which
 		-- is what the sockets contract's `carve` activity names.
-		{id = "market_bowyer", module = "buildings", make = "workshop",
+		{id = "market_bowyer", template = "lethariel_market_bowyer",
 			order = 3, turns = 3,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("tree_log"))
 				shop_counter(buf, palette, area)
@@ -108,8 +106,8 @@ local function loader(directory)
 		-- that names no feature, because it sits on the ground it stands on,
 		-- and the one that reads as needlework. The socket's y is 2: a seat is
 		-- a walkable node and the weaver sits ON it.
-		{id = "market_weaver", module = "capitals", make = "scriptorium",
-			order = 4, roof = "pale", spec = {w = 13, d = 17, wall_h = 6},
+		{id = "market_weaver", template = "lethariel_market_weaver",
+			order = 4, roof = "pale",
 			decorate = function(buf, palette, area)
 				-- x0 + 5 and not x0 + 3: the plot's own lantern pillar is
 				-- three by three at (x0 + 2, z0 + 2), so a bench three nodes
@@ -129,19 +127,16 @@ local function loader(directory)
 		-- 5. The fountain court: the district's public garden, so its plot is
 		-- three nodes wider all round than a building's and the ring that buys
 		-- is planted.
-		{id = "market_fountain", module = "capitals", make = "well_court",
-			order = 5, margin = 4, garden = true, spec = {size = 11}},
+		{id = "market_fountain", template = "highcourt_well_court",
+			order = 5, margin = 4, garden = true},
 		-- 6. The market watch.
-		{id = "market_watch", module = "capitals", make = "barracks",
-			roof = "pale",
-			spec = {w = 13, d = 17, wall_h = 5, patrol_group = MARKET_WATCH,
-				order = 6}},
+		{id = "market_watch", template = "lethariel_market_watch",
+			roof = "pale"},
 		-- 7. The grove between the plots, which is the contract's own word for
 		-- what stands between elf buildings. It carries one of the district's
 		-- two SPARE wander spots and its forager.
-		{id = "market_grove", module = "capitals", make = "grove",
+		{id = "market_grove", template = "lethariel_market_grove",
 			order = 7,
-			spec = {size = 15, kind = "columnar", height = 7},
 			-- ONE PLANT, WHERE THE FORAGER'S HANDS ARE. A grove is leaves and
 			-- litter and a socket facing into it may look down three nodes of
 			-- open air; the sockets contract's feature test reads the first
@@ -157,8 +152,7 @@ local function loader(directory)
 				}
 			end},
 		-- 8. The orchard edge along the district's own outer row.
-		{id = "market_orchard", module = "capitals", make = "orchard_edge",
-			spec = {len = 21, d = 11, patrol_group = MARKET_WATCH, order = 8},
+		{id = "market_orchard", template = "lethariel_market_orchard",
 			-- `orchard_edge` puts its two street waypoints two nodes in from
 			-- each end of its own ring street, and on a 23-node plot that is
 			-- exactly where the plot's own lantern pillars stand. The
@@ -174,10 +168,8 @@ local function loader(directory)
 		-- 9. THE BAKER'S. Door index 4, single leaf: the `store` kit stands
 		-- its roof posts on the odd cells of the gable's inner run, so an
 		-- eleven-wide longhouse's centred door opens onto a post.
-		{id = "market_bakehouse", module = "buildings", make = "longhouse",
+		{id = "market_bakehouse", template = "lethariel_market_bakehouse",
 			order = 10,
-			spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true},
 			decorate = function(buf, palette, area)
 				area.dressing.counter(buf, palette, area.x0 + 2, area.z0 + 1,
 					3, "x")
@@ -288,10 +280,8 @@ local function loader(directory)
 	local MARTIAL_WATCH = "lethariel_martial_watch"
 
 	local MARTIAL = {
-		{id = "martial_barracks", module = "capitals", make = "barracks",
+		{id = "martial_barracks", template = "lethariel_martial_barracks",
 			roof = "pale",
-			spec = {w = 13, d = 17, wall_h = 5, patrol_group = MARTIAL_WATCH,
-				order = 1},
 			extra_sockets = function(area)
 				-- x = -4: the plot builder sets a bench at x 3..5 on this very
 				-- row, and a guard standing in it is a guard standing in a
@@ -299,10 +289,8 @@ local function loader(directory)
 				return {plots.guard_post("barracks_gate", -4, area.z0 + 2, 2)}
 			end},
 		-- The armoury, with the armourer's counter on the apron.
-		{id = "martial_armoury", module = "buildings", make = "workshop",
+		{id = "martial_armoury", template = "lethariel_market_bowyer",
 			order = 2, turns = 3,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("workbench"))
 				shop_counter(buf, palette, area)
@@ -315,41 +303,36 @@ local function loader(directory)
 			end},
 		-- The watch tower, which is what an open capital has in place of a
 		-- wall turret.
-		{id = "martial_tower", module = "buildings", make = "watchpost",
-			order = 3, spec = {w = 9, d = 9, wall_h = 4},
+		{id = "martial_tower", template = "highcourt_martial_drill_yard",
+			order = 3,
 			extra_sockets = function(area)
 				return {plots.guard_post("tower", -3, area.z0 + 2, 2)}
 			end},
 		-- The muster hall.
-		{id = "martial_hall", module = "buildings", make = "hall",
-			order = 4, roof = "pale",
-			spec = {w = 13, d = 17, wall_h = 6, infill = true}},
+		{id = "martial_hall", template = "lethariel_martial_hall",
+			order = 4, roof = "pale"},
 		-- The stable of the guard.
-		{id = "martial_stable", module = "capitals", make = "stable",
-			order = 5, spec = {w = 15, d = 11, wall_h = 5}},
+		{id = "martial_stable", template = "lethariel_martial_stable",
+			order = 5},
 		-- The armoury store.
-		{id = "martial_store", module = "buildings", make = "longhouse",
+		{id = "martial_store", template = "lethariel_martial_store",
 			order = 6,
-			spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true},
 			extra_sockets = function(area)
 				return {plots.spare("store", area.x1 - 1, area.z1 - 1, 2)}
 			end},
 		-- The grove the district musters in front of.
-		{id = "martial_grove", module = "capitals", make = "grove",
-			order = 7, spec = {size = 15, kind = "columnar", height = 7},
+		{id = "martial_grove", template = "lethariel_market_grove",
+			order = 7,
 			extra_sockets = function(area)
 				return {plots.spare("grove", area.x0 + 1, area.z1 - 1, 2)}
 			end},
 		-- The wardens' lodge.
-		{id = "martial_lodge", module = "buildings", make = "cottage",
-			order = 8, turns = 1,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
+		{id = "martial_lodge", template = "lethariel_martial_lodge",
+			order = 8, turns = 1},
 		-- The look-out platform in the boughs: this capital's own part, and
 		-- the martial district is where a lookout belongs.
-		{id = "martial_bough", module = "elf", make = "tree_platform",
-			order = 9, spec = {size = 11, deck = 7, wall_h = 3}},
+		{id = "martial_bough", template = "lethariel_bough_west",
+			order = 9},
 	}
 
 	local MARTIAL_FILL = {
@@ -441,11 +424,11 @@ local function loader(directory)
 		-- MARGIN 3, not the default 2: the shrine's own south flight of three
 		-- treads stands on the row a two-node ring would put this plot's gate
 		-- socket on, and a socket in a stair is a socket with no feet cell.
-		{id = "mere_shrine", module = "elf", make = "shrine",
-			order = 1, margin = 3, spec = {size = 9, rise = 5, quest = true}},
+		{id = "mere_shrine", template = "lethariel_plot_mere_shrine",
+			order = 1, margin = 3},
 		-- 2. THE LORE HALL on the shelf above the water.
-		{id = "mere_lore_hall", module = "capitals", make = "scriptorium",
-			order = 2, roof = "pale", spec = {w = 13, d = 17, wall_h = 6},
+		{id = "mere_lore_hall", template = "lethariel_mere_lore_hall",
+			order = 2, roof = "pale",
 			decorate = function(buf, palette, area)
 				area.dressing.counter(buf, palette, area.x1 - 5,
 					area.z0 + 1, 4, "x")
@@ -465,8 +448,8 @@ local function loader(directory)
 			-- `brew` activity names.
 			socket_overrides = function() return {} end},
 		-- 3. THE MOURNING GROVE: the graves of the city, under kept boughs.
-		{id = "mere_mourning", module = "capitals", make = "grove",
-			order = 3, spec = {size = 15, kind = "columnar", height = 7},
+		{id = "mere_mourning", template = "lethariel_market_grove",
+			order = 3,
 			-- THE GRAVE ROW RUNS DOWN THE WEST SIDE, not across the
 			-- forecourt. A grove's own standards stand at the four corners of
 			-- its pad -- (-5, -5) and (5, -5) among them -- and a crown
@@ -556,24 +539,16 @@ local function loader(directory)
 	local HOMES_WATCH = "lethariel_homes_watch"
 
 	local HOMES = {
-		{id = "homes_terrace_west", module = "buildings", make = "cottage",
-			order = 1, turns = 1,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
-		{id = "homes_terrace_east", module = "buildings", make = "cottage",
-			order = 2, turns = 3,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip", infill = true,
-				shutters = true}},
-		{id = "homes_longhouse", module = "buildings", make = "longhouse",
-			order = 3,
-			spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true}},
+		{id = "homes_terrace_west", template = "lethariel_martial_lodge",
+			order = 1, turns = 1},
+		{id = "homes_terrace_east", template = "lethariel_homes_terrace_east",
+			order = 2, turns = 3},
+		{id = "homes_longhouse", template = "lethariel_homes_longhouse",
+			order = 3},
 		-- THE BREWHOUSE, with the brewer's counter on the apron and the
 		-- cauldron beside it.
-		{id = "homes_brewhouse", module = "buildings", make = "workshop",
+		{id = "homes_brewhouse", template = "lethariel_market_bowyer",
 			order = 4, turns = 3,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("hearth"))
 				shop_counter(buf, palette, area)
@@ -586,9 +561,8 @@ local function loader(directory)
 			end},
 		-- THE CARVER'S YARD: a hall with a standing stone on the apron, which
 		-- is the feature `carve` names.
-		{id = "homes_carver", module = "buildings", make = "hall",
+		{id = "homes_carver", template = "lethariel_martial_hall",
 			order = 5, roof = "pale",
-			spec = {w = 13, d = 17, wall_h = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local signature = palette.maybe("signature") or
 					palette.node("wall_accent")
@@ -600,20 +574,20 @@ local function loader(directory)
 				return {plots.work("stone", "carve", area.x0 + 3, area.z0, 0)}
 			end},
 		-- The hall of feasts.
-		{id = "homes_feast_hall", module = "capitals", make = "scriptorium",
-			order = 6, roof = "pale", spec = {w = 13, d = 17, wall_h = 6}},
+		{id = "homes_feast_hall", template = "lethariel_homes_feast_hall",
+			order = 6, roof = "pale"},
 		-- The bough house, the second of this capital's tree platforms.
-		{id = "homes_bough", module = "elf", make = "tree_platform",
-			order = 7, spec = {size = 11, deck = 6, wall_h = 3},
+		{id = "homes_bough", template = "lethariel_bough_east",
+			order = 7,
 			extra_sockets = function(area)
 				return {plots.spare("bough", area.x1 - 1, area.z1 - 1, 2)}
 			end},
 		-- The garden court.
-		{id = "homes_court", module = "capitals", make = "well_court",
-			order = 8, margin = 4, garden = true, spec = {size = 11}},
+		{id = "homes_court", template = "highcourt_well_court",
+			order = 8, margin = 4, garden = true},
 		-- The grove the quarter sits in.
-		{id = "homes_grove", module = "capitals", make = "grove",
-			order = 9, spec = {size = 15, kind = "columnar", height = 7},
+		{id = "homes_grove", template = "lethariel_market_grove",
+			order = 9,
 			decorate = function(buf, palette, area)
 				area.dressing.plant(buf, palette, 0, -2)
 			end,
