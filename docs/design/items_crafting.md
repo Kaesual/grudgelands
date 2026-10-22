@@ -1736,8 +1736,14 @@ family pools in §6.2 decide legal stats; a stat cannot occupy both channels.
 | Dodge (percentage points) | Elusive | of the Cat |
 | Armor rating | Stalwart | of the Tortoise |
 
-Words are identical across tiers; the tooltip states the concrete value and
-the enchant's tier, e.g. "+15 Strength (T5)".
+Words are identical across tiers; the tooltip states the channel, the
+concrete value and the enchant's tier, one line per enchant with the prefix
+first (Round 56 ruling 12), e.g. "Prefix: +15 Strength (T5)" and
+"Suffix: +3.5% Crit (T4)"; a maximum HP or Mana enchant adds its amount at
+the player's level inside the brackets. A stack keeps its tooltip in its meta,
+so an item stored in a chest or a mail shows the old form until it is
+carried and rebuilt (it enters the inventory through the give helper, or the
+next join, equipment or level change rebuilds every carried stack).
 Examples: *Bronze Sword of the Ox*, *Lucky Bronze Sword of the Bear*. No refined
 state or marker exists.
 
@@ -1751,8 +1757,12 @@ then start it with its material cost: a 5 s job that holds the item and
 counts one profession craft (Round 45).
 Replacement preserves the other channel, wear and unrelated stack metadata.
 An identical no-op (same stat and tier) is refused without cost or progress.
-Overwriting a higher tier is allowed; the preview warns ("Replaces T7
-Strength with T6 Strength.").
+When the item already has an enchant in the operation's channel, the box
+names it as its tooltip line without the amount at the player's level
+("Replaces: Prefix: +21 Strength (T7)", Round 56 ruling 12). Overwriting a
+higher tier is allowed; that line then turns orange and carries the warning
+as its tooltip ("Replaces T7 Strength with T6 Strength."). Away from the
+station, the station's line takes the XP hint's place.
 
 ### 6b.6 Quality follows slot count
 

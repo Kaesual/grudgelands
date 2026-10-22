@@ -9,8 +9,11 @@
 -- result's image with its computed description as the tooltip), the area
 -- profession's enchants valid for the placed item up to the profession's
 -- tier (a scrolling list with the value each gives on this item), the
--- chosen enchant's materials with have/need, the overwrite warning, the XP
--- hint and Enchant now, which turns into Cancel while a job runs.
+-- chosen enchant's materials with have/need, the enchant it replaces
+-- ("Replaces: Prefix: +5 Strength (T2)", Round 56; orange with the
+-- overwrite warning as its tooltip when that is of a higher tier), the XP
+-- hint (at the station) and Enchant now, which turns into Cancel while a
+-- job runs.
 --
 -- Upgrade: the target slot, its item level and cap, "+N levels" with Max,
 -- the resulting item level, the materials for N levels with have/need, the
@@ -246,8 +249,15 @@ local function enchant_build(player, view)
 			y) + 0.1
 		if refusal then
 			y = wrapped_labels(fs, X, y, W, refusal, WARN, NOTE_STEP)
-		elseif plan.warning then
-			y = wrapped_labels(fs, X, y, W, plan.warning, WARN, NOTE_STEP)
+		elseif plan.replaces then
+			-- The box has room for one of the two: a replaced enchant of a
+			-- higher tier turns the line orange, the warning is its tooltip.
+			local top = y
+			y = wrapped_labels(fs, X, y, W, plan.replaces, plan.warning and WARN, NOTE_STEP)
+			if plan.warning then
+				fs[#fs + 1] = ("tooltip[%s,%s;%s,%s;%s]"):format(n(X), n(top - 0.2), n(W),
+					n(y - top), esc(plan.warning))
+			end
 		end
 		if chosen.station and not grug_jobs.station_nearby(player, chosen.station) then
 			enabled = false
@@ -255,7 +265,9 @@ local function enchant_build(player, view)
 		end
 	end
 	if st.note then y = wrapped_labels(fs, X, y, W, st.note, NOTE, NOTE_STEP) end
-	if chosen then
+	-- The XP hint at the station only: away from it the station's line
+	-- takes its room.
+	if chosen and (not chosen.station or grug_jobs.station_nearby(player, chosen.station)) then
 		local hint, color = grug_jobs._xp_hint(player, chosen)
 		if hint then wrapped_labels(fs, X, y, W, hint, color, NOTE_STEP) end
 	end
