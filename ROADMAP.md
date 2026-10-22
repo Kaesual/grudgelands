@@ -604,11 +604,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   the inactive hotbar, faction-wide Quartermasters, mana food for every
   class, floating items), `Prefix:`/`Suffix:` in enchant tooltips and the
   station's "Replaces prefix: …", polygon parts in the armor pipeline with
-  the hood (invisible until its art pick) and the open chin strip, the town
+  the hood (its art picked and baked in 0.56.1) and the open chin strip, the town
   buildings frozen byte-identically into 260 building templates with a
   local editor ([format](docs/technical/building-template-format.md)), and
   the quest overview page. Complete on 2026-10-22; not pushed, the GUI test
-  and the hood art pick open.
+  (0.56.0 and 0.56.1 together) open.
 
 ### Remaining work
 

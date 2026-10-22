@@ -692,10 +692,9 @@ chest), then a new world for the towns.
    prefix recipe: a white "Replaces prefix: …"; a lower tier of the same channel: the line is **orange** and
    hovering it shows "Replaces T3 … with T2 …" (on touch screens the tooltip may not show); an empty channel shows no
    line; away from the forge "Requires: Forge nearby", no XP hint, nothing overlapping the button.
-10. **The chin strip and the hidden hood:** cloth T1–T6 and leather T1–T5 helmets show the chin strip see-through;
-    leather T6 and metal unchanged; no hood visible anywhere; looking up and down as before; the Character tab's
-    figure about 3 % lower (judge it); the website's model shows the chin strip and no hood, and its framing is
-    unchanged.
+10. **The chin strip:** cloth T1–T6 and leather T1–T5 helmets show the chin strip see-through; leather T6 and metal
+    unchanged; looking up and down as before; the Character tab's figure about 3 % lower (judge it); the website's
+    model shows the chin strip, and its framing is unchanged. The hood itself (0.56.1): item 14.
 11. **The editor** (desktop only; a local developer tool): `python3 tools/building_templates/editor/serve.py`, open
     http://127.0.0.1:8756/, open a building, fly through it with Noclip (on a touch screen with the move pad); on layer 1 place a bed and a door, see the
     padlock on layer 2 (painting there is refused); paint on layer 3, Undo, Reset; wall up the entrance door and Save
