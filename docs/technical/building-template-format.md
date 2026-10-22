@@ -223,6 +223,7 @@ table before the lane merges.
 | `inside` | the destination spot | a standing point (below) |
 | `lights` | the light writers | no placement rule (no town reads the group; towns find lights from the cells); kept as data |
 | `sockets` | the NPC and quest sockets | a standing point |
+| `trees` | the stems of a planted template (§4.2) | inside the box, the stem column's ground cell (y = 0) not air; attributes `kind=<planter>` and `height=<n>` |
 
 A **standing point** is a cell whose node and the node above are both passable while the node below is walkable.
 Passable: not `walkable` in the registry, or part of a door (the leaf and its `door_hidden`, which the registry
@@ -276,6 +277,25 @@ measures a part (`ground_area` and `clear_to` in the capital plot builders read 
 measure what it measured before: such a measurement is computed from the part as the generator built it and stored
 in `meta` (for example `meta extent=[x0,z0,x1,z1]`), in the part frame, and the town code reads it from there and
 rotates it as it rotates cells.
+
+### 4.2 Planting (trees stay algorithmic)
+
+Trees are vegetation, not buildings: they come from the tree generator (`dressing.grown` and the planters built on
+it), so a change of the generator reaches every tree (the user, 2026-10-22, overriding the first freeze of the
+capital groves and orchards). A template whose part planted trees (groves, orchards, copses, gardens) is a
+**planted template**:
+
+- its cells are what the part wrote **before** planting (ground, paths, hedges, kerbs);
+- its `trees` points are the stems, in planting order, each with the planter (`kind=`, the `dressing` function the
+  part called) and `height=`; `meta plant_spacing=<n>` when the part set `buf.tree_spacing`;
+- `meta undergrowth=[x0,z0,x1,z1,density]` when the part scattered undergrowth after planting;
+- cells the part wrote **after** planting (lanterns, a gate, anything written over the grown trees) are legend
+  entries marked `late` (`role path_light late`, `node … late`).
+
+The loader builds the part buffer from the cells, plants at the `trees` points in order with the placement's
+palette (in the part's own frame, before `parts.stamp`, exactly as the generator did), scatters the undergrowth,
+writes the `late` cells, and only then returns the part. A stem whose tree does not fit stays out, as before. The
+template therefore holds no tree, leaf or undergrowth cell, and the editor moves stems as points (ruling 28).
 
 ## 5. Multi-cell objects
 
