@@ -41,7 +41,32 @@ remain delivered foundations, with this refinement work still ahead.
   Cooking. Explore a broader range of useful food buffs.
 - **Quests that welcome players into the world:** improve how quests teach
   the game and explore more immersive ways to connect their tasks to the
-  people and places around them.
+  people and places around them. The **quest rework** (decided in
+  principle with the user on 2026-10-22) gives the game a story thread from
+  the capital on (level 15–20 at the latest), marks story quests apart from
+  kill quests, cuts repetition and dependencies between kill quests, groups
+  the start towns' quests into families and stops rewarding the requested
+  items. Round 56 prepared it with the quest overview page
+  (`tools/r56_questmap/`) and an idea report, which recommends a faction
+  story from the capital combined with standalone place stories.
+
+Decided with the user on 2026-10-22 for their own rounds, in an order the
+user sets ([Round 56 plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds),
+[BACKLOG](BACKLOG.md#decided-for-later-rounds-round-56-8)):
+
+- **A clearer crafting window:** one wide recipe box with the craft button
+  beside the amount, a progress bar with a stop button, a crafting queue of
+  up to five jobs (crafts, enchants and upgrades alike), a details page per
+  recipe that names where each ingredient comes from, favourites, and Basic
+  recipes unlocked together with the profession tier that needs them.
+- **Town fixes** (a map reset): passable bough platforms in Lethariel,
+  capital gatehouses with an inner stair, royal guards beside their king,
+  gate patrols on the city side, the terrace stair, and a waystone and
+  mailbox at every start town's centre. The building fixes are made in the
+  building templates.
+- **Mining camps** (a map reset): one faction camp in every T2, T3 and T4
+  zone outside the capital zones, whose lift leads down to a protected room
+  at the tier's depth with a fetch quest.
 
 These are goals for the next design and playtest passes, not changes already
 available in the game. Detailed follow-up scope and current design owners:
@@ -571,6 +596,19 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   Complete on 2026-10-21; GUI-accepted and pushed with 0.55.1 the same day,
   which runs in production. 0.55.1 (**compatible**) adds the admin debug command `/prof`
   ([professions.md](docs/design/professions.md#16-the-prof-debug-command)).
+- [x] **Round 56 "Playtest fixes, clear enchants, the hood and the quest
+  survey"** ([completion](docs/planning/round56-plan.md#completion-2026-10-22)),
+  version 0.56.0, **compatible**, no step: the fixes from the playtest of
+  2026-10-21 (aggro by level, the hit alert on the hit mob, ranged mobs
+  closing in, land mounts falling and jumping like players, selling from
+  the inactive hotbar, faction-wide Quartermasters, mana food for every
+  class, floating items), `Prefix:`/`Suffix:` in enchant tooltips and the
+  station's "Replaces prefix: …", polygon parts in the armor pipeline with
+  the hood (invisible until its art pick) and the open chin strip, the town
+  buildings frozen byte-identically into 260 building templates with a
+  local editor ([format](docs/technical/building-template-format.md)), and
+  the quest overview page. Complete on 2026-10-22; not pushed, the GUI test
+  and the hood art pick open.
 
 ### Remaining work
 
@@ -613,8 +651,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 52](BACKLOG.md#round-52-carry-overs),
   [Round 53](BACKLOG.md#round-53-carry-overs),
   [0.53.1](BACKLOG.md#0531-carry-overs),
-  [Round 54](BACKLOG.md#round-54-carry-overs) and
-  [Round 55](BACKLOG.md#round-55-carry-overs) carry-overs (Round 40: the
+  [Round 54](BACKLOG.md#round-54-carry-overs),
+  [Round 55](BACKLOG.md#round-55-carry-overs) and
+  [Round 56](BACKLOG.md#round-56-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -630,7 +669,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   picking in towns for the user, picking, flight-overlay, trinket and
   tool notes; Round 54: the off-hand card, contract z-fighting, clearance,
   web version 1 and tool notes; Round 55: back cards for other classes,
-  NPC offhands, model, bake, achievement-command and tool notes);
+  NPC offhands, model, bake, achievement-command and tool notes; Round 56:
+  the hood finish step, ranged-mob, mount, float and trade notes, the
+  known template defects and template-tool notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

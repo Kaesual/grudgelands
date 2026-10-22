@@ -2967,6 +2967,127 @@ The items the user decides in the GUI test are in the
   (`check_lua.sh` needs `GRUG_LUA51_PARSER` or a copy of the main
   checkout's `tools/bin`).
 
+### Round 56 carry-overs
+
+**Noted 2026-10-22** ([completion](docs/planning/round56-plan.md#completion-2026-10-22)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the GUI test are in the
+[GUI checklist](docs/planning/round56-plan.md#gui-checklist-round-56).
+
+- **The hood finish step** (HOODART): the user's pick of drop-01 (P1 "Bound
+  cowl" or P2 "Crown and point" per line) and the colour question (the
+  hood's undyed zone A against the coloured helm on many tiers), then a
+  small lane bakes the pick (possibly 0.56.1). `tools/r54_art/assemble.py`
+  takes whole tiers (icons are an overlay): a drop with only hoods needs
+  whole-tier repaints or an overlay section like the icons'. The art check
+  warns on leather T1 and T3 head (zone B 2 < 3 after the open chin strip)
+  until those helms are repainted. The chin strip is cleared by the painters
+  (`assemble.py`, `make_test_art`); `check.py` allows it on cloth and
+  leather T1–T5 but does not require it. `check.py` counts no front-facing
+  polygon faces (it warns on any) and its overlap report covers boxes only.
+  The Character tab's figure sits about 3 % lower (the hidden hood's
+  bounding box; `grug_inventory/pages.lua` could lift it by about 0.1).
+- **Ranged mobs** (MOBAI, its review): every 10 s a `dogshoot` archer still
+  charges into melee for 3 s (upstream `dogswitch`); ranged kings close in
+  by walking straight, without navigation or pathfinding; pure `shoot` mobs
+  (none exist) do not get the no-sight walk; camp-less kin (night families,
+  rats) still chain their `camp_swarm` (kept, the user).
+- **Mounts** (MOUNT, its review): small pools round up (`ceil`), so 11
+  nodes cost 2 of 31 HP (6.5 %) at level 1; `AIRBORNE_PAUSE` (0.5 s) now
+  pauses the gallop on jumps and falls deeper than about 2.45 nodes (the
+  comment says "about two"; a sound matter, not tuned); no fixture for a
+  lethal fall while mounted (`r45_pt6` F); the probe's STEP line could
+  release jump after the climb.
+- **Trade and food** (SMALL, its review): a single sale checks only the item
+  name at the shown list and index (since Round 50); the food status text
+  is fixed when eaten (a class change during the buff keeps it); a Caster
+  dish replaces a Warrior's current food buff;
+  `docs/audit-2026-10/docs/05-design-items.md` still describes the refusal
+  (a historical audit).
+- **Floating items** (FLOAT, its review): an item lying on land that water
+  later flows over is not lifted; a floating item does not notice water
+  rising above it (a source placed on it), nor the removal of a ceiling it
+  rests against; a falling water column lets an item climb to the pool
+  above; `force_out` while floating; no drift with the current (the user).
+- **Enchants** (AFFIX): a chest-to-inventory drag does not rebuild the
+  tooltip at once (the next refresh does); the hover warning may not show
+  on touch screens.
+- **Quest overview** (QUESTMAP): items show their short id (in-game names
+  need every item mod); PvP captains read "Captain Throng (named per
+  world)"; the flag thresholds are fixed in `flags.lua`.
+- **Template defects** (the known-defects baseline, warnings until fixed in
+  a map-reset round): Kezamba's moot house has a pane over a door's upper
+  cell; both Lethariel mere shrines have an inside point on a block; 25
+  points are unreachable inside their templates (gates, shrines, Sunscar's
+  warlord platform, which the town's outer stair reaches).
+- **Template data** (FREEZE-TOWNS, FREEZE-CAPITALS, TREES, their reviews):
+  `troll_palette.lua` duplicates `kezamba.roster` (it stays for the tools);
+  near-duplicate templates are kept apart by their meta
+  (`highcourt_service_yard` = `hearthpine_workyard`, `kezamba_trade_shed` =
+  `kapok_drying_shed`, `lethariel_market_grove` =
+  `highcourt_lore_quiet_grove`); `highcourt_statue` and the well court are
+  used across capitals under Highcourt's name; Nhal Veyr's vigil copse
+  (height 7) shares the market copse's template with 6 (the tree generator
+  ignores it); the meta `trees`, `peak`, `top` and `extent` stay
+  generator-time numbers (`top` feeds the plot builders' clearance; re-measure
+  when the tree generator changes); each `templates.lua` copy loads its own
+  dressing tree pools; Hearthpine's decor stays town code (moving it needs a
+  map reset).
+- **Template tools** (VIEWER, EDITOR, FREEZE-*, their reviews): no
+  upside-down flip in the editor (needs a `shaped` predicate in
+  `palettes.lua`); no point selection by a click in 3D; a template with a
+  standing warning (Sunscar's `warlord_platform`) asks for a confirmation
+  on every save; a save takes 6–7 s (every build); `serve.check` follows
+  `check.validate`'s signature; `check.py` does not build a capital whose
+  roster was deleted; `export.py --check` fails by design after the first
+  deliberate template edit (then retire it); `check_upgrade.py` takes about
+  20 s (two town builds); the viewer's reader is not the gate (it accepts
+  what `check.py` refuses); panes settle within the template alone (a pane
+  at the edge does not see the town's cells); the town page keeps its
+  Google Fonts link; the diff and workshop tools were not rerun; the
+  gallery could not be published as an artifact (a local page);
+  `gui_run.py` needs Chromium.
+- **Docs:** the format doc's §6 table names "`buildings.lua` door writers,
+  the race part files" as the source of `doors` points (the coordinator's
+  file).
+- **Round end:** the seed fleet `full` owed by the freeze (each freeze lane
+  ran `quick`, 100 of 100).
+
+### Decided for later rounds (Round 56 §8)
+
+**Decided with the user on 2026-10-22**, each its own round in an order the
+user sets; the decisions and their detail are in
+[Round 56 plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds).
+
+- **Crafting window:** layout C (one wide middle box, "Craft ×N" / "Queue
+  ×N", the progress bar with a stop button and one job line, "View Queue
+  [N]", output slots only while filled); the queue (crafts, enchants and
+  upgrades alike, inputs taken when queued and returned on cancel, no
+  reordering, at most 5 entries, no automatic crafting of missing
+  ingredients); a details page per recipe with its ingredients' sources;
+  recursive Basic unlocks with a profession tier; favourites in player
+  meta. First step: a report of the recipe chain depth per recipe.
+- **Town fixes** (**map reset**): in the templates (the user in the editor or
+  a lane): Lethariel's bough platforms (the beam over the stair and the deck
+  rail go) and the five core gatehouses (an inner stair, the doors one node
+  towards the passage, a 4-node deck opening, the first-floor openings
+  closed); in code: Lethariel's royal guards on posts by the king, the gate
+  guards' two patrols and the tower post, the terrace stair's off-by-one in
+  `dressing.terrace`, the waystone and mailbox at each start town's centre.
+  Candidates: NPCs using doors more visibly, the town workshop evening.
+- **Mining camps** (**map reset**): 20 camps (one per T2, T3 and T4 zone
+  outside the capital zones), a faction-only teleport lift to a protected
+  room written by the world generator at the tier's lowest y + 50 (−250,
+  −450, −650), a fetch quest, faction guards; the T4 room may lie in the PvP
+  depth.
+- **Quest rework** (after QUESTMAP and QUESTIDEAS): a story thread from the
+  capital on (level 15–20 at the latest), story quests marked apart from
+  kill quests, more story with fewer repetitions and dependencies, quest
+  families across start towns, rewards that are not the requested items.
+  The idea report recommends a faction story from the capital combined with
+  standalone place stories, investigations selectively and journeys for the
+  mining camps, piloted on one zone and its capital per faction.
+
 ### Audit 2026-10 open questions
 
 **Open, for the user** (collected 2026-10-05 from the

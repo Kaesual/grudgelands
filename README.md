@@ -91,6 +91,16 @@ and its profession trainers.
 
 ## Current state
 
+**0.56.0** brings the fixes from the big playtest: monsters far below
+your level leave you alone, a hit monster calls only the kin around it,
+archers walk closer instead of shooting arrows that never arrive, and land
+mounts fall and jump like you do without throwing you off after a fall.
+You can sell from your second hotbar, every Quartermaster trades with its
+whole faction, any class may eat mana food, and items in water float to
+the surface. Enchant tooltips name the prefix and the suffix, and the
+enchanting station shows what a new enchant replaces. Cloth helmets and
+leather ones below tier 6 leave the chin free.
+
 **0.55.0** shows your offhand gear on your character: a Warrior's shield
 on the left arm, raised in front of the chest to block and a little bigger
 with each tier, a Mage's or Priest's spellbook open in the left hand, and
