@@ -24,7 +24,7 @@ local function loader(directory)
 
 	local PLOTS = {
 		-- 1. THE SPIRIT HALL: the district's tallest plot and the carrier of
-		-- this capital's second quest shell, which `capitals.temple` publishes
+		-- this capital's second quest shell, which the temple generator published
 		-- three nodes inside its own door. The user's playtest-round-2 ruling
 		-- is that the elder stands ON THE DOORSTEP and shows the street his
 		-- face, so the shell stands one node outside the door, tagged `door`,

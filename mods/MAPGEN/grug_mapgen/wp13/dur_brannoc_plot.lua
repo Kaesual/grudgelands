@@ -328,16 +328,16 @@ local function loader(directory)
 		-- loop and one flair spot at its own gate.
 		local sockets = {}
 		-- What this plot changes about the sockets its PART published. A
-		-- generator in `capitals.lua` knows its own building and nothing about
+		-- template knows its own building and nothing about
 		-- the composition it is built into, so it cannot know which of its
 		-- walls faces a lane or where this plot's path runs; the roster says so
-		-- instead of the library being edited per composition.
+		-- instead of the template being edited per composition.
 		local overrides = {}
 		if type(plot.socket_overrides) == "function" then
 			overrides = plot.socket_overrides(area)
 		end
 		for _, entry in ipairs(points.sockets or {}) do
-			-- `spawn` travels with the socket: a generator that publishes a
+			-- `spawn` travels with the socket: a template that publishes a
 			-- spare must not lose it here.
 			local override = overrides[entry.id] or {}
 			sockets[#sockets + 1] = {id = entry.id, role = entry.role,
@@ -354,10 +354,10 @@ local function loader(directory)
 				group = watch, order = plot.order}
 		end
 		-- Every plot publishes one flair spot at its own gate, on the doorstep
-		-- path: the plots built from `buildings.lua` publish no socket of their
-		-- own (a start generator knows nothing about the NPC seam), and a
-		-- district of nine plots with four inhabited ones is not a district
-		-- anybody lives in.
+		-- path: the plot templates frozen from the start-town generators
+		-- publish no socket of their own (those generators knew nothing about
+		-- the NPC seam), and a district of nine plots with four inhabited
+		-- ones is not a district anybody lives in.
 		sockets[#sockets + 1] = {id = plot.id .. "_gate_idle", role = "idle",
 			x = 0, y = 1, z = z0 + 2, face = 0, tags = {"door"}}
 		-- Whatever this plot alone publishes: the garrison's guard posts, a

@@ -38,11 +38,11 @@ local function loader(directory)
 
 	local PLOTS = {
 		-- 1. The terrace market: a covered arcade rather than a square, and the
-		-- reason is a socket rather than a taste. `capitals.market_square`
+		-- reason is a socket rather than a taste. The market square template
 		-- always publishes a `waypoint` -- the travel pad WP17 has reserved --
 		-- and a capital has exactly one of those, in its civic core; a district
-		-- market built from that generator would give this capital two. The
-		-- arcade is `capitals.colonnade`, a roofed walk on piers, which is what
+		-- market built from that template would give this capital two. The
+		-- arcade is the colonnade template, a roofed walk on piers, which is what
 		-- a dwarf market under a terrace edge looks like; the butcher's counter
 		-- stands on its apron.
 		-- The colonnade publishes its OWN waypoint (the walk under the arcade),

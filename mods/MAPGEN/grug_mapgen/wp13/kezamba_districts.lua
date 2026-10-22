@@ -490,12 +490,12 @@ local function loader(directory)
 				order = 3,
 				-- A CAPITAL HAS EXACTLY ONE QUEST SHELL and the core's shrine
 				-- carries it (`wp13/kezamba.lua`), so the temple's own is
-				-- dropped here rather than the shared generator being edited.
+				-- dropped here rather than the shared template being edited.
 				drop = {quest = true},
-				-- THE ALTAR IS THE PLOT'S AND NOT THE GENERATOR'S. `pray`'s
+				-- THE ALTAR IS THE PLOT'S AND NOT THE TEMPLATE'S. `pray`'s
 				-- feature rule is "an altar, a candle or a grave marker" and it
 				-- is answered OUTSIDE, because every socket stands outside a
-				-- room; `capitals.temple` furnishes its nave and puts nothing
+				-- room; the temple's template furnishes its nave and puts nothing
 				-- on its doorstep. So the plot sets a basalt altar stone on the
 				-- feature row with a flame on it, and the shaman stands one
 				-- node in front of it.

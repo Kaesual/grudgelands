@@ -289,9 +289,9 @@ local function loader(directory)
 				group = watch, order = plot.order}
 		end
 		-- Every plot publishes one flair spot at its own gate, on the
-		-- doorstep path: the plots built from `buildings.lua` publish no
-		-- socket of their own, and a district of nine plots with four
-		-- inhabited ones is not a district anybody lives in.
+		-- doorstep path: the plot templates frozen from the start-town
+		-- generators publish no socket of their own, and a district of nine
+		-- plots with four inhabited ones is not a district anybody lives in.
 		sockets[#sockets + 1] = {id = plot.id .. "_gate_idle", role = "idle",
 			x = 0, y = 1, z = z0 + 2, face = 0, tags = {"door"}}
 		if type(plot.extra_sockets) == "function" then

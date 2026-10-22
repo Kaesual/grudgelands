@@ -320,10 +320,10 @@ local function loader(directory)
 		-- district loop where the part publishes none of its own.
 		local sockets = {}
 		-- What this plot changes about the sockets its PART published. A
-		-- generator in `capitals.lua` knows its own building and nothing about
+		-- template knows its own building and nothing about
 		-- the composition it is built into, so it cannot know which of its
 		-- walls faces a lane or where this plot's path runs; the roster says
-		-- so instead of the library being edited per composition. Keyed by
+		-- so instead of the template being edited per composition. Keyed by
 		-- socket id, and a function of the plot's own ground rectangle,
 		-- because that is where the answers are.
 		local overrides = {}
@@ -331,7 +331,7 @@ local function loader(directory)
 			overrides = plot.socket_overrides(area)
 		end
 		for _, entry in ipairs(points.sockets or {}) do
-			-- `spawn` travels with the socket: a generator that publishes a
+			-- `spawn` travels with the socket: a template that publishes a
 			-- spare must not lose it here, the way the first version of this
 			-- copy would have (`nhal_veyr.lua` carries the same field in the
 			-- core's own copy for the same reason).
@@ -351,10 +351,10 @@ local function loader(directory)
 				group = watch, order = plot.order}
 		end
 		-- Every plot publishes one flair spot at its own gate, on the
-		-- doorstep path: the plots built from `buildings.lua` publish no
-		-- socket of their own (a start generator knows nothing about the
-		-- NPC seam), and a district of nine plots with four inhabited ones
-		-- is not a district anybody lives in.
+		-- doorstep path: the plot templates frozen from the start-town
+		-- generators publish no socket of their own (those generators knew
+		-- nothing about the NPC seam), and a district of nine plots with
+		-- four inhabited ones is not a district anybody lives in.
 		sockets[#sockets + 1] = {id = plot.id .. "_gate_idle", role = "idle",
 			x = 0, y = 1, z = z0 + 2, face = plot.gate_face or 0, tags = {"door"}}
 		-- Whatever this plot alone publishes: the martial district's guard

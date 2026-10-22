@@ -12,6 +12,45 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.56.0 — fixes from the big playtest (2026-10-22)
+
+Fixes and wishes from the playtest with many players on 2026-10-21.
+**Compatible:** no map reset and no migration step.
+
+- **Monsters far below your level leave you alone:** from six levels below
+  you, a monster's notice range shrinks by a fifth per level, and one ten
+  or more levels below attacks only when you walk right into it or hit it.
+  A monster you hit still fights back.
+- **Calling for help:** a monster you hit calls the kin around itself, not
+  around you, and the ones it calls don't call any others.
+- **Archers come closer:** a ranged monster that cannot reach you walks
+  (or flies) closer and then shoots, instead of standing still and firing
+  arrows that never arrive. The Bandit Archer now moves its arm when it
+  shoots.
+- **Mounts fall and jump like you do:** a land mount falls as fast as you
+  on foot and jumps just over two blocks. Riding, a fall hurts only when it
+  is five blocks deeper than one that would hurt on foot, and a fall never
+  throws you off; a hit from a monster or a player still does.
+- **Sell from your second hotbar:** the vendor's Sell tab lists the items
+  on the hotbar you are not showing too.
+- **Quartermasters serve the whole faction:** every Quartermaster trades
+  with all players of its faction; your own race's Quartermaster still
+  gives you 10 % off.
+- **Mana food for everyone:** a Warrior can eat a caster's dish and gets
+  its health part.
+- **Items float:** a dropped item or loot that lands in water rises to the
+  surface and stays there.
+- **Clearer enchants:** item tooltips mark the enchant lines `Prefix:` and
+  `Suffix:`, and the enchanting station shows what a new enchant replaces
+  ("Replaces prefix: …"); the line is orange, with a warning when you point
+  at it, if the new enchant is a lower tier. Enchanted items in chests show
+  the new lines once you carry them.
+- **Open chin:** the bottom row of the helmet's front is see-through on
+  every cloth head piece and on leather ones up to tier 5, so the chin
+  shows.
+- The town buildings are now stored as building templates that can be
+  edited with a developer tool; towns and capitals look exactly as before.
+
 ## 0.55.1 — the profession debug command (2026-10-21)
 
 For server admins. **Compatible:** no map reset and no migration step.

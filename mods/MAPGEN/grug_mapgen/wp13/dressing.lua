@@ -1181,7 +1181,7 @@ local function loader(directory)
 	-- merlons are what a fighting platform is looked over.
 	--
 	-- `y` is the course the breastwork STANDS ON, one above the deck slab
-	-- `roofs.flat_deck` laid, so the deck stays continuous underneath it.
+	-- the building's template laid, so the deck stays continuous underneath it.
 	-- `caps`, when given, collects the position of every merlon this ring
 	-- raised. The return value is the ring's own cell count, which is NOT the
 	-- merlon population -- the first version published it as one, and the

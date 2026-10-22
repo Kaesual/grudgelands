@@ -285,7 +285,7 @@ local function loader(directory)
 			overrides = plot.socket_overrides(area)
 		end
 		for _, entry in ipairs(points.sockets or {}) do
-			-- `spawn` travels with the socket: a generator that publishes a
+			-- `spawn` travels with the socket: a template that publishes a
 			-- spare must not lose it here.
 			local override = overrides[entry.id] or {}
 			sockets[#sockets + 1] = {id = entry.id, role = entry.role,
@@ -302,9 +302,9 @@ local function loader(directory)
 				group = watch, order = plot.order}
 		end
 		-- Every plot publishes one flair spot at its own gate, on the doorstep
-		-- path: the plots built from `buildings.lua` publish no socket of their
-		-- own, and a district of nine plots with four inhabited ones is not a
-		-- district anybody lives in.
+		-- path: the plot templates frozen from the start-town generators
+		-- publish no socket of their own, and a district of nine plots with
+		-- four inhabited ones is not a district anybody lives in.
 		--
 		-- A FILL PLOT'S IS A SPARE, not a resident. A field, a spoil heap or a
 		-- wood yard has a way in but no doorstep, and standing somebody at the

@@ -226,7 +226,7 @@ local function loader(directory)
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
-	-- The ruin is NOT in it: `buildings.ruin` publishes no `inside` point and
+	-- The ruin is NOT in it: its template publishes no `inside` point and
 	-- nobody keeps that room, which is the same choice Stillgrave made about
 	-- its two.
 	local DESTINATION_ORDER = {"mausoleum", "gate_south", "gate_west",
@@ -329,7 +329,7 @@ local function loader(directory)
 		local claimed, stamped = {}, {}
 
 		-- The citadel paving of the avenues and the mossy cobble of the lanes,
-		-- each resolved the way `capitals.lua` resolves it: the capital
+		-- each resolved the way the templates resolve it: the capital
 		-- vocabulary is optional and falls back into the start vocabulary.
 		local AVENUE = undead.maybe("castle_paving") or undead.node("plaza")
 		local LANE = undead.node("path")
