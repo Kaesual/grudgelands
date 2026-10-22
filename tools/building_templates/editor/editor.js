@@ -437,9 +437,16 @@ function showFindings(r) {
   drawGrid(); refreshMarks(); renderLayers();
 }
 function message(text, level) { const m = $("message"); m.textContent = text; m.className = level || ""; }
+// The validator builds every town and capital (a few seconds): the page
+// is busy meanwhile and Check and Save wait.
+function busy(on) {
+  for (const id of ["check", "save"]) $(id).disabled = on;
+  document.body.style.cursor = on ? "progress" : "";
+}
 async function runCheck() {
-  message("Checking…", "muted");
-  const r = await api("/api/check", payload());
+  message("Checking: the validator builds every town and capital (a few seconds)…", "muted");
+  busy(true);
+  const r = await api("/api/check", payload()).finally(() => busy(false));
   if (!r.ok) { message(r.data.error, "error"); return null; }
   showFindings(r.data);
   const d = r.data;
@@ -463,7 +470,9 @@ async function save() {
   body.push("<p class=muted>A template change changes what new worlds build: the release that ships it declares a map reset.</p>");
   const ok = await ask("Save the template", body.join(""), [["Cancel", false], [d.warnings.length ? "Save with the warnings" : "Save", true, true]]);
   if (!ok) return;
-  const r = await api("/api/save", payload({ confirm: d.warnings.length > 0 }));
+  message("Saving: the validator checks the edit once more (a few seconds)…", "muted");
+  busy(true);
+  const r = await api("/api/save", payload({ confirm: d.warnings.length > 0 })).finally(() => busy(false));
   if (!r.ok) {
     if (r.data.errors) showFindings(r.data);
     message("Not saved: " + r.data.error, "error");

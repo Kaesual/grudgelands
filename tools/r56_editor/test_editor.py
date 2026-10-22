@@ -261,6 +261,47 @@ def main():
         status, r = request(port, "POST", "/api/save", e.body(confirm=True))
         check(status == 200 and r["saved"], "saved after the confirmation")
 
+        # -- builds: every town and capital is built through the game's loader;
+        # a build error of a town that places the edited template refuses the
+        # save, one of a town that does not place it is a warning. No edit
+        # within the editor's rules was found that breaks a build (every
+        # leave-unchanged cell of every Highcourt and Lethariel template
+        # filled with air or a wall builds), so the build finding is injected
+        # into the real validator's report.
+        status, r = request(port, "POST", "/api/check", Edit(tpl).body(hash=again["hash"]))
+        check(status == 200 and not any(w["rule"] == "build" for w in r["warnings"]),
+              "the clone builds every town and capital: %s" % r["warnings"][:2])
+        real_validate = serve.check.validate
+        broken_town = ["highcourt"]
+
+        def validate(root, baseline, replaced, **kw):
+            report = real_validate(root, baseline, replaced, **kw)
+            report.error("build", broken_town[0], None, "does not build: wp13 %s: no door for kings_hall"
+                         % broken_town[0])
+            return report
+        serve.check.validate = validate
+        try:
+            status, cap = request(port, "GET", "/api/template?name=highcourt_chapel_house")
+            check("Highcourt" in cap["used_text"], "a capital template opens with its roster use")
+            e = Edit(cap)
+            spot = find(e, lambda x, y, z: y >= 2 and e.get(x, y, z) == "." and e.get(x, y - 1, z) not in (".", " "))
+            e.put(*spot, e.key("role wall"))
+            cpath = os.path.join(tdir, "highcourt_chapel_house.tpl")
+            corig = open(cpath, "rb").read()
+            status, r = request(port, "POST", "/api/save", e.body(confirm=True))
+            check(status == 409 and any(f["rule"] == "build" and "Highcourt" in f["message"] for f in r["errors"]),
+                  "a capital template edit that breaks its capital's build is refused: %s" % r.get("errors"))
+            check(open(cpath, "rb").read() == corig, "nothing written")
+            broken_town[0] = "kezamba"
+            status, r = request(port, "POST", "/api/save", e.body())
+            check(status == 409 and r.get("need_confirm") and not r["errors"] and
+                  any(w["rule"] == "build" and "Kezamba" in w["message"] for w in r["warnings"]),
+                  "a build error of a capital that does not place the template is a warning: %s" % r.get("error"))
+            status, r = request(port, "POST", "/api/save", e.body(confirm=True))
+            check(status == 200 and r["saved"], "and the unrelated edit saves after the confirmation")
+        finally:
+            serve.check.validate = real_validate
+
         # -- a file on disk that does not parse: a JSON error, nothing written
         broken = os.path.join(tdir, "broken_one.tpl")
         with open(broken, "w") as fh:

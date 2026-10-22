@@ -23,8 +23,8 @@ sys.path.insert(0, os.path.join(REPO, "tools", "building_templates", "editor"))
 
 import serve  # noqa: E402
 
-SPARSE = ["/mods/MAPGEN/grug_mapgen/building_templates/", "/mods/MAPGEN/grug_mapgen/wp13/",
-          "/tools/building_templates/"]
+# the mapgen whole: the validator builds every town and capital from it
+SPARSE = ["/mods/MAPGEN/grug_mapgen/", "/tools/building_templates/"]
 COPIED = ["tools/building_templates/nodes.json", "tools/building_templates/editor_palette.txt",
           "tools/building_templates/palette_dump.lua"]
 
