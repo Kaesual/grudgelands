@@ -65,7 +65,11 @@ the example selection, and both tools say so.
 - **The hood** (Round 56, [armor-format.md §1a](../../docs/technical/armor-format.md#1a-polygon-parts-round-56)):
   a polygon part of the head slot, wedges on top of and behind the helm, worn only together with the helm. Paint
   it for cloth and leather (metal leaves it out of `on`): name `hood` in the tier's `on` list (and `variant`, as
-  for a box) and paint `<line>/hood_<variant>.png` at 64×12, starting from `templates/blank/hood.png`.
+  for a box) and paint `<line>/hood_<variant>.png` at 64×12. **Two ways:** paint the hood as one sees it, in
+  three views (side, back, top, one pixel per skin pixel), and let
+  [`tools/r56_hood/views.py`](../r56_hood/README.md#painting-in-views) project them onto the faces (borders and
+  patterns then run on across the face edges; the tool writes the sheet, bleed included, and refuses unpainted or
+  off-palette pixels); or paint the sheet directly, starting from `templates/blank/hood.png`.
   `templates/parts/hood.png` shows the eight face rectangles (`T.*` the top wedge, `B.*` the back wedge, `J.*`
   the joint between them), each face's polygon outlined, and its orientation: seen from outside, columns run to
   the viewer's right; row 0 is the top (on the near-horizontal top faces `T.top` and `J.top`, the back edge).
