@@ -11,7 +11,7 @@
 --   error <file> <reason>      a file the game's loader refuses
 -- With `build`, it also builds every start town and capital the way the game
 -- does, from those files, and prints
---   error <town> <reason>      a town or capital that does not build
+--   build <town> <reason>      a town or capital that does not build
 --   use <capital> <count> <use key>   how often the capital's code placed
 --                                     each template and palette combination
 -- Plain Lua 5.1 under LuaJIT (no engine).
@@ -87,7 +87,7 @@ if build then
 			local ok, err = pcall(function()
 				return dofile(wp40 .. "/" .. profile.blueprint_file)()
 			end)
-			if not ok then say("error", profile.key, one_line(err)) end
+			if not ok then say("build", profile.key, one_line(err)) end
 		end
 	end
 	local capital_source = dofile(wp40 .. "/r7_capital_blueprint.lua")
@@ -99,7 +99,7 @@ if build then
 			for _, plot in ipairs(kit.plots) do plot.build() end
 		end)
 		if not ok then
-			say("error", key, one_line(err))
+			say("build", key, one_line(err))
 		else
 			local counts, keys = {}, {}
 			for _, made in ipairs(capitals[key]) do

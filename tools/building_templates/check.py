@@ -899,7 +899,8 @@ def baseline_reader(root, mode):
 
 def loader_run(root, replaced, names, builds):
     """The game's loader over the files (loader_check.lua): a list of
-    ("error", file, reason) and ("use", capital, count, key)."""
+    ("error", file, reason), ("build", town, reason) and ("use", capital,
+    count, key)."""
     source = root / BASE
     with tempfile.TemporaryDirectory(prefix="grug_template_check_") as scratch:
         if replaced:
@@ -920,8 +921,8 @@ def loader_run(root, replaced, names, builds):
     found = []
     for line in run.stdout.splitlines():
         words = line.split(" ", 3)
-        if words[0] == "error":
-            found.append(("error", words[1], line.split(" ", 2)[2]))
+        if words[0] in ("error", "build"):
+            found.append((words[0], words[1], line.split(" ", 2)[2]))
         elif words[0] == "use":
             found.append(("use", words[1], int(words[2]), words[3]))
     return found
@@ -1038,10 +1039,19 @@ def validate(root=ROOT, baseline="file", replaced=None, builds=True):
     # town and capital built from them; a roster's counts against the build
     listing = ["templates/%s.tpl" % name for name in names] + \
         ["layouts/%s" % Path(layout["path"]).name for layout in layouts + rosters]
+    if builds and not (root / "mods/MAPGEN/grug_mapgen/wp40").is_dir():
+        # a partial checkout (the editor's tests clone only the templates and
+        # wp13): the files are still read by the game's loader
+        builds = False
+        report.warn("build", "checkout", None, "the towns and capitals are not built: "
+                    "this checkout has no mods/MAPGEN/grug_mapgen/wp40")
     counts = {}
     for found in loader_run(root, replaced, listing, builds):
         if found[0] == "error":
-            report.error("loader", found[1], None, "the game's loader: " + found[2])
+            report.error("loader", Path(found[1]).stem, None, "the game's loader: %s: %s" %
+                         (found[1], found[2]))
+        elif found[0] == "build":
+            report.error("build", found[1], None, "does not build: " + found[2])
         else:
             counts[(found[1], found[3])] = found[2]
     if builds:
@@ -1278,10 +1288,12 @@ def real_template_cases():
          {"orientation", "multi_cell", "point_place"}),
         ("a role painted from the editor palette", put(text, empty, keys["wall"]), set()),
     ]
+    defects = {d[:3] for d in known_defects(ROOT)}
     for label, mutated, wanted in cases:
         report = validate(ROOT, "file", {relative: mutated}, builds=False)
         got = {rule for rule, where, _, _ in report.errors if where == name}
-        others = [e for e in report.errors if e[1] != name]
+        others = [e for e in report.errors
+                  if e[1] != name and (e[1], e[0], e[2]) not in defects]
         if got != wanted or others:
             failures.append("%s: rules %s, expected %s%s" % (
                 label, sorted(got), sorted(wanted), " (and %s)" % others if others else ""))
@@ -1341,8 +1353,10 @@ def parity_cases():
     if got != {"roster"}:
         failures.append("a roster count the capital does not place: rules %s" % sorted(got))
     report = validate(ROOT, "file", {}, builds=True)
-    if report.errors:
-        failures.append("the files as they are: %s" % report.errors[:3])
+    defects = {d[:3] for d in known_defects(ROOT)}
+    left = [e for e in report.errors if (e[1], e[0], e[2]) not in defects]
+    if left:
+        failures.append("the files as they are: %s" % left[:3])
     return failures
 
 

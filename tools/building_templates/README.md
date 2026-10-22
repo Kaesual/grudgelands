@@ -47,10 +47,11 @@ and says where.
 The town viewer, the template gallery and the shared node renderer the
 template editor reuses: see [`viewer/README.md`](viewer/README.md).
 
-## The freeze (lane FREEZE-TOWNS, Round 56)
+## The freeze (lanes FREEZE-TOWNS and FREEZE-CAPITALS, Round 56)
 
-The six start towns' buildings were cut out of the finished towns into the
-templates under `mods/MAPGEN/grug_mapgen/building_templates/` (format doc §8).
+The six start towns' and the six capitals' buildings were cut out of the
+finished towns into the templates under
+`mods/MAPGEN/grug_mapgen/building_templates/` (format doc §8).
 Since then the templates are the source of truth; the tools below are the
 record of how they were made and the gates that keep them honest.
 
@@ -75,13 +76,36 @@ record of how they were made and the gates that keep them honest.
   templates are still that export (it fails once a template is edited on
   purpose; it is not a release gate). Rerunning `export.py` without `--check`
   overwrites every template.
+- `export.py` also runs `export_capitals.lua` on the mapgen of
+  `PRE_CAPITAL_FREEZE`: every capital's core and every district plot built on
+  its own (`freeze_build.build_capital`), with **role-only** probe tags (a
+  capital compares names across its palette handles, so every handle tags
+  alike, `<node>#h0:<role>`, and a role's channel is the first of the
+  placement's palettes binding it to the cell's node). Every stamped part is a
+  placement (the core's buildings, each plot's building, the ruin close's two
+  shells), cut with the writes of the building-bound steps listed in
+  `CAPITALS` (hall floor bands, braziers, hangings, the chapel belfry, the
+  deck breastworks, room decor); the door-tagged socket overrides and the
+  door-tagged core sockets move into the templates; every template carries
+  `extent` and `top` (the part's measurements, format doc §4.1). It writes one
+  roster per capital (`layouts/<capital>.roster`) and
+  `freeze_report_capitals.txt` (with the placements and their templates, and
+  the capital parts that equal a start town's template apart from the
+  measurements). The shared pieces of both exporters are `export_lib.lua`.
 - `check.py` is the validator of format doc §6 and the gate: `check.py`
   (against `BASELINE`), `check.py --baseline=self` (the freeze),
-  `--write-known-defects` (the exporter's known-defects baseline; empty for
-  the start towns), `--self-test` (the parser and every rule on mutated copies
-  of a frozen template). It reads the palettes and the param2 rules from the
-  game's Lua through `palette_dump.lua` (LuaJIT) and the registry from
-  `nodes.json`. The editor imports `validate(root, baseline, replaced)`.
+  `--write-known-defects` (the exporter's known-defects baseline: three
+  capital defects, none for the start towns), `--self-test` (the parser and
+  every rule on mutated copies of a frozen template, the loader parity and the
+  roster cases). It reads the palettes and the param2 rules from the game's
+  Lua through `palette_dump.lua` (LuaJIT), the registry from `nodes.json`, and
+  runs the game's own loader through `loader_check.lua`: a file the game
+  refuses is an error (rule `loader`), every start town and capital is built
+  from the files (rule `build`; skipped with a warning in a checkout without
+  `wp40`, the editor's test clones) and each roster's counts must equal what
+  the capital's code places (rule `roster`). The editor imports
+  `validate(root, baseline, replaced, builds=True)` (the build adds about
+  five seconds).
 - `editor_palette.txt`: the editor palette (format doc §7), written from the
   rules and the registry; lane EDITOR added `role door_hidden` (the door's
   upper cell, which the editor places with the door; without it every new
@@ -90,8 +114,9 @@ record of how they were made and the gates that keep them honest.
   plain coral blocks stay).
 - `town_identity.lua <repo> [<tree>] [--load]`: what the towns build, per
   start town the settlement identity and the point digest (and with `--load`
-  the construction time and the allocation), per capital a digest over its
-  core and plots. `tools/check_upgrade.py` runs it on the pushed commit and on
+  the construction time and the allocation), per capital its identity
+  digest (the settlement identities of its core and plots), cells, point
+  digest, build digest and blueprint count (and with `--load` its numbers). `tools/check_upgrade.py` runs it on the pushed commit and on
   the working tree and wants a map reset when they differ.
 
 ## The editor (`editor/`, lane EDITOR, Round 56)
