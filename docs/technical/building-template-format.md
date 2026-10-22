@@ -113,7 +113,9 @@ An entry is one of:
   The stamp resolves it through the placement's palette: `palette.node(role)`, `palette.variant(role, suffix)`
   for the family roles of `palette.prefix_roles` (door, bed, bed_fancy, pillar), `palette.maybe(role)` for an
   optional role. `channel` names which of the placement's palettes resolves it (§4.2; default: the main palette);
-  today's roof palettes are the channel `roof`.
+  today's roof palettes are the channel `roof`. A building-bound write that used the town's own palette on a
+  placement whose main palette is another (Stillgrave's chapel, Kapok's spirit lodge) uses the channel `town`,
+  set in the layout as `town=<palette name>` (usually the plain race palette).
 - **A fixed node**: `node <node name> [o=<orientation>]`, the same for every race (a torch that is a torch for every
   race, glass, a station that only this building has).
 - **A race switch**: `race <race>=<key> … [*=<key>]`, choosing another legend key per race of the placement (`*`
@@ -194,14 +196,16 @@ patrol points in their walking order):
 **Building points only.** Points a town places for a building in town coordinates today become points of the
 template (ruling 32): a town point belongs to a placement when the town's code derives it from that placement
 (from its id, its stamp result or its door), or when it is a town socket tagged `door` that stands within 3 nodes
-of one of that placement's `doors` points (the start towns write those as literal coordinates). This covers the `door`-tagged sockets of Hearthpine, Dawnmere,
-Sunscar, Kapok, Stillgrave and the capitals and hand-set inside points (Sunscar). Town-wide points (street patrols,
+(the largest of |dx|, |dy|, |dz| at most 3) of one of that placement's `doors` points (the start towns write those as literal coordinates). This covers the `door`-tagged sockets of Hearthpine, Dawnmere,
+Silverleaf, Sunscar, Kapok, Stillgrave and the capitals and hand-set inside points (Sunscar). Town-wide points (street patrols,
 the waystone, the plaza vendors, sockets on the town's own ground with no building) stay in the town. The exporter
 lists every point it moves, with the rule that moved it.
 
 - The town keeps **building its own lists** (sockets, doorways, rooms) in today's order: where it placed such a
   point by hand, it now takes the position from the stamp result by the point's `id` (`sockets` with `id=`) and
-  inserts it at the same place in its list, so the point digest stays equal.
+  inserts it at the same place in its list, so the point digest stays equal. Such a template point carries only its
+  `id` and `face`; the role, tags and every other attribute stay in the town's own entry, which names the building
+  and the point id (the template holds where the point stands, the town what it is for).
 - A town socket's direction is converted to `face` (facedir 0–3) for the template and back to the town's own
   encoding after the stamp; the exporter proves the round trip for every moved point.
 - A building point may stand outside the building's walls on ground the town writes (Hearthpine's hall quest giver
@@ -263,7 +267,9 @@ template and palette combination), which the validator checks against a build.
 
 The loader turns a template into a **part** exactly like a generator's result, `{buffer, w, d, peak, points, …meta}`
 (a `parts.buffer` filled in the template frame for the placement's palettes, `w`/`d` from `pivot`, the `meta` values
-as fields), so `parts.stamp` stays the only rotation and its `footprint` comes out as before. Town code that
+as fields), so `parts.stamp` stays the only rotation and its `footprint` comes out as before. The groups every
+generator part carried (`doors`, `lights`, `inside`, `room_corner`) are always present in the result, empty when
+the template has no such point. Town code that
 measures a part (`ground_area` and `clear_to` in the capital plot builders read the part's own non-air cells) must
 measure what it measured before: such a measurement is computed from the part as the generator built it and stored
 in `meta` (for example `meta extent=[x0,z0,x1,z1]`), in the part frame, and the town code reads it from there and
