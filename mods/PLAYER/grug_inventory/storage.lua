@@ -44,8 +44,9 @@ end
 -- The lists a consumer counts and takes items from (Round 50 ruling 3):
 -- carried_lists, then the inactive hotbar layout last. Counting and taking
 -- walk the same lists, so a count never promises what the take cannot find.
+-- A vendor's sell list and lot selling walk them too (Round 56 ruling 8).
 -- Nothing ever gives into the inactive layout (it is not in the give order
--- below), and a vendor's sell list leaves it out (carried_lists).
+-- below).
 function grug_inventory.consume_lists(inv)
 	local lists = grug_inventory.carried_lists(inv)
 	if inv:get_size(grug_inventory.HOTBAR_STORE) > 0 then

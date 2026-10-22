@@ -88,22 +88,15 @@ end
 --
 
 -- `faction` is the faction this vendor serves (grug_traders.vendor_faction):
--- ruling 13 (Round 31), every vendor serves only its own faction.
+-- ruling 13 (Round 31), every vendor serves only its own faction. A race's
+-- Quartermaster serves every player of its faction (Round 56 ruling 9);
+-- its race keeps only the discount (has_discount, below).
 function grug_traders.can_trade(player, vendor, faction)
 	if not player or not player:is_player() or not vendor then
 		return false, "This vendor is not open for business."
 	end
 	if not grug_factions.serves(faction, player) then
 		return false, grug_factions.refusal(vendor.nametag, faction)
-	end
-	if vendor.race then
-		-- Race vendor: THE race-exclusive vendor perk of world.md §7.
-		local pr = grug_classes.get_race(player)
-		if pr ~= vendor.race then
-			local def = grug_classes.registered_races[vendor.race]
-			return false, "The " .. vendor.nametag .. " trades only with " ..
-				((def and def.name) or vendor.race) .. " characters."
-		end
 	end
 	return true
 end
@@ -119,7 +112,8 @@ function grug_traders.vendor_faction(vendor, settlement_key)
 end
 
 -- Same-race discount (world.md §7, 10% — grug_traders.RACE_DISCOUNT). Only a
--- race vendor can grant it, and only on BUY prices.
+-- race's Quartermaster can grant it, only to its own race, and only on BUY
+-- prices.
 function grug_traders.has_discount(player, vendor)
 	return vendor ~= nil and vendor.race ~= nil and player ~= nil and
 		player:is_player() and grug_classes.get_race(player) == vendor.race
@@ -392,7 +386,8 @@ for _, faction_id in ipairs(grug_core.faction_ids) do
 	}, GUARD_TEXTURE[faction_id])
 end
 
--- One race-exclusive vendor per race (world.md §7).
+-- One Quartermaster per race (world.md §7): it serves its whole faction and
+-- gives its own race the discount.
 for _, race_id in ipairs(race_ids) do
 	local def = grug_classes.registered_races[race_id]
 	register_vendor({
@@ -728,7 +723,7 @@ if type(grug_mobs.register_start_socket_role) == "function" then
 			return "grug_traders:vendor_general_" .. settlement.faction_id
 		end
 		if socket.kind == "race" then
-			-- The race-exclusive vendor of world.md §7 -- the start roster's
+			-- The race's Quartermaster of world.md §7 -- the start roster's
 			-- own kind, and the same entity the race's capital gets.
 			return "grug_traders:vendor_race_" .. settlement.race_id
 		end

@@ -1083,26 +1083,25 @@ territory.
   Orc +1 rage per hit taken ·
   Elf +3 m ability range (0.53.1, was +5 m; **ranged/spell abilities
   only** — melee abilities keep their own reach, `classes.md` §2b) · Human
-  +10% quest XP. Plus **one
-  race-exclusive vendor per race** (WP7). Implementation state (WP19): the
-  troll perk `ooc_regen_mult` (1.5) multiplies out-of-combat mana
-  regeneration and food healing (`grug_food.heal_multiplier`, instant and per
-  tick); there is no natural HP regeneration (WP21 closed 2026-09-29), and
+  +10% quest XP. Plus **one Quartermaster per race** with a discount for
+  its own race (WP7; Round 56). Implementation state (WP19): the troll
+  perk `ooc_regen_mult` (1.5) multiplies out-of-combat mana regeneration
+  and food healing (`grug_food.heal_multiplier`, instant and per tick); there is no natural HP regeneration (WP21 closed 2026-09-29), and
   rage decay is unaffected. The
   human +10 % applies to quest rewards: quest turn-ins pass source "quest"
   to `grug_xp.add_xp`, which applies `grug_classes.get_xp_bonus`.
 - **The vendor perk, quantified** (decided 2026-08-07 in WP7 — the perk
   was named above but never given numbers):
-  - **One race-exclusive vendor per race**, standing in that race's
-    capital (§3), and **only members of that race may trade there**.
-    That exclusivity is what carries the perk: it is a shop the other
-    five races cannot open at all, not a discount tag on a shared one.
-  - **Same-race discount: 10 %** off that vendor's buy prices, rounded
-    down and never below 1c. **Buy-back prices are not discounted**
-    (`economy.md` §2): the target payout remains ceiling-rounded 5% of the
+  - **One Quartermaster per race**, standing in that race's start town
+    and capital (§3). It **trades with every player of its faction**
+    (Round 56 ruling 9, replacing the race-exclusive vendor of WP7); a
+    player of the other faction gets the shared refusal line.
+  - **Same-race discount: 10 %** off that vendor's buy prices for its own
+    race only, rounded down and never below 1c. **Buy-back prices are not
+    discounted** (`economy.md` §2): the target payout remains ceiling-rounded 5% of the
     applicable purchase or authoritative reference price.
-  - Both are the *bonus* on top of the visible passive, in line with the
-    rule above that a perk must be FELT from level 1: the passive does
+  - The discount is the *bonus* on top of the visible passive, in line
+    with the rule above that a perk must be FELT from level 1: the passive does
     the felt work, the vendor is the flavor that pays off later.
 - Universal base recipes and professions are never race-exclusive; there is
   no cultural finishing (removed in Round 33). Equipment remains tradeable

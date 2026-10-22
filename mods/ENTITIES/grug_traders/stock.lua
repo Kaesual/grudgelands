@@ -3,8 +3,8 @@
 -- shelves.
 
 --
--- Same-race discount (world.md §7: "one race-exclusive vendor per race" plus
--- "the vendor discount as a bonus"). The doc never fixed the number — 10% is
+-- Same-race discount (world.md §7: a race's Quartermaster serves its whole
+-- faction and gives its own race the discount; Round 56 ruling 9). 10% is
 -- the WP7 decision and is documented alongside it. It applies to BUY prices
 -- only; buy-back is never discounted, or the discount would widen the
 -- buy/sell spread into a money loop at the race vendor.

@@ -8,8 +8,9 @@
 -- grug_map atlas/providers on a fake engine. Checks:
 --   S  the service refusal table: every villager service role (innkeeper,
 --      Riding Trainer, Shipwright, Housing Steward, profession trainer), the
---      quest giver, the three vendor kinds and the race vendor's own rule,
---      for an own-faction and an enemy player; one refusal line, at most one
+--      quest giver and the three vendor kinds (a race's Quartermaster
+--      serves its whole faction since Round 56 ruling 9), for an
+--      own-faction and an enemy player; one refusal line, at most one
 --      per player every two seconds; a plain resident still answers anyone;
 --      a factionless NPC serves everyone;
 --   G  guards, royal guards and kings give no quests: their entity files
@@ -329,9 +330,8 @@ check(not ok and message == "<Accord Quartermaster> I serve only The Accord.",
 ok, message = trade("grug_traders:vendor_race_orc", ann)
 check(not ok and message:find("I serve only The Throng.", 1, true),
 	"S race vendor refuses the enemy with the line: " .. tostring(message))
-ok, message = trade("grug_traders:vendor_race_human", dag)
-check(not ok and message:find("trades only with Human", 1, true),
-	"S race vendor keeps its race rule for its own faction: " .. tostring(message))
+check(trade("grug_traders:vendor_race_human", dag),
+	"S race vendor serves another race of its faction (Round 56 ruling 9)")
 check(trade("grug_traders:vendor_race_human", ann), "S race vendor serves its race")
 check(trade("grug_traders:vendor_butcher", ann, "dawnmere") and
 	trade("grug_traders:vendor_butcher", org, "gor_drazhak"),

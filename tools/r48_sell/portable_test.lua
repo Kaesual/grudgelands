@@ -156,7 +156,9 @@ grug_core = {item_name = function(name) -- luacheck: ignore
 	return ({["default:cobble"] = "Cobblestone", ["default:sand"] = "Sand", ["t:gem"] = "Gem"})[name] or name
 end}
 grug_inventory = { -- luacheck: ignore
-	carried_lists = function(inv)
+	-- The sell list walks the consumer lists since Round 56 ruling 8 (the
+	-- inactive hotbar layout is tools/r56_small's case; none here).
+	consume_lists = function(inv)
 		local lists = {"main"}
 		if inv:get_size("bag1") > 0 then lists[#lists + 1] = "bag1" end
 		return lists

@@ -1028,12 +1028,15 @@ main profession slot (professions.md §1).
   with continuous bite feedback: a looping eating sound at 0.5 gain and a
   modest moving HUD food image in place of the wield image, both cleaned up
   when the hold ends or is cancelled. In combat the hold is refused at once,
-  before any sound. The level requirement and the mana-pool check refuse at
-  the end of the hold, so their sound has already played; a Caster dish is
-  refused for a character without a mana pool ("Mana food has no effect
-  without a mana pool."). Nothing is consumed on a refusal.
+  before any sound. The level requirement refuses at the end of the hold, so
+  its sound has already played. Nothing is consumed on a refusal.
   Accepted food heals instantly; its regeneration pauses during later combat,
   while secondary modifiers remain active.
+  **Every class may eat a Caster dish** (Round 56 ruling 10): for a character
+  without a mana pool (the Warrior) its mana regeneration and mana pool bonus
+  do nothing, and the food status's detail line on the Effects tab leaves
+  them out. The item tooltip keeps them, so a Warrior sees that the dish
+  suits a caster. Mana potions stay refused without a mana pool.
 
   | Tier | Minimum level | Instant HP | Dish regeneration per tick | Plain regeneration per tick | Hearty secondary | Caster secondary | Hunter secondary |
   |---|---:|---:|---:|---:|---|---|---|
