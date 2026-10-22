@@ -17,7 +17,9 @@
 -- positions relative to the studio origin S (the floor's top is y 0.5); a
 -- figure is {at = {x, y, z}, yaw, frame (engine frame, frozen), mesh,
 -- textures, size (visual size, default 1), wield (an item the game's wield
--- entity holds in the tool pose at the figure's size), mirror (true: take
+-- entity holds in the tool pose at the figure's size), head (Round 56: the
+-- Head bone pitched by this many degrees, positive turns the face up, as the
+-- game's head look does with a bone override), mirror (true: take
 -- mesh, textures and visual size from the capture player itself, i.e. what
 -- the game's own composition put on it)}. Lane GAME reuses it with its own
 -- scene: equip items on the player in `setup` and show `mirror` figures.
@@ -107,6 +109,9 @@ local function place(player, shot)
 			obj:set_properties(props)
 			obj:set_yaw(fig.yaw or 0)
 			obj:set_animation({x = fig.frame or 0, y = fig.frame or 0}, 0, 0, false)
+			if fig.head then
+				obj:set_bone_override("Head", {rotation = {vec = {x = math.rad(fig.head), y = 0, z = 0}}})
+			end
 			live[#live + 1] = obj
 			if fig.wield then
 				local wield = core.add_entity(vec(fig.at), "grug_visuals:wield")
