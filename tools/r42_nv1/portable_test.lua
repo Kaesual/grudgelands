@@ -1040,8 +1040,10 @@ do
 	check(branch(archer, 1, 2, true) == "dogfight", "S1 in reach: melee")
 	local wisp = {attack_type = "dogshoot", reach = 2, pathfinding = 1, fly = true,
 		dogshoot_switch = 1}
-	check(branch(wisp, 1, 10, false) == "shoot" and branch(wisp, 1, 10, true) == "shoot",
-		"S2 a flier shoots as before")
+	-- Round 56 MOBAI (the user, 2026-10-22): a flier without sight flies at
+	-- its target instead of shooting arrows the lock refuses.
+	check(branch(wisp, 1, 10, false) == "dogfight" and branch(wisp, 1, 10, true) == "shoot",
+		"S2 a flier shoots with sight and flies closer without it")
 	-- S6 a dogshoot mob without a switch (ds_var 0: the ranged kings) keeps
 	-- upstream's branches: melee in reach, otherwise none, seen or not.
 	local king = {attack_type = "dogshoot", reach = 3, pathfinding = 1}
