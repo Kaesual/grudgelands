@@ -577,6 +577,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   No item drop on death, so the quiver keeps its arrows like the equipped
   items do.
 - No item drop or XP loss on death (Round 18).
+- An item on the ground (dropped, thrown or mob loot) that is inside water rises
+  to the surface and rests there without drifting; out of the water it falls
+  as usual, and lava is unchanged (Round 56).
 
 ## 4. Crafting model (Round 45)
 

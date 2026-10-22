@@ -284,12 +284,15 @@ Engine reference for the line citations: `reference_projects/luanti` at
   with it showed no slider. The left-click pickup also takes the drop the
   client punched when the server's own ray misses it
   (`mods/PLAYER/grug_abilities/input.lua`, `M.press`), within the engine's
-  interaction reach. Fixture `tools/r491_drop` A and B.
+  interaction reach. Fixture `tools/r491_drop` A and B. Since Round 56 an
+  item floating on water starts the same two resends when it settles
+  (FLOAT, `tools/r56_float`).
 - **How to tell upstream fixed it:** a resting entity's position is sent
   reliably, or resent periodically while nothing changes.
 - **What to remove then:** the resync block and `RESYNC_FIRST`/`RESYNC_LAST`
-  in `default/item_entity.lua` (the pickup rule may stay: it also covers a
-  picture that lags for other reasons).
+  in `default/item_entity.lua`, and the `_grug_resync` start in its
+  `float_settle` (the pickup rule may stay: it also covers a picture that
+  lags for other reasons).
 
 ## Checked and not listed
 
