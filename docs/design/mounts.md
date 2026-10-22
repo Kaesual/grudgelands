@@ -87,7 +87,7 @@ character state:
 - **Every tier is faster than ordinary aggressive mobs** — they run 4.6
   (`combat_stats.md` §3), while the slowest mount runs 6.4. Bespoke encounters
   such as the Kraken keep their separate speed rules.
-  **Incoming damage dismounts the rider** (§3.1): the travel speed is
+  **Incoming damage dismounts the rider** (§3.1, a fall excepted): the travel speed is
   permanent, the immunity to the mob game is not.
 - The two flying tiers are the late-game milestones. Expert matches the
   level-30 fast land mount at +100% and adds direct aerial routes and terrain
@@ -224,6 +224,12 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   step height to clear the engine's strict collision comparison; taller
   obstacles and low ceilings continue to block them. Flying movement is
   unchanged.
+- **Land mounts fall and jump like a player** (Round 56 rulings 4 and 5): they
+  accelerate at the player's gravity, **19.62** nodes/s² (the engine's
+  2 × `movement_gravity` 9.81, `clientenvironment.cpp`), with no ground snap,
+  and a jump starts at **9.3** nodes/s, which lifts the mount 2.2 nodes: just
+  over a 2-node step. Boats off the water and flying mounts keep their own
+  physics.
 - Within each riding tier every race and faction has the same collision and
   selection box (Round 31 ruling 8, fairness); look, size and seat stay per
   race and faction. Tiers 1 and 2 use the Courser's box (1.4 wide, 1.6
@@ -282,7 +288,8 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   mount is summoned in it ("Mounts cannot be summoned in lava.").
 - **A stun dismounts you**: `grug_core.set_stun` dismounts a mounted player
   (`grug_core/movement.lua`).
-- **Taking damage dismounts you** (§3.1) — the same detach path again.
+- **Taking damage dismounts you** (§3.1) — the same detach path again; a
+  fall's damage does not (Round 56 ruling 7).
 - Mounting is refused while `grug_core.in_combat(player)` reports the active
   five-second combat window.
 - **A ground mount is summoned only on solid ground** (Round 45 playtest): a
@@ -303,7 +310,8 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
 
 - **Any incoming damage dismounts the rider, immediately.** Damage from
   any source counts — a mob's melee swing, a ranged attack, an enemy
-  player in PvP, the environment. There is **no threshold and no grace
+  player in PvP, the environment — except a fall (Round 56 ruling 7, below).
+  There is **no threshold and no grace
   period**: geographic warnings exist because a player cannot see an exact
   rules boundary, while a hit is unambiguous and the whole point of this rule
   is that it lands at the moment of the hit.
@@ -311,8 +319,9 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   the Elixir of Vigor) runs out or gear with +HP % comes off, the engine
   lowers HP to the new maximum; the rider stays mounted, also in flight
   (`grug_core.is_max_hp_clamp`).
-- **A ground mount's rider takes the same fall damage as on foot** (Round 45
-  playtest). The engine computes a player's fall damage on the client from
+- **A ground mount's rider takes the fall damage of a drop 5 nodes shorter
+  than on foot** (Round 45 playtest; Round 56 ruling 6 added the 5 nodes).
+  The engine computes a player's fall damage on the client from
   the player's own collisions, which an attached player does not have, so
   the land controller applies the engine's player rule itself: it keeps the
   peak height while off the ground (a liquid breaks the fall: the peak
@@ -320,15 +329,23 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   however fast; a liquid, water or lava, ends the ride before any landing
   anyway, and the rider then meets the engine's own rules there; a new
   mount starts without a peak), and on landing a drop of `d` nodes deals
-  `floor(f × sqrt(2 × 19.62 × d) − 14 + 0.5)` native damage with reason type `fall`, where `f` is the floor
-  node's and the rider's `fall_damage_add_percent` factor (19.62 is the
-  player's gravity; the mount itself falls at 9.81, so the height counts,
-  not its speed). Nothing below about 5 nodes hurts. The shared fall
-  modifier scales it to the pool and the race perk like any fall, and the
-  damage dismounts the rider at the landing spot like all damage. Flying
-  mounts do not fall (descent stays far below the tolerance); a hard
-  mid-air dismount leaves an ordinary falling player.
-- The dismount uses the **same detach path** as every other one (§3), so
+  `floor(f × sqrt(2 × 19.62 × (d − 5)) − 14 + 0.5)` native damage with
+  reason type `fall`, where `f` is the floor node's and the rider's
+  `fall_damage_add_percent` factor (19.62 is the player's gravity, at which
+  the mount itself falls too). The shared fall modifier scales it to the
+  pool like any fall, 5 % of the pool per point. Nothing up to about 10
+  nodes hurts; with `f` = 1:
+
+  | Drop (nodes) | 5 | 10 | 11 | 13 | 20 | 30 |
+  |---|---|---|---|---|---|---|
+  | Native points | 0 | 0 | 1 | 4 | 10 | 17 |
+  | Share of the HP pool | 0 | 0 | 5 % | 20 % | 50 % | 85 % |
+
+  **The fall's damage never dismounts** (Round 56 ruling 7): the rider stays
+  mounted at the landing spot, and a lethal fall ends the ride through the
+  death. Flying mounts do not fall (descent stays far below the tolerance);
+  a hard mid-air dismount leaves an ordinary falling player.
+- The damage dismount uses the **same detach path** as every other one (§3), so
   the rider is set down on a free neighbouring node rather than inside
   the mount's model. The hard geographic mid-air dismount is the exception:
   it keeps the rider at the boundary position, and the rider leaves the mount

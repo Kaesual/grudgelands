@@ -430,8 +430,9 @@ tools](#player-meta-read-by-external-tools).
   pose change replaced them (one table read a step).
   `grug_mounts.dismount` is the shared cleanup path for manual, damage, death, leave, shutdown and external-detach exits and clears the
   runtime-only untimed `mount` status. Mounted players cannot attack. A land
-  controller deals its rider the engine's player fall damage itself (peak
-  height while airborne, `set_hp` with type `fall`; mounts.md §3.1). A
+  controller falls at the player's gravity and deals its rider the engine's
+  player fall damage itself, 5 nodes shorter (peak height while airborne,
+  `set_hp` with type `fall`, which keeps the rider mounted; mounts.md §3.1). A
   riding or flying mount entering a liquid (water or lava) ends in its step
   (hard dismount, "Mounts cannot enter water." / "... lava.") and is not
   summoned in one; a ground mount is summoned only on solid ground. Land
