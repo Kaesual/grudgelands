@@ -15,7 +15,7 @@
 -- where the names are cut, and a barrow terrace where they stand. The wave-2
 -- activities `carve` and `mourn` are what it is built around.
 --
--- THE SECOND QUEST SOCKET IS THE TEMPLE'S OWN. `capitals.temple` publishes one
+-- THE SECOND QUEST SOCKET IS THE TEMPLE'S OWN. Its template publishes one
 -- wherever it is built, which is how Highcourt comes to have two (its core's
 -- and its lore district's) and how this capital comes to have two.
 --

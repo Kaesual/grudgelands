@@ -228,9 +228,9 @@ local function loader(directory)
 		for _, entry in ipairs(points.sockets or {}) do
 			-- DROP: what a plot takes away from the sockets its PART published.
 			-- A capital has exactly one throne, one travel pad and one quest
-			-- shell, and a generator cannot know that -- `capitals.temple`
+			-- shell, and a template cannot know that -- the temple's template
 			-- publishes a quest socket wherever it stands. The roster says so
-			-- instead of the shared library being edited per composition, which
+			-- instead of the shared template being edited per composition, which
 			-- is the hook `dur_brannoc.lua` settled on.
 			local drop = plot.drop and plot.drop[entry.role]
 			local override = overrides[entry.id] or {}
@@ -249,10 +249,10 @@ local function loader(directory)
 				role = "guard_patrol", x = 0, y = 1, z = z0 + 2, face = 0,
 				group = watch, order = plot.order}
 		end
-		-- Every plot publishes one flair spot at its own gate: the plots built
-		-- from `buildings.lua` publish no socket of their own, and a district of
-		-- nine plots with four inhabited ones is not a district anybody lives
-		-- in.
+		-- Every plot publishes one flair spot at its own gate: the plot
+		-- templates frozen from the start-town generators publish no socket of
+		-- their own, and a district of nine plots with four inhabited ones is
+		-- not a district anybody lives in.
 		sockets[#sockets + 1] = {id = plot.id .. "_gate_idle", role = "idle",
 			x = 0, y = 1, z = z0 + 2, face = 0, tags = {"door"}}
 		if type(plot.extra_sockets) == "function" then

@@ -5,9 +5,10 @@
 -- What a plot is and how it is built is `nhal_veyr_plot.lua`; where the nine
 -- plots stand is the capital planner's. This file is the roster.
 --
--- Two of the nine are MAUSOLEA (`undead_parts.lua`), which is the part the
--- shared capital kit does not carry and the contract's section 2.4 line asks
--- for by name. Their doors face the lane and a mourner stands on each doorstep.
+-- Two of the nine are MAUSOLEA (building templates of the undead's own),
+-- which is the part the shared capital kit does not carry and the contract's
+-- section 2.4 line asks for by name. Their doors face the lane and a mourner
+-- stands on each doorstep.
 --
 -- The vigil holds the city's EMBALMER (sockets contract section 8.4, the
 -- wave-2 kinds): the one profession of this race that has nowhere else to be.
@@ -184,13 +185,13 @@ local function loader(directory)
 		--
 		-- 2. THE RUIN CLOSE: the contract's "ruins mixed among kept houses",
 		-- and the one place in the capital where they are the whole of a lot.
-		-- Two half-standing ruin shells (`buildings.ruin`'s, frozen into
+		-- Two half-standing ruin shells (the start towns' ruin, frozen into
 		-- templates in Round 56) with iron bars set in the gaps and candles
 		-- burning in them, which is the rest of the contract's line for this
 		-- race.
 		--
 		-- A ruin is stamped here rather than taken as a district plot because
-		-- `buildings.ruin` publishes an OPEN room -- `closed = false` -- and a
+		-- the ruin's template publishes an OPEN room -- `closed = false` -- and a
 		-- lot of the grid carries a building somebody keeps. A fill lot is
 		-- where the city's own decay belongs.
 		{id = "vigil_ruin_close", yard = {},
@@ -232,7 +233,7 @@ local function loader(directory)
 					plots.spare("ruin_close", 9, -9, 0),
 				}
 			end},
-		-- 3. THE HIGH VIGIL: the candle court of `undead_parts.lua` with two
+		-- 3. THE HIGH VIGIL: the candle court template with two
 		-- at its altar.
 		{id = "vigil_high_court", template = "nhal_veyr_market_candle_court",
 			margin = 3,

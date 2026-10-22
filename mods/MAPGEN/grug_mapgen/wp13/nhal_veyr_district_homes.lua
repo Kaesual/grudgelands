@@ -8,7 +8,7 @@
 -- THE CONTRACT'S LINE FOR THIS RACE IS BUILT HERE. Section 2.4 asks for
 -- "stepped terraces with RUINS MIXED AMONG KEPT HOUSES", and this is the
 -- district where that is literal: two of the nine lots carry a
--- `buildings.ruin` between the cottages rather than a house, so the street a
+-- ruin template between the cottages rather than a house, so the street a
 -- player walks is kept, kept, fallen, kept. The vigil district's ruin close
 -- is the other half of the same line and is a whole lot of decay; this is the
 -- half that matters more, because a ruin only reads as a ruin next to

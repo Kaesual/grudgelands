@@ -42,13 +42,13 @@ local function loader()
 	-- THE CASTLE ROLES ARE PART OF IT. The independent review of 2026-09-16
 	-- read the king's hall as "a red-brick manor with a timber roof", and the
 	-- brick is `grug_decor:castle_pavement_brick` and `castle_stonewall`:
-	-- `capitals.king_hall` dresses itself in the CAPITAL vocabulary, not in
+	-- the king's hall dresses itself in the CAPITAL vocabulary, not in
 	-- `wall`, so rebinding the wall alone changed nothing the eye sees. Those
 	-- four rebindings put the hall, its turrets and its podium in the same rock
 	-- its platform is made of, and they stay.
 	--
 	-- THE ROOF STAYS TIMBER, AND THAT IS NOW A CHOICE RATHER THAN A LIMIT.
-	-- Until 2026-09-16 it was a limit: `roofs.raster` turns a hip with
+	-- Until 2026-09-16 it was a limit: the roof generator turned a hip with
 	-- `roof_stair_outer` and a valley with `roof_stair_inner`, and
 	-- `wp13/parts.lua`'s SHAPED table -- the library's one written-down list of
 	-- the nodes that may carry a facedir -- carried the straight basalt stair

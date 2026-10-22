@@ -223,7 +223,7 @@ local function loader(directory)
 				}
 			end},
 		-- 3. THE PYRE COURT, where the watch burns its own: the candle court
-		-- of `undead_parts.lua` with two keeping the vigil at its altar.
+		-- template with two keeping the vigil at its altar.
 		{id = "watch_pyre_court", template = "nhal_veyr_market_candle_court",
 			margin = 3,
 			extra_sockets = function(area)

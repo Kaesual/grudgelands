@@ -8,8 +8,8 @@
 -- quarter carries the chapel with its belfry (`highcourt.lua`), which is what
 -- the contract's section 2.4 line about the human capital asks for, and a
 -- second chapel two hundred nodes away would be the same building twice. The
--- shrine below is `capitals.temple` -- hip roofed, taller, with its own bell
--- on the ridge and the quest socket its generator publishes -- so the
+-- shrine below is the temple template -- hip roofed, taller, with its own
+-- bell on the ridge and the quest socket its template publishes -- so the
 -- district has a place of its own without repeating the core's.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
@@ -95,7 +95,7 @@ local function loader(directory)
 	-- of the capital that is a BUILDING. The user's round-3 ruling asked for
 	-- "a chapel with a graveyard in the lore district"; a graveyard is open
 	-- ground and a chapel is not, and both belong to one piece of the city, so
-	-- the row builds the small parish chapel of `buildings.chapel` in the
+	-- the row builds the small parish chapel of the start towns in the
 	-- middle of the lot and lays the burial ground on the strip behind it,
 	-- inside a low wall. It is NOT the core's chapel repeated: the core
 	-- carries the great chapel with the belfry, and this is the one the

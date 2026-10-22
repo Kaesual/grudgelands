@@ -238,7 +238,7 @@ local function loader(directory)
 		local claimed, stamped = {}, {}
 
 		-- The citadel paving of the avenues and the cobble of the lanes, each
-		-- resolved the way `capitals.lua` resolves it: the capital vocabulary
+		-- resolved the way the templates resolve it: the capital vocabulary
 		-- is optional and falls back into the start vocabulary.
 		local AVENUE = dwarf.maybe("castle_paving") or dwarf.node("plaza")
 		local LANE = dwarf.node("path")

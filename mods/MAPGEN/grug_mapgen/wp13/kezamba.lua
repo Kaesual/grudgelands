@@ -412,8 +412,8 @@ local function loader(directory)
 			-- ask, so a plot laid over another cuts a silent hole in the first.
 			--
 			-- And no plot may leave the core's own envelope. That is not
-			-- paranoia: several library parts carry authored cells at NEGATIVE
-			-- local coordinates -- `capitals.king_hall`'s forecourt steps reach
+			-- paranoia: several templates carry authored cells at NEGATIVE
+			-- local coordinates -- the king's hall's forecourt steps reach
 			-- x -3 and z -3 of its own frame -- so a part's real extent is
 			-- wider than the `w` and `d` it declares, and under a quarter turn
 			-- the overhang moves to another side. The first layout of this
@@ -614,7 +614,7 @@ local function loader(directory)
 		-- 7b. THE FISHING QUAY, and why it is authored column by column rather
 		-- than stamped as a part.
 		--
-		-- `troll_parts` has no landing generator, and the reason is geometry:
+		-- There is no troll landing template, and the reason is geometry:
 		-- Kezamba's shoreline runs DIAGONALLY across the pad -- from (39, -7) to
 		-- (-16, 47) -- so a rectangular apron with a jetty off one face either
 		-- has its apron in the water or its jetty on the land, at every position

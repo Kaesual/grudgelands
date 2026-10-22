@@ -4,9 +4,9 @@
 -- contract.md section 2.1: the 96 x 96 civic core, anchor-relative exactly
 -- like a start, flat at y = 0 by construction, inside the contract's bounds
 -- of x/z [-47, 47] and y [-2, 40] (it reaches y 31, the hall's ridge
--- lantern). It is authored out of the capital parts of `capitals.lua` and
--- the start generators of `buildings.lua`, the same way Dawnmere Fields is
--- authored out of the latter alone.
+-- lantern). Its buildings are building templates (Round 56), frozen from
+-- the capital and start-town generators it was first authored out of, the
+-- same way Dawnmere Fields' are frozen from the latter alone.
 --
 -- Highcourt is the human capital of the contract's section 2.4 table: a
 -- brick-and-white-stone city on a river plateau, half-timbered lanes, a
@@ -299,7 +299,7 @@ local function loader(directory)
 		local claimed, stamped = {}, {}
 
 		-- The citadel paving of the avenues and the cobble of the lanes,
-		-- each resolved the way `capitals.lua` resolves it: the capital
+		-- each resolved the way the templates resolve it: the capital
 		-- vocabulary is optional and falls back into the start vocabulary.
 		local AVENUE = white.maybe("castle_paving") or white.node("plaza")
 		local LANE = human.node("path")

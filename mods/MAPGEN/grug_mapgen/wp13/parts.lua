@@ -191,12 +191,12 @@ local SHAPED = {
 	["grug_decor:darkage_marble_slab"] = true,
 	["grug_decor:darkage_basalt_stair"] = true,
 	-- THE TWO CORNERS OF THE BASALT FAMILY. Every other roof family in this
-	-- table is complete because a roof needs all four shapes: `roofs.raster`
-	-- turns a hip with `roof_stair_outer` and a valley with `roof_stair_inner`
-	-- and takes them from the palette, so a family missing its corners cannot
-	-- be bound to the roof roles at all -- `Buffer:put` refuses the unlisted
-	-- name with "has no paramtype2" the first time the rasteriser writes a
-	-- corner. Basalt was listed with only the straight stair and the slab,
+	-- table is complete because a roof needs all four shapes: the roofs of
+	-- the building templates turn a hip with `roof_stair_outer` and a valley
+	-- with `roof_stair_inner`, taken from the palette, so a family missing its
+	-- corners cannot be bound to the roof roles at all -- `Buffer:put` refuses
+	-- the unlisted name with "has no paramtype2" the first time a template
+	-- stamps a corner. Basalt was listed with only the straight stair and the slab,
 	-- which is why `wp13/troll_palette.lua`'s BASALT handle left the king's
 	-- hall of a basalt capital under a junglewood roof. `grug_decor` has
 	-- registered all four shapes of basalt since the darkage import

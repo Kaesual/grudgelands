@@ -85,7 +85,7 @@ local function loader(directory)
 	-- THE FIGHTING PLATFORM (contract section 2.4, "warlord hall with fighting
 	-- platform"): a raised court on the hall's own forecourt, beside its great
 	-- door, four courses up, with its own breastwork and one flight off its
-	-- outer flank. Authored here and not in `capitals.lua`, because only this
+	-- outer flank. Authored here and not in the hall's template, because only this
 	-- composition knows which way the hall faces and where its approach runs.
 	--
 	-- BESIDE THE DOOR AND NOT ACROSS IT. The first version put it on the axis
@@ -283,7 +283,7 @@ local function loader(directory)
 		local deck_rings = 0
 
 		-- The court paving of the avenues and the cobble of the lanes, each
-		-- resolved the way `capitals.lua` resolves it: the capital vocabulary
+		-- resolved the way the templates resolve it: the capital vocabulary
 		-- is optional and falls back into the start vocabulary.
 		local AVENUE = orc.maybe("castle_paving") or orc.node("plaza")
 		local LANE = orc.node("path")

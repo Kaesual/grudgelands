@@ -80,7 +80,7 @@ local function loader(directory)
 
 	-- The breastwork on each building's deck: the rectangle it rings, the
 	-- deck course it stands on and the merlon rhythm. A deck slab sits one
-	-- course above the wall head (`roofs.flat_deck`), so the breastwork
+	-- course above the wall head (in the building's template), so the breastwork
 	-- stands on the course above that and a warrior walks the deck between
 	-- the merlons.
 	local BREASTWORKS = {

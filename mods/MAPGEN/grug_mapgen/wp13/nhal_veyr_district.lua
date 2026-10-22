@@ -284,7 +284,7 @@ local function loader(directory)
 			end},
 		--
 		-- 3. THE CANDLE COURT, the one open place in the district where a
-		-- light burns: the paved square of `undead_parts.candle_court` with
+		-- light burns: the paved square of the candle court template with
 		-- its altar, and two PRAYING at it.
 		{id = "market_candle_court", template = "nhal_veyr_market_candle_court",
 			margin = 3,
