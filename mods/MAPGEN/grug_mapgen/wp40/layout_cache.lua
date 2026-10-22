@@ -9,7 +9,8 @@
 -- one. The key names everything the layouts depend on: a format version, the
 -- full world seed, a digest of every Lua source of the mapgen mod (the whole
 -- tree, through `preparation_identity.lua`'s routine, so no new module can be
--- forgotten), the mapgen settings and the Lua interpreter. Every text section
+-- forgotten, and the building templates and town layouts with it), the mapgen
+-- settings and the Lua interpreter. Every text section
 -- carries its length and SHA-256 and the file ends in a SHA-256 over all
 -- bytes before it: a truncated, edited or half-written file never decodes.
 -- A main boot with a hit is an emerge-style construction from the texts,
@@ -41,14 +42,17 @@ return function(deps)
 		return #a < #b
 	end
 
-	-- Every `.lua` file below `mod_dir`, as paths relative to it, byte-sorted.
+	-- Every `.lua` file below `mod_dir`, and every building template and town
+	-- layout (`.tpl`, `.layout`, Round 56: what the towns build), as paths
+	-- relative to it, byte-sorted.
 	function M.source_files(mod_dir)
 		local out = {}
 		local function walk(rel)
 			local path = rel == "" and mod_dir or mod_dir .. "/" .. rel
 			local prefix = rel == "" and "" or rel .. "/"
 			for _, name in ipairs(deps.list_dir(path, false) or {}) do
-				if name:sub(-4) == ".lua" and name:sub(1, 1) ~= "." then
+				if (name:sub(-4) == ".lua" or name:sub(-4) == ".tpl" or
+						name:sub(-7) == ".layout") and name:sub(1, 1) ~= "." then
 					out[#out + 1] = prefix .. name
 				end
 			end

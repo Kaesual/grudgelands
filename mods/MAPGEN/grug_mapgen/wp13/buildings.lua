@@ -634,25 +634,8 @@ local function loader(directory)
 		})
 	end
 
-	-- The barn: the largest farm building. Closed walls of plank and loam, a
-	-- cart-wide double door in the gable end, a straw floor and a saltbox
-	-- roof, so it stands a head taller at the back than the cottages do.
-	function M.barn(palette, spec)
-		local w, d = spec.w or 13, spec.d or 11
-		local wall_h = spec.wall_h or 5
-		return M.build(palette, {
-			id = spec.id, overhang = spec.overhang or 1, apron = spec.apron,
-			stilt = spec.stilt, stairs = spec.stairs,
-			roof_palette = spec.roof_palette,
-			infill = spec.infill, shutters = spec.shutters,
-			blocks = {{x0 = 0, z0 = 0, x1 = w - 1, z1 = d - 1, wall_h = wall_h,
-				roof = spec.roof or "saltbox", ridge_axis = "z", lift = 2,
-				rise = 4, kit = "barn"}},
-			doors = {{side = spec.door_side or "z-",
-				index = spec.door_index or math.floor(w / 2), double = true}},
-			inside = spec.inside or {x = 2, y = 1, z = d - 3},
-		})
-	end
+	-- (The barn generator built only Dawnmere's great barn; since Round 56 that
+	-- building is a template, so the generator is gone.)
 
 	-- The meeting hall: the tallest ordinary building, hip roofed, with the
 	-- long benches and lamps of a village chapel. The belfry is a separate

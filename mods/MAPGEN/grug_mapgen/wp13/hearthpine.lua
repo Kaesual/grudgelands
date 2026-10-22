@@ -11,7 +11,6 @@
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
@@ -19,31 +18,12 @@ local function loader(directory)
 	local RADIUS = 63
 	local SCHEMA = "grug_wp13_hearthpine_blueprint_v1"
 
-	-- Plot roster. Each row is one placed building: landmark id, generator,
-	-- its parameters, the pad anchor of the rotated footprint and the
-	-- rotation that turns its door toward the path.
-	local PLOTS = {
-		{id = "forge_hall", make = "workshop", x = -5, z = -26, turns = 0,
-			roof_material = "slate",
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5}},
-		{id = "west_home", make = "cottage", x = -26, z = 2, turns = 3,
-			spec = {w = 9, d = 9, roof = "gable", ridge_axis = "x"}},
-		{id = "east_home", make = "cottage", x = 16, z = -4, turns = 1,
-			spec = {w = 11, d = 9, roof = "hip", fancy_bed = true}},
-		{id = "southwest_home", make = "cottage", x = -38, z = -20, turns = 2,
-			spec = {w = 9, d = 9, roof = "saltbox", ridge_axis = "x", lift = 2}},
-		{id = "east_gable_home", make = "cottage", x = 30, z = -8, turns = 0,
-			spec = {w = 11, d = 9, roof = "gable", ridge_axis = "x"}},
-		{id = "lagerhouse", make = "longhouse", x = 14, z = 22, turns = 0,
-			spec = {w = 9, d = 13}},
-		{id = "community_hall", make = "hall", x = -34, z = 28, turns = 0,
-			roof_material = "slate",
-			spec = {w = 13, d = 15, wall_h = 5}},
-		{id = "workyard", make = "shed", x = -32, z = 14, turns = 0,
-			spec = {w = 13, d = 9, open_sides = {"z-", "x+"}}},
-		{id = "gatewatch", make = "watchpost", x = -12, z = 50, turns = 2,
-			spec = {door_side = "x-"}},
-	}
+	-- The buildings are building templates (Round 56): the layout
+	-- `building_templates/layouts/hearthpine.layout` places them in stamp
+	-- order, with the slate roof palette of the forge hall and the community
+	-- hall.
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local TOWN = templates.town("hearthpine")
 
 	-- Paved approaches. The first row is the cross street that serves the
 	-- forge, the south-west home and the east gable home; the rest are short
@@ -66,18 +46,6 @@ local function loader(directory)
 
 	-- The watchpost lookout keeps its historical destination id.
 	local DESTINATION_ID = {gatewatch = "gatewatch_roof"}
-
-	-- Not every roof is pine. The two civic buildings -- the forge hall and
-	-- the community hall -- carry a stone-brick roof, which is the same
-	-- rasterised stair family in a different material, so the roof generator
-	-- needs no change and the village reads as more than one trade.
-	local SLATE_ROOF = {
-		roof_stair = "stairs:stair_stonebrick",
-		roof_stair_outer = "stairs:stair_outer_stonebrick",
-		roof_stair_inner = "stairs:stair_inner_stonebrick",
-		roof_slab = "stairs:slab_stonebrick",
-		roof_ridge = "default:stonebrick",
-	}
 
 	-- The waypoint pad (Round 29, WP17): on the open litter west of the street, between the
 	-- west door's lane and the workyard lane; the inn door is eleven nodes
@@ -116,8 +84,10 @@ local function loader(directory)
 		-- plaza, facing across it.
 		{id = "plaza_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -5, dir = {x = -1, z = 0}},
-		{id = "idle_west_door", role = "idle", tags = {"door"}, x = -16, y = 1,
-			z = 4, dir = {x = -1, z = 0}},
+		-- `building`: the point stands at that building's door and is a point
+		-- of its template (Round 56); the position comes from the stamp.
+		{id = "idle_west_door", role = "idle", tags = {"door"},
+			building = "west_home"},
 		{id = "idle_plaza_bench", role = "idle", tags = {"bench"}, x = 7, y = 1,
 			z = 1, dir = {x = 1, z = 0}},
 		{id = "idle_workyard", role = "idle", tags = {"work"}, x = -19, y = 1,
@@ -147,8 +117,8 @@ local function loader(directory)
 			x = -19, y = 1, z = 21, dir = {x = 1, z = 0}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
-		{id = "hall_quest", role = "quest", tags = {"door"}, x = -28, y = 1,
-			z = 26, dir = {x = 0, z = 1}},
+		{id = "hall_quest", role = "quest", tags = {"door"},
+			building = "community_hall"},
 		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
 		-- stands here, grug_home reads it.
 		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
@@ -177,7 +147,6 @@ local function loader(directory)
 
 	return function()
 		local palette = palettes.new("dwarf")
-		local slate = palettes.new("dwarf", SLATE_ROOF)
 		local buf = parts.buffer()
 		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`).
 		buf.tree_share = 2
@@ -227,34 +196,36 @@ local function loader(directory)
 		layout.pave(buf, palette, -10, -9, 10, 6, "plaza", 4)
 		layout.pave(buf, palette, -2, -9, 2, RADIUS, "path", 3)
 
-		-- 3. Buildings.
-		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			if plot.roof_material == "slate" then spec.roof_palette = slate end
-			local part = buildings[plot.make](palette, spec)
-			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
+		-- 3. Buildings, the layout's placements in stamp order.
+		local stamped_sockets = {}
+		for _, place in ipairs(TOWN.places) do
+			local part = TOWN.part(place)
+			local points = parts.stamp(buf, part, place.x, place.y, place.z,
+				place.turns)
 			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z,
+			placed[place.id] = {x = place.x, z = place.z,
 				w = footprint.w, d = footprint.d, peak = part.peak}
-			plot_order[#plot_order + 1] = placed[plot.id]
+			plot_order[#plot_order + 1] = placed[place.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
+					face = door.face, id = place.id}
 			end
 			local spot = points.inside[1]
-			inside_by_id[DESTINATION_ID[plot.id] or plot.id] =
+			inside_by_id[DESTINATION_ID[place.id] or place.id] =
 				{x = spot.x, y = spot.y, z = spot.z}
 			for index = 1, #points.room_corner, 2 do
 				local a, b = points.room_corner[index], points.room_corner[index + 1]
 				rooms[#rooms + 1] = {
 					min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
 					max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
-					top = a.top, closed = a.closed, id = plot.id,
+					top = a.top, closed = a.closed, id = place.id,
 				}
 			end
+			for _, point in ipairs(points.sockets or {}) do
+				stamped_sockets[point.id] = point
+			end
 		end
+		local sockets = templates.sockets(SOCKETS, stamped_sockets, "hearthpine")
 
 		-- 4. Paved approaches from every doorstep to the street or the plaza.
 		for _, rect in ipairs(PATHS) do
@@ -375,8 +346,11 @@ local function loader(directory)
 
 		-- 8c. Every house's small touches (Round 36 decor kit): a barrel or a
 		-- pot by the door, flowers under the windows, a wood pile or a barrel
-		-- against a side wall; never on a socket or the cell before it.
-		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+		-- against a side wall; never on a socket or the cell before it. They
+		-- stay town work, not template content (Round 56): the paved
+		-- approaches of step 4 clear the headroom of touches the kit stands on
+		-- them, so written at the stamp, nine of them would be lost.
+		decor.dress_rooms(buf, palette, rooms, doorways, sockets,
 			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
 
 		dressing.vale_undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
@@ -390,7 +364,7 @@ local function loader(directory)
 
 		-- 10. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
-		layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+		layout.green(buf, palette, RADIUS, sockets, doorways)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end
@@ -482,7 +456,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
-				sockets = SOCKETS,
+				sockets = sockets,
 			},
 		}
 	end

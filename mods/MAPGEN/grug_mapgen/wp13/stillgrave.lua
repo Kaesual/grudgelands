@@ -29,9 +29,7 @@
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 
 	local RADIUS = 63
@@ -57,28 +55,23 @@ local function loader(directory)
 		{21, 16, 25, 18},                -- new burial ground gate
 	}
 
-	-- Plot roster. Each row is one placed building: landmark id, generator,
-	-- its parameters and the pad anchor of the footprint. Every door in the
-	-- Hollow faces the lane in front of it, so no plot needs a rotation.
-	local PLOTS = {
-		{id = "crypt_chapel", make = "chapel", x = -5, z = 12,
-			spec = {w = 11, d = 15, wall_h = 6, rise = 3, door_side = "z-"}},
-		{id = "bone_works", make = "workshop", x = 24, z = -6,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				kit = "carver", wing_kit = "carver_wing"}},
-		{id = "keepers_house", make = "cottage", x = -34, z = 34,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable", ridge_axis = "x",
-				door_side = "z-", door_index = 4}},
-		{id = "warden_house", make = "cottage", x = -18, z = 34,
-			spec = {w = 11, d = 9, wall_h = 5, roof = "hip",
-				door_side = "z-", door_index = 5}},
-		{id = "hollow_ruin", make = "ruin", x = 2, z = 34,
-			spec = {w = 9, d = 9, wall_h = 6, phase = 0}},
-		{id = "sunken_ruin", make = "ruin", x = 18, z = 34,
-			spec = {w = 11, d = 9, wall_h = 6, phase = 3}},
-		{id = "watchtower", make = "watchpost", x = 5, z = -53,
-			spec = {door_side = "x-"}},
-	}
+	-- The buildings are building templates (Round 56): the layout
+	-- `building_templates/layouts/stillgrave.layout` places them in stamp
+	-- order. Every door faces the lane in front of it, so no placement needs a
+	-- rotation. The templates carry each house's small touches.
+	--
+	-- The crypt-chapel is the one building of the Hollow that is not timber:
+	-- pale stone-brick walls and a boarded ceiling of the same stone (the
+	-- layout's `crypt` palette), under the SAME black obsidian roof the homes
+	-- carry. The first render tried it the other way round -- a pale roof over
+	-- dark walls -- and the roof mass swallowed the building; a pale wall
+	-- under the hamlet's own roof reads as the one thing here that was built
+	-- to outlast its builders. The castle kit's own `castle_dungeon_stone`
+	-- stair family is deliberately NOT the roof: those are that mod's
+	-- registrations, not `stairs:`, and a roof is not the place to assume two
+	-- mods agree about facedir.
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local TOWN = templates.town("stillgrave")
 
 	-- Destination order is part of the consumer contract and never changes.
 	-- The two ruins are absent on purpose: nobody keeps those rooms.
@@ -86,24 +79,6 @@ local function loader(directory)
 		"warden_house", "watchtower_lookout"}
 
 	local DESTINATION_ID = {watchtower = "watchtower_lookout"}
-
-	-- The crypt-chapel is the one building of the Hollow that is not timber:
-	-- pale stone-brick walls and a boarded ceiling of the same stone, under
-	-- the SAME black obsidian roof the homes carry. The first render tried it
-	-- the other way round -- a pale roof over dark walls -- and the roof mass
-	-- swallowed the building; a pale wall under the hamlet's own roof reads as
-	-- the one thing here that was built to outlast its builders.
-	--
-	-- The castle kit's own `castle_dungeon_stone` stair family would have been
-	-- the obvious roof and is deliberately NOT used anywhere: those are that
-	-- mod's registrations, not `stairs:`, and the rasteriser's outer/inner
-	-- param2 convention is transcribed from the `stairs` mod. A roof is not
-	-- the place to assume two mods agree about facedir.
-	local CRYPT_STONE = {
-		wall = "default:stonebrick",
-		ceiling = "default:stonebrick",
-		wall_accent = "default:mossycobble",
-	}
 
 	-- Burial grounds: the old one west of the court, the newer one east of
 	-- the works. Each sits inside its own low wall with one gate gap.
@@ -179,13 +154,15 @@ local function loader(directory)
 			order = 5, x = 9, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "court_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -5, dir = {x = -1, z = 0}},
-		{id = "idle_warden_door", role = "idle", tags = {"door"}, x = -13,
-			y = 1, z = 32, dir = {x = 0, z = 1}},
+		-- `building`: the point stands at that building's door and is a point
+		-- of its template (Round 56); the position comes from the stamp.
+		{id = "idle_warden_door", role = "idle", tags = {"door"},
+			building = "warden_house"},
 		{id = "idle_court_settle", role = "idle", tags = {"bench"}, x = -10,
 			y = 1, z = 4, dir = {x = 0, z = -1}},
 		-- Round 47: `door`, it stands before the bone works' door.
-		{id = "idle_bone_works", role = "idle", tags = {"work", "door"}, x = 22, y = 1,
-			z = -1, dir = {x = 1, z = 0}},
+		{id = "idle_bone_works", role = "idle", tags = {"work", "door"},
+			building = "bone_works"},
 		-- The gate braziers at (-4, -58) and (4, -58) are the only fire an
 		-- arrival sees; this spot stands at the western one.
 		{id = "idle_gate_brazier", role = "idle", tags = {"fire"}, x = -5,
@@ -203,8 +180,8 @@ local function loader(directory)
 			tags = {"work"}, x = -22, y = 1, z = -8, dir = {x = 0, z = 1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
-		{id = "hall_quest", role = "quest", tags = {"door"}, x = 2, y = 1,
-			z = 10, dir = {x = 0, z = 1}},
+		{id = "hall_quest", role = "quest", tags = {"door"},
+			building = "crypt_chapel"},
 		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
 		-- stands here, grug_home reads it.
 		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
@@ -233,7 +210,6 @@ local function loader(directory)
 
 	return function()
 		local palette = palettes.new("undead")
-		local crypt = palettes.new("undead", CRYPT_STONE)
 		local buf = parts.buffer()
 		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`).
 		buf.tree_share = 2
@@ -332,39 +308,30 @@ local function loader(directory)
 				"path", 4)
 		end
 
-		-- 3. Buildings.
-		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			local walls = palette
-			if plot.id == "crypt_chapel" then
-				-- The chapel is built from the stone palette; only its roof
-				-- comes from the hamlet's, which is the plain one.
-				walls = crypt
-				spec.roof_palette = palette
-				spec.kit = "crypt"
-			end
-			local part = buildings[plot.make](walls, spec)
-			if plot.make == "ruin" then
+		-- 3. Buildings, the layout's placements in stamp order.
+		local stamped_sockets = {}
+		for _, place in ipairs(TOWN.places) do
+			local part = TOWN.part(place)
+			if part.ivy ~= nil then
 				if part.ivy < 1 or part.cobwebs < 1 then
-					error("wp13 stillgrave: the ruin " .. plot.id ..
+					error("wp13 stillgrave: the ruin " .. place.id ..
 						" grew no ivy and no cobweb", 0)
 				end
 				ruin_ivy = ruin_ivy + part.ivy
 				ruin_cobwebs = ruin_cobwebs + part.cobwebs
 			end
-			local points = parts.stamp(buf, part, plot.x, 0, plot.z, 0)
+			local points = parts.stamp(buf, part, place.x, place.y, place.z,
+				place.turns)
 			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z,
+			placed[place.id] = {x = place.x, z = place.z,
 				w = footprint.w, d = footprint.d, peak = part.peak}
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
+					face = door.face, id = place.id}
 			end
 			local spot = points.inside[1]
 			if spot then
-				inside_by_id[DESTINATION_ID[plot.id] or plot.id] =
+				inside_by_id[DESTINATION_ID[place.id] or place.id] =
 					{x = spot.x, y = spot.y, z = spot.z}
 			end
 			for index = 1, #points.room_corner, 2 do
@@ -373,10 +340,14 @@ local function loader(directory)
 					min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
 					max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
 					top = a.top, closed = a.closed,
-					ruin = a.ruin and true or false, id = plot.id,
+					ruin = a.ruin and true or false, id = place.id,
 				}
 			end
+			for _, point in ipairs(points.sockets or {}) do
+				stamped_sockets[point.id] = point
+			end
 		end
+		local sockets = templates.sockets(SOCKETS, stamped_sockets, "stillgrave")
 
 		-- 4. The gate: two dressed obsidian pillars on the verge under a
 		-- gravewood lintel, a brazier at each foot, and low walls running out
@@ -582,12 +553,6 @@ local function loader(directory)
 		-- 9b. The waypoint pad, before the bone piles so nothing grows on it.
 		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "stillgrave")
 
-		-- 9c. Every house's small touches (Round 36 decor kit): a barrel or a
-		-- pot by the door, flowers under the windows, a wood pile or a barrel
-		-- against a side wall; never on a socket or the cell before it.
-		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
-			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
-
 		-- 10. Bone piles and dead shrubs on whatever open blight is left:
 		-- thin over the basin, thicker where the ground is already turned.
 		-- Round 51 follow-up FT (the user: too many bones outside the
@@ -617,7 +582,7 @@ local function loader(directory)
 
 		-- 12. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
-		layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+		layout.green(buf, palette, RADIUS, sockets, doorways)
 		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
 		dressing.thin_cover(buf)
 		local source, count = buf:cells()
@@ -712,7 +677,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
-				sockets = SOCKETS,
+				sockets = sockets,
 				graves = graves,
 				gravewood_trees = grove,
 				bone_piles = bones,

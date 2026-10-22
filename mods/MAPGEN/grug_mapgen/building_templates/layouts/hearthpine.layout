@@ -1,0 +1,16 @@
+grudgelands-town-layout 1
+# The start town's buildings in stamp order (frozen in Round 56).
+town hearthpine
+race dwarf
+
+palette slate race=dwarf roof_ridge=default:stonebrick roof_slab=stairs:slab_stonebrick roof_stair=stairs:stair_stonebrick roof_stair_inner=stairs:stair_inner_stonebrick roof_stair_outer=stairs:stair_outer_stonebrick
+
+place forge_hall template=hearthpine_forge_hall x=-5 y=0 z=-26 turns=0 roof=slate
+place west_home template=hearthpine_west_home x=-26 y=0 z=2 turns=3
+place east_home template=hearthpine_east_home x=16 y=0 z=-4 turns=1
+place southwest_home template=hearthpine_southwest_home x=-38 y=0 z=-20 turns=2
+place east_gable_home template=hearthpine_east_gable_home x=30 y=0 z=-8 turns=0
+place lagerhouse template=hearthpine_lagerhouse x=14 y=0 z=22 turns=0
+place community_hall template=hearthpine_community_hall x=-34 y=0 z=28 turns=0 roof=slate
+place workyard template=hearthpine_workyard x=-32 y=0 z=14 turns=0
+place gatewatch template=hearthpine_gatewatch x=-12 y=0 z=50 turns=2

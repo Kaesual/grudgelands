@@ -1,0 +1,16 @@
+grudgelands-town-layout 1
+# The start town's buildings in stamp order (frozen in Round 56).
+town dawnmere
+race human
+
+palette tile race=human roof_ridge=default:brick roof_slab=stairs:slab_brick roof_stair=stairs:stair_brick roof_stair_inner=stairs:stair_inner_brick roof_stair_outer=stairs:stair_outer_brick
+
+place meeting_hall template=dawnmere_meeting_hall x=-16 y=0 z=10 turns=0 roof=tile
+place harvest_inn template=dawnmere_harvest_inn x=6 y=0 z=10 turns=0
+place great_barn template=dawnmere_great_barn x=-33 y=0 z=-6 turns=0
+place smithy template=dawnmere_smithy x=24 y=0 z=-6 turns=0 roof=tile
+place orchard_cottage template=dawnmere_orchard_cottage x=-30 y=0 z=-26 turns=0
+place lane_cottage template=dawnmere_lane_cottage x=-14 y=0 z=-26 turns=0
+place green_cottage template=dawnmere_green_cottage x=6 y=0 z=-26 turns=0
+place field_cottage template=dawnmere_field_cottage x=22 y=0 z=-26 turns=0
+place tollhouse template=dawnmere_tollhouse x=5 y=0 z=48 turns=0 roof=tile

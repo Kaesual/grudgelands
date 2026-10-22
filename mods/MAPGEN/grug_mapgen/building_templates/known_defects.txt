@@ -1,0 +1,3 @@
+# The frozen state's known defects (format doc §6.3): a hard finding
+# listed here is reported as a warning until it is fixed.
+# <template> <rule> <x> <y> <z> <note>

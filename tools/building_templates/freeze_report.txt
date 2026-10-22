@@ -1,0 +1,494 @@
+# The freeze report of the start towns (tools/building_templates/export.py).
+# The pre-freeze source is the commit export.py names; every count is measured.
+
+== hearthpine (dwarf): 71401 writes, 9 stamps
+building-bound steps (their writes are template content):
+  (none moved)
+points moved into templates:
+  - sockets idle_west_door -> west_home: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - sockets hall_quest -> community_hall: a door-tagged town socket within 3 nodes of its door (2 nodes)
+building-bound steps kept in town code by the stamp-time rule:
+  - room and apron decor (decor.dress_rooms) (line 379, 67 writes): the paved approaches (line 261) come after it and clear the headroom of nine touches it stands on them
+
+== dawnmere (human): 84349 writes, 10 stamps
+building-bound steps (their writes are template content):
+  - the belfry on the meeting hall's ridge (line 372)
+  - a cart wheel on the barn wall (line 462)
+  - a cart wheel on the inn gable (line 464)
+  - the crates stacked indoors (barn, meeting hall) (line 532)
+  - room and apron decor (decor.dress_rooms) (line 571)
+points moved into templates:
+  - sockets hall_quest -> meeting_hall: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - sockets home_innkeeper -> harvest_inn: a door-tagged town socket within 3 nodes of its door (1 nodes)
+  - sockets idle_barn -> great_barn: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - sockets idle_smithy -> smithy: a door-tagged town socket within 3 nodes of its door (2 nodes)
+building-bound steps kept in town code by the stamp-time rule:
+  (none: every building-bound step moved whole)
+
+== silverleaf (elf): 78751 writes, 10 stamps
+building-bound steps (their writes are template content):
+  - the spire on the shrine's ridge (line 389)
+  - the lanterns under the covered market's bays (line 430)
+  - the gable lights of the four houses (line 439)
+  - room and apron decor (decor.dress_rooms) (line 546)
+points moved into templates:
+  - sockets hall_quest -> lore_hall: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - sockets idle_bowyer -> bowyer_workshop: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - sockets home_innkeeper -> glade_house_west: a door-tagged town socket within 3 nodes of its door (1 nodes)
+building-bound steps kept in town code by the stamp-time rule:
+  (none: every building-bound step moved whole)
+
+== stillgrave (undead): 59762 writes, 7 stamps
+building-bound steps (their writes are template content):
+  - room and apron decor (decor.dress_rooms) (line 588)
+points moved into templates:
+  - sockets hall_quest -> crypt_chapel: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - sockets idle_bone_works -> bone_works: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - sockets idle_warden_door -> warden_house: a door-tagged town socket within 3 nodes of its door (2 nodes)
+building-bound steps kept in town code by the stamp-time rule:
+  (none: every building-bound step moved whole)
+
+== sunscar (orc): 70622 writes, 9 stamps
+building-bound steps (their writes are template content):
+  - the two cressets in the round lodge (line 479)
+  - the brazier stands on the warlord hall's deck (line 520)
+  - the brazier fires on the warlord hall's deck (line 521)
+  - a wagon wheel on the warlord hall (line 687)
+  - a wagon wheel on the armoury (line 692)
+  - a wagon wheel on the bone lodge (line 693)
+  - room and apron decor (decor.dress_rooms) (line 730)
+points moved into templates:
+  - sockets hall_quest -> warlord_hall: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - inside warlord_platform -> warlord_hall: a destination the town sets by hand on the building
+  - sockets idle_armoury_forge -> armoury: a door-tagged town socket within 3 nodes of its door (2 nodes)
+building-bound steps kept in town code by the stamp-time rule:
+  (none: every building-bound step moved whole)
+
+== kapok (troll): 81519 writes, 8 stamps
+building-bound steps (their writes are template content):
+  - room and apron decor (decor.dress_rooms) (line 536)
+points moved into templates:
+  - sockets idle_lodge_door -> spirit_lodge: a door-tagged town socket within 3 nodes of its door (3 nodes)
+  - sockets hall_quest -> spirit_lodge: a door-tagged town socket within 3 nodes of its door (3 nodes)
+building-bound steps kept in town code by the stamp-time rule:
+  (none: every building-bound step moved whole)
+
+== templates: 50 for 51 placements
+templates shared by several placements: 1
+
+-- hearthpine_forge_hall (hearthpine:forge_hall)
+   cells 3192, legend 41, role cells 928, fixed-node cells 0, force-air cells 2264, race switches 0, undecided 0
+   town writes kept in its box (forge_hall): 127
+     52x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     13x line 374: layout.plant_wood(buf, palette, RADIUS, 5)
+     18x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     44x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_west_home (hearthpine:west_home)
+   cells 1331, legend 34, role cells 427, fixed-node cells 0, force-air cells 904, race switches 0, undecided 0
+   town writes kept in its box (west_home): 52
+     12x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     3x line 365: dressing.path_light(buf, palette, spot[1], spot[2])
+     2x line 374: layout.plant_wood(buf, palette, RADIUS, 5)
+     7x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     28x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_east_home (hearthpine:east_home)
+   cells 1430, legend 42, role cells 457, fixed-node cells 0, force-air cells 973, race switches 0, undecided 0
+   town writes kept in its box (east_home): 48
+     12x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     8x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     28x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_southwest_home (hearthpine:southwest_home)
+   cells 1573, legend 34, role cells 459, fixed-node cells 0, force-air cells 1114, race switches 0, undecided 0
+   town writes kept in its box (southwest_home): 74
+     32x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     6x line 374: layout.plant_wood(buf, palette, RADIUS, 5)
+     8x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     28x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_east_gable_home (hearthpine:east_gable_home)
+   cells 1573, legend 34, role cells 487, fixed-node cells 0, force-air cells 1086, race switches 0, undecided 0
+   town writes kept in its box (east_gable_home): 72
+     36x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     8x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     28x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_lagerhouse (hearthpine:lagerhouse)
+   cells 1980, legend 26, role cells 597, fixed-node cells 0, force-air cells 1383, race switches 0, undecided 0
+   town writes kept in its box (lagerhouse): 67
+     24x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     3x line 374: layout.plant_wood(buf, palette, RADIUS, 5)
+     8x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     32x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_community_hall (hearthpine:community_hall)
+   cells 3060, legend 39, role cells 823, fixed-node cells 0, force-air cells 2237, race switches 0, undecided 0
+   town writes kept in its box (community_hall): 88
+     36x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     2x line 374: layout.plant_wood(buf, palette, RADIUS, 5)
+     8x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     42x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_workyard (hearthpine:workyard)
+   cells 1650, legend 21, role cells 484, fixed-node cells 0, force-air cells 1166, race switches 0, undecided 0
+   town writes kept in its box (workyard): 35
+     12x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     3x line 374: layout.plant_wood(buf, palette, RADIUS, 5)
+     20x line 389: parts.resolve_panes(buf)
+
+-- hearthpine_gatewatch (hearthpine:gatewatch)
+   cells 1573, legend 32, role cells 546, fixed-node cells 0, force-air cells 1027, race switches 0, undecided 0
+   town writes kept in its box (gatewatch): 33
+     12x line 261: layout.pave(buf, palette, rect[1], rect[2], rect[3], rect[4], "path", 3)
+     3x line 358: layout.street_lamps(buf, palette, 0, 2, 62, 7, outdoors)
+     2x line 379: decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
+     16x line 389: parts.resolve_panes(buf)
+
+-- dawnmere_meeting_hall (dawnmere:meeting_hall)
+   cells 2938, legend 44, role cells 893, fixed-node cells 0, force-air cells 2045, race switches 0, undecided 0
+   building-bound writes (meeting_hall): room and apron decor (decor.dress_rooms) 1; the belfry on the meeting hall's ridge 112; the crates stacked indoors (barn, meeting hall) 2
+   town writes kept in its box (meeting_hall): 61
+     36x line 579: parts.resolve_panes(buf)
+     25x line 583: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- dawnmere_harvest_inn (dawnmere:harvest_inn)
+   cells 2873, legend 36, role cells 857, fixed-node cells 0, force-air cells 2016, race switches 0, undecided 0
+   building-bound writes (harvest_inn): a cart wheel on the inn gable 2; room and apron decor (decor.dress_rooms) 1
+   town writes kept in its box (harvest_inn): 36
+     36x line 579: parts.resolve_panes(buf)
+
+-- dawnmere_great_barn (dawnmere:great_barn)
+   cells 2925, legend 32, role cells 810, fixed-node cells 0, force-air cells 2115, race switches 0, undecided 0
+   building-bound writes (great_barn): a cart wheel on the barn wall 2; room and apron decor (decor.dress_rooms) 7; the crates stacked indoors (barn, meeting hall) 2
+   town writes kept in its box (great_barn): 38
+     36x line 579: parts.resolve_panes(buf)
+     2x line 583: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- dawnmere_smithy (dawnmere:smithy)
+   cells 2880, legend 45, role cells 880, fixed-node cells 0, force-air cells 2000, race switches 0, undecided 0
+   building-bound writes (smithy): room and apron decor (decor.dress_rooms) 24
+   town writes kept in its box (smithy): 36
+     36x line 579: parts.resolve_panes(buf)
+
+-- dawnmere_orchard_cottage (dawnmere:orchard_cottage)
+   cells 1452, legend 39, role cells 489, fixed-node cells 0, force-air cells 963, race switches 0, undecided 0
+   building-bound writes (orchard_cottage): room and apron decor (decor.dress_rooms) 1
+   town writes kept in its box (orchard_cottage): 28
+     28x line 579: parts.resolve_panes(buf)
+
+-- dawnmere_lane_cottage (dawnmere:lane_cottage)
+   cells 1331, legend 46, role cells 456, fixed-node cells 0, force-air cells 875, race switches 0, undecided 0
+   building-bound writes (lane_cottage): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (lane_cottage): 24
+     24x line 579: parts.resolve_panes(buf)
+
+-- dawnmere_green_cottage (dawnmere:green_cottage)
+   cells 1694, legend 38, role cells 517, fixed-node cells 0, force-air cells 1177, race switches 0, undecided 0
+   building-bound writes (green_cottage): room and apron decor (decor.dress_rooms) 1
+   town writes kept in its box (green_cottage): 24
+     24x line 579: parts.resolve_panes(buf)
+
+-- dawnmere_field_cottage (dawnmere:field_cottage)
+   cells 1716, legend 39, role cells 566, fixed-node cells 0, force-air cells 1150, race switches 0, undecided 0
+   building-bound writes (field_cottage): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (field_cottage): 28
+     28x line 579: parts.resolve_panes(buf)
+
+-- dawnmere_tollhouse (dawnmere:tollhouse, silverleaf:gate_lookout)
+   cells 1573, legend 35, role cells 548, fixed-node cells 0, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (tollhouse): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (tollhouse): 16
+     16x line 579: parts.resolve_panes(buf)
+   building-bound writes (gate_lookout): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (gate_lookout): 16
+     16x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_moon_shrine (silverleaf:moon_shrine)
+   cells 2876, legend 41, role cells 863, fixed-node cells 0, force-air cells 2013, race switches 0, undecided 0
+   building-bound writes (moon_shrine): room and apron decor (decor.dress_rooms) 7; the spire on the shrine's ridge 117
+   town writes kept in its box (moon_shrine): 32
+     32x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_lore_hall (silverleaf:lore_hall)
+   cells 3315, legend 41, role cells 884, fixed-node cells 0, force-air cells 2431, race switches 0, undecided 0
+   building-bound writes (lore_hall): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (lore_hall): 42
+     42x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_bowyer_workshop (silverleaf:bowyer_workshop)
+   cells 3120, legend 43, role cells 928, fixed-node cells 0, force-air cells 2192, race switches 0, undecided 0
+   building-bound writes (bowyer_workshop): room and apron decor (decor.dress_rooms) 14
+   town writes kept in its box (bowyer_workshop): 36
+     36x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_terrace_house_west (silverleaf:terrace_house_west)
+   cells 1521, legend 37, role cells 473, fixed-node cells 0, force-air cells 1048, race switches 0, undecided 0
+   building-bound writes (terrace_house_west): the gable lights of the four houses 1
+   town writes kept in its box (terrace_house_west): 54
+     13x line 375: buf:put(x1, plot.lift + 1, z, palette.node("railing"))
+     13x line 376: buf:put(x2, plot.lift + 1, z, palette.node("railing"))
+     7x line 379: buf:put(x, plot.lift + 1, z2, palette.node("railing"))
+     1x line 541: local standards = layout.plant_grove(buf, palette, RADIUS, 6, SPECIMENS)
+     20x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_terrace_house_east (silverleaf:terrace_house_east)
+   cells 1521, legend 35, role cells 473, fixed-node cells 0, force-air cells 1048, race switches 0, undecided 0
+   building-bound writes (terrace_house_east): the gable lights of the four houses 1
+   town writes kept in its box (terrace_house_east): 53
+     13x line 375: buf:put(x1, plot.lift + 1, z, palette.node("railing"))
+     13x line 376: buf:put(x2, plot.lift + 1, z, palette.node("railing"))
+     7x line 379: buf:put(x, plot.lift + 1, z2, palette.node("railing"))
+     20x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_glade_house_west (silverleaf:glade_house_west)
+   cells 1521, legend 38, role cells 481, fixed-node cells 0, force-air cells 1040, race switches 0, undecided 0
+   building-bound writes (glade_house_west): room and apron decor (decor.dress_rooms) 8; the gable lights of the four houses 1
+   town writes kept in its box (glade_house_west): 20
+     20x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_glade_house_east (silverleaf:glade_house_east)
+   cells 1404, legend 44, role cells 465, fixed-node cells 0, force-air cells 939, race switches 0, undecided 0
+   building-bound writes (glade_house_east): room and apron decor (decor.dress_rooms) 9; the gable lights of the four houses 1
+   town writes kept in its box (glade_house_east): 20
+     20x line 554: parts.resolve_panes(buf)
+
+-- silverleaf_covered_market (silverleaf:covered_market)
+   cells 1815, legend 22, role cells 513, fixed-node cells 0, force-air cells 1302, race switches 0, undecided 0
+   building-bound writes (covered_market): the lanterns under the covered market's bays 4
+   town writes kept in its box (covered_market): 21
+     1x line 541: local standards = layout.plant_grove(buf, palette, RADIUS, 6, SPECIMENS)
+     20x line 554: parts.resolve_panes(buf)
+
+-- stillgrave_crypt_chapel (stillgrave:crypt_chapel)
+   cells 2697, legend 42, role cells 781, fixed-node cells 5, force-air cells 1911, race switches 0, undecided 0
+   building-bound writes (crypt_chapel): room and apron decor (decor.dress_rooms) 6
+   town writes kept in its box (crypt_chapel): 36
+     36x line 616: parts.resolve_panes(buf)
+
+-- stillgrave_bone_works (stillgrave:bone_works)
+   cells 2880, legend 40, role cells 851, fixed-node cells 11, force-air cells 2018, race switches 0, undecided 0
+   building-bound writes (bone_works): room and apron decor (decor.dress_rooms) 24
+   town writes kept in its box (bone_works): 44
+     36x line 616: parts.resolve_panes(buf)
+     8x line 620: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- stillgrave_keepers_house (stillgrave:keepers_house)
+   cells 1452, legend 37, role cells 461, fixed-node cells 7, force-air cells 984, race switches 0, undecided 0
+   building-bound writes (keepers_house): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (keepers_house): 26
+     24x line 616: parts.resolve_panes(buf)
+     2x line 620: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- stillgrave_warden_house (stillgrave:warden_house)
+   cells 1573, legend 43, role cells 495, fixed-node cells 6, force-air cells 1072, race switches 0, undecided 0
+   building-bound writes (warden_house): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (warden_house): 31
+     3x line 573: paved_prop("path lamp", spot[1], spot[2], spot[1], spot[2],
+     28x line 616: parts.resolve_panes(buf)
+
+-- stillgrave_hollow_ruin (stillgrave:hollow_ruin)
+   cells 1089, legend 16, role cells 235, fixed-node cells 3, force-air cells 851, race switches 0, undecided 0
+   town writes kept in its box (hollow_ruin): 0
+
+-- stillgrave_sunken_ruin (stillgrave:sunken_ruin)
+   cells 1287, legend 16, role cells 288, fixed-node cells 3, force-air cells 996, race switches 0, undecided 0
+   town writes kept in its box (sunken_ruin): 5
+     3x line 573: paved_prop("path lamp", spot[1], spot[2], spot[1], spot[2],
+     2x line 620: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- stillgrave_watchtower (stillgrave:watchtower)
+   cells 1573, legend 33, role cells 549, fixed-node cells 0, force-air cells 1024, race switches 0, undecided 0
+   building-bound writes (watchtower): room and apron decor (decor.dress_rooms) 3
+   town writes kept in its box (watchtower): 17
+     1x line 539: grove = grove + layout.plant_gravewood(buf, palette, block[1],
+     16x line 616: parts.resolve_panes(buf)
+
+-- sunscar_warlord_hall (sunscar:warlord_hall)
+   cells 3553, legend 34, role cells 1132, fixed-node cells 7, force-air cells 2414, race switches 0, undecided 0
+   building-bound writes (warlord_hall): a wagon wheel on the warlord hall 2; room and apron decor (decor.dress_rooms) 8; the brazier fires on the warlord hall's deck 5; the brazier stands on the warlord hall's deck 5
+   town writes kept in its box (warlord_hall): 193
+     90x line 488: dressing.parapet(buf, palette, work.x1, work.z1, work.x2, work.z2,
+     36x line 512: dressing.outer_stair(buf, palette, 8, 16, 8, "z", 0)
+     7x line 516: buf:clear(8, 8, 16, 8, 8, 22)
+     4x line 517: buf:clear(7, 9, 22, 7, 10, 23)
+     50x line 744: parts.resolve_panes(buf)
+     6x line 748: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- sunscar_armoury (sunscar:armoury)
+   cells 2160, legend 39, role cells 794, fixed-node cells 12, force-air cells 1354, race switches 0, undecided 0
+   building-bound writes (armoury): a wagon wheel on the armoury 1; room and apron decor (decor.dress_rooms) 14
+   town writes kept in its box (armoury): 173
+     102x line 488: dressing.parapet(buf, palette, work.x1, work.z1, work.x2, work.z2,
+     14x line 499: buf:clear(32, 7, -4, 32, 8, 2)
+     14x line 500: buf:clear(31, 6, -4, 31, 7, 2)
+     7x line 505: buf:put(31, 6, z, palette.node("roof_ridge"))
+     36x line 744: parts.resolve_panes(buf)
+
+-- sunscar_beast_pen (sunscar:beast_pen)
+   cells 1560, legend 20, role cells 543, fixed-node cells 0, force-air cells 1017, race switches 0, undecided 0
+   town writes kept in its box (beast_pen): 105
+     85x line 631: buf:put(x, 0, z, palette.node("ground_straw"))
+     20x line 744: parts.resolve_panes(buf)
+
+-- sunscar_chief_lodge (sunscar:chief_lodge)
+   cells 1053, legend 37, role cells 424, fixed-node cells 9, force-air cells 620, race switches 0, undecided 0
+   building-bound writes (chief_lodge): room and apron decor (decor.dress_rooms) 11; the two cressets in the round lodge 2
+   town writes kept in its box (chief_lodge): 48
+     36x line 488: dressing.parapet(buf, palette, work.x1, work.z1, work.x2, work.z2,
+     12x line 744: parts.resolve_panes(buf)
+
+-- sunscar_spear_lodge (sunscar:spear_lodge)
+   cells 1089, legend 35, role cells 430, fixed-node cells 6, force-air cells 653, race switches 0, undecided 0
+   building-bound writes (spear_lodge): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (spear_lodge): 72
+     48x line 488: dressing.parapet(buf, palette, work.x1, work.z1, work.x2, work.z2,
+     24x line 744: parts.resolve_panes(buf)
+
+-- sunscar_tusk_lodge (sunscar:tusk_lodge)
+   cells 1287, legend 37, role cells 494, fixed-node cells 6, force-air cells 787, race switches 0, undecided 0
+   building-bound writes (tusk_lodge): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (tusk_lodge): 85
+     54x line 488: dressing.parapet(buf, palette, work.x1, work.z1, work.x2, work.z2,
+     3x line 720: dressing.path_light(buf, palette, spot[1], spot[2])
+     28x line 744: parts.resolve_panes(buf)
+
+-- sunscar_bone_lodge (sunscar:bone_lodge)
+   cells 1430, legend 38, role cells 538, fixed-node cells 6, force-air cells 886, race switches 0, undecided 0
+   building-bound writes (bone_lodge): a wagon wheel on the bone lodge 1; room and apron decor (decor.dress_rooms) 14
+   town writes kept in its box (bone_lodge): 78
+     54x line 488: dressing.parapet(buf, palette, work.x1, work.z1, work.x2, work.z2,
+     24x line 744: parts.resolve_panes(buf)
+
+-- sunscar_west_tower (sunscar:west_tower)
+   cells 1210, legend 26, role cells 547, fixed-node cells 1, force-air cells 662, race switches 0, undecided 0
+   building-bound writes (west_tower): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (west_tower): 22
+     5x line 540: stakes = stakes + dressing.palisade(buf, palette, line[1], line[2],
+     16x line 744: parts.resolve_panes(buf)
+     1x line 748: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- sunscar_east_tower (sunscar:east_tower)
+   cells 1210, legend 27, role cells 547, fixed-node cells 1, force-air cells 662, race switches 0, undecided 0
+   building-bound writes (east_tower): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (east_tower): 27
+     5x line 540: stakes = stakes + dressing.palisade(buf, palette, line[1], line[2],
+     16x line 744: parts.resolve_panes(buf)
+     6x line 748: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- kapok_spirit_lodge (kapok:spirit_lodge)
+   cells 5187, legend 42, role cells 1078, fixed-node cells 6, force-air cells 4103, race switches 0, undecided 0
+   building-bound writes (spirit_lodge): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (spirit_lodge): 7
+     5x line 407: paved_prop("fish_stall", -13, 21, -9, 25, function()
+     2x line 411: paved_prop("terrace_kerb", kerb[1], kerb[2], kerb[3], kerb[4],
+
+-- kapok_fish_smoker (kapok:fish_smoker)
+   cells 4042, legend 40, role cells 1102, fixed-node cells 0, force-air cells 2940, race switches 0, undecided 0
+   town writes kept in its box (fish_smoker): 45
+     5x line 492: local laid = dressing.stepping_line(buf, palette, line[1], line[2],
+     40x line 540: local flora = dressing.basin_flora(buf, palette, -RADIUS, -RADIUS,
+
+-- kapok_drying_shed (kapok:drying_shed)
+   cells 1650, legend 20, role cells 484, fixed-node cells 0, force-air cells 1166, race switches 0, undecided 0
+   town writes kept in its box (drying_shed): 0
+
+-- kapok_elder_stilt (kapok:elder_stilt)
+   cells 2411, legend 38, role cells 673, fixed-node cells 6, force-air cells 1732, race switches 0, undecided 0
+   building-bound writes (elder_stilt): room and apron decor (decor.dress_rooms) 6
+   town writes kept in its box (elder_stilt): 81
+     15x line 377: dressing.walkway(buf, palette, bridge.x, bridge.z, bridge.len,
+     8x line 466: hung_prop("veranda_rope", spot[1], DECK - 1, spot[2], function()
+     2x line 474: hung_prop("lantern", spot[1], DECK - 1, spot[2], function()
+     33x line 531: local jungle = layout.plant_jungle(buf, palette, RADIUS, 7)
+     23x line 540: local flora = dressing.basin_flora(buf, palette, -RADIUS, -RADIUS,
+
+-- kapok_river_stilt (kapok:river_stilt)
+   cells 2411, legend 42, role cells 650, fixed-node cells 6, force-air cells 1755, race switches 0, undecided 0
+   building-bound writes (river_stilt): room and apron decor (decor.dress_rooms) 6
+   town writes kept in its box (river_stilt): 66
+     15x line 377: dressing.walkway(buf, palette, bridge.x, bridge.z, bridge.len,
+     8x line 466: hung_prop("veranda_rope", spot[1], DECK - 1, spot[2], function()
+     2x line 474: hung_prop("lantern", spot[1], DECK - 1, spot[2], function()
+     41x line 540: local flora = dressing.basin_flora(buf, palette, -RADIUS, -RADIUS,
+
+-- kapok_weaver_stilt (kapok:weaver_stilt)
+   cells 2411, legend 42, role cells 650, fixed-node cells 6, force-air cells 1755, race switches 0, undecided 0
+   building-bound writes (weaver_stilt): room and apron decor (decor.dress_rooms) 6
+   town writes kept in its box (weaver_stilt): 83
+     18x line 377: dressing.walkway(buf, palette, bridge.x, bridge.z, bridge.len,
+     8x line 466: hung_prop("veranda_rope", spot[1], DECK - 1, spot[2], function()
+     2x line 474: hung_prop("lantern", spot[1], DECK - 1, spot[2], function()
+     23x line 531: local jungle = layout.plant_jungle(buf, palette, RADIUS, 7)
+     32x line 540: local flora = dressing.basin_flora(buf, palette, -RADIUS, -RADIUS,
+
+-- kapok_reed_stilt (kapok:reed_stilt)
+   cells 2411, legend 37, role cells 674, fixed-node cells 6, force-air cells 1731, race switches 0, undecided 0
+   building-bound writes (reed_stilt): room and apron decor (decor.dress_rooms) 6
+   town writes kept in its box (reed_stilt): 76
+     15x line 377: dressing.walkway(buf, palette, bridge.x, bridge.z, bridge.len,
+     8x line 466: hung_prop("veranda_rope", spot[1], DECK - 1, spot[2], function()
+     2x line 474: hung_prop("lantern", spot[1], DECK - 1, spot[2], function()
+     43x line 540: local flora = dressing.basin_flora(buf, palette, -RADIUS, -RADIUS,
+     8x line 550: layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+
+-- kapok_watchpost (kapok:watchpost)
+   cells 1573, legend 33, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (watchpost): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (watchpost): 0
+
+every template reads back through wp13/templates.lua as exactly the cells cut for each of its placements
+
+== per-race shapes: how often another race builds a different shape
+  hearthpine_forge_hall (dwarf): 0 of 5 other races build another shape
+  hearthpine_west_home (dwarf): 0 of 5 other races build another shape
+  hearthpine_east_home (dwarf): 0 of 5 other races build another shape
+  hearthpine_southwest_home (dwarf): 0 of 5 other races build another shape
+  hearthpine_east_gable_home (dwarf): 0 of 5 other races build another shape
+  hearthpine_lagerhouse (dwarf): 0 of 5 other races build another shape
+  hearthpine_community_hall (dwarf): 0 of 5 other races build another shape
+  hearthpine_workyard (dwarf): 0 of 5 other races build another shape
+  hearthpine_gatewatch (dwarf): 0 of 5 other races build another shape
+  dawnmere_meeting_hall (human): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  dawnmere_harvest_inn (human): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  dawnmere_great_barn (human): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  dawnmere_smithy (human): 0 of 5 other races build another shape
+  dawnmere_orchard_cottage (human): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  dawnmere_lane_cottage (human): 0 of 5 other races build another shape
+  dawnmere_green_cottage (human): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  dawnmere_field_cottage (human): 0 of 5 other races build another shape
+  dawnmere_tollhouse (human): 0 of 5 other races build another shape
+  silverleaf_moon_shrine (elf): 3 of 5 other races build another shape (human, undead, orc)
+  silverleaf_lore_hall (elf): 0 of 5 other races build another shape
+  silverleaf_bowyer_workshop (elf): 0 of 5 other races build another shape
+  silverleaf_terrace_house_west (elf): 0 of 5 other races build another shape
+  silverleaf_terrace_house_east (elf): 0 of 5 other races build another shape
+  silverleaf_glade_house_west (elf): 0 of 5 other races build another shape
+  silverleaf_glade_house_east (elf): 0 of 5 other races build another shape
+  silverleaf_covered_market (elf): 0 of 5 other races build another shape
+  stillgrave_crypt_chapel (undead): 2 of 5 other races build another shape (human, orc)
+  stillgrave_bone_works (undead): 5 of 5 other races build another shape (dwarf, human, elf, orc, troll)
+  stillgrave_keepers_house (undead): 0 of 5 other races build another shape
+  stillgrave_warden_house (undead): 0 of 5 other races build another shape
+  stillgrave_hollow_ruin (undead): 5 of 5 other races build another shape (dwarf, human, elf, orc, troll)
+  stillgrave_sunken_ruin (undead): 5 of 5 other races build another shape (dwarf, human, elf, orc, troll)
+  stillgrave_watchtower (undead): 0 of 5 other races build another shape
+  sunscar_warlord_hall (orc): 0 of 5 other races build another shape
+  sunscar_armoury (orc): 0 of 5 other races build another shape
+  sunscar_beast_pen (orc): 0 of 5 other races build another shape
+  sunscar_chief_lodge (orc): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  sunscar_spear_lodge (orc): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  sunscar_tusk_lodge (orc): 0 of 5 other races build another shape
+  sunscar_bone_lodge (orc): 4 of 5 other races build another shape (dwarf, elf, undead, troll)
+  sunscar_west_tower (orc): 0 of 5 other races build another shape
+  sunscar_east_tower (orc): 0 of 5 other races build another shape
+  kapok_spirit_lodge (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  kapok_fish_smoker (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  kapok_drying_shed (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  kapok_elder_stilt (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  kapok_river_stilt (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  kapok_weaver_stilt (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  kapok_reed_stilt (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  kapok_watchpost (troll): 5 of 5 other races build another shape (dwarf, human, elf, undead, orc)
+  total: 92 race builds of another shape, 0 failed (informational: every template is placed by its own race only, or by races that build it identically)
