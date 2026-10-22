@@ -2974,19 +2974,7 @@ the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the GUI test are in the
 [GUI checklist](docs/planning/round56-plan.md#gui-checklist-round-56).
 
-- **The hood finish step** (HOODART): the user's pick of drop-01 (P1 "Bound
-  cowl" or P2 "Crown and point" per line) and the colour question (the
-  hood's undyed zone A against the coloured helm on many tiers), then a
-  small lane bakes the pick (possibly 0.56.1). `tools/r54_art/assemble.py`
-  takes whole tiers (icons are an overlay): a drop with only hoods needs
-  whole-tier repaints or an overlay section like the icons'. The art check
-  warns on leather T1 and T3 head (zone B 2 < 3 after the open chin strip)
-  until those helms are repainted. The chin strip is cleared by the painters
-  (`assemble.py`, `make_test_art`); `check.py` allows it on cloth and
-  leather T1–T5 but does not require it. `check.py` counts no front-facing
-  polygon faces (it warns on any) and its overlap report covers boxes only.
-  The Character tab's figure sits about 3 % lower (the hidden hood's
-  bounding box; `grug_inventory/pages.lua` could lift it by about 0.1).
+- **The hood finish step** (HOODART): drop-01 was not taken (the user, 2026-10-22: the cloth P2 T4–T6 direction fits, but the ornaments are too loud and the undyed zone A stands apart from the coloured helms); a small tool lane HOODPAINT lets the painter paint the hood in side, back and top views and projects them onto the faces, then Astra paints drop-02 (the helm's material colour, zone A as lining or hem, subtle ornament); the pick and its bake come as 0.56.1.
 - **Ranged mobs** (MOBAI, its review): every 10 s a `dogshoot` archer still
   charges into melee for 3 s (upstream `dogswitch`); ranged kings close in
   by walking straight, without navigation or pathfinding; pure `shoot` mobs
@@ -3047,11 +3035,6 @@ The items the user decides in the GUI test are in the
   Google Fonts link; the diff and workshop tools were not rerun; the
   gallery could not be published as an artifact (a local page);
   `gui_run.py` needs Chromium.
-- **Docs:** the format doc's §6 table names "`buildings.lua` door writers,
-  the race part files" as the source of `doors` points (the coordinator's
-  file).
-- **Round end:** the seed fleet `full` owed by the freeze (each freeze lane
-  ran `quick`, 100 of 100).
 
 ### Decided for later rounds (Round 56 §8)
 

@@ -44,7 +44,7 @@ Fixes and wishes from the playtest with many players on 2026-10-21.
   `Suffix:`, and the enchanting station shows what a new enchant replaces
   ("Replaces prefix: …"); the line is orange, with a warning when you point
   at it, if the new enchant is a lower tier. Enchanted items in chests show
-  the new lines once you carry them.
+  the new lines after your next login, equipment change or level-up.
 - **Open chin:** the bottom row of the helmet's front is see-through on
   every cloth head piece and on leather ones up to tier 5, so the chin
   shows.

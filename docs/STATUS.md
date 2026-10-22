@@ -30,8 +30,9 @@ user's notes.
   [plan, decisions, numbers and GUI checklist](planning/round56-plan.md#completion-2026-10-22)).
   **Not pushed:** 0.56.0 waits for the user's GUI test. The hood ships
   invisible: the models carry it, every shipped head layer leaves it
-  transparent until the user picks its art (HOODART drop-01 waits for the
-  pick; the bake may come as 0.56.1). From main `74053146` (the plan):
+  transparent until the user picks its art (drop-01 not taken; a painting
+  tool, HOODPAINT, then Astra's drop-02; the pick and bake as 0.56.1). Seed
+  fleet `full` on main `2ef55861`: 304 of 304 seeds build. From main `74053146` (the plan):
   SMALL (`4547c186`), QUESTMAP (`a42f8df6`), the coordinator's HOODPAGE
   (`ea1ecd43`) and TPLFORMAT (`1ac0688b`, with seven answer commits), MOUNT
   (`23355acb`), VIEWER (`e6342420`, `b5031847`, `e3e2f8b0`), AFFIX

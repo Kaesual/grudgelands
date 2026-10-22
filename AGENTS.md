@@ -539,7 +539,7 @@ The topic rules below name the one path to use; the
   composition to `baseline.tsv` ([settlements.md](docs/design/settlements.md)
   "Decor pass");
   the start towns' and capitals' house touches are template content since
-  0.56.0, Hearthpine's excepted).
+  0.56.0, Hearthpine's excepted.
 
 ### World generation
 

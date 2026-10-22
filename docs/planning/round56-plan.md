@@ -526,8 +526,10 @@ the capital on, standalone place stories, investigations, journeys and deliverie
 recommends the first two combined, investigations selectively and journeys for the mining camps, piloted on two
 paths (one zone and its capital per faction). The quest rework (§8) plans from it.
 **HOODART** (GPT-6 Astra, outside the repo): drop-01 delivered two proposals (P1 "Bound cowl", P2 "Crown and
-point", both 0 violations, 0 warnings); the user's pick and a colour question (the hood's undyed zone A against the
-coloured helm on many tiers) are open.
+point", both 0 violations, 0 warnings); drop-01 was not taken (the user, 2026-10-22: the cloth P2 T4–T6 direction fits, but the ornaments are too loud and the
+undyed zone A stands apart from the coloured helms); a small tool lane HOODPAINT lets the painter paint the hood in
+side, back and top views and projects them onto the faces, then Astra paints drop-02 (the helm's material colour,
+zone A as lining or hem, subtle ornament); the pick and its bake come as 0.56.1.
 
 Main has 250 portable fixtures (10 new: `r56_small`, `r56_questmap`, `r56_mount`, `r56_affix`, `r56_float`,
 `r56_mobai`, `r56_hood`, `r56_freeze_towns`, `r56_freeze_capitals`, `r56_trees`) and the Python tests `tools/building_templates/viewer/test_templates.py` and `tools/r56_editor/test_editor.py` (plus its
@@ -643,13 +645,11 @@ so the map needs no reset. Saved state read or written differently:
 
 ### Open notes
 
-- **For the user:** the GUI test below; the hood art pick from HOODART drop-01 (P1 or P2 per line) and the colour
-  question, then a small finish lane bakes the pick (possibly 0.56.1); the Character tab's figure about 3 % lower
+- **For the user:** the GUI test below; the hood art (HOODPAINT, drop-02, the pick and its bake as 0.56.1); the Character tab's figure about 3 % lower
   (the invisible hood's bounding box; a cheap fix would lift the model in `grug_inventory`'s page by about 0.1
   formspec units) and the website's framing.
-- **For the coordinator:** the format doc's §6 table still names "`buildings.lua` door writers, the race part
-  files" as the source of `doors` points (line 221); the seed fleet `full` §6 asked for (the freeze; each lane ran
-  `quick`) at the round end.
+- **Round end (coordinator):** the format doc's point table no longer names the removed generators (2ef55861); the
+  seed fleet `full` §6 asked for ran on main 2ef55861: **304 of 304 seeds build**, 0 failed (18 min 48 s).
 - `export.py --check` holds the templates to the freeze's export only until the first deliberate template edit;
   from then on `check.py` is the gate and the export check retires (by design).
 - The r54 art check reports 2 warnings on the shipped art (leather T1 and T3 head: zone B 2 < 3 after the open chin
@@ -697,10 +697,10 @@ chest), then a new world for the towns.
     figure about 3 % lower (judge it); the website's model shows the chin strip and no hood, and its framing is
     unchanged.
 11. **The editor** (desktop only; a local developer tool): `python3 tools/building_templates/editor/serve.py`, open
-    http://127.0.0.1:8756/, open a building, fly through it with Noclip; on layer 1 place a bed and a door, see the
+    http://127.0.0.1:8756/, open a building, fly through it with Noclip (on a touch screen with the move pad); on layer 1 place a bed and a door, see the
     padlock on layer 2 (painting there is refused); paint on layer 3, Undo, Reset; wall up the entrance door and Save
     (refused); make a valid change, Save, see it in `git diff`, then `git checkout` the file. The gallery (local page):
-    switch the palette, group by race, walk into a building, fly through a wall, cut the layers.
+    switch the palette, group by race, walk into a building, fly through a wall, cut the layers; the town page (`tools/building_templates/viewer`): Noclip from the overview.
 12. **The towns look exactly as before** in a new world: each start town (Dawnmere's belfry, Silverleaf's spire,
     lanterns and gable lights, Sunscar's deck braziers and wheels, barrels and pots at the doors) and each capital
     (Highcourt's belfry, the hall bands, braziers and hangings, Gor Drazhak's deck parapets, the temple elders on
