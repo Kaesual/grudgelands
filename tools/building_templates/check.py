@@ -1279,7 +1279,7 @@ def real_template_cases():
         ("a role painted from the editor palette", put(text, empty, keys["wall"]), set()),
     ]
     for label, mutated, wanted in cases:
-        report = validate(ROOT, "file", {relative: mutated})
+        report = validate(ROOT, "file", {relative: mutated}, builds=False)
         got = {rule for rule, where, _, _ in report.errors if where == name}
         others = [e for e in report.errors if e[1] != name]
         if got != wanted or others:
@@ -1291,9 +1291,58 @@ def real_template_cases():
     t = parse_template(text, relative, shared)
     empty = next(p for p in sorted(t["grid"]) if t["grid"][p] == "." and p[1] >= 2)
     report = validate(ROOT, "file", {relative: put(legend_add(text, "~ node default:wood"),
-                                                   empty, "~")})
+                                                   empty, "~")}, builds=False)
     if not any(w[0] == "fixed_in_shared" and w[1] == shared for w in report.warnings):
         failures.append("a fixed node in a template two races place is flagged")
+    failures += parity_cases()
+    return failures
+
+
+def parity_cases():
+    """The validator refuses what the game's loader refuses (Round 56 lane
+    FREEZE-CAPITALS), reads the capitals' rosters and holds them to a build."""
+    failures = []
+    name = "hearthpine_west_home"
+    relative = "%s/templates/%s.tpl" % (BASE, name)
+    text = (ROOT / relative).read_text()
+
+    def rules(replaced, where, builds=False):
+        report = validate(ROOT, "file", replaced, builds=builds)
+        return {rule for rule, at, _, _ in report.errors if at == where}
+    meta = next(line for line in text.split("\n") if line.startswith("meta "))
+    cases = [
+        ("a name given twice", {relative: text.replace("\nname %s\n" % name,
+                                                       "\nname %s\nname %s\n" % (name, name))},
+         name, {"format", "loader"}),
+        ("a meta key given twice", {relative: text.replace(meta, meta + " peak=1")},
+         name, {"format", "loader"}),
+    ]
+    layout = "%s/layouts/dawnmere.layout" % BASE
+    layout_text = (ROOT / layout).read_text()
+    cases.append(("an override of an undeclared role",
+                  {layout: layout_text.replace("palette tile race=human",
+                                               "palette tile race=human no_such_role=default:wood")},
+                  "dawnmere", {"layout", "loader"}))
+    roster = "%s/layouts/highcourt.roster" % BASE
+    roster_text = (ROOT / roster).read_text()
+    cases.append(("a roster use naming a channel the template lacks",
+                  {roster: roster_text.replace("use highcourt_market count=1 main=white",
+                                               "use highcourt_market count=1 main=white "
+                                               "roof=slate")},
+                  "highcourt", {"roster", "loader"}))
+    for label, replaced, where, wanted in cases:
+        got = rules(replaced, where)
+        if got != wanted:
+            failures.append("%s: rules %s, expected %s" % (label, sorted(got), sorted(wanted)))
+    # against a build: a count the capital does not place
+    got = rules({roster: roster_text.replace("use highcourt_kings_hall count=1",
+                                             "use highcourt_kings_hall count=2")},
+                "highcourt", builds=True)
+    if got != {"roster"}:
+        failures.append("a roster count the capital does not place: rules %s" % sorted(got))
+    report = validate(ROOT, "file", {}, builds=True)
+    if report.errors:
+        failures.append("the files as they are: %s" % report.errors[:3])
     return failures
 
 
