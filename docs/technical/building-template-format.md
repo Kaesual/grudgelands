@@ -376,7 +376,8 @@ lane, never in the editor (ruling 22).
   - **Stamp time:** the template writes everything at the stamp. Where moving a building-bound write from its later
     step to the stamp would change what a step in between does (a `free_area` or `natural` test, a tree cut by
     `Buffer:put`, a measurement), that write stays in the town's code and the exporter lists it; byte identity
-    decides.
+    decides. Where a step cannot be split cleanly, the whole step may stay (Hearthpine's decor: its paved approaches
+    would erase 9 of its 67 writes); its cells are then not template content until a map-reset round moves them.
   - Town points derived from the building become template points as §3.4 says.
 - **Roles** (ruling 22) are found by building each part with each placing race's palette and with **tagged probe
   palettes**: every role bound to a tagged name that answers every name predicate the generators ask exactly as the
