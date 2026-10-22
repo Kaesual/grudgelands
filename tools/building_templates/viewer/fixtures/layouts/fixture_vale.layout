@@ -1,0 +1,10 @@
+grudgelands-town-layout 1
+# Fixture town for the template gallery (lane VIEWER, Round 56).
+town fixture_vale
+race dwarf
+
+palette slate race=dwarf roof_slab=grug_decor:darkage_slate_tile_slab roof_stair=grug_decor:darkage_slate_tile_stair
+
+place north_house template=fixture_house x=-10 y=0 z=4 turns=0
+place south_house template=fixture_house x=-10 y=0 z=-12 turns=2 roof=slate
+place shed template=fixture_shed x=6 y=0 z=0 turns=1

@@ -40,3 +40,8 @@ personal Luanti folder), the probe writes `<world>/template_nodes.json` once all
 mods are loaded and shuts the server down, and `node_dump/normalize.py` writes
 the sorted file. The run directory is removed afterwards; a failed run keeps it
 and says where.
+
+## The viewer and the gallery (`viewer/`)
+
+The town viewer, the template gallery and the shared node renderer the
+template editor reuses: see [`viewer/README.md`](viewer/README.md).

@@ -1,0 +1,622 @@
+<title>__TITLE__</title>
+<style>
+/* Layout: the town fills the screen; one floating instrument panel at the top
+   left, the block inspector under it, a compass rose at the top right. The
+   sky is the game's, not the theme's; only the panels follow the theme. */
+:root {
+  --bg: #9ec3ea;
+  --panel: rgba(250, 248, 242, 0.93);
+  --ink: #24272b;
+  --muted: #5c6168;
+  --line: rgba(36, 39, 43, 0.15);
+  --accent: #2e6b52;
+  --accent-ink: #f6fbf8;
+  --chip: rgba(46, 107, 82, 0.10);
+  --shadow: 0 6px 24px rgba(20, 30, 45, 0.18);
+  --diff-added: #2fa36b;
+  --diff-removed: #e0464f;
+  --diff-replaced: #e8a317;
+  --diff-turned: #3f7ee8;
+  --font-display: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Segoe UI", system-ui, sans-serif;
+  --font-data: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --panel: rgba(27, 30, 34, 0.92);
+    --ink: #ebe8e1;
+    --muted: #a6abb1;
+    --line: rgba(235, 232, 225, 0.14);
+    --accent: #7fc7a6;
+    --accent-ink: #0f241b;
+    --chip: rgba(127, 199, 166, 0.14);
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --panel: rgba(27, 30, 34, 0.92);
+  --ink: #ebe8e1;
+  --muted: #a6abb1;
+  --line: rgba(235, 232, 225, 0.14);
+  --accent: #7fc7a6;
+  --accent-ink: #0f241b;
+  --chip: rgba(127, 199, 166, 0.14);
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden; background: var(--bg); color: var(--ink);
+  font: 15px/1.4 var(--font-body);
+}
+#stage { position: fixed; inset: 0; touch-action: none; }
+#stage canvas { display: block; outline: none; }
+#labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.label {
+  position: absolute; left: 0; top: 0; white-space: nowrap;
+  font: 600 13px/1 var(--font-display); letter-spacing: 0.04em;
+  color: #fff; padding: 3px 7px; border-radius: 3px;
+  background: rgba(22, 28, 34, 0.62);
+  transform: translate(-50%, -100%);
+}
+.panel {
+  position: fixed; z-index: 2; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+#panel {
+  top: calc(16px + env(safe-area-inset-top, 0px)); left: 16px;
+  width: min(300px, calc(100vw - 32px)); max-height: calc(100% - 32px);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+#panel header { padding: 14px 16px 12px; border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font: 500 11px/1 var(--font-data); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); }
+.title-row { display: flex; align-items: center; gap: 8px; }
+#town {
+  flex: 1; min-width: 0; font: 700 22px/1.1 var(--font-display); color: var(--ink);
+  background: transparent; border: 0; padding: 0; appearance: none; cursor: pointer;
+  text-wrap: balance;
+}
+#town:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+.caret { color: var(--muted); pointer-events: none; font-size: 12px; }
+#collapse { margin-left: auto; }
+.meta { margin: 0; font: 12px/1.4 var(--font-data); color: var(--muted);
+  font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+#controls { display: flex; flex-direction: column; }
+.group { padding: 12px 16px; border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 8px; }
+.group:last-child { border-bottom: 0; }
+.group h2 { margin: 0; font: 500 11px/1 var(--font-data); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+button {
+  font: 500 14px/1 var(--font-body); color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px; cursor: pointer;
+}
+button:hover { background: var(--chip); }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink);
+  border-color: var(--accent); }
+.icon-btn { padding: 5px 8px; font-size: 12px; }
+.check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.range-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+output, .num { font: 13px/1 var(--font-data); font-variant-numeric: tabular-nums; }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+.hint kbd { font: 11px/1 var(--font-data); border: 1px solid var(--line);
+  border-radius: 3px; padding: 1px 4px; }
+.code-row { display: flex; gap: 6px; }
+.code-row input {
+  flex: 1; min-width: 0; font: 12px/1 var(--font-data); color: var(--ink);
+  background: transparent; border: 1px solid var(--line); border-radius: 5px; padding: 7px 8px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.swatch { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+.sw-added { background: var(--diff-added); }
+.sw-removed { background: var(--diff-removed); }
+.sw-replaced { background: var(--diff-replaced); }
+.sw-turned { background: var(--diff-turned); }
+#changes-list { display: flex; flex-direction: column; gap: 4px; }
+#changes-list button { display: flex; justify-content: space-between; gap: 8px; text-align: left; }
+#changes-list .num { color: var(--muted); }
+#inspect .change { font: 13px/1.35 var(--font-data); overflow-wrap: anywhere; }
+#inspect {
+  left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(300px, calc(100vw - 32px)); padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+#inspect .node { font: 500 14px/1.3 var(--font-data); overflow-wrap: anywhere; }
+#inspect .where { font: 13px/1.3 var(--font-data); color: var(--muted);
+  font-variant-numeric: tabular-nums; }
+#inspect .bldg { font: 700 16px/1.2 var(--font-display); letter-spacing: 0.03em; }
+#compass {
+  top: calc(16px + env(safe-area-inset-top, 0px)); right: 16px; width: 52px; height: 52px;
+  border-radius: 50%; display: grid; place-items: center;
+}
+#compass .needle { width: 100%; height: 100%; position: relative; }
+#compass .needle span {
+  position: absolute; left: 50%; top: 5px; transform: translateX(-50%);
+  font: 700 14px/1 var(--font-display); color: var(--accent);
+}
+#compass .needle i {
+  position: absolute; left: 50%; top: 21px; width: 2px; height: 22px; margin-left: -1px;
+  background: linear-gradient(var(--accent) 50%, var(--muted) 50%); border-radius: 1px;
+}
+#status {
+  position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none;
+  font: 700 20px/1 var(--font-display); letter-spacing: 0.05em; color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,.45);
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#panel.collapsed #controls, #panel.collapsed .meta { display: none; }
+@media (max-width: 560px) {
+  #inspect { left: 16px; right: 16px; width: auto; }
+  #panel { max-height: 55%; }
+}
+.label.group { font-size: 16px; background: rgba(46, 107, 82, 0.85); padding: 4px 9px; }
+.label.point { font: 500 11px/1 var(--font-data); background: rgba(22, 28, 34, 0.72); }
+.label.tpl { cursor: pointer; pointer-events: auto; }
+#title-row h1 { margin: 0; font: 700 22px/1.1 var(--font-display); overflow-wrap: anywhere; }
+select.plain { font: 500 14px/1 var(--font-body); color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; max-width: 100%; }
+#list { display: flex; flex-direction: column; gap: 10px; }
+#list h3 { margin: 0; font: 700 15px/1.2 var(--font-display); letter-spacing: 0.03em; }
+#list .tpl-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; width: 100%; }
+#list .tpl-btn .used, .used-line { font-size: 12.5px; color: var(--muted); }
+.used-line { margin: 0; }
+details.legend-box summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+details.legend-box pre { margin: 6px 0 0; font: 12px/1.45 var(--font-data); white-space: pre-wrap; overflow-wrap: anywhere; }
+.warn { margin: 0; font-size: 13px; color: #b5541b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .warn { color: #f0a46e; } }
+:root[data-theme="dark"] .warn { color: #f0a46e; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div id="stage" aria-label="3D view of the building templates"></div>
+<div id="labels"></div>
+<div id="status">Loading</div>
+
+<aside id="panel" class="panel" aria-label="Gallery controls">
+  <header>
+    <div class="row">
+      <span class="eyebrow">Building templates</span>
+      <button id="collapse" class="icon-btn" type="button" aria-expanded="true">Hide</button>
+    </div>
+    <div id="title-row"><h1 id="heading">All templates</h1></div>
+    <p id="meta" class="meta"></p>
+  </header>
+  <div id="controls">
+    <section class="group">
+      <h2>Palette</h2>
+      <label class="sr" for="binding">Palette</label>
+      <select id="binding" class="plain"></select>
+      <p id="bad" class="warn" hidden></p>
+    </section>
+    <section class="group" id="grid-controls">
+      <h2>Group by</h2>
+      <div class="row" role="group" aria-label="Group by">
+        <button id="by-town" type="button" aria-pressed="true">Town</button>
+        <button id="by-race" type="button" aria-pressed="false">Race</button>
+      </div>
+      <label class="check"><input id="show-names" type="checkbox" checked> Template names</label>
+      <p class="hint">Click a building, or a name below, to open it alone.</p>
+      <div id="list"></div>
+    </section>
+    <section class="group" id="one-controls" hidden>
+      <div class="row"><button id="back" type="button">◂ All templates</button></div>
+      <h2>Camera</h2>
+      <div class="row" role="group" aria-label="Camera mode">
+        <button id="mode-orbit" type="button" aria-pressed="true">Orbit</button>
+        <button id="mode-walk" type="button" aria-pressed="false">Walk</button>
+        <button id="mode-noclip" type="button" aria-pressed="false">Noclip</button>
+      </div>
+      <p id="hint" class="hint"></p>
+      <div class="range-row">
+        <label for="cut">Cut away above layer</label>
+        <output id="cut-out" for="cut">all</output>
+      </div>
+      <input id="cut" type="range" min="0" max="10" step="1" value="10">
+      <label class="check"><input id="show-points" type="checkbox" checked> Points</label>
+      <p id="used" class="used-line"></p>
+      <details class="legend-box"><summary>Legend and points</summary><pre id="legend"></pre></details>
+    </section>
+  </div>
+</aside>
+
+<div id="inspect" class="panel" hidden aria-live="polite">
+  <div class="row">
+    <span class="eyebrow">Selected cell</span>
+    <button id="inspect-close" class="icon-btn" type="button" aria-label="Clear selection" style="margin-left:auto">✕</button>
+  </div>
+  <div id="inspect-node" class="node"></div>
+  <div id="inspect-entry" class="where"></div>
+  <div id="inspect-where" class="where"></div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script id="payload" type="application/json">__PAYLOAD__</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+__RENDERER__
+
+// The template gallery: every building template once, in a grid grouped by
+// town or race; one template alone with orbit, walk, noclip, a layer cut and
+// its points. Cells come resolved per palette from build_gallery.py.
+const P = JSON.parse(document.getElementById("payload").textContent);
+const TPL = P.templates;
+const $ = id => document.getElementById(id);
+const titleCase = s => s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+const raceLabel = r => r ? r[0].toUpperCase() + r.slice(1) : "No race";
+const GAP = 4, ROW_WIDTH = 120, GROUP_GAP = 10;
+
+let binding = "placed", groupBy = "town", one = null;  // one: the template shown alone
+const view = createNodeView({
+  stage: $("stage"), types: P.types, textures: P.textures, meshes: P.meshes,
+  onPick: e => onClick(e), onFrame: () => updateLabels(),
+});
+
+// ------------------------------------------------------------- cells -----
+for (const t of TPL) {
+  const bin = atob(t.cells), dv = new DataView(new Uint8Array([...bin].map(c => c.charCodeAt(0))).buffer);
+  const n = t.count;
+  t.X = new Int16Array(n); t.Y = new Int16Array(n); t.Z = new Int16Array(n); t.K = new Uint16Array(n);
+  for (let i = 0; i < n; i++) {
+    t.X[i] = dv.getInt16(i * 8, true); t.Y[i] = dv.getInt16(i * 8 + 2, true);
+    t.Z[i] = dv.getInt16(i * 8 + 4, true); t.K[i] = dv.getUint16(i * 8 + 6, true);
+  }
+  t.usedText = t.used.length
+    ? "used " + t.used.reduce((a, u) => a + u[1], 0) + "× in " + t.used.map(u => u[1] > 1 ? `${u[0]} (${u[1]})` : u[0]).join(", ")
+    : "not used by any layout or roster";
+}
+// One template's drawn cells for a palette: [{x, y, z, t, p2, i}] where i
+// is the template cell index; nothing for cells that write air or nothing.
+function resolvedCells(t, b) {
+  const res = t.res[b], fix = new Map((t.fix[b] || []).map(f => [f[0], f]));
+  const out = [];
+  for (let i = 0; i < t.count; i++) {
+    let [type, p2] = res[t.K[i]];
+    const f = fix.get(i);
+    if (f) { type = f[1]; p2 = f[2]; }
+    if (type < 0) continue;
+    out.push({ x: t.X[i], y: t.Y[i], z: t.Z[i], t: type, p2, i });
+  }
+  return out;
+}
+function toData(list) {
+  const n = list.length;
+  const X = new Int16Array(n), Y = new Int16Array(n), Z = new Int16Array(n), T = new Uint16Array(n), P2 = new Uint8Array(n);
+  list.forEach((c, k) => { X[k] = c.x; Y[k] = c.y; Z[k] = c.z; T[k] = c.t; P2[k] = c.p2; });
+  const d = cellData(X, Y, Z, T, P2);
+  d.src = list;
+  return d;
+}
+
+// -------------------------------------------------------------- grid -----
+// Groups in the order the towns appear in the layouts, then the rest.
+function groups() {
+  const map = new Map();
+  const add = (key, label, t) => { if (!map.has(key)) map.set(key, { key, label, items: [] }); map.get(key).items.push(t); };
+  if (groupBy === "town") {
+    for (const [town, label] of P.towns) map.set(town, { key: town, label, items: [] });
+    for (const t of TPL) add(t.town || "_unused", t.town ? titleCase(t.town) : "Not placed", t);
+  } else {
+    for (const t of TPL) add(t.race || "_none", raceLabel(t.race), t);
+  }
+  return [...map.values()].filter(g => g.items.length);
+}
+let layout = [];  // [{t, ox, oz, group}] and group labels
+function buildGrid() {
+  layout = [];
+  const glabels = [];
+  let z = 0, width = 0;
+  for (const g of groups()) {
+    let x = 0, rowDepth = 0;
+    glabels.push({ text: g.label, pos: [-2, 0, z - 3], group: g.key });
+    for (const t of g.items) {
+      const [sx, , sz] = t.size;
+      if (x > 0 && x + sx > ROW_WIDTH) { x = 0; z += rowDepth + GAP; rowDepth = 0; }
+      layout.push({ t, ox: x, oz: z });
+      width = Math.max(width, x + sx);
+      x += sx + GAP; rowDepth = Math.max(rowDepth, sz);
+    }
+    z += rowDepth + GROUP_GAP;
+  }
+  const list = [];
+  for (const L of layout) {
+    const t = L.t, [x0, y0, z0] = t.origin;
+    for (const c of resolvedCells(t, binding === "placed" ? "placed" : binding))
+      list.push({ ...c, x: c.x - x0 + L.ox, y: c.y - y0, z: c.z - z0 + L.oz, tpl: t });
+  }
+  view.filter.cut = Infinity;
+  view.setData(toData(list));
+  setGround(-4, -7, width + 4, z - GROUP_GAP + 4, -0.5);
+  makeLabels([
+    ...glabels.map(g => ({ text: g.text, cls: "group", pos: g.pos })),
+    ...layout.map(L => ({ text: L.t.name, cls: "tpl", pos: [L.ox + L.t.size[0] / 2 - 0.5, L.t.size[1] + 0.5, L.oz + L.t.size[2] / 2 - 0.5], tpl: L.t })),
+  ]);
+  updateBad();
+  return { width, depth: z - GROUP_GAP };
+}
+function overviewGrid(ext) {
+  const cx = ext.width / 2, cz = ext.depth / 2, r = Math.max(ext.width, ext.depth, 16) / 2;
+  view.lookAt([cx + r * 0.5, r * 1.1 + 8, cz - r * 1.6 - 6], [cx, 0, cz]);
+}
+function renderList() {
+  const list = $("list");
+  list.textContent = "";
+  for (const g of groups()) {
+    const h = document.createElement("h3");
+    h.textContent = `${g.label} · ${g.items.length}`;
+    list.appendChild(h);
+    for (const t of g.items) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "tpl-btn";
+      b.innerHTML = "<span></span><span class=used></span>";
+      b.firstChild.textContent = t.name;
+      b.lastChild.textContent = t.usedText;
+      b.onclick = () => openOne(t);
+      list.appendChild(b);
+    }
+  }
+}
+
+// ----------------------------------------------------------- ground ------
+let ground = null;
+function setGround(x0, z0, x1, z1, y) {
+  if (ground) { view.root.remove(ground); ground.geometry.dispose(); }
+  const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0);
+  g.rotateX(-Math.PI / 2);
+  ground = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x8a9a6c, side: THREE.DoubleSide,
+    polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }));
+  ground.position.set((x0 + x1) / 2, y, (z0 + z1) / 2);
+  ground.userData.y = y;
+  view.root.add(ground);
+}
+
+// ------------------------------------------------------------ labels -----
+const labelLayer = $("labels");
+let labels = [];
+function makeLabels(items) {
+  labelLayer.textContent = "";
+  labels = items.map(it => {
+    const el = document.createElement("div");
+    el.className = "label " + (it.cls || "");
+    el.textContent = it.text;
+    if (it.tpl) el.onclick = () => openOne(it.tpl);
+    labelLayer.appendChild(el);
+    return { el, pos: view.toThree(it.pos), cls: it.cls, y: it.pos[1] };
+  });
+}
+const tmp = new THREE.Vector3();
+function updateLabels() {
+  const w = window.innerWidth, h = window.innerHeight;
+  const names = $("show-names").checked, points = $("show-points").checked;
+  for (const l of labels) {
+    const on = l.cls === "point" ? points && (view.filter.cut === Infinity || l.y <= view.filter.cut) : (l.cls === "tpl" ? names : true);
+    tmp.copy(l.pos).project(view.camera);
+    const visible = on && tmp.z < 1 && tmp.z > -1 && Math.abs(tmp.x) < 1.1 && Math.abs(tmp.y) < 1.1;
+    l.el.hidden = !visible;
+    if (visible) l.el.style.transform =
+      `translate(${((tmp.x + 1) / 2 * w).toFixed(1)}px, ${((1 - tmp.y) / 2 * h).toFixed(1)}px) translate(-50%, -100%)`;
+  }
+}
+
+// ------------------------------------------------------- one template ----
+const POINT_COLORS = { doors: 0xe8a317, inside: 0x3f7ee8, room_corner: 0x9b59b6, sockets: 0x2fa36b, lights: 0xffd23f };
+let pointMarks = null;
+function buildPoints(t) {
+  if (pointMarks) { view.root.remove(pointMarks); pointMarks.traverse(o => o.geometry?.dispose()); pointMarks = null; }
+  if (!$("show-points").checked) return;
+  pointMarks = new THREE.Group();
+  for (const [group, x, y, z, face] of t.points) {
+    if (view.filter.cut !== Infinity && y > view.filter.cut) continue;
+    const m = new THREE.Mesh(new THREE.OctahedronGeometry(0.22),
+      new THREE.MeshBasicMaterial({ color: POINT_COLORS[group] ?? 0xe0464f, depthTest: false, transparent: true }));
+    m.renderOrder = 8;
+    m.position.set(x, y, z);
+    pointMarks.add(m);
+    if (face !== null && face !== undefined) {
+      const d = [[0, 1], [1, 0], [0, -1], [-1, 0]][face];
+      const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, y, z), new THREE.Vector3(x + d[0] * 0.6, y, z + d[1] * 0.6)]);
+      const line = new THREE.Line(g, new THREE.LineBasicMaterial({ color: POINT_COLORS[group] ?? 0xe0464f, depthTest: false }));
+      line.renderOrder = 8;
+      pointMarks.add(line);
+    }
+  }
+  view.root.add(pointMarks);
+}
+function oneData() {
+  return toData(resolvedCells(one, binding));
+}
+function openOne(t, keepView) {
+  one = t;
+  $("grid-controls").hidden = true;
+  $("one-controls").hidden = false;
+  $("heading").textContent = t.name;
+  const [x0, y0, z0] = t.origin, [sx, sy, sz] = t.size;
+  $("meta").textContent = `${sx} × ${sy} × ${sz} · pivot ${t.pivot.join(" × ")} · cell ${t.cell}` +
+    (t.races.length ? ` · races ${t.races.join(", ")}` : "") + ` · ${t.source}`;
+  $("used").textContent = t.usedText;
+  $("legend").textContent = t.legend.join("\n") + "\n\npoints\n" +
+    t.points.map(p => `${p[0]} ${p[1]} ${p[2]} ${p[3]}${p[5] ? " " + p[5] : ""}`).join("\n");
+  const cut = $("cut");
+  cut.min = y0; cut.max = y0 + sy - 1; cut.value = cut.max;
+  view.filter.cut = Infinity;
+  updateCutLabel();
+  inspect(null);
+  view.setData(oneData());
+  // The town's ground: the top of layer 0 (format doc §3.4), or under the
+  // template when it starts higher; walking outside the walls stands on it.
+  const gy = y0 <= 0 ? 0.5 : y0 - 0.5;
+  setGround(x0 - 3, z0 - 3, x0 + sx + 2, z0 + sz + 2, gy);
+  view.groundLevel = gy;
+  makeLabels(t.points.map(([group, x, y, z, , text]) => {
+    const id = /(?:^|\s)id=(\S+)/.exec(text || "");
+    return { text: group + (id ? " " + id[1] : ""), cls: "point", pos: [x, y + 0.45, z] };
+  }));
+  buildPoints(t);
+  updateBad();
+  if (!keepView) goOrbitOne();
+}
+function goOrbitOne() {
+  const [x0, y0, z0] = one.origin, [sx, sy, sz] = one.size;
+  const cx = x0 + sx / 2 - 0.5, cy = y0 + sy / 3, cz = z0 + sz / 2 - 0.5, r = Math.max(sx, sy, sz, 6);
+  view.lookAt([cx + r * 0.9, cy + r * 0.8, cz - r * 1.3], [cx, cy, cz]);
+}
+// Walk in through the first door, from two steps outside.
+function goWalkOne() {
+  const door = one.points.find(p => p[0] === "doors");
+  if (!door) { view.setMode("walk"); return; }
+  const [, x, y, z, face] = door, d = [[0, 1], [1, 0], [0, -1], [-1, 0]][face ?? 0];
+  view.walkFrom([x - d[0] * 2, y, z - d[1] * 2], Math.atan2(-d[0], d[1]));
+}
+function backToGrid() {
+  one = null;
+  if (pointMarks) { view.root.remove(pointMarks); pointMarks = null; }
+  inspect(null);
+  $("grid-controls").hidden = false;
+  $("one-controls").hidden = true;
+  $("heading").textContent = "All templates";
+  view.groundLevel = null;
+  $("meta").textContent = `${TPL.length} templates · ${P.source}`;
+  overviewGrid(buildGrid());
+}
+
+// -------------------------------------------------------- inspector ------
+function inspect(hit) {
+  view.select(hit);
+  const panel = $("inspect");
+  if (!hit || !one) { panel.hidden = true; return; }
+  const c = view.data.src[hit.i];
+  const legend = one.legend[one.K[c.i]];
+  $("inspect-node").textContent = view.types[c.t].name + (c.p2 ? `  param2 ${c.p2}` : "");
+  $("inspect-entry").textContent = legend;
+  $("inspect-where").textContent = `x ${hit.x}   y ${hit.y}   z ${hit.z}  (template frame)`;
+  panel.hidden = false;
+}
+$("inspect-close").onclick = () => inspect(null);
+function onClick(e) {
+  const hit = view.pick(e.clientX, e.clientY);
+  if (one) { inspect(hit); return; }
+  if (hit && hit.i >= 0) openOne(view.data.src[hit.i].tpl);
+}
+
+// --------------------------------------------------------- controls ------
+function updateBad() {
+  const el = $("bad");
+  const b = binding;
+  if (one) {
+    const bad = one.bad[b];
+    el.hidden = !bad;
+    if (bad) el.textContent = `${bad[0]} cell(s) do not resolve for this palette and are not drawn: ${bad[1]}`;
+  } else {
+    const n = TPL.filter(t => t.bad[b]).length;
+    el.hidden = !n;
+    if (n) el.textContent = `${n} template(s) have cells that do not resolve for this palette (not drawn).`;
+  }
+}
+for (const [key, label] of P.bindings) {
+  const o = document.createElement("option");
+  o.value = key; o.textContent = label;
+  $("binding").appendChild(o);
+}
+$("binding").onchange = () => {
+  binding = $("binding").value;
+  if (one) { view.setData(oneData()); updateBad(); }
+  else buildGrid();
+};
+function setGroupBy(g) {
+  groupBy = g;
+  $("by-town").setAttribute("aria-pressed", String(g === "town"));
+  $("by-race").setAttribute("aria-pressed", String(g === "race"));
+  renderList();
+  overviewGrid(buildGrid());
+}
+$("by-town").onclick = () => setGroupBy("town");
+$("by-race").onclick = () => setGroupBy("race");
+$("back").onclick = backToGrid;
+$("mode-orbit").onclick = () => { view.setMode("orbit"); goOrbitOne(); };
+$("mode-walk").onclick = goWalkOne;
+$("mode-noclip").onclick = () => view.setMode("noclip");
+$("show-points").onchange = () => { if (one) buildPoints(one); };
+view.onMode(m => {
+  for (const id of ["orbit", "walk", "noclip"]) $("mode-" + id).setAttribute("aria-pressed", String(id === m));
+  updateHint();
+});
+function updateHint() {
+  const hint = $("hint");
+  if (view.mode === "orbit") hint.innerHTML = "Drag to turn, right-drag or two fingers to pan, scroll to zoom. Click a block to inspect it.";
+  else if (view.mode === "walk") hint.innerHTML = "<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk, drag to look, <kbd>Space</kbd> jump, <kbd>Shift</kbd> run. Doors are open.";
+  else hint.innerHTML = "Flies through walls. <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly, drag to look, <kbd>Space</kbd> up, <kbd>Shift</kbd> down, hold <kbd>E</kbd> faster.";
+}
+const cutInput = $("cut");
+function updateCutLabel() {
+  $("cut-out").textContent = view.filter.cut === Infinity ? "all" : `y ${view.filter.cut}`;
+}
+let cutTimer = 0;
+cutInput.oninput = () => {
+  const v = +cutInput.value;
+  view.filter.cut = v >= +cutInput.max ? Infinity : v;
+  updateCutLabel();
+  clearTimeout(cutTimer);
+  cutTimer = setTimeout(() => {
+    view.rebuild();
+    if (one) buildPoints(one);
+    // The ground plane would hide a cut below it.
+    if (ground) ground.visible = view.filter.cut === Infinity || view.filter.cut >= ground.userData.y;
+  }, 40);
+};
+const panel = $("panel"), collapse = $("collapse");
+function setCollapsed(on) {
+  panel.classList.toggle("collapsed", on);
+  collapse.textContent = on ? "Show" : "Hide";
+  collapse.setAttribute("aria-expanded", String(!on));
+}
+collapse.onclick = () => setCollapsed(!panel.classList.contains("collapsed"));
+if (window.innerWidth < 560) setCollapsed(true);
+
+// -------------------------------------------------------------- boot -----
+function start(saved) {
+  $("status").textContent = "Building";
+  requestAnimationFrame(() => setTimeout(() => {
+    // Local preview hooks (?tpl=<name>&race=<palette key>&group=race&cut=<y>
+    // &cam=x,y,z>x,y,z&walk=1&noclip=x,y,z,yaw,pitch); the artifact frame
+    // never passes a query string, so they stay inert there.
+    const q = new URLSearchParams(location.search);
+    const race = q.get("race") || saved?.binding;
+    if (race && P.bindings.some(b => b[0] === race)) { binding = race; $("binding").value = race; }
+    if (q.get("group") === "race") groupBy = "race";
+    $("by-town").setAttribute("aria-pressed", String(groupBy === "town"));
+    $("by-race").setAttribute("aria-pressed", String(groupBy === "race"));
+    renderList();
+    const name = q.get("tpl") || saved?.tpl;
+    const t = TPL.find(t => t.name === name);
+    if (t) openOne(t); else backToGrid();
+    if (t && q.get("cut")) { cutInput.value = q.get("cut"); cutInput.oninput(); clearTimeout(cutTimer); view.rebuild(); buildPoints(t); }
+    const cam = /^(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)>(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)$/.exec(q.get("cam") || "");
+    if (cam) view.lookAt([+cam[1], +cam[2], +cam[3]], [+cam[4], +cam[5], +cam[6]]);
+    if (t && q.get("walk")) goWalkOne();
+    if (q.get("noclip")) { const w = q.get("noclip").split(",").map(Number); view.walkFrom([w[0], w[1], w[2]], w[3] || 0, "noclip"); view.walker.pitch = w[4] || 0; }
+    view.step();
+    updateHint();
+    $("status").hidden = true;
+    view.start();
+  }, 0));
+}
+window.claude?.hot?.snapshot?.(() => ({ tpl: one?.name, binding }));
+window.__gallery = { view, openOne, backToGrid, TPL };
+if (window.claude?.hot?.ready) window.claude.hot.ready(start);
+else start(window.claude?.hot?.data ?? {});
+</script>
