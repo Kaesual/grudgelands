@@ -202,6 +202,9 @@ it).
   the box; painting over or emptying one part removes the whole object.
 - **Points** (the list under the grid, or click a marker with Move point):
   move only; the group, order, face and attributes never change (ruling 28).
+  A planted template's stems are `trees` points like any other (moved on
+  its ground layer); its trees and undergrowth are not drawn (the game grows
+  them at load), and a cell picked from a `late` entry is painted `late`.
 - **Undo, redo** (Ctrl+Z, Ctrl+Y), **Reset** (back to the saved file), the
   "changed since commit" outline (cells whose legend entry differs from the
   file at HEAD) and a draft in local storage, offered again after a crash or
