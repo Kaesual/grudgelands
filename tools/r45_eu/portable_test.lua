@@ -970,7 +970,10 @@ do
 			"E not offered: " .. entry)
 	end
 	choose(smith, "T2 prefix: +5 Strength")
-	says(smith.formspec, "Replaces T3 Strength with T2 Strength.", "E the overwrite warning")
+	-- Round 56 (lane AFFIX): the line names what it replaces; a higher tier
+	-- turns it orange with the overwrite warning as its tooltip.
+	says(smith.formspec, "Replaces: Prefix: +5 Strength (T3)", "E the replaced enchant")
+	has(smith.formspec, ";Replaces T3 Strength with T2 Strength.]", "E the overwrite warning")
 
 	-- Cancel returns the exact item and the materials.
 	local placed = smith.inv:get_stack(TARGET, 1)
@@ -1430,6 +1433,15 @@ do
 	geometry_ok(enchant_fs, "P enchant box")
 	choose(smith, "T2 prefix: +5 Strength")
 	geometry_ok(smith.formspec, "P enchant box with the warning")
+	-- Round 56: replacing the prefix, at the forge and away from it.
+	stock_enchant(smith, J.station_operation("enchant:sword:prefix:dex:t3"))
+	choose(smith, "T3 prefix: +4 Dexterity")
+	says(smith.formspec, "Replaces: Prefix: +5 Strength (T3)", "P the replaced enchant")
+	geometry_ok(smith.formspec, "P enchant box replacing")
+	nodes = {}
+	geometry_ok(open(smith), "P enchant box replacing away from the forge")
+	lacks(smith.formspec, "Crafting this will", "P no XP hint away from the forge")
+	at_forge(smith)
 	-- The upgrade box with the warning.
 	upgrade_box(smith)
 	click(smith, {[OF.levels] = "1", key_enter_field = OF.levels})
