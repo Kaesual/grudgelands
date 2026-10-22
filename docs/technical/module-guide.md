@@ -2542,8 +2542,9 @@ tools](#player-meta-read-by-external-tools).
   an authored row (`M.place`: open ground only, never a path, built cell,
   socket or the cell before it, a door's approach, the central actor
   clearance or before a window) and the house touches (`M.dress_house`,
-  `M.houses_from`, `decor_kit.dress_rooms` in the start-town and capital
-  plot builders). The Round 20 catalogue's `props` rows and the Round 14
+  `M.houses_from`, `decor_kit.dress_rooms` in the capital plot builders and
+  Hearthpine; in the other five start towns the touches are template
+  content since Round 56). The Round 20 catalogue's `props` rows and the Round 14
   builder's `DECOR` table are kit pieces; the four rift candidates keep
   their four `props` positions (`rift_core.lua` reads them) and carry the
   rest as `decor`. Fixture `tools/r36_w` (every composition's bounds,
@@ -2553,6 +2554,35 @@ tools](#player-meta-read-by-external-tools).
   param2 + 2, never at a wall it could have its back to; `engine.sh`
   measures the raised half of Highcourt's seats in the engine); renders
   `tools/r36_w/render.py`, the whole roster `tools/r36_p`.
+  **Round 56 (building templates):** the six start towns build their
+  buildings from text templates
+  ([building-template-format.md](building-template-format.md)):
+  `building_templates/templates/*.tpl` and one
+  `building_templates/layouts/<town>.layout` each, read at load by
+  `wp13/templates.lua` (a malformed file stops the load with file, line and
+  reason; `templates.town(id)` parses a town's layout and templates once,
+  `town.part(place)` fills a part for the placement's palettes and
+  `parts.stamp` places it as before; `templates.sockets` places a town socket
+  that names its `building` from that template's `sockets` point). The
+  templates hold what the towns used to write into a building after stamping
+  it (belfries, the shrine spire, market lanterns, gable lights, wheels,
+  indoor crates, cressets, deck braziers, room and apron decor); the streets,
+  terrain, podiums, parapets, outer stairs, deck ropes and lanterns, trees,
+  the pane pass and Hearthpine's decor stay town code
+  (`tools/building_templates/freeze_report.txt`). The templates are the
+  source of truth; the generators the start towns alone used are gone
+  (`buildings.barn`, the inn, barn, carver, lodge and smoker kits), the
+  capitals still build from the generators. Gate:
+  `python3 tools/building_templates/check.py` (structure always, the editor
+  palette, reachability and the entrance only for cells edited against the
+  commit `building_templates/BASELINE` names; `--self-test` runs every rule);
+  `tools/check_upgrade.py` wants a map reset whenever what the towns build
+  changes against the pushed commit (`tools/building_templates/town_identity.lua`:
+  the start towns' identities and point digests, the capitals' build
+  digests). The world-folder layout cache digests the `.tpl` and `.layout`
+  files with the mapgen sources. Exporter `tools/building_templates/export.py`
+  (`--check`: the committed templates are the export of the pre-freeze
+  generators), fixture `tools/r56_freeze_towns`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. A surface row may carry `bands` (seven content refs by
   `y % 7 + 1`) and `band_depth` (Round 51 T4, the badlands' clay bands from
