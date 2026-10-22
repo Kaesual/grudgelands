@@ -227,6 +227,10 @@ def _parse_legend(t, lines, i, fail):
             entry["name"] = attrs[0][1]
             allowed = ("variant", "channel", "o", "else") if kind == "role" else ("o",)
             for k, v in attrs[1:]:
+                if k is None and v == "late" and "late" not in entry:
+                    # written after planting (format doc §4.2)
+                    entry["late"] = True
+                    continue
                 if k not in allowed:
                     fail(number, "unknown attribute '%s' on a %s" % (k, kind))
                 entry[k] = v
@@ -328,7 +332,7 @@ def entry_key(entry, legend=None):
     if entry["kind"] == "race":
         return ("race", tuple(sorted((race, ref(key)) for race, key in entry["choices"].items())))
     attrs = []
-    for k in ("variant", "channel", "o", "else"):
+    for k in ("variant", "channel", "o", "else", "late"):
         if k in entry:
             attrs.append((k, ref(entry[k]) if k == "else" else entry[k]))
     return (entry["kind"], entry["name"], tuple(attrs))
@@ -516,6 +520,8 @@ def resolve(template, palettes, binding):
             name = entry_node(entry, binding, palettes)
         except ValueError as e:
             return str(e)
+        if name == "air":
+            return FORCE_AIR
         if name is None:
             fallback = entry.get("else", UNCHANGED)
             if fallback in (FORCE_AIR, UNCHANGED):

@@ -27,10 +27,11 @@ const WALL_CYCLE = [2, 5, 3, 4];
 
 // ------------------------------------------------------------- entries ---
 // A legend entry's text as fields: {kind, name, variant, channel, o, else,
-// choices}. o is [kind, value] or null.
+// late, choices}. o is [kind, value] or null; late marks a cell a planted
+// template writes after its trees (format doc §4.2).
 export function parseEntry(text) {
   const words = text.trim().split(/\s+/);
-  const e = { kind: words[0], name: null, variant: null, channel: null, o: null, else: null, choices: null };
+  const e = { kind: words[0], name: null, variant: null, channel: null, o: null, else: null, late: false, choices: null };
   if (e.kind === "race") {
     e.choices = {};
     for (const w of words.slice(1)) { const [race, key] = w.split("="); e.choices[race] = key; }
@@ -38,6 +39,7 @@ export function parseEntry(text) {
   }
   e.name = words[1];
   for (const w of words.slice(2)) {
+    if (w === "late") { e.late = true; continue; }
     const i = w.indexOf("=");
     const k = w.slice(0, i), v = w.slice(i + 1);
     if (k === "o") { const [kind, n] = v.split(":"); e.o = [kind, +n]; }
@@ -58,6 +60,7 @@ export function entryText(e) {
   }
   if (e.o) out.push(`o=${e.o[0]}:${e.o[1]}`);
   if (e.kind === "role" && e.else) out.push("else=" + e.else);
+  if (e.late) out.push("late");
   return out.join(" ");
 }
 
@@ -120,7 +123,8 @@ export class Doc {
     const e = parseEntry(text);
     if (e.kind !== "role" || e.else || !this.optional || !this.optional.has(e.name)) return text;
     const same = f => f.kind === "role" && f.name === e.name && f.variant === e.variant &&
-      f.channel === e.channel && (f.o ? f.o.join(":") : "") === (e.o ? e.o.join(":") : "");
+      f.channel === e.channel && (f.o ? f.o.join(":") : "") === (e.o ? e.o.join(":") : "") &&
+      f.late === e.late;
     const found = this.keys.map(k => this.entries.get(k)).find(same);
     if (found) return found.text;
     e.else = "air";
@@ -356,10 +360,11 @@ export class Doc {
     if (!e || depth > 8) return "?";
     if (e.kind === "race")
       return "race " + Object.keys(e.choices).sort().map(r => `${r}=<${this.identity(e.choices[r], entries, depth + 1)}>`).join(" ");
-    if (e.kind === "node") return `node ${e.name} o=${e.o ? e.o.join(":") : ""}`;
+    const late = e.late ? " late" : "";
+    if (e.kind === "node") return `node ${e.name} o=${e.o ? e.o.join(":") : ""}${late}`;
     let fb = e.else || "unchanged";
     if (!["air", "unchanged"].includes(fb)) fb = `<${this.identity(fb, entries, depth + 1)}>`;
-    return `role ${e.name} variant=${e.variant || ""} channel=${e.channel || ""} o=${e.o ? e.o.join(":") : ""} else=${fb}`;
+    return `role ${e.name} variant=${e.variant || ""} channel=${e.channel || ""} o=${e.o ? e.o.join(":") : ""} else=${fb}${late}`;
   }
   // Cell indices whose entry differs from the file at HEAD (all of them
   // when the template is not in HEAD).
@@ -461,6 +466,7 @@ export function resolveKey(doc, key, binding, P, depth = 0) {
   if (key === AIR || key === UNCHANGED) return key;
   const e = doc.entries.get(key);
   if (!e) return { error: `undefined key ${key}` };
+  if (e.kind === "node" && e.name === "air") return AIR;
   if (e.kind === "race") {
     const c = e.choices[binding.main.race] ?? e.choices["*"];
     if (c === undefined) return { error: `race switch ${key} covers no ${binding.main.race}` };

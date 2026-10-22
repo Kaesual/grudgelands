@@ -136,17 +136,22 @@ def parse_entry(text, cell, facts):
                 entry["o"] = value
             elif key == "else" and value:
                 entry["fallback"] = value
+            elif word == "late" and not entry.get("late"):
+                entry["late"] = True
             else:
                 raise ValueError("bad role option " + word)
         return entry
     if kind == "node":
-        if len(words) < 2 or not re.match(r"^[\w]+:[\w]+$", words[1]):
+        if len(words) < 2 or not (re.match(r"^[\w]+:[\w]+$", words[1]) or words[1] == "air"):
             raise ValueError("bad node name %s" % (words[1] if len(words) > 1 else ""))
         entry = {"kind": "node", "name": words[1], "o": None}
         for word in words[2:]:
-            if not word.startswith("o="):
+            if word == "late" and not entry.get("late"):
+                entry["late"] = True
+            elif not word.startswith("o="):
                 raise ValueError("bad node option " + word)
-            entry["o"] = word[2:]
+            else:
+                entry["o"] = word[2:]
         return entry
     if kind == "race":
         entry = {"kind": "race", "map": {}, "order": []}
@@ -511,16 +516,19 @@ def entry_text(t, key, depth=0):
     entry = t["legend"].get(key)
     if entry is None or depth > 8:
         return "?"
+    # a cell written after planting differs from the same entry before it
+    late = " late" if entry.get("late") else ""
     if entry["kind"] == "node":
-        return "node %s o=%s" % (entry["name"], entry["o"])
+        return "node %s o=%s%s" % (entry["name"], entry["o"], late)
     if entry["kind"] == "race":
         return "race " + " ".join("%s=<%s>" % (race, entry_text(t, entry["map"][race], depth + 1))
                                   for race in sorted(entry["map"]))
     fallback = entry["fallback"]
     if fallback not in (None, "air", "unchanged"):
         fallback = "<%s>" % entry_text(t, fallback, depth + 1)
-    return "role %s variant=%s channel=%s o=%s else=%s" % (
-        entry["role"], entry["variant"], entry["channel"], entry["o"], fallback or "unchanged")
+    return "role %s variant=%s channel=%s o=%s else=%s%s" % (
+        entry["role"], entry["variant"], entry["channel"], entry["o"], fallback or "unchanged",
+        late)
 
 
 class Context:
@@ -761,6 +769,14 @@ def check_template(t, contexts, facts, nodes, report, baseline, palette_roles,
                 if not standing(*position):
                     report.error("point_place", name, position, "the %s point is not a "
                                  "standing point (%s)" % (point["group"], context.label))
+            elif point["group"] == "trees":
+                # a stem stands on the part's own ground (§3.4, §4.2): the
+                # ground cell of its column is a cell, not air
+                ground = cells.get((point["x"], 0, point["z"]))
+                if ground is None or ground[0] == "air":
+                    report.error("point_place", name, position, "the stem's ground cell "
+                                 "(y 0) is %s (%s)" % ("air" if ground else "not written",
+                                                        context.label))
         if len(corners) % 2:
             report.error("point_pair", name, None, "room_corner points come in pairs")
         for a, b in zip(corners[0::2], corners[1::2]):
