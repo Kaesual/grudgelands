@@ -20,7 +20,12 @@
 --     and palettes each capital uses;
 --   * every template carries `extent` (the part's non-air cells, x0 z0 x1
 --     z1) and `top` (its highest cell) as meta: the plot builders measure
---     the part as the generator built it (format doc §4.1).
+--     the part as the generator built it (format doc §4.1);
+--   * a part that planted trees or scattered undergrowth (the groves,
+--     orchards and copses; Round 56 lane TREES) is a planted template
+--     (format doc §4.2): its cells are the part before planting, its stems
+--     `trees` points in planting order, `plant_spacing` and `undergrowth`
+--     meta, and the cells written after planting `late` entries.
 --
 -- LuaJIT only; a tool, never shipped.
 
@@ -276,6 +281,67 @@ local function has_door_tag(tags)
 	return false
 end
 
+-- A planted part (format doc §4.2) -> its content: the cells as they stood
+-- when the part began planting (with what each replaced before then), the
+-- cells written after planting as `late` entries, the stems as `trees`
+-- points in planting order, its tree spacing and its undergrowth.
+local planted_lines = {}
+local function planted_content(pl)
+	local plant, pplant = pl.stamp.planting, pl.pstamp.planting
+	local where = pl.capital .. ":" .. pl.id
+	assert(not plant.bad, where .. " cannot be a planted template: " .. tostring(plant.bad))
+	assert(pplant and #pplant.stems == #plant.stems, where .. ": the probe planting differs")
+	pl.planted, pl.bb_keys = true, {}
+	local final, pfinal = {}, {}
+	for index, cell in ipairs(pl.stamp.cells) do
+		local key = key3(cell.x, cell.y, cell.z)
+		final[key], pfinal[key] = cell, pl.pstamp.cells[index]
+	end
+	local function cut(key, cell, twin, prev, pprev, late)
+		local prev_entry
+		if prev then
+			prev_entry = label(lib.parts, prev.name, prev.param2, pprev.name, pl.candidates)
+		end
+		local entry = with_fallback(label(lib.parts, cell.name, cell.param2, twin.name,
+			pl.candidates), prev_entry)
+		entry.late = late or nil
+		pl.content[key] = {x = cell.x, y = cell.y, z = cell.z, entry = entry,
+			name = cell.name, param2 = cell.param2}
+	end
+	for key, cell in pairs(plant.snapshot) do
+		if not plant.late[key] then
+			cut(key, cell, pplant.snapshot[key], plant.prev[key], pplant.prev[key])
+		end
+	end
+	for key, writes in pairs(plant.late) do
+		local cell = assert(final[key], where .. ": a late cell the part no longer holds")
+		-- what the cell held before: the earlier late write, or the cell
+		-- before planting
+		local prev, pprev = plant.snapshot[key], pplant.snapshot[key]
+		if writes > 1 then prev, pprev = pl.stamp.prev[key], pl.pstamp.prev[key] end
+		cut(key, cell, pfinal[key], prev, pprev, true)
+	end
+	for key in pairs(final) do
+		assert(pl.content[key] or plant.planted[key], where .. ": the cell " .. key ..
+			" is neither content nor planted")
+	end
+	pl.stems = {}
+	for index, stem in ipairs(plant.stems) do
+		local twin = pplant.stems[index]
+		assert(twin.x == stem.x and twin.z == stem.z and twin.kind == stem.kind,
+			where .. ": the probe stems differ")
+		assert(stem.spacing == plant.stems[1].spacing, where .. ": the tree spacing changes")
+		assert(type(stem.height) == "number", where .. ": a stem without a height")
+		pl.stems[index] = {x = stem.x, y = 0, z = stem.z, kind = stem.kind,
+			height = stem.height}
+	end
+	pl.plant_spacing = plant.stems[1] and plant.stems[1].spacing or nil
+	pl.undergrowth = plant.undergrowth
+	planted_lines[#planted_lines + 1] = table.concat({"  - ", pl.id, ": ", #pl.stems,
+		" stems", plant.undergrowth and ", undergrowth" or "", ", ", plant.late_count,
+		" writes after planting"})
+end
+
 -- Cut one blueprint (`which` = "core" or a plot index).
 local function export_blueprint(config, cap, which)
 	local real = fb.build_capital(src, config.key, which, "real")
@@ -408,11 +474,19 @@ local function export_blueprint(config, cap, which)
 					pl.candidates), prev_entry),
 				name = cell.name, param2 = cell.param2}
 		end
+		if pl.stamp.planting then
+			-- a planted part keeps its whole cut (trees and all) as its
+			-- identity: the freeze's templates stay the templates
+			pl.old_content, pl.content = pl.content, {}
+			planted_content(pl)
+		end
 		for group, list in pairs(pl.stamp.points) do pl.points[group] = fb.copy(list) end
+		pl.points.trees = pl.stems
 		local extent, top = measure(cells)
 		pl.meta = {}
 		for key, value in pairs(pl.stamp.meta) do pl.meta[key] = value end
 		pl.meta.extent, pl.meta.top = extent, top
+		pl.meta.plant_spacing, pl.meta.undergrowth = pl.plant_spacing, pl.undergrowth
 	end
 
 	-- 2. the building-bound writes, in write order
@@ -465,6 +539,14 @@ local function export_blueprint(config, cap, which)
 				bb_candidates(pl))
 			pl.content[key] = {x = x, y = y, z = z, name = write.name, param2 = param2,
 				entry = with_fallback(entry, before and before.entry), step = step}
+			if pl.planted then
+				-- written over the grown trees: after planting
+				pl.old_content[key] = {x = x, y = y, z = z, name = write.name,
+					param2 = param2, entry = with_fallback(label(real.parts, write.name, param2,
+						probe.writes[index].name, bb_candidates(pl)), before and before.entry)}
+				pl.content[key].entry.late = true
+				pl.bb_keys[key] = true
+			end
 			pl.steps[step.name] = (pl.steps[step.name] or 0) + 1
 			bb[index] = pl
 		end
@@ -648,26 +730,55 @@ for _, config in ipairs(CAPITALS) do
 				".lua line ", table.concat(step.lines, ", "), ")")
 		end
 	end
+	say("planted templates (format doc §4.2; stems, undergrowth, writes after planting):")
+	for _, line in ipairs(planted_lines) do say(line) end
+	planted_lines = {}
 	cap.core, cap.plots = core, plots
 	rosters[#rosters + 1] = cap
 	say("placements: ", #core, " in the core, ", #plots, " on the district plots")
 end
 
--- render and merge identical templates
+-- render and merge identical templates. A planted template's identity is
+-- its part as the generator built it, trees and all (the freeze's), and its
+-- users must agree on the planted form but for the stems' `height=` (the
+-- tree generator does not read it; the first user's is written).
+local function without_heights(text)
+	return (text:gsub("\n(trees %-?%d+ %-?%d+ %-?%d+) height=%-?%d+", "\n%1"))
+end
 local templates, template_order = {}, {}
 for _, pl in ipairs(placements_all) do
 	local rendered = lib.render(pl)
 	local body = rendered.head .. "\n" .. rendered.tail
+	local identity = body
+	if pl.planted then
+		local meta, points = {}, {}
+		for key, value in pairs(pl.stamp.meta) do
+			if key ~= "plant_spacing" and key ~= "undergrowth" then meta[key] = value end
+		end
+		for group, list in pairs(pl.points) do
+			if group ~= "trees" then points[group] = list end
+		end
+		local old = lib.render({content = pl.old_content, points = points, moved = pl.moved,
+			stamp = {meta = meta}, w = pl.w, d = pl.d, id = pl.id})
+		identity = old.head .. "\n" .. old.tail
+	end
 	local found
 	for _, name in ipairs(template_order) do
-		if templates[name].body == body then found = templates[name] end
+		if templates[name].identity == identity then found = templates[name] end
+	end
+	if found and found.body ~= body then
+		assert(without_heights(found.body) == without_heights(body), pl.capital .. ":" ..
+			pl.id .. ": its planted form differs from " .. found.name .. "'s")
+		say("  - ", pl.capital, ":", pl.id, " shares ", found.name,
+			" with other stem heights (the tree generator does not read them)")
 	end
 	if not found then
 		local name = pl.capital .. "_" .. pl.id
 		-- a district plot sharing a core building's id (Lethariel's two
 		-- mere shrines) names its template after the district plot
 		if templates[name] then name = pl.capital .. "_plot_" .. pl.id end
-		found = {name = name, body = body, rendered = rendered, users = {}, races = {}}
+		found = {name = name, body = body, identity = identity, rendered = rendered,
+			users = {}, races = {}}
 		assert(not templates[found.name], "two templates named " .. found.name)
 		templates[found.name] = found
 		template_order[#template_order + 1] = found.name
@@ -825,19 +936,30 @@ for _, cap in ipairs(rosters) do
 			end
 			local got = lib.cells_of(loader.part(parsed[pl.template], pl.id, pl.race,
 				palette_of).buffer)
-			for key, cell in pairs(pl.content) do
+			-- a planted template reads back as the part its generator built,
+			-- trees and all (with the building-bound writes over it)
+			local want = pl.content
+			if pl.planted then
+				want = {}
+				for _, cell in ipairs(pl.stamp.cells) do
+					want[key3(cell.x, cell.y, cell.z)] = cell
+				end
+				for key in pairs(pl.bb_keys) do want[key] = pl.content[key] end
+			end
+			for key, cell in pairs(want) do
 				assert(got[key] == cell.name .. "/" .. cell.param2, pl.template .. " for " ..
 					pl.capital .. ":" .. pl.id .. ": the cell " .. key .. " reads back as " ..
 					tostring(got[key]) .. ", not " .. cell.name .. "/" .. cell.param2)
 			end
 			for key in pairs(got) do
-				assert(pl.content[key], pl.template .. ": an extra cell " .. key)
+				assert(want[key], pl.template .. ": an extra cell " .. key)
 			end
 		end
 	end
 end
 say("")
 say("every template reads back through wp13/templates.lua as exactly the cells",
-	" cut for each of its placements")
+	" cut for each of its placements (a planted one as exactly its generator's",
+	" part, its trees planted by the loader)")
 
 print(table.concat(report, "\n"))

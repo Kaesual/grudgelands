@@ -11,6 +11,13 @@ building-bound steps (their writes are template content):
   - core: the braziers between the hall's bays (highcourt.lua line 649)
   - core: the hangings on the hall's aisle walls (highcourt.lua line 681)
   - plot: room and apron decor (decor.dress_rooms) (highcourt_plot.lua line 417)
+planted templates (format doc §4.2; stems, undergrowth, writes after planting):
+  - orchard_east: 6 stems, undergrowth, 6 writes after planting
+  - orchard_west: 6 stems, undergrowth, 6 writes after planting
+  - market_grove: 16 stems, undergrowth, 6 writes after planting
+  - market_orchard: 6 stems, undergrowth, 6 writes after planting
+  - lore_quiet_grove: 16 stems, undergrowth, 6 writes after planting
+  - homes_orchard: 6 stems, undergrowth, 6 writes after planting
 placements: 21 in the core, 37 on the district plots
 
 == dur_brannoc (dwarf)
@@ -20,6 +27,8 @@ building-bound steps (their writes are template content):
   - core: the stone-block bands inlaid in the hall's floor (dur_brannoc.lua line 526, 527, 532)
   - core: the braziers between the hall's bays (dur_brannoc.lua line 545)
   - plot: room and apron decor (decor.dress_rooms) (dur_brannoc_plot.lua line 423)
+planted templates (format doc §4.2; stems, undergrowth, writes after planting):
+  - forge_copse: 16 stems, undergrowth, 6 writes after planting
 placements: 18 in the core, 36 on the district plots
 
 == lethariel (elf)
@@ -27,6 +36,17 @@ points moved into templates:
   - socket override star_hall_quest -> star_hall: the part's socket on its doorstep, tagged door (derived from the placement)
 building-bound steps (their writes are template content):
   - plot: room and apron decor (decor.dress_rooms) (lethariel_plot.lua line 353)
+planted templates (format doc §4.2; stems, undergrowth, writes after planting):
+  - sacred_grove: 16 stems, undergrowth, 6 writes after planting
+  - bough_west: 0 stems, undergrowth, 265 writes after planting
+  - bough_east: 0 stems, undergrowth, 254 writes after planting
+  - market_grove: 16 stems, undergrowth, 6 writes after planting
+  - market_orchard: 6 stems, undergrowth, 6 writes after planting
+  - martial_grove: 16 stems, undergrowth, 6 writes after planting
+  - martial_bough: 0 stems, undergrowth, 265 writes after planting
+  - mere_mourning: 16 stems, undergrowth, 6 writes after planting
+  - homes_bough: 0 stems, undergrowth, 254 writes after planting
+  - homes_grove: 16 stems, undergrowth, 6 writes after planting
 placements: 18 in the core, 30 on the district plots
 
 == nhal_veyr (undead)
@@ -36,6 +56,9 @@ building-bound steps (their writes are template content):
   - core: the grave-slab bands inlaid in the mausoleum's floor (nhal_veyr.lua line 599, 600, 605)
   - core: the braziers between the mausoleum's bays (nhal_veyr.lua line 618)
   - plot: room and apron decor (decor.dress_rooms) (nhal_veyr_plot.lua line 469)
+planted templates (format doc §4.2; stems, undergrowth, writes after planting):
+  - market_copse: 16 stems, undergrowth, 6 writes after planting
+  - vigil_copse: 16 stems, undergrowth, 6 writes after planting
 placements: 19 in the core, 42 on the district plots
 
 == gor_drazhak (orc)
@@ -48,13 +71,16 @@ building-bound steps (their writes are template content):
   - core: the braziers between the hall's bays (gor_drazhak.lua line 581)
   - plot: the breastwork over a flat deck (gor_drazhak_plot.lua line 333)
   - plot: room and apron decor (decor.dress_rooms) (gor_drazhak_plot.lua line 434)
+planted templates (format doc §4.2; stems, undergrowth, writes after planting):
 placements: 18 in the core, 30 on the district plots
 
 == kezamba (troll)
 points moved into templates:
 building-bound steps (their writes are template content):
   - plot: room and apron decor (decor.dress_rooms) (kezamba_plot.lua line 330)
+planted templates (format doc §4.2; stems, undergrowth, writes after planting):
 placements: 12 in the core, 36 on the district plots
+  - nhal_veyr:vigil_copse shares nhal_veyr_market_copse with other stem heights (the tree generator does not read them)
 
 == highcourt placements (id -> template)
   core kings_hall -> highcourt_kings_hall
@@ -387,7 +413,7 @@ placements: 12 in the core, 36 on the district plots
 
 == templates: 210 for 317 placements
 templates shared by several placements: 42
-cells 741351 (role 180142, fixed-node 11319, force-air 549890)
+cells 741351 (role 179908, fixed-node 914, force-air 560529)
 
 -- highcourt_kings_hall (highcourt:kings_hall)
    cells 34809, legend 62, role cells 6709, fixed-node cells 0, force-air cells 28100, race switches 0, undecided 0
@@ -477,13 +503,13 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      6x line 337: layout.green(buf, palette, 13, sockets, points.doors)
 
 -- highcourt_orchard_east (highcourt:orchard_east)
-   cells 3927, legend 33, role cells 331, fixed-node cells 589, force-air cells 3007, race switches 0, undecided 0
+   cells 3927, legend 8, role cells 310, fixed-node cells 0, force-air cells 3617, race switches 0, undecided 0
    town writes kept in its box (orchard_east): 45
      27x line 826: dressing.undergrowth(buf, human, -RADIUS, -RADIUS, RADIUS, RADIUS, 5,
      18x line 896: dressing.thin_cover(buf)
 
 -- highcourt_orchard_west (highcourt:orchard_west)
-   cells 3927, legend 33, role cells 331, fixed-node cells 589, force-air cells 3007, race switches 0, undecided 0
+   cells 3927, legend 8, role cells 310, fixed-node cells 0, force-air cells 3617, race switches 0, undecided 0
    town writes kept in its box (orchard_west): 58
      32x line 826: dressing.undergrowth(buf, human, -RADIUS, -RADIUS, RADIUS, RADIUS, 5,
      26x line 896: dressing.thin_cover(buf)
@@ -619,12 +645,12 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      60x line 420: parts.resolve_panes(buf)
 
 -- highcourt_market_grove (highcourt:market_grove)
-   cells 5625, legend 29, role cells 247, fixed-node cells 1179, force-air cells 4199, race switches 0, undecided 0
+   cells 5625, legend 4, role cells 231, fixed-node cells 0, force-air cells 5394, race switches 0, undecided 0
    town writes kept in its box (market_grove): 3
      3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 
 -- highcourt_market_orchard (highcourt:market_orchard)
-   cells 3927, legend 33, role cells 331, fixed-node cells 589, force-air cells 3007, race switches 0, undecided 0
+   cells 3927, legend 8, role cells 310, fixed-node cells 0, force-air cells 3617, race switches 0, undecided 0
    town writes kept in its box (market_orchard): 3
      3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 
@@ -745,7 +771,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 
 -- highcourt_lore_quiet_grove (highcourt:lore_quiet_grove)
-   cells 5625, legend 26, role cells 248, fixed-node cells 1464, force-air cells 3913, race switches 0, undecided 0
+   cells 5625, legend 4, role cells 231, fixed-node cells 0, force-air cells 5394, race switches 0, undecided 0
    town writes kept in its box (lore_quiet_grove): 3
      3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 
@@ -799,7 +825,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      36x line 420: parts.resolve_panes(buf)
 
 -- highcourt_homes_orchard (highcourt:homes_orchard)
-   cells 4641, legend 33, role cells 379, fixed-node cells 589, force-air cells 3673, race switches 0, undecided 0
+   cells 4641, legend 8, role cells 352, fixed-node cells 0, force-air cells 4289, race switches 0, undecided 0
    town writes kept in its box (homes_orchard): 3
      3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 
@@ -916,7 +942,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      60x line 426: parts.resolve_panes(buf)
 
 -- dur_brannoc_forge_copse (dur_brannoc:forge_copse)
-   cells 5625, legend 24, role cells 248, fixed-node cells 1071, force-air cells 4306, race switches 0, undecided 0
+   cells 5625, legend 4, role cells 231, fixed-node cells 0, force-air cells 5394, race switches 0, undecided 0
    town writes kept in its box (forge_copse): 3
      3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
 
@@ -1114,7 +1140,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      52x line 838: parts.resolve_panes(buf)
 
 -- lethariel_sacred_grove (lethariel:sacred_grove)
-   cells 7225, legend 32, role cells 314, fixed-node cells 1993, force-air cells 4918, race switches 0, undecided 0
+   cells 7225, legend 4, role cells 295, fixed-node cells 0, force-air cells 6930, race switches 0, undecided 0
    town writes kept in its box (sacred_grove): 99
      30x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
      38x line 762: dressing.undergrowth(buf, elf_palette, -RADIUS, -RADIUS, RADIUS,
@@ -1127,7 +1153,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      3x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
 
 -- lethariel_bough_west (lethariel:bough_west, lethariel:martial_bough)
-   cells 1815, legend 16, role cells 360, fixed-node cells 0, force-air cells 1455, race switches 0, undecided 0
+   cells 1815, legend 14, role cells 344, fixed-node cells 29, force-air cells 1442, race switches 0, undecided 0
    town writes kept in its box (bough_west): 64
      3x line 679: paved_prop("bench", seat[1], seat[2], x2, z2, function()
      34x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
@@ -1140,7 +1166,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      10x line 356: parts.resolve_panes(buf)
 
 -- lethariel_bough_east (lethariel:bough_east, lethariel:homes_bough)
-   cells 1694, legend 16, role cells 349, fixed-node cells 0, force-air cells 1345, race switches 0, undecided 0
+   cells 1694, legend 14, role cells 333, fixed-node cells 29, force-air cells 1332, race switches 0, undecided 0
    town writes kept in its box (bough_east): 97
      62x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
      19x line 762: dressing.undergrowth(buf, elf_palette, -RADIUS, -RADIUS, RADIUS,
@@ -1198,7 +1224,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      60x line 356: parts.resolve_panes(buf)
 
 -- lethariel_market_grove (lethariel:market_grove, lethariel:martial_grove, lethariel:mere_mourning, lethariel:homes_grove)
-   cells 5625, legend 26, role cells 248, fixed-node cells 1464, force-air cells 3913, race switches 0, undecided 0
+   cells 5625, legend 4, role cells 231, fixed-node cells 0, force-air cells 5394, race switches 0, undecided 0
    town writes kept in its box (market_grove): 44
      32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
      3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
@@ -1219,7 +1245,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      8x line 356: parts.resolve_panes(buf)
 
 -- lethariel_market_orchard (lethariel:market_orchard)
-   cells 3927, legend 31, role cells 330, fixed-node cells 589, force-air cells 3008, race switches 0, undecided 0
+   cells 3927, legend 7, role cells 309, fixed-node cells 0, force-air cells 3618, race switches 0, undecided 0
    town writes kept in its box (market_orchard): 63
      48x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
      3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
@@ -1414,7 +1440,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      60x line 472: parts.resolve_panes(buf)
 
 -- nhal_veyr_market_copse (nhal_veyr:market_copse, nhal_veyr:vigil_copse)
-   cells 5625, legend 32, role cells 236, fixed-node cells 347, force-air cells 5042, race switches 0, undecided 0
+   cells 5625, legend 4, role cells 231, fixed-node cells 0, force-air cells 5394, race switches 0, undecided 0
    town writes kept in its box (market_copse): 3
      3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
    town writes kept in its box (vigil_copse): 3
@@ -2060,7 +2086,7 @@ cells 741351 (role 180142, fixed-node 11319, force-air 549890)
      3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
      2x line 265: plot.decorate(buf, palette, area)
 
-every template reads back through wp13/templates.lua as exactly the cells cut for each of its placements
+every template reads back through wp13/templates.lua as exactly the cells cut for each of its placements (a planted one as exactly its generator's part, its trees planted by the loader)
 capital parts identical to a start town's template: 2
   highcourt_service_yard = hearthpine_workyard
   kezamba_trade_shed = kapok_drying_shed

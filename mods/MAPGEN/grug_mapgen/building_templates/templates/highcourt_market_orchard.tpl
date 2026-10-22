@@ -5,184 +5,159 @@ pivot 21 11
 origin 0 0 0
 size 21 17 11
 cell 1
-meta extent=[0,0,20,10] hedge=18 peak=11 top=16 trees=3
+meta extent=[0,0,20,10] hedge=18 peak=11 top=16 trees=3 undergrowth=[0,4,20,10,7]
 races human
 
 legend
-A node default:apple
-B node default:leaves
-C node default:tree
-D node grug_trees:apple_base o=facedir:10
-E node grug_trees:apple_base o=facedir:12
-F node grug_trees:apple_base o=facedir:18
-G node grug_trees:apple_base o=facedir:4
-H node grug_trees:apple_branch
-I node grug_trees:apple_branch o=facedir:10
-J node grug_trees:apple_branch o=facedir:12
-K node grug_trees:apple_branch o=facedir:18
-L node grug_trees:apple_branch o=facedir:2
-M node grug_trees:apple_branch o=facedir:4
-N node grug_trees:apple_quarter
-O node grug_trees:apple_quarter o=facedir:1
-P node grug_trees:apple_quarter o=facedir:2
-Q node grug_trees:apple_quarter o=facedir:3
-R node grug_trees:apple_twig
-S node grug_trees:apple_twig o=facedir:10
-T node grug_trees:apple_twig o=facedir:12
-U node grug_trees:apple_twig o=facedir:18
-V node grug_trees:apple_twig o=facedir:2
-W node grug_trees:apple_twig o=facedir:4
-X role fence_gate else=air
-Y role grass_tuft
-Z role ground
-a role hedge else=air
-b role hedge_stem else=air
-c role light_post o=wallmounted:1
-d role low_wall
-e role path
-f role post
-g role undergrowth
+A role fence_gate else=air
+B role ground
+C role hedge else=air
+D role hedge_stem else=air
+E role light_post o=wallmounted:1 late
+F role low_wall
+G role path
+H role post late
 end
 
 layer 0
-|eeeeeeeeeeeeeeeeeeeee|
-|eeeeeeeeeeeeeeeeeeeee|
-|ZZZZZZZZZZZZZZZZZZZZZ|
-|ZZZZZZZZZeeeZZZZZZZZZ|
-|ZZZZZZZZZZZZZZZZZZZZZ|
-|ZZZZZZZZZZZZZZZZZZZZZ|
-|ZZZZZZZZZZZZZZZZZZZZZ|
-|ZZZZZZZZZZZZZZZZZZZZZ|
-|ZZZZZZZZZZZZZZZZZZZZZ|
-|ZZZZZZZZZZZZZZZZZZZZZ|
-|ZZZZZZZZZZZZZZZZZZZZZ|
+|GGGGGGGGGGGGGGGGGGGGG|
+|GGGGGGGGGGGGGGGGGGGGG|
+|BBBBBBBBBBBBBBBBBBBBB|
+|BBBBBBBBBGGGBBBBBBBBB|
+|BBBBBBBBBBBBBBBBBBBBB|
+|BBBBBBBBBBBBBBBBBBBBB|
+|BBBBBBBBBBBBBBBBBBBBB|
+|BBBBBBBBBBBBBBBBBBBBB|
+|BBBBBBBBBBBBBBBBBBBBB|
+|BBBBBBBBBBBBBBBBBBBBB|
+|BBBBBBBBBBBBBBBBBBBBB|
 layer 1
 |.....................|
-|....f.......f........|
-|ddddddddd...ddddddddd|
-|bbbbbbbbb.X.bbbbbbbbb|
-|......gg............Y|
-|...Y...Yg...NQ.Y....Y|
-|...C.Y..C...OP....Y..|
-|.g.......Y...gg......|
-|..........Y..........|
-|.......g...........gY|
-|...Y....g......Y.....|
+|....H.......H........|
+|FFFFFFFFF...FFFFFFFFF|
+|DDDDDDDDD.A.DDDDDDDDD|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 layer 2
 |.....................|
-|....f.......f........|
+|....H.......H........|
 |.....................|
-|aaaaaaaaa...aaaaaaaaa|
+|CCCCCCCCC...CCCCCCCCC|
 |.....................|
-|............NQ.......|
-|...C....C...OP.......|
+|.....................|
+|.....................|
 |.....................|
 |.....................|
 |.....................|
 |.....................|
 layer 3
 |.....................|
-|....c.......c........|
+|....E.......E........|
 |.....................|
-|aaaaaaaaa...aaaaaaaaa|
-|.............G.......|
-|...........ENQB......|
-|...C....C...OPE......|
-|.............G.......|
-|.............M.......|
+|CCCCCCCCC...CCCCCCCCC|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 |.....................|
 |.....................|
 layer 4
 |.....................|
 |.....................|
 |.....................|
-|............BBB......|
-|...........BBHB.A....|
-|..BD......BHBBBBB....|
-|..FCF...C.BWBBHJ.....|
-|...DB......WTBAAB....|
-|...........BBHBA.....|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 |.....................|
 |.....................|
 layer 5
 |.....................|
 |.....................|
-|.............BBB.....|
-|...B.....BATTWBB.....|
-|..BIBB...BBWBHBBB....|
-|..BLBB..D.BBBBBBB....|
-|.KLBLKBBCFBRBBBHT....|
-|..BLBB.ADBBBRBBWBB...|
-|..BI.B.....TWRBBB....|
-|..ABB......BBBB......|
-|...BB................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 layer 6
 |.....................|
 |.....................|
-|...B........BBBB.....|
-|..ASUU...BBBBRBBB....|
-|.BBLBS..IBTRBBBBB....|
-|.BBBBBBBLBBBBBBBBB...|
-|ULBBBLUBBLBRBBBBRB...|
-|SBBBBBSBLBWBBBTRBB...|
-|SUBVUUS.BBTRBRWBB....|
-|.BBSBB.....BBBBB.....|
-|..ABBB...............|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 layer 7
 |.....................|
 |.....................|
-|..ABB..B.B..BB.......|
-|.ABVB.UUSABBBRB......|
-|.BBBBVSBLBABBWBBB....|
-|BBBBBSUBBBBBBBBBB....|
-|VBBBBBVBBLBRBBBBRB...|
-|BBBBBSUBLBSBBBBBBB...|
-|.VUVUVBBSUUBBRB......|
-|.BSBSBBB.BA.BB.......|
-|..BBBB...............|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 layer 8
 |.....................|
-|........B............|
-|..BBB..BBB...........|
-|..BVB..BVBB.B.B......|
-|.BBSBBVBBSBB.BB......|
-|BBBBBUSBBSBBBB..B....|
-|VUBBBUVBBVURB..BB....|
-|BBBBBBBBBBVUBBB......|
-|.BBVBBBBVBBBBRB......|
-|.BBBBBBBBB..BB.......|
-|..BBB...B............|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 layer 9
 |.....................|
 |.....................|
-|.......BBBB..........|
-|...B...BVSB..........|
-|..BB..BBSV...........|
-|BB..BBBBBBBBB........|
-|BB.BBVBBBBVBB........|
-|B.BB.BBBBBBBBB.......|
-|..BB..BBVBBBBBB......|
-|......BBSBB..B.......|
-|.......BBB...........|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 layer 10
 |.....................|
 |.....................|
-|.........B...........|
-|.......BBB...........|
-|.......BVB...........|
-|.......BBBB..........|
-|.....BBBBBB..........|
-|.....BBBBB...........|
-|........BB...........|
-|.......BBB...........|
-|.......BBB...........|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
+|.....................|
 layer 11
 |.....................|
 |.....................|
 |.....................|
-|........B............|
-|.......BB............|
-|.......BBB...........|
+|.....................|
+|.....................|
+|.....................|
 |.....................|
 |.....................|
 |.....................|
@@ -255,4 +230,10 @@ lights 12 3 1
 sockets 10 1 5 face=0 id={id}_work role=idle tags=[work]
 sockets 2 1 0 face=1 group=highcourt_market_watch id={id}_street_a order=8 role=guard_patrol
 sockets 18 1 0 face=3 group=highcourt_market_watch id={id}_street_b order=9 role=guard_patrol
+trees 3 0 6 height=5 kind=broadleaf
+trees 5 0 9 height=4 kind=broadleaf
+trees 8 0 6 height=5 kind=broadleaf
+trees 10 0 9 height=4 kind=broadleaf
+trees 13 0 6 height=5 kind=broadleaf
+trees 15 0 9 height=4 kind=broadleaf
 end

@@ -5,226 +5,198 @@ pivot 15 15
 origin 0 0 0
 size 15 25 15
 cell 1
-meta extent=[0,0,14,14] peak=12 top=24 trees=7
+meta extent=[0,0,14,14] peak=12 plant_spacing=3 top=24 trees=7 undergrowth=[0,0,14,14,6]
 races undead
 
 legend
-A node grug_nodes:bone_pile
-B node grug_nodes:bone_pile o=facedir:1
-C node grug_nodes:bone_pile o=facedir:2
-D node grug_nodes:bone_pile o=facedir:3
-E node grug_nodes:bones_fragments
-F node grug_nodes:bones_fragments o=facedir:3
-G node grug_nodes:skull_horned
-H node grug_nodes:skull_human o=facedir:1
-I node grug_nodes:spine_animal o=facedir:3
-J node grug_trees:gravewood_base o=facedir:12
-K node grug_trees:gravewood_base o=facedir:13
-L node grug_trees:gravewood_base o=facedir:4
-M node grug_trees:gravewood_base o=facedir:9
-N node grug_trees:gravewood_branch
-O node grug_trees:gravewood_branch o=facedir:1
-P node grug_trees:gravewood_branch o=facedir:12
-Q node grug_trees:gravewood_branch o=facedir:13
-R node grug_trees:gravewood_branch o=facedir:4
-S node grug_trees:gravewood_branch o=facedir:9
-T node grug_trees:gravewood_leaves
-U node grug_trees:gravewood_tree
-V node grug_trees:gravewood_twig
-W node grug_trees:gravewood_twig o=facedir:1
-X node grug_trees:gravewood_twig o=facedir:12
-Y node grug_trees:gravewood_twig o=facedir:13
-Z node grug_trees:gravewood_twig o=facedir:4
-a node grug_trees:gravewood_twig o=facedir:9
-b role grass_tuft
-c role ground
-d role light_post o=wallmounted:1
-e role path
-f role post
+A role ground
+B role light_post o=wallmounted:1 late
+C role path
+D role post late
 end
 
 layer 0
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|eeeeeeeeeeeeeee|
-|eeeeeeeeeeeeeee|
-|eeeeeeeeeeeeeee|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
-|cccccceeecccccc|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|CCCCCCCCCCCCCCC|
+|CCCCCCCCCCCCCCC|
+|CCCCCCCCCCCCCCC|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
+|AAAAAACCCAAAAAA|
 layer 1
+|...............|
+|...............|
+|.....D.........|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 |.........D.....|
-|....H..........|
-|..E..f....U....|
-|....I..........|
-|..U..U.....Ub..|
-|....b........A.|
 |...............|
 |...............|
-|...............|
-|.A........DC..F|
-|..U......bU....|
-|.b..U......G..B|
-|.........f.....|
-|...........C...|
-|.........b.....|
 layer 2
 |...............|
 |...............|
-|.....f....U....|
-|...............|
-|..U..UU....U...|
+|.....D.........|
 |...............|
 |...............|
 |...............|
 |...............|
 |...............|
-|..U.U.....U....|
-|....U..........|
-|.........f.....|
+|...............|
+|...............|
+|...............|
+|...............|
+|.........D.....|
 |...............|
 |...............|
 layer 3
 |...............|
 |...............|
-|.....d....UR...|
-|..........UL...|
-|..UU..U....UU..|
+|.....B.........|
 |...............|
 |...............|
 |...............|
-|..........R....|
-|..........L....|
-|..UUU.....UU...|
 |...............|
-|.........d.....|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|.........B.....|
 |...............|
 |...............|
 layer 4
-|...........T...|
-|..........XZX..|
-|......Z....V...|
-|...LPXXX..U....|
-|...U..UZ....U..|
-|..........XPL..|
-|.a........T....|
-|YYa......XZX...|
-|..YS......V....|
-|...QM..........|
-|...UU......U...|
-|.........XPL...|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 |...............|
 |...............|
 |...............|
 layer 5
-|.........XZX...|
-|.Z........ZT...|
-|XZT...R...L....|
-|.XR...L...U....|
-|..JUUJU.Z...U..|
-|.....RX.XXV.LP.|
-|......ZX.ZT..Z.|
-|......Z..TT.XZX|
-|............Z..|
 |...............|
-|...UU..Z...U...|
-|...MQT.XXV.LP..|
-|....aYY.Z...Z..|
-|.....a.....XZX.|
-|...........Z...|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 layer 6
-|.........V.V...|
-|.V....Z.Z......|
-|VTT...V.ZX.....|
-|.T.....RX.U..Z.|
-|....U.UJ.T..NX.|
-|....Ya..TTT....|
-|.....aYT.......|
-|.a..aYT.......V|
-|YYa.S.......V..|
-|..QMQ.......Z..|
-|...UU...T..NX..|
-|.....T.TTT.....|
-|....TTW........|
-|.....W.......V.|
-|...........V...|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 layer 7
 |...............|
-|.....XVXV......|
-|.........V.....|
-|..........U....|
-|...JU.U........|
-|..PRW.LPX......|
-|.XZ...W.Z......|
-|.Z....a........|
-|TT....aY.......|
-|.T....a........|
-|...UUKQ........|
-|....M..........|
-|....S..........|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 |...............|
 |...............|
 layer 8
 |...............|
-|.....V.V.......|
 |...............|
-|...XXPL...U....|
-|....NXU...LP...|
-|.......V...Z...|
-|.......ZVX.Z...|
-|XV....TZZ......|
-|.Z...TT........|
-|....aY.........|
-|...UO.WYY......|
 |...............|
-|....W..........|
-|....a..........|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 |...............|
 layer 9
 |...............|
 |...............|
-|...Z....Z......|
-|..XVT...PJUJPXX|
-|..ZT.XN........|
 |...............|
-|........TVXVX..|
-|V.....XVV.ZT...|
-|.V....ZT.......|
-|........a......|
-|...U....W......|
-|........a......|
 |...............|
-|...YWY.........|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 |...............|
 layer 10
 |...............|
 |...............|
-|...V...XV.....Z|
-|...TT.....N...V|
-|..VT......Z...Z|
-|...........T...|
-|.......T..TTV..|
-|......TTV.V....|
-|......VT.......|
-|........W......|
-|...OY...T......|
-|........W......|
 |...............|
-|...W.W.........|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
+|...............|
 |...............|
 layer 11
 |...............|
-|.......Z.......|
-|......XV......V|
-|......Z........|
-|..............V|
+|...............|
+|...............|
+|...............|
+|...............|
 |...............|
 |...............|
 |...............|
@@ -237,9 +209,9 @@ layer 11
 |...............|
 layer 12
 |...............|
-|.......V.......|
 |...............|
-|......V........|
+|...............|
+|...............|
 |...............|
 |...............|
 |...............|
@@ -448,4 +420,20 @@ points
 lights 5 3 2
 lights 9 3 12
 sockets 7 1 7 face=0 id={id}_idle role=idle tags=[bench]
+trees 1 0 1 height=6 kind=gravewood
+trees 1 0 4 height=6 kind=gravewood
+trees 1 0 10 height=6 kind=gravewood
+trees 1 0 13 height=6 kind=gravewood
+trees 4 0 1 height=6 kind=gravewood
+trees 4 0 4 height=6 kind=gravewood
+trees 4 0 10 height=6 kind=gravewood
+trees 4 0 13 height=6 kind=gravewood
+trees 10 0 1 height=6 kind=gravewood
+trees 10 0 4 height=6 kind=gravewood
+trees 10 0 10 height=6 kind=gravewood
+trees 10 0 13 height=6 kind=gravewood
+trees 13 0 1 height=6 kind=gravewood
+trees 13 0 4 height=6 kind=gravewood
+trees 13 0 10 height=6 kind=gravewood
+trees 13 0 13 height=6 kind=gravewood
 end
