@@ -285,9 +285,11 @@ A multi-cell object takes several cells, is placed only where all of them are fr
 | Door | the leaf (a member of the `door` family, variant `_a` or `_b`) at y, `door_hidden` at y + 1 with facedir = the leaf's for `_a` and (leaf + 3) % 4 for `_b` (`parts.door`); gates are not doors |
 | Bed | `_bottom` at the cell, `_top` one step along its facedir with the same facedir (`parts.bed`), for `bed` and `bed_fancy` |
 
-Any other node whose box reaches into a second cell (from the registry's `node_box`/`collision_box`/
-`selection_box`) is listed by lane EDITOR and added to this table by the coordinator. A pillar stack (`pillar`
-`_bottom`, `_middle`, `_top`) is three single cells.
+Only doors and beds reserve cells. Other nodes whose box reaches into a neighbouring cell (lane EDITOR's list
+from `nodes.json`: the castle pillars' crossbraces, the open window shutter, the wagon wheel on the road, corals and
+kelp, seagrass, the waystone, the cairn base, the tree bases, the mob fences) only **overhang**: they take one cell,
+and the editor marks the overhang in its item list. `xpanes:door_steel_bar_*` would be a door, but no palette binds
+it. A pillar stack (`pillar` `_bottom`, `_middle`, `_top`) is three single cells.
 
 ## 6. Validation rules
 

@@ -205,7 +205,7 @@ details.legend-box pre { margin: 6px 0 0; font: 12px/1.45 var(--font-data); whit
         <button id="by-race" type="button" aria-pressed="false">Race</button>
       </div>
       <label class="check"><input id="show-names" type="checkbox" checked> Template names</label>
-      <p class="hint">Click a building, or a name below, to open it alone.</p>
+      <p class="hint">Click a building, or a name below, to open it alone. Names show when you come closer.</p>
       <div id="list"></div>
     </section>
     <section class="group" id="one-controls" hidden>
@@ -259,7 +259,7 @@ const TPL = P.templates;
 const $ = id => document.getElementById(id);
 const titleCase = s => s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 const raceLabel = r => r ? r[0].toUpperCase() + r.slice(1) : "No race";
-const GAP = 4, ROW_WIDTH = 120, GROUP_GAP = 10;
+const GAP = 4, ROW_WIDTH = 120, GROUP_GAP = 10, NAME_RANGE = 75;
 
 let binding = "placed", groupBy = "town", one = null;  // one: the template shown alone
 const view = createNodeView({
@@ -404,7 +404,10 @@ function updateLabels() {
   const w = window.innerWidth, h = window.innerHeight;
   const names = $("show-names").checked, points = $("show-points").checked;
   for (const l of labels) {
-    const on = l.cls === "point" ? points && (view.filter.cut === Infinity || l.y <= view.filter.cut) : (l.cls === "tpl" ? names : true);
+    // Template names only nearby, so the overview of many templates stays
+    // readable; group names always.
+    const on = l.cls === "point" ? points && (view.filter.cut === Infinity || l.y <= view.filter.cut)
+      : (l.cls === "tpl" ? names && view.camera.position.distanceTo(l.pos) < NAME_RANGE : true);
     tmp.copy(l.pos).project(view.camera);
     const visible = on && tmp.z < 1 && tmp.z > -1 && Math.abs(tmp.x) < 1.1 && Math.abs(tmp.y) < 1.1;
     l.el.hidden = !visible;
