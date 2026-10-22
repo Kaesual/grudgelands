@@ -72,12 +72,12 @@ def b64_rgba(img):
 
 
 def tier_assets(cat, pals, art, line, tid, race):
-    """palette-mapped box sheets, composed skin, icons, and the list of missing files."""
+    """palette-mapped box and polygon part sheets, composed skin, icons, and the list of missing files."""
     tier = cat["tiers"][line][tid]
     mapping = L.palette_map(pals, tier["palette"])
-    byid = {b["id"]: b for b in cat["boxes"]}
-    missing, boxes = [], []
-    for bid in [b["id"] for b in cat["boxes"] if b["id"] in tier["on"]]:
+    byid = {b["id"]: b for b in L.pieces(cat)}
+    missing, boxes, parts = [], [], []
+    for bid in [b["id"] for b in L.pieces(cat) if b["id"] in tier["on"]]:
         b = byid[bid]
         v = L.tier_variant(tier, bid)
         p = L.box_file(art, line, bid, v)
@@ -88,6 +88,10 @@ def tier_assets(cat, pals, art, line, tid, race):
         else:
             missing.append(f"{bid}_{v}")
             im = L.checker(tuple(b["sheet"]))
+        if b.get("kind") == "poly":
+            parts.append({"id": bid, "bone": b["bone"], "vertices": b["vertices"], "polys": b["polys"],
+                          "sheet": b["sheet"], "img": im})
+            continue
         boxes.append({"id": bid, "box": b["box"], "bone": b["bone"], "rot": b["rot"], "mirror": b["mirror"],
                       "sheet": b["sheet"], "img": im})
     helm = any(x in tier["on"] for x in ("helm", "visor"))
@@ -124,7 +128,7 @@ def tier_assets(cat, pals, art, line, tid, race):
             missing.append(f"icons/{slot}_{v}")
             im = L.checker((16, 16), cell=4)
         icons[slot] = im
-    return {"boxes": boxes, "skin_img": skin}, icons, missing
+    return {"boxes": boxes, "parts": parts, "skin_img": skin}, icons, missing
 
 
 PAGE = r"""<!doctype html>
@@ -207,6 +211,23 @@ function buildTier(T) {
       g.add(mesh); p.add(g); armor.push(g);
     });
   });
+  // polygon parts (Round 56): absolute catalog points on their bone, each convex face fanned from its first vertex
+  (T.parts || []).forEach(s => {
+    const pos = [], uvs = [], pv = B[s.bone];
+    s.polys.forEach(f => {
+      for (let i = 1; i < f.v.length - 1; i++) [0, i, i + 1].forEach(k => {
+        const p = s.vertices[f.v[k]];
+        pos.push(p[0] - pv[0], p[1] - pv[1], p[2] - pv[2]);
+        uvs.push(f.uv[k][0] / s.sheet[0], 1 - f.uv[k][1] / s.sheet[1]);
+      });
+    });
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+    geo.computeVertexNormals();
+    const mat = new THREE.MeshLambertMaterial({map: tex(s.rgba, s.sheet[0], s.sheet[1]), alphaTest: 0.5, side: THREE.FrontSide});
+    const g = new THREE.Group(); g.add(new THREE.Mesh(geo, mat)); bones[s.bone].add(g); armor.push(g);
+  });
 }
 function pose(walk) {
   // walking: legs at +-0.6 rad (the prototype's walk at sin = 0.6 / 0.785), arms opposite, panels 0.06 + 1.2|leg| / 0.06 + 1.1|leg|
@@ -269,7 +290,8 @@ def render_cells(cat, pals, art, line, tids, race, cells, W, H, dist, workdir, s
     if ENGINE == "soft":
         return softrender.render(cat, tiers, cells, W, H, dist, cat["stature"].get(race, 1.0), BG), icons, missing
     js_tiers = [{"skin": b64_rgba(t["skin_img"]),
-                 "boxes": [dict({k: v for k, v in b.items() if k != "img"}, rgba=b64_rgba(b["img"])) for b in t["boxes"]]}
+                 "boxes": [dict({k: v for k, v in b.items() if k != "img"}, rgba=b64_rgba(b["img"])) for b in t["boxes"]],
+                 "parts": [dict({k: v for k, v in b.items() if k != "img"}, rgba=b64_rgba(b["img"])) for b in t["parts"]]}
                 for t in tiers]
     data = {"width": W, "height": H, "bg": BG, "bones": cat["bones"], "body": cat["body"],
             "stature": cat["stature"].get(race, 1.0), "dist": dist, "tiers": js_tiers, "cells": cells}

@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Z-fighting check, rest pose, all bones together (mirrored copies included):
-no two boxes may have same-facing faces closer than 0.25 px where they overlap.
-Exit 1 on a problem."""
+no two boxes may have same-facing faces closer than 0.25 px where they overlap,
+and no face of a polygon part (Round 56, armor-format.md §1a) may lie closer
+than that to a same-facing box face it overlaps. Rotated boxes are left out
+here (the model generator's own check covers every triangle). Exit 1 on a
+problem."""
 import itertools
 import sys
 
 sys.dont_write_bytecode = True
 import catalog  # noqa: E402
+import polypart  # noqa: E402
 
 BODY = [("head", "head", [-4, 24, -4, 4, 32, 4]), ("hat", "head", [-4.5, 23.5, -4.5, 4.5, 32.5, 4.5]),
         ("torso", "body", [-4, 12, -2, 4, 24, 2]), ("arm", "arm_r", [-8, 12, -2, -4, 24, 2]),
@@ -34,8 +38,26 @@ def main():
                     bad += 1
                     print(f"Z-FIGHT {na} / {nb}: axis {'xyz'[ax]} {'min' if side == 0 else 'max'} faces "
                           f"{A[ax + side]} vs {B[ax + side]}")
-    print("boxes in the model:", catalog.box_count(), "vertices:", catalog.box_count() * 24 + catalog.BODY_VERTICES,
-          "| problems:", bad)
+    # polygon parts: each face against every same-facing box face (normals within 0.9999)
+    part_verts = 0
+    for _, pid, _, _, part, _ in catalog.poly_parts():
+        for f in part["faces"]:
+            pts = polypart.points(part, f)
+            part_verts += len(pts)
+            n = polypart.newell(pts)
+            for nb, _, B in items:
+                for ax in range(3):
+                    for side, sign in ((0, -1), (3, 1)):
+                        if n[ax] * sign < 0.9999:
+                            continue
+                        dist = max(abs(p[ax] - B[ax + side]) for p in pts)
+                        o = [i for i in range(3) if i != ax]
+                        if dist < 0.25 - 1e-9 and all(min(max(p[i] for p in pts), B[i + 3]) - max(min(p[i] for p in pts),
+                                                                                                    B[i]) > 0 for i in o):
+                            bad += 1
+                            print(f"Z-FIGHT {pid}.{f['name']} / {nb}: axis {'xyz'[ax]} {dist:.3f} px apart")
+    print("boxes in the model:", catalog.box_count(), "polygon part vertices:", part_verts, "vertices:",
+          catalog.box_count() * 24 + catalog.BODY_VERTICES + part_verts, "| problems:", bad)
     return 1 if bad else 0
 
 

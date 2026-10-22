@@ -1,5 +1,5 @@
 {
- "_doc": "test selection (make_test_art.py): the example from tiers_example.json; metal T1 adds the pauldron",
+ "_doc": "test selection (make_test_art.py): the example from tiers_example.json; metal T1 adds the pauldron, cloth and leather add the hood, leather T6 wears helm variant b",
  "metal": {
   "T1": {
    "palette": "bronze",
@@ -177,7 +177,8 @@
     "helm",
     "chest",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -200,7 +201,8 @@
     "belt",
     "pauldron",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -226,7 +228,8 @@
     "sleeve",
     "pauldron",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -253,7 +256,8 @@
     "bracer",
     "pauldron",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -283,7 +287,8 @@
     "pauldron",
     "thigh",
     "knee",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -313,9 +318,12 @@
     "pauldron",
     "thigh",
     "knee",
-    "boot"
+    "boot",
+    "hood"
    ],
-   "variant": {},
+   "variant": {
+    "helm": "b"
+   },
    "inner": {
     "chest": "a",
     "legs": "a",
@@ -336,7 +344,8 @@
     "helm",
     "chest",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -354,11 +363,11 @@
   "T2": {
    "palette": "woven",
    "on": [
-    "helm",
     "chest",
     "belt",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -383,7 +392,8 @@
     "panel_b",
     "sleeve",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -408,7 +418,8 @@
     "panel_b",
     "sleeve",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -435,7 +446,8 @@
     "tasset",
     "sleeve",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {
@@ -462,7 +474,8 @@
     "tasset",
     "sleeve",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {},
    "inner": {

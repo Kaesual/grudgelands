@@ -4,7 +4,9 @@ The same scene as the chromium/three.js page in render.py: the skeleton with
 the pivots of character.b3d, rest and walk pose (legs +-0.6 rad, arms opposite,
 panel swing 0.06 + 1.2|leg| front / 0.06 + 1.1|leg| back), left limbs as
 mirrored right ones, z rotations of the catalog, the race skin with the inner
-paint, and the palette-swapped box sheets. Perspective camera (fov 30) with
+paint, the palette-swapped box sheets and the polygon parts (Round 56, their
+convex faces fanned from the first vertex, as the model generator does).
+Perspective camera (fov 30) with
 the same positions; z-buffered, perspective-correct textured triangles with
 nearest-neighbour texel lookup and an alpha test (alpha < 128 writes nothing);
 back faces culled; flat per-face Lambert shading with the page's lights (sky
@@ -120,6 +122,16 @@ def build_scene(cat, tier, stature, walk):
                 wn = nm @ n
                 wn /= np.linalg.norm(wn)
                 faces.append((wc, uvs, rect, wn, tx))
+    for p in tier.get("parts", []):
+        # absolute catalog points on their bone: the bone's frame minus its pivot (never mirrored or rotated)
+        M = placements(G, P, p["bone"], False, None)[0]
+        nm = np.linalg.inv(M[:3, :3]).T
+        tex = np.asarray(p["img"].convert("RGBA"))
+        for f in p["polys"]:
+            cs = np.array([p["vertices"][i] for i in f["v"]], float)
+            wn = nm @ np.array(f["normal"], float)
+            faces.append(((M[:3, :3] @ cs.T).T + M[:3, 3], np.array(f["uv"], float), tuple(f["rect"]),
+                          wn / np.linalg.norm(wn), tex))
     return faces
 
 
@@ -210,8 +222,8 @@ def render_view(faces, cell, dist, bg):
         S = np.array([[p[0], p[1]] for p in pts])
         Z = np.array([p[2] for p in pts])
         light = shade(cam, n) / 1.0
-        for a, b, c in ((0, 1, 2), (0, 2, 3)):
-            raster_tri(color, zbuf, S[[a, b, c]], Z[[a, b, c]], uvs[[a, b, c]], rect, tex, light)
+        for i in range(1, len(wc) - 1):          # a quad, or a polygon part's convex face: a fan
+            raster_tri(color, zbuf, S[[0, i, i + 1]], Z[[0, i, i + 1]], uvs[[0, i, i + 1]], rect, tex, light)
     img = Image.fromarray(np.clip(color + 0.5, 0, 255).astype(np.uint8), "RGB")
     return img.reduce(SS) if SS > 1 else img
 

@@ -47,6 +47,12 @@ SHAPES = [
     ("feet", "toe", "Zehenkappe", "leg_r", [-4.75, -0.5, 1.5, -0.5, 2.0, 3.25], {"mirror": True}),
 ]
 
+# Polygon parts (Round 56, armor-format.md §1a): convex planar faces from a schema file, on one bone.
+# area, id, German label, the box whose surface closes the part (its `shell`), the schema file (repo path)
+POLY_PARTS = [
+    ("head", "hood", "Kapuze", "helm", "tools/r56_hood/hood.json"),
+]
+
 AREAS = [("head", "Kopf"), ("torso", "Torso"), ("shoulders", "Schultern"), ("arms", "Arme"),
          ("hip", "Hüfte"), ("legs", "Beine"), ("feet", "Füße")]
 
@@ -205,6 +211,15 @@ def boxes():
         out.append({"area": area, "id": sid, "label": label, "bone": bone, "box": box,
                     "mirror": bool(ex.get("mirror")), "rot": ex.get("rot")})
     return out
+
+
+def poly_parts():
+    """[(area, id, label, shell, schema dict, repo path)] of the polygon parts."""
+    import json
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[2]
+    return [(area, pid, label, shell, json.loads((repo / path).read_text()), path)
+            for area, pid, label, shell, path in POLY_PARTS]
 
 
 def box_count():
