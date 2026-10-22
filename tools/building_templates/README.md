@@ -185,8 +185,12 @@ it).
   file at HEAD) and a draft in local storage, offered again after a crash or
   reload when the file has not changed since.
 - **Save** runs the validator first (`check.validate`, imported, against
-  `BASELINE`, the known defects as warnings): an error of this template
-  refuses the save and is listed with its cell (red in the grid and in 3D),
+  `BASELINE`, the known defects as warnings, every town and capital built
+  through the game's loader, a few seconds; the page is busy meanwhile): an
+  error of this template, or a build, roster or loader error of a town or
+  capital that places it, refuses the save and is listed with its cell (red
+  in the grid and in 3D) or its town; a build error of a town that does not
+  place the template (broken before the edit) is a warning;
   warnings need a confirmation, and the dialog says "used N× in …" (a
   template several placements use changes all of them). **Check** runs the
   validator without saving.

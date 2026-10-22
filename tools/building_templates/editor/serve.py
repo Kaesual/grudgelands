@@ -327,26 +327,36 @@ class Editor(object):
         return name, path, data, text
 
     def check(self, name, text):
-        """The shared validator on the edited file: (blocking errors of this
-        template, its warnings, errors elsewhere), as dicts."""
+        """The shared validator on the edited file, every town and capital
+        built through the game's loader: (blocking errors, warnings, errors
+        elsewhere), as dicts. Blocking: the template's own errors, and a
+        build, roster or loader error of a town or capital that places it
+        (the edit broke that town). A build error of a town that does not
+        place it was there before the edit: a warning."""
         try:
             report = check.validate(self.root, "file", {self.relative(name): text})
         except SystemExit as e:
             raise Refused(500, "the validator stopped: %s" % e)
+        towns = {lay.town for lay, _, _ in self.uses().get(name, [])}
         defects = check.known_defects(pathlib.Path(self.root))
         errors, warnings, elsewhere = [], [], []
         for finding in report.errors:
             rule, where, position, _ = finding
             known = any(d[0] == where and d[1] == rule and d[2] == position for d in defects)
+            town_level = rule in ("build", "roster", "loader")
             if known:
-                if where == name:
+                if where == name or where in towns:
                     warnings.append(as_dict(finding, "known defect"))
-            elif where == name:
-                errors.append(as_dict(finding))
+            elif where == name or (town_level and where in towns):
+                errors.append(as_dict(finding, title(where)
+                                      if rule == "build" else None))
+            elif rule == "build":
+                warnings.append(as_dict(finding, "%s, which does not place this template, "
+                                        "did not build before this edit either" % title(where)))
             else:
                 elsewhere.append(as_dict(finding))
         for finding in report.warnings:
-            if finding[1] == name:
+            if finding[1] == name or (finding[0] == "build" and finding[1] == "checkout"):
                 warnings.append(as_dict(finding))
         return errors, warnings, elsewhere
 
