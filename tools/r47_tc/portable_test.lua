@@ -507,8 +507,8 @@ do
 		end
 		return result
 	end)
-	-- (Round 56 FREEZE-CAPITALS: a grove's own trees are template cells now, so
-	-- the trees planted at build plus the trunk columns the plot holds count.)
+	-- (Round 56 TREES: a grove's trees are grown at build again, by the
+	-- template loader at the planted template's stems.)
 	local groves = 0
 	for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak",
 			"kezamba"}) do
@@ -516,18 +516,9 @@ do
 		for _, plot in ipairs(kit.plots) do
 			if plot.id:match("grove") or plot.id:match("copse") then
 				counting = 0
-				local built = plot.build()
-				local trunks, seen = 0, {}
-				for _, cell in ipairs(built.cells) do
-					local column = cell.x .. ":" .. cell.z
-					if cell.name:match("tree$") and not seen[column] then
-						seen[column] = true
-						trunks = trunks + 1
-					end
-				end
+				plot.build()
 				groves = groves + 1
-				check(counting + trunks >= 4, key .. "/" .. plot.id .. " has trees (" ..
-					counting .. " planted, " .. trunks .. " trunk columns)")
+				check(counting >= 4, key .. "/" .. plot.id .. " has trees (" .. counting .. ")")
 			end
 		end
 	end
@@ -714,8 +705,8 @@ do
 	print(("E5: %d town trees standing, %d cut by a later write and taken out"):format(
 		standing, cut))
 	-- (Round 51 follow-up FT halved the six starts' trees: 1162 -> 799; Round 56
-	-- FREEZE-CAPITALS: the capitals' grove trees are template cells, 669 grown)
-	check(standing > 640, "the town trees stand (" .. standing .. ")")
+	-- TREES: the capitals' grove trees are grown at build again)
+	check(standing > 700, "the town trees stand (" .. standing .. ")")
 	check(broken == 0, "no later write cuts a town tree's wood (" .. broken .. " cells)")
 end
 
