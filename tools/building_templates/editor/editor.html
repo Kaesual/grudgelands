@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Template Editor</title>
+<style>
+:root {
+  --sky: #9ec3ea;
+  --bg: #eeece6;
+  --panel: #faf8f2;
+  --ink: #24272b;
+  --muted: #5c6168;
+  --line: rgba(36, 39, 43, 0.16);
+  --accent: #2e6b52;
+  --accent-ink: #f6fbf8;
+  --chip: rgba(46, 107, 82, 0.10);
+  --role: #2e6b52;
+  --warn: #b5541b;
+  --error: #c62f38;
+  --changed: #e8a317;
+  --air: #cfe3f7;
+  --font-display: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Segoe UI", system-ui, sans-serif;
+  --font-data: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17191c; --panel: #1f2226; --ink: #ebe8e1; --muted: #a6abb1;
+    --line: rgba(235, 232, 225, 0.15); --accent: #7fc7a6; --accent-ink: #0f241b;
+    --chip: rgba(127, 199, 166, 0.14); --role: #7fc7a6; --warn: #f0a46e; --error: #ff7a80;
+    --air: #2b3b4d; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17191c; --panel: #1f2226; --ink: #ebe8e1; --muted: #a6abb1;
+  --line: rgba(235, 232, 225, 0.15); --accent: #7fc7a6; --accent-ink: #0f241b;
+  --chip: rgba(127, 199, 166, 0.14); --role: #7fc7a6; --warn: #f0a46e; --error: #ff7a80;
+  --air: #2b3b4d; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.4 var(--font-body); overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+button {
+  background: transparent; border: 1px solid var(--line); border-radius: 5px;
+  padding: 5px 9px; cursor: pointer; white-space: nowrap;
+}
+button:hover:not(:disabled) { background: var(--chip); }
+button:disabled { opacity: .45; cursor: default; }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.primary:hover:not(:disabled), button[aria-pressed="true"]:hover:not(:disabled) { background: var(--accent); filter: brightness(1.12); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+select, input[type="search"] {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 5px 7px; min-width: 0;
+}
+kbd { font: 11px/1 var(--font-data); border: 1px solid var(--line); border-radius: 3px; padding: 1px 4px; }
+.eyebrow { font: 500 11px/1 var(--font-data); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-data); }
+
+/* ------------------------------------------------------------ home ---- */
+#home { height: 100%; overflow-y: auto; padding: 24px 16px 48px; }
+#home .inner { max-width: 1040px; margin: 0 auto; }
+#home h1 { font: 700 26px/1.15 var(--font-display); margin: 6px 0 4px; }
+#home p { margin: 0 0 16px; max-width: 70ch; }
+#home h2 { font: 700 16px/1.2 var(--font-display); margin: 22px 0 8px; letter-spacing: .02em; }
+.tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.tpl-grid button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left;
+  padding: 9px 11px; background: var(--panel); white-space: normal; }
+.tpl-grid .n { font: 500 13.5px/1.25 var(--font-data); overflow-wrap: anywhere; }
+.tpl-grid .u { font-size: 12.5px; color: var(--muted); }
+.tpl-grid .draft { font-size: 12px; color: var(--warn); }
+
+/* ---------------------------------------------------------- editor ---- */
+#editor { height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+#bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 12px;
+  background: var(--panel); border-bottom: 1px solid var(--line); }
+#bar h1 { font: 700 18px/1.1 var(--font-display); margin: 0; overflow-wrap: anywhere; }
+#bar .grp { display: flex; align-items: center; gap: 4px; }
+#bar .sep { width: 1px; align-self: stretch; background: var(--line); }
+#used { font-size: 12.5px; color: var(--muted); }
+#dirty { font-size: 12.5px; color: var(--warn); }
+#main { display: grid; grid-template-columns: 250px minmax(0, 1fr) minmax(320px, 40%); min-height: 0; }
+#items { border-right: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; min-height: 0; }
+#items .top { padding: 10px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--line); }
+#brush { display: flex; align-items: center; gap: 8px; min-height: 34px; }
+#brush .lbl { flex: 1; min-width: 0; font: 12.5px/1.25 var(--font-data); overflow-wrap: anywhere; }
+#item-list { overflow-y: auto; padding: 4px 10px 16px; flex: 1; }
+#item-list h3 { font: 500 11px/1 var(--font-data); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); margin: 14px 0 6px; }
+.item { display: flex; align-items: center; gap: 7px; width: 100%; text-align: left; border: 0;
+  padding: 3px 4px; border-radius: 4px; white-space: normal; }
+.item .t { font: 12.5px/1.2 var(--font-data); overflow-wrap: anywhere; flex: 1; min-width: 0; }
+.item .tag { font-size: 10.5px; color: var(--muted); }
+.item.sel { outline: 2px solid var(--accent); background: var(--chip); }
+.icon { width: 22px; height: 22px; flex: none; border-radius: 3px; image-rendering: pixelated;
+  border: 1px solid var(--line); background: var(--bg) center / cover no-repeat; position: relative; }
+.icon.role::after { content: ""; position: absolute; left: -1px; top: -1px; border-top: 8px solid var(--role);
+  border-right: 8px solid transparent; }
+#stagewrap { position: relative; min-width: 0; min-height: 0; background: var(--sky); }
+#stage { position: absolute; inset: 0; touch-action: none; overflow: hidden; }
+#stage canvas { display: block; outline: none; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.label { position: absolute; left: 0; top: 0; white-space: nowrap; font: 600 12px/1 var(--font-display);
+  color: #fff; padding: 3px 6px; border-radius: 3px; background: rgba(22, 28, 34, .66); transform: translate(-50%, -100%); }
+.label.street { background: rgba(232, 163, 23, .92); color: #241a03; }
+#viewbar { position: absolute; left: 8px; top: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+#viewbar > * { pointer-events: auto; }
+#viewbar .grp { display: flex; gap: 3px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 3px; }
+#viewbar button { border: 0; padding: 4px 8px; }
+#viewhint { position: absolute; left: 8px; bottom: 8px; max-width: calc(100% - 16px); font-size: 12.5px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+#gridpane { border-left: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+#gridpane .top { padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--line); }
+#layers { display: flex; flex-wrap: wrap; gap: 3px; }
+#layers button { padding: 2px 6px; font: 12px/1.2 var(--font-data); min-width: 28px; }
+#layers button.has-change { box-shadow: inset 0 -3px 0 var(--changed); }
+#layers button.has-error { box-shadow: inset 0 -3px 0 var(--error); }
+#gridwrap { flex: 1; min-height: 0; overflow: auto; padding: 8px; position: relative; }
+#grid { display: block; cursor: crosshair; }
+#hover { padding: 6px 10px; border-top: 1px solid var(--line); font: 12px/1.35 var(--font-data); min-height: 40px; overflow-wrap: anywhere; }
+.legend-row { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
+.legend-row span { display: inline-flex; align-items: center; gap: 5px; }
+.sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; border: 1px solid var(--line); }
+#bottom { border-top: 1px solid var(--line); background: var(--panel); max-height: 32vh; overflow-y: auto; }
+#bottom .row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 6px 12px; }
+#message { font-size: 13px; }
+#message.error { color: var(--error); }
+#message.warn { color: var(--warn); }
+#findings { list-style: none; margin: 0; padding: 0 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+#findings li button { border: 0; text-align: left; white-space: normal; width: 100%; padding: 3px 6px; font: 12.5px/1.35 var(--font-data); }
+#findings li.error button { color: var(--error); }
+#findings li.warn button { color: var(--warn); }
+#points-box { max-height: 160px; overflow-y: auto; }
+#points-list { display: flex; flex-direction: column; gap: 1px; }
+#points-list button { border: 0; text-align: left; font: 12px/1.3 var(--font-data); padding: 2px 4px; white-space: normal; }
+#points-list button.sel { outline: 2px solid var(--accent); }
+#points-list button.moved { color: var(--changed); }
+details summary { cursor: pointer; font-size: 12.5px; color: var(--muted); }
+/* the modal */
+#modal { position: fixed; inset: 0; background: rgba(10, 12, 15, .45); display: grid; place-items: center; z-index: 20; padding: 16px; }
+#modal .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; max-width: 560px; width: 100%;
+  padding: 16px 18px; box-shadow: 0 10px 40px rgba(0, 0, 0, .35); display: flex; flex-direction: column; gap: 10px; max-height: 80vh; overflow-y: auto; }
+#modal h2 { margin: 0; font: 700 18px/1.2 var(--font-display); }
+#modal .body { font-size: 14px; overflow-wrap: anywhere; display: flex; flex-direction: column; gap: 6px; }
+#modal .body ul { margin: 0; padding-left: 18px; font: 12.5px/1.4 var(--font-data); }
+#modal .buttons { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+#notice { position: fixed; left: 50%; top: 56px; transform: translateX(-50%); z-index: 15; max-width: min(640px, calc(100vw - 32px));
+  background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 6px;
+  padding: 8px 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; box-shadow: 0 6px 24px rgba(0,0,0,.2); }
+#status { position: fixed; inset: 0; display: grid; place-items: center; font: 700 18px/1 var(--font-display); color: var(--muted); pointer-events: none; }
+@media (max-width: 900px) {
+  body { overflow: auto; }
+  #editor { height: auto; }
+  #main { grid-template-columns: 1fr; }
+  #items { max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); }
+  #stagewrap { height: 55vh; }
+  #gridpane { border-left: 0; }
+  #gridwrap { max-height: 60vh; }
+}
+</style>
+</head>
+<body>
+<div id="status">Loading</div>
+
+<section id="home" hidden>
+  <div class="inner">
+    <span class="eyebrow">Grudgelands · local tool</span>
+    <h1>Building template editor</h1>
+    <p>Every town building template of this working tree. Open one to edit its cells and move its points.
+      Saving runs the template validator and writes the file only when it finds no error; nothing else is
+      written, and git is never touched.</p>
+    <div id="home-list"></div>
+  </div>
+</section>
+
+<section id="editor" hidden>
+  <header id="bar">
+    <button id="back" type="button" title="All templates">◂ Templates</button>
+    <div>
+      <h1 id="name"></h1>
+      <div id="used"></div>
+    </div>
+    <div class="grp">
+      <label for="binding" class="eyebrow">Preview</label>
+      <select id="binding"></select>
+    </div>
+    <div class="sep"></div>
+    <div class="grp" role="group" aria-label="Tool">
+      <button type="button" data-tool="paint" title="Paint the item (1)">Paint</button>
+      <button type="button" data-tool="pick" title="Pick an item from a cell (2)">Pick</button>
+      <button type="button" data-tool="air" title="Force air: the building writes air here (3)">Air</button>
+      <button type="button" data-tool="unchanged" title="Leave unchanged: the building writes nothing here (4)">Unchanged</button>
+      <button type="button" data-tool="rotate" title="Turn a cell, a door or a bed by 90° (5)">Rotate</button>
+      <button type="button" data-tool="point" title="Move a point: select it, then click its new cell (6)">Move point</button>
+    </div>
+    <div class="sep"></div>
+    <div class="grp">
+      <button id="undo" type="button" title="Undo (Ctrl+Z)">Undo</button>
+      <button id="redo" type="button" title="Redo (Ctrl+Y)">Redo</button>
+      <button id="reset" type="button" title="Back to the saved file">Reset</button>
+    </div>
+    <div class="sep"></div>
+    <div class="grp">
+      <button id="check" type="button" title="Run the validator without saving">Check</button>
+      <button id="save" type="button" class="primary">Save…</button>
+      <span id="dirty"></span>
+    </div>
+  </header>
+
+  <div id="main">
+    <aside id="items" aria-label="Items">
+      <div class="top">
+        <div id="brush"><span class="icon"></span><span class="lbl"></span>
+          <button id="turn-brush" type="button" title="Turn the item before painting (R)">↻</button></div>
+        <input id="search" type="search" placeholder="Search items" aria-label="Search items">
+      </div>
+      <div id="item-list"></div>
+    </aside>
+
+    <div id="stagewrap">
+      <div id="stage" aria-label="3D view of the template"></div>
+      <div id="labels"></div>
+      <div id="viewbar">
+        <div class="grp" role="group" aria-label="Camera">
+          <button type="button" data-mode="orbit">Orbit</button>
+          <button type="button" data-mode="walk">Walk</button>
+          <button type="button" data-mode="noclip">Noclip</button>
+        </div>
+        <div class="grp" role="group" aria-label="Layers above the current one">
+          <button type="button" data-above="ghost" title="Layers above the current one drawn transparent">Above: transparent</button>
+          <button type="button" data-above="hidden">hidden</button>
+          <button type="button" data-above="shown">shown</button>
+        </div>
+        <div class="grp"><button id="show-changed" type="button" aria-pressed="true" title="Outline cells that differ from the file at HEAD">Changed since commit</button></div>
+      </div>
+      <div id="viewhint"></div>
+    </div>
+
+    <section id="gridpane" aria-label="Layer grid">
+      <div class="top">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="eyebrow">Layer</span>
+          <button id="layer-down" type="button" title="Layer below (PageDown)">▼</button>
+          <strong id="layer-label" class="mono"></strong>
+          <button id="layer-up" type="button" title="Layer above (PageUp)">▲</button>
+          <span class="muted" style="font-size:12px">wheel over the grid changes the layer</span>
+        </div>
+        <div id="layers"></div>
+        <div class="legend-row">
+          <span><i class="sw" style="background:var(--air)"></i>force air</span>
+          <span><i class="sw" id="sw-unchanged"></i>leave unchanged</span>
+          <span><i class="sw" style="border-color:var(--role);border-width:2px"></i>role (race material)</span>
+          <span><i class="sw" style="border-color:var(--changed);border-width:2px"></i>changed since commit</span>
+          <span><i class="sw" style="border-color:var(--error);border-width:2px"></i>validator finding</span>
+        </div>
+      </div>
+      <div id="gridwrap"><canvas id="grid"></canvas></div>
+      <div id="hover" class="muted">Hover a cell.</div>
+      <details id="points-box"><summary>Points (move only)</summary><div id="points-list"></div></details>
+    </section>
+  </div>
+
+  <footer id="bottom">
+    <div class="row"><span class="eyebrow">Validator</span><span id="message" class="muted">Not checked yet.</span></div>
+    <ul id="findings"></ul>
+  </footer>
+</section>
+
+<div id="notice" hidden></div>
+<div id="modal" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <h2 id="modal-title"></h2><div class="body" id="modal-body"></div><div class="buttons" id="modal-buttons"></div>
+</div></div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="/editor.js"></script>
+</body>
+</html>

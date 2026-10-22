@@ -86,7 +86,11 @@ class Template(object):
         self.points = []        # dicts: group, x, y, z, face, attrs (ordered)
 
 
-def _content_lines(path):
+def _content_lines(path, text=None):
+    if text is not None:
+        for number, raw in enumerate(text.split("\n"), 1):
+            yield number, raw
+        return
     with open(path, "r", encoding="utf-8") as fh:
         for number, raw in enumerate(fh, 1):
             yield number, raw.rstrip("\n")
@@ -97,9 +101,13 @@ def _is_skip(line):
     return stripped == "" or stripped.startswith("#")
 
 
-def parse_template(path):
+def parse_template(path, text=None):
+    """A template from its file, or from `text` (the file's contents; `path`
+    then only names it, the editor reads the version at HEAD this way)."""
     t = Template(path)
-    lines = list(_content_lines(path))
+    lines = list(_content_lines(path, text))
+    if text is not None and lines and lines[-1][1] == "":
+        lines.pop()
     i = 0
 
     def fail(number, reason):
