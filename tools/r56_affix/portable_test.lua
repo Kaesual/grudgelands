@@ -295,32 +295,32 @@ do
 	-- The same channel: the line of the enchant it replaces.
 	local full = result.output
 	result = plan("enchant:sword:prefix:dex:t3", full)
-	eq(result and result.replaces, "Replaces: Prefix: +5 Strength (T3)",
+	eq(result and result.replaces, "Replaces prefix: +5 Strength (T3)",
 		"B a new prefix names the prefix it replaces")
 	eq(result and result.warning, nil, "B ... an equal tier warns of nothing")
 	eq(table.concat(affix_lines(result.output), "|"),
 		"Prefix: +4 Dexterity (T3)|Suffix: +2.6% Crit (T3)", "B ... the result keeps the suffix")
 	result = plan("enchant:sword:suffix:crit_percent:t1", full)
-	eq(result and result.replaces, "Replaces: Suffix: +2.6% Crit (T3)",
+	eq(result and result.replaces, "Replaces suffix: +2.6% Crit (T3)",
 		"B a new suffix names the suffix it replaces")
 	-- A higher tier replaced: the line and the warning.
 	eq(result and result.warning, "Replaces T3 Crit with T1 Crit.",
 		"B ... a higher tier keeps its warning beside the line")
 	result = plan("enchant:sword:prefix:str:t2", full)
-	eq(result and result.replaces, "Replaces: Prefix: +5 Strength (T3)",
+	eq(result and result.replaces, "Replaces prefix: +5 Strength (T3)",
 		"B the same stat at a lower tier names it too")
 	eq(result and result.warning, "Replaces T3 Strength with T2 Strength.",
 		"B ... with the warning")
 	-- A higher tier replacing a lower one: the line, no warning.
 	local low = plan("enchant:sword:prefix:str:t1", with_prefix).output
 	result = plan("enchant:sword:prefix:str:t3", low)
-	eq(result and result.replaces, "Replaces: Prefix: +3 Strength (T1)",
+	eq(result and result.replaces, "Replaces prefix: +3 Strength (T1)",
 		"B a stronger enchant names the weaker one")
 	eq(result and result.warning, nil, "B ... without a warning")
 	-- The line carries no amount at the player's level (two lines in the box).
 	local hp = plan("enchant:sword:suffix:max_hp_percent:t2", with_prefix).output
 	result = plan("enchant:sword:suffix:crit_percent:t2", hp)
-	eq(result and result.replaces, "Replaces: Suffix: +2.4% maximum HP (T2)",
+	eq(result and result.replaces, "Replaces suffix: +2.4% maximum HP (T2)",
 		"B an HP suffix without the amount at the player's level")
 	-- A refused enchant has no plan, so no line.
 	local _, reason = plan("enchant:sword:prefix:str:t3", full)
