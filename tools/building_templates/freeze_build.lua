@@ -82,7 +82,12 @@ local function town_source_line(state)
 		if not info then break end
 		if info.source == state.town_source then
 			inner = inner or info.currentline
-			if info.func == state.build_fn then return info.currentline, inner end
+			-- a capital's plot builder is loaded once per district file, so
+			-- its build function is matched by where it is defined
+			if info.func == state.build_fn or (state.build_linedefined and
+					info.linedefined == state.build_linedefined) then
+				return info.currentline, inner
+			end
 		end
 	end
 	return nil, inner
@@ -99,7 +104,13 @@ M.copy = shallow_copy
 -- Install the instrumented `dofile` for one run; returns the restore
 -- function. `state.town_buf` is the first buffer the town file creates.
 local function install(mode, state)
-	local probe = mode == "probe"
+	-- "probe_role" (the capitals) tags every handle alike (`h0`): a capital's
+	-- own code compares names across its handles (a hall floor laid by one
+	-- handle against the paving another names), which a per-handle tag would
+	-- answer differently; the exporter tells the handles apart by what each
+	-- binds.
+	local probe = mode == "probe" or mode == "probe_role"
+	local role_only = mode == "probe_role"
 	local saved_dofile = dofile
 	local shared = {}
 	state.shared = shared
@@ -139,6 +150,7 @@ local function install(mode, state)
 		end
 		local orig_stamp = parts.stamp
 		parts.stamp = function(target, part, ox, oy, oz, turns)
+			local caller = debug.getinfo(2, "Sl")
 			local points = orig_stamp(target, part, ox, oy, oz, turns)
 			if target == state.town_buf then
 				local source, count = part.buffer:cells()
@@ -161,7 +173,10 @@ local function install(mode, state)
 					points = shallow_copy(part.points or {}),
 					ox = ox, oy = oy, oz = oz, turns = turns % 4,
 					line = town_source_line(state), result = points,
-					generator = state.generator, write_index = #state.writes}
+					generator = state.generator_of[part] or state.generator,
+					caller = caller and (caller.short_src:match("[^/]+$") .. ":" ..
+						caller.currentline),
+					write_index = #state.writes}
 				state.generator = nil
 			end
 			return points
@@ -237,7 +252,7 @@ local function install(mode, state)
 			end
 			local function tag(name, role)
 				if name == nil then return nil end
-				return name .. "#" .. id .. ":" .. role
+				return name .. "#" .. (role_only and "h0" or id) .. ":" .. role
 			end
 			local handle = {race = race}
 			function handle.node(role) return tag(real.node(role), role) end
@@ -259,7 +274,11 @@ local function install(mode, state)
 		return copy
 	end
 
-	local function wrap_generators(path)
+	-- Every function of a generator module records the outermost call that
+	-- built a part: `state.generator` (the start towns: the call before the
+	-- next stamp) and `state.generator_of[part]` (the capitals, whose
+	-- modules also hold helpers that build no part).
+	local function wrap_generators(path, module_name)
 		local loader = saved_dofile(path)
 		return function(directory)
 			local module = loader(directory)
@@ -267,12 +286,18 @@ local function install(mode, state)
 				if type(fn) == "function" then
 					module[name] = function(palette, spec, ...)
 						local outer = state.generator == nil
-						if outer then
-							state.generator = {make = name, palette = palette,
-								roof = type(spec) == "table" and spec.roof_palette or nil,
-								spec = shallow_copy(spec)}
-						end
+						local record = {make = name, module = module_name,
+							palette = palette,
+							roof = type(spec) == "table" and spec.roof_palette or nil,
+							spec = shallow_copy(spec)}
+						if outer then state.generator = record end
+						state.depth = state.depth + 1
 						local result = fn(palette, spec, ...)
+						state.depth = state.depth - 1
+						if state.depth == 0 and type(result) == "table" and
+								result.buffer and not state.generator_of[result] then
+							state.generator_of[result] = record
+						end
 						return result
 					end
 				end
@@ -356,8 +381,9 @@ local function install(mode, state)
 		elseif name == "palette" then
 			shared.palette = shared.palette or load_palette(path)
 			return shared.palette
-		elseif name == "buildings" then
-			return wrap_generators(path)
+		elseif name == "buildings" or name == "capitals" or name == "elf_parts" or
+				name == "troll_parts" or name == "undead_parts" then
+			return wrap_generators(path, name)
 		elseif name == "decor_kit" then
 			return wrap_decor(path)
 		elseif name == "layout" then
@@ -372,6 +398,7 @@ end
 function M.build(src, town, mode)
 	local state = {mode = mode, writes = {}, stamps = {}, handles = {},
 		handle_of = {}, part_prev = {}, context = {}, generator = nil,
+		generator_of = {}, depth = 0,
 		town_source = "@" .. src .. "/" .. town .. ".lua"}
 	local restore = install(mode, state)
 	local saved_dofile = dofile
@@ -403,12 +430,93 @@ function M.build(src, town, mode)
 	return state
 end
 
+-- The source lines of a wp13 file, for the step names.
+local function source_lines(path)
+	local lines = {}
+	local file = assert(io.open(path, "rb"))
+	for line in file:read("*a"):gmatch("([^\n]*)\n") do
+		lines[#lines + 1] = line
+	end
+	file:close()
+	return lines
+end
+
+-- Build one blueprint of a capital (Round 56 lane FREEZE-CAPITALS): its
+-- civic core (`which` = "core", the town file `<key>.lua`, the build
+-- function its `M.core`) or its district plot number `which` in the order
+-- of `<key>_districts.lua` M.plots() (the town file `<key>_plot.lua`, the
+-- build function its `M.build`, which every district file loads a copy of).
+-- The record is `M.build`'s, plus for a plot `row` (the roster row) and
+-- `overrides` (what its `socket_overrides` answered, by socket id).
+function M.build_capital(src, key, which, mode)
+	local file = which == "core" and key .. ".lua" or key .. "_plot.lua"
+	local state = {mode = mode, writes = {}, stamps = {}, handles = {},
+		handle_of = {}, part_prev = {}, context = {}, generator = nil,
+		generator_of = {}, depth = 0, overrides = {},
+		town_source = "@" .. src .. "/" .. file}
+	local lines = source_lines(src .. "/" .. file)
+	if which ~= "core" then
+		for number, line in ipairs(lines) do
+			if line:find("^%s*function M%.build%(") then state.build_linedefined = number end
+		end
+		assert(state.build_linedefined, file .. " has no M.build")
+	end
+	local restore = install(mode, state)
+	local wrapped_dofile = dofile
+	local ok, result = pcall(function()
+		if which == "core" then
+			local module = wrapped_dofile(src .. "/" .. file)(src)
+			state.build_fn = module.core
+			state.plots = upvalue(module.core, "PLOTS")
+			for _, row in ipairs(state.plots) do
+				local overrides = row.socket_overrides
+				if type(overrides) == "function" then
+					row.socket_overrides = function(...)
+						local answer = overrides(...)
+						for id, value in pairs(answer) do
+							state.overrides[id] = shallow_copy(value)
+						end
+						return answer
+					end
+				end
+			end
+			return module.core()
+		end
+		local districts = wrapped_dofile(src .. "/" .. key .. "_districts.lua")(src)
+		local entry = districts.plots()[which]
+		local row = upvalue(entry.build, "plot")
+		assert(type(row) == "table" and row.id == entry.id, key .. ": no roster row for " ..
+			tostring(entry.id))
+		state.row, state.plot_id = row, entry.id
+		local overrides = row.socket_overrides
+		if type(overrides) == "function" then
+			row.socket_overrides = function(...)
+				local answer = overrides(...)
+				for id, value in pairs(answer) do state.overrides[id] = shallow_copy(value) end
+				return answer
+			end
+		end
+		local blueprint = entry.build()
+		row.socket_overrides = overrides
+		return blueprint
+	end)
+	restore()
+	if not ok then
+		error(key .. " " .. tostring(which) .. " (" .. mode .. "): " .. tostring(result), 0)
+	end
+	state.blueprint = result
+	state.parts = state.shared.parts
+	state.lines = lines
+	return state
+end
+
 -- One generator call in isolation with `race`'s palettes (tagged in the
 -- probe mode): the part's cells, or nil and the error. `spec` is a copy of
 -- the town's spec; its `roof_palette` is rebuilt from `roof_overrides`.
 function M.generator(src, make, spec, race, main_overrides, roof_overrides, mode)
 	local state = {mode = mode or "probe", writes = {}, stamps = {}, handles = {},
-		handle_of = {}, part_prev = {}, context = {}, town_source = "@-"}
+		handle_of = {}, part_prev = {}, context = {}, town_source = "@-",
+		generator_of = {}, depth = 0}
 	local restore = install(state.mode, state)
 	local ok, result = pcall(function()
 		local palettes = dofile(src .. "/palette.lua")

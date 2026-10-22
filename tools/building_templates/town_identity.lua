@@ -6,17 +6,21 @@
 -- so the building peaks, lights and counts), SHA-256 over a canonical
 -- serialisation with sorted keys.
 --
--- The six capitals print one line each as well: a digest over their core's
--- and every district plot's whole blueprint (cells included, canonical
--- serialisation) and the cell count, so a change of what a capital builds
--- shows too.
+-- The six capitals print one line each as well (Round 56 lane
+-- FREEZE-CAPITALS): an IDENTITY digest over the settlement identity SHA-256
+-- of the core and of every district plot as `r7_settlement` computes them,
+-- the cell count, a POINT DIGEST over every one of those blueprints without
+-- its cells, a BUILD digest over their whole blueprints (cells included,
+-- canonical serialisation) and the blueprint count, so a change of what a
+-- capital builds shows too.
 --
 -- Usage: luajit tools/building_templates/town_identity.lua <repo> [<tree>] [--load]
 --   <tree> is the checkout whose `mods/MAPGEN/grug_mapgen` is built (default:
 --   the repo itself; `tools/check_upgrade.py` passes an extracted earlier
 --   release). Prints one line per town: key, identity, cells, point digest.
 --   --load adds the construction numbers: the median CPU seconds of five
---   constructions (loading the composition and building it) and the KB the
+--   constructions (loading the composition and building it; a capital: its
+--   kit, its core and every district plot, median of three) and the KB the
 --   Lua heap allocates during one (collector stopped).
 --
 -- The tool itself is LuaJIT (SHA-256 through tools/wp40/r6/common.lua).
@@ -101,19 +105,61 @@ for _, profile in ipairs(settlement.roster) do
 end
 
 local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
+local profiles = {}
+for _, profile in ipairs(settlement.roster) do profiles[profile.key] = profile end
+local function build_capital(key)
+	local kit = capital.kit(key)
+	local list = {{id = "core", schema = kit.core.schema, blueprint = kit.core.build()}}
+	for _, plot in ipairs(kit.plots) do
+		list[#list + 1] = {id = plot.id, schema = plot.schema, blueprint = plot.build()}
+	end
+	return list
+end
 for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr",
 		"gor_drazhak", "kezamba"}) do
-	local kit = capital.kit(key)
-	local digests, cells = {}, 0
-	local core = kit.core.build()
-	cells = cells + #core.cells
-	digests[#digests + 1] = "core:" .. common.hex(sha(table.concat(canonical(core, {}))))
-	for _, plot in ipairs(kit.plots) do
-		local built = plot.build()
-		cells = cells + #built.cells
-		digests[#digests + 1] = plot.id .. ":" ..
-			common.hex(sha(table.concat(canonical(built, {}))))
+	local profile = profiles[key]
+	local list = build_capital(key)
+	local identities, points, digests, cells = {}, {}, {}, 0
+	for index, entry in ipairs(list) do
+		local blueprint = entry.blueprint
+		cells = cells + #blueprint.cells
+		local prepared
+		if index == 1 then
+			-- the core through the anchor path every start takes: the same
+			-- bounds and schemas as the capital's own core descriptor
+			prepared = settlement.prepare(profile, blueprint, sha).blueprints[1]
+		else
+			prepared = settlement.prepare_plot(profile, {id = entry.id, schema = entry.schema,
+				build = function() return blueprint end}, sha)
+		end
+		identities[#identities + 1] = entry.id .. ":" .. prepared.identity.sha256
+		points[#points + 1] = entry.id .. ":" .. point_digest(blueprint)
+		digests[#digests + 1] = (index == 1 and "core" or entry.id) .. ":" ..
+			common.hex(sha(table.concat(canonical(blueprint, {}))))
 	end
-	print(table.concat({key, common.hex(sha(table.concat(digests, "\n"))), cells,
-		#digests}, "\t"))
+	local line = {key, common.hex(sha(table.concat(identities, "\n"))), cells,
+		common.hex(sha(table.concat(points, "\n"))),
+		common.hex(sha(table.concat(digests, "\n"))), #digests}
+	if load_numbers then
+		local times = {}
+		for run = 1, 3 do
+			collectgarbage("collect")
+			local started = os.clock()
+			capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
+			build_capital(key)
+			times[run] = os.clock() - started
+		end
+		table.sort(times)
+		collectgarbage("collect")
+		collectgarbage("stop")
+		local before = collectgarbage("count")
+		capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
+		local kept = build_capital(key)
+		local allocated = collectgarbage("count") - before
+		collectgarbage("restart")
+		kept = nil
+		line[#line + 1] = string.format("%.3f", times[2])
+		line[#line + 1] = string.format("%.0f", allocated)
+	end
+	print(table.concat(line, "\t"))
 end
