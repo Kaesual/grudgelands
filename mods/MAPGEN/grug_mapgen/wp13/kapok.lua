@@ -28,9 +28,7 @@
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 
 	local RADIUS = 63
@@ -62,47 +60,15 @@ local function loader(directory)
 		{2, -49, 4, -47},            -- watchpost doorstep
 	}
 
-	-- Plot roster. Each row is one placed building: landmark id, generator,
-	-- its parameters, the pad anchor of the footprint and the rotation.
-	-- `stilt` raises the floor onto posts and `stairs` gives it the flight
-	-- that reaches the deck; both are library parameters, not troll-only code.
-	local PLOTS = {
-		{id = "spirit_lodge", make = "hall", x = -6, z = 20, turns = 0,
-			terrace = true,
-			spec = {w = 13, d = 15, wall_h = 7, overhang = 1, apron = 3,
-				rise = 3, kit = "lodge", chimneys = {{x = 6, z = 7}}}},
-		-- Door index 3, not the middle: `workshop` stands its first flue on
-		-- the middle cell of a wall, and a chimney through a doorway is a
-		-- doorway no longer. Both flues are moved to the smoking wall.
-		{id = "fish_smoker", make = "workshop", x = 16, z = 20, turns = 0,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, stilt = 2, apron = 2,
-				door_side = "z-", door_index = 3,
-				stairs = {{side = "z-", index = 3, width = 3}},
-				chimneys = {{x = 5, z = 12}, {x = 15, z = 4}},
-				kit = "smoker"}},
-		{id = "drying_shed", make = "shed", x = -32, z = 20, turns = 0,
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}}},
-		{id = "elder_stilt", make = "cottage", x = -30, z = -22, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, overhang = 1, apron = 2, stilt = DECK,
-				roof = "gable", ridge_axis = "x", rise = 3, door_side = "z+",
-				door_index = 4, fancy_bed = true,
-				stairs = {{side = "z+", index = 4, width = 3}}}},
-		{id = "river_stilt", make = "cottage", x = 22, z = -22, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, overhang = 1, apron = 2, stilt = DECK,
-				roof = "hip", rise = 3, door_side = "z+", door_index = 4,
-				stairs = {{side = "z+", index = 4, width = 3}}}},
-		{id = "weaver_stilt", make = "cottage", x = -30, z = 4, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, overhang = 1, apron = 2, stilt = DECK,
-				roof = "hip", rise = 3, door_side = "z-", door_index = 4,
-				stairs = {{side = "z-", index = 4, width = 3}}}},
-		{id = "reed_stilt", make = "cottage", x = 22, z = 4, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, overhang = 1, apron = 2, stilt = DECK,
-				roof = "gable", ridge_axis = "z", rise = 3, door_side = "z-",
-				door_index = 4,
-				stairs = {{side = "z-", index = 4, width = 3}}}},
-		{id = "watchpost", make = "watchpost", x = 5, z = -52, turns = 0,
-			spec = {door_side = "x-"}},
-	}
+	-- The buildings are building templates (Round 56): the layout
+	-- `building_templates/layouts/kapok.layout` places them in stamp order.
+	-- The stilt houses stand on posts with the flight that reaches their deck
+	-- (the deck height every dwelling and bridge shares, `DECK`), and the
+	-- spirit lodge alone stands on stone: its apron is the terrace it sits on
+	-- (the layout's `terrace` palette). The templates carry each house's
+	-- small touches.
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local TOWN = templates.town("kapok")
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"spirit_lodge", "fish_smoker", "drying_shed",
@@ -110,10 +76,6 @@ local function loader(directory)
 		"watchpost_deck"}
 
 	local DESTINATION_ID = {watchpost = "watchpost_deck"}
-
-	-- The lodge alone stands on stone: its apron is the terrace it sits on,
-	-- not the plank apron every other plot carries.
-	local TERRACE_APRON = {path = "grug_decor:darkage_basalt_brick"}
 
 	-- The two flying bridges, deck to deck across the road: one between the
 	-- southern pair of dwellings, one between the northern pair. The pier rule
@@ -176,8 +138,10 @@ local function loader(directory)
 			order = 5, x = 10, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "clearing_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
-		{id = "idle_lodge_door", role = "idle", tags = {"door"}, x = -2, y = 1,
-			z = 17, dir = {x = 0, z = 1}},
+		-- `building`: the point stands at that building's door and is a point
+		-- of its template (Round 56); the position comes from the stamp.
+		{id = "idle_lodge_door", role = "idle", tags = {"door"},
+			building = "spirit_lodge"},
 		{id = "idle_terrace_settle", role = "idle", tags = {"bench"}, x = -12,
 			y = 1, z = 27, dir = {x = 1, z = 0}},
 		{id = "idle_drying_shed", role = "idle", tags = {"work"}, x = -17,
@@ -202,8 +166,8 @@ local function loader(directory)
 			tags = {"bench"}, x = -16, y = 1, z = 24, dir = {x = 1, z = 0}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
-		{id = "hall_quest", role = "quest", tags = {"door"}, x = 3, y = 1,
-			z = 17, dir = {x = 0, z = 1}},
+		{id = "hall_quest", role = "quest", tags = {"door"},
+			building = "spirit_lodge"},
 		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
 		-- stands here, grug_home reads it.
 		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
@@ -232,7 +196,6 @@ local function loader(directory)
 
 	return function()
 		local palette = palettes.new("troll")
-		local terrace = palettes.new("troll", TERRACE_APRON)
 		local buf = parts.buffer()
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id, plot_order = {}, {}, {}
@@ -340,34 +303,36 @@ local function loader(directory)
 				"path", 4)
 		end
 
-		-- 3. Buildings.
-		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			local part = buildings[plot.make](
-				plot.terrace and terrace or palette, spec)
-			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
+		-- 3. Buildings, the layout's placements in stamp order.
+		local stamped_sockets = {}
+		for _, place in ipairs(TOWN.places) do
+			local part = TOWN.part(place)
+			local points = parts.stamp(buf, part, place.x, place.y, place.z,
+				place.turns)
 			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z,
+			placed[place.id] = {x = place.x, z = place.z,
 				w = footprint.w, d = footprint.d, peak = part.peak}
-			plot_order[#plot_order + 1] = placed[plot.id]
+			plot_order[#plot_order + 1] = placed[place.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
+					face = door.face, id = place.id}
 			end
 			local spot = points.inside[1]
-			inside_by_id[DESTINATION_ID[plot.id] or plot.id] =
+			inside_by_id[DESTINATION_ID[place.id] or place.id] =
 				{x = spot.x, y = spot.y, z = spot.z}
 			for index = 1, #points.room_corner, 2 do
 				local a, b = points.room_corner[index], points.room_corner[index + 1]
 				rooms[#rooms + 1] = {
 					min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
 					max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
-					top = a.top, closed = a.closed, id = plot.id,
+					top = a.top, closed = a.closed, id = place.id,
 				}
 			end
+			for _, point in ipairs(points.sockets or {}) do
+				stamped_sockets[point.id] = point
+			end
 		end
+		local sockets = templates.sockets(SOCKETS, stamped_sockets, "kapok")
 
 		-- 4. The flying bridges, deck to deck over the road.
 		local function pier_clear(px)
@@ -530,12 +495,6 @@ local function loader(directory)
 		buf.tree_share = 2
 		local jungle = layout.plant_jungle(buf, palette, RADIUS, 7)
 
-		-- 12b. Every house's small touches (Round 36 decor kit): a barrel or a
-		-- pot by the door, flowers under the windows, a wood pile or a barrel
-		-- against a side wall; never on a socket or the cell before it.
-		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
-			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
-
 		-- 13. Basin flora on whatever open litter is left.
 		local flora = dressing.basin_flora(buf, palette, -RADIUS, -RADIUS,
 			RADIUS, RADIUS)
@@ -547,7 +506,7 @@ local function loader(directory)
 
 		-- 15. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
-		layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+		layout.green(buf, palette, RADIUS, sockets, doorways)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end
@@ -638,7 +597,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
-				sockets = SOCKETS,
+				sockets = sockets,
 				deck_height = DECK,
 				rope_cells = rope_cells,
 				rack_lines = rack_lines,

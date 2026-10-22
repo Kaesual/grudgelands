@@ -22,9 +22,7 @@
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 
 	local RADIUS = 63
@@ -54,47 +52,16 @@ local function loader(directory)
 		{3, 51, 4, 53},            -- lookout doorstep
 	}
 
-	-- Plot roster. Each row is one placed building: landmark id, generator,
-	-- its parameters, the pad anchor of the footprint, the rotation that
-	-- turns its door toward its lane and, for the two terrace houses, the
-	-- height of the podium the whole building is lifted onto.
-	local PLOTS = {
-		-- The shrine is the one steep roof in the glade: a narrow nave under a
-		-- full-pitch gable whose ridge runs with the approach, so the moon
-		-- face at the gable end is what the colonnade walks you toward. A hip
-		-- at this width would clip into the broad flat deck the lore hall and
-		-- the lookout carry, and a shrine is not a hall.
-		{id = "moon_shrine", make = "chapel", x = -25, z = 18, turns = 0,
-			roof_material = "pale",
-			spec = {w = 9, d = 15, wall_h = 7, door_index = 4,
-				roof = "gable", ridge_axis = "z", rise = 5}},
-		{id = "lore_hall", make = "hall", x = 14, z = 16, turns = 0,
-			roof_material = "pale",
-			spec = {w = 13, d = 15, wall_h = 6}},
-		{id = "bowyer_workshop", make = "workshop", x = 30, z = -6, turns = 0,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 6, door_side = "x-"}},
-		{id = "terrace_house_west", make = "cottage", x = -22, z = -18,
-			turns = 0, lift = 3,
-			spec = {w = 7, d = 11, wall_h = 6, roof = "gable",
-				ridge_axis = "z", door_side = "z-", door_index = 3,
-				fancy_bed = true}},
-		{id = "terrace_house_east", make = "cottage", x = 16, z = -18,
-			turns = 0, lift = 3,
-			spec = {w = 7, d = 11, wall_h = 6, roof = "gable",
-				ridge_axis = "z", door_side = "z-", door_index = 3}},
-		{id = "glade_house_west", make = "cottage", x = -38, z = -21,
-			turns = 0,
-			spec = {w = 7, d = 11, wall_h = 6, roof = "gable",
-				ridge_axis = "z", door_side = "z-", door_index = 3}},
-		{id = "glade_house_east", make = "cottage", x = 32, z = -21,
-			turns = 0,
-			spec = {w = 7, d = 11, wall_h = 6, roof = "hip",
-				door_side = "z-", door_index = 3}},
-		{id = "covered_market", make = "shed", x = -44, z = -4, turns = 0,
-			spec = {w = 13, d = 9, wall_h = 5, open_sides = {"x+", "z-"}}},
-		{id = "gate_lookout", make = "watchpost", x = 5, z = 48, turns = 0,
-			roof_material = "pale", spec = {door_side = "x-"}},
-	}
+	-- The buildings are building templates (Round 56): the layout
+	-- `building_templates/layouts/silverleaf.layout` places them in stamp
+	-- order, the pale roof palette on the shrine, the lore hall and the gate
+	-- lookout, and the lift of the two terrace houses' podiums. The
+	-- templates carry what the glade used to add to its buildings afterwards:
+	-- the spire on the shrine's ridge, the lanterns under the covered market's
+	-- bays, the gable lights of the four houses and each house's small
+	-- touches.
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local TOWN = templates.town("silverleaf")
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"moon_shrine", "lore_hall", "bowyer_workshop",
@@ -102,18 +69,6 @@ local function loader(directory)
 		"glade_house_east", "covered_market", "lookout_deck"}
 
 	local DESTINATION_ID = {gate_lookout = "lookout_deck"}
-
-	-- The three public buildings carry the brick cut of the same silver
-	-- sandstone instead of the plain one, in the same rasterised stair
-	-- family, so the shrine, the lore hall and the gate read as the parts of
-	-- the glade that were dressed rather than sawn.
-	local PALE_ROOF = {
-		roof_stair = "stairs:stair_silver_sandstone_brick",
-		roof_stair_outer = "stairs:stair_outer_silver_sandstone_brick",
-		roof_stair_inner = "stairs:stair_inner_silver_sandstone_brick",
-		roof_slab = "stairs:slab_silver_sandstone_brick",
-		roof_ridge = "default:silver_sandstone_brick",
-	}
 
 	-- The processional colonnade on the shrine approach: paired silverwood
 	-- posts carrying a beam architrave, with a lantern hung under every bay.
@@ -162,13 +117,15 @@ local function loader(directory)
 		{id = "court_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
 		-- Round 17: The existing west glade house hosts guests; the shrine keeps its own role.
-		{id = "home_innkeeper", role = "idle", tags = {"door"}, x = -35,
-			y = 1, z = -22, dir = {x = 0, z = 1}},
+		-- `building`: the point stands at that building's door and is a point
+		-- of its template (Round 56); the position comes from the stamp.
+		{id = "home_innkeeper", role = "idle", tags = {"door"},
+			building = "glade_house_west"},
 		{id = "idle_court_bench", role = "idle", tags = {"bench"}, x = -7,
 			y = 1, z = 5, dir = {x = 0, z = -1}},
 		-- Round 47: `door`, it stands before the bowyer's door.
-		{id = "idle_bowyer", role = "idle", tags = {"work", "door"}, x = 28, y = 1,
-			z = -1, dir = {x = 1, z = 0}},
+		{id = "idle_bowyer", role = "idle", tags = {"work", "door"},
+			building = "bowyer_workshop"},
 		-- The covered market's hanging lanterns are the only open flame the
 		-- glade keeps outdoors; this is its fireside. Round 47: it faced the
 		-- market's corner post a node away (-1,0); it looks along the bays.
@@ -190,8 +147,8 @@ local function loader(directory)
 			x = -33, y = 1, z = 5, dir = {x = 0, z = 1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
-		{id = "hall_quest", role = "quest", tags = {"door"}, x = 20, y = 1,
-			z = 14, dir = {x = 0, z = 1}},
+		{id = "hall_quest", role = "quest", tags = {"door"},
+			building = "lore_hall"},
 		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
 		-- stands here, grug_home reads it.
 		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
@@ -220,7 +177,6 @@ local function loader(directory)
 
 	return function()
 		local palette = palettes.new("elf")
-		local pale = palettes.new("elf", PALE_ROOF)
 		local buf = parts.buffer()
 		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`).
 		buf.tree_share = 2
@@ -325,45 +281,46 @@ local function loader(directory)
 			end
 		end
 
-		-- 3. Terraces, then buildings.
-		for _, plot in ipairs(PLOTS) do
-			local lift = plot.lift or 0
+		-- 3. Terraces, then buildings: the layout's placements in stamp order.
+		local stamped_sockets = {}
+		for _, place in ipairs(TOWN.places) do
+			local lift = place.lift or 0
+			local part = TOWN.part(place)
 			if lift > 0 then
-				-- The podium reaches `plot.z + spec.d`, one node PAST the
-				-- back wall, because that is where the apron ring and the
-				-- railing below stand. It used to stop at `spec.d - 1`, flush
-				-- with the wall, and the 33 cells of ring and rail behind the
-				-- two terrace houses had nothing under them at all.
-				dressing.terrace(buf, palette, plot.x - 1, plot.z - 1,
-					plot.x + plot.spec.w, plot.z + plot.spec.d, lift, "z-")
+				-- The podium reaches `place.z + d`, one node PAST the back
+				-- wall, because that is where the apron ring and the railing
+				-- below stand. It used to stop at `d - 1`, flush with the
+				-- wall, and the 33 cells of ring and rail behind the two
+				-- terrace houses had nothing under them at all.
+				dressing.terrace(buf, palette, place.x - 1, place.z - 1,
+					place.x + part.w, place.z + part.d, lift, "z-")
 			end
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			if plot.roof_material == "pale" then spec.roof_palette = pale end
-			local part = buildings[plot.make](palette, spec)
-			local points = parts.stamp(buf, part, plot.x, lift, plot.z,
-				plot.turns)
+			local points = parts.stamp(buf, part, place.x, place.y, place.z,
+				place.turns)
 			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z, lift = lift,
+			placed[place.id] = {x = place.x, z = place.z, lift = lift,
 				w = footprint.w, d = footprint.d, peak = part.peak + lift}
-			plot_order[#plot_order + 1] = placed[plot.id]
+			plot_order[#plot_order + 1] = placed[place.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
+					face = door.face, id = place.id}
 			end
 			local spot = points.inside[1]
-			inside_by_id[DESTINATION_ID[plot.id] or plot.id] =
+			inside_by_id[DESTINATION_ID[place.id] or place.id] =
 				{x = spot.x, y = spot.y, z = spot.z}
 			for index = 1, #points.room_corner, 2 do
 				local a, b = points.room_corner[index], points.room_corner[index + 1]
 				rooms[#rooms + 1] = {
 					min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
 					max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
-					top = a.top + lift, closed = a.closed, id = plot.id,
+					top = a.top + lift, closed = a.closed, id = place.id,
 				}
 			end
+			for _, point in ipairs(points.sockets or {}) do
+				stamped_sockets[point.id] = point
+			end
 		end
+		local sockets = templates.sockets(SOCKETS, stamped_sockets, "silverleaf")
 
 		-- 4. Terrace railings: the two sides and the back of every podium,
 		-- so the front stays open for the steps and the doorway.
@@ -378,15 +335,6 @@ local function loader(directory)
 			for x = x1 + 1, x2 - 1 do
 				buf:put(x, plot.lift + 1, z2, palette.node("railing"))
 			end
-		end
-
-		-- 5. The spire on the shrine's ridge: the one silhouette that marks
-		-- the glade's centre from under the canopy.
-		do
-			local shrine = placed.moon_shrine
-			local spire = buildings.belfry(palette,
-				{height = 4, roof_palette = pale})
-			parts.stamp(buf, spire, shrine.x + 2, shrine.peak, shrine.z + 5, 0)
 		end
 
 		-- 6. The gate: two brick piers under a silverwood lintel, candles
@@ -415,28 +363,6 @@ local function loader(directory)
 			end
 			parts.hanging_light(buf, palette, COLONNADE.x1 + 2,
 				COLONNADE.height, z)
-		end
-
-		-- 7b. Lanterns under the covered market's open bays. The top plate of
-		-- an open side follows the roof, so its height varies along the bay;
-		-- the lantern is hung under the first beam found scanning down.
-		local function lantern_under(x, z)
-			for y = 7, 3, -1 do
-				if parts.hanging_light(buf, palette, x, y, z) then return true end
-			end
-			refuse("market_lantern", x, z, "no beam to hang it under")
-		end
-		for _, bay in ipairs({{-32, -2}, {-32, 2}, {-42, -4}, {-38, -4}}) do
-			lantern_under(bay[1], bay[2])
-		end
-
-		-- 8. Gable lights: one emberglass lamp set into the ridge gable of
-		-- every house, which is what makes the glade readable at night from
-		-- the canopy paths.
-		for _, id in ipairs({"terrace_house_west", "terrace_house_east",
-				"glade_house_west", "glade_house_east"}) do
-			local plot = placed[id]
-			parts.beacon(buf, palette, plot.x + 3, plot.lift + 8, plot.z)
 		end
 
 		-- 9. The court: lantern standards, flower beds on marble kerbs,
@@ -540,12 +466,6 @@ local function loader(directory)
 		-- 13. The silverwood: named specimens first, then the scatter.
 		local standards = layout.plant_grove(buf, palette, RADIUS, 6, SPECIMENS)
 
-		-- 13b. Every house's small touches (Round 36 decor kit): a barrel or a
-		-- pot by the door, flowers under the windows, a wood pile or a barrel
-		-- against a side wall; never on a socket or the cell before it.
-		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
-			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
-
 		-- 14. Ferns and pale grass on whatever litter is left.
 		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
 
@@ -555,7 +475,7 @@ local function loader(directory)
 
 		-- 16. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
-		layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+		layout.green(buf, palette, RADIUS, sockets, doorways)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end
@@ -651,7 +571,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
-				sockets = SOCKETS,
+				sockets = sockets,
 				standards = standards,
 				stepping_stones = stepping_stones,
 			},

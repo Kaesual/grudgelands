@@ -18,10 +18,8 @@
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 
 	local RADIUS = 63
 	local SCHEMA = "grug_wp13_dawnmere_blueprint_v1"
@@ -44,39 +42,14 @@ local function loader(directory)
 		{3, 51, 4, 53},                  -- tollhouse doorstep
 	}
 
-	-- Plot roster. Each row is one placed building: landmark id, generator,
-	-- its parameters, the pad anchor of the rotated footprint and the
-	-- rotation that turns its door toward the lane.
-	local PLOTS = {
-		{id = "meeting_hall", make = "chapel", x = -16, z = 10, turns = 0,
-			roof_material = "tile",
-			spec = {w = 11, d = 15, wall_h = 6, shutters = true}},
-		{id = "harvest_inn", make = "longhouse", x = 6, z = 10, turns = 0,
-			spec = {w = 11, d = 15, wall_h = 5, kit = "inn", infill = true,
-				shutters = true}},
-		{id = "great_barn", make = "barn", x = -33, z = -6, turns = 0,
-			spec = {w = 13, d = 11, wall_h = 6, door_side = "x+",
-				door_index = 6, infill = true}},
-		{id = "smithy", make = "workshop", x = 24, z = -6, turns = 0,
-			roof_material = "tile",
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-"}},
-		{id = "orchard_cottage", make = "cottage", x = -30, z = -26, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable", ridge_axis = "x",
-				door_side = "z+", door_index = 3, infill = true,
-				shutters = true}},
-		{id = "lane_cottage", make = "cottage", x = -14, z = -26, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip", door_side = "z+",
-				door_index = 4, shutters = true, fancy_bed = true}},
-		{id = "green_cottage", make = "cottage", x = 6, z = -26, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "saltbox", ridge_axis = "x", lift = 2,
-				door_side = "z+", door_index = 4, infill = true,
-				shutters = true}},
-		{id = "field_cottage", make = "cottage", x = 22, z = -26, turns = 0,
-			spec = {w = 11, d = 9, wall_h = 5, roof = "gable", ridge_axis = "z",
-				door_side = "z+", door_index = 5, shutters = true}},
-		{id = "tollhouse", make = "watchpost", x = 5, z = 48, turns = 0,
-			roof_material = "tile", spec = {door_side = "x-"}},
-	}
+	-- The buildings are building templates (Round 56): the layout
+	-- `building_templates/layouts/dawnmere.layout` places them in stamp order,
+	-- the brick roof palette on the two public buildings. The templates carry
+	-- what the hamlet used to add to its buildings afterwards: the belfry on
+	-- the meeting hall's ridge, the cart wheels on the barn and the inn, the
+	-- crates stacked in the barn and the hall, and each house's small touches.
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local TOWN = templates.town("dawnmere")
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"meeting_hall", "harvest_inn", "great_barn",
@@ -84,17 +57,6 @@ local function loader(directory)
 		"field_cottage", "tollhouse_roof"}
 
 	local DESTINATION_ID = {tollhouse = "tollhouse_roof"}
-
-	-- The two public buildings carry a brick roof instead of a plank one, in
-	-- the same rasterised stair family, so the civic core reads as the part of
-	-- the hamlet that was built to last.
-	local TILE_ROOF = {
-		roof_stair = "stairs:stair_brick",
-		roof_stair_outer = "stairs:stair_outer_brick",
-		roof_stair_inner = "stairs:stair_inner_brick",
-		roof_slab = "stairs:slab_brick",
-		roof_ridge = "default:brick",
-	}
 
 	-- Fenced fields, each a rectangle of furrows with a headland inside its
 	-- fence. `axis` names the direction the rows run.
@@ -155,17 +117,19 @@ local function loader(directory)
 		{id = "green_vendor", role = "vendor", kind = "race", x = 6, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
 		-- Round 17: The existing Harvest Inn receives the former cottage-door resident.
-		{id = "home_innkeeper", role = "idle", tags = {"door"}, x = 11,
-			y = 1, z = 9, dir = {x = 0, z = 1}},
+		-- `building`: the point stands at that building's door and is a point
+		-- of its template (Round 56); the position comes from the stamp.
+		{id = "home_innkeeper", role = "idle", tags = {"door"},
+			building = "harvest_inn"},
 		{id = "idle_green_bench", role = "idle", tags = {"bench"}, x = -6,
 			y = 1, z = 7, dir = {x = 0, z = -1}},
 		-- Round 47: both stand before their building's door, so they carry
 		-- `door` and the consumer turns them to the street (the first tag
 		-- stays the spoken line).
-		{id = "idle_barn", role = "idle", tags = {"work", "door"}, x = -19, y = 1,
-			z = 0, dir = {x = -1, z = 0}},
-		{id = "idle_smithy", role = "idle", tags = {"fire", "door"}, x = 22, y = 1,
-			z = -1, dir = {x = 1, z = 0}},
+		{id = "idle_barn", role = "idle", tags = {"work", "door"},
+			building = "great_barn"},
+		{id = "idle_smithy", role = "idle", tags = {"fire", "door"},
+			building = "smithy"},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
 		-- is a spawn socket like an `idle` one and its resident never leaves
@@ -188,8 +152,8 @@ local function loader(directory)
 		-- The elder stands ON the hall's doorstep, so its authored facing is
 		-- the door -- and `door` is what turns the NPC round to the street
 		-- (start_npcs.lua `socket_face_yaw`, playtest round 2).
-		{id = "hall_quest", role = "quest", tags = {"door"}, x = -11, y = 1,
-			z = 8, dir = {x = 0, z = 1}},
+		{id = "hall_quest", role = "quest", tags = {"door"},
+			building = "meeting_hall"},
 		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
 		-- stands here, grug_home reads it.
 		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
@@ -218,7 +182,6 @@ local function loader(directory)
 
 	return function()
 		local palette = palettes.new("human")
-		local tile = palettes.new("human", TILE_ROOF)
 		local buf = parts.buffer()
 		-- Round 51 follow-up FT: half the start's trees (`dressing.grown`).
 		buf.tree_share = 2
@@ -275,13 +238,8 @@ local function loader(directory)
 		-- end bench stood on the green's west guard waypoint's front cell).
 		-- A socket tagged for a feature (a bench, work, a fire) faces that
 		-- feature on purpose, so only its own cell is kept.
+		-- (Filled once the buildings stand: four sockets are their points.)
 		local socket_cells = {}
-		for _, s in ipairs(SOCKETS) do
-			socket_cells[s.x .. ":" .. s.z] = s.id
-			if not s.tags then
-				socket_cells[(s.x + s.dir.x) .. ":" .. (s.z + s.dir.z)] = s.id
-			end
-		end
 		local function prop(name, x1, z1, x2, z2, build)
 			if not layout.free_area(buf, x1, z1, x2, z2, 4) then
 				refuse(name, x1, z1, "the space is taken")
@@ -315,14 +273,6 @@ local function loader(directory)
 			place(name, x1, z1, build)
 		end
 
-		-- A wall prop must find its support and a free cell, or the wall it
-		-- was authored against has moved.
-		local function wall_prop(name, role, x, y, z, dx, dy, dz)
-			if not parts.wall_prop(buf, palette, role, x, y, z, dx, dy, dz) then
-				refuse(name, x, z, "no support or no room at height " .. y)
-			end
-		end
-
 		-- 1. Meadow ground.
 		layout.meadow(buf, palette, RADIUS, 32)
 
@@ -334,42 +284,41 @@ local function loader(directory)
 				"path", 4)
 		end
 
-		-- 3. Buildings.
-		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			if plot.roof_material == "tile" then spec.roof_palette = tile end
-			local part = buildings[plot.make](palette, spec)
-			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
+		-- 3. Buildings, the layout's placements in stamp order.
+		local stamped_sockets = {}
+		for _, place in ipairs(TOWN.places) do
+			local part = TOWN.part(place)
+			local points = parts.stamp(buf, part, place.x, place.y, place.z,
+				place.turns)
 			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z,
+			placed[place.id] = {x = place.x, z = place.z,
 				w = footprint.w, d = footprint.d, peak = part.peak}
-			plot_order[#plot_order + 1] = placed[plot.id]
+			plot_order[#plot_order + 1] = placed[place.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
+					face = door.face, id = place.id}
 			end
 			local spot = points.inside[1]
-			inside_by_id[DESTINATION_ID[plot.id] or plot.id] =
+			inside_by_id[DESTINATION_ID[place.id] or place.id] =
 				{x = spot.x, y = spot.y, z = spot.z}
 			for index = 1, #points.room_corner, 2 do
 				local a, b = points.room_corner[index], points.room_corner[index + 1]
 				rooms[#rooms + 1] = {
 					min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
 					max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
-					top = a.top, closed = a.closed, id = plot.id,
+					top = a.top, closed = a.closed, id = place.id,
 				}
 			end
+			for _, point in ipairs(points.sockets or {}) do
+				stamped_sockets[point.id] = point
+			end
 		end
-
-		-- 4. The belfry on the meeting hall's ridge: the one silhouette that
-		-- marks the hamlet's centre from the fields.
-		do
-			local hall = placed.meeting_hall
-			local belfry = buildings.belfry(palette,
-				{height = 3, roof_palette = tile})
-			parts.stamp(buf, belfry, hall.x + 3, hall.peak, hall.z + 5, 0)
+		local sockets = templates.sockets(SOCKETS, stamped_sockets, "dawnmere")
+		for _, s in ipairs(sockets) do
+			socket_cells[s.x .. ":" .. s.z] = s.id
+			if not s.tags then
+				socket_cells[(s.x + s.dir.x) .. ":" .. (s.z + s.dir.z)] = s.id
+			end
 		end
 
 		-- 5. The gate: two brick piers on cobble footings under a timber
@@ -456,13 +405,6 @@ local function loader(directory)
 		prop("handcart", -27, -11, -26, -10, function()
 			return dressing.handcart(buf, palette, -27, -10, "x")
 		end)
-		-- Cart wheels left leaning on the barn and the inn gable. Both walls
-		-- carry glass between their posts, so each wheel hangs on a post
-		-- column: the barn's at z = -2 and z = 2, the inn's at z = 14 and 15.
-		wall_prop("barn_wheel", "wheel", -34, 2, -2, 1, 0, 0)
-		wall_prop("barn_wheel", "wheel", -34, 2, 2, 1, 0, 0)
-		wall_prop("inn_wheel", "wheel", 17, 2, 14, -1, 0, 0)
-		wall_prop("inn_wheel", "wheel", 17, 2, 15, -1, 0, 0)
 
 		-- 8. Fields, their fences and their gates.
 		local crop_cells = 0
@@ -526,14 +468,6 @@ local function loader(directory)
 				dressing.crates(buf, palette, crate[1], crate[2], crate[3])
 			end)
 		end
-		-- And two more stacked indoors, on the barn's straw and the meeting
-		-- hall's boards, where the floor underneath is built and not ground.
-		for _, crate in ipairs({{-22, 2, 1}, {-14, 12, 0}}) do
-			paved_prop("crates", crate[1], crate[2], crate[1], crate[2],
-				function()
-					dressing.crates(buf, palette, crate[1], crate[2], crate[3])
-				end)
-		end
 
 		-- 11. Orchards: apple standards on the proportions of the vendored
 		-- apple tree, in two blocks either side of the civic core.
@@ -565,12 +499,6 @@ local function loader(directory)
 		-- 12b. The waypoint pad, before the flora so nothing grows on it.
 		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "dawnmere")
 
-		-- 12c. Every house's small touches (Round 36 decor kit): a barrel or a
-		-- pot by the door, flowers under the windows, a wood pile or a barrel
-		-- against a side wall; never on a socket or the cell before it.
-		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
-			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
-
 		-- 13. Meadow flora on whatever open turf is left.
 		dressing.undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 4)
 
@@ -580,7 +508,7 @@ local function loader(directory)
 
 		-- 15. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
-		layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+		layout.green(buf, palette, RADIUS, sockets, doorways)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end
@@ -673,7 +601,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
-				sockets = SOCKETS,
+				sockets = sockets,
 				crop_cells = crop_cells,
 				hedge_cells = hedge_cells,
 				orchard_trees = orchard,

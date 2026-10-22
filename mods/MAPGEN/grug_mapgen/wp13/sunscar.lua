@@ -31,9 +31,7 @@
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 
 	local RADIUS = 63
@@ -59,36 +57,18 @@ local function loader(directory)
 		{13, -25, 15, -23},              -- bone lodge doorstep
 	}
 
-	-- Plot roster. Each row is one placed building: landmark id, generator,
-	-- its parameters and the pad anchor of its footprint. Every roof is a
-	-- flat deck; the breastwork that turns a deck into a fighting top is
-	-- written over the finished pad, because a parapet is a ring of full
-	-- nodes and the roof rasteriser writes exactly one cell per column.
-	local PLOTS = {
-		{id = "warlord_hall", make = "hall", x = -7, z = 14, turns = 0,
-			spec = {w = 15, d = 17, wall_h = 7, roof = "flat_deck"}},
-		{id = "armoury", make = "workshop", x = 22, z = -7, turns = 0,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, wing_wall_h = 4,
-				roof = "flat_deck", door_side = "x-"}},
-		{id = "beast_pen", make = "shed", x = -40, z = -8, turns = 0,
-			spec = {w = 13, d = 11, wall_h = 4, roof = "flat_deck",
-				open_sides = {"x+", "z+"}}},
-		{id = "chief_lodge", make = "round_lodge", x = -36, z = 16, turns = 0,
-			spec = {wall_h = 5}},
-		{id = "spear_lodge", make = "cottage", x = -34, z = -34, turns = 0,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "flat_deck",
-				door_side = "z+", door_index = 4, infill = true}},
-		{id = "tusk_lodge", make = "cottage", x = -16, z = -34, turns = 0,
-			spec = {w = 11, d = 9, wall_h = 5, roof = "flat_deck",
-				door_side = "z+", door_index = 5, fancy_bed = true}},
-		{id = "bone_lodge", make = "cottage", x = 10, z = -34, turns = 0,
-			spec = {w = 9, d = 11, wall_h = 6, roof = "flat_deck",
-				door_side = "z+", door_index = 4, infill = true}},
-		{id = "west_tower", make = "watchpost", x = -14, z = -60, turns = 0,
-			spec = {roof = "flat_deck", door_side = "x+"}},
-		{id = "east_tower", make = "watchpost", x = 6, z = -60, turns = 0,
-			spec = {roof = "flat_deck", door_side = "x-"}},
-	}
+	-- The buildings are building templates (Round 56): the layout
+	-- `building_templates/layouts/sunscar.layout` places them in stamp order.
+	-- Every roof is a flat deck; the breastwork that turns a deck into a
+	-- fighting top is written over the finished pad, because a parapet is a
+	-- ring of full nodes and the roof rasteriser writes exactly one cell per
+	-- column. The templates carry what the camp used to add to its buildings
+	-- afterwards: the two cressets in the round lodge, the braziers on the
+	-- warlord hall's deck and the warlord's platform point on it, the wagon
+	-- wheels on the hall, the armoury and the bone lodge, and each house's
+	-- small touches.
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local TOWN = templates.town("sunscar")
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"warlord_hall", "warlord_platform", "armoury",
@@ -177,32 +157,6 @@ local function loader(directory)
 		{-34, -20, -20, -10, 9, 5}, {24, 14, 38, 30, 9, 5},
 	}
 
-	-- A round-ish dwelling. `buildings.build` takes rectangles, and the union
-	-- of a tall narrow one with a short wide one is an octagon: the four
-	-- corner cells of the square are simply never built, and every wall cell
-	-- that falls strictly inside the other rectangle is opened, so the two
-	-- blocks are one room. That is as round as an axis-aligned voxel house
-	-- gets without a curve, and it is what a chief's round lodge looks like
-	-- from the yard.
-	local function round_lodge(palette, spec)
-		local w, d = 9, 9
-		local wall_h = spec.wall_h or 5
-		return buildings.build(palette, {
-			id = spec.id, overhang = 1, infill = true,
-			blocks = {
-				{x0 = 1, z0 = 0, x1 = w - 2, z1 = d - 1, wall_h = wall_h,
-					roof = "flat_deck", kit = "home",
-					kit_spec = {hearth_x = w - 3, hearth_z = 1,
-						hearth_face = 3}},
-				{x0 = 0, z0 = 1, x1 = w - 1, z1 = d - 2, wall_h = wall_h,
-					roof = "flat_deck"},
-			},
-			chimneys = {{x = w - 2, z = 1}},
-			doors = {{side = "z-", index = 3}},
-			inside = {x = 3, y = 1, z = d - 3},
-		})
-	end
-
 	-- The waypoint pad (Round 29, WP17): on the open flats north of the south lane, in front
 	-- of the tusk house's door, six nodes away.
 	local WAYPOINT = {x = -11, z = -16}
@@ -242,8 +196,8 @@ local function loader(directory)
 		{id = "idle_beast_pen", role = "idle", tags = {"work"}, x = -25, y = 1,
 			z = -2, dir = {x = -1, z = 0}},
 		-- Round 47: `door`, it stands before the armoury's door.
-		{id = "idle_armoury_forge", role = "idle", tags = {"fire", "door"}, x = 20,
-			y = 1, z = -2, dir = {x = 1, z = 0}},
+		{id = "idle_armoury_forge", role = "idle", tags = {"fire", "door"},
+			building = "armoury"},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
 		-- is a spawn socket like an `idle` one and its resident never leaves
@@ -259,8 +213,10 @@ local function loader(directory)
 			x = -14, y = 1, z = -1, dir = {x = 0, z = -1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
-		{id = "hall_quest", role = "quest", tags = {"door"}, x = 3, y = 1,
-			z = 12, dir = {x = 0, z = 1}},
+		-- `building`: the point stands at that building's door and is a point
+		-- of its template (Round 56); the position comes from the stamp.
+		{id = "hall_quest", role = "quest", tags = {"door"},
+			building = "warlord_hall"},
 		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
 		-- stands here, grug_home reads it.
 		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
@@ -294,9 +250,6 @@ local function loader(directory)
 		buf.tree_share = 2
 		local lights, doorways, rooms = {}, {}, {}
 		local placed, inside_by_id = {}, {}
-		local make = {}
-		for name, generator in pairs(buildings) do make[name] = generator end
-		make.round_lodge = round_lodge
 
 		-- The same plots in roster order. `placed` is keyed by landmark id and
 		-- can only be walked with `pairs`; the ordered copy keeps the
@@ -391,12 +344,6 @@ local function loader(directory)
 
 		-- A wall prop must find its support and a free cell, or the wall it
 		-- was authored against has moved.
-		local function wall_prop(name, role, x, y, z, dx, dy, dz)
-			if not parts.wall_prop(buf, palette, role, x, y, z, dx, dy, dz) then
-				refuse(name, x, z, "no support or no room at height " .. y)
-			end
-		end
-
 		-- 1. The flats: ochre grass with the bare dirt and gravel of a camp
 		-- worn only where the camp actually treads.
 		layout.meadow(buf, palette, RADIUS, 36)
@@ -441,44 +388,39 @@ local function loader(directory)
 				"path", 4)
 		end
 
-		-- 3. Buildings.
-		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			local part = make[plot.make](palette, spec)
-			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
+		-- 3. Buildings, the layout's placements in stamp order.
+		local stamped_sockets = {}
+		for _, place in ipairs(TOWN.places) do
+			local part = TOWN.part(place)
+			local points = parts.stamp(buf, part, place.x, place.y, place.z,
+				place.turns)
 			local footprint = points.footprint[1]
-			placed[plot.id] = {x = plot.x, z = plot.z,
+			placed[place.id] = {x = place.x, z = place.z,
 				w = footprint.w, d = footprint.d, peak = part.peak}
-			plot_order[#plot_order + 1] = placed[plot.id]
+			plot_order[#plot_order + 1] = placed[place.id]
 			for _, door in ipairs(points.doors) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
-					face = door.face, id = plot.id}
+					face = door.face, id = place.id}
 			end
-			local spot = points.inside[1]
-			inside_by_id[DESTINATION_ID[plot.id] or plot.id] =
-				{x = spot.x, y = spot.y, z = spot.z}
+			-- The first inside point is the building's own destination; the
+			-- warlord hall's second one is the platform on its deck.
+			for index, spot in ipairs(points.inside) do
+				local id = index == 1 and (DESTINATION_ID[place.id] or place.id) or spot.id
+				inside_by_id[id] = {x = spot.x, y = spot.y, z = spot.z}
+			end
 			for index = 1, #points.room_corner, 2 do
 				local a, b = points.room_corner[index], points.room_corner[index + 1]
 				rooms[#rooms + 1] = {
 					min = {x = math.min(a.x, b.x), y = a.y, z = math.min(a.z, b.z)},
 					max = {x = math.max(a.x, b.x), y = a.y, z = math.max(a.z, b.z)},
-					top = a.top, closed = a.closed, id = plot.id,
+					top = a.top, closed = a.closed, id = place.id,
 				}
 			end
+			for _, point in ipairs(points.sockets or {}) do
+				stamped_sockets[point.id] = point
+			end
 		end
-
-		-- 3b. Two cressets on the round lodge's outer ring. The octagon is
-		-- two overlapping rectangles, so it publishes two rooms, and the home
-		-- kit's own torches slide onto the chamfer walls of the inner one:
-		-- the outer ring would be a furnished room with no light of its own.
-		-- These hang on the wide block's long walls, which are the only two
-		-- walls that ring is bounded by.
-		for _, cresset in ipairs({{-35, 18, -1}, {-29, 22, 1}}) do
-			parts.wall_torch(buf, palette, cresset[1], 3, cresset[2],
-				cresset[3], 0, 0)
-		end
+		local sockets = templates.sockets(SOCKETS, stamped_sockets, "sunscar")
 
 		-- 4. Breastworks. Every deck gets its crenellated ring; the armoury's
 		-- main ring is cut where the forge wing passes under it, so the two
@@ -506,21 +448,15 @@ local function loader(directory)
 		end
 
 		-- 5. The warlord's fighting top: an external stair off the east
-		-- apron, a gap cut in the breastwork where it lands, and a brazier on
-		-- each corner of the deck, so the platform is lit and reachable
-		-- without a ladder.
+		-- apron and a gap cut in the breastwork where it lands, so the
+		-- platform (lit by the hall's own braziers) is reachable without a
+		-- ladder.
 		dressing.outer_stair(buf, palette, 8, 16, 8, "z", 0)
 		-- The flight climbs under the deck's own eave, so the eave is cut
 		-- away over it: without that a warrior halfway up has a slab where
 		-- his head is, and the platform is only reachable in theory.
 		buf:clear(8, 8, 16, 8, 8, 22)
 		buf:clear(7, 9, 22, 7, 10, 23)
-		for _, brazier in ipairs({{-5, 18}, {5, 18}, {-5, 26}, {5, 26},
-				{0, 25}}) do
-			buf:put(brazier[1], 9, brazier[2], palette.node("wall_accent"))
-			parts.floor_torch(buf, palette, brazier[1], 10, brazier[2])
-		end
-		inside_by_id.warlord_platform = {x = 0, y = 9, z = 22}
 
 		-- 6. The gate: two desert-stone piers under an acacia lintel, torches
 		-- over the road and the stake line running out to either side.
@@ -663,8 +599,8 @@ local function loader(directory)
 				end)
 		end
 
-		-- 10. Camp gear between the plots: timber, barrels, more wagons, and
-		-- the wheels left leaning where the carters left them.
+		-- 10. Camp gear between the plots: timber, barrels and more wagons
+		-- (the wheels leaning on the walls are the buildings' own).
 		for _, pile in ipairs({{-22, 6, 4, "z"}, {20, 8, 3, "z"},
 				{-24, -30, 3, "x"}, {24, -30, 3, "x"}, {-12, 24, 3, "z"}}) do
 			local axis = pile[4]
@@ -684,13 +620,6 @@ local function loader(directory)
 		prop("hall_wagon", 26, 7, 28, 8, function()
 			return dressing.wagon(buf, palette, 26, 8, "x")
 		end)
-		wall_prop("hall_wheel_west", "wheel", -8, 2, 18, 1, 0, 0)
-		-- Both wheels hang on the hall's timber window frames; the adobe
-		-- between them carries a slit, and a wheel on a barred slit hangs in
-		-- the window.
-		wall_prop("hall_wheel_north", "wheel", -8, 2, 22, 1, 0, 0)
-		wall_prop("armoury_wheel", "wheel", 21, 2, 0, 1, 0, 0)
-		wall_prop("bone_lodge_wheel", "wheel", 9, 2, -30, 1, 0, 0)
 
 		-- 11. Standards down the road, where a war band would plant them.
 		for _, mast in ipairs({{-6, -20}, {6, -20}, {-6, -40}, {6, -40},
@@ -724,12 +653,6 @@ local function loader(directory)
 		-- 13b. The waypoint pad, before the flora so nothing grows on it.
 		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "sunscar")
 
-		-- 13c. Every house's small touches (Round 36 decor kit): a barrel or a
-		-- pot by the door, flowers under the windows, a wood pile or a barrel
-		-- against a side wall; never on a socket or the cell before it.
-		decor.dress_rooms(buf, palette, rooms, doorways, SOCKETS,
-			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
-
 		-- 14. Dry flora on whatever open ground is left.
 		-- Density 6, not the 4 the wooded starts use: at 4 the sieve
 		-- `(7x + 11z) % d` collapses onto `(x + z) % 4`, which is exactly the
@@ -745,7 +668,7 @@ local function loader(directory)
 
 		-- 16. Canonical cell list, bounds and palette.
 		-- Round 47 town greening: the race's trees on the open wild ground.
-		layout.green(buf, palette, RADIUS, SOCKETS, doorways)
+		layout.green(buf, palette, RADIUS, sockets, doorways)
 		local source, count = buf:cells()
 		local cells = {}
 		for index = 1, count do cells[index] = source[index] end
@@ -850,7 +773,7 @@ local function loader(directory)
 				doors = doorways,
 				rooms = rooms,
 				lights = lights,
-				sockets = SOCKETS,
+				sockets = sockets,
 				merlon_cells = merlons,
 				palisade_stakes = stakes,
 				berm_cells = berm_cells,

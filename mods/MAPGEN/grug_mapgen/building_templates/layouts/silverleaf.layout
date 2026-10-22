@@ -1,0 +1,16 @@
+grudgelands-town-layout 1
+# The start town's buildings in stamp order (frozen in Round 56).
+town silverleaf
+race elf
+
+palette pale race=elf roof_ridge=default:silver_sandstone_brick roof_slab=stairs:slab_silver_sandstone_brick roof_stair=stairs:stair_silver_sandstone_brick roof_stair_inner=stairs:stair_inner_silver_sandstone_brick roof_stair_outer=stairs:stair_outer_silver_sandstone_brick
+
+place moon_shrine template=silverleaf_moon_shrine x=-25 y=0 z=18 turns=0 roof=pale
+place lore_hall template=silverleaf_lore_hall x=14 y=0 z=16 turns=0 roof=pale
+place bowyer_workshop template=silverleaf_bowyer_workshop x=30 y=0 z=-6 turns=0
+place terrace_house_west template=silverleaf_terrace_house_west x=-22 y=3 z=-18 turns=0 lift=3
+place terrace_house_east template=silverleaf_terrace_house_east x=16 y=3 z=-18 turns=0 lift=3
+place glade_house_west template=silverleaf_glade_house_west x=-38 y=0 z=-21 turns=0
+place glade_house_east template=silverleaf_glade_house_east x=32 y=0 z=-21 turns=0
+place covered_market template=silverleaf_covered_market x=-44 y=0 z=-4 turns=0
+place gate_lookout template=dawnmere_tollhouse x=5 y=0 z=48 turns=0 roof=pale

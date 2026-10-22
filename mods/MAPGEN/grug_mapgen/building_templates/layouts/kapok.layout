@@ -1,0 +1,16 @@
+grudgelands-town-layout 1
+# The start town's buildings in stamp order (frozen in Round 56).
+town kapok
+race troll
+
+palette town race=troll
+palette terrace race=troll path=grug_decor:darkage_basalt_brick
+
+place spirit_lodge template=kapok_spirit_lodge x=-6 y=0 z=20 turns=0 main=terrace town=town
+place fish_smoker template=kapok_fish_smoker x=16 y=0 z=20 turns=0
+place drying_shed template=kapok_drying_shed x=-32 y=0 z=20 turns=0
+place elder_stilt template=kapok_elder_stilt x=-30 y=0 z=-22 turns=0
+place river_stilt template=kapok_river_stilt x=22 y=0 z=-22 turns=0
+place weaver_stilt template=kapok_weaver_stilt x=-30 y=0 z=4 turns=0
+place reed_stilt template=kapok_reed_stilt x=22 y=0 z=4 turns=0
+place watchpost template=kapok_watchpost x=5 y=0 z=-52 turns=0

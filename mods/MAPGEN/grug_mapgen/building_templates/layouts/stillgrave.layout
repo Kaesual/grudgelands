@@ -1,0 +1,15 @@
+grudgelands-town-layout 1
+# The start town's buildings in stamp order (frozen in Round 56).
+town stillgrave
+race undead
+
+palette town race=undead
+palette crypt race=undead ceiling=default:stonebrick wall=default:stonebrick wall_accent=default:mossycobble
+
+place crypt_chapel template=stillgrave_crypt_chapel x=-5 y=0 z=12 turns=0 main=crypt roof=town town=town
+place bone_works template=stillgrave_bone_works x=24 y=0 z=-6 turns=0
+place keepers_house template=stillgrave_keepers_house x=-34 y=0 z=34 turns=0
+place warden_house template=stillgrave_warden_house x=-18 y=0 z=34 turns=0
+place hollow_ruin template=stillgrave_hollow_ruin x=2 y=0 z=34 turns=0
+place sunken_ruin template=stillgrave_sunken_ruin x=18 y=0 z=34 turns=0
+place watchtower template=stillgrave_watchtower x=5 y=0 z=-53 turns=0
