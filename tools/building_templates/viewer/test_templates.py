@@ -98,6 +98,51 @@ def main():
             except T.FormatError as e:
                 check(reason in e.reason and e.line > 0, "error names '%s': %s" % (reason, e))
 
+    # Layouts and rosters: the magic, the town and race lines, the entries.
+    with tempfile.TemporaryDirectory() as tmp:
+        roster = open(os.path.join(FIX, "layouts", "fixture_keep.roster")).read()
+        layout = open(os.path.join(FIX, "layouts", "fixture_vale.layout")).read()
+        cases = [
+            ("fixture_keep.roster", roster.replace("grudgelands-town-roster 1\n", ""), "expected"),
+            ("fixture_keep.roster", roster.replace("grudgelands-town-roster 1", "grudgelands-town-layout 1"),
+             "expected 'grudgelands-town-roster 1'"),
+            ("fixture_keep.roster", roster.replace("race human\n", ""), "without a race line"),
+            ("fixture_keep.roster", roster.replace("town fixture_keep\n", ""), "without a town line"),
+            ("fixture_keep.roster", roster + "place a template=fixture_shed x=0 y=0 z=0 turns=0\n",
+             "not 'place'"),
+            ("fixture_vale.layout", layout + "use fixture_shed count=2\n", "not 'use'"),
+            ("fixture_vale.layout", layout.replace("grudgelands-town-layout 1", "grudgelands-town-roster 1"),
+             "expected 'grudgelands-town-layout 1'"),
+        ]
+        for name, text, reason in cases:
+            path = os.path.join(tmp, name)
+            with open(path, "w") as fh:
+                fh.write(text)
+            try:
+                T.parse_layout(path)
+                check(False, "a broken %s parses (%s)" % (name, reason))
+            except T.FormatError as e:
+                check(reason in e.reason and e.line > 0, "error names '%s': %s" % (reason, e))
+
+    # Legend entries compare by their parsed form, not their spelling.
+    with tempfile.TemporaryDirectory() as tmp:
+        text = open(os.path.join(FIX, "templates", "fixture_house.tpl")).read()
+        text = text.replace("d role door variant=_a o=facedir:0",
+                            "d role door o=facedir:0 variant=_a\nD role door variant=_a o=facedir:0\n"
+                            "e role door variant=_b o=facedir:0\nK role storage o=facedir:2\n"
+                            "R race *=K elf=f")
+        path = os.path.join(tmp, "fixture_house.tpl")
+        with open(path, "w") as fh:
+            fh.write(text)
+        alt = T.parse_template(path)
+        key = lambda k: T.entry_key(alt.legend[k], alt.legend)
+        check(key("d") == key("D"), "attribute order is no difference")
+        check(key("d") != key("e"), "another variant is a different entry")
+        check(key("K") == key("k"), "another key for the same entry is equal")
+        check(key("R") == key("r"), "a race switch over renamed keys is equal")
+        check(T.entry_key(alt.legend["R"]) != T.entry_key(alt.legend["r"]),
+              "without the legend, a switch compares its keys")
+
     # -- resolving ----------------------------------------------------------
     names = set()
     reg = json.load(open(build_viewer.NODES_JSON))
@@ -143,6 +188,20 @@ def main():
     check(rr["c"] == ("default:wood", 0), "a node of kind none writes 0 whatever is stored")
     check(rr["e"] == ("xpanes:pane_flat", 3), "a flat pane's param2 is canonical")
     check(isinstance(rr["g"], str) and "variant" in rr["g"], "a family needs its variant")
+
+    # An unknown race in a layout names the file and the line.
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "fixture_vale.layout")
+        text = open(os.path.join(FIX, "layouts", "fixture_vale.layout")).read()
+        with open(path, "w") as fh:
+            fh.write(text.replace("palette slate race=dwarf", "palette slate race=gnome"))
+        lay = T.parse_layout(path)
+        try:
+            build_gallery.placement_binding(pal, lay, lay.places[1])
+            check(False, "an unknown palette race binds")
+        except T.FormatError as e:
+            check(e.path == path and e.line == lay.palette_lines["slate"] and "gnome" in e.reason,
+                  "unknown race names file and line: %s" % e)
 
     # -- the pane port against parts.resolve_panes --------------------------
     for tpl in (house, shed):

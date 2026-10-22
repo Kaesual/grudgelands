@@ -21,9 +21,7 @@ import re
 
 TEMPLATE_MAGIC = "grudgelands-building-template 1"
 LAYOUT_MAGIC = "grudgelands-town-layout 1"
-# The format doc gives rosters "the same palette lines as a layout" but no
-# magic line of their own; a roster may start with either line (or neither).
-ROSTER_MAGICS = (LAYOUT_MAGIC, "grudgelands-town-roster 1")
+ROSTER_MAGIC = "grudgelands-town-roster 1"
 
 FORCE_AIR = "air"        # '.': the part writes air
 UNCHANGED = "unchanged"  # ' ': the part writes nothing
@@ -308,6 +306,26 @@ def _parse_points(t, lines, i, fail):
     fail(len(lines), "points without end")
 
 
+def entry_key(entry, legend=None):
+    """A legend entry's parsed form, for comparing entries (format doc §3.2:
+    an edit is a different entry, not a different key or attribute order).
+    With the template's `legend`, the keys a race switch or an `else=`
+    names are replaced by their own entries, so a renamed key compares
+    equal. An optional role without `else=` and one with `else=unchanged`
+    still differ here (the reader does not know which roles are optional)."""
+    def ref(key):
+        if legend is not None and key in legend and key not in (FORCE_AIR, UNCHANGED):
+            return entry_key(legend[key], legend)
+        return key
+    if entry["kind"] == "race":
+        return ("race", tuple(sorted((race, ref(key)) for race, key in entry["choices"].items())))
+    attrs = []
+    for k in ("variant", "channel", "o", "else"):
+        if k in entry:
+            attrs.append((k, ref(entry[k]) if k == "else" else entry[k]))
+    return (entry["kind"], entry["name"], tuple(attrs))
+
+
 # ------------------------------------------------------------ layouts ---
 
 class Layout(object):
@@ -316,7 +334,9 @@ class Layout(object):
         self.kind = "roster" if path.endswith(".roster") else "layout"
         self.town = os.path.basename(path).rsplit(".", 1)[0]
         self.race = None
+        self.race_line = None
         self.palettes = {}   # name -> (race, {role: node})
+        self.palette_lines = {}  # name -> line number
         self.places = []     # dicts: id, template, x, y, z, turns, main, channels, lift
         self.uses = []       # dicts: template, count, main, channels (rosters)
 
@@ -327,13 +347,15 @@ def parse_layout(path):
     i = 0
     while i < len(lines) and _is_skip(lines[i][1]):
         i += 1
-    if lay.kind == "layout":
-        if i >= len(lines) or lines[i][1].strip() != LAYOUT_MAGIC:
-            raise FormatError(path, lines[i][0] if i < len(lines) else 1,
-                              "expected '%s'" % LAYOUT_MAGIC)
-        i += 1
-    elif i < len(lines) and lines[i][1].strip() in ROSTER_MAGICS:
-        i += 1
+    # A layout places its templates (`place`); a roster, for a town whose
+    # placement stays algorithmic, counts them (`use`). Format doc §4.
+    magic = LAYOUT_MAGIC if lay.kind == "layout" else ROSTER_MAGIC
+    entry_word = "place" if lay.kind == "layout" else "use"
+    if i >= len(lines) or lines[i][1].strip() != magic:
+        raise FormatError(path, lines[i][0] if i < len(lines) else 1,
+                          "expected '%s'" % magic)
+    i += 1
+    seen_town = False
     for number, line in lines[i:]:
         if _is_skip(line):
             continue
@@ -342,8 +364,10 @@ def parse_layout(path):
             attrs = split_attrs(rest)
             if word == "town":
                 lay.town = rest.strip()
+                seen_town = True
             elif word == "race":
                 lay.race = rest.strip()
+                lay.race_line = number
             elif word == "palette":
                 name = attrs[0][1]
                 fields = dict((k, v) for k, v in attrs[1:])
@@ -351,7 +375,11 @@ def parse_layout(path):
                     raise ValueError("palette takes race=")
                 race = fields.pop("race")
                 lay.palettes[name] = (race, fields)
+                lay.palette_lines[name] = number
             elif word in ("place", "use"):
+                if word != entry_word:
+                    raise ValueError("a %s takes '%s' lines, not '%s'" % (
+                        lay.kind, entry_word, word))
                 rec = {"line": number, "channels": {}, "main": None}
                 rest_attrs = attrs
                 if word == "place":
@@ -382,8 +410,10 @@ def parse_layout(path):
                 raise ValueError("unknown line '%s'" % word)
         except (ValueError, IndexError) as e:
             raise FormatError(path, number, str(e) or "malformed line")
-    if lay.race is None and lay.kind == "layout":
-        raise FormatError(path, len(lines), "layout without race")
+    if not seen_town:
+        raise FormatError(path, len(lines), "%s without a town line" % lay.kind)
+    if lay.race is None:
+        raise FormatError(path, len(lines), "%s without a race line" % lay.kind)
     return lay
 
 

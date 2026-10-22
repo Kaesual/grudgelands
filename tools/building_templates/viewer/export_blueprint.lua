@@ -2,7 +2,7 @@
 --
 -- Plain Lua 5.1 / LuaJIT, no engine:
 --
---     luajit tools/wp13/viewer/export_blueprint.lua <blueprint.lua>
+--     luajit tools/building_templates/viewer/export_blueprint.lua <blueprint.lua>
 --
 -- Output is line based, tab separated:
 --

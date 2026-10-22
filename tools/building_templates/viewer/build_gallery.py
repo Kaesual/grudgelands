@@ -81,13 +81,19 @@ def read_sources(base):
 
 def placement_binding(pal, lay, rec):
     """{"main": palette, <channel>: palette} for one placement or use line."""
+    def bind(race, overrides, line):
+        try:
+            return pal.bind(race, overrides)
+        except ValueError as e:
+            raise T.FormatError(lay.path, line, str(e))
+
     def named(name):
         if name not in lay.palettes:
             raise T.FormatError(lay.path, rec["line"], "unknown palette %s" % name)
         race, overrides = lay.palettes[name]
-        return pal.bind(race, overrides)
-    race = lay.race or "human"
-    binding = {"main": named(rec["main"]) if rec.get("main") else pal.bind(race)}
+        return bind(race, overrides, lay.palette_lines[name])
+    binding = {"main": named(rec["main"]) if rec.get("main")
+               else bind(lay.race, None, lay.race_line)}
     for channel, name in rec["channels"].items():
         binding[channel] = named(name)
     return binding
@@ -191,7 +197,10 @@ def main(argv=None):
             town, race = lay.town, lay.race or placed["main"]["race"]
         else:
             race = tpl.races[0] if tpl.races else "human"
-            placed = {"main": pal.bind(race)}
+            try:
+                placed = {"main": pal.bind(race)}
+            except ValueError as e:
+                raise T.FormatError(tpl.path, "races", str(e))
             placed_label = "unused; %s palette" % race
             town = None
         res, fix, bad = {}, {}, {}

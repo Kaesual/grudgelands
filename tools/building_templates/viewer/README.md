@@ -22,7 +22,7 @@ Round 56.
 | `../nodes.json` | the real node registry (see `../README.md` for refreshing it) |
 | `build_gallery.py` | builds the template gallery as one self-contained HTML page |
 | `gallery.html` | the gallery page: the grid, one template alone, palettes, points |
-| `templates.py` | reads templates, layouts and rosters (format doc §3, §4), resolves roles for a palette (§3.2) and settles panes (the port of `parts.resolve_panes`) |
+| `templates.py` | the viewer's reader, not the gate (the gate is `../check.py`): reads templates, layouts and rosters (format doc §3, §4), compares legend entries by their parsed form (`entry_key`), resolves roles for a palette (§3.2) and settles panes (the port of `parts.resolve_panes`) |
 | `palettes.lua` | LuaJIT helper: the race palettes (`wp13/palette.lua`), the Kezamba overrides (`wp13/troll_palette.lua`) and the `parts.lua` node predicates as JSON; `panes` runs `parts.resolve_panes` for the test |
 | `test_templates.py` | the reader's test: parsing, the resolver's rules, the pane port against the Lua |
 | `fixtures/` | hand-written fixture templates (`cell 1` and `cell 2`), two layouts and a roster |
