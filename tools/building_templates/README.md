@@ -2,8 +2,9 @@
 
 Tools for the building templates of
 [building-template-format.md](../../docs/technical/building-template-format.md):
-the node registry they read, and (from lanes VIEWER and FREEZE-TOWNS) the
-viewer, the gallery, the exporter and the validator. Nothing here ships with the game.
+the node registry they read, and (from lanes VIEWER, FREEZE-TOWNS and EDITOR)
+the viewer, the gallery, the exporter, the validator and the editor. Nothing
+here ships with the game.
 
 ## The node registry (`nodes.json`)
 
@@ -81,10 +82,104 @@ record of how they were made and the gates that keep them honest.
   of a frozen template). It reads the palettes and the param2 rules from the
   game's Lua through `palette_dump.lua` (LuaJIT) and the registry from
   `nodes.json`. The editor imports `validate(root, baseline, replaced)`.
-- `editor_palette.txt`: the first version of the editor palette (format doc
-  §7), written from the rules and the registry; lane EDITOR extends it.
+- `editor_palette.txt`: the editor palette (format doc §7), written from the
+  rules and the registry; lane EDITOR added `role door_hidden` (the door's
+  upper cell, which the editor places with the door; without it every new
+  door would fail the palette rule) and removed the rooted water plants
+  (`default:coral_cyan`, `_green`, `_pink`, `default:sand_with_kelp`; the
+  plain coral blocks stay).
 - `town_identity.lua <repo> [<tree>] [--load]`: what the towns build, per
   start town the settlement identity and the point digest (and with `--load`
   the construction time and the allocation), per capital a digest over its
   core and plots. `tools/check_upgrade.py` runs it on the pushed commit and on
   the working tree and wants a map reset when they differ.
+
+## The editor (`editor/`, lane EDITOR, Round 56)
+
+A local tool for editing the town buildings (Round 56 rulings 25–31). Start
+it by hand from the repository root and open the address it prints:
+
+```sh
+python3 tools/building_templates/editor/serve.py            # http://127.0.0.1:8756/
+python3 tools/building_templates/editor/serve.py --port 9000
+```
+
+It needs Python 3 with Pillow (textures), LuaJIT and git, as the gallery and
+the validator do, and the browser fetches three.js 0.160.0 from the CDN. It
+starts in well under a second; Ctrl+C stops it.
+
+**What it may do.** The server listens on 127.0.0.1 only and answers only
+requests addressed to `127.0.0.1` or `localhost` (no other host name, no
+cross-origin request, JSON only). It reads the templates, layouts and rosters
+of this working tree and writes **only existing template files** in
+`mods/MAPGEN/grug_mapgen/building_templates/templates/`, and only on Save. It
+never creates, renames or deletes a file and never runs a git command that
+writes: its one git use is `git show HEAD:<template>` for the "changed since
+commit" highlight. Drafts stay in the browser's local storage.
+
+**The page.** The template list (by town, with "used N× in …"), then one
+template: the 3D view (the shared `viewer/renderer.js`: orbit, walk, noclip)
+beside the layer grid (north up, the template's own frame; the town turns
+it).
+- Layers: the buttons, ▲/▼, PageUp/PageDown or the mouse wheel over the grid.
+  In 3D the layers above the current one are drawn transparent, hidden or
+  shown; the current layer is outlined and its force-air (blue) and
+  leave-unchanged (amber) cells are marked.
+- The footprint (pivot) is dashed; the **street side** (the footprint side of
+  an entrance door point) is an amber edge with an arrow into the door, in the
+  grid and in 3D, with the template frame's +x and +z axes.
+- **Preview:** each placement's palettes ("As placed", the default) or a plain
+  race palette; roles are drawn in that material.
+- **Tools** (keys 1–6): Paint (drag to paint), Pick (or Alt+click), Air (force
+  air), Unchanged (leave unchanged), Rotate (90°, only where the node's kind
+  allows it in every placing palette: facedir 0–3 keeping an upside-down
+  axis, wallmounted only around the four walls, never onto the floor or the
+  ceiling), Move point. A
+  click in the 3D view applies the tool to the block under the pointer (a
+  point moves onto it).
+- **Items:** the roles first (with a corner mark, in the preview's material;
+  a required role a placing race does not bind, or an optional one no
+  placing race binds, is disabled), the role variants with a channel the template uses
+  (`roof_stair · roof palette`), then the editor palette's groups, with a
+  search. `R` or ↻ turns the item before painting. A fixed node in a template
+  several races place asks first (ruling 22). Nodes whose boxes reach into a
+  neighbouring cell are marked in the list.
+- **Optional roles** are stored with their fallback (ruling 22): painting one
+  reuses the template's own legend entry for that role (same variant, channel
+  and orientation) and otherwise writes `else=air`; it never adds a second
+  entry that differs only by `else=`.
+- **Multi-cell objects** (format doc §5): a door takes its cell and the one
+  above (locked: only emptying, turning or picking it acts there, on the whole
+  door), a bed its cell and the next along its facing. They are placed only
+  where their other cells are free (force air or leave unchanged) and inside
+  the box; painting over or emptying one part removes the whole object.
+- **Points** (the list under the grid, or click a marker with Move point):
+  move only; the group, order, face and attributes never change (ruling 28).
+- **Undo, redo** (Ctrl+Z, Ctrl+Y), **Reset** (back to the saved file), the
+  "changed since commit" outline (cells whose legend entry differs from the
+  file at HEAD) and a draft in local storage, offered again after a crash or
+  reload when the file has not changed since.
+- **Save** runs the validator first (`check.validate`, imported, against
+  `BASELINE`, the known defects as warnings): an error of this template
+  refuses the save and is listed with its cell (red in the grid and in 3D),
+  warnings need a confirmation, and the dialog says "used N× in …" (a
+  template several placements use changes all of them). **Check** runs the
+  validator without saving.
+
+**The writer** (`editor/tplfile.py`): the page sends cells, legend entries and
+point positions; the server takes the header, the box, the pivot and every
+point's group, face and attributes from the file on disk, writes the file in
+the canonical layout the freeze exporter writes (unused legend entries
+dropped, keys kept) and replaces it atomically (a temp file in the same
+directory, fsync, rename). Every frozen template is canonical, so an unedited
+save writes identical bytes; a file that is not canonical is reported when it
+opens, never rewritten then. New legend entries get the next free key in the
+exporter's order; a legend that outgrows single characters becomes `cell 2`.
+
+Files: `serve.py` (the server and the save gate), `tplfile.py` (model and
+writer), `model.js` (the edit rules and the stamp's resolution, no page code),
+`editor.js` and `editor.html` (the page). Tests: `tools/r56_editor/`
+(`test_editor.py`: the server, the writer's round trip on every template, the
+save gate, path confinement; `gui_run.py`: the GUI checklist path in a
+headless Chromium with screenshots). Both work on a disposable shared clone,
+never on the working tree.
