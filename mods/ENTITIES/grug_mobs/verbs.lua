@@ -593,6 +593,19 @@ function grug_mobs.camp_swarm(def, opts)
 	end)
 end
 
+-- An alerted mob calls nobody (Round 56, round56-plan.md ruling 2). mobs_redo's
+-- group alert (mobs/api.lua on_punch) hands every mob it pulled onto the
+-- hitter to this mark, which counts the mob's swarm call for this fight as
+-- made: a camp member pulled by a hit on its neighbour does not call its own
+-- camp (or, camp-less, its kin around it) in turn. The hit mob itself and a
+-- mob that picks a target by itself still swarm as above; the mark ends with
+-- the fight like the call's own flag.
+function grug_mobs.mark_alerted(ent)
+	if ent.temp and ent.state == "attack" then
+		ent.temp.grug_swarm_called = true
+	end
+end
+
 --
 -- Aura (Bog Ooze: "engulfs" — touch damage)
 --
@@ -797,12 +810,17 @@ function grug_mobs.register_homing_arrow(name, def)
 	core.registered_entities[name]._grug_projectile_label = def.label
 end
 
-function grug_mobs.stamp_arrow_damage(ent, mob)
+-- The lock checks the shooter's shot range (Round 56 MOBAI, mobs/api.lua
+-- grug_shot_range, the range do_states shoots inside) and its sight with
+-- mobs_redo's ranged sight geometry; a shooter with a sight check of its own
+-- (a dragon) passes that check's lifts, so a target it sees is never refused.
+function grug_mobs.stamp_arrow_damage(ent, mob, eye_lift, target_lift)
 	if not ent then
 		return
 	end
 	ent._grug_lock = mob and grug_core.actor_projectile_lock(mob.object,
-		mob.attack, ent.object:get_pos(), ent.velocity or 14, mob.view_range or 16)
+		mob.attack, ent.object:get_pos(), ent.velocity or 14,
+		mobs.grug_shot_range(mob), eye_lift, target_lift)
 	if not ent._grug_lock then ent.object:remove() end
 	ent._grug_source = mob and mob.object
 	ent._grug_damage = mob and mob.damage or nil
