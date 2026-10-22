@@ -261,6 +261,24 @@ def main():
         status, r = request(port, "POST", "/api/save", e.body(confirm=True))
         check(status == 200 and r["saved"], "saved after the confirmation")
 
+        # -- a file on disk that does not parse: a JSON error, nothing written
+        broken = os.path.join(tdir, "broken_one.tpl")
+        with open(broken, "w") as fh:
+            fh.write("grudgelands-building-template 1\nname broken_one\nlegend\n")
+        status, r = request(port, "GET", "/api/template?name=broken_one")
+        check(status == 422 and "error" in r, "a broken file does not open: %s" % status)
+        status, r = request(port, "POST", "/api/check", Edit(tpl).body(name="broken_one"))
+        check(status == 500 and isinstance(r, dict) and "error" in r, "a server error answers JSON (%s)" % status)
+        check(open(broken).read().endswith("legend\n"), "and writes nothing")
+        os.unlink(broken)
+
+        # -- the editor palette offers no rooted water plants -------------------
+        status, assets = request(port, "GET", "/api/assets")
+        offered = {n for _, items in assets["editor_palette"] for _, n in items}
+        for name in ("default:coral_cyan", "default:coral_green", "default:coral_pink", "default:sand_with_kelp"):
+            check(name not in offered, "%s is not in the editor palette" % name)
+        check("default:coral_brown" in offered, "the plain coral blocks stay")
+
         # -- the atomic write -------------------------------------------------
         target = os.path.join(tmp, "atomic.tpl")
         with open(target, "wb") as fh:

@@ -108,9 +108,34 @@ MODEL_CHECKS = r"""
   ok(d.rotate(rec, x, 2, z, () => "facedir").ok && d.entry(d.get(x, 2, z)).o[1] === 0, "a facedir cell turns 3 -> 0");
   d.put(rec, x, 2, z, d.keyFor("role light_wall o=wallmounted:2"));
   ok(d.rotate(rec, x, 2, z, () => "wallmounted").ok && d.entry(d.get(x, 2, z)).o[1] === 5, "a wallmounted cell turns");
+  d.put(rec, x, 2, z, d.keyFor("role light_wall o=wallmounted:4"));
+  ok(d.rotate(rec, x, 2, z, () => "wallmounted").ok && d.entry(d.get(x, 2, z)).o[1] === 2, "a wall-mounted cell turns around the walls (4 -> 2)");
+  for (const v of [0, 1]) {
+    d.put(rec, x, 2, z, d.keyFor(`role light_wall o=wallmounted:${v}`));
+    ok(!d.rotate(rec, x, 2, z, () => "wallmounted").ok && d.entry(d.get(x, 2, z)).o[1] === v, `wallmounted ${v} (floor or ceiling) is not turned`);
+  }
+  let w = d.keyFor("role light_wall o=wallmounted:2"), seen = [];
+  d.put(rec, x, 2, z, w);
+  for (let k = 0; k < 8; k++) { d.rotate(rec, x, 2, z, () => "wallmounted"); seen.push(d.entry(d.get(x, 2, z)).o[1]); }
+  ok(seen.every(v => v >= 2 && v <= 5), "turning never reaches the floor or the ceiling: " + seen);
   d.put(rec, x, 2, z, wallKey);
   ok(!d.rotate(rec, x, 2, z, () => "none").ok, "a node without orientation does not turn");
   d.commit(rec);
+  // an optional role is stored with its fallback: the template's own entry
+  // for the role, else else=air; never a second entry differing by else=
+  const o1 = new D(E.tpl); o1.optional = E.doc.optional;
+  rec = o1.begin();
+  ok(o1.apply(rec, x, 2, z, { kind: "entry", text: "role flower" }).ok, "painting an optional role");
+  ok(o1.entry(o1.get(x, 2, z)).text === "role flower else=air", "without an entry for it the role gets else=air: " + o1.entry(o1.get(x, 2, z)).text);
+  const o2 = new D(E.tpl); o2.optional = E.doc.optional;
+  const own = o2.keyFor("role flower else=unchanged");
+  rec = o2.begin();
+  o2.apply(rec, x, 2, z, { kind: "entry", text: "role flower" });
+  o2.apply(rec, x + 1, 2, z, { kind: "entry", text: "role flower" });
+  ok(o2.get(x, 2, z) === own && o2.get(x + 1, 2, z) === own, "the template's own entry for the role is reused");
+  ok(o2.keys.filter(k => o2.entries.get(k).name === "flower").length === 1, "no second entry differing only by else=");
+  ok(o2.withFallback("role wall") === "role wall", "a required role takes no else=");
+  ok(o2.withFallback("role flower else=unchanged") === "role flower else=unchanged", "an explicit fallback stays");
   // points move and nothing else; the box stays
   const p0 = d.points[0], was = [p0.group, p0.face, p0.rest];
   rec = d.begin();
@@ -217,6 +242,12 @@ def main(argv):
             model = b.js(WIDEN_CHECK)
             check(model["fails"] == [], "widening the keys: %s" % model["fails"])
             CHECKS[0] += model["count"]
+
+            # an optional role no placing race binds is disabled like an unbound required one
+            unbound = b.js("""(() => { const E = window.__editor, P = null;
+              return [...document.querySelectorAll('#item-list .item')].filter(e => { const br = JSON.parse(e.dataset.brush);
+                return br.kind === 'entry' && br.text === 'role bale'; }).map(e => e.disabled); })()""")
+            check(unbound == [True], "bale (optional, no dwarf binding) is disabled for the dwarf template: %s" % unbound)
 
             # layer 1: a bed and a door, by clicks on the grid
             spot = b.js("""(() => { const d = window.__editor.doc;

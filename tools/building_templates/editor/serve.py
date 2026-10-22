@@ -479,6 +479,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 raise Refused(404, "not found")
         except Refused as e:
             self.fail(e)
+        except Exception as e:  # never drop the connection; nothing was written
+            self.fail(Refused(500, "editor error: %s: %s" % (type(e).__name__, e)))
 
     def do_POST(self):
         try:
@@ -502,6 +504,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 raise Refused(404, "not found")
         except Refused as e:
             self.fail(e)
+        except Exception as e:  # never drop the connection; nothing was written
+            self.fail(Refused(500, "editor error: %s: %s" % (type(e).__name__, e)))
 
 
 def make_server(root, port, verbose=False):

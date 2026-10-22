@@ -13,6 +13,7 @@ import json
 import os
 import select
 import shutil
+import signal
 import socket
 import struct
 import subprocess
@@ -111,7 +112,7 @@ class Browser(object):
              "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--remote-debugging-port=0",
              "--user-data-dir=" + self.profile, "--window-size=%d,%d" % (width, height),
              "--hide-scrollbars", "about:blank"],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
         port = None
         for _ in range(200):
             try:
@@ -142,14 +143,33 @@ class Browser(object):
     def close(self):
         if getattr(self, "ws", None):
             self.ws.close()
-        if self.proc.poll() is None:
-            self.proc.terminate()
+        # Chromium's helper processes share its process group (its own
+        # session): stop them all and wait until none is left, so nothing
+        # writes into the profile after it is removed.
+        for sig in (signal.SIGTERM, signal.SIGKILL):
             try:
-                self.proc.wait(10)
-            except subprocess.TimeoutExpired:
-                self.proc.kill()
-                self.proc.wait()
+                os.killpg(self.proc.pid, sig)
+            except ProcessLookupError:
+                break
+            end = time.time() + 10
+            while time.time() < end and self._group_alive():
+                time.sleep(0.1)
+            if not self._group_alive():
+                break
+        if self.proc.poll() is None:
+            self.proc.wait()
         shutil.rmtree(self.profile, ignore_errors=True)
+        if os.path.exists(self.profile):
+            time.sleep(0.5)
+            shutil.rmtree(self.profile, ignore_errors=True)
+
+    def _group_alive(self):
+        self.proc.poll()
+        try:
+            os.killpg(self.proc.pid, 0)
+            return True
+        except ProcessLookupError:
+            return False
 
     def call(self, method, **params):
         self.serial += 1

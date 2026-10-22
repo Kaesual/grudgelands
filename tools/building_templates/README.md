@@ -85,7 +85,9 @@ record of how they were made and the gates that keep them honest.
 - `editor_palette.txt`: the editor palette (format doc §7), written from the
   rules and the registry; lane EDITOR added `role door_hidden` (the door's
   upper cell, which the editor places with the door; without it every new
-  door would fail the palette rule).
+  door would fail the palette rule) and removed the rooted water plants
+  (`default:coral_cyan`, `_green`, `_pink`, `default:sand_with_kelp`; the
+  plain coral blocks stay).
 - `town_identity.lua <repo> [<tree>] [--load]`: what the towns build, per
   start town the settlement identity and the point digest (and with `--load`
   the construction time and the allocation), per capital a digest over its
@@ -131,16 +133,21 @@ it).
 - **Tools** (keys 1–6): Paint (drag to paint), Pick (or Alt+click), Air (force
   air), Unchanged (leave unchanged), Rotate (90°, only where the node's kind
   allows it in every placing palette: facedir 0–3 keeping an upside-down
-  axis, wallmounted around the walls, then floor and ceiling), Move point. A
+  axis, wallmounted only around the four walls, never onto the floor or the
+  ceiling), Move point. A
   click in the 3D view applies the tool to the block under the pointer (a
   point moves onto it).
 - **Items:** the roles first (with a corner mark, in the preview's material;
-  a role a placing race does not bind is disabled, an optional one notes what
-  it falls back to), the role variants with a channel the template uses
+  a required role a placing race does not bind, or an optional one no
+  placing race binds, is disabled), the role variants with a channel the template uses
   (`roof_stair · roof palette`), then the editor palette's groups, with a
   search. `R` or ↻ turns the item before painting. A fixed node in a template
   several races place asks first (ruling 22). Nodes whose boxes reach into a
   neighbouring cell are marked in the list.
+- **Optional roles** are stored with their fallback (ruling 22): painting one
+  reuses the template's own legend entry for that role (same variant, channel
+  and orientation) and otherwise writes `else=air`; it never adds a second
+  entry that differs only by `else=`.
 - **Multi-cell objects** (format doc §5): a door takes its cell and the one
   above (locked: only emptying, turning or picking it acts there, on the whole
   door), a bed its cell and the next along its facing. They are placed only

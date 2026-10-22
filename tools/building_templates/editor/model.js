@@ -21,9 +21,9 @@ export const FACE_STEP = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 export const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" +
   "!$%&'()*+,-/:;<=>?@[\\]^_`{}~\"";
 export const AIR = ".", UNCHANGED = " ";
-// The order the rotate tool turns a wallmounted node in: the four walls
-// around, then the floor and the ceiling.
-const WALL_CYCLE = [2, 5, 3, 4, 1, 0];
+// The order the rotate tool turns a wallmounted node in: around the four
+// walls only, never onto the floor or the ceiling (0, 1).
+const WALL_CYCLE = [2, 5, 3, 4];
 
 // ------------------------------------------------------------- entries ---
 // A legend entry's text as fields: {kind, name, variant, channel, o, else,
@@ -110,6 +110,21 @@ export class Doc {
     if (key === null) { this.widenKeys(); key = this.freeKey(); }
     this.addEntry(key, want);
     return key;
+  }
+  // An optional role is stored with its fallback (ruling 22): a role
+  // painted without else= takes the template's own entry for that role
+  // (same variant, channel and orientation) when it has one, else
+  // else=air; never a second entry differing only by else=. `optional` is
+  // the set of optional roles (the page sets it from the palettes).
+  withFallback(text) {
+    const e = parseEntry(text);
+    if (e.kind !== "role" || e.else || !this.optional || !this.optional.has(e.name)) return text;
+    const same = f => f.kind === "role" && f.name === e.name && f.variant === e.variant &&
+      f.channel === e.channel && (f.o ? f.o.join(":") : "") === (e.o ? e.o.join(":") : "");
+    const found = this.keys.map(k => this.entries.get(k)).find(same);
+    if (found) return found.text;
+    e.else = "air";
+    return entryText(e);
   }
   freeKey() {
     const used = new Set(this.keys);
@@ -244,7 +259,7 @@ export class Doc {
     const obj = this.object(x, y, z);
     if (obj) for (const c of obj.cells) this.put(rec, c[0], c[1], c[2], erase ?? AIR);
     if (erase !== null) { this.put(rec, x, y, z, erase); return { ok: true }; }
-    if (brush.kind === "entry") { this.put(rec, x, y, z, this.keyFor(brush.text)); return { ok: true }; }
+    if (brush.kind === "entry") { this.put(rec, x, y, z, this.keyFor(this.withFallback(brush.text))); return { ok: true }; }
     const o = brush.o ?? 0;
     if (brush.kind === "door") {
       if (!this.inBox(x, y + 1, z)) { this.rollback(rec, mark); return { ok: false, message: "a door needs the cell above it inside the box" }; }
@@ -411,7 +426,10 @@ export function turned(e, kind) {
   if (kind === "facedir") {
     if (v >= 4 && v < 20) return null;  // a lying tree piece: not turned here
     copy.o = ["facedir", (v & ~3) | ((v + 1) & 3)];
-  } else copy.o = ["wallmounted", WALL_CYCLE[(WALL_CYCLE.indexOf(v) + 1) % WALL_CYCLE.length]];
+  } else {
+    if (!WALL_CYCLE.includes(v)) return null;  // on the floor or the ceiling: not turned
+    copy.o = ["wallmounted", WALL_CYCLE[(WALL_CYCLE.indexOf(v) + 1) % WALL_CYCLE.length]];
+  }
   return entryText(copy);
 }
 

@@ -126,6 +126,7 @@ async function open(name, keepDraft) {
   if (!res.ok) { notice(`Cannot open ${name}: ${res.data.error}`); showHome(); return; }
   tpl = res.data;
   doc = new Doc(tpl);
+  doc.optional = new Set([...P.optional, ...Object.keys(P.families).filter(f => !P.required.includes(f))]);
   savedState = JSON.stringify(doc.serialize());
   $("home").hidden = true; $("editor").hidden = false;
   $("name").textContent = tpl.name;
@@ -197,8 +198,10 @@ function roleAvailability(e) {
     if (n === null) missing.push(b.main.race);
   }
   const required = P.required.includes(e.name);
-  if (missing.length && required) return [`not bound for ${[...new Set(missing)].join(", ")}`, ""];
-  return [null, missing.length ? `${[...new Set(missing)].join(", ")}: ${e.else ? "else=" + e.else : "writes nothing"}` : ""];
+  const all = placingBindings().length;
+  if (missing.length && (required || missing.length === all))
+    return [`not bound for ${[...new Set(missing)].join(", ")}${required ? "" : " (no placing race has it)"}`, ""];
+  return [null, missing.length ? `${[...new Set(missing)].join(", ")}: ${e.else ? "else=" + e.else : "falls back to the template's entry or air"}` : ""];
 }
 function renderItems() {
   const box = $("item-list");
