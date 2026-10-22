@@ -41,6 +41,41 @@ function grug_mobs.received_pursuit_damage(self, hitter, amount)
 end
 
 --
+-- Aggro radius by level gap (Round 56, round56-plan.md ruling 1 and D2,
+-- combat_stats.md §3 "Aggro radius by level"). A monster picking a player
+-- target by itself (mobs_redo's general_attack) notices a player whose level
+-- is more than AGGRO_FULL_GAP above its own only within a shorter radius:
+-- 20 % of its view range less per level of gap past 5, never below
+-- AGGRO_MIN_RADIUS. A hit still draws retaliation and the group alert as
+-- before; guards, kings and every other mob of a faction, animals and NPCs
+-- keep their full view range, and so does every mob towards a mob target.
+--
+grug_mobs.AGGRO_FULL_GAP = 5
+grug_mobs.AGGRO_STEP = 0.2
+grug_mobs.AGGRO_MIN_RADIUS = 1
+
+-- The radius for a level gap (player level - mob level).
+function grug_mobs.aggro_radius(view_range, gap)
+	local share = 1 - grug_mobs.AGGRO_STEP * (gap - grug_mobs.AGGRO_FULL_GAP)
+	share = math.max(0, math.min(1, share))
+	return math.max(view_range * share, grug_mobs.AGGRO_MIN_RADIUS)
+end
+
+-- The radius within which `self` may pick `player` by itself, or nil for its
+-- full view range. Read by the general_attack GRUG PATCH in mobs/api.lua,
+-- before the line-of-sight ray, only for a player candidate in view.
+function grug_mobs.player_aggro_radius(self, player)
+	if self.type ~= "monster" or self._grug_faction or not self._grug_level then
+		return nil
+	end
+	local gap = grug_core.get_player_level(player) - self._grug_level
+	if gap <= grug_mobs.AGGRO_FULL_GAP then
+		return nil
+	end
+	return grug_mobs.aggro_radius(self.view_range, gap)
+end
+
+--
 -- Target acquisition for a mob that may target nobody (WP36 review, LOW 2).
 --
 -- mobs_redo's general_attack short-circuits at its very first line for a

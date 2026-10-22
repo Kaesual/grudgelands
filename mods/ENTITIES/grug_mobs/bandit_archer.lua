@@ -67,6 +67,12 @@ archer.shoot_interval = 2.5
 -- feet. The skeleton archer uses 1.5 for a 1.98-node mesh; 1.3 is the same
 -- fraction of this one.
 archer.shoot_offset = 1.3
+-- A shoot clip (Round 56 MOBAI), as the Poacher has one (zero_asset_variants
+-- .lua): character.b3d has no bow clip, so the 189..198 mine/punch range is
+-- the release gesture; without it mobs_redo played nothing on a shot.
+archer.animation.shoot_start = archer.animation.punch_start
+archer.animation.shoot_end = archer.animation.punch_end
+archer.animation.shoot_speed = archer.animation.punch_speed
 -- dogshoot_switch = 1 starts in the RANGED phase; 10 s shooting against 3 s
 -- of melee is "mostly ranged" (golem.lua documents the three knobs).
 archer.dogshoot_switch = 1

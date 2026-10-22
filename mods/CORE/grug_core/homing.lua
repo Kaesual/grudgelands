@@ -66,15 +66,29 @@ function grug_core.homing_step(lock, dtime)
 	return target_center(lock.target, pos), lock.age >= lock.duration
 end
 
--- Actors lock their current target only after range and terrain LOS succeed.
-function grug_core.actor_projectile_lock(owner, target, origin, speed, range)
-	if not target or not target:get_pos() or vector.distance(origin, target:get_pos()) > range then return nil end
-	local destination = target_center(target, target:get_pos())
-	for pointed in core.raycast(origin, destination, false, false) do
+-- Actors lock their current target only after range and terrain LOS succeed,
+-- measured the way the shooter's own sight check measures them (Round 56
+-- MOBAI; mobs/api.lua do_states, grug_obstacle.target_visible and
+-- line_of_sight): the distance between the owner's and the target's
+-- positions, and a ray between those positions raised by `eye_lift` and
+-- `target_lift` (default SIGHT_LIFT, mobs_redo's ranged sight; a dragon
+-- passes its own eye height) that only a walkable node stops. A target the
+-- shooter sees inside its shot range is therefore always locked, near or far;
+-- before, the range ran from the projectile and the ray from the body centre
+-- to the target's centre, and a shot the mob had seen fit to fire could be
+-- refused. `origin` (where the projectile starts) only sets the flight time.
+local SIGHT_LIFT = 0.5
+function grug_core.actor_projectile_lock(owner, target, origin, speed, range,
+		eye_lift, target_lift)
+	local from = owner and owner:get_pos()
+	local to = target and target:get_pos()
+	if not from or not to or vector.distance(from, to) > range then return nil end
+	from = vector.offset(from, 0, eye_lift or SIGHT_LIFT, 0)
+	to = vector.offset(to, 0, target_lift or SIGHT_LIFT, 0)
+	for pointed in core.raycast(from, to, false, false) do
 		if pointed.type == "node" then
-			local node = core.get_node_or_nil(pointed.under)
-			local def = node and core.registered_nodes[node.name]
-			if not def or def.walkable then return nil end
+			local def = core.registered_nodes[core.get_node(pointed.under).name]
+			if def and def.walkable then return nil end
 		end
 	end
 	return grug_core.homing_lock(owner, target, origin, speed)
