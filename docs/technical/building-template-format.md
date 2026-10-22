@@ -218,8 +218,8 @@ table before the lane merges.
 
 | Group | Today from | Placed as |
 |---|---|---|
-| `doors` | `buildings.lua` door writers, the race part files | in a **doorway**: a door leaf cell (a member of the `door` family, `_a` or `_b`) whose facedir equals `face`, or an open doorway with no door (two passable cells above each other, as the elf tree platform writes it) |
-| `room_corner` | the room writers | in pairs (1st and 2nd, 3rd and 4th …), both at the same y, inside the box (the y is the room's floor or the first cell above it, as each writer chose; no node rule) |
+| `doors` | the door writers of the former generators (now in the templates) | in a **doorway**: a door leaf cell (a member of the `door` family, `_a` or `_b`) whose facedir equals `face`, or an open doorway with no door (two passable cells above each other, as the elf tree platform writes it) |
+| `room_corner` | the former room writers | in pairs (1st and 2nd, 3rd and 4th …), both at the same y, inside the box (the y is the room's floor or the first cell above it, as each writer chose; no node rule) |
 | `inside` | the destination spot | a standing point (below) |
 | `lights` | the light writers | no placement rule (no town reads the group; towns find lights from the cells); kept as data |
 | `sockets` | the NPC and quest sockets | a standing point |
