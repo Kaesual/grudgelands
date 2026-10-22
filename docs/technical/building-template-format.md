@@ -261,7 +261,9 @@ its code names the template and the palettes per placement. Its "used N× in …
 checks then come from a roster the freeze writes next to the layouts (`layouts/<town>.roster`, magic line
 `grudgelands-town-roster 1`, then a `town` and a `race` line, the same `palette`
 lines as a layout, then one `use <template> count=<n> [main=<palette name>] [<channel>=<palette name> …]` line per
-template and palette combination), which the validator checks against a build.
+template and palette combination), which the validator checks against a build. In a roster, a `use` line
+without `main=` means the palette named `town`, and a non-roof channel resolves to the roster palette of the same
+name. A `sockets` point without a `role` attribute is the position of a town entry (§3.4).
 
 ### 4.1 The loader's result
 
@@ -385,15 +387,18 @@ lane, never in the editor (ruling 22).
   palettes**: every role bound to a tagged name that answers every name predicate the generators ask exactly as the
   placing race's real node does (`parts.full_solid`, `pane_connects`, `wild_soil`, `is_pane`, `shaped`,
   `tree_piece`, `param2_kind`, `place_param2`, `layout.green`'s tree choice by `tree_log`, `decor_kit`'s window and
-  soft tests, and any other the lane finds), with channels tagged apart; a probe palette handle keeps `race` = the placing race (the decor kit branches on
+  soft tests, and any other the lane finds), with channels tagged apart where the code allows (where it compares node names across palette handles, as the
+  capital code does, all handles are tagged alike and a role's channel is taken from the first palette of the
+  placement that binds that node; byte identity decides); a probe palette handle keeps `race` = the placing race (the decor kit branches on
   `palette.race`). A cell holding a tagged name follows that
   role; a cell that follows none is a fixed node; a cell the probe cannot decide keeps its node and is listed.
   Building a part with another race's palette may fail (a wall torch with no solid support); role inference uses the
   placing races only, and the other races' failures are tolerated and reported, not errors. Roles identical in all
   six palettes today are still recorded as roles; where only the probe can tell them apart, a group may map to one
   canonical role.
-- **Identical parts become one template:** the same legend entries in the same cells and the same points, with
-  each point value that contains the placement's id written as `{id}` (§3.4) before comparing.
+- **Identical parts become one template:** the same legend entries in the same cells, the same points (each point
+  value that contains the placement's id written as `{id}`, §3.4) and the same `meta` (the measurements of §4.1 are
+  part of a template's identity).
 - **Proof:** the settlement identity hashes of every town unchanged, and a digest of everything the identity bytes
   leave out (landmarks, sockets, doorways, rooms, inside points, `peak`, any other point the towns or quests read)
   equal before and after.
