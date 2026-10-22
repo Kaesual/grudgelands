@@ -98,6 +98,11 @@ rules); panes are then settled over the template alone as the town's pane
 pass would (a pane at the template's edge does not see the town's cells).
 Cells that do not resolve for a palette (a race switch without that race, an
 orientation of the wrong kind) are not drawn, and the page says how many.
+A planted template (format doc §4.2: the groves, orchards, copses and the
+Lethariel boughs) is shown without its trees and undergrowth, which the game
+grows at load: its stems are `trees` point markers on the ground, and its
+`late` cells are drawn like any other cell. The town viewer shows the trees
+(it renders the built blueprint).
 
 Local preview hooks: `?tpl=<name>`, `?race=<palette key>`, `?group=race`,
 `?cut=<y>`, `?cam=x,y,z>x,y,z`, `?walk=1`, `?noclip=x,y,z,yaw,pitch`.

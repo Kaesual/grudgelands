@@ -2589,7 +2589,16 @@ tools](#player-meta-read-by-external-tools).
   `templates.stamped_point`); the plot builders read the part's `extent` and
   `top` meta where they measured the generator's part. The capital services
   (`capital_services.decorate`), the plot dressing, lamps, gardens, paving,
-  the city edge and the trees stay code (`freeze_report_capitals.txt`). The
+  the city edge and the trees stay code (`freeze_report_capitals.txt`).
+  **Planted templates** (lane TREES, format doc §4.2): the groves, orchards
+  and copses and the Lethariel boughs hold their cells before planting, their
+  stems as `trees` points (planter and height, in planting order),
+  `plant_spacing` and `undergrowth` meta and the cells written after planting
+  as `late` legend entries; `templates.part` plants at the stems with the
+  live tree generator (`dressing.lua`, the placement's main palette, in the
+  part's frame), scatters the undergrowth and then writes the late cells, so
+  a change of the tree generator reaches every tree (fixture
+  `tools/r56_trees`). The
   building generators are gone (`buildings.lua`, `capitals.lua`,
   `roofs.lua`, `interiors.lua`, `elf_parts.lua`, `troll_parts.lua`,
   `undead_parts.lua`); `troll_palette.lua` stays for the tools (the game
