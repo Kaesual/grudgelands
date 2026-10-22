@@ -1,0 +1,606 @@
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the town fills the screen; one floating instrument panel at the top
+   left, the block inspector under it, a compass rose at the top right. The
+   sky is the game's, not the theme's; only the panels follow the theme. */
+:root {
+  --bg: #9ec3ea;
+  --panel: rgba(250, 248, 242, 0.93);
+  --ink: #24272b;
+  --muted: #5c6168;
+  --line: rgba(36, 39, 43, 0.15);
+  --accent: #2e6b52;
+  --accent-ink: #f6fbf8;
+  --chip: rgba(46, 107, 82, 0.10);
+  --shadow: 0 6px 24px rgba(20, 30, 45, 0.18);
+  --diff-added: #2fa36b;
+  --diff-removed: #e0464f;
+  --diff-replaced: #e8a317;
+  --diff-turned: #3f7ee8;
+  --font-display: "Alegreya Sans SC", "Trebuchet MS", sans-serif;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --panel: rgba(27, 30, 34, 0.92);
+    --ink: #ebe8e1;
+    --muted: #a6abb1;
+    --line: rgba(235, 232, 225, 0.14);
+    --accent: #7fc7a6;
+    --accent-ink: #0f241b;
+    --chip: rgba(127, 199, 166, 0.14);
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --panel: rgba(27, 30, 34, 0.92);
+  --ink: #ebe8e1;
+  --muted: #a6abb1;
+  --line: rgba(235, 232, 225, 0.14);
+  --accent: #7fc7a6;
+  --accent-ink: #0f241b;
+  --chip: rgba(127, 199, 166, 0.14);
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden; background: var(--bg); color: var(--ink);
+  font: 15px/1.4 var(--font-body);
+}
+#stage { position: fixed; inset: 0; touch-action: none; }
+#stage canvas { display: block; outline: none; }
+#labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.label {
+  position: absolute; left: 0; top: 0; white-space: nowrap;
+  font: 600 13px/1 var(--font-display); letter-spacing: 0.04em;
+  color: #fff; padding: 3px 7px; border-radius: 3px;
+  background: rgba(22, 28, 34, 0.62);
+  transform: translate(-50%, -100%);
+}
+.panel {
+  position: fixed; z-index: 2; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+#panel {
+  top: calc(16px + env(safe-area-inset-top, 0px)); left: 16px;
+  width: min(300px, calc(100vw - 32px)); max-height: calc(100% - 32px);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+#panel header { padding: 14px 16px 12px; border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font: 500 11px/1 var(--font-data); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); }
+.title-row { display: flex; align-items: center; gap: 8px; }
+#town {
+  flex: 1; min-width: 0; font: 700 22px/1.1 var(--font-display); color: var(--ink);
+  background: transparent; border: 0; padding: 0; appearance: none; cursor: pointer;
+  text-wrap: balance;
+}
+#town:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+.caret { color: var(--muted); pointer-events: none; font-size: 12px; }
+#collapse { margin-left: auto; }
+.meta { margin: 0; font: 12px/1.4 var(--font-data); color: var(--muted);
+  font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+#controls { display: flex; flex-direction: column; }
+.group { padding: 12px 16px; border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 8px; }
+.group:last-child { border-bottom: 0; }
+.group h2 { margin: 0; font: 500 11px/1 var(--font-data); letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+button {
+  font: 500 14px/1 var(--font-body); color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px; cursor: pointer;
+}
+button:hover { background: var(--chip); }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink);
+  border-color: var(--accent); }
+.icon-btn { padding: 5px 8px; font-size: 12px; }
+.check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.range-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+output, .num { font: 13px/1 var(--font-data); font-variant-numeric: tabular-nums; }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+.hint kbd { font: 11px/1 var(--font-data); border: 1px solid var(--line);
+  border-radius: 3px; padding: 1px 4px; }
+.code-row { display: flex; gap: 6px; }
+.code-row input {
+  flex: 1; min-width: 0; font: 12px/1 var(--font-data); color: var(--ink);
+  background: transparent; border: 1px solid var(--line); border-radius: 5px; padding: 7px 8px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.swatch { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+.sw-added { background: var(--diff-added); }
+.sw-removed { background: var(--diff-removed); }
+.sw-replaced { background: var(--diff-replaced); }
+.sw-turned { background: var(--diff-turned); }
+#changes-list { display: flex; flex-direction: column; gap: 4px; }
+#changes-list button { display: flex; justify-content: space-between; gap: 8px; text-align: left; }
+#changes-list .num { color: var(--muted); }
+#inspect .change { font: 13px/1.35 var(--font-data); overflow-wrap: anywhere; }
+#inspect {
+  left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(300px, calc(100vw - 32px)); padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+#inspect .node { font: 500 14px/1.3 var(--font-data); overflow-wrap: anywhere; }
+#inspect .where { font: 13px/1.3 var(--font-data); color: var(--muted);
+  font-variant-numeric: tabular-nums; }
+#inspect .bldg { font: 700 16px/1.2 var(--font-display); letter-spacing: 0.03em; }
+#compass {
+  top: calc(16px + env(safe-area-inset-top, 0px)); right: 16px; width: 52px; height: 52px;
+  border-radius: 50%; display: grid; place-items: center;
+}
+#compass .needle { width: 100%; height: 100%; position: relative; }
+#compass .needle span {
+  position: absolute; left: 50%; top: 5px; transform: translateX(-50%);
+  font: 700 14px/1 var(--font-display); color: var(--accent);
+}
+#compass .needle i {
+  position: absolute; left: 50%; top: 21px; width: 2px; height: 22px; margin-left: -1px;
+  background: linear-gradient(var(--accent) 50%, var(--muted) 50%); border-radius: 1px;
+}
+#status {
+  position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none;
+  font: 700 20px/1 var(--font-display); letter-spacing: 0.05em; color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,.45);
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#panel.collapsed #controls, #panel.collapsed .meta { display: none; }
+@media (max-width: 560px) {
+  #inspect { left: 16px; right: 16px; width: auto; }
+  #panel { max-height: 55%; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div id="stage" aria-label="3D view of the town"></div>
+<div id="labels"></div>
+<div id="status">Loading</div>
+
+<aside id="panel" class="panel" aria-label="Viewer controls">
+  <header>
+    <div class="row">
+      <span class="eyebrow">Grudgelands · start towns</span>
+      <button id="collapse" class="icon-btn" type="button" aria-expanded="true">Hide</button>
+    </div>
+    <div class="title-row">
+      <label class="sr" for="town">Town</label>
+      <select id="town"></select><span class="caret" aria-hidden="true">▼</span>
+    </div>
+    <p id="town-meta" class="meta"></p>
+  </header>
+  <div id="controls">
+    <section class="group">
+      <h2>Camera</h2>
+      <div class="row" role="group" aria-label="Camera mode">
+        <button id="mode-orbit" type="button" aria-pressed="true">Orbit</button>
+        <button id="mode-walk" type="button" aria-pressed="false">Walk</button>
+        <button id="mode-noclip" type="button" aria-pressed="false">Noclip</button>
+      </div>
+      <p id="hint" class="hint"></p>
+      <div class="row" role="group" aria-label="Viewpoints">
+        <button id="view-overview" type="button">Overview</button>
+        <button id="view-spawn" type="button">Spawn</button>
+        <button id="view-gate" type="button">Gate</button>
+      </div>
+    </section>
+    <section class="group">
+      <h2>Show</h2>
+      <label class="check"><input id="show-labels" type="checkbox" checked> Building names</label>
+      <label class="check"><input id="show-veg" type="checkbox" checked> Trees and plants</label>
+      <div class="range-row">
+        <label for="cut">Cut away above height</label>
+        <output id="cut-out" for="cut">all</output>
+      </div>
+      <input id="cut" type="range" min="0" max="30" step="1" value="30">
+    </section>
+    <section class="group" id="changes" hidden>
+      <h2>Changes</h2>
+      <p id="changes-summary" class="hint"></p>
+      <div id="changes-body">
+        <div class="legend" id="changes-legend"></div>
+        <label class="check"><input id="show-diff" type="checkbox" checked> Highlight changes</label>
+        <div id="changes-list"></div>
+      </div>
+      <div class="row"><button id="partner" type="button"></button></div>
+    </section>
+    <section class="group">
+      <h2>View code for feedback</h2>
+      <p class="hint">Copy the code to name exactly what you are looking at. Paste one to jump there.</p>
+      <div class="code-row">
+        <label class="sr" for="view-code">View code</label>
+        <input id="view-code" type="text" spellcheck="false" autocomplete="off">
+        <button id="view-copy" type="button">Copy</button>
+        <button id="view-go" type="button">Go</button>
+      </div>
+    </section>
+  </div>
+</aside>
+
+<div id="inspect" class="panel" hidden aria-live="polite">
+  <div class="row">
+    <span class="eyebrow">Selected block</span>
+    <button id="inspect-copy" class="icon-btn" type="button" style="margin-left:auto">Copy</button>
+    <button id="inspect-close" class="icon-btn" type="button" aria-label="Clear selection">✕</button>
+  </div>
+  <div id="inspect-bldg" class="bldg"></div>
+  <div id="inspect-node" class="node"></div>
+  <div id="inspect-where" class="where"></div>
+  <div id="inspect-change" class="change" hidden></div>
+</div>
+
+<div id="compass" class="panel" aria-hidden="true"><div class="needle"><span>N</span><i></i></div></div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script id="payload" type="application/json">__PAYLOAD__</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+__RENDERER__
+
+// The town viewer: the start towns block for block, from the settlement
+// blueprints, on the shared node renderer (renderer.js).
+const P = JSON.parse(document.getElementById("payload").textContent);
+const statusEl = document.getElementById("status");
+const townSelect = document.getElementById("town");
+const townMeta = document.getElementById("town-meta");
+let current = null;
+
+function townData(town) {
+  if (!town.data) town.data = decodeCells(town.cells, town.count);
+  return town.data;
+}
+
+const view = createNodeView({
+  stage: document.getElementById("stage"),
+  types: P.types, textures: P.textures, meshes: P.meshes,
+  onPick: e => inspect(view.pick(e.clientX, e.clientY, markerHit)),
+  onFrame: () => { updateCompass(); updateLabels(); },
+});
+const { camera } = view;
+
+P.towns.forEach(t => {
+  const o = document.createElement("option");
+  o.value = t.key; o.textContent = t.label;
+  townSelect.appendChild(o);
+});
+
+const titleCase = s => s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+const SKIP_LABEL = new Set(["main_street", "gate_passage"]);
+function buildingAt(town, x, y, z) {
+  let best = null, bestVol = Infinity;
+  for (const [key, x1, y1, z1, x2, y2, z2] of town.boxes) {
+    if (SKIP_LABEL.has(key)) continue;
+    if (x >= x1 && x <= x2 && y >= y1 && y <= y2 && z >= z1 && z <= z2) {
+      const vol = (x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1);
+      if (vol < bestVol) { best = key; bestVol = vol; }
+    }
+  }
+  return best;
+}
+function point(town, key, fallback) {
+  const p = town.points.find(p => p[0] === key);
+  return p ? [p[1], p[2], p[3]] : fallback;
+}
+
+const labelLayer = document.getElementById("labels");
+let labels = [];
+function makeLabels(town) {
+  labelLayer.textContent = "";
+  labels = town.boxes.filter(b => !SKIP_LABEL.has(b[0])).map(([key, x1, y1, z1, x2, y2, z2]) => {
+    const el = document.createElement("div");
+    el.className = "label"; el.textContent = titleCase(key);
+    labelLayer.appendChild(el);
+    return { el, key, y2, pos: view.toThree([(x1 + x2) / 2, y2 + 1.5, (z1 + z2) / 2]) };
+  });
+}
+const showLabels = document.getElementById("show-labels");
+const tmp = new THREE.Vector3();
+function updateLabels() {
+  const on = showLabels.checked;
+  const w = window.innerWidth, h = window.innerHeight;
+  for (const l of labels) {
+    tmp.copy(l.pos);
+    if (view.filter.cut !== Infinity) tmp.y = Math.min(l.pos.y, view.filter.cut + 1.5);
+    tmp.project(camera);
+    const visible = on && tmp.z < 1 && tmp.z > -1 && Math.abs(tmp.x) < 1.1 && Math.abs(tmp.y) < 1.1;
+    l.el.hidden = !visible;
+    if (visible) l.el.style.transform =
+      `translate(${((tmp.x + 1) / 2 * w).toFixed(1)}px, ${((1 - tmp.y) / 2 * h).toFixed(1)}px) translate(-50%, -100%)`;
+  }
+}
+
+function setTown(key, keepView) {
+  const town = P.towns.find(t => t.key === key) || P.towns[0];
+  current = town;
+  townSelect.value = town.key;
+  const d = townData(town);
+  const cut = document.getElementById("cut");
+  cut.min = d.min[1]; cut.max = d.max[1];
+  if (view.filter.cut === Infinity || view.filter.cut > d.max[1]) { cut.value = d.max[1]; view.filter.cut = Infinity; }
+  updateCutLabel();
+  const race = town.race ? `${town.race} start · ` : "";
+  townMeta.textContent = `${race}${town.count.toLocaleString("en-US")} nodes · ${town.source}`;
+  inspect(null);
+  view.setData(d);
+  makeLabels(town);
+  buildMarkers();
+  updateChangesPanel();
+  if (!keepView) goOverview();
+}
+
+// ------------------------------------------------------------ cameras ----
+function updateModeButtons(m) {
+  for (const id of ["orbit", "walk", "noclip"])
+    document.getElementById("mode-" + id).setAttribute("aria-pressed", String(id === m));
+  updateHint();
+}
+view.onMode(updateModeButtons);
+function updateHint() {
+  const hint = document.getElementById("hint");
+  if (view.mode === "orbit") hint.innerHTML = "Drag to turn, right-drag or two fingers to pan, scroll to zoom. Click a block to inspect it.";
+  else if (view.mode === "walk") hint.innerHTML = "<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk, drag to look, <kbd>Space</kbd> jump, <kbd>Shift</kbd> run. Doors are open.";
+  else hint.innerHTML = "Flies through walls. <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly, drag to look, <kbd>Space</kbd> up, <kbd>Shift</kbd> down, hold <kbd>E</kbd> faster.";
+}
+function goOverview() {
+  const d = townData(current);
+  const r = Math.max(d.max[0] - d.min[0], d.max[2] - d.min[2]) / 2;
+  view.lookAt([r * 0.55, r * 0.85 + 10, -r * 1.25], [0, 2, 0]);
+}
+document.getElementById("view-overview").onclick = goOverview;
+document.getElementById("view-spawn").onclick = () => {
+  const s = point(current, "spawn", [0, 1, 0]);
+  const g = point(current, "gate", [0, 1, 63]);
+  view.walkFrom(s, Math.atan2(-(g[0] - s[0]), (g[2] - s[2])) + Math.PI);
+};
+document.getElementById("view-gate").onclick = () => {
+  const g = point(current, "gate", [0, 1, 63]);
+  const s = point(current, "spawn", [0, 1, 0]);
+  view.walkFrom([g[0], g[1], g[2] - 1], Math.atan2(-(s[0] - g[0]), (s[2] - g[2])));
+};
+for (const m of ["orbit", "walk", "noclip"])
+  document.getElementById("mode-" + m).onclick = () => view.setMode(m);
+
+// ------------------------------------------------------------- changes ---
+// A reworked town carries its diff against the game version:
+// [x, y, z, kind, "before param2", "after param2"], kind as DIFF_KINDS.
+const DIFF_KINDS = ["added", "removed", "replaced", "turned"];
+const DIFF_COLORS = [0x2fa36b, 0xe0464f, 0xe8a317, 0x3f7ee8];
+const diffKey = (x, y, z) => x + "," + y + "," + z;
+let diffMap = new Map(), markers = null;
+const showDiff = document.getElementById("show-diff");
+const markerHit = (x, y, z) => markers && diffMap.has(diffKey(x, y, z));
+function buildMarkers() {
+  if (markers) { view.root.remove(markers); markers.traverse(o => o.geometry?.dispose()); markers = null; }
+  diffMap = new Map();
+  if (!current.diff) return;
+  for (const c of current.diff) diffMap.set(diffKey(c[0], c[1], c[2]), c);
+  if (!showDiff.checked) return;
+  markers = new THREE.Group();
+  const geo = new THREE.BoxGeometry(1.06, 1.06, 1.06);
+  const edges = new THREE.EdgesGeometry(geo);
+  DIFF_KINDS.forEach((_, k) => {
+    const list = current.diff.filter(c => c[3] === k && c[1] <= view.filter.cut);
+    if (!list.length) return;
+    const mat = new THREE.MeshBasicMaterial({ color: DIFF_COLORS[k], transparent: true, opacity: 0.6,
+      depthWrite: false, fog: false });
+    const mesh = new THREE.InstancedMesh(geo, mat, list.length);
+    const m = new THREE.Matrix4();
+    list.forEach((c, i) => mesh.setMatrixAt(i, m.makeTranslation(c[0], c[1], c[2])));
+    mesh.renderOrder = 5;
+    markers.add(mesh);
+    // Outlines, merged into one line set per kind.
+    const base = edges.attributes.position.array, pos = new Float32Array(base.length * list.length);
+    list.forEach((c, i) => {
+      for (let v = 0; v < base.length; v += 3) {
+        pos[i * base.length + v] = base[v] + c[0];
+        pos[i * base.length + v + 1] = base[v + 1] + c[1];
+        pos[i * base.length + v + 2] = base[v + 2] + c[2];
+      }
+    });
+    const lg = new THREE.BufferGeometry();
+    lg.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    const lines = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: DIFF_COLORS[k], fog: false }));
+    lines.renderOrder = 6;
+    markers.add(lines);
+  });
+  view.root.add(markers);
+}
+function updateChangesPanel() {
+  const section = document.getElementById("changes");
+  const partner = current.partner && P.towns.find(t => t.key === current.partner);
+  section.hidden = !current.diff && !partner;
+  const button = document.getElementById("partner");
+  button.hidden = !partner;
+  if (partner) button.textContent = current.diff ? "Show game version" : "Show " + partner.label.split(" · ").pop() + " version";
+  const body = document.getElementById("changes-body"), summary = document.getElementById("changes-summary");
+  body.hidden = !current.diff;
+  if (!current.diff) {
+    summary.textContent = "This town has a reworked version with highlighted changes.";
+    return;
+  }
+  const counts = [0, 0, 0, 0];
+  const byBuilding = new Map();
+  for (const c of current.diff) {
+    counts[c[3]]++;
+    const b = buildingAt(current, c[0], c[1], c[2]) || "open_ground";
+    byBuilding.set(b, (byBuilding.get(b) || 0) + 1);
+  }
+  summary.textContent = `${current.diff.length.toLocaleString("en-US")} changed blocks against the game version` +
+    (current.noise ? `, ${current.noise} left out as world noise (crops, doors, grass).` : ".");
+  document.getElementById("changes-legend").innerHTML = DIFF_KINDS.map((k, i) =>
+    `<span><i class="swatch sw-${k}"></i>${k[0].toUpperCase() + k.slice(1)} ${counts[i]}</span>`).join("");
+  const list = document.getElementById("changes-list");
+  list.textContent = "";
+  [...byBuilding.entries()].sort((a, b) => b[1] - a[1]).forEach(([key, n]) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerHTML = `<span></span><span class="num"></span>`;
+    btn.firstChild.textContent = key === "open_ground" ? "Open ground" : titleCase(key);
+    btn.lastChild.textContent = n;
+    btn.onclick = () => focusBuilding(key);
+    list.appendChild(btn);
+  });
+}
+function focusBuilding(key) {
+  const box = current.boxes.find(b => b[0] === key);
+  let cx, cy, cz, r;
+  if (box) {
+    const [, x1, y1, z1, x2, y2, z2] = box;
+    cx = (x1 + x2) / 2; cy = (y1 + y2) / 2; cz = (z1 + z2) / 2;
+    r = Math.max(x2 - x1, z2 - z1, 8);
+  } else {
+    const pts = current.diff.filter(c => !buildingAt(current, c[0], c[1], c[2]));
+    if (!pts.length) return;
+    cx = pts.reduce((a, c) => a + c[0], 0) / pts.length;
+    cy = pts.reduce((a, c) => a + c[1], 0) / pts.length;
+    cz = pts.reduce((a, c) => a + c[2], 0) / pts.length;
+    r = 16;
+  }
+  view.lookAt([cx + r * 0.7, cy + r * 0.9, cz - r * 1.1], [cx, cy, cz]);
+}
+showDiff.onchange = buildMarkers;
+document.getElementById("partner").onclick = () => {
+  if (current.partner) setTown(current.partner, true);
+};
+
+// ----------------------------------------------------------- inspector ---
+let selected = null;
+function inspect(hit) {
+  const panel = document.getElementById("inspect");
+  view.select(hit);
+  if (!hit) { panel.hidden = true; selected = null; return; }
+  selected = hit;
+  const d = townData(current);
+  const { i, x, y, z } = hit;
+  const b = buildingAt(current, x, y, z);
+  document.getElementById("inspect-bldg").textContent = b ? titleCase(b) : "Open ground";
+  document.getElementById("inspect-node").textContent = i >= 0 ?
+    view.types[d.T[i]].name + (d.P2[i] ? `  param2 ${d.P2[i]}` : "") : "air";
+  document.getElementById("inspect-where").textContent = `x ${x}   y ${y}   z ${z}`;
+  const change = diffMap.get(diffKey(x, y, z));
+  const changeEl = document.getElementById("inspect-change");
+  changeEl.hidden = !change;
+  if (change) changeEl.textContent = `${DIFF_KINDS[change[3]]}: ${change[4]} → ${change[5]}`;
+  panel.hidden = false;
+}
+function inspectText() {
+  if (!selected) return "";
+  const d = townData(current), { i, x, y, z } = selected;
+  const b = buildingAt(current, x, y, z);
+  const change = diffMap.get(diffKey(x, y, z));
+  return `${current.key} ${x},${y},${z} ${i >= 0 ? view.types[d.T[i]].name : "air"}${b ? " (" + b + ")" : ""}` +
+    (change ? ` [${DIFF_KINDS[change[3]]}: ${change[4]} -> ${change[5]}]` : "");
+}
+
+// --------------------------------------------------------- view codes ----
+const fmt = v => (Math.round(v * 10) / 10).toString();
+function viewCode() {
+  const { pos, target } = view.pose();
+  return `${current.key}@${pos.map(fmt).join(",")}>${target.map(fmt).join(",")}`;
+}
+function applyViewCode(code) {
+  const m = /^\s*([\w-]+)@(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)>(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)\s*$/.exec(code || "");
+  if (!m) return false;
+  if (!P.towns.some(t => t.key === m[1])) return false;
+  if (m[1] !== current.key) setTown(m[1], true);
+  view.lookAt([+m[2], +m[3], +m[4]], [+m[5], +m[6], +m[7]]);
+  return true;
+}
+async function copyText(text, button) {
+  const old = button.textContent;
+  try { await navigator.clipboard.writeText(text); button.textContent = "Copied"; }
+  catch { button.textContent = "Select"; }
+  setTimeout(() => { button.textContent = old; }, 1400);
+}
+const codeInput = document.getElementById("view-code");
+document.getElementById("view-copy").onclick = e => {
+  codeInput.value = viewCode();
+  codeInput.select();
+  copyText(codeInput.value, e.currentTarget);
+};
+document.getElementById("view-go").onclick = () => {
+  if (!applyViewCode(codeInput.value)) { codeInput.setCustomValidity("Not a view code"); codeInput.reportValidity(); }
+};
+codeInput.addEventListener("input", () => codeInput.setCustomValidity(""));
+codeInput.addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("view-go").click(); });
+document.getElementById("inspect-copy").onclick = e => copyText(inspectText(), e.currentTarget);
+document.getElementById("inspect-close").onclick = () => inspect(null);
+
+// ------------------------------------------------------------ controls ---
+townSelect.onchange = () => setTown(townSelect.value);
+showLabels.onchange = updateLabels;
+document.getElementById("show-veg").onchange = e => { view.filter.veg = e.target.checked; view.rebuild(); };
+const cutInput = document.getElementById("cut");
+function updateCutLabel() {
+  document.getElementById("cut-out").textContent = view.filter.cut === Infinity ? "all" : `y ${view.filter.cut}`;
+}
+let cutTimer = 0;
+cutInput.oninput = () => {
+  const v = +cutInput.value;
+  view.filter.cut = v >= +cutInput.max ? Infinity : v;
+  updateCutLabel();
+  clearTimeout(cutTimer);
+  cutTimer = setTimeout(() => { view.rebuild(); buildMarkers(); }, 60);
+};
+const panel = document.getElementById("panel");
+const collapse = document.getElementById("collapse");
+function setCollapsed(on) {
+  panel.classList.toggle("collapsed", on);
+  collapse.textContent = on ? "Show" : "Hide";
+  collapse.setAttribute("aria-expanded", String(!on));
+}
+collapse.onclick = () => setCollapsed(!panel.classList.contains("collapsed"));
+if (window.innerWidth < 560) setCollapsed(true);
+
+const needle = document.querySelector("#compass .needle");
+const fwd = new THREE.Vector3();
+function updateCompass() {
+  camera.getWorldDirection(fwd);
+  const heading = Math.atan2(fwd.x, -fwd.z);
+  needle.style.transform = `rotate(${(-heading * 180 / Math.PI).toFixed(1)}deg)`;
+}
+
+// ---------------------------------------------------------------- boot ---
+function start(saved) {
+  statusEl.textContent = "Building";
+  requestAnimationFrame(() => setTimeout(() => {
+    const q = new URLSearchParams(location.search);
+    const key = q.get("town") || saved?.town || P.towns[0].key;
+    setTown(key);
+    if (saved?.view) applyViewCode(saved.view);
+    // Local preview hooks (?view=<code>&walk=x,y,z,yaw&noclip=x,y,z,yaw,pitch&cut=N&veg=0&pick=x,y);
+    // the artifact frame never passes a query string, so they stay inert there.
+    if (q.get("veg") === "0") { document.getElementById("show-veg").checked = false; view.filter.veg = false; view.rebuild(); }
+    if (q.get("cut")) { cutInput.value = q.get("cut"); cutInput.oninput(); clearTimeout(cutTimer); view.rebuild(); buildMarkers(); }
+    if (q.get("view")) applyViewCode(q.get("view"));
+    if (q.get("walk")) { const w = q.get("walk").split(",").map(Number); view.walkFrom([w[0], w[1], w[2]], w[3] || 0); view.step(); }
+    if (q.get("noclip")) { const w = q.get("noclip").split(",").map(Number); view.walkFrom([w[0], w[1], w[2]], w[3] || 0, "noclip"); view.walker.pitch = w[4] || 0; view.step(); }
+    if (q.get("pick")) { const [px, py] = q.get("pick").split(",").map(Number); inspect(view.pick(px, py, markerHit)); }
+    updateHint();
+    statusEl.hidden = true;
+    view.start();
+  }, 0));
+}
+window.claude?.hot?.snapshot?.(() => ({ town: current?.key, view: current ? viewCode() : null }));
+window.__viewer = { setTown, applyViewCode, viewCode, inspect, view, goOverview };
+if (window.claude?.hot?.ready) window.claude.hot.ready(start);
+else start(window.claude?.hot?.data ?? {});
+</script>
