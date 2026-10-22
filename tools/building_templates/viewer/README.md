@@ -20,6 +20,12 @@ Round 56.
 | `export_blueprint.lua` | plain LuaJIT exporter: cells plus named landmark boxes and points |
 | `town.html` | the town page: town choice, labels, inspector, view codes, workshop diffs |
 | `../nodes.json` | the real node registry (see `../README.md` for refreshing it) |
+| `build_gallery.py` | builds the template gallery as one self-contained HTML page |
+| `gallery.html` | the gallery page: the grid, one template alone, palettes, points |
+| `templates.py` | reads templates, layouts and rosters (format doc §3, §4), resolves roles for a palette (§3.2) and settles panes (the port of `parts.resolve_panes`) |
+| `palettes.lua` | LuaJIT helper: the race palettes (`wp13/palette.lua`), the Kezamba overrides (`wp13/troll_palette.lua`) and the `parts.lua` node predicates as JSON; `panes` runs `parts.resolve_panes` for the test |
+| `test_templates.py` | the reader's test: parsing, the resolver's rules, the pane port against the Lua |
+| `fixtures/` | hand-written fixture templates (`cell 1` and `cell 2`), two layouts and a roster |
 
 ### The shared renderer
 
@@ -61,6 +67,40 @@ chromium-browser --headless=new --use-angle=swiftshader --enable-unsafe-swiftsha
 
 Use one `--user-data-dir` per parallel Chromium; a shared profile makes the
 second instance exit without a screenshot.
+
+## Template gallery
+
+```sh
+# every template of mods/MAPGEN/grug_mapgen/building_templates (the fixtures
+# while that directory does not exist yet), as published
+python3 tools/building_templates/viewer/build_gallery.py -o /tmp/gallery.html
+# the fixtures, as a file to open locally
+python3 tools/building_templates/viewer/build_gallery.py --fixtures --standalone -o /tmp/g.html
+# the reader's test (parsing, resolving, the pane port against parts.lua)
+python3 tools/building_templates/viewer/test_templates.py
+```
+
+The page shows every template once in a grid, grouped by the town of its
+first placement (or by race), each labelled and listed with its "used N× in
+…" (the `place` lines of the layouts and the `use … count=` lines of the
+rosters). A click on a building or a name opens it alone in its own frame:
+orbit, walk (in through its first door), noclip, a layer cut, its points as
+markers with their ids, its legend, and a cell inspector (node, param2,
+legend entry, template coordinates).
+
+The palette choice re-renders: **As placed** resolves each template with the
+palettes of its first placement (the layout's `main` and channel palettes,
+overrides included); a race resolves every channel with that race's plain
+palette; "Troll + Kezamba …" adds one of `troll_palette.lua`'s override
+tables. Resolution follows format doc §3.2 (families by variant, optional
+roles by their `else=`, race switches by the palette's race, the orientation
+rules); panes are then settled over the template alone as the town's pane
+pass would (a pane at the template's edge does not see the town's cells).
+Cells that do not resolve for a palette (a race switch without that race, an
+orientation of the wrong kind) are not drawn, and the page says how many.
+
+Local preview hooks: `?tpl=<name>`, `?race=<palette key>`, `?group=race`,
+`?cut=<y>`, `?cam=x,y,z>x,y,z`, `?walk=1`, `?noclip=x,y,z,yaw,pitch`.
 
 ## Refreshing the node registry
 
