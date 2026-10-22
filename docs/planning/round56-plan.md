@@ -259,13 +259,13 @@ The report offers three or four distinct strategies. Each has the player's exper
 types it needs (with rough effort), its risks, and a few example quest ideas. It ends with quick wins and a
 recommended combination.
 
-**HOOD-FINISH and HOODART (finish step).** When the user has set the hood on the page, HOOD's implementer
-regenerates the models from those values (a delta review checks it). Then a small Astra art lane: Astra paints the hood faces for every cloth and
+**HOOD-FINISH and HOODART (finish step).** The user accepted the page's first shape unchanged (2026-10-22), so
+HOOD builds with the final values and no regeneration step is needed. Then a small Astra art lane: Astra paints the hood faces for every cloth and
 leather head piece (and the transparent chin strip) in the existing tier palettes and zones. The brief gives design
 goals, not per-tier permission lists. The user picks on a pick page as in Round 54; the bake runs the pick into
 `mods/`.
 
-**TPLFORMAT (coordinator).** The format doc (`docs/technical/template-format.md`):
+**TPLFORMAT (coordinator).** The format doc ([building-template-format.md](../technical/building-template-format.md)):
 - one text file per template: name, bounds, a legend (character → role or node, param2), one character grid per
   y layer (`.` force air, space leave unchanged), and a points section; a template that needs more legend entries
   than single characters allow uses two characters per cell;
@@ -394,7 +394,7 @@ Nothing unpicked ships (the hood stays transparent everywhere until the user's a
   change declares a map reset; FREEZE-TOWNS teaches `check_upgrade.py` to enforce it.
 - **Size:** 16 lanes with the template half; the coordinator staggers the starts within the process budget.
 - **Shared docs:** CHANGELOG, STATUS and the version only in D.
-- **Decided during the round:** the hood's shape (the user, on the page); the hood art pick; the QUESTMAP page's
+- **Decided during the round:** the hood's shape (the user, on the page: the first shape, unchanged, 2026-10-22); the hood art pick; the QUESTMAP page's
   look (the user's first look, small fixes then).
 - **The finish step** (the user's hood values, HOODART, the pick) may come after the round end as 0.56.1, as in
   Round 55.
