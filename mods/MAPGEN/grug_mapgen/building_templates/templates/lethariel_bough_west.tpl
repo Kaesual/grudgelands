@@ -5,72 +5,70 @@ pivot 11 11
 origin 0 0 0
 size 11 15 11
 cell 1
-meta extent=[0,0,10,10] peak=11 rails=26 steps=7 top=14
+meta extent=[0,0,10,10] peak=11 rails=26 steps=7 top=14 undergrowth=[0,0,10,10,5]
 races elf
 
 legend
-A role beam
-B role floor
-C role grass_tuft
+A node air late
+B role beam late
+C role floor late
 D role ground
-E role light_wall o=wallmounted:5
+E role light_wall o=wallmounted:5 late
 F role path
-G role railing
-H role signature else=C
-I role signature else=D
-J role signature else=air
-K role signature_slab else=air
-L role signature_stair o=facedir:2 else=air
-M role tree_log
-N role undergrowth
-O role wall
-P role window o=facedir:3
+G role railing late
+H role signature else=D late
+I role signature else=air late
+J role signature_slab else=air late
+K role signature_stair o=facedir:2 else=air late
+L role tree_log late
+M role wall late
+N role window o=facedir:3 late
 end
 
 layer 0
 |DDDDDDDDDDD|
 |DDDDDDDDDDD|
-|DDDDDDDDDID|
-|DDDFFFFFDID|
-|DDDFFFFFDID|
-|DDDFFFFFDID|
-|DDDFFFFFDID|
-|DDDFFFFFDID|
-|DDDDDDDDDID|
+|DDDDDDDDDHD|
+|DDDFFFFFDHD|
+|DDDFFFFFDHD|
+|DDDFFFFFDHD|
+|DDDFFFFFDHD|
+|DDDFFFFFDHD|
+|DDDDDDDDDHD|
 |DDDDDDDDDDD|
 |DDDDDDDDDDD|
 layer 1
-|...C.....N.|
-|.C.....N...|
-|.........J.|
-|.C.......H.|
-|....MM...J.|
-|N...MM...J.|
-|.........JC|
-|C........J.|
-|....N...NLC|
-|C.N...C....|
-|....N.....C|
+|...........|
+|...........|
+|.........I.|
+|.........I.|
+|....LL...I.|
+|....LL...I.|
+|.........I.|
+|.........I.|
+|.........K.|
+|...........|
+|...........|
 layer 2
 |...........|
 |...........|
-|.........J.|
-|.........J.|
-|....MM...J.|
-|....MM...J.|
-|.........J.|
-|.........L.|
+|.........I.|
+|.........I.|
+|....LL...I.|
+|....LL...I.|
+|.........I.|
+|.........K.|
 |...........|
 |...........|
 |...........|
 layer 3
 |...........|
 |...........|
-|.........J.|
-|.........J.|
-|....MM...J.|
-|....MM...J.|
-|.........L.|
+|.........I.|
+|.........I.|
+|....LL...I.|
+|....LL...I.|
+|.........K.|
 |...........|
 |...........|
 |...........|
@@ -78,10 +76,10 @@ layer 3
 layer 4
 |...........|
 |...........|
-|.........J.|
-|.........J.|
-|....MM...J.|
-|....MM...L.|
+|.........I.|
+|.........I.|
+|....LL...I.|
+|....LL...K.|
 |...........|
 |...........|
 |...........|
@@ -90,10 +88,10 @@ layer 4
 layer 5
 |...........|
 |...........|
-|.........J.|
-|.........J.|
-|....MM...L.|
-|....MM.....|
+|.........I.|
+|.........I.|
+|....LL...K.|
+|....LL.....|
 |...........|
 |...........|
 |...........|
@@ -102,10 +100,10 @@ layer 5
 layer 6
 |...........|
 |...........|
-|.........J.|
-|.........L.|
-|....MM.....|
-|....MM.....|
+|.........I.|
+|.........K.|
+|....LL.....|
+|....LL.....|
 |...........|
 |...........|
 |...........|
@@ -113,62 +111,62 @@ layer 6
 |...........|
 layer 7
 |...........|
-|.....A.....|
-|..BBBBBBBL.|
-|..BBBBBBB..|
-|..BBBBBBB..|
-|.ABBBBBBBA.|
-|..BBBBBBB..|
-|..BBBBBBB..|
-|..BBBBBBB..|
-|.....A.....|
+|.....B.....|
+|..CCCCCCCK.|
+|..CCCCCCC..|
+|..CCCCCCC..|
+|.BCCCCCCCB.|
+|..CCCCCCC..|
+|..CCCCCCC..|
+|..CCCCCCC..|
+|.....B.....|
 |...........|
 layer 8
 |...........|
 |...........|
-|..GGGGGG...|
-|..GOOOOOG..|
-|..GO...OG..|
-|..GO....G..|
-|..GO...OG..|
-|..GOOOOOG..|
+|..GGGGGG.A.|
+|..GMMMMMG..|
+|..GMAAAMG..|
+|..GMAAA.G..|
+|..GMAAAMG..|
+|..GMMMMMG..|
 |..GGGGGGG..|
 |...........|
 |...........|
 layer 9
 |...........|
 |...........|
-|...........|
-|...OOOOO...|
-|...PE..O...|
-|...O.......|
-|...P...O...|
-|...OOOOO...|
+|.........A.|
+|...MMMMM...|
+|...NEAAM...|
+|...MAAA....|
+|...NAAAM...|
+|...MMMMM...|
 |...........|
 |...........|
 |...........|
 layer 10
 |...........|
 |...........|
-|...........|
-|...OOOOO...|
-|...O...O...|
-|...O.......|
-|...O...O...|
-|...OOOOO...|
+|.........A.|
+|...MMMMM...|
+|...MAAAM...|
+|...MAAA....|
+|...MAAAM...|
+|...MMMMM...|
 |...........|
 |...........|
 |...........|
 layer 11
 |...........|
 |...........|
-|..KKKKKKK..|
-|..KKKKKKK..|
-|..KKKKKKK..|
-|..KKKKKKK..|
-|..KKKKKKK..|
-|..KKKKKKK..|
-|..KKKKKKK..|
+|..JJJJJJJ..|
+|..JJJJJJJ..|
+|..JJJJJJJ..|
+|..JJJJJJJ..|
+|..JJJJJJJ..|
+|..JJJJJJJ..|
+|..JJJJJJJ..|
 |...........|
 |...........|
 layer 12

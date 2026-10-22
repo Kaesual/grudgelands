@@ -92,7 +92,31 @@ record of how they were made and the gates that keep them honest.
   `freeze_report_capitals.txt` (with the placements and their templates, and
   the capital parts that equal a start town's template apart from the
   measurements). The shared pieces of both exporters are `export_lib.lua`.
-- `check.py` is the validator of format doc §6 and the gate: `check.py`
+- **Planted templates** (lane TREES, Round 56; format doc §4.2): a part that
+  planted trees or scattered undergrowth (the groves, orchards and copses,
+  the Lethariel boughs: 13 templates) keeps its trees algorithmic.
+  `freeze_build.lua` records each part buffer's planting (the buffer when the
+  part first planted, the stems with their `dressing` planter, height and the
+  buffer's tree spacing, the undergrowth call, the cells planting wrote and
+  the writes after it) and `export_capitals.lua` cuts such a part as the
+  cells before planting, the stems as `trees` points, `plant_spacing` and
+  `undergrowth` meta and the writes after planting as `late` entries; a part
+  whose planting is not "cells, trees, undergrowth, late" is refused. Read
+  back through the game's loader, a planted placement must be exactly its
+  generator's part, trees and all. The freeze's templates stay the
+  templates: a planted template's identity is its whole generated part (so
+  Lethariel's groves do not merge with Highcourt's quiet grove), and its
+  users must agree on the planted form but for the stems' `height=`, which
+  the tree generator does not read (Nhal Veyr's vigil copse shares the market
+  copse's heights 6 for its own 7; the report says so). No start town plants
+  (`export.lua` refuses a planting stamp). The planted templates were re-cut
+  and `BASELINE` moved to that commit with the lane brief as the
+  coordinator's approval (format doc §6.2).
+- `check.py` is the validator of format doc §6 and the gate (it reads
+  `late` entries, part of an entry's identity, refuses a race switch or an
+  `else=` naming a `late` entry, holds every `trees` stem to written ground
+  that is not air and warns, rule `stem_soil`, when that ground is not wild
+  soil for a placing race, where no tree grows): `check.py`
   (against `BASELINE`), `check.py --baseline=self` (the freeze),
   `--write-known-defects` (the exporter's known-defects baseline: three
   capital defects, none for the start towns), `--self-test` (the parser and
@@ -180,6 +204,9 @@ it).
   the box; painting over or emptying one part removes the whole object.
 - **Points** (the list under the grid, or click a marker with Move point):
   move only; the group, order, face and attributes never change (ruling 28).
+  A planted template's stems are `trees` points like any other (moved on
+  its ground layer); its trees and undergrowth are not drawn (the game grows
+  them at load), and a cell picked from a `late` entry is painted `late`.
 - **Undo, redo** (Ctrl+Z, Ctrl+Y), **Reset** (back to the saved file), the
   "changed since commit" outline (cells whose legend entry differs from the
   file at HEAD) and a draft in local storage, offered again after a crash or

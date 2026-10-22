@@ -150,6 +150,9 @@ local function export_town(config)
 			local plot = real.plots[#placements + 1]
 			assert(plot, town .. ": more stamps than plots")
 			local pstamp = probe.stamps[k]
+			-- no start town's building plants (Round 56 lane TREES): a part
+			-- that did would be a planted template (format doc §4.2)
+			assert(not stamp.planting, town .. " " .. plot.id .. " plants trees or undergrowth")
 			local pl = {town = town, id = plot.id, race = race, stamp = stamp,
 				pstamp = pstamp, ox = stamp.ox, oy = stamp.oy, oz = stamp.oz,
 				turns = stamp.turns, w = stamp.w, d = stamp.d, lift = plot.lift,

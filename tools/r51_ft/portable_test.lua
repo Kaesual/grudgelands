@@ -106,10 +106,9 @@ for _, name in ipairs({"dawnmere", "hearthpine", "kapok", "silverleaf", "stillgr
 end
 
 -- B. the capitals' trees ----------------------------------------------------
--- (Round 56 FREEZE-CAPITALS: the grove and copse trees are template cells now and
--- no longer grown at build, 83/62/141/70 -> 52/47/71/56; every capital's cells are
--- pinned by tools/r56_freeze_capitals.)
-local CAPITAL_TREES = {highcourt = 52, dur_brannoc = 47, lethariel = 71, nhal_veyr = 56,
+-- (Round 56 TREES: the grove and copse trees are grown at build again, by the
+-- template loader at the planted templates' stems, as before the freeze.)
+local CAPITAL_TREES = {highcourt = 83, dur_brannoc = 62, lethariel = 141, nhal_veyr = 70,
 	gor_drazhak = 35, kezamba = 37}
 local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
 local cores = {}

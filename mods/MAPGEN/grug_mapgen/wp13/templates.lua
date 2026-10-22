@@ -10,7 +10,9 @@
 -- mid-generation), and turns one placement into a part exactly like a
 -- building generator's result: `{buffer, w, d, points, peak, ...meta}` in the
 -- template's own frame, filled for the placement's palettes, so `parts.stamp`
--- stays the only rotation.
+-- stays the only rotation. A planted template (format doc §4.2: groves,
+-- orchards, copses) holds no tree: the loader plants its stems with the live
+-- tree generator (`dressing.lua`) while it builds the part.
 --
 -- Every list keeps its file order; nothing deterministic walks `pairs`.
 --
@@ -32,6 +34,18 @@ local function loader(directory)
 	M.DECLARED = DECLARED
 	M.GROUPS = {"doors", "lights", "inside", "room_corner"}
 	local KINDS = {facedir = parts.FACEDIR, wallmounted = parts.WALLMOUNTED}
+	-- The planters a `trees` point may name (format doc §3.4, §4.2): the
+	-- `dressing` routines a part planted a stem with.
+	M.PLANTERS = {tree = true, broadleaf = true, columnar = true, acacia = true,
+		gravewood = true, jungle_tree = true, emergent = true}
+	-- The planting metadata (§4.2) is for the loader, never a part field.
+	M.PLANTING_META = {plant_spacing = true, undergrowth = true}
+	-- The tree generator, loaded when the first planted template is built.
+	local dressing
+	local function dressing_module()
+		dressing = dressing or dofile(directory .. "/dressing.lua")(directory)
+		return dressing
+	end
 
 	local function read(path)
 		local file = io.open(path, "rb")
@@ -160,6 +174,7 @@ local function loader(directory)
 					entry.channel = value
 				elseif key == "o" then entry.o = value
 				elseif key == "else" then entry.fallback = value
+				elseif list[index] == "late" and not entry.late then entry.late = true
 				else error("bad role option " .. list[index], 0) end
 			end
 			local family = palettes.prefix_roles[role]
@@ -189,8 +204,9 @@ local function loader(directory)
 			local entry = {kind = "node", name = list[2]}
 			for index = 3, #list do
 				local value = list[index]:match("^o=(.+)$")
-				if not value then error("bad node option " .. list[index], 0) end
-				entry.o = value
+				if list[index] == "late" and not entry.late then entry.late = true
+				elseif not value then error("bad node option " .. list[index], 0)
+				else entry.o = value end
 			end
 			return entry
 		elseif kind == "race" then
@@ -325,17 +341,24 @@ local function loader(directory)
 			end
 			if entry.kind == "race" then
 				for _, race in ipairs(entry.order) do
-					if defined(entry.map[race], "a race switch").kind == "race" then
+					local target = defined(entry.map[race], "a race switch")
+					if target.kind == "race" then
 						fail({number = entry.line}, "a race switch names another switch")
+					end
+					-- a cell is late by its own entry (format doc §4.2)
+					if target.late then
+						fail({number = entry.line}, "a race switch names a late entry")
 					end
 				end
 			elseif entry.fallback and entry.fallback ~= "air" and entry.fallback ~= "unchanged" then
 				if #entry.fallback ~= t.cell then
 					fail({number = entry.line}, "bad else= " .. entry.fallback)
 				end
-				if defined(entry.fallback, "else=").kind == "race" then
+				local target = defined(entry.fallback, "else=")
+				if target.kind == "race" then
 					fail({number = entry.line}, "else= names a race switch")
 				end
+				if target.late then fail({number = entry.line}, "else= names a late entry") end
 			end
 		end
 		-- grid
@@ -420,6 +443,39 @@ local function loader(directory)
 		end
 		line = next_line()
 		if line then fail(line, "nothing may follow the points") end
+		-- planting (format doc §4.2): the stems, in planting order, and the
+		-- undergrowth scattered after them
+		t.stems = {}
+		for _, point in ipairs(t.points.trees or {}) do
+			local stem = {x = point.x, z = point.z}
+			for _, attr in ipairs(point.attrs) do
+				if attr.key == "kind" and M.PLANTERS[attr.value] then stem.kind = attr.value
+				elseif attr.key == "height" and type(attr.value) == "number" then
+					stem.height = attr.value
+				else
+					fail({number = point.line}, "a trees point takes kind=<planter> and " ..
+						"height=<n>, not " .. attr.key)
+				end
+			end
+			if point.face or not stem.kind or not stem.height then
+				fail({number = point.line}, "a trees point is 'trees <x> <y> <z> " ..
+					"height=<n> kind=<planter>'")
+			end
+			t.stems[#t.stems + 1] = stem
+		end
+		local spacing, cover = t.meta.plant_spacing, t.meta.undergrowth
+		if spacing ~= nil and (type(spacing) ~= "number" or spacing < 1) then
+			fail(lines[2], "meta plant_spacing must be a positive integer")
+		end
+		if cover ~= nil then
+			local ok = type(cover) == "table" and #cover == 5
+			for index = 1, ok and 5 or 0 do
+				if type(cover[index]) ~= "number" then ok = false end
+			end
+			if not ok or cover[5] < 1 then
+				fail(lines[2], "meta undergrowth must be [x0,z0,x1,z1,density]")
+			end
+		end
 		return t
 	end
 
@@ -624,38 +680,66 @@ local function loader(directory)
 	end
 
 	-- The part of one placement: the template's cells for its palettes, its
-	-- points with `{id}` filled in, its pivot and its metadata.
+	-- points with `{id}` filled in, its pivot and its metadata. A planted
+	-- template (format doc §4.2) is built as its generator built it: the
+	-- cells, then the trees at its stems in planting order and the
+	-- undergrowth, both with the placement's main palette in the part's own
+	-- frame, then the `late` cells.
 	function M.part(t, id, race, palette_of)
 		local buf = parts.buffer()
+		local late = {}
 		for layer_index, layer in ipairs(t.grid) do
 			local y = t.y0 + layer_index - 1
 			for row_index, row in ipairs(layer) do
 				local z = t.z0 + row_index - 1
 				for column, key in ipairs(row) do
 					if key then
-						local name, param2 = resolve(t, key, palette_of, race)
-						if name then buf:put(t.x0 + column - 1, y, z, name, param2) end
+						local entry = t.legend[key]
+						if entry and entry.late then
+							late[#late + 1] = {t.x0 + column - 1, y, z, key}
+						else
+							local name, param2 = resolve(t, key, palette_of, race)
+							if name then buf:put(t.x0 + column - 1, y, z, name, param2) end
+						end
 					end
 				end
 			end
 		end
+		local cover = t.meta.undergrowth
+		if #t.stems > 0 or cover then
+			local planter, main = dressing_module(), palette_of(nil)
+			if t.meta.plant_spacing then buf.tree_spacing = t.meta.plant_spacing end
+			for _, stem in ipairs(t.stems) do
+				planter[stem.kind](buf, main, stem.x, stem.z, stem.height)
+			end
+			if cover then
+				planter.undergrowth(buf, main, cover[1], cover[2], cover[3], cover[4], cover[5])
+			end
+		end
+		for _, cell in ipairs(late) do
+			local name, param2 = resolve(t, cell[4], palette_of, race)
+			if name then buf:put(cell[1], cell[2], cell[3], name, param2) end
+		end
 		local points = {}
+		-- the stems were planted above: they are no point of the part
 		for _, group in ipairs(t.point_groups) do
 			local list = {}
-			for index, point in ipairs(t.points[group]) do
+			for index, point in ipairs(group == "trees" and {} or t.points[group]) do
 				local copy = {x = point.x, y = point.y, z = point.z, face = point.face}
 				for _, attr in ipairs(point.attrs) do
 					copy[attr.key] = substitute(attr.value, id)
 				end
 				list[index] = copy
 			end
-			points[group] = list
+			if group ~= "trees" then points[group] = list end
 		end
 		-- A generator's part always carried these groups, empty or not, and
 		-- the towns walk them; a file lists no empty group.
 		for _, group in ipairs(M.GROUPS) do points[group] = points[group] or {} end
 		local part = {buffer = buf, w = t.w, d = t.d, points = points}
-		for _, key in ipairs(t.meta_order) do part[key] = t.meta[key] end
+		for _, key in ipairs(t.meta_order) do
+			if not M.PLANTING_META[key] then part[key] = t.meta[key] end
+		end
 		return part
 	end
 

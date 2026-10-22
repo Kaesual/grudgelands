@@ -62,7 +62,8 @@ function lib.orientation_of(name, param2)
 end
 
 function lib.entry_text(entry)
-	if entry.kind == "air" then return "." end
+	-- air written after planting is a legend entry (format doc §4.2)
+	if entry.kind == "air" then return entry.late and "node air" or "." end
 	if entry.kind == "node" then
 		return "node " .. entry.name .. (entry.o and (" o=" .. entry.o) or "")
 	end
@@ -116,7 +117,8 @@ function lib.with_id(value, id)
 end
 local with_id = lib.with_id
 
-local GROUP_ORDER = {doors = 1, inside = 2, room_corner = 3, lights = 4, sockets = 5}
+local GROUP_ORDER = {doors = 1, inside = 2, room_corner = 3, lights = 4, sockets = 5,
+	trees = 6}
 
 -- One cut building -> the head (pivot, box, cell width, meta) and the tail
 -- (legend, grid, points) of its template file. `pl` carries `content` (the
@@ -126,14 +128,14 @@ function lib.render(pl)
 	-- legend entries: the cells' and their fallbacks'
 	local entries, by_text = {}, {}
 	local function intern(entry)
-		if entry.kind == "air" then return "." end
+		if entry.kind == "air" and not entry.late then return "." end
 		if entry.fallback_entry then
 			local target = intern(entry.fallback_entry)
 			entry.fallback_text = entry_text(entry.fallback_entry)
 			entry.fallback_ref = target
 		end
 		local text = entry_text(entry) .. (entry.fallback_text and
-			(" else=<" .. entry.fallback_text .. ">") or "")
+			(" else=<" .. entry.fallback_text .. ">") or "") .. (entry.late and " late" or "")
 		if not by_text[text] then
 			by_text[text] = entry
 			entries[#entries + 1] = text
@@ -217,6 +219,7 @@ function lib.render(pl)
 			line = line .. " else=" .. (entry.fallback_ref == "." and "air" or
 				key_of[entry.fallback_ref])
 		end
+		if entry.late then line = line .. " late" end
 		legend[#legend + 1] = key_of[text] .. " " .. line
 	end
 	local grid = {}

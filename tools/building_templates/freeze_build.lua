@@ -11,6 +11,13 @@
 --     the palette handles the generator was given, and the stamp result;
 --   * every write into every part buffer, with the value it replaced
 --     (`prev`), so an optional role knows what its cell held before it;
+--   * the planting of every part buffer (Round 56 lane TREES, format doc
+--     §4.2): the buffer as it stood when the part first planted a tree or
+--     scattered undergrowth, the stems in planting order (the `dressing`
+--     planter, its height argument and the buffer's tree spacing), the
+--     undergrowth call, the cells planting wrote and the cells written
+--     after it (`late`), and why the part cannot be a planted template
+--     when its planting does not follow cells, trees, undergrowth, late;
 --   * the town's PLOTS and SOCKETS (upvalues of the build function).
 --
 -- `mode` is "real" (the race palettes as they are) or "probe" (tagged
@@ -136,6 +143,13 @@ local function install(mode, state)
 					state.part_prev[self] = track
 				end
 				track[key] = prev and {name = prev.name, param2 = prev.param2} or false
+				local plant = state.planting[self]
+				if plant and plant.active > 0 then
+					plant.planted[key] = true
+				elseif plant then
+					plant.late[key] = (plant.late[key] or 0) + 1
+					plant.late_count = plant.late_count + 1
+				end
 			end
 			return orig_put(self, x, y, z, name, param2)
 		end
@@ -169,6 +183,7 @@ local function install(mode, state)
 				end
 				state.stamps[#state.stamps + 1] = {part = part, cells = cells,
 					prev = state.part_prev[part.buffer] or {},
+					planting = state.planting[part.buffer],
 					w = part.w, d = part.d, meta = meta,
 					points = shallow_copy(part.points or {}),
 					ox = ox, oy = oy, oz = oz, turns = turns % 4,
@@ -344,6 +359,68 @@ local function install(mode, state)
 
 	-- The town trees are the town's (never template content), and the tree
 	-- routine picks its species row by comparing names: it gets the real ones.
+	local PLANTERS = {"tree", "broadleaf", "columnar", "acacia", "gravewood",
+		"jungle_tree", "emergent"}
+	-- The planting record of a part buffer, begun at its first planting call
+	-- with a copy of the buffer (and of what each cell replaced).
+	local function planting_of(buf)
+		local plant = state.planting[buf]
+		if plant then return plant end
+		local snapshot, prev = {}, {}
+		for key, cell in pairs(buf.cell) do
+			snapshot[key] = {x = cell.x, y = cell.y, z = cell.z, name = cell.name,
+				param2 = cell.param2}
+		end
+		for key, value in pairs(state.part_prev[buf] or {}) do prev[key] = value end
+		plant = {snapshot = snapshot, prev = prev, stems = {}, planted = {}, late = {},
+			late_count = 0, active = 0}
+		state.planting[buf] = plant
+		return plant
+	end
+	local function wrap_planting(module)
+		local direct_grown = module.grown
+		module.grown = function(buf, ...)
+			local plant = buf ~= state.town_buf and state.planting[buf]
+			if buf ~= state.town_buf and not (plant and plant.active > 0) then
+				planting_of(buf).bad = "a part calls dressing.grown itself"
+			end
+			return direct_grown(buf, ...)
+		end
+		for _, name in ipairs(PLANTERS) do
+			local planter = module[name]
+			module[name] = function(buf, palette, x, z, height, ...)
+				if buf == state.town_buf then return planter(buf, palette, x, z, height, ...) end
+				local plant = planting_of(buf)
+				if plant.active > 0 then return planter(buf, palette, x, z, height, ...) end
+				if plant.undergrowth or plant.late_count > 0 then
+					plant.bad = "a tree planted after the undergrowth or a later write"
+				end
+				if select("#", ...) > 0 then plant.bad = "a planter called with a top" end
+				plant.stems[#plant.stems + 1] = {x = x, z = z, kind = name,
+					height = height, spacing = buf.tree_spacing}
+				plant.active = plant.active + 1
+				local planted = planter(buf, palette, x, z, height)
+				plant.active = plant.active - 1
+				return planted
+			end
+		end
+		local undergrowth = module.undergrowth
+		module.undergrowth = function(buf, palette, x1, z1, x2, z2, density, patch)
+			if buf == state.town_buf then
+				return undergrowth(buf, palette, x1, z1, x2, z2, density, patch)
+			end
+			local plant = planting_of(buf)
+			if plant.undergrowth or plant.late_count > 0 or patch then
+				plant.bad = "a second undergrowth, one after a later write, or a patchy one"
+			end
+			plant.undergrowth = {x1, z1, x2, z2, density}
+			plant.active = plant.active + 1
+			local a, b = undergrowth(buf, palette, x1, z1, x2, z2, density, patch)
+			plant.active = plant.active - 1
+			return a, b
+		end
+	end
+
 	local function wrap_dressing(path)
 		local loader = saved_dofile(path)
 		return function(directory)
@@ -368,6 +445,7 @@ local function install(mode, state)
 					return undergrowth_at(buf, palette, x, y, z)
 				end
 			end
+			wrap_planting(module)
 			return module
 		end
 	end
@@ -397,7 +475,7 @@ end
 -- Build one town. Returns the record described above plus the blueprint.
 function M.build(src, town, mode)
 	local state = {mode = mode, writes = {}, stamps = {}, handles = {},
-		handle_of = {}, part_prev = {}, context = {}, generator = nil,
+		handle_of = {}, part_prev = {}, planting = {}, context = {}, generator = nil,
 		generator_of = {}, depth = 0,
 		town_source = "@" .. src .. "/" .. town .. ".lua"}
 	local restore = install(mode, state)
@@ -451,7 +529,7 @@ end
 function M.build_capital(src, key, which, mode)
 	local file = which == "core" and key .. ".lua" or key .. "_plot.lua"
 	local state = {mode = mode, writes = {}, stamps = {}, handles = {},
-		handle_of = {}, part_prev = {}, context = {}, generator = nil,
+		handle_of = {}, part_prev = {}, planting = {}, context = {}, generator = nil,
 		generator_of = {}, depth = 0, overrides = {},
 		town_source = "@" .. src .. "/" .. file}
 	local lines = source_lines(src .. "/" .. file)
@@ -515,7 +593,7 @@ end
 -- the town's spec; its `roof_palette` is rebuilt from `roof_overrides`.
 function M.generator(src, make, spec, race, main_overrides, roof_overrides, mode)
 	local state = {mode = mode or "probe", writes = {}, stamps = {}, handles = {},
-		handle_of = {}, part_prev = {}, context = {}, town_source = "@-",
+		handle_of = {}, part_prev = {}, planting = {}, context = {}, town_source = "@-",
 		generator_of = {}, depth = 0}
 	local restore = install(state.mode, state)
 	local ok, result = pcall(function()

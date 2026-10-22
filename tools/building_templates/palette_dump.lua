@@ -5,7 +5,7 @@
 --   family <role> <suffix> ...          the family roles and their suffixes
 --   bind <race> <role> <node>           every race's binding
 --   kind <node> <param2 kind> <place_param2> <shaped 0|1> <tree piece 0|1>
---                                       for every node name read from stdin
+--        <wild soil 0|1>                for every node name read from stdin
 -- Usage: luajit tools/building_templates/palette_dump.lua <repo> < names
 -- Plain Lua 5.1 (no engine).
 
@@ -36,6 +36,6 @@ end
 for name in io.read("*a"):gmatch("%S+") do
 	out[#out + 1] = table.concat({"kind", name, parts.param2_kind(name),
 		parts.place_param2(name), parts.shaped(name) and 1 or 0,
-		parts.tree_piece(name) and 1 or 0}, " ")
+		parts.tree_piece(name) and 1 or 0, parts.wild_soil(name) and 1 or 0}, " ")
 end
 print(table.concat(out, "\n"))

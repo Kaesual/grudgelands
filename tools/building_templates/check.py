@@ -136,17 +136,22 @@ def parse_entry(text, cell, facts):
                 entry["o"] = value
             elif key == "else" and value:
                 entry["fallback"] = value
+            elif word == "late" and not entry.get("late"):
+                entry["late"] = True
             else:
                 raise ValueError("bad role option " + word)
         return entry
     if kind == "node":
-        if len(words) < 2 or not re.match(r"^[\w]+:[\w]+$", words[1]):
+        if len(words) < 2 or not (re.match(r"^[\w]+:[\w]+$", words[1]) or words[1] == "air"):
             raise ValueError("bad node name %s" % (words[1] if len(words) > 1 else ""))
         entry = {"kind": "node", "name": words[1], "o": None}
         for word in words[2:]:
-            if not word.startswith("o="):
+            if word == "late" and not entry.get("late"):
+                entry["late"] = True
+            elif not word.startswith("o="):
                 raise ValueError("bad node option " + word)
-            entry["o"] = word[2:]
+            else:
+                entry["o"] = word[2:]
         return entry
     if kind == "race":
         entry = {"kind": "race", "map": {}, "order": []}
@@ -450,7 +455,8 @@ def lua_facts(root, names):
                          text=True)
     if run.returncode != 0:
         raise SystemExit("check: palette_dump.lua failed: " + run.stderr.strip())
-    facts = {"required": [], "optional": [], "families": {}, "binds": {}, "kinds": {}}
+    facts = {"required": [], "optional": [], "families": {}, "binds": {}, "kinds": {},
+             "wild": set()}
     for line in run.stdout.splitlines():
         words = line.split()
         if words[0] == "required":
@@ -464,6 +470,8 @@ def lua_facts(root, names):
         elif words[0] == "kind":
             facts["kinds"][words[1]] = (words[2], int(words[3]), words[4] == "1",
                                        words[5] == "1")
+            if words[6] == "1":
+                facts["wild"].add(words[1])
     return facts
 
 
@@ -511,16 +519,19 @@ def entry_text(t, key, depth=0):
     entry = t["legend"].get(key)
     if entry is None or depth > 8:
         return "?"
+    # a cell written after planting differs from the same entry before it
+    late = " late" if entry.get("late") else ""
     if entry["kind"] == "node":
-        return "node %s o=%s" % (entry["name"], entry["o"])
+        return "node %s o=%s%s" % (entry["name"], entry["o"], late)
     if entry["kind"] == "race":
         return "race " + " ".join("%s=<%s>" % (race, entry_text(t, entry["map"][race], depth + 1))
                                   for race in sorted(entry["map"]))
     fallback = entry["fallback"]
     if fallback not in (None, "air", "unchanged"):
         fallback = "<%s>" % entry_text(t, fallback, depth + 1)
-    return "role %s variant=%s channel=%s o=%s else=%s" % (
-        entry["role"], entry["variant"], entry["channel"], entry["o"], fallback or "unchanged")
+    return "role %s variant=%s channel=%s o=%s else=%s%s" % (
+        entry["role"], entry["variant"], entry["channel"], entry["o"], fallback or "unchanged",
+        late)
 
 
 class Context:
@@ -684,16 +695,19 @@ def check_template(t, contexts, facts, nodes, report, baseline, palette_roles,
             fallback = entry["fallback"]
             if fallback and fallback not in ("air", "unchanged"):
                 target = t["legend"].get(fallback)
-                if target is None or target["kind"] == "race":
+                if target is None or target["kind"] == "race" or target.get("late"):
                     report.error("legend", name, None, "line %d: else= names %s" %
-                                 (entry["line"], "a race switch" if target else
+                                 (entry["line"], ("a late entry" if target.get("late") else
+                                                  "a race switch") if target else
                                   "the undefined key '%s'" % fallback))
         elif entry["kind"] == "race":
             for race in entry["order"]:
                 target = t["legend"].get(entry["map"][race])
-                if target is None or target["kind"] == "race":
+                # lateness is the cell's own entry's (format doc §4.2)
+                if target is None or target["kind"] == "race" or target.get("late"):
                     report.error("legend", name, None, "line %d: the race switch names %s" %
-                                 (entry["line"], "another switch" if target else
+                                 (entry["line"], ("a late entry" if target.get("late") else
+                                                  "another switch") if target else
                                   "an undefined key"))
     if report.errors and any(e[1] == name and e[0] == "legend" for e in report.errors):
         return
@@ -761,6 +775,20 @@ def check_template(t, contexts, facts, nodes, report, baseline, palette_roles,
                 if not standing(*position):
                     report.error("point_place", name, position, "the %s point is not a "
                                  "standing point (%s)" % (point["group"], context.label))
+            elif point["group"] == "trees":
+                # a stem stands on the part's own ground (§3.4, §4.2): the
+                # ground cell of its column is a cell, not air
+                ground = cells.get((point["x"], 0, point["z"]))
+                if ground is None or ground[0] == "air":
+                    report.error("point_place", name, position, "the stem's ground cell "
+                                 "(y 0) is %s (%s)" % ("air" if ground else "not written",
+                                                        context.label))
+                elif ground[0] not in facts["wild"]:
+                    # the tree generator plants only on wild soil (dressing.grown):
+                    # this stem grows no tree
+                    report.warn("stem_soil", name, position, "the stem stands on %s, "
+                                "not wild soil: no tree grows there (%s)" % (ground[0],
+                                                                             context.label))
         if len(corners) % 2:
             report.error("point_pair", name, None, "room_corner points come in pairs")
         for a, b in zip(corners[0::2], corners[1::2]):
@@ -1198,7 +1226,10 @@ def self_test():
     expect(entry_text({"legend": {"A": {"kind": "node", "name": "a:b", "o": None}}}, "A") ==
            entry_text({"legend": {"B": {"kind": "node", "name": "a:b", "o": None}}}, "B"),
            "a renamed key is no edit")
-    layout = parse_layout("\n".join([LAYOUT_MAGIC, "town x", "race dwarf",
+    late = parse_template(good.replace("F role floor", "F role floor late"), "t.tpl", "t")
+    expect(late["legend"]["F"].get("late") and entry_text(late, "F") != entry_text(t, "F"),
+           "a late entry parses and differs from the entry before planting")
+    layout =parse_layout("\n".join([LAYOUT_MAGIC, "town x", "race dwarf",
                                      "palette slate race=dwarf roof_slab=stairs:slab_stone",
                                      "place a template=t x=1 y=0 z=-2 turns=3 roof=slate lift=2",
                                      ""]), "x.layout")
@@ -1306,7 +1337,68 @@ def real_template_cases():
                                                    empty, "~")}, builds=False)
     if not any(w[0] == "fixed_in_shared" and w[1] == shared for w in report.warnings):
         failures.append("a fixed node in a template two races place is flagged")
+    failures += planted_cases()
     failures += parity_cases()
+    return failures
+
+
+def planted_cases():
+    """A planted template (format doc §4.2, Round 56 lane TREES): its stems
+    move as points, stand on written ground, name a known planter, and its
+    planting meta is the loader's to refuse (the game's loader reports it for
+    the template and for the capital that places it)."""
+    failures = []
+    name = "highcourt_orchard_east"
+    relative = "%s/templates/%s.tpl" % (BASE, name)
+    text = (ROOT / relative).read_text()
+    t = parse_template(text, relative, name)
+
+    def put(source, position, key):
+        out = source.split("\n")
+        x, y, z = position
+        row = out.index("layer %d" % y) + 1 + (z - t["z0"])
+        column = 1 + (x - t["x0"])
+        out[row] = out[row][:column] + key + out[row][column + 1:]
+        return "\n".join(out)
+    stem = next(p for p in t["points"] if p["group"] == "trees")
+    line = next(l for l in text.split("\n") if l.startswith("trees "))
+    late = next(l for l in text.split("\n") if l.endswith(" late"))
+    cases = [
+        ("the planted template", text, set()),
+        ("a stem moved", text.replace(line, line.replace(
+            "trees %d " % stem["x"], "trees %d " % (stem["x"] + 1), 1), 1), set()),
+        ("a stem on force air", put(text, (stem["x"], 0, stem["z"]), "."), {"point_place"}),
+        ("a stem with an unknown planter", text.replace(line, line.replace(
+            "kind=broadleaf", "kind=oak"), 1), {"loader", "point_baseline"}),
+        ("a malformed undergrowth", text.replace("undergrowth=[0,4,20,10,7]",
+                                                 "undergrowth=[0,4,20,10]"), {"loader"}),
+        ("a late mark given twice", text.replace(late, late + " late"),
+         {"format", "loader"}),
+        ("a race switch naming a late entry",
+         text.replace("\nend\n", "\n~ race human=%s\nend\n" % late[0], 1), {"legend", "loader"}),
+        ("an else= naming a late entry",
+         text.replace("\nend\n", "\n~ role fence_gate else=%s\nend\n" % late[0], 1),
+         {"legend", "loader"}),
+    ]
+    defects = {d[:3] for d in known_defects(ROOT)}
+    for label, mutated, wanted in cases:
+        report = validate(ROOT, "file", {relative: mutated}, builds=False)
+        got = {rule for rule, where, _, _ in report.errors if where == name}
+        others = [e for e in report.errors if e[1] not in (name, "highcourt") and
+                  (e[1], e[0], e[2]) not in defects]
+        if got != wanted or others:
+            failures.append("planted: %s: rules %s, expected %s%s" % (
+                label, sorted(got), sorted(wanted), " (and %s)" % others if others else ""))
+    # a stem moved onto the path stays valid but grows no tree: a warning
+    onto = text.replace(line, line.replace("trees %d 0 %d " % (stem["x"], stem["z"]),
+                                           "trees %d 0 0 " % stem["x"], 1), 1)
+    report = validate(ROOT, "file", {relative: onto}, builds=False)
+    if not any(w[0] == "stem_soil" and w[1] == name for w in report.warnings) or \
+            any(e[1] == name for e in report.errors):
+        failures.append("planted: a stem on the path is a stem_soil warning, no error")
+    report = validate(ROOT, "file", {}, builds=False)
+    if any(w[0] == "stem_soil" for w in report.warnings):
+        failures.append("planted: no frozen stem stands off wild soil")
     return failures
 
 
