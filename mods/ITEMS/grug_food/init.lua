@@ -155,21 +155,30 @@ end
 -- The food status's detail line on the Character page Effects tab, e.g.
 -- "+6% HP, +6% Mana/5s, +1 Crit"; the status name is the eaten dish.
 -- `heal_multiplier` (the eater's, default 1) shows the HP regeneration the
--- player actually gets, so a Troll reads the scaled value.
-function grug_food.status_detail(effect, heal_multiplier)
+-- player actually gets, so a Troll reads the scaled value. `no_mana` (an
+-- eater without a mana pool, Round 56 ruling 10) leaves the mana parts out:
+-- they do nothing for that eater. The item tooltip keeps them.
+function grug_food.status_detail(effect, heal_multiplier, no_mana)
 	local regen = {}
 	if effect.regen.hp then
 		regen[#regen + 1] = "+" .. number_text(effect.regen.hp *
 			(heal_multiplier or 1)) .. "% HP"
 	end
-	if effect.regen.mana then
+	if effect.regen.mana and not no_mana then
 		regen[#regen + 1] = "+" .. number_text(effect.regen.mana) .. "% Mana"
 	end
 	if #regen > 0 then
 		regen[#regen] = regen[#regen] .. "/" .. grug_food.INTERVAL .. "s"
 	end
 	local parts = regen
-	local modifiers = modifier_parts(effect.modifiers, false)
+	local shown = effect.modifiers
+	if no_mana and shown.mana_pool_percent then
+		shown = {}
+		for key, value in pairs(effect.modifiers) do
+			if key ~= "mana_pool_percent" then shown[key] = value end
+		end
+	end
+	local modifiers = modifier_parts(shown, false)
 	for index = 1, #modifiers do
 		parts[#parts + 1] = modifiers[index]
 	end
@@ -217,11 +226,16 @@ end
 
 -- `item_definition` is the eaten item's: its own picture becomes the status
 -- icon when it has one (Round 26 ruling 20), else the generic food icon.
+-- Any class may eat mana food (Round 56 ruling 10): for an eater without a
+-- mana pool the mana tick restores nothing (restore_mana) and the mana pool
+-- modifier adds to a pool of 0 (grug_classes.get_max_mana); the detail line
+-- leaves both out.
 local function start_food_status(player, tier, effect, item_definition)
 	local tier_def = grug_food.TIERS[tier]
 	local record = grug_core.set_status(player, "food", {
 		label = item_name(item_definition),
-		detail = grug_food.status_detail(effect, grug_food.heal_multiplier(player)),
+		detail = grug_food.status_detail(effect, grug_food.heal_multiplier(player),
+			grug_classes.get_max_mana(player) <= 0),
 		icon = grug_core.status_icons.item_icon(item_definition),
 		duration = grug_food.DURATION,
 		kind = "buff",
@@ -262,10 +276,6 @@ function grug_food.eat(itemstack, user, tier, kind, role)
 	-- Refusals go to the message feed, one keyed line (never to chat).
 	if not allowed then
 		grug_core.feed(user, "notice", "Requires level " .. required .. ".", "food")
-		return itemstack
-	end
-	if effect.regen.mana and grug_classes.get_max_mana(user) <= 0 then
-		grug_core.feed(user, "notice", "Mana food has no effect without a mana pool.", "food")
 		return itemstack
 	end
 	if start_food_status(user, tier, effect, itemstack:get_definition()) then
