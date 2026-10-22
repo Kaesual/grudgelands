@@ -16,6 +16,9 @@ role ceiling
 role chimney
 role chimney_cap
 role door
+# the door's upper cell: the editor places it with the door (format doc §5;
+# lane EDITOR, Round 56), never on its own
+role door_hidden
 role fence
 role fence_rail
 role floor
