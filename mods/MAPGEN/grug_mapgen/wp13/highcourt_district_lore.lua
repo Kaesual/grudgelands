@@ -27,43 +27,34 @@ local function loader(directory)
 		-- The temple generator stands its quest spot three nodes INSIDE the
 		-- nave, which is where a shrine's own keeper belongs and not where a
 		-- quest-giver does: the user's playtest-round-2 ruling is that the
-		-- elder stands on the doorstep and shows the street his face. So this
-		-- plot moves the socket out onto its own path and tags it `door`,
+		-- elder stands on the doorstep and shows the street his face. So the
+		-- shrine's template stands the socket on its own path, tagged `door`,
 		-- which is what turns the NPC round (`start_npcs.lua`
-		-- `socket_face_yaw`). Both halves are here rather than in
-		-- `capitals.lua` because the generator cannot know which of its walls
-		-- this composition puts to a lane, nor where this plot's path runs.
-		{id = "lore_shrine", module = "capitals", make = "temple",
-			roof = "slate", order = 1,
-			socket_overrides = function(area)
-				return {lore_shrine_quest = {x = 0, z = area.oz - 2, face = 0,
-					tags = {"door"}}}
-			end,
-			spec = {w = 13, d = 17, wall_h = 6}},
+		-- `socket_face_yaw`; a point of the template since Round 56, it was
+		-- this row's socket override before).
+		{id = "lore_shrine", template = "highcourt_lore_shrine",
+			roof = "slate", order = 1},
 		-- 2. The library. A hall under slate, the biggest room in the
 		-- district, with shuttered reveals left open so it reads as a place
 		-- that is used.
-		{id = "lore_library", module = "buildings", make = "hall",
-			roof = "slate", order = 2,
-			spec = {w = 15, d = 19, wall_h = 6, infill = true}},
+		{id = "lore_library", template = "highcourt_lore_library",
+			roof = "slate", order = 2},
 		-- 3. The scriptorium: shelving the length of both walls, desks in
 		-- front of it, and the saltbox roof that stands its rear wall taller
 		-- than its front.
-		{id = "lore_scriptorium", module = "capitals", make = "scriptorium",
-			roof = "slate", order = 3,
-			spec = {w = 15, d = 17, wall_h = 6}},
+		{id = "lore_scriptorium", template = "highcourt_lore_scriptorium",
+			roof = "slate", order = 3},
 		-- 4. The archive. A granary is a stone box with bins down both walls
 		-- and a cart door in the gable, which is also what a record store
 		-- is; slate rather than plank, because this one belongs to the crown.
-		{id = "lore_archive", module = "capitals", make = "granary",
-			roof = "slate", order = 4,
-			spec = {w = 13, d = 15, wall_h = 6}},
+		{id = "lore_archive", template = "highcourt_lore_archive",
+			roof = "slate", order = 4},
 		-- 5. The herb garden: the well court with five nodes of planted
 		-- ground all round instead of two, the same way the market's well is
 		-- a garden rather than a paved square in a field, plus the beds that
 		-- make it a physic garden and not a lawn.
-		{id = "lore_herb_garden", module = "capitals", make = "well_court",
-			order = 5, margin = 5, garden = true, spec = {size = 11},
+		{id = "lore_herb_garden", template = "highcourt_well_court",
+			order = 5, margin = 5, garden = true,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.flower_bed(buf, palette, area.x0 + 1, area.oz + 3,
@@ -76,24 +67,21 @@ local function loader(directory)
 			end},
 		-- 6. The chapter house, where the district's own business is done.
 		-- Door index 4, single leaf, for the `store` kit's post rhythm.
-		{id = "lore_chapter_house", module = "buildings", make = "longhouse",
-			order = 6,
-			spec = {w = 11, d = 13, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true}},
+		{id = "lore_chapter_house", template = "highcourt_lore_chapter_house",
+			order = 6},
 		-- 7. The almonry.
-		{id = "lore_almonry", module = "buildings", make = "cottage",
-			order = 7, spec = {w = 9, d = 11, wall_h = 4, infill = true}},
+		{id = "lore_almonry", template = "highcourt_lore_almonry",
+			order = 7},
 		-- 8. The cloister walk: the colonnade, in the crown's white stone
 		-- like the two flanking the core's throne approach, with its own
 		-- waypoint in the loop (so this row carries no `order`).
-		{id = "lore_cloister_walk", module = "capitals", make = "colonnade",
-			handle = "white",
-			spec = {len = 15, d = 5, patrol_group = WATCH, order = 8}},
+		{id = "lore_cloister_walk", template = "highcourt_lore_cloister_walk",
+			handle = "white"},
 		-- 9. The quiet grove: columnar trees rather than the market's
 		-- broadleaf, so the two groves of the capital do not read as one
 		-- piece of dressing used twice, and the district's second spare.
-		{id = "lore_quiet_grove", module = "capitals", make = "grove",
-			order = 9, spec = {size = 15, kind = "columnar", height = 7},
+		{id = "lore_quiet_grove", template = "highcourt_lore_quiet_grove",
+			order = 9,
 			extra_sockets = function(area)
 				return {plots.spare("grove", area.x1 - 2, area.z1 - 2, 2)}
 			end},
@@ -113,9 +101,8 @@ local function loader(directory)
 	-- carries the great chapel with the belfry, and this is the one the
 	-- district buries from.
 	local FILL = {
-		{id = "lore_chapel_yard", module = "buildings", make = "chapel",
+		{id = "lore_chapel_yard", template = "highcourt_lore_chapel_yard",
 			roof = "slate", margin = 3,
-			spec = {w = 11, d = 13, wall_h = 5, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.graveyard(buf, palette, area.x0 + 1, area.z1 - 1,

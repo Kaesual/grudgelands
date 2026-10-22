@@ -110,13 +110,22 @@ check(#part.points.doors == 0 and #part.points.lights == 0 and
 	#part.points.room_corner == 0, "the generator's point groups are there")
 local stamped = parts.stamp(parts.buffer(), part, 10, 0, 20, 1)
 check(stamped.inside[1].x == 10 and stamped.inside[1].z == 20, "the point stamps")
+-- (Round 56 FREEZE-CAPITALS: the stamped points carry the building that
+-- stamped them, `templates.collect_sockets`, and a point of another building
+-- is refused.)
+local function collected()
+	return templates.collect_sockets({}, {sockets = {{x = 5, y = 1, z = 6, face = 3,
+		id = "b"}}}, "h")
+end
 local sockets = templates.sockets({{id = "a", role = "idle", x = 1, y = 1, z = 1,
 	dir = {x = 0, z = 1}}, {id = "b", role = "quest", tags = {"door"}, building = "h"}},
-	{b = {x = 5, y = 1, z = 6, face = 3, id = "b"}}, "test")
+	collected(), "test")
 check(sockets[2].x == 5 and sockets[2].dir.x == -1 and sockets[2].dir.z == 0 and
 	sockets[2].building == nil and sockets[2].role == "quest", "a socket from its building")
 check(not pcall(templates.sockets, {{id = "b", building = "h"}}, {}, "test"),
 	"a socket its building lacks is refused")
+check(not pcall(templates.sockets, {{id = "b", building = "other"}}, collected(), "test"),
+	"a socket another building stamped is refused")
 
 -- E. the freeze -------------------------------------------------------------------
 -- Identity SHA-256 and point digest of each start town as the building

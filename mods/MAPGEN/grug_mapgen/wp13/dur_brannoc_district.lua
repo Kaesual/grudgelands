@@ -49,8 +49,8 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. The charcoal store: the fuel the forge court burns, kept dry in a
 		-- granary and stacked on the apron outside it.
-		{id = "forge_charcoal", module = "capitals", make = "granary",
-			order = 1, spec = {w = 11, d = 15, wall_h = 5},
+		{id = "forge_charcoal", template = "dur_brannoc_forge_charcoal",
+			order = 1,
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("tree_log"))
 				buf:put(area.x1 - 3, 1, area.z0 + 1, palette.node("tree_log"))
@@ -64,8 +64,8 @@ local function loader(directory)
 				}
 			end},
 		-- 2. The pack stable: the goats that carry ore down from the workings.
-		{id = "forge_pack_stable", module = "capitals", make = "stable",
-			order = 2, spec = {w = 15, d = 11, wall_h = 5},
+		{id = "forge_pack_stable", template = "highcourt_market_stable",
+			order = 2,
 			decorate = function(buf, palette, area)
 				-- The fodder on the apron: a planter's KERB is solid masonry
 				-- and stops the feature search on the socket's own course, so
@@ -85,10 +85,8 @@ local function loader(directory)
 		-- the forge's cauldrons on the odd cells of the z- gable's inner run,
 		-- and the generator's own chimney stack stands on the middle cell of
 		-- that same wall and is written after the door.
-		{id = "forge_smithy", module = "buildings", make = "workshop",
+		{id = "forge_smithy", template = "dur_brannoc_forge_smithy",
 			order = 3, turns = 3,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				-- The anvil on the apron: the dwarf palette's `workbench` is
 				-- `grug_materials:iron_block`, which is the node the sockets
@@ -104,8 +102,8 @@ local function loader(directory)
 			end},
 		-- 4. The guild house of the forge, roofed in slate so it reads as
 		-- civic from the lane rather than as the largest workshop in it.
-		{id = "forge_guild_house", module = "capitals", make = "scriptorium",
-			order = 4, roof = "slate", spec = {w = 13, d = 17, wall_h = 6},
+		{id = "forge_guild_house", template = "dur_brannoc_forge_guild_house",
+			order = 4, roof = "slate",
 			decorate = function(buf, palette, area)
 				area.dressing.bench(buf, palette, area.x0 + 3, area.z0 + 1,
 					2, 2, "x")
@@ -119,8 +117,8 @@ local function loader(directory)
 		-- 5. The quenching court is the district's public ground, so its plot
 		-- is five nodes wider all round than a building's and the ring that
 		-- buys is planted.
-		{id = "forge_quench_court", module = "capitals", make = "well_court",
-			order = 5, margin = 5, garden = true, spec = {size = 11},
+		{id = "forge_quench_court", template = "highcourt_well_court",
+			order = 5, margin = 5, garden = true,
 			extra_sockets = function(area)
 				return {
 					plots.work("quench_bench", "sit", -1, area.z1 - 2, 2,
@@ -131,15 +129,13 @@ local function loader(directory)
 		-- 6. The district watch. The barracks generator publishes its own
 		-- guard post, its muster idle spot and waypoint 6 of the loop, so this
 		-- row carries no `order` of its own.
-		{id = "forge_watch", module = "capitals", make = "barracks",
-			roof = "slate",
-			spec = {w = 15, d = 21, wall_h = 5, patrol_group = WATCH,
-				order = 6}},
+		{id = "forge_watch", template = "dur_brannoc_forge_watch",
+			roof = "slate"},
 		-- 7. A pine copse rather than a broadleaf grove: this is the
 		-- Hearthpine terrace, and `grove` takes the dressing silhouette it is
 		-- given. It is also where the district forages.
-		{id = "forge_copse", module = "capitals", make = "grove",
-			order = 7, spec = {size = 15, kind = "tree", height = 8},
+		{id = "forge_copse", template = "dur_brannoc_forge_copse",
+			order = 7,
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1,
 					palette.node("undergrowth"))
@@ -152,8 +148,8 @@ local function loader(directory)
 			end},
 		-- 8. The ore yard: what comes down from the workings before it is
 		-- smelted, kept in a granary with the heaps on the apron.
-		{id = "forge_ore_yard", module = "capitals", make = "granary",
-			order = 8, spec = {w = 11, d = 15, wall_h = 5},
+		{id = "forge_ore_yard", template = "dur_brannoc_forge_ore_yard",
+			order = 8,
 			decorate = function(buf, palette, area)
 				-- A face of bedded granite on the apron, two courses, which is
 				-- what a `mine` socket at the outer row looks at.
@@ -169,10 +165,8 @@ local function loader(directory)
 		-- 9. The store. Door index 4, single leaf: the `store` kit stands its
 		-- roof posts on the odd cells of the gable's inner run, so an
 		-- eleven-wide longhouse's centred door opens onto a post.
-		{id = "forge_store", module = "buildings", make = "longhouse",
+		{id = "forge_store", template = "dur_brannoc_forge_store",
 			order = 9,
-			spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true},
 			decorate = function(buf, palette, area)
 				shop_counter(buf, palette, area)
 			end,

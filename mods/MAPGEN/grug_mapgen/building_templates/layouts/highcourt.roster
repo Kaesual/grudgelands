@@ -1,0 +1,62 @@
+grudgelands-town-roster 1
+# The templates and palettes the capital's code places (frozen in Round 56):
+# the civic core's buildings and every district plot's.
+town highcourt
+race human
+
+palette town race=human
+palette white race=human signature=grug_decor:darkage_marble signature_slab=grug_decor:darkage_marble_slab signature_stair=grug_decor:darkage_marble_stair
+palette slate race=human roof_ridge=grug_decor:darkage_slate_tile roof_slab=grug_decor:darkage_slate_tile_slab roof_stair=grug_decor:darkage_slate_tile_stair roof_stair_inner=grug_decor:darkage_slate_tile_stair_inner roof_stair_outer=grug_decor:darkage_slate_tile_stair_outer
+palette white_slate race=human roof_ridge=grug_decor:darkage_slate_tile roof_slab=grug_decor:darkage_slate_tile_slab roof_stair=grug_decor:darkage_slate_tile_stair roof_stair_inner=grug_decor:darkage_slate_tile_stair_inner roof_stair_outer=grug_decor:darkage_slate_tile_stair_outer signature=grug_decor:darkage_marble signature_slab=grug_decor:darkage_marble_slab signature_stair=grug_decor:darkage_marble_stair
+
+use highcourt_kings_hall count=1 main=white_slate
+use highcourt_gate_south count=4 main=white
+use highcourt_market count=1 main=white
+use highcourt_colonnade_west count=1 main=white
+use highcourt_colonnade_east count=1 main=white
+use highcourt_statue count=2 main=white
+use highcourt_well_court count=1 main=white
+use highcourt_orchard_east count=1
+use highcourt_orchard_west count=1
+use highcourt_chapel count=1 roof=white_slate
+use highcourt_service_yard count=2
+use highcourt_service_store count=1
+use highcourt_city_workshop count=1
+use highcourt_north_house count=1
+use highcourt_lane_house count=1
+use highcourt_orchard_house count=1
+use highcourt_chapel_house count=1
+use highcourt_market_house count=1
+use highcourt_market_granary count=1
+use highcourt_market_stable count=1
+use highcourt_market_workshop count=1
+use highcourt_market_counting_house count=1 roof=slate
+use highcourt_well_court count=3
+use highcourt_market_watch count=1 roof=slate
+use highcourt_market_grove count=1
+use highcourt_market_orchard count=1
+use highcourt_market_store count=1
+use highcourt_martial_barracks count=1 roof=slate
+use highcourt_martial_muster_hall count=1 roof=slate
+use highcourt_martial_armoury count=1
+use highcourt_martial_stables count=1
+use highcourt_martial_drill_yard count=1
+use highcourt_martial_quartermaster count=1
+use highcourt_martial_guard_house count=1
+use highcourt_martial_watch_tower count=1
+use highcourt_lore_shrine count=1 roof=slate
+use highcourt_lore_library count=1 roof=slate
+use highcourt_lore_scriptorium count=1 roof=slate
+use highcourt_lore_archive count=1 roof=slate
+use highcourt_lore_chapter_house count=1
+use highcourt_lore_almonry count=1
+use highcourt_lore_cloister_walk count=1 main=white
+use highcourt_lore_quiet_grove count=1
+use highcourt_lore_chapel_yard count=1 roof=slate
+use highcourt_homes_tavern count=1
+use highcourt_homes_house_gable count=1
+use highcourt_homes_house_hip count=1
+use highcourt_homes_house_lane count=1
+use highcourt_homes_tenement count=1
+use highcourt_homes_bakehouse count=1
+use highcourt_homes_orchard count=1

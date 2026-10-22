@@ -84,7 +84,7 @@ mobs_redo fork publishes `mobs`.
 
 | Mod | Owns | Seams other mods use | Rules |
 |---|---|---|---|
-| `grug_mapgen` | World generation: the WP40 R7 pipeline (`wp40/`: zones, terrain, water, roads, ores, caves, settlements, capitals, POIs, decor, the land kit's structures `kit_templates.lua`, the one VoxelManip transaction), the wp13 building library and the building templates the start towns are built from (`building_templates/`, Round 56), world nodes and POI displays (Round 51: the shipwrecks, `wp40/wreck_writer.lua`) | `wp40` (the zone session, layouts; through `grug_zones` for gameplay) | [world.md](../design/world.md), [world_zones.md](../design/world_zones.md), [settlements.md](../design/settlements.md), [world_preparation.md](../design/world_preparation.md) |
+| `grug_mapgen` | World generation: the WP40 R7 pipeline (`wp40/`: zones, terrain, water, roads, ores, caves, settlements, capitals, POIs, decor, the land kit's structures `kit_templates.lua`, the one VoxelManip transaction), the wp13 building library and the building templates the start towns and capitals are built from (`building_templates/`, Round 56), world nodes and POI displays (Round 51: the shipwrecks, `wp40/wreck_writer.lua`) | `wp40` (the zone session, layouts; through `grug_zones` for gameplay) | [world.md](../design/world.md), [world_zones.md](../design/world_zones.md), [settlements.md](../design/settlements.md), [world_preparation.md](../design/world_preparation.md) |
 | BASE (`beds`, `creative`, `default`, `doors`, `dye`, `player_api`, `sfinv`, `stairs`, `vessels`, `walls`, `wool`, `xpanes`) | Vendored upstream mods with GRUG PATCH sites | engine-style APIs (`sfinv`, `player_api`, `default`) | [VENDOR.md](../../VENDOR.md) |
 
 ## Ownership traps

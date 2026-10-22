@@ -32,7 +32,7 @@
 -- put it over the contract's 12,000-cell budget on its own.
 --
 -- A PLOT NEED NOT BE A BUILDING. A roster row that carries `yard` instead of
--- `module`/`make` builds the same thing without a part in the middle of it:
+-- `template` builds the same thing without a part in the middle of it:
 -- the same ground course, the same skirt, the same cleared airspace, the same
 -- sockets, and whatever its own `decorate` plants on it. That is what a field,
 -- a corral, a pit, a midden or a rock court is, and it is the same builder
@@ -50,11 +50,10 @@ local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local services = dofile(directory .. "/capital_services.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("gor_drazhak")
 
 	local M = {}
 
@@ -77,37 +76,26 @@ local function loader(directory)
 	-- better trade than moving a house eighty-four nodes out of its district.
 	M.MIN_CLEAR = 9
 
-	-- THE SECOND PALETTE HANDLE. Adobe is the orc signature and is already the
+	-- THE SECOND PALETTE. Adobe is the orc signature and is already the
 	-- `wall` binding, so a capital building made grander by a richer wall
 	-- material is not available the way Highcourt's marble crown is. What IS
 	-- available, and is the contract's own word, is the ORS-STONE BASE COURSE:
 	-- `grug_decor:darkage_ors_block`, the banded red sandstone this palette
-	-- already infills its adobe walls with. A civic building built with it
-	-- throughout is stone where a dwelling is mud brick, which is the same
-	-- distinction Highcourt draws with marble and reads at the same distance.
-	M.ORS = {
-		wall = "grug_decor:darkage_ors_block",
-		wall_infill = "grug_decor:darkage_adobe",
-	}
+	-- already infills its adobe walls with, the roster's `ors` palette
+	-- (`building_templates/layouts/gor_drazhak.roster`). A civic building
+	-- built with it throughout is stone where a dwelling is mud brick.
 
 	-- The plot's own ground area: the part's extent grown by two nodes on every
 	-- side and then clamped into the envelope, so the doorstep path
 	-- and the lamps stand on the plot and not beside it.
+	-- The extent is the template's `extent` (the building's non-air cells as
+	-- its generator built them, format doc §4.1), turned with the part.
 	local function ground_area(part, ox, oz, turns, margin, reach)
-		local order, count = part.buffer:cells()
-		local x0, x1, z0, z1
-		for index = 1, count do
-			local cell = order[index]
-			if cell.name ~= parts.AIR then
-				local rx, rz = parts.rotate_footprint(cell.x, cell.z,
-					part.w, part.d, turns)
-				local x, z = ox + rx, oz + rz
-				if x0 == nil or x < x0 then x0 = x end
-				if x1 == nil or x > x1 then x1 = x end
-				if z0 == nil or z < z0 then z0 = z end
-				if z1 == nil or z > z1 then z1 = z end
-			end
-		end
+		local e = part.extent
+		local ax, az = parts.rotate_footprint(e[1], e[2], part.w, part.d, turns)
+		local bx, bz = parts.rotate_footprint(e[3], e[4], part.w, part.d, turns)
+		local x0, x1 = ox + math.min(ax, bx), ox + math.max(ax, bx)
+		local z0, z1 = oz + math.min(az, bz), oz + math.max(az, bz)
 		reach = reach or M.REACH
 		local function clamp(value)
 			if value < -reach then return -reach end
@@ -167,41 +155,6 @@ local function loader(directory)
 			face = face or 0, tags = tags}
 	end
 
-	----------------------------------------------------------------------
-	-- the flat deck's parapet
-	----------------------------------------------------------------------
-
-	-- THE BREASTWORK. A flat roof reads as a shed lid until something stands
-	-- proud of it; the contract's orc line says "adobe flat roofs WITH
-	-- PARAPETS", and this is that ring.
-	--
-	-- It is written column by column over the finished part and only where the
-	-- course below it is an opaque full node, which is what keeps a ring from
-	-- floating over the eave a rasteriser did not lay: a deck field covers the
-	-- block grown by its overhang, but a part built from several blocks has
-	-- corners where it does not, and the first version of this helper drew four
-	-- straight sides through them. The count is published so the KAT can hold a
-	-- plot to a ring it actually got.
-	local function breastwork(buf, palette, x0, z0, x1, z1, y)
-		local low = palette.node("low_wall")
-		local merlon = palette.maybe("signature") or palette.node("wall_accent")
-		local placed = 0
-		for z = z0, z1 do
-			for x = x0, x1 do
-				if x == x0 or x == x1 or z == z0 or z == z1 then
-					if parts.solid_at(buf, x, y - 1, z) then
-						buf:put(x, y, z, low)
-						if (x + z) % 2 == 0 then
-							buf:put(x, y + 1, z, merlon)
-						end
-						placed = placed + 1
-					end
-				end
-			end
-		end
-		return placed
-	end
-
 	-- A YARD: the open-ground plot. Its own half-extent, which is the fill
 	-- lot's reach or less, and a peak of zero, because nothing of the
 	-- composition's own stands above the ground course until `decorate` puts it
@@ -224,49 +177,24 @@ local function loader(directory)
 
 	-- Build one plot from its roster row.
 	--
-	-- The row: `id`, `module` ("capitals" or "buildings"), `make` (the
-	-- generator), `spec` (its arguments), and optionally `turns`, `margin`,
-	-- `handle` ("ors"), `parapet` (a flat deck's breastwork), `order` (its
-	-- waypoint in the district loop), `decorate`, `socket_overrides` and
-	-- `extra_sockets`.
+	-- The row: `id`, `template` (its building template, Round 56), and
+	-- optionally `turns`, `margin`, `handle` ("ors"), `order` (its waypoint in
+	-- the district loop), `decorate`, `socket_overrides` and `extra_sockets`.
 	function M.build(plot, context)
 		context = context or {}
 		local watch = plot.patrol_group or context.patrol_group
-		local local_generators = context.generators
-		local base = palettes.new("orc")
-		local palette = base
-		if plot.handle == "ors" then
-			palette = palettes.new("orc", M.ORS)
-		end
-		local spec = {}
-		for key, value in pairs(plot.spec or {}) do spec[key] = value end
-		spec.id = plot.id
-		if services.service("gor_drazhak", plot.id) == "riding" then
-			spec.w, spec.d, spec.open_shelter = 21, 17, true
-		end
+		local main = plot.handle == "ors" and "ors" or "town"
+		local palette = CAPITAL.palettes[main]
+		-- The riding service's stable is an open shelter (its template is
+		-- the 21 x 17 one), re-stamped over the plot's own lamps below.
+		local open_shelter = services.service("gor_drazhak", plot.id) == "riding"
 		local part, turns, rw, rd, ox, oz
 		local x0, z0, x1, z1
 		if plot.yard then
 			turns, rw, rd, ox, oz = 0, 1, 1, 0, 0
 			x0, z0, x1, z1 = yard_area(plot)
 		else
-			-- Three generator tables, not two. `capitals` and `buildings` are
-			-- the shared library; the third is the district roster's OWN, which
-			-- is how a plan that exists in one quarter of one capital -- the
-			-- warrens' round lodge -- is built without editing `buildings.lua`,
-			-- a file this lane does not own.
-			local module = local_generators
-			if plot.module == "capitals" then
-				module = capitals
-			elseif plot.module == "buildings" then
-				module = buildings
-			end
-			local generator = module and module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 gor drazhak plot: no generator " ..
-					tostring(plot.make) .. " in " .. tostring(plot.module), 0)
-			end
-			part = generator(palette, spec)
+			part = CAPITAL.part(plot.template, plot.id, main)
 			-- The part is centred on the plot origin, which is also the
 			-- reference column: the terrain height under the middle of the plot
 			-- is the height the whole plot is levelled to. A quarter turn swaps
@@ -302,7 +230,6 @@ local function loader(directory)
 			end
 		end
 		local points = {sockets = {}, doors = {}, room_corner = {}, inside = {}}
-		local parapet_columns = 0
 		if plot.yard then
 			-- A yard's own gate: three columns of path at the street edge, so
 			-- the ground is entered from the lane rather than crossed at
@@ -327,18 +254,8 @@ local function loader(directory)
 			-- 4. The part itself.
 			points = parts.stamp(buf, part, ox, 0, oz, turns)
 
-			-- 4b. The breastwork over a flat deck.
-			if plot.parapet then
-				local grow = plot.parapet.grow or 1
-				parapet_columns = breastwork(buf, palette, ox - grow,
-					oz - grow, ox + rw - 1 + grow, oz + rd - 1 + grow,
-					plot.parapet.y)
-				if parapet_columns < (plot.parapet.least or 16) then
-					error("wp13 gor drazhak plot: the breastwork of " ..
-						tostring(plot.id) .. " found only " ..
-						parapet_columns .. " columns of deck", 0)
-				end
-			end
+			-- 4b. The breastwork over a flat deck is the template's own (Round 56;
+			-- its column count is the template's `parapet_columns`).
 
 			-- 5. Two lamps on the street corners of the plot, and a bench
 			-- beside the door, its back to the house and its seat to the
@@ -420,20 +337,15 @@ local function loader(directory)
 			entry.dir = {x = dx, z = dz}
 		end
 
-		if spec.open_shelter then
+		if open_shelter then
 			-- Generic shopfront lamps/benches must not become extra shelter
 			-- posts or intrude into the open stable's public approach.
 			buf:clear(x0, 1, z0, x1, clear_to, z1)
 			parts.stamp(buf, part, ox, 0, oz, turns)
 		end
 		services.decorate("gor_drazhak", plot.id, buf, palette, sockets, area)
-		-- 6c. Every closed room's small touches (Round 36 decor kit): a
-		-- barrel or a pot by the door, flowers under the windows, a wood pile
-		-- or a barrel against a side wall; never on a socket or the cell
-		-- before it.
-		decor.dress_rooms(buf, palette, decor.rooms_from_corners(points.room_corner),
-			points.doors or {}, sockets, {palette.node("foundation"),
-				palette.node("path"), palette.maybe("ground_straw")})
+		-- (Every closed room's small touches, the Round 36 decor kit, are the
+		-- template's own since Round 56.)
 		parts.resolve_panes(buf)
 
 		-- Round 47 town greening: the race's trees on the plot's open wild
@@ -520,7 +432,7 @@ local function loader(directory)
 				rooms = rooms,
 				lights = lights,
 				sockets = sockets,
-				parapet_columns = parapet_columns,
+				parapet_columns = part and part.parapet_columns or 0,
 			},
 		}
 	end
@@ -557,8 +469,7 @@ local function loader(directory)
 					id = plot.id,
 					build = function()
 						return M.build(plot,
-							{patrol_group = definition.patrol_group,
-								generators = definition.generators})
+							{patrol_group = definition.patrol_group})
 					end,
 				}
 			end

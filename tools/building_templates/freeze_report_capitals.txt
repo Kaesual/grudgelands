@@ -1,0 +1,2066 @@
+# The freeze report of the capitals (tools/building_templates/export.py).
+# The pre-freeze source is the commit export.py names; every count is measured.
+
+== highcourt (human)
+points moved into templates:
+  - socket chapel_quest -> chapel: a door-tagged town socket within 3 nodes of its door (2 nodes)
+  - socket override lore_shrine_quest -> lore_shrine: the part's socket on its doorstep, tagged door (derived from the placement)
+building-bound steps (their writes are template content):
+  - core: the belfry on the chapel's ridge and its bell beam (highcourt.lua line 571, 583)
+  - core: the marble bands inlaid in the hall's floor (highcourt.lua line 623, 624, 630)
+  - core: the braziers between the hall's bays (highcourt.lua line 649)
+  - core: the hangings on the hall's aisle walls (highcourt.lua line 681)
+  - plot: room and apron decor (decor.dress_rooms) (highcourt_plot.lua line 417)
+placements: 21 in the core, 37 on the district plots
+
+== dur_brannoc (dwarf)
+points moved into templates:
+  - socket override ancestor_hall_quest -> ancestor_hall: the part's socket on its doorstep, tagged door (derived from the placement)
+building-bound steps (their writes are template content):
+  - core: the stone-block bands inlaid in the hall's floor (dur_brannoc.lua line 526, 527, 532)
+  - core: the braziers between the hall's bays (dur_brannoc.lua line 545)
+  - plot: room and apron decor (decor.dress_rooms) (dur_brannoc_plot.lua line 423)
+placements: 18 in the core, 36 on the district plots
+
+== lethariel (elf)
+points moved into templates:
+  - socket override star_hall_quest -> star_hall: the part's socket on its doorstep, tagged door (derived from the placement)
+building-bound steps (their writes are template content):
+  - plot: room and apron decor (decor.dress_rooms) (lethariel_plot.lua line 353)
+placements: 18 in the core, 30 on the district plots
+
+== nhal_veyr (undead)
+points moved into templates:
+  - socket override vigil_hall_quest -> vigil_hall: the part's socket on its doorstep, tagged door (derived from the placement)
+building-bound steps (their writes are template content):
+  - core: the grave-slab bands inlaid in the mausoleum's floor (nhal_veyr.lua line 599, 600, 605)
+  - core: the braziers between the mausoleum's bays (nhal_veyr.lua line 618)
+  - plot: room and apron decor (decor.dress_rooms) (nhal_veyr_plot.lua line 469)
+placements: 19 in the core, 42 on the district plots
+
+== gor_drazhak (orc)
+points moved into templates:
+  - socket override skull_hall_quest -> skull_hall: the part's socket on its doorstep, tagged door (derived from the placement)
+  - socket override bone_spirit_hall_quest -> bone_spirit_hall: the part's socket on its doorstep, tagged door (derived from the placement)
+building-bound steps (their writes are template content):
+  - core: the breastworks over the dwellings' flat decks (gor_drazhak.lua line 526)
+  - core: the ors-stone bands inlaid in the hall's floor (gor_drazhak.lua line 562, 563, 568)
+  - core: the braziers between the hall's bays (gor_drazhak.lua line 581)
+  - plot: the breastwork over a flat deck (gor_drazhak_plot.lua line 333)
+  - plot: room and apron decor (decor.dress_rooms) (gor_drazhak_plot.lua line 434)
+placements: 18 in the core, 30 on the district plots
+
+== kezamba (troll)
+points moved into templates:
+building-bound steps (their writes are template content):
+  - plot: room and apron decor (decor.dress_rooms) (kezamba_plot.lua line 330)
+placements: 12 in the core, 36 on the district plots
+
+== highcourt placements (id -> template)
+  core kings_hall -> highcourt_kings_hall
+  core gate_south -> highcourt_gate_south
+  core gate_west -> highcourt_gate_south
+  core gate_north -> highcourt_gate_south
+  core gate_east -> highcourt_gate_south
+  core market -> highcourt_market
+  core colonnade_west -> highcourt_colonnade_west
+  core colonnade_east -> highcourt_colonnade_east
+  core statue -> highcourt_statue
+  core well_court -> highcourt_well_court
+  core orchard_east -> highcourt_orchard_east
+  core orchard_west -> highcourt_orchard_west
+  core chapel -> highcourt_chapel
+  core service_yard -> highcourt_service_yard
+  core service_store -> highcourt_service_store
+  core city_workshop -> highcourt_city_workshop
+  core north_house -> highcourt_north_house
+  core lane_house -> highcourt_lane_house
+  core orchard_house -> highcourt_orchard_house
+  core chapel_house -> highcourt_chapel_house
+  core market_house -> highcourt_market_house
+  market_granary market_granary -> highcourt_market_granary
+  market_stable market_stable -> highcourt_market_stable
+  market_workshop market_workshop -> highcourt_market_workshop
+  market_counting_house market_counting_house -> highcourt_market_counting_house
+  market_well market_well -> highcourt_well_court
+  market_watch market_watch -> highcourt_market_watch
+  market_grove market_grove -> highcourt_market_grove
+  market_orchard market_orchard -> highcourt_market_orchard
+  market_store market_store -> highcourt_market_store
+  martial_barracks martial_barracks -> highcourt_martial_barracks
+  martial_muster_hall martial_muster_hall -> highcourt_martial_muster_hall
+  martial_armoury martial_armoury -> highcourt_martial_armoury
+  martial_stables martial_stables -> highcourt_martial_stables
+  martial_drill_yard martial_drill_yard -> highcourt_martial_drill_yard
+  martial_quartermaster martial_quartermaster -> highcourt_martial_quartermaster
+  martial_wain_shed martial_wain_shed -> highcourt_service_yard
+  martial_guard_house martial_guard_house -> highcourt_martial_guard_house
+  martial_watch_tower martial_watch_tower -> highcourt_martial_watch_tower
+  lore_shrine lore_shrine -> highcourt_lore_shrine
+  lore_library lore_library -> highcourt_lore_library
+  lore_scriptorium lore_scriptorium -> highcourt_lore_scriptorium
+  lore_archive lore_archive -> highcourt_lore_archive
+  lore_herb_garden lore_herb_garden -> highcourt_well_court
+  lore_chapter_house lore_chapter_house -> highcourt_lore_chapter_house
+  lore_almonry lore_almonry -> highcourt_lore_almonry
+  lore_cloister_walk lore_cloister_walk -> highcourt_lore_cloister_walk
+  lore_quiet_grove lore_quiet_grove -> highcourt_lore_quiet_grove
+  lore_chapel_yard lore_chapel_yard -> highcourt_lore_chapel_yard
+  homes_tavern homes_tavern -> highcourt_homes_tavern
+  homes_well homes_well -> highcourt_well_court
+  homes_monument homes_monument -> highcourt_statue
+  homes_house_gable homes_house_gable -> highcourt_homes_house_gable
+  homes_house_hip homes_house_hip -> highcourt_homes_house_hip
+  homes_house_lane homes_house_lane -> highcourt_homes_house_lane
+  homes_tenement homes_tenement -> highcourt_homes_tenement
+  homes_bakehouse homes_bakehouse -> highcourt_homes_bakehouse
+  homes_orchard homes_orchard -> highcourt_homes_orchard
+
+== dur_brannoc placements (id -> template)
+  core kings_hall -> dur_brannoc_kings_hall
+  core gate_south -> dur_brannoc_gate_south
+  core gate_west -> dur_brannoc_gate_south
+  core gate_north -> dur_brannoc_gate_south
+  core gate_east -> dur_brannoc_gate_south
+  core market -> highcourt_market
+  core colonnade_west -> dur_brannoc_colonnade_west
+  core colonnade_east -> dur_brannoc_colonnade_east
+  core statue -> highcourt_statue
+  core cistern_court -> highcourt_well_court
+  core ancestor_hall -> dur_brannoc_ancestor_hall
+  core great_forge -> dur_brannoc_great_forge
+  core smelting_yard -> highcourt_service_yard
+  core masons_guild -> dur_brannoc_masons_guild
+  core market_house -> dur_brannoc_market_house
+  core south_house -> dur_brannoc_south_house
+  core lane_house -> dur_brannoc_lane_house
+  core plaza_house -> dur_brannoc_plaza_house
+  forge_charcoal forge_charcoal -> dur_brannoc_forge_charcoal
+  forge_pack_stable forge_pack_stable -> highcourt_market_stable
+  forge_smithy forge_smithy -> dur_brannoc_forge_smithy
+  forge_guild_house forge_guild_house -> dur_brannoc_forge_guild_house
+  forge_quench_court forge_quench_court -> highcourt_well_court
+  forge_watch forge_watch -> dur_brannoc_forge_watch
+  forge_copse forge_copse -> dur_brannoc_forge_copse
+  forge_ore_yard forge_ore_yard -> dur_brannoc_forge_ore_yard
+  forge_store forge_store -> dur_brannoc_forge_store
+  garrison_barracks garrison_barracks -> dur_brannoc_garrison_barracks
+  garrison_muster_hall garrison_muster_hall -> dur_brannoc_garrison_muster_hall
+  garrison_armoury garrison_armoury -> dur_brannoc_garrison_armoury
+  garrison_drill_yard garrison_drill_yard -> dur_brannoc_garrison_drill_yard
+  garrison_stable garrison_stable -> dur_brannoc_garrison_stable
+  garrison_quartermaster garrison_quartermaster -> dur_brannoc_garrison_quartermaster
+  garrison_wain_shed garrison_wain_shed -> highcourt_service_yard
+  garrison_serjeant garrison_serjeant -> dur_brannoc_garrison_serjeant
+  garrison_watch_tower garrison_watch_tower -> dur_brannoc_garrison_watch_tower
+  deep_hall_of_record deep_hall_of_record -> dur_brannoc_deep_hall_of_record
+  deep_scriptorium deep_scriptorium -> dur_brannoc_deep_scriptorium
+  deep_memory_hall deep_memory_hall -> dur_brannoc_deep_memory_hall
+  deep_carvers deep_carvers -> dur_brannoc_garrison_armoury
+  deep_lantern_court deep_lantern_court -> highcourt_well_court
+  deep_archive deep_archive -> dur_brannoc_garrison_quartermaster
+  deep_keeper deep_keeper -> dur_brannoc_garrison_serjeant
+  deep_lamp_store deep_lamp_store -> highcourt_service_yard
+  deep_watch deep_watch -> dur_brannoc_garrison_watch_tower
+  terrace_market terrace_market -> dur_brannoc_terrace_market
+  terrace_brewhouse terrace_brewhouse -> dur_brannoc_garrison_armoury
+  terrace_alehouse terrace_alehouse -> dur_brannoc_terrace_alehouse
+  terrace_bakehouse terrace_bakehouse -> dur_brannoc_terrace_bakehouse
+  terrace_well_court terrace_well_court -> highcourt_well_court
+  terrace_long_house terrace_long_house -> dur_brannoc_terrace_long_house
+  terrace_cottage_west terrace_cottage_west -> dur_brannoc_terrace_cottage_west
+  terrace_cottage_east terrace_cottage_east -> dur_brannoc_terrace_cottage_east
+  terrace_watch terrace_watch -> dur_brannoc_garrison_watch_tower
+
+== lethariel placements (id -> template)
+  core kings_hall -> lethariel_kings_hall
+  core gate_south -> lethariel_gate_south
+  core gate_west -> lethariel_gate_south
+  core gate_east -> lethariel_gate_south
+  core market -> lethariel_market
+  core colonnade_west -> lethariel_colonnade_west
+  core colonnade_east -> lethariel_colonnade_east
+  core statue -> highcourt_statue
+  core fountain_court -> highcourt_well_court
+  core star_hall -> lethariel_star_hall
+  core sacred_grove -> lethariel_sacred_grove
+  core mere_shrine -> lethariel_mere_shrine
+  core bough_west -> lethariel_bough_west
+  core bough_east -> lethariel_bough_east
+  core quay_house -> dur_brannoc_market_house
+  core south_house -> dur_brannoc_south_house
+  core plaza_house -> dur_brannoc_lane_house
+  core shore_house -> dur_brannoc_plaza_house
+  market_granary market_granary -> lethariel_market_granary
+  market_stable market_stable -> highcourt_market_stable
+  market_bowyer market_bowyer -> lethariel_market_bowyer
+  market_weaver market_weaver -> lethariel_market_weaver
+  market_fountain market_fountain -> highcourt_well_court
+  market_watch market_watch -> lethariel_market_watch
+  market_grove market_grove -> lethariel_market_grove
+  market_orchard market_orchard -> lethariel_market_orchard
+  market_bakehouse market_bakehouse -> lethariel_market_bakehouse
+  martial_barracks martial_barracks -> lethariel_martial_barracks
+  martial_armoury martial_armoury -> lethariel_market_bowyer
+  martial_tower martial_tower -> highcourt_martial_drill_yard
+  martial_hall martial_hall -> lethariel_martial_hall
+  martial_stable martial_stable -> lethariel_martial_stable
+  martial_store martial_store -> lethariel_martial_store
+  martial_grove martial_grove -> lethariel_market_grove
+  martial_lodge martial_lodge -> lethariel_martial_lodge
+  martial_bough martial_bough -> lethariel_bough_west
+  mere_shrine mere_shrine -> lethariel_plot_mere_shrine
+  mere_lore_hall mere_lore_hall -> lethariel_mere_lore_hall
+  mere_mourning mere_mourning -> lethariel_market_grove
+  homes_terrace_west homes_terrace_west -> lethariel_martial_lodge
+  homes_terrace_east homes_terrace_east -> lethariel_homes_terrace_east
+  homes_longhouse homes_longhouse -> lethariel_homes_longhouse
+  homes_brewhouse homes_brewhouse -> lethariel_market_bowyer
+  homes_carver homes_carver -> lethariel_martial_hall
+  homes_feast_hall homes_feast_hall -> lethariel_homes_feast_hall
+  homes_bough homes_bough -> lethariel_bough_east
+  homes_court homes_court -> highcourt_well_court
+  homes_grove homes_grove -> lethariel_market_grove
+
+== nhal_veyr placements (id -> template)
+  core mausoleum -> nhal_veyr_mausoleum
+  core gate_south -> nhal_veyr_gate_south
+  core gate_west -> nhal_veyr_gate_south
+  core gate_north -> nhal_veyr_gate_south
+  core gate_east -> nhal_veyr_gate_south
+  core market -> highcourt_market
+  core colonnade_west -> nhal_veyr_colonnade_west
+  core colonnade_east -> nhal_veyr_colonnade_east
+  core statue -> highcourt_statue
+  core cistern_court -> highcourt_well_court
+  core vigil_hall -> nhal_veyr_vigil_hall
+  core bone_works -> dur_brannoc_great_forge
+  core charnel_yard -> highcourt_service_yard
+  core bonesmith_guild -> nhal_veyr_bonesmith_guild
+  core market_house -> dur_brannoc_market_house
+  core south_house -> dur_brannoc_south_house
+  core lane_house -> nhal_veyr_lane_house
+  core plaza_house -> dur_brannoc_plaza_house
+  core fallen_house -> nhal_veyr_fallen_house
+  market_bone_store market_bone_store -> nhal_veyr_market_bone_store
+  market_cart_yard market_cart_yard -> highcourt_market_stable
+  market_bonesmith market_bonesmith -> nhal_veyr_market_bonesmith
+  market_shroud_house market_shroud_house -> nhal_veyr_market_shroud_house
+  market_cistern market_cistern -> highcourt_well_court
+  market_watch market_watch -> nhal_veyr_market_watch
+  market_copse market_copse -> nhal_veyr_market_copse
+  market_physic market_physic -> nhal_veyr_market_physic
+  market_charnel market_charnel -> nhal_veyr_market_charnel
+  market_candle_court market_candle_court -> nhal_veyr_market_candle_court
+  watch_barracks watch_barracks -> nhal_veyr_watch_barracks
+  watch_captain_hall watch_captain_hall -> nhal_veyr_watch_captain_hall
+  watch_armoury watch_armoury -> nhal_veyr_watch_armoury
+  watch_stables watch_stables -> nhal_veyr_watch_stables
+  watch_drill_yard watch_drill_yard -> nhal_veyr_watch_drill_yard
+  watch_quartermaster watch_quartermaster -> nhal_veyr_watch_quartermaster
+  watch_cart_shed watch_cart_shed -> highcourt_service_yard
+  watch_serjeant_house watch_serjeant_house -> nhal_veyr_watch_serjeant_house
+  watch_tower watch_tower -> nhal_veyr_watch_tower
+  watch_pyre_court watch_pyre_court -> nhal_veyr_market_candle_court
+  vigil_ossuary vigil_ossuary -> nhal_veyr_vigil_ossuary
+  vigil_scriptorium vigil_scriptorium -> nhal_veyr_vigil_scriptorium
+  vigil_embalmer vigil_embalmer -> nhal_veyr_market_bonesmith
+  vigil_mausoleum_west vigil_mausoleum_west -> nhal_veyr_vigil_mausoleum_west
+  vigil_mausoleum_east vigil_mausoleum_east -> nhal_veyr_vigil_mausoleum_east
+  vigil_candle_works vigil_candle_works -> nhal_veyr_market_bonesmith
+  vigil_cloister vigil_cloister -> highcourt_well_court
+  vigil_watch vigil_watch -> nhal_veyr_vigil_watch
+  vigil_copse vigil_copse -> nhal_veyr_market_copse
+  vigil_ruin_close vigil_ruin_close_ruin_1 -> nhal_veyr_vigil_ruin_close_ruin_1
+  vigil_ruin_close vigil_ruin_close_ruin_2 -> nhal_veyr_vigil_ruin_close_ruin_2
+  vigil_high_court vigil_high_court -> nhal_veyr_market_candle_court
+  homes_gate_house homes_gate_house -> nhal_veyr_homes_gate_house
+  homes_lane_house homes_lane_house -> nhal_veyr_homes_lane_house
+  homes_terrace_house homes_terrace_house -> nhal_veyr_homes_terrace_house
+  homes_corner_house homes_corner_house -> nhal_veyr_homes_corner_house
+  homes_fallen_west homes_fallen_west -> nhal_veyr_homes_fallen_west
+  homes_fallen_east homes_fallen_east -> nhal_veyr_homes_fallen_east
+  homes_mourners_hall homes_mourners_hall -> nhal_veyr_watch_captain_hall
+  homes_watch homes_watch -> nhal_veyr_vigil_watch
+  homes_cistern homes_cistern -> highcourt_well_court
+  homes_candle_court homes_candle_court -> nhal_veyr_market_candle_court
+
+== gor_drazhak placements (id -> template)
+  core warlord_hall -> gor_drazhak_warlord_hall
+  core gate_south -> gor_drazhak_gate_south
+  core gate_west -> gor_drazhak_gate_south
+  core gate_north -> gor_drazhak_gate_south
+  core gate_east -> gor_drazhak_gate_south
+  core bazaar_square -> highcourt_market
+  core colonnade_west -> gor_drazhak_colonnade_west
+  core colonnade_east -> gor_drazhak_colonnade_east
+  core statue -> highcourt_statue
+  core cistern_court -> highcourt_well_court
+  core skull_hall -> gor_drazhak_skull_hall
+  core host_store -> gor_drazhak_host_store
+  core beast_shed -> highcourt_service_yard
+  core council_house -> gor_drazhak_council_house
+  core bazaar_house -> gor_drazhak_bazaar_house
+  core south_house -> gor_drazhak_south_house
+  core lane_house -> gor_drazhak_lane_house
+  core plaza_house -> gor_drazhak_bazaar_house
+  bazaar_butcher bazaar_butcher -> gor_drazhak_bazaar_butcher
+  bazaar_tannery bazaar_tannery -> gor_drazhak_bazaar_tannery
+  bazaar_brewhouse bazaar_brewhouse -> gor_drazhak_bazaar_butcher
+  bazaar_armourer bazaar_armourer -> gor_drazhak_bazaar_armourer
+  bazaar_smithy bazaar_smithy -> gor_drazhak_bazaar_butcher
+  bazaar_store bazaar_store -> gor_drazhak_bazaar_store
+  bazaar_wain_yard bazaar_wain_yard -> highcourt_service_yard
+  bazaar_carver bazaar_carver -> gor_drazhak_bazaar_carver
+  bazaar_house bazaar_house -> gor_drazhak_plot_bazaar_house
+  war_barracks war_barracks -> gor_drazhak_war_barracks
+  war_armoury war_armoury -> gor_drazhak_war_armoury
+  war_beast_pen war_beast_pen -> highcourt_market_stable
+  war_drill_yard war_drill_yard -> gor_drazhak_war_drill_yard
+  war_quartermaster war_quartermaster -> gor_drazhak_war_quartermaster
+  war_wain_shed war_wain_shed -> highcourt_service_yard
+  war_chief_house war_chief_house -> gor_drazhak_plot_bazaar_house
+  war_watch_tower war_watch_tower -> gor_drazhak_war_watch_tower
+  bone_spirit_hall bone_spirit_hall -> gor_drazhak_bone_spirit_hall
+  bone_reader_hall bone_reader_hall -> gor_drazhak_bone_reader_hall
+  bone_herb_house bone_herb_house -> gor_drazhak_bone_herb_house
+  bone_store bone_store -> gor_drazhak_bone_store
+  bone_shaman_house bone_shaman_house -> gor_drazhak_plot_bazaar_house
+  bone_ash_court bone_ash_court -> highcourt_well_court
+  warren_clan_house warren_clan_house -> gor_drazhak_warren_clan_house
+  warren_round_lodge warren_round_lodge -> gor_drazhak_warren_round_lodge
+  warren_house_spear warren_house_spear -> gor_drazhak_warren_house_spear
+  warren_house_tusk warren_house_tusk -> gor_drazhak_warren_house_tusk
+  warren_house_bone warren_house_bone -> gor_drazhak_warren_house_bone
+  warren_weaver warren_weaver -> gor_drazhak_bazaar_tannery
+  warren_store warren_store -> gor_drazhak_warren_store
+
+== kezamba placements (id -> template)
+  core kings_hall -> kezamba_kings_hall
+  core moot_house -> kezamba_moot_house
+  core cauldron_court -> kezamba_cauldron_court
+  core shrine -> kezamba_shrine
+  core carver_yard -> kezamba_carver_yard
+  core granary -> kezamba_granary
+  core stable -> kezamba_stable
+  core gate_house_south -> kezamba_gate_house_south
+  core lane_house -> kezamba_lane_house
+  core west_house -> kezamba_west_house
+  core shore_house -> kezamba_shore_house
+  core trade_shed -> kezamba_trade_shed
+  shore_market shore_market -> kezamba_shore_market
+  shore_butcher shore_butcher -> kezamba_shore_butcher
+  shore_tailor shore_tailor -> kezamba_shore_tailor
+  shore_store shore_store -> kezamba_shore_store
+  shore_smokehouse shore_smokehouse -> kezamba_trade_shed
+  shore_carvers shore_carvers -> kezamba_shore_carvers
+  shore_well shore_well -> highcourt_well_court
+  shore_watch shore_watch -> kezamba_shore_watch
+  shore_house shore_house -> kezamba_plot_shore_house
+  vine_house_a vine_house_a -> kezamba_vine_house_a
+  vine_house_b vine_house_b -> kezamba_vine_house_b
+  vine_house_c vine_house_c -> kezamba_vine_house_c
+  vine_house_d vine_house_d -> kezamba_vine_house_d
+  vine_longhouse vine_longhouse -> kezamba_plot_shore_house
+  vine_herbalist vine_herbalist -> kezamba_vine_herbalist
+  vine_moot vine_moot -> kezamba_vine_moot
+  vine_well vine_well -> highcourt_well_court
+  vine_store vine_store -> kezamba_shore_store
+  canopy_barracks_a canopy_barracks_a -> kezamba_canopy_barracks_a
+  canopy_barracks_b canopy_barracks_b -> kezamba_canopy_barracks_b
+  canopy_armoury canopy_armoury -> kezamba_shore_butcher
+  canopy_watchpost canopy_watchpost -> kezamba_canopy_watchpost
+  canopy_stable canopy_stable -> highcourt_market_stable
+  canopy_store canopy_store -> kezamba_shore_store
+  canopy_hall canopy_hall -> kezamba_plot_shore_house
+  canopy_house_a canopy_house_a -> kezamba_vine_house_a
+  canopy_house_b canopy_house_b -> kezamba_vine_house_b
+  canopy_carvers canopy_carvers -> kezamba_shore_carvers
+  canopy_well canopy_well -> highcourt_well_court
+  totem_scriptorium totem_scriptorium -> kezamba_totem_scriptorium
+  totem_carvers totem_carvers -> kezamba_shore_carvers
+  totem_shrine totem_shrine -> kezamba_totem_shrine
+  totem_hall totem_hall -> kezamba_plot_shore_house
+  totem_house_a totem_house_a -> kezamba_vine_house_a
+  totem_store totem_store -> kezamba_shore_store
+  totem_well totem_well -> highcourt_well_court
+
+== templates: 210 for 317 placements
+templates shared by several placements: 42
+cells 741351 (role 180142, fixed-node 11319, force-air 549890)
+
+-- highcourt_kings_hall (highcourt:kings_hall)
+   cells 34809, legend 62, role cells 6709, fixed-node cells 0, force-air cells 28100, race switches 0, undecided 0
+   building-bound writes (kings_hall): the braziers between the hall's bays 4; the hangings on the hall's aisle walls 8; the marble bands inlaid in the hall's floor 90
+   town writes kept in its box (kings_hall): 89
+     6x line 761: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+     83x line 890: parts.resolve_panes(buf)
+
+-- highcourt_gate_south (highcourt:gate_south, highcourt:gate_west, highcourt:gate_north, highcourt:gate_east)
+   cells 1547, legend 19, role cells 898, fixed-node cells 0, force-air cells 649, race switches 0, undecided 0
+   town writes kept in its box (gate_south): 6
+     6x line 890: parts.resolve_panes(buf)
+   town writes kept in its box (gate_west): 6
+     6x line 890: parts.resolve_panes(buf)
+   town writes kept in its box (gate_north): 6
+     6x line 890: parts.resolve_panes(buf)
+   town writes kept in its box (gate_east): 6
+     6x line 890: parts.resolve_panes(buf)
+
+-- highcourt_market (highcourt:market, dur_brannoc:market, nhal_veyr:market, gor_drazhak:bazaar_square)
+   cells 5625, legend 26, role cells 919, fixed-node cells 0, force-air cells 4706, race switches 0, undecided 0
+   town writes kept in its box (market): 39
+     39x line 794: orchard = orchard + layout.plant_orchard(buf, human, block[1],
+   town writes kept in its box (market): 9
+     9x line 788: if dressing.gravewood(buf, undead, tx, tz, height) then trees = trees + 1 end
+   town writes kept in its box (bazaar_square): 7
+     3x line 769: dressing.bench(buf, orc, seat[1], seat[2], seat[3], 3, "x")
+     1x line 806: trees = trees + layout.plant_orchard(buf, orc, block[1], block[2],
+     3x line 839: dressing.rock_terrace(buf, orc, rock[1], rock[2], rock[3],
+
+-- highcourt_colonnade_west (highcourt:colonnade_west)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_west): 3
+     3x line 761: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+
+-- highcourt_colonnade_east (highcourt:colonnade_east)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_east): 9
+     6x line 752: layout.street_lamps(buf, human, 0, -44, -4, 8, outdoors)
+     3x line 761: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+
+-- highcourt_statue (highcourt:statue, highcourt:homes_monument, dur_brannoc:statue, lethariel:statue, nhal_veyr:statue, gor_drazhak:statue)
+   cells 810, legend 14, role cells 157, fixed-node cells 0, force-air cells 653, race switches 0, undecided 0
+   town writes kept in its box (statue): 4
+     4x line 679: paved_prop("bench", seat[1], seat[2], x2, z2, function()
+
+-- highcourt_well_court (highcourt:well_court, highcourt:market_well, highcourt:lore_herb_garden, highcourt:homes_well, dur_brannoc:cistern_court, dur_brannoc:forge_quench_court, dur_brannoc:deep_lantern_court, dur_brannoc:terrace_well_court, lethariel:fountain_court, lethariel:market_fountain, lethariel:homes_court, nhal_veyr:cistern_court, nhal_veyr:market_cistern, nhal_veyr:vigil_cloister, nhal_veyr:homes_cistern, gor_drazhak:cistern_court, gor_drazhak:bone_ash_court, kezamba:shore_well, kezamba:vine_well, kezamba:canopy_well, kezamba:totem_well)
+   cells 847, legend 13, role cells 155, fixed-node cells 0, force-air cells 692, race switches 0, undecided 0
+   town writes kept in its box (market_well): 63
+     22x line 325: dressing.broadleaf(buf, palette, spot[1], spot[2], 5)
+     41x line 424: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (lore_herb_garden): 180
+     22x line 325: dressing.broadleaf(buf, palette, spot[1], spot[2], 5)
+     158x line 412: services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+   town writes kept in its box (homes_well): 48
+     48x line 424: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (forge_quench_court): 20
+     4x line 336: dressing.tree(buf, palette, spot[1], spot[2], 6)
+     16x line 430: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (deep_lantern_court): 20
+     4x line 336: dressing.tree(buf, palette, spot[1], spot[2], 6)
+     16x line 430: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (terrace_well_court): 20
+     4x line 336: dressing.tree(buf, palette, spot[1], spot[2], 6)
+     16x line 430: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (market_cistern): 28
+     20x line 371: dressing.gravewood(buf, palette, spot[1], spot[2], 5)
+     8x line 476: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (vigil_cloister): 28
+     20x line 371: dressing.gravewood(buf, palette, spot[1], spot[2], 5)
+     8x line 476: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (homes_cistern): 28
+     20x line 371: dressing.gravewood(buf, palette, spot[1], spot[2], 5)
+     8x line 476: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (cistern_court): 12
+     12x line 806: trees = trees + layout.plant_orchard(buf, orc, block[1], block[2],
+   town writes kept in its box (bone_ash_court): 11
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     8x line 360: plot.decorate(buf, palette, area)
+   town writes kept in its box (shore_well): 6
+     6x line 337: layout.green(buf, palette, 13, sockets, points.doors)
+   town writes kept in its box (vine_well): 6
+     6x line 337: layout.green(buf, palette, 13, sockets, points.doors)
+   town writes kept in its box (canopy_well): 6
+     6x line 337: layout.green(buf, palette, 13, sockets, points.doors)
+   town writes kept in its box (totem_well): 6
+     6x line 337: layout.green(buf, palette, 13, sockets, points.doors)
+
+-- highcourt_orchard_east (highcourt:orchard_east)
+   cells 3927, legend 33, role cells 331, fixed-node cells 589, force-air cells 3007, race switches 0, undecided 0
+   town writes kept in its box (orchard_east): 45
+     27x line 826: dressing.undergrowth(buf, human, -RADIUS, -RADIUS, RADIUS, RADIUS, 5,
+     18x line 896: dressing.thin_cover(buf)
+
+-- highcourt_orchard_west (highcourt:orchard_west)
+   cells 3927, legend 33, role cells 331, fixed-node cells 589, force-air cells 3007, race switches 0, undecided 0
+   town writes kept in its box (orchard_west): 58
+     32x line 826: dressing.undergrowth(buf, human, -RADIUS, -RADIUS, RADIUS, RADIUS, 5,
+     26x line 896: dressing.thin_cover(buf)
+
+-- highcourt_chapel (highcourt:chapel)
+   cells 2946, legend 37, role cells 861, fixed-node cells 0, force-air cells 2085, race switches 0, undecided 0
+   building-bound writes (chapel): the belfry on the chapel's ridge and its bell beam 119
+   town writes kept in its box (chapel): 82
+     46x line 794: orchard = orchard + layout.plant_orchard(buf, human, block[1],
+     36x line 890: parts.resolve_panes(buf)
+
+-- highcourt_service_yard (highcourt:service_yard, highcourt:martial_wain_shed, dur_brannoc:smelting_yard, dur_brannoc:garrison_wain_shed, dur_brannoc:deep_lamp_store, nhal_veyr:charnel_yard, nhal_veyr:watch_cart_shed, gor_drazhak:beast_shed, gor_drazhak:bazaar_wain_yard, gor_drazhak:war_wain_shed)
+   cells 1650, legend 21, role cells 484, fixed-node cells 0, force-air cells 1166, race switches 0, undecided 0
+   town writes kept in its box (service_yard): 20
+     20x line 890: parts.resolve_panes(buf)
+   town writes kept in its box (martial_wain_shed): 174
+     2x line 343: plot.decorate(buf, palette, area)
+     152x line 412: services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+     20x line 420: parts.resolve_panes(buf)
+   town writes kept in its box (smelting_yard): 20
+     20x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (garrison_wain_shed): 20
+     20x line 426: parts.resolve_panes(buf)
+   town writes kept in its box (deep_lamp_store): 20
+     20x line 426: parts.resolve_panes(buf)
+   town writes kept in its box (charnel_yard): 20
+     20x line 969: parts.resolve_panes(buf)
+   town writes kept in its box (watch_cart_shed): 20
+     20x line 472: parts.resolve_panes(buf)
+   town writes kept in its box (beast_shed): 20
+     20x line 970: parts.resolve_panes(buf)
+   town writes kept in its box (bazaar_wain_yard): 22
+     2x line 360: plot.decorate(buf, palette, area)
+     20x line 437: parts.resolve_panes(buf)
+   town writes kept in its box (war_wain_shed): 22
+     2x line 360: plot.decorate(buf, palette, area)
+     20x line 437: parts.resolve_panes(buf)
+
+-- highcourt_service_store (highcourt:service_store)
+   cells 2873, legend 26, role cells 816, fixed-node cells 0, force-air cells 2057, race switches 0, undecided 0
+   town writes kept in its box (service_store): 77
+     2x line 715: paved_prop("crates", stack[1], stack[2], stack[1], stack[2],
+     12x line 723: paved_prop("wood_pile", pile[1], pile[2], x2, z2, function()
+     27x line 794: orchard = orchard + layout.plant_orchard(buf, human, block[1],
+     36x line 890: parts.resolve_panes(buf)
+
+-- highcourt_city_workshop (highcourt:city_workshop)
+   cells 2880, legend 40, role cells 856, fixed-node cells 0, force-air cells 2024, race switches 0, undecided 0
+   town writes kept in its box (city_workshop): 40
+     40x line 890: parts.resolve_panes(buf)
+
+-- highcourt_north_house (highcourt:north_house)
+   cells 1452, legend 38, role cells 488, fixed-node cells 0, force-air cells 964, race switches 0, undecided 0
+   town writes kept in its box (north_house): 28
+     28x line 890: parts.resolve_panes(buf)
+
+-- highcourt_lane_house (highcourt:lane_house)
+   cells 1331, legend 42, role cells 430, fixed-node cells 0, force-air cells 901, race switches 0, undecided 0
+   town writes kept in its box (lane_house): 28
+     28x line 890: parts.resolve_panes(buf)
+
+-- highcourt_orchard_house (highcourt:orchard_house)
+   cells 1694, legend 38, role cells 520, fixed-node cells 0, force-air cells 1174, race switches 0, undecided 0
+   town writes kept in its box (orchard_house): 28
+     28x line 890: parts.resolve_panes(buf)
+
+-- highcourt_chapel_house (highcourt:chapel_house)
+   cells 1331, legend 44, role cells 458, fixed-node cells 0, force-air cells 873, race switches 0, undecided 0
+   town writes kept in its box (chapel_house): 49
+     21x line 794: orchard = orchard + layout.plant_orchard(buf, human, block[1],
+     28x line 890: parts.resolve_panes(buf)
+
+-- highcourt_market_house (highcourt:market_house)
+   cells 1452, legend 38, role cells 488, fixed-node cells 0, force-air cells 964, race switches 0, undecided 0
+   town writes kept in its box (market_house): 28
+     28x line 890: parts.resolve_panes(buf)
+
+-- highcourt_market_granary (highcourt:market_granary)
+   cells 3094, legend 25, role cells 819, fixed-node cells 0, force-air cells 2275, race switches 0, undecided 0
+   building-bound writes (market_granary): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (market_granary): 39
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     36x line 420: parts.resolve_panes(buf)
+
+-- highcourt_market_stable (highcourt:market_stable, dur_brannoc:forge_pack_stable, lethariel:market_stable, nhal_veyr:market_cart_yard, gor_drazhak:war_beast_pen, kezamba:canopy_stable)
+   cells 2499, legend 4, role cells 448, fixed-node cells 357, force-air cells 1694, race switches 0, undecided 0
+   town writes kept in its box (market_stable): 4644
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     2142x line 409: buf:clear(x0, 1, z0, x1, clear_to, z1)
+     2499x line 410: parts.stamp(buf, part, ox, 0, oz, turns)
+   town writes kept in its box (forge_pack_stable): 4644
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     2142x line 415: buf:clear(x0, 1, z0, x1, clear_to, z1)
+     2499x line 416: parts.stamp(buf, part, ox, 0, oz, turns)
+   town writes kept in its box (market_stable): 4692
+     48x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     2142x line 345: buf:clear(x0, 1, z0, x1, clear_to, z1)
+     2499x line 346: parts.stamp(buf, part, ox, 0, oz, turns)
+   town writes kept in its box (market_cart_yard): 4644
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     2142x line 461: buf:clear(x0, 1, z0, x1, clear_to, z1)
+     2499x line 462: parts.stamp(buf, part, ox, 0, oz, turns)
+   town writes kept in its box (war_beast_pen): 4641
+     2142x line 426: buf:clear(x0, 1, z0, x1, clear_to, z1)
+     2499x line 427: parts.stamp(buf, part, ox, 0, oz, turns)
+   town writes kept in its box (canopy_stable): 4644
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     2142x line 322: buf:clear(x0, 1, z0, x1, clear_to, z1)
+     2499x line 323: parts.stamp(buf, part, ox, 0, oz, turns)
+
+-- highcourt_market_workshop (highcourt:market_workshop)
+   cells 2880, legend 45, role cells 876, fixed-node cells 0, force-air cells 2004, race switches 0, undecided 0
+   building-bound writes (market_workshop): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (market_workshop): 196
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     153x line 412: services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+     40x line 420: parts.resolve_panes(buf)
+
+-- highcourt_market_counting_house (highcourt:market_counting_house)
+   cells 3990, legend 27, role cells 1080, fixed-node cells 0, force-air cells 2910, race switches 0, undecided 0
+   building-bound writes (market_counting_house): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (market_counting_house): 207
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 412: services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+     52x line 420: parts.resolve_panes(buf)
+
+-- highcourt_market_watch (highcourt:market_watch)
+   cells 4692, legend 33, role cells 1241, fixed-node cells 0, force-air cells 3451, race switches 0, undecided 0
+   building-bound writes (market_watch): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (market_watch): 63
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 420: parts.resolve_panes(buf)
+
+-- highcourt_market_grove (highcourt:market_grove)
+   cells 5625, legend 29, role cells 247, fixed-node cells 1179, force-air cells 4199, race switches 0, undecided 0
+   town writes kept in its box (market_grove): 3
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- highcourt_market_orchard (highcourt:market_orchard)
+   cells 3927, legend 33, role cells 331, fixed-node cells 589, force-air cells 3007, race switches 0, undecided 0
+   town writes kept in its box (market_orchard): 3
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- highcourt_market_store (highcourt:market_store)
+   cells 2873, legend 29, role cells 825, fixed-node cells 0, force-air cells 2048, race switches 0, undecided 0
+   building-bound writes (market_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (market_store): 191
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 412: services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+     36x line 420: parts.resolve_panes(buf)
+
+-- highcourt_martial_barracks (highcourt:martial_barracks)
+   cells 5681, legend 33, role cells 1438, fixed-node cells 0, force-air cells 4243, race switches 0, undecided 0
+   building-bound writes (martial_barracks): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (martial_barracks): 67
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     64x line 420: parts.resolve_panes(buf)
+
+-- highcourt_martial_muster_hall (highcourt:martial_muster_hall)
+   cells 3876, legend 41, role cells 1007, fixed-node cells 0, force-air cells 2869, race switches 0, undecided 0
+   building-bound writes (martial_muster_hall): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (martial_muster_hall): 53
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     50x line 420: parts.resolve_panes(buf)
+
+-- highcourt_martial_armoury (highcourt:martial_armoury)
+   cells 3192, legend 45, role cells 954, fixed-node cells 0, force-air cells 2238, race switches 0, undecided 0
+   building-bound writes (martial_armoury): room and apron decor (decor.dress_rooms) 26
+   town writes kept in its box (martial_armoury): 47
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 420: parts.resolve_panes(buf)
+
+-- highcourt_martial_stables (highcourt:martial_stables)
+   cells 3060, legend 26, role cells 872, fixed-node cells 0, force-air cells 2188, race switches 0, undecided 0
+   building-bound writes (martial_stables): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (martial_stables): 47
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 420: parts.resolve_panes(buf)
+
+-- highcourt_martial_drill_yard (highcourt:martial_drill_yard, lethariel:martial_tower)
+   cells 1573, legend 34, role cells 548, fixed-node cells 0, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (martial_drill_yard): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (martial_drill_yard): 16
+     16x line 420: parts.resolve_panes(buf)
+   building-bound writes (martial_tower): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (martial_tower): 59
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     24x line 356: parts.resolve_panes(buf)
+
+-- highcourt_martial_quartermaster (highcourt:martial_quartermaster)
+   cells 3315, legend 29, role cells 931, fixed-node cells 0, force-air cells 2384, race switches 0, undecided 0
+   building-bound writes (martial_quartermaster): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (martial_quartermaster): 47
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 420: parts.resolve_panes(buf)
+
+-- highcourt_martial_guard_house (highcourt:martial_guard_house)
+   cells 1170, legend 43, role cells 397, fixed-node cells 0, force-air cells 773, race switches 0, undecided 0
+   building-bound writes (martial_guard_house): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (martial_guard_house): 23
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     20x line 420: parts.resolve_panes(buf)
+
+-- highcourt_martial_watch_tower (highcourt:martial_watch_tower)
+   cells 1573, legend 34, role cells 548, fixed-node cells 0, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (martial_watch_tower): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (martial_watch_tower): 19
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     16x line 420: parts.resolve_panes(buf)
+
+-- highcourt_lore_shrine (highcourt:lore_shrine)
+   cells 4063, legend 39, role cells 1042, fixed-node cells 0, force-air cells 3021, race switches 0, undecided 0
+   building-bound writes (lore_shrine): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (lore_shrine): 55
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 420: parts.resolve_panes(buf)
+
+-- highcourt_lore_library (highcourt:lore_library)
+   cells 4641, legend 43, role cells 1166, fixed-node cells 0, force-air cells 3475, race switches 0, undecided 0
+   building-bound writes (lore_library): room and apron decor (decor.dress_rooms) 14
+   town writes kept in its box (lore_library): 53
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     50x line 420: parts.resolve_panes(buf)
+
+-- highcourt_lore_scriptorium (highcourt:lore_scriptorium)
+   cells 4522, legend 27, role cells 1197, fixed-node cells 0, force-air cells 3325, race switches 0, undecided 0
+   building-bound writes (lore_scriptorium): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (lore_scriptorium): 55
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 420: parts.resolve_panes(buf)
+
+-- highcourt_lore_archive (highcourt:lore_archive)
+   cells 3825, legend 25, role cells 977, fixed-node cells 0, force-air cells 2848, race switches 0, undecided 0
+   building-bound writes (lore_archive): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (lore_archive): 199
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 412: services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+     44x line 420: parts.resolve_panes(buf)
+
+-- highcourt_lore_chapter_house (highcourt:lore_chapter_house)
+   cells 2535, legend 29, role cells 744, fixed-node cells 0, force-air cells 1791, race switches 0, undecided 0
+   building-bound writes (lore_chapter_house): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (lore_chapter_house): 39
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     36x line 420: parts.resolve_panes(buf)
+
+-- highcourt_lore_almonry (highcourt:lore_almonry)
+   cells 1573, legend 37, role cells 509, fixed-node cells 0, force-air cells 1064, race switches 0, undecided 0
+   building-bound writes (lore_almonry): room and apron decor (decor.dress_rooms) 10
+   town writes kept in its box (lore_almonry): 31
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 420: parts.resolve_panes(buf)
+
+-- highcourt_lore_cloister_walk (highcourt:lore_cloister_walk)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (lore_cloister_walk): 3
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- highcourt_lore_quiet_grove (highcourt:lore_quiet_grove)
+   cells 5625, legend 26, role cells 248, fixed-node cells 1464, force-air cells 3913, race switches 0, undecided 0
+   town writes kept in its box (lore_quiet_grove): 3
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- highcourt_lore_chapel_yard (highcourt:lore_chapel_yard)
+   cells 2340, legend 36, role cells 647, fixed-node cells 0, force-air cells 1693, race switches 0, undecided 0
+   building-bound writes (lore_chapel_yard): room and apron decor (decor.dress_rooms) 6
+   town writes kept in its box (lore_chapel_yard): 36
+     36x line 420: parts.resolve_panes(buf)
+
+-- highcourt_homes_tavern (highcourt:homes_tavern)
+   cells 3060, legend 41, role cells 831, fixed-node cells 0, force-air cells 2229, race switches 0, undecided 0
+   building-bound writes (homes_tavern): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (homes_tavern): 48
+     6x line 343: plot.decorate(buf, palette, area)
+     42x line 420: parts.resolve_panes(buf)
+
+-- highcourt_homes_house_gable (highcourt:homes_house_gable)
+   cells 1089, legend 37, role cells 365, fixed-node cells 0, force-air cells 724, race switches 0, undecided 0
+   building-bound writes (homes_house_gable): room and apron decor (decor.dress_rooms) 10
+   town writes kept in its box (homes_house_gable): 23
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     20x line 420: parts.resolve_panes(buf)
+
+-- highcourt_homes_house_hip (highcourt:homes_house_hip)
+   cells 1430, legend 43, role cells 464, fixed-node cells 0, force-air cells 966, race switches 0, undecided 0
+   building-bound writes (homes_house_hip): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (homes_house_hip): 31
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 420: parts.resolve_panes(buf)
+
+-- highcourt_homes_house_lane (highcourt:homes_house_lane)
+   cells 1331, legend 37, role cells 434, fixed-node cells 0, force-air cells 897, race switches 0, undecided 0
+   building-bound writes (homes_house_lane): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (homes_house_lane): 31
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 420: parts.resolve_panes(buf)
+
+-- highcourt_homes_tenement (highcourt:homes_tenement)
+   cells 3211, legend 29, role cells 905, fixed-node cells 0, force-air cells 2306, race switches 0, undecided 0
+   building-bound writes (homes_tenement): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (homes_tenement): 47
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 420: parts.resolve_panes(buf)
+
+-- highcourt_homes_bakehouse (highcourt:homes_bakehouse)
+   cells 2090, legend 43, role cells 674, fixed-node cells 0, force-air cells 1416, race switches 0, undecided 0
+   building-bound writes (homes_bakehouse): room and apron decor (decor.dress_rooms) 12
+   town writes kept in its box (homes_bakehouse): 191
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 412: services.decorate("highcourt", plot.id, buf, palette, sockets, area)
+     36x line 420: parts.resolve_panes(buf)
+
+-- highcourt_homes_orchard (highcourt:homes_orchard)
+   cells 4641, legend 33, role cells 379, fixed-node cells 589, force-air cells 3673, race switches 0, undecided 0
+   town writes kept in its box (homes_orchard): 3
+     3x line 314: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- dur_brannoc_kings_hall (dur_brannoc:kings_hall)
+   cells 34809, legend 62, role cells 6701, fixed-node cells 0, force-air cells 28108, race switches 0, undecided 0
+   building-bound writes (kings_hall): the braziers between the hall's bays 4; the stone-block bands inlaid in the hall's floor 90
+   town writes kept in its box (kings_hall): 89
+     6x line 635: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+     83x line 776: parts.resolve_panes(buf)
+
+-- dur_brannoc_gate_south (dur_brannoc:gate_south, dur_brannoc:gate_west, dur_brannoc:gate_north, dur_brannoc:gate_east)
+   cells 1547, legend 19, role cells 898, fixed-node cells 0, force-air cells 649, race switches 0, undecided 0
+   town writes kept in its box (gate_south): 6
+     6x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (gate_west): 6
+     6x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (gate_north): 6
+     6x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (gate_east): 6
+     6x line 776: parts.resolve_panes(buf)
+
+-- dur_brannoc_colonnade_west (dur_brannoc:colonnade_west)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_west): 3
+     3x line 635: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+
+-- dur_brannoc_colonnade_east (dur_brannoc:colonnade_east)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_east): 9
+     6x line 626: layout.street_lamps(buf, dwarf, 0, -44, -6, 8, outdoors)
+     3x line 635: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+
+-- dur_brannoc_ancestor_hall (dur_brannoc:ancestor_hall)
+   cells 4798, legend 37, role cells 1186, fixed-node cells 0, force-air cells 3612, race switches 0, undecided 0
+   town writes kept in its box (ancestor_hall): 52
+     52x line 776: parts.resolve_panes(buf)
+
+-- dur_brannoc_great_forge (dur_brannoc:great_forge, nhal_veyr:bone_works)
+   cells 2880, legend 40, role cells 856, fixed-node cells 0, force-air cells 2024, race switches 0, undecided 0
+   town writes kept in its box (great_forge): 40
+     40x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (bone_works): 40
+     40x line 969: parts.resolve_panes(buf)
+
+-- dur_brannoc_masons_guild (dur_brannoc:masons_guild)
+   cells 3990, legend 26, role cells 1089, fixed-node cells 0, force-air cells 2901, race switches 0, undecided 0
+   town writes kept in its box (masons_guild): 52
+     52x line 776: parts.resolve_panes(buf)
+
+-- dur_brannoc_market_house (dur_brannoc:market_house, lethariel:quay_house, nhal_veyr:market_house)
+   cells 1452, legend 34, role cells 460, fixed-node cells 0, force-air cells 992, race switches 0, undecided 0
+   town writes kept in its box (market_house): 28
+     28x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (quay_house): 49
+     21x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     28x line 838: parts.resolve_panes(buf)
+   town writes kept in its box (market_house): 28
+     28x line 969: parts.resolve_panes(buf)
+
+-- dur_brannoc_south_house (dur_brannoc:south_house, lethariel:south_house, nhal_veyr:south_house)
+   cells 1331, legend 40, role cells 430, fixed-node cells 0, force-air cells 901, race switches 0, undecided 0
+   town writes kept in its box (south_house): 28
+     28x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (south_house): 28
+     28x line 838: parts.resolve_panes(buf)
+   town writes kept in its box (south_house): 28
+     28x line 969: parts.resolve_panes(buf)
+
+-- dur_brannoc_lane_house (dur_brannoc:lane_house, lethariel:plaza_house)
+   cells 1694, legend 36, role cells 492, fixed-node cells 0, force-air cells 1202, race switches 0, undecided 0
+   town writes kept in its box (lane_house): 28
+     28x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (plaza_house): 28
+     28x line 838: parts.resolve_panes(buf)
+
+-- dur_brannoc_plaza_house (dur_brannoc:plaza_house, lethariel:shore_house, nhal_veyr:plaza_house)
+   cells 1452, legend 34, role cells 460, fixed-node cells 0, force-air cells 992, race switches 0, undecided 0
+   town writes kept in its box (plaza_house): 28
+     28x line 776: parts.resolve_panes(buf)
+   town writes kept in its box (shore_house): 28
+     28x line 838: parts.resolve_panes(buf)
+   town writes kept in its box (plaza_house): 36
+     8x line 788: if dressing.gravewood(buf, undead, tx, tz, height) then trees = trees + 1 end
+     28x line 969: parts.resolve_panes(buf)
+
+-- dur_brannoc_forge_charcoal (dur_brannoc:forge_charcoal)
+   cells 3094, legend 23, role cells 813, fixed-node cells 6, force-air cells 2275, race switches 0, undecided 0
+   building-bound writes (forge_charcoal): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (forge_charcoal): 39
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     36x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_forge_smithy (dur_brannoc:forge_smithy)
+   cells 2880, legend 45, role cells 863, fixed-node cells 13, force-air cells 2004, race switches 0, undecided 0
+   building-bound writes (forge_smithy): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (forge_smithy): 196
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     153x line 418: services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+     40x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_forge_guild_house (dur_brannoc:forge_guild_house)
+   cells 3990, legend 28, role cells 1091, fixed-node cells 5, force-air cells 2894, race switches 0, undecided 0
+   building-bound writes (forge_guild_house): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (forge_guild_house): 207
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 418: services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+     52x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_forge_watch (dur_brannoc:forge_watch)
+   cells 4692, legend 33, role cells 1234, fixed-node cells 7, force-air cells 3451, race switches 0, undecided 0
+   building-bound writes (forge_watch): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (forge_watch): 63
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_forge_copse (dur_brannoc:forge_copse)
+   cells 5625, legend 24, role cells 248, fixed-node cells 1071, force-air cells 4306, race switches 0, undecided 0
+   town writes kept in its box (forge_copse): 3
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- dur_brannoc_forge_ore_yard (dur_brannoc:forge_ore_yard)
+   cells 3094, legend 23, role cells 811, fixed-node cells 6, force-air cells 2277, race switches 0, undecided 0
+   building-bound writes (forge_ore_yard): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (forge_ore_yard): 191
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 418: services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+     36x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_forge_store (dur_brannoc:forge_store)
+   cells 2873, legend 29, role cells 819, fixed-node cells 6, force-air cells 2048, race switches 0, undecided 0
+   building-bound writes (forge_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (forge_store): 191
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 418: services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+     36x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_barracks (dur_brannoc:garrison_barracks)
+   cells 5681, legend 33, role cells 1432, fixed-node cells 6, force-air cells 4243, race switches 0, undecided 0
+   building-bound writes (garrison_barracks): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (garrison_barracks): 67
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     64x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_muster_hall (dur_brannoc:garrison_muster_hall)
+   cells 3876, legend 41, role cells 1001, fixed-node cells 6, force-air cells 2869, race switches 0, undecided 0
+   building-bound writes (garrison_muster_hall): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (garrison_muster_hall): 53
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     50x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_armoury (dur_brannoc:garrison_armoury, dur_brannoc:deep_carvers, dur_brannoc:terrace_brewhouse)
+   cells 3192, legend 45, role cells 942, fixed-node cells 12, force-air cells 2238, race switches 0, undecided 0
+   building-bound writes (garrison_armoury): room and apron decor (decor.dress_rooms) 26
+   town writes kept in its box (garrison_armoury): 47
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 426: parts.resolve_panes(buf)
+   building-bound writes (deep_carvers): room and apron decor (decor.dress_rooms) 26
+   town writes kept in its box (deep_carvers): 199
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 418: services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+     44x line 426: parts.resolve_panes(buf)
+   building-bound writes (terrace_brewhouse): room and apron decor (decor.dress_rooms) 26
+   town writes kept in its box (terrace_brewhouse): 199
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 418: services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+     44x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_drill_yard (dur_brannoc:garrison_drill_yard)
+   cells 1573, legend 34, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (garrison_drill_yard): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (garrison_drill_yard): 16
+     16x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_stable (dur_brannoc:garrison_stable)
+   cells 3060, legend 25, role cells 856, fixed-node cells 6, force-air cells 2198, race switches 0, undecided 0
+   building-bound writes (garrison_stable): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (garrison_stable): 47
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_quartermaster (dur_brannoc:garrison_quartermaster, dur_brannoc:deep_archive)
+   cells 3315, legend 29, role cells 924, fixed-node cells 7, force-air cells 2384, race switches 0, undecided 0
+   building-bound writes (garrison_quartermaster): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (garrison_quartermaster): 47
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 426: parts.resolve_panes(buf)
+   building-bound writes (deep_archive): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (deep_archive): 47
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_serjeant (dur_brannoc:garrison_serjeant, dur_brannoc:deep_keeper)
+   cells 1170, legend 43, role cells 392, fixed-node cells 5, force-air cells 773, race switches 0, undecided 0
+   building-bound writes (garrison_serjeant): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (garrison_serjeant): 23
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     20x line 426: parts.resolve_panes(buf)
+   building-bound writes (deep_keeper): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (deep_keeper): 23
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     20x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_garrison_watch_tower (dur_brannoc:garrison_watch_tower, dur_brannoc:deep_watch, dur_brannoc:terrace_watch)
+   cells 1573, legend 34, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (garrison_watch_tower): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (garrison_watch_tower): 19
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     16x line 426: parts.resolve_panes(buf)
+   building-bound writes (deep_watch): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (deep_watch): 19
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     16x line 426: parts.resolve_panes(buf)
+   building-bound writes (terrace_watch): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (terrace_watch): 19
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     16x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_deep_hall_of_record (dur_brannoc:deep_hall_of_record)
+   cells 4063, legend 40, role cells 1040, fixed-node cells 5, force-air cells 3018, race switches 0, undecided 0
+   building-bound writes (deep_hall_of_record): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (deep_hall_of_record): 55
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_deep_scriptorium (dur_brannoc:deep_scriptorium)
+   cells 3990, legend 28, role cells 1091, fixed-node cells 6, force-air cells 2893, race switches 0, undecided 0
+   building-bound writes (deep_scriptorium): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (deep_scriptorium): 55
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_deep_memory_hall (dur_brannoc:deep_memory_hall)
+   cells 3876, legend 41, role cells 1000, fixed-node cells 6, force-air cells 2870, race switches 0, undecided 0
+   building-bound writes (deep_memory_hall): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (deep_memory_hall): 53
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     50x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_terrace_market (dur_brannoc:terrace_market)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (terrace_market): 3
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- dur_brannoc_terrace_alehouse (dur_brannoc:terrace_alehouse)
+   cells 3060, legend 41, role cells 824, fixed-node cells 6, force-air cells 2230, race switches 0, undecided 0
+   building-bound writes (terrace_alehouse): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (terrace_alehouse): 45
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     42x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_terrace_bakehouse (dur_brannoc:terrace_bakehouse)
+   cells 2880, legend 42, role cells 858, fixed-node cells 8, force-air cells 2014, race switches 0, undecided 0
+   building-bound writes (terrace_bakehouse): room and apron decor (decor.dress_rooms) 10
+   town writes kept in its box (terrace_bakehouse): 190
+     2x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 418: services.decorate("dur_brannoc", plot.id, buf, palette, sockets, area)
+     36x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_terrace_long_house (dur_brannoc:terrace_long_house)
+   cells 3705, legend 29, role cells 1013, fixed-node cells 6, force-air cells 2686, race switches 0, undecided 0
+   building-bound writes (terrace_long_house): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (terrace_long_house): 55
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_terrace_cottage_west (dur_brannoc:terrace_cottage_west)
+   cells 1430, legend 43, role cells 458, fixed-node cells 6, force-air cells 966, race switches 0, undecided 0
+   building-bound writes (terrace_cottage_west): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (terrace_cottage_west): 31
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 426: parts.resolve_panes(buf)
+
+-- dur_brannoc_terrace_cottage_east (dur_brannoc:terrace_cottage_east)
+   cells 1573, legend 37, role cells 493, fixed-node cells 4, force-air cells 1076, race switches 0, undecided 0
+   building-bound writes (terrace_cottage_east): room and apron decor (decor.dress_rooms) 10
+   town writes kept in its box (terrace_cottage_east): 31
+     3x line 328: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 426: parts.resolve_panes(buf)
+
+-- lethariel_kings_hall (lethariel:kings_hall)
+   cells 34809, legend 61, role cells 6697, fixed-node cells 0, force-air cells 28112, race switches 0, undecided 0
+   town writes kept in its box (kings_hall): 333
+     250x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     83x line 838: parts.resolve_panes(buf)
+
+-- lethariel_gate_south (lethariel:gate_south, lethariel:gate_west, lethariel:gate_east)
+   cells 1547, legend 19, role cells 898, fixed-node cells 0, force-air cells 649, race switches 0, undecided 0
+   town writes kept in its box (gate_south): 12
+     6x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     6x line 838: parts.resolve_panes(buf)
+   town writes kept in its box (gate_west): 8
+     2x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     6x line 838: parts.resolve_panes(buf)
+   town writes kept in its box (gate_east): 6
+     6x line 838: parts.resolve_panes(buf)
+
+-- lethariel_market (lethariel:market)
+   cells 3969, legend 26, role cells 727, fixed-node cells 0, force-air cells 3242, race switches 0, undecided 0
+   town writes kept in its box (market): 1
+     1x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+
+-- lethariel_colonnade_west (lethariel:colonnade_west)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+
+-- lethariel_colonnade_east (lethariel:colonnade_east)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+
+-- lethariel_star_hall (lethariel:star_hall)
+   cells 4798, legend 37, role cells 1186, fixed-node cells 0, force-air cells 3612, race switches 0, undecided 0
+   town writes kept in its box (star_hall): 81
+     29x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     52x line 838: parts.resolve_panes(buf)
+
+-- lethariel_sacred_grove (lethariel:sacred_grove)
+   cells 7225, legend 32, role cells 314, fixed-node cells 1993, force-air cells 4918, race switches 0, undecided 0
+   town writes kept in its box (sacred_grove): 99
+     30x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     38x line 762: dressing.undergrowth(buf, elf_palette, -RADIUS, -RADIUS, RADIUS,
+     1x line 842: layout.green(buf, elf_palette, RADIUS, sockets, doorways)
+     30x line 844: dressing.thin_cover(buf)
+
+-- lethariel_mere_shrine (lethariel:mere_shrine)
+   cells 810, legend 14, role cells 235, fixed-node cells 0, force-air cells 575, race switches 0, undecided 0
+   town writes kept in its box (mere_shrine): 3
+     3x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+
+-- lethariel_bough_west (lethariel:bough_west, lethariel:martial_bough)
+   cells 1815, legend 16, role cells 360, fixed-node cells 0, force-air cells 1455, race switches 0, undecided 0
+   town writes kept in its box (bough_west): 64
+     3x line 679: paved_prop("bench", seat[1], seat[2], x2, z2, function()
+     34x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     17x line 762: dressing.undergrowth(buf, elf_palette, -RADIUS, -RADIUS, RADIUS,
+     2x line 838: parts.resolve_panes(buf)
+     8x line 844: dressing.thin_cover(buf)
+   town writes kept in its box (martial_bough): 45
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     10x line 356: parts.resolve_panes(buf)
+
+-- lethariel_bough_east (lethariel:bough_east, lethariel:homes_bough)
+   cells 1694, legend 16, role cells 349, fixed-node cells 0, force-air cells 1345, race switches 0, undecided 0
+   town writes kept in its box (bough_east): 97
+     62x line 719: local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
+     19x line 762: dressing.undergrowth(buf, elf_palette, -RADIUS, -RADIUS, RADIUS,
+     2x line 838: parts.resolve_panes(buf)
+     14x line 844: dressing.thin_cover(buf)
+   town writes kept in its box (homes_bough): 45
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     10x line 356: parts.resolve_panes(buf)
+
+-- lethariel_market_granary (lethariel:market_granary)
+   cells 3094, legend 23, role cells 819, fixed-node cells 0, force-air cells 2275, race switches 0, undecided 0
+   building-bound writes (market_granary): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (market_granary): 79
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 356: parts.resolve_panes(buf)
+
+-- lethariel_market_bowyer (lethariel:market_bowyer, lethariel:martial_armoury, lethariel:homes_brewhouse)
+   cells 2880, legend 45, role cells 876, fixed-node cells 0, force-air cells 2004, race switches 0, undecided 0
+   building-bound writes (market_bowyer): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (market_bowyer): 235
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 348: services.decorate("lethariel", plot.id, buf, palette, sockets, area)
+     48x line 356: parts.resolve_panes(buf)
+   building-bound writes (martial_armoury): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (martial_armoury): 236
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     153x line 348: services.decorate("lethariel", plot.id, buf, palette, sockets, area)
+     48x line 356: parts.resolve_panes(buf)
+   building-bound writes (homes_brewhouse): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (homes_brewhouse): 235
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 348: services.decorate("lethariel", plot.id, buf, palette, sockets, area)
+     48x line 356: parts.resolve_panes(buf)
+
+-- lethariel_market_weaver (lethariel:market_weaver)
+   cells 3990, legend 28, role cells 1096, fixed-node cells 0, force-air cells 2894, race switches 0, undecided 0
+   building-bound writes (market_weaver): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (market_weaver): 247
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 348: services.decorate("lethariel", plot.id, buf, palette, sockets, area)
+     60x line 356: parts.resolve_panes(buf)
+
+-- lethariel_market_watch (lethariel:market_watch)
+   cells 3420, legend 33, role cells 948, fixed-node cells 0, force-air cells 2472, race switches 0, undecided 0
+   building-bound writes (market_watch): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (market_watch): 95
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 356: parts.resolve_panes(buf)
+
+-- lethariel_market_grove (lethariel:market_grove, lethariel:martial_grove, lethariel:mere_mourning, lethariel:homes_grove)
+   cells 5625, legend 26, role cells 248, fixed-node cells 1464, force-air cells 3913, race switches 0, undecided 0
+   town writes kept in its box (market_grove): 44
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     1x line 294: plot.decorate(buf, palette, area)
+     8x line 356: parts.resolve_panes(buf)
+   town writes kept in its box (martial_grove): 43
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     8x line 356: parts.resolve_panes(buf)
+   town writes kept in its box (mere_mourning): 43
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     8x line 356: parts.resolve_panes(buf)
+   town writes kept in its box (homes_grove): 44
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     1x line 294: plot.decorate(buf, palette, area)
+     8x line 356: parts.resolve_panes(buf)
+
+-- lethariel_market_orchard (lethariel:market_orchard)
+   cells 3927, legend 31, role cells 330, fixed-node cells 589, force-air cells 3008, race switches 0, undecided 0
+   town writes kept in its box (market_orchard): 63
+     48x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     12x line 356: parts.resolve_panes(buf)
+
+-- lethariel_market_bakehouse (lethariel:market_bakehouse)
+   cells 2873, legend 29, role cells 823, fixed-node cells 0, force-air cells 2050, race switches 0, undecided 0
+   building-bound writes (market_bakehouse): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (market_bakehouse): 231
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 348: services.decorate("lethariel", plot.id, buf, palette, sockets, area)
+     44x line 356: parts.resolve_panes(buf)
+
+-- lethariel_martial_barracks (lethariel:martial_barracks)
+   cells 3420, legend 33, role cells 947, fixed-node cells 0, force-air cells 2473, race switches 0, undecided 0
+   building-bound writes (martial_barracks): room and apron decor (decor.dress_rooms) 6
+   town writes kept in its box (martial_barracks): 95
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 356: parts.resolve_panes(buf)
+
+-- lethariel_martial_hall (lethariel:martial_hall, lethariel:homes_carver)
+   cells 3705, legend 41, role cells 967, fixed-node cells 0, force-air cells 2738, race switches 0, undecided 0
+   building-bound writes (martial_hall): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (martial_hall): 93
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     58x line 356: parts.resolve_panes(buf)
+   building-bound writes (homes_carver): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (homes_carver): 93
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     58x line 356: parts.resolve_panes(buf)
+
+-- lethariel_martial_stable (lethariel:martial_stable)
+   cells 2652, legend 25, role cells 757, fixed-node cells 0, force-air cells 1895, race switches 0, undecided 0
+   building-bound writes (martial_stable): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (martial_stable): 79
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 356: parts.resolve_panes(buf)
+
+-- lethariel_martial_store (lethariel:martial_store)
+   cells 2873, legend 29, role cells 825, fixed-node cells 0, force-air cells 2048, race switches 0, undecided 0
+   building-bound writes (martial_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (martial_store): 231
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 348: services.decorate("lethariel", plot.id, buf, palette, sockets, area)
+     44x line 356: parts.resolve_panes(buf)
+
+-- lethariel_martial_lodge (lethariel:martial_lodge, lethariel:homes_terrace_west)
+   cells 1452, legend 36, role cells 467, fixed-node cells 0, force-air cells 985, race switches 0, undecided 0
+   building-bound writes (martial_lodge): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (martial_lodge): 71
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     36x line 356: parts.resolve_panes(buf)
+   building-bound writes (homes_terrace_west): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (homes_terrace_west): 71
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     36x line 356: parts.resolve_panes(buf)
+
+-- lethariel_plot_mere_shrine (lethariel:mere_shrine)
+   cells 810, legend 14, role cells 235, fixed-node cells 0, force-air cells 575, race switches 0, undecided 0
+   town writes kept in its box (mere_shrine): 8
+     8x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+
+-- lethariel_mere_lore_hall (lethariel:mere_lore_hall)
+   cells 3990, legend 28, role cells 1096, fixed-node cells 0, force-air cells 2894, race switches 0, undecided 0
+   building-bound writes (mere_lore_hall): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (mere_lore_hall): 247
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 348: services.decorate("lethariel", plot.id, buf, palette, sockets, area)
+     60x line 356: parts.resolve_panes(buf)
+
+-- lethariel_homes_terrace_east (lethariel:homes_terrace_east)
+   cells 1331, legend 43, role cells 437, fixed-node cells 0, force-air cells 894, race switches 0, undecided 0
+   building-bound writes (homes_terrace_east): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (homes_terrace_east): 71
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     36x line 356: parts.resolve_panes(buf)
+
+-- lethariel_homes_longhouse (lethariel:homes_longhouse)
+   cells 2873, legend 29, role cells 825, fixed-node cells 0, force-air cells 2048, race switches 0, undecided 0
+   building-bound writes (homes_longhouse): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (homes_longhouse): 79
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 356: parts.resolve_panes(buf)
+
+-- lethariel_homes_feast_hall (lethariel:homes_feast_hall)
+   cells 3990, legend 28, role cells 1097, fixed-node cells 0, force-air cells 2893, race switches 0, undecided 0
+   building-bound writes (homes_feast_hall): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (homes_feast_hall): 95
+     32x line 266: dressing.lantern_pillar(buf, palette, lamp[1], lamp[2])
+     3x line 268: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 356: parts.resolve_panes(buf)
+
+-- nhal_veyr_mausoleum (nhal_veyr:mausoleum)
+   cells 34809, legend 63, role cells 6701, fixed-node cells 0, force-air cells 28108, race switches 0, undecided 0
+   building-bound writes (mausoleum): the braziers between the mausoleum's bays 4; the grave-slab bands inlaid in the mausoleum's floor 90
+   town writes kept in its box (mausoleum): 100
+     6x line 714: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+     11x line 788: if dressing.gravewood(buf, undead, tx, tz, height) then trees = trees + 1 end
+     83x line 969: parts.resolve_panes(buf)
+
+-- nhal_veyr_gate_south (nhal_veyr:gate_south, nhal_veyr:gate_west, nhal_veyr:gate_north, nhal_veyr:gate_east)
+   cells 1547, legend 19, role cells 898, fixed-node cells 0, force-air cells 649, race switches 0, undecided 0
+   town writes kept in its box (gate_south): 6
+     6x line 969: parts.resolve_panes(buf)
+   town writes kept in its box (gate_west): 6
+     6x line 969: parts.resolve_panes(buf)
+   town writes kept in its box (gate_north): 6
+     6x line 969: parts.resolve_panes(buf)
+   town writes kept in its box (gate_east): 6
+     6x line 969: parts.resolve_panes(buf)
+
+-- nhal_veyr_colonnade_west (nhal_veyr:colonnade_west)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_west): 3
+     3x line 714: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+
+-- nhal_veyr_colonnade_east (nhal_veyr:colonnade_east)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_east): 9
+     6x line 705: layout.street_lamps(buf, undead, 0, -44, -6, 8, outdoors)
+     3x line 714: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+
+-- nhal_veyr_vigil_hall (nhal_veyr:vigil_hall)
+   cells 4798, legend 36, role cells 1183, fixed-node cells 0, force-air cells 3615, race switches 0, undecided 0
+   town writes kept in its box (vigil_hall): 54
+     2x line 788: if dressing.gravewood(buf, undead, tx, tz, height) then trees = trees + 1 end
+     52x line 969: parts.resolve_panes(buf)
+
+-- nhal_veyr_bonesmith_guild (nhal_veyr:bonesmith_guild)
+   cells 3990, legend 25, role cells 1073, fixed-node cells 0, force-air cells 2917, race switches 0, undecided 0
+   town writes kept in its box (bonesmith_guild): 54
+     2x line 788: if dressing.gravewood(buf, undead, tx, tz, height) then trees = trees + 1 end
+     52x line 969: parts.resolve_panes(buf)
+
+-- nhal_veyr_lane_house (nhal_veyr:lane_house)
+   cells 1694, legend 34, role cells 492, fixed-node cells 0, force-air cells 1202, race switches 0, undecided 0
+   town writes kept in its box (lane_house): 28
+     28x line 969: parts.resolve_panes(buf)
+
+-- nhal_veyr_fallen_house (nhal_veyr:fallen_house)
+   cells 792, legend 13, role cells 208, fixed-node cells 2, force-air cells 582, race switches 0, undecided 0
+
+-- nhal_veyr_market_bone_store (nhal_veyr:market_bone_store)
+   cells 3094, legend 23, role cells 813, fixed-node cells 6, force-air cells 2275, race switches 0, undecided 0
+   building-bound writes (market_bone_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (market_bone_store): 191
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 464: services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
+     36x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_market_bonesmith (nhal_veyr:market_bonesmith, nhal_veyr:vigil_embalmer, nhal_veyr:vigil_candle_works)
+   cells 2880, legend 45, role cells 863, fixed-node cells 13, force-air cells 2004, race switches 0, undecided 0
+   building-bound writes (market_bonesmith): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (market_bonesmith): 196
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     153x line 464: services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
+     40x line 472: parts.resolve_panes(buf)
+   building-bound writes (vigil_embalmer): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (vigil_embalmer): 43
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     40x line 472: parts.resolve_panes(buf)
+   building-bound writes (vigil_candle_works): room and apron decor (decor.dress_rooms) 20
+   town writes kept in its box (vigil_candle_works): 195
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 464: services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
+     40x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_market_shroud_house (nhal_veyr:market_shroud_house)
+   cells 3990, legend 27, role cells 1075, fixed-node cells 5, force-air cells 2910, race switches 0, undecided 0
+   building-bound writes (market_shroud_house): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (market_shroud_house): 207
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 464: services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
+     52x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_market_watch (nhal_veyr:market_watch)
+   cells 4692, legend 33, role cells 1234, fixed-node cells 7, force-air cells 3451, race switches 0, undecided 0
+   building-bound writes (market_watch): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (market_watch): 63
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_market_copse (nhal_veyr:market_copse, nhal_veyr:vigil_copse)
+   cells 5625, legend 32, role cells 236, fixed-node cells 347, force-air cells 5042, race switches 0, undecided 0
+   town writes kept in its box (market_copse): 3
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   town writes kept in its box (vigil_copse): 3
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- nhal_veyr_market_physic (nhal_veyr:market_physic)
+   cells 3705, legend 41, role cells 962, fixed-node cells 5, force-air cells 2738, race switches 0, undecided 0
+   building-bound writes (market_physic): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (market_physic): 205
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 464: services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
+     50x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_market_charnel (nhal_veyr:market_charnel)
+   cells 2873, legend 29, role cells 819, fixed-node cells 6, force-air cells 2048, race switches 0, undecided 0
+   building-bound writes (market_charnel): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (market_charnel): 191
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 464: services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
+     36x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_market_candle_court (nhal_veyr:market_candle_court, nhal_veyr:watch_pyre_court, nhal_veyr:vigil_high_court, nhal_veyr:homes_candle_court)
+   cells 847, legend 8, role cells 149, fixed-node cells 0, force-air cells 698, race switches 0, undecided 0
+   town writes kept in its box (market_candle_court): 25
+     25x line 476: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (watch_pyre_court): 25
+     25x line 476: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (vigil_high_court): 25
+     25x line 476: layout.green(buf, palette, M.REACH, sockets, points.doors)
+   town writes kept in its box (homes_candle_court): 25
+     25x line 476: layout.green(buf, palette, M.REACH, sockets, points.doors)
+
+-- nhal_veyr_watch_barracks (nhal_veyr:watch_barracks)
+   cells 5681, legend 33, role cells 1432, fixed-node cells 6, force-air cells 4243, race switches 0, undecided 0
+   building-bound writes (watch_barracks): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (watch_barracks): 67
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     64x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_watch_captain_hall (nhal_veyr:watch_captain_hall, nhal_veyr:homes_mourners_hall)
+   cells 3876, legend 41, role cells 1001, fixed-node cells 6, force-air cells 2869, race switches 0, undecided 0
+   building-bound writes (watch_captain_hall): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (watch_captain_hall): 53
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     50x line 472: parts.resolve_panes(buf)
+   building-bound writes (homes_mourners_hall): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (homes_mourners_hall): 205
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 464: services.decorate("nhal_veyr", plot.id, buf, palette, sockets, area)
+     50x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_watch_armoury (nhal_veyr:watch_armoury)
+   cells 3192, legend 45, role cells 942, fixed-node cells 12, force-air cells 2238, race switches 0, undecided 0
+   building-bound writes (watch_armoury): room and apron decor (decor.dress_rooms) 26
+   town writes kept in its box (watch_armoury): 47
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_watch_stables (nhal_veyr:watch_stables)
+   cells 3060, legend 25, role cells 856, fixed-node cells 6, force-air cells 2198, race switches 0, undecided 0
+   building-bound writes (watch_stables): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (watch_stables): 47
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_watch_drill_yard (nhal_veyr:watch_drill_yard)
+   cells 1573, legend 34, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (watch_drill_yard): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (watch_drill_yard): 16
+     16x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_watch_quartermaster (nhal_veyr:watch_quartermaster)
+   cells 3315, legend 29, role cells 924, fixed-node cells 7, force-air cells 2384, race switches 0, undecided 0
+   building-bound writes (watch_quartermaster): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (watch_quartermaster): 47
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     44x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_watch_serjeant_house (nhal_veyr:watch_serjeant_house)
+   cells 1170, legend 43, role cells 392, fixed-node cells 5, force-air cells 773, race switches 0, undecided 0
+   building-bound writes (watch_serjeant_house): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (watch_serjeant_house): 23
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     20x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_watch_tower (nhal_veyr:watch_tower)
+   cells 1573, legend 34, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (watch_tower): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (watch_tower): 19
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     16x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_vigil_ossuary (nhal_veyr:vigil_ossuary)
+   cells 4275, legend 23, role cells 1064, fixed-node cells 5, force-air cells 3206, race switches 0, undecided 0
+   building-bound writes (vigil_ossuary): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (vigil_ossuary): 55
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_vigil_scriptorium (nhal_veyr:vigil_scriptorium)
+   cells 3990, legend 27, role cells 1075, fixed-node cells 6, force-air cells 2909, race switches 0, undecided 0
+   building-bound writes (vigil_scriptorium): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (vigil_scriptorium): 55
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_vigil_mausoleum_west (nhal_veyr:vigil_mausoleum_west)
+   cells 1985, legend 43, role cells 639, fixed-node cells 6, force-air cells 1340, race switches 0, undecided 0
+   building-bound writes (vigil_mausoleum_west): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (vigil_mausoleum_west): 39
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     36x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_vigil_mausoleum_east (nhal_veyr:vigil_mausoleum_east)
+   cells 1671, legend 43, role cells 549, fixed-node cells 6, force-air cells 1116, race switches 0, undecided 0
+   building-bound writes (vigil_mausoleum_east): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (vigil_mausoleum_east): 35
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     32x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_vigil_watch (nhal_veyr:vigil_watch, nhal_veyr:homes_watch)
+   cells 4692, legend 33, role cells 1234, fixed-node cells 7, force-air cells 3451, race switches 0, undecided 0
+   building-bound writes (vigil_watch): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (vigil_watch): 63
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 472: parts.resolve_panes(buf)
+   building-bound writes (homes_watch): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (homes_watch): 63
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     60x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_vigil_ruin_close_ruin_1 (nhal_veyr:vigil_ruin_close_ruin_1)
+   cells 968, legend 14, role cells 216, fixed-node cells 3, force-air cells 749, race switches 0, undecided 0
+   town writes kept in its box (vigil_ruin_close_ruin_1): 84
+     82x line 395: plot.decorate(buf, palette, area)
+     2x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_vigil_ruin_close_ruin_2 (nhal_veyr:vigil_ruin_close_ruin_2)
+   cells 968, legend 15, role cells 244, fixed-node cells 2, force-air cells 722, race switches 0, undecided 0
+
+-- nhal_veyr_homes_gate_house (nhal_veyr:homes_gate_house)
+   cells 1452, legend 37, role cells 461, fixed-node cells 4, force-air cells 987, race switches 0, undecided 0
+   building-bound writes (homes_gate_house): room and apron decor (decor.dress_rooms) 5
+   town writes kept in its box (homes_gate_house): 31
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_homes_lane_house (nhal_veyr:homes_lane_house)
+   cells 1331, legend 43, role cells 431, fixed-node cells 4, force-air cells 896, race switches 0, undecided 0
+   building-bound writes (homes_lane_house): room and apron decor (decor.dress_rooms) 5
+   town writes kept in its box (homes_lane_house): 31
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_homes_terrace_house (nhal_veyr:homes_terrace_house)
+   cells 2002, legend 37, role cells 561, fixed-node cells 6, force-air cells 1435, race switches 0, undecided 0
+   building-bound writes (homes_terrace_house): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (homes_terrace_house): 31
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_homes_corner_house (nhal_veyr:homes_corner_house)
+   cells 1716, legend 37, role cells 542, fixed-node cells 4, force-air cells 1170, race switches 0, undecided 0
+   building-bound writes (homes_corner_house): room and apron decor (decor.dress_rooms) 10
+   town writes kept in its box (homes_corner_house): 31
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_homes_fallen_west (nhal_veyr:homes_fallen_west)
+   cells 968, legend 14, role cells 216, fixed-node cells 3, force-air cells 749, race switches 0, undecided 0
+   town writes kept in its box (homes_fallen_west): 11
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     4x line 395: plot.decorate(buf, palette, area)
+     4x line 472: parts.resolve_panes(buf)
+
+-- nhal_veyr_homes_fallen_east (nhal_veyr:homes_fallen_east)
+   cells 1144, legend 15, role cells 273, fixed-node cells 4, force-air cells 867, race switches 0, undecided 0
+   town writes kept in its box (homes_fallen_east): 11
+     3x line 353: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     4x line 395: plot.decorate(buf, palette, area)
+     4x line 472: parts.resolve_panes(buf)
+
+-- gor_drazhak_warlord_hall (gor_drazhak:warlord_hall)
+   cells 34809, legend 62, role cells 6701, fixed-node cells 0, force-air cells 28108, race switches 0, undecided 0
+   building-bound writes (warlord_hall): the braziers between the hall's bays 4; the ors-stone bands inlaid in the hall's floor 90
+   town writes kept in its box (warlord_hall): 434
+     99x line 602: buf:put(x, y, z, ORS_BLOCK)
+     33x line 605: buf:put(x, PLATFORM.top, z, STONE)
+     132x line 609: buf:clear(PLATFORM.x1, PLATFORM.top + 1, PLATFORM.z1,
+     23x line 611: breastwork(buf, ors, PLATFORM.x1, PLATFORM.z1, PLATFORM.x2,
+     6x line 624: buf:put(x, y, flight_z, ORS_BLOCK)
+     3x line 626: parts.stair(buf, x, PLATFORM.top - step, flight_z, tread, 3)
+     2x line 628: buf:clear(PLATFORM.x2, PLATFORM.top + 1, flight_z,
+     2x line 634: parts.floor_torch(buf, orc, corner[1], PLATFORM.top + 1,
+     3x line 749: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+     83x line 970: parts.resolve_panes(buf)
+     48x line 974: layout.green(buf, orc, RADIUS, sockets, doorways)
+
+-- gor_drazhak_gate_south (gor_drazhak:gate_south, gor_drazhak:gate_west, gor_drazhak:gate_north, gor_drazhak:gate_east)
+   cells 1547, legend 19, role cells 898, fixed-node cells 0, force-air cells 649, race switches 0, undecided 0
+   town writes kept in its box (gate_south): 6
+     6x line 970: parts.resolve_panes(buf)
+   town writes kept in its box (gate_west): 6
+     6x line 970: parts.resolve_panes(buf)
+   town writes kept in its box (gate_north): 6
+     6x line 970: parts.resolve_panes(buf)
+   town writes kept in its box (gate_east): 6
+     6x line 970: parts.resolve_panes(buf)
+
+-- gor_drazhak_colonnade_west (gor_drazhak:colonnade_west)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_west): 11
+     3x line 749: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+     8x line 778: paved_prop("approach_standard", mast[1], mast[2], mast[1], mast[2],
+
+-- gor_drazhak_colonnade_east (gor_drazhak:colonnade_east)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (colonnade_east): 17
+     6x line 740: layout.street_lamps(buf, orc, 0, -44, -12, 8, outdoors)
+     3x line 749: paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
+     8x line 778: paved_prop("approach_standard", mast[1], mast[2], mast[1], mast[2],
+
+-- gor_drazhak_skull_hall (gor_drazhak:skull_hall)
+   cells 4798, legend 36, role cells 1183, fixed-node cells 0, force-air cells 3615, race switches 0, undecided 0
+   town writes kept in its box (skull_hall): 52
+     52x line 970: parts.resolve_panes(buf)
+
+-- gor_drazhak_host_store (gor_drazhak:host_store)
+   cells 3094, legend 22, role cells 810, fixed-node cells 0, force-air cells 2284, race switches 0, undecided 0
+   town writes kept in its box (host_store): 36
+     36x line 970: parts.resolve_panes(buf)
+
+-- gor_drazhak_council_house (gor_drazhak:council_house)
+   cells 3990, legend 25, role cells 1073, fixed-node cells 0, force-air cells 2917, race switches 0, undecided 0
+   town writes kept in its box (council_house): 76
+     12x line 806: trees = trees + layout.plant_orchard(buf, orc, block[1], block[2],
+     52x line 970: parts.resolve_panes(buf)
+     12x line 974: layout.green(buf, orc, RADIUS, sockets, doorways)
+
+-- gor_drazhak_bazaar_house (gor_drazhak:bazaar_house, gor_drazhak:plaza_house)
+   cells 968, legend 34, role cells 455, fixed-node cells 0, force-air cells 513, race switches 0, undecided 0
+   building-bound writes (bazaar_house): the breastworks over the dwellings' flat decks 60
+   town writes kept in its box (bazaar_house): 28
+     28x line 970: parts.resolve_panes(buf)
+   building-bound writes (plaza_house): the breastworks over the dwellings' flat decks 60
+   town writes kept in its box (plaza_house): 33
+     5x line 806: trees = trees + layout.plant_orchard(buf, orc, block[1], block[2],
+     28x line 970: parts.resolve_panes(buf)
+
+-- gor_drazhak_south_house (gor_drazhak:south_house)
+   cells 968, legend 34, role cells 455, fixed-node cells 0, force-air cells 513, race switches 0, undecided 0
+   building-bound writes (south_house): the breastworks over the dwellings' flat decks 60
+   town writes kept in its box (south_house): 32
+     4x line 806: trees = trees + layout.plant_orchard(buf, orc, block[1], block[2],
+     28x line 970: parts.resolve_panes(buf)
+
+-- gor_drazhak_lane_house (gor_drazhak:lane_house)
+   cells 1089, legend 36, role cells 488, fixed-node cells 0, force-air cells 601, race switches 0, undecided 0
+   building-bound writes (lane_house): the breastworks over the dwellings' flat decks 60
+   town writes kept in its box (lane_house): 30
+     2x line 806: trees = trees + layout.plant_orchard(buf, orc, block[1], block[2],
+     28x line 970: parts.resolve_panes(buf)
+
+-- gor_drazhak_bazaar_butcher (gor_drazhak:bazaar_butcher, gor_drazhak:bazaar_brewhouse, gor_drazhak:bazaar_smithy)
+   cells 2160, legend 39, role cells 879, fixed-node cells 11, force-air cells 1270, race switches 0, undecided 0
+   building-bound writes (bazaar_butcher): room and apron decor (decor.dress_rooms) 15; the breastwork over a flat deck 71
+   town writes kept in its box (bazaar_butcher): 51
+     2x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     11x line 360: plot.decorate(buf, palette, area)
+     38x line 437: parts.resolve_panes(buf)
+   building-bound writes (bazaar_brewhouse): room and apron decor (decor.dress_rooms) 15; the breastwork over a flat deck 71
+   town writes kept in its box (bazaar_brewhouse): 41
+     1x line 360: plot.decorate(buf, palette, area)
+     40x line 437: parts.resolve_panes(buf)
+   building-bound writes (bazaar_smithy): room and apron decor (decor.dress_rooms) 15; the breastwork over a flat deck 71
+   town writes kept in its box (bazaar_smithy): 194
+     1x line 360: plot.decorate(buf, palette, area)
+     153x line 429: services.decorate("gor_drazhak", plot.id, buf, palette, sockets, area)
+     40x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_bazaar_tannery (gor_drazhak:bazaar_tannery, gor_drazhak:warren_weaver)
+   cells 1650, legend 21, role cells 512, fixed-node cells 0, force-air cells 1138, race switches 0, undecided 0
+   town writes kept in its box (bazaar_tannery): 184
+     4x line 360: plot.decorate(buf, palette, area)
+     152x line 429: services.decorate("gor_drazhak", plot.id, buf, palette, sockets, area)
+     28x line 437: parts.resolve_panes(buf)
+   town writes kept in its box (warren_weaver): 180
+     152x line 429: services.decorate("gor_drazhak", plot.id, buf, palette, sockets, area)
+     28x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_bazaar_armourer (gor_drazhak:bazaar_armourer)
+   cells 2394, legend 39, role cells 955, fixed-node cells 10, force-air cells 1429, race switches 0, undecided 0
+   building-bound writes (bazaar_armourer): room and apron decor (decor.dress_rooms) 14; the breastwork over a flat deck 75
+   town writes kept in its box (bazaar_armourer): 207
+     1x line 360: plot.decorate(buf, palette, area)
+     152x line 429: services.decorate("gor_drazhak", plot.id, buf, palette, sockets, area)
+     44x line 437: parts.resolve_panes(buf)
+     10x line 441: layout.green(buf, palette, M.REACH, sockets, points.doors)
+
+-- gor_drazhak_bazaar_store (gor_drazhak:bazaar_store)
+   cells 3094, legend 25, role cells 813, fixed-node cells 5, force-air cells 2276, race switches 0, undecided 0
+   building-bound writes (bazaar_store): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (bazaar_store): 36
+     36x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_bazaar_carver (gor_drazhak:bazaar_carver)
+   cells 1144, legend 38, role cells 527, fixed-node cells 5, force-air cells 612, race switches 0, undecided 0
+   building-bound writes (bazaar_carver): room and apron decor (decor.dress_rooms) 11; the breastwork over a flat deck 66
+   town writes kept in its box (bazaar_carver): 190
+     152x line 429: services.decorate("gor_drazhak", plot.id, buf, palette, sockets, area)
+     28x line 437: parts.resolve_panes(buf)
+     10x line 441: layout.green(buf, palette, M.REACH, sockets, points.doors)
+
+-- gor_drazhak_plot_bazaar_house (gor_drazhak:bazaar_house, gor_drazhak:war_chief_house, gor_drazhak:bone_shaman_house)
+   cells 1144, legend 39, role cells 522, fixed-node cells 6, force-air cells 616, race switches 0, undecided 0
+   building-bound writes (bazaar_house): room and apron decor (decor.dress_rooms) 7; the breastwork over a flat deck 66
+   town writes kept in its box (bazaar_house): 31
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 437: parts.resolve_panes(buf)
+   building-bound writes (war_chief_house): room and apron decor (decor.dress_rooms) 7; the breastwork over a flat deck 66
+   town writes kept in its box (war_chief_house): 31
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 437: parts.resolve_panes(buf)
+   building-bound writes (bone_shaman_house): room and apron decor (decor.dress_rooms) 7; the breastwork over a flat deck 66
+   town writes kept in its box (bone_shaman_house): 31
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_war_barracks (gor_drazhak:war_barracks)
+   cells 4641, legend 34, role cells 1214, fixed-node cells 6, force-air cells 3421, race switches 0, undecided 0
+   building-bound writes (war_barracks): room and apron decor (decor.dress_rooms) 14
+   town writes kept in its box (war_barracks): 69
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     14x line 360: plot.decorate(buf, palette, area)
+     52x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_war_armoury (gor_drazhak:war_armoury)
+   cells 2394, legend 41, role cells 965, fixed-node cells 12, force-air cells 1417, race switches 0, undecided 0
+   building-bound writes (war_armoury): room and apron decor (decor.dress_rooms) 26; the breastwork over a flat deck 75
+   town writes kept in its box (war_armoury): 55
+     44x line 437: parts.resolve_panes(buf)
+     11x line 441: layout.green(buf, palette, M.REACH, sockets, points.doors)
+
+-- gor_drazhak_war_drill_yard (gor_drazhak:war_drill_yard)
+   cells 1573, legend 34, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (war_drill_yard): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (war_drill_yard): 16
+     16x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_war_quartermaster (gor_drazhak:war_quartermaster)
+   cells 3315, legend 29, role cells 924, fixed-node cells 7, force-air cells 2384, race switches 0, undecided 0
+   building-bound writes (war_quartermaster): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (war_quartermaster): 55
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     8x line 360: plot.decorate(buf, palette, area)
+     44x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_war_watch_tower (gor_drazhak:war_watch_tower)
+   cells 1573, legend 34, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (war_watch_tower): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (war_watch_tower): 19
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     16x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_bone_spirit_hall (gor_drazhak:bone_spirit_hall)
+   cells 4798, legend 39, role cells 1189, fixed-node cells 5, force-air cells 3604, race switches 0, undecided 0
+   building-bound writes (bone_spirit_hall): room and apron decor (decor.dress_rooms) 11
+   town writes kept in its box (bone_spirit_hall): 55
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     52x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_bone_reader_hall (gor_drazhak:bone_reader_hall)
+   cells 3990, legend 27, role cells 1075, fixed-node cells 6, force-air cells 2909, race switches 0, undecided 0
+   building-bound writes (bone_reader_hall): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (bone_reader_hall): 63
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     8x line 360: plot.decorate(buf, palette, area)
+     52x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_bone_herb_house (gor_drazhak:bone_herb_house)
+   cells 1144, legend 39, role cells 529, fixed-node cells 5, force-air cells 610, race switches 0, undecided 0
+   building-bound writes (bone_herb_house): room and apron decor (decor.dress_rooms) 13; the breastwork over a flat deck 66
+   town writes kept in its box (bone_herb_house): 187
+     152x line 429: services.decorate("gor_drazhak", plot.id, buf, palette, sockets, area)
+     28x line 437: parts.resolve_panes(buf)
+     7x line 441: layout.green(buf, palette, M.REACH, sockets, points.doors)
+
+-- gor_drazhak_bone_store (gor_drazhak:bone_store)
+   cells 3094, legend 25, role cells 813, fixed-node cells 6, force-air cells 2275, race switches 0, undecided 0
+   building-bound writes (bone_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (bone_store): 46
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     7x line 360: plot.decorate(buf, palette, area)
+     36x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_warren_clan_house (gor_drazhak:warren_clan_house)
+   cells 3705, legend 29, role cells 1013, fixed-node cells 6, force-air cells 2686, race switches 0, undecided 0
+   building-bound writes (warren_clan_house): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (warren_clan_house): 65
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     10x line 360: plot.decorate(buf, palette, area)
+     52x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_warren_round_lodge (gor_drazhak:warren_round_lodge)
+   cells 1170, legend 38, role cells 501, fixed-node cells 10, force-air cells 659, race switches 0, undecided 0
+   building-bound writes (warren_round_lodge): room and apron decor (decor.dress_rooms) 10; the breastwork over a flat deck 48
+   town writes kept in its box (warren_round_lodge): 14
+     2x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     12x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_warren_house_spear (gor_drazhak:warren_house_spear)
+   cells 1144, legend 37, role cells 522, fixed-node cells 6, force-air cells 616, race switches 0, undecided 0
+   building-bound writes (warren_house_spear): room and apron decor (decor.dress_rooms) 7; the breastwork over a flat deck 66
+   town writes kept in its box (warren_house_spear): 31
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     28x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_warren_house_tusk (gor_drazhak:warren_house_tusk)
+   cells 936, legend 38, role cells 435, fixed-node cells 10, force-air cells 491, race switches 0, undecided 0
+   building-bound writes (warren_house_tusk): room and apron decor (decor.dress_rooms) 10; the breastwork over a flat deck 48
+   town writes kept in its box (warren_house_tusk): 14
+     2x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     12x line 437: parts.resolve_panes(buf)
+
+-- gor_drazhak_warren_house_bone (gor_drazhak:warren_house_bone)
+   cells 1287, legend 40, role cells 564, fixed-node cells 5, force-air cells 718, race switches 0, undecided 0
+   building-bound writes (warren_house_bone): room and apron decor (decor.dress_rooms) 11; the breastwork over a flat deck 66
+   town writes kept in its box (warren_house_bone): 40
+     28x line 437: parts.resolve_panes(buf)
+     12x line 441: layout.green(buf, palette, M.REACH, sockets, points.doors)
+
+-- gor_drazhak_warren_store (gor_drazhak:warren_store)
+   cells 3094, legend 25, role cells 813, fixed-node cells 4, force-air cells 2277, race switches 0, undecided 0
+   building-bound writes (warren_store): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (warren_store): 50
+     3x line 349: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     11x line 360: plot.decorate(buf, palette, area)
+     36x line 437: parts.resolve_panes(buf)
+
+-- kezamba_kings_hall (kezamba:kings_hall)
+   cells 22937, legend 62, role cells 4879, fixed-node cells 0, force-air cells 18058, race switches 0, undecided 0
+
+-- kezamba_moot_house (kezamba:moot_house)
+   cells 3501, legend 28, role cells 529, fixed-node cells 0, force-air cells 2972, race switches 0, undecided 0
+   town writes kept in its box (moot_house): 24
+     3x line 696: if dressing.emergent(buf, timber, spot[1], spot[2], spot[3]) then
+     12x line 726: dressing.basin_flora(buf, timber, area[1], area[2], area[3],
+     9x line 865: dressing.thin_cover(buf)
+
+-- kezamba_cauldron_court (kezamba:cauldron_court)
+   cells 1575, legend 11, role cells 319, fixed-node cells 0, force-air cells 1256, race switches 0, undecided 0
+   town writes kept in its box (cauldron_court): 3
+     3x line 635: local lamps_placed = scatter("street lamp",
+
+-- kezamba_shrine (kezamba:shrine)
+   cells 2197, legend 12, role cells 348, fixed-node cells 0, force-air cells 1849, race switches 0, undecided 0
+   town writes kept in its box (shrine): 23
+     3x line 635: local lamps_placed = scatter("street lamp",
+     2x line 714: if dressing.jungle_tree(buf, timber, spot[1], spot[2], spot[3]) then
+     11x line 726: dressing.basin_flora(buf, timber, area[1], area[2], area[3],
+     7x line 865: dressing.thin_cover(buf)
+
+-- kezamba_carver_yard (kezamba:carver_yard)
+   cells 1859, legend 8, role cells 213, fixed-node cells 0, force-air cells 1646, race switches 0, undecided 0
+   town writes kept in its box (carver_yard): 35
+     3x line 635: local lamps_placed = scatter("street lamp",
+     24x line 726: dressing.basin_flora(buf, timber, area[1], area[2], area[3],
+     8x line 865: dressing.thin_cover(buf)
+
+-- kezamba_granary (kezamba:granary)
+   cells 3094, legend 21, role cells 810, fixed-node cells 0, force-air cells 2284, race switches 0, undecided 0
+
+-- kezamba_stable (kezamba:stable)
+   cells 2652, legend 23, role cells 757, fixed-node cells 0, force-air cells 1895, race switches 0, undecided 0
+
+-- kezamba_gate_house_south (kezamba:gate_house_south)
+   cells 1452, legend 33, role cells 460, fixed-node cells 0, force-air cells 992, race switches 0, undecided 0
+
+-- kezamba_lane_house (kezamba:lane_house)
+   cells 1331, legend 39, role cells 430, fixed-node cells 0, force-air cells 901, race switches 0, undecided 0
+
+-- kezamba_west_house (kezamba:west_house)
+   cells 1694, legend 35, role cells 492, fixed-node cells 0, force-air cells 1202, race switches 0, undecided 0
+
+-- kezamba_shore_house (kezamba:shore_house)
+   cells 1452, legend 33, role cells 460, fixed-node cells 0, force-air cells 992, race switches 0, undecided 0
+
+-- kezamba_trade_shed (kezamba:trade_shed, kezamba:shore_smokehouse)
+   cells 1650, legend 20, role cells 484, fixed-node cells 0, force-air cells 1166, race switches 0, undecided 0
+   town writes kept in its box (shore_smokehouse): 211
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     56x line 265: plot.decorate(buf, palette, area)
+     152x line 325: services.decorate("kezamba", plot.id, buf, palette, sockets, area)
+
+-- kezamba_shore_market (kezamba:shore_market)
+   cells 1575, legend 11, role cells 319, fixed-node cells 0, force-air cells 1256, race switches 0, undecided 0
+   town writes kept in its box (shore_market): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_shore_butcher (kezamba:shore_butcher, kezamba:canopy_armoury)
+   cells 2880, legend 44, role cells 863, fixed-node cells 12, force-air cells 2005, race switches 0, undecided 0
+   building-bound writes (shore_butcher): room and apron decor (decor.dress_rooms) 19
+   town writes kept in its box (shore_butcher): 17
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     14x line 265: plot.decorate(buf, palette, area)
+   building-bound writes (canopy_armoury): room and apron decor (decor.dress_rooms) 19
+   town writes kept in its box (canopy_armoury): 164
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     8x line 265: plot.decorate(buf, palette, area)
+     153x line 325: services.decorate("kezamba", plot.id, buf, palette, sockets, area)
+
+-- kezamba_shore_tailor (kezamba:shore_tailor)
+   cells 2028, legend 35, role cells 611, fixed-node cells 5, force-air cells 1412, race switches 0, undecided 0
+   building-bound writes (shore_tailor): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (shore_tailor): 165
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     10x line 265: plot.decorate(buf, palette, area)
+     152x line 325: services.decorate("kezamba", plot.id, buf, palette, sockets, area)
+
+-- kezamba_shore_store (kezamba:shore_store, kezamba:vine_store, kezamba:canopy_store, kezamba:totem_store)
+   cells 3094, legend 23, role cells 813, fixed-node cells 6, force-air cells 2275, race switches 0, undecided 0
+   building-bound writes (shore_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (shore_store): 155
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 325: services.decorate("kezamba", plot.id, buf, palette, sockets, area)
+   building-bound writes (vine_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (vine_store): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (canopy_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (canopy_store): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (totem_store): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (totem_store): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_shore_carvers (kezamba:shore_carvers, kezamba:canopy_carvers, kezamba:totem_carvers)
+   cells 2475, legend 8, role cells 269, fixed-node cells 0, force-air cells 2206, race switches 0, undecided 0
+   town writes kept in its box (shore_carvers): 155
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 325: services.decorate("kezamba", plot.id, buf, palette, sockets, area)
+   town writes kept in its box (canopy_carvers): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   town writes kept in its box (totem_carvers): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_shore_watch (kezamba:shore_watch)
+   cells 4692, legend 32, role cells 1234, fixed-node cells 7, force-air cells 3451, race switches 0, undecided 0
+   building-bound writes (shore_watch): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (shore_watch): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_plot_shore_house (kezamba:shore_house, kezamba:vine_longhouse, kezamba:canopy_hall, kezamba:totem_hall)
+   cells 2873, legend 28, role cells 819, fixed-node cells 6, force-air cells 2048, race switches 0, undecided 0
+   building-bound writes (shore_house): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (shore_house): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (vine_longhouse): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (vine_longhouse): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (canopy_hall): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (canopy_hall): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (totem_hall): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (totem_hall): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_vine_house_a (kezamba:vine_house_a, kezamba:canopy_house_a, kezamba:totem_house_a)
+   cells 2028, legend 35, role cells 611, fixed-node cells 6, force-air cells 1411, race switches 0, undecided 0
+   building-bound writes (vine_house_a): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (vine_house_a): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (canopy_house_a): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (canopy_house_a): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (totem_house_a): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (totem_house_a): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_vine_house_b (kezamba:vine_house_b, kezamba:canopy_house_b)
+   cells 1859, legend 41, role cells 569, fixed-node cells 6, force-air cells 1284, race switches 0, undecided 0
+   building-bound writes (vine_house_b): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (vine_house_b): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+   building-bound writes (canopy_house_b): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (canopy_house_b): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_vine_house_c (kezamba:vine_house_c)
+   cells 2366, legend 35, role cells 655, fixed-node cells 6, force-air cells 1705, race switches 0, undecided 0
+   building-bound writes (vine_house_c): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (vine_house_c): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_vine_house_d (kezamba:vine_house_d)
+   cells 2028, legend 35, role cells 611, fixed-node cells 6, force-air cells 1411, race switches 0, undecided 0
+   building-bound writes (vine_house_d): room and apron decor (decor.dress_rooms) 9
+   town writes kept in its box (vine_house_d): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_vine_herbalist (kezamba:vine_herbalist)
+   cells 1859, legend 41, role cells 569, fixed-node cells 5, force-air cells 1285, race switches 0, undecided 0
+   building-bound writes (vine_herbalist): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (vine_herbalist): 229
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     74x line 265: plot.decorate(buf, palette, area)
+     152x line 325: services.decorate("kezamba", plot.id, buf, palette, sockets, area)
+
+-- kezamba_vine_moot (kezamba:vine_moot)
+   cells 1071, legend 12, role cells 344, fixed-node cells 0, force-air cells 727, race switches 0, undecided 0
+   town writes kept in its box (vine_moot): 6
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     3x line 265: plot.decorate(buf, palette, area)
+
+-- kezamba_canopy_barracks_a (kezamba:canopy_barracks_a)
+   cells 4692, legend 32, role cells 1234, fixed-node cells 7, force-air cells 3451, race switches 0, undecided 0
+   building-bound writes (canopy_barracks_a): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (canopy_barracks_a): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_canopy_barracks_b (kezamba:canopy_barracks_b)
+   cells 4692, legend 32, role cells 1234, fixed-node cells 7, force-air cells 3451, race switches 0, undecided 0
+   building-bound writes (canopy_barracks_b): room and apron decor (decor.dress_rooms) 8
+   town writes kept in its box (canopy_barracks_b): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_canopy_watchpost (kezamba:canopy_watchpost)
+   cells 1573, legend 33, role cells 547, fixed-node cells 1, force-air cells 1025, race switches 0, undecided 0
+   building-bound writes (canopy_watchpost): room and apron decor (decor.dress_rooms) 2
+   town writes kept in its box (canopy_watchpost): 3
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+
+-- kezamba_totem_scriptorium (kezamba:totem_scriptorium)
+   cells 3990, legend 27, role cells 1091, fixed-node cells 5, force-air cells 2894, race switches 0, undecided 0
+   building-bound writes (totem_scriptorium): room and apron decor (decor.dress_rooms) 7
+   town writes kept in its box (totem_scriptorium): 155
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     152x line 325: services.decorate("kezamba", plot.id, buf, palette, sockets, area)
+
+-- kezamba_totem_shrine (kezamba:totem_shrine)
+   cells 4798, legend 40, role cells 1193, fixed-node cells 5, force-air cells 3600, race switches 0, undecided 0
+   building-bound writes (totem_shrine): room and apron decor (decor.dress_rooms) 12
+   town writes kept in its box (totem_shrine): 5
+     3x line 254: dressing.bench(buf, palette, 3, z0 + 2, 2, 3, "x")
+     2x line 265: plot.decorate(buf, palette, area)
+
+every template reads back through wp13/templates.lua as exactly the cells cut for each of its placements
+capital parts identical to a start town's template: 2
+  highcourt_service_yard = hearthpine_workyard
+  kezamba_trade_shed = kapok_drying_shed

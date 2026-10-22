@@ -29,9 +29,8 @@ local function loader(directory)
 		-- hanging racks on its apron and the chopping block in front of them.
 		-- `chop` is the activity, and the feature under its `dir` is that
 		-- block -- a log, which is exactly what the vocabulary names.
-		{id = "bazaar_butcher", module = "buildings", make = "workshop",
+		{id = "bazaar_butcher", template = "gor_drazhak_bazaar_butcher",
 			order = 1, handle = "ors",
-			parapet = {y = 7},
 			-- THE DOOR OPENS IN THE x- WALL, like Dawnmere's smithy and like
 			-- every other workshop in this capital. The `workshop` interior kit
 			-- stands three cauldrons and two workbenches along the whole inner
@@ -39,8 +38,6 @@ local function loader(directory)
 			-- outermost cells opens onto a cauldron with a torch over it --
 			-- which is what the first version of this roster did, at index 5
 			-- and then again at index 4.
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, roof = "flat_deck",
-				door_side = "x-", door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.drying_rack(buf, palette, area.x0 + 2, area.z1 - 3,
@@ -65,9 +62,8 @@ local function loader(directory)
 		-- 2. THE TANNERY: a shed over the pits, the vats on the yard and the
 		-- hides on their frames. `brew` is the vocabulary's word for a
 		-- resident stirring a cauldron, and a tan vat is a cauldron.
-		{id = "bazaar_tannery", module = "buildings", make = "shed",
+		{id = "bazaar_tannery", template = "gor_drazhak_bazaar_tannery",
 			order = 2, margin = 4,
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-"}},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, vat in ipairs({{area.x0 + 3, area.z1 - 3},
@@ -93,9 +89,8 @@ local function loader(directory)
 		-- it, which is where a socket has to be (a socket is never inside a
 		-- room) and where a grog vat belongs in a camp that never stopped
 		-- being one.
-		{id = "bazaar_brewhouse", module = "buildings", make = "workshop",
+		{id = "bazaar_brewhouse", template = "gor_drazhak_bazaar_butcher",
 			order = 3, margin = 3,
-			parapet = {y = 7},
 			-- THE DOOR OPENS IN THE x- WALL, like Dawnmere's smithy and like
 			-- every other workshop in this capital. The `workshop` interior kit
 			-- stands three cauldrons and two workbenches along the whole inner
@@ -103,8 +98,6 @@ local function loader(directory)
 			-- outermost cells opens onto a cauldron with a torch over it --
 			-- which is what the first version of this roster did, at index 5
 			-- and then again at index 4.
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, roof = "flat_deck",
-				door_side = "x-", door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, vat in ipairs({{area.x0 + 2, area.z1 - 2},
@@ -135,11 +128,8 @@ local function loader(directory)
 		-- kit stands the forge's cauldrons on the odd cells of the z- gable's
 		-- inner run and the generator's chimney on that wall's middle cell, so
 		-- a door there would open onto a hearth.
-		{id = "bazaar_armourer", module = "buildings", make = "workshop",
+		{id = "bazaar_armourer", template = "gor_drazhak_bazaar_armourer",
 			order = 4, margin = 3, handle = "ors",
-			parapet = {y = 7},
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5, roof = "flat_deck",
-				door_side = "x-", door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, anvil in ipairs({{area.x1 - 3, area.z0 + 3},
@@ -161,11 +151,8 @@ local function loader(directory)
 				}
 			end},
 
-		{id = "bazaar_smithy", module = "buildings", make = "workshop",
+		{id = "bazaar_smithy", template = "gor_drazhak_bazaar_butcher",
 			order = 5, margin = 3, handle = "ors",
-			parapet = {y = 7},
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, roof = "flat_deck",
-				door_side = "x-", door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				buf:put(area.x1 - 3, 1, area.z0 + 4, palette.node("workbench"))
@@ -187,9 +174,8 @@ local function loader(directory)
 		-- 6. THE STORE HOUSE: the granary generator, which is a store with
 		-- bins down both walls and a cart-wide double door, and the counter on
 		-- its apron where the keeper stands.
-		{id = "bazaar_store", module = "capitals", make = "granary",
+		{id = "bazaar_store", template = "gor_drazhak_bazaar_store",
 			order = 6, margin = 3, handle = "ors",
-			spec = {w = 11, d = 15, wall_h = 5},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.counter(buf, palette, area.x1 - 4, area.z1 - 2, 3,
@@ -206,9 +192,8 @@ local function loader(directory)
 
 		-- 7. THE WAIN YARD: the shed open on two sides with the carts under it
 		-- and the timber it hauls stacked on the apron.
-		{id = "bazaar_wain_yard", module = "buildings", make = "shed",
+		{id = "bazaar_wain_yard", template = "highcourt_service_yard",
 			order = 7, margin = 4,
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.wagon(buf, palette, area.x0 + 3, area.z1 - 3, "x")
@@ -229,11 +214,8 @@ local function loader(directory)
 		-- 8. THE CARVER: the bone and horn work the contract's totem posts are
 		-- made of. The half-cut post stands on his apron and the finished ones
 		-- flank his door.
-		{id = "bazaar_carver", module = "buildings", make = "cottage",
+		{id = "bazaar_carver", template = "gor_drazhak_bazaar_carver",
 			order = 8, margin = 3,
-			parapet = {y = 6},
-			spec = {w = 9, d = 11, wall_h = 4, roof = "flat_deck",
-				infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.totem(buf, palette, area.x0 + 2, area.z0 + 3, 4)
@@ -253,11 +235,8 @@ local function loader(directory)
 			end},
 
 		-- 9. THE TRADER'S HOUSE, and the district's second spare.
-		{id = "bazaar_house", module = "buildings", make = "cottage",
+		{id = "bazaar_house", template = "gor_drazhak_plot_bazaar_house",
 			order = 9,
-			parapet = {y = 6},
-			spec = {w = 11, d = 9, wall_h = 4, roof = "flat_deck",
-				infill = true, fancy_bed = true},
 			extra_sockets = function(area)
 				return {
 					plots.spare("bazaar_house", area.x1 - 2, area.z1 - 2, 2),

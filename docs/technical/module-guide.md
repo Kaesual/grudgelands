@@ -2542,9 +2542,9 @@ tools](#player-meta-read-by-external-tools).
   an authored row (`M.place`: open ground only, never a path, built cell,
   socket or the cell before it, a door's approach, the central actor
   clearance or before a window) and the house touches (`M.dress_house`,
-  `M.houses_from`, `decor_kit.dress_rooms` in the capital plot builders and
-  Hearthpine; in the other five start towns the touches are template
-  content since Round 56). The Round 20 catalogue's `props` rows and the Round 14
+  `M.houses_from`, `decor_kit.dress_rooms` in Hearthpine; in the other five
+  start towns and every capital the touches are template content since
+  Round 56). The Round 20 catalogue's `props` rows and the Round 14
   builder's `DECOR` table are kit pieces; the four rift candidates keep
   their four `props` positions (`rift_core.lua` reads them) and carry the
   rest as `decor`. Fixture `tools/r36_w` (every composition's bounds,
@@ -2571,18 +2571,44 @@ tools](#player-meta-read-by-external-tools).
   the pane pass and Hearthpine's decor stay town code
   (`tools/building_templates/freeze_report.txt`). The templates are the
   source of truth; the generators the start towns alone used are gone
-  (`buildings.barn`, the inn, barn, carver, lodge and smoker kits), the
-  capitals still build from the generators. Gate:
+  (`buildings.barn`, the inn, barn, carver, lodge and smoker kits).
+  **The six capitals** followed in the same round (lane FREEZE-CAPITALS): their
+  core buildings and every district plot's building are templates too, but
+  their placement stays algorithmic (the core's composition, the plot
+  planner), so each capital has a ROSTER instead of a layout
+  (`building_templates/layouts/<capital>.roster`: its named palettes and one
+  `use` line per template and palette combination with its count).
+  `templates.capital(id)` parses the roster and every template it lists at
+  load; the core's `PLOTS` rows and the district rosters name each
+  placement's `template` and roster palettes, `capital.part(template, id,
+  main, roof)` builds it (only a combination the roster lists) and counts it.
+  The templates hold the hall floor bands, braziers and hangings, Highcourt's
+  chapel belfry, Gor Drazhak's deck breastworks, the room decor and the temple
+  elders' doorsteps (the door-tagged sockets: a template `sockets` point
+  without a role is a town entry's position, `templates.collect_sockets` and
+  `templates.stamped_point`); the plot builders read the part's `extent` and
+  `top` meta where they measured the generator's part. The capital services
+  (`capital_services.decorate`), the plot dressing, lamps, gardens, paving,
+  the city edge and the trees stay code (`freeze_report_capitals.txt`). The
+  building generators are gone (`buildings.lua`, `capitals.lua`,
+  `roofs.lua`, `interiors.lua`, `elf_parts.lua`, `troll_parts.lua`,
+  `undead_parts.lua`); `troll_palette.lua` stays for the tools (the game
+  reads the Kezamba roster). Gate:
   `python3 tools/building_templates/check.py` (structure always, the editor
   palette, reachability and the entrance only for cells edited against the
   commit `building_templates/BASELINE` names; `--self-test` runs every rule);
+  the gate also runs the game's own loader over the files and builds every
+  town and capital from them (`loader_check.lua`), holding each roster's
+  counts to the build;
   `tools/check_upgrade.py` wants a map reset whenever what the towns build
   changes against the pushed commit (`tools/building_templates/town_identity.lua`:
-  the start towns' identities and point digests, the capitals' build
-  digests). The world-folder layout cache digests the `.tpl` and `.layout`
-  files with the mapgen sources. Exporter `tools/building_templates/export.py`
-  (`--check`: the committed templates are the export of the pre-freeze
-  generators), fixture `tools/r56_freeze_towns`.
+  the start towns' identities and point digests, the capitals' identity,
+  point and build digests). The world-folder layout cache digests the `.tpl`,
+  `.layout` and `.roster` files with the mapgen sources. Exporter
+  `tools/building_templates/export.py` (`--check`: the committed templates are
+  the export of the pre-freeze generators, `export.lua` for the start towns,
+  `export_capitals.lua` for the capitals), fixtures `tools/r56_freeze_towns`
+  and `tools/r56_freeze_capitals`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. A surface row may carry `bands` (seven content refs by
   `y % 7 + 1`) and `band_depth` (Round 51 T4, the badlands' clay bands from

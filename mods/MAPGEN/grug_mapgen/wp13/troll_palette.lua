@@ -1,6 +1,11 @@
 -- Kezamba's palette handles: the troll start palette with the capital's own
 -- rebindings on top of it.
 --
+-- SINCE ROUND 56 THE GAME READS THESE AS THE ROSTER'S PALETTES
+-- (`building_templates/layouts/kezamba.roster`, where they were frozen from
+-- this file); the tools still read this file (the template viewer's palette
+-- dump). A change here alone changes nothing in the game.
+--
 -- `wp13/palette.lua` is the shared library and not this lane's to edit, and it
 -- does not have to be: `palettes.new(race, overrides)` rebinds any DECLARED
 -- role on top of a race, and every role below is already declared there. So

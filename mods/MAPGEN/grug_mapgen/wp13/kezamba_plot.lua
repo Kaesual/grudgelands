@@ -18,7 +18,7 @@
 --     shoulder of terrace is not left standing inside a wall.
 --
 -- A PLOT NEED NOT BE A BUILDING. A roster row carrying `yard` instead of
--- `module`/`make` builds the same ground, skirt, clear volume, gate path, lamps
+-- `template` builds the same ground, skirt, clear volume, gate path, lamps
 -- and sockets with no part in the middle of it, and whatever its own `decorate`
 -- plants on it. That is what a field, a vine terrace, a log yard, a moot green
 -- or a basin is.
@@ -40,13 +40,10 @@ local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
 	local services = dofile(directory .. "/capital_services.lua")
 	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
-	local decor = dofile(directory .. "/decor_kit.lua")(directory)
-	local troll = dofile(directory .. "/troll_parts.lua")(directory)
-	local handles = dofile(directory .. "/troll_palette.lua")()
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("kezamba")
 
 	local M = {}
 
@@ -55,11 +52,6 @@ local function loader(directory)
 	-- Kezamba lot check (retired in Round 22) held every lot's rise against
 	-- this number.
 	M.MIN_CLEAR = 8
-
-	M.BASALT = handles.BASALT
-	M.WATER = handles.WATER
-	M.CROP = handles.CROP
-	M.VINE = handles.VINE
 
 	-- ---- the socket shapes a roster may publish -----------------------
 
@@ -97,21 +89,14 @@ local function loader(directory)
 
 	-- ---- the builder --------------------------------------------------
 
+	-- The extent is the template's `extent` (the building's non-air cells as
+	-- its generator built them, format doc §4.1), turned with the part.
 	local function ground_area(part, ox, oz, turns, margin, reach)
-		local order, count = part.buffer:cells()
-		local x0, x1, z0, z1
-		for index = 1, count do
-			local cell = order[index]
-			if cell.name ~= parts.AIR then
-				local rx, rz = parts.rotate_footprint(cell.x, cell.z,
-					part.w, part.d, turns)
-				local x, z = ox + rx, oz + rz
-				if x0 == nil or x < x0 then x0 = x end
-				if x1 == nil or x > x1 then x1 = x end
-				if z0 == nil or z < z0 then z0 = z end
-				if z1 == nil or z > z1 then z1 = z end
-			end
-		end
+		local e = part.extent
+		local ax, az = parts.rotate_footprint(e[1], e[2], part.w, part.d, turns)
+		local bx, bz = parts.rotate_footprint(e[3], e[4], part.w, part.d, turns)
+		local x0, x1 = ox + math.min(ax, bx), ox + math.max(ax, bx)
+		local z0, z1 = oz + math.min(az, bz), oz + math.max(az, bz)
 		local function clamp(value)
 			if value < -reach then return -reach end
 			if value > reach then return reach end
@@ -141,34 +126,14 @@ local function loader(directory)
 		context = context or {}
 		local watch = plot.patrol_group or context.patrol_group
 		local reach = plot.reach or 13
-		local palette = palettes.new("troll")
-		if plot.handle == "basalt" then
-			palette = palettes.new("troll", handles.BASALT)
-		elseif plot.handle == "water" then
-			palette = palettes.new("troll", handles.WATER)
-		elseif plot.handle == "basalt_water" then
-			palette = palettes.new("troll",
-				handles.merged(handles.BASALT, handles.WATER))
-		elseif plot.handle == "vine" then
-			-- The raised-bed gardens: `dressing.planter`'s two interior roles
-			-- rebound to the race's own jungle growth, for the two plots that
-			-- are a garden and for nothing else.
-			palette = palettes.new("troll", handles.VINE)
-		elseif plot.handle == "crop" then
-			-- The crop handle is the one a FIELD asks for, and only a field:
-			-- binding `crop` everywhere would change `dressing.plant` too --
-			-- it reads `flower or crop or grass_tuft` -- and put reeds in
-			-- every grove, pasture and terrace this capital dresses. The
-			-- three fields of `kezamba_districts.lua` name it and nothing
-			-- else does.
-			palette = palettes.new("troll", handles.CROP)
-		end
-		local spec = {}
-		for key, value in pairs(plot.spec or {}) do spec[key] = value end
-		spec.id = plot.id
-		if services.service("kezamba", plot.id) == "riding" then
-			spec.w, spec.d, spec.open_shelter = 21, 17, true
-		end
+		-- the roster's palettes: `town` the plain troll timber, `basalt` the
+		-- civic stone, `water`/`basalt_water` with the river water bound,
+		-- `vine` the raised-bed gardens' jungle growth, `crop` the fields'
+		local main = plot.handle or "town"
+		local palette = CAPITAL.palettes[main]
+		-- The riding service's stable is an open shelter (its template is
+		-- the 21 x 17 one), re-stamped over the plot's own lamps below.
+		local open_shelter = services.service("kezamba", plot.id) == "riding"
 
 		local part, turns, rw, rd, ox, oz
 		local x0, z0, x1, z1
@@ -176,15 +141,7 @@ local function loader(directory)
 			turns, rw, rd, ox, oz = 0, 1, 1, 0, 0
 			x0, z0, x1, z1 = yard_area(plot, reach)
 		else
-			local module = capitals
-			if plot.module == "buildings" then module = buildings
-			elseif plot.module == "troll" then module = troll end
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 kezamba plot: no generator " .. tostring(plot.make),
-					0)
-			end
-			part = generator(palette, spec)
+			part = CAPITAL.part(plot.template, plot.id, main)
 			turns = (plot.turns or 0) % 4
 			rw = (turns % 2 == 1) and part.d or part.w
 			rd = (turns % 2 == 1) and part.w or part.d
@@ -202,12 +159,9 @@ local function loader(directory)
 		buf:fill(x0, -1, z0, x1, -1, z1, palette.node("subsoil"))
 		buf:fill(x0, 0, z0, x1, 0, z1, palette.node("ground"))
 		local clear_to = peak + 2
-		if part then
-			local order, count = part.buffer:cells()
-			for index = 1, count do
-				if order[index].y > clear_to then clear_to = order[index].y end
-			end
-		end
+		-- the part's highest cell as its generator built it (the template's
+		-- `top`, format doc §4.1)
+		if part and part.top > clear_to then clear_to = part.top end
 		if clear_to < M.MIN_CLEAR then clear_to = M.MIN_CLEAR end
 		buf:clear(x0, 1, z0, x1, clear_to, z1)
 		-- 2. The foundation skirt, the perimeter only, down to the contract's
@@ -259,8 +213,7 @@ local function loader(directory)
 		-- socket would otherwise be published into a wall.
 		local area = {x0 = x0, z0 = z0, x1 = x1, z1 = z1, ox = ox, oz = oz,
 			pw = rw, pd = rd, peak = peak, clear_to = clear_to, reach = reach,
-			dressing = dressing, parts = parts, palettes = palettes,
-			troll = troll}
+			dressing = dressing, parts = parts, palettes = palettes}
 		if type(plot.decorate) == "function" then
 			plot.decorate(buf, palette, area)
 		end
@@ -316,20 +269,15 @@ local function loader(directory)
 			entry.dir = {x = dx, z = dz}
 		end
 
-		if spec.open_shelter then
+		if open_shelter then
 			-- Generic shopfront lamps/benches must not become extra shelter
 			-- posts or intrude into the open stable's public approach.
 			buf:clear(x0, 1, z0, x1, clear_to, z1)
 			parts.stamp(buf, part, ox, 0, oz, turns)
 		end
 		services.decorate("kezamba", plot.id, buf, palette, sockets, area)
-		-- 6c. Every closed room's small touches (Round 36 decor kit): a
-		-- barrel or a pot by the door, flowers under the windows, a wood pile
-		-- or a barrel against a side wall; never on a socket or the cell
-		-- before it.
-		decor.dress_rooms(buf, palette, decor.rooms_from_corners(points.room_corner),
-			points.doors or {}, sockets, {palette.node("foundation"),
-				palette.node("path"), palette.maybe("ground_straw")})
+		-- (Every closed room's small touches, the Round 36 decor kit, are the
+		-- template's own since Round 56.)
 		parts.resolve_panes(buf)
 
 		-- Round 47 town greening: the race's trees on the plot's open wild

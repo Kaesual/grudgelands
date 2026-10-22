@@ -43,10 +43,8 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. The barracks: the generator publishes its guard post, its muster
 		-- idle spot and waypoint 1 of the loop, so this row carries no `order`.
-		{id = "garrison_barracks", module = "capitals", make = "barracks",
+		{id = "garrison_barracks", template = "dur_brannoc_garrison_barracks",
 			roof = "slate",
-			spec = {w = 17, d = 21, wall_h = 6, patrol_group = WATCH,
-				order = 1},
 			extra_sockets = function(area)
 				return {
 					plots.guard_post("gate_west", area.x0 + 2, area.z0 + 3, 0),
@@ -56,17 +54,14 @@ local function loader(directory)
 		-- 2. The muster hall, where the watch is read its orders: a hall under
 		-- slate, so it reads as civic from the lane and not as the biggest
 		-- longhouse in the quarter.
-		{id = "garrison_muster_hall", module = "buildings", make = "hall",
-			roof = "slate", order = 2,
-			spec = {w = 15, d = 17, wall_h = 5, infill = true}},
+		{id = "garrison_muster_hall", template = "dur_brannoc_garrison_muster_hall",
+			roof = "slate", order = 2},
 		-- 3. The armoury. A workshop, turned, opening in its x- wall for the
 		-- reason the smithy is: the `workshop` kit stands its cauldrons on the
 		-- odd cells of the z- gable's inner run and the chimney on that wall's
 		-- middle cell, so a door there would open onto a hearth.
-		{id = "garrison_armoury", module = "buildings", make = "workshop",
+		{id = "garrison_armoury", template = "dur_brannoc_garrison_armoury",
 			order = 3, turns = 3,
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("workbench"))
 				shop_counter(buf, palette, area)
@@ -82,8 +77,8 @@ local function loader(directory)
 		-- field: a guard room with a fighting deck over it, five nodes of open
 		-- ground all round for the posts and the standards, and the pair who
 		-- spar there.
-		{id = "garrison_drill_yard", module = "buildings", make = "watchpost",
-			order = 4, margin = 5, spec = {},
+		{id = "garrison_drill_yard", template = "dur_brannoc_garrison_drill_yard",
+			order = 4, margin = 5,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, spot in ipairs({{area.x0 + 2, area.z1 - 2},
@@ -106,8 +101,8 @@ local function loader(directory)
 				}
 			end},
 		-- 5. The garrison's own stable.
-		{id = "garrison_stable", module = "capitals", make = "stable",
-			order = 5, spec = {w = 15, d = 13, wall_h = 5},
+		{id = "garrison_stable", template = "dur_brannoc_garrison_stable",
+			order = 5,
 			decorate = function(buf, palette, area)
 				area.dressing.plant(buf, palette, area.x0 + 3, area.z0 + 1)
 				area.dressing.plant(buf, palette, area.x0 + 4, area.z0 + 1)
@@ -119,15 +114,13 @@ local function loader(directory)
 			end},
 		-- 6. The quartermaster's store. Door index 6, for the roof-post reason
 		-- the forge district's store records.
-		{id = "garrison_quartermaster", module = "buildings", make = "longhouse",
-			order = 6,
-			spec = {w = 13, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 6, infill = true}},
+		{id = "garrison_quartermaster", template = "dur_brannoc_garrison_quartermaster",
+			order = 6},
 		-- 7. The wain shed: open on two sides, four nodes of yard rather than
 		-- two, because a wagon, a stack of barrels and a pile of billets need
 		-- ground that is not under the shed's own eaves.
-		{id = "garrison_wain_shed", module = "buildings", make = "shed",
-			order = 7, margin = 4, spec = {w = 13, d = 9, wall_h = 4},
+		{id = "garrison_wain_shed", template = "highcourt_service_yard",
+			order = 7, margin = 4,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.wagon(buf, palette, area.x0 + 3, area.z1 - 3, "x")
@@ -140,14 +133,13 @@ local function loader(directory)
 				}
 			end},
 		-- 8. The serjeant's house.
-		{id = "garrison_serjeant", module = "buildings", make = "cottage",
-			order = 8,
-			spec = {w = 11, d = 7, wall_h = 4, roof = "hip", infill = true}},
+		{id = "garrison_serjeant", template = "dur_brannoc_garrison_serjeant",
+			order = 8},
 		-- 9. The watch tower at the quarter's far corner, turned a quarter so
 		-- its door faces the lane rather than repeating the drill yard's post,
 		-- and the district's second spare.
-		{id = "garrison_watch_tower", module = "buildings", make = "watchpost",
-			order = 9, turns = 1, spec = {},
+		{id = "garrison_watch_tower", template = "dur_brannoc_garrison_watch_tower",
+			order = 9, turns = 1,
 			extra_sockets = function(area)
 				return {
 					plots.guard_post("tower_foot", area.ox - 1, area.z0 + 3, 0),

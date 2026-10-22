@@ -25,10 +25,8 @@ local function loader(directory)
 		-- 1. The barracks: the district's own generator publishes its guard
 		-- post, its muster idle spot and waypoint 1 of the loop, so this row
 		-- carries no `order` of its own.
-		{id = "martial_barracks", module = "capitals", make = "barracks",
+		{id = "martial_barracks", template = "highcourt_martial_barracks",
 			roof = "slate",
-			spec = {w = 17, d = 21, wall_h = 6, patrol_group = WATCH,
-				order = 1},
 			extra_sockets = function(area)
 				return {
 					plots.guard_post("gate_west", area.x0 + 2, area.z0 + 3, 0),
@@ -38,27 +36,24 @@ local function loader(directory)
 		-- 2. The muster hall: where the watch is read its orders. A hall, hip
 		-- roofed under slate, so it reads as civic from the avenue rather
 		-- than as the biggest cottage in the district.
-		{id = "martial_muster_hall", module = "buildings", make = "hall",
-			roof = "slate", order = 2,
-			spec = {w = 15, d = 17, wall_h = 5, infill = true}},
+		{id = "martial_muster_hall", template = "highcourt_martial_muster_hall",
+			roof = "slate", order = 2},
 		-- 3. The armoury. A workshop, turned, opening in its x- wall like
 		-- Dawnmere's smithy and like the market's own workshop: the
 		-- `workshop` kit stands the forge's cauldrons on the odd cells of the
 		-- z- gable's inner run and the generator's default chimney stack on
 		-- that wall's middle cell, so a door there opens onto a hearth.
-		{id = "martial_armoury", module = "buildings", make = "workshop",
-			order = 3, turns = 3,
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true}},
+		{id = "martial_armoury", template = "highcourt_martial_armoury",
+			order = 3, turns = 3},
 		-- 4. The stables: the garrison's own, beside the wain shed.
-		{id = "martial_stables", module = "capitals", make = "stable",
-			order = 4, spec = {w = 15, d = 13, wall_h = 5}},
+		{id = "martial_stables", template = "highcourt_martial_stables",
+			order = 4},
 		-- 5. The drill yard. The watchpost is the piece that makes it a yard
 		-- and not a field: a guard room with a fighting deck over it, with
 		-- five nodes of open ground all round for the posts, the standards
 		-- and the armourer's stack of billets.
-		{id = "martial_drill_yard", module = "buildings", make = "watchpost",
-			order = 5, margin = 5, spec = {},
+		{id = "martial_drill_yard", template = "highcourt_martial_drill_yard",
+			order = 5, margin = 5,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				for _, spot in ipairs({{area.x0 + 2, area.z1 - 2},
@@ -81,17 +76,15 @@ local function loader(directory)
 		-- `store` kit stands its roof posts on the odd cells of the gable's
 		-- inner run, so an eleven-wide longhouse's centred door opens onto a
 		-- post.
-		{id = "martial_quartermaster", module = "buildings", make = "longhouse",
-			order = 6,
-			spec = {w = 13, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 6, infill = true}},
+		{id = "martial_quartermaster", template = "highcourt_martial_quartermaster",
+			order = 6},
 		-- 7. The wain shed: open on two sides, the carts and the barrels
 		-- under it and the rest of the load on the apron.
-		{id = "martial_wain_shed", module = "buildings", make = "shed",
+		{id = "martial_wain_shed", template = "highcourt_service_yard",
 			-- Four nodes of yard rather than two: a wagon, a stack of
 			-- barrels and a pile of billets need ground that is not under
 			-- the shed's own eaves.
-			order = 7, margin = 4, spec = {w = 13, d = 9, wall_h = 4},
+			order = 7, margin = 4,
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.wagon(buf, palette, area.x0 + 3, area.z1 - 3, "x")
@@ -99,14 +92,13 @@ local function loader(directory)
 				dressing.wood_pile(buf, palette, area.x0 + 2, area.z0 + 2, 3, "x")
 			end},
 		-- 8. The serjeant's house.
-		{id = "martial_guard_house", module = "buildings", make = "cottage",
-			order = 8,
-			spec = {w = 11, d = 7, wall_h = 4, roof = "hip", infill = true}},
+		{id = "martial_guard_house", template = "highcourt_martial_guard_house",
+			order = 8},
 		-- 9. The watch tower at the district's far corner, turned a quarter
 		-- so its door faces the lane rather than repeating the drill yard's
 		-- post, and the second of the district's two spare wander spots.
-		{id = "martial_watch_tower", module = "buildings", make = "watchpost",
-			order = 9, turns = 1, spec = {},
+		{id = "martial_watch_tower", template = "highcourt_martial_watch_tower",
+			order = 9, turns = 1,
 			extra_sockets = function(area)
 				return {
 					plots.guard_post("tower_foot", area.ox - 1, area.z0 + 3, 0),

@@ -1,0 +1,46 @@
+grudgelands-town-roster 1
+# The templates and palettes the capital's code places (frozen in Round 56):
+# the civic core's buildings and every district plot's.
+town gor_drazhak
+race orc
+
+palette town race=orc
+palette ors race=orc wall=grug_decor:darkage_ors_block wall_infill=grug_decor:darkage_adobe
+
+use gor_drazhak_warlord_hall count=1 main=ors town=town
+use gor_drazhak_gate_south count=4 main=ors
+use highcourt_market count=1
+use gor_drazhak_colonnade_west count=1
+use gor_drazhak_colonnade_east count=1
+use highcourt_statue count=1
+use highcourt_well_court count=2
+use gor_drazhak_skull_hall count=1 main=ors
+use gor_drazhak_host_store count=1 main=ors
+use highcourt_service_yard count=3
+use gor_drazhak_council_house count=1 main=ors
+use gor_drazhak_bazaar_house count=2
+use gor_drazhak_south_house count=1
+use gor_drazhak_lane_house count=1
+use gor_drazhak_bazaar_butcher count=2 main=ors
+use gor_drazhak_bazaar_tannery count=2
+use gor_drazhak_bazaar_butcher count=1
+use gor_drazhak_bazaar_armourer count=1 main=ors
+use gor_drazhak_bazaar_store count=1 main=ors
+use gor_drazhak_bazaar_carver count=1
+use gor_drazhak_plot_bazaar_house count=3
+use gor_drazhak_war_barracks count=1 main=ors
+use gor_drazhak_war_armoury count=1 main=ors
+use highcourt_market_stable count=1
+use gor_drazhak_war_drill_yard count=1
+use gor_drazhak_war_quartermaster count=1 main=ors
+use gor_drazhak_war_watch_tower count=1
+use gor_drazhak_bone_spirit_hall count=1 main=ors
+use gor_drazhak_bone_reader_hall count=1 main=ors
+use gor_drazhak_bone_herb_house count=1
+use gor_drazhak_bone_store count=1 main=ors
+use gor_drazhak_warren_clan_house count=1 main=ors
+use gor_drazhak_warren_round_lodge count=1 main=ors
+use gor_drazhak_warren_house_spear count=1
+use gor_drazhak_warren_house_tusk count=1
+use gor_drazhak_warren_house_bone count=1
+use gor_drazhak_warren_store count=1 main=ors

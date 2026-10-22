@@ -48,8 +48,7 @@ local function loader(directory)
 		-- The colonnade publishes its OWN waypoint (the walk under the arcade),
 		-- so this row carries no `order` and hands the loop in through `spec`,
 		-- exactly as the barracks rows of the other districts do.
-		{id = "terrace_market", module = "capitals", make = "colonnade",
-			spec = {len = 15, d = 5, patrol_group = WATCH, order = 1},
+		{id = "terrace_market", template = "dur_brannoc_terrace_market",
 			decorate = function(buf, palette, area)
 				shop_counter(buf, palette, area)
 			end,
@@ -63,10 +62,8 @@ local function loader(directory)
 			end},
 		-- 2. The brewhouse: the workshop kit again, turned, with the vats on
 		-- its apron. `brew` faces a cauldron or a cask.
-		{id = "terrace_brewhouse", module = "buildings", make = "workshop",
+		{id = "terrace_brewhouse", template = "dur_brannoc_garrison_armoury",
 			order = 2, turns = 3,
-			spec = {w = 11, d = 15, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				area.dwarf.brew_vats(buf, palette, area.x0 + 2, area.z0 + 1,
 					2, "x")
@@ -80,9 +77,8 @@ local function loader(directory)
 				}
 			end},
 		-- 3. The alehouse: a hall under slate with the trestles outside it.
-		{id = "terrace_alehouse", module = "buildings", make = "hall",
+		{id = "terrace_alehouse", template = "dur_brannoc_terrace_alehouse",
 			roof = "slate", order = 3,
-			spec = {w = 13, d = 15, wall_h = 5, infill = true},
 			decorate = function(buf, palette, area)
 				local dressing = area.dressing
 				dressing.bench(buf, palette, area.x0 + 2, area.z0 + 1, 2, 2,
@@ -99,10 +95,8 @@ local function loader(directory)
 				}
 			end},
 		-- 4. The bakehouse, and the baker's counter on the lane.
-		{id = "terrace_bakehouse", module = "buildings", make = "workshop",
+		{id = "terrace_bakehouse", template = "dur_brannoc_terrace_bakehouse",
 			order = 4, turns = 1,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				shop_counter(buf, palette, area)
 			end,
@@ -114,8 +108,8 @@ local function loader(directory)
 				}
 			end},
 		-- 5. The well court, planted in the ring its wider ground buys.
-		{id = "terrace_well_court", module = "capitals", make = "well_court",
-			order = 5, margin = 5, garden = true, spec = {size = 11},
+		{id = "terrace_well_court", template = "highcourt_well_court",
+			order = 5, margin = 5, garden = true,
 			extra_sockets = function(area)
 				return {
 					plots.work("well_bench", "sit", -1, area.z1 - 2, 2,
@@ -125,22 +119,17 @@ local function loader(directory)
 			end},
 		-- 6. The long house: the quarter's biggest dwelling, several families
 		-- under one roof, which is what a terrace city does with its ground.
-		{id = "terrace_long_house", module = "buildings", make = "longhouse",
-			order = 6,
-			spec = {w = 13, d = 17, wall_h = 5, door_side = "z-",
-				door_index = 6, infill = true}},
+		{id = "terrace_long_house", template = "dur_brannoc_terrace_long_house",
+			order = 6},
 		-- 7. and 8. Two cottages, one hipped and one gabled, so the lane does
 		-- not read as one house built twice.
-		{id = "terrace_cottage_west", module = "buildings", make = "cottage",
-			order = 7,
-			spec = {w = 11, d = 9, wall_h = 4, roof = "hip", infill = true}},
-		{id = "terrace_cottage_east", module = "buildings", make = "cottage",
-			order = 8,
-			spec = {w = 9, d = 11, wall_h = 4, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
+		{id = "terrace_cottage_west", template = "dur_brannoc_terrace_cottage_west",
+			order = 7},
+		{id = "terrace_cottage_east", template = "dur_brannoc_terrace_cottage_east",
+			order = 8},
 		-- 9. The quarter's watch, and its second spare.
-		{id = "terrace_watch", module = "buildings", make = "watchpost",
-			order = 9, turns = 1, spec = {},
+		{id = "terrace_watch", template = "dur_brannoc_garrison_watch_tower",
+			order = 9, turns = 1,
 			extra_sockets = function(area)
 				return {
 					plots.spare("terrace_watch", area.x1 - 2, area.z1 - 2, 2),

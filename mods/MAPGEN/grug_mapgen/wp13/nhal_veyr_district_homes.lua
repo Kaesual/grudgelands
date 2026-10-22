@@ -45,43 +45,35 @@ local function loader(directory)
 		-- (`z-`) and is TURNED to face its lane instead: a cottage's `home`
 		-- kit furnishes the cell behind every other wall -- bed corner,
 		-- hearth, table -- and only the z- doorway is authored clear of it.
-		{id = "homes_gate_house", module = "buildings", make = "cottage",
-			order = 1,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
-		{id = "homes_lane_house", module = "buildings", make = "cottage",
-			order = 2,
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
-				infill = true, fancy_bed = true}},
-		{id = "homes_terrace_house", module = "buildings", make = "cottage",
-			order = 3,
-			spec = {w = 11, d = 9, wall_h = 5, roof = "saltbox",
-				ridge_axis = "x", infill = true, shutters = true}},
-		{id = "homes_corner_house", module = "buildings", make = "cottage",
-			order = 4,
-			spec = {w = 9, d = 11, wall_h = 5, roof = "gable",
-				ridge_axis = "x", infill = true, shutters = true}},
+		{id = "homes_gate_house", template = "nhal_veyr_homes_gate_house",
+			order = 1},
+		{id = "homes_lane_house", template = "nhal_veyr_homes_lane_house",
+			order = 2},
+		{id = "homes_terrace_house", template = "nhal_veyr_homes_terrace_house",
+			order = 3},
+		{id = "homes_corner_house", template = "nhal_veyr_homes_corner_house",
+			order = 4},
 		--
 		-- 5 and 6. THE TWO FALLEN ONES, between the kept houses. A ruin
 		-- publishes no door, no destination and an OPEN room, so nothing that
 		-- reads a composition mistakes it for a house somebody lives in; what
 		-- it publishes here is the district's spare wander spot and, at the
 		-- west one, a mourner at the candle on its step.
-		{id = "homes_fallen_west", module = "buildings", make = "ruin",
+		{id = "homes_fallen_west", template = "nhal_veyr_homes_fallen_west",
 			-- Round 47: the gate spot looks along the street; both ways
 			-- in and out the ruin's walls stand a node away.
 			gate_face = 1,
-			order = 5, spec = {w = 9, d = 9, wall_h = 5, phase = 0},
+			order = 5,
 			decorate = barred_and_lit,
 			extra_sockets = function(area)
 				return {plots.work("step_candle", "mourn",
 					area.ox + 4, area.oz - 4, 0)}
 			end},
-		{id = "homes_fallen_east", module = "buildings", make = "ruin",
+		{id = "homes_fallen_east", template = "nhal_veyr_homes_fallen_east",
 			-- Round 47: the gate spot looks along the street; both ways
 			-- in and out the ruin's walls stand a node away.
 			gate_face = 1,
-			order = 6, spec = {w = 9, d = 11, wall_h = 5, phase = 2},
+			order = 6,
 			decorate = barred_and_lit,
 			extra_sockets = function(area)
 				return {plots.spare("fallen", area.x1 - 1, area.z1 - 1, 2)}
@@ -91,9 +83,8 @@ local function loader(directory)
 		-- quarter gathers. A hall in dungeon stone under a vaulted roof, so it
 		-- reads as civic from the lane. Its bench outside the door carries the
 		-- `sit` work socket, which is the one activity that names no feature.
-		{id = "homes_mourners_hall", module = "buildings", make = "hall",
+		{id = "homes_mourners_hall", template = "nhal_veyr_watch_captain_hall",
 			order = 7, handle = "crypt", roof = "vault",
-			spec = {w = 15, d = 17, wall_h = 5, infill = true},
 			decorate = function(buf, palette, area)
 				area.dressing.bench(buf, palette, area.x0 + 3, area.z0 + 1,
 					2, 2, "x")
@@ -103,15 +94,13 @@ local function loader(directory)
 					2, {"bench"}, 2)}
 			end},
 		-- 8. The quarter's own watch.
-		{id = "homes_watch", module = "capitals", make = "barracks",
-			handle = "crypt", roof = "vault",
-			spec = {w = 15, d = 21, wall_h = 5, patrol_group = WATCH,
-				order = 8}},
+		{id = "homes_watch", template = "nhal_veyr_vigil_watch",
+			handle = "crypt", roof = "vault"},
 		-- 9. The cistern court the houses draw from, five nodes wider all
 		-- round than a building's, its ring planted with gravewoods, and the
 		-- district's second spare.
-		{id = "homes_cistern", module = "capitals", make = "well_court",
-			order = 9, margin = 5, garden = true, spec = {size = 11},
+		{id = "homes_cistern", template = "highcourt_well_court",
+			order = 9, margin = 5, garden = true,
 			extra_sockets = function(area)
 				-- On the back row of the planted ring, not its corner: the
 				-- corner is where `garden` stands a gravewood.
@@ -212,8 +201,8 @@ local function loader(directory)
 				}
 			end},
 		-- 3. THE QUARTER'S CANDLE COURT, where the houses gather.
-		{id = "homes_candle_court", module = "undead", make = "candle_court",
-			margin = 3, spec = {size = 11},
+		{id = "homes_candle_court", template = "nhal_veyr_market_candle_court",
+			margin = 3,
 			extra_sockets = function(area)
 				return {
 					plots.work("vigil_south", "pray",

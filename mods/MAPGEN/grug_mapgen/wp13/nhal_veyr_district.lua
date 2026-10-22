@@ -47,11 +47,10 @@ local function loader(directory)
 	-- barracks carries its own inside `spec`, because that generator publishes
 	-- the waypoint itself.
 	local PLOTS = {
-		{id = "market_bone_store", module = "capitals", make = "granary",
-			order = 1, handle = "crypt", roof = "vault",
-			spec = {w = 11, d = 15, wall_h = 5}},
-		{id = "market_cart_yard", module = "capitals", make = "stable",
-			order = 2, spec = {w = 15, d = 11, wall_h = 5}},
+		{id = "market_bone_store", template = "nhal_veyr_market_bone_store",
+			order = 1, handle = "crypt", roof = "vault"},
+		{id = "market_cart_yard", template = "highcourt_market_stable",
+			order = 2},
 		--
 		-- THE BONESMITH. The forge of the necropolis: the contract's own
 		-- "bonesmith (use `smith`)". The anvil on the apron is
@@ -67,10 +66,8 @@ local function loader(directory)
 		-- cells of the inner run of that very wall, and a double door takes an
 		-- odd cell whichever index it is given, so the doorway would open onto
 		-- a hearth. The same wall also carries the generator's chimney stack.
-		{id = "market_bonesmith", module = "buildings", make = "workshop",
+		{id = "market_bonesmith", template = "nhal_veyr_market_bonesmith",
 			order = 3, turns = 3,
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, "grug_decor:cottages_anvil")
 				shop_counter(buf, palette, area)
@@ -89,9 +86,8 @@ local function loader(directory)
 		-- outside the door -- the one activity that names no feature, because
 		-- it sits on the ground it stands on. The socket's y is 2: the seat is
 		-- a walkable node and the weaver sits ON it.
-		{id = "market_shroud_house", module = "capitals", make = "scriptorium",
+		{id = "market_shroud_house", template = "nhal_veyr_market_shroud_house",
 			order = 4, handle = "crypt", roof = "vault",
-			spec = {w = 13, d = 17, wall_h = 6},
 			decorate = function(buf, palette, area)
 				area.dressing.bench(buf, palette, area.x0 + 3, area.z0 + 1,
 					2, 2, "x")
@@ -107,18 +103,15 @@ local function loader(directory)
 		-- The cistern court is the district's public ground, so its plot is
 		-- five nodes wider all round than a building's and the ring that buys
 		-- is planted with gravewoods.
-		{id = "market_cistern", module = "capitals", make = "well_court",
-			order = 5, margin = 5, garden = true, spec = {size = 11}},
-		{id = "market_watch", module = "capitals", make = "barracks",
-			handle = "crypt", roof = "vault",
-			spec = {w = 15, d = 21, wall_h = 5, patrol_group = WATCH,
-				order = 6}},
+		{id = "market_cistern", template = "highcourt_well_court",
+			order = 5, margin = 5, garden = true},
+		{id = "market_watch", template = "nhal_veyr_market_watch",
+			handle = "crypt", roof = "vault"},
 		-- The gravewood copse, and the district's first SPARE wander spot: an
 		-- idle position a walking NPC may use as a destination and which the
 		-- placement engine is meant not to staff with an inhabitant of its own.
-		{id = "market_copse", module = "capitals", make = "grove",
+		{id = "market_copse", template = "nhal_veyr_market_copse",
 			order = 7,
-			spec = {size = 15, kind = "gravewood", height = 6},
 			extra_sockets = function(area)
 				return {plots.spare("copse", area.x0 + 1, area.z1 - 1, 2)}
 			end},
@@ -127,9 +120,8 @@ local function loader(directory)
 		-- and its feature is "a cauldron, barrel or cooking pot"; this
 		-- palette's `hearth` IS `grug_decor:xdecor_cauldron`, so the pot on
 		-- the apron is the palette's own role and the socket faces it.
-		{id = "market_physic", module = "buildings", make = "hall",
+		{id = "market_physic", template = "nhal_veyr_market_physic",
 			order = 8,
-			spec = {w = 13, d = 17, wall_h = 6, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("hearth"))
 				shop_counter(buf, palette, area)
@@ -147,10 +139,8 @@ local function loader(directory)
 		-- its apron is the palette's own `tree_log` -- gravewood -- which is
 		-- what the wave-2 `carve` activity names, so the carver working bone
 		-- at it is the same feature rule the woodcutter's is.
-		{id = "market_charnel", module = "buildings", make = "longhouse",
+		{id = "market_charnel", template = "nhal_veyr_market_charnel",
 			order = 9,
-			spec = {w = 11, d = 15, wall_h = 5, door_side = "z-",
-				door_index = 4, infill = true},
 			decorate = function(buf, palette, area)
 				buf:put(area.x0 + 3, 1, area.z0 + 1, palette.node("tree_log"))
 				shop_counter(buf, palette, area)
@@ -296,8 +286,8 @@ local function loader(directory)
 		-- 3. THE CANDLE COURT, the one open place in the district where a
 		-- light burns: the paved square of `undead_parts.candle_court` with
 		-- its altar, and two PRAYING at it.
-		{id = "market_candle_court", module = "undead", make = "candle_court",
-			margin = 3, spec = {size = 11},
+		{id = "market_candle_court", template = "nhal_veyr_market_candle_court",
+			margin = 3,
 			-- The two who keep the light. They stand two nodes off the altar
 			-- step on its own axis and look at it, so the first cell on their
 			-- course carries a votive torch one course up -- which is the

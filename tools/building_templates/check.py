@@ -2,11 +2,15 @@
 """The building template validator (docs/technical/building-template-format.md §6).
 
 The one validator for the gate and the editor (which imports `validate`). It
-reads every template and town layout under
+reads every template, town layout and capital roster under
 mods/MAPGEN/grug_mapgen/building_templates/, the palettes and the param2 rules
 of the game's own Lua (through tools/building_templates/palette_dump.lua under
 LuaJIT), the node registry tools/building_templates/nodes.json, the editor
 palette tools/building_templates/editor_palette.txt and the known defects.
+It also runs the game's own loader over the same files
+(tools/building_templates/loader_check.lua): a file the game refuses is an
+error here too, every start town and capital must build from the files, and a
+roster's counts must be what the capital's code places (format doc §4).
 
 Rules (ruling 33): structure is always hard (§6.1); the editor palette,
 reachability and the entrance on the footprint edge are hard only for templates
@@ -25,14 +29,17 @@ Exits non-zero on any error.
 """
 import json
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = "mods/MAPGEN/grug_mapgen/building_templates"
 TEMPLATE_MAGIC = "grudgelands-building-template 1"
 LAYOUT_MAGIC = "grudgelands-town-layout 1"
+ROSTER_MAGIC = "grudgelands-town-roster 1"
 RACES = ("dwarf", "human", "elf", "undead", "orc", "troll")
 KINDS = {"facedir": "facedir", "wallmounted": "wallmounted"}
 FACE_STEP = {0: (0, 1), 1: (1, 0), 2: (0, -1), 3: (-1, 0)}
@@ -199,6 +206,8 @@ def parse_template(text, path, expected_name=None, facts=None):
         if head == "legend" and len(words) == 1:
             break
         if head == "name" and len(words) == 2 and re.match(r"^[a-z0-9_]+$", words[1]):
+            if t.get("name") is not None:
+                fail(number, "name given twice")
             t["name"] = words[1]
         elif head == "pivot" and len(words) == 3 and all(ints):
             t["w"], t["d"] = int(words[1]), int(words[2])
@@ -218,6 +227,8 @@ def parse_template(text, path, expected_name=None, facts=None):
                     key, sep, raw = word.partition("=")
                     if not sep or not re.match(r"^[A-Za-z_]\w*$", key):
                         raise ValueError(word)
+                    if any(key == old for old, _ in t["meta"]):
+                        fail(number, "meta %s given twice" % key)
                     t["meta"].append((key, value_of(raw)))
             except ValueError as error:
                 fail(number, "bad meta value %s" % error)
@@ -323,11 +334,22 @@ def parse_template(text, path, expected_name=None, facts=None):
     return t
 
 
-def parse_layout(text, path):
+def use_key(template, main, channels):
+    """A placement's palettes as one key, as the game's loader spells it
+    (`templates.use_key`): the template, `main=` and the channels by name."""
+    words = [template] + (["main=" + main] if main else [])
+    return " ".join(words + ["%s=%s" % (c, channels[c]) for c in sorted(channels)])
+
+
+def parse_layout(text, path, roster=False):
+    """A town layout, or with `roster` a capital's roster (format doc §4): the
+    same town, race and palette lines, then `use` lines instead of placements."""
     lines = split_lines(text, path)
-    if not lines or lines[0] != LAYOUT_MAGIC:
-        raise FormatError(path, 1, "the first line must be '%s'" % LAYOUT_MAGIC)
-    layout = {"path": path, "town": None, "race": None, "palettes": {}, "places": []}
+    magic = ROSTER_MAGIC if roster else LAYOUT_MAGIC
+    if not lines or lines[0] != magic:
+        raise FormatError(path, 1, "the first line must be '%s'" % magic)
+    layout = {"path": path, "town": None, "race": None, "palettes": {}, "places": [],
+              "uses": []}
     for number, line in enumerate(lines[1:], start=2):
         if comment_or_blank(line):
             continue
@@ -351,7 +373,36 @@ def parse_layout(text, path):
                 overrides[match.group(1)] = match.group(2)
             layout["palettes"][words[1]] = {"race": race, "overrides": overrides,
                                             "line": number}
-        elif head == "place" and len(words) >= 7 and re.match(r"^[a-z0-9_]+$", words[1]):
+        elif roster and head == "use" and len(words) >= 3 and \
+                re.match(r"^[a-z0-9_]+$", words[1]):
+            use = {"template": words[1], "count": None, "main": None, "channels": {},
+                   "line": number}
+            for word in words[2:]:
+                key, sep, value = word.partition("=")
+                if not sep or not value:
+                    raise FormatError(path, number, "bad use field " + word)
+                if key == "count":
+                    if use["count"] is not None or not re.match(r"^[1-9]\d*$", value):
+                        raise FormatError(path, number, "count must be a positive integer")
+                    use["count"] = int(value)
+                elif key == "main":
+                    if use["main"]:
+                        raise FormatError(path, number, "main given twice")
+                    use["main"] = value
+                elif key in ("template", "x", "y", "z", "turns", "lift"):
+                    raise FormatError(path, number, "a roster places nothing: %s=" % key)
+                else:
+                    if key in use["channels"]:
+                        raise FormatError(path, number, "channel %s given twice" % key)
+                    use["channels"][key] = value
+            if use["count"] is None:
+                raise FormatError(path, number, "a use line needs count=")
+            use["key"] = use_key(use["template"], use["main"], use["channels"])
+            if any(other["key"] == use["key"] for other in layout["uses"]):
+                raise FormatError(path, number, "the use %s is given twice" % use["key"])
+            layout["uses"].append(use)
+        elif not roster and head == "place" and len(words) >= 7 and \
+                re.match(r"^[a-z0-9_]+$", words[1]):
             place = {"id": words[1], "channels": {}, "main": None, "lift": None,
                      "line": number}
             for word in words[2:]:
@@ -381,6 +432,10 @@ def parse_layout(text, path):
             raise FormatError(path, number, "unknown layout line")
     if not layout["town"] or not layout["race"]:
         raise FormatError(path, 1, "a layout names its town and race")
+    for item in layout["places"] + layout["uses"]:
+        for name in [item["main"], *item["channels"].values()]:
+            if name is not None and name not in layout["palettes"]:
+                raise FormatError(path, item["line"], "names the undefined palette " + name)
     return layout
 
 
@@ -842,9 +897,41 @@ def baseline_reader(root, mode):
     return read, "BASELINE %s" % ref
 
 
-def validate(root=ROOT, baseline="file", replaced=None):
+def loader_run(root, replaced, names, builds):
+    """The game's loader over the files (loader_check.lua): a list of
+    ("error", file, reason), ("build", town, reason) and ("use", capital,
+    count, key)."""
+    source = root / BASE
+    with tempfile.TemporaryDirectory(prefix="grug_template_check_") as scratch:
+        if replaced:
+            # the editor's unsaved files over a copy of the directory
+            source = Path(scratch) / "building_templates"
+            for kind in ("templates", "layouts"):
+                shutil.copytree(root / BASE / kind, source / kind)
+            for relative, text in replaced.items():
+                target = source / Path(relative).relative_to(BASE)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text)
+        command = ["luajit", str(root / "tools/building_templates/loader_check.lua"),
+                   str(root), str(source)] + (["build"] if builds else [])
+        run = subprocess.run(command, input="\n".join(names), capture_output=True,
+                             text=True, cwd=root)
+    if run.returncode != 0:
+        raise SystemExit("check: loader_check.lua failed: " + run.stderr.strip())
+    found = []
+    for line in run.stdout.splitlines():
+        words = line.split(" ", 3)
+        if words[0] in ("error", "build"):
+            found.append((words[0], words[1], line.split(" ", 2)[2]))
+        elif words[0] == "use":
+            found.append(("use", words[1], int(words[2]), words[3]))
+    return found
+
+
+def validate(root=ROOT, baseline="file", replaced=None, builds=True):
     """Run every rule. `replaced` maps a relative path to the text the editor
-    is about to save. Returns the Report."""
+    is about to save. `builds` (default on) builds every start town and
+    capital from the files through the game's loader. Returns the Report."""
     root = Path(root)
     replaced = replaced or {}
     report = Report()
@@ -864,11 +951,13 @@ def validate(root=ROOT, baseline="file", replaced=None):
             templates[template_name] = parse_template(read(relative), relative, template_name)
         except FormatError as error:
             report.error("format", template_name, None, str(error))
-    layouts = []
-    for path in sorted(layout_dir.glob("*.layout")):
+    layouts, rosters = [], []
+    for path in sorted(layout_dir.glob("*.layout")) + sorted(layout_dir.glob("*.roster")):
         relative = "%s/layouts/%s" % (BASE, path.name)
+        roster = path.suffix == ".roster"
         try:
-            layouts.append(parse_layout(read(relative), relative))
+            parsed = parse_layout(read(relative), relative, roster)
+            (rosters if roster else layouts).append(parsed)
         except FormatError as error:
             report.error("format", path.stem, None, str(error))
     nodes = registry(root)
@@ -878,6 +967,13 @@ def validate(root=ROOT, baseline="file", replaced=None):
             if entry["kind"] == "node":
                 wanted.add(entry["name"])
     facts = lua_facts(root, wanted)
+    declared = set(facts["required"]) | set(facts["optional"])
+    for layout in layouts + rosters:
+        for name, spec in layout["palettes"].items():
+            for role in spec["overrides"]:
+                if role not in declared:
+                    report.error("layout", layout["town"], None, "%s: palette %s overrides "
+                                 "the undeclared role %s" % (layout["path"], name, role))
     # layouts and the contexts they place each template in
     contexts = {name: [] for name in templates}
     for layout in layouts:
@@ -909,6 +1005,66 @@ def validate(root=ROOT, baseline="file", replaced=None):
             if race not in templates[place["template"]]["races"]:
                 report.error("layout", place["template"], None, "the races header does not "
                              "cover %s (%s)" % (race, where))
+    # rosters: the templates and palettes a capital's code places (format doc
+    # §4); every use line is one context, its channels exactly the
+    # template's (the game's loader resolves a capital's channels by name)
+    for roster in rosters:
+        town = roster["town"]
+        palettes = {name: palette_of(facts, spec["race"], spec["overrides"])
+                    for name, spec in roster["palettes"].items()}
+        races_of = {name: spec["race"] for name, spec in roster["palettes"].items()}
+        for use in roster["uses"]:
+            where = "%s:%s" % (town, use["key"])
+            t = templates.get(use["template"])
+            if t is None:
+                report.error("roster", town, None, "%s lists the unknown template %s" %
+                             (roster["path"], use["template"]))
+                continue
+            used = {e["channel"] for e in t["legend"].values()
+                    if e["kind"] == "role" and e["channel"]}
+            if used != set(use["channels"]):
+                report.error("roster", town, None, "line %d: %s uses the channels %s, the "
+                             "line names %s" % (use["line"], t["name"],
+                                                sorted(used) or "none",
+                                                sorted(use["channels"]) or "none"))
+            race = races_of[use["main"]] if use["main"] else roster["race"]
+            main = palettes[use["main"]] if use["main"] else \
+                palettes.get("town", palette_of(facts, roster["race"], None))
+            channels = {c: palettes[n] for c, n in use["channels"].items()}
+            contexts[use["template"]].append(Context(where, race, main, channels))
+            if race not in t["races"]:
+                report.error("roster", use["template"], None, "the races header does not "
+                             "cover %s (%s)" % (race, where))
+    # the game's own loader over the same files, and (with `builds`) every
+    # town and capital built from them; a roster's counts against the build
+    listing = ["templates/%s.tpl" % name for name in names] + \
+        ["layouts/%s" % Path(layout["path"]).name for layout in layouts + rosters]
+    if builds and not (root / "mods/MAPGEN/grug_mapgen/wp40").is_dir():
+        # a partial checkout (the editor's tests clone only the templates and
+        # wp13): the files are still read by the game's loader
+        builds = False
+        report.warn("build", "checkout", None, "the towns and capitals are not built: "
+                    "this checkout has no mods/MAPGEN/grug_mapgen/wp40")
+    counts = {}
+    for found in loader_run(root, replaced, listing, builds):
+        if found[0] == "error":
+            report.error("loader", Path(found[1]).stem, None, "the game's loader: %s: %s" %
+                         (found[1], found[2]))
+        elif found[0] == "build":
+            report.error("build", found[1], None, "does not build: " + found[2])
+        else:
+            counts[(found[1], found[3])] = found[2]
+    if builds:
+        for roster in rosters:
+            town = roster["town"]
+            listed = {use["key"]: use for use in roster["uses"]}
+            built = {key: n for (capital, key), n in counts.items() if capital == town}
+            for key in sorted(set(listed) | set(built)):
+                want = listed[key]["count"] if key in listed else 0
+                if built.get(key, 0) != want:
+                    report.error("roster", town, None, "%s: the capital places '%s' %d "
+                                 "times, the roster says %d" % (roster["path"], key,
+                                                                built.get(key, 0), want))
     reader, described = baseline_reader(root, baseline)
     palette_roles, palette_nodes = editor_palette(root)
     for name, t in templates.items():
@@ -925,6 +1081,7 @@ def validate(root=ROOT, baseline="file", replaced=None):
         baseline_unreachable(t, contexts[name], facts, nodes, report)
     report.baseline = described
     report.counts = (len(templates), len(layouts))
+    report.rosters = len(rosters)
     return report
 
 
@@ -1004,9 +1161,9 @@ def main(argv):
         print("ERROR: " + describe(finding))
     templates, layouts = report.counts
     status = "FAIL" if errors else "PASS"
-    print("building templates: %s (%d templates, %d layouts, %d errors, %d warnings; "
-          "baseline: %s)" % (status, templates, layouts, len(errors), len(warnings),
-                             report.baseline))
+    print("building templates: %s (%d templates, %d layouts, %d rosters, %d errors, "
+          "%d warnings; baseline: %s)" % (status, templates, layouts, report.rosters,
+                                          len(errors), len(warnings), report.baseline))
     return 1 if errors else 0
 
 
@@ -1131,10 +1288,12 @@ def real_template_cases():
          {"orientation", "multi_cell", "point_place"}),
         ("a role painted from the editor palette", put(text, empty, keys["wall"]), set()),
     ]
+    defects = {d[:3] for d in known_defects(ROOT)}
     for label, mutated, wanted in cases:
-        report = validate(ROOT, "file", {relative: mutated})
+        report = validate(ROOT, "file", {relative: mutated}, builds=False)
         got = {rule for rule, where, _, _ in report.errors if where == name}
-        others = [e for e in report.errors if e[1] != name]
+        others = [e for e in report.errors
+                  if e[1] != name and (e[1], e[0], e[2]) not in defects]
         if got != wanted or others:
             failures.append("%s: rules %s, expected %s%s" % (
                 label, sorted(got), sorted(wanted), " (and %s)" % others if others else ""))
@@ -1144,9 +1303,60 @@ def real_template_cases():
     t = parse_template(text, relative, shared)
     empty = next(p for p in sorted(t["grid"]) if t["grid"][p] == "." and p[1] >= 2)
     report = validate(ROOT, "file", {relative: put(legend_add(text, "~ node default:wood"),
-                                                   empty, "~")})
+                                                   empty, "~")}, builds=False)
     if not any(w[0] == "fixed_in_shared" and w[1] == shared for w in report.warnings):
         failures.append("a fixed node in a template two races place is flagged")
+    failures += parity_cases()
+    return failures
+
+
+def parity_cases():
+    """The validator refuses what the game's loader refuses (Round 56 lane
+    FREEZE-CAPITALS), reads the capitals' rosters and holds them to a build."""
+    failures = []
+    name = "hearthpine_west_home"
+    relative = "%s/templates/%s.tpl" % (BASE, name)
+    text = (ROOT / relative).read_text()
+
+    def rules(replaced, where, builds=False):
+        report = validate(ROOT, "file", replaced, builds=builds)
+        return {rule for rule, at, _, _ in report.errors if at == where}
+    meta = next(line for line in text.split("\n") if line.startswith("meta "))
+    cases = [
+        ("a name given twice", {relative: text.replace("\nname %s\n" % name,
+                                                       "\nname %s\nname %s\n" % (name, name))},
+         name, {"format", "loader"}),
+        ("a meta key given twice", {relative: text.replace(meta, meta + " peak=1")},
+         name, {"format", "loader"}),
+    ]
+    layout = "%s/layouts/dawnmere.layout" % BASE
+    layout_text = (ROOT / layout).read_text()
+    cases.append(("an override of an undeclared role",
+                  {layout: layout_text.replace("palette tile race=human",
+                                               "palette tile race=human no_such_role=default:wood")},
+                  "dawnmere", {"layout", "loader"}))
+    roster = "%s/layouts/highcourt.roster" % BASE
+    roster_text = (ROOT / roster).read_text()
+    cases.append(("a roster use naming a channel the template lacks",
+                  {roster: roster_text.replace("use highcourt_market count=1 main=white",
+                                               "use highcourt_market count=1 main=white "
+                                               "roof=slate")},
+                  "highcourt", {"roster", "loader"}))
+    for label, replaced, where, wanted in cases:
+        got = rules(replaced, where)
+        if got != wanted:
+            failures.append("%s: rules %s, expected %s" % (label, sorted(got), sorted(wanted)))
+    # against a build: a count the capital does not place
+    got = rules({roster: roster_text.replace("use highcourt_kings_hall count=1",
+                                             "use highcourt_kings_hall count=2")},
+                "highcourt", builds=True)
+    if got != {"roster"}:
+        failures.append("a roster count the capital does not place: rules %s" % sorted(got))
+    report = validate(ROOT, "file", {}, builds=True)
+    defects = {d[:3] for d in known_defects(ROOT)}
+    left = [e for e in report.errors if (e[1], e[0], e[2]) not in defects]
+    if left:
+        failures.append("the files as they are: %s" % left[:3])
     return failures
 
 

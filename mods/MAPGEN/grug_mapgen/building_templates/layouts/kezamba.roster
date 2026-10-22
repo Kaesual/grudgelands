@@ -1,0 +1,45 @@
+grudgelands-town-roster 1
+# The templates and palettes the capital's code places (frozen in Round 56):
+# the civic core's buildings and every district plot's.
+town kezamba
+race troll
+
+palette town race=troll
+palette basalt race=troll castle_paving=grug_decor:darkage_basalt_brick castle_wall=grug_decor:darkage_basalt castle_wall_slab=grug_decor:darkage_basalt_slab castle_wall_stair=grug_decor:darkage_basalt_stair wall=grug_decor:darkage_basalt wall_accent=grug_decor:darkage_basalt_brick
+palette water race=troll water=default:river_water_source
+palette basalt_water race=troll castle_paving=grug_decor:darkage_basalt_brick castle_wall=grug_decor:darkage_basalt castle_wall_slab=grug_decor:darkage_basalt_slab castle_wall_stair=grug_decor:darkage_basalt_stair wall=grug_decor:darkage_basalt wall_accent=grug_decor:darkage_basalt_brick water=default:river_water_source
+palette vine race=troll fern=default:junglegrass grass_tuft=default:junglegrass
+palette crop race=troll crop=default:papyrus crop_soil=grug_farming:soil
+
+use kezamba_kings_hall count=1 main=basalt
+use kezamba_moot_house count=1 main=basalt
+use kezamba_cauldron_court count=1
+use kezamba_shrine count=1
+use kezamba_carver_yard count=1
+use kezamba_granary count=1
+use kezamba_stable count=1
+use kezamba_gate_house_south count=1
+use kezamba_lane_house count=1
+use kezamba_west_house count=1
+use kezamba_shore_house count=1
+use kezamba_trade_shed count=2
+use kezamba_shore_market count=1
+use kezamba_shore_butcher count=2
+use kezamba_shore_tailor count=1
+use kezamba_shore_store count=4
+use kezamba_shore_carvers count=3
+use highcourt_well_court count=4
+use kezamba_shore_watch count=1
+use kezamba_plot_shore_house count=4
+use kezamba_vine_house_a count=3
+use kezamba_vine_house_b count=2
+use kezamba_vine_house_c count=1
+use kezamba_vine_house_d count=1
+use kezamba_vine_herbalist count=1
+use kezamba_vine_moot count=1
+use kezamba_canopy_barracks_a count=1
+use kezamba_canopy_barracks_b count=1
+use kezamba_canopy_watchpost count=1
+use highcourt_market_stable count=1
+use kezamba_totem_scriptorium count=1
+use kezamba_totem_shrine count=1

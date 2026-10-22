@@ -43,17 +43,24 @@
 --   * the district plots are `highcourt_districts.lua`; where they stand,
 --     turned to their streets, is the capital planner's per-world layout
 --     (`wp40/capital_planner.lua`, `wp40/r7_capital_blueprint.lua`).
+--   * the buildings are building templates (Round 56,
+--     docs/technical/building-template-format.md): each PLOTS row names its
+--     template and palettes, and the roster
+--     `building_templates/layouts/highcourt.roster` lists the templates and
+--     palettes the core and the districts place. The templates carry what
+--     the core used to add to its buildings afterwards: the chapel's belfry,
+--     the hall's marble floor bands, braziers and hangings, and the chapel
+--     elder's doorstep.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
-	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("highcourt")
 
 	local M = {}
 
@@ -68,45 +75,12 @@ local function loader(directory)
 	-- see the gatehouse rows below for why they cannot be in this one.
 	local WATCH = "highcourt_watch"
 
-	-- The crown's white stone. `signature` is the role every capital part
-	-- dresses itself in (podium, string courses, merlon caps, the market
-	-- cross, the statue), so rebinding it is what turns one part from a city
-	-- building into a royal one without a second generator.
-	local WHITE = {
-		signature = "grug_decor:darkage_marble",
-		signature_stair = "grug_decor:darkage_marble_stair",
-		signature_slab = "grug_decor:darkage_marble_slab",
-	}
-
-	-- The civic roof: slate, not plank. A hall, a chapel and a gate tower
-	-- roofed in the same boards as a cottage read as big cottages, which is
-	-- the defect the Dawnmere increment fixed with its brick roof; here the
-	-- civic buildings carry the darkage slate family, which has the corner
-	-- shapes the rasteriser needs.
-	local SLATE = {
-		roof_stair = "grug_decor:darkage_slate_tile_stair",
-		roof_stair_outer = "grug_decor:darkage_slate_tile_stair_outer",
-		roof_stair_inner = "grug_decor:darkage_slate_tile_stair_inner",
-		roof_slab = "grug_decor:darkage_slate_tile_slab",
-		roof_ridge = "grug_decor:darkage_slate_tile",
-	}
-
-	local function merged(...)
-		local out = {}
-		for _, source in ipairs({...}) do
-			for role, name in pairs(source) do out[role] = name end
-		end
-		return out
-	end
-
-	-- The king's hall's own dimensions, in one place: the plot row below is
-	-- built from them and so is the floor the composition lays inside it, so
-	-- a hall of another size cannot leave its carpet edging behind.
-	-- `base`, `arcade` and the dais offset are the generator's own
-	-- (`capitals.king_hall`): y = 2 is the hall floor, the arcades stand at
-	-- x = arcade and w - 1 - arcade, and the carpet runs from z = 1 to the
-	-- foot of the dais at d - 9.
-	local HALL = {w = 31, d = 27, rise = 7, base = 2, arcade = 5, dais = 9}
+	-- The crown's white stone and the civic slate roof are palettes of the
+	-- roster: `white` rebinds `signature` (the role every capital part dresses
+	-- itself in: podium, string courses, merlon caps, the market cross, the
+	-- statue), so one building reads as a royal one; `white_slate` puts the
+	-- darkage slate family on the civic roofs as well, which has the corner
+	-- shapes the rasteriser needs. `town` is the plain human palette.
 
 	-- The streets. Every one of them is five or three nodes wide, paved at
 	-- y = 0 and cleared to head height; the plots are laid clear of them, so
@@ -158,10 +132,10 @@ local function loader(directory)
 		{29, -36, 33, -34, "lane"},
 	}
 
-	-- The plot roster. `make` is the generator, `module` the library it comes
-	-- from, `x`/`z` the pad anchor of the rotated footprint and `turns` the
-	-- rotation. `palette` names which of the three handles below the part is
-	-- built with, `roof` which roof handle it carries.
+	-- The plot roster. `template` is the building template, `x`/`z` the pad
+	-- anchor of the rotated footprint and `turns` the rotation. `palette`
+	-- names the roster palette the template is built with, `roof` the one
+	-- its roof channel takes.
 	--
 	-- `drop` and `recast` are the socket policy, and they exist because a
 	-- part does not know how many of a thing a CAPITAL may have. Three roles
@@ -175,14 +149,12 @@ local function loader(directory)
 	local PLOTS = {
 		-- 1. The king's hall, on the north-south axis, its great door
 		-- looking down the approach to the south gate.
-		-- The hall is built with the slate handle as well as roofed with it.
-		-- Its four lucarnes per slope take their hoods from the palette's
-		-- own `roof_slab` rather than from the roof palette, so a hall built
-		-- with the plain human handle wears four plank hoods on a slate
-		-- roof; the two handles differ in nothing but the five roof roles.
-		{id = "kings_hall", module = "capitals", make = "king_hall",
-			x = -15, z = 9, turns = 0, palette = "slate", roof = "slate",
-			spec = {w = HALL.w, d = HALL.d, rise = HALL.rise},
+		-- The hall is built with the slate palette as well as roofed with it:
+		-- its four lucarnes per slope take their hoods from the main
+		-- palette's own `roof_slab`, so a hall built with the plain one would
+		-- wear four plank hoods on a slate roof.
+		{id = "kings_hall", template = "highcourt_kings_hall",
+			x = -15, z = 9, turns = 0, palette = "white_slate", roof = "white_slate",
 			drop = {waypoint = true}},
 
 		-- 2. The four gatehouses. Highcourt has no curtain wall, so these
@@ -202,27 +174,18 @@ local function loader(directory)
 		-- gatehouse is all there is. `order = 2` puts the chamber above the
 		-- deck the part always numbers 1, which makes each tower a loop of
 		-- 1..2 that its own stair really joins.
-		{id = "gate_south", module = "capitals", make = "gatehouse",
-			x = -6, z = -RADIUS, turns = 0, palette = "white", roof = "slate",
-			spec = {patrol_group = "highcourt_gate_south_tower",
-				deck_group = "highcourt_gate_south_tower", order = 2}},
-		{id = "gate_west", module = "capitals", make = "gatehouse",
-			x = -RADIUS, z = -6, turns = 1, palette = "white", roof = "slate",
-			spec = {patrol_group = "highcourt_gate_west_tower",
-				deck_group = "highcourt_gate_west_tower", order = 2}},
-		{id = "gate_north", module = "capitals", make = "gatehouse",
-			x = -6, z = 43, turns = 2, palette = "white", roof = "slate",
-			spec = {patrol_group = "highcourt_gate_north_tower",
-				deck_group = "highcourt_gate_north_tower", order = 2}},
-		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 43, z = -6, turns = 3, palette = "white", roof = "slate",
-			spec = {patrol_group = "highcourt_gate_east_tower",
-				deck_group = "highcourt_gate_east_tower", order = 2}},
+		{id = "gate_south", template = "highcourt_gate_south",
+			x = -6, z = -RADIUS, turns = 0, palette = "white", roof = "white_slate"},
+		{id = "gate_west", template = "highcourt_gate_south",
+			x = -RADIUS, z = -6, turns = 1, palette = "white", roof = "white_slate"},
+		{id = "gate_north", template = "highcourt_gate_south",
+			x = -6, z = 43, turns = 2, palette = "white", roof = "white_slate"},
+		{id = "gate_east", template = "highcourt_gate_south",
+			x = 43, z = -6, turns = 3, palette = "white", roof = "white_slate"},
 
 		-- 3. The market square, west of the approach.
-		{id = "market", module = "capitals", make = "market_square",
+		{id = "market", template = "highcourt_market",
 			x = -36, z = -31, turns = 0, palette = "white",
-			spec = {size = 25},
 			drop = {waypoint = true},
 			-- and the booth's id says booth, not vendor: an id is a string
 			-- the NPC lane reads in logs, and `market_vendor_1` with the
@@ -232,19 +195,17 @@ local function loader(directory)
 
 		-- 4. The two colonnades flanking the approach, turned so their
 		-- walks run with it.
-		{id = "colonnade_west", module = "capitals", make = "colonnade",
-			x = -9, z = -21, turns = 1, palette = "white",
-			spec = {len = 15, patrol_group = WATCH, order = 9}},
-		{id = "colonnade_east", module = "capitals", make = "colonnade",
-			x = 4, z = -21, turns = 3, palette = "white",
-			spec = {len = 15, patrol_group = WATCH, order = 10}},
+		{id = "colonnade_west", template = "highcourt_colonnade_west",
+			x = -9, z = -21, turns = 1, palette = "white"},
+		{id = "colonnade_east", template = "highcourt_colonnade_east",
+			x = 4, z = -21, turns = 3, palette = "white"},
 
 		-- 5. The civic furniture: the king's statue on the east side of the
 		-- crossing, the public well court on the west.
-		{id = "statue", module = "capitals", make = "statue_plinth",
-			x = 12, z = -11, turns = 0, palette = "white", spec = {}},
-		{id = "well_court", module = "capitals", make = "well_court",
-			x = -46, z = 8, turns = 0, palette = "white", spec = {size = 11}},
+		{id = "statue", template = "highcourt_statue",
+			x = 12, z = -11, turns = 0, palette = "white"},
+		{id = "well_court", template = "highcourt_well_court",
+			x = -46, z = 8, turns = 0, palette = "white"},
 
 		-- 6. The open edge, in place of a wall: a kerbed ring street, a
 		-- clipped hedge with a gate gap and two rows of fruit trees, both
@@ -255,25 +216,19 @@ local function loader(directory)
 		-- fruit trees stand ON the far row and their crowns reach three
 		-- nodes, so a piece stamped hard against the pad edge puts leaves
 		-- two nodes outside the core. Both are therefore inset.
-		{id = "orchard_east", module = "capitals", make = "orchard_edge",
-			x = 8, z = -45, turns = 2, palette = "human",
-			spec = {len = 21, patrol_group = WATCH, order = 1}},
-		{id = "orchard_west", module = "capitals", make = "orchard_edge",
-			x = -45, z = -45, turns = 2, palette = "human",
-			spec = {len = 21, patrol_group = WATCH, order = 7}},
+		{id = "orchard_east", template = "highcourt_orchard_east",
+			x = 8, z = -45, turns = 2, palette = "town"},
+		{id = "orchard_west", template = "highcourt_orchard_west",
+			x = -45, z = -45, turns = 2, palette = "town"},
 
-		-- 7. The chapel with its belfry, on the west lane; the belfry itself
-		-- is stamped on its ridge below.
-		{id = "chapel", module = "buildings", make = "chapel",
-			x = -34, z = 20, turns = 0, palette = "human", roof = "slate",
-			spec = {w = 11, d = 15, wall_h = 6, door_side = "x+",
-				door_index = 7, infill = true}},
+		-- 7. The chapel with its belfry, on the west lane.
+		{id = "chapel", template = "highcourt_chapel",
+			x = -34, z = 20, turns = 0, palette = "town", roof = "white_slate"},
 
 		-- 8. The household's own buildings, in the service court east of the
 		-- hall: the open workyard and the store.
-		{id = "service_yard", module = "buildings", make = "shed",
-			x = 25, z = 7, turns = 0, palette = "human",
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}}},
+		{id = "service_yard", template = "highcourt_service_yard",
+			x = 25, z = 7, turns = 0, palette = "town"},
 		-- The store's door is at index 4 and single-leaved on purpose. The
 		-- `store` interior kit stands its roof posts on the odd cells of the
 		-- gable wall's inner run (x1 + 2, x1 + 4, ...), so the centred
@@ -282,43 +237,29 @@ local function loader(directory)
 		-- in. Hearthpine's nine-wide store misses the post by one cell,
 		-- which is why nothing caught this before a capital asked for a
 		-- wider one.
-		{id = "service_store", module = "buildings", make = "longhouse",
-			x = 25, z = 22, turns = 0, palette = "human",
-			spec = {w = 11, d = 15, wall_h = 5, infill = true,
-				door_index = 4}},
+		{id = "service_store", template = "highcourt_service_store",
+			x = 25, z = 22, turns = 0, palette = "town"},
 
 		-- 9. The half-timbered city: a workshop on the south lane and four
 		-- houses along the outer ring.
-		{id = "city_workshop", module = "buildings", make = "workshop",
-			x = 31, z = -46, turns = 0, palette = "human",
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true}},
+		{id = "city_workshop", template = "highcourt_city_workshop",
+			x = 31, z = -46, turns = 0, palette = "town"},
 		-- The three houses keep the generator's own door side (`z-`) and are
 		-- TURNED to face their lane instead. A cottage's `home` kit furnishes
 		-- the cell behind every other wall -- bed corner, hearth, table --
 		-- and only the z- doorway is authored clear of it, which is what
 		-- every start uses; asking the same generator for a door in the gable
 		-- end instead opens it onto the furniture.
-		{id = "north_house", module = "buildings", make = "cottage",
-			x = -46, z = 23, turns = 3, palette = "human",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "x", infill = true, shutters = true}},
-		{id = "lane_house", module = "buildings", make = "cottage",
-			x = 37, z = -17, turns = 1, palette = "human",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
-				infill = true, fancy_bed = true}},
-		{id = "orchard_house", module = "buildings", make = "cottage",
-			x = 37, z = -30, turns = 1, palette = "human",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "saltbox",
-				ridge_axis = "x", infill = true, shutters = true}},
-		{id = "chapel_house", module = "buildings", make = "cottage",
-			x = -46, z = 36, turns = 3, palette = "human",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
-				infill = true, shutters = true}},
-		{id = "market_house", module = "buildings", make = "cottage",
-			x = -46, z = -30, turns = 3, palette = "human",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
+		{id = "north_house", template = "highcourt_north_house",
+			x = -46, z = 23, turns = 3, palette = "town"},
+		{id = "lane_house", template = "highcourt_lane_house",
+			x = 37, z = -17, turns = 1, palette = "town"},
+		{id = "orchard_house", template = "highcourt_orchard_house",
+			x = 37, z = -30, turns = 1, palette = "town"},
+		{id = "chapel_house", template = "highcourt_chapel_house",
+			x = -46, z = 36, turns = 3, palette = "town"},
+		{id = "market_house", template = "highcourt_market_house",
+			x = -46, z = -30, turns = 3, palette = "town"},
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
@@ -350,14 +291,12 @@ local function loader(directory)
 	-- Round 22); this file is the civic core.
 
 	function M.core()
-		local human = palettes.new("human")
-		local white = palettes.new("human", WHITE)
-		local slate = palettes.new("human", merged(WHITE, SLATE))
-		local handles = {human = human, white = white, slate = slate}
+		local human = CAPITAL.palettes.town
+		local white = CAPITAL.palettes.white
 		local buf = parts.buffer()
 		local doorways, rooms, sockets = {}, {}, {}
 		local placed, inside_by_id, plot_order = {}, {}, {}
-		local claimed = {}
+		local claimed, stamped = {}, {}
 
 		-- The citadel paving of the avenues and the cobble of the lanes,
 		-- each resolved the way `capitals.lua` resolves it: the capital
@@ -478,16 +417,8 @@ local function loader(directory)
 
 		-- 4. The plots.
 		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			if plot.roof then spec.roof_palette = handles[plot.roof] end
-			local module = (plot.module == "capitals") and capitals or buildings
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 highcourt: no generator " .. plot.make, 0)
-			end
-			local part = generator(handles[plot.palette], spec)
+			local part = CAPITAL.part(plot.template, plot.id, plot.palette,
+				plot.roof)
 			-- Two plots may not share a cell.
 			--
 			-- `parts.stamp` writes; it does not ask. A plot laid over
@@ -518,7 +449,7 @@ local function loader(directory)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak}
+				d = footprint.d, peak = part.peak, nave_floor = part.nave_floor}
 			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors or {}) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
@@ -539,8 +470,11 @@ local function loader(directory)
 					top = a.top, closed = a.closed, id = plot.id,
 				}
 			end
+			-- The building's own sockets; a socket point without a role is the
+			-- position of one of the composition's own sockets below.
+			templates.collect_sockets(stamped, points, plot.id)
 			for _, entry in ipairs(points.sockets or {}) do
-				local drop = plot.drop and plot.drop[entry.role]
+				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
 					local recast = plot.recast and plot.recast[entry.role]
 					local out = {id = entry.id, role = entry.role,
@@ -561,136 +495,8 @@ local function loader(directory)
 			end
 		end
 
-		-- 5. The chapel's belfry, on its own ridge: the silhouette that
-		-- marks the city's chapel from the far end of the west lane, the
-		-- same way Dawnmere's meeting hall carries one.
-		do
-			local chapel = placed.chapel
-			local height = 4
-			local bx, bz = chapel.x + 3, chapel.z + 6
-			parts.stamp(buf, buildings.belfry(human,
-				{height = height, roof_palette = slate}),
-				bx, chapel.peak, bz, 0)
-			-- The bell's frame needs bearing. A lantern taller than three
-			-- courses hangs its bell from a cross-beam at its own centre,
-			-- and that beam touches nothing but the bell: the two of them
-			-- are an island four courses above the ridge. `capitals.lua`
-			-- carries the same two cells for the king's hall and the temple
-			-- (`bear_bell`), which is a local function there, so the same
-			-- fix is written at this call site -- the beam is landed on the
-			-- lantern's own beam ring, on both sides.
-			for _, offset in ipairs({1, 3}) do
-				buf:put(bx + offset, chapel.peak + height, bz + 2,
-					human.node("beam"))
-			end
-		end
-
-		-- 5b. The hall's floor and its hangings.
-		--
-		-- The first render of the finished core showed what the section
-		-- drawing could not: a nave twenty-five nodes long paved in one
-		-- material, with the carpet the only thing on it. The generator
-		-- owns the architecture and this lane does not change it, so the
-		-- composition dresses the floor it stands on -- a white stone edging
-		-- either side of the carpet, a band across the nave at every arcade
-		-- bay, braziers between the bays and hangings on the aisle walls.
-		local nave = {}
-		do
-			local hall = placed.kings_hall
-			local floor_y = HALL.base
-			local west = hall.x + HALL.arcade + 1
-			local east = hall.x + HALL.w - 2 - HALL.arcade
-			local carpet_from = hall.z + 1
-			local carpet_to = hall.z + HALL.d - HALL.dais - 1
-			local centre = hall.x + math.floor((HALL.w - 1) / 2)
-			local marble = white.node("signature")
-			-- Every cell this writes has to BE the hall's floor already: a
-			-- band that lands on a dais step or outside the nave is a band
-			-- the hall did not have room for.
-			local paving_name = white.maybe("castle_paving") or
-				white.node("plaza")
-			local function inlay_floor(x, z)
-				local cell = buf:at(x, floor_y, z)
-				if cell == nil or cell.name ~= paving_name then
-					error("wp13 highcourt: the hall's floor at " .. x .. "," ..
-						z .. " is " .. (cell and cell.name or "air") ..
-						", not the paving this band is laid into", 0)
-				end
-				buf:put(x, floor_y, z, marble)
-				nave[#nave + 1] = {x = x, z = z}
-			end
-			for z = carpet_from, carpet_to do
-				inlay_floor(centre - 2, z)
-				inlay_floor(centre + 2, z)
-			end
-			-- A band at every arcade bay, broken by the carpet it crosses.
-			for z = carpet_from + 3, carpet_to, 4 do
-				for x = west, east do
-					if x < centre - 2 or x > centre + 2 then
-						inlay_floor(x, z)
-					end
-				end
-			end
-			-- Braziers between the bays, on the band's own stone. The
-			-- clearance test is written here rather than taken from
-			-- `layout.free`, which asks about the cells above the PAD: the
-			-- hall's floor is two courses up and everything under it is the
-			-- podium, so the pad test calls every cell in the building
-			-- taken.
-			for _, z in ipairs({carpet_from + 5, carpet_to - 4}) do
-				for _, x in ipairs({centre - 4, centre + 4}) do
-					for level = floor_y + 1, floor_y + 2 do
-						local cell = buf:at(x, level, z)
-						if cell ~= nil and cell.name ~= parts.AIR then
-							error("wp13 highcourt: the brazier at " .. x ..
-								"," .. z .. " stands in " .. cell.name, 0)
-						end
-					end
-					parts.floor_torch(buf, human, x, floor_y + 1, z)
-				end
-			end
-			-- Hangings on the aisle walls, clear of the wall lights and of
-			-- the benches, each hung on the outer wall behind it.
-			-- A hanging is a plain cloth cell against the wall behind it,
-			-- not a wallmounted prop: `wool:red` carries no paramtype2, so
-			-- `parts.wall_prop` refuses it -- and the hall's own royal
-			-- hangings are written the same way. What has to hold is that
-			-- the wall IS there and the cell is free.
-			-- The bay is SEARCHED for, not counted out: the aisle wall
-			-- carries a pane every fourth bay and a cloth hung over a window
-			-- is a cloth hung over a hole. Each hanging walks along its own
-			-- wall until it finds two courses of masonry, exactly as the
-			-- library's entry torches do, and is fatal when the wall offers
-			-- none.
-			for _, wanted in ipairs({carpet_from + 4, carpet_to - 4}) do
-				for _, side in ipairs({{hall.x + 1, -1},
-						{hall.x + HALL.w - 2, 1}}) do
-					local x, hung = side[1], false
-					for _, step in ipairs({0, 1, -1, 2, -2}) do
-						local z = wanted + step
-						local usable = true
-						for y = floor_y + 2, floor_y + 3 do
-							local here = buf:at(x, y, z)
-							if (here ~= nil and here.name ~= parts.AIR) or
-									not parts.solid_at(buf, x + side[2], y, z) then
-								usable = false
-							end
-						end
-						if usable and not hung then
-							for y = floor_y + 2, floor_y + 3 do
-								buf:put(x, y, z, human.node("rug_accent"))
-							end
-							hung = true
-						end
-					end
-					if not hung then
-						error("wp13 highcourt: no bay of the aisle wall at " ..
-							x .. " near " .. wanted .. " can carry a " ..
-							"hanging", 0)
-					end
-				end
-			end
-		end
+		-- 5. The chapel's belfry and the hall's floor, braziers and hangings
+		-- are the templates' own (Round 56).
 
 		-- 6. The principal service court, east of the hall: the two royal
 		-- trading booths of the contract's `vendor` pair, the household's
@@ -843,7 +649,14 @@ local function loader(directory)
 		-- `door`: the elder stands on the chapel's doorstep and its authored
 		-- facing is the door, so the consumer turns it round to the west lane
 		-- (start_npcs.lua `socket_face_yaw`, playtest round 2).
-		socket("chapel_quest", "quest", -22, 1, 27, 3, {tags = {"door"}})
+		-- Where it stands is a point of the chapel's template.
+		do
+			local spot = templates.stamped_point(stamped, "chapel_quest", "chapel",
+				"highcourt")
+			socket("chapel_quest", "quest", spot.x, spot.y, spot.z, spot.face,
+				{tags = {"door"}})
+		end
+		templates.all_used(stamped, "highcourt")
 		socket("travel_waypoint", "waypoint",
 			math.floor((PLAZA.x1 + PLAZA.x2) / 2), 1,
 			math.floor((PLAZA.z1 + PLAZA.z2) / 2), 0)
@@ -1014,7 +827,7 @@ local function loader(directory)
 				sockets = sockets,
 				orchard_trees = orchard,
 				precinct_wall_columns = wall,
-				nave_floor = #nave,
+				nave_floor = placed.kings_hall.nave_floor,
 			},
 		}
 	end

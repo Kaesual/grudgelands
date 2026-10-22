@@ -50,13 +50,11 @@
 
 local function loader(directory)
 	local parts = dofile(directory .. "/parts.lua")
-	local palettes = dofile(directory .. "/palette.lua")
-	local buildings = dofile(directory .. "/buildings.lua")(directory)
-	local capitals = dofile(directory .. "/capitals.lua")(directory)
 	local dressing = dofile(directory .. "/dressing.lua")(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
-	local plots = dofile(directory .. "/nhal_veyr_plot.lua")(directory)
+	local templates = dofile(directory .. "/templates.lua")(directory)
+	local CAPITAL = templates.capital("nhal_veyr")
 
 	local M = {}
 
@@ -70,24 +68,11 @@ local function loader(directory)
 	-- street to a rampart through a wall.
 	local WATCH = "nhal_veyr_watch"
 
-	-- The two handles, which are `nhal_veyr_plot.CRYPT` and `.VAULT` -- the
-	-- district builder's own, read from there rather than spelled twice, so a
-	-- civic building in the core and one on a lot are the same masonry.
-	local CRYPT = plots.CRYPT
-	local VAULT = plots.VAULT
-
-	local function merged(...)
-		local out = {}
-		for _, source in ipairs({...}) do
-			for role, name in pairs(source) do out[role] = name end
-		end
-		return out
-	end
-
-	-- The king's hall's own dimensions, in one place, so the floor this
-	-- composition lays inside it cannot be left behind by a hall of another
-	-- size. `base`, `arcade` and `dais` are `capitals.king_hall`'s own.
-	local HALL = {w = 31, d = 27, rise = 7, base = 2, arcade = 5, dais = 9}
+	-- The palettes are the roster's (`building_templates/layouts/
+	-- nhal_veyr.roster`), shared with the district plots so a civic building
+	-- in the core and one on a lot are the same masonry: `town` the plain
+	-- undead palette, `crypt` its civic masonry and `crypt_vault` that under
+	-- the vault roof.
 
 	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
 	-- everything above its paving but the waystone and its mailbox. x1 is 11 and not 8, for the reason
@@ -133,9 +118,12 @@ local function loader(directory)
 		{17, -40, 19, -38, "lane"},
 	}
 
-	-- The plot roster. `make` is the generator, `module` the library it comes
-	-- from, `x`/`z` the pad anchor of the rotated footprint, `turns` the
-	-- rotation, `palette` and `roof` which handle it is built and roofed with.
+	-- The plot roster. `template` is the building template (Round 56,
+	-- docs/technical/building-template-format.md), `x`/`z` the pad anchor of
+	-- the rotated footprint, `turns` the rotation, `palette` and `roof` the
+	-- roster palettes it is built and roofed with. The templates carry what
+	-- the core used to add afterwards: the mausoleum's floor bands and
+	-- braziers and the vigil elder's doorstep.
 	--
 	-- `drop` and `recast` are the socket policy of the sockets contract, and
 	-- they exist because a part cannot know how many of a thing a CAPITAL may
@@ -143,39 +131,29 @@ local function loader(directory)
 	-- families. The KAT asserts the resulting multiset.
 	local PLOTS = {
 		-- 1. THE MAUSOLEUM, on the axis, its great door looking down the
-		-- approach to the south gate. Built with the crypt handle as well as
-		-- roofed with the vault: a lucarne takes its hood from the palette's
-		-- own `roof_slab`, so a hall built with the plain handle would wear
-		-- obsidian hoods on a dungeon-stone roof.
-		{id = "mausoleum", module = "capitals", make = "king_hall",
-			x = -15, z = 9, turns = 0, palette = "crypt", roof = "vault",
-			spec = {w = HALL.w, d = HALL.d, rise = HALL.rise},
+		-- approach to the south gate. Built with the crypt palette as well as
+		-- roofed with the vault: a lucarne takes its hood from the main
+		-- palette's own `roof_slab`, so a hall built with the plain one would
+		-- wear obsidian hoods on a dungeon-stone roof.
+		{id = "mausoleum", template = "nhal_veyr_mausoleum",
+			x = -15, z = 9, turns = 0, palette = "crypt", roof = "crypt_vault",
 			drop = {waypoint = true}},
 
 		-- 2. The four inner gatehouses, where the avenues leave the precinct.
 		-- Nhal Veyr's curtain wall is 209 nodes further out, so these are the
 		-- necropolis's own gates and not the city's.
-		{id = "gate_south", module = "capitals", make = "gatehouse",
-			x = -6, z = -RADIUS, turns = 0, palette = "crypt", roof = "vault",
-			spec = {patrol_group = "nhal_veyr_gate_south_tower",
-				deck_group = "nhal_veyr_gate_south_tower", order = 2}},
-		{id = "gate_west", module = "capitals", make = "gatehouse",
-			x = -RADIUS, z = -6, turns = 1, palette = "crypt", roof = "vault",
-			spec = {patrol_group = "nhal_veyr_gate_west_tower",
-				deck_group = "nhal_veyr_gate_west_tower", order = 2}},
-		{id = "gate_north", module = "capitals", make = "gatehouse",
-			x = -6, z = 43, turns = 2, palette = "crypt", roof = "vault",
-			spec = {patrol_group = "nhal_veyr_gate_north_tower",
-				deck_group = "nhal_veyr_gate_north_tower", order = 2}},
-		{id = "gate_east", module = "capitals", make = "gatehouse",
-			x = 43, z = -6, turns = 3, palette = "crypt", roof = "vault",
-			spec = {patrol_group = "nhal_veyr_gate_east_tower",
-				deck_group = "nhal_veyr_gate_east_tower", order = 2}},
+		{id = "gate_south", template = "nhal_veyr_gate_south",
+			x = -6, z = -RADIUS, turns = 0, palette = "crypt", roof = "crypt_vault"},
+		{id = "gate_west", template = "nhal_veyr_gate_south",
+			x = -RADIUS, z = -6, turns = 1, palette = "crypt", roof = "crypt_vault"},
+		{id = "gate_north", template = "nhal_veyr_gate_south",
+			x = -6, z = 43, turns = 2, palette = "crypt", roof = "crypt_vault"},
+		{id = "gate_east", template = "nhal_veyr_gate_south",
+			x = 43, z = -6, turns = 3, palette = "crypt", roof = "crypt_vault"},
 
 		-- 3. The market square, west of the approach.
-		{id = "market", module = "capitals", make = "market_square",
-			x = -35, z = -28, turns = 0, palette = "undead",
-			spec = {size = 25},
+		{id = "market", template = "highcourt_market",
+			x = -35, z = -28, turns = 0, palette = "town",
 			drop = {waypoint = true},
 			-- A booth without a trader is a flair NPC's work spot, and its id
 			-- has to say booth: `market_vendor_1` with the role `idle` is a
@@ -184,58 +162,43 @@ local function loader(directory)
 				from = "_vendor_", to = "_booth_"}}},
 
 		-- 4. The two colonnades flanking the approach.
-		{id = "colonnade_west", module = "capitals", make = "colonnade",
-			x = -9, z = -21, turns = 1, palette = "crypt",
-			spec = {len = 15, patrol_group = WATCH, order = 1}},
-		{id = "colonnade_east", module = "capitals", make = "colonnade",
-			x = 4, z = -21, turns = 3, palette = "crypt",
-			spec = {len = 15, patrol_group = WATCH, order = 6}},
+		{id = "colonnade_west", template = "nhal_veyr_colonnade_west",
+			x = -9, z = -21, turns = 1, palette = "crypt"},
+		{id = "colonnade_east", template = "nhal_veyr_colonnade_east",
+			x = 4, z = -21, turns = 3, palette = "crypt"},
 
 		-- 5. The civic furniture: the king's statue east of the crossing and
 		-- the cistern court in the west quarter.
-		{id = "statue", module = "capitals", make = "statue_plinth",
-			x = 12, z = -11, turns = 0, palette = "crypt", spec = {}},
-		{id = "cistern_court", module = "capitals", make = "well_court",
-			x = -45, z = 9, turns = 0, palette = "undead", spec = {size = 11}},
+		{id = "statue", template = "highcourt_statue",
+			x = 12, z = -11, turns = 0, palette = "crypt"},
+		{id = "cistern_court", template = "highcourt_well_court",
+			x = -45, z = 9, turns = 0, palette = "town"},
 
 		-- 6. The hall of vigil: the capital library's temple, in the west
-		-- quarter, and where this capital's quest shell stands.
-		{id = "vigil_hall", module = "capitals", make = "temple",
-			x = -44, z = 22, turns = 0, palette = "crypt", roof = "vault",
-			spec = {w = 13, d = 19, wall_h = 7, rise = 5},
-			-- The temple publishes its own quest shell, and a capital has
-			-- exactly one: the composition adds none of its own.
-			--
-			-- It does MOVE AND RETAG the shell. `capitals.temple` stands it
-			-- three nodes inside its own door, in the nave -- where a shrine's
-			-- own keeper belongs and a quest-giver does not. The user's
-			-- playtest-round-2 ruling is that the elder stands on the doorstep
-			-- and shows the street his face, so this plot puts him one node
-			-- outside the door on the temple walk and tags him `door`, which is
-			-- what turns an NPC round (`grug_mobs/start_npcs.lua`,
-			-- `socket_face_yaw`).
-			socket_overrides = function(placed)
-				return {vigil_hall_quest = {x = placed.x + 6,
-					z = placed.z - 1, face = 0, tags = {"door"}}}
-			end},
+		-- quarter, and where this capital's quest shell stands. The temple
+		-- publishes its own quest shell, and a capital has exactly one: the
+		-- composition adds none of its own. The shell stands on the doorstep,
+		-- one node outside the door on the temple walk, tagged `door`, which
+		-- is what turns an NPC round (`grug_mobs/start_npcs.lua`,
+		-- `socket_face_yaw`; the user's playtest-round-2 ruling): a point of
+		-- the temple's template since Round 56, this row's socket override
+		-- before.
+		{id = "vigil_hall", template = "nhal_veyr_vigil_hall",
+			x = -44, z = 22, turns = 0, palette = "crypt", roof = "crypt_vault"},
 
 		-- 7. The ossuary court, the north-east quarter and this capital's
 		-- signature. The bone works opens in its x- wall, like every workshop
 		-- in this capital: the `workshop` interior kit stands the cauldrons on
 		-- the odd cells of the z- gable's inner run, and the generator's own
 		-- chimney stack stands on the middle cell of that same wall.
-		{id = "bone_works", module = "buildings", make = "workshop",
-			x = 24, z = 8, turns = 0, palette = "undead",
-			spec = {w = 11, d = 13, wing = 7, wall_h = 5, door_side = "x-",
-				door_index = 6, infill = true}},
-		{id = "charnel_yard", module = "buildings", make = "shed",
-			x = 24, z = 27, turns = 0, palette = "undead",
-			spec = {w = 13, d = 9, wall_h = 4, open_sides = {"z-", "x+"}}},
+		{id = "bone_works", template = "dur_brannoc_great_forge",
+			x = 24, z = 8, turns = 0, palette = "town"},
+		{id = "charnel_yard", template = "highcourt_service_yard",
+			x = 24, z = 27, turns = 0, palette = "town"},
 
 		-- 8. The bonesmiths' guild, in the south-east corner.
-		{id = "bonesmith_guild", module = "capitals", make = "scriptorium",
-			x = 29, z = -46, turns = 2, palette = "crypt", roof = "vault",
-			spec = {w = 13, d = 17, wall_h = 6}},
+		{id = "bonesmith_guild", template = "nhal_veyr_bonesmith_guild",
+			x = 29, z = -46, turns = 2, palette = "crypt", roof = "crypt_vault"},
 
 		-- 9. The kept houses: four on the outer ground, and the contract's
 		-- "ruins mixed among kept houses" -- one fallen shell between two of
@@ -244,31 +207,22 @@ local function loader(directory)
 		-- The cottages keep the generator's own door side (`z-`) and are TURNED
 		-- to face their ground instead: the `home` kit furnishes the cell
 		-- behind every other wall and only the z- doorway is authored clear.
-		{id = "market_house", module = "buildings", make = "cottage",
-			x = -45, z = -20, turns = 3, palette = "undead",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "z", infill = true, shutters = true}},
-		{id = "south_house", module = "buildings", make = "cottage",
-			x = -41, z = -41, turns = 1, palette = "undead",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "hip",
-				infill = true, shutters = true}},
-		{id = "lane_house", module = "buildings", make = "cottage",
-			x = 37, z = -17, turns = 1, palette = "undead",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "saltbox",
-				ridge_axis = "x", infill = true, fancy_bed = true}},
-		{id = "plaza_house", module = "buildings", make = "cottage",
-			x = 9, z = -46, turns = 1, palette = "undead",
-			spec = {w = 9, d = 9, wall_h = 5, roof = "gable",
-				ridge_axis = "x", infill = true, shutters = true}},
+		{id = "market_house", template = "dur_brannoc_market_house",
+			x = -45, z = -20, turns = 3, palette = "town"},
+		{id = "south_house", template = "dur_brannoc_south_house",
+			x = -41, z = -41, turns = 1, palette = "town"},
+		{id = "lane_house", template = "nhal_veyr_lane_house",
+			x = 37, z = -17, turns = 1, palette = "town"},
+		{id = "plaza_house", template = "dur_brannoc_plaza_house",
+			x = 9, z = -46, turns = 1, palette = "town"},
 		-- The fallen one stands BETWEEN the two west houses, which is the only
 		-- place on this pad where the contract's line reads: a ruin on its own
 		-- is a heap in a field, and a ruin with a kept cottage on either side
 		-- of it is a street that lost a house. Its apron ring stops one node
 		-- clear of the south house's and two clear of the market house's; the
 		-- market square's west kerb is one node further out again.
-		{id = "fallen_house", module = "buildings", make = "ruin",
-			x = -45, z = -30, turns = 0, palette = "undead",
-			spec = {w = 9, d = 7, wall_h = 5, phase = 1}},
+		{id = "fallen_house", template = "nhal_veyr_fallen_house",
+			x = -45, z = -30, turns = 0, palette = "town"},
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
@@ -368,14 +322,11 @@ local function loader(directory)
 	-- Round 22); this file is the civic core.
 
 	function M.core()
-		local undead = palettes.new("undead")
-		local crypt = palettes.new("undead", CRYPT)
-		local vault = palettes.new("undead", merged(CRYPT, VAULT))
-		local handles = {undead = undead, crypt = crypt, vault = vault}
+		local undead = CAPITAL.palettes.town
 		local buf = parts.buffer()
 		local doorways, rooms, sockets = {}, {}, {}
 		local placed, inside_by_id, plot_order = {}, {}, {}
-		local claimed = {}
+		local claimed, stamped = {}, {}
 
 		-- The citadel paving of the avenues and the mossy cobble of the lanes,
 		-- each resolved the way `capitals.lua` resolves it: the capital
@@ -478,16 +429,8 @@ local function loader(directory)
 
 		-- 4. The plots.
 		for _, plot in ipairs(PLOTS) do
-			local spec = {}
-			for key, value in pairs(plot.spec) do spec[key] = value end
-			spec.id = plot.id
-			if plot.roof then spec.roof_palette = handles[plot.roof] end
-			local module = (plot.module == "capitals") and capitals or buildings
-			local generator = module[plot.make]
-			if type(generator) ~= "function" then
-				error("wp13 nhal veyr: no generator " .. plot.make, 0)
-			end
-			local part = generator(handles[plot.palette], spec)
+			local part = CAPITAL.part(plot.template, plot.id, plot.palette,
+				plot.roof)
 			-- Two plots may not share a cell. `parts.stamp` writes; it does not
 			-- ask, so a plot laid over another cuts a silent hole in the first
 			-- and the pad still builds -- the shape of defect that cost
@@ -511,7 +454,7 @@ local function loader(directory)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak}
+				d = footprint.d, peak = part.peak, nave_floor = part.nave_floor}
 			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors or {}) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
@@ -532,30 +475,23 @@ local function loader(directory)
 					top = a.top, closed = a.closed, id = plot.id,
 				}
 			end
-			-- What this plot changes about the sockets its PART published. A
-			-- generator in `capitals.lua` knows its own building and nothing
-			-- about the composition it is built into, so the roster says so
-			-- instead of the library being edited per composition.
-			local overrides = {}
-			if type(plot.socket_overrides) == "function" then
-				overrides = plot.socket_overrides(placed[plot.id])
-			end
+			-- The building's own sockets; a socket point without a role is the
+			-- position of one of the composition's own sockets.
+			templates.collect_sockets(stamped, points, plot.id)
 			for _, entry in ipairs(points.sockets or {}) do
-				local drop = plot.drop and plot.drop[entry.role]
+				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
 					local recast = plot.recast and plot.recast[entry.role]
-					local override = overrides[entry.id] or {}
 					local out = {id = entry.id, role = entry.role,
-						x = override.x or entry.x, y = override.y or entry.y,
-						z = override.z or entry.z,
-						face = override.face or entry.face,
+						x = entry.x, y = entry.y, z = entry.z,
+						face = entry.face,
 						group = entry.group,
 						order = entry.order, kind = entry.kind,
 						activity = entry.activity,
 						-- `spawn` travels with the socket: a generator that
 						-- publishes a spare must not lose it here.
 						spawn = entry.spawn,
-						tags = override.tags or entry.tags}
+						tags = entry.tags}
 					if recast then
 						out.role = recast.role
 						out.tags = recast.tags
@@ -569,56 +505,9 @@ local function loader(directory)
 			end
 		end
 
-		-- 5. The mausoleum's floor: a grave-slab edging either side of the
-		-- carpet and a band across the nave at every arcade bay, with votive
-		-- lights between the bays. The generator owns the architecture; what a
-		-- twenty-five-node nave of one paving material needs is a floor
-		-- somebody drew.
-		local nave = {}
-		do
-			local hall = placed.mausoleum
-			local floor_y = HALL.base
-			local west = hall.x + HALL.arcade + 1
-			local east = hall.x + HALL.w - 2 - HALL.arcade
-			local carpet_from = hall.z + 1
-			local carpet_to = hall.z + HALL.d - HALL.dais - 1
-			local centre = hall.x + math.floor((HALL.w - 1) / 2)
-			local paving_name = crypt.maybe("castle_paving") or
-				crypt.node("plaza")
-			local function inlay_floor(x, z)
-				local cell = buf:at(x, floor_y, z)
-				if cell == nil or cell.name ~= paving_name then
-					error("wp13 nhal veyr: the mausoleum floor at " .. x .. "," ..
-						z .. " is " .. (cell and cell.name or "air") ..
-						", not the paving this band is laid into", 0)
-				end
-				buf:put(x, floor_y, z, SIGNATURE)
-				nave[#nave + 1] = {x = x, z = z}
-			end
-			for z = carpet_from, carpet_to do
-				inlay_floor(centre - 2, z)
-				inlay_floor(centre + 2, z)
-			end
-			for z = carpet_from + 3, carpet_to, 4 do
-				for x = west, east do
-					if x < centre - 2 or x > centre + 2 then
-						inlay_floor(x, z)
-					end
-				end
-			end
-			for _, z in ipairs({carpet_from + 5, carpet_to - 4}) do
-				for _, x in ipairs({centre - 4, centre + 4}) do
-					for level = floor_y + 1, floor_y + 2 do
-						local cell = buf:at(x, level, z)
-						if cell ~= nil and cell.name ~= parts.AIR then
-							error("wp13 nhal veyr: the votive light at " .. x ..
-								"," .. z .. " stands in " .. cell.name, 0)
-						end
-					end
-					parts.floor_torch(buf, undead, x, floor_y + 1, z)
-				end
-			end
-		end
+		-- 5. The mausoleum's floor bands and braziers are its template's own
+		-- (Round 56).
+		templates.all_used(stamped, "nhal_veyr")
 
 		-- 6. THE OSSUARY COURT: the two royal booths of the contract's
 		-- `vendor` pair, the bone stacks, the coffin crates, the embalmer's
@@ -1093,7 +982,7 @@ local function loader(directory)
 				graves = graves,
 				gravewoods = trees,
 				flora = flora,
-				nave_floor = #nave,
+				nave_floor = placed.mausoleum.nave_floor,
 			},
 		}
 	end

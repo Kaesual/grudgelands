@@ -825,9 +825,9 @@ Every settlement composition carries dressing that fits its style (user
 review of 2026-10-05 on the POI review page; WP13 rework, plan §2.11). The
 pieces and rules live in one module, `grug_mapgen/wp13/decor_kit.lua`; every
 node comes from the race's settlement palette (`wp13/palette.lua`), so a dwarf
-well looks dwarf. Since Round 56 a start town's house touches are part of its
-building templates (Hearthpine still dresses its houses after paving its
-approaches; [building-template-format.md](../technical/building-template-format.md)). Footprints, positions, paths, protection boxes, sockets
+well looks dwarf. Since Round 56 a start town's and a capital's house touches
+are part of its building templates (Hearthpine still dresses its houses after
+paving its approaches; [building-template-format.md](../technical/building-template-format.md)). Footprints, positions, paths, protection boxes, sockets
 and the world plan are unchanged; only cells inside each composition's own
 volume change.
 
