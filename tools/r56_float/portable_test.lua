@@ -20,7 +20,10 @@
 --   F5  lava unchanged: the item sinks to the floor;
 --   F6  the pool drained: a floating item falls as usual and lands;
 --   F7  a 10-deep lake, F8 water under a stone roof (held under it), F9 a
---       flowing film below the item's centre does not lift it.
+--       flowing film below the item's centre does not lift it;
+--   F10 long server steps (0.45, 0.6 and 2.5 s): a first step that lands at
+--       once still lifts the item, a rise step of more than a node rests at
+--       the surface, not a node under it, land items unchanged.
 -- Every case prints one "CASE <id> <observed>" line. Prints
 -- "R56 FLOAT PORTABLE PASS checks=<n>" or the failures.
 
@@ -328,6 +331,45 @@ do -- F7 a 10-deep lake, F8 under a stone roof, F9 a thin film.
 		"F8 held still under the roof")
 	check(near(film.object.pos.y, 0.5 + SIZE) and film._grug_float == nil,
 		"F9 a film below the centre does not lift it")
+end
+
+do -- F10 long server steps (the engine allows up to 2.5 s): the first step
+	-- already lands, and one rise step can climb more than a node.
+	local out = {}
+	for _, dt in ipairs({0.45, 0.6, 2.5}) do
+		DT = dt
+		reset()
+		floor_and_pool(3, "default:water_source")
+		local floor_spawn = new_item(0, 1.3, 0)
+		run(floor_spawn, 12)
+		local mid = new_item(1, 2.4, 1, vector.new(0, 0, 0))
+		mid.object.acc = vector.new(0, 0, 0)
+		-- rising, last seen in node 2 (top 2.5), one node under the surface node
+		mid._grug_float, mid._grug_top = "rise", 2.5
+		mid.object.vel = vector.new(0, 2, 0)
+		run(mid, 12)
+		reset()
+		floor_and_pool(10, "default:water_source")
+		local deep = new_item(0, 1.3, 0)
+		run(deep, 20)
+		reset()
+		floor_and_pool(0, "default:water_source")
+		local land = new_item(0, 1.5, 0, vector.new(0.5, 5, 0))
+		run(land, 6)
+		local lying = run(land, 10)
+		out[#out + 1] = ("dt %.2f: pool %.3f, mid %.3f, 10 deep %.3f, land %.3f lying %d"):format(dt,
+			floor_spawn.object.pos.y, mid.object.pos.y, deep.object.pos.y, land.object.pos.y, lying)
+		check(near(floor_spawn.object.pos.y, 3.5) and settled(floor_spawn),
+			("F10 dt %.2f: spawned at the floor, rests at the surface"):format(dt))
+		check(near(mid.object.pos.y, 3.5) and settled(mid),
+			("F10 dt %.2f: a long rise step rests at the surface, not a node under it"):format(dt))
+		check(near(deep.object.pos.y, 10.5) and settled(deep),
+			("F10 dt %.2f: a 10-deep lake, the surface"):format(dt))
+		check(near(land.object.pos.y, 0.5 + SIZE) and land._grug_float == nil and lying == 0,
+			("F10 dt %.2f: land unchanged, no lookup while it lies"):format(dt))
+	end
+	DT = 0.09
+	case("F10", table.concat(out, "; "))
 end
 
 minetest, core = nil, nil

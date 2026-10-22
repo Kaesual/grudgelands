@@ -74,7 +74,7 @@ local function float_settle(self, pos, y)
 end
 
 -- Called while the item flies, on the step it lands and while it floats:
--- one node lookup per call.
+-- one node lookup per call (a few more on a long step's settle).
 local function float_step(self, moveresult)
 	local pos = self.object:get_pos()
 	if not pos then return end
@@ -99,8 +99,21 @@ local function float_step(self, moveresult)
 		end
 		self._grug_top = top
 	elseif self._grug_float == "rise" then
-		-- surfaced: rest on the water it rose through
-		float_settle(self, pos, top or self._grug_top)
+		-- surfaced: rest on the water it rose through. A long server step
+		-- can lift it more than a node past the last water node it was in,
+		-- so the highest water between here and that node counts (this
+		-- step only, at most a node per RISE * dtime).
+		if not top then
+			top = self._grug_top
+			for y = math.floor(pos.y + 0.5) - 1, math.floor(self._grug_top) + 1, -1 do
+				local found = water_top(vector.new(pos.x, y, pos.z))
+				if found then
+					top = found
+					break
+				end
+			end
+		end
+		float_settle(self, pos, top)
 	end
 end
 
@@ -131,16 +144,18 @@ local item = {
 	end,
 
 	on_step = function(self, dtime, moveresult, ...)
+		local was_moving = self.moving_state -- (R56 FLOAT, below)
 		builtin_item.on_step(self, dtime, moveresult, ...)
 		local resync = self._grug_resync -- (0.49.1 DROP, below)
 
 		-- GRUG PATCH (R56 FLOAT): water lifts the item. Looked at while it
-		-- flies, on the step it lands and while it floats; never while it
-		-- lies on land or slides on ice. A settle starts the resync clock
-		-- below with the next step, as a landing does.
+		-- flies, on the step it lands (also a first step that lands at
+		-- once) and while it floats; never while it lies on land or slides
+		-- on ice. A settle starts the resync clock below with the next step,
+		-- as a landing does.
 		if moveresult and self.physical_state and self.itemstring ~= "" and
 				(self._grug_float or not moveresult.collides or
-				(self._grug_unsettled and not self.moving_state)) then
+				(not self.moving_state and (self._grug_unsettled or was_moving))) then
 			float_step(self, moveresult)
 		end
 
