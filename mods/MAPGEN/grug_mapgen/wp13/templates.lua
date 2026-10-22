@@ -41,8 +41,11 @@ local function loader(directory)
 
 	-- The file's lines with their numbers; a file is `\n`-terminated text.
 	local function lines_of(text, path)
-		if text:find("\r", 1, true) then
-			error(path .. ": carriage return in the file (only \\n line ends)", 0)
+		local carriage = text:find("\r", 1, true)
+		if carriage then
+			local _, before = text:sub(1, carriage):gsub("\n", "")
+			error(path .. ":" .. (before + 1) ..
+				": carriage return in the file (only \\n line ends)", 0)
 		end
 		local out = {}
 		local number = 0

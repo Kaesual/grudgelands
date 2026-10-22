@@ -18,7 +18,13 @@ compatible, map reset, migrate or new server. The rules checked here:
 - against the last pushed commit (default `origin/main`): the version never
   decreases, entries are never edited or removed, a new entry comes only
   together with a version bump, a pushed `map_reset_pass` is never edited,
-  and the step file of every pushed `migrate` entry is unchanged. A missing
+  and the step file of every pushed `migrate` entry is unchanged;
+- WHAT THE TOWNS BUILD (Round 56): the settlement identities and point digests
+  of every start town and the build digest of every capital
+  (tools/building_templates/town_identity.lua) are compared with the pushed
+  commit's; any difference (a template, a layout, a palette or code that
+  changes a town) needs a map reset entry the pushed declaration did not have.
+  The comparison is of what the towns build, never of the template files. A missing
   earlier declaration is accepted (the first declaration); a pushed schema-1
   declaration has no `migrate` list, a pushed schema-1 or schema-2 one no
   `map_reset_pass`.
@@ -40,6 +46,8 @@ import json
 import re
 import subprocess
 import sys
+import tarfile
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -243,6 +251,49 @@ def pushed_declaration(ref):
     return json.loads(shown), "compared with %s" % ref
 
 
+TOWN_TOOL = "tools/building_templates/town_identity.lua"
+
+
+def town_builds(tree):
+    """{town: (identity or digest, cells, point digest)} for the checkout at
+    `tree` (start towns and capitals), built by this checkout's tool."""
+    run = subprocess.run(["luajit", str(ROOT / TOWN_TOOL), str(ROOT), str(tree)],
+                         capture_output=True, text=True)
+    if run.returncode != 0:
+        raise SystemExit("check_upgrade: %s failed on %s:\n%s" % (TOWN_TOOL, tree, run.stderr))
+    builds = {}
+    for line in run.stdout.splitlines():
+        fields = line.split("\t")
+        builds[fields[0]] = tuple(fields[1:])
+    return builds
+
+
+def pushed_town_builds(ref):
+    with tempfile.TemporaryDirectory(prefix="grug_upgrade_base_") as tree:
+        archive = Path(tree) / "base.tar"
+        with archive.open("wb") as handle:
+            run = subprocess.run(["git", "archive", ref, "mods/MAPGEN/grug_mapgen"],
+                                 cwd=ROOT, stdout=handle)
+        if run.returncode != 0:
+            raise SystemExit("check_upgrade: cannot extract the mapgen at %s" % ref)
+        with tarfile.open(archive) as tar:
+            tar.extractall(tree)
+        return town_builds(tree)
+
+
+def town_errors(old_builds, new_builds, old, new):
+    """A change of what the towns build needs a newly declared map reset."""
+    changed = sorted(key for key in set(old_builds) | set(new_builds)
+                     if old_builds.get(key) != new_builds.get(key))
+    if not changed:
+        return []
+    added = [entry for entry in new["map_reset"] if entry not in (old or {}).get("map_reset", [])]
+    if added:
+        return []
+    return ["what the towns build changed (%s) against the pushed commit; that needs "
+            "a map reset entry for this version" % ", ".join(changed)]
+
+
 def check(base):
     decl = json.loads((ROOT / DECLARATION).read_text())
     conf_version = game_conf_version((ROOT / "game.conf").read_text())
@@ -257,6 +308,9 @@ def check(base):
         pushed_migrate = (old or {}).get("migrate") or []
         errors += step_errors(decl["migrate"], pushed_migrate, read_file,
                               lambda path: read_at(base, path))
+        if not errors:
+            errors += town_errors(pushed_town_builds(base), town_builds(ROOT), old, decl)
+            note += "; the towns build as at %s or a map reset is declared" % base
     if errors:
         raise SystemExit("Upgrade declaration: FAIL\n" + "\n".join(errors))
     print("Upgrade declaration %s: PASS (%s)" % (decl["version"], note))
@@ -407,6 +461,21 @@ def self_test():
                        pushed.get) != [], "a pushed step file is never changed")
     expect(step_errors(["0.43.0"], ["0.43.0"], files.get, pushed.get) != [],
            "a pushed step whose file the pushed commit lacks")
+
+    towns = {"hearthpine": ("aa", "10", "bb"), "highcourt": ("cc", "20", "4")}
+    moved = dict(towns, hearthpine=("ab", "10", "bb"))
+    digest = dict(towns, hearthpine=("aa", "10", "bc"))
+    expect(town_errors(towns, dict(towns), first, dict(first, version="0.42.0")) == [],
+           "the towns build the same: nothing to declare")
+    expect(town_errors(towns, moved, first, dict(first, version="0.42.0")) != [],
+           "a town's identity changed without a new map reset")
+    expect(town_errors(towns, digest, first, dict(first, version="0.42.0")) != [],
+           "a town's points changed without a new map reset")
+    expect(town_errors(towns, moved, first, dict(first, version="0.42.0",
+                                                  map_reset=["0.40.1", "0.42.0"])) == [],
+           "a town's identity changed with a new map reset")
+    expect(town_errors(towns, {"hearthpine": towns["hearthpine"]}, first,
+                       dict(first, version="0.42.0")) != [], "a town that disappeared")
 
     expect(game_conf_version("# version = 1.0.0\nversion = 0.41.0\n") == "0.41.0",
            "game.conf's version line")

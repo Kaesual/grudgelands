@@ -100,7 +100,8 @@ def comment_or_blank(line):
 
 def split_lines(text, path):
     if "\r" in text:
-        raise FormatError(path, None, "carriage return in the file (only \\n line ends)")
+        raise FormatError(path, text[:text.index("\r")].count("\n") + 1,
+                          "carriage return in the file (only \\n line ends)")
     lines = text.split("\n")
     if lines and lines[-1] == "":
         lines.pop()
@@ -1051,11 +1052,102 @@ def self_test():
         failures.append("an incomplete placement is refused")
     except FormatError:
         pass
+    failures += real_template_cases()
     if failures:
         print("check.py self-test: FAIL\n" + "\n".join(failures))
         return 1
     print("check.py self-test: PASS")
     return 0
+
+
+def real_template_cases():
+    """Every rule on a mutated copy of a frozen template against BASELINE (needs
+    the repository with its history and LuaJIT)."""
+    failures = []
+    if not (ROOT / BASE / "BASELINE").is_file():
+        return ["the rule cases need BASELINE"]
+    name = "hearthpine_west_home"
+    relative = "%s/templates/%s.tpl" % (BASE, name)
+    text = (ROOT / relative).read_text()
+    lines = text.split("\n")
+    keys = {}
+    for line in lines:
+        match = re.match(r"^(\S) (role|node) (\S+)", line)
+        if match:
+            keys.setdefault(match.group(3), match.group(1))
+    t = parse_template(text, relative, name)
+    inside = [p for p in t["points"] if p["group"] == "inside"][0]
+
+    def first_cell(key, y=None):
+        return min(p for p, k in t["grid"].items() if k == key and (y is None or p[1] == y))
+
+    def put(source, position, key):
+        out = source.split("\n")
+        x, y, z = position
+        layer = out.index("layer %d" % y)
+        row = layer + 1 + (z - t["z0"])
+        column = 1 + (x - t["x0"])
+        out[row] = out[row][:column] + key + out[row][column + 1:]
+        return "\n".join(out)
+
+    def legend_add(source, line):
+        return source.replace("\nend\n", "\n%s\nend\n" % line, 1)
+
+    def point_line(source, prefix, new):
+        return "\n".join(new if line.startswith(prefix) else line
+                         for line in source.split("\n"))
+
+    hidden = first_cell(keys["door_hidden"])
+    leaf = first_cell(keys["door"])
+    empty = next(p for p in sorted(t["grid"]) if t["grid"][p] == "." and p[1] >= 2)
+    door = [p for p in t["points"] if p["group"] == "doors"][0]
+    cases = [
+        ("the frozen template", text, set()),
+        ("a door without its upper cell", put(text, hidden, "."), {"multi_cell"}),
+        ("a walled-in door", put(text, leaf, keys["wall"]),
+         {"multi_cell", "point_place", "reach"}),
+        ("a node outside the editor palette",
+         put(legend_add(text, "~ node default:river_water_source"), empty, "~"),
+         {"edit_palette"}),
+        ("an unknown node", put(legend_add(text, "~ node default:no_such_node"), empty, "~"),
+         {"known_node", "edit_palette"}),
+        ("an inside point in mid-air",
+         point_line(text, "inside", "inside %d %d %d id={id}" %
+                    (inside["x"], t["y0"] + t["sy"] - 1, inside["z"])),
+         {"point_place", "reach"}),
+        ("an inside point with another id",
+         point_line(text, "inside", "inside %d %d %d id=other" %
+                    (inside["x"], inside["y"], inside["z"])), {"point_baseline"}),
+        ("a door point that turned",
+         point_line(text, "doors", "doors %d %d %d face=%d" %
+                    (door["x"], door["y"], door["z"], (door["face"] + 1) % 4)),
+         {"point_place", "point_baseline"}),
+        ("a pivot that changed", text.replace("pivot 9 9", "pivot 9 10"), {"box_baseline"}),
+        ("a race switch that misses the placing race",
+         put(legend_add(text, "~ race human=%s" % keys["wall"]), empty, "~"),
+         {"legend"}),
+        ("a door oriented as a wall fitting",
+         text.replace(" role door variant=_a", " role door variant=_a o=wallmounted:1", 1),
+         {"orientation", "multi_cell", "point_place"}),
+        ("a role painted from the editor palette", put(text, empty, keys["wall"]), set()),
+    ]
+    for label, mutated, wanted in cases:
+        report = validate(ROOT, "file", {relative: mutated})
+        got = {rule for rule, where, _, _ in report.errors if where == name}
+        others = [e for e in report.errors if e[1] != name]
+        if got != wanted or others:
+            failures.append("%s: rules %s, expected %s%s" % (
+                label, sorted(got), sorted(wanted), " (and %s)" % others if others else ""))
+    shared = "dawnmere_tollhouse"
+    relative = "%s/templates/%s.tpl" % (BASE, shared)
+    text = (ROOT / relative).read_text()
+    t = parse_template(text, relative, shared)
+    empty = next(p for p in sorted(t["grid"]) if t["grid"][p] == "." and p[1] >= 2)
+    report = validate(ROOT, "file", {relative: put(legend_add(text, "~ node default:wood"),
+                                                   empty, "~")})
+    if not any(w[0] == "fixed_in_shared" and w[1] == shared for w in report.warnings):
+        failures.append("a fixed node in a template two races place is flagged")
+    return failures
 
 
 if __name__ == "__main__":
