@@ -681,7 +681,7 @@ export function createNodeView(opts) {
     if (dx) tryMove(walker.x + dx, walker.z);
     if (dz) tryMove(walker.x, walker.z + dz);
     const ground = groundAt(walker.x, walker.z, walker.feet + 0.05);
-    const floor = ground ?? (data ? data.min[1] - 0.5 : 0);
+    const floor = ground ?? view.groundLevel ?? (data ? data.min[1] - 0.5 : 0);
     if (k.has("Space") && walker.grounded) { walker.vy = 6.5; walker.grounded = false; }
     walker.vy -= 22 * dt;
     walker.feet += walker.vy * dt;
@@ -842,13 +842,17 @@ export function createNodeView(opts) {
     renderer.render(scene, camera);
   }
 
-  return {
+  const view = {
+    // Where walking stops when no cell is below (null: half a node under
+    // the lowest cell); a page that shows a building alone sets its ground.
+    groundLevel: null,
     THREE, renderer, scene, camera, controls, root, filter, walker,
     get data() { return data; }, get mode() { return mode; },
     setData, rebuild, setMode, lookAt, walkFrom, pose, pick, select, start, step,
     groundAt, toThree, toLuanti, types: TYPES,
     onMode(f) { modeListeners.push(f); },
   };
+  return view;
 }
 
 // The touch pad's look, added to the page once by createNodeView.

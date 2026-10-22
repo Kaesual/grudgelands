@@ -378,8 +378,10 @@ function setGround(x0, z0, x1, z1, y) {
   if (ground) { view.root.remove(ground); ground.geometry.dispose(); }
   const g = new THREE.PlaneGeometry(x1 - x0, z1 - z0);
   g.rotateX(-Math.PI / 2);
-  ground = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x8a9a6c, side: THREE.DoubleSide }));
+  ground = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x8a9a6c, side: THREE.DoubleSide,
+    polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }));
   ground.position.set((x0 + x1) / 2, y, (z0 + z1) / 2);
+  ground.userData.y = y;
   view.root.add(ground);
 }
 
@@ -455,7 +457,11 @@ function openOne(t, keepView) {
   updateCutLabel();
   inspect(null);
   view.setData(oneData());
-  setGround(x0 - 3, z0 - 3, x0 + sx + 2, z0 + sz + 2, y0 - 0.5);
+  // The town's ground: the top of layer 0 (format doc §3.4), or under the
+  // template when it starts higher; walking outside the walls stands on it.
+  const gy = y0 <= 0 ? 0.5 : y0 - 0.5;
+  setGround(x0 - 3, z0 - 3, x0 + sx + 2, z0 + sz + 2, gy);
+  view.groundLevel = gy;
   makeLabels(t.points.map(([group, x, y, z, , text]) => {
     const id = /(?:^|\s)id=(\S+)/.exec(text || "");
     return { text: group + (id ? " " + id[1] : ""), cls: "point", pos: [x, y + 0.45, z] };
@@ -483,6 +489,7 @@ function backToGrid() {
   $("grid-controls").hidden = false;
   $("one-controls").hidden = true;
   $("heading").textContent = "All templates";
+  view.groundLevel = null;
   $("meta").textContent = `${TPL.length} templates · ${P.source}`;
   overviewGrid(buildGrid());
 }
@@ -564,7 +571,12 @@ cutInput.oninput = () => {
   view.filter.cut = v >= +cutInput.max ? Infinity : v;
   updateCutLabel();
   clearTimeout(cutTimer);
-  cutTimer = setTimeout(() => { view.rebuild(); if (one) buildPoints(one); }, 40);
+  cutTimer = setTimeout(() => {
+    view.rebuild();
+    if (one) buildPoints(one);
+    // The ground plane would hide a cut below it.
+    if (ground) ground.visible = view.filter.cut === Infinity || view.filter.cut >= ground.userData.y;
+  }, 40);
 };
 const panel = $("panel"), collapse = $("collapse");
 function setCollapsed(on) {
