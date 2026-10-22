@@ -730,8 +730,10 @@ for _, config in ipairs(CAPITALS) do
 				".lua line ", table.concat(step.lines, ", "), ")")
 		end
 	end
-	say("planted templates (format doc §4.2; stems, undergrowth, writes after planting):")
-	for _, line in ipairs(planted_lines) do say(line) end
+	if #planted_lines > 0 then
+		say("planted templates (format doc §4.2; stems, undergrowth, writes after planting):")
+		for _, line in ipairs(planted_lines) do say(line) end
+	end
 	planted_lines = {}
 	cap.core, cap.plots = core, plots
 	rosters[#rosters + 1] = cap
@@ -745,7 +747,7 @@ end
 local function without_heights(text)
 	return (text:gsub("\n(trees %-?%d+ %-?%d+ %-?%d+) height=%-?%d+", "\n%1"))
 end
-local templates, template_order = {}, {}
+local templates, template_order, shared_heights = {}, {}, {}
 for _, pl in ipairs(placements_all) do
 	local rendered = lib.render(pl)
 	local body = rendered.head .. "\n" .. rendered.tail
@@ -769,8 +771,9 @@ for _, pl in ipairs(placements_all) do
 	if found and found.body ~= body then
 		assert(without_heights(found.body) == without_heights(body), pl.capital .. ":" ..
 			pl.id .. ": its planted form differs from " .. found.name .. "'s")
-		say("  - ", pl.capital, ":", pl.id, " shares ", found.name,
-			" with other stem heights (the tree generator does not read them)")
+		shared_heights[#shared_heights + 1] = "  " .. pl.capital .. ":" .. pl.id ..
+			" shares " .. found.name .. " with other stem heights (the tree generator" ..
+			" does not read them; the template has the first user's)"
 	end
 	if not found then
 		local name = pl.capital .. "_" .. pl.id
@@ -883,6 +886,7 @@ for _, name in ipairs(template_order) do
 	node_total = node_total + t.rendered.node_cells
 end
 say("templates shared by several placements: ", shared)
+for _, line in ipairs(shared_heights) do say(line) end
 say("cells ", cells_total, " (role ", role_total, ", fixed-node ", node_total,
 	", force-air ", cells_total - role_total - node_total, ")")
 for _, name in ipairs(template_order) do

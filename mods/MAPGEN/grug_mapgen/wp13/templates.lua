@@ -341,17 +341,24 @@ local function loader(directory)
 			end
 			if entry.kind == "race" then
 				for _, race in ipairs(entry.order) do
-					if defined(entry.map[race], "a race switch").kind == "race" then
+					local target = defined(entry.map[race], "a race switch")
+					if target.kind == "race" then
 						fail({number = entry.line}, "a race switch names another switch")
+					end
+					-- a cell is late by its own entry (format doc §4.2)
+					if target.late then
+						fail({number = entry.line}, "a race switch names a late entry")
 					end
 				end
 			elseif entry.fallback and entry.fallback ~= "air" and entry.fallback ~= "unchanged" then
 				if #entry.fallback ~= t.cell then
 					fail({number = entry.line}, "bad else= " .. entry.fallback)
 				end
-				if defined(entry.fallback, "else=").kind == "race" then
+				local target = defined(entry.fallback, "else=")
+				if target.kind == "race" then
 					fail({number = entry.line}, "else= names a race switch")
 				end
+				if target.late then fail({number = entry.line}, "else= names a late entry") end
 			end
 		end
 		-- grid

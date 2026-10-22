@@ -455,7 +455,8 @@ def lua_facts(root, names):
                          text=True)
     if run.returncode != 0:
         raise SystemExit("check: palette_dump.lua failed: " + run.stderr.strip())
-    facts = {"required": [], "optional": [], "families": {}, "binds": {}, "kinds": {}}
+    facts = {"required": [], "optional": [], "families": {}, "binds": {}, "kinds": {},
+             "wild": set()}
     for line in run.stdout.splitlines():
         words = line.split()
         if words[0] == "required":
@@ -469,6 +470,8 @@ def lua_facts(root, names):
         elif words[0] == "kind":
             facts["kinds"][words[1]] = (words[2], int(words[3]), words[4] == "1",
                                        words[5] == "1")
+            if words[6] == "1":
+                facts["wild"].add(words[1])
     return facts
 
 
@@ -692,16 +695,19 @@ def check_template(t, contexts, facts, nodes, report, baseline, palette_roles,
             fallback = entry["fallback"]
             if fallback and fallback not in ("air", "unchanged"):
                 target = t["legend"].get(fallback)
-                if target is None or target["kind"] == "race":
+                if target is None or target["kind"] == "race" or target.get("late"):
                     report.error("legend", name, None, "line %d: else= names %s" %
-                                 (entry["line"], "a race switch" if target else
+                                 (entry["line"], ("a late entry" if target.get("late") else
+                                                  "a race switch") if target else
                                   "the undefined key '%s'" % fallback))
         elif entry["kind"] == "race":
             for race in entry["order"]:
                 target = t["legend"].get(entry["map"][race])
-                if target is None or target["kind"] == "race":
+                # lateness is the cell's own entry's (format doc §4.2)
+                if target is None or target["kind"] == "race" or target.get("late"):
                     report.error("legend", name, None, "line %d: the race switch names %s" %
-                                 (entry["line"], "another switch" if target else
+                                 (entry["line"], ("a late entry" if target.get("late") else
+                                                  "another switch") if target else
                                   "an undefined key"))
     if report.errors and any(e[1] == name and e[0] == "legend" for e in report.errors):
         return
@@ -777,6 +783,12 @@ def check_template(t, contexts, facts, nodes, report, baseline, palette_roles,
                     report.error("point_place", name, position, "the stem's ground cell "
                                  "(y 0) is %s (%s)" % ("air" if ground else "not written",
                                                         context.label))
+                elif ground[0] not in facts["wild"]:
+                    # the tree generator plants only on wild soil (dressing.grown):
+                    # this stem grows no tree
+                    report.warn("stem_soil", name, position, "the stem stands on %s, "
+                                "not wild soil: no tree grows there (%s)" % (ground[0],
+                                                                             context.label))
         if len(corners) % 2:
             report.error("point_pair", name, None, "room_corner points come in pairs")
         for a, b in zip(corners[0::2], corners[1::2]):
@@ -1362,6 +1374,11 @@ def planted_cases():
                                                  "undergrowth=[0,4,20,10]"), {"loader"}),
         ("a late mark given twice", text.replace(late, late + " late"),
          {"format", "loader"}),
+        ("a race switch naming a late entry",
+         text.replace("\nend\n", "\n~ race human=%s\nend\n" % late[0], 1), {"legend", "loader"}),
+        ("an else= naming a late entry",
+         text.replace("\nend\n", "\n~ role fence_gate else=%s\nend\n" % late[0], 1),
+         {"legend", "loader"}),
     ]
     defects = {d[:3] for d in known_defects(ROOT)}
     for label, mutated, wanted in cases:
@@ -1372,6 +1389,16 @@ def planted_cases():
         if got != wanted or others:
             failures.append("planted: %s: rules %s, expected %s%s" % (
                 label, sorted(got), sorted(wanted), " (and %s)" % others if others else ""))
+    # a stem moved onto the path stays valid but grows no tree: a warning
+    onto = text.replace(line, line.replace("trees %d 0 %d " % (stem["x"], stem["z"]),
+                                           "trees %d 0 0 " % stem["x"], 1), 1)
+    report = validate(ROOT, "file", {relative: onto}, builds=False)
+    if not any(w[0] == "stem_soil" and w[1] == name for w in report.warnings) or \
+            any(e[1] == name for e in report.errors):
+        failures.append("planted: a stem on the path is a stem_soil warning, no error")
+    report = validate(ROOT, "file", {}, builds=False)
+    if any(w[0] == "stem_soil" for w in report.warnings):
+        failures.append("planted: no frozen stem stands off wild soil")
     return failures
 
 

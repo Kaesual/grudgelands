@@ -113,8 +113,10 @@ record of how they were made and the gates that keep them honest.
   and `BASELINE` moved to that commit with the lane brief as the
   coordinator's approval (format doc §6.2).
 - `check.py` is the validator of format doc §6 and the gate (it reads
-  `late` entries, part of an entry's identity, and holds every `trees` stem
-  to written ground that is not air): `check.py`
+  `late` entries, part of an entry's identity, refuses a race switch or an
+  `else=` naming a `late` entry, holds every `trees` stem to written ground
+  that is not air and warns, rule `stem_soil`, when that ground is not wild
+  soil for a placing race, where no tree grows): `check.py`
   (against `BASELINE`), `check.py --baseline=self` (the freeze),
   `--write-known-defects` (the exporter's known-defects baseline: three
   capital defects, none for the start towns), `--self-test` (the parser and

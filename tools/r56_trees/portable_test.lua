@@ -16,7 +16,8 @@
 --      keeps the tree off it;
 --   D. a malformed planted template stops at load with its file and line
 --      (an unknown planter, a stem without its height, a turned stem, a
---      malformed undergrowth or tree spacing, `late` twice).
+--      malformed undergrowth or tree spacing, `late` twice, a race switch or
+--      an `else=` naming a `late` entry: a cell is late by its own entry).
 -- Byte identity of every capital's build is pinned by r56_freeze_capitals D.
 --
 -- Usage (repo root): luajit tools/r56_trees/portable_test.lua [REPO]
@@ -239,6 +240,9 @@ for _, case in ipairs({
 	{"cell 1", "cell 1\nmeta undergrowth=[0,0,8,8]", "a malformed undergrowth"},
 	{"cell 1", "cell 1\nmeta plant_spacing=0", "a tree spacing below one"},
 	{"default:stone late", "default:stone late late", "late given twice"},
+	{"default:stone late", "default:stone late\nR race human=S", "a race switch naming a late entry"},
+	{"default:stone late", "default:stone late\nF role fence_gate else=S",
+		"an else= naming a late entry"},
 }) do
 	local text = good:gsub(case[1]:gsub("%p", "%%%0"), (case[2]:gsub("%%", "%%%%")), 1)
 	check(text ~= good, "the case applies: " .. case[3])

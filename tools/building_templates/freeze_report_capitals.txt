@@ -71,16 +71,13 @@ building-bound steps (their writes are template content):
   - core: the braziers between the hall's bays (gor_drazhak.lua line 581)
   - plot: the breastwork over a flat deck (gor_drazhak_plot.lua line 333)
   - plot: room and apron decor (decor.dress_rooms) (gor_drazhak_plot.lua line 434)
-planted templates (format doc §4.2; stems, undergrowth, writes after planting):
 placements: 18 in the core, 30 on the district plots
 
 == kezamba (troll)
 points moved into templates:
 building-bound steps (their writes are template content):
   - plot: room and apron decor (decor.dress_rooms) (kezamba_plot.lua line 330)
-planted templates (format doc §4.2; stems, undergrowth, writes after planting):
 placements: 12 in the core, 36 on the district plots
-  - nhal_veyr:vigil_copse shares nhal_veyr_market_copse with other stem heights (the tree generator does not read them)
 
 == highcourt placements (id -> template)
   core kings_hall -> highcourt_kings_hall
@@ -413,6 +410,7 @@ placements: 12 in the core, 36 on the district plots
 
 == templates: 210 for 317 placements
 templates shared by several placements: 42
+  nhal_veyr:vigil_copse shares nhal_veyr_market_copse with other stem heights (the tree generator does not read them; the template has the first user's)
 cells 741351 (role 179908, fixed-node 914, force-air 560529)
 
 -- highcourt_kings_hall (highcourt:kings_hall)
