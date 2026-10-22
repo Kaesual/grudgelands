@@ -256,7 +256,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     tooltip), the profession's enchants valid for the item up to the
     profession tier, best tier first, each with the value it gives on this
     item ("T5 prefix: +11 Strength"), the chosen one's materials with
-    have/need, the enchant it replaces ("Replaces: Prefix: +21 Strength
+    have/need, the enchant it replaces ("Replaces prefix: +21 Strength
     (T7)", Round 56; orange with the overwrite warning "Replaces T7
     Strength with T6 Strength." as its tooltip when that is a higher
     tier), the XP hint (at the station) and **Enchant now** (5 s), which turns into

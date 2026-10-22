@@ -10,7 +10,7 @@
 -- profession's enchants valid for the placed item up to the profession's
 -- tier (a scrolling list with the value each gives on this item), the
 -- chosen enchant's materials with have/need, the enchant it replaces
--- ("Replaces: Prefix: +5 Strength (T2)", Round 56; orange with the
+-- ("Replaces prefix: +5 Strength (T2)", Round 56; orange with the
 -- overwrite warning as its tooltip when that is of a higher tier), the XP
 -- hint (at the station) and Enchant now, which turns into Cancel while a
 -- job runs.

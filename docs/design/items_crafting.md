@@ -1761,8 +1761,8 @@ counts one profession craft (Round 45).
 Replacement preserves the other channel, wear and unrelated stack metadata.
 An identical no-op (same stat and tier) is refused without cost or progress.
 When the item already has an enchant in the operation's channel, the box
-names it as its tooltip line without the amount at the player's level
-("Replaces: Prefix: +21 Strength (T7)", Round 56 ruling 12). Overwriting a
+names it with its channel, value and tier, without the amount at the
+player's level ("Replaces prefix: +21 Strength (T7)", Round 56 ruling 12). Overwriting a
 higher tier is allowed; that line then turns orange and carries the warning
 as its tooltip ("Replaces T7 Strength with T6 Strength."). Away from the
 station, the station's line takes the XP hint's place.

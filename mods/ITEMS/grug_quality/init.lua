@@ -407,14 +407,21 @@ local function base_lines(stack, ilvl)
 	return lines
 end
 
+-- An enchant's value, stat and tier ("+5 Strength (T2)"); `extra` goes
+-- inside the brackets.
+local function affix_value_text(slot, extra)
+	local definition = AFFIX[slot.stat]
+	return "+" .. format_number(slot.value, definition.decimals) ..
+		(definition.percent and "% " or " ") .. definition.label .. " (T" .. slot.tier ..
+		(extra and extra ~= "" and "; " .. extra or "") .. ")"
+end
+
 -- One enchant's tooltip line, named by its channel (Round 56 ruling 12):
 -- "Prefix: +5 Strength (T2)"; a max HP or Mana enchant adds its amount at
 -- the player's level inside the brackets.
 local CHANNEL_WORD = {prefix = "Prefix", suffix = "Suffix"}
 
 local function affix_line(slot, player)
-	local definition = AFFIX[slot.stat]
-	local value = format_number(slot.value, definition.decimals)
 	local extra = ""
 	if player and (slot.stat == "max_hp_percent" or
 			slot.stat == "max_mana_percent") and grug_classes and
@@ -423,8 +430,7 @@ local function affix_line(slot, player)
 		extra = grug_classes.pool_percent_amount(player, pool, slot.value) ..
 			" at your level"
 	end
-	return CHANNEL_WORD[slot.channel] .. ": +" .. value .. (definition.percent and "% " or " ") ..
-		definition.label .. " (T" .. slot.tier .. (extra ~= "" and "; " .. extra or "") .. ")"
+	return CHANNEL_WORD[slot.channel] .. ": " .. affix_value_text(slot, extra)
 end
 
 -- The enchant lines of a stack in their fixed order, the prefix first,
@@ -694,10 +700,9 @@ end
 grug_items.enchant_refusal = enchant_refusal
 
 -- An enchant writes the recipe's tier into its channel. Overwriting stays
--- allowed: `replaces` names the enchant the channel holds now, as its
--- tooltip line without the amount at the player's level ("Replaces: Prefix:
--- +5 Strength (T2)", Round 56 ruling 12; two lines at most in the enchant
--- box); `warning` names a replaced enchant of a higher tier (a crowned or
+-- allowed: `replaces` names the enchant the channel holds now, without the
+-- amount at the player's level ("Replaces prefix: +5 Strength (T2)", Round
+-- 56 ruling 12; two lines at most in the enchant box); `warning` names a replaced enchant of a higher tier (a crowned or
 -- boss item's T7, a better found one), whose cap the new one never reaches.
 local function enchant_plan(recipe, stack, player)
 	local reason = enchant_refusal(recipe, stack)
@@ -707,7 +712,8 @@ local function enchant_plan(recipe, stack, player)
 	local channels = {}
 	for index = 1, #current do channels[current[index].channel] = current[index] end
 	local replaced = channels[recipe.enchant_channel]
-	local replaces = replaced and "Replaces: " .. affix_line(replaced)
+	local replaces = replaced and "Replaces " .. replaced.channel .. ": " ..
+		affix_value_text(replaced)
 	local added = {channel = recipe.enchant_channel, stat = recipe.enchant_stat,
 		tier = recipe.tier}
 	channels[recipe.enchant_channel] = added
