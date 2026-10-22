@@ -140,7 +140,7 @@ lines do not:
 - `make_test_art.py` writes `test_art/` with a `tiers.json` (passes check.py without warnings; letters
   F/R/L/B or corner flags in OUTLINE mark each face's top-left for orientation; an eye band open in the
   helm's face window, the chin strip open on cloth and leather T1–T5, a placeholder hood on every cloth and
-  leather tier) and `test_art_broken/` (sixteen deliberate errors).
+  leather tier) and `test_art_broken/` (seventeen deliberate errors).
 - **Polygon parts** (Round 56, spec §1a): `catalog.py` names each part's schema file (`POLY_PARTS`; the hood:
   `tools/r56_hood/hood.json`), `polypart.py` validates it (planar convex faces wound outward, a closed shell with
   the helm, no face on the helm, no coplanar overlap, UVs in their rects, rects disjoint in the sheet, the unwrap

@@ -134,7 +134,7 @@ one **atlas texture**: a worn piece paints its slot's boxes on the atlas, and
 the boxes it does not use stay transparent, so the model never changes with
 the gear. Chest, legs and feet also paint the body under their boxes (the
 **inner paint**, a skin layer: sleeves, trousers, the lower legs); the helmet
-is boxes only. Each tier's colours are baked into its art (its palette);
+paints no inner layer (its boxes and, since Round 56, the hood part only). Each tier's colours are baked into its art (its palette);
 no tier is tinted at runtime. Inventory art and worn art are separate assets
 made for their respective layouts. A character therefore shows the same
 armor line, slot and material tier that its equipped item names.

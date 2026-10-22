@@ -22,9 +22,10 @@ Violations (exit code 1 if any):
     without the helm);
   - per line, tier and slot fewer than 6 zone A or 3 zone B pixels seen from
     the front (an approximation, see the zone section of the output).
-Warnings (printed, exit code unchanged): a sheet no tier uses; a zone shortfall
-on a head piece whose chin strip is open (the strip took zone pixels; the hood
-art lane repaints these helms); a front-facing polygon face (not counted).
+Warnings (printed, exit code unchanged): a sheet no tier uses; zone B exactly
+one pixel short on a head piece whose chin strip is open (the strip took zone
+pixels; the hood art lane repaints these helms; a larger shortfall stays a
+violation); a front-facing polygon face (not counted).
 Information: the overlap report (catalog-wide which
 box can cover which, and the pairs each tier wears together).
 """
@@ -314,8 +315,8 @@ def check_zones(cat, art, lines, good, rep):
           "  slots are ignored (each piece must show its zones when worn on its own; a robe may cover the boots).\n"
           "  Both mirrored copies count. Perspective, side faces and the walk are ignored. Minimum per slot:\n"
           "  A >= 6, B >= 3. Polygon parts count with their slot through front-facing faces only (none on the\n"
-          "  hood: it adds nothing from the front). A shortfall on a head piece whose chin strip is open\n"
-          "  (Round 56 ruling 17: the strip took zone pixels) is a WARNING until the hood art repaints it.")
+          "  hood: it adds nothing from the front). Zone B exactly one short on a head piece whose chin strip is\n"
+          "  open (Round 56 ruling 17: the strip took zone pixels) is a WARNING until the hood art repaints it.")
     byid = {b["id"]: b for b in L.pieces(cat)}
     front_facing = {p["id"]: [f["name"] for f in p["polys"] if f["normal"][2] >= 0.954] for p in cat.get("parts", [])}
     for pid, names in front_facing.items():
@@ -357,9 +358,11 @@ def check_zones(cat, art, lines, good, rep):
                 if low:
                     msg = f"{line} {tid} {slot}: " + ", ".join(f"zone {z} {c[z]} < {ZONE_MIN[z]}" for z in low) + \
                         " seen from the front (approximation)"
+                    # the chin strip's own effect (Round 56 ruling 17): zone B one pixel short on a head piece whose
+                    # strip is open is a warning until the hood art repaints the helm; anything more is a violation
                     sheet = sheets.get("helm")
-                    if slot == "head" and sheet is not None and L.chin_open(line, [tid]) and \
-                            all(sheet.getpixel(xy)[3] < 128 for xy in L.chin_row(helm)):
+                    if slot == "head" and low == ["B"] and c["B"] == ZONE_MIN["B"] - 1 and sheet is not None and \
+                            L.chin_open(line, [tid]) and all(sheet.getpixel(xy)[3] < 128 for xy in L.chin_row(helm)):
                         rep.w(msg + "; the open chin strip took zone pixels (Round 56 ruling 17), the hood art "
                                     "repaints this helm")
                     else:

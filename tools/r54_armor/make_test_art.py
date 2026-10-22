@@ -30,8 +30,9 @@ the slot region, an icon of the wrong size, a missing file, an unknown file
 name, a slot whose zones were removed, an unknown box in tiers.json,
 transparent texels in the sleeve and the chest faces, a hole in the helm front
 outside its face window; Round 56: an open chin strip on the veil helm of
-leather T6, a hole in a hood face's bleed, hood paint outside its faces, and a
-tier that wears the hood without the helm).
+leather T6, a hole in a hood face's bleed, hood paint outside its faces, a
+tier that wears the hood without the helm, and a cloth helm without zone B on
+its front, more than the chin strip's one-pixel allowance).
 """
 import argparse
 import json
@@ -362,7 +363,17 @@ def write_broken(clean, out):
     t = json.loads((out / "tiers.json").read_text())
     t["cloth"]["T2"]["on"].remove("helm")
     (out / "tiers.json").write_text(json.dumps(t, indent=1))
-    print("wrote broken set to", out, "(16 deliberate errors in metal/, leather/, cloth/ and tiers.json)")
+    # 17 the cloth helm loses every zone B pixel of its front face: its chin strip is open, but zone B 0 < 3 is more
+    # than the strip's one-pixel allowance, so cloth T1, T3 and T4 head stay violations
+    cp = out / "cloth" / "helm_a.png"
+    im = Image.open(cp).convert("RGBA")
+    fx, fy, fw, fh = hl["faces"]["front"]
+    for y in range(fy, fy + fh):
+        for x in range(fx, fx + fw):
+            if im.getpixel((x, y))[3] and im.getpixel((x, y))[:3] in L.ZONE_B:
+                im.putpixel((x, y), C["M_MID"])
+    im.save(cp)
+    print("wrote broken set to", out, "(17 deliberate errors in metal/, leather/, cloth/ and tiers.json)")
 
 
 def main():
