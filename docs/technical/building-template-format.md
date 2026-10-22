@@ -223,7 +223,7 @@ table before the lane merges.
 | `inside` | the destination spot | a standing point (below) |
 | `lights` | the light writers | no placement rule (no town reads the group; towns find lights from the cells); kept as data |
 | `sockets` | the NPC and quest sockets | a standing point |
-| `trees` | the stems of a planted template (§4.2) | inside the box, the stem column's ground cell (y = 0) not air; attributes `kind=<planter>` and `height=<n>` |
+| `trees` | the stems of a planted template (§4.2) | inside the box, the stem column's ground cell (y = 0) written by the template and not air; attributes `kind=<planter>` and `height=<n>` |
 
 A **standing point** is a cell whose node and the node above are both passable while the node below is walkable.
 Passable: not `walkable` in the registry, or part of a door (the leaf and its `door_hidden`, which the registry
@@ -290,7 +290,9 @@ capital groves and orchards). A template whose part planted trees (groves, orcha
   part called) and `height=`; `meta plant_spacing=<n>` when the part set `buf.tree_spacing`;
 - `meta undergrowth=[x0,z0,x1,z1,density]` when the part scattered undergrowth after planting;
 - cells the part wrote **after** planting (lanterns, a gate, anything written over the grown trees) are legend
-  entries marked `late` (`role path_light late`, `node … late`).
+  entries marked `late` (`role path_light late`, `node … late`); `late` is allowed on role and node entries, not on
+  race switches, and air written after planting is `node air late`;
+- a template that only scatters undergrowth (Lethariel's bough platforms) is planted too, with no `trees` points.
 
 The loader builds the part buffer from the cells, plants at the `trees` points in order with the placement's
 palette (in the part's own frame, before `parts.stamp`, exactly as the generator did), scatters the undergrowth,
