@@ -147,11 +147,18 @@ armor line, slot and material tier that its equipped item names.
   design goals: metal bulkier with each tier, leather layered, cloth smooth
   and noble through ornament, and at the same tier metal more than leather
   more than cloth. Tier = the boxes worn, the paint and the palette.
+  Round 56 lifts "boxes only" (low poly is the goal): the catalog's first
+  **polygon part** is the cloth and leather **hood** on the head slot,
+  wedges on top of and behind the helm (shaped by the user on a preview
+  page, [armor-format.md](../technical/armor-format.md) §1a). Metal never
+  shows it; until the user picks its art, every tier leaves it transparent.
 - **Armor is opaque** (the user, 2026-10-20: transparent texels showed
   holes, one looked into the hollow box): every face of a worn box is
   fully painted. The only opening is the helm's **face window**, so the
   face shows under a helmet; the metal T5 and T6 helmets are closed (the
-  window painted over, a visor in front).
+  window painted over, a visor in front). Since Round 56 the helm's
+  **chin strip** (the front face's bottom row) is open on every cloth head
+  piece and on leather T1–T5; leather T6 (the veil) and metal stay closed.
 - **The art** is original, painted by GPT-6 Astra in the armor contract's
   reference palette and picked by the user per line and tier from two
   proposals each (2026-10-20): metal T1–T5 "Bastion" and T6

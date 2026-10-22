@@ -32,6 +32,11 @@ of Round 54 ([plan](../../docs/planning/round54-plan.md)).
   entries (the art picks under `_source`; the icon picks stay out), `art/palettes.json` their palettes. Then
   it runs the icon painters (`--art` = the picked `tiers.json`) and lays each picked icon over its tier's icon
   file, under the same name, so the icons keep their file names and their tier palettes.
+- **The chin strip** (Round 56 ruling 17): `assemble.py` clears the helm front face's bottom row on the helm sheet
+  of every cloth tier and of leather T1–T5 after the tier copy (leather T6, the veil, and metal keep theirs), so
+  the painters stay as delivered. A future painter that leaves the strip open itself is unaffected. With the strip
+  open, leather T1 and T3 show 2 zone B pixels from the front instead of 3: `check.py` reports that as a warning
+  until the hood art repaints these helms.
 - `ghosts.py`: the Character page's four empty-slot ghosts `grug_gear_item_<slot>_metal.png`
   (`grug_inventory/pages.lua` darkens them), copies of the baked metal T3 (steel) icons; `--check`. Since
   the icon drops: head from `icons-drop-02` p1, chest and legs from `icons-drop-01` p1, feet from
