@@ -23,7 +23,8 @@
 --   K  the max-HP clamp is no damage (PLY-02, CMB-06): one predicate; an
 --      engine clamp or apply_stats' join clamp leaves the rider mounted and
 --      the use-hold running and keeps the shield's points; a punch, a fall
---      and a mod set_hp dismount, interrupt and are soaked; apply_stats
+--      and a mod set_hp interrupt and are soaked, and all but the fall
+--      dismount (Round 56 ruling 7); apply_stats
 --      lowering hp_max through the engine clamp keeps the rider up;
 --   F  the PvP Strike fallback (CMB-01): with Loose or a cast skill wielded
 --      the claimed swing lands the transaction's scaled damage (with
@@ -503,7 +504,9 @@ do
 	eq(dismounts + stops, 0, "K apply_stats' clamp neither dismounts nor interrupts")
 	for _, reason in ipairs({{type = "punch"}, {type = "fall", from = "engine"}, {type = "set_hp"}}) do
 		hit(reason)
-		eq(dismounts, 1, "K real damage (" .. reason.type .. ") dismounts")
+		-- Round 56 ruling 7: a fall's damage keeps the rider mounted.
+		eq(dismounts, reason.type == "fall" and 0 or 1, "K real damage (" .. reason.type ..
+			") dismounts, a fall excepted")
 		eq(stops, 1, "K real damage (" .. reason.type .. ") interrupts the hold")
 	end
 

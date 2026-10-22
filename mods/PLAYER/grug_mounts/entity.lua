@@ -12,16 +12,24 @@ local SURFACE_DEPTH = 1
 local BOAT_RESPONSE = 1.5
 local LANDING_RADIUS = 2
 -- Ride sounds (Round 45 PT6): a ground mount's gallop pauses once the mount
--- has been off the ground this long (a jump, a fall deeper than about one
--- node). A step down a slope (0.45 s for one node) keeps the gallop going.
+-- has been off the ground this long (a jump, a fall deeper than about two
+-- nodes). A step down a slope (0.32 s for one node) keeps the gallop going.
 local AIRBORNE_PAUSE = 0.5
--- Fall damage of a ground mount's rider (Round 45 PT6): the engine's own
--- player rule (clientenvironment.cpp, which an attached player never runs):
--- the impact speed a player reaches falling the same height (player gravity
--- 2 x movement_gravity 9.81), times the fall_damage_add_percent factor, minus
--- a 14 nodes/s tolerance, is the damage. The mount falls at 9.81, so the
--- rule reads the height, not the mount's own speed.
-local PLAYER_GRAVITY = 19.62
+-- A ground mount falls with the player's gravity (Round 56 ruling 4): the
+-- engine's player gravity is 2 x movement_gravity x the gravity override
+-- (clientenvironment.cpp:133); the game keeps movement_gravity at 9.81 and
+-- an active player's override at 1.
+local MOUNT_GRAVITY = 19.62
+-- The jump (ruling 5): 9.3 nodes/s lifts the mount's box 9.3^2 / (2 x 19.62)
+-- = 2.2 nodes, just over a 2-node step (the box bottom is its feet).
+local JUMP_SPEED = 9.3
+-- Fall damage of a ground mount's rider (Round 45 PT6, Round 56 ruling 6):
+-- the engine's own player rule (clientenvironment.cpp, which an attached
+-- player never runs) on the drop less FALL_ALLOWANCE nodes: the impact speed
+-- of that height at MOUNT_GRAVITY, times the fall_damage_add_percent factor,
+-- minus a 14 nodes/s tolerance, is the damage. The rule reads the height,
+-- which the mount's own fall at the same gravity matches.
+local FALL_ALLOWANCE = 5
 -- Water is for boats (Round 45 PT6): a riding or flying mount ends where it
 -- enters a liquid (water or lava), and none is summoned there; a ground
 -- mount is summoned only by a player standing on solid ground.
@@ -379,15 +387,15 @@ local function fall_factor(self, player, pos)
 end
 
 -- The rider's fall damage for a drop of `height` nodes, as the engine deals
--- it to a player: the native amount with reason type "fall", which the
--- shared fall modifier (grug_core/combat.lua) scales to the HP pool and
--- the race perk, and which the HP observer below turns into a dismount.
--- Returns true when damage was dealt.
+-- it to a player falling FALL_ALLOWANCE nodes less: the native amount with
+-- reason type "fall", which the shared fall modifier (grug_core/combat.lua)
+-- scales to the HP pool (5 % per point) and which leaves the rider mounted
+-- (the HP observer below). Returns true when damage was dealt.
 local function fall_damage(self, player, pos, height)
 	local factor = fall_factor(self, player, pos)
-	if not factor or factor <= 0 then return false end
-	local damage = math.floor(factor * math.sqrt(2 * PLAYER_GRAVITY * height) -
-		FALL_TOLERANCE + 0.5)
+	if not factor or factor <= 0 or height <= FALL_ALLOWANCE then return false end
+	local damage = math.floor(factor *
+		math.sqrt(2 * MOUNT_GRAVITY * (height - FALL_ALLOWANCE)) - FALL_TOLERANCE + 0.5)
 	local hp = player:get_hp()
 	if damage <= 0 or hp <= 0 then return false end
 	player:set_hp(hp - damage, {type = "fall"})
@@ -435,15 +443,15 @@ local function land_step(self, control, yaw, dtime, moveresult)
 			y = pos.y + self._grug_model.collisionbox[2] - 0.1, z = pos.z})
 		local node = foot and core.get_node_or_nil(foot)
 		local definition = node and core.registered_nodes[node.name]
-		if definition and definition.walkable then y_velocity = 6.5 end
+		if definition and definition.walkable then y_velocity = JUMP_SPEED end
 	end
 	self.object:set_yaw(0)
 	self.object:set_velocity({x = input_x * horizontal, y = y_velocity,
 		z = input_z * horizontal})
-	self.object:set_acceleration({x = 0, y = -9.81, z = 0})
+	self.object:set_acceleration({x = 0, y = -MOUNT_GRAVITY, z = 0})
 	set_animation(self, input_scale == 0 and "stand" or "move")
-	-- A landing from more than about five nodes hurts the rider, and the hurt
-	-- dismounts (the HP observer removes this mount).
+	-- A landing from more than about ten nodes hurts the rider, who stays
+	-- mounted; a lethal one ends the ride through the death (this mount gone).
 	local pos = self.object:get_pos()
 	local drop = pos and track_fall(self, moveresult, pos)
 	if drop and drop > 0 and fall_damage(self, self.driver, pos, drop) and
@@ -838,11 +846,13 @@ function grug_mounts.toggle(player, tier_id)
 end
 
 -- Any damage dismounts; a boat's rider stays in the water where the boat was.
--- The max-HP clamp is no damage (an expiring pool buff, a gear swap): the
--- rider stays up, also in flight.
+-- A fall does not (Round 56 ruling 7: a rider's only fall is a ground
+-- mount's landing, fall_damage above). The max-HP clamp is no damage (an
+-- expiring pool buff, a gear swap): the rider stays up, also in flight.
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	local record = hp_change < 0 and active[player:get_player_name()]
-	if record and not grug_core.is_max_hp_clamp(reason) then
+	if record and not (reason and reason.type == "fall") and
+			not grug_core.is_max_hp_clamp(reason) then
 		grug_mounts.dismount(player, nil, record.mode == "water")
 	end
 end, false)

@@ -15,15 +15,16 @@
 --   S  grug_sounds.stop: only a stoppable event's kept play, once; it lifts
 --      the interval; a non-stoppable event (the boat's splash) stays
 --      ephemeral and is never stopped; a leaving player's handles go;
---   F  fall damage of a ground mount's rider, the engine's player rule
---      floor(f * sqrt(2 * 19.62 * d) - 14 + 0.5) with type "fall": 4 and 5
---      nodes are harmless, 6 and 10 nodes hurt; the peak of a jump counts;
+--   F  fall damage of a ground mount's rider, the engine's player rule 5
+--      nodes shorter (Round 56 ruling 6)
+--      floor(f * sqrt(2 * 19.62 * (d - 5)) - 14 + 0.5) with type "fall": 9 and
+--      10 nodes are harmless, 11 and 15 nodes hurt; the peak of a jump counts;
 --      a damage-adding floor multiplies the speed before the tolerance, a
 --      negating one and an immortal rider take none; a fall into water ends
 --      the ride with no fall damage, also landing on a pool floor with no
 --      step sampled inside the water, and a landing in lava deals none
---      either (the lava ends the ride); a remount starts without a peak; the fall hit dismounts
---      (both objects gone); a flyer takes none;
+--      either (the lava ends the ride); a remount starts without a peak; the fall hit keeps the
+--      rider mounted (Round 56 ruling 7: both objects stay); a flyer takes none;
 --   A  water is for boats: a horse walking into water (source, river water
 --      flowing, one node deep) and a flyer descending into it are dismounted
 --      at once where they are (one feed note, the gallop stopped); beside
@@ -418,6 +419,9 @@ local function fall(entity, height, path)
 	return 100 - ada.hp, ada.reasons[n + 1]
 end
 local function sit(tier)
+	-- Round 56 ruling 7: a fall no longer ends the ride, so each case
+	-- starts from a fresh mount.
+	if grug_mounts.active.ada then grug_mounts.dismount(ada, "manual", false) end
 	ada.control = {}
 	ada.pos = {x = 0, y = GROUND, z = 0}
 	local entity = ride(ada, tier)
@@ -427,30 +431,30 @@ end
 
 floor_of("floor")
 horse = sit(1)
-eq(fall(horse, 4), 0, "F 4 nodes do not hurt")
-eq(fall(horse, 5), 0, "F 5 nodes do not hurt (14.0 nodes/s is the tolerance)")
+eq(fall(horse, 9), 0, "F 9 nodes do not hurt")
+eq(fall(horse, 10), 0, "F 10 nodes do not hurt (5 + 5 nodes: 14.0 nodes/s is the tolerance)")
 check(grug_mounts.active.ada ~= nil, "F a harmless drop keeps the rider up")
 local record = grug_mounts.active.ada
-local damage, reason = fall(horse, 6)
-eq(damage, math.floor(math.sqrt(2 * 19.62 * 6) - 14 + 0.5), "F 6 nodes: the engine's damage")
-eq(damage, 1, "F 6 nodes deal 1 native HP")
+local damage, reason = fall(horse, 11)
+eq(damage, math.floor(math.sqrt(2 * 19.62 * 6) - 14 + 0.5), "F 11 nodes: the engine's damage of 6")
+eq(damage, 1, "F 11 nodes deal 1 native HP")
 eq(reason and reason.type, "fall", "F the reason is a fall (the pool modifier scales it)")
-eq(grug_mounts.active.ada, nil, "F the fall hit dismounts")
-check(not record.object:is_valid() and not record.visual:is_valid(), "F the mount and its model are gone")
-eq(ada:get_attach(), nil, "F the rider is detached")
+eq(grug_mounts.active.ada, record, "F the fall hit keeps the rider mounted")
+check(record.object:is_valid() and record.visual:is_valid(), "F the mount and its model stay")
+eq(ada:get_attach(), record.object, "F the rider stays attached")
 
 horse = sit(1)
-eq(fall(horse, 10), 6, "F 10 nodes deal 6 native HP")
--- A jump from a ledge 4 nodes up: the apex (2.15 above it) is the peak.
+eq(fall(horse, 15), 6, "F 15 nodes deal 6 native HP")
+-- A jump from a ledge 9 nodes up: the apex (2.2 above it) is the peak.
 horse = sit(1)
-eq(fall(horse, 0, {GROUND + 4.5, GROUND + 6.15, GROUND + 5, GROUND + 2}), 2,
-	"F the peak of a jump counts (6.15 nodes: 2 HP)")
+eq(fall(horse, 0, {GROUND + 9.5, GROUND + 11.2, GROUND + 10, GROUND + 2}), 2,
+	"F the peak of a jump counts (11.2 nodes: 2 HP)")
 
 floor_of("floor_hard")
 horse = sit(1)
-eq(fall(horse, 3), math.floor(2 * math.sqrt(2 * 19.62 * 3) - 14 + 0.5),
+eq(fall(horse, 8), math.floor(2 * math.sqrt(2 * 19.62 * 3) - 14 + 0.5),
 	"F a +100% floor doubles the speed before the tolerance")
-eq(grug_mounts.active.ada, nil, "F (dismounted)")
+check(grug_mounts.active.ada ~= nil, "F (still mounted)")
 floor_of("floor_soft")
 horse = sit(1)
 eq(fall(horse, 20), 0, "F a -100% floor takes all fall damage")
@@ -459,7 +463,7 @@ ada.armor = {immortal = 1}
 eq(fall(horse, 20), 0, "F an immortal rider takes none")
 ada.armor = {fall_damage_add_percent = 100}
 horse = sit(1)
-eq(fall(horse, 3), 8, "F the rider's own fall_damage_add_percent counts like the engine's")
+eq(fall(horse, 8), 8, "F the rider's own fall_damage_add_percent counts like the engine's")
 ada.armor = {}
 
 -- A fall into water: the ride ends in the water, with no fall damage.
