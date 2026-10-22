@@ -1214,7 +1214,10 @@ def self_test():
     expect(entry_text({"legend": {"A": {"kind": "node", "name": "a:b", "o": None}}}, "A") ==
            entry_text({"legend": {"B": {"kind": "node", "name": "a:b", "o": None}}}, "B"),
            "a renamed key is no edit")
-    layout = parse_layout("\n".join([LAYOUT_MAGIC, "town x", "race dwarf",
+    late = parse_template(good.replace("F role floor", "F role floor late"), "t.tpl", "t")
+    expect(late["legend"]["F"].get("late") and entry_text(late, "F") != entry_text(t, "F"),
+           "a late entry parses and differs from the entry before planting")
+    layout =parse_layout("\n".join([LAYOUT_MAGIC, "town x", "race dwarf",
                                      "palette slate race=dwarf roof_slab=stairs:slab_stone",
                                      "place a template=t x=1 y=0 z=-2 turns=3 roof=slate lift=2",
                                      ""]), "x.layout")
@@ -1322,7 +1325,53 @@ def real_template_cases():
                                                    empty, "~")}, builds=False)
     if not any(w[0] == "fixed_in_shared" and w[1] == shared for w in report.warnings):
         failures.append("a fixed node in a template two races place is flagged")
+    failures += planted_cases()
     failures += parity_cases()
+    return failures
+
+
+def planted_cases():
+    """A planted template (format doc §4.2, Round 56 lane TREES): its stems
+    move as points, stand on written ground, name a known planter, and its
+    planting meta is the loader's to refuse (the game's loader reports it for
+    the template and for the capital that places it)."""
+    failures = []
+    name = "highcourt_orchard_east"
+    relative = "%s/templates/%s.tpl" % (BASE, name)
+    text = (ROOT / relative).read_text()
+    t = parse_template(text, relative, name)
+
+    def put(source, position, key):
+        out = source.split("\n")
+        x, y, z = position
+        row = out.index("layer %d" % y) + 1 + (z - t["z0"])
+        column = 1 + (x - t["x0"])
+        out[row] = out[row][:column] + key + out[row][column + 1:]
+        return "\n".join(out)
+    stem = next(p for p in t["points"] if p["group"] == "trees")
+    line = next(l for l in text.split("\n") if l.startswith("trees "))
+    late = next(l for l in text.split("\n") if l.endswith(" late"))
+    cases = [
+        ("the planted template", text, set()),
+        ("a stem moved", text.replace(line, line.replace(
+            "trees %d " % stem["x"], "trees %d " % (stem["x"] + 1), 1), 1), set()),
+        ("a stem on force air", put(text, (stem["x"], 0, stem["z"]), "."), {"point_place"}),
+        ("a stem with an unknown planter", text.replace(line, line.replace(
+            "kind=broadleaf", "kind=oak"), 1), {"loader", "point_baseline"}),
+        ("a malformed undergrowth", text.replace("undergrowth=[0,4,20,10,7]",
+                                                 "undergrowth=[0,4,20,10]"), {"loader"}),
+        ("a late mark given twice", text.replace(late, late + " late"),
+         {"format", "loader"}),
+    ]
+    defects = {d[:3] for d in known_defects(ROOT)}
+    for label, mutated, wanted in cases:
+        report = validate(ROOT, "file", {relative: mutated}, builds=False)
+        got = {rule for rule, where, _, _ in report.errors if where == name}
+        others = [e for e in report.errors if e[1] not in (name, "highcourt") and
+                  (e[1], e[0], e[2]) not in defects]
+        if got != wanted or others:
+            failures.append("planted: %s: rules %s, expected %s%s" % (
+                label, sorted(got), sorted(wanted), " (and %s)" % others if others else ""))
     return failures
 
 
