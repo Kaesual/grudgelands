@@ -417,7 +417,12 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   server-validated crosshair hostile must be in range and initially visible;
   no stale enemy memory and no valid target means no shot or mana/ammo payment.
   Mob/boss/guard missiles lock their valid attack target under the same initial
-  range/line-of-sight rule. Smite stays immediate; area skills stay area skills.
+  range/line-of-sight rule, measured the way the shooter's own sight check
+  measures it (Round 56): the distance between the shooter's and the
+  target's positions against the shooter's shot range (§3), and a ray
+  between those positions each raised 0.5 that only a walkable node stops (a
+  dragon's breath: its own eye height and the target + 1, as its sight check);
+  `grug_core.actor_projectile_lock`. Smite stays immediate; area skills stay area skills.
 - The Mage's projectiles (Fiery Spark, Cold Spark, Fireball, Flame Lance)
   fly from a **20 m initial range** at **20 m/s** (Flame Lance 35 m/s) for a
   coefficient of the spell base + spell power ([classes.md](classes.md) §4);
@@ -636,6 +641,29 @@ Normal tier at level L:
   Archer**, one slot in three of the existing bandit camp, which takes the
   registered ranged roster from **4 of 43 to 5 of 44** and is the first ranged
   enemy a player meets in the inner ring.
+- **Aggro radius by level** (Round 56, user ruling 2026-10-22): a monster
+  (wild mobs, elites, rares, bosses) picking a **player** target by itself
+  notices a player far above its level only closer. With `gap` = player
+  level − mob level, the radius is
+  `max(view_range × clamp(1 − 0.2 × (gap − 5), 0, 1), 1)`: the full view
+  range up to a gap of 5, then 20 % less per level (6 → 80 %, 7 → 60 %,
+  8 → 40 %, 9 → 20 %, 10 and more → the 1 m floor). The test runs before
+  the sight ray, so a player out of the radius costs no ray. A hit mob still
+  fights back and the group alert (§4) is unchanged; guards, kings and every
+  other mob of a faction, animals and NPCs keep their full view range, and so
+  does every mob towards a mob target (`grug_mobs/aggro.lua`
+  `player_aggro_radius`, read by `general_attack` in `mobs/api.lua`).
+- **Shot range** (Round 56, ruling 3 and D1): a ranged mob shoots within its
+  own **shot range**, by default `view_range + 4` (a `dogshoot` family's 16 →
+  20; a definition may set `_grug_shot_range`), so a player can stand inside
+  it without drawing aggro. A ranged mob (`shoot`, `dogshoot` outside its
+  melee phase, the ranged kings and fliers too) whose target is beyond its
+  shot range walks closer the way a ground ranged mob without sight walks
+  (§4) and stops **3 m inside** it, so it does not hover at the edge; inside
+  it shoots. Its projectile locks the target with the same shot range and
+  the same sight geometry (§2 "Hostile casts and projectiles"), so a shot it
+  fires at a target it sees is never refused (`mobs/api.lua`
+  `grug_shot_range`, `grug_mobs.stamp_arrow_damage`).
 - Pacing (Round 28 ruling 31): a level needs `k(L) = 8 + 0.29·(L − 1)`
   same-level normal kills' worth of XP (8 at level 1, about 25 at level 59;
   82 kill equivalents to level 10, 968 to level 60); quest rewards and
@@ -1004,10 +1032,13 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   its ranged phase that cannot see its target walks at it like a melee mob, stuck detector and
   search included, until it sees it; then it stops and shoots, which ends
   its stuck episode like a strike; it never shoots without sight. Its melee
-  phase navigates like any melee mob. A flying `dogshoot` mob keeps
-  upstream's switch (it shoots from range whether or not it sees); a
-  `dogshoot` mob without a ranged phase (no `dogshoot_switch`: the ranged
-  kings) keeps upstream's branches and never searches. This
+  phase navigates like any melee mob. Beyond its shot range (§3, Round 56)
+  every ranged mob walks the same way until it is 3 m inside it. A flying
+  `dogshoot` mob keeps upstream's switch inside its shot range (it shoots
+  whether or not it sees) and flies closer beyond it; a `dogshoot` mob
+  without a ranged phase (no `dogshoot_switch`: the ranged kings) keeps
+  upstream's branches inside its shot range, walks closer (straight, without
+  a search) beyond it and never searches. This
   replaces mobs_redo's stuck
   timer, the 1 s blocked-line-of-sight trigger and the sidestep of the
   close-cover ruling of 2026-09-17 and the walk-speed crawl of a wedged
@@ -1093,9 +1124,14 @@ class kits must support this (Warrior: threat/taunt tools, Priest:
 in-combat heals). Pulling several same-level mobs solo is dangerous by
 design (`group_attack` stays on).
 
-**Group alert** (Round 28 ruling 35): a mob that is hit calls mobs within its
-view range that have `group_attack` and are not fighting yet: the same entity
-name (as before) and mobs of the same family when the hit mob has
+**Group alert** (Round 28 ruling 35; centred on the hit mob since Round 56,
+user ruling 2026-10-22): a mob that is hit calls mobs within its view range
+**around itself** (not around the hitter) that have `group_attack` and are
+not fighting yet. It does not cascade: only the mob that was really hit
+calls; an alerted mob only takes the hitter as its target and calls nobody,
+not even its own camp's swarm (`grug_mobs.mark_alerted`). The hit mob's own
+camp swarm runs as before, its chain inside one camp. The callees are the
+same entity name (as before) and mobs of the same family when the hit mob has
 `group_attack` too. The pack call (a fleeing pack hunter) and the camp swarm
 use the same rule. A neutral mob never answers or calls anyone, not even a
 mob of its own name (the disposition also switches `group_attack` off), so it

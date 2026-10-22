@@ -593,6 +593,19 @@ function grug_mobs.camp_swarm(def, opts)
 	end)
 end
 
+-- An alerted mob calls nobody (Round 56, round56-plan.md ruling 2). mobs_redo's
+-- group alert (mobs/api.lua on_punch) hands every mob it pulled onto the
+-- hitter to this mark, which counts the mob's swarm call for this fight as
+-- made: a camp member pulled by a hit on its neighbour does not call its own
+-- camp (or, camp-less, its kin around it) in turn. The hit mob itself and a
+-- mob that picks a target by itself still swarm as above; the mark ends with
+-- the fight like the call's own flag.
+function grug_mobs.mark_alerted(ent)
+	if ent.temp and ent.state == "attack" then
+		ent.temp.grug_swarm_called = true
+	end
+end
+
 --
 -- Aura (Bog Ooze: "engulfs" — touch damage)
 --

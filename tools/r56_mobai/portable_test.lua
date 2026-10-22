@@ -12,7 +12,7 @@
 --   N  the numbers: objects scanned and sight rays per scan on one probe (a
 --      player among mobs of mixed level gaps), the rule off and on;
 --   A  the hit alert: centred on the hit mob, its view range, and an alerted
---      mob (do_attack) calls nobody;
+--      mob (do_attack, the camp swarm's mark) calls nobody;
 --   S  the shot range: view_range + 4, a definition's own value (copied by
 --      register_mob), read at call time;
 --   W  the approach: beyond the shot range a ranged mob walks (the dogfight
@@ -331,9 +331,14 @@ do
 	check(alert_src:find("get_objects_inside_radius(self.object:get_pos(), self.view_range)", 1, true)
 		~= nil, "A0 the alert scans around the hit mob with its view range")
 	local centres = {}
+	local verbs_src = read("mods/ENTITIES/grug_mobs/verbs.lua")
+	local marks = {}
+	load_in(cut(verbs_src, "function grug_mobs.mark_alerted(ent)", "\n--\n-- Aura", "mark_alerted"),
+		{grug_mobs = marks}, "mark_alerted")
 	local env = {
 		is_player = function(o) return o.player == true end,
-		grug_mobs = {alert_kin = function(a, b) return a.group_attack and b.group_attack end},
+		grug_mobs = {alert_kin = function(a, b) return a.group_attack and b.group_attack end,
+			mark_alerted = marks.mark_alerted},
 		core = {get_objects_inside_radius = function(c, r)
 			centres[#centres + 1] = {c = c, r = r}
 			return scan(c, r)
@@ -352,6 +357,10 @@ do
 	local kin_far = new_mob({}, {x = 43, y = 0, z = 0})
 	local stranger = new_mob({group_attack = false, name = "grug_mobs:stag"}, {x = 24, y = 0, z = 0})
 	scene = {shooter, hit, kin_near, kin_near2, kin_by_mage, kin_far, stranger}
+	for _, m in ipairs({kin_near, kin_near2, kin_by_mage, kin_far, stranger}) do
+		m.temp = {}
+		m.do_attack = function(self, target) self.target = target; self.state = "attack" end
+	end
 	alert(hit, shooter, "mage")
 	check(#centres == 1 and centres[1].c.x == 23 and centres[1].r == 16,
 		"A1 one scan, centred on the hit mob, radius its view range")
@@ -360,6 +369,13 @@ do
 	check(kin_by_mage.target == nil, "A3 the kin around the hitter do not")
 	check(kin_far.target == nil and stranger.target == nil,
 		"A4 nothing beyond the view range, nothing without group_attack")
+	check(kin_near.temp.grug_swarm_called == true and kin_near2.temp.grug_swarm_called == true
+		and kin_far.temp.grug_swarm_called == nil and hit.temp == nil,
+		"A4b the alerted mobs are marked as having made their swarm call; the hit mob is not")
+	local swarm = cut(verbs_src, "function grug_mobs.camp_swarm(def, opts)", "\nend\n", "camp_swarm")
+	check(swarm:find("if self.temp.grug_swarm_called then\n\t\t\treturn\n\t\tend", 1, true)
+		~= nil and swarm:find("self.temp.grug_swarm_called = nil", 1, true) ~= nil,
+		"A4c camp_swarm calls nobody while the mark stands, and clears it after the fight")
 	-- No cascade: an alerted mob takes do_attack, and do_attack (cut out of
 	-- api.lua, with grug_mobs' prototype wrapper) scans nobody.
 	local do_attack = load_in("local mob_class = {}\n" ..

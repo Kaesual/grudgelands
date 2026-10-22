@@ -3513,9 +3513,11 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		-- GRUG PATCH (Round 56 MOBAI, round56-plan.md ruling 2): centred on the
 		-- hit mob, not on the hitter (a ranged hit called the kin around the
 		-- shooter). Only a hit mob calls: an alerted mob gets do_attack, never
-		-- this path, so the call does not spread further.
+		-- this path, and grug_mobs.mark_alerted keeps it from calling its own
+		-- camp, so the call does not spread further.
 		local objs = core.get_objects_inside_radius(self.object:get_pos(), self.view_range)
 		local ent
+		local mark_alerted = grug_mobs and grug_mobs.mark_alerted
 
 		for n = 1, #objs do
 
@@ -3533,6 +3535,7 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 				or (grug_mobs and grug_mobs.alert_kin
 				and grug_mobs.alert_kin(self, ent))) then
 					ent:do_attack(hitter)
+					if mark_alerted then mark_alerted(ent) end
 				end
 
 				-- have owned mobs attack player threat
