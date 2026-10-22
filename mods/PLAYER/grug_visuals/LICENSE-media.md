@@ -151,7 +151,9 @@ Original, AI-assisted pixel art painted for Grudgelands by **GPT-6 Astra** on
 ([armor-format.md](../../../docs/technical/armor-format.md) §6), written with
 **Python/Pillow** by the painters in
 [`tools/r54_art/src/`](../../../tools/r54_art/README.md) (drops `drop-02`
-metal, `drop-03-leather`, `drop-03-cloth`). No image-generation service,
+metal, `drop-03-leather`, `drop-03-cloth`; the hood, 2026-10-22, by
+`hood-drop-02`, painted in side, back and top views and projected onto the
+hood's faces by `tools/r56_hood/views.py`). No image-generation service,
 downloads or third-party source pixels. The project dedicates any rights it
 holds in these files to **CC0 1.0 Universal**
 (<https://creativecommons.org/publicdomain/zero/1.0/>). The user picked one of
@@ -164,7 +166,7 @@ grade key of `grug_gear.MATERIALS`.
 
 | File | Author | License | Notes |
 |------|--------|---------|-------|
-| `grug_armor_<line>_<grade>_<slot>.png` (72 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py` (Python/Pillow): atlas layer 128 × 64, the slot's worn boxes (and polygon parts: the hood, transparent on every tier until its art is picked); Round 56: the chin strip (helm front's bottom row) cleared on the cloth and leather T1–T5 head layers by `tools/r54_art/assemble.py` (the Grudgelands project, CC0-1.0) |
+| `grug_armor_<line>_<grade>_<slot>.png` (72 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py` (Python/Pillow): atlas layer 128 × 64, the slot's worn boxes (and polygon parts: the hood, on the cloth and leather head layers); Round 56: the chin strip (helm front's bottom row) cleared on the cloth and leather T1–T5 head layers by `tools/r54_art/assemble.py` (the Grudgelands project, CC0-1.0); 0.56.1: the hood painted on the 12 cloth and leather head layers (`hood-drop-02` proposal P2, GPT-6 Astra, CC0-1.0), and one zone B pixel added on the leather T1 and T3 helms by the same drop |
 | `grug_armor_<line>_<grade>_<slot>_ench.png` (72 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py`: enchant mask of the atlas layer (zone A frame, zone B frame) |
 | `grug_armor_<line>_<grade>_<slot>_skin.png` (54 files: chest, legs, feet) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py` (Python/Pillow): skin layer 64 × 32, the slot's inner paint |
 | `grug_armor_<line>_<grade>_<slot>_skin_ench.png` (54 files) | GPT-6 Astra (Grudgelands) | CC0-1.0 | Own work, AI-assisted; `bake.py`: enchant mask of the skin layer |

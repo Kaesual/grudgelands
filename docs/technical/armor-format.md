@@ -172,8 +172,9 @@ front face that lie wholly in front of the head's face (columns 1–8, rows 1–
 transparent, so a helmet can leave the face open; the head is directly behind them. Since Round 56 (ruling 17,
 confirmed by the user 2026-10-22) the helm's **chin strip**, the front face's bottom row (all 10 texels), is
 transparent on every cloth head piece (T1–T6) and on the leather ones without a veil (T1–T5); leather T6 and metal
-keep it opaque. `check.py` allows it on a helm sheet that only those tiers wear and reports a zone shortfall that
-the open strip causes on a head piece as a warning, not a violation, until the hood art repaints those helms. Shape
+keep it opaque. `check.py` allows it on a helm sheet that only those tiers wear and reports a zone shortfall of one
+zone B pixel that the open strip causes on a head piece as a warning, not a violation (the shipped art has none since
+the hood art, 0.56.1, repainted the leather T1 and T3 helms). Shape
 comes from the box and the paint, not from cut-outs.
 
 ## 5. Inner paint (on the skin)
