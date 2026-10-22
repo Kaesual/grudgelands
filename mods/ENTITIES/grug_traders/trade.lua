@@ -17,8 +17,8 @@
 --      session is silently dropped — no session, no vendor, no prices);
 --   2. the player is within TRADE_RANGE of the session's vendor POSITION
 --      (not of an ObjectRef — refs must never be kept across callbacks);
---   3. the player still passes the vendor's faction/race access rule
---      (a faction/race can be changed by an admin while the form is open);
+--   3. the player still passes the vendor's faction access rule (a
+--      faction can be changed by an admin while the form is open);
 --   4. prices, item names and counts are recomputed SERVER-SIDE. The field
 --      name carries an index and nothing else; that index is re-resolved
 --      against a freshly computed offer/row list and cross-checked against the
@@ -118,12 +118,15 @@ local function current_offer(player, session, vendor, discount)
 	return offer
 end
 
--- Every stack in the player's main list and bags the vendor would buy. A
--- good that sells singly keeps one row per slot ({list, index, item, count,
--- unit}); a lot good (Round 48, sell plan §3.5) gets ONE row per item name
--- with its count over every carried list ({item, count, lot, copper}: copper
--- per lot), placed where its first stack is, so 30 + 30 Cobblestone in two
--- slots still make a lot of 50. Lot goods sell without a quality factor and
+-- Every stack the vendor would buy in the player's main list, bags and the
+-- inactive hotbar layout (grug_inventory.consume_lists, Round 56 ruling 8:
+-- the lists every consumer counts and takes from, so a lot count never
+-- promises what the take cannot find). A good that sells singly keeps one
+-- row per slot ({list, index, item, count, unit}); a lot good (Round 48,
+-- sell plan §3.5) gets ONE row per item name with its count over every
+-- listed list ({item, count, lot, copper}: copper per lot), placed where its
+-- first stack is, so 30 + 30 Cobblestone in two slots still make a lot of
+-- 50. Lot goods sell without a quality factor and
 -- wear is ignored, so merging their stacks changes no price. Every row keeps
 -- a representative `stack` (its slot's, a lot row its first one) for the
 -- row's tooltip only (Round 49 ruling 2); no action reads it.
@@ -133,7 +136,7 @@ local function current_rows(player)
 	if not inv then
 		return rows
 	end
-	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+	for _, list in ipairs(grug_inventory.consume_lists(inv)) do
 		for i, stack in ipairs(inv:get_list(list) or {}) do
 			if not stack:is_empty() then
 				local unit = grug_traders.stack_sell_price(stack)
@@ -470,7 +473,7 @@ local function do_buy(player, session, vendor, index)
 end
 
 -- A lot row's "All" (sell plan §3.5.4-§3.5.6): as many whole lots as the
--- player carries over every carried list; the rest stays. The row is
+-- player carries over the sell list's lists; the rest stays. The row is
 -- recomputed server-side and cross-checked against the one shown (item, lot,
 -- copper, total count); the money ceiling is checked before anything is
 -- removed, and the units are taken with the engine's remove_item, list by
@@ -503,7 +506,7 @@ local function do_sell_lots(player, shown)
 	local inv = player:get_inventory()
 	local wanted = lots * fresh.lot
 	local removed = 0
-	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+	for _, list in ipairs(grug_inventory.consume_lists(inv)) do
 		if removed >= wanted then break end
 		local take = ItemStack(fresh.item)
 		take:set_count(wanted - removed)

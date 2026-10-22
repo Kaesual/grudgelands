@@ -505,10 +505,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   (`grug_inventory.consume_lists`): crafting ingredients (§4), arrows (the
   quiver, `main`, the bags, then B), quest items (counted for progress and
   turn-in; rewards never land in the inactive layout), the Claim Stone's
-  activation fuel and the Fallen Crown. The vendor's sell list leaves the
-  inactive layout out (selling is editing by hand); the repair quote
-  includes it. The gear the Crownbinder offers to crown comes from the
-  shown side only.
+  activation fuel, the Fallen Crown and the vendor's sell list (its rows
+  and lot selling, with no marker on the inactive layout's rows; Round 56
+  ruling 8 replaces Round 50's "left out"); the repair quote includes it.
+  The gear the Crownbinder offers to crown comes from the shown side only.
 - **Shift-click from another inventory** (Round 45 playtest) follows the
   give order too: chests, furnaces, the bookshelf and vessels shelf, the
   creative inventory, the crafting overflow and the target slot ring

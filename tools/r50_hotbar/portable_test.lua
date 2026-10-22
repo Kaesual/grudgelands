@@ -23,7 +23,8 @@
 --   C  the consumers, by the study's numbers: a1/a2 crafting (count = take,
 --      the inactive layout last), a4 ammunition, a5/a6 quests (counted and
 --      taken last, rewards never into it), a7 the Claim Stone's activation
---      fuel, a8 the Fallen Crown, a9 the vendor's sell list (left out), a10
+--      fuel, a8 the Fallen Crown, a9 the vendor's sell list (included since
+--      Round 56 ruling 8), a10
 --      the repair quote (included), a12 holds_stone;
 --   K  skills: normalize_kit keeps one copy per layout and cleans both; the
 --      starter kit goes onto the shown layout (D1; that a talent unlock
@@ -626,7 +627,8 @@ do
 end
 
 -- a9: the vendor's sell rows (cut out of grug_traders/trade.lua) read the
--- carried lists: B is left out.
+-- consumer lists: B is offered last (Round 56 ruling 8 replaced Round 50's
+-- "left out").
 do
 	local src = read("mods/ENTITIES/grug_traders/trade.lua")
 	local block = src:match("\n(local function current_rows%(player%).-\n\treturn rows\nend)\n")
@@ -641,7 +643,8 @@ do
 	local rows = current_rows(p)
 	local lists = {}
 	for _, r in ipairs(rows) do lists[#lists + 1] = r.list .. "#" .. r.index end
-	eq(table.concat(lists, ","), "main#2,main#9", "C a9 main's sticks are offered, B's are not")
+	eq(table.concat(lists, ","), "main#2,main#9," .. STORE .. "#1",
+		"C a9 main's sticks are offered, then B's")
 end
 
 -- a10: the repair quote (grug_repair/service.lua) includes B.
