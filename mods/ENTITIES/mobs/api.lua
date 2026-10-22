@@ -2119,21 +2119,28 @@ mobs.grug_shot_range = grug_shot_range
 -- Whether a ranged mob in its ranged phase (`shoot`, `dogshoot` outside its
 -- melee phase, the ranged kings' ds_var 0 included) walks closer this step:
 -- it starts beyond its shot range and walks until it is GRUG_CLOSE_IN inside,
--- then stands (a shot's or a cast's clip keeps playing). The flag lives in
--- the runtime-only temp table.
+-- then stands (a shot's or a cast's clip keeps playing). Inside its shot
+-- range it also stops as soon as its navigation is in trouble (stuck, or a
+-- failed search: grug_nav's `want` and `fails` in `temp.grug_nav`), so a
+-- target across a ravine or a fence is shot at instead of given up after the
+-- navigation's failed searches. The flag lives in the runtime-only temp
+-- table; the melee phase and stop_attack clear it.
 local function grug_ranged_closing(self, ds_var, dist)
 
 	if self.attack_type ~= "shoot"
 	and not (self.attack_type == "dogshoot" and ds_var ~= 2) then
+		if ds_var == 2 then self.temp.grug_closing = nil end
 		return false
 	end
 
 	local temp = self.temp
 	local range = grug_shot_range(self)
+	local nst = temp.grug_nav
 
 	if dist > range then
 		temp.grug_closing = true
-	elseif temp.grug_closing and dist <= range - GRUG_CLOSE_IN then
+	elseif temp.grug_closing and (dist <= range - GRUG_CLOSE_IN
+	or (nst and (nst.want or (nst.fails or 0) > 0))) then
 		temp.grug_closing = nil
 		self:set_velocity(0)
 		local anim = self.animation_current
@@ -2156,6 +2163,7 @@ function mob_class:stop_attack()
 	if self.temp then
 		grug_nav.forget(self.temp)
 		grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
+		self.temp.grug_closing = nil -- GRUG PATCH (Round 56 MOBAI): no stale approach
 	end
 	self:set_velocity(0)
 	self.state = "stand"

@@ -16,8 +16,11 @@
 --   S  the shot range: view_range + 4, a definition's own value (copied by
 --      register_mob), read at call time;
 --   W  the approach: beyond the shot range a ranged mob walks (the dogfight
---      branch), stops 3 m inside and shoots there, no hovering; the melee
---      phase, the ranged kings, fliers and melee mobs;
+--      branch), stops 3 m inside and shoots there, no hovering; a blocked
+--      mob (stuck, a failed search) stops inside its shot range; the melee
+--      phase and stop_attack clear it; the ranged kings, fliers, melee mobs;
+--   G  the review's ravine on the real navigation: blocked at 19 m it shoots
+--      instead of giving its target up;
 --   L  the projectile lock: the shot range and the sight check's geometry,
 --      so a target seen at the edge of the shot range is locked, one beyond
 --      it is not, and lock and sight agree on every probe scene;
@@ -488,6 +491,109 @@ do
 	local pure = archer({attack_type = "shoot", dogshoot_switch = nil})
 	check(step(pure, 0, 25, true) == "walk" and step(pure, 0, 16, true) == "shoot",
 		"W17 a pure shooter closes in the same way")
+	-- Blocked inside the shot range: the navigation's trouble ends the walk.
+	local blocked = archer()
+	check(step(blocked, 1, 21, true) == "walk", "W18 a blocked archer starts closing at 21 m")
+	blocked.temp.grug_nav = {fails = 0}
+	check(step(blocked, 1, 19, true) == "walk", "W19 at 19 m with a free way it keeps walking")
+	blocked.temp.grug_nav.want = true -- stuck
+	check(step(blocked, 1, 19, true) == "shoot" and blocked.temp.grug_closing == nil
+		and blocked.velocity == 0, "W20 stuck at 19 m (inside 20): it stops and shoots")
+	local failed = archer()
+	step(failed, 1, 21, true)
+	failed.temp.grug_nav = {fails = 1}
+	check(step(failed, 1, 19.5, true) == "shoot", "W21 a failed search at 19.5 m: it shoots")
+	local far = archer()
+	far.temp.grug_nav = {fails = 2, want = true}
+	check(step(far, 1, 21, true) == "walk", "W22 beyond the shot range trouble changes nothing")
+	-- The melee phase clears the approach.
+	local phase = archer()
+	step(phase, 1, 21, true)
+	check(phase.temp.grug_closing == true, "W23 closing ...")
+	step(phase, 2, 19, true)
+	check(phase.temp.grug_closing == nil, "W24 ... cleared by the melee phase")
+	check(step(phase, 1, 19, true) == "shoot", "W25 back in the ranged phase at 19 m it shoots")
+	-- stop_attack clears it too (cut out of api.lua).
+	local stop_attack = load_in("local mob_class = {}\n" ..
+		cut(api, "function mob_class:stop_attack()", "\n-- execute current state", "stop_attack") ..
+		"\nreturn mob_class.stop_attack", {
+			grug_nav = {forget = function(t) t.grug_nav = nil end},
+			grug_obstacle = {forget_no_path = function() end},
+		}, "stop_attack")
+	local stopped = archer()
+	step(stopped, 1, 25, true)
+	stop_attack(stopped)
+	check(stopped.temp.grug_closing == nil and stopped.state == "stand",
+		"W26 stop_attack clears the approach")
+end
+
+-- ---------------------------------------------------------------------------
+-- G. The review's ravine (the REAL grug_nav.lua and grug_obstacle.lua): an
+-- archer that came from 21 m stands blocked 19 m from its target (no path,
+-- it cannot move). It shoots and keeps its target; walking on, the
+-- navigation's failed searches would give the target up.
+-- ---------------------------------------------------------------------------
+do
+	local saved_core = core
+	local us = 1000000
+	local searches = 0
+	core = {
+		registered_nodes = {air = {name = "air", walkable = false},
+			stone = {name = "stone", walkable = true}},
+		get_us_time = function() return us end,
+		get_node_or_nil = function(p) return {name = p.y <= 0 and "stone" or "air"} end,
+		find_path = function()
+			searches = searches + 1
+			us = us + 50
+			return nil -- the ravine: no way across
+		end,
+	}
+	local O2 = dofile(repo .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
+	local nav = dofile(repo .. "/mods/ENTITIES/mobs/grug_nav.lua")
+	nav.init({obstacle = O2, max_jump = 4, max_drop = 6})
+	local DT = 0.1
+	local target = {get_luaentity = function() return nil end,
+		is_player = function() return true end,
+		get_properties = function() return {collisionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3}} end}
+	local function run(fixed)
+		local a = {attack_type = "dogshoot", reach = 3, view_range = 16, dogshoot_switch = 1,
+			_grug_cbox = {-0.3, -0.01, -0.3, 0.3, 1.7, 0.3}, initial_properties = {stepheight = 1.1},
+			jump_height = 4, fear_height = 6, temp = {grug_closing = true},
+			animation_current = "run"}
+		a.set_velocity = function() end
+		a.set_animation = function(self, an) self.animation_current = an end
+		local p, tpos = {x = 0, y = 0.51, z = 0}, {x = 19, y = 0.51, z = 0}
+		local shots, gave_up = 0, false
+		for _ = 1, 150 do
+			us = us + math.floor(DT * 1e6)
+			nav.begin_server_step(DT)
+			O2.begin_server_step()
+			local closing = helpers.closing(a, 1, 19)
+			if not fixed then closing = true end -- the walk before the fix
+			if closing then
+				local _, outcome = nav.combat_step(a, p, DT, target, tpos, 19, false, false)
+				if outcome == "give_up" then
+					gave_up = true
+					break
+				end
+				nav.command(a, p, 4) -- it runs and does not move
+			else
+				shots = shots + 1
+				nav.combat_step(a, p, DT, target, tpos, 19, true, false)
+				nav.command(a, p, 0)
+			end
+		end
+		return shots, gave_up
+	end
+	local shots_before, gave_up_before = run(false)
+	searches = 0
+	local shots, gave_up = run(true)
+	check(gave_up_before and shots_before == 0,
+		"G1 walking on, the failed searches give the target up (the review's case)")
+	check(not gave_up and shots > 0 and searches <= 1,
+		"G2 with the fix it stops once stuck (" .. searches .. " failed search), shoots and keeps "
+		.. "its target (" .. shots .. " shot steps of 150)")
+	core = saved_core
 end
 
 -- ---------------------------------------------------------------------------

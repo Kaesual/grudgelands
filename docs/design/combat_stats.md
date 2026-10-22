@@ -659,8 +659,10 @@ Normal tier at level L:
   it without drawing aggro. A ranged mob (`shoot`, `dogshoot` outside its
   melee phase, the ranged kings and fliers too) whose target is beyond its
   shot range walks closer the way a ground ranged mob without sight walks
-  (§4) and stops **3 m inside** it, so it does not hover at the edge; inside
-  it shoots. Its projectile locks the target with the same shot range and
+  (§4) and stops **3 m inside** it, so it does not hover at the edge, or
+  earlier, once inside its shot range, when its way is blocked (stuck or a
+  failed search: a target across a ravine or a fence is shot at, not given
+  up); inside it shoots. Its projectile locks the target with the same shot range and
   the same sight geometry (§2 "Hostile casts and projectiles"), so a shot it
   fires at a target it sees is never refused (`mobs/api.lua`
   `grug_shot_range`, `grug_mobs.stamp_arrow_damage`).
