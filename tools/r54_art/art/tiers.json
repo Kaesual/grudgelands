@@ -233,12 +233,14 @@
    "on": [
     "helm",
     "chest",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "a",
     "chest": "a",
-    "boot": "a"
+    "boot": "a",
+    "hood": "a"
    },
    "inner": {
     "chest": "a",
@@ -259,14 +261,16 @@
     "chest",
     "belt",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "b",
     "chest": "b",
     "belt": "b",
     "thigh": "b",
-    "boot": "b"
+    "boot": "b",
+    "hood": "b"
    },
    "inner": {
     "chest": "b",
@@ -289,7 +293,8 @@
     "panel_b",
     "sleeve",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "c",
@@ -298,7 +303,8 @@
     "panel_b": "c",
     "sleeve": "c",
     "thigh": "c",
-    "boot": "c"
+    "boot": "c",
+    "hood": "c"
    },
    "inner": {
     "chest": "c",
@@ -322,7 +328,8 @@
     "sleeve",
     "bracer",
     "thigh",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "d",
@@ -332,7 +339,8 @@
     "sleeve": "d",
     "bracer": "d",
     "thigh": "d",
-    "boot": "d"
+    "boot": "d",
+    "hood": "d"
    },
    "inner": {
     "chest": "d",
@@ -358,7 +366,8 @@
     "pauldron",
     "thigh",
     "knee",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "e",
@@ -370,7 +379,8 @@
     "pauldron": "e",
     "thigh": "e",
     "knee": "e",
-    "boot": "e"
+    "boot": "e",
+    "hood": "e"
    },
    "inner": {
     "chest": "e",
@@ -397,7 +407,8 @@
     "pauldron",
     "thigh",
     "knee",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "f",
@@ -410,7 +421,8 @@
     "pauldron": "f",
     "thigh": "f",
     "knee": "f",
-    "boot": "f"
+    "boot": "f",
+    "hood": "f"
    },
    "inner": {
     "chest": "f",
@@ -431,12 +443,14 @@
    "on": [
     "helm",
     "chest",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "a",
     "chest": "a",
-    "boot": "a"
+    "boot": "a",
+    "hood": "a"
    },
    "inner": {
     "chest": "a",
@@ -456,13 +470,15 @@
     "helm",
     "chest",
     "belt",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "b",
     "chest": "b",
     "belt": "b",
-    "boot": "b"
+    "boot": "b",
+    "hood": "b"
    },
    "inner": {
     "chest": "b",
@@ -485,7 +501,8 @@
     "panel_f",
     "panel_b",
     "sleeve",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "c",
@@ -494,7 +511,8 @@
     "sleeve": "c",
     "panel_f": "c",
     "panel_b": "c",
-    "boot": "c"
+    "boot": "c",
+    "hood": "c"
    },
    "inner": {
     "chest": "c",
@@ -517,7 +535,8 @@
     "panel_f",
     "panel_b",
     "sleeve",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "d",
@@ -526,7 +545,8 @@
     "sleeve": "d",
     "panel_f": "d",
     "panel_b": "d",
-    "boot": "d"
+    "boot": "d",
+    "hood": "d"
    },
    "inner": {
     "chest": "d",
@@ -549,7 +569,8 @@
     "panel_f",
     "panel_b",
     "sleeve",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "e",
@@ -558,7 +579,8 @@
     "sleeve": "e",
     "panel_f": "e",
     "panel_b": "e",
-    "boot": "e"
+    "boot": "e",
+    "hood": "e"
    },
    "inner": {
     "chest": "e",
@@ -581,7 +603,8 @@
     "panel_f",
     "panel_b",
     "sleeve",
-    "boot"
+    "boot",
+    "hood"
    ],
    "variant": {
     "helm": "f",
@@ -590,7 +613,8 @@
     "sleeve": "f",
     "panel_f": "f",
     "panel_b": "f",
-    "boot": "f"
+    "boot": "f",
+    "hood": "f"
    },
    "inner": {
     "chest": "f",
@@ -634,54 +658,54 @@
   },
   "leather": {
    "T1": {
-    "drop": "drop-03-leather",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T2": {
-    "drop": "drop-03-leather",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T3": {
-    "drop": "drop-03-leather",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T4": {
-    "drop": "drop-03-leather",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T5": {
-    "drop": "drop-03-leather",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T6": {
-    "drop": "drop-03-leather",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    }
   },
   "cloth": {
    "T1": {
-    "drop": "drop-03-cloth",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T2": {
-    "drop": "drop-03-cloth",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T3": {
-    "drop": "drop-03-cloth",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T4": {
-    "drop": "drop-03-cloth",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T5": {
-    "drop": "drop-03-cloth",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    },
    "T6": {
-    "drop": "drop-03-cloth",
-    "prop": "p1"
+    "drop": "hood-drop-02",
+    "prop": "p2"
    }
   }
  }

@@ -8,20 +8,20 @@
   "T6": {"drop": "drop-02", "prop": "p2"}
  },
  "leather": {
-  "T1": {"drop": "drop-03-leather", "prop": "p1"},
-  "T2": {"drop": "drop-03-leather", "prop": "p1"},
-  "T3": {"drop": "drop-03-leather", "prop": "p1"},
-  "T4": {"drop": "drop-03-leather", "prop": "p1"},
-  "T5": {"drop": "drop-03-leather", "prop": "p1"},
-  "T6": {"drop": "drop-03-leather", "prop": "p1"}
+  "T1": {"drop": "hood-drop-02", "prop": "p2"},
+  "T2": {"drop": "hood-drop-02", "prop": "p2"},
+  "T3": {"drop": "hood-drop-02", "prop": "p2"},
+  "T4": {"drop": "hood-drop-02", "prop": "p2"},
+  "T5": {"drop": "hood-drop-02", "prop": "p2"},
+  "T6": {"drop": "hood-drop-02", "prop": "p2"}
  },
  "cloth": {
-  "T1": {"drop": "drop-03-cloth", "prop": "p1"},
-  "T2": {"drop": "drop-03-cloth", "prop": "p1"},
-  "T3": {"drop": "drop-03-cloth", "prop": "p1"},
-  "T4": {"drop": "drop-03-cloth", "prop": "p1"},
-  "T5": {"drop": "drop-03-cloth", "prop": "p1"},
-  "T6": {"drop": "drop-03-cloth", "prop": "p1"}
+  "T1": {"drop": "hood-drop-02", "prop": "p2"},
+  "T2": {"drop": "hood-drop-02", "prop": "p2"},
+  "T3": {"drop": "hood-drop-02", "prop": "p2"},
+  "T4": {"drop": "hood-drop-02", "prop": "p2"},
+  "T5": {"drop": "hood-drop-02", "prop": "p2"},
+  "T6": {"drop": "hood-drop-02", "prop": "p2"}
  },
  "icons": {
   "metal": {

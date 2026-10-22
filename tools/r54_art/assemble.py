@@ -30,6 +30,16 @@ row, is cleared on the helm sheet of every cloth tier and of leather T1-T5
 (armorlib.CHIN_TIERS) after the tier copy; leather T6 (the veil) and metal
 keep theirs. A helm sheet shared by a chin-strip tier and another tier stops
 the assembly. A painter that already leaves the strip open is unaffected.
+
+Round 56 (lane HOODFINISH): the hood art. src/hood-<drop>/build.py is the hood
+drop's painter, as delivered (GPT-6 Astra, CC0), with its inputs (source.zip,
+the snapshot of art/ it painted on, and source-sha256.json); it paints the hood
+in side, back and top views, projects them with tools/r56_hood/views.py
+(--game: this checkout) and writes both proposals as complete art directories
+(the snapshot plus the hood sheets, the hood in the cloth and leather `on`
+lists and its helm repairs). The picked cloth and leather tiers come from it
+whole, like any drop. src/hood-<drop>/views/<proposal>/ keeps the picked
+proposal's painted views; the check compares them with the painter's.
 """
 import argparse
 import json
@@ -48,21 +58,24 @@ from PIL import Image  # noqa: E402
 
 import armorlib as L  # noqa: E402
 
+REPO = HERE.parents[1]
 SRC = HERE / "src"
 ART = HERE / "art"
 PICKS = HERE / "picks.json"
 
 
-def paint(work, pattern, *args):
-    """Run the painters src/<pattern>/paint.py on copies under `work`;
-    -> {drop: drop dir}."""
+def paint(work, pattern, script, *args):
+    """Run the painters src/<pattern>/<script> on copies under `work` (the
+    files next to the painter go along, its subfolders stay); -> {drop: drop dir}."""
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
     drops = {}
-    for painter in sorted(SRC.glob(f"{pattern}/paint.py")):
+    for painter in sorted(SRC.glob(f"{pattern}/{script}")):
         drop = work / painter.parent.name
         (drop / "src").mkdir(parents=True)
-        shutil.copyfile(painter, drop / "src" / "paint.py")
-        r = subprocess.run([sys.executable, str(drop / "src" / "paint.py"), *map(str, args)],
+        for f in painter.parent.iterdir():
+            if f.is_file():
+                shutil.copyfile(f, drop / "src" / f.name)
+        r = subprocess.run([sys.executable, str(drop / "src" / script), *map(str, args)],
                            cwd=work, env=env, capture_output=True, text=True)
         if r.returncode:
             sys.exit(f"{painter}: exit {r.returncode}\n{r.stdout}{r.stderr}")
@@ -140,6 +153,22 @@ def pixels(data):
     return im.mode, im.size, im.tobytes()
 
 
+def views_problems(drops, picks):
+    """The kept painted views of each picked hood proposal against the painter's."""
+    problems = []
+    for drop, prop in sorted({(p["drop"], p["prop"]) for line in L.LINES for p in picks[line].values()}):
+        if not drop.startswith("hood-"):
+            continue
+        kept = SRC / drop / "views" / prop
+        made = drops[drop] / "views" / prop
+        have = {p.relative_to(kept).as_posix() for p in kept.rglob("*.png")}
+        want = {p.relative_to(made).as_posix() for p in made.rglob("*.png")}
+        for rel in sorted(have | want):
+            if rel not in have or rel not in want or pixels((kept / rel).read_bytes()) != pixels((made / rel).read_bytes()):
+                problems.append(f"differs src/{drop}/views/{prop}/{rel}")
+    return problems
+
+
 def check(files, tiers, palettes):
     problems = []
     have = {p.relative_to(ART).as_posix() for p in ART.rglob("*.png")}
@@ -175,17 +204,24 @@ def main():
     picks = json.loads(PICKS.read_text())
     with tempfile.TemporaryDirectory(prefix="r54_art.") as tmp:
         work = Path(tmp)
-        files, tiers, palettes = assemble(paint(work, "drop-*", "--tool", TOOL), picks)
+        drops = paint(work, "drop-*", "paint.py", "--tool", TOOL)
+        drops.update(paint(work, "hood-*", "build.py", "--game", REPO))
+        files, tiers, palettes = assemble(drops, picks)
         clear_chin(files, tiers)
         (work / "picked").mkdir()
         (work / "picked" / "tiers.json").write_text(dump(tiers))
-        lay_icons(files, tiers, paint(work, "icons-*", "--art", work / "picked"), picks["icons"])
+        lay_icons(files, tiers, paint(work, "icons-*", "paint.py", "--art", work / "picked"), picks["icons"])
+        views = views_problems(drops, picks)
     if a.check:
-        problems = check(files, tiers, palettes)
+        problems = views + check(files, tiers, palettes)
         for p in problems:
             print("FAIL", p)
         print(f"r54 art check: {'FAIL' if problems else 'ok'} ({len(files)} PNG files + 2 JSON)")
         return 1 if problems else 0
+    for p in views:
+        print("FAIL", p)
+    if views:
+        return 1
     write(files, tiers, palettes)
     print(f"r54 art: {len(files)} PNG files + tiers.json, palettes.json -> {ART}")
     return 0
