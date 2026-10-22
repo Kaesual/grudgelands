@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-21. This is the delivery pointer, not another game specification.
+Updated 2026-10-22. This is the delivery pointer, not another game specification.
 
 The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the
@@ -12,12 +12,81 @@ pass (0.54.1); 0.53.0 to 0.54.1 were pushed together on 2026-10-21
 (2026-10-21). Round 55 (0.55.0) puts the offhand into the model; 0.55.1
 adds the admin debug command `/prof`. Both passed the user's GUI test, were
 pushed on 2026-10-21 (origin/main `52996c44`) and 0.55.1 runs in
-production. Next: the playtest of the new classes and a short balance fix
-round. The
+production. Round 56 (0.56.0) takes the fixes from the playtest of
+2026-10-21 and freezes the town buildings into editable building
+templates; it is not pushed and waits for the user's GUI test, and the
+hood art pick follows as its finish step. Next: the rounds decided for
+later in the
+[Round 56 plan §8](planning/round56-plan.md#8-decided-for-later-rounds)
+(the crafting window, the town fixes, the mining camps, the quest rework),
+in an order the user sets. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 56 "Playtest fixes, clear enchants, the hood and the quest
+  survey" complete** (2026-10-22, version 0.56.0, **compatible**, no
+  migration step;
+  [plan, decisions, numbers and GUI checklist](planning/round56-plan.md#completion-2026-10-22)).
+  **Not pushed:** 0.56.0 waits for the user's GUI test. The hood ships
+  invisible: the models carry it, every shipped head layer leaves it
+  transparent until the user picks its art (HOODART drop-01 waits for the
+  pick; the bake may come as 0.56.1). From main `74053146` (the plan):
+  SMALL (`4547c186`), QUESTMAP (`a42f8df6`), the coordinator's HOODPAGE
+  (`ea1ecd43`) and TPLFORMAT (`1ac0688b`, with seven answer commits), MOUNT
+  (`23355acb`), VIEWER (`e6342420`, `b5031847`, `e3e2f8b0`), AFFIX
+  (`cc51536d`, wording `9ed29396`), FLOAT (`3e7422b3`), MOBAI (`cfbea1bb`,
+  fliers `a356f392`), HOOD (`b32f236a`), FREEZE-TOWNS (`7254f854`), EDITOR
+  (`0a2f9d2d`, build gate `0d0ed329`), FREEZE-CAPITALS (`8516145b`) and
+  TREES (`0c64e084`) merged, then this documentation lane D. Every code
+  lane independently reviewed by Opus (SMALL, QUESTMAP, MOUNT, AFFIX,
+  FREEZE-TOWNS, FREEZE-CAPITALS MERGE; FLOAT, MOBAI, HOOD, EDITOR, TREES
+  MERGE with findings fixed and delta-reviewed or checked; VIEWER MERGE
+  AFTER FIXES); GPT-6 Astra wrote the quest idea report (QUESTIDEAS,
+  private, in German) and paints the hood (HOODART). Main has 250 portable
+  fixtures (10 new). The declaration is
+  `{"schema": 3, "version": "0.56.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.55.1 moves on without a step (its layout cache rebuilds
+  once).
+  - **Mobs (MOBAI):** the aggro radius shrinks by 20 % per level from a
+    gap of 6 (none from 10; at least 1 m), tested before the sight ray (12
+    → 6 rays on the probe); the hit alert centred on the hit mob, without
+    cascade; ranged mobs close in beyond their shot range (`view_range +
+    4`), fliers also without sight, and their arrows lock with the sight
+    geometry; the Bandit Archer's shoot clip
+    ([combat_stats.md §3](design/combat_stats.md)).
+  - **Mounts (MOUNT):** land mounts at the player's gravity (19.62), a
+    jump of 9.3 (2.2 nodes), +5 nodes of fall tolerance, a fall never
+    dismounts ([mounts.md](design/mounts.md)).
+  - **Trade, food, items (SMALL, FLOAT):** the sell list over the inactive
+    hotbar; Quartermasters serve the whole faction (the 10 % stays per
+    race); every class eats mana food; items in water rise at 2 nodes/s and
+    hold at the surface.
+  - **Enchants (AFFIX):** `Prefix:`/`Suffix:` in tooltips, prefix first;
+    the station's "Replaces prefix: …" line, orange with the warning as its
+    tooltip for a higher tier it replaces
+    ([items_crafting.md §6b](design/items_crafting.md#6b-enchantments)).
+  - **The hood (HOODPAGE, HOOD):** polygon parts in the armor pipeline
+    ([armor-format.md §1a](technical/armor-format.md#1a-polygon-parts-round-56)),
+    the hood on the head slot in both models and the `.glb` (player model
+    1,240 → 1,272 vertices), the chin strip open on cloth T1–T6 and leather
+    T1–T5.
+  - **Building templates (TPLFORMAT, FREEZE-TOWNS, FREEZE-CAPITALS, TREES,
+    VIEWER, EDITOR):** 260 templates (50 start-town, 210 capital; 13
+    planted, whose trees grow at load), 6 layouts and 6 rosters, frozen
+    byte-identically; the building generators are gone; the gate
+    `tools/building_templates/check.py`, `check_upgrade.py` wanting a map
+    reset when what the towns build changes, the gallery and the local
+    editor ([format](technical/building-template-format.md)).
+  - **Quests (QUESTMAP):** `tools/r56_questmap/` writes an overview page of
+    all 485 quests and their chains with the rework's flags.
+  - **Gates:** each code lane's full fixture run (241–250/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.55.1),
+    `check_fresh_server.py`, the template topic checks and the full
+    fixtures (the lane report). The round end on main (full fixtures, the
+    seed fleet `full` owed by the freeze, one boot, the sync) is the
+    coordinator's. Its GUI test (desktop and web build) is open
+    ([carry-overs](../BACKLOG.md#round-56-carry-overs)).
 - **0.55.1 "The profession debug command" complete** (2026-10-21,
   **compatible**, no migration step; the user's request; branch
   `prof-admin`, one coordinator-built lane, independently reviewed by Opus,

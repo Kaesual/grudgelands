@@ -12,7 +12,18 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.55.1, the profession debug command `/prof`
+**Current state:** 0.56.0, Round 56 "Playtest fixes, clear enchants,
+the hood and the quest survey" (**compatible**, no step;
+[completion](docs/planning/round56-plan.md#completion-2026-10-22)): the
+fixes from the playtest of 2026-10-21 (level-scaled aggro, the hit alert on
+the hit mob, ranged mobs closing in, land mounts falling and jumping like
+players, selling from the inactive hotbar, faction-wide Quartermasters,
+mana food for every class, floating items), `Prefix:`/`Suffix:` in enchant
+tooltips and "Replaces prefix: …" at the station, the hood as an armor
+polygon part (transparent until the user's art pick) and the open chin
+strip, the town buildings frozen byte-identically into building templates
+with a local editor, the quest overview page; **not pushed**, waiting for
+the user's GUI test. Before it 0.55.1, the profession debug command `/prof`
 (**compatible**, no step;
 [professions.md](docs/design/professions.md#16-the-prof-debug-command)), on
 0.55.0, Round 55 "The offhand look" (**compatible**, no step;
@@ -52,9 +63,10 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the user's playtest of the new
-classes and a short balance fix round
-([delivery plan](docs/planning/class-redesign/delivery-plan.md)).
+are not recorded as passed. Next: the user's GUI test of 0.56.0, the
+hood art pick (a finish step, possibly 0.56.1) and the rounds decided for
+later ([plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds):
+the crafting window, the town fixes, the mining camps, the quest rework).
 Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
@@ -394,18 +406,28 @@ The topic rules below name the one path to use; the
   `tools/r31_b/gen_enchant_masks.py --check`, the armor's and the offhand's
   from their `bake.py` (below). PvP POIs are rules in
   `grug_mapgen/wp40/r31_pvp_catalog.lua`.
-- **Armor is boxes in the model with one atlas** (Round 54,
-  [armor format](docs/technical/armor-format.md)): the contract
-  (`tools/r54_armor/catalog.py`, `data/catalog.json`, `data/atlas.json`)
-  changes only through a round's coordinator; the worn layers, the armor
+- **Armor is boxes and polygon parts in the model with one atlas** (Round
+  54; polygon parts since Round 56, [armor
+  format](docs/technical/armor-format.md) §1a: convex faces, low poly, such
+  as the hood of the head slot, whose schema file is
+  `tools/r56_hood/hood.json`): the contract
+  (`tools/r54_armor/catalog.py`, `data/catalog.json`, `data/atlas.json`,
+  the polygon parts' schema files) changes only through a round's
+  coordinator; the worn layers, the armor
   icons and all their masks are baked by `tools/r54_armor/bake.py` from the
   picked art in `tools/r54_art/`, never edited by hand. A change to the art,
   the catalog or the models runs the topic checks: `tools/r54_armor/`
-  `export.py --check`, `atlas.py --check`, `zfight.py`, `check.py --art
+  `export.py --check` (it also validates every polygon part's schema file,
+  the hood's `hood.json`), `atlas.py --check`, `zfight.py`, `check.py --art
   tools/r54_art/art` and `bake.py --icons-out mods/ITEMS/grug_gear/textures
   --check`; `tools/r54_art/assemble.py --check` and `ghosts.py --check`;
-  `tools/r33_c3/gen_cloak_model.py --check` (the player and NPC models) and
-  `tools/r40_an/make_poses.py --check`.
+  `tools/r33_c3/gen_cloak_model.py --check` (the player and NPC models),
+  `tools/r40_an/make_poses.py --check` and the hood's fixture
+  `tools/r56_hood` (the hood in both models and the tiers that name it).
+  The chin strip (the helm front's bottom row) is open on every cloth head
+  piece and leather T1–T5 (`check.py` refuses it elsewhere); the hood stays
+  transparent on every shipped head layer until the user picks its art (no
+  shipped tier names it).
 - **The offhand look is parts of the model with one atlas** (Round 55,
   [offhand format](docs/technical/offhand-format.md)): the shield and the
   open spellbook on the bones `Offhand_Shield` and `Offhand_Book`, the
@@ -515,10 +537,39 @@ The topic rules below name the one path to use; the
   whole or failing the build; it never changes a composition's bounds, sockets
   or protection box, never blocks a window or a way; `tools/r36_w` holds every
   composition to `baseline.tsv` ([settlements.md](docs/design/settlements.md)
-  "Decor pass").
+  "Decor pass");
+  the start towns' and capitals' house touches are template content since
+  0.56.0, Hearthpine's excepted).
 
 ### World generation
 
+- **Town buildings are building templates** (Round 56, since 0.56.0): every
+  building of the six start towns and the six capitals is a text file under
+  `mods/MAPGEN/grug_mapgen/building_templates/` (`templates/*.tpl`, one
+  `layouts/<town>.layout` per start town, one `layouts/<capital>.roster`
+  per capital), read at load by `wp13/templates.lua`. The templates are the
+  source of truth; the building generators are gone, and materials still
+  come from the race palettes (`wp13/palette.lua`). Streets, plazas, walls,
+  the city edge, terrain fitting, podiums, capital plot placement and the
+  trees (planted at load at a template's stems) stay algorithmic. Format
+  and validation rules:
+  [building-template-format.md](docs/technical/building-template-format.md).
+  Edit them with the local editor (`python3
+  tools/building_templates/editor/serve.py`, localhost only, saving only
+  through the validator). **A template, layout, roster or palette change
+  changes what new worlds build and needs a declared map reset**;
+  `tools/check_upgrade.py` enforces it (it compares what the towns build
+  with the pushed commit). Topic checks when templates, layouts, rosters,
+  palettes or the loader change: `python3
+  tools/building_templates/check.py` (the hard gate, ruling 33: structure
+  always, the editor palette and reachability for edited cells; it also
+  runs the game's loader and builds every town and capital) and `check.py
+  --self-test`; `python3 tools/building_templates/export.py --check` (the
+  templates are still the freeze's export; until the first deliberate
+  template edit, when it fails by design and retires);
+  `tools/building_templates/viewer/test_templates.py` (the viewer's
+  reader) and `tools/r56_editor/test_editor.py` (the editor; LuaJIT
+  inside, about 1.5 minutes, so through the Lua queue).
 - The WP40 R7 pipeline in `grug_mapgen` is the only mapgen owner (seams and the
   boundaries tests must cross:
   [module guide](docs/technical/module-guide.md#mapgen-and-biomes)). Test mapgen
