@@ -18,6 +18,11 @@ through the shared Lua queue): the cloth and leather head pieces at T1, T3 and T
 strip, placeholder hood over it) and the metal T3 helm, from the front, the side and the back, and nodding 50°
 down and 60° up. Test art only, never in `mods/`.
 
+`finish_scene.lua` (Round 56 HOODFINISH, the picked hood in 0.56.1) is a scene for the same capture
+(`SCENE=tools/r56_hood/finish_scene.lua`, no `MODELS`): the shipped art as the game composes it, a human in the
+whole cloth or leather set at T1, T3 and T6 from the front, the side and the back and nodding, both T3 head pieces
+enchanted, and a real bandit in cloth.
+
 ## Painting in views
 
 The sheet keeps each of the eight faces as its own rectangle in its own orientation, so neighbours on the head lie

@@ -150,8 +150,10 @@ armor line, slot and material tier that its equipped item names.
   Round 56 lifts "boxes only" (low poly is the goal): the catalog's first
   **polygon part** is the cloth and leather **hood** on the head slot,
   wedges on top of and behind the helm (shaped by the user on a preview
-  page, [armor-format.md](../technical/armor-format.md) §1a). Metal never
-  shows it; until the user picks its art, every tier leaves it transparent.
+  page, [armor-format.md](../technical/armor-format.md) §1a). Every cloth
+  and leather tier wears it (the user's art pick, 0.56.1: the helm's
+  material colour, a lining at the edge and fittings finer with each
+  tier); metal never shows it.
 - **Armor is opaque** (the user, 2026-10-20: transparent texels showed
   holes, one looked into the hollow box): every face of a worn box is
   fully painted. The only opening is the helm's **face window**, so the

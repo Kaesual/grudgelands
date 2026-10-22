@@ -152,12 +152,12 @@ lines do not:
   (`--check` fails on any schema problem, so a new export from the hood page cannot break the model).
   `atlas.py` places part sheets whole below the boxes (every box keeps its place), `zfight.py` checks their
   faces, `bake.py` and both renderers draw them, `templates.py` writes `templates/parts/<part>.png`.
-- **The hood finish step** (after the user's art pick): the picked hood sheets (and repainted helms) enter
-  `tools/r54_art/art` through `tools/r54_art/assemble.py` like any picked art (a drop's painter under
-  `tools/r54_art/src/` and the picks; a hood sheet is a file like a box sheet, and the picked `tiers.json` names
-  `hood` on the cloth and leather tiers); then `check.py --art ../r54_art/art`, `bake.py --icons-out
-  ../../mods/ITEMS/grug_gear/textures` and `../r54_art/ghosts.py --check`, as for any art change. The models
-  already carry the hood, so only the baked head layers change.
+- **The hood art** (0.56.1, the user's pick): the picked hood sheets (and two repaired helms) entered
+  `tools/r54_art/art` through `tools/r54_art/assemble.py` like any picked art (the drop's painter under
+  `tools/r54_art/src/hood-drop-02/` and the picks; a hood sheet is a file like a box sheet, and the picked
+  `tiers.json` names `hood` on the cloth and leather tiers); then `check.py --art ../r54_art/art`, `bake.py
+  --icons-out ../../mods/ITEMS/grug_gear/textures` and `../r54_art/ghosts.py --check`, as for any art change. The
+  models already carried the hood, so only the baked head layers changed.
 - Two proposals for a pick page: two art directories, rendered separately.
 
 ## Bake: art to game textures
