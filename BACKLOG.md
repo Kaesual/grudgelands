@@ -2974,7 +2974,6 @@ the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the GUI test are in the
 [GUI checklist](docs/planning/round56-plan.md#gui-checklist-round-56).
 
-- **The hood finish step** (HOODART): drop-01 was not taken (the user, 2026-10-22: the cloth P2 T4–T6 direction fits, but the ornaments are too loud and the undyed zone A stands apart from the coloured helms); a small tool lane HOODPAINT lets the painter paint the hood in side, back and top views and projects them onto the faces, then Astra paints drop-02 (the helm's material colour, zone A as lining or hem, subtle ornament); the pick and its bake come as 0.56.1.
 - **Ranged mobs** (MOBAI, its review): every 10 s a `dogshoot` archer still
   charges into melee for 3 s (upstream `dogswitch`); ranged kings close in
   by walking straight, without navigation or pathfinding; pure `shoot` mobs

@@ -63,9 +63,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the user's GUI test of 0.56.0, the
-hood art pick (a finish step, possibly 0.56.1) and the rounds decided for
-later ([plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds):
+are not recorded as passed. Next: the user's GUI test of 0.56.0 and
+0.56.1 (the picked hood art, the round's finish step) and the rounds
+decided for later ([plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds):
 the crafting window, the town fixes, the mining camps, the quest rework).
 Details: [STATUS](docs/STATUS.md).
 
@@ -425,9 +425,8 @@ The topic rules below name the one path to use; the
   `tools/r40_an/make_poses.py --check` and the hood's fixture
   `tools/r56_hood` (the hood in both models and the tiers that name it).
   The chin strip (the helm front's bottom row) is open on every cloth head
-  piece and leather T1–T5 (`check.py` refuses it elsewhere); the hood stays
-  transparent on every shipped head layer until the user picks its art (no
-  shipped tier names it).
+  piece and leather T1–T5 (`check.py` refuses it elsewhere); every cloth and
+  leather tier wears the picked hood (0.56.1), metal never does.
 - **The offhand look is parts of the model with one atlas** (Round 55,
   [offhand format](docs/technical/offhand-format.md)): the shield and the
   open spellbook on the bones `Offhand_Shield` and `Offhand_Book`, the

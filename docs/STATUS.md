@@ -14,8 +14,8 @@ adds the admin debug command `/prof`. Both passed the user's GUI test, were
 pushed on 2026-10-21 (origin/main `52996c44`) and 0.55.1 runs in
 production. Round 56 (0.56.0) takes the fixes from the playtest of
 2026-10-21 and freezes the town buildings into editable building
-templates; it is not pushed and waits for the user's GUI test, and the
-hood art pick follows as its finish step. Next: the rounds decided for
+templates; 0.56.1 adds the picked hood art (its finish step). Neither is
+pushed; both wait for the user's GUI test. Next: the rounds decided for
 later in the
 [Round 56 plan §8](planning/round56-plan.md#8-decided-for-later-rounds)
 (the crafting window, the town fixes, the mining camps, the quest rework),
@@ -24,14 +24,23 @@ in an order the user sets. The
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **0.56.1 "The hood"** (2026-10-22, **compatible**, no migration step;
+  [plan addendum](planning/round56-plan.md#addendum-0561-the-hood-art-2026-10-22)):
+  the user picked HOODART drop-02 proposal P2 "Turned edge" (GPT-6 Astra,
+  CC0) for cloth and leather T1–T6. Lane HOODFINISH (Opus) brought the
+  drop's painter into `tools/r54_art` (whole tiers from `hood-drop-02` p2,
+  with two one-pixel leather helm repairs) and baked it: only the 12 cloth
+  and leather head layers and their masks change, `check.py` 0 violations
+  and 0 warnings. **Not pushed:** on top of 0.56.0, both wait for the
+  user's GUI test.
 - **Round 56 "Playtest fixes, clear enchants, the hood and the quest
   survey" complete** (2026-10-22, version 0.56.0, **compatible**, no
   migration step;
   [plan, decisions, numbers and GUI checklist](planning/round56-plan.md#completion-2026-10-22)).
-  **Not pushed:** 0.56.0 waits for the user's GUI test. The hood ships
-  invisible: the models carry it, every shipped head layer leaves it
-  transparent until the user picks its art (drop-01 not taken; a painting
-  tool, HOODPAINT, then Astra's drop-02; the pick and bake as 0.56.1). Seed
+  **Not pushed:** 0.56.0 waits for the user's GUI test. The hood shipped
+  invisible in 0.56.0 (the models carry it, every head layer left it
+  transparent; drop-01 not taken; a painting tool, HOODPAINT, then Astra's
+  drop-02); its art came with 0.56.1 (above). Seed
   fleet `full` on main `2ef55861`: 304 of 304 seeds build. From main `74053146` (the plan):
   SMALL (`4547c186`), QUESTMAP (`a42f8df6`), the coordinator's HOODPAGE
   (`ea1ecd43`) and TPLFORMAT (`1ac0688b`, with seven answer commits), MOUNT

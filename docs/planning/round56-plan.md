@@ -1,6 +1,6 @@
 # Round 56 — playtest fixes, clear enchants, the hood and the quest survey (0.56.0)
 
-Coordinator: Claude, 2026-10-22. Status: **complete** ([completion](#completion-2026-10-22)) except the hood art finish step; the user's go 2026-10-22.
+Coordinator: Claude, 2026-10-22. Status: **complete** ([completion](#completion-2026-10-22)), the hood art finish step as 0.56.1 ([addendum](#addendum-0561-the-hood-art-2026-10-22)); the user's go 2026-10-22.
 
 The source is the user's playtest with many players on 2026-10-21 and the discussion of its feedback on 2026-10-22.
 This round takes the fixes that need no map reset, the enchant display, the cloth/leather hood, two quest lanes
@@ -721,3 +721,32 @@ one headless boot (PASS). Each code lane ran the full `run_fixtures.sh` once (SM
 241/0, MOBAI's flier round 246/0, HOOD 243/0, FREEZE-TOWNS 245/0, EDITOR 248/0, FREEZE-CAPITALS 249 with two grove
 counts updated, TREES 250/0); the coordinator's run on main `22289063` 246/0. The round end on main (full fixtures,
 the seed fleet `full`, one boot, the sync) is the coordinator's.
+
+### Addendum: 0.56.1, the hood art (2026-10-22)
+
+The finish step (§7), on main `68ed15f5` (0.56.0 plus HOODPAINT), as lane HOODFINISH (Opus), branch
+`r56-hoodfinish`. **0.56.1 is compatible:** only textures and tools change; no saved state, no item ids; not pushed,
+on top of 0.56.0.
+
+- **HOODPAINT** (`bb77258f`, merged `68ed15f5`): `tools/r56_hood/views.py` paints the hood in side, back and top
+  views and projects them onto its eight faces (templates, projection, preview, self-test). Review MERGE.
+- **HOODART drop-02** (GPT-6 Astra, CC0, outside the repo): two proposals painted in views in the helm's material
+  colour, zone A as a one-pixel lining, zone B as stitching or fittings; both 0 violations, 0 warnings; one zone B
+  pixel added on the leather T1 and T3 helms (sheet 14, 11), so their heads show 3 zone B pixels with the chin strip
+  open.
+- **The pick** (the user, 2026-10-22): proposal **P2 "Turned edge"** for cloth T1–T6 and leather T1–T6.
+- **Into the art** (`tools/r54_art`): the drop's painter `build.py` as delivered under `src/hood-drop-02/` with its
+  inputs (`source.zip`, the snapshot of `art/` it painted on, and its hashes) and the picked proposal's 36 painted
+  views; `assemble.py` runs it with `--game` set to the checkout and compares the kept views with its output.
+  `picks.json` takes cloth and leather T1–T6 whole from `hood-drop-02` p2: proven byte-identical to the shipped art
+  but for the 12 hood sheets, the two helm repairs and `hood` in the twelve `on` lists (the drop's snapshot equals
+  `art/` at `68ed15f5` file for file). A later repaint of a cloth or leather tier needs a new hood drop or an overlay.
+- **The bake:** 24 files change, the 12 cloth and leather head layers and their masks (9,095 → 11,343 B); 4,848
+  pixels, all inside the hood's atlas rectangle (0, 42, 64 × 12) but for the two repairs (atlas 14, 11 on leather
+  T1 and T3 and their mask frames). Every other baked file, the icons and the models are unchanged. `check.py` on the
+  shipped art: 0 violations, **0 warnings** (the two chin-strip zone warnings gone). Measured.
+- **Run time:** `assemble.py --check` 0.5 → 2.1 s (the hood painter projects 24 hoods). Measured.
+- **Shots:** cloth and leather T1, T3 and T6 from the front, the side and the back and nodding; both T3 head pieces
+  enchanted; a bandit in cloth (`tools/r56_hood/finish_scene.lua`, private shots).
+- **GUI checklist:** item 14 above; item 10's "no hood visible anywhere" is replaced by the hood on every cloth and
+  leather head piece, metal without it.

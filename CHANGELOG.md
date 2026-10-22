@@ -12,6 +12,16 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.56.1 — the hood (2026-10-22)
+
+**Compatible:** no map reset and no migration step.
+
+- **Cloth and leather head pieces have a hood:** it sits over the top and
+  the back of the head in the piece's own colour, with a lining and small
+  stitching or fasteners at its edge that grow finer with each tier, and an
+  enchanted head piece colours that edge too. Bandits wear it as well.
+  Metal helmets stay as they are.
+
 ## 0.56.0 — fixes from the big playtest (2026-10-22)
 
 Fixes and wishes from the playtest with many players on 2026-10-21.
