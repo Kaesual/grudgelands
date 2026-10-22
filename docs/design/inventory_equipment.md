@@ -256,8 +256,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     tooltip), the profession's enchants valid for the item up to the
     profession tier, best tier first, each with the value it gives on this
     item ("T5 prefix: +11 Strength"), the chosen one's materials with
-    have/need, the overwrite warning ("Replaces T7 Strength with T6
-    Strength."), the XP hint and **Enchant now** (5 s), which turns into
+    have/need, the enchant it replaces ("Replaces prefix: +21 Strength
+    (T7)", Round 56; orange with the overwrite warning "Replaces T7
+    Strength with T6 Strength." as its tooltip when that is a higher
+    tier), the XP hint (at the station) and **Enchant now** (5 s), which turns into
     **Cancel**. The **upgrade box**: the slot, the item level and the cap
     ("Cap 30 (Weaponsmith tier 3)"), **+N levels** with **Max** (to the cap,
     as far as the materials pay), the resulting item level, the materials
@@ -577,6 +579,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   No item drop on death, so the quiver keeps its arrows like the equipped
   items do.
 - No item drop or XP loss on death (Round 18).
+- An item on the ground (dropped, thrown or mob loot) that is inside water rises
+  to the surface and rests there without drifting; out of the water it falls
+  as usual, and lava is unchanged (Round 56).
 
 ## 4. Crafting model (Round 45)
 

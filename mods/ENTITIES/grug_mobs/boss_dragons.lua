@@ -561,7 +561,9 @@ local function shoot_breath(self, action, opts)
 			local ent = object and object:get_luaentity()
 			if ent then
 				if degrees == 0 then
-					grug_mobs.stamp_arrow_damage(ent, self)
+					-- Locked with the dragon's own sight check (the ground
+					-- mode's line_of_sight: eye height to the target + 1).
+					grug_mobs.stamp_arrow_damage(ent, self, opts.eye_height, 1)
 				else
 					grug_mobs.stamp_straight_arrow(ent, self)
 				end

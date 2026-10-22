@@ -144,7 +144,7 @@ formspecs that drop the prepend. The client plays it at the file's own level
   their clip length while moving. Gallop and wing beats stop at once (a
   0.1 s fade) when the mount stands still and on every dismount, and the
   gallop pauses while a ground mount has been off the ground for more than
-  0.5 s (a jump, a fall deeper than about one node) and starts again on
+  0.5 s (a jump, a fall deeper than about two nodes) and starts again on
   landing (Round 45 playtest). The mount's own step reads this; there is
   no extra timer.
 - **Travel** (waystone, home), **fishing** cast and catch (the splash), and

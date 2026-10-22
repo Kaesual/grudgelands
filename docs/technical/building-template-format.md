@@ -25,8 +25,8 @@ podiums stay algorithmic (ruling 20). The name keeps these files apart from wp40
   (`<town>_<plot id>`); a template several placements share keeps that name.
 - All files are UTF-8 text with `\n` line ends. Lines starting with `#` (after optional spaces) are comments,
   except inside a grid row. Blank lines are ignored outside grids.
-- Every file starts with a magic line: `grudgelands-building-template 1` or `grudgelands-town-layout 1`. A reader
-  refuses another magic or version.
+- Every file starts with a magic line: `grudgelands-building-template 1`, `grudgelands-town-layout 1` or
+  `grudgelands-town-roster 1` (§4). A reader refuses another magic or version.
 - The game reads the files once at load (the loader in grug_mapgen). A malformed file stops the server at load with
   the file name, the line number and the reason, never mid-generation. Readers keep the file order everywhere
   (no `pairs` order).
@@ -254,7 +254,8 @@ place west_home template=hearthpine_west_home x=-26 y=0 z=2 turns=3
 
 A town whose building placement stays algorithmic (the capital plot planner, ruling 20) may have no layout file:
 its code names the template and the palettes per placement. Its "used N× in …" list and the validator's palette
-checks then come from a roster the freeze writes next to the layouts (`layouts/<town>.roster`: the same `palette`
+checks then come from a roster the freeze writes next to the layouts (`layouts/<town>.roster`, magic line
+`grudgelands-town-roster 1`, then a `town` and a `race` line, the same `palette`
 lines as a layout, then one `use <template> count=<n> [main=<palette name>] [<channel>=<palette name> …]` line per
 template and palette combination), which the validator checks against a build.
 

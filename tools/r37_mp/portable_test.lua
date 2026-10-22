@@ -719,6 +719,8 @@ local arrow_defs = {}
 grug_mobs = {scale_attack_damage = function(x) return x end}
 mobs = {has_priv = function(name) return name == "peaceful" end,
 	is_invisible = function() return false end,
+	-- Round 56 MOBAI: stamp_arrow_damage locks with the shot range (mobs/api.lua).
+	grug_shot_range = function(m) return m._grug_shot_range or m.view_range + 4 end,
 	register_arrow = function(_, name, def)
 	arrow_defs[name] = def
 	core.registered_entities[name] = {initial_properties = {}}

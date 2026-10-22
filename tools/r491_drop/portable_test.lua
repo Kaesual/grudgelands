@@ -59,6 +59,7 @@ do
 	local builtin_moving -- what the fake builtin step sets moving_state to
 	local builtin_removes = false
 	local builtin = {
+		physical_state = true, -- as the engine's builtin item
 		set_item = function() end,
 		on_step = function(self, _, moveresult)
 			if builtin_removes then self.object.removed = true end
@@ -74,9 +75,14 @@ do
 		features = {},
 		register_entity = function(_, def) registered = def end,
 		log = function() end,
+		-- Round 56 FLOAT looks at the node of a flying item: air everywhere
+		-- here, so these cases run through it unchanged.
+		settings = {get = function() return nil end},
+		registered_nodes = {air = {liquidtype = "none", groups = {}}},
+		get_node_or_nil = function() return {name = "air", param2 = 0} end,
 	}
+	core = minetest
 	dofile(ROOT .. "/mods/BASE/default/item_entity.lua")
-	minetest = nil
 	check(registered ~= nil, "A item_entity.lua registers the item")
 
 	local function new_item()
@@ -171,6 +177,7 @@ do
 		check(attached == 0, "A5 an attached item sends nothing")
 		check(ok and #r.object.sends == 0, "A5 a removed item sends nothing and raises nothing")
 	end
+	minetest, core = nil, nil
 end
 
 ------------------------------------------------------------------------------

@@ -1576,7 +1576,7 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	-- Equipped armor (items_crafting.md §3.1): PHYSICAL mitigation only.
 	-- There is no damage-type system in this game, so `reason.type ==
 	-- "punch"` is the whole definition of physical: fall damage has its own
-	-- race perk right below, and drowning/lava/starvation must never be
+	-- pool scaling right below, and drowning/lava/starvation must never be
 	-- reduced by a breastplate. Runs after the dodge roll (a dodge already
 	-- cancelled the hit) and before the absorb shield, so the shield soaks
 	-- what armor let through -- shield points are worth full damage, not

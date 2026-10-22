@@ -1873,6 +1873,12 @@ function mob_class:general_attack()
 	-- `sp = s` and raised `sp.y` inside the loop, so the eye (and every later
 	-- distance) climbed one node per candidate.
 	local sp = {x = s.x, y = s.y + 1, z = s.z}
+	-- GRUG PATCH (Round 56 MOBAI, round56-plan.md ruling 1): a monster notices
+	-- a player far above its level only closer (grug_mobs.player_aggro_radius,
+	-- nil: the full view range). Tested before the sight ray, so a player out
+	-- of that radius costs a comparison and no ray. Mob targets, other mob
+	-- types and the hit and alert paths are untouched.
+	local aggro_radius = grug_mobs and grug_mobs.player_aggro_radius
 
 	for _,player in pairs(objs) do
 
@@ -1884,7 +1890,10 @@ function mob_class:general_attack()
 		p.y = p.y + 1
 
 		-- choose closest entity to attack
-		if dist ~= 0 and dist < min_dist and self:line_of_sight(sp, p) then
+		if dist ~= 0 and dist < min_dist
+		and not (aggro_radius and is_player(player)
+			and dist > (aggro_radius(self, player) or dist))
+		and self:line_of_sight(sp, p) then
 			min_dist = dist
 			min_player = player
 		end
@@ -2090,6 +2099,57 @@ function mob_class:dogswitch(dtime)
 	return self.dogshoot_switch
 end
 
+-- GRUG PATCH (Round 56 MOBAI, round56-plan.md ruling 3 and D1): a ranged
+-- mob's shot range is its own value, a little larger than its view range, so
+-- a player can stand inside it without drawing aggro. A definition may set
+-- `_grug_shot_range`; otherwise view_range + GRUG_SHOT_RANGE_EXTRA, read at
+-- call time (an underground spawn raises its view_range at runtime). The
+-- arrow's target lock uses the same value (grug_mobs.stamp_arrow_damage).
+local GRUG_SHOT_RANGE_EXTRA = 4
+-- A closing mob stops this far inside its shot range, so it does not hover
+-- at the edge and walk again at every small step of its target.
+local GRUG_CLOSE_IN = 3
+
+local function grug_shot_range(self)
+	return self._grug_shot_range or ((self.view_range or 5) + GRUG_SHOT_RANGE_EXTRA)
+end
+
+mobs.grug_shot_range = grug_shot_range
+
+-- Whether a ranged mob in its ranged phase (`shoot`, `dogshoot` outside its
+-- melee phase, the ranged kings' ds_var 0 included) walks closer this step:
+-- it starts beyond its shot range and walks until it is GRUG_CLOSE_IN inside,
+-- then stands (a shot's or a cast's clip keeps playing). Inside its shot
+-- range it also stops as soon as its navigation is in trouble (stuck, or a
+-- failed search: grug_nav's `want` and `fails` in `temp.grug_nav`), so a
+-- target across a ravine or a fence is shot at instead of given up after the
+-- navigation's failed searches. The flag lives in the runtime-only temp
+-- table; the melee phase and stop_attack clear it.
+local function grug_ranged_closing(self, ds_var, dist)
+
+	if self.attack_type ~= "shoot"
+	and not (self.attack_type == "dogshoot" and ds_var ~= 2) then
+		if ds_var == 2 then self.temp.grug_closing = nil end
+		return false
+	end
+
+	local temp = self.temp
+	local range = grug_shot_range(self)
+	local nst = temp.grug_nav
+
+	if dist > range then
+		temp.grug_closing = true
+	elseif temp.grug_closing and (dist <= range - GRUG_CLOSE_IN
+	or (nst and (nst.want or (nst.fails or 0) > 0))) then
+		temp.grug_closing = nil
+		self:set_velocity(0)
+		local anim = self.animation_current
+		if anim == "walk" or anim == "run" then self:set_animation("stand") end
+	end
+
+	return temp.grug_closing == true
+end
+
 -- stop attack & reset vars
 
 function mob_class:stop_attack()
@@ -2103,6 +2163,7 @@ function mob_class:stop_attack()
 	if self.temp then
 		grug_nav.forget(self.temp)
 		grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
+		self.temp.grug_closing = nil -- GRUG PATCH (Round 56 MOBAI): no stale approach
 	end
 	self:set_velocity(0)
 	self.state = "stand"
@@ -2333,6 +2394,13 @@ function mob_class:do_states(dtime)
 			ds_var = self:dogswitch(dtime)
 		end
 
+		-- GRUG PATCH (Round 56 MOBAI, ruling 3): a ranged mob whose target is
+		-- beyond its shot range walks closer (the dogfight branch below, the
+		-- way a ground ranged mob without sight walks) instead of standing and
+		-- shooting arrows its target lock refuses. Fliers too: they shot from
+		-- any distance before, the same fault.
+		local grug_closing = grug_ranged_closing(self, ds_var, dist)
+
 		if self.attack_type == "explode" then
 
 			self:yaw_to_pos(p)
@@ -2424,7 +2492,8 @@ function mob_class:do_states(dtime)
 		-- one (ds_var 0: the ranged kings) upstream's branches.
 		elseif self.attack_type == "dogfight" or (self.attack_type == "dogshoot"
 		and (ds_var == 2 or dist <= self.reach
-			or (ds_var == 1 and not in_sight and not self.fly))) then
+			or (ds_var == 1 and not in_sight and not self.fly)))
+		or grug_closing then
 			local movement_pos = target_pos
 
 			-- GRUG PATCH: the attack cadence runs during the CHASE
@@ -3449,8 +3518,14 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 
 		-- alert others to the attack
-		local objs = core.get_objects_inside_radius(hitter:get_pos(), self.view_range)
+		-- GRUG PATCH (Round 56 MOBAI, round56-plan.md ruling 2): centred on the
+		-- hit mob, not on the hitter (a ranged hit called the kin around the
+		-- shooter). Only a hit mob calls: an alerted mob gets do_attack, never
+		-- this path, and grug_mobs.mark_alerted keeps it from calling its own
+		-- camp, so the call does not spread further.
+		local objs = core.get_objects_inside_radius(self.object:get_pos(), self.view_range)
 		local ent
+		local mark_alerted = grug_mobs and grug_mobs.mark_alerted
 
 		for n = 1, #objs do
 
@@ -3468,6 +3543,7 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 				or (grug_mobs and grug_mobs.alert_kin
 				and grug_mobs.alert_kin(self, ent))) then
 					ent:do_attack(hitter)
+					if mark_alerted then mark_alerted(ent) end
 				end
 
 				-- have owned mobs attack player threat
@@ -4065,6 +4141,9 @@ function mobs:register_mob(name, def)
 		-- GRUG PATCH: explicit authored-encounter exemption from ordinary far-mob
 		-- culling. This plain field also survives current-version reactivation.
 		_grug_no_far_despawn = def._grug_no_far_despawn == true,
+		-- GRUG PATCH (Round 56 MOBAI): a definition's own shot range (nil:
+		-- view_range + GRUG_SHOT_RANGE_EXTRA, grug_shot_range).
+		_grug_shot_range = def._grug_shot_range,
 		stay_near = def.stay_near,
 		randomly_turn = def.randomly_turn ~= false,
 		ignore_invisibility = def.ignore_invisibility,
