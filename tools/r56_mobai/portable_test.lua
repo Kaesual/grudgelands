@@ -18,7 +18,8 @@
 --   W  the approach: beyond the shot range a ranged mob walks (the dogfight
 --      branch), stops 3 m inside and shoots there, no hovering; a blocked
 --      mob (stuck, a failed search) stops inside its shot range; the melee
---      phase and stop_attack clear it; the ranged kings, fliers, melee mobs;
+--      phase and stop_attack clear it; the ranged kings, melee mobs; fliers
+--      (without sight they fly closer instead of shooting, also inside);
 --   G  the review's ravine on the real navigation: blocked at 19 m it shoots
 --      instead of giving its target up;
 --   L  the projectile lock: the shot range and the sight check's geometry,
@@ -483,8 +484,17 @@ do
 	-- A flier: the same fault, the same rule; without sight it still shoots.
 	local wisp = archer({fly = true})
 	check(step(wisp, 1, 24, true) == "walk", "W14 a flier beyond its shot range flies closer")
+	-- Inside its shot range a flier without sight flies at its target (no
+	-- shot, so no arrow the lock deletes) and shoots once it sees it (the
+	-- user, 2026-10-22).
 	local wisp2 = archer({fly = true})
-	check(step(wisp2, 1, 10, false) == "shoot", "W15 a flier inside it keeps upstream's switch")
+	check(step(wisp2, 1, 10, false) == "walk", "W15 a flier inside it without sight flies closer")
+	check(step(wisp2, 1, 9, true) == "shoot", "W15b ... and shoots once it sees its target")
+	check(step(wisp2, 1, 19, true) == "shoot" and step(wisp2, 1, 19, false) == "walk",
+		"W15c at 19 m: shoots with sight, flies closer without")
+	local wisp3 = archer({fly = true})
+	check(step(wisp3, 1, 24, false) == "walk" and step(wisp3, 1, 24, true) == "walk",
+		"W15d beyond its shot range a flier flies closer, seen or not (unchanged)")
 	local zombie = archer({attack_type = "dogfight", dogshoot_switch = nil})
 	check(step(zombie, 0, 30, true) == "walk" and zombie.temp.grug_closing == nil,
 		"W16 a melee mob is untouched")

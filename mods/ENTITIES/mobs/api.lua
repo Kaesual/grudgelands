@@ -2488,11 +2488,14 @@ function mob_class:do_states(dtime)
 		-- ground dogshoot mob in its ranged phase that cannot see its target
 		-- walks (and paths) the dogfight way until it sees it; then the shoot
 		-- branch stops it and shoots, so it never shoots without line of
-		-- sight. Fliers keep upstream's switch, and a dogshoot mob without
-		-- one (ds_var 0: the ranged kings) upstream's branches.
+		-- sight. A dogshoot mob without one (ds_var 0: the ranged kings)
+		-- keeps upstream's branches. GRUG PATCH (Round 56 MOBAI, the user's
+		-- answer of 2026-10-22): a flier without sight flies at its target the
+		-- same way (no search, fliers never path) instead of shooting arrows
+		-- its target lock refuses, and shoots again once it sees it.
 		elseif self.attack_type == "dogfight" or (self.attack_type == "dogshoot"
 		and (ds_var == 2 or dist <= self.reach
-			or (ds_var == 1 and not in_sight and not self.fly)))
+			or (ds_var == 1 and not in_sight)))
 		or grug_closing then
 			local movement_pos = target_pos
 

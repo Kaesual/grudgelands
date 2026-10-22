@@ -1036,8 +1036,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   its stuck episode like a strike; it never shoots without sight. Its melee
   phase navigates like any melee mob. Beyond its shot range (§3, Round 56)
   every ranged mob walks the same way until it is 3 m inside it. A flying
-  `dogshoot` mob keeps upstream's switch inside its shot range (it shoots
-  whether or not it sees) and flies closer beyond it; a `dogshoot` mob
+  `dogshoot` mob in its ranged phase flies at its target (straight, it never
+  searches) while it is beyond its shot range or cannot see it, and shoots
+  once it sees it inside its shot range (the user, 2026-10-22); a `dogshoot` mob
   without a ranged phase (no `dogshoot_switch`: the ranged kings) keeps
   upstream's branches inside its shot range, walks closer (straight, without
   a search) beyond it and never searches. This
