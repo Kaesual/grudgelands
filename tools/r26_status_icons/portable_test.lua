@@ -148,6 +148,8 @@ local EXPECTED_KIND = {
 	cold_shock = "buff", retort = "buff", clear_conscience = "buff",
 	follow_the_line = "buff", parry = "buff", ruination = "buff",
 	close_dance = "buff",
+	-- Round 58 (CONSUME): the Miner's Guild consumables' own slot.
+	mining_sense = "buff",
 }
 
 local function texture_ok(name, label)
