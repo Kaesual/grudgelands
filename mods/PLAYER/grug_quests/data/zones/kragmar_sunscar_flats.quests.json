@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_sunscar_flats",
+  "reworked": true,
   "identity": "Sunscar lives by its wells; boars, rats, husks and a band of very confused water thieves all want a drink first.",
   "hubs": [
     {
@@ -25,73 +26,15 @@
   ],
   "quests": [
     {
-      "id": "sunscar_hunt_01",
-      "line": "hunt",
-      "giver": "r14_orc_elder",
-      "turnin": "r14_orc_elder",
-      "min_level": 1,
-      "level": 2,
-      "requires": [],
-      "title": "A Drink Too Far",
-      "text": "Scrub Piglets are ripping our waterskins in the {name:wellfields}, {dir_of:sunscar:wellfields}. Kill eight by day; their yellow names mean they wait for you to strike first. Make that first blow count.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "small_boar"
-          ],
-          "count": 8,
-          "area": "kragmar_sunscar_flats/wellfields"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Yellow names are neutral single pulls.",
-      "duration_min": 8
-    },
-    {
-      "id": "sunscar_hunt_02",
-      "line": "hunt",
-      "giver": "r14_orc_elder",
-      "turnin": "r14_orc_elder",
-      "min_level": 2,
-      "level": 2,
-      "requires": [
-        "sunscar_hunt_01"
-      ],
-      "title": "Hides Are Not Bedding",
-      "text": "Kill eight Dust Rats in the {name:wellfields} after dark; they are chewing the clan's drying hides into bedding. Their red names mean they come at you on sight, so keep your feet under you.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "large_rat"
-          ],
-          "count": 8,
-          "area": "kragmar_sunscar_flats/wellfields"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Night rosters differ from day ones; red names attack on sight.",
-      "duration_min": 8
-    },
-    {
       "id": "sunscar_hunt_03",
       "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
       "min_level": 4,
       "level": 5,
-      "requires": [
-        "sunscar_hunt_02"
-      ],
-      "title": "Earn Your Breath",
-      "text": "The clan's cooking fires need feeding, and your hunting arm needs work. Bring down eight Dustrunners by day in the {name:runner_plains}, {zone_area:runner_plains}. Save the boasting for when you catch your breath.",
+      "requires": [],
+      "title": "[PH] Dustrunners on the Plains",
+      "text": "[PH] Hunt 8 Dustrunners by day on the {name:runner_plains}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -104,37 +47,93 @@
       ],
       "rewards": {
         "weight": 3,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_patch",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_light",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A local hunt; the chest armor choice (one enchant, item level 5).",
+      "duration_min": 9
     },
     {
-      "id": "sunscar_hunt_04",
+      "id": "sunscar_scorpions",
       "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
-      "min_level": 5,
-      "level": 6,
-      "requires": [
-        "sunscar_hunt_03"
-      ],
-      "title": "Let the Thirst End",
-      "text": "Even death has not quenched the Sun-Dried Husks that wander the {name:saltflats} at night, {dir_from_giver:saltflats}. Put eight to rest before they reach our wells. Whatever they were, they have crawled through enough salt.",
+      "min_level": 6,
+      "level": 7,
+      "requires": [],
+      "title": "[PH] Rock Scorpions",
+      "text": "[PH] Kill 6 Rock Scorpions by day on the {name:runner_plains}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "sluggish_husk"
+            "irritable_scorpion"
           ],
-          "count": 8,
-          "area": "kragmar_sunscar_flats/saltflats"
+          "count": 6,
+          "area": "kragmar_sunscar_flats/runner_plains"
         }
       ],
       "rewards": {
         "weight": 3,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_patch",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_light",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_bronze",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A local hunt; the legs armor choice (one enchant, item level 7).",
+      "duration_min": 12
     },
     {
       "id": "sunscar_hunt_05",
@@ -143,11 +142,10 @@
       "turnin": "r14_orc_elder",
       "min_level": 8,
       "level": 9,
-      "requires": [
-        "sunscar_hunt_04"
-      ],
-      "title": "The Last Drop Is Ours",
-      "text": "We share water with any thirsty stranger; the Water Thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six of them and {name:water_thief_chief} himself. Let Sunscar fill its cups without looking over its shoulder.",
+      "requires": [],
+      "title": "[PH] The Finale: {name:water_thief_chief}",
+      "text": "[PH] Defeat 6 Water Thieves at the {name:thieves_camp}, then {name:water_thief_chief}. Real text to follow.",
+      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -167,10 +165,50 @@
       ],
       "rewards": {
         "weight": 4.5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:staff_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Camps hold several enemies; pull the edge, then the chief.",
-      "duration_min": 15,
+      "lesson": "A camp pack plus a named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
       "climax": true
     },
     {
@@ -194,285 +232,6 @@
       "rewards": {
         "weight": 1,
         "items": []
-      },
-      "duration_min": 6
-    },
-    {
-      "id": "sunscar_tools_01",
-      "line": "tools",
-      "giver": "r14_orc_elder",
-      "turnin": "r14_orc_elder",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "Put Those Hands to Work",
-      "text": "A clan needs hands that can build as well as break. Make one Wooden Axe and one Wooden Pickaxe, then bring both to me. I will give them back after a look; I have enough tools and too many idle pupils.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_wood",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_wood",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": [
-          {
-            "item": "grug_materials:axe_wood",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_wood",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Basic tools; handed-in tools come back as the reward.",
-      "duration_min": 5
-    },
-    {
-      "id": "sunscar_tools_02",
-      "line": "tools",
-      "giver": "r14_orc_elder",
-      "turnin": "r14_orc_elder",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "sunscar_tools_01"
-      ],
-      "title": "Leave the Splinters Behind",
-      "text": "Still pulling splinters out? Then you have learned what wood can do. Bring me one Stone Axe and one Stone Pickaxe for inspection. I will return both, ready for your next lesson.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_stone",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_stone",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": [
-          {
-            "item": "grug_materials:axe_stone",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_stone",
-            "count": 1
-          }
-        ]
-      },
-      "duration_min": 6
-    },
-    {
-      "id": "sunscar_tools_03",
-      "line": "tools",
-      "giver": "r14_orc_elder",
-      "turnin": "r14_orc_elder",
-      "min_level": 5,
-      "level": 6,
-      "requires": [
-        "sunscar_tools_02"
-      ],
-      "title": "A Lesson in the Coals",
-      "text": "The ground keeps its good things buried; make it yield some. Mine copper and tin beneath the flats, smelt three Copper Bars and three Tin Bars, and bring them here. I will give you a Dual Furnace so you can turn the two metals into bronze.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:copper_bar",
-          "count": 3
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:tin_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "grug_smelting:dual_furnace",
-            "count": 1
-          }
-        ]
-      },
-      "duration_min": 12
-    },
-    {
-      "id": "sunscar_tools_04",
-      "line": "tools",
-      "giver": "r14_orc_elder",
-      "turnin": "r14_orc_elder",
-      "min_level": 7,
-      "level": 8,
-      "requires": [
-        "sunscar_tools_03"
-      ],
-      "title": "Let Bronze Do the Talking",
-      "text": "Bring me three Bronze Bars from your furnace, and I will put a Bronze Pickaxe in your hands. The rocks beyond Sunscar have ignored some very fine threats; take something they will listen to.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:bronze_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "grug_materials:pick_bronze",
-            "count": 1
-          }
-        ]
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "sunscar_pantry_01",
-      "line": "pantry",
-      "giver": "r20_orc_start_cook",
-      "turnin": "r20_orc_start_cook",
-      "min_level": 3,
-      "level": 4,
-      "requires": [],
-      "title": "Supper Has Too Many Legs",
-      "text": "Supper is scuttling about on the {name:strand}, {dir_from_giver:strand}, and I have a pot to mind. Hunt Fiddler Crabs there by day and bring me three Crab Legs. Their yellow names mean they wait for the first hit, which is more courtesy than I get from hungry hunters.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:crab_leg",
-          "count": 3,
-          "roles": [
-            "quiet_shore_crab"
-          ],
-          "area": "kragmar_sunscar_flats/strand"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "sunscar_pantry_02",
-      "line": "pantry",
-      "giver": "r20_orc_start_cook",
-      "turnin": "r20_orc_start_cook",
-      "min_level": 5,
-      "level": 6,
-      "requires": [
-        "sunscar_pantry_01",
-        "sunscar_hunt_03"
-      ],
-      "title": "Keep Dinner Off the Dirt",
-      "text": "Bring me three Fine Sinew from the Dustrunners that graze the {name:runner_plains} by day. My drying rack needs new bindings before it drops supper into the dirt, and those runners are too quick for an old cook with a ladle.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:fine_sinew",
-          "count": 3,
-          "roles": [
-            "young_plains_runner"
-          ],
-          "area": "kragmar_sunscar_flats/runner_plains"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 6
-    },
-    {
-      "id": "sunscar_kitchen_01",
-      "line": "kitchen",
-      "giver": "r20_orc_start_cook",
-      "turnin": "r20_orc_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "Grandmother's Fire",
-      "text": "My grandmother's grandmother tended the Long Fire. Every cook since has kept it fed. Bring me five logs from any tree outside town. You can tell your grandchildren you helped; leave out how much I had to ask.",
-      "objectives": [
-        {
-          "type": "item",
-          "group": "tree",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Any log counts; planks do not.",
-      "duration_min": 4
-    },
-    {
-      "id": "sunscar_kitchen_02",
-      "line": "kitchen",
-      "giver": "r20_orc_start_cook",
-      "turnin": "r20_orc_start_cook",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "sunscar_kitchen_01"
-      ],
-      "title": "Give the Oven a Roar",
-      "text": "This oven is sulking, and shouting at it only gets ash in my teeth. Mine five Coal Lumps from the stone around Sunscar and bring them here. We have a clan to feed before anyone starts gnawing the ladle.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "sunscar_kitchen_03",
-      "line": "kitchen",
-      "giver": "r20_orc_start_cook",
-      "turnin": "r20_orc_start_cook",
-      "min_level": 4,
-      "level": 5,
-      "requires": [
-        "sunscar_kitchen_02",
-        "sunscar_hunt_02"
-      ],
-      "title": "A Bowl You Earned",
-      "text": "Hear those stomachs growling louder than the hunters' stories? Bring me ten pieces of Raw Meat from your hunts. I will cook a share for you too; nobody who feeds this fire leaves it hungry.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 10
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "mobs:meat",
-            "count": 3
-          }
-        ]
       },
       "duration_min": 6
     }

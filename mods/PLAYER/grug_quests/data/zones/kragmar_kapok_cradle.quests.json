@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_kapok_cradle",
+  "reworked": true,
   "identity": "Kapok raises its young among the yam beds, and somebody keeps stealing the rain's offerings.",
   "hubs": [
     {
@@ -25,118 +26,59 @@
   ],
   "quests": [
     {
-      "id": "kapok_hunt_01",
+      "id": "kapok_tapirs",
       "line": "hunt",
       "giver": "r14_troll_elder",
       "turnin": "r14_troll_elder",
-      "min_level": 1,
-      "level": 2,
+      "min_level": 4,
+      "level": 5,
       "requires": [],
-      "title": "A Boar Has No Use for Beads",
-      "text": "A root feeds a troll, a troll tends the roots; the Yam Piglets have skipped their half of the bargain. Kill eight by day in the {name:yam_beds} {dir_of:kapok:yam_beds}; their yellow names mean they leave you alone until you strike. Watch the rain offerings while you hunt, too. Yams go missing into bellies, but carved beads have been disappearing as well.",
+      "title": "[PH] Tapir Calves in the Broadleaf",
+      "text": "[PH] Hunt 8 Tapir Calves by day in the {name:broadleaf_wood}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "small_boar"
+            "young_tapir"
           ],
           "count": 8,
-          "area": "kragmar_kapok_cradle/yam_beds"
+          "area": "kragmar_kapok_cradle/broadleaf_wood"
         }
       ],
       "rewards": {
         "weight": 3,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_patch",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_light",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Yellow names are neutral single pulls.",
-      "duration_min": 8
-    },
-    {
-      "id": "kapok_hunt_02",
-      "line": "hunt",
-      "giver": "r14_troll_elder",
-      "turnin": "r14_troll_elder",
-      "min_level": 2,
-      "level": 2,
-      "requires": [
-        "kapok_hunt_01"
-      ],
-      "title": "No Peace for the Yams",
-      "text": "The boars sleep, the Moss Rats wake, and our yams get no peace at all. Kill eight rats after dark in the {name:yam_beds} {dir_of:kapok:yam_beds}. Pick your fights carefully: a red-named rat bites first and never apologises.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "large_rat"
-          ],
-          "count": 8,
-          "area": "kragmar_kapok_cradle/yam_beds"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "The same area holds a day and a night roster; red names attack on sight.",
-      "duration_min": 8
-    },
-    {
-      "id": "kapok_hunt_03",
-      "line": "hunt",
-      "giver": "r14_troll_elder",
-      "turnin": "r14_troll_elder",
-      "min_level": 3,
-      "level": 4,
-      "requires": [
-        "kapok_hunt_02"
-      ],
-      "title": "The Roots Remember Feet",
-      "text": "After dark, listen in the {name:rootways}, which lies {zone_area:rootways}: rats scurry, but Root Shufflers drag their feet. Kill six zombies before they shuffle into somebody's doorway. Sunlight burns them, but I would rather trust your hands than wait for a clear morning.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "braindead_zombie"
-          ],
-          "count": 6,
-          "area": "kragmar_kapok_cradle/rootways"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Zombies come out at night and burn in the sun.",
+      "lesson": "A local hunt; the head armor choice (one enchant, item level 5).",
       "duration_min": 9
-    },
-    {
-      "id": "kapok_hunt_04",
-      "line": "hunt",
-      "giver": "r14_troll_elder",
-      "turnin": "r14_troll_elder",
-      "min_level": 7,
-      "level": 9,
-      "requires": [
-        "kapok_hunt_03"
-      ],
-      "title": "Read the Tusks",
-      "text": "The {name:thornwood}, {zone_area:thornwood}, teaches a harsher lesson than the yam beds. Kill eight Bushpigs there by day; a red name means they will start the fight without asking. Take them one at a time, and watch for Vine Asps among the vines. Wisdom is mostly noticing the second set of teeth.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "aggressive_boar"
-          ],
-          "count": 8,
-          "area": "kragmar_kapok_cradle/thornwood"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Red names attack on sight; a minor role shares the area.",
-      "duration_min": 10
     },
     {
       "id": "kapok_hunt_05",
@@ -145,11 +87,10 @@
       "turnin": "r14_troll_elder",
       "min_level": 8,
       "level": 9,
-      "requires": [
-        "kapok_hunt_04"
-      ],
-      "title": "Luck Stolen Twice",
-      "text": "Our rain beads have become lucky charms for sale at the {name:thieves_camp} {dir_from_giver:thieves_camp}. Kill six Offering Thieves there and their leader, Thief-Chief Tangle, at the camp's centre. More thieves will come to fill the gaps, so do not wait for an empty camp before you face Tangle. Let us see how much luck a stolen bead can buy.",
+      "requires": [],
+      "title": "[PH] The Finale: {name:offering_thief_chief}",
+      "text": "[PH] Defeat 6 Offering Thieves at the {name:thieves_camp}, then {name:offering_thief_chief}. Real text to follow.",
+      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -169,11 +110,51 @@
       ],
       "rewards": {
         "weight": 4.5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:wand_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "climax": true,
-      "lesson": "A camp keeps refilling; its named chief stands at the centre.",
-      "duration_min": 14
+      "lesson": "A camp pack plus a named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "climax": true
     },
     {
       "id": "kapok_departure",
@@ -198,318 +179,6 @@
         "items": []
       },
       "duration_min": 6
-    },
-    {
-      "id": "kapok_tools_01",
-      "line": "tools",
-      "giver": "r14_troll_elder",
-      "turnin": "r14_troll_elder",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "Save Your Knuckles",
-      "text": "Before you wrestle the jungle, give your hands something sensible to hold. Craft a Wooden Axe and a Wooden Pickaxe, then bring me one of each to inspect. I will give you a pair back; I teach with my hands, too, and have no use for yours beaten flat against a tree.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_wood",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_wood",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": [
-          {
-            "item": "grug_materials:axe_wood",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_wood",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Basic grid tools; the reward replaces the tools handed in.",
-      "duration_min": 5
-    },
-    {
-      "id": "kapok_tools_02",
-      "line": "tools",
-      "giver": "r14_troll_elder",
-      "turnin": "r14_troll_elder",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "kapok_tools_01"
-      ],
-      "title": "A Lesson Under the Moss",
-      "text": "Moss makes every rock look welcoming; your pick will tell you which ones mean it. Take your Wooden Pickaxe to the plain stone outside town, then craft a Stone Axe and a Stone Pickaxe. Bring me one of each, and I will give you a pair back for the digging ahead.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_stone",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_stone",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": [
-          {
-            "item": "grug_materials:axe_stone",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_stone",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Tool progression; check the rock's required pick tier.",
-      "duration_min": 7
-    },
-    {
-      "id": "kapok_tools_03",
-      "line": "tools",
-      "giver": "r14_troll_elder",
-      "turnin": "r14_troll_elder",
-      "min_level": 5,
-      "level": 6,
-      "requires": [
-        "kapok_tools_02"
-      ],
-      "title": "What the Fire Leaves",
-      "text": "You have learned to read roots; now read the rock beneath them. Mine copper and tin outside town, smelt the lumps in a furnace, and bring me three Copper Bars and three Tin Bars. One lump makes one bar, which is the sort of honest accounting I wish we had at feasts, and a Dual Furnace waits for you when you are done.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:copper_bar",
-          "count": 3
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:tin_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "grug_smelting:dual_furnace",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Mining and the furnace: one lump, one bar.",
-      "duration_min": 10
-    },
-    {
-      "id": "kapok_tools_04",
-      "line": "tools",
-      "giver": "r14_troll_elder",
-      "turnin": "r14_troll_elder",
-      "min_level": 7,
-      "level": 8,
-      "requires": [
-        "kapok_tools_03"
-      ],
-      "title": "Two Voices in the Fire",
-      "text": "Copper and tin must share your Dual Furnace for this lesson. Smelt them together, bring me three Bronze Bars, and a Bronze Pickaxe is yours. Think of it as a song with two voices, only neither voice can wander off halfway through.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:bronze_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "grug_materials:pick_bronze",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "The dual furnace makes alloys.",
-      "duration_min": 10
-    },
-    {
-      "id": "kapok_kitchen_01",
-      "line": "kitchen",
-      "giver": "r20_troll_start_cook",
-      "turnin": "r20_troll_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "The Pot Is Waiting",
-      "text": "Hear that quiet pot? That is the sound of no supper. Chop trees outside town and bring me five logs of any kind, not planks; the trees in town stay standing, unless you plan to hold up our shade yourself.",
-      "objectives": [
-        {
-          "type": "item",
-          "group": "tree",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Any log counts; planks do not. Town plants are protected.",
-      "duration_min": 4
-    },
-    {
-      "id": "kapok_kitchen_02",
-      "line": "kitchen",
-      "giver": "r20_troll_start_cook",
-      "turnin": "r20_troll_start_cook",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "kapok_kitchen_01"
-      ],
-      "title": "Heat Before Hospitality",
-      "text": "Rain drums on my roof, hungry trolls drum on my table, and neither will wait for damp wood. Mine five Coal Lumps from the rock outside town and bring them here. When you use the oven, coal goes in the fuel slot and food in the cooking slot; I already have enough complaints without serving fuel.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Gather while waiting for night; the public oven is in town.",
-      "duration_min": 7
-    },
-    {
-      "id": "kapok_kitchen_03",
-      "line": "kitchen",
-      "giver": "r20_troll_start_cook",
-      "turnin": "r20_troll_start_cook",
-      "min_level": 4,
-      "level": 5,
-      "requires": [
-        "kapok_kitchen_02",
-        "kapok_hunt_01"
-      ],
-      "title": "A Hunter Worth Inviting",
-      "text": "You can hunt, but can I leave you alone with supper? Put five pieces of Raw Meat in the oven by my hearth, cook them, and bring me the five Meat. Learn this well and you will always have friends arriving just as the pot is ready.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "The public oven turns Raw Meat into Meat.",
-      "duration_min": 6
-    },
-    {
-      "id": "kapok_pantry_01",
-      "line": "pantry",
-      "giver": "r20_troll_start_cook",
-      "turnin": "r20_troll_start_cook",
-      "min_level": 3,
-      "level": 3,
-      "requires": [
-        "kapok_hunt_02"
-      ],
-      "title": "More Holes Than Sack",
-      "text": "My yam sacks have more holes than sack, thanks to the Moss Rats. Hunt them after dark in the {name:yam_beds} {dir_of:kapok:yam_beds} and bring me two Rat Fur Patches for repairs. Keep any spares for your armour; the rats chewed the holes, so the rats can pay for the patches.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:rat_fur_patch",
-          "count": 2,
-          "roles": [
-            "large_rat"
-          ],
-          "area": "kragmar_kapok_cradle/yam_beds"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Drops can be gathered while doing another quest.",
-      "duration_min": 4
-    },
-    {
-      "id": "kapok_pantry_02",
-      "line": "pantry",
-      "giver": "r20_troll_start_cook",
-      "turnin": "r20_troll_start_cook",
-      "min_level": 4,
-      "level": 4,
-      "requires": [
-        "kapok_pantry_01"
-      ],
-      "title": "Guests with Pincers",
-      "text": "A feast needs Crab Legs, and I refuse to count the guests' legs as a substitute. Bring me two from the Fiddler Crabs in the {name:shallows} {dir_from_giver:shallows}. They leave you be until you strike, so choose your crab before you start waving your hands.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:crab_leg",
-          "count": 2,
-          "roles": [
-            "quiet_shore_crab"
-          ],
-          "area": "kragmar_kapok_cradle/shallows"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Shore regions are narrow strips along the water.",
-      "duration_min": 8
-    },
-    {
-      "id": "kapok_pantry_03",
-      "line": "pantry",
-      "giver": "r20_troll_start_cook",
-      "turnin": "r20_troll_start_cook",
-      "min_level": 5,
-      "level": 6,
-      "requires": [
-        "kapok_pantry_02"
-      ],
-      "title": "Supper Above the Mud",
-      "text": "One loose knot and my drying racks will serve supper to the mud. Bring me two Fine Sinew from the Tapir Calves that graze the {name:broadleaf_wood} by day, {zone_area:broadleaf_wood}. The tapirs wait for you to start trouble; the Ocelots sharing their ground do not.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:fine_sinew",
-          "count": 2,
-          "roles": [
-            "young_tapir"
-          ],
-          "area": "kragmar_kapok_cradle/broadleaf_wood"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "A neutral main role next to an aggressive minor role.",
-      "duration_min": 9
     }
   ]
 }

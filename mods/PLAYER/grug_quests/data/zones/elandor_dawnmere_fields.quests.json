@@ -1,5 +1,6 @@
 {
   "zone": "elandor_dawnmere_fields",
+  "reworked": true,
   "identity": "Dawnmere feeds the road to Highcourt, but boars, rats and a remarkably confused requisition gang are eating the harvest first.",
   "hubs": [
     {
@@ -25,15 +26,13 @@
   ],
   "quests": [
     {
-      "id": "dawnmere_hunt_01",
+      "id": "start_boars",
       "line": "hunt",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "Crop Thieves",
-      "text": "Barley Piglets are eating next winter's bread in the {name:home_fields} {dir_of:dawnmere:home_fields}. Hunt eight by day; their yellow names mean they fight back only when struck. A fellow called Crumb has been helping himself to our grain too, but let us begin with the thieves who cannot read.",
+      "title": "[PH] Piglets in the Fields",
+      "text": "[PH] Hunt 8 Barley Piglets by day in the {name:home_fields}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -44,54 +43,572 @@
           "area": "elandor_dawnmere_fields/home_fields"
         }
       ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r14_dwarf_elder"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_hearthpine_vale/timberline"
+            }
+          ],
+          "text": "[PH] Hunt 8 Pine Piglets by day in the {name:timberline}. Real text to follow."
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_silverleaf_glades/home_glades"
+            }
+          ],
+          "text": "[PH] Hunt 8 Glade Piglets by day in the {name:home_glades}. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r14_orc_elder"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_sunscar_flats/wellfields"
+            }
+          ],
+          "text": "[PH] Hunt 8 Scrub Piglets by day in the {name:wellfields}. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r14_troll_elder"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_kapok_cradle/yam_beds"
+            }
+          ],
+          "text": "[PH] Hunt 8 Yam Piglets by day in the {name:yam_beds}. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r14_undead_elder"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_stillgrave_hollow/dead_furrows"
+            }
+          ],
+          "text": "[PH] Hunt 8 Barrow Piglets by day in the {name:dead_furrows}. Real text to follow."
+        }
+      ],
       "rewards": {
         "weight": 3,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t1",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t1",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "Yellow names are neutral: they only fight back. Save the meat.",
+      "lesson": "First hunt by day, offered at once with the night's rats; the early potion choice.",
       "duration_min": 8
     },
     {
-      "id": "dawnmere_hunt_02",
-      "line": "hunt",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "dawnmere_hunt_01"
-      ],
-      "title": "The Night Shift",
-      "text": "The day's work ends, and the gnawing begins: Barn Rats come out after sunset in the {name:meadows}, which lie {zone_area:meadows}. Kill eight there at night. Their red names mean they will not wait to be introduced, so watch the grass as well as the one in front of you.",
+      "id": "start_rats",
+      "line": "pantry",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "[PH] Rats in the Grain Sacks",
+      "text": "[PH] Kill 3 Barn Rats after dark in the {name:meadows} and bring me 1 Rat Fur Patch. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
             "large_rat"
           ],
-          "count": 8,
+          "count": 3,
+          "area": "elandor_dawnmere_fields/meadows"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:rat_fur_patch",
+          "count": 1,
+          "roles": [
+            "large_rat"
+          ],
           "area": "elandor_dawnmere_fields/meadows"
         }
       ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r20_human_start_cook"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r20_dwarf_start_cook"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_hearthpine_vale/timberline"
+            },
+            {
+              "area": "elandor_hearthpine_vale/timberline"
+            }
+          ],
+          "text": "[PH] Kill 3 Timber Rats after dark in the {name:timberline} and bring me 1 Rat Fur Patch. Real text to follow."
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r20_elf_start_cook"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_silverleaf_glades/home_glades"
+            },
+            {
+              "area": "elandor_silverleaf_glades/home_glades"
+            }
+          ],
+          "text": "[PH] Kill 3 Fern Rats after dark in the {name:home_glades} and bring me 1 Rat Fur Patch. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r20_orc_start_cook"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_sunscar_flats/wellfields"
+            },
+            {
+              "area": "kragmar_sunscar_flats/wellfields"
+            }
+          ],
+          "text": "[PH] Kill 3 Dust Rats after dark in the {name:wellfields} and bring me 1 Rat Fur Patch. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r20_troll_start_cook"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_kapok_cradle/yam_beds"
+            },
+            {
+              "area": "kragmar_kapok_cradle/yam_beds"
+            }
+          ],
+          "text": "[PH] Kill 3 Moss Rats after dark in the {name:yam_beds} and bring me 1 Rat Fur Patch. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r20_undead_start_cook"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_stillgrave_hollow/dead_furrows"
+            },
+            {
+              "area": "kragmar_stillgrave_hollow/dead_furrows"
+            }
+          ],
+          "text": "[PH] Kill 3 Grave Rats after dark in the {name:dead_furrows} and bring me 1 Rat Fur Patch. Real text to follow."
+        }
+      ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 2
       },
-      "lesson": "Night rosters differ from day rosters; red names attack on sight.",
+      "lesson": "Night target at a third of the day count (one night suffices); ordinary loot has uses.",
+      "duration_min": 6
+    },
+    {
+      "id": "start_stone",
+      "line": "tools",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "[PH] Stone for the Wall",
+      "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "stone",
+          "count": 10
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r14_dwarf_elder"
+          ],
+          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ],
+          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r14_orc_elder"
+          ],
+          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r14_troll_elder"
+          ],
+          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r14_undead_elder"
+          ],
+          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_materials:pick_stone",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:axe_stone",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Craft a Wooden Pickaxe to dig stone; the reward is the next tools, never the request.",
+      "duration_min": 6
+    },
+    {
+      "id": "start_fuel",
+      "line": "kitchen",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "[PH] Fuel for the Oven",
+      "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "tree",
+          "count": 5
+        },
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 5
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r20_human_start_cook"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r20_dwarf_start_cook"
+          ],
+          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r20_elf_start_cook"
+          ],
+          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r20_orc_start_cook"
+          ],
+          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r20_troll_start_cook"
+          ],
+          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r20_undead_start_cook"
+          ],
+          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2.5
+      },
+      "lesson": "Any log counts, coal from the rock; town plants are protected.",
       "duration_min": 8
     },
     {
-      "id": "dawnmere_hunt_03",
-      "line": "hunt",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
+      "id": "start_meat",
+      "line": "kitchen",
       "min_level": 4,
-      "level": 6,
-      "requires": [
-        "dawnmere_hunt_02"
+      "level": 5,
+      "requires": [],
+      "title": "[PH] The Smokehouse Share",
+      "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 10
+        }
       ],
-      "title": "Foxes Before Breakfast",
-      "text": "Our hens have taken to sleeping with one eye open, thanks to the Henthieves in the {name:pastures}, which lie {zone_area:pastures}. Hunt eight by day. Watch for Grunters among them: a red name means the creature will start the fight without waiting for you.",
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r20_human_start_cook"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r20_dwarf_start_cook"
+          ],
+          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r20_elf_start_cook"
+          ],
+          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r20_orc_start_cook"
+          ],
+          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r20_troll_start_cook"
+          ],
+          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r20_undead_start_cook"
+          ],
+          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "mobs:meat",
+            "count": 3
+          }
+        ]
+      },
+      "lesson": "Hunt loot is useful; raw food cooks in the oven.",
+      "duration_min": 4
+    },
+    {
+      "id": "start_bars",
+      "line": "tools",
+      "min_level": 5,
+      "level": 6,
+      "requires": [],
+      "title": "[PH] Metal for the Mending",
+      "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:copper_bar",
+          "count": 3
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:tin_bar",
+          "count": 3
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r14_dwarf_elder"
+          ],
+          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ],
+          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r14_orc_elder"
+          ],
+          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r14_troll_elder"
+          ],
+          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r14_undead_elder"
+          ],
+          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_smelting:dual_furnace",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Ore to bar in a Furnace; the Dual Furnace makes the first alloy.",
+      "duration_min": 10
+    },
+    {
+      "id": "start_bronze",
+      "line": "tools",
+      "min_level": 7,
+      "level": 8,
+      "requires": [],
+      "title": "[PH] Bronze for the Road",
+      "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:bronze_bar",
+          "count": 3
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r14_dwarf_elder"
+          ],
+          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ],
+          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r14_orc_elder"
+          ],
+          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r14_troll_elder"
+          ],
+          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r14_undead_elder"
+          ],
+          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_materials:pick_bronze",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Alloys in the Dual Furnace; the Bronze Pickaxe digs Iron.",
+      "duration_min": 12
+    },
+    {
+      "id": "start_foxes",
+      "line": "hunt",
+      "min_level": 4,
+      "level": 5,
+      "requires": [],
+      "title": "[PH] Foxes in the Henhouse",
+      "text": "[PH] Hunt 8 Henthieves by day in the {name:pastures}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -102,25 +619,69 @@
           "area": "elandor_dawnmere_fields/pastures"
         }
       ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_silverleaf_glades/foxglades"
+            }
+          ],
+          "text": "[PH] Hunt 8 Russet Kits by day in the {name:foxglades}. Real text to follow."
+        }
+      ],
       "rewards": {
         "weight": 3,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_patch",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_light",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Yellow foxes next to a red minor role: pick your pulls.",
+      "lesson": "A day hunt; the level-5 chest armor choice (one enchant).",
       "duration_min": 9
     },
     {
-      "id": "dawnmere_hunt_04",
+      "id": "start_snappers",
       "line": "hunt",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
       "min_level": 7,
       "level": 8,
-      "requires": [
-        "dawnmere_hunt_03"
-      ],
-      "title": "Five Claws Too Many",
-      "text": "The fishermen came back from the {name:wreck_coast} {dir_from_giver:wreck_coast} with empty nets and some very firm opinions about Wreck Snappers. Kill five there by day so our folk can try their luck again. Go while the sun is up; the drowned dead walk that shore after dark, and I would rather you came home for supper.",
+      "requires": [],
+      "title": "[PH] Snappers on the Shore",
+      "text": "[PH] Kill 5 Wreck Snappers by day in the {name:wreck_coast}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -131,12 +692,96 @@
           "area": "elandor_dawnmere_fields/wreck_coast"
         }
       ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r14_dwarf_elder"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_hearthpine_vale/rockpools"
+            }
+          ],
+          "text": "[PH] Kill 5 Boulder Crabs by day in the {name:rockpools}. Real text to follow."
+        }
+      ],
       "rewards": {
         "weight": 2.5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_patch",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_light",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_bronze",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Scarce shore target, five only; the shore changes owner at night.",
+      "lesson": "A scarce shore target by day; the level-8 legs armor choice (one enchant).",
       "duration_min": 12
+    },
+    {
+      "id": "dawnmere_pantry_02",
+      "line": "pantry",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 7,
+      "level": 8,
+      "requires": [],
+      "title": "[PH] A Brush and a Better Supper",
+      "text": "[PH] Bring me 2 Crab Legs from the Wreck Snappers on the {name:wreck_coast} and 1 Fox Tail from the Henthieves in the {name:pastures}. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:crab_leg",
+          "count": 2,
+          "roles": [
+            "giant_crab"
+          ],
+          "area": "elandor_dawnmere_fields/wreck_coast"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:fox_tail",
+          "count": 1,
+          "roles": [
+            "small_fox"
+          ],
+          "area": "elandor_dawnmere_fields/pastures"
+        }
+      ],
+      "rewards": {
+        "weight": 2
+      },
+      "lesson": "Keep what your enchants need, hand in what they do not.",
+      "duration_min": 7
     },
     {
       "id": "dawnmere_hunt_05",
@@ -145,11 +790,10 @@
       "turnin": "r14_human_elder",
       "min_level": 8,
       "level": 9,
-      "requires": [
-        "dawnmere_hunt_04"
-      ],
-      "title": "Requisition for One Crumb",
-      "text": "{name:confused_bandit_chief} calls our missing grain a requisition, though he cannot say who requisitioned it. Find the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat seven Grain Pilferers, then Crumb himself. They keep their posts day and night; draw the chief away from his collectors if you can. We planted that harvest, and our people ought to eat it.",
+      "requires": [],
+      "title": "[PH] The Finale: {name:confused_bandit_chief}",
+      "text": "[PH] Defeat 7 Grain Pilferers at the {name:bandit_camp}, then {name:confused_bandit_chief}. Real text to follow.",
+      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -169,9 +813,49 @@
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:wand_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A camp pack plus a named normal leader; pull them apart.",
+      "lesson": "A camp pack plus a named leader; the weapon choice (prefix and suffix).",
       "duration_min": 12,
       "climax": true
     },
@@ -199,306 +883,6 @@
       },
       "lesson": "Start zone to home zone handoff.",
       "duration_min": 7
-    },
-    {
-      "id": "dawnmere_tools_01",
-      "line": "tools",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "Two Hands, Two Tools",
-      "text": "Make a Wooden Axe and a Wooden Pickaxe from wood, then bring both to me here in Dawnmere. I will check your work and give you a working pair in return. A sword looks splendid over a hearth, but somebody still has to chop the firewood.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_wood",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_wood",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": [
-          {
-            "item": "grug_materials:axe_wood",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_wood",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Grid tools; handed-in tools are replaced by the reward.",
-      "duration_min": 5
-    },
-    {
-      "id": "dawnmere_tools_02",
-      "line": "tools",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "dawnmere_tools_01"
-      ],
-      "title": "A Stone Edge",
-      "text": "Those wooden tools have earned their keep; let us put a better edge on your next day's work. Use your wooden pick on suitable rock outside Dawnmere, then make a Stone Axe and a Stone Pickaxe and bring both to me. In return you get a pair that has already proved itself on Dawnmere's rock; the ore ahead deserves tools with a little experience.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_stone",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_stone",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": [
-          {
-            "item": "grug_materials:axe_stone",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_stone",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Tool progression; check the rock's pick tier.",
-      "duration_min": 7
-    },
-    {
-      "id": "dawnmere_tools_03",
-      "line": "tools",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
-      "min_level": 5,
-      "level": 6,
-      "requires": [
-        "dawnmere_tools_02"
-      ],
-      "title": "Metal for the Mending",
-      "text": "Every loose hinge in Dawnmere seems to find its way onto my list. Smelt three Copper Bars and three Tin Bars from the local ore, then bring them to me for the town repairs. I will give you a Dual Furnace for your own work; set it outside protected ground, where it will not become my next complaint.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:copper_bar",
-          "count": 3
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:tin_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "grug_smelting:dual_furnace",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Ore to bar; bars handed in are consumed.",
-      "duration_min": 10
-    },
-    {
-      "id": "dawnmere_tools_04",
-      "line": "tools",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
-      "min_level": 7,
-      "level": 8,
-      "requires": [
-        "dawnmere_tools_03"
-      ],
-      "title": "Bronze for the Road",
-      "text": "You have helped mend the town; now we ought to see you properly equipped for the road. Make three Bronze Bars from fresh copper and tin in your Dual Furnace and bring them to me. The earlier bars went into our repairs, so you will need another batch. A Bronze Pickaxe will be your share of the work.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:bronze_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "grug_materials:pick_bronze",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Alloys; the Bronze Pickaxe opens the next rock tier.",
-      "duration_min": 12,
-      "climax": true
-    },
-    {
-      "id": "dawnmere_pantry_01",
-      "line": "pantry",
-      "giver": "r20_human_start_cook",
-      "turnin": "r20_human_start_cook",
-      "min_level": 3,
-      "level": 3,
-      "requires": [
-        "dawnmere_hunt_02"
-      ],
-      "title": "The Rats Can Mend It",
-      "text": "The Barn Rats have chewed my grain sacks, and I intend to make them contribute to the repairs. Bring me two Rat Fur Patches from them in the {name:meadows} after dark; any you saved from your hunt will do. Yes, we are patching rat holes with rat fur. I call that good housekeeping.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:rat_fur_patch",
-          "count": 2,
-          "roles": [
-            "large_rat"
-          ],
-          "area": "elandor_dawnmere_fields/meadows"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Ordinary loot has uses; collect while hunting.",
-      "duration_min": 3
-    },
-    {
-      "id": "dawnmere_pantry_02",
-      "line": "pantry",
-      "giver": "r20_human_start_cook",
-      "turnin": "r20_human_start_cook",
-      "min_level": 7,
-      "level": 8,
-      "requires": [
-        "dawnmere_pantry_01",
-        "dawnmere_hunt_04"
-      ],
-      "title": "A Brush and a Better Supper",
-      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from the Wreck Snappers on the {name:wreck_coast} {dir_from_giver:wreck_coast}, and one Fox Tail from the Henthieves in the {name:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and keep the Crab Eyes for yourself. I have enough people watching me cook.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:crab_leg",
-          "count": 2,
-          "roles": [
-            "giant_crab"
-          ],
-          "area": "elandor_dawnmere_fields/wreck_coast"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:fox_tail",
-          "count": 1,
-          "roles": [
-            "small_fox"
-          ],
-          "area": "elandor_dawnmere_fields/pastures"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Keep what your enchants need, hand in what they do not.",
-      "duration_min": 7,
-      "climax": true
-    },
-    {
-      "id": "dawnmere_kitchen_01",
-      "line": "kitchen",
-      "giver": "r20_human_start_cook",
-      "turnin": "r20_human_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "Five Logs, Any Tree",
-      "text": "Bring me five logs from any tree outside Dawnmere, whenever your hands are free. The oven needs fuelwood, not a debate about which tree is fashionable. Leave the trees inside town alone; I will not have my supper blamed for a missing village green.",
-      "objectives": [
-        {
-          "type": "item",
-          "group": "tree",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Any log counts; town plants are protected.",
-      "duration_min": 4
-    },
-    {
-      "id": "dawnmere_kitchen_02",
-      "line": "kitchen",
-      "giver": "r20_human_start_cook",
-      "turnin": "r20_human_start_cook",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "dawnmere_kitchen_01"
-      ],
-      "title": "A Proper Fire",
-      "text": "An oven full of good intentions still serves a cold dinner. Bring me five Coal Lumps from the rock outside Dawnmere when your hunts leave you time. At the public oven, coal goes in the fuel slot and raw food in the cooking slot; get those right and we can call you useful in two trades.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Gather while you wait for night; the public oven is in town.",
-      "duration_min": 7
-    },
-    {
-      "id": "dawnmere_kitchen_03",
-      "line": "kitchen",
-      "giver": "r20_human_start_cook",
-      "turnin": "r20_human_start_cook",
-      "min_level": 4,
-      "level": 5,
-      "requires": [
-        "dawnmere_kitchen_02",
-        "dawnmere_hunt_02"
-      ],
-      "title": "The Smokehouse Share",
-      "text": "Bring ten cuts of Raw Meat from your hunts to my kitchen here in Dawnmere; anything you saved already counts. Boars and foxes provide it by day, rats after dark, and I have mouths to feed at every hour. I will cook a share for you to take along. Heroes run on supper, whatever the songs say.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 10
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "mobs:meat",
-            "count": 3
-          }
-        ]
-      },
-      "lesson": "Earlier hunt loot is useful; raw food cooks in the oven.",
-      "duration_min": 4,
-      "climax": true
     }
   ]
 }
