@@ -221,7 +221,7 @@ local STORE = grug_inventory.HOTBAR_STORE
 local Stack = getmetatable(ItemStack("default:dirt"))
 -- Wear (the harness's stacks have none): kept on the stack and copied.
 local plain_item_stack = ItemStack
-function ItemStack(value)
+_G.ItemStack = function(value)
 	local stack = plain_item_stack(value)
 	if type(value) == "table" and getmetatable(value) == Stack then stack.wear = value.wear end
 	return stack
@@ -388,7 +388,7 @@ end
 core.close_formspec = function() end
 core.chat_send_player = function() end
 -- The harness's vector is a permissive stand-in: the two calls used here.
-vector = {}
+_G.vector = {}
 vector.new = function(x, y, z)
 	if type(x) == "table" then return {x = x.x, y = x.y, z = x.z} end
 	return {x = x, y = y, z = z}

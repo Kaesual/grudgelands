@@ -627,8 +627,8 @@ without a plot prefix, the same ids in all six capitals:
 
 | Socket | Role | Who stands there |
 |---|---|---|
-| `miners_guild_leader` | `quest`, facing the door | the capital's guild leader. Today a nameless quest shell; the leader is registered on it as a quest NPC (`grug_quests.register_npc(id, {settlement = <capital key>, socket = "miners_guild_leader", title = …, race = …})`), which gives the shell its name, race and dialogue, and a talk objective can name it. |
-| `miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the exchange counter, the guild's vendor (materials for reputation). It is taken over as a service socket, `grug_core.assign_service_socket(<capital key>, "miners_guild_exchange", <role>)`, as the Crownbinder and the Housing Steward take theirs (a new role in `SERVICE_ROLES` and its entity through `grug_mobs.register_start_socket_role`). Until then a resident stands there, who may be one of the core's walkers. |
+| `miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it. |
+| `miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the Miner's Guild Exchange (`grug_traders:guild_exchange`): the socket is taken over as the service role `guild_exchange` (`grug_traders/vendors.lua`, the socket id read from `GUILD_HALL.exchange`), as the Crownbinder takes his; a guild vendor of the capital's faction that opens on Trade-in and buys like every vendor, without the camp vendor's reputation page or repair. |
 | `miners_guild_clerk`, `miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
 | `miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
 
@@ -1054,8 +1054,8 @@ CAMPNPC, LIFT and GUILDQUESTS):
 | Socket id | Role | Kind / tag | What stands there |
 |---|---|---|---|
 | `lift` | `lift` | – | the lift node `grug_mapgen:guild_lift` (its cell, `4dir` facing the gate; nobody stands on it); its x/z is the camp's lift column |
-| `quest_foreman` | `quest` | – | the foreman, the camp's quest giver (a quest shell of the camp's race until his quests are registered) |
-| `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`: buys like every vendor, no shelf of its own yet; lane CAMPNPC adds the trade-in, repair and the reputation page) |
+| `quest_foreman` | `quest` | – | the Foreman, the camp's quest giver (`r58_foreman_<camp id>`, `grug_quests/npcs.lua`: of the camp's race and faction, giver role `foreman_t<camp tier>`, [quests.md](quests.md) "The Miner's Guild givers") |
+| `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`, of the camp's faction): buys like every vendor, opens on the Trade-in, repairs, and its Buy mode is the reputation page ([miners_guild.md](miners_guild.md) §5.2) |
 | `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |
 | `yard_west`, `yard_east` | `guard_post` | tag `camp` | a contested mining camp's two further guards |
 

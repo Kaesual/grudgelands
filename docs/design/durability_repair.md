@@ -51,9 +51,16 @@ or trader distribution is introduced.
 The service offers a preview and repair of one item or all eligible items in
 equipment, main and bag inventories.
 
-**Repair happens only in towns** (Round 46 ruling 16, the user's decision of
-2026-10-12): the trainers and Grudge-Free Repairs above are the only
-providers. No Claim Stone claim, furnace, dual furnace or other station
+**Repair happens in towns** (Round 46 ruling 16, the user's decision of
+2026-10-12) **and at the mining camps** (Round 58, the user's ruling "each
+camp has a vendor who … repairs", [miners_guild.md](miners_guild.md) §3):
+the trainers and Grudge-Free Repairs above and the Camp Vendor of every
+mining camp and war camp are the only providers. The Camp Vendor's window
+has a Repair button that opens the same repair form ("Equipment repairs",
+the line "The camp vendor repairs your equipment for money.") with the same
+prices and rules; its provider is the camp's `vendor_camp` socket
+(`grug_repair` kind `camp_vendor`: the player within 8 nodes of it and of
+the camp's faction, rechecked on every action). No Claim Stone claim, furnace, dual furnace or other station
 repairs, and no crafting table or craft grid does (the engine craft grid is
 gone since Round 45). The claim-station repair of Round 29 (2026-09-29 D7)
 is removed. Grudge-Free Repairs carries its own map and minimap marker, a
