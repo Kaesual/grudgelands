@@ -615,6 +615,15 @@ do
 	check(Q.turn_in(di, "qs_story_landing"), "C the story step turned in")
 	level_of.di = 2
 	eq(listed(di, EL, "qs_story_word").status, "available", "C the chain's next step opens")
+	-- Every marker value has its map texture (tools/r57_qsys/render_story_icons.py).
+	for _, status in ipairs(Q.MARKER_STATUSES) do
+		for _, prefix in ipairs({"", "story_"}) do
+			local path = ROOT .. "/mods/PLAYER/grug_map/textures/grug_map_quest_" .. prefix .. status .. ".png"
+			local handle = io.open(path, "rb")
+			check(handle ~= nil, "C the map texture of " .. prefix .. status)
+			if handle then handle:close() end
+		end
+	end
 	-- The free follow-up opens with its free predecessor.
 	check(listed(di, CK, "qs_free_b") == nil, "C a free follow-up hidden before its predecessor")
 end
