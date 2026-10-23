@@ -94,26 +94,29 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 
 -- D. the freeze -------------------------------------------------------------------
 -- The identity, point and build digests of each capital as the building
--- generators built it at 36698232 (tools/building_templates/town_identity.lua).
+-- generators built it at 36698232 (tools/building_templates/town_identity.lua);
+-- since Round 58 (TOWNFIX, a declared map reset: the five core gatehouses,
+-- Lethariel's bough platforms, the throne guards' posts, the gate watch) the
+-- capitals' new values.
 local FROZEN = {
-	highcourt = {"5738fdb88b35ae4783e05cd98e8bd2c5fa5012f2926b8730858764e622ac667e",
-		"fad8c3735592b4a63cc33d17ce07f48e99527976440f19b8faa1162833bba48c",
-		"04b1da3799926c5f184163b59d483e747664e402d4a7df912c301efe9b34e914"},
-	dur_brannoc = {"8b67d9017b719ba8c1ee716b0b3329409c6286966cf2db707f8d20d590518366",
-		"b3280e0ad218d7ad941051d65cdac001023bdf72ae5c67734a7d170d29b806d3",
-		"c322c9d33d63440c0972920a311a8812648bbcb43fab0935b9e24e42c5ac1b45"},
-	lethariel = {"e4f1b0684b700d00ef9295074a9e4cb1e05b425623c209603655fee4f7cbf94c",
-		"f7bd83b9fdc21bfc427b307b98f6747082f6071e48a6910680d5c3dda0e1acf9",
-		"35dc4a99db63acfc47b8d8e0b105f1fadfec725127f2b23550bc2576c13756ce"},
-	nhal_veyr = {"befb3409e7fc9c648aaea5d3201fb5bdbc985d952bf8243289cfbde7a2ca3f6a",
-		"9bbee03f8976aa26f1821ab1ea503502bcc96d4a224fa3d01ba028ccdc85ae35",
-		"22f7fffe3de4b1c3864cda08c3536e2f9f649fdd15eaaf325f52981ac2a0bac4"},
-	gor_drazhak = {"177852549db14f9c07f4d0feddd0845ef98adeba1f2a1be761b00fa0cf9ace89",
-		"0b8d0105c021388f282720661b7ee65f23893499a5d3ca828ff13dd38a7a2706",
-		"6e1fa6070b922e046fac55b61739fb02f7bfa19a3b9526c9df1c7d9e64951cfb"},
+	highcourt = {"2ab44450598c11ac5e5f2b3e50d2949bacbd51270f2c384f84a9b54e3ba646d4",
+		"246c4aa60debe558bba1014c5ff02e159b068f652487935d0a139bc12cf208ea",
+		"cffb47dfb2592468e9ba94aafbb26e536a14b94941234f88f1a5aa45509ac52c"},
+	dur_brannoc = {"86143810fdcc0f961aa9fc0a65398466b67166a3e63bb5c91e4d3c73f564a4fe",
+		"723a569361183c4ebe7c811fecfb5513416d55c5650b0396723f63e5677e3342",
+		"44624c6682b7acdcfc018f6d0aacc6f2967d1d1220ba3e05d07ec50199cb090c"},
+	lethariel = {"c4c9b02372ccc4725b3953ce7b22533374222df5cdf320b710e531e7bad3b424",
+		"bb510489b81be68119a29d3d2134da1b229271399dd7f35b3092bbb98802afaa",
+		"b9b4ee544a3827ec4c3f0272bf5f930d5ed66bf73513c37e26c5388ce1db882d"},
+	nhal_veyr = {"9f92f6bc446db67b037ad81382afc89c2f8d8729bda126cdbadfbb38a8ca3809",
+		"f176d799653054066fe5da987cdcc09f0083c0ec8f613cec3c057f822c2cdc18",
+		"cffdc8d19df2e8d8d6d98adcabd4438876283cef2012e04c41dcf2868e149eb7"},
+	gor_drazhak = {"aa86eda103c45f6f12546a453abdcc326aefb688d409365c7b67609070b6b0db",
+		"9504ae5ffcd016a6d48431b6146bb2cc8df2f81ce62b821e26c8aa890cfb5f1d",
+		"f74459255afe21f51c0268ab909da78219aefb9b68d6dd687bde3c3824cea099"},
 	kezamba = {"9817ba378a32752eadc3d27fc49f559923e29a6593e6dee73c3a4563e666cf7a",
-		"7afb9fb0f5e8350a70c90ad6857d90da22920d7c9419def4dd4c03b57110ff8a",
-		"3747933548d603b228ada46d086d25066d1feab2f59f1792c68cd5a6ff89a78e"},
+		"a54cb4557343f2c13fe7c0fda4b77387c061a2fe06bbf2d7c62b36c982710012",
+		"6ae12ef00d34b7312ed6a3033832a40a6e9cdfa33d3ba26c3af97848b9091010"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
