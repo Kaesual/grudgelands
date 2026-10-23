@@ -262,9 +262,11 @@ do
 			end
 		end
 	end
-	eq(#files, 42, "C the 42 quest files are read")
-	-- Round 57: the six start zones' 92 quests became 30 (12 shared, 18 local).
-	eq(quests, 423, "C 423 quests ship (485 less the start zones' rework)")
+	-- Round 58: the two guild files and the four Battlegrounds zones' files.
+	eq(#files, 48, "C the 48 quest files are read")
+	-- Round 57: the six start zones' 92 quests became 30 (12 shared, 18 local);
+	-- Round 58 adds the Miner's Guild's 28.
+	eq(quests, 451, "C 451 quests ship (485 less the start zones' rework, plus the guild's 28)")
 	eq(table.concat(repeatables, ", "), "", "C no repeatable quest ships")
 	local empty = {}
 	for _, key in ipairs(hub_lines) do
