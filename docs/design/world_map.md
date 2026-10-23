@@ -610,16 +610,17 @@ drawn from the base image above. The gliding version (approved in playtest,
   (`grug_quests.markers_changed`: a quest change, held objective items as
   the quest tracker sees them every 0.5 s, a level change), and at a check
   every 5 s (each player in their own phase) only when their key changed:
-  the quest markers' version (a repeatable's cooldown ending shows then),
-  the home, the discovered waystones, the Claim Stone waypoint or the
+  the quest markers' version, the home, the discovered waystones, the Claim Stone waypoint or the
   faction. Party member names are
   read again only on a party change and that 5 s check. The window size and
   the location line are read every 0.5 s (Round 30, perf review #12); a
   window change then resends every element's position. Only changed HUD
   values are sent. The quest givers' states come from one
   `grug_quests.marker_states` call per player (one decoded quest state for
-  all givers, memoized until the quest state, held objective items, the
-  level or the end of a repeatable's cooldown change it).
+  all givers, memoized until the quest state, held objective items or the
+  level change it). A story quest's giver (Round 57) shows the story icon
+  of its status (`grug_map_quest_story_<status>.png`,
+  [quests.md](quests.md) "Confirmed by the user").
 - **Cost** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
   (LuaJIT, no engine; one player, 0.09 s server steps, about ten markers in
   the window, two party members moving along) measures about 18 HUD packets

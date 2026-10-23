@@ -48,7 +48,8 @@ What a change needs:
 | Nothing saved changes meaning | compatible |
 | World generation, or map-bound state (§3.2) the new code cannot read | map reset |
 | A removed item: a step replaces or removes it in inventories, offline characters included, and the waiting packed belongings in `grug_housing`'s `recovered:*` entries and the item strings of their contents in the `packed:*` content keys (and in the `lists` of a pass the game has not cleaned yet; a step never reads the map: items in node inventories on the map stay, and at a map reset the pre-reset pass packs those in claims, whose unregistered items the game drops at the next load, §3.5), and in the mail (since 0.48.0: the item strings of letter attachments in `grug_mail`'s mod storage, keys `box:<name>`, and the player list `grug_mail_out`); the first, 0.44.0, removes the mount items and every skill outside the hotbar (§5.8) | migrate |
-| Restructured character state (quests and their objectives, prerequisites or order, talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
+| Restructured character state (talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
+| A reworked quest (its objectives, prerequisites or order changed): it takes a new id, and the old id is dropped as an unknown id (§4; Round 57 ruling 21) | compatible |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
 | A change to a validated world-creation scalar the game forces over `map_meta.txt` itself (`core.set_mapgen_setting*` with `override_meta`, `r7_native.lua` `apply_and_validate_main`: the six v7 terrain and climate noise params and, since Round 49, `mgv7_spflags`) | map reset |
@@ -58,9 +59,11 @@ that is not map-bound and that the new code cannot read is converted by a
 declared step (§5) whose test runs the step end to end, or declared a new
 server; never converted at load by code
 scattered over the mods (`tools/check_fresh_server.py` guards the retired
-mechanisms and keeps the markers in grug_core's runner). Ids of quests,
-items, achievements and waypoints stay stable; a renamed item may keep its
-old name with `register_alias` (`tools/check_fresh_server.py` allows it).
+mechanisms and keeps the markers in grug_core's runner). Ids of items,
+achievements and waypoints stay stable; a renamed item may keep its old
+name with `register_alias` (`tools/check_fresh_server.py` allows it).
+Quest ids change only for a good reason, and a quest whose objectives
+change takes a new id (Round 57 ruling 21); unknown ids never crash (§4).
 Mapgen parameters a version needs keep being set by the game itself.
 
 Every lane states its change's outcome in its report and the reviewer checks

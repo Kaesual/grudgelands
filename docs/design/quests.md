@@ -13,7 +13,10 @@ a place" objective, quest tags and the turn-in hook by Round 36 Lane E,
 quests removed by Round 46 ruling 8, 2026-10-12
 ([plan](../planning/round46-plan.md) §2); the system quest kind and the
 starter quest by Round 48, 2026-10-14
-([mail plan](../planning/mail-plan.md) rulings 15 and 17.2).
+([mail plan](../planning/mail-plan.md) rulings 15 and 17.2); shared quests,
+story and free play, completion texts, choice rewards and the end of the
+repeatable switch by Round 57, 2026-10-23
+([plan](../planning/round57-plan.md) §2 rulings 9–17 and 21, §3).
 
 
 ### Confirmed by the user
@@ -38,10 +41,13 @@ starter quest by Round 48, 2026-10-14
   [world_map.md](world_map.md#quest-targets)).
 - Quest lists (the quest giver's dialog and the quest log) show each quest's
   status as the entry's colour, explained by a legend or the list's tooltip:
-  available gold, ready to complete green, in progress blue, locked grey; a
-  repeatable quest ends in "(R)", which the legend explains only while a
-  repeatable quest is registered (none ships, below). The giver's dialog is wide enough for the
-  longest title at a full-HD window; quest texts are read-only (Round 35).
+  available gold, ready to complete green, in progress blue, locked grey.
+  Once a story quest is listed (Round 57 ruling 13), the list has two
+  categories: a "Story" header in the story violet above the story quests
+  and a "Side quests" header above the others, their titles set in; every
+  entry keeps its status colour and a header selects nothing. The giver's
+  dialog is wide enough for the longest title at a full-HD window; quest
+  texts are read-only (Round 35).
 - The giver's dialog opens on the first quest ready to complete, else the
   first one to accept, else the first in the list, and preselects the same
   way after every Complete and every Accept, so several finished quests are
@@ -71,6 +77,13 @@ starter quest by Round 48, 2026-10-14
 - Marker precedence: ready to turn in (yellow question mark), available
   (yellow exclamation mark), active but incomplete (silver question mark),
   relevant level-locked quest (silver exclamation mark), otherwise none.
+  Story quests have their own marker (Round 57 ruling 13): the same symbol
+  in violet, bright where the gold is and muted where the silver is, so the
+  status still reads on its own. The most urgent status of a giver wins
+  first, and a story quest of that status makes it the story marker: a
+  ready side quest beats an available story quest. The map window and the
+  minimap draw the same values with their own icons
+  (`grug_map_quest_story_<status>.png`, `tools/r57_qsys/render_story_icons.py`).
 - Quest chains use existing faction story and zone identities. No cross-faction
   cooperative questline is introduced.
 
@@ -81,10 +94,10 @@ starter quest by Round 48, 2026-10-14
   notice). Each tracked quest is one HUD line showing only its objective
   (e.g. "0/4 Bring Raw Meat"), no title; a quest ready to turn in shows
   "Return to <turn-in NPC>" (a system quest its own line, "System quests"
-  below). A quest with several objectives shows them on
-  one compact line ("Wood Axe 0/1, Wood Pickaxe 0/1"), a travel quest reads
-  "Travel to <NPC>" and a repeatable starts with "Repeatable: ". Two quests
-  with identical objectives may read the same. Keep the tab authoritative; do not place the entire journal
+  below; a shared quest the turn-in of the variant the player took). A
+  quest with several objectives shows them on one compact line ("Wood Axe
+  0/1, Wood Pickaxe 0/1") and a travel quest reads "Travel to <NPC>". Two
+  quests with identical objectives may read the same. Keep the tab authoritative; do not place the entire journal
   permanently on screen.
 - Item turn-ins accept already-owned and traded/crafted-by-others items.
   Descriptions say “Bring ...” instead of claiming to verify personal crafting.
@@ -102,12 +115,13 @@ starter quest by Round 48, 2026-10-14
   must not accidentally hide the shared eligible participant event from quests.
   Quest min-level/prerequisite and target rules remain independent.
 - Abandoning a quest removes its counters, not ordinary player items. It may be
-  accepted again if prerequisites still hold. Completed one-time quests remain
-  completed and do not consume active-log slots; repeatables follow
-  "Repeatable quests" below.
+  accepted again if prerequisites still hold. Completed quests remain
+  completed and do not consume active-log slots; every quest is done once
+  ("Every quest once" below).
 - One-time XP/coin/item rewards, with all prerequisites, consumed items and
-  reward space preflighted together; insufficient space refuses the turn-in
-  without consumption or a dropped reward. A quest reward never waits in the
+  reward space (the picked choice included, "Choice rewards" below)
+  preflighted together; insufficient space refuses the turn-in without
+  consumption or a dropped reward. A quest reward never waits in the
   mail or in an escrow: it is paid at the turn-in or refused (the mailbox,
   [mail.md](mail.md), carries letters, not quest rewards).
 - Every quest description includes its minimum level and the titles of its
@@ -125,8 +139,9 @@ starter quest by Round 48, 2026-10-14
   the faction of its race (a new giver's own race, else its settlement's),
   and the other faction gets the shared refusal line
   ([settlements.md](settlements.md)). Dialog, floating symbols and atlas use
-  the same visibility: the other faction never sees a giver's marker. A
-  quest's turn-in NPC is of its giver's faction (checked at load).
+  the same visibility: the other faction never sees a giver's marker. Every
+  giver has a turn-in NPC of its own faction (checked at load, per variant
+  of a shared quest, Round 57).
   NPCs with multiple quests offer a simple list; independent tasks can form
   bundles without a separate bundle engine.
 - Explain optional crafting through a side branch; do not force every player
@@ -383,31 +398,24 @@ counted name, names the text never says).
   full) and posts a loot line to the message feed, so a party never competes
   for it. Each quest drop pairs with an item objective of its quest.
 
-## Repeatable quests (Ruling 42)
+## Every quest once (Round 57 ruling 11)
 
-**No repeatable quest ships** (Round 46 ruling 8): Round 29's 55
-repeatable bounties, the 11 `bounty`/`bounties` giver lines that held
-nothing else and the front bounty baseline (two repeats per bounty in the
-41–60 budget) are removed.
-A saved quest state that still holds one of their ids drops it from the
-active and tracked quests at load; `completed` and `cooldowns` entries are
-only looked up by id (`state.lua`, `tools/r46_xp`). The island bounties are
-one-time quests and stay: they pay coin and materials and count nothing
-toward leveling.
-
-The mechanism stays for later content: a quest with
-`repeatable = {cooldown}` can be taken again once the cooldown (seconds of
-real time) has passed since its turn-in. It is labelled "Repeatable" in the
-dialogue list and detail (with the cooldown), the quest log and the HUD;
-while it cools down the giver lists it with "Repeatable again in N min.".
-Its first completion counts for every quest that requires it; a repeat
-starts its counters from zero.
+Every quest is done exactly once; there are no repeatable quests and no
+switch for them. Round 46 removed the 55 repeatable bounties (ruling 8);
+Round 57 removed the `repeatable` field from the code, the loader, both
+validators, the map and the tools: a quest file that still names it stops
+the load like any unknown field (`E-unknown-key`). A saved quest state that
+still holds a removed quest id drops it from the active and tracked quests
+at load; `completed` is only looked up by id, and an old state's
+`cooldowns` are never read (`state.lua`, `tools/r46_xp`). The island
+bounties are one-time quests: they pay coin and materials and count
+nothing toward leveling.
 
 ## System quests (Round 48)
 
 A **system quest** is registered by code, not by a quest file: it has no
-quest giver, no turn-in NPC, no objectives, no quest drops and no repeat
-(mail plan ruling 17.2, [mail.md](mail.md) §8). The mod that owns it
+quest giver, no turn-in NPC, no objectives, no quest drops and no choice of
+rewards (mail plan ruling 17.2, [mail.md](mail.md) §8; Round 57). The mod that owns it
 accepts it through the normal accept (the 20-quest log limit holds) and
 turns it in through the normal turn-in, so its rewards, the turn-in hook
 and the achievements work as for any quest. It is ready to turn in from
@@ -420,9 +428,10 @@ The one system quest is the starter quest `mailbox_visit`, "Use a mailbox
 in one of the cities" (level 1, both factions): turn-in line "Open a
 mailbox beside the waystone of a capital or a starting village", turned in
 by opening any mailbox; reward one kill equivalent at level 1 (30 XP) and a
-fixed 25c (`rewards.copper`, the first letters' postage). Quests have no
-completion text: its completion line goes to the message feed with the
-turn-in. The quest tools (`validate.py`, `ledger.py`, `income.py`) read
+fixed 25c (`rewards.copper`, the first letters' postage). It is turned in
+without a dialog, so its completion line (grug_mail's) goes to the message
+feed with the turn-in; a quest-file quest shows its completion text in the
+turn-in dialog ("Completion text" below). The quest tools (`validate.py`, `ledger.py`, `income.py`) read
 only the quest files, so they do not count it.
 
 ## Quest data (per zone)
@@ -432,31 +441,40 @@ Quest content is data, one file per zone, read at load by
 
 - `mods/PLAYER/grug_quests/data/zones/<zone_id>.quests.json`: the zone's
   hubs (at most two givers per hub, at most two lines per giver), their givers
-  and lines, and its quests (format: design frame §4.7: `giver`, `turnin`,
+  and lines, optionally the file's rework flag (`"reworked": true`, Round 57,
+  below), and its quests (format: design frame §4.7: `giver`, `turnin`,
   `min_level`, reward `level`, `requires` across zones, `objectives`,
-  `quest_drops`, `repeatable`, `rewards` with `weight`, optional `copper`
-  and `items`; the design notes `lesson`, `duration_min`, `optional`,
-  `climax`, `group` and `notes` are allowed and not read; `tags`, Round 36,
-  is a list of snake_case names the achievements count, below). Any other field
-  of a quest, an objective, its rewards or a quest drop stops the load
-  (`E-unknown-key`): fixed reward `xp`, `faction`/`race` gates and kill
-  objectives by entity names (`mobs`) or zone filter (`zone`) were retired
-  in Round 30.
+  `quest_drops`, `rewards` with `weight`, optional `copper`, `items` and
+  `choices`; Round 57: `variants` in place of `giver` and `turnin`, `texts`,
+  `story`, `completion`; the design notes `lesson`, `duration_min`,
+  `optional`, `climax`, `group` and `notes` are allowed and not read;
+  `tags`, Round 36, is a list of snake_case names the achievements count,
+  below). Any other field of a quest, an objective, its rewards, a choice,
+  a variant or a quest drop stops the load (`E-unknown-key`): fixed reward
+  `xp`, `faction`/`race` gates and kill objectives by entity names (`mobs`)
+  or zone filter (`zone`) were retired in Round 30, `repeatable` in Round
+  57.
 - `<zone_id>.front.quests.json`: front quests given by that zone's givers on
   the line `front`, which the zone's own file declares for that giver; the
   zone's own quests never use `front`.
 - New givers stand at a free quest socket of the hub's settlement
-  (`{"npc", "new": {"name", "race", "socket"}, "lines"}`): the socket-bound
-  NPC system places the quest giver there with that name and race; the race
-  sets the giver's faction, so a giver of the other faction can stand in a
-  settlement (a spy).
+  (`{"npc", "new": {"name", "race", "socket", "role"?}, "lines"}`): the
+  socket-bound NPC system places the quest giver there with that name and
+  race; the race sets the giver's faction, so a giver of the other faction
+  can stand in a settlement (a spy). The optional `role` (Round 57) makes it
+  one of a giver role's NPCs ("Shared quests" below); a code-registered NPC
+  names it in `grug_quests.register_npc`.
 - The loader checks every file at load and stops the server with every
   finding listed, each naming the file and the quest: givers and lines per
   hub, front lines, objective shapes, known NPCs, items, groups and roles,
-  critter targets, areas that host their target, quest-drop pairing, and the
+  critter targets, areas that host their target, quest-drop pairing, the
   level fit (every level a target, quest-drop source or item source is met
-  at lies within the quest's reward level ±3). `tools/r28_design/validate.py` checks the same rules on the
-  design files, plus the atlas checks.
+  at lies within the quest's reward level ±3), and since Round 57 the
+  variants, the faction pairing per giver, the choices and their enchants,
+  and in reworked files the rules of "The rework flag" below.
+  `tools/r28_design/validate.py` checks the same rules on the design files
+  (the enchant pools excepted: the game's `grug_items.check_affixes`), plus
+  the atlas checks.
 - Item objectives allocate held items exact items first, then groups; the
   turn-in takes exactly what the progress counted.
 - **Chapter chains** (Round 36): `requires` crosses files, and a quest whose
@@ -466,8 +484,8 @@ Quest content is data, one file per zone, read at load by
   two bounties that did). The main line's chapter gates (41, 46, 53, 60)
   follow from it.
 - **Turn-in hook and tags** (Round 36): `grug_quests.register_on_turn_in(fn)`
-  calls `fn(player, quest_id, def)` once per completed turn-in (a
-  repeatable at each), after the state and the rewards are stored; a refused
+  calls `fn(player, quest_id, def)` once per completed turn-in, after the
+  state and the rewards are stored; a refused
   turn-in calls nothing, and a failing observer keeps neither the others nor
   the turn-in from completing. `grug_achievements` counts through it
   `quest:<quest id>` (that quest's turn-ins; a one-time quest's achievement
@@ -479,6 +497,119 @@ Quest content is data, one file per zone, read at load by
   front file needs its host's `front` line. Removing a required quest or a host's `front` line
   stops the load, so replace dependent zone files in one change (or keep the
   required ids).
+
+## Shared quests (Round 57 ruling 9)
+
+A task that is the same in several places is **one quest**: one id, given
+and handed in by several NPCs, done once per player everywhere. No giver
+offers a quest the player completed (or holds) elsewhere.
+
+- **Variants.** A shared quest carries `variants` in place of `giver` and
+  `turnin`, one per giver zone: `{"zone", "givers", "turnins"?,
+  "objectives"?, "quest_drops"?, "text"?, "completion"?}`. Kill objectives
+  are zone-bound (their names resolve in a zone, "The quest-name
+  guarantee"), so each variant counts **its own zone's names**: a variant's
+  `objectives` lists one entry per objective of the quest with only the
+  zone-bound fields it changes (kill and item: `roles`, `area`; talk:
+  `npc`; use: `place`; quest drops: `roles`, `area`), and a bare area,
+  place or placeholder id means the variant's zone. The counts, the item
+  ids, the rewards, the levels and the requirements are the quest's own,
+  the same in every variant. The map's targets and the "Return to" line
+  follow the variant the player took.
+- **Where it lives.** A shared quest lives in the quest file of its first
+  variant's zone (`E-variant` elsewhere), so every tool that reads quests
+  per zone file finds it in a real zone; `tools/r28_design/r28common.py`
+  (`zone_quests`, `quest_variants`, `quest_view`) gives the tools each
+  variant as that zone's view, and the ledger counts it once per route.
+- **Givers and turn-ins.** `givers` lists NPC ids or giver roles,
+  `{"role", "faction"}`: every quest NPC registered with that role and
+  serving that faction gives it (bound once every mod is loaded; Round 58's
+  camp foremen). `turnins` defaults to the givers. An NPC gives a quest in
+  one variant only, so the giver a player takes it from names the variant;
+  the active quest keeps it (`variant`, `giver`) and is listed and handed
+  in only at that variant's turn-ins. An active entry saved without a
+  variant follows the first one.
+- **Hubs and lines.** Each giver NPC of a variant is a hub giver of the
+  variant zone's file (`E-giver-not-hub`), so a shared quest is given in
+  several hubs while an NPC still gives quests in one hub only
+  (`E-giver-twice`). The quest's `line` is one name, one of the (at most
+  two) lines of every giver NPC that gives it; a role giver has no hub and
+  no line check.
+- **Factions.** A shared start quest spans both factions (three Accord and
+  three Throng towns): every giver has at least one turn-in of its own
+  faction in its variant (`E-turnin-faction`); the dialog still serves
+  only the giver's faction.
+- **Texts.** The text a player reads is the giver's own (`texts` by the
+  giver's NPC id), else its race's (`texts` by race id: the giver's race),
+  else the variant's `text`, else the quest's; the completion text the
+  variant's, else the quest's. Placeholders resolve in the variant's zone.
+  A shared quest has one name: its title takes no placeholder.
+
+## Story and free play (Round 57 rulings 10 and 13)
+
+- **Story quests** (`"story": true`) guide the player from A to B and may
+  form chains. Their marker and their list category are their own
+  ("Confirmed by the user").
+- **Every other quest is free play**: it requires nothing but a level and
+  has at most one follow-up (a quest that names it in `requires`), rarely:
+  the zone's last quest that leads to the next zone's giver, a guild's small
+  storyline. A place offers its free quests at once.
+- These two rules hold only in reworked files ("The rework flag").
+
+## Completion text (Round 57 ruling 14)
+
+A quest may carry `completion`, a short closing paragraph. At the turn-in
+NPC, while the quest is ready, the dialog shows it in place of the quest
+text, above the objectives and the rewards. The quest log keeps the quest
+text. A system quest has no dialog: its mod posts its own completion line.
+
+## Choice rewards (Round 57 rulings 15–17)
+
+- `rewards.choices` lists 2–4 rewards, `{"item", "count"?, "affixes"?}`;
+  the player picks one at the turn-in. Every player sees the same choice
+  (no class filter); an equipment choice offers one item per armor class
+  (cloth, leather, metal) or one weapon per weapon line.
+- **The offer** shows the choices as item icons with their tooltips, and
+  names them in the reward text ("and one of: …"), before any click.
+- **The turn-in** shows them as item buttons with their tooltips above the
+  Complete button; a click picks one (framed and named, "Chosen: …").
+  Complete refuses until one is picked ("Choose your reward first."); the
+  preflight checks room for the picked reward, and a refused Complete keeps
+  the pick. A system quest never carries a choice.
+- **Equipment rewards** (a choice or `items`) are made at the quest's
+  reward `level` as their item level, with the author's fixed enchants
+  (`affixes`: `{"channel": "prefix" | "suffix", "stat"}`, at most one per
+  channel, each in the item's enchant pool for that channel), never random
+  ones, each of the item level's tier: `grug_items.make_stack`
+  (grug_quality, the one store path: values, quality, name, tooltip).
+  Every reward stack gets the receiver's tooltip as `grug_inventory.give`
+  initialises one (the weapon's "Effective at level" line).
+- **Tooltips.** Item buttons and images show their definition's
+  description, never a stack's meta, so the dialog's tooltips are
+  `grug_items.tooltip_text` of the stack the player would get (the shared
+  helper; the recipe details use the same).
+
+## The rework flag (Round 57)
+
+A quest file with `"reworked": true` follows the rules the quest rework
+introduces; the files of levels 11–60 keep their chains until their own
+rework (Round 59 and later), and nothing of this section ever reports an
+unflagged file. In reworked files (both validators, the same codes):
+
+- `E-free-requires`: a free quest requires at most one quest, the one it
+  follows; only story quests chain;
+- `E-free-follow-ups`: a free quest is required by at most one quest of a
+  reworked file;
+- `E-free-chain`: a free follow-up has no free follow-up of its own;
+- `E-reward-budget` (ruling 17): per zone, capitals excepted, at most two
+  quests with an equipment reward of one enchant and one with two enchants
+  (counted in every zone a shared quest is given in);
+  `W-reward-levels` when two of one kind share a reward level;
+- `E-reward-requested`: a reward (an item or a choice) is never a requested
+  item, nor a member of a requested group;
+- `W-night-count` (ruling 12; a day lasts 15 real minutes, a night 5): a
+  kill objective whose targets spawn only at night asks 20–50 % of the
+  median count of the zone's day kill objectives (leaders left out).
 
 ## For content lanes
 

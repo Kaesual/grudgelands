@@ -7,9 +7,10 @@ the migration tool (`tools/migrate.py`), one declared step per `migrate`
 version with its test, and the game's online part of a step runs only through
 grug_core's runner (`grug_core.migrations`); never through load-time
 conversions scattered over the mods. The mechanisms the fresh-server
-development mode removed stay removed. Ids of quests, items, achievements and
-waypoints stay stable; a renamed item may keep its old name with
-`register_alias`, so aliases are no longer refused here.
+development mode removed stay removed. Ids of items, achievements and
+waypoints stay stable (quest ids change only for a good reason, a reworked
+quest taking a new id; Round 57 ruling 21); a renamed item may keep its old
+name with `register_alias`, so aliases are no longer refused here.
 
 Also (Round 44): the baked map art's Lua copy is current
 (tools/r44_mb/gen_baked_art.py --check and its decoder self-test), since art
