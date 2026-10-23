@@ -26,8 +26,8 @@
 -- the page shows the chosen recipe.
 --
 -- Item tooltips: grug_items.tooltip_text (grug_quality's one helper) and the
--- item's source lines. "Open ▶" never goes to a loop-back recipe (bars from
--- their block, planks from stairs). Every text is clipped or wrapped to its column (the
+-- item's source lines. "Open ▶" never goes to an exact inverse recipe (bars
+-- from their block, planks from stairs). Every text is clipped or wrapped to its column (the
 -- window is the same on desktop and web).
 
 local F = grug_jobs.CRAFT_FIELDS
@@ -287,10 +287,23 @@ local function knows(player, recipe)
 end
 grug_jobs.details_knows = knows
 
--- Whether `recipe` (which makes `item`) loops back: one of its item
--- ingredients is made from `item` (a block unpacked into bars, planks from
--- stairs). It is no real source, so Open ▶ skips it.
-local function loops_back(recipe, item)
+-- Whether `recipe` (which makes `item`) is the exact inverse of a recipe
+-- of `item`: its one ingredient is made only from `item` (a block unpacked
+-- into bars, planks from stairs). It is no real source: Open ▶ never goes
+-- there.
+local function inverse(recipe, item)
+	local entry = recipe.ingredients[1]
+	if #recipe.ingredients ~= 1 or not entry.item then return false end
+	local back = grug_jobs.recipes_for_output(entry.item)
+	for _, other in ipairs(back) do
+		if #other.ingredients ~= 1 or other.ingredients[1].item ~= item then return false end
+	end
+	return #back > 0
+end
+
+-- Whether one of `recipe`'s item ingredients is made from `item` (the dye
+-- mixes): such a recipe is taken only when no other remains.
+local function cycles(recipe, item)
 	for _, entry in ipairs(recipe.ingredients) do
 		for _, back in ipairs(entry.item and grug_jobs.recipes_for_output(entry.item) or {}) do
 			for _, input in ipairs(back.ingredients) do
@@ -301,21 +314,27 @@ local function loops_back(recipe, item)
 	return false
 end
 
--- The recipe "Open ▶" shows for an item: the first the player knows, else
--- the first (the index's order), never a loop-back; nil without one (the
+-- The recipe "Open ▶" shows for an item: never an exact inverse; of the
+-- rest the ones that do not cycle back first, each group the first the
+-- player knows, else its first (the index's order); nil without one (the
 -- box then shows the source lines only).
 local function recipe_for(player, item)
-	local first
+	local groups = {{}, {}}
 	for _, source in ipairs(index().sources(item)) do
 		if source.kind == "recipe" then
 			local recipe = grug_jobs.recipe(source.id)
-			if recipe and not loops_back(recipe, item) then
-				if knows(player, recipe) then return recipe end
-				first = first or recipe
+			if recipe and not inverse(recipe, item) then
+				table.insert(groups[cycles(recipe, item) and 2 or 1], recipe)
 			end
 		end
 	end
-	return first
+	for _, list in ipairs(groups) do
+		for _, recipe in ipairs(list) do
+			if knows(player, recipe) then return recipe end
+		end
+		if list[1] then return list[1] end
+	end
+	return nil
 end
 
 grug_jobs.details_recipe_for = function(player, item) return recipe_for(player, item) end
@@ -336,8 +355,10 @@ end
 -- The state.
 --
 
+-- The box it was opened from is kept with the stack: ui.lua's one
+-- box_return slot is taken over when the queue view opens from this page.
 function grug_jobs.open_recipe_details(st, page)
-	st.details = {pages = {page}}
+	st.details = {pages = {page}, from = st.box ~= "details" and st.box or nil}
 	grug_jobs.open_craft_box(st, "details")
 end
 
@@ -571,8 +592,13 @@ local function fields(player, st, fields_)
 		if pages and #pages > 1 then
 			table.remove(pages)
 		else
+			local from = st.details and st.details.from
 			st.details = nil
-			grug_jobs.close_craft_box(st)
+			if from then
+				st.box, st.box_return = from, nil
+			else
+				grug_jobs.close_craft_box(st)
+			end
 		end
 		return true
 	end

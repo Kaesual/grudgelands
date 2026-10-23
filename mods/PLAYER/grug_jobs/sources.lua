@@ -432,8 +432,9 @@ end
 
 -- The tables `build` takes, from the loaded mods (after load). The pure
 -- mapgen data files are read from grug_mapgen's folder: the wild plants
--- (wp40/world_content_catalog.lua), and the ore rows and the decorations
--- (wp40/r7_r6_manifest.lua; a decoration's schematic names its nodes).
+-- (wp40/world_content_catalog.lua), the ore rows and the decorations
+-- (wp40/r7_r6_manifest.lua; a decoration's schematic names its nodes) and
+-- the production rows' surface nodes (wp40/r7_content.lua).
 function M.game_data()
 	local data = {items = core.registered_items, recipes = grug_jobs.recipes,
 		entities = core.registered_entities, name_of = grug_core.item_name, fixed = M.FIXED}
@@ -489,6 +490,16 @@ function M.game_data()
 		data.world_nodes = {}
 		for _, list in ipairs({catalog.reef, catalog.freshwater, catalog.seagrass}) do
 			for _, name in ipairs(list or {}) do data.world_nodes[#data.world_nodes + 1] = name end
+		end
+		-- The production rows' surface nodes (wp40/r7_content.lua, mask bit 1:
+		-- the biomes' ground, stone and ice), read from the file's row table
+		-- (its factory needs the mapgen's construction).
+		local handle = io.open(mapgen .. "/wp40/r7_content.lua", "rb")
+		local text = handle and handle:read("*a") or ""
+		if handle then handle:close() end
+		local rows = text:match("local ACCEPTED_R6_ROWS = (%b{})") or ""
+		for name, mask in rows:gmatch('{"([%w_:]+)",%s*(%d+)}') do
+			if tonumber(mask) % 2 == 1 then data.world_nodes[#data.world_nodes + 1] = name end
 		end
 		local manifest = dofile(mapgen .. "/wp40/r7_r6_manifest.lua")()
 		data.ore_rows = {}

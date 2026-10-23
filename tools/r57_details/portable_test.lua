@@ -304,6 +304,11 @@ for token in pairs(KNOWN_GAPS) do
 	check(FLEXIBLE_GAPS[token] or not real.has_source(token),
 		"R a listed gap still has no source (else drop it): " .. token)
 end
+for _, case in ipairs({{"default:desert_cobble", "default:desert_stone"},
+		{"default:ice", "default:ice"}, {"default:mossycobble", "default:mossycobble"}}) do
+	check(find(real.sources(case[1]), {kind = "dig", node = case[2]}) ~= nil,
+		"R " .. case[1] .. " is dug from " .. case[2] .. " (a mapgen surface row)")
+end
 local bucket = real.sources("grug_farming:water_bucket")
 check(#bucket == 1 and bucket[1].kind == "use" and bucket[1].text == S.FIXED["grug_farming:water_bucket"],
 	"R the Water Bucket has its fixed line (filled at water)")
@@ -439,6 +444,9 @@ check(fit, "P every label fits its column " .. tostring(long))
 local RF = grug_jobs.details_recipe_for
 check(RF(P1, "grug_materials:steel_bar") == nil,
 	"P Steel Bar has no Open ▶ (its Basic recipe unpacks the block; the alloy is its source)")
+local blue = RF(P1, "dye:blue")
+check(blue and blue.output == "dye:blue", "P Blue Dye opens its mix (a cycle among dyes, no inverse)")
+check(RF(P1, "dye:dark_green") ~= nil, "P ...and Dark Green Dye")
 local wood_recipe = RF(P1, "default:wood")
 check(wood_recipe and not wood_recipe.ingredients[1].item:match("^stairs:"),
 	"P Apple Wood Planks open a real recipe, not stairs or slabs back to planks (" ..
@@ -613,6 +621,13 @@ if first_ench then
 	page = page_of()
 	check(page:find("Enchant: T", 1, true) ~= nil and context.grug_craft.details.pages[1].id == first_ench,
 		"P ...it opens that enchant's page")
+	-- View Queue from the page, close it, ◀ Back: the enchant box again.
+	click_page({[DF.queue] = "View Queue"})
+	eq(context.grug_craft.box, "queue", "P View Queue from the enchant page")
+	click_page({[DF.back] = "◀ Back to recipe"})
+	eq(context.grug_craft.box, "details", "P ...its back returns to the page")
+	click_page({grug_craft_dback = "◀ Back"})
+	eq(context.grug_craft.box, "enchant", "P ...and ◀ Back to the enchant box")
 end
 local with, total = 0, 0
 for _, list in pairs(real.by_item) do

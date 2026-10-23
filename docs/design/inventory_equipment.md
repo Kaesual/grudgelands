@@ -343,8 +343,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     player's tier) other than the chosen one: it chooses the recipe in its
     area tab and closes the page. Then one box per ingredient: its icon
     (tooltip: the item's own tooltip and its sources), "<name> ×N", "you
-    have H" (orange when short), **Open ▶** when it has a recipe (the first
-    the player knows, else the first) and, for a group entry, **Kinds ▶**;
+    have H" (orange when short), **Open ▶** when it has a recipe (never an
+    exact inverse such as bars from their block; recipes that cycle back,
+    the dye mixes, only when no other remains; the first the player knows,
+    else the first) and, for a group entry, **Kinds ▶**;
     below, one line per kind of source, generated from the registered data
     (`grug_jobs/sources.lua`): the recipes ("Basic recipe", "Tailor T2
     recipe at a Tailor Bench"), the furnace ("Furnace: from Iron Lump"),
