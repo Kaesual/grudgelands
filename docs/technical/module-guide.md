@@ -419,7 +419,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_jobs.MENDER_TITLE` (one constant, "Grudge-Free Repairs"), the socket's
   profession kept, so `open_trainer` opens only `grug_repair.open_trainer`'s
   form and the trainer provider (`grug_repair/providers.lua`, any trainer
-  socket, the only repair provider since Round 46: no station repairs) and the
+  socket; with the camp vendor's `camp_vendor` of Round 58 the only repair
+  providers: no station repairs since Round 46) and the
   faction rule apply as to a trainer; `grug_map/providers.lua` marks it as a
   `service` with `grug_map_repair.png` and the title as label (no tooltip,
   Round 46); `grug_core/settlement_sockets.lua` only validates that a trainer
@@ -1754,7 +1755,20 @@ tools](#player-meta-read-by-external-tools).
     traded through `grug_guild.trade_in` after the row is re-checked against
     the one shown. The camp vendor and the
     guild house's exchange counter carry the field. The guild's consumables
-    pay their catalogue `sell_copper` (`prices.lua`).
+    pay their catalogue `sell_copper` (`prices.lua`). A guild vendor with
+    `guild_page = true` (the camp vendor, lane CAMPNPC) has the reputation
+    page as its Buy mode: `grug_guild.vendor_rows`, buttons
+    `repbuy_<index in catalog.CONSUMABLES>` for the rows the rank unlocks
+    (`session.rep_shown`, the click's cross-check), bought through
+    `grug_guild.buy`. `repairs = true` (the camp vendor) shows a Repair
+    button that ends the window's session and opens
+    `grug_repair.open_camp_vendor` for the socket the vendor stands on
+    (`grug_traders.open`'s fifth argument `origin = {settlement, socket}`,
+    plain strings from the entity's `_grug_start`/`_grug_socket`). The
+    Miner's Guild Exchange (`grug_traders:guild_exchange`) takes over each
+    capital's `capital_services.GUILD_HALL.exchange` socket as the service
+    role `guild_exchange` (`grug_core` `SERVICE_ROLES`), like the
+    Crownbinder.
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached
@@ -1914,7 +1928,18 @@ tools](#player-meta-read-by-external-tools).
   when the icon is nil). The trade-in (`exchange.lua`) counts and takes over
   `grug_inventory.consume_lists` like the Sell tab's lots (remove_item by
   name, every check first). `/guild_rep <player> <points>` (privilege
-  `server`) adds reputation for tests and the GUI checklist.
+  `server`) adds reputation for tests and the GUI checklist. The vendor page
+  (`vendor.lua`, CAMPNPC): `vendor_rows` and `buy` (room checked before the
+  spend, nothing saved of its own); the window is `grug_traders`'.
+- **The guild's people** (Round 58 CAMPNPC): the 36 foremen
+  (`r58_foreman_<camp id>`, role `foreman_t<tier>`) and the six leaders
+  (`r58_guild_leader_<capital>`) are quest NPCs of `grug_quests/npcs.lua`
+  (it reads `grug_mapgen.mining_camps` and `capital_services.GUILD_HALL`;
+  [quests.md](../design/quests.md) "The Miner's Guild givers"); the Camp
+  Vendor and the Miner's Guild Exchange are `grug_traders` vendors; the camp
+  vendor's repair is `grug_repair`'s provider kind `camp_vendor`
+  (`providers.lua`: the camp's `vendor_camp` socket, distance 8, the camp's
+  faction).
 - **The mining effect** (`effect.lua`, `items.lua`, Round 58 CONSUME):
   runtime state per player name (the effect's own end time from
   `core.get_us_time`, the current Remains `{pos, token}`, the marker HUD

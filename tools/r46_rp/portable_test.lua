@@ -131,7 +131,9 @@ do
 	dofile(repo .. "/mods/ITEMS/grug_repair/providers.lua")
 	grug_repair.register_provider = register
 end
-eq(table.concat(kinds, ","), "trainer", "P the trainer is the only provider kind")
+-- Round 58 adds the Miner's Guild's camp vendor (its own fixture:
+-- tools/r58_campnpc); no station provider returns.
+eq(table.concat(kinds, ","), "trainer,camp_vendor", "P the trainer and the camp vendor are the provider kinds")
 eq(grug_repair.can_open_station, nil, "P no can_open_station")
 eq(grug_repair.open_station, nil, "P no open_station")
 
@@ -215,8 +217,9 @@ check(row:find("GPT-6 Astra", 1, true) and row:find("AI-assisted", 1, true) and
 -- ---------------------------------------------------------------------------
 -- H: help and the furnace dialog
 -- ---------------------------------------------------------------------------
-check(read("mods/PLAYER/grug_inventory/help.lua"):find("Repairs are made only in towns", 1, true),
-	"H Help: repairs only in towns")
+-- Round 58: and at the mining camps' Camp Vendors.
+check(read("mods/PLAYER/grug_inventory/help.lua"):find("Repairs are made in towns and at the Miner's Guild's mining camps", 1, true),
+	"H Help: repairs in towns and at the mining camps")
 local workspaces = read("mods/PLAYER/grug_jobs/workspaces.lua")
 check(workspaces ~= "" and not workspaces:find("grug_repair", 1, true) and
 	not workspaces:find("grug_jobs_repair", 1, true), "H the furnace dialog has no repair path")

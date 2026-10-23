@@ -167,13 +167,31 @@ one picture.
 ### 5.2 The camp vendor
 
 - **Ruling:** see §3 (buys, trades, repairs, the one page of six rows).
-- **Proposal:** the rows are locked by the rank of the player's own guild
-  ("Reach Reputation Rank N"), and the rank is checked again at the purchase.
-  Prices are paid from the balance. The page is not a shelf of
-  `grug_traders.profession_stock`, so the ingredient source index never lists
-  the consumables as copper goods. The hall's exchange counter in each capital
-  trades and buys like the camp vendor but has no reputation page
-  (**proposal**; the plan names it "the guild's vendor" for the exchange).
+- **Proposal (built by lane CAMPNPC):** the rows are locked by the rank of
+  the player's own guild ("Reach Reputation Rank N"), and the rank is checked
+  again at the purchase. Prices are paid from the balance. The page is not a
+  shelf of `grug_traders.profession_stock`, so the ingredient source index
+  never lists the consumables as copper goods. The hall's exchange counter in
+  each capital trades and buys like the camp vendor but has no reputation
+  page (**proposal, built**; the plan names it "the guild's vendor" for the
+  exchange).
+- **As built:** the Camp Vendor (`grug_traders:vendor_camp`, every mining
+  camp's and war camp's `vendor_camp` socket) is a guild vendor (`guild =
+  true`) that opens on Trade-in; it sells no copper goods, so its **Buy**
+  mode is the reputation page (`guild_page = true`): the guild's rank,
+  balance and lifetime as on the Trade-in, then one row per tier with its
+  Ore Sense and Treasure Hunt, each item a button with its price in
+  reputation and the row's use level ("Use from level 21"); a locked row is
+  greyed, has no button and says "Reach Reputation Rank N" (its prices
+  shown). A purchase that fails (rank, balance, a full bag) spends nothing
+  and says why. Its **Repair** button opens the repair form
+  ([durability_repair.md](durability_repair.md)). The Miner's Guild
+  Exchange (`grug_traders:guild_exchange`, the hall's exchange socket) opens
+  on Trade-in, buys like every vendor, and its Buy mode says "The Miner's
+  Guild sells its goods at the mining camps." Both serve only the faction of
+  the settlement they stand in (Round 31 ruling 13, as every vendor; the
+  reviewer's raider concern), and the foremen and leaders serve their own
+  faction like every quest giver.
 
 ## 6. Achievements and cloaks
 
@@ -487,14 +505,18 @@ The status id `catalog.STATUS.id` (`mining_sense`), the variant
 - `grug_guild.remains_loot(tier, random) -> {copper = n, items = {"name count", …}}`,
   pure (`random(lo, hi)` an integer source), so a fixture can roll it.
 
-### 10.7 The vendor page (`vendor.lua`, CAMPNPC)
+### 10.7 The vendor page (`vendor.lua`, CAMPNPC; built)
 
 | Function | Returns |
 |---|---|
 | `grug_guild.vendor_rows(player)` | six rows `{tier, rank, unlocked, items}`, `items` the tier's two consumable rows |
 | `grug_guild.buy(player, item)` | `true`, or `false, err` (`"no_faction"`, `"unknown"`, `"rank"`, `"insufficient"`, `"full"`: no room, nothing spent) |
 
-The window and its buttons are `grug_traders`' (the camp vendor kind).
+The window and its buttons are `grug_traders`' (the camp vendor kind):
+the page's buttons are `repbuy_<index in catalog.CONSUMABLES>`, and a
+click counts only for an item the page showed buyable. `buy` checks the
+room before it spends (`grug_inventory.fits`) and gives through
+`grug_inventory.give`; it saves nothing of its own.
 
 ### 10.8 Ids
 
