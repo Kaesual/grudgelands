@@ -1745,6 +1745,16 @@ tools](#player-meta-read-by-external-tools).
     (`stock.lua` `culture`, four price bands); vendors sell blue ×3 and gold
     ×6 of the Common payout (`grug_traders.stack_sell_price`,
     `price_rules.QUALITY_FACTOR`).
+  - **A Miner's Guild vendor** (Round 58): a vendor definition in
+    `grug_traders.vendors` with `guild = true` gets the window's third mode,
+    Trade-in (`trade.lua`; it opens on it): "Miner's Guild" (never a
+    guild's proper name: those belong in texts and on buildings), the rank
+    and the balance, and a row per exchanged item from
+    `grug_guild.trade_in_rows`, its button `tradein_<catalogue index>`,
+    traded through `grug_guild.trade_in` after the row is re-checked against
+    the one shown. The camp vendor and the
+    guild house's exchange counter carry the field. The guild's consumables
+    pay their catalogue `sell_copper` (`prices.lua`).
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached
@@ -1888,6 +1898,35 @@ tools](#player-meta-read-by-external-tools).
   no view built) and recomputes the row layout only on a window change
   (fixture `tools/r32_f4`). Current geometry and offline presentation:
   [parties.md](../design/parties.md).
+
+## Miner's Guild
+
+- **`grug_guild` (Round 58):** the catalogue, its API, the files and their owners and the saved keys: [miners_guild.md](../design/miners_guild.md) §10.
+  Reputation (`store.lua`): two integers per character and guild in player
+  meta, keyed by faction id (`grug_guild:lifetime_<faction>`,
+  `grug_guild:balance_<faction>`); `add` and `spend` fire
+  `register_on_change`, and `add` fires `register_on_rank_change` only when
+  the rank rose (the achievement counter `guild:rank` reads
+  `grug_guild.highest_rank` live, so nothing is copied). Every display of
+  rank and balance goes through `grug_guild.summary`, `format_points` and
+  `reputation_formspec` (text "Reputation 1,234" until the reputation icon
+  is picked; the icon then goes into `grug_guild.REPUTATION_ICON`, no caller
+  changes). The trade-in (`exchange.lua`) counts and takes over
+  `grug_inventory.consume_lists` like the Sell tab's lots (remove_item by
+  name, every check first). `/guild_rep <player> <points>` (privilege
+  `server`) adds reputation for tests and the GUI checklist.
+- **The mining effect** (`effect.lua`, `items.lua`, Round 58 CONSUME):
+  runtime state per player name (the effect's own end time from
+  `core.get_us_time`, the current Remains `{pos, token}`, the marker HUD
+  ids), never the status record: `grug_core` clears statuses in its own
+  leave and death callbacks first. Its timers are `core.after` chains per
+  running effect (the end, the 30 s save, Ore Sense's 60–120 s mark,
+  Treasure Hunt's `check_seconds` check), no globalstep. Saved: player meta
+  `grug_guild:effect` only. Helpers beside the contract:
+  `grug_guild.band_text(tier)` (the band in words), `ore_sense_find(pos,
+  tier, range)` (the one search), `remains_spot_ok(pos, tier, name)` (the
+  placement rules); `_remains_on_timer` and `_remains_on_dig` are the
+  Remains nodes' hooks into the effect. Fixture: `tools/r58_consume`.
 
 ## Mail
 
@@ -2637,6 +2676,45 @@ tools](#player-meta-read-by-external-tools).
   `CONTESTED_DEPTH_Y = −501` in `zones.lua` (PvP and territory). Fixtures
   `tools/r31_s`, `tools/r31_m` (incl. `spacing_check.lua` over six seeds,
   `engine.sh`), `tools/r31_da2`, `tools/r24_protection_depth`.
+  **Round 58 camps** (the Miner's Guild): anchors 119–144 of
+  `source/simple_map.lua` (pass 2; fitting profiles `mining_camp`, with a
+  trail, and `camp_construction`), rules `r58_camp_catalog.lua` (the 20
+  mining camps and 6 camps under construction by zone, faction and race,
+  the lift offsets `LIFT` per composition kind, `ROOM_FLOOR_Y`, `tier_of`),
+  bound by `r7_settlement.camp_profiles` (turned by
+  `r31_pvp_catalog.gate_turns`, the war camps' rule) and built by
+  `r58_camp_blueprint.lua`; the war camp blueprint gains the lift,
+  `quest_foreman` and `vendor_camp` sockets. The lift node
+  `grug_mapgen:guild_lift` (`world_nodes.lua`, `4dir`, written facing its
+  camp's gate and turned with it: `wp13/parts.lua`) is settlement palette
+  content like the waystone (no class of its own in `r7_content.lua`). Its
+  static fields that the class row digests (paramtype, paramtype2,
+  light_source, sunlight_propagates, floodable, the liquid fields, the
+  groups grug_natural and grug_air) change only in `world_nodes.lua`, in a
+  map reset round: main computes the settlement semantic digest before the
+  other mods load and emerge after, so LIFT's override from grug_guild
+  changes only behaviour and textures. The camp vendor is
+  `grug_traders:vendor_camp` ("Camp Vendor", a profession-style vendor
+  without a shelf of its own until CAMPNPC). **The camp module** `r58_camps.lua` (pure, main and
+  mapgen environment, from the `placement_layout` text or parsed
+  positions): `camps(layout[, seams])` (the 36 camps with a lift sorted by
+  id: `{id, kind, faction, race, zone_id, tier, anchor, lift, levels, label,
+  anchor_id}`; `seams = {raw_sha256, full_seed}` rolls a war camp's race),
+  `under_construction(layout)`, `ROOM_FLOOR_Y` and `index(layout, seams)`,
+  published in main as `grug_mapgen.mining_camps` (`camps`,
+  `under_construction`, `get(id)`, `near(pos[, radius])`). The camps carry
+  no activation node, so `r7_anchor_roster.lua` and the zone overlay keep 42
+  rows and 36 columns. Classification: `world_protection.settlement_kind`
+  (`mining_camp`; a camp under construction `war_camp` with the PvP margin),
+  `grug_map/settlement_icons.lua` (the mine's icon, the war camp's),
+  `spawn_policy.protected_spawn_surface` and `roam_avoid` (`mining_camp`),
+  `grug_core/settlement_sockets.lua` (role `lift`, vendor kind `camp`),
+  `grug_mobs/pvp_garrison.lua` (third argument the camp catalogue: a mining
+  camp is settlement kind `mining_camp` without garrison, a camp under
+  construction a `pvp_camp`). The socket contract:
+  [settlements.md](../design/settlements.md) "Round 58 mining camps and
+  camps under construction". Fixture `tools/r58_camps`; the seed fleet
+  checks every camp per seed.
   **Round 36 mapgen (decor pass):** `wp13/decor_kit.lua` (pure) owns the
   pieces (`M.piece` in the race's palette), the whole-or-error placement of
   an authored row (`M.place`: open ground only, never a path, built cell,
@@ -2714,9 +2792,10 @@ tools](#player-meta-read-by-external-tools).
   the start towns' identities and point digests, the capitals' identity,
   point and build digests). The world-folder layout cache digests the `.tpl`,
   `.layout` and `.roster` files with the mapgen sources. Exporter
-  `tools/building_templates/export.py` (`--check`: the committed templates are
-  the export of the pre-freeze generators, `export.lua` for the start towns,
-  `export_capitals.lua` for the capitals), fixtures `tools/r56_freeze_towns`
+  `tools/building_templates/export.py` (the record of the freeze from the
+  pre-freeze generators, `export.lua` for the start towns,
+  `export_capitals.lua` for the capitals; its `--check` is retired since the
+  first deliberate template edit, Round 58), fixtures `tools/r56_freeze_towns`
   and `tools/r56_freeze_capitals`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. A surface row may carry `bands` (seven content refs by

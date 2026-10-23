@@ -19,7 +19,7 @@ use highcourt_well_court count=4
 use nhal_veyr_vigil_hall count=1 main=crypt roof=crypt_vault
 use dur_brannoc_great_forge count=1
 use highcourt_service_yard count=2
-use nhal_veyr_bonesmith_guild count=1 main=crypt roof=crypt_vault
+use nhal_veyr_miners_guild count=1 main=crypt roof=crypt_vault
 use dur_brannoc_market_house count=1
 use dur_brannoc_south_house count=1
 use nhal_veyr_lane_house count=1

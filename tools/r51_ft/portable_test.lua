@@ -108,8 +108,10 @@ end
 -- B. the capitals' trees ----------------------------------------------------
 -- (Round 56 TREES: the grove and copse trees are grown at build again, by the
 -- template loader at the planted templates' stems, as before the freeze.)
-local CAPITAL_TREES = {highcourt = 83, dur_brannoc = 62, lethariel = 141, nhal_veyr = 70,
-	gor_drazhak = 35, kezamba = 37}
+-- (Round 58 HALLS: the Miner's Guild houses take three of Lethariel's and one
+-- of Gor Drazhak's core trees' ground.)
+local CAPITAL_TREES = {highcourt = 83, dur_brannoc = 62, lethariel = 139, nhal_veyr = 70,
+	gor_drazhak = 34, kezamba = 37}
 local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
 local cores = {}
 for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak",

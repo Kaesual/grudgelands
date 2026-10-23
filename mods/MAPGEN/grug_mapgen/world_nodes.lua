@@ -147,6 +147,44 @@ return function(engine, directory, nodes, gathering)
   end,
  })
 
+ -- The Miner's Guild lift point (Round 58): written by the settlement writer
+ -- at every camp's lift socket (`wp40/r58_camp_blueprint.lua`,
+ -- `r31_pvp_poi_blueprint.lua`), so it too exists before the settlement
+ -- content is resolved. A placeholder look from shipped textures and no
+ -- behaviour: grug_guild (lane LIFT) overrides it with the lift's use and
+ -- the picked art, and such an override changes only the behaviour (the
+ -- callbacks) and the look (tiles, description). The settlement content's
+ -- semantic digest (`wp40/r7_content.lua`, its class row) reads paramtype,
+ -- paramtype2, light_source, sunlight_propagates, floodable, the liquid
+ -- fields and the groups grug_natural and grug_air; main computes it while
+ -- this mod loads and emerge after every mod has loaded, so an override
+ -- that changed one of them would stop the mapgen at its first start. A
+ -- change to those static fields belongs here, in a map reset round.
+ -- `4dir`: the blueprints write it facing its camp's gate side (param2 0
+ -- in the composition's frame, turned with the camp: `wp13/parts.lua`), so
+ -- an art with a front shows it.
+ engine.register_node("grug_mapgen:guild_lift", {
+  description="Miner's Guild Lift",
+  drawtype="nodebox",
+  paramtype2="4dir",
+  tiles={"default_wood.png^[colorize:#3b2a14:70","default_wood.png",
+   "default_wood.png^default_ladder_wood.png"},
+  paramtype="light",
+  light_source=3,
+  node_box={type="fixed",fixed={{-0.5,-0.5,-0.5,0.5,-0.375,0.5},
+   {-0.3125,-0.375,-0.3125,0.3125,0.375,0.3125}}},
+  groups={not_in_creative_inventory=1},
+  diggable=false,
+  -- ROOMS writes it at each room's lift cell too, deep underground, where a
+  -- neighbouring chunk's caves and dungeons spare only non-ground content,
+  -- and no liquid may flow into it.
+  is_ground_content=false,
+  floodable=false,
+  drop="",
+  on_blast=function() end,
+  sounds=default.node_sound_wood_defaults(),
+ })
+
  -- This occupies the air node immediately above the source-water surface;
  -- its thin box sits at the bottom of that node and never replaces water.
  engine.register_node(catalog.freshwater[1], {

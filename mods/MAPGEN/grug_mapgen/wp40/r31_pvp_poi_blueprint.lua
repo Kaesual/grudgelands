@@ -28,6 +28,7 @@ if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapge
 local parts = dofile(module_dir.."/../wp13/parts.lua")
 local rot = dofile(module_dir.."/../wp13/plot_approach.lua").rot
 local catalog = dofile(module_dir.."/r31_pvp_catalog.lua")
+local camps = dofile(module_dir.."/r58_camp_catalog.lua")
 
 local SIZE = {pvp_fortress={r=24,h=16}, pvp_camp_low={r=11,h=9}, pvp_camp_high={r=13,h=9}}
 local FACTION_OF = {dwarf="accord",human="accord",elf="accord",undead="throng",orc="throng",troll="throng"}
@@ -391,6 +392,29 @@ return function(options, profile)
 			socket("yard_east","guard_post",4,captain_z,0,-1,{tags={"camp"}})
 		end
 		socket("captain","captain",0,captain_z,0,-1)
+		-- Round 58: a war camp is a mining camp of its faction's Miner's Guild
+		-- too (round58-plan.md §2): on the open ground east of the command tent
+		-- the lift's headframe on a timber deck (the lift node at
+		-- `r58_camp_catalog.LIFT`, the cell the module turns with the camp),
+		-- the camp vendor beside it and the foreman west of the command tent.
+		-- The raid role, the garrison and the protection stay as they were.
+		local lift=assert(camps.LIFT[art.kind], "Round 58 war camp lift missing")
+		local lx,lz=lift.x,lift.z
+		fill(lx-1,0,lz-1,lx+1,0,lz+1,c.wood)
+		fill(lx-1,1,lz,lx-1,3,lz,c.post); fill(lx+1,1,lz,lx+1,3,lz,c.post)
+		fill(lx-1,4,lz,lx+1,4,lz,c.wood)
+		fill(lx,2,lz,lx,3,lz,c.fence)
+		-- param2 0: its front toward the gate (4dir, turned with the camp)
+		put(lx,1,lz,"grug_mapgen:guild_lift",0)
+		record("lift headframe",lx,lz,1,1,4,"lift")
+		socket("lift","lift",lx,lz,0,-1)
+		if high then
+			socket("vendor_camp","vendor",7,7,-1,0,{kind="camp"})
+			socket("quest_foreman","quest",-6,8,0,-1)
+		else
+			socket("vendor_camp","vendor",6,2,-1,0,{kind="camp"})
+			socket("quest_foreman","quest",-5,6,0,-1)
+		end
 	end
 
 	-- The anchor root and its yard stay open; nothing is authored onto them.
@@ -445,3 +469,6 @@ end
 --   quest       a protected quest giver (fortress)
 --   vendor      `kind = "general"`: the fortress Quartermaster
 --   waypoint    `travel_waypoint`: the waystone cell (grug_home reads it)
+-- Round 58, every camp (the camp socket contract, settlements.md "Mining
+-- camps"): `lift` (role lift, the lift node's cell), `quest_foreman` (role
+-- quest, the foreman) and `vendor_camp` (role vendor, kind "camp").

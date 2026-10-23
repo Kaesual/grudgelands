@@ -598,6 +598,58 @@ want lived-in settlements without paying for it in server load"):
   25 m show / 30 m hide carrier gate as combat families. A nearby player no
   longer exposes settlement names to a different, distant player.
 
+### The Miner's Guild houses
+
+Round 58 (lane HALLS; [Round 58 plan](../planning/round58-plan.md) §2). Every
+capital's civic core holds the house of its faction's Miner's Guild: **The
+Charter of Stone** in Highcourt, Dur Brannoc and Lethariel, **The
+Oathdelvers** in Nhal Veyr, Gor Drazhak and Kezamba. The core is
+anchor-relative and the same in every world, so every world has the six houses
+whatever its seed; the capital planner places only the district plots round
+it. Each house is a core building with the plot id `miners_guild`, in the
+place of a building the core had:
+
+| Capital | Template | In the core (x, z) | Door | In the place of |
+|---|---|---|---|---|
+| Highcourt | `highcourt_miners_guild` | 31..46, −46..−34 (turned once) | west | the city workshop |
+| Dur Brannoc | `dur_brannoc_miners_guild` | 29..41, −46..−30 | north | the masons' guild |
+| Lethariel | `lethariel_miners_guild` | −46..−34, 22..34 | east, over the turf to the quay | the quay house (grown into the corner between the fountain court and the shore house) |
+| Nhal Veyr | `nhal_veyr_miners_guild` | 29..41, −46..−30 | north | the bonesmiths' guild |
+| Gor Drazhak | `gor_drazhak_miners_guild` | 29..41, −46..−30 | north | the war council house |
+| Kezamba | `kezamba_miners_guild` | 6..20, −16..−6 (turned once) | west, to the south avenue | the granary |
+
+One design in six palettes (`tools/r58_halls/make_halls.py` writes the six
+templates; edit the script, not the files): a hall behind a two-row forecourt
+with a winch over a tub and an ore cart by its heap, one door in the middle of
+the front wall, the guild's banners beside it and a plaque over it, the
+exchange counter on the east side of the hall, the clerk's desk and the ore
+sorter's sample table on the west side, the leader's desk at the back under a
+frieze of the six tier stones (the depths the guild mines), stores and shelves
+in the back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it
+with a gable to the street in their civic roof; Gor Drazhak and Kezamba with
+a flat deck behind a breastwork (merlons in Gor Drazhak). Kezamba builds it in
+the basalt of its civic halls. The banners and the plaque are placeholders
+from shipped textures until the guild emblems are picked: blue and yellow wool
+with a gold plaque for The Charter of Stone, red and black wool with a copper
+plaque for The Oathdelvers.
+
+**The hall socket contract** (fixed in Round 58 for the lanes that put the
+guild's people there; `wp13/capital_services.lua` `M.GUILD_HALL`). The
+sockets are core sockets, registered under the capital's settlement key
+without a plot prefix, the same ids in all six capitals:
+
+| Socket | Role | Who stands there |
+|---|---|---|
+| `miners_guild_leader` | `quest`, facing the door | the capital's guild leader. Today a nameless quest shell; the leader is registered on it as a quest NPC (`grug_quests.register_npc(id, {settlement = <capital key>, socket = "miners_guild_leader", title = …, race = …})`), which gives the shell its name, race and dialogue, and a talk objective can name it. |
+| `miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the exchange counter, the guild's vendor (materials for reputation). It is taken over as a service socket, `grug_core.assign_service_socket(<capital key>, "miners_guild_exchange", <role>)`, as the Crownbinder and the Housing Steward take theirs (a new role in `SERVICE_ROLES` and its entity through `grug_mobs.register_start_socket_role`). Until then a resident stands there, who may be one of the core's walkers. |
+| `miners_guild_clerk`, `miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
+| `miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
+
+The house's `inside` point is the destination `miners_guild` and its door the
+core doorway `miners_guild`. Every hall socket and the door are reachable from
+the core's arrival, and no NPC of the house faces a wall
+(`tools/r58_halls/portable_test.lua`, `tools/r47_nz`).
+
 ### Settlement walkers
 
 Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
@@ -983,3 +1035,49 @@ General and his bodyguards; a camp's captain), three protected quest givers
 and a Quartermaster in a fortress, and the fortress waystone. Garrisons,
 levels and quests: [pvp.md](pvp.md) §6–§7; positions and protection:
 [world_zones.md](world_zones.md) §16.
+Since Round 58 every war camp is a mining camp of its faction's Miner's
+Guild too: its lift, foreman and camp vendor stand on the open ground beside
+the command tent (the sockets below); its garrison, raid role and protection
+are unchanged.
+
+## Round 58 mining camps and camps under construction
+
+Anchors 119–144 add the Miner's Guild's camps (rules
+`wp40/r58_camp_catalog.lua`, compositions `wp40/r58_camp_blueprint.lua`,
+both 23 × 23 and centred like the war camps):
+
+- **20 mining camps**, one in every level-11–40 zone outside the capital
+  zones (6 T2, 8 T3, 6 T4). A camp belongs to the faction of its continent
+  half (a contested T4 camp too) and builds from its zone's race palette: a
+  fence ring with a lit gate on every side, the lift's headframe on a timber
+  deck, the foreman's tent in faction cloth, the vendor's stall, ore heaps,
+  an ore cart and a timber stack. Two faction guards hold the gate, two more
+  the yard in a contested camp.
+- **6 camps under construction**, one in each contested T4 zone, built by
+  the other faction (the race of the zone across the front): a palisade
+  begun on the gate side, a scaffolded watchtower, a hut frame, timber,
+  supplies and the command tent; guards and a captain, and nothing an enemy
+  could use (no lift, vendor, shelter or bed).
+- Camps carry **no activation node** (no banner, no fire): they are not in
+  the anchor activation roster, and their protection is their building core
+  box (`world_protection.lua`: kind `mining_camp`; a camp under construction
+  is a `war_camp` with the PvP margin).
+
+**The camp socket contract** (every mining camp and war camp; read by lanes
+CAMPNPC, LIFT and GUILDQUESTS):
+
+| Socket id | Role | Kind / tag | What stands there |
+|---|---|---|---|
+| `lift` | `lift` | – | the lift node `grug_mapgen:guild_lift` (its cell, `4dir` facing the gate; nobody stands on it); its x/z is the camp's lift column |
+| `quest_foreman` | `quest` | – | the foreman, the camp's quest giver (a quest shell of the camp's race until his quests are registered) |
+| `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`: buys like every vendor, no shelf of its own yet; lane CAMPNPC adds the trade-in, repair and the reputation page) |
+| `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |
+| `yard_west`, `yard_east` | `guard_post` | tag `camp` | a contested mining camp's two further guards |
+
+A camp under construction has `gate_west`, `gate_east` (tag `gate`),
+`yard_west`, `yard_east` (tag `camp`) and `captain` (role `captain`): the PvP
+garrison of its zone's highest level third with a named captain
+(`grug_mobs/pvp_garrison.lua`, `data/pvp_names.json`). The camps' lift
+columns, levels and tiers come from the camp module `wp40/r58_camps.lua`
+(`grug_mapgen.mining_camps` in the main environment); placement:
+[world_zones.md](world_zones.md) §8.5.

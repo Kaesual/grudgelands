@@ -195,8 +195,10 @@ local function loader(directory)
 		{id = "smelting_yard", template = "highcourt_service_yard",
 			x = 24, z = 27, turns = 0, palette = "town"},
 
-		-- 8. The masons' guild, in the south-east corner.
-		{id = "masons_guild", template = "dur_brannoc_masons_guild",
+		-- 8. The Miner's Guild house of The Charter of Stone, in the south-east
+		-- corner (Round 58, in the masons' guild's place; settlements.md
+		-- "The Miner's Guild houses").
+		{id = "miners_guild", template = "dur_brannoc_miners_guild",
 			x = 29, z = -46, turns = 2, palette = "town", roof = "slate"},
 
 		-- 9. The citizens' quarter: four houses on the outer ground. The
@@ -216,7 +218,7 @@ local function loader(directory)
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "gate_south", "gate_west",
 		"gate_north", "gate_east", "ancestor_hall", "great_forge",
-		"smelting_yard", "masons_guild", "market_house", "south_house",
+		"smelting_yard", "miners_guild", "market_house", "south_house",
 		"lane_house", "plaza_house"}
 
 	-- The corner waypoints of the city loop, in the open ground between the

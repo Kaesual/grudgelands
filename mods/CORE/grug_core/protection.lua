@@ -194,6 +194,8 @@ local PROTECTION_HINTS = {
 	camp = "Camp – protected",
 	fortress = "Fortress – protected",
 	war_camp = "Camp – protected",
+	-- Round 58: a Miner's Guild mining camp
+	mining_camp = "Camp – protected",
 	poi = "Point of interest – protected",
 	accord_home = "Accord home territory – protected",
 	throng_home = "Throng home territory – protected",

@@ -406,6 +406,39 @@ local anchor_rows = {
 	{37,"pvp_accord_high","pvp_camp_high","placed"},
 	{37,"pvp_throng_low","pvp_camp_low","placed"},
 	{37,"pvp_throng_high","pvp_camp_high","placed"},
+	-- Round 58 camps (round58-plan.md §2; rules `r58_camp_catalog.lua`),
+	-- anchors 119..144 in a later pass, so every earlier row keeps its place:
+	-- a mining camp in every level-11-40 zone outside the capital zones, in
+	-- the zone's lowest level third (the tier's items are usable from the
+	-- zone's first level on: 11, 21, 31), and a camp under construction of
+	-- the other faction in each contested level-31-40 zone, in its highest
+	-- third (towards the front).
+	{2,"mining_camp","mining_camp","placed","low",2},
+	{7,"mining_camp","mining_camp","placed","low",2},
+	{12,"mining_camp","mining_camp","placed","low",2},
+	{18,"mining_camp","mining_camp","placed","low",2},
+	{23,"mining_camp","mining_camp","placed","low",2},
+	{28,"mining_camp","mining_camp","placed","low",2},
+	{4,"mining_camp","mining_camp","placed","low",2},
+	{9,"mining_camp","mining_camp","placed","low",2},
+	{14,"mining_camp","mining_camp","placed","low",2},
+	{15,"mining_camp","mining_camp","placed","low",2},
+	{20,"mining_camp","mining_camp","placed","low",2},
+	{25,"mining_camp","mining_camp","placed","low",2},
+	{30,"mining_camp","mining_camp","placed","low",2},
+	{31,"mining_camp","mining_camp","placed","low",2},
+	{5,"mining_camp","mining_camp","placed","low",2},
+	{10,"mining_camp","mining_camp","placed","low",2},
+	{16,"mining_camp","mining_camp","placed","low",2},
+	{21,"mining_camp","mining_camp","placed","low",2},
+	{26,"mining_camp","mining_camp","placed","low",2},
+	{32,"mining_camp","mining_camp","placed","low",2},
+	{5,"camp_construction","camp_construction","placed","high",2},
+	{10,"camp_construction","camp_construction","placed","high",2},
+	{16,"camp_construction","camp_construction","placed","high",2},
+	{21,"camp_construction","camp_construction","placed","high",2},
+	{26,"camp_construction","camp_construction","placed","high",2},
+	{32,"camp_construction","camp_construction","placed","high",2},
 }
 
 -- One anchor row as the source's anchor record. A row may carry the named
@@ -542,6 +575,11 @@ source.anchor_profiles = {
 	{id="pvp_fortress",shape="gentle_grade",building_core_width=60,fitting_width=120,blend_width=184,force_native_dungeon=false,trail=true},
 	{id="pvp_camp_low",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
 	{id="pvp_camp_high",shape="gentle_grade",building_core_width=28,fitting_width=72,blend_width=120,force_native_dungeon=false},
+	-- Round 58 camps (`r58_camp_blueprint.lua`): the centred 23-node box of
+	-- r7_settlement BOUNDS one node wider; a mining camp joins the roads by
+	-- a trail, a camp under construction (an enemy's) does not.
+	{id="mining_camp",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false,trail=true},
+	{id="camp_construction",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
 }
 -- A capital's protection is its planned city (Round 22, plan D76): inside the
 -- wall line, the edge and a band beyond it, built from the capital layout

@@ -4,7 +4,9 @@
 -- capitals, every settlement prepared -- and its `build`: the zones session,
 -- the R7 anchor roster and every settlement's configuration), every
 -- tributary's junction stretch at most JOIN_MAX nodes, no open sea at the rim
--- of a bay (Round 51 T2), and the per-chunk path
+-- of a bay (Round 51 T2), every camp of the Miner's Guild placed and
+-- registered (Round 58: 36 with lifts, 6 under construction), and the
+-- per-chunk path
 -- (Round 37, audit MGT-01/MGS-02): a sample of chunks planned and written
 -- through the real `plan_slice` and writer against a fake VoxelManip.
 --
@@ -67,6 +69,41 @@ local function build()
 			end
 		end
 		return false
+	end
+	-- Every camp is placed and registered (Round 58): the 20 mining camps and
+	-- the 16 war camps with their lift columns, the 6 camps under
+	-- construction, each in its own zone on a dry core (no wet resort), its
+	-- settlement registered at the anchor the camp module names.
+	do
+		local C = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r58_camps.lua")
+		local text = R.main.placement_layout_text()
+		local camps, under = C.camps(text), C.under_construction(text)
+		if #camps ~= 36 or #under ~= 6 then
+			error(("camps: %d with lifts and %d under construction, not 36 and 6"):format(#camps,
+				#under), 0)
+		end
+		local registered = {}
+		for _, row in ipairs(R.main.settlement_sockets(R.built)) do registered[row.key] = row end
+		local step_of = {}
+		for line in text:gmatch("[^\n]+") do
+			local id, step = line:match("^(anchor_%d+) %-?%d+ %-?%d+ (%d+)$")
+			if id then step_of[id] = tonumber(step) end
+		end
+		local wet = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/placement_rules.lua").WET_RESORT
+		for _, list in ipairs({camps, under}) do
+			for _, camp in ipairs(list) do
+				local row = registered[camp.id]
+				if not row or row.anchor.x ~= camp.anchor.x or row.anchor.z ~= camp.anchor.z then
+					error("camp " .. camp.id .. " is not registered at its anchor", 0)
+				end
+				if R.built.zones_session.id_at(camp.anchor.x, camp.anchor.z) ~= camp.zone_id then
+					error("camp " .. camp.id .. " is not in its zone", 0)
+				end
+				if step_of[camp.anchor_id] == wet then
+					error("camp " .. camp.id .. " found no dry core", 0)
+				end
+			end
+		end
 	end
 	for _, bay in ipairs(SOURCE.bays) do
 		local cx = bay.centreline[1].x

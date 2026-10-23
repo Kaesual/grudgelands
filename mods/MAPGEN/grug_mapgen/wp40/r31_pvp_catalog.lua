@@ -47,6 +47,20 @@ for _, zone in ipairs(BATTLEGROUNDS) do
 	end
 end
 
+-- The quarter turns of a row's composition: its one gate faces where
+-- players come from. A fortress's faces the middle road along x = 0, which
+-- the placement rules keep on the faction's side (`placement_rules.lua`: the
+-- Accord's east of it, so its gate faces west; the Throng's west, its gate
+-- facing east); a camp's faces its own continent (Elandor at -z, Kragmar at
+-- +z). A row's own `turns` overrides the rule. Seed-free, so the blueprint
+-- is too; `r7_settlement.lua` and the camp module (`r58_camps.lua`, which
+-- turns the lift point with the camp) read it here.
+function M.gate_turns(row)
+	if row.turns ~= nil then return row.turns end
+	if row.kind == "pvp_fortress" then return row.faction == "accord" and 1 or 3 end
+	return row.faction == "accord" and 0 or 2
+end
+
 -- A camp's level band inside its zone's range (ruling 19: The Broken
 -- Causeway 41-43 and 48-50, the 51-60 zones 51-53 and 58-60).
 function M.camp_levels(level_min, level_max, band)

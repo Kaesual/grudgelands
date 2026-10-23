@@ -443,7 +443,9 @@ for _, ach in ipairs(book.achievements) do
 	local c = ach.counter or (ach.manual and R.MANUAL .. ach.id)
 	local ok = (ach.manual and c == R.MANUAL .. ach.id) or
 		c == "kill:animal" or c == "kill:zombie" or c:find("^boss:") or c:find("^pvp:guards$") or c == "craft:cooking" or c == "craft:alchemist" or
-		c == "death:fall" or c:find("^quest:[a-z][a-z0-9_]*$") or c:find("^quest_tag:[a-z][a-z0-9_]*$")
+		c == "death:fall" or c:find("^quest:[a-z][a-z0-9_]*$") or c:find("^quest_tag:[a-z][a-z0-9_]*$") or
+		-- Round 58: grug_guild's rank-change hook (read live, tools/r58_rep).
+		c == "guild:rank"
 	local family = c:match("^kill:family:(.+)$")
 	local group = c:match("^kill:group:(.+)$")
 	local rare = c:match("^kill:rare:(.+)$")
@@ -452,13 +454,14 @@ for _, ach in ipairs(book.achievements) do
 	check(ok, "C counter " .. c .. " of " .. ach.id .. " is produced by a hook")
 end
 -- Every textured cloak has its file (and its wings file, if any), and the ids
--- are exactly Astra's 45 (Round 55 added the Supporter Cloak).
+-- are exactly Astra's 48 (Round 55 added the Supporter Cloak, Round 58 the
+-- three Miner's Guild cloaks).
 local ASTRA = {"plain_grey", "unburnt_roll", "unbought_banner", "broken_due", "supporter"}
 for _, row in ipairs({{"hunter", 3}, {"kingslayer", 3}, {"wyvernslayer", 3},
 		{"dragonslayer", 3}, {"honored", 3}, {"zombie_slayer", 3}, {"boaring_work", 3},
 		{"rat_race", 2}, {"suppers_ready", 3}, {"bottle_service", 3}, {"loose_bones", 3},
 		{"stone_deaf", 2}, {"final_notice", 1}, {"rust_in_peace", 2},
-		{"no_more_orders", 1}, {"last_word", 1}, {"grounded", 1}}) do
+		{"no_more_orders", 1}, {"last_word", 1}, {"grounded", 1}, {"miners_guild", 3}}) do
 	for tier = 1, row[2] do ASTRA[#ASTRA + 1] = row[1] .. "_" .. tier end
 end
 local textured = {}
@@ -477,11 +480,11 @@ for _, cloak in ipairs(book.cloaks) do
 		if handle then handle:close() end
 	end
 end
-eq(#ASTRA, 45, "C Astra's list")
+eq(#ASTRA, 48, "C Astra's list")
 for _, id in ipairs(ASTRA) do check(textured[id], "C catalogue has " .. id) end
 local count = 0
 for _ in pairs(textured) do count = count + 1 end
-eq(count, 45, "C no cloak beyond Astra's list")
+eq(count, 48, "C no cloak beyond Astra's list")
 -- Tier N of an achievement unlocks <id>_N; the Round 36 three and Round 55's
 -- Supporter unlock their one cloak by its own name (story bible §6).
 local NAMED = {every_name_accounted_for = "unburnt_roll", our_oaths_are_ours = "unbought_banner",
@@ -491,7 +494,8 @@ for _, ach in ipairs(book.achievements) do
 		eq(tier.cloak, NAMED[ach.id] or (ach.id .. "_" .. t), "C " .. ach.id .. " tier " .. t .. " cloak")
 	end
 end
-eq(#book.achievements, 21, "C twenty-one achievements")
+-- Round 58 added the Miner's Guild series.
+eq(#book.achievements, 22, "C twenty-two achievements")
 
 -- G: the faction rule.
 do

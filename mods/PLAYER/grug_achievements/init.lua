@@ -8,7 +8,7 @@
 -- Pure rules: core.lua (counters, tiers, unlocks, selection) and
 -- creatures.lua (which kill counts as what).
 --
--- Counters come from six hooks, each O(1) per event:
+-- Counters come from seven hooks, each O(1) per event:
 --   * grug_mobs' eligible kill (every credited participant of a mob death):
 --     kill:animal and kill:zombie, kill:family:<family>, kill:group:<group>
 --     (named leaders by role) and kill:rare:<group> (named rares by registry
@@ -24,7 +24,9 @@
 --   * deaths: death:<reason type>, e.g. death:fall;
 --   * grug_quests' turn-ins (grug_quests.register_on_turn_in, Round 36):
 --     quest:<quest id> and quest_tag:<tag> for each of the quest's `tags`,
---     each only while an achievement asks for it.
+--     each only while an achievement asks for it;
+--   * grug_guild's rank changes (grug_guild.register_on_rank_change, Round
+--     58): guild:rank, read from grug_guild.highest_rank, never copied.
 -- Every achievement is also settled once at join, so a counter that moved
 -- without a hook (an admin edit) still earns its tier. A row with a
 -- `faction` (catalog.lua) is never shown to, settled for or earned by a
@@ -71,6 +73,10 @@ local function value_of(player, counter)
 	if stat then
 		local pvp = rawget(_G, "grug_pvp")
 		return pvp and pvp.stats(player)[stat] or 0
+	end
+	if counter == "guild:rank" then
+		local guild = rawget(_G, "grug_guild")
+		return guild and guild.highest_rank(player) or 0
 	end
 	return R.count(player:get_meta(), counter)
 end
@@ -323,6 +329,12 @@ end)
 if core.global_exists("grug_pvp") then
 	grug_pvp.register_on_stat(function(player, key)
 		counter_changed(player, "pvp:" .. key)
+	end)
+end
+
+if core.global_exists("grug_guild") then
+	grug_guild.register_on_rank_change(function(player)
+		counter_changed(player, "guild:rank")
 	end)
 end
 

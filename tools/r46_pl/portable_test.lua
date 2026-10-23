@@ -69,7 +69,8 @@ do
 			check(a == authored and a.position ~= nil, "D fixed " .. a.id .. " unchanged")
 		end
 	end
-	check(placed == 98, "D 98 placed anchors")
+	-- (Round 58: the 26 camps, anchors 119..144)
+	check(placed == 124, "D 124 placed anchors")
 	check(not pcall(P.parse, text:gsub("\n[^\n]+\n$", "\n"), A.source), "D a truncated text is refused")
 end
 

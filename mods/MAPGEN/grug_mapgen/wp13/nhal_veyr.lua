@@ -200,8 +200,10 @@ local function loader(directory)
 		{id = "charnel_yard", template = "highcourt_service_yard",
 			x = 24, z = 27, turns = 0, palette = "town"},
 
-		-- 8. The bonesmiths' guild, in the south-east corner.
-		{id = "bonesmith_guild", template = "nhal_veyr_bonesmith_guild",
+		-- 8. The Miner's Guild house of The Oathdelvers, in the south-east
+		-- corner (Round 58, in the bonesmiths' guild's place; settlements.md
+		-- "The Miner's Guild houses").
+		{id = "miners_guild", template = "nhal_veyr_miners_guild",
 			x = 29, z = -46, turns = 2, palette = "crypt", roof = "crypt_vault"},
 
 		-- 9. The kept houses: four on the outer ground, and the contract's
@@ -235,7 +237,7 @@ local function loader(directory)
 	-- its two.
 	local DESTINATION_ORDER = {"mausoleum", "gate_south", "gate_west",
 		"gate_north", "gate_east", "vigil_hall", "bone_works",
-		"charnel_yard", "bonesmith_guild", "market_house", "south_house",
+		"charnel_yard", "miners_guild", "market_house", "south_house",
 		"lane_house", "plaza_house"}
 
 	-- THE STANDING POSITIONS THIS COMPOSITION PUBLISHES ARE DATA, and they are

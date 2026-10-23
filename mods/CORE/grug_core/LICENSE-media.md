@@ -75,3 +75,16 @@ says 29; only the explicitly requested IDs are included.
 | `textures/grug_status_frame_buff.png` | Own work; procedural Pillow overlay; reproduce with frames.py | CC0-1.0 |
 | `textures/grug_status_frame_debuff.png` | Own work; procedural Pillow overlay; reproduce with frames.py | CC0-1.0 |
 | `textures/grug_status_frame_neutral.png` | Own work; procedural Pillow overlay; reproduce with frames.py | CC0-1.0 |
+
+## Round 58 Miner's Guild status icons — CC0
+
+Made for Grudgelands by GPT-6 Astra (guild art drop 01, proposal P2 "Reading
+the rock", picked by the user on 2026-10-23): painted texel by texel by the
+drop's own script (`paint.py`, no source images, no randomness, no
+image-generation model). Copied unchanged; the frame is added at run time
+like every status (`status_icons.lua`).
+
+| File | Origin / treatment | License |
+|---|---|---|
+| `textures/grug_status_ore_sense.png` | Own work; drop 01 P2 `status_ore_sense.png` (assay vial with detection rays, 64×64, opaque plate), unchanged | CC0-1.0 |
+| `textures/grug_status_treasure_hunt.png` | Own work; drop 01 P2 `status_treasure_hunt.png` (folded survey map with a destination bracket, 64×64, opaque plate), unchanged | CC0-1.0 |

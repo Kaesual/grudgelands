@@ -211,9 +211,10 @@ local function loader(directory)
 			-- the band at z 23..26 clear for the muster ground.
 			},
 
-		-- 8. THE WAR COUNCIL HOUSE, in the south-east corner: the bone record
-		-- of the clans, which is this race's archive.
-		{id = "council_house", template = "gor_drazhak_council_house",
+		-- 8. The Miner's Guild house of The Oathdelvers, in the south-east
+		-- corner (Round 58, in the war council house's place; settlements.md
+		-- "The Miner's Guild houses").
+		{id = "miners_guild", template = "gor_drazhak_miners_guild",
 			x = 29, z = -46, turns = 2, palette = "ors"},
 
 		-- 9. The clans' quarter: four dwellings on the outer ground, every one
@@ -234,7 +235,7 @@ local function loader(directory)
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"warlord_hall", "gate_south", "gate_west",
 		"gate_north", "gate_east", "skull_hall", "host_store", "beast_shed",
-		"council_house", "bazaar_house", "south_house", "lane_house",
+		"miners_guild", "bazaar_house", "south_house", "lane_house",
 		"plaza_house"}
 
 	-- The corner waypoints of the city loop, in the open ground between the
