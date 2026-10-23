@@ -10,9 +10,11 @@
 --    tab is the vendor's own shelf and the gear tab is the T1 catalog only.
 -- B. Thread (with parchment and vial) still reaches every trade's shelf and
 --    the core stock; the tailor still sells White and Brown Wool.
--- C. Selling the four to a vendor pays the old price (prices.lua under
---    registry stubs): Leather and Light Leather 2c, Linen Scrap 1c, the
---    Bronze Bar 1c -- the same with the old shelves put back.
+-- C. Traders still buy the four (prices.lua under registry stubs): Leather
+--    and Light Leather 2c and Linen Scrap 1c by their loot class, as with the
+--    old shelves put back; the Bronze Bar, off the shelves, takes the general
+--    rule for processed goods, its inputs (Copper Bar + Tin Bar, 2c), where
+--    its old 7c shelf capped it at 1c.
 -- The engine counterpart over the real registry is tools/r57_vendormat/probe.sh.
 
 local ROOT = arg and arg[1] or "."
@@ -240,7 +242,7 @@ do
 	eq(now["mobs:leather"], 2, "C Leather sells for 2c")
 	eq(now["grug_mobs:light_leather"], 2, "C Light Leather sells for 2c")
 	eq(now["grug_mobs:linen_scrap"], 1, "C Linen Scrap sells for 1c")
-	eq(now["grug_materials:bronze_bar"], 1, "C the Bronze Bar sells for 1c, as from its old 7c shelf")
+	eq(now["grug_materials:bronze_bar"], 2, "C the Bronze Bar sells for its inputs, 2c")
 	-- The old shelves put back (stock.lua at main a90990d5) pay the same.
 	local RETIRED = {{"butcher", "mobs:leather", 8}, {"butcher", "grug_mobs:light_leather", 6},
 		{"tailor", "grug_mobs:linen_scrap", 3}, {"smith", "grug_materials:bronze_bar", 7},
@@ -250,9 +252,10 @@ do
 		table.insert(grug_traders.profession_stock[row[1]], {item = row[2], price = row[3]})
 	end
 	local OLD = payouts()
-	for _, item in ipairs(FOUR) do
+	for _, item in ipairs({"mobs:leather", "grug_mobs:light_leather", "grug_mobs:linen_scrap"}) do
 		eq(now[item], OLD[item], "C " .. item .. " buys back as with the old shelves")
 	end
+	eq(OLD["grug_materials:bronze_bar"], 1, "C the old 7c shelf capped the Bronze Bar at 1c")
 end
 
 if failures > 0 then

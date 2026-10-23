@@ -164,7 +164,8 @@ end
 -- cloth, ores or metal bars of any tier either: hides and cloth come off the
 -- start zones' beasts and dead, copper and tin out of their rock. Thread
 -- stays as a job supply and the tailor keeps its two wools (bed decor);
--- buy-back of all of them is unchanged. tools/r57_vendormat pins this.
+-- traders still buy all of them (the Bronze Bar, off the shelves, pays its
+-- inputs like any bar: 2c). tools/r57_vendormat pins this.
 -- The audit at the bottom of this file enforces the tier rule at
 -- load, together with the older rule that a shelf names only registered
 -- items (an unregistered one renders as a buyable "unknown item" button): a

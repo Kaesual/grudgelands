@@ -103,10 +103,7 @@ precedence over preserving the exact mathematical ratio.
   sells (gear, supplies) and to every equippable of the gear catalog by the
   reference price of its slot and tier (T2+ bases, shields, spellbooks and
   trinkets in the "other" slot; Round 33, [item_tiers.md](item_tiers.md) §6.1). Thus a T1 Common weapon returns 2c and a T6 Common
-  weapon returns 1s25c. A good that left every shelf keeps the buy-back of
-  its old shelf price the same way (Round 57 ruling 28: the Bronze Bar, 7c,
-  still returns 1c; Leather, Light Leather and Linen Scrap pay their loot
-  class as before). The same-race purchase discount never increases
+  weapon returns 1s25c. The same-race purchase discount never increases
   buy-back; a 1–2c supply (thread, torch, stick) is not sellable at all,
   because 5% rounded up would equal its discounted price. Sticks are crafted
   from free wood, so no mob drops them and fishing does not catch them.

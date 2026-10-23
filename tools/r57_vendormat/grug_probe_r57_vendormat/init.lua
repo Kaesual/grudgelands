@@ -8,8 +8,10 @@
 --   2. compares every item's resolved value (sell_value, milli-copper) as
 --      the shelves are now with the value after the eight retired entries
 --      (Round 57 ruling 28) are put back and the prices resolved again, then
---      takes them off and resolves once more. Lists every difference; any
---      difference fails (ruling 28: buy-back is unchanged).
+--      takes them off and resolves once more. Lists every difference; one
+--      in Leather, Light Leather or Linen Scrap fails (they pay their loot
+--      class). The Bronze Bar and the goods made from it are expected to
+--      move: off the shelves the bar pays its inputs (coordinator, Round 57).
 -- Ends with "RESULT PASS" or "RESULT FAIL".
 
 local function log(text)
@@ -185,6 +187,8 @@ core.after(0, function()
 	log(("items compared %d, values that differ %d, re-resolve drift %d"):format(
 		#names, diffs, drift))
 	if drift > 0 then ok = false end
-	if diffs > 0 then ok = false end
+	for _, item in ipairs({"mobs:leather", "grug_mobs:light_leather", "grug_mobs:linen_scrap"}) do
+		if old[item] ~= now[item] then ok = false end
+	end
 	log(ok and "RESULT PASS" or "RESULT FAIL")
 end)
