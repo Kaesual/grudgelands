@@ -968,3 +968,49 @@ General and his bodyguards; a camp's captain), three protected quest givers
 and a Quartermaster in a fortress, and the fortress waystone. Garrisons,
 levels and quests: [pvp.md](pvp.md) §6–§7; positions and protection:
 [world_zones.md](world_zones.md) §16.
+Since Round 58 every war camp is a mining camp of its faction's Miner's
+Guild too: its lift, foreman and camp vendor stand on the open ground beside
+the command tent (the sockets below); its garrison, raid role and protection
+are unchanged.
+
+## Round 58 mining camps and camps under construction
+
+Anchors 119–144 add the Miner's Guild's camps (rules
+`wp40/r58_camp_catalog.lua`, compositions `wp40/r58_camp_blueprint.lua`,
+both 23 × 23 and centred like the war camps):
+
+- **20 mining camps**, one in every level-11–40 zone outside the capital
+  zones (6 T2, 8 T3, 6 T4). A camp belongs to the faction of its continent
+  half (a contested T4 camp too) and builds from its zone's race palette: a
+  fence ring with a lit gate on every side, the lift's headframe on a timber
+  deck, the foreman's tent in faction cloth, the vendor's stall, ore heaps,
+  an ore cart and a timber stack. Two faction guards hold the gate, two more
+  the yard in a contested camp.
+- **6 camps under construction**, one in each contested T4 zone, built by
+  the other faction (the race of the zone across the front): a palisade
+  begun on the gate side, a scaffolded watchtower, a hut frame, timber,
+  supplies and the command tent; guards and a captain, and nothing an enemy
+  could use (no lift, vendor, shelter or bed).
+- Camps carry **no activation node** (no banner, no fire): they are not in
+  the anchor activation roster, and their protection is their building core
+  box (`world_protection.lua`: kind `mining_camp`; a camp under construction
+  is a `war_camp` with the PvP margin).
+
+**The camp socket contract** (every mining camp and war camp; read by lanes
+CAMPNPC, LIFT and GUILDQUESTS):
+
+| Socket id | Role | Kind / tag | What stands there |
+|---|---|---|---|
+| `lift` | `lift` | – | the lift node `grug_mapgen:guild_lift` (its cell, `4dir` facing the gate; nobody stands on it); its x/z is the camp's lift column |
+| `quest_foreman` | `quest` | – | the foreman, the camp's quest giver (a quest shell of the camp's race until his quests are registered) |
+| `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`: buys like every vendor, no shelf of its own yet; lane CAMPNPC adds the trade-in, repair and the reputation page) |
+| `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |
+| `yard_west`, `yard_east` | `guard_post` | tag `camp` | a contested mining camp's two further guards |
+
+A camp under construction has `gate_west`, `gate_east` (tag `gate`),
+`yard_west`, `yard_east` (tag `camp`) and `captain` (role `captain`): the PvP
+garrison of its zone's highest level third with a named captain
+(`grug_mobs/pvp_garrison.lua`, `data/pvp_names.json`). The camps' lift
+columns, levels and tiers come from the camp module `wp40/r58_camps.lua`
+(`grug_mapgen.mining_camps` in the main environment); placement:
+[world_zones.md](world_zones.md) §8.5.

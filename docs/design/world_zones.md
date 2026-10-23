@@ -1240,8 +1240,9 @@ apex mining camps, keep their positions.
 ### 8.5 Seed-dependent POI placement (Round 46)
 
 The villages, outposts, bandit and Mirefolk camps, mines, clash sites (but
-the four rift sites), rare dens, the two PvP fortresses and the sixteen war
-camps have no authored position: every world places them by rules
+the four rift sites), rare dens, the two PvP fortresses, the sixteen war
+camps and (Round 58) the twenty mining camps and six camps under
+construction have no authored position: every world places them by rules
 (`wp40/placement.lua`, the kinds' rules in `wp40/placement_rules.lua`;
 round46-plan.md §4.2, rulings 2 and 17). The start towns, capitals, dragon
 arenas, apex mines and the rift sites (`r20_anchor_076`, `077`, `084`, `085`)
@@ -1278,7 +1279,13 @@ stay fixed.
   Throng's west, 88 to 448 nodes off it), so the gate faces the road on every
   world; the **war camps** on their own faction's half of their
   Battlegrounds zone at their catalogue levels, 128 nodes from a boat path's
-  mainland end, and every PvP POI 120 nodes from every other.
+  mainland end, and every PvP POI 120 nodes from every other; the **mining
+  camps** (Round 58, anchors 119–138: one in every level-11–40 zone outside
+  the capital zones) 16 and 160 in the zone's lowest level third, where the
+  tier's guild items become usable (levels 11, 21, 31), joined to the roads
+  by a trail; the **camps under construction** (anchors 139–144, one per
+  contested level-31–40 zone, of the other faction) 16 and 160 in its
+  highest third, toward the front, without a trail.
 - **The choice.** Candidates are the cells of the water layout's 16-node
   grid that pass the cheap tests; the exact tests walk them in an order
   seeded by the world and the anchor (mines by their hills, fortresses by
@@ -1289,7 +1296,9 @@ stay fixed.
   those near water when any is). Order: fixed
   anchors first, then fortresses, war camps, villages, mines, outposts,
   bandit camps, Mirefolk camps, clash sites and rare dens; rows a later round
-  appends go into a later `pass`, so the earlier ones keep their places.
+  appends go into a later `pass`, so the earlier ones keep their places (the
+  Round 58 camps are pass 2: mining camps, then the camps under
+  construction).
 - **Fallbacks.** A row that finds nothing relaxes step by step: the band by
   one third (a war camp by one level), relief × 1.5, spacing × 0.75 and a
   smaller zone margin, then band ± 2, relief × 2 and spacing × 0.5, then
@@ -2191,7 +2200,15 @@ and quests are in [pvp.md](pvp.md) §6–§7.
   `world_map.md`).
 - **No activation node:** unlike outposts (guard banner) and bandit camps
   (camp fire) the PvP POIs get no anchor node; their garrison stands on the
-  blueprint's sockets.
+  blueprint's sockets. The same holds for the Round 58 mining camps and
+  camps under construction, so the anchor activation roster keeps its 42
+  rows and the zone overlay its 36 protected columns.
+- **Mining camps (Round 58):** every war camp is also a mining camp of its
+  faction's Miner's Guild (lift, foreman, camp vendor; tier 5 in The Broken
+  Causeway and The Shattered Line, tier 6 in Gravesalt Escarpment and The
+  Skyglass Canopy); the camps and their socket contract:
+  [settlements.md](settlements.md) "Round 58 mining camps and camps under
+  construction".
 
 - Twelve zones are contested. Eight of them carry the current war-activity
   budget: Ashenward March, Bannerbreak Mesa and all six §8.3 zones. Their §8

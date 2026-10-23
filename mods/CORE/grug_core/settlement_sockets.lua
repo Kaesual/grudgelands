@@ -35,7 +35,10 @@ local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	mount_display = true, gear_display = true, public_station = true,
 	-- Round 31 PvP POIs: the fortress General and his two bodyguards, a
 	-- camp's captain (pvp-plan ruling 17, r31_pvp_poi_blueprint.lua).
-	general = true, bodyguard = true, captain = true}
+	general = true, bodyguard = true, captain = true,
+	-- Round 58: a mining camp's lift point, the lift node's cell (the camp
+	-- socket contract, settlements.md "Mining camps"); nobody stands on it.
+	lift = true}
 local TRAINER_PROFESSIONS = {weaponsmith = true, armorsmith = true, alchemist = true,
 	tailor = true, leatherworker = true, woodcarver = true, goldsmith = true,
 	cooking = true}
@@ -45,7 +48,10 @@ local TRAINER_PROFESSIONS = {weaponsmith = true, armorsmith = true, alchemist = 
 local VENDOR_KINDS = {race = true, general = true, butcher = true,
 	smith = true, fishmonger = true, baker = true, tailor = true,
 	mason = true, brewer = true, bowyer = true, herbalist = true,
-	armourer = true, tanner = true, embalmer = true}
+	armourer = true, tanner = true, embalmer = true,
+	-- Round 58: the camp vendor of the Miner's Guild (its entity is
+	-- grug_traders' `vendor_camp`)
+	camp = true}
 -- Contract section 8.2: the closed activity vocabulary of a `work` socket.
 -- The second row is the wave-2 extension; an activity the NPC mod does not
 -- animate yet is a resident standing still at its workplace, never an error.

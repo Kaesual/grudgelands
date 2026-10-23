@@ -2641,6 +2641,45 @@ tools](#player-meta-read-by-external-tools).
   `CONTESTED_DEPTH_Y = −501` in `zones.lua` (PvP and territory). Fixtures
   `tools/r31_s`, `tools/r31_m` (incl. `spacing_check.lua` over six seeds,
   `engine.sh`), `tools/r31_da2`, `tools/r24_protection_depth`.
+  **Round 58 camps** (the Miner's Guild): anchors 119–144 of
+  `source/simple_map.lua` (pass 2; fitting profiles `mining_camp`, with a
+  trail, and `camp_construction`), rules `r58_camp_catalog.lua` (the 20
+  mining camps and 6 camps under construction by zone, faction and race,
+  the lift offsets `LIFT` per composition kind, `ROOM_FLOOR_Y`, `tier_of`),
+  bound by `r7_settlement.camp_profiles` (turned by
+  `r31_pvp_catalog.gate_turns`, the war camps' rule) and built by
+  `r58_camp_blueprint.lua`; the war camp blueprint gains the lift,
+  `quest_foreman` and `vendor_camp` sockets. The lift node
+  `grug_mapgen:guild_lift` (`world_nodes.lua`, `4dir`, written facing its
+  camp's gate and turned with it: `wp13/parts.lua`) is settlement palette
+  content like the waystone (no class of its own in `r7_content.lua`). Its
+  static fields that the class row digests (paramtype, paramtype2,
+  light_source, sunlight_propagates, floodable, the liquid fields, the
+  groups grug_natural and grug_air) change only in `world_nodes.lua`, in a
+  map reset round: main computes the settlement semantic digest before the
+  other mods load and emerge after, so LIFT's override from grug_guild
+  changes only behaviour and textures. The camp vendor is
+  `grug_traders:vendor_camp` ("Camp Vendor", a profession-style vendor
+  without a shelf of its own until CAMPNPC). **The camp module** `r58_camps.lua` (pure, main and
+  mapgen environment, from the `placement_layout` text or parsed
+  positions): `camps(layout[, seams])` (the 36 camps with a lift sorted by
+  id: `{id, kind, faction, race, zone_id, tier, anchor, lift, levels, label,
+  anchor_id}`; `seams = {raw_sha256, full_seed}` rolls a war camp's race),
+  `under_construction(layout)`, `ROOM_FLOOR_Y` and `index(layout, seams)`,
+  published in main as `grug_mapgen.mining_camps` (`camps`,
+  `under_construction`, `get(id)`, `near(pos[, radius])`). The camps carry
+  no activation node, so `r7_anchor_roster.lua` and the zone overlay keep 42
+  rows and 36 columns. Classification: `world_protection.settlement_kind`
+  (`mining_camp`; a camp under construction `war_camp` with the PvP margin),
+  `grug_map/settlement_icons.lua` (the mine's icon, the war camp's),
+  `spawn_policy.protected_spawn_surface` and `roam_avoid` (`mining_camp`),
+  `grug_core/settlement_sockets.lua` (role `lift`, vendor kind `camp`),
+  `grug_mobs/pvp_garrison.lua` (third argument the camp catalogue: a mining
+  camp is settlement kind `mining_camp` without garrison, a camp under
+  construction a `pvp_camp`). The socket contract:
+  [settlements.md](../design/settlements.md) "Round 58 mining camps and
+  camps under construction". Fixture `tools/r58_camps`; the seed fleet
+  checks every camp per seed.
   **Round 36 mapgen (decor pass):** `wp13/decor_kit.lua` (pure) owns the
   pieces (`M.piece` in the race's palette), the whole-or-error placement of
   an authored row (`M.place`: open ground only, never a path, built cell,

@@ -12,6 +12,15 @@ dofile(modpath .. "/poi_displays.lua")(core)
 grug_mapgen.wp40 = dofile(modpath .. "/wp40/r7_loader.lua")(
 	core, modpath, grug_materials, grug_gathering, grug_core)
 
+-- The camps of the Miner's Guild of this world (Round 58, `wp40/r58_camps.lua`):
+-- every camp with its lift column and levels, the camps under construction,
+-- `get(id)` and `near(pos)`. The mapgen environment builds the same lists
+-- from its `placement_layout`.
+grug_mapgen.mining_camps = dofile(modpath .. "/wp40/r58_camps.lua").index(
+	grug_mapgen.wp40.placement_layout_text,
+	{raw_sha256 = function(bytes) return core.sha256(bytes, true) end,
+		full_seed = grug_mapgen.wp40.full_seed})
+
 -- Planned water flow for grug_core's water guard (world_zones.md §7.4): at a
 -- step between two planned inland surfaces, river or canal, the higher water
 -- flows over the lower one. That flow is generated world, also inside

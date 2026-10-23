@@ -87,6 +87,24 @@
       "orc": "Captain Vroshka",
       "troll": "Captain Vazeka",
       "undead": "Captain Othrelle Duskheir"
+    },
+    "camp_site_stormvault_heights": {
+      "undead": "Captain Seldrith Hollowmere"
+    },
+    "camp_site_ashenward_march": {
+      "orc": "Captain Gorvash"
+    },
+    "camp_site_glassroot_wilds": {
+      "troll": "Captain Zalumbe"
+    },
+    "camp_site_blackwind_rise": {
+      "dwarf": "Captain Hulda Stonewright"
+    },
+    "camp_site_bannerbreak_mesa": {
+      "human": "Captain Aldric Marrowford"
+    },
+    "camp_site_thunderroot_wilds": {
+      "elf": "Captain Sirelle"
     }
   }
 }

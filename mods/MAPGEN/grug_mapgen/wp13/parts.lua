@@ -88,6 +88,9 @@ local PARAM2_KIND = {
 	["grug_jobs:jewellers_bench"] = M.FACEDIR,
 	-- the mailbox beside every waystone (Round 48, dressing.waystone)
 	["grug_mapgen:mailbox"] = M.FACEDIR,
+	-- the Miner's Guild lift (Round 58, `4dir`: its four values turn like an
+	-- upright facedir's)
+	["grug_mapgen:guild_lift"] = M.FACEDIR,
 	["grug_decor:capital_product_weaponsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_armorsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_tailor"] = M.FACEDIR,

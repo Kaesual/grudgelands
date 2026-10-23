@@ -51,6 +51,7 @@ QUESTS = "mods/PLAYER/grug_quests/data/zones"
 SIMPLE_MAP = "mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua"
 POI_CATALOG = "mods/MAPGEN/grug_mapgen/wp40/r20_poi_catalog.lua"
 PVP_CATALOG = "mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"
+CAMP_CATALOG = "mods/MAPGEN/grug_mapgen/wp40/r58_camp_catalog.lua"
 SIGNAL_SOURCE = "docs/planning/round28/mobs/names-proposal.json"
 NEIGHBOURS = "tools/r38_names/neighbours.tsv"
 SEEDS = ["42", "7", "2026", "1234", "99999", "314159"]
@@ -898,6 +899,31 @@ class Model:
                                            family="guard", base="guard", tier="named", authored_tier="elite",
                                            role_levels=[cl, cl], levels=[cl, cl],
                                            notes=["war commander, level 60 elite"]))
+        # Round 58: the six enemy camps under construction (r58_camp_catalog.lua,
+        # pvp_garrison.lua): the named captain of the camp's one (builder's)
+        # race at its contested 31-40 zone's top level. Their guards carry no
+        # names-file slot (pvp_garrison.lua): the faction guards above.
+        ctxt = r.text(CAMP_CATALOG)
+        faction_of = {"dwarf": "accord", "human": "accord", "elf": "accord",
+                      "undead": "throng", "orc": "throng", "troll": "throng"}
+        for zid in re.findall(r'^\t\{"(\w+)", "(?:accord|throng)", "\w+", "\w+"\},$',
+                              ctxt[ctxt.index("local CONSTRUCTION"):], re.M):
+            key = "camp_site_" + re.sub(r"^(elandor|kragmar)_", "", zid)
+            (race, cname), = self.pvp_names["captains"][key].items()
+            faction = faction_of[race]
+            zl = self.zones[zid]
+            hi = zl["level_max"]
+            common = {"zone": zid, "leader": False, "disposition": None, "size": 1.0, "drops": None,
+                      "clocks": ["any"], "faction": faction, "tags": [zid + "/" + key]}
+            self.add_slot(dict(common, key="%s/%s.captain-%s/L%d-%d" % (zid, key, race, hi, hi),
+                               source="pvp_garrison", name=cname,
+                               name_source="pvp_names.json captains",
+                               name_where=r.cite(PVP_NAMES, r'"%s"' % re.escape(cname)),
+                               entity="grug_mobs:captain_" + faction, role="captain_" + faction,
+                               family="guard", base="guard", tier="named", authored_tier="normal",
+                               role_levels=[hi, hi], levels=[hi, hi], race=race,
+                               notes=["the captain of a camp under construction (Round 58), "
+                                      "of its builder's race"]))
 
         # Registered sub-types nothing places.
         placed = {s["role"] for s in self.slots}
