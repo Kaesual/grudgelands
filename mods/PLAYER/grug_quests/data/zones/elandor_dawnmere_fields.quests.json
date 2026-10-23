@@ -32,7 +32,7 @@
       "level": 2,
       "requires": [],
       "title": "Eight Snouts Too Many",
-      "text": "Barley Piglets are eating next winter's bread before we've had a chance to bake it. Hunt eight by day in the {name:home_fields}, {zone_area:home_fields}. They leave you alone until you strike, so take a moment to choose your quarrel.",
+      "text": "Barley Piglets are eating next winter's bread before we've had a chance to bake it. Hunt eight by day in the {name:home_fields}, which lie {zone_area:home_fields}. They leave you alone until you strike, so you choose the quarrel; just don't choose three at once.",
       "objectives": [
         {
           "type": "kill",
@@ -60,7 +60,7 @@
               "area": "elandor_hearthpine_vale/timberline"
             }
           ],
-          "text": "A pit prop ought to hold up a mine, not feed a pig. Hunt eight Pine Piglets by day in the {name:timberline}, {zone_area:timberline}, before they root through another stack. They won't start the fight; for once, the foreman leaves the timing to you."
+          "text": "A pit prop ought to hold up a mine, not feed a pig. Hunt eight Pine Piglets by day in the {name:timberline}, which lies {zone_area:timberline}, before they root through another stack. They won't start the fight, so for once in Hearthpine somebody other than me decides when the shift begins."
         },
         {
           "zone": "elandor_silverleaf_glades",
@@ -72,7 +72,7 @@
               "area": "elandor_silverleaf_glades/home_glades"
             }
           ],
-          "text": "We planted those saplings for children yet unborn; the Glade Piglets consider them breakfast. Cull eight by day in the {name:home_glades}, {zone_area:home_glades}. They will let you choose the first blow, though I fear they will never appreciate the years behind it."
+          "text": "We planted those saplings for children yet unborn; the Glade Piglets consider them breakfast. Cull eight by day in the {name:home_glades}, which lie {zone_area:home_glades}. They will let you strike first, which is more patience than they have ever shown a seedling."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -84,7 +84,7 @@
               "area": "kragmar_sunscar_flats/wellfields"
             }
           ],
-          "text": "Water carried home on tired shoulders should reach a mouth, not leak from a chewed waterskin. Hunt eight Scrub Piglets by day in the {name:wellfields}, {zone_area:wellfields}. They wait for you to strike, so plant your feet and make the blow count."
+          "text": "Water carried home on tired shoulders should reach a mouth, not leak from a chewed waterskin. Hunt eight Scrub Piglets by day in the {name:wellfields}, which lie {zone_area:wellfields}. They wait for you to strike first, and an orc who is handed the first blow does not waste it."
         },
         {
           "zone": "kragmar_kapok_cradle",
@@ -96,7 +96,7 @@
               "area": "kragmar_kapok_cradle/yam_beds"
             }
           ],
-          "text": "We tend the yams, the yams feed the village, and the Yam Piglets would like to shorten that arrangement. Hunt eight by day in the {name:yam_beds}, {zone_area:yam_beds}. They leave you be until you strike; use that courtesy to keep a clear path around your feet."
+          "text": "A root feeds a troll, a troll tends the root; the Yam Piglets have eaten their way into the middle of that song. Hunt eight by day in the {name:yam_beds}, which lie {zone_area:yam_beds}. They leave you be until you strike, so take them one verse at a time."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -108,7 +108,7 @@
               "area": "kragmar_stillgrave_hollow/dead_furrows"
             }
           ],
-          "text": "The Barrow Piglets have been rearranging people I buried with considerable care. Kill eight by day in the {name:dead_furrows}, {zone_area:dead_furrows}. They will wait for you to strike, which is more consideration than they show the residents."
+          "text": "The Barrow Piglets have been rearranging people I buried with considerable care. Kill eight by day in the {name:dead_furrows}, which lie {zone_area:dead_furrows}. They will wait for you to strike, which is more consideration than they show the residents."
         }
       ],
       "rewards": {
@@ -134,7 +134,7 @@
       "level": 2,
       "requires": [],
       "title": "The Rats Can Mend It",
-      "text": "The Barn Rats have eaten my grain and left me a sack that holds nothing but a grudge. Kill three after dark in the {name:home_fields}, {zone_area:home_fields}, and bring me one Rat Fur Patch. Patching rat holes with rat fur is what I call good housekeeping.",
+      "text": "The Barn Rats have eaten my grain and left me a sack that holds nothing but a grudge. Kill three after dark in the {name:home_fields}, which lie {zone_area:home_fields}, or farther out in the {name:meadows}, and bring me one Rat Fur Patch. They bite before they ask, and patching rat holes with rat fur is what I call good housekeeping.",
       "objectives": [
         {
           "type": "kill",
@@ -174,7 +174,7 @@
               "area": "elandor_hearthpine_vale/timberline"
             }
           ],
-          "text": "Something's been chewing my flour sacks after the late shift, and for once it isn't a miner. Kill three Timber Rats after dark in the {name:timberline}, {zone_area:timberline}, and bring me one Rat Fur Patch. I'll do the stitching; I've seen enough of your lot try to mend things with nails."
+          "text": "Something's been at my flour sacks after the late shift, and for once it isn't a miner. Kill three Timber Rats after dark in the {name:timberline}, which lies {zone_area:timberline}, and bring me one Rat Fur Patch. They bite first and never apologise; I'll do the stitching, since every miner in this hall mends a sack with nails."
         },
         {
           "zone": "elandor_silverleaf_glades",
@@ -189,7 +189,7 @@
               "area": "elandor_silverleaf_glades/home_glades"
             }
           ],
-          "text": "Three generations of careful weaving, and the Fern Rats decide my seed baskets need doors. Kill three after dark in the {name:home_glades}, {zone_area:home_glades}, and bring me one Rat Fur Patch. I can mend a basket, but teaching manners to its visitors has proved a longer undertaking."
+          "text": "Three generations of careful weaving, and the Fern Rats decide my seed baskets need doors. Kill three after dark in the {name:home_glades}, which lie {zone_area:home_glades}, and bring me one Rat Fur Patch. I can mend a basket, but teaching manners to its visitors has proved a longer undertaking."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -204,7 +204,7 @@
               "area": "kragmar_sunscar_flats/wellfields"
             }
           ],
-          "text": "Dust Rats have chewed through my food sacks and dragged the scraps off for bedding. Kill three after dark in the {name:wellfields}, {zone_area:wellfields}, and bring me one Rat Fur Patch. They have had their comfort; I want my pantry back."
+          "text": "Dust Rats have chewed through my food sacks and dragged the scraps off to line their beds. Kill three after dark in the {name:wellfields}, which lie {zone_area:wellfields}, and bring me one Rat Fur Patch. They charge on sight, so meet them head-on; they slept on my supper, they can patch my sacks."
         },
         {
           "zone": "kragmar_kapok_cradle",
@@ -219,7 +219,7 @@
               "area": "kragmar_kapok_cradle/yam_beds"
             }
           ],
-          "text": "My yam sacks have more holes than sack, and the Moss Rats look suspiciously well fed. Kill three after dark in the {name:yam_beds}, {zone_area:yam_beds}, and bring me one Rat Fur Patch. They made the holes; let them help with the mending."
+          "text": "My yam sacks have more holes than sack, and the Moss Rats look suspiciously well fed. Kill three after dark in the {name:yam_beds}, which lie {zone_area:yam_beds}, and bring me one Rat Fur Patch. They made the holes, so it's only fair they lend a little of themselves to the mending."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -234,7 +234,7 @@
               "area": "kragmar_stillgrave_hollow/dead_furrows"
             }
           ],
-          "text": "Our shroud sacks have begun returning their contents to the floor, courtesy of the Grave Rats. Kill three after dark in the {name:dead_furrows}, {zone_area:dead_furrows}, and bring me one Rat Fur Patch. Death is no excuse for untidy storage."
+          "text": "Our shroud sacks have begun returning their contents to the floor, courtesy of the Grave Rats. Kill three after dark in the {name:dead_furrows}, which lie {zone_area:dead_furrows}, and bring me one Rat Fur Patch. Death is no excuse for untidy storage."
         }
       ],
       "rewards": {
@@ -291,7 +291,7 @@
           "givers": [
             "r14_troll_elder"
           ],
-          "text": "Rain finds every loose stone in a wall, and then it invites the mud indoors. Bring me ten blocks of stone, any kind, for the repairs. A Wooden Pickaxe will gather ordinary rock outside town; moss is no guarantee of a soft landing for your knuckles."
+          "text": "Rain finds every loose stone in a wall, and then it invites the mud indoors. Bring me ten blocks of stone, any kind, for the repairs. A Wooden Pickaxe will gather ordinary rock outside town; moss makes every rock look friendly, but only some of them mean it."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -363,7 +363,7 @@
           "givers": [
             "r20_orc_start_cook"
           ],
-          "text": "My grandmother's grandmother tended the Long Fire, and every cook since has kept it fed. Bring me five whole logs of any tree and five Coal Lumps; gather them from trees and rock outside town. Leave Sunscar's trees standing, and you may tell your grandchildren you helped without leaving out any awkward details."
+          "text": "My grandmother's grandmother tended the Long Fire, and every cook since has kept it fed. Bring me five whole logs of any tree and five Coal Lumps from the trees and rock outside town; Sunscar's own trees stay standing. One day you can tell your grandchildren you fed the Long Fire, and leave out how often I had to ask."
         },
         {
           "zone": "kragmar_kapok_cradle",
@@ -495,7 +495,7 @@
           "givers": [
             "r14_elf_elder"
           ],
-          "text": "Our hall has heard a great deal of wisdom; lately its hinges insist on answering. Bring me three Copper Bars and three Tin Bars for the repairs. You can smelt the local copper and tin ore in a furnace, should you wish to lend a hand to the conversation."
+          "text": "Our hall has heard a great deal of wisdom; lately its hinges insist on answering back. Bring me three Copper Bars and three Tin Bars for the repairs. You can smelt the local copper and tin ore in a furnace, and with luck the next voice raised in that hall will be someone's, not something's."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -516,7 +516,7 @@
           "givers": [
             "r14_undead_elder"
           ],
-          "text": "The hinges on our storage chests groan whenever I open them, which makes one of us still capable of complaining about work. Bring me three Copper Bars and three Tin Bars for repairs. You can smelt the local copper and tin ore in a furnace; the noise has outlived its charm."
+          "text": "The hinges on our storage chests groan every time I lift a lid, and around here groaning is a privilege of the residents. Bring me three Copper Bars and three Tin Bars for repairs. You can smelt the local copper and tin ore in a furnace; I would like the chests to rest as quietly as everyone else."
         }
       ],
       "rewards": {
@@ -538,7 +538,7 @@
       "level": 8,
       "requires": [],
       "title": "A Little Bronze Goes Far",
-      "text": "Dawnmere wears out tools faster than I can count them, especially when someone lends a hammer to a fence post. Bring me three Bronze Bars for the workshop. If you want to make them yourself, a Dual Furnace can alloy copper and tin.",
+      "text": "Dawnmere wears out tools faster than I can count them, and someone has been using my best hammer as a fence post. Bring me three Bronze Bars for the workshop. If you make them yourself, a Dual Furnace will alloy Copper Bars and Tin Bars into bronze.",
       "objectives": [
         {
           "type": "item",
@@ -565,7 +565,7 @@
           "givers": [
             "r14_elf_elder"
           ],
-          "text": "A tool worth keeping may pass through many hands before its work is done. Bring me three Bronze Bars for the workshop. A Dual Furnace can alloy copper and tin if you wish to make them yourself; we can spare a little time now for something that will last."
+          "text": "Copper and tin each have their virtues; put them together and you gain a third, which is more than most councils manage. Bring me three Bronze Bars for the workshop. A Dual Furnace will alloy Copper Bars and Tin Bars if you wish to make them yourself; a good tool, like a good tree, repays patience."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -608,7 +608,7 @@
       "level": 5,
       "requires": [],
       "title": "Foxes at Our Expense",
-      "text": "Our hens have taken to sleeping with one eye open, and now the farmers are doing it too. Hunt eight Henthieves by day in the {name:pastures}, {zone_area:pastures}. A hen should be able to cross her own yard without settling someone else's supper.",
+      "text": "Our hens have taken to sleeping with one eye open, and now the farmers are doing it too. Hunt eight Henthieves by day in the {name:pastures}, which lie {zone_area:pastures}; they wait for your first blow, but the Grunters rooting among them will not. A hen ought to be able to cross her own yard without ending up as someone else's supper.",
       "objectives": [
         {
           "type": "kill",
@@ -636,7 +636,7 @@
               "area": "elandor_silverleaf_glades/foxglades"
             }
           ],
-          "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Russet Kits by day in the {name:foxglades}, {zone_area:foxglades}. I have time to plant again, but the seedlings have only the roots they stand on."
+          "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Russet Kits by day in the {name:foxglades}, which lie {zone_area:foxglades}, and mind the Acorn Grunters that share them. I have time to plant again, but the seedlings have only the roots they stand on."
         }
       ],
       "rewards": {
@@ -681,7 +681,7 @@
       "level": 8,
       "requires": [],
       "title": "Claws on the Shore",
-      "text": "The fishermen came back with torn nets and some very firm opinions about Wreck Snappers. Kill five by day on the shore at the {name:wreck_coast}, {dir_from_giver:wreck_coast}. Go while the sun is up; after dark, that shore has other reasons to keep you from supper.",
+      "text": "The fishermen came back with torn nets and some very firm opinions about Wreck Snappers. Kill five by day on the {name:wreck_coast}, {dir_from_giver:wreck_coast}; they come at you on sight. Go while the sun is up, because after dark the drowned walk that shore, and I would rather you came home for supper.",
       "objectives": [
         {
           "type": "kill",
@@ -756,7 +756,7 @@
       "level": 8,
       "requires": [],
       "title": "A Brush and a Better Supper",
-      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from Wreck Snappers on the {name:wreck_coast}, {dir_from_giver:wreck_coast}, and one Fox Tail from Henthieves in the {name:pastures}, {zone_area:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and do try to keep them in separate pockets.",
+      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from the Wreck Snappers on the {name:wreck_coast}, {dir_from_giver:wreck_coast}, and one Fox Tail from the Henthieves in the {name:pastures}, which lie {zone_area:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and do try to keep them in separate pockets.",
       "objectives": [
         {
           "type": "item",
@@ -793,7 +793,7 @@
       "requires": [],
       "title": "Requisition for One Crumb",
       "text": "{name:confused_bandit_chief} calls our missing grain a requisition, though he cannot say who requisitioned it. Defeat seven Grain Pilferers and their chief at the {name:bandit_camp}, {dir_from_giver:bandit_camp}; they keep their posts day and night. We planted that harvest, and a man with a stolen sack and a long word does not get to decide who eats it.",
-      "completion": "Crumb can no longer sign away a harvest he never planted. You've done right by Dawnmere, and when you take to the road, you'll leave with more good wishes than will fit in your pack.",
+      "completion": "Crumb has filed his last requisition, and the grain stays with the hands that grew it. You've done right by Dawnmere; when you take to the road, you'll carry more good wishes than your pack has room for.",
       "objectives": [
         {
           "type": "kill",

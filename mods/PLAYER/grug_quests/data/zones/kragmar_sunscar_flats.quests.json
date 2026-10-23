@@ -34,7 +34,7 @@
       "level": 5,
       "requires": [],
       "title": "Earn Your Breath",
-      "text": "The hunters say the Dustrunners are getting quicker; I suspect the hunters are getting louder. Bring down eight by day on the {name:runner_plains}, {zone_area:runner_plains}, to keep the herd in check. Save the boasting for when you catch your breath.",
+      "text": "The hunters say the Dustrunners are getting quicker; I suspect the hunters are getting louder. Bring down eight by day on the {name:runner_plains}, which stretch {zone_area:runner_plains}, to keep the herd in check. Save the boasting for when you catch your breath.",
       "objectives": [
         {
           "type": "kill",
@@ -89,7 +89,7 @@
       "level": 7,
       "requires": [],
       "title": "Mind the Other End",
-      "text": "A hunter watching the horizon can still be put on their back by a Rock Scorpion. Kill six by day on the {name:runner_plains}, {zone_area:runner_plains}, so our hunters can watch the herds instead of every stone. Mind the tail; a bold step is worth little if you cannot take the next one.",
+      "text": "A hunter watching the horizon can still be put flat on their back by a Rock Scorpion. Kill six by day on the {name:runner_plains}, which lie {zone_area:runner_plains}, so our hunters can watch the herds instead of every stone. They strike on sight, so mind the tail; a bold step is worth little if you cannot take the next one.",
       "objectives": [
         {
           "type": "kill",
@@ -145,7 +145,7 @@
       "requires": [],
       "title": "The Last Drop Is Ours",
       "text": "We share water with any thirsty stranger; {name:water_thief_chief} has taken that for weakness. Strike the {name:thieves_camp}, {dir_from_giver:thieves_camp}, and kill six Water Thieves and their chief. They guard their stolen water day and night. Let Sunscar fill its cups without looking over its shoulder.",
-      "completion": "Lastdrop is beaten, and our wells belong to the hands that tend them. You have earned a place at our fire. Take the road when you are ready; that place stays yours.",
+      "completion": "Lastdrop has had his last drop, and our wells belong again to the hands that tend them. Sunscar will tell this one loudly, and for once the boasting is earned. Take the road when you are ready; your cup stays full here.",
       "objectives": [
         {
           "type": "kill",

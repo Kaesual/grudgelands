@@ -34,7 +34,7 @@
       "level": 5,
       "requires": [],
       "title": "Flowers for the Wrong Guests",
-      "text": "We leave greenery for those who can no longer enjoy a meal, and the Gaunt Fawns have been enjoying it on their behalf. Cull eight by day on the {name:blightmoor}, {zone_area:blightmoor}. The mourners would like their offerings to last a little longer than the walk home.",
+      "text": "We leave greenery for those who can no longer enjoy a meal, and the Gaunt Fawns have been enjoying it on their behalf. Cull eight by day on the {name:blightmoor}, which lies {zone_area:blightmoor}; they wait for your first blow, though the Plague Boars there do not. The mourners would like their offerings to last a little longer than the walk home.",
       "objectives": [
         {
           "type": "kill",

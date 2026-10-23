@@ -87,7 +87,7 @@
               "area": "kragmar_kapok_cradle/rootways"
             }
           ],
-          "text": "Listen among the roots after dark: rats scurry, but Root Shufflers drag their feet. Lay three to rest in the {name:rootways}, {zone_area:rootways}. Nobody should wander forever without knowing which doorway is home."
+          "text": "Listen among the roots after dark: rats scurry, but Root Shufflers drag their feet. Lay three to rest at night in the {name:rootways}, which lie {zone_area:rootways}. Nobody should wander forever without knowing which doorway is home."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -99,7 +99,7 @@
               "area": "kragmar_stillgrave_hollow/ashfields"
             }
           ],
-          "text": "I have read the burial rolls aloud to the Nameless Shufflers, and not one turned its head. Lay three to rest in the {name:ashfields}, {zone_area:ashfields}, by day or night. The blight shelters them from the sun; waiting for morning will not give them back their names."
+          "text": "I have read the burial rolls aloud to the Nameless Shufflers, and not one turned its head. Lay three to rest in the {name:ashfields}, which lie {zone_area:ashfields}, by day or night. The blight shelters them from the sun; waiting for morning will not give them back their names."
         }
       ],
       "rewards": {
@@ -205,7 +205,7 @@
       "level": 5,
       "requires": [],
       "title": "A Hard Hat Has Limits",
-      "text": "Ibex Kids are kicking slate onto the paths, and the miners have begun looking up instead of where they're going. Hunt eight by day among the {name:high_pines}, {zone_area:high_pines}. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
+      "text": "Ibex Kids are kicking slate onto the paths, and the miners have begun looking up instead of where they're going. Hunt eight by day among the {name:high_pines}, which lie {zone_area:high_pines}; they graze peaceably until you start it. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
       "objectives": [
         {
           "type": "kill",
@@ -260,7 +260,7 @@
       "level": 9,
       "requires": [],
       "title": "Bracket Doesn't Add Up",
-      "text": "{name:muddled_ore_chief} has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp}, {dir_from_giver:ore_thief_camp}, and defeat seven Ore Thieves and their chief; the crew lurks there day and night. Draw Bracket away from his crew if you can; I'd like his ledger closed without your name entered in it.",
+      "text": "{name:muddled_ore_chief} has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp}, {dir_from_giver:ore_thief_camp}, and defeat seven Ore Thieves and their chief; they hold it day and night. Draw Bracket away from his crew if you can; I'd like his ledger closed without your name entered in it.",
       "completion": "Bracket's sums finally add up to nothing, and our miners can keep what they dig. Hearthpine will remember the work you've done here. When you're ready for a longer road, come and have a word with me.",
       "objectives": [
         {

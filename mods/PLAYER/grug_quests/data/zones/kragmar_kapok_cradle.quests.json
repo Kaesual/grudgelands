@@ -34,7 +34,7 @@
       "level": 5,
       "requires": [],
       "title": "No Manners at the Root",
-      "text": "The Tapir Calves have discovered that our young plants taste better than anything we left for them. Hunt eight by day in the {name:broadleaf_wood}, {zone_area:broadleaf_wood}. They will graze quietly until you strike, so choose your footing before you choose your tapir.",
+      "text": "The Tapir Calves have discovered that our young plants taste better than anything we left out for them. Hunt eight by day in the {name:broadleaf_wood}, which lies {zone_area:broadleaf_wood}. They graze quietly until you strike, but the Ocelots that share their shade will not wait so politely.",
       "objectives": [
         {
           "type": "kill",
