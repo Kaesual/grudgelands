@@ -236,9 +236,19 @@ def build(spec):
     def counter(x, z):
         put(x, 1, z, "role table_leg")
         put(x, 2, z, "role table_top")
+
+    # A desk at waist height, so whoever stands behind it is seen from the
+    # door (HALLS2: the leader stood half hidden behind a counter of a post
+    # and a slab on top): posts at its two ends, the top slab upside down in
+    # the course between them.
+    def desk(cells_xz):
+        for index, (x, z) in enumerate(cells_xz):
+            if index in (0, len(cells_xz) - 1):
+                put(x, 1, z, "role table_leg")
+            else:
+                put(x, 1, z, "role table_top o=facedir:20")
     zc = hz0 + 2
-    for z in (zc, zc + 1, zc + 2):
-        counter(w - 3, z)
+    desk([(w - 3, z) for z in (zc, zc + 1, zc + 2)])
     put(w - 2, 1, zc - 1, "role storage o=facedir:3")
     put(w - 2, 1, zc - 2, "node default:coalblock")
     put(w - 2, 2, zc - 2, "node grug_materials:copper_block")
@@ -246,8 +256,7 @@ def build(spec):
     counter(2, zc + 4)
     put(1, 1, zc + 5, "role storage o=facedir:1")
     zl = hz1 - 1
-    for x in (cx - 1, cx, cx + 1):
-        counter(x, zl)
+    desk([(x, zl) for x in (cx - 1, cx, cx + 1)])
     for x, face in ((1, 1), (w - 2, 3)):
         put(x, 1, hz1, "role storage o=facedir:%d" % face)
         put(x, 2, hz1, "role storage o=facedir:%d" % face)
