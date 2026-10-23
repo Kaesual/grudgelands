@@ -264,9 +264,22 @@ residents stand along the west fence (x = −8), clear of the mount displays'
 lanes. The role handler is `grug_mounts`' (boats); a socket without a handler
 places nobody.
 
-The shared gatehouse upper-floor stair opening removes exactly one additional
-obstructing block in the ascent direction. Treads, rise, passage, deck and room
-dimensions are unchanged; there is no stair redesign or bespoke clearance test.
+**The core gatehouse** (the five capitals with one, all but Kezamba; the
+template `<capital>_gate_south`; Round 58, the user's rulings of 2026-10-22):
+the two guard chambers' doors stand one node from the passage. The east
+chamber (the right one seen from outside) holds the inner stair from the
+ground to the first floor: three treads along the chamber's outer side, a
+landing across its field end and three treads back onto the first floor,
+with three free nodes over every tread (the engine lifts the player's box
+onto the next tread while it still stands over this one). The roof stair
+climbs from the first floor to the deck through a four-node opening; the
+first floor's side walls are closed. **The gate's watch** (`wp13/gate_watch.lua`):
+the two ground guards walk one rectangle on the city side of the gate in
+opposite directions (gate frame x 2..10, z 8..12, two to six nodes in front
+of the city wall), meeting in front of the gate mouth and at the far side;
+the tower guard holds a post on the deck. Such a small loop is walked round
+its corners (`patrol.lua` `loop_reach`: a loop whose legs are all at most
+8 m is walked to within half its shortest leg).
 
 A capital has **four districts**: market and professions, martial and
 garrison, lore and spiritual, residential and cultural. They stay recognisable
@@ -299,7 +312,7 @@ preparation covers the six start readiness envelopes instead.
 **NPCs arrive when their authored blocks are loaded.** Current-world readiness
 and per-socket loading govern roster placement, including outlying district
 plots; preparation does not authorize an NPC in an unloaded block. A capital
-carries several patrol loops — a city ring, one per gate tower and one per district — and each loop
+carries several patrol loops — a city ring, two per core gate and one per district — and each loop
 gets its own guard,
 walking that loop and no other; its flair villagers keep to the composition they
 belong to, the core or their own plot, instead of wandering the whole city. Its
@@ -337,8 +350,8 @@ outside, land reached only over the water; inside, a spit the lake cuts off
 from the city; any other dry stretch is walled, so the city is never open over
 land. No turret stands within six points
 of the open water. The wall carries no
-NPCs of its own; a capital's garrison is the four gatehouses of its civic
-core.
+NPCs of its own; a capital's garrison is the gatehouses of its civic core
+(three guards each: the deck post and the two on the rectangle).
 
 **Between the plots.** Decided 2026-09-15 with the round-3 playtest: a quarter
 of nine buildings in a 512 envelope is empty, so each quarter carries four more
@@ -735,18 +748,20 @@ it) at its centre, in the cell of the settlement's `travel_waypoint` socket
   course (`dressing.waypoint_pad`): a cross and the diamond round it in the
   start palette's signature stone, the diamond's inside paved with the lane
   material, the waystone in the middle. It is laid on open ground after the
-  buildings and lights and before the trees and flora, inside the start's
-  footprint, near the innkeeper and reachable from a lane (pad centre in
-  start-local x/z):
+  buildings and lights and before the trees and flora. Since Round 58 (the
+  user's ruling of 2026-10-22) it lies at the town's centre next to the
+  Quartermaster (the race vendor), on open ground that carries no authored
+  pattern (pad centre in start-local x/z; the Quartermaster stands at about
+  (7, −4)):
 
   | Start | Centre | Where |
   |---|---|---|
-  | Hearthpine | (−9, 12) | litter west of the street, 11 nodes from the inn door |
-  | Dawnmere | (14, −6) | turf between the green's east kerb and the east lane, 15 nodes from the inn door |
-  | Silverleaf | (−44, −23) | the west end of the south lane, 9 nodes from the guest house door |
-  | Stillgrave | (−14, 22) | blight beside the west lane, 10 nodes from the warden's door |
-  | Sunscar | (−11, −16) | flats north of the south lane, 6 nodes from the tusk house door |
-  | Kapok Cradle | (−12, 5) | litter west of the boardwalk road between the cross lanes |
+  | Hearthpine | (2, −2) | the arrival plaza beside the spawn, west of the market stall and the Quartermaster at its end |
+  | Dawnmere | (2, −3) | the green's south walk, west of the Quartermaster |
+  | Silverleaf | (10, −3) | the court east of the crescent, beside the Quartermaster |
+  | Stillgrave | (2, −4) | the court, west of the Quartermaster |
+  | Sunscar | (6, −3) | the yard, north-west of the Quartermaster |
+  | Kapok Cradle | (4, −6) | the clearing east of the boardwalk road, south-west of the Quartermaster |
 
 ## Housing Stewards (Round 25)
 
