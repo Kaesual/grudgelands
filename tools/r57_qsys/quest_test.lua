@@ -609,6 +609,8 @@ do
 	check(entries and entries:find("Story", 1, true) < entries:find("Crop Thieves", 1, true),
 		"C story quests first in the log")
 	eq(session.quest_rows[1], nil, "C a header selects no quest")
+	check(quest_box.handle(di, session, {grug_quest_list = "CHG:1"}), "C a click on a header redraws the log")
+	eq(session.quest_selected, "qs_story_landing", "C ... and keeps the selected quest")
 	eq(session.quest_rows[2], "qs_story_landing", "C the story quest under its header")
 	kill(di, "Wreck Snapper", 4)
 	eq(Q.marker_states(di)[EL], "story_ready", "C two ready quests, one a story quest: the story marker")

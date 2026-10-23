@@ -891,11 +891,13 @@ class Validator:
                 self.check_npc(q.get("turnin"), file, path + ".turnin")
             # Every giver has a turn-in of its own faction (Round 57: a
             # shared quest's variants may serve both factions).
+            # A turn-in of unknown faction (no atlas: an ordinary hub NPC)
+            # leaves the check to the game's loader.
             turnin_factions = {self.giver_faction(t) for t in variant["turnins"] if isinstance(t, str)}
             turnin_factions |= {r.get("faction") for r in variant["turnin_roles"]}
             for name, faction in [(g, self.giver_faction(g)) for g in variant["givers"] if isinstance(g, str)] + \
                     [(r.get("role"), r.get("faction")) for r in variant["giver_roles"]]:
-                if faction and faction not in turnin_factions:
+                if faction and None not in turnin_factions and faction not in turnin_factions:
                     self.E("E-turnin-faction", file, vpath, "giver %s serves %s, and no turn-in of the variant does"
                            % (name, faction))
         min_level, level = q.get("min_level"), q.get("level")
@@ -961,7 +963,9 @@ class Validator:
         for variant in variants:
             vzone = variant["zone"] if isinstance(variant["zone"], str) else zone
             vpath = path if variant["implicit"] else "%s.variants[%s]" % (path, variant["zone"])
-            vq = dict(q, giver=(variant["givers"] or [None])[0], turnin=(variant["turnins"] or [None])[0])
+            vq = dict(q, giver=(variant["givers"] or [None])[0], turnin=(variant["turnins"] or [None])[0],
+                      _factions=[self.giver_faction(g) for g in variant["givers"] if isinstance(g, str)] +
+                      [r.get("faction") for r in variant["giver_roles"]])
             self.objectives(vzone, vq, variant, level, file, vpath, all_areas)
             if variant["implicit"] or vzone in self.d.quests:
                 self.check_destinations(vzone, dict(vq, objectives=variant["objectives"],
@@ -1484,7 +1488,10 @@ class Validator:
                    % (role, area_ref, ", ".join(sorted(self.area_roles(area)))))
         else:
             self.check_level_fit(role, tuple(area["levels"]), level, file, path)
-        faction = self.giver_faction(q.get("giver"))
+        # The faction the quest's givers serve (Round 57: every giver of the
+        # variant, roles included); None when unknown or mixed.
+        factions = q.get("_factions") if "_factions" in q else [self.giver_faction(q.get("giver"))]
+        faction = factions[0] if factions and all(f == factions[0] for f in factions) else None
         if faction is None or area["garrison"] == faction:
             self.E("E-garrison-faction", file, path, "%s is a garrison of the %s; only the other faction's "
                    "quests target it (giver %s serves %s)" % (area_ref, area["garrison"], q.get("giver"),
@@ -2778,6 +2785,19 @@ def self_test():
             _expect(name, validate(target, existing, atlas, mobs_path=mobs), code, failures)
         finally:
             shutil.rmtree(tmp)
+    # Without an atlas an ordinary turn-in's faction is unknown: the faction
+    # pairing is left to the game's loader, never a finding (Round 57 fix).
+    setup = dict((name, change) for name, change, _ in _scenarios())["a giver without a turn-in of its faction"]
+    tmp = Path(tempfile.mkdtemp(prefix="r28_validate_"))
+    try:
+        shutil.copytree(valid, tmp / "design")
+        setup(tmp / "design")
+        got = validate(tmp / "design", existing, None, mobs_path=mobs)
+        if "E-turnin-faction" in got.codes():
+            failures.append("without an atlas an unknown turn-in faction gives no E-turnin-faction")
+        cases.append(("no-atlas faction pairing", None, None, None))
+    finally:
+        shutil.rmtree(tmp)
     if failures:
         for f in failures:
             print("FAIL " + f)

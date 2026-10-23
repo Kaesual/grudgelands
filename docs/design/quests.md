@@ -45,7 +45,8 @@ repeatable switch by Round 57, 2026-10-23
   Once a story quest is listed (Round 57 ruling 13), the list has two
   categories: a "Story" header in the story violet above the story quests
   and a "Side quests" header above the others, their titles set in; every
-  entry keeps its status colour and a header selects nothing. The giver's
+  entry keeps its status colour and a click on a header keeps the quest
+  shown before. Help → Quests names the story symbols and the category. The giver's
   dialog is wide enough for the longest title at a full-HD window; quest
   texts are read-only (Round 35).
 - The giver's dialog opens on the first quest ready to complete, else the

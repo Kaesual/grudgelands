@@ -209,6 +209,10 @@ function M.handle(player, session, fields)
 			-- the focus and would eat the inventory key, the window's send
 			-- moves the focus away (window.lua, set_focus).
 			changed = true
+		elseif event.type == "CHG" or event.type == "DCL" then
+			-- A category header (Round 57) selects nothing: the window is sent
+			-- again with the selection it had.
+			changed = true
 		end
 	end
 	local id = session.quest_selected
