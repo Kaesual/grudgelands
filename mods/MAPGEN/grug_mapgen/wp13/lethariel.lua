@@ -160,9 +160,8 @@ local function loader(directory)
 		-- The east quarter's walk to the sacred grove and the shrine.
 		{6, 8, 24, 10, "lane"},
 		{26, 5, 28, 8, "lane"},
-		-- The doorsteps of the outer houses; the first is the Miner's Guild
-		-- house's walk to the quay (Round 58).
-		{-32, 27, -25, 29, "lane"},
+		-- The doorsteps of the outer houses (the Miner's Guild house, which
+		-- took the quay house's, opens over the turf to the quay).
 		{-44, -20, -42, -18, "lane"},
 		{40, -40, 42, -38, "lane"},
 		{-16, -44, -14, -42, "lane"},

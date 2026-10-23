@@ -600,7 +600,7 @@ place of a building the core had:
 |---|---|---|---|---|
 | Highcourt | `highcourt_miners_guild` | 31..46, −46..−34 (turned once) | west | the city workshop |
 | Dur Brannoc | `dur_brannoc_miners_guild` | 29..41, −46..−30 | north | the masons' guild |
-| Lethariel | `lethariel_miners_guild` | −46..−34, 22..34 | east, a walk to the quay | the quay house (grown into the corner between the fountain court and the shore house) |
+| Lethariel | `lethariel_miners_guild` | −46..−34, 22..34 | east, over the turf to the quay | the quay house (grown into the corner between the fountain court and the shore house) |
 | Nhal Veyr | `nhal_veyr_miners_guild` | 29..41, −46..−30 | north | the bonesmiths' guild |
 | Gor Drazhak | `gor_drazhak_miners_guild` | 29..41, −46..−30 | north | the war council house |
 | Kezamba | `kezamba_miners_guild` | 6..20, −16..−6 (turned once) | west, to the south avenue | the granary |
