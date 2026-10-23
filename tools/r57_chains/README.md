@@ -51,6 +51,7 @@ order:
    the loop from outside, so it is never the source.
 4. `seed`: if a loop is left that nothing outside feeds, its item named most often as an
    ingredient by steps outside the loop (then the first name) counts as raw, and the walk repeats.
+   A loop that another stuck item feeds waits for the next pass.
    On today's data this happens to White Wool and to Red and Blue Dye.
 
 The result is the same for any order of `steps`. The result holds:
@@ -80,6 +81,12 @@ Two points follow from the definitions and are open for CRAFT:
   only. Planks from Acacia Bush Stem stand for `group:wood`. Other members' and alternatives'
   Basic recipes are not on the list.
 - A loop-back step (for example Coal Lump ×9 from a Coal Block) is never on the way.
+
+Known limits of the report:
+
+- Rule `unpack` reverses Obsidian: the mined node shows as made from 9 shards, the shard as raw.
+- Depth assumes every item with a recipe is crafted, even where it also drops (Heavy Leather and
+  Scaled Hide drop, so a hunter's Nightscale chain is really 2–3 steps).
 
 ## The report
 

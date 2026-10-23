@@ -175,7 +175,9 @@ $("search").addEventListener("input", renderAll);
 try {
 	const saved = localStorage.getItem("r57chains-area");
 	if (saved !== null && DATA.areas.includes(saved)) $("area").value = saved;
-	$("area").addEventListener("change", () => localStorage.setItem("r57chains-area", $("area").value));
+	$("area").addEventListener("change", () => {
+		try { localStorage.setItem("r57chains-area", $("area").value); } catch (e) { /* unavailable */ }
+	});
 } catch (e) { /* storage unavailable */ }
 renderAll();
 

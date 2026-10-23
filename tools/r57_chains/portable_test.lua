@@ -9,7 +9,7 @@
 --      by the furnace (rule unpack); a lump/block loop nothing feeds (rule
 --      unpack makes the lump raw); a plank/stair/slab loop (rule cut_back);
 --      a recolour loop through a group (rule seed: the member used most
---      outside); a one-for-one pair (no cut_back, rule seed); a group ingredient resolving to its cheapest member; two
+--      outside; a loop another stuck loop feeds waits); a one-for-one pair (no cut_back, rule seed); a group ingredient resolving to its cheapest member; two
 --      recipes for one item (the shallowest is the source, then the fewest
 --      steps); the loops listed with their rules; the longest chain; what an
 --      operation consumes; the same result in any step order;
@@ -186,6 +186,22 @@ end
 check(same, "S the reversed step order gives the same steps")
 list_eq(B.seeded, R.seeded, "S the reversed step order seeds the same item")
 eq(table.concat(B.order, ","), table.concat(R.order, ","), "S the reversed step order sorts the same")
+
+-- Rule seed only seeds a loop no other stuck item feeds: A <-> B has no
+-- feed; C <-> D is fed by A (D from A and a gem), so D is made, not seeded.
+local FED = chains.analyse({
+	{id = "a_from_b", output = "x:a", ingredients = {I("x:b")}},
+	{id = "b_from_a", output = "x:b", ingredients = {I("x:a")}},
+	{id = "c_from_d", output = "x:c", ingredients = {I("x:d"), I("x:gem")}},
+	{id = "d_from_c", output = "x:d", ingredients = {I("x:c"), I("x:gem")}},
+	{id = "d_from_a", output = "x:d", ingredients = {I("x:a"), I("x:gem")}},
+	{id = "use_d", output = "x:e", ingredients = {I("x:d")}},
+	{id = "use_a", output = "x:f", ingredients = {I("x:a")}},
+}, {})
+list_eq(FED.seeded, {"x:a"}, "S a fed loop is not seeded")
+eq(FED.items["x:d"].via, "d_from_a", "S the fed loop's item is made from the seed")
+eq(FED.items["x:d"].depth, 1, "S D is depth 1")
+eq(FED.items["x:c"].depth, 2, "S C is depth 2")
 
 ------------------------------------------------------------------------------
 -- R: the real registry, Basic catalog and smelting recipes.

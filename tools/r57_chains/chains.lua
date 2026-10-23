@@ -220,30 +220,54 @@ function chains.analyse(steps, members)
 			if value == INF then stuck[name] = true end
 		end
 		if next(stuck) == nil then break end
-		-- The loops among the stuck items; seed one item in each.
+		-- The loops among the stuck items; seed one item in each loop that no
+		-- other stuck item feeds (a fed loop may resolve once its feeder is
+		-- seeded, so it waits for the next pass).
 		local stuck_steps = {}
 		for _, step in ipairs(steps) do
 			if usable[step.id] and stuck[step.output] then stuck_steps[step.id] = true end
 		end
 		local stuck_loops = loops(steps, stuck_steps, members)
-		assert(#stuck_loops > 0, "chains: an unreachable item outside a loop")
-		for _, loop in ipairs(stuck_loops) do
-			local uses = {}
+		local function fed(loop)
 			for _, step in ipairs(steps) do
-				if not loop.set[step.output] then
+				if stuck_steps[step.id] and loop.set[step.output] then
 					for _, entry in ipairs(step.ingredients) do
-						if entry.item and loop.set[entry.item] then
-							uses[entry.item] = (uses[entry.item] or 0) + 1
+						-- An entry with a reachable candidate is no feed.
+						local open, outside = true, false
+						for _, name in ipairs(candidates(entry, members)) do
+							if not stuck[name] then open = false end
+							if stuck[name] and not loop.set[name] then outside = true end
 						end
+						if open and outside then return true end
 					end
 				end
 			end
-			local best
-			for _, name in ipairs(loop.items) do
-				if not best or (uses[name] or 0) > (uses[best] or 0) then best = name end
-			end
-			seeded[best] = true
+			return false
 		end
+		local seeds_before = 0
+		for _ in pairs(seeded) do seeds_before = seeds_before + 1 end
+		for _, loop in ipairs(stuck_loops) do
+			if not fed(loop) then
+				local uses = {}
+				for _, step in ipairs(steps) do
+					if not loop.set[step.output] then
+						for _, entry in ipairs(step.ingredients) do
+							if entry.item and loop.set[entry.item] then
+								uses[entry.item] = (uses[entry.item] or 0) + 1
+							end
+						end
+					end
+				end
+				local best
+				for _, name in ipairs(loop.items) do
+					if not best or (uses[name] or 0) > (uses[best] or 0) then best = name end
+				end
+				seeded[best] = true
+			end
+		end
+		local seeds_after = 0
+		for _ in pairs(seeded) do seeds_after = seeds_after + 1 end
+		assert(seeds_after > seeds_before, "chains: an unreachable item outside a loop")
 		settle()
 	end
 
