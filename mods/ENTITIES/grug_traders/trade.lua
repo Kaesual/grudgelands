@@ -24,6 +24,14 @@
 --      against a freshly computed offer/row list and cross-checked against the
 --      snapshot the player was actually shown. A mismatch (the stack moved,
 --      a shelf changed) aborts the action and re-renders.
+--
+-- THE TRADE-IN (Round 58, miners_guild.md §5). A vendor whose definition
+-- carries `guild = true` (the camp vendor and the guild house's exchange
+-- counter) is a Miner's Guild vendor: its window gets a third mode,
+-- Trade-in, that trades mining materials for reputation with the player's
+-- own guild (grug_guild.trade_in_rows / trade_in), and opens on it. The rows
+-- re-validate like the Sell tab's lots; grug_guild takes the items only
+-- after every check.
 
 local FORMNAME = "grug_traders:trade"
 
@@ -36,8 +44,17 @@ local FORM_W, FORM_H = 14, 10.2
 -- A lot row below its lot size (sell plan §3.5.3).
 local GREYED = "#8a8a8a"
 
--- player name -> {vendor, faction, pos, mode, tab, page, offer, rows}
+-- player name -> {vendor, faction, pos, mode, tab, page, offer, rows,
+-- trade_rows}
 local sessions = {}
+
+-- A Miner's Guild vendor (its definition's `guild = true`) shows the
+-- Trade-in mode. grug_guild depends on nothing of this mod, and the window
+-- reads it only at runtime.
+local function guild_vendor(vendor)
+	return vendor ~= nil and vendor.guild == true and rawget(_G, "grug_guild") ~= nil
+end
+grug_traders.guild_vendor = guild_vendor
 
 local function esc(text)
 	return core.formspec_escape(text)
@@ -187,10 +204,20 @@ local function header(parts, player, session, vendor, discount)
 		parts[#parts + 1] = "label[5.0,1.2;" .. esc(core.colorize("#7ee081",
 			"Kinship discount: -" .. pct .. "% on every purchase")) .. "]"
 	end
-	local buy_style = session.mode == "buy" and "#4a7fc0" or "#3a3a3a"
-	local sell_style = session.mode == "sell" and "#4a7fc0" or "#3a3a3a"
-	parts[#parts + 1] = "style[mode_buy;bgcolor=" .. buy_style .. "]"
-	parts[#parts + 1] = "style[mode_sell;bgcolor=" .. sell_style .. "]"
+	local function style(mode)
+		parts[#parts + 1] = "style[mode_" .. mode .. ";bgcolor=" ..
+			(session.mode == mode and "#4a7fc0" or "#3a3a3a") .. "]"
+	end
+	style("buy")
+	style("sell")
+	if guild_vendor(vendor) then
+		-- Three modes: Buy and Sell move left to make room.
+		style("tradein")
+		parts[#parts + 1] = "button[8.2,0.3;1.6,0.8;mode_buy;Buy]"
+		parts[#parts + 1] = "button[9.9,0.3;1.5,0.8;mode_sell;Sell]"
+		parts[#parts + 1] = "button[11.5,0.3;2.0,0.8;mode_tradein;Trade-in]"
+		return
+	end
 	parts[#parts + 1] = "button[10.3,0.3;1.6,0.8;mode_buy;Buy]"
 	parts[#parts + 1] = "button[12.0,0.3;1.5,0.8;mode_sell;Sell]"
 end
@@ -303,6 +330,74 @@ local function render_sell(parts, player, session)
 	parts[#parts + 1] = "button[4.2,8.8;1.2,0.7;sell_next;>]"
 end
 
+-- "1 point each", "1 point per 50".
+local function points_text(points, lot)
+	local text = grug_guild.format_points(points) .. (points == 1 and " point" or " points")
+	return text .. (lot > 1 and (" per " .. lot) or " each")
+end
+
+-- The Trade-in mode (Round 58): the player's guild, rank and balance, then a
+-- row per exchanged item carried (the Sell tab's lot rows: greyed with
+-- "Need N to trade" below one lot, else "All" for every whole lot).
+local function render_tradein(parts, player, session)
+	local view = grug_guild.summary(player)
+	local ui_name = grug_guild.catalog.UI_NAME
+	if not view then
+		session.trade_rows = {}
+		parts[#parts + 1] = "label[0.6,1.75;" .. esc("You belong to no guild.") .. "]"
+		return
+	end
+	parts[#parts + 1] = "label[0.6,1.75;" .. esc(ui_name .. ": " .. view.guild) .. "]"
+	parts[#parts + 1] = "label[7.4,1.75;" .. esc(("Rank %d of %d"):format(view.rank,
+		grug_guild.catalog.MAX_RANK)) .. "]"
+	parts[#parts + 1] = grug_guild.reputation_formspec(0.6, 2.15, view.balance)
+	local lifetime = "Lifetime " .. grug_guild.format_points(view.lifetime)
+	parts[#parts + 1] = "label[7.4,2.15;" .. esc(view.next and
+		(lifetime .. " of " .. grug_guild.format_points(view.next) .. " for Rank " ..
+			(view.rank + 1)) or (lifetime .. ": the highest rank")) .. "]"
+
+	local rows = grug_guild.trade_in_rows(player)
+	session.trade_rows = rows
+	local pages = math.max(1, math.ceil(#rows / SELL_ROWS))
+	session.page = math.min(math.max(session.page, 1), pages)
+	local first = (session.page - 1) * SELL_ROWS + 1
+	for offset = 0, SELL_ROWS - 1 do
+		local i = first + offset
+		local row = rows[i]
+		if row then
+			local y = 2.5 + offset * 0.8
+			local short = row.lots < 1
+			local function text(value)
+				return esc(short and core.colorize(GREYED, value) or value)
+			end
+			parts[#parts + 1] = ("item_image[0.7,%.2f;0.7,0.7;%s]"):format(y, row.item)
+			parts[#parts + 1] = ("tooltip[0.7,%.2f;0.7,0.7;%s]"):format(y,
+				esc(full_desc(row.item)))
+			parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.35,
+				text(short_desc(row.item) .. " x" .. row.count))
+			parts[#parts + 1] = ("label[7.4,%.2f;%s]"):format(y + 0.35,
+				text(points_text(row.points, row.lot)))
+			if short then
+				parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35,
+					text("Need " .. row.lot .. " to trade"))
+			else
+				parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;tradein_%d;All (%s)]")
+					:format(y, i, esc(grug_guild.format_points(row.total)))
+				parts[#parts + 1] = ("tooltip[tradein_%d;%s]"):format(i,
+					esc(("Trade %d %s for %s reputation"):format(row.lots * row.lot,
+						short_desc(row.item), grug_guild.format_points(row.total))))
+			end
+		end
+	end
+	if #rows == 0 then
+		parts[#parts + 1] = "label[0.7,3.0;" .. esc("You carry nothing the guild takes.\n" ..
+			"The guild takes raw ores, rough gems, stone and sand.") .. "]"
+	end
+	parts[#parts + 1] = "button[0.7,8.8;1.2,0.7;tradein_prev;<]"
+	parts[#parts + 1] = ("label[2.2,9.15;Page %d / %d]"):format(session.page, pages)
+	parts[#parts + 1] = "button[4.2,8.8;1.2,0.7;tradein_next;>]"
+end
+
 local function build(player, session, vendor, status)
 	-- The body is rendered FIRST because the buy grid decides the window
 	-- height; size[] is prepended afterwards.
@@ -314,6 +409,8 @@ local function build(player, session, vendor, status)
 	local needed
 	if session.mode == "sell" then
 		render_sell(body, player, session)
+	elseif session.mode == "tradein" then
+		render_tradein(body, player, session)
 	else
 		needed = render_buy(body, player, session, vendor, discount)
 	end
@@ -380,7 +477,8 @@ function grug_traders.open(clicker, vendor_name, pos, faction)
 		-- A POSITION, never the ObjectRef: the entity may be unloaded or
 		-- replaced between two field submissions (AGENTS.md).
 		pos = {x = pos.x, y = pos.y, z = pos.z},
-		mode = "buy",
+		-- A guild vendor opens on its Trade-in mode.
+		mode = guild_vendor(vendor) and "tradein" or "buy",
 		tab = "general",
 		page = 1,
 	}
@@ -412,6 +510,10 @@ local function validate(player)
 	if not ok then
 		close(player, message)
 		return nil
+	end
+	-- The Trade-in mode exists only at a guild vendor.
+	if session.mode == "tradein" and not guild_vendor(vendor) then
+		session.mode = "buy"
 	end
 	-- A stale bracket tab (an unknown id, or one above the player's level)
 	-- falls back to the always-available core stock.
@@ -598,6 +700,46 @@ local function do_sell(player, session, index, sell_all)
 		grug_money.format(total) .. ".")
 end
 
+-- A Trade-in row's "All" (Round 58): the row is recomputed and cross-checked
+-- against the one shown (item, count, lot, points), then grug_guild trades
+-- every whole lot, taking the items only after its own checks.
+local REFUSALS = {
+	no_faction = "You belong to no guild.",
+	not_exchanged = "The guild does not take that.",
+	too_few = "Not enough for one lot.",
+}
+local function do_trade_in(player, session, index)
+	local shown = session.trade_rows and session.trade_rows[index]
+	if not shown then
+		show(player)
+		return
+	end
+	local fresh
+	for _, row in ipairs(grug_guild.trade_in_rows(player)) do
+		if row.item == shown.item then
+			fresh = row
+			break
+		end
+	end
+	if not fresh or fresh.count ~= shown.count or fresh.lot ~= shown.lot or
+			fresh.points ~= shown.points then
+		show(player, "Your items have changed.")
+		return
+	end
+	if fresh.lots < 1 then
+		show(player)
+		return
+	end
+	local points, err = grug_guild.trade_in(player, shown.item)
+	if not points then
+		show(player, REFUSALS[err] or "The guild does not take that.")
+		return
+	end
+	grug_sounds.play("vendor_sell", player)
+	show(player, ("Traded %d %s for %s reputation. %d left."):format(fresh.lots * fresh.lot,
+		short_desc(fresh.item), grug_guild.format_points(points), fresh.rest))
+end
+
 --
 -- Field dispatch
 --
@@ -636,6 +778,34 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		session.page = session.page + 1
 		show(player)
 		return true
+	end
+	-- The Trade-in fields count only at a guild vendor (a client may send
+	-- any field anywhere).
+	if guild_vendor(vendor) then
+		if fields.mode_tradein then
+			session.mode = "tradein"
+			session.page = 1
+			show(player)
+			return true
+		end
+		if fields.tradein_prev then
+			session.page = math.max(1, session.page - 1)
+			show(player)
+			return true
+		end
+		if fields.tradein_next then
+			session.page = session.page + 1
+			show(player)
+			return true
+		end
+		if session.mode == "tradein" then
+			for i = 1, (session.trade_rows and #session.trade_rows or 0) do
+				if fields["tradein_" .. i] then
+					do_trade_in(player, session, i)
+					return true
+				end
+			end
+		end
 	end
 
 	-- The remaining actions carry an index in the field NAME. They are tested
