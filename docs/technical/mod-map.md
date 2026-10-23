@@ -47,7 +47,7 @@ mobs_redo fork publishes `mobs`.
 | `grug_map` | The map window (atlas, Z and the Map tab, Round 44; its marker layers, `layers.lua`, Round 47) with the quest log (`quest_box.lua`) and quest targets (`targets.lua`), our minimap, markers and their providers, the zone banner and location | `location` (`capital_of`, …), `minimap.set_now_playing` (grug_ambience's "Now playing" box, 0.45.1), `register_marker_provider`, `window.open`, `quest_npc`, `quest_targets` | [world_map.md](../design/world_map.md), [quests.md](../design/quests.md) |
 | `grug_keys` | Rising edges of the zoom and aux1 keys (one control read per player per step) and the players' `zoom_fov` (Round 44) | `register_on_press` | [world_map.md](../design/world_map.md#map-window) |
 | `grug_quickbar` | The quickbar on E (Round 44): owned mounts and boats, the potion belt, the hotbar switch (Round 50) and Return home in one window sent once per opening | `open`, `drink`, `FORMNAME` | [inventory_equipment.md](../design/inventory_equipment.md#the-quickbar-e-round-44) |
-| `grug_guild` | The Miner's Guild (Round 58): the catalogue of ranks, exchange rates, consumables and Miner's Remains (`catalog.lua`, pure); reputation, the trade-in, the mining effect, the camp vendor's page, the lift's interaction (over `grug_mapgen:guild_lift`; the lift and room nodes are `grug_mapgen`'s) | `catalog` and its accessors (`rank_for`, `threshold`, `exchange_rate`, `consumable`, `consumable_by_item`, `remains`, `guild`); `lifetime`, `balance`, `rank`, `add`, `spend`, `register_on_change`, `register_on_rank_change`; `trade_in_rows`, `trade_in`; `active_effect`, `start_effect`, `stop_effect`, `remains_loot`; `vendor_rows`, `buy` (the files and owners: spec §10) | [miners_guild.md](../design/miners_guild.md) |
+| `grug_guild` | The Miner's Guild (Round 58): the catalogue of ranks, exchange rates, consumables and Miner's Remains (`catalog.lua`, pure); reputation, the trade-in, the mining effect, the camp vendor's page, the lift's interaction (over `grug_mapgen:guild_lift`; the lift and room nodes are `grug_mapgen`'s) | `catalog` and its accessors (`rank_for`, `threshold`, `exchange_rate`, `consumable`, `consumable_by_item`, `remains`, `guild`); `lifetime`, `balance`, `rank`, `add`, `spend`, `register_on_change`, `register_on_rank_change`, and for the displays `highest_rank`, `summary`, `format_points`, `reputation_formspec`; `trade_in_rows`, `trade_in`; `active_effect`, `start_effect`, `stop_effect`, `remains_loot`; `vendor_rows`, `buy` (the files and owners: spec §10) | [miners_guild.md](../design/miners_guild.md) |
 | `grug_achievements` | Per-character achievements, their counters and the cloaks they unlock | none (counts through other mods' hooks) | [character_visuals.md](../design/character_visuals.md) §5b |
 
 ## ENTITIES
@@ -98,8 +98,10 @@ mobs_redo fork publishes `mobs`.
   runtime without declaring them (for example `grug_gear` declares only
   `default`; `grug_inventory.give` is called at run time from mods that load
   before it: `grug_factions`, `grug_money`, `grug_mobs`, `grug_housing`,
-  `grug_farming`, `grug_fishing` and the vendored `default`). A fixture that
-  loads one mod alone needs stand-ins for what it calls.
+  `grug_farming`, `grug_fishing` and the vendored `default`; `grug_traders`'
+  Trade-in mode and `grug_inventory`'s Character page read `grug_guild` at
+  run time). A fixture that loads one mod alone needs stand-ins for what it
+  calls.
 - **"compatibility" and "legacy" in a name do not mean removable.** The zone
   authority's compatibility adapters are the live `grug_zones` API, and
   `grug_mobs.registered_cadence` is the live mob registry.

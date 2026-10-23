@@ -13,6 +13,7 @@
 --   free world materials     0, and they count 0 in a recipe (wood, stone,
 --                            sand, glass, flowers and their dyes ...), so
 --                            nothing made only from them pays
+--   the guild's consumables  the catalogue's sell_copper (grug_guild)
 --   everything else          0: not sellable
 --
 -- That first pass runs unchanged since Round 48 (round48-plan.md ruling 2.2):
@@ -450,6 +451,15 @@ function grug_traders.resolve_prices()
 		recipes_for = recipes_for,
 		group_members = group_members,
 	})
+	-- The Miner's Guild's consumables (Round 58, miners_guild.md §7): bought
+	-- with reputation, never with copper, so no rule above prices them; a
+	-- vendor pays the catalogue's `sell_copper` (5 % of the price).
+	local guild = rawget(_G, "grug_guild")
+	if guild then
+		for _, row in ipairs(guild.catalog.CONSUMABLES) do
+			if core.registered_items[row.item] then payouts[row.item] = row.sell_copper end
+		end
+	end
 	values, material = rules.resolve_values(second_pass_data(classified, reference))
 	return payouts
 end

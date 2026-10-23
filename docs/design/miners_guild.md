@@ -95,12 +95,12 @@ one picture.
   5 h at T6 for rank 6 (16 h in all); ranks 7–10 are prestige at T6 (8, 11½,
   14½ and 24 h: about 75 h in all for the winged cloak). The steps never
   shrink, so the last ranks are the hardest.
-- **Proposal (one guild per character, by faction):** the values are kept per
-  faction (`grug_guild:lifetime_accord`, …), so an admin's `/faction` (the
-  only way a faction changes, `grug_factions.set_faction`) gives the
-  character the other guild at its own values (0 at first) and keeps the old
-  ones should it switch back. A character without a faction has no guild:
-  rank 0, nothing to trade or buy.
+- **Proposal (one guild per character, by faction; built by lane REP):** the
+  values are kept per faction (`grug_guild:lifetime_accord`, …), so an admin's
+  `/faction` (the only way a faction changes, `grug_factions.set_faction`)
+  gives the character the other guild at its own values (0 at first) and keeps
+  the old ones should it switch back. A character without a faction has no
+  guild: rank 0, nothing to trade or buy.
 
 ## 5. The exchange
 
@@ -109,10 +109,13 @@ one picture.
   material, stone and sand very low; selling to vendors for copper stays
   possible. **Ruling (§2a):** bricks, blocks and other made goods are not
   exchanged.
-- **Proposal (the mechanism):** like the vendor's Sell tab for lot goods: one
-  row per exchanged item the player carries in `grug_inventory.consume_lists`
-  (counts summed), "N points per L", a button that trades every whole lot and
-  leaves the rest. No quality factor, wear ignored.
+- **Proposal (the mechanism; built by lane REP):** like the vendor's Sell tab
+  for lot goods: one row per exchanged item the player carries in
+  `grug_inventory.consume_lists` (counts summed), "N points per L", a button
+  that trades every whole lot and leaves the rest. No quality factor, wear
+  ignored. Built as the vendor window's **Trade-in** mode, shown by a vendor
+  whose definition (`grug_traders.vendors`) carries `guild = true`; the window
+  opens on it and shows the guild, the rank and the balance.
 - **Proposal (the list):** raw mined goods only, 25 items:
   - stone and sand, **1 point per 50**: Cobblestone, Mossy Cobblestone,
     Desert Cobblestone, Granite, Basalt, Slate, Gravel, Sand, Silver Sand
@@ -126,11 +129,11 @@ one picture.
     common ore in its band, a gem about a quarter.
   - Left out: bars, blocks, bricks, cut gems, Sandstone (four Sand, both ways
     by recipe) and Desert Sand (no natural source in our world; a recipe only).
-- **Cobblestone and Gravel wait for lane REP:** the mason sells both today
-  (`grug_traders/stock.lua`), so their rows carry `pending = "rep"` and are not
-  exchanged. REP deletes the two `pending` fields in the change that takes them
-  off the shelf; the fixture (`tools/r58_guildspec`) then checks them like
-  every other row, and refuses a `pending` row that has no vendor source left.
+- **Cobblestone and Gravel joined with lane REP (built):** the mason no
+  longer sells them (`grug_traders/stock.lua`), and their rows carry no
+  `pending` field any more; the fixture (`tools/r58_guildspec`) checks them
+  like every other row, and refuses a `pending` row that has no vendor source
+  left.
 
 ### 5.2 The camp vendor
 
@@ -147,13 +150,15 @@ one picture.
 
 - **Ruling:** an achievement series "Reach Reputation Rank 3/6/10 with the
   Miner's Guild" with three cloaks (rank 10 winged; the picked art: drop-01 P1).
-- **Proposal:** one achievement row `miners_guild` with tiers at 3, 6 and 10
-  on the counter `guild:rank`, the highest rank the character reached with
-  either guild (so an admin's `/faction` never takes a cloak); cloaks
-  `miners_guild_1` … `_3` (`grug_achievements` convention: tier N of `<id>`
-  unlocks `<id>_N`), the third with wings. The counter is fed by
+- **Proposal (built by lane REP):** one achievement row `miners_guild` with
+  tiers at 3, 6 and 10 on the counter `guild:rank`, the highest rank the
+  character reached with either guild (so an admin's `/faction` never takes a
+  cloak); cloaks `miners_guild_1` … `_3` (`grug_achievements` convention: tier
+  N of `<id>` unlocks `<id>_N`), the third with wings. The counter is fed by
   `grug_guild.register_on_rank_change` (§10.3). No `faction` field: both
-  factions earn it.
+  factions earn it. Built with the counter read live
+  (`grug_guild.highest_rank`, nothing copied) and the cloaks Lamp Badge
+  Workcloth, Lamp and Pick Workcloth and Lamplight Mantle (names a proposal).
 
 ## 7. The consumables
 
@@ -419,7 +424,7 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
 
 Both numbers clamp at 2,147,483,647 (`set_int`). An admin command for tests
 and the GUI checklist ("the winged cloak at rank 10, admin-set") is REP's:
-**proposal** `/guild_rep <player> <points>` (privilege `server`), through
+**proposal, built** `/guild_rep <player> <points>` (privilege `server`), through
 `add(…, "admin")`.
 
 ### 10.4 The trade-in (`exchange.lua`, REP)

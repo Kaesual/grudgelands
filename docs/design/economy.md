@@ -104,7 +104,10 @@ precedence over preserving the exact mathematical ratio.
   (ruling 28) no vendor sells leather, cloth, ores or metal bars of any
   tier: hides and cloth are hunted, ores mined, bars smelted. Thread stays
   on every shelf as a job supply, and the tailor keeps White and Brown Wool
-  (bed decor).
+  (bed decor). Since Round 58 (plan §2a) no vendor sells what the Miner's
+  Guild takes for reputation ([miners_guild.md](miners_guild.md) §5): the
+  mason no longer sells Cobblestone and Gravel, so copper never buys
+  reputation; vendors still buy both.
 - A vendor's **buy-back is capped at 5%** of the item's purchase price,
   **rounded up to the next copper**, and applies to goods a vendor also
   sells (gear, supplies) and to every equippable of the gear catalog by the
@@ -172,8 +175,8 @@ items without one:
   | Planks (`group:wood`) | 12 mc (a quarter log, rounded down) | 1c per 99 |
 
   Sandstone is exactly four sand, because the recipes run both ways. The
-  table wins over the vendor rule: the Mason's Cobblestone, Gravel and
-  bricks sell in these lots too (always below their shelf price).
+  table wins over the vendor rule: the Mason's bricks sell in these
+  lots too (always below their shelf price).
 - **Crafted goods** (no class, sold by no vendor, not gear: potions,
   dishes, seeds, tools, bags, stations, furniture, stairs ...) pay **half**
   the material value of their cheapest recipe, without exceptions. The
