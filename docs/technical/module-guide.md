@@ -2792,9 +2792,10 @@ tools](#player-meta-read-by-external-tools).
   the start towns' identities and point digests, the capitals' identity,
   point and build digests). The world-folder layout cache digests the `.tpl`,
   `.layout` and `.roster` files with the mapgen sources. Exporter
-  `tools/building_templates/export.py` (`--check`: the committed templates are
-  the export of the pre-freeze generators, `export.lua` for the start towns,
-  `export_capitals.lua` for the capitals), fixtures `tools/r56_freeze_towns`
+  `tools/building_templates/export.py` (the record of the freeze from the
+  pre-freeze generators, `export.lua` for the start towns,
+  `export_capitals.lua` for the capitals; its `--check` is retired since the
+  first deliberate template edit, Round 58), fixtures `tools/r56_freeze_towns`
   and `tools/r56_freeze_capitals`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. A surface row may carry `bands` (seven content refs by

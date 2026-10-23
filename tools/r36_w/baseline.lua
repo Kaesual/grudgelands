@@ -11,7 +11,9 @@
 -- the current tree's record with that file). Rewritten by Round 47 lane NZ
 -- for the NPC facing fixes (ruling 20): 77 socket facings, nothing else; and by
 -- lane TC for the generated town trees (ruling 3): bounds, cleared airspace
--- and the sockets placed from a part's extent move with the trees. As a module:
+-- and the sockets placed from a part's extent move with the trees; and by
+-- Round 58 lane HALLS for the Miner's Guild houses: the six cores' sockets
+-- (the hall's in place of the replaced building's). As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}
