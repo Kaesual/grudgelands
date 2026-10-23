@@ -78,7 +78,9 @@ local function read(meta, key)
 end
 
 local function valid_amount(points)
-	return type(points) == "number" and points >= 1 and points == math.floor(points)
+	-- math.huge passes the floor test: an integer is finite.
+	return type(points) == "number" and points >= 1 and points < math.huge and
+		points == math.floor(points)
 end
 
 function grug_guild.lifetime(player)
@@ -231,7 +233,13 @@ core.register_chatcommand("guild_rep", {
 		if not player then
 			return false, target .. " is not online."
 		end
-		local lifetime, err = grug_guild.add(player, tonumber(amount), "admin")
+		-- Digits only: no inf, nan, 1e999 or fractions reach add().
+		local points = amount:match("^%d+$") and tonumber(amount)
+		if not points or points > grug_guild.MAX_POINTS then
+			return false, "Points must be a whole number from 1 to " ..
+				grug_guild.format_points(grug_guild.MAX_POINTS) .. "."
+		end
+		local lifetime, err = grug_guild.add(player, points, "admin")
 		if not lifetime then
 			return false, target .. " " .. (REFUSAL[err] or err) .. "."
 		end

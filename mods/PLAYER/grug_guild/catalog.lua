@@ -198,9 +198,10 @@ M.ORE_SENSE_TARGETS = {
 }
 
 -- The exchange: only items no vendor sells (round58-plan.md §2a: no bars,
--- blocks, bricks or other made goods). `pending = "rep"` marks the two items
--- the mason still sells: lane REP deletes the field in the change that takes
--- them off the shelf; until then they are not exchanged.
+-- blocks, bricks or other made goods). A row may carry `pending = "<lane>"`
+-- while a vendor still sells its item: it is then not exchanged until that
+-- lane takes the item off the shelf and deletes the field (Round 58: lane
+-- REP did so for Cobblestone and Gravel; no row is pending now).
 local EXCHANGE_ITEMS = {
 	{item = "default:cobble"},
 	{item = "default:mossycobble"},

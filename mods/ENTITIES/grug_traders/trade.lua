@@ -347,7 +347,9 @@ local function render_tradein(parts, player, session)
 		parts[#parts + 1] = "label[0.6,1.75;" .. esc("You belong to no guild.") .. "]"
 		return
 	end
-	parts[#parts + 1] = "label[0.6,1.75;" .. esc(ui_name .. ": " .. view.guild) .. "]"
+	-- The interface says "Miner's Guild" only; the guilds' proper names
+	-- belong in texts and on buildings (the user's ruling).
+	parts[#parts + 1] = "label[0.6,1.75;" .. esc(ui_name) .. "]"
 	parts[#parts + 1] = "label[7.4,1.75;" .. esc(("Rank %d of %d"):format(view.rank,
 		grug_guild.catalog.MAX_RANK)) .. "]"
 	parts[#parts + 1] = grug_guild.reputation_formspec(0.6, 2.15, view.balance)
@@ -358,6 +360,10 @@ local function render_tradein(parts, player, session)
 
 	local rows = grug_guild.trade_in_rows(player)
 	session.trade_rows = rows
+	-- A row's button carries its item's catalogue index, never its place on
+	-- the screen: a second click from an older form names the same item.
+	local key_of = {}
+	for index, rate in ipairs(grug_guild.catalog.EXCHANGE) do key_of[rate.item] = index end
 	local pages = math.max(1, math.ceil(#rows / SELL_ROWS))
 	session.page = math.min(math.max(session.page, 1), pages)
 	local first = (session.page - 1) * SELL_ROWS + 1
@@ -381,9 +387,10 @@ local function render_tradein(parts, player, session)
 				parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35,
 					text("Need " .. row.lot .. " to trade"))
 			else
+				local key = key_of[row.item]
 				parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;tradein_%d;All (%s)]")
-					:format(y, i, esc(grug_guild.format_points(row.total)))
-				parts[#parts + 1] = ("tooltip[tradein_%d;%s]"):format(i,
+					:format(y, key, esc(grug_guild.format_points(row.total)))
+				parts[#parts + 1] = ("tooltip[tradein_%d;%s]"):format(key,
 					esc(("Trade %d %s for %s reputation"):format(row.lots * row.lot,
 						short_desc(row.item), grug_guild.format_points(row.total))))
 			end
@@ -708,8 +715,14 @@ local REFUSALS = {
 	not_exchanged = "The guild does not take that.",
 	too_few = "Not enough for one lot.",
 }
-local function do_trade_in(player, session, index)
-	local shown = session.trade_rows and session.trade_rows[index]
+local function do_trade_in(player, session, item)
+	local shown
+	for _, row in ipairs(session.trade_rows or {}) do
+		if row.item == item then
+			shown = row
+			break
+		end
+	end
 	if not shown then
 		show(player)
 		return
@@ -799,9 +812,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			return true
 		end
 		if session.mode == "tradein" then
-			for i = 1, (session.trade_rows and #session.trade_rows or 0) do
-				if fields["tradein_" .. i] then
-					do_trade_in(player, session, i)
+			-- By catalogue index, in catalogue order.
+			for index, rate in ipairs(grug_guild.catalog.EXCHANGE) do
+				if fields["tradein_" .. index] then
+					do_trade_in(player, session, rate.item)
 					return true
 				end
 			end

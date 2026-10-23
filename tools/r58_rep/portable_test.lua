@@ -201,7 +201,7 @@ local none, err = grug_guild.spend(ann, 1)
 check(none == nil and err == "insufficient", "A spend refuses a short balance (insufficient)")
 eq(grug_guild.lifetime(ann), C.RANKS[4], "A a refused spend keeps the lifetime")
 eq(#changes, 0, "A a refused spend fires nothing")
-for _, bad in ipairs({0, -5, 1.5, "10", math.huge * 0}) do
+for _, bad in ipairs({0, -5, 1.5, "10", math.huge * 0, math.huge, 1e999}) do
 	local a, a_err = grug_guild.add(ann, bad, "test")
 	local s, s_err = grug_guild.spend(ann, bad)
 	check(a == nil and a_err == "bad_amount", "A add refuses " .. tostring(bad))
@@ -377,6 +377,10 @@ grug_traders.vendors[TEST] = {name = TEST, kind = "r58_test", faction = "accord"
 	nametag = "Test Guild Vendor", stock = "r58_test", guild = true}
 grug_traders.profession_stock.r58_test = {}
 local ORIGIN = {x = 0, y = 0, z = 0}
+-- A Trade-in button carries its item's catalogue index.
+local KEY = {}
+for index, rate in ipairs(C.EXCHANGE) do KEY[rate.item] = index end
+local COBBLE, SAND, SILVER = KEY["default:cobble"], KEY["default:sand"], KEY["grug_materials:silver_lump"]
 
 local eve = new_player("eve", "accord")
 grug_guild.add(eve, C.RANKS[3] + 34, "test")
@@ -388,50 +392,64 @@ grug_traders.open(eve, TEST, ORIGIN, "accord")
 check(has("mode_tradein;Trade-in]"), "C a guild vendor shows the Trade-in mode")
 check(has("button[8.2,0.3;1.6,0.8;mode_buy;Buy]") and has("button[9.9,0.3;1.5,0.8;mode_sell;Sell]"),
 	"C Buy and Sell move left")
-check(has("Miner's Guild: The Charter of Stone"), "C opens on Trade-in: the guild's name")
+check(has("label[0.6,1.75;Miner's Guild]"), "C opens on Trade-in: Miner's Guild")
+check(not has("Charter of Stone") and not has("Oathdelvers"),
+	"C no proper name in the interface (the user's ruling)")
 check(has("Rank 3 of 10"), "C the rank")
 check(has("Reputation " .. grug_guild.format_points(C.RANKS[3] + 34 - 1500)), "C the balance")
 check(has("Lifetime " .. grug_guild.format_points(C.RANKS[3] + 34) .. " of " ..
 	grug_guild.format_points(C.RANKS[4]) .. " for Rank 4"), "C the lifetime and the next rank")
-check(has("Cobblestone x103") and has("1 point per 50") and has("tradein_1;All (2)]"),
+check(has("Cobblestone x103") and has("1 point per 50") and has("tradein_" .. COBBLE .. ";All (2)]"),
 	"C the Cobblestone row: 103, 1 point per 50, All (2)")
-check(has("Sand x49") and has("Need 50 to trade") and not has("tradein_2;"),
+check(has("Sand x49") and has("Need 50 to trade") and not has("tradein_" .. SAND .. ";"),
 	"C 49 Sand: greyed, Need 50 to trade, no button")
-check(has("Silver x3") and has("8 points each") and has("tradein_3;All (24)]"),
+check(has("Silver x3") and has("8 points each") and has("tradein_" .. SILVER .. ";All (24)]"),
 	"C the Silver row: 8 points each, All (24)")
 
 -- All on the first row.
 local life_before = grug_guild.lifetime(eve)
-submit(eve, {tradein_1 = "x"})
+local old_form = shown
+submit(eve, {["tradein_" .. COBBLE] = "x"})
 eq(grug_guild.lifetime(eve), life_before + 2, "C All traded 2 points")
 eq(count_of(eve.inv, "default:cobble"), 3, "C 3 Cobblestone stay")
 check(has("Traded 100 Cobblestone for 2 reputation. 3 left."), "C the status line")
 check(has("Cobblestone x3") and has("Need 50 to trade"), "C the rest shows greyed")
+-- A second click on the same button of the old form: the row is greyed now,
+-- and the click never reaches the next row's item.
+check(old_form:find("tradein_" .. COBBLE .. ";", 1, true) ~= nil, "C the old form had the button")
+local twice_life = grug_guild.lifetime(eve)
+submit(eve, {["tradein_" .. COBBLE] = "x"})
+eq(grug_guild.lifetime(eve), twice_life, "C a second click from the old form trades nothing")
+eq(count_of(eve.inv, "grug_materials:silver_lump"), 3, "C ...and never the next row's item")
 -- A forged click on the greyed row trades nothing.
-local sand_index
-for index, row in ipairs(grug_guild.trade_in_rows(eve)) do
-	if row.item == "default:sand" then sand_index = index end
-end
-submit(eve, {["tradein_" .. sand_index] = "x"})
+submit(eve, {["tradein_" .. SAND] = "x"})
 eq(count_of(eve.inv, "default:sand"), 49, "C a forged All on a greyed row takes nothing")
 -- A stale row: the stack moved between render and click.
-local silver_index
-for index, row in ipairs(grug_guild.trade_in_rows(eve)) do
-	if row.item == "grug_materials:silver_lump" then silver_index = index end
-end
 eve.inv:set_stack("main", 11, ItemStack("grug_materials:silver_lump 2"))
 local stale_life = grug_guild.lifetime(eve)
-submit(eve, {["tradein_" .. silver_index] = "x"})
+submit(eve, {["tradein_" .. SILVER] = "x"})
 check(has("Your items have changed."), "C a stale row re-renders with the refusal")
 eq(count_of(eve.inv, "grug_materials:silver_lump"), 2, "C a stale row takes nothing")
 eq(grug_guild.lifetime(eve), stale_life, "C a stale row credits nothing")
-submit(eve, {["tradein_" .. silver_index] = "x"})
+submit(eve, {["tradein_" .. SILVER] = "x"})
 eq(grug_guild.lifetime(eve), stale_life + 16, "C the fresh row trades")
+-- A row that the first click empties: the second click from the same old
+-- form trades nothing, never the item that moved up into its place.
+local hal = new_player("hal", "accord")
+fill(hal, {{"main", 9, "grug_materials:silver_lump 2"}, {"main", 10, "grug_materials:rough_jade 1"}})
+grug_traders.open(hal, TEST, ORIGIN, "accord")
+submit(hal, {["tradein_" .. SILVER] = "x"})
+eq(count_of(hal.inv, "grug_materials:silver_lump"), 0, "C the Silver row traded and gone")
+local hal_life = grug_guild.lifetime(hal)
+submit(hal, {["tradein_" .. SILVER] = "x"})
+eq(count_of(hal.inv, "grug_materials:rough_jade"), 1, "C a second click never trades the next item")
+eq(grug_guild.lifetime(hal), hal_life, "C ...and credits nothing")
+
 -- Switching modes.
 submit(eve, {mode_sell = "Sell"})
-check(has("The vendor buys most things") and not has("Miner's Guild:"), "C Sell from the guild vendor")
+check(has("The vendor buys most things") and not has("label[0.6,1.75;Miner's Guild]"), "C Sell from the guild vendor")
 submit(eve, {mode_tradein = "Trade-in"})
-check(has("Miner's Guild: The Charter of Stone"), "C back to Trade-in")
+check(has("label[0.6,1.75;Miner's Guild]"), "C back to Trade-in")
 submit(eve, {mode_buy = "Buy"})
 check(has("The vendor has nothing on this shelf."), "C Buy at the test vendor")
 
@@ -442,9 +460,9 @@ grug_traders.open(eve, "grug_traders:vendor_general_accord", ORIGIN, "accord")
 check(shown ~= nil and not has("mode_tradein"), "C a vendor without `guild` has no Trade-in")
 check(has("button[10.3,0.3;1.6,0.8;mode_buy;Buy]"), "C its Buy button stays where it was")
 submit(eve, {mode_tradein = "Trade-in"})
-check(not has("Miner's Guild:"), "C a forged Trade-in field is ignored")
+check(not has("label[0.6,1.75;Miner's Guild]"), "C a forged Trade-in field is ignored")
 local life_plain = grug_guild.lifetime(eve)
-for i = 1, 4 do submit(eve, {["tradein_" .. i] = "x"}) end
+for i = 1, #C.EXCHANGE do submit(eve, {["tradein_" .. i] = "x"}) end
 eq(grug_guild.lifetime(eve), life_plain, "C a forged trade at a plain vendor credits nothing")
 eq(count_of(eve.inv, "default:iron_lump"), 4, "C ...and takes nothing")
 
@@ -457,8 +475,9 @@ eq(shown, nil, "C the other faction gets no window")
 grug_traders.open(eve, TEST, ORIGIN, "accord")
 eve.get_pos = function() return {x = 20, y = 0, z = 0} end
 local far_life = grug_guild.lifetime(eve)
-submit(eve, {tradein_1 = "x"})
+submit(eve, {["tradein_" .. KEY["default:iron_lump"]] = "x"})
 eq(grug_guild.lifetime(eve), far_life, "C out of range nothing trades")
+eq(count_of(eve.inv, "default:iron_lump"), 4, "C ...and takes nothing")
 eve.get_pos = function() return {x = 0, y = 0, z = 0} end
 
 ------------------------------------------------------------------------------

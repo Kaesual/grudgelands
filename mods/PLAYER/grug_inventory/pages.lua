@@ -415,7 +415,7 @@ local function stats_content(player)
 			esc(("%s: Rank %d"):format(guild.catalog.UI_NAME, view.rank)))
 		fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(STAT_X,
 			STAT_Y + (next_row - 0.5) * STAT_STEP, STAT_W, 2 * STAT_STEP,
-			esc(("%s, lifetime %s"):format(view.guild, guild.format_points(view.lifetime))))
+			esc("Lifetime reputation " .. guild.format_points(view.lifetime)))
 		fs[#fs + 1] = guild.reputation_formspec(STAT_X, STAT_Y + (next_row + 1) * STAT_STEP,
 			view.balance)
 		next_row = next_row + 2
