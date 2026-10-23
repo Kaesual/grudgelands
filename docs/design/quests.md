@@ -576,7 +576,7 @@ text. A system quest has no dialog: its mod posts its own completion line.
   enchants read without hovering (the user, 2026-10-23).
 - **The turn-in** shows them as item buttons with their tooltips above the
   Complete button; a click picks one (framed and named, "Chosen: …"), and
-  the text shows the picked stack's whole tooltip (item level, stats,
+  the text starts with the picked stack's whole tooltip (item level, stats,
   enchants); before a pick a hint says so.
   Complete refuses until one is picked ("Choose your reward first."); the
   preflight checks room for the picked reward, and a refused Complete keeps

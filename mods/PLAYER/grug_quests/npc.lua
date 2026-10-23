@@ -186,7 +186,7 @@ local function choice_row(player, def, ready, picked)
 		end
 	end
 	-- The name the made stack shows (its enchant words); its whole tooltip
-	-- stands in the text area above (Round 57 follow-up).
+	-- heads the text area above (Round 57 follow-up).
 	local chosen = ready and picked_lines(player, def, picked)
 	out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y + CHOICE_SIZE + 0.35,
 		esc(chosen and ("Chosen: " .. chosen[1] .. " (see above)") or
@@ -249,9 +249,10 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	local choices = #def.rewards.choices > 0
 	if not (row.status == "ready" and def.rewards.choices[picked or 0]) then picked = nil end
 	-- At the turn-in the picked reward's whole tooltip (item level, stats,
-	-- enchants) is readable without hovering (Round 57 follow-up).
+	-- enchants) is readable without hovering, at the top of the text, where
+	-- it needs no scrolling at the web client's size (Round 57 follow-up).
 	local chosen = picked_lines(player, def, picked)
-	if chosen then detail = detail .. "\n\nChosen:\n" .. table.concat(chosen, "\n") end
+	if chosen then detail = "Chosen:\n" .. table.concat(chosen, "\n") .. "\n\n" .. detail end
 	-- The description is a read-only text (no field name).
 	local form = "formspec_version[6]size[16,9.4]label[0.4,0.4;" .. esc(npc.title or id) .. "]" ..
 		"textlist[0.4,0.9;7,6;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. ";false]" ..
