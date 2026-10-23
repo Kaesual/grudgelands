@@ -126,11 +126,11 @@ one picture.
     common ore in its band, a gem about a quarter.
   - Left out: bars, blocks, bricks, cut gems, Sandstone (four Sand, both ways
     by recipe) and Desert Sand (no natural source in our world; a recipe only).
-- **Cobblestone and Gravel wait for lane REP:** the mason sells both today
-  (`grug_traders/stock.lua`), so their rows carry `pending = "rep"` and are not
-  exchanged. REP deletes the two `pending` fields in the change that takes them
-  off the shelf; the fixture (`tools/r58_guildspec`) then checks them like
-  every other row, and refuses a `pending` row that has no vendor source left.
+- **Cobblestone and Gravel joined with lane REP (built):** the mason no
+  longer sells them (`grug_traders/stock.lua`), and their rows carry no
+  `pending` field any more; the fixture (`tools/r58_guildspec`) checks them
+  like every other row, and refuses a `pending` row that has no vendor source
+  left.
 
 ### 5.2 The camp vendor
 
