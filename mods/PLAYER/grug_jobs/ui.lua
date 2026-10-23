@@ -453,14 +453,16 @@ local function job_strip(fs, st, job, waiting)
 end
 
 -- The overflow row above the strip, only while the list holds something
--- (Round 47; Round 57: one row of up to OVERFLOW_SLOTS slots, "+N more"
--- when it grew beyond; the drain moves the rest to the front). Shift-click
+-- (Round 47; Round 57: one row of up to OVERFLOW_SLOTS slots; a list grown
+-- beyond shows one slot less and "+N more", the drain moves the rest to the
+-- front). Shift-click
 -- goes to the inbox (grug_inventory/inbox.lua: main[9..] and the bags).
 local OVERFLOW_NOTE = "Overflow — empties into your inventory by itself"
 local function overflow_row(fs, player, y)
 	local inv = player:get_inventory()
 	local size = inv:get_size(grug_jobs.OUTPUT_LIST)
-	local shown = math.min(size, OVERFLOW_SLOTS)
+	-- A grown list: the last place of the row says how many more.
+	local shown = size > OVERFLOW_SLOTS and OVERFLOW_SLOTS - 1 or size
 	local x = BOX.x + 0.2
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(y + 0.2),
 		esc(core.colorize(NOTE_COLOR, OVERFLOW_NOTE)))
@@ -472,7 +474,7 @@ local function overflow_row(fs, player, y)
 		if not inv:get_stack(grug_jobs.OUTPUT_LIST, index):is_empty() then more = more + 1 end
 	end
 	if more > 0 then
-		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x + shown * 1.25), n(y + 0.95),
+		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x + shown * 1.25 + 0.1), n(y + 0.95),
 			esc(core.colorize(DIM, "+" .. more .. " more")))
 	end
 end
