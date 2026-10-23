@@ -14,7 +14,7 @@ Follow your faction's story, develop your talents and team up for dangerous
 bosses. Between adventures, improve your equipment, tend your crops and
 return to a home you built yourself.
 
-**2 factions · 6 peoples · 4 classes · 500+ quests · Progression to level 60**
+**2 factions · 6 peoples · 4 classes · 400+ quests · Progression to level 60**
 
 **[Play in your browser](https://kaesual.com)** ·
 [Join our Luanti server](#play-with-luanti) ·
@@ -32,8 +32,8 @@ return to a home you built yourself.
 - **Follow a story across the world.** Start with the people of your home
   town, travel to your capital and follow quests through forests, mountains
   and contested borderlands. Each faction has its own main story, leading
-  toward a finale for a small party. Your map and quest log help you find
-  the next step.
+  toward a finale for a small party. Some quests let you choose your
+  reward, and your map and quest log help you find the next step.
 - **Face greater dangers together.** Form a party to challenge bosses,
   raid enemy war camps or sail to distant dragon islands. Contested lands
   and enemy territory automatically flag you for faction PvP; you can also
@@ -42,8 +42,9 @@ return to a home you built yourself.
 - **Make the gear for your next adventure.** Choose two of six primary
   professions to craft weapons, armour, bags and jewellery. Improve your
   equipment with enchantments and upgrades, or hunt for better loot.
-  Search recipes and start crafting jobs that keep progressing while you
-  are offline. Everyone starts with Cooking; Alchemy adds potions and elixirs.
+  Search recipes, see where every ingredient comes from and queue up to
+  five crafting jobs that keep progressing while you are offline. Everyone
+  starts with Cooking; Alchemy adds potions and elixirs.
 - **Build a home between journeys.** From level 20, claim a protected plot
   in your faction's homelands and decide which friends can use it. Build,
   grow crops, go fishing and prepare supplies. Your activated Claim Stone
@@ -90,6 +91,17 @@ Around level 10, your starting quests lead you toward your people's capital
 and its profession trainers.
 
 ## Current state
+
+**0.57.0** brings a clearer crafting window and new start zones: queue
+up to five crafts, enchants and upgrades that run one after the other,
+offline too, open a details page that names where each ingredient comes
+from, and mark your favourite recipes; Basic recipes come with your
+profession tier. The six start towns offer fewer, broader quests all at
+once, and some let you choose your reward, ending in a weapon with two
+enchants. Alloys and graded woods are simpler to make, every dye can be
+crafted, and vendors no longer sell leather, cloth or bars. You can fly
+over the water near a bay's shore, and open-chin helmets are open
+underneath too.
 
 **0.56.0** brings the fixes from the big playtest: monsters far below
 your level leave you alone, a hit monster calls only the kin around it,

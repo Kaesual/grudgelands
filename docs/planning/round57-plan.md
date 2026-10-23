@@ -1,6 +1,6 @@
 # Round 57 — the crafting window, the quest foundation and the new start zones (0.57.0)
 
-Coordinator: Claude, 2026-10-23. Status: **running** (the user's go 2026-10-23). The plan review (a fresh Opus, 2026-10-23) is folded in:
+Coordinator: Claude, 2026-10-23. Status: **complete** ([completion](#completion-2026-10-23)); 0.57.0 not pushed, it waits for the user's GUI test; the user's go 2026-10-23. The plan review (a fresh Opus, 2026-10-23) is folded in:
 three blockers (the chain rules against unreworked files, zone-bound objectives in shared quests, the
 `*_departure` ids) and the important findings.
 
@@ -36,6 +36,7 @@ findings are lane FIX56.
 | 1 | DYES | Opus | Every dye reachable: sources for White and Yellow Dye (added during the round, ruling 29) | ALLOY merged |
 | 1 | VENDORMAT | Opus | No vendor sells leather, cloth, ores or bars (added during the round, ruling 28) | the user's go |
 | 1 | ALLOY | Opus | Flat alloy and wood chains, Steel Bars craftable (added during the round, rulings 25–27) | CHAINDEPTH merged |
+| 1 | QSYS2 | Opus | Choice rewards show their enchants without hovering (added during the round, the user) | QSYS merged |
 | 2 | STARTQUESTS | Opus | The six start zones rebuilt on QSYS: structure, data and the reward pattern; placeholder texts | QSYS merged |
 | 3 | STARTTEXT | Astra | The texts of the new start-zone quests | STARTQUESTS' structure accepted by the user |
 | 3 | TEXTREVIEW | Opus | The text review with a suggestion page; the user picks | STARTTEXT |
@@ -572,3 +573,265 @@ town fixes. Its own plan follows after this round; these are its rulings. They r
   boss drops from fixed loot tables for the instances, and items found in the world. The armor redesign with
   several polygon groups per slot (for item variety) is planned separately and lands after Round 58, so it does
   not collide with this work in `grug_visuals` and the armor data.
+
+## Completion (2026-10-23)
+
+Every lane is merged on main and independently reviewed (Opus); this lane D (the version, this section, AGENTS,
+the status owners) follows on main `a1582d57`. **0.57.0 is compatible:** no migration step, no map reset, item,
+achievement and waypoint ids unchanged, no new socket; old start-quest ids are dropped as unknown ids (ruling 21).
+**Push:** not pushed; 0.57.0 waits for the user's GUI test. **Sync:** by the coordinator after the round.
+
+### Lanes
+
+Worktrees and branches `r57-<lane>`. Main's first-parent commits, in order (lane tip in brackets):
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| plan | `08fb032b`, `f913f17a` | this plan with the plan review's findings and the quest-code sub-review; then the go | fresh Opus plan review (three blockers folded in) |
+| CHAINDEPTH | `c5f37bae` (`a3ea9bee`) | `tools/r57_chains/`: the disposable probe dumps every registered recipe, `chains.lua` walks depth, steps and the Basic list with four loop rules (`unpack`, `cut_back`, `shallower`, `seed`), `generate.lua` writes `report.txt` and a page | MERGE with one latent finding (the `seed` rule seeded a loop another stuck loop feeds), fixed, delta MERGE |
+| FIX56 | `fd0a58fa` (`f34d1d81`) | bays: the belt's sea within 128 nodes of a bay body and landward of its mouth cut is `planned_water` / "bay" for gameplay (`zone_field.bay_water_at`, `simple_map.bay_shore_at`, `zones.lua`; generation unchanged); the chin: the helm bottom face's rows 0–2 open on cloth T1–T6 and leather T1–T5 (`armorlib.chin_under`, `check.py`, 22 head layers and masks rebaked); `tools/r57_fix56` | MERGE (the full-preparation caveat and the headland edge as notes) |
+| CRAFT | `aaf9edbd` (`e1eaec86`) | `grug_jobs`: the queue (5 jobs, `grug_jobs:queue`), layout C on every box, `queue_box.lua`, the growing overflow, favourites, the recursive Basic unlock (`grug_jobs:basic_unlocked`, hooks at learn, tier, `/prof`, join); Help, `inventory_equipment.md`, `professions.md` | MERGE with two lows (a double click on ■ or Craft), fixed with build serials, delta MERGE |
+| ALLOY | `5107187f` (`8d6a50aa`) | Embersteel and Abyssal Steel from the Steel Bar; the graded woods 2 planks + the tier's ingredient; 6 Steel Bars → 16 Steel Bars (`xpanes:bar_flat`); `tools/r45_rg/edits.lua` and the regenerated `basic_recipes.lua`; `tools/r57_alloy` | MERGE (the stale `item_tiers.md` upgrade table to lane D; the T3 Anthracite question to the user) |
+| QSYS | `a90990d5` (`ede9cbb5`) | `grug_quests`: variants per giver zone, role givers, the rework flag, `story`, `completion`, `choices`, `repeatable` removed, the free-play, budget, requested-item and night-count rules in both validators; `grug_quality`: `check_affixes`, `make_stack`, `tooltip_text`; the map's story icons; the Python quest tools and QUESTMAP | MERGE AFTER FIXES (`validate.py --game` reported 7 false `E-turnin-faction` errors without `--atlas`), fixed with the Help line, the variant-aware garrison faction and the header click, delta MERGE |
+| QSYS2 | `6562f395` (`eb2bddd7`) | the offer and the turn-in list each choice by its enchanted name with its enchant lines; the picked stack's whole tooltip heads the text | display only, the coordinator checked the diff and the shots |
+| DETAILS | `60adda34` (`83e5ce93`) | `grug_jobs/sources.lua` (the ingredient source index) and `details.lua` (the "details" craft box: recipe, enchant, upgrade and group pages); `grug_mobs.drop_tables()`; `tools/r57_details` with the whole-game harness | MERGE with three minor findings (the loop-back filter, the mapgen surface rows, ◀ Back after the queue view), fixed, delta MERGE with a smoke boot |
+| VENDORMAT | `f4991ea3` (`70b2a3f4`), `073ef842` | the eight shelf entries gone (`stock.lua`); `tools/r57_vendormat` with an engine probe; then the coordinator flipped `r57_details`' tailor check after the merge | MERGE AFTER FIXES (`r57_details` pinned the old shelf), fixed by the coordinator |
+| DYES | `feddd5c2` (`2a216c51`) | four Basic rows: Bone → 2 White, Sunleaf → 2 Yellow, Apple → 2 Red, Marshbloom → 2 Cyan; `tools/r57_dyes` | MERGE AFTER FIXES (`r57_details`' known gaps), the fix with the user's sources checked by the coordinator |
+| STARTQUESTS | `b1c6259c` (`ce4e5f6f`), `31c8b94c` | the six start files reworked: 30 quests (12 shared, 18 local), the reward pattern, placeholder texts; `tools/r57_startquests` (`build_structure.py`, `report.py`, fixture); `quests.md` "The start zones" | MERGE AFTER FIXES (the r27 choice-line seam with QSYS2, the README conflict, the Dawnmere reason), then the user's twins verdict, fix round (the twins shared), delta MERGE |
+| STARTTEXT | `a1582d57` (`5e58e377`) | GPT-6 Astra wrote the 101 text fields (24 titles, 71 texts, 6 completions); the user's 36 picks of the Opus text review applied by script | TEXTREVIEW (Opus): 0 must-fix, 36 proposals, all picked |
+| D | this section | the version 0.57.0, AGENTS (the current state, stable ids, the quest foundation, the crafting queue, the chin underside, the topic checks), the brief templates' id sentence, `item_tiers.md`'s own-material values, STATUS, CHANGELOG, BACKLOG, ROADMAP, README | independent review |
+
+**STORYARC** (GPT-6 Astra, outside the repository): the story arc draft in German for the user (private, in the
+orchestration folder). An Opus review found 14 points (4 high) and made 20 proposals; the user answered the three
+open choices and took all 20 recommended proposals; draft 2 built them, and a short Opus check found two text fixes,
+applied by the coordinator. The decision is recorded below; the arc is built in Round 59 and later (§9).
+**GUILDART** (GPT-6 Astra, outside the repository): drop-01 with two proposals, 38 assets (the plan's 3 cloaks, 12
+consumable icons and the remains block, plus two 64×64 status icons for the effect slot); the user's picks are
+below. Nothing of it ships before Round 58's code (ruling 22).
+
+Main has 259 portable fixtures (9 new: `r57_chains`, `r57_fix56`, `r57_craft`, `r57_alloy`, `r57_qsys`,
+`r57_details`, `r57_vendormat`, `r57_dyes`, `r57_startquests`). `mods/` against 0.56.1 (measured, `git diff
+2b4a3228 a1582d57`): 67 files, +5,154 −2,925 lines, of them 22 rebaked head layers and masks; the rest is
+`grug_jobs` (two new files for the details page, one for the queue view), `grug_quests`, the six start-zone quest
+files, `grug_quality`, `grug_map`, three `wp40` mapgen files, `grug_traders/stock.lua`, `grug_smelting/recipes.lua`,
+the Help page and `grug_mobs/subtypes.lua`.
+
+### Lanes added during the round
+
+- **ALLOY** (rulings 25–27): the CHAINDEPTH report showed the deepest recipes ran through the alloy ladder and the
+  graded-wood line (depth 7); the user decided to take T5 and T6 straight from Steel and each wood grade from
+  planks.
+- **VENDORMAT** (ruling 28): with leather and cloth keeping their recipes, the user ruled that no vendor sells
+  leather, cloth, ores or bars, so Round 58's reputation cannot be bought with copper through vendor materials.
+- **DYES** (ruling 29): DETAILS' review found that without White and Yellow Dye every dye but Black and Violet,
+  and every coloured wool, was unreachable; the user wanted every dye in this round.
+- **QSYS2:** the user wanted the choice rewards' enchants readable at selection as in the item tooltip, without
+  hovering.
+
+### Decisions during the round
+
+**The user** (HANDOVER):
+
+- **GUILDART:** the cloaks from drop-01 P1 (charcoal cloth, lamp and pick), the consumable and status icons from
+  P2 (vial and map), the Miner's Remains from P1 (skull and pick overlay); the picks wait in the orchestration
+  folder for Round 58.
+- **STORYARC:** (a) the guilds and the military closely interwoven, little conflict inside a faction; (b) a
+  traitor or a wrong decision: the author decides; (c) the enemy guild rather impersonal (option A); then all 20
+  recommended proposals of the review. The guild names **The Charter of Stone** (The Accord) and **The
+  Oathdelvers** (The Throng).
+- **ALLOY:** the rule (T5/T6 = Steel + the tier's ingredient; the graded woods with their ids kept, Heartwood =
+  planks + Abyssal Crystal; Steel Bars from steel bars; the Water Bucket as it is); the T3 grade takes Anthracite,
+  not a Steel Bar (kept). **Leather and cloth stay** as they are: their grades drop from the tier's own beasts.
+- **Dye sources:** Bone → White (instead of Rock Salt, which grows only in the front zones) and Apple → Red
+  (instead of Fire Pepper, wild only on the Throng side); Sunleaf → Yellow and Marshbloom → Cyan as built.
+- **QUESTMAP:** the start-zone structure accepted; the local twin hunts shared (option b: `start_foxes`,
+  `start_snappers`, `start_grunters`); the quest XP about 10 % lower than before is fine.
+- **The texts:** all 36 proposals of the text review picked.
+- **The "test" world's seed** (476085000009918749): read by the coordinator from its `map_meta.txt` with the user's
+  permission, for FIX56's example column; no lane opened the user's Luanti folder.
+
+**The coordinator** (answers to lane questions; each built as stated):
+
+- **The Bronze Bar's buy-back by the general rule:** VENDORMAT first pinned its old 1c; the coordinator dropped the
+  pin, so off every shelf it pays its inputs (2c), and the Bronze Block (18c) and four bronze goods (+1c) move with
+  it (ruling 28's note).
+- **DETAILS' Open ▶ rule:** "Open ▶" follows the first known recipe and skips only an exact inverse (one
+  ingredient that is made only from this item: a stair back to its block, a block back to its bars); the dye mixes
+  open again. The Water Bucket gets one fixed source line; the base templates' drops stay (Q1–Q3).
+- **CRAFT's overflow grows:** a finished job's stacks that do not fit go into `grug_craft_out`, which grows by a
+  slot per stack and shrinks back as it drains, so nothing is dropped at the feet any more; a cancel whose refund
+  does not fit is refused as before. "N of 5 slots" counts the running job, View Queue [N] the waiting ones; the
+  "Favorites only" checkbox stays beside "Craftable only"; the enchant line "Steel Sword: Strength T3" (Q1–Q3).
+- **The recursive Basic unlock** follows every Basic recipe that makes an ingredient and every member of a named
+  group (CHAINDEPTH Q1), not through furnace steps (the review found no Basic recipe missed today).
+- **FIX56:** the full-preparation caveat accepted as best effort and noted (below); the 128-node margin kept for the
+  user to judge at a headland.
+- **QSYS:** follow-ups counted among reworked files only; "only story quests chain" as `E-free-chain`; the night
+  share band 20–50 % as a warning (Q1–Q3); the violet story colour is the user's call in the GUI test.
+- **STARTQUESTS:** ids kept where the objectives are unchanged (old completers miss the new reward, ruling 20);
+  `start_rats` with the cook, `start_stone` rewarding the Stone Pickaxe and Axe (gut versions).
+- **VENDORMAT:** the bowyer's Feather, the embalmer's Bone and Rotting Flesh, the mason's Clay Brick and the Decor
+  Merchant's Iron Grille stay on their shelves (not leather, cloth, ore or bar).
+
+### Deviations from the plan
+
+- **Four lanes added** (above) and the plan's rulings 25–29 with them.
+- **CHAINDEPTH reads the game through a disposable engine probe**, not a stub loader: the stub loaders do not load
+  cooking, alchemy, smelting, the item groups or the curation's `clear_craft`.
+- **STARTQUESTS kept today's 137 quest-named kinds** and changed no spawn file: `quest_kinds.py --check` wants the
+  named kinds equal to the spawn files' `quest_target` flags. So Dawnmere's `start_rats` names the meadows (levels
+  3–4) as its area; Barn Rats in the home fields count too, and the text sends the player to the home fields first.
+- **The quest count** went 92 → 34 in the first build and 92 → 30 after the shared twins.
+- **`build_structure.py --check`** holds only until the texts land: since STARTTEXT the JSON files are the source,
+  and the script would write the placeholders back (its README line says so). It is not a gate.
+- **GUILDART** delivered two status icons beyond the plan's twelve consumable icons.
+- **CRAFT's bookmark** is a ★/☆ text button: no bookmark texture without the user's pick.
+
+### Numbers worth keeping
+
+Measured unless marked "report" (taken from the lane's report).
+
+- **Recipe chain depth** (`tools/r57_chains`; the plan's base, after ALLOY, and lane D's run on the final branch):
+  699 → 700 → **704** recipes (the Steel Bars row, then four dye rows); deepest recipe 7 → 7 → **7**, but at the
+  end only the four Nightscale leather pieces reach it (before: the Abyssal Steel trinkets and weapons, Heartwood
+  and Nightscale); recipes per depth 1–7: 118 / 134 / 241 / 47 / 30 / 34 / 14 before, **112 / 137 / 241 / 90 / 33 /
+  6 / 4** now; Abyssal Steel Bar 5 → 3, Heartwood 7 → 2, the Abyssal Steel Sword 7 → 5 (ALLOY report); loops 51,
+  loop seeds 3 (White Wool, Red Dye, Blue Dye) → **1** (White Wool).
+- **Start quests:** 92 → **30** (12 shared, 18 local; 15 ids kept, 77 dropped, 15 new), shipped quests 485 → 423;
+  offered per start zone 12 (Dawnmere) or 13. Quest copper per zone 61–68c → 55–61c (`report.py`). The ledger's solo run
+  1 → 10 (`ledger.py --game --track <race>`, reward XP): human 1575, dwarf 1504, elf 1571, orc 1556, troll 1571,
+  undead 1536 (before, per zone: 1603–1737, report); the questing share 85–89 % (before 90–101 %; report).
+- **The source index** (`r57_details` on the final branch): 815 items with sources, 1,450 sources, 330 ingredient
+  tokens, no gap; built in 5.4 ms in the engine (report).
+- **Formspec sizes** (whole inventory formspec, bytes; report): the Basic page 4,436 → 4,499, during a job 3,649 →
+  3,940, the enchant box 5,428 → 5,478 (CRAFT's fixture); in the engine idle 5,182, a queue of three 5,428, the
+  queue view 6,170, the enchant box 7,488; the details page 7,215, a group page 6,735, an enchant page 7,097.
+- **The Basic unlock** (report): Basic recipes per tier T1–T6, tailor 14 15 15 17 13 13, weaponsmith 12 12 20 12
+  12 12, leatherworker 13 14 16 16 13 17; 48 distinct, a store of at most about 2.7 KB.
+- **Bays** (FIX56 report): before, about 8,000–10,100 no-fly sea columns next to bay water per seed; 17–21k columns
+  moved to bay water per seed, all of them flyable now; at the user's example 102 of 169 columns within ±48 were
+  no-fly for the Accord, now 0; `water_class_at` about 1.3 → 1.7 µs on a belt column.
+- **Prices** (lane D's engine probe of every upgrade's own material, copper per unit T1–T6): metal bars 2 / 1 / 4 /
+  10 / 20 / 44 (Embersteel 26 → 20, Abyssal Steel 66 → 44, ALLOY report; the Bronze Bar 1 → 2, VENDORMAT report),
+  graded wood 0 / 1 / 3 / 6 / 16 / 40 (all 0 before), settings 2 / 2 / 5 / 6 / 23 / 47; the Abyssal Steel Sword 125c
+  → 88c (report).
+
+### Classification
+
+**Compatible**, no step:
+`{"schema": 3, "version": "0.57.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+A world on 0.56.1 moves on without a step: the towns build as on origin/main (`check_upgrade.py`), world generation
+is unchanged (FIX56 changes the gameplay water class only), and no item, achievement or waypoint id changes. Saved
+state read or written differently:
+
+- `grug_jobs:job` keeps Round 56's format; new: `grug_jobs:queue` (the waiting jobs; missing = empty),
+  `grug_jobs:favorites` and `grug_jobs:basic_unlocked` (filled at the next join); the overflow list
+  `grug_craft_out` may grow past its four slots and shrinks back as it drains (a downgrade would cut it back);
+- `grug_quests:state` active entries gain `variant` and `giver` (an entry without them follows the first variant);
+  old cooldown keys are never read; the 77 dropped start-quest ids leave active and tracked lists at load
+  (contract §4), the 15 kept ids keep their counters and completions; an existing character is offered the new
+  start quests, and its level-11 quests keep their `*_departure` requirement;
+- the minimap and layout caches rebuild once (their keys digest the mapgen tree, which FIX56 changed);
+- a dual furnace still holding an old pair (Silversteel + Emberglass) no longer matches; the items stay in place.
+
+**Caveat (best effort, contract §1):** `preparation_identity.lua` digests `zones.lua`, `simple_map.lua` and
+`zone_field.lua`, so a world created with `grug_prepare_full_world = true` stops at load with "Surface preparation
+authority changed" until its map is reset (the reset clears the preparation progress and keeps the mode).
+Start-town preparation worlds, the default and the hosting platform's setting, are not affected. The CHANGELOG
+names it for server admins.
+
+### Open notes
+
+- **For the user:** the GUI test below, with the violet story colour and the headland edge to judge.
+- **Round 58** plans from §8 with the picked guild art; **Round 59** builds the story arc from the picked draft
+  (STORYARC draft 2, private).
+- The reviews' and reports' notes are in the [Round 57 carry-overs](../../BACKLOG.md#round-57-carry-overs); the
+  rounds decided for later (§8–§9) in the [ROADMAP](../../ROADMAP.md#next-priorities--deepening-the-playable-game)
+  and the [BACKLOG](../../BACKLOG.md#decided-for-round-58-and-later-round-57-plan-89).
+
+### GUI checklist (Round 57)
+
+Desktop and the web build (the lanes' web shots were taken at 1280×720 and 1035×696), on the synced game. An
+existing 0.56.1 world first (a character above level 10 with old start quests done or active, a running crafting
+job, enchanted items), then a new character, then a new world for the bays.
+
+1. **Layout C** (CRAFT): idle the big button reads "Craft ×N", right of Max; with a job running "Queue ×N", the
+   bar with the small ■, one line naming the job ("Aspen Wood Planks ×40", no countdown) and "View Queue [N]" at
+   the bottom right. The bar, ■ and View Queue stay on another recipe, the overview, the enchant and upgrade boxes
+   and the details page; the output slots show only while filled. At the web size: "Quantity" clears "−", and
+   judge "Favorites only" beside "Craftable only" (tight) and the area tabs "Cooking" / "Weaponsmith" (they touch
+   at 1280×720); long recipe names next to ×N overlapped before this round too.
+2. **The queue:** queue 5 jobs, one of them an enchant (the target slot empties); a sixth is refused ("The crafting
+   queue is full (5 jobs).") and takes nothing; "N of 5 slots" counts the running job, View Queue [N] the waiting
+   ones. ✕ on one: its ingredients and its item come back whole (enchants, wear); ■ stops the running one and the
+   next starts. A quick double click on ■ stops one job only, on Craft queues one job only.
+3. **Offline and the overflow:** queue 3 jobs, fill the inventory, log out for longer than they take and back in:
+   they have finished in order and their outputs wait in the Overflow, which has grown; take them out and it
+   shrinks. A cancel whose refund does not fit is refused with "Not enough inventory space to cancel" and works
+   once there is room. A job of the old version that was running at the update finishes as before.
+4. **Favourites:** ★ two recipes; "Favorites only" alone, and with "Craftable only" (craftable favourites only);
+   they survive a relog.
+5. **The Basic unlock:** learn Tailor: Thread and Patch Bolt are listed in Basic without having held their
+   ingredients; reach a new tier (or `/prof set`): its Basic inputs appear; an existing character has them after
+   its next login.
+6. **Recipe details** (DETAILS): Crafting → a recipe → "Recipe details": each ingredient names where it comes from
+   (creatures with level bands, vendors with their price, zones, mining tiers, trees, fishing, farming; the Water
+   Bucket its fixed line); hovering an icon shows the item's tooltip, then its sources. "Open ▶" on Thread, then
+   "◀ Back" twice returns to the recipe box; Steel Bar has no "Open ▶"; a dye mix (Blue Dye on a wool page) has
+   one. Stick: "Kinds ▶" lists the planks, "Open ▶" on one. "Select this recipe" on a known recipe chooses it in
+   its tab, and an unknown one has no such button. Weaponsmith: "Enchant an item" / "Upgrade an item" → "Details"
+   opens the operation's page; from it View Queue → back → "◀ Back" returns to the enchant box. At the web size
+   long source lines sit close to the box's right edge.
+7. **Alloys and woods** (ALLOY): at the Dual Furnace Steel + Emberglass makes Embersteel and Steel + Abyssal
+   Crystal makes Abyssal Steel; Silversteel + Emberglass makes nothing and stays in its slots. In Basic, planks and
+   an Iron Bar list Polished Wood; Heartwood needs only planks and a Crystal; Steel Bars (metal) list Steel Bars ×16
+   and from them the bar door and trapdoor. Help → Basics → Smelting names Steel for T5 and T6.
+8. **Dyes** (DYES): holding Bone, Sunleaf, Apple or Marshbloom lists White, Yellow, Red or Cyan Dye in Basic; mix
+   White + Red into Pink, Cyan + Yellow into Green, Cyan + Magenta into Blue; a coloured wool from its dye and any
+   wool.
+9. **Vendors** (VENDORMAT): the butcher, tailor, smith and embalmer no longer list Leather, Light Leather, Linen
+   Scrap or the Bronze Bar; the armourer's and tanner's General tab shows only Thread, Parchment and Glass Bottle,
+   their gear tab unchanged; the tailor still sells White and Brown Wool. Selling Leather / Light Leather / Linen
+   Scrap / a Bronze Bar pays 2c / 2c / 1c / 2c.
+10. **A new character's start** (STARTQUESTS): the elder offers the boars and the stone, the cook the rats and the
+    fuel, all at once; one night is enough for 3 rats and a Rat Fur Patch (in Dawnmere the home fields' Barn Rats
+    count; the text sends you there). The start town offers its free quests at once.
+11. **Shared quests:** take the boars in Dawnmere: Hearthpine's elder does not offer them while they are active,
+    and once done no town offers them again; "Return to" names the giver you took it from.
+12. **Choice rewards** (QSYS, QSYS2): the boars' potion choice, the level-5 and level-7/8 armor choices (cloth,
+    leather, metal) and the finale's weapon choice (prefix and suffix, item level 9): the offer lists each choice by
+    its enchanted name with its enchant lines and shows the icons with tooltips; at the turn-in Complete is
+    refused without a pick ("Choose your reward first."); a pick frames the icon, reads "Chosen: …" and puts the
+    item's whole tooltip on top of the text; the item received has those enchants and that item level; with full
+    bags Complete is refused and the pick stays. At the web size the picked tooltip reads without scrolling.
+13. **Completion text:** each zone's last quest shows its closing lines at the turn-in in place of the quest text;
+    the departure then leads to the next zone's quest giver.
+14. **Story marking** (no shipped story quest yet: QSYS's capture probe or a later round shows it): a story giver's
+    violet "!" beside a normal gold one; the quest log's "Story" heading with an accent, the status colours kept;
+    a ready side quest at a mixed giver still shows; the map and minimap story icons (at 4× zoom the map icon may
+    overlap a neighbour's under the player arrow). **Judge the violet**: a first gut version. A click on a
+    "Story" or "Side quests" header keeps the selected quest highlighted.
+15. **An existing character above level 10:** the new start quests are offered (accepted, ruling 20; one whose old
+    finale was done keeps it done under its kept id); its old start quests in the log are gone without an error;
+    its level-11 zone's quests are still offered.
+16. **Bays** (FIX56): in the world "test", fly along the bay shore at (−609, 9, −2285) and along the whole bay: no
+    dismount, no red on the minimap's no-fly overlay; the open sea and the bay mouths stay no-fly, and so does the
+    outer coast past a headland, up to 128 nodes from the bay (**judge the headland edge**).
+17. **The chin underside:** look at cloth T1–T6 and leather T1–T5 head pieces from below and at a low front angle:
+    no texture under the chin; leather T6 and the metal helmets unchanged; the hood as in 0.56.1.
+18. **Help:** Help → Quests & Professions names the violet story symbols; Help → Basics → Crafting describes the
+    queue, the stop button, the Overflow and the favourites.
+19. **The pages for the user** (outside the game): the chain report `r57/chains/index.html` (area filter, column
+    sort, search, the loops section) and the QUESTMAP page of the start zones.
+
+### Round-end gates
+
+Lane D on its branch from `a1582d57`: `check_upgrade.py` PASS (against origin/main `2b4a3228`, 0.56.1; the towns
+build as there), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (6 warnings, as before),
+`quest_kinds.py --check` 0 differ, `r37_dc` PASS, `build_doc.py --check` current (after the regeneration),
+`income.py --check` PASS, `tools/r57_chains/run.sh` (one boot, 704 recipes), the questmap page (423 quests, 0 load
+warnings), the full `run_fixtures.sh` (FULLRUN) and one headless boot (BOOT). Each code lane ran the full
+`run_fixtures.sh` once (CHAINDEPTH and FIX56 251/0, CRAFT 251/0, ALLOY 252/0, QSYS 251/0 and its review's
+trial merge 255/0, QSYS2 255/0, DETAILS 255 with one pin fixed, VENDORMAT and DYES 256 (DYES after one fixture
+update), STARTQUESTS 253 with three pins fixed, then 258/0 after its fix round); the coordinator ran the full set
+on main `a90990d5` (exit 0).

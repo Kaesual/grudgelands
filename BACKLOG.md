@@ -3035,20 +3035,99 @@ The items the user decides in the GUI test are in the
   gallery could not be published as an artifact (a local page);
   `gui_run.py` needs Chromium.
 
+### Round 57 carry-overs
+
+**Noted 2026-10-23** ([completion](docs/planning/round57-plan.md#completion-2026-10-23)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the GUI test are in the
+[GUI checklist](docs/planning/round57-plan.md#gui-checklist-round-57).
+
+- **Crafting queue** (CRAFT, its review and delta review): the room check at
+  queueing counts the inventory, not the outputs of the jobs before it (the
+  overflow takes the rest); a station recipe plays its sound when queued and
+  has no end cue; a nested `update_job` from an XP or tier hook can deliver
+  a later job's stacks before the current one's (nothing is lost);
+  `start_job` returns `true, nil, nil` if `begin_job` refuses after the take
+  (needs a corrupt job and four waiting ones; as before this round);
+  `read_queue` drops an unreadable entry with its inputs; a click sent while
+  a newer page is on its way is ignored (the player clicks again); a
+  downgrade would cut a grown overflow back to four slots; the unlock walk
+  does not pass furnace steps (no Basic recipe is missed today); Help's
+  Basic line does not mention the tier unlock; at the web size ×N overlaps
+  long recipe names (as before).
+- **Recipe details** (DETAILS, its review and delta review): a pack/unpack
+  pair counts as an exact inverse both ways, so a block made from bars has
+  no "Open ▶" (blocks are almost only ingredients of their own unpack);
+  Steel Bar's "Basic recipe" line names the block unpack (loop-back recipes
+  could leave the lines too); the page stack has no cap; the Quartermasters'
+  T1 gear tab is not in the index (gear is never an ingredient); the
+  fixture could also pin `r7_content.lua`'s 174 surface rows; long source
+  lines sit close to the box's edge at the web size.
+- **Recipe chains** (CHAINDEPTH, ALLOY, their reviews): the Nightscale
+  leather line is the deepest now (7: Light → Cured → Heavy Leather →
+  Scaled Hide → Nightscale), though Heavy Leather and Scaled Hide also drop,
+  so a hunter's chain is 2–3; every weapon has a stick and a metal-rod
+  recipe, the stick one a step shallower; `unpack` shows Obsidian as made
+  from shards; White Wool is the one loop seed left (no creature drops
+  wool; vendors sell White Wool); the dump is not committed, so every
+  report run boots the engine; from T3 a wood grade costs only its
+  ingredient while the matching alloy costs Steel too (accepted); a dug
+  Steel Bars piece from a town palette sells for a fraction of a copper.
+- **Quest system** (QSYS, its review): the header-click redraw keeps the old
+  row index and pick, so if the NPC's rows changed in between the pick can
+  land on another ready choice quest (it is framed and named before
+  Complete); `texts` keyed by a role giver's NPC id is refused (`E-texts`,
+  role givers are bound after validation; from Round 58); the zone atlas's
+  quest lists are a snapshot; probe-registered quests pay 0c; at 4× the
+  map's story icon can overlap a neighbour's under the player arrow.
+- **Start zones** (STARTQUESTS, its review, the text review): Dawnmere's
+  `start_rats` names the meadows (levels 3–4) as its area and map target,
+  because `home_fields` would change the quest-named kinds and so the spawn
+  flags (the text sends players to the home fields, whose Barn Rats count);
+  Hearthpine's `start_crabs` (level 4) counts Boulder Crabs too, which
+  exist only at level 7 in the Rockpools and attack on sight (the Pebble
+  Crabs fit; kept); the finales' titles name their leaders literally and
+  go stale if `names.json` renames one; `start_stone`, `start_bars` and
+  `start_bronze` share one middle sentence in every variant; an old
+  character who did a former tool quest gets the Dual Furnace and Bronze
+  Pickaxe again (ruling 20 accepts it); `build_structure.py --check` holds
+  only until the texts land (the JSON files are the source now) and its
+  comment at line 288 still gives the old Dawnmere reason; `r56_questmap`
+  lost its positive `start_twin` test; `tools/r57_qsys`' capture probe still
+  accepts `dawnmere_hunt_01`, so its Q1 shot lacks that side quest (use
+  `start_boars`).
+- **Story arc** (STORYARC check): draft 2's T3 story step needs two free
+  boss quests, the only step with two free detours (no rule broken; for
+  Round 59).
+- **Vendors** (VENDORMAT): the armourer's and tanner's General tab holds
+  only the three supplies; ruling 28 could join the `grug_traders` load
+  audit (today the fixture enforces it); `economy-vendor-plan.md` §2.3 still
+  lists the old shelves (a planning doc).
+- **Bays and the chin** (FIX56, its review): at a headland the no-fly edge
+  runs through the outer coast's belt up to 128 nodes from the bay, and 0–20
+  small enclosed no-fly specks remain near the bays per seed; housing claims
+  are allowed on bay shore water and the Reed Angelfish may spawn there;
+  `bay_water_at` returns the first bay whose grown body matches (one bay per
+  coast today); the legacy `compatibility.zone_at` answers core/inner/outer
+  there instead of "coast" (no caller); `tools/r54_armor/templates.py`
+  paints only the front strip of the open chin, not the underside.
+- **Tools** (lane D, QSYS, STARTQUESTS): `quest_targets.py` stops on the
+  water-kind region stats, stale since Round 51 (`tools/r28_regions/run.sh`
+  refreshes them); `item_tiers.md`'s own-material values in
+  `tools/r33_ds/money.py` are hand-measured (lane D re-measured them in the
+  engine) and `build_doc.py --check` was stale on main before lane D (the
+  start zones' quest copper moved the income table); `check_lua.sh` flags
+  two SETGLOBAL lines in the `r57_details` fixture.
+
 ### Decided for later rounds (Round 56 §8)
 
 **Decided with the user on 2026-10-22**, each its own round in an order the
 user sets; the decisions and their detail are in
 [Round 56 plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds).
 
-- **Crafting window:** layout C (one wide middle box, "Craft ×N" / "Queue
-  ×N", the progress bar with a stop button and one job line, "View Queue
-  [N]", output slots only while filled); the queue (crafts, enchants and
-  upgrades alike, inputs taken when queued and returned on cancel, no
-  reordering, at most 5 entries, no automatic crafting of missing
-  ingredients); a details page per recipe with its ingredients' sources;
-  recursive Basic unlocks with a profession tier; favourites in player
-  meta. First step: a report of the recipe chain depth per recipe.
+- **Crafting window:** **delivered in Round 57** (0.57.0): layout C, the
+  queue of five, the details pages, recursive Basic unlocks, favourites and
+  the chain-depth report.
 - **Town fixes** (**map reset**): in the templates (the user in the editor or
   a lane): Lethariel's bough platforms (the beam over the stair and the deck
   rail go) and the five core gatehouses (an inner stair, the doors one node
@@ -3062,13 +3141,11 @@ user sets; the decisions and their detail are in
   room written by the world generator at the tier's lowest y + 50 (−250,
   −450, −650), a fetch quest, faction guards; the T4 room may lie in the PvP
   depth.
-- **Quest rework** (after QUESTMAP and QUESTIDEAS): a story thread from the
-  capital on (level 15–20 at the latest), story quests marked apart from
-  kill quests, more story with fewer repetitions and dependencies, quest
-  families across start towns, rewards that are not the requested items.
-  The idea report recommends a faction story from the capital combined with
-  standalone place stories, investigations selectively and journeys for the
-  mining camps, piloted on one zone and its capital per faction.
+- **Quest rework** (after QUESTMAP and QUESTIDEAS): the foundation and the
+  six start zones are **delivered in Round 57** (shared quests, story
+  marking, choice rewards, no repeatables, quest families across the start
+  towns, rewards that are not the requested items); the story thread from
+  the capital on and the levels 11–60 follow from Round 59 (below).
 
 ### Decided for Round 58 and later (Round 57 plan §8–§9)
 
@@ -3078,7 +3155,8 @@ above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-deci
 - **Round 58, the Miner's Guild** (**map reset**, together with the town
   fixes above):
   - one guild per faction, a political actor, with a guild building in every
-    capital;
+    capital: **The Charter of Stone** (The Accord) and **The Oathdelvers**
+    (The Throng), the user's names of 2026-10-23;
   - 20 new camps (T2–T4) plus the 16 Battlegrounds war camps as mining camps,
     and one "camp under construction" of the enemy in each own contested T4
     zone (guards only, no lift);
@@ -3093,10 +3171,18 @@ above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-deci
     sells only the 12 consumables (Ore Sense and Treasure Hunt, T1–T6; rank
     gates buying, level gates use, own effect slot, one active at a time,
     the effect lasts across logout and death); materials are also traded for
-    reputation at the guild in the capitals.
+    reputation at the guild in the capitals;
+  - the art is picked (GUILDART, 2026-10-23: the cloaks, the 12 consumable
+    icons, two status icons and the Miner's Remains block) and waits in the
+    orchestration folder for this round's code.
 - **Round 59 and later:** the story arc and the quest rework of levels
-  11–60; then unique items (quest rewards, boss loot tables for instances,
-  world finds) and the armor redesign with several polygon groups per slot.
+  11–60, zone by zone with the rework flag; the arc follows the user's picks
+  on the Round 57 draft ([completion](docs/planning/round57-plan.md#decisions-during-the-round):
+  the guilds and their faction's military closely interwoven with little
+  conflict inside a faction, a traitor or a wrong decision as the author
+  chooses, the enemy guild rather impersonal);
+  then unique items (quest rewards, boss loot tables for instances, world
+  finds) and the armor redesign with several polygon groups per slot.
 
 ### Audit 2026-10 open questions
 
