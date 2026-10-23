@@ -1,5 +1,6 @@
 {
   "zone": "elandor_hearthpine_vale",
+  "reworked": true,
   "identity": "Hearthpine cuts the pit props for the Copperfell shafts; this year the woods bite back, and a gang of ore thieves under a chief called Bracket is carting off what the shift digs.",
   "hubs": [
     {
@@ -25,247 +26,175 @@
   ],
   "quests": [
     {
-      "id": "hearthpine_hunt_01",
+      "id": "start_dead",
       "line": "hunt",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 1,
-      "level": 2,
-      "requires": [],
-      "title": "A Pig's Breakfast",
-      "text": "Pine Piglets are rooting through our pit props {zone_area:timberline}, and I refuse to lose a miner to a pig's breakfast. Kill eight by day; a yellow name means they leave you be until you strike. Save any meat for Hilda, then we'll see about the ore thieves.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "small_boar"
-          ],
-          "count": 8,
-          "area": "elandor_hearthpine_vale/timberline"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Yellow names are neutral single pulls; keep the meat.",
-      "duration_min": 8
-    },
-    {
-      "id": "hearthpine_tools_01",
-      "line": "tools",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "Hands Before Heroics",
-      "text": "Before you go making a name for yourself, make something with a handle. Craft a Wooden Axe and a Wooden Pickaxe and bring both to me here in Hearthpine. A miner's first tools hang on the hall wall for luck, so yours go up beside your grandmother's, and you take a seasoned pair from the rack in their place.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_wood",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_wood",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": [
-          {
-            "item": "grug_materials:axe_wood",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_wood",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Grid crafting of the first tools; turned-in tools are replaced.",
-      "duration_min": 5
-    },
-    {
-      "id": "hearthpine_kitchen_01",
-      "line": "kitchen",
-      "giver": "r20_dwarf_start_cook",
-      "turnin": "r20_dwarf_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "title": "Feed the Fire First",
-      "text": "Every mouth in Hearthpine wants supper, including the smokehouse. Bring me five logs from trees outside town, at any hour; logs, mind, not planks. Leave the town trees standing, or you'll answer to Brunna before you answer to me.",
-      "objectives": [
-        {
-          "type": "item",
-          "group": "tree",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Any log counts; planks do not; protected town trees cannot be cut.",
-      "duration_min": 4
-    },
-    {
-      "id": "hearthpine_hunt_02",
-      "line": "hunt",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 2,
-      "level": 2,
-      "requires": [
-        "hearthpine_hunt_01"
-      ],
-      "title": "The Unpaid Night Crew",
-      "text": "Our timber has acquired a night crew with teeth and no respect for joinery. Kill eight Timber Rats {zone_area:timberline} after dark. A red name means they'll attack on sight; pick your fights before they pick you.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "large_rat"
-          ],
-          "count": 8,
-          "area": "elandor_hearthpine_vale/timberline"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Night clock and red names; a red name attacks on sight.",
-      "duration_min": 8
-    },
-    {
-      "id": "hearthpine_tools_02",
-      "line": "tools",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "hearthpine_tools_01"
-      ],
-      "title": "An Edge Worth Keeping",
-      "text": "Good, you've learned which end to hold. Take your Wooden Pickaxe to plain rock outside the walls, then craft a Stone Axe and a Stone Pickaxe and bring both for inspection. I'll swap them for a fresh pair; the next rock won't yield to wood and encouragement.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:axe_stone",
-          "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:pick_stone",
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": [
-          {
-            "item": "grug_materials:axe_stone",
-            "count": 1
-          },
-          {
-            "item": "grug_materials:pick_stone",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Pick tiers gate rock; stone tools open the next rock.",
-      "duration_min": 7
-    },
-    {
-      "id": "hearthpine_kitchen_02",
-      "line": "kitchen",
-      "giver": "r20_dwarf_start_cook",
-      "turnin": "r20_dwarf_start_cook",
-      "min_level": 2,
-      "level": 3,
-      "requires": [
-        "hearthpine_kitchen_01"
-      ],
-      "title": "Supper Needs a Spark",
-      "text": "A cold oven is just a cupboard with ambitions. Mine five Coal Lumps from the rock outside town and bring them to me when you have a break from hunting. Try the public oven while you're here: coal in the fuel slot, raw food in the cooking slot, and patience until supper.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Gathering while waiting for night; the public oven stands in town.",
-      "duration_min": 7
-    },
-    {
-      "id": "hearthpine_pantry_01",
-      "line": "pantry",
-      "giver": "r20_dwarf_start_cook",
-      "turnin": "r20_dwarf_start_cook",
-      "min_level": 3,
-      "level": 3,
-      "requires": [
-        "hearthpine_hunt_02"
-      ],
-      "title": "Mending at the Rats' Expense",
-      "text": "The rats have eaten at my expense and chewed through my flour sacks, so they can pay for the mending. Bring me two Rat Fur Patches from the Timber Rats in the {name:timberline} after nightfall.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:rat_fur_patch",
-          "count": 2,
-          "roles": [
-            "large_rat"
-          ],
-          "area": "elandor_hearthpine_vale/timberline"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Ordinary family loot answers a pantry request.",
-      "duration_min": 4
-    },
-    {
-      "id": "hearthpine_hunt_03",
-      "line": "hunt",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
       "min_level": 3,
       "level": 4,
-      "requires": [
-        "hearthpine_hunt_02"
-      ],
-      "title": "The Dead Can Clock Out",
-      "text": "I know a dragging footstep after a hard shift, and those aren't tired miners. Kill eight Pit Shufflers on the {name:shingle} {dir_from_giver:shingle} after nightfall. They burn in sunlight, so get your daytime work done while you wait. The dead can have your next shift.",
+      "requires": [],
+      "title": "[PH] The Restless Dead",
+      "text": "[PH] Lay 3 Pit Shufflers to rest in the {name:shingle} after dark. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
             "braindead_zombie"
           ],
-          "count": 8,
+          "count": 3,
           "area": "elandor_hearthpine_vale/shingle"
         }
       ],
+      "variants": [
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r14_dwarf_elder"
+          ]
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_silverleaf_glades/strand"
+            }
+          ],
+          "text": "[PH] Lay 3 Dune Stumblers to rest in the {name:strand} after dark. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r14_orc_elder"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "befuddled_husk"
+              ],
+              "area": "kragmar_sunscar_flats/strand"
+            }
+          ],
+          "text": "[PH] Lay 3 Sun-Dried Husks to rest in the {name:strand} after dark. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r14_troll_elder"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_kapok_cradle/rootways"
+            }
+          ],
+          "text": "[PH] Lay 3 Root Shufflers to rest in the {name:rootways} after dark. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r14_undead_elder"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_stillgrave_hollow/ashfields"
+            }
+          ],
+          "text": "[PH] Lay 3 Nameless Shufflers to rest in the {name:ashfields}. Real text to follow."
+        }
+      ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 1.5
       },
-      "lesson": "Zombies come at night and burn in the sun.",
-      "duration_min": 9
+      "lesson": "A night target at a third of the day count.",
+      "duration_min": 5
+    },
+    {
+      "id": "start_crabs",
+      "line": "pantry",
+      "min_level": 4,
+      "level": 5,
+      "requires": [],
+      "title": "[PH] Crab Legs for Supper",
+      "text": "[PH] Bring me 2 Crab Legs from the Pebble Crabs and Boulder Crabs in the {name:rockpools}. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:crab_leg",
+          "count": 2,
+          "roles": [
+            "quiet_shore_crab",
+            "giant_crab"
+          ],
+          "area": "elandor_hearthpine_vale/rockpools"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r20_dwarf_start_cook"
+          ]
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r20_elf_start_cook"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "quiet_shore_crab"
+              ],
+              "area": "elandor_silverleaf_glades/strand"
+            }
+          ],
+          "text": "[PH] Bring me 2 Crab Legs from the Sand Fiddlers in the {name:strand}. Real text to follow."
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r20_orc_start_cook"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_sunscar_flats/saltflats"
+            }
+          ],
+          "text": "[PH] Bring me 2 Crab Legs from the Fiddler Crabs and Sand Snappers in the {name:saltflats}. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r20_troll_start_cook"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "quiet_shore_crab"
+              ],
+              "area": "kragmar_kapok_cradle/shallows"
+            }
+          ],
+          "text": "[PH] Bring me 2 Crab Legs from the Fiddler Crabs in the {name:shallows}. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r20_undead_start_cook"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_stillgrave_hollow/saltbones"
+            }
+          ],
+          "text": "[PH] Bring me 2 Crab Legs from the Ghost Crabs and Bone Snappers in the {name:saltbones}. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2
+      },
+      "lesson": "Shore loot by day; keep what your enchants need.",
+      "duration_min": 6
     },
     {
       "id": "hearthpine_hunt_04",
@@ -273,12 +202,10 @@
       "giver": "r14_dwarf_elder",
       "turnin": "r14_dwarf_elder",
       "min_level": 4,
-      "level": 6,
-      "requires": [
-        "hearthpine_hunt_02"
-      ],
-      "title": "A Hard Hat Has Limits",
-      "text": "Ibex Kids are kicking slate onto the path through the {name:high_pines}, which lie {zone_area:high_pines}. Hunt eight by day; they'll graze peaceably until you start the fight. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
+      "level": 5,
+      "requires": [],
+      "title": "[PH] Ibex on the High Pines",
+      "text": "[PH] Hunt 8 Ibex Kids by day in the {name:high_pines}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -290,144 +217,94 @@
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_patch",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_light",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A daytime hunt beside the night work; ibex are neutral grazers.",
+      "lesson": "A local hunt; the head armor choice (one enchant, item level 5).",
       "duration_min": 9
     },
     {
-      "id": "hearthpine_kitchen_03",
-      "line": "kitchen",
-      "giver": "r20_dwarf_start_cook",
-      "turnin": "r20_dwarf_start_cook",
-      "min_level": 4,
-      "level": 5,
-      "requires": [
-        "hearthpine_kitchen_02",
-        "hearthpine_hunt_02"
-      ],
-      "title": "Winter Doesn't Bring Lunch",
-      "text": "When the snow shuts us in, I mean to hear snoring, not stomachs. Bring me ten pieces of Raw Meat for the winter racks; what you've saved counts, or hunt boar and ibex by day and rats by night here in Hearthpine Vale. I'll send you off with three portions of Meat, because the cook gets the last word on leaving hungry.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 10
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "mobs:meat",
-            "count": 3
-          }
-        ]
-      },
-      "lesson": "Earlier hunting loot pays a later request.",
-      "duration_min": 4,
-      "climax": true
-    },
-    {
-      "id": "hearthpine_tools_03",
-      "line": "tools",
+      "id": "hearthpine_boulder_crabs",
+      "line": "hunt",
       "giver": "r14_dwarf_elder",
       "turnin": "r14_dwarf_elder",
-      "min_level": 5,
-      "level": 6,
-      "requires": [
-        "hearthpine_tools_02"
-      ],
-      "title": "Fittings Before Fortune",
-      "text": "A shaft prop is only as trustworthy as its fittings, and miners put their lives beneath ours. Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. I'll give you a Dual Furnace for your own work; set it up outside protected ground, because the hall has rules about open fires and I wrote most of them.",
+      "min_level": 7,
+      "level": 8,
+      "requires": [],
+      "title": "[PH] Boulder Crabs",
+      "text": "[PH] Kill 5 Boulder Crabs by day in the {name:rockpools}. Real text to follow.",
       "objectives": [
         {
-          "type": "item",
-          "item": "grug_materials:copper_bar",
-          "count": 3
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:tin_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": [
-          {
-            "item": "grug_smelting:dual_furnace",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Ore to bar; a dual furnace takes two inputs.",
-      "duration_min": 10
-    },
-    {
-      "id": "hearthpine_pantry_02",
-      "line": "pantry",
-      "giver": "r20_dwarf_start_cook",
-      "turnin": "r20_dwarf_start_cook",
-      "min_level": 6,
-      "level": 7,
-      "requires": [
-        "hearthpine_pantry_01"
-      ],
-      "title": "The Feast Fights Back",
-      "text": "For once I'd like a feast that nobody can mistake for yesterday's stew. Bring me three Crab Legs from Pebble Crabs or Boulder Crabs at the {name:rockpools} {dir_from_giver:rockpools} by day. Pebble Crabs leave you alone until provoked; Boulder Crabs start the argument themselves, so keep all your fingers for the cutlery.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:crab_leg",
-          "count": 3,
+          "type": "kill",
           "roles": [
-            "quiet_shore_crab",
             "giant_crab"
           ],
+          "count": 5,
           "area": "elandor_hearthpine_vale/rockpools"
         }
       ],
       "rewards": {
         "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Shore strips by day; neutral and aggressive crabs share the rocks.",
-      "duration_min": 8,
-      "climax": true
-    },
-    {
-      "id": "hearthpine_tools_04",
-      "line": "tools",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 7,
-      "level": 8,
-      "requires": [
-        "hearthpine_tools_03"
-      ],
-      "title": "Your Next Bite of Mountain",
-      "text": "Those Copper Bars and Tin Bars are holding up mine shafts now, so you'll need fresh supplies for this. Use your Dual Furnace to make three Bronze Bars and bring them to me here. You've earned a Bronze Pickaxe and a crack at tougher rock; remember who taught you when you strike something worth bragging about.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:bronze_bar",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": [
+        "choices": [
           {
-            "item": "grug_materials:pick_bronze",
-            "count": 1
+            "item": "grug_gear:feet_cloth_patch",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_light",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_bronze",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
           }
         ]
       },
-      "lesson": "Alloys need fresh inputs; the Bronze Pickaxe is the onward tool.",
-      "duration_min": 12,
-      "climax": true
+      "lesson": "A local hunt; the feet armor choice (one enchant, item level 8).",
+      "duration_min": 12
     },
     {
       "id": "hearthpine_hunt_05",
@@ -436,11 +313,10 @@
       "turnin": "r14_dwarf_elder",
       "min_level": 8,
       "level": 9,
-      "requires": [
-        "hearthpine_hunt_04"
-      ],
-      "title": "Bracket Doesn't Add Up",
-      "text": "Bracket has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, where his crew lurks day and night, and defeat seven Ore Thieves and Ore Chief Bracket himself. Draw the chief away from his crew if you can; I'd like his ledger closed without your name entered in it.",
+      "requires": [],
+      "title": "[PH] The Finale: {name:muddled_ore_chief}",
+      "text": "[PH] Defeat 7 Ore Thieves at the {name:ore_thief_camp}, then {name:muddled_ore_chief}. Real text to follow.",
+      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -460,9 +336,49 @@
       ],
       "rewards": {
         "weight": 4.5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:staff_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Seven helpers and one normal named leader; pull the chief alone.",
+      "lesson": "A camp pack plus a named leader; the weapon choice (prefix and suffix).",
       "duration_min": 12,
       "climax": true
     },
