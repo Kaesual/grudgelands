@@ -1,8 +1,8 @@
 # Round 57 — the crafting window, the quest foundation and the new start zones (0.57.0)
 
-Coordinator: Claude, 2026-10-23. Status: **draft**. The plan review (a fresh Opus, 2026-10-23) is folded in:
+Coordinator: Claude, 2026-10-23. Status: **running** (the user's go 2026-10-23). The plan review (a fresh Opus, 2026-10-23) is folded in:
 three blockers (the chain rules against unreworked files, zone-bound objectives in shared quests, the
-`*_departure` ids) and the important findings. The draft waits for the user's go.
+`*_departure` ids) and the important findings.
 
 The source is the discussion with the user on 2026-10-22 ([Round 56 plan §8](round56-plan.md#8-decided-for-later-rounds))
 and 2026-10-23, which ordered the next rounds:
