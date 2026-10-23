@@ -164,9 +164,10 @@ per-zone quest files (below): one track per race from the start zone to its
 heartland, the contested 31–40 zones, and the 41–60 front with island
 bounties. Round 31 adds 24 PvP fortress quests (below) and Round 36 the main
 line's 25 (below); Round 46 removed Round 29's 55 repeatable quests (485 in
-total). This is an editorial budget, not a filler quota.
-Offer roughly three independent local starter tasks across the adventure giver
-and a separate cook near an oven. Compatible tasks share an outing; avoid
+total); Round 57 rebuilt the six start zones' 92 quests as 34 (427 in total,
+"The start zones" below). This is an editorial budget, not a filler quota.
+A start town offers its quests at once across the elder and the cook near
+an oven ("The start zones"). Compatible tasks share an outing; avoid
 repeated returns for increasing counts of the same mob. Optional item/cooking
 lessons do not block the combat story or implicitly require a profession.
 
@@ -611,6 +612,51 @@ unflagged file. In reworked files (both validators, the same codes):
 - `W-night-count` (ruling 12; a day lasts 15 real minutes, a night 5): a
   kill objective whose targets spawn only at night asks 20–50 % of the
   median count of the zone's day kill objectives (leaders left out).
+
+## The start zones (Round 57)
+
+The six start zones (levels 1–10: Dawnmere Fields, Hearthpine Vale and
+Silverleaf Glades of The Accord; Sunscar Flats, Kapok Cradle and Stillgrave
+Hollow of The Throng) are the rework's pilot (round57-plan.md §2 rulings
+9–12 and 15–18): all six files are reworked, every quest is free play and
+there is no story quest; the story begins at the level-19 handovers
+(Round 59). Each town's two quest givers, the elder (lines `hunt` and
+`tools`) and the cook (`pantry` and `kitchen`), offer their quests at once,
+each gated only by its level.
+
+- **Shared quests** (one id, a variant per town; Dawnmere's file holds the
+  first seven, Hearthpine's the two Dawnmere does not give):
+  `start_boars` (8 small boars of the town's home kind by day, level 1,
+  reward level 2) and `start_rats` (3 large rats after dark and 1 Rat Fur
+  Patch, the cook's, level 1) are offered together; `start_stone` (10 stone
+  of any kind, a Wooden Pickaxe's first job; a Stone Pickaxe and Stone Axe),
+  `start_fuel` (5 logs and 5 Coal Lumps), `start_dead` (3 of the zone's
+  zombies or husks, level 3; not in Dawnmere), `start_crabs` (2 Crab Legs,
+  level 4; not in Dawnmere), `start_meat` (10 Raw Meat for 3 Meat),
+  `start_bars` (3 Copper and 3 Tin Bars for a Dual Furnace, level 5) and
+  `start_bronze` (3 Bronze Bars for a Bronze Pickaxe, level 7). Nothing is
+  handed in and given back: the Round 29 tool swaps are gone.
+- **Local quests**: two hunts of the zone's own beasts, at reward level 5
+  and 7 or 8; the finale at the town's thieves' camp with its named leader
+  (reward level 9); and the `*_departure` travel quest to the next zone's
+  giver, the zone's one follow-up (it requires the finale; ten level-11
+  quests require the departures). Dawnmere, without undead and shore
+  crabs near town, keeps its cook's shore-and-pasture errand.
+- **Counts by phase** (ruling 12): the night's rats and the dead ask 3,
+  about a third of the day hunts' 8.
+- **Rewards** (ruling 18): `start_boars` a choice of 2 Healing Potion I or
+  2 Mana Potion I; the level-5 hunt an armor piece (cloth, leather or metal)
+  with the class's main stat as its prefix, the level-7/8 hunt another slot
+  with a suffix (mana, crit, maximum HP); the finale one weapon per weapon
+  line with a prefix and a suffix (a Wand or Staff, the Bow, a Sword or
+  Battle Axe; the two-handed Staff where the Battle Axe is offered). Each
+  zone gives two slots, chosen so sister towns differ. The other quests pay
+  XP and copper, the crafting ones their tool or station.
+- **Ids**: a quest whose objectives stayed keeps its id (the six finales
+  `*_hunt_05`, six hunts and Dawnmere's errand); every other quest is new,
+  and the old ids are dropped (upgrade contract §4). The structure was
+  written by `tools/r57_startquests/build_structure.py`;
+  `tools/r57_startquests/portable_test.lua` checks it.
 
 ## For content lanes
 
