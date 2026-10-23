@@ -151,7 +151,8 @@ eligibility and flag".
 ## 6. PvP points of interest
 
 One fortress per faction and 16 Battlegrounds camps, anchors 101–118
-placed per world by rules since Round 46 (placement rules, spacing and
+(since Round 58 also the six camps under construction, §6.3, anchors
+139–144) placed per world by rules since Round 46 (placement rules, spacing and
 protection: [world_zones.md](world_zones.md) §8.5 and §16; garrison and respawn rules:
 [world.md](world.md) §4). All are protected POIs with a 10-node margin,
 refuse ambient hostile spawns and nudge idle roaming mobs away (a mob in
@@ -228,6 +229,30 @@ combat may follow its target in).
   chest armour.
 - Own-faction players find shelter: the guards treat them as friends; enemy
   guards are hostile. Kiting enemy guards to an own camp is accepted.
+- **Mining camps too** (Round 58): every camp is also a mining camp of its
+  faction's Miner's Guild, with a lift to the rooms of every tier down to
+  its zone's (tier 5 in the 41–50 zones, tier 6 in the 51–60 zones), a
+  foreman and a camp vendor beside the command tent
+  ([settlements.md](settlements.md) "Round 58 mining camps and camps under
+  construction"). The garrison, the raid quests and the protection stay as
+  above.
+
+### 6.3 Camps under construction (Round 58)
+
+- One enemy camp under construction in each contested level-31–40 zone,
+  built by the other faction (by the race of the zone across the front:
+  Stormvault Heights, Ashenward March and Glassroot Wilds get an undead,
+  orc and troll camp of The Throng; Blackwind Rise, Bannerbreak Mesa and
+  Thunderroot Wilds a dwarf, human and elf camp of The Accord), anchors
+  139–144, in the zone's highest level third (toward the front).
+- A protected POI like a war camp (kind `war_camp`, the 10-node margin, no
+  ambient hostile spawns, the idle push; a war camp's icon on the map).
+- **Garrison:** 2 gate and 2 yard guards at the top three levels of the
+  zone (38–40), never elite, and a **named captain** at level 40 (the war
+  camps' captain rules and respawns; names in `pvp_names.json`).
+- **Nothing of use to the enemy:** no lift, no vendor, no shelter, no bed.
+  The foreman of the own T4 mining camp gives the quest against it (lane
+  GUILDQUESTS).
 
 ## 7. Quests
 

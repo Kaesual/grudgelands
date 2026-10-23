@@ -169,7 +169,11 @@ return function(engine, directory, nodes, gathering)
    {-0.3125,-0.375,-0.3125,0.3125,0.375,0.3125}}},
   groups={not_in_creative_inventory=1},
   diggable=false,
+  -- ROOMS writes it at each room's lift cell too, deep underground, where a
+  -- neighbouring chunk's caves and dungeons spare only non-ground content,
+  -- and no liquid may flow into it.
   is_ground_content=false,
+  floodable=false,
   drop="",
   on_blast=function() end,
   sounds=default.node_sound_wood_defaults(),
