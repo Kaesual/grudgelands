@@ -572,7 +572,8 @@ want lived-in settlements without paying for it in server load"):
   has a butcher in it, so a `vendor` socket may name one of twelve professions —
   butcher, smith, fishmonger, baker, tailor, mason, brewer, bowyer, herbalist,
   armourer, tanner and embalmer. Each has a shelf of its trade's supplies and
-  T1 basics (the vendor supply rule of [professions.md](professions.md) §4;
+  T1 basics, never leather, cloth, ores or bars (Round 57 ruling 28; the
+  vendor supply rule of [professions.md](professions.md) §4;
   shelves in the [economy plan](../planning/economy-vendor-plan.md) §2.3) and
   serves its settlement's faction (no race restriction, and therefore no
   kinship discount); only the smith and the armourer also sell the T1 gear

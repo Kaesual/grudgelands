@@ -33,6 +33,8 @@ findings are lane FIX56.
 | 1 | CRAFT | Opus | The crafting queue (crafts, enchants, upgrades), layout C, favourites, recursive Basic unlocks | the user's go |
 | 1 | DETAILS | Opus | The recipe details pages with their generated ingredient sources | the user's go (integrates after CRAFT merged) |
 | 1 | QSYS | Opus | Shared quests with several givers and text variants, choice rewards, story marking, completion text, the free-play validator rules, `repeatable` removed | the user's go |
+| 1 | DYES | Opus | Every dye reachable: sources for White and Yellow Dye (added during the round, ruling 29) | ALLOY merged |
+| 1 | VENDORMAT | Opus | No vendor sells leather, cloth, ores or bars (added during the round, ruling 28) | the user's go |
 | 1 | ALLOY | Opus | Flat alloy and wood chains, Steel Bars craftable (added during the round, rulings 25–27) | CHAINDEPTH merged |
 | 2 | STARTQUESTS | Opus | The six start zones rebuilt on QSYS: structure, data and the reward pattern; placeholder texts | QSYS merged |
 | 3 | STARTTEXT | Astra | The texts of the new start-zone quests | STARTQUESTS' structure accepted by the user |
@@ -152,7 +154,14 @@ pick page; nothing of it ships before Round 58.
 26. **The graded woods follow the same rule, with their item ids kept:** each grade is made from planks plus the
     tier's ingredient instead of the grade below; Heartwood (T6) = planks + Abyssal Crystal.
 27. **Steel Bars (`xpanes:bar_flat`) become craftable from Steel Bars.** White and Yellow Dye get a source only if
-    something reachable needs them. The Water Bucket stays as it is.
+    something reachable needs them. The Water Bucket stays as it is. Leather and cloth keep their recipes (their
+    grades drop from the tier's own beasts already).
+28. **No vendor sells leather, cloth, ores or metal bars** (Leather, Light Leather, Linen Scrap and the Bronze Bar
+    leave every shelf). Thread stays as a job supply, and White and Brown Wool stay at the tailor (bed decor).
+    Buy-back follows the general price rule: the Bronze Bar now pays its inputs (2c instead of 1c from its old
+    shelf price; the Bronze Block and four bronze goods move with it; coordinator decision).
+29. **Every dye becomes reachable** (2026-10-23), from existing items only: Bone → White, Sunleaf → Yellow, Apple →
+    Red, Marshbloom → Cyan (after Blueberries → Violet); every other dye follows from the mixes.
 
 ### Process
 
@@ -525,8 +534,8 @@ town fixes. Its own plan follows after this round; these are its rulings. They r
   cloak has wings (texture work only; the cloak model has wings already).
 - **Exchange rates** by material (stone, sand, ores, gems and so on), with stone and sand very low. Selling ores
   and stone for money stays possible, as at every vendor.
-  - *For the Round 58 plan:* if any vendor sells ore, buying it and trading it for reputation becomes a
-    deliberate gold sink, or vendors stop selling it.
+  - Vendors sell no leather, cloth, ores or bars (ruling 28), so reputation cannot be bought with copper through
+    vendor materials.
 
 **Consumables**
 - **Two kinds:**

@@ -572,9 +572,13 @@ text. A system quest has no dialog: its mod posts its own completion line.
   (no class filter); an equipment choice offers one item per armor class
   (cloth, leather, metal) or one weapon per weapon line.
 - **The offer** shows the choices as item icons with their tooltips, and
-  names them in the reward text ("and one of: …"), before any click.
+  lists them in the reward text ("and one of:", one per line) by the name
+  the made stack shows (its enchant words) with its enchant lines, so the
+  enchants read without hovering (the user, 2026-10-23).
 - **The turn-in** shows them as item buttons with their tooltips above the
-  Complete button; a click picks one (framed and named, "Chosen: …").
+  Complete button; a click picks one (framed and named, "Chosen: …"), and
+  the text starts with the picked stack's whole tooltip (item level, stats,
+  enchants); before a pick a hint says so.
   Complete refuses until one is picked ("Choose your reward first."); the
   preflight checks room for the picked reward, and a refused Complete keeps
   the pick. A system quest never carries a choice.

@@ -93,8 +93,11 @@ precedence over preserving the exact mathematical ratio.
 - **Vendor rule** ([professions.md](professions.md) §4): vendors sell
   supplies, consumables, tools, the Common gear floor and a few T1 basics,
   never an enchant input (a signature loot item or family input of
-  `enchants.json`; a T1 own material such as the Bronze Bar may be sold) and
-  never a crafting ingredient above T1.
+  `enchants.json`) and never a crafting ingredient above T1. Since Round 57
+  (ruling 28) no vendor sells leather, cloth, ores or metal bars of any
+  tier: hides and cloth are hunted, ores mined, bars smelted. Thread stays
+  on every shelf as a job supply, and the tailor keeps White and Brown Wool
+  (bed decor).
 - A vendor's **buy-back is capped at 5%** of the item's purchase price,
   **rounded up to the next copper**, and applies to goods a vendor also
   sells (gear, supplies) and to every equippable of the gear catalog by the

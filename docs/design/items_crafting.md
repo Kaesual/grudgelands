@@ -1182,7 +1182,11 @@ main profession slot (professions.md §1).
   Profession shelves carry their trade's supplies, food and T1 basics
   ([economy plan](../planning/economy-vendor-plan.md) §2.3); no shelf sells
   an enchant input (signature loot or family input) or an ingredient above
-  T1, which a load audit enforces (`professions.md` §4).
+  T1, which a load audit enforces (`professions.md` §4). Since Round 57
+  (ruling 28) no shelf sells leather, cloth, ores or metal bars either: the
+  butcher sells meat, the tailor White and Brown Wool, the smith the bronze
+  tools, and the armourer's and tanner's General tabs carry only the job
+  supplies beside their gear tabs (`tools/r57_vendormat`).
 
 ### 3.8 Vendor bracket catalogs (decided 2026-08-07; shelf since Round 33)
 

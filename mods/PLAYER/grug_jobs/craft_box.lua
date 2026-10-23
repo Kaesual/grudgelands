@@ -7,10 +7,10 @@
 --           marked, ☆ not; a click toggles it);
 --   middle  the item's description (what its tooltip says, scrolling when
 --           long), "Ingredients (have/need)" (with "Recipe details" at its
---           right once a "details" box is registered: the seam lane DETAILS
---           fills), the ingredients with have/need, the maximum, the
---           warnings (the profession gate, "Requires: <station> nearby", a
---           full queue), the note of the last refused action and the XP hint;
+--           right, which opens details.lua's page on this recipe), the
+--           ingredients with have/need, the maximum, the warnings (the
+--           profession gate, "Requires: <station> nearby", a full queue),
+--           the note of the last refused action and the XP hint;
 --   bottom  the quantity row "Quantity [−][field][+] [Max]" (stackable
 --           outputs only, default 1) and, right-aligned in the same row, the
 --           big button: "Craft ×N" while nothing runs, "Queue ×N" while a job
@@ -498,7 +498,7 @@ local function fields(player, st, fields)
 		return true
 	end
 	if fields[F.details] and grug_jobs.has_craft_box("details") then
-		grug_jobs.open_craft_box(st, "details")
+		grug_jobs.open_recipe_details(st, {kind = "recipe", id = recipe.id})
 		return true
 	end
 	-- A dropdown whose value differs from the built one was changed (only
