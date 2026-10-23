@@ -173,6 +173,17 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	local zones_session = built.zones_session
 	do
 		local rooms_module = dofile(wp40 .. "/guild_rooms.lua")
+		-- Every node the room step writes exists (emerge would refuse each
+		-- room chunk otherwise) and is non-ground-content.
+		local names = {rooms_module.NODES.fill, rooms_module.NODES.floor,
+			rooms_module.NODES.lamp}
+		for _, name in ipairs(rooms_module.NODES.mantle) do names[#names + 1] = name end
+		for _, name in ipairs(names) do
+			local def = core_api.registered_nodes[name]
+			if type(def) ~= "table" or def.is_ground_content ~= false then
+				fail("guild room node differs: " .. name)
+			end
+		end
 		guild_rooms = rooms_module.index(rooms_module.lift_camps(wp40,
 			runtime.placement_layout_text()))
 		zones_session = dofile(wp40 .. "/guild_room_protection.lua")(zones_session,

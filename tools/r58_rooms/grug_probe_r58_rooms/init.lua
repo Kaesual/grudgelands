@@ -1,6 +1,6 @@
 -- Disposable engine probe (Round 58 lane ROOMS): the Miner's Guild lift rooms
 -- in a real world. Never shipped: staged through tools/luanti_headless.sh
--- (PROBE=), see tools/r58_rooms/README.md.
+-- (PROBE=), see the Round 58 ROOMS line in tools/README.md.
 --
 -- Emerges only each room's box (setting r58rooms_max: at most that many
 -- rooms, default all; r58rooms_camps: a comma list of camp ids to keep), then

@@ -13,9 +13,10 @@
 --                    `passable()` (grug_home/travel.lua) takes it.
 --   room_floor       the floor under the room and its exits (a full normal
 --                    node, as the travel path's safe arrival wants).
+--   room_lamp        the four wall lamps (light 14; the look of default's Mese
+--                    Lamp, a node the game's content curation removes).
 --   room_mantle_t1 .. t6  the shell round the room, in the look of its
 --                    tier's host rock (default:stone, the tier rocks).
---   The lamps are default's Mese Lamp (non-ground-content already).
 --
 --   dofile(modpath .. "/guild_room_nodes.lua")(core, grug_materials)
 return function(engine, materials)
@@ -49,6 +50,23 @@ return function(engine, materials)
 		groups = {not_in_creative_inventory = 1},
 		on_blast = noop,
 		sounds = stone_sounds,
+	})
+
+	-- A light source spreads only with paramtype "light" (the engine's
+	-- spreadLight skips a node whose light does not propagate).
+	engine.register_node(NODES.lamp, {
+		description = "Guild Room Lamp",
+		drawtype = "glasslike",
+		tiles = {"default_meselamp.png"},
+		paramtype = "light",
+		sunlight_propagates = true,
+		light_source = 14,
+		diggable = false,
+		is_ground_content = false,
+		drop = "",
+		groups = {not_in_creative_inventory = 1},
+		on_blast = noop,
+		sounds = default.node_sound_glass_defaults(),
 	})
 
 	for tier = 1, R.TIERS do

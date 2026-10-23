@@ -414,8 +414,6 @@ for tier = 2, 6 do
 	register("grug_materials:t" .. tier .. "_stone", {tiles = {"grug_materials_t" .. tier ..
 		"_stone.png"}})
 end
-register("default:meselamp", {drawtype = "glasslike", paramtype = "light",
-	sunlight_propagates = true, is_ground_content = false, light_source = 14})
 register("default:water_source", {drawtype = "liquid", liquidtype = "source",
 	walkable = false})
 register("default:lava_source", {drawtype = "liquid", liquidtype = "source",
@@ -426,7 +424,8 @@ do
 	_G.grug_materials = {}
 	_G.core = {get_modpath = function() return nil end}
 	dofile(repo .. "/mods/ITEMS/grug_materials/registry.lua")
-	_G.default = {node_sound_stone_defaults = function() return {} end}
+	_G.default = {node_sound_stone_defaults = function() return {} end,
+		node_sound_glass_defaults = function() return {} end}
 	dofile(repo .. "/mods/MAPGEN/grug_mapgen/guild_room_nodes.lua")({
 		get_modpath = function(mod)
 			assert(mod == "grug_mapgen")
@@ -455,10 +454,21 @@ for tier = 1, 6 do
 		mantle.walkable == true and mantle.tiles[1] == host.tiles[1],
 		"H the T" .. tier .. " mantle looks like " .. grug_materials.TIERS[tier].node)
 end
-check(registered[R.NODES.lamp].is_ground_content == false and
-	read(repo .. "/mods/BASE/default/nodes.lua"):find(
-		'register_node%("default:meselamp", {.-is_ground_content = false') ~= nil,
-	"H the shipped lamp is non-ground-content")
+local lamp = registered[R.NODES.lamp]
+check(lamp and lamp.is_ground_content == false and lamp.diggable == false and
+	lamp.paramtype == "light" and lamp.light_source == 14,
+	"H the lamp: light 14 that spreads (paramtype light), non-ground-content")
+-- No room node is one the game's content curation removes (default's Mese
+-- Lamp is: the first engine run refused it in every room chunk).
+do
+	local curation = read(repo .. "/mods/ITEMS/grug_materials/content_curation.lua")
+	local names = {R.NODES.fill, R.NODES.floor, R.NODES.lamp}
+	for _, name in ipairs(R.NODES.mantle) do names[#names + 1] = name end
+	for _, name in ipairs(names) do
+		check(name:find("^grug_mapgen:") and not curation:find('"' .. name .. '"', 1, true),
+			"H " .. name .. " is grug_mapgen's own, never curated away")
+	end
+end
 
 -- ---------------------------------------------------------------------------
 -- E. Liquids round the rooms

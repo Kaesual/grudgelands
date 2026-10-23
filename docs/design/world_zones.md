@@ -2031,6 +2031,12 @@ numeric-truncated seed.
   footprint from its placement height − 80 upward), immutable
   deep ocean/channels, planned-water/shelf inheritance,
   ordinary land and the y = -501 contested-depth override.
+- The Miner's Guild rooms (Round 58) are y-bounded hard-protected boxes, one
+  per room (the box the room step writes, `wp40/guild_room_protection.lua`
+  over the session): inside one `territory_rule_at` answers
+  `hard_protected` and `hard_protection_kind_at` `guild_room`; `pvp_rule_at`
+  is unchanged, so a room at −650 and below is contested ground like all
+  land below −501.
 - Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,
   `guard_level_at`, `open_sea_at` and protection callers consume the
   `grug_zones` authority through explicit adapters. `difficulty_at` is gone;

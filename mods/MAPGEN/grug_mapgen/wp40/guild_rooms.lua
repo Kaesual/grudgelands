@@ -47,7 +47,7 @@
 -- at (0, 0, 1).
 --
 -- Every node the room step writes is non-ground-content (the fill, the floor,
--- the lamp, the mantle; `guild_room_nodes.lua`): a neighbouring chunk's caves,
+-- the lamps, the mantle; `guild_room_nodes.lua`): a neighbouring chunk's caves,
 -- flooded caves and dungeons, which reach about 16 nodes past its edge, spare
 -- exactly such nodes, and the fill (walkable, floodable and buildable_to false)
 -- lets no liquid in. The exits end at the box face, so the host rock a player
@@ -55,13 +55,13 @@
 local M = {}
 
 M.SCHEMA = "grug_wp58_guild_rooms_v1"
--- The node names the room step writes (registered by guild_room_nodes.lua;
--- the lamp is default's Mese Lamp). The lift cell takes the fill until the
--- lift node is wired in.
+-- The node names the room step writes (all registered by
+-- guild_room_nodes.lua). The lift cell takes the fill until the lift node is
+-- wired in.
 M.NODES = {
 	fill = "grug_mapgen:room_fill",
 	floor = "grug_mapgen:room_floor",
-	lamp = "default:meselamp",
+	lamp = "grug_mapgen:room_lamp",
 	mantle = {"grug_mapgen:room_mantle_t1", "grug_mapgen:room_mantle_t2",
 		"grug_mapgen:room_mantle_t3", "grug_mapgen:room_mantle_t4",
 		"grug_mapgen:room_mantle_t5", "grug_mapgen:room_mantle_t6"},
