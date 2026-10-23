@@ -33,4 +33,35 @@ return {
 		{item = "grug_materials:embersteel_bar", n = 3},
 		{item = "grug_farming:water_bucket", n = 1},
 		{item = "grug_cooking:salt_crust", n = 1}}},
+	-- Round 57 lane ALLOY (the user's ruling 2 of 2026-10-23): the graded
+	-- wood is flat like the alloys. Each grade from Polished up is 2 planks
+	-- plus one unit of its tier's own ingredient (T2 Iron Bar, T3
+	-- Anthracite, T4 Silver Bar, T5 Emberglass, T6 Abyssal Crystal), no
+	-- longer the grade below plus a plank; Seasoned stays 2 planks.
+	{output = "grug_artisans:polished_wood", was = 1, removed = true,
+		signature = "group:wood*1+grug_artisans:seasoned_wood*1"},
+	{output = "grug_artisans:hardened_wood", was = 1, removed = true,
+		signature = "group:wood*1+grug_artisans:polished_wood*1"},
+	{output = "grug_artisans:inlaid_wood", was = 1, removed = true,
+		signature = "group:wood*1+grug_artisans:hardened_wood*1"},
+	{output = "grug_artisans:lacquered_wood", was = 1, removed = true,
+		signature = "group:wood*1+grug_artisans:inlaid_wood*1"},
+	{output = "grug_artisans:heartwood_wood", was = 1, removed = true,
+		signature = "group:wood*1+grug_artisans:lacquered_wood*1"},
+	{output = "grug_artisans:polished_wood", count = 1, added = {
+		{group = "wood", n = 2}, {item = "grug_materials:iron_bar", n = 1}}},
+	{output = "grug_artisans:hardened_wood", count = 1, added = {
+		{group = "wood", n = 2}, {item = "grug_materials:anthracite", n = 1}}},
+	{output = "grug_artisans:inlaid_wood", count = 1, added = {
+		{group = "wood", n = 2}, {item = "grug_materials:silver_bar", n = 1}}},
+	{output = "grug_artisans:lacquered_wood", count = 1, added = {
+		{group = "wood", n = 2}, {item = "grug_materials:emberglass", n = 1}}},
+	{output = "grug_artisans:heartwood_wood", count = 1, added = {
+		{group = "wood", n = 2}, {item = "grug_materials:abyssal_crystal", n = 1}}},
+	-- Round 57 lane ALLOY (ruling 3): Steel Bars, the Steel Bar Door's and
+	-- Trapdoor's input, lost their recipe with default:steel_ingot; they come
+	-- back as the panes' pattern (6 glass -> 16 panes) with the Steel Bar:
+	-- 6 Steel Bars -> 16 Steel Bars (minetest_game xpanes, 3x2 steel ingots).
+	{output = "xpanes:bar_flat", count = 16, added = {
+		{item = "grug_materials:steel_bar", n = 6}}},
 }

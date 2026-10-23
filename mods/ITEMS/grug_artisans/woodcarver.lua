@@ -13,8 +13,8 @@ local tiers = {
 
 A.register_ingredient("group:wood", 1)
 
--- The six wood grades. Each grade's recipe (the grade below, or two planks,
--- and a plank) is Basic (grug_jobs/basic_recipes.lua).
+-- The six wood grades. Each grade's recipe is Basic (grug_jobs/basic_recipes.lua):
+-- two planks, from Polished up with one unit of the tier's own ingredient.
 for tier = 1, #tiers do
 	local row = tiers[tier]
 	local wood = A.register_item(C .. row.key .. "_wood", row.name .. " Wood",

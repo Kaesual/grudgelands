@@ -71,6 +71,11 @@ end
 -- (Anthracite too) never substitutes for it (§3.0.2). The matcher needs both
 -- material slots filled, so a lone Iron Bar matches nothing.
 --
+-- The alloys above Steel are flat (Round 57, the user's ruling of
+-- 2026-10-23): each is Steel plus its tier's own ingredient, never the alloy
+-- below, so Abyssal Steel is two dual-furnace steps from the Iron Bar, not
+-- four. Old Silversteel and Embersteel bars stay ordinary T4/T5 bars.
+--
 local ALLOYS = {
 	{"grug_materials:bronze_bar",
 		"grug_materials:copper_bar", "grug_materials:tin_bar", ALLOY_TIME},
@@ -79,9 +84,9 @@ local ALLOYS = {
 	{"grug_materials:silversteel_bar",
 		"grug_materials:steel_bar", "grug_materials:silver_bar", ALLOY_TIME},
 	{"grug_materials:embersteel_bar",
-		"grug_materials:silversteel_bar", "grug_materials:emberglass", ALLOY_TIME},
+		"grug_materials:steel_bar", "grug_materials:emberglass", ALLOY_TIME},
 	{"grug_materials:abyssal_steel_bar",
-		"grug_materials:embersteel_bar", "grug_materials:abyssal_crystal", ALLOY_TIME},
+		"grug_materials:steel_bar", "grug_materials:abyssal_crystal", ALLOY_TIME},
 }
 
 for _, row in ipairs(ALLOYS) do
