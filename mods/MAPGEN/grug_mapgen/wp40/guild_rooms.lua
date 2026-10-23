@@ -16,12 +16,13 @@
 --                               id), or nil for a camp without rooms
 --   rooms.room_at(pos)          the room whose box holds the node at pos, or
 --                               nil (allocation-free: the spawn gates ask it)
---   rooms.rooms_in(minp, maxp)  the rooms whose box meets the inclusive box
+--   rooms.rooms_in(minp, maxp)  the rooms whose written extent (the box and
+--                               the exits' plugs) meets the inclusive box
 --   rooms.summary()             one line per room (the identity both
 --                               environments log)
 --   R.cell(room, x, y, z)       what the room holds at a node of its box:
---                               "fill", "lift", "floor", "lamp", "mantle"
---                               or nil outside
+--                               "fill", "lift", "floor", "lamp", "mantle",
+--                               "plug" (just outside the box) or nil
 --
 -- A room is {camp_id, tier, floor_y, minp, maxp, arrival, lift_cell}, one
 -- table shared by every caller (never written into):
@@ -29,6 +30,8 @@
 --              the floor nodes of floor_y - 1;
 --   minp/maxp  the inclusive box the room step writes and protects: the
 --              open room, its exits and the mantle round them;
+--   write_minp/write_maxp  the box one node wider in x and z: what the room
+--              step writes, the box and the exits' plugs;
 --   lift_cell  the node of the room's lift (CAMPS' lift node), in the lift
 --              column on the floor, its front toward the arrival;
 --   arrival    the player position beside the lift (the feet 0.49 below
@@ -38,8 +41,9 @@
 -- THE SHAPE, in offsets from (lift.x, floor_y, lift.z): the open room is 7 x 7
 -- columns (-3 .. 3) and 4 layers (0 .. 3); three exits, 1 wide and 2 high,
 -- leave the middle of the -x, +x and -z walls and run through the mantle to
--- the box face (offset 4 .. 6), where they end blind in the host rock beyond
--- it; players dig on from there. The floor (offset -1) is the floor node under
+-- the box face (offset 4 .. 6); one node beyond it each ends blind in a plug
+-- (offset 7, the exit's 1 x 2 cross-section) of diggable tier rock, outside
+-- the protected box: players dig on from there. The floor (offset -1) is the floor node under
 -- the room and the exits; four lamps sit in the walls at offset 2, one above
 -- each exit and one in the +z wall behind the lift (light 8 or more on every
 -- open node); everything else of the box is mantle, three nodes thick
@@ -48,11 +52,13 @@
 -- at (0, 0, 1).
 --
 -- Every node the room step writes is non-ground-content (the fill, the floor,
--- the lamps, the mantle; `guild_room_nodes.lua`): a neighbouring chunk's caves,
--- flooded caves and dungeons, which reach about 16 nodes past its edge, spare
--- exactly such nodes, and the fill (walkable, floodable and buildable_to false)
--- lets no liquid in. The exits end at the box face, so the host rock a player
--- digs there lies outside the protected box.
+-- the lamps, the mantle, the plugs; `guild_room_nodes.lua`): a neighbouring
+-- chunk's caves, flooded caves and dungeons, which reach about 16 nodes past
+-- its edge, spare exactly such nodes, and the fill (walkable, floodable and
+-- buildable_to false) lets no liquid in. The plug replaces whatever stood
+-- one node past an exit's end (a cave's lava or water included), so an exit
+-- never opens onto a cave; it lies outside the protected box, so a player
+-- digs it and on from there.
 local M = {}
 
 M.SCHEMA = "grug_wp58_guild_rooms_v1"
@@ -66,6 +72,9 @@ M.NODES = {
 	lamp = "grug_mapgen:room_lamp",
 	lift = "grug_mapgen:guild_lift",
 	lift_param2 = 2,
+	plug = {"grug_mapgen:room_plug_t1", "grug_mapgen:room_plug_t2",
+		"grug_mapgen:room_plug_t3", "grug_mapgen:room_plug_t4",
+		"grug_mapgen:room_plug_t5", "grug_mapgen:room_plug_t6"},
 	mantle = {"grug_mapgen:room_mantle_t1", "grug_mapgen:room_mantle_t2",
 		"grug_mapgen:room_mantle_t3", "grug_mapgen:room_mantle_t4",
 		"grug_mapgen:room_mantle_t5", "grug_mapgen:room_mantle_t6"},
@@ -130,12 +139,23 @@ local function lamp_cell(dx, dy, dz)
 	return false
 end
 
+-- Whether offset (dx, dy, dz) is an exit's plug: one node past the box face
+-- in the exit's column, the exit's height.
+local function plug_cell(dx, dy, dz)
+	if dy < 0 or dy >= EXIT_HEIGHT then return false end
+	for index = 1, #M.EXITS do
+		local exit = M.EXITS[index]
+		if dx == exit[1] * (REACH + 1) and dz == exit[2] * (REACH + 1) then return true end
+	end
+	return false
+end
+
 -- What the room holds at offset (dx, dy, dz) from its lift column at
--- floor_y; nil outside the box.
+-- floor_y; "plug" just outside the box, nil elsewhere outside it.
 function M.cell_at_offset(dx, dy, dz)
 	if dx < -REACH or dx > REACH or dz < -REACH or dz > REACH or dy < BOTTOM or
 			dy > TOP then
-		return nil
+		return plug_cell(dx, dy, dz) and "plug" or nil
 	end
 	local inside = dx >= -HALF and dx <= HALF and dz >= -HALF and dz <= HALF
 	local exit = not inside and exit_column(dx, dz)
@@ -160,6 +180,8 @@ local function new_room(camp, level, floor_y)
 	return {camp_id = camp.id, tier = level, floor_y = floor_y,
 		minp = {x = x - REACH, y = floor_y + BOTTOM, z = z - REACH},
 		maxp = {x = x + REACH, y = floor_y + TOP, z = z + REACH},
+		write_minp = {x = x - REACH - 1, y = floor_y + BOTTOM, z = z - REACH - 1},
+		write_maxp = {x = x + REACH + 1, y = floor_y + TOP, z = z + REACH + 1},
 		lift_cell = {x = x, y = floor_y, z = z},
 		arrival = {x = x + arrival[1], y = floor_y + arrival[2] - 0.49,
 			z = z + arrival[3]}}
@@ -210,14 +232,15 @@ function M.index(camps, floors)
 		end
 		by_camp[camp.id] = rooms
 	end
-	-- One room per place: two boxes never meet (camps lie far apart; a
-	-- placement that broke this would write one room into another).
+	-- One room per place: two written extents never meet (camps lie far
+	-- apart; a placement that broke this would write one room or its plugs
+	-- into another).
 	for band_index = 1, #bands do
 		local band = bands[band_index]
 		for first = 1, #band.rooms do
 			for second = first + 1, #band.rooms do
 				local a, b = band.rooms[first], band.rooms[second]
-				if boxes_meet(a.minp, a.maxp, b.minp, b.maxp) then
+				if boxes_meet(a.write_minp, a.write_maxp, b.write_minp, b.write_maxp) then
 					fail("the rooms of " .. a.camp_id .. " and " .. b.camp_id .. " meet")
 				end
 			end
@@ -274,7 +297,7 @@ function M.index(camps, floors)
 			if minp.y <= band.max_y and band.min_y <= maxp.y then
 				for room_index = 1, #band.rooms do
 					local room = band.rooms[room_index]
-					if boxes_meet(minp, maxp, room.minp, room.maxp) then
+					if boxes_meet(minp, maxp, room.write_minp, room.write_maxp) then
 						found[#found + 1] = room
 					end
 				end

@@ -25,8 +25,9 @@
 --    failure is reported, the room is written whole; a failing room step is
 --    reported, never raised.
 -- E. Liquids: water and lava round two rooms; nothing liquid is left in a
---    box, the liquid right outside stays, an exit ends at the box face with
---    water beyond; every node the step writes is non-ground-content.
+--    box, the liquid right outside stays, the liquid in an exit's plug cell
+--    is replaced by the plug and the cell beyond stays; every node the step
+--    writes is non-ground-content.
 -- F. Protection (wp40/guild_room_protection.lua): inside a box
 --    "guild_room", "hard_protected" and protected for both factions; above,
 --    below and beside it the wrapped session's answers; the PvP rule and the
@@ -136,14 +137,33 @@ end
 -- open room 7*7*4 = 196 (one lift cell), exits 3*3*2 = 18, floor 49 + 9,
 -- lamps 4 (in the walls), mantle the rest of 13*13*10 = 1690
 check(counts.lift == 1 and counts.fill == 195 + 18 and counts.floor == 58 and
-	counts.lamp == 4 and counts.mantle == 1690 - 196 - 18 - 58 - 4,
+	counts.lamp == 4 and counts.mantle == 1690 - 196 - 18 - 58 - 4 and counts.plug == 3 * 2,
 	"A the shape's counts")
 for _, exit in ipairs(R.EXITS) do
 	local fx, fz = exit[1] * 6, exit[2] * 6
 	check(R.cell_at_offset(fx, 0, fz) == "fill" and R.cell_at_offset(fx, 1, fz) == "fill" and
 		R.cell_at_offset(fx, 2, fz) == "mantle" and R.cell_at_offset(fx, -1, fz) == "floor" and
-		R.cell_at_offset(exit[1] * 7, 0, exit[2] * 7) == nil,
-		"A an exit runs to the box face and ends there")
+		R.cell_at_offset(exit[1] * 7, 0, exit[2] * 7) == "plug" and
+		R.cell_at_offset(exit[1] * 7, 1, exit[2] * 7) == "plug" and
+		R.cell_at_offset(exit[1] * 7, 2, exit[2] * 7) == nil and
+		R.cell_at_offset(exit[1] * 7, -1, exit[2] * 7) == nil and
+		R.cell_at_offset(exit[1] * 8, 0, exit[2] * 8) == nil,
+		"A an exit runs to the box face and ends in a 1 x 2 plug just past it")
+end
+check(R.cell_at_offset(0, 0, 7) == nil and R.cell_at_offset(7, 0, 1) == nil,
+	"A no plug where no exit is")
+for _, room in ipairs(rooms.list) do
+	local c = room.lift_cell
+	local wmin, wmax = room.write_minp, room.write_maxp
+	check(wmin.x == room.minp.x - 1 and wmax.x == room.maxp.x + 1 and
+		wmin.z == room.minp.z - 1 and wmax.z == room.maxp.z + 1 and
+		wmin.y == room.minp.y and wmax.y == room.maxp.y,
+		"A the written extent: the box one node wider in x and z")
+	for _, exit in ipairs(R.EXITS) do
+		local plug = {x = c.x + exit[1] * 7, y = c.y + 1, z = c.z + exit[2] * 7}
+		check(rooms.room_at(plug) == nil and R.cell(room, plug.x, plug.y, plug.z) == "plug",
+			"A a plug lies outside the protected box")
+	end
 end
 check(R.cell_at_offset(0, 0, 4) == "mantle" and R.cell_at_offset(0, 0, 6) == "mantle",
 	"A no exit in the +z wall")
@@ -237,7 +257,8 @@ local function new_vm(world, minp, maxp, broken)
 	function vm:set_node_at(pos, node)
 		if broken then error("set_node_at refused") end
 		check(inside(pos, minp, maxp), "B a write inside its own chunk")
-		check(rooms.room_at(pos) ~= nil, "B a write inside a room box")
+		check(rooms.room_at(pos) ~= nil or node.name:find("^grug_mapgen:room_plug_t%d$"),
+			"B a write inside a room box, or a plug")
 		local lift = node.name == R.NODES.lift
 		check((node.param1 or 0) == 0 and (node.param2 or 0) == (lift and 2 or 0),
 			"B light reset, param2 0 (the lift's front toward +z: 2)")
@@ -262,14 +283,15 @@ local function chunk_of(x, y, z)
 	local minp = {x = base(x), y = base(y), z = base(z)}
 	return minp, {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
 end
--- Every chunk a room box meets, in the order given.
+-- Every chunk a room's written extent meets, in the order given.
 local function room_chunks(room_list, reverse)
 	local seen, list = {}, {}
 	for _, room in ipairs(room_list) do
-		for z = room.minp.z, room.maxp.z, 13 do
-			for x = room.minp.x, room.maxp.x, 13 do
-				for _, cx in ipairs({x, room.maxp.x}) do
-					for _, cz in ipairs({z, room.maxp.z}) do
+		local wmin, wmax = room.write_minp, room.write_maxp
+		for z = wmin.z, wmax.z, 13 do
+			for x = wmin.x, wmax.x, 13 do
+				for _, cx in ipairs({x, wmax.x}) do
+					for _, cz in ipairs({z, wmax.z}) do
 						local minp, maxp = chunk_of(cx, room.minp.y, cz)
 						local k = key(minp.x, minp.y, minp.z)
 						if not seen[k] then
@@ -299,7 +321,7 @@ do
 	local minp, maxp = {x = -31000, y = -31000, z = -31000}, {x = 31000, y = 31000, z = 31000}
 	local vm = new_vm(whole, minp, maxp)
 	check(write(vm, minp, maxp) == 12, "B one big chunk writes every room")
-	check(vm.writes == 12 * 1690, "B every box node written once: " .. vm.writes)
+	check(vm.writes == 12 * (1690 + 6), "B every box node and plug written once: " .. vm.writes)
 end
 for _, reverse in ipairs({false, true}) do
 	local split = new_world()
@@ -312,12 +334,12 @@ for _, reverse in ipairs({false, true}) do
 		check(#vm.lit == 1, "B one lighting call per room part")
 		written = written + vm.writes
 	end
-	check(written == 4 * 1690, "B the parts add up to the boxes: " .. written)
+	check(written == 4 * (1690 + 6), "B the parts add up to the boxes and plugs: " .. written)
 	local same = 0
 	for _, room in ipairs(edge_rooms) do
-		for z = room.minp.z, room.maxp.z do
-			for y = room.minp.y, room.maxp.y do
-				for x = room.minp.x, room.maxp.x do
+		for z = room.write_minp.z, room.write_maxp.z do
+			for y = room.write_minp.y, room.write_maxp.y do
+				for x = room.write_minp.x, room.write_maxp.x do
 					local k = key(x, y, z)
 					if split.nodes[k] == whole.nodes[k] and split.nodes[k] ~= nil then
 						same = same + 1
@@ -326,7 +348,7 @@ for _, reverse in ipairs({false, true}) do
 			end
 		end
 	end
-	check(same == 4 * 1690, "B split = whole" .. (reverse and " (reverse order)" or ""))
+	check(same == 4 * (1690 + 6), "B split = whole" .. (reverse and " (reverse order)" or ""))
 end
 -- The node at each kind.
 do
@@ -339,6 +361,31 @@ do
 		whole.nodes[key(c.x, c.y + 2, c.z + 4)] == R.NODES.lamp and
 		whole.nodes[key(c.x, c.y + 5, c.z)] == R.NODES.mantle[3],
 		"B the lift facing the arrival, fill, floor, lamp and the tier's mantle")
+	check(whole.nodes[key(c.x + 7, c.y, c.z)] == R.NODES.plug[3] and
+		whole.nodes[key(c.x + 7, c.y + 1, c.z)] == R.NODES.plug[3] and
+		whole.nodes[key(c.x + 7, c.y + 2, c.z)] == nil and
+		whole.nodes[key(c.x + 8, c.y, c.z)] == nil, "B the tier's plug past the +x exit")
+end
+-- A plug alone in a chunk: a box ending on a chunk edge (x 47) has its +x
+-- plug in the next chunk (x 48 ..), which the box does not meet; that chunk
+-- still writes the plug, and only it.
+do
+	local lone = R.index({{id = "edge_plug", tier = 1, lift = {x = 41, z = 300},
+		levels = {1}}}, FLOORS)
+	local room = lone.list[1]
+	check(room.maxp.x == 47, "B the box ends on the chunk edge")
+	local minp, maxp = chunk_of(48, room.floor_y, 300)
+	local world = new_world()
+	local vm = new_vm(world, minp, maxp)
+	vm.set_node_at = function(_, pos, node)
+		check(inside(pos, minp, maxp), "B the plug inside its own chunk")
+		world.nodes[key(pos.x, pos.y, pos.z)] = node.name
+		vm.writes = vm.writes + 1
+	end
+	check(W.new(R, lone)(vm, minp, maxp) == 1 and vm.writes == 2 and
+		world.nodes[key(48, room.floor_y, 300)] == R.NODES.plug[1] and
+		world.nodes[key(48, room.floor_y + 1, 300)] == R.NODES.plug[1],
+		"B the next chunk writes the lone plug")
 end
 
 -- ---------------------------------------------------------------------------
@@ -449,10 +496,13 @@ local registered = {}
 local function register(name, def)
 	registered[name] = setmetatable(def, {__index = NODEDEF_DEFAULT})
 end
-register("default:stone", {tiles = {"default_stone.png"}})
+register("default:stone", {tiles = {"default_stone.png"}, description = "Stone",
+	groups = {cracky = 3, stone = 1, grug_natural = 1, grug_stratum = 1},
+	drop = "default:cobble"})
 for tier = 2, 6 do
 	register("grug_materials:t" .. tier .. "_stone", {tiles = {"grug_materials_t" .. tier ..
-		"_stone.png"}})
+		"_stone.png"}, description = "Tier " .. tier .. " rock", drop = "default:cobble",
+		groups = {cracky = 3, level = tier, grug_natural = 1, grug_stratum = tier}})
 end
 register("default:water_source", {drawtype = "liquid", liquidtype = "source",
 	walkable = false})
@@ -497,6 +547,13 @@ for tier = 1, 6 do
 	check(mantle and mantle.is_ground_content == false and mantle.diggable == false and
 		mantle.walkable == true and mantle.tiles[1] == host.tiles[1],
 		"H the T" .. tier .. " mantle looks like " .. grug_materials.TIERS[tier].node)
+	local plug = registered[R.NODES.plug[tier]]
+	check(plug and plug.is_ground_content == false and plug.diggable == true and
+		plug.walkable == true and plug.drawtype == "normal" and plug.tiles[1] == host.tiles[1] and
+		plug.drop == "default:cobble" and plug.groups.cracky == 3 and
+		plug.groups.level == host.groups.level and plug.groups.grug_natural == nil and
+		plug.groups.grug_stratum == nil and plug.description == host.description,
+		"H the T" .. tier .. " plug digs like its host rock (Cobble), non-ground-content")
 end
 do
 	local source = read(repo .. "/mods/MAPGEN/grug_mapgen/world_nodes.lua")
@@ -515,6 +572,7 @@ do
 	local curation = read(repo .. "/mods/ITEMS/grug_materials/content_curation.lua")
 	local names = {R.NODES.fill, R.NODES.floor, R.NODES.lamp, R.NODES.lift}
 	for _, name in ipairs(R.NODES.mantle) do names[#names + 1] = name end
+	for _, name in ipairs(R.NODES.plug) do names[#names + 1] = name end
 	for _, name in ipairs(names) do
 		check(name:find("^grug_mapgen:") and not curation:find('"' .. name .. '"', 1, true),
 			"H " .. name .. " is grug_mapgen's own, never curated away")
@@ -554,6 +612,8 @@ do
 						if def.is_ground_content ~= false then
 							ground_content = ground_content + 1
 						end
+					elseif R.cell(room, x, y, z) == "plug" then
+						if name ~= R.NODES.plug[room.tier] then outside_kept = false end
 					elseif name ~= liquid then
 						outside_kept = false
 					end
@@ -567,8 +627,10 @@ do
 		for _, exit in ipairs(R.EXITS) do
 			local fx, fz = c.x + exit[1] * 6, c.z + exit[2] * 6
 			check(world_get(world, fx, c.y, fz) == R.NODES.fill and
-				world_get(world, fx + exit[1], c.y, fz + exit[2]) == liquid,
-				"E an exit ends at the box face, " .. liquid .. " beyond it")
+				world_get(world, fx + exit[1], c.y, fz + exit[2]) == R.NODES.plug[room.tier] and
+				world_get(world, fx + exit[1], c.y + 1, fz + exit[2]) == R.NODES.plug[room.tier] and
+				world_get(world, fx + 2 * exit[1], c.y, fz + 2 * exit[2]) == liquid,
+				"E the " .. liquid .. " in an exit's plug cell replaced, the cell beyond unchanged")
 		end
 	end
 	check(fill.floodable == false and fill.buildable_to == false and fill.liquidtype == "none",
@@ -645,6 +707,11 @@ do
 	check(core.is_protected(room.minp, "miner") and
 		not core.is_protected({x = room.maxp.x + 1, y = room.floor_y, z = room.lift_cell.z}, "miner"),
 		"F protected in the box, not beside it (own home ground)")
+	local c = room.lift_cell
+	check(not core.is_protected({x = c.x + 7, y = c.y, z = c.z}, "miner") and
+		grug_core.protection_hint({x = c.x + 7, y = c.y + 1, z = c.z}, "miner") == nil and
+		zones.hard_protection_kind_at({x = c.x, y = c.y, z = c.z - 7}) == nil,
+		"F an exit's plug is not protected: a player digs it")
 	_G.core, _G.grug_core, _G.grug_zones = saved_core, saved_grug_core, saved_zones
 end
 

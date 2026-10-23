@@ -178,6 +178,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		local names = {rooms_module.NODES.fill, rooms_module.NODES.floor,
 			rooms_module.NODES.lamp, rooms_module.NODES.lift}
 		for _, name in ipairs(rooms_module.NODES.mantle) do names[#names + 1] = name end
+		for _, name in ipairs(rooms_module.NODES.plug) do names[#names + 1] = name end
 		for _, name in ipairs(names) do
 			local def = core_api.registered_nodes[name]
 			if type(def) ~= "table" or def.is_ground_content ~= false then

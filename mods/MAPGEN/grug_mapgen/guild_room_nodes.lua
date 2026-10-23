@@ -17,6 +17,11 @@
 --                    Lamp, a node the game's content curation removes).
 --   room_mantle_t1 .. t6  the shell round the room, in the look of its
 --                    tier's host rock (default:stone, the tier rocks).
+--   room_plug_t1 .. t6    the blind end one node past each exit, outside the
+--                    protected box: the host rock's look, dig groups (its
+--                    tier's pick gate) and drop (Cobble), but non-ground-
+--                    content, so no cave opens it; the only one of these
+--                    nodes a player digs.
 --
 --   dofile(modpath .. "/guild_room_nodes.lua")(core, grug_materials)
 return function(engine, materials)
@@ -84,6 +89,20 @@ return function(engine, materials)
 			groups = {not_in_creative_inventory = 1},
 			on_blast = noop,
 			sounds = stone_sounds,
+		})
+		-- The plug digs like its host rock: the host's groups but the two
+		-- that mark generated natural ground (grug_natural, grug_stratum).
+		local groups = {not_in_creative_inventory = 1}
+		for group, value in pairs(host.groups or {}) do
+			if group ~= "grug_natural" and group ~= "grug_stratum" then groups[group] = value end
+		end
+		engine.register_node(NODES.plug[tier], {
+			description = host.description,
+			tiles = tiles,
+			groups = groups,
+			drop = host.drop or "default:cobble",
+			is_ground_content = false,
+			sounds = host.sounds or stone_sounds,
 		})
 	end
 end

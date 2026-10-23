@@ -4,7 +4,7 @@
 --
 -- Emerges only each room's box (setting r58rooms_max: at most that many
 -- rooms, default all; r58rooms_camps: a comma list of camp ids to keep), then
--- per room one CHECK line: every node of the box is the shape's
+-- per room one CHECK line: every node of the box and the exits' plugs is the shape's
 -- (guild_rooms.lua R.cell), no liquid and no ground-content node in it, light
 -- at the arrival, the zone authority's "guild_room" and "hard_protected" in
 -- the box and not right outside, and the ambient spawn policy refusing a
@@ -43,6 +43,19 @@ local function check_room(room)
 				end
 				if def and def.liquidtype ~= "none" then liquid = liquid + 1 end
 				if not def or def.is_ground_content ~= false then ground = ground + 1 end
+			end
+		end
+	end
+	-- the exits' plugs, one node past the box face
+	local c = room.lift_cell
+	for _, exit in ipairs(R.EXITS) do
+		for dy = 0, R.EXIT_HEIGHT - 1 do
+			local pos = {x = c.x + exit[1] * (R.BOX.max_x + 1), y = room.floor_y + dy,
+				z = c.z + exit[2] * (R.BOX.max_z + 1)}
+			local name = core.get_node(pos).name
+			if name ~= R.NODES.plug[room.tier] then
+				wrong = wrong + 1
+				first = first or (core.pos_to_string(pos) .. " " .. name .. " (plug)")
 			end
 		end
 	end

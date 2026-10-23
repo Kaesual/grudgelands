@@ -11,8 +11,8 @@
 --   write(vm, minp, maxp) -> the number of rooms written into the chunk
 --   local step = W.or_degrade(severe, write) -- step(vm, minp, maxp) -> ok
 --
--- Each chunk writes exactly the part of every room box inside its own
--- minp .. maxp, so a room split over chunk edges comes out the same in
+-- Each chunk writes exactly the part of every room box and its exits'
+-- plugs inside its own minp .. maxp, so a room split over chunk edges comes out the same in
 -- whatever order its chunks are generated: every node of the box is the
 -- shape's (R.cell), whatever stood there, liquids and caves included. The
 -- old param1 goes with set_node_at (light 0), then calc_lighting on the
@@ -33,7 +33,8 @@ function W.new(R, rooms, nodes)
 		"guild room writer: the room index differs")
 	assert(type(nodes.fill) == "string" and type(nodes.floor) == "string" and
 		type(nodes.lamp) == "string" and type(nodes.mantle) == "table" and
-		#nodes.mantle == R.TIERS, "guild room writer: the node names differ")
+		#nodes.mantle == R.TIERS and type(nodes.plug) == "table" and
+		#nodes.plug == R.TIERS, "guild room writer: the node names differ")
 	local cell_at_offset = R.cell_at_offset
 	local pos, node = {x = 0, y = 0, z = 0}, {name = "", param1 = 0, param2 = 0}
 	local low, high = {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}
@@ -44,20 +45,24 @@ function W.new(R, rooms, nodes)
 		local rooms_here = rooms.rooms_in(minp, maxp)
 		for room_index = 1, #rooms_here do
 			local room = rooms_here[room_index]
-			local mantle = nodes.mantle[room.tier]
+			local mantle, plug = nodes.mantle[room.tier], nodes.plug[room.tier]
 			local cx, fy, cz = room.lift_cell.x, room.floor_y, room.lift_cell.z
-			low.x, low.y, low.z = math.max(minp.x, room.minp.x),
-				math.max(minp.y, room.minp.y), math.max(minp.z, room.minp.z)
-			high.x, high.y, high.z = math.min(maxp.x, room.maxp.x),
-				math.min(maxp.y, room.maxp.y), math.min(maxp.z, room.maxp.z)
+			local wmin, wmax = room.write_minp, room.write_maxp
+			low.x, low.y, low.z = math.max(minp.x, wmin.x),
+				math.max(minp.y, wmin.y), math.max(minp.z, wmin.z)
+			high.x, high.y, high.z = math.min(maxp.x, wmax.x),
+				math.min(maxp.y, wmax.y), math.min(maxp.z, wmax.z)
 			for z = low.z, high.z do
 				for y = low.y, high.y do
 					for x = low.x, high.x do
 						local kind = cell_at_offset(x - cx, y - fy, z - cz)
-						pos.x, pos.y, pos.z = x, y, z
-						node.name = kind == "mantle" and mantle or by_kind[kind]
-						node.param2 = kind == "lift" and lift_param2 or 0
-						vm:set_node_at(pos, node)
+						if kind then
+							pos.x, pos.y, pos.z = x, y, z
+							node.name = kind == "mantle" and mantle or
+								(kind == "plug" and plug or by_kind[kind])
+							node.param2 = kind == "lift" and lift_param2 or 0
+							vm:set_node_at(pos, node)
+						end
 					end
 				end
 			end

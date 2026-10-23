@@ -292,4 +292,5 @@ engine's own chunk generation only. The argument per writer stands in
 outside a fitted box has to extend it first. The Miner's Guild rooms (Round
 58) are no pass of the writer: their own step runs after it in every chunk a
 room box meets, skipped chunks included, and writes only the room boxes
+and their exits' plugs
 ([module guide](../technical/module-guide.md#mapgen-and-biomes)).

@@ -2488,8 +2488,10 @@ tools](#player-meta-read-by-external-tools).
   `room_at`, `rooms_in`; a room is `{camp_id, tier, floor_y, minp, maxp,
   arrival, lift_cell}`, `floor_y` the open layer the feet stand in, `arrival`
   a position for `grug_home/travel.lua`'s safe arrival) and owns the shape
-  (`cell_at_offset`: a 7 × 4 × 7 open room, three 1 × 2 exits ending blind at
-  the box face, the floor, four wall lamps, a 3-node mantle; a 13 × 10 × 13
+  (`cell_at_offset`: a 7 × 4 × 7 open room, three 1 × 2 exits ending at the
+  box face in a plug one node past it (`room_plug_t1` … `_t6`: the host rock's
+  look, digs and drops like it, non-ground-content, outside the protected
+  box), the floor, four wall lamps, a 3-node mantle; a 13 × 10 × 13
   box; CAMPS' lift node `grug_mapgen:guild_lift` at the centre, param2 2,
   its front toward the arrival). `lift_camps(wp40, placement_layout)` is the
   one seam to the camp list (`r58_camps.lua` `camps` and `ROOM_FLOOR_Y`:
@@ -2498,7 +2500,8 @@ tools](#player-meta-read-by-external-tools).
   (`wp40/guild_room_writer.lua`) runs in `r7_mapgen.lua`'s callback after
   `refine_or_degrade` and outside it, with its own degrade
   (`[GRUG-SEVERE]`, key `mapgen_room:<chunk>`): every chunk writes the part
-  of each room box inside its own minp..maxp (`set_node_at`, then
+  of each room box and its plugs (`write_minp`/`write_maxp`, the box one
+  node wider in x and z) inside its own minp..maxp (`set_node_at`, then
   `calc_lighting` on that part), so the early-out chunks and a chunk whose
   refinement failed get their rooms too, and a split room is the same in any
   chunk order. Every node it writes is non-ground-content
