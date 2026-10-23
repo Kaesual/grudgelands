@@ -612,6 +612,38 @@ do
 		check(guard.temp.grug_royal_follow_active ~= true, "P4 the king back: the follow ends")
 		check(dist2(guard, post.pos.x, post.pos.z) <= 4, "P4 back at its post")
 		near(guard.object.yaw, post.yaw, "P4 facing the authored way")
+		-- The king idle eight nodes from the post (his seat's other side, off
+		-- it): the guard follows once, ends the follow within 4 m and stays
+		-- beside him instead of taking turns with the walk to its post (the
+		-- review's hysteresis: release at 4 m, follow again only beyond 5).
+		king.object.pos = {x = post.pos.x - 8, y = seat.pos.y, z = seat.pos.z}
+		king._grug_post_x, king._grug_post_z = nil, nil -- he stays where he is
+		local starts, was, far = 0, false, 0
+		for _ = 1, 300 do
+			step(guard)
+			local now = guard.temp.grug_royal_follow_active == true
+			if now and not was then starts = starts + 1 end
+			was = now
+			local kp = king.object.pos
+			if dist2(guard, kp.x, kp.z) > 36 then far = far + 1 end
+		end
+		eq(starts, 1, "P5 one follow, no turns with the post walk")
+		check(guard.temp.grug_royal_follow_active ~= true, "P5 the follow ended beside him")
+		local kp = king.object.pos
+		check(dist2(guard, kp.x, kp.z) <= 25, "P5 it stands within 5 m of the king")
+		check(guard.temp.grug_royal_post_ok == false, "P5 the post is not held while he is away")
+		-- 4.5 m out while following: it keeps following (no release above 4 m)
+		guard.object.pos = {x = kp.x + 7, y = kp.y, z = kp.z}
+		run(guard, 1.1)
+		eq(guard.temp.grug_royal_follow_active, true, "P6 seven nodes out it follows again")
+		guard.object.pos = {x = kp.x + 4.5, y = kp.y, z = kp.z}
+		guard.temp.grug_royal_follow = 0.95
+		step(guard)
+		eq(guard.temp.grug_royal_follow_active, true, "P6 at 4.5 m it keeps following")
+		-- back on his seat: the post holds again
+		king.object.pos = copy(seat.pos)
+		run(guard, 12)
+		check(dist2(guard, post.pos.x, post.pos.z) <= 4, "P7 the king on his seat: back at its post")
 	end
 end
 
