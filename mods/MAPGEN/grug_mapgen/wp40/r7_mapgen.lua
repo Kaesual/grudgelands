@@ -109,9 +109,24 @@ end
 local refine_or_degrade = dofile(wp40 .. "/degrade.lua")(severe,
 	core.get_name_from_content_id)
 
+-- The Miner's Guild rooms (Round 58, `guild_room_writer.lua`): their own
+-- step after the refinement and outside it, with its own degrade, so it runs
+-- in every chunk a room box meets, the early-out chunks above and a chunk
+-- whose refinement failed included. The rooms come from the same placement
+-- layout text main reads (r7_loader.lua logs the same digest).
+local rooms_module = dofile(wp40 .. "/guild_rooms.lua")
+local guild_rooms = rooms_module.index(rooms_module.lift_camps(wp40,
+	payload.placement_layout))
+core.log("action", ("[grug_mapgen] emerge guild rooms: %d rooms, digest %s"):format(
+	#guild_rooms.list, core.sha256(guild_rooms.summary()):sub(1, 16)))
+local room_writer = dofile(wp40 .. "/guild_room_writer.lua")
+local rooms_or_degrade = room_writer.or_degrade(severe,
+	room_writer.new(rooms_module, guild_rooms))
+
 core.register_on_generated(function(vmanip, minp, maxp, blockseed)
 	-- Measurement-only comparison mode: retain the untouched v7 VM bytes so
 	-- the external R8 cave checker can prove the component the real writer saw.
 	if native_baseline then return end
 	refine_or_degrade(refine, vmanip, minp, maxp)
+	rooms_or_degrade(vmanip, minp, maxp)
 end)

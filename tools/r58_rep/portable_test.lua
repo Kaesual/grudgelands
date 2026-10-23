@@ -451,7 +451,8 @@ check(has("The vendor buys most things") and not has("label[0.6,1.75;Miner's Gui
 submit(eve, {mode_tradein = "Trade-in"})
 check(has("label[0.6,1.75;Miner's Guild]"), "C back to Trade-in")
 submit(eve, {mode_buy = "Buy"})
-check(has("The vendor has nothing on this shelf."), "C Buy at the test vendor")
+-- Round 58 CAMPNPC: an empty guild vendor's shelf says where the guild sells.
+check(has("The Miner's Guild sells its goods at the mining camps."), "C Buy at the test vendor")
 
 -- A vendor without the field has no Trade-in mode, and forged fields do nothing.
 fill(eve, {{"main", 12, "default:iron_lump 4"}})

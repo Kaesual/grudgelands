@@ -547,6 +547,33 @@ offers a quest the player completed (or holds) elsewhere.
   variant's, else the quest's. Placeholders resolve in the variant's zone.
   A shared quest has one name: its title takes no placeholder.
 
+### The Miner's Guild givers (Round 58)
+
+Registered in code (`grug_quests/npcs.lua`), like the fortress givers: the
+Battlegrounds zones have no quest file, and a camp's quests are bound to the
+depth, not to a zone ([miners_guild.md](miners_guild.md) §11).
+
+- **The foremen:** one per mining camp and war camp (36), id
+  `r58_foreman_<camp id>` (the camp ids of `grug_mapgen.mining_camps`), on
+  the camp's `quest_foreman` socket, titled "Foreman", of the camp's race and
+  faction, with the giver role **`foreman_t<tier>`**: the camp's zone tier,
+  which its deepest lift reaches (`foreman_t2` … `foreman_t6`; 3/4/3/4/4
+  camps per faction for T2…T6). A guild quest of tier k lists the role rows
+  `{"role": "foreman_tk", "faction": F}` … `{"role": "foreman_t6",
+  "faction": F}` in the variant of faction F (one variant per faction), so
+  every own camp whose lift reaches tier k gives it and turns it in, and each
+  foreman stands in one variant only (`registry.lua` `bind_role_givers`
+  asserts it); no tier filter exists in `grug_quests`. A camp's own quests
+  (its kill quests, the T4 foreman's raid) name its foreman by id.
+- **The guild leaders:** one per capital, id `r58_guild_leader_<capital
+  key>`, on the guild house's leader socket (`capital_services.GUILD_HALL`
+  `leader`), of the capital's race and faction, named as the story names
+  them: Alis Cartwright (Highcourt), Hadrin Beamset (Dur Brannoc), Caelir
+  Veinward (Lethariel), Iven Lastshift (Nhal Veyr), Drava Flintshoulder (Gor
+  Drazhak), Ombali Ropekeeper (Kezamba). No role: a follow-up's talk
+  objective names its race region's leader by id.
+- Like every quest giver, both serve only their own faction.
+
 ## Story and free play (Round 57 rulings 10 and 13)
 
 - **Story quests** (`"story": true`) guide the player from A to B and may

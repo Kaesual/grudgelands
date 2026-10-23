@@ -32,6 +32,18 @@
 -- own guild (grug_guild.trade_in_rows / trade_in), and opens on it. The rows
 -- re-validate like the Sell tab's lots; grug_guild takes the items only
 -- after every check.
+--
+-- THE REPUTATION PAGE AND REPAIR (Round 58, lane CAMPNPC). A guild vendor
+-- whose definition also carries `guild_page = true` (the camp vendor) sells
+-- no copper goods: its Buy mode is the reputation page, the twelve
+-- consumables in six rows by tier, a row locked with "Reach Reputation Rank
+-- N" until the rank is reached (grug_guild.vendor_rows), each item a button
+-- `repbuy_<catalogue index>` that buys through grug_guild.buy (the rank, the
+-- balance and the room checked again there, nothing spent on a refusal).
+-- A vendor with `repairs = true` (the camp vendor) shows a Repair button
+-- that opens grug_repair's form for the socket the vendor stands on
+-- (grug_repair's camp vendor provider re-checks socket, distance and
+-- faction on every action).
 
 local FORMNAME = "grug_traders:trade"
 
@@ -44,8 +56,8 @@ local FORM_W, FORM_H = 14, 10.2
 -- A lot row below its lot size (sell plan §3.5.3).
 local GREYED = "#8a8a8a"
 
--- player name -> {vendor, faction, pos, mode, tab, page, offer, rows,
--- trade_rows}
+-- player name -> {vendor, faction, pos, origin, mode, tab, page, offer, rows,
+-- trade_rows, rep_shown}
 local sessions = {}
 
 -- A Miner's Guild vendor (its definition's `guild = true`) shows the
@@ -55,6 +67,19 @@ local function guild_vendor(vendor)
 	return vendor ~= nil and vendor.guild == true and rawget(_G, "grug_guild") ~= nil
 end
 grug_traders.guild_vendor = guild_vendor
+
+-- A guild vendor whose Buy mode is the reputation page (the camp vendor).
+local function guild_page(vendor)
+	return guild_vendor(vendor) and vendor.guild_page == true
+end
+
+-- A vendor that repairs (the camp vendor), with grug_repair loaded (it
+-- depends on nothing of this mod) and the socket the vendor stands on.
+local function repairs(vendor, session)
+	local repair = rawget(_G, "grug_repair")
+	return vendor ~= nil and vendor.repairs == true and repair ~= nil and
+		repair.open_camp_vendor ~= nil and session.origin ~= nil
+end
 
 local function esc(text)
 	return core.formspec_escape(text)
@@ -210,6 +235,11 @@ local function header(parts, player, session, vendor, discount)
 	end
 	style("buy")
 	style("sell")
+	if repairs(vendor, session) then
+		-- Opens another window, so it stands apart from the mode buttons.
+		parts[#parts + 1] = "button[5.9,0.3;2.0,0.8;repair;Repair]"
+		parts[#parts + 1] = "tooltip[repair;" .. esc("Repair your equipment for money") .. "]"
+	end
 	if guild_vendor(vendor) then
 		-- Three modes: Buy and Sell move left to make room.
 		style("tradein")
@@ -222,7 +252,83 @@ local function header(parts, player, session, vendor, discount)
 	parts[#parts + 1] = "button[12.0,0.3;1.5,0.8;mode_sell;Sell]"
 end
 
+-- The guild lines of the Trade-in mode and the reputation page: the guild,
+-- rank and balance, the lifetime towards the next rank. Returns the
+-- summary, or nil (and says so) for a character without a guild.
+local function guild_lines(parts, player)
+	local view = grug_guild.summary(player)
+	if not view then
+		parts[#parts + 1] = "label[0.6,1.75;" .. esc("You belong to no guild.") .. "]"
+		return nil
+	end
+	-- The interface says "Miner's Guild" only; the guilds' proper names
+	-- belong in texts and on buildings (the user's ruling).
+	parts[#parts + 1] = "label[0.6,1.75;" .. esc(grug_guild.catalog.UI_NAME) .. "]"
+	parts[#parts + 1] = "label[7.4,1.75;" .. esc(("Rank %d of %d"):format(view.rank,
+		grug_guild.catalog.MAX_RANK)) .. "]"
+	parts[#parts + 1] = grug_guild.reputation_formspec(0.6, 2.15, view.balance)
+	local lifetime = "Lifetime " .. grug_guild.format_points(view.lifetime)
+	parts[#parts + 1] = "label[7.4,2.15;" .. esc(view.next and
+		(lifetime .. " of " .. grug_guild.format_points(view.next) .. " for Rank " ..
+			(view.rank + 1)) or (lifetime .. ": the highest rank")) .. "]"
+	return view
+end
+
+-- The catalogue index of each consumable (the page's button names).
+local function consumable_keys()
+	local key_of = {}
+	for index, row in ipairs(grug_guild.catalog.CONSUMABLES) do key_of[row.item] = index end
+	return key_of
+end
+
+-- The reputation page (Round 58, the camp vendor's Buy mode): the guild
+-- lines, then one row per tier with its two consumables. An unlocked row's
+-- items are buttons with their price; a locked row is greyed with "Reach
+-- Reputation Rank N" and has no button (the mount trainer's locked rows).
+-- `session.rep_shown` keeps the items shown buyable, the click's cross-check.
+local function render_reputation(parts, player, session)
+	session.rep_shown = {}
+	if not guild_lines(parts, player) then return end
+	local key_of = consumable_keys()
+	for index, row in ipairs(grug_guild.vendor_rows(player)) do
+		local y = 2.65 + (index - 1) * 1.1
+		local function text(value)
+			return esc(row.unlocked and value or core.colorize(GREYED, value))
+		end
+		for column, item in ipairs(row.items) do
+			local x = 0.7 + (column - 1) * 4.6
+			if row.unlocked then
+				local key = key_of[item.item]
+				session.rep_shown[item.item] = true
+				parts[#parts + 1] = ("item_image_button[%.2f,%.2f;0.9,0.9;%s;repbuy_%d;]")
+					:format(x, y, item.item, key)
+				parts[#parts + 1] = ("tooltip[repbuy_%d;%s]"):format(key,
+					esc(full_desc(item.item) .. "\nPrice: " ..
+						grug_guild.format_points(item.price) .. " reputation"))
+			else
+				parts[#parts + 1] = ("item_image[%.2f,%.2f;0.9,0.9;%s]"):format(x, y, item.item)
+				parts[#parts + 1] = ("tooltip[%.2f,%.2f;0.9,0.9;%s]"):format(x, y,
+					esc(full_desc(item.item)))
+			end
+			parts[#parts + 1] = ("label[%.2f,%.2f;%s]"):format(x + 1.1, y + 0.2,
+				text(short_desc(item.item)))
+			-- The price through the one reputation display (its icon once
+			-- picked), in a locked row too: the player sees what it will cost.
+			parts[#parts + 1] = grug_guild.reputation_formspec(x + 1.1, y + 0.62, item.price)
+		end
+		parts[#parts + 1] = ("label[9.9,%.2f;%s]"):format(y + 0.42, row.unlocked and
+			esc(("Use from level %d"):format(row.items[1].use_level)) or
+			text(("Reach Reputation Rank %d"):format(row.rank)))
+	end
+end
+
 local function render_buy(parts, player, session, vendor, discount)
+	-- The camp vendor sells only for reputation: its Buy mode is the page.
+	if guild_page(vendor) then
+		session.offer = {}
+		render_reputation(parts, player, session)
+		return
+	end
 	-- Tab row: the level-independent core stock plus the T1 gear shelf
 	-- (round33-plan.md §2.6: vendors sell T1 bases only, at every level).
 	local max_bracket = grug_traders.max_bracket()
@@ -262,7 +368,11 @@ local function render_buy(parts, player, session, vendor, discount)
 		parts[#parts + 1] = ("tooltip[buy_%d;%s]"):format(i, esc(tip))
 	end
 	if #offer == 0 then
-		parts[#parts + 1] = "label[0.6,3.0;The vendor has nothing on this shelf.]"
+		-- The guild house's exchange counter sells nothing: the guild's goods
+		-- are the camp vendors'.
+		parts[#parts + 1] = "label[0.6,3.0;" .. esc(guild_vendor(vendor) and
+			"The Miner's Guild sells its goods at the mining camps." or
+			"The vendor has nothing on this shelf.") .. "]"
 	end
 	-- Required form height. The full gear shelf is 18 entries (six weapon
 	-- families and twelve armour pieces); filtered profession views are smaller. General-tab supplies
@@ -340,23 +450,10 @@ end
 -- row per exchanged item carried (the Sell tab's lot rows: greyed with
 -- "Need N to trade" below one lot, else "All" for every whole lot).
 local function render_tradein(parts, player, session)
-	local view = grug_guild.summary(player)
-	local ui_name = grug_guild.catalog.UI_NAME
-	if not view then
+	if not guild_lines(parts, player) then
 		session.trade_rows = {}
-		parts[#parts + 1] = "label[0.6,1.75;" .. esc("You belong to no guild.") .. "]"
 		return
 	end
-	-- The interface says "Miner's Guild" only; the guilds' proper names
-	-- belong in texts and on buildings (the user's ruling).
-	parts[#parts + 1] = "label[0.6,1.75;" .. esc(ui_name) .. "]"
-	parts[#parts + 1] = "label[7.4,1.75;" .. esc(("Rank %d of %d"):format(view.rank,
-		grug_guild.catalog.MAX_RANK)) .. "]"
-	parts[#parts + 1] = grug_guild.reputation_formspec(0.6, 2.15, view.balance)
-	local lifetime = "Lifetime " .. grug_guild.format_points(view.lifetime)
-	parts[#parts + 1] = "label[7.4,2.15;" .. esc(view.next and
-		(lifetime .. " of " .. grug_guild.format_points(view.next) .. " for Rank " ..
-			(view.rank + 1)) or (lifetime .. ": the highest rank")) .. "]"
 
 	local rows = grug_guild.trade_in_rows(player)
 	session.trade_rows = rows
@@ -461,8 +558,10 @@ end
 -- Entry point (called from the vendor entity's on_rightclick)
 --
 
--- `faction`: the faction the vendor serves (grug_traders.vendor_faction).
-function grug_traders.open(clicker, vendor_name, pos, faction)
+-- `faction`: the faction the vendor serves (grug_traders.vendor_faction);
+-- `origin` (optional): {settlement, socket} the vendor stands on, plain
+-- strings (the camp vendor's repair provider).
+function grug_traders.open(clicker, vendor_name, pos, faction, origin)
 	if not clicker or not clicker:is_player() or not pos then
 		return
 	end
@@ -484,6 +583,9 @@ function grug_traders.open(clicker, vendor_name, pos, faction)
 		-- A POSITION, never the ObjectRef: the entity may be unloaded or
 		-- replaced between two field submissions (AGENTS.md).
 		pos = {x = pos.x, y = pos.y, z = pos.z},
+		origin = type(origin) == "table" and type(origin.settlement) == "string" and
+			type(origin.socket) == "string" and
+			{settlement = origin.settlement, socket = origin.socket} or nil,
 		-- A guild vendor opens on its Trade-in mode.
 		mode = guild_vendor(vendor) and "tradein" or "buy",
 		tab = "general",
@@ -753,6 +855,43 @@ local function do_trade_in(player, session, item)
 		short_desc(fresh.item), grug_guild.format_points(points), fresh.rest))
 end
 
+-- A reputation page item (Round 58): only an item the page showed buyable;
+-- grug_guild.buy checks the faction, the rank, the balance and the room
+-- again and spends nothing on a refusal.
+local REP_REFUSALS = {
+	no_faction = "You belong to no guild.",
+	unknown = "The guild does not sell that.",
+	insufficient = "Not enough reputation.",
+	full = "Your inventory is full.",
+}
+local function do_rep_buy(player, session, row)
+	if not (session.rep_shown and session.rep_shown[row.item]) then
+		show(player)
+		return
+	end
+	local ok, err = grug_guild.buy(player, row.item)
+	if not ok then
+		show(player, err == "rank" and ("Reach Reputation Rank %d first."):format(row.rank) or
+			REP_REFUSALS[err] or "The guild does not sell that.")
+		return
+	end
+	grug_sounds.play("vendor_buy", player)
+	show(player, ("Bought %s for %s reputation."):format(short_desc(row.item),
+		grug_guild.format_points(row.price)))
+end
+
+-- The Repair button: the repair form of the socket the vendor stands on;
+-- the vendor window's session ends with it (another window takes over).
+local function do_repair(player, session)
+	local ok, reason = rawget(_G, "grug_repair").open_camp_vendor(player, session.origin.settlement,
+		session.origin.socket)
+	if ok then
+		sessions[player:get_player_name()] = nil
+		return
+	end
+	show(player, reason or "The repair service is not available here.")
+end
+
 --
 -- Field dispatch
 --
@@ -791,6 +930,19 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		session.page = session.page + 1
 		show(player)
 		return true
+	end
+	if fields.repair and repairs(vendor, session) then
+		do_repair(player, session)
+		return true
+	end
+	-- The reputation page's items count only on that page.
+	if guild_page(vendor) and session.mode == "buy" then
+		for index, row in ipairs(grug_guild.catalog.CONSUMABLES) do
+			if fields["repbuy_" .. index] then
+				do_rep_buy(player, session, row)
+				return true
+			end
+		end
 	end
 	-- The Trade-in fields count only at a guild vendor (a client may send
 	-- any field anywhere).

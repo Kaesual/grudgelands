@@ -822,6 +822,11 @@ function grug_mobs.protected_spawn_surface(pos)
 	return protected
 end
 
+-- The Miner's Guild rooms (Round 58, grug_mapgen.guild_rooms): no ambient
+-- underground spawn in a room's box, an allocation-free test that returns at
+-- once outside the rooms' few y bands.
+local guild_rooms = rawget(_G, "grug_mapgen") and grug_mapgen.guild_rooms
+
 -- Allocation-free spawn policy. Unknown ABM families fail closed.
 function grug_mobs.spawn_policy_allows(mob_name, pos)
 	-- Before every other authority, the Kraken's included: a start footprint
@@ -836,6 +841,9 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	end
 	if pos.y < UNDERGROUND_TOP then
 		if not UNDERGROUND_MOBS[mob_name] then
+			return false
+		end
+		if guild_rooms and guild_rooms.room_at(pos) then
 			return false
 		end
 		-- Round 46: the elite floor of the underground elite roll

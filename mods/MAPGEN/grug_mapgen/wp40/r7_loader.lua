@@ -164,8 +164,37 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 			m.candidate_references, m.maximum_candidates, now() - started))
 	end
 
+	-- THE MINER'S GUILD ROOMS (Round 58, `guild_rooms.lua`): the rooms of
+	-- the camps with a lift, from the placement layout text emerge receives
+	-- too, so both environments hold the same rooms (both log the digest).
+	-- Their boxes are protected by a wrapper beside the zone overlay
+	-- (`guild_room_protection.lua`).
+	local guild_rooms
+	local zones_session = built.zones_session
+	do
+		local rooms_module = dofile(wp40 .. "/guild_rooms.lua")
+		-- Every node the room step writes exists (emerge would refuse each
+		-- room chunk otherwise) and is non-ground-content.
+		local names = {rooms_module.NODES.fill, rooms_module.NODES.floor,
+			rooms_module.NODES.lamp, rooms_module.NODES.lift}
+		for _, name in ipairs(rooms_module.NODES.mantle) do names[#names + 1] = name end
+		for _, name in ipairs(rooms_module.NODES.plug) do names[#names + 1] = name end
+		for _, name in ipairs(names) do
+			local def = core_api.registered_nodes[name]
+			if type(def) ~= "table" or def.is_ground_content ~= false then
+				fail("guild room node differs: " .. name)
+			end
+		end
+		guild_rooms = rooms_module.index(rooms_module.lift_camps(wp40,
+			runtime.placement_layout_text()))
+		zones_session = dofile(wp40 .. "/guild_room_protection.lua")(zones_session,
+			guild_rooms)
+		core_api.log("action", ("[grug_mapgen] guild rooms: %d rooms, digest %s"):format(
+			#guild_rooms.list, core_api.sha256(guild_rooms.summary()):sub(1, 16)))
+	end
+
 	local publish_authority = core_owner.prepare_zone_authority(
-		built.zones_session, built.consumer_payload, world_protection)
+		zones_session, built.consumer_payload, world_protection)
 	if type(publish_authority) ~= "function" then
 		fail("prepared authority seam differs")
 	end
@@ -471,6 +500,8 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		-- The capital layouts of this world (capital planner; the text
 		-- `capital_planner.deserialize` reads), e.g. for the world map.
 		capital_layout_text = payload.capital_layout,
+		-- The Miner's Guild rooms of this world (guild_rooms.lua's index).
+		guild_rooms = guild_rooms,
 		-- The world-layout cache's key parts {seed, source, settings,
 		-- interpreter} for the other world-folder caches; nil when this start
 		-- has no trustworthy key.
