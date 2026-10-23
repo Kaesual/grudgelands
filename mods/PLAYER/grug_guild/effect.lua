@@ -320,8 +320,9 @@ for tier, keys in ipairs(catalog.ORE_SENSE_TARGETS) do
 end
 
 -- The deposit Ore Sense of `tier` marks from pos: the nearest node of the
--- first target with one in the range box (clipped to the band), or nil.
--- One engine search for all targets.
+-- first target with one within `range` (true distance; the engine searches
+-- the cube around it, clipped to the band), or nil. One engine search for
+-- all targets.
 function grug_guild.ore_sense_find(pos, tier, range)
 	pos = rounded(pos)
 	local band = tier_row(tier)
@@ -333,7 +334,7 @@ function grug_guild.ore_sense_find(pos, tier, range)
 		local best, best_distance
 		for _, at in ipairs(found[node_name] or {}) do
 			local d = distance(pos, at)
-			if not best or d < best_distance then best, best_distance = at, d end
+			if d <= range and (not best or d < best_distance) then best, best_distance = at, d end
 		end
 		if best then return best, node_name end
 	end
@@ -402,10 +403,16 @@ local function save_loop(effect)
 	end)
 end
 
--- Runs `row` for `seconds` from now (a new use or a saved effect).
-local function begin(player, row, seconds)
+-- Runs `row` for `seconds` from now: a new use (the first Remains at
+-- once) or a saved effect resumed at join (`resumed`: the leave took the
+-- Remains, so the next one waits for the pause, as after a dig; a relog
+-- never skips it).
+local function begin(player, row, seconds, resumed)
 	local effect = {name = player:get_player_name(), row = row,
 		ends_us = now_us() + seconds * 1e6, next_place_us = 0}
+	if resumed and row.respawn_seconds then
+		effect.next_place_us = now_us() + row.respawn_seconds * 1e6
+	end
 	effects[effect.name] = effect
 	apply_status(player, effect)
 	save(player, effect)
@@ -458,7 +465,7 @@ end
 core.register_on_joinplayer(function(player)
 	local row, seconds = saved(player)
 	if row then
-		begin(player, row, seconds)
+		begin(player, row, seconds, true)
 	elseif player:get_meta():get_string(EFFECT_KEY) ~= "" then
 		player:get_meta():set_string(EFFECT_KEY, "")
 	end

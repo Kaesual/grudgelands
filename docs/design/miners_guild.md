@@ -221,8 +221,9 @@ one picture.
     that), plus at leave; the offline time does not count; the death and the
     respawn re-apply the picture;
   - Ore Sense makes **one** `core.find_nodes_in_area` (grouped) over the
-    range box, clipped to the band, for all its targets at once, and marks
-    the nearest deposit of the first target found; per-target
+    range cube, clipped to the band, for all its targets at once, and marks
+    the nearest deposit within `range` (true distance) of the first target
+    found; per-target
     `core.find_node_near` would be up to one full scan per target when none
     is near (measured in the round report);
   - the **markers** are per-player HUD image waypoints (`hud_add`
@@ -235,6 +236,9 @@ one picture.
     timer removes it when the token is no longer its owner's current one, so
     an old Remains whose block was unloaded while a newer one was placed
     goes when its block loads, and every Remains goes after a restart;
+  - a relog never skips Treasure Hunt's pause: the leave takes the
+    Remains, and the resumed effect places the next one after
+    `respawn_seconds` (a fresh use places the first at once);
   - a refusal says why: the use level, the band (`… works only between y
     −301 and −500.`), or the running effect with its time left.
 

@@ -611,6 +611,24 @@ found, found_node = grug_guild.ore_sense_find(alice:get_pos(), 3, 16)
 check(found and found_node == silver, "D then the next target")
 eq(grug_guild.ore_sense_find(alice:get_pos(), 3, 3), nil, "D nothing beyond the range")
 store.nodes[key(garnet_pos)] = garnet
+-- The range is a true distance: a gem in a corner of the search cube (about
+-- 18 away) loses to a silver 10 away.
+do
+	local here = alice:get_pos()
+	store.nodes[key(garnet_pos)] = nil
+	store.nodes[key(silver_pos)] = nil
+	local corner = {x = here.x + 13, y = here.y + 1, z = here.z + 13}
+	local near_silver = {x = here.x, y = here.y, z = here.z + 10}
+	store.nodes[key(corner)] = garnet
+	store.nodes[key(near_silver)] = silver
+	found, found_node = grug_guild.ore_sense_find(here, 3, 16)
+	check(found and found_node == silver, "D a gem beyond the true range is skipped")
+	store.nodes[key(near_silver)] = nil
+	eq(grug_guild.ore_sense_find(here, 3, 16), nil, "D a gem only in the cube's corner is no mark")
+	store.nodes[key(corner)] = nil
+	store.nodes[key(garnet_pos)] = garnet
+	store.nodes[key(silver_pos)] = silver
+end
 -- Near the band's edge the search stays inside it: a garnet just above
 -- y -301 (T2 rock) is not marked from y -305.
 store.nodes["0,-298,0"] = garnet
@@ -821,9 +839,34 @@ eq(saved(alice).kind, "treasure_hunt", "E the leave saved the effect")
 
 -- A restart with a Remains in the map (the crash): it goes when its timer
 -- fires, whether its owner comes back or not.
+-- The rejoin resumes the effect but keeps the pause (a relog never skips
+-- it): nothing at once, the next one after respawn_seconds.
 alice = fake_player("alice", {x = 0, y = -799, z = 0}, 60)
 join(alice)
-check(#find_remains() == 1, "E the rejoin places one")
+eq(#find_remains(), 0, "E the rejoin places none at once")
+advance(th.check_seconds + 0.1)
+eq(#find_remains(), 0, "E the rejoin waits for the pause")
+advance(th.respawn_seconds)
+check(#find_remains() == 1, "E the rejoin places one after the pause")
+-- Dig, relog, still no new Remains before the pause.
+placed = find_remains()
+if placed[1] then
+	local pos = placed[1].pos
+	local oldmeta = core.get_meta(pos):to_table()
+	core.set_node(pos, {name = "air"})
+	core.registered_nodes[placed[1].name].after_dig_node(pos, {name = placed[1].name}, oldmeta, alice)
+	core.set_node(pos, {name = tier5})
+end
+advance(th.check_seconds + 0.1)
+leave(alice)
+alice = fake_player("alice", {x = 0, y = -799, z = 0}, 60)
+join(alice)
+advance(th.check_seconds + 0.1)
+eq(#find_remains(), 0, "E dig, relog: no new Remains before the pause")
+advance(th.respawn_seconds - 2 * th.check_seconds)
+eq(#find_remains(), 0, "E dig, relog: still none inside the pause")
+advance(2 * th.check_seconds + 0.2)
+check(#find_remains() == 1, "E dig, relog: the next one after the pause")
 local stale = find_remains()[1]
 boot()
 alice = fake_player("alice", {x = stale.pos.x, y = stale.pos.y, z = stale.pos.z + 2}, 60)
