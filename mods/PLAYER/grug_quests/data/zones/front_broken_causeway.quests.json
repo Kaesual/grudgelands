@@ -50,8 +50,8 @@
       "min_level": 41,
       "level": 42,
       "requires": [],
-      "title": "[PH] Clear the Camp's Surroundings (t5 low)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "title": "The Supply Run Bites Back",
+      "text": "Sinkmire Viper has made carrying water through the reeds an occupation requiring entirely too many eyes. Hunt eight Sinkmire Viper in the reed marsh of {name:reedmire}, {zone_area:reedmire}, by day. The camp needs the water, and I would like to stop sending escorts out for buckets.",
       "objectives": [
         {
           "type": "kill",
@@ -77,7 +77,7 @@
               "area": "front_broken_causeway/reedmire"
             }
           ],
-          "text": "[PH] Defeat Sinkmire Viper × 8 by day in the {name:reedmire}, which lie {zone_area:reedmire}, so the camp's haulers can pass. Real text to follow."
+          "text": "Sinkmire Viper has made carrying water through the reeds an occupation requiring entirely too many eyes. Hunt eight Sinkmire Viper in the reed marsh of {name:reedmire}, {zone_area:reedmire}, by day. The camp needs the water, and I would like to stop sending escorts out for buckets."
         },
         {
           "zone": "front_shattered_line",
@@ -93,7 +93,7 @@
               "area": "front_shattered_line/approaches"
             }
           ],
-          "text": "[PH] Defeat Deserter × 8 by day in the {name:approaches}, which lie {zone_area:approaches}, so the camp's haulers can pass. Real text to follow."
+          "text": "Deserter has been ambushing our haulers before their supplies reach camp. Defeat eight Deserter on the battlefield approaches of {name:approaches}, {zone_area:approaches}; they are active by day. Every stolen load leaves both a guard and a worker waiting for something they need."
         }
       ],
       "rewards": {
@@ -121,8 +121,8 @@
       "min_level": 48,
       "level": 49,
       "requires": [],
-      "title": "[PH] Clear the Camp's Surroundings (t5 high)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "title": "Work Under Fire",
+      "text": "Tallow-Sealed Husk keeps driving our supply carriers off the open ground. Defeat eight Tallow-Sealed Husk in the fields of {name:toll_fields}, {zone_area:toll_fields}, by day. The camp cannot eat a schedule, however often I rewrite it.",
       "objectives": [
         {
           "type": "kill",
@@ -148,7 +148,7 @@
               "area": "front_broken_causeway/toll_fields"
             }
           ],
-          "text": "[PH] Defeat Tallow-Sealed Husk × 8 by day in the {name:toll_fields}, which lie {zone_area:toll_fields}, so the camp's haulers can pass. Real text to follow."
+          "text": "Tallow-Sealed Husk keeps driving our supply carriers off the open ground. Defeat eight Tallow-Sealed Husk in the fields of {name:toll_fields}, {zone_area:toll_fields}, by day. The camp cannot eat a schedule, however often I rewrite it."
         },
         {
           "zone": "front_shattered_line",
@@ -164,7 +164,7 @@
               "area": "front_shattered_line/breach"
             }
           ],
-          "text": "[PH] Defeat Turncoat Archer × 8 by day in the {name:breach}, which lie {zone_area:breach}, so the camp's haulers can pass. Real text to follow."
+          "text": "Turncoat Archer has been taking shots at the workers hauling supplies through the breach. Defeat eight Turncoat Archer in the broken battlefield of {name:breach}, {zone_area:breach}; they are there by day. Our people need a clear run to camp, and crouching behind the load is getting them nowhere."
         }
       ],
       "rewards": {

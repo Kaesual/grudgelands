@@ -339,9 +339,9 @@
         "guild_t3_anthracite",
         "guild_t3_garnet"
       ],
-      "title": "[PH] Word to the Guild House (Third depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "Marks Beside the Promise",
+      "text": "The anthracite and garnet orders are settled; this delivery copy bears both the guild's register mark and the military supply office's. Take this delivery copy to Iven Lastshift at the Miner's Guild house in Nhal Veyr so The Oathdelvers can record it.",
+      "completion": "These paired marks identify The Oathdelvers and the military supply office in the same delivery record. Each entry has someone to answer for it. I will keep the copy with the names of those who confirmed it.",
       "objectives": [
         {
           "type": "talk",
@@ -362,8 +362,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The anthracite and garnet orders are settled; this delivery copy bears both the guild's register mark and the military supply office's. Take this delivery copy to Iven Lastshift at the Miner's Guild house in Nhal Veyr so The Oathdelvers can record it.",
+          "completion": "These paired marks identify The Oathdelvers and the military supply office in the same delivery record. Each entry has someone to answer for it. I will keep the copy with the names of those who confirmed it."
         },
         {
           "zone": "kragmar_blackwind_rise",
@@ -378,8 +378,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled, and the delivery copy has the guild and military supply marks entered plainly beside one another. Take this delivery copy to Iven Lastshift at the Miner's Guild house in Nhal Veyr so The Oathdelvers can record it.",
+          "completion": "These paired marks identify The Oathdelvers and the military supply office in the same delivery record. Each entry has someone to answer for it. I will keep the copy with the names of those who confirmed it."
         },
         {
           "zone": "kragmar_speargrass_reach",
@@ -394,8 +394,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The anthracite and garnet are accounted for; the guild and military supply office have each marked this delivery copy to stand by it. Take this delivery copy to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak so The Oathdelvers can record it.",
+          "completion": "Our mark and the supply office's mark stand beside the same delivery: The Oathdelvers promised the load, and the army agreed to receive it. Each can answer for its part. This copy shows that both did."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -410,8 +410,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are settled, and this delivery copy bears the marks of the guild and military supply office that pledged to see them through. Take this delivery copy to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak so The Oathdelvers can record it.",
+          "completion": "Our mark and the supply office's mark stand beside the same delivery: The Oathdelvers promised the load, and the army agreed to receive it. Each can answer for its part. This copy shows that both did."
         },
         {
           "zone": "kragmar_whispering_reedlands",
@@ -426,8 +426,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The anthracite and garnet orders are filled, and the guild and military supply office have both witnessed this delivery copy with their marks. Take this delivery copy to Ombali Ropekeeper at the Miner's Guild house in Kezamba so The Oathdelvers can record it.",
+          "completion": "This is how The Oathdelvers and the military supply office record a delivery together, with a mark from each beside the witnessed agreement. The marks tell me whose word was given and what it covered. I will keep the copy with that account."
         },
         {
           "zone": "kragmar_totemwater_reach",
@@ -442,8 +442,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are settled; this delivery copy carries the guild and military supply marks side by side, where their witnesses can find them. Take this delivery copy to Ombali Ropekeeper at the Miner's Guild house in Kezamba so The Oathdelvers can record it.",
+          "completion": "This is how The Oathdelvers and the military supply office record a delivery together, with a mark from each beside the witnessed agreement. The marks tell me whose word was given and what it covered. I will keep the copy with that account."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -458,8 +458,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The anthracite and garnet are accounted for, and this delivery copy bears both the guild's mark and the military supply office's, still legible despite the damp. Take this delivery copy to Ombali Ropekeeper at the Miner's Guild house in Kezamba so The Oathdelvers can record it.",
+          "completion": "This is how The Oathdelvers and the military supply office record a delivery together, with a mark from each beside the witnessed agreement. The marks tell me whose word was given and what it covered. I will keep the copy with that account."
         },
         {
           "zone": "front_gravesalt_escarpment",
@@ -475,8 +475,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled; I have checked that the guild and military supply marks are clear on this delivery copy. Take this delivery copy to Iven Lastshift at the Miner's Guild house in Nhal Veyr so The Oathdelvers can record it.",
+          "completion": "These paired marks identify The Oathdelvers and the military supply office in the same delivery record. Each entry has someone to answer for it. I will keep the copy with the names of those who confirmed it."
         },
         {
           "zone": "front_broken_causeway",
@@ -492,8 +492,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The anthracite and garnet orders are settled, and both the guild and military supply office have put their marks on this delivery copy. Take this delivery copy to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak so The Oathdelvers can record it.",
+          "completion": "Our mark and the supply office's mark stand beside the same delivery: The Oathdelvers promised the load, and the army agreed to receive it. Each can answer for its part. This copy shows that both did."
         },
         {
           "zone": "front_shattered_line",
@@ -509,8 +509,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled; this delivery copy records the guild and military supply office's marks beside the promise they kept. Take this delivery copy to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak so The Oathdelvers can record it.",
+          "completion": "Our mark and the supply office's mark stand beside the same delivery: The Oathdelvers promised the load, and the army agreed to receive it. Each can answer for its part. This copy shows that both did."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -526,8 +526,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The anthracite and garnet are accounted for, and this delivery copy has the guild and military supply marks entered together for the witnesses. Take this delivery copy to Ombali Ropekeeper at the Miner's Guild house in Kezamba so The Oathdelvers can record it.",
+          "completion": "This is how The Oathdelvers and the military supply office record a delivery together, with a mark from each beside the witnessed agreement. The marks tell me whose word was given and what it covered. I will keep the copy with that account."
         }
       ],
       "rewards": {
