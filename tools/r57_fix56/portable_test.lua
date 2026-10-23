@@ -3,7 +3,8 @@
 --
 --   luajit tools/r57_fix56/portable_test.lua [repo]
 --
--- Builds the zones session of two fleet seeds as the runtime does
+-- Builds the zones session of three seeds (two fleet seeds and the user's
+-- world "test") as the runtime does
 -- (wp40/world_assembly.lua, without the capitals; about 10 s per seed) and
 -- asks the REAL flight rule (grug_mounts flight.lua column_flight_state)
 -- with that session as grug_zones. Checks, per seed:
@@ -17,8 +18,8 @@
 --   C  bay-mouth caps: columns inside a bay's body past its mouth cut
 --      (zone_field bay_at names the bay, the class is not planned water and
 --      no bay shore): "ocean" for both factions.
--- The user's example in the world "test" (-609, -2285, Goldmead Vale) needs
--- that world's seed: add it to SEEDS when it is known.
+-- The third seed is the user's world "test" with the example of ruling 23,
+-- (-609, -2285) in Goldmead Vale.
 -- Prints "R57 FIX56 PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -37,6 +38,11 @@ local SEEDS = {
 			{-692, -2040, "elandor_goldmead_vale", "accord"},
 			{1596, 3152, "kragmar_kapok_cradle", "throng"}},
 		open = {0, -3900}, caps = {{-955, -2950, 1}, {930, 3080, 4}}},
+	-- the user's world "test" (Round 57 ruling 23): the example column
+	-- (-609, 9, -2285), Goldmead Vale, was belt and no-fly up to 0.56
+	{seed = "476085000009918749",
+		shore = {{-609, -2285, "elandor_goldmead_vale", "accord"}},
+		open = {0, -3900}, caps = {{-955, -3150, 1}, {930, 3200, 4}}},
 	{seed = "6866842473207",
 		shore = {{-932, -1936, "elandor_whitebridge_shire", "accord"}},
 		open = {0, -3900}, caps = {{-955, -2950, 1}, {930, 2950, 4}}},
