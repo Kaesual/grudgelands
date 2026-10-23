@@ -32,10 +32,15 @@ The Miner's Guild's reputation (Round 58) is no ledger currency and no copper bu
   interior zeros are retained: `5c`, `1s 5c`, `1g 0s 5c`. One formatter owns
   Character-screen, chat and trade UI output. The current balance is shown
   on Character and relevant trade screens; there is no persistent money HUD.
-- Money is a **ledger-only universal transaction currency**. No NPC or
-  world node drops money. Currency enters or moves only through explicit
-  transactions: quest rewards, NPC purchases of sellable loot, NPC/player
-  sales, player-to-player trade and the coin bags mobs drop (below).
+- Money is a **ledger-only universal transaction currency**. No NPC drops
+  money, and one world node does: the **Miner's Remains** (Round 58), the
+  block a Treasure Hunt hides in the rock, gives whoever digs it a Bag of
+  Coins beside its bars and gem ([miners_guild.md](miners_guild.md) §8; the
+  amounts are `remains.t<n>.copper_*` in `grug_guild/catalog.lua`).
+  Currency enters or moves only through explicit transactions: quest
+  rewards, NPC purchases of sellable loot, NPC/player sales,
+  player-to-player trade, the coin bags mobs drop (below) and the Remains'
+  bag.
 - **Bag of Coins** (Round 34): the one way money leaves the balance as an
   item, so players can give money to each other. **Withdraw** in the
   Inventory tab's money row (the Character page until the Round 45

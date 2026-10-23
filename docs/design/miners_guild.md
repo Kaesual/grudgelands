@@ -215,6 +215,28 @@ one picture.
   which run before `grug_guild`'s (it loads first), so the status is already
   gone when `grug_guild`'s callback runs: CONSUME keeps the effect's own end
   time per player and saves and re-applies from that, never from the status.
+- **Built** (lane CONSUME, `grug_guild/effect.lua`, `items.lua`): the common
+  rules, both kinds and the slot as proposed above, with these choices:
+  - the save timer writes every **30 s** (a crash costs the player at most
+    that), plus at leave; the offline time does not count; the death and the
+    respawn re-apply the picture;
+  - Ore Sense makes **one** `core.find_nodes_in_area` (grouped) over the
+    range box, clipped to the band, for all its targets at once, and marks
+    the nearest deposit of the first target found; per-target
+    `core.find_node_near` would be up to one full scan per target when none
+    is near (measured in the round report);
+  - the **markers** are per-player HUD image waypoints (`hud_add`
+    `image_waypoint`): only the user's client has them, and they are drawn
+    over the world, so a deposit or a Remains inside the rock shows;
+    per-player particles and entities with observers are depth-tested and
+    the rock in front hides them. Ore Sense shows the ore's own tile,
+    Treasure Hunt the Remains' tile;
+  - each Remains holds its owner and a **placement token** in node meta; its
+    timer removes it when the token is no longer its owner's current one, so
+    an old Remains whose block was unloaded while a newer one was placed
+    goes when its block loads, and every Remains goes after a restart;
+  - a refusal says why: the use level, the band (`… works only between y
+    −301 and −500.`), or the running effect with its time left.
 
 ## 8. Miner's Remains
 
@@ -239,6 +261,12 @@ one picture.
   half an hour of the band's income (82–105 %, §9). Bars and cut gems are made
   goods, so the exchange never takes them: Treasure Hunt cannot feed
   reputation, and reputation cannot buy reputation.
+- **Built** (lane CONSUME): the nodes carry the tier rock's `grug_stratum`
+  group with its level, so digging them is the rock's transaction (the
+  protection, the tier pick and its hint) and the startup audit accepts the
+  level; the loot goes to the digger like a dig's drops
+  (`core.handle_node_drops`); when the Remains goes without a dig it turns
+  back into its rock.
 - The Remains are a second world source of copper beside the mobs' coin bags,
   by the ruling; `economy.md` §1 ("No NPC or world node drops money") gets that
   exception from lane CONSUME.
