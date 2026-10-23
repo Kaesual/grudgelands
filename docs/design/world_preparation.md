@@ -288,5 +288,9 @@ y −113 down is skipped unless a fitted box reaches within a mapblock of it;
 the chunk −112…−33 holds the fill floor and keeps the full writer. The test
 reads neither columns nor the heightmap, so mining and caving deep cost the
 engine's own chunk generation only. The argument per writer stands in
-`wp40/air_chunks.lua`; a new pass that writes below y −37 outside a fitted
-box has to extend it first.
+`wp40/air_chunks.lua`; a new pass of the writer that writes below y −37
+outside a fitted box has to extend it first. The Miner's Guild rooms (Round
+58) are no pass of the writer: their own step runs after it in every chunk a
+room box meets, skipped chunks included, and writes only the room boxes
+and their exits' plugs
+([module guide](../technical/module-guide.md#mapgen-and-biomes)).

@@ -63,6 +63,15 @@ one picture.
   through and liquids cannot enter (`walkable = false`, `floodable = false`,
   `buildable_to = false`, `is_ground_content = false`); the planned lava-lake
   pass spares the rooms.
+- **The room** (lane ROOMS, `wp40/guild_rooms.lua`): an open room 7 × 7 nodes
+  and 4 high round the camp's lift column, the lift in its centre facing the
+  arrival point beside it, three exits (1 wide, 2 high) in three walls running
+  through the 3-node mantle, each ending blind in a plug of the tier's rock
+  one node past the mantle (outside the protection: players dig on from
+  there; no cave or liquid opens it), four wall lamps; the
+  mantle wears the tier's host rock. The whole 13 × 10 × 13 box is protected
+  ("Miner's Guild – protected") and refuses mob spawns; below −501 it is
+  contested ground like everything there.
 - Each room lies in its band's **lower half** (`grug_materials.TIERS`
   `lower_half_y_max`), where the "½" ore rows of the
   [density table](world_zones.md) lie at their full rate: Iron in T1,

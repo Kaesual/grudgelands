@@ -196,6 +196,8 @@ local PROTECTION_HINTS = {
 	war_camp = "Camp – protected",
 	-- Round 58: a Miner's Guild mining camp
 	mining_camp = "Camp – protected",
+	-- Round 58: a Miner's Guild lift room (grug_zones.hard_protection_kind_at)
+	guild_room = "Miner's Guild – protected",
 	poi = "Point of interest – protected",
 	accord_home = "Accord home territory – protected",
 	throng_home = "Throng home territory – protected",
@@ -218,7 +220,7 @@ function grug_core.protection_reason(pos, name)
 	-- refusal.
 	if grug_core.world_protected_for_faction(pos, faction) then
 		local kind = grug_zones.hard_protection_kind_at(pos)
-		if kind == "town" or kind == "landmark" then return kind end
+		if kind == "town" or kind == "landmark" or kind == "guild_room" then return kind end
 		-- Roads and settlement cores protect for everyone (Round 25 rulings
 		-- 15-17), home territory or not, and win over claim reasons.
 		local feature = grug_core.world_feature_at(pos)

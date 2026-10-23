@@ -2478,7 +2478,47 @@ tools](#player-meta-read-by-external-tools).
   new pass that writes above that envelope, or below y −37 outside a fitted
   box, must extend the envelope or that file's argument first, or its chunks
   are silently skipped (`tools/r49_skip` checks the writer's result on
-  skipped chunks).
+  skipped chunks) — unless it is a step of its own outside the refinement,
+  like the guild rooms below.
+  **The Miner's Guild rooms** (Round 58, lane ROOMS): one room per lift
+  level of every camp with a lift, around the camp's lift column at its
+  tier's floor (−50, −250, −450, −650, −950, −1050). `wp40/guild_rooms.lua`
+  (pure, loaded in both environments) builds them from the camps
+  (`index(camps, floors)`: `list`, `rooms_for_camp`, the allocation-free
+  `room_at`, `rooms_in`; a room is `{camp_id, tier, floor_y, minp, maxp,
+  arrival, lift_cell}`, `floor_y` the open layer the feet stand in, `arrival`
+  a position for `grug_home/travel.lua`'s safe arrival) and owns the shape
+  (`cell_at_offset`: a 7 × 4 × 7 open room, three 1 × 2 exits ending at the
+  box face in a plug one node past it (`room_plug_t1` … `_t6`: the host rock's
+  look, digs and drops like it, non-ground-content, outside the protected
+  box), the floor, four wall lamps, a 3-node mantle; a 13 × 10 × 13
+  box; CAMPS' lift node `grug_mapgen:guild_lift` at the centre, param2 2,
+  its front toward the arrival). `lift_camps(wp40, placement_layout)` is the
+  one seam to the camp list (`r58_camps.lua` `camps` and `ROOM_FLOOR_Y`:
+  36 camps, 148 rooms), read from the placement layout text in both
+  environments (no IPC field); both log the room count and digest. The room step
+  (`wp40/guild_room_writer.lua`) runs in `r7_mapgen.lua`'s callback after
+  `refine_or_degrade` and outside it, with its own degrade
+  (`[GRUG-SEVERE]`, key `mapgen_room:<chunk>`): every chunk writes the part
+  of each room box and its plugs (`write_minp`/`write_maxp`, the box one
+  node wider in x and z) inside its own minp..maxp (`set_node_at`, then
+  `calc_lighting` on that part), so the early-out chunks and a chunk whose
+  refinement failed get their rooms too, and a split room is the same in any
+  chunk order. Every node it writes is non-ground-content
+  (`guild_room_nodes.lua`: the airlike fill — walkable, floodable,
+  buildable_to, pointable and diggable false, light passing — the floor, the
+  mantle per tier in its host rock's look, the lamp), since a
+  neighbouring chunk's caves, flooded caves and dungeons reach about 16
+  nodes past its edge, sideways too, and spare only such nodes; the fill
+  lets no liquid in. Main wraps the zone session once more
+  (`wp40/guild_room_protection.lua`, beside the zone overlay, whose schema
+  stays): inside a box `territory_rule_at` is `hard_protected`,
+  `hard_protection_kind_at` `guild_room` (hint "Miner's Guild – protected")
+  and the faction policy protects for
+  everyone; the PvP rule and `hard_footprint_in` stay the session's. The
+  rooms are public as `grug_mapgen.guild_rooms`; the ambient underground
+  spawns (`spawn_policy.lua`) refuse a room box through `room_at`, the depth
+  pulse through `hard_protection_kind_at`. Fixture `tools/r58_rooms`.
   **Per-column caches of the emerge environment** (the session's own,
   first in first out; every value is a pure function of x/z and the world,
   so a hit equals a miss): the planner column tuples (`zones.lua`
