@@ -830,7 +830,8 @@ Lane D on its branch from `a1582d57`: `check_upgrade.py` PASS (against origin/ma
 build as there), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (6 warnings, as before),
 `quest_kinds.py --check` 0 differ, `r37_dc` PASS, `build_doc.py --check` current (after the regeneration),
 `income.py --check` PASS, `tools/r57_chains/run.sh` (one boot, 704 recipes), the questmap page (423 quests, 0 load
-warnings), the full `run_fixtures.sh` (FULLRUN) and one headless boot (BOOT). Each code lane ran the full
+warnings), the `r33_ds` fixture (its money table), the full `run_fixtures.sh` (259 passed, 0 failed) and one headless boot
+(PASS, no ERROR line). Each code lane ran the full
 `run_fixtures.sh` once (CHAINDEPTH and FIX56 251/0, CRAFT 251/0, ALLOY 252/0, QSYS 251/0 and its review's
 trial merge 255/0, QSYS2 255/0, DETAILS 255 with one pin fixed, VENDORMAT and DYES 256 (DYES after one fixture
 update), STARTQUESTS 253 with three pins fixed, then 258/0 after its fix round); the coordinator ran the full set
