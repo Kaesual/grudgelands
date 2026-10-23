@@ -668,10 +668,15 @@ local function leader_moving(lent)
 end
 
 local function royal_guard_base_tick(base_tick, self, dtime)
-	-- Royal socket fields identify and claim the authored guard slot, but the
-	-- ordinary start-guard tick would also steer this guard back to that slot.
-	-- The king is the only live home target for the encounter, so keep the
-	-- identity fields while hiding them from start_post_tick.
+	-- A throne guard holds its post beside the seat (Round 58, the user's
+	-- ruling of 2026-10-22: posts within ROYAL_FOLLOW_DISTANCE of the king, no
+	-- free wander): idle and near its leader, the ordinary start-guard tick
+	-- walks it to its socket and turns it the authored way. While the follow
+	-- owns it, the king is the only live home target, so the post fields are
+	-- hidden from start_post_tick. A bodyguard carries none (start_npcs.lua).
+	if not (self.temp and self.temp.grug_royal_follow_active) then
+		return base_tick(self, dtime)
+	end
 	local post_x, post_z, post_yaw = self._grug_post_x, self._grug_post_z,
 		self._grug_post_yaw
 	self._grug_post_x, self._grug_post_z, self._grug_post_yaw = nil, nil, nil
@@ -826,6 +831,8 @@ for race, row in pairs(RACES) do
 	guard.on_die = function(self) grug_mobs.royal_guard_died(self) end
 	grug_mobs.register_mob("grug_mobs:royal_guard_" .. race_id, guard)
 	core.registered_entities["grug_mobs:royal_guard_" .. race_id]._grug_no_tint = true
+	-- No random walk from the post either (Round 58), as a king's from his seat.
+	core.registered_entities["grug_mobs:royal_guard_" .. race_id]._grug_no_wander = true
 end
 
 -- Round 31: the two fortress Generals (pvp-plan ruling 17; "Generals respawn

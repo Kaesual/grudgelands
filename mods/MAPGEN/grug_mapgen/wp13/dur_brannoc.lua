@@ -46,6 +46,7 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local templates = dofile(directory .. "/templates.lua")(directory)
+	local gate_watch = dofile(directory .. "/gate_watch.lua")(directory)
 	local CAPITAL = templates.capital("dur_brannoc")
 
 	local M = {}
@@ -118,6 +119,9 @@ local function loader(directory)
 	-- the core used to add afterwards: the hall's floor bands and braziers
 	-- and the temple elder's doorstep.
 	--
+	-- `watch` marks a core gatehouse whose guards gate_watch.lua sets (Round
+	-- 58): the ground guards' rectangle and the tower guard's post.
+	--
 	-- `drop` and `recast` are the socket policy of the sockets contract, and
 	-- they exist because a part cannot know how many of a thing a CAPITAL may
 	-- have: one throne, one travel pad for WP17 and exactly two vendor families
@@ -135,13 +139,13 @@ local function loader(directory)
 		-- 2. The four inner gatehouses, where the avenues leave the citadel
 		-- precinct. Dur Brannoc's curtain wall is 209 nodes further out, so
 		-- these are the citadel's own gates and not the city's.
-		{id = "gate_south", template = "dur_brannoc_gate_south",
+		{id = "gate_south", template = "dur_brannoc_gate_south", watch = true,
 			x = -6, z = -RADIUS, turns = 0, palette = "town", roof = "slate"},
-		{id = "gate_west", template = "dur_brannoc_gate_south",
+		{id = "gate_west", template = "dur_brannoc_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "town", roof = "slate"},
-		{id = "gate_north", template = "dur_brannoc_gate_south",
+		{id = "gate_north", template = "dur_brannoc_gate_south", watch = true,
 			x = -6, z = 43, turns = 2, palette = "town", roof = "slate"},
-		{id = "gate_east", template = "dur_brannoc_gate_south",
+		{id = "gate_east", template = "dur_brannoc_gate_south", watch = true,
 			x = 43, z = -6, turns = 3, palette = "town", roof = "slate"},
 
 		-- 3. The market square, west of the approach, its north apron on the
@@ -402,6 +406,7 @@ local function loader(directory)
 			-- The building's own sockets; a socket point without a role is the
 			-- position of one of the composition's own sockets.
 			templates.collect_sockets(stamped, points, plot.id)
+			local first = #sockets + 1
 			for _, entry in ipairs(points.sockets or {}) do
 				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
@@ -425,6 +430,11 @@ local function loader(directory)
 					end
 					sockets[#sockets + 1] = out
 				end
+			end
+			-- A core gatehouse's watch (Round 58, gate_watch.lua): the ground
+			-- guards' rectangle on the city side and the tower guard's post.
+			if plot.watch then
+				gate_watch.apply(sockets, first, plot, part.w, part.d, "dur_brannoc")
 			end
 		end
 

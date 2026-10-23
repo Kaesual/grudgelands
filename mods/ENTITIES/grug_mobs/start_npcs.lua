@@ -45,10 +45,11 @@
 --      the gate -- and its far plots follow on the heartbeat as a player walks
 --      up to them. Nothing waits for the whole 512 envelope: `serve` already
 --      skips a socket whose node is not loaded and keeps it pending.
---   2. HOW MANY LOOPS. A start has one patrol loop. Highcourt's core has five
---      (the city ring and one per gate tower) and its district one more, so a
---      waypoint's `group` is what decides which loop it belongs to, and each
---      loop carries its own guard, booked on its own first waypoint.
+--   2. HOW MANY LOOPS. A start has one patrol loop. Highcourt's core has nine
+--      (the city ring and two per gate, the gate watch of Round 58) and its
+--      districts more, so a waypoint's `group` is what decides which loop it
+--      belongs to, and each loop carries its own guard, booked on its own
+--      first waypoint.
 --   3. HOW FAR A VILLAGER WANDERS. A capital's idle spots are spread over 300
 --      nodes, and one villager walking between all of them is not flair. The
 --      spots are grouped by the composition they came from -- the registry
@@ -1340,6 +1341,7 @@ refresh_walk = function(entity)
 			points[k] = {x = loop[k].x, y = loop[k].y, z = loop[k].z}
 		end
 		route.points = points
+		route.reach = grug_mobs.loop_reach(points)
 		if type(route.wp) ~= "number" or route.wp > #points then route.wp = 1 end
 	end
 end
@@ -1472,19 +1474,21 @@ local function install(entity, row, slot)
 		-- Horizontal only, like every other "am I where I belong" rule in this
 		-- mod (aggro.lua's evade and its roam cap): a guard standing on the
 		-- step above its post is not off it. The full position lives in
-		-- `_grug_home`.
-		if not slot.royal then
-			entity._grug_post_x = slot.pos.x
-			entity._grug_post_z = slot.pos.z
-			entity._grug_post_yaw = slot.yaw
-		end
+		-- `_grug_home`, and the post's height in `_grug_post_y` (the walk
+		-- home's goal; a throne guard's `_grug_home` follows its king).
+		-- A throne guard holds its post too since Round 58 (bosses.lua
+		-- royal_guard_base_tick), within the follow distance of the seat.
+		entity._grug_post_x = slot.pos.x
+		entity._grug_post_y = slot.pos.y
+		entity._grug_post_z = slot.pos.z
+		entity._grug_post_yaw = slot.yaw
 	elseif slot.role == "guard_patrol" then
 		-- guard.lua's own tick walks `_grug_patrol_route` through
 		-- `grug_mobs.route_tick`, and aggro.lua exempts a route carrier from
 		-- both the leash and the roam cap -- being away from the post IS its
 		-- job. Its own copy of the points, because `wp` lives in that table, and
-		-- its OWN LOOP's points: a capital has one per gate tower besides the
-		-- city ring, and mixing them would walk a guard off a wall walk.
+		-- its OWN LOOP's points: a capital has two per core gate besides the
+		-- city ring, and mixing them would walk a guard across the city.
 		local loop = row.patrols[slot.group] or {}
 		local points = {}
 		for index = 1, #loop do
@@ -1492,7 +1496,10 @@ local function install(entity, row, slot)
 				z = loop[index].z}
 		end
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
-		entity._grug_patrol_route = {points = points, wp = 1}
+		-- A small loop's own waypoint reach (patrol.lua `loop_reach`, Round
+		-- 58: a capital gate's watch rectangle), nil for every longer loop.
+		entity._grug_patrol_route = {points = points, wp = 1,
+			reach = grug_mobs.loop_reach(points)}
 	elseif slot.role == "idle" then
 		-- Its own composition's spots, so a district villager keeps to its plot
 		-- and a core villager to the core -- and, since round 3, only the ones
@@ -1926,7 +1933,8 @@ function grug_mobs.start_post_tick(self, dtime)
 		-- sight only. The post's height is its socket's (`_grug_home`, the same
 		-- position for a post guard, a king and a General).
 		local home = self._grug_home
-		local y = home and home.x == post_x and home.z == post_z and home.y or nil
+		local y = self._grug_post_y or
+			(home and home.x == post_x and home.z == post_z and home.y or nil)
 		if grug_mobs.walk_fixed(self, dtime, pos, post_x, y, post_z, "post",
 				"post") >= POST_SNAP_AFTER then
 			grug_mobs.snap_try(self, pos, post_x, post_z,
