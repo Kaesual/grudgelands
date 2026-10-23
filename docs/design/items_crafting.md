@@ -320,6 +320,15 @@ group with the coal lump, so the recipe takes either (the crafting box
 chooses which, [inventory_equipment.md](inventory_equipment.md) §1), and
 Black Dye takes charcoal too.
 
+**Dyes** are Basic recipes, and every one of the 15 is reachable from
+what anyone gathers (Round 57 ruling 29). Six come from one raw item each
+and make 2 (4 from coal): **Black** from Coal or Charcoal, **Violet** from
+Blueberries, **White** from Rock Salt, **Yellow** from Sunleaf, **Red** from
+Fire Pepper and **Cyan** from Marshbloom (none of them an Alchemy herb).
+The other nine come from the two-dye mixes (Orange, Pink, Grey, Dark Grey,
+Green, Magenta, Blue, Dark Green, Brown). One dye and any wool make that
+colour's wool.
+
 **Anthracite** (Round 47 rulings 8–10) is the deep coal: an ore of its own
 (`grug_materials:stone_with_anthracite`, item `grug_materials:anthracite`,
 Iron pick) from the lower half of T2 down; Coal ends at T2 (no Coal ore
