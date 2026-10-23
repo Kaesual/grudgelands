@@ -238,12 +238,10 @@ local function loader(directory)
 		{id = "service_store", template = "highcourt_service_store",
 			x = 25, z = 22, turns = 0, palette = "town"},
 
-		-- 9. The half-timbered city: the Miner's Guild house of The Charter of
-		-- Stone on the south lane (Round 58, in the city workshop's place,
-		-- turned so its door keeps the workshop's west side; settlements.md
-		-- "The Miner's Guild houses") and four houses along the outer ring.
-		{id = "miners_guild", template = "highcourt_miners_guild",
-			x = 31, z = -46, turns = 1, palette = "town", roof = "slate"},
+		-- 9. The half-timbered city: a workshop on the south lane and four
+		-- houses along the outer ring.
+		{id = "city_workshop", template = "highcourt_city_workshop",
+			x = 31, z = -46, turns = 0, palette = "town"},
 		-- The three houses keep the generator's own door side (`z-`) and are
 		-- TURNED to face their lane instead. A cottage's `home` kit furnishes
 		-- the cell behind every other wall -- bed corner, hearth, table --
@@ -265,7 +263,7 @@ local function loader(directory)
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "gate_south", "gate_west",
 		"gate_north", "gate_east", "chapel", "service_yard", "service_store",
-		"miners_guild", "north_house", "lane_house", "orchard_house",
+		"city_workshop", "north_house", "lane_house", "orchard_house",
 		"chapel_house", "market_house"}
 
 	-- The four corner waypoints of the city's patrol loop, in the open ground
