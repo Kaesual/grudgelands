@@ -84,8 +84,10 @@ end
 local SHOTS = {
 	{name = "S1_silverleaf_waystone", run = function(player)
 		local stone, vendor = SIL.s.travel_waypoint, SIL.s.court_vendor
-		view(player, at(SIL.a, -3, 4, -10), vector.offset(vector.multiply(
+		view(player, at(SIL.a, 15, 4, -10), vector.offset(vector.multiply(
 			vector.add(stone.pos, vendor.pos), 0.5), 0, 0.5, 0))
+	end, after = function()
+		local stone, vendor = SIL.s.travel_waypoint, SIL.s.court_vendor
 		log(("waystone %s (local %d,%d), mailbox %s, %s"):format(core.pos_to_string(stone.pos),
 			stone.x, stone.z, core.get_node(vector.offset(stone.pos, 2, 0, 1)).name,
 			where("silverleaf", "court_vendor", vendor)))
@@ -110,7 +112,7 @@ local SHOTS = {
 		view(player, at(LET.a, 1, 8.5, -47.5), at(LET.a, 4, 5, -46))
 	end},
 	{name = "G3_gate_deck_opening", run = function(player)
-		view(player, at(LET.a, 1, 15, -41.5), at(LET.a, -2.5, 11, -44))
+		view(player, at(LET.a, -2, 16, -48.5), at(LET.a, -2.5, 11, -44))
 	end, after = watch_log},
 	{name = "G4_gate_watch", run = function(player)
 		view(player, at(LET.a, 0, 13, -29), at(LET.a, 0, 1, -40))
