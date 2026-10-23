@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recipe Chain Depth</title>
+<!-- Template of tools/r57_chains/generate.lua: the data replaces the marker
+     below; no external resource. -->
+<style>
+:root {
+	--bg: #fbfaf7; --fg: #1f1d1a; --muted: #6b665e; --line: #ddd8cf;
+	--head: #f0ece4; --accent: #8a4b14; --bar: #c9853f;
+}
+@media (prefers-color-scheme: dark) {
+	:root { --bg: #1b1a18; --fg: #ece8e1; --muted: #a59f95; --line: #3a3732;
+		--head: #262420; --accent: #e3a560; --bar: #b9773a; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg);
+	font: 14px/1.45 system-ui, sans-serif; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+h2 { font-size: 17px; margin: 28px 0 8px; color: var(--accent); }
+p, li { max-width: 72em; }
+.muted { color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+select, input { font: inherit; padding: 4px 6px; background: var(--bg); color: var(--fg);
+	border: 1px solid var(--line); border-radius: 4px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 4px 6px; text-align: left;
+	vertical-align: top; }
+th { background: var(--head); position: sticky; top: 0; cursor: pointer; white-space: nowrap; }
+th.num { text-align: right; }
+th.sorted::after { content: " \25BE"; }
+th.sorted.up::after { content: " \25B4"; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.small { font-size: 12px; color: var(--muted); }
+.bar { display: inline-block; height: 8px; background: var(--bar); border-radius: 2px;
+	vertical-align: middle; margin-left: 4px; }
+ul.loop { margin: 2px 0 10px; padding-left: 20px; }
+code { font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>Recipe chain depth</h1>
+<p class="muted" id="source"></p>
+
+<h2>Legend</h2>
+<ul id="legend"></ul>
+<p>Loops are broken by these rules, in order:</p>
+<ol id="rules"></ol>
+
+<h2>Recipes per depth</h2>
+<p class="muted" id="depthnote"></p>
+<div class="scroll"><table id="depths"></table></div>
+
+<h2>Recipes</h2>
+<div class="controls">
+	<label>Area <select id="area"><option value="">All</option></select></label>
+	<label>Search <input id="search" type="search" placeholder="output, ingredient, Basic"></label>
+	<span class="muted" id="count"></span>
+</div>
+<div class="scroll"><table id="recipes"></table></div>
+
+<h2>Enchants and upgrades</h2>
+<p class="muted">The depth of what one enchant, or one upgrade level, consumes (a weapon upgrade's
+Stick included). The area filter above applies here too.</p>
+<div class="scroll"><table id="ops"></table></div>
+
+<h2>Loops</h2>
+<div id="loops"></div>
+
+<h2>Raw materials</h2>
+<p class="muted">Items no recipe makes (mined, gathered, dropped or bought), and the loop seeds.</p>
+<ul id="raw"></ul>
+
+<script>
+const DATA = /*DATA*/null;
+const $ = (id) => document.getElementById(id);
+const text = (tag, value, cls) => {
+	const el = document.createElement(tag);
+	el.textContent = value;
+	if (cls) el.className = cls;
+	return el;
+};
+$("source").textContent = "Source: " + DATA.source;
+DATA.legend.join("\n").replace(/\n  /g, " ").split("\n").forEach((line) => $("legend").append(text("li", line)));
+DATA.rules.forEach(([id, rule]) => {
+	const li = document.createElement("li");
+	li.append(text("b", id), document.createTextNode(": " + rule));
+	$("rules").append(li);
+});
+
+// Recipes per depth.
+$("depthnote").textContent = "Without the " + DATA.loop_back + " loop-back steps (rules unpack " +
+	"and cut_back: a block back into bars, a stair back into its block); the table lists them.";
+{
+	const table = $("depths");
+	const head = document.createElement("tr");
+	head.append(text("th", "Area"));
+	for (let d = 1; d <= DATA.top; d++) head.append(text("th", "depth " + d, "num"));
+	table.append(head);
+	DATA.depths.forEach((cells) => {
+		const tr = document.createElement("tr");
+		cells.forEach((cell, i) => tr.append(text("td", cell, i ? "num" : "")));
+		table.append(tr);
+	});
+}
+
+// A sortable, filterable table.
+function makeTable(id, columns, rows, numeric) {
+	const table = $(id);
+	let key = 2, up = false;
+	const head = document.createElement("tr");
+	columns.forEach((name, i) => {
+		const th = text("th", name);
+		if (numeric[i]) th.style.textAlign = "right";
+		th.addEventListener("click", () => {
+			if (key === i) up = !up; else { key = i; up = !numeric[i]; }
+			render();
+		});
+		head.append(th);
+	});
+	const body = document.createElement("tbody");
+	table.append(head, body);
+	function render() {
+		const area = $("area").value;
+		const needle = $("search").value.trim().toLowerCase();
+		const list = rows.filter((row) => (!area || row[0] === area) &&
+			(!needle || row.join(" ").toLowerCase().includes(needle)));
+		list.sort((a, b) => {
+			const c = numeric[key] ? (a[key] || 0) - (b[key] || 0) :
+				String(a[key]).localeCompare(String(b[key]));
+			// Ties: deepest first, then the most steps, then by name.
+			return (up ? c : -c) || b[2] - a[2] || b[3] - a[3] ||
+				String(a[4]).localeCompare(String(b[4]));
+		});
+		[...head.children].forEach((th, i) => {
+			th.className = i === key ? (up ? "sorted up" : "sorted") : "";
+		});
+		body.replaceChildren(...list.map((row) => {
+			const tr = document.createElement("tr");
+			columns.forEach((_, i) => {
+				const td = text("td", row[i] === null ? "" : row[i],
+					numeric[i] ? "num" : (i >= 6 ? "small" : ""));
+				if (i === 2) {
+					const bar = document.createElement("span");
+					bar.className = "bar";
+					bar.style.width = (row[2] * 8) + "px";
+					td.append(bar);
+				}
+				tr.append(td);
+			});
+			if (row[9]) tr.title = row[9];
+			return tr;
+		}));
+		return list.length;
+	}
+	return render;
+}
+DATA.areas.forEach((area) => $("area").append(new Option(area, area)));
+const renderRecipes = makeTable("recipes",
+	["Area", "Tier", "Depth", "Steps", "Recipe", "Ingredients", "Basic on the way", "Notes", "Longest chain"],
+	DATA.rows, [false, true, true, true, false, false, false, false, false]);
+const renderOps = makeTable("ops",
+	["Profession", "Tier", "Depth", "Steps", "Operation", "One costs", "Basic on the way"],
+	DATA.ops, [false, true, true, true, false, false, false]);
+function renderAll() {
+	const shown = renderRecipes();
+	renderOps();
+	$("count").textContent = shown + " of " + DATA.rows.length + " recipes";
+}
+$("area").addEventListener("change", renderAll);
+$("search").addEventListener("input", renderAll);
+try {
+	const saved = localStorage.getItem("r57chains-area");
+	if (saved !== null && DATA.areas.includes(saved)) $("area").value = saved;
+	$("area").addEventListener("change", () => {
+		try { localStorage.setItem("r57chains-area", $("area").value); } catch (e) { /* unavailable */ }
+	});
+} catch (e) { /* storage unavailable */ }
+renderAll();
+
+// Loops.
+DATA.loops.forEach(([items, seeds, steps], i) => {
+	const p = text("p", (i + 1) + ". " + items);
+	if (seeds) p.append(text("span", "  (seeded as raw: " + seeds + ")", "muted"));
+	const ul = document.createElement("ul");
+	ul.className = "loop";
+	steps.forEach(([rule, step]) => {
+		const li = document.createElement("li");
+		li.append(text("code", "[" + rule + "] "), document.createTextNode(step));
+		ul.append(li);
+	});
+	$("loops").append(p, ul);
+});
+DATA.raw.forEach((line) => $("raw").append(text("li", line)));
+</script>
+</body>
+</html>
