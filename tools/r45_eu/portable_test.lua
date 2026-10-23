@@ -592,6 +592,13 @@ local function total(player, name)
 end
 local function context_of(player) return sfinv.get_or_create_context(player) end
 local function st_of(player) return context_of(player).grug_craft end
+-- Round 57 review: a big button's name carries the build's serial, the stop
+-- button names the running job.
+local function go(player, field) return (field or FIELDS.go) .. "_" .. st_of(player).serial end
+local function stop(player)
+	local job = J.job_state(player)
+	return job and J.stop_field(job) or FIELDS.stop
+end
 local function open(player)
 	sfinv.set_page(player, "sfinv:crafting")
 	return player.formspec
@@ -933,11 +940,11 @@ do
 	local image = expected:get_meta():get_string("inventory_image")
 	check(image ~= "", "E the result has its enchant image")
 	has(fs, "image[7.95,1.65;0.9,0.9;" .. fs_escape(image) .. "]", "E the preview shows it")
-	has(fs, "grug_craft_ench_go;Enchant now]", "E Enchant now is enabled")
+	has(fs, go(smith, OF.enchant) .. ";Enchant now]", "E Enchant now is enabled")
 	says(fs, "Crafting this will give you a Weaponsmith experience point", "E the XP hint")
 	local crafts_before = J.crafts_in_tier(smith, "weaponsmith")
 	local bars = total(smith, "grug_materials:steel_bar")
-	click(smith, {[OF.enchant] = "Enchant now"})
+	click(smith, {[go(smith, OF.enchant)] = "Enchant now"})
 	local job = J.job_state(smith)
 	check(job ~= nil and job.kind == "enchant", "E the job starts")
 	eq(job and job.finish - job.start, 5, "E 5 s")
@@ -947,7 +954,7 @@ do
 	eq(total(smith, "grug_materials:steel_bar"), bars, "E the bar is held by the job, not lost")
 	-- Round 57 layout C: the job strip's stop button and one line naming the
 	-- enchant and the item.
-	has(smith.formspec, FIELDS.stop .. ";■]", "E the stop button while it runs")
+	has(smith.formspec, stop(smith) .. ";■]", "E the stop button while it runs")
 	says(smith.formspec, "Steel Sword: Strength T3", "E the job's line")
 	-- (greyed: the slot is empty now)
 	has(smith.formspec, FIELDS.recheck .. ";Queue Enchant]", "E Enchant now reads Queue Enchant")
@@ -988,10 +995,10 @@ do
 	choose(smith, "T2 prefix: +5 Strength")
 	local before = {}
 	for _, entry in ipairs(T2.ingredients) do before[entry.item] = total(smith, entry.item) end
-	click(smith, {[OF.enchant] = "Enchant now"})
+	click(smith, {[go(smith, OF.enchant)] = "Enchant now"})
 	check(J.job_state(smith) ~= nil, "E a second enchant starts")
 	pass(2)
-	click(smith, {[FIELDS.stop] = "Cancel"})
+	click(smith, {[stop(smith)] = "Cancel"})
 	eq(J.job_state(smith), nil, "E cancelled")
 	local back
 	for _, stack in ipairs(smith.inv:get_list("main")) do
@@ -1038,7 +1045,7 @@ do
 	local enchanted = Q.operation_plan(STR_T3, sword, smith).output
 	smith.inv:set_stack(TARGET, 1, enchanted)
 	local bars = total(smith, "grug_materials:steel_bar")
-	click(smith, {[OF.enchant] = "Enchant now"})
+	click(smith, {[go(smith, OF.enchant)] = "Enchant now"})
 	eq(J.job_state(smith), nil, "E a changed target does not start")
 	says(smith.formspec, "This enchantment would not change the item.", "E it says why")
 	eq(total(smith, "grug_materials:steel_bar"), bars, "E nothing consumed")
@@ -1057,6 +1064,16 @@ do
 	put(smith, TARGET, 1, crafted("grug_gear:sword_steel"):to_string())
 	ok, reason = J.start_operation(smith, STR_T3.id)
 	check(ok and #J.queue_state(smith) == 1, "E a second enchant waits in the queue")
+	-- Round 57 review: a second click on the page the first replaced queues
+	-- nothing (the button carries the build's serial).
+	open(smith)
+	put(smith, TARGET, 1, crafted("grug_gear:sword_steel"):to_string())
+	stock_enchant(smith, STR_T3)
+	local stale = go(smith, OF.enchant)
+	st_of(smith).serial = st_of(smith).serial + 1
+	click(smith, {[stale] = "Queue Enchant"})
+	eq(#J.queue_state(smith), 1, "E a stale Queue Enchant click queues nothing")
+	put(smith, TARGET, 1, "")
 	check(smith.inv:get_stack(TARGET, 1):is_empty(), "E ... with its item out of the slot")
 	pass(10)
 	eq(J.job_state(smith), nil, "E both done")
@@ -1172,7 +1189,7 @@ do
 	has(smith.formspec, OF.levels .. ";;9]", "U Max fills to the cap")
 	says(smith.formspec, "Result: item level 30 (cap)", "U the result at the cap")
 	-- Above the cap: lowered, noted, nothing started.
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "12"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "12"})
 	eq(J.job_state(smith), nil, "U +12 does not start")
 	has(smith.formspec, OF.levels .. ";;9]", "U the field is lowered to 9")
 	says(smith.formspec, "The cap is item level 30 — levels reduced to 9", "U the note")
@@ -1182,7 +1199,7 @@ do
 	stock_levels(smith, 4, 20)
 	click(smith, {[OF.max] = "Max", [OF.levels] = "9"})
 	has(smith.formspec, OF.levels .. ";;4]", "U Max: what the materials pay for")
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "6"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "6"})
 	eq(J.job_state(smith), nil, "U too few materials do not start")
 	says(smith.formspec, "Not enough ingredients — levels reduced to 4", "U the materials note")
 	-- +3: 3 s, three bars and three sticks, item level 24, enchants follow.
@@ -1190,7 +1207,7 @@ do
 	put(smith, TARGET, 1, sword:to_string())
 	stock_levels(smith, 5, 5)
 	local crafts = J.crafts_in_tier(smith, "weaponsmith")
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "3"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "3"})
 	local job = J.job_state(smith)
 	check(job ~= nil and job.kind == "upgrade", "U +3 starts at once below the player's level")
 	eq(job and job.finish - job.start, 3, "U 1 s per level")
@@ -1198,7 +1215,7 @@ do
 	eq(smith.inv:get_stack(TARGET, 1):is_empty(), true, "U the item left the slot")
 	says(smith.formspec, "Steel Sword +3 levels", "U the job's line")
 	lacks(smith.formspec, "Crafting…", "U ... not Crafting…")
-	has(smith.formspec, FIELDS.stop .. ";■]", "U the stop button while it runs")
+	has(smith.formspec, stop(smith) .. ";■]", "U the stop button while it runs")
 	pass(3)
 	eq(J.job_state(smith), nil, "U done after 3 s")
 	local out = result_of(smith, "grug_gear:sword_steel")
@@ -1232,10 +1249,10 @@ do
 	put(smith, TARGET, 1, out:to_string())
 	stock_levels(smith, 3, 3)
 	upgrade_box(smith)
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "2"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "2"})
 	check(J.job_state(smith) ~= nil, "U a job to cancel")
 	pass(1)
-	click(smith, {[FIELDS.stop] = "Stop"})
+	click(smith, {[stop(smith)] = "Stop"})
 	eq(J.job_state(smith), nil, "U cancelled")
 	local back
 	for _, stack in ipairs(smith.inv:get_list("main")) do
@@ -1256,18 +1273,18 @@ do
 	upgrade_box(smith)
 	click(smith, {[OF.levels] = "1", key_enter_field = OF.levels})
 	lacks(smith.formspec, "Upgrade anyway", "U +1 to 22: no warning at the player's level")
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "5"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "5"})
 	eq(J.job_state(smith), nil, "U the first click above the level does not start")
 	local fs = smith.formspec
 	says(fs, "The target item level exceeds your level, you won't be able to use this " ..
 		"item before you have reached level 26.", "U the warning")
-	has(fs, "style[" .. OF.upgrade .. ";bgcolor=#f0c419", "U the button is yellow")
-	has(fs, OF.upgrade .. ";Upgrade anyway]", "U Upgrade anyway")
+	has(fs, "style[" .. go(smith, OF.upgrade) .. ";bgcolor=#f0c419", "U the button is yellow")
+	has(fs, go(smith, OF.upgrade) .. ";Upgrade anyway]", "U Upgrade anyway")
 	-- Another count is a new question.
-	click(smith, {[OF.upgrade] = "Upgrade anyway", [OF.levels] = "6"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade anyway", [OF.levels] = "6"})
 	eq(J.job_state(smith), nil, "U a changed count shows its warning first")
 	says(smith.formspec, "reached level 27.", "U the warning for +6")
-	click(smith, {[OF.upgrade] = "Upgrade anyway", [OF.levels] = "6"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade anyway", [OF.levels] = "6"})
 	check(J.job_state(smith) ~= nil, "U the second click starts")
 	pass(6)
 	eq(Q.effective_ilvl(result_of(smith, "grug_gear:sword_steel")), 27,
@@ -1300,9 +1317,9 @@ do
 	stock_levels(smith, 20, 20, "grug_materials:bronze_bar")
 	open(smith)
 	says(smith.formspec, "Cap 10 (Weaponsmith tier 1)", "U a T1 item's cap is 10 for a T2 smith")
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "10"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "10"})
 	has(smith.formspec, OF.levels .. ";;9]", "U +10 on a level-1 item is lowered to 9")
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "9"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "9"})
 	pass(9)
 	local top = result_of(smith, "grug_gear:sword_bronze")
 	eq(Q.effective_ilvl(top), 10, "U a T2 smith raises a T1 sword to 10, never past it")
@@ -1452,7 +1469,7 @@ do
 	-- The upgrade box with the warning.
 	upgrade_box(smith)
 	click(smith, {[OF.levels] = "1", key_enter_field = OF.levels})
-	click(smith, {[OF.upgrade] = "Upgrade now", [OF.levels] = "9"})
+	click(smith, {[go(smith, OF.upgrade)] = "Upgrade now", [OF.levels] = "9"})
 	local upgrade_fs = smith.formspec
 	eq(J.job_state(smith), nil, "P the first click above the level only warns")
 	says(upgrade_fs, "The target item level exceeds your level", "P the upgrade box warns")

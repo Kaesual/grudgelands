@@ -217,11 +217,16 @@ tools](#player-meta-read-by-external-tools).
   DETAILS: once a `details` box is registered, the recipe box draws
   "Recipe details" (`grug_craft_details`) beside its ingredients heading,
   which opens it). Below every box ui.lua draws the job strip (from
-  `CRAFT_STRIP_Y`: the bar, the stop button `grug_craft_stop`, the job's
+  `CRAFT_STRIP_Y`: the bar, the stop button `stop_field(job)` =
+  `grug_craft_stop_<start in ms>` (a click names the job it stops, so a
+  double click never stops the next one), the job's
   line, View Queue `grug_craft_queue`) and, while it holds something, the
   overflow row; `action_button(view, field, label, enabled[, style])` is
   the big button right-aligned in a box's bottom row (`CRAFT_ACTION`,
-  greyed as `grug_craft_recheck` when disabled). `JOB_TEXTS[kind](job)`
+  greyed as `grug_craft_recheck` when disabled; live it is named
+  `<field>_<serial>`, the page build's serial `grug_craft.serial`, and
+  `action_clicked(st, fields, field)` accepts only the newest build's, so a
+  double click never starts or queues twice). `JOB_TEXTS[kind](job)`
   is a job's one line and `JOB_ICONS[kind](job)` its icon in the queue
   view (the waiting jobs' ✕ are `grug_craft_unqueue_<id>`), `progress_bar(x, y, w, h,
   job, now)` draws the bar

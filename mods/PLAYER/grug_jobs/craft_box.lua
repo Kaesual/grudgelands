@@ -474,13 +474,14 @@ local function build(player, view)
 		y = wrapped_labels(fs, X, y, W, entry[1], entry[2], NOTE_STEP)
 	end
 	if stacks then
-		-- Quantity [−][field][+] [Max], the big button right of it.
+		-- Quantity [−][field][+] [Max], the big button right of it ("Quantity"
+		-- needs about 1.3 units at the web client's size).
 		fs[#fs + 1] = ("label[%s,%s;Quantity]button[%s,%s;0.55,0.6;%s;−]" ..
 			"field[%s,%s;0.95,0.6;%s;;%s]field_close_on_enter[%s;false]" ..
 			"button[%s,%s;0.55,0.6;%s;+]button[%s,%s;0.9,0.6;%s;Max]"):format(
-			n(X), n(quantity_y + 0.3), n(X + 1.25), n(quantity_y), F.minus,
-			n(X + 1.85), n(quantity_y), F.qty, esc(st.qty), F.qty,
-			n(X + 2.85), n(quantity_y), F.plus, n(X + 3.5), n(quantity_y), F.max)
+			n(X), n(quantity_y + 0.3), n(X + 1.4), n(quantity_y), F.minus,
+			n(X + 2), n(quantity_y), F.qty, esc(st.qty), F.qty,
+			n(X + 3), n(quantity_y), F.plus, n(X + 3.65), n(quantity_y), F.max)
 	end
 	-- "Craft ×N" while nothing runs, "Queue ×N" while a job runs (ruling 1).
 	fs[#fs + 1] = grug_jobs.action_button(view, F.go,
@@ -532,7 +533,7 @@ local function fields(player, st, fields)
 		end
 		return true
 	end
-	if fields[F.go] then
+	if grug_jobs.action_clicked(st, fields, F.go) then
 		local ok, reason, info = grug_jobs.start_job(player, recipe.id,
 			stacks and (quantity_of(st.qty) or st.qty) or 1,
 			st.picks_for == recipe.id and st.picks or nil)

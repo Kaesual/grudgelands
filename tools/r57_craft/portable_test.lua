@@ -33,7 +33,8 @@
 --      under every box (another recipe, the overview, a details box), no
 --      countdown, the output slots only while filled, the queue view
 --      (rows, ✕, "◀ Back to recipe", "N of 5 slots"), a full queue greys
---      the button, every element inside its column;
+--      the button, every element inside its column; a double click on
+--      Craft/Queue starts one job, on the stop button stops one;
 --   V  favourites: the star toggles a recipe, saved in player meta (a
 --      rejoin reads it), "Favorites only" alone and with "Craftable only";
 --   U  the recursive Basic unlock: learning a profession unlocks the Basic
@@ -526,6 +527,13 @@ local function click(player, fields)
 	end
 end
 local function st_of(player) return sfinv.get_or_create_context(player).grug_craft end
+-- Round 57 review: a big button's name carries the build's serial, the stop
+-- button names the running job.
+local function go(player, field) return (field or F.go) .. "_" .. st_of(player).serial end
+local function stop(player)
+	local job = J.job_state(player)
+	return job and J.stop_field(job) or F.stop
+end
 local function content(fs) return fs:match("real_coordinates%[false%](.*)$") or "" end
 local function raw(player, key) return player.meta:get_string(key) end
 local function decoded(player, key)
@@ -759,7 +767,7 @@ do
 	-- The stop button: the stew's ingredients back, the planks start now.
 	advance(1.5)
 	local stop_at = J.now()
-	click(c, {[F.stop] = "■"})
+	click(c, {[stop(c)] = "■"})
 	local job = J.job_state(c)
 	check(job and job.recipe == plank.id, "C stop: the planks start")
 	check(job and math.abs(job.start - stop_at) < 1e-6, "C ... now, not at the stew's end")
@@ -868,7 +876,7 @@ do
 	put(l, "main", 11, "t:log 20")
 	check(choose(l, 2, stew), "L the stew chosen")
 	local fs = l.formspec
-	has(fs, F.go .. ";Craft ×1]", "L Craft ×N while idle")
+	has(fs, go(l) .. ";Craft ×1]", "L Craft ×N while idle")
 	has(fs, "No job running", "L the idle strip")
 	lacks(fs, F.stop .. ";", "L no stop button while idle")
 	lacks(fs, F.queue .. ";", "L no View Queue while idle")
@@ -876,12 +884,12 @@ do
 	has(fs, "checkbox[" .. J._fs_number(2.75) .. ",2;" .. F.fav_only .. ";Favorites only;false]",
 		"L Favorites only beside Craftable only")
 	geometry_ok(fs, "L idle")
-	click(l, {[F.qty] = "4", [F.go] = "Craft ×4"})
+	click(l, {[F.qty] = "4", [go(l)] = "Craft ×4"})
 	fs = l.formspec
 	check(J.job_state(l) ~= nil, "L the click starts the job")
-	has(fs, F.go .. ";Queue ×4]", "L Queue ×N while a job runs")
+	has(fs, go(l) .. ";Queue ×4]", "L Queue ×N while a job runs")
 	has(fs, "animated_image[5.6,", "L the bar in the strip")
-	has(fs, F.stop .. ";■]", "L the small stop button")
+	has(fs, stop(l) .. ";■]", "L the small stop button")
 	has(fs, "Hearty Stew ×4", "L one line names the job")
 	has(fs, queue_button(0), "L View Queue [0]")
 	lacks(fs, " s left", "L no countdown")
@@ -889,7 +897,7 @@ do
 	-- The strip stays on another recipe, on the overview and on a details box.
 	check(choose(l, 1, plank), "L another recipe")
 	has(l.formspec, "animated_image[5.6,", "L the bar stays on another recipe")
-	has(l.formspec, F.go .. ";Queue ×1]", "L ... and it queues")
+	has(l.formspec, go(l) .. ";Queue ×1]", "L ... and it queues")
 	click(l, {[F.area .. "2"] = "Cooking"})
 	has(l.formspec, "animated_image[5.6,", "L the bar on the overview (no recipe chosen)")
 	has(l.formspec, queue_button(0), "L ... and View Queue")
@@ -901,12 +909,12 @@ do
 	click(l, {[F.details] = "Recipe details"})
 	has(l.formspec, "DETAILS PAGE", "L the details box opens")
 	has(l.formspec, "animated_image[5.6,", "L ... with the bar")
-	has(l.formspec, F.stop .. ";■]", "L ... the stop button")
+	has(l.formspec, stop(l) .. ";■]", "L ... the stop button")
 	has(l.formspec, queue_button(0), "L ... and View Queue")
 	-- The queue view.
-	click(l, {[F.qty] = "2", [F.go] = "Queue ×2"})
+	click(l, {[F.qty] = "2", [go(l)] = "Queue ×2"})
 	check(choose(l, 1, plank), "L back at the planks")
-	click(l, {[F.qty] = "2", [F.go] = "Queue ×2"})
+	click(l, {[F.qty] = "2", [go(l)] = "Queue ×2"})
 	eq(#J.queue_state(l), 1, "L a job waits")
 	has(l.formspec, queue_button(1), "L View Queue [1]")
 	click(l, {[F.queue] = "View Queue [1]"})
@@ -919,9 +927,9 @@ do
 	has(fs, "animated_image[5.6,", "L the bar under the queue view")
 	geometry_ok(fs, "L the queue view")
 	click(l, {[F.back] = "x"})
-	has(l.formspec, F.go .. ";Queue ×2]", "L Back returns to the recipe")
+	has(l.formspec, go(l) .. ";Queue ×2]", "L Back returns to the recipe")
 	-- Full: the button greys with the message.
-	for _ = 1, 3 do click(l, {[F.qty] = "1", [F.go] = "Queue ×1"}) end
+	for _ = 1, 3 do click(l, {[F.qty] = "1", [go(l)] = "Queue ×1"}) end
 	eq(#J.queue_state(l), 4, "L the queue is full")
 	fs = l.formspec
 	has(fs, F.recheck .. ";Queue ×1]", "L a full queue greys the button")
@@ -935,6 +943,25 @@ do
 	advance(30)
 	run_timers()
 	eq(J.job_state(l), nil, "L the queue runs empty")
+	-- Double clicks (Round 57 review): the second click of Craft or Queue,
+	-- and of the stop button, comes from the page the first replaced.
+	check(choose(l, 1, plank), "L the planks once more")
+	local first = go(l)
+	click(l, {[F.qty] = "1", [first] = "Craft ×1"})
+	click(l, {[F.qty] = "1", [first] = "Craft ×1"})
+	check(J.job_state(l) ~= nil and #J.queue_state(l) == 0, "L a double click starts one job")
+	click(l, {[F.qty] = "1", [go(l)] = "Queue ×1"})
+	eq(#J.queue_state(l), 1, "L a click on the newest page queues")
+	local stale = stop(l)
+	advance(0.5)
+	click(l, {[stale] = "■"})
+	local promoted = J.job_state(l)
+	check(promoted ~= nil and #J.queue_state(l) == 0, "L the stop stops the running job")
+	click(l, {[stale] = "■"})
+	check(J.job_state(l) ~= nil and J.job_state(l).start == promoted.start,
+		"L a second click on the old stop button leaves the promoted job running")
+	advance(5)
+	run_timers()
 end
 
 ------------------------------------------------------------------------------

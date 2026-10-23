@@ -442,8 +442,9 @@ local function job_strip(fs, st, job, waiting)
 	local queue_x = right - QUEUE_W
 	local bar_w = queue_x - 0.3 - STOP_W - 0.1 - x
 	fs[#fs + 1] = grug_jobs.progress_bar(x, STRIP_Y + 0.35, bar_w, 0.3, job, grug_jobs.now())
+	local stop = grug_jobs.stop_field(job)
 	fs[#fs + 1] = ("button[%s,%s;%s,0.5;%s;■]tooltip[%s;%s]"):format(n(x + bar_w + 0.1),
-		n(STRIP_Y + 0.25), n(STOP_W), F.stop, F.stop,
+		n(STRIP_Y + 0.25), n(STOP_W), stop, stop,
 		esc("Stop this job: what it has not made comes back."))
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(STRIP_Y + 0.95),
 		esc(clip_chars(job_label(job), math.floor((bar_w + STOP_W + 0.1) * CHARS_PER_UNIT))))
@@ -481,9 +482,20 @@ local function overflow_row(fs, player, y)
 	end
 end
 
+-- The stop button names the running job (its start in ms), so a second
+-- click on a page sent before the stop never stops the job promoted after
+-- it (Round 57 review).
+function grug_jobs.stop_field(job)
+	return F.stop .. "_" .. tostring(math.floor(job.start * 1000))
+end
+
 -- The big button of layout C (ruling 1): right-aligned in the box's bottom
 -- row, above the overflow and the strip. A button that cannot start is
--- greyed and named grug_craft_recheck (a click only rebuilds the page).
+-- greyed and named grug_craft_recheck (a click only rebuilds the page). A
+-- live one carries the build's serial (`<field>_<serial>`, view.serial):
+-- action_clicked accepts only the newest build's, so a double click (the
+-- second on the page the first replaced) never starts or queues twice
+-- (Round 57 review).
 local DISABLED_STYLE = "style[" .. F.recheck ..
 	";bgcolor=#2a2a2a;bgcolor_hovered=#2a2a2a;textcolor=#808080;border=false]"
 grug_jobs.CRAFT_DISABLED_STYLE = DISABLED_STYLE
@@ -491,9 +503,13 @@ function grug_jobs.action_button(view, field, label, enabled, style)
 	local geometry = ("%s,%s;%s,%s"):format(n(BOX.x + BOX.w - 0.2 - ACTION.w),
 		n(view.bottom - ACTION.h), n(ACTION.w), n(ACTION.h))
 	if enabled then
-		return (style or "") .. ("button[%s;%s;%s]"):format(geometry, field, esc(label))
+		return (style or "") .. ("button[%s;%s_%d;%s]"):format(geometry, field, view.serial,
+			esc(label))
 	end
 	return DISABLED_STYLE .. ("button[%s;%s;%s]"):format(geometry, F.recheck, esc(label))
+end
+function grug_jobs.action_clicked(st, fields, field)
+	return st.serial ~= nil and fields[field .. "_" .. st.serial] ~= nil
 end
 
 -- Resends the Crafting page when it is the player's current page (the
@@ -621,8 +637,9 @@ function grug_jobs.crafting_page_content(player, context)
 	local waiting = job and grug_jobs.queue_state(player) or {}
 	local overflow = not player:get_inventory():is_empty(grug_jobs.OUTPUT_LIST)
 	local bottom = STRIP_Y - (overflow and OVERFLOW_H or 0)
+	st.serial = (st.serial or 0) + 1
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
-		recipe = recipe, queue = waiting, bottom = bottom - 0.1,
+		recipe = recipe, queue = waiting, bottom = bottom - 0.1, serial = st.serial,
 		full = job ~= nil and 1 + #waiting >= grug_jobs.QUEUE_MAX})
 	if overflow then overflow_row(fs, player, bottom) end
 	job_strip(fs, st, job, waiting)
@@ -708,10 +725,17 @@ local function receive_fields(player, context, fields)
 	end
 	-- The job strip's buttons, the same under every box: stop the running
 	-- job, open the queue view.
-	if fields[F.stop] then
-		local ok, reason = grug_jobs.cancel_job(player)
-		if not ok then st.note = reason end
-		handled = true
+	for name in pairs(fields) do
+		local key = type(name) == "string" and name:match("^" .. F.stop .. "_(%d+)$")
+		if key then
+			-- Only the running job's own button (a stale one names an older job).
+			local job = grug_jobs.job_state(player)
+			if job and grug_jobs.stop_field(job) == name then
+				local ok, reason = grug_jobs.cancel_job(player)
+				if not ok then st.note = reason end
+			end
+			handled = true
+		end
 	end
 	if fields[F.queue] and boxes.queue then
 		grug_jobs.open_craft_box(st, "queue")

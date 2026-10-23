@@ -495,6 +495,13 @@ local function content(fs)
 	return fs:match("real_coordinates%[false%](.*)$") or ""
 end
 local function st_of(player) return context_of(player).grug_craft end
+-- Round 57 review: a big button's name carries the build's serial, the stop
+-- button names the running job.
+local function go(player, field) return (field or FIELDS.go) .. "_" .. st_of(player).serial end
+local function stop(player)
+	local job = J.job_state(player)
+	return job and J.stop_field(job) or FIELDS.stop
+end
 local function count(text, needle)
 	local found, from = 0, 1
 	while true do
@@ -812,14 +819,14 @@ has(fs, "item_image[5.6,2.6;0.4,0.4;t:meat]", "Q an ingredient icon")
 has(fs, "30/1]", "Q have/need for one")
 has(fs, "Max: 12]", "Q the maximum (12 grain)")
 -- 0.45.1: Quantity [−][field][+] [Max].
-has(fs, "field[7.45,", "Q a quantity field for a stackable output")
+has(fs, "field[7.6,", "Q a quantity field for a stackable output")
 has(fs, "grug_craft_qty;;1]", "Q the field's default is 1")
 has(fs, "field_close_on_enter[grug_craft_qty;false]", "Q Enter keeps the window open")
 has(fs, "grug_craft_max;Max]", "Q the Max button")
 says(fs, "Crafting this will give you a Cooking experience point", "Q the XP hint")
 has(fs, "(c@#7ae08a)Crafting this", "Q ... in green")
 -- Round 57 layout C: the big button names the quantity.
-has(fs, "grug_craft_go;Craft ×1]", "Q Craft ×N")
+has(fs, go(cook) .. ";Craft ×1]", "Q Craft ×N")
 geometry_ok(fs, "Q a stackable recipe")
 -- Enter recalculates, never starts.
 click(cook, {[FIELDS.qty] = "5", key_enter_field = FIELDS.qty, key_enter = "true"})
@@ -829,7 +836,7 @@ has(cook.formspec, "30/5]", "Q have/need for the typed quantity")
 click(cook, {[FIELDS.qty] = "x", key_enter_field = FIELDS.qty})
 says(cook.formspec, "Enter a quantity of 1 or more.", "Q a bad quantity is named on Enter")
 -- Craft now above the maximum lowers the field and does not start.
-click(cook, {[FIELDS.qty] = "40", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "40", [go(cook)] = "Craft now"})
 eq(J.job_state(cook), nil, "Q above the maximum: no job")
 has(cook.formspec, "grug_craft_qty;;12]", "Q the field lowered to the maximum")
 says(cook.formspec, "Not enough ingredients — quantity reduced to 12", "Q the note")
@@ -845,7 +852,7 @@ lacks(cook.formspec, "quantity reduced", "Q the note goes with the next click")
 -- J. Sends per job; the bar; browsing while a job runs.
 ------------------------------------------------------------------------------
 sent = cook.sent
-click(cook, {[FIELDS.qty] = "12", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "12", [go(cook)] = "Craft now"})
 local job = J.job_state(cook)
 check(job ~= nil and job.quantity == 12, "J the job starts with the field's quantity")
 eq(cook.sent, sent + 1, "J the start sends the page once")
@@ -853,8 +860,8 @@ fs = cook.formspec
 -- Round 57 layout C: the job strip at the box's bottom (the bar, the small
 -- stop button, one line, View Queue); the big button queues.
 has(fs, "Hearty Stew " .. fs_escape("×") .. "12", "J the job's line")
-has(fs, "grug_craft_stop;■]", "J the small stop button")
-has(fs, "grug_craft_go;Queue ×12]", "J Craft ×N turned into Queue ×N")
+has(fs, stop(cook) .. ";■]", "J the small stop button")
+has(fs, go(cook) .. ";Queue ×12]", "J Craft ×N turned into Queue ×N")
 has(fs, "grug_craft_queue;" .. fs_escape("View Queue [0]") .. "]", "J View Queue")
 lacks(fs, "Crafting…", "J no indicator (one line below the bar)")
 -- 12 s job: 1.5 x 12 s / 96 frames = 187.5 -> 188 ms; elapsed 0 -> frame 1.
@@ -867,7 +874,7 @@ print(("bytes: Crafting tab, a page during a job (recipe chosen): content %d, pa
 advance(6)
 click(cook, {[FIELDS.area .. "1"] = "Basic"})
 has(cook.formspec, ";96;188;33]", "J frame_start from the elapsed time on every build")
-has(cook.formspec, "grug_craft_stop;■]", "J the stop button also while browsing another area")
+has(cook.formspec, stop(cook) .. ";■]", "J the stop button also while browsing another area")
 has(cook.formspec, "Hearty Stew " .. fs_escape("×") .. "12", "J the job stays shown while browsing")
 advance(3)
 click(cook, {[FIELDS.next] = ">"})
@@ -877,7 +884,7 @@ has(cook.formspec, ";96;188;49]", "J three quarters: frame 49")
 click(cook, {[FIELDS.area .. "2"] = "Cooking"})
 click(cook, {[FIELDS.row .. "1"] = ""})
 put(cook, "main", 20, "t:grain 1")
-click(cook, {[FIELDS.qty] = "1", [FIELDS.go] = "Queue ×1"})
+click(cook, {[FIELDS.qty] = "1", [go(cook)] = "Queue ×1"})
 eq(#J.queue_state(cook), 1, "J a second job waits")
 has(cook.formspec, "grug_craft_queue;" .. fs_escape("View Queue [1]") .. "]",
 	"J View Queue counts it")
@@ -901,14 +908,14 @@ run_timers()
 eq(J.job_state(cook), nil, "J the job ended")
 eq(cook.sent, sent + 1, "J the end sends the page once")
 has(cook.formspec, "No job running", "J idle after the end")
-has(cook.formspec, "grug_craft_go;Craft ×1]", "J Queue ×N turned back into Craft ×N")
+has(cook.formspec, go(cook) .. ";Craft ×1]", "J Queue ×N turned back into Craft ×N")
 eq(cook.inv:get_stack("main", 10):get_count(), 12, "J the stews in the inventory (R47)")
 check(cook.inv:is_empty(OUT), "J ... not in the output list")
 eq(feed_lines[#feed_lines], "Hearty Stew ×12 is ready", "J the feed line")
 -- On another page the end sends nothing.
 put(cook, "main", 9, "t:meat 5")
 put(cook, "main", 11, "t:grain 5")
-click(cook, {[FIELDS.qty] = "2", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "2", [go(cook)] = "Craft now"})
 check(J.job_state(cook) ~= nil, "J a second job after the first")
 sfinv.set_page(cook, "grug_inventory:inventory")
 sent = cook.sent
@@ -919,19 +926,19 @@ eq(cook.sent, sent, "J ... and sent nothing")
 fs = open(cook)
 eq(cook.inv:get_stack("main", 10):get_count(), 14, "J the inventory collects both")
 -- Cancel: one resend, everything back.
-click(cook, {[FIELDS.qty] = "3", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "3", [go(cook)] = "Craft now"})
 eq(count_of(cook, "t:meat"), 0, "J the third job took the meat")
 sent = cook.sent
-click(cook, {[FIELDS.stop] = "Stop"})
+click(cook, {[stop(cook)] = "Stop"})
 eq(J.job_state(cook), nil, "J Stop cancels")
 eq(cook.sent, sent + 1, "J the cancel sends the page once")
 eq(count_of(cook, "t:meat"), 3, "J the refund")
 -- A Stop refused without room keeps the job and shows the reason.
-click(cook, {[FIELDS.qty] = "3", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "3", [go(cook)] = "Craft now"})
 for index = 1, 32 do
 	if cook.inv:get_stack("main", index):is_empty() then put(cook, "main", index, "t:torch 99") end
 end
-click(cook, {[FIELDS.stop] = "Stop"})
+click(cook, {[stop(cook)] = "Stop"})
 check(J.job_state(cook) ~= nil, "J a Stop without room keeps the job")
 says(cook.formspec, "Not enough inventory space to cancel", "J the refusal")
 for index = 1, 32 do
@@ -944,7 +951,7 @@ eq(count_of(cook, "t:stew"), 17, "J every stew in the inventory (12 + 2 + 3)")
 -- build that opens the tab, or inside the next start: still one send each.
 put(cook, "main", 9, "t:meat 4")
 put(cook, "main", 10, "t:grain 4")
-click(cook, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "1", [go(cook)] = "Craft now"})
 check(J.job_state(cook) ~= nil, "J a short job")
 sfinv.set_page(cook, "grug_inventory:inventory")
 advance(1.5)
@@ -953,10 +960,10 @@ open(cook)
 eq(cook.sent, sent + 1, "J a job due at the tab's build completes in it: one send")
 eq(J.job_state(cook), nil, "J ... the job completed")
 has(cook.formspec, "No job running", "J ... and the build shows it")
-click(cook, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "1", [go(cook)] = "Craft now"})
 advance(1.5)
 sent = cook.sent
-click(cook, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now"})
+click(cook, {[FIELDS.qty] = "1", [go(cook)] = "Craft now"})
 eq(cook.sent, sent + 1, "J a due job completed by the next start: one send")
 check(J.job_state(cook) ~= nil, "J ... and the new job runs")
 advance(2)
@@ -1002,12 +1009,12 @@ do
 	click(v, {[FIELDS.area .. "2"] = "Cooking"})
 	click(v, {[FIELDS.row .. "1"] = ""})
 	has(v.formspec, "Max: 0 (inventory room)]", "V Max names the inventory's room")
-	click(v, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now"})
+	click(v, {[FIELDS.qty] = "1", [go(v)] = "Craft now"})
 	eq(J.job_state(v), nil, "V no job without room")
 	says(v.formspec, "Not enough room in inventory", "V the note")
 	-- With a job and the overflow at once, everything stays in its column.
 	put(v, "main", 12, "")
-	click(v, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now"})
+	click(v, {[FIELDS.qty] = "1", [go(v)] = "Craft now"})
 	check(J.job_state(v) ~= nil, "V a job with room for it")
 	put(v, OUT, 2, "t:stew 1")
 	fs = open(v)
@@ -1061,8 +1068,8 @@ says(fs, "Requires: Forge nearby", "S the station hint")
 has(fs, "(c@#ff9f5a)Requires: Forge nearby", "S ... as a warning")
 has(fs, "style[grug_craft_recheck;", "S the button greyed")
 has(fs, "grug_craft_recheck;Craft ×1]", "S ... and disabled (it cannot start)")
-lacks(fs, "grug_craft_go;", "S no live Craft now")
-lacks(fs, "field[7.45,", "S no quantity field for a non-stackable output")
+lacks(fs, "grug_craft_go_", "S no live Craft now")
+lacks(fs, "field[7.6,", "S no quantity field for a non-stackable output")
 says(fs, "Crafting this will not give you a Weaponsmith experience point",
 	"S the XP hint below the profession tier")
 has(fs, "(c@#8a8a8a)Crafting this will not", "S ... in grey")
@@ -1073,13 +1080,13 @@ eq(J.job_state(smith), nil, "S the disabled button never starts")
 eq(smith.sent, sent + 1, "S ... a click rebuilds the page")
 nodes[#nodes + 1] = {name = "t:forge", pos = {x = 3, y = 12, z = 0}}
 click(smith, {[FIELDS.recheck] = "Craft now"})
-has(smith.formspec, "grug_craft_go;Craft ×1]", "S with the forge within 4 nodes: enabled")
+has(smith.formspec, go(smith) .. ";Craft ×1]", "S with the forge within 4 nodes: enabled")
 lacks(smith.formspec, "Requires: Forge", "S no hint")
 click(smith, {[FIELDS.row .. "2"] = ""})
 says(smith.formspec, "Crafting this will give you a Weaponsmith experience point",
 	"S the hint for the current tier")
 has(smith.formspec, "(c@#7ae08a)Crafting this", "S ... in green")
-click(smith, {[FIELDS.go] = "Craft now"})
+click(smith, {[go(smith)] = "Craft now"})
 job = J.job_state(smith)
 check(job ~= nil and job.quantity == 1, "S a non-stackable job of one")
 -- A profession too low: disabled with the reason.
@@ -1181,7 +1188,7 @@ do
 	local max_y = label_y(part, "Max: ")
 	local hint_y = label_y(part, "Crafting this will")
 	local quantity_y = tonumber(part:match("field%[[%d%.]+,([%d%.]+);"))
-	local button_y = tonumber(part:match("button%[10%.5,([%d%.]+);2%.6,0%.8;grug_craft_go;"))
+	local button_y = tonumber(part:match("button%[10%.5,([%d%.]+);2%.6,0%.8;grug_craft_go_%d+;"))
 	check(sub_y and desc and sub_y + 0.2 <= desc.y, "D top: the output above the description")
 	check(desc and ingredients_y and desc.y + desc.h <= ingredients_y - 0.2,
 		"D middle: the description above the ingredients")
@@ -1204,7 +1211,7 @@ do
 	part = box_part(chef.formspec)
 	eq(description_box(part), nil, "D no description when the tooltip is only the name")
 	has(part, "label[5.6,2.35;Ingredients (have/need)]", "D ... the ingredients move up")
-	has(part, "field[7.45," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y - 0.8) .. ";",
+	has(part, "field[7.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y - 0.8) .. ";",
 		"D the quantity row stays in the bottom row")
 	-- Gear: the description the job's crafted_output builds, the name line
 	-- dropped; no quantity row.

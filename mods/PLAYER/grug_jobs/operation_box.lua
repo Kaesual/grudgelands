@@ -61,7 +61,8 @@ local WARN = "#ff9f5a"
 local NOTE = "#f0c75e"
 local DIM = "#9a9a9a"
 local ARROW = "gui_furnace_arrow_bg.png^[transformR270"
-local ANYWAY_STYLE = "style[" .. F.upgrade ..
+-- (the button's name carries the build's serial, ui.lua's action_button)
+local ANYWAY_STYLE = "style[" .. F.upgrade .. "_%d" ..
 	";bgcolor=#f0c419;bgcolor_hovered=#f5d24a;bgcolor_pressed=#c9a10f;textcolor=#222222]"
 
 local function esc(value)
@@ -276,7 +277,7 @@ local function enchant_fields(player, st, fields)
 		if index and st.ench_rows and st.ench_rows[index] then st.ench = st.ench_rows[index] end
 		return true
 	end
-	if fields[F.enchant] then
+	if grug_jobs.action_clicked(st, fields, F.enchant) then
 		if not st.ench then
 			st.note = "Choose an enchant from the list."
 			return true
@@ -406,7 +407,8 @@ local function upgrade_build(player, view)
 	-- The yellow "Upgrade anyway" only where it starts something.
 	local anyway = warning and enabled
 	button(fs, view, F.upgrade, anyway and "Upgrade anyway" or "Upgrade now",
-		anyway and "Queue anyway" or "Queue Upgrade", enabled, anyway and ANYWAY_STYLE or nil)
+		anyway and "Queue anyway" or "Queue Upgrade", enabled,
+		anyway and ANYWAY_STYLE:format(view.serial) or nil)
 	return table.concat(fs)
 end
 
@@ -421,7 +423,7 @@ local function upgrade_fields(player, st, fields)
 		if not levels_of(st.levels) then st.note = "Enter a number of levels of 1 or more." end
 		return true
 	end
-	if not fields[F.upgrade] then return false end
+	if not grug_jobs.action_clicked(st, fields, F.upgrade) then return false end
 	local levels = levels_of(st.levels)
 	if not levels then
 		st.note = "Enter a number of levels of 1 or more."
