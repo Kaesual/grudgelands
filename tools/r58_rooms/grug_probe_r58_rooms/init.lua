@@ -9,13 +9,15 @@
 -- at the arrival, the zone authority's "guild_room" and "hard_protected" in
 -- the box and not right outside, and the ambient spawn policy refusing a
 -- zombie at the lift cell; plus a count of the liquids in the ring of 3
--- nodes round the box (so a run shows rooms with water or lava next to them).
+-- nodes round the box and the nearest water and lava within r58rooms_far
+-- (default 12) nodes of it (so a run shows rooms with water or lava near).
 -- Ends the server with "[r58rooms] DONE pass=<n> fail=<n>".
 
 local P = "[r58rooms] "
 local function log(msg) core.log("action", P .. msg) end
 local R = dofile(core.get_modpath("grug_mapgen") .. "/wp40/guild_rooms.lua")
 local MAX = tonumber(core.settings:get("r58rooms_max") or "") or 1000
+local FAR = tonumber(core.settings:get("r58rooms_far") or "") or 12
 local KEEP = {}
 for id in (core.settings:get("r58rooms_camps") or ""):gmatch("[^,%s]+") do KEEP[id] = true end
 
@@ -62,6 +64,19 @@ local function check_room(room)
 	local ring = {}
 	for name, n in pairs(ring_liquid) do ring[#ring + 1] = name .. "=" .. n end
 	table.sort(ring)
+	-- the nearest water and lava within FAR nodes of the box (Chebyshev)
+	local nearest = {}
+	for _, kind in ipairs({"water", "lava"}) do
+		local found = core.find_nodes_in_area(vector.subtract(minp, FAR), vector.add(maxp, FAR),
+			{"group:" .. kind})
+		local best
+		for _, p in ipairs(found) do
+			local d = math.max(minp.x - p.x, p.x - maxp.x, minp.y - p.y, p.y - maxp.y,
+				minp.z - p.z, p.z - maxp.z)
+			if not best or d < best then best = d end
+		end
+		nearest[#nearest + 1] = kind .. " " .. (best and tostring(best) or "-")
+	end
 	local lift = core.get_node(room.lift_cell)
 	if lift.param2 ~= R.NODES.lift_param2 then
 		wrong = wrong + 1
@@ -79,10 +94,11 @@ local function check_room(room)
 	local ok = wrong == 0 and liquid == 0 and ground == 0 and light >= 8 and protected and
 		spawn == false
 	log(("CHECK %s %s T%d floor %d at %d,%d: wrong %d%s, liquid %d, ground content %d, " ..
-		"light %d, protected %s, zombie spawn %s, ring liquids %s"):format(
+		"light %d, protected %s, zombie spawn %s, ring liquids %s, nearest %s"):format(
 		ok and "PASS" or "FAIL", room.camp_id, room.tier, room.floor_y, room.lift_cell.x,
 		room.lift_cell.z, wrong, first and (" (first " .. first .. ")") or "", liquid, ground,
-		light, tostring(protected), tostring(spawn), #ring > 0 and table.concat(ring, " ") or "none"))
+		light, tostring(protected), tostring(spawn), #ring > 0 and table.concat(ring, " ") or "none",
+		table.concat(nearest, ", ")))
 	return ok
 end
 
