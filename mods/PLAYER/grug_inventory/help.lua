@@ -78,6 +78,7 @@ local SECTIONS = {
 	{id = "quests", label = "Quests & Professions", x = 1.3, w = 2.9, text = body({
 		heading("Quests"),
 		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = needs a higher level. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
+		"• Story quests have violet symbols and their own \"Story\" heading in the quest lists; the rest are side quests you can take in any order.",
 		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, take it to the person with the yellow ? (often the giver) and press Complete.",
 		"• Objectives are: bring items (counted from your inventory and bags, taken when you hand in), defeat creatures, or speak with a named person. Everyone nearby who helped with damage or healing gets kill credit; the killing blow is not needed.",
 		"• Your quest log is in the map window (Z or the Map & Quests tab): up to 20 active quests, up to ten tracked on screen. Select a quest to read it and to see its targets on the map where they are known. When the log is full, finish or abandon a quest before you accept a new one.",
@@ -119,7 +120,7 @@ local SECTIONS = {
 		"• Every ore or gem you dig and every fish you catch gives XP; deeper ores, gems (more than ores) and fish from higher-level waters give more.",
 		"",
 		heading("Smelting"),
-		"• Smelt ore into bars in a Furnace. Alloys need a Dual Furnace: Bronze = Copper + Tin, Steel = Iron + Anthracite, Silversteel = Steel + Silver, Embersteel = Silversteel + Emberglass, Abyssal Steel = Embersteel + Abyssal Crystal.",
+		"• Smelt ore into bars in a Furnace. Alloys need a Dual Furnace: Bronze = Copper + Tin, Steel = Iron + Anthracite, Silversteel = Steel + Silver, Embersteel = Steel + Emberglass, Abyssal Steel = Steel + Abyssal Crystal.",
 		"",
 		heading("Crafting"),
 		"• The Crafting tab has an area for Basic recipes, Cooking, each of your primary professions and Alchemy. Basic lists a recipe once you have held each of its ingredients (sticks and the wooden tools from the start), and says New recipe when one joins; a profession area shows the recipes up to your tier in it, and each new tier adds its recipes. Search the list, turn its pages or tick Craftable only; ×N says how many times the items in your inventory and bags make a recipe. The star at the top right of a recipe marks it as a favorite, and Favorites only lists your favorites.",

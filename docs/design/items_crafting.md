@@ -154,8 +154,8 @@ universal pick.
 | T2 | 11–20 | 11 | **Iron** | Iron ore, normal furnace | `grug_materials:t2_stone`, −101…−300 | Anthracite (the Steel input): y ≥ −300 (lower half of T2) |
 | T3 | 21–30 | 21 | **Steel** | Iron Bar + Anthracite, dual furnace | `grug_materials:t3_stone`, −301…−500 | Silver: y ≥ −500 |
 | T4 | 31–40 | 31 | **Silversteel** | Steel + Silver, dual furnace | `grug_materials:t4_stone`, −501…−700 | Emberglass: y ≥ −700 |
-| T5 | 41–50 | 41 | **Embersteel** | Silversteel + Emberglass, dual furnace | `grug_materials:t5_stone`, −701…−1000 | Abyssal Crystal: y ≥ −1000 |
-| T6 | 51–60 | 51 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | `grug_materials:t6_stone`, below −1000 | no T7 prerequisite |
+| T5 | 41–50 | 41 | **Embersteel** | Steel + Emberglass, dual furnace | `grug_materials:t5_stone`, −701…−1000 | Abyssal Crystal: y ≥ −1000 |
+| T6 | 51–60 | 51 | **Abyssal Steel** | Steel + Abyssal Crystal, dual furnace | `grug_materials:t6_stone`, below −1000 | no T7 prerequisite |
 
 - Wood and Stone starter picks are not extra material tiers. They are T1
   picks (T1 rock and every T1 resource but Iron); Bronze is the best T1 pick
@@ -341,8 +341,14 @@ the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
 | Iron bar | Iron lump | normal furnace |
 | Steel bar | 1 Iron Bar + 1 Anthracite | dual furnace |
 | Silversteel bar | Steel + Silver | dual furnace |
-| Embersteel bar | Silversteel + Emberglass | dual furnace |
-| Abyssal Steel bar | Embersteel + Abyssal Crystal | dual furnace |
+| Embersteel bar | Steel + Emberglass | dual furnace |
+| Abyssal Steel bar | Steel + Abyssal Crystal | dual furnace |
+
+The alloys above Steel are **flat** (Round 57, the user's ruling of
+2026-10-23): Silversteel, Embersteel and Abyssal Steel are each one Steel Bar
+plus one unit of the tier's own ingredient, never the alloy below, so every
+alloy is at most two dual-furnace steps from the Iron Bar. Before Round 57,
+Embersteel took Silversteel and Abyssal Steel took Embersteel.
 
 Steel has two material inputs. Anthracite occupies the second material slot
 (Round 47 ruling 9; Coal and Charcoal never make Steel); burning fuel never
@@ -944,7 +950,21 @@ Heartwood** (T1→T6), retained for enchanting rather than plain weapon recipes,
 each a Basic recipe from any `group:wood` — both continents
 reach every grade by construction, and the per-race woods stay a cosmetic
 skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
-for example Steel Staff (§3.8).
+for example Steel Staff (§3.8). Like the alloys (§3.0.2), the grades are
+**flat** (Round 57, the user's ruling of 2026-10-23): each is 2 planks plus
+one unit of its tier's own ingredient, never the grade below.
+
+| Grade | Tier | Basic recipe |
+|---|---|---|
+| Seasoned Wood | T1 | 2 planks |
+| Polished Wood | T2 | 2 planks + 1 Iron Bar |
+| Hardened Wood | T3 | 2 planks + 1 Anthracite |
+| Inlaid Wood | T4 | 2 planks + 1 Silver Bar |
+| Lacquered Wood | T5 | 2 planks + 1 Emberglass |
+| Heartwood Wood | T6 | 2 planks + 1 Abyssal Crystal |
+
+The T2–T6 ingredients are the metal ladder's own: the tier's new metal or
+the alloy's second input (§3.0.1).
 
 **Makes, enchants and upgrades**: staves and wands.
 

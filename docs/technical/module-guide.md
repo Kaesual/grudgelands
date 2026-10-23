@@ -1520,8 +1520,16 @@ tools](#player-meta-read-by-external-tools).
 - **Enchantments**: every enchant stores its stat, channel and tier (1–7) in
   `grug_ench`; its value is `grug_items.enchant_value(stat, ilvl, tier)`
   (`docs/design/item_tiers.md` §1.1), derived on write by grug_quality's one
-  store path (rolls, enchants, upgrades, the crown; nothing else writes an
-  item level but the 0.45.0 migration's offline pin), never rolled.
+  store path (rolls, enchants, upgrades, the crown, since Round 57 the
+  authored stacks of `grug_items.make_stack(item, ilvl, affixes, player)`,
+  the quest rewards' fixed enchants checked by
+  `grug_items.check_affixes(item, affixes)`; nothing else writes an item
+  level but the 0.45.0 migration's offline pin), never rolled.
+  `grug_items.tooltip_text(item, player)` (Round 57) is the one tooltip
+  text of an item for item buttons and images, which show only a
+  definition's description: the lines the stack shows (equipment rebuilt
+  through the store path's description, the reader's lines with a player),
+  on a copy, not escaped (fixture `tools/r57_qsys`).
   `grug_items.refresh_capabilities(stack)` rewrites a stack's tool
   capabilities from its item level and enchants as that path does (a broken
   stack keeps them for the repair); the 0.45.0 migration's join part uses it. `grug_items.operation_plan(recipe, stack,
@@ -1801,14 +1809,35 @@ tools](#player-meta-read-by-external-tools).
   credits a finished hold (`Q.credit_use`); places resolve through
   `labels.lua` `Q.use_place` (a clash site `grug_mobs.spawn_regions
   .clash_site`, a recipe quest place `zone_place`/`place_spot`).
+  Since Round 57 ([quests.md](../design/quests.md) "Shared quests") a
+  definition holds `variants` (per giver zone: givers, turn-ins, giver
+  roles, its own resolved objectives and quest drops, text; the counts and
+  rewards are the quest's); `def.giver_variant` maps a giver to its
+  variant, and `def.npc`, `def.turnin_npc`, `def.objectives` and
+  `def.quest_drops` read the first variant's. `validate.lua` `V.variants`
+  builds them from a file (the loader and the checks share it),
+  `registry.lua` `Q.bind_role_givers` binds role givers at mods-loaded
+  after `resolve_npc_factions` (which also keeps each NPC's `race_id` for
+  the per-race texts). The active entry keeps `variant` and `giver`;
+  `state.lua` `Q.variant_of(def, entry)` is the one lookup (an entry
+  without them reads as the first variant), `Q.turns_in_at`,
+  `Q.turnin_for` and `Q.active_entry` serve the dialog, the HUD and the map.
+  `Q.accept(player, id, npc)` takes the giver, `Q.turn_in(player, id,
+  choice)` the picked reward; `Q.reward_stacks` makes every reward through
+  `grug_items.make_stack` (grug_quality: fixed enchants at the quest's
+  reward level, the receiver's tooltip), and the dialog's choice tooltips
+  are `grug_items.tooltip_text` (the shared helper, also the recipe
+  details'). `npc.lua` `Q.category_list` builds the Story category of the
+  dialog and the quest log. Fixture `tools/r57_qsys`.
   `Q.register_on_turn_in(fn(player, id, def))` fires once per completed
   turn-in, after the state and rewards are stored (grug_achievements'
   `quest:` and `quest_tag:` counters); fixture `tools/r36_e`. Since Round 30 `state.lua` caches each player's decoded
   state keyed by the raw meta string: readers share that table and must
   never write into it, mutating paths take a copy (`editable`) and `save`
   re-caches. Marker consumers ask `Q.marker_states(player)` once for every
-  giver (memoized until the raw state changes, `Q.markers_changed` resets it
-  or the earliest running repeatable cooldown ends, Round 37): the
+  giver (memoized until the raw state changes or `Q.markers_changed`
+  resets it, Round 37; a value is a status or, for a story quest, its
+  `story_<status>` variant, `Q.marker_parts` splits it, Round 57): the
   minimap, the only consumer that registers
   `Q.register_on_markers_changed` (since Round 44 the map window too: it
   sends itself again while open, throttled); the NPC tags, read on the 1 Hz

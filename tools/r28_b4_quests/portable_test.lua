@@ -2,12 +2,12 @@
 -- quest files). Loads the REAL grug_quests files under a minimal `core` stub
 -- and checks:
 --   1. the fixture files (fixture/grug_quests): dependency-order loading,
---      roles to entities, areas, groups, quest drops, repeatables, a front
---      file and a new giver at a free quest socket;
+--      roles to entities, areas, groups, quest drops, a front file and a
+--      new giver at a free quest socket;
 --   2. play through a player stand-in: every objective kind, area credit by
 --      the mob's tag, leader kills, the compact HUD line, travel credit on
---      accept ("Travel to"), quest drops per eligible participant, repeatable
---      cooldown and labels, weight rewards;
+--      accept ("Travel to"), quest drops per eligible participant, every
+--      quest done once (Round 57 ruling 11: no repeatable), weight rewards;
 --   3. load-time validation: one designer mistake per case, each refused with
 --      a message naming the file and the quest.
 --
@@ -521,32 +521,20 @@ eq(dropped[1], "grug_mobs:ledger_page 1", "full inventory: dropped at the feet")
 math.random = random
 check(Q.turn_in(ann, "fx_pantry_01"), "ann turns in the pages")
 
--- Repeatable: cooldown from turn-in, labels, first completion for prerequisites.
-local clock = 1000
-Q.clock = function() return clock end
+-- Every quest is done once (Round 57 ruling 11; the repeatable bounty of
+-- Rounds 28-56 is a plain quest now): no "(R)" label, done for good after
+-- its turn-in, and its completion opens its dependant.
 form = dialogue(ann, "r20_human_start_cook", "fx_kitchen_bounty")
-has(form, "Rats in the Larder (R)", "dialogue list labels Repeatable")
-has(form, "Repeatable (every 30 min)", "dialogue detail labels the cooldown")
+has(form, "Rats in the Larder", "dialogue lists the bounty")
+check(not form:find("(R)", 1, true) and not form:find("Repeatable", 1, true), "no repeatable label anywhere")
 check(Q.accept(ann, "fx_kitchen_bounty"), "accept the bounty")
 row = journal_row(ann, "fx_kitchen_bounty")
-eq(Q.hud_line(row, 400), "Repeatable: 0/2 Defeat Large Rat", "HUD labels Repeatable")
-log = pages["grug_quests:quests"].get(nil, ann, {grug_quest_selected = "fx_kitchen_bounty"})
-has(log, "Rats in the Larder (R)", "quest log list labels Repeatable")
-has(log, "Rats in the Larder (Repeatable)", "quest log title labels Repeatable")
+eq(Q.hud_line(row, 400), "0/2 Defeat Large Rat", "HUD line without a repeatable prefix")
 for _ = 1, 2 do Q.credit_kill(ann, mob("large_rat", "elandor_dawnmere_fields/home_fields_night"), AT) end
 check(Q.turn_in(ann, "fx_kitchen_bounty"), "turn in the bounty")
-local status, reason = Q.status(ann, "fx_kitchen_bounty")
-eq(status, "locked", "cooldown after turn-in")
-eq(reason, "Repeatable again in 30 min.", "cooldown reason")
-eq(Q.status(ann, "fx_kitchen_after"), "available", "first completion counts for prerequisites")
-clock = clock + 1799
-eq(Q.status(ann, "fx_kitchen_bounty"), "locked", "still cooling down")
-clock = clock + 1
-eq(Q.status(ann, "fx_kitchen_bounty"), "available", "available again after the cooldown")
-check(Q.accept(ann, "fx_kitchen_bounty"), "accept the bounty again")
-Q.credit_kill(ann, mob("large_rat", "elandor_dawnmere_fields/home_fields_night"), AT)
-eq(journal_row(ann, "fx_kitchen_bounty").objectives[1].count, 1, "a repeat starts from zero")
-eq(Q.status(ann, "fx_kitchen_after"), "available", "dependant stays available during a repeat")
+eq(Q.status(ann, "fx_kitchen_bounty"), "completed", "done for good after the turn-in")
+check(not Q.accept(ann, "fx_kitchen_bounty"), "not accepted again")
+eq(Q.status(ann, "fx_kitchen_after"), "available", "the completion counts for prerequisites")
 
 -- An area-less kill counts the role wherever it falls (there is no zone filter).
 check(Q.accept(ann, "fx_boar_hunt"), "accept the area-less hunt")
@@ -753,8 +741,8 @@ local cases = {
 	{"prerequisite cycle", "E-cycle", "fx_hunt_01", function(f)
 		quest_of(f, "fx_hunt_01").requires = {"fx_travel"}
 	end},
-	{"repeatable without cooldown", "E-repeatable", "fx_kitchen_bounty", function(f)
-		quest_of(f, "fx_kitchen_bounty").repeatable = {cooldown = 0}
+	{"repeatable is no field (Round 57 ruling 11)", "E-unknown-key", "unknown field 'repeatable'", function(f)
+		quest_of(f, "fx_kitchen_bounty").repeatable = {cooldown = 1800}
 	end},
 	{"rewards without weight", "E-required", "fx_tools_01", function(f)
 		quest_of(f, "fx_tools_01").rewards = {copper = 5}

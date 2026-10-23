@@ -577,7 +577,6 @@ for _, id in ipairs(ids) do
 			plain = ("%d/%d %s"):format(0, rows[1].required, Q.objective_action(rows[1]))
 			ranged = plain .. Q.objective_levels_text(rows[1])
 		end
-		if def.repeatable then plain, ranged = "Repeatable: " .. plain, "Repeatable: " .. ranged end
 		lines = lines + 1
 		if visible(plain) > 38 then over_without = over_without + 1 end
 		if visible(ranged) > 38 then over_with = over_with + 1 end

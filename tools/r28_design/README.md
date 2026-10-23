@@ -233,6 +233,25 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   (`E-garrison-faction`; the giver's faction: a fortress giver's own, a new
   giver's race's, else its atlas zone's). The game checks the same rules at
   load (`grug_quests/validate.lua`).
+- Round 57 ([quests.md](../../docs/design/quests.md) "Shared quests" to
+  "The rework flag"; the game's `validate.lua` the same codes): a quest
+  with `variants` (in place of `giver` and `turnin`) lives in the file of
+  its first variant's zone; each variant's giver NPC is a hub giver of the
+  variant zone's file (`E-giver-not-hub`) with the quest's line (`E-line`),
+  gives it in one variant only, and has a turn-in of its own faction
+  (`E-turnin-faction`); a variant overrides only the zone-bound fields of
+  the objectives and quest drops, one entry each (`E-variant`,
+  `E-unknown-key`); a shared quest's title takes no placeholder; `texts`
+  keys are its givers or races (`E-texts`); `story` is a boolean,
+  `completion` a text; `rewards.choices` lists 2–4 `{item, count,
+  affixes}` with at most one prefix and one suffix of a known stat
+  (`E-rewards`; the enchant pools are the game's check); `repeatable` is an
+  unknown field. In files with `"reworked": true` only: `E-free-requires`,
+  `E-free-follow-ups`, `E-free-chain` (only story quests chain),
+  `E-reward-budget` and `W-reward-levels` (the zone's equipment rewards by
+  enchant count, capitals excepted), `E-reward-requested` (a reward is never
+  a requested item or group member) and `W-night-count` (a night-only kill
+  count about a third of the zone's day median).
 - The atlas predates the Round 31 PvP POIs: `Atlas` adds each fortress and
   camp from the game's catalogue as an anchor (its settlement key) and a
   named place of its zone, and the fortress quest givers (Warmaster,
@@ -306,8 +325,10 @@ python3 tools/r28_design/ledger.py \
   member needs their own requested items (ordinary drops go to one player,
   quest-only drops roll per member). Group quests (`"group": true`) count for
   the party only (`--solo-group` to include them solo).
-- `--repeat N` counts every repeatable quest N times (none ships since
-  Round 46 ruling 8); `--skip-optional` drops `"optional": true` quests;
+- Every quest counts once (Round 57 ruling 11: `--repeat` went with the
+  repeatable quests); a shared quest (`variants`) counts in the first zone
+  of the route that gives it, as that zone's variant
+  (`r28common.zone_quests`); `--skip-optional` drops `"optional": true` quests;
   `--start-level N` for contested and front routes (the first band's need
   then starts at N).
 - Exit 0 (2 for unreadable design files); the duo table is informational.
@@ -344,16 +365,17 @@ and the chief as its leader), `samples/existing_min.json`, `samples/mobs_min.jso
 `samples/atlas/`
 (nine zone files of the seed-42 atlas, trimmed to the fields the tools
 read). The validator test checks that the valid sample gives only
-`W-loot-unchecked` (only Dawnmere is designed) and that 144 variants each give
+`W-loot-unchecked` (only Dawnmere is designed) and that about 200 variants each give
 their expected finding (broken designs and recipes, plus allowed forms: a
 `from` anchor by anchor id, a leader deep in a kind, a palette-only spawns
 file, a leader kill without area, a leader of another zone, a declared
 front file, a capital front giver, both outpost givers declared, the
 single-NPC contested exemption, a new giver at a free socket, a zone-added
-leader used from another zone, a critter sub-type of a critter base) and the
-retired quest fields refused (`E-unknown-key`). The ledger test checks the
+leader used from another zone, a critter sub-type of a critter base, Round
+57's shared quest, choices, story and the reworked-file rules) and the
+retired quest fields refused (`E-unknown-key`, `repeatable` among them). The ledger test checks the
 formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
 194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,
-per-quest bands, per-role levels in kinds, species mix, `--lines` and
-`--start-level`. Both print one summary line
+per-quest bands, per-role levels in kinds, species mix, `--lines`,
+`--start-level` and a shared quest counted once per route. Both print one summary line
 on PASS.

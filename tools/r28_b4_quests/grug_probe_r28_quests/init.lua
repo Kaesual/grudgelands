@@ -5,11 +5,12 @@
 -- load-time validation against the real registries) it checks:
 --   1. a sample new-format zone file through the real loader: a new giver
 --      at Highcourt's free quest socket, a quest with a kill, an item group
---      and a quest-only drop, a repeatable, a travel quest;
+--      and a quest-only drop, a quest done once (Round 57 ruling 11), a
+--      travel quest;
 --   2. the sample played end to end by a player stand-in (a headless server
 --      has no client): accept, kill credit, quest drop into the inventory,
---      turn-in with the weight reward, the repeatable's cooldown, travel
---      credit on accept;
+--      turn-in with the weight reward, done for good after its turn-in,
+--      travel credit on accept;
 --   3. the load-time world checks against the shipped Dawnmere recipe (level
 --      fit, role in area).
 -- It logs what the shipped zone files register (quests, objectives, rewards).
@@ -68,9 +69,9 @@ local SAMPLE = {
 				rewards = {weight = 3, copper = 7, items = {{item = "mobs:meat_raw", count = 2}}}},
 			{id = "probe_bounty", line = "bounties", giver = "probe_lore_keeper", turnin = "probe_lore_keeper",
 				min_level = 20, level = 22, requires = {"probe_supplies"}, title = "Probe Bounty",
-				text = "Boars again. Come back after a minute.",
+				text = "Boars again. One more, and we are done.",
 				objectives = {{type = "kill", roles = {"boar"}, count = 1}},
-				repeatable = {cooldown = 60}, rewards = {weight = 1, copper = 1}},
+				rewards = {weight = 1, copper = 1}},
 			{id = "probe_travel", line = "probe", giver = "probe_lore_keeper",
 				turnin = "r20_human_capital_envoy", min_level = 20, level = 22, title = "Probe Travel",
 				text = "Walk to the chapel. Mariel expects you.",
@@ -158,18 +159,11 @@ local function play(Q)
 		eq(inv:contains_item("main", "default:tree") or inv:contains_item("main", "default:pine_tree"), false,
 			"logs taken")
 		eq(inv:contains_item("main", "mobs:meat_raw 2"), true, "reward items delivered")
-		local clock = Q.clock
-		local now = clock()
-		Q.clock = function() return now end
-		check(Q.accept(player, "probe_bounty"), "accept the repeatable")
+		check(Q.accept(player, "probe_bounty"), "accept the bounty")
 		Q.credit_kill(player, boar, at)
-		check(Q.turn_in(player, "probe_bounty"), "turn in the repeatable")
-		local status, reason = Q.status(player, "probe_bounty")
-		eq(status, "locked", "repeatable cools down")
-		log("repeatable after turn-in: " .. status .. " (" .. tostring(reason) .. ")")
-		Q.clock = function() return now + 60 end
-		eq(Q.status(player, "probe_bounty"), "available", "repeatable available after its cooldown")
-		Q.clock = clock
+		check(Q.turn_in(player, "probe_bounty"), "turn in the bounty")
+		eq(Q.status(player, "probe_bounty"), "completed", "the bounty is done for good")
+		check(not Q.accept(player, "probe_bounty"), "the bounty is not taken again")
 		check(Q.accept(player, "probe_travel"), "accept the travel quest")
 		local travel
 		for _, quest in ipairs(Q.journal(player).quests) do if quest.id == "probe_travel" then travel = quest end end

@@ -73,9 +73,9 @@ def main():
     # R2: a signal word, in any case.
     p = broken(sg + "/large_rat/L3-4", "large Barrowrat")
     expect(len(p) == 1 and p[0].startswith("R2 "), "R2 signal word: %s" % p)
-    # R3: Piglet only on the *_hunt_01 start pigs.
+    # R3: Piglet only on the start pigs (small_boar from level 1).
     p = broken(sg + "/small_boar/L1-2", "Grave Piglet")
-    expect(p == [], "R3 Piglet on the hunt_01 pigs passes: %s" % p)
+    expect(p == [], "R3 Piglet on the start pigs passes: %s" % p)
     p = broken(sg + "/small_boar/L3-4", "Grave Piglet")
     expect(len(p) == 1 and p[0].startswith("R3 "), "R3 Piglet elsewhere: %s" % p)
     # R4: one name on L1-2 and L5-7 leaves a gap; on L1-2 and L3-4 it joins.

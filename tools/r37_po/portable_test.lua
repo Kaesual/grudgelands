@@ -18,9 +18,9 @@
 --      providers only when the markers' key (quest version, home,
 --      waystones, faction) changed;
 --   K  quest markers (PLY-06): marker_states is recomputed on an accept, a
---      turn-in, a level-up, a held objective item (the tracker's poll) and
---      a repeatable's cooldown ending, and not otherwise (the level is read
---      once per recompute, which counts them); after every operation of a
+--      turn-in, a level-up and a held objective item (the tracker's poll),
+--      and not otherwise (the level is read once per recompute, which counts
+--      them; no repeatable cooldown since Round 57); after every operation of a
 --      long scripted sequence the memo equals a full recompute (the most
 --      urgent Q.npc_quests row per NPC);
 --   T  tracker (PLY-05): without an active item objective a poll reads no
@@ -316,11 +316,9 @@ quest("hunt", {npc = "elder", objectives = {{type = "kill", mobs = {"grug_mobs:b
 quest("meat", {npc = "elder", prerequisites = {"hunt"},
 	objectives = {{type = "item", item = "grug_food:raw_meat", count = 2}}})
 quest("logs", {npc = "hunter", objectives = {{type = "item", group = "log", count = 2}}})
-quest("bounty", {npc = "hunter", repeatable = {cooldown = 60},
+quest("bounty", {npc = "hunter",
 	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
-local clock = 1000
-Q.clock = function() return clock end
 local boar = {name = "grug_mobs:boar", description = "Boar", object = {}}
 
 -- ---------------------------------------------------------------------------
@@ -391,19 +389,15 @@ eq(Q.marker_states(ann).hunter, "ready", "K two logs: ready at the hunter")
 ann:give("default:dirt 5")
 hud_steps(0.5)
 check(not recomputes(ann), "K a non-objective item keeps the memo")
--- a repeatable's cooldown
+-- a quest done for good (Round 57 ruling 11: no repeatable cooldown ends
+-- the memo any more)
 Q.turn_in(ann, "logs")
 Q.accept(ann, "bounty")
 Q.credit_kill(ann, boar, {x = 0, y = 0, z = 0})
 Q.turn_in(ann, "bounty")
-agrees(ann, "bounty cooling down")
-check(not recomputes(ann), "K during the cooldown the memo holds")
-clock = clock + 59
-check(not recomputes(ann), "K ...a second before its end too")
-clock = clock + 1
-check(recomputes(ann), "K the cooldown's end recomputes")
-eq(Q.marker_states(ann).hunter, "available", "K the bounty is available again")
-check(not recomputes(ann), "K ...and then the memo holds again")
+agrees(ann, "bounty done")
+check(not recomputes(ann), "K after the turn-in the memo holds")
+eq(Q.marker_states(ann).hunter, nil, "K the hunter has nothing left")
 -- a long scripted sequence: after every step (and the tracker's poll) the
 -- memo equals a full recompute
 do
@@ -427,9 +421,7 @@ do
 		function() level_up(bob, 2) end,
 		function() bob:give("default:tree 1") end,
 		function() Q.turn_in(bob, "logs") end,
-		function() clock = clock + 30 end,
 		function() Q.accept(bob, "bounty"); Q.credit_kill(bob, boar, {x = 0, y = 0, z = 0}); Q.turn_in(bob, "bounty") end,
-		function() clock = clock + 61 end,
 	}
 	for i, op in ipairs(ops) do
 		op()

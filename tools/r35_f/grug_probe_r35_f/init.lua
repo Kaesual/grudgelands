@@ -35,7 +35,7 @@ core.register_on_mods_loaded(function()
 		local titles = 0
 		for id, def in pairs(grug_quests.registered_quests) do
 			titles = titles + 1
-			out(("TITLE %d %s %s%s"):format(#def.title, id, def.title, def.repeatable and " [R]" or ""))
+			out(("TITLE %d %s %s"):format(#def.title, id, def.title))
 		end
 		out(("RESULT DONE titles=%d dig_failures=%d flint=%s"):format(titles, failures, tostring(flint)))
 	end)

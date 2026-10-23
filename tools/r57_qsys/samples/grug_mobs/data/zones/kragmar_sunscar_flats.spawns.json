@@ -1,0 +1,114 @@
+{
+  "zone": "kragmar_sunscar_flats",
+  "recipe": {
+    "from": {
+      "anchor": "start"
+    },
+    "to": {
+      "border": "kragmar_redtusk_savanna"
+    },
+    "belts": [
+      {
+        "id": "near",
+        "share": 50,
+        "levels": [
+          1,
+          3
+        ],
+        "kinds": {
+          "open": {
+            "id": "wellfields",
+            "name": "Wellfields",
+            "day": [
+              {
+                "role": "small_boar",
+                "weight": 1
+              }
+            ],
+            "night": [
+              {
+                "role": "large_rat",
+                "weight": 1
+              }
+            ],
+            "density": "normal"
+          },
+          "shore": {
+            "id": "dust_shore",
+            "name": "Dust Shore",
+            "day": [
+              {
+                "role": "giant_crab",
+                "weight": 1
+              }
+            ],
+            "night": [
+              {
+                "role": "giant_crab",
+                "weight": 1
+              }
+            ],
+            "density": "normal"
+          }
+        }
+      },
+      {
+        "id": "mid",
+        "share": 25,
+        "levels": [
+          4,
+          7
+        ],
+        "kinds": {
+          "open": {
+            "id": "mid_flats",
+            "name": "Mid Flats",
+            "day": [
+              {
+                "role": "wolf",
+                "weight": 1
+              }
+            ],
+            "night": [
+              {
+                "role": "wolf",
+                "weight": 1
+              }
+            ],
+            "density": "normal"
+          }
+        }
+      },
+      {
+        "id": "far",
+        "share": 25,
+        "levels": [
+          8,
+          10
+        ],
+        "kinds": {
+          "open": {
+            "id": "far_flats",
+            "name": "Far Flats",
+            "day": [
+              {
+                "role": "bear",
+                "weight": 1
+              }
+            ],
+            "night": [
+              {
+                "role": "bear",
+                "weight": 1
+              }
+            ],
+            "density": "normal"
+          }
+        }
+      }
+    ],
+    "camps": [],
+    "leaders": [],
+    "critters": []
+  }
+}

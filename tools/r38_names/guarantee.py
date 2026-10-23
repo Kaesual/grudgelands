@@ -154,7 +154,9 @@ def check_objectives(model):
         if o["relation"] != "counts":
             continue
         where = "%s %s %s" % (o["file"].rsplit("/", 1)[-1], o["quest"], o["path"])
-        quest = quests[o["quest"]]
+        # The texts the objective is read in (Round 57: a shared quest's
+        # variant reads its own, inventory.quest_variant_rows).
+        quest = dict(quests[o["quest"]], text=o.get("text", quests[o["quest"]].get("text")))
         selected = [model.slot_by_key[k] for k in o["selected"]]
         names = sorted({s["name"] for s in selected})
         for role in o["roles"]:

@@ -13,14 +13,15 @@
 --      own predicate grug_mobs.player_kill_xp), else a gradient per level,
 --      green at 9 below, yellow at the own level, red from 5 above;
 --   C. the shipped quest files hold no repeatable quest, and every hub
---      line of a giver still has a quest;
+--      line of a giver still has a quest (Round 57: a shared quest's
+--      givers are its variants' NPC ids);
 --   D. saved quest state holding removed quest ids (an active and tracked
 --      bounty with progress, a completed one, a running cooldown) loads
 --      without an error: the journal, the tracker, the markers, a kill
 --      credit, an accept and an abandon all work, and the next save drops
 --      the removed active and tracked ids;
---   E. the quest dialog's legend explains "(R)" only while a repeatable
---      quest is registered.
+--   E. the quest dialog's legend has no "(R)" (Round 57 ruling 11: no
+--      repeatable quest exists; registering one is refused).
 --
 -- Usage (repo root): luajit tools/r46_xp/portable_test.lua [repo]
 
@@ -247,7 +248,13 @@ do
 		for _, q in ipairs(data.quests) do
 			quests = quests + 1
 			if q.repeatable ~= nil then repeatables[#repeatables + 1] = q.id end
-			line_quests[q.giver .. "/" .. q.line] = true
+			local givers = {q.giver}
+			for _, variant in ipairs(q.variants or {}) do
+				for _, giver in ipairs(variant.givers or {}) do
+					if type(giver) == "string" then givers[#givers + 1] = giver end
+				end
+			end
+			for _, giver in ipairs(givers) do line_quests[giver .. "/" .. q.line] = true end
 		end
 		for _, hub in ipairs(data.hubs or {}) do
 			for _, giver in ipairs(hub.givers) do
@@ -304,7 +311,6 @@ do
 	dofile(repo .. "/mods/PLAYER/grug_quests/hud.lua")
 	local Q = grug_quests
 	local now = 1000000
-	Q.clock = function() return now end
 	Q.register_npc("r14_dwarf_steward", {settlement = "s", socket = "a", title = "Steward"})
 	-- A kept quest of the steward's other line, and a second one to accept.
 	Q.register_quest("copperfell_survey_01", {title = "Survey", description = "d",
@@ -358,8 +364,7 @@ do
 	check(saved.completed.copperfell_bounty_gnawers == true,
 		"D completed ids stay as written (only looked up by id)")
 	check(pcall(Q.abandon, player, "copperfell_survey_02"), "D abandon works")
-	now = now + 3600
-	check(pcall(Q.marker_states, player), "D the markers after the old cooldown's end")
+	check(pcall(Q.marker_states, player), "D the markers ignore the old cooldowns (Round 57: never read)")
 end
 
 ------------------------------------------------------------------------------
@@ -373,13 +378,12 @@ do
 		if type(key) == "string" and key:match("^register_") then return noop end
 	end})
 	dofile(repo .. "/mods/PLAYER/grug_quests/npc.lua")
-	check(Q.status_legend():find("(R)", 1, true) == nil, "E no repeatable: the legend has no (R)")
+	check(Q.status_legend():find("(R)", 1, true) == nil, "E the legend has no (R)")
 	check(Q.status_tooltip():find("(R)", 1, true) == nil, "E ...nor the tooltip")
-	Q.register_quest("test_bounty", {title = "Bounty", description = "d", npc = "r14_dwarf_steward",
+	check(not pcall(Q.register_quest, "test_bounty", {title = "Bounty", description = "d", npc = "r14_dwarf_steward",
 		rewards = {weight = 1}, repeatable = {cooldown = 60},
-		objectives = {{type = "item", item = "grug_food:raw_meat", count = 1}}})
-	check(Q.status_legend():find("(R) Repeatable", 1, true) ~= nil, "E a repeatable: the legend explains (R)")
-	check(Q.status_tooltip():find("(R): repeatable", 1, true) ~= nil, "E ...and the tooltip")
+		objectives = {{type = "item", item = "grug_food:raw_meat", count = 1}}}),
+		"E a repeatable quest is refused (Round 57 ruling 11)")
 end
 
 print(("%d checks, %d failures"):format(checks, failures))

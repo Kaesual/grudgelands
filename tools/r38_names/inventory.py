@@ -985,16 +985,18 @@ class Model:
         for fname in self.quest_files:
             rel = QUESTS + "/" + fname
             data = r.json(rel)
-            qzone = data["zone"]
-            for qi, q in enumerate(data["quests"]):
-                rows = [("objectives", i, o) for i, o in enumerate(q["objectives"])]
-                rows += [("quest_drops", i, o) for i, o in enumerate(q.get("quest_drops") or [])]
+            for q, qzone, prefix, text in quest_variant_rows(data):
+                rows = [(prefix + "objectives", i, o) for i, o in enumerate(q["objectives"])]
+                rows += [(prefix + "quest_drops", i, o) for i, o in enumerate(q.get("quest_drops") or [])]
                 for field, oi, o in rows:
                     roles = o.get("roles") or []
                     if not roles:
                         continue
                     kind = o.get("type", "quest_drop")
                     area = o.get("area")
+                    # A variant's bare area is its zone's (Round 57).
+                    if area and "/" not in area:
+                        area = qzone + "/" + area
                     # The selector (labels.lua Q.target_names): a leader's
                     # slot; else the slots of the area; else the quest
                     # zone's kinds and camps (else any slot of the role).
@@ -1037,7 +1039,7 @@ class Model:
                                    for role in d.get("roles") or [] for s in by_role.get(role, [])
                                    if not d.get("area") or d["area"] in s["tags"]}),
                                "same_name_not_counted": [], "same_name_not_counted_in_zone": [],
-                               "counted_other_name": [], "title": q.get("title", "")}
+                               "counted_other_name": [], "title": q.get("title", ""), "text": text}
                         self.objectives.append(obj)
                         for key in obj["guidance"]:
                             self.slot_by_key[key]["quest_targets"].append({
@@ -1066,7 +1068,7 @@ class Model:
                            "count": o.get("count"), "labels": labels, "targets": targets,
                            "selected": sorted({s["key"] for s in selected}),
                            "same_name_not_counted": same_not, "same_name_not_counted_in_zone": same_not_zone,
-                           "counted_other_name": other, "title": q.get("title", "")}
+                           "counted_other_name": other, "title": q.get("title", ""), "text": text}
                     self.objectives.append(obj)
                     for key in obj["targets"]:
                         self.slot_by_key[key]["quest_targets"].append({
@@ -1223,6 +1225,38 @@ class Model:
             s["quest_targets"].sort(key=lambda q: (q["file"], q["quest"], q["path"]))
             s["quest_mentions"].sort(key=lambda q: (q["file"], q["path"]))
         self.sources.sort(key=lambda s: s["id"])
+
+
+def quest_variant_rows(data):
+    """(quest, zone, path prefix, text) of every quest of a quest file: a
+    shared quest (Round 57, `variants`) once per variant, with that variant's
+    objectives and quest drops (the quest's with the variant's zone-bound
+    fields) in its zone, and the texts it is read in there (its own or the
+    quest's, and the `texts` of givers and races)."""
+    out = []
+    file_zone = data["zone"]
+    for q in data["quests"]:
+        variants = q.get("variants")
+        if not isinstance(variants, list):
+            out.append((q, file_zone, "", q.get("text", "")))
+            continue
+        extra = " ".join(t for t in (q.get("texts") or {}).values() if isinstance(t, str))
+        for row in variants:
+            if not isinstance(row, dict) or not isinstance(row.get("zone"), str):
+                continue
+            view = dict(q, objectives=[], quest_drops=[])
+            for field, keys in (("objectives", None), ("quest_drops", ("roles", "area"))):
+                over = row.get(field) if isinstance(row.get(field), list) else []
+                for i, base in enumerate(q.get(field) or []):
+                    entry = dict(base)
+                    allowed = keys or {"kill": ("roles", "area"), "item": ("roles", "area"),
+                                       "talk": ("npc",), "use": ("place",)}.get(base.get("type"), ())
+                    if i < len(over) and isinstance(over[i], dict):
+                        entry.update({k: v for k, v in over[i].items() if k in allowed})
+                    view[field].append(entry)
+            out.append((view, row["zone"], "variants[%s]." % row["zone"],
+                        " ".join(t for t in (row.get("text") or q.get("text", ""), extra) if t)))
+    return out
 
 
 def runtime_fallback(cands, zone):

@@ -1,8 +1,10 @@
 -- Round 56 lane QUESTMAP: one self-contained HTML page of every shipped
 -- quest and its chains, the input for the quest rework (round56-plan §4, §8).
 --
---   luajit tools/r56_questmap/questmap.lua [REPO] [--out FILE]
+--   luajit tools/r56_questmap/questmap.lua [REPO] [--out FILE] [--data DIR]
 --
+-- --data DIR (Round 57): the quest files of DIR/data/zones instead of the
+-- shipped ones (a lane's draft, a fixture's sample; model.lua).
 -- REPO defaults to the current directory; FILE to
 -- ~/projects/grudgelands-orchestration/r56/questmap/index.html (the folder
 -- must exist). The quests come from the real loader (model.lua), the flags
@@ -10,9 +12,9 @@
 -- as one JSON block. No network, nothing written into the repository.
 -- Loaded by dofile from another script it returns build(repo, out), which
 -- writes the page and returns its text and the summary line.
-local function build(repo, out)
+local function build(repo, out, data_root)
 	local json = dofile(repo .. "/tools/r28_b4_quests/json.lua")
-	local model = dofile(repo .. "/tools/r56_questmap/model.lua")(repo)
+	local model = dofile(repo .. "/tools/r56_questmap/model.lua")(repo, data_root)
 	local F = dofile(repo .. "/tools/r56_questmap/flags.lua")
 	local facts = F.analyse(model.quests, model.zones)
 
@@ -119,11 +121,14 @@ local function build(repo, out)
 end
 
 if not (arg and arg[0] and arg[0]:find("questmap%.lua$")) then return build end
-local repo, out = ".", nil
+local repo, out, data_root = ".", nil, nil
 local i = 1
 while arg[i] do
 	if arg[i] == "--out" then
 		out = arg[i + 1]
+		i = i + 1
+	elseif arg[i] == "--data" then
+		data_root = arg[i + 1]
 		i = i + 1
 	else
 		repo = arg[i]
@@ -131,5 +136,5 @@ while arg[i] do
 	i = i + 1
 end
 local _, summary = build(repo, out or ((os.getenv("HOME") or ".") ..
-	"/projects/grudgelands-orchestration/r56/questmap/index.html"))
+	"/projects/grudgelands-orchestration/r56/questmap/index.html"), data_root)
 print(summary)

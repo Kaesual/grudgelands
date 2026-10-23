@@ -340,14 +340,13 @@ for _, id in ipairs(ids) do
 		if check(detail ~= nil, "dialogue detail present: " .. id) then
 			check(stat_hit(detail) == nil, "dialogue free of stats: " .. id .. " " .. tostring(stat_hit(detail)))
 			check(not detail:find(ESC, 1, true), "dialogue free of escapes: " .. id)
-			-- Description lines, a blank line, a repeatable's cooldown line, one
-			-- line per objective, a blank line, the reward line and one line per
-			-- reward item.
-			local cooldown = def.repeatable and 1 or 0
-			local want = #lines_of(def.description) + 1 + cooldown + #def.objectives + 1 + 1 + #def.rewards.items
+			-- Description lines, a blank line, one line per objective, a blank
+			-- line, the reward line and one line per reward item (Round 57: no
+			-- repeatable's cooldown line).
+			local want = #lines_of(def.description) + 1 + #def.objectives + 1 + 1 + #def.rewards.items
 			eq(#lines_of(detail), want, "dialogue line count (one line per item): " .. id)
 			local detail_lines = lines_of(detail)
-			local first = #lines_of(def.description) + 2 + cooldown
+			local first = #lines_of(def.description) + 2
 			for index, objective in ipairs(def.objectives) do
 				local line = detail_lines[first + index - 1] or ""
 				if objective.type == "item" and objective.item then
@@ -396,8 +395,8 @@ for _, id in ipairs(ids) do
 		if #def.rewards.items > 0 then record("quest log rewards", rewards) end
 	end
 	-- The HUD's one compact line (quests.md): "0/4 Bring Iron Bar" for one
-	-- objective, "Iron Bar 0/4, Coal Lump 0/4" for several, "Repeatable: "
-	-- first. Checked where every objective names one exact item.
+	-- objective, "Iron Bar 0/4, Coal Lump 0/4" for several. Checked where
+	-- every objective names one exact item.
 	local hud_want
 	for index, objective in ipairs(def.objectives) do
 		if objective.type ~= "item" or not objective.item then hud_want = nil; break end
@@ -405,7 +404,6 @@ for _, id in ipairs(ids) do
 		hud_want = #def.objectives == 1 and ("0/%d Bring %s"):format(objective.count, name) or
 			(index > 1 and hud_want .. ", " or "") .. ("%s 0/%d"):format(name, objective.count)
 	end
-	if hud_want and def.repeatable then hud_want = "Repeatable: " .. hud_want end
 	local journal = Q.journal(player)
 	for _, width in ipairs({38, 400}) do
 		local text = Q.hud_text(journal, nil)

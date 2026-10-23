@@ -193,16 +193,6 @@ function Q.objective_levels_text(objective)
 	return (" (level %d–%d)"):format(levels[1], levels[2])
 end
 
--- A repeatable's cooldown in words: "30 min", "2 h", "1 h 30 min".
-function Q.cooldown_text(seconds)
-	local minutes = math.ceil(seconds / 60)
-	local hours = math.floor(minutes / 60)
-	minutes = minutes - hours * 60
-	if hours == 0 then return minutes .. " min" end
-	if minutes == 0 then return hours .. " h" end
-	return ("%d h %d min"):format(hours, minutes)
-end
-
 --
 -- Placeholders in quest titles and texts (Round 29 Lane Q1, the user's text
 -- rule of 2026-10-02): directions and places that depend on the seed are
@@ -388,14 +378,17 @@ local function zone_name(zone)
 	return record and record.display_name or zone
 end
 
--- One placeholder of quest `def`'s text, filled for this world. "From
--- here" is true only in the giver's own dialogue (`at_giver`); the quest log
--- and another NPC's dialogue read it from the giver's settlement ("northeast
--- of Dawnmere"). A target whose phrase cannot be built (no region of that
--- kind on this seed, a map that failed to build) falls back to the zone or
--- the place, without a direction, and is logged once.
-local function placeholder_value(def, p, at_giver)
-	local target, reason = Q.placeholder_target(def.zone, p.args[#p.args])
+-- One placeholder of quest `def`'s text, filled for this world, in the
+-- zone of `variant` (Round 57: a bare id is the variant's zone) and from its
+-- giver `giver`. "From here" is true only in the giver's own dialogue
+-- (`at_giver`); the quest log and another NPC's dialogue read it from the
+-- giver's settlement ("northeast of Dawnmere"). A target whose phrase
+-- cannot be built (no region of that kind on this seed, a map that failed
+-- to build) falls back to the zone or the place, without a direction, and
+-- is logged once.
+local function placeholder_value(def, variant, giver, p, at_giver)
+	local zone = variant.zone or def.zone
+	local target, reason = Q.placeholder_target(zone, p.args[#p.args])
 	if not target then
 		core.log("warning", ("[grug_quests] %s: %s: %s"):format(def.id, p.raw, reason))
 		return nil
@@ -412,10 +405,10 @@ local function placeholder_value(def, p, at_giver)
 	local subject = target.what == "poi" and regions.place(target.id) or target.id
 	local result
 	if p.kind == "dir_from_giver" and not at_giver then
-		local npc = Q.registered_npcs[def.npc]
+		local npc = Q.registered_npcs[giver]
 		result, reason = regions.describe(target.zone, subject, "of", npc and npc.settlement)
 	elseif p.kind == "dir_from_giver" then
-		local pos = giver_position(def.npc)
+		local pos = giver_position(giver)
 		result, reason = pos and regions.describe(target.zone, subject, "from", pos)
 		reason = reason or "the giver has no position"
 	elseif p.kind == "dir_of" then
@@ -433,19 +426,55 @@ local function placeholder_value(def, p, at_giver)
 	return "in " .. zone_name(target.zone)
 end
 
--- The quest's text (with its requirements) as players read it: in the
--- giver's dialogue (`at_giver`), else in the quest log or at another NPC.
--- Each form is filled once and cached; the title is filled at load
--- (Q.fill_names).
-local texts = {}
-function Q.quest_text(def, at_giver)
-	local key = at_giver and def.id .. "@giver" or def.id
-	local text = texts[key]
-	if not text then
-		text = def.description:find("{", 1, true) and
-			P.fill(def.description, function(p) return placeholder_value(def, p, at_giver) end) or
-			def.description
-		texts[key] = text
+-- Where a quest is read (Round 57): the variant and the giver of an active
+-- entry ({variant, giver}, state.lua), of a giver's offer ({giver = npc})
+-- or nil (the first variant and its first giver).
+local function reading(def, source)
+	local giver = source and source.giver
+	local variant = source and source.variant and def.variant_by_key[source.variant] or
+		(giver and def.variant_by_key[def.giver_variant[giver] or ""]) or
+		def.variant_by_key[def.variant_order[1]]
+	return variant, giver or variant.givers[1] or def.npc
+end
+
+-- The text a giver tells (Round 57 ruling 9): its own (`texts` by its NPC
+-- id), its race's (`texts` by race), its variant's, else the quest's.
+local function base_text(def, variant, giver)
+	local texts = def.texts
+	if texts then
+		local npc = Q.registered_npcs[giver]
+		local own = texts[giver] or (npc and npc.race_id and texts[npc.race_id])
+		if own then return own end
 	end
-	return text
+	return variant.description or def.description
+end
+
+-- The quest's text (with its requirements) as players read it: in the
+-- giver's dialogue (`at_giver`), else in the quest log or at another NPC;
+-- `source` is where it is read (`reading`). Each form is filled once and
+-- cached; the title is filled at load (Q.fill_names).
+local texts = {}
+local function filled(def, variant, giver, text, at_giver, key)
+	local cached = texts[key]
+	if not cached then
+		cached = text:find("{", 1, true) and
+			P.fill(text, function(p) return placeholder_value(def, variant, giver, p, at_giver) end) or text
+		texts[key] = cached
+	end
+	return cached
+end
+function Q.quest_text(def, at_giver, source)
+	local variant, giver = reading(def, source)
+	local text = base_text(def, variant, giver)
+	return filled(def, variant, giver, text, at_giver,
+		def.id .. "|" .. variant.key .. "|" .. tostring(giver) .. (at_giver and "@giver" or ""))
+end
+
+-- The closing paragraph of the turn-in (Round 57 ruling 14), filled like
+-- the text, or nil: the variant's, else the quest's.
+function Q.completion_text(def, source)
+	local variant, giver = reading(def, source)
+	local text = variant.completion or def.completion
+	if not text then return nil end
+	return filled(def, variant, giver, text, false, def.id .. "|" .. variant.key .. "|" .. tostring(giver) .. "@done")
 end

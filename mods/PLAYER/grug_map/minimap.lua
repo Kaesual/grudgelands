@@ -83,9 +83,8 @@ local META = "grug_map:minimap_hidden"
 -- (grug_quests.markers_changed: a quest change, held objective items, a
 -- level), on joining, and when the SLOW check (every SLOW seconds, each
 -- player in its own phase) finds their key changed: the quest markers'
--- version (a repeatable's cooldown ends), the home, the discovered
--- waystones or the faction (Round 37); the ones near the window are picked
--- on each new cell.
+-- version, the home, the discovered waystones or the faction (Round 37);
+-- the ones near the window are picked on each new cell.
 local SLOW = 5.0
 -- The window size and the location line are read again every WINDOW
 -- seconds, not every step (Round 30, perf review #12): a resize relayouts
@@ -104,9 +103,13 @@ local BEZEL_PX = 256
 -- kings and dragons are pixels of the base since Round 44.
 local SHOWN = {quest = true, steward = true, service = true, trainer = true,
 	innkeeper = true, home = true, waypoint = true}
-local QUEST_TEXTURE = {available = "grug_map_quest_available.png",
-	locked = "grug_map_quest_locked.png", ready = "grug_map_quest_ready.png",
-	active = "grug_map_quest_active.png"}
+-- By marker value (grug_quests.marker_states): the status, and a story
+-- quest's own (Round 57, "story_<status>").
+local QUEST_TEXTURE = {}
+for _, status in ipairs({"available", "locked", "ready", "active"}) do
+	QUEST_TEXTURE[status] = "grug_map_quest_" .. status .. ".png"
+	QUEST_TEXTURE["story_" .. status] = "grug_map_quest_story_" .. status .. ".png"
+end
 local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png",
 	waypoint = "grug_map_waypoint.png"}
 -- Which markers keep a slot when more than MARKER_SLOTS are in the circle
