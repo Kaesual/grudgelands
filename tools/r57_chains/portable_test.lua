@@ -9,7 +9,7 @@
 --      by the furnace (rule unpack); a lump/block loop nothing feeds (rule
 --      unpack makes the lump raw); a plank/stair/slab loop (rule cut_back);
 --      a recolour loop through a group (rule seed: the member used most
---      outside); a group ingredient resolving to its cheapest member; two
+--      outside); a one-for-one pair (no cut_back, rule seed); a group ingredient resolving to its cheapest member; two
 --      recipes for one item (the shallowest is the source, then the fewest
 --      steps); the loops listed with their rules; the longest chain; what an
 --      operation consumes; the same result in any step order;
@@ -71,6 +71,11 @@ local SYNTHETIC = {
 	{id = "wool_white", output = "t:wool_white", ingredients = {I("t:dye_white"), G("wool")}, basic = true},
 	{id = "wool_red", output = "t:wool_red", ingredients = {I("t:dye_red"), G("wool")}, basic = true},
 	{id = "bed", output = "t:bed", ingredients = {I("t:wool_white", 3), G("wood", 3)}, basic = true},
+	-- Two items made from each other one for one, nothing else: no rule
+	-- before seed applies; the one used outside is the seed.
+	{id = "moss_from_rock", output = "t:moss", ingredients = {I("t:rock")}, basic = true},
+	{id = "rock_from_moss", output = "t:rock", ingredients = {I("t:moss")}, basic = true},
+	{id = "wall", output = "t:wall", ingredients = {I("t:rock", 6)}, basic = true},
 	-- Two recipes for the guard: from the sword (deeper) or from a bar.
 	{id = "guard_deep", output = "t:guard", ingredients = {I("t:sword")}},
 	{id = "guard_flat", output = "t:guard", ingredients = {I("t:bar"), I("t:gem")}},
@@ -125,10 +130,15 @@ eq(R.groups.wood, "t:plank_a", "S group:wood resolves to the shallowest member")
 eq(S.handle.depth, 2, "S the handle is depth 2")
 eq(S.handle.chosen[1], "t:plank_a", "S the handle names the member it uses")
 -- The wool loop: seeded with the member used most outside it (the bed).
-list_eq(R.seeded, {"t:wool_white"}, "S the white wool is the loop's seed")
+list_eq(R.seeded, {"t:rock", "t:wool_white"}, "S the white wool and the rock are the seeds")
 eq(IT["t:wool_white"].depth, 0, "S the seed is raw")
 eq(S.wool_red.depth, 1, "S red wool: a dye and the seed")
 eq(R.groups.wool, "t:wool_white", "S group:wool resolves to the seed")
+-- The one-for-one pair: neither cuts the other; the rock is the seed.
+check(S.moss_from_rock.broken == nil and S.rock_from_moss.broken == nil,
+	"S a one-for-one pair is no cut_back")
+eq(IT["t:rock"].depth, 0, "S the rock is the pair's seed")
+eq(IT["t:moss"].depth, 1, "S the moss is made from the rock")
 -- Two recipes: the shallowest is the source, then the fewer steps.
 eq(IT["t:guard"].depth, 2, "S the guard takes its shallowest recipe")
 eq(IT["t:guard"].via, "guard_flat", "S the bar recipe is the guard's source")
@@ -146,12 +156,13 @@ local loop_rules = {}
 for _, loop in ipairs(R.loops) do
 	for _, entry in ipairs(loop.steps) do loop_rules[entry.id] = entry.rule or "source" end
 end
-eq(#R.loops, 4, "S four loops: bar, coal, planks, wool")
+eq(#R.loops, 5, "S five loops: bar, coal, planks, wool, rock")
 eq(loop_rules.unblock, "unpack", "S the loop list names rule unpack")
 eq(loop_rules.unstair, "cut_back", "S the loop list names rule cut_back")
 eq(loop_rules.wool_white, "seed", "S the loop list names rule seed")
 eq(loop_rules.block, "source", "S the block is its own source")
 eq(loop_rules.wool_red, "source", "S red wool is its own source")
+eq(loop_rules.rock_from_moss, "seed", "S the rock's recipe: rule seed")
 
 -- An operation's cost.
 local cost = chains.consume(R, {I("t:handle"), G("wood"), I("t:gem")})
@@ -252,7 +263,6 @@ end
 check(finite, "R every real step has a finite depth")
 
 if failures > 0 then
-	print(("R57 CHAINS PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R57 CHAINS PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R57 CHAINS PORTABLE PASS checks=%d"):format(checks))

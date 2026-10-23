@@ -286,7 +286,9 @@ write(out_dir .. "/report.txt", table.concat(lines, "\n") .. "\n")
 ------------------------------------------------------------------------------
 -- index.html
 ------------------------------------------------------------------------------
+local json_null = {}
 local function json(value)
+	if value == json_null then return "null" end
 	local kind = type(value)
 	if kind == "string" then
 		return '"' .. value:gsub('[%c"\\<>&]', function(c)
@@ -311,7 +313,7 @@ end
 local rows = {}
 for _, id in ipairs(result.order) do
 	local step, info, meta = input.by_id[id], result.steps[id], input.meta[id]
-	rows[#rows + 1] = {meta.area_label, meta.tier or 0, info.depth, info.steps,
+	rows[#rows + 1] = {meta.area_label, meta.tier or json_null, info.depth, info.steps,
 		output_text(step), ingredients_text(step, info.chosen), basics_text(info.basics),
 		notes(step), info.depth > 1 and chain_text(id) or "", id}
 end

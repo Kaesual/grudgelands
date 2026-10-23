@@ -30,6 +30,7 @@ table { border-collapse: collapse; width: 100%; }
 th, td { border-bottom: 1px solid var(--line); padding: 4px 6px; text-align: left;
 	vertical-align: top; }
 th { background: var(--head); position: sticky; top: 0; cursor: pointer; white-space: nowrap; }
+th.num { text-align: right; }
 th.sorted::after { content: " \25BE"; }
 th.sorted.up::after { content: " \25B4"; }
 td.num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -97,7 +98,7 @@ $("depthnote").textContent = "Without the " + DATA.loop_back + " loop-back steps
 	const table = $("depths");
 	const head = document.createElement("tr");
 	head.append(text("th", "Area"));
-	for (let d = 1; d <= DATA.top; d++) head.append(text("th", "depth " + d));
+	for (let d = 1; d <= DATA.top; d++) head.append(text("th", "depth " + d, "num"));
 	table.append(head);
 	DATA.depths.forEach((cells) => {
 		const tr = document.createElement("tr");
@@ -113,6 +114,7 @@ function makeTable(id, columns, rows, numeric) {
 	const head = document.createElement("tr");
 	columns.forEach((name, i) => {
 		const th = text("th", name);
+		if (numeric[i]) th.style.textAlign = "right";
 		th.addEventListener("click", () => {
 			if (key === i) up = !up; else { key = i; up = !numeric[i]; }
 			render();
@@ -127,9 +129,11 @@ function makeTable(id, columns, rows, numeric) {
 		const list = rows.filter((row) => (!area || row[0] === area) &&
 			(!needle || row.join(" ").toLowerCase().includes(needle)));
 		list.sort((a, b) => {
-			let c = numeric[key] ? a[key] - b[key] : String(a[key]).localeCompare(String(b[key]));
-			if (c === 0) c = b[2] - a[2] || b[3] - a[3];
-			return up ? c : -c;
+			const c = numeric[key] ? (a[key] || 0) - (b[key] || 0) :
+				String(a[key]).localeCompare(String(b[key]));
+			// Ties: deepest first, then the most steps, then by name.
+			return (up ? c : -c) || b[2] - a[2] || b[3] - a[3] ||
+				String(a[4]).localeCompare(String(b[4]));
 		});
 		[...head.children].forEach((th, i) => {
 			th.className = i === key ? (up ? "sorted up" : "sorted") : "";
@@ -137,7 +141,8 @@ function makeTable(id, columns, rows, numeric) {
 		body.replaceChildren(...list.map((row) => {
 			const tr = document.createElement("tr");
 			columns.forEach((_, i) => {
-				const td = text("td", row[i], numeric[i] ? "num" : (i >= 6 ? "small" : ""));
+				const td = text("td", row[i] === null ? "" : row[i],
+					numeric[i] ? "num" : (i >= 6 ? "small" : ""));
 				if (i === 2) {
 					const bar = document.createElement("span");
 					bar.className = "bar";

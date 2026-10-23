@@ -142,8 +142,9 @@ function chains.analyse(steps, members)
 			usable[step.id], broken[step.id] = false, "unpack"
 		end
 	end
-	-- Rule cut_back, on what unpack left.
-	local cut = {}
+	-- Rule cut_back, on what unpack left. Two steps that would cut each other
+	-- (A from B alone, B from A alone, nothing else) stay for the rules after.
+	local cut, maker_of = {}, {}
 	for _, step in ipairs(steps) do
 		local only = step.ingredients[1]
 		if usable[step.id] and loop_step(step) and #step.ingredients == 1 and only.item then
@@ -154,11 +155,15 @@ function chains.analyse(steps, members)
 			local maker = makers[1]
 			if #makers == 1 and #maker.ingredients == 1 and
 					maker.ingredients[1].item == step.output then
-				cut[#cut + 1] = step
+				cut[#cut + 1], maker_of[step.id] = step, maker.id
 			end
 		end
 	end
-	for _, step in ipairs(cut) do usable[step.id], broken[step.id] = false, "cut_back" end
+	for _, step in ipairs(cut) do
+		if not maker_of[maker_of[step.id]] then
+			usable[step.id], broken[step.id] = false, "cut_back"
+		end
+	end
 
 	-- The depths: a fixpoint over the usable steps (rule shallower), and
 	-- rule seed for what stays unreachable.
