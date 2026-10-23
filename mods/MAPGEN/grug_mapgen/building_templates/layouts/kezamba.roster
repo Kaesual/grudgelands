@@ -16,7 +16,7 @@ use kezamba_moot_house count=1 main=basalt
 use kezamba_cauldron_court count=1
 use kezamba_shrine count=1
 use kezamba_carver_yard count=1
-use kezamba_miners_guild count=1 main=basalt
+use kezamba_granary count=1
 use kezamba_stable count=1
 use kezamba_gate_house_south count=1
 use kezamba_lane_house count=1
@@ -31,6 +31,7 @@ use kezamba_shore_carvers count=3
 use highcourt_well_court count=4
 use kezamba_shore_watch count=1
 use kezamba_plot_shore_house count=4
+use kezamba_miners_guild count=1 main=basalt
 use kezamba_vine_house_a count=3
 use kezamba_vine_house_b count=2
 use kezamba_vine_house_c count=1
