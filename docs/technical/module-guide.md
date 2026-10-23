@@ -1889,6 +1889,10 @@ tools](#player-meta-read-by-external-tools).
   (fixture `tools/r32_f4`). Current geometry and offline presentation:
   [parties.md](../design/parties.md).
 
+## Miner's Guild
+
+- **`grug_guild` (Round 58):** the catalogue, its API, the files and their owners and the saved keys: [miners_guild.md](../design/miners_guild.md) §10.
+
 ## Mail
 
 - **`grug_mail` (Round 48, [mail.md](../design/mail.md)):** one global
