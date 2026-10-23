@@ -95,3 +95,25 @@ and below the diagonal is painted and sampled; the right wing mirrors it.
 |------|--------|--------|---------|
 | `grug_achievements_cloak_supporter.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Supporter Cloak (proposal p1, midnight with a seed emblem); `tools/r55_art/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |
 | `grug_achievements_cloak_supporter_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the Supporter Cloak's wings, their bands continuing the cloak's; `tools/r55_art/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |
+
+## The Miner's Guild cloaks — Round 58
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-23 (guild art drop `drop-01`, proposal p1 "Lamplight and tools",
+picked by the user on 2026-10-23): charcoal workcloth with a lamp badge that
+grows with the rank, a pick at rank 6 and bands of lamplight on the rank 10
+wings, written with Python/Pillow by the painter kept at
+`tools/r58_rep/src/drop-01/paint.py`; no image-generation service,
+downloaded art or third-party source pixels. The project dedicates any rights
+it holds in these originals to CC0-1.0. `tools/r58_rep/cloaks.py` repaints
+them and copies them here (`--check` compares them).
+
+The cloaks are 32×32 RGBA, fully opaque, in the format above; the wings are
+16×32 RGBA in the Supporter Cloak's wing format.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `grug_achievements_cloak_miners_guild_1.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Miner's Guild rank 3 cloak (drop-01 p1 `cloak_guild_3.png`, a modest lamp patch); `tools/r58_rep/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_miners_guild_2.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Miner's Guild rank 6 cloak (drop-01 p1 `cloak_guild_6.png`, lamp, pick and bronze hem); `tools/r58_rep/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_miners_guild_3.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Miner's Guild rank 10 cloak (drop-01 p1 `cloak_guild_10.png`, bright lamp core and double hem); `tools/r58_rep/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |
+| `grug_achievements_cloak_miners_guild_3_wings.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; the rank 10 cloak's wings (drop-01 p1 `wings_guild_10.png`, bands of lamplight); `tools/r58_rep/src/drop-01/paint.py` (Python/Pillow) | CC0-1.0 |

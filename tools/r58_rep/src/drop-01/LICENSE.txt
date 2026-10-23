@@ -1,0 +1,14 @@
+SPDX-License-Identifier: CC0-1.0
+
+To the extent possible under law, the authors waive all copyright and
+related or neighboring rights in the original art and code of this drop
+under the Creative Commons CC0 1.0 Universal Public Domain Dedication.
+
+This dedication covers the original PNG artwork in p1/ and p2/, the Python
+scripts in src/, and the original notes and preview layout artwork.
+
+The reference textures and player-model imagery reproduced for inspection
+under checks/ retain their source media terms. No reference pixels are
+included in p1/ or p2/, and paint.py reads no source images.
+
+CC0 deed and legal text: https://creativecommons.org/publicdomain/zero/1.0/

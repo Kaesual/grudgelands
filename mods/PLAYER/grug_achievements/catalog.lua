@@ -40,6 +40,9 @@
 --   quest_tag:<tag>       turn-ins of quests whose `tags` list the tag, e.g.
 --                         every quest of a questline (Round 36)
 --   manual:<id>           a manual row's own, 1 while granted (Round 55)
+--   guild:rank            the highest Miner's Guild rank the character
+--                         reached with either guild (Round 58; read live from
+--                         grug_guild.highest_rank, never copied)
 --
 return {
 	defaults = {"none", "plain_grey"},
@@ -138,6 +141,15 @@ return {
 		{id = "supporter", name = "Supporter Cloak",
 			texture = "grug_achievements_cloak_supporter.png",
 			wings = "grug_achievements_cloak_supporter_wings.png"},
+		-- Round 58: the Miner's Guild series, GPT-6 Astra's (guild art drop-01
+		-- P1, picked 2026-10-23; tools/r58_rep/cloaks.py); rank 10 winged.
+		{id = "miners_guild_1", name = "Lamp Badge Workcloth",
+			texture = "grug_achievements_cloak_miners_guild_1.png"},
+		{id = "miners_guild_2", name = "Lamp and Pick Workcloth",
+			texture = "grug_achievements_cloak_miners_guild_2.png"},
+		{id = "miners_guild_3", name = "Lamplight Mantle",
+			texture = "grug_achievements_cloak_miners_guild_3.png",
+			wings = "grug_achievements_cloak_miners_guild_3_wings.png"},
 	},
 	achievements = {
 		-- U1
@@ -251,5 +263,12 @@ return {
 			text_one = "Helped shape Grudgelands early on.",
 			flavour = "You walked these roads before they had names.",
 			tiers = {{at = 1, cloak = "supporter"}}},
+		-- Round 58 (miners_guild.md §6): reputation rank 3, 6 and 10 with the
+		-- character's guild, either faction's (no `faction` field).
+		{id = "miners_guild", name = "Miner's Guild", counter = "guild:rank",
+			text = "Reach Reputation Rank %d with the Miner's Guild.",
+			flavour = "The foremen know your lamp before they see your face.",
+			tiers = {{at = 3, cloak = "miners_guild_1"}, {at = 6, cloak = "miners_guild_2"},
+				{at = 10, cloak = "miners_guild_3"}}},
 	},
 }
