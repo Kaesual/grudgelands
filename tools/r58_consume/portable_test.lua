@@ -20,9 +20,11 @@
 -- C. Persistence: a leave and join (offline time does not count), a death
 --    (grug_core's clear first, then the re-apply), the crash (the timer save,
 --    then a join without a leave), the end; no position in player meta.
--- D. Ore Sense: its targets in catalogue order, one search per mark, the
---    marker for its user only and for marker_seconds, the interval, nothing
---    outside the band.
+-- D. Ore Sense: a random deposit in range, ore or gem (a random target kind
+--    first, then one of its deposits; the user's ruling of 2026-10-23), one
+--    search per mark, the marker for its user only and for marker_seconds,
+--    the first mark one interval after the use, nothing outside the band
+--    (a mark due there does nothing, the next interval starts).
 -- E. Treasure Hunt: the placement rules (tier rock, 26 solid neighbours,
 --    protection and hard protection refused, unloaded refused), the marker
 --    for the owner only and only within marker_range, removal by distance,
@@ -603,14 +605,41 @@ local silver_pos = {x = 5, y = -349, z = 0}
 store.nodes[key(garnet_pos)] = garnet
 store.nodes[key(silver_pos)] = silver
 local calls = search_calls
-local found, found_node = grug_guild.ore_sense_find(alice:get_pos(), 3, 16)
-check(found and found_node == garnet and key(found) == key(garnet_pos), "D the first target (the gem) wins over a nearer silver")
+local lowest = function(lo) return lo end
+local highest = function(_, hi) return hi end
+local found, found_node = grug_guild.ore_sense_find(alice:get_pos(), 3, 16, lowest)
+check(found and found_node == garnet and key(found) == key(garnet_pos), "D the random pick can be the gem")
 eq(search_calls - calls, 1, "D one search for every target at once")
-store.nodes[key(garnet_pos)] = nil
-found, found_node = grug_guild.ore_sense_find(alice:get_pos(), 3, 16)
-check(found and found_node == silver, "D then the next target")
+found, found_node = grug_guild.ore_sense_find(alice:get_pos(), 3, 16, highest)
+check(found and found_node == silver and key(found) == key(silver_pos), "D the random pick can be the ore")
 eq(grug_guild.ore_sense_find(alice:get_pos(), 3, 3), nil, "D nothing beyond the range")
-store.nodes[key(garnet_pos)] = garnet
+-- A seeded source over many marks: a random kind first (the one Garnet is
+-- marked about as often as all five Silvers together), then any deposit.
+do
+	local seed = 12345
+	local function seeded(lo, hi)
+		seed = (seed * 1103515245 + 12345) % 2147483648
+		return lo + math.floor(seed / 2147483648 * (hi - lo + 1))
+	end
+	local extra = {}
+	for index = 1, 4 do
+		extra[index] = {x = index - 2, y = -349, z = 6 + index}
+		store.nodes[key(extra[index])] = silver
+	end
+	local gems, seen, picks = 0, {}, 400
+	for _ = 1, picks do
+		local at, node = grug_guild.ore_sense_find(alice:get_pos(), 3, 16, seeded)
+		if node == garnet then gems = gems + 1 end
+		seen[key(at)] = true
+	end
+	check(gems / picks > 0.4 and gems / picks < 0.6, "D the kind first: the gem about half the marks (" ..
+		gems .. " of " .. picks .. ")")
+	check(seen[key(garnet_pos)] and seen[key(silver_pos)], "D both an ore and a gem are marked")
+	for index = 1, 4 do
+		check(seen[key(extra[index])], "D every Silver deposit can be marked (" .. index .. ")")
+		store.nodes[key(extra[index])] = nil
+	end
+end
 -- The range is a true distance: a gem in a corner of the search cube (about
 -- 18 away) loses to a silver 10 away.
 do
@@ -642,6 +671,8 @@ check(grug_guild.stop_effect(alice), "D stop_effect")
 eq(use(alice, "grug_guild:ore_sense_t3", 1), 0, "D a fresh use")
 local row = catalog.consumable("ore_sense", 3)
 local mark_times, marked = {}, 0
+local use_clock = clock
+local marked_at = {}
 calls = search_calls
 local last_seen
 for _ = 1, 1000 do
@@ -650,7 +681,9 @@ for _ = 1, 1000 do
 	if #list > 0 and not last_seen then
 		mark_times[#mark_times + 1] = clock
 		marked = marked + 1
-		check(key(list[1].world_pos) == key(garnet_pos), "D the marker sits on the deposit")
+		local at = key(list[1].world_pos)
+		check(at == key(garnet_pos) or at == key(silver_pos), "D the marker sits on a deposit")
+		marked_at[at] = true
 		check(list[1].text:find(garnet:gsub(".*:", ""), 1, true) ~= nil or list[1].text ~= "",
 			"D the marker shows the ore's own tile")
 	end
@@ -659,6 +692,10 @@ for _ = 1, 1000 do
 	eq(#waypoints(bob), 0, "D the marker is alice's only")
 end
 check(marked >= 8 and marked <= 17, "D a mark every 60-120 s (" .. marked .. " in 1000 s)")
+check(marked_at[key(garnet_pos)] and marked_at[key(silver_pos)], "D over the marks both the gem and the ore")
+local first_gap = mark_times[1] and (mark_times[1] - use_clock) / 1e6
+check(first_gap and first_gap >= row.interval_min - 1 and first_gap <= row.interval_max + 1,
+	"D the first mark one interval after the use (" .. tostring(first_gap) .. " s)")
 eq(search_calls - calls, marked, "D one search per mark")
 for index = 2, #mark_times do
 	local gap = (mark_times[index] - mark_times[index - 1]) / 1e6
@@ -684,6 +721,18 @@ advance(300)
 eq(search_calls - calls, 0, "D outside the band no search")
 eq(#waypoints(alice), 0, "D outside the band no marker")
 check(math.abs(remaining_before - grug_guild.active_effect(alice).remaining - 300) < 1, "D the time runs everywhere")
+-- Back in the band the chain of intervals goes on: a mark within one
+-- interval, and the search ran only after the return.
+alice:set_pos({x = 0, y = -349, z = 0})
+calls = search_calls
+local back
+for _ = 1, row.interval_max + 2 do
+	advance(1)
+	if #waypoints(alice) > 0 then back = true break end
+end
+check(back, "D a mark that fell due outside the band did nothing; the next interval marks again")
+eq(search_calls - calls, 1, "D one search after the return")
+alice:set_pos({x = 0, y = -250, z = 0})
 
 -- The end: the effect, the slot and the saved key go.
 advance(grug_guild.active_effect(alice).remaining + 1)

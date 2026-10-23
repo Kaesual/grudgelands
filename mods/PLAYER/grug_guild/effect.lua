@@ -27,10 +27,12 @@
 -- the rock in front would hide them (luanti src/client/particles.cpp
 -- getMaterialForParticle: the Z test stays on; only Z writes go off).
 --
--- Ore Sense: every interval_min..interval_max seconds (uniform), while the
--- user is in the band, ONE core.find_nodes_in_area over the `range` box
--- (clipped to the band) for every target node at once; the mark goes to the
--- nearest deposit of the first target (catalogue order) that has one, for
+-- Ore Sense: every interval_min..interval_max seconds (uniform; the first
+-- mark one interval after the use), while the user is in the band (a mark
+-- that falls due outside it does nothing and the next interval starts), ONE
+-- core.find_nodes_in_area over the `range` box (clipped to the band) for
+-- every target node at once; the mark goes to a random deposit within range
+-- (a random target kind that has one, then one of its deposits), for
 -- marker_seconds.
 --
 -- Treasure Hunt: one Miner's Remains at a time (items.lua registers the
@@ -319,26 +321,32 @@ for tier, keys in ipairs(catalog.ORE_SENSE_TARGETS) do
 	target_nodes[tier] = nodes
 end
 
--- The deposit Ore Sense of `tier` marks from pos: the nearest node of the
--- first target with one within `range` (true distance; the engine searches
--- the cube around it, clipped to the band), or nil. One engine search for
--- all targets.
-function grug_guild.ore_sense_find(pos, tier, range)
+-- The deposit Ore Sense of `tier` marks from pos (the user's ruling,
+-- 2026-10-23: a random deposit, ore or gem): of the targets with a deposit
+-- within `range` (true distance; the engine searches the cube around it,
+-- clipped to the band), one at random, then one of its deposits at random;
+-- nil when none. Kind first, so a rare gem is marked as often as a common
+-- ore instead of drowning in Coal. One engine search for all targets.
+-- `random(lo, hi)` is math.random unless a caller (the fixture) passes one.
+function grug_guild.ore_sense_find(pos, tier, range, random)
+	random = random or math.random
 	pos = rounded(pos)
 	local band = tier_row(tier)
 	local minp = {x = pos.x - range, y = math.max(pos.y - range, band.y_min), z = pos.z - range}
 	local maxp = {x = pos.x + range, y = math.min(pos.y + range, band.y_max), z = pos.z + range}
 	if minp.y > maxp.y then return nil end
 	local found = core.find_nodes_in_area(minp, maxp, target_nodes[tier], true)
+	local kinds = {} -- {node name, deposits in range}, catalogue order
 	for _, node_name in ipairs(target_nodes[tier]) do
-		local best, best_distance
+		local near = {}
 		for _, at in ipairs(found[node_name] or {}) do
-			local d = distance(pos, at)
-			if d <= range and (not best or d < best_distance) then best, best_distance = at, d end
+			if distance(pos, at) <= range then near[#near + 1] = at end
 		end
-		if best then return best, node_name end
+		if #near > 0 then kinds[#kinds + 1] = {node_name, near} end
 	end
-	return nil
+	if #kinds == 0 then return nil end
+	local kind = kinds[random(1, #kinds)]
+	return kind[2][random(1, #kind[2])], kind[1]
 end
 
 local function ore_texture(node_name)
