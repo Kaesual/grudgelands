@@ -29,10 +29,11 @@ DEFAULT_OUT = Path.home() / "projects/grudgelands-orchestration/r58/questmap/ind
 INTRO = ("Round 58: the Miner's Guild's quests alone (placeholder texts, [PH]). The guild files (The Charter "
          "of Stone, The Oathdelvers) hold the gather quests by depth tier, given by every own camp whose lift "
          "reaches the tier (the foreman roles foreman_tk ... foreman_t6). Each camp zone shows its foreman: "
-         "its hunt (line camp), the raid of a T4 camp, and the follow-ups of every tier its lift reaches "
+         "its hunt (line camp; by day, or after dark where the zone's quests already hunt every day role), the raid of a T4 camp, and the follow-ups of every tier its lift reaches "
          "(line guild; they open once both gather quests of the tier are done and travel to the guild leader "
          "of the zone's race region). The Chains view shows each tier's two gather quests with the two "
-         "follow-ups (one per faction). Rewards: XP and the quest copper only, no reputation.")
+         "follow-ups (one per faction). Rewards: XP and the quest copper, no reputation; the camp hunts add a "
+         "choice of the tier's leather, cloth or bar; the raid asks for the camp's four guards and its captain.")
 
 
 def ours(q):
