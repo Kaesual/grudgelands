@@ -19,7 +19,17 @@
 --      from its furnace and an alloy from the dual furnace; Linen Scrap's
 --      drops with level bands and leaders; a herb's zones and Alchemy
 --      tier; Thread's vendors; an ore's rock tiers; and prints the gaps
---      and the index's size and build time (comparisons, not targets).
+--      and the index's size and build time (comparisons, not targets);
+--   P  the details page (details.lua) on the real data: a recipe with two
+--      ingredient boxes (sources, have counts, Open ▸ only where the
+--      ingredient has a recipe, tooltips), Open ▸ and ◂ Back through a
+--      stack of pages, Select this recipe only for a known recipe (it
+--      chooses the recipe in its area), a group ingredient's Kinds ▸ page,
+--      every element inside the box above the job strip (with the overflow
+--      row too) and every label inside its column. Until lane CRAFT merges,
+--      its layout C box and open/close_craft_box are stood in for.
+--   R57_DETAILS_SHOW=1 prints the first page's formspec, R57_DETAILS_DUMP=<file>
+--   writes the source lines the digest is taken of.
 -- Prints "R57 DETAILS PORTABLE PASS checks=<n>" or the failures.
 
 local repo = arg and arg[1] or "."
@@ -326,6 +336,149 @@ check(find(thread_real, {kind = "recipe", area = "basic"}) ~= nil, "R ...and its
 local gear = find(real.sources("grug_gear:sword_bronze"), {kind = "vendor"})
 check(gear ~= nil, "R the T1 gear shelf is a vendor source (Bronze Sword)")
 check(#real.members("wood") > 3, "R group:wood resolves to its members")
+
+------------------------------------------------------------------------------
+-- P: the details page (details.lua) on the real data.
+------------------------------------------------------------------------------
+-- Until lane CRAFT merges, its box API (open_craft_box, close_craft_box and
+-- the view's `bottom`) is stood in for here; the page registers its box with
+-- the real register_craft_box.
+grug_jobs.open_craft_box = grug_jobs.open_craft_box or function(st, name)
+	if st.box ~= name then st.box_return = st.box end
+	st.box = name
+end
+grug_jobs.close_craft_box = grug_jobs.close_craft_box or function(st)
+	st.box, st.box_return = st.box_return, nil
+end
+local boxes = {}
+local register_box = grug_jobs.register_craft_box
+grug_jobs.register_craft_box = function(name, def)
+	boxes[name] = def
+	return register_box(name, def)
+end
+grug_jobs.item_sources = function() return real end
+-- Layout C's box and strip (CRAFT's ui.lua on r57-craft) until it merges.
+if not grug_jobs.CRAFT_STRIP_Y then
+	local bottom = grug_inventory.VIEW_GEOMETRY.top - 0.1
+	grug_jobs.CRAFT_BOX = {x = 5.4, y = 0.95, w = 7.9, h = bottom - 0.95}
+	grug_jobs.CRAFT_STRIP_Y = bottom - 1.35
+end
+dofile(repo .. "/mods/PLAYER/grug_jobs/details.lua")
+grug_jobs.register_craft_box = register_box
+local box = boxes.details
+check(box and type(box.build) == "function" and type(box.fields) == "function",
+	"P details.lua registers the details box")
+
+local function player_named(name)
+	local meta = {}
+	local meta_object = {
+		get_string = function(_, key) return meta[key] or "" end,
+		set_string = function(_, key, value) meta[key] = value end,
+		get_int = function(_, key) return tonumber(meta[key]) or 0 end,
+		set_int = function(_, key, value) meta[key] = value end,
+	}
+	return {get_player_name = function() return name end, is_player = function() return true end,
+		get_meta = function() return meta_object end, meta = meta}
+end
+-- Every element's rectangle inside the box and above its bottom.
+local BOXR = grug_jobs.CRAFT_BOX
+local function inside(fs, bottom)
+	local bad = {}
+	for kind, x, y, w, h in fs:gmatch("([%a_]+)%[(%-?[%d%.]+),(%-?[%d%.]+);([%d%.]+),([%d%.]+)") do
+		x, y, w, h = tonumber(x), tonumber(y), tonumber(w), tonumber(h)
+		if x < BOXR.x - 0.01 or x + w > BOXR.x + BOXR.w + 0.01 or y < BOXR.y - 0.01 or
+				y + h > bottom + 0.01 then
+			bad[#bad + 1] = kind .. "@" .. x .. "," .. y
+		end
+	end
+	for x, y in fs:gmatch("label%[(%-?[%d%.]+),(%-?[%d%.]+);") do
+		if tonumber(y) > bottom or tonumber(x) < BOXR.x then bad[#bad + 1] = "label@" .. x .. "," .. y end
+	end
+	return #bad == 0, table.concat(bad, " ")
+end
+-- The longest label text against its room (the web build's window is the
+-- same; text must not run out of the box): characters per unit 6.6.
+local function labels_fit(fs)
+	for x, text in fs:gmatch("label%[(%-?[%d%.]+),[%-%d%.]+;([^%]]*)%]") do
+		local plain = text:gsub("\27%([^)]*%)", ""):gsub("\27[EF]", ""):gsub("\\", "")
+		local length = 0
+		for _ in plain:gmatch("[^\128-\191]") do length = length + 1 end
+		if tonumber(x) + length / 6.6 > BOXR.x + BOXR.w + 0.05 then return false, plain end
+	end
+	return true
+end
+
+local bolt = grug_jobs.recipe("grug_professions:bolt_patch|grug_mobs:linen_scrap*2+grug_professions:thread*1")
+check(bolt ~= nil, "P the Patch Bolt recipe exists")
+local P1 = player_named("p1")
+local counts = {items = {["grug_mobs:linen_scrap"] = 1}, groups = {}}
+local st = {selected = bolt.id, box = "details", box_return = nil}
+local view = {st = st, counts = counts, bottom = grug_jobs.CRAFT_STRIP_Y and grug_jobs.CRAFT_STRIP_Y - 0.1 or 7.59}
+local fs = box.build(P1, view)
+if os.getenv("R57_DETAILS_SHOW") then print((fs:gsub("%]", "]\n"))) end
+check(fs:find("Recipe details:", 1, true) ~= nil and fs:find("Patch Bolt", 1, true) ~= nil,
+	"P the page names the recipe")
+
+check(fs:find("Linen Scrap ×2", 1, true) and fs:find("Thread ×1", 1, true),
+	"P one box per ingredient: Linen Scrap ×2 and Thread ×1")
+check(fs:find("you have 1", 1, true) and fs:find("you have 0", 1, true), "P the have counts")
+check(fs:find("Drops from:", 1, true) and fs:find("Sold by every Quartermaster", 1, true),
+	"P the sources: Linen Scrap's drops and Thread's vendors")
+check(fs:find("grug_craft_dopen_2", 1, true) ~= nil and fs:find("grug_craft_dopen_1", 1, true) == nil,
+	"P Open ▸ only on Thread (Linen Scrap has no recipe)")
+check(fs:find("grug_craft_dselect", 1, true) == nil, "P no select button on the chosen recipe")
+check(fs:find("tooltip%[") ~= nil, "P the icons carry tooltips")
+local ok, where = inside(fs, view.bottom)
+check(ok, "P every element inside the box and above the job strip " .. where)
+local fit, long = labels_fit(fs)
+check(fit, "P every label fits its column " .. tostring(long))
+
+-- Open ▸ on Thread, then Back twice.
+check(box.fields(P1, st, {grug_craft_dopen_2 = "Open ▸"}), "P Open ▸ is handled")
+fs = box.build(P1, view)
+check(fs:find("Thread", 1, true) and fs:find("Linen Scrap ×1", 1, true), "P ...it shows Thread's recipe")
+eq(#st.details.pages, 2, "P ...on a stack of two pages")
+check(fs:find("grug_craft_dselect", 1, true) == nil, "P no select button for an unknown Basic recipe")
+P1.meta[grug_jobs.HELD_KEY] = "1 grug_mobs:linen_scrap"
+local P2 = player_named("p2")
+P2.meta[grug_jobs.HELD_KEY] = "1 grug_mobs:linen_scrap"
+local st2 = {selected = bolt.id, box = "details"}
+box.fields(P2, st2, {grug_craft_dopen_2 = "Open ▸"})
+fs = box.build(P2, {st = st2, counts = counts, bottom = view.bottom})
+check(fs:find("grug_craft_dselect", 1, true) ~= nil, "P a known recipe has Select this recipe")
+check(box.fields(P2, st2, {grug_craft_dselect = "Select this recipe"}), "P Select is handled")
+check(st2.selected == "grug_professions:thread|grug_mobs:linen_scrap*1" and st2.slot == 1 and
+	st2.box == nil and st2.details == nil, "P ...it chooses Thread in Basic and closes the page")
+box.fields(P1, st, {grug_craft_dback = "◂ Back"})
+eq(#st.details.pages, 1, "P ◂ Back steps back one page")
+check(box.build(P1, view):find("Patch Bolt", 1, true) ~= nil, "P ...to Patch Bolt")
+box.fields(P1, st, {grug_craft_dback = "◂ Back"})
+check(st.box == nil and st.details == nil, "P ◂ Back from the first page leaves the details box")
+
+-- A group ingredient: Kinds ▸ opens a page of its kinds.
+local stick
+for _, record in ipairs(grug_jobs.recipes_for_output("default:stick")) do
+	if record.ingredients[1].group == "wood" then stick = record end
+end
+check(stick ~= nil, "P a Stick recipe takes group:wood")
+local st3 = {selected = stick.id, box = "details"}
+fs = box.build(P1, {st = st3, counts = counts, bottom = view.bottom})
+check(fs:find("Any wood", 1, true) and fs:find("grug_craft_dkinds_1", 1, true), "P the group box has Kinds ▸")
+box.fields(P1, st3, {grug_craft_dkinds_1 = "Kinds ▸"})
+fs = box.build(P1, {st = st3, counts = counts, bottom = view.bottom})
+check(fs:find("Kinds of:", 1, true) ~= nil, "P the group page")
+local wood_members = real.members("wood")
+check(fs:find(core.formspec_escape(grug_core.item_name(wood_members[1])), 1, true) ~= nil,
+	"P ...lists the kinds (" .. #wood_members .. ")")
+ok, where = inside(fs, view.bottom)
+check(ok, "P the group page stays inside the box " .. where)
+box.fields(P1, st3, {grug_craft_dopen_1 = "Open ▸"})
+eq(st3.details.pages[#st3.details.pages].kind, "recipe", "P Open ▸ on a kind opens its recipe")
+local short_view = {st = st3, counts = counts, bottom = view.bottom - 1.6}
+st3.details.pages = {{kind = "group", group = "wood", page = 1}}
+fs = box.build(P1, short_view)
+ok, where = inside(fs, short_view.bottom)
+check(ok, "P with the overflow row the group page still fits " .. where)
 
 local with, total = 0, 0
 for _, list in pairs(real.by_item) do

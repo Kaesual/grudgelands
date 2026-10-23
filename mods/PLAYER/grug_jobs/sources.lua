@@ -73,6 +73,13 @@ local function drop_names(name, def)
 	return out
 end
 
+-- A mob's name: its definition's description without escapes.
+local function entity_label(def, name)
+	local text = (def.description or ""):gsub("\27%([^)]*%)", ""):gsub("\27[EF]", "")
+	text = text:match("^[^\n]*") or ""
+	return text ~= "" and text or name
+end
+
 local function sorted_keys(map)
 	local keys = {}
 	for key in pairs(map) do keys[#keys + 1] = key end
@@ -96,9 +103,13 @@ end
 --   catch        grug_fishing.CATCH_TABLES; catch_total
 --   crops        grug_farming.CROPS (a list of {key, harvest_item, seed, stages})
 --   zone         function(zone id) -> {display_name, level_min, level_max}
+--   name_of      function(item name) -> its name (default: the description's
+--                first line; the game passes grug_core.item_name)
 --   world_nodes  extra natural node names (the mapgen's plants and reef)
 function M.build(data)
 	local items = data.items or {}
+	local first_line = data.name_of and function(_, name) return data.name_of(name) end or
+		first_line
 	local by_item = {}
 	local placed = {} -- item, kind and node: a node yields an item once
 	local function add(item, source)
@@ -229,7 +240,7 @@ function M.build(data)
 				end
 				if lo then static_drops(name, def, sub.display, lo, hi) end
 			elseif not (role and tables[role]) then
-				static_drops(name, def, first_line(def, name),
+				static_drops(name, def, entity_label(def, name),
 					def._grug_min_level, def._grug_max_level or def._grug_min_level)
 			end
 		end
@@ -413,7 +424,7 @@ end
 -- (wp40/r7_r6_manifest.lua; a decoration's schematic names its nodes).
 function M.game_data()
 	local data = {items = core.registered_items, recipes = grug_jobs.recipes,
-		entities = core.registered_entities}
+		entities = core.registered_entities, name_of = grug_core.item_name}
 	data.cooking = {}
 	for _, name in ipairs(sorted_keys(core.registered_items)) do
 		for _, recipe in ipairs(core.get_all_craft_recipes(name) or {}) do
