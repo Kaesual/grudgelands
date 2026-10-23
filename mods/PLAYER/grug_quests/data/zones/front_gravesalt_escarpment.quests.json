@@ -1,0 +1,470 @@
+{
+  "zone": "front_gravesalt_escarpment",
+  "identity": "The Battlegrounds' war camps of both factions, mining camps of the Miner's Guild since Round 58: their foremen's quests.",
+  "hubs": [
+    {
+      "id": "gravesalt_escarpment_accord_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_gravesalt_escarpment_accord_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_gravesalt_escarpment_accord_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gravesalt_escarpment_throng_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_gravesalt_escarpment_throng_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_gravesalt_escarpment_throng_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "guild_t5_report_accord",
+      "line": "guild",
+      "story": true,
+      "min_level": 41,
+      "level": 43,
+      "requires": [
+        "guild_t5_emberglass",
+        "guild_t5_ruby"
+      ],
+      "title": "[PH] Word to the Guild House (Fifth depth)",
+      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
+      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_dur_brannoc"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_accord_high",
+            "r58_foreman_pvp_camp_broken_causeway_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_accord_high",
+            "r58_foreman_pvp_camp_shattered_line_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "notes": "Round 58 follow-up of tier 5 (The Charter of Stone): story seed: A regular receipt records that a war camp's pay supplies both its fighters and its workers."
+    },
+    {
+      "id": "guild_t5_report_throng",
+      "line": "guild",
+      "story": true,
+      "min_level": 41,
+      "level": 43,
+      "requires": [
+        "guild_t5_emberglass",
+        "guild_t5_ruby"
+      ],
+      "title": "[PH] Word to the Guild House (Fifth depth)",
+      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
+      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_nhal_veyr"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_nhal_veyr"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_throng_high",
+            "r58_foreman_pvp_camp_broken_causeway_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_gor_drazhak"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_throng_high",
+            "r58_foreman_pvp_camp_shattered_line_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_gor_drazhak"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_kezamba"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "notes": "Round 58 follow-up of tier 5 (The Oathdelvers): story seed: A regular receipt records that a war camp's pay supplies both its fighters and its workers."
+    },
+    {
+      "id": "guild_t6_report_accord",
+      "line": "guild",
+      "story": true,
+      "min_level": 51,
+      "level": 53,
+      "requires": [
+        "guild_t6_crystal",
+        "guild_t6_diamond"
+      ],
+      "title": "[PH] Word to the Guild House (Sixth depth)",
+      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
+      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_dur_brannoc"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the sixth depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the sixth depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "notes": "Round 58 follow-up of tier 6 (The Charter of Stone): story seed: A salvage record lists recovered names and personal belongings apart from usable material, and the guild house files it accordingly."
+    },
+    {
+      "id": "guild_t6_report_throng",
+      "line": "guild",
+      "story": true,
+      "min_level": 51,
+      "level": 53,
+      "requires": [
+        "guild_t6_crystal",
+        "guild_t6_diamond"
+      ],
+      "title": "[PH] Word to the Guild House (Sixth depth)",
+      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
+      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_nhal_veyr"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_nhal_veyr"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the sixth depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_kezamba"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the sixth depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "notes": "Round 58 follow-up of tier 6 (The Oathdelvers): story seed: A salvage record lists recovered names and personal belongings apart from usable material, and the guild house files it accordingly."
+    },
+    {
+      "id": "camp_hunt_t6_low",
+      "line": "camp",
+      "min_level": 51,
+      "level": 52,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t6 low)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "salt_boring_weevil"
+          ],
+          "count": 8,
+          "area": "front_gravesalt_escarpment/saltflats"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_low",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_low"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "salt_boring_weevil"
+              ],
+              "area": "front_gravesalt_escarpment/saltflats"
+            }
+          ],
+          "text": "[PH] Defeat Brine Borer × 8 by day in the {name:saltflats}, which lie {zone_area:saltflats}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_low",
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_low"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "glass_knuckle_ape"
+              ],
+              "area": "front_skyglass_canopy/cloudwood"
+            }
+          ],
+          "text": "[PH] Defeat Cloud Ape × 8 by day in the {name:cloudwood}, which lie {zone_area:cloudwood}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L51-53."
+    },
+    {
+      "id": "camp_hunt_t6_high",
+      "line": "camp",
+      "min_level": 58,
+      "level": 59,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t6 high)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_watch_husk"
+          ],
+          "count": 8,
+          "area": "front_gravesalt_escarpment/whitewall"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_high"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "last_watch_husk"
+              ],
+              "area": "front_gravesalt_escarpment/whitewall"
+            }
+          ],
+          "text": "[PH] Defeat Last-Watch Mummy × 8 by day in the {name:whitewall}, which lie {zone_area:whitewall}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_high"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "glass_knuckle_ape"
+              ],
+              "area": "front_skyglass_canopy/high_canopy"
+            }
+          ],
+          "text": "[PH] Defeat Knuckler × 8 by day in the {name:high_canopy}, which lie {zone_area:high_canopy}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L58-60."
+    }
+  ]
+}

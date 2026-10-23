@@ -1,0 +1,162 @@
+{
+  "zone": "front_broken_causeway",
+  "identity": "The Battlegrounds' war camps of both factions, mining camps of the Miner's Guild since Round 58: their foremen's quests.",
+  "hubs": [
+    {
+      "id": "broken_causeway_accord_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_accord_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_accord_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "broken_causeway_throng_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_throng_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_throng_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "camp_hunt_t5_low",
+      "line": "camp",
+      "min_level": 41,
+      "level": 42,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t5 low)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_brigand"
+          ],
+          "count": 8,
+          "area": "front_broken_causeway/alderwood"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_accord_low",
+            "r58_foreman_pvp_camp_broken_causeway_throng_low"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "causeway_brigand"
+              ],
+              "area": "front_broken_causeway/alderwood"
+            }
+          ],
+          "text": "[PH] Defeat Causeway Brigand × 8 by day in the {name:alderwood}, which lie {zone_area:alderwood}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_accord_low",
+            "r58_foreman_pvp_camp_shattered_line_throng_low"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "warpack_hyena"
+              ],
+              "area": "front_shattered_line/approaches"
+            }
+          ],
+          "text": "[PH] Defeat Siegepack Hyena × 8 by day in the {name:approaches}, which lie {zone_area:approaches}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L41-43."
+    },
+    {
+      "id": "camp_hunt_t5_high",
+      "line": "camp",
+      "min_level": 48,
+      "level": 49,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t5 high)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_mire_husk"
+          ],
+          "count": 8,
+          "area": "front_broken_causeway/toll_fields"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_accord_high",
+            "r58_foreman_pvp_camp_broken_causeway_throng_high"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "causeway_mire_husk"
+              ],
+              "area": "front_broken_causeway/toll_fields"
+            }
+          ],
+          "text": "[PH] Defeat Mire-Cured Husk × 8 by day in the {name:toll_fields}, which lie {zone_area:toll_fields}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_accord_high",
+            "r58_foreman_pvp_camp_shattered_line_throng_high"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "reed_stalking_tiger"
+              ],
+              "area": "front_shattered_line/siegecrest"
+            }
+          ],
+          "text": "[PH] Defeat Crest Tiger × 8 by day in the {name:siegecrest}, which lie {zone_area:siegecrest}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L48-50."
+    }
+  ]
+}

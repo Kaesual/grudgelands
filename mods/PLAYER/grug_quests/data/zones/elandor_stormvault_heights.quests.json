@@ -27,6 +27,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_stormvault_heights",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_stormvault_heights",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
@@ -308,6 +321,378 @@
       "duration_min": 15,
       "climax": true,
       "group": true
+    },
+    {
+      "id": "guild_t4_report_accord",
+      "line": "guild",
+      "story": true,
+      "min_level": 31,
+      "level": 33,
+      "requires": [
+        "guild_t4_silver",
+        "guild_t4_sapphire"
+      ],
+      "title": "[PH] Word to the Guild House (Fourth depth)",
+      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
+      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_dur_brannoc"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r58_foreman_mining_camp_stormvault_heights"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fourth depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r58_foreman_mining_camp_ashenward_march"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fourth depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_glassroot_wilds"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fourth depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fourth depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_accord_high",
+            "r58_foreman_pvp_camp_broken_causeway_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fourth depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_accord_high",
+            "r58_foreman_pvp_camp_shattered_line_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fourth depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the fourth depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "notes": "Round 58 follow-up of tier 4 (The Charter of Stone): story seed: A short camp report names the affected drivers and workers beside the lost cargo and shows why the guild collects news from the border."
+    },
+    {
+      "id": "camp_hunt_t4",
+      "line": "camp",
+      "min_level": 31,
+      "level": 32,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t4)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "ridge_crag_eagle"
+          ],
+          "count": 8,
+          "area": "elandor_stormvault_heights/eagle_crags"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r58_foreman_mining_camp_stormvault_heights"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "ridge_crag_eagle"
+              ],
+              "area": "elandor_stormvault_heights/eagle_crags"
+            }
+          ],
+          "text": "[PH] Defeat Golden Eagle × 8 by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r58_foreman_mining_camp_ashenward_march"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "briarpack_wolf"
+              ],
+              "area": "elandor_ashenward_march/cinderwood"
+            }
+          ],
+          "text": "[PH] Defeat Ashwolf × 8 by day in the {name:cinderwood}, which lie {zone_area:cinderwood}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_glassroot_wilds"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "watchful_stag"
+              ],
+              "area": "elandor_glassroot_wilds/fringe"
+            }
+          ],
+          "text": "[PH] Defeat Rootantler × 8 by day in the {name:fringe}, which lie {zone_area:fringe}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r58_foreman_mining_camp_blackwind_rise"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "territorial_bear"
+              ],
+              "area": "kragmar_blackwind_rise/bonewood"
+            }
+          ],
+          "text": "[PH] Defeat Gale Bear × 8 by day in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r58_foreman_mining_camp_bannerbreak_mesa"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "warpack_hyena"
+              ],
+              "area": "kragmar_bannerbreak_mesa/badlands"
+            }
+          ],
+          "text": "[PH] Defeat Warpack Hyena × 8 by day in the {name:badlands}, which lie {zone_area:badlands}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_thunderroot_wilds"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "territorial_ape"
+              ],
+              "area": "kragmar_thunderroot_wilds/canopy"
+            }
+          ],
+          "text": "[PH] Defeat Thunder Ape × 8 by day in the {name:canopy}, which lie {zone_area:canopy}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L31-33."
+    },
+    {
+      "id": "camp_site_raid",
+      "line": "camp",
+      "min_level": 36,
+      "level": 40,
+      "requires": [],
+      "title": "[PH] The Camp Under Construction",
+      "text": "[PH] The enemy raises a camp in our zone. Defeat its captain. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "count": 1,
+          "area": "elandor_stormvault_heights/camp_site_stormvault_heights"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r58_foreman_mining_camp_stormvault_heights"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "captain_throng"
+              ],
+              "area": "elandor_stormvault_heights/camp_site_stormvault_heights"
+            }
+          ],
+          "text": "[PH] The enemy raises the {name:camp_site_stormvault_heights} {dir_from_giver:camp_site_stormvault_heights}. Defeat {captain:camp_site_stormvault_heights} before their banner holds. Real text to follow."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r58_foreman_mining_camp_ashenward_march"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "captain_throng"
+              ],
+              "area": "elandor_ashenward_march/camp_site_ashenward_march"
+            }
+          ],
+          "text": "[PH] The enemy raises the {name:camp_site_ashenward_march} {dir_from_giver:camp_site_ashenward_march}. Defeat {captain:camp_site_ashenward_march} before their banner holds. Real text to follow."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_glassroot_wilds"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "captain_throng"
+              ],
+              "area": "elandor_glassroot_wilds/camp_site_glassroot_wilds"
+            }
+          ],
+          "text": "[PH] The enemy raises the {name:camp_site_glassroot_wilds} {dir_from_giver:camp_site_glassroot_wilds}. Defeat {captain:camp_site_glassroot_wilds} before their banner holds. Real text to follow."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r58_foreman_mining_camp_blackwind_rise"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "captain_accord"
+              ],
+              "area": "kragmar_blackwind_rise/camp_site_blackwind_rise"
+            }
+          ],
+          "text": "[PH] The enemy raises the {name:camp_site_blackwind_rise} {dir_from_giver:camp_site_blackwind_rise}. Defeat {captain:camp_site_blackwind_rise} before their banner holds. Real text to follow."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r58_foreman_mining_camp_bannerbreak_mesa"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "captain_accord"
+              ],
+              "area": "kragmar_bannerbreak_mesa/camp_site_bannerbreak_mesa"
+            }
+          ],
+          "text": "[PH] The enemy raises the {name:camp_site_bannerbreak_mesa} {dir_from_giver:camp_site_bannerbreak_mesa}. Defeat {captain:camp_site_bannerbreak_mesa} before their banner holds. Real text to follow."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_thunderroot_wilds"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "captain_accord"
+              ],
+              "area": "kragmar_thunderroot_wilds/camp_site_thunderroot_wilds"
+            }
+          ],
+          "text": "[PH] The enemy raises the {name:camp_site_thunderroot_wilds} {dir_from_giver:camp_site_thunderroot_wilds}. Defeat {captain:camp_site_thunderroot_wilds} before their banner holds. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3
+      },
+      "notes": "Round 58 raid: the camp under construction of each contested T4 zone, given by the own T4 foreman; its captain (its guards carry no name slot yet)."
     }
   ]
 }

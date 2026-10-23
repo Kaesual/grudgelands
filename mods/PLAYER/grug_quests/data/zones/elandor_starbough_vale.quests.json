@@ -43,6 +43,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_starbough_vale",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_starbough_vale",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

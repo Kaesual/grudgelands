@@ -37,6 +37,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_ossuary_reach",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_ossuary_reach",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
@@ -315,6 +328,212 @@
       },
       "lesson": "Travel handoff from the heartland to the faction's contested zones.",
       "duration_min": 10
+    },
+    {
+      "id": "guild_t3_report_throng",
+      "line": "guild",
+      "story": true,
+      "min_level": 21,
+      "level": 23,
+      "requires": [
+        "guild_t3_anthracite",
+        "guild_t3_garnet"
+      ],
+      "title": "[PH] Word to the Guild House (Third depth)",
+      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
+      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_nhal_veyr"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_ossuary_reach",
+          "givers": [
+            "r58_foreman_mining_camp_ossuary_reach"
+          ],
+          "turnins": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_nhal_veyr"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r58_foreman_mining_camp_blackwind_rise"
+          ],
+          "turnins": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_nhal_veyr"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "kragmar_speargrass_reach",
+          "givers": [
+            "r58_foreman_mining_camp_speargrass_reach"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_gor_drazhak"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r58_foreman_mining_camp_bannerbreak_mesa"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_gor_drazhak"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "kragmar_whispering_reedlands",
+          "givers": [
+            "r58_foreman_mining_camp_whispering_reedlands"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_kezamba"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "kragmar_totemwater_reach",
+          "givers": [
+            "r58_foreman_mining_camp_totemwater_reach"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_kezamba"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_thunderroot_wilds"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_kezamba"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_nhal_veyr"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_throng_high",
+            "r58_foreman_pvp_camp_broken_causeway_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_gor_drazhak"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_throng_high",
+            "r58_foreman_pvp_camp_shattered_line_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_gor_drazhak"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_throng_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_kezamba"
+            }
+          ],
+          "text": "[PH] Both The Oathdelvers orders of the third depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "notes": "Round 58 follow-up of tier 3 (The Oathdelvers): story seed: The player carries an ordinary delivery copy confirmed by the guild and the supply office; the leader explains their joint seal (Charter of Stone) or their joint register marks (Oathdelvers)."
     }
   ]
 }

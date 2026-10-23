@@ -14,6 +14,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_moonfall_wood",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_moonfall_wood",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

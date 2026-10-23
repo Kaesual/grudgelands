@@ -38,6 +38,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_whispering_reedlands",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_whispering_reedlands",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

@@ -14,6 +14,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_totemwater_reach",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_totemwater_reach",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

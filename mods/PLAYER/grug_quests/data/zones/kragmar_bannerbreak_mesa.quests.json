@@ -58,6 +58,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_bannerbreak_mesa",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_bannerbreak_mesa",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
