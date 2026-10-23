@@ -147,6 +147,34 @@ return function(engine, directory, nodes, gathering)
   end,
  })
 
+ -- The Miner's Guild lift point (Round 58): written by the settlement writer
+ -- at every camp's lift socket (`wp40/r58_camp_blueprint.lua`,
+ -- `r31_pvp_poi_blueprint.lua`), so it too exists before the settlement
+ -- content is resolved. A placeholder look from shipped textures and no
+ -- behaviour: grug_guild (lane LIFT) overrides it with the lift's use and
+ -- the picked art. An override changes only the tiles, the description and
+ -- the callbacks: drawtype, paramtype, paramtype2, light_source,
+ -- sunlight_propagates, floodable and the groups enter the settlement
+ -- content's semantic digest (`wp40/r7_content.lua`), which main computes
+ -- while this mod loads and emerge after every mod has loaded, so a changed
+ -- field there stops the mapgen at its first start.
+ engine.register_node("grug_mapgen:guild_lift", {
+  description="Miner's Guild Lift",
+  drawtype="nodebox",
+  tiles={"default_wood.png^[colorize:#3b2a14:70","default_wood.png",
+   "default_wood.png^default_ladder_wood.png"},
+  paramtype="light",
+  light_source=3,
+  node_box={type="fixed",fixed={{-0.5,-0.5,-0.5,0.5,-0.375,0.5},
+   {-0.3125,-0.375,-0.3125,0.3125,0.375,0.3125}}},
+  groups={not_in_creative_inventory=1},
+  diggable=false,
+  is_ground_content=false,
+  drop="",
+  on_blast=function() end,
+  sounds=default.node_sound_wood_defaults(),
+ })
+
  -- This occupies the air node immediately above the source-water surface;
  -- its thin box sits at the bottom of that node and never replaces water.
  engine.register_node(catalog.freshwater[1], {

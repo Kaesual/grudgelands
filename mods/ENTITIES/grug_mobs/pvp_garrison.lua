@@ -29,6 +29,15 @@
 --                                       authored socket -- he stands across
 --                                       the captain from the west yard post
 --                                       (M.commander_socket)
+-- Round 58 camps (`grug_mapgen/wp40/r58_camp_catalog.lua`, the third
+-- argument of M.new): a mining camp of the Miner's Guild is its own
+-- settlement kind ("mining_camp") whose sockets keep the ordinary resolvers
+-- (the faction guards on its posts, the foreman's quest shell, the camp
+-- vendor), so it has no garrison here; a camp under construction is served
+-- as a camp ("pvp_camp"): its gate and yard guards and its captain are
+-- garrison posts of the camp's highest level third (its catalogue `band`),
+-- the captain named in data/pvp_names.json for the camp's one race (the
+-- builder's), the guards by their entity (no data/names.json slot).
 -- Looks (round31-plan §1, lane A's contract at grug_visuals.npc_race): a
 -- camp's people are of the camp's race and the General of his fortress's seat
 -- race, both the race their settlement registered as; fortress guards and
@@ -99,10 +108,10 @@ end
 
 -- `catalog` is r31_pvp_catalog.lua's table, `names` the decoded
 -- data/pvp_names.json ({generals = {accord, throng}, captains = {<camp key> =
--- {<race> = name}}, commanders = {<camp key> = name}}). Fails loudly when a
--- General or any captain a camp can roll has no name, or a commander names
--- no higher camp.
-function M.new(catalog, names)
+-- {<race> = name}}, commanders = {<camp key> = name}}), `camps` (optional)
+-- r58_camp_catalog.lua's table. Fails loudly when a General or any captain a
+-- camp can roll has no name, or a commander names no higher camp.
+function M.new(catalog, names, camps)
 	if type(catalog) ~= "table" or type(catalog.rows) ~= "table" or
 			type(catalog.FACTION_RACES) ~= "table" or type(catalog.SEAT_RACE) ~= "table" or
 			type(catalog.camp_levels) ~= "function" then
@@ -116,8 +125,18 @@ function M.new(catalog, names)
 	local G = setmetatable({catalog = catalog, names = names}, {__index = M})
 	local commanders = names.commanders or {}
 	if type(commanders) ~= "table" then fail("commander names differ") end
-	local by_key = {}
-	for _, row in ipairs(catalog.rows) do
+	local by_key, mining = {}, {}
+	local rows = {}
+	for _, row in ipairs(catalog.rows) do rows[#rows + 1] = row end
+	if camps ~= nil then
+		if type(camps) ~= "table" or type(camps.mining) ~= "table" or
+				type(camps.construction) ~= "table" then
+			fail("camp catalogue differs")
+		end
+		for _, row in ipairs(camps.mining) do mining[row.key] = row end
+		for _, row in ipairs(camps.construction) do rows[#rows + 1] = row end
+	end
+	for _, row in ipairs(rows) do
 		local races = catalog.FACTION_RACES[row.faction]
 		if not races then fail(row.key .. ": faction differs") end
 		by_key[row.key] = row
@@ -128,7 +147,8 @@ function M.new(catalog, names)
 			end
 		else
 			local captains = names.captains[row.key]
-			for _, race in ipairs(races) do
+			-- A camp under construction is of one race (its builder's).
+			for _, race in ipairs(row.race and {row.race} or races) do
 				local name = type(captains) == "table" and captains[race]
 				if type(name) ~= "string" or name == "" then
 					fail("no captain name for " .. row.key .. " " .. race)
@@ -144,13 +164,16 @@ function M.new(catalog, names)
 		if type(name) ~= "string" or name == "" then fail("no commander name for " .. key) end
 	end
 
-	-- The catalogue row of a settlement key, or nil (not a PvP POI).
+	-- The catalogue row of a settlement key, or nil (not a PvP POI; a camp
+	-- under construction is one, a mining camp is not).
 	function G.poi(key)
 		return by_key[key]
 	end
 
-	-- The settlement kind start_npcs.lua serves a PvP POI as.
+	-- The settlement kind start_npcs.lua serves a PvP POI (or a Round 58
+	-- camp) as.
 	function G.settlement_kind(key)
+		if mining[key] then return "mining_camp" end
 		local row = by_key[key]
 		if not row then return nil end
 		return row.kind == "pvp_fortress" and "pvp_fortress" or "pvp_camp"
@@ -257,6 +280,8 @@ function M.new(catalog, names)
 		if not of_faction then fail(key .. ": race " .. tostring(race_id) .. " is not of " .. faction) end
 		local low, high = catalog.camp_levels(band[1], band[2], row.band)
 		spec.name_key = key .. "." .. (role == "captain" and "captain-" .. race_id or "guard")
+		-- A camp under construction's guards have no names-file slot.
+		if row.kind == "camp_construction" and role ~= "captain" then spec.name_key = nil end
 		if role == "captain" then
 			spec.entity = M.captain_entity(faction)
 			spec.level_min, spec.level_max = high, high

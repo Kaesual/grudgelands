@@ -64,6 +64,7 @@ local module_dir = type(module_info)=="table" and type(module_info.source)=="str
 if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapgen").."/wp40" end
 local round20_catalog = dofile(module_dir.."/r20_poi_catalog.lua")
 local pvp_catalog = dofile(module_dir.."/r31_pvp_catalog.lua")
+local camp_catalog = dofile(module_dir.."/r58_camp_catalog.lua")
 local plot_approach = dofile(module_dir.."/../wp13/plot_approach.lua")
 local approach_palettes = dofile(module_dir.."/../wp13/palette.lua")
 local parts = dofile(module_dir.."/../wp13/parts.lua")
@@ -85,6 +86,10 @@ M.BOUNDS = {
 	pvp_fortress = {min = {x = -24, y = 0, z = -24}, max = {x = 24, y = 16, z = 24}},
 	pvp_camp_low = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 9, z = 11}},
 	pvp_camp_high = {min = {x = -13, y = 0, z = -13}, max = {x = 13, y = 9, z = 13}},
+	-- Round 58 camps (`r58_camp_blueprint.lua`): square and centred like the
+	-- war camps, their fitting profiles' cores one node wider.
+	mining_camp = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 9, z = 11}},
+	camp_construction = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 9, z = 11}},
 }
 
 -- The city edge (walls or palisades, gatehouses, turrets) is the one
@@ -437,17 +442,9 @@ end
 -- and slot name in the source (anchors 101..118, template id = the row's
 -- kind). Every row has its anchor; a missing one is an authoring error.
 --
--- The one gate faces where players come from: a fortress's faces the middle
--- road along x = 0, which the placement rules keep on the faction's side
--- (`placement_rules.lua`: the Accord's east of it, so its gate faces west;
--- the Throng's west, its gate facing east); a camp's faces its own
--- continent (Elandor at -z, Kragmar at +z). A row's own `turns` overrides
--- the rule. Seed-free, so the blueprint is too.
-function M.pvp_gate_turns(row)
-	if row.turns ~= nil then return row.turns end
-	if row.kind == "pvp_fortress" then return row.faction == "accord" and 1 or 3 end
-	return row.faction == "accord" and 0 or 2
-end
+-- The one gate faces where players come from (`r31_pvp_catalog.gate_turns`:
+-- a fortress's the middle road, a camp's its own continent).
+M.pvp_gate_turns = pvp_catalog.gate_turns
 
 function M.pvp_profiles(source)
 	local zone_numeric = {}
@@ -481,8 +478,50 @@ function M.pvp_profiles(source)
 	end
 	return profiles
 end
-for _, profile in ipairs(M.pvp_profiles(dofile(module_dir .. "/source/simple_map.lua"))) do
-	M.roster[#M.roster + 1] = profile
+-- The Round 58 camps (`r58_camp_catalog.lua`): the mining camps and the
+-- camps under construction bind their anchors the same way (anchors
+-- 119..144, all or none), registered as the row's race and turned by the
+-- war camps' rule (the gate faces the own continent).
+function M.camp_profiles(source)
+	local zone_record = {}
+	for index = 1, #source.zones do zone_record[source.zones[index].id] = source.zones[index] end
+	local anchor_of = {}
+	for index = 1, #source.anchors do
+		local a = source.anchors[index]
+		anchor_of[a.zone_numeric_id .. "/" .. a.slot_id] = a
+	end
+	local profiles = {}
+	for _, list in ipairs({camp_catalog.mining, camp_catalog.construction}) do
+		for _, row in ipairs(list) do
+			local zone = zone_record[row.zone_id]
+			if not zone then error("WP13 camp zone differs: " .. row.key, 0) end
+			local a = anchor_of[zone.numeric_id .. "/" .. row.slot]
+			if not a then error("WP13 camp anchor missing: " .. row.key, 0) end
+			if a.template_id ~= row.kind then error("WP13 camp template differs: " .. row.key, 0) end
+			local stem = "grug_r58_" .. row.key
+			profiles[#profiles + 1] = {key = row.key, label = row.label, race = row.race,
+				slot = row.slot, bounds = row.kind, lazy = true, zone_id = row.zone_id,
+				anchor_id = a.id, numeric_id = a.numeric_id,
+				blueprint_file = "r58_camp_blueprint.lua",
+				art = {kind = row.kind, faction = row.faction, race = row.race,
+					contested = zone.territory_rule == "contested_land",
+					turns = pvp_catalog.gate_turns(row)},
+				blueprint_schema = stem .. "_v1", identity_schema = stem .. "_identity_v1",
+				config_schema = stem .. "_config_v1", ledger_schema = stem .. "_ledger_v1",
+				metrics_schema = stem .. "_metrics_v1", delta_schema = stem .. "_delta_v1",
+				reserve_anchor_root = true}
+		end
+	end
+	return profiles
+end
+do
+	local source = dofile(module_dir .. "/source/simple_map.lua")
+	for _, profile in ipairs(M.pvp_profiles(source)) do
+		M.roster[#M.roster + 1] = profile
+	end
+	for _, profile in ipairs(M.camp_profiles(source)) do
+		M.roster[#M.roster + 1] = profile
+	end
 end
 
 -- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that

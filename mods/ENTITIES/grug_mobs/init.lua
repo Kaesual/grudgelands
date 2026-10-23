@@ -1109,8 +1109,11 @@ do
 	local handle = assert(io.open(modpath .. "/data/pvp_names.json", "r"))
 	local names = core.parse_json(handle:read("*a"))
 	handle:close()
+	local wp40 = core.get_modpath("grug_mapgen") .. "/wp40"
 	grug_mobs.pvp_garrison = dofile(modpath .. "/pvp_garrison.lua").new(
-		dofile(core.get_modpath("grug_mapgen") .. "/wp40/r31_pvp_catalog.lua"), names)
+		dofile(wp40 .. "/r31_pvp_catalog.lua"), names,
+		-- Round 58: the mining camps and the camps under construction
+		dofile(wp40 .. "/r58_camp_catalog.lua"))
 end
 -- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
 -- come before camps.lua, which names the two guard mobs in its camp types.

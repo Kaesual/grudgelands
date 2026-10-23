@@ -45,9 +45,10 @@ end
 grug_mobs.ROAM_AVOID_DIRS = DIRS
 
 -- world_feature_at kinds that push (Round 31: the PvP fortresses and war
--- camps like a village); "camp" and "poi" (outposts included) do not.
+-- camps like a village; Round 58 the mining camps); "camp" and "poi"
+-- (outposts included) do not.
 local PUSH_FEATURE = {road = true, bridge = true, village = true, fortress = true,
-	war_camp = true}
+	war_camp = true, mining_camp = true}
 
 -- Whether one probe point lies on ground the push keeps mobs away from.
 function grug_mobs.roam_avoid_hit(pos)
