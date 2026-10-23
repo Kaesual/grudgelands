@@ -49,8 +49,10 @@ local function loader(directory)
 	-- `sockets[first ..]` are the gate's own sockets, as the capital took
 	-- them from the stamp; `plot` is its placement ({id, x, z, turns}, stamped
 	-- at y 0), `w` and `d` its part's pivot, `prefix` the capital's key (the
-	-- loop names, as the template's own `group=<capital>_{id}_tower` had it).
-	function M.apply(sockets, first, plot, w, d, prefix)
+	-- loop names, as the template's own `group=<capital>_{id}_tower` had it),
+	-- `buf` the core's buffer (it remembers the corners for `clear_cover`).
+	function M.apply(sockets, first, plot, w, d, prefix, buf)
+		buf.watch_corners = buf.watch_corners or {}
 		local kept, posts = {}, 0
 		for index = first, #sockets do
 			local socket = sockets[index]
@@ -75,6 +77,8 @@ local function loader(directory)
 					sign(nxt[2] - corner[2]))
 				local rx, rz = parts.rotate_footprint(corner[1], corner[2], w, d,
 					plot.turns)
+				local corners_seen = buf.watch_corners
+				corners_seen[#corners_seen + 1] = {plot.x + rx, plot.z + rz}
 				sockets[#sockets + 1] = {
 					id = plot.id .. "_watch_" .. loop.name .. "_" .. order,
 					role = "guard_patrol", x = plot.x + rx, y = 1, z = plot.z + rz,
@@ -84,6 +88,29 @@ local function loader(directory)
 				}
 			end
 		end
+	end
+
+	-- The ground cover the capital's meadow flora planted on a corner's feet
+	-- or head cell (after the plots, `dressing.undergrowth`), taken off again
+	-- so the watch's corners stand on open ground (the cover rule of
+	-- tools/r51_ft: no cover on a socket). `palette` is the core's race
+	-- palette.
+	local COVER = {"undergrowth", "grass_tuft", "fern"}
+	function M.clear_cover(buf, palette)
+		local cover = {}
+		for _, role in ipairs(COVER) do
+			local name = palette.maybe(role)
+			if name then cover[name] = true end
+		end
+		for _, corner in ipairs(buf.watch_corners or {}) do
+			for y = 1, 2 do
+				local cell = buf:at(corner[1], y, corner[2])
+				if cell and cover[cell.name] then
+					buf:put(corner[1], y, corner[2], parts.AIR, 0)
+				end
+			end
+		end
+		buf.watch_corners = nil
 	end
 
 	return M

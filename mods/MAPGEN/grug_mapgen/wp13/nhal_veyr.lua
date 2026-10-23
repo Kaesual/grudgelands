@@ -511,7 +511,7 @@ local function loader(directory)
 			-- A core gatehouse's watch (Round 58, gate_watch.lua): the ground
 			-- guards' rectangle on the city side and the tower guard's post.
 			if plot.watch then
-				gate_watch.apply(sockets, first, plot, part.w, part.d, "nhal_veyr")
+				gate_watch.apply(sockets, first, plot, part.w, part.d, "nhal_veyr", buf)
 			end
 		end
 
@@ -871,6 +871,8 @@ local function loader(directory)
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, undead, RADIUS, sockets, doorways)
 		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		-- Round 58: the gate watch's corners stand on open ground.
+		gate_watch.clear_cover(buf, CAPITAL.palettes.town)
 		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}
