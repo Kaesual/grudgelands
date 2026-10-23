@@ -1,7 +1,10 @@
 -- Round 56 lane QUESTMAP: every shipped quest as the game registers it.
 --
---   local model = dofile(REPO .. "/tools/r56_questmap/model.lua")(REPO)
+--   local model = dofile(REPO .. "/tools/r56_questmap/model.lua")(REPO [, DATA])
 --
+-- DATA (optional, Round 57): a folder whose data/zones holds the quest files
+-- to read instead of the shipped ones (a fixture's sample, a lane's draft);
+-- the code stays the repository's.
 -- Runs the REAL grug_quests registry.lua, labels.lua, npcs.lua, validate.lua
 -- and loader.lua over the shipped zone files (data/zones), with the real
 -- spawn recipes (tools/r28_b1/load_spawn_areas.lua), the real mob names
@@ -15,7 +18,7 @@
 --
 -- Returns {zones, quests, npcs, warnings}: plain tables, see build() below.
 -- Plain Lua 5.1 / LuaJIT; reads only, writes nothing.
-return function(repo)
+return function(repo, data_root)
 	repo = repo or "."
 	local json = dofile(repo .. "/tools/r28_b4_quests/json.lua")
 	-- The globals the loaded files use, put back as they were at the end.
@@ -36,7 +39,8 @@ return function(repo)
 	-- The engine surface the loaded files touch at load; any other
 	-- register_* call is a no-op.
 	local warnings = {}
-	local paths = {grug_quests = repo .. "/mods/PLAYER/grug_quests",
+	local code = repo .. "/mods/PLAYER/grug_quests"
+	local paths = {grug_quests = code,
 		grug_mobs = repo .. "/mods/ENTITIES/grug_mobs", grug_xp = repo .. "/mods/PLAYER/grug_xp",
 		grug_money = repo .. "/mods/PLAYER/grug_money"}
 	local current = "grug_quests"
@@ -130,8 +134,10 @@ return function(repo)
 
 	-- use.lua hooks the quest state (state.lua, not loaded: no players).
 	rawset(_G, "grug_quests", {register_on_change = function() end})
+	for _, file in ipairs({"registry", "labels", "npcs", "use"}) do dofile(code .. "/" .. file .. ".lua") end
+	-- The quest files from here on (use.lua read its object kinds above).
+	paths.grug_quests = data_root or code
 	local base = paths.grug_quests .. "/"
-	for _, file in ipairs({"registry", "labels", "npcs", "use"}) do dofile(base .. file .. ".lua") end
 	for _, npc in pairs(grug_quests.registered_npcs) do
 		sockets[npc.settlement] = sockets[npc.settlement] or {}
 		table.insert(sockets[npc.settlement], {id = npc.socket, role = "quest", pos = {x = 0, y = 0, z = 0}})
@@ -154,7 +160,7 @@ return function(repo)
 			end
 		end
 	end
-	for _, file in ipairs({"validate", "loader"}) do dofile(base .. file .. ".lua") end
+	for _, file in ipairs({"validate", "loader"}) do dofile(code .. "/" .. file .. ".lua") end
 	local Q = grug_quests
 
 	-- The model -------------------------------------------------------------
@@ -242,32 +248,65 @@ return function(repo)
 		end
 		return row
 	end
+	local function fill(text, zone)
+		return (Q.fill_names(text, zone):gsub("{[%w_]+:[^}]*}", "[place]"))
+	end
 	for _, entry in ipairs(Q.validate.each_quest(Q.quest_files)) do
 		local raw, file = entry.quest, entry.file
 		local def = Q.registered_quests[raw.id]
-		local objectives = {}
-		for index, objective in ipairs(def.objectives) do
-			objectives[index] = objective_row(objective, raw.objectives[index], file.zone)
+		-- Round 57: one row per quest, its variants (one per giver zone)
+		-- with their own givers, turn-ins, hubs, objectives and text.
+		local variants = {}
+		for index, variant in ipairs(Q.validate.variants(file, raw)) do
+			local registered = def.variant_by_key[variant.key]
+			local rows = {}
+			for i, objective in ipairs(registered.objectives) do
+				rows[i] = objective_row(objective, variant.objectives[i], variant.zone)
+			end
+			local givers, giver_names, turnin_names = {}, {}, {}
+			for _, npc in ipairs(registered.givers) do
+				givers[#givers + 1] = npc
+				giver_names[#giver_names + 1] = npc_name(npc)
+			end
+			for _, role in ipairs(registered.giver_roles) do
+				giver_names[#giver_names + 1] = "every " .. role.role .. " of the " .. role.faction
+			end
+			for _, npc in ipairs(registered.turnins) do turnin_names[#turnin_names + 1] = npc_name(npc) end
+			local zone = zone_by_id[variant.zone]
+			variants[index] = {zone = variant.zone, zone_name = zone and zone.display_name or variant.zone,
+				hub = givers[1] and hub_of[variant.zone .. "/" .. givers[1]] or false,
+				givers = givers, giver_names = giver_names, turnins = registered.turnins,
+				turnin_names = turnin_names, objectives = rows,
+				text = fill(variant.text or raw.text, variant.zone)}
 		end
+		local objectives = variants[1].objectives
 		local items = {}
 		for _, item in ipairs(raw.rewards.items or {}) do
 			items[#items + 1] = {item = item.item, count = item.count or 1}
+		end
+		-- Round 57 ruling 15: the choice, each with its fixed enchants.
+		local choices = {}
+		for _, choice in ipairs(raw.rewards.choices or {}) do
+			local affixes = {}
+			for _, affix in ipairs(choice.affixes or {}) do affixes[#affixes + 1] = affix.channel .. " " .. affix.stat end
+			choices[#choices + 1] = {item = choice.item, count = choice.count or 1, affixes = affixes}
 		end
 		local drops = {}
 		for _, drop in ipairs(def.quest_drops) do drops[#drops + 1] = drop.item end
 		-- The text with its names filled (as the title, at load); a direction
 		-- differs per world and stays a marker.
-		local text = Q.fill_names(raw.text, file.zone):gsub("{[%w_]+:[^}]*}", "[place]")
+		local text = variants[1].text
 		model.quests[#model.quests + 1] = {
 			id = raw.id, title = def.title, zone = file.zone, file = file.name, front = file.front,
-			hub = hub_of[file.zone .. "/" .. raw.giver] or false, line = raw.line,
+			hub = variants[1].hub, line = raw.line, variants = variants, shared = raw.variants ~= nil,
+			story = raw.story == true, completion = raw.completion and fill(raw.completion, file.zone) or false,
 			giver = def.npc, giver_name = npc_name(def.npc),
 			turnin = def.turnin_npc, turnin_name = npc_name(def.turnin_npc),
 			min_level = def.min_level, level = def.level,
 			requires = def.prerequisites, objectives = objectives, quest_drops = drops,
 			rewards = {weight = def.rewards.weight, copper = def.rewards.copper,
 				copper_text = grug_money.format(def.rewards.copper), copper_fixed = raw.rewards.copper ~= nil,
-				xp = Q.reward_xp(def), items = items},
+				xp = Q.reward_xp(def), items = items, choices = choices},
 			optional = raw.optional == true, climax = raw.climax == true, tags = raw.tags or {},
 			duration_min = raw.duration_min or false, text = text, lesson = raw.lesson or false,
 		}

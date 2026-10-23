@@ -575,6 +575,10 @@ function V.structure(files, npcs)
 				end
 				if not list(quest.variants) or #quest.variants == 0 then
 					add(where, "variants must be a non-empty list [E-variant]")
+				elseif type(quest.variants[1]) == "table" and quest.variants[1].zone ~= file.zone then
+					-- One home file per shared quest: its first variant's zone's.
+					add(where, ("a shared quest lives in the file of its first variant's zone (%s) [E-variant]")
+						:format(tostring(quest.variants[1].zone)))
 				end
 			end
 			local seen_zone, seen_giver = {}, {}

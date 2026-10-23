@@ -870,6 +870,10 @@ refused("a variant without its zone's area", "E-unknown-area", function(files)
 	quest_of(files, CROP).variants[2].objectives = nil
 end)
 refused("giver and variants together", "E-variant", function(files) quest_of(files, CROP).giver = EL end)
+has(refused("a shared quest outside its first variant's file", "E-variant", function(files)
+	local quest = quest_of(files, CROP)
+	quest.variants[1], quest.variants[2] = quest.variants[2], quest.variants[1]
+end), "lives in the file of its first variant's zone", "F one home file per shared quest")
 refused("a variant zone without a quest file", "E-variant", function(files)
 	quest_of(files, CROP).variants[2].zone = "kragmar_redtusk_savanna"
 end)

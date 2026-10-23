@@ -277,14 +277,16 @@ def quest_named_kinds(quests, spawns):
 
     for qpath in sorted(Path(quests).glob("*.json")):
         file_zone = qpath.name.split(".", 1)[0]
-        for quest in json.loads(qpath.read_text()).get("quests") or []:
+        for quest, zone in quest_views(json.loads(qpath.read_text()), file_zone):
             rows = [o for o in quest.get("objectives") or [] if o.get("type") in ("kill", "item")]
             rows += quest.get("quest_drops") or []
             for row in rows:
                 if row.get("roles") and row.get("area"):
-                    add(*area_ref(row["area"], file_zone))
-            for key in ("title", "text"):
-                for _, args in PLACEHOLDER.findall(quest.get(key) or ""):
+                    add(*area_ref(row["area"], zone))
+            texts = [quest.get(key) or "" for key in ("title", "text", "completion")]
+            texts += [t for t in (quest.get("texts") or {}).values() if isinstance(t, str)]
+            for value in texts:
+                for _, args in PLACEHOLDER.findall(value):
                     qualified, _, rest = args.split(":")[-1].rpartition("/")
                     if rest in leader_zone and (not qualified or qualified == leader_zone[rest]):
                         continue
@@ -292,10 +294,26 @@ def quest_named_kinds(quests, spawns):
                         continue
                     if rest in clash and (not qualified or qualified == clash[rest]["zone"]):
                         continue
-                    if rest in places.get(qualified or file_zone, ()):
+                    if rest in places.get(qualified or zone, ()):
                         continue
-                    add(qualified or file_zone, rest)
+                    add(qualified or zone, rest)
     return named, flagged
+
+
+def quest_views(data, file_zone):
+    """(quest, zone) for every quest of a quest file: a shared quest (Round
+    57, `variants`) once per variant, as that variant's view in its zone
+    (r28common.quest_view)."""
+    out = []
+    for quest in data.get("quests") or []:
+        if "variants" not in quest:
+            out.append((quest, file_zone))
+            continue
+        for variant in C.quest_variants(file_zone, quest):
+            if isinstance(variant["zone"], str):
+                out.append((dict(C.quest_view(quest, variant), completion=variant["completion"] or
+                                 quest.get("completion")), variant["zone"]))
+    return out
 
 
 def flag_problems(named, flagged):
@@ -362,7 +380,9 @@ def check_quest(world, quest, file_zone, new):
             clocks_met |= clocks
             note = "" if clocks == set(CLOCKS) else " (%s only)" % "/".join(sorted(clocks))
             new["ok"].append(where + note)
-    for key in ("title", "text"):
+    # Round 57: the completion text too (a shared quest's view, quest_views,
+    # carries its variant's).
+    for key in ("title", "text", "completion"):
         for kind, args in PLACEHOLDER.findall(quest.get(key) or ""):
             ref = args.split(":")[-1]
             where = "%s %s {%s:%s}" % (qid, key, kind, args)
@@ -401,8 +421,8 @@ def main():
     for qpath in sorted(Path(args.quests).glob("*.json")):
         data = json.loads(qpath.read_text())
         file_zone = qpath.name.split(".", 1)[0]
-        for quest in data.get("quests") or []:
-            check_quest(world, quest, file_zone, new)
+        for quest, zone in quest_views(data, file_zone):
+            check_quest(world, quest, zone, new)
 
     named, flagged = quest_named_kinds(args.quests, args.spawns)
     new["missing"].extend(flag_problems(named, flagged))

@@ -49,9 +49,12 @@ SUBTYPE_REQUIRED = ("role", "family", "base", "display", "size", "disposition", 
 ITEM_KEYS = {"id", "name", "tier", "family", "kind", "description", "uses", "icon", "notes"}
 ITEM_REQUIRED = ("id", "name", "tier", "kind", "description")
 ITEM_KINDS = ("signature", "generic", "quest")
-QUEST_KEYS = {"id", "line", "giver", "turnin", "min_level", "level", "requires", "title", "text",
-              "objectives", "rewards", "quest_drops", "repeatable", "lesson", "duration_min",
-              "optional", "climax", "group", "notes", "tags"}
+# Round 57 (the game's validate.lua): `story` (ruling 13), `completion`
+# (ruling 14), `variants` in place of `giver` and `turnin` and `texts`
+# (ruling 9); `repeatable` is gone (ruling 11), an unknown field like any.
+QUEST_KEYS = {"id", "line", "giver", "turnin", "variants", "min_level", "level", "requires", "title", "text",
+              "texts", "completion", "story", "objectives", "rewards", "quest_drops", "lesson",
+              "duration_min", "optional", "climax", "group", "notes", "tags"}
 QUEST_REQUIRED = ("id", "line", "giver", "turnin", "min_level", "level", "title", "text",
                   "objectives", "rewards")
 # The fields of an objective, its rewards and a quest drop. A quest, an
@@ -63,8 +66,29 @@ OBJECTIVE_KEYS = {"type", "count", "roles", "area", "item", "group", "npc", "pla
 # fields and its hold in whole seconds.
 USE_KEYS = ("place", "object", "label", "hold")
 USE_HOLD = (1, 15)
-REWARD_KEYS = {"weight", "copper", "items"}
+REWARD_KEYS = {"weight", "copper", "items", "choices"}
 DROP_KEYS = {"item", "chance", "roles", "area"}
+# Round 57 ruling 15: a choice of 2..MAX_CHOICES rewards, each an item with a
+# count and fixed enchants ({channel, stat}; whether the item's pool takes
+# the stat is the game loader's check, grug_items.check_affixes).
+CHOICE_KEYS = {"item", "count", "affixes"}
+AFFIX_KEYS = {"channel", "stat"}
+AFFIX_STATS = {"str", "dex", "int", "max_hp_percent", "max_mana_percent", "crit_percent",
+               "attack_speed_percent", "dodge_percent", "armor_rating"}
+MAX_CHOICES = 4
+# A variant (Round 57 ruling 9): its zone, givers and turn-ins (NPC ids or
+# {role, faction}), the zone-bound fields per objective and quest drop, its
+# own text and completion text.
+VARIANT_KEYS = {"zone", "givers", "turnins", "objectives", "quest_drops", "text", "completion"}
+ROLE_KEYS = {"role", "faction"}
+OVERRIDE_KEYS = {"kill": {"roles", "area"}, "item": {"roles", "area"}, "talk": {"npc"}, "use": {"place"}}
+DROP_OVERRIDE_KEYS = {"roles", "area"}
+# The file-level rework flag (Round 57): the free-play rules, the reward
+# budget, the requested item and the night count apply only in files that
+# carry it.
+REWORK_FLAG = "reworked"
+REWARD_BUDGET = {1: 2, 2: 1}
+NIGHT_SHARE = (0.2, 0.5)
 DISPOSITIONS = ("neutral", "aggressive", "critter")
 FRONT_LINE = "front"
 FAMILIES = ("sword", "dagger", "greataxe", "metal_armor", "shield", "leather_armor", "cloth_armor",
@@ -759,23 +783,121 @@ class Validator:
                 self.E("E-front-line", file, path + ".giver", "%s does not declare the line 'front' in "
                        "zones/%s.quests.json" % (q["giver"], host))
                 continue
-            self.quest(host, q, file, path, front_lines, all_areas)
+            self.quest(host, q, file, path, front_lines, all_areas, front=True)
 
-    def quest(self, zone, q, file, path, giver_lines, all_areas):
+    def reworked(self, zone, front=False):
+        """Round 57: whether the zone's quest file (or its front file)
+        carries the rework flag."""
+        data = (self.d.front if front else self.d.quests).get(zone)
+        return isinstance(data, dict) and data.get(REWORK_FLAG) is True
+
+    def variants(self, zone, q):
+        """Round 57: the quest's variants (r28common.quest_variants, the
+        game's V.variants)."""
+        return C.quest_variants(zone, q)
+
+    def check_npc_list(self, value, key, file, path, required):
+        """A variant's givers or turn-ins: NPC ids or {role, faction}."""
+        if value is None and not required:
+            return
+        if not isinstance(value, list) or not value:
+            self.E("E-variant", file, path, "%r must be a non-empty list of NPC ids or {\"role\", \"faction\"}" % key)
+            return
+        for entry in value:
+            if isinstance(entry, dict):
+                self.unknown_keys(entry, ROLE_KEYS, file, path + "." + key, error=True)
+                if not (isinstance(entry.get("role"), str) and C.SNAKE.match(entry["role"])) or \
+                        entry.get("faction") not in ("accord", "throng"):
+                    self.E("E-variant", file, path, "a %s role is {\"role\": snake_case, \"faction\": \"accord\" | "
+                           "\"throng\"}" % key)
+            else:
+                self.check_npc(entry, file, path + "." + key)
+
+    def check_variant_row(self, q, variant, file, path):
+        """A variant's own fields (Round 57)."""
+        row = variant["row"]
+        self.unknown_keys(row, VARIANT_KEYS, file, path, error=True)
+        if row.get("zone") not in self.d.quests:
+            self.E("E-variant", file, path, "zone %r has no quest file" % row.get("zone"))
+        self.check_npc_list(row.get("givers"), "givers", file, path, True)
+        self.check_npc_list(row.get("turnins"), "turnins", file, path, False)
+        for key, base, allowed_of in (("objectives", q.get("objectives"), lambda b: OVERRIDE_KEYS.get(b.get("type"), set())),
+                                      ("quest_drops", q.get("quest_drops"), lambda b: DROP_OVERRIDE_KEYS)):
+            if key not in row:
+                continue
+            base = base if isinstance(base, list) else []
+            entries = row[key]
+            if not isinstance(entries, list) or len(entries) != len(base):
+                self.E("E-variant", file, path + "." + key, "one entry per entry of the quest's %s (%d)" % (key, len(base)))
+                continue
+            for i, entry in enumerate(entries):
+                epath = "%s.%s[%d]" % (path, key, i)
+                if not isinstance(entry, dict):
+                    self.E("E-variant", file, epath, "must be an object")
+                    continue
+                self.unknown_keys(entry, allowed_of(base[i] if isinstance(base[i], dict) else {}), file, epath,
+                                  error=True)
+                if "roles" in entry and not (isinstance(entry["roles"], list) and entry["roles"]):
+                    self.E("E-objective", file, epath, "roles must be a non-empty list")
+                for field in ("area", "npc", "place"):
+                    if field in entry and not (isinstance(entry[field], str) and entry[field]):
+                        self.E("E-objective", file, epath, "%s must be a non-empty string" % field)
+        for key in ("text", "completion"):
+            if key in row and not (isinstance(row[key], str) and row[key].strip()):
+                self.E("E-text", file, path + "." + key, "%s must be a non-empty string" % key)
+
+    def quest(self, zone, q, file, path, giver_lines, all_areas, front=False):
         self.unknown_keys(q, QUEST_KEYS, file, path, error=True)
-        self.required(q, QUEST_REQUIRED, file, path)
+        shared = "variants" in q
+        self.required(q, [k for k in QUEST_REQUIRED if not (shared and k in ("giver", "turnin"))], file, path)
         qid = q.get("id")
         if not isinstance(qid, str) or not C.SNAKE.match(qid):
             self.E("E-id", file, path, "quest id %r must be snake_case" % qid)
         elif qid in self.quest_ids and self.quest_ids[qid] != (zone, path):
             self.E("E-duplicate", file, path, "quest id %s also in %s" % (qid, self.quest_ids[qid][0]))
-        giver = q.get("giver")
-        if giver not in giver_lines:
-            self.E("E-giver-not-hub", file, path + ".giver", "giver %r is not a giver of a hub in this zone" % giver)
-        elif q.get("line") not in giver_lines[giver]:
-            self.E("E-line", file, path + ".line", "line %r is not one of %s's lines %s"
-                   % (q.get("line"), giver, sorted(giver_lines[giver])))
-        self.check_npc(q.get("turnin"), file, path + ".turnin")
+        if shared:
+            if "giver" in q or "turnin" in q:
+                self.E("E-variant", file, path, "a quest with variants names its givers and turn-ins there, "
+                       "not in 'giver'/'turnin'")
+            if front:
+                self.E("E-variant", file, path, "a front quest has one giver: no variants")
+            if not isinstance(q.get("variants"), list) or not q["variants"]:
+                self.E("E-variant", file, path + ".variants", "variants must be a non-empty list")
+        variants = self.variants(zone, q)
+        if shared and variants and variants[0]["zone"] != zone:
+            self.E("E-variant", file, path + ".variants", "a shared quest lives in the file of its first variant's "
+                   "zone (%s), not in %s" % (variants[0]["zone"], zone))
+        seen_zones, seen_givers = set(), set()
+        for variant in variants:
+            vpath = path if variant["implicit"] else "%s.variants[%s]" % (path, variant["zone"])
+            lines_of = giver_lines if variant["implicit"] else self.hub_lines.get(variant["zone"]) or {}
+            if not variant["implicit"]:
+                self.check_variant_row(q, variant, file, vpath)
+                if variant["zone"] in seen_zones:
+                    self.E("E-variant", file, vpath, "the quest's second variant of zone %s" % variant["zone"])
+                seen_zones.add(variant["zone"])
+            for giver in variant["givers"]:
+                gpath = vpath + (".giver" if variant["implicit"] else ".givers")
+                if giver in seen_givers:
+                    self.E("E-variant", file, gpath, "giver %s already gives this quest in another variant" % giver)
+                seen_givers.add(giver)
+                if giver not in lines_of:
+                    self.E("E-giver-not-hub", file, gpath, "giver %r is not a giver of a hub in %s"
+                           % (giver, "this zone" if variant["implicit"] else "zones/%s.quests.json" % variant["zone"]))
+                elif q.get("line") not in lines_of[giver]:
+                    self.E("E-line", file, path + ".line", "line %r is not one of %s's lines %s"
+                           % (q.get("line"), giver, sorted(lines_of[giver])))
+            if variant["implicit"]:
+                self.check_npc(q.get("turnin"), file, path + ".turnin")
+            # Every giver has a turn-in of its own faction (Round 57: a
+            # shared quest's variants may serve both factions).
+            turnin_factions = {self.giver_faction(t) for t in variant["turnins"] if isinstance(t, str)}
+            turnin_factions |= {r.get("faction") for r in variant["turnin_roles"]}
+            for name, faction in [(g, self.giver_faction(g)) for g in variant["givers"] if isinstance(g, str)] + \
+                    [(r.get("role"), r.get("faction")) for r in variant["giver_roles"]]:
+                if faction and faction not in turnin_factions:
+                    self.E("E-turnin-faction", file, vpath, "giver %s serves %s, and no turn-in of the variant does"
+                           % (name, faction))
         min_level, level = q.get("min_level"), q.get("level")
         if not is_int(min_level, 1, C.LEVEL_CAP):
             self.E("E-levels", file, path + ".min_level", "min_level must be an integer 1..60")
@@ -801,6 +923,8 @@ class Validator:
         if tags is not None and not (isinstance(tags, list) and all(isinstance(t, str) and C.SNAKE.match(t)
                                                                     for t in tags) and len(set(tags)) == len(tags)):
             self.E("E-tags", file, path + ".tags", "tags must be a list of distinct snake_case names")
+        if "story" in q and not isinstance(q["story"], bool):
+            self.E("E-type", file, path + ".story", "story is true or false")
         title, text = q.get("title"), q.get("text")
         if not isinstance(title, str) or not title.strip():
             self.E("E-text", file, path + ".title", "title must be a non-empty string")
@@ -808,10 +932,86 @@ class Validator:
             self.E("E-text", file, path + ".text", "text must be a non-empty string")
         elif not 2 <= sentences(text) <= 4:
             self.W("W-text", file, path + ".text", "text has %d sentences (two to four)" % sentences(text))
-        self.check_texts(zone, q, file, path, all_areas)
-        objectives = q.get("objectives")
-        if not isinstance(objectives, list) or not objectives:
-            self.E("E-objective", file, path + ".objectives", "objectives must be a non-empty list")
+        if "completion" in q and not (isinstance(q["completion"], str) and q["completion"].strip()):
+            self.E("E-text", file, path + ".completion", "completion must be a non-empty string")
+        texts = q.get("texts")
+        givers_of = {g for v in variants for g in v["givers"]}
+        if texts is not None:
+            if not isinstance(texts, dict):
+                self.E("E-texts", file, path + ".texts", "texts maps a giver's NPC id or a race to a text")
+                texts = {}
+            for key, value in sorted(texts.items()):
+                if key not in givers_of and key not in C.RACE_FACTION:
+                    self.E("E-texts", file, path + ".texts", "%s is neither a giver of this quest nor a race" % key)
+                if not isinstance(value, str) or not value.strip():
+                    self.E("E-text", file, path + ".texts." + str(key), "must be a non-empty string")
+        # The texts as they are read in each variant's zone (Round 57).
+        for variant in variants:
+            vpath = path if variant["implicit"] else "%s.variants[%s]" % (path, variant["zone"])
+            vzone = variant["zone"] if isinstance(variant["zone"], str) else zone
+            fields = {"text": variant["text"] or text, "completion": variant["completion"] or q.get("completion")}
+            if variant["implicit"] or variant["index"] == 0:
+                fields["title"] = title
+            for key, value in sorted((texts or {}).items()):
+                info = self.zone_info(vzone)
+                if key in variant["givers"] or (key in C.RACE_FACTION and (info is None or info.get("race") == key)):
+                    fields["texts." + key] = value
+            self.check_texts(vzone, fields, file, vpath, all_areas, shared)
+        rewarded = []
+        for variant in variants:
+            vzone = variant["zone"] if isinstance(variant["zone"], str) else zone
+            vpath = path if variant["implicit"] else "%s.variants[%s]" % (path, variant["zone"])
+            vq = dict(q, giver=(variant["givers"] or [None])[0], turnin=(variant["turnins"] or [None])[0])
+            self.objectives(vzone, vq, variant, level, file, vpath, all_areas)
+            if variant["implicit"] or vzone in self.d.quests:
+                self.check_destinations(vzone, dict(vq, objectives=variant["objectives"],
+                                                    quest_drops=variant["quest_drops"]), file, vpath)
+        rewards = q.get("rewards")
+        enchants = 0
+        if rewards is not None:
+            if not isinstance(rewards, dict):
+                self.E("E-rewards", file, path + ".rewards", "rewards must be an object")
+            else:
+                self.unknown_keys(rewards, REWARD_KEYS, file, path + ".rewards", error=True)
+                if "weight" in rewards:
+                    if not is_num(rewards["weight"]) or rewards["weight"] < 0:
+                        self.E("E-rewards", file, path + ".rewards", "weight must be a number >= 0 (KE)")
+                else:
+                    self.E("E-required", file, path + ".rewards", "rewards need a 'weight' (KE at level)")
+                if "copper" in rewards and not is_int(rewards["copper"], 0):
+                    self.E("E-rewards", file, path + ".rewards", "copper must be an integer >= 0")
+                for j, item in enumerate(rewards.get("items") or []):
+                    ipath = "%s.rewards.items[%d]" % (path, j)
+                    if not isinstance(item, dict):
+                        self.E("E-rewards", file, ipath, "reward items are {\"item\": id, \"count\": n}")
+                        continue
+                    name, count = item.get("item"), item.get("count", 1)
+                    self.check_item_ref(name, file, ipath, "reward item")
+                    rewarded.append(name)
+                    if not is_int(count, 1):
+                        self.E("E-rewards", file, ipath, "reward count must be an integer >= 1")
+                enchants = self.choices(rewards, file, path, rewarded)
+        for key in ("optional", "climax", "group"):
+            if key in q and not isinstance(q[key], bool):
+                self.E("E-type", file, path + "." + key, "%s must be true or false" % key)
+        reworked = self.reworked(zone, front)
+        if reworked:
+            self.requested_rewards(q, rewarded, file, path)
+            if enchants:
+                for vzone in sorted({v["zone"] for v in variants if isinstance(v["zone"], str)}):
+                    if not (self.zone_records().get(vzone) or {}).get("capital"):
+                        self.budget.setdefault(vzone, {1: [], 2: []})[min(enchants, 2)].append(
+                            (qid, level, file, path))
+            for variant in variants:
+                self.count_phases(variant, file, path, all_areas)
+
+    def objectives(self, zone, q, variant, level, file, path, all_areas):
+        """One variant's objectives and quest drops in its zone (the game
+        checks the same per variant, validate.lua V.world)."""
+        objectives = variant["objectives"]
+        if not isinstance(q.get("objectives"), list) or not q.get("objectives"):
+            if variant["implicit"] or variant["index"] == 0:
+                self.E("E-objective", file, path + ".objectives", "objectives must be a non-empty list")
             objectives = []
         item_objectives = set()
         for j, obj in enumerate(objectives):
@@ -832,9 +1032,10 @@ class Validator:
                 if len(objectives) != 1:
                     self.E("E-talk-only", file, opath, "a talk objective must be the quest's only objective")
                 self.check_npc(obj.get("npc"), file, opath + ".npc")
-                if obj.get("npc") != q.get("turnin"):
+                turnins = variant["turnins"]
+                if variant["turnin_roles"] or len(turnins) != 1 or obj.get("npc") != turnins[0]:
                     self.E("E-talk-turnin", file, opath, "travel quests turn in at the talk target (%s, not %s)"
-                           % (obj.get("npc"), q.get("turnin")))
+                           % (obj.get("npc"), ", ".join(str(t) for t in turnins)))
                 continue
             if not is_int(obj.get("count"), 1):
                 self.E("E-objective", file, opath, "count must be an integer >= 1")
@@ -861,9 +1062,9 @@ class Validator:
                     self.item_source(zone, q, obj, level, file, opath, all_areas)
             else:
                 self.E("E-objective", file, opath, "type %r must be kill, item, talk or use" % kind)
-        drops = q.get("quest_drops") or []
+        drops = variant["quest_drops"]
         dropped = set()
-        for j, drop in enumerate(drops if isinstance(drops, list) else []):
+        for j, drop in enumerate(drops):
             dpath = "%s.quest_drops[%d]" % (path, j)
             if not isinstance(drop, dict):
                 self.E("E-type", file, dpath, "quest drop must be an object")
@@ -892,35 +1093,167 @@ class Validator:
         for item in item_objectives:
             if (self.catalog_items.get(item) or {}).get("kind") == "quest" and item not in dropped:
                 self.E("E-quest-item-source", file, path, "quest item %s needs a quest_drops entry" % item)
-        repeatable = q.get("repeatable")
-        if repeatable is not None and not (isinstance(repeatable, dict) and is_int(repeatable.get("cooldown"), 1)):
-            self.E("E-repeatable", file, path + ".repeatable", "repeatable must be {\"cooldown\": seconds}")
-        rewards = q.get("rewards")
-        if rewards is not None:
-            if not isinstance(rewards, dict):
-                self.E("E-rewards", file, path + ".rewards", "rewards must be an object")
-            else:
-                self.unknown_keys(rewards, REWARD_KEYS, file, path + ".rewards", error=True)
-                if "weight" in rewards:
-                    if not is_num(rewards["weight"]) or rewards["weight"] < 0:
-                        self.E("E-rewards", file, path + ".rewards", "weight must be a number >= 0 (KE)")
+
+    def choices(self, rewards, file, path, rewarded):
+        """Round 57 ruling 15: a choice of 2..MAX_CHOICES rewards. Returns
+        the most enchants on one of them (the reward budget)."""
+        if "choices" not in rewards:
+            return 0
+        choices = rewards["choices"]
+        cpath = path + ".rewards.choices"
+        if not isinstance(choices, list) or not 2 <= len(choices) <= MAX_CHOICES:
+            self.E("E-rewards", file, cpath, "reward choices are a list of 2..%d {\"item\", \"count\", "
+                   "\"affixes\"}" % MAX_CHOICES)
+            return 0
+        most = 0
+        for j, choice in enumerate(choices):
+            jpath = "%s[%d]" % (cpath, j)
+            if not isinstance(choice, dict) or not isinstance(choice.get("item"), str) or \
+                    not is_int(choice.get("count", 1), 1):
+                self.E("E-rewards", file, jpath, "must be {\"item\": id, \"count\": n >= 1, \"affixes\"?}")
+                continue
+            self.unknown_keys(choice, CHOICE_KEYS, file, jpath, error=True)
+            self.check_item_ref(choice["item"], file, jpath, "reward choice")
+            rewarded.append(choice["item"])
+            affixes = choice.get("affixes", [])
+            if not isinstance(affixes, list) or len(affixes) > 2:
+                self.E("E-rewards", file, jpath + ".affixes", "affixes are a list of at most two "
+                       "{\"channel\", \"stat\"}")
+                continue
+            channels, stats = set(), set()
+            for k, affix in enumerate(affixes):
+                apath = "%s.affixes[%d]" % (jpath, k)
+                if not isinstance(affix, dict):
+                    self.E("E-rewards", file, apath, "an enchant is {\"channel\", \"stat\"}")
+                    continue
+                self.unknown_keys(affix, AFFIX_KEYS, file, apath, error=True)
+                if affix.get("channel") not in ("prefix", "suffix") or affix.get("channel") in channels:
+                    self.E("E-rewards", file, apath, "one enchant each in the prefix and the suffix")
+                if affix.get("stat") not in AFFIX_STATS or affix.get("stat") in stats:
+                    self.E("E-rewards", file, apath, "unknown or repeated enchant stat %r" % affix.get("stat"))
+                channels.add(affix.get("channel"))
+                stats.add(affix.get("stat"))
+            most = max(most, len(affixes))
+        return most
+
+    def requested_rewards(self, q, rewarded, file, path):
+        """Round 57 (ruling 17, Round 56 §8): a reward is never the requested
+        item, nor a member of a requested group. Reworked files only."""
+        for obj in q.get("objectives") or []:
+            if not isinstance(obj, dict) or obj.get("type") != "item":
+                continue
+            group = obj.get("group")
+            group = group[6:] if isinstance(group, str) and group.startswith("group:") else group
+            for item in rewarded:
+                in_group = group and (group in ((self.ex_items.get(item) or {}).get("groups") or {}) or
+                                      item in ((self.ex_groups.get(group) or {}).get("members") or []))
+                if item == obj.get("item") or in_group:
+                    self.E("E-reward-requested", file, path + ".rewards", "reward %s is the requested item %s: a "
+                           "reward is never what the quest asks for" % (item, obj.get("item") or obj.get("group")))
+
+    def count_phases(self, variant, file, path, all_areas):
+        """Round 57 ruling 12: the kill counts by spawn phase in a reworked
+        file's zone; night_counts() compares them."""
+        zone = variant["zone"]
+        if not isinstance(zone, str):
+            return
+        for j, obj in enumerate(variant["objectives"]):
+            if not isinstance(obj, dict) or obj.get("type") != "kill" or not is_int(obj.get("count"), 1):
+                continue
+            clocks = set()
+            for role in obj.get("roles") or []:
+                if self.d.find_leader(role):
+                    continue
+                if obj.get("area"):
+                    azone, aid = C.split_area_ref(obj["area"], zone)
+                    areas = [(all_areas.get(azone) or {}).get(aid)]
                 else:
-                    self.E("E-required", file, path + ".rewards", "rewards need a 'weight' (KE at level)")
-                if "copper" in rewards and not is_int(rewards["copper"], 0):
-                    self.E("E-rewards", file, path + ".rewards", "copper must be an integer >= 0")
-                for j, item in enumerate(rewards.get("items") or []):
-                    ipath = "%s.rewards.items[%d]" % (path, j)
-                    if not isinstance(item, dict):
-                        self.E("E-rewards", file, ipath, "reward items are {\"item\": id, \"count\": n}")
-                        continue
-                    name, count = item.get("item"), item.get("count", 1)
-                    self.check_item_ref(name, file, ipath, "reward item")
-                    if not is_int(count, 1):
-                        self.E("E-rewards", file, ipath, "reward count must be an integer >= 1")
-        for key in ("optional", "climax", "group"):
-            if key in q and not isinstance(q[key], bool):
-                self.E("E-type", file, path + "." + key, "%s must be true or false" % key)
-        self.check_destinations(zone, q, file, path)
+                    areas = list((all_areas.get(zone) or {}).values())
+                for area in areas:
+                    for row in (area or {}).get("species") or []:
+                        if row.get("role") == role:
+                            clocks.add(row.get("clock"))
+            if not clocks:
+                continue
+            if clocks == {"night"}:
+                self.nights.setdefault(zone, []).append((obj["count"], file, "%s.objectives[%d]" % (path, j)))
+            else:
+                self.day_counts.setdefault(zone, []).append(obj["count"])
+
+    def night_counts(self):
+        for zone in sorted(self.nights):
+            days = sorted(self.day_counts.get(zone) or [])
+            if not days:
+                continue
+            n = len(days)
+            median = days[n // 2] if n % 2 else (days[n // 2 - 1] + days[n // 2]) / 2
+            for count, file, path in self.nights[zone]:
+                if not NIGHT_SHARE[0] <= count / median <= NIGHT_SHARE[1]:
+                    self.W("W-night-count", file, path, "a night-only target's count %d is not about a third of "
+                           "the zone's day counts (median %s; one night is 5 minutes, a day 15)" % (count, median))
+
+    def reward_budget(self):
+        """Ruling 17: per zone (capitals excepted) at most two equipment
+        rewards with one enchant and one with two, at different levels."""
+        for zone in sorted(self.budget):
+            for enchants, limit in sorted(REWARD_BUDGET.items()):
+                rows = sorted(self.budget[zone][enchants])
+                if len(rows) > limit:
+                    qid, _, file, path = rows[-1]
+                    self.E("E-reward-budget", file, path, "%s has %d equipment rewards with %d enchant%s (%s); at most "
+                           "%d per zone, capitals excepted" % (zone, len(rows), enchants, "" if enchants == 1 else "s",
+                                                               ", ".join(r[0] for r in rows), limit))
+                levels = {}
+                for qid, level, file, path in rows:
+                    if level in levels:
+                        self.W("W-reward-levels", file, path, "%s and %s reward equipment with %d enchant%s at the "
+                               "same level %s; spread them over the zone" % (levels[level], qid, enchants,
+                                                                            "" if enchants == 1 else "s", level))
+                    levels.setdefault(level, qid)
+
+    def free_play(self):
+        """Round 57 rulings 10 and 13, reworked files only: only story quests
+        chain; a free quest requires at most the one quest it follows
+        (E-free-requires), is required by at most one quest of a reworked
+        file (E-free-follow-ups), and a free follow-up has no free follow-up
+        (E-free-chain). The game checks the same (validate.lua V.free_play)."""
+        quests, flagged = {}, {}
+        for suffix, files in ((".quests.json", self.d.quests), (".front.quests.json", self.d.front)):
+            for zone, data in files.items():
+                reworked = isinstance(data, dict) and data.get(REWORK_FLAG) is True
+                for q in (data or {}).get("quests") or [] if isinstance(data, dict) else []:
+                    if isinstance(q, dict) and isinstance(q.get("id"), str) and q["id"] not in quests:
+                        quests[q["id"]] = q
+                        if reworked:
+                            flagged[q["id"]] = (self.d.zone_file(zone + suffix), "quests[%s]" % q["id"])
+
+        def requires(q):
+            return [r for r in q.get("requires") or [] if isinstance(r, str)] if isinstance(q.get("requires"), list) else []
+
+        def free(q):
+            return q is not None and q.get("story") is not True
+
+        followers = {}
+        for qid in flagged:
+            for req in requires(quests[qid]):
+                followers.setdefault(req, []).append(qid)
+        for qid, (file, path) in sorted(flagged.items()):
+            q = quests[qid]
+            if not free(q):
+                continue
+            own = requires(q)
+            if len(own) > 1:
+                self.E("E-free-requires", file, path, "a free quest requires nothing but a level and at most the one "
+                       "quest it follows (%s); only story quests chain" % ", ".join(own))
+            for req in own:
+                prior = quests.get(req)
+                if free(prior) and requires(prior):
+                    self.E("E-free-chain", file, path, "follows %s, itself a free follow-up: only story quests chain"
+                           % req)
+            after = sorted(followers.get(qid) or [])
+            if len(after) > 1:
+                self.E("E-free-follow-ups", file, path, "a free quest has at most one follow-up, not %d (%s); only "
+                       "story quests chain" % (len(after), ", ".join(after)))
 
     def use_objective(self, zone, obj, file, path):
         """Round 36: a "use at a place" objective, as the game's validate.lua:
@@ -979,12 +1312,13 @@ class Validator:
                 area = {"type": "place"}
         return area
 
-    def check_texts(self, zone, q, file, path, all_areas):
-        """Round 29 Q1: placeholders in the title and text resolve (a title
-        takes only {name:...}), places exist (with --atlas), "from here"
-        points at a compact target, and no fixed compass word is written."""
-        for key in ("title", "text"):
-            value = q.get(key)
+    def check_texts(self, zone, fields, file, path, all_areas, shared=False):
+        """Round 29 Q1: placeholders in the title and texts (`fields`, key ->
+        text, as read in `zone`; Round 57: a variant's zone) resolve (a title
+        takes only {name:...}, a shared quest's title none), places exist
+        (with --atlas), "from here" points at a compact target, and no fixed
+        compass word is written."""
+        for key, value in fields.items():
             if not isinstance(value, str):
                 continue
             kpath = "%s.%s" % (path, key)
@@ -992,7 +1326,10 @@ class Validator:
             for problem in problems:
                 self.E("E-placeholder", file, kpath, problem)
             for kind, args, raw in found:
-                if key == "title" and kind in PLACEHOLDER_DIRECTIONS:
+                if key == "title" and shared:
+                    self.E("E-placeholder", file, kpath, "%s: a quest given in several zones has one name; its "
+                           "title takes no placeholder" % raw)
+                elif key == "title" and kind in PLACEHOLDER_DIRECTIONS:
                     self.E("E-placeholder", file, kpath, "%s: a title takes only {name:...}; directions "
                            "belong in the text" % raw)
                 target = self.placeholder_target(zone, args[-1], all_areas)
@@ -1013,6 +1350,13 @@ class Validator:
             for word in compass_words(value):
                 self.E("E-compass", file, kpath, "fixed compass word %r; write a direction placeholder or "
                        "neutral wording" % word)
+
+    def zone_records(self):
+        """The mapgen's zone rows (r28common.zone_records), read once: the
+        capitals of the reward budget (Round 57)."""
+        if not hasattr(self, "_zone_records"):
+            self._zone_records = C.zone_records()
+        return self._zone_records
 
     def check_destinations(self, zone, q, file, path):
         """Ruling 44: no quest sends players into another race's 11-20 zone;
@@ -1265,6 +1609,18 @@ class Validator:
         for zone, data in self.d.spawns.items():
             if not self.only_zones or zone in self.only_zones:
                 self.spawns(zone, data)
+        # Round 57: every zone's hub givers and their lines first, so a
+        # shared quest's variant can name the givers of another zone's hubs.
+        self.hub_lines = {}
+        for zone, data in self.d.quests.items():
+            lines = {}
+            for hub in (data or {}).get("hubs") or [] if isinstance(data, dict) else []:
+                for giver in (hub or {}).get("givers") or [] if isinstance(hub, dict) else []:
+                    if isinstance(giver, dict) and isinstance(giver.get("npc"), str):
+                        lines.setdefault(giver["npc"], set()).update(
+                            x for x in giver.get("lines") or [] if isinstance(x, str))
+            self.hub_lines[zone] = lines
+        self.budget, self.day_counts, self.nights = {}, {}, {}
         hub_givers, lines_by_zone = {}, {}
         for zone, data in self.d.quests.items():
             if not self.only_zones or zone in self.only_zones:
@@ -1273,6 +1629,9 @@ class Validator:
             if not self.only_zones or host in self.only_zones:
                 self.front_quests(host, data, all_areas, lines_by_zone.get(host))
         self.cycles()
+        self.free_play()
+        self.reward_budget()
+        self.night_counts()
         self.loot_coverage()
         self.zone_leaders_placed()
         for zone, data in self.d.zone_catalogs.items():
@@ -1803,7 +2162,92 @@ def _mutations():
             d["recipe"]["places"] = [row]
         return change
 
-    return [
+    # Round 57: the reworked-file rules, choices, story and repeatable.
+    def reworked(*changes):
+        def change(d):
+            d["reworked"] = True
+            for c in changes:
+                c(d)
+        return change
+
+    def all_story(d):
+        for q in d["quests"]:
+            q["story"] = True
+
+    def set_field(qid, key, value):
+        def change(d):
+            quest(d, qid)[key] = copy.deepcopy(value)
+        return change
+
+    def second_follow_up(d):
+        row = copy.deepcopy(quest(d, "sample_hunt_02"))
+        row["id"], row["requires"] = "sample_hunt_02b", ["sample_hunt_01"]
+        d["quests"].append(row)
+
+    def choice_rows(enchants):
+        affixes = [{"channel": "prefix", "stat": "str"}, {"channel": "suffix", "stat": "max_hp_percent"}][:enchants]
+        return [{"item": "grug_materials:axe_wood", "affixes": affixes},
+                {"item": "grug_materials:pick_wood"}]
+
+    def budget(enchants, ids):
+        def change(d):
+            for qid in ids:
+                quest(d, qid)["rewards"]["choices"] = choice_rows(enchants)
+        return change
+
+    round57 = [
+        ("repeatable is an unknown field", Q, set_field("sample_bounty_rats", "repeatable", {"cooldown": 60}),
+         "E-unknown-key"),
+        ("story is a boolean", Q, set_field("sample_hunt_01", "story", "yes"), "E-type"),
+        ("a completion text", Q, set_field("sample_hunt_01", "completion", "Well done."), None),
+        ("an empty completion text", Q, set_field("sample_hunt_01", "completion", " "), "E-text"),
+        ("a choice of two rewards", Q, set_field("sample_hunt_01", "rewards", {"weight": 3, "choices": choice_rows(1)}),
+         None),
+        ("a choice of one", Q, set_field("sample_hunt_01", "rewards", {"weight": 3, "choices": choice_rows(1)[:1]}),
+         "E-rewards"),
+        ("an unknown enchant stat", Q, set_field("sample_hunt_01", "rewards", {"weight": 3, "choices": [
+            {"item": "grug_materials:axe_wood", "affixes": [{"channel": "prefix", "stat": "luck"}]},
+            {"item": "grug_materials:pick_wood"}]}), "E-rewards"),
+        ("two prefixes", Q, set_field("sample_hunt_01", "rewards", {"weight": 3, "choices": [
+            {"item": "grug_materials:axe_wood", "affixes": [{"channel": "prefix", "stat": "str"},
+                                                            {"channel": "prefix", "stat": "dex"}]},
+            {"item": "grug_materials:pick_wood"}]}), "E-rewards"),
+        ("texts keyed by a stranger", Q, set_field("sample_hunt_01", "texts", {"r20_human_start_cook": "Not mine."}),
+         "E-texts"),
+        ("texts keyed by the giver's race", Q, set_field("sample_hunt_01", "texts", {"human": "Hunt them. Now."}),
+         None),
+        ("an unreworked file keeps its chains", Q, second_follow_up, None),
+        ("reworked: a chain of free quests", Q, reworked(), "E-free-chain"),
+        ("reworked: story quests chain", Q, reworked(all_story), None),
+        ("reworked: a free quest with two follow-ups", Q, reworked(all_story, second_follow_up,
+                                                                    set_field("sample_hunt_01", "story", False)),
+         "E-free-follow-ups"),
+        ("reworked: a free quest requiring two", Q, reworked(all_story, set_field("sample_hunt_03", "story", False),
+                                                             set_field("sample_hunt_03", "requires",
+                                                                       ["sample_hunt_02", "sample_hunt_01"])),
+         "E-free-requires"),
+        ("reworked: a reward that is the requested item", Q, reworked(all_story, set_field(
+            "sample_tools_01", "rewards", {"weight": 1, "items": [{"item": "grug_materials:axe_wood"}]})),
+         "E-reward-requested"),
+        ("reworked: a reward of the requested group", Q, reworked(all_story, set_field(
+            "sample_tools_02", "rewards", {"weight": 1, "items": [{"item": "default:tree"}]})),
+         "E-reward-requested"),
+        ("unreworked: the requested item as a reward", Q, set_field(
+            "sample_tools_01", "rewards", {"weight": 1, "items": [{"item": "grug_materials:axe_wood"}]}), None),
+        ("reworked: three one-enchant rewards", Q, reworked(all_story, budget(1, ["sample_hunt_01", "sample_hunt_02",
+                                                                                 "sample_hunt_03"])),
+         "E-reward-budget"),
+        ("reworked: two two-enchant rewards", Q, reworked(all_story, budget(2, ["sample_hunt_01", "sample_hunt_04"])),
+         "E-reward-budget"),
+        ("reworked: two one-enchant rewards at one level", Q, reworked(all_story, budget(1, ["sample_hunt_01",
+                                                                                            "sample_hunt_02"]),
+                                                                        set_field("sample_hunt_02", "level", 2)),
+         "W-reward-levels"),
+        ("reworked: a night count of a day count's size", Q, reworked(all_story), "W-night-count"),
+        ("the rework flag's quests as in the game", Q, reworked(all_story), "!E-free-chain"),
+    ]
+
+    return round57 + [
         ("placeholder: unknown kind", Q, text_set("sample_hunt_01", "text", "Go {where:home_fields}. Now."),
          "E-placeholder"),
         ("placeholder: unmatched brace", Q, text_set("sample_hunt_01", "text", "Go {name:home_fields. Now."),
@@ -2178,7 +2622,51 @@ def _scenarios():
                 q["objectives"] = [{"type": "kill", "roles": ["guard_throng"], "count": 3}]
         _save(target / Q_FILE, data)
 
+    # Round 57 ruling 9: a shared quest with a variant in Dawnmere and one in
+    # Goldmead (the steward's hub there).
+    def shared(*changes):
+        def setup(target):
+            _save(target / "zones" / "elandor_goldmead_vale.quests.json", {
+                "zone": "elandor_goldmead_vale", "hubs": [{"id": "village", "anchor": "goldmead_village",
+                                                           "givers": [{"npc": "r14_human_steward",
+                                                                       "lines": ["hunt"]}]}],
+                "quests": []})
+            data = _load(target / Q_FILE)
+            row = _simple_quest("sample_shared_01", None, "hunt", 3)
+            del row["giver"], row["turnin"]
+            row["variants"] = [{"zone": "elandor_dawnmere_fields", "givers": ["r14_human_elder"]},
+                               {"zone": "elandor_goldmead_vale", "givers": ["r14_human_steward"],
+                                "text": "Goldmead needs coal too. Dig five lumps and bring them here."}]
+            for change in changes:
+                change(row)
+            data["quests"].append(row)
+            _save(target / Q_FILE, data)
+        return setup
+
+    def variant(index, **fields):
+        def change(row):
+            row["variants"][index].update(fields)
+        return change
+
     return [
+        ("a shared quest in two zones", shared(), None),
+        ("a shared quest outside its first variant's file", shared(lambda row: row["variants"].reverse()),
+         "E-variant"),
+        ("a variant giver of another zone's hub", shared(variant(1, givers=["r14_human_elder"])), "E-giver-not-hub"),
+        ("a variant zone without a quest file", shared(variant(1, zone="elandor_highcourt")), "E-variant"),
+        ("giver beside variants", shared(lambda row: row.update(giver="r14_human_elder")), "E-variant"),
+        ("an override list of the wrong length", shared(variant(1, objectives=[{}, {}])), "E-variant"),
+        ("an override of a fixed field", shared(variant(1, objectives=[{"count": 2}])), "E-unknown-key"),
+        ("a shared title with a placeholder", shared(lambda row: row.update(title="Coal of {name:meadows}")),
+         "E-placeholder"),
+        ("a variant role giver", shared(variant(1, givers=[{"role": "foreman", "faction": "accord"}])), None),
+        ("a role of no faction", shared(variant(1, givers=[{"role": "foreman", "faction": "elves"}])), "E-variant"),
+        ("a giver without a turn-in of its faction", shared(variant(1, givers=[{"role": "foreman",
+                                                                                 "faction": "throng"}],
+                                                                    turnins=["r14_human_steward"])),
+         "E-turnin-faction"),
+        ("a variant text naming another zone's kind", shared(variant(1, text="Go to {name:meadows}. Now.")),
+         "E-placeholder-target"),
         ("front file on a declared front line", front_ok, "!W-front-host-missing"),
         ("front file quest on another line", front_wrong_line, "E-front-line"),
         ("host quests.json uses line front", front_in_host, "E-front-line"),
