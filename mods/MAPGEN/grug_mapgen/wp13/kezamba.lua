@@ -154,9 +154,11 @@ local function loader(directory)
 		{id = "carver_yard", template = "kezamba_carver_yard",
 			x = -46, z = -16, turns = 0, handle = "town"},
 
-		-- 6. The granary and the pack stable of the east quarter.
-		{id = "granary", template = "kezamba_granary",
-			x = 6, z = -16, turns = 1, handle = "town"},
+		-- 6. The Miner's Guild house of The Oathdelvers (Round 58, in the
+		-- granary's place, in the basalt of the civic halls; settlements.md
+		-- "The Miner's Guild houses") and the pack stable of the east quarter.
+		{id = "miners_guild", template = "kezamba_miners_guild",
+			x = 6, z = -16, turns = 1, handle = "basalt"},
 		{id = "stable", template = "kezamba_stable",
 			x = 35, z = -45, turns = 1, handle = "town"},
 
@@ -178,7 +180,7 @@ local function loader(directory)
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "moot_house", "cauldron_court",
-		"shrine", "carver_yard", "granary", "stable",
+		"shrine", "carver_yard", "miners_guild", "stable",
 		"gate_house_south", "lane_house", "west_house", "shore_house",
 		"trade_shed"}
 
