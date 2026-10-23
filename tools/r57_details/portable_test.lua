@@ -264,12 +264,11 @@ local real = S.build(S.game_data())
 local build_seconds = os.clock() - started
 
 -- Every recipe ingredient and enchant input has a source, except these
--- (each a data question for the user, reported by the lane):
+-- (each a data question for the user, reported by the lane; White and
+-- Yellow Dye left the list with Round 57 ruling 29, lane DYES):
 -- A flexible gap may also have a source (lane ALLOY gave Steel Bars a
 -- recipe in Round 57; kept flexible so the pin holds either way).
 local KNOWN_GAPS = {
-	["dye:white"] = "no recipe or source makes White Dye (Wool White needs it)",
-	["dye:yellow"] = "no recipe or source makes Yellow Dye",
 	["xpanes:bar_flat"] = "Steel Bars have no recipe (the steel bar door and trapdoor need them)",
 }
 local FLEXIBLE_GAPS = {["xpanes:bar_flat"] = true}

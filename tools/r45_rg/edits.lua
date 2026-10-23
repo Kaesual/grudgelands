@@ -68,10 +68,11 @@ return {
 	-- gathers. The flower recipes went with the flowers mod, so only Black
 	-- (coal) and Violet (blueberries) had a source, and the mixes hold two
 	-- loops (Red, Magenta, Pink; Blue, Cyan, Green). One plain plant or
-	-- mineral each, after Blueberries -> 2 Violet: White, Yellow, and one
-	-- dye in each loop (Red, Cyan); the mixes make the other nine.
-	{output = "dye:white", count = 2, added = {{item = "grug_gathering:rock_salt", n = 1}}},
+	-- mob drop each, after Blueberries -> 2 Violet: White, Yellow, and one
+	-- dye in each loop (Red, Cyan); the mixes make the other nine. The user
+	-- picked Bone for White and Apple for Red (no new items or mechanics).
+	{output = "dye:white", count = 2, added = {{item = "grug_mobs:bone", n = 1}}},
 	{output = "dye:yellow", count = 2, added = {{item = "grug_gathering:sunleaf", n = 1}}},
-	{output = "dye:red", count = 2, added = {{item = "grug_cooking:fire_pepper", n = 1}}},
+	{output = "dye:red", count = 2, added = {{item = "default:apple", n = 1}}},
 	{output = "dye:cyan", count = 2, added = {{item = "grug_gathering:marshbloom", n = 1}}},
 }

@@ -323,8 +323,8 @@ Black Dye takes charcoal too.
 **Dyes** are Basic recipes, and every one of the 15 is reachable from
 what anyone gathers (Round 57 ruling 29). Six come from one raw item each
 and make 2 (4 from coal): **Black** from Coal or Charcoal, **Violet** from
-Blueberries, **White** from Rock Salt, **Yellow** from Sunleaf, **Red** from
-Fire Pepper and **Cyan** from Marshbloom (none of them an Alchemy herb).
+Blueberries, **White** from Bone, **Yellow** from Sunleaf, **Red** from
+Apple and **Cyan** from Marshbloom (none of them an Alchemy herb).
 The other nine come from the two-dye mixes (Orange, Pink, Grey, Dark Grey,
 Green, Magenta, Blue, Dark Green, Brown). One dye and any wool make that
 colour's wool.
