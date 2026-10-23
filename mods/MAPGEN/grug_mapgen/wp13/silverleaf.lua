@@ -85,8 +85,8 @@ local function loader(directory)
 
 	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
 	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
-	-- on the court, west of the Quartermaster.
-	local WAYPOINT = {x = 4, z = -3}
+	-- on the court east of the crescent, beside the Quartermaster.
+	local WAYPOINT = {x = 10, z = -3}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
