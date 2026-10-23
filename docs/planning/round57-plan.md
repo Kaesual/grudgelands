@@ -611,7 +611,8 @@ below. Nothing of it ships before Round 58's code (ruling 22).
 
 Main has 259 portable fixtures (9 new: `r57_chains`, `r57_fix56`, `r57_craft`, `r57_alloy`, `r57_qsys`,
 `r57_details`, `r57_vendormat`, `r57_dyes`, `r57_startquests`). `mods/` against 0.56.1 (measured, `git diff
-2b4a3228 a1582d57`): 67 files, +5,154 −2,925 lines, of them 22 rebaked head layers and masks; the rest is
+2b4a3228 a1582d57`): 67 files, +5,154 −2,925 lines, of them 22 rebaked head layers and masks and the four story quest icons
+of the map; the rest is
 `grug_jobs` (two new files for the details page, one for the queue view), `grug_quests`, the six start-zone quest
 files, `grug_quality`, `grug_map`, three `wp40` mapgen files, `grug_traders/stock.lua`, `grug_smelting/recipes.lua`,
 the Help page and `grug_mobs/subtypes.lua`.
