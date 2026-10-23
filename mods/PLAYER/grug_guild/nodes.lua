@@ -1,0 +1,5 @@
+-- The camps' lift and room nodes (spec §3, catalog.NODES): the skeleton
+-- commit registers grug_guild:lift, grug_guild:room_fill and
+-- grug_guild:room_mantle here with placeholder textures (round58-plan.md
+-- §1); lane LIFT swaps in the picked lift art. ROOMS writes the fill and the
+-- mantle from the mapgen environment by these names.

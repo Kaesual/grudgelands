@@ -1,0 +1,3 @@
+-- The lift's interaction (spec §3): lane LIFT fills this file (the camp's
+-- levels, own faction only, the travel path of grug_home, the room's return
+-- point with its register_on_relocate clear).
