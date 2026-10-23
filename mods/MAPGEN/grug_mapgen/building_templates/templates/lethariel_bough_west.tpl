@@ -125,9 +125,9 @@ layer 8
 |...........|
 |...........|
 |..GGGGGG.A.|
-|..GMMMMMG..|
-|..GMAAAMG..|
-|..GMAAA.G..|
+|..GMMMMM...|
+|..GMAAAM...|
+|..GMAAA....|
 |..GMAAAMG..|
 |..GMMMMMG..|
 |..GGGGGGG..|
