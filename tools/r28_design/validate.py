@@ -212,8 +212,13 @@ class Validator:
         if atlas:
             self.npcs |= atlas.all_npcs()
         # The PvP fortresses' quest givers (Round 31; npcs.lua registers
-        # them with the fortress, after the item dump was taken).
+        # them with the fortress, after the item dump was taken) and the
+        # Miner's Guild's foremen and leaders (Round 58, npcs.lua: one per
+        # camp and capital of the world).
         self.fortress_npcs = C.fortress_quest_npcs()
+        self.guild_npcs = C.guild_quest_npcs()
+        self.fortress_npcs.update(self.guild_npcs)
+        self.guild_zones = C.guild_zones()
         self.npcs |= set(self.fortress_npcs)
         self.registered_npcs = set(self.npcs)
 
@@ -621,7 +626,7 @@ class Validator:
             return
         if data.get("zone") != zone:
             self.E("E-zone-mismatch", file, "zone", "zone %r does not match the file name %s" % (data.get("zone"), zone))
-        if self.atlas and self.zone_info(zone) is None:
+        if self.atlas and self.zone_info(zone) is None and zone not in self.guild_zones:
             self.E("E-unknown-zone", file, "zone", "zone %s is not in the atlas" % zone)
         giver_lines = {}
         for i, hub in enumerate(data.get("hubs") or []):
@@ -736,7 +741,9 @@ class Validator:
                 not any(FRONT_LINE in lines for lines in giver_lines.values()):
             self.E("E-front-reserve", file, "hubs", "one quest giver of the capital declares the line 'front' "
                    "(reserved for the front lane)")
-        if info is None or info["role"] != "contested" or len(info["npcs"]) <= 1:
+        # A camp's foreman (Round 58) is no zone giver of the front lane's.
+        if info is None or info["role"] != "contested" or \
+                len([npc for npc in info["npcs"] if npc not in self.guild_npcs]) <= 1:
             return
         for npc in sorted(info["npcs"]):
             if info["anchor_kinds"].get(info["npcs"][npc]["anchor"]) != "outpost":
@@ -1466,8 +1473,9 @@ class Validator:
         return True
 
     def giver_faction(self, npc):
-        """The faction a quest giver serves: a fortress giver's own, a new
-        giver's race's, else its atlas zone's; None if unknown."""
+        """The faction a quest giver serves: a fortress giver's or a guild
+        NPC's own, a new giver's race's, else its atlas zone's; None if
+        unknown."""
         if npc in self.fortress_npcs:
             return self.fortress_npcs[npc]["faction"]
         for zone, data in self.d.quests.items():
