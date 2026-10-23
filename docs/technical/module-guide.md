@@ -1892,6 +1892,18 @@ tools](#player-meta-read-by-external-tools).
 ## Miner's Guild
 
 - **`grug_guild` (Round 58):** the catalogue, its API, the files and their owners and the saved keys: [miners_guild.md](../design/miners_guild.md) §10.
+- **The mining effect** (`effect.lua`, `items.lua`, Round 58 CONSUME):
+  runtime state per player name (the effect's own end time from
+  `core.get_us_time`, the current Remains `{pos, token}`, the marker HUD
+  ids), never the status record: `grug_core` clears statuses in its own
+  leave and death callbacks first. Its timers are `core.after` chains per
+  running effect (the end, the 30 s save, Ore Sense's 60–120 s mark,
+  Treasure Hunt's `check_seconds` check), no globalstep. Saved: player meta
+  `grug_guild:effect` only. Helpers beside the contract:
+  `grug_guild.band_text(tier)` (the band in words), `ore_sense_find(pos,
+  tier, range)` (the one search), `remains_spot_ok(pos, tier, name)` (the
+  placement rules); `_remains_on_timer` and `_remains_on_dig` are the
+  Remains nodes' hooks into the effect. Fixture: `tools/r58_consume`.
 
 ## Mail
 
