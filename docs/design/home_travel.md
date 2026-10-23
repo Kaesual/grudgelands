@@ -54,7 +54,10 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   adds no home points. It shares the one travel path of
   `grug_home/travel.lua` (a running Charge dash ended, dismount, emerge,
   deferred re-validation, safe arrival) through `grug_home.travel`, but never starts or reads the home
-  cooldown, and only one trip per player is prepared at a time.
+  cooldown, and only one trip per player is prepared at a time. The Miner's
+  Guild lifts (Round 58, [miners_guild.md](miners_guild.md) §3) travel the
+  same way, between a camp's surface and its rooms, with the waystones'
+  rules.
 
 ## Claim Stone as travel home (Round 25)
 

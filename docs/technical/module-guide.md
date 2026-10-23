@@ -1909,9 +1909,9 @@ tools](#player-meta-read-by-external-tools).
   the rank rose (the achievement counter `guild:rank` reads
   `grug_guild.highest_rank` live, so nothing is copied). Every display of
   rank and balance goes through `grug_guild.summary`, `format_points` and
-  `reputation_formspec` (text "Reputation 1,234" until the reputation icon
-  is picked; the icon then goes into `grug_guild.REPUTATION_ICON`, no caller
-  changes). The trade-in (`exchange.lua`) counts and takes over
+  `reputation_formspec` (the picked icon `grug_guild.REPUTATION_ICON`,
+  `grug_guild_reputation.png`, then the number; text "Reputation 1,234"
+  when the icon is nil). The trade-in (`exchange.lua`) counts and takes over
   `grug_inventory.consume_lists` like the Sell tab's lots (remove_item by
   name, every check first). `/guild_rep <player> <points>` (privilege
   `server`) adds reputation for tests and the GUI checklist.
@@ -1927,6 +1927,20 @@ tools](#player-meta-read-by-external-tools).
   tier, range)` (the one search), `remains_spot_ok(pos, tier, name)` (the
   placement rules); `_remains_on_timer` and `_remains_on_dig` are the
   Remains nodes' hooks into the effect. Fixture: `tools/r58_consume`.
+- **The lift** (`lift.lua`, Round 58 LIFT): `core.override_item` of
+  `grug_mapgen:guild_lift` with `on_rightclick` only (the settlement
+  semantic digest reads the static fields, `world_nodes.lua`'s).
+  `grug_guild.lift_at(pos)` finds the camp (`grug_mapgen.guild_rooms.room_at`
+  for a room's lift, `grug_mapgen.mining_camps.near(pos, 0)` for the surface
+  lift) and returns `{camp, level, levels}`; `use_lift(player, pos)` refuses
+  another faction through `grug_factions.refuse` and shows the list
+  (`grug_guild:lift:<n>`). A trip is `grug_home.travel` (read at run time:
+  grug_home is no dependency) to the room's `lift_cell` (arrival
+  `room.arrival`) or the camp's `lift` socket (arrival the first safe cell
+  in front of, behind, then beside the node by its `4dir` param2); the
+  check on the server step after the emerge wants the same faction, out of
+  combat, within 8 nodes of the lift. Runtime dialogs per player name only,
+  dropped at leave and death; nothing saved. Fixture: `tools/r58_lift`.
 
 ## Mail
 
@@ -2733,7 +2747,8 @@ tools](#player-meta-read-by-external-tools).
   groups grug_natural and grug_air) change only in `world_nodes.lua`, in a
   map reset round: main computes the settlement semantic digest before the
   other mods load and emerge after, so LIFT's override from grug_guild
-  changes only behaviour and textures. The camp vendor is
+  changes only the right-click (the picked look, node box and selection box
+  are static fields there). The camp vendor is
   `grug_traders:vendor_camp` ("Camp Vendor", a profession-style vendor
   without a shelf of its own until CAMPNPC). **The camp module** `r58_camps.lua` (pure, main and
   mapgen environment, from the `placement_layout` text or parsed
@@ -2746,7 +2761,9 @@ tools](#player-meta-read-by-external-tools).
   no activation node, so `r7_anchor_roster.lua` and the zone overlay keep 42
   rows and 36 columns. Classification: `world_protection.settlement_kind`
   (`mining_camp`; a camp under construction `war_camp` with the PvP margin),
-  `grug_map/settlement_icons.lua` (the mine's icon, the war camp's),
+  `grug_map/settlement_icons.lua` (baked: the mine's icon, the war camp's;
+  the map window's markers `MARKER`/`marker(slot)`: the picked
+  `grug_map_mining_camp.png`, `grug_map_camp_construction.png`),
   `spawn_policy.protected_spawn_surface` and `roam_avoid` (`mining_camp`),
   `grug_core/settlement_sockets.lua` (role `lift`, vendor kind `camp`),
   `grug_mobs/pvp_garrison.lua` (third argument the camp catalogue: a mining

@@ -72,14 +72,34 @@ one picture.
   mantle wears the tier's host rock. The whole 13 × 10 × 13 box is protected
   ("Miner's Guild – protected") and refuses mob spawns; below −501 it is
   contested ground like everything there.
+- **The lift** (lane LIFT, `grug_guild/lift.lua`): a right-click opens the
+  list of the camp's levels, "Surface" and "Level N (floor y)" for each room
+  (Level 1 (-50) … the camp's tier), the current one "You are here", the
+  others a Travel button. The camp is found from the clicked lift (a room's
+  through `guild_rooms.room_at`, the surface lift through
+  `mining_camps.near`). Only members of the camp's faction use it; everyone
+  else (the enemy, in a room too, and a character without a faction) gets
+  the faction service's refusal line ("<Miner's Guild Lift> I serve only
+  The Accord."). A trip runs through `grug_home.travel` with the waystones'
+  rules ([world.md](world.md) §6): instant, free, no cooldown, alive and out
+  of combat, standing within 8 nodes of the lift, one trip at a time, the
+  mount left behind; combat or walking away during the emerge cancels it.
+  It arrives at the room's arrival point in front of its lift, or on the
+  surface in front of the surface lift (its `4dir` front, the deck toward the
+  gate), else behind or beside it; no free cell leaves the player where they
+  are. Nothing is saved: the list always offers every level, so there is no
+  return point. The node's look (guild art drop 02 P1, the rope drum hoist,
+  its node box and a full-node selection box) is static in
+  `grug_mapgen/world_nodes.lua`; `lift.lua` overrides only the right-click.
 - Each room lies in its band's **lower half** (`grug_materials.TIERS`
   `lower_half_y_max`), where the "½" ore rows of the
   [density table](world_zones.md) lie at their full rate: Iron in T1,
   Anthracite in T2, Silver in T3, Emberglass in T4, Abyssal Crystal in T5. The
   yield model (§9) counts them so.
 - The nodes are `grug_mapgen`'s (coordinator decision): CAMPS registers the
-  lift point `grug_mapgen:guild_lift` as a placeholder, which LIFT overrides
-  from `grug_guild` (`lift.lua`) with its behaviour and the picked art; ROOMS
+  lift point `grug_mapgen:guild_lift` (LIFT gave it the picked art and node
+  box in `world_nodes.lua` and overrides its right-click from `grug_guild`,
+  `lift.lua`); ROOMS
   registers `grug_mapgen:room_fill`, `grug_mapgen:room_floor`,
   `grug_mapgen:room_lamp` and `grug_mapgen:room_mantle_t1` … `_t6`
   (`grug_mapgen/guild_room_nodes.lua`, the ids in `wp40/guild_rooms.lua`
@@ -374,7 +394,7 @@ that path and goes to the coordinator with the change the lane would want.
 | `effect.lua` | CONSUME | the mining effect: §10.5 |
 | `items.lua` | CONSUME | the 12 items, the 6 Remains nodes, the loot roll: §10.6 |
 | `vendor.lua` | CAMPNPC | the reputation page's rows and the purchase: §10.7 |
-| `lift.lua` | LIFT | the lift's interaction: overrides `grug_mapgen:guild_lift` (CAMPS' placeholder) with its behaviour and the picked art |
+| `lift.lua` | LIFT | the lift's interaction: overrides `grug_mapgen:guild_lift`'s right-click (the node's static fields and picked art are `world_nodes.lua`'s); `lift_at(pos)`, `use_lift(player, pos)` (§3) |
 
 Until a lane fills its file, its functions are documented stubs that answer
 as for a character of rank 0 with nothing to trade and no effect (`add`,
@@ -500,9 +520,9 @@ The window and its buttons are `grug_traders`' (the camp vendor kind).
 - The keys are created on first use, so with 0.58.0's map reset every
   character starts at 0 (plan §3). They hold no position, so a later map reset
   keeps them like money, and nothing needs a `register_on_relocate` clear
-  ([upgrade contract](../technical/upgrade-contract.md) §3.4). The lift's
-  return point (LIFT) is a position and gets one; the Treasure Hunt's block
-  position is runtime-only, never in player meta.
+  ([upgrade contract](../technical/upgrade-contract.md) §3.4). The lift keeps
+  no return point (its list offers every level), so it saves nothing; the
+  Treasure Hunt's block position is runtime-only, never in player meta.
 - No mod storage.
 
 ## 11. Guild quests
