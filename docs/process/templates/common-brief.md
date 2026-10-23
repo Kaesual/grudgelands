@@ -41,8 +41,8 @@ bigger than planned, report it (the coordinator splits it with the user).
   only through the tool (`tools/migrate.py`, one declared step per
   `migrate` version, with its test; online work only through grug_core's
   runner), no compat code, no placeholders for removed things; ids of
-  quests, items, achievements and waypoints stay stable (a renamed item may
-  use `register_alias`). Your report classifies your change as
+  items, achievements and waypoints stay stable (a renamed item may use
+  `register_alias`), and a quest whose objectives change takes a new id. Your report classifies your change as
   *compatible*, *map reset* (map-bound state or world generation changed),
   *migrate* (saved state the new code cannot read, converted by a step) or
   *new server* (such state not migrated, or a validated world-creation

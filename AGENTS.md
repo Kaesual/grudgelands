@@ -12,18 +12,30 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.56.0, Round 56 "Playtest fixes, clear enchants,
-the hood and the quest survey" (**compatible**, no step;
+**Current state:** 0.57.0, Round 57 "The crafting window, the quest
+foundation and the new start zones" (**compatible**, no step;
+[completion](docs/planning/round57-plan.md#completion-2026-10-23)): the
+crafting queue (five jobs, crafts, enchants and upgrades alike, offline
+too), layout C, recipe details pages with generated ingredient sources,
+favourites and Basic recipes unlocked with the profession tier; the quest
+foundation (shared quests with variants and several givers, choice rewards
+with fixed enchants, story marking, completion texts, the free-play rules,
+no repeatable quests); the six start zones rebuilt on it (92 → 30 quests);
+flat alloys and wood grades, every dye craftable, no vendor selling
+leather, cloth, ores or bars; bay shore water flying under its zone's rule
+and the chin strip open underneath. **Not pushed:** 0.57.0 waits for the
+user's GUI test. Before it 0.56.1 and 0.56.0, Round 56 "Playtest fixes,
+clear enchants, the hood and the quest survey" (**compatible**, no step;
 [completion](docs/planning/round56-plan.md#completion-2026-10-22)): the
 fixes from the playtest of 2026-10-21 (level-scaled aggro, the hit alert on
 the hit mob, ranged mobs closing in, land mounts falling and jumping like
 players, selling from the inactive hotbar, faction-wide Quartermasters,
 mana food for every class, floating items), `Prefix:`/`Suffix:` in enchant
 tooltips and "Replaces prefix: …" at the station, the hood as an armor
-polygon part (transparent until the user's art pick) and the open chin
-strip, the town buildings frozen byte-identically into building templates
-with a local editor, the quest overview page; with 0.56.1, the picked hood art, GUI-accepted and
-**pushed** on 2026-10-23 (origin/main `2b4a3228`). Before it 0.55.1, the profession debug command `/prof`
+polygon part and the open chin strip, the town buildings frozen
+byte-identically into building templates with a local editor, the quest
+overview page; with 0.56.1, the picked hood art, GUI-accepted and
+**pushed** on 2026-10-23 (origin/main `2b4a3228`). Before them 0.55.1, the profession debug command `/prof`
 (**compatible**, no step;
 [professions.md](docs/design/professions.md#16-the-prof-debug-command)), on
 0.55.0, Round 55 "The offhand look" (**compatible**, no step;
@@ -63,9 +75,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: [Round 57](docs/planning/round57-plan.md)
-(the crafting window, the quest foundation, the start zones), then Round 58
-(the Miner's Guild and the town fixes, a map reset).
+are not recorded as passed. Next: the user's GUI test of 0.57.0, then
+Round 58 (the Miner's Guild and the town fixes, a map reset;
+[Round 57 plan §8](docs/planning/round57-plan.md#8-decided-for-round-58)),
+then Round 59 and later (the story arc and the quest rework of levels
+11–60).
 Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
@@ -138,9 +152,11 @@ Details: [STATUS](docs/STATUS.md).
 - **`origin/main` history is never rewritten** (contract R8): the platform
   fetches released commits to create test realms, restore backups and build
   its migration runner.
-- **Stable ids:** quests, items, achievements and waypoints keep their ids;
-  a renamed item may keep its old name with `register_alias`. Unknown ids in
-  saved state are ignored or dropped, never a crash.
+- **Stable ids:** items, achievements and waypoints keep their ids; quest
+  ids change only for a good reason, and a reworked quest takes a new id
+  (Round 57 ruling 21); a renamed item may keep its old name with
+  `register_alias`. Unknown ids in saved state are ignored or dropped, never
+  a crash.
 - **Every lane classifies its change** (compatible, map reset, migrate, new
   server) in its report and the reviewer checks it; a new-server change is
   reported before it is built
@@ -361,8 +377,12 @@ The topic rules below name the one path to use; the
 - **Money check:** `tools/r29_e4/income.py --check` (mount, boat and respec
   prices, the crown fee) after any change to loot, repair or quest copper.
   Quests pay copper from their weight unless `rewards.copper` is set. Quest
-  checks: `quest_targets.py` (region stats of three seeds), `validate.py
-  --game`, `ledger.py --track <race>`.
+  checks: `quest_targets.py` (region stats of three seeds; it stops on the
+  stale water-kind stats since Round 51 until `tools/r28_regions/run.sh`
+  refreshes them), `validate.py --game`, `ledger.py --track <race>`,
+  `quest_kinds.py --check`; `luajit tools/r56_questmap/questmap.lua --out
+  FILE` writes the quest overview page for the user (`--data DIR` reads a
+  draft's `DIR/data/zones`).
 - **All travel** (home return, respawn, waystones) goes through
   `grug_home/travel.lua`; boats are water mounts in `grug_mounts`. Gems are
   depth-tiered: each in its own tier rock, one tier deeper at half and two
@@ -424,8 +444,10 @@ The topic rules below name the one path to use; the
   `tools/r40_an/make_poses.py --check` and the hood's fixture
   `tools/r56_hood` (the hood in both models and the tiers that name it).
   The chin strip (the helm front's bottom row) is open on every cloth head
-  piece and leather T1–T5 (`check.py` refuses it elsewhere); every cloth and
-  leather tier wears the picked hood (0.56.1), metal never does.
+  piece and leather T1–T5, and so is the underside under the chin (the helm
+  bottom face's front rows, Round 57; `check.py` refuses both elsewhere);
+  every cloth and leather tier wears the picked hood (0.56.1), metal never
+  does.
 - **The offhand look is parts of the model with one atlas** (Round 55,
   [offhand format](docs/technical/offhand-format.md)): the shield and the
   open spellbook on the bones `Offhand_Shield` and `Offhand_Book`, the
@@ -485,7 +507,15 @@ The topic rules below name the one path to use; the
 - **An enchant's value is never stored free:** each enchant carries stat,
   channel and tier, and `grug_items.enchant_value(stat, ilvl, tier)` derives it
   through grug_quality's one store path on every level or tier change. Station
-  work is a `grug_jobs.register_station_operation` kind.
+  work is a `grug_jobs.register_station_operation` kind. Crafts, enchants and
+  upgrades share one job queue of at most five (the running job under
+  `grug_jobs:job` in its old format, the waiting ones under
+  `grug_jobs:queue`; inputs taken when queued, outputs that do not fit into
+  the growing overflow; [professions.md](docs/design/professions.md)); a new
+  craft box registers through `grug_jobs.register_craft_box`, so the job
+  strip stays under it. Recipe chains: `tools/r57_chains/run.sh OUT_DIR`
+  (one boot through the queue) reports the depth per recipe after a recipe
+  change.
 - **Profession progress** comes only from recipes with the `progress` flag,
   through `grug_jobs.award_progress`.
 - **Achievements** are catalog data on existing counters fed by hooks
@@ -524,6 +554,15 @@ The topic rules below name the one path to use; the
   [story bible](docs/planning/round36/story-bible.md); the final turn-in ids
   `accord_main_final` / `throng_main_final` are fixed and chapter gates come
   from `requires` ([quests.md](docs/design/quests.md) "The main line").
+- **The quest foundation** (Round 57, [quests.md](docs/design/quests.md)
+  "Shared quests" to "The rework flag"): a task given in several places is
+  one quest with one variant per giver zone (several givers or a role,
+  texts per giver or race); only story quests (`story`) chain, a free quest
+  needs only a level and has at most one follow-up; rewards may be a
+  `choices` list (equipment with author-fixed enchants at the reward
+  level); every quest is done once (`repeatable` is gone). The new rules
+  apply to files marked `"reworked": true` (the six start zones), so the
+  unreworked files stay valid until their rework.
 - **"Use at a place"** is an objective, never a node (`grug_quests/use.lua`).
   Other mods hear turn-ins through `grug_quests.register_on_turn_in`, never a
   second completion path; `grug_quests.quest_held` is the cheap "has or did"
