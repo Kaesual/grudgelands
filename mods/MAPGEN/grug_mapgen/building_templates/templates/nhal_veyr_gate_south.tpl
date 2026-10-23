@@ -28,6 +28,8 @@ P role signature
 Q role signature else=air
 R role signature_slab else=air
 S role window
+T role castle_wall_stair o=facedir:0 else=air
+U role castle_wall_stair o=facedir:2 else=air
 end
 
 layer -2
@@ -56,66 +58,66 @@ layer 0
 |FFFFAAAAAFFFF|
 layer 1
 |GGGG.....GGGG|
+|G..G.....GFFG|
+|G..G.....G.FG|
+|G..G.....G.FG|
+|G..G.....G.UG|
 |G..G.....G..G|
-|G..G.....G..G|
-|G..G.....G..G|
-|G..G.....G..G|
-|G..G.....G..G|
-|GJGG.....GGJG|
+|GGJG.....GJGG|
 layer 2
 |GGGG.....GGGG|
+|G..G.....GFFG|
+|G..G.....G.FG|
+|G..G.....G.UG|
 |G..G.....G..G|
 |G..G.....G..G|
-|G..G.....G..G|
-|G..G.....G..G|
-|G..G.....G..G|
-|GKGG.....GGKG|
+|GGKG.....GKGG|
 layer 3
 |QQQQ.....QQQQ|
-|QO.C.....E.OQ|
-|Q..Q.....Q..Q|
+|QO.C.....EFFQ|
+|Q..Q.....Q.UQ|
 |Q..Q.....Q..Q|
 |Q..Q.....Q..Q|
 |Q..C.....E..Q|
 |QQQQ.....QQQQ|
 layer 4
 |GGGG.....GGGG|
-|GGGGN...MGGGG|
-|GGGG.....GGGG|
-|GGGG.....GGGG|
+|GGGGN...MG..G|
+|GGGG.....GT.G|
+|GGGG.....GG.G|
 |GGGG.....GGGG|
 |GGGG.....GGGG|
 |GGGG.....GGGG|
 layer 5
 |GGGGH...IGGGG|
-|GGGGH...IGGGG|
-|GGGGH...IGGGG|
-|GGGGH...IGGGG|
+|GGGGH...IG.OG|
+|GGGGH...IG..G|
+|GGGGH...IGTGG|
 |GGGGH...IGGGG|
 |GGGGH...IGGGG|
 |GGGGH...IGGGG|
 layer 6
 |LLLLLLLLLLLLL|
 |LLLLLLLLLLLLL|
-|LLLLLLLLLLLLL|
-|LLLLLLLLLLLLL|
-|LLLLLLLLLLLLL|
+|LLLLLLLLLL.LL|
+|LLLLLLLLLL.LL|
+|LLLLLLLLLLTLL|
 |LLLLLLLLLLLLL|
 |LLLLLLLLLLLLL|
 layer 7
 |GGGGGGGGGGGGG|
 |G...........G|
-|.............|
-|.............|
-|.............|
+|G...........G|
+|G...........G|
+|G...........G|
 |G.H.........G|
 |GGGGGGGGGGGGG|
 layer 8
 |GGGDGGDGGDGGG|
 |G...........G|
-|.............|
-|.............|
-|.............|
+|G...........G|
+|G...........G|
+|G...........G|
 |G..H........G|
 |GGGSGGSGGSGGG|
 layer 9
@@ -140,7 +142,7 @@ layer 11
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
-|BBB...HBBBBBB|
+|BB....HBBBBBB|
 |BBBBBBBBBBBBB|
 layer 12
 |GGGGGGGGGGGGG|
@@ -168,19 +170,19 @@ layer 14
 |R.R.R.R.R.R.R|
 
 points
-doors 1 1 6 face=2
-doors 11 1 6 face=2
+doors 2 1 6 face=2
+doors 10 1 6 face=2
 inside 1 1 3 id={id}
 room_corner 1 0 1 closed=true id={id} top=3
 room_corner 2 0 5
 lights 1 3 1
-lights 11 3 1
+lights 11 5 1
 lights 4 4 1
 lights 8 4 1
 sockets 4 1 1 face=2 id={id}_post_west role=guard_post
 sockets 8 1 1 face=2 id={id}_post_east role=guard_post
 sockets 6 7 3 face=2 group=nhal_veyr_{id}_tower id={id}_rampart order=2 role=guard_patrol
 sockets 6 12 3 face=2 group=nhal_veyr_{id}_tower id={id}_deck order=1 role=guard_patrol
-sockets 1 1 4 face=2 id={id}_idle_west role=idle tags=[fire]
-sockets 11 1 4 face=2 id={id}_idle_east role=idle tags=[fire]
+sockets 2 1 4 face=2 id={id}_idle_west role=idle tags=[fire]
+sockets 10 1 4 face=2 id={id}_idle_east role=idle tags=[fire]
 end
