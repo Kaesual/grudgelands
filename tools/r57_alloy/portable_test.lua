@@ -16,9 +16,9 @@
 --      another grade;
 --   B  Steel Bars: one Basic recipe, 6 Steel Bars -> 16, and the Steel Bar
 --      Door and Trapdoor still take them;
---   D  the dye decision: nothing makes White or Yellow Dye, and only dye
---      mixes and recoloured wool take them (no profession recipe, enchant,
---      upgrade or other data names a dye);
+--   D  only dye mixes and recoloured wool take White or Yellow Dye (no
+--      profession recipe, enchant, upgrade or other data names a dye); their
+--      sources are lane DYES' (tools/r57_dyes);
 --   I  the item ids: the bar ids in grug_materials, the six grade keys in
 --      grug_artisans/woodcarver.lua and the Steel Bars pane in xpanes;
 --   C  the chain depth (tools/r57_chains): Silversteel, Embersteel and
@@ -167,11 +167,10 @@ for _, output in ipairs({"xpanes:door_steel_bar", "xpanes:trapdoor_steel_bar"}) 
 end
 
 ------------------------------------------------------------------------------
--- D: White and Yellow Dye stay without a source (nothing beyond decor needs
--- them).
+-- D: only decor takes White and Yellow Dye. Round 57 lane DYES (ruling 29)
+-- gave them a source, so "nothing makes them" moved to tools/r57_dyes.
 ------------------------------------------------------------------------------
 for _, dye in ipairs({"dye:white", "dye:yellow"}) do
-	eq(#J.recipes_for_output(dye), 0, "D nothing makes " .. dye)
 	for _, recipe in ipairs(J.recipes) do
 		for _, entry in ipairs(recipe.ingredients) do
 			if entry.item == dye then
