@@ -119,7 +119,7 @@ local SECTIONS = {
 		"• Every ore or gem you dig and every fish you catch gives XP; deeper ores, gems (more than ores) and fish from higher-level waters give more.",
 		"",
 		heading("Smelting"),
-		"• Smelt ore into bars in a Furnace. Alloys need a Dual Furnace: Bronze = Copper + Tin, Steel = Iron + Anthracite, Silversteel = Steel + Silver, Embersteel = Silversteel + Emberglass, Abyssal Steel = Embersteel + Abyssal Crystal.",
+		"• Smelt ore into bars in a Furnace. Alloys need a Dual Furnace: Bronze = Copper + Tin, Steel = Iron + Anthracite, Silversteel = Steel + Silver, Embersteel = Steel + Emberglass, Abyssal Steel = Steel + Abyssal Crystal.",
 		"",
 		heading("Crafting"),
 		"• The Crafting tab has an area for Basic recipes, Cooking, each of your primary professions and Alchemy. Basic lists a recipe once you have held each of its ingredients (sticks and the wooden tools from the start), and says New recipe when one joins; a profession area shows the recipes up to your tier in it, and each new tier adds its recipes. Search the list, turn its pages or tick Craftable only; ×N says how many times the items in your inventory and bags make a recipe. The star at the top right of a recipe marks it as a favorite, and Favorites only lists your favorites.",
