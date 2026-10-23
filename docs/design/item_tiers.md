@@ -803,11 +803,11 @@ too), which sell for about 3–15 minutes of the band's income:
 | Tier | One level: one own material (bar … setting) | A whole tier (+9 levels) | Minutes of the band's income |
 |---:|---|---:|---:|
 | T1 | 0c–2c | up to 18c | 5.3 |
-| T2 | 0c–10c | up to 90c | 12.1 |
-| T3 | 0c–26c | up to 2s 34c | 13.4 |
-| T4 | 0c–28c | up to 2s 52c | 5.9 |
-| T5 | 0c–80c | up to 7s 20c | 6.2 |
-| T6 | 0c–82c | up to 7s 38c | 2.7 |
+| T2 | 1c–10c | up to 90c | 12.1 |
+| T3 | 2c–26c | up to 2s 34c | 13.4 |
+| T4 | 2c–28c | up to 2s 52c | 5.9 |
+| T5 | 4c–80c | up to 7s 20c | 6.2 |
+| T6 | 40c–82c | up to 7s 38c | 2.7 |
 <!-- end generated -->
 
 ### 6.4 The culture vendor
@@ -841,7 +841,7 @@ column shows a player in gold gear). Mount and respec prices move by less than
 <!-- generated: income -->
 | Band | Net/h today | Gear sales/h | Repair/h today | Repair/h new (blue) | Repair/h new (gold) | Net/h after (blue) | Change | Repair share today → after (blue / gold) |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| 1 → 10 | 2s 2c | 8c | 3c | 17c | 34c | 1s 96c | -2.8 % | 1.7 % → 8.1 % / 16.2 % |
+| 1 → 10 | 2s 5c | 8c | 4c | 18c | 36c | 1s 99c | -2.9 % | 1.7 % → 8.2 % / 16.5 % |
 | 10 → 20 | 4s 45c | 17c | 6c | 29c | 57c | 4s 39c | -1.4 % | 1.3 % → 6.1 % / 12.3 % |
 | 20 → 30 | 10s 45c | 35c | 11c | 53c | 1s 6c | 10s 37c | -0.7 % | 1.0 % → 4.8 % / 9.7 % |
 | 30 → 40 | 25s 74c | 85c | 21c | 1s 5c | 2s 11c | 25s 75c | +0.0 % | 0.8 % → 3.9 % / 7.9 % |
