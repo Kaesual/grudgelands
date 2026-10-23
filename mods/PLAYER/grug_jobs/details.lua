@@ -25,8 +25,9 @@
 -- grug_jobs.open_recipe_details(st, page) starts a new stack; without one,
 -- the page shows the chosen recipe.
 --
--- Item tooltips: grug_items.tooltip_text (grug_quality, lane QSYS) and the
--- item's source lines. Every text is clipped or wrapped to its column (the
+-- Item tooltips: grug_items.tooltip_text (grug_quality's one helper) and the
+-- item's source lines. "Open ▶" never goes to a loop-back recipe (bars from
+-- their block, planks from stairs). Every text is clipped or wrapped to its column (the
 -- window is the same on desktop and web).
 
 local F = grug_jobs.CRAFT_FIELDS
@@ -62,17 +63,10 @@ local function index()
 	return grug_jobs.item_sources()
 end
 
--- The tooltip text of an item stack (grug_quality's one helper; until lane
--- QSYS merges, a stub with its contract for a plain item: the definition's
--- description, the name for an unknown item).
+-- The tooltip text of an item stack: grug_quality's one helper (not
+-- formspec-escaped; tooltip_area escapes it).
 local function tooltip_text(item, player)
-	local items = rawget(_G, "grug_items")
-	if items and type(items.tooltip_text) == "function" then
-		return items.tooltip_text(item, player)
-	end
-	local name = ItemStack(item):get_name()
-	local def = core.registered_items[name]
-	return def and def.description or name
+	return grug_items.tooltip_text(item, player)
 end
 
 --
@@ -293,14 +287,29 @@ local function knows(player, recipe)
 end
 grug_jobs.details_knows = knows
 
+-- Whether `recipe` (which makes `item`) loops back: one of its item
+-- ingredients is made from `item` (a block unpacked into bars, planks from
+-- stairs). It is no real source, so Open ▶ skips it.
+local function loops_back(recipe, item)
+	for _, entry in ipairs(recipe.ingredients) do
+		for _, back in ipairs(entry.item and grug_jobs.recipes_for_output(entry.item) or {}) do
+			for _, input in ipairs(back.ingredients) do
+				if input.item == item then return true end
+			end
+		end
+	end
+	return false
+end
+
 -- The recipe "Open ▶" shows for an item: the first the player knows, else
--- the first (the index's order); nil without one.
+-- the first (the index's order), never a loop-back; nil without one (the
+-- box then shows the source lines only).
 local function recipe_for(player, item)
 	local first
 	for _, source in ipairs(index().sources(item)) do
 		if source.kind == "recipe" then
 			local recipe = grug_jobs.recipe(source.id)
-			if recipe then
+			if recipe and not loops_back(recipe, item) then
 				if knows(player, recipe) then return recipe end
 				first = first or recipe
 			end
@@ -308,6 +317,8 @@ local function recipe_for(player, item)
 	end
 	return first
 end
+
+grug_jobs.details_recipe_for = function(player, item) return recipe_for(player, item) end
 
 -- The area tab a recipe is listed in (ui.lua's slots: Basic, Cooking, the
 -- two primary slots, Alchemy), or nil.

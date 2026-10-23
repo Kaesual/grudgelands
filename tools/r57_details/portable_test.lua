@@ -265,8 +265,8 @@ local build_seconds = os.clock() - started
 
 -- Every recipe ingredient and enchant input has a source, except these
 -- (each a data question for the user, reported by the lane):
--- A flexible gap may also have a source (lane ALLOY gives Steel Bars a
--- recipe; the pin passes before and after it merges).
+-- A flexible gap may also have a source (lane ALLOY gave Steel Bars a
+-- recipe in Round 57; kept flexible so the pin holds either way).
 local KNOWN_GAPS = {
 	["dye:white"] = "no recipe or source makes White Dye (Wool White needs it)",
 	["dye:yellow"] = "no recipe or source makes Yellow Dye",
@@ -375,8 +375,12 @@ local function player_named(name)
 		get_int = function(_, key) return tonumber(meta[key]) or 0 end,
 		set_int = function(_, key, value) meta[key] = value end,
 	}
+	local empty = {get_list = function() return {} end, get_size = function() return 0 end,
+		get_stack = function() return ItemStack("") end, is_empty = function() return true end,
+		get_lists = function() return {} end}
 	return {get_player_name = function() return name end, is_player = function() return true end,
-		get_meta = function() return meta_object end, meta = meta}
+		get_meta = function() return meta_object end, meta = meta,
+		get_inventory = function() return empty end}
 end
 -- Every element's rectangle inside the box and above its bottom.
 local BOXR = grug_jobs.CRAFT_BOX
@@ -430,6 +434,21 @@ local ok, where = inside(fs, view.bottom)
 check(ok, "P every element inside the box and above the job strip " .. where)
 local fit, long = labels_fit(fs)
 check(fit, "P every label fits its column " .. tostring(long))
+
+-- Open ▶ never goes to a loop-back recipe (Round 57 coordinator ruling).
+local RF = grug_jobs.details_recipe_for
+check(RF(P1, "grug_materials:steel_bar") == nil,
+	"P Steel Bar has no Open ▶ (its Basic recipe unpacks the block; the alloy is its source)")
+local wood_recipe = RF(P1, "default:wood")
+check(wood_recipe and not wood_recipe.ingredients[1].item:match("^stairs:"),
+	"P Apple Wood Planks open a real recipe, not stairs or slabs back to planks (" ..
+	tostring(wood_recipe and wood_recipe.id) .. ")")
+eq(RF(P1, "grug_professions:thread").id, "grug_professions:thread|grug_mobs:linen_scrap*1",
+	"P Thread opens its recipe")
+-- The tooltips are grug_quality's helper's text plus the sources.
+local helper_text = grug_items.tooltip_text("grug_mobs:linen_scrap", P1)
+check(helper_text ~= "" and fs:find(core.formspec_escape(grug_inventory.wrap_text(helper_text, 48)), 1, true) ~= nil,
+	"P an icon's tooltip starts with grug_items.tooltip_text")
 
 -- Open ▶ on Thread, then Back twice.
 check(box.fields(P1, st, {grug_craft_dopen_2 = "Open ▶"}), "P Open ▶ is handled")
