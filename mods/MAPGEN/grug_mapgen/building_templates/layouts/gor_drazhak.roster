@@ -28,6 +28,7 @@ use gor_drazhak_bazaar_armourer count=1 main=ors
 use gor_drazhak_bazaar_store count=1 main=ors
 use gor_drazhak_bazaar_carver count=1
 use gor_drazhak_plot_bazaar_house count=3
+use gor_drazhak_miners_guild count=1 main=ors
 use gor_drazhak_war_barracks count=1 main=ors
 use gor_drazhak_war_armoury count=1 main=ors
 use highcourt_market_stable count=1

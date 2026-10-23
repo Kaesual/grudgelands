@@ -36,6 +36,7 @@ use highcourt_market_watch count=1 roof=slate
 use highcourt_market_grove count=1
 use highcourt_market_orchard count=1
 use highcourt_market_store count=1
+use highcourt_miners_guild count=1 roof=slate
 use highcourt_martial_barracks count=1 roof=slate
 use highcourt_martial_muster_hall count=1 roof=slate
 use highcourt_martial_armoury count=1

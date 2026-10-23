@@ -97,26 +97,28 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- generators built it at 36698232 (tools/building_templates/town_identity.lua);
 -- since Round 58 (TOWNFIX, a declared map reset: the five core gatehouses,
 -- Lethariel's bough platforms, the throne guards' posts, the gate watch) with
--- the Miner's Guild house of lane HALLS, the capitals' new values.
+-- the Miner's Guild house of lane HALLS, moved out of the core onto a
+-- district plot of its own by lane HALLS2 (the core's replaced building
+-- back), the capitals' new values.
 local FROZEN = {
-	highcourt = {"6d7b2327b2bf120ab727e3c0732ecc716cc6de908789d9448355f557b057c4bc",
-		"30237a58742f4d0b98716119f8e18de4e58cc9aa52116cedf3c5728fdb629a26",
-		"5de11683086b8f6d6acf80b94fef9851b347f87718f903fb3ca08cac6539ec37"},
-	dur_brannoc = {"fc52566191e8101e16b775d960ce4b67c85f8bf970a5fbf745dea858b07346db",
-		"a0dfbdfade46ee1ac47c14b5783ef4bf039223a942f7c60ed43f4a374e0aca55",
-		"3736bda371961e796b4eb8ee010439f3eeef51dcb5847ce58d7264bd6c793368"},
-	lethariel = {"df49b117f6aa7cb59b43304cf9a72a386576c997ee1b83e19fd5347b0d373213",
-		"ca8fbcd8f45f8cdc567aaa247715381a8de29203ec962c6a08a60ae6cedc50ed",
-		"2ccd16e5f934f7f4602665c262c07eb14556a8a843905309db53866bbe7b022c"},
-	nhal_veyr = {"c80aab6fc1d11b98cfd0ed3f5336e901211e471e9bb904d7b60c495c24535bc1",
-		"ddc7a7da738c717ffde443a8a00cdce2d285c4ff2ea9421c70ec485b92175863",
-		"cf5c36cdc566138d5dc8f3d58edc4d48353236783222fc87a2c4f8d2b9977824"},
-	gor_drazhak = {"5791cc500d35d6244f2782f6e767635f9ae21c9d0d8c14c6741f6726f52d4307",
-		"19617107726f625fa6eb6a8d965abe8f7b2edd6c063dc2423190efe27a63063b",
-		"3ba91ef6458829613ea8697d04eb7ba9e05b31528745f9246782ef9fc2b0d144"},
-	kezamba = {"929d852e1c2467a11e89a261fdacbc46b9b922e5f8b920249cabcc561adcef1e",
-		"325bc59ac71cde675e3656906037200998962af6dc7421ec7399fe5209fe28b6",
-		"3328d681f3387856653c76ae94df8eed08093aeb4c9d8e5d0f0d69b369123c34"},
+	highcourt = {"24e40d9e0e89627c1307e67a1fc6cf59a7eb616dd3562bd3b23e7f26339d9c24",
+		"73ab6c639c21c0192b7cad806bd627d728ecbbe5dcd14a69bae71146ee359f89",
+		"f1a7b4c1eaf18cfae66100fa28be4a91c0c69dda434efd02580aa2b1e5a221ae"},
+	dur_brannoc = {"e1302fc6ed9caaedee8beabf8aa8b5dc3da47a220693e0832c896d5e423e9a7f",
+		"376c862d4d9cc0f16d5963b13fe98f56d5a0dbb115347f3b2dfddf1b2110f289",
+		"6359c612efeaeeecaae54658a2c388849aa30896084e028b3b796b8e2d33fb42"},
+	lethariel = {"df0b9158b154e7b2fd0c297dd2a7182131a39ba5d05fea80ad98a5a53a710db1",
+		"349f923ec04a3cfd10af537843482e769bd9e4c910b8e6d4c0019185b50b0a0d",
+		"b70c7cef1ee3cec8f8766175a179156874245a4cda5ace2368e3360c5c4593b1"},
+	nhal_veyr = {"270a5ae565c39027dea789d2f3434fe291d152d30e844abd216014edbe56d1eb",
+		"5daaf6b7295007890af88cd27f584b97d97900b1da8a518fcfdb17260b1abc55",
+		"6f0ccf0c0d43a53be18b9d1833910b806e45c971a2da04c350c8cf56eaab722d"},
+	gor_drazhak = {"b3cffe7b7918c70cd258a63e53544e4b4adacfb80651785ce7bad6beb99c6ad3",
+		"e20224659959aeecc3dcde71faf742c6afca6d18ee8fe7fc4ef7188e3c3b105c",
+		"b60fd2881084bb4a0803edfcea33f78fd765c026ce9401b52069ce7971aa2238"},
+	kezamba = {"fcb3368594597d6cfa8a57a0232d684174a967455234db24bc9a300338fa22a2",
+		"df6b259db2aa4aa7200b2bd54ff9fcced49b2c1b95f886eb759851720f5340f2",
+		"596f3ba1015c19e749b4b45fc63a64b3e1049a776a3ad09cef166f2512869c31"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
@@ -170,9 +172,10 @@ _G.dofile = function(path)
 	return chunk
 end
 -- the buildings of each core and its district plots (Nhal Veyr's ruin close
--- stamps two of its own)
-local PLACEMENTS = {highcourt = 58, dur_brannoc = 54, lethariel = 48, nhal_veyr = 61,
-	gor_drazhak = 48, kezamba = 48}
+-- stamps two of its own; Round 58 HALLS2: one more each, the guild house's
+-- district plot)
+local PLACEMENTS = {highcourt = 59, dur_brannoc = 55, lethariel = 49, nhal_veyr = 62,
+	gor_drazhak = 49, kezamba = 49}
 local profiles = {}
 for _, profile in ipairs(settlement.roster) do profiles[profile.key] = profile end
 local capital_source = dofile(wp40 .. "/r7_capital_blueprint.lua")
