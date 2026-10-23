@@ -576,7 +576,7 @@ town fixes. Its own plan follows after this round; these are its rulings. They r
 
 ## Completion (2026-10-23)
 
-Every lane is merged on main and independently reviewed (Opus); this lane D (the version, this section, AGENTS,
+Every lane is merged on main, and every code lane but the display-only QSYS2 independently reviewed (Opus); this lane D (the version, this section, AGENTS,
 the status owners) follows on main `a1582d57`. **0.57.0 is compatible:** no migration step, no map reset, item,
 achievement and waypoint ids unchanged, no new socket; old start-quest ids are dropped as unknown ids (ruling 21).
 **Push:** not pushed; 0.57.0 waits for the user's GUI test. **Sync:** by the coordinator after the round.
@@ -605,8 +605,8 @@ Worktrees and branches `r57-<lane>`. Main's first-parent commits, in order (lane
 orchestration folder). An Opus review found 14 points (4 high) and made 20 proposals; the user answered the three
 open choices and took all 20 recommended proposals; draft 2 built them, and a short Opus check found two text fixes,
 applied by the coordinator. The decision is recorded below; the arc is built in Round 59 and later (§9).
-**GUILDART** (GPT-6 Astra, outside the repository): drop-01 with two proposals, 38 assets (the plan's 3 cloaks, 12
-consumable icons and the remains block, plus two 64×64 status icons for the effect slot); the user's picks are
+**GUILDART** (GPT-6 Astra, outside the repository): drop-01 with two proposals, 38 assets in all (each proposal the plan's 3 cloaks,
+12 consumable icons and the remains block, plus two 64×64 status icons for the effect slot); the user's picks are
 below. Nothing of it ships before Round 58's code (ruling 22).
 
 Main has 259 portable fixtures (9 new: `r57_chains`, `r57_fix56`, `r57_craft`, `r57_alloy`, `r57_qsys`,
