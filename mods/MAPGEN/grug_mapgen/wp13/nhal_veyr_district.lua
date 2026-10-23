@@ -151,6 +151,13 @@ local function loader(directory)
 					plots.work("block", "carve", area.x0 + 3, area.z0, 0),
 				}
 			end},
+		-- THE MINER'S GUILD HOUSE of The Oathdelvers (Round 58 lane HALLS2;
+		-- settlements.md "The Miner's Guild houses"): the hall and its ore
+		-- yard under the headframe. A required plot (r7_capitals.lua), so
+		-- every world places it; its id is the hall socket contract's plot
+		-- (capital_services.lua GUILD_HALL).
+		{id = "miners_guild", template = "nhal_veyr_miners_guild",
+			handle = "crypt", roof = "vault"},
 	}
 
 	-- THE DISTRICT'S OWN FILL: four dressings on the district's four fill

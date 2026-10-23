@@ -85,14 +85,16 @@ return function(wp40_directory)
 	end
 
 	-- The required plots of a capital: the inn, the eight service plots (the
-	-- cook's among them) and the stable (audit §2.2); a missing one is a load
-	-- error in its consumer, so the planner always places them.
+	-- cook's among them), the stable (audit §2.2) and the Miner's Guild house
+	-- (Round 58); a missing one is a load error in its consumer, so the
+	-- planner always places them.
 	local function required_of(key)
 		local set = {}
 		for _, id in pairs(assert(services.PLOTS[key], "service plots missing: " .. key)) do
 			set[id] = true
 		end
 		set[assert(services.INNS[key], "inn plot missing: " .. key)] = true
+		set[services.GUILD_HALL.plot] = true
 		return set
 	end
 

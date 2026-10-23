@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-"""Build the two review pages of the Miner's Guild houses (Round 58 lane HALLS).
+"""Build the two review pages of the Miner's Guild houses (Round 58 lanes
+HALLS, HALLS2).
 
-    python3 tools/r58_halls/build_pages.py OUT_DIR [--standalone]
+    python3 tools/r58_halls/build_pages.py OUT_DIR [--standalone] [--seed=N]
 
 Writes OUT_DIR/halls_gallery.html, the template gallery of the six houses
 alone (building_templates/viewer/build_gallery.py over a copy of the six
 templates and the capitals' rosters cut to their house lines, so "As placed"
-resolves each house with its capital's palettes), and OUT_DIR/halls_cores.html,
-the town viewer of the six civic cores with their houses
-(building_templates/viewer/build_viewer.py over tools/r58_halls/view/).
+resolves each house with its capital's palettes), and OUT_DIR/halls_cores.html
+(the HALLS file name, kept for its link), the town viewer of the six houses
+in their districts: each district's plots where one seed's plan (default 1,
+tools/r58_halls/plan_layout.lua, about 17 s) placed them, at their planned
+heights, without the streets and the terrain
+(building_templates/viewer/build_viewer.py over
+tools/r58_halls/view/<capital>_district_blueprint.lua).
 Without --standalone the pages are written as the Artifact publisher takes
 them (no <html> wrapper).
 """
@@ -39,6 +44,10 @@ def main(argv):
         raise SystemExit(__doc__)
     out = os.path.abspath(argv[0])
     flags = ["--standalone"] if "--standalone" in argv[1:] else []
+    seed = 1
+    for arg in argv[1:]:
+        if arg.startswith("--seed="):
+            seed = int(arg.split("=", 1)[1])
     os.makedirs(out, exist_ok=True)
     gallery = os.path.join(out, "halls_gallery.html")
     with tempfile.TemporaryDirectory(prefix="grug_r58_halls_") as scratch:
@@ -66,11 +75,21 @@ def main(argv):
             raise SystemExit("build_pages: the scratch path is still in the gallery")
         with open(gallery, "w", encoding="utf-8") as handle:
             handle.write(text)
-    run([sys.executable, os.path.join(VIEWER, "build_viewer.py")] +
-        [os.path.join("tools", "r58_halls", "view", key + "_core_blueprint.lua")
-         for key in CAPITALS] +
-        ["--title", "Miner's Guild Houses in the Capital Cores", "-o",
-         os.path.join(out, "halls_cores.html")] + flags)
+    with tempfile.TemporaryDirectory(prefix="grug_r58_halls_") as scratch:
+        layout = os.path.join(scratch, "layout.lua")
+        proc = subprocess.run(["luajit", os.path.join(HERE, "plan_layout.lua"), REPO,
+                               str(seed)], cwd=REPO, capture_output=True, text=True)
+        sys.stderr.write(proc.stderr)
+        if proc.returncode != 0:
+            raise SystemExit("build_pages: plan_layout.lua failed")
+        with open(layout, "w", encoding="utf-8") as handle:
+            handle.write(proc.stdout)
+        os.environ["R58_HALLS_LAYOUT"] = layout
+        run([sys.executable, os.path.join(VIEWER, "build_viewer.py")] +
+            [os.path.join("tools", "r58_halls", "view", key + "_district_blueprint.lua")
+             for key in CAPITALS] +
+            ["--title", "Miner's Guild Houses in their Districts (seed %d)" % seed, "-o",
+             os.path.join(out, "halls_cores.html")] + flags)
     print("wrote", gallery, "and", os.path.join(out, "halls_cores.html"))
     return 0
 

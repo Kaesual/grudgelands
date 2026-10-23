@@ -33,13 +33,15 @@ M.PLOTS = {
 M.INNS = {highcourt = "homes_tavern", dur_brannoc = "terrace_alehouse",
  lethariel = "homes_longhouse", nhal_veyr = "homes_lane_house",
  gor_drazhak = "warren_clan_house", kezamba = "vine_longhouse"}
--- The Miner's Guild house of every capital (Round 58): a building of the
--- civic core with the same plot id in all six, so its socket ids (core
--- sockets carry no plot prefix) are the hall socket contract of
--- docs/design/settlements.md "The Miner's Guild houses".
-M.GUILD_HALL = {plot = "miners_guild", leader = "miners_guild_leader",
- exchange = "miners_guild_exchange",
- residents = {"miners_guild_clerk", "miners_guild_sorter", "miners_guild_porter"}}
+-- The Miner's Guild house of every capital (Round 58): a district plot with
+-- the same plot id in all six (lane HALLS2; a required plot, so the planner
+-- always places it), so its socket ids -- a plot's sockets carry the plot id
+-- as their prefix (`r7_settlement.lua` M.sockets) -- are the hall socket
+-- contract of docs/design/settlements.md "The Miner's Guild houses".
+M.GUILD_HALL = {plot = "miners_guild", leader = "miners_guild/miners_guild_leader",
+ exchange = "miners_guild/miners_guild_exchange",
+ residents = {"miners_guild/miners_guild_clerk", "miners_guild/miners_guild_sorter",
+  "miners_guild/miners_guild_porter"}}
 local STATIONS = {forge="grug_jobs:forge", tailor="grug_jobs:tailor_bench",
  alchemist="grug_brewing:brewing_stand", leatherworker="grug_jobs:tanning_rack",
  woodcarver="grug_jobs:carving_bench", goldsmith="grug_jobs:jewellers_bench",

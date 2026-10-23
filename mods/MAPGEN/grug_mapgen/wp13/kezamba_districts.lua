@@ -1,6 +1,6 @@
--- Kezamba's four districts and their fifty-two plots.
+-- Kezamba's four districts and their fifty-three plots.
 --
--- `M.plots()` returns the 52 plots in a FIXED order -- district by district in
+-- `M.plots()` returns the 53 plots in a FIXED order -- district by district in
 -- the contract's own role order, each district's building plots in roster
 -- order and then its fill plots in roster order. Their sizes (`reach`) come
 -- from `kezamba_lots.lua`; where they stand and how they are turned is the
@@ -245,6 +245,13 @@ local function loader(directory)
 				end},
 			{id = "shore_house", template = "kezamba_plot_shore_house",
 				order = 10},
+			-- THE MINER'S GUILD HOUSE of The Oathdelvers (Round 58 lane HALLS2;
+			-- settlements.md "The Miner's Guild houses"): the hall and its ore
+			-- yard under the headframe. A required plot (r7_capitals.lua), so
+			-- every world places it; its id is the hall socket contract's plot
+			-- (capital_services.lua GUILD_HALL).
+			{id = "miners_guild", template = "kezamba_miners_guild",
+				handle = "basalt"},
 		},
 		fill = {
 			{id = "shore_vineyard", yard = {}, order = 11,

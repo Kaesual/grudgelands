@@ -1,4 +1,4 @@
--- The sizes of Kezamba's fifty-two plots: every row is one plot of the
+-- The sizes of Kezamba's fifty-three plots: every row is one plot of the
 -- district rosters (`kezamba_districts.lua`) with its `reach`, the half width
 -- of ground the plot lays (13 for a building, 11, 8 or 5 for a fill dressing),
 -- and the district roles in roster order. Where a plot stands and how it is
@@ -28,6 +28,8 @@ local function loader()
 		{id = "shore_7", kind = "plot", reach = 13},
 		{id = "shore_8", kind = "plot", reach = 13},
 		{id = "shore_9", kind = "plot", reach = 13},
+		-- the Miner's Guild house (Round 58 lane HALLS2)
+		{id = "shore_10", kind = "plot", reach = 13},
 		{id = "shore_f1", kind = "fill", reach = 11},
 		{id = "shore_f2", kind = "fill", reach = 11},
 		{id = "shore_f3", kind = "fill", reach = 8},

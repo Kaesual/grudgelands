@@ -743,6 +743,12 @@ node grug_decor:xdecor_potted_viola
 node grug_decor:xdecor_rope
 node grug_decor:xdecor_stonepath
 node grug_decor:xdecor_table
+node grug_mapgen:guild_banner_charter
+node grug_mapgen:guild_banner_oathdelvers
+node grug_mapgen:guild_emblem_charter
+node grug_mapgen:guild_emblem_oathdelvers
+node grug_mapgen:mine_cart
+node grug_mapgen:mine_rail
 node grug_nodes:bone_pile
 node grug_nodes:lichen_carpet
 node grug_nodes:lichen_carpet_b

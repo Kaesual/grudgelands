@@ -182,6 +182,13 @@ local function loader(directory)
 					shop_vendor("baker", "baker", area, 2), -- Round 47: a post at 0
 				}
 			end},
+		-- THE MINER'S GUILD HOUSE of The Charter of Stone (Round 58 lane HALLS2;
+		-- settlements.md "The Miner's Guild houses"): the hall and its ore
+		-- yard under the headframe. A required plot (r7_capitals.lua), so
+		-- every world places it; its id is the hall socket contract's plot
+		-- (capital_services.lua GUILD_HALL).
+		{id = "miners_guild", template = "lethariel_miners_guild",
+			roof = "pale"},
 	}
 
 	-- THE MARKET'S FILL. Every dressing is laid out the same way and the

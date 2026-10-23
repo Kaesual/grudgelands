@@ -19,7 +19,7 @@ use lethariel_sacred_grove count=1 main=elf
 use lethariel_mere_shrine count=1 main=pale
 use lethariel_bough_west count=2 main=elf
 use lethariel_bough_east count=2 main=elf
-use lethariel_miners_guild count=1 main=elf roof=pale
+use dur_brannoc_market_house count=1 main=elf
 use dur_brannoc_south_house count=1 main=elf
 use dur_brannoc_lane_house count=1 main=elf
 use dur_brannoc_plaza_house count=1 main=elf
@@ -32,6 +32,7 @@ use lethariel_market_watch count=1 main=elf roof=pale
 use lethariel_market_grove count=4 main=elf
 use lethariel_market_orchard count=1 main=elf
 use lethariel_market_bakehouse count=1 main=elf
+use lethariel_miners_guild count=1 main=elf roof=pale
 use lethariel_martial_barracks count=1 main=elf roof=pale
 use highcourt_martial_drill_yard count=1 main=elf
 use lethariel_martial_hall count=2 main=elf roof=pale

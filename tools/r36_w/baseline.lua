@@ -16,7 +16,10 @@
 -- (the hall's in place of the replaced building's); and by Round 58 lane
 -- TOWNFIX (a declared map reset) for the moved sockets only: the start
 -- towns' waystones, the core gates' watch, the throne guards' posts and the
--- gatehouses' idle posts, bounds and airspace unchanged. As a module:
+-- gatehouses' idle posts, bounds and airspace unchanged; and by Round 58
+-- lane HALLS2, which moved the guild houses onto district plots: the six
+-- cores' sockets back to the replaced buildings', and the six new plots
+-- `<capital>/miners_guild`. As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}

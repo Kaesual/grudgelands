@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Round 58 lane HALLS: engine screenshots of the Miner's Guild houses in
+# Round 58 lanes HALLS, HALLS2: engine screenshots of the Miner's Guild houses in
 # Dur Brannoc and Lethariel (The Charter of Stone) and Gor Drazhak (The
 # Oathdelvers), outside and inside, and a check that each house's frieze and
 # plaque stand in the world (probe.txt, "CHECK"). Only the houses' regions are
