@@ -1,14 +1,20 @@
 -- The Crafting tab's recipe box (Round 45 lane UI; ui-crafting-rework-plan.md
--- §2.18, §4.2, §4.3; Round 45 playtest fix 3), drawn into grug_jobs.CRAFT_BOX
--- by ui.lua in three stacked areas:
---   top     the chosen recipe's output: icon, name, area, tier, "makes N";
+-- §2.18, §4.2, §4.3; Round 45 playtest fix 3; Round 57 layout C), drawn into
+-- grug_jobs.CRAFT_BOX by ui.lua in three stacked areas, above the job strip
+-- (ui.lua draws the bar, the stop button and View Queue under every box):
+--   top     the chosen recipe's output: icon, name, area, tier, "makes N",
+--           and the favourite star at the top right (Round 57 ruling 7: ★
+--           marked, ☆ not; a click toggles it);
 --   middle  the item's description (what its tooltip says, scrolling when
---           long), the ingredients with have/need, the maximum, the
---           warnings (the profession gate, "Requires: <station> nearby"),
---           the note of the last refused action and the XP hint;
+--           long), "Ingredients (have/need)" (with "Recipe details" at its
+--           right once a "details" box is registered: the seam lane DETAILS
+--           fills), the ingredients with have/need, the maximum, the
+--           warnings (the profession gate, "Requires: <station> nearby", a
+--           full queue), the note of the last refused action and the XP hint;
 --   bottom  the quantity row "Quantity [−][field][+] [Max]" (stackable
---           outputs only, default 1) and below it Craft now, which turns
---           into Stop while a job runs.
+--           outputs only, default 1) and, right-aligned in the same row, the
+--           big button: "Craft ×N" while nothing runs, "Queue ×N" while a job
+--           runs (ruling 1).
 -- Without a chosen recipe the box shows the professions overview
 -- (overview.lua): every known profession's tier, progress and the level cap
 -- note.
@@ -45,11 +51,12 @@
 -- click on another recipe whose page has not arrived yet) names an old
 -- serial and is ignored.
 --
--- A button that cannot start ("Requires: Forge nearby", a missing tier) is
--- drawn disabled. A formspec button has no disabled state: it is greyed and
--- named grug_craft_recheck, and a click only rebuilds the page, which checks
--- the station again (the client shows the cached page when the inventory
--- opens, so a player who walked to the forge refreshes it this way).
+-- A button that cannot start ("Requires: Forge nearby", a missing tier, a
+-- full queue) is drawn disabled. A formspec button has no disabled state: it
+-- is greyed and named grug_craft_recheck, and a click only rebuilds the page,
+-- which checks the station again (the client shows the cached page when the
+-- inventory opens, so a player who walked to the forge refreshes it this
+-- way).
 
 local F = grug_jobs.CRAFT_FIELDS
 local BOX = grug_jobs.CRAFT_BOX
@@ -59,9 +66,9 @@ local label_of = grug_jobs.recipe_label
 
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
-local BUTTON_Y = BOX.y + BOX.h - 0.75
--- The quantity row sits right above the button.
-local QUANTITY_Y = BUTTON_Y - 0.75
+local ACTION = grug_jobs.CRAFT_ACTION
+-- The favourite star at the top right.
+local STAR = {w = 0.6, h = 0.6}
 -- The middle area's first label (its centre) below the top area.
 local MIDDLE_Y = BOX.y + 1.4
 local INGREDIENT_ROWS, INGREDIENT_STEP = 5, 0.45
@@ -78,8 +85,7 @@ local WARN = "#ff9f5a"
 local NOTE = "#f0c75e"
 local XP_GREEN = "#7ae08a"
 local XP_GREY = "#8a8a8a"
-local DISABLED_STYLE = "style[" .. F.recheck ..
-	";bgcolor=#2a2a2a;bgcolor_hovered=#2a2a2a;textcolor=#808080;border=false]"
+local STAR_ON, STAR_OFF = "#f0c419", "#9a9a9a"
 -- Characters per real unit (ui.lua's rate).
 local CHARS = 6.6
 
@@ -344,16 +350,14 @@ local function ingredient_rows(fs, recipe, counts, quantity, y, choice)
 	return y
 end
 
-local function button(fs, job, enabled)
-	local geometry = ("%s,%s;%s,0.65"):format(n(X), n(BUTTON_Y), n(W))
-	if job then
-		fs[#fs + 1] = ("button[%s;%s;Stop]"):format(geometry, F.stop)
-	elseif enabled then
-		fs[#fs + 1] = ("button[%s;%s;Craft now]"):format(geometry, F.go)
-	else
-		fs[#fs + 1] = DISABLED_STYLE ..
-			("button[%s;%s;Craft now]"):format(geometry, F.recheck)
-	end
+-- The star (ruling 7): a text button, gold ★ when the recipe is a favourite,
+-- grey ☆ when not.
+local function star(fs, player, recipe)
+	local on = grug_jobs.is_favorite(player, recipe.id)
+	fs[#fs + 1] = ("style[%s;textcolor=%s;font_size=*1.4]button[%s,%s;%s,%s;%s;%s]" ..
+		"tooltip[%s;%s]"):format(F.fav, on and STAR_ON or STAR_OFF,
+		n(BOX.x + BOX.w - 0.2 - STAR.w), n(BOX.y + 0.2), n(STAR.w), n(STAR.h), F.fav,
+		on and "★" or "☆", F.fav, on and "Remove from favorites" or "Add to favorites")
 end
 
 local function build(player, view)
@@ -361,14 +365,14 @@ local function build(player, view)
 	local fs = {("box[%s,%s;%s,%s;%s]"):format(n(BOX.x), n(BOX.y), n(BOX.w), n(BOX.h),
 		BOX_COLOR)}
 	if not recipe then
-		-- The overview fills the box (above Stop while a job runs).
-		local bottom = job and BUTTON_Y - 0.1 or BOX.y + BOX.h
+		-- The overview fills the box above the strip.
 		fs[#fs + 1] = grug_jobs.professions_formspec(grug_jobs.profession_overview(player),
-			{x = X, y = BOX.y + 0.05, w = W, h = bottom - BOX.y - 0.1})
-		if job then button(fs, job) end
+			{x = X, y = BOX.y + 0.05, w = W, h = view.bottom - BOX.y - 0.1})
 		st.pick_rows = nil
 		return table.concat(fs)
 	end
+	-- The bottom row: the quantity row and the big button.
+	local quantity_y = view.bottom - ACTION.h + (ACTION.h - 0.6) / 2
 	local stacks = stackable(recipe)
 	local picks = grug_jobs.crafting_picks(st, recipe, view.counts)
 	local most, by_ingredients, by_space = grug_jobs.max_craftable(player, recipe,
@@ -387,8 +391,10 @@ local function build(player, view)
 	local quantity = stacks and quantity_of(st.qty) or 1
 	local sub = area_name(recipe) .. " · Tier " .. recipe.tier
 	if recipe.count > 1 then sub = sub .. " · makes " .. recipe.count end
-	-- The name in up to two lines beside the icon, then the area line.
-	local width = math.floor((W - 1.05) * CHARS)
+	star(fs, player, recipe)
+	-- The name in up to two lines beside the icon (left of the star), then
+	-- the area line.
+	local width = math.floor((W - 1.05 - STAR.w - 0.1) * CHARS)
 	local name = {}
 	for piece in (grug_inventory.wrap_text(label_of(recipe.output), width) ..
 			"\n"):gmatch("(.-)\n") do
@@ -416,6 +422,10 @@ local function build(player, view)
 		notes[#notes + 1] = {"Requires: " .. (info and info.display_name or recipe.station) ..
 			" nearby", WARN}
 	end
+	if view.full then
+		enabled = false
+		notes[#notes + 1] = {grug_jobs.QUEUE_FULL, WARN}
+	end
 	if st.note then notes[#notes + 1] = {st.note, NOTE} end
 	local hint, color = xp_hint(player, recipe)
 	if hint then notes[#notes + 1] = {hint, color} end
@@ -432,7 +442,7 @@ local function build(player, view)
 	end
 	local below = 0.1 + 0.25 + rows * INGREDIENT_STEP +
 		dropdowns * (DROPDOWN_STEP - INGREDIENT_STEP) + 0.65 + note_lines * NOTE_STEP
-	local limit = (stacks and QUANTITY_Y or BUTTON_Y) - 0.05
+	local limit = view.bottom - ACTION.h - 0.05
 	y = MIDDLE_Y
 	local text = description_of(player, recipe)
 	if text ~= "" then
@@ -447,6 +457,12 @@ local function build(player, view)
 		end
 	end
 	fs[#fs + 1] = ("label[%s,%s;Ingredients (have/need)]"):format(n(X), n(y))
+	-- The seam of the recipe details page (Round 57, lane DETAILS registers
+	-- the "details" box).
+	if grug_jobs.has_craft_box("details") then
+		fs[#fs + 1] = ("button[%s,%s;2.2,0.5;%s;Recipe details]"):format(n(X + W - 2.2),
+			n(y - 0.25), F.details)
+	end
 	st.pick_serial = (st.pick_serial or 0) + 1
 	local choice = {picks = picks, serial = st.pick_serial, rows = {}}
 	y = ingredient_rows(fs, recipe, view.counts, quantity, y + 0.25, choice)
@@ -458,27 +474,32 @@ local function build(player, view)
 		y = wrapped_labels(fs, X, y, W, entry[1], entry[2], NOTE_STEP)
 	end
 	if stacks then
-		-- Quantity [−][field][+] [Max] across the box's inner width.
+		-- Quantity [−][field][+] [Max], the big button right of it.
 		fs[#fs + 1] = ("label[%s,%s;Quantity]button[%s,%s;0.55,0.6;%s;−]" ..
 			"field[%s,%s;0.95,0.6;%s;;%s]field_close_on_enter[%s;false]" ..
 			"button[%s,%s;0.55,0.6;%s;+]button[%s,%s;0.9,0.6;%s;Max]"):format(
-			n(X), n(QUANTITY_Y + 0.3), n(X + 1.25), n(QUANTITY_Y), F.minus,
-			n(X + 1.85), n(QUANTITY_Y), F.qty, esc(st.qty), F.qty,
-			n(X + 2.85), n(QUANTITY_Y), F.plus, n(X + 3.5), n(QUANTITY_Y), F.max)
+			n(X), n(quantity_y + 0.3), n(X + 1.25), n(quantity_y), F.minus,
+			n(X + 1.85), n(quantity_y), F.qty, esc(st.qty), F.qty,
+			n(X + 2.85), n(quantity_y), F.plus, n(X + 3.5), n(quantity_y), F.max)
 	end
-	button(fs, job, enabled)
+	-- "Craft ×N" while nothing runs, "Queue ×N" while a job runs (ruling 1).
+	fs[#fs + 1] = grug_jobs.action_button(view, F.go,
+		(job and "Queue ×" or "Craft ×") .. quantity, enabled)
 	return table.concat(fs)
 end
 
 local function fields(player, st, fields)
-	if fields[F.stop] then
-		local ok, reason = grug_jobs.cancel_job(player)
-		if not ok then st.note = reason end
-		return true
-	end
 	if fields[F.recheck] then return true end
 	local recipe = st.selected and grug_jobs.recipe(st.selected)
 	if not recipe then return false end
+	if fields[F.fav] then
+		grug_jobs.toggle_favorite(player, recipe.id)
+		return true
+	end
+	if fields[F.details] and grug_jobs.has_craft_box("details") then
+		grug_jobs.open_craft_box(st, "details")
+		return true
+	end
 	-- A dropdown whose value differs from the built one was changed (only
 	-- the built recipe's dropdowns: a row click carries the old ones; only
 	-- the newest build's serial: an older page's change is stale).

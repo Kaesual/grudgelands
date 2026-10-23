@@ -945,9 +945,12 @@ do
 	eq(total(smith, "grug_gear:sword_steel"), 1, "E the item lives only in the job")
 	check(same_item(ItemStack(job.target), sword), "E the job holds the exact item")
 	eq(total(smith, "grug_materials:steel_bar"), bars, "E the bar is held by the job, not lost")
-	has(smith.formspec, ";Cancel]", "E the button is Cancel while it runs")
-	has(smith.formspec, "Enchanting…", "E the indicator")
-	says(smith.formspec, "Steel Sword", "E the job's label names the item")
+	-- Round 57 layout C: the job strip's stop button and one line naming the
+	-- enchant and the item.
+	has(smith.formspec, FIELDS.stop .. ";■]", "E the stop button while it runs")
+	says(smith.formspec, "Steel Sword: Strength T3", "E the job's line")
+	-- (greyed: the slot is empty now)
+	has(smith.formspec, FIELDS.recheck .. ";Queue Enchant]", "E Enchant now reads Queue Enchant")
 	pass(4.9)
 	check(J.job_state(smith) ~= nil, "E not done at 4.9 s")
 	pass(0.1)
@@ -1048,14 +1051,15 @@ do
 	check(not ok, "E a refused begin refuses the start")
 	check(same_item(smith.inv:get_stack(TARGET, 1), sword), "E ... the item back in its slot")
 	eq(total(smith, "grug_materials:steel_bar"), bars, "E ... and the materials back")
-	-- A second job cannot start while one runs.
+	-- Round 57: a second job waits in the queue (tools/r57_craft).
 	ok = J.start_operation(smith, STR_T3.id)
 	check(ok, "E an enchant starts")
 	put(smith, TARGET, 1, crafted("grug_gear:sword_steel"):to_string())
 	ok, reason = J.start_operation(smith, STR_T3.id)
-	eq(reason, "A crafting job is already running.", "E one job at a time")
-	pass(5)
-	eq(J.job_state(smith), nil, "E done")
+	check(ok and #J.queue_state(smith) == 1, "E a second enchant waits in the queue")
+	check(smith.inv:get_stack(TARGET, 1):is_empty(), "E ... with its item out of the slot")
+	pass(10)
+	eq(J.job_state(smith), nil, "E both done")
 	clear(smith)
 end
 
@@ -1192,10 +1196,9 @@ do
 	eq(job and job.finish - job.start, 3, "U 1 s per level")
 	eq(total(smith, "grug_materials:steel_bar"), 5, "U the bars are held by the job")
 	eq(smith.inv:get_stack(TARGET, 1):is_empty(), true, "U the item left the slot")
-	says(smith.formspec, "Steel Sword +3 levels", "U the job's label")
-	has(smith.formspec, "Upgrading…", "U the indicator says Upgrading…")
+	says(smith.formspec, "Steel Sword +3 levels", "U the job's line")
 	lacks(smith.formspec, "Crafting…", "U ... not Crafting…")
-	has(smith.formspec, FIELDS.stop .. ";Stop]", "U Stop while it runs")
+	has(smith.formspec, FIELDS.stop .. ";■]", "U the stop button while it runs")
 	pass(3)
 	eq(J.job_state(smith), nil, "U done after 3 s")
 	local out = result_of(smith, "grug_gear:sword_steel")
@@ -1359,7 +1362,8 @@ local function rects(part)
 	end
 	return out
 end
-local COLUMNS = {{0.2, 5.2}, {5.4, 10.2}, {10.4, 13.3}}
+-- (Round 57 layout C: the box spans to the frame's edge.)
+local COLUMNS = {{0.2, 5.2}, {5.4, 13.3}}
 local function geometry_ok(fs, label)
 	local ok = true
 	for _, r in ipairs(rects(content(fs))) do
@@ -1375,9 +1379,10 @@ local function geometry_ok(fs, label)
 						:format(label, r.name, r.text or "", r.x, r.y, right))
 				end
 			end
-			-- The box's own elements end above the button.
-			local button_y = grug_jobs.CRAFT_BOX.y + grug_jobs.CRAFT_BOX.h - 0.75
-			if r.x >= 5.4 and r.x < 10.2 and r.name == "label" and
+			-- The box's own labels end above its bottom row (the big button,
+			-- the levels row; Round 57), which ends above the job strip.
+			local button_y = grug_jobs.CRAFT_STRIP_Y - 0.1 - grug_jobs.CRAFT_ACTION.h
+			if r.x >= 5.4 and r.name == "label" and r.y < button_y - 1e-6 and
 					r.y + r.h > button_y + 1e-6 then
 				ok = check(false, ("%s: label %q at %.2f runs into the button"):format(label,
 					r.text or "", r.y))
@@ -1393,8 +1398,10 @@ local function box_part(fs)
 	local part = content(fs)
 	-- The boxes end a gap above the short view (Round 45 PT2 follow-up).
 	local h = grug_jobs._fs_number(grug_jobs.CRAFT_BOX.h)
-	local from = part:find("box[5.4,0.95;4.8," .. h .. ";", 1, true)
-	local to = part:find("box[10.4,0.95;2.9," .. h .. ";", 1, true)
+	local from = part:find("box[5.4,0.95;7.9," .. h .. ";", 1, true)
+	-- (up to the job strip's rule, Round 57)
+	local to = part:find("box[5.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1) ..
+		";7.5,0.03;", 1, true)
 	return from and to and part:sub(from, to - 1) or ""
 end
 do

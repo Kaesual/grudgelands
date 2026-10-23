@@ -177,6 +177,9 @@ for _, fn in ipairs(callbacks.loaded) do fn() end
 
 local J = grug_jobs
 J.refresh_crafting_page = function(player) refreshes[#refreshes + 1] = player:get_player_name() end
+-- Round 57: the join's tier catch-up asks the profession tiers (state.lua is
+-- not loaded here; tools/r57_craft has the tier unlock).
+grug_jobs.profession_level = function() return 0 end
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/basic_unlock.lua")
 eq(#callbacks.step, 1, "S one globalstep")
 
