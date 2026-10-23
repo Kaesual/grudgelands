@@ -85,11 +85,15 @@ local function frame(player, shot)
 		for _, socket in ipairs(grug_core.settlement_sockets_at(shot.id)) do
 			if socket.role == "lift" then lift = socket.pos end
 		end
-		player:set_pos(vector.new(lift.x - 4 * side, lift.y + 3, lift.z + 6 * side))
-		face(player, lift, 0.35)
+		-- five nodes from the lift towards the camp's centre, a little up
+		local dx, dz = anchor.x - lift.x, anchor.z - lift.z
+		local d = math.sqrt(dx * dx + dz * dz)
+		player:set_pos(vector.new(lift.x + 5 * dx / d, lift.y + 3, lift.z + 5 * dz / d))
+		face(player, lift, 0.45)
 	else
-		player:set_pos(vector.new(anchor.x, anchor.y + 16, anchor.z + 27 * side))
-		face(player, anchor, 0.5)
+		-- high over the gate side, so no tree outside the camp stands between
+		player:set_pos(vector.new(anchor.x, anchor.y + 21, anchor.z + 17 * side))
+		face(player, anchor, 0.85)
 	end
 end
 
