@@ -166,13 +166,15 @@ local function page_bytes()
 	for _, entry in ipairs(basic.ingredients) do inv:add_item("main", entry.item .. " " .. entry.n * 5) end
 	context.grug_craft.selected = basic.id
 	local sent = player.sent
-	click({[F.qty] = "5", [F.go] = "Craft now"})
+	-- (Round 57: the big button carries the build's serial)
+	click({[F.qty] = "5", [F.go .. "_" .. context.grug_craft.serial] = "Craft ×5"})
 	check(J.job_state(player) ~= nil, "the job starts from the page")
 	check(player.sent == sent + 1, "the start sends once")
 	fs = build("a page during a job, the recipe chosen")
 	check(fs:find("animated_image[", 1, true) ~= nil, "the progress bar")
 	sent = player.sent
-	click({[F.stop] = "Stop"})
+	-- (Round 57: the stop button names the running job)
+	click({[J.stop_field(J.job_state(player))] = "■"})
 	check(J.job_state(player) == nil, "Stop cancels")
 	check(player.sent == sent + 1, "the cancel sends once")
 	core.remove_detached_inventory("r45ui_probe")

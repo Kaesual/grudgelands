@@ -30,6 +30,9 @@ row, is cleared on the helm sheet of every cloth tier and of leather T1-T5
 (armorlib.CHIN_TIERS) after the tier copy; leather T6 (the veil) and metal
 keep theirs. A helm sheet shared by a chin-strip tier and another tier stops
 the assembly. A painter that already leaves the strip open is unaffected.
+Round 57 (lane FIX56, ruling 24): the strip continues under the chin, the
+helm bottom face's rows in front of the neck (armorlib.chin_under), cleared
+on the same sheets.
 
 Round 56 (lane HOODFINISH): the hood art. src/hood-<drop>/build.py is the hood
 drop's painter, as delivered (GPT-6 Astra, CC0), with its inputs (source.zip,
@@ -122,7 +125,8 @@ def lay_icons(files, tiers, drops, picks):
 
 
 def clear_chin(files, tiers):
-    """Clear the chin strip (armorlib.chin_row) on the helm sheets of the chin-strip tiers (Round 56 ruling 17)."""
+    """Clear the open chin (armorlib.chin_texels: the strip, Round 56 ruling 17, and the strip under the chin,
+    Round 57 ruling 24) on the helm sheets of the chin-strip tiers."""
     from io import BytesIO
     helm = next(b for b in L.load_catalog()["boxes"] if b["id"] == "helm")
     for line in L.LINES:
@@ -136,7 +140,7 @@ def clear_chin(files, tiers):
                     sys.exit(f"{rel}: worn by {', '.join(tids)}: chin-strip and closed tiers share one helm sheet")
                 continue
             im = Image.open(BytesIO(files[rel])).convert("RGBA")
-            for xy in L.chin_row(helm):
+            for xy in sorted(L.chin_texels(helm)):
                 im.putpixel(xy, (0, 0, 0, 0))
             buf = BytesIO()
             im.save(buf, format="PNG")

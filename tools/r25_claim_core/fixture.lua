@@ -1189,8 +1189,12 @@ if seed ~= "none" then
 		" housing adds %.0f ns (0 claims) and %.0f ns (%d claims)"):format(#positions,
 		inside, full_model.claim_count(), best[2] - best[1], best[3] - best[1],
 		full_model.claim_count()))
-	-- A protected answer must match: claimed positions refuse "probe".
-	check(fifty_fn(positions[1], "probe") == (full_model.claim_at(positions[1]) ~= nil),
+	-- A protected answer must match: claimed positions refuse "probe", on top
+	-- of grug_core's own answer (Round 57 FIX56: bay shore water became claim
+	-- ground, so the first sampled position now lies in the other faction's
+	-- home, which grug_core refuses by itself).
+	check(fifty_fn(positions[1], "probe") == (base_fn(positions[1], "probe") or
+		full_model.claim_at(positions[1]) ~= nil),
 		"benchmark chain answers like the model")
 end
 

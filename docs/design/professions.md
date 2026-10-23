@@ -183,8 +183,21 @@ Basic lists what the character has held the ingredients of (Round 47,
   line, "New recipe: Torch" or "New recipes: Torch and 4 more". The first
   scan of a character (a new one at its first join, an existing one at its
   first login after the update) is silent. The held set lives in player
-  meta `grug_jobs:held` (only the tokens a Basic recipe names). Search,
-  pages and "Craftable only" work on the listed recipes. Basic and
+  meta `grug_jobs:held` (only the tokens a Basic recipe names). Since
+  Round 57 (ruling 6) a profession tier also lists, recursively, every
+  Basic recipe its recipes and enchants or upgrades need (Tailor T1: Patch
+  Bolt, then Thread): for each ingredient the Basic recipes that make it
+  (for a group ingredient, those of every member), then theirs. A step that
+  turns a product back into its own ingredient never counts (a block from
+  its stairs or bars, sand from sandstone: a Basic recipe X ← Y is left out
+  when another makes Y from X). The tier unlocks at a learn (tier 1), at a
+  tier advance and at `/prof` (tiers 1..N), with the scan's feed line; a
+  character already past a tier catches up silently at its join. The
+  unlocked set lives in player meta `grug_jobs:basic_unlocked` (the held
+  set's format, recipe ids) and stays when the profession is unlearned.
+  Search, pages, "Craftable only" and "Favorites only" (the recipes the
+  player marked with the star, Round 57 ruling 7; both on: the craftable
+  favourites) work on the listed recipes. Basic and
   Cooking are there from the start; the two primaries and Alchemy start
   empty and are learned at the capital trainers (spec §2.16).
 - **Durations** (spec §2.30), per crafted item; a job lasts quantity ×
@@ -205,15 +218,30 @@ Basic lists what the character has held the ingredients of (Round 47,
   (`grug_jobs.can_craft_recipe`), and its station within 4 nodes when the job
   starts (§1.5). Basic is open to everyone.
 - **Crafting jobs** (Round 45, spec §2.19–2.22, §4.4; `grug_jobs/jobs.lua`):
-  every craft is a timed job of the player's own, one job per player, the
-  whole quantity as one job (quantity × duration).
+  every craft is a timed job of the player's own, the whole quantity as one
+  job (quantity × duration).
+  - **The queue** (Round 57 rulings 3–4): at most **5 jobs** per player,
+    the running one included; crafts, enchants and upgrades alike. A job
+    accepted while one runs waits ("Queue ×N"); a sixth is refused with
+    "The crafting queue is full (5 jobs)." and nothing is taken. Its checks
+    (below) run when it is queued and its ingredients (and an enchant's or
+    upgrade's target item) are taken then, so a waiting job starts without
+    the player at the station. The waiting jobs run one after the other on
+    the wall clock, each starting when the one before ended, online by the
+    timer and offline at the login, which works off every job that would
+    have finished by then. No reordering and no automatic crafting of
+    missing ingredients. A waiting job can be cancelled in the queue view:
+    its ingredients and target come back whole, or the cancel is refused
+    with "Not enough inventory space to cancel" when they do not fit.
   - **Start:** the profession gate, the station within 4 nodes (checked only
-    at the start), the ingredients, and room in the inventory for the whole
-    order once its ingredients are taken (Round 47 ruling 18: the slots the
-    take empties count, partial stacks of the same item too; the check
-    changes nothing). A quantity above what the ingredients or the room
-    allow is refused with the maximum ("… quantity reduced to N"); none at
-    all reads "Not enough ingredients" or "Not enough room in inventory".
+    at the start or the queueing), the ingredients, and room in the
+    inventory for the whole order once its ingredients are taken (Round 47
+    ruling 18: the slots the take empties count, partial stacks of the same
+    item too; the check changes nothing; it counts the inventory as it is,
+    not the outputs of the jobs before it). A quantity above what the
+    ingredients or the room allow is refused with the maximum ("… quantity
+    reduced to N"); none at all reads "Not enough ingredients" or "Not
+    enough room in inventory".
   - **Ingredients** are consumed at the start: the bags first, then
     `main[9..]`, the hotbar last. Only stacks without metadata count, for item
     and group entries alike; the list's ×N uses the same rule, and where one
@@ -228,27 +256,32 @@ Basic lists what the character has held the ingredients of (Round 47,
     is delivered at login, when the Crafting tab opens, and by a timer at
     each craft's end while the player is online.
   - **The overflow:** what no longer fits (the inventory filled during the
-    job) goes to four take-only slots (`grug_craft_out`, every player),
-    shown only while they hold something; they move into the inventory by
-    themselves as soon as there is room (a poll each second, only while
-    they hold something). What fits there neither drops at the player's
-    feet.
+    job) goes to the take-only overflow (`grug_craft_out`, four slots for
+    every player), shown only while it holds something; it moves into the
+    inventory by itself as soon as there is room (a poll each second, only
+    while it holds something). Since Round 57 nothing drops: when the four
+    slots are full the list grows by a slot per stack (five queued jobs may
+    finish offline into a full inventory), and the drain shrinks it back to
+    four.
   - **The end:** the profession XP and the achievement counters count the
     whole job, the craft sound plays, and an online player gets the feed
     line "Hearty Stew ×10 is ready".
-  - **Cancel/Stop** first delivers the crafts finished by then, then refunds
+  - **Stop** (the running job) first delivers the crafts finished by then, then refunds
     the ingredients of the crafts not yet made (each ingredient's own kinds;
     with no craft delivered every consumed stack and an enchant's or
     upgrade's target item) into the inventory, or is refused with "Not
     enough inventory space to cancel" when the refund does not fit. The
     delivered crafts count for XP and achievements. A Stop after the end
-    time completes the job instead.
+    time completes the job instead. After a Stop the next waiting job
+    starts at once.
   - **Enchants and upgrades** (Round 45 lane EU, spec §2.24, §2.26; the
     boxes are [inventory_equipment.md](inventory_equipment.md) §1) are jobs on
     the item in the Crafting tab's **target slot** (`grug_craft_target`, one
-    piece of equipment): the start takes the item in with the materials, so
-    while the job runs it lives only in the job; the result goes into the
-    inventory (or the overflow) at its end; a cancel returns the item. The
+    piece of equipment): the start (or the queueing) takes the item in with
+    the materials, so while the job runs or waits it lives only in the job
+    and the slot is free for the next item; the result goes into the
+    inventory (or the overflow) at its end; a stop or a cancel returns the
+    item. The
     start judges the item as it is then (family, tier, channels, the cap) and
     needs the profession at the operation's tier, the station nearby and room
     for the result in the inventory once the materials are taken. An enchant
@@ -259,8 +292,9 @@ Basic lists what the character has held the ingredients of (Round 47,
   the current profession tier, awarded at its end; a saturated profession
   advances at the end of its next counting job once the character band
   allows it. Unlearning a profession while its job runs lets the job finish
-  without XP. The list, search and ×N of the Crafting tab, its crafting
-  box, overflow and progress bar: [inventory_equipment.md](inventory_equipment.md)
+  without XP, and so do its waiting jobs. The list, search and ×N of the
+  Crafting tab, its crafting box, overflow, job strip and queue view:
+  [inventory_equipment.md](inventory_equipment.md)
   §1 "The Crafting tab" (spec §2.17–2.18 and §4.2–4.5); the professions
   overview sits in its box.
 - Unlearning wipes that profession's level and current-tier count. Learning

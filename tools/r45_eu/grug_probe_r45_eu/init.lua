@@ -132,7 +132,7 @@ local function run(done)
 	-- (the first primary slot is tab 3)
 	local page = J.crafting_page_content(player, context)
 	log(("bytes: the Crafting page with the enchant box %d"):format(#page))
-	check(page:find("grug_craft_ench_go;Enchant now]", 1, true) ~= nil,
+	check(page:find("grug_craft_ench_go_%d+;Enchant now%]") ~= nil,
 		"enchant: the box offers Enchant now")
 	local expected = Q.operation_plan(op, sword, player).output
 	local started, reason = J.start_operation(player, op.id)

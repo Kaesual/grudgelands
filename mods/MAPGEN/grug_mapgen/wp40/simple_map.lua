@@ -431,6 +431,28 @@ return function(zone_field, terrain_field)
 				return "deep_ocean"
 			end
 
+			-- Bay shore water (Round 57 FIX56, ruling 23): the id of the bay a
+			-- sea column belongs to for gameplay, or nil. The belt above also
+			-- takes the strips along a bay's shore outside its body (the coast
+			-- noise drowns a little more, and the land primitives' own edges
+			-- leave strips of plain sea; the Round 57 scan of the bays found
+			-- them within about 60 nodes of the body). They are the bay's water
+			-- inside the mainland footprint (mounts.md §4.1), so the gameplay
+			-- water class (zones.lua water_class_at) reads sea within
+			-- BAY_SHORE_REACH of the body as the bay's, up to the same mouth cut
+			-- as the body's: the outer bay-mouth caps stay belt and open sea.
+			-- Generation keeps the class above.
+			local BAY_SHORE_REACH = 128
+			local function bay_shore_at(x, z)
+				local zone, coast = sample(x, z)
+				if zone ~= 0 or coast <= -shelf_width * 8 then return nil end
+				local bay_index, _, warped_z = field.bay_water_at(x, z, BAY_SHORE_REACH)
+				if not bay_index then return nil end
+				local bay = source.bays[bay_index]
+				if bay_mouth_passed(bay, warped_z, x, mouth_noise) then return nil end
+				return bay.id
+			end
+
 			-- A dragon channel's floor (ruling 6): its weight at (x, z) (1 inside
 			-- the channel, easing to 0 over CHANNEL.ramp nodes beyond its edge)
 			-- and the floor y it lifts the sea floor to, CHANNEL.depth_min to
@@ -790,6 +812,12 @@ return function(zone_field, terrain_field)
 
 			function session.water_class_at(x, z)
 				return (classification_values_at(x, z))
+			end
+
+			-- See `bay_shore_at` above: the bay id of a coastal-belt column that
+			-- is bay water for gameplay, else nil.
+			function session.bay_shore_at(x, z)
+				return bay_shore_at(x, z)
 			end
 
 			function session.macro_region_at(x, z)

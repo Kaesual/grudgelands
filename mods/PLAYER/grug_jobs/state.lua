@@ -71,6 +71,11 @@ function grug_jobs.learn(player, profession, quiet)
 	end
 	set_int(meta, META_LEVEL .. profession, 1)
 	set_int(meta, META_CRAFTS .. profession, 0)
+	-- Tier 1 unlocks the Basic recipes its recipes need (Round 57 ruling 6,
+	-- basic_unlock.lua).
+	if grug_jobs.unlock_basic_tiers then
+		grug_jobs.unlock_basic_tiers(player, profession, 1, 1, quiet)
+	end
 	local text = "Learned " .. definition.name .. "."
 	if quiet then return true, text end
 	message(player, text)
@@ -149,6 +154,9 @@ local function record_craft(player, profession, tier, crafts)
 		set_int(meta, META_CRAFTS .. profession, 0)
 		message(player, grug_jobs.PROFESSIONS[profession].name ..
 			" advanced to tier " .. (current + 1) .. ".")
+		if grug_jobs.unlock_basic_tiers then
+			grug_jobs.unlock_basic_tiers(player, profession, current + 1, current + 1)
+		end
 		return true, current + 1, gained
 	elseif count >= threshold and gained > 0 then
 		message(player, grug_jobs.PROFESSIONS[profession].name ..
@@ -288,6 +296,9 @@ function grug_jobs.admin_set(player, profession, tier, slot)
 	local granted = math.max(1, math.min(tier, grug_jobs.character_tier(player), 6))
 	set_int(meta, META_LEVEL .. profession, granted)
 	set_int(meta, META_CRAFTS .. profession, 0)
+	if grug_jobs.unlock_basic_tiers then
+		grug_jobs.unlock_basic_tiers(player, profession, 1, granted, true)
+	end
 	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
 	return true, granted, before
 end

@@ -185,7 +185,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Since Round 44 every slot's name is also printed beside it in the gear
     box; the tooltips stay.
 - **The Crafting tab** (Round 45, [UI rework spec](../planning/ui-crafting-rework-plan.md)
-  §2.16–2.22, §4.2–4.5; real coordinates; the short view below): the 3×3
+  §2.16–2.22, §4.2–4.5; real coordinates; the short view below; since
+  Round 57 **layout C**, [Round 57 plan](../planning/round57-plan.md)
+  rulings 1–2 and 7: the list on the left, one wide box on the right, the
+  right column gone): the 3×3
   grid and the recipe books are gone. Along the top the **area tabs**:
   Basic (the default), Cooking, the two primary slots ("Primary 1" and "2"
   while empty) and Alchemy, beside them the chosen area's tier progress
@@ -202,14 +205,20 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     on the server, at most once a second (a quicker request is ignored
     without a resend); **×** between the field and Search (0.45.1) empties
     the field and shows the whole list from page 1 at once, outside that
-    limit; **Craftable only** keeps the rows with ×N ≥ 1. The tab opens
+    limit; **Craftable only** keeps the rows with ×N ≥ 1 and **Favorites
+    only** beside it the recipes marked with the star (Round 57; both on:
+    the craftable favourites; an area without one says how to mark one).
+    The favourites are saved per character (player meta
+    `grug_jobs:favorites`). The tab opens
     with no text field focused, so "i" closes it (0.45.1): every build
     sets the focus to Search (`set_focus[…;true]`), except the answer to
     Enter in a text field, which leaves the focus there; closing the
     window after such an answer resends the page once.
-  - **Middle, the crafting box** in three stacked areas (Round 45 playtest
-    fix 3). **Top:** the chosen recipe's output (its name in up to two
-    lines, area, tier, "makes N"). **Middle:** the made item's description
+  - **Right, the crafting box** in three stacked areas (Round 45 playtest
+    fix 3), above the job strip. **Top:** the chosen recipe's output (its
+    name in up to two lines, area, tier, "makes N") and at the top right
+    the favourite **star** (★ gold when marked, ☆ grey when not; a click
+    toggles it). **Middle:** the made item's description
     as its tooltip reads, without the name line and without colours, in a
     read-only text area that scrolls when long (a scroll sends nothing) and
     takes the room the rest leaves; left out when the tooltip is only the
@@ -217,7 +226,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     the job makes (Common, no enchants, the tier's base item level, stats,
     requirement); a raw dish shows the cooked dish of its furnace recipe and
     "Must be cooked in a furnace to become edible."; anything else its own
-    description. Below it the ingredients with icons and have/need for the
+    description. Below it "Ingredients (have/need)" (with **Recipe
+    details** at its right once the details page exists, Round 57 lane
+    DETAILS), the ingredients with icons and have/need for the
     field's quantity, "Max: N" ("(inventory room)" when the room limits it), the
     warnings, the note of the last refused action and the XP hint:
     "Crafting this will give you a <profession> experience point" in green
@@ -233,14 +244,17 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (Round 46, the user's request), a **dropdown** replaces its name:
     "Automatic" (the first matching stacks in the take order), then each
     carried kind with its count. The choice drives Max, the list's ×N of
-    the recipe, **Craft now** and the take; it is page state only (never
+    the recipe, **Craft ×N** and the take; it is page state only (never
     saved), choosing another recipe starts it on Automatic, and a chosen
     kind no longer carried, or a group left with one kind, falls back to
-    Automatic on the next build. **Bottom:** the **quantity row** "Quantity [−][field][+]
-    [Max]" (stackable outputs only, default 1), below it **Craft now**. A missing station reads "Requires: <station> nearby" and
-    a missing profession tier its reason; both draw **Craft now** greyed,
-    and a click on it only rebuilds the page (checking the station again).
-    While a job runs the button is **Stop**. Without a chosen recipe the box shows the professions overview
+    Automatic on the next build. **Bottom:** one row: the **quantity row**
+    "Quantity [−][field][+] [Max]" (stackable outputs only, default 1) and,
+    right-aligned beside it, the big button **Craft ×N** (N the field's
+    quantity), which reads **Queue ×N** while a job runs. A missing station
+    reads "Requires: <station> nearby", a missing profession tier its reason
+    and a full queue "The crafting queue is full (5 jobs)."; each draws the
+    button greyed, and a click on it only rebuilds the page (checking the
+    station again). Without a chosen recipe the box shows the professions overview
     (per known profession its tier, "Crafts: n/m toward tier N+1",
     "Highest tier reached." at T6 and the level-cap note, as the Character
     tab did until Round 45; rows that do not fit point to the area tabs).
@@ -248,56 +262,78 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     §4.6): a learned primary area shows the buttons "Enchant an item" and
     "Upgrade an item" below its list (ordinary buttons; the open box's one
     in the gold selection colour); a recipe row or an area tab returns to
-    the recipe box. Both boxes draw the **target slot** `grug_craft_target` (one piece
+    the recipe box. Both boxes end above the job strip, like the recipe
+    box. Both boxes draw the **target slot** `grug_craft_target` (one piece
     of equipment; shift-click moves an item of `main` into it and back out
     through the shift-click inbox, §3; placing or taking it resends the
     page). The **enchant box**: the slot, an arrow,
     the preview (the result's image, its computed description as the
-    tooltip), the profession's enchants valid for the item up to the
+    tooltip) and right of them "Valid enchants": the profession's enchants
+    valid for the item up to the
     profession tier, best tier first, each with the value it gives on this
-    item ("T5 prefix: +11 Strength"), the chosen one's materials with
+    item ("T5 prefix: +11 Strength"); below them the chosen one's materials with
     have/need, the enchant it replaces ("Replaces prefix: +21 Strength
     (T7)", Round 56; orange with the overwrite warning "Replaces T7
     Strength with T6 Strength." as its tooltip when that is a higher
-    tier), the XP hint (at the station) and **Enchant now** (5 s), which turns into
-    **Cancel**. The **upgrade box**: the slot, the item level and the cap
-    ("Cap 30 (Weaponsmith tier 3)"), **+N levels** with **Max** (to the cap,
-    as far as the materials pay), the resulting item level, the materials
-    for N levels, and **Upgrade now**; a result that needs a higher level
+    tier), the XP hint (at the station) and, right-aligned in the bottom
+    row, **Enchant now** (5 s), which reads **Queue Enchant** while a job
+    runs. The **upgrade box**: the slot, the item level and the cap
+    ("Cap 30 (Weaponsmith tier 3)"), the resulting item level, the
+    materials for N levels, and the bottom row **+N levels** with **Max**
+    (to the cap, as far as the materials pay) and **Upgrade now** (**Queue
+    Upgrade** while a job runs); a result that needs a higher level
     than the player's shows the permanent warning "The target item level
     exceeds your level, you won't be able to use this item before you have
-    reached level N." and the yellow **Upgrade anyway**. The server learns
+    reached level N." and the yellow **Upgrade anyway** (**Queue
+    anyway**). The server learns
     N only with a click, so a click for an item and count not yet shown
     with the warning shows it and the next one starts (spec §4.3); a count
     above the cap or the materials is lowered with its note. An item at or
     above its cap reads "Already at the cap (item level C)." and takes no
-    level. The running job reads "Enchanting…" with the item's name, or
-    "Upgrading…" with "Steel Sword +3 levels". An item left in the slot
+    level. A job's line (below the bar, in the queue view) reads "Steel
+    Sword: Strength T3" for an enchant and "Steel Sword +3 levels" for an
+    upgrade. An item left in the slot
     goes back into the inventory at join and when a profession is unlearned
     (the give helper, then the overflow; with no room anywhere it stays in
     the slot).
   - **The quantity field** (spec §4.3): Enter recalculates and never starts;
-    Craft now above the maximum lowers the field to it with the job's note
+    Craft ×N above the maximum lowers the field to it with the job's note
     ("Not enough ingredients — quantity reduced to N") and starts nothing;
     the field echoes the last value the server knows on every resend.
     **−** lowers it by one only above 1 (from a value above the maximum
     straight to the maximum, at least 1), **+** raises it by one only below
     the maximum (0.45.1); a value that is not a whole number of 1 or more
     counts as 1, so − makes it 1 and + makes it 2.
-  - **Right, the job and the overflow:** the job: "No job running", or the
-    green "Crafting…" indicator, the job's label ("Hearty Stew ×10") and the
-    **progress bar**, one `animated_image[]` of 64 fill and 32 full frames
-    (`grug_jobs_progress_bar.png`, generated by `tools/r45_ui/gen_progress_bar.py`)
-    that runs 1.5 × the job time and starts at the frame of the elapsed
-    time on every build, so it is full at the end and stays full through a
-    late resend. Recipes stay browsable while a job runs; a second job
-    cannot start. Below the job, only while it holds something, the
-    **overflow** (Round 47): "Overflow", its four take-only slots
-    (shift-click moves a stack into the inventory in the give order, through
-    the shift-click inbox, §3) and "These move into your inventory when
-    there is room."
+  - **The job strip** at the box's bottom (Round 57 layout C), the same
+    under every box (another recipe, the overview, the enchant and upgrade
+    boxes, the queue view, the details page): a rule; while idle "No job
+    running"; while a job runs the **progress bar**, one `animated_image[]`
+    of 64 fill and 32 full frames (`grug_jobs_progress_bar.png`, generated
+    by `tools/r45_ui/gen_progress_bar.py`) that runs 1.5 × the job time and
+    starts at the frame of the elapsed time on every build, so it is full at
+    the end and stays full through a late resend; beside it the small
+    **stop button** (■; it stops the running job, professions.md §1.2);
+    exactly one line below it naming the job ("Aspen Wood Planks ×40"),
+    **no countdown** (the bar is the client's animation; the page is never
+    refreshed by the second); at the right **View Queue [N]** (N the
+    waiting jobs), in the gold selection colour while the queue view is
+    open. Recipes stay browsable while a job runs. Above the strip, only
+    while it holds something, the **overflow** (Round 47): "Overflow —
+    empties into your inventory by itself" and one row of its take-only
+    slots (shift-click moves a stack into the inventory in the give order,
+    through the shift-click inbox, §3); a list grown beyond six slots shows
+    five and "+N more".
+  - **The queue view** (Round 57, wireframe "Variant C open"): opened by
+    View Queue in the box: "◀ Back to recipe", "Crafting queue", "N of 5
+    slots" (the running job included), then each waiting job in order with
+    its icon, its line, its area ("Basic", "Weaponsmith · enchant") and
+    **✕**, which cancels it and returns its ingredients and target item;
+    below, "Ingredients and the target item are taken when a job is queued;
+    ✕ returns them. The queue keeps running while you are offline." No
+    reordering. A recipe row, an area tab or a box button also leave it.
   - **Sends:** a click answers with one resend; a job sends the page at its
-    start, its end (only while the player's current page is Crafting) and a
+    start, its end (only while the player's current page is Crafting; the
+    next waiting job starts with it, so the bar restarts) and a
     cancel; a craft delivered into the inventory sends nothing (the lists
     update on their own), the overflow appearing or emptying sends it once;
     a pure scrollbar event of the view sends nothing.
@@ -605,8 +641,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   into the inventory through the give helper (Round 47 ruling 18). What no
   longer fits lands in the overflow `grug_craft_out`, four take-only slots
   created for every player at join (nothing is put, moved or swapped into
-  it), which drain into the inventory through the give helper when there is
-  room; a cancel's refund goes through the give helper too.
+  it; since Round 57 it grows by a slot when they are full instead of
+  dropping anything, and shrinks back when drained), which drain into the
+  inventory through the give helper when there is room; a cancel's refund
+  goes through the give helper too.
 - Professional components such as settings are never Basic inputs.
 - Named enchant application and replacement need the owning profession's
   station nearby. Weaponsmith and Armorsmith share one Forge; Leatherworker

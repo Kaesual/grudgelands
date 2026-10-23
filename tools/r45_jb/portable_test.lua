@@ -8,7 +8,7 @@
 -- of storage.lua), the REAL grug_jobs registry.lua, state.lua and jobs.lua
 -- under a stub engine with a wall clock, the microsecond counter, core.after
 -- and player meta. Checks:
---   S  the start checks: busy, unknown recipe, quantity, profession, the
+--   S  the start checks: unknown recipe, quantity, profession, the
 --      station within 4 nodes (once, at the start), ingredients (none,
 --      reduced), the room for the whole order in the inventory once the
 --      ingredients are taken (none, reduced; partial stacks counted, the
@@ -40,7 +40,8 @@
 --   V  the overflow: what no longer fits goes to the output list, which
 --      drains into the inventory by a poll only while it holds something
 --      (no poll otherwise), the page resend when it appears and empties,
---      the feet for the overflow's own overflow, a drain after a join;
+--      a slot more for the overflow's own overflow (Round 57: nothing
+--      dropped), a drain after a join;
 --   A  the output list: created at join for every player, take-only (put,
 --      move in and swaps refused, taking out allowed), Take all through the
 --      give helper with the leftover kept.
@@ -630,8 +631,10 @@ do
 	check(start and start.name == "s1" and start.recipe == sword.id and start.pos and
 		start.pos.x == 4 and start.pos.y == 6 and start.pos.z == -4,
 		"S the start hook gets the forge the job starts at")
-	ok, reason, info = J.start_job(p, torch.id, 1)
-	check(not ok and info.code == "busy", "S one job per player")
+	-- Round 57: a second job waits in the queue (tools/r57_craft has the
+	-- queue); a refused start runs no start hook.
+	ok, reason, info = J.start_job(p, torch.id, 0)
+	check(not ok and info.code == "quantity", "S a refused start")
 	eq(#starts - starts_before, 1, "S a refused start runs no start hook")
 	-- The station counts once, at the start.
 	nodes = {}
@@ -978,10 +981,12 @@ do
 		target = target:to_string(), duration = 5})
 	eq(copy.finish - copy.start, 5, "K begin_job sets the times")
 	local stored = e.meta:get_string(J.JOB_KEY)
-	local again, why = J.begin_job(e, {kind = "test", consumed = {"t:oak 1 0"}, duration = 1})
-	check(again == nil and why == "A crafting job is already running.",
-		"K begin_job refuses while a job runs")
-	eq(e.meta:get_string(J.JOB_KEY), stored, "K the refused begin_job kept the stored job")
+	-- Round 57: a second begin_job waits in the queue (tools/r57_craft).
+	local again = J.begin_job(e, {kind = "test", consumed = {"t:oak 1 0"}, duration = 1})
+	check(again and again.queued, "K begin_job queues while a job runs")
+	eq(e.meta:get_string(J.JOB_KEY), stored, "K the queued begin_job kept the stored job")
+	check(J.cancel_queued(e, again.id), "K the queued one cancels")
+	eq(count_of(e, "t:oak"), 1, "K ... and its material comes back")
 	ok = J.cancel_job(e)
 	check(ok, "K the target job cancels")
 	eq(count_of(e, "t:gem"), 2, "K the materials back")
@@ -1213,7 +1218,8 @@ do
 	eq(#refreshes, 2, "V the open page is resent once, to drop the slots")
 	eq(#afters, 0, "V no poll once it is empty")
 	eq(count_of(p, "t:stew"), 23, "V no stew lost or duplicated (20 + 3)")
-	-- The overflow's own overflow drops at the player's feet.
+	-- Round 57: the overflow grows a slot instead of dropping at the feet
+	-- (tools/r57_craft: a queue's outputs into a full inventory).
 	local dropped_before = #dropped
 	put(p, "main", 30, "t:dirt 99")
 	fill(p, OUT, 1, 4, "t:stone 99")
@@ -1227,8 +1233,9 @@ do
 	run_timers()
 	advance(1)
 	run_timers()
-	eq(#dropped - dropped_before, 2, "V what fits nowhere drops at the feet, craft by craft")
-	eq(dropped[#dropped]:to_string(), "t:stew 1 0", "V ... one stew each")
+	eq(#dropped - dropped_before, 0, "V nothing drops at the feet")
+	eq(p.inv:get_size(OUT), 5, "V the overflow grew by a slot for the stews")
+	eq(stack_at(p, OUT, 5):to_string(), "t:stew 2 0", "V ... which holds both")
 	-- A rejoin starts one poll chain, never two.
 	leave(p)
 	advance(J.OVERFLOW_POLL)
@@ -1237,10 +1244,11 @@ do
 	join(p)
 	local polls = #afters
 	eq(polls, 1, "V one poll after a rejoin")
-	for index = 1, 4 do put(p, OUT, index, "") end
+	for index = 1, 5 do put(p, OUT, index, "") end
 	advance(J.OVERFLOW_POLL)
 	run_timers()
 	eq(#afters, 0, "V a list emptied by hand ends the poll")
+	eq(p.inv:get_size(OUT), 4, "V ... and the grown list shrinks back to 4")
 	J.refresh_crafting_page = nil
 end
 

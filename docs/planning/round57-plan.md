@@ -1,8 +1,8 @@
 # Round 57 — the crafting window, the quest foundation and the new start zones (0.57.0)
 
-Coordinator: Claude, 2026-10-23. Status: **draft**. The plan review (a fresh Opus, 2026-10-23) is folded in:
+Coordinator: Claude, 2026-10-23. Status: **running** (the user's go 2026-10-23). The plan review (a fresh Opus, 2026-10-23) is folded in:
 three blockers (the chain rules against unreworked files, zone-bound objectives in shared quests, the
-`*_departure` ids) and the important findings. The draft waits for the user's go.
+`*_departure` ids) and the important findings.
 
 The source is the discussion with the user on 2026-10-22 ([Round 56 plan §8](round56-plan.md#8-decided-for-later-rounds))
 and 2026-10-23, which ordered the next rounds:
@@ -33,6 +33,7 @@ findings are lane FIX56.
 | 1 | CRAFT | Opus | The crafting queue (crafts, enchants, upgrades), layout C, favourites, recursive Basic unlocks | the user's go |
 | 1 | DETAILS | Opus | The recipe details pages with their generated ingredient sources | the user's go (integrates after CRAFT merged) |
 | 1 | QSYS | Opus | Shared quests with several givers and text variants, choice rewards, story marking, completion text, the free-play validator rules, `repeatable` removed | the user's go |
+| 1 | ALLOY | Opus | Flat alloy and wood chains, Steel Bars craftable (added during the round, rulings 25–27) | CHAINDEPTH merged |
 | 2 | STARTQUESTS | Opus | The six start zones rebuilt on QSYS: structure, data and the reward pattern; placeholder texts | QSYS merged |
 | 3 | STARTTEXT | Astra | The texts of the new start-zone quests | STARTQUESTS' structure accepted by the user |
 | 3 | TEXTREVIEW | Opus | The text review with a suggestion page; the user picks | STARTTEXT |
@@ -143,6 +144,15 @@ pick page; nothing of it ships before Round 58.
     ids are already dropped, upgrade contract §4); old → new mapping only where it comes free.
 21. **"Quests keep their ids" is removed as a rule** (not only for this rework): quest ids change only for a good
     reason anyway. Items, achievements and waypoints keep theirs; unknown ids still never crash.
+
+### Recipes (2026-10-23, during the round, after the CHAINDEPTH report)
+
+25. **Alloys T4–T6 come straight from Steel:** Silversteel = Steel + Silver (as today), Embersteel = Steel +
+    Emberglass, Abyssal Steel = Steel + Abyssal Crystal. The chain no longer runs through the tier below.
+26. **The graded woods follow the same rule, with their item ids kept:** each grade is made from planks plus the
+    tier's ingredient instead of the grade below; Heartwood (T6) = planks + Abyssal Crystal.
+27. **Steel Bars (`xpanes:bar_flat`) become craftable from Steel Bars.** White and Yellow Dye get a source only if
+    something reachable needs them. The Water Bucket stays as it is.
 
 ### Process
 
@@ -444,7 +454,8 @@ town fixes. Its own plan follows after this round; these are its rulings. They r
 [Round 56 §8](round56-plan.md#8-decided-for-later-rounds).
 
 **The Miner's Guild**
-- One guild per faction, an essential political actor of its faction (its name and role come from STORYARC).
+- One guild per faction, an essential political actor of its faction: **The Charter of Stone** (The Accord) and
+  **The Oathdelvers** (The Throng), the user's pick 2026-10-23; their role comes from STORYARC.
 - A Miner's Guild building with NPCs stands in each of the six capitals (a template change).
 
 **The camps**
