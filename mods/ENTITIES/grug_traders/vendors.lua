@@ -355,7 +355,10 @@ local function vendor_def(vendor, texture)
 				vendor.open(clicker, vendor.nametag, self.object:get_pos(), faction)
 				return
 			end
-			grug_traders.open(clicker, vendor.name, self.object:get_pos(), faction)
+			-- The socket it stands on (plain strings): the camp vendor's repair
+			-- provider is that socket (grug_repair, providers.lua).
+			grug_traders.open(clicker, vendor.name, self.object:get_pos(), faction,
+				{settlement = self._grug_start, socket = self._grug_socket})
 		end,
 	}
 end
@@ -442,10 +445,14 @@ local PROFESSIONS = {
 	{kind = "culture", nametag = "Decor Merchant"},
 	-- Round 58: the Miner's Guild's camp vendor at every mining camp's
 	-- `vendor_camp` socket (settlements.md "Round 58 mining camps"). It buys
-	-- like every vendor and has no shelf of its own yet (an empty General
-	-- tab, no gear); lane CAMPNPC adds the trade-in, repair and the
-	-- reputation page.
-	{kind = "camp", nametag = "Camp Vendor"},
+	-- like every vendor, trades mining materials for reputation (`guild`:
+	-- the window's Trade-in mode, which it opens on), repairs (`repairs`:
+	-- grug_repair's camp vendor provider) and sells no copper goods: its Buy
+	-- mode is the reputation page (`guild_page`, grug_guild/vendor.lua), the
+	-- twelve consumables in six rows locked by rank. Like every profession
+	-- vendor it serves the faction of the settlement it stands in, the
+	-- camp's.
+	{kind = "camp", nametag = "Camp Vendor", guild = true, guild_page = true, repairs = true},
 }
 
 for _, row in ipairs(PROFESSIONS) do
@@ -460,6 +467,8 @@ for _, row in ipairs(PROFESSIONS) do
 		brackets = grug_traders.PROFESSION_BRACKETS[row.kind] and true or nil,
 		bracket_filter = type(grug_traders.PROFESSION_BRACKETS[row.kind]) ==
 			"string" and grug_traders.PROFESSION_BRACKETS[row.kind] or nil,
+		-- Round 58: the Miner's Guild's fields (trade.lua).
+		guild = row.guild, guild_page = row.guild_page, repairs = row.repairs,
 	-- The placeholder skin of a build without grug_visuals. A profession
 	-- vendor has no faction, so it falls back to the Accord guard texture and
 	-- the visuals mod replaces it with the settlement's race at activation.
@@ -504,6 +513,29 @@ for _, service in ipairs(CAPITAL_SERVICES) do
 		return service.entity
 	end)
 end
+
+-- THE MINER'S GUILD EXCHANGE (Round 58, miners_guild.md §5.2): the exchange
+-- counter of every capital's guild house. A guild vendor (`guild`: it opens
+-- on Trade-in) that buys like every vendor and sells nothing (no
+-- reputation page: the guild's goods are the camp vendors'). It takes over
+-- the house's inhabited counter socket (the hall socket contract,
+-- capital_services.GUILD_HALL `exchange`), as the Crownbinder takes over
+-- its plot's gate resident, and serves the capital's faction.
+register_vendor({
+	name = "grug_traders:guild_exchange",
+	kind = "guild_exchange",
+	nametag = "Miner's Guild Exchange",
+	-- No shelf of its own: an empty General tab and no gear (trade.lua says
+	-- where the guild's goods are sold).
+	stock = "guild_exchange",
+	guild = true,
+}, GUARD_TEXTURE.accord)
+for _, key in ipairs(capital_keys) do
+	grug_core.assign_service_socket(key, capital_services.GUILD_HALL.exchange, "guild_exchange")
+end
+grug_mobs.register_start_socket_role("guild_exchange", function()
+	return "grug_traders:guild_exchange"
+end)
 
 --
 -- Placement

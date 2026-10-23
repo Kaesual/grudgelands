@@ -100,3 +100,49 @@ for _, faction in ipairs({"accord", "throng"}) do
 		end
 	end
 end
+
+-- Round 58: the Miner's Guild's people (miners_guild.md §2, §11).
+--
+-- The guild leaders: one per capital, on the guild house's leader socket
+-- (the hall socket contract, grug_mapgen's capital_services.GUILD_HALL
+-- `leader`, read from there so its socket id has one owner), named as the
+-- story-arc decision names them; the capital's race and faction. Quest
+-- givers and turn-ins of the guild quests' follow-ups (lane GUILDQUESTS).
+-- A capital registers its sockets with the world (r7_loader), so the records
+-- follow the registry like the fortress givers'. (Named fields: the
+-- design tools read the fortress block's two-string rows as its roles.)
+local hall
+for _, row in ipairs({
+	{capital = "highcourt", title = "Alis Cartwright"},
+	{capital = "dur_brannoc", title = "Hadrin Beamset"},
+	{capital = "lethariel", title = "Caelir Veinward"},
+	{capital = "nhal_veyr", title = "Iven Lastshift"},
+	{capital = "gor_drazhak", title = "Drava Flintshoulder"},
+	{capital = "kezamba", title = "Ombali Ropekeeper"},
+}) do
+	if grug_core.settlement_socket_anchor(row.capital) then
+		hall = hall or dofile(core.get_modpath("grug_mapgen") .. "/wp13/capital_services.lua").GUILD_HALL
+		Q.register_npc("r58_guild_leader_" .. row.capital, {settlement = row.capital,
+			socket = hall.leader, title = row.title})
+	end
+end
+
+-- The foremen: one per mining camp and war camp (the camp module,
+-- grug_mapgen.mining_camps), on the camp's `quest_foreman` socket (the camp
+-- socket contract, settlements.md), titled "Foreman" (only story-relevant
+-- foremen get a name), of the camp's faction (its registered race). The
+-- role is the camp's tier, `foreman_t<tier>` (foreman_t2 ... foreman_t6;
+-- the deepest lift of a camp reaches its zone's tier): a guild quest of
+-- tier k lists the giver roles foreman_tk ... foreman_t6 of its faction
+-- variant, so every own camp whose lift reaches tier k gives it and each
+-- foreman is in one variant only (quests.md "The Miner's Guild givers").
+-- The fixture harnesses that load this file without grug_mapgen register
+-- no camp.
+local mapgen = rawget(_G, "grug_mapgen")
+local camps = mapgen and mapgen.mining_camps and mapgen.mining_camps.camps
+for _, camp in ipairs(type(camps) == "table" and camps or {}) do
+	if grug_core.settlement_socket_anchor(camp.id) then
+		Q.register_npc("r58_foreman_" .. camp.id, {settlement = camp.id, socket = "quest_foreman",
+			title = "Foreman", role = "foreman_t" .. camp.tier})
+	end
+end
