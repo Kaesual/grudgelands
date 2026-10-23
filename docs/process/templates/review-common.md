@@ -27,7 +27,8 @@ Goal: find what would break the game or a user rule, not style nits.
 - Rules: the plan's rulings (§2, number by number where the lane implements
   them) and the brief; release mode (data migrations only through a
   declared step of `tools/migrate.py` with its test, no placeholders,
-  stable ids; the lane's upgrade classification — compatible, map reset,
+  stable item, achievement and waypoint ids (a reworked quest takes a new
+  id); the lane's upgrade classification — compatible, map reset,
   migrate or new server — is right, new map-bound state has its clear and a
   step keeps the baseline rule); docs updated where the change makes them
   wrong; no edits to

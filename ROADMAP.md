@@ -38,45 +38,51 @@ remain delivered foundations, with this refinement work still ahead.
   up, quiet caves and animal calls).
 - **Crafting with more character and purpose:** build on the improved
   recipe system with more variety, wit and versatility, especially in
-  Cooking. Explore a broader range of useful food buffs.
+  Cooking. Explore a broader range of useful food buffs. Round 57 (0.57.0)
+  gave crafting its clearer window: a queue of up to five jobs (crafts,
+  enchants and upgrades alike, offline too), one wide recipe box, a details
+  page per recipe that names where each ingredient comes from, favourites
+  and Basic recipes unlocked with the profession tier; the alloys and wood
+  grades come straight from Steel and planks, and every dye can be made.
 - **Quests that welcome players into the world:** improve how quests teach
   the game and explore more immersive ways to connect their tasks to the
-  people and places around them. The **quest rework** (decided in
-  principle with the user on 2026-10-22) gives the game a story thread from
-  the capital on (level 15–20 at the latest), marks story quests apart from
-  kill quests, cuts repetition and dependencies between kill quests, groups
-  the start towns' quests into families and stops rewarding the requested
-  items. Round 56 prepared it with the quest overview page
-  (`tools/r56_questmap/`) and an idea report, which recommends a faction
-  story from the capital combined with standalone place stories.
+  people and places around them. The **quest rework** (decided with the
+  user on 2026-10-22) gives the game a story thread from the capital on
+  (level 15–20 at the latest), marks story quests apart from kill quests,
+  cuts repetition and dependencies between kill quests and stops rewarding
+  the requested items. Round 57 laid its foundation (one quest for many
+  givers, choice rewards with fixed enchants, story marking, completion
+  texts, free play outside the story, no repeatable quests) and rebuilt the
+  six start zones on it, 92 quests as 30.
 
-Decided with the user on 2026-10-22 and ordered on 2026-10-23
-([Round 56 plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds),
-[Round 57 plan](docs/planning/round57-plan.md),
-[BACKLOG](BACKLOG.md#decided-for-later-rounds-round-56-8)): **Round 57** the
-crafting window, the quest foundation (one quest for many givers, choice
-rewards, story marking, no repeatable quests, free play outside the story)
-and the six start zones rebuilt on it; **Round 58**, the one map reset, the
-Miner's Guild (36 mining camps including the 16 Battlegrounds war camps, a
-lift to every tier depth, guild quests bound to the depth, reputation with
-ranks, cloaks and two kinds of consumables) together with the town fixes;
-**Round 59 and later** the story arc and the quest rework of levels 11–60,
-then unique items. The items below are the Round 56 decisions; the Round 57
-plan §8 replaces the mining camps' detail.
+Decided with the user on 2026-10-22 and 2026-10-23
+([Round 57 plan §8–§9](docs/planning/round57-plan.md#8-decided-for-round-58),
+[BACKLOG](BACKLOG.md#decided-for-round-58-and-later-round-57-plan-89)):
 
-- **A clearer crafting window:** one wide recipe box with the craft button
-  beside the amount, a progress bar with a stop button, a crafting queue of
-  up to five jobs (crafts, enchants and upgrades alike), a details page per
-  recipe that names where each ingredient comes from, favourites, and Basic
-  recipes unlocked together with the profession tier that needs them.
-- **Town fixes** (a map reset): passable bough platforms in Lethariel,
-  capital gatehouses with an inner stair, royal guards beside their king,
-  gate patrols on the city side, the terrace stair, and a waystone and
-  mailbox at every start town's centre. The building fixes are made in the
-  building templates.
-- **Mining camps** (a map reset): one faction camp in every T2, T3 and T4
-  zone outside the capital zones, whose lift leads down to a protected room
-  at the tier's depth with a fetch quest.
+- **Round 58, the Miner's Guild** (the one map reset): one guild per
+  faction, **The Charter of Stone** for The Accord and **The Oathdelvers**
+  for The Throng, each a political actor of its faction with a guild
+  building in every capital; 36 mining camps (one in every T2, T3 and T4
+  zone outside the capital zones and the 16 Battlegrounds war camps) with a
+  faction-only lift to a protected room at every tier depth down to the
+  camp's tier; guild quests bound to the depth; reputation with ranks, an
+  achievement series with three cloaks and two kinds of mining
+  consumables. The cloaks, the consumable icons and the Miner's Remains
+  block are already picked and ship with that round's code.
+- **Round 58, the town fixes** (in the same map reset): passable bough
+  platforms in Lethariel, capital gatehouses with an inner stair, royal
+  guards beside their king, gate patrols on the city side, the terrace
+  stair, and a waystone and mailbox at every start town's centre. The
+  building fixes are made in the building templates.
+- **Round 59 and later, the story arc:** each faction's story from the
+  start zones to the front at level 41, built on the Round 57 foundation
+  zone by zone with the quest rework of levels 11–60. The user decided the
+  arc's direction on 2026-10-23
+  ([decisions](docs/planning/round57-plan.md#decisions-during-the-round)):
+  the Miner's Guilds and their faction's military closely interwoven, with
+  little conflict inside a faction, and the enemy faction's guild rather
+  impersonal. Then unique, non-craftable items (quest rewards, boss loot
+  for the instances, world finds).
 
 These are goals for the next design and playtest passes, not changes already
 available in the game. Detailed follow-up scope and current design owners:
@@ -617,8 +623,19 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   the hood (its art picked and baked in 0.56.1) and the open chin strip, the town
   buildings frozen byte-identically into 260 building templates with a
   local editor ([format](docs/technical/building-template-format.md)), and
-  the quest overview page. Complete on 2026-10-22; not pushed, the GUI test
-  (0.56.0 and 0.56.1 together) open.
+  the quest overview page. Complete on 2026-10-22; GUI-accepted and pushed
+  with 0.56.1 on 2026-10-23.
+- [x] **Round 57 "The crafting window, the quest foundation and the new
+  start zones"** ([completion](docs/planning/round57-plan.md#completion-2026-10-23)),
+  version 0.57.0, **compatible**, no step: the crafting queue of five jobs,
+  layout C, recipe details pages with generated ingredient sources,
+  favourites and recursive Basic unlocks; the quest foundation (shared
+  quests with variants, choice rewards with fixed enchants, story marking,
+  completion texts, the free-play rules, no repeatable quests) and the six
+  start zones rebuilt on it (92 → 30 quests); flat alloys and wood grades,
+  every dye craftable, no vendor selling leather, cloth, ores or bars; bay
+  shore water under its zone's flight rule and the chin strip open
+  underneath. Complete on 2026-10-23; not pushed, the GUI test open.
 
 ### Remaining work
 
@@ -662,8 +679,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 53](BACKLOG.md#round-53-carry-overs),
   [0.53.1](BACKLOG.md#0531-carry-overs),
   [Round 54](BACKLOG.md#round-54-carry-overs),
-  [Round 55](BACKLOG.md#round-55-carry-overs) and
-  [Round 56](BACKLOG.md#round-56-carry-overs) carry-overs (Round 40: the
+  [Round 55](BACKLOG.md#round-55-carry-overs),
+  [Round 56](BACKLOG.md#round-56-carry-overs) and
+  [Round 57](BACKLOG.md#round-57-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -680,8 +698,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   tool notes; Round 54: the off-hand card, contract z-fighting, clearance,
   web version 1 and tool notes; Round 55: back cards for other classes,
   NPC offhands, model, bake, achievement-command and tool notes; Round 56:
-  the hood finish step, ranged-mob, mount, float and trade notes, the
-  known template defects and template-tool notes);
+  ranged-mob, mount, float and trade notes, the known template defects and
+  template-tool notes; Round 57: crafting queue, details, chain, quest,
+  start-zone, vendor, bay and tool notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

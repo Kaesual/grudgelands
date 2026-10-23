@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-22. This is the delivery pointer, not another game specification.
+Updated 2026-10-23. This is the delivery pointer, not another game specification.
 
 The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the
@@ -16,15 +16,75 @@ production. Round 56 (0.56.0) takes the fixes from the playtest of
 2026-10-21 and freezes the town buildings into editable building
 templates; 0.56.1 adds the picked hood art (its finish step). Both passed
 the user's GUI test (two small findings go to Round 57's fix lane) and were
-pushed on 2026-10-23 (origin/main `2b4a3228`). Next:
-[Round 57](planning/round57-plan.md) (the crafting window, the quest
-foundation and the six start zones rebuilt on it), then Round 58 (the
-Miner's Guild and the town fixes, a map reset), as ordered with the user on
-2026-10-23. The
+pushed on 2026-10-23 (origin/main `2b4a3228`). Round 57 (0.57.0) builds
+the crafting window (the queue, layout C, recipe details, favourites,
+recursive Basic unlocks), the quest foundation and the six start zones
+rebuilt on it; it is **not pushed** and waits for the user's GUI test.
+Next: Round 58 (the Miner's Guild and the town fixes, a map reset), then
+the story arc and the quest rework of levels 11–60 from Round 59, as
+ordered with the user on 2026-10-23. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 57 "The crafting window, the quest foundation and the new start
+  zones" complete** (2026-10-23, version 0.57.0, **compatible**, no
+  migration step;
+  [plan, decisions, numbers and GUI checklist](planning/round57-plan.md#completion-2026-10-23)).
+  **Not pushed:** 0.57.0 waits for the user's GUI test. From main
+  `08fb032b` (the plan) and `f913f17a` (the go): CHAINDEPTH (`c5f37bae`),
+  FIX56 (`fd0a58fa`), CRAFT (`aaf9edbd`), ALLOY (`5107187f`), QSYS
+  (`a90990d5`), QSYS2 (`6562f395`), DETAILS (`60adda34`), VENDORMAT
+  (`f4991ea3`, `073ef842`), DYES (`feddd5c2`), STARTQUESTS (`b1c6259c`,
+  `31c8b94c`) and STARTTEXT (`a1582d57`) merged, then this documentation
+  lane D. ALLOY, VENDORMAT, DYES and QSYS2 were added during the round
+  (rulings 25–29 and the user's wish to read the choice rewards' enchants
+  without hovering). Every code lane independently reviewed by Opus
+  (FIX56 and ALLOY MERGE; CHAINDEPTH, CRAFT and DETAILS MERGE with
+  findings fixed and delta-reviewed; QSYS and STARTQUESTS MERGE AFTER
+  FIXES, fixed and delta-reviewed; VENDORMAT and DYES MERGE AFTER FIXES,
+  their fixture seams fixed and checked by the coordinator; QSYS2 checked
+  by the coordinator); GPT-6 Astra wrote the story arc draft
+  (STORYARC, private, in German, Opus review and check), the start-zone
+  texts (STARTTEXT, with the Opus text review's 36 proposals, all picked)
+  and the Round 58 guild art (GUILDART, picked, waiting for Round 58). Main
+  has 259 portable fixtures (9 new). The declaration is
+  `{"schema": 3, "version": "0.57.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  a world of 0.56.1 moves on without a step (old start-quest ids are
+  dropped as unknown ids; a world created with full preparation stops at
+  load until a map reset, best effort per the
+  [upgrade contract §1](technical/upgrade-contract.md#1-four-outcomes)).
+  - **Crafting (CRAFT, DETAILS):** a queue of five jobs (crafts, enchants
+    and upgrades alike, inputs taken when queued, offline too) with the
+    running job in its old key, layout C under every box, an overflow that
+    grows, favourites, Basic recipes unlocked with a profession tier; the
+    recipe details pages over a generated ingredient source index (815
+    items, 1,450 sources)
+    ([professions.md](design/professions.md),
+    [inventory_equipment.md](design/inventory_equipment.md)).
+  - **Recipes (CHAINDEPTH, ALLOY, DYES):** the chain-depth report
+    `tools/r57_chains`; Embersteel and Abyssal Steel from Steel, the graded
+    woods from planks plus the tier's ingredient, Steel Bars craftable (the
+    deepest metal recipe 7 → 5); every dye from Bone, Sunleaf, Apple,
+    Marshbloom and the mixes ([items_crafting.md](design/items_crafting.md)).
+  - **Vendors (VENDORMAT):** no shelf sells leather, cloth, ores or bars;
+    the Bronze Bar buys back at its inputs (2c) ([economy.md](design/economy.md)).
+  - **Quests (QSYS, QSYS2, STARTQUESTS, STARTTEXT):** shared quests with a
+    variant per giver zone and role givers, choice rewards with fixed
+    enchants (`grug_items.make_stack`, `tooltip_text`), story marking,
+    completion texts, the free-play rules under the rework flag,
+    `repeatable` removed; the six start zones 92 → 30 quests (423 shipped)
+    ([quests.md](design/quests.md)).
+  - **Fixes of 0.56 (FIX56):** bay shore water flies under its zone's rule;
+    the chin strip open underneath on cloth T1–T6 and leather T1–T5
+    ([mounts.md §4.1](design/mounts.md#41-ocean-warned-edge-then-forced-flight-dismount),
+    [armor-format.md](technical/armor-format.md)).
+  - **Gates:** each code lane's full fixture run (251–258/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.56.1),
+    `check_fresh_server.py`, `validate.py --game`, the full fixtures and one
+    boot (the lane report). The round end on main (full fixtures, one boot,
+    the sync) is the coordinator's; its GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-57-carry-overs)).
 - **0.56.1 "The hood"** (2026-10-22, **compatible**, no migration step;
   [plan addendum](planning/round56-plan.md#addendum-0561-the-hood-art-2026-10-22)):
   the user picked HOODART drop-02 proposal P2 "Turned edge" (GPT-6 Astra,

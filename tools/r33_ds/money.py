@@ -31,10 +31,13 @@ POOL = (("weapon", 6), ("chest", 3), ("other", 17))  # 26 equippables per tier
 DROP = {"white": (5.0, 1), "blue": (2.0, 3), "gold": (1.0, 6)}  # percent, sale multiplier
 REPAIR_TODAY = 0.20
 REPAIR_PROPOSED = 1.00
-OWN_MATERIAL_VALUE = {  # sell value of one own material (R3 registry dump)
-    "metal bar": (1, 1, 2, 8, 24, 64), "leather": (2, 2, 2, 2, 80, 82),
-    "cloth bolt": (2, 10, 26, 28, 4, 42), "graded wood": (0, 0, 0, 0, 0, 0),
-    "setting": (2, 2, 3, 6, 27, 67)}
+# Sell value in copper of one own material per tier: the R3 registry dump,
+# re-measured in the engine by Round 57 lane D after the flat alloys and wood
+# grades (ALLOY) and the Bronze Bar off the shelves (VENDORMAT).
+OWN_MATERIAL_VALUE = {
+    "metal bar": (2, 1, 4, 10, 20, 44), "leather": (2, 2, 2, 2, 80, 82),
+    "cloth bolt": (2, 10, 26, 28, 4, 42), "graded wood": (0, 1, 3, 6, 16, 40),
+    "setting": (2, 2, 5, 6, 23, 47)}
 
 
 def buyback(price):

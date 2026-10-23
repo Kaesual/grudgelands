@@ -12,6 +12,74 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.57.0 — the crafting window and the new start zones (2026-10-23)
+
+**Compatible:** no map reset and no migration step.
+
+- **A crafting queue:** while a job runs, the big button reads "Queue ×N"
+  instead of "Craft ×N" and adds the next job: up to 5 jobs in all,
+  crafts, enchants and upgrades alike, one after the other, while you are
+  offline too. Their ingredients (and an enchant's item) are taken when
+  you queue them; View Queue lists the waiting jobs, ✕ cancels one and
+  gives everything back, and the small ■ beside the bar stops the running
+  one. What does not fit into your inventory waits in the Overflow, which
+  grows as needed, so a finished job is never dropped at your feet.
+- **A wider crafting window:** one wide recipe box, the button beside Max,
+  and under every box the bar, the stop button, one line naming the job
+  and View Queue.
+- **Recipe details:** "Recipe details" (and "Details" in the enchant and
+  upgrade boxes) opens a page that names where each ingredient comes from:
+  recipes, vendors with their price, creatures by level, the zones where it
+  grows, the mining depth, trees, fishing and farming. "Open ▶" walks down
+  the chain and "◀ Back" returns; an ingredient of several kinds opens a
+  page of its kinds; "Select this recipe" chooses a recipe you know.
+- **Favorites:** the star on a recipe marks it, and "Favorites only"
+  beside "Craftable only" lists them.
+- **Basic recipes come with your profession:** learning a profession or
+  reaching a new tier also unlocks every Basic recipe its recipes need,
+  such as Thread and the Patch Bolt; existing characters get them at their
+  next login.
+- **New start zones:** the six start towns offer fewer, broader quests
+  (30 instead of 92), all of them at once: the boar and rat hunts from the
+  first minute, three rats in one night. A task that is the same in every
+  town is one quest: done in one town, it is done everywhere. A character
+  above level 10 can take the new ones too; its level-11 quests stay.
+- **Reward choices:** some quests let you pick your reward: two healing or
+  mana potions, an armor piece of item level 5 and one of level 7 or 8
+  with an enchant (cloth, leather or metal), and at each zone's last quest
+  a weapon with a prefix and a suffix. The offer and the turn-in show the
+  choices with their enchants; Complete waits until you pick one.
+- **Story quests and closing words:** story quests get violet symbols and
+  their own "Story" heading in the quest log (the start zones are free
+  play; the story comes later), and a quest can end with a few closing
+  lines at the turn-in, as each start zone's last quest does.
+- **Simpler alloys and woods:** Embersteel is Steel + Emberglass and
+  Abyssal Steel is Steel + Abyssal Crystal (no longer the alloy of the tier
+  below); each graded wood is 2 planks plus its tier's ingredient (Iron
+  Bar, Anthracite, Silver Bar, Emberglass, Abyssal Crystal). Embersteel and
+  Abyssal Steel bars and the goods made from them sell for less (the
+  Abyssal Steel Sword 125c → 88c), and the graded woods above Seasoned
+  sell for 1c to 40c.
+  Steel Bars for the bar door and trapdoor: 6 Steel Bars (metal) make 16.
+- **Every dye can be made:** White from Bone, Yellow from Sunleaf, Red
+  from Apple and Cyan from Marshbloom; the other colours and every wool
+  follow from the mixes.
+- **Vendors no longer sell leather, cloth or bars:** Leather, Light
+  Leather, Linen Scrap and the Bronze Bar left the shelves; creatures drop
+  them, and Bronze is Copper + Tin in the Dual Furnace. Thread and the
+  tailor's wool stay. Selling a Bronze Bar now pays 2c instead of 1c, and
+  the goods made from it a little more.
+- **Flying over bays:** a bay's water near its shore now follows its
+  zone's flight rule, so you no longer drop off your mount there; the open
+  sea and the bay mouths stay no-fly.
+- **Open chin, underneath too:** the cloth and leather head pieces with the
+  open chin strip are see-through under the chin as well.
+- **Server admins:** a world created with `grug_prepare_full_world = true`
+  refuses to start after this update until its map is reset
+  (`grug_reset_world`): its preparation fingerprint covers the changed
+  water rules. Worlds in the default start-town preparation mode, which
+  the hosting platform uses, are not affected.
+
 ## 0.56.1 — the hood (2026-10-22)
 
 **Compatible:** no map reset and no migration step.
