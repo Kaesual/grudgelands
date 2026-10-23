@@ -23,8 +23,8 @@ with fixed enchants, story marking, completion texts, the free-play rules,
 no repeatable quests); the six start zones rebuilt on it (92 → 30 quests);
 flat alloys and wood grades, every dye craftable, no vendor selling
 leather, cloth, ores or bars; bay shore water flying under its zone's rule
-and the chin strip open underneath. **Not pushed:** 0.57.0 waits for the
-user's GUI test. Before it 0.56.1 and 0.56.0, Round 56 "Playtest fixes,
+and the chin strip open underneath. **Pushed** 2026-10-23 (origin/main
+`69481ed1`); its GUI test runs together with Round 58's. Before it 0.56.1 and 0.56.0, Round 56 "Playtest fixes,
 clear enchants, the hood and the quest survey" (**compatible**, no step;
 [completion](docs/planning/round56-plan.md#completion-2026-10-22)): the
 fixes from the playtest of 2026-10-21 (level-scaled aggro, the hit alert on
@@ -75,9 +75,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the user's GUI test of 0.57.0, then
-Round 58 (the Miner's Guild and the town fixes, a map reset;
-[Round 57 plan §8](docs/planning/round57-plan.md#8-decided-for-round-58)),
+are not recorded as passed. Next: Round 58 (the Miner's Guild and the town fixes, a map reset;
+[Round 58 plan](docs/planning/round58-plan.md)), then the joint GUI test of 0.57.0 and 0.58.0,
 then Round 59 and later (the story arc and the quest rework of levels
 11–60).
 Details: [STATUS](docs/STATUS.md).

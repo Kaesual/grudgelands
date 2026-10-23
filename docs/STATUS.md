@@ -19,8 +19,10 @@ the user's GUI test (two small findings go to Round 57's fix lane) and were
 pushed on 2026-10-23 (origin/main `2b4a3228`). Round 57 (0.57.0) builds
 the crafting window (the queue, layout C, recipe details, favourites,
 recursive Basic unlocks), the quest foundation and the six start zones
-rebuilt on it; it is **not pushed** and waits for the user's GUI test.
-Next: Round 58 (the Miner's Guild and the town fixes, a map reset), then
+rebuilt on it; it was **pushed on 2026-10-23** (origin/main `69481ed1`) without
+a GUI test: the user tests 0.57 and 0.58 together after Round 58.
+Next: Round 58 (the Miner's Guild and the town fixes, a map reset;
+[plan](planning/round58-plan.md)), then
 the story arc and the quest rework of levels 11–60 from Round 59, as
 ordered with the user on 2026-10-23. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
@@ -31,7 +33,8 @@ user's notes.
   zones" complete** (2026-10-23, version 0.57.0, **compatible**, no
   migration step;
   [plan, decisions, numbers and GUI checklist](planning/round57-plan.md#completion-2026-10-23)).
-  **Not pushed:** 0.57.0 waits for the user's GUI test. From main
+  **Pushed 2026-10-23** (origin/main `69481ed1`) before its GUI test, which the user runs together with
+  Round 58's. From main
   `08fb032b` (the plan) and `f913f17a` (the go): CHAINDEPTH (`c5f37bae`),
   FIX56 (`fd0a58fa`), CRAFT (`aaf9edbd`), ALLOY (`5107187f`), QSYS
   (`a90990d5`), QSYS2 (`6562f395`), DETAILS (`60adda34`), VENDORMAT
