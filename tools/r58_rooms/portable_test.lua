@@ -30,7 +30,8 @@
 -- F. Protection (wp40/guild_room_protection.lua): inside a box
 --    "guild_room", "hard_protected" and protected for both factions; above,
 --    below and beside it the wrapped session's answers; the PvP rule and the
---    claim footprints untouched.
+--    claim footprints untouched; the real protection.lua's hint
+--    "Miner's Guild – protected" in a room.
 -- G. The spawn refusals: the real spawn_policy.lua refuses an ambient
 --    underground spawn in a room and allows it beside; the real
 --    depth_pulse.lua refuses a pulse spot in a room ("refused_protected").
@@ -621,6 +622,31 @@ for _, room in ipairs(rooms.list) do
 		"F " .. at .. " keeps its PvP rule")
 end
 check(not pcall(wrap, {}, rooms), "F refuses a session without the queries")
+-- The player's hint (the real grug_core/protection.lua on stubs): a room
+-- explains itself as the Miner's Guild's, the ground beside it does not.
+do
+	local saved_core, saved_grug_core, saved_zones = rawget(_G, "core"), rawget(_G, "grug_core"),
+		rawget(_G, "grug_zones")
+	_G.core = {is_protected = function() return false end,
+		check_player_privs = function() return false end}
+	_G.grug_core = {
+		get_player_faction = function() return "accord" end,
+		zone_authority_installed = function() return true end,
+		world_protected_for_faction = function(pos, faction)
+			return zones.compatibility.world_protected_for_faction(pos, faction)
+		end,
+		world_feature_at = function() return nil end,
+	}
+	_G.grug_zones = zones
+	dofile(repo .. "/mods/CORE/grug_core/protection.lua")
+	local room = edge_rooms[2]
+	check(grug_core.protection_hint(room.lift_cell, "miner") == "Miner's Guild – protected",
+		"F the hint in a room: " .. tostring(grug_core.protection_hint(room.lift_cell, "miner")))
+	check(core.is_protected(room.minp, "miner") and
+		not core.is_protected({x = room.maxp.x + 1, y = room.floor_y, z = room.lift_cell.z}, "miner"),
+		"F protected in the box, not beside it (own home ground)")
+	_G.core, _G.grug_core, _G.grug_zones = saved_core, saved_grug_core, saved_zones
+end
 
 -- ---------------------------------------------------------------------------
 -- G. The spawn refusals
