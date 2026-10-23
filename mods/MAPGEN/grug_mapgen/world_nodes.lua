@@ -152,15 +152,21 @@ return function(engine, directory, nodes, gathering)
  -- `r31_pvp_poi_blueprint.lua`), so it too exists before the settlement
  -- content is resolved. A placeholder look from shipped textures and no
  -- behaviour: grug_guild (lane LIFT) overrides it with the lift's use and
- -- the picked art. An override changes only the tiles, the description and
- -- the callbacks: drawtype, paramtype, paramtype2, light_source,
- -- sunlight_propagates, floodable and the groups enter the settlement
- -- content's semantic digest (`wp40/r7_content.lua`), which main computes
- -- while this mod loads and emerge after every mod has loaded, so a changed
- -- field there stops the mapgen at its first start.
+ -- the picked art, and such an override changes only the behaviour (the
+ -- callbacks) and the look (tiles, description). The settlement content's
+ -- semantic digest (`wp40/r7_content.lua`, its class row) reads paramtype,
+ -- paramtype2, light_source, sunlight_propagates, floodable, the liquid
+ -- fields and the groups grug_natural and grug_air; main computes it while
+ -- this mod loads and emerge after every mod has loaded, so an override
+ -- that changed one of them would stop the mapgen at its first start. A
+ -- change to those static fields belongs here, in a map reset round.
+ -- `4dir`: the blueprints write it facing its camp's gate side (param2 0
+ -- in the composition's frame, turned with the camp: `wp13/parts.lua`), so
+ -- an art with a front shows it.
  engine.register_node("grug_mapgen:guild_lift", {
   description="Miner's Guild Lift",
   drawtype="nodebox",
+  paramtype2="4dir",
   tiles={"default_wood.png^[colorize:#3b2a14:70","default_wood.png",
    "default_wood.png^default_ladder_wood.png"},
   paramtype="light",

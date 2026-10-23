@@ -1001,9 +1001,9 @@ CAMPNPC, LIFT and GUILDQUESTS):
 
 | Socket id | Role | Kind / tag | What stands there |
 |---|---|---|---|
-| `lift` | `lift` | – | the lift node `grug_mapgen:guild_lift` (its cell; nobody stands on it); its x/z is the camp's lift column |
+| `lift` | `lift` | – | the lift node `grug_mapgen:guild_lift` (its cell, `4dir` facing the gate; nobody stands on it); its x/z is the camp's lift column |
 | `quest_foreman` | `quest` | – | the foreman, the camp's quest giver (a quest shell of the camp's race until his quests are registered) |
-| `vendor_camp` | `vendor` | kind `camp` | the camp vendor (entity `grug_traders:vendor_camp`, lane CAMPNPC) |
+| `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`: buys like every vendor, no shelf of its own yet; lane CAMPNPC adds the trade-in, repair and the reputation page) |
 | `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |
 | `yard_west`, `yard_east` | `guard_post` | tag `camp` | a contested mining camp's two further guards |
 

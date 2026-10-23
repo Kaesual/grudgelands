@@ -2646,12 +2646,17 @@ tools](#player-meta-read-by-external-tools).
   `r31_pvp_catalog.gate_turns`, the war camps' rule) and built by
   `r58_camp_blueprint.lua`; the war camp blueprint gains the lift,
   `quest_foreman` and `vendor_camp` sockets. The lift node
-  `grug_mapgen:guild_lift` (`world_nodes.lua`) is settlement palette
-  content like the waystone (no class of its own in `r7_content.lua`); an
-  override keeps its semantic fields (paramtype, paramtype2, light_source,
-  sunlight_propagates, floodable, groups), which enter the settlement
-  content's semantic digest that main computes before the other mods load
-  and emerge after. **The camp module** `r58_camps.lua` (pure, main and
+  `grug_mapgen:guild_lift` (`world_nodes.lua`, `4dir`, written facing its
+  camp's gate and turned with it: `wp13/parts.lua`) is settlement palette
+  content like the waystone (no class of its own in `r7_content.lua`). Its
+  static fields that the class row digests (paramtype, paramtype2,
+  light_source, sunlight_propagates, floodable, the liquid fields, the
+  groups grug_natural and grug_air) change only in `world_nodes.lua`, in a
+  map reset round: main computes the settlement semantic digest before the
+  other mods load and emerge after, so LIFT's override from grug_guild
+  changes only behaviour and textures. The camp vendor is
+  `grug_traders:vendor_camp` ("Camp Vendor", a profession-style vendor
+  without a shelf of its own until CAMPNPC). **The camp module** `r58_camps.lua` (pure, main and
   mapgen environment, from the `placement_layout` text or parsed
   positions): `camps(layout[, seams])` (the 36 camps with a lift sorted by
   id: `{id, kind, faction, race, zone_id, tier, anchor, lift, levels, label,

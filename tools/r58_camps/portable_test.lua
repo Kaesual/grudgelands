@@ -214,7 +214,14 @@ for _, profile in ipairs(settlement.roster) do
 		for _, s in ipairs(bp.landmarks.sockets) do sockets[s.id] = s end
 		for _, cell in ipairs(bp.cells) do cells[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell.name end
 		local lift_cells = 0
-		for _, cell in ipairs(bp.cells) do if cell.name == "grug_mapgen:guild_lift" then lift_cells = lift_cells + 1 end end
+		for _, cell in ipairs(bp.cells) do
+			if cell.name == "grug_mapgen:guild_lift" then
+				lift_cells = lift_cells + 1
+				-- 4dir, its front toward the gate: the camp's turns
+				check(cell.param2 == profile.art.turns % 4,
+					"B " .. profile.key .. " the lift faces the gate")
+			end
+		end
 		local kind = profile.art.kind
 		local label = "B " .. profile.key
 		if kind == "camp_construction" then
