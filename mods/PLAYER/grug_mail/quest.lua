@@ -36,9 +36,11 @@ function grug_mail.grant_starter_quest(player)
 	return ok == true
 end
 
--- Opening any mailbox turns the quest in; the quest's completion line goes
--- to the message feed with the turn-in (quests have no completion text). A
--- refused turn-in (a full purse) says why and leaves the quest active.
+-- Opening any mailbox turns the quest in, without a dialog (a system quest
+-- carries no choice; quests.md "System quests"), so its completion line goes
+-- to the message feed with the turn-in, where an NPC's quest shows its
+-- completion text in the turn-in dialog (Round 57 ruling 14). A refused
+-- turn-in (a full purse) says why and leaves the quest active.
 grug_mail.register_on_mailbox_open(function(player)
 	if grug_quests.quest_held(player, QUEST) ~= "active" then return end
 	local ok, message = grug_quests.turn_in(player, QUEST)

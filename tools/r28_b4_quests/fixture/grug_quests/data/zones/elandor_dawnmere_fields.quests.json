@@ -92,11 +92,10 @@
       "min_level": 1,
       "level": 2,
       "title": "Rats in the Larder",
-      "text": "Large Rats raid the larder after nightfall. Thin them out, and come back tomorrow.",
+      "text": "Large Rats raid the larder after nightfall. Thin them out before they eat the winter stores.",
       "objectives": [
         {"type": "kill", "roles": ["large_rat"], "count": 2, "area": "home_fields_night"}
       ],
-      "repeatable": {"cooldown": 1800},
       "rewards": {"weight": 1, "copper": 2}
     },
     {

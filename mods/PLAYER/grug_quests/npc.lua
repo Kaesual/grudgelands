@@ -13,22 +13,18 @@ local function in_reach(player, entity)
 	return pos and pp and vector.distance(pos, pp) <= 6
 end
 -- A quest list row (Round 35): the status is the entry's colour, not a text
--- that cut the title off; a repeatable quest ends in a short "(R)". The quest
--- giver's dialog and the quest log share the colours and the legend.
+-- that cut the title off. The quest giver's dialog and the quest log share
+-- the colours and the legend.
 Q.STATUS_COLORS = {available = "#ffd24a", ready = "#7ee06a", active = "#8fc1ff", locked = "#9a9a9a"}
+-- The story accent (Round 57 ruling 13): the "Story" category of the quest
+-- lists and the story markers (the map icons, tools/r57_qsys/render_story_icons.py).
+Q.STORY_COLOR = "#c69cff"
 local STATUS_ORDER = {"available", "ready", "active", "locked"}
 local STATUS_NAMES = {available = {"Available", "gold"}, ready = {"Ready to complete", "green"},
 	active = {"In progress", "blue"}, locked = {"Locked", "grey"}}
-function Q.list_entry(title, status, repeatable)
-	return Q.STATUS_COLORS[status] .. core.formspec_escape(title .. (repeatable and " (R)" or ""))
-end
--- The legend explains "(R)" only while a repeatable quest is registered
--- (Round 46 ruling 8 removed the shipped ones; the mechanism stays).
-local function any_repeatable()
-	for _, def in pairs(Q.registered_quests) do
-		if def.repeatable then return true end
-	end
-	return false
+-- `indent` (a list with categories) sets the title in by two spaces.
+function Q.list_entry(title, status, indent)
+	return Q.STATUS_COLORS[status] .. core.formspec_escape((indent and "  " or "") .. title)
 end
 -- The legend as one coloured line, and as the list's tooltip (escaped).
 function Q.status_legend(statuses)
@@ -36,21 +32,50 @@ function Q.status_legend(statuses)
 	for _, status in ipairs(statuses or STATUS_ORDER) do
 		parts[#parts + 1] = core.colorize(Q.STATUS_COLORS[status], STATUS_NAMES[status][1])
 	end
-	return core.formspec_escape(table.concat(parts, "   ") .. (any_repeatable() and "   (R) Repeatable" or ""))
+	return core.formspec_escape(table.concat(parts, "   "))
 end
 function Q.status_tooltip(statuses)
 	local lines = {}
 	for _, status in ipairs(statuses or STATUS_ORDER) do
 		lines[#lines + 1] = STATUS_NAMES[status][1] .. ": " .. STATUS_NAMES[status][2]
 	end
-	if any_repeatable() then lines[#lines + 1] = "(R): repeatable" end
 	return core.formspec_escape(table.concat(lines, "\n"))
+end
+-- A quest list with its categories (Round 57 ruling 13): once a story quest
+-- is listed, a "Story" header in the story accent above the story quests
+-- and a "Side quests" header above the others, their titles set in; the
+-- status stays each entry's colour. `entry(row, indent)` makes an entry.
+-- Returns the textlist entries and, per entry, the row index (nil on a
+-- header), and per row its entry index.
+function Q.category_list(rows, entry)
+	local story, side = {}, {}
+	for index, row in ipairs(rows) do
+		if row.story then story[#story + 1] = index else side[#side + 1] = index end
+	end
+	local entries, row_of, entry_of = {}, {}, {}
+	local function add(text, index)
+		entries[#entries + 1] = text
+		row_of[#entries] = index
+		if index then entry_of[index] = #entries end
+	end
+	if #story == 0 then
+		for index, row in ipairs(rows) do add(entry(row, false), index) end
+		return entries, row_of, entry_of
+	end
+	add(Q.STORY_COLOR .. core.formspec_escape("Story"))
+	for _, index in ipairs(story) do add(entry(rows[index], true), index) end
+	if #side > 0 then
+		add("#b8b8b8" .. core.formspec_escape("Side quests"))
+		for _, index in ipairs(side) do add(entry(rows[index], true), index) end
+	end
+	return entries, row_of, entry_of
 end
 
 -- The row a dialog opens on (0.45.1): the first quest ready to complete,
 -- else the first one to accept, else `fallback` (default the first row), so
 -- a player with several finished quests just clicks "Complete" again and
--- again, and one accepting several just clicks "Accept".
+-- again, and one accepting several just clicks "Accept". Story quests are
+-- listed first (Q.npc_quests), so they come first here too.
 local function preselect(rows, fallback)
 	local available
 	for index, row in ipairs(rows) do
@@ -61,13 +86,81 @@ local function preselect(rows, fallback)
 end
 Q.npc_preselect = preselect
 
+-- The reward lines of a quest: its XP, copper and items, then its choice.
+function Q.reward_lines(def)
+	local lines = {"Rewards: " .. Q.reward_xp(def) .. " XP, " .. grug_money.format(def.rewards.copper)}
+	for _, item in ipairs(def.rewards.items) do
+		local stack = ItemStack(item)
+		lines[#lines + 1] = grug_core.item_name(stack) .. " × " .. stack:get_count()
+	end
+	if #def.rewards.choices > 0 then
+		local names = {}
+		for _, choice in ipairs(def.rewards.choices) do
+			local stack = ItemStack(choice.item)
+			names[#names + 1] = grug_core.item_name(stack) .. (stack:get_count() > 1 and " × " .. stack:get_count() or "")
+		end
+		lines[#lines + 1] = "and one of: " .. table.concat(names, ", ")
+	end
+	return lines
+end
+
+-- A reward choice's tooltip: the stack the player would get, made as the
+-- turn-in makes it (its item level and enchants), in grug_quality's own
+-- tooltip text (item buttons show only the definition's description).
+local function choice_tooltip(player, def, choice)
+	local items_api = rawget(_G, "grug_items")
+	if not items_api then return grug_core.item_name(ItemStack(choice.item)) end
+	local stack = items_api.make_stack(choice.item, def.level, choice.affixes, player)
+	return items_api.tooltip_text(stack or choice.item, player)
+end
+
+-- The choice row (Round 57 ruling 15) under the text: item icons with
+-- their tooltips; at the turn-in buttons, the picked one framed, above the
+-- Complete button; in the offer and while active, icons to read only.
+local CHOICE_X, CHOICE_Y, CHOICE_SIZE, CHOICE_STEP = 7.8, 5.95, 1.15, 1.4
+local function choice_row(player, def, ready, picked)
+	local esc, out = core.formspec_escape, {}
+	out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y - 0.35,
+		esc(ready and "Choose your reward:" or "You will choose one reward:"))
+	for index, choice in ipairs(def.rewards.choices) do
+		local x = CHOICE_X + (index - 1) * CHOICE_STEP
+		local stack = ItemStack(choice.item)
+		local name, count = stack:get_name(), stack:get_count()
+		local tip = esc(choice_tooltip(player, def, choice))
+		if ready then
+			if picked == index then
+				out[#out + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#7ee06a]"):format(x - 0.08, CHOICE_Y - 0.08,
+					CHOICE_SIZE + 0.16, CHOICE_SIZE + 0.16)
+			end
+			out[#out + 1] = ("item_image_button[%.2f,%.2f;%.2f,%.2f;%s;choice_%d;%s]"):format(x, CHOICE_Y,
+				CHOICE_SIZE, CHOICE_SIZE, esc(name), index, count > 1 and tostring(count) or "")
+			out[#out + 1] = ("tooltip[choice_%d;%s]"):format(index, tip)
+		else
+			out[#out + 1] = ("item_image[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, CHOICE_Y, CHOICE_SIZE, CHOICE_SIZE,
+				esc(name))
+			if count > 1 then
+				out[#out + 1] = ("label[%.2f,%.2f;%d]"):format(x + CHOICE_SIZE - 0.3, CHOICE_Y + CHOICE_SIZE - 0.2, count)
+			end
+			out[#out + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, CHOICE_Y, CHOICE_SIZE, CHOICE_SIZE, tip)
+		end
+	end
+	if ready then
+		local chosen = picked and def.rewards.choices[picked]
+		out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y + CHOICE_SIZE + 0.35,
+			esc(chosen and ("Chosen: " .. grug_core.item_name(ItemStack(chosen.item))) or
+				"Click a reward to choose it."))
+	end
+	return table.concat(out)
+end
+
 -- The dialog is wide enough for the longest quest title in the list at a
 -- full-HD window (the title column is 7 of 16 units). `selected` is the row
 -- to show: an index (a click in the list), a quest id (that quest's row if
 -- it is still listed, else the preselection), {after = quest id} (the
 -- preselection, else that quest's row) or nil (the preselection). `notice`
--- marks a redraw after Accept or Complete.
-function Q.open_npc(player, entity, selected, notice)
+-- marks a redraw after Accept or Complete; `picked` the reward chosen at
+-- the turn-in (a redraw after a click on a choice).
+function Q.open_npc(player, entity, selected, notice, picked)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
 	-- Ruling 13 (Round 31): a quest giver serves only its own faction.
@@ -78,10 +171,7 @@ function Q.open_npc(player, entity, selected, notice)
 	end
 	local rows = Q.npc_quests(player, id)
 	if #rows == 0 then return false end
-	local esc, entries = core.formspec_escape, {}
-	for _, row in ipairs(rows) do
-		entries[#entries + 1] = Q.list_entry(row.title, row.status, row.repeatable)
-	end
+	local esc = core.formspec_escape
 	-- The first open of the dialog plays its cue; a redraw (another quest
 	-- chosen, after Accept or Complete) does not.
 	local redraw = selected ~= nil or notice ~= nil
@@ -94,36 +184,43 @@ function Q.open_npc(player, entity, selected, notice)
 		selected = type(selected) == "string" and listed or nil
 	end
 	selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows, listed)
+	local entries, row_of, entry_of = Q.category_list(rows, function(row, indent)
+		return Q.list_entry(row.title, row.status, indent)
+	end)
 	local row = rows[selected]
 	local def = Q.registered_quests[row.id]
-	local detail = Q.quest_text(def, id == def.npc) .. "\n\n"
-	if def.repeatable then
-		detail = detail .. ("Repeatable (every %s)\n"):format(Q.cooldown_text(def.repeatable.cooldown))
-	end
+	local active = Q.active_entry(player, row.id)
+	-- The giver's own text where it gives the quest, else the text of the
+	-- variant and giver the player took it from (Round 57); at the turn-in
+	-- the completion paragraph (ruling 14) in its place, when there is one.
+	local at_giver = def.giver_variant[id] ~= nil and not active
+	local source = active or {giver = def.giver_variant[id] and id or nil}
+	local completion = row.status == "ready" and Q.completion_text(def, active)
+	local detail = (completion or Q.quest_text(def, at_giver or (active and active.giver == id), source)) .. "\n\n"
 	-- One line per objective (ruling 41), with its targets' level range
 	-- (Lane Q0): "Defeat Barrow Piglet × 8 (level 1–2)".
-	for _, objective in ipairs(def.objectives) do
+	for _, objective in ipairs(Q.variant_of(def, source).objectives) do
 		detail = detail .. (objective.description or Q.objective_action(objective)) ..
 			" × " .. objective.count .. Q.objective_levels_text(objective) .. "\n"
 	end
-	detail = detail .. "\nRewards: " .. Q.reward_xp(def) .. " XP, " .. grug_money.format(def.rewards.copper)
-	for _, item in ipairs(def.rewards.items) do
-		local stack = ItemStack(item)
-		detail = detail .. "\n" .. grug_core.item_name(stack) .. " × " .. stack:get_count()
-	end
+	detail = detail .. "\n" .. table.concat(Q.reward_lines(def), "\n")
+	local choices = #def.rewards.choices > 0
+	if not (row.status == "ready" and def.rewards.choices[picked or 0]) then picked = nil end
 	-- The description is a read-only text (no field name).
 	local form = "formspec_version[6]size[16,9.4]label[0.4,0.4;" .. esc(npc.title or id) .. "]" ..
-		"textlist[0.4,0.9;7,6;quests;" .. table.concat(entries, ",") .. ";" .. selected .. ";false]" ..
+		"textlist[0.4,0.9;7,6;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. ";false]" ..
 		"tooltip[quests;" .. Q.status_tooltip() .. "]" ..
 		"label[0.4,7.3;" .. Q.status_legend() .. "]" ..
-		"textarea[7.8,0.9;7.8,6;;;" .. esc(detail) .. "]" ..
+		("textarea[7.8,0.9;7.8,%.2f;;;%s]"):format(choices and 4.3 or 6, esc(detail)) ..
+		(choices and choice_row(player, def, row.status == "ready", picked) or "") ..
 		-- The Close button holds the focus (0.45.1): a focused text area or
 		-- list would swallow the inventory key that closes the dialog.
 		"label[0.4,7.9;" .. esc(notice or row.reason or "") .. "]set_focus[close;true]" ..
 		"button_exit[13.3,8.4;2.3,0.7;close;Close]"
 	if row.status == "available" then form = form .. "button[7.8,8.4;2,0.7;accept;Accept]" end
 	if row.status == "ready" then form = form .. "button[7.8,8.4;2,0.7;turnin;Complete]" end
-	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected}
+	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected,
+		row_of = row_of, picked = picked}
 	if not redraw then grug_sounds.play("npc_quest", player) end
 	core.show_formspec(player:get_player_name(), FORM, form)
 	return true
@@ -140,27 +237,44 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 	if fields.quests then
 		local event = core.explode_textlist_event(fields.quests)
-		if event.index and session.rows[event.index] then
-			if event.index ~= session.selected then grug_sounds.play("quest_page", player) end
-			Q.open_npc(player, session.entity, event.index)
+		local index = event.index and session.row_of[event.index]
+		if index and session.rows[index] then
+			if index ~= session.selected then grug_sounds.play("quest_page", player) end
+			Q.open_npc(player, session.entity, index)
+		elseif event.index then
+			-- A category header: the same quest stays shown.
+			Q.open_npc(player, session.entity, session.selected, nil, session.picked)
 		end
 		return true
 	end
 	local row = session.rows[session.selected]
 	local def = row and Q.registered_quests[row.id]
+	-- A click on a reward choice (Round 57): it is the picked one.
+	for index in ipairs(def and def.rewards.choices or {}) do
+		if fields["choice_" .. index] then
+			if index ~= session.picked then grug_sounds.play("quest_page", player) end
+			Q.open_npc(player, session.entity, session.selected, nil, index)
+			return true
+		end
+	end
 	local ok, message
-	if fields.accept and def and def.npc == session.npc then ok, message = Q.accept(player, row.id)
-	elseif fields.turnin and def and def.turnin_npc == session.npc then ok, message = Q.turn_in(player, row.id) end
+	if fields.accept and def and def.giver_variant[session.npc] then
+		ok, message = Q.accept(player, row.id, session.npc)
+	elseif fields.turnin and def and Q.turns_in_at(player, row.id, session.npc) then
+		ok, message = Q.turn_in(player, row.id, session.picked)
+	end
 	if ok ~= nil then
 		sessions[name] = nil
 		-- After a Complete the dialog preselects again; after an Accept it
 		-- preselects too and stays on the accepted quest only when nothing
 		-- is ready or acceptable (the user, 2026-10-10); a failed Accept or
-		-- Complete stays on that quest while it is listed here.
+		-- Complete stays on that quest while it is listed here (a refused
+		-- Complete keeps the chosen reward).
 		local target = row.id
 		if ok and fields.turnin then target = nil
 		elseif ok then target = {after = row.id} end
-		if not Q.open_npc(player, session.entity, target, message or "Quest updated.") then
+		if not Q.open_npc(player, session.entity, target, message or "Quest updated.",
+				not ok and session.picked or nil) then
 			core.close_formspec(name, FORM)
 		end
 	end
@@ -173,7 +287,15 @@ core.register_on_leaveplayer(function(player) sessions[player:get_player_name()]
 -- the same parent mesh scale. 24.84 + 5*0.54 == 27 + 0.54 for every race.
 local MARKER_SCALE = 5
 local MARKER_Y = 27 - (MARKER_SCALE - 1) * 0.54
-local symbols = {ready = "question", available = "exclamation", active = "question", locked = "exclamation"}
+-- Marker value -> {symbol, colour} (Round 57 ruling 13: a story quest's
+-- marker keeps the status's symbol and brightness in the story accent).
+local MARKERS = {}
+for _, status in ipairs(Q.MARKER_STATUSES) do
+	local symbol = (status == "ready" or status == "active") and "question" or "exclamation"
+	local bright = status == "ready" or status == "available"
+	MARKERS[status] = {symbol = symbol, color = bright and "#ffd700" or "#c0c0c0"}
+	MARKERS["story_" .. status] = {symbol = symbol, color = bright and "#b46bff" or "#a99bc4"}
+end
 core.register_entity("grug_quests:marker", {
 	initial_properties = {physical = false, collide_with_objects = false, pointable = false,
 		visual = "mesh", mesh = "grug_quests_question.obj",
@@ -206,14 +328,14 @@ grug_core.register_tag_visibility(function(parent, observers, removed)
 	end
 	local children = markers[parent] or {}
 	markers[parent] = children
-	for state, symbol in pairs(symbols) do
+	for state, look in pairs(MARKERS) do
 		local child = children[state]
 		if partitions[state] and (not child or not child:is_valid()) then
 			child = core.add_entity(parent:get_pos(), "grug_quests:marker")
 			if child then
 				child:set_attach(parent, "", {x = 0, y = MARKER_Y, z = 0}, {x = 0, y = 0, z = 0})
-				child:set_properties({mesh = "grug_quests_" .. symbol .. ".obj", textures = {
-					(state == "ready" or state == "available") and "[fill:16x16:#ffd700" or "[fill:16x16:#c0c0c0"}})
+				child:set_properties({mesh = "grug_quests_" .. look.symbol .. ".obj",
+					textures = {"[fill:16x16:" .. look.color}})
 				children[state] = child
 			end
 		end

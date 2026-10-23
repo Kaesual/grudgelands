@@ -10,7 +10,7 @@
 -- Prints "R57 QSYS PORTABLE PASS" or the failures (exit 1).
 local ROOT = arg and arg[1] or "."
 local failed = false
-for _, part in ipairs({"quality_test.lua"}) do
+for _, part in ipairs({"quality_test.lua", "quest_test.lua"}) do
 	local handle = io.popen(('luajit "%s/tools/r57_qsys/%s" "%s" 2>&1'):format(ROOT, part, ROOT))
 	local output = handle:read("*a")
 	handle:close()
