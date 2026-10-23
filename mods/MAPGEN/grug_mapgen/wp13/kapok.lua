@@ -106,9 +106,11 @@ local function loader(directory)
 	local RACKS = {{-37, 20, 7, "z"}, {-37, 30, 6, "z"},
 		{-17, 20, 7, "z"}, {-17, 30, 6, "z"}}
 
-	-- The waypoint pad (Round 29, WP17): on the open litter west of the boardwalk road,
-	-- between the two cross lanes.
-	local WAYPOINT = {x = -12, z = 5}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
+	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
+	-- in the clearing east of the boardwalk road, south-west of the
+	-- Quartermaster.
+	local WAYPOINT = {x = 4, z = -6}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).

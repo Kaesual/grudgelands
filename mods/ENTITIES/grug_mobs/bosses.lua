@@ -647,6 +647,10 @@ local function king_def(race, row)
 end
 
 local ROYAL_FOLLOW_DISTANCE = 5
+-- A follow ends only within ROYAL_RELEASE_DISTANCE of the leader (Round 58
+-- review: a hysteresis, so a guard near the 5 m line does not start and end
+-- its follow on every check).
+local ROYAL_RELEASE_DISTANCE = 4
 -- THE FOLLOW ON THE SHARED NAVIGATION (Round 42 NV2, round42-plan.md rulings
 -- 4, 5 and 11). A leader that waits -- idle, at or on the way to his seat --
 -- is a fixed goal: the guard walks at him and, stuck, follows a found path to
@@ -668,10 +672,22 @@ local function leader_moving(lent)
 end
 
 local function royal_guard_base_tick(base_tick, self, dtime)
-	-- Royal socket fields identify and claim the authored guard slot, but the
-	-- ordinary start-guard tick would also steer this guard back to that slot.
-	-- The king is the only live home target for the encounter, so keep the
-	-- identity fields while hiding them from start_post_tick.
+	-- A throne guard holds its post beside the seat (Round 58, the user's
+	-- ruling of 2026-10-22: posts within ROYAL_FOLLOW_DISTANCE of the king, no
+	-- free wander): idle and near its leader, the ordinary start-guard tick
+	-- walks it to its socket and turns it the authored way. While the follow
+	-- owns it, the king is the only live home target, so the post fields are
+	-- hidden from start_post_tick. A bodyguard carries none (start_npcs.lua).
+	--
+	-- The post is held only while the leader stands near it (within the
+	-- follow distance of the post, `grug_royal_post_ok`, decided by
+	-- royal_guard_tick once a second): a guard whose idle leader stands
+	-- further from the post stays beside him, so the walk to the post and the
+	-- follow back never take turns (Round 58 review).
+	local t = self.temp
+	if not (t and (t.grug_royal_follow_active or t.grug_royal_post_ok == false)) then
+		return base_tick(self, dtime)
+	end
 	local post_x, post_z, post_yaw = self._grug_post_x, self._grug_post_z,
 		self._grug_post_yaw
 	self._grug_post_x, self._grug_post_z, self._grug_post_yaw = nil, nil, nil
@@ -777,8 +793,20 @@ local function royal_guard_tick(base_tick, self, dtime, boss_id)
 			local king_pos = ent.object:get_pos()
 			self._grug_home = {x = king_pos.x, y = king_pos.y, z = king_pos.z}
 			local dx, dz = king_pos.x - pos.x, king_pos.z - pos.z
-			if dx * dx + dz * dz <=
-					ROYAL_FOLLOW_DISTANCE * ROYAL_FOLLOW_DISTANCE then
+			local post_x, post_z = self._grug_post_x, self._grug_post_z
+			if post_x then
+				local px, pz = king_pos.x - post_x, king_pos.z - post_z
+				t.grug_royal_post_ok = px * px + pz * pz <=
+					ROYAL_FOLLOW_DISTANCE * ROYAL_FOLLOW_DISTANCE
+			end
+			local hold = t.grug_royal_follow_active and ROYAL_RELEASE_DISTANCE or
+				ROYAL_FOLLOW_DISTANCE
+			if dx * dx + dz * dz <= hold * hold then
+				if t.grug_royal_follow_active then
+					-- arrived: it stands (no walk on past the line)
+					self:set_velocity(0)
+					self.state = "stand"
+				end
 				forget_follow(self, ent.object)
 				return
 			end
@@ -788,6 +816,8 @@ local function royal_guard_tick(base_tick, self, dtime, boss_id)
 			return false
 		end
 	end
+	-- No leader in reach (fallen, unloaded): hold the post.
+	t.grug_royal_post_ok = nil
 	forget_follow(self, t.grug_royal_leader)
 end
 
@@ -826,6 +856,8 @@ for race, row in pairs(RACES) do
 	guard.on_die = function(self) grug_mobs.royal_guard_died(self) end
 	grug_mobs.register_mob("grug_mobs:royal_guard_" .. race_id, guard)
 	core.registered_entities["grug_mobs:royal_guard_" .. race_id]._grug_no_tint = true
+	-- No random walk from the post either (Round 58), as a king's from his seat.
+	core.registered_entities["grug_mobs:royal_guard_" .. race_id]._grug_no_wander = true
 end
 
 -- Round 31: the two fortress Generals (pvp-plan ruling 17; "Generals respawn

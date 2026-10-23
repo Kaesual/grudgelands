@@ -103,7 +103,7 @@ layer 6
 |..CCCCCCC..|
 |..CCCCCCCK.|
 |..CCCCCCC..|
-|.BCCCCCCCB.|
+|.BCCCCCCC..|
 |..CCCCCCC..|
 |..CCCCCCC..|
 |..CCCCCCC..|
@@ -114,8 +114,8 @@ layer 7
 |...........|
 |..GGGGGGG..|
 |..GMMMMM.A.|
-|..GMAAAMG..|
-|..GMAAA.G..|
+|..GMAAAM...|
+|..GMAAA....|
 |..GMAAAMG..|
 |..GMMMMMG..|
 |..GGGGGGG..|

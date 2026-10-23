@@ -126,9 +126,10 @@ local function guard_tick(self, dtime)
 		-- so it also rides in staticdata; post guards keep their idle turns.
 		self.randomly_turn = false
 		-- A start town's or a capital's watch walks cached legs (routes.lua,
-		-- Round 42); an outpost's (no settlement key) plain fixed walks.
+		-- Round 42); an outpost's (no settlement key) plain fixed walks. A
+		-- small loop carries its own reach (start_npcs.lua, Round 58).
 		grug_mobs.route_tick(self, dtime, route.points, route, "wp", true,
-			self._grug_start)
+			self._grug_start, route.reach)
 	end
 	-- A START SETTLEMENT's post guard holds its authored socket and faces its
 	-- authored direction while idle (start_npcs.lua, WP13). An outpost guard

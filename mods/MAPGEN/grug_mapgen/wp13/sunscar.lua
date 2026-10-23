@@ -157,9 +157,10 @@ local function loader(directory)
 		{-34, -20, -20, -10, 9, 5}, {24, 14, 38, 30, 9, 5},
 	}
 
-	-- The waypoint pad (Round 29, WP17): on the open flats north of the south lane, in front
-	-- of the tusk house's door, six nodes away.
-	local WAYPOINT = {x = -11, z = -16}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
+	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
+	-- on the yard, north-west of the Quartermaster.
+	local WAYPOINT = {x = 6, z = -3}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).

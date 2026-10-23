@@ -54,6 +54,7 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local templates = dofile(directory .. "/templates.lua")(directory)
+	local gate_watch = dofile(directory .. "/gate_watch.lua")(directory)
 	local CAPITAL = templates.capital("nhal_veyr")
 
 	local M = {}
@@ -125,6 +126,9 @@ local function loader(directory)
 	-- the core used to add afterwards: the mausoleum's floor bands and
 	-- braziers and the vigil elder's doorstep.
 	--
+	-- `watch` marks a core gatehouse whose guards gate_watch.lua sets (Round
+	-- 58): the ground guards' rectangle and the tower guard's post.
+	--
 	-- `drop` and `recast` are the socket policy of the sockets contract, and
 	-- they exist because a part cannot know how many of a thing a CAPITAL may
 	-- have: one throne, one travel pad for WP17 and exactly two `grug_traders`
@@ -142,13 +146,13 @@ local function loader(directory)
 		-- 2. The four inner gatehouses, where the avenues leave the precinct.
 		-- Nhal Veyr's curtain wall is 209 nodes further out, so these are the
 		-- necropolis's own gates and not the city's.
-		{id = "gate_south", template = "nhal_veyr_gate_south",
+		{id = "gate_south", template = "nhal_veyr_gate_south", watch = true,
 			x = -6, z = -RADIUS, turns = 0, palette = "crypt", roof = "crypt_vault"},
-		{id = "gate_west", template = "nhal_veyr_gate_south",
+		{id = "gate_west", template = "nhal_veyr_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "crypt", roof = "crypt_vault"},
-		{id = "gate_north", template = "nhal_veyr_gate_south",
+		{id = "gate_north", template = "nhal_veyr_gate_south", watch = true,
 			x = -6, z = 43, turns = 2, palette = "crypt", roof = "crypt_vault"},
-		{id = "gate_east", template = "nhal_veyr_gate_south",
+		{id = "gate_east", template = "nhal_veyr_gate_south", watch = true,
 			x = 43, z = -6, turns = 3, palette = "crypt", roof = "crypt_vault"},
 
 		-- 3. The market square, west of the approach.
@@ -480,6 +484,7 @@ local function loader(directory)
 			-- The building's own sockets; a socket point without a role is the
 			-- position of one of the composition's own sockets.
 			templates.collect_sockets(stamped, points, plot.id)
+			local first = #sockets + 1
 			for _, entry in ipairs(points.sockets or {}) do
 				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
@@ -504,6 +509,11 @@ local function loader(directory)
 					end
 					sockets[#sockets + 1] = out
 				end
+			end
+			-- A core gatehouse's watch (Round 58, gate_watch.lua): the ground
+			-- guards' rectangle on the city side and the tower guard's post.
+			if plot.watch then
+				gate_watch.apply(sockets, first, plot, part.w, part.d, "nhal_veyr", buf)
 			end
 		end
 
@@ -863,6 +873,8 @@ local function loader(directory)
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, undead, RADIUS, sockets, doorways)
 		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		-- Round 58: the gate watch's corners stand on open ground.
+		gate_watch.clear_cover(buf, CAPITAL.palettes.town)
 		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}

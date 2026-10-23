@@ -83,10 +83,10 @@ local function loader(directory)
 		{-6, 30, 11}, {6, 34, 13}, {-34, -8, 12}, {34, -14, 11},
 	}
 
-	-- The waypoint pad (Round 29, WP17): where the south lane ends west of the glade house
-	-- that hosts guests, so the lane runs onto its cross; the inn door is
-	-- nine nodes away.
-	local WAYPOINT = {x = -44, z = -23}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
+	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
+	-- on the court east of the crescent, beside the Quartermaster.
+	local WAYPOINT = {x = 10, z = -3}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).

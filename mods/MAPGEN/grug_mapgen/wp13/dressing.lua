@@ -532,6 +532,13 @@ local function loader(directory)
 	-- steps up its `side` ("z-", "z+", "x-" or "x+"), three treads wide and
 	-- centred on that side. The podium top is the caller's building pad, so
 	-- a building stamped at y = height stands on it with its own apron.
+	--
+	-- The flight has `height` treads, all outside the podium, the top one
+	-- (y = height) against its edge: its raised half is flush with the
+	-- podium's top, so the walk from the ground to the pad climbs half a node
+	-- at a time. Until Round 58 it had `height - 1` and left a full node to
+	-- climb at the edge, which a player can only jump (the Silverleaf terrace
+	-- houses).
 	function M.terrace(buf, palette, x1, z1, x2, z2, height, side)
 		buf:fill(x1, 1, z1, x2, height, z2, palette.node("plaza"))
 		buf:clear(x1, height + 1, z1, x2, height + 4, z2)
@@ -544,8 +551,8 @@ local function loader(directory)
 		elseif side == "x-" then face, edge = 1, x1
 		else face, edge = 3, x2 end
 		local outward = (side == "z-" or side == "x-") and -1 or 1
-		for tread = 1, height - 1 do
-			local step = edge + outward * (height - tread)
+		for tread = 1, height do
+			local step = edge + outward * (height - tread + 1)
 			for offset = -1, 1 do
 				local sx = along_x and (centre + offset) or step
 				local sz = along_x and step or (centre + offset)

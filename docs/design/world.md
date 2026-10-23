@@ -498,7 +498,11 @@ level-60 royal guards per capital. They consume the authored `king` and royal
 guard sockets; the king alone owns reset, death and group-respawn authority as
 specified in `world_zones.md` §12. A king holds his seat (Round 41): he never
 wanders, stands on his throne socket facing its authored direction and walks
-back to it after a fight or a leash reset; his guards follow him there.
+back to it after a fight or a leash reset; his guards follow him there. Since
+Round 58 (the user's ruling of 2026-10-22) his throne guards hold posts beside
+him: each its own socket, three nodes from the seat and so within the follow
+distance (5 m), facing its authored way, with no random walk; they follow him
+only while he is further than that and walk back to their posts after.
 
 ## 4. Outposts & patrols
 
