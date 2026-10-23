@@ -572,13 +572,17 @@ select(q, soup.id)
 has(q.formspec, "Max: 3]", "Q setup: the maximum is 3")
 local X = 5.6
 local row = {}
-for name, x, w in q.formspec:gmatch("(%a+)%[([%d%.]+),7%.54;([%d%.]+),0%.6;") do
+-- Round 57 layout C: the bottom row above the job strip, left of the big
+-- button.
+local row_y = grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y - 0.8):gsub("%.", "%%.")
+for name, x, w in q.formspec:gmatch("(%a+)%[([%d%.]+)," .. row_y .. ";([%d%.]+),0%.6;") do
 	row[#row + 1] = {name = name, x = tonumber(x), w = tonumber(w)}
 end
 eq(#row, 4, "Q the row: −, the field, +, Max")
 local ok = #row == 4
+local button_x = grug_jobs.CRAFT_BOX.x + grug_jobs.CRAFT_BOX.w - 0.2 - grug_jobs.CRAFT_ACTION.w
 for index, r in ipairs(row) do
-	if r.x + r.w > X + 4.4 + 1e-6 then ok = false end
+	if r.x + r.w > button_x - 0.1 + 1e-6 then ok = false end
 	if index > 1 and r.x < row[index - 1].x + row[index - 1].w then ok = false end
 end
 check(ok and row[1].x >= X + 8 / 6.6, "Q the row fits the box after the label, no overlap")

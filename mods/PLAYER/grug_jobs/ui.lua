@@ -105,8 +105,10 @@ local BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
 local TAB_Y, TAB_H = 0.25, 0.65
 local LIST_X, LIST_W = 0.2, 5.0
 local SEARCH_Y, CHECK_Y = 1.1, 2.0
--- "Favorites only" beside "Craftable only" (Round 57 ruling 7).
-local FAV_CHECK_X = 2.6
+-- "Favorites only" beside "Craftable only" (Round 57 ruling 7). At the web
+-- client's size the two labels need about 5.2 units (measured on the
+-- Round 57 shots), so the second may run into the gap before the box.
+local FAV_CHECK_X = 2.75
 -- Rows 0.54 high (0.56 until the boxes moved up), so the box buttons below
 -- the pager keep their height.
 local ROW_Y, ROW_H, ICON = 2.35, 0.54, 0.45

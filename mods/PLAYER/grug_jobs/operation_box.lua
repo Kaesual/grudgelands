@@ -51,8 +51,8 @@ local W = BOX.w - 0.4
 local ACTION = grug_jobs.CRAFT_ACTION
 local TITLE_Y, SLOT_Y = BOX.y + 0.3, BOX.y + 0.65
 -- The enchant list right of the slot, the arrow and the preview.
-local LIST_X = X + 3.6
-local LIST_W, LIST_H = W - 3.6, 1.75
+local LIST_X = X + 3.45
+local LIST_W, LIST_H = W - 3.45, 1.75
 local NOTE_STEP = 0.38
 local LEVEL_CHARS = 8
 local BOX_COLOR = "#00000040"

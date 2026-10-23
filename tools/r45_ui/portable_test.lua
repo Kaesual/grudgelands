@@ -554,7 +554,10 @@ local function geometry_ok(fs, label)
 				label, r.name, r.x, r.y, r.w, r.h))
 		elseif r.y >= 0.95 then
 			for _, column in ipairs(COLUMNS) do
-				if r.x >= column[1] - 1e-6 and r.x < column[2] and right > column[2] + 0.05 then
+				-- (a checkbox of the list may run into the gap before the box:
+				-- "Favorites only" beside "Craftable only", Round 57)
+				local limit = column[2] + ((r.name == "checkbox" and column[2] < 5.3) and 0.2 or 0.05)
+				if r.x >= column[1] - 1e-6 and r.x < column[2] and right > limit then
 					ok = check(false, ("%s: %s %q at %.2f,%.2f runs out of its column (%.2f)")
 						:format(label, r.name, r.text or "", r.x, r.y, right))
 				end
