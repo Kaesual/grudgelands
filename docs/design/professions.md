@@ -293,7 +293,8 @@ Basic lists what the character has held the ingredients of (Round 47,
   advances at the end of its next counting job once the character band
   allows it. Unlearning a profession while its job runs lets the job finish
   without XP, and so do its waiting jobs. The list, search and ×N of the
-  Crafting tab, its crafting box, overflow, job strip and queue view:
+  Crafting tab, its crafting box, overflow, job strip, queue view and recipe
+  details page (where each ingredient comes from, Round 57):
   [inventory_equipment.md](inventory_equipment.md)
   §1 "The Crafting tab" (spec §2.17–2.18 and §4.2–4.5); the professions
   overview sits in its box.
@@ -501,12 +502,14 @@ graded wood) are not profession products.
 few T1 basics. They never sell an enchant input — a signature loot item or
 family input of `grug_professions/data/enchants.json` — and never a crafting
 ingredient above T1** (user ruling 1 of 2026-10-02,
-[economy plan](../planning/economy-vendor-plan.md) §2). A T1 own material
-may be sold (the smith and the armourer sell the Bronze Bar, the tanner Light
-Leather). Every ingredient from T2 up and every enchant input comes from
-loot, mining or gathering: the hunt is the game. T1 basics stay buyable
-because T1 is the tutorial band. A load audit in `grug_traders` drops and
-reports any shelf entry that breaks the rule; it judges a food by its own raw
+[economy plan](../planning/economy-vendor-plan.md) §2). Since Round 57
+(ruling 28) no vendor sells leather, cloth, ores or metal bars of any tier
+either (Thread stays as a job supply). Every ingredient from T2 up, every
+enchant input and every leather, cloth, ore and bar comes from loot, mining,
+smelting or gathering: the hunt is the game. The other T1 basics stay
+buyable because T1 is the tutorial band. A load audit in `grug_traders`
+drops and reports any shelf entry that breaks the tier or enchant rule
+(`tools/r57_vendormat` checks the material rule); it judges a food by its own raw
 tier (`items_crafting.md` §3.7, so the baker's T1 melon passes) and anything
 else by the higher of its own tier and its profession ingredient tier.
 Flavour shelves (the mason's blocks, candles, food to eat) stay. (Also

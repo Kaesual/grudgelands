@@ -36,8 +36,9 @@
 --      list that still holds a stack, leaves a size-0 list alone;
 --   X  removed: no shipped file names a removed function, file or the
 --      craft grid; outside the furnaces, the vendored fuel and cooking
---      queries, the price module's cooking reader and the curation clears,
---      nothing reads the engine's craft recipes.
+--      queries, the price module's and the source index's (Round 57)
+--      cooking readers and the curation clears, nothing reads the engine's
+--      craft recipes.
 -- Prints "R45 RG PORTABLE PASS checks=<n>" or the failures.
 
 local repo = arg and arg[1] or "."
@@ -564,9 +565,12 @@ do
 	end
 	pipe:close()
 	check(files > 400, "every shipped Lua file was scanned (" .. files .. ")")
+	-- Round 57 lane DETAILS: the source index reads the furnace's cooking
+	-- recipes too (where an item comes from), as the price module does.
 	eq(table.concat(readers, " "), "mods/ENTITIES/grug_traders/prices.lua " ..
-		"mods/ITEMS/grug_materials/content_curation.lua",
-		"only the price module (cooking) and the curation clears list engine recipes")
+		"mods/ITEMS/grug_materials/content_curation.lua mods/PLAYER/grug_jobs/sources.lua",
+		"only the price module and the source index (cooking) and the curation clears list " ..
+		"engine recipes")
 	for _, path in ipairs({"stations.lua", "discovery.lua", "basics_routes.lua",
 			"basics_presentation.lua"}) do
 		check(io.open(repo .. "/mods/PLAYER/grug_jobs/" .. path) == nil,

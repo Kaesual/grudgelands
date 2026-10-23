@@ -410,6 +410,19 @@ function grug_mobs.band_drop_items()
 	return out
 end
 
+-- Every drop table by its key (a family, or a sub-type's `drops`), as fresh
+-- copies: key -> {bands = {[1..6] = rows}, leader_bonus = rows or nil}, each
+-- row {name, chance, min, max}. Read-only use: the recipe details' source
+-- index (grug_jobs/sources.lua, Round 57) shows where an item drops.
+function grug_mobs.drop_tables()
+	local out = {}
+	for key, entry in pairs(DROPS) do
+		out[key] = {bands = table.copy(entry.bands),
+			leader_bonus = entry.leader_bonus and table.copy(entry.leader_bonus)}
+	end
+	return out
+end
+
 --
 -- Sub-type registrations (ruling 35, frame §4.1)
 --

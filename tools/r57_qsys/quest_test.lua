@@ -525,7 +525,11 @@ do
 	form = dialogue(ann, EL, CROP)
 	has(form, "The fields are quiet again", "A the completion text at the turn-in")
 	lacks(form, "Barley Piglets are eating", "A ... in place of the quest text")
+	has(form, "and one of:\n  Small Healing Potion × 2\n  Small Mana Potion × 2",
+		"A a plain choice reads its name and count, one per line")
 	form = click(ann, {choice_1 = "1"})
+	has(form, "Chosen:\nSmall Healing Potion", "A the picked plain choice's tooltip lines in the text")
+	has(form, "Chosen: Small Healing Potion (see above)", "A ... and its name under the icons")
 	click(ann, {turnin = "Complete"})
 	eq(Q.status(ann, CROP), "completed", "A turned in")
 	eq(ann:find("fx:healing_potion"):get_count(), 2, "A the picked two healing potions")
@@ -641,12 +645,19 @@ do
 	has(form, "item_image[10.60,5.95;1.15,1.15;grug_gear:chest_metal_bronze]", "D ... the third, the chestplate")
 	has(form, "Item level 5", "D ... its tooltip names the reward's item level")
 	has(form, "of the Owl", "D ... and its fixed enchant")
-	has(form, "and one of: ", "D the rewards text names the choice")
+	-- Round 57 follow-up (the user): the enchants readable without hovering.
+	has(form, "and one of:\n  Patch Robe of the Owl (Suffix: +2 Intelligence (T1))\n" ..
+		"  Quick Light Jerkin (Prefix: +1 Dexterity (T1))\n  Heavy Bronze Chestplate (Prefix: +2 Strength (T1))",
+		"D the offer names each choice by its enchanted name with its enchants")
+	lacks(form, "Patch Robe,", "D ... never by the base name")
+	has(form, "Hover an item to see its tooltip.", "D the offer's hint")
 	lacks(form, "choice_1", "D no choice button before the turn-in")
 	click(ed, {accept = "Accept"})
 	kill(ed, "Hill Wolf", 8)
 	form = dialogue(ed, EL, "qs_armor")
 	has(form, "Choose your reward:", "D the turn-in asks for the choice")
+	has(form, "Pick an item to see its enchantments above, or hover it.", "D ... with the hint before a pick")
+	lacks(form, "Chosen:", "D ... and no chosen reward yet")
 	has(form, "item_image_button[7.80,5.95;1.15,1.15;grug_gear:chest_cloth_patch;choice_1;]",
 		"D ... selectable buttons")
 	has(form, "tooltip[choice_2;", "D ... each with its tooltip")
@@ -656,7 +667,9 @@ do
 	eq(Q.status(ed, "qs_armor"), "ready", "D ... the quest stays")
 	form = click(ed, {choice_2 = "2"})
 	has(form, "box[9.12,5.87;1.31,1.31;#7ee06a]", "D the picked choice is framed")
-	has(form, "Chosen: ", "D ... and named")
+	has(form, "Chosen: Quick Light Jerkin (see above)", "D ... and named by its enchanted name")
+	has(form, "Chosen:\nQuick Light Jerkin\nItem level 5\nLeather\n", "D the picked stack's tooltip in the text")
+	has(form, "Prefix: +1 Dexterity (T1)\nUsable by:", "D ... with its enchant line")
 	-- A full inventory: the preflight refuses the picked reward.
 	local slots = ed:slots()
 	for i = 1, #slots do slots[i] = ItemStack("default:cobble 99") end
