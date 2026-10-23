@@ -158,6 +158,9 @@ for _, c in ipairs(compositions) do
 			end
 			if s.role == "waypoint" then
 				check(at(s.x, 1, s.z) == "grug_mapgen:waystone", label .. ": waystone at its socket")
+			elseif s.role == "lift" then
+				-- Round 58: a camp's lift socket is its lift node's cell
+				check(at(s.x, 1, s.z) == "grug_mapgen:guild_lift", label .. ": lift node at its socket")
 			else
 				check(standing(s.x, s.z), label .. ": socket " .. s.id .. " stands on ground with air above")
 			end
@@ -179,6 +182,9 @@ for _, c in ipairs(compositions) do
 			check(roles.guard_post == guards and roles.captain == 1,
 				label .. ": " .. guards .. " guards and a captain")
 			check(groups.gate == 2, label .. ": two of them hold the gate")
+			-- Round 58: a war camp is a mining camp too
+			check(roles.lift == 1 and seen.lift and roles.quest == 1 and seen.quest_foreman and
+				roles.vendor == 1 and seen.vendor_camp, label .. ": the lift, the foreman, the camp vendor")
 		end
 		check(register(profile.key, bp.landmarks.race, rows, profile.label) == #rows,
 			label .. ": the grug_core registry takes every socket")
@@ -203,7 +209,7 @@ for _, c in ipairs(compositions) do
 		end
 		for _, s in ipairs(rows) do
 			local near = reached[s.x .. ":" .. s.z]
-			if s.role == "waypoint" then
+			if s.role == "waypoint" or s.role == "lift" then
 				near = reached[(s.x + 1) .. ":" .. s.z] or reached[(s.x - 1) .. ":" .. s.z] or
 					reached[s.x .. ":" .. (s.z + 1)] or reached[s.x .. ":" .. (s.z - 1)]
 			end

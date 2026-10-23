@@ -64,10 +64,12 @@ do
 		local kind = icons.kind(anchor.slot_id)
 		if kind then counts[kind] = (counts[kind] or 0) + 1 else unknown[#unknown + 1] = anchor.slot_id end
 	end
-	eq(#source.anchors, 118, "K 118 anchors")
+	-- Round 58: 20 mining camps (the mine's icon until the picked camp
+	-- icon) and 6 camps under construction (war camps)
+	eq(#source.anchors, 144, "K 144 anchors")
 	eq(#unknown, 0, "K every anchor has a kind (" .. table.concat(unknown, ",") .. ")")
 	local want = {start = 6, capital = 6, village = 12, outpost = 24, fortress = 2,
-		war_camp = 16, bandit = 12, mirefolk = 4, mine = 8, clash = 16, rare_den = 10, dragon = 2}
+		war_camp = 22, bandit = 12, mirefolk = 4, mine = 28, clash = 16, rare_den = 10, dragon = 2}
 	for kind, n in pairs(want) do eq(counts[kind], n, "K " .. kind) end
 	check(icons.kind(nil) == nil and icons.kind("landmark") == nil and icons.kind("") == nil,
 		"K no kind for an unknown slot")
