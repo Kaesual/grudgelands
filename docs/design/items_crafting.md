@@ -949,7 +949,8 @@ universal tier ladder. The six processed grades are decided
 Heartwood** (T1→T6), retained for enchanting rather than plain weapon recipes,
 each a Basic recipe from any `group:wood` — both continents
 reach every grade by construction, and the per-race woods stay a cosmetic
-skin on top, never a tier gate. Like the alloys (§3.0.2), the grades are
+skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
+for example Steel Staff (§3.8). Like the alloys (§3.0.2), the grades are
 **flat** (Round 57, the user's ruling of 2026-10-23): each is 2 planks plus
 one unit of its tier's own ingredient, never the grade below.
 
@@ -963,8 +964,7 @@ one unit of its tier's own ingredient, never the grade below.
 | Heartwood Wood | T6 | 2 planks + 1 Abyssal Crystal |
 
 The T2–T6 ingredients are the metal ladder's own: the tier's new metal or
-the alloy's second input (§3.0.1). These are component names; finished weapons follow the shared tier names,
-for example Steel Staff (§3.8).
+the alloy's second input (§3.0.1).
 
 **Makes, enchants and upgrades**: staves and wands.
 
