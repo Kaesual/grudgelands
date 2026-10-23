@@ -1745,6 +1745,14 @@ tools](#player-meta-read-by-external-tools).
     (`stock.lua` `culture`, four price bands); vendors sell blue ×3 and gold
     ×6 of the Common payout (`grug_traders.stack_sell_price`,
     `price_rules.QUALITY_FACTOR`).
+  - **A Miner's Guild vendor** (Round 58): a vendor definition in
+    `grug_traders.vendors` with `guild = true` gets the window's third mode,
+    Trade-in (`trade.lua`; it opens on it): the guild's name, the rank and
+    the balance, and a row per exchanged item from
+    `grug_guild.trade_in_rows`, traded through `grug_guild.trade_in` after
+    the row is re-checked against the one shown. The camp vendor and the
+    guild house's exchange counter carry the field. The guild's consumables
+    pay their catalogue `sell_copper` (`prices.lua`).
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached
@@ -1892,6 +1900,19 @@ tools](#player-meta-read-by-external-tools).
 ## Miner's Guild
 
 - **`grug_guild` (Round 58):** the catalogue, its API, the files and their owners and the saved keys: [miners_guild.md](../design/miners_guild.md) §10.
+  Reputation (`store.lua`): two integers per character and guild in player
+  meta, keyed by faction id (`grug_guild:lifetime_<faction>`,
+  `grug_guild:balance_<faction>`); `add` and `spend` fire
+  `register_on_change`, and `add` fires `register_on_rank_change` only when
+  the rank rose (the achievement counter `guild:rank` reads
+  `grug_guild.highest_rank` live, so nothing is copied). Every display of
+  rank and balance goes through `grug_guild.summary`, `format_points` and
+  `reputation_formspec` (text "Reputation 1,234" until the reputation icon
+  is picked; the icon then goes into `grug_guild.REPUTATION_ICON`, no caller
+  changes). The trade-in (`exchange.lua`) counts and takes over
+  `grug_inventory.consume_lists` like the Sell tab's lots (remove_item by
+  name, every check first). `/guild_rep <player> <points>` (privilege
+  `server`) adds reputation for tests and the GUI checklist.
 
 ## Mail
 
