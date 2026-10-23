@@ -146,7 +146,7 @@ return function(options, profile)
 		decor.piece(brush,"ore_heap",7,8,0)
 		decor.piece(brush,"ore_heap",-6,-6,0)
 		decor.piece(brush,"woodpile",-9,-9,0,3)
-		lamp(-4,-4,2); lamp(4,4,2)
+		lamp(-6,-3,2); lamp(4,4,2)
 		-- Sockets (the camp socket contract, settlements.md "Mining camps").
 		socket("lift","lift",lx,lz,0,-1)
 		socket("quest_foreman","quest",-7,2,0,-1)
