@@ -26,23 +26,53 @@
   ],
   "quests": [
     {
-      "id": "silverleaf_hunt_04",
+      "id": "start_grunters",
       "line": "hunt",
-      "giver": "r14_elf_elder",
-      "turnin": "r14_elf_elder",
-      "min_level": 4,
-      "level": 5,
+      "min_level": 7,
+      "level": 8,
       "requires": [],
-      "title": "[PH] Russet Kits in the Seedbeds",
-      "text": "[PH] Hunt 8 Russet Kits by day in the {name:foxglades}. Real text to follow.",
+      "title": "[PH] Tusks in the Undergrowth",
+      "text": "[PH] Kill 6 Acorn Grunters by day in the {name:foxglades}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "small_fox"
+            "aggressive_boar"
           ],
-          "count": 8,
+          "count": 6,
           "area": "elandor_silverleaf_glades/foxglades"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ]
+        },
+        {
+          "zone": "kragmar_kapok_cradle",
+          "givers": [
+            "r14_troll_elder"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_kapok_cradle/thornwood"
+            }
+          ],
+          "text": "[PH] Kill 6 Bushpigs by day in the {name:thornwood}. Real text to follow."
+        },
+        {
+          "zone": "kragmar_stillgrave_hollow",
+          "givers": [
+            "r14_undead_elder"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_stillgrave_hollow/blightmoor"
+            }
+          ],
+          "text": "[PH] Kill 6 Plague Boars by day in the {name:blightmoor}. Real text to follow."
         }
       ],
       "rewards": {
@@ -52,68 +82,13 @@
             "item": "grug_gear:feet_cloth_patch",
             "affixes": [
               {
-                "channel": "prefix",
-                "stat": "int"
-              }
-            ]
-          },
-          {
-            "item": "grug_gear:feet_leather_light",
-            "affixes": [
-              {
-                "channel": "prefix",
-                "stat": "dex"
-              }
-            ]
-          },
-          {
-            "item": "grug_gear:feet_metal_bronze",
-            "affixes": [
-              {
-                "channel": "prefix",
-                "stat": "str"
-              }
-            ]
-          }
-        ]
-      },
-      "lesson": "A local hunt; the feet armor choice (one enchant, item level 5).",
-      "duration_min": 9
-    },
-    {
-      "id": "silverleaf_grunters",
-      "line": "hunt",
-      "giver": "r14_elf_elder",
-      "turnin": "r14_elf_elder",
-      "min_level": 6,
-      "level": 7,
-      "requires": [],
-      "title": "[PH] Acorn Grunters",
-      "text": "[PH] Kill 5 Acorn Grunters by day in the {name:foxglades}. Real text to follow.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "aggressive_boar"
-          ],
-          "count": 5,
-          "area": "elandor_silverleaf_glades/foxglades"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "choices": [
-          {
-            "item": "grug_gear:head_cloth_patch",
-            "affixes": [
-              {
                 "channel": "suffix",
                 "stat": "max_mana_percent"
               }
             ]
           },
           {
-            "item": "grug_gear:head_leather_light",
+            "item": "grug_gear:feet_leather_light",
             "affixes": [
               {
                 "channel": "suffix",
@@ -122,7 +97,7 @@
             ]
           },
           {
-            "item": "grug_gear:head_metal_bronze",
+            "item": "grug_gear:feet_metal_bronze",
             "affixes": [
               {
                 "channel": "suffix",
@@ -132,7 +107,7 @@
           }
         ]
       },
-      "lesson": "A local hunt; the head armor choice (one enchant, item level 7).",
+      "lesson": "Aggressive boars by day; the level-8 feet armor choice (one enchant).",
       "duration_min": 12
     },
     {

@@ -198,8 +198,8 @@ for _, row in ipairs(ZONES) do
 		end
 	end
 end
-eq(shared_count, 9, "nine shared quests")
-eq(local_count, 25, "25 local quests (four per zone, Dawnmere five)")
+eq(shared_count, 12, "twelve shared quests")
+eq(local_count, 18, "18 local quests (the finale and the departure per zone, the hunts no other zone shares, Dawnmere's errand)")
 for _, row in ipairs(ZONES) do
 	local want = row[1] == "elandor_dawnmere_fields" and 12 or 13
 	eq(#offered[row[1]], want, row[1] .. ": quests offered")

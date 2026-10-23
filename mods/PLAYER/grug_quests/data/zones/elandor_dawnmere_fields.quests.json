@@ -602,14 +602,12 @@
       "duration_min": 12
     },
     {
-      "id": "dawnmere_hunt_03",
+      "id": "start_foxes",
       "line": "hunt",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
       "min_level": 4,
       "level": 5,
       "requires": [],
-      "title": "[PH] Henthieves in the Pastures",
+      "title": "[PH] Foxes in the Henhouse",
       "text": "[PH] Hunt 8 Henthieves by day in the {name:pastures}. Real text to follow.",
       "objectives": [
         {
@@ -619,6 +617,26 @@
           ],
           "count": 8,
           "area": "elandor_dawnmere_fields/pastures"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_silverleaf_glades",
+          "givers": [
+            "r14_elf_elder"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_silverleaf_glades/foxglades"
+            }
+          ],
+          "text": "[PH] Hunt 8 Russet Kits by day in the {name:foxglades}. Real text to follow."
         }
       ],
       "rewards": {
@@ -653,19 +671,17 @@
           }
         ]
       },
-      "lesson": "A local hunt; the chest armor choice (one enchant, item level 5).",
+      "lesson": "A day hunt; the level-5 chest armor choice (one enchant).",
       "duration_min": 9
     },
     {
-      "id": "dawnmere_hunt_04",
+      "id": "start_snappers",
       "line": "hunt",
-      "giver": "r14_human_elder",
-      "turnin": "r14_human_elder",
       "min_level": 7,
       "level": 8,
       "requires": [],
-      "title": "[PH] Snappers on the Wreck Coast",
-      "text": "[PH] Kill 5 Wreck Snappers by day on the {name:wreck_coast}. Real text to follow.",
+      "title": "[PH] Snappers on the Shore",
+      "text": "[PH] Kill 5 Wreck Snappers by day in the {name:wreck_coast}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -674,6 +690,26 @@
           ],
           "count": 5,
           "area": "elandor_dawnmere_fields/wreck_coast"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "elandor_hearthpine_vale",
+          "givers": [
+            "r14_dwarf_elder"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_hearthpine_vale/rockpools"
+            }
+          ],
+          "text": "[PH] Kill 5 Boulder Crabs by day in the {name:rockpools}. Real text to follow."
         }
       ],
       "rewards": {
@@ -708,7 +744,7 @@
           }
         ]
       },
-      "lesson": "A local hunt; the legs armor choice (one enchant, item level 8).",
+      "lesson": "A scarce shore target by day; the level-8 legs armor choice (one enchant).",
       "duration_min": 12
     },
     {

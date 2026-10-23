@@ -252,61 +252,6 @@
       "duration_min": 9
     },
     {
-      "id": "hearthpine_boulder_crabs",
-      "line": "hunt",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 7,
-      "level": 8,
-      "requires": [],
-      "title": "[PH] Boulder Crabs",
-      "text": "[PH] Kill 5 Boulder Crabs by day in the {name:rockpools}. Real text to follow.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "giant_crab"
-          ],
-          "count": 5,
-          "area": "elandor_hearthpine_vale/rockpools"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "choices": [
-          {
-            "item": "grug_gear:feet_cloth_patch",
-            "affixes": [
-              {
-                "channel": "suffix",
-                "stat": "max_mana_percent"
-              }
-            ]
-          },
-          {
-            "item": "grug_gear:feet_leather_light",
-            "affixes": [
-              {
-                "channel": "suffix",
-                "stat": "crit_percent"
-              }
-            ]
-          },
-          {
-            "item": "grug_gear:feet_metal_bronze",
-            "affixes": [
-              {
-                "channel": "suffix",
-                "stat": "max_hp_percent"
-              }
-            ]
-          }
-        ]
-      },
-      "lesson": "A local hunt; the feet armor choice (one enchant, item level 8).",
-      "duration_min": 12
-    },
-    {
       "id": "hearthpine_hunt_05",
       "line": "hunt",
       "giver": "r14_dwarf_elder",

@@ -263,8 +263,8 @@ do
 		end
 	end
 	eq(#files, 42, "C the 42 quest files are read")
-	-- Round 57: the six start zones' 92 quests became 34 (9 shared, 25 local).
-	eq(quests, 427, "C 427 quests ship (485 less the start zones' rework)")
+	-- Round 57: the six start zones' 92 quests became 30 (12 shared, 18 local).
+	eq(quests, 423, "C 423 quests ship (485 less the start zones' rework)")
 	eq(table.concat(repeatables, ", "), "", "C no repeatable quest ships")
 	local empty = {}
 	for _, key in ipairs(hub_lines) do

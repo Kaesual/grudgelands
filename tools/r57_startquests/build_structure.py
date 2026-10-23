@@ -231,6 +231,49 @@ SHARED = [
         "duration_min": 12,
         "text": "Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe.",
     },
+    # The local hunts that were twins (the same target and count in two or
+    # three zones, round57 fix round, ruling 9): one shared quest each, so
+    # one reward, one slot and one level for every zone that gives it.
+    {
+        "id": "start_foxes", "giver": "elder", "line": "hunt", "min_level": 4, "level": 5,
+        "title": "Foxes in the Henhouse",
+        "objectives": lambda v: [kill(["small_fox"], 8, v["area"])],
+        "rewards": {"weight": 3, "choices": armor("chest", EARLY)},
+        "lesson": "A day hunt; the level-5 chest armor choice (one enchant).",
+        "duration_min": 9,
+        "text": "Hunt 8 {mob} by day in the {{name:{area}}}.",
+        "towns": {
+            "dawnmere": {"area": "pastures", "mob": "Henthieves"},
+            "silverleaf": {"area": "foxglades", "mob": "Russet Kits"},
+        },
+    },
+    {
+        "id": "start_snappers", "giver": "elder", "line": "hunt", "min_level": 7, "level": 8,
+        "title": "Snappers on the Shore",
+        "objectives": lambda v: [kill(["giant_crab"], 5, v["area"])],
+        "rewards": {"weight": 2.5, "choices": armor("legs", LATE)},
+        "lesson": "A scarce shore target by day; the level-8 legs armor choice (one enchant).",
+        "duration_min": 12,
+        "text": "Kill 5 {mob} by day in the {{name:{area}}}.",
+        "towns": {
+            "dawnmere": {"area": "wreck_coast", "mob": "Wreck Snappers"},
+            "hearthpine": {"area": "rockpools", "mob": "Boulder Crabs"},
+        },
+    },
+    {
+        "id": "start_grunters", "giver": "elder", "line": "hunt", "min_level": 7, "level": 8,
+        "title": "Tusks in the Undergrowth",
+        "objectives": lambda v: [kill(["aggressive_boar"], 6, v["area"])],
+        "rewards": {"weight": 3, "choices": armor("feet", LATE)},
+        "lesson": "Aggressive boars by day; the level-8 feet armor choice (one enchant).",
+        "duration_min": 12,
+        "text": "Kill 6 {mob} by day in the {{name:{area}}}.",
+        "towns": {
+            "silverleaf": {"area": "foxglades", "mob": "Acorn Grunters"},
+            "kapok": {"area": "thornwood", "mob": "Bushpigs"},
+            "stillgrave": {"area": "blightmoor", "mob": "Plague Boars"},
+        },
+    },
 ]
 ALL_TOWNS = {town: {} for _, town, _ in ZONES}
 
@@ -242,12 +285,6 @@ ALL_TOWNS = {town: {} for _, town, _ in ZONES}
 # few hunts), every other quest has a new id.
 LOCAL = {
     "dawnmere": {
-        "mid": {"id": "dawnmere_hunt_03", "title": "Henthieves in the Pastures", "min_level": 4, "level": 5,
-                "objectives": [kill(["small_fox"], 8, "pastures")], "weight": 3, "slot": "chest",
-                "text": "Hunt 8 Henthieves by day in the {name:pastures}."},
-        "late": {"id": "dawnmere_hunt_04", "title": "Snappers on the Wreck Coast", "min_level": 7, "level": 8,
-                 "objectives": [kill(["giant_crab"], 5, "wreck_coast")], "weight": 2.5, "slot": "legs",
-                 "text": "Kill 5 Wreck Snappers by day on the {name:wreck_coast}."},
         # Dawnmere has no undead and no low shore kind for the shared crab
         # legs: its cook keeps her own shore-and-pasture errand (objectives
         # as shipped, so the id stays).
@@ -267,20 +304,11 @@ LOCAL = {
         "mid": {"id": "hearthpine_hunt_04", "title": "Ibex on the High Pines", "min_level": 4, "level": 5,
                 "objectives": [kill(["young_ibex"], 8, "high_pines")], "weight": 3, "slot": "head",
                 "text": "Hunt 8 Ibex Kids by day in the {name:high_pines}."},
-        "late": {"id": "hearthpine_boulder_crabs", "title": "Boulder Crabs", "min_level": 7, "level": 8,
-                 "objectives": [kill(["giant_crab"], 5, "rockpools")], "weight": 2.5, "slot": "feet",
-                 "text": "Kill 5 Boulder Crabs by day in the {name:rockpools}."},
         "final": {"id": "hearthpine_hunt_05", "melee": "greataxe", "chief": "muddled_ore_chief",
                   "camp": "ore_thief_camp", "weight": 4.5,
                   "text": "Defeat 7 Ore Thieves at the {name:ore_thief_camp}, then {name:muddled_ore_chief}."},
     },
     "silverleaf": {
-        "mid": {"id": "silverleaf_hunt_04", "title": "Russet Kits in the Seedbeds", "min_level": 4, "level": 5,
-                "objectives": [kill(["small_fox"], 8, "foxglades")], "weight": 3, "slot": "feet",
-                "text": "Hunt 8 Russet Kits by day in the {name:foxglades}."},
-        "late": {"id": "silverleaf_grunters", "title": "Acorn Grunters", "min_level": 6, "level": 7,
-                 "objectives": [kill(["aggressive_boar"], 5, "foxglades")], "weight": 2.5, "slot": "head",
-                 "text": "Kill 5 Acorn Grunters by day in the {name:foxglades}."},
         "final": {"id": "silverleaf_hunt_05", "melee": "sword", "chief": "misguided_poacher_chief",
                   "camp": "poacher_camp", "weight": 5,
                   "text": "Defeat 7 Fern Poachers or Wood Thieves at the {name:poacher_camp}, then "
@@ -301,9 +329,6 @@ LOCAL = {
         "mid": {"id": "kapok_tapirs", "title": "Tapir Calves in the Broadleaf", "min_level": 4, "level": 5,
                 "objectives": [kill(["young_tapir"], 8, "broadleaf_wood")], "weight": 3, "slot": "head",
                 "text": "Hunt 8 Tapir Calves by day in the {name:broadleaf_wood}."},
-        "late": {"id": "kapok_hunt_04", "title": "Bushpigs in the Thornwood", "min_level": 7, "level": 8,
-                 "objectives": [kill(["aggressive_boar"], 8, "thornwood")], "weight": 3.5, "slot": "feet",
-                 "text": "Hunt 8 Bushpigs by day in the {name:thornwood}."},
         "final": {"id": "kapok_hunt_05", "melee": "sword", "chief": "offering_thief_chief",
                   "camp": "thieves_camp", "weight": 4.5,
                   "text": "Defeat 6 Offering Thieves at the {name:thieves_camp}, then {name:offering_thief_chief}."},
@@ -312,9 +337,6 @@ LOCAL = {
         "mid": {"id": "stillgrave_fawns", "title": "Gaunt Fawns on the Moor", "min_level": 4, "level": 5,
                 "objectives": [kill(["young_gaunt_stag"], 8, "blightmoor")], "weight": 3, "slot": "legs",
                 "text": "Hunt 8 Gaunt Fawns by day on the {name:blightmoor}."},
-        "late": {"id": "stillgrave_plague_boars", "title": "Plague Boars", "min_level": 6, "level": 7,
-                 "objectives": [kill(["aggressive_boar"], 6, "blightmoor")], "weight": 3, "slot": "chest",
-                 "text": "Kill 6 Plague Boars by day on the {name:blightmoor}."},
         "final": {"id": "stillgrave_hunt_05", "melee": "greataxe", "chief": "grave_robber_chief",
                   "camp": "robbers_camp", "weight": 4.5,
                   "text": "Defeat 6 Grave Robbers at the {name:robbers_camp}, then {name:grave_robber_chief}."},
@@ -366,6 +388,8 @@ def local_quests(town, departure):
     spec, elder = LOCAL[town], ELDER[town]
     rows = []
     for key, affix in (("mid", EARLY), ("late", LATE)):
+        if key not in spec:
+            continue  # this zone's hunt of that level is a shared quest
         q = spec[key]
         rows.append({
             "id": q["id"], "line": "hunt", "giver": elder, "turnin": elder,

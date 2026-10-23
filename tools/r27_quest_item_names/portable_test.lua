@@ -337,8 +337,9 @@ for _, id in ipairs(ids) do
 		shown = {}
 		check(Q.open_npc(player, entity_for(def.npc), selected), "dialogue opens: " .. id)
 		-- Round 57: a quest with a choice of rewards has a shorter text field
-		-- (the choice row sits below it) and one "and one of: ..." line more.
-		local choice_lines = #(def.rewards.choices or {}) > 0 and 1 or 0
+		-- (the choice row sits below it), its "and one of:" line and one line
+		-- per choice.
+		local choice_lines = #(def.rewards.choices or {}) > 0 and 1 + #def.rewards.choices or 0
 		local detail = shown[1] and (element(shown[1].form, "textarea[7.8,0.9;7.8,6;;;") or
 			element(shown[1].form, "textarea[7.8,0.9;7.8,4.3;;;"))
 		if check(detail ~= nil, "dialogue detail present: " .. id) then
