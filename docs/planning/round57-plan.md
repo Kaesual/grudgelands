@@ -158,7 +158,8 @@ pick page; nothing of it ships before Round 58.
     grades drop from the tier's own beasts already).
 28. **No vendor sells leather, cloth, ores or metal bars** (Leather, Light Leather, Linen Scrap and the Bronze Bar
     leave every shelf). Thread stays as a job supply, and White and Brown Wool stay at the tailor (bed decor).
-    Buy-back is unchanged.
+    Buy-back follows the general price rule: the Bronze Bar now pays its inputs (2c instead of 1c from its old
+    shelf price; the Bronze Block and four bronze goods move with it; coordinator decision).
 29. **Every dye becomes reachable** (2026-10-23): White and Yellow Dye get a plain source (proposal: Rock Salt →
     White, Sunleaf → Yellow, after Blueberries → Violet), and every other dye then follows from the mixes or gets
     its own plain source where a mix loops.

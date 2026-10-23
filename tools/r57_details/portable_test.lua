@@ -329,7 +329,7 @@ check(outlaw and outlaw.levels[1] == 1 and outlaw.levels[2] == 10 and #outlaw.mo
 check(find(linen, {kind = "drop", key = "zombie", band = 1}) ~= nil, "R ...and from zombies of levels 1-10")
 check(find(linen, {kind = "drop", key = "goblin", leader = true}) ~= nil, "R ...and from goblin leaders")
 check(find(linen, {kind = "drop", mob = "grug_mobs:bog_ooze"}) ~= nil, "R ...and the Bog Ooze's static drops")
-check(find(linen, {kind = "vendor", vendor = "tailor"}) ~= nil, "R ...and the Tailor sells it")
+check(find(linen, {kind = "vendor"}) == nil, "R ...and no vendor sells it (ruling 28)")
 
 local moss = find(real.sources("grug_gathering:gravemoss"), {kind = "gather"})
 check(moss and table.concat(moss.zones, ",") == "elandor_copperfell_foothills,kragmar_mournfen" and
