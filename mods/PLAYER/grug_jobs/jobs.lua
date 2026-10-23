@@ -1,15 +1,29 @@
 -- Crafting jobs (Round 45 lane JB; round45-plan.md §3, §4.3,
 -- ui-crafting-rework-plan.md §2.19-2.22, §2.31, §2.36, §4.4; Round 47 lane
--- CR, round47-plan.md ruling 18). Every craft is a timed job of the player's
--- own: one job per player, the whole quantity as one job. The ingredients
--- are consumed at the start, which needs room in the inventory for the
--- whole order once they are taken. Each craft's result goes into the
--- inventory (the give helper) as it finishes; what no longer fits (the
--- inventory filled meanwhile) waits in the overflow slots, which empty
--- themselves into the inventory as soon as there is room. Cancel/Stop
--- refunds the ingredients of the crafts not yet delivered.
+-- CR, round47-plan.md ruling 18; Round 57 lane CRAFT, round57-plan.md
+-- rulings 3-4: the queue). Every craft is a timed job of the player's own,
+-- the whole quantity as one job. The ingredients are consumed when the job
+-- is accepted, which needs room in the inventory for the whole order once
+-- they are taken. Each craft's result goes into the inventory (the give
+-- helper) as it finishes; what no longer fits (the inventory filled
+-- meanwhile) waits in the overflow slots, which empty themselves into the
+-- inventory as soon as there is room. Cancel/Stop refunds the ingredients of
+-- the crafts not yet delivered.
 --
--- Job state: player meta JOB_KEY, one core.serialize'd table
+-- The queue (Round 57): at most QUEUE_MAX entries per player, the running
+-- job included. Crafts, enchants and upgrades share one entry format. An
+-- entry accepted while a job runs waits; its checks (profession, station,
+-- ingredients, target, room) ran when it was accepted and its inputs are
+-- taken then, so it starts without the player at the station. When the
+-- running job ends, the first waiting entry starts at that end time, on the
+-- wall clock like the job itself: online by the timer, offline at the
+-- login's catch-up, which works off every entry that would have finished,
+-- each starting when the one before it ended. A Stop starts the next one
+-- now. A waiting entry can be cancelled (its inputs and target come back
+-- whole); there is no reordering.
+--
+-- Job state: player meta JOB_KEY, one core.serialize'd table (the running
+-- job, the format of Round 47)
 --   {kind = "recipe", recipe = <registry id>, quantity = <crafts>,
 --    consumed = {<itemstring>, ...}, target = <itemstring> | nil,
 --    start = <seconds>, finish = <seconds>, no_xp = true | nil,
@@ -26,17 +40,27 @@
 -- restarts and logouts. A job stored before Round 47 has no `delivered`: it
 -- delivers everything at its end, as it would have.
 --
+-- The waiting entries: player meta QUEUE_KEY (Round 57), one core.serialize'd
+-- list in queue order, "" when nothing waits. An entry is a job record
+-- without `start` and `finish`: `duration` (seconds) instead, and `id` (a
+-- number unique among the player's entries, which the queue view's cancel
+-- names). A character without the key has an empty queue, so a save of
+-- Round 56 reads unchanged; code before Round 57 reads only JOB_KEY.
+--
 -- Completion: a core.after timer only for an online player with a running
 -- job, at the next craft's end; at login and whenever the Crafting tab is
 -- built (update_job) the state catches up. The overflow drain is a
 -- core.after poll only for players whose overflow holds something. Nothing
 -- runs per step.
 --
--- API (lane UI, ST and EU):
+-- API (lane UI, ST and EU; Round 57 the queue):
 --   grug_jobs.start_job(player, recipe_id, quantity[, picks]) -> ok, reason, info
---   grug_jobs.cancel_job(player)                     -> ok, reason
---   grug_jobs.job_state(player)                      -> nil | copy of the job
---   grug_jobs.update_job(player, source)             -> true when it completed
+--   grug_jobs.cancel_job(player)                     -> ok, reason (the running job)
+--   grug_jobs.cancel_queued(player, id)              -> ok, reason (a waiting entry)
+--   grug_jobs.job_state(player)                      -> nil | copy of the running job
+--   grug_jobs.queue_state(player)                    -> copies of the waiting entries
+--   grug_jobs.queue_full(player)                     -> whether no entry can be added
+--   grug_jobs.update_job(player, source)             -> true when a job completed
 --   grug_jobs.ingredient_counts(player)              -> counts (one pass)
 --   grug_jobs.ingredient_have(counts, entry)         -> count
 --   grug_jobs.picked_ingredients(ingredients, picks) -> the list with the chosen kinds
@@ -49,21 +73,27 @@
 --   grug_jobs.station_nearby(player, station)        -> bool, nearest pos
 --   grug_jobs.take_all(player)                       -> moved, left
 --   grug_jobs.watch_overflow(player)                 (the drain poll)
+--   grug_jobs.to_overflow(player, stack)             (the overflow, grown to fit)
 --   grug_jobs.register_on_job_start(fn(player, job, station_pos))
 --   grug_jobs.register_on_job_end(fn(player, job, outcome, source))
 --   grug_jobs.register_job_kind(kind, {finish = fn(player, job) -> stacks, label})
 --   grug_jobs.begin_job(player, job[, station_pos]) -> job copy | nil, reason
---     (a job runs),
+--     (a job runs or waits; the copy's `queued` says which),
 --   grug_jobs.take_ingredients(player, ingredients, quantity) (the parts
 --     start_job uses, for EU's kinds)
 
 local JOB_KEY = "grug_jobs:job"
+local QUEUE_KEY = "grug_jobs:queue"
+-- Entries per player, the running job included (Round 57 ruling 3).
+local QUEUE_MAX = 5
 local OUTPUT = "grug_craft_out"
 local OUTPUT_SIZE = 4
 local STATION_RADIUS = 4
 local HOTBAR = 8
 
 grug_jobs.JOB_KEY = JOB_KEY
+grug_jobs.QUEUE_KEY = QUEUE_KEY
+grug_jobs.QUEUE_MAX = QUEUE_MAX
 grug_jobs.OUTPUT_LIST = OUTPUT
 grug_jobs.OUTPUT_SIZE = OUTPUT_SIZE
 grug_jobs.STATION_RADIUS = STATION_RADIUS
@@ -119,6 +149,52 @@ function grug_jobs.job_state(player)
 	copy.recipe_def = job.recipe and grug_jobs.recipe(job.recipe) or nil
 	return copy
 end
+
+-- The waiting entries in queue order (an entry the format cannot read is
+-- dropped with a warning, as an unreadable job is).
+local function read_queue(player)
+	local text = player:get_meta():get_string(QUEUE_KEY)
+	if text == "" then return {} end
+	local list = core.deserialize(text)
+	local queue = {}
+	for _, entry in ipairs(type(list) == "table" and list or {}) do
+		if type(entry) == "table" and type(entry.duration) == "number" then
+			queue[#queue + 1] = entry
+		end
+	end
+	if type(list) ~= "table" or #queue ~= #list then
+		core.log("warning", "[grug_jobs] unreadable queue entries of " ..
+			player:get_player_name() .. " dropped")
+		player:get_meta():set_string(QUEUE_KEY, #queue > 0 and core.serialize(queue) or "")
+	end
+	return queue
+end
+
+local function write_queue(player, queue)
+	player:get_meta():set_string(QUEUE_KEY, #queue > 0 and core.serialize(queue) or "")
+end
+
+-- Copies of the waiting entries in queue order (job_state's copies, with
+-- `recipe_def`). No side effects.
+function grug_jobs.queue_state(player)
+	local list = {}
+	for index, entry in ipairs(read_queue(player)) do
+		local copy = copy_job(entry)
+		copy.recipe_def = entry.recipe and grug_jobs.recipe(entry.recipe) or nil
+		list[index] = copy
+	end
+	return list
+end
+
+-- Whether the queue holds QUEUE_MAX entries, the running job included.
+local function queue_full(player)
+	if not read_job(player) then return false end
+	return 1 + #read_queue(player) >= QUEUE_MAX
+end
+grug_jobs.queue_full = queue_full
+
+local QUEUE_FULL = "The crafting queue is full (" .. QUEUE_MAX .. " jobs)."
+grug_jobs.QUEUE_FULL = QUEUE_FULL
 
 --
 -- Ingredients (round45-plan.md §3): only stacks without metadata count, for
@@ -436,20 +512,40 @@ function grug_jobs.max_craftable(player, recipe, counts, picks)
 end
 
 --
--- The overflow (Round 47 ruling 18): the four take-only slots of the
--- output list. Finished items go into the inventory; what no longer fits
--- (the inventory filled during the job) waits here and moves into the
--- inventory as soon as there is room: a poll every OVERFLOW_POLL seconds,
--- only while the list holds something. What fits nowhere drops at the
--- player's feet. ui.lua draws the slots only while they hold something.
+-- The overflow (Round 47 ruling 18): the take-only slots of the output
+-- list. Finished items go into the inventory; what no longer fits (the
+-- inventory filled during the job) waits here and moves into the inventory
+-- as soon as there is room: a poll every OVERFLOW_POLL seconds, only while
+-- the list holds something. Round 57: the list has OUTPUT_SIZE slots and
+-- grows by a slot while a finished stack does not fit (a queue of five
+-- entries may finish offline into a full inventory), so nothing is ever
+-- dropped; the drain moves what is left to the front and shrinks it back
+-- to OUTPUT_SIZE. ui.lua draws the slots only while they hold something.
 --
 
 local OVERFLOW_POLL = 1
 grug_jobs.OVERFLOW_POLL = OVERFLOW_POLL
 
+-- At least OUTPUT_SIZE slots; a grown list keeps its size (the drain
+-- shrinks it).
 function grug_jobs.ensure_output_area(player)
 	local inv = player:get_inventory()
-	if inv:get_size(OUTPUT) ~= OUTPUT_SIZE then inv:set_size(OUTPUT, OUTPUT_SIZE) end
+	if inv:get_size(OUTPUT) < OUTPUT_SIZE then inv:set_size(OUTPUT, OUTPUT_SIZE) end
+end
+
+-- A grown list with free slots: what it holds to the front, the size back
+-- to what that needs (at least OUTPUT_SIZE).
+local function settle_overflow(inv)
+	local size = inv:get_size(OUTPUT)
+	if size <= OUTPUT_SIZE then return end
+	local kept = {}
+	for index = 1, size do
+		local stack = inv:get_stack(OUTPUT, index)
+		if not stack:is_empty() then kept[#kept + 1] = stack end
+	end
+	if #kept == size then return end
+	for index = 1, size do inv:set_stack(OUTPUT, index, kept[index] or ItemStack("")) end
+	inv:set_size(OUTPUT, math.max(OUTPUT_SIZE, #kept))
 end
 
 -- The open Crafting page follows a change of what it shows (ui.lua
@@ -496,6 +592,7 @@ function grug_jobs.watch_overflow(player)
 			return
 		end
 		grug_jobs.take_all(online)
+		settle_overflow(online:get_inventory())
 		if online:get_inventory():is_empty(OUTPUT) then
 			draining[name] = nil
 			refresh_page(online)
@@ -506,28 +603,39 @@ function grug_jobs.watch_overflow(player)
 	core.after(OVERFLOW_POLL, poll)
 end
 
--- Delivers finished stacks: the inventory first, then the overflow, then
--- the player's feet. Returns true when the overflow went from empty to
--- holding something (the page then shows the slots).
+-- Puts `stack` into the overflow, a slot more while it does not fit (Round
+-- 57: never dropped), and starts the drain.
+function grug_jobs.to_overflow(player, stack)
+	local inv = player:get_inventory()
+	grug_jobs.ensure_output_area(player)
+	local left = inv:add_item(OUTPUT, stack)
+	while not left:is_empty() do
+		local size = inv:get_size(OUTPUT)
+		inv:set_size(OUTPUT, size + 1)
+		left = inv:add_item(OUTPUT, left)
+		if inv:get_size(OUTPUT) ~= size + 1 then
+			-- (an engine that refused the size: the feet, as before Round 57)
+			core.log("error", "[grug_jobs] overflow of " .. player:get_player_name() ..
+				" cannot grow; dropped at the player: " .. left:to_string())
+			core.add_item(player:get_pos(), left)
+			break
+		end
+	end
+	grug_jobs.watch_overflow(player)
+end
+
+-- Delivers finished stacks: the inventory first, then the overflow (grown
+-- to fit). Returns true when the overflow went from empty to holding
+-- something (the page then shows the slots).
 local function deliver(player, stacks)
 	local inv = player:get_inventory()
 	local was_empty = inv:is_empty(OUTPUT)
-	local overflowed = false
 	for _, stack in ipairs(stacks) do
 		local left = grug_inventory.give(player, stack)
-		if not left:is_empty() then
-			overflowed = true
-			left = inv:add_item(OUTPUT, left)
-		end
-		if not left:is_empty() then
-			core.log("warning", "[grug_jobs] output of " .. player:get_player_name() ..
-				" did not fit; dropped at the player: " .. left:to_string())
-			core.add_item(player:get_pos(), left)
-		end
+		if not left:is_empty() then grug_jobs.to_overflow(player, left) end
 	end
 	-- Items arrived without an inventory action: the recipe scan looks soon.
 	if grug_jobs.held_dirty then grug_jobs.held_dirty(player) end
-	if overflowed then grug_jobs.watch_overflow(player) end
 	return was_empty and not inv:is_empty(OUTPUT)
 end
 
@@ -725,12 +833,30 @@ local function deliver_due(player, job, source)
 	end
 end
 
--- The job and its timer go before finish runs: a callback inside it (a
--- Crafting page rebuilt by an XP or achievement hook calls update_job) finds
--- no job, so nothing completes twice.
+-- The first waiting entry becomes the running job, starting at `at` (the
+-- end of the job before it, or now after a Stop). Returns it, or nil when
+-- nothing waits. The caller arms the timer (update_job does).
+local function promote(player, at)
+	local queue = read_queue(player)
+	local entry = table.remove(queue, 1)
+	if not entry then return nil end
+	entry.start = at
+	entry.finish = at + entry.duration
+	entry.duration, entry.id = nil, nil
+	write_queue(player, queue)
+	write_job(player, entry)
+	return entry
+end
+
+-- The job and its timer go before finish runs, and the next waiting entry
+-- starts at this job's end (Round 57): a callback inside finish (a Crafting
+-- page rebuilt by an XP or achievement hook calls update_job) finds the job
+-- gone, so nothing completes twice, and the next one already running from
+-- the right time.
 local function complete(player, job, source)
 	timers[player:get_player_name()] = nil
 	write_job(player, nil)
+	promote(player, job.finish)
 	local kind = kinds[job.kind or "recipe"] or kinds.recipe
 	local stacks, label = kind.finish(player, job)
 	deliver(player, stacks)
@@ -739,19 +865,28 @@ local function complete(player, job, source)
 end
 
 local schedule
--- Completes the running job when its end time has passed, else delivers
--- the crafts finished so far and makes sure the online timer runs. Returns
--- true when it completed the job.
+-- Completes the running job when its end time has passed, and each waiting
+-- entry after it whose end has passed too (the login's catch-up, Round 57);
+-- then delivers the crafts finished so far and makes sure the online timer
+-- runs. Returns true when it completed a job.
 function grug_jobs.update_job(player, source)
 	local job = read_job(player)
-	if not job then return false end
-	if finished(job) then
+	if not job then
+		-- A queue without its running job (the job was unreadable): the next
+		-- entry starts now.
+		job = promote(player, grug_jobs.now())
+		if not job then return false end
+	end
+	local completed = false
+	while finished(job) do
 		complete(player, job, source or "open")
-		return true
+		completed = true
+		job = read_job(player)
+		if not job then return true end
 	end
 	deliver_due(player, job, source)
 	if not timers[player:get_player_name()] then schedule(player, job) end
-	return false
+	return completed
 end
 
 schedule = function(player, job)
@@ -766,26 +901,54 @@ schedule = function(player, job)
 	end)
 end
 
--- Stores a job whose inputs are already taken: `job.duration` seconds from
--- now, and runs the start callbacks with `station_pos` (station_nearby's
--- node, not stored). Returns the job copy, or nil and the reason while a job
--- runs (a due one completes first): the caller still holds the inputs it took
--- and gives them back. EU's kinds start through this.
+-- An id for a new waiting entry: unique among the player's entries.
+local function new_id(queue)
+	local id = math.floor(grug_jobs.now() * 1000)
+	local taken = true
+	while taken do
+		taken = false
+		for _, entry in ipairs(queue) do
+			if entry.id == id then
+				id, taken = id + 1, true
+			end
+		end
+	end
+	return id
+end
+
+-- Stores a job whose inputs are already taken: it runs `job.duration`
+-- seconds from now, or, while a job runs, waits at the end of the queue
+-- (Round 57). Runs the start callbacks with `station_pos` (station_nearby's
+-- node, not stored) in both cases: the player stands at the station now.
+-- Returns the job copy (`queued` set when it waits), or nil and the reason
+-- when the queue is full (a due job completes first): the caller still
+-- holds the inputs it took and gives them back. EU's kinds start through
+-- this.
 function grug_jobs.begin_job(player, job, station_pos)
 	grug_jobs.update_job(player, "start")
-	if read_job(player) then return nil, "A crafting job is already running." end
-	local now = grug_jobs.now()
+	local running = read_job(player)
+	local queue = running and read_queue(player)
+	if running and 1 + #queue >= QUEUE_MAX then return nil, QUEUE_FULL end
 	job.kind = job.kind or "recipe"
 	job.consumed = job.consumed or {}
-	job.start = now
-	job.finish = now + job.duration
-	job.duration = nil
-	write_job(player, job)
-	schedule(player, job)
+	if running then
+		job.id = new_id(queue)
+		queue[#queue + 1] = job
+		write_queue(player, queue)
+	else
+		local now = grug_jobs.now()
+		job.start = now
+		job.finish = now + job.duration
+		job.duration = nil
+		write_job(player, job)
+		schedule(player, job)
+	end
 	for index = 1, #start_callbacks do
 		start_callbacks[index](player, copy_job(job), station_pos)
 	end
-	return copy_job(job)
+	local copy = copy_job(job)
+	copy.queued = running and true or nil
+	return copy
 end
 
 local function refused(reason, code, max)
@@ -795,8 +958,9 @@ end
 local NO_ROOM = "Not enough room in inventory"
 grug_jobs.NO_ROOM = NO_ROOM
 
--- Starts a job of `quantity` crafts. Returns true, nil, the job copy; or
--- false, the reason and {code, max}: code "busy", "recipe", "quantity",
+-- Starts a job of `quantity` crafts, or queues it while a job runs (Round
+-- 57). Returns true, nil, the job copy; or false, the reason and {code,
+-- max}: code "busy" (the queue is full), "recipe", "quantity",
 -- "profession", "station", "space" or "ingredients"; `max` (space and
 -- ingredients) is the quantity that would start, 0 when none. "space":
 -- the whole order's result does not fit into the inventory once its
@@ -804,11 +968,9 @@ grug_jobs.NO_ROOM = NO_ROOM
 -- (picked_ingredients): the count and the take use the chosen kinds; a
 -- chosen kind the player no longer carries refuses as "ingredients".
 function grug_jobs.start_job(player, recipe_id, quantity, picks)
-	-- A job past its end completes first; a running one blocks.
+	-- A job past its end completes first; a full queue blocks.
 	grug_jobs.update_job(player, "start")
-	if read_job(player) then
-		return refused("A crafting job is already running.", "busy")
-	end
+	if queue_full(player) then return refused(QUEUE_FULL, "busy") end
 	local recipe = grug_jobs.recipe(recipe_id)
 	if not recipe then return refused("Unknown recipe.", "recipe") end
 	quantity = tonumber(quantity)
@@ -858,54 +1020,96 @@ function grug_jobs.start_job(player, recipe_id, quantity, picks)
 		duration = quantity * recipe.time}, station_pos)
 end
 
--- Cancel/Stop (spec §2.19): after the end time the job completes instead
--- (true, "completed"); otherwise the crafts finished by now are delivered
--- and what it has not delivered is refunded
+-- A refund into the inventory; what the fit check let through and still
+-- does not fit goes into the overflow (never dropped).
+local function refund_all(player, stacks)
+	for _, stack in ipairs(stacks) do
+		local left = grug_inventory.give(player, stack)
+		if not left:is_empty() then grug_jobs.to_overflow(player, left) end
+	end
+end
+
+local NO_ROOM_CANCEL = "Not enough inventory space to cancel"
+
+-- Cancel/Stop (spec §2.19) of the running job: after the end time the job
+-- completes instead (true, "completed"); otherwise the crafts finished by
+-- now are delivered and what it has not delivered is refunded
 -- (true, "cancelled") and the crafts it delivered count for XP and
 -- achievements (without the craft sound), or nothing happens when the
--- inventory cannot hold the refund (a dry run first).
+-- inventory cannot hold the refund (a dry run first). The next waiting
+-- entry then starts now (Round 57).
 function grug_jobs.cancel_job(player)
 	local job = read_job(player)
 	if not job then return false, "No crafting job is running." end
 	if finished(job) then
-		complete(player, job, "stop")
+		grug_jobs.update_job(player, "stop")
 		return true, "completed"
 	end
 	-- The crafts finished by now are made (a late timer delivers them here).
 	deliver_due(player, job, "stop")
 	local refund = unfinished_of(job)
 	if not grug_inventory.fits(player, refund) then
-		return false, "Not enough inventory space to cancel"
+		return false, NO_ROOM_CANCEL
 	end
 	timers[player:get_player_name()] = nil
 	write_job(player, nil)
-	for _, stack in ipairs(refund) do
-		local left = grug_inventory.give(player, stack)
-		if not left:is_empty() then core.add_item(player:get_pos(), left) end
-	end
+	refund_all(player, refund)
 	local recipe = (job.delivered or 0) > 0 and job.recipe and grug_jobs.recipe(job.recipe)
 	if recipe then grug_jobs.award_progress(player, recipe, job.delivered, job.no_xp, true) end
+	local next_job = promote(player, grug_jobs.now())
+	if next_job and not timers[player:get_player_name()] then schedule(player, next_job) end
 	run_end(player, job, "cancelled", "stop")
 	return true, "cancelled"
 end
 
--- Unlearning a profession lets its running job finish without XP
--- (state.lua's unlearn calls this); an enchant or upgrade job names its
--- station operation (lane EU).
+-- Cancels the waiting entry `id` (Round 57, the queue view's ✕): its
+-- consumed stacks and its target come back whole, or nothing happens when
+-- the inventory cannot hold them. Returns true, "cancelled"; or false and
+-- why (an entry that has started meanwhile is the running job: Stop).
+function grug_jobs.cancel_queued(player, id)
+	grug_jobs.update_job(player, "stop")
+	local queue = read_queue(player)
+	for index, entry in ipairs(queue) do
+		if entry.id == id then
+			local refund = unfinished_of(entry)
+			if not grug_inventory.fits(player, refund) then
+				return false, NO_ROOM_CANCEL
+			end
+			table.remove(queue, index)
+			write_queue(player, queue)
+			refund_all(player, refund)
+			return true, "cancelled"
+		end
+	end
+	return false, "That job is no longer waiting."
+end
+
+-- Unlearning a profession lets its running job, and its waiting entries
+-- (Round 57), finish without XP (state.lua's unlearn calls this); an
+-- enchant or upgrade job names its station operation (lane EU).
+local function forfeits(job, profession)
+	local recipe = job.recipe and grug_jobs.recipe(job.recipe) or
+		job.operation and grug_jobs.station_operation and
+		grug_jobs.station_operation(job.operation)
+	return recipe and recipe.profession == profession and not job.no_xp
+end
 function grug_jobs.forfeit_job_xp(player, profession)
 	local job = read_job(player)
-	local recipe = job and (job.recipe and grug_jobs.recipe(job.recipe) or
-		job.operation and grug_jobs.station_operation and
-		grug_jobs.station_operation(job.operation))
-	if recipe and recipe.profession == profession and not job.no_xp then
+	if job and forfeits(job, profession) then
 		job.no_xp = true
 		write_job(player, job)
 	end
+	local queue, changed = read_queue(player), false
+	for _, entry in ipairs(queue) do
+		if forfeits(entry, profession) then entry.no_xp, changed = true, true end
+	end
+	if changed then write_queue(player, queue) end
 end
 
 -- The output list exists for every player (old ones too) before the job
--- catches up (offline crafts are delivered here, as they would have been
--- online); an overflow left from before starts draining. grug_core's
+-- and the queue catch up (offline crafts are delivered here, as they would
+-- have been online, each waiting entry from the end of the one before); an
+-- overflow left from before starts draining. grug_core's
 -- migration runner joins before this.
 core.register_on_joinplayer(function(player)
 	grug_jobs.ensure_output_area(player)

@@ -27,13 +27,34 @@
 -- A scan that unlocks recipes writes one feed line: "New recipe: X", or
 -- "New recipes: X and N more", and resends an open Crafting page.
 --
+-- The tier unlock (Round 57 ruling 6): a profession tier also unlocks,
+-- recursively, every Basic recipe its recipes and station operations need
+-- (Thread, then Patch Bolt). The walk (needed_basic, once per profession
+-- and tier, after load): for each ingredient entry, the Basic recipes that
+-- make it (its item, or any member of its group), then theirs, each once.
+-- A step that turns a product back into its own ingredient is never a
+-- source: a Basic recipe X <- Y is left out when another Basic recipe makes
+-- Y from X (block and stairs, block and bars, sand and sandstone), so only
+-- the one-way chains count. The unlocked set: player meta UNLOCKED_KEY in
+-- the held set's format (the format word "1", then the sorted recipe ids,
+-- space-separated); an id no recipe has any more is never shown. It grows
+-- at a learn (tier 1), at a tier advance (that tier) and at the admin's
+-- /prof (tiers 1..N), and at every join from each learned profession's
+-- tiers 1..its tier (silent: the catch-up of characters already past a
+-- tier, and of recipes a later version adds). An unlock stays when the
+-- profession is unlearned. "Held once" keeps working beside it.
+--
 -- API:
 --   grug_jobs.recipe_known(player, recipe) -> whether the list shows it
 --   grug_jobs.scan_held(player[, quiet])   -> the number of recipes unlocked
 --   grug_jobs.held_dirty(player)           (a scan in the player's next slot)
---   grug_jobs.HELD_KEY, grug_jobs.HELD_STARTER
+--   grug_jobs.needed_basic(profession, tier) -> the Basic recipe ids (a list)
+--   grug_jobs.unlock_basic_tiers(player, profession, from, to[, quiet])
+--                                          -> the number of recipes it added
+--   grug_jobs.HELD_KEY, grug_jobs.HELD_STARTER, grug_jobs.BASIC_UNLOCKED_KEY
 
 local HELD_KEY = "grug_jobs:held"
+local UNLOCKED_KEY = "grug_jobs:basic_unlocked"
 local FORMAT = "1"
 local SLOTS, SLOT_PERIOD, SWEEP = 5, 0.1, 10
 -- Sticks and every wooden tool (ruling 19), by output.
@@ -42,6 +63,7 @@ local STARTER = {"default:stick", "grug_materials:pick_wood", "grug_materials:ax
 
 grug_jobs.HELD_KEY = HELD_KEY
 grug_jobs.HELD_STARTER = STARTER
+grug_jobs.BASIC_UNLOCKED_KEY = UNLOCKED_KEY
 
 --
 -- The index of the Basic catalog, built at its first use (after load):
@@ -89,33 +111,51 @@ end
 -- The held set: read once per session, written when it grows.
 --
 
-local cached = {}
-local function load(player)
-	local name = player:get_player_name()
-	local held = cached[name]
-	if held then return held end
-	held = {}
-	local text = player:get_meta():get_string(HELD_KEY)
+-- A set in the format word's format (the held set, the unlocked set).
+local function read_set(player, key)
+	local set = {}
 	local first = true
-	for word in text:gmatch("%S+") do
+	for word in player:get_meta():get_string(key):gmatch("%S+") do
 		-- The format word first; an unknown format reads as an empty set.
 		if first then
 			if word ~= FORMAT then break end
 			first = false
 		else
-			held[word] = true
+			set[word] = true
 		end
 	end
+	return set
+end
+
+local function write_set(player, key, set)
+	local words = {}
+	for word in pairs(set) do words[#words + 1] = word end
+	table.sort(words)
+	table.insert(words, 1, FORMAT)
+	player:get_meta():set_string(key, table.concat(words, " "))
+end
+
+local cached, unlocked_cache = {}, {}
+local function load(player)
+	local name = player:get_player_name()
+	local held = cached[name]
+	if held then return held end
+	held = read_set(player, HELD_KEY)
 	cached[name] = held
 	return held
 end
 
 local function save(player, held)
-	local words = {}
-	for token in pairs(held) do words[#words + 1] = token end
-	table.sort(words)
-	table.insert(words, 1, FORMAT)
-	player:get_meta():set_string(HELD_KEY, table.concat(words, " "))
+	write_set(player, HELD_KEY, held)
+end
+
+local function load_unlocked(player)
+	local name = player:get_player_name()
+	local set = unlocked_cache[name]
+	if set then return set end
+	set = read_set(player, UNLOCKED_KEY)
+	unlocked_cache[name] = set
+	return set
 end
 
 local function known(held, recipe)
@@ -127,11 +167,11 @@ end
 
 -- Whether the Crafting tab lists `recipe`: every recipe outside Basic (the
 -- tier rule is ui.lua's), a starter recipe, a Basic recipe whose every
--- ingredient was held.
+-- ingredient was held or that a profession tier unlocked (Round 57).
 function grug_jobs.recipe_known(player, recipe)
 	if recipe.area ~= "basic" then return true end
 	if catalog().starter[recipe.id] then return true end
-	return known(load(player), recipe)
+	return known(load(player), recipe) or load_unlocked(player)[recipe.id] == true
 end
 
 -- The feed line of a scan that unlocked `recipes`: the first by name.
@@ -187,6 +227,130 @@ function grug_jobs.scan_held(player, quiet)
 end
 
 --
+-- The tier unlock (Round 57 ruling 6; head comment).
+--
+
+-- Per item name, the Basic recipes that make it, the steps that turn a
+-- product back into its own ingredient left out; built at the first use.
+local makers
+local function basic_makers()
+	if makers then return makers end
+	local basic = grug_jobs.recipes_in_area("basic")
+	local inputs = {} -- output -> the item ingredients of its Basic recipes
+	for _, recipe in ipairs(basic) do
+		inputs[recipe.output] = inputs[recipe.output] or {}
+		for _, entry in ipairs(recipe.ingredients) do
+			if entry.item then inputs[recipe.output][entry.item] = true end
+		end
+	end
+	makers = {}
+	for _, recipe in ipairs(basic) do
+		local back = false
+		for _, entry in ipairs(recipe.ingredients) do
+			if entry.item and inputs[entry.item] and inputs[entry.item][recipe.output] then
+				back = true
+			end
+		end
+		if not back then
+			makers[recipe.output] = makers[recipe.output] or {}
+			table.insert(makers[recipe.output], recipe)
+		end
+	end
+	return makers
+end
+
+-- The Basic recipes that make what one ingredient entry accepts.
+local group_makers = {}
+local function makers_of(entry)
+	local by_output = basic_makers()
+	if entry.item then return by_output[entry.item] or {} end
+	local list = group_makers[entry.group]
+	if list then return list end
+	list = {}
+	local outputs = {}
+	for output in pairs(by_output) do
+		if core.get_item_group(output, entry.group) > 0 then outputs[#outputs + 1] = output end
+	end
+	table.sort(outputs)
+	for _, output in ipairs(outputs) do
+		for _, recipe in ipairs(by_output[output]) do list[#list + 1] = recipe end
+	end
+	group_makers[entry.group] = list
+	return list
+end
+
+-- The ids of every Basic recipe that the recipes and station operations of
+-- `profession` at exactly `tier` need, recursively, in the walk's order.
+-- The list is the cache's own: never write into it.
+local needed = {}
+function grug_jobs.needed_basic(profession, tier)
+	local key = profession .. ":" .. tier
+	if needed[key] then return needed[key] end
+	local list, seen = {}, {}
+	local function walk(ingredients)
+		for _, entry in ipairs(ingredients or {}) do
+			for _, recipe in ipairs(makers_of(entry)) do
+				if not seen[recipe.id] then
+					seen[recipe.id] = true
+					list[#list + 1] = recipe.id
+					walk(recipe.ingredients)
+				end
+			end
+		end
+	end
+	for _, recipe in ipairs(grug_jobs.recipes_in_area(profession)) do
+		if recipe.tier == tier then walk(recipe.ingredients) end
+	end
+	if grug_jobs.station_operations then
+		for _, op in ipairs(grug_jobs.station_operations()) do
+			if op.profession == profession and op.tier == tier then
+				walk(op.ingredients)
+				walk(op.weapon_extra)
+			end
+		end
+	end
+	needed[key] = list
+	return list
+end
+
+-- Unlocks the Basic recipes of `profession`'s tiers `from`..`to`. Returns the
+-- number of recipes the set gained. Unless `quiet`, the ones the list did
+-- not show before get one feed line ("New recipes: …", as the scan's) and
+-- an open Crafting page is resent.
+function grug_jobs.unlock_basic_tiers(player, profession, from, to, quiet)
+	if not grug_jobs.PROFESSIONS[profession] then return 0 end
+	local set = load_unlocked(player)
+	local held, starter = load(player), catalog().starter
+	local added, shown = 0, {}
+	for tier = math.max(1, from), math.min(6, to) do
+		for _, id in ipairs(grug_jobs.needed_basic(profession, tier)) do
+			if not set[id] then
+				local recipe = grug_jobs.recipe(id)
+				if recipe and not starter[id] and not known(held, recipe) then
+					shown[#shown + 1] = recipe
+				end
+				set[id] = true
+				added = added + 1
+			end
+		end
+	end
+	if added == 0 then return 0 end
+	write_set(player, UNLOCKED_KEY, set)
+	if quiet or #shown == 0 then return added end
+	grug_core.feed(player, "notice", unlock_line(shown))
+	if grug_jobs.refresh_crafting_page then grug_jobs.refresh_crafting_page(player) end
+	return added
+end
+
+-- The join's catch-up: every learned profession's tiers up to its tier.
+local function catch_up(player)
+	for profession in pairs(grug_jobs.PROFESSIONS) do
+		local level = grug_jobs.profession_level(player, profession)
+		if level >= 1 then grug_jobs.unlock_basic_tiers(player, profession, 1, level, true) end
+	end
+end
+
+--
 -- When the scan runs: SLOTS slots of SLOT_PERIOD each; a player sits in one
 -- slot (assigned in turn at join) and is scanned there when dirty or when
 -- SWEEP seconds have passed since its last scan.
@@ -211,6 +375,7 @@ core.register_on_joinplayer(function(player)
 	-- The first-login scan. A new character's starter kit arrives later, at
 	-- "Create character" (grug_factions), and is found by the next scan.
 	grug_jobs.scan_held(player, true)
+	catch_up(player)
 end)
 
 core.register_on_leaveplayer(function(player)
@@ -218,6 +383,7 @@ core.register_on_leaveplayer(function(player)
 	local slot = slot_of[name]
 	if slot then members[slot][name] = nil end
 	cached[name], slot_of[name], dirty[name], visits[name] = nil, nil, nil, nil
+	unlocked_cache[name] = nil
 end)
 
 core.register_on_player_inventory_action(function(player)

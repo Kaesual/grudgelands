@@ -1,26 +1,29 @@
 -- The Crafting tab's enchant and upgrade boxes (Round 45 lane EU;
 -- round45-plan.md §4.6; ui-crafting-rework-plan.md §2.24, §2.26, §4.3, §4.6;
--- wireframe v1's Crafting artboard, variants "enchant" and "upgrade"), drawn
--- into grug_jobs.CRAFT_BOX through register_craft_box. A learned primary
--- area shows the buttons "Enchant an item" and "Upgrade an item" below its
--- list; the jobs are operation_jobs.lua's.
+-- wireframe v1's Crafting artboard, variants "enchant" and "upgrade"; Round
+-- 57 layout C), drawn into grug_jobs.CRAFT_BOX through register_craft_box,
+-- above ui.lua's job strip (the bar, the stop button, View Queue). A learned
+-- primary area shows the buttons "Enchant an item" and "Upgrade an item"
+-- below its list; the jobs are operation_jobs.lua's, queued while a job runs
+-- (Round 57: the item leaves the slot with the materials, so the next one
+-- can go in).
 --
 -- Enchant: the target slot (grug_craft_target), the arrow, the preview (the
--- result's image with its computed description as the tooltip), the area
--- profession's enchants valid for the placed item up to the profession's
--- tier (a scrolling list with the value each gives on this item), the
--- chosen enchant's materials with have/need, the enchant it replaces
--- ("Replaces prefix: +5 Strength (T2)", Round 56; orange with the
--- overwrite warning as its tooltip when that is of a higher tier), the XP
--- hint (at the station) and Enchant now, which turns into Cancel while a
--- job runs.
+-- result's image with its computed description as the tooltip) and, right
+-- of them, the area profession's enchants valid for the placed item up to
+-- the profession's tier (a scrolling list with the value each gives on this
+-- item); below, the chosen enchant's materials with have/need, the enchant
+-- it replaces ("Replaces prefix: +5 Strength (T2)", Round 56; orange with
+-- the overwrite warning as its tooltip when that is of a higher tier), the
+-- XP hint (at the station) and, right-aligned in the bottom row, Enchant
+-- now, which reads Queue Enchant while a job runs.
 --
--- Upgrade: the target slot, its item level and cap, "+N levels" with Max,
--- the resulting item level, the materials for N levels with have/need, the
--- permanent warning when the result needs a higher level than the
--- player's, and Upgrade now, the yellow "Upgrade anyway" with the warning
--- (Stop while a job runs). An item at or above its cap reads "Already at
--- the cap" and takes no level.
+-- Upgrade: the target slot, its item level and cap, the resulting item
+-- level, the materials for N levels with have/need, the permanent warning
+-- when the result needs a higher level than the player's; the bottom row
+-- "+N levels" with Max and Upgrade now (Queue Upgrade while a job runs),
+-- the yellow "Upgrade anyway" ("Queue anyway") with the warning. An item at
+-- or above its cap reads "Already at the cap" and takes no level.
 --
 -- The levels field follows spec §4.3 like the quantity field: Enter
 -- recalculates and never starts; a click above the maximum (the cap or the
@@ -45,8 +48,11 @@ grug_jobs.OPERATION_FIELDS = F
 
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
-local BUTTON_Y = BOX.y + BOX.h - 0.75
+local ACTION = grug_jobs.CRAFT_ACTION
 local TITLE_Y, SLOT_Y = BOX.y + 0.3, BOX.y + 0.65
+-- The enchant list right of the slot, the arrow and the preview.
+local LIST_X = X + 3.45
+local LIST_W, LIST_H = W - 3.45, 1.75
 local NOTE_STEP = 0.38
 local LEVEL_CHARS = 8
 local BOX_COLOR = "#00000040"
@@ -55,9 +61,8 @@ local WARN = "#ff9f5a"
 local NOTE = "#f0c75e"
 local DIM = "#9a9a9a"
 local ARROW = "gui_furnace_arrow_bg.png^[transformR270"
-local DISABLED_STYLE = "style[" .. UIF.recheck ..
-	";bgcolor=#2a2a2a;bgcolor_hovered=#2a2a2a;textcolor=#808080;border=false]"
-local ANYWAY_STYLE = "style[" .. F.upgrade ..
+-- (the button's name carries the build's serial, ui.lua's action_button)
+local ANYWAY_STYLE = "style[" .. F.upgrade .. "_%d" ..
 	";bgcolor=#f0c419;bgcolor_hovered=#f5d24a;bgcolor_pressed=#c9a10f;textcolor=#222222]"
 
 local function esc(value)
@@ -119,31 +124,17 @@ local function station_warning(op)
 	return "Requires: " .. (info and info.display_name or op.station) .. " nearby"
 end
 
--- The button: Cancel/Stop while a job runs, else the action or its greyed
--- form (a click on that only rebuilds the page).
-local function button(fs, job, stop_label, field, label, enabled, style)
-	local geometry = ("%s,%s;%s,0.65"):format(n(X), n(BUTTON_Y), n(W))
-	if job then
-		fs[#fs + 1] = ("button[%s;%s;%s]"):format(geometry, UIF.stop, stop_label)
-	elseif enabled then
-		if style then fs[#fs + 1] = style end
-		fs[#fs + 1] = ("button[%s;%s;%s]"):format(geometry, field, esc(label))
-	else
-		fs[#fs + 1] = DISABLED_STYLE .. ("button[%s;%s;%s]"):format(geometry, UIF.recheck,
-			esc(label))
-	end
+-- The big button in the bottom row (ui.lua's action_button): the action,
+-- "Queue <action>" while a job runs (ruling 1), greyed when it cannot start
+-- (a click on that only rebuilds the page).
+local function button(fs, view, field, label, queued_label, enabled, style)
+	fs[#fs + 1] = grug_jobs.action_button(view, field, view.job and queued_label or label,
+		enabled, style)
 end
 
-local function no_area(fs, job, stop_label)
+local function no_area(fs)
 	wrapped_labels(fs, X, TITLE_Y + 0.5, W, "Choose a profession area above.", DIM, NOTE_STEP)
-	if job then button(fs, job, stop_label) end
 	return table.concat(fs)
-end
-
-local function cancel(player, st)
-	local ok, reason = grug_jobs.cancel_job(player)
-	if not ok then st.note = reason end
-	return true
 end
 
 --
@@ -201,11 +192,11 @@ local function preview(fs, x, result)
 end
 
 local function enchant_build(player, view)
-	local st, job = view.st, view.job
+	local st = view.st
 	local fs = {("box[%s,%s;%s,%s;%s]"):format(n(BOX.x), n(BOX.y), n(BOX.w), n(BOX.h),
 		BOX_COLOR)}
 	local profession = area_profession(player, view.tab, "enchant")
-	if not profession then return no_area(fs, job, "Cancel") end
+	if not profession then return no_area(fs) end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(TITLE_Y),
 		esc("Enchant · " .. grug_jobs.OPERATION_SECONDS.enchant .. " s"))
 	fs[#fs + 1] = RING
@@ -225,25 +216,26 @@ local function enchant_build(player, view)
 	if chosen then plan, refusal = grug_items.operation_plan(chosen, target, player) end
 	preview(fs, X + 2.3, plan and plan.output)
 	fs[#fs + 1] = ("label[%s,%s;Result]"):format(n(X + 2.3), n(SLOT_Y + 1.2))
-	local y = SLOT_Y + 1.55
+	-- Right of the slots: the list, or why there is none.
 	local name = grug_jobs.PROFESSIONS[profession].name
 	if target:is_empty() then
-		y = wrapped_labels(fs, X, y, W, "Place an item in the Target slot to see the " ..
-			name .. " enchants for it.", DIM, NOTE_STEP)
+		wrapped_labels(fs, LIST_X, SLOT_Y + 0.2, LIST_W, "Place an item in the Target slot " ..
+			"to see the " .. name .. " enchants for it.", DIM, NOTE_STEP)
 	elseif #rows == 0 then
 		local level = grug_jobs.profession_level(player, profession)
-		y = wrapped_labels(fs, X, y, W, name .. " (tier " .. level ..
+		wrapped_labels(fs, LIST_X, SLOT_Y + 0.2, LIST_W, name .. " (tier " .. level ..
 			") has no enchant for this item.", DIM, NOTE_STEP)
 	else
-		fs[#fs + 1] = ("label[%s,%s;Enchants valid for this item]"):format(n(X), n(y))
+		fs[#fs + 1] = ("label[%s,%s;Valid enchants]"):format(n(LIST_X),
+			n(TITLE_Y))
 		local ilvl = grug_items.effective_ilvl(target) or 1
 		local items = {}
 		for index, op in ipairs(rows) do items[index] = esc(enchant_text(op, ilvl)) end
-		fs[#fs + 1] = ("textlist[%s,%s;%s,1.6;%s;%s;%d;false]"):format(n(X), n(y + 0.2),
-			n(W), F.list, table.concat(items, ","), selected)
-		y = y + 1.95
+		fs[#fs + 1] = ("textlist[%s,%s;%s,%s;%s;%s;%d;false]"):format(n(LIST_X), n(SLOT_Y),
+			n(LIST_W), n(LIST_H), F.list, table.concat(items, ","), selected)
 	end
-	local enabled = chosen ~= nil and plan ~= nil and job == nil
+	local y = SLOT_Y + LIST_H + 0.3
+	local enabled = chosen ~= nil and plan ~= nil and not view.full
 	local away = chosen and chosen.station and not grug_jobs.station_nearby(player, chosen.station)
 	if chosen then
 		y = grug_jobs._ingredient_rows(fs, {ingredients = chosen.ingredients}, view.counts, 1,
@@ -265,6 +257,7 @@ local function enchant_build(player, view)
 			y = wrapped_labels(fs, X, y, W, station_warning(chosen), WARN, NOTE_STEP)
 		end
 	end
+	if view.full then y = wrapped_labels(fs, X, y, W, grug_jobs.QUEUE_FULL, WARN, NOTE_STEP) end
 	if st.note then y = wrapped_labels(fs, X, y, W, st.note, NOTE, NOTE_STEP) end
 	-- The XP hint at the station only: away from it the station's line
 	-- takes its room.
@@ -272,12 +265,11 @@ local function enchant_build(player, view)
 		local hint, color = grug_jobs._xp_hint(player, chosen)
 		if hint then wrapped_labels(fs, X, y, W, hint, color, NOTE_STEP) end
 	end
-	button(fs, job, "Cancel", F.enchant, "Enchant now", enabled)
+	button(fs, view, F.enchant, "Enchant now", "Queue Enchant", enabled)
 	return table.concat(fs)
 end
 
 local function enchant_fields(player, st, fields)
-	if fields[UIF.stop] then return cancel(player, st) end
 	if fields[UIF.recheck] then return true end
 	local event = fields[F.list]
 	if event then
@@ -285,7 +277,7 @@ local function enchant_fields(player, st, fields)
 		if index and st.ench_rows and st.ench_rows[index] then st.ench = st.ench_rows[index] end
 		return true
 	end
-	if fields[F.enchant] then
+	if grug_jobs.action_clicked(st, fields, F.enchant) then
 		if not st.ench then
 			st.note = "Choose an enchant from the list."
 			return true
@@ -345,11 +337,11 @@ local function warned_key(target, levels)
 end
 
 local function upgrade_build(player, view)
-	local st, job = view.st, view.job
+	local st = view.st
 	local fs = {("box[%s,%s;%s,%s;%s]"):format(n(BOX.x), n(BOX.y), n(BOX.w), n(BOX.h),
 		BOX_COLOR)}
 	local profession = area_profession(player, view.tab, "upgrade")
-	if not profession then return no_area(fs, job, "Stop") end
+	if not profession then return no_area(fs) end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(TITLE_Y),
 		esc("Upgrade · " .. grug_jobs.OPERATION_SECONDS.upgrade .. " s per level"))
 	fs[#fs + 1] = RING
@@ -377,17 +369,18 @@ local function upgrade_build(player, view)
 	elseif v.gap then
 		local levels = levels_of(st.levels)
 		local shown = levels and math.min(levels, v.gap) or 1
+		-- The bottom row: +N levels [field] [Max], the big button right of it.
+		local row_y = view.bottom - ACTION.h + (ACTION.h - 0.6) / 2
 		fs[#fs + 1] = ("label[%s,%s;+N levels]field[%s,%s;1,0.6;%s;;%s]" ..
 			"field_close_on_enter[%s;false]button[%s,%s;1,0.6;%s;Max]"):format(
-			n(X), n(y + 0.3), n(X + 1.35), n(y), F.levels, esc(st.levels or "1"), F.levels,
-			n(X + 2.5), n(y), F.max)
-		y = y + 0.95
+			n(X), n(row_y + 0.3), n(X + 1.35), n(row_y), F.levels, esc(st.levels or "1"),
+			F.levels, n(X + 2.5), n(row_y), F.max)
 		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y), esc("Result: item level " ..
 			(v.ilvl + shown) .. (v.ilvl + shown == v.cap and " (cap)" or "")))
 		y = y + 0.25
 		y = grug_jobs._ingredient_rows(fs, {ingredients = v.ingredients}, view.counts, shown,
 			y) + 0.1
-		enabled = job == nil
+		enabled = not view.full
 		local allowed, why = grug_jobs.can_craft_recipe(player, v.op)
 		if not allowed then
 			enabled = false
@@ -407,17 +400,20 @@ local function upgrade_build(player, view)
 		-- the warning.
 		st.warned = warning and warned_key(target, shown) or nil
 	end
+	if view.full and v.gap then
+		y = wrapped_labels(fs, X, y, W, grug_jobs.QUEUE_FULL, WARN, NOTE_STEP)
+	end
 	if st.note then wrapped_labels(fs, X, y, W, st.note, NOTE, NOTE_STEP) end
 	-- The yellow "Upgrade anyway" only where it starts something.
 	local anyway = warning and enabled
-	button(fs, job, "Stop", F.upgrade, anyway and "Upgrade anyway" or "Upgrade now", enabled,
-		anyway and ANYWAY_STYLE or nil)
+	button(fs, view, F.upgrade, anyway and "Upgrade anyway" or "Upgrade now",
+		anyway and "Queue anyway" or "Queue Upgrade", enabled,
+		anyway and ANYWAY_STYLE:format(view.serial) or nil)
 	return table.concat(fs)
 end
 
 local function upgrade_fields(player, st, fields)
 	if fields[F.levels] then st.levels = clean(fields[F.levels], LEVEL_CHARS) end
-	if fields[UIF.stop] then return cancel(player, st) end
 	if fields[UIF.recheck] then return true end
 	if fields[F.max] then
 		st.fill_levels = true
@@ -427,7 +423,7 @@ local function upgrade_fields(player, st, fields)
 		if not levels_of(st.levels) then st.note = "Enter a number of levels of 1 or more." end
 		return true
 	end
-	if not fields[F.upgrade] then return false end
+	if not grug_jobs.action_clicked(st, fields, F.upgrade) then return false end
 	local levels = levels_of(st.levels)
 	if not levels then
 		st.note = "Enter a number of levels of 1 or more."

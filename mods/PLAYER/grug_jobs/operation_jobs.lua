@@ -3,7 +3,8 @@
 -- player places the item in the target slot `grug_craft_target` (one slot,
 -- created for every player at join; only equipment goes in). A job's start
 -- takes the item in with the materials (jobs.lua's take_ingredients), so
--- while the job runs the item lives only in the job's `target`; the result
+-- while the job runs (or waits in the queue, Round 57) the item lives only
+-- in the job's `target`, and the slot is free for the next item; the result
 -- goes into the inventory (the start checks the room, Round 47), else the
 -- overflow; a cancel returns the exact item and the materials (jobs.lua's
 -- refund).
@@ -21,7 +22,8 @@
 --   grug_jobs.TARGET_LIST
 --   grug_jobs.operation_target(stack)        -> whether the slot takes it
 --   grug_jobs.start_operation(player, op_id, levels) -> ok, reason, info
---     ({code, max}: "busy", "recipe", "quantity", "profession", "station",
+--     (queued while a job runs; {code, max}: "busy" (the queue is full),
+--      "recipe", "quantity", "profession", "station",
 --      "cap", "target", "ingredients", "space" (the result would not fit
 --      into the inventory once the materials are taken); `max` the levels
 --      that would start for "cap" and "ingredients")
@@ -107,23 +109,22 @@ local function refused(reason, code, max)
 end
 
 -- Hands back what a refused begin took: the item into its slot, the
--- materials through the give helper (then the feet).
+-- materials through the give helper (then the overflow).
 local function give_back(player, target, consumed)
 	player:get_inventory():set_stack(TARGET, 1, target)
 	for _, item in ipairs(consumed) do
 		local left = grug_inventory.give(player, ItemStack(item))
-		if not left:is_empty() then core.add_item(player:get_pos(), left) end
+		if not left:is_empty() then grug_jobs.to_overflow(player, left) end
 	end
 end
 
 -- Starts an enchant (`levels` ignored) or an upgrade of `levels` item levels
--- on the item in the target slot. Returns true, nil, the job copy; or false,
--- the reason and {code, max}.
+-- on the item in the target slot, or queues it while a job runs (Round 57:
+-- every check runs now). Returns true, nil, the job copy; or false, the
+-- reason and {code, max}.
 function grug_jobs.start_operation(player, op_id, levels)
 	grug_jobs.update_job(player, "start")
-	if grug_jobs.job_state(player) then
-		return refused("A crafting job is already running.", "busy")
-	end
+	if grug_jobs.queue_full(player) then return refused(grug_jobs.QUEUE_FULL, "busy") end
 	local op = grug_jobs.station_operation(op_id)
 	if not op then return refused("Unknown operation.", "recipe") end
 	local quantity = 1
@@ -216,18 +217,24 @@ end
 grug_jobs.register_job_kind("enchant", {finish = finish})
 grug_jobs.register_job_kind("upgrade", {finish = finish})
 
--- The running job's indicator and label (ui.lua): "Enchanting…" and
--- "Upgrading…" (the user, 2026-10-09), "Steel Sword +3 levels".
-grug_jobs.JOB_RUN_LABELS.enchant = "Enchanting…"
-grug_jobs.JOB_RUN_LABELS.upgrade = "Upgrading…"
+-- A job's line (ui.lua: the line below the bar and the queue view's rows;
+-- Round 57 layout C has one short line): "Steel Sword: Strength T2", "Steel
+-- Sword +3 levels".
 local function target_name(job)
 	local stack = ItemStack(job.target or "")
 	if stack:is_empty() then return "" end
 	local base = stack:get_meta():get_string("grug_base_name")
 	return base ~= "" and base or grug_core.item_name(stack:get_name())
 end
-grug_jobs.JOB_TEXTS.enchant = target_name
+grug_jobs.JOB_TEXTS.enchant = function(job)
+	local op = grug_jobs.station_operation(job.operation or "")
+	local affix = op and grug_items.AFFIXES and grug_items.AFFIXES[op.enchant_stat or ""]
+	return target_name(job) .. (affix and (": " .. affix.label .. " T" .. op.tier) or "")
+end
 grug_jobs.JOB_TEXTS.upgrade = function(job)
 	local levels = job.quantity or 1
 	return target_name(job) .. " +" .. levels .. (levels == 1 and " level" or " levels")
 end
+-- The job's icon in the queue view: the item it works on.
+grug_jobs.JOB_ICONS.enchant = function(job) return ItemStack(job.target or ""):get_name() end
+grug_jobs.JOB_ICONS.upgrade = grug_jobs.JOB_ICONS.enchant

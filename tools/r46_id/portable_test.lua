@@ -439,6 +439,13 @@ local function content(fs)
 	return fs:match("real_coordinates%[false%](.*)$") or ""
 end
 local function st_of(player) return context_of(player).grug_craft end
+-- Round 57 review: a big button's name carries the build's serial, the stop
+-- button names the running job.
+local function go(player, field) return (field or FIELDS.go) .. "_" .. st_of(player).serial end
+local function stop(player)
+	local job = J.job_state(player)
+	return job and J.stop_field(job) or FIELDS.stop
+end
 local function count(text, needle)
 	local found, from = 0, 1
 	while true do
@@ -614,7 +621,7 @@ click(p, {[pick(p, 1)] = "9"})
 eq(st_of(p).picks.root, "t:cassava", "C an index out of range changes nothing")
 -- Craft now with the choice: cassava for the root, Automatic's carrot for
 -- the staple.
-click(p, {[FIELDS.qty] = "2", [FIELDS.go] = "Craft now", [pick(p, 1)] = "3", [pick(p, 2)] = "1"})
+click(p, {[FIELDS.qty] = "2", [go(p)] = "Craft now", [pick(p, 1)] = "3", [pick(p, 2)] = "1"})
 check(J.job_state(p) ~= nil, "C the job starts")
 eq(count_of(p, "t:cassava"), 0, "C the take: all four cassava for the root")
 eq(count_of(p, "t:carrot"), 8, "C ... one carrot per craft for the staple")
@@ -641,7 +648,7 @@ put(p, "main", 9, "t:carrot 10")
 rebuild(p)
 click(p, {[pick(p, 1)] = "3"})
 p.inv:set_stack("main", 11, ItemStack(""))
-click(p, {[FIELDS.qty] = "1", [FIELDS.go] = "Craft now", [pick(p, 1)] = "3"})
+click(p, {[FIELDS.qty] = "1", [go(p)] = "Craft now", [pick(p, 1)] = "3"})
 eq(J.job_state(p), nil, "F a stale choice starts nothing")
 eq(count_of(p, "t:carrot"), 10, "F ... and takes nothing")
 eq(st_of(p).picks, nil, "F ... and the page falls back to Automatic")
@@ -694,7 +701,7 @@ click(p, {[pick(p, 1)] = "3"})
 eq(max_of(p.formspec), 3, "T coal lump chosen: 3")
 click(p, {[pick(p, 1)] = "2"})
 eq(max_of(p.formspec), 5, "T charcoal chosen: 5")
-click(p, {[FIELDS.qty] = "5", [FIELDS.go] = "Craft now", [pick(p, 1)] = "2"})
+click(p, {[FIELDS.qty] = "5", [go(p)] = "Craft now", [pick(p, 1)] = "2"})
 eq(count_of(p, "t:charcoal"), 0, "T the take: the charcoal")
 eq(count_of(p, "t:coal"), 3, "T ... and no coal")
 finish_job(p)

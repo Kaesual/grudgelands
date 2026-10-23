@@ -1,35 +1,43 @@
 -- The Crafting tab (Round 45 lane UI; round45-plan.md §3, §4.4;
 -- ui-crafting-rework-plan.md §2.16-2.22, §2.33, §4.2-4.5; wireframe v1's
--- Crafting artboard). Real coordinates inside the inventory window's frame,
--- above the short inventory view:
+-- Crafting artboard; Round 57 lane CRAFT: layout C, round57-plan.md rulings
+-- 1-2 and 7). Real coordinates inside the inventory window's frame, above
+-- the short inventory view:
 --   top     the area tabs (Basic, Cooking, the two primary slots, Alchemy)
 --           and the selected area's tier progress;
---   left    the recipe list: search, "Craftable only", 10 rows per page
---           (icon, name, ×N), "Page x of y";
---   middle  the crafting box (craft_box.lua; replaceable, lane EU adds the
---           enchant and upgrade boxes); the professions overview while no
---           recipe is chosen;
---   right   the running job (the green indicator, its label, the progress
---           bar) and, only while it holds something, the overflow
---           (grug_craft_out, take-only; Round 47 ruling 18: finished items
---           go into the inventory, jobs.lua drains the overflow into it).
+--   left    the recipe list: search, "Craftable only" and "Favorites only",
+--           10 rows per page (icon, name, ×N), "Page x of y";
+--   right   one wide box: the crafting box (craft_box.lua; replaceable,
+--           lane EU adds the enchant and upgrade boxes, queue_box.lua the
+--           queue view); the professions overview while no recipe is
+--           chosen. Every box ends above the job strip at the box's bottom,
+--           which ui.lua draws whatever the box: the progress bar with a
+--           small stop button, one line naming the running job, "View Queue
+--           [N]" at the right ("No job running" while idle); above the strip,
+--           only while it holds something, the overflow (grug_craft_out,
+--           take-only; finished items go into the inventory, jobs.lua drains
+--           the overflow into it).
 --
 -- Runtime state lives in the sfinv context (context.grug_craft), never in
 -- player meta: the area, the page, the applied search and the typed text,
--- "Craftable only", the chosen recipe, the last known quantity and the note
--- of the last refused action. A formspec is resent whole and the client
--- does not keep typed field text across a resend, so every build echoes the
--- last known field values (spec §4.3).
+-- "Craftable only", "Favorites only", the chosen recipe, the last known
+-- quantity and the note of the last refused action. The favourites
+-- themselves are player meta (FAVORITES_KEY, Round 57 ruling 7). A
+-- formspec is resent whole and the client does not keep typed field text
+-- across a resend, so every build echoes the last known field values (spec
+-- §4.3).
 --
 -- Traffic (spec §1, §4.4, plan §5): one ingredient pass per build
 -- (grug_jobs.ingredient_counts), which feeds ×N, "Craftable only" and the
 -- crafting box (the room check of Max reuses its lists). A click is
 -- answered with one resend; a pure scrollbar event of the inventory view
 -- never reaches this page (sfinv.handle_scroll). Per job the page is sent
--- at its start (the Craft now click), at its end (the timer, only while the
--- player's current page is Crafting) and at a cancel (the Stop click); a
--- craft delivered into the inventory sends nothing (the client shows the
--- lists live), the overflow appearing or emptying sends it once, and so
+-- at its start (the Craft or Queue click), at its end (the timer, only while
+-- the player's current page is Crafting; the next waiting job starts with
+-- it, so the bar restarts) and at a cancel (the stop click); the bar is a
+-- client animation, never a refresh per second. A craft delivered into the
+-- inventory sends nothing (the client shows the lists live), the overflow
+-- appearing or emptying sends it once, and so
 -- does a scan that unlocks a Basic recipe (basic_unlock.lua). The search runs
 -- at most once per second: a search request within a second of the last
 -- one is ignored without a resend, like Sort's cooldown (spec ruling 5).
@@ -76,16 +84,19 @@ local F = {
 	minus = "grug_craft_minus", plus = "grug_craft_plus",
 	go = "grug_craft_go", stop = "grug_craft_stop", recheck = "grug_craft_recheck",
 	box = "grug_craft_box_",
+	-- Round 57: favourites, the queue view, the details seam.
+	fav = "grug_craft_fav", fav_only = "grug_craft_fav_only",
+	queue = "grug_craft_queue", back = "grug_craft_back", unqueue = "grug_craft_unqueue_",
+	details = "grug_craft_details",
 }
 grug_jobs.CRAFT_FIELDS = F
 
--- Colours: the gold selection of grug_inventory, the overview's note colour,
--- the running job's green.
+-- Colours: the gold selection of grug_inventory, the overview's note colour.
 local SELECTED_ROW = "#8a682f80"
 local BOX_COLOR = "#00000040"
 local DIM = "#9a9a9a"
-local RUN_COLOR = "#5fd068"
 local NOTE_COLOR = "#f0c75e"
+local RULE_COLOR = "#ffffff30"
 
 -- Layout (real coordinates; the frame is 13.5 wide). The boxes end a gap
 -- above the short view's Inventory box, as on the other tabs
@@ -94,14 +105,30 @@ local BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
 local TAB_Y, TAB_H = 0.25, 0.65
 local LIST_X, LIST_W = 0.2, 5.0
 local SEARCH_Y, CHECK_Y = 1.1, 2.0
+-- "Favorites only" beside "Craftable only" (Round 57 ruling 7). At the web
+-- client's size the two labels need about 5.2 units (measured on the
+-- Round 57 shots), so the second may run into the gap before the box.
+local FAV_CHECK_X = 2.75
 -- Rows 0.54 high (0.56 until the boxes moved up), so the box buttons below
 -- the pager keep their height.
 local ROW_Y, ROW_H, ICON = 2.35, 0.54, 0.45
 local PAGER_Y = ROW_Y + PER_PAGE * ROW_H + 0.1
 local PAGER_H = 0.55
-local BOX = {x = 5.4, y = 0.95, w = 4.8, h = BOTTOM - 0.95}
-local OUT = {x = 10.4, y = 0.95, w = 2.9, h = BOTTOM - 0.95}
+-- Layout C (Round 57 ruling 1): the right column is gone and the box spans
+-- to the frame's edge.
+local BOX = {x = 5.4, y = 0.95, w = 7.9, h = BOTTOM - 0.95}
 grug_jobs.CRAFT_BOX = BOX
+-- The job strip at the box's bottom (a rule, the bar with the stop button,
+-- the job's line, View Queue), the overflow row above it while it holds
+-- something, and the boxes' bottom row (the big button; craft_box.lua's
+-- quantity row, operation_box.lua's levels row).
+local STRIP_H = 1.35
+local STRIP_Y = BOX.y + BOX.h - STRIP_H
+local OVERFLOW_H, OVERFLOW_SLOTS = 1.6, 6
+local STOP_W, QUEUE_W = 0.6, 2.6
+local ACTION = {w = 2.6, h = 0.8}
+grug_jobs.CRAFT_ACTION = ACTION
+grug_jobs.CRAFT_STRIP_Y = STRIP_Y
 -- Characters per real unit for clipping and wrapping (the overview's rate),
 -- and a row's room for its name between the icon and ×N.
 local CHARS_PER_UNIT = 6.6
@@ -120,6 +147,17 @@ local function clip(text, limit)
 	return text:sub(1, limit - 2) .. ".."
 end
 grug_jobs._clip = clip
+-- The same by characters (UTF-8: "×" and "→" are one each).
+local function clip_chars(text, limit)
+	local count, cut = 0, nil
+	for at in text:gmatch("()[^\128-\191]") do
+		count = count + 1
+		if count == limit - 1 then cut = at end
+	end
+	if count <= limit then return text end
+	return text:sub(1, cut - 1) .. ".."
+end
+grug_jobs._clip_chars = clip_chars
 
 --
 -- Areas (spec §2.16): Basic and Cooking, the two primary slots, Alchemy. An
@@ -187,6 +225,50 @@ local function label_of(output)
 end
 grug_jobs.recipe_label = label_of
 
+--
+-- Favourites (Round 57 ruling 7): the recipe ids a player bookmarked, in
+-- player meta FAVORITES_KEY as one core.serialize'd sorted list ("" for
+-- none); read once per session. An id no recipe has any more is kept until
+-- the next change writes the list, and never shown.
+--
+
+local FAVORITES_KEY = "grug_jobs:favorites"
+grug_jobs.FAVORITES_KEY = FAVORITES_KEY
+local favorite_sets = {}
+
+local function favorites_of(player)
+	local name = player:get_player_name()
+	local set = favorite_sets[name]
+	if set then return set end
+	set = {}
+	local text = player:get_meta():get_string(FAVORITES_KEY)
+	local list = text ~= "" and core.deserialize(text) or nil
+	for _, id in ipairs(type(list) == "table" and list or {}) do
+		if type(id) == "string" then set[id] = true end
+	end
+	favorite_sets[name] = set
+	return set
+end
+
+function grug_jobs.is_favorite(player, recipe_id)
+	return favorites_of(player)[recipe_id] == true
+end
+
+-- Bookmarks the recipe or removes the bookmark; returns whether it is one now.
+function grug_jobs.toggle_favorite(player, recipe_id)
+	local set = favorites_of(player)
+	set[recipe_id] = not set[recipe_id] or nil
+	local list = {}
+	for id in pairs(set) do list[#list + 1] = id end
+	table.sort(list)
+	player:get_meta():set_string(FAVORITES_KEY, #list > 0 and core.serialize(list) or "")
+	return set[recipe_id] == true
+end
+
+core.register_on_leaveplayer(function(player)
+	favorite_sets[player:get_player_name()] = nil
+end)
+
 -- ×N of one row: the chosen recipe counts its chosen kinds (`picks`).
 local function crafts_of(st, counts, recipe, picks)
 	return grug_jobs.crafts_from_counts(counts, recipe,
@@ -202,9 +284,12 @@ local function list_rows(player, st, tab, counts, picks)
 	local level = tab.area ~= "basic" and grug_jobs.profession_level(player, tab.area) or nil
 	-- basic_unlock.lua's rule (absent in harnesses that load no basic_unlock.lua).
 	local known = tab.area == "basic" and grug_jobs.recipe_known
+	-- "Favorites only" (both filters on: the craftable favourites).
+	local favorites = st.fav_only and favorites_of(player)
 	for _, recipe in ipairs(grug_jobs.recipes_in_area(tab.area)) do
 		label_of(recipe.output)
 		if (not level or recipe.tier <= level) and (not known or known(player, recipe)) and
+				(not favorites or favorites[recipe.id]) and
 				(query == "" or lowered[recipe.output]:find(query, 1, true)) then
 			if st.only then
 				local crafts = crafts_of(st, counts, recipe, picks)
@@ -219,14 +304,18 @@ local function list_rows(player, st, tab, counts, picks)
 	return rows
 end
 
-local function empty_text(tab, searching)
+local function empty_text(tab, searching, favorites)
 	if not tab.area then
 		return "No primary profession yet. Learn one from its trainer in the capital."
 	end
 	if not tab.learned then
 		return "Not learned yet. Learn " .. tab.label .. " from its trainer in the capital."
 	end
-	return searching and "No recipe matches." or "No recipe can be crafted now."
+	if searching then return "No recipe matches." end
+	if favorites then
+		return "No favorite here yet. Mark a recipe with the star at the top right of its box."
+	end
+	return "No recipe can be crafted now."
 end
 
 local function wrapped_labels(fs, x, y, width, text, color, step)
@@ -253,8 +342,9 @@ local function list_content(fs, player, st, tab, counts, picks)
 		n(LIST_X), n(SEARCH_Y), F.search, esc(st.typed), F.search)
 	fs[#fs + 1] = ("button[%s,%s;0.5,0.6;%s;×]button[%s,%s;1.3,0.6;%s;Search]"):format(
 		n(LIST_X + 3.1), n(SEARCH_Y), F.clear, n(LIST_X + 3.7), n(SEARCH_Y), F.find)
-	fs[#fs + 1] = ("checkbox[%s,%s;%s;Craftable only;%s]"):format(n(LIST_X), n(CHECK_Y),
-		F.only, tostring(st.only))
+	fs[#fs + 1] = ("checkbox[%s,%s;%s;Craftable only;%s]checkbox[%s,%s;%s;Favorites only;%s]")
+		:format(n(LIST_X), n(CHECK_Y), F.only, tostring(st.only),
+		n(FAV_CHECK_X), n(CHECK_Y), F.fav_only, tostring(st.fav_only == true))
 	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]"):format(n(LIST_X), n(ROW_Y), n(LIST_W),
 		n(PER_PAGE * ROW_H), BOX_COLOR)
 	st.rows = {}
@@ -287,7 +377,7 @@ local function list_content(fs, player, st, tab, counts, picks)
 	end
 	if #rows == 0 then
 		wrapped_labels(fs, LIST_X + 0.15, ROW_Y + 0.35, LIST_W - 0.3,
-			empty_text(tab, st.search ~= ""))
+			empty_text(tab, st.search ~= "", st.fav_only))
 	end
 	fs[#fs + 1] = ("button[%s,%s;0.8,%s;%s;<]label[%s,%s;%s]button[%s,%s;0.8,%s;%s;>]"):format(
 		n(LIST_X), n(PAGER_Y), n(PAGER_H), F.prev,
@@ -296,14 +386,13 @@ local function list_content(fs, player, st, tab, counts, picks)
 end
 
 --
--- The running job and the overflow (spec §2.20, §4.5; Round 47).
+-- The job strip and the overflow (spec §2.20, §4.5; Round 47; Round 57
+-- layout C).
 --
 
--- What the indicator says per job kind; lane EU adds "Enchanting…".
-grug_jobs.JOB_RUN_LABELS = {recipe = "Crafting…"}
-
--- The running job's label per kind, fn(job) -> text; lane EU adds the
--- enchant ("Steel Sword") and upgrade ("Steel Sword +3 levels") texts.
+-- A job's line per kind, fn(job) -> text (the line below the bar and the
+-- queue view's rows); lane EU adds the enchant ("Enchant: Strength T2 →
+-- Steel Sword") and upgrade ("Upgrade: Steel Sword +3 levels") texts.
 grug_jobs.JOB_TEXTS = {recipe = function(job)
 	local recipe = job.recipe_def
 	if not recipe then return "" end
@@ -311,11 +400,16 @@ grug_jobs.JOB_TEXTS = {recipe = function(job)
 	local name = label_of(recipe.output)
 	return total > 1 and (name .. " ×" .. total) or name
 end}
+-- A job's icon per kind, fn(job) -> item name (the queue view's rows).
+grug_jobs.JOB_ICONS = {recipe = function(job)
+	return job.recipe_def and job.recipe_def.output or ""
+end}
 
 local function job_label(job)
 	local text = grug_jobs.JOB_TEXTS[job.kind or "recipe"]
 	return text and text(job) or ""
 end
+grug_jobs.job_label = job_label
 
 -- The bar's element: frame_start is the fill frame for the elapsed time,
 -- computed on every build; one frame lasts 1.5 x the job time / BAR_FRAMES
@@ -330,33 +424,92 @@ function grug_jobs.progress_bar(x, y, w, h, job, now)
 		n(x), n(y), n(w), n(h), BAR_TEXTURE, BAR_FRAMES, duration, start)
 end
 
--- The right column: the running job at its top; below it the overflow,
--- drawn only while it holds something (the slots, a note that they empty
--- themselves; shift-click goes to the inbox, grug_inventory/inbox.lua:
--- main[9..] and the bags).
-local OVERFLOW_NOTE = "These move into your inventory when there is room."
-local function output_content(fs, player, job)
-	local x = OUT.x + 0.2
-	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]"):format(n(OUT.x), n(OUT.y), n(OUT.w), n(OUT.h),
-		BOX_COLOR)
-	local y = OUT.y + 0.4
+-- The strip at the box's bottom, the same for every box (ruling 2): a rule;
+-- while a job runs the bar with the small stop button beside it, exactly one
+-- line below it naming the job (no countdown: the bar is the client's
+-- animation, ruling 1) and "View Queue [N]" (N the waiting jobs) at the
+-- right, in the selection colour while the queue view is open; while idle
+-- "No job running".
+local function job_strip(fs, st, job, waiting)
+	local x, right = BOX.x + 0.2, BOX.x + BOX.w - 0.2
+	fs[#fs + 1] = ("box[%s,%s;%s,0.03;%s]"):format(n(x), n(STRIP_Y + 0.1), n(right - x),
+		RULE_COLOR)
 	if not job then
-		fs[#fs + 1] = ("label[%s,%s;No job running]"):format(n(x), n(y))
-	else
-		fs[#fs + 1] = ("box[%s,%s;0.2,0.2;%s]label[%s,%s;%s]"):format(n(x), n(y - 0.1),
-			RUN_COLOR, n(x + 0.3), n(y), esc(core.colorize(RUN_COLOR,
-			grug_jobs.JOB_RUN_LABELS[job.kind or "recipe"] or "Working…")))
-		y = wrapped_labels(fs, x, y + 0.5, 2.5, job_label(job))
-		fs[#fs + 1] = grug_jobs.progress_bar(x, y, 2.5, 0.27, job, grug_jobs.now())
+		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(STRIP_Y + 0.6),
+			esc(core.colorize(DIM, "No job running")))
+		return
 	end
-	if player:get_inventory():is_empty(grug_jobs.OUTPUT_LIST) then return end
-	y = OUT.y + 2.6
-	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(y), esc(core.colorize(NOTE_COLOR,
-		"Overflow")))
-	fs[#fs + 1] = ("list[current_player;%s;%s,%s;2,2;]listring[current_player;%s]" ..
+	local queue_x = right - QUEUE_W
+	local bar_w = queue_x - 0.3 - STOP_W - 0.1 - x
+	fs[#fs + 1] = grug_jobs.progress_bar(x, STRIP_Y + 0.35, bar_w, 0.3, job, grug_jobs.now())
+	local stop = grug_jobs.stop_field(job)
+	fs[#fs + 1] = ("button[%s,%s;%s,0.5;%s;■]tooltip[%s;%s]"):format(n(x + bar_w + 0.1),
+		n(STRIP_Y + 0.25), n(STOP_W), stop, stop,
+		esc("Stop this job: what it has not made comes back."))
+	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(STRIP_Y + 0.95),
+		esc(clip_chars(job_label(job), math.floor((bar_w + STOP_W + 0.1) * CHARS_PER_UNIT))))
+	if st.box == "queue" then
+		fs[#fs + 1] = grug_inventory.selected_button_style(F.queue, true)
+	end
+	fs[#fs + 1] = ("button[%s,%s;%s,0.85;%s;%s]"):format(n(queue_x), n(STRIP_Y + 0.3),
+		n(QUEUE_W), F.queue, esc("View Queue [" .. #waiting .. "]"))
+end
+
+-- The overflow row above the strip, only while the list holds something
+-- (Round 47; Round 57: one row of up to OVERFLOW_SLOTS slots; a list grown
+-- beyond shows one slot less and "+N more", the drain moves the rest to the
+-- front). Shift-click
+-- goes to the inbox (grug_inventory/inbox.lua: main[9..] and the bags).
+local OVERFLOW_NOTE = "Overflow — empties into your inventory by itself"
+local function overflow_row(fs, player, y)
+	local inv = player:get_inventory()
+	local size = inv:get_size(grug_jobs.OUTPUT_LIST)
+	-- A grown list: the last place of the row says how many more.
+	local shown = size > OVERFLOW_SLOTS and OVERFLOW_SLOTS - 1 or size
+	local x = BOX.x + 0.2
+	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(y + 0.2),
+		esc(core.colorize(NOTE_COLOR, OVERFLOW_NOTE)))
+	fs[#fs + 1] = ("list[current_player;%s;%s,%s;%d,1;]listring[current_player;%s]" ..
 		"listring[current_player;grug_inbox]listring[current_player;main]"):format(
-		grug_jobs.OUTPUT_LIST, n(x), n(y + 0.35), grug_jobs.OUTPUT_LIST)
-	wrapped_labels(fs, x, y + 2.95, 2.5, OVERFLOW_NOTE, DIM)
+		grug_jobs.OUTPUT_LIST, n(x), n(y + 0.45), shown, grug_jobs.OUTPUT_LIST)
+	local more = 0
+	for index = shown + 1, size do
+		if not inv:get_stack(grug_jobs.OUTPUT_LIST, index):is_empty() then more = more + 1 end
+	end
+	if more > 0 then
+		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x + shown * 1.25 + 0.1), n(y + 0.95),
+			esc(core.colorize(DIM, "+" .. more .. " more")))
+	end
+end
+
+-- The stop button names the running job (its start in ms), so a second
+-- click on a page sent before the stop never stops the job promoted after
+-- it (Round 57 review).
+function grug_jobs.stop_field(job)
+	return F.stop .. "_" .. tostring(math.floor(job.start * 1000))
+end
+
+-- The big button of layout C (ruling 1): right-aligned in the box's bottom
+-- row, above the overflow and the strip. A button that cannot start is
+-- greyed and named grug_craft_recheck (a click only rebuilds the page). A
+-- live one carries the build's serial (`<field>_<serial>`, view.serial):
+-- action_clicked accepts only the newest build's, so a double click (the
+-- second on the page the first replaced) never starts or queues twice
+-- (Round 57 review).
+local DISABLED_STYLE = "style[" .. F.recheck ..
+	";bgcolor=#2a2a2a;bgcolor_hovered=#2a2a2a;textcolor=#808080;border=false]"
+grug_jobs.CRAFT_DISABLED_STYLE = DISABLED_STYLE
+function grug_jobs.action_button(view, field, label, enabled, style)
+	local geometry = ("%s,%s;%s,%s"):format(n(BOX.x + BOX.w - 0.2 - ACTION.w),
+		n(view.bottom - ACTION.h), n(ACTION.w), n(ACTION.h))
+	if enabled then
+		return (style or "") .. ("button[%s;%s_%d;%s]"):format(geometry, field, view.serial,
+			esc(label))
+	end
+	return DISABLED_STYLE .. ("button[%s;%s;%s]"):format(geometry, F.recheck, esc(label))
+end
+function grug_jobs.action_clicked(st, fields, field)
+	return st.serial ~= nil and fields[field .. "_" .. st.serial] ~= nil
 end
 
 -- Resends the Crafting page when it is the player's current page (the
@@ -372,19 +525,40 @@ end
 
 --
 -- The crafting boxes (spec §2.18; lane EU adds its enchant and upgrade
--- boxes): def.build(player, view) -> formspec text inside grug_jobs.CRAFT_BOX,
--- def.fields(player, st, fields) -> true when it handled the event (the page
--- then resends). `view` = {st, tab, recipe, job, counts}. The box drawn is
--- context.grug_craft.box (default "recipe"). A box with `button = {label,
--- shown = fn(player, tab)}` gets a button below the list where `shown` says
--- so (lane EU: "Enchant an item", "Upgrade an item" in the primary areas); a
--- click opens it, a recipe row or an area tab returns to the recipe box.
+-- boxes, Round 57 the queue view): def.build(player, view) -> formspec text
+-- inside grug_jobs.CRAFT_BOX, def.fields(player, st, fields) -> true when it
+-- handled the event (the page then resends). `view` = {st, tab, recipe, job,
+-- counts, queue, full, bottom}: `job` the running job, `queue` the waiting
+-- ones (queue_state), `full` whether the queue takes no more, `bottom` where
+-- the box's own content ends (above the overflow row and the job strip,
+-- which ui.lua draws; the big button's row ends there, action_button). The
+-- box drawn is context.grug_craft.box (default "recipe"). A box with
+-- `button = {label, shown = fn(player, tab)}` gets a button below the list
+-- where `shown` says so (lane EU: "Enchant an item", "Upgrade an item" in
+-- the primary areas); a click opens it, a recipe row or an area tab returns
+-- to the recipe box. A box without one opens from a button of another box
+-- (open_craft_box: the queue view from View Queue; the seam for the recipe
+-- details page, craft_box.lua) and goes back with close_craft_box.
 --
 
 local boxes, box_order = {}, {}
 function grug_jobs.register_craft_box(name, def)
 	if not boxes[name] then box_order[#box_order + 1] = name end
 	boxes[name] = def
+end
+
+function grug_jobs.has_craft_box(name)
+	return boxes[name] ~= nil
+end
+
+-- Opens box `name` over the current one (the chosen recipe stays);
+-- close_craft_box returns to the box it was opened from.
+function grug_jobs.open_craft_box(st, name)
+	if st.box ~= name then st.box_return = st.box end
+	st.box = name
+end
+function grug_jobs.close_craft_box(st)
+	st.box, st.box_return = st.box_return, nil
 end
 
 -- The row of box buttons below the pager, down to the boxes' bottom edge.
@@ -448,7 +622,7 @@ function grug_jobs.crafting_page_content(player, context)
 		x = x + w + 0.1
 	end
 	local text, fill = tier_progress(player, tab)
-	local bar_x = OUT.x + OUT.w - 1.3
+	local bar_x = BOX.x + BOX.w - 1.3
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(math.min(x + 0.2, bar_x - 2.3)),
 		n(TAB_Y + TAB_H / 2), esc(text))
 	if fill then
@@ -460,9 +634,15 @@ function grug_jobs.crafting_page_content(player, context)
 	list_content(fs, player, st, tab, counts, grug_jobs.crafting_picks(st, recipe, counts))
 	box_buttons(fs, player, st, tab)
 	local box = boxes[st.box or "recipe"] or boxes.recipe
+	local waiting = job and grug_jobs.queue_state(player) or {}
+	local overflow = not player:get_inventory():is_empty(grug_jobs.OUTPUT_LIST)
+	local bottom = STRIP_Y - (overflow and OVERFLOW_H or 0)
+	st.serial = (st.serial or 0) + 1
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
-		recipe = recipe})
-	output_content(fs, player, job)
+		recipe = recipe, queue = waiting, bottom = bottom - 0.1, serial = st.serial,
+		full = job ~= nil and 1 + #waiting >= grug_jobs.QUEUE_MAX})
+	if overflow then overflow_row(fs, player, bottom) end
+	job_strip(fs, st, job, waiting)
 	return table.concat(fs)
 end
 
@@ -531,7 +711,7 @@ local function receive_fields(player, context, fields)
 	end
 	for _, name in ipairs(box_order) do
 		if fields[F.box .. name] and boxes[name].button then
-			st.box, st.selected = name, nil
+			st.box, st.selected, st.box_return = name, nil, nil
 			handled = true
 		end
 	end
@@ -539,6 +719,27 @@ local function receive_fields(player, context, fields)
 	if fields[F.next] then st.page, handled = st.page + 1, true end
 	if fields[F.only] then
 		st.only, st.page, handled = fields[F.only] == "true", 1, true
+	end
+	if fields[F.fav_only] then
+		st.fav_only, st.page, handled = fields[F.fav_only] == "true", 1, true
+	end
+	-- The job strip's buttons, the same under every box: stop the running
+	-- job, open the queue view.
+	for name in pairs(fields) do
+		local key = type(name) == "string" and name:match("^" .. F.stop .. "_(%d+)$")
+		if key then
+			-- Only the running job's own button (a stale one names an older job).
+			local job = grug_jobs.job_state(player)
+			if job and grug_jobs.stop_field(job) == name then
+				local ok, reason = grug_jobs.cancel_job(player)
+				if not ok then st.note = reason end
+			end
+			handled = true
+		end
+	end
+	if fields[F.queue] and boxes.queue then
+		grug_jobs.open_craft_box(st, "queue")
+		handled = true
 	end
 	local box = boxes[st.box or "recipe"] or boxes.recipe
 	if box.fields(player, st, fields) then handled = true end

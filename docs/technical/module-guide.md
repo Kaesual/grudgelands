@@ -170,12 +170,18 @@ tools](#player-meta-read-by-external-tools).
   profession recipe or station operation needs the profession at the recipe's
   tier).
 - **The Crafting tab** (`ui.lua` the page, `craft_box.lua` the recipe box,
-  Round 45 lane UI; layout `inventory_equipment.md` §1): runtime state in
+  `queue_box.lua` the queue view, Round 45 lane UI, Round 57 layout C;
+  layout `inventory_equipment.md` §1): runtime state in
   the sfinv context `grug_craft` (area slot, page, applied and typed search,
-  Craftable only, chosen recipe id, last known quantity text, the note of
-  the last refused action, the row ids of the last build, and since Round 46
+  Craftable only, Favorites only `fav_only`, chosen recipe id, last known
+  quantity text, the note of the last refused action, the row ids of the
+  last build, the open box `box` and the one it was opened from
+  `box_return`, and since Round 46
   the chosen kinds `picks` (group -> item) of the recipe `picks_for` and the
-  built dropdowns `pick_rows`); nothing in player meta. A group entry with
+  built dropdowns `pick_rows`). In player meta only the favourites (Round
+  57): `grug_jobs:favorites`, one `core.serialize`d sorted list of recipe
+  ids ("" for none), read once per session; `is_favorite(player, id)`,
+  `toggle_favorite(player, id)`; an id no recipe has is never shown. A group entry with
   two or more carried kinds gets `dropdown[...;grug_craft_pick_<serial>_<index>;
   ...;true]` (index events; `pick_serial` counts the box's builds); `fields`
   applies a value of the newest build's serial that differs from the built
@@ -197,27 +203,61 @@ tools](#player-meta-read-by-external-tools).
   a search within a second of the last is ignored without one. The end
   resend is a `register_on_job_end` callback for the sources `timer` and
   `join` while the current page is Crafting (`open`, `start` and `stop` are
-  answered by their own build or click). The middle box is replaceable for
+  answered by their own build or click). The box is replaceable for
   lane EU: `register_craft_box(name, {build = fn(player, view) -> formspec,
   fields = fn(player, st, fields) -> handled})` draws into
-  `grug_jobs.CRAFT_BOX` (`view` = `{st, tab, recipe, job, counts}`, the box
-  named by `grug_craft.box`, default `recipe`; a def with `button = {label,
+  `grug_jobs.CRAFT_BOX` (`view` = `{st, tab, recipe, job, counts, queue,
+  full, bottom}`: the running job, the waiting ones (`queue_state`),
+  whether the queue is full, and the y where the box's own content ends; the
+  box named by `grug_craft.box`, default `recipe`; a def with `button = {label,
   shown = fn(player, tab)}` gets a button below the list, field
-  `grug_craft_box_<name>`); `JOB_RUN_LABELS[kind]` names the running
-  indicator and `JOB_TEXTS[kind](job)` its label, `progress_bar(x, y, w, h,
+  `grug_craft_box_<name>`; `has_craft_box(name)`, `open_craft_box(st,
+  name)` and `close_craft_box(st)` open a box over the current one and go
+  back: the queue view `queue` from View Queue, and the seam for lane
+  DETAILS: once a `details` box is registered, the recipe box draws
+  "Recipe details" (`grug_craft_details`) beside its ingredients heading,
+  which opens it). Below every box ui.lua draws the job strip (from
+  `CRAFT_STRIP_Y`: the bar, the stop button `stop_field(job)` =
+  `grug_craft_stop_<start in ms>` (a click names the job it stops, so a
+  double click never stops the next one), the job's
+  line, View Queue `grug_craft_queue`) and, while it holds something, the
+  overflow row; `action_button(view, field, label, enabled[, style])` is
+  the big button right-aligned in a box's bottom row (`CRAFT_ACTION`,
+  greyed as `grug_craft_recheck` when disabled; live it is named
+  `<field>_<serial>`, the page build's serial `grug_craft.serial`, and
+  `action_clicked(st, fields, field)` accepts only the newest build's, so a
+  double click never starts or queues twice). `JOB_TEXTS[kind](job)`
+  is a job's one line and `JOB_ICONS[kind](job)` its icon in the queue
+  view (the waiting jobs' ✕ are `grug_craft_unqueue_<id>`), `progress_bar(x, y, w, h,
   job, now)` draws the bar
   (`grug_jobs_progress_bar.png` from `tools/r45_ui/gen_progress_bar.py
   --check`: 64 fill + 32 full frames, `BAR_FRAMES`), field names are
   `CRAFT_FIELDS`. Fixtures `tools/r45_ui`, `tools/r46_id` (the dropdowns).
-- **Crafting jobs** (`jobs.lua`, Round 45 lane JB): one job per player in
+- **Crafting jobs** (`jobs.lua`, Round 45 lane JB; the queue Round 57):
+  the running job in
   player meta `grug_jobs:job` (one `core.serialize`d table: `kind`
   "recipe", `recipe` id, `quantity`, `consumed` itemstrings for the refund,
   `target` itemstring for lane EU's enchant and upgrade kinds, `start` and
   `finish` in os.time() seconds with a sub-second part from `grug_jobs.now()`,
   `no_xp` after an unlearn; Round 47: `delivered`, the crafts of a recipe
   job delivered so far, and `picks`, the chosen kinds; a job without
-  `delivered` delivers at its end only). `start_job(player, recipe_id, quantity[, picks])` →
-  ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
+  `delivered` delivers at its end only). The waiting jobs (Round 57) in
+  `grug_jobs:queue`: one `core.serialize`d list in queue order ("" when
+  none), each entry a job record with `duration` (seconds) instead of
+  `start`/`finish` and an `id` (unique per player, named by the queue
+  view's cancel); `QUEUE_MAX` 5 entries with the running one. An old save
+  without the key has an empty queue; code before Round 57 reads only the
+  running job. When the running job completes, the first entry becomes
+  the running job with `start` = the previous `finish` (before the kind's
+  finish runs, so a hook inside it finds the next job already running);
+  `update_job` loops until the running job is not due, which is the login's
+  offline catch-up; a Stop starts the next one now. `queue_state(player)`
+  (copies with `recipe_def`), `queue_full(player)`, `QUEUE_FULL` (the
+  message), `cancel_queued(player, id)` → ok, reason (the consumed stacks
+  and target whole, refused when they do not fit). An unreadable queue
+  entry is dropped with a warning, as an unreadable job is.
+  `start_job(player, recipe_id, quantity[, picks])` →
+  ok, reason, `{code, max}` (codes `busy` (the queue is full), `recipe`, `quantity`,
   `profession`, `station`, `ingredients`, `space`: the whole order's result
   does not fit into the inventory once its ingredients are taken,
   `output_fits`); `cancel_job(player)` → ok, `"completed"`/`"cancelled"` or
@@ -246,10 +286,12 @@ tools](#player-meta-read-by-external-tools).
   `station_nearby(player, station)` (nodes whose `_grug_station` is the kind,
   within 4 nodes; true and the nearest such node); `take_all(player)` → moved, left. Finished
   stacks go through the give helper; the rest into the overflow
-  `grug_craft_out` (4 take-only slots, `ensure_output_area`, created at
+  `grug_craft_out` (at least 4 take-only slots, `ensure_output_area`, created at
   every join; a join handler that runs earlier, such as the 0.45.0
   migration's join part in `grug_core/migrations.lua`, calls it before it
-  uses the list), then the feet. `watch_overflow(player)` drains it by one
+  uses the list) through `to_overflow(player, stack)`, which adds a slot
+  while a stack does not fit (Round 57: nothing goes to the feet; the drain
+  moves what is left to the front and shrinks the list back to 4). `watch_overflow(player)` drains it by one
   `core.after` chain per player while it holds something (`take_all` every
   `OVERFLOW_POLL` s, started by a delivery into it and at the join);
   `refresh_crafting_page(player)` (ui.lua) resends an open Crafting page
@@ -258,15 +300,17 @@ tools](#player-meta-read-by-external-tools).
   `completed`/`cancelled`; source `timer`, `join`, `open`, `start`, `stop`)
   is where UI resends an open Crafting page;
   `register_on_job_start(fn(player, job, station_pos))` runs after a job
-  started (`station_pos` the station the start found, nil without one);
+  was accepted, started or queued (`station_pos` the station the start
+  found, nil without one; the station sound plays then);
   `register_job_kind(kind, {finish})`, `begin_job(player, job[,
-  station_pos])` (nil and the reason while a job runs: the caller gives
+  station_pos])` (it runs the job, or queues it while one runs, the copy's
+  `queued` set; nil and the reason when the queue is full: the caller gives
   back what it took) and `take_ingredients` are the parts EU's kinds
   use. A job is cleared before its kind's `finish` runs, so a hook inside it
   cannot complete it twice; a job without its recipe, or of an unknown kind,
   returns its ingredients and target. A finished recipe job makes its
   stacks (gear through `grug_items.crafted_output`), calls `award_progress`
-  once and feeds "<item> ×N is ready". Fixture `tools/r45_jb`.
+  once and feeds "<item> ×N is ready". Fixtures `tools/r45_jb`, `tools/r57_craft` (the queue, offline, the grown overflow).
 - **The Basic unlock** (`basic_unlock.lua`, Round 47 lane CR, ruling 19): the
   held set in player meta `grug_jobs:held` (the format word `1`, then the
   sorted tokens a Basic recipe names, item names and `group:<name>`,
@@ -276,11 +320,23 @@ tools](#player-meta-read-by-external-tools).
   stick and the four wooden tools), `scan_held(player[, quiet])` (every
   list; returns the recipes it unlocked and feeds
   "New recipe: X" / "New recipes: X and N more", resends an open page
-  unless quiet; the first scan of a character without the key is silent),
+  unless quiet; the first scan of a character without the key is silent).
+  Round 57 the tier unlock: `needed_basic(profession, tier)` (the walk,
+  cached per profession and tier: for each ingredient of the tier's recipes
+  and station operations the Basic recipes that make its item or any member
+  of its group, recursively, a recipe X ← Y left out when another Basic
+  recipe makes Y from X) and `unlock_basic_tiers(player, profession, from,
+  to[, quiet])` into player meta `grug_jobs:basic_unlocked`
+  (`BASIC_UNLOCKED_KEY`, the held set's format with recipe ids, read once
+  per session), called by `learn` (tier 1), the tier advance in
+  `record_craft` and `admin_set` (tiers 1..N, quiet), and at every join for
+  each learned profession's tiers 1..`profession_level` (quiet);
+  `recipe_known` reads both sets
   `held_dirty(player)` (jobs.lua after a delivery). When: at the join,
   before the Crafting tab's build, and in the player's slot (5 slots of
   0.1 s, one slot's players per step) when an inventory action, a dug node
-  or a delivery marked it, else every 10 s. Fixture `tools/r47_cr`; the
+  or a delivery marked it, else every 10 s. Fixtures `tools/r47_cr`,
+  `tools/r57_craft` (the tier unlock); the
   list filter in `tools/r45_ui`.
 - **Station sounds** (`station_sounds.lua`, Round 45 PT8): a start hook
   plays the station's sound at the station a job (recipe, enchant or
@@ -297,7 +353,7 @@ tools](#player-meta-read-by-external-tools).
   callbacks still judge, `operation_target(stack)`; a placement resends an
   open Crafting page; `return_operation_target(player)` hands a left item
   back at join and on an unlearn: give helper, overflow, else it stays). `start_operation(player, op_id,
-  levels)` → ok, reason, `{code, max}` (codes `busy`, `recipe`, `quantity`,
+  levels)` → ok, reason, `{code, max}` (queued while a job runs, Round 57; codes `busy` (the queue is full), `recipe`, `quantity`,
   `profession`, `station`, `cap`, `target`, `space`, `ingredients`) judges
   the slot's item with `grug_items.operation_result`, needs room for the
   result in the inventory once the materials are taken (`output_fits`), takes `operation_ingredients(op, stack)` × levels (one own material
