@@ -21,7 +21,6 @@ for id in (core.settings:get("r58rooms_camps") or ""):gmatch("[^,%s]+") do KEEP[
 
 local function expected(room, kind)
 	if kind == "mantle" then return R.NODES.mantle[room.tier] end
-	if kind == "lift" then return R.NODES.fill end
 	return R.NODES[kind]
 end
 
@@ -63,6 +62,11 @@ local function check_room(room)
 	local ring = {}
 	for name, n in pairs(ring_liquid) do ring[#ring + 1] = name .. "=" .. n end
 	table.sort(ring)
+	local lift = core.get_node(room.lift_cell)
+	if lift.param2 ~= R.NODES.lift_param2 then
+		wrong = wrong + 1
+		first = first or ("lift param2 " .. lift.param2)
+	end
 	local arrival = vector.round(room.arrival)
 	local light = core.get_node_light(arrival) or -1
 	local above = {x = room.lift_cell.x, y = maxp.y + 1, z = room.lift_cell.z}

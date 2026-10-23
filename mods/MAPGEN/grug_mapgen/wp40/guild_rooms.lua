@@ -29,7 +29,8 @@
 --              the floor nodes of floor_y - 1;
 --   minp/maxp  the inclusive box the room step writes and protects: the
 --              open room, its exits and the mantle round them;
---   lift_cell  the node of the room's lift, in the lift column on the floor;
+--   lift_cell  the node of the room's lift (CAMPS' lift node), in the lift
+--              column on the floor, its front toward the arrival;
 --   arrival    the player position beside the lift (the feet 0.49 below
 --              the cell, so `grug_home/travel.lua`'s safe arrival reads the
 --              floor node under it).
@@ -55,13 +56,16 @@
 local M = {}
 
 M.SCHEMA = "grug_wp58_guild_rooms_v1"
--- The node names the room step writes (all registered by
--- guild_room_nodes.lua). The lift cell takes the fill until the lift node is
--- wired in.
+-- The node names the room step writes (registered by guild_room_nodes.lua;
+-- the lift is CAMPS' node, world_nodes.lua, the one the camps' surface lifts
+-- are). The lift's param2 (`4dir`, 0 = its front toward -z) turns its front
+-- toward +z, to the arrival cell.
 M.NODES = {
 	fill = "grug_mapgen:room_fill",
 	floor = "grug_mapgen:room_floor",
 	lamp = "grug_mapgen:room_lamp",
+	lift = "grug_mapgen:guild_lift",
+	lift_param2 = 2,
 	mantle = {"grug_mapgen:room_mantle_t1", "grug_mapgen:room_mantle_t2",
 		"grug_mapgen:room_mantle_t3", "grug_mapgen:room_mantle_t4",
 		"grug_mapgen:room_mantle_t5", "grug_mapgen:room_mantle_t6"},
@@ -291,13 +295,13 @@ function M.index(camps, floors)
 end
 
 -- The camps with a lift and the room floor per tier, as the game reads them
--- in both environments from the world's placement layout text. Round 58
--- phase 1: no camp yet; phase 2 returns CAMPS' camp module's `camps` and
--- `ROOM_FLOOR_Y` here.
+-- in both environments from the world's placement layout text: CAMPS' camp
+-- module (`r58_camps.lua`; no seams: the rooms need no war camp's race).
 function M.lift_camps(wp40, placement_layout)
 	assert(type(wp40) == "string" and type(placement_layout) == "string",
 		"guild rooms: the camp source differs")
-	return {}, {}
+	local camps = dofile(wp40 .. "/r58_camps.lua")
+	return camps.camps(placement_layout), camps.ROOM_FLOOR_Y
 end
 
 return M

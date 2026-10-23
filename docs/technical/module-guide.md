@@ -2455,9 +2455,11 @@ tools](#player-meta-read-by-external-tools).
   a position for `grug_home/travel.lua`'s safe arrival) and owns the shape
   (`cell_at_offset`: a 7 × 4 × 7 open room, three 1 × 2 exits ending blind at
   the box face, the floor, four wall lamps, a 3-node mantle; a 13 × 10 × 13
-  box). `lift_camps(wp40, placement_layout)` is the one seam to the camp
-  list, read from the placement layout text in both environments (no IPC
-  field); both log the room count and digest. The room step
+  box; CAMPS' lift node `grug_mapgen:guild_lift` at the centre, param2 2,
+  its front toward the arrival). `lift_camps(wp40, placement_layout)` is the
+  one seam to the camp list (`r58_camps.lua` `camps` and `ROOM_FLOOR_Y`:
+  36 camps, 148 rooms), read from the placement layout text in both
+  environments (no IPC field); both log the room count and digest. The room step
   (`wp40/guild_room_writer.lua`) runs in `r7_mapgen.lua`'s callback after
   `refine_or_degrade` and outside it, with its own degrade
   (`[GRUG-SEVERE]`, key `mapgen_room:<chunk>`): every chunk writes the part
@@ -2473,7 +2475,8 @@ tools](#player-meta-read-by-external-tools).
   lets no liquid in. Main wraps the zone session once more
   (`wp40/guild_room_protection.lua`, beside the zone overlay, whose schema
   stays): inside a box `territory_rule_at` is `hard_protected`,
-  `hard_protection_kind_at` `guild_room` and the faction policy protects for
+  `hard_protection_kind_at` `guild_room` (hint "Miner's Guild – protected")
+  and the faction policy protects for
   everyone; the PvP rule and `hard_footprint_in` stay the session's. The
   rooms are public as `grug_mapgen.guild_rooms`; the ambient underground
   spawns (`spawn_policy.lua`) refuse a room box through `room_at`, the depth

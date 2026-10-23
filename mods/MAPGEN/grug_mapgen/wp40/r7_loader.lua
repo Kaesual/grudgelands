@@ -176,7 +176,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		-- Every node the room step writes exists (emerge would refuse each
 		-- room chunk otherwise) and is non-ground-content.
 		local names = {rooms_module.NODES.fill, rooms_module.NODES.floor,
-			rooms_module.NODES.lamp}
+			rooms_module.NODES.lamp, rooms_module.NODES.lift}
 		for _, name in ipairs(rooms_module.NODES.mantle) do names[#names + 1] = name end
 		for _, name in ipairs(names) do
 			local def = core_api.registered_nodes[name]

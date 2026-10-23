@@ -39,6 +39,7 @@ function W.new(R, rooms, nodes)
 	local low, high = {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0}
 	local by_kind = {fill = nodes.fill, lift = nodes.lift or nodes.fill,
 		floor = nodes.floor, lamp = nodes.lamp}
+	local lift_param2 = nodes.lift and nodes.lift_param2 or 0
 	return function(vm, minp, maxp)
 		local rooms_here = rooms.rooms_in(minp, maxp)
 		for room_index = 1, #rooms_here do
@@ -55,6 +56,7 @@ function W.new(R, rooms, nodes)
 						local kind = cell_at_offset(x - cx, y - fy, z - cz)
 						pos.x, pos.y, pos.z = x, y, z
 						node.name = kind == "mantle" and mantle or by_kind[kind]
+						node.param2 = kind == "lift" and lift_param2 or 0
 						vm:set_node_at(pos, node)
 					end
 				end

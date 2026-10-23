@@ -1,6 +1,6 @@
--- Round 58 lane ROOMS portable test (LuaJIT): the Miner's Guild lift rooms
--- against a stub camp list (phase 1: CAMPS' camp module is built in
--- parallel; the stub camps stand here, not at its path).
+-- Round 58 lane ROOMS portable test (LuaJIT): the Miner's Guild lift rooms,
+-- mostly on a stub camp list (camps at chosen chunk corners), and on the
+-- real camps of three seeds (W).
 --
 --   luajit tools/r58_rooms/portable_test.lua [REPO]
 --
@@ -10,8 +10,12 @@
 --    face, four lamps, the mantle), the index's refusals and determinism,
 --    every box inside one y chunk and the -50 box below the writer's
 --    authored floor (y -37).
+-- W. The real camps through the game's seam (`lift_camps`, CAMPS'
+--    r58_camps.lua) on seeds 42, 12345 and 5575844014311305038: 36 camps,
+--    148 rooms, no two boxes meeting, each in one y chunk, deterministic.
 -- B. The room step (wp40/guild_room_writer.lua) on a fake VoxelManip: a box
---    split over chunk edges comes out the same as written by one chunk, in
+--    split over chunk edges comes out the same as written by one chunk (the
+--    lift node at the lift cell, its front toward the arrival), in
 --    either chunk order; every write lies in its own chunk and in a box;
 --    calc_lighting on each written part.
 -- C. The early-outs: the real air_chunks.lua skips the writer in every room
@@ -176,8 +180,37 @@ refused({{id = "deep", tier = 7, lift = {x = 0, z = 0}, levels = {7}}}, "a tier 
 refused({{id = "half", tier = 1, lift = {x = 0.5, z = 0}, levels = {1}}}, "a fractional lift")
 check(#R.index({}, {}).list == 0 and R.index({}, {}).room_at({x = 0, y = -50, z = 0}) == nil,
 	"A no camps, no rooms")
-local none, no_floors = R.lift_camps(wp40, "placement text")
-check(#none == 0 and next(no_floors) == nil, "A phase 1: the game's camp source is empty")
+
+-- W. The real camps (CAMPS' r58_camps.lua through the game's one seam,
+-- `lift_camps`) over three fleet seeds: 36 camps, 148 rooms, no two boxes
+-- meeting (the index refuses that), every room in one y chunk, every lift
+-- column a node coordinate; the same rooms from a second read.
+do
+	_G.core = _G.core or {}
+	local common = dofile(repo .. "/tools/wp40/r6/common.lua")
+	local A = dofile(wp40 .. "/world_assembly.lua")(wp40, common.new_sha256())
+	for _, seed in ipairs({"42", "12345", "5575844014311305038"}) do
+		local W = A.world(seed)
+		W.place()
+		local text = W.placement_text
+		local camps, floors = R.lift_camps(wp40, text)
+		local real = R.index(camps, floors)
+		check(#camps == 36 and #real.list == 148, "W seed " .. seed .. ": 36 camps, 148 rooms: " ..
+			#camps .. ", " .. #real.list)
+		for index = 1, 6 do check(floors[index] == FLOORS[index], "W the floors are CAMPS'") end
+		local in_one_chunk = 0
+		for _, room in ipairs(real.list) do
+			if math.floor((room.minp.y + 32) / 80) == math.floor((room.maxp.y + 32) / 80) then
+				in_one_chunk = in_one_chunk + 1
+			end
+		end
+		check(in_one_chunk == 148, "W seed " .. seed .. ": every room in one y chunk")
+		check(R.index(R.lift_camps(wp40, text)).summary() == real.summary(),
+			"W seed " .. seed .. ": the same rooms again")
+		print(("  seed %s: %d camps, %d rooms, digest %s"):format(seed, #camps, #real.list,
+			common.hex(common.new_sha256()(real.summary())):sub(1, 16)))
+	end
+end
 
 -- ---------------------------------------------------------------------------
 -- The fake world and VoxelManip
@@ -204,7 +237,11 @@ local function new_vm(world, minp, maxp, broken)
 		if broken then error("set_node_at refused") end
 		check(inside(pos, minp, maxp), "B a write inside its own chunk")
 		check(rooms.room_at(pos) ~= nil, "B a write inside a room box")
-		check((node.param1 or 0) == 0 and (node.param2 or 0) == 0, "B light and param2 reset")
+		local lift = node.name == R.NODES.lift
+		check((node.param1 or 0) == 0 and (node.param2 or 0) == (lift and 2 or 0),
+			"B light reset, param2 0 (the lift's front toward +z: 2)")
+		world.param2 = world.param2 or {}
+		world.param2[key(pos.x, pos.y, pos.z)] = node.param2
 		world.nodes[key(pos.x, pos.y, pos.z)] = node.name
 		self.writes = self.writes + 1
 	end
@@ -294,11 +331,13 @@ end
 do
 	local room = edge_rooms[3]
 	local c = room.lift_cell
-	check(whole.nodes[key(c.x, c.y, c.z)] == R.NODES.fill and
+	check(whole.nodes[key(c.x, c.y, c.z)] == R.NODES.lift and
+		whole.param2[key(c.x, c.y, c.z)] == 2 and
+		whole.nodes[key(c.x, c.y, c.z + 1)] == R.NODES.fill and
 		whole.nodes[key(c.x, c.y - 1, c.z)] == R.NODES.floor and
 		whole.nodes[key(c.x, c.y + 2, c.z + 4)] == R.NODES.lamp and
 		whole.nodes[key(c.x, c.y + 5, c.z)] == R.NODES.mantle[3],
-		"B fill, floor, lamp and the tier's mantle")
+		"B the lift facing the arrival, fill, floor, lamp and the tier's mantle")
 end
 
 -- ---------------------------------------------------------------------------
@@ -418,6 +457,10 @@ register("default:water_source", {drawtype = "liquid", liquidtype = "source",
 	walkable = false})
 register("default:lava_source", {drawtype = "liquid", liquidtype = "source",
 	walkable = false, damage_per_second = 8, is_ground_content = false})
+-- CAMPS' lift node (world_nodes.lua): its fields that matter here, checked
+-- against the real registration's source below.
+register("grug_mapgen:guild_lift", {drawtype = "nodebox", paramtype = "light",
+	paramtype2 = "4dir", is_ground_content = false, floodable = false, diggable = false})
 register("air", {drawtype = "airlike", walkable = false, pointable = false,
 	buildable_to = true, floodable = true, paramtype = "light", sunlight_propagates = true})
 do
@@ -454,6 +497,13 @@ for tier = 1, 6 do
 		mantle.walkable == true and mantle.tiles[1] == host.tiles[1],
 		"H the T" .. tier .. " mantle looks like " .. grug_materials.TIERS[tier].node)
 end
+do
+	local source = read(repo .. "/mods/MAPGEN/grug_mapgen/world_nodes.lua")
+	local block = source:match('register_node%("grug_mapgen:guild_lift", {(.-)\n }%)')
+	check(block and block:find("is_ground_content=false", 1, true) and
+		block:find("floodable=false", 1, true) and block:find('paramtype2="4dir"', 1, true),
+		"H CAMPS' lift node is non-ground-content, not floodable, 4dir")
+end
 local lamp = registered[R.NODES.lamp]
 check(lamp and lamp.is_ground_content == false and lamp.diggable == false and
 	lamp.paramtype == "light" and lamp.light_source == 14,
@@ -462,7 +512,7 @@ check(lamp and lamp.is_ground_content == false and lamp.diggable == false and
 -- Lamp is: the first engine run refused it in every room chunk).
 do
 	local curation = read(repo .. "/mods/ITEMS/grug_materials/content_curation.lua")
-	local names = {R.NODES.fill, R.NODES.floor, R.NODES.lamp}
+	local names = {R.NODES.fill, R.NODES.floor, R.NODES.lamp, R.NODES.lift}
 	for _, name in ipairs(R.NODES.mantle) do names[#names + 1] = name end
 	for _, name in ipairs(names) do
 		check(name:find("^grug_mapgen:") and not curation:find('"' .. name .. '"', 1, true),
