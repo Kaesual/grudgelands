@@ -120,7 +120,7 @@ local function build_rows()
 			end
 			local list = rows[provider]
 			list[#list + 1] = {id = row.key, label = name, detail = detail, kind = kind,
-				texture = texture(kind), position = row.anchor,
+				texture = texture(icons.marker(row.slot)), position = row.anchor,
 				faction = faction_of_race[row.race_id]}
 		end
 		for _, socket in ipairs(grug_core.settlement_sockets_at(row.key)) do

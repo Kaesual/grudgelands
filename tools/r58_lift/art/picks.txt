@@ -1,0 +1,14 @@
+# Round 58 lane LIFT: the user's picks of guild art drop 02 (2026-10-23),
+# proposal P1, shipped as byte copies. One line per file:
+#   <sha256 of the picked file>  <file in drop-02/p1/>  <game path>
+# ship.py copies and checks them; tools/r58_lift/portable_test.lua checks
+# the shipped files against the same hashes.
+683b03036039080d8173f4b3d69117f0bade9c51e72366b8e0f0d78c0403b201  guild_lift_top.png  mods/MAPGEN/grug_mapgen/textures/grug_mapgen_guild_lift_top.png
+d627a5013d32a54b12ca8daf5ede0a633de134a22bbc7ef8ad279e8ebe969229  guild_lift_bottom.png  mods/MAPGEN/grug_mapgen/textures/grug_mapgen_guild_lift_bottom.png
+006d0152e85638d55bbdb9dfc513949adf0eee684e36507562cc48ffa1ec478d  guild_lift_right.png  mods/MAPGEN/grug_mapgen/textures/grug_mapgen_guild_lift_right.png
+b645da213c05286f0d26adc0389070cb1b39328cc675eae1b2a2293d34c3560b  guild_lift_left.png  mods/MAPGEN/grug_mapgen/textures/grug_mapgen_guild_lift_left.png
+48857592b0989de218ed500e5fd85523aefdfe76ade2ad06cf51961eeed26406  guild_lift_back.png  mods/MAPGEN/grug_mapgen/textures/grug_mapgen_guild_lift_back.png
+52b0b4770c20c79d61f0d76553454b40c501a41df8fc1fa31bb18f5c02eac7cb  guild_lift_front.png  mods/MAPGEN/grug_mapgen/textures/grug_mapgen_guild_lift_front.png
+2317a0acf2129f133d85ea5b1e8d287077571caf303a4c64a9ebd5cd1d56bbad  reputation.png  mods/PLAYER/grug_guild/textures/grug_guild_reputation.png
+6fbb6bf95547be354660ed1ee54959fc72c6ea30f420792995cc01cde90f3f36  map_mining_camp.png  mods/PLAYER/grug_map/textures/grug_map_mining_camp.png
+ccb4f6f86c9eb8b45f8f3bf583c3d19c2b6eda08d4528c3c6cfdca0008dbadc4  map_camp_construction.png  mods/PLAYER/grug_map/textures/grug_map_camp_construction.png

@@ -259,8 +259,18 @@ eq(grug_guild.format_points(999), "999", "A format 999")
 eq(grug_guild.format_points(1234), "1,234", "A format 1,234")
 eq(grug_guild.format_points(350000), "350,000", "A format 350,000")
 eq(grug_guild.format_points(2147483647), "2,147,483,647", "A format the clamp")
-eq(grug_guild.reputation_formspec(1, 2, 1234), "label[1.00,2.00;Reputation 1,234]",
-	"A reputation drawn as text until the icon is picked")
+-- Round 58 lane LIFT: the picked reputation icon is set, so the number
+-- follows the icon; without it the text form.
+eq(grug_guild.reputation_formspec(1, 2, 1234),
+	"image[1.00,1.77;0.45,0.45;grug_guild_reputation.png]label[1.55,2.00;1,234]",
+	"A reputation drawn as the picked icon and the number")
+do
+	local icon = grug_guild.REPUTATION_ICON
+	grug_guild.REPUTATION_ICON = nil
+	eq(grug_guild.reputation_formspec(1, 2, 1234), "label[1.00,2.00;Reputation 1,234]",
+		"A reputation drawn as text without an icon")
+	grug_guild.REPUTATION_ICON = icon
+end
 local view = grug_guild.summary(ann)
 check(view.rank == 4 and view.lifetime == C.RANKS[4] and view.balance == 0 and
 	view.next == C.RANKS[5] and view.guild == "The Charter of Stone", "A the summary")
@@ -396,7 +406,8 @@ check(has("label[0.6,1.75;Miner's Guild]"), "C opens on Trade-in: Miner's Guild"
 check(not has("Charter of Stone") and not has("Oathdelvers"),
 	"C no proper name in the interface (the user's ruling)")
 check(has("Rank 3 of 10"), "C the rank")
-check(has("Reputation " .. grug_guild.format_points(C.RANKS[3] + 34 - 1500)), "C the balance")
+check(has("grug_guild_reputation.png]label[1.15,2.15;" ..
+	grug_guild.format_points(C.RANKS[3] + 34 - 1500) .. "]"), "C the balance after the icon")
 check(has("Lifetime " .. grug_guild.format_points(C.RANKS[3] + 34) .. " of " ..
 	grug_guild.format_points(C.RANKS[4]) .. " for Rank 4"), "C the lifetime and the next rank")
 check(has("Cobblestone x103") and has("1 point per 50") and has("tradein_" .. COBBLE .. ";All (2)]"),

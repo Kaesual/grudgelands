@@ -54,3 +54,21 @@ stay in `tools/r51_sea/`.
 | `grug_mapgen_seagrass_1_anim.png` | `tools/r51_sea/anim/seagrass_1_anim.png` | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical (16 x 128, eight frames) |
 | `grug_mapgen_seagrass_2_anim.png` | `tools/r51_sea/anim/seagrass_2_anim.png` | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical (16 x 128, eight frames) |
 | `grug_mapgen_seagrass_3_anim.png` | `tools/r51_sea/anim/seagrass_3_anim.png` | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical (16 x 128, eight frames) |
+
+## The Miner's Guild lift (Round 58 lane LIFT)
+
+Original art by GPT-6 Astra, made for Grudgelands: guild art drop 02,
+proposal P1 (the rope drum hoist), picked by the user on 2026-10-23, painted
+texel by texel by the drop's own script (no source images, no randomness, no
+image-generation model). Byte-identical copies under the `grug_mapgen_`
+prefix; `tools/r58_lift/art/ship.py --check` compares them with the picked
+files' SHA-256 (`tools/r58_lift/art/picks.txt`).
+
+| File | Source | Author | License | Modifications |
+|------|--------|--------|---------|---------------|
+| `textures/grug_mapgen_guild_lift_top.png` | drop 02 P1 `guild_lift_top.png` (timber deck, rope wraps, down chevron, 16×16) | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical |
+| `textures/grug_mapgen_guild_lift_bottom.png` | drop 02 P1 `guild_lift_bottom.png` (dark stone courses, 16×16) | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical |
+| `textures/grug_mapgen_guild_lift_right.png` | drop 02 P1 `guild_lift_right.png` (timber end grain, strap, crank, 16×16) | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical |
+| `textures/grug_mapgen_guild_lift_left.png` | drop 02 P1 `guild_lift_left.png` (the right face mirrored for −X, 16×16) | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical |
+| `textures/grug_mapgen_guild_lift_back.png` | drop 02 P1 `guild_lift_back.png` (the front face mirrored for +Z, 16×16) | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical |
+| `textures/grug_mapgen_guild_lift_front.png` | drop 02 P1 `guild_lift_front.png` (rope drum, timber frame, inset lamp, stone base, 16×16) | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical |
