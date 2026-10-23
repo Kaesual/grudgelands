@@ -10,7 +10,9 @@
 -- The files and their lanes (spec §10, so parallel lanes never edit one
 -- file): catalog.lua GUILDSPEC (its VALUES: the tuning page's accepted
 -- numbers), store.lua and exchange.lua REP, effect.lua and items.lua
--- CONSUME, vendor.lua CAMPNPC, nodes.lua the skeleton commit, lift.lua LIFT.
+-- CONSUME, vendor.lua CAMPNPC, lift.lua LIFT. The lift and room nodes are
+-- grug_mapgen's (spec §3): grug_mapgen:guild_lift (CAMPS, a placeholder
+-- that LIFT overrides from here) and the room nodes (ROOMS).
 -- Until a lane fills its file, its functions answer as for a character of
 -- rank 0 with nothing to trade and no effect.
 grug_guild = {}
@@ -33,7 +35,6 @@ dofile(path .. "/exchange.lua")
 dofile(path .. "/effect.lua")
 dofile(path .. "/items.lua")
 dofile(path .. "/vendor.lua")
-dofile(path .. "/nodes.lua")
 dofile(path .. "/lift.lua")
 
 -- The load audit: every item the catalogue names is registered once every

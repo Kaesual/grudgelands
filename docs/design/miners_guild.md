@@ -68,9 +68,13 @@ one picture.
   [density table](world_zones.md) lie at their full rate: Iron in T1,
   Anthracite in T2, Silver in T3, Emberglass in T4, Abyssal Crystal in T5. The
   yield model (§9) counts them so.
-- The node ids (catalogue `NODES`, registered by the skeleton commit in
-  `nodes.lua`): `grug_guild:lift`, `grug_guild:room_fill`,
-  `grug_guild:room_mantle`.
+- The nodes are `grug_mapgen`'s (coordinator decision): CAMPS registers the
+  lift point `grug_mapgen:guild_lift` as a placeholder, which LIFT overrides
+  from `grug_guild` (`lift.lua`) with its behaviour and the picked art; ROOMS
+  registers `grug_mapgen:room_fill`, `grug_mapgen:room_floor`,
+  `grug_mapgen:room_lamp` and `grug_mapgen:room_mantle_t1` … `_t6`
+  (`grug_mapgen/guild_room_nodes.lua`, the ids in `wp40/guild_rooms.lua`
+  `NODES`). The catalogue does not repeat them.
 
 ## 4. Reputation
 
@@ -205,7 +209,12 @@ one picture.
 - **Persistence:** statuses are runtime-only and cleared at leave and death
   (`grug_core/status.lua`). The effect saves `{kind, tier, remaining}` in
   player meta `grug_guild:effect` on a timer and at leave, and re-applies it at
-  join and after `on_dieplayer`. No position is saved (§10.9).
+  join and after `on_dieplayer`. No position is saved (§10.9). `grug_core`
+  clears the statuses in its own leave and death callbacks (`status.lua`:
+  `register_on_leaveplayer`, `register_on_dieplayer(clear_runtime_statuses)`),
+  which run before `grug_guild`'s (it loads first), so the status is already
+  gone when `grug_guild`'s callback runs: CONSUME keeps the effect's own end
+  time per player and saves and re-applies from that, never from the status.
 
 ## 8. Miner's Remains
 
@@ -308,7 +317,7 @@ that path and goes to the coordinator with the change the lane would want.
 
 | File | Owner | Holds |
 |---|---|---|
-| `mod.conf` | GUILDSPEC | `depends = grug_core, grug_materials, grug_money, grug_inventory, default` — every dependency the planned mod needs, so no lane edits it; another one goes to the coordinator |
+| `mod.conf` | GUILDSPEC | `depends = grug_core, grug_materials, grug_money, grug_inventory, grug_mapgen, grug_factions, default` — every dependency the planned mod needs, so no lane edits it; another one goes to the coordinator |
 | `init.lua` | GUILDSPEC | the global `grug_guild`, the catalogue API, one `dofile` per file below, the load audit (every catalogue item registered once the mods have loaded) |
 | `catalog.lua` | GUILDSPEC; its `VALUES` the coordinator (the tuning page); the two `pending` fields REP | every number and id as pure data, the accessors |
 | `store.lua` | REP | reputation: §10.3 |
@@ -316,11 +325,13 @@ that path and goes to the coordinator with the change the lane would want.
 | `effect.lua` | CONSUME | the mining effect: §10.5 |
 | `items.lua` | CONSUME | the 12 items, the 6 Remains nodes, the loot roll: §10.6 |
 | `vendor.lua` | CAMPNPC | the reputation page's rows and the purchase: §10.7 |
-| `nodes.lua` | the skeleton commit (coordinator), then LIFT for the picked texture | the lift, room fill and mantle nodes |
-| `lift.lua` | LIFT | the lift's interaction |
+| `lift.lua` | LIFT | the lift's interaction: overrides `grug_mapgen:guild_lift` (CAMPS' placeholder) with its behaviour and the picked art |
 
 Until a lane fills its file, its functions are documented stubs that answer
-as for a character of rank 0 with nothing to trade and no effect. Outside
+as for a character of rank 0 with nothing to trade and no effect (`add`,
+`trade_in`, `start_effect` and `buy` refuse with `"unavailable"`). The
+fixture checks only that the functions exist, so each lane fills its file
+without touching it. Outside
 `grug_guild`, the lanes touch: REP `grug_traders` (the mason's shelf, the
 trade-in in the vendor window, the consumables' payout in `prices.lua` from
 `sell_copper`) and `grug_achievements` (§6); CONSUME
@@ -354,7 +365,7 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
 - `ORE_SENSE_TARGETS[tier]`: resource keys of `grug_materials.RESOURCES`, in
   priority order.
 - `GUILDS[faction] = {id, name}`, `UI_NAME`, `STATUS = {id, variants}`,
-  `KINDS`, `KIND_NAMES`, `NUMERALS`, `NODES`, `TIER_COUNT`.
+  `KINDS`, `KIND_NAMES`, `NUMERALS`, `TIER_COUNT`.
 - Accessors, also published on `grug_guild`: `rank_for(lifetime) -> 0..10`,
   `threshold(rank) -> lifetime | nil` (0 for rank 0, nil beyond 10),
   `exchange_rate(item) -> row | nil` (nil for a pending row),
@@ -423,7 +434,8 @@ The window and its buttons are `grug_traders`' (the camp vendor kind).
 | `grug_guild:ore_sense_t1` … `_t6` | Ore Sense I … VI |
 | `grug_guild:treasure_hunt_t1` … `_t6` | Treasure Hunt I … VI |
 | `grug_guild:miners_remains_t1` … `_t6` | Miner's Remains in each tier's rock |
-| `grug_guild:lift`, `grug_guild:room_fill`, `grug_guild:room_mantle` | the lift point, the room's fill and mantle |
+| `grug_mapgen:guild_lift` | the lift point (CAMPS; LIFT overrides it) |
+| `grug_mapgen:room_fill`, `room_floor`, `room_lamp`, `room_mantle_t1` … `_t6` | the room's nodes (ROOMS) |
 | status `mining_sense`, variants `ore_sense`, `treasure_hunt` | the effect slot (not `elixir`) |
 | achievement `miners_guild`, cloaks `miners_guild_1` … `_3`, counter `guild:rank` | §6 (proposal) |
 

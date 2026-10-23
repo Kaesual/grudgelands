@@ -173,10 +173,6 @@ M.STATUS = {id = "mining_sense", variants = {ore_sense = "ore_sense",
 	treasure_hunt = "treasure_hunt"}}
 M.KINDS = {"ore_sense", "treasure_hunt"}
 M.KIND_NAMES = {ore_sense = "Ore Sense", treasure_hunt = "Treasure Hunt"}
--- The nodes of the camps' lifts and rooms (spec §3; registered by the
--- skeleton commit, never by this file).
-M.NODES = {lift = "grug_guild:lift", room_fill = "grug_guild:room_fill",
-	room_mantle = "grug_guild:room_mantle"}
 
 -- The tier rock each tier's Remains is placed in and looks like
 -- (grug_materials.TIERS[t].node), and the loot's bar and cut gem.

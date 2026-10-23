@@ -3,11 +3,10 @@
 --
 --   luajit tools/r58_guildspec/portable_test.lua REPO
 --
--- A. The catalogue's shape: every tunable number in VALUES and used, ten
---    rising ranks whose steps never shrink (the last ones hardest), both
---    kinds in all six tiers with the ruled use levels (1, 11, ..., 51) and
---    purchase ranks (1..6), rising prices, Remains worth more deeper, Ore
---    Sense's targets the resources of its harvest tier (gem first), the
+-- A. The catalogue's shape: every tunable number in VALUES (whole, not
+--    negative) and used, ten strictly rising ranks, both kinds in all six
+--    tiers with the ruled use levels (1, 11, ..., 51) and purchase ranks
+--    (1..6), Ore Sense's targets the resources of its harvest tier (gem first), the
 --    Remains' rock, bar and gem the tier's own (grug_materials registry),
 --    the accessors, and validate() refusing a broken catalogue.
 -- B. Round 58 §2a on the real game (the r57_details harness and Round 57's
@@ -16,8 +15,8 @@
 --    a drop); a `pending` row is exactly an item a vendor still sells (the
 --    mason's Cobblestone and Gravel until lane REP takes them off the shelf
 --    and deletes the field); no made goods (bars, blocks, bricks, cut gems);
---    every mined resource is exchanged. grug_guild loads, publishes its API
---    (the stubs answer rank 0) and registers no item yet.
+--    every mined resource is exchanged. grug_guild loads and publishes its
+--    API; every grug_guild item it registers is named by the catalogue.
 -- C. No copper loop: a vendor pays for a consumable at most what the
 --    materials behind its price would have sold for (the cheapest copper per
 --    point of the exchange; stone and sand at prices.lua's bulk value), and
@@ -25,7 +24,11 @@
 --    reputation).
 -- D. The spec's generated model tables are current (write_doc.lua) and the
 --    tuning page builds with every catalogue key (build_page.lua).
--- Prints "R58 GUILDSPEC PORTABLE PASS checks=<n>" or raises.
+-- Rough targets only print a warning (the user's rule): rank steps that
+-- shrink, prices or vendor prices that do not rise per tier, Remains or an
+-- hour of mining not worth more deeper. The tuning page shows the same
+-- warnings and refuses to save what fails here.
+-- Prints "R58 GUILDSPEC PORTABLE PASS checks=<n> warnings=<n>" or raises.
 
 local repo = assert(arg and arg[1], "usage: luajit portable_test.lua REPO")
 local checks, failures = 0, 0
@@ -34,6 +37,15 @@ local function check(ok, label)
 	if not ok then
 		failures = failures + 1
 		print("FAIL " .. label)
+	end
+end
+-- A rough target the user may set aside (the user's rule: rough targets, no
+-- extra gates): printed, never a failure.
+local warnings = 0
+local function warn(ok, label)
+	if not ok then
+		warnings = warnings + 1
+		print("warning " .. label)
 	end
 end
 local function eq(actual, expected, label)
@@ -101,7 +113,8 @@ eq(#C.RANKS, 10, "A ten ranks")
 local step = 0
 for rank = 1, 10 do
 	local this = C.RANKS[rank] - (C.RANKS[rank - 1] or 0)
-	check(this > 0 and this >= step, "A rank " .. rank .. " rises by at least the step before")
+	check(this > 0, "A rank " .. rank .. " needs more than the rank before")
+	warn(this >= step, "A rank " .. rank .. "'s step is smaller than the step before (the last ranks should be the hardest)")
 	step = this
 end
 eq(C.rank_for(0), 0, "A rank_for(0)")
@@ -125,8 +138,8 @@ for _, kind in ipairs(C.KINDS) do
 			eq(C.consumable_by_item(row.item), row, "A consumable_by_item " .. row.item)
 			eq(row.use_level, 10 * tier - 9, "A use level of " .. row.item .. " (ruling)")
 			eq(row.rank, tier, "A purchase rank of " .. row.item .. " (ruling)")
-			check(row.price > last_price, "A " .. row.item .. " costs more than the tier below")
-			check(row.sell_copper > last_sell, "A " .. row.item .. " sells for more than the tier below")
+			warn(row.price > last_price, "A " .. row.item .. " costs no more than the tier below")
+			warn(row.sell_copper > last_sell, "A " .. row.item .. " sells for no more than the tier below")
 			eq(row.variant, C.STATUS.variants[kind], "A " .. row.item .. " variant")
 			last_price, last_sell = row.price, row.sell_copper
 		end
@@ -135,8 +148,8 @@ end
 eq(C.STATUS.id, "mining_sense", "A the effect slot's status id")
 check(C.STATUS.id ~= "elixir", "A the effect slot is not the elixir's")
 local sense = C.consumable("ore_sense", 1)
-check(sense.interval_min == 60 and sense.interval_max == 120 and sense.marker_seconds == 5,
-	"A Ore Sense keeps the ruled 60-120 s and 5 s")
+check(sense.interval_min >= 60 and sense.interval_max <= 120 and sense.marker_seconds == 5,
+	"A Ore Sense keeps within the ruled 60-120 s and its 5 s marker")
 
 -- Ore Sense targets: the resources of the item's harvest tier, gem first.
 for tier = 1, 6 do
@@ -170,7 +183,7 @@ for tier = 1, 6 do
 	eq(row.gem, gem, "A Remains T" .. tier .. " gives the tier's cut gem")
 	local worth = (row.copper_min + row.copper_max) / 2 + (row.bars_min + row.bars_max) / 2 * bars[tier] +
 		gems[tier] / row.gem_chance
-	check(worth > last_value, "A Remains T" .. tier .. " is worth more than the tier above")
+	warn(worth > last_value, "A Remains T" .. tier .. " is worth no more than the tier above (the ruling: worth more deeper)")
 	last_value = worth
 end
 
@@ -227,7 +240,9 @@ end
 eq(C.exchange_rate("grug_materials:iron_bar"), nil, "B a bar is not exchanged")
 eq(C.exchange_rate("default:stonebrick"), nil, "B a brick is not exchanged")
 
--- grug_guild in the game: its API, the stubs at rank 0, no item yet.
+-- grug_guild in the game: its API (the functions only: REP, CONSUME and
+-- CAMPNPC fill their files without touching this fixture), and every item it
+-- registers is one the catalogue names.
 check(type(grug_guild) == "table" and grug_guild.catalog ~= nil, "B grug_guild publishes its catalogue")
 for _, name in ipairs({"rank_for", "threshold", "exchange_rate", "consumable", "consumable_by_item",
 		"remains", "guild", "lifetime", "balance", "rank", "add", "spend", "register_on_change",
@@ -235,14 +250,13 @@ for _, name in ipairs({"rank_for", "threshold", "exchange_rate", "consumable", "
 		"stop_effect", "remains_loot", "vendor_rows", "buy"}) do
 	check(type(grug_guild[name]) == "function", "B grug_guild." .. name .. " is published")
 end
-eq(grug_guild.rank({}), 0, "B the store stub answers rank 0")
-eq(select(2, grug_guild.spend({}, 1)), "insufficient", "B the store stub refuses a spend")
-local rows = grug_guild.vendor_rows({})
-eq(#rows, 6, "B the vendor stub lists six rows")
-check(not rows[1].unlocked and rows[6].items[2].item == "grug_guild:treasure_hunt_t6",
-	"B the vendor stub's rows are locked and hold both kinds")
+local named = {}
+for _, row in ipairs(C.CONSUMABLES) do named[row.item] = true end
+for _, row in ipairs(C.REMAINS) do named[row.node] = true end
 for name in pairs(game.items) do
-	check(not name:find("^grug_guild:"), "B the skeleton registers no item yet: " .. name)
+	if name:find("^grug_guild:") then
+		check(named[name], "B a registered grug_guild item is named by CONSUMABLES or REMAINS: " .. name)
+	end
 end
 
 ------------------------------------------------------------------------------
@@ -300,8 +314,8 @@ end
 check(html:find('db.doc("picks/tuning")', 1, true), "D the page saves to picks/tuning")
 local result = model.run(repo)
 for tier = 1, 6 do
-	check(result.tiers[tier].rep > (result.tiers[tier - 1] or {rep = 0}).rep,
-		"D the model: an hour deeper earns more reputation (T" .. tier .. ")")
+	warn(result.tiers[tier].rep > (result.tiers[tier - 1] or {rep = 0}).rep,
+		"D the model: an hour at T" .. tier .. " earns no more reputation than the tier above")
 end
 
 if failures > 0 then
@@ -310,4 +324,4 @@ end
 print(string.format("R58 GUILDSPEC model: reputation per hour %.0f / %.0f / %.0f / %.0f / %.0f / %.0f, rank 10 after %.1f h",
 	result.tiers[1].rep, result.tiers[2].rep, result.tiers[3].rep, result.tiers[4].rep,
 	result.tiers[5].rep, result.tiers[6].rep, result.ranks[10].cumulative))
-print("R58 GUILDSPEC PORTABLE PASS checks=" .. checks)
+print("R58 GUILDSPEC PORTABLE PASS checks=" .. checks .. " warnings=" .. warnings)
