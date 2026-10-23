@@ -109,7 +109,7 @@ end
 -- tooltip text (item buttons show only the definition's description).
 local function choice_tooltip(player, def, choice)
 	local items_api = rawget(_G, "grug_items")
-	if not items_api then return grug_core.item_name(ItemStack(choice.item)) end
+	if not (items_api and items_api.make_stack) then return grug_core.item_name(ItemStack(choice.item)) end
 	local stack = items_api.make_stack(choice.item, def.level, choice.affixes, player)
 	return items_api.tooltip_text(stack or choice.item, player)
 end
@@ -211,7 +211,7 @@ function Q.open_npc(player, entity, selected, notice, picked)
 		"textlist[0.4,0.9;7,6;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. ";false]" ..
 		"tooltip[quests;" .. Q.status_tooltip() .. "]" ..
 		"label[0.4,7.3;" .. Q.status_legend() .. "]" ..
-		("textarea[7.8,0.9;7.8,%.2f;;;%s]"):format(choices and 4.3 or 6, esc(detail)) ..
+		"textarea[7.8,0.9;7.8," .. (choices and "4.3" or "6") .. ";;;" .. esc(detail) .. "]" ..
 		(choices and choice_row(player, def, row.status == "ready", picked) or "") ..
 		-- The Close button holds the focus (0.45.1): a focused text area or
 		-- list would swallow the inventory key that closes the dialog.
@@ -290,7 +290,7 @@ local MARKER_Y = 27 - (MARKER_SCALE - 1) * 0.54
 -- Marker value -> {symbol, colour} (Round 57 ruling 13: a story quest's
 -- marker keeps the status's symbol and brightness in the story accent).
 local MARKERS = {}
-for _, status in ipairs(Q.MARKER_STATUSES) do
+for _, status in ipairs({"ready", "available", "active", "locked"}) do
 	local symbol = (status == "ready" or status == "active") and "question" or "exclamation"
 	local bright = status == "ready" or status == "available"
 	MARKERS[status] = {symbol = symbol, color = bright and "#ffd700" or "#c0c0c0"}

@@ -573,8 +573,9 @@ def build(args):
                 npc = quest_npcs.get(o.get("npc"), {})
                 txt = "talk to %s (%s)" % (npc.get("title", o.get("npc")), npc.get("settlement", "?"))
             objs.append(txt)
-        title = q["title"] + (" (repeatable)" if q.get("repeatable") else "")
-        return {"id": q["id"], "title": title, "giver": q["npc"],
+        # Round 57: a shared quest is listed at its first variant's giver
+        # (the atlas is a snapshot; no check reads its quest lists).
+        return {"id": q["id"], "title": q["title"], "giver": q["npc"],
                 "turnin": q["turnin_npc"], "min_level": q["min_level"], "xp": q["xp"],
                 "copper": q["copper"], "prerequisites": q.get("prerequisites") or [],
                 "objectives": objs, "objectives_raw": q["objectives"],

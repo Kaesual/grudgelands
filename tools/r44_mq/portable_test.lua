@@ -267,8 +267,15 @@ rawset(_G, "grug_quests", {
 	register_on_markers_changed = function(fn) markers_changed[#markers_changed + 1] = fn end,
 	marker_states = function() return giver_states, 1 end,
 	use_place_xz = function(ref) return ref == "dawnmere/old_well" and {x = 300, z = -100} or nil end,
-	list_entry = function(title, status, repeatable)
-		return "#" .. status .. fs_escape(title .. (repeatable and " (R)" or ""))
+	list_entry = function(title, status)
+		return "#" .. status .. fs_escape(title)
+	end,
+	-- Round 57: the quest box asks for the list with its categories
+	-- (npc.lua; no story quest here, so one entry per row).
+	category_list = function(rows, entry)
+		local entries, row_of, entry_of = {}, {}, {}
+		for i, row in ipairs(rows) do entries[i], row_of[i], entry_of[i] = entry(row, false), i, i end
+		return entries, row_of, entry_of
 	end,
 	status_tooltip = function() return "legend" end,
 	objective_action = function(o) return (o.type == "kill" and "Defeat " or "Bring ") .. (o.what or "x") end,
@@ -546,7 +553,7 @@ local function quest_row(id, ready, objectives)
 		rows[i] = {type = o.type, count = p, required = o.count, what = id .. i}
 	end
 	return {id = id, title = "Title " .. id, description = "About " .. id, objectives = rows,
-		ready = ready, npc = def.turnin_npc, repeatable = false, travel = id == "q_talk",
+		ready = ready, npc = def.turnin_npc, travel = id == "q_talk",
 		rewards = {copper = 12, items = {}}, reward_xp = 40}
 end
 

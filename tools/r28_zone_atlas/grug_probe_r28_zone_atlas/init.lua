@@ -85,8 +85,7 @@ local function run()
 				turnin_npc = def.turnin_npc, min_level = def.min_level, level = def.level,
 				prerequisites = table.copy(def.prerequisites), objectives = objectives,
 				xp = grug_quests.reward_xp(def), copper = def.rewards.copper,
-				reward_items = table.copy(def.rewards.items), description = description,
-				repeatable = def.repeatable}
+				reward_items = table.copy(def.rewards.items), description = description}
 		end
 	end
 	table.sort(out.quests, function(a, b) return a.id < b.id end)

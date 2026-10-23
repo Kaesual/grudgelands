@@ -481,7 +481,7 @@ local function reward_stacks(player, def, choice)
 	local items_api, out = rawget(_G, "grug_items"), {}
 	for index, row in ipairs(rows) do
 		local stack
-		if items_api then
+		if items_api and items_api.make_stack then
 			stack = assert(items_api.make_stack(row.item, def.level, row.affixes, player))
 		else
 			-- Fixtures without grug_quality: the plain stack.
