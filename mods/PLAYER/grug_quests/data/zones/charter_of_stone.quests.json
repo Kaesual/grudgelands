@@ -10,8 +10,8 @@
       "min_level": 11,
       "level": 13,
       "requires": [],
-      "title": "[PH] 20 Iron Lump from the Depth",
-      "text": "[PH] The Miner's Guild needs 20 Iron Lump from the second depth. Real text to follow.",
+      "title": "[PH] Iron Lump × 20 from the Depth",
+      "text": "[PH] The Miner's Guild needs Iron Lump × 20 from the second depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -44,7 +44,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 20 Iron Lump from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Iron Lump × 20 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -70,7 +70,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 20 Iron Lump from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Iron Lump × 20 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -84,8 +84,8 @@
       "min_level": 11,
       "level": 13,
       "requires": [],
-      "title": "[PH] 4 Rough Jade from the Depth",
-      "text": "[PH] The Miner's Guild needs 4 Rough Jade from the second depth. Real text to follow.",
+      "title": "[PH] Rough Jade × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Jade × 4 from the second depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -118,7 +118,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 4 Rough Jade from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Rough Jade × 4 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -144,7 +144,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 4 Rough Jade from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Rough Jade × 4 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -158,8 +158,8 @@
       "min_level": 21,
       "level": 23,
       "requires": [],
-      "title": "[PH] 20 Anthracite from the Depth",
-      "text": "[PH] The Miner's Guild needs 20 Anthracite from the third depth. Real text to follow.",
+      "title": "[PH] Anthracite × 20 from the Depth",
+      "text": "[PH] The Miner's Guild needs Anthracite × 20 from the third depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -188,7 +188,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 20 Anthracite from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Anthracite × 20 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -210,7 +210,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 20 Anthracite from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Anthracite × 20 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -224,8 +224,8 @@
       "min_level": 21,
       "level": 23,
       "requires": [],
-      "title": "[PH] 4 Rough Garnet from the Depth",
-      "text": "[PH] The Miner's Guild needs 4 Rough Garnet from the third depth. Real text to follow.",
+      "title": "[PH] Rough Garnet × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Garnet × 4 from the third depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -254,7 +254,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 4 Rough Garnet from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Rough Garnet × 4 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -276,7 +276,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 4 Rough Garnet from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Rough Garnet × 4 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -290,8 +290,8 @@
       "min_level": 31,
       "level": 33,
       "requires": [],
-      "title": "[PH] 15 Silver from the Depth",
-      "text": "[PH] The Miner's Guild needs 15 Silver from the fourth depth. Real text to follow.",
+      "title": "[PH] Silver × 15 from the Depth",
+      "text": "[PH] The Miner's Guild needs Silver × 15 from the fourth depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -316,7 +316,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 15 Silver from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Silver × 15 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -334,7 +334,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 15 Silver from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Silver × 15 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -348,8 +348,8 @@
       "min_level": 31,
       "level": 33,
       "requires": [],
-      "title": "[PH] 4 Rough Sapphire from the Depth",
-      "text": "[PH] The Miner's Guild needs 4 Rough Sapphire from the fourth depth. Real text to follow.",
+      "title": "[PH] Rough Sapphire × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Sapphire × 4 from the fourth depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -374,7 +374,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 4 Rough Sapphire from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Rough Sapphire × 4 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -392,7 +392,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 4 Rough Sapphire from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Rough Sapphire × 4 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -406,8 +406,8 @@
       "min_level": 41,
       "level": 43,
       "requires": [],
-      "title": "[PH] 15 Emberglass from the Depth",
-      "text": "[PH] The Miner's Guild needs 15 Emberglass from the fifth depth. Real text to follow.",
+      "title": "[PH] Emberglass × 15 from the Depth",
+      "text": "[PH] The Miner's Guild needs Emberglass × 15 from the fifth depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -428,7 +428,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 15 Emberglass from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Emberglass × 15 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -442,7 +442,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 15 Emberglass from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Emberglass × 15 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -456,8 +456,8 @@
       "min_level": 41,
       "level": 43,
       "requires": [],
-      "title": "[PH] 4 Rough Ruby from the Depth",
-      "text": "[PH] The Miner's Guild needs 4 Rough Ruby from the fifth depth. Real text to follow.",
+      "title": "[PH] Rough Ruby × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Ruby × 4 from the fifth depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -478,7 +478,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 4 Rough Ruby from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Rough Ruby × 4 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -492,7 +492,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 4 Rough Ruby from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Rough Ruby × 4 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -506,8 +506,8 @@
       "min_level": 51,
       "level": 53,
       "requires": [],
-      "title": "[PH] 10 Abyssal Crystal from the Depth",
-      "text": "[PH] The Miner's Guild needs 10 Abyssal Crystal from the sixth depth. Real text to follow.",
+      "title": "[PH] Abyssal Crystal × 10 from the Depth",
+      "text": "[PH] The Miner's Guild needs Abyssal Crystal × 10 from the sixth depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -524,7 +524,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 10 Abyssal Crystal from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Abyssal Crystal × 10 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -534,7 +534,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 10 Abyssal Crystal from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Abyssal Crystal × 10 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {
@@ -548,8 +548,8 @@
       "min_level": 51,
       "level": 53,
       "requires": [],
-      "title": "[PH] 4 Rough Diamond from the Depth",
-      "text": "[PH] The Miner's Guild needs 4 Rough Diamond from the sixth depth. Real text to follow.",
+      "title": "[PH] Rough Diamond × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Diamond × 4 from the sixth depth. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -566,7 +566,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs 4 Rough Diamond from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Charter of Stone needs Rough Diamond × 4 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         },
         {
           "zone": "oathdelvers",
@@ -576,7 +576,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs 4 Rough Diamond from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "[PH] The Oathdelvers needs Rough Diamond × 4 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
         }
       ],
       "rewards": {

@@ -219,12 +219,12 @@ def gather_quests():
             for faction in FACTIONS:
                 guild_zone, guild_name = GUILD[faction]
                 variants.append({"zone": guild_zone, "givers": role_rows(tier, faction),
-                                 "text": PH + "%s needs %d %s from the %s depth. Take the camp's lift down to "
-                                 "the tier's rooms and dig." % (guild_name, count, name, DEPTH[tier]) + TBD})
+                                 "text": PH + "%s needs %s × %d from the %s depth. Take the camp's lift down to "
+                                 "the tier's rooms and dig." % (guild_name, name, count, DEPTH[tier]) + TBD})
             out.append({
                 "id": "guild_t%d_%s" % (tier, suffix), "line": "guild", "min_level": lo, "level": lo + 2,
-                "requires": [], "title": PH + "%d %s from the Depth" % (count, name),
-                "text": PH + "The Miner's Guild needs %d %s from the %s depth." % (count, name, DEPTH[tier]) + TBD,
+                "requires": [], "title": PH + "%s × %d from the Depth" % (name, count),
+                "text": PH + "The Miner's Guild needs %s × %d from the %s depth." % (name, count, DEPTH[tier]) + TBD,
                 "objectives": [{"type": "item", "item": item, "count": count}],
                 "variants": variants, "rewards": {"weight": GATHER_WEIGHT},
                 "notes": "Round 58 gather quest, tier %d: offered at every own camp whose lift reaches the tier "

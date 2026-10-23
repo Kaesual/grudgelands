@@ -105,6 +105,11 @@ return function(repo, data_root)
 			for key in pairs(sockets) do
 				out[#out + 1] = {key = key, anchor = {x = 0, y = 0, z = 0}, race_id = guild_world.race_of[key]}
 			end
+			-- A camp under construction is of its builder's race, so its
+			-- captain has a name on every world (labels.lua Q.captain_name).
+			for _, site in ipairs(guild_world.mining_camps.under_construction) do
+				out[#out + 1] = {key = site.id, anchor = {x = 0, y = 0, z = 0}, race_id = site.race}
+			end
 			table.sort(out, function(a, b) return a.key < b.key end)
 			return out
 		end,
