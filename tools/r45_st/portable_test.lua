@@ -1039,8 +1039,8 @@ do
 end
 
 ------------------------------------------------------------------------------
--- Q. The 158 item objectives (spec §4.7; 163 before Round 46 removed the
---    repeatable quests): none names an item that disappears
+-- Q. The 93 item objectives (spec §4.7; 163 before Round 46 removed the
+--    repeatable quests, 158 before Round 57 rebuilt the start zones): none names an item that disappears
 --    (a mixture) or that only a profession makes (an Alchemy product, gear).
 ------------------------------------------------------------------------------
 do
@@ -1072,7 +1072,7 @@ do
 		end
 	end
 	handle:close()
-	eq(objectives, 158, "Q the quests hold 158 item objectives (Round 46: five were on repeatables)")
+	eq(objectives, 93, "Q the quests hold 93 item objectives (Round 57: the start zones shared theirs)")
 	eq(#flagged, 0, "Q none names a mixture, potion, elixir or grug_gear item (" ..
 		table.concat(flagged, ", ") .. ")")
 end

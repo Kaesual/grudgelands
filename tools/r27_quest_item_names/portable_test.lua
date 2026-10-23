@@ -336,14 +336,19 @@ for _, id in ipairs(ids) do
 	if check(selected ~= nil, "offer listed by giver: " .. id) then
 		shown = {}
 		check(Q.open_npc(player, entity_for(def.npc), selected), "dialogue opens: " .. id)
-		local detail = shown[1] and element(shown[1].form, "textarea[7.8,0.9;7.8,6;;;")
+		-- Round 57: a quest with a choice of rewards has a shorter text field
+		-- (the choice row sits below it) and one "and one of: ..." line more.
+		local choice_lines = #(def.rewards.choices or {}) > 0 and 1 or 0
+		local detail = shown[1] and (element(shown[1].form, "textarea[7.8,0.9;7.8,6;;;") or
+			element(shown[1].form, "textarea[7.8,0.9;7.8,4.3;;;"))
 		if check(detail ~= nil, "dialogue detail present: " .. id) then
 			check(stat_hit(detail) == nil, "dialogue free of stats: " .. id .. " " .. tostring(stat_hit(detail)))
 			check(not detail:find(ESC, 1, true), "dialogue free of escapes: " .. id)
 			-- Description lines, a blank line, one line per objective, a blank
 			-- line, the reward line and one line per reward item (Round 57: no
 			-- repeatable's cooldown line).
-			local want = #lines_of(def.description) + 1 + #def.objectives + 1 + 1 + #def.rewards.items
+			local want = #lines_of(def.description) + 1 + #def.objectives + 1 + 1 + #def.rewards.items +
+				choice_lines
 			eq(#lines_of(detail), want, "dialogue line count (one line per item): " .. id)
 			local detail_lines = lines_of(detail)
 			local first = #lines_of(def.description) + 2
@@ -376,7 +381,8 @@ for _, id in ipairs(ids) do
 	local detail = detail_at and element(form, ";;;", detail_at)
 	if check(detail ~= nil, "quest log text field present: " .. id) then
 		local detail_lines = lines_of(detail)
-		local count = #detail_lines
+		-- Round 57: a choice of rewards adds its "and one of: ..." line last.
+		local count = #detail_lines - (#(def.rewards.choices or {}) > 0 and 1 or 0)
 		local rewards = detail_lines[count]
 		local first = count - 1 - #def.objectives
 		eq(detail_lines[count - 1], "", "quest log empty line before the rewards: " .. id)
