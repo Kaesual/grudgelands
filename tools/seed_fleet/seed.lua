@@ -5,7 +5,8 @@
 -- the R7 anchor roster and every settlement's configuration), every
 -- tributary's junction stretch at most JOIN_MAX nodes, no open sea at the rim
 -- of a bay (Round 51 T2), every camp of the Miner's Guild placed and
--- registered (Round 58: 36 with lifts, 6 under construction), and the
+-- registered (Round 58: 36 with lifts, 6 under construction) with their
+-- 148 rooms, and the
 -- per-chunk path
 -- (Round 37, audit MGT-01/MGS-02): a sample of chunks planned and written
 -- through the real `plan_slice` and writer against a fake VoxelManip.
@@ -102,6 +103,20 @@ local function build()
 				if step_of[camp.anchor_id] == wet then
 					error("camp " .. camp.id .. " found no dry core", 0)
 				end
+			end
+		end
+		-- Their rooms (Round 58 lane ROOMS, `guild_rooms.lua` through the game's
+		-- seam): 148, no two boxes meeting (the index refuses that), each box
+		-- in one y chunk of the grid -32 + 80k.
+		local G = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/guild_rooms.lua")
+		local rooms = G.index(G.lift_camps(repo .. "/mods/MAPGEN/grug_mapgen/wp40", text))
+		if #rooms.list ~= 148 then
+			error(("guild rooms: %d, not 148"):format(#rooms.list), 0)
+		end
+		for _, room in ipairs(rooms.list) do
+			if math.floor((room.minp.y + 32) / 80) ~= math.floor((room.maxp.y + 32) / 80) then
+				error("guild room of " .. room.camp_id .. " T" .. room.tier ..
+					" crosses a chunk edge in y", 0)
 			end
 		end
 	end
