@@ -13,8 +13,8 @@
 --      from them; letting go, stepping away, taking damage and the object
 --      vanishing interrupt it; a player without the quest cannot start one;
 --   D. one use point credits every active quest that names it;
---   E. the turn-in hook fires exactly once per turn-in (again for each turn-in
---      of a repeatable), never for a refused one, and a failing observer
+--   E. the turn-in hook fires exactly once per turn-in, never for a
+--      refused one, and a failing observer
 --      keeps neither the others nor the turn-in from completing;
 --   F. grug_achievements counts quest:<id> and quest_tag:<tag> through the
 --      hook (one test catalogue row each) and earns the tier;
@@ -259,7 +259,7 @@ local QUESTS = {
 	quest("e_cairn", {use("brandscar_cairn", "Plant the banner", {object = "pledged_standard", hold = 2})},
 		{text = "The {name:brandscar_cairn} lies {dir_from_giver:brandscar_cairn}. The {name:r20_anchor_076} too."}),
 	quest("e_bounty", {use("elandor_stormvault_heights/brandscar_cairn", "Burn the mark",
-		{object = "rootmark", count = 1})}, {repeatable = {cooldown = 60}, tags = {"main_line", "bounties"}}),
+		{object = "rootmark", count = 1})}, {tags = {"main_line", "bounties"}}),
 }
 local FILE = {name = "elandor_stormvault_heights.quests.json", zone = "elandor_stormvault_heights",
 	front = false, data = {zone = "elandor_stormvault_heights",
@@ -521,8 +521,6 @@ for _, row in ipairs({
 	A.book.achievement[row.id] = row
 	A.book.by_counter[row.counter] = {row}
 end
-local clock = 1000
-Q.clock = function() return clock end
 local eve = make_player("eve", at(SALTGATE, 1, 0))
 check(Q.accept(eve, "e_fire_too") and Q.accept(eve, "e_bounty"), "F eve takes two quests")
 Q.use_pass(eve)
@@ -548,13 +546,16 @@ pcall(Q.turn_in, eve, "e_bounty")
 eq(R.count(eve:get_meta(), "quest_tag:main_line"), 1, "F a tagged quest counts its tag")
 eq(R.count(eve:get_meta(), "quest_tag:bounties"), 0, "F a tag no achievement asks for is not stored")
 eq(R.count(eve:get_meta(), "quest:e_bounty"), 0, "F neither is a quest no achievement asks for")
-clock = clock + 61
-check(Q.accept(eve, "e_bounty"), "F the bounty again after its cooldown")
+-- Round 57 ruling 11: the bounty is done once; a second tagged quest
+-- counts the tag again.
+check(not Q.accept(eve, "e_bounty"), "F the bounty is done once")
+eve.pos = at(SALTGATE, 1, 0)
+check(Q.accept(eve, "e_fire"), "F eve takes the other tagged quest")
 Q.use_pass(eve)
-check(Q.start_use(eve, points[Q.use_key(Q.registered_quests.e_bounty.objectives[1])].object), "F and again")
+check(Q.start_use(eve, points[key].object), "F and lights the fire for it")
 advance(3.0)
-pcall(Q.turn_in, eve, "e_bounty")
-eq(R.count(eve:get_meta(), "quest_tag:main_line"), 2, "F each turn-in of a repeatable counts")
+pcall(Q.turn_in, eve, "e_fire")
+eq(R.count(eve:get_meta(), "quest_tag:main_line"), 2, "F each tagged turn-in counts")
 eq(R.earned(eve:get_meta(), A.book.achievement.test_line), 2, "F the second tier")
 
 ------------------------------------------------------------------------------

@@ -884,6 +884,111 @@ function grug_items.crafted_output(stack, player)
 	return true
 end
 
+-- Author-fixed enchants (Round 57, quests.md "Choice rewards"): whether
+-- `affixes`, a list of {channel = "prefix" | "suffix", stat = <a stat of
+-- grug_items.AFFIXES>}, may sit on item `item` (a name, an item string or
+-- a stack): equipment with an enchant pool (no tool), at most one enchant
+-- per channel, distinct stats, each stat in the family's pool for its
+-- channel (a trinket's per channel). Returns true, or false and the reason.
+function grug_items.check_affixes(item, affixes)
+	local stack = ItemStack(item)
+	if stack:is_empty() or not core.registered_items[stack:get_name()] then
+		return false, "unknown item " .. tostring(stack:get_name())
+	end
+	if type(affixes) ~= "table" or #affixes > 2 then return false, "at most two enchants" end
+	if #affixes == 0 then return true end
+	local family = family_for(stack)
+	if not family or family == "tool" or (family ~= "trinket" and not POOLS[family]) then
+		return false, stack:get_name() .. " takes no enchants"
+	end
+	local channels, stats = {}, {}
+	for _, affix in ipairs(affixes) do
+		if type(affix) ~= "table" or (affix.channel ~= "prefix" and affix.channel ~= "suffix") then
+			return false, "an enchant names its channel, prefix or suffix"
+		end
+		if channels[affix.channel] then return false, "two enchants in the " .. affix.channel end
+		if not AFFIX[affix.stat] or stats[affix.stat] then
+			return false, "unknown or repeated enchant stat " .. tostring(affix.stat)
+		end
+		local found = false
+		for _, stat in ipairs(grug_items.enchant_pool(family, affix.channel) or {}) do
+			if stat == affix.stat then found = true end
+		end
+		if not found then
+			return false, ("%s is not in the %s pool of %s"):format(affix.stat, affix.channel, family)
+		end
+		channels[affix.channel], stats[affix.stat] = true, true
+	end
+	return true
+end
+
+-- An authored stack (Round 57: the quest rewards): item `item` (a name or
+-- an item string with a count) at item level `ilvl` with the enchants
+-- `affixes` ({channel, stat}, grug_items.check_affixes; never rolled), each
+-- of the item level's tier (as a found enchant), through the one store
+-- path, so the values, the quality (Common, Uncommon, Rare), the name and
+-- the tooltip follow. Equipment only takes the item level (a tool or a
+-- plain item ignores `ilvl` and must have no enchants). With `player` the
+-- tooltip is the receiver's (the weapon line, HP and Mana amounts), as
+-- grug_inventory.give initialises it. Returns the stack, or nil and the
+-- reason.
+function grug_items.make_stack(item, ilvl, affixes, player)
+	affixes = affixes or {}
+	local ok, reason = grug_items.check_affixes(item, affixes)
+	if not ok then return nil, reason end
+	local stack = ItemStack(item)
+	local family = family_for(stack)
+	if family and family ~= "tool" then
+		local meta = stack:get_meta()
+		ilvl = effective_ilvl(stack, ilvl)
+		ensure_base_name(stack)
+		if ilvl then write_item_level_meta(stack, meta, ilvl) end
+		local stored = {}
+		for index, affix in ipairs(affixes) do
+			stored[index] = found_affix(affix.channel, affix.stat, ilvl or 1)
+		end
+		store_affixes(stack, stored, player)
+	end
+	if player and grug_gear and type(grug_gear.initialize_weapon_tooltip) == "function" then
+		grug_gear.initialize_weapon_tooltip(stack, player)
+	end
+	return stack
+end
+
+-- The tooltip text of an item (Round 57; the shared helper of the quest
+-- rewards and the recipe details, which draw items as buttons and images:
+-- those show the definition's description, never a stack's meta).
+-- Contract:
+--   grug_items.tooltip_text(item, player) -> string
+--   `item`   an ItemStack, an item string or an item name; never changed
+--            (the helper works on a copy);
+--   `player` optional: the reader, for the player-dependent lines (a
+--            weapon's "Effective at level" line, the HP and Mana amounts of
+--            those enchants), as an inventory stack shows them to that player;
+-- returns the lines the engine shows as that stack's tooltip: the name as
+-- the first line (an equipment name keeps its quality colour escape), then
+-- the item level, the stats, the enchant lines (prefix first), "Crowned",
+-- who may use it, the level requirement and the durability; a plain item
+-- its description (translation escapes kept, the client resolves them);
+-- an unknown item its name. Not formspec-escaped: the caller escapes it
+-- (core.formspec_escape) for tooltip[] or a label.
+function grug_items.tooltip_text(item, player)
+	local stack = ItemStack(item)
+	if stack:is_empty() then return "" end
+	local name = stack:get_name()
+	local def = core.registered_items[name]
+	if not def then return name end
+	if family_for(stack) then
+		grug_items.regenerate_description(stack, player)
+		if player and grug_gear and type(grug_gear.initialize_weapon_tooltip) == "function" then
+			grug_gear.initialize_weapon_tooltip(stack, player)
+		end
+	end
+	local text = stack:get_meta():get_string("description")
+	if text == "" then text = def.description or name end
+	return text
+end
+
 local function gear_stack(itemname, ilvl, quality, rng, seed)
 	local stack = ItemStack(itemname)
 	-- A child seed keeps each independently dropped stack reproducible without

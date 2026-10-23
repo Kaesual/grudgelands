@@ -15,6 +15,7 @@ Python 3 standard library only. Formulas follow the Round 28 plan, Rulings
   gathering XP    = round(ratio * M(min(10 * tier, player level))),
                     ratio ore 0.05, gem 0.10, fish 0.33 (Round 46 ruling 7)
 """
+import copy
 import json
 import math
 import re
@@ -163,6 +164,73 @@ def load_existing(path):
     return read_json(path)
 
 
+# --- Round 57: shared quests (variants) -------------------------------------
+# The game's grug_quests validate.lua V.variants: a quest given in several
+# zones carries `variants` ({zone, givers, turnins, objectives, quest_drops,
+# text, completion}); each variant's objectives and quest drops are the
+# quest's with the variant's zone-bound fields (a bare area or place id is
+# the variant's zone).
+VARIANT_OVERRIDES = {"kill": ("roles", "area"), "item": ("roles", "area"), "talk": ("npc",), "use": ("place",)}
+DROP_OVERRIDES = ("roles", "area")
+
+
+def quest_variants(zone, q):
+    """The variants of quest `q` of `zone`'s file: [{"key", "zone",
+    "givers", "giver_roles", "turnins", "turnin_roles", "objectives",
+    "quest_drops", "text", "completion", "row", "index", "implicit"}]. A
+    quest without `variants` is one implicit variant of its file's zone,
+    `giver` and `turnin`."""
+    objectives = q.get("objectives") if isinstance(q.get("objectives"), list) else []
+    drops = q.get("quest_drops") if isinstance(q.get("quest_drops"), list) else []
+    if "variants" not in q:
+        return [{"key": zone, "zone": zone, "givers": [q.get("giver")], "giver_roles": [],
+                 "turnins": [q.get("turnin")], "turnin_roles": [], "objectives": objectives,
+                 "quest_drops": drops, "text": None, "completion": None, "row": None, "index": 0,
+                 "implicit": True}]
+
+    def merged(base, overrides, keys_of):
+        out = []
+        for i, entry in enumerate(base):
+            entry = copy.deepcopy(entry)
+            if isinstance(entry, dict) and i < len(overrides) and isinstance(overrides[i], dict):
+                for key in keys_of(entry):
+                    if key in overrides[i]:
+                        entry[key] = copy.deepcopy(overrides[i][key])
+            out.append(entry)
+        return out
+
+    def split(values):
+        values = values if isinstance(values, list) else []
+        return [v for v in values if not isinstance(v, dict)], [v for v in values if isinstance(v, dict)]
+
+    out = []
+    for index, row in enumerate(q["variants"] if isinstance(q.get("variants"), list) else []):
+        if not isinstance(row, dict):
+            continue
+        givers, giver_roles = split(row.get("givers"))
+        turnins, turnin_roles = split(row["turnins"] if "turnins" in row else row.get("givers"))
+        over = row.get("objectives") if isinstance(row.get("objectives"), list) else []
+        drop_over = row.get("quest_drops") if isinstance(row.get("quest_drops"), list) else []
+        out.append({"key": row.get("zone"), "zone": row.get("zone"), "givers": givers, "giver_roles": giver_roles,
+                    "turnins": turnins, "turnin_roles": turnin_roles,
+                    "objectives": merged(objectives, over, lambda e: VARIANT_OVERRIDES.get(e.get("type"), ())),
+                    "quest_drops": merged(drops, drop_over, lambda e: DROP_OVERRIDES),
+                    "text": row.get("text"), "completion": row.get("completion"), "row": row, "index": index,
+                    "implicit": False})
+    return out
+
+
+def quest_view(q, variant):
+    """Quest `q` as given in one variant: the variant's first giver and
+    turn-in, objectives, quest drops and text, without `variants` (tools
+    that read one giver and one zone read this view)."""
+    view = {k: v for k, v in q.items() if k != "variants"}
+    view.update(giver=(variant["givers"] or [None])[0], turnin=(variant["turnins"] or [None])[0],
+                objectives=variant["objectives"], quest_drops=variant["quest_drops"],
+                text=variant["text"] or q.get("text"), variant_zone=variant["zone"])
+    return view
+
+
 class Design:
     """Every design file under one design directory, loaded leniently; the
     validator reports structural problems, the ledger only needs the data."""
@@ -235,11 +303,21 @@ class Design:
     def zone_quests(self, zone, lines=None):
         """The zone's own quests plus its front file's, optionally only the
         given lines (EVERY_LINE among them: all lines). Each quest is
-        returned as stored."""
+        returned as stored; a shared quest (Round 57, `variants`) as the
+        view of its variant in this zone (quest_view), from whichever zone's
+        file holds it."""
         out = []
         for data in (self.quests.get(zone), self.front.get(zone)):
             if isinstance(data, dict):
-                out.extend(q for q in data.get("quests") or [] if isinstance(q, dict))
+                for q in data.get("quests") or []:
+                    if isinstance(q, dict) and "variants" not in q:
+                        out.append(q)
+        for home, data in sorted(self.quests.items()):
+            for q in (data or {}).get("quests") or [] if isinstance(data, dict) else []:
+                if isinstance(q, dict) and "variants" in q:
+                    for variant in quest_variants(home, q):
+                        if variant["zone"] == zone:
+                            out.append(quest_view(q, variant))
         if lines and EVERY_LINE not in lines:
             out = [q for q in out if q.get("line") in lines]
         return out

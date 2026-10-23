@@ -407,7 +407,14 @@ end
 local journal_state
 grug_quests = {MAX_TRACKED = 10, registered_npcs = {elder = {title = "Elder Maren"}},
 	-- npc.lua's list helpers (Round 35), checked in tools/r35_f.
-	list_entry = function(title, _, repeatable) return fs_escape(title .. (repeatable and " (R)" or "")) end,
+	list_entry = function(title) return fs_escape(title) end,
+	-- Round 57: the quest box asks for the list with its categories
+	-- (npc.lua; no story quest here, so one entry per row).
+	category_list = function(rows, entry)
+		local entries, row_of, entry_of = {}, {}, {}
+		for i, row in ipairs(rows) do entries[i], row_of[i], entry_of[i] = entry(row, false), i, i end
+		return entries, row_of, entry_of
+	end,
 	status_tooltip = function() return "" end,
 	register_on_change = function(fn) grug_quests._changed = fn end,
 	journal = function() return deep_copy(journal_state) end,

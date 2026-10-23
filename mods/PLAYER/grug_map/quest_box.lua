@@ -6,8 +6,9 @@
 -- and passes their fields here; the selected quest also picks the map's
 -- quest targets (targets.lua). State lives in the window's session:
 -- quest_selected, quest_abandon (the quest whose confirmation is shown),
--- quest_notice and quest_rows (list row -> quest id). A click on one of the
--- map's layer buttons deselects the quest (M.deselect, Round 47).
+-- quest_notice and quest_rows (list entry -> quest id; nil on a category
+-- header, Round 57). A click on one of the map's layer buttons deselects
+-- the quest (M.deselect, Round 47).
 local M = {}
 
 local function esc(value)
@@ -52,7 +53,8 @@ end
 -- line each like the quest-offer dialogue (Round 32: one text field, so it
 -- scrolls only when everything together does not fit). No hard wrap: the
 -- textarea wraps at its own width. A system quest (Round 48: no objectives,
--- no NPC) shows its turn-in text in the objectives' place.
+-- no NPC) shows its turn-in text in the objectives' place; a choice of
+-- rewards (Round 57) reads "and one of: ...".
 local function detail_text(quest)
 	local objectives = {}
 	for _, objective in ipairs(quest.objectives) do
@@ -66,8 +68,15 @@ local function detail_text(quest)
 		local stack = ItemStack(item)
 		rewards[#rewards + 1] = stack:get_count() .. " × " .. grug_core.item_name(stack)
 	end
+	local choices = {}
+	for _, choice in ipairs(quest.rewards.choices or {}) do
+		local stack = ItemStack(choice.item)
+		choices[#choices + 1] = (stack:get_count() > 1 and stack:get_count() .. " × " or "") ..
+			grug_core.item_name(stack)
+	end
 	return quest.description .. "\n\n" ..
-		table.concat(objectives, "\n") .. "\n\nRewards: " .. table.concat(rewards, ", ")
+		table.concat(objectives, "\n") .. "\n\nRewards: " .. table.concat(rewards, ", ") ..
+		(#choices > 0 and ("\nand one of: " .. table.concat(choices, ", ")) or "")
 end
 
 -- "Level 9 · Dawnmere Fields": the quest's level and its zone's name, the
@@ -98,16 +107,29 @@ local PANEL = "#00000040"
 
 -- The two boxes for `journal` inside `rect` {x, y, w, h}.
 function M.content(session, journal, rect)
-	local quest, selected_index = M.selected(journal, session)
+	local quest = M.selected(journal, session)
 	local x, y, w = rect.x, rect.y, rect.w
 	local list_h = math.max(LIST_MIN, rect.h * LIST_SHARE)
 	local right = x + w - PAD
-	local rows = {}
+	-- The list with its "Story" category (Round 57 ruling 13): story quests
+	-- first under their header in the story accent, the others under "Side
+	-- quests"; each entry keeps its status colour.
+	local ordered = {}
+	for _, row in ipairs(journal.quests) do
+		if row.story then ordered[#ordered + 1] = row end
+	end
+	for _, row in ipairs(journal.quests) do
+		if not row.story then ordered[#ordered + 1] = row end
+	end
+	local rows, row_of, entry_of = grug_quests.category_list(ordered, function(row, indent)
+		return grug_quests.list_entry((tracked(journal, row.id) and "* " or "") .. row.title,
+			row.ready and "ready" or "active", indent)
+	end)
 	session.quest_rows = {}
-	for index, row in ipairs(journal.quests) do
-		session.quest_rows[index] = row.id
-		rows[#rows + 1] = grug_quests.list_entry((tracked(journal, row.id) and "* " or "") .. row.title,
-			row.ready and "ready" or "active", row.repeatable)
+	for entry, index in pairs(row_of) do session.quest_rows[entry] = ordered[index].id end
+	local selected_entry = 0
+	for index, row in ipairs(ordered) do
+		if quest and row.id == quest.id then selected_entry = entry_of[index] end
 	end
 	local row_y = y + list_h - PAD - BUTTON_H
 	local fs = {
@@ -117,7 +139,7 @@ function M.content(session, journal, rect)
 			y + PAD + ROW_H / 2, journal.hud_enabled and "true" or "false"),
 		("textlist[%.2f,%.2f;%.2f,%.2f;grug_quest_list;%s;%d;false]"):format(x + PAD,
 			y + PAD + ROW_H + 0.1, w - 2 * PAD, row_y - (y + PAD + ROW_H + 0.1) - 0.15,
-			table.concat(rows, ","), selected_index or 0),
+			table.concat(rows, ","), selected_entry),
 		("tooltip[grug_quest_list;%s]"):format(grug_quests.status_tooltip({"active", "ready"})),
 	}
 	local text_y = y + list_h + GAP
@@ -145,7 +167,7 @@ function M.content(session, journal, rect)
 			:format(right - ABANDON_W, row_y, ABANDON_W, BUTTON_H)
 	end
 	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + PAD, text_y + PAD + ROW_H / 2,
-		esc(quest.title .. (quest.repeatable and " (Repeatable)" or "")))
+		esc(quest.title))
 	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + PAD, text_y + PAD + ROW_H * 1.5,
 		esc(level_line(quest)))
 	-- The status line at the bottom: where to hand in, or the last notice. A
@@ -186,6 +208,10 @@ function M.handle(player, session, fields)
 			-- A click on the selected row sends too: the clicked list holds
 			-- the focus and would eat the inventory key, the window's send
 			-- moves the focus away (window.lua, set_focus).
+			changed = true
+		elseif event.type == "CHG" or event.type == "DCL" then
+			-- A category header (Round 57) selects nothing: the window is sent
+			-- again with the selection it had.
 			changed = true
 		end
 	end

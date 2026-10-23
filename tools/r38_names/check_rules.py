@@ -29,7 +29,9 @@ Checked (one line per problem, exit 1 on any):
   R1  words: normal mobs, critters and guards at most 2, named mobs, elites
       and bosses at most 3 (words split on spaces; a hyphenated word is one)
   R2  no signal word (tools/r28_names' list: Small, Large, Braindead ...)
-  R3  "Piglet" only on the start pigs the `*_hunt_01` quests target
+  R3  "Piglet" only on the start pigs: the slots of the start boar
+      (`small_boar`) met from level 1 (Round 57: no longer keyed to the
+      `*_hunt_01` quest ids, which the start-zone rework renames)
   R4  per name (case-insensitive, across every zone using it): its zone
       slots' level bands join without a gap, and all of them lie in one drop
       tier. A zone slot whose own band spans two tiers counts as the tier
@@ -71,12 +73,9 @@ GAP_EXEMPT = {"rift spawn": "rift_spawn"}
 
 
 def piglet_slots(model):
-    """The slots the `*_hunt_01` kill objectives target (the start pigs)."""
-    out = set()
-    for o in model.objectives:
-        if o["quest"].endswith("_hunt_01") and o["kind"] == "kill":
-            out.update(o.get("selected", o["targets"]))
-    return out
+    """The start pigs: the slots of `small_boar` met from level 1 (the six
+    start zones' first boars, the targets of their first hunt)."""
+    return {s["key"] for s in model.slots if s["role"] == "small_boar" and s["levels"][0] == 1}
 
 
 def load_proposals(paths):
@@ -149,9 +148,9 @@ def check(model, entries, partial=False, world_pending=False):
             problems.append("R2 %s: %r has the signal word%s %s" % (key, name, "s" if len(sig) > 1 else "",
                                                                      ", ".join(sig)))
         if PIGLET.search(name) and key not in pigs:
-            problems.append("R3 %s: %r - Piglet is reserved for the start pigs of the *_hunt_01 quests" % (key, name))
+            problems.append("R3 %s: %r - Piglet is reserved for the start pigs (small_boar from level 1)" % (key, name))
         if key in pigs and not PIGLET.search(name):
-            notes.append("note R3 %s: a start pig of a *_hunt_01 quest without \"Piglet\" (%r)" % (key, name))
+            notes.append("note R3 %s: a start pig without \"Piglet\" (%r)" % (key, name))
         # Rule 4 binds the zone slots only (world/ slots: plan §6 items 9, 10).
         if slot["zone"] is not None:
             by_name[name.lower()].append(slot)

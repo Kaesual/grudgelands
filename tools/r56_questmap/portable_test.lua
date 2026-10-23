@@ -8,6 +8,8 @@
 --      copper from the loader's formula unless a quest sets its own, XP from
 --      grug_quests.reward_xp's formula, names on every kill, every giver in a
 --      hub; the start towns' wooden tools quest is flagged;
+--   V  (Round 57) the model of tools/r57_qsys's samples: a shared quest's
+--      variants, a story quest, a choice of rewards with its enchants;
 --   P  questmap.lua writes one page with the data in place of its marker.
 -- Usage (repo root): luajit tools/r56_questmap/portable_test.lua [REPO]
 local repo = arg and arg[1] or "."
@@ -113,6 +115,28 @@ eq(no_hub, 0, "M every quest's giver stands in a hub")
 local facts = F.analyse(model.quests, model.zones).by_id
 check(facts.dawnmere_tools_01 and has(facts.dawnmere_tools_01.flags, "reward_is_request") and
 	has(facts.dawnmere_tools_01.flags, "start_twin"), "M the wooden tools quest is flagged")
+
+-- V (Round 57): a shared quest, a story quest and a choice of rewards, on
+-- tools/r57_qsys's sample files (Dawnmere Fields and Sunscar Flats).
+do
+	local sample = dofile(repo .. "/tools/r56_questmap/model.lua")(repo, repo .. "/tools/r57_qsys/samples/grug_quests")
+	local by_id = {}
+	for _, quest in ipairs(sample.quests) do by_id[quest.id] = quest end
+	local crop = by_id.qs_crop_thieves
+	check(crop and crop.shared and #crop.variants == 2, "V the shared quest is one row with two variants")
+	eq(crop and crop.variants[2].zone, "kragmar_sunscar_flats", "V ...its second variant's zone")
+	eq(crop and crop.variants[2].giver_names[1], "Gara Stonevoice", "V ...and giver")
+	eq(crop and crop.variants[1].hub, "dawnmere", "V the first variant's hub")
+	eq(crop and crop.variants[2].hub, "sunscar", "V the second variant's hub")
+	check(crop and crop.variants[2].text:find("[place]", 1, true) == nil and
+		crop.variants[2].text:find("Piglets dig up", 1, true) ~= nil, "V the variant's own text")
+	eq(crop and #crop.rewards.choices, 2, "V the choice of rewards")
+	check(crop and crop.completion and crop.completion:find("quiet again", 1, true), "V the completion text")
+	check(by_id.qs_story_landing and by_id.qs_story_landing.story, "V the story quest is marked")
+	eq(by_id.qs_final and by_id.qs_final.rewards.choices[1].affixes[2], "suffix crit_percent", "V a choice's enchants")
+	eq(by_id.qs_guild_stone and by_id.qs_guild_stone.variants[1].giver_names[1], "every foreman of the throng",
+		"V a role giver")
+end
 
 -- P ---------------------------------------------------------------------------
 local out = os.tmpname()

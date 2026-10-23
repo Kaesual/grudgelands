@@ -338,7 +338,7 @@
         "sample_pantry_01"
       ],
       "title": "Rat Bounty",
-      "text": "Large Rats breed faster than we can count. Kill ten more at night and I will pay again.",
+      "text": "Large Rats breed faster than we can count. Kill ten of them at night and I will pay you.",
       "objectives": [
         {
           "type": "kill",
@@ -353,9 +353,6 @@
         "weight": 2,
         "copper": 10,
         "items": []
-      },
-      "repeatable": {
-        "cooldown": 3600
       }
     }
   ]

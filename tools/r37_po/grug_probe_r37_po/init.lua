@@ -748,8 +748,7 @@ local function quest_state(kind)
 	local max_completed = kind == "late" and math.huge or 15
 	local ncompleted = 0
 	for _, id in ipairs(quest_ids) do
-		local def = grug_quests.registered_quests[id]
-		if nactive < max_active and not def.repeatable then
+		if nactive < max_active then
 			active[id] = {}
 			nactive = nactive + 1
 			tracked[#tracked + 1] = id
@@ -759,7 +758,7 @@ local function quest_state(kind)
 		end
 	end
 	return core.serialize({active = active, completed = completed, tracked = tracked,
-		hud = true, cooldowns = {}})
+		hud = true})
 end
 
 local classes = {"mage", "warrior", "priest", "scout"}

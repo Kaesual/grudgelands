@@ -37,16 +37,17 @@ local function read_files()
 	return files
 end
 
--- One quest of a file as a registry definition.
-local function definition(file, quest)
+-- One objective list of a variant as registry rows, its targets resolved
+-- in `zone` (the variant's zone: a bare area or place id is that zone's).
+local function objective_rows(list, zone)
 	local objectives = {}
-	for index, objective in ipairs(quest.objectives) do
+	for index, objective in ipairs(list) do
 		local row = {type = objective.type, count = objective.count or 1}
 		if objective.type == "kill" then
 			row.mobs = V.target_names(objective)
-			row.area = V.area_ref(objective.area, file.zone)
+			row.area = V.area_ref(objective.area, zone)
 			-- Round 38: the names that count (labels.lua), per role and as a set.
-			row.names = Q.target_names(row.mobs, row.area, file.zone)
+			row.names = Q.target_names(row.mobs, row.area, zone)
 			row.name_set = Q.name_set(row.names)
 		elseif objective.type == "item" then
 			row.item = objective.item
@@ -54,7 +55,7 @@ local function definition(file, quest)
 		elseif objective.type == "use" then
 			-- The place in its canonical form and its name (labels.lua); an
 			-- unknown place keeps its reference for the world check to refuse.
-			local place = Q.use_place(objective.place, file.zone)
+			local place = Q.use_place(objective.place, zone)
 			row.place = place and place.ref or objective.place
 			row.place_name = place and place.name or nil
 			row.object, row.label, row.hold = objective.object, objective.label, objective.hold
@@ -63,27 +64,56 @@ local function definition(file, quest)
 		end
 		objectives[index] = row
 	end
+	return objectives
+end
+
+local function drop_rows(list, zone)
 	local drops = {}
-	for index, drop in ipairs(quest.quest_drops or {}) do
-		local mobs, area = V.target_names(drop), V.area_ref(drop.area, file.zone)
-		local names = Q.target_names(mobs, area, file.zone)
+	for index, drop in ipairs(list) do
+		local mobs, area = V.target_names(drop), V.area_ref(drop.area, zone)
+		local names = Q.target_names(mobs, area, zone)
 		drops[index] = {item = drop.item, chance = drop.chance, mobs = mobs, area = area,
 			names = names, name_set = Q.name_set(names)}
+	end
+	return drops
+end
+
+local function role_rows(list)
+	local out = {}
+	for index, row in ipairs(list) do out[index] = {role = row.role, faction = row.faction} end
+	return out
+end
+
+-- One quest of a file as a registry definition: one variant per giver zone
+-- (Round 57; validate.lua V.variants), the counts and rewards the quest's.
+local function definition(file, quest)
+	local variants = {}
+	for index, variant in ipairs(V.variants(file, quest)) do
+		variants[index] = {key = variant.key, zone = variant.zone,
+			givers = table.copy(variant.givers), turnins = table.copy(variant.turnins),
+			giver_roles = role_rows(variant.giver_roles), turnin_roles = role_rows(variant.turnin_roles),
+			objectives = objective_rows(variant.objectives, variant.zone),
+			quest_drops = drop_rows(variant.quest_drops, variant.zone),
+			description = variant.text, completion = variant.completion}
 	end
 	local rewards = quest.rewards
 	local copper = rewards.copper
 	if copper == nil then copper = Q.quest_copper(quest.level, rewards.weight) end
-	local items = {}
+	local items, choices = {}, {}
 	for index, item in ipairs(rewards.items or {}) do
 		items[index] = item.item .. " " .. (item.count or 1)
 	end
+	for index, choice in ipairs(rewards.choices or {}) do
+		local affixes = {}
+		for i, affix in ipairs(choice.affixes or {}) do affixes[i] = {channel = affix.channel, stat = affix.stat} end
+		choices[index] = {item = choice.item .. " " .. (choice.count or 1), affixes = affixes}
+	end
 	return {
 		title = Q.fill_names(quest.title, file.zone), description = quest.text,
-		npc = quest.giver, turnin_npc = quest.turnin,
+		texts = quest.texts and table.copy(quest.texts) or nil, completion = quest.completion,
+		story = quest.story == true, variants = variants,
 		min_level = quest.min_level, level = quest.level, prerequisites = quest.requires or {},
-		objectives = objectives, quest_drops = drops,
-		repeatable = quest.repeatable and {cooldown = quest.repeatable.cooldown} or nil,
-		rewards = {weight = rewards.weight, copper = copper, items = items},
+		rewards = {weight = rewards.weight, copper = copper, items = items, choices = choices},
 		zone = file.zone, line = quest.line, source = "zones/" .. file.name, tags = quest.tags,
 	}
 end
@@ -124,7 +154,7 @@ local function register_new_givers(files)
 					local key, message = free_socket_settlement(file.zone, hub, giver.new.socket)
 					if key then
 						Q.register_npc(giver.npc, {settlement = key, socket = giver.new.socket,
-							title = giver.new.name, race = giver.new.race})
+							title = giver.new.name, race = giver.new.race, role = giver.new.role})
 					else
 						errors[#errors + 1] = ("zones/%s: hub %s: giver %s: %s [E-new-giver]")
 							:format(file.name, hub.id, giver.npc, message)
@@ -191,11 +221,24 @@ local function world_view()
 		end
 		return {levels = {lo, hi}, levels_by_role = by_role, roles = roles, garrison = row.faction}
 	end
+	-- role -> {day, night}: whether a kind's or camp's rosters spawn it by
+	-- day and at night (Round 57, the night-count warning).
+	local function clocks(found)
+		local out = {}
+		for _, clock in ipairs({"day", "night"}) do
+			local roster = found.rosters and found.rosters[clock]
+			for _, entry in ipairs(roster and roster.list or {}) do
+				out[entry.role] = out[entry.role] or {}
+				out[entry.role][clock] = true
+			end
+		end
+		return out
+	end
 	local function area(zone, id)
 		local found = areas.get_area(zone, id)
 		if not found then return garrison_area(zone, id) end
 		return {levels = found.levels, levels_by_role = found.levels_by_role,
-			roles = areas.area_roles(zone, id) or {}}
+			roles = areas.area_roles(zone, id) or {}, clocks = clocks(found)}
 	end
 	return {
 		entity = function(name) return core.registered_entities[name] end,
@@ -207,6 +250,7 @@ local function world_view()
 		-- The faction a quest giver serves (registry.lua, resolved before
 		-- these checks) and the one it fights.
 		npc_faction = function(npc) return (Q.registered_npcs[npc] or {}).faction end,
+		npc_race = function(npc) return (Q.registered_npcs[npc] or {}).race_id end,
 		opposing_faction = function(faction) return grug_core.opposing_faction(faction) end,
 		leader = function(role) return areas.leader(role) end,
 		-- {level_min, level_max} of a named zone (base mobs' surface levels).
@@ -230,6 +274,15 @@ local function world_view()
 		captain_name = Q.captain_name,
 		item = function(name)
 			return core.registered_items[name] ~= nil or core.registered_aliases[name] ~= nil
+		end,
+		-- Round 57: whether an item is in a group (a reward that is the
+		-- requested item), the enchants a reward choice may carry and the
+		-- capitals (no reward budget there).
+		item_group = function(name, group) return core.get_item_group(name, group) > 0 end,
+		check_affixes = function(item, affixes) return grug_items.check_affixes(item, affixes) end,
+		capital = function(zone)
+			local record = grug_zones.get(zone)
+			return record ~= nil and record.civic_no_hostiles == true
 		end,
 		-- Quest text placeholders (labels.lua): a target and a named place.
 		placeholder_target = Q.placeholder_target,
@@ -270,13 +323,17 @@ function Q.validate_quest_data(files)
 	if #found > 0 then fail(found) end
 	for _, row in ipairs(V.each_quest(files)) do
 		local def = Q.registered_quests[row.quest.id]
-		for index, objective in ipairs(def and row.quest.objectives or {}) do
-			local levels = V.objective_levels(world, row.file.zone, row.quest, objective)
-			-- Round 38: a kill counts every mob of its names, so the log shows
-			-- the levels of every slot bearing them (data/names.json); a name
-			-- the file does not hold (a PvP captain) adds the selected levels.
-			if objective.type == "kill" then levels = Q.names_levels(def.objectives[index].names, levels) end
-			def.objectives[index].levels = levels
+		for _, variant in ipairs(def and V.variants(row.file, row.quest) or {}) do
+			local rows = def.variant_by_key[variant.key].objectives
+			local quest = {level = row.quest.level, quest_drops = variant.quest_drops}
+			for index, objective in ipairs(variant.objectives) do
+				local levels = V.objective_levels(world, variant.zone, quest, objective)
+				-- Round 38: a kill counts every mob of its names, so the log shows
+				-- the levels of every slot bearing them (data/names.json); a name
+				-- the file does not hold (a PvP captain) adds the selected levels.
+				if objective.type == "kill" then levels = Q.names_levels(rows[index].names, levels) end
+				rows[index].levels = levels
+			end
 		end
 	end
 end

@@ -128,6 +128,7 @@ ul.tree ul.tree { padding-left: 22px; border-left: 1px dashed var(--line); margi
 .f-kill_chain { background: var(--crit-bg); color: var(--crit-fg); }
 .f-deep { background: var(--calm-bg); color: var(--calm-fg); }
 .mark { font-size: 0.72rem; color: var(--muted); border: 1px dotted var(--muted); border-radius: 999px; padding: 0 7px; }
+.mark.story { color: #8a5cd6; border-color: #8a5cd6; border-style: solid; }
 .link { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline;
   text-decoration-color: var(--line); text-underline-offset: 2px; font-size: inherit; text-align: left; }
 details.more { font-size: 0.85rem; }
@@ -213,6 +214,11 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
 
   var byId = {}, zoneById = {};
   D.quests.forEach(function (q) { byId[q.id] = q; });
+  // Round 57: a shared quest is given in every zone of its variants.
+  function variantIn(q, zone) {
+    for (var i = 0; i < q.variants.length; i++) if (q.variants[i].zone === zone) return q.variants[i];
+    return null;
+  }
   D.zones.forEach(function (z) { zoneById[z.id] = z; });
   function factionOf(zone) { var z = zoneById[zone]; return z && z.faction ? z.faction : "contested"; }
 
@@ -226,7 +232,10 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
 
   // Search text per quest, built once.
   D.quests.forEach(function (q) {
-    var parts = [q.id, q.title, q.giver_name, q.turnin_name, q.line, (zoneById[q.zone] || {}).name];
+    var parts = [q.id, q.title, q.giver_name, q.turnin_name, q.line, (zoneById[q.zone] || {}).name,
+      q.story ? "story" : "", q.shared ? "shared" : ""];
+    q.variants.forEach(function (v) { parts = parts.concat(v.giver_names, [v.zone_name]); });
+    (q.rewards.choices || []).forEach(function (c) { parts.push(c.item); });
     q.objectives.forEach(function (o) {
       parts = parts.concat(o.names || [], [o.item, o.group, o.area_name, o.npc_name, o.place_name, o.label]);
     });
@@ -244,7 +253,7 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
   } catch (e) { /* storage unavailable: defaults */ }
 
   function matches(q) {
-    if (state.zone && q.zone !== state.zone) return false;
+    if (state.zone && !variantIn(q, state.zone)) return false;
     if (state.faction && factionOf(q.zone) !== state.faction) return false;
     var t = state.type;
     if (t === "killonly" || t === "itemonly") {
@@ -268,7 +277,7 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
     var types = {kill: 0, item: 0, talk: 0, use: 0}, objectives = 0, givers = {}, copper = 0, xp = 0;
     D.quests.forEach(function (q) {
       q.objectives.forEach(function (o) { types[o.type]++; objectives++; });
-      givers[q.giver] = true;
+      q.variants.forEach(function (v) { v.givers.forEach(function (g) { givers[g] = true; }); });
     });
     var hubs = 0;
     D.zones.forEach(function (z) { hubs += z.hubs.length; });
@@ -293,7 +302,7 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
       "</tr></thead>";
     var total = {quests: 0};
     var rows = zonesSorted().map(function (z) {
-      var qs = D.quests.filter(function (q) { return q.zone === z.id; });
+      var qs = D.quests.filter(function (q) { return variantIn(q, z.id); });
       var c = {kill: 0, item: 0, talk: 0, use: 0};
       var fc = {};
       qs.forEach(function (q) {
@@ -348,6 +357,9 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
   }
   function card(q, opts) {
     opts = opts || {};
+    // In a zone view, a shared quest shows that zone's variant (its givers,
+    // names and text; Round 57).
+    var v = (opts.zone && variantIn(q, opts.zone)) || q.variants[0];
     var r = q.rewards, same = {};
     q.reward_items.forEach(function (i) { same[i] = true; });
     var items = r.items.map(function (i) {
@@ -357,7 +369,11 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
     });
     var rew = '<div class="rew"><span class="num">' + r.xp + " XP</span> · " + esc(r.copper_text) +
       (r.copper_fixed ? ' <span class="muted">(set)</span>' : "") +
-      ' <span class="muted">· weight ' + r.weight + "</span>" + (items.length ? " · " + items.join(", ") : "") + "</div>";
+      ' <span class="muted">· weight ' + r.weight + "</span>" + (items.length ? " · " + items.join(", ") : "") +
+      ((r.choices || []).length ? ' · <span title="The player picks one at the turn-in">one of: ' + r.choices.map(function (c) {
+        return esc((c.count > 1 ? c.count + " × " : "") + short(c.item)) +
+          (c.affixes.length ? ' <span class="muted">(' + esc(c.affixes.join(", ")) + ")</span>" : "");
+      }).join(", ") + "</span>" : "") + "</div>";
     var flags = q.flags.filter(function (f) {
       return !(f === "repeated" && q.flags.indexOf("start_twin") >= 0 && q.family_zones === q.family_starts);
     }).map(function (f) {
@@ -365,7 +381,10 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
         : f === "repeated" ? " ×" + q.family_zones : f === "start_twin" ? " ×" + q.family_starts : "";
       return '<span class="flag f-' + f + '" title="' + esc(FLAG[f].tip) + '">' + esc(FLAG[f].label) + extra + "</span>";
     }).join(" ");
-    var marks = (q.optional ? ' <span class="mark">optional</span>' : "") + (q.climax ? ' <span class="mark">climax</span>' : "") +
+    var marks = (q.story ? ' <span class="mark story">story</span>' : "") +
+      (q.shared ? ' <span class="mark" title="' + esc(q.variants.map(function (x) { return x.zone_name + ": " +
+        x.giver_names.join(", "); }).join("; ")) + '">shared ×' + q.variants.length + "</span>" : "") +
+      (q.optional ? ' <span class="mark">optional</span>' : "") + (q.climax ? ' <span class="mark">climax</span>' : "") +
       (q.front ? ' <span class="mark">front</span>' : "") +
       q.tags.map(function (t) { return ' <span class="mark">' + esc(t) + "</span>"; }).join("");
     var others = q.requires.filter(function (id) { return id !== opts.parent; });
@@ -374,7 +393,7 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
     var facts = '<div class="facts num">' + q.ancestors + " before it · depth " + q.depth +
       " · unlocks " + q.unlocks.length + (q.kill_chain ? " · kill run " + q.kill_chain : "") +
       (q.duration_min ? " · about " + q.duration_min + " min" : "") +
-      (q.turnin !== q.giver ? " · hand in to " + esc(q.turnin_name) : "") + "</div>";
+      (v.turnins.join() !== v.givers.join() ? " · hand in to " + esc(v.turnin_names.join(", ")) : "") + "</div>";
     var zonetag = opts.zoneTag ? ' <span class="zonetag">' + esc((zoneById[q.zone] || {}).name) + "</span>" : "";
     var all = q.ancestors ? "<p><b>Everything before it (" + q.ancestors + "):</b> " +
       q.all_before.map(function (id) { return questLink(id, true, q.zone); }).join(", ") + "</p>" : "";
@@ -385,10 +404,13 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
       '<div class="qtop"><span class="lvl" title="Reward level, opens at level ' + q.min_level + '"><b>L' + q.level + "</b>" +
       (q.min_level !== q.level ? " ≥" + q.min_level : "") + '</span><span class="title">' + esc(q.title) + "</span>" +
       zonetag + '<span class="qid">' + esc(q.id) + "</span>" + marks + " " + flags + "</div>" +
-      q.objectives.map(objectiveHtml).join("") + rew + needs + facts +
-      '<details class="more"><summary>Text and links</summary><p>' + esc(q.text) + "</p>" +
+      v.objectives.map(objectiveHtml).join("") + rew + needs + facts +
+      '<details class="more"><summary>Text and links</summary><p>' + esc(v.text) + "</p>" +
+      (q.completion ? '<p><b>At the turn-in:</b> ' + esc(q.completion) + "</p>" : "") +
+      (q.shared ? "<p><b>Given in:</b> " + q.variants.map(function (x) {
+        return esc(x.zone_name) + " (" + esc(x.giver_names.join(", ")) + ")"; }).join(", ") + "</p>" : "") +
       (q.lesson ? '<p class="lesson">Design note: ' + esc(q.lesson) + "</p>" : "") +
-      "<p>Giver: " + esc(q.giver_name) + " · line <span class=\"mono\">" + esc(q.line) + "</span> · file <span class=\"mono\">" + esc(q.file) + "</span></p>" +
+      "<p>Giver: " + esc(v.giver_names.join(", ")) + " · line <span class=\"mono\">" + esc(q.line) + "</span> · file <span class=\"mono\">" + esc(q.file) + "</span></p>" +
       all + unlocks + fam + "</details></div>";
   }
 
@@ -419,7 +441,8 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
         var html = "", at = q;
         for (;;) {
           var next = kids[at.id] || [];
-          html += (at === q ? "<li>" : '<li class="cont">') + card(at, {parent: at._parent, zoneTag: opts && opts.zoneTag}) +
+          html += (at === q ? "<li>" : '<li class="cont">') + card(at, {parent: at._parent, zoneTag: opts && opts.zoneTag,
+            zone: opts && opts.zone}) +
             (next.length > 1 ? branch(next) : "") + "</li>";
           if (next.length !== 1) break;
           at = next[0];
@@ -433,23 +456,26 @@ footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
   // ---- Views -------------------------------------------------------------
   function renderZones() {
     return zonesSorted().map(function (z) {
-      var qs = D.quests.filter(function (q) { return q.zone === z.id; });
+      var qs = D.quests.filter(function (q) { return variantIn(q, z.id); });
       var used = {};
       var hubs = z.hubs.map(function (h) {
         var givers = h.givers.map(function (g) {
           var lines = g.lines.map(function (line) {
-            var set = qs.filter(function (q) { return q.giver === g.npc && q.line === line && q.hub === h.id; });
+            var set = qs.filter(function (q) {
+              var v = variantIn(q, z.id);
+              return v.givers.indexOf(g.npc) >= 0 && q.line === line && v.hub === h.id;
+            });
             set.forEach(function (q) { used[q.id] = true; });
             if (!set.length) return "";
             return '<div class="line"><p class="linehead">Line <span class="mono">' + esc(line) + "</span> <small>(" +
-              set.length + ")</small></p>" + forest(set) + "</div>";
+              set.length + ")</small></p>" + forest(set, {zone: z.id}) + "</div>";
           }).join("");
           return '<div class="giver"><h3>' + esc(g.name) + " <small>" + esc(g.npc) + "</small></h3>" + lines + "</div>";
         }).join("");
         return '<div class="hub"><h4>' + esc(h.name) + "</h4>" + givers + "</div>";
       }).join("");
       var rest = qs.filter(function (q) { return !used[q.id]; });
-      if (rest.length) hubs += '<div class="hub"><h4>Other givers</h4>' + forest(rest) + "</div>";
+      if (rest.length) hubs += '<div class="hub"><h4>Other givers</h4>' + forest(rest, {zone: z.id}) + "</div>";
       return '<section class="zone" id="zone-' + esc(z.id) + '" data-zone="' + esc(z.id) + '"><div class="zonehead ' +
         factionOf(z.id) + '"><h2>' + esc(z.name) + '</h2><span class="count">' + factionName(z) + " · " + band(z) + " · " +
         qs.length + " quests</span></div>" + (z.identity ? '<p class="identity">' + esc(z.identity) + "</p>" : "") + hubs + "</section>";

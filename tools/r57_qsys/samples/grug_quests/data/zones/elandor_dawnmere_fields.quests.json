@@ -1,0 +1,360 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "reworked": true,
+  "identity": "Sample for tools/r57_qsys: the Round 57 quest foundation (shared quests, story, free play, choices).",
+  "hubs": [
+    {
+      "id": "dawnmere",
+      "anchor": "start",
+      "givers": [
+        {
+          "npc": "r14_human_elder",
+          "lines": [
+            "hunt",
+            "story"
+          ]
+        },
+        {
+          "npc": "r20_human_start_cook",
+          "lines": [
+            "pantry",
+            "kitchen"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "qs_crop_thieves",
+      "line": "hunt",
+      "min_level": 1,
+      "level": 2,
+      "title": "Crop Thieves",
+      "text": "Piglets are eating the {name:home_fields}. Hunt eight of them by day.",
+      "texts": {
+        "human": "Barley Piglets are eating the {name:home_fields}. Hunt eight of them by day, please."
+      },
+      "completion": "The fields are quiet again. Take one of these for the road.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "small_boar"
+          ],
+          "count": 8,
+          "area": "home_fields"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r14_orc_elder"
+          ],
+          "objectives": [
+            {
+              "area": "wellfields"
+            }
+          ],
+          "text": "Piglets dig up the {name:wellfields}. Hunt eight of them by day.",
+          "completion": "The wells are safe. Pick what suits you."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "fx:healing_potion",
+            "count": 2
+          },
+          {
+            "item": "fx:mana_potion",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "qs_night_shift",
+      "line": "hunt",
+      "min_level": 1,
+      "level": 2,
+      "title": "The Night Shift",
+      "text": "Rats come out after dark in the {name:home_fields}. Kill three of them by night.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "large_rat"
+          ],
+          "count": 3,
+          "area": "home_fields"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_dawnmere_fields",
+          "givers": [
+            "r14_human_elder"
+          ]
+        },
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            "r14_orc_elder"
+          ],
+          "objectives": [
+            {
+              "area": "wellfields"
+            }
+          ],
+          "text": "Rats come out after dark in the {name:wellfields}. Kill three of them by night."
+        }
+      ],
+      "rewards": {
+        "weight": 2
+      }
+    },
+    {
+      "id": "qs_story_landing",
+      "story": true,
+      "line": "story",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 2,
+      "title": "The Landing",
+      "text": "Snappers block the {name:home_shore}. Clear four of them, then we talk.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "giant_crab"
+          ],
+          "count": 4,
+          "area": "home_shore"
+        }
+      ],
+      "rewards": {
+        "weight": 2
+      }
+    },
+    {
+      "id": "qs_story_word",
+      "story": true,
+      "line": "story",
+      "giver": "r14_human_elder",
+      "turnin": "r20_human_start_cook",
+      "requires": [
+        "qs_story_landing"
+      ],
+      "min_level": 2,
+      "level": 3,
+      "title": "Word to the Kitchen",
+      "text": "Tell the cook what you saw at the shore. She keeps the town's ears.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_human_start_cook"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      }
+    },
+    {
+      "id": "qs_story_wolves",
+      "story": true,
+      "line": "story",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "requires": [
+        "qs_story_word"
+      ],
+      "min_level": 4,
+      "level": 5,
+      "title": "Teeth in the Hills",
+      "text": "The cook heard wolves in the {name:mid_fields}. Thin out six of them.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "wolf"
+          ],
+          "count": 6,
+          "area": "mid_fields"
+        }
+      ],
+      "rewards": {
+        "weight": 3
+      }
+    },
+    {
+      "id": "qs_armor",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 4,
+      "level": 5,
+      "title": "Hill Wolves",
+      "text": "Wolves in the {name:mid_fields} grow bold. Hunt eight of them.",
+      "completion": "Good work. The smith left these for whoever came back in one piece.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "wolf"
+          ],
+          "count": 8,
+          "area": "mid_fields"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_patch",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_light",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "qs_final",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 8,
+      "level": 9,
+      "title": "The Ridge Bears",
+      "text": "Bears rule the {name:far_fields}. Bring down five of them.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "bear"
+          ],
+          "count": 5,
+          "area": "far_fields"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_gear:sword_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:dagger_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_bronze",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "qs_free_a",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 1,
+      "level": 2,
+      "title": "Meat for the Pot",
+      "text": "Bring me three pieces of raw meat. The pot is empty.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      }
+    },
+    {
+      "id": "qs_free_b",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "requires": [
+        "qs_free_a"
+      ],
+      "min_level": 1,
+      "level": 2,
+      "title": "Fuel for the Fire",
+      "text": "Now bring two logs of any tree. Meat does not cook itself.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "group:tree",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      }
+    }
+  ]
+}

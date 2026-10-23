@@ -71,15 +71,20 @@ do
 		registered_npcs = {giver = {faction = "accord", title = "Giver"}},
 		registered_quests = {},
 		quest_text = function(def) return "Text " .. def.id end,
-		cooldown_text = function() return "1 h" end,
 		objective_action = function() return "Defeat" end,
+		-- Round 57: the dialog reads the active entry, the variant, the
+		-- completion text and the turn-in NPC of the variant.
+		active_entry = function() return nil end,
+		completion_text = function() return nil end,
+		variant_of = function(def) return {objectives = def.objectives} end,
+		turns_in_at = function() return true end,
 		objective_levels_text = function() return "" end,
 		reward_xp = function() return 10 end,
 		npc_quests = function() return copy(rows) end,
 	}
 	for _, id in ipairs({"q1", "q2", "q3", "q4", "q5"}) do
 		grug_quests.registered_quests[id] = {id = id, npc = "giver", turnin_npc = "giver",
-			objectives = {}, rewards = {copper = 5, items = {}}}
+			giver_variant = {giver = "main"}, objectives = {}, rewards = {copper = 5, items = {}, choices = {}}}
 	end
 	assert(loadfile(ROOT .. "/mods/PLAYER/grug_quests/npc.lua"))()
 	local Q = grug_quests

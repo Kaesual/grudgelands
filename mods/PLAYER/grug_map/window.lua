@@ -80,8 +80,13 @@ W.PLACE_ICON = 0.34
 -- party check compares these cells, so a move inside one sends nothing.
 local ARROW_STEP = 0.02
 local RING = "grug_map_ring.png^[multiply:#ff8c1a^[opacity:190"
-local QUEST_TEXTURE = {active = "grug_map_quest_active.png", ready = "grug_map_quest_ready.png",
-	available = "grug_map_quest_available.png", locked = "grug_map_quest_locked.png"}
+-- A quest marker's texture by its value (grug_quests.marker_states): the
+-- status, and a story quest's own (Round 57, "story_<status>").
+local QUEST_TEXTURE = {}
+for _, status in ipairs({"active", "ready", "available", "locked"}) do
+	QUEST_TEXTURE[status] = "grug_map_quest_" .. status .. ".png"
+	QUEST_TEXTURE["story_" .. status] = "grug_map_quest_story_" .. status .. ".png"
+end
 local SCROLL_X, SCROLL_Y = "grug_map_scroll_x", "grug_map_scroll_y"
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
@@ -214,16 +219,18 @@ function W.layer_markers(player, layer)
 	return result
 end
 
--- The hand-in NPC of the selected quest (quest mode, ruling 2 and §3):
--- {id, title, position, status} with status "ready" or "active", or nil
--- (an NPC of the other faction stays unmarked, ruling 13 of Round 31).
+-- The hand-in NPC of the selected quest (quest mode, ruling 2 and §3; the
+-- turn-in of the variant the player took, Round 57): {id, title, position,
+-- status} with status "ready" or "active" ("story_ready", "story_active"
+-- for a story quest), or nil (an NPC of the other faction stays unmarked,
+-- ruling 13 of Round 31).
 function W.handin_mark(player, quest)
 	local npc = quest and grug_map.quest_npc(quest.npc)
 	if not npc or not grug_map.marker_visible(npc, grug_factions.get_faction(player) or "") then
 		return nil
 	end
 	return {id = npc.id, title = npc.title, position = npc.position,
-		status = quest.ready and "ready" or "active"}
+		status = (quest.story and "story_" or "") .. (quest.ready and "ready" or "active")}
 end
 
 -- Settlement key -> anchor (a garrison camp's place), built on first need.
@@ -259,6 +266,9 @@ function W.quest_targets(player, quest)
 	if not quest then return nil end
 	local def = grug_quests.registered_quests[quest.id]
 	if not def then return nil end
+	-- The targets of the variant the player took (Round 57): its own zone's.
+	local variant = grug_quests.variant_of and grug_quests.variant_of(def, {variant = quest.variant})
+	if variant then def = {objectives = variant.objectives, zone = variant.zone or def.zone} end
 	return targets.targets(index, def, quest.objectives, player:get_pos(), lookup)
 end
 

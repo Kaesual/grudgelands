@@ -379,20 +379,25 @@ do
 		registered_npcs = {giver = {title = "Old Maren", faction = "accord"}},
 		registered_quests = {},
 		quest_text = function() return "Text" end,
-		cooldown_text = function() return "1 h" end,
 		objective_action = function() return "Defeat" end,
+		-- Round 57: the dialog reads the active entry, the variant, the
+		-- completion text and the turn-in NPC of the variant.
+		active_entry = function() return nil end,
+		completion_text = function() return nil end,
+		variant_of = function(def) return {objectives = def.objectives} end,
+		turns_in_at = function() return true end,
 		objective_levels_text = function() return "" end,
 		reward_xp = function() return 10 end,
 	}
 	local rows = {
 		{id = "q1", title = "Break Ranks at the Shattered Line Throng War Camp", status = "available"},
-		{id = "q2", title = "Bounty: Threads, Across", status = "ready", repeatable = true},
+		{id = "q2", title = "Bounty: Threads, Across", status = "ready"},
 		{id = "q3", title = "In Progress", status = "active"},
 		{id = "q4", title = "Later", status = "locked", reason = "Requires level 12"},
 	}
 	for _, row in ipairs(rows) do
 		grug_quests.registered_quests[row.id] = {npc = "giver", turnin_npc = "giver", objectives = {},
-			rewards = {copper = 5, items = {}}, repeatable = row.repeatable and {cooldown = 3600} or nil}
+			giver_variant = {giver = "main"}, rewards = {copper = 5, items = {}, choices = {}}}
 	end
 	grug_quests.npc_quests = function() return rows end
 	assert(loadfile(ROOT .. "/mods/PLAYER/grug_quests/npc.lua"))()
@@ -406,13 +411,16 @@ do
 		local entry = Q.list_entry("A, Title", status, false)
 		eq(entry, color .. "A\\, Title", "Q the entry is the status colour and the escaped title: " .. status)
 	end
-	eq(Q.list_entry("Bounty", "ready", true), Q.STATUS_COLORS.ready .. "Bounty (R)", "Q repeatable ends in (R)")
+	-- Round 57 ruling 11: no repeatable quests, so no "(R)" marks and no
+	-- legend for them.
+	eq(Q.list_entry("Bounty", "ready", true), Q.STATUS_COLORS.ready .. "  Bounty",
+		"Q a listed quest under a category is set in, never marked (R)")
 	local legend = Q.status_legend()
 	for _, status in ipairs({"available", "ready", "active", "locked"}) do
 		check(legend:find(Q.STATUS_COLORS[status], 1, true) ~= nil, "Q the legend shows " .. status)
 	end
-	check(legend:find("(R)", 1, true) ~= nil, "Q the legend explains (R)")
-	check(Q.status_tooltip():find("(R): repeatable", 1, true) ~= nil, "Q the tooltip explains (R)")
+	check(not legend:find("(R)", 1, true) and not Q.status_tooltip():find("(R)", 1, true),
+		"Q no repeatable mark in the legend or the tooltip")
 
 	local player = {get_player_name = function() return "alice" end, is_player = function() return true end,
 		get_hp = function() return 20 end, get_pos = function() return {x = 0, y = 0, z = 0} end}
@@ -427,8 +435,8 @@ do
 	check(list ~= "" and not list:find("(available)", 1, true) and not list:find("Repeatable", 1, true),
 		"Q no status or [Repeatable] text in the list")
 	check(form:find(Q.STATUS_COLORS.available .. "Break Ranks", 1, true) ~= nil, "Q the available entry is coloured")
-	check(form:find(Q.STATUS_COLORS.ready .. "Bounty: Threads\\, Across (R)", 1, true) ~= nil,
-		"Q the ready repeatable entry is coloured and ends in (R)")
+	check(form:find(Q.STATUS_COLORS.ready .. "Bounty: Threads\\, Across", 1, true) ~= nil and
+		not form:find("(R)", 1, true), "Q the ready entry is coloured, without a repeatable mark")
 	check(form:find("tooltip[quests;", 1, true) ~= nil, "Q the list has a tooltip")
 	check(form:find(legend, 1, true) ~= nil, "Q the dialog shows the legend")
 	local description = form:match("(textarea%[[^%]]-;)")

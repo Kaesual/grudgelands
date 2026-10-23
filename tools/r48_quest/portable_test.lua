@@ -449,6 +449,12 @@ dofile(ROOT .. "/mods/PLAYER/grug_quests/hud.lua")
 -- npc.lua's list helpers (the dialogue is not loaded here).
 grug_quests.list_entry = function(title) return title end
 grug_quests.status_tooltip = function() return "" end
+-- Round 57: the list with its categories (no story quest here).
+grug_quests.category_list = function(rows, entry)
+	local entries, row_of, entry_of = {}, {}, {}
+	for i, row in ipairs(rows) do entries[i], row_of[i], entry_of[i] = entry(row, false), i, i end
+	return entries, row_of, entry_of
+end
 local Q = grug_quests
 -- An ordinary NPC quest and twenty fillers beside the system quest.
 Q.register_npc("elder", {settlement = "dur_brannoc", socket = "quest_1", title = "Elder Maren"})

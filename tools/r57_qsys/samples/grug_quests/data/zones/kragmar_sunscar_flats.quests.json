@@ -1,0 +1,58 @@
+{
+  "zone": "kragmar_sunscar_flats",
+  "reworked": true,
+  "identity": "Sample for tools/r57_qsys: the Throng zone of the shared quests and the role giver.",
+  "hubs": [
+    {
+      "id": "sunscar",
+      "anchor": "start",
+      "givers": [
+        {
+          "npc": "r14_orc_elder",
+          "lines": [
+            "hunt",
+            "tools"
+          ]
+        },
+        {
+          "npc": "r20_orc_start_cook",
+          "lines": [
+            "pantry",
+            "kitchen"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "qs_guild_stone",
+      "line": "guild",
+      "min_level": 1,
+      "level": 3,
+      "title": "Stone for the Guild",
+      "text": "The guild needs cut stone for its new hall. Bring five pieces of cobble.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 5
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_sunscar_flats",
+          "givers": [
+            {
+              "role": "foreman",
+              "faction": "throng"
+            }
+          ]
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      }
+    }
+  ]
+}

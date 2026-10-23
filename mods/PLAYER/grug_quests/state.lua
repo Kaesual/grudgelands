@@ -3,10 +3,6 @@ local KEY = "grug_quests:state"
 -- The one tracker cap (Round 24 ruling 23): the HUD tracker, the auto-track on
 -- accept and the quest-log notice all read this constant.
 Q.MAX_TRACKED = 10
--- Repeatable cooldowns count real seconds from turn-in (Round 28 ruling 42),
--- so a bounty is ready again after the same wait whether or not the server
--- was running in between. Fixtures replace the clock.
-Q.clock = os.time
 local callbacks, turn_in_callbacks, busy = {}, {}, {}
 -- The decoded state per player name, keyed by the raw meta string it came
 -- from (Round 30, perf review #1): {raw = string, state = table}. Readers
@@ -14,19 +10,21 @@ local callbacks, turn_in_callbacks, busy = {}, {}, {}
 -- mutating paths take `editable`'s copy, and `save` caches what it stores.
 -- Cleared on leave.
 local cache = {}
--- `completed` keeps the first completion forever (prerequisites read it);
--- `cooldowns` holds when a completed repeatable may be accepted again.
--- Returns the shared read-only state and the raw string.
+-- `completed` keeps the completion forever (prerequisites read it; every
+-- quest is done once, Round 57 ruling 11). An active entry holds its
+-- objective counters by index and, since Round 57, the `variant` and the
+-- `giver` it was taken from (an entry without them follows the quest's
+-- first variant). Returns the shared read-only state and the raw string.
 local function load(player)
 	local name, raw = player:get_player_name(), player:get_meta():get_string(KEY)
 	local entry = cache[name]
 	if not entry or entry.raw ~= raw then
 		local state = core.deserialize(raw) or
 			{active = {}, completed = {}, tracked = {}, hud = true}
-		state.cooldowns = state.cooldowns or {}
 		-- A quest id the game no longer registers is dropped from the active
 		-- and tracked quests (the upgrade contract: unknown ids in saved state
-		-- never crash); `completed` and `cooldowns` are only looked up by id.
+		-- never crash); `completed` is only looked up by id (as an old
+		-- state's `cooldowns` of the removed repeatables, never read).
 		for id in pairs(state.active or {}) do
 			if not Q.registered_quests[id] then state.active[id] = nil end
 		end
@@ -78,9 +76,9 @@ core.register_on_leaveplayer(function(player)
 	cache[name], marker_memo[name], item_memo[name] = nil, nil, nil
 end)
 function Q.register_on_change(callback) callbacks[#callbacks + 1] = callback end
--- fn(player, quest_id, def) once per completed turn-in (a repeatable at each
--- of its turn-ins), after the state and the rewards are stored (Round 36:
--- grug_achievements counts quests and quest tags with it).
+-- fn(player, quest_id, def) once per completed turn-in, after the state and
+-- the rewards are stored (Round 36: grug_achievements counts quests and
+-- quest tags with it).
 function Q.register_on_turn_in(callback) turn_in_callbacks[#turn_in_callbacks + 1] = callback end
 local function owned_lists(player)
 	local lists, inv = {"main"}, player:get_inventory()
@@ -114,10 +112,22 @@ local function accepts(objective, name)
 	return name ~= "" and core.get_item_group(name, objective.group) > 0
 end
 Q.accepts_item = accepts
--- Seconds until a completed repeatable may be taken again (0 = now).
-local function cooldown_left(def, state)
-	local ready_at = def.repeatable and state.cooldowns[def.id]
-	return ready_at and math.max(0, ready_at - Q.clock()) or 0
+-- The variant of quest `def` an active entry follows (Round 57, ruling 9):
+-- the one it was taken in, else the first (an entry saved before variants,
+-- a quest accepted without an NPC, or a variant the data no longer has).
+function Q.variant_of(def, active)
+	return active and active.variant and def.variant_by_key[active.variant] or
+		def.variant_by_key[def.variant_order[1]]
+end
+-- The NPC to return to: the first turn-in of the variant that serves the
+-- player (Round 57: a shared quest's turn-ins may serve both factions).
+function Q.turnin_for(player, variant)
+	if #variant.turnins <= 1 then return variant.turnins[1] end
+	for _, npc in ipairs(variant.turnins) do
+		local row = Q.registered_npcs[npc]
+		if row and grug_factions.serves(row.faction, player) then return npc end
+	end
+	return variant.turnins[1]
 end
 -- `level`, if given, is the player's level read once for a whole pass.
 local function permitted(player, def, state, level)
@@ -129,17 +139,11 @@ local function permitted(player, def, state, level)
 	end
 	return true
 end
--- Accept gate: `permitted` plus not active, not done (a repeatable after its
--- cooldown counts as not done).
+-- Accept gate: `permitted` plus not active and not done. One completion per
+-- player counts everywhere (Round 57 ruling 9: no giver of a shared quest
+-- offers it again).
 local function offerable(player, def, state, level)
-	if state.active[def.id] then return false, "This quest is not available." end
-	if state.completed[def.id] then
-		if not def.repeatable then return false, "This quest is not available." end
-		local left = cooldown_left(def, state)
-		if left > 0 then
-			return false, ("Repeatable again in %s."):format(Q.cooldown_text(left))
-		end
-	end
+	if state.active[def.id] or state.completed[def.id] then return false, "This quest is not available." end
 	return permitted(player, def, state, level)
 end
 -- Item objectives draw from one snapshot, so two objectives never count the
@@ -149,6 +153,7 @@ end
 -- shown and the items taken can never disagree. A travel quest's
 -- conversation is complete from the start (ruling 39).
 local function progress(player, def, active, snapshot)
+	local objectives = Q.variant_of(def, active).objectives
 	local counts, rows, ready = table.copy(snapshot or holdings(player)), {}, true
 	local allocation, names = {}, nil
 	local function take(index, name, wanted)
@@ -160,7 +165,7 @@ local function progress(player, def, active, snapshot)
 		return amount
 	end
 	for pass = 1, 2 do
-		for index, objective in ipairs(def.objectives) do
+		for index, objective in ipairs(objectives) do
 			if objective.type == "item" and (pass == 1) == (objective.item ~= nil) then
 				allocation[index] = {}
 				if objective.item then
@@ -180,7 +185,7 @@ local function progress(player, def, active, snapshot)
 			end
 		end
 	end
-	for index, objective in ipairs(def.objectives) do
+	for index, objective in ipairs(objectives) do
 		local count
 		if objective.type == "talk" then count = objective.count
 		elseif objective.type == "kill" or objective.type == "use" then count = active[index] or 0
@@ -203,7 +208,7 @@ function Q.status(player, id)
 		local _, ready = progress(player, def, state.active[id])
 		return ready and "ready" or "active"
 	end
-	if state.completed[id] and not def.repeatable then return "completed" end
+	if state.completed[id] then return "completed" end
 	local allowed, reason = offerable(player, def, state)
 	return allowed and "available" or "locked", reason
 end
@@ -220,14 +225,20 @@ end
 -- "available" or "locked" (with the reason), or nil when it is not listed
 -- there. `pass` carries one holdings snapshot and one level read through
 -- the pass (`pass.counts`, `pass.level`).
+-- An active quest is listed only at the turn-ins of the variant it was
+-- taken in, an open one at every giver of any variant (Round 57).
 local function status_at(player, npc, def, state, pass)
 	local id = def.id
-	if state.completed[id] and def.repeatable == nil then return nil end
+	if state.completed[id] then return nil end
 	for _, prior in ipairs(def.prerequisites) do
 		if not state.completed[prior] then return nil end
 	end
 	local active = state.active[id]
-	if (active and def.turnin_npc or def.npc) ~= npc then return nil end
+	if active then
+		if not Q.variant_of(def, active).turnin_set[npc] then return nil end
+	elseif not def.giver_variant[npc] then
+		return nil
+	end
 	if active then
 		pass.counts = pass.counts or holdings(player)
 		local _, ready = progress(player, def, active, pass.counts)
@@ -237,6 +248,16 @@ local function status_at(player, npc, def, state, pass)
 	local allowed, reason = offerable(player, def, state, pass.level)
 	return allowed and "available" or "locked", reason
 end
+-- Whether the player hands quest `id` in at `npc`: active and `npc` a
+-- turn-in of the variant they took (Round 57).
+function Q.turns_in_at(player, id, npc)
+	local def, active = Q.registered_quests[id], load(player).active[id]
+	return def ~= nil and active ~= nil and Q.variant_of(def, active).turnin_set[npc] == true
+end
+-- The active entry of quest `id` (shared, read-only), or nil.
+function Q.active_entry(player, id)
+	return load(player).active[id]
+end
 -- One bounded state/holdings snapshot for one NPC viewer.
 function Q.npc_quests(player, npc)
 	local state, rows, pass = load(player), {}, {}
@@ -245,45 +266,56 @@ function Q.npc_quests(player, npc)
 		local status, reason = status_at(player, npc, def, state, pass)
 		if status then
 			rows[#rows + 1] = {id = id, title = def.title, status = status, reason = reason,
-				repeatable = def.repeatable ~= nil}
+				story = def.story}
 		end
 	end
-	table.sort(rows, function(a, b) return a.id < b.id end)
+	-- Story quests first (the dialog's "Story" category, Round 57), then by id.
+	table.sort(rows, function(a, b)
+		if a.story ~= b.story then return a.story end
+		return a.id < b.id
+	end)
 	return rows
 end
 -- The marker of every quest NPC for this player (Round 30, perf review #1):
 -- NPC id -> the most urgent status of its rows in Q.npc_quests (ready, then
--- available, active, locked); NPCs without rows are absent. One state load,
--- one level read and one holdings snapshot for all NPCs. Memoized per
--- player until something it depends on changes (Round 37, audit PLY-06):
--- the raw state (a quest change), Q.markers_changed (held objective items,
--- the level) or the end of the earliest repeatable cooldown still running.
--- Also returns a version that rises whenever the markers differ from the
--- previous result, for cheap change tests (the Map tab). Read-only: the
--- table is shared until the next change.
+-- available, active, locked); NPCs without rows are absent. A story quest
+-- (Round 57 ruling 13) of that status makes it the story marker
+-- ("story_ready" ...): the status stays visible on its own, and a ready
+-- side quest still wins over an available story quest. One state load, one
+-- level read and one holdings snapshot for all NPCs. Memoized per player
+-- until something it depends on changes (Round 37, audit PLY-06): the raw
+-- state (a quest change) or Q.markers_changed (held objective items, the
+-- level). Also returns a version that rises whenever the markers differ
+-- from the previous result, for cheap change tests (the Map tab).
+-- Read-only: the table is shared until the next change.
 local MARKER_PRIORITY = {ready = 1, available = 2, active = 3, locked = 4}
+Q.MARKER_STATUSES = {"ready", "available", "active", "locked"}
+-- A marker value's status and whether it is a story marker.
+function Q.marker_parts(value)
+	local status = type(value) == "string" and value:match("^story_(.+)$")
+	if status then return status, true end
+	return value, false
+end
 function Q.marker_states(player)
 	local name = player:get_player_name()
 	local state, raw = load(player)
 	local memo = marker_memo[name]
-	if memo and memo.fresh and memo.raw == raw and
-			(not memo.expires or Q.clock() < memo.expires) then
+	if memo and memo.fresh and memo.raw == raw then
 		return memo.states, memo.version
 	end
 	local states, pass = {}, {}
 	for npc, ids in pairs(Q.quests_by_npc) do
-		local best
+		local best, story
 		for id in pairs(ids) do
-			local status = status_at(player, npc, Q.registered_quests[id], state, pass)
-			if status and (not best or MARKER_PRIORITY[status] < MARKER_PRIORITY[best]) then best = status end
+			local def = Q.registered_quests[id]
+			local status = status_at(player, npc, def, state, pass)
+			if status and (not best or MARKER_PRIORITY[status] < MARKER_PRIORITY[best]) then
+				best, story = status, def.story
+			elseif status and status == best and def.story then
+				story = true
+			end
 		end
-		states[npc] = best
-	end
-	-- A repeatable turns available when its cooldown ends: the earliest end
-	-- still ahead (cooldown_left's clock) ends the memo.
-	local clock, expires = Q.clock(), nil
-	for _, ready_at in pairs(state.cooldowns) do
-		if ready_at > clock and (not expires or ready_at < expires) then expires = ready_at end
+		states[npc] = best and (story and "story_" .. best or best) or nil
 	end
 	local same = memo ~= nil
 	if same then
@@ -298,7 +330,7 @@ function Q.marker_states(player)
 		memo = {states = states, version = (memo and memo.version or 0) + 1}
 		marker_memo[name] = memo
 	end
-	memo.raw, memo.fresh, memo.expires = raw, true, expires
+	memo.raw, memo.fresh = raw, true
 	return memo.states, memo.version
 end
 -- The quest log holds at most MAX_ACTIVE quests (quests.md).
@@ -313,9 +345,14 @@ end
 function Q.log_full(player)
 	return active_count(load(player)) >= Q.MAX_ACTIVE
 end
-function Q.accept(player, id)
+-- `npc`: the giver the quest is taken from (the dialog); its variant is the
+-- one the player follows (Round 57). Without one (a system quest, a
+-- fixture) the quest's first variant.
+function Q.accept(player, id, npc)
 	local def, state = Q.registered_quests[id], editable(player)
 	if not def then return false, "This quest is not available." end
+	local variant = npc and def.giver_variant[npc]
+	if npc and not variant then return false, "This quest is not available." end
 	local allowed, reason = offerable(player, def, state)
 	if not allowed then return false, reason end
 	if active_count(state) >= Q.MAX_ACTIVE then
@@ -324,7 +361,7 @@ function Q.accept(player, id)
 	-- A travel quest's conversation counts from the start (ruling 39, see
 	-- progress): the destination shows its "?" at once; the turn-in still
 	-- needs the visit.
-	state.active[id] = {}
+	state.active[id] = {variant = variant, giver = npc}
 	if #state.tracked < Q.MAX_TRACKED then state.tracked[#state.tracked + 1] = id end
 	save(player, state)
 	changed(player)
@@ -373,12 +410,13 @@ function Q.journal(player, counts)
 	for id in pairs(state.active) do ids[#ids + 1] = id end
 	table.sort(ids)
 	for _, id in ipairs(ids) do
-		local def = Q.registered_quests[id]
-		local objectives, ready = progress(player, def, state.active[id], counts)
-		rows[#rows + 1] = {id = id, title = def.title, description = Q.quest_text(def),
-			objectives = objectives, ready = ready, npc = def.turnin_npc,
-			repeatable = def.repeatable ~= nil, travel = Q.is_travel(def),
-			turnin_text = def.turnin_text,
+		local def, active = Q.registered_quests[id], state.active[id]
+		local variant = Q.variant_of(def, active)
+		local objectives, ready = progress(player, def, active, counts)
+		rows[#rows + 1] = {id = id, title = def.title, description = Q.quest_text(def, false, active),
+			objectives = objectives, ready = ready, npc = Q.turnin_for(player, variant),
+			variant = variant.key, zone = variant.zone or def.zone, story = def.story,
+			travel = Q.is_travel(def), turnin_text = def.turnin_text,
 			rewards = table.copy(def.rewards), reward_xp = Q.reward_xp(def)}
 	end
 	return {quests = rows, tracked = table.copy(state.tracked), hud_enabled = state.hud ~= false}
@@ -401,7 +439,8 @@ function Q.journal_key(player)
 		local quests = {}
 		for id in pairs(state.active) do
 			local objectives = {}
-			for _, objective in ipairs(Q.registered_quests[id].objectives) do
+			local def = Q.registered_quests[id]
+			for _, objective in ipairs(Q.variant_of(def, state.active[id]).objectives) do
 				if objective.type == "item" then objectives[#objectives + 1] = objective end
 			end
 			if #objectives > 0 then quests[#quests + 1] = objectives end
@@ -430,12 +469,35 @@ function Q.journal_key(player)
 	table.sort(names)
 	return raw, table.concat(names, ","), counts
 end
+-- The reward stacks of a turn-in: the reward items and the picked choice
+-- (Round 57), each made by grug_items.make_stack: equipment at the quest's
+-- reward level with its fixed enchants, every stack with the receiver's
+-- tooltip as grug_inventory.give initialises one (the turn-in writes its
+-- slots itself, so it must not skip that).
+local function reward_stacks(player, def, choice)
+	local rows = {}
+	for _, item in ipairs(def.rewards.items) do rows[#rows + 1] = {item = item} end
+	if choice then rows[#rows + 1] = def.rewards.choices[choice] end
+	local items_api, out = rawget(_G, "grug_items"), {}
+	for index, row in ipairs(rows) do
+		local stack
+		if items_api and items_api.make_stack then
+			stack = assert(items_api.make_stack(row.item, def.level, row.affixes, player))
+		else
+			-- Fixtures without grug_quality: the plain stack.
+			stack = ItemStack(row.item)
+		end
+		out[index] = stack
+	end
+	return out
+end
+Q.reward_stacks = reward_stacks
 -- Preflight copies every owned slot, in the give helper's order (main[9..],
 -- the bags, the hotbar last), so rewards land where any other item would.
 -- Removing requirements and adding rewards to the same copies accounts for
 -- space freed by this very hand-in. The inactive hotbar layout's slots come
 -- after them: requirements are taken from it last, rewards never land in it.
-local function settlement(player, def, active)
+local function settlement(player, def, active, rewards)
 	local inv, rows, hotbar, hidden = player:get_inventory(), {}, {}, {}
 	local lists = owned_lists(player)
 	lists[#lists + 1] = STORE
@@ -469,7 +531,7 @@ local function settlement(player, def, active)
 			end
 		end
 	end
-	for _, reward in ipairs(def.rewards.items) do
+	for _, reward in ipairs(rewards) do
 		local rest = ItemStack(reward)
 		-- Fill compatible partial stacks before spending an empty slot.
 		for pass = 1, 2 do
@@ -483,7 +545,9 @@ local function settlement(player, def, active)
 	end
 	return takes
 end
-function Q.turn_in(player, id)
+-- `choice`: the index of the picked reward of `rewards.choices` (Round 57
+-- ruling 15); a quest with a choice refuses without one.
+function Q.turn_in(player, id, choice)
 	local name, state = player:get_player_name(), editable(player)
 	local def = Q.registered_quests[id]
 	if busy[name] or not def or not state.active[id] then return false, "This quest is not active." end
@@ -491,8 +555,15 @@ function Q.turn_in(player, id)
 	if not allowed then return false, reason end
 	local _, ready = progress(player, def, state.active[id])
 	if not ready then return false, "The objectives are not complete." end
+	if #def.rewards.choices > 0 then
+		choice = tonumber(choice)
+		if not choice or not def.rewards.choices[choice] then return false, "Choose your reward first." end
+	else
+		choice = nil
+	end
 	if grug_money.get(player) + def.rewards.copper > grug_money.MAX then return false, "Your coin purse cannot hold the reward." end
-	local rows, error_message = settlement(player, def, state.active[id])
+	local rewards = reward_stacks(player, def, choice)
+	local rows, error_message = settlement(player, def, state.active[id], rewards)
 	if not rows then return false, error_message end
 	local inv = player:get_inventory()
 	for _, row in ipairs(rows) do
@@ -508,12 +579,10 @@ function Q.turn_in(player, id)
 	end
 	-- The reward items are in the inventory now (settlement checked they fit):
 	-- one message-feed line each (Round 28 ruling 20).
-	for _, reward in ipairs(def.rewards.items) do
-		local stack = ItemStack(reward)
+	for _, stack in ipairs(rewards) do
 		grug_core.feed_item(player, stack, stack:get_count())
 	end
 	state.active[id], state.completed[id] = nil, true
-	if def.repeatable then state.cooldowns[id] = Q.clock() + def.repeatable.cooldown end
 	untrack(state, id)
 	save(player, state)
 	-- Persist the one-time claim before reward APIs publish callbacks.
@@ -557,7 +626,7 @@ function Q.credit_kill(player, mob, pos)
 	for id, counters in pairs(state.active) do
 		local def = Q.registered_quests[id]
 		if permitted(player, def, state) then
-			for index, objective in ipairs(def.objectives) do
+			for index, objective in ipairs(Q.variant_of(def, counters).objectives) do
 				if objective.type == "kill" and mob_counts(objective, mob) then
 					local before = counters[index] or 0
 					local after = math.min(objective.count, before + 1)
@@ -593,7 +662,7 @@ function Q.use_needs(player)
 	for id, counters in pairs(state.active) do
 		local def = Q.registered_quests[id]
 		if def and permitted(player, def, state) then
-			for index, objective in ipairs(def.objectives) do
+			for index, objective in ipairs(Q.variant_of(def, counters).objectives) do
 				if objective.type == "use" and (counters[index] or 0) < objective.count then
 					local key = Q.use_key(objective)
 					if not seen[key] then
@@ -614,7 +683,7 @@ function Q.credit_use(player, key)
 	for id, counters in pairs(state.active) do
 		local def = Q.registered_quests[id]
 		if def and permitted(player, def, state) then
-			for index, objective in ipairs(def.objectives) do
+			for index, objective in ipairs(Q.variant_of(def, counters).objectives) do
 				if objective.type == "use" and Q.use_key(objective) == key and
 						(counters[index] or 0) < objective.count then
 					copy = copy or editable(player)
@@ -644,13 +713,14 @@ function Q.roll_quest_drops(mob, participants, pos)
 		local player = core.get_player_by_name(name)
 		if player then
 			local state, counts, gained = load(player), nil, false
-			for id in pairs(state.active) do
+			for id, active in pairs(state.active) do
 				local def = Q.registered_quests[id]
-				if #def.quest_drops > 0 and permitted(player, def, state) then
-					for _, drop in ipairs(def.quest_drops) do
+				local variant = Q.variant_of(def, active)
+				if #variant.quest_drops > 0 and permitted(player, def, state) then
+					for _, drop in ipairs(variant.quest_drops) do
 						if mob_counts(drop, mob) then
 							local needed = 0
-							for _, objective in ipairs(def.objectives) do
+							for _, objective in ipairs(variant.objectives) do
 								if objective.item == drop.item then needed = needed + objective.count end
 							end
 							counts = counts or holdings(player)

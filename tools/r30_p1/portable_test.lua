@@ -9,7 +9,7 @@
 -- Checks:
 --   C  the decoded-state cache: every read path shares one decoded table per
 --      raw meta string (no deserialization while it is unchanged); accept,
---      kill credit, a quest drop, turn-in, a repeatable's cooldown, abandon,
+--      kill credit, a quest drop, turn-in (done once, Round 57), abandon,
 --      tracking and the HUD switch each refresh it; leave clears it and a
 --      rejoin decodes once. After EVERY operation no cached table has
 --      changed (deep comparison with a copy taken when it entered the
@@ -17,8 +17,8 @@
 --   M  Q.marker_states: one table for all NPCs, equal to the most urgent
 --      row of Q.npc_quests for each; memoized (same table, same version, no
 --      holdings scan) until a state change, a quest change callback, the
---      tracker's held-item signal, a level change or a cooldown's end
---      (Round 37: no longer for a second only); the version rises only when
+--      tracker's held-item signal or a level change (Round 37: no longer for
+--      a second only); the version rises only when
 --      a marker differs;
 --   T  NPC tag callback: a parent that is no quest NPC allocates nothing
 --      and asks nothing; a quest NPC asks marker_states once per observer;
@@ -326,13 +326,11 @@ quest("intro", {npc = "elder", objectives = {{type = "item", item = "grug_food:r
 quest("next", {npc = "elder", turnin_npc = "hunter", prerequisites = {"intro"},
 	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 2}}})
 quest("logs", {npc = "hunter", objectives = {{type = "item", group = "log", count = 3}}})
-quest("bounty", {npc = "hunter", repeatable = {cooldown = 60},
+quest("bounty", {npc = "hunter",
 	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 quest("tusk", {npc = "envoy", objectives = {{type = "item", item = "grug_mobs:tusk", count = 1}},
 	quest_drops = {{item = "grug_mobs:tusk", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, chance = 1}}})
 quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
-local clock = 1000
-Q.clock = function() return clock end
 
 -- ---------------------------------------------------------------------------
 -- C: the cache never changes under its readers
@@ -355,7 +353,6 @@ local function audit()
 	for _, entry in pairs(cache) do
 		local decoded = entry.raw ~= "" and assert(loadstring("return " .. entry.raw))() or
 			{active = {}, completed = {}, tracked = {}, hud = true}
-		decoded.cooldowns = decoded.cooldowns or {}
 		if not deep_equal(entry.state, decoded) then consistent = false end
 	end
 	return intact, consistent
@@ -418,7 +415,7 @@ do
 	eq(deserializations - before, 0, "C no deserialization while the state is unchanged")
 end
 
--- accept, progress, turn-in, kill credit, drops, cooldown, abandon, tracking.
+-- accept, progress, turn-in, kill credit, drops, abandon, tracking.
 check(op("accept intro", Q.accept, ann, "intro"), "C accept intro")
 eq(Q.status(ann, "intro"), "active", "C status follows the accept at once")
 eq(Q.marker_states(ann).elder, "active", "M accept shows at once (state changed)")
@@ -472,14 +469,12 @@ check(op("turn in tusk", Q.turn_in, ann, "tusk"), "C turn in tusk")
 check(op("accept bounty", Q.accept, ann, "bounty"), "C accept bounty")
 op("bounty kill", Q.credit_kill, ann, boar, {x = 0, y = 0, z = 0})
 check(op("turn in bounty", Q.turn_in, ann, "bounty"), "C turn in bounty")
-states = markers_agree("bounty cooling down")
-local cooling = false
+states = markers_agree("bounty done")
+local listed = false
 for _, row in ipairs(Q.npc_quests(ann, "hunter")) do
-	if row.id == "bounty" then cooling = row.status == "locked" and row.reason:find("Repeatable again") ~= nil end
+	if row.id == "bounty" then listed = true end
 end
-check(cooling, "C the bounty cools down after its turn-in")
-clock = clock + 61
-markers_agree("bounty ready again")
+check(not listed, "C the bounty is done once: not listed after its turn-in (Round 57 ruling 11)")
 check(op("accept logs", Q.accept, ann, "logs"), "C accept logs")
 check(op("untrack logs", Q.set_tracked, ann, "logs", false), "C untrack")
 eq(#Q.journal(ann).tracked, 0, "C untracked in the journal")
@@ -655,7 +650,9 @@ end
 -- I: markers follow held items and the level without a quest change
 -- ---------------------------------------------------------------------------
 do
-	-- ann: logs active with 2 of 3 logs; the bounty is available again.
+	-- ann: logs active with 2 of 3 logs; the bounty is done for good (Round
+	-- 57 ruling 11: no repeatable quest comes back), so the hunter shows the
+	-- logs' marker alone.
 	local scans, real_inventory = 0, ann.get_inventory
 	function ann:get_inventory()
 		local inv = real_inventory(self)
@@ -666,7 +663,7 @@ do
 	us = us + 1100000
 	hud_steps(0.5)
 	local states, version = Q.marker_states(ann)
-	eq(states.hunter, "available", "I two of three logs: the hunter offers the bounty")
+	eq(states.hunter, "active", "I two of three logs: the hunter's marker is the logs' (in progress)")
 	eq(states.envoy, "locked", "I level 1: the envoy's veteran quest is locked")
 	-- quiet HUD polls and a non-objective item keep the memo
 	local decoded, polled = deserializations, scans
@@ -681,7 +678,7 @@ do
 	eq(deserializations - decoded, 0, "I quiet polls and markers decode nothing")
 	-- the last log: ready after the next HUD slot, inside the memo's second
 	ann:give("default:tree 1")
-	eq(Q.marker_states(ann).hunter, "available", "I before the HUD slot the memo holds")
+	eq(Q.marker_states(ann).hunter, "active", "I before the HUD slot the memo holds")
 	hud_steps(0.5)
 	local ready, risen = Q.marker_states(ann)
 	eq(ready.hunter, "ready", "I the last objective item shows ready after the next HUD slot")
@@ -692,7 +689,7 @@ do
 		if stack:get_name() == "default:tree" then ann.lists.main[i] = ItemStack("") end
 	end
 	hud_steps(0.5)
-	eq(Q.marker_states(ann).hunter, "available", "I a dropped objective item takes the ready back")
+	eq(Q.marker_states(ann).hunter, "active", "I a dropped objective item takes the ready back")
 	-- a level-up unlocks at once
 	level_up(ann, 5)
 	eq(Q.marker_states(ann).envoy, "available", "I a level-up unlocks the envoy's quest at once")
