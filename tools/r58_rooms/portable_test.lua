@@ -552,7 +552,8 @@ for tier = 1, 6 do
 		plug.walkable == true and plug.drawtype == "normal" and plug.tiles[1] == host.tiles[1] and
 		plug.drop == "default:cobble" and plug.groups.cracky == 3 and
 		plug.groups.level == host.groups.level and plug.groups.grug_natural == nil and
-		plug.groups.grug_stratum == nil and plug.description == host.description,
+		plug.groups.grug_stratum == host.groups.grug_stratum and
+		plug.description == host.description,
 		"H the T" .. tier .. " plug digs like its host rock (Cobble), non-ground-content")
 end
 do

@@ -90,11 +90,12 @@ return function(engine, materials)
 			on_blast = noop,
 			sounds = stone_sounds,
 		})
-		-- The plug digs like its host rock: the host's groups but the two
-		-- that mark generated natural ground (grug_natural, grug_stratum).
+		-- The plug digs like its host rock: the host's groups (grug_stratum
+		-- with them, which grug_materials' audit pairs with the pick gate
+		-- `level`), but not grug_natural: it is no generated natural ground.
 		local groups = {not_in_creative_inventory = 1}
 		for group, value in pairs(host.groups or {}) do
-			if group ~= "grug_natural" and group ~= "grug_stratum" then groups[group] = value end
+			if group ~= "grug_natural" then groups[group] = value end
 		end
 		engine.register_node(NODES.plug[tier], {
 			description = host.description,
