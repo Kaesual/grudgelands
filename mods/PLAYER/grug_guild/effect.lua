@@ -173,9 +173,14 @@ end
 
 -- A spot for the tier's Remains: the tier rock itself, all 26 neighbours
 -- loaded and solid, in the band, not protected.
+local host_cids = {} -- tier -> the tier rock's content id
 function grug_guild.remains_spot_ok(pos, tier, name)
 	if not in_band(tier, pos.y) then return false end
-	local host = core.get_content_id(catalog.remains(tier).host)
+	local host = host_cids[tier]
+	if not host then
+		host = core.get_content_id(catalog.remains(tier).host)
+		host_cids[tier] = host
+	end
 	local cid, _, _, loaded = core.get_node_raw(pos.x, pos.y, pos.z)
 	if not loaded or cid ~= host then return false end
 	for dx = -1, 1 do
