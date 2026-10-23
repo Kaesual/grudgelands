@@ -1,16 +1,18 @@
--- Disposable engine probe (Round 58 lane HALLS): the Miner's Guild houses in
--- the engine, for screenshots and a check. Never shipped:
+-- Disposable engine probe (Round 58 lanes HALLS, HALLS2): the Miner's Guild
+-- houses in the engine, on their district plots, for screenshots and a check. Never shipped:
 -- tools/r58_halls/capture.sh stages it through tools/luanti_headless.sh and
 -- connects one real client. The driver (character creation, camera, SHOT /
 -- ack handshake) is lane FT's probe's (tools/r51_ft), from lanes LK and TC.
 --
--- Per capital: the hall's sockets from the registry (the leader at the back,
--- the porter in the forecourt), an emerged box round them (a region, never
--- the world), then
+-- Per capital: the hall's sockets from the registry (capital_services.lua
+-- GUILD_HALL: the leader at the back, the porter in the forecourt), an
+-- emerged box round them (a region, never the world), then
 --   check  the nodes the house writes: the frieze's six tier stones in a row
---          behind the leader and the plaque over the door, read in the world;
---   shots  outside (in front of the forecourt, looking at the door) and
---          inside (just inside the door, looking at the leader's desk).
+--          behind the leader, the guild's emblem plaque and banners (the
+--          picked art), the yard's rail and the headframe's sheave wheels,
+--          read in the world;
+--   shots  outside (from the street, the headframe in view) and inside
+--          (just inside the door, looking at the leader's desk).
 
 local P = "[r58halls] "
 local NAME = "grugcap"
@@ -22,10 +24,11 @@ for label in (core.settings:get("r58halls_only") or ""):gmatch("[^,%s]+") do ONL
 local function log(msg) core.log("action", P .. msg) end
 
 local CAPITALS = {
-	{key = "dur_brannoc", plaque = "grug_materials:gold_block"},
-	{key = "gor_drazhak", plaque = "grug_materials:copper_block"},
-	{key = "lethariel", plaque = "grug_materials:gold_block"},
+	{key = "dur_brannoc", guild = "charter"},
+	{key = "gor_drazhak", guild = "oathdelvers"},
+	{key = "lethariel", guild = "charter"},
 }
+local HALL = dofile(core.get_modpath("grug_mapgen") .. "/wp13/capital_services.lua").GUILD_HALL
 local TIERS = {"default:stone", "grug_materials:t2_stone", "grug_materials:t3_stone",
 	"grug_materials:t4_stone", "grug_materials:t5_stone", "grug_materials:t6_stone"}
 
@@ -40,9 +43,9 @@ end
 local function find_halls()
 	for _, cap in ipairs(CAPITALS) do
 		if next(ONLY) == nil or ONLY[cap.key] then
-			local leader = socket_pos(cap.key, "miners_guild_leader")
-			local porter = socket_pos(cap.key, "miners_guild_porter")
-			local exchange = socket_pos(cap.key, "miners_guild_exchange")
+			local leader = socket_pos(cap.key, HALL.leader)
+			local porter = socket_pos(cap.key, HALL.residents[3])
+			local exchange = socket_pos(cap.key, HALL.exchange)
 			if leader and porter and exchange then
 				halls[#halls + 1] = {cap = cap, leader = leader, porter = porter,
 					exchange = exchange}
@@ -79,20 +82,28 @@ local function survey(hall)
 	end
 	local tiers = 0
 	for tier = 1, #TIERS do if found[tier] then tiers = tiers + 1 end end
-	-- the plaque: over the door, three nodes up, one node towards the hall
-	-- from the porter's row and up to three nodes sideways
-	-- (the house's ore samples may be the same metal: at least one)
-	local minp = vector.subtract(hall.porter, {x = 4, y = 0, z = 4})
-	local maxp = vector.add(hall.porter, {x = 4, y = 5, z = 4})
-	local plaque = #core.find_nodes_in_area(minp, maxp, {hall.cap.plaque})
-	log(("CHECK %s: frieze %d of 6 tier stones behind the leader, plaque %d (%s)")
-		:format(key, tiers, plaque, (tiers == 6 and plaque >= 1) and "ok" or "MISSING"))
-	-- outside: 9 back along the axis from the porter and 10 up, over the
-	-- trees the core plants on its open ground, looking down at the door
-	local out = {x = hall.porter.x - ax * 9 + az * 3, y = hall.porter.y + 10,
-		z = hall.porter.z - az * 9 + ax * 3}
+	-- the picked art and the yard round the porter: the plaque over the door,
+	-- the banners beside it and on the headframe, the rail and the wheels
+	local minp = vector.subtract(hall.porter, {x = 18, y = 1, z = 18})
+	local maxp = vector.add(hall.porter, {x = 18, y = 17, z = 18})
+	local function count(name) return #core.find_nodes_in_area(minp, maxp, {name}) end
+	local g = hall.cap.guild
+	local plaque = count("grug_mapgen:guild_emblem_" .. g)
+	local banners = count("grug_mapgen:guild_banner_" .. g)
+	local rails = count("grug_mapgen:mine_rail") + count("grug_mapgen:mine_cart")
+	local wheels = count("grug_decor:cottages_wagon_wheel")
+	local ok = tiers == 6 and plaque >= 1 and banners >= 4 and rails >= 9 and wheels >= 2
+	log(("CHECK %s: frieze %d of 6 tier stones behind the leader, plaque %d, banners %d, " ..
+		"rail %d, sheave wheels %d (%s)"):format(key, tiers, plaque, banners, rails, wheels,
+		ok and "ok" or "MISSING"))
+	-- outside: 16 back along the axis from the porter, 5 to the yard's side
+	-- and 9 up, looking at the door with the headframe beside it
+	local side = {x = az, z = -ax}  -- the yard (template +x)
+	local out = {x = hall.porter.x - ax * 16 + side.x * 5, y = hall.porter.y + 9,
+		z = hall.porter.z - az * 16 + side.z * 5}
 	SHOTS[#SHOTS + 1] = {name = key .. "_outside", pos = out,
-		yaw = yaw_to(out, hall.porter), pitch = 32, first = true}
+		yaw = yaw_to(out, vector.add(hall.porter, {x = side.x * 4, y = 0, z = side.z * 4})),
+		pitch = 18, first = true}
 	-- inside: three in from the porter (the first row past the door), at
 	-- eye height, looking at the leader
 	local inside = {x = hall.porter.x + ax * 3, y = hall.porter.y + 1.9,

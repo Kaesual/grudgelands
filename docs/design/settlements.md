@@ -600,55 +600,80 @@ want lived-in settlements without paying for it in server load"):
 
 ### The Miner's Guild houses
 
-Round 58 (lane HALLS; [Round 58 plan](../planning/round58-plan.md) §2). Every
-capital's civic core holds the house of its faction's Miner's Guild: **The
+Round 58 (lanes HALLS and HALLS2; [Round 58 plan](../planning/round58-plan.md)
+§2). Every capital holds the house of its faction's Miner's Guild: **The
 Charter of Stone** in Highcourt, Dur Brannoc and Lethariel, **The
-Oathdelvers** in Nhal Veyr, Gor Drazhak and Kezamba. The core is
-anchor-relative and the same in every world, so every world has the six houses
-whatever its seed; the capital planner places only the district plots round
-it. Each house is a core building with the plot id `miners_guild`, in the
-place of a building the core had:
+Oathdelvers** in Nhal Veyr, Gor Drazhak and Kezamba. The house is a
+**district plot** with the plot id `miners_guild` in the district of the
+capital's trades, a required plot like the inn and the service plots
+(`wp40/r7_capitals.lua`), so the capital planner places it in every world,
+wherever that world's plan puts the district (the seed fleet plans it per
+seed). The civic cores keep the buildings they had before Round 58.
 
-| Capital | Template | In the core (x, z) | Door | In the place of |
-|---|---|---|---|---|
-| Highcourt | `highcourt_miners_guild` | 31..46, −46..−34 (turned once) | west | the city workshop |
-| Dur Brannoc | `dur_brannoc_miners_guild` | 29..41, −46..−30 | north | the masons' guild |
-| Lethariel | `lethariel_miners_guild` | −46..−34, 22..34 | east, over the turf to the quay | the quay house (grown into the corner between the fountain court and the shore house) |
-| Nhal Veyr | `nhal_veyr_miners_guild` | 29..41, −46..−30 | north | the bonesmiths' guild |
-| Gor Drazhak | `gor_drazhak_miners_guild` | 29..41, −46..−30 | north | the war council house |
-| Kezamba | `kezamba_miners_guild` | 6..20, −16..−6 (turned once) | west, to the south avenue | the granary |
+| Capital | Template | District | Lot |
+|---|---|---|---|
+| Highcourt | `highcourt_miners_guild` | market (`highcourt_market`) | its own (±13) |
+| Dur Brannoc | `dur_brannoc_miners_guild` | forge (`dur_brannoc_forge`) | its own (±13) |
+| Lethariel | `lethariel_miners_guild` | market (`lethariel_market`) | its own (±11) |
+| Nhal Veyr | `nhal_veyr_miners_guild` | market (`nhal_veyr_market`) | its own (±13) |
+| Gor Drazhak | `gor_drazhak_miners_guild` | bazaar (`gor_drazhak_bazaar`) | its own (±13) |
+| Kezamba | `kezamba_miners_guild` | shore market (`shore`) | `shore_10` (±13) |
 
 One design in six palettes (`tools/r58_halls/make_halls.py` writes the six
-templates; edit the script, not the files): a hall behind a two-row forecourt
-with a winch over a tub and an ore cart by its heap, one door in the middle of
-the front wall, the guild's banners beside it and a plaque over it, the
-exchange counter on the east side of the hall, the clerk's desk and the ore
-sorter's sample table on the west side, the leader's desk at the back under a
-frieze of the six tier stones (the depths the guild mines), stores and shelves
-in the back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it
-with a gable to the street in their civic roof; Gor Drazhak and Kezamba with
-a flat deck behind a breastwork (merlons in Gor Drazhak). Kezamba builds it in
-the basalt of its civic halls. The banners and the plaque are placeholders
-from shipped textures until the guild emblems are picked: blue and yellow wool
-with a gold plaque for The Charter of Stone, red and black wool with a copper
-plaque for The Oathdelvers.
+templates; edit the script, not the files), on a 17 × 17 footprint (19 × 19
+with its apron, which fits the smallest lot), its front to the plot's street:
+
+- **The hall** on the west side, 11 × 14: a stone plinth two courses high
+  under a timber frame (posts at the corners and every third column, a top
+  plate), one door in the middle of the front wall in a stone surround, the
+  guild's emblem sign over it and its banners beside it. Inside: the exchange
+  counter on the east side, the clerk's desk and the ore sorter's sample
+  table on the west side, the leader's desk at the back under a frieze of the
+  six tier stones (the depths the guild mines), stores and shelves in the
+  back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it with
+  a gable to the street in their civic roof; Gor Drazhak and Kezamba with a
+  flat deck behind a breastwork (merlons in Gor Drazhak). Kezamba builds it
+  in the basalt of its civic halls, Nhal Veyr in its crypt stone.
+- **The ore yard** on the east side, open to the street: a **headframe**
+  over a grated shaft collar (four timber legs 15 high, three rings of
+  beams, two sheave wheels on its head beam, a rope down to a tub, the
+  guild's banners on its front), the landmark that marks the house from the
+  street; a rail from the shaft to the street with two ore carts; six heaps,
+  one per tier, each its host stone under its ore (copper, gold, silver,
+  emberglass, abyssal crystal, diamond, as storage blocks: ore nodes would
+  show to Ore Sense); pit props, barrels and a coal bunker; mine lamps on the
+  yard's posts and under the headframe; a fence along the yard's outer
+  sides.
+
+The banners and signs are the user's pick of the guild art (2026-10-23:
+drop 02's P2 cloths, P1's 16 px emblems), registered in grug_mapgen so the
+settlement writer can place them: `grug_mapgen:guild_banner_charter`,
+`grug_mapgen:guild_banner_oathdelvers` (the whole cloth flat on its wall,
+wallmounted) and `grug_mapgen:guild_emblem_charter`,
+`grug_mapgen:guild_emblem_oathdelvers` (the emblem on a board in the guild's
+colour). The rail and the cart are `grug_mapgen:mine_rail` and
+`grug_mapgen:mine_cart` (shipped textures, decoration only). None of them can
+be dug or blown up; camps may use them too.
 
 **The hall socket contract** (fixed in Round 58 for the lanes that put the
-guild's people there; `wp13/capital_services.lua` `M.GUILD_HALL`). The
-sockets are core sockets, registered under the capital's settlement key
-without a plot prefix, the same ids in all six capitals:
+guild's people there; `wp13/capital_services.lua` `M.GUILD_HALL`, which the
+consumers read instead of literals). The sockets are the plot's, registered
+under the capital's settlement key with the plot prefix every district plot's
+sockets carry (`<plot id>/<socket id>`, `wp40/r7_settlement.lua` `M.sockets`),
+the same ids in all six capitals:
 
 | Socket | Role | Who stands there |
 |---|---|---|
-| `miners_guild_leader` | `quest`, facing the door | the capital's guild leader. Today a nameless quest shell; the leader is registered on it as a quest NPC (`grug_quests.register_npc(id, {settlement = <capital key>, socket = "miners_guild_leader", title = …, race = …})`), which gives the shell its name, race and dialogue, and a talk objective can name it. |
-| `miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the exchange counter, the guild's vendor (materials for reputation). It is taken over as a service socket, `grug_core.assign_service_socket(<capital key>, "miners_guild_exchange", <role>)`, as the Crownbinder and the Housing Steward take theirs (a new role in `SERVICE_ROLES` and its entity through `grug_mobs.register_start_socket_role`). Until then a resident stands there, who may be one of the core's walkers. |
-| `miners_guild_clerk`, `miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
-| `miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
+| `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader. Today a nameless quest shell; the leader is registered on it as a quest NPC (`grug_quests.register_npc(id, {settlement = <capital key>, socket = GUILD_HALL.leader, title = …, race = …})`), which gives the shell its name, race and dialogue, and a talk objective can name it. |
+| `miners_guild/miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the exchange counter, the guild's vendor (materials for reputation). It is taken over as a service socket, `grug_core.assign_service_socket(<capital key>, GUILD_HALL.exchange, <role>)`, as the Crownbinder and the Housing Steward take theirs (a new role in `SERVICE_ROLES` and its entity through `grug_mobs.register_start_socket_role`). Until then a resident stands there, who may be one of the capital's walkers. |
+| `miners_guild/miners_guild_clerk`, `miners_guild/miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
+| `miners_guild/miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
 
-The house's `inside` point is the destination `miners_guild` and its door the
-core doorway `miners_guild`. Every hall socket and the door are reachable from
-the core's arrival, and no NPC of the house faces a wall
-(`tools/r58_halls/portable_test.lua`, `tools/r47_nz`).
+Like every district plot it also publishes `miners_guild/miners_guild_gate_idle`,
+a resident at its gate. The house's `inside` point is the destination
+`miners_guild` and its door the doorway `miners_guild`. Every hall socket
+and the door are reachable from the plot's arrival, and no NPC of the house
+faces a wall (`tools/r58_halls/portable_test.lua`, `tools/r47_nz`).
 
 ### Settlement walkers
 
