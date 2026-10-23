@@ -402,8 +402,8 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
   respawn_seconds, check_seconds`); `CONSUMABLE_BY_ITEM[item]`.
 - `REMAINS[tier]`: `{tier, node, name, host, bar, gem, copper_min,
   copper_max, bars_min, bars_max, gem_chance}`.
-- `ORE_SENSE_TARGETS[tier]`: resource keys of `grug_materials.RESOURCES`, in
-  priority order.
+- `ORE_SENSE_TARGETS[tier]`: resource keys of `grug_materials.RESOURCES`
+  (display order; a mark picks a random kind in range, §7).
 - `GUILDS[faction] = {id, name}`, `UI_NAME`, `STATUS = {id, variants}`,
   `KINDS`, `KIND_NAMES`, `NUMERALS`, `TIER_COUNT`.
 - Accessors, also published on `grug_guild`: `rank_for(lifetime) -> 0..10`,

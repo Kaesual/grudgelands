@@ -186,8 +186,9 @@ local TIER_GEM = {"grug_materials:cut_citrine", "grug_materials:cut_jade",
 	"grug_materials:cut_ruby", "grug_materials:cut_diamond"}
 
 -- What Ore Sense of a tier looks for (grug_materials resource keys): the
--- resources whose harvest tier is the item's tier, the gem first. A mark
--- goes to the nearest deposit of the first key with one in range.
+-- resources whose harvest tier is the item's tier. A mark picks a random
+-- kind among those with a deposit in range, then a random deposit of it
+-- (the user, 2026-10-23); the order is only the display order.
 M.ORE_SENSE_TARGETS = {
 	{"citrine", "iron", "quartz", "copper", "tin", "coal"},
 	{"jade", "gold", "anthracite"},
