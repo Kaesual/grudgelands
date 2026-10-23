@@ -51,15 +51,15 @@
       "level": 42,
       "requires": [],
       "title": "[PH] Clear the Camp's Surroundings (t5 low)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "causeway_brigand"
+            "causeway_sinkmire_viper"
           ],
           "count": 8,
-          "area": "front_broken_causeway/alderwood"
+          "area": "front_broken_causeway/reedmire"
         }
       ],
       "variants": [
@@ -72,12 +72,12 @@
           "objectives": [
             {
               "roles": [
-                "causeway_brigand"
+                "causeway_sinkmire_viper"
               ],
-              "area": "front_broken_causeway/alderwood"
+              "area": "front_broken_causeway/reedmire"
             }
           ],
-          "text": "[PH] Defeat Causeway Brigand × 8 by day in the {name:alderwood}, which lie {zone_area:alderwood}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Sinkmire Viper × 8 by day in the {name:reedmire}, which lie {zone_area:reedmire}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "front_shattered_line",
@@ -88,18 +88,18 @@
           "objectives": [
             {
               "roles": [
-                "warpack_hyena"
+                "siege_deserter"
               ],
               "area": "front_shattered_line/approaches"
             }
           ],
-          "text": "[PH] Defeat Siegepack Hyena × 8 by day in the {name:approaches}, which lie {zone_area:approaches}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Deserter × 8 by day in the {name:approaches}, which lie {zone_area:approaches}, so the camp's haulers can pass. Real text to follow."
         }
       ],
       "rewards": {
         "weight": 3.5
       },
-      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L41-43."
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L41-43) that the zone's own quests do not hunt yet, met by day."
     },
     {
       "id": "camp_hunt_t5_high",
@@ -108,12 +108,12 @@
       "level": 49,
       "requires": [],
       "title": "[PH] Clear the Camp's Surroundings (t5 high)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "causeway_mire_husk"
+            "tallow_sealed_husk"
           ],
           "count": 8,
           "area": "front_broken_causeway/toll_fields"
@@ -129,12 +129,12 @@
           "objectives": [
             {
               "roles": [
-                "causeway_mire_husk"
+                "tallow_sealed_husk"
               ],
               "area": "front_broken_causeway/toll_fields"
             }
           ],
-          "text": "[PH] Defeat Mire-Cured Husk × 8 by day in the {name:toll_fields}, which lie {zone_area:toll_fields}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Tallow-Sealed Husk × 8 by day in the {name:toll_fields}, which lie {zone_area:toll_fields}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "front_shattered_line",
@@ -145,18 +145,18 @@
           "objectives": [
             {
               "roles": [
-                "reed_stalking_tiger"
+                "siege_deserter_archer"
               ],
-              "area": "front_shattered_line/siegecrest"
+              "area": "front_shattered_line/breach"
             }
           ],
-          "text": "[PH] Defeat Crest Tiger × 8 by day in the {name:siegecrest}, which lie {zone_area:siegecrest}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Turncoat Archer × 8 by day in the {name:breach}, which lie {zone_area:breach}, so the camp's haulers can pass. Real text to follow."
         }
       ],
       "rewards": {
         "weight": 3.5
       },
-      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L48-50."
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L48-50) that the zone's own quests do not hunt yet, met by day."
     }
   ]
 }

@@ -471,12 +471,12 @@
       "level": 32,
       "requires": [],
       "title": "[PH] Clear the Camp's Surroundings (t4)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "ridge_crag_eagle"
+            "storm_ridge_ram"
           ],
           "count": 8,
           "area": "elandor_stormvault_heights/eagle_crags"
@@ -491,12 +491,12 @@
           "objectives": [
             {
               "roles": [
-                "ridge_crag_eagle"
+                "storm_ridge_ram"
               ],
               "area": "elandor_stormvault_heights/eagle_crags"
             }
           ],
-          "text": "[PH] Defeat Golden Eagle × 8 by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Stormhorn Ram × 8 by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -529,21 +529,6 @@
           "text": "[PH] Defeat Rootantler × 8 by day in the {name:fringe}, which lie {zone_area:fringe}, so the camp's haulers can pass. Real text to follow."
         },
         {
-          "zone": "kragmar_blackwind_rise",
-          "givers": [
-            "r58_foreman_mining_camp_blackwind_rise"
-          ],
-          "objectives": [
-            {
-              "roles": [
-                "territorial_bear"
-              ],
-              "area": "kragmar_blackwind_rise/bonewood"
-            }
-          ],
-          "text": "[PH] Defeat Gale Bear × 8 by day in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
-        },
-        {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r58_foreman_mining_camp_bannerbreak_mesa"
@@ -551,33 +536,18 @@
           "objectives": [
             {
               "roles": [
-                "warpack_hyena"
+                "marching_husk"
               ],
               "area": "kragmar_bannerbreak_mesa/badlands"
             }
           ],
-          "text": "[PH] Defeat Warpack Hyena × 8 by day in the {name:badlands}, which lie {zone_area:badlands}, so the camp's haulers can pass. Real text to follow."
-        },
-        {
-          "zone": "kragmar_thunderroot_wilds",
-          "givers": [
-            "r58_foreman_mining_camp_thunderroot_wilds"
-          ],
-          "objectives": [
-            {
-              "roles": [
-                "territorial_ape"
-              ],
-              "area": "kragmar_thunderroot_wilds/canopy"
-            }
-          ],
-          "text": "[PH] Defeat Thunder Ape × 8 by day in the {name:canopy}, which lie {zone_area:canopy}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Muster Husk × 8 by day in the {name:badlands}, which lie {zone_area:badlands}, so the camp's haulers can pass. Real text to follow."
         }
       ],
       "rewards": {
         "weight": 3.5
       },
-      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L31-33."
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L31-33) that the zone's own quests do not hunt yet, met by day."
     },
     {
       "id": "camp_site_raid",

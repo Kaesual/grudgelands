@@ -95,7 +95,10 @@ repeatable switch by Round 57, 2026-10-23
   notice). Each tracked quest is one HUD line showing only its objective
   (e.g. "0/4 Bring Raw Meat"), no title; a quest ready to turn in shows
   "Return to <turn-in NPC>" (a system quest its own line, "System quests"
-  below; a shared quest the turn-in of the variant the player took). A
+  below; a shared quest the turn-in of the variant the player took, the
+  giver it was taken from when that giver is one of them, Round 58: a role
+  quest's turn-ins are every foreman of the role). The same NPC carries the
+  map's hand-in marker. A
   quest with several objectives shows them on one compact line ("Wood Axe
   0/1, Wood Pickaxe 0/1") and a travel quest reads "Travel to <NPC>". Two
   quests with identical objectives may read the same. Keep the tab authoritative; do not place the entire journal
@@ -165,7 +168,7 @@ heartland, the contested 31–40 zones, and the 41–60 front with island
 bounties. Round 31 adds 24 PvP fortress quests (below) and Round 36 the main
 line's 25 (below); Round 46 removed Round 29's 55 repeatable quests (485 in
 total); Round 57 rebuilt the six start zones' 92 quests as 30 (423 in total,
-"The start zones" below); Round 58 adds the Miner's Guild's 28 (451 in
+"The start zones" below); Round 58 adds the Miner's Guild's 30 (453 in
 total, [miners_guild.md](miners_guild.md) §11). This is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near

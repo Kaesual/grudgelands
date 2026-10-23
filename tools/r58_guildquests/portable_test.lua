@@ -111,7 +111,7 @@ do
 end
 local count = 0
 for _ in pairs(quests) do count = count + 1 end
-eq(count, 28, "S 28 guild quests (10 gather, 10 follow-ups, 7 hunts, 1 raid)")
+eq(count, 30, "S 30 guild quests (10 gather, 10 follow-ups, 9 hunts, 1 raid)")
 
 -- The guild files: zones of their own (grug_guild's GUILDS ids), reworked.
 local guild_catalog = dofile(repo .. "/mods/PLAYER/grug_guild/catalog.lua")
@@ -237,7 +237,61 @@ for id, q in pairs(quests) do
 		eq(q.objectives[1].type, "kill", "S " .. id .. " a kill objective")
 	end
 end
-eq(hunts, 7, "S 7 camp hunts (T2, T3, T4 and the war camps' two bands of T5 and T6)")
+eq(hunts, 9, "S 9 camp hunts (T2, T3, T4, the war camps' two bands of T5 and T6, and T3's and T4's night hunts)")
+-- A hunt never repeats a role the zone's own quests already hunt (their
+-- kill objectives in the zone's and the front files), but in Lorindor,
+-- whose quests hunt every role by its camp; a night hunt's target spawns
+-- only at night in its area and asks a third of the day count.
+do
+	local hunted = {}
+	for _, name in ipairs(list_dir(ZONES)) do
+		local data = name:find("%.quests%.json$") and read_json(ZONES .. "/" .. name)
+		for _, q in ipairs(data and data.quests or {}) do
+			if not (q.id:find("^guild_") or q.id:find("^camp_")) then
+				for _, variant in ipairs(q.variants or {{zone = data.zone}}) do
+					for index, objective in ipairs(q.objectives) do
+						if objective.type == "kill" then
+							local own = (variant.objectives or {})[index] or {}
+							local area = own.area or objective.area
+							local zone = area and area:match("^([^/]+)/") or variant.zone
+							hunted[zone] = hunted[zone] or {}
+							for _, role in ipairs(own.roles or objective.roles) do hunted[zone][role] = true end
+						end
+					end
+				end
+			end
+		end
+	end
+	local repeats = {}
+	for id, q in pairs(quests) do
+		if id:find("^camp_hunt_") then
+			local night = id:find("_night$") ~= nil
+			eq(q.objectives[1].count, night and 3 or 8, "S " .. id .. " count")
+			for _, variant in ipairs(q.variants) do
+				local objective = (variant.objectives or {{}})[1]
+				local role = (objective.roles or q.objectives[1].roles)[1]
+				if (hunted[variant.zone] or {})[role] then repeats[#repeats + 1] = variant.zone .. "/" .. role end
+				local zone, kind_id = (objective.area or q.objectives[1].area):match("^([^/]+)/(.+)$")
+				local spawns = read_json(repo .. "/mods/ENTITIES/grug_mobs/data/zones/" .. zone .. ".spawns.json")
+				local by_day = false
+				for _, belt in ipairs(spawns.recipe.belts) do
+					for _, kind in pairs(belt.kinds) do
+						if kind.id == kind_id then
+							local day = kind.day == "open" and belt.kinds.open.day or kind.day
+							for _, row in ipairs(type(day) == "table" and day or {}) do
+								by_day = by_day or row.role == role
+							end
+						end
+					end
+				end
+				eq(by_day, not night, "S " .. id .. " " .. variant.zone .. " " .. role .. (night and
+					" spawns only at night" or " spawns by day"))
+			end
+		end
+	end
+	table.sort(repeats)
+	eq(table.concat(repeats, ","), "elandor_lorindor/moss_antler_stag", "S the hunts repeat no zone quest's role but Lorindor's")
+end
 for _, camp in ipairs(camps_static) do
 	check(hunt_of["r58_foreman_" .. camp.id] ~= nil, "S " .. camp.id .. " has a hunt")
 end
@@ -515,6 +569,35 @@ for _, faction in ipairs(FACTIONS) do
 					end
 				end
 			end
+		end
+	end
+end
+
+-- The hand-in marker (journal row npc, Q.turnin_for): a role quest returns
+-- to the foreman it was taken from, a follow-up to its leader.
+for _, faction in ipairs(FACTIONS) do
+	player_faction, player_level = faction, 60
+	for _, row in ipairs(foremen) do
+		if row.camp.faction == faction and (row.camp.tier == 2 or row.camp.tier == 5) then
+			set_state()
+			check(Q.accept(player, "guild_t2_iron", row.id), "B guild_t2_iron accepted at " .. row.id)
+			local npc
+			for _, entry in ipairs(Q.journal(player).quests) do
+				if entry.id == "guild_t2_iron" then npc = entry.npc end
+			end
+			eq(npc, row.id, "B guild_t2_iron taken at " .. row.id .. " returns there")
+		end
+	end
+	local report = "guild_t2_report_" .. faction
+	for _, row in ipairs(foremen) do
+		if row.camp.faction == faction and row.camp.tier == 5 then
+			set_state({[gathers[2][1]] = true, [gathers[2][2]] = true})
+			check(Q.accept(player, report, row.id), "B " .. report .. " accepted at " .. row.id)
+			local npc
+			for _, entry in ipairs(Q.journal(player).quests) do
+				if entry.id == report then npc = entry.npc end
+			end
+			eq(npc, leader_for(row.camp.zone_id, faction), "B " .. report .. " from " .. row.id .. " returns to its leader")
 		end
 	end
 end

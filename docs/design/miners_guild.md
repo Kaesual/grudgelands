@@ -567,7 +567,7 @@ Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md))
   only from the exchange. Rewards are XP, copper, materials or choices under
   the budget rule.
 - **As built (the structure; placeholder texts "[PH]" until lane
-  GUILDTEXT):** 28 quests with new ids, written by
+  GUILDTEXT):** 30 quests with new ids, written by
   `tools/r58_guildquests/build_structure.py`, checked by
   `tools/r58_guildquests/portable_test.lua`; the structure page is
   `tools/r58_guildquests/questmap.py`. Every reward is XP and the quest
@@ -612,17 +612,24 @@ Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md))
     to Lethariel and Kezamba. The variants carry a completion text; the
     tier's story seed (the story-arc decision §5) is each quest's design
     note for GUILDTEXT.
-  - **Camp hunts** (free play, weight 3.5): one shared quest per camp band,
-    a variant per camp zone given by its foremen, 8 of the main day role of
-    the zone's quest-target kind in the camp's level belt (the zone's
-    lowest belt; a war camp's high band the highest), by day:
-    `camp_hunt_t2` (6 zones, reward level 12), `camp_hunt_t3` (8, level 22),
-    `camp_hunt_t4` (6, level 32), and for the war camps `camp_hunt_t5_low`
-    (42), `camp_hunt_t5_high` (49), `camp_hunt_t6_low` (52) and
-    `camp_hunt_t6_high` (59), each with its two Battlegrounds zones (the
-    zone's Accord and Throng camps of that band in one variant; the low and
-    high bands hunt different names). Every camp has one hunt; a T4 camp
-    also the raid.
+  - **Camp hunts** (free play): a role near the camp, in a quest-target
+    kind of the camp's level belt (the zone's lowest belt; a war camp's high
+    band the highest), that the zone's own quests (its file and the front
+    files) do not hunt yet, by role or by name; a role met by day first (8
+    kills, weight 3.5), else a night-only one (3 kills, a third of the day
+    count, weight 2.5). One shared quest per camp band and clock, a variant
+    per camp zone given by its foremen: by day `camp_hunt_t2` (6 zones,
+    reward level 12), `camp_hunt_t3` (7, level 22), `camp_hunt_t4`
+    (Stormvault, Ashenward, Glassroot, Bannerbreak; 32), and for the war
+    camps `camp_hunt_t5_low` (42), `camp_hunt_t5_high` (49),
+    `camp_hunt_t6_low` (52) and `camp_hunt_t6_high` (59), each with its two
+    Battlegrounds zones (the zone's Accord and Throng camps of that band in
+    one variant; the low and high bands hunt different names); after dark
+    `camp_hunt_t3_night` (Totemwater Reach) and `camp_hunt_t4_night`
+    (Blackwind Rise, Thunderroot Wilds). Lorindor's quests already hunt
+    every role by its camp, so its hunt keeps the stag (`moss_antler_stag`
+    in the Berrywoods; `lorindor_cutting_opt_01` hunts it in the
+    Paleroots). Every camp has one hunt; a T4 camp also the raid.
   - **The raid** `camp_site_raid` (free play, level 36, reward level 40,
     weight 3): one quest with a variant per contested T4 zone, given by the
     own T4 foreman, against the zone's camp under construction: its

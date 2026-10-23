@@ -568,7 +568,7 @@
       "level": 22,
       "requires": [],
       "title": "[PH] Clear the Camp's Surroundings (t3)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -648,12 +648,12 @@
           "objectives": [
             {
               "roles": [
-                "briarpack_wolf"
+                "marrow_weevil"
               ],
               "area": "kragmar_ossuary_reach/bonewood"
             }
           ],
-          "text": "[PH] Defeat Ash Howler × 8 by day in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Marrow Weevil × 8 by day in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "kragmar_speargrass_reach",
@@ -684,27 +684,12 @@
             }
           ],
           "text": "[PH] Defeat Reed Tapir × 8 by day in the {name:canopy}, which lie {zone_area:canopy}, so the camp's haulers can pass. Real text to follow."
-        },
-        {
-          "zone": "kragmar_totemwater_reach",
-          "givers": [
-            "r58_foreman_mining_camp_totemwater_reach"
-          ],
-          "objectives": [
-            {
-              "roles": [
-                "reed_tapir"
-              ],
-              "area": "kragmar_totemwater_reach/jungle"
-            }
-          ],
-          "text": "[PH] Defeat Reed Tapir × 8 by day in the {name:jungle}, which lie {zone_area:jungle}, so the camp's haulers can pass. Real text to follow."
         }
       ],
       "rewards": {
         "weight": 3.5
       },
-      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L21-23."
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L21-23) that the zone's own quests do not hunt yet, met by day."
     }
   ]
 }

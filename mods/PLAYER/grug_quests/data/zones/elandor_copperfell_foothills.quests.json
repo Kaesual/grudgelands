@@ -702,12 +702,12 @@
       "level": 12,
       "requires": [],
       "title": "[PH] Clear the Camp's Surroundings (t2)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "young_boar"
+            "young_fox"
           ],
           "count": 8,
           "area": "elandor_copperfell_foothills/lower_pines"
@@ -722,12 +722,12 @@
           "objectives": [
             {
               "roles": [
-                "young_boar"
+                "young_fox"
               ],
               "area": "elandor_copperfell_foothills/lower_pines"
             }
           ],
-          "text": "[PH] Defeat Rooter × 8 by day in the {name:lower_pines}, which lie {zone_area:lower_pines}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Bracken Fox × 8 by day in the {name:lower_pines}, which lie {zone_area:lower_pines}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "elandor_goldmead_vale",
@@ -737,12 +737,12 @@
           "objectives": [
             {
               "roles": [
-                "young_fox"
+                "young_boar"
               ],
               "area": "elandor_goldmead_vale/orchards"
             }
           ],
-          "text": "[PH] Defeat Bracken Fox × 8 by day in the {name:orchards}, which lie {zone_area:orchards}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Rooter × 8 by day in the {name:orchards}, which lie {zone_area:orchards}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "elandor_starbough_vale",
@@ -752,12 +752,12 @@
           "objectives": [
             {
               "roles": [
-                "young_fox"
+                "young_boar"
               ],
               "area": "elandor_starbough_vale/lower_boughs"
             }
           ],
-          "text": "[PH] Defeat Bracken Fox × 8 by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Truffle Sow × 8 by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "kragmar_mournfen",
@@ -767,12 +767,12 @@
           "objectives": [
             {
               "roles": [
-                "young_boar"
+                "sullen_bog_ooze"
               ],
               "area": "kragmar_mournfen/blightfields"
             }
           ],
-          "text": "[PH] Defeat Fen Rooter × 8 by day in the {name:blightfields}, which lie {zone_area:blightfields}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Bog Seep × 8 by day in the {name:blightfields}, which lie {zone_area:blightfields}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "kragmar_redtusk_savanna",
@@ -782,12 +782,12 @@
           "objectives": [
             {
               "roles": [
-                "watchful_zebra"
+                "dustpack_hyena"
               ],
               "area": "kragmar_redtusk_savanna/grasslands"
             }
           ],
-          "text": "[PH] Defeat Waterhole Zebra × 8 by day in the {name:grasslands}, which lie {zone_area:grasslands}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Cackler × 8 by day in the {name:grasslands}, which lie {zone_area:grasslands}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "kragmar_raincall_basin",
@@ -797,18 +797,18 @@
           "objectives": [
             {
               "roles": [
-                "reed_tapir"
+                "young_boar"
               ],
               "area": "kragmar_raincall_basin/rainwood"
             }
           ],
-          "text": "[PH] Defeat Mudsnout × 8 by day in the {name:rainwood}, which lie {zone_area:rainwood}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Wallow Sow × 8 by day in the {name:rainwood}, which lie {zone_area:rainwood}, so the camp's haulers can pass. Real text to follow."
         }
       ],
       "rewards": {
         "weight": 3.5
       },
-      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L11-13."
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L11-13) that the zone's own quests do not hunt yet, met by day."
     }
   ]
 }

@@ -16,9 +16,9 @@ texts ("[PH] ..."):
     story quest): it requires both gather quests of its tier and is a travel
     quest to the guild leader of the giver zone's race region, one variant
     per zone with an own camp of tier >= k (the zone's foremen give it);
-  * the camp hunts, one shared quest per camp band (a variant per camp zone,
-    the zone's foremen giving it): 8 of the main day role of the zone's
-    quest-target kind in the camp's level band;
+  * the camp hunts, one shared quest per camp band and clock (a variant per
+    camp zone, the zone's foremen giving it): a role near the camp that the
+    zone's own quests do not hunt yet, 8 by day or 3 after dark;
   * the raid on the enemy camp under construction (one quest, a variant per
     contested T4 zone, given by the own T4 foreman): its captain.
 
@@ -86,6 +86,8 @@ GATHER_WEIGHT = 4
 REPORT_WEIGHT = 1.5
 HUNT_WEIGHT = 3.5
 HUNT_COUNT = 8
+HUNT_NIGHT_COUNT = 3  # ruling 12: a night-only target asks about a third of the day count
+HUNT_NIGHT_WEIGHT = 2.5
 RAID_WEIGHT = 3
 RAID_LEVELS = (36, 40)  # min level, reward level (the camp site's captain is 40)
 
@@ -169,36 +171,147 @@ def mob_name(zone, role, lo, hi):
     return found.pop()
 
 
-def hunt_candidates(zone, band):
-    """[(kind id, role, levels, name)] for a camp's hunt: in the zone's
-    lowest belt (a mining camp and a war camp's low band sit in the zone's
-    lowest level third) or its highest (a war camp's high band), every
-    quest-target kind with a land day roster (open before forest and
-    highland) and its main day role."""
-    recipe = json.loads((SPAWNS / ("%s.spawns.json" % zone)).read_text(encoding="utf-8"))["recipe"]
-    belt = recipe["belts"][-1 if band == "high" else 0]
-    out = []
-    for slot in ("open", "forest", "highland"):
-        kind = belt["kinds"].get(slot)
-        if kind and kind.get("quest_target") and isinstance(kind.get("day"), list):
-            role = max(kind["day"], key=lambda r: r["weight"])["role"]
-            levels = tuple(belt["levels"])
-            out.append((kind["id"], role, levels, mob_name(zone, role, levels[0], levels[1])))
-    assert out, "%s: no quest-target land kind in belt %s" % (zone, belt["id"])
+_recipes = {}
+
+
+def recipe(zone):
+    if zone not in _recipes:
+        path = SPAWNS / ("%s.spawns.json" % zone)
+        _recipes[zone] = json.loads(path.read_text(encoding="utf-8"))["recipe"] if path.exists() else None
+    return _recipes[zone]
+
+
+def area_levels(zone, area_id):
+    """The belt levels of a recipe kind or camp, or None (a garrison)."""
+    r = recipe(zone)
+    belts = {b["id"]: b for b in r["belts"]} if r else {}
+    for belt in belts.values():
+        if any(k["id"] == area_id for k in belt["kinds"].values()):
+            return tuple(belt["levels"])
+    for camp in (r or {}).get("camps") or []:
+        if camp["id"] == area_id and camp.get("belt") in belts:
+            return tuple(belts[camp["belt"]]["levels"])
+    return None
+
+
+def names_of(zone, role, lo, hi):
+    """Every name a role shows in `zone` at levels lo..hi (data/names.json)."""
+    global _names
+    if _names is None:
+        _names = json.loads(NAMES.read_text(encoding="utf-8"))["names"]
+    out = set()
+    for key, name in _names.items():
+        m = re.match(r"^([\w]+)/([\w.\-]+)/L(\d+)-(\d+)$", key)
+        if m and m.group(1) == zone and m.group(2) == role and int(m.group(3)) <= hi and int(m.group(4)) >= lo:
+            out.add(name)
     return out
 
 
+_hunted = None
+
+
+def hunted(zone):
+    """(roles, names) the zone's own quests already hunt: every kill
+    objective of a quest that is no guild quest (zone and front files) whose
+    area lies in `zone` (an objective without an area: its file's zone)."""
+    global _hunted
+    if _hunted is None:
+        _hunted = {}
+        for path in sorted(QUESTS.glob("*.quests.json")):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            for q in data.get("quests") or []:
+                if ours_quest(q):
+                    continue
+                for variant in q.get("variants") or [{"zone": data["zone"]}]:
+                    overrides = variant.get("objectives") or []
+                    for index, objective in enumerate(q["objectives"]):
+                        if objective["type"] != "kill":
+                            continue
+                        own = overrides[index] if index < len(overrides) else {}
+                        roles, area = own.get("roles", objective["roles"]), own.get("area", objective.get("area"))
+                        where, area_id = (area.split("/", 1) if "/" in area else (variant["zone"], area)) \
+                            if area else (variant["zone"], None)
+                        if not recipe(where):
+                            continue
+                        levels = area_levels(where, area_id) if area_id else (1, 60)
+                        if not levels:
+                            continue
+                        entry = _hunted.setdefault(where, (set(), set()))
+                        for role in roles:
+                            entry[0].add(role)
+                            entry[1].update(names_of(where, role, levels[0], levels[1]))
+    return _hunted.get(zone, (set(), set()))
+
+
+LAND = ("open", "forest", "highland")
+
+
+def hunt_candidates(zone, band):
+    """[(night, kind id, role, levels, name)] for a camp's hunt, best first:
+    in the zone's lowest belt (a mining camp and a war camp's low band sit
+    in the zone's lowest level third) or its highest (a war camp's high
+    band), every role of a quest-target kind's rosters that the zone's own
+    quests do not hunt yet (by role and by name); a role met by day first
+    (`night` false), then land kinds (open, forest, highland), the roster's
+    main role before its minor one."""
+    belt = recipe(zone)["belts"][-1 if band == "high" else 0]
+    levels = tuple(belt["levels"])
+    roles_done, names_done = hunted(zone)
+    out = []
+    for slot, kind in belt["kinds"].items():
+        if slot.startswith(("sea", "lake", "river")) or not kind.get("quest_target"):
+            continue
+
+        def roster(clock):
+            value = kind.get(clock)
+            if value == "open":
+                value = (belt["kinds"].get("open") or {}).get(clock)
+            return value if isinstance(value, list) else []
+        day = {r["role"] for r in roster("day")}
+        for clock in ("day", "night"):
+            for row in roster(clock):
+                role = row["role"]
+                names = names_of(zone, role, levels[0], levels[1])
+                if role in roles_done or names & names_done or len(names) != 1:
+                    continue
+                night = role not in day
+                rank = (night, slot not in LAND, -row["weight"], LAND.index(slot) if slot in LAND else 9)
+                out.append((rank, (night, kind["id"], role, levels, next(iter(names)))))
+    out.sort(key=lambda r: r[0])
+    seen, best = set(), []
+    for _, cand in out:
+        if (cand[1], cand[2]) not in seen:
+            seen.add((cand[1], cand[2]))
+            best.append(cand)
+    return best
+
+
 def hunt_targets(zone, bands):
-    """{band: candidate} for the camps of one zone: the first candidate per
-    band, the bands' names told apart where the zone allows (a war camp
-    zone's low and high camps hunt different names)."""
+    """{band: candidate or None} for the camps of one zone (None: the zone's
+    quests hunt every role near the camp; the first quest-target kind's main
+    day role then stays, a duplicate the report names). A war camp zone's
+    low and high camps hunt different names, fewest night hunts first."""
     lists = [hunt_candidates(zone, band) for band in bands]
-    if len(bands) == 2:
-        for low in lists[0]:
-            for high in lists[1]:
-                if low[3] != high[3]:
-                    return {bands[0]: low, bands[1]: high}
-    return {band: candidates[0] for band, candidates in zip(bands, lists)}
+    if len(bands) == 2 and lists[0] and lists[1]:
+        pairs = [(lo[0] + hi[0], i + j, lo, hi) for i, lo in enumerate(lists[0]) for j, hi in enumerate(lists[1])
+                 if lo[4] != hi[4]]
+        if pairs:
+            pairs.sort(key=lambda p: (p[0], p[1]))
+            return {bands[0]: pairs[0][2], bands[1]: pairs[0][3]}
+    return {band: (candidates[0] if candidates else None) for band, candidates in zip(bands, lists)}
+
+
+def fallback_target(zone, band):
+    """The first quest-target land kind's main day role (a duplicate of a
+    zone quest's target)."""
+    belt = recipe(zone)["belts"][-1 if band == "high" else 0]
+    levels = tuple(belt["levels"])
+    for slot in LAND:
+        kind = belt["kinds"].get(slot)
+        if kind and kind.get("quest_target") and isinstance(kind.get("day"), list):
+            role = max(kind["day"], key=lambda r: r["weight"])["role"]
+            return (False, kind["id"], role, levels, mob_name(zone, role, levels[0], levels[1]))
+    raise AssertionError("%s: no quest-target land kind in belt %s" % (zone, belt["id"]))
 
 
 # --- the quests ------------------------------------------------------------
@@ -273,51 +386,64 @@ def report_quests(mining, war, records, names):
     return out
 
 
+DUPLICATES = []  # (quest id, zone, role): a hunt that repeats a zone quest's target
+
+
 def hunt_quests(mining, war, records):
-    """One shared hunt per camp band: T2, T3 and T4 mining camps (the
-    zone's lowest belt), T5 and T6 war camps by band (low: the lowest belt,
-    high: the highest)."""
-    groups = []
-    for tier in (2, 3, 4):
-        groups.append(("camp_hunt_t%d" % tier, [c for c in mining if c["tier"] == tier], None))
+    """The camp hunts: per camp band (T2, T3 and T4 mining camps in the
+    zone's lowest belt, T5 and T6 war camps by band: low the lowest belt,
+    high the highest) one shared quest of the camps that hunt by day and
+    one of those that can only hunt by night (a night-only target, a third
+    of the day count, ruling 12), a variant per camp zone."""
+    bands = [(tier, None, [c for c in mining if c["tier"] == tier]) for tier in (2, 3, 4)]
     for tier in (5, 6):
         for band in ("low", "high"):
-            groups.append(("camp_hunt_t%d_%s" % (tier, band),
-                           [c for c in war if c["tier"] == tier and c["band"] == band], band))
+            bands.append((tier, band, [c for c in war if c["tier"] == tier and c["band"] == band]))
     out = []
-    for qid, camps, band in groups:
+    del DUPLICATES[:]
+    for tier, band, camps in bands:
         zones = []
         for camp in sorted(camps, key=lambda c: (records[c["zone"]]["number"], c["id"])):
             if camp["zone"] not in zones:
                 zones.append(camp["zone"])
-        variants, levels = [], set()
-        base = None
+        groups = {False: [], True: []}
         for zone in zones:
-            bands = ("low", "high") if band else (None,)
-            kind, role, belt, name = hunt_targets(zone, bands)[band]
-            levels.add(belt)
-            givers = sorted(foreman(c["id"]) for c in camps if c["zone"] == zone)
-            area = "%s/%s" % (zone, kind)
-            if base is None:
-                base = kill([role], HUNT_COUNT, area)
-            variants.append({
-                "zone": zone, "givers": givers,
-                "objectives": [{"roles": [role], "area": area}],
-                "text": PH + "Defeat %s × %d by day in the {name:%s}, which lie {zone_area:%s}, so the camp's "
-                "haulers can pass." % (name, HUNT_COUNT, kind, kind) + TBD,
+            pick = hunt_targets(zone, ("low", "high") if band else (None,))[band]
+            if pick is None:
+                pick = fallback_target(zone, band)
+                DUPLICATES.append(("t%d%s" % (tier, "_" + band if band else ""), zone, pick[2]))
+            groups[pick[0]].append((zone, pick))
+        for night in (False, True):
+            if not groups[night]:
+                continue
+            qid = "camp_hunt_t%d%s%s" % (tier, "_" + band if band else "", "_night" if night else "")
+            count = HUNT_NIGHT_COUNT if night else HUNT_COUNT
+            when = "after dark" if night else "by day"
+            variants, levels, base = [], set(), None
+            for zone, (_, kind, role, belt, name) in groups[night]:
+                levels.add(belt)
+                area = "%s/%s" % (zone, kind)
+                if base is None:
+                    base = kill([role], count, area)
+                variants.append({
+                    "zone": zone, "givers": sorted(foreman(c["id"]) for c in camps if c["zone"] == zone),
+                    "objectives": [{"roles": [role], "area": area}],
+                    "text": PH + "Defeat %s × %d %s in the {name:%s}, which lie {zone_area:%s}, so the camp's "
+                    "haulers can pass." % (name, count, when, kind, kind) + TBD,
+                })
+            assert len(levels) == 1, "%s: the variants' belts differ: %s" % (qid, sorted(levels))
+            lo, hi = levels.pop()
+            out.append({
+                "id": qid, "line": "camp", "min_level": lo, "level": (lo + hi) // 2, "requires": [],
+                "title": PH + "Clear the Camp's Surroundings (%s)" % qid.replace("camp_hunt_", "").replace("_", " "),
+                "text": PH + "Beasts by the camp keep the haulers from the lift. Thin them out %s." % when + TBD,
+                "objectives": [kill(base["roles"], count, base["area"])],
+                "variants": variants, "rewards": {"weight": HUNT_NIGHT_WEIGHT if night else HUNT_WEIGHT},
+                "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' "
+                         "foremen; a role near the camp (the camps' level belt L%d-%d) that the zone's own quests "
+                         "do not hunt yet%s." % (lo, hi, ", met only at night (a third of the day count)"
+                                                 if night else ", met by day"),
             })
-        assert len(levels) == 1, "%s: the variants' belts differ: %s" % (qid, sorted(levels))
-        lo, hi = levels.pop()
-        level = (lo + hi) // 2
-        out.append({
-            "id": qid, "line": "camp", "min_level": lo, "level": level, "requires": [],
-            "title": PH + "Clear the Camp's Surroundings (%s)" % qid.replace("camp_hunt_", "").replace("_", " "),
-            "text": PH + "Beasts by the camp keep the haulers from the lift. Thin them out." + TBD,
-            "objectives": [kill(base["roles"], HUNT_COUNT, base["area"])],
-            "variants": variants, "rewards": {"weight": HUNT_WEIGHT},
-            "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main "
-                     "day role of the zone's quest-target kind in the camps' level belt L%d-%d." % (lo, hi),
-        })
     return out
 
 

@@ -359,15 +359,15 @@
       "level": 52,
       "requires": [],
       "title": "[PH] Clear the Camp's Surroundings (t6 low)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "salt_boring_weevil"
+            "salt_hide_bear"
           ],
           "count": 8,
-          "area": "front_gravesalt_escarpment/saltflats"
+          "area": "front_gravesalt_escarpment/bonewood"
         }
       ],
       "variants": [
@@ -380,12 +380,12 @@
           "objectives": [
             {
               "roles": [
-                "salt_boring_weevil"
+                "salt_hide_bear"
               ],
-              "area": "front_gravesalt_escarpment/saltflats"
+              "area": "front_gravesalt_escarpment/bonewood"
             }
           ],
-          "text": "[PH] Defeat Brine Borer × 8 by day in the {name:saltflats}, which lie {zone_area:saltflats}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Charnel Bear × 8 by day in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -396,18 +396,18 @@
           "objectives": [
             {
               "roles": [
-                "glass_knuckle_ape"
+                "saltroad_deserter"
               ],
               "area": "front_skyglass_canopy/cloudwood"
             }
           ],
-          "text": "[PH] Defeat Cloud Ape × 8 by day in the {name:cloudwood}, which lie {zone_area:cloudwood}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Saltroad Deserter × 8 by day in the {name:cloudwood}, which lie {zone_area:cloudwood}, so the camp's haulers can pass. Real text to follow."
         }
       ],
       "rewards": {
         "weight": 3.5
       },
-      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L51-53."
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L51-53) that the zone's own quests do not hunt yet, met by day."
     },
     {
       "id": "camp_hunt_t6_high",
@@ -416,12 +416,12 @@
       "level": 59,
       "requires": [],
       "title": "[PH] Clear the Camp's Surroundings (t6 high)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out. Real text to follow.",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "last_watch_husk"
+            "embergrit_gnawer"
           ],
           "count": 8,
           "area": "front_gravesalt_escarpment/whitewall"
@@ -437,12 +437,12 @@
           "objectives": [
             {
               "roles": [
-                "last_watch_husk"
+                "embergrit_gnawer"
               ],
               "area": "front_gravesalt_escarpment/whitewall"
             }
           ],
-          "text": "[PH] Defeat Last-Watch Mummy × 8 by day in the {name:whitewall}, which lie {zone_area:whitewall}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Embergrit Gnawer × 8 by day in the {name:whitewall}, which lie {zone_area:whitewall}, so the camp's haulers can pass. Real text to follow."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -453,18 +453,18 @@
           "objectives": [
             {
               "roles": [
-                "glass_knuckle_ape"
+                "last_watch_husk"
               ],
               "area": "front_skyglass_canopy/high_canopy"
             }
           ],
-          "text": "[PH] Defeat Knuckler × 8 by day in the {name:high_canopy}, which lie {zone_area:high_canopy}, so the camp's haulers can pass. Real text to follow."
+          "text": "[PH] Defeat Last-Watch Mummy × 8 by day in the {name:high_canopy}, which lie {zone_area:high_canopy}, so the camp's haulers can pass. Real text to follow."
         }
       ],
       "rewards": {
         "weight": 3.5
       },
-      "notes": "Round 58 camp hunt: one shared quest per camp band, given by the camps' foremen; the main day role of the zone's quest-target kind in the camps' level belt L58-60."
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L58-60) that the zone's own quests do not hunt yet, met by day."
     }
   ]
 }

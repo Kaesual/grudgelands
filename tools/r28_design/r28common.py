@@ -1239,7 +1239,7 @@ def guild_quest_npcs(pois=None, records=None, npcs=QUEST_NPCS):
                                              "faction": camp["faction"], "role": "foreman_t%d" % camp["tier"]}
     text = Path(npcs).read_text(encoding="utf-8")
     leaders = re.findall(r'\{capital = "(\w+)", title = "([^"]+)"\}', text)
-    m = re.search(r'GUILD_HALL = \{[^}]*leader = "(\w+)"', Path(CAPITAL_SERVICES).read_text(encoding="utf-8"))
+    m = re.search(r'GUILD_HALL = \{[^}]*leader = "([^"]+)"', Path(CAPITAL_SERVICES).read_text(encoding="utf-8"))
     if len(leaders) != 6 or not m:
         raise LoadError("%s: the six guild leaders or the hall's leader socket not found" % npcs)
     for capital, title in leaders:

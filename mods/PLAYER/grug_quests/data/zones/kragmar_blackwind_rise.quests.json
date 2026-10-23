@@ -415,6 +415,61 @@
         "weight": 1.5
       },
       "notes": "Round 58 follow-up of tier 4 (The Oathdelvers): story seed: A short camp report names the affected drivers and workers beside the lost cargo and shows why the guild collects news from the border."
+    },
+    {
+      "id": "camp_hunt_t4_night",
+      "line": "camp",
+      "min_level": 31,
+      "level": 32,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t4 night)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out after dark. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "grave_web_spider"
+          ],
+          "count": 3,
+          "area": "kragmar_blackwind_rise/bonewood"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r58_foreman_mining_camp_blackwind_rise"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "grave_web_spider"
+              ],
+              "area": "kragmar_blackwind_rise/bonewood"
+            }
+          ],
+          "text": "[PH] Defeat Pall Weaver × 3 after dark in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_thunderroot_wilds"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "stalking_panther"
+              ],
+              "area": "kragmar_thunderroot_wilds/canopy"
+            }
+          ],
+          "text": "[PH] Defeat Shade Panther × 3 after dark in the {name:canopy}, which lie {zone_area:canopy}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2.5
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L31-33) that the zone's own quests do not hunt yet, met only at night (a third of the day count)."
     }
   ]
 }

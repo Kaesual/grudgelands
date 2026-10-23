@@ -246,6 +246,46 @@
         "items": []
       },
       "duration_min": 8
+    },
+    {
+      "id": "camp_hunt_t3_night",
+      "line": "camp",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t3 night)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out after dark. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "sullen_bog_ooze"
+          ],
+          "count": 3,
+          "area": "kragmar_totemwater_reach/jungle"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_totemwater_reach",
+          "givers": [
+            "r58_foreman_mining_camp_totemwater_reach"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "sullen_bog_ooze"
+              ],
+              "area": "kragmar_totemwater_reach/jungle"
+            }
+          ],
+          "text": "[PH] Defeat Sedge Ooze × 3 after dark in the {name:jungle}, which lie {zone_area:jungle}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2.5
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L21-23) that the zone's own quests do not hunt yet, met only at night (a third of the day count)."
     }
   ]
 }

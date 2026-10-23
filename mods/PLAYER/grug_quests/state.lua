@@ -119,9 +119,14 @@ function Q.variant_of(def, active)
 	return active and active.variant and def.variant_by_key[active.variant] or
 		def.variant_by_key[def.variant_order[1]]
 end
--- The NPC to return to: the first turn-in of the variant that serves the
--- player (Round 57: a shared quest's turn-ins may serve both factions).
-function Q.turnin_for(player, variant)
+-- The NPC to return to: the giver the quest was taken from when it is one
+-- of the variant's turn-ins (Round 58: a role quest's turn-ins are every
+-- foreman of the role, the nearest is where it came from), else the first
+-- turn-in of the variant that serves the player (Round 57: a shared quest's
+-- turn-ins may serve both factions). `active` is the quest's active entry.
+function Q.turnin_for(player, variant, active)
+	local giver = active and active.giver
+	if giver and variant.turnin_set and variant.turnin_set[giver] then return giver end
 	if #variant.turnins <= 1 then return variant.turnins[1] end
 	for _, npc in ipairs(variant.turnins) do
 		local row = Q.registered_npcs[npc]
@@ -414,7 +419,7 @@ function Q.journal(player, counts)
 		local variant = Q.variant_of(def, active)
 		local objectives, ready = progress(player, def, active, counts)
 		rows[#rows + 1] = {id = id, title = def.title, description = Q.quest_text(def, false, active),
-			objectives = objectives, ready = ready, npc = Q.turnin_for(player, variant),
+			objectives = objectives, ready = ready, npc = Q.turnin_for(player, variant, active),
 			variant = variant.key, zone = variant.zone or def.zone, story = def.story,
 			travel = Q.is_travel(def), turnin_text = def.turnin_text,
 			rewards = table.copy(def.rewards), reward_xp = Q.reward_xp(def)}
