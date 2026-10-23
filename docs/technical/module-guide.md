@@ -2467,7 +2467,10 @@ tools](#player-meta-read-by-external-tools).
   zones session, `wp40/zones.lua`; the same function in the mapgen and the
   main environment). One column, no allocation; it returns six values:
   `class` (`"lake"`, `"river"`, `"bay"`, `"belt"`, `"channel"` or
-  `"open_sea"`; a swamp pool reads `"lake"`; on dry land it returns `nil`
+  `"open_sea"`; a swamp pool reads `"lake"`, a bay's shore strip of the belt
+  `"bay"`, as `water_class_at` reads it `planned_water` (Round 57 FIX56,
+  `simple_map.lua` `bay_shore_at`; the mapgen's column tuple keeps
+  `coastal_shelf`); on dry land it returns `nil`
   alone), the owning `zone id` (a channel's island's; `nil` for the open
   sea), the zone's analytic surface `mob level` (`nil` for the open sea),
   the `distance` to dry land in nodes (for the sea's classes the true coast

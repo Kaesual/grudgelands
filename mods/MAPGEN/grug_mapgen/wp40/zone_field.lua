@@ -727,6 +727,27 @@ function M.new(seed, source, o, warp_scale)
 		end
 		return nil
 	end
+	-- The bay whose body lies within `margin` nodes of a column, at the same
+	-- coast-warped point as bay_at (Round 57 FIX56, ruling 23): the bay's
+	-- body grown by `margin`. The sea along a bay's shore is not all body:
+	-- the coast noise drowns a little more, and between a bay and the land
+	-- primitives' own edges lie strips of plain sea. Generation never asks
+	-- it (bay_at above stays the mapgen's bay); the gameplay water class
+	-- does (simple_map.lua bay_shore_at).
+	function s.bay_water_at(x, z, margin)
+		local wx, wz = warp_raw(x, z)
+		local d = coast_damp(x, z)
+		local qx, qz = x + d * wx, z + d * wz
+		for i = 1, NB do
+			local bb = bays[i].bb
+			if qx >= bb.min_x - margin and qx <= bb.max_x + margin and
+					qz >= bb.min_z - margin and qz <= bb.max_z + margin and
+					sdf_tapered(qx, qz, bays[i].pts) > -margin then
+				return i, qx, qz
+			end
+		end
+		return nil
+	end
 	function s.coast_signed(x, z)
 		local wx, wz = warp_raw(x, z)
 		return (coast_values(x, z, wx, wz))

@@ -460,7 +460,11 @@ rewrite records the WP40 model it replaced.
   `belt_edge`, on the true coast distance, the 16-node chamfer grid of the
   terrain field); the open sea begins beyond it, so no open sea lies inside or
   at the rim of a bay. The belt belongs to the zone on land (its level,
-  faction and PvP rule), as the 80-node shelf did before. The **open sea**
+  faction and PvP rule), as the 80-node shelf did before. For gameplay
+  (`water_class_at`, the water query) the belt along a bay's shore, within
+  128 nodes of the bay's body and landward of its mouth, is that bay's water
+  (Round 57, ruling 23: bays are not ocean); generation and the planner's
+  column tuple keep it belt. The **open sea**
   has no zone. Planned and bay water belong to their zone
   ([world.md](world.md) §2 R3). The old
   hydrology rows were removed at the start of Round 22 Phase 5, which lays out

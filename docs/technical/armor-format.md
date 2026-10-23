@@ -172,7 +172,11 @@ front face that lie wholly in front of the head's face (columns 1–8, rows 1–
 transparent, so a helmet can leave the face open; the head is directly behind them. Since Round 56 (ruling 17,
 confirmed by the user 2026-10-22) the helm's **chin strip**, the front face's bottom row (all 10 texels), is
 transparent on every cloth head piece (T1–T6) and on the leather ones without a veil (T1–T5); leather T6 and metal
-keep it opaque. `check.py` allows it on a helm sheet that only those tiers wear and reports a zone shortfall of one
+keep it opaque. Since Round 57 (ruling 24) the strip continues **under the chin**: the helm's bottom face opens in the
+rows that start in front of the neck (the body's front face, z = 2), full width, its rows 0–2 of 10 (the top row is
+the front edge; `armorlib.chin_under`), on the same tiers; the head's underside is directly above them, and the rows
+under the neck stay opaque. The hood reaches below the helm's top only behind the head, so nothing of it lies under
+the chin. `check.py` allows both on a helm sheet that only those tiers wear and reports a zone shortfall of one
 zone B pixel that the open strip causes on a head piece as a warning, not a violation (the shipped art has none since
 the hood art, 0.56.1, repainted the leather T1 and T3 helms). Shape
 comes from the box and the paint, not from cut-outs.
@@ -268,7 +272,8 @@ skin region), each with its mask.
 From `tools/r54_armor/`:
 
 - `python3 check.py --art <dir>`: file names and sizes, colours, alpha, transparent texels in a face (outside the
-  helm's face window and, on the chin-strip tiers, its chin strip; a polygon part's whole face rectangles),
+  helm's face window and, on the chin-strip tiers, its chin strip and the strip under the chin; a polygon part's
+  whole face rectangles),
   paint outside faces or regions, a part worn without its helm, missing files per tier, zone counts from the
   front, the overlap report (boxes only); exit 1 on a violation.
 - `python3 render.py --art <dir> --out <dir>`: contact sheets per line and race (`--detail` for one tier,

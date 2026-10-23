@@ -49,7 +49,9 @@ of Round 54 ([plan](../../docs/planning/round54-plan.md)).
   of every cloth tier and of leather T1–T5 after the tier copy (leather T6, the veil, and metal keep theirs), so
   the painters stay as delivered. A future painter that leaves the strip open itself is unaffected. With the strip
   open, leather T1 and T3 showed 2 zone B pixels from the front instead of 3 (a `check.py` warning) until the
-  hood drop added one on each helm: the shipped art has no warning.
+  hood drop added one on each helm: the shipped art has no warning. Since Round 57 (ruling 24) it also clears
+  the strip's continuation under the chin, the helm bottom face's rows in front of the neck
+  (`armorlib.chin_under`), on the same sheets.
 - `ghosts.py`: the Character page's four empty-slot ghosts `grug_gear_item_<slot>_metal.png`
   (`grug_inventory/pages.lua` darkens them), copies of the baked metal T3 (steel) icons; `--check`. Since
   the icon drops: head from `icons-drop-02` p1, chest and legs from `icons-drop-01` p1, feet from

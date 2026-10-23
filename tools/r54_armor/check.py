@@ -16,7 +16,8 @@ Violations (exit code 1 if any):
     slot's skin regions on an inner sheet;
   - a transparent texel inside a box sheet's faces (armor is opaque; only the
     helm's face window may be open, and the helm's chin strip on the cloth and
-    leather tiers of Round 56 ruling 17) or inside a polygon part's face
+    leather tiers of Round 56 ruling 17, with its continuation under the chin
+    on the helm's bottom face, Round 57 ruling 24) or inside a polygon part's face
     rectangles (the texels outside the polygon are bleed, painted too);
   - a tier that wears a polygon part without the box that closes it (the hood
     without the helm);
@@ -99,16 +100,18 @@ NAME = re.compile(r"^([a-z_]+)_([a-z0-9]+)\.png$")
 
 def check_opaque(rep, rel, im, b, chin=False):
     """Every texel of every face is opaque (the user, 2026-10-20: no transparency in armor, it shows holes);
-    the exceptions are the helm's face window (armorlib.open_window) and, when `chin`, the helm's chin strip
-    (armorlib.chin_row, Round 56 ruling 17). A polygon part's face owns its whole rect (the texels outside the
+    the exceptions are the helm's face window (armorlib.open_window) and, when `chin`, the helm's open chin
+    (armorlib.chin_texels: the strip, Round 56 ruling 17, and its continuation under the chin, Round 57 ruling 24).
+    A polygon part's face owns its whole rect (the texels outside the
     polygon are bleed), so every texel of every rect is opaque."""
     px = im.load()
-    window = L.open_window(b) | (L.chin_row(b) if chin else set())
+    window = L.open_window(b) | (L.chin_texels(b) if chin else set())
     holes = [(x, y) for x, y in sorted(face_cells(b), key=lambda q: (q[1], q[0]))
              if px[x, y][3] < 128 and (x, y) not in window]
     if holes:
         what = ("a polygon part's face owns its whole rect, bleed included" if b.get("kind") == "poly" else
-                "only the helm's face window may be open" + (", and its chin strip" if chin else ""))
+                "only the helm's face window may be open" + (", and its chin strip and the strip under the chin"
+                                                             if chin else ""))
         rep.v(f"{rel}: {len(holes)} transparent texel(s) inside the faces at {coords(holes)} (sheet pixels; armor "
               f"is opaque, {what})")
 

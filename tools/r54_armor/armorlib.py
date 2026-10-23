@@ -270,7 +270,7 @@ def open_window(b):
     return out
 
 
-# ---------- the chin strip (Round 56 ruling 17) ----------
+# ---------- the chin strip (Round 56 ruling 17; its underside Round 57 ruling 24) ----------
 # The helm front face's bottom row may stay transparent on every cloth head piece and on the leather ones without
 # a veil (T1-T5); leather T6 and metal stay opaque there (the user, 2026-10-22).
 CHIN_TIERS = {"cloth": ("T1", "T2", "T3", "T4", "T5", "T6"), "leather": ("T1", "T2", "T3", "T4", "T5")}
@@ -282,6 +282,28 @@ def chin_row(b):
         return set()
     fx, fy, fw, fh = b["faces"]["front"]
     return {(fx + c, fy + fh - 1) for c in range(fw)}
+
+
+# Round 57 ruling 24: the strip continues under the chin. The helm's bottom face (its top row is the front edge)
+# opens in every row that starts in front of the neck (the body's front face), full width like the strip; the head's
+# underside is directly above it. The rows behind lie under the neck and stay opaque.
+NECK_FRONT_Z = 2.0   # the body's front face (z), skin pixels
+
+
+def chin_under(b):
+    """Sheet pixels of the helm bottom face's rows under the chin (Round 57 ruling 24); empty for every other
+    box."""
+    if b["id"] != "helm":
+        return set()
+    fx, fy, fw, fh = b["faces"]["bottom"]
+    z1 = b["box"][5]
+    depth = (z1 - b["box"][2]) / fh
+    return {(fx + c, fy + r) for r in range(fh) if z1 - r * depth > NECK_FRONT_Z + 1e-9 for c in range(fw)}
+
+
+def chin_texels(b):
+    """Every sheet pixel of the open chin: the strip on the front face and its continuation under the chin."""
+    return chin_row(b) | chin_under(b)
 
 
 def chin_open(line, tids):

@@ -439,6 +439,7 @@ local function zones_factory(dependencies)
 		local horizontal = horizontal_module.new(full_seed_string)
 		if type(horizontal) ~= "table" or
 				type(horizontal.classification_values_at) ~= "function" or
+				type(horizontal.bay_shore_at) ~= "function" or
 				type(horizontal.warp_at) ~= "function" or
 				type(horizontal.zone_level_at) ~= "function" or
 				type(horizontal.owner_at) ~= "function" or
@@ -1257,7 +1258,10 @@ local function zones_factory(dependencies)
 
 		-- Wet river and lake columns are `planned_water` (zone-owned water,
 		-- world_zones.md §7.4), like the planner's column tuple; their dry
-		-- banks stay `land`.
+		-- banks stay `land`. So is a bay's shore strip of the coastal belt
+		-- (Round 57 FIX56, ruling 23; simple_map.lua bay_shore_at): water
+		-- inside the mainland footprint, which the planner's tuple still
+		-- calls belt (generation is unchanged).
 		function session.water_class_at(x, z)
 			local outside
 			x, z, outside = normalize_xz(x, z, "water-class query")
@@ -1266,13 +1270,17 @@ local function zones_factory(dependencies)
 					height.inland_water_at(x, z) ~= nil then
 				return "planned_water"
 			end
+			if water_class == "coastal_shelf" and horizontal.bay_shore_at(x, z) then
+				return "planned_water"
+			end
 			return water_class
 		end
 
 		-- THE WATER QUERY (Round 51 T2): one column, no allocation. Returns
 		-- class, zone id, mob level, distance to dry land, depth, protected:
 		--   class      "lake", "river", "bay", "belt", "channel" or "open_sea"
-		--              (a swamp pool reads "lake"); nil on dry land, and then
+		--              (a swamp pool reads "lake", a bay's shore strip of the
+		--              belt "bay", as water_class_at); nil on dry land, and then
 		--              nothing else
 		--   zone id    the owning zone's id ("front_..." for a channel: its
 		--              island's), nil for the open sea
@@ -1352,7 +1360,12 @@ local function zones_factory(dependencies)
 					surface_level_from_classification(x, z, water_class, owner),
 					inland_distance_wanted and inland_distance(x, z) or nil, depth, false
 			end
-			return QUERY_CLASS[water_class], owner and zone_by_numeric[owner].id or nil,
+			local class = QUERY_CLASS[water_class]
+			-- a bay's shore strip of the belt is the bay's (water_class_at)
+			if water_class == "coastal_shelf" and horizontal.bay_shore_at(x, z) then
+				class = "bay"
+			end
+			return class, owner and zone_by_numeric[owner].id or nil,
 				surface_level_from_classification(x, z, water_class, owner),
 				horizontal.coast_distance_at(x, z),
 				WATER_LEVEL - height.terrain_height_at(x, z),

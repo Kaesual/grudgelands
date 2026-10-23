@@ -271,7 +271,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   the shore follows its zone's rule. Every exterior-ocean class remains
   non-flyable, while planned zone water inherits its zone's flight rule.
   Claims exist only in the eligible home zones (`housing.md` §2). Their
-  planned water may lie in a claim unless it is protected; the belt is
+  planned water may lie in a claim unless it is protected (a bay's shore
+  strip of the belt counts as the bay's, Round 57); the belt is
   excluded although it belongs to a zone, and the ocean has no zone (Round 25
   ruling 23). The islands hold no claims.
 - **R4 — Natural minerals do not regrow** (revised 2026-09-20): ores and mineral resources do
