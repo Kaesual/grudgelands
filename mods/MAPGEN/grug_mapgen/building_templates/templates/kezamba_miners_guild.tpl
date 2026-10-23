@@ -37,16 +37,17 @@ X role light_wall o=wallmounted:2
 Y role light_wall o=wallmounted:3
 Z role light_wall o=wallmounted:4
 a role path
-b role rug
-c role shelf o=facedir:2
-d role storage o=facedir:1
-e role storage o=facedir:3
-f role table_leg
-g role table_top
-h role wall
-i role wall_accent
-j role window o=facedir:0
-k role window o=facedir:3
+b role post
+c role rug
+d role shelf o=facedir:2
+e role storage o=facedir:1
+f role storage o=facedir:3
+g role table_leg
+h role table_top
+i role wall
+j role wall_accent
+k role window o=facedir:0
+l role window o=facedir:3
 end
 
 layer 0
@@ -54,15 +55,15 @@ layer 0
 |aaaaaaaaaaaaa|
 |aaaaaaaaaaaaa|
 |aWWWWWWWWWWWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
-|aWVVVVbVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
+|aWVVVVcVVVVWa|
 |aWVVVVVVVVVWa|
 |aWVVVVVVVVVWa|
 |aWWWWWWWWWWWa|
@@ -71,91 +72,91 @@ layer 1
 |.............|
 |.UDU.....FEG.|
 |.C........AC.|
-|.iiiiiSiiiii.|
-|.i........Ai.|
-|.i........ei.|
-|.i.......f.i.|
-|.i.f.....f.i.|
-|.i.......f.i.|
-|.i.........i.|
-|.i.f.......i.|
-|.id........i.|
-|.i.........i.|
-|.i...fff...i.|
-|.idc.....cei.|
-|.iiiiiiiiiii.|
+|.jjjjjSjjjjj.|
+|.j........Aj.|
+|.j........fj.|
+|.j.......g.j.|
+|.j.g.....g.j.|
+|.j.......g.j.|
+|.j.........j.|
+|.j.g.......j.|
+|.je........j.|
+|.j.........j.|
+|.j...ggg...j.|
+|.jed.....dfj.|
+|.jbjjjjjjbjj.|
 |.............|
 layer 2
 |.............|
 |.UHU.........|
 |.............|
-|.ihjPiTiPjhi.|
-|.h........Ih.|
-|.k.........k.|
-|.k.......g.k.|
-|.h.g.....g.h.|
-|.h.......g.h.|
-|.k.........k.|
-|.k.g.......k.|
-|.h.........h.|
-|.h.........h.|
-|.h...ggg...h.|
-|.hdc.....ceh.|
-|.ihBJKLMNhhi.|
+|.jikPjTjPkij.|
+|.i........Ii.|
+|.l.........l.|
+|.l.......h.l.|
+|.i.h.....h.i.|
+|.i.......h.i.|
+|.l.........l.|
+|.l.h.......l.|
+|.i.........i.|
+|.i.........i.|
+|.i...hhh...i.|
+|.ied.....dfi.|
+|.jbBJKLMNbij.|
 |.............|
 layer 3
 |.............|
 |.UHU.........|
 |.....Z.Z.....|
-|.ihjPiiiPjhi.|
-|.hY.......Xh.|
-|.k.........k.|
-|.k.........k.|
-|.h.........h.|
-|.h.........h.|
-|.k.........k.|
-|.k.........k.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.hY.......Xh.|
-|.ihiiiiiihhi.|
+|.jikPjjjPkij.|
+|.iY.......Xi.|
+|.l.........l.|
+|.l.........l.|
+|.i.........i.|
+|.i.........i.|
+|.l.........l.|
+|.l.........l.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.iY.......Xi.|
+|.jbBJKLMNbij.|
 |.............|
 layer 4
 |.............|
 |.QQQ.........|
 |.............|
-|.ihhOhIhOhhi.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.h.........h.|
-|.ihhhhhhhhhi.|
+|.jiiOiIiOiij.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.i.........i.|
+|.jQQQQQQQQij.|
 |.............|
 layer 5
 |.............|
 |.............|
 |.............|
-|.iiiiiiiiiii.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.iQQQQQQQQQi.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.iQQQQQQQQQi.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.iiiiiiiiiii.|
+|.jjjjjjjjjjj.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.jQQQQQQQQQj.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.jQQQQQQQQQj.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.jjjjjjjjjjj.|
 |.............|
 layer 6
 |.............|
@@ -179,19 +180,19 @@ layer 7
 |.............|
 |.............|
 |.............|
-|.iiiiiiiiiii.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.i.........i.|
-|.iiiiiiiiiii.|
+|.jjjjjjjjjjj.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.j.........j.|
+|.jjjjjjjjjjj.|
 |.............|
 
 points

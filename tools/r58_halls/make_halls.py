@@ -142,10 +142,16 @@ def build(spec):
         put(x, 2, zf, guild["main"])
         put(x, 3, zf, guild["main"])
         put(x, 4, zf, guild["accent"])
-    # the frieze of the six depths behind the leader, in the back wall
+    # the frieze of the six depths behind the leader, set into the back wall
+    # two courses high between two posts under a beam
     for index, entry in enumerate(TIERS):
         put(cx - 3 + index, 2, zb, entry)
-        put(cx - 3 + index, 3, zb, "role wall_accent")
+        put(cx - 3 + index, 3, zb, entry)
+    for x in (cx - 4, cx + 3):
+        for y in (1, 2, 3):
+            put(x, y, zb, "role post")
+    for x in range(cx - 4, cx + 4):
+        put(x, 4, zb, "role beam")
     points["doors"].append((cx, 1, zf, "face=0"))
 
     # 3. The roof.
