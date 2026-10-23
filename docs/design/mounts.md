@@ -428,9 +428,16 @@ warning and forced dismount are separate consumer states derived from
   independent of altitude. The landward planned parts of bays, lakes, rivers,
   marsh channels and other water inside a mainland footprint remain part of
   their named zone, inherit its flight rule and do not become ocean merely
-  because they contain water nodes or connect to the outer sea. The four
-  declared outer bay-mouth caps are deep ocean and use this section's warning
-  and forced-dismount rule.
+  because they contain water nodes or connect to the outer sea. That holds
+  for the sea along a bay's shore outside its authored body too (the coast
+  noise drowns a little more than the body, and the land prongs' own edges
+  leave strips of plain sea): the gameplay water class
+  (`grug_zones.water_class_at`) reads every belt column within 128 nodes of
+  a bay's body and landward of its mouth as that bay's planned water
+  (Round 57, ruling 23; generation keeps them belt). At a headland the
+  no-fly edge therefore lies on the outer coast's belt, up to 128 nodes from
+  the bay. The four declared outer bay-mouth caps are deep ocean and use this
+  section's warning and forced-dismount rule.
 - A flying mount cannot be summoned in an ocean column. Once per second, the
   visible warning probes the same flight-legality rule as the hard dismount in
   16 horizontal directions at 1, 2, 4, 8, 16, 32 and 40 nodes (the band is
