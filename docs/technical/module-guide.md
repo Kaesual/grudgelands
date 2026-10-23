@@ -1747,10 +1747,12 @@ tools](#player-meta-read-by-external-tools).
     `price_rules.QUALITY_FACTOR`).
   - **A Miner's Guild vendor** (Round 58): a vendor definition in
     `grug_traders.vendors` with `guild = true` gets the window's third mode,
-    Trade-in (`trade.lua`; it opens on it): the guild's name, the rank and
-    the balance, and a row per exchanged item from
-    `grug_guild.trade_in_rows`, traded through `grug_guild.trade_in` after
-    the row is re-checked against the one shown. The camp vendor and the
+    Trade-in (`trade.lua`; it opens on it): "Miner's Guild" (never a
+    guild's proper name: those belong in texts and on buildings), the rank
+    and the balance, and a row per exchanged item from
+    `grug_guild.trade_in_rows`, its button `tradein_<catalogue index>`,
+    traded through `grug_guild.trade_in` after the row is re-checked against
+    the one shown. The camp vendor and the
     guild house's exchange counter carry the field. The guild's consumables
     pay their catalogue `sell_copper` (`prices.lua`).
   - **No detached inventories in trade UIs.** The reference
