@@ -2,14 +2,15 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-The game ships 423 quests, one data file per zone plus a front file per
-front host (`quests.md`, "Quest data"): Round 29's quests — one track per race
+The game ships 451 quests, one data file per zone plus a front file per
+front host and the two guild files (`quests.md`, "Quest data"): Round 29's quests — one track per race
 from the start zone to its heartland, the contested 31–40 zones and the 41–60
 front with its island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
 Round 31's 24 PvP fortress quests (§4) and Round 36's 25 for the main line
 of levels 41–60 (WP9, `story.md` §2a). Round 46 removed Round 29's 55
-repeatable quests (ruling 8; 436 of its 491 remain), and Round 57 rebuilt
-the six start zones' 92 quests as 30 (`quests.md`, "The start zones").
+repeatable quests (ruling 8; 436 of its 491 remain), Round 57 rebuilt
+the six start zones' 92 quests as 30 (`quests.md`, "The start zones"), and
+Round 58 adds the Miner's Guild's 28 ([miners_guild.md](miners_guild.md) §11).
 
 ## 1. Leveling pace
 

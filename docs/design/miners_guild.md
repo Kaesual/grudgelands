@@ -529,7 +529,8 @@ room before it spends (`grug_inventory.fits`) and gives through
 
 ## 11. Guild quests
 
-Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md)).
+Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md))
+(built: the structure).
 
 - **Ruling:** guild gather quests are bound to the depth, not the camp: one
   quest id per tier (T2–T6) for both factions with a text per guild, taken and
@@ -542,7 +543,86 @@ Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md)).
   or night spawns; "at night" may be literal); all of a camp's quests can be
   taken at once; no chains beyond the one follow-up; no kill objectives in the
   depth; no repeatable quests.
-- The gather quests ask for exchanged materials. **Proposal:** their copper
-  and items follow the Round 57 reward rules; they give no reputation of their
-  own (reputation comes only from the exchange; see the round report's
-  questions).
+- **Ruling (2026-10-23):** no reputation from guild quests; reputation comes
+  only from the exchange. Rewards are XP, copper, materials or choices under
+  the budget rule.
+- **As built (the structure; placeholder texts "[PH]" until lane
+  GUILDTEXT):** 28 quests with new ids, written by
+  `tools/r58_guildquests/build_structure.py`, checked by
+  `tools/r58_guildquests/portable_test.lua`; the structure page is
+  `tools/r58_guildquests/questmap.py`. Every reward is XP and the quest
+  copper of the reward weight (quests.md "Copper"), no item and no
+  reputation.
+  - **Gather quests** (free play, weight 4, opening at the tier's first
+    level, reward level two above), two per tier, each the tier's
+    signature resource and its gem: T2 `guild_t2_iron` (Iron Lump × 20) and
+    `guild_t2_jade` (Rough Jade × 4); T3 `guild_t3_anthracite` (Anthracite
+    × 20), `guild_t3_garnet` (Rough Garnet × 4); T4 `guild_t4_silver`
+    (Silver × 15), `guild_t4_sapphire` (Rough Sapphire × 4); T5
+    `guild_t5_emberglass` (Emberglass × 15), `guild_t5_ruby` (Rough Ruby ×
+    4); T6 `guild_t6_crystal` (Abyssal Crystal × 10), `guild_t6_diamond`
+    (Rough Diamond × 4). Counts are rough: about a quarter hour's digging in
+    the tier (the yield model, §9). Each has one variant per faction whose
+    givers are the role rows `foreman_tk` … `foreman_t6` of that faction,
+    so every own camp whose lift reaches the tier gives it and takes it in
+    (quests.md "The Miner's Guild givers"); the variant's text names its
+    guild.
+  - **Where they live:** a shared quest lives in its first variant's file
+    and a variant's zone needs a quest file, so the gather quests live in
+    the two guild files, `charter_of_stone.quests.json` (every gather
+    quest; its first variant is The Accord's) and
+    `oathdelvers.quests.json` (the Throng variant's zone; no quest of its
+    own), whose zones are the guilds' ids. The loader reads them like
+    every zone file; the quest log shows such a quest's level without a
+    zone. Both are reworked: the free-play rules and the reward checks
+    apply to them.
+  - **Follow-ups** (story quests, weight 1.5, the gather quests' levels):
+    `guild_t<k>_report_accord` and `_throng`, one per tier and faction. Each
+    requires both gather quests of its tier (two requirements: a story
+    quest, `E-free-requires`) and is a travel quest to a guild leader, one
+    variant per zone with an own camp of tier ≥ k (that zone's foremen give
+    it; 14/11/7/4/2 variants per faction for T2…T6). Per faction, because a
+    Battlegrounds zone holds both factions' camps, a variant is keyed by its
+    zone, and a talk objective names one NPC. The leader is the capital's of
+    the zone's race region; a Battlegrounds zone is one faction's race
+    region, so the other faction's camps there report to the race across the
+    front (dwarf–undead, human–orc, elf–troll: the zones' columns): The
+    Broken Causeway and The Shattered Line to Highcourt and Gor Drazhak,
+    Gravesalt Escarpment to Dur Brannoc and Nhal Veyr, The Skyglass Canopy
+    to Lethariel and Kezamba. The variants carry a completion text; the
+    tier's story seed (the story-arc decision §5) is each quest's design
+    note for GUILDTEXT.
+  - **Camp hunts** (free play, weight 3.5): one shared quest per camp band,
+    a variant per camp zone given by its foremen, 8 of the main day role of
+    the zone's quest-target kind in the camp's level belt (the zone's
+    lowest belt; a war camp's high band the highest), by day:
+    `camp_hunt_t2` (6 zones, reward level 12), `camp_hunt_t3` (8, level 22),
+    `camp_hunt_t4` (6, level 32), and for the war camps `camp_hunt_t5_low`
+    (42), `camp_hunt_t5_high` (49), `camp_hunt_t6_low` (52) and
+    `camp_hunt_t6_high` (59), each with its two Battlegrounds zones (the
+    zone's Accord and Throng camps of that band in one variant; the low and
+    high bands hunt different names). Every camp has one hunt; a T4 camp
+    also the raid.
+  - **The raid** `camp_site_raid` (free play, level 36, reward level 40,
+    weight 3): one quest with a variant per contested T4 zone, given by the
+    own T4 foreman, against the zone's camp under construction: its
+    captain (`captain_<builder faction>` in the area
+    `<zone>/camp_site_<zone>`). The camp's guards carry no name slot
+    (`data/names.json`), so they cannot be a kill target yet. The war-camp
+    raids of the fortresses stay as they are.
+  - **Files:** each surface camp zone's file gains a hub `<camp id>` with
+    its foreman (lines `camp` and `guild`) and the guild quests whose first
+    variant is that zone's; it keeps its own quests and its rework state
+    (unflagged: its chains stay until its rework). The four Battlegrounds
+    zones get a quest file of their own (not reworked: both factions'
+    follow-ups there require the same gather quests, which the free-play
+    count `E-free-follow-ups` would read as two follow-ups; a player sees
+    only their own faction's).
+  - **The reward budget** (`E-reward-budget`) counts equipment rewards per
+    zone a quest is given in, that is per variant zone: a role variant in
+    its guild zone, an NPC variant in its camp zone. No guild quest rewards
+    equipment, so it counts none anywhere.
+  - All of a camp's quests can be taken at once (only the follow-ups wait
+    for their two gather quests); nothing is repeatable; no kill objective
+    lies in the depth (every kill area is a surface kind or a camp
+    under construction).

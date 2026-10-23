@@ -1801,7 +1801,8 @@ tools](#player-meta-read-by-external-tools).
   carrier's one-second 25/30 hysteresis pass; no independent player scan.
   Quest UI tracks up to ten selected quests (`grug_quests.MAX_TRACKED`, one objective line each) and stores its HUD preference.
   Since Round 28 the content is data: `data/zones/<zone>.quests.json` and
-  `<zone>.front.quests.json`, read by `loader.lua`, checked by `validate.lua`
+  `<zone>.front.quests.json` (Round 58: also the two guild files, whose
+  zone is a guild id, `charter_of_stone` / `oathdelvers`), read by `loader.lua`, checked by `validate.lua`
   (structure at load, roles/areas/levels/items once every mod loaded; every
   finding names file and quest); quest NPCs bound to sockets are in
   `npcs.lua`, new givers at free quest sockets come from the files. Since
