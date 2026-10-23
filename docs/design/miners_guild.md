@@ -571,8 +571,8 @@ Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md))
   `tools/r58_guildquests/build_structure.py`, checked by
   `tools/r58_guildquests/portable_test.lua`; the structure page is
   `tools/r58_guildquests/questmap.py`. Every reward is XP and the quest
-  copper of the reward weight (quests.md "Copper"), no item and no
-  reputation.
+  copper of the reward weight (quests.md "Copper"), no reputation; the
+  camp hunts add a choice of materials (below).
   - **Gather quests** (free play, weight 4, opening at the tier's first
     level, reward level two above), two per tier, each the tier's
     signature resource and its gem: T2 `guild_t2_iron` (Iron Lump × 20) and
@@ -630,13 +630,26 @@ Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md))
     every role by its camp, so its hunt keeps the stag (`moss_antler_stag`
     in the Berrywoods; `lorindor_cutting_opt_01` hunts it in the
     Paleroots). Every camp has one hunt; a T4 camp also the raid.
+  - **The hunts' reward** (the user, 2026-10-23: materials for the hunt):
+    besides XP and copper a choice of the camp tier's hunted leather, its
+    cloth or a bar of its metal, none of which a vendor sells (Round 57
+    ruling 28), so a hunt is a real source: T2 Light Leather × 4, Linen
+    Cloth × 3 or Iron Bar × 2; T3 Heavy Leather × 3, Heavy Cloth × 3 or
+    Steel Bar × 2; T4 Scaled Hide × 3, Raw Silk × 3 or Silversteel Bar × 2;
+    T5 Sleek Pelt × 3, Raw Silk × 4 or Embersteel Bar × 2; T6 Sleek Pelt ×
+    4, Raw Silk × 5 or Abyssal Steel Bar × 1. No equipment, so the reward
+    budget counts none.
   - **The raid** `camp_site_raid` (free play, level 36, reward level 40,
-    weight 3): one quest with a variant per contested T4 zone, given by the
-    own T4 foreman, against the zone's camp under construction: its
-    captain (`captain_<builder faction>` in the area
-    `<zone>/camp_site_<zone>`). The camp's guards carry no name slot
-    (`data/names.json`), so they cannot be a kill target yet. The war-camp
-    raids of the fortresses stay as they are.
+    weight 4): one quest with a variant per contested T4 zone, given by the
+    own T4 foreman, against the zone's camp under construction: its four
+    guards and its captain (`guard_` and `captain_<builder faction>` in the
+    area `<zone>/camp_site_<zone>`), as a war camp's raid. The guards are
+    named by their slot `<zone>/camp_site_<zone>.guard/L38-40` of
+    `data/names.json` ("Accord Stakeguard", "Throng Stakeguard";
+    `pvp_garrison.lua` gives them the name key `<key>.guard`, written by
+    `tools/r38_b1/gen_names.py --proposals
+    tools/r58_guildquests/names_proposals.json`). The war-camp raids of
+    the fortresses stay as they are.
   - **Files:** each surface camp zone's file gains a hub `<camp id>` with
     its foreman (lines `camp` and `guild`) and the guild quests whose first
     variant is that zone's; it keeps its own quests and its rework state

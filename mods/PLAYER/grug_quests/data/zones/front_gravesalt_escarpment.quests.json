@@ -405,7 +405,21 @@
         }
       ],
       "rewards": {
-        "weight": 3.5
+        "weight": 3.5,
+        "choices": [
+          {
+            "item": "grug_mobs:sleek_pelt",
+            "count": 4
+          },
+          {
+            "item": "grug_mobs:spider_silk",
+            "count": 5
+          },
+          {
+            "item": "grug_materials:abyssal_steel_bar",
+            "count": 1
+          }
+        ]
       },
       "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L51-53) that the zone's own quests do not hunt yet, met by day."
     },
@@ -462,7 +476,21 @@
         }
       ],
       "rewards": {
-        "weight": 3.5
+        "weight": 3.5,
+        "choices": [
+          {
+            "item": "grug_mobs:sleek_pelt",
+            "count": 4
+          },
+          {
+            "item": "grug_mobs:spider_silk",
+            "count": 5
+          },
+          {
+            "item": "grug_materials:abyssal_steel_bar",
+            "count": 1
+          }
+        ]
       },
       "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L58-60) that the zone's own quests do not hunt yet, met by day."
     }

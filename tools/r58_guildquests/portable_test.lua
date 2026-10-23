@@ -9,10 +9,12 @@
 --    the foreman roles of their tier and deeper; one story follow-up per
 --    tier and faction that requires both gather quests and travels to the
 --    leader of its giver zone's race region; one camp hunt per camp (a
---    shared quest per camp band), the raid on each camp under construction
---    from the own T4 foreman; no repeatable quest, no kill objective in the
---    depth (every kill area is a surface kind or a camp site's garrison),
---    no reward but XP and copper (no reputation, no item); free play: only
+--    shared quest per camp band and clock) on a role the zone's own quests
+--    do not hunt (Lorindor excepted), 8 by day or 3 after dark, with a
+--    choice of materials; the raid on each camp under construction (four
+--    guards and the captain) from the own T4 foreman; no repeatable quest,
+--    no kill objective in the depth (every kill area is a surface kind or a
+--    camp site's garrison), no reputation, no fixed item; free play: only
 --    the follow-ups require anything.
 -- B. The real loader over seed 42's settlement sockets (tools/seed_fleet:
 --    the camps' and capitals' blueprints as the world registers them),
@@ -22,8 +24,9 @@
 --    offered at every own camp of tier >= k and nowhere else (and never by
 --    the other faction's foremen); the follow-up only after both gather
 --    quests, at the camps of its tier and deeper, turned in only at its
---    variant's leader; each camp's hunt and each T4 foreman's raid at that
---    foreman.
+--    variant's leader (also the hand-in NPC of the journal: a role quest's
+--    is the foreman it was taken from); each camp's hunt and each T4
+--    foreman's raid at that foreman.
 -- V. tools/r28_design/validate.py --game: 0 errors.
 -- Prints "R58 GUILDQUESTS PORTABLE PASS checks=<n>" or raises.
 
@@ -313,9 +316,15 @@ do
 				end
 				check(own ~= nil and own.faction ~= site.faction, "S " .. site.key .. " lies by an enemy T4 camp")
 				eq(table.concat(found.givers, ","), own and "r58_foreman_" .. own.id, "S " .. site.key .. " giver")
-				local objective = (found.objectives or {{}})[1]
-				eq(objective.area, site.zone_id .. "/" .. site.key, "S " .. site.key .. " its garrison")
-				eq((objective.roles or {})[1], "captain_" .. site.faction, "S " .. site.key .. " its captain")
+				-- Its four guards and its captain, as a war camp's raid.
+				local guards, captain = (found.objectives or {})[1] or {}, (found.objectives or {})[2] or {}
+				for _, objective in ipairs({guards, captain}) do
+					eq(objective.area, site.zone_id .. "/" .. site.key, "S " .. site.key .. " its garrison")
+				end
+				eq((guards.roles or {})[1], "guard_" .. site.faction, "S " .. site.key .. " its guards")
+				eq((captain.roles or {})[1], "captain_" .. site.faction, "S " .. site.key .. " its captain")
+				eq(q.objectives[1].count, 4, "S " .. site.key .. " four guards")
+				eq(q.objectives[2].count, 1, "S " .. site.key .. " one captain")
 			end
 		end
 	end
@@ -325,9 +334,21 @@ end
 -- depth (a kill area is a recipe kind of the surface or a camp site).
 for id, q in pairs(quests) do
 	eq(q.repeatable, nil, "S " .. id .. " is not repeatable")
+	-- XP and the formula's copper; a hunt also a choice of 2-3 materials
+	-- of no vendor's shelf (no gear, no enchants); no reputation anywhere.
 	local rewards = q.rewards or {}
-	check(rewards.items == nil and rewards.choices == nil and rewards.copper == nil,
-		"S " .. id .. " rewards XP and the formula's copper only (no reputation, no item)")
+	check(rewards.items == nil and rewards.copper == nil,
+		"S " .. id .. " rewards XP and the formula's copper (no reputation, no fixed item)")
+	if id:find("^camp_hunt_") then
+		local choices = rewards.choices or {}
+		check(#choices >= 2 and #choices <= 3, "S " .. id .. " a choice of 2-3 materials")
+		for _, choice in ipairs(choices) do
+			check(choice.affixes == nil and (choice.item:find("^grug_mobs:") or choice.item:find("_bar$")) ~= nil,
+				"S " .. id .. " " .. choice.item .. " is a hunted material or a bar")
+		end
+	else
+		eq(rewards.choices, nil, "S " .. id .. " no choice")
+	end
 	for _, variant in ipairs(q.variants) do
 		for index, objective in ipairs(q.objectives) do
 			if objective.type == "kill" then
@@ -624,11 +645,14 @@ for _, row in ipairs(foremen) do
 	for _, status in pairs(offered) do all_open = all_open and status == "available" end
 	check(all_open, "B " .. row.id .. " offers all its quests at once")
 end
--- The raid's captain is named on this world (his camp's race).
+-- The raid's guards and captain are named on this world (the captain by his
+-- camp's race, the guards by their names slot).
 for _, variant in ipairs(Q.registered_quests.camp_site_raid.variants) do
-	local names = variant.objectives[1].names -- per role, its names
-	check(type(names) == "table" and #names == 1 and #names[1] == 1 and type(names[1][1]) == "string",
-		"B the raid in " .. variant.zone .. " counts its captain by name")
+	for index, what in ipairs({"guards", "captain"}) do
+		local names = variant.objectives[index].names -- per role, its names
+		check(type(names) == "table" and #names == 1 and #names[1] == 1 and type(names[1][1]) == "string",
+			"B the raid in " .. variant.zone .. " counts its " .. what .. " by one name")
+	end
 end
 
 ------------------------------------------------------------------------------

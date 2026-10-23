@@ -901,8 +901,9 @@ class Model:
                                            notes=["war commander, level 60 elite"]))
         # Round 58: the six enemy camps under construction (r58_camp_catalog.lua,
         # pvp_garrison.lua): the named captain of the camp's one (builder's)
-        # race at its contested 31-40 zone's top level. Their guards carry no
-        # names-file slot (pvp_garrison.lua): the faction guards above.
+        # race at its contested 31-40 zone's top level, and its guards at the
+        # zone's top three levels by their slot "<key>.guard" (lane
+        # GUILDQUESTS, as a war camp's: names.json names them).
         ctxt = r.text(CAMP_CATALOG)
         faction_of = {"dwarf": "accord", "human": "accord", "elf": "accord",
                       "undead": "throng", "orc": "throng", "troll": "throng"}
@@ -924,6 +925,15 @@ class Model:
                                role_levels=[hi, hi], levels=[hi, hi], race=race,
                                notes=["the captain of a camp under construction (Round 58), "
                                       "of its builder's race"]))
+            gkey = "%s/%s.guard/%s" % (zid, key, band_key(hi - 2, hi))
+            gname = re.search(r'guard_def\("%s", "([^"]+)"' % faction, gtext).group(1)
+            self.add_slot(dict(common, key=gkey, source="pvp_garrison", name=self.file_name(gkey, gname),
+                               name_source="names.json (pvp_garrison.lua camp posts)",
+                               name_where=r.cite(MOBS + "/pvp_garrison.lua", r'or "guard"\)'),
+                               entity="grug_mobs:guard_" + faction, role="guard_" + faction,
+                               family="guard", base="guard", tier="guard", authored_tier="normal",
+                               role_levels=[hi - 2, hi], levels=[hi - 2, hi],
+                               notes=["the guards of a camp under construction (Round 58)"]))
 
         # Registered sub-types nothing places.
         placed = {s["role"] for s in self.slots}

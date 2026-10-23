@@ -248,11 +248,13 @@ combat may follow its target in).
 - A protected POI like a war camp (kind `war_camp`, the 10-node margin, no
   ambient hostile spawns, the idle push; a war camp's icon on the map).
 - **Garrison:** 2 gate and 2 yard guards at the top three levels of the
-  zone (38–40), never elite, and a **named captain** at level 40 (the war
-  camps' captain rules and respawns; names in `pvp_names.json`).
+  zone (38–40), never elite, named "Accord Stakeguard" or "Throng
+  Stakeguard" by their slot of `data/names.json` (Round 58 GUILDQUESTS), and
+  a **named captain** at level 40 (the war camps' captain rules and
+  respawns; names in `pvp_names.json`).
 - **Nothing of use to the enemy:** no lift, no vendor, no shelter, no bed.
-  The foreman of the own T4 mining camp gives the quest against it (lane
-  GUILDQUESTS).
+  The foreman of the own T4 mining camp gives the quest against it
+  (`camp_site_raid`: its four guards and its captain, miners_guild.md §11).
 
 ## 7. Quests
 

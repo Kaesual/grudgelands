@@ -467,7 +467,21 @@
         }
       ],
       "rewards": {
-        "weight": 2.5
+        "weight": 2.5,
+        "choices": [
+          {
+            "item": "grug_mobs:scaled_hide",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:spider_silk",
+            "count": 3
+          },
+          {
+            "item": "grug_materials:silversteel_bar",
+            "count": 2
+          }
+        ]
       },
       "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L31-33) that the zone's own quests do not hunt yet, met only at night (a third of the day count)."
     }

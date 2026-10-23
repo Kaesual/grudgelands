@@ -20,7 +20,7 @@ texts ("[PH] ..."):
     camp zone, the zone's foremen giving it): a role near the camp that the
     zone's own quests do not hunt yet, 8 by day or 3 after dark;
   * the raid on the enemy camp under construction (one quest, a variant per
-    contested T4 zone, given by the own T4 foreman): its captain.
+    contested T4 zone, given by the own T4 foreman): its four guards and its captain.
 
 The 20 surface camp zones' files get a hub with the camp's foreman and the
 quests whose first variant is theirs; the four Battlegrounds zones (34-37)
@@ -88,7 +88,19 @@ HUNT_WEIGHT = 3.5
 HUNT_COUNT = 8
 HUNT_NIGHT_COUNT = 3  # ruling 12: a night-only target asks about a third of the day count
 HUNT_NIGHT_WEIGHT = 2.5
-RAID_WEIGHT = 3
+RAID_WEIGHT = 4  # four guards and the captain, as a higher war camp's raid
+RAID_GUARDS = 4  # the camp's two gate and two yard posts
+# The hunts' choice reward (the user, 2026-10-23: materials for the hunt):
+# per camp tier one of the tier's hunted leather, its cloth or a bar of its
+# metal, modest amounts; no vendor sells any of them (Round 57 ruling 28),
+# so the hunts are a real source. (item, count)
+HUNT_CHOICES = {
+    2: [("grug_mobs:light_leather", 4), ("grug_mobs:linen_cloth", 3), ("grug_materials:iron_bar", 2)],
+    3: [("grug_mobs:heavy_leather", 3), ("grug_mobs:heavy_cloth", 3), ("grug_materials:steel_bar", 2)],
+    4: [("grug_mobs:scaled_hide", 3), ("grug_mobs:spider_silk", 3), ("grug_materials:silversteel_bar", 2)],
+    5: [("grug_mobs:sleek_pelt", 3), ("grug_mobs:spider_silk", 4), ("grug_materials:embersteel_bar", 2)],
+    6: [("grug_mobs:sleek_pelt", 4), ("grug_mobs:spider_silk", 5), ("grug_materials:abyssal_steel_bar", 1)],
+}
 RAID_LEVELS = (36, 40)  # min level, reward level (the camp site's captain is 40)
 
 # The one small story seed per tier (story-arc decision §5), for GUILDTEXT.
@@ -438,7 +450,9 @@ def hunt_quests(mining, war, records):
                 "title": PH + "Clear the Camp's Surroundings (%s)" % qid.replace("camp_hunt_", "").replace("_", " "),
                 "text": PH + "Beasts by the camp keep the haulers from the lift. Thin them out %s." % when + TBD,
                 "objectives": [kill(base["roles"], count, base["area"])],
-                "variants": variants, "rewards": {"weight": HUNT_NIGHT_WEIGHT if night else HUNT_WEIGHT},
+                "variants": variants, "rewards": {"weight": HUNT_NIGHT_WEIGHT if night else HUNT_WEIGHT,
+                                                  "choices": [{"item": item, "count": n}
+                                                              for item, n in HUNT_CHOICES[tier]]},
                 "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' "
                          "foremen; a role near the camp (the camps' level belt L%d-%d) that the zone's own quests "
                          "do not hunt yet%s." % (lo, hi, ", met only at night (a third of the day count)"
@@ -456,19 +470,21 @@ def raid_quest(mining, sites, records):
         assert len(own) == 1 and own[0]["faction"] != site["faction"] and own[0]["tier"] == 4
         variants.append({
             "zone": site["zone"], "givers": [foreman(own[0]["id"])],
-            "objectives": [{"roles": ["captain_" + site["faction"]], "area": "%s/%s" % (site["zone"], site["id"])}],
-            "text": PH + "The enemy raises the {name:%s} {dir_from_giver:%s}. Defeat {captain:%s} before "
-            "their banner holds." % (site["id"], site["id"], site["id"]) + TBD,
+            "objectives": [{"roles": ["guard_" + site["faction"]], "area": "%s/%s" % (site["zone"], site["id"])},
+                           {"roles": ["captain_" + site["faction"]], "area": "%s/%s" % (site["zone"], site["id"])}],
+            "text": PH + "The enemy raises the {name:%s} {dir_from_giver:%s}. Defeat %d of its %s Stakeguards "
+            "and {captain:%s} before their banner holds." % (site["id"], site["id"], RAID_GUARDS,
+                                                           site["faction"].capitalize(), site["id"]) + TBD,
         })
-    first = variants[0]["objectives"][0]
+    guards, captain = variants[0]["objectives"]
     return {
         "id": "camp_site_raid", "line": "camp", "min_level": RAID_LEVELS[0], "level": RAID_LEVELS[1],
         "requires": [], "title": PH + "The Camp Under Construction",
-        "text": PH + "The enemy raises a camp in our zone. Defeat its captain." + TBD,
-        "objectives": [kill(first["roles"], 1, first["area"])],
+        "text": PH + "The enemy raises a camp in our zone. Defeat its guards and its captain." + TBD,
+        "objectives": [kill(guards["roles"], RAID_GUARDS, guards["area"]), kill(captain["roles"], 1, captain["area"])],
         "variants": variants, "rewards": {"weight": RAID_WEIGHT},
         "notes": "Round 58 raid: the camp under construction of each contested T4 zone, given by the own T4 "
-                 "foreman; its captain (its guards carry no name slot yet).",
+                 "foreman; its four guards and its captain, as a war camp's raid.",
     }
 
 

@@ -545,7 +545,21 @@
         }
       ],
       "rewards": {
-        "weight": 3.5
+        "weight": 3.5,
+        "choices": [
+          {
+            "item": "grug_mobs:scaled_hide",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:spider_silk",
+            "count": 3
+          },
+          {
+            "item": "grug_materials:silversteel_bar",
+            "count": 2
+          }
+        ]
       },
       "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L31-33) that the zone's own quests do not hunt yet, met by day."
     },
@@ -556,8 +570,16 @@
       "level": 40,
       "requires": [],
       "title": "[PH] The Camp Under Construction",
-      "text": "[PH] The enemy raises a camp in our zone. Defeat its captain. Real text to follow.",
+      "text": "[PH] The enemy raises a camp in our zone. Defeat its guards and its captain. Real text to follow.",
       "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "count": 4,
+          "area": "elandor_stormvault_heights/camp_site_stormvault_heights"
+        },
         {
           "type": "kill",
           "roles": [
@@ -576,12 +598,18 @@
           "objectives": [
             {
               "roles": [
+                "guard_throng"
+              ],
+              "area": "elandor_stormvault_heights/camp_site_stormvault_heights"
+            },
+            {
+              "roles": [
                 "captain_throng"
               ],
               "area": "elandor_stormvault_heights/camp_site_stormvault_heights"
             }
           ],
-          "text": "[PH] The enemy raises the {name:camp_site_stormvault_heights} {dir_from_giver:camp_site_stormvault_heights}. Defeat {captain:camp_site_stormvault_heights} before their banner holds. Real text to follow."
+          "text": "[PH] The enemy raises the {name:camp_site_stormvault_heights} {dir_from_giver:camp_site_stormvault_heights}. Defeat 4 of its Throng Stakeguards and {captain:camp_site_stormvault_heights} before their banner holds. Real text to follow."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -591,12 +619,18 @@
           "objectives": [
             {
               "roles": [
+                "guard_throng"
+              ],
+              "area": "elandor_ashenward_march/camp_site_ashenward_march"
+            },
+            {
+              "roles": [
                 "captain_throng"
               ],
               "area": "elandor_ashenward_march/camp_site_ashenward_march"
             }
           ],
-          "text": "[PH] The enemy raises the {name:camp_site_ashenward_march} {dir_from_giver:camp_site_ashenward_march}. Defeat {captain:camp_site_ashenward_march} before their banner holds. Real text to follow."
+          "text": "[PH] The enemy raises the {name:camp_site_ashenward_march} {dir_from_giver:camp_site_ashenward_march}. Defeat 4 of its Throng Stakeguards and {captain:camp_site_ashenward_march} before their banner holds. Real text to follow."
         },
         {
           "zone": "elandor_glassroot_wilds",
@@ -606,12 +640,18 @@
           "objectives": [
             {
               "roles": [
+                "guard_throng"
+              ],
+              "area": "elandor_glassroot_wilds/camp_site_glassroot_wilds"
+            },
+            {
+              "roles": [
                 "captain_throng"
               ],
               "area": "elandor_glassroot_wilds/camp_site_glassroot_wilds"
             }
           ],
-          "text": "[PH] The enemy raises the {name:camp_site_glassroot_wilds} {dir_from_giver:camp_site_glassroot_wilds}. Defeat {captain:camp_site_glassroot_wilds} before their banner holds. Real text to follow."
+          "text": "[PH] The enemy raises the {name:camp_site_glassroot_wilds} {dir_from_giver:camp_site_glassroot_wilds}. Defeat 4 of its Throng Stakeguards and {captain:camp_site_glassroot_wilds} before their banner holds. Real text to follow."
         },
         {
           "zone": "kragmar_blackwind_rise",
@@ -621,12 +661,18 @@
           "objectives": [
             {
               "roles": [
+                "guard_accord"
+              ],
+              "area": "kragmar_blackwind_rise/camp_site_blackwind_rise"
+            },
+            {
+              "roles": [
                 "captain_accord"
               ],
               "area": "kragmar_blackwind_rise/camp_site_blackwind_rise"
             }
           ],
-          "text": "[PH] The enemy raises the {name:camp_site_blackwind_rise} {dir_from_giver:camp_site_blackwind_rise}. Defeat {captain:camp_site_blackwind_rise} before their banner holds. Real text to follow."
+          "text": "[PH] The enemy raises the {name:camp_site_blackwind_rise} {dir_from_giver:camp_site_blackwind_rise}. Defeat 4 of its Accord Stakeguards and {captain:camp_site_blackwind_rise} before their banner holds. Real text to follow."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -636,12 +682,18 @@
           "objectives": [
             {
               "roles": [
+                "guard_accord"
+              ],
+              "area": "kragmar_bannerbreak_mesa/camp_site_bannerbreak_mesa"
+            },
+            {
+              "roles": [
                 "captain_accord"
               ],
               "area": "kragmar_bannerbreak_mesa/camp_site_bannerbreak_mesa"
             }
           ],
-          "text": "[PH] The enemy raises the {name:camp_site_bannerbreak_mesa} {dir_from_giver:camp_site_bannerbreak_mesa}. Defeat {captain:camp_site_bannerbreak_mesa} before their banner holds. Real text to follow."
+          "text": "[PH] The enemy raises the {name:camp_site_bannerbreak_mesa} {dir_from_giver:camp_site_bannerbreak_mesa}. Defeat 4 of its Accord Stakeguards and {captain:camp_site_bannerbreak_mesa} before their banner holds. Real text to follow."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -651,18 +703,24 @@
           "objectives": [
             {
               "roles": [
+                "guard_accord"
+              ],
+              "area": "kragmar_thunderroot_wilds/camp_site_thunderroot_wilds"
+            },
+            {
+              "roles": [
                 "captain_accord"
               ],
               "area": "kragmar_thunderroot_wilds/camp_site_thunderroot_wilds"
             }
           ],
-          "text": "[PH] The enemy raises the {name:camp_site_thunderroot_wilds} {dir_from_giver:camp_site_thunderroot_wilds}. Defeat {captain:camp_site_thunderroot_wilds} before their banner holds. Real text to follow."
+          "text": "[PH] The enemy raises the {name:camp_site_thunderroot_wilds} {dir_from_giver:camp_site_thunderroot_wilds}. Defeat 4 of its Accord Stakeguards and {captain:camp_site_thunderroot_wilds} before their banner holds. Real text to follow."
         }
       ],
       "rewards": {
-        "weight": 3
+        "weight": 4
       },
-      "notes": "Round 58 raid: the camp under construction of each contested T4 zone, given by the own T4 foreman; its captain (its guards carry no name slot yet)."
+      "notes": "Round 58 raid: the camp under construction of each contested T4 zone, given by the own T4 foreman; its four guards and its captain, as a war camp's raid."
     }
   ]
 }
