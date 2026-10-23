@@ -192,15 +192,16 @@ one picture.
     2s50c), the 5 % of every buy-back; never more than the materials behind
     the price would have sold for (the fixture's no-loop check: at most price
     × the cheapest copper per point of the exchange, 0.75c, Gold and Silver).
-- **Ore Sense (proposal):** a mark goes to the nearest deposit within
-  **16 nodes** of the first target with one in range; its targets are the
-  resources of its own harvest tier, the gem first (T1 Rough Citrine, Iron,
+- **Ore Sense:** **Ruling** (the user, 2026-10-23): a mark goes to a
+  **random deposit, ore or gem**, of its targets within **16 nodes**; the
+  first mark comes one interval after the use, and marks happen only while
+  the user is in the item's tier depth. Its targets are the
+  resources of its own harvest tier (the gem listed first: T1 Rough Citrine, Iron,
   Quartz, Copper, Tin, Coal; T2 Jade, Gold, Anthracite; T3 Garnet, Silver; T4
   Sapphire, Emberglass; T5 Ruby, Abyssal Crystal; T6 Diamond); a uniform
   random interval of 60–120 s between marks, the marker 5 s, seen by the user
-  only. The search is `core.find_node_near` over the targets' nodes
-  (`group:grug_resource` = the harvest tier), once per mark: about one call per
-  player every 90 s.
+  only. One search per mark over the targets' nodes: about one per player
+  every 90 s (built with `core.find_nodes_in_area`, below).
 - **Treasure Hunt (proposal):** one Miner's Remains at a time, placed
   **12–24 nodes** from the user in the tier's own rock (`TIERS[t].node`, all 26
   neighbours solid, `core.is_protected` and the hard protection false);
@@ -227,10 +228,12 @@ one picture.
     respawn re-apply the picture;
   - Ore Sense makes **one** `core.find_nodes_in_area` (grouped) over the
     range cube, clipped to the band, for all its targets at once, and marks
-    the nearest deposit within `range` (true distance) of the first target
-    found; per-target
-    `core.find_node_near` would be up to one full scan per target when none
-    is near (measured in the round report);
+    a random target kind that has a deposit within `range` (true
+    distance), then one of its deposits at random: kind first, so the gem
+    is marked about as often as a common ore rather than drowning in Coal;
+    a mark that falls due outside the band does nothing and the next
+    interval starts (per-target `core.find_node_near` would be up to one
+    full scan per target when none is near; measured in the round report);
   - the **markers** are per-player HUD image waypoints (`hud_add`
     `image_waypoint`): only the user's client has them, and they are drawn
     over the world, so a deposit or a Remains inside the rock shows;
