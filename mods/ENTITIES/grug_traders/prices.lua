@@ -328,8 +328,16 @@ local function sold_prices()
 	return sold
 end
 
+-- Goods that left every shelf but keep the buy-back of their old shelf price
+-- (Round 57 ruling 28: buy-back is unchanged). Without it the Bronze Bar
+-- would pay its inputs (Copper Bar + Tin Bar, 2c) instead of the 1c of its
+-- old 7c price, and six goods made from it would move with it. Leather,
+-- Light Leather and Linen Scrap need no entry: they pay their loot class.
+local FORMER_SHELF = {["grug_materials:bronze_bar"] = 7}
+
 -- The reference price of every equippable no vendor sells (grug_gear's drop
--- pool of each tier): it pays the buy-back a sold base would.
+-- pool of each tier): it pays the buy-back a sold base would. The former
+-- shelf goods above join it.
 local function reference_prices(sold)
 	local reference = {}
 	for bracket = 1, #grug_gear.BRACKETS do
@@ -337,6 +345,9 @@ local function reference_prices(sold)
 			local price = grug_gear.get_price(item)
 			if price and not sold[item] then reference[item] = price end
 		end
+	end
+	for item, price in pairs(FORMER_SHELF) do
+		if not sold[item] and core.registered_items[item] then reference[item] = price end
 	end
 	return reference
 end

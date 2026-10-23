@@ -160,7 +160,12 @@ end
 -- WHAT IS ON THEM (economy-vendor-plan.md §2): a shelf of the trade's
 -- supplies, food to eat, flavour goods and a few T1 basics -- never an enchant
 -- input and never a material above T1, because those come from hunting,
--- mining and gathering. The audit at the bottom of this file enforces that at
+-- mining and gathering. Since Round 57 (ruling 28) no shelf sells leather,
+-- cloth, ores or metal bars of any tier either: hides and cloth come off the
+-- start zones' beasts and dead, copper and tin out of their rock. Thread
+-- stays as a job supply and the tailor keeps its two wools (bed decor);
+-- buy-back of all of them is unchanged. tools/r57_vendormat pins this.
+-- The audit at the bottom of this file enforces the tier rule at
 -- load, together with the older rule that a shelf names only registered
 -- items (an unregistered one renders as a buyable "unknown item" button): a
 -- failing entry is DROPPED from its shelf and reported as an error.
@@ -213,12 +218,10 @@ function grug_traders.register_all_vendor_stock(def)
 	end
 end
 
--- The butcher: meat and the plain hides that come off the same animal.
+-- The butcher: raw and cooked meat.
 profession_shelf("butcher", {
 	{"mobs:meat_raw", 4},
 	{"mobs:meat", 9},
-	{"mobs:leather", 8},
-	{"grug_mobs:light_leather", 6},
 })
 
 -- The fishmonger: the ordinary catch; band fish are caught, not bought.
@@ -234,17 +237,15 @@ profession_shelf("baker", {
 	{"grug_cooking:bread", 6},
 })
 
--- The tailor: the T1 cloth scrap and the two wools of a settlement's bolts.
+-- The tailor: the two wools of a settlement's beds and bolts.
 profession_shelf("tailor", {
-	{"grug_mobs:linen_scrap", 3},
 	{"wool:white", 6},
 	{"wool:brown", 6},
 })
 
--- The smith: the T1 bar and the bronze tools. The GEAR is the T1 gear tab
--- this vendor keeps (see the note above), not a list here.
+-- The smith: the bronze tools. The GEAR is the T1 gear tab this vendor keeps
+-- (see the note above), not a list here.
 profession_shelf("smith", {
-	{"grug_materials:bronze_bar", 7},
 	{"grug_materials:pick_bronze", 40, "tools"},
 	{"grug_materials:axe_bronze", 36, "tools"},
 	{"grug_materials:shovel_bronze", 32, "tools"},
@@ -284,24 +285,19 @@ profession_shelf("herbalist", {
 	{"grug_traders:potion_healing_weak", 8},
 })
 
--- The armourer: the T1 bar. Its distinguishing offer is the T1 gear tab, so
--- the general shelf is not a hand-copied list.
-profession_shelf("armourer", {
-	{"grug_materials:bronze_bar", 7},
-})
+-- The armourer: its offer is the T1 gear tab; the General tab carries only
+-- the job supplies (thread, parchment, vial).
+profession_shelf("armourer", {})
 
--- The tanner: the plain hides on General; its gear tab filters the shared T1
--- gear shelf to the four pieces of the matching leather grade.
-profession_shelf("tanner", {
-	{"mobs:leather", 8},
-	{"grug_mobs:light_leather", 6},
-})
+-- The tanner: its gear tab filters the shared T1 gear shelf to the four
+-- pieces of the matching leather grade; the General tab carries only the job
+-- supplies.
+profession_shelf("tanner", {})
 
 -- The embalmer: the undead capital's own trade.
 profession_shelf("embalmer", {
 	{"grug_mobs:bone", 3},
 	{"grug_decor:xdecor_candle", 4},
-	{"grug_mobs:linen_scrap", 3},
 	{"grug_mobs:zombie_flesh", 5},
 })
 
