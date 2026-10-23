@@ -17,7 +17,7 @@ use highcourt_well_court count=2
 use gor_drazhak_skull_hall count=1 main=ors
 use gor_drazhak_host_store count=1 main=ors
 use highcourt_service_yard count=3
-use gor_drazhak_miners_guild count=1 main=ors
+use gor_drazhak_council_house count=1 main=ors
 use gor_drazhak_bazaar_house count=2
 use gor_drazhak_south_house count=1
 use gor_drazhak_lane_house count=1

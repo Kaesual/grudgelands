@@ -161,8 +161,8 @@ local function loader(directory)
 		-- The east quarter's walk to the sacred grove and the shrine.
 		{6, 8, 24, 10, "lane"},
 		{26, 5, 28, 8, "lane"},
-		-- The doorsteps of the outer houses (the Miner's Guild house, which
-		-- took the quay house's, opens over the turf to the quay).
+		-- The doorsteps of the outer houses.
+		{-46, 27, -38, 29, "lane"},
 		{-44, -20, -42, -18, "lane"},
 		{40, -40, 42, -38, "lane"},
 		{-16, -44, -14, -42, "lane"},
@@ -257,12 +257,8 @@ local function loader(directory)
 		-- to face their ground instead: the `home` kit furnishes the cell
 		-- behind every other wall and only the z- doorway is authored clear
 		-- of it.
-		-- The Miner's Guild house of The Charter of Stone stands where the
-		-- quay house stood, grown to the corner between the fountain court
-		-- and the shore house, its door to the quay (Round 58;
-		-- settlements.md "The Miner's Guild houses").
-		{id = "miners_guild", template = "lethariel_miners_guild",
-			x = -46, z = 22, turns = 3, palette = "elf", roof = "pale"},
+		{id = "quay_house", template = "dur_brannoc_market_house",
+			x = -43, z = 25, turns = 1, palette = "elf"},
 		{id = "south_house", template = "dur_brannoc_south_house",
 			x = 38, z = -46, turns = 1, palette = "elf"},
 		{id = "plaza_house", template = "dur_brannoc_lane_house",
@@ -274,7 +270,7 @@ local function loader(directory)
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "gate_south", "gate_west",
-		"gate_east", "star_hall", "bough_west", "bough_east", "miners_guild",
+		"gate_east", "star_hall", "bough_west", "bough_east", "quay_house",
 		"south_house", "plaza_house", "shore_house"}
 
 	-- The corner waypoints of the city loop, in the open ground between the

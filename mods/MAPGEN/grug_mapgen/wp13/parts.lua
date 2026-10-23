@@ -91,6 +91,15 @@ local PARAM2_KIND = {
 	-- the Miner's Guild lift (Round 58, `4dir`: its four values turn like an
 	-- upright facedir's)
 	["grug_mapgen:guild_lift"] = M.FACEDIR,
+	-- the guild houses' banners and emblem plaques hang on their wall like a
+	-- ladder; the yard's rail and ore cart are `4dir` like the lift (Round 58
+	-- lane HALLS2)
+	["grug_mapgen:guild_banner_charter"] = M.WALLMOUNTED,
+	["grug_mapgen:guild_banner_oathdelvers"] = M.WALLMOUNTED,
+	["grug_mapgen:guild_emblem_charter"] = M.WALLMOUNTED,
+	["grug_mapgen:guild_emblem_oathdelvers"] = M.WALLMOUNTED,
+	["grug_mapgen:mine_rail"] = M.FACEDIR,
+	["grug_mapgen:mine_cart"] = M.FACEDIR,
 	["grug_decor:capital_product_weaponsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_armorsmith"] = M.FACEDIR,
 	["grug_decor:capital_product_tailor"] = M.FACEDIR,

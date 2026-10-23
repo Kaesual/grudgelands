@@ -54,3 +54,19 @@ stay in `tools/r51_sea/`.
 | `grug_mapgen_seagrass_1_anim.png` | `tools/r51_sea/anim/seagrass_1_anim.png` | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical (16 x 128, eight frames) |
 | `grug_mapgen_seagrass_2_anim.png` | `tools/r51_sea/anim/seagrass_2_anim.png` | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical (16 x 128, eight frames) |
 | `grug_mapgen_seagrass_3_anim.png` | `tools/r51_sea/anim/seagrass_3_anim.png` | GPT-6 Astra | CC0-1.0 | renamed only; byte-identical (16 x 128, eight frames) |
+
+## Miner's Guild banners and emblems (Round 58 lane HALLS2)
+
+Original pixel art by **GPT-6 Astra**, Round 58 guild-art drop 02, made for
+the game, **CC0-1.0** (the drop's `LICENSE.txt`). The user's pick of
+2026-10-23: the banners of proposal P2, the emblems of proposal P1. All four
+files are byte-identical copies of the picked files (renamed only); no
+third-party source pixels. The plaque nodes draw the emblem over a shipped
+plank texture (`default_wood.png` with a colorize modifier).
+
+| File | Author | Source / modifications | License |
+|---|---|---|---|
+| `textures/grug_mapgen_guild_banner_charter.png` | GPT-6 Astra (Round 58) | guild-art drop 02 P2 `banner_charter.png` (32×32 cloth, lamp in a stone arch); byte-identical copy | CC0-1.0 |
+| `textures/grug_mapgen_guild_banner_oathdelvers.png` | GPT-6 Astra (Round 58) | guild-art drop 02 P2 `banner_oathdelvers.png` (32×32 cloth, split ore in tongs); byte-identical copy | CC0-1.0 |
+| `textures/grug_mapgen_guild_emblem_charter.png` | GPT-6 Astra (Round 58) | guild-art drop 02 P1 `emblem_charter.png` (16 px, keystone under a pick); byte-identical copy | CC0-1.0 |
+| `textures/grug_mapgen_guild_emblem_oathdelvers.png` | GPT-6 Astra (Round 58) | guild-art drop 02 P1 `emblem_oathdelvers.png` (16 px, crossed picks round ore); byte-identical copy | CC0-1.0 |
