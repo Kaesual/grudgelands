@@ -90,10 +90,17 @@ end
 ------------------------------------------------------------------------------
 -- 1. The helper itself.
 ------------------------------------------------------------------------------
+-- Round 58: the camps and capitals of the Miner's Guild's foremen and
+-- leaders, whom npcs.lua registers where the world has them
+-- (tools/r58_guildquests/guild_world.lua; the shipped files name them).
+local GUILD_WORLD = dofile(ROOT .. "/tools/r58_guildquests/guild_world.lua")(ROOT)
+grug_mapgen = {mining_camps = GUILD_WORLD.mining_camps}
 grug_core = {register_tag_visibility = function() end,
 	-- grug_quests/npcs.lua: both PvP fortresses are bound, so their quest
 	-- givers register (Round 31; the shipped quest files name them).
-	settlement_socket_anchor = function(key) return key:match("^pvp_fortress_") and {x = 0, z = 0} or nil end,
+	settlement_socket_anchor = function(key)
+		return (key:match("^pvp_fortress_") or GUILD_WORLD.anchor(key)) and {x = 0, z = 0} or nil
+	end,
 	hud_layout = {side_text_width = function() return 38 end},
 	settlement_sockets_at = function() return {} end}
 dofile("mods/CORE/grug_core/item_names.lua")
@@ -179,7 +186,9 @@ grug_zones = {get = function(zone) return {display_name = zone} end}
 -- The quest content is the per-zone quest files (Round 28 Lane B4), read by
 -- the real loader.
 local json = dofile("tools/r28_b4_quests/json.lua")
-core.get_modpath = function() return ROOT .. "/mods/PLAYER/grug_quests" end
+core.get_modpath = function(name)
+	return name == "grug_mapgen" and ROOT .. "/mods/MAPGEN/grug_mapgen" or ROOT .. "/mods/PLAYER/grug_quests"
+end
 core.get_current_modname = function() return "grug_quests" end
 core.parse_json = function(text) return (json.decode(text)) end
 core.get_dir_list = function(path)
@@ -197,6 +206,16 @@ local Q = grug_quests
 for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader",
 		"hud"}) do
 	dofile(ROOT .. "/mods/PLAYER/grug_quests/" .. file .. ".lua")
+end
+-- Round 58: the gather quests' foreman roles bind by role and faction
+-- (init.lua); this fixture leaves every NPC without a faction, so it serves
+-- its one player: the foremen get theirs for the binding only.
+for _, camp in ipairs(GUILD_WORLD.mining_camps.camps) do
+	Q.registered_npcs["r58_foreman_" .. camp.id].faction = camp.faction
+end
+Q.bind_role_givers()
+for _, camp in ipairs(GUILD_WORLD.mining_camps.camps) do
+	Q.registered_npcs["r58_foreman_" .. camp.id].faction = nil
 end
 -- The quest log is the map window's quest box since Round 44
 -- (grug_map/quest_box.lua); this stands in for the old Quests tab's page.

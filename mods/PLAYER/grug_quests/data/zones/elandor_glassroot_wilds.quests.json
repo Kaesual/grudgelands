@@ -14,6 +14,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_glassroot_wilds",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_glassroot_wilds",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

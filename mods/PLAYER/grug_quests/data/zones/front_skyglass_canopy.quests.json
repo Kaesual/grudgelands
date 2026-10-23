@@ -1,0 +1,47 @@
+{
+  "zone": "front_skyglass_canopy",
+  "identity": "The Battlegrounds' war camps of both factions, mining camps of the Miner's Guild since Round 58: their foremen's quests.",
+  "hubs": [
+    {
+      "id": "skyglass_canopy_accord_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_skyglass_canopy_accord_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_skyglass_canopy_accord_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skyglass_canopy_throng_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_skyglass_canopy_throng_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_skyglass_canopy_throng_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": []
+}

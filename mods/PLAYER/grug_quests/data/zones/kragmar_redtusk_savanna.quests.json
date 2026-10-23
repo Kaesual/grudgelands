@@ -44,6 +44,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_redtusk_savanna",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_redtusk_savanna",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

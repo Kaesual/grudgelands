@@ -350,7 +350,7 @@ do
 		local guard = G.slot(row.key, row.race, {role = "guard_post", tags = {"gate"}}, band)
 		check(guard and guard.entity == "grug_mobs:guard_" .. row.faction and
 			guard.level_min == zone.level_max - 2 and guard.level_max == zone.level_max and
-			guard.name_key == nil, "K " .. row.key .. " its guards")
+			guard.name_key == row.key .. ".guard", "K " .. row.key .. " its guards (their names slot)")
 	end
 	check(G.settlement_kind("pvp_camp_broken_causeway_accord_low") == "pvp_camp",
 		"K a war camp keeps its garrison")

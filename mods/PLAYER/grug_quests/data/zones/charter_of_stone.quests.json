@@ -1,0 +1,588 @@
+{
+  "zone": "charter_of_stone",
+  "reworked": true,
+  "identity": "The Charter of Stone's gather quests by depth tier, given at every own mining camp whose lift reaches the tier (Round 58); no map zone.",
+  "hubs": [],
+  "quests": [
+    {
+      "id": "guild_t2_iron",
+      "line": "guild",
+      "min_level": 11,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Iron Lump × 20 from the Depth",
+      "text": "[PH] The Miner's Guild needs Iron Lump × 20 from the second depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:iron_lump",
+          "count": 20
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t2",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t3",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Iron Lump × 20 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t2",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t3",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Iron Lump × 20 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 2: offered at every own camp whose lift reaches the tier (foreman_t2 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t2_jade",
+      "line": "guild",
+      "min_level": 11,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Rough Jade × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Jade × 4 from the second depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:rough_jade",
+          "count": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t2",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t3",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Rough Jade × 4 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t2",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t3",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Rough Jade × 4 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 2: offered at every own camp whose lift reaches the tier (foreman_t2 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t3_anthracite",
+      "line": "guild",
+      "min_level": 21,
+      "level": 23,
+      "requires": [],
+      "title": "[PH] Anthracite × 20 from the Depth",
+      "text": "[PH] The Miner's Guild needs Anthracite × 20 from the third depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:anthracite",
+          "count": 20
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t3",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Anthracite × 20 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t3",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Anthracite × 20 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 3: offered at every own camp whose lift reaches the tier (foreman_t3 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t3_garnet",
+      "line": "guild",
+      "min_level": 21,
+      "level": 23,
+      "requires": [],
+      "title": "[PH] Rough Garnet × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Garnet × 4 from the third depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:rough_garnet",
+          "count": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t3",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Rough Garnet × 4 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t3",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t4",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Rough Garnet × 4 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 3: offered at every own camp whose lift reaches the tier (foreman_t3 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t4_silver",
+      "line": "guild",
+      "min_level": 31,
+      "level": 33,
+      "requires": [],
+      "title": "[PH] Silver × 15 from the Depth",
+      "text": "[PH] The Miner's Guild needs Silver × 15 from the fourth depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:silver_lump",
+          "count": 15
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t4",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Silver × 15 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t4",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Silver × 15 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 4: offered at every own camp whose lift reaches the tier (foreman_t4 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t4_sapphire",
+      "line": "guild",
+      "min_level": 31,
+      "level": 33,
+      "requires": [],
+      "title": "[PH] Rough Sapphire × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Sapphire × 4 from the fourth depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:rough_sapphire",
+          "count": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t4",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Rough Sapphire × 4 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t4",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Rough Sapphire × 4 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 4: offered at every own camp whose lift reaches the tier (foreman_t4 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t5_emberglass",
+      "line": "guild",
+      "min_level": 41,
+      "level": 43,
+      "requires": [],
+      "title": "[PH] Emberglass × 15 from the Depth",
+      "text": "[PH] The Miner's Guild needs Emberglass × 15 from the fifth depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:emberglass",
+          "count": 15
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Emberglass × 15 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Emberglass × 15 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 5: offered at every own camp whose lift reaches the tier (foreman_t5 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t5_ruby",
+      "line": "guild",
+      "min_level": 41,
+      "level": 43,
+      "requires": [],
+      "title": "[PH] Rough Ruby × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Ruby × 4 from the fifth depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:rough_ruby",
+          "count": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t5",
+              "faction": "accord"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Rough Ruby × 4 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t5",
+              "faction": "throng"
+            },
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Rough Ruby × 4 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 5: offered at every own camp whose lift reaches the tier (foreman_t5 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t6_crystal",
+      "line": "guild",
+      "min_level": 51,
+      "level": 53,
+      "requires": [],
+      "title": "[PH] Abyssal Crystal × 10 from the Depth",
+      "text": "[PH] The Miner's Guild needs Abyssal Crystal × 10 from the sixth depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:abyssal_crystal",
+          "count": 10
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Abyssal Crystal × 10 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Abyssal Crystal × 10 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 6: offered at every own camp whose lift reaches the tier (foreman_t6 ... foreman_t6), taken and turned in only there."
+    },
+    {
+      "id": "guild_t6_diamond",
+      "line": "guild",
+      "min_level": 51,
+      "level": 53,
+      "requires": [],
+      "title": "[PH] Rough Diamond × 4 from the Depth",
+      "text": "[PH] The Miner's Guild needs Rough Diamond × 4 from the sixth depth. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:rough_diamond",
+          "count": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "charter_of_stone",
+          "givers": [
+            {
+              "role": "foreman_t6",
+              "faction": "accord"
+            }
+          ],
+          "text": "[PH] The Charter of Stone needs Rough Diamond × 4 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        },
+        {
+          "zone": "oathdelvers",
+          "givers": [
+            {
+              "role": "foreman_t6",
+              "faction": "throng"
+            }
+          ],
+          "text": "[PH] The Oathdelvers needs Rough Diamond × 4 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "notes": "Round 58 gather quest, tier 6: offered at every own camp whose lift reaches the tier (foreman_t6 ... foreman_t6), taken and turned in only there."
+    }
+  ]
+}

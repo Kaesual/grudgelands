@@ -37,7 +37,8 @@
 -- as a camp ("pvp_camp"): its gate and yard guards and its captain are
 -- garrison posts of the camp's highest level third (its catalogue `band`),
 -- the captain named in data/pvp_names.json for the camp's one race (the
--- builder's), the guards by their entity (no data/names.json slot).
+-- builder's), the guards by their slot "<key>.guard" of data/names.json
+-- (Round 58 GUILDQUESTS, as a war camp's guards).
 -- Looks (round31-plan §1, lane A's contract at grug_visuals.npc_race): a
 -- camp's people are of the camp's race and the General of his fortress's seat
 -- race, both the race their settlement registered as; fortress guards and
@@ -279,9 +280,9 @@ function M.new(catalog, names, camps)
 		for _, race in ipairs(races) do of_faction = of_faction or race == race_id end
 		if not of_faction then fail(key .. ": race " .. tostring(race_id) .. " is not of " .. faction) end
 		local low, high = catalog.camp_levels(band[1], band[2], row.band)
+		-- A camp under construction's guards too (Round 58 GUILDQUESTS: the
+		-- raid on it counts them by their slot's name, as a war camp's).
 		spec.name_key = key .. "." .. (role == "captain" and "captain-" .. race_id or "guard")
-		-- A camp under construction's guards have no names-file slot.
-		if row.kind == "camp_construction" and role ~= "captain" then spec.name_key = nil end
 		if role == "captain" then
 			spec.entity = M.captain_entity(faction)
 			spec.level_min, spec.level_max = high, high

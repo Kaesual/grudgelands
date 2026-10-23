@@ -1,0 +1,190 @@
+{
+  "zone": "front_broken_causeway",
+  "identity": "The Battlegrounds' war camps of both factions, mining camps of the Miner's Guild since Round 58: their foremen's quests.",
+  "hubs": [
+    {
+      "id": "broken_causeway_accord_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_accord_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_accord_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "broken_causeway_throng_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_throng_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_broken_causeway_throng_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "camp_hunt_t5_low",
+      "line": "camp",
+      "min_level": 41,
+      "level": 42,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t5 low)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_sinkmire_viper"
+          ],
+          "count": 8,
+          "area": "front_broken_causeway/reedmire"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_accord_low",
+            "r58_foreman_pvp_camp_broken_causeway_throng_low"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "causeway_sinkmire_viper"
+              ],
+              "area": "front_broken_causeway/reedmire"
+            }
+          ],
+          "text": "[PH] Defeat Sinkmire Viper × 8 by day in the {name:reedmire}, which lie {zone_area:reedmire}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_accord_low",
+            "r58_foreman_pvp_camp_shattered_line_throng_low"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "siege_deserter"
+              ],
+              "area": "front_shattered_line/approaches"
+            }
+          ],
+          "text": "[PH] Defeat Deserter × 8 by day in the {name:approaches}, which lie {zone_area:approaches}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "choices": [
+          {
+            "item": "grug_mobs:sleek_pelt",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:spider_silk",
+            "count": 4
+          },
+          {
+            "item": "grug_materials:embersteel_bar",
+            "count": 2
+          }
+        ]
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L41-43) that the zone's own quests do not hunt yet, met by day."
+    },
+    {
+      "id": "camp_hunt_t5_high",
+      "line": "camp",
+      "min_level": 48,
+      "level": 49,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t5 high)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "tallow_sealed_husk"
+          ],
+          "count": 8,
+          "area": "front_broken_causeway/toll_fields"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_accord_high",
+            "r58_foreman_pvp_camp_broken_causeway_throng_high"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "tallow_sealed_husk"
+              ],
+              "area": "front_broken_causeway/toll_fields"
+            }
+          ],
+          "text": "[PH] Defeat Tallow-Sealed Husk × 8 by day in the {name:toll_fields}, which lie {zone_area:toll_fields}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_accord_high",
+            "r58_foreman_pvp_camp_shattered_line_throng_high"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "siege_deserter_archer"
+              ],
+              "area": "front_shattered_line/breach"
+            }
+          ],
+          "text": "[PH] Defeat Turncoat Archer × 8 by day in the {name:breach}, which lie {zone_area:breach}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "choices": [
+          {
+            "item": "grug_mobs:sleek_pelt",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:spider_silk",
+            "count": 4
+          },
+          {
+            "item": "grug_materials:embersteel_bar",
+            "count": 2
+          }
+        ]
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L48-50) that the zone's own quests do not hunt yet, met by day."
+    }
+  ]
+}

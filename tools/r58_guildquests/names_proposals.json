@@ -1,0 +1,23 @@
+{
+  "notes": "Round 58 GUILDQUESTS: the guards of the six camps under construction (the raid counts them by name); written into names.json by tools/r38_b1/gen_names.py --proposals.",
+  "slots": {
+    "elandor_stormvault_heights/camp_site_stormvault_heights.guard/L38-40": {
+      "name": "Throng Stakeguard"
+    },
+    "elandor_ashenward_march/camp_site_ashenward_march.guard/L38-40": {
+      "name": "Throng Stakeguard"
+    },
+    "elandor_glassroot_wilds/camp_site_glassroot_wilds.guard/L38-40": {
+      "name": "Throng Stakeguard"
+    },
+    "kragmar_blackwind_rise/camp_site_blackwind_rise.guard/L38-40": {
+      "name": "Accord Stakeguard"
+    },
+    "kragmar_bannerbreak_mesa/camp_site_bannerbreak_mesa.guard/L38-40": {
+      "name": "Accord Stakeguard"
+    },
+    "kragmar_thunderroot_wilds/camp_site_thunderroot_wilds.guard/L38-40": {
+      "name": "Accord Stakeguard"
+    }
+  }
+}

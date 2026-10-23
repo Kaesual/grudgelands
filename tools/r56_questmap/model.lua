@@ -23,7 +23,7 @@ return function(repo, data_root)
 	local json = dofile(repo .. "/tools/r28_b4_quests/json.lua")
 	-- The globals the loaded files use, put back as they were at the end.
 	local GLOBALS = {"core", "grug_core", "grug_zones", "grug_mobs", "grug_quests", "grug_xp",
-		"grug_money", "ItemStack", "vector"}
+		"grug_money", "grug_mapgen", "ItemStack", "vector"}
 	local saved = {}
 	for _, name in ipairs(GLOBALS) do saved[name] = rawget(_G, name) end
 	local had_copy = table.copy
@@ -42,7 +42,7 @@ return function(repo, data_root)
 	local code = repo .. "/mods/PLAYER/grug_quests"
 	local paths = {grug_quests = code,
 		grug_mobs = repo .. "/mods/ENTITIES/grug_mobs", grug_xp = repo .. "/mods/PLAYER/grug_xp",
-		grug_money = repo .. "/mods/PLAYER/grug_money"}
+		grug_money = repo .. "/mods/PLAYER/grug_money", grug_mapgen = repo .. "/mods/MAPGEN/grug_mapgen"}
 	local current = "grug_quests"
 	local engine = {
 		registered_items = {}, registered_aliases = {}, registered_entities = {},
@@ -88,17 +88,28 @@ return function(repo, data_root)
 
 	-- Settlement sockets: every quest NPC stands on its own socket (sockets
 	-- exist before terrain; their positions do not matter here). A PvP
-	-- fortress is bound, so its three givers register (npcs.lua).
+	-- fortress is bound, so its three givers register (npcs.lua), and so are
+	-- the Miner's Guild's camps and capitals with their foremen and leaders
+	-- (Round 58, tools/r58_guildquests/guild_world.lua).
+	local guild_world = dofile(repo .. "/tools/r58_guildquests/guild_world.lua")(repo)
+	rawset(_G, "grug_mapgen", {mining_camps = guild_world.mining_camps})
 	local sockets = {}
 	rawset(_G, "grug_core", {
 		register_tag_visibility = function() end,
 		register_level_overlay = function() end,
 		settlement_socket_anchor = function(key)
-			return key:find("^pvp_fortress_") and {x = 0, y = 0, z = 0} or nil
+			return (key:find("^pvp_fortress_") or guild_world.anchor(key)) and {x = 0, y = 0, z = 0} or nil
 		end,
 		settlement_socket_settlements = function()
 			local out = {}
-			for key in pairs(sockets) do out[#out + 1] = {key = key, anchor = {x = 0, y = 0, z = 0}} end
+			for key in pairs(sockets) do
+				out[#out + 1] = {key = key, anchor = {x = 0, y = 0, z = 0}, race_id = guild_world.race_of[key]}
+			end
+			-- A camp under construction is of its builder's race, so its
+			-- captain has a name on every world (labels.lua Q.captain_name).
+			for _, site in ipairs(guild_world.mining_camps.under_construction) do
+				out[#out + 1] = {key = site.id, anchor = {x = 0, y = 0, z = 0}, race_id = site.race}
+			end
 			table.sort(out, function(a, b) return a.key < b.key end)
 			return out
 		end,
@@ -121,7 +132,7 @@ return function(repo, data_root)
 		local names = json.decode(handle:read("*a"))
 		handle:close()
 		grug_mobs.pvp_garrison = dofile(paths.grug_mobs .. "/pvp_garrison.lua").new(
-			dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"), names)
+			dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"), names, guild_world.camp_catalog)
 	end
 
 	-- The XP formula (grug_quests.reward_xp) and the money format.

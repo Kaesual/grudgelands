@@ -1145,6 +1145,12 @@ def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None, names=PVP
                              "label": "%s %s %s" % (f["name"], PVP_FACTION_NAME[faction],
                                                     "Picket" if band == "low" else "War Camp"),
                              "zone": f["zone_id"], "faction": faction, "kind": "pvp_camp", "band": band})
+    # Round 58: the six enemy camps under construction (r58_camp_catalog.lua),
+    # served as camps of their zone's highest band (pvp_garrison.lua: guards
+    # and a captain of the builder's faction; the game's G.poi knows them).
+    for site in camp_sites():
+        rows.append({"key": site["key"], "label": site["label"], "zone": site["zone"],
+                     "faction": site["faction"], "kind": "pvp_camp", "band": "high", "site": True})
     out = {}
     for row in rows:
         fac = row["faction"]
@@ -1160,6 +1166,89 @@ def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None, names=PVP
                 row["roles"]["commander_" + fac] = [levels["COMMANDER_LEVEL"]] * 2
         row["tiers"] = {role: tiers[(row["kind"], role[:-len(fac) - 1])] for role in row["roles"]}
         out[row["key"]] = row
+    return out
+
+
+CAMP_CATALOG = REPO / "mods" / "MAPGEN" / "grug_mapgen" / "wp40" / "r58_camp_catalog.lua"
+CAPITAL_SERVICES = REPO / "mods" / "MAPGEN" / "grug_mapgen" / "wp13" / "capital_services.lua"
+
+
+def _camp_catalog_rows(block, catalog=CAMP_CATALOG):
+    """The rows {zone id, faction, race, short name} of one block (MINING or
+    CONSTRUCTION) of r58_camp_catalog.lua."""
+    text = Path(catalog).read_text(encoding="utf-8")
+    m = re.search(r"local %s = \{(.*?)\n\}" % block, text, re.S)
+    rows = re.findall(r'\{"(\w+)", "(\w+)", "(\w+)", "([^"]+)"\}', m.group(1) if m else "")
+    if not rows:
+        raise LoadError("%s: no %s rows found" % (catalog, block))
+    return rows
+
+
+def _camp_short(zone_id):
+    return re.sub(r"^(elandor|kragmar)_", "", zone_id)
+
+
+GUILD_CATALOG = REPO / "mods" / "PLAYER" / "grug_guild" / "catalog.lua"
+
+
+def guild_zones(catalog=GUILD_CATALOG):
+    """{guild id: faction} of grug_guild's catalogue (GUILDS): the zones of
+    the two guild quest files (Round 58: `<guild id>.quests.json` holds the
+    gather quests given at every own mining camp, no map zone)."""
+    rows = re.findall(r'(accord|throng) = \{id = "(\w+)", name = "[^"]+"\}', Path(catalog).read_text(encoding="utf-8"))
+    if sorted(f for f, _ in rows) != ["accord", "throng"]:
+        raise LoadError("%s: GUILDS not found" % catalog)
+    return {gid: faction for faction, gid in rows}
+
+
+def camp_sites(catalog=CAMP_CATALOG):
+    """The Round 58 enemy camps under construction, as r58_camp_catalog.lua
+    builds them: [{"key", "label", "zone", "faction" (the builder's), "race"}]."""
+    return [{"key": "camp_site_" + _camp_short(z), "label": "%s %s Camp Site" % (name, PVP_FACTION_NAME[f]),
+             "zone": z, "faction": f, "race": r} for z, f, r, name in _camp_catalog_rows("CONSTRUCTION", catalog)]
+
+
+def mining_camps(catalog=CAMP_CATALOG, pois=None, records=None):
+    """Every Round 58 camp with a lift (grug_mapgen.mining_camps): the 20
+    mining camps of r58_camp_catalog.lua and the 16 Battlegrounds war camps,
+    [{"key", "zone", "faction", "race" (None: a war camp's, rolled per
+    world), "band" (a war camp's), "tier" (its zone's)}], sorted by key."""
+    records = records or zone_records()
+    pois = pois or pvp_pois(records=records)
+
+    def tier(zone):
+        return max(1, min(6, (records[zone]["levels"][0] - 1) // 10 + 1))
+    out = [{"key": "mining_camp_" + _camp_short(z), "zone": z, "faction": f, "race": r, "band": None,
+            "tier": tier(z)} for z, f, r, _ in _camp_catalog_rows("MINING", catalog)]
+    out += [{"key": key, "zone": poi["zone"], "faction": poi["faction"], "race": None, "band": poi["band"],
+             "tier": tier(poi["zone"])} for key, poi in pois.items()
+            if poi["kind"] == "pvp_camp" and not poi.get("site")]
+    return sorted(out, key=lambda c: c["key"])
+
+
+def guild_quest_npcs(pois=None, records=None, npcs=QUEST_NPCS):
+    """{npc id: {"settlement", "socket", "title", "zone", "faction", "role"}}
+    of the Miner's Guild's quest NPCs (npcs.lua's Round 58 block): the
+    foreman of every camp with a lift (`foreman_t<tier>`) and the guild
+    leader of each capital (no role)."""
+    records = records or zone_records()
+    out = {}
+    for camp in mining_camps(pois=pois, records=records):
+        out["r58_foreman_" + camp["key"]] = {"settlement": camp["key"], "socket": "quest_foreman",
+                                             "title": "Foreman", "zone": camp["zone"],
+                                             "faction": camp["faction"], "role": "foreman_t%d" % camp["tier"]}
+    text = Path(npcs).read_text(encoding="utf-8")
+    leaders = re.findall(r'\{capital = "(\w+)", title = "([^"]+)"\}', text)
+    m = re.search(r'GUILD_HALL = \{[^}]*leader = "([^"]+)"', Path(CAPITAL_SERVICES).read_text(encoding="utf-8"))
+    if len(leaders) != 6 or not m:
+        raise LoadError("%s: the six guild leaders or the hall's leader socket not found" % npcs)
+    for capital, title in leaders:
+        zone = [z for z, r in records.items() if r["capital"] and z.endswith("_" + capital)]
+        if len(zone) != 1:
+            raise LoadError("%s: capital %s has no zone" % (npcs, capital))
+        out["r58_guild_leader_" + capital] = {"settlement": capital, "socket": m.group(1), "title": title,
+                                              "zone": zone[0], "faction": RACE_FACTION[records[zone[0]]["race"]],
+                                              "role": None}
     return out
 
 
@@ -1365,7 +1454,9 @@ class Atlas:
         """The atlas predates the Round 31 PvP POIs: each fortress and camp is
         added from the game's catalogue as an anchor of its zone (its
         settlement key stands for the anchor id) and a named place, and the
-        fortress quest givers as that anchor's quest NPCs."""
+        fortress quest givers as that anchor's quest NPCs (Round 58: the
+        camps under construction too, the mining camps as anchors and the
+        Miner's Guild's foremen and leaders as quest NPCs)."""
         pois = pvp_pois()
         for key, poi in pois.items():
             zone = self.zones.get(poi["zone"])
@@ -1374,7 +1465,16 @@ class Atlas:
             zone["anchors"].setdefault(key, key)
             zone["anchor_kinds"][key] = poi["kind"]
             zone["places"][key] = poi["label"]
-        for npc, row in fortress_quest_npcs(pois).items():
+        # Round 58: the mining camps as anchors of their zones, and the
+        # Miner's Guild's foremen and leaders as their quest NPCs.
+        for camp in mining_camps(pois=pois):
+            zone = self.zones.get(camp["zone"])
+            if zone is not None:
+                zone["anchors"].setdefault(camp["key"], camp["key"])
+                zone["anchor_kinds"].setdefault(camp["key"], "mining_camp")
+        npcs = dict(fortress_quest_npcs(pois))
+        npcs.update(guild_quest_npcs(pois))
+        for npc, row in npcs.items():
             zone = self.zones.get(row["zone"])
             if zone is not None:
                 zone["npcs"][npc] = {"settlement": row["settlement"], "anchor": row["settlement"],

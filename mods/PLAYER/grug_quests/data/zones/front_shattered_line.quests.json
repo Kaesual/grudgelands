@@ -1,0 +1,47 @@
+{
+  "zone": "front_shattered_line",
+  "identity": "The Battlegrounds' war camps of both factions, mining camps of the Miner's Guild since Round 58: their foremen's quests.",
+  "hubs": [
+    {
+      "id": "shattered_line_accord_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_shattered_line_accord_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_shattered_line_accord_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shattered_line_throng_camps",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_pvp_camp_shattered_line_throng_high",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        },
+        {
+          "npc": "r58_foreman_pvp_camp_shattered_line_throng_low",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": []
+}

@@ -106,7 +106,8 @@ for _, quest in ipairs(model.quests) do
 	for _, objective in ipairs(quest.objectives) do
 		if objective.type == "kill" and #objective.names == 0 then no_name = no_name + 1 end
 	end
-	if not quest.hub then no_hub = no_hub + 1 end
+	-- Round 58: a quest given by a role (the gather quests' foremen) has no hub.
+	if not quest.hub and #quest.variants[1].givers > 0 then no_hub = no_hub + 1 end
 end
 eq(bad_copper, 0, "M copper is the loader's formula")
 eq(bad_xp, 0, "M XP is the reward formula")

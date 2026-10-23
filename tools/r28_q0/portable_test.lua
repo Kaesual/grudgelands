@@ -79,7 +79,12 @@ function ItemStack(item)
 	return stack
 end
 
-local mod_paths, shown, pages = {}, {}, {}
+local mod_paths, shown, pages = {grug_mapgen = "mods/MAPGEN/grug_mapgen"}, {}, {}
+-- Round 58: the camps and capitals of the Miner's Guild's foremen and
+-- leaders, whom npcs.lua registers where the world has them (the shipped
+-- files name them; tools/r58_guildquests/guild_world.lua).
+local GUILD_WORLD = dofile("tools/r58_guildquests/guild_world.lua")(".")
+grug_mapgen = {mining_camps = GUILD_WORLD.mining_camps}
 local DISPOSITION = {wild_turkey = "critter", guard_accord = false, guard_throng = false}
 core = {
 	registered_items = {}, registered_aliases = {}, registered_entities = {},
@@ -111,8 +116,11 @@ end})
 vector = {distance = function() return 1 end}
 grug_core = {register_tag_visibility = function() end,
 	-- grug_quests/npcs.lua: both PvP fortresses are bound, so their quest
-	-- givers register (Round 31; the shipped quest files name them).
-	settlement_socket_anchor = function(key) return key:match("^pvp_fortress_") and {x = 0, z = 0} or nil end,
+	-- givers register (Round 31; the shipped quest files name them), and so
+	-- are the camps and capitals of the guild's people (Round 58).
+	settlement_socket_anchor = function(key)
+		return (key:match("^pvp_fortress_") or GUILD_WORLD.anchor(key)) and {x = 0, z = 0} or nil
+	end,
 	hud_layout = {side_text_width = function() return 38 end, QUEST_WRAP = 38, anchors = {quest_list = {}}}}
 dofile("mods/CORE/grug_core/item_names.lua")
 grug_xp = {get_level = function() return 60 end, register_on_level_change = function() end,
@@ -296,7 +304,7 @@ local function register_real(_, mobs_root)
 	-- quest checks ask about a fortress's or camp's area.
 	local names = read_json(mobs_root .. "/data/pvp_names.json")
 	local garrison = dofile(mobs_root .. "/pvp_garrison.lua").new(
-		dofile("mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"), names)
+		dofile("mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"), names, GUILD_WORLD.camp_catalog)
 	for _, faction in ipairs({"accord", "throng"}) do
 		for _, entity in ipairs({garrison.guard_entity(faction), garrison.captain_entity(faction),
 				garrison.general_entity(faction), garrison.bodyguard_entity(faction)}) do
@@ -307,7 +315,7 @@ local function register_real(_, mobs_root)
 	grug_mobs.disposition = function() return nil end
 	-- The settlement records (a PvP camp's race names its captain, read at
 	-- load since Round 38), as resolve_factions below.
-	local records = {}
+	local records = GUILD_WORLD.records()
 	for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
 		records[#records + 1] = {key = row.key, race_id = row.race}
 	end
@@ -317,7 +325,7 @@ end
 -- Every quest NPC's faction from its settlement's race (the roster), as
 -- registry.lua resolves it once mods are loaded.
 local function resolve_factions(Q)
-	local records = {}
+	local records = GUILD_WORLD.records()
 	for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
 		records[#records + 1] = {key = row.key, race_id = row.race}
 	end
@@ -327,6 +335,8 @@ local function resolve_factions(Q)
 		elf = {faction = "accord"}, orc = {faction = "throng"}, troll = {faction = "throng"},
 		undead = {faction = "throng"}}
 	Q.resolve_npc_factions()
+	-- Round 58: the gather quests' foreman roles (init.lua binds them next).
+	Q.bind_role_givers()
 end
 
 -- Load grug_quests from `quest_root` (its data/zones are the quest files)

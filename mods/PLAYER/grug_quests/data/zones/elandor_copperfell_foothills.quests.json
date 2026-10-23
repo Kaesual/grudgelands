@@ -43,6 +43,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_copperfell_foothills",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_copperfell_foothills",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
@@ -427,6 +440,389 @@
       },
       "lesson": "Home zone to capital handoff.",
       "duration_min": 8
+    },
+    {
+      "id": "guild_t2_report_accord",
+      "line": "guild",
+      "story": true,
+      "min_level": 11,
+      "level": 13,
+      "requires": [
+        "guild_t2_iron",
+        "guild_t2_jade"
+      ],
+      "title": "[PH] Word to the Guild House (Second depth)",
+      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
+      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_dur_brannoc"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_copperfell_foothills",
+          "givers": [
+            "r58_foreman_mining_camp_copperfell_foothills"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_frostbarrow_shelf",
+          "givers": [
+            "r58_foreman_mining_camp_frostbarrow_shelf"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r58_foreman_mining_camp_stormvault_heights"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_goldmead_vale",
+          "givers": [
+            "r58_foreman_mining_camp_goldmead_vale"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_whitebridge_shire",
+          "givers": [
+            "r58_foreman_mining_camp_whitebridge_shire"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r58_foreman_mining_camp_ashenward_march"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_starbough_vale",
+          "givers": [
+            "r58_foreman_mining_camp_starbough_vale"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_lorindor",
+          "givers": [
+            "r58_foreman_mining_camp_lorindor"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_moonfall_wood",
+          "givers": [
+            "r58_foreman_mining_camp_moonfall_wood"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_glassroot_wilds"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_gravesalt_escarpment",
+          "givers": [
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_high",
+            "r58_foreman_pvp_camp_gravesalt_escarpment_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_broken_causeway",
+          "givers": [
+            "r58_foreman_pvp_camp_broken_causeway_accord_high",
+            "r58_foreman_pvp_camp_broken_causeway_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_shattered_line",
+          "givers": [
+            "r58_foreman_pvp_camp_shattered_line_accord_high",
+            "r58_foreman_pvp_camp_shattered_line_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+        },
+        {
+          "zone": "front_skyglass_canopy",
+          "givers": [
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_high",
+            "r58_foreman_pvp_camp_skyglass_canopy_accord_low"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
+          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "notes": "Round 58 follow-up of tier 2 (The Charter of Stone): story seed: The foreman sends a recommendation to the guild house, so that the player's name is known among the reliable helpers."
+    },
+    {
+      "id": "camp_hunt_t2",
+      "line": "camp",
+      "min_level": 11,
+      "level": 12,
+      "requires": [],
+      "title": "[PH] Clear the Camp's Surroundings (t2)",
+      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "young_fox"
+          ],
+          "count": 8,
+          "area": "elandor_copperfell_foothills/lower_pines"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_copperfell_foothills",
+          "givers": [
+            "r58_foreman_mining_camp_copperfell_foothills"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "young_fox"
+              ],
+              "area": "elandor_copperfell_foothills/lower_pines"
+            }
+          ],
+          "text": "[PH] Defeat Bracken Fox × 8 by day in the {name:lower_pines}, which lie {zone_area:lower_pines}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "elandor_goldmead_vale",
+          "givers": [
+            "r58_foreman_mining_camp_goldmead_vale"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "young_boar"
+              ],
+              "area": "elandor_goldmead_vale/orchards"
+            }
+          ],
+          "text": "[PH] Defeat Rooter × 8 by day in the {name:orchards}, which lie {zone_area:orchards}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "elandor_starbough_vale",
+          "givers": [
+            "r58_foreman_mining_camp_starbough_vale"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "young_boar"
+              ],
+              "area": "elandor_starbough_vale/lower_boughs"
+            }
+          ],
+          "text": "[PH] Defeat Truffle Sow × 8 by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "kragmar_mournfen",
+          "givers": [
+            "r58_foreman_mining_camp_mournfen"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "sullen_bog_ooze"
+              ],
+              "area": "kragmar_mournfen/blightfields"
+            }
+          ],
+          "text": "[PH] Defeat Bog Seep × 8 by day in the {name:blightfields}, which lie {zone_area:blightfields}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "kragmar_redtusk_savanna",
+          "givers": [
+            "r58_foreman_mining_camp_redtusk_savanna"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "dustpack_hyena"
+              ],
+              "area": "kragmar_redtusk_savanna/grasslands"
+            }
+          ],
+          "text": "[PH] Defeat Cackler × 8 by day in the {name:grasslands}, which lie {zone_area:grasslands}, so the camp's haulers can pass. Real text to follow."
+        },
+        {
+          "zone": "kragmar_raincall_basin",
+          "givers": [
+            "r58_foreman_mining_camp_raincall_basin"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "young_boar"
+              ],
+              "area": "kragmar_raincall_basin/rainwood"
+            }
+          ],
+          "text": "[PH] Defeat Wallow Sow × 8 by day in the {name:rainwood}, which lie {zone_area:rainwood}, so the camp's haulers can pass. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "choices": [
+          {
+            "item": "grug_mobs:light_leather",
+            "count": 4
+          },
+          {
+            "item": "grug_mobs:linen_cloth",
+            "count": 3
+          },
+          {
+            "item": "grug_materials:iron_bar",
+            "count": 2
+          }
+        ]
+      },
+      "notes": "Round 58 camp hunt: one shared quest per camp band and clock, given by the camps' foremen; a role near the camp (the camps' level belt L11-13) that the zone's own quests do not hunt yet, met by day."
     }
   ]
 }

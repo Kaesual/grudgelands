@@ -95,7 +95,10 @@ repeatable switch by Round 57, 2026-10-23
   notice). Each tracked quest is one HUD line showing only its objective
   (e.g. "0/4 Bring Raw Meat"), no title; a quest ready to turn in shows
   "Return to <turn-in NPC>" (a system quest its own line, "System quests"
-  below; a shared quest the turn-in of the variant the player took). A
+  below; a shared quest the turn-in of the variant the player took, the
+  giver it was taken from when that giver is one of them, Round 58: a role
+  quest's turn-ins are every foreman of the role). The same NPC carries the
+  map's hand-in marker. A
   quest with several objectives shows them on one compact line ("Wood Axe
   0/1, Wood Pickaxe 0/1") and a travel quest reads "Travel to <NPC>". Two
   quests with identical objectives may read the same. Keep the tab authoritative; do not place the entire journal
@@ -165,7 +168,9 @@ heartland, the contested 31–40 zones, and the 41–60 front with island
 bounties. Round 31 adds 24 PvP fortress quests (below) and Round 36 the main
 line's 25 (below); Round 46 removed Round 29's 55 repeatable quests (485 in
 total); Round 57 rebuilt the six start zones' 92 quests as 30 (423 in total,
-"The start zones" below). This is an editorial budget, not a filler quota.
+"The start zones" below); Round 58 adds the Miner's Guild's 30 (453 in
+total, [miners_guild.md](miners_guild.md) §11). This is an editorial budget,
+not a filler quota.
 A start town offers its quests at once across the elder and the cook near
 an oven ("The start zones"). Compatible tasks share an outing; avoid
 repeated returns for increasing counts of the same mob. Optional item/cooking
@@ -459,6 +464,14 @@ Quest content is data, one file per zone, read at load by
 - `<zone_id>.front.quests.json`: front quests given by that zone's givers on
   the line `front`, which the zone's own file declares for that giver; the
   zone's own quests never use `front`.
+- Round 58: the four Battlegrounds zones have a quest file of their own
+  (their war camps' foremen and quests), and the two **guild files**
+  `charter_of_stone.quests.json` and `oathdelvers.quests.json`, whose zones
+  are the guilds' ids (`grug_guild` catalogue `GUILDS`), not map zones: the
+  home of the gather quests that the foreman roles give in every own camp
+  ([miners_guild.md](miners_guild.md) §11). A quest in a guild file shows
+  only its level in the quest log (no zone), and the leveling routes of
+  `ledger.py` pass no guild file.
 - New givers stand at a free quest socket of the hub's settlement
   (`{"npc", "new": {"name", "race", "socket", "role"?}, "lines"}`): the
   socket-bound NPC system places the quest giver there with that name and
@@ -550,8 +563,14 @@ offers a quest the player completed (or holds) elsewhere.
 ### The Miner's Guild givers (Round 58)
 
 Registered in code (`grug_quests/npcs.lua`), like the fortress givers: the
-Battlegrounds zones have no quest file, and a camp's quests are bound to the
-depth, not to a zone ([miners_guild.md](miners_guild.md) §11).
+camps are the world's (`grug_mapgen.mining_camps`), and a camp's gather
+quests are bound to the depth, not to a zone ([miners_guild.md](miners_guild.md)
+§11). Each foreman is a hub giver of its camp zone's file (a Battlegrounds
+zone's file holds its eight; lines `camp` and `guild`), so the quests that
+name it by id are given in its zone. The design tools know them from the
+camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
+`guild_quest_npcs`); a portable harness that loads the shipped files gives
+`npcs.lua` the camps and capitals with `tools/r58_guildquests/guild_world.lua`.
 
 - **The foremen:** one per mining camp and war camp (36), id
   `r58_foreman_<camp id>` (the camp ids of `grug_mapgen.mining_camps`), on
@@ -627,7 +646,10 @@ text. A system quest has no dialog: its mod posts its own completion line.
 A quest file with `"reworked": true` follows the rules the quest rework
 introduces; the files of levels 11–60 keep their chains until their own
 rework (Round 59 and later), and nothing of this section ever reports an
-unflagged file. In reworked files (both validators, the same codes):
+unflagged file (Round 58: the guild files are flagged; the camp zones and
+the Battlegrounds files are not, so the guild quests homed there are free
+play by construction, checked by `tools/r58_guildquests`). In reworked files
+(both validators, the same codes):
 
 - `E-free-requires`: a free quest requires at most one quest, the one it
   follows; only story quests chain;

@@ -58,6 +58,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_ashenward_march",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_ashenward_march",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

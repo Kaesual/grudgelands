@@ -43,6 +43,19 @@
           ]
         }
       ]
+    },
+    {
+      "id": "mining_camp_raincall_basin",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_foreman_mining_camp_raincall_basin",
+          "lines": [
+            "camp",
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
