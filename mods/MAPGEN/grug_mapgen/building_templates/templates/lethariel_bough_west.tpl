@@ -115,7 +115,7 @@ layer 7
 |..CCCCCCCK.|
 |..CCCCCCC..|
 |..CCCCCCC..|
-|.BCCCCCCCB.|
+|.BCCCCCCC..|
 |..CCCCCCC..|
 |..CCCCCCC..|
 |..CCCCCCC..|
