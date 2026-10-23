@@ -66,8 +66,9 @@ local function survey(hall)
 	local d = vector.subtract(hall.leader, hall.porter)
 	local ax = math.abs(d.x) > math.abs(d.z) and (d.x > 0 and 1 or -1) or 0
 	local az = ax == 0 and (d.z > 0 and 1 or -1) or 0
-	-- the frieze: one node behind the leader, y + 1 (the layer above the feet)
-	local back = {x = hall.leader.x + ax * 2, y = hall.leader.y + 1, z = hall.leader.z + az * 2}
+	-- the frieze: in the back wall right behind the leader, y + 1 (the layer
+	-- above the feet)
+	local back = {x = hall.leader.x + ax, y = hall.leader.y + 1, z = hall.leader.z + az}
 	local found = {}
 	for offset = -4, 4 do
 		local p = {x = back.x + az * offset, y = back.y, z = back.z + ax * offset}
@@ -80,17 +81,18 @@ local function survey(hall)
 	for tier = 1, #TIERS do if found[tier] then tiers = tiers + 1 end end
 	-- the plaque: over the door, three nodes up, one node towards the hall
 	-- from the porter's row and up to three nodes sideways
-	local plaque = 0
+	-- (the house's ore samples may be the same metal: at least one)
 	local minp = vector.subtract(hall.porter, {x = 4, y = 0, z = 4})
 	local maxp = vector.add(hall.porter, {x = 4, y = 5, z = 4})
-	plaque = #core.find_nodes_in_area(minp, maxp, {hall.cap.plaque})
+	local plaque = #core.find_nodes_in_area(minp, maxp, {hall.cap.plaque})
 	log(("CHECK %s: frieze %d of 6 tier stones behind the leader, plaque %d (%s)")
-		:format(key, tiers, plaque, (tiers == 6 and plaque == 1) and "ok" or "MISSING"))
-	-- outside: 12 back along the axis from the porter, 5 up, looking at the door
-	local out = {x = hall.porter.x - ax * 12 + az * 3, y = hall.porter.y + 5,
-		z = hall.porter.z - az * 12 + ax * 3}
+		:format(key, tiers, plaque, (tiers == 6 and plaque >= 1) and "ok" or "MISSING"))
+	-- outside: 9 back along the axis from the porter and 10 up, over the
+	-- trees the core plants on its open ground, looking down at the door
+	local out = {x = hall.porter.x - ax * 9 + az * 3, y = hall.porter.y + 10,
+		z = hall.porter.z - az * 9 + ax * 3}
 	SHOTS[#SHOTS + 1] = {name = key .. "_outside", pos = out,
-		yaw = yaw_to(out, hall.porter), pitch = 14, first = true}
+		yaw = yaw_to(out, hall.porter), pitch = 32, first = true}
 	-- inside: three in from the porter (the first row past the door), at
 	-- eye height, looking at the leader
 	local inside = {x = hall.porter.x + ax * 3, y = hall.porter.y + 1.9,
