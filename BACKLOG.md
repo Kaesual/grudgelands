@@ -3070,6 +3070,34 @@ user sets; the decisions and their detail are in
   standalone place stories, investigations selectively and journeys for the
   mining camps, piloted on one zone and its capital per faction.
 
+### Decided for Round 58 and later (Round 57 plan §8–§9)
+
+**Decided with the user on 2026-10-23**, replacing the mining-camp entry
+above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-decided-for-round-58).
+
+- **Round 58, the Miner's Guild** (**map reset**, together with the town
+  fixes above):
+  - one guild per faction, a political actor, with a guild building in every
+    capital;
+  - 20 new camps (T2–T4) plus the 16 Battlegrounds war camps as mining camps,
+    and one "camp under construction" of the enemy in each own contested T4
+    zone (guards only, no lift);
+  - a faction-only teleport lift to a protected room at every tier depth
+    down to the camp's tier (148 rooms), guarded against water and lava;
+  - guild quests bound to the depth (one id per tier for both factions, at
+    own camps only), 1–2 kill quests per camp, everything at once, no T1
+    quest, no repeatables;
+  - reputation with a lifetime rank (0–10) and a spendable balance, an
+    achievement with three cloaks (ranks 3, 6, 10);
+  - a camp vendor who buys, repairs, trades materials for reputation and
+    sells only the 12 consumables (Ore Sense and Treasure Hunt, T1–T6; rank
+    gates buying, level gates use, own effect slot, one active at a time,
+    the effect lasts across logout and death); materials are also traded for
+    reputation at the guild in the capitals.
+- **Round 59 and later:** the story arc and the quest rework of levels
+  11–60; then unique items (quest rewards, boss loot tables for instances,
+  world finds) and the armor redesign with several polygon groups per slot.
+
 ### Audit 2026-10 open questions
 
 **Open, for the user** (collected 2026-10-05 from the

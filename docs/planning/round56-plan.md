@@ -463,7 +463,7 @@ These were decided with the user on 2026-10-22; each becomes its own round, in a
 - **The town workshop evening** with players stays a later idea (the tools come to main with VIEWER).
 - **NPCs using doors** more visibly (goals inside buildings) is a candidate.
 
-**Mining camps** (needs a map reset).
+**Mining camps** (needs a map reset). *Replaced on 2026-10-23 by the Miner's Guild, [Round 57 plan §8](round57-plan.md#8-decided-for-round-58).*
 - **Placement:**
   - one camp in every T2, T3 and T4 zone except the capital zones: 20 camps (6 T2, 8 T3, 6 T4);
   - placed per seed by the placement rules, in the part of the zone whose level fits the room's depth.
@@ -493,7 +493,8 @@ These were decided with the user on 2026-10-22; each becomes its own round, in a
 All lanes but the hood art are merged on main and independently reviewed (Opus); this lane D (the version, this
 section, AGENTS, the workflow gate and the status owners) follows on main `0c64e084`. **0.56.0 is compatible:** no
 migration step, item ids unchanged, and the towns and capitals build byte-identically, which `check_upgrade.py` now
-proves. **Push:** not pushed; 0.56.0 waits for the user's GUI test. **Sync:** by the coordinator after the round.
+proves. **Push:** with 0.56.1 on 2026-10-23 after the user's GUI test (origin/main `2b4a3228`); the GUI test found
+two small things for Round 57's fix lane (bays with no-fly columns; the chin strip's underside). **Sync:** by the coordinator after the round.
 **The hood ships invisible:** the models carry it, but every shipped head layer leaves it transparent until the user
 picks its art (HOODART); that finish step may come as 0.56.1 (§7).
 
@@ -724,8 +725,8 @@ the seed fleet `full`, one boot, the sync) is the coordinator's.
 ### Addendum: 0.56.1, the hood art (2026-10-22)
 
 The finish step (§7), on main `68ed15f5` (0.56.0 plus HOODPAINT), as lane HOODFINISH (Opus), branch
-`r56-hoodfinish`. **0.56.1 is compatible:** only textures and tools change; no saved state, no item ids; not pushed,
-on top of 0.56.0.
+`r56-hoodfinish`. **0.56.1 is compatible:** only textures and tools change; no saved state, no item ids; on top of 0.56.0,
+pushed with it on 2026-10-23.
 
 - **HOODPAINT** (`bb77258f`, merged `68ed15f5`): `tools/r56_hood/views.py` paints the hood in side, back and top
   views and projects them onto its eight faces (templates, projection, preview, self-test). Review MERGE.

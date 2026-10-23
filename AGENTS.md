@@ -22,8 +22,8 @@ mana food for every class, floating items), `Prefix:`/`Suffix:` in enchant
 tooltips and "Replaces prefix: …" at the station, the hood as an armor
 polygon part (transparent until the user's art pick) and the open chin
 strip, the town buildings frozen byte-identically into building templates
-with a local editor, the quest overview page; **not pushed**, waiting for
-the user's GUI test. Before it 0.55.1, the profession debug command `/prof`
+with a local editor, the quest overview page; with 0.56.1, the picked hood art, GUI-accepted and
+**pushed** on 2026-10-23 (origin/main `2b4a3228`). Before it 0.55.1, the profession debug command `/prof`
 (**compatible**, no step;
 [professions.md](docs/design/professions.md#16-the-prof-debug-command)), on
 0.55.0, Round 55 "The offhand look" (**compatible**, no step;
@@ -61,12 +61,11 @@ performance (native first) and gameplay polish" (**map reset**;
 Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 (2026-10-06), Round 42's playtest was accepted (2026-10-08), Rounds 46 and
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
-0.53.1, 0.54.1 and 0.55.1 on 2026-10-21; the GUI tests of Rounds 36–38, 40,
+0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the user's GUI test of 0.56.0 and
-0.56.1 (the picked hood art, the round's finish step) and the rounds
-decided for later ([plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds):
-the crafting window, the town fixes, the mining camps, the quest rework).
+are not recorded as passed. Next: [Round 57](docs/planning/round57-plan.md)
+(the crafting window, the quest foundation, the start zones), then Round 58
+(the Miner's Guild and the town fixes, a map reset).
 Details: [STATUS](docs/STATUS.md).
 
 ## Language rules

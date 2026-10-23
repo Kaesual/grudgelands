@@ -50,9 +50,19 @@ remain delivered foundations, with this refinement work still ahead.
   (`tools/r56_questmap/`) and an idea report, which recommends a faction
   story from the capital combined with standalone place stories.
 
-Decided with the user on 2026-10-22 for their own rounds, in an order the
-user sets ([Round 56 plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds),
-[BACKLOG](BACKLOG.md#decided-for-later-rounds-round-56-8)):
+Decided with the user on 2026-10-22 and ordered on 2026-10-23
+([Round 56 plan §8](docs/planning/round56-plan.md#8-decided-for-later-rounds),
+[Round 57 plan](docs/planning/round57-plan.md),
+[BACKLOG](BACKLOG.md#decided-for-later-rounds-round-56-8)): **Round 57** the
+crafting window, the quest foundation (one quest for many givers, choice
+rewards, story marking, no repeatable quests, free play outside the story)
+and the six start zones rebuilt on it; **Round 58**, the one map reset, the
+Miner's Guild (36 mining camps including the 16 Battlegrounds war camps, a
+lift to every tier depth, guild quests bound to the depth, reputation with
+ranks, cloaks and two kinds of consumables) together with the town fixes;
+**Round 59 and later** the story arc and the quest rework of levels 11–60,
+then unique items. The items below are the Round 56 decisions; the Round 57
+plan §8 replaces the mining camps' detail.
 
 - **A clearer crafting window:** one wide recipe box with the craft button
   beside the amount, a progress bar with a stop button, a crafting queue of

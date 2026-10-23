@@ -14,12 +14,13 @@ adds the admin debug command `/prof`. Both passed the user's GUI test, were
 pushed on 2026-10-21 (origin/main `52996c44`) and 0.55.1 runs in
 production. Round 56 (0.56.0) takes the fixes from the playtest of
 2026-10-21 and freezes the town buildings into editable building
-templates; 0.56.1 adds the picked hood art (its finish step). Neither is
-pushed; both wait for the user's GUI test. Next: the rounds decided for
-later in the
-[Round 56 plan §8](planning/round56-plan.md#8-decided-for-later-rounds)
-(the crafting window, the town fixes, the mining camps, the quest rework),
-in an order the user sets. The
+templates; 0.56.1 adds the picked hood art (its finish step). Both passed
+the user's GUI test (two small findings go to Round 57's fix lane) and were
+pushed on 2026-10-23 (origin/main `2b4a3228`). Next:
+[Round 57](planning/round57-plan.md) (the crafting window, the quest
+foundation and the six start zones rebuilt on it), then Round 58 (the
+Miner's Guild and the town fixes, a map reset), as ordered with the user on
+2026-10-23. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
@@ -31,13 +32,15 @@ user's notes.
   drop's painter into `tools/r54_art` (whole tiers from `hood-drop-02` p2,
   with two one-pixel leather helm repairs) and baked it: only the 12 cloth
   and leather head layers and their masks change, `check.py` 0 violations
-  and 0 warnings. **Not pushed:** on top of 0.56.0, both wait for the
-  user's GUI test.
+  and 0 warnings. **Pushed** with 0.56.0 on 2026-10-23 after the user's GUI
+  test (origin/main `2b4a3228`).
 - **Round 56 "Playtest fixes, clear enchants, the hood and the quest
   survey" complete** (2026-10-22, version 0.56.0, **compatible**, no
   migration step;
   [plan, decisions, numbers and GUI checklist](planning/round56-plan.md#completion-2026-10-22)).
-  **Not pushed:** 0.56.0 waits for the user's GUI test. The hood shipped
+  **Pushed** with 0.56.1 on 2026-10-23 after the user's GUI test (origin/main
+  `2b4a3228`); two small findings (bay no-fly columns, the chin strip's
+  underside) go to Round 57's fix lane. The hood shipped
   invisible in 0.56.0 (the models carry it, every head layer left it
   transparent; drop-01 not taken; a painting tool, HOODPAINT, then Astra's
   drop-02); its art came with 0.56.1 (above). Seed
