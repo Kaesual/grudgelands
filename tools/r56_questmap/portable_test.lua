@@ -113,8 +113,17 @@ eq(bad_xp, 0, "M XP is the reward formula")
 eq(no_name, 0, "M every kill names its targets")
 eq(no_hub, 0, "M every quest's giver stands in a hub")
 local facts = F.analyse(model.quests, model.zones).by_id
-check(facts.dawnmere_tools_01 and has(facts.dawnmere_tools_01.flags, "reward_is_request") and
-	has(facts.dawnmere_tools_01.flags, "start_twin"), "M the wooden tools quest is flagged")
+-- Round 57: the start zones' tool swaps are gone and their common tasks are
+-- shared quests, one row each (tools/r57_startquests).
+do
+	local swaps, boars = 0, nil
+	for _, quest in ipairs(model.quests) do
+		if has(facts[quest.id].flags, "reward_is_request") then swaps = swaps + 1 end
+		if quest.id == "start_boars" then boars = quest end
+	end
+	eq(swaps, 0, "M no shipped quest rewards what it requests")
+	check(boars and boars.shared and #boars.variants == 6, "M the start boars are one row with six variants")
+end
 
 -- V (Round 57): a shared quest, a story quest and a choice of rewards, on
 -- tools/r57_qsys's sample files (Dawnmere Fields and Sunscar Flats).
@@ -147,7 +156,7 @@ if handle then handle:close() end
 os.remove(out)
 check(said:find("questmap: ", 1, true) ~= nil, "P the tool reports")
 check(page:find("__QUESTMAP_DATA__", 1, true) == nil, "P the marker is replaced")
-check(page:find('"id":"dawnmere_hunt_01"', 1, true) ~= nil, "P the data is in the page")
+check(page:find('"id":"start_boars"', 1, true) ~= nil, "P the data is in the page")
 check(page:find("<title>", 1, true) ~= nil and page:find("http", 1, true) == nil, "P one page, no network")
 
 if failures > 0 then

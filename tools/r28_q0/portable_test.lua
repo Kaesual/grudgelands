@@ -17,7 +17,9 @@
 --      many objectives get a range, and how many HUD tracker lines would
 --      exceed the tracker width with the range added (the HUD decision);
 --      Round 32: kill targets read as their zone shows them (Kapok's boar,
---      bandit and leader) in the dialogue text and the tracker line.
+--      bandit and leader) in the dialogue text and the tracker line;
+--      Round 57: the start towns offer the boars and rats at once, and a
+--      shared quest taken or done in one town is offered in no other.
 --
 -- Usage (repo root): luajit tools/r28_q0/portable_test.lua
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
@@ -122,6 +124,9 @@ grug_factions = {get_faction = function() return "accord" end,
 dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
+-- Round 57: the shipped start zones carry reward choices with fixed enchants;
+-- their pools are grug_quality's and tools/r57_startquests' check, not this one.
+grug_items = {check_affixes = function() return true end}
 sfinv = {register_page = function(name, def) pages[name] = def end,
 	make_formspec = function(_, _, content) return content end, get_page = function() return "" end,
 	pages = pages, pages_unordered = {}}
@@ -586,7 +591,9 @@ check(ranged_kills > 0 and ranged_kills <= kills, "shipped kill objectives get r
 -- Round 32: kill targets read as their zone shows them, through the
 -- loader's names and the quest state's rows (tracker); since Round 38 the
 -- names are the accepted ones of data/names.json.
-eq(Q.objective_action(Q.registered_quests.kapok_hunt_01.objectives[1]), "Defeat Yam Piglet",
+-- Round 57: the start zones' boar hunt is one shared quest; Kapok's variant.
+local boars = Q.registered_quests.start_boars
+eq(Q.objective_action(boars.variant_by_key[boars.giver_variant.r14_troll_elder].objectives[1]), "Defeat Yam Piglet",
 	"shipped: Kapok's small boar by its zone name")
 do
 	local objectives = Q.registered_quests.kapok_hunt_05.objectives
@@ -597,8 +604,36 @@ end
 -- The journal fills the quest text; this fixture builds no region map.
 grug_mobs.spawn_regions.describe = function() return nil, "no region map in this fixture" end
 for key in pairs(meta) do meta[key] = nil end -- section 2's quests are not shipped ones
-check(Q.accept(player, "kapok_hunt_01"), "shipped: accept kapok_hunt_01")
-eq(hud("kapok_hunt_01"), "0/8 Defeat Yam Piglet", "shipped: the tracker line names the zone's boar")
+check(Q.accept(player, "start_boars", "r14_troll_elder"), "shipped: accept start_boars from Kapok's elder")
+eq(hud("start_boars"), "0/8 Defeat Yam Piglet", "shipped: the tracker line names the zone's boar")
+-- Round 57 (tools/r57_startquests): a new character is offered the boar and
+-- rat quests at once in every start town; a shared quest taken or done in
+-- one town is offered in no other.
+do
+	local level = grug_xp.get_level
+	grug_xp.get_level = function() return 1 end
+	local function status(npc, id)
+		for _, row in ipairs(Q.npc_quests(player, npc)) do
+			if row.id == id then return row.status end
+		end
+		return "none"
+	end
+	for key in pairs(meta) do meta[key] = nil end
+	for _, race in ipairs({"human", "dwarf", "elf", "orc", "troll", "undead"}) do
+		eq(status("r14_" .. race .. "_elder", "start_boars"), "available", "start: the " .. race .. " elder offers the boars")
+		eq(status("r20_" .. race .. "_start_cook", "start_rats"), "available",
+			"start: the " .. race .. " cook offers the rats at once")
+	end
+	check(Q.accept(player, "start_boars", "r14_human_elder"), "start: the boars taken in Dawnmere")
+	eq(status("r14_human_elder", "start_boars"), "active", "start: ...active there")
+	eq(status("r14_dwarf_elder", "start_boars"), "none", "start: ...not offered in Hearthpine")
+	meta["grug_quests:state"] = {active = {}, completed = {start_boars = true}, tracked = {}, hud = true}
+	eq(status("r14_human_elder", "start_boars"), "none", "start: done once, not offered again")
+	eq(status("r14_elf_elder", "start_boars"), "none", "start: ...nor in Silverleaf")
+	eq(status("r20_elf_start_cook", "start_rats"), "available", "start: the other quests stay offered")
+	for key in pairs(meta) do meta[key] = nil end
+	grug_xp.get_level = level
+end
 -- What the one-time computation costs at load (reported, not a target).
 do
 	local world, real = nil, Q.validate.world
