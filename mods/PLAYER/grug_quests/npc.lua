@@ -86,32 +86,73 @@ local function preselect(rows, fallback)
 end
 Q.npc_preselect = preselect
 
--- The reward lines of a quest: its XP, copper and items, then its choice.
-function Q.reward_lines(def)
+-- A reward choice as the player would get it: the stack made as the
+-- turn-in makes it (its item level and fixed enchants, the receiver's
+-- tooltip), or the plain stack without grug_quality (fixtures).
+local function choice_stack(player, def, choice)
+	local items_api = rawget(_G, "grug_items")
+	local stack = items_api and items_api.make_stack and
+		items_api.make_stack(choice.item, def.level, choice.affixes, player)
+	return stack or ItemStack(choice.item)
+end
+
+-- Its tooltip: grug_quality's own tooltip text (item buttons show only the
+-- definition's description).
+local function choice_tooltip(player, def, choice)
+	local items_api = rawget(_G, "grug_items")
+	local stack = choice_stack(player, def, choice)
+	if not (items_api and items_api.tooltip_text) then return grug_core.item_name(stack) end
+	return items_api.tooltip_text(stack, player)
+end
+
+-- The tooltip's lines as plain text (the quality colour and the stat
+-- colours dropped): what the dialog's text area shows.
+local function plain_lines(text)
+	local out = {}
+	for line in (grug_core.plain_text(text) .. "\n"):gmatch("(.-)\n") do
+		if line ~= "" then out[#out + 1] = line end
+	end
+	return out
+end
+
+-- A choice as one line of the reward text (Round 57 follow-up, the user:
+-- the enchants readable without hovering): the made stack's name (with its
+-- enchant words, as the inventory shows it), its count and its enchant
+-- lines.
+local function choice_line(player, def, choice)
+	local lines = plain_lines(choice_tooltip(player, def, choice))
+	local stack = ItemStack(choice.item)
+	local enchants = {}
+	for _, line in ipairs(lines) do
+		if line:find("^Prefix: ") or line:find("^Suffix: ") then enchants[#enchants + 1] = line end
+	end
+	return (lines[1] or grug_core.item_name(stack)) .. (stack:get_count() > 1 and " × " .. stack:get_count() or "") ..
+		(#enchants > 0 and " (" .. table.concat(enchants, ", ") .. ")" or "")
+end
+
+-- The reward lines of a quest: its XP, copper and items, then its choice,
+-- one choice per line (`player`: the reader, whose tooltip the made stacks
+-- carry).
+function Q.reward_lines(def, player)
 	local lines = {"Rewards: " .. Q.reward_xp(def) .. " XP, " .. grug_money.format(def.rewards.copper)}
 	for _, item in ipairs(def.rewards.items) do
 		local stack = ItemStack(item)
 		lines[#lines + 1] = grug_core.item_name(stack) .. " × " .. stack:get_count()
 	end
 	if #def.rewards.choices > 0 then
-		local names = {}
+		lines[#lines + 1] = "and one of:"
 		for _, choice in ipairs(def.rewards.choices) do
-			local stack = ItemStack(choice.item)
-			names[#names + 1] = grug_core.item_name(stack) .. (stack:get_count() > 1 and " × " .. stack:get_count() or "")
+			lines[#lines + 1] = "  " .. choice_line(player, def, choice)
 		end
-		lines[#lines + 1] = "and one of: " .. table.concat(names, ", ")
 	end
 	return lines
 end
 
--- A reward choice's tooltip: the stack the player would get, made as the
--- turn-in makes it (its item level and enchants), in grug_quality's own
--- tooltip text (item buttons show only the definition's description).
-local function choice_tooltip(player, def, choice)
-	local items_api = rawget(_G, "grug_items")
-	if not (items_api and items_api.make_stack) then return grug_core.item_name(ItemStack(choice.item)) end
-	local stack = items_api.make_stack(choice.item, def.level, choice.affixes, player)
-	return items_api.tooltip_text(stack or choice.item, player)
+-- The picked reward's whole tooltip, for the text area at the turn-in.
+local function picked_lines(player, def, picked)
+	local choice = picked and def.rewards.choices[picked]
+	if not choice then return nil end
+	return plain_lines(choice_tooltip(player, def, choice))
 end
 
 -- The choice row (Round 57 ruling 15) under the text: item icons with
@@ -144,12 +185,13 @@ local function choice_row(player, def, ready, picked)
 			out[#out + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, CHOICE_Y, CHOICE_SIZE, CHOICE_SIZE, tip)
 		end
 	end
-	if ready then
-		local chosen = picked and def.rewards.choices[picked]
-		out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y + CHOICE_SIZE + 0.35,
-			esc(chosen and ("Chosen: " .. grug_core.item_name(ItemStack(chosen.item))) or
-				"Click a reward to choose it."))
-	end
+	-- The name the made stack shows (its enchant words); its whole tooltip
+	-- stands in the text area above (Round 57 follow-up).
+	local chosen = ready and picked_lines(player, def, picked)
+	out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y + CHOICE_SIZE + 0.35,
+		esc(chosen and ("Chosen: " .. chosen[1] .. " (see above)") or
+			(ready and "Pick an item to see its enchantments above, or hover it." or
+				"Hover an item to see its tooltip.")))
 	return table.concat(out)
 end
 
@@ -203,9 +245,13 @@ function Q.open_npc(player, entity, selected, notice, picked)
 		detail = detail .. (objective.description or Q.objective_action(objective)) ..
 			" × " .. objective.count .. Q.objective_levels_text(objective) .. "\n"
 	end
-	detail = detail .. "\n" .. table.concat(Q.reward_lines(def), "\n")
+	detail = detail .. "\n" .. table.concat(Q.reward_lines(def, player), "\n")
 	local choices = #def.rewards.choices > 0
 	if not (row.status == "ready" and def.rewards.choices[picked or 0]) then picked = nil end
+	-- At the turn-in the picked reward's whole tooltip (item level, stats,
+	-- enchants) is readable without hovering (Round 57 follow-up).
+	local chosen = picked_lines(player, def, picked)
+	if chosen then detail = detail .. "\n\nChosen:\n" .. table.concat(chosen, "\n") end
 	-- The description is a read-only text (no field name).
 	local form = "formspec_version[6]size[16,9.4]label[0.4,0.4;" .. esc(npc.title or id) .. "]" ..
 		"textlist[0.4,0.9;7,6;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. ";false]" ..
