@@ -31,8 +31,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "[PH] Piglets in the Fields",
-      "text": "[PH] Hunt 8 Barley Piglets by day in the {name:home_fields}. Real text to follow.",
+      "title": "Eight Snouts Too Many",
+      "text": "Barley Piglets are eating next winter's bread before we've had a chance to bake it. Hunt eight by day in the {name:home_fields}, {zone_area:home_fields}. They leave you alone until you strike, so take a moment to choose your quarrel.",
       "objectives": [
         {
           "type": "kill",
@@ -60,7 +60,7 @@
               "area": "elandor_hearthpine_vale/timberline"
             }
           ],
-          "text": "[PH] Hunt 8 Pine Piglets by day in the {name:timberline}. Real text to follow."
+          "text": "A pit prop ought to hold up a mine, not feed a pig. Hunt eight Pine Piglets by day in the {name:timberline}, {zone_area:timberline}, before they root through another stack. They won't start the fight; for once, the foreman leaves the timing to you."
         },
         {
           "zone": "elandor_silverleaf_glades",
@@ -72,7 +72,7 @@
               "area": "elandor_silverleaf_glades/home_glades"
             }
           ],
-          "text": "[PH] Hunt 8 Glade Piglets by day in the {name:home_glades}. Real text to follow."
+          "text": "We planted those saplings for children yet unborn; the Glade Piglets consider them breakfast. Cull eight by day in the {name:home_glades}, {zone_area:home_glades}. They will let you choose the first blow, though I fear they will never appreciate the years behind it."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -84,7 +84,7 @@
               "area": "kragmar_sunscar_flats/wellfields"
             }
           ],
-          "text": "[PH] Hunt 8 Scrub Piglets by day in the {name:wellfields}. Real text to follow."
+          "text": "Water carried home on tired shoulders should reach a mouth, not leak from a chewed waterskin. Hunt eight Scrub Piglets by day in the {name:wellfields}, {zone_area:wellfields}. They wait for you to strike, so plant your feet and make the blow count."
         },
         {
           "zone": "kragmar_kapok_cradle",
@@ -96,7 +96,7 @@
               "area": "kragmar_kapok_cradle/yam_beds"
             }
           ],
-          "text": "[PH] Hunt 8 Yam Piglets by day in the {name:yam_beds}. Real text to follow."
+          "text": "We tend the yams, the yams feed the village, and the Yam Piglets would like to shorten that arrangement. Hunt eight by day in the {name:yam_beds}, {zone_area:yam_beds}. They leave you be until you strike; use that courtesy to keep a clear path around your feet."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -108,7 +108,7 @@
               "area": "kragmar_stillgrave_hollow/dead_furrows"
             }
           ],
-          "text": "[PH] Hunt 8 Barrow Piglets by day in the {name:dead_furrows}. Real text to follow."
+          "text": "The Barrow Piglets have been rearranging people I buried with considerable care. Kill eight by day in the {name:dead_furrows}, {zone_area:dead_furrows}. They will wait for you to strike, which is more consideration than they show the residents."
         }
       ],
       "rewards": {
@@ -133,8 +133,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "[PH] Rats in the Grain Sacks",
-      "text": "[PH] Kill 3 Barn Rats after dark in the {name:meadows} and bring me 1 Rat Fur Patch. Real text to follow.",
+      "title": "The Rats Can Mend It",
+      "text": "The Barn Rats have eaten my grain and left me a sack that holds nothing but a grudge. Kill three after dark in the {name:home_fields}, {zone_area:home_fields}, and bring me one Rat Fur Patch. Patching rat holes with rat fur is what I call good housekeeping.",
       "objectives": [
         {
           "type": "kill",
@@ -174,7 +174,7 @@
               "area": "elandor_hearthpine_vale/timberline"
             }
           ],
-          "text": "[PH] Kill 3 Timber Rats after dark in the {name:timberline} and bring me 1 Rat Fur Patch. Real text to follow."
+          "text": "Something's been chewing my flour sacks after the late shift, and for once it isn't a miner. Kill three Timber Rats after dark in the {name:timberline}, {zone_area:timberline}, and bring me one Rat Fur Patch. I'll do the stitching; I've seen enough of your lot try to mend things with nails."
         },
         {
           "zone": "elandor_silverleaf_glades",
@@ -189,7 +189,7 @@
               "area": "elandor_silverleaf_glades/home_glades"
             }
           ],
-          "text": "[PH] Kill 3 Fern Rats after dark in the {name:home_glades} and bring me 1 Rat Fur Patch. Real text to follow."
+          "text": "Three generations of careful weaving, and the Fern Rats decide my seed baskets need doors. Kill three after dark in the {name:home_glades}, {zone_area:home_glades}, and bring me one Rat Fur Patch. I can mend a basket, but teaching manners to its visitors has proved a longer undertaking."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -204,7 +204,7 @@
               "area": "kragmar_sunscar_flats/wellfields"
             }
           ],
-          "text": "[PH] Kill 3 Dust Rats after dark in the {name:wellfields} and bring me 1 Rat Fur Patch. Real text to follow."
+          "text": "Dust Rats have chewed through my food sacks and dragged the scraps off for bedding. Kill three after dark in the {name:wellfields}, {zone_area:wellfields}, and bring me one Rat Fur Patch. They have had their comfort; I want my pantry back."
         },
         {
           "zone": "kragmar_kapok_cradle",
@@ -219,7 +219,7 @@
               "area": "kragmar_kapok_cradle/yam_beds"
             }
           ],
-          "text": "[PH] Kill 3 Moss Rats after dark in the {name:yam_beds} and bring me 1 Rat Fur Patch. Real text to follow."
+          "text": "My yam sacks have more holes than sack, and the Moss Rats look suspiciously well fed. Kill three after dark in the {name:yam_beds}, {zone_area:yam_beds}, and bring me one Rat Fur Patch. They made the holes; let them help with the mending."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -234,7 +234,7 @@
               "area": "kragmar_stillgrave_hollow/dead_furrows"
             }
           ],
-          "text": "[PH] Kill 3 Grave Rats after dark in the {name:dead_furrows} and bring me 1 Rat Fur Patch. Real text to follow."
+          "text": "Our shroud sacks have begun returning their contents to the floor, courtesy of the Grave Rats. Kill three after dark in the {name:dead_furrows}, {zone_area:dead_furrows}, and bring me one Rat Fur Patch. Death is no excuse for untidy storage."
         }
       ],
       "rewards": {
@@ -249,8 +249,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "[PH] Stone for the Wall",
-      "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow.",
+      "title": "A Useful Weight",
+      "text": "A gap in a wall is an invitation, and Dawnmere has quite enough guests with tusks. Bring me ten blocks of stone, any kind, for the repairs. If you need to gather some, a Wooden Pickaxe will loosen ordinary rock outside town.",
       "objectives": [
         {
           "type": "item",
@@ -270,35 +270,35 @@
           "givers": [
             "r14_dwarf_elder"
           ],
-          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+          "text": "Good masonry starts with sound stone and someone willing to carry it. Bring me ten blocks of stone, any kind, for our walls. A Wooden Pickaxe will get you started on ordinary rock outside town; I promise not to judge the load by how loudly you put it down."
         },
         {
           "zone": "elandor_silverleaf_glades",
           "givers": [
             "r14_elf_elder"
           ],
-          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+          "text": "The low walls keep wandering feet away from our youngest roots. Bring me ten blocks of stone, any kind, to mend the gaps. A Wooden Pickaxe can gather ordinary rock outside town; even a garden meant to outlast us needs work today."
         },
         {
           "zone": "kragmar_sunscar_flats",
           "givers": [
             "r14_orc_elder"
           ],
-          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+          "text": "A wall with a gap is just a heap of stone making promises. Bring me ten blocks of stone, any kind, and we will make ours useful again. If your pack is empty, take a Wooden Pickaxe to ordinary rock outside town."
         },
         {
           "zone": "kragmar_kapok_cradle",
           "givers": [
             "r14_troll_elder"
           ],
-          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+          "text": "Rain finds every loose stone in a wall, and then it invites the mud indoors. Bring me ten blocks of stone, any kind, for the repairs. A Wooden Pickaxe will gather ordinary rock outside town; moss is no guarantee of a soft landing for your knuckles."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
           "givers": [
             "r14_undead_elder"
           ],
-          "text": "[PH] Make a Wooden Pickaxe, dig 10 stone of any kind outside town and bring it to me. Real text to follow."
+          "text": "Our walls are losing stones, and I would like to catch the habit before it spreads to the residents. Bring me ten blocks of stone, any kind. A Wooden Pickaxe will gather ordinary rock outside town; if it has a name and two dates on it, choose another rock."
         }
       ],
       "rewards": {
@@ -323,8 +323,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "[PH] Fuel for the Oven",
-      "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow.",
+      "title": "The Fire Eats Too",
+      "text": "An oven full of good intentions still serves a cold dinner. Bring me five logs of any tree and five Coal Lumps; you can gather the logs and mine the coal outside town. Whole logs, please, not planks, and leave Dawnmere's trees standing.",
       "objectives": [
         {
           "type": "item",
@@ -349,35 +349,35 @@
           "givers": [
             "r20_dwarf_start_cook"
           ],
-          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+          "text": "Every mouth in Hearthpine wants supper, including the smokehouse. Bring me five logs of any tree and five Coal Lumps; the woods and rock outside town can supply both. Logs, mind, not planks, and leave the town trees alone or Brunna will have words with us both."
         },
         {
           "zone": "elandor_silverleaf_glades",
           "givers": [
             "r20_elf_start_cook"
           ],
-          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+          "text": "Saelin can warm a gathering with a speech; I have tried it on the oven without success. Bring me five logs of any tree and five Coal Lumps, gathered outside town if you need them. Leave our planted trees standing, and keep the logs whole; supper has waited quite long enough for eloquence."
         },
         {
           "zone": "kragmar_sunscar_flats",
           "givers": [
             "r20_orc_start_cook"
           ],
-          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+          "text": "My grandmother's grandmother tended the Long Fire, and every cook since has kept it fed. Bring me five whole logs of any tree and five Coal Lumps; gather them from trees and rock outside town. Leave Sunscar's trees standing, and you may tell your grandchildren you helped without leaving out any awkward details."
         },
         {
           "zone": "kragmar_kapok_cradle",
           "givers": [
             "r20_troll_start_cook"
           ],
-          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+          "text": "Rain drums on my roof, hungry trolls drum on my table, and the oven contributes nothing at all. Bring me five whole logs of any tree and five Coal Lumps from outside town. Leave Kapok's trees standing, unless you plan to hold up our shade yourself."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
           "givers": [
             "r20_undead_start_cook"
           ],
-          "text": "[PH] Bring me 5 logs of any tree and 5 Coal Lumps from the rock outside town. Real text to follow."
+          "text": "The fire beneath my brine pot has gone out, and glaring at it has achieved very little. Bring me five whole logs of any tree and five Coal Lumps; gather them outside Stillgrave's warded ground if you need to. Leave the town trees standing; some of us have grown rather attached to their shade."
         }
       ],
       "rewards": {
@@ -392,8 +392,8 @@
       "min_level": 4,
       "level": 5,
       "requires": [],
-      "title": "[PH] The Smokehouse Share",
-      "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow.",
+      "title": "Room at the Table",
+      "text": "The hands that bring in our harvest deserve more than a crust at the end of the day. Bring me ten pieces of Raw Meat for the kitchen; anything already in your pack is welcome. Heroes run on supper too, whatever the songs say.",
       "objectives": [
         {
           "type": "item",
@@ -413,35 +413,35 @@
           "givers": [
             "r20_dwarf_start_cook"
           ],
-          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+          "text": "When the snow shuts us in, I mean to hear snoring, not stomachs. Bring me ten pieces of Raw Meat for the winter racks; anything you've saved will do. A cellar doesn't fill itself while we admire the mountain."
         },
         {
           "zone": "elandor_silverleaf_glades",
           "givers": [
             "r20_elf_start_cook"
           ],
-          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+          "text": "The planting crews eat last and pretend they are not hungry. Bring me ten pieces of Raw Meat; what you have already set aside is welcome. I mean to have supper waiting before anyone has to pretend."
         },
         {
           "zone": "kragmar_sunscar_flats",
           "givers": [
             "r20_orc_start_cook"
           ],
-          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+          "text": "Hear those stomachs trying to drown out the hunters' stories? Bring me ten pieces of Raw Meat for the pot; I can use what is already in your pack. There is room at this fire for quiet folk as well as loud ones."
         },
         {
           "zone": "kragmar_kapok_cradle",
           "givers": [
             "r20_troll_start_cook"
           ],
-          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+          "text": "Everyone has a cousin coming to supper, and somehow the cousins all have cousins. Bring me ten pieces of Raw Meat; anything you have saved will help. I have counted the bowls twice and decided to stop counting people."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
           "givers": [
             "r20_undead_start_cook"
           ],
-          "text": "[PH] Bring me 10 Raw Meat from your hunts; I cook a share for you. Real text to follow."
+          "text": "A mourner may insist they cannot face a meal, but I still leave a bowl within reach. Bring me ten pieces of Raw Meat for the kitchen; anything already in your pack is welcome. An empty chair is sorrow enough without an empty table."
         }
       ],
       "rewards": {
@@ -462,8 +462,8 @@
       "min_level": 5,
       "level": 6,
       "requires": [],
-      "title": "[PH] Metal for the Mending",
-      "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow.",
+      "title": "Metal for the Mending",
+      "text": "Every loose hinge in Dawnmere seems to find its way onto my list. Bring me three Copper Bars and three Tin Bars for the town repairs. If you need to make them, smelt the local copper and tin ore in a furnace; a door that closes will spare me several complaints.",
       "objectives": [
         {
           "type": "item",
@@ -488,35 +488,35 @@
           "givers": [
             "r14_dwarf_elder"
           ],
-          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+          "text": "A shaft prop is only as trustworthy as its fittings, and miners put their lives beneath ours. Bring me three Copper Bars and three Tin Bars for the repairs. You can smelt the local copper and tin ore in a furnace; I can work with a crooked bar, but not an empty promise."
         },
         {
           "zone": "elandor_silverleaf_glades",
           "givers": [
             "r14_elf_elder"
           ],
-          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+          "text": "Our hall has heard a great deal of wisdom; lately its hinges insist on answering. Bring me three Copper Bars and three Tin Bars for the repairs. You can smelt the local copper and tin ore in a furnace, should you wish to lend a hand to the conversation."
         },
         {
           "zone": "kragmar_sunscar_flats",
           "givers": [
             "r14_orc_elder"
           ],
-          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+          "text": "A loose fitting at the well wastes water every time someone hauls a bucket. Bring me three Copper Bars and three Tin Bars for repairs. A furnace will smelt the local copper and tin ore if you need supplies; no one should carry a full bucket's weight for half a drink."
         },
         {
           "zone": "kragmar_kapok_cradle",
           "givers": [
             "r14_troll_elder"
           ],
-          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+          "text": "The rain has been testing our fittings, and some have answered by falling off. Bring me three Copper Bars and three Tin Bars for repairs. You can smelt the local copper and tin ore in a furnace; I would rather hear hammers than another door landing in the mud."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
           "givers": [
             "r14_undead_elder"
           ],
-          "text": "[PH] Smelt 3 Copper Bars and 3 Tin Bars and bring them to me; you get a Dual Furnace. Real text to follow."
+          "text": "The hinges on our storage chests groan whenever I open them, which makes one of us still capable of complaining about work. Bring me three Copper Bars and three Tin Bars for repairs. You can smelt the local copper and tin ore in a furnace; the noise has outlived its charm."
         }
       ],
       "rewards": {
@@ -537,8 +537,8 @@
       "min_level": 7,
       "level": 8,
       "requires": [],
-      "title": "[PH] Bronze for the Road",
-      "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow.",
+      "title": "A Little Bronze Goes Far",
+      "text": "Dawnmere wears out tools faster than I can count them, especially when someone lends a hammer to a fence post. Bring me three Bronze Bars for the workshop. If you want to make them yourself, a Dual Furnace can alloy copper and tin.",
       "objectives": [
         {
           "type": "item",
@@ -558,35 +558,35 @@
           "givers": [
             "r14_dwarf_elder"
           ],
-          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+          "text": "The mountain has plenty left to give, and our workshop has plenty left to mend. Bring me three Bronze Bars. A Dual Furnace can alloy copper and tin if you're making your own; bring the metal, and I'll supply the opinions on workmanship."
         },
         {
           "zone": "elandor_silverleaf_glades",
           "givers": [
             "r14_elf_elder"
           ],
-          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+          "text": "A tool worth keeping may pass through many hands before its work is done. Bring me three Bronze Bars for the workshop. A Dual Furnace can alloy copper and tin if you wish to make them yourself; we can spare a little time now for something that will last."
         },
         {
           "zone": "kragmar_sunscar_flats",
           "givers": [
             "r14_orc_elder"
           ],
-          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+          "text": "The clan needs sound metal for tools, and the workshop cannot hammer boasts into shape. Bring me three Bronze Bars. A Dual Furnace can alloy copper and tin if you want to make your own; the smith will be glad of something solid to work with."
         },
         {
           "zone": "kragmar_kapok_cradle",
           "givers": [
             "r14_troll_elder"
           ],
-          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+          "text": "Everyone borrows the village tools, but few remember that the tools need tending too. Bring me three Bronze Bars for the workshop. If you make them yourself, a Dual Furnace can alloy copper and tin, two voices sharing a fire without trying to sing over each other."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
           "givers": [
             "r14_undead_elder"
           ],
-          "text": "[PH] Make 3 Bronze Bars in a Dual Furnace and bring them to me; you get a Bronze Pickaxe. Real text to follow."
+          "text": "A workshop needs fresh metal even when most of its customers have stopped growing. Bring me three Bronze Bars for the tools we mend. A Dual Furnace can alloy copper and tin if you wish to make them yourself; happily, the metals get along better than most families at a reading of the will."
         }
       ],
       "rewards": {
@@ -607,8 +607,8 @@
       "min_level": 4,
       "level": 5,
       "requires": [],
-      "title": "[PH] Foxes in the Henhouse",
-      "text": "[PH] Hunt 8 Henthieves by day in the {name:pastures}. Real text to follow.",
+      "title": "Foxes at Our Expense",
+      "text": "Our hens have taken to sleeping with one eye open, and now the farmers are doing it too. Hunt eight Henthieves by day in the {name:pastures}, {zone_area:pastures}. A hen should be able to cross her own yard without settling someone else's supper.",
       "objectives": [
         {
           "type": "kill",
@@ -636,7 +636,7 @@
               "area": "elandor_silverleaf_glades/foxglades"
             }
           ],
-          "text": "[PH] Hunt 8 Russet Kits by day in the {name:foxglades}. Real text to follow."
+          "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Russet Kits by day in the {name:foxglades}, {zone_area:foxglades}. I have time to plant again, but the seedlings have only the roots they stand on."
         }
       ],
       "rewards": {
@@ -680,8 +680,8 @@
       "min_level": 7,
       "level": 8,
       "requires": [],
-      "title": "[PH] Snappers on the Shore",
-      "text": "[PH] Kill 5 Wreck Snappers by day in the {name:wreck_coast}. Real text to follow.",
+      "title": "Claws on the Shore",
+      "text": "The fishermen came back with torn nets and some very firm opinions about Wreck Snappers. Kill five by day on the shore at the {name:wreck_coast}, {dir_from_giver:wreck_coast}. Go while the sun is up; after dark, that shore has other reasons to keep you from supper.",
       "objectives": [
         {
           "type": "kill",
@@ -709,7 +709,7 @@
               "area": "elandor_hearthpine_vale/rockpools"
             }
           ],
-          "text": "[PH] Kill 5 Boulder Crabs by day in the {name:rockpools}. Real text to follow."
+          "text": "Boulder Crabs have been taking bites out of our shore gear, and I refuse to put 'digested' in the repair book again. Kill five by day among the {name:rockpools}, {dir_from_giver:rockpools}. Keep room to move; anything that cracks timber deserves more respect than a wet boot."
         }
       ],
       "rewards": {
@@ -755,8 +755,8 @@
       "min_level": 7,
       "level": 8,
       "requires": [],
-      "title": "[PH] A Brush and a Better Supper",
-      "text": "[PH] Bring me 2 Crab Legs from the Wreck Snappers on the {name:wreck_coast} and 1 Fox Tail from the Henthieves in the {name:pastures}. Real text to follow.",
+      "title": "A Brush and a Better Supper",
+      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from Wreck Snappers on the {name:wreck_coast}, {dir_from_giver:wreck_coast}, and one Fox Tail from Henthieves in the {name:pastures}, {zone_area:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and do try to keep them in separate pockets.",
       "objectives": [
         {
           "type": "item",
@@ -791,9 +791,9 @@
       "min_level": 8,
       "level": 9,
       "requires": [],
-      "title": "[PH] The Finale: {name:confused_bandit_chief}",
-      "text": "[PH] Defeat 7 Grain Pilferers at the {name:bandit_camp}, then {name:confused_bandit_chief}. Real text to follow.",
-      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
+      "title": "Requisition for One Crumb",
+      "text": "{name:confused_bandit_chief} calls our missing grain a requisition, though he cannot say who requisitioned it. Defeat seven Grain Pilferers and their chief at the {name:bandit_camp}, {dir_from_giver:bandit_camp}; they keep their posts day and night. We planted that harvest, and a man with a stolen sack and a long word does not get to decide who eats it.",
+      "completion": "Crumb can no longer sign away a harvest he never planted. You've done right by Dawnmere, and when you take to the road, you'll leave with more good wishes than will fit in your pack.",
       "objectives": [
         {
           "type": "kill",

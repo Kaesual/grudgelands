@@ -31,8 +31,8 @@
       "min_level": 3,
       "level": 4,
       "requires": [],
-      "title": "[PH] The Restless Dead",
-      "text": "[PH] Lay 3 Pit Shufflers to rest in the {name:shingle} after dark. Real text to follow.",
+      "title": "Let Them Rest",
+      "text": "I know a dragging footstep after a hard shift, and those aren't tired miners. Lay three Pit Shufflers to rest after dark on the shore at the {name:shingle}, {dir_from_giver:shingle}. Whatever shift they think they're working, it has gone on long enough.",
       "objectives": [
         {
           "type": "kill",
@@ -60,7 +60,7 @@
               "area": "elandor_silverleaf_glades/strand"
             }
           ],
-          "text": "[PH] Lay 3 Dune Stumblers to rest in the {name:strand} after dark. Real text to follow."
+          "text": "Dune grass bends beneath a living foot and rises after it; the dead leave it no such quiet. Lay three Dune Stumblers to rest after dark on the {name:strand}, {dir_from_giver:strand}. Let the waves be the only thing that returns to that shore without tiring."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -75,7 +75,7 @@
               "area": "kragmar_sunscar_flats/strand"
             }
           ],
-          "text": "[PH] Lay 3 Sun-Dried Husks to rest in the {name:strand} after dark. Real text to follow."
+          "text": "The Sun-Dried Husks still drag themselves along the shore as though thirst could follow them past death. Put three to rest after dark on the {name:strand}, {dir_from_giver:strand}. Whatever they were, they have crawled through enough salt."
         },
         {
           "zone": "kragmar_kapok_cradle",
@@ -87,7 +87,7 @@
               "area": "kragmar_kapok_cradle/rootways"
             }
           ],
-          "text": "[PH] Lay 3 Root Shufflers to rest in the {name:rootways} after dark. Real text to follow."
+          "text": "Listen among the roots after dark: rats scurry, but Root Shufflers drag their feet. Lay three to rest in the {name:rootways}, {zone_area:rootways}. Nobody should wander forever without knowing which doorway is home."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -99,7 +99,7 @@
               "area": "kragmar_stillgrave_hollow/ashfields"
             }
           ],
-          "text": "[PH] Lay 3 Nameless Shufflers to rest in the {name:ashfields}. Real text to follow."
+          "text": "I have read the burial rolls aloud to the Nameless Shufflers, and not one turned its head. Lay three to rest in the {name:ashfields}, {zone_area:ashfields}, by day or night. The blight shelters them from the sun; waiting for morning will not give them back their names."
         }
       ],
       "rewards": {
@@ -114,8 +114,8 @@
       "min_level": 4,
       "level": 5,
       "requires": [],
-      "title": "[PH] Crab Legs for Supper",
-      "text": "[PH] Bring me 2 Crab Legs from the Pebble Crabs and Boulder Crabs in the {name:rockpools}. Real text to follow.",
+      "title": "The Feast Fights Back",
+      "text": "For once I'd like a supper nobody can mistake for yesterday's stew. Bring me two Crab Legs from Pebble Crabs or Boulder Crabs by day at the {name:rockpools}, {dir_from_giver:rockpools}. The Pebble Crabs wait for you to start trouble; the Boulder Crabs have no such manners, so mind your fingers.",
       "objectives": [
         {
           "type": "item",
@@ -148,7 +148,7 @@
               "area": "elandor_silverleaf_glades/strand"
             }
           ],
-          "text": "[PH] Bring me 2 Crab Legs from the Sand Fiddlers in the {name:strand}. Real text to follow."
+          "text": "Even an ancient recipe needs someone willing to get their boots wet. Bring me two Crab Legs from Sand Fiddlers by day on the {name:strand}, {dir_from_giver:strand}. The crabs leave you alone until you strike, which gives you time to choose something more promising than the one already escaping into the water."
         },
         {
           "zone": "kragmar_sunscar_flats",
@@ -160,7 +160,7 @@
               "area": "kragmar_sunscar_flats/saltflats"
             }
           ],
-          "text": "[PH] Bring me 2 Crab Legs from the Fiddler Crabs and Sand Snappers in the {name:saltflats}. Real text to follow."
+          "text": "Supper is scuttling about while I stand here with an empty pot. Bring me two Crab Legs from Fiddler Crabs or Sand Snappers by day on the shore at the {name:saltflats}, {dir_from_giver:saltflats}. The Fiddler Crabs wait for the first blow; the Sand Snappers are less patient than my hungry hunters."
         },
         {
           "zone": "kragmar_kapok_cradle",
@@ -175,7 +175,7 @@
               "area": "kragmar_kapok_cradle/shallows"
             }
           ],
-          "text": "[PH] Bring me 2 Crab Legs from the Fiddler Crabs in the {name:shallows}. Real text to follow."
+          "text": "A feast needs Crab Legs, and I refuse to count the guests' legs as a substitute. Bring me two from the Fiddler Crabs by day in the {name:shallows}, {dir_from_giver:shallows}. Choose your crab before you start waving your hands; it will wait, and I would like the same number of fingers helping with supper."
         },
         {
           "zone": "kragmar_stillgrave_hollow",
@@ -187,7 +187,7 @@
               "area": "kragmar_stillgrave_hollow/saltbones"
             }
           ],
-          "text": "[PH] Bring me 2 Crab Legs from the Ghost Crabs and Bone Snappers in the {name:saltbones}. Real text to follow."
+          "text": "For once, my shopping can be done in daylight. Bring me two Crab Legs from Ghost Crabs or Bone Snappers on the shore at the {name:saltbones}, {dir_from_giver:saltbones}. The Ghost Crabs will wait to be provoked, while the Bone Snappers would happily make a meal of the shopper."
         }
       ],
       "rewards": {
@@ -204,8 +204,8 @@
       "min_level": 4,
       "level": 5,
       "requires": [],
-      "title": "[PH] Ibex on the High Pines",
-      "text": "[PH] Hunt 8 Ibex Kids by day in the {name:high_pines}. Real text to follow.",
+      "title": "A Hard Hat Has Limits",
+      "text": "Ibex Kids are kicking slate onto the paths, and the miners have begun looking up instead of where they're going. Hunt eight by day among the {name:high_pines}, {zone_area:high_pines}. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
       "objectives": [
         {
           "type": "kill",
@@ -259,9 +259,9 @@
       "min_level": 8,
       "level": 9,
       "requires": [],
-      "title": "[PH] The Finale: {name:muddled_ore_chief}",
-      "text": "[PH] Defeat 7 Ore Thieves at the {name:ore_thief_camp}, then {name:muddled_ore_chief}. Real text to follow.",
-      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
+      "title": "Bracket Doesn't Add Up",
+      "text": "{name:muddled_ore_chief} has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp}, {dir_from_giver:ore_thief_camp}, and defeat seven Ore Thieves and their chief; the crew lurks there day and night. Draw Bracket away from his crew if you can; I'd like his ledger closed without your name entered in it.",
+      "completion": "Bracket's sums finally add up to nothing, and our miners can keep what they dig. Hearthpine will remember the work you've done here. When you're ready for a longer road, come and have a word with me.",
       "objectives": [
         {
           "type": "kill",
