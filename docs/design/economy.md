@@ -93,14 +93,20 @@ precedence over preserving the exact mathematical ratio.
 - **Vendor rule** ([professions.md](professions.md) §4): vendors sell
   supplies, consumables, tools, the Common gear floor and a few T1 basics,
   never an enchant input (a signature loot item or family input of
-  `enchants.json`; a T1 own material such as the Bronze Bar may be sold) and
-  never a crafting ingredient above T1.
+  `enchants.json`) and never a crafting ingredient above T1. Since Round 57
+  (ruling 28) no vendor sells leather, cloth, ores or metal bars of any
+  tier: hides and cloth are hunted, ores mined, bars smelted. Thread stays
+  on every shelf as a job supply, and the tailor keeps White and Brown Wool
+  (bed decor).
 - A vendor's **buy-back is capped at 5%** of the item's purchase price,
   **rounded up to the next copper**, and applies to goods a vendor also
   sells (gear, supplies) and to every equippable of the gear catalog by the
   reference price of its slot and tier (T2+ bases, shields, spellbooks and
   trinkets in the "other" slot; Round 33, [item_tiers.md](item_tiers.md) §6.1). Thus a T1 Common weapon returns 2c and a T6 Common
-  weapon returns 1s25c. The same-race purchase discount never increases
+  weapon returns 1s25c. A good that left every shelf keeps the buy-back of
+  its old shelf price the same way (Round 57 ruling 28: the Bronze Bar, 7c,
+  still returns 1c; Leather, Light Leather and Linen Scrap pay their loot
+  class as before). The same-race purchase discount never increases
   buy-back; a 1–2c supply (thread, torch, stick) is not sellable at all,
   because 5% rounded up would equal its discounted price. Sticks are crafted
   from free wood, so no mob drops them and fishing does not catch them.
