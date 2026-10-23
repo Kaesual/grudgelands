@@ -142,7 +142,7 @@ return {
 			texture = "grug_achievements_cloak_supporter.png",
 			wings = "grug_achievements_cloak_supporter_wings.png"},
 		-- Round 58: the Miner's Guild series, GPT-6 Astra's (guild art drop-01
-		-- P1, picked 2026-10-23; tools/r58_rep/cloaks.py); rank 10 winged.
+		-- P1, picked 2026-10-23; plain copies, LICENSE-media.md); rank 10 winged.
 		{id = "miners_guild_1", name = "Lamp Badge Workcloth",
 			texture = "grug_achievements_cloak_miners_guild_1.png"},
 		{id = "miners_guild_2", name = "Lamp and Pick Workcloth",
