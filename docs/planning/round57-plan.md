@@ -33,6 +33,7 @@ findings are lane FIX56.
 | 1 | CRAFT | Opus | The crafting queue (crafts, enchants, upgrades), layout C, favourites, recursive Basic unlocks | the user's go |
 | 1 | DETAILS | Opus | The recipe details pages with their generated ingredient sources | the user's go (integrates after CRAFT merged) |
 | 1 | QSYS | Opus | Shared quests with several givers and text variants, choice rewards, story marking, completion text, the free-play validator rules, `repeatable` removed | the user's go |
+| 1 | DYES | Opus | Every dye reachable: sources for White and Yellow Dye (added during the round, ruling 29) | ALLOY merged |
 | 1 | VENDORMAT | Opus | No vendor sells leather, cloth, ores or bars (added during the round, ruling 28) | the user's go |
 | 1 | ALLOY | Opus | Flat alloy and wood chains, Steel Bars craftable (added during the round, rulings 25–27) | CHAINDEPTH merged |
 | 2 | STARTQUESTS | Opus | The six start zones rebuilt on QSYS: structure, data and the reward pattern; placeholder texts | QSYS merged |
@@ -158,6 +159,9 @@ pick page; nothing of it ships before Round 58.
 28. **No vendor sells leather, cloth, ores or metal bars** (Leather, Light Leather, Linen Scrap and the Bronze Bar
     leave every shelf). Thread stays as a job supply, and White and Brown Wool stay at the tailor (bed decor).
     Buy-back is unchanged.
+29. **Every dye becomes reachable** (2026-10-23): White and Yellow Dye get a plain source (proposal: Rock Salt →
+    White, Sunleaf → Yellow, after Blueberries → Violet), and every other dye then follows from the mixes or gets
+    its own plain source where a mix loops.
 
 ### Process
 
