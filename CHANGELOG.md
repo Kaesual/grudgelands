@@ -60,7 +60,7 @@ the [project status](docs/STATUS.md) and the round plans.
   Abyssal Steel bars and the goods made from them sell for less (the
   Abyssal Steel Sword 125c → 88c), and the graded woods above Seasoned
   sell for 1c to 40c.
-  Steel Bars for the bar door and trapdoor: 6 Steel Bars (metal) make 16.
+  Steel Bars, the iron bars of the bar door and trapdoor, are craftable: 6 Steel Bars (the metal) make 16.
 - **Every dye can be made:** White from Bone, Yellow from Sunleaf, Red
   from Apple and Cyan from Marshbloom; the other colours and every wool
   follow from the mixes.

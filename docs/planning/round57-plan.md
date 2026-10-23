@@ -815,7 +815,7 @@ job, enchanted items), then a new character, then a new world for the bays.
 15. **An existing character above level 10:** the new start quests are offered (accepted, ruling 20; one whose old
     finale was done keeps it done under its kept id); its old start quests in the log are gone without an error;
     its level-11 zone's quests are still offered.
-16. **Bays** (FIX56): in the world "test", fly along the bay shore at (−609, 9, −2285) and along the whole bay: no
+16. **Bays** (FIX56): in a new world with the "test" seed 476085000009918749 (or "test" if it still exists), fly along the bay shore at (−609, 9, −2285) and along the whole bay: no
     dismount, no red on the minimap's no-fly overlay; the open sea and the bay mouths stay no-fly, and so does the
     outer coast past a headland, up to 128 nodes from the bay (**judge the headland edge**).
 17. **The chin underside:** look at cloth T1–T6 and leather T1–T5 head pieces from below and at a low front angle:
