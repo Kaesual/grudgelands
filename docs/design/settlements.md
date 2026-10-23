@@ -1093,7 +1093,7 @@ CAMPNPC, LIFT and GUILDQUESTS):
 
 | Socket id | Role | Kind / tag | What stands there |
 |---|---|---|---|
-| `lift` | `lift` | – | the lift node `grug_mapgen:guild_lift` (its cell, `4dir` facing the gate; nobody stands on it); its x/z is the camp's lift column |
+| `lift` | `lift` | – | the lift node `grug_mapgen:guild_lift` (its cell, `4dir` facing the gate; nobody stands on it); its x/z is the camp's lift column; a trip up the lift arrives on the deck cell in front of it ([miners_guild.md](miners_guild.md) §3) |
 | `quest_foreman` | `quest` | – | the Foreman, the camp's quest giver (`r58_foreman_<camp id>`, `grug_quests/npcs.lua`: of the camp's race and faction, giver role `foreman_t<camp tier>`, [quests.md](quests.md) "The Miner's Guild givers") |
 | `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`, of the camp's faction): buys like every vendor, opens on the Trade-in, repairs, and its Buy mode is the reputation page ([miners_guild.md](miners_guild.md) §5.2) |
 | `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |

@@ -24,3 +24,12 @@ and tools"); the overlay is drawn over each tier rock's own tile at run time
 | `textures/grug_guild_treasure_hunt_t5.png` | Own work; drop 01 P2 `treasure_hunt_t5.png` (folded parchment map, tier 5 accent on the band, 16×16), unchanged | CC0-1.0 |
 | `textures/grug_guild_treasure_hunt_t6.png` | Own work; drop 01 P2 `treasure_hunt_t6.png` (folded parchment map, tier 6 accent on the band, 16×16), unchanged | CC0-1.0 |
 | `textures/grug_guild_miners_remains_overlay.png` | Own work; drop 01 P1 `miners_remains_overlay.png` (skull, snapped pick and cloth scrap, transparent elsewhere, 16×16), unchanged | CC0-1.0 |
+
+The reputation icon is guild art drop 02, proposal P1 (GPT-6 Astra, picked by
+the user on 2026-10-23, painted by that drop's own script, no source images),
+copied unchanged; `tools/r58_lift/art/ship.py --check` compares it with the
+picked file's SHA-256.
+
+| File | Origin / treatment | License |
+|---|---|---|
+| `textures/grug_guild_reputation.png` | Own work; drop 02 P1 `reputation.png` (pewter token stamped with a pick, 16×16), unchanged | CC0-1.0 |

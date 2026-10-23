@@ -426,7 +426,10 @@ check(has("Rank 0 of 10") and has("Reach Reputation Rank 1") and has("Reach Repu
 	"W rank 0: the page, every row locked")
 check(not has("repbuy_"), "W rank 0: no buy button")
 check(not has("tab_general"), "W the page has no shelf tabs")
-check(has("Reputation " .. grug_guild.format_points(T4.price)), "W a locked row shows its price")
+-- Round 58 LIFT: the picked reputation icon is set, so a price is the icon
+-- and the number (grug_guild.reputation_formspec).
+check(has("grug_guild_reputation.png]label[") and
+	has(";" .. grug_guild.format_points(T4.price) .. "]"), "W a locked row shows its price")
 -- A forged click on a locked row buys nothing.
 grug_guild.add(bo, 5, "test")
 submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T1.item]] = "x"})

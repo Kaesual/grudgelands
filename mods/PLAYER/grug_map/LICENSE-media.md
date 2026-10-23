@@ -172,3 +172,17 @@ stays readable at the band's height), bands 160×40, all RGBA. See `tools/r48_ar
 | `textures/grug_map_mail_8.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
 | `textures/grug_map_mail_9.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
 | `textures/grug_map_mail_9p.png` | GPT-6 Astra (Round 48) | icon B (Sealed envelope); `tools/r48_hud/gen_hud_textures.py`; composed from ARTM's picked parts; cooldown glyphs remain HUD-owned | CC0-1.0 |
+
+# The Miner's Guild map icons (Round 58 lane LIFT)
+
+Original art by GPT-6 Astra, made for Grudgelands: guild art drop 02,
+proposal P1, picked by the user on 2026-10-23, painted texel by texel by the
+drop's own script (no source images). Byte-identical copies;
+`tools/r58_lift/art/ship.py --check` compares them with the picked files'
+SHA-256. The minimap's baked 6 px icons (`art/`) are unchanged: a mining camp
+keeps the mine's, a camp under construction the war camp's.
+
+| File | Author | Source / modifications | License |
+|---|---|---|---|
+| `textures/grug_map_mining_camp.png` | GPT-6 Astra (Round 58) | drop 02 P1 `map_mining_camp.png` (rope drum and timber frame on a stone foot, 16×16); renamed only, byte-identical | CC0-1.0 |
+| `textures/grug_map_camp_construction.png` | GPT-6 Astra (Round 58) | drop 02 P1 `map_camp_construction.png` (bare tent rafters with a rust-red pennant, 16×16); renamed only, byte-identical | CC0-1.0 |

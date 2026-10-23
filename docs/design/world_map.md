@@ -205,8 +205,8 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   | Bosses | Kings & bosses | the six kings, the two dragons (a dragon arena within 64 nodes of its dragon is one icon), the rift boss at his clash site (the clash icon), the rare dens | both | the name, with the level where the registry has a fixed one ("King of Highcourt (level 65)"); a den its name, "Rare den" and the level at its anchor |
   | Trainers | Trainers & traders | the profession and Riding trainers (0.23 units at 1x and 2x), the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
   | Towns | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
-  | POIs | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
-  | PvP | PvP | the two fortresses and the war camps (with the camps under construction, Round 58) | both | the name |
+  | POIs | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the picked rope-drum icon `grug_map_mining_camp.png`), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
+  | PvP | PvP | the two fortresses and the war camps (with the camps under construction, Round 58, the picked tent-frame icon `grug_map_camp_construction.png`) | both | the name |
   | Zones | Zones | every zone's name and level band as text | — | — |
   | None | No markers | only the arrows | — | — |
 
@@ -364,7 +364,8 @@ renderer draws, into the image itself:
   war camps (and the camps under construction, `camp_construction`, Round
   58), bandit and Mirefolk camps (red warning details), mines and gem
   camps (`mine`, `apex_mine`; the mining camps, `mining_camp`, take the
-  mine's icon until the picked camp icon), clash sites (`clash_*`), rare dens
+  mine's 6 px icon here; the map window marks them with their own,
+  below), clash sites (`clash_*`), rare dens
   (`rare_*`), the dragon arenas; plus the six kings at their sockets and the
   two dragons. A dragon arena and its dragon are one icon. Generals,
   captains and the rift boss stay unmarked. **Every settlement is baked for

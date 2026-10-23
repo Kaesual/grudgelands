@@ -179,11 +179,10 @@ function grug_guild.format_points(points)
 	return sign .. out:gsub("^,", "")
 end
 
--- The reputation icon is not picked yet (lane LIFTART): until then the
--- balance is drawn as text, "Reputation 1,234". The picked icon goes into
--- REPUTATION_ICON, and this function then draws it before the number; no
--- caller changes.
-grug_guild.REPUTATION_ICON = nil
+-- The reputation icon (guild art drop 02 P1, the pewter token, picked
+-- 2026-10-23; lane LIFT): drawn before the number. Without it (nil) the
+-- balance is drawn as text, "Reputation 1,234"; no caller changes.
+grug_guild.REPUTATION_ICON = "grug_guild_reputation.png"
 
 -- A label centred on `y` (real coordinates), starting at `x`.
 function grug_guild.reputation_formspec(x, y, points)

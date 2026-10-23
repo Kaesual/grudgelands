@@ -32,13 +32,22 @@ function M.kind(slot)
 	local class = M.class(slot)
 	if class ~= "other" then return class end
 	if type(slot) ~= "string" then return nil end
-	-- Round 58: a mining camp of the Miner's Guild takes the mine's icon
-	-- until the picked camp icon (lane LIFTART) arrives
+	-- Round 58: a mining camp of the Miner's Guild bakes the mine's icon
+	-- (the map window marks it with its own, M.MARKER)
 	if slot == "mine" or slot == "apex_mine" or slot == "mining_camp" then return "mine" end
 	if slot == "dragon" then return "dragon" end
 	if slot:match("^clash_") then return "clash" end
 	if slot:match("^rare_") then return "rare_den" end
 	return nil
+end
+
+-- The map window's marker of a slot whose own icon is not baked (Round 58,
+-- the picked guild art: the minimap's 6 px image keeps the kind's): a
+-- mining camp and a camp under construction. The marker's texture is
+-- grug_map_<marker>.png.
+M.MARKER = {mining_camp = "mining_camp", camp_construction = "camp_construction"}
+function M.marker(slot)
+	return M.MARKER[slot] or M.kind(slot)
 end
 
 -- The map window's layer of each kind (Round 47, the work package's §3):

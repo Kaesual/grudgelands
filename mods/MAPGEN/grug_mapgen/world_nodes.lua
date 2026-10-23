@@ -149,11 +149,13 @@ return function(engine, directory, nodes, gathering)
 
  -- The Miner's Guild lift point (Round 58): written by the settlement writer
  -- at every camp's lift socket (`wp40/r58_camp_blueprint.lua`,
- -- `r31_pvp_poi_blueprint.lua`), so it too exists before the settlement
- -- content is resolved. A placeholder look from shipped textures and no
- -- behaviour: grug_guild (lane LIFT) overrides it with the lift's use and
- -- the picked art, and such an override changes only the behaviour (the
- -- callbacks) and the look (tiles, description). The settlement content's
+ -- `r31_pvp_poi_blueprint.lua`) and by the room step at every room's lift
+ -- cell, so it too exists before the settlement content is resolved. The
+ -- look is the picked art (guild art drop 02 P1, the rope drum hoist; its
+ -- node box and tile order as the drop's notes give them: +Y, -Y, +X, -X,
+ -- +Z, -Z, the front the -Z face) with a full-node selection box, so the
+ -- control is easy to click. What a right-click does is grug_guild's
+ -- (`lift.lua`): it overrides only the callbacks. The settlement content's
  -- semantic digest (`wp40/r7_content.lua`, its class row) reads paramtype,
  -- paramtype2, light_source, sunlight_propagates, floodable, the liquid
  -- fields and the groups grug_natural and grug_air; main computes it while
@@ -167,12 +169,22 @@ return function(engine, directory, nodes, gathering)
   description="Miner's Guild Lift",
   drawtype="nodebox",
   paramtype2="4dir",
-  tiles={"default_wood.png^[colorize:#3b2a14:70","default_wood.png",
-   "default_wood.png^default_ladder_wood.png"},
+  tiles={"grug_mapgen_guild_lift_top.png","grug_mapgen_guild_lift_bottom.png",
+   "grug_mapgen_guild_lift_right.png","grug_mapgen_guild_lift_left.png",
+   "grug_mapgen_guild_lift_back.png","grug_mapgen_guild_lift_front.png"},
   paramtype="light",
   light_source=3,
-  node_box={type="fixed",fixed={{-0.5,-0.5,-0.5,0.5,-0.375,0.5},
-   {-0.3125,-0.375,-0.3125,0.3125,0.375,0.3125}}},
+  node_box={type="fixed",fixed={
+   {-0.5,-0.5,-0.4375,0.5,-0.3125,0.4375}, -- stone footing
+   {-0.4375,-0.3125,0.0625,-0.25,0.3125,0.25}, -- left timber
+   {0.25,-0.3125,0.0625,0.4375,0.3125,0.25}, -- right timber
+   {-0.5,0.3125,0,0.5,0.5,0.3125}, -- lamp crossbeam
+   {-0.25,0,0.0625,0.25,0.25,0.3125}, -- rope drum
+   {-0.3125,-0.0625,0,-0.1875,0.3125,0.375}, -- left drum flange
+   {0.1875,-0.0625,0,0.3125,0.3125,0.375}, -- right drum flange
+   {-0.0625,-0.3125,0.125,0.0625,0,0.25}, -- descending rope
+   {0.375,-0.0625,-0.125,0.5,0.125,0.125}}}, -- iron crank
+  selection_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,0.5,0.5}},
   groups={not_in_creative_inventory=1},
   diggable=false,
   -- ROOMS writes it at each room's lift cell too, deep underground, where a
