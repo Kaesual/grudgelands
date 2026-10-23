@@ -129,7 +129,7 @@ for dz = -7, 7 do
 	end
 end
 -- open room 7*7*4 = 196 (one lift cell), exits 3*3*2 = 18, floor 49 + 9,
--- lamps 4, mantle the rest of 13*13*10 = 1690
+-- lamps 4 (in the walls), mantle the rest of 13*13*10 = 1690
 check(counts.lift == 1 and counts.fill == 195 + 18 and counts.floor == 58 and
 	counts.lamp == 4 and counts.mantle == 1690 - 196 - 18 - 58 - 4,
 	"A the shape's counts")
@@ -142,8 +142,24 @@ for _, exit in ipairs(R.EXITS) do
 end
 check(R.cell_at_offset(0, 0, 4) == "mantle" and R.cell_at_offset(0, 0, 6) == "mantle",
 	"A no exit in the +z wall")
-check(R.cell_at_offset(2, 4, -2) == "lamp" and R.cell_at_offset(0, 4, 0) == "mantle",
-	"A the lamps in the ceiling")
+check(R.cell_at_offset(-4, 2, 0) == "lamp" and R.cell_at_offset(4, 2, 0) == "lamp" and
+	R.cell_at_offset(0, 2, -4) == "lamp" and R.cell_at_offset(0, 2, 4) == "lamp" and
+	R.cell_at_offset(-5, 2, 0) == "mantle" and R.cell_at_offset(0, 4, 0) == "mantle",
+	"A a lamp in each wall, above each exit")
+-- Light: a lamp gives 14, one less per node (Manhattan through the open
+-- nodes); every open node of the room is within 6 of a lamp.
+for dz = -3, 3 do
+	for dy = 0, 3 do
+		for dx = -3, 3 do
+			local nearest = math.huge
+			for _, lamp in ipairs(R.LAMPS) do
+				nearest = math.min(nearest, math.abs(dx - lamp[1]) + math.abs(dy - lamp[2]) +
+					math.abs(dz - lamp[3]))
+			end
+			check(14 - nearest >= 8, "A light 8 or more at " .. dx .. "," .. dy .. "," .. dz)
+		end
+	end
+end
 check(R.cell_at_offset(0, 0, 1) == "fill" and R.cell_at_offset(0, -1, 1) == "floor",
 	"A the arrival cell is open over the floor")
 
@@ -280,7 +296,7 @@ do
 	local c = room.lift_cell
 	check(whole.nodes[key(c.x, c.y, c.z)] == R.NODES.fill and
 		whole.nodes[key(c.x, c.y - 1, c.z)] == R.NODES.floor and
-		whole.nodes[key(c.x + 2, c.y + 4, c.z + 2)] == R.NODES.lamp and
+		whole.nodes[key(c.x, c.y + 2, c.z + 4)] == R.NODES.lamp and
 		whole.nodes[key(c.x, c.y + 5, c.z)] == R.NODES.mantle[3],
 		"B fill, floor, lamp and the tier's mantle")
 end

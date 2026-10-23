@@ -39,8 +39,9 @@
 -- leave the middle of the -x, +x and -z walls and run through the mantle to
 -- the box face (offset 4 .. 6), where they end blind in the host rock beyond
 -- it; players dig on from there. The floor (offset -1) is the floor node under
--- the room and the exits; four lamps sit in the ceiling (offset 4, at -2 and
--- +2 in x and z); everything else of the box is mantle, three nodes thick
+-- the room and the exits; four lamps sit in the walls at offset 2, one above
+-- each exit and one in the +z wall behind the lift (light 8 or more on every
+-- open node); everything else of the box is mantle, three nodes thick
 -- round the room: below the floor -3 .. -2, above the room 4 .. 6, beside it
 -- 4 .. 6. The lift cell is the room's centre (0, 0, 0), the arrival beside it
 -- at (0, 0, 1).
@@ -69,15 +70,16 @@ M.TIERS = 6
 
 -- The shape (offsets from the lift column at floor_y).
 M.HALF = 3 -- the open room: -HALF .. HALF in x and z
+local HALF = M.HALF
 M.HEIGHT = 4 -- the open room: 0 .. HEIGHT - 1 in y
 M.MANTLE = 3 -- the mantle's thickness round the room (the floor layer counts)
 M.EXIT_HEIGHT = 2
 -- The exits' directions {dx, dz}: the middle of the -x, +x and -z walls.
 M.EXITS = {{-1, 0}, {1, 0}, {0, -1}}
--- The lamps' offsets {dx, dz} in the ceiling's lowest layer.
-M.LAMPS = {{-2, -2}, {-2, 2}, {2, -2}, {2, 2}}
+-- The lamps' offsets {dx, dy, dz} in the walls' first layer.
+M.LAMPS = {{-HALF - 1, 2, 0}, {HALF + 1, 2, 0}, {0, 2, -HALF - 1}, {0, 2, HALF + 1}}
 M.ARRIVAL = {0, 0, 1} -- {dx, dy, dz} of the arrival cell
-local HALF, HEIGHT, MANTLE, EXIT_HEIGHT = M.HALF, M.HEIGHT, M.MANTLE, M.EXIT_HEIGHT
+local HEIGHT, MANTLE, EXIT_HEIGHT = M.HEIGHT, M.MANTLE, M.EXIT_HEIGHT
 local REACH = HALF + MANTLE -- the box: -REACH .. REACH in x and z
 local BOTTOM, TOP = -MANTLE, HEIGHT - 1 + MANTLE -- the box in y
 M.BOX = {min_x = -REACH, max_x = REACH, min_y = BOTTOM, max_y = TOP,
@@ -116,10 +118,10 @@ local function exit_column(dx, dz)
 	return false
 end
 
-local function lamp_column(dx, dz)
+local function lamp_cell(dx, dy, dz)
 	for index = 1, #M.LAMPS do
 		local lamp = M.LAMPS[index]
-		if dx == lamp[1] and dz == lamp[2] then return true end
+		if dx == lamp[1] and dy == lamp[2] and dz == lamp[3] then return true end
 	end
 	return false
 end
@@ -139,7 +141,7 @@ function M.cell_at_offset(dx, dy, dz)
 	end
 	if exit and dy >= 0 and dy < EXIT_HEIGHT then return "fill" end
 	if dy == -1 and (inside or exit) then return "floor" end
-	if dy == HEIGHT and lamp_column(dx, dz) then return "lamp" end
+	if lamp_cell(dx, dy, dz) then return "lamp" end
 	return "mantle"
 end
 
