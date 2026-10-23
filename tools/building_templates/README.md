@@ -72,10 +72,13 @@ record of how they were made and the gates that keep them honest.
   `freeze_report.txt` is its report: the building-bound steps per town, the
   steps kept in town code by the stamp-time rule (Hearthpine's decor), the
   points moved, per template its cells, legend, role and fixed-node cells and
-  the town writes kept in its box. `export.py --check` proves the committed
-  templates are still that export (it fails once a template is edited on
-  purpose; it is not a release gate). Rerunning `export.py` without `--check`
-  overwrites every template.
+  the town writes kept in its box. `export.py --check` proved the committed
+  templates were still that export; it is **retired** since Round 58 (lane
+  HALLS made the first deliberate template edit, the Miner's Guild houses), so
+  it now only says so, and `check.py` is the gate. Rerunning the export
+  (`export.py --overwrite-edits`, refused without the flag) would put every
+  template back to the generators' version and delete the templates made
+  since.
 - `export.py` also runs `export_capitals.lua` on the mapgen of
   `PRE_CAPITAL_FREEZE`: every capital's core and every district plot built on
   its own (`freeze_build.build_capital`), with **role-only** probe tags (a
