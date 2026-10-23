@@ -33,8 +33,8 @@
       "min_level": 4,
       "level": 5,
       "requires": [],
-      "title": "[PH] Gaunt Fawns on the Moor",
-      "text": "[PH] Hunt 8 Gaunt Fawns by day on the {name:blightmoor}. Real text to follow.",
+      "title": "Flowers for the Wrong Guests",
+      "text": "We leave greenery for those who can no longer enjoy a meal, and the Gaunt Fawns have been enjoying it on their behalf. Cull eight by day on the {name:blightmoor}, which lies {zone_area:blightmoor}; they wait for your first blow, though the Plague Boars there do not. The mourners would like their offerings to last a little longer than the walk home.",
       "objectives": [
         {
           "type": "kill",
@@ -88,9 +88,9 @@
       "min_level": 8,
       "level": 9,
       "requires": [],
-      "title": "[PH] The Finale: {name:grave_robber_chief}",
-      "text": "[PH] Defeat 6 Grave Robbers at the {name:robbers_camp}, then {name:grave_robber_chief}. Real text to follow.",
-      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
+      "title": "Borrow Has Had Long Enough",
+      "text": "{name:grave_robber_chief} has been treating our graves as a lending library, with no intention of returning anything. Kill six Grave Robbers and their chief at the {name:robbers_camp}, {dir_from_giver:robbers_camp}, where they keep watch day and night. An honest mourner might dig the wrong hole once; arriving with sacks suggests a settled intention.",
+      "completion": "Borrow has had his answer, and our dead may keep what is theirs. You have been good company for Stillgrave, which is more than I can say for most arrivals with a shovel. When you leave, let it be with our thanks and on your own feet.",
       "objectives": [
         {
           "type": "kill",

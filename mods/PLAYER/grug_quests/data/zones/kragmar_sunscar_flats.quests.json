@@ -33,8 +33,8 @@
       "min_level": 4,
       "level": 5,
       "requires": [],
-      "title": "[PH] Dustrunners on the Plains",
-      "text": "[PH] Hunt 8 Dustrunners by day on the {name:runner_plains}. Real text to follow.",
+      "title": "Earn Your Breath",
+      "text": "The hunters say the Dustrunners are getting quicker; I suspect the hunters are getting louder. Bring down eight by day on the {name:runner_plains}, which stretch {zone_area:runner_plains}, to keep the herd in check. Save the boasting for when you catch your breath.",
       "objectives": [
         {
           "type": "kill",
@@ -88,8 +88,8 @@
       "min_level": 6,
       "level": 7,
       "requires": [],
-      "title": "[PH] Rock Scorpions",
-      "text": "[PH] Kill 6 Rock Scorpions by day on the {name:runner_plains}. Real text to follow.",
+      "title": "Mind the Other End",
+      "text": "A hunter watching the horizon can still be put flat on their back by a Rock Scorpion. Kill six by day on the {name:runner_plains}, which lie {zone_area:runner_plains}, so our hunters can watch the herds instead of every stone. They strike on sight, so mind the tail; a bold step is worth little if you cannot take the next one.",
       "objectives": [
         {
           "type": "kill",
@@ -143,9 +143,9 @@
       "min_level": 8,
       "level": 9,
       "requires": [],
-      "title": "[PH] The Finale: {name:water_thief_chief}",
-      "text": "[PH] Defeat 6 Water Thieves at the {name:thieves_camp}, then {name:water_thief_chief}. Real text to follow.",
-      "completion": "[PH] The town's own story is closed; the weapon is the zone's reward. Real text to follow.",
+      "title": "The Last Drop Is Ours",
+      "text": "We share water with any thirsty stranger; {name:water_thief_chief} has taken that for weakness. Strike the {name:thieves_camp}, {dir_from_giver:thieves_camp}, and kill six Water Thieves and their chief. They guard their stolen water day and night. Let Sunscar fill its cups without looking over its shoulder.",
+      "completion": "Lastdrop has had his last drop, and our wells belong again to the hands that tend them. Sunscar will tell this one loudly, and for once the boasting is earned. Take the road when you are ready; your cup stays full here.",
       "objectives": [
         {
           "type": "kill",
