@@ -204,7 +204,14 @@ local EXPECTED_KIND = {village = "village", outpost = "poi", bandit_home = "camp
 	bandit_frontier = "camp", mine = "poi", mirefolk = "camp", clash = "poi",
 	dragon = "poi", apex_mine = "poi", rare_route = "poi",
 	-- Round 31 PvP POIs (pvp-plan ruling 22: 10 nodes of margin)
-	pvp_fortress = "fortress", pvp_camp_low = "war_camp", pvp_camp_high = "war_camp"}
+	pvp_fortress = "fortress", pvp_camp_low = "war_camp", pvp_camp_high = "war_camp",
+	-- Round 58: the mining camps, and the camps under construction as war camps
+	mining_camp = "mining_camp", camp_construction = "war_camp"}
+-- The centred compositions of a PvP POI or a Round 58 camp (and their margin).
+local function centred(template_id)
+	return template_id:match("^pvp_") or template_id == "mining_camp" or
+		template_id == "camp_construction"
+end
 
 -- Deterministic pseudo-random numbers (no math.random state shared).
 local function rng(seed_value)
@@ -226,7 +233,8 @@ local function run_seed(seed)
 		W.seconds.world, W.seconds.blueprints, W.seconds.protection, W.memory_kib,
 		m.corridors, m.segments, m.runs, m.boxes, m.records, m.populated_cells,
 		m.candidate_references, m.maximum_candidates, #W.road_text))
-	check(m.boxes == 106, "106 settlement boxes")
+	-- Round 58: 26 camps more (20 mining camps, 6 under construction)
+	check(m.boxes == 132, "132 settlement boxes")
 
 	-- The oracle: every box, then every segment of every road.
 	local corridors = wp.road_corridors(W.roads, W.road_text)
@@ -280,7 +288,8 @@ local function run_seed(seed)
 		by_kind[b.kind] = (by_kind[b.kind] or 0) + 1
 		local a, bb = row.anchor, row.bounds
 		local margin = wp.settlement_margin(row.slot)
-		check(margin == (row.template_id:match("^pvp_") and 10 or 0), row.key .. " margin")
+		check(margin == ((row.template_id:match("^pvp_") or row.template_id == "camp_construction") and
+			10 or 0), row.key .. " margin")
 		check(b.min_x == a.x + bb.min.x - margin and b.max_x == a.x + bb.max.x + margin and
 			b.min_z == a.z + bb.min.z - margin and b.max_z == a.z + bb.max.z + margin and
 			b.min_y == a.y - 10 and b.max_y == a.y + bb.max.y + 10 and bb.min.y == 0,
@@ -291,7 +300,7 @@ local function run_seed(seed)
 		for _, p in ipairs(core) do
 			if p.id == row.template_id then width = p.building_core_width end
 		end
-		if row.template_id:match("^pvp_") then
+		if centred(row.template_id) then
 			-- a PvP POI's centred box lies inside its core (a camp's core is one
 			-- node wider, the fortress's a flat field round its walls)
 			check(bb.min.x >= -width / 2 and bb.max.x <= width / 2 - 1 and
@@ -317,11 +326,12 @@ local function run_seed(seed)
 			agree(p[1], p[2], p[3], row.key .. " face out (full index)")
 		end
 	end
-	print(("  boxes: %d village, %d camp, %d poi, %d fortress, %d war camp"):format(
+	print(("  boxes: %d village, %d camp, %d poi, %d fortress, %d war camp, %d mining camp"):format(
 		by_kind.village or 0, by_kind.camp or 0, by_kind.poi or 0, by_kind.fortress or 0,
-		by_kind.war_camp or 0))
+		by_kind.war_camp or 0, by_kind.mining_camp or 0))
 	check(by_kind.village == 12 and by_kind.camp == 16 and by_kind.poi == 60 and
-		by_kind.fortress == 2 and by_kind.war_camp == 16, "box categories")
+		by_kind.fortress == 2 and by_kind.war_camp == 22 and by_kind.mining_camp == 20,
+		"box categories")
 
 	-- b. Candidate grid against the oracle.
 	local random = rng(tonumber(seed:sub(-9)) or 1)
@@ -485,7 +495,7 @@ local function run_seed(seed)
 			local p = {x = b.min_x, y = b.max_y, z = b.max_z}
 			local text = ({village = "Village – protected", camp = "Camp – protected",
 				poi = "Point of interest – protected", fortress = "Fortress – protected",
-				war_camp = "Camp – protected"})[b.kind]
+				war_camp = "Camp – protected", mining_camp = "Camp – protected"})[b.kind]
 			for _, name in ipairs({"a", "t"}) do
 				check(core.is_protected(p, name), W.rows[index].key .. " protected for " .. name)
 				local got = hint(p, name)

@@ -38,9 +38,11 @@ Inputs beside §8:
 | 4 | D | Opus | Docs, CHANGELOG, version 0.58.0 with the map-reset declaration, STATUS, the joint GUI checklist of 0.57 and 0.58, a full seed fleet | everything else |
 
 Wave 1 starts on GUILDSPEC's accepted **contract** (format, API, saved keys); the numbers live in the catalogue and
-drop in when the user accepts them. Once the contract is accepted, the coordinator commits the `grug_guild`
-**skeleton** on main (mod folder, catalogue file, stub API, and the node ids `grug_guild:lift`, the room fill and the
-mantle with placeholder textures), so the parallel lanes never each create the mod. CAMPS' brief fixes the camp
+drop in when the user accepts them. GUILDSPEC's branch carries the `grug_guild` **skeleton** (mod folder, catalogue
+file, stub API in one file per owning lane), merged with the contract, so the parallel lanes never each create the
+mod. *Changed at brief time (coordinator, 2026-10-23):* the lift and room nodes are grug_mapgen nodes, because the
+world writer needs them in wave 0: CAMPS registers `grug_mapgen:guild_lift` (a placeholder; LIFT overrides it from
+`grug_guild`), ROOMS the room fill, floor, lamp and the mantles `grug_mapgen:room_mantle_t1` … `_t6`. CAMPS' brief fixes the camp
 socket ids, roles and kinds (the foreman's quest socket, the camp vendor kind, the lift socket) as the contract
 CAMPNPC reads; HALLS' brief fixes the hall's sockets the same way. The lift, emblem and banner nodes ship with
 placeholders until the LIFTART pick; LIFT swaps in the picked textures (texture-only).

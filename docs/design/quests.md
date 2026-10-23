@@ -671,6 +671,8 @@ each gated only by its level.
   written by `tools/r57_startquests/build_structure.py`;
   `tools/r57_startquests/portable_test.lua` checks it.
 
+The Miner's Guild's quests (Round 58): [miners_guild.md](miners_guild.md) §11.
+
 ## For content lanes
 
 Round 29 Lane Q1. Quest texts follow the user's text rule (2026-10-02):

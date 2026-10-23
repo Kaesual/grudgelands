@@ -1,0 +1,5 @@
+-- The lift's interaction (spec §3): lane LIFT fills this file. It
+-- overrides grug_mapgen:guild_lift (CAMPS' placeholder node) with its
+-- behaviour and the picked art: the camp's levels, own faction only, the
+-- travel path of grug_home, the room's return point with its
+-- register_on_relocate clear.

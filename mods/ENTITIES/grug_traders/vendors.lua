@@ -440,6 +440,12 @@ local PROFESSIONS = {
 	{kind = "embalmer", nametag = "Embalmer"},
 	-- Round 33: the capital culture vendor (cosmetic blocks and lights).
 	{kind = "culture", nametag = "Decor Merchant"},
+	-- Round 58: the Miner's Guild's camp vendor at every mining camp's
+	-- `vendor_camp` socket (settlements.md "Round 58 mining camps"). It buys
+	-- like every vendor and has no shelf of its own yet (an empty General
+	-- tab, no gear); lane CAMPNPC adds the trade-in, repair and the
+	-- reputation page.
+	{kind = "camp", nametag = "Camp Vendor"},
 }
 
 for _, row in ipairs(PROFESSIONS) do

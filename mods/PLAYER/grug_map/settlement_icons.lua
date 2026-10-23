@@ -18,6 +18,8 @@ function M.class(slot)
 	if slot:match("^village_%d+$") then return "village" end
 	if slot:match("^outpost_%d+$") then return "outpost" end
 	if slot:match("^pvp_%a+_%a+$") then return "war_camp" end
+	-- Round 58: an enemy camp under construction is a war camp on the map
+	if slot == "camp_construction" then return "war_camp" end
 	if slot:match("^bandit_%d+$") then return "bandit" end
 	if slot == "mirefolk" then return "mirefolk" end
 	return "other"
@@ -30,7 +32,9 @@ function M.kind(slot)
 	local class = M.class(slot)
 	if class ~= "other" then return class end
 	if type(slot) ~= "string" then return nil end
-	if slot == "mine" or slot == "apex_mine" then return "mine" end
+	-- Round 58: a mining camp of the Miner's Guild takes the mine's icon
+	-- until the picked camp icon (lane LIFTART) arrives
+	if slot == "mine" or slot == "apex_mine" or slot == "mining_camp" then return "mine" end
 	if slot == "dragon" then return "dragon" end
 	if slot:match("^clash_") then return "clash" end
 	if slot:match("^rare_") then return "rare_den" end
@@ -58,6 +62,7 @@ M.POI_WORD = {bandit = "Bandit camp", mirefolk = "Mirefolk camp", mine = "Mine",
 	clash = "Clash site"}
 function M.poi_word(slot)
 	if slot == "apex_mine" then return "Gem camp" end
+	if slot == "mining_camp" then return "Mining camp" end
 	return M.POI_WORD[M.kind(slot) or ""]
 end
 

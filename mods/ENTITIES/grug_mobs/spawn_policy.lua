@@ -770,9 +770,10 @@ end
 --
 -- Round 28 ruling 3: no ambient non-critter spawn on the exact protected
 -- surface: a road corridor or bridge, a village's building core and a
--- Round 31 PvP fortress or war camp with its margin (grug_core
--- .world_feature_at, the half width + 1 corridor of ruling 1 and the
--- village, fortress and war-camp boxes), a start town's footprint and a
+-- Round 31 PvP fortress or war camp with its margin, a Round 58 mining camp
+-- (grug_core.world_feature_at, the half width + 1 corridor of ruling 1 and
+-- the village, fortress, war-camp and mining-camp boxes; a camp under
+-- construction answers "war_camp"), a start town's footprint and a
 -- capital city (grug_zones.hard_protection_kind_at "town"). No margin
 -- beyond them: the idle push of ruling 2 keeps aggressive mobs off roads and
 -- towns, a margin of aggro range would empty land trails run through.
@@ -812,7 +813,7 @@ function grug_mobs.protected_spawn_surface(pos)
 	if not protected then
 		local kind = grug_core.world_feature_at(pos)
 		protected = kind == "road" or kind == "bridge" or kind == "village" or
-			kind == "fortress" or kind == "war_camp"
+			kind == "fortress" or kind == "war_camp" or kind == "mining_camp"
 	end
 	if not protected and capital_zone(grug_zones.id_at(x, z)) then
 		protected = grug_zones.hard_protection_kind_at(pos) == "town"

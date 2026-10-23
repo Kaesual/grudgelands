@@ -108,7 +108,8 @@ for _, seed in ipairs(seeds) do
 	local ok, module, layout, text, pois, placed = pcall(build, seed)
 	check(ok, ("seed %s: the water layout builds (%s)"):format(seed, tostring(module)))
 	check(type(pois) == "table" and #pois == 8, "seed " .. seed .. ": the fixed POI cores reached the build")
-	check(#placed == 98, "seed " .. seed .. ": the placed POIs")
+	-- (Round 58: and the 26 camps)
+	check(#placed == 124, "seed " .. seed .. ": the placed POIs")
 	local all = {}
 	for _, p in ipairs(pois) do all[#all + 1] = p end
 	for _, p in ipairs(placed) do all[#all + 1] = p end

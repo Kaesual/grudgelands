@@ -82,7 +82,10 @@ local catalog = dofile(wp40 .. "/r31_pvp_catalog.lua")
 local source = dofile(wp40 .. "/source/simple_map.lua")
 local M = dofile(repo .. "/mods/ENTITIES/grug_mobs/pvp_garrison.lua")
 local names = json.parse(read(repo .. "/mods/ENTITIES/grug_mobs/data/pvp_names.json"))
-local G = M.new(catalog, names)
+-- Round 58: the camp catalogue (its camps under construction are named
+-- camps too, its mining camps no garrison).
+local camps = dofile(wp40 .. "/r58_camp_catalog.lua")
+local G = M.new(catalog, names, camps)
 
 local zone_of = {}
 for _, zone in ipairs(source.zones) do zone_of[zone.id] = zone end
@@ -107,7 +110,12 @@ do
 	-- the Round 31 Astra file does not carry. Round 38 renamed one captain
 	-- (the user's accepted names, 2026-10-06); the rest are the Astra file.
 	astra.captains.pvp_camp_skyglass_canopy_throng_low.undead = "Captain Morveth Stillwake"
-	check(same({generals = names.generals, captains = names.captains}, astra),
+	-- Round 58 adds the six captains of the camps under construction.
+	local round31 = {}
+	for key, value in pairs(names.captains) do
+		if not key:find("^camp_site_") then round31[key] = value end
+	end
+	check(same({generals = names.generals, captains = round31}, astra),
 		"N the shipped Generals and captains are the Astra file (and Round 38's rename)")
 	local seen, count, keys = {}, 0, 0
 	local function name_ok(name, label)
@@ -387,10 +395,13 @@ grug_mobs.set_plain_tag = function(self, text) carrier_text[self] = text end
 function mobs:register_mob(name, def) core.registered_entities[name] = def end
 dofile(repo .. "/mods/ENTITIES/grug_mobs/start_villagers.lua")
 core.registered_entities["grug_traders:vendor_general_accord"] = {}
+-- Round 58: the camp vendor (vendors.lua `vendor_camp`) on every camp
+core.registered_entities["grug_traders:vendor_camp"] = {}
 -- Only start_npcs.lua's heartbeat runs below (not bosses.lua's dragon clock).
 steps = {}
 dofile(repo .. "/mods/ENTITIES/grug_mobs/start_npcs.lua")
 grug_mobs.register_start_socket_role("vendor", function(socket, settlement)
+	if socket.kind == "camp" then return "grug_traders:vendor_camp" end
 	return socket.kind == "general" and "grug_traders:vendor_general_" .. settlement.faction_id or nil
 end)
 
@@ -453,6 +464,9 @@ for _, poi in ipairs(POIS) do
 		local spec = G.slot(poi.key, poi.race, socket, band)
 		if socket.role == "waypoint" then
 			eq(entity, nil, where .. ": nobody on the waystone")
+		elseif socket.role == "lift" then
+			-- Round 58: nobody on the lift node
+			eq(entity, nil, where .. ": nobody on the lift")
 		elseif check(entity ~= nil, where .. " placed") then
 			if spec then
 				eq(entity.name, spec.entity, where .. " entity")
@@ -476,9 +490,14 @@ for _, poi in ipairs(POIS) do
 					eq(entity._grug_boss_id, "general:" .. poi.faction, where .. " the General's encounter")
 				end
 			elseif socket.role == "quest" then
-				eq(entity.name, "grug_mobs:elder_human", where .. " a protected quest shell of the seat race")
+				-- a fortress's of its seat race, a camp's foreman (Round 58) of the
+				-- camp's own race
+				eq(entity.name, "grug_mobs:elder_" .. (poi.kind == "pvp_fortress" and "human" or poi.race),
+					where .. " a protected quest shell of the settlement's race")
 			elseif socket.role == "vendor" then
-				eq(entity.name, "grug_traders:vendor_general_accord", where .. " the faction Quartermaster")
+				-- a fortress's Quartermaster, a camp's camp vendor (Round 58)
+				eq(entity.name, socket.kind == "camp" and "grug_traders:vendor_camp" or
+					"grug_traders:vendor_general_accord", where .. " the vendor of its kind")
 			end
 		end
 	end
@@ -532,8 +551,9 @@ local census = {}
 for _, row in ipairs(grug_mobs.start_npc_census()) do census[row.key] = row end
 eq(census.pvp_fortress_accord.kind, "pvp_fortress", "P census: the fortress kind")
 eq(census.pvp_fortress_accord.live, 19, "P census: 12 guards, the General, 2 bodyguards, 3 quest givers, the Quartermaster")
-eq(census.pvp_camp_broken_causeway_accord_low.live, 5, "P census: the lower camp holds 5")
-eq(census.pvp_camp_shattered_line_throng_high.live, 6, "P census: the higher camp holds 6")
+-- Round 58: and each camp its foreman and its camp vendor
+eq(census.pvp_camp_broken_causeway_accord_low.live, 7, "P census: the lower camp holds 7")
+eq(census.pvp_camp_shattered_line_throng_high.live, 8, "P census: the higher camp holds 8")
 
 ------------------------------------------------------------------------------
 -- T. Respawn timers.

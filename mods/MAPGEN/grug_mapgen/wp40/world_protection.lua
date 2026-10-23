@@ -9,7 +9,7 @@
 --   local boxes = wp.settlement_boxes(rows)
 --   local index = wp.new(index128, {corridors = corridors, boxes = boxes})
 --   index.kind_at(x, y, z) -> "road", "bridge", "village", "camp", "fortress",
---       "war_camp", "poi" or nil
+--       "war_camp", "mining_camp", "poi" or nil
 --
 -- A CORRIDOR is a polyline with a surface profile: a road today, a waypoint
 -- path later. A column is inside it when its distance to the centreline (its
@@ -90,12 +90,19 @@ function M.settlement_kind(slot)
 	-- own beside the bandit and Mirefolk camps, whose mobs spawn on them
 	if slot == "pvp_fortress" then return "fortress" end
 	if slot:match("^pvp_%a+_%a+$") then return "war_camp" end
+	-- Round 58: the Miner's Guild's mining camps (no hostile spawns, the
+	-- idle push), and the enemy camps under construction, guarded war camps
+	-- of the other faction in every way
+	if slot == "mining_camp" then return "mining_camp" end
+	if slot == "camp_construction" then return "war_camp" end
 	return "poi"
 end
 
--- The extra x/z margin of a slot's box (ruling 22 for the PvP POIs).
+-- The extra x/z margin of a slot's box (ruling 22 for the PvP POIs; a camp
+-- under construction is one, Round 58).
 function M.settlement_margin(slot)
-	return type(slot) == "string" and slot:match("^pvp_") and M.PVP_MARGIN or 0
+	return type(slot) == "string" and (slot:match("^pvp_") or slot == "camp_construction") and
+		M.PVP_MARGIN or 0
 end
 
 -- Every road of a serialized layout (network roads, trails, capital streets

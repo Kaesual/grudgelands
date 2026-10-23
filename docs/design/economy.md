@@ -16,6 +16,8 @@ price tables, buy-back, the audit fixes and a simple income estimate, without
 a checksummed manifest or audit DAG. Quest copper rewards use the same ×2.5
 axis (D2).
 
+The Miner's Guild's reputation (Round 58) is no ledger currency and no copper buys it: [miners_guild.md](miners_guild.md).
+
 ## 1. Currency: copper / silver / gold
 
 - Base-100 chain: **100 copper = 1 silver, 100 silver = 1 gold**.

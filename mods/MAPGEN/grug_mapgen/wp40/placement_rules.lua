@@ -40,12 +40,17 @@ R.KINDS = {
 		fortress = {min = 88, max = 448}},
 	pvp_camp_low = {relief = 16, dry = 8, spacing = 160, pvp = true, camp = {half = 16}},
 	pvp_camp_high = {relief = 16, dry = 8, spacing = 160, pvp = true, camp = {half = 16}},
+	-- Round 58 (r58_camp_catalog.lua): the mining camps and the camps under
+	-- construction, the outposts' rules (their bands are the anchor rows').
+	mining_camp = {relief = 16, dry = 8, spacing = 160},
+	camp_construction = {relief = 16, dry = 8, spacing = 160},
 }
 
 -- The order kinds are placed in within one pass (the larger and the more
 -- constrained first); a kind missing here follows them by template id.
 R.KIND_ORDER = {"pvp_fortress", "pvp_camp_high", "pvp_camp_low", "village", "mine",
-	"outpost", "bandit_home", "bandit_frontier", "mirefolk", "clash", "rare_route"}
+	"outpost", "bandit_home", "bandit_frontier", "mirefolk", "clash", "rare_route",
+	"mining_camp", "camp_construction"}
 
 -- The relaxation steps, tried in order until one finds a candidate:
 -- band slack (thirds; a war camp's levels), relief factor, spacing factor,

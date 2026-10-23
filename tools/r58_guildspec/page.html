@@ -1,0 +1,340 @@
+<title>Miner's Guild Zahlen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Zilla+Slab:wght@500;600&display=swap">
+<style>
+/* Layout: one reading column; a summary table, then one card per group (ranks, exchange, consumables, Remains, model) with a row per number: name, field(s), live derived line, one-line reason; rows stack on phones; a sticky save bar. */
+:root {
+  --bg: #f3f4f2; --surface: #ffffff; --fg: #1f2427; --muted: #5d666c; --line: #d5d9d6;
+  --accent: #a4521f; --accent-soft: #f4e3d7; --pick: #e9eef0; --warn: #a3262a; --warn-bg: #f7e1e1;
+  --display: "Zilla Slab", Georgia, serif; --body: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #171b1d; --surface: #20262a; --fg: #e4e7e5; --muted: #9aa3a8; --line: #343c41;
+  --accent: #e08a52; --accent-soft: #3a2a20; --pick: #2a3237; --warn: #f08a8a; --warn-bg: #3a2224; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #171b1d; --surface: #20262a; --fg: #e4e7e5; --muted: #9aa3a8; --line: #343c41;
+  --accent: #e08a52; --accent-soft: #3a2a20; --pick: #2a3237; --warn: #f08a8a; --warn-bg: #3a2224; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; margin: 0; }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 120px; display: flex; flex-direction: column; gap: 18px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; }
+h1 { font-size: 30px; line-height: 1.15; }
+h2 { font-size: 21px; }
+h3 { font-size: 16px; margin-top: 6px; }
+p { margin: 0; max-width: 72ch; }
+.lead { color: var(--muted); }
+.warn { color: var(--warn); background: var(--warn-bg); border-radius: 5px; padding: 8px 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; width: 100%; }
+th, td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 500; font-size: 13px; }
+.row { display: grid; grid-template-columns: minmax(10em, 1fr) auto minmax(14em, 1.6fr); gap: 4px 14px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.row:first-of-type { border-top: 0; }
+.row .label { font-weight: 500; }
+.row .label .sub { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+.row .fields { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.row .derived { font-size: 14px; font-variant-numeric: tabular-nums; }
+.row .reason { grid-column: 1 / -1; color: var(--muted); font-size: 13.5px; }
+@media (max-width: 680px) { .row { grid-template-columns: 1fr; } }
+.field { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); }
+input[type=number] { width: 6.5em; font: inherit; font-family: var(--mono); font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 4px 6px; }
+input[type=number].changed { border-color: var(--accent); background: var(--accent-soft); }
+input[type=number].bad { border-color: var(--warn); background: var(--warn-bg); }
+.fixed { font-family: var(--mono); font-size: 14px; }
+.pending { font-size: 12px; font-weight: 600; letter-spacing: .03em; color: var(--accent); }
+textarea { width: 100%; box-sizing: border-box; min-height: 40px; resize: vertical; font: inherit; font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; }
+textarea:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); }
+.bar .in { max-width: 980px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+button { font: inherit; font-weight: 500; border-radius: 5px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+#status { color: var(--muted); font-size: 14px; flex: 1 1 200px; min-width: 0; font-variant-numeric: tabular-nums; }
+</style>
+
+<div class="wrap">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <h1>Miner's Guild: die Zahlen</h1>
+    <p class="lead">Runde 58, GUILDSPEC. Alle Zahlen der Gilde sind Vorschläge: Ränge, Tauschwerte, Preise und Wirkung der Verbrauchsgüter, die Beute der Miner's Remains. Ändere, was dir nicht passt; die Zeilen darunter rechnen sofort mit. Ruf hat zwei Zahlen: den Lebenszeit-Ruf (er bestimmt den Rang und sinkt nie) und das ausgebbare Guthaben.</p>
+    <p class="lead">Die Stunden sind ein <strong>Modell</strong>, keine Messung: Grabzeit der Spitzhacke je Stufe, Erzdichte des Gesteins und die Annahmen ganz unten (wie viel einer wirklich gräbt, wie viel Fels er dabei sieht). Rang n entsteht im Modell durch Abbau in Stufe min(n, 6), also dort, wo die Ware dieses Rangs benutzbar wird. Grobe Richtwerte, keine harten Grenzen.</p>
+    <p id="selfcheck" class="warn" hidden></p>
+    <p id="warnings" class="warn" hidden></p>
+  </div>
+
+  <section class="card">
+    <h2>Was eine Stunde Abbau bringt</h2>
+    <p class="lead">Je Stufe, mit den Zahlen dieser Seite. Kupfer: dieselben Funde stattdessen beim Händler verkauft, daneben das Einkommen je Stunde der Stufe (economy.md).</p>
+    <div class="scroll"><table id="summary"></table></div>
+  </section>
+
+  <section class="card" id="g-ranks"><h2>Ränge</h2>
+    <p class="lead">Lebenszeit-Ruf je Rang 1–10. Rang 1–6 schalten den Kauf der T1–T6-Ware frei; Achievements bei 3, 6 und 10 (die Umhänge).</p>
+    <div class="rows"></div>
+    <label class="lead" for="note-ranks">Notiz zu den Rängen</label><textarea id="note-ranks" rows="2"></textarea>
+  </section>
+
+  <section class="card" id="g-exchange"><h2>Tausch: Material gegen Ruf</h2>
+    <p class="lead">Punkte je Los (Los = so viele Stück). Nur, was kein Händler verkauft: keine Barren, Blöcke, Ziegel oder anderen hergestellten Waren. Verkaufen gegen Kupfer bleibt daneben möglich; die Zahl rechts sagt, wie viel Verkaufswert man für einen Punkt aufgibt.</p>
+    <div class="rows"></div>
+    <label class="lead" for="note-exchange">Notiz zum Tausch</label><textarea id="note-exchange" rows="2"></textarea>
+  </section>
+
+  <section class="card" id="g-consumables"><h2>Verbrauchsgüter: Ore Sense und Treasure Hunt</h2>
+    <p class="lead">Je Stufe ein Paar; Kauf ab Rang = Stufe, Benutzung ab Stufe 1/11/21/31/41/51 (Regel), nur in der eigenen Tiefe, eines der beiden zur Zeit, läuft über Logout und Tod weiter. Preis in Ruf; der Händler zahlt den Kupferwert.</p>
+    <p class="lead">Bei den Vorschlägen bringen die Zusatzfunde von Ore Sense etwa 10–26 % seines Preises in Ruf zurück: es spart Suchen, es bezahlt sich nicht selbst.</p>
+    <p class="lead">Ein Treasure Hunt bringt mit seinen Remains etwa eine halbe Stunde Kupfer-Einkommen der Stufe.</p>
+    <div class="rows"></div>
+    <h3>Wirkung (gilt für alle Stufen)</h3>
+    <div class="rows" id="params"></div>
+    <label class="lead" for="note-consumables">Notiz zu den Verbrauchsgütern</label><textarea id="note-consumables" rows="2"></textarea>
+  </section>
+
+  <section class="card" id="g-remains"><h2>Miner's Remains</h2>
+    <p class="lead">Der versteckte Block von Treasure Hunt: ein Münzbeutel, Barren der Stufe und manchmal ein geschliffener Edelstein. Keine neue Ware (die wartet auf die Unique Items). Barren und geschliffene Steine sind nicht tauschbar, so speist Treasure Hunt keinen Ruf.</p>
+    <div class="rows"></div>
+    <label class="lead" for="note-remains">Notiz zu den Remains</label><textarea id="note-remains" rows="2"></textarea>
+  </section>
+
+  <section class="card" id="g-model"><h2>Modell-Annahmen</h2>
+    <p class="lead">Keine Spielzahlen: nur das Modell hinter den Stunden. Gespeichert als <span class="fixed">model.*</span>, damit ich sehe, womit du gerechnet hast.</p>
+    <div class="rows"></div>
+    <label class="lead" for="note-model">Notiz zum Modell</label><textarea id="note-model" rows="2"></textarea>
+  </section>
+
+  <section class="card">
+    <h2>Sonst noch etwas?</h2>
+    <label for="general" class="lead">Allgemeine Notiz (optional)</label>
+    <textarea id="general" rows="3"></textarea>
+  </section>
+</div>
+<div class="bar"><div class="in">
+  <button type="button" id="reset">Vorschläge wiederherstellen</button>
+  <button type="button" class="primary" id="save">Speichern</button>
+  <span id="status"></span>
+</div></div>
+
+<script>
+const D = __DATA__;
+const GROUPS = ["ranks", "exchange", "consumables", "remains", "model"];
+const MODEL_KEYS = ["active", "overhead", "exposure", "stone_carried", "sense_extra", "hunt_reach"];
+const MODEL_LABELS = {active: "Grabanteil der Stunde", overhead: "Sekunden je Block extra", exposure: "Gesehener Fels je Block",
+  stone_carried: "Mitgenommener Stein", sense_extra: "Ore Sense: neue Funde", hunt_reach: "Remains: Sekunden bis gefunden"};
+const DEFAULTS = Object.assign({}, D.values);
+for (const k of MODEL_KEYS) DEFAULTS["model." + k] = D.assumptions[k];
+const inputs = new Map();
+const nf = (x, d = 0) => Number(x).toLocaleString("de-DE", {minimumFractionDigits: d, maximumFractionDigits: d});
+function money(c) { c = Math.round(c); const g = Math.floor(c / 10000), s = Math.floor(c / 100) % 100, r = c % 100;
+  return g > 0 ? g + "g " + s + "s " + r + "c" : s > 0 ? s + "s " + r + "c" : r + "c"; }
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+function field(key, label, step) {
+  const wrap = el("label", "field");
+  if (label) wrap.append(document.createTextNode(label));
+  const inp = el("input"); inp.type = "number"; inp.inputMode = "decimal"; inp.step = step || "1"; inp.min = "0";
+  inp.value = DEFAULTS[key]; inp.dataset.key = key; inp.setAttribute("aria-label", label ? label + " (" + key + ")" : key);
+  inputs.set(key, inp); wrap.append(inp); return wrap;
+}
+function row(container, label, sub, fields, reason, derivedId) {
+  const r = el("div", "row");
+  const l = el("div", "label", label); if (sub) { const s = el("span", "sub"); s.textContent = sub; l.append(s); }
+  const f = el("div", "fields"); for (const x of fields) f.append(x);
+  const d = el("div", "derived"); if (derivedId) d.id = derivedId;
+  r.append(l, f, d);
+  if (reason) r.append(el("div", "reason", reason));
+  container.append(r); return r;
+}
+const rowsOf = id => document.querySelector("#" + id + " .rows");
+
+// Ranks.
+for (let n = 1; n <= D.ranks; n++) row(rowsOf("g-ranks"), "Rang " + n, null, [field("rank." + n)], D.reasons["rank." + n], "d-rank-" + n);
+// Exchange.
+for (const x of D.exchange) {
+  const sub = x.tier ? "Erntestufe " + x.tier : "Stein und Sand";
+  const r = row(rowsOf("g-exchange"), x.name, sub, [field("exchange." + x.item + ".points", "Punkte"), field("exchange." + x.item + ".lot", "je")],
+    D.reasons[x.pending ? "pending" : x.class], "d-ex-" + x.item);
+  if (x.pending) r.querySelector(".label").append(el("span", "pending", " wartet auf REP"));
+}
+// Consumables per tier.
+for (const c of D.consumables) {
+  row(rowsOf("g-consumables"), "Stufe " + c.tier, c.sense + " / " + c.hunt + " · Stufe " + c.use_level + " · Rang " + c.rank,
+    [field("ore_sense.t" + c.tier + ".price", "Ore Sense"), field("treasure_hunt.t" + c.tier + ".price", "Treasure Hunt"), field("consumable.t" + c.tier + ".sell_copper", "Händler c")],
+    c.tier === 1 ? D.reasons["ore_sense.price"] + " " + D.reasons["consumable.sell_copper"] : "Ore Sense sucht zuerst " + c.target_name + ".", "d-con-" + c.tier);
+}
+const PARAMS = [["ore_sense.duration", "Ore Sense: Dauer (s)"], ["ore_sense.range", "Ore Sense: Suchradius"], ["ore_sense.interval_min", "Ore Sense: Abstand min (s)"],
+  ["ore_sense.interval_max", "Ore Sense: Abstand max (s)"], ["ore_sense.marker_seconds", "Ore Sense: Markierung (s)"], ["treasure_hunt.duration", "Treasure Hunt: Dauer (s)"],
+  ["treasure_hunt.place_min", "Treasure Hunt: Abstand min"], ["treasure_hunt.place_max", "Treasure Hunt: Abstand max"], ["treasure_hunt.marker_range", "Treasure Hunt: Markierung bis"],
+  ["treasure_hunt.remove_distance", "Treasure Hunt: verschwindet ab"], ["treasure_hunt.respawn_seconds", "Treasure Hunt: Pause (s)"], ["treasure_hunt.check_seconds", "Treasure Hunt: Prüfung alle (s)"]];
+for (const [key, label] of PARAMS) row(document.getElementById("params"), label, null, [field(key)], D.reasons[key], "d-" + key.replace(".", "-"));
+// Remains.
+for (const r of D.remains) {
+  const p = "remains.t" + r.tier + ".";
+  row(rowsOf("g-remains"), "Stufe " + r.tier, r.bar + " · " + r.gem,
+    [field(p + "copper_min", "c von"), field(p + "copper_max", "bis"), field(p + "bars_min", "Barren"), field(p + "bars_max", "bis"), field(p + "gem_chance", "Stein 1 in")],
+    r.tier === 1 ? D.reasons["remains.copper"] + " " + D.reasons["remains.bars"] + " " + D.reasons["remains.gem_chance"] : null, "d-rem-" + r.tier);
+}
+// Model.
+for (const k of MODEL_KEYS) row(rowsOf("g-model"), MODEL_LABELS[k], null, [field("model." + k, null, "0.01")], D.reasons["model." + k], null);
+
+function values() { const v = {}; for (const [k, inp] of inputs) { const x = parseFloat(inp.value); v[k] = isFinite(x) ? x : NaN; } return v; }
+function rate(v, item) { const p = v["exchange." + item + ".points"], l = v["exchange." + item + ".lot"]; return (p || 0) / (l || 1); }
+
+// The model (the same as tools/r58_guildspec/model.lua).
+function model(v) {
+  const a = {}; for (const k of MODEL_KEYS) a[k] = v["model." + k];
+  const tiers = [];
+  for (let t = 1; t <= 6; t++) {
+    const dig = D.dig[t - 1], nodes = 3600 * a.active / (dig + a.overhead), seen = nodes * a.exposure;
+    let repOres = 0, copper = 0, res = 0;
+    for (const o of D.ores) { const den = o.den[t - 1]; if (!den) continue; const n = seen / den; res += n; repOres += n * rate(v, o.item); copper += n * o.copper; }
+    const stone = nodes * a.stone_carried, repStone = stone * rate(v, "default:cobble");
+    copper += stone * 0.02;
+    tiers.push({t, dig, nodes, res, rep: repOres + repStone, repStone, copper, income: D.income[t - 1]});
+  }
+  const ranks = []; let cum = 0, prev = 0;
+  for (let n = 1; n <= D.ranks; n++) { const at = v["rank." + n], t = Math.min(n, 6), h = (at - prev) / tiers[t - 1].rep; cum += h;
+    ranks.push({n, at, t, h, cum, t6: at / tiers[5].rep}); prev = at; }
+  const cons = [];
+  for (let t = 1; t <= 6; t++) {
+    const st = tiers[t - 1], sp = v["ore_sense.t" + t + ".price"], hp = v["treasure_hunt.t" + t + ".price"];
+    const marks = v["ore_sense.duration"] / ((v["ore_sense.interval_min"] + v["ore_sense.interval_max"]) / 2);
+    const target = D.ores.find(o => o.key === D.consumables[t - 1].target);
+    const size = {8: 8, 4: 4, 2: 1}[target.cap];
+    const senseExtra = marks * size * a.sense_extra * rate(v, target.item);
+    const p = "remains.t" + t + ".";
+    const remains = v["treasure_hunt.duration"] / (v["treasure_hunt.respawn_seconds"] + a.hunt_reach);
+    const each = (v[p + "copper_min"] + v[p + "copper_max"]) / 2 + (v[p + "bars_min"] + v[p + "bars_max"]) / 2 * D.bar_copper[t - 1] + D.gem_copper[t - 1] / v[p + "gem_chance"];
+    cons.push({t, marks, senseExtra, senseShare: senseExtra / sp, sensePerHour: st.rep / sp, huntPerHour: st.rep / hp,
+      remains, each, hunt: remains * each, huntShare: remains * each / (st.income / 2)});
+  }
+  return {tiers, ranks, cons};
+}
+
+// The page's model against the generator's (model.lua) at the proposed numbers.
+(function selfcheck() {
+  const m = model(DEFAULTS), off = [];
+  const near = (a, b) => Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(b));
+  m.tiers.forEach((s, i) => { if (!near(s.rep, D.ref.rep[i])) off.push("Ruf T" + (i + 1)); });
+  m.ranks.forEach((r, i) => { if (!near(r.cum, D.ref.hours[i])) off.push("Stunden Rang " + (i + 1)); });
+  m.cons.forEach((c, i) => { if (!near(c.senseExtra, D.ref.sense[i]) || !near(c.hunt, D.ref.hunt[i])) off.push("Ware T" + (i + 1)); });
+  if (off.length) { const w = document.getElementById("selfcheck"); w.hidden = false; w.textContent = "Achtung: das Modell dieser Seite weicht vom Generator ab (" + off.join(", ") + "). Bitte melde das."; }
+})();
+
+// The cheapest copper a point of reputation costs (every exchange row, the
+// pending ones too): a vendor may pay at most price x this for a consumable.
+function cheapestCopper(v) {
+  let min = Infinity;
+  for (const x of D.exchange) { const pts = rate(v, x.item); if (!(pts > 0)) continue;
+    const cp = x.class === "bulk" ? 0.02 : D.ores.find(o => o.item === x.item).copper; min = Math.min(min, cp / pts); }
+  return min;
+}
+
+// What the fixture (tools/r58_guildspec/portable_test.lua) and apply_tuning.py
+// refuse: marked red, never saved.
+function validate(v) {
+  const bad = new Set();
+  for (const [k, x] of Object.entries(v)) {
+    if (!isFinite(x) || x < 0) bad.add(k);
+    else if (!k.startsWith("model.") && x !== Math.floor(x)) bad.add(k); // the catalogue takes whole numbers
+  }
+  for (let n = 1; n <= D.ranks; n++) { if (!(v["rank." + n] > (n > 1 ? v["rank." + (n - 1)] : 0))) bad.add("rank." + n); }
+  for (const x of D.exchange) for (const f of [".points", ".lot"]) { if (!(v["exchange." + x.item + f] >= 1)) bad.add("exchange." + x.item + f); }
+  const cheapest = cheapestCopper(v);
+  for (let t = 1; t <= 6; t++) {
+    for (const kind of ["ore_sense", "treasure_hunt"]) { const k = kind + ".t" + t + ".price"; if (!(v[k] >= 1)) bad.add(k);
+      if (v["consumable.t" + t + ".sell_copper"] > v[k] * cheapest) bad.add("consumable.t" + t + ".sell_copper"); }
+  }
+  for (const k of ["ore_sense.duration", "treasure_hunt.duration", "ore_sense.marker_seconds", "treasure_hunt.check_seconds"]) if (!(v[k] > 0)) bad.add(k);
+  if (!(v["ore_sense.range"] >= 1)) bad.add("ore_sense.range");
+  // The ruling: a mark every 60-120 s, shown 5 s.
+  if (!(v["ore_sense.interval_min"] >= 60)) bad.add("ore_sense.interval_min");
+  if (!(v["ore_sense.interval_max"] <= 120 && v["ore_sense.interval_max"] >= v["ore_sense.interval_min"])) bad.add("ore_sense.interval_max");
+  if (v["ore_sense.marker_seconds"] !== 5) bad.add("ore_sense.marker_seconds");
+  if (!(v["treasure_hunt.place_min"] >= 2)) bad.add("treasure_hunt.place_min");
+  if (v["treasure_hunt.place_max"] < v["treasure_hunt.place_min"]) bad.add("treasure_hunt.place_max");
+  if (v["treasure_hunt.marker_range"] < v["treasure_hunt.place_max"]) bad.add("treasure_hunt.marker_range");
+  if (v["treasure_hunt.remove_distance"] <= v["treasure_hunt.marker_range"]) bad.add("treasure_hunt.remove_distance");
+  for (let t = 1; t <= 6; t++) { const p = "remains.t" + t + ".";
+    if (v[p + "copper_max"] < v[p + "copper_min"]) bad.add(p + "copper_max");
+    if (v[p + "bars_max"] < v[p + "bars_min"]) bad.add(p + "bars_max");
+    if (!(v[p + "gem_chance"] >= 1)) bad.add(p + "gem_chance"); }
+  for (const k of ["model.active", "model.exposure"]) if (!(v[k] > 0)) bad.add(k);
+  return bad;
+}
+
+// Rough targets (the fixture prints the same as warnings): shown, saving allowed.
+function warnings(v, m) {
+  const out = []; let step = 0;
+  for (let n = 1; n <= D.ranks; n++) { const s = v["rank." + n] - (n > 1 ? v["rank." + (n - 1)] : 0);
+    if (s < step) out.push("Rang " + n + ": der Schritt ist kleiner als der davor (die letzten Ränge sollen die schwersten sein)."); step = s; }
+  for (const [kind, label] of [["ore_sense", "Ore Sense"], ["treasure_hunt", "Treasure Hunt"]])
+    for (let t = 2; t <= 6; t++) if (!(v[kind + ".t" + t + ".price"] > v[kind + ".t" + (t - 1) + ".price"])) out.push(label + " T" + t + " kostet nicht mehr als T" + (t - 1) + ".");
+  for (let t = 2; t <= 6; t++) if (!(v["consumable.t" + t + ".sell_copper"] > v["consumable.t" + (t - 1) + ".sell_copper"])) out.push("Händlerpreis T" + t + " nicht höher als T" + (t - 1) + ".");
+  for (let t = 2; t <= 6; t++) if (!(m.cons[t - 1].each > m.cons[t - 2].each)) out.push("Remains T" + t + " ist nicht mehr wert als T" + (t - 1) + " (Regel: tiefer mehr wert).");
+  for (let t = 2; t <= 6; t++) if (!(m.tiers[t - 1].rep > m.tiers[t - 2].rep)) out.push("Eine Stunde in T" + t + " bringt nicht mehr Ruf als in T" + (t - 1) + ".");
+  return out;
+}
+
+function render() {
+  const v = values(), bad = validate(v);
+  for (const [k, inp] of inputs) { inp.classList.toggle("bad", bad.has(k)); inp.classList.toggle("changed", !bad.has(k) && v[k] !== DEFAULTS[k]); }
+  const changed = [...inputs.keys()].filter(k => v[k] !== DEFAULTS[k]).length;
+  const box = document.getElementById("warnings");
+  if (bad.size) { box.hidden = true; status.textContent = bad.size + " Feld(er) ungültig, rot markiert (so nicht speicherbar)" + noStore; return; }
+  const m = model(v);
+  const warn = warnings(v, m);
+  box.hidden = warn.length === 0; box.textContent = warn.length ? "Hinweise (Richtwerte, speichern geht trotzdem): " + warn.join(" ") : "";
+  const tb = document.getElementById("summary");
+  tb.innerHTML = "<tr><th>Stufe</th><th>Ruf / h</th><th>davon Stein</th><th>Kupfer / h verkauft</th><th>Einkommen / h</th><th>Käufe / h (OS, TH)</th></tr>";
+  for (const s of m.tiers) { const c = m.cons[s.t - 1]; const tr = document.createElement("tr");
+    for (const x of ["T" + s.t, nf(s.rep), nf(s.repStone), money(s.copper), money(s.income), nf(c.sensePerHour, 2) + " / " + nf(c.huntPerHour, 2)]) tr.append(el("td", null, x));
+    tb.append(tr); }
+  for (const r of m.ranks) document.getElementById("d-rank-" + r.n).textContent = nf(r.h, 1) + " h in T" + r.t + " · gesamt " + nf(r.cum, 1) + " h · nur T6: " + nf(r.t6, 1) + " h";
+  const minCpp = cheapestCopper(v);
+  for (const x of D.exchange) {
+    const pts = rate(v, x.item); let cp;
+    if (x.class === "bulk") cp = 0.02; else cp = D.ores.find(o => o.item === x.item).copper;
+    const cpp = pts > 0 ? cp / pts : Infinity;
+    document.getElementById("d-ex-" + x.item).textContent = pts > 0 ? "Ruf je Stück " + nf(pts, pts < 1 ? 2 : 0) + " · gibt ~" + nf(cpp, 2) + "c Verkaufswert je Punkt auf" : "kein Ruf";
+  }
+  for (const c of m.cons) {
+    const sell = v["consumable.t" + c.t + ".sell_copper"], limit = Math.min(v["ore_sense.t" + c.t + ".price"], v["treasure_hunt.t" + c.t + ".price"]) * minCpp;
+    document.getElementById("d-con-" + c.t).textContent = "Eine Stunde T" + c.t + " kauft " + nf(c.sensePerHour, 2) + " / " + nf(c.huntPerHour, 2) +
+      " · Ore Sense: " + nf(c.marks) + " Hinweise, ~" + nf(c.senseExtra) + " Ruf extra (" + nf(c.senseShare * 100) + " % des Preises)" +
+      " · Treasure Hunt: " + nf(c.remains) + " Remains, " + money(c.hunt) + " (" + nf(c.huntShare * 100) + " % einer halben Stunde Einkommen)" +
+      " · Händlerpreis höchstens " + money(Math.floor(limit)) + " (sonst ein Kupfer-Kreislauf)";
+  }
+  for (const [key] of PARAMS) { const d = document.getElementById("d-" + key.replace(".", "-")); d.textContent = ""; }
+  document.getElementById("d-ore_sense-duration").textContent = nf(m.cons[0].marks) + " Hinweise je Anwendung";
+  document.getElementById("d-treasure_hunt-duration").textContent = nf(m.cons[0].remains) + " Remains je Anwendung (Modell)";
+  for (const c of m.cons) document.getElementById("d-rem-" + c.t).textContent = "Wert je Fund ~" + money(c.each) + " · je Anwendung ~" + money(c.hunt);
+  status.textContent = (changed ? changed + " Wert(e) geändert" : "Alle Werte wie vorgeschlagen") + (warn.length ? ", " + warn.length + " Hinweis(e)" : "") + noStore;
+}
+let noStore = "";
+const status = document.getElementById("status");
+document.querySelector(".wrap").addEventListener("input", e => { if (e.target.matches("input[type=number]")) render(); });
+document.getElementById("reset").addEventListener("click", () => { for (const [k, inp] of inputs) inp.value = DEFAULTS[k]; render(); });
+render();
+
+let db = null; const save = document.getElementById("save"); save.disabled = true;
+(async () => {
+  try { db = await window.claude?.use?.("db"); } catch (e) { db = null; }
+  if (!db) { noStore = " · Speichern ist in dieser Ansicht nicht möglich. Schreib mir deine Werte im Chat."; render(); return; }
+  try {
+    const snap = await db.doc("picks/tuning").get();
+    if (snap.exists) { const d = snap.data();
+      for (const [k, x] of Object.entries(d.values || {})) { const inp = inputs.get(k); if (inp && typeof x === "number") inp.value = x; }
+      for (const g of GROUPS) { const t = (d.notes || {})[g]; if (t) document.getElementById("note-" + g).value = t; }
+      if (d.general) document.getElementById("general").value = d.general;
+      render(); if (d.savedAt) status.textContent += " · zuletzt gespeichert " + new Date(d.savedAt).toLocaleString("de-DE"); }
+  } catch (e) {}
+  save.disabled = false;
+})();
+save.addEventListener("click", async () => {
+  if (!db) return; const v = values();
+  if (validate(v).size) { status.textContent = "Erst die rot markierten Felder korrigieren."; return; }
+  save.disabled = true;
+  const notes = {}; for (const g of GROUPS) notes[g] = document.getElementById("note-" + g).value.trim();
+  const d = {values: v, notes, general: document.getElementById("general").value.trim(), savedAt: new Date().toISOString()};
+  try { await db.doc("picks/tuning").set(d); render(); status.textContent += " · gespeichert " + new Date(d.savedAt).toLocaleTimeString("de-DE"); }
+  catch (e) { status.textContent = "Nicht gespeichert (" + (e && e.code || "Fehler") + "). Bitte noch einmal versuchen oder im Chat schreiben."; }
+  save.disabled = false;
+});
+</script>
