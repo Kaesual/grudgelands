@@ -1,0 +1,71 @@
+-- The nodes of the Miner's Guild lift rooms (Round 58 lane ROOMS;
+-- wp40/guild_rooms.lua owns the shape, wp40/guild_room_writer.lua writes it).
+-- Placeholder looks from shipped textures. Every one is non-ground-content
+-- (a neighbouring chunk's caves, flooded caves and dungeons carve and flood
+-- only ground content, so they never cut into a room), can never be dug or
+-- blown up and drops nothing; the rooms are protected boxes besides.
+--   room_fill        the open room and its exits: airlike, light passes, not
+--                    walkable, so players and mobs move through it as through
+--                    air; not floodable and not buildable_to, so no liquid
+--                    flows into it and nothing is placed into it; never
+--                    pointed at. Modelled on grug_mobs:rift_void without its
+--                    liquid movement, damage and tint, so the travel path's
+--                    `passable()` (grug_home/travel.lua) takes it.
+--   room_floor       the floor under the room and its exits (a full normal
+--                    node, as the travel path's safe arrival wants).
+--   room_mantle_t1 .. t6  the shell round the room, in the look of its
+--                    tier's host rock (default:stone, the tier rocks).
+--   The lamps are default's Mese Lamp (non-ground-content already).
+--
+--   dofile(modpath .. "/guild_room_nodes.lua")(core, grug_materials)
+return function(engine, materials)
+	local R = dofile(engine.get_modpath("grug_mapgen") .. "/wp40/guild_rooms.lua")
+	local NODES = R.NODES
+	local function noop() end
+	local stone_sounds = default.node_sound_stone_defaults()
+
+	engine.register_node(NODES.fill, {
+		description = "Guild Room Air",
+		drawtype = "airlike",
+		paramtype = "light",
+		sunlight_propagates = true,
+		walkable = false,
+		pointable = false,
+		diggable = false,
+		buildable_to = false,
+		floodable = false,
+		is_ground_content = false,
+		drop = "",
+		groups = {not_in_creative_inventory = 1},
+		on_blast = noop,
+	})
+
+	engine.register_node(NODES.floor, {
+		description = "Guild Room Floor",
+		tiles = {"default_stone_block.png"},
+		diggable = false,
+		is_ground_content = false,
+		drop = "",
+		groups = {not_in_creative_inventory = 1},
+		on_blast = noop,
+		sounds = stone_sounds,
+	})
+
+	for tier = 1, R.TIERS do
+		local host = engine.registered_nodes[materials.TIERS[tier].node]
+		assert(type(host) == "table" and type(host.tiles) == "table",
+			"guild room nodes: the tier " .. tier .. " host rock is not registered")
+		local tiles = {}
+		for index, tile in ipairs(host.tiles) do tiles[index] = tile end
+		engine.register_node(NODES.mantle[tier], {
+			description = "Guild Room Rock",
+			tiles = tiles,
+			diggable = false,
+			is_ground_content = false,
+			drop = "",
+			groups = {not_in_creative_inventory = 1},
+			on_blast = noop,
+			sounds = stone_sounds,
+		})
+	end
+end

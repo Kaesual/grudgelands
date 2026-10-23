@@ -9,8 +9,14 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/jit_tuning.lua")()
 dofile(modpath .. "/world_nodes.lua")(core, modpath, grug_nodes, grug_gathering)
 dofile(modpath .. "/poi_displays.lua")(core)
+-- The Miner's Guild lift rooms' nodes (Round 58).
+dofile(modpath .. "/guild_room_nodes.lua")(core, grug_materials)
 grug_mapgen.wp40 = dofile(modpath .. "/wp40/r7_loader.lua")(
 	core, modpath, grug_materials, grug_gathering, grug_core)
+-- The Miner's Guild lift rooms of this world (wp40/guild_rooms.lua: the
+-- rooms by camp, room_at, rooms_in), for the lift, the foremen and the spawn
+-- gates; the zone authority already protects their boxes.
+grug_mapgen.guild_rooms = grug_mapgen.wp40.guild_rooms
 
 -- Planned water flow for grug_core's water guard (world_zones.md §7.4): at a
 -- step between two planned inland surfaces, river or canal, the higher water
