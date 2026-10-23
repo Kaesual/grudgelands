@@ -140,7 +140,7 @@ local SECTIONS = {
 		"• The Inventory tab holds up to four bags of 4 to 16 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
 		"• The potion belt on the Inventory tab holds four potions or elixirs; drink them from the quickbar (E).",
 		"• Eat food out of combat for a five-minute buff: instant healing, regeneration and sometimes extra stats. Only one food buff is active at a time.",
-		"• Gear wears out with use and stops working when broken. Repairs are made only in towns: every profession trainer of your faction repairs it for money, and so does @MENDER@ in every start town and capital (the hammer and anvil on the map).",
+		"• Gear wears out with use and stops working when broken. Repairs are made in towns and at the Miner's Guild's mining camps: every profession trainer of your faction repairs it for money, and so does @MENDER@ in every start town and capital (the hammer and anvil on the map), and so does the Camp Vendor of every mining camp.",
 		"",
 		heading("Riding, home and death"),
 		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mounts then wait in the quickbar: press E and click one to mount or dismount.",

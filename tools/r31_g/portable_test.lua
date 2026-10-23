@@ -418,6 +418,14 @@ for _, poi in ipairs(POIS) do
 	poi.race = race
 	grug_core.register_settlement_sockets(poi.key, race, poi.anchor, sockets, poi.key)
 end
+-- Round 58: the camp index grug_quests/npcs.lua registers the foremen from
+-- (grug_mapgen.mining_camps, the real module over a layout with every
+-- anchor placed; only the registered camps get a foreman).
+do
+	local layout = {}
+	for _, a in ipairs(source.anchors) do layout[a.id] = {x = 0, z = 0} end
+	_G.grug_mapgen = {mining_camps = dofile(wp40 .. "/r58_camps.lua").index(layout)}
+end
 -- grug_quests loads after the registry, before the mods-loaded placement.
 _G.grug_quests = {}
 dofile(repo .. "/mods/PLAYER/grug_quests/registry.lua")
@@ -684,6 +692,25 @@ do
 	end
 	eq(grug_mobs.quest_socket_title("pvp_fortress_accord", "quest_warmaster"), "Warmaster",
 		"Q the quest shell takes the record's title")
+	-- Round 58: each registered war camp's foreman (lane CAMPNPC), titled
+	-- Foreman, with the role of the camp's zone tier (both 41-50 zones: T5,
+	-- the higher band too), on the camp's quest socket; the shell takes the title.
+	for _, pair in ipairs({{"pvp_camp_broken_causeway_accord_low", 5},
+			{"pvp_camp_shattered_line_throng_high", 5}}) do
+		local npc = Q.registered_npcs["r58_foreman_" .. pair[1]]
+		check(npc and npc.settlement == pair[1] and npc.socket == "quest_foreman" and
+			npc.title == "Foreman" and npc.role == "foreman_t" .. pair[2],
+			"Q " .. pair[1] .. ": the foreman foreman_t" .. pair[2] .. " on quest_foreman")
+		local shell = holders(pair[1]).quest_foreman
+		if check(shell ~= nil, "Q " .. pair[1] .. " foreman placed") then
+			eq(carrier_text[shell], "Foreman", "Q " .. pair[1] .. " the foreman's nametag")
+		end
+	end
+	local foremen = 0
+	for id in pairs(Q.registered_npcs) do
+		if id:find("^r58_foreman_") then foremen = foremen + 1 end
+	end
+	eq(foremen, 2, "Q a foreman only for a registered camp")
 	-- The placed shells: nametag and own name are the role title, not the
 	-- race's "Village Elder", at placement and after a reload.
 	local fortress = holders("pvp_fortress_accord")

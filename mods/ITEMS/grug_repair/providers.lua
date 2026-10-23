@@ -42,10 +42,43 @@ grug_repair.register_provider("trainer", function(player, provider)
 	return false
 end)
 
--- The trainer is the only provider: repair happens only in towns (Round 46
--- ruling 16; the claim stations' repair of Round 29 is gone).
+-- Repair happens in towns (Round 46 ruling 16; the claim stations' repair
+-- of Round 29 is gone) and, since Round 58, at the Miner's Guild's camp
+-- vendors (below).
 function grug_repair.can_open_trainer(player, entity)
 	return grug_repair.provider_permitted(player, trainer_provider(entity))
+end
+
+-- The camp vendor (Round 58, miners_guild.md §3: "each camp has ... a
+-- vendor who ... repairs"): the provider is the `vendor_camp` socket the
+-- vendor stands on, by settlement key and socket id (plain strings; the
+-- vendor window holds no ObjectRef). Every action re-checks that the socket
+-- is a camp vendor socket, that the player stands within 8 nodes of it and
+-- belongs to the camp's faction (the race the camp is registered as).
+local function camp_vendor_provider(settlement, socket)
+	if type(settlement) ~= "string" or type(socket) ~= "string" then return nil end
+	return {kind = "camp_vendor", settlement = settlement, socket = socket}
+end
+
+grug_repair.register_provider("camp_vendor", function(player, provider)
+	local race
+	for _, settlement in ipairs(grug_core.settlement_socket_settlements()) do
+		if settlement.key == provider.settlement then race = settlement.race_id break end
+	end
+	local definition = race and grug_classes.registered_races[race]
+	if not definition or grug_factions.get_faction(player) ~= definition.faction then
+		return false
+	end
+	for _, socket in ipairs(grug_core.settlement_sockets_at(provider.settlement)) do
+		if socket.id == provider.socket and socket.role == "vendor" and socket.kind == "camp" then
+			return distance_squared(player:get_pos(), socket.pos) <= 64
+		end
+	end
+	return false
+end)
+
+function grug_repair.can_open_camp_vendor(player, settlement, socket)
+	return grug_repair.provider_permitted(player, camp_vendor_provider(settlement, socket))
 end
 
 local function esc(text) return core.formspec_escape(tostring(text)) end
@@ -78,8 +111,9 @@ local function form(session)
 		end
 		dy = dy + 0.1
 	end
-	fs[#fs + 1] = ("label[0.4,%.2f;All professions can repair your equipment for money.]")
-		:format(0.9 + dy)
+	fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.9 + dy, esc(quote.provider.kind == "camp_vendor" and
+		"The camp vendor repairs your equipment for money." or
+		"All professions can repair your equipment for money."))
 	local first = (session.page - 1) * PAGE_SIZE + 1
 	for i = first, math.min(#quote.items, first + PAGE_SIZE - 1) do
 		local row = quote.items[i]
@@ -117,6 +151,11 @@ end
 
 function grug_repair.open_trainer(player, entity)
 	return grug_repair.open(player, trainer_provider(entity))
+end
+
+-- The camp vendor window's Repair button (grug_traders/trade.lua).
+function grug_repair.open_camp_vendor(player, settlement, socket)
+	return grug_repair.open(player, camp_vendor_provider(settlement, socket))
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
