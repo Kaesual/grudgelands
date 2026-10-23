@@ -170,6 +170,7 @@ return function(repo, options)
 			get_keys = function() return {} end,
 			to_table = function() return {fields = {}} end,
 			from_table = function() end,
+			set_tool_capabilities = function() end,
 		}
 	end
 	local function craft_items(recipe)
@@ -315,7 +316,7 @@ return function(repo, options)
 	Stack.__index = Stack
 	function ItemStack(value)
 		if type(value) == "table" and getmetatable(value) == Stack then
-			return setmetatable({name = value.name, count = value.count}, Stack)
+			return setmetatable({name = value.name, count = value.count, meta = value.meta}, Stack)
 		end
 		local name, count = tostring(value or ""):match("^(%S*)%s*(%d*)")
 		return setmetatable({name = name, count = name == "" and 0 or tonumber(count) or 1}, Stack)
@@ -324,7 +325,25 @@ return function(repo, options)
 	function Stack:get_count() return self.count end
 	function Stack:set_count(count) self.count = count end
 	function Stack:is_empty() return self.count == 0 end
-	function Stack:get_meta() return storage() end
+	function Stack:get_meta()
+		self.meta = self.meta or storage()
+		return self.meta
+	end
+	function Stack:set_name(name) self.name = name end
+	function Stack:get_tool_capabilities()
+		local def = items[self.name]
+		return def and def.tool_capabilities or {}
+	end
+	function Stack:set_tool_capabilities() end
+	function Stack:set_wear() end
+	function Stack:get_free_space() return 99 - self.count end
+	function Stack:take_item(count)
+		count = math.min(count or 1, self.count)
+		self.count = self.count - count
+		local taken = ItemStack(self.name .. " " .. count)
+		if self.count == 0 then self.name = "" end
+		return taken
+	end
 	function Stack:get_definition() return items[self.name] or {} end
 	function Stack:get_stack_max() return 99 end
 	function Stack:to_string() return self.name .. " " .. self.count end

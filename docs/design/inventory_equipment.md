@@ -227,8 +227,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     requirement); a raw dish shows the cooked dish of its furnace recipe and
     "Must be cooked in a furnace to become edible."; anything else its own
     description. Below it "Ingredients (have/need)" (with **Recipe
-    details** at its right once the details page exists, Round 57 lane
-    DETAILS), the ingredients with icons and have/need for the
+    details** at its right, which opens the recipe details page below), the
+    ingredients with icons and have/need for the
     field's quantity, "Max: N" ("(inventory room)" when the room limits it), the
     warnings, the note of the last refused action and the XP hint:
     "Crafting this will give you a <profession> experience point" in green
@@ -277,7 +277,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Strength with T6 Strength." as its tooltip when that is a higher
     tier), the XP hint (at the station) and, right-aligned in the bottom
     row, **Enchant now** (5 s), which reads **Queue Enchant** while a job
-    runs. The **upgrade box**: the slot, the item level and the cap
+    runs; with an enchant chosen, **Details** at the top right opens its
+    details page. The **upgrade box**: the slot, the item level and the cap
     ("Cap 30 (Weaponsmith tier 3)"), the resulting item level, the
     materials for N levels, and the bottom row **+N levels** with **Max**
     (to the cap, as far as the materials pay) and **Upgrade now** (**Queue
@@ -290,7 +291,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     with the warning shows it and the next one starts (spec §4.3); a count
     above the cap or the materials is lowered with its note. An item at or
     above its cap reads "Already at the cap (item level C)." and takes no
-    level. A job's line (below the bar, in the queue view) reads "Steel
+    level. While the item can take a level, **Details** at the top right
+    opens the upgrade's details page (one level's materials, a weapon's
+    Stick included). A job's line (below the bar, in the queue view) reads "Steel
     Sword: Strength T3" for an enchant and "Steel Sword +3 levels" for an
     upgrade. An item left in the slot
     goes back into the inventory at join and when a profession is unlearned
@@ -331,6 +334,41 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     below, "Ingredients and the target item are taken when a job is queued;
     ✕ returns them. The queue keeps running while you are offline." No
     reordering. A recipe row, an area tab or a box button also leave it.
+  - **The recipe details page** (Round 57 ruling 5, wireframe "Recipe
+    details"): a box like the others, so the job strip stays under it. The
+    top row: **◀ Back** and "Recipe details: <name>". Then the made item's
+    icon (its tooltip), name and "Tailor · T1 · Tailor Bench · makes 1",
+    and **Select this recipe** for a recipe the player knows (Basic: its
+    ingredients held once or unlocked; a profession recipe up to the
+    player's tier) other than the chosen one: it chooses the recipe in its
+    area tab and closes the page. Then one box per ingredient: its icon
+    (tooltip: the item's own tooltip and its sources), "<name> ×N", "you
+    have H" (orange when short), **Open ▶** when it has a recipe (the first
+    the player knows, else the first) and, for a group entry, **Kinds ▶**;
+    below, one line per kind of source, generated from the registered data
+    (`grug_jobs/sources.lua`): the recipes ("Basic recipe", "Tailor T2
+    recipe at a Tailor Bench"), the furnace ("Furnace: from Iron Lump"),
+    the dual furnace, vendors ("Sold by every Quartermaster and 12 shops in
+    the capitals, from 1c"; a race Quartermaster stands in every town and
+    capital, the faction Quartermasters and the profession shops in the
+    capitals), drops with their level bands ("Drops from: Fern Poacher,
+    Grain Pilferer and 6 more (L1–10), leaders …, Bog Ooze"), herb and
+    wild plant zones with their levels and the Alchemy tier a healing herb
+    needs, mining ("Mined: Iron ore in T1–T4 rock (surface to y −700),
+    Bronze pick"), trees, fishing, farming, natural ground, and one fixed
+    line for the Water Bucket ("Fill an Empty Iron Bucket at water"); an
+    item without any source reads "No known source.". While the box has
+    room, the ingredient's own recipe follows as small chips with
+    tooltips. A group page ("Kinds of: …") lists the group's kinds, each
+    with its first source line and Open ▶, paged when long. An enchant's
+    or an upgrade's page (from **Details** in its box) shows the operation
+    ("Enchant: T2 prefix Strength", "Upgrade: T2, one item level"), the
+    profession, tier, station and time, and the boxes of its materials.
+    **Open ▶**, **Kinds ▶** and **◀ Back** walk a stack of pages in the
+    page state (never saved); ◀ Back from the first page returns to the box
+    it was opened from, and every opening starts a new stack. Navigation
+    exists only on this page. The index is built once, at the page's first
+    use.
   - **Sends:** a click answers with one resend; a job sends the page at its
     start, its end (only while the player's current page is Crafting; the
     next waiting job starts with it, so the bar restarts) and a

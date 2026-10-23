@@ -16,14 +16,17 @@
 -- it replaces ("Replaces prefix: +5 Strength (T2)", Round 56; orange with
 -- the overwrite warning as its tooltip when that is of a higher tier), the
 -- XP hint (at the station) and, right-aligned in the bottom row, Enchant
--- now, which reads Queue Enchant while a job runs.
+-- now, which reads Queue Enchant while a job runs. "Details" at the top
+-- right opens the chosen enchant's details page (details.lua: where each
+-- material comes from).
 --
 -- Upgrade: the target slot, its item level and cap, the resulting item
 -- level, the materials for N levels with have/need, the permanent warning
 -- when the result needs a higher level than the player's; the bottom row
 -- "+N levels" with Max and Upgrade now (Queue Upgrade while a job runs),
 -- the yellow "Upgrade anyway" ("Queue anyway") with the warning. An item at
--- or above its cap reads "Already at the cap" and takes no level.
+-- or above its cap reads "Already at the cap" and takes no level. "Details" at
+-- the top right opens the upgrade's details page (one level's materials).
 --
 -- The levels field follows spec §4.3 like the quantity field: Enter
 -- recalculates and never starts; a click above the maximum (the cap or the
@@ -43,6 +46,8 @@ local F = {
 	list = "grug_craft_ench_list", enchant = "grug_craft_ench_go",
 	levels = "grug_craft_levels", max = "grug_craft_levels_max",
 	upgrade = "grug_craft_upg_go",
+	-- Round 57 lane DETAILS: the operation's details page (details.lua).
+	details = "grug_craft_op_details",
 }
 grug_jobs.OPERATION_FIELDS = F
 
@@ -99,6 +104,21 @@ end
 
 local function target_of(player)
 	return player:get_inventory():get_stack(TARGET, 1)
+end
+
+-- "Details" at the box's top right (Round 57 lane DETAILS).
+local function details_button(fs)
+	if grug_jobs.has_craft_box("details") then
+		fs[#fs + 1] = ("button[%s,%s;1.6,0.5;%s;Details]"):format(n(X + W - 1.6),
+			n(TITLE_Y - 0.25), F.details)
+	end
+end
+
+-- Opens the details page of operation `id` on the slot's item.
+local function open_details(player, st, id)
+	local target = target_of(player)
+	grug_jobs.open_recipe_details(st, {kind = "operation", id = id,
+		target = not target:is_empty() and target:get_name() or nil})
 end
 
 -- The slot, its label and the box behind it.
@@ -234,6 +254,7 @@ local function enchant_build(player, view)
 		fs[#fs + 1] = ("textlist[%s,%s;%s,%s;%s;%s;%d;false]"):format(n(LIST_X), n(SLOT_Y),
 			n(LIST_W), n(LIST_H), F.list, table.concat(items, ","), selected)
 	end
+	if chosen then details_button(fs) end
 	local y = SLOT_Y + LIST_H + 0.3
 	local enabled = chosen ~= nil and plan ~= nil and not view.full
 	local away = chosen and chosen.station and not grug_jobs.station_nearby(player, chosen.station)
@@ -275,6 +296,10 @@ local function enchant_fields(player, st, fields)
 	if event then
 		local index = tonumber(tostring(event):match("^%u%u%u:(%d+)"))
 		if index and st.ench_rows and st.ench_rows[index] then st.ench = st.ench_rows[index] end
+		return true
+	end
+	if fields[F.details] and st.ench and grug_jobs.has_craft_box("details") then
+		open_details(player, st, st.ench)
 		return true
 	end
 	if grug_jobs.action_clicked(st, fields, F.enchant) then
@@ -367,6 +392,7 @@ local function upgrade_build(player, view)
 	if v.reason then
 		y = wrapped_labels(fs, X, y, W, v.reason, v.op and NOTE or WARN, NOTE_STEP)
 	elseif v.gap then
+		details_button(fs)
 		local levels = levels_of(st.levels)
 		local shown = levels and math.min(levels, v.gap) or 1
 		-- The bottom row: +N levels [field] [Max], the big button right of it.
@@ -421,6 +447,13 @@ local function upgrade_fields(player, st, fields)
 	end
 	if fields.key_enter_field == F.levels then
 		if not levels_of(st.levels) then st.note = "Enter a number of levels of 1 or more." end
+		return true
+	end
+	if fields[F.details] and grug_jobs.has_craft_box("details") then
+		local profession = area_profession(player, st.tab_seen, "upgrade")
+		local v = profession and upgrade_view(player, profession, target_of(player),
+			grug_jobs.ingredient_counts(player))
+		if v and v.op then open_details(player, st, v.op.id) end
 		return true
 	end
 	if not grug_jobs.action_clicked(st, fields, F.upgrade) then return false end

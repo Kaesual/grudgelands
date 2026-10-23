@@ -21,13 +21,17 @@
 --      tier; Thread's vendors; an ore's rock tiers; and prints the gaps
 --      and the index's size and build time (comparisons, not targets);
 --   P  the details page (details.lua) on the real data: a recipe with two
---      ingredient boxes (sources, have counts, Open ▸ only where the
---      ingredient has a recipe, tooltips), Open ▸ and ◂ Back through a
+--      ingredient boxes (sources, have counts, Open ▶ only where the
+--      ingredient has a recipe, tooltips), Open ▶ and ◀ Back through a
 --      stack of pages, Select this recipe only for a known recipe (it
---      chooses the recipe in its area), a group ingredient's Kinds ▸ page,
---      every element inside the box above the job strip (with the overflow
---      row too) and every label inside its column. Until lane CRAFT merges,
---      its layout C box and open/close_craft_box are stood in for.
+--      chooses the recipe in its area), a group ingredient's Kinds ▶ page,
+--      enchant and upgrade pages (an upgrade's weapon extra), every element
+--      inside the box above the job strip (with the overflow row too) and
+--      every label inside its column; then the real Crafting page through
+--      its own handler: Recipe details opens the page on the recipe with the
+--      inventory's counts, the job strip stays under it, Open ▶ and ◀ Back
+--      back to the recipe box, a new opening starts a fresh stack, and the
+--      upgrade and enchant boxes' Details open their operation's page.
 --   R57_DETAILS_SHOW=1 prints the first page's formspec, R57_DETAILS_DUMP=<file>
 --   writes the source lines the digest is taken of.
 -- Prints "R57 DETAILS PORTABLE PASS checks=<n>" or the failures.
@@ -261,12 +265,14 @@ local build_seconds = os.clock() - started
 
 -- Every recipe ingredient and enchant input has a source, except these
 -- (each a data question for the user, reported by the lane):
+-- A flexible gap may also have a source (lane ALLOY gives Steel Bars a
+-- recipe; the pin passes before and after it merges).
 local KNOWN_GAPS = {
 	["dye:white"] = "no recipe or source makes White Dye (Wool White needs it)",
 	["dye:yellow"] = "no recipe or source makes Yellow Dye",
-	["grug_farming:water_bucket"] = "filled at water with the Empty Iron Bucket, an action, not data",
 	["xpanes:bar_flat"] = "Steel Bars have no recipe (the steel bar door and trapdoor need them)",
 }
+local FLEXIBLE_GAPS = {["xpanes:bar_flat"] = true}
 local tokens, seen = {}, {}
 local function note(token)
 	if not seen[token] then
@@ -295,8 +301,12 @@ for _, token in ipairs(tokens) do
 	if group then check(#real.members(group) > 0, "R group " .. group .. " has a member") end
 end
 for token in pairs(KNOWN_GAPS) do
-	check(not real.has_source(token), "R a listed gap still has no source (else drop it): " .. token)
+	check(FLEXIBLE_GAPS[token] or not real.has_source(token),
+		"R a listed gap still has no source (else drop it): " .. token)
 end
+local bucket = real.sources("grug_farming:water_bucket")
+check(#bucket == 1 and bucket[1].kind == "use" and bucket[1].text == S.FIXED["grug_farming:water_bucket"],
+	"R the Water Bucket has its fixed line (filled at water)")
 check(enchant_inputs > 100, "R the enchant inputs are read (" .. enchant_inputs .. ")")
 
 local iron = real.sources("grug_materials:iron_bar")
@@ -323,6 +333,8 @@ eq(real.zone("kragmar_mournfen").display_name, "Mournfen", "R a zone id resolves
 local carrot_wild = find(real.sources("grug_cooking:carrot"), {kind = "gather"})
 check(carrot_wild and #carrot_wild.zones == 3 and carrot_wild.levels[2] == 6, "R Carrots grow wild in three start zones")
 
+check(grug_jobs.item_sources ~= nil and grug_jobs.has_craft_box("details"),
+	"R init.lua loads sources.lua and details.lua (the details box is registered)")
 local thread_real = real.sources("grug_professions:thread")
 local shops = 0
 for _, source in ipairs(thread_real) do
@@ -340,28 +352,14 @@ check(#real.members("wood") > 3, "R group:wood resolves to its members")
 ------------------------------------------------------------------------------
 -- P: the details page (details.lua) on the real data.
 ------------------------------------------------------------------------------
--- Until lane CRAFT merges, its box API (open_craft_box, close_craft_box and
--- the view's `bottom`) is stood in for here; the page registers its box with
--- the real register_craft_box.
-grug_jobs.open_craft_box = grug_jobs.open_craft_box or function(st, name)
-	if st.box ~= name then st.box_return = st.box end
-	st.box = name
-end
-grug_jobs.close_craft_box = grug_jobs.close_craft_box or function(st)
-	st.box, st.box_return = st.box_return, nil
-end
+-- The box's own build and fields: details.lua loaded once more with the
+-- registration captured (init.lua loaded it already; the second
+-- registration is the same box).
 local boxes = {}
 local register_box = grug_jobs.register_craft_box
 grug_jobs.register_craft_box = function(name, def)
 	boxes[name] = def
 	return register_box(name, def)
-end
-grug_jobs.item_sources = function() return real end
--- Layout C's box and strip (CRAFT's ui.lua on r57-craft) until it merges.
-if not grug_jobs.CRAFT_STRIP_Y then
-	local bottom = grug_inventory.VIEW_GEOMETRY.top - 0.1
-	grug_jobs.CRAFT_BOX = {x = 5.4, y = 0.95, w = 7.9, h = bottom - 0.95}
-	grug_jobs.CRAFT_STRIP_Y = bottom - 1.35
 end
 dofile(repo .. "/mods/PLAYER/grug_jobs/details.lua")
 grug_jobs.register_craft_box = register_box
@@ -413,7 +411,7 @@ check(bolt ~= nil, "P the Patch Bolt recipe exists")
 local P1 = player_named("p1")
 local counts = {items = {["grug_mobs:linen_scrap"] = 1}, groups = {}}
 local st = {selected = bolt.id, box = "details", box_return = nil}
-local view = {st = st, counts = counts, bottom = grug_jobs.CRAFT_STRIP_Y and grug_jobs.CRAFT_STRIP_Y - 0.1 or 7.59}
+local view = {st = st, counts = counts, bottom = grug_jobs.CRAFT_STRIP_Y - 0.1}
 local fs = box.build(P1, view)
 if os.getenv("R57_DETAILS_SHOW") then print((fs:gsub("%]", "]\n"))) end
 check(fs:find("Recipe details:", 1, true) ~= nil and fs:find("Patch Bolt", 1, true) ~= nil,
@@ -425,7 +423,7 @@ check(fs:find("you have 1", 1, true) and fs:find("you have 0", 1, true), "P the 
 check(fs:find("Drops from:", 1, true) and fs:find("Sold by every Quartermaster", 1, true),
 	"P the sources: Linen Scrap's drops and Thread's vendors")
 check(fs:find("grug_craft_dopen_2", 1, true) ~= nil and fs:find("grug_craft_dopen_1", 1, true) == nil,
-	"P Open ▸ only on Thread (Linen Scrap has no recipe)")
+	"P Open ▶ only on Thread (Linen Scrap has no recipe)")
 check(fs:find("grug_craft_dselect", 1, true) == nil, "P no select button on the chosen recipe")
 check(fs:find("tooltip%[") ~= nil, "P the icons carry tooltips")
 local ok, where = inside(fs, view.bottom)
@@ -433,8 +431,8 @@ check(ok, "P every element inside the box and above the job strip " .. where)
 local fit, long = labels_fit(fs)
 check(fit, "P every label fits its column " .. tostring(long))
 
--- Open ▸ on Thread, then Back twice.
-check(box.fields(P1, st, {grug_craft_dopen_2 = "Open ▸"}), "P Open ▸ is handled")
+-- Open ▶ on Thread, then Back twice.
+check(box.fields(P1, st, {grug_craft_dopen_2 = "Open ▶"}), "P Open ▶ is handled")
 fs = box.build(P1, view)
 check(fs:find("Thread", 1, true) and fs:find("Linen Scrap ×1", 1, true), "P ...it shows Thread's recipe")
 eq(#st.details.pages, 2, "P ...on a stack of two pages")
@@ -443,19 +441,19 @@ P1.meta[grug_jobs.HELD_KEY] = "1 grug_mobs:linen_scrap"
 local P2 = player_named("p2")
 P2.meta[grug_jobs.HELD_KEY] = "1 grug_mobs:linen_scrap"
 local st2 = {selected = bolt.id, box = "details"}
-box.fields(P2, st2, {grug_craft_dopen_2 = "Open ▸"})
+box.fields(P2, st2, {grug_craft_dopen_2 = "Open ▶"})
 fs = box.build(P2, {st = st2, counts = counts, bottom = view.bottom})
 check(fs:find("grug_craft_dselect", 1, true) ~= nil, "P a known recipe has Select this recipe")
 check(box.fields(P2, st2, {grug_craft_dselect = "Select this recipe"}), "P Select is handled")
 check(st2.selected == "grug_professions:thread|grug_mobs:linen_scrap*1" and st2.slot == 1 and
 	st2.box == nil and st2.details == nil, "P ...it chooses Thread in Basic and closes the page")
-box.fields(P1, st, {grug_craft_dback = "◂ Back"})
-eq(#st.details.pages, 1, "P ◂ Back steps back one page")
+box.fields(P1, st, {grug_craft_dback = "◀ Back"})
+eq(#st.details.pages, 1, "P ◀ Back steps back one page")
 check(box.build(P1, view):find("Patch Bolt", 1, true) ~= nil, "P ...to Patch Bolt")
-box.fields(P1, st, {grug_craft_dback = "◂ Back"})
-check(st.box == nil and st.details == nil, "P ◂ Back from the first page leaves the details box")
+box.fields(P1, st, {grug_craft_dback = "◀ Back"})
+check(st.box == nil and st.details == nil, "P ◀ Back from the first page leaves the details box")
 
--- A group ingredient: Kinds ▸ opens a page of its kinds.
+-- A group ingredient: Kinds ▶ opens a page of its kinds.
 local stick
 for _, record in ipairs(grug_jobs.recipes_for_output("default:stick")) do
 	if record.ingredients[1].group == "wood" then stick = record end
@@ -463,8 +461,8 @@ end
 check(stick ~= nil, "P a Stick recipe takes group:wood")
 local st3 = {selected = stick.id, box = "details"}
 fs = box.build(P1, {st = st3, counts = counts, bottom = view.bottom})
-check(fs:find("Any wood", 1, true) and fs:find("grug_craft_dkinds_1", 1, true), "P the group box has Kinds ▸")
-box.fields(P1, st3, {grug_craft_dkinds_1 = "Kinds ▸"})
+check(fs:find("Any wood", 1, true) and fs:find("grug_craft_dkinds_1", 1, true), "P the group box has Kinds ▶")
+box.fields(P1, st3, {grug_craft_dkinds_1 = "Kinds ▶"})
 fs = box.build(P1, {st = st3, counts = counts, bottom = view.bottom})
 check(fs:find("Kinds of:", 1, true) ~= nil, "P the group page")
 local wood_members = real.members("wood")
@@ -472,14 +470,131 @@ check(fs:find(core.formspec_escape(grug_core.item_name(wood_members[1])), 1, tru
 	"P ...lists the kinds (" .. #wood_members .. ")")
 ok, where = inside(fs, view.bottom)
 check(ok, "P the group page stays inside the box " .. where)
-box.fields(P1, st3, {grug_craft_dopen_1 = "Open ▸"})
-eq(st3.details.pages[#st3.details.pages].kind, "recipe", "P Open ▸ on a kind opens its recipe")
+box.fields(P1, st3, {grug_craft_dopen_1 = "Open ▶"})
+eq(st3.details.pages[#st3.details.pages].kind, "recipe", "P Open ▶ on a kind opens its recipe")
 local short_view = {st = st3, counts = counts, bottom = view.bottom - 1.6}
 st3.details.pages = {{kind = "group", group = "wood", page = 1}}
 fs = box.build(P1, short_view)
 ok, where = inside(fs, short_view.bottom)
 check(ok, "P with the overflow row the group page still fits " .. where)
 
+-- An enchant's and an upgrade's page: the operation and its materials.
+local enchant, upgrade
+for _, op in ipairs(grug_jobs.station_operations()) do
+	if op.operation == "enchant" and not enchant then enchant = op end
+	if op.operation == "upgrade" and not upgrade then upgrade = op end
+end
+local st4 = {selected = nil, box = "recipe"}
+grug_jobs.open_recipe_details(st4, {kind = "operation", id = enchant.id})
+check(st4.box == "details" and st4.box_return == "recipe", "P open_recipe_details opens the details box")
+fs = box.build(P1, {st = st4, counts = counts, bottom = view.bottom})
+check(fs:find("Enchant: T" .. enchant.tier, 1, true) ~= nil and
+	fs:find(core.formspec_escape(grug_core.item_name(enchant.ingredients[1].item)), 1, true) ~= nil,
+	"P an enchant's page: its title and its materials (" .. enchant.id .. ")")
+ok, where = inside(fs, view.bottom)
+check(ok, "P the enchant page stays inside the box " .. where)
+check(fs:find("grug_craft_dselect", 1, true) == nil, "P an operation has no select button")
+st4.details.pages = {{kind = "operation", id = upgrade.id, target = "grug_gear:sword_bronze"}}
+fs = box.build(P1, {st = st4, counts = counts, bottom = view.bottom})
+local upgrade_list = grug_jobs.operation_ingredients(upgrade, ItemStack("grug_gear:sword_bronze"))
+local _, upgrade_boxes = fs:gsub("you have ", "")
+check(fs:find("Upgrade: T" .. upgrade.tier, 1, true) ~= nil and upgrade_boxes == #upgrade_list,
+	"P an upgrade's page on a weapon: one box per material, the weapon's extra included (" ..
+	upgrade_boxes .. ")")
+
+-- The whole Crafting page with the details box open: the job strip (bar,
+-- stop button, View Queue) stays below it (ruling 2).
+local function inventory_of(lists)
+	local inv = {}
+	function inv:get_list(name) return lists[name] end
+	function inv:get_size(name) return lists[name] and #lists[name] or 0 end
+	function inv:get_stack(name, i) return lists[name] and lists[name][i] or ItemStack("") end
+	function inv:is_empty(name)
+		for _, stack in ipairs(lists[name] or {}) do if not stack:is_empty() then return false end end
+		return true
+	end
+	function inv:get_lists() return lists end
+	return inv
+end
+local lists = {}
+for _, name in ipairs({"main", "craft", grug_jobs.OUTPUT_LIST, grug_jobs.TARGET_LIST}) do
+	lists[name] = {}
+	for i = 1, 8 do lists[name][i] = ItemStack("") end
+end
+lists.main[1] = ItemStack("grug_mobs:linen_scrap 3")
+local P3 = player_named("p3")
+P3.get_inventory = function() return inventory_of(lists) end
+P3.get_pos = function() return {x = 0, y = 0, z = 0} end
+local context = {page = "sfinv:crafting", grug_craft = {slot = 1, page = 1, search = "",
+	typed = "", only = false, qty = "1", rows = {}, selected = bolt.id}}
+local crafting = sfinv.pages["sfinv:crafting"]
+sfinv.set_player_inventory_formspec = function() end
+local function page_of()
+	local built_ok, text = pcall(grug_jobs.crafting_page_content, P3, context)
+	check(built_ok, "P the Crafting page builds " .. tostring(not built_ok and text or ""))
+	return built_ok and text or ""
+end
+local function click_page(fields_)
+	local click_ok, err = pcall(crafting.on_player_receive_fields, crafting, P3, context, fields_)
+	check(click_ok, "P a click is handled " .. tostring(not click_ok and err or ""))
+end
+local DF = grug_jobs.CRAFT_FIELDS
+local page = page_of()
+check(page:find(DF.details .. ";Recipe details]", 1, true) ~= nil, "P the recipe box has Recipe details")
+click_page({[DF.details] = "Recipe details"})
+page = page_of()
+check(context.grug_craft.box == "details" and page:find("Recipe details:", 1, true) ~= nil and
+	page:find("Linen Scrap ×2", 1, true) ~= nil, "P Recipe details opens the details page on the recipe")
+check(page:find("you have 3", 1, true) ~= nil, "P ...with the inventory's counts")
+-- Idle, the strip is its rule and "No job running"; with a job, the bar, the
+-- stop button and View Queue are the same strip under every box (r57_craft
+-- part L checks them under a details box).
+check(page:find("No job running", 1, true) ~= nil and
+	page:find(("box[%s,%s;"):format(grug_jobs._fs_number(BOXR.x + 0.2),
+		grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1)), 1, true) ~= nil,
+	"P the job strip stays under the details page (ruling 2)")
+click_page({grug_craft_dopen_2 = "Open ▶"})
+page = page_of()
+check(page:find("Linen Scrap ×1", 1, true) ~= nil and page:find("No job running", 1, true) ~= nil,
+	"P Open ▶ through the page's own handler, the strip still there")
+click_page({grug_craft_dback = "◀ Back"})
+click_page({grug_craft_dback = "◀ Back"})
+page = page_of()
+check(context.grug_craft.box ~= "details" and page:find(DF.details .. ";Recipe details]", 1, true) ~= nil,
+	"P ◀ Back twice returns to the recipe box")
+-- Opening it again starts a fresh stack on the recipe.
+click_page({[DF.details] = "Recipe details"})
+eq(#context.grug_craft.details.pages, 1, "P a new opening starts a fresh page stack")
+
+-- The enchant and upgrade boxes' Details (operation_box.lua): a Weaponsmith
+-- with a Bronze Sword in the target slot.
+P3.meta["grug_jobs:primary:1"] = "weaponsmith"
+lists[grug_jobs.TARGET_LIST][1] = ItemStack("grug_gear:sword_bronze")
+context.grug_craft = {slot = 3, page = 1, search = "", typed = "", only = false, qty = "1", rows = {}}
+page_of()
+click_page({[DF.box .. "upgrade"] = "Upgrade an item"})
+page = page_of()
+check(page:find("grug_craft_op_details;Details]", 1, true) ~= nil, "P the upgrade box has Details")
+click_page({grug_craft_op_details = "Details"})
+page = page_of()
+local top = context.grug_craft.details and context.grug_craft.details.pages[1]
+check(top and top.kind == "operation" and top.target == "grug_gear:sword_bronze" and
+	page:find("Upgrade: T", 1, true) ~= nil, "P ...it opens the upgrade's page on the slot's item")
+click_page({grug_craft_dback = "◀ Back"})
+eq(context.grug_craft.box, "upgrade", "P ◀ Back returns to the upgrade box")
+click_page({[DF.box .. "enchant"] = "Enchant an item"})
+page_of()
+local first_ench = context.grug_craft.ench_rows and context.grug_craft.ench_rows[1]
+check(first_ench ~= nil, "P the enchant box lists the sword's enchants")
+if first_ench then
+	click_page({grug_craft_ench_list = "CHG:1"})
+	page = page_of()
+	check(page:find("grug_craft_op_details;Details]", 1, true) ~= nil, "P a chosen enchant has Details")
+	click_page({grug_craft_op_details = "Details"})
+	page = page_of()
+	check(page:find("Enchant: T", 1, true) ~= nil and context.grug_craft.details.pages[1].id == first_ench,
+		"P ...it opens that enchant's page")
+end
 local with, total = 0, 0
 for _, list in pairs(real.by_item) do
 	with = with + 1

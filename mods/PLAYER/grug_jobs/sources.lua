@@ -24,6 +24,7 @@
 --   fishing  band, levels, weight (percent)
 --   farming  crop, seed
 --   dig      node, label (natural ground and plants)
+--   use      text (a fixed line where an action makes the item: FIXED)
 -- Each item's list is sorted by kind (KIND_ORDER), then by a stable key.
 -- Group ingredients resolve to their members (`members`); a member hidden
 -- from the creative inventory (a tree's shape node) is no kind of its own.
@@ -31,7 +32,7 @@
 local M = {}
 
 M.KIND_ORDER = {"recipe", "furnace", "alloy", "vendor", "drop", "gather",
-	"mining", "tree", "fishing", "farming", "dig"}
+	"mining", "tree", "fishing", "farming", "dig", "use"}
 local KIND_RANK = {}
 for index, kind in ipairs(M.KIND_ORDER) do KIND_RANK[kind] = index end
 
@@ -40,6 +41,12 @@ for index, kind in ipairs(M.KIND_ORDER) do KIND_RANK[kind] = index end
 -- Quartermasters and the profession shops in the capitals.
 M.WHERE_CORE = "every town and capital"
 M.WHERE_SHOP = "capitals"
+
+-- Items an action makes, which no data names (the coordinator's ruling,
+-- Round 57): item -> the line the details page shows.
+M.FIXED = {
+	["grug_farming:water_bucket"] = "Fill an Empty Iron Bucket at water",
+}
 
 local function band_levels(band)
 	return {(band - 1) * 10 + 1, band * 10}
@@ -106,6 +113,7 @@ end
 --   name_of      function(item name) -> its name (default: the description's
 --                first line; the game passes grug_core.item_name)
 --   world_nodes  extra natural node names (the mapgen's plants and reef)
+--   fixed        item -> a fixed line (M.FIXED)
 function M.build(data)
 	local items = data.items or {}
 	local first_line = data.name_of and function(_, name) return data.name_of(name) end or
@@ -345,6 +353,10 @@ function M.build(data)
 		end
 	end
 
+	for _, item in ipairs(sorted_keys(data.fixed or {})) do
+		if items[item] then add(item, {kind = "use", text = data.fixed[item], sort = item}) end
+	end
+
 	for _, list in pairs(by_item) do
 		table.sort(list, function(a, b)
 			local ra, rb = KIND_RANK[a.kind], KIND_RANK[b.kind]
@@ -424,7 +436,7 @@ end
 -- (wp40/r7_r6_manifest.lua; a decoration's schematic names its nodes).
 function M.game_data()
 	local data = {items = core.registered_items, recipes = grug_jobs.recipes,
-		entities = core.registered_entities, name_of = grug_core.item_name}
+		entities = core.registered_entities, name_of = grug_core.item_name, fixed = M.FIXED}
 	data.cooking = {}
 	for _, name in ipairs(sorted_keys(core.registered_items)) do
 		for _, recipe in ipairs(core.get_all_craft_recipes(name) or {}) do

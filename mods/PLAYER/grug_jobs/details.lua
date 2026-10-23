@@ -2,22 +2,26 @@
 -- wireframe "Recipe details"): a crafting box ("details", ui.lua's
 -- register_craft_box) over the chosen recipe, so the job strip ui.lua draws
 -- under every box (the bar, the stop button, View Queue) stays (ruling 2).
---   header   "◂ Back" (one page back; from the first page to the box it was
+--   header   "◀ Back" (one page back; from the first page to the box it was
 --            opened from) and "Recipe details: <name>";
 --   item     the made item's icon with its tooltip, its name, the area, tier,
 --            station and count, and "Select this recipe" for a recipe the
 --            player knows (one other than the chosen one);
 --   boxes    one per ingredient: icon and tooltip, "<name> ×N", "you have
---            H", "Open ▸" to that ingredient's own recipe (a group: "Kinds ▸"
+--            H", "Open ▶" to that ingredient's own recipe (a group: "Kinds ▶"
 --            to a page of its kinds), the ingredient's sources from the
 --            source index (sources.lua) and, while there is room, the
 --            ingredients of its own recipe as small chips with tooltips.
 -- A group page lists the group's kinds, each with its first source line and
--- "Open ▸" where it has a recipe, paged when it does not fit.
+-- "Open ▶" where it has a recipe, paged when it does not fit. An enchant or
+-- upgrade page (opened from its box, operation_box.lua) shows the operation
+-- and the boxes of its materials (an upgrade's for one level, a weapon's
+-- extra included). ◀ and ▶ are in the engine's fonts, ◂ and ▸ are not.
 --
 -- Navigation exists only on this page: a stack of pages in the page state
 -- (context.grug_craft.details, never saved). A page is
---   {kind = "recipe", id = <record id>} or {kind = "group", group, n, page}.
+--   {kind = "recipe", id = <record id>}, {kind = "group", group, n, page} or
+--   {kind = "operation", id = <station operation id>, target = <item name>}.
 -- grug_jobs.open_recipe_details(st, page) starts a new stack; without one,
 -- the page shows the chosen recipe.
 --
@@ -235,6 +239,10 @@ function KIND_LINES.dig(list)
 	return "Dug from: " .. list_text(labels, 3)
 end
 
+function KIND_LINES.use(list)
+	return list[1].text
+end
+
 -- The source lines of an item or an ingredient token: one per kind, or
 -- "No known source". A group token reads as its kinds.
 local NO_SOURCE = "No known source."
@@ -285,7 +293,7 @@ local function knows(player, recipe)
 end
 grug_jobs.details_knows = knows
 
--- The recipe "Open ▸" shows for an item: the first the player knows, else
+-- The recipe "Open ▶" shows for an item: the first the player knows, else
 -- the first (the index's order); nil without one.
 local function recipe_for(player, item)
 	local first
@@ -329,8 +337,13 @@ local function current(st)
 	return st.selected and {kind = "recipe", id = st.selected} or nil
 end
 
--- The ingredients a page lists: {entry, item (nil for a group)}.
+-- The ingredient entries a page lists.
 local function page_entries(page)
+	if page.kind == "operation" then
+		local op = grug_jobs.station_operation(page.id)
+		if not op then return {} end
+		return grug_jobs.operation_ingredients(op, page.target and ItemStack(page.target) or nil)
+	end
 	local recipe = page.kind == "recipe" and grug_jobs.recipe(page.id)
 	return recipe and recipe.ingredients or {}
 end
@@ -340,7 +353,7 @@ end
 --
 
 local function header(fs, y, title, name)
-	fs[#fs + 1] = ("button[%s,%s;1.4,0.5;%s;%s]"):format(n(X), n(y), D.back, esc("◂ Back"))
+	fs[#fs + 1] = ("button[%s,%s;1.4,0.5;%s;%s]"):format(n(X), n(y), D.back, esc("◀ Back"))
 	local text = core.colorize(DIM, title) .. " " .. clip(name, W - 1.6 - 0.15 * #title)
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 1.6), n(y + 0.25), esc(text))
 	return y + 0.65
@@ -388,12 +401,13 @@ local function ingredient_box(fs, player, view, index_, entry, y, h)
 	local own = entry.item and recipe_for(player, entry.item)
 	if own then
 		fs[#fs + 1] = ("button[%s,%s;%s,0.45;%s%d;%s]"):format(n(X + W - button_w - 0.05),
-			n(y + 0.08), n(button_w), D.open, index_, esc("Open ▸"))
+			n(y + 0.08), n(button_w), D.open, index_, esc("Open ▶"))
 	elseif members then
 		fs[#fs + 1] = ("button[%s,%s;%s,0.45;%s%d;%s]"):format(n(X + W - button_w - 0.05),
-			n(y + 0.08), n(button_w), D.kinds, index_, esc("Kinds ▸"))
+			n(y + 0.08), n(button_w), D.kinds, index_, esc("Kinds ▶"))
 	end
-	local have_x = X + W - button_w - 0.15 - 0.15 * #have_text
+	-- "you have" left of the button with room for a wider font (web).
+	local have_x = X + W - button_w - 0.3 - 0.17 * #have_text
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(have_x), n(y + 0.3),
 		esc(have < entry.n and core.colorize(WARN, have_text) or have_text))
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 0.65), n(y + 0.3),
@@ -401,15 +415,18 @@ local function ingredient_box(fs, player, view, index_, entry, y, h)
 	-- The source lines, then the chips where the room allows.
 	local inner = y + 0.6
 	local bottom = y + h - 0.15
-	local chip_room = own and #own.ingredients > 0 and bottom - inner >= LINE + 0.5
-	local line_bottom = chip_room and bottom - 0.5 or bottom
 	local lines = grug_jobs.source_lines(token)
 	local wrapped = {}
 	for _, line in ipairs(lines) do
-		for piece in (grug_inventory.wrap_text(line, chars(W - 0.3)) .. "\n"):gmatch("(.-)\n") do
+		for piece in (grug_inventory.wrap_text(line, chars(W - 0.7)) .. "\n"):gmatch("(.-)\n") do
 			wrapped[#wrapped + 1] = piece
 		end
 	end
+	-- The sources come first: the chips only where two lines (or all of
+	-- them) still fit above them.
+	local chip_room = own and #own.ingredients > 0 and
+		bottom - inner - 0.5 >= math.min(#wrapped, 2) * LINE
+	local line_bottom = chip_room and bottom - 0.5 or bottom
 	local room = math.max(1, math.floor((line_bottom - inner) / LINE + 0.01))
 	for i = 1, math.min(room, #wrapped) do
 		local piece = wrapped[i]
@@ -418,6 +435,15 @@ local function ingredient_box(fs, player, view, index_, entry, y, h)
 			esc(core.colorize(DIM, piece)))
 	end
 	if chip_room then chips(fs, player, X + 0.15, bottom - 0.47, W - 0.3, own) end
+end
+
+-- The ingredient boxes from `y` down to the box's bottom.
+local function ingredient_boxes(fs, player, view, list, y)
+	local h = math.min(2.6, (view.bottom - y) / math.max(1, #list))
+	for i, entry in ipairs(list) do
+		ingredient_box(fs, player, view, i, entry, y, h)
+		y = y + h
+	end
 end
 
 local function recipe_page(fs, player, view, page)
@@ -436,16 +462,41 @@ local function recipe_page(fs, player, view, page)
 	fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 0.95), n(y + 0.2),
 		esc(clip(name_of(recipe.output), text_w)), n(X + 0.95), n(y + 0.6),
 		esc(core.colorize(DIM, clip(recipe_subtitle(recipe), text_w))))
-	y = y + 1.0
-	local list = recipe.ingredients
-	local h = math.min(2.6, (view.bottom - y) / math.max(1, #list))
-	for i, entry in ipairs(list) do
-		ingredient_box(fs, player, view, i, entry, y, h)
-		y = y + h
-	end
+	ingredient_boxes(fs, player, view, recipe.ingredients, y + 1.0)
 end
 
-local ROW = 0.62
+-- An enchant or upgrade: its title, the profession, tier and station, the
+-- target item's icon (the operation's preview item without one), then the
+-- materials.
+local function operation_page(fs, player, view, page)
+	local op = grug_jobs.station_operation(page.id)
+	if not op then return end
+	local title
+	if op.operation == "enchant" then
+		local affix = grug_items.AFFIXES[op.enchant_stat]
+		title = ("Enchant: T%d %s %s"):format(op.tier, op.enchant_channel,
+			affix and affix.label or op.enchant_stat)
+	else
+		title = ("Upgrade: T%d, one item level"):format(op.tier)
+	end
+	local y = header(fs, BOX.y + 0.15, "Details:", title)
+	local icon = page.target or op.output_name or ""
+	fs[#fs + 1] = ("item_image[%s,%s;0.8,0.8;%s]"):format(n(X), n(y), esc(icon))
+	if icon ~= "" then tooltip_area(fs, X, y, 0.8, 0.8, tooltip_text(icon, player)) end
+	local parts = {grug_jobs.PROFESSIONS[op.profession].name, "T" .. op.tier}
+	local station = op.station and grug_jobs.STATIONS[op.station]
+	if station then parts[#parts + 1] = station.display_name end
+	parts[#parts + 1] = op.operation == "enchant" and
+		(grug_jobs.OPERATION_SECONDS.enchant .. " s") or
+		(grug_jobs.OPERATION_SECONDS.upgrade .. " s per level")
+	local text_w = W - 1.05
+	fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 0.95), n(y + 0.2),
+		esc(clip(page.target and ("On " .. name_of(page.target)) or title, text_w)),
+		n(X + 0.95), n(y + 0.6), esc(core.colorize(DIM, clip(table.concat(parts, " · "), text_w))))
+	ingredient_boxes(fs, player, view, page_entries(page), y + 1.0)
+end
+
+local ROW = 0.8
 local function group_page(fs, player, view, page)
 	local members = index().members(page.group)
 	local y = header(fs, BOX.y + 0.15, "Kinds of:", token_name("group:" .. page.group))
@@ -456,15 +507,15 @@ local function group_page(fs, player, view, page)
 	for i = first + 1, math.min(#members, first + per_page) do
 		local item = members[i]
 		fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]item_image[%s,%s;0.45,0.45;%s]"):format(n(X), n(y),
-			n(W), n(ROW - 0.08), BOX_COLOR, n(X + 0.1), n(y + 0.05), esc(item))
-		tooltip_area(fs, X + 0.1, y + 0.05, 0.45, 0.45, item_tooltip(item, player))
+			n(W), n(ROW - 0.08), BOX_COLOR, n(X + 0.1), n(y + 0.12), esc(item))
+		tooltip_area(fs, X + 0.1, y + 0.12, 0.45, 0.45, item_tooltip(item, player))
 		local text_w = W - 0.75 - 1.45
-		fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 0.65), n(y + 0.15),
-			esc(clip(name_of(item), text_w)), n(X + 0.65), n(y + 0.4),
+		fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 0.65), n(y + 0.2),
+			esc(clip(name_of(item), text_w)), n(X + 0.65), n(y + 0.52),
 			esc(core.colorize(DIM, clip(grug_jobs.source_lines(item)[1], text_w))))
 		if recipe_for(player, item) then
-			fs[#fs + 1] = ("button[%s,%s;1.3,0.45;%s%d;%s]"):format(n(X + W - 1.35), n(y + 0.04),
-				D.open, i, esc("Open ▸"))
+			fs[#fs + 1] = ("button[%s,%s;1.3,0.45;%s%d;%s]"):format(n(X + W - 1.35), n(y + 0.12),
+				D.open, i, esc("Open ▶"))
 		end
 		y = y + ROW
 	end
@@ -481,6 +532,8 @@ local function build(player, view)
 	local page = current(view.st)
 	if page and page.kind == "group" then
 		group_page(fs, player, view, page)
+	elseif page and page.kind == "operation" then
+		operation_page(fs, player, view, page)
 	elseif page then
 		recipe_page(fs, player, view, page)
 	end
