@@ -38,7 +38,6 @@ local SUBJECT = "Miner's Guild Lift"
 local REACH = 8
 local FORM_PREFIX = "grug_guild:lift:"
 
-local function mapgen() return rawget(_G, "grug_mapgen") or {} end
 -- grug_home is not a dependency of this mod (spec §10.1); it is read when a
 -- trip starts, like the mailbox reads grug_mail.
 local function home() return rawget(_G, "grug_home") end
@@ -50,8 +49,7 @@ end
 
 function grug_guild.lift_at(pos)
 	if type(pos) ~= "table" then return nil end
-	local mg = mapgen()
-	local rooms, camps = mg.guild_rooms, mg.mining_camps
+	local rooms, camps = grug_mapgen.guild_rooms, grug_mapgen.mining_camps
 	if not rooms or not camps then return nil end
 	local camp, level
 	local room = rooms.room_at(pos)
@@ -121,7 +119,8 @@ end
 
 function grug_guild.use_lift(player, pos)
 	if not player or not player:is_player() or player:get_hp() <= 0 then return end
-	local found = grug_guild.lift_at(vector.round(pos))
+	pos = vector.round(pos)
+	local found = grug_guild.lift_at(pos)
 	if not found then return end
 	if not grug_factions.serves(found.camp.faction, player) then
 		grug_factions.refuse(player, SUBJECT, found.camp.faction)
@@ -130,8 +129,7 @@ function grug_guild.use_lift(player, pos)
 	local name = player:get_player_name()
 	serial = serial + 1
 	local formname = FORM_PREFIX .. serial
-	dialogs[name] = {formname = formname, camp = found.camp.id, level = found.level,
-		pos = vector.round(pos)}
+	dialogs[name] = {formname = formname, camp = found.camp.id, pos = pos}
 	core.show_formspec(name, formname, form(found))
 end
 
