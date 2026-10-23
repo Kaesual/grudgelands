@@ -216,7 +216,19 @@ tools](#player-meta-read-by-external-tools).
   back: the queue view `queue` from View Queue, and the seam for lane
   DETAILS: once a `details` box is registered, the recipe box draws
   "Recipe details" (`grug_craft_details`) beside its ingredients heading,
-  which opens it). Below every box ui.lua draws the job strip (from
+  and the enchant and upgrade boxes "Details" (`grug_craft_op_details`),
+  which open it through `open_recipe_details(st, page)`, a new page stack).
+  The details box (`details.lua`) reads the **ingredient source index**
+  (`sources.lua`): `grug_jobs.item_sources()` builds it once at its first
+  use from `grug_jobs.sources.game_data()` (the registry, the engine's
+  cooking recipes, `grug_smelting.RECIPES`, the vendor shelves,
+  `grug_mobs.drop_tables()` and `subtypes`, the gathering catalog, the
+  mapgen's wild plants, ore rows and decorations read from its pure data
+  files, the fishing and crop tables) and answers `sources(item)`,
+  `members(group)`, `has_source(token)`, `label(item)` and `zone(id)`;
+  `sources.build(data)` is pure, and `tools/r57_details` tests it on the
+  real data. `source_lines(token)` is the page's one line per kind of
+  source. Below every box ui.lua draws the job strip (from
   `CRAFT_STRIP_Y`: the bar, the stop button `stop_field(job)` =
   `grug_craft_stop_<start in ms>` (a click names the job it stops, so a
   double click never stops the next one), the job's

@@ -904,6 +904,8 @@ do
 	lacks(l.formspec, "Recipe details", "L no details button before lane DETAILS")
 	J.register_craft_box("details", {build = function() return "label[5.6,1.5;DETAILS PAGE]" end,
 		fields = function() return false end})
+	-- Lane DETAILS: the seam opens the page through details.lua's opener.
+	J.open_recipe_details = function(st) J.open_craft_box(st, "details") end
 	check(choose(l, 1, plank), "L the planks again")
 	has(l.formspec, F.details .. ";Recipe details]", "L the details seam once a details box exists")
 	click(l, {[F.details] = "Recipe details"})

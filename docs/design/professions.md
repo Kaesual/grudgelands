@@ -293,7 +293,8 @@ Basic lists what the character has held the ingredients of (Round 47,
   advances at the end of its next counting job once the character band
   allows it. Unlearning a profession while its job runs lets the job finish
   without XP, and so do its waiting jobs. The list, search and ×N of the
-  Crafting tab, its crafting box, overflow, job strip and queue view:
+  Crafting tab, its crafting box, overflow, job strip, queue view and recipe
+  details page (where each ingredient comes from, Round 57):
   [inventory_equipment.md](inventory_equipment.md)
   §1 "The Crafting tab" (spec §2.17–2.18 and §4.2–4.5); the professions
   overview sits in its box.
