@@ -6,7 +6,7 @@ origin -1 0 -1
 size 11 12 11
 cell 1
 meta extent=[-1,-1,9,9] peak=9 top=11
-races dwarf elf undead
+races dwarf undead
 
 legend
 A role bed variant=_bottom

@@ -264,9 +264,22 @@ residents stand along the west fence (x = −8), clear of the mount displays'
 lanes. The role handler is `grug_mounts`' (boats); a socket without a handler
 places nobody.
 
-The shared gatehouse upper-floor stair opening removes exactly one additional
-obstructing block in the ascent direction. Treads, rise, passage, deck and room
-dimensions are unchanged; there is no stair redesign or bespoke clearance test.
+**The core gatehouse** (the five capitals with one, all but Kezamba; the
+template `<capital>_gate_south`; Round 58, the user's rulings of 2026-10-22):
+the two guard chambers' doors stand one node from the passage. The east
+chamber (the right one seen from outside) holds the inner stair from the
+ground to the first floor: three treads along the chamber's outer side, a
+landing across its field end and three treads back onto the first floor,
+with three free nodes over every tread (the engine lifts the player's box
+onto the next tread while it still stands over this one). The roof stair
+climbs from the first floor to the deck through a four-node opening; the
+first floor's side walls are closed. **The gate's watch** (`wp13/gate_watch.lua`):
+the two ground guards walk one rectangle on the city side of the gate in
+opposite directions (gate frame x 2..10, z 8..12, two to six nodes in front
+of the city wall), meeting in front of the gate mouth and at the far side;
+the tower guard holds a post on the deck. Such a small loop is walked round
+its corners (`patrol.lua` `loop_reach`: a loop whose legs are all at most
+8 m is walked to within half its shortest leg).
 
 A capital has **four districts**: market and professions, martial and
 garrison, lore and spiritual, residential and cultural. They stay recognisable
@@ -299,7 +312,7 @@ preparation covers the six start readiness envelopes instead.
 **NPCs arrive when their authored blocks are loaded.** Current-world readiness
 and per-socket loading govern roster placement, including outlying district
 plots; preparation does not authorize an NPC in an unloaded block. A capital
-carries several patrol loops — a city ring, one per gate tower and one per district — and each loop
+carries several patrol loops — a city ring, two per core gate and one per district — and each loop
 gets its own guard,
 walking that loop and no other; its flair villagers keep to the composition they
 belong to, the core or their own plot, instead of wandering the whole city. Its
@@ -337,8 +350,8 @@ outside, land reached only over the water; inside, a spit the lake cuts off
 from the city; any other dry stretch is walled, so the city is never open over
 land. No turret stands within six points
 of the open water. The wall carries no
-NPCs of its own; a capital's garrison is the four gatehouses of its civic
-core.
+NPCs of its own; a capital's garrison is the gatehouses of its civic core
+(three guards each: the deck post and the two on the rectangle).
 
 **Between the plots.** Decided 2026-09-15 with the round-3 playtest: a quarter
 of nine buildings in a 512 envelope is empty, so each quarter carries four more
@@ -585,6 +598,58 @@ want lived-in settlements without paying for it in server load"):
   25 m show / 30 m hide carrier gate as combat families. A nearby player no
   longer exposes settlement names to a different, distant player.
 
+### The Miner's Guild houses
+
+Round 58 (lane HALLS; [Round 58 plan](../planning/round58-plan.md) §2). Every
+capital's civic core holds the house of its faction's Miner's Guild: **The
+Charter of Stone** in Highcourt, Dur Brannoc and Lethariel, **The
+Oathdelvers** in Nhal Veyr, Gor Drazhak and Kezamba. The core is
+anchor-relative and the same in every world, so every world has the six houses
+whatever its seed; the capital planner places only the district plots round
+it. Each house is a core building with the plot id `miners_guild`, in the
+place of a building the core had:
+
+| Capital | Template | In the core (x, z) | Door | In the place of |
+|---|---|---|---|---|
+| Highcourt | `highcourt_miners_guild` | 31..46, −46..−34 (turned once) | west | the city workshop |
+| Dur Brannoc | `dur_brannoc_miners_guild` | 29..41, −46..−30 | north | the masons' guild |
+| Lethariel | `lethariel_miners_guild` | −46..−34, 22..34 | east, over the turf to the quay | the quay house (grown into the corner between the fountain court and the shore house) |
+| Nhal Veyr | `nhal_veyr_miners_guild` | 29..41, −46..−30 | north | the bonesmiths' guild |
+| Gor Drazhak | `gor_drazhak_miners_guild` | 29..41, −46..−30 | north | the war council house |
+| Kezamba | `kezamba_miners_guild` | 6..20, −16..−6 (turned once) | west, to the south avenue | the granary |
+
+One design in six palettes (`tools/r58_halls/make_halls.py` writes the six
+templates; edit the script, not the files): a hall behind a two-row forecourt
+with a winch over a tub and an ore cart by its heap, one door in the middle of
+the front wall, the guild's banners beside it and a plaque over it, the
+exchange counter on the east side of the hall, the clerk's desk and the ore
+sorter's sample table on the west side, the leader's desk at the back under a
+frieze of the six tier stones (the depths the guild mines), stores and shelves
+in the back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it
+with a gable to the street in their civic roof; Gor Drazhak and Kezamba with
+a flat deck behind a breastwork (merlons in Gor Drazhak). Kezamba builds it in
+the basalt of its civic halls. The banners and the plaque are placeholders
+from shipped textures until the guild emblems are picked: blue and yellow wool
+with a gold plaque for The Charter of Stone, red and black wool with a copper
+plaque for The Oathdelvers.
+
+**The hall socket contract** (fixed in Round 58 for the lanes that put the
+guild's people there; `wp13/capital_services.lua` `M.GUILD_HALL`). The
+sockets are core sockets, registered under the capital's settlement key
+without a plot prefix, the same ids in all six capitals:
+
+| Socket | Role | Who stands there |
+|---|---|---|
+| `miners_guild_leader` | `quest`, facing the door | the capital's guild leader. Today a nameless quest shell; the leader is registered on it as a quest NPC (`grug_quests.register_npc(id, {settlement = <capital key>, socket = "miners_guild_leader", title = …, race = …})`), which gives the shell its name, race and dialogue, and a talk objective can name it. |
+| `miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the exchange counter, the guild's vendor (materials for reputation). It is taken over as a service socket, `grug_core.assign_service_socket(<capital key>, "miners_guild_exchange", <role>)`, as the Crownbinder and the Housing Steward take theirs (a new role in `SERVICE_ROLES` and its entity through `grug_mobs.register_start_socket_role`). Until then a resident stands there, who may be one of the core's walkers. |
+| `miners_guild_clerk`, `miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
+| `miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
+
+The house's `inside` point is the destination `miners_guild` and its door the
+core doorway `miners_guild`. Every hall socket and the door are reachable from
+the core's arrival, and no NPC of the house faces a wall
+(`tools/r58_halls/portable_test.lua`, `tools/r47_nz`).
+
 ### Settlement walkers
 
 Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
@@ -735,18 +800,20 @@ it) at its centre, in the cell of the settlement's `travel_waypoint` socket
   course (`dressing.waypoint_pad`): a cross and the diamond round it in the
   start palette's signature stone, the diamond's inside paved with the lane
   material, the waystone in the middle. It is laid on open ground after the
-  buildings and lights and before the trees and flora, inside the start's
-  footprint, near the innkeeper and reachable from a lane (pad centre in
-  start-local x/z):
+  buildings and lights and before the trees and flora. Since Round 58 (the
+  user's ruling of 2026-10-22) it lies at the town's centre next to the
+  Quartermaster (the race vendor), on open ground that carries no authored
+  pattern (pad centre in start-local x/z; the Quartermaster stands at about
+  (7, −4)):
 
   | Start | Centre | Where |
   |---|---|---|
-  | Hearthpine | (−9, 12) | litter west of the street, 11 nodes from the inn door |
-  | Dawnmere | (14, −6) | turf between the green's east kerb and the east lane, 15 nodes from the inn door |
-  | Silverleaf | (−44, −23) | the west end of the south lane, 9 nodes from the guest house door |
-  | Stillgrave | (−14, 22) | blight beside the west lane, 10 nodes from the warden's door |
-  | Sunscar | (−11, −16) | flats north of the south lane, 6 nodes from the tusk house door |
-  | Kapok Cradle | (−12, 5) | litter west of the boardwalk road between the cross lanes |
+  | Hearthpine | (2, −2) | the arrival plaza beside the spawn, west of the market stall and the Quartermaster at its end |
+  | Dawnmere | (2, −3) | the green's south walk, west of the Quartermaster |
+  | Silverleaf | (10, −3) | the court east of the crescent, beside the Quartermaster |
+  | Stillgrave | (2, −4) | the court, west of the Quartermaster |
+  | Sunscar | (6, −3) | the yard, north-west of the Quartermaster |
+  | Kapok Cradle | (4, −6) | the clearing east of the boardwalk road, south-west of the Quartermaster |
 
 ## Housing Stewards (Round 25)
 

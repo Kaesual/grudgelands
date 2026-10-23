@@ -21,7 +21,7 @@ use highcourt_orchard_west count=1
 use highcourt_chapel count=1 roof=white_slate
 use highcourt_service_yard count=2
 use highcourt_service_store count=1
-use highcourt_city_workshop count=1
+use highcourt_miners_guild count=1 roof=slate
 use highcourt_north_house count=1
 use highcourt_lane_house count=1
 use highcourt_orchard_house count=1

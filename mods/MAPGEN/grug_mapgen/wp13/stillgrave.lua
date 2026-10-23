@@ -122,9 +122,10 @@ local function loader(directory)
 		{40, 46, 60, 60, 6},
 	}
 
-	-- The waypoint pad (Round 29, WP17): on the open blight between the west lane and the
-	-- hall, its cross reaching the lane; the warden's door is ten nodes away.
-	local WAYPOINT = {x = -14, z = 22}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
+	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
+	-- on the court, west of the Quartermaster.
+	local WAYPOINT = {x = 2, z = -4}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).

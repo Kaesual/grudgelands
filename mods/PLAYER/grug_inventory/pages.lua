@@ -347,9 +347,10 @@ local function gear_content(player, context)
 end
 
 -- Stats (3D and Stats in one mode since the Round 45 playtest): the player
--- model on the left; right of it the pools, armor, crit and dodge, the Claim
--- Stone status, and at the foot, bottom-aligned with the model, the cloak
--- picker (Round 33, §2.10). The balance and Withdraw are on the Inventory
+-- model on the left; right of it the pools, armor, crit and dodge, the
+-- Miner's Guild rank and reputation (Round 58), the Claim Stone status, and
+-- at the foot, bottom-aligned with the model, the cloak picker (Round 33,
+-- §2.10). The balance and Withdraw are on the Inventory
 -- tab. The column is about 4 units wide: lines wrap at STAT_CHARS (0.15
 -- units a character, a small web window's font against its slots).
 local MODEL = {x = 0.4, y = 1.35, w = 3.3, h = BOX_BOTTOM - 0.25 - 1.35}
@@ -403,6 +404,22 @@ local function stats_content(player)
 	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(STAT_X,
 		STAT_Y + 3 * STAT_STEP - STAT_STEP / 2, STAT_W, STAT_STEP,
 		esc(grug_inventory.wrap_text(DAMAGE_REDUCTION_TOOLTIP, 48)))
+	-- The Miner's Guild (Round 58): the own guild's rank and the balance, two
+	-- lines under the stats. grug_guild depends on this mod, so it is read at
+	-- build time; it re-sends the cached page on every change itself.
+	local next_row = #lines + 0.5
+	local guild = rawget(_G, "grug_guild")
+	local view = guild and guild.summary(player)
+	if view then
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X, STAT_Y + next_row * STAT_STEP,
+			esc(("%s: Rank %d"):format(guild.catalog.UI_NAME, view.rank)))
+		fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(STAT_X,
+			STAT_Y + (next_row - 0.5) * STAT_STEP, STAT_W, 2 * STAT_STEP,
+			esc("Lifetime reputation " .. guild.format_points(view.lifetime)))
+		fs[#fs + 1] = guild.reputation_formspec(STAT_X, STAT_Y + (next_row + 1) * STAT_STEP,
+			view.balance)
+		next_row = next_row + 2
+	end
 	-- Claim Stone status (Round 25 ruling 14), wrapped to the column. Neither
 	-- mod depends on the other, so grug_housing is read at build time; it has
 	-- no status until the player has received a stone and keeps the cached
@@ -413,7 +430,7 @@ local function stats_content(player)
 	if status then
 		local text = esc(grug_inventory.wrap_text(status.text, STAT_CHARS))
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
-			STAT_Y + (#lines + 0.5) * STAT_STEP,
+			STAT_Y + next_row * STAT_STEP,
 			status.color and core.colorize(status.color, text) or text)
 	end
 	-- grug_achievements depends on this mod, so it is read at build time.

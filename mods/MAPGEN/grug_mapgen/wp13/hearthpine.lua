@@ -47,10 +47,11 @@ local function loader(directory)
 	-- The watchpost lookout keeps its historical destination id.
 	local DESTINATION_ID = {gatewatch = "gatewatch_roof"}
 
-	-- The waypoint pad (Round 29, WP17): on the open litter west of the street, between the
-	-- west door's lane and the workyard lane; the inn door is eleven nodes
-	-- away.
-	local WAYPOINT = {x = -9, z = 12}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
+	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
+	-- on the arrival plaza beside the spawn, west of the market stall and the
+	-- Quartermaster at its end.
+	local WAYPOINT = {x = 2, z = -2}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).

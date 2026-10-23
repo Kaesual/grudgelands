@@ -544,6 +544,28 @@ local function route_clear(self)
 end
 
 --
+-- HOW NEAR A SMALL LOOP'S WAYPOINT COUNTS AS REACHED (Round 58). A loop whose
+-- every leg is at most twice WAYPOINT_REACHED (a capital gate's watch
+-- rectangle, gate_watch.lua) would be cut to nothing by the 4 m reach: the
+-- next corner is "reached" before the guard has walked to the last one. Such
+-- a loop is walked to within half its shortest leg (at least 1 m), so its
+-- corners are walked round; every longer loop keeps WAYPOINT_REACHED (nil).
+--
+function grug_mobs.loop_reach(points)
+	if type(points) ~= "table" or #points < 2 then return nil end
+	local shortest, longest = math.huge, 0
+	for index = 1, #points do
+		local a, b = points[index], points[index % #points + 1]
+		local dx, dz = b.x - a.x, b.z - a.z
+		local leg = math.sqrt(dx * dx + dz * dz)
+		if leg < shortest then shortest = leg end
+		if leg > longest then longest = leg end
+	end
+	if longest > 2 * WAYPOINT_REACHED then return nil end
+	return math.max(1, shortest / 2)
+end
+
+--
 -- points     — array of {x = , z = } (y optional), at least 2; the mob walks
 --              on whatever ground it finds and the navigation finds the way
 --              round what stands in it.
@@ -562,9 +584,11 @@ end
 --              from the route cache (routes.lua; a capital's over its
 --              streets), and a leg with no route is skipped at once. Without
 --              it (outposts, rares) each waypoint is a plain fixed walk.
+-- reach      — how near a waypoint counts as reached (optional, default
+--              WAYPOINT_REACHED): a small loop's own (`loop_reach`).
 --
 function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, snap,
-		settlement)
+		settlement, reach)
 	if not points or #points < 2 then
 		return
 	end
@@ -595,7 +619,8 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key, snap,
 	end
 	local pt = points[idx]
 	local dx, dz = pt.x - pos.x, pt.z - pos.z
-	if dx * dx + dz * dz <= WAYPOINT_REACHED * WAYPOINT_REACHED then
+	reach = reach or WAYPOINT_REACHED
+	if dx * dx + dz * dz <= reach * reach then
 		t.grug_route_from = idx
 		idx = idx % #points + 1
 		wp_holder[wp_key] = idx

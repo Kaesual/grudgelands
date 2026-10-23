@@ -1216,8 +1216,8 @@ lights 29 5 7
 lights 1 5 15
 lights 29 5 15
 sockets 15 6 23 face=2 id=king role=king
-sockets 8 4 20 face=2 id=throne_guard_west role=guard_post
-sockets 22 4 20 face=2 id=throne_guard_east role=guard_post
+sockets 12 6 23 face=2 id=throne_guard_west role=guard_post
+sockets 18 6 23 face=2 id=throne_guard_east role=guard_post
 sockets 12 3 2 face=0 id=door_guard_west role=guard_post
 sockets 19 3 2 face=0 id=door_guard_east role=guard_post
 sockets 15 3 4 face=0 id=hall_waypoint role=waypoint

@@ -71,10 +71,10 @@ local function loader(directory)
 		{10, -60, 34, -44, "x"},
 	}
 
-	-- The waypoint pad (Round 29, WP17): on the open turf between the green's
-	-- east kerb and the east lane, where its cross meets both; the inn door
-	-- is fifteen nodes away across the green.
-	local WAYPOINT = {x = 14, z = -6}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
+	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
+	-- on the green's south walk, west of the Quartermaster.
+	local WAYPOINT = {x = 2, z = -3}
 
 	-- Hedgerows on the outer boundaries of the fields.
 	local HEDGES = {

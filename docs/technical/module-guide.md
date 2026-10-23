@@ -1745,6 +1745,16 @@ tools](#player-meta-read-by-external-tools).
     (`stock.lua` `culture`, four price bands); vendors sell blue ×3 and gold
     ×6 of the Common payout (`grug_traders.stack_sell_price`,
     `price_rules.QUALITY_FACTOR`).
+  - **A Miner's Guild vendor** (Round 58): a vendor definition in
+    `grug_traders.vendors` with `guild = true` gets the window's third mode,
+    Trade-in (`trade.lua`; it opens on it): "Miner's Guild" (never a
+    guild's proper name: those belong in texts and on buildings), the rank
+    and the balance, and a row per exchanged item from
+    `grug_guild.trade_in_rows`, its button `tradein_<catalogue index>`,
+    traded through `grug_guild.trade_in` after the row is re-checked against
+    the one shown. The camp vendor and the
+    guild house's exchange counter carry the field. The guild's consumables
+    pay their catalogue `sell_copper` (`prices.lua`).
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached
@@ -1892,6 +1902,31 @@ tools](#player-meta-read-by-external-tools).
 ## Miner's Guild
 
 - **`grug_guild` (Round 58):** the catalogue, its API, the files and their owners and the saved keys: [miners_guild.md](../design/miners_guild.md) §10.
+  Reputation (`store.lua`): two integers per character and guild in player
+  meta, keyed by faction id (`grug_guild:lifetime_<faction>`,
+  `grug_guild:balance_<faction>`); `add` and `spend` fire
+  `register_on_change`, and `add` fires `register_on_rank_change` only when
+  the rank rose (the achievement counter `guild:rank` reads
+  `grug_guild.highest_rank` live, so nothing is copied). Every display of
+  rank and balance goes through `grug_guild.summary`, `format_points` and
+  `reputation_formspec` (text "Reputation 1,234" until the reputation icon
+  is picked; the icon then goes into `grug_guild.REPUTATION_ICON`, no caller
+  changes). The trade-in (`exchange.lua`) counts and takes over
+  `grug_inventory.consume_lists` like the Sell tab's lots (remove_item by
+  name, every check first). `/guild_rep <player> <points>` (privilege
+  `server`) adds reputation for tests and the GUI checklist.
+- **The mining effect** (`effect.lua`, `items.lua`, Round 58 CONSUME):
+  runtime state per player name (the effect's own end time from
+  `core.get_us_time`, the current Remains `{pos, token}`, the marker HUD
+  ids), never the status record: `grug_core` clears statuses in its own
+  leave and death callbacks first. Its timers are `core.after` chains per
+  running effect (the end, the 30 s save, Ore Sense's 60–120 s mark,
+  Treasure Hunt's `check_seconds` check), no globalstep. Saved: player meta
+  `grug_guild:effect` only. Helpers beside the contract:
+  `grug_guild.band_text(tier)` (the band in words), `ore_sense_find(pos,
+  tier, range)` (the one search), `remains_spot_ok(pos, tier, name)` (the
+  placement rules); `_remains_on_timer` and `_remains_on_dig` are the
+  Remains nodes' hooks into the effect. Fixture: `tools/r58_consume`.
 
 ## Mail
 
@@ -2794,9 +2829,10 @@ tools](#player-meta-read-by-external-tools).
   the start towns' identities and point digests, the capitals' identity,
   point and build digests). The world-folder layout cache digests the `.tpl`,
   `.layout` and `.roster` files with the mapgen sources. Exporter
-  `tools/building_templates/export.py` (`--check`: the committed templates are
-  the export of the pre-freeze generators, `export.lua` for the start towns,
-  `export_capitals.lua` for the capitals), fixtures `tools/r56_freeze_towns`
+  `tools/building_templates/export.py` (the record of the freeze from the
+  pre-freeze generators, `export.lua` for the start towns,
+  `export_capitals.lua` for the capitals; its `--check` is retired since the
+  first deliberate template edit, Round 58), fixtures `tools/r56_freeze_towns`
   and `tools/r56_freeze_capitals`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. A surface row may carry `bands` (seven content refs by

@@ -357,7 +357,8 @@ local SHELVES = {
 	brewer = {"grug_traders:potion_healing_weak", "default:apple"},
 	herbalist = {"grug_traders:potion_healing_weak"},
 	embalmer = {"grug_mobs:bone", "grug_decor:xdecor_candle", "grug_mobs:zombie_flesh"},
-	mason = {"default:cobble", "default:gravel", "default:clay_brick",
+	-- Round 58 §2a: Cobblestone and Gravel left the mason's shelf (the guild takes them).
+	mason = {"default:clay_brick",
 		"default:stonebrick", "default:sandstonebrick", "default:stone_block"},
 	-- Round 33: the capital Decor Merchant (tools/r33_c5 checks its bands).
 	culture = {"grug_decor:darkage_marble", "grug_decor:darkage_marble_tile",

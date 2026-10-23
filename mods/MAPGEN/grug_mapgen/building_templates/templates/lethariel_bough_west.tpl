@@ -115,7 +115,7 @@ layer 7
 |..CCCCCCCK.|
 |..CCCCCCC..|
 |..CCCCCCC..|
-|.BCCCCCCCB.|
+|.BCCCCCCC..|
 |..CCCCCCC..|
 |..CCCCCCC..|
 |..CCCCCCC..|
@@ -125,9 +125,9 @@ layer 8
 |...........|
 |...........|
 |..GGGGGG.A.|
-|..GMMMMMG..|
-|..GMAAAMG..|
-|..GMAAA.G..|
+|..GMMMMM...|
+|..GMAAAM...|
+|..GMAAA....|
 |..GMAAAMG..|
 |..GMMMMMG..|
 |..GGGGGGG..|

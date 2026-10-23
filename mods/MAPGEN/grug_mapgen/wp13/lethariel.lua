@@ -50,6 +50,7 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local templates = dofile(directory .. "/templates.lua")(directory)
+	local gate_watch = dofile(directory .. "/gate_watch.lua")(directory)
 	local CAPITAL = templates.capital("lethariel")
 
 	local M = {}
@@ -160,8 +161,8 @@ local function loader(directory)
 		-- The east quarter's walk to the sacred grove and the shrine.
 		{6, 8, 24, 10, "lane"},
 		{26, 5, 28, 8, "lane"},
-		-- The doorsteps of the outer houses.
-		{-46, 27, -38, 29, "lane"},
+		-- The doorsteps of the outer houses (the Miner's Guild house, which
+		-- took the quay house's, opens over the turf to the quay).
 		{-44, -20, -42, -18, "lane"},
 		{40, -40, 42, -38, "lane"},
 		{-16, -44, -14, -42, "lane"},
@@ -172,6 +173,9 @@ local function loader(directory)
 	-- the rotated footprint, `turns` the rotation, `palette` and `roof` the
 	-- roster palettes it is built and roofed with. The hall of stars'
 	-- template carries its elder's doorstep.
+	--
+	-- `watch` marks a core gatehouse whose guards gate_watch.lua sets (Round
+	-- 58): the ground guards' rectangle and the tower guard's post.
 	--
 	-- `drop` and `recast` are the socket policy of the sockets contract: a
 	-- part cannot know how many of a thing a CAPITAL may have -- one throne,
@@ -190,11 +194,11 @@ local function loader(directory)
 		-- 2. The three inner gates. Lethariel has no curtain wall, so these
 		-- are the civic precinct's own gates and the fourth "gate" is the
 		-- quay: the north avenue leaves the pad over water.
-		{id = "gate_south", template = "lethariel_gate_south",
+		{id = "gate_south", template = "lethariel_gate_south", watch = true,
 			x = -6, z = -RADIUS, turns = 0, palette = "pale", roof = "pale"},
-		{id = "gate_west", template = "lethariel_gate_south",
+		{id = "gate_west", template = "lethariel_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "pale", roof = "pale"},
-		{id = "gate_east", template = "lethariel_gate_south",
+		{id = "gate_east", template = "lethariel_gate_south", watch = true,
 			x = 43, z = -6, turns = 3, palette = "pale", roof = "pale"},
 
 		-- 3. The market square, east of the approach in the south quarter.
@@ -253,8 +257,12 @@ local function loader(directory)
 		-- to face their ground instead: the `home` kit furnishes the cell
 		-- behind every other wall and only the z- doorway is authored clear
 		-- of it.
-		{id = "quay_house", template = "dur_brannoc_market_house",
-			x = -43, z = 25, turns = 1, palette = "elf"},
+		-- The Miner's Guild house of The Charter of Stone stands where the
+		-- quay house stood, grown to the corner between the fountain court
+		-- and the shore house, its door to the quay (Round 58;
+		-- settlements.md "The Miner's Guild houses").
+		{id = "miners_guild", template = "lethariel_miners_guild",
+			x = -46, z = 22, turns = 3, palette = "elf", roof = "pale"},
 		{id = "south_house", template = "dur_brannoc_south_house",
 			x = 38, z = -46, turns = 1, palette = "elf"},
 		{id = "plaza_house", template = "dur_brannoc_lane_house",
@@ -266,7 +274,7 @@ local function loader(directory)
 
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "gate_south", "gate_west",
-		"gate_east", "star_hall", "bough_west", "bough_east", "quay_house",
+		"gate_east", "star_hall", "bough_west", "bough_east", "miners_guild",
 		"south_house", "plaza_house", "shore_house"}
 
 	-- The corner waypoints of the city loop, in the open ground between the
@@ -546,6 +554,7 @@ local function loader(directory)
 			-- The building's own sockets; a socket point without a role is the
 			-- position of one of the composition's own sockets.
 			templates.collect_sockets(stamped, points, plot.id)
+			local first = #sockets + 1
 			for _, entry in ipairs(points.sockets or {}) do
 				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
@@ -571,6 +580,11 @@ local function loader(directory)
 					end
 					sockets[#sockets + 1] = out
 				end
+			end
+			-- A core gatehouse's watch (Round 58, gate_watch.lua): the ground
+			-- guards' rectangle on the city side and the tower guard's post.
+			if plot.watch then
+				gate_watch.apply(sockets, first, plot, part.w, part.d, "lethariel", buf)
 			end
 		end
 
@@ -802,6 +816,8 @@ local function loader(directory)
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, elf_palette, RADIUS, sockets, doorways)
 		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		-- Round 58: the gate watch's corners stand on open ground.
+		gate_watch.clear_cover(buf, CAPITAL.palettes.town)
 		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}

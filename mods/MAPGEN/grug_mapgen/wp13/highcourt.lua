@@ -60,6 +60,7 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local templates = dofile(directory .. "/templates.lua")(directory)
+	local gate_watch = dofile(directory .. "/gate_watch.lua")(directory)
 	local CAPITAL = templates.capital("highcourt")
 
 	local M = {}
@@ -137,6 +138,9 @@ local function loader(directory)
 	-- names the roster palette the template is built with, `roof` the one
 	-- its roof channel takes.
 	--
+	-- `watch` marks a core gatehouse whose guards gate_watch.lua sets (Round
+	-- 58): the ground guards' rectangle and the tower guard's post.
+	--
 	-- `drop` and `recast` are the socket policy, and they exist because a
 	-- part does not know how many of a thing a CAPITAL may have. Three roles
 	-- name a singular runtime seam: one throne, one travel pad for WP17, and
@@ -159,28 +163,22 @@ local function loader(directory)
 
 		-- 2. The four gatehouses. Highcourt has no curtain wall, so these
 		-- are not wall towers: they are the four gates of an open city, each
-		-- carrying the five-wide passage of the gate corridor, its two guard
-		-- chambers and its share of the one patrol loop. The field face of
-		-- the part (its loopholes) is turned outward by the rotation.
+		-- carrying the five-wide passage of the gate corridor and its two
+		-- guard chambers. The field face of the part (its loopholes) is
+		-- turned outward by the rotation.
 		--
-		-- Each gate keeps its own TOWER WATCH of two waypoints instead of a
-		-- share of the city loop, and that is the part's geometry talking:
-		-- its patrol waypoint stands on the wall walk at y = 7 and its deck
-		-- waypoint on the fighting top at y = 12, five courses higher, with
-		-- only the internal flight between them. A ground loop that took
-		-- either one in would ask an NPC to step from the street to the
-		-- wall walk through a wall -- and Highcourt has no curtain wall to
-		-- carry a walk from one gate to the next, so the walk inside each
-		-- gatehouse is all there is. `order = 2` puts the chamber above the
-		-- deck the part always numbers 1, which makes each tower a loop of
-		-- 1..2 that its own stair really joins.
-		{id = "gate_south", template = "highcourt_gate_south",
+		-- Each gate keeps its own watch instead of a share of the city loop
+		-- (Round 58, `watch`, gate_watch.lua): two guards walk a rectangle on
+		-- the city side in opposite directions and the tower guard holds a
+		-- post on the fighting top, which the east chamber's inner stair and
+		-- the roof stair reach from the street.
+		{id = "gate_south", template = "highcourt_gate_south", watch = true,
 			x = -6, z = -RADIUS, turns = 0, palette = "white", roof = "white_slate"},
-		{id = "gate_west", template = "highcourt_gate_south",
+		{id = "gate_west", template = "highcourt_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "white", roof = "white_slate"},
-		{id = "gate_north", template = "highcourt_gate_south",
+		{id = "gate_north", template = "highcourt_gate_south", watch = true,
 			x = -6, z = 43, turns = 2, palette = "white", roof = "white_slate"},
-		{id = "gate_east", template = "highcourt_gate_south",
+		{id = "gate_east", template = "highcourt_gate_south", watch = true,
 			x = 43, z = -6, turns = 3, palette = "white", roof = "white_slate"},
 
 		-- 3. The market square, west of the approach.
@@ -240,10 +238,12 @@ local function loader(directory)
 		{id = "service_store", template = "highcourt_service_store",
 			x = 25, z = 22, turns = 0, palette = "town"},
 
-		-- 9. The half-timbered city: a workshop on the south lane and four
-		-- houses along the outer ring.
-		{id = "city_workshop", template = "highcourt_city_workshop",
-			x = 31, z = -46, turns = 0, palette = "town"},
+		-- 9. The half-timbered city: the Miner's Guild house of The Charter of
+		-- Stone on the south lane (Round 58, in the city workshop's place,
+		-- turned so its door keeps the workshop's west side; settlements.md
+		-- "The Miner's Guild houses") and four houses along the outer ring.
+		{id = "miners_guild", template = "highcourt_miners_guild",
+			x = 31, z = -46, turns = 1, palette = "town", roof = "slate"},
 		-- The three houses keep the generator's own door side (`z-`) and are
 		-- TURNED to face their lane instead. A cottage's `home` kit furnishes
 		-- the cell behind every other wall -- bed corner, hearth, table --
@@ -265,7 +265,7 @@ local function loader(directory)
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "gate_south", "gate_west",
 		"gate_north", "gate_east", "chapel", "service_yard", "service_store",
-		"city_workshop", "north_house", "lane_house", "orchard_house",
+		"miners_guild", "north_house", "lane_house", "orchard_house",
 		"chapel_house", "market_house"}
 
 	-- The four corner waypoints of the city's patrol loop, in the open ground
@@ -473,6 +473,7 @@ local function loader(directory)
 			-- The building's own sockets; a socket point without a role is the
 			-- position of one of the composition's own sockets below.
 			templates.collect_sockets(stamped, points, plot.id)
+			local first = #sockets + 1
 			for _, entry in ipairs(points.sockets or {}) do
 				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
@@ -492,6 +493,11 @@ local function loader(directory)
 					end
 					sockets[#sockets + 1] = out
 				end
+			end
+			-- A core gatehouse's watch (Round 58, gate_watch.lua): the ground
+			-- guards' rectangle on the city side and the tower guard's post.
+			if plot.watch then
+				gate_watch.apply(sockets, first, plot, part.w, part.d, "highcourt", buf)
 			end
 		end
 
@@ -706,6 +712,8 @@ local function loader(directory)
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, human, RADIUS, sockets, doorways)
 		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		-- Round 58: the gate watch's corners stand on open ground.
+		gate_watch.clear_cover(buf, CAPITAL.palettes.town)
 		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}

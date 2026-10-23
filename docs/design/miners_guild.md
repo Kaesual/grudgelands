@@ -102,12 +102,12 @@ one picture.
   5 h at T6 for rank 6 (16 h in all); ranks 7–10 are prestige at T6 (8, 11½,
   14½ and 24 h: about 75 h in all for the winged cloak). The steps never
   shrink, so the last ranks are the hardest.
-- **Proposal (one guild per character, by faction):** the values are kept per
-  faction (`grug_guild:lifetime_accord`, …), so an admin's `/faction` (the
-  only way a faction changes, `grug_factions.set_faction`) gives the
-  character the other guild at its own values (0 at first) and keeps the old
-  ones should it switch back. A character without a faction has no guild:
-  rank 0, nothing to trade or buy.
+- **Proposal (one guild per character, by faction; built by lane REP):** the
+  values are kept per faction (`grug_guild:lifetime_accord`, …), so an admin's
+  `/faction` (the only way a faction changes, `grug_factions.set_faction`)
+  gives the character the other guild at its own values (0 at first) and keeps
+  the old ones should it switch back. A character without a faction has no
+  guild: rank 0, nothing to trade or buy.
 
 ## 5. The exchange
 
@@ -116,10 +116,13 @@ one picture.
   material, stone and sand very low; selling to vendors for copper stays
   possible. **Ruling (§2a):** bricks, blocks and other made goods are not
   exchanged.
-- **Proposal (the mechanism):** like the vendor's Sell tab for lot goods: one
-  row per exchanged item the player carries in `grug_inventory.consume_lists`
-  (counts summed), "N points per L", a button that trades every whole lot and
-  leaves the rest. No quality factor, wear ignored.
+- **Proposal (the mechanism; built by lane REP):** like the vendor's Sell tab
+  for lot goods: one row per exchanged item the player carries in
+  `grug_inventory.consume_lists` (counts summed), "N points per L", a button
+  that trades every whole lot and leaves the rest. No quality factor, wear
+  ignored. Built as the vendor window's **Trade-in** mode, shown by a vendor
+  whose definition (`grug_traders.vendors`) carries `guild = true`; the window
+  opens on it and shows the guild, the rank and the balance.
 - **Proposal (the list):** raw mined goods only, 25 items:
   - stone and sand, **1 point per 50**: Cobblestone, Mossy Cobblestone,
     Desert Cobblestone, Granite, Basalt, Slate, Gravel, Sand, Silver Sand
@@ -133,11 +136,11 @@ one picture.
     common ore in its band, a gem about a quarter.
   - Left out: bars, blocks, bricks, cut gems, Sandstone (four Sand, both ways
     by recipe) and Desert Sand (no natural source in our world; a recipe only).
-- **Cobblestone and Gravel wait for lane REP:** the mason sells both today
-  (`grug_traders/stock.lua`), so their rows carry `pending = "rep"` and are not
-  exchanged. REP deletes the two `pending` fields in the change that takes them
-  off the shelf; the fixture (`tools/r58_guildspec`) then checks them like
-  every other row, and refuses a `pending` row that has no vendor source left.
+- **Cobblestone and Gravel joined with lane REP (built):** the mason no
+  longer sells them (`grug_traders/stock.lua`), and their rows carry no
+  `pending` field any more; the fixture (`tools/r58_guildspec`) checks them
+  like every other row, and refuses a `pending` row that has no vendor source
+  left.
 
 ### 5.2 The camp vendor
 
@@ -154,13 +157,15 @@ one picture.
 
 - **Ruling:** an achievement series "Reach Reputation Rank 3/6/10 with the
   Miner's Guild" with three cloaks (rank 10 winged; the picked art: drop-01 P1).
-- **Proposal:** one achievement row `miners_guild` with tiers at 3, 6 and 10
-  on the counter `guild:rank`, the highest rank the character reached with
-  either guild (so an admin's `/faction` never takes a cloak); cloaks
-  `miners_guild_1` … `_3` (`grug_achievements` convention: tier N of `<id>`
-  unlocks `<id>_N`), the third with wings. The counter is fed by
+- **Proposal (built by lane REP):** one achievement row `miners_guild` with
+  tiers at 3, 6 and 10 on the counter `guild:rank`, the highest rank the
+  character reached with either guild (so an admin's `/faction` never takes a
+  cloak); cloaks `miners_guild_1` … `_3` (`grug_achievements` convention: tier
+  N of `<id>` unlocks `<id>_N`), the third with wings. The counter is fed by
   `grug_guild.register_on_rank_change` (§10.3). No `faction` field: both
-  factions earn it.
+  factions earn it. Built with the counter read live
+  (`grug_guild.highest_rank`, nothing copied) and the cloaks Lamp Badge
+  Workcloth, Lamp and Pick Workcloth and Lamplight Mantle (names a proposal).
 
 ## 7. The consumables
 
@@ -194,15 +199,16 @@ one picture.
     2s50c), the 5 % of every buy-back; never more than the materials behind
     the price would have sold for (the fixture's no-loop check: at most price
     × the cheapest copper per point of the exchange, 0.75c, Gold and Silver).
-- **Ore Sense (proposal):** a mark goes to the nearest deposit within
-  **16 nodes** of the first target with one in range; its targets are the
-  resources of its own harvest tier, the gem first (T1 Rough Citrine, Iron,
+- **Ore Sense:** **Ruling** (the user, 2026-10-23): a mark goes to a
+  **random deposit, ore or gem**, of its targets within **16 nodes**; the
+  first mark comes one interval after the use, and marks happen only while
+  the user is in the item's tier depth. Its targets are the
+  resources of its own harvest tier (the gem listed first: T1 Rough Citrine, Iron,
   Quartz, Copper, Tin, Coal; T2 Jade, Gold, Anthracite; T3 Garnet, Silver; T4
   Sapphire, Emberglass; T5 Ruby, Abyssal Crystal; T6 Diamond); a uniform
   random interval of 60–120 s between marks, the marker 5 s, seen by the user
-  only. The search is `core.find_node_near` over the targets' nodes
-  (`group:grug_resource` = the harvest tier), once per mark: about one call per
-  player every 90 s.
+  only. One search per mark over the targets' nodes: about one per player
+  every 90 s (built with `core.find_nodes_in_area`, below).
 - **Treasure Hunt (proposal):** one Miner's Remains at a time, placed
   **12–24 nodes** from the user in the tier's own rock (`TIERS[t].node`, all 26
   neighbours solid, `core.is_protected` and the hard protection false);
@@ -222,6 +228,34 @@ one picture.
   which run before `grug_guild`'s (it loads first), so the status is already
   gone when `grug_guild`'s callback runs: CONSUME keeps the effect's own end
   time per player and saves and re-applies from that, never from the status.
+- **Built** (lane CONSUME, `grug_guild/effect.lua`, `items.lua`): the common
+  rules, both kinds and the slot as proposed above, with these choices:
+  - the save timer writes every **30 s** (a crash costs the player at most
+    that), plus at leave; the offline time does not count; the death and the
+    respawn re-apply the picture;
+  - Ore Sense makes **one** `core.find_nodes_in_area` (grouped) over the
+    range cube, clipped to the band, for all its targets at once, and marks
+    a random target kind that has a deposit within `range` (true
+    distance), then one of its deposits at random: kind first, so the gem
+    is marked about as often as a common ore rather than drowning in Coal;
+    a mark that falls due outside the band does nothing and the next
+    interval starts (per-target `core.find_node_near` would be up to one
+    full scan per target when none is near; measured in the round report);
+  - the **markers** are per-player HUD image waypoints (`hud_add`
+    `image_waypoint`): only the user's client has them, and they are drawn
+    over the world, so a deposit or a Remains inside the rock shows;
+    per-player particles and entities with observers are depth-tested and
+    the rock in front hides them. Ore Sense shows the ore's own tile,
+    Treasure Hunt the Remains' tile;
+  - each Remains holds its owner and a **placement token** in node meta; its
+    timer removes it when the token is no longer its owner's current one, so
+    an old Remains whose block was unloaded while a newer one was placed
+    goes when its block loads, and every Remains goes after a restart;
+  - a relog never skips Treasure Hunt's pause: the leave takes the
+    Remains, and the resumed effect places the next one after
+    `respawn_seconds` (a fresh use places the first at once);
+  - a refusal says why: the use level, the band (`… works only between y
+    −301 and −500.`), or the running effect with its time left.
 
 ## 8. Miner's Remains
 
@@ -246,6 +280,12 @@ one picture.
   half an hour of the band's income (82–105 %, §9). Bars and cut gems are made
   goods, so the exchange never takes them: Treasure Hunt cannot feed
   reputation, and reputation cannot buy reputation.
+- **Built** (lane CONSUME): the nodes carry the tier rock's `grug_stratum`
+  group with its level, so digging them is the rock's transaction (the
+  protection, the tier pick and its hint) and the startup audit accepts the
+  level; the loot goes to the digger like a dig's drops
+  (`core.handle_node_drops`); when the Remains goes without a dig it turns
+  back into its rock.
 - The Remains are a second world source of copper beside the mobs' coin bags,
   by the ruling; `economy.md` §1 ("No NPC or world node drops money") gets that
   exception from lane CONSUME.
@@ -369,8 +409,8 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
   respawn_seconds, check_seconds`); `CONSUMABLE_BY_ITEM[item]`.
 - `REMAINS[tier]`: `{tier, node, name, host, bar, gem, copper_min,
   copper_max, bars_min, bars_max, gem_chance}`.
-- `ORE_SENSE_TARGETS[tier]`: resource keys of `grug_materials.RESOURCES`, in
-  priority order.
+- `ORE_SENSE_TARGETS[tier]`: resource keys of `grug_materials.RESOURCES`
+  (display order; a mark picks a random kind in range, §7).
 - `GUILDS[faction] = {id, name}`, `UI_NAME`, `STATUS = {id, variants}`,
   `KINDS`, `KIND_NAMES`, `NUMERALS`, `TIER_COUNT`.
 - Accessors, also published on `grug_guild`: `rank_for(lifetime) -> 0..10`,
@@ -394,7 +434,7 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
 
 Both numbers clamp at 2,147,483,647 (`set_int`). An admin command for tests
 and the GUI checklist ("the winged cloak at rank 10, admin-set") is REP's:
-**proposal** `/guild_rep <player> <points>` (privilege `server`), through
+**proposal, built** `/guild_rep <player> <points>` (privilege `server`), through
 `add(…, "admin")`.
 
 ### 10.4 The trade-in (`exchange.lua`, REP)

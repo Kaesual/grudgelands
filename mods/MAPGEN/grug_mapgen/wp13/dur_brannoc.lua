@@ -46,6 +46,7 @@ local function loader(directory)
 	local layout = dofile(directory .. "/layout.lua")(directory)
 	local precinct_ring = dofile(directory .. "/precinct_ring.lua")
 	local templates = dofile(directory .. "/templates.lua")(directory)
+	local gate_watch = dofile(directory .. "/gate_watch.lua")(directory)
 	local CAPITAL = templates.capital("dur_brannoc")
 
 	local M = {}
@@ -118,6 +119,9 @@ local function loader(directory)
 	-- the core used to add afterwards: the hall's floor bands and braziers
 	-- and the temple elder's doorstep.
 	--
+	-- `watch` marks a core gatehouse whose guards gate_watch.lua sets (Round
+	-- 58): the ground guards' rectangle and the tower guard's post.
+	--
 	-- `drop` and `recast` are the socket policy of the sockets contract, and
 	-- they exist because a part cannot know how many of a thing a CAPITAL may
 	-- have: one throne, one travel pad for WP17 and exactly two vendor families
@@ -135,13 +139,13 @@ local function loader(directory)
 		-- 2. The four inner gatehouses, where the avenues leave the citadel
 		-- precinct. Dur Brannoc's curtain wall is 209 nodes further out, so
 		-- these are the citadel's own gates and not the city's.
-		{id = "gate_south", template = "dur_brannoc_gate_south",
+		{id = "gate_south", template = "dur_brannoc_gate_south", watch = true,
 			x = -6, z = -RADIUS, turns = 0, palette = "town", roof = "slate"},
-		{id = "gate_west", template = "dur_brannoc_gate_south",
+		{id = "gate_west", template = "dur_brannoc_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "town", roof = "slate"},
-		{id = "gate_north", template = "dur_brannoc_gate_south",
+		{id = "gate_north", template = "dur_brannoc_gate_south", watch = true,
 			x = -6, z = 43, turns = 2, palette = "town", roof = "slate"},
-		{id = "gate_east", template = "dur_brannoc_gate_south",
+		{id = "gate_east", template = "dur_brannoc_gate_south", watch = true,
 			x = 43, z = -6, turns = 3, palette = "town", roof = "slate"},
 
 		-- 3. The market square, west of the approach, its north apron on the
@@ -191,8 +195,10 @@ local function loader(directory)
 		{id = "smelting_yard", template = "highcourt_service_yard",
 			x = 24, z = 27, turns = 0, palette = "town"},
 
-		-- 8. The masons' guild, in the south-east corner.
-		{id = "masons_guild", template = "dur_brannoc_masons_guild",
+		-- 8. The Miner's Guild house of The Charter of Stone, in the south-east
+		-- corner (Round 58, in the masons' guild's place; settlements.md
+		-- "The Miner's Guild houses").
+		{id = "miners_guild", template = "dur_brannoc_miners_guild",
 			x = 29, z = -46, turns = 2, palette = "town", roof = "slate"},
 
 		-- 9. The citizens' quarter: four houses on the outer ground. The
@@ -212,7 +218,7 @@ local function loader(directory)
 	-- Destination order is part of the consumer contract and never changes.
 	local DESTINATION_ORDER = {"kings_hall", "gate_south", "gate_west",
 		"gate_north", "gate_east", "ancestor_hall", "great_forge",
-		"smelting_yard", "masons_guild", "market_house", "south_house",
+		"smelting_yard", "miners_guild", "market_house", "south_house",
 		"lane_house", "plaza_house"}
 
 	-- The corner waypoints of the city loop, in the open ground between the
@@ -402,6 +408,7 @@ local function loader(directory)
 			-- The building's own sockets; a socket point without a role is the
 			-- position of one of the composition's own sockets.
 			templates.collect_sockets(stamped, points, plot.id)
+			local first = #sockets + 1
 			for _, entry in ipairs(points.sockets or {}) do
 				local drop = entry.role == nil or (plot.drop and plot.drop[entry.role])
 				if not drop then
@@ -425,6 +432,11 @@ local function loader(directory)
 					end
 					sockets[#sockets + 1] = out
 				end
+			end
+			-- A core gatehouse's watch (Round 58, gate_watch.lua): the ground
+			-- guards' rectangle on the city side and the tower guard's post.
+			if plot.watch then
+				gate_watch.apply(sockets, first, plot, part.w, part.d, "dur_brannoc", buf)
 			end
 		end
 
@@ -664,6 +676,8 @@ local function loader(directory)
 		-- Round 47 town greening: the race's trees on the open wild ground.
 		layout.green(buf, dwarf, RADIUS, sockets, doorways)
 		-- Round 51 follow-up FT: the ground cover thinned, now the trees stand.
+		-- Round 58: the gate watch's corners stand on open ground.
+		gate_watch.clear_cover(buf, CAPITAL.palettes.town)
 		dressing.thin_cover(buf)
 		local source, count = buf:cells()
 		local cells = {}

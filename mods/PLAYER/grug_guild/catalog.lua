@@ -186,8 +186,9 @@ local TIER_GEM = {"grug_materials:cut_citrine", "grug_materials:cut_jade",
 	"grug_materials:cut_ruby", "grug_materials:cut_diamond"}
 
 -- What Ore Sense of a tier looks for (grug_materials resource keys): the
--- resources whose harvest tier is the item's tier, the gem first. A mark
--- goes to the nearest deposit of the first key with one in range.
+-- resources whose harvest tier is the item's tier. A mark picks a random
+-- kind among those with a deposit in range, then a random deposit of it
+-- (the user, 2026-10-23); the order is only the display order.
 M.ORE_SENSE_TARGETS = {
 	{"citrine", "iron", "quartz", "copper", "tin", "coal"},
 	{"jade", "gold", "anthracite"},
@@ -198,17 +199,18 @@ M.ORE_SENSE_TARGETS = {
 }
 
 -- The exchange: only items no vendor sells (round58-plan.md §2a: no bars,
--- blocks, bricks or other made goods). `pending = "rep"` marks the two items
--- the mason still sells: lane REP deletes the field in the change that takes
--- them off the shelf; until then they are not exchanged.
+-- blocks, bricks or other made goods). A row may carry `pending = "<lane>"`
+-- while a vendor still sells its item: it is then not exchanged until that
+-- lane takes the item off the shelf and deletes the field (Round 58: lane
+-- REP did so for Cobblestone and Gravel; no row is pending now).
 local EXCHANGE_ITEMS = {
-	{item = "default:cobble", pending = "rep"},
+	{item = "default:cobble"},
 	{item = "default:mossycobble"},
 	{item = "default:desert_cobble"},
 	{item = "grug_materials:granite"},
 	{item = "grug_materials:basalt"},
 	{item = "grug_materials:slate"},
-	{item = "default:gravel", pending = "rep"},
+	{item = "default:gravel"},
 	{item = "default:sand"},
 	{item = "default:silver_sand"},
 	{item = "default:coal_lump"},

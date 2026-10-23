@@ -22,10 +22,16 @@
 --      General (`_grug_no_wander` on the prototype), a post guard still
 --      does;
 --   S  the seat: a king and a General carry the post fields of their throne
---      socket (a bodyguard and a royal guard none); pushed away he walks back
---      with the walk clip and faces the socket's authored way; he does not
---      leave a fight for the seat, walks back after it and after a leash
---      reset; his bodyguards stand within the follow distance of the seat.
+--      socket (a bodyguard none; a throne guard its own post since Round 58,
+--      tools/r58_townfix); pushed away he walks back with the walk clip and
+--      faces the socket's authored way; he does not leave a fight for the
+--      seat, walks back after it and after a leash reset; his bodyguards
+--      stand within the follow distance of the seat;
+--   P  (Round 58) a throne guard holds its post beside the seated king: no
+--      random walk (`_grug_no_wander`), pushed off it walks back and faces
+--      the authored way, it does not follow a king within the follow
+--      distance, follows one beyond it with its post hidden and walks back
+--      to its post when he is near again.
 -- Prints "R41 MOB PORTABLE PASS checks=<n>" or the failures.
 
 local repo = arg and arg[1] or "."
@@ -292,11 +298,12 @@ steps = {}
 dofile(repo .. "/mods/ENTITIES/grug_mobs/start_npcs.lua")
 
 -- A small Accord capital of the human race: the king on his dais facing -z
--- (the hall's door), two throne guards, two idle spots for one walker.
+-- (the hall's door), two throne guards beside him (three nodes, as the six
+-- halls have them since Round 58), two idle spots for one walker.
 local CAPITAL_SOCKETS = {
 	{id = "king", role = "king", x = 0, y = 1, z = 20, dir = {x = 0, z = -1}},
-	{id = "throne_guard_west", role = "guard_post", x = -7, y = 1, z = 17, dir = {x = 0, z = -1}},
-	{id = "throne_guard_east", role = "guard_post", x = 7, y = 1, z = 17, dir = {x = 0, z = -1}},
+	{id = "throne_guard_west", role = "guard_post", x = -3, y = 1, z = 20, dir = {x = 0, z = -1}},
+	{id = "throne_guard_east", role = "guard_post", x = 3, y = 1, z = 20, dir = {x = 0, z = -1}},
 	{id = "hall_idle_west", role = "idle", x = -20, y = 1, z = 0, dir = {x = 1, z = 0}},
 	{id = "hall_idle_east", role = "idle", x = 20, y = 1, z = 0, dir = {x = -1, z = 0}, spawn = false},
 }
@@ -453,7 +460,7 @@ end
 ------------------------------------------------------------------------------
 -- S. The seat.
 ------------------------------------------------------------------------------
-local function seat_case(label, key, leader_socket, retinue)
+local function seat_case(label, key, leader_socket, retinue, posted)
 	local leader = holder(key, leader_socket)
 	if not check(leader ~= nil, label .. " the leader is placed") then return end
 	local socket = socket_of(key, leader_socket)
@@ -462,8 +469,15 @@ local function seat_case(label, key, leader_socket, retinue)
 	near(leader._grug_post_yaw, socket.yaw, label .. " post yaw is the socket's authored facing")
 	for _, id in ipairs(retinue) do
 		local member = holder(key, id)
-		check(member ~= nil and member._grug_post_x == nil,
-			label .. " " .. id .. " carries no post (it follows)")
+		if posted then
+			local own = socket_of(key, id)
+			check(member ~= nil and member._grug_post_x == own.pos.x and
+				member._grug_post_z == own.pos.z and member._grug_post_y == own.pos.y,
+				label .. " " .. id .. " carries its own post (Round 58)")
+		else
+			check(member ~= nil and member._grug_post_x == nil,
+				label .. " " .. id .. " carries no post (it follows)")
+		end
 	end
 	leader.temp.grug_royal_cooldown = 1e9 -- no signature casts in this test
 	local seat_x, seat_z, yaw = socket.pos.x, socket.pos.z, socket.yaw
@@ -506,7 +520,7 @@ local function seat_case(label, key, leader_socket, retinue)
 	return leader, socket
 end
 
-seat_case("S king", "r41_capital", "king", {"throne_guard_west", "throne_guard_east"})
+seat_case("S king", "r41_capital", "king", {"throne_guard_west", "throne_guard_east"}, true)
 local general, general_socket = seat_case("S General", "pvp_fortress_accord", "general",
 	{"bodyguard_west", "bodyguard_east"})
 if general then
@@ -554,6 +568,82 @@ do
 		run(guard, 0.4)
 		eq(guard.animation_current, "walk", "R4 the step after the lock re-asserts the walk")
 		check(guard.temp.grug_royal_follow_active == true, "R4 still following")
+	end
+end
+
+------------------------------------------------------------------------------
+-- P. A throne guard holds its post beside the seated king (Round 58).
+------------------------------------------------------------------------------
+do
+	eq(core.registered_entities["grug_mobs:royal_guard_human"]._grug_no_wander, true,
+		"P1 a throne guard is marked: no random walk")
+	local king = holder("r41_capital", "king")
+	local guard = holder("r41_capital", "throne_guard_east")
+	local post = socket_of("r41_capital", "throne_guard_east")
+	local seat = socket_of("r41_capital", "king")
+	if check(king ~= nil and guard ~= nil, "P the king and his guard are placed") then
+		king.object.pos = copy(seat.pos)
+		-- the stand branch with every chance answering yes starts no walk
+		api_env.random = function() return 1 end
+		guard.walk_chance, guard.order, guard.state = 50, "", "stand"
+		stand_branch(guard, guard.object.pos, 0)
+		eq(guard.state, "stand", "P1 the stand branch starts no walk for it")
+		api_env.random = function(a) return a or 0 end
+		-- R left it following fifteen nodes out: the king is near now
+		guard.object.pos = {x = post.pos.x, y = post.pos.y, z = post.pos.z - 3}
+		guard:set_animation("stand", true)
+		run(guard, 1.1)
+		check(guard.temp.grug_royal_follow_active ~= true,
+			"P2 within the follow distance of the seated king it does not follow")
+		run(guard, 8)
+		check(dist2(guard, post.pos.x, post.pos.z) <= 4, "P2 pushed off, back at its post")
+		eq(guard.state, "stand", "P2 standing")
+		near(guard.object.yaw, post.yaw, "P2 facing the authored way")
+		-- the king leaves his seat ten nodes: it follows, its post hidden only
+		-- while its own base tick runs
+		king.object.pos = {x = seat.pos.x - 10, y = seat.pos.y, z = seat.pos.z}
+		run(guard, 1.2)
+		eq(guard.temp.grug_royal_follow_active, true, "P3 the king ten nodes off: it follows")
+		eq(guard._grug_post_x, post.pos.x, "P3 the post stays on the guard")
+		check(guard.object.vel.x < 0, "P3 toward the king")
+		-- he is back on his seat: the follow ends and it walks to its post
+		king.object.pos = copy(seat.pos)
+		run(guard, 12)
+		check(guard.temp.grug_royal_follow_active ~= true, "P4 the king back: the follow ends")
+		check(dist2(guard, post.pos.x, post.pos.z) <= 4, "P4 back at its post")
+		near(guard.object.yaw, post.yaw, "P4 facing the authored way")
+		-- The king idle eight nodes from the post (his seat's other side, off
+		-- it): the guard follows once, ends the follow within 4 m and stays
+		-- beside him instead of taking turns with the walk to its post (the
+		-- review's hysteresis: release at 4 m, follow again only beyond 5).
+		king.object.pos = {x = post.pos.x - 8, y = seat.pos.y, z = seat.pos.z}
+		king._grug_post_x, king._grug_post_z = nil, nil -- he stays where he is
+		local starts, was, far = 0, false, 0
+		for _ = 1, 300 do
+			step(guard)
+			local now = guard.temp.grug_royal_follow_active == true
+			if now and not was then starts = starts + 1 end
+			was = now
+			local kp = king.object.pos
+			if dist2(guard, kp.x, kp.z) > 36 then far = far + 1 end
+		end
+		eq(starts, 1, "P5 one follow, no turns with the post walk")
+		check(guard.temp.grug_royal_follow_active ~= true, "P5 the follow ended beside him")
+		local kp = king.object.pos
+		check(dist2(guard, kp.x, kp.z) <= 25, "P5 it stands within 5 m of the king")
+		check(guard.temp.grug_royal_post_ok == false, "P5 the post is not held while he is away")
+		-- 4.5 m out while following: it keeps following (no release above 4 m)
+		guard.object.pos = {x = kp.x + 7, y = kp.y, z = kp.z}
+		run(guard, 1.1)
+		eq(guard.temp.grug_royal_follow_active, true, "P6 seven nodes out it follows again")
+		guard.object.pos = {x = kp.x + 4.5, y = kp.y, z = kp.z}
+		guard.temp.grug_royal_follow = 0.95
+		step(guard)
+		eq(guard.temp.grug_royal_follow_active, true, "P6 at 4.5 m it keeps following")
+		-- back on his seat: the post holds again
+		king.object.pos = copy(seat.pos)
+		run(guard, 12)
+		check(dist2(guard, post.pos.x, post.pos.z) <= 4, "P7 the king on his seat: back at its post")
 	end
 end
 

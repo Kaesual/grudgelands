@@ -32,10 +32,15 @@ The Miner's Guild's reputation (Round 58) is no ledger currency and no copper bu
   interior zeros are retained: `5c`, `1s 5c`, `1g 0s 5c`. One formatter owns
   Character-screen, chat and trade UI output. The current balance is shown
   on Character and relevant trade screens; there is no persistent money HUD.
-- Money is a **ledger-only universal transaction currency**. No NPC or
-  world node drops money. Currency enters or moves only through explicit
-  transactions: quest rewards, NPC purchases of sellable loot, NPC/player
-  sales, player-to-player trade and the coin bags mobs drop (below).
+- Money is a **ledger-only universal transaction currency**. No NPC drops
+  money, and one world node does: the **Miner's Remains** (Round 58), the
+  block a Treasure Hunt hides in the rock, gives whoever digs it a Bag of
+  Coins beside its bars and gem ([miners_guild.md](miners_guild.md) §8; the
+  amounts are `remains.t<n>.copper_*` in `grug_guild/catalog.lua`).
+  Currency enters or moves only through explicit transactions: quest
+  rewards, NPC purchases of sellable loot, NPC/player sales,
+  player-to-player trade, the coin bags mobs drop (below) and the Remains'
+  bag.
 - **Bag of Coins** (Round 34): the one way money leaves the balance as an
   item, so players can give money to each other. **Withdraw** in the
   Inventory tab's money row (the Character page until the Round 45
@@ -99,7 +104,10 @@ precedence over preserving the exact mathematical ratio.
   (ruling 28) no vendor sells leather, cloth, ores or metal bars of any
   tier: hides and cloth are hunted, ores mined, bars smelted. Thread stays
   on every shelf as a job supply, and the tailor keeps White and Brown Wool
-  (bed decor).
+  (bed decor). Since Round 58 (plan §2a) no vendor sells what the Miner's
+  Guild takes for reputation ([miners_guild.md](miners_guild.md) §5): the
+  mason no longer sells Cobblestone and Gravel, so copper never buys
+  reputation; vendors still buy both.
 - A vendor's **buy-back is capped at 5%** of the item's purchase price,
   **rounded up to the next copper**, and applies to goods a vendor also
   sells (gear, supplies) and to every equippable of the gear catalog by the
@@ -167,8 +175,8 @@ items without one:
   | Planks (`group:wood`) | 12 mc (a quarter log, rounded down) | 1c per 99 |
 
   Sandstone is exactly four sand, because the recipes run both ways. The
-  table wins over the vendor rule: the Mason's Cobblestone, Gravel and
-  bricks sell in these lots too (always below their shelf price).
+  table wins over the vendor rule: the Mason's bricks sell in these
+  lots too (always below their shelf price).
 - **Crafted goods** (no class, sold by no vendor, not gear: potions,
   dishes, seeds, tools, bags, stations, furniture, stairs ...) pay **half**
   the material value of their cheapest recipe, without exceptions. The

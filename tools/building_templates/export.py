@@ -12,16 +12,22 @@ tools/building_templates/freeze_report.txt and freeze_report_capitals.txt, and
 the known-defects baseline (check.py --baseline=self --write-known-defects).
 
 The templates are the source of truth from the freeze on (ruling 23): this
-tool is the record of how they were made and the proof it is repeatable, not
-a way to change them. Rerunning it overwrites every template with the
-generators' version.
+tool is the record of how they were made, not a way to change them.
+
+RETIRED in Round 58: lane HALLS made the first deliberate template edit (the
+Miner's Guild houses), so the committed templates are no longer the freeze's
+export and `--check` no longer compares them (it says so and passes, for any
+list that still runs it; the comparison is in the history, Round 56).
+Rerunning the export would overwrite every template with the generators'
+version and delete the templates made since, so the write refuses unless it
+is asked for by name.
 
 Usage (repository root):
-  python3 tools/building_templates/export.py          # write (the freeze)
-  python3 tools/building_templates/export.py --check  # the committed files
-      are exactly what the pre-freeze source exports (nothing is written)
+  python3 tools/building_templates/export.py --check   # retired: prints so
+  python3 tools/building_templates/export.py --overwrite-edits
+      # the freeze again: every template back to the generators' version,
+      # every template made since deleted
 """
-import filecmp
 import re
 import subprocess
 import sys
@@ -95,30 +101,16 @@ def export(into):
     return reports
 
 
+RETIRED = ("export --check: RETIRED since Round 58 (lane HALLS made the first "
+           "deliberate template edit; the templates are no longer the export of "
+           "%s and %s, and check.py is the gate)" % (PRE_FREEZE[:8], PRE_CAPITAL_FREEZE[:8]))
+
+
 def main(argv):
     if argv == ["--check"]:
-        with tempfile.TemporaryDirectory(prefix="grug_freeze_out_") as out:
-            reports = export(Path(out))
-            problems = []
-            for kind in ("templates", "layouts"):
-                fresh = sorted(p.name for p in (Path(out) / kind).iterdir())
-                kept = sorted(p.name for p in (OUT / kind).iterdir())
-                if fresh != kept:
-                    problems.append("%s: the files differ: %s" %
-                                    (kind, sorted(set(fresh) ^ set(kept))))
-                for name in sorted(set(fresh) & set(kept)):
-                    if not filecmp.cmp(Path(out) / kind / name, OUT / kind / name,
-                                       shallow=False):
-                        problems.append("%s/%s differs from the export" % (kind, name))
-            for path, text in reports.items():
-                if path.read_text() != text:
-                    problems.append("%s differs from the export" % path.name)
-        if problems:
-            raise SystemExit("export --check: FAIL\n" + "\n".join(problems))
-        print("export --check: PASS (the templates are the export of %s and %s)" %
-              (PRE_FREEZE[:8], PRE_CAPITAL_FREEZE[:8]))
+        print(RETIRED)
         return 0
-    if argv:
+    if argv != ["--overwrite-edits"]:
         raise SystemExit(__doc__)
     with tempfile.TemporaryDirectory(prefix="grug_freeze_out_") as out:
         reports = export(Path(out))

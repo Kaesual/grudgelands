@@ -17,7 +17,7 @@ use highcourt_well_court count=4
 use dur_brannoc_ancestor_hall count=1 roof=slate
 use dur_brannoc_great_forge count=1
 use highcourt_service_yard count=3
-use dur_brannoc_masons_guild count=1 roof=slate
+use dur_brannoc_miners_guild count=1 roof=slate
 use dur_brannoc_market_house count=1
 use dur_brannoc_south_house count=1
 use dur_brannoc_lane_house count=1

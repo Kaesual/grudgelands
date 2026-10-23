@@ -73,6 +73,12 @@ icons.STATUS = {
 		art("alchemy_swiftness")),
 	alchemy_cave = def("buff", "Cave Draught", "Night vision",
 		art("alchemy_cave")),
+	-- The Miner's Guild consumables (Round 58, grug_guild effect.lua): one
+	-- slot for both kinds, the caller's label names the item.
+	mining_sense = def("buff", "Mining Effect", "", art("ore_sense"), {
+		ore_sense = art("ore_sense"),
+		treasure_hunt = art("treasure_hunt"),
+	}),
 
 	-- Movement and mounts.
 	mount = def("buff", "Mount", "", art("mount_land"), {
