@@ -205,17 +205,20 @@ split in two**:
 | `[herb Tn]` | **healing herb** — Alchemy only, tier n | **never** |
 | `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by Alchemy **and** by Cooking | **never** (Round 48 ruling 5: spices stay gather-only) |
 
-Both plant lines keep the same three tiers: T1 (levels 10–25), T2 (25–45)
-and T3 (45–60), and each line has exactly one plant per tier, reachable on
-both continents.
+Both plant lines keep the same three tiers, and each line has exactly one
+plant per tier, reachable on both continents. Since Round 60 the Alchemy
+herbs follow the level bands of the recipe tiers that use them (T1 from
+level 1, T2 from 11, T3 from 21): gravemoss T1 in levels 1–30, sunleaf T1 in
+1–20, dragonweed T2 in 11–40 and crimson lotus T3 in 21–60; the spices
+marshbloom T2 (21–30) and stormkelp T3 (41–60) are unchanged.
 
-**Where the line runs**: healing herbs grow on ground no plough will
-ever touch — bare stone, gravel and mesa clay, dead wood, the deep
-jungle floor — while spices grow on the soft, workable ground of
-meadow, marsh and shore. The split is readable off the biome itself, it
-keeps every healing herb bound to a journey into its own biome, and it
-gives Cooking a supply line that farming can later take over without
-ever touching alchemy's.
+**Where the line runs**: the line is told by the plant, not the ground.
+Since Round 60 the four Alchemy herbs (gravemoss, sunleaf, dragonweed,
+crimson lotus) grow on the main ground of any biome of their zones
+(`world_zones.md` §11), so each race finds its tier's herbs in its own
+level band; marshbloom keeps the marsh and stormkelp the shore. No herb or
+spice is farmed (Round 48 ruling 5), so Cooking's crops never touch
+alchemy's supply.
 
 **Farming and claims**: inside an active Claim Stone claim (`housing.md`;
 world integration summary in `world.md` §5) only the owner and players with
@@ -438,25 +441,22 @@ recipe-book state. Missing, throwing or malformed authorization fails closed;
 spices and foods never call this seam.
 
 **Healing herbs** (Alchemy only, never farmable; both continents reach
-every tier — see §6): **gravemoss T1** (pine hills, blight),
-**dragonweed T2** (crags, badlands, deep forest, bone forest),
-**crimson lotus T3** (deep jungle, jungle fringe). All three sit on
-stone, gravel, mesa clay, dead-wood litter or jungle floor.
-
-The lotus source is the one that had to be repaired: until 2026-08-08 the
-Accord's `grug_jungle_fringe` generated at 0.08 % of the land because the
-deep forest contained its cuboid, so in practice **only the Throng had a
-T3 healing herb**. Biomes now follow the zone palettes of `world_zones.md`
-§8, and the fringe's lotus comes from The Skyglass Canopy (`world_zones.md`
-§11).
+every tier — see §6; Round 60: in their tiers' level bands, on any main
+ground of their zones, `world_zones.md` §11): **gravemoss T1** (the six
+start zones, Copperfell Foothills, Mournfen and every 21–30 zone),
+**dragonweed T2** (every 11–20 zone, Frostbarrow Shelf, Ossuary Reach,
+Ashenward March, Bannerbreak Mesa), **crimson lotus T3** (every 21–30 zone,
+every contested 31–40 zone, both 41–50 fronts, The Skyglass Canopy and
+Stormscale Summit).
 
 **Spices** (gathered by everyone, used by both Alchemy and
 Cooking — which costs no main slot — and never farmed, Round 48 ruling 5):
-**sunleaf T1** (meadows, savanna, elf forest, jungle edge),
-**marshbloom T2** (swamp), **stormkelp T3** (the exact cardinal dry-shore
-predicate in `world_zones.md` §11). Sunleaf and Marshbloom sit on workable
-grass/mud; Stormkelp's natural source may use any accepted P7 dry support in
-its four named high/endpoint zones and does not require `grug_beach` or sand.
+**sunleaf T1** (the six start zones and every 11–20 zone, on any main
+ground, Round 60), **marshbloom T2** (swamp), **stormkelp T3** (the exact
+cardinal dry-shore predicate in `world_zones.md` §11). Marshbloom sits on
+the swamp's mud; Stormkelp's natural source may use any accepted P7 dry
+support in its four named high/endpoint zones and does not require
+`grug_beach` or sand.
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
 own T1–T6 recipes, `items_crafting.md`; the tiers tie to
@@ -1495,10 +1495,10 @@ nodes and, thinner, one and two tiers deeper (Round 46). The signature wood foll
 | Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 21–60 | deep-forest/fringe spiders; both 41–50 fronts by night (Round 46); T5–T6 outlaws | bone-forest/jungle spiders; the same fronts and outlaws |
 | Food plants (everyone, farmable) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), mushrooms (deep forest/swamp), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, mushrooms (bone forest/swamp), meat/fish |
 | Food plants, **found-only** (everyone, never farmable) | 45–60 (wild cocoa 51–60) | wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
-| Healing herbs T1 (Alchemy) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
-| Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
-| Healing herbs T3 | 45–60 | crimson lotus (jungle fringe, The Skyglass Canopy) | crimson lotus (deep jungle) |
-| Spices T1 (everyone gathers; Alchemy + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
+| Healing herbs T1 (Alchemy; Round 60: by level band, any main ground) | 1–30 | gravemoss (every start and 21–30 zone, Copperfell) | gravemoss (every start and 21–30 zone, Mournfen) |
+| Healing herbs T2 | 11–40 | dragonweed (every 11–20 zone, Frostbarrow, Ashenward) | dragonweed (every 11–20 zone, Ossuary, Bannerbreak) |
+| Healing herbs T3 | 21–60 | crimson lotus (every 21–30 zone; the shared contested 31–40 zones and fronts) | crimson lotus (every 21–30 zone; the shared contested 31–40 zones and fronts) |
+| Spices T1 (everyone gathers; Alchemy + Cooking use) | 1–20 | sunleaf (every start and 11–20 zone) | sunleaf (every start and 11–20 zone) |
 | Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
 | Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, bear claw (slime gel, one faction, has no recipe use since Round 33) | identical (shared tables) |
