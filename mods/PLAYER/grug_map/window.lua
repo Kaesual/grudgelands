@@ -426,7 +426,7 @@ end
 -- information (or nil).
 function W.formspec(player, session, info)
 	local w, h = W.window_size(info)
-	local layout = W.layout(w, h - grug_inventory.UI.header_h)
+	local layout = W.layout(w, h)
 	session.layout = layout
 	local zoom = session.zoom or 1
 	local journal = grug_quests.journal(player)
@@ -441,7 +441,7 @@ function W.formspec(player, session, info)
 	local fs = {
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
-		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h),
+		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + grug_inventory.UI.header_h),
 		grug_inventory.navigation(player, session, "grug_map:atlas", w),
 		("container[0,%.3f]"):format(grug_inventory.UI.header_h),
 		-- The inventory key closes a form unless the focused element eats it
