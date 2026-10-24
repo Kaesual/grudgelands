@@ -646,6 +646,27 @@ do
 	eq(status("r14_elf_elder", "start_boars"), "none", "start: ...nor in Silverleaf")
 	eq(status("r20_elf_start_cook", "start_rats"), "available", "start: the other quests stay offered")
 	for key in pairs(meta) do meta[key] = nil end
+	-- Round 59 (tools/r59_bandquests): a level-11 character is offered the
+	-- band's first quests at once, without a departure; the shared repairs
+	-- taken or done in one band zone are offered in no other.
+	grug_xp.get_level = function() return 11 end
+	for _, race in ipairs({"human", "dwarf", "elf", "orc", "troll", "undead"}) do
+		eq(status("r15_" .. race .. "_local", "band_repairs"), "available",
+			"band: the " .. race .. " local offers the repairs at once")
+	end
+	for _, row in ipairs({{"r14_dwarf_steward", "copperfell_copper"}, {"r14_human_steward", "goldmead_corn"},
+			{"r14_elf_steward", "starbough_sunleaf"}, {"r14_undead_steward", "mournfen_gravemoss"},
+			{"r14_orc_steward", "redtusk_corn"}, {"r14_troll_steward", "raincall_melons"}}) do
+		eq(status(row[1], row[2]), "available", "band: " .. row[2] .. " needs no departure")
+	end
+	check(Q.accept(player, "band_repairs", "r15_dwarf_local"), "band: the repairs taken in Copperfell")
+	eq(status("r15_dwarf_local", "band_repairs"), "active", "band: ...active there")
+	eq(status("r15_human_local", "band_repairs"), "none", "band: ...not offered in Goldmead")
+	meta["grug_quests:state"] = {active = {}, completed = {band_repairs = true}, tracked = {}, hud = true}
+	eq(status("r15_dwarf_local", "band_repairs"), "none", "band: done once, not offered again")
+	eq(status("r15_orc_local", "band_repairs"), "none", "band: ...nor in Redtusk")
+	eq(status("r15_orc_local", "redtusk_fences"), "locked", "band: a level-14 craft is shown locked at 11")
+	for key in pairs(meta) do meta[key] = nil end
 	grug_xp.get_level = level
 end
 -- What the one-time computation costs at load (reported, not a target).
