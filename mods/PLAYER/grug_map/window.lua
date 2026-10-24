@@ -458,7 +458,6 @@ function W.formspec(player, session, info)
 		("label[3.3,%.2f;Current: %s]"):format(cy, esc(current_zone(player))),
 		minimap,
 		("button[%.2f,%.2f;3.2,0.6;grug_map_back;Back to inventory]"):format(right - 3.95, PAD),
-		("button_exit[%.2f,%.2f;0.6,0.6;grug_map_close;X]"):format(right - 0.6, PAD),
 		("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;horizontal;%.5f]"):format(layout.map_x,
 			layout.map_y, layout.map_w, layout.map_h, SCROLL_X, layout.map_w / 1000),
 		-- The inner clipper spans the full scaled width so horizontal scrolling
@@ -674,6 +673,8 @@ function W.handle_fields(player, fields)
 				sfinv.set_page(player, target)
 				core.show_formspec(name, "", sfinv.get_formspec(player,
 					sfinv.get_or_create_context(player)))
+			else
+				core.close_formspec(name, W.FORMNAME)
 			end
 		end
 		return
