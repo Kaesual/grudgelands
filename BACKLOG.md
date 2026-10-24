@@ -3119,6 +3119,65 @@ The items the user decides in the GUI test are in the
   start zones' quest copper moved the income table); `check_lua.sh` flags
   two SETGLOBAL lines in the `r57_details` fixture.
 
+### Round 58 carry-overs
+
+**Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the joint GUI test of 0.57 and 0.58 are in the
+[GUI checklist](docs/planning/round58-plan.md#gui-checklist-rounds-57-and-58).
+
+- **Open GUI judgements:** the camps' places and bands; the headframe
+  partly hiding the lift from the side and the lift's light level 3 (LIFT,
+  CAMPS); the gate watch as one rectangle walked both ways and the tower
+  post on the deck; the start towns' waystone pads (TOWNFIX, a first
+  version); the banners one node big (larger needs `visual_scale` in the
+  town viewer's `signlike` code, HALLS2); the Ore Sense and Remains
+  markers' size and contrast (32 px, the Remains tile stone-coloured) and
+  their HUD waypoints on the web client (CONSUME); the names nobody picked
+  yet: the cloaks Lamp Badge Workcloth, Lamp and Pick Workcloth and
+  Lamplight Mantle, the achievement "Miner's Guild" I–III and its line
+  (REP); from Round 57 the violet story colour, now on the guild
+  follow-ups, and the headland edge.
+- **Guild and camps** (GUILDSPEC, CAMPS, their reviews): the model's T1
+  hour sells for 4s 16c against 1s 72c of income (a generous model, not a
+  guild issue); Round 57's source index sees only `stock`,
+  `profession_stock` and the bracket's first stock (the §2a fixture
+  relies on it); `mining_camps.near` has no upper y limit (fine).
+- **Rooms** (ROOMS, its review): a cave may open just past an exit's plug,
+  and mobs can walk in (accepted; only spawning inside the box is
+  refused); the protection wrapper copies the session's fields once
+  (`guild_room_protection.lua`).
+- **Consumables** (CONSUME, its review): mobs that spawn on
+  `group:grug_stratum` could in theory spawn on a dug-open Remains.
+- **Reputation** (REP, its review): `/guild_rep` has no fixture of its own
+  (the harness drops `register_chatcommand`; the capture runs use it).
+- **People** (CAMPNPC): no map marker for the Exchange (`grug_map`); no
+  guild touch on the leaders (an NPC cloak seam in `grug_visuals`, with
+  the emblems later); the story arc names one foreman, Brodd Deeppeg in
+  Frostbarrow, who needs a per-camp title override (Round 59).
+- **Lift** (LIFT): the minimap keeps the mine and war-camp 6 px icons (the
+  picks have no 6 × 6 version; a later art pass); `lift.lua` reads
+  `grug_home` at run time (no dependency).
+- **Houses** (HALLS, HALLS2, their reviews): the engine shots of three
+  houses show the old, higher desks; `BASELINE` was not moved (the new
+  templates count every cell as edited); the `required_of` comment in
+  `r7_capitals.lua` calls the list stable.
+- **Town fixes** (TOWNFIX, its review): `loop_reach` applies to every loop
+  (district loops' legs are longer than 8 m in practice, harmless);
+  `world.md` §3 ("their four level-60 royal guards"), `world_zones.md`
+  §12 ("exactly four") and `biomes_mobs.md`'s King row say four royal
+  guards where the hall templates seat two (wrong before this round too;
+  the 2026-10 playtest audit noted it).
+- **Guild quests** (GUILDQUESTS, its review, the text review): the quest
+  log shows a shared quest's home zone to everyone (`quest_box.lua`; the
+  variant's zone would be right); the ledger has no faction filter in the
+  Battlegrounds zones; the Battlegrounds files stay unflagged until a
+  per-faction `E-free-follow-ups` (Round 59); the QUESTMAP page carries no
+  commit stamp; `build_structure.py --check` holds only until the texts
+  landed (10 of 26 files differ now; not a gate); each follow-up's second
+  sentence repeats the paper's name (kept); GUILDTEXT proposed "Accord
+  Pioneer"/"Throng Pioneer" for the guards (Stakeguard kept).
+
 ### Decided for later rounds (Round 56 §8)
 
 **Decided with the user on 2026-10-22**, each its own round in an order the
@@ -3128,7 +3187,8 @@ user sets; the decisions and their detail are in
 - **Crafting window:** **delivered in Round 57** (0.57.0): layout C, the
   queue of five, the details pages, recursive Basic unlocks, favourites and
   the chain-depth report.
-- **Town fixes** (**map reset**): in the templates (the user in the editor or
+- **Town fixes** (**map reset**): **delivered in Round 58** (0.58.0, lane
+  TOWNFIX; the royal-guard posts in all six capitals). In the templates (the user in the editor or
   a lane): Lethariel's bough platforms (the beam over the stair and the deck
   rail go) and the five core gatehouses (an inner stair, the doors one node
   towards the passage, a 4-node deck opening, the first-floor openings
@@ -3153,7 +3213,8 @@ user sets; the decisions and their detail are in
 above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-decided-for-round-58).
 
 - **Round 58, the Miner's Guild** (**map reset**, together with the town
-  fixes above):
+  fixes above): **delivered in Round 58** (0.58.0,
+  [completion](docs/planning/round58-plan.md#completion-2026-10-24)):
   - one guild per faction, a political actor, with a guild building in every
     capital: **The Charter of Stone** (The Accord) and **The Oathdelvers**
     (The Throng), the user's names of 2026-10-23;

@@ -1,7 +1,8 @@
 # Round 58 — the Miner's Guild and the town fixes (0.58.0, map reset)
 
-Coordinator: Claude, 2026-10-23. Status: **planned**, waiting for the user's go (after a compaction). The plan
-review (a fresh Opus, 2026-10-23, `r58/reports/plan-review.md`) is folded in; its blocker is decided (§2a).
+Coordinator: Claude, 2026-10-23. Status: **complete** ([completion](#completion-2026-10-24)); 0.58.0 not pushed, it
+waits for the user's joint GUI test of 0.57.0 and 0.58.0; the user's go 2026-10-23. The plan review (a fresh Opus,
+2026-10-23, `r58/reports/plan-review.md`) is folded in; its blocker is decided (§2a).
 
 Round 58 is the **one map reset** of this stretch. Its rulings were decided with the user on 2026-10-22 and
 2026-10-23 and stand in [Round 57 plan §8](round57-plan.md#8-decided-for-round-58); this plan turns them into lanes.
@@ -369,3 +370,334 @@ report.
 
 Round 59 and later: the story arc built (the picked draft), the quest rework of levels 11–60 on the Round 57
 foundation; then unique items (Round 57 §9). The armor redesign with polygon groups lands after this round.
+
+## Completion (2026-10-24)
+
+Every lane is merged on main, every code lane independently reviewed (Opus) and every logic fix delta-reviewed; this
+lane D (the version, the declaration, this section, AGENTS, the status owners, the joint GUI checklist) follows on
+main `c85f6624`. **0.58.0 is a map reset:** no migration step; characters keep their items, levels, quests and money;
+item, achievement and waypoint ids unchanged; no new position in player meta. **Push:** not pushed; 0.57.0 was pushed
+on 2026-10-23 without its GUI test, and 0.58.0 waits for the user's joint GUI test of both. **Sync:** by the
+coordinator after the round.
+
+### Lanes
+
+Worktrees and branches `r58-<lane>`. Main's first-parent commits, in order (lane tip in brackets):
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| plan | `616112ab`, `a9191497` | this plan with the plan review folded in (B1 decided as §2a); then §1's note that the skeleton came with GUILDSPEC and the lift and room nodes are grug_mapgen's | fresh Opus plan review (one blocker, ten important findings) |
+| GUILDSPEC | `734a914e` (`36cd21e1`) | `docs/design/miners_guild.md` (the rulings, the proposals, the yield model's tables, the `grug_guild` contract §10); the `grug_guild` skeleton (`catalog.lua` with every number, a stub file per owning lane, the load audit); `tools/r58_guildspec` (`model.lua`, `write_doc.lua`, the tuning page, `apply_tuning.py`, the §2a fixture on the real game) | MERGE AFTER FIXES (the fixture pinned stubs; the node ids; page and fixture disagreed; the status-clear order), fixed, delta MERGE |
+| CAMPS | `5d2444cd` (`38a088dc`) | anchors 119–144: 20 mining camps in their zones' lowest level third, 6 camps under construction in the highest third of the contested T4 zones; the 16 war camps with a headframe, a foreman and a camp vendor; `wp40/r58_camp_catalog.lua`, `r58_camp_blueprint.lua`, the pure camp module `r58_camps.lua`; `grug_mapgen:guild_lift`; protection kind `mining_camp`, map icons, spawn refusal, the garrison; the fleet's camp check | MERGE AFTER FIXES (36 boot errors until the camp vendor existed; the lift's `paramtype2`), fixed (a placeholder camp vendor, `4dir`), delta MERGE |
+| CONSUME | `a2b8386a` (`5b9f8f9a`), `0edc5faa` (`b09c77ab`), `a42f91b6` | the 12 consumables, the `mining_sense` slot with the picked icons, persistence across leave, death and a crash, Ore Sense (one grouped search, HUD waypoint markers), Treasure Hunt (node-timer removal, a token per placement), the six Miner's Remains with the picked overlay; `tools/r58_consume` with the drop's painter (`art/paint.py`, `ship.py --check`); then the user's ruling (a random ore or gem) and the coordinator's comment and spec line | MERGE AFTER FIXES (a relog skipped Treasure Hunt's pause; the search was a cube), fixed, delta MERGE; the ruling's follow-up delta MERGE |
+| REP | `e8159d96` (`96b7cf5b`) | `store.lua` (lifetime and balance per faction, the rank callbacks, `/guild_rep`), `exchange.lua` and the vendor window's Trade-in mode (`guild = true`), the mason's shelf without Cobblestone and Gravel, the consumables' payout in `prices.lua`, the Character page's two lines, the achievement `miners_guild` with the three picked cloaks | MERGE (the brief had asked for the guild's proper name in the window; the coordinator followed the ruling), small fix round (names out of the window, buttons by catalogue index, non-finite amounts refused), delta MERGE |
+| HALLS | `0713d49a` (`4471bbf4`) | six Miner's Guild houses replacing a core building each (`tools/r58_halls/make_halls.py`), the hall socket contract `capital_services.GUILD_HALL`; `export.py --check` retired | MERGE (three minor notes); merged after the user's look at the pages |
+| TOWNFIX | `63210975` (`827569a9`) | Lethariel's bough beams (decks 6 and 7) and rails; the five core gatehouses (stair with a landing, doors and posts, the 4-wide deck opening, closed walls); throne-guard posts beside the king in all six capitals; `wp13/gate_watch.lua` (two counter-rotating loops, the tower post on the deck) and `patrol.lua` `loop_reach`; the terrace stair; the six start towns' waystone pads | MERGE, then the coordinator's ask for the royal guards' hysteresis (`518ca24c`, release 4 m, re-follow 5 m, the post only near the king), delta MERGE; main merged in-lane |
+| ROOMS | `1816247e` (`19aefc48`) | phase 1 against stub camps (`ad4f7599`): `wp40/guild_rooms.lua`, the room step `guild_room_writer.lua` after `refine_or_degrade` with its own degrade, `guild_room_protection.lua`, the room nodes and `grug_mapgen:room_lamp`; phase 2 (`74218d53`): CAMPS' module wired, the lift written at every lift cell, the hint line, the fleet's room check; then the exit plugs | MERGE (the exits ended at the box face, not blind in rock: the coordinator's ruling call), the plugs `room_plug_t1` … `_t6`, delta MERGE |
+| CAMPNPC | `c25fbd58` (`c62b7757`) | the 36 foremen (`r58_foreman_<camp>`, role `foreman_t<tier>`), the six named guild leaders, the Miner's Guild Exchange (`grug_traders:guild_exchange`, service role `guild_exchange`), the camp vendor's trade-in, repair (provider `camp_vendor`) and rank-locked page (`vendor.lua`) | MERGE |
+| HALLS2 | `1edcd33c` (`558fea92`) | added during the round (below): the house on a required district plot `miners_guild` (17 × 17) in each capital's trades district with a headframe and an ore yard, the six core buildings restored, the picked banners (drop 02 P2) and emblems (P1) and the rail and cart as grug_mapgen nodes, `GUILD_HALL` with plot-prefixed ids, Kezamba's lot `shore_10` | MERGE (the reviewer's full run 267/267) |
+| LIFT | `2a610b86` (`562091eb`) | `grug_guild/lift.lua` (the level list, own faction only, trips through `grug_home.travel` with the waystones' rules, no saved position), the picked drop 02 P1 art (the lift's node box and faces, the reputation icon, the map-window markers), `tools/r58_lift/art/ship.py --check` | MERGE AFTER FIXES (merge-time only: the `r58_campnpc` price pin with the icon, the settlements.md lift row), two merge rounds checked by the coordinator |
+| GUILDQUESTS | `ab5846c9` (`4facf389`) | 30 quests with 130 variants (10 gather, 10 story follow-ups, 9 camp hunts, 1 raid with six variants) written by `tools/r58_guildquests/build_structure.py` with placeholder texts; the guild files as pseudo-zones; `Q.turnin_for` preferring the giver; the camp-site guards' name slots; QUESTMAP | MERGE AFTER FIXES (the validator's leader pattern after HALLS2; the hunts copied the zones' own quests; the hand-in marker), fixed with the user's two decisions, delta MERGE |
+| GUILDTEXT | `c85f6624` (`1f9a2fdb`) | GPT-6 Astra wrote the 276 text fields (`dfcff660`: 30 titles, 160 texts, 86 completions); the user's picks of the Opus text review applied by the coordinator's script (65 of 65) with three captain names | TEXTREVIEW (Opus): 0 must-fix, 65 proposals, all picked; 8 name verdicts |
+| D | this section | the version 0.58.0 and the `map_reset` entry, AGENTS (the current state, World generation without `export.py --check`, the Miner's Guild, the guild quests, the topic checks), upgrade contract §2, the format doc's §6.3 example, STATUS, CHANGELOG, BACKLOG, ROADMAP, README, the joint GUI checklist | independent review |
+
+**LIFTART** (GPT-6 Astra, outside the repository): guild art drop 02 with two proposals, 26 assets (the lift's faces,
+the two guilds' emblems and banners, the reputation icon, the two map icons), reproducible; the user's picks are below.
+Nothing unpicked ships.
+
+Main has 269 portable fixtures (10 new: `r58_guildspec`, `r58_camps`, `r58_consume`, `r58_rep`, `r58_halls`,
+`r58_townfix`, `r58_rooms`, `r58_campnpc`, `r58_lift`, `r58_guildquests`). `mods/` against 0.57.0 (measured, `git diff
+69481ed1 c85f6624 -- mods`): 166 files, +10,594 −349 lines; the new mod `grug_guild` (8 Lua files, 1,676 lines with
+`catalog.lua`), the room and camp files in `wp40`, the six guild-house templates and the 30 quests' data in 26 quest
+files, the picked textures of drops 01 and 02.
+
+### Lanes added during the round
+
+- **HALLS2:** the user found HALLS' houses fine for a first version but not "Miner's Guild" enough and asked whether
+  they could stand outside the civic core; on the coordinator's answer (the cost of a district plot) the user chose to
+  move them into a district. HALLS2 put each house on a required district plot with a headframe and an ore yard,
+  restored the six core buildings HALLS had replaced and shipped the picked banners and emblems as nodes.
+
+### Decisions during the round
+
+**The user** (HANDOVER):
+
+- **§2a (plan review B1):** option (a): the mason stops selling Cobblestone and Gravel; the exchange takes only items
+  no vendor sells.
+- **LIFTART:** the banners from drop 02 **P2** (lamp arch, split ore); everything else from **P1**: the timber
+  rope-drum lift, the 16 px emblems (keystone, crossed picks), the pewter reputation token, the two map icons.
+- **The numbers:** accepted as a first version; the tuning page's store stayed empty, so the catalogue's proposals
+  stand (§9 of [miners_guild.md](../design/miners_guild.md)).
+- **Ore Sense:** a mark goes to a **random ore or gem** in range (not the gem first); the first mark comes one
+  interval (1–2 min) after the use, and only in the item's depth, as built.
+- **No reputation from guild quests:** reputation comes only from the exchange.
+- **The halls:** Kezamba's house in basalt; then the houses moved into a district (HALLS2); HALLS2's houses accepted
+  ("sehen top aus"), the banners one node big for now, a house near the city wall is fine.
+- **The raid:** four guards and the captain (the camp-site guards get name slots); **the hunts** reward a choice of
+  materials.
+- **QUESTMAP:** the guild quests' structure accepted.
+- **The texts:** all 65 proposals of the text review; the captain names Kembala (troll), **Torva Stonewright**
+  (dwarf, the review's idea, replacing Hulda Stonewright) and Eshara (elf), the other captains and both Stakeguard
+  titles as they were.
+
+**The coordinator** (answers to lane questions; each built as stated):
+
+- **The nodes in grug_mapgen** (brief time): CAMPS registers `grug_mapgen:guild_lift`, ROOMS the room nodes, because
+  the world writer needs them in wave 0; `grug_guild` overrides only the lift's right-click.
+- **GUILDSPEC built the skeleton** (mod, catalogue, a stub file per lane), so merging GUILDSPEC put it on main; its
+  Q1–Q7 as recommended, except Q1 and Q4 (the user's).
+- **The camp module contract** in CAMPS' brief; CAMPS' `camps(layout, seams)` (a war camp's race needs the world's
+  seams) accepted; two gate guards per own camp (four in a contested T4 camp), the lowest third for mining camps and
+  the highest for camps under construction; the captains' names to GUILDTEXT.
+- **ROOMS in two phases** (stub camps, then CAMPS' module); its answers: the room step writes CAMPS' lift node at the
+  lift cell, the hint line `guild_room = "Miner's Guild – protected"` in `grug_core/protection.lua`, its own
+  `room_lamp` (the Mese Lamp is curated out), mobs walking in through a cave past an exit accepted; then **the exit
+  plugs**, because the ruling says the exits end blind in rock.
+- **The user interface says "Miner's Guild" only:** REP's Trade-in label and Character tooltip drop the proper names
+  (the coordinator's brief had asked for them; the ruling wins); `grug_guild.summary` keeps the name for texts.
+- **One painter for the guild art:** CONSUME's `tools/r58_consume/art/paint.py`; REP copies the cloak PNGs byte for
+  byte, and LIFT's `ship.py` copies drop 02's files by hash.
+- **Option (A), prefixed hall sockets:** HALLS2's plot sockets carry the plot prefix (`miners_guild/…`), read through
+  `capital_services.GUILD_HALL`; its `required_of` line in `r7_capitals.lua` approved; Kezamba on the shore.
+  CAMPNPC binds through `GUILD_HALL`.
+- **TOWNFIX:** the throne-guard posts in all six capitals (shared code), the deck-7 beam removed too, the watch as one
+  rectangle walked both ways, the tower post on the deck, Kezamba's gate posts unchanged; then the follow hysteresis.
+- **CAMPNPC:** own faction only at the camp vendor and the exchange counter (the existing rule; CAMPS' note that the
+  camp vendor served everybody was refuted), the camp vendor opens on Trade-in, the exchange counter keeps its Buy
+  mode with a pointer to the camps; the leaders' guild touch and the one named foreman wait (backlog).
+- **LIFT:** `grug_home` looked up at run time (no new dependency), the minimap's 6 px icons kept, the lift's light
+  level 3.
+- **GUILDQUESTS:** follow-ups per faction (10 ids), a follow-up at every own camp of tier ≥ k, Battlegrounds camps
+  reporting across the front, the guild files as pseudo-zones, the camp and Battlegrounds files unflagged.
+
+### Deviations from the plan
+
+- **One lane added** (HALLS2, above), so 15 lanes.
+- **CAMPS needed no second phase**; it registered the placeholder camp vendor in its fix round so that boots stay
+  free of errors until CAMPNPC.
+- **The room lamp** is `grug_mapgen:room_lamp` (the plan's "shipped light node" `default:meselamp` is curated out),
+  and each exit ends in a plug of the tier's rock one node past the box, outside its protection.
+- **The lift saves no return point:** the list offers every level, so the plan's "room's return point" was not
+  needed and nothing goes into player meta (no `register_on_relocate` clear; `tools/r41_up` untouched).
+- **Ore Sense's marker** is a per-player HUD image waypoint, not particles or an entity (both are depth-tested and the
+  rock hides them), and its search is one grouped `find_nodes_in_area` instead of a `find_node_near` per target.
+- **The royal guards** stand on posts in all six capitals, not only Lethariel (all six wandered).
+- **The quests:** 30 instead of 28 (two night hunts where a camp's zone already hunts every day role); Lorindor's hunt
+  repeats the stag, the one role there; the raid's four guards needed name slots (`pvp_garrison.lua`, `names.json`).
+- **The camp files are not flagged reworked** (the brief's lead was refuted: flagging them fails their old chains).
+- **`build_structure.py --check`** holds only until the texts land: since GUILDTEXT the JSON files are the source (10
+  of 26 files differ from its placeholders); it is not a gate, as in Round 57.
+- **The minimap** keeps the mine and war-camp 6 px icons: the picks have no 6 × 6 version; the picked icons show in
+  the map window.
+
+### Numbers worth keeping
+
+Measured unless marked "report" (taken from the lane's report) or "model".
+
+- **Reputation (model, GUILDSPEC):** 416 / 483 / 903 / 2,047 / 3,535 / 5,165 points per hour of mining at T1–T6;
+  hours to ranks 1–6 in total 0.5 / 1.9 / 3.9 / 7.0 / 11.0 / 16.2, to rank 10 74 h; an hour at a tier buys about one
+  consumable; Ore Sense's extra finds worth 10–26 % of its price; one Treasure Hunt about half an hour of the band's
+  income (82–105 %). No measured mining yield exists.
+- **The room step (report, engine, seeds 12345 and 42):** 148 of 148 rooms correct per seed; 1.07 ms per room chunk on
+  average (max 1.8 ms, 343 chunks), against about 159 ms of R7 refinement in a −50 chunk (under 1 % there) and
+  0.04–0.09 ms in a deep early-out chunk; the −650 room of `pvp_camp_skyglass_canopy_throng_low` on seed 42 has 588
+  lava sources within its ring, the nearest one node from the box, and stays clean.
+- **Placement (report, CAMPS, three seeds):** 0.6–0.7 s; a camp's nearest POI centre 138–163 nodes away; one fleet
+  seed 29.5–30.7 s before and 30.8–32.4 s after (noise under contention).
+- **Fleet times (report):** `seed_fleet quick` 100 of 100 in every mapgen lane: CAMPS 6 min 41 s and 6 min 39 s,
+  HALLS 6 min 10 s, TOWNFIX 6 min 12 s, ROOMS 6 min 22 s, HALLS2 6 min 27 s. Lane D's **full fleet on main**: see
+  [Round-end gates](#round-end-gates).
+- **Quests:** 30 guild quests with 130 variants (20 gather, 76 follow-up, 28 hunt, 6 raid), shipped quests 423 → **453**
+  (measured over the quest files). Rewards (report): gather 360 XP / 21c (T2) … 1,160 XP / 8s (T6); follow-ups 135 XP
+  / 8c … 435 XP / 3s; hunts 298 XP / 18c … 1,120 XP / 7s; the raid 900 XP / 1s 28c; the night hunts 338 XP / 32c (T3)
+  and 463 XP / 80c (T4). Per camp against the zone's own quests (report): T2 4 quests 1,153 XP vs about 14 quests and
+  4,500 XP; T3 7 quests 2,658 XP vs 8–12 and 3,100–5,050; T4 11 quests 5,313 XP vs 8–19 and 5,300–13,500.
+- **The ledger (report):** the solo questing share, human, levels 10–20 82 → 92 %, 30–40 78 → 85 % (the other races
+  6–10 points more; the ledger also counts the other faction's Battlegrounds follow-ups, so slightly high).
+- **Ore Sense and Treasure Hunt (report, engine, range 16, 40-run averages):** one Ore Sense search 181–299 µs at T1
+  (about 1,800 deposits of six targets in the box), 84 µs at T5, 48 µs with no target; the spec's `find_node_near` per
+  target would cost up to 323 µs per call with nothing in range, about 1.9 ms for T1's six; a Treasure Hunt spot test
+  9.9–11.4 µs, at most about 0.16 ms per 5 s check. No globalstep was added; a user with Ore Sense costs one search
+  per mark every 60–120 s.
+- **The lift (report, engine, seed 42):** 11 trips at `mining_camp_ashenward_march` (T4), each at most 0.5 s.
+- **Throne guards (report, engine):** 3.0 m from the king; before the hysteresis an idle king about 8 m from the post
+  started the follow 7 times in 30 s (`r41_mob`).
+
+### Classification
+
+**Map reset**, no step:
+`{"schema": 3, "version": "0.58.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+The reason ([upgrade contract §2](../technical/upgrade-contract.md#2-the-declaration)): the camps (new anchors and
+blueprints, the extended war camps), the 148 rooms of their own generation step, the guild houses on their district
+plots and the town fixes change what world generation and the towns build (`check_upgrade.py` sees the town builds;
+the camps and rooms it does not see, so the entry covers them too). A world on 0.57.0 (or 0.56.1) moves on across the
+reset with the pre-reset pass (`map_reset_pass` 0.50.0): characters keep everything but their position and home claim
+(contract §3.2), reputation starts at 0 for everybody.
+
+What needs the reset and what alone would be compatible (the lanes' reports): CAMPS, ROOMS, HALLS/HALLS2 and TOWNFIX
+are world generation and templates; CAMPNPC's NPCs and GUILDQUESTS' quests stand on the new sockets, so they ride on
+the reset; GUILDSPEC's skeleton, REP, CONSUME, LIFT's code and art and the new nodes alone would be compatible.
+Saved state, all without a position:
+
+- player meta `grug_guild:lifetime_<accord|throng>` and `grug_guild:balance_<accord|throng>` (integers, created on
+  first use; REP); `grug_guild:effect` (`core.serialize({kind, tier, remaining})`, every 30 s, at leave and at start;
+  CONSUME);
+- existing keys written anew: `grug_achievements:t:miners_guild` and the cloak list (three ids more), and
+  `grug_quests:state` for the 30 new quests (new ids, no format change);
+- map-bound, going with the map: the Miner's Remains' node meta (`owner`, `token`) and timer; TOWNFIX's socket
+  markers in `grug_mobs`' mod storage (existing `startnpc:` keys, cleared by `map_reset.lua`);
+- nothing new in mod storage, nothing in player meta that holds a position, so no `register_on_relocate` clear.
+
+### Open notes
+
+- **For the user:** the joint GUI test below, with these to judge: the camps' places and their bands, the headframe
+  partly hiding the lift and the lift's light, the guard and watch rounds, the waystone pads' places, the banner size,
+  the Ore Sense and Remains markers' size and contrast (also on the web build), and the **names never picked yet**:
+  the cloaks Lamp Badge Workcloth, Lamp and Pick Workcloth and Lamplight Mantle, the achievement "Miner's Guild" I–III
+  and its line "The foremen know your lamp before they see your face." (REP's proposals); from Round 57 the violet
+  story colour (now on the guild follow-ups) and the headland edge.
+- **Round 59** builds the story arc from the picked draft and reworks the quests of levels 11–60 (§9); the guild's
+  follow-ups carry its first seeds.
+- The reviews' and reports' notes are in the [Round 58 carry-overs](../../BACKLOG.md#round-58-carry-overs).
+
+### GUI checklist (Rounds 57 and 58)
+
+One test for both rounds (plan §6, review I9), desktop and the web build (the lanes' web shots were taken at
+1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on the synced game.
+
+**Resetting a local world** (what the hosting platform does, contract §3.5):
+
+1. Quit the world (stop the server), then make a copy of the world folder.
+2. Optional, to test the claims' containers: from the repository checkout,
+   `python3 tools/migrate.py --world <world folder> --map-reset` (Python 3.13 or newer; it packs the containers in
+   every housing claim and must end with exit 0).
+3. Delete `map.sqlite` in the world folder; keep `map_meta.txt` (the seed), `world.mt`, `players.sqlite`,
+   `auth.sqlite` and `mod_storage.sqlite`.
+4. In Luanti's settings, *Content: Games → Grudgelands → Hosting platform*, raise **Map reset counter**
+   (`grug_reset_world`) above the world's record: 1 for a world never reset before, else one more than last time (the
+   game reads it at the start; only a value above the record resets).
+5. Start the world. `debug.txt` must show `[grug_core] map reset N applied to the world (was M)`
+   (`grug_core/map_reset.lua`); if the line is missing, the value was not above the record: quit, restore the copy
+   and start again from step 2 with a higher value. The map is generated anew from the seed; each existing character
+   is held on the waiting screen and moved to its race's start town at its next join, without the welcome.
+6. Afterwards set the counter back to **0**: it is one setting for every local world, and another world whose record
+   is lower would reset at its next start (without its map being emptied): its claims and NPC records cleared, its
+   characters moved to their start towns.
+
+**Order:** (A) the existing world, reset as above, first join with its old characters; (B) everything else on that
+world and with new characters; (C) a new world (or the "test" world) for the bays. *Re-checked (D):* no Round 57 item
+needs the old **map**; items 3 (its last sentence), 5 (its last sentence) and 15 test an old character's **first join
+on the new code**, which the reset keeps (player meta stays), so they run in (A) at that first join, the path the
+production world takes. Do not join the existing world on the new game before the reset, or that first join is spent.
+Items 1, 2 and 4 need no old state.
+
+**(A) The existing world, at the first join after the reset** (a character above level 10 with old start quests done
+or active, a crafting job running when it last logged out, enchanted items, a housing claim if you have one):
+
+1. **The reset:** the character arrives at its race's start town without the welcome and keeps its level, inventory,
+   equipment, money, quests, professions, mounts and waypoints; its home claim is gone (Return home falls back to the
+   innkeeper), the Housing Steward hands out a new Claim Stone, and (after step 2) the claim's containers wait in its
+   Belongings tab. The Character page shows "Miner's Guild: Rank 0".
+2. **Round 57 item 3, last sentence:** a job of the old version that was running finishes as before (its output in the
+   inventory or the Overflow).
+3. **Round 57 item 5, last sentence:** the existing character has its Basic recipes after this login.
+4. **Round 57 item 15:** the new start quests are offered (one whose old finale was done keeps it done); its old start
+   quests are gone from the log without an error; its level-11 zone's quests are still offered.
+
+**(B) Round 57** (its [checklist](round57-plan.md#gui-checklist-round-57) items, unchanged unless noted):
+
+1. Layout C. 2. The queue. 3. Offline and the overflow (its last sentence in A). 4. Favourites. 5. The Basic unlock
+(its last sentence in A). 6. Recipe details. 7. Alloys and woods. 8. Dyes. 9. Vendors (and Round 58's mason below).
+10. A new character's start (the waystone and mailbox now stand at the town's centre: Round 58 below). 11. Shared
+quests. 12. Choice rewards (Round 58's hunts
+add a choice of materials, below). 13. Completion text. 14. Story marking: **changed by Round 58**: the guild's ten
+follow-ups are the first shipped story quests, so judge the violet "!", the "Story" heading and the map icons on one
+of them (B, guild quests) instead of the capture probe. 15. An existing character above level 10 (in A). 16. Bays
+(in C). 17. The chin underside. 18. Help. 19. The pages for the user.
+
+**(B) Round 58:**
+
+20. **Mining camps** (CAMPS): find a mining camp in a T2 (levels 11–20), a T3 and a T4 zone: in the zone's lowest
+    level third, a trail from the road, a tent, a stall, the headframe with the lift, two gate guards (four in a
+    contested T4 camp, which belongs to the faction of its half of the continent), the Foreman and the Camp Vendor with their nametags. A Battlegrounds
+    war camp shows the headframe east of the command tent and the foreman west of it; its guards and raid role are
+    unchanged. Nothing in a camp can be dug.
+21. **Camps under construction:** in a contested T4 zone, in its highest third, the enemy's camp of scaffolding with
+    four Stakeguards and a named captain; no lift, no vendor, nothing to use.
+22. **The map:** mining camps on the POI layer ("Mining camp: …", the rope-drum icon), camps under construction on
+    the PvP layer (the tent-frame icon); the minimap keeps the old 6 px mine and war-camp icons.
+23. **The lift** (LIFT): right-click an own T4 camp's lift: "Surface" and Levels 1–4 (−50 … −650), the surface "You
+    are here", Travel on the others; ride to every level and back, arriving in front of the lift in the room and on
+    the deck; in combat "Cannot travel in combat."; as the other faction, in a room too, the refusal line ("I serve
+    only The Accord.") and no list. **Judge:** the headframe partly hides the lift from the side; the lift's own light.
+24. **The rooms** (ROOMS): each level lit, three exits, each ending in a plug of the tier's rock that you dig (it
+    drops Cobblestone) and dig on from; inside the room you cannot dig or build ("Miner's Guild – protected"); no
+    monster spawns in a room; water and lava next to it stay out (the −650 rooms often border lava); below −501 the
+    room is contested ground.
+25. **The camp vendor at rank 0** (CAMPNPC; before any `/guild_rep`, or with a fresh character): it opens on
+    Trade-in; Buy shows all six rows locked, "Reach Reputation Rank N" with their prices. Repair: the Repair button
+    opens the repair form and mends a worn tool. An enemy is refused. The Exchange in your capital: Trade-in and Sell;
+    Buy shows only "The Miner's Guild sells its goods at the mining camps."; no repair. At the web size the page fits.
+26. **Reputation** (REP): `/guild_rep <you> 2734`: the Character page shows "Miner's Guild: Rank 3" and "Reputation
+    2,734" with the pewter token, the feed the new rank, the rank-3 cloak in the picker. At a Camp Vendor and at the
+    Exchange the window opens on **Trade-in** and says "Miner's Guild" only (no guild name): rank, reputation and the
+    lifetime to the next rank; trading 143 Cobblestone gives "Traded 100 … 43 left.", 49 Sand is greyed; the Sell tab
+    still pays copper for the same goods. The mason no longer sells Cobblestone or Gravel. Web: a Claim Stone status
+    of four lines fits between the guild lines and the cloak picker. **Then, still at rank 3**, the camp vendor's
+    page: rows 1–3 open with "Use from level N"; buy Ore Sense I: the balance drops by 400, the lifetime and the rank
+    stay; with a full bag the purchase is refused and nothing spent.
+27. **The cloaks:** `/guild_rep <you> 350000`: ranks 6 and 10, the winged cloak; **judge the names** (above).
+28. **Ore Sense** (CONSUME): a T2 item is refused below level 11; outside its depth the use is refused with the band
+    (for example "… works only between y −301 and −500."). Use Ore Sense I above y −100: the status icon appears;
+    within 1–2 minutes a small ore tile marks a random ore or gem deposit through the rock for 5 s; a second item is
+    refused with the time left and nothing is taken.
+29. **Treasure Hunt:** Treasure Hunt V between y −701 and −1000: a skull-tile marker; dig to it: coins, a bar,
+    sometimes a cut gem; walk more than 48 away: it is gone, and about 90 s later a new one appears. Log out and in,
+    and die: the icon and the time left continue (the offline time does not count), and a relog does not skip the pause. A second player sees no marker but
+    can dig the block. **Web:** the markers (HUD waypoints) show on the web client too; judge their size and contrast.
+30. **Guild houses** (HALLS2): in each capital's trades district the headframe marks the house; inside, the named
+    leader behind a low desk (Highcourt Alis Cartwright, Dur Brannoc Hadrin Beamset, Lethariel Caelir Veinward, Nhal
+    Veyr Iven Lastshift, Gor Drazhak Drava Flintshoulder, Kezamba Ombali Ropekeeper) and the Exchange behind a low
+    counter; the banners, the emblem sign, the frieze of the six tier stones, the ore yard; the civic core has its old
+    building back. A house may stand near the city wall (accepted).
+31. **Guild quests** (GUILDQUESTS, GUILDTEXT): a level-15 Accord character at a T2 camp is offered the Iron, the Jade
+    and the camp's hunt at once; a T3 camp also offers the T2 gathers (its own open at 21); the quest log shows a
+    gather quest as "Level 13" without a zone; a Throng character is refused at an Accord foreman. Both T2 gathers
+    done: the violet follow-up, "Travel to <leader>", turned in only at that leader, with its closing lines. A gather
+    quest's "Return to" and the map's hand-in marker point at the foreman you took it from (a role quest has every
+    foreman of its tier as a turn-in; GUILDQUESTS changed `Q.turnin_for`). A hunt's
+    choice of leather, cloth or bars; the night hunts (Totemwater Reach, Blackwind Rise, Thunderroot Wilds) after dark;
+    from a T4 foreman the raid on the camp under construction (four Stakeguards and the captain by name). Read the
+    texts.
+32. **Town fixes** (TOWNFIX): a capital gatehouse (all five but Kezamba): the east door, the stair with a landing, the
+    first floor, the deck through the 4-wide opening, no jump; two guards circling the city side in opposite
+    directions, the third standing on the deck (**judge** the rounds). Lethariel: both bough stairs walkable, the hall
+    door reachable. In every capital the throne guards stand beside the king, follow him into a fight and return
+    afterwards, without starting over and over while he stands away from his seat. Silverleaf's terrace stair without
+    a jump. Each start town: the waystone and the mailbox at the centre by the Quartermaster ("Mailbox in <town>"),
+    travel works (**judge** the places).
+33. **Help:** Help names the Camp Vendor among those who repair.
+34. **The pages for the user** (outside the game, private claude.ai pages): the guild houses'
+    [gallery](https://claude.ai/artifact/RUtD5TW5vNYVXykBCBcUxG) and
+    [districts](https://claude.ai/artifact/2T7ZhQhDcaHffMVWYdu7DF), the town fixes'
+    [gallery](https://claude.ai/artifact/TRn7fM8vcmpqycVBQFDcXn),
+    [start towns](https://claude.ai/artifact/GPLY4kRSKoHJyqaePJBKKD) and
+    [Lethariel core](https://claude.ai/artifact/45fkkM4dXyWv7WrY9BwR3v), the guild quests'
+    [QUESTMAP](https://claude.ai/artifact/3RDdAyMBV8bQxoe873qDdp) and the
+    [tuning page](https://claude.ai/artifact/2oekLZggJaBnSsYCv2eRoG).
+
+**(C) Round 57 item 16, the bays:** in a new world with the "test" seed (or the reset "test" world).
+
+### Round-end gates
+
+Lane D on its branch from `c85f6624` (measured): `check_upgrade.py` PASS (against origin/main `69481ed1`, 0.57.0, with
+the `map_reset` entry 0.58.0; before it the towns' builds failed it by design), `check_fresh_server.py` PASS,
+`validate.py --game` 0 errors (6 warnings, as before), `r37_dc` PASS (765 checks), `write_doc.lua . --check` current,
+`make_halls.py --check` PASS (6 templates), both `ship.py --check` (15 and 9 textures, 0 differ), a link and anchor
+check of every touched file, the full `run_fixtures.sh` (**269 passed, 0 failed**), the **full seed fleet on main**
+`c85f6624` (`seed_fleet/run.sh full` through the queue at 8 parallel: **304 of 304 seeds build, 0 failed, 19 min 0
+s**, with the camp and room checks) and one headless boot (PASS, no ERROR line). Each code lane ran the full
+`run_fixtures.sh` once (GUILDSPEC 260/0, CAMPS 258 with two pins fixed then 260/0, ROOMS 260/0 and 262/0 after phase
+2, 266/0 before its last node fix, HALLS 259 with one fixed, TOWNFIX 260/0 and 265/0 after merging main, CONSUME and
+REP 261/0, CAMPNPC 264 with one pin fixed, HALLS2 265/0, LIFT 267/0 and 268/0 after its merge rounds, GUILDQUESTS
+268/0 and 269/0); the coordinator ran the full set on main `63210975` (265/0).

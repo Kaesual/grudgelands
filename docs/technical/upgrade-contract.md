@@ -142,6 +142,16 @@ list of the platform's migration contract):
   stored talent windows and the retired skill items go offline, and each
   character with a class gets one chat line at its next join. No map
   reset: the production world moves from 0.52.1 to 0.53.0 with the tool.
+- 0.58.0 (Round 58, the Miner's Guild) needs the seventh map reset: the
+  mining camps, the camps under construction and the extended war camps,
+  the 148 lift rooms (their own generation step), the guild houses on a
+  district plot in the six capitals and the town fixes (gatehouses, bough
+  platforms, throne-guard posts, the terrace stair, the start towns'
+  waystones) change what world generation and the towns build. It
+  declares no step: the guild's new player meta (reputation, the mining
+  effect) holds no position and starts empty. `map_reset_pass` stays
+  0.50.0, so the pass packs the claims' containers; the production world
+  moves to 0.58.0 across this one reset.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the

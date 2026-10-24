@@ -59,21 +59,14 @@ Decided with the user on 2026-10-22 and 2026-10-23
 ([Round 57 plan §8–§9](docs/planning/round57-plan.md#8-decided-for-round-58),
 [BACKLOG](BACKLOG.md#decided-for-round-58-and-later-round-57-plan-89)):
 
-- **Round 58, the Miner's Guild** (the one map reset): one guild per
-  faction, **The Charter of Stone** for The Accord and **The Oathdelvers**
-  for The Throng, each a political actor of its faction with a guild
-  building in every capital; 36 mining camps (one in every T2, T3 and T4
-  zone outside the capital zones and the 16 Battlegrounds war camps) with a
-  faction-only lift to a protected room at every tier depth down to the
-  camp's tier; guild quests bound to the depth; reputation with ranks, an
-  achievement series with three cloaks and two kinds of mining
-  consumables. The cloaks, the consumable icons and the Miner's Remains
-  block are already picked and ship with that round's code.
-- **Round 58, the town fixes** (in the same map reset): passable bough
-  platforms in Lethariel, capital gatehouses with an inner stair, royal
-  guards beside their king, gate patrols on the city side, the terrace
-  stair, and a waystone and mailbox at every start town's centre. The
-  building fixes are made in the building templates.
+- **Round 58, the Miner's Guild and the town fixes:** **delivered** in
+  0.58.0 (a map reset; [completion](docs/planning/round58-plan.md#completion-2026-10-24)):
+  The Charter of Stone and The Oathdelvers, 36 mining camps with a
+  faction-only lift to 148 protected rooms at the tier depths, six enemy
+  camps under construction, reputation with ranks and three cloaks, the
+  camp vendor, Ore Sense and Treasure Hunt, a guild house in every capital,
+  30 guild quests, and the Round 56 town fixes. Its GUI test runs together
+  with Round 57's.
 - **Round 59 and later, the story arc:** each faction's story from the
   start zones to the front at level 41, built on the Round 57 foundation
   zone by zone with the quest rework of levels 11–60. The user decided the
@@ -81,8 +74,10 @@ Decided with the user on 2026-10-22 and 2026-10-23
   ([decisions](docs/planning/round57-plan.md#decisions-during-the-round)):
   the Miner's Guilds and their faction's military closely interwoven, with
   little conflict inside a faction, and the enemy faction's guild rather
-  impersonal. Then unique, non-craftable items (quest rewards, boss loot
-  for the instances, world finds).
+  impersonal. **Next**, from Round 59 ([Round 58 plan §9](docs/planning/round58-plan.md#9-later)). After it the
+  armor redesign with several polygon groups per slot; later unique,
+  non-craftable items (quest rewards, boss loot for the instances, world
+  finds).
 
 These are goals for the next design and playtest passes, not changes already
 available in the game. Detailed follow-up scope and current design owners:
@@ -635,7 +630,19 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   start zones rebuilt on it (92 → 30 quests); flat alloys and wood grades,
   every dye craftable, no vendor selling leather, cloth, ores or bars; bay
   shore water under its zone's flight rule and the chin strip open
-  underneath. Complete on 2026-10-23; not pushed, the GUI test open.
+  underneath. Complete on 2026-10-23; pushed on 2026-10-23 without its GUI
+  test, which runs together with Round 58's.
+- [x] **Round 58 "The Miner's Guild and the town fixes"**
+  ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
+  version 0.58.0, **map reset**, no step: one Miner's Guild per faction
+  (`grug_guild`), 20 new mining camps and the 16 war camps as mining camps
+  with a faction-only teleport lift to 148 protected rooms at the tier
+  depths, six enemy camps under construction, reputation (ranks 0–10, a
+  trade-in of raw mined goods, three cloaks), the camp vendor's rank-locked
+  page, Ore Sense and Treasure Hunt, the Miner's Remains, a guild house on
+  a district plot in every capital, 30 guild quests; the Round 56 town
+  fixes. Complete on 2026-10-24; not pushed, the joint GUI test of 0.57 and
+  0.58 open.
 
 ### Remaining work
 
@@ -680,8 +687,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [0.53.1](BACKLOG.md#0531-carry-overs),
   [Round 54](BACKLOG.md#round-54-carry-overs),
   [Round 55](BACKLOG.md#round-55-carry-overs),
-  [Round 56](BACKLOG.md#round-56-carry-overs) and
-  [Round 57](BACKLOG.md#round-57-carry-overs) carry-overs (Round 40: the
+  [Round 56](BACKLOG.md#round-56-carry-overs),
+  [Round 57](BACKLOG.md#round-57-carry-overs) and
+  [Round 58](BACKLOG.md#round-58-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -700,7 +708,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   NPC offhands, model, bake, achievement-command and tool notes; Round 56:
   ranged-mob, mount, float and trade notes, the known template defects and
   template-tool notes; Round 57: crafting queue, details, chain, quest,
-  start-zone, vendor, bay and tool notes);
+  start-zone, vendor, bay and tool notes; Round 58: the open GUI judgements
+  and the names to pick, room, consumable, lift, house, town-fix and
+  guild-quest notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

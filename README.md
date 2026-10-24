@@ -92,6 +92,19 @@ and its profession trainers.
 
 ## Current state
 
+**0.58.0** brings the Miner's Guild of each faction, The Charter of
+Stone and The Oathdelvers: mining camps across the land with a lift down
+to safe, lit rooms at every ore depth, reputation you earn by trading what
+you mine, with ranks, three cloaks and two kinds of mining aids from the
+camp vendor (Ore Sense marks a deposit through the rock, Treasure Hunt
+hides a miner's remains to dig up), a guild house with a headframe in
+every capital, enemy camps under construction to raid and 30 guild
+quests. Town fixes make Lethariel's bough stairs, the capital gatehouses
+and Silverleaf's terrace stair walkable, set the royal guards beside their
+king and put each start town's waystone and mailbox at its centre. It
+needed a map reset; characters keep their level, gear, inventory and
+quests.
+
 **0.57.0** brings a clearer crafting window and new start zones: queue
 up to five crafts, enchants and upgrades that run one after the other,
 offline too, open a details page that names where each ingredient comes
@@ -320,7 +333,7 @@ investigations and delivery records.
 |------|------------------|
 | World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns and capitals; [story](docs/design/story.md): factions and the campaign. |
 | Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
-| Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
+| Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit; [Miner's Guild](docs/design/miners_guild.md): mining camps, lifts, reputation and the guild's goods. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags and crafting stations; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers. |

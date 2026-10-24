@@ -12,7 +12,19 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.57.0, Round 57 "The crafting window, the quest
+**Current state:** 0.58.0, Round 58 "The Miner's Guild and the town
+fixes" (**map reset**, no step;
+[completion](docs/planning/round58-plan.md#completion-2026-10-24)): one
+Miner's Guild per faction (`grug_guild`; The Charter of Stone, The
+Oathdelvers): 20 new mining camps and the 16 war camps as mining camps with
+a faction-only teleport lift to 148 protected rooms at the ore tiers'
+depths (their own generation step), six enemy camps under construction,
+reputation with ranks 0–10 from a trade-in of raw mined goods, the camp
+vendor's rank-locked page, Ore Sense and Treasure Hunt in their own effect
+slot, the Miner's Remains, three cloaks, a guild house on a district plot in
+each capital and 30 guild quests; the Round 56 town fixes. **Not pushed**;
+it waits for the user's joint GUI test of 0.57.0 and 0.58.0. Before it
+0.57.0, Round 57 "The crafting window, the quest
 foundation and the new start zones" (**compatible**, no step;
 [completion](docs/planning/round57-plan.md#completion-2026-10-23)): the
 crafting queue (five jobs, crafts, enchants and upgrades alike, offline
@@ -75,8 +87,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: Round 58 (the Miner's Guild and the town fixes, a map reset;
-[Round 58 plan](docs/planning/round58-plan.md)), then the joint GUI test of 0.57.0 and 0.58.0,
+are not recorded as passed. Next: the joint GUI test of 0.57.0 and 0.58.0
+([checklist](docs/planning/round58-plan.md#gui-checklist-rounds-57-and-58)),
 then Round 59 and later (the story arc and the quest rework of levels
 11–60).
 Details: [STATUS](docs/STATUS.md).
@@ -387,6 +399,23 @@ The topic rules below name the one path to use; the
   depth-tiered: each in its own tier rock, one tier deeper at half and two
   tiers deeper at a quarter of its density (Round 46), always with its own
   tier's harvest tier; there are no gem grades and no apex sockets.
+- **The Miner's Guild** (Round 58, [miners_guild.md](docs/design/miners_guild.md)):
+  `grug_guild` holds the catalogue (`catalog.lua`: every rank, rate, price,
+  effect and loot number; code reads them from there), reputation
+  (`store.lua`, the lifetime and balance per faction), the trade-in
+  (`exchange.lua`, the vendor window's Trade-in mode for a vendor with
+  `guild = true`), the mining effect and its items (`effect.lua`,
+  `items.lua`, status `mining_sense`), the vendor page (`vendor.lua`) and the
+  lift's right-click (`lift.lua`, trips through `grug_home.travel`); its
+  world nodes are `grug_mapgen`'s ("World generation"). No copper route into
+  reputation: the exchange takes only items no vendor sells
+  (`tools/r58_guildspec` checks it on the real game). Topic checks after a
+  number or the spec changes: `luajit tools/r58_guildspec/write_doc.lua .
+  --check` (the spec's generated tables); after the shipped guild art
+  changes: `python3 tools/r58_consume/art/ship.py --check` (drop 01's
+  icons, status icons and Remains overlay) and `python3
+  tools/r58_lift/art/ship.py --check` (drop 02's lift faces, reputation
+  icon and map markers).
 
 ### Performance
 
@@ -562,6 +591,14 @@ The topic rules below name the one path to use; the
   level); every quest is done once (`repeatable` is gone). The new rules
   apply to files marked `"reworked": true` (the six start zones), so the
   unreworked files stay valid until their rework.
+- **The guild quests** (Round 58, [miners_guild.md](docs/design/miners_guild.md)
+  §11): the gather quests live in the guild files
+  (`charter_of_stone.quests.json`, `oathdelvers.quests.json`, zones named
+  by the guilds' ids) and are given through the foremen's tier roles
+  (`foreman_t<k>`, [quests.md](docs/design/quests.md#the-miners-guild-givers-round-58));
+  the camp files carry the foreman hubs. Since the texts landed the JSON
+  files are the source: `tools/r58_guildquests/build_structure.py` would
+  write the placeholders back and is not a gate.
 - **"Use at a place"** is an objective, never a node (`grug_quests/use.lua`).
   Other mods hear turn-ins through `grug_quests.register_on_turn_in`, never a
   second completion path; `grug_quests.quest_held` is the cheap "has or did"
@@ -600,12 +637,27 @@ The topic rules below name the one path to use; the
   tools/building_templates/check.py` (the hard gate, ruling 33: structure
   always, the editor palette and reachability for edited cells; it also
   runs the game's loader and builds every town and capital) and `check.py
-  --self-test`; `python3 tools/building_templates/export.py --check` (the
-  templates are still the freeze's export; until the first deliberate
-  template edit, when it fails by design and retires);
-  `tools/building_templates/viewer/test_templates.py` (the viewer's
-  reader) and `tools/r56_editor/test_editor.py` (the editor; LuaJIT
-  inside, about 1.5 minutes, so through the Lua queue).
+  --self-test`; `tools/building_templates/viewer/test_templates.py` (the
+  viewer's reader) and `tools/r56_editor/test_editor.py` (the editor;
+  LuaJIT inside, about 1.5 minutes, so through the Lua queue).
+  `export.py --check` is retired (Round 58 HALLS made the first
+  deliberate template edits: it prints RETIRED and passes, and the export
+  itself refuses to run without `--overwrite-edits`), so `check.py` is the
+  gate. The Miner's Guild houses are generated:
+  `python3 tools/r58_halls/make_halls.py --check` (edit the script, never
+  the six `<capital>_miners_guild.tpl` files).
+- **The Miner's Guild's world** (Round 58,
+  [miners_guild.md](docs/design/miners_guild.md) §3): the camps are POI
+  rows (`wp40/r58_camp_catalog.lua`, the blueprints) and one pure,
+  deterministic camp module (`wp40/r58_camps.lua`, `camps(layout[, seams])`, read in
+  both environments from `placement_layout`); the lift rooms are their own
+  step after `refine_or_degrade` with their own degrade
+  (`wp40/guild_room_writer.lua`) and a y-bounded protection wrapper beside
+  the zone overlay (`guild_room_protection.lua`). The lift, room and banner
+  nodes are `grug_mapgen`'s (`world_nodes.lua`, `guild_room_nodes.lua`); a
+  change to the fields the settlement digest reads (`world_nodes.lua`'s
+  comment at the lift) belongs there in a map-reset round, never in an
+  override. The seed fleet checks every seed's 42 camps and 148 rooms.
 - The WP40 R7 pipeline in `grug_mapgen` is the only mapgen owner (seams and the
   boundaries tests must cross:
   [module guide](docs/technical/module-guide.md#mapgen-and-biomes)). Test mapgen
