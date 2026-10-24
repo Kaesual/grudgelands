@@ -680,3 +680,20 @@ the user.
     [text pick page](https://claude.ai/artifact/KacTKqvwAciXKtp7dM5gMf).
 
 **(C) Round 57 item 16, the bays:** in a new world with the "test" seed (or the reset "test" world).
+
+### Round-end gates
+
+Lane D on its branch from `b63318dd` (measured; `mods/` identical to main): `check_upgrade.py` PASS (against
+origin/main `69481ed1`, 0.57.0, with the `map_reset` entry 0.60.0; it also passes without that entry, since unpushed
+0.58.0's covers every change against 0.57.0), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (6 warnings,
+as before), `quest_kinds.py --check` 0 differ (119 quest-named kinds), `quest_targets.py` 0 missing (947 targets on
+seeds 42, 7, 2026), `guarantee.py --check` PASS, `income.py --check` PASS, `r37_dc` PASS (766 checks),
+`tools/r60_bandquests/build_structure.py --check` 0 of 8 and `tools/r60_capitals/build_structure.py --check` 0 of 6
+differ, `tools/r59_bandquests/build_structure.py --check` and `tools/r59_storyquests/build_structure.py --check` 0 of
+6, `tools/r58_guildquests/build_structure.py --check --ids` 0 of 26, `tools/r60_storyart/paint_art.py --check` OK (7
+textures) and `tools/r59_storyart/paint_art.py --check` OK (4), a link and anchor check of every touched file, the
+full `run_fixtures.sh` (**275 passed, 0 failed**), the **full seed fleet on main's tree** (`seed_fleet/run.sh full`
+through the queue at 8 parallel, with the quest-place check: **304 of 304 seeds build, 0 failed, 21 min 25 s**;
+Round 59's took 20 min 8 s) and one headless boot (PASS, no ERROR line). Each code lane ran the full `run_fixtures.sh`
+once (HERBS 273/0, BANDQUESTS 273 of 274, `r30_p1`'s stub then fixed and passing, CAPITALS 275/0 after its rebase,
+STORYART-SHIP 275/0).
