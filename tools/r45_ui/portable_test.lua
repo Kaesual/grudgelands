@@ -614,8 +614,10 @@ for index, label in ipairs({"Basic", "Cooking", "Primary 1", "Primary 2", "Alche
 	has(fs, ("%s%d;%s]"):format(FIELDS.area, index, label), "P area tab " .. label)
 end
 has(fs, grug_core.ui.button_style("grug_craft_area1", "selected"), "P Basic is the default area, styled selected")
-has(fs, grug_core.ui.button_style("grug_craft_area2,grug_craft_area3,grug_craft_area4,grug_craft_area5", "normal"),
-	"P one style for the other tabs")
+for index = 2, 5 do
+	has(fs, grug_core.ui.button_style("grug_craft_area" .. index, "normal"),
+		"P unselected profession button " .. index)
+end
 has(fs, "Basic: no tier", "P Basic has no tier")
 -- Round 47 ruling 18: crafts land in the inventory; the overflow slots are
 -- drawn only while they hold something (V below), and Take all is gone.
@@ -655,7 +657,7 @@ do
 		}
 	end
 	fs = open(p)
-	has(fs, "label[5.60,1.35;Weaponsmith — Tier 2]", "O the first row at the box's top")
+	has(fs, grug_core.ui.heading(5.6, 1.35, "Weaponsmith — Tier 2"), "O the first row at the box's top")
 	says(fs, "Capped by your level: reach level 21, then craft once more for tier 3.",
 		"O the cap note, wrapped")
 	says(fs, "Alchemy — Tier 6 Highest tier reached.", "O a T6 row")
@@ -695,12 +697,13 @@ has(p.formspec, grug_core.ui.button_style("grug_craft_area4", "selected"), "A th
 click(p, {[FIELDS.area .. "5"] = "Alchemy"})
 says(p.formspec, "Not learned yet. Learn Alchemy from its trainer in the capital.",
 	"A an unlearned profession says how to learn it")
-has(p.formspec, "Not learned]", "A no tier progress while unlearned")
+has(p.formspec, core.formspec_escape(core.colorize(grug_core.ui.colors.muted, "Not learned")) .. "]",
+	"A no tier progress while unlearned")
 click(p, {[FIELDS.area .. "3"] = "Weaponsmith"})
 fs = p.formspec
 has(fs, "grug_craft_area3;Weaponsmith]", "A the primary slot's tab names its profession")
 has(fs, "Tier 1 · 4/10", "A the tier progress")
-has(fs, "box[12,0.45;0.52,0.25;#c9a24a]", "A the tier bar filled 4/10")
+has(fs, "box[10.75,0.75;0.98,0.12;#d4b77d]", "A the tier bar filled 4/10")
 has(fs, "Copper Sword", "A the T1 recipe listed")
 -- Round 45 playtest fix 3: tiers above the profession tier are hidden.
 lacks(fs, "Iron Battle Axe", "A the T2 recipe hidden at weaponsmith tier 1")
@@ -816,10 +819,10 @@ click(cook, {[FIELDS.area .. "2"] = "Cooking"})
 click(cook, {[FIELDS.row .. "1"] = ""})
 fs = cook.formspec
 eq(st_of(cook).selected, stew.id, "Q a row click chooses the recipe")
-has(fs, "box[0.2,2.35;5,0.54;#8a682f80]", "Q the chosen row is highlighted")
+has(fs, "box[0.2,2.35;5,0.54;#bba06235]", "Q the chosen row is highlighted")
 has(fs, "item_image[5.6,1.15;0.9,0.9;t:stew]", "Q the output's icon")
 has(fs, "Cooking · Tier 1", "Q the area and tier")
-has(fs, "label[5.6,2.35;Ingredients (have/need)]", "Q the ingredients heading")
+has(fs, grug_core.ui.heading(5.6, 2.35, "Ingredients (have/need)"), "Q the ingredients heading")
 has(fs, "item_image[5.6,2.6;0.4,0.4;t:meat]", "Q an ingredient icon")
 has(fs, "30/1]", "Q have/need for one")
 has(fs, "Max: 12]", "Q the maximum (12 grain)")
@@ -1119,8 +1122,8 @@ lacks(novice.formspec, "experience point", "S no XP hint for a tier above the pr
 local function box_part(fs)
 	local part = content(fs)
 	-- The boxes end a gap above the short view (Round 45 PT2 follow-up).
-	local h = grug_jobs._fs_number(grug_jobs.CRAFT_BOX.h)
-	local from = part:find("box[5.4,0.95;7.9," .. h .. ";", 1, true)
+	local box = grug_jobs.CRAFT_BOX
+	local from = part:find(grug_core.ui.panel(box.x, box.y, box.w, box.h), 1, true)
 	-- (up to the job strip's rule, Round 57)
 	local to = part:find("box[5.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1) ..
 		";7.5,0.03;", 1, true)
@@ -1184,7 +1187,7 @@ do
 	eq(desc and desc.text, "Hunter's Roast\nRestores 30 HP over 10 s.\nWell fed: +2 Stamina\n" ..
 		"Must be cooked in a furnace to become edible.", "D the cooked dish's text and the note")
 	lacks(desc and desc.text or "", "Inedible", "D not the raw item's own text")
-	has(part, "box[5.6,2.2;7.5,", "D the description's box at the middle's top")
+	has(part, "background9[5.600,2.200;7.500,", "D the description's box at the middle's top")
 	lacks(part, "scrollbar[", "D no scrollbar element in the box (a scroll would send events)")
 	lacks(part, "scroll_container[", "D no scroll container in the box")
 	-- The three areas in order.
@@ -1215,7 +1218,7 @@ do
 	click(chef, {[FIELDS.row .. "1"] = ""})
 	part = box_part(chef.formspec)
 	eq(description_box(part), nil, "D no description when the tooltip is only the name")
-	has(part, "label[5.6,2.35;Ingredients (have/need)]", "D ... the ingredients move up")
+	has(part, grug_core.ui.heading(5.6, 2.35, "Ingredients (have/need)"), "D ... the ingredients move up")
 	has(part, "field[7.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y - 0.8) .. ";",
 		"D the quantity row stays in the bottom row")
 	-- Gear: the description the job's crafted_output builds, the name line
@@ -1320,7 +1323,8 @@ has(fs, "label[0.9,2.62;A Very Long Decorated..]", "the long name clipped in the
 has(fs, "tooltip[grug_craft_row1;A Very Long Decorated Ceremonial Bookshelf of Oak]",
 	"... in full as the row's tooltip")
 lacks(fs, "tooltip[grug_craft_row2;", "no tooltip for a name that fits")
-has(fs, "label[6.65,1.25;A Very Long Decorated Ceremonial]label[6.65,1.6;Bookshelf of Oak]",
+has(fs, grug_core.ui.heading(6.65, 1.25, "A Very Long Decorated Ceremonial") ..
+	grug_core.ui.heading(6.65, 1.6, "Bookshelf of Oak"),
 	"the wide box wraps the name to two lines")
 has(fs, "label[6.65,2;Basic · Tier 1]", "the area line below it")
 -- 0.45.1: two members are written out (tools/r451_cu checks the labels).
