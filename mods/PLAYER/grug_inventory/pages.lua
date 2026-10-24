@@ -225,7 +225,7 @@ local function gear_content(player, context)
 			fs[#fs + 1] = ("list[current_player;%s;%.2f,%.2f;1,1;]"):format(
 				slot.list, pos[1], pos[2])
 			local name = grug_inventory.slot_label(class_id, slot.list) or slot.label
-			fs[#fs + 1] = ("style_type[label;font_size=12]label[%.2f,%.2f;%s]" ..
+			fs[#fs + 1] = ("style_type[label;font_size=*0.75]label[%.2f,%.2f;%s]" ..
 				"style_type[label;font_size=]"):format(pos[1], pos[2] + 1.16, esc(name == "Caster offhand" and "Offhand" or name))
 			-- The area tooltip repeats the slot's name over the cell. It shows
 			-- on EMPTY slots only, which is what we want — a slot with an item in

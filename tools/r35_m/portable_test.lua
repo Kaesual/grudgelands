@@ -522,6 +522,59 @@ do
 	run(600)
 	check(#pushes == 0 and #filter(sounds, is_music) == 2, "R outside: no music")
 
+	-- Render the real Help page with its real ambience controls. All coordinates
+	-- must share real units: the inventory header translates this whole body
+	-- equally; a legacy island would rescale its inherited container offset.
+	do
+		local old_settings, old_sfinv, old_inventory = rawget(_G, "Settings"),
+			rawget(_G, "sfinv"), rawget(_G, "grug_inventory")
+		local old_game_info, old_ui = core.get_game_info, grug_core.ui
+		local help
+		core.get_game_info = function() return {path = repo} end
+		rawset(_G, "Settings", function()
+			return {get = function() return "0.59.0" end}
+		end)
+		rawset(_G, "sfinv", {
+			register_page = function(_, def) help = def end,
+			make_formspec = function(_, _, content) return content end,
+		})
+		dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+		rawset(_G, "grug_inventory", {
+			selected_button_style = function(name, selected)
+				return grug_core.ui.button_style(name, selected and "selected" or "normal")
+			end,
+		})
+		dofile(repo .. "/mods/PLAYER/grug_inventory/help.lua")
+		local content = help:get(ana, {grug_help_section = "sound"})
+		check(content:find("real_coordinates[true]", 1, true) == 1 and
+			not content:find("real_coordinates[false]", 1, true),
+			"R Help Sound: all elements use the inherited real-coordinate body")
+		local bx, by, bw, bh = content:match(
+			"hypertext%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);;")
+		bx, by, bw, bh = tonumber(bx), tonumber(by), tonumber(bw), tonumber(bh)
+		check(bx and bx >= 0 and bx + bw <= 13.5 and by + bh <= 13.673,
+			"R Help Sound: the explanatory body stays inside the shared frame")
+		local count, previous_bottom = 0, 0
+		for x, y, w, h, kind in content:gmatch(
+			"dropdown%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_ambience_([%w_]+)_volume;") do
+			x, y, w, h = tonumber(x), tonumber(y), tonumber(w), tonumber(h)
+			count = count + 1
+			check(by and y >= previous_bottom and y + h < by and
+				x >= 0 and x + w <= 13.5 and w > 0 and h > 0,
+				"R Help Sound: " .. kind .. " dropdown fits above text without row overlap")
+			local cy = tonumber(content:match(
+				"checkbox%[[%d.]+,([%d.]+);grug_ambience_" .. kind .. ";"))
+			check(cy and math.abs(cy - (y + h / 2)) < 0.011,
+				"R Help Sound: " .. kind .. " checkbox aligns with its dropdown")
+			previous_bottom = y + h
+		end
+		check(count == 2, "R Help Sound: both volume controls have explicit real width and height")
+		rawset(_G, "Settings", old_settings)
+		rawset(_G, "sfinv", old_sfinv)
+		rawset(_G, "grug_inventory", old_inventory)
+		core.get_game_info, grug_core.ui = old_game_info, old_ui
+	end
+
 	-- settings: 5 % steps, an unchanged dropdown does nothing, /music on after 0
 	commands.music.func("ana", "35")
 	local fs = A.settings_formspec(ana, 0.2, 1.0)
@@ -613,6 +666,6 @@ end
 if #failures > 0 then
 	for _, f in ipairs(failures) do print("FAIL " .. f) end
 	print(("R35 M PORTABLE FAIL %d/%d"):format(#failures, checks))
-	os.exit(1)
+	error("R35 M portable checks failed", 0)
 end
 print("R35 M PORTABLE PASS checks=" .. checks)

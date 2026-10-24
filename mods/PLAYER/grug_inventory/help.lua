@@ -271,11 +271,7 @@ end
 local function sound_controls(player)
 	local ambience = rawget(_G, "grug_ambience")
 	if not ambience then return "" end
-	-- This existing builder uses legacy dropdown geometry. The real parent
-	-- container supplies its origin; only its own controls switch units.
-	return "container[0.45,1.35]real_coordinates[false]" ..
-		ambience.settings_formspec(player, 0, 0) ..
-		"real_coordinates[true]container_end[]"
+	return ambience.settings_formspec(player, BODY_X, BODY_Y + 0.15)
 end
 
 local function help_content(player, context)

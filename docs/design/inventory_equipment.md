@@ -13,8 +13,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   body and adds a fixed 2.2-unit header with themed navigation. All non-map
   tabs share that frame; Map & Quests keeps its larger responsive window
   and uses the same navigation. See the [presentation contract](../technical/ui-presentation.md).
-  Real and retained legacy body fragments explicitly select their coordinate
-  mode inside the header's container. Inventory capacity is unchanged.
+  Live page bodies, including Help's Sound controls, use real coordinates
+  inside the header's container. Inventory capacity is unchanged.
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
   Character · Talents & Skills · Crafting · Party & PvP · Map & Quests ·
@@ -102,7 +102,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   on the left, the selected Stats/Effects/Achievements panel on the right,
   both above the short inventory view. The mode lives only in runtime
   context; Stats is the default. The original model preview remains
-  mouse-rotatable. Stats includes the actual class/race/combat values, Claim
+  mouse-rotatable. Stats includes the actual combat values, Claim
   Stone status and cloak picker; the professions overview stays in Crafting.
   Effects retain their coarse remaining-time labels. Achievements retain
   their real catalog and bottom pager, with full tooltip descriptions.
