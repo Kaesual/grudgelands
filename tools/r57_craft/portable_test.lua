@@ -742,6 +742,11 @@ do
 	click(c, {[F.queue] = "View Queue"})
 	local fs = c.formspec
 	has(fs, "Crafting queue", "C the queue view")
+	has(fs, "style_type[textarea;textcolor=#a7b2bc]textarea[", "C all soft-wrapped notes stay muted")
+	has(fs, "style_type[textarea;textcolor=#e5e8eb]", "C note styling restores the shared text role")
+	local note_text = fs:match("textarea%[[^;]+;[^;]+;;;(.-)%]")
+	check(note_text and not note_text:find("\27", 1, true),
+		"C notes remain unnamed read-only text without inline color escapes")
 	local queue = J.queue_state(c)
 	has(fs, F.unqueue .. queue[1].id .. ";✕]", "C a ✕ per waiting job")
 	-- ✕ on the enchant: the cloak (whole, its meta kept) and the dust back.
@@ -762,6 +767,8 @@ do
 	click(c, {[F.unqueue .. id] = "✕"})
 	eq(raw(c, J.QUEUE_KEY), before, "C a cancel without room changes nothing")
 	has(c.formspec, "Not enough inventory space to cancel", "C ... and says why")
+	has(c.formspec, "style_type[textarea;textcolor=#f0c75e]textarea[",
+		"C a refusal uses one consistent warning color across soft wraps")
 	-- A stale ✕ (an id no job waits under) cancels nothing.
 	clear_slots(c, filled)
 	click(c, {[F.unqueue .. (id + 7)] = "✕"})
@@ -1081,6 +1088,30 @@ do
 	check(listed[bolt.id] and listed[thread.id] and listed[silk_bolt.id],
 		"U Basic lists the unlocked recipes")
 	eq(#bag.ingredients + #robe.ingredients, 4, "U (the recipes' own lists unchanged)")
+end
+
+-- The real profession catalogue includes longer names than the placeholder
+-- primary slots. Every legal pair retains five non-overlapping tabs and the
+-- same tier area; Leatherworker keeps at least its original text allowance.
+for first = 1, #J.PRIMARY_PROFESSIONS - 1 do
+	for second = first + 1, #J.PRIMARY_PROFESSIONS do
+		local p = new_player("tab_width_" .. first .. "_" .. second)
+		J.learn(p, J.PRIMARY_PROFESSIONS[first], true)
+		J.learn(p, J.PRIMARY_PROFESSIONS[second], true)
+		local fs = open(p)
+		local right, found = 0.1, 0
+		for x, width, label in fs:gmatch("button%[([%d%.]+),0%.25;([%d%.]+),0%.65;grug_craft_area%d;([^%]]+)%]") do
+			x, width = tonumber(x), tonumber(width)
+			check(x >= right + 0.08 and width >= 1.3, "tabs retain readable widths and gaps")
+			if label == "Leatherworker" then
+				check(width >= 2.255, "Leatherworker retains its original label allowance")
+			end
+			right, found = x + width, found + 1
+		end
+		eq(found, 5, "every profession pair shows five tabs")
+		check(right <= 10.61, "profession tabs stay clear of the unchanged tier area")
+		has(fs, "label[10.75,0.45;", "the tier label does not move between profession pairs")
+	end
 end
 
 if failures > 0 then

@@ -84,10 +84,12 @@ local function build(player, view)
 			"Nothing is waiting. While a job runs, “Queue” adds the next one here." or
 			"No job running.", DIM, NOTE_STEP)
 	end
-	local note = st.note and (core.colorize(NOTE, st.note) .. "\n\n") or ""
-	note = note .. core.colorize(DIM, QUEUE_NOTE)
-	fs[#fs + 1] = ("textarea[%s,%s;%s,%s;;;%s]"):format(n(X), n(y + 0.1), n(W),
-		n(math.max(0.5, view.bottom - y - 0.1)), esc(note))
+	-- Keep the textarea unnamed/read-only. A widget color survives soft wraps;
+	-- inline color escapes do not. A refusal colors the whole note block.
+	local note = (st.note and (st.note .. "\n\n") or "") .. QUEUE_NOTE
+	fs[#fs + 1] = ("style_type[textarea;textcolor=%s]textarea[%s,%s;%s,%s;;;%s]" ..
+		"style_type[textarea;textcolor=%s]"):format(st.note and NOTE or DIM,
+		n(X), n(y + 0.1), n(W), n(math.max(0.5, view.bottom - y - 0.1)), esc(note), UI.colors.text)
 	return table.concat(fs)
 end
 
