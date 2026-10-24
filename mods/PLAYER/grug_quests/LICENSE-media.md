@@ -27,3 +27,25 @@ with their bases on the bottom rows. They contain no lettering.
 | `textures/grug_quests_obj_rootmark.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; burning root in a stone cradle and folded cover; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_quests_obj_survey_cairn.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; frost-pale cairn with branded coin; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_quests_obj_wreck_pay_chest.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; split chest, boards, waterline and spilled coins; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## Band 11–20 and chapter 1 objects — Round 59
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-24 (lane STORYART, two proposals and the user's pick). Hand-placed
+pixel shapes written with Python/Pillow; no image-generation service,
+downloaded art or third-party source pixels. The project dedicates any
+rights it holds in these originals to CC0-1.0. The reproducible generator
+is kept as provenance at `tools/r59_storyart/paint_art.py` (`--check`
+verifies the four files byte for byte).
+
+All four files are 32×32 RGBA, with transparent backgrounds (alpha 0 or
+255 only). Like the Round 36 objects they are upright quest-object sprites,
+viewed from the front and slightly above, with their bases on the bottom
+row. They contain no lettering.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `textures/grug_quests_obj_dispatch_record.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; portrait writing board on a trestle, slate band and wax seal; `tools/r59_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_quests_obj_witness_record.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; two offset pale tablets bound with cord and a side knot; `tools/r59_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_quests_obj_snare_bundle.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; closed hemp-rope snare knotted to a short wooden peg; `tools/r59_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_quests_obj_held_supplies.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; two cloth packs behind stakes and a crossed jute cord; `tools/r59_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
