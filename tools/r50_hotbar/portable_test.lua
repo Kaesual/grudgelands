@@ -839,7 +839,7 @@ end
 local function marked(fs)
 	local out = {}
 	for _, layout in ipairs({"A", "B"}) do
-		if fs:find("style[" .. I.HOTBAR_FIELDS[layout] .. ";bgcolor=#c8962f", 1, true) then
+		if fs:find(grug_core.ui.button_style(I.HOTBAR_FIELDS[layout], "selected"), 1, true) then
 			out[#out + 1] = layout
 		end
 	end

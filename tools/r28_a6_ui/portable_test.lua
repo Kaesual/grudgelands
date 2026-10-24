@@ -634,7 +634,7 @@ local rows = {
 }
 local trainer_fs = grug_mounts.trainer_formspec(rows, {ok = false, text = "You do not have enough money."})
 formspec_ok(trainer_fs, "trainer")
-has(trainer_fs, "button[5.0,2.05;3.0,0.65;buy_2;Buy 15 silver]", "buy button with price")
+has(trainer_fs, "button[7.3,2.05;3.0,0.65;buy_2;Buy 15 silver]", "buy button with price")
 lacks(trainer_fs, "buy_1", "no button for an owned tier")
 lacks(trainer_fs, "buy_3", "no button below the level")
 lacks(trainer_fs, "buy_4", "no button without the previous tier")

@@ -71,6 +71,8 @@ local function load_help(game_conf_text)
 		set_page = function() end,
 	}
 	_G.grug_inventory = {selected_button_style = function() return "" end}
+	_G.grug_core = {}
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 	dofile(repo .. "/mods/PLAYER/grug_inventory/help.lua")
 	assert(page, "help page registered")
 	return page:get({}, {grug_help_section = "about"}), grug_inventory.GAME_VERSION, warnings
