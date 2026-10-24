@@ -149,9 +149,8 @@ T3_PLACE = "socket:nhal_veyr/miners_guild/miners_guild_public_register"
 # T3's prerequisites (plan §3, the cross-lane ids): T2a `story_throng_03`
 # (lane BANDQUESTS, Ossuary Reach), the free `ossuary_rubbings_03`
 # (BANDQUESTS, id kept) and the free Hush quest `nhal_veyr_vigil_03` (here,
-# id kept). Until this branch is rebased on BANDQUESTS' merge, T2a does not
-# exist here and T3 requires T2 (`story_throng_02`) in its place.
-T3_REQUIRES = ["story_throng_02", "ossuary_rubbings_03", "nhal_veyr_vigil_03"]
+# id kept); T2 comes with T2a.
+T3_REQUIRES = ["story_throng_03", "ossuary_rubbings_03", "nhal_veyr_vigil_03"]
 
 # ---------------------------------------------------------------- shared
 # One quest, one level each; each variant: its capital's giver, its
@@ -184,7 +183,7 @@ SHARED = [
     {
         "id": "capital_night_dead", "giver": "envoy", "line": "envoy", "min_level": 21, "level": 22,
         "title": "Debts That Walk at Night",
-        "objectives": [kill(["debtbound_zombie"], 3, "elandor_highcourt/commons")],
+        "objectives": [kill(["debtbound_zombie"], 2, "elandor_highcourt/commons")],
         "rewards": {"weight": 2.5, "choices": POTIONS_T3},
         "lesson": "A short night hunt on the capital's outskirts; a third of a day hunt's count.",
         "duration_min": 8,
@@ -193,16 +192,16 @@ SHARED = [
         "capitals": {
             "highcourt": {"area": "elandor_highcourt/commons",
                           "text": "Mariel: Debtbound Zombies wander the commons after dark with somebody's "
-                                  "unpaid tolls; lay three to rest."},
+                                  "unpaid tolls; lay two to rest."},
             "dur_brannoc": {"area": "elandor_dur_brannoc/pastures",
                             "text": "Dorrin: Debtbound Zombies knock at the pasture gates at night to collect "
-                                    "debts long settled; lay three to rest."},
+                                    "debts long settled; lay two to rest."},
             "lethariel": {"area": "elandor_lethariel/glades",
                           "text": "Eriath: Debtbound Zombies trample the saplings in the glades at night; "
-                                  "grant three of them peace before dawn does it harder."},
+                                  "grant two of them peace before dawn does it harder."},
             "nhal_veyr": {"area": "kragmar_nhal_veyr/blightfields",
                           "text": "Ossa: Debtbound Zombies walk the blightfields at night with debts that "
-                                  "stand in no register of hers; lay three to rest."},
+                                  "stand in no register of hers; lay two to rest."},
         },
     },
     {

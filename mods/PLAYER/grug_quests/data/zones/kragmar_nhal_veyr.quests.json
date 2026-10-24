@@ -88,7 +88,7 @@
       "min_level": 29,
       "level": 29,
       "requires": [
-        "story_throng_02",
+        "story_throng_03",
         "ossuary_rubbings_03",
         "nhal_veyr_vigil_03"
       ],

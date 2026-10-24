@@ -270,14 +270,14 @@
       "level": 22,
       "requires": [],
       "title": "[PH] Debts That Walk at Night",
-      "text": "[PH] Mariel: Debtbound Zombies wander the commons after dark with somebody's unpaid tolls; lay three to rest. Real text to follow.",
+      "text": "[PH] Mariel: Debtbound Zombies wander the commons after dark with somebody's unpaid tolls; lay two to rest. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
             "debtbound_zombie"
           ],
-          "count": 3,
+          "count": 2,
           "area": "elandor_highcourt/commons"
         }
       ],
@@ -287,7 +287,7 @@
           "givers": [
             "r20_human_capital_envoy"
           ],
-          "text": "[PH] Mariel: Debtbound Zombies wander the commons after dark with somebody's unpaid tolls; lay three to rest. Real text to follow."
+          "text": "[PH] Mariel: Debtbound Zombies wander the commons after dark with somebody's unpaid tolls; lay two to rest. Real text to follow."
         },
         {
           "zone": "elandor_dur_brannoc",
@@ -299,7 +299,7 @@
               "area": "elandor_dur_brannoc/pastures"
             }
           ],
-          "text": "[PH] Dorrin: Debtbound Zombies knock at the pasture gates at night to collect debts long settled; lay three to rest. Real text to follow."
+          "text": "[PH] Dorrin: Debtbound Zombies knock at the pasture gates at night to collect debts long settled; lay two to rest. Real text to follow."
         },
         {
           "zone": "elandor_lethariel",
@@ -311,7 +311,7 @@
               "area": "elandor_lethariel/glades"
             }
           ],
-          "text": "[PH] Eriath: Debtbound Zombies trample the saplings in the glades at night; grant three of them peace before dawn does it harder. Real text to follow."
+          "text": "[PH] Eriath: Debtbound Zombies trample the saplings in the glades at night; grant two of them peace before dawn does it harder. Real text to follow."
         },
         {
           "zone": "kragmar_nhal_veyr",
@@ -323,7 +323,7 @@
               "area": "kragmar_nhal_veyr/blightfields"
             }
           ],
-          "text": "[PH] Ossa: Debtbound Zombies walk the blightfields at night with debts that stand in no register of hers; lay three to rest. Real text to follow."
+          "text": "[PH] Ossa: Debtbound Zombies walk the blightfields at night with debts that stand in no register of hers; lay two to rest. Real text to follow."
         }
       ],
       "rewards": {

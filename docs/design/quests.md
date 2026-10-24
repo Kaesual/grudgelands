@@ -993,13 +993,13 @@ guild leader alone (`guild`). 64 quests became 47.
 
 - **Shared quests** (each in its first variant's file, Highcourt's or
   Lethariel's): `capital_torches` (20 Torches, all six envoys, level 20),
-  `capital_night_dead` (3 Debtbound Zombies after dark, about a third of
+  `capital_night_dead` (2 Debtbound Zombies after dark, about a third of
   the capitals' day hunts; the envoys of Highcourt, Dur Brannoc,
   Lethariel and Nhal Veyr, level 21–22), `capital_precision` (the Alchemy
   quest, below) and `capital_raw_meat` (8 Raw Meat from the capital's day
   game, the cooks of Lethariel, Gor Drazhak, Kezamba and Nhal Veyr, level
   20–21). Varda's Mire Carp in Dur Brannoc is a variant of the band's fish
-  quest, homed in Totemwater Reach.
+  quest `band_mire_carp`, homed in Totemwater Reach.
 - **Local quests**: each capital's climax, its named leader alone and free
   (Penn, Brakk, Rusk, Garr, Takka's `kezamba_offerings_04` and Hush's
   `nhal_veyr_vigil_03`, ids kept for the two whose objectives stayed or

@@ -13,11 +13,12 @@
 --    envoy ids and their `front` lines kept; the kept ids T3 names
 --    (`nhal_veyr_vigil_03`, Hush alone; `nhal_veyr_vigil_04` requires
 --    nothing); T3 (`story_throng_04`): story, Ossa to Iven at 29, its
---    prerequisites (T2a once it ships, else T2; `ossuary_rubbings_03`,
+--    prerequisites (T2a `story_throng_03`, `ossuary_rubbings_03`,
 --    `nhal_veyr_vigil_03`) and one use at the public register; the Alchemy
 --    quest: one shared quest of the six envoys on `envoy` at 19-20 with no
 --    prerequisite, asking for an Elixir of Precision I, which no quest
---    rewards; no Mire Carp quest in a capital file (BANDQUESTS' fish quest).
+--    rewards; no Mire Carp quest in a capital file (Varda gives the band's
+--    fish quest `band_mire_carp` on her provisions line).
 -- I. The Alchemy quest's ingredients: Precision I is Sunleaf + Boar Tusk +
 --    a Glass Bottle (grug_alchemy recipes.lua tier 1); Sunleaf grows in all
 --    six start zones and needs no profession (grug_gathering catalog.lua);
@@ -215,7 +216,22 @@ do
 	end
 	eq(table.concat(followers, ","), T3, "S T3 is the Hush quest's one follow-up")
 end
-local t2a = quests.story_throng_03 and "story_throng_03" or "story_throng_02"
+-- T2a (lane BANDQUESTS, Ossuary Reach), which requires T2.
+local t2a = "story_throng_03"
+if check(quests[t2a] ~= nil, "S T2a ships") then
+	eq(table.concat(quests[t2a].requires or {}, ","), "story_throng_02", "S T2a requires T2")
+end
+-- Varda's Mire Carp is the band's fish quest's variant on her provisions line.
+do
+	local fish, varda = quests.band_mire_carp, nil
+	for _, v in ipairs(fish and fish.variants or {}) do
+		for _, giver in ipairs(v.givers or {}) do
+			if giver == cook("dur_brannoc") then varda = v end
+		end
+	end
+	check(varda ~= nil and varda.zone == "elandor_dur_brannoc", "S Varda gives band_mire_carp in Dur Brannoc")
+	eq(fish and fish.line, "provisions", "S ... on her provisions line")
+end
 do
 	local q = quests[T3]
 	if check(q ~= nil, "S T3 ships") then
