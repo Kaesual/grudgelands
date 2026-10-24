@@ -33,7 +33,8 @@ repeatable switch by Round 57, 2026-10-23
   of the map, the list box with the active count, the Quest HUD switch, the
   list and one row with "Track on HUD" on the left and Abandon on the right
   (while Confirm abandon and Cancel are shown they take the row alone,
-  Round 32); below it the selected quest's title, its level and zone, one
+  Round 32); below it the selected quest's title, its level and zone (a
+  shared quest's: the zone of the variant the player took, Round 59), one
   scrolling text field with the description, the objective lines and the
   reward line, separated by an empty line each, and where to hand it in.
   Selecting a quest marks its targets on the map (leader, talk NPC and use

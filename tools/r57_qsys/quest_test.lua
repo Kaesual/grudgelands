@@ -549,6 +549,11 @@ do
 	row = journal_row(bo, CROP)
 	check(row.ready, "A Sunscar's piglets do")
 	eq(Q.hud_line(row, 400), "Return to Gara Stonevoice", "A returns to Sunscar's elder")
+	-- Round 59: the quest log's level line names the variant's zone, not the
+	-- shared quest's home file's (Dawnmere's).
+	local log = quest_box.content({quest_selected = CROP}, Q.journal(bo), {x = 13.4, y = 1.05, w = 7, h = 10.7})
+	has(log, " · Sunscar Flats", "A the quest log names the zone of the variant taken")
+	lacks(log, "Dawnmere Fields", "A ... not the quest's home zone")
 	form = dialogue(bo, OE, CROP)
 	has(form, "The wells are safe", "A the variant's completion text")
 	check(not Q.accept(bo, CROP, EL), "A not accepted twice")
