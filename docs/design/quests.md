@@ -837,8 +837,9 @@ quests.
 - **Ids**: a quest whose objectives stayed keeps its id (the departures,
   the six witness travels and the six handoffs, five day hunts, three perpetrators);
   every other quest is new. The structure was written by
-  `tools/r59_bandquests/build_structure.py`;
-  `tools/r59_bandquests/portable_test.lua` checks it.
+  `tools/r59_bandquests/build_structure.py` with placeholder texts (since
+  the texts landed the JSON files are the source; its `--check` compares
+  their structure only); `tools/r59_bandquests/portable_test.lua` checks it.
 
 ## Chapter 1 in the capitals (Round 59)
 
@@ -877,8 +878,10 @@ capitals' other quests stay as they were.
 - **Rewards** (capitals are excepted from the zone budget): the first pays a
   travel quest's weight 1, the second weight 3 with a choice of 2 Healing
   Potion II or 2 Mana Potion II.
-- The structure is written by `tools/r59_storyquests/build_structure.py`
-  (placeholder texts); `tools/r59_storyquests/portable_test.lua` checks it.
+- The structure was written by `tools/r59_storyquests/build_structure.py`
+  with placeholder texts; since the texts landed (Round 59 BANDTEXT) the
+  JSON files are the source, its `--check` compares their structure only,
+  and `tools/r59_storyquests/portable_test.lua` checks it.
 
 The Miner's Guild's quests (Round 58): [miners_guild.md](miners_guild.md) §11.
 

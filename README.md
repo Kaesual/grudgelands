@@ -87,10 +87,21 @@ To create a local world or host a server, see
 
 Press `I` for your inventory. Its **Help** tab explains equipment, crafting,
 professions, travel and combat, and includes the sound controls.
-Around level 10, your starting quests lead you toward your people's capital
-and its profession trainers.
+Around level 10, your starting quests send you on to the next zone, whose
+village, outpost and camps offer their quests at once; around level 19
+they lead you to your people's capital, its profession trainers and the
+first chapter of your faction's story.
 
 ## Current state
+
+**0.59.0** reworks the quests of levels 11–20: each of the six zones
+offers 13 quests at once, far fewer of them hunts and more of them
+errands, crafts, gathering, a witness to find and things to recover at
+the bandit camps, with potion, armor and weapon choices as rewards. At
+level 19 every capital's envoy opens the first chapter of the faction's
+story with the Miner's Guild leader, who sends you to a spot in the town
+at 20. It needed a map reset; characters keep their level, gear,
+inventory and quests.
 
 **0.58.0** brings the Miner's Guild of each faction, The Charter of
 Stone and The Oathdelvers: mining camps across the land with a lift down

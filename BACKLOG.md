@@ -99,7 +99,10 @@ layouts, resource tables or buff values.
   new objective types at the new seed-placed POIs (about 83 % of quests are
   kill or kill-for-drop). Round 46 removed the repeatables, stopped the 23
   sell-only drops and built the placement
-  ([Round 46 plan](docs/planning/round46-plan.md)).
+  ([Round 46 plan](docs/planning/round46-plan.md)); Round 59 took the band
+  11–20 to 21 % kill objectives (no kill-for-drop) and three mob names per
+  zone ([quests.md](docs/design/quests.md#the-band-1120-round-59)); the
+  bands 21–60 follow.
 - Current owners: [quests](docs/design/quests.md) and
   [story](docs/design/story.md). Coordinate teaching steps with the class
   and crafting revisions above.
@@ -3097,8 +3100,8 @@ The items the user decides in the GUI test are in the
   accepts `dawnmere_hunt_01`, so its Q1 shot lacks that side quest (use
   `start_boars`).
 - **Story arc** (STORYARC check): draft 2's T3 story step needs two free
-  boss quests, the only step with two free detours (no rule broken; for
-  Round 59).
+  boss quests, the only step with two free detours (no rule broken; Round
+  59 left it to the T3 band's round, [Round 59 plan §9](docs/planning/round59-plan.md#9-later)).
 - **Vendors** (VENDORMAT): the armourer's and tanner's General tab holds
   only the three supplies; ruling 28 could join the `grug_traders` load
   audit (today the fixture enforces it); `economy-vendor-plan.md` §2.3 still
@@ -3111,9 +3114,10 @@ The items the user decides in the GUI test are in the
   coast today); the legacy `compatibility.zone_at` answers core/inner/outer
   there instead of "coast" (no caller); `tools/r54_armor/templates.py`
   paints only the front strip of the open chin, not the underside.
-- **Tools** (lane D, QSYS, STARTQUESTS): `quest_targets.py` stops on the
-  water-kind region stats, stale since Round 51 (`tools/r28_regions/run.sh`
-  refreshes them); `item_tiers.md`'s own-material values in
+- **Tools** (lane D, QSYS, STARTQUESTS): `quest_targets.py` stopped on the
+  water-kind region stats, stale since Round 51 (**done in Round 59**:
+  BANDQUESTS regenerated the region maps with `tools/r28_regions/run.sh`,
+  `quest_targets.py` 0 missing); `item_tiers.md`'s own-material values in
   `tools/r33_ds/money.py` are hand-measured (lane D re-measured them in the
   engine) and `build_doc.py --check` was stale on main before lane D (the
   start zones' quest copper moved the income table); `check_lua.sh` flags
@@ -3123,8 +3127,8 @@ The items the user decides in the GUI test are in the
 
 **Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
-The items the user decides in the joint GUI test of 0.57 and 0.58 are in the
-[GUI checklist](docs/planning/round58-plan.md#gui-checklist-rounds-57-and-58).
+The items the user decides in the joint GUI test of 0.57, 0.58 and 0.59 are in
+the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and-59).
 
 - **Open GUI judgements:** the camps' places and bands; the headframe
   partly hiding the lift from the side and the lift's light level 3 (LIFT,
@@ -3154,7 +3158,8 @@ The items the user decides in the joint GUI test of 0.57 and 0.58 are in the
 - **People** (CAMPNPC): no map marker for the Exchange (`grug_map`); no
   guild touch on the leaders (an NPC cloak seam in `grug_visuals`, with
   the emblems later); the story arc names one foreman, Brodd Deeppeg in
-  Frostbarrow, who needs a per-camp title override (Round 59).
+  Frostbarrow, who needs a per-camp title override (moved to Round 60 with
+  Frostbarrow's band, [Round 59 plan §9](docs/planning/round59-plan.md#9-later)).
 - **Lift** (LIFT): the minimap keeps the mine and war-camp 6 px icons (the
   picks have no 6 × 6 version; a later art pass); `lift.lua` reads
   `grug_home` at run time (no dependency).
@@ -3169,14 +3174,77 @@ The items the user decides in the joint GUI test of 0.57 and 0.58 are in the
   guards where the hall templates seat two (wrong before this round too;
   the 2026-10 playtest audit noted it).
 - **Guild quests** (GUILDQUESTS, its review, the text review): the quest
-  log shows a shared quest's home zone to everyone (`quest_box.lua`; the
-  variant's zone would be right); the ledger has no faction filter in the
-  Battlegrounds zones; the Battlegrounds files stay unflagged until a
-  per-faction `E-free-follow-ups` (Round 59); the QUESTMAP page carries no
+  log showed a shared quest's home zone to everyone (**done in Round 59**,
+  QSYS3: the variant's zone); the ledger has no faction filter in the
+  Battlegrounds zones; the Battlegrounds files stay unflagged (Round 59's
+  per-faction `E-free-follow-ups` would now allow flagging them; their
+  own rework is a later band's); the QUESTMAP page carries no
   commit stamp; `build_structure.py --check` holds only until the texts
   landed (10 of 26 files differ now; not a gate); each follow-up's second
   sentence repeats the paper's name (kept); GUILDTEXT proposed "Accord
   Pioneer"/"Throng Pioneer" for the guards (Stakeguard kept).
+
+### Round 59 carry-overs
+
+**Noted 2026-10-24** ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the joint GUI test of 0.57, 0.58 and 0.59 are
+in the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and-59).
+
+- **Open GUI judgements:** the held supplies' hold in the Redtusk and
+  Raincall bandit camps with the camp's members around (the socket is
+  15.6 nodes from the leader's spot, past a bandit's 14-node sight, but the
+  members spawn within 24 nodes of the centre; damage stops a hold;
+  BANDQUESTS and its review); the Nhal Veyr town place, about six nodes
+  beside the mourners' hall door, reading as outside the hall
+  (STORYQUESTS' review); the four quest objects' look and size in the
+  world (STORYART); the band's K15 errands (torches, signs, ladders,
+  fences, locked chests, herbs, crops, copper ore) as a first version
+  (the user accepted the QUESTMAP); the start departure (level 9) arrives
+  at a steward whose first quest opens at level 10.
+- **Questing share** (BANDQUESTS, its review): the solo questing share of
+  levels 10→20 fell from 91–100 % to 54–61 % (measured on main with
+  `ledger.py --game --track <race> --start-level 10`; the lanes' reports
+  read 55–62 %): reward XP stayed (−7 % … +2 %), the kills that carried
+  half of it are gone. **The user kept it** (2026-10-24, no XP bump; free
+  play is the main mode). The lane's alternative, about +1.5 KE on the
+  non-kill quests (about 75 %), stays on record for the later bands.
+- **NPCs per player** (the user asked, 2026-10-24): nothing in Round 59
+  hides an NPC per player (the chapter's captives stay in place, pick K12
+  A). A per-player visibility of NPCs (the engine's `set_observers`, as
+  the quest objects use) is a possible later feature, **not planned**.
+- **Quest system** (QSYS3, its review): `validate.py` reads the NPCs'
+  factions from the item dump `existing.json`, so a code-registered NPC
+  newer than the dump counts for both factions (stricter than the game)
+  until `tools/r28_design/dump_items.sh` runs again; town places as
+  `{name:…}` placeholder targets are not done (a text names the building
+  in words; the user can ask for them); the comment at
+  `mods/CORE/grug_core/settlement_sockets.lua:8` ("and later the quest mod
+  read it") is stale.
+- **The band** (BANDQUESTS, its review): kept ids (the departures,
+  witnesses, handoffs, five day hunts, three perpetrators) now carry the
+  new choice rewards, which characters who finished them never see (only
+  the user's world); `tools/r58_guildquests/build_structure.py` would now
+  pick Rooters for Copperfell's camp hunt while the shipped Bracken Fox
+  stays, so its `--check --ids` (ids and hubs only) is the only check of
+  those files left, and the S rows of `tools/r58_guildquests` cover the
+  rest; the camp hunt `camp_hunt_t2` and the guild reports are as Round 58
+  shipped them.
+- **Chapter 1** (STORYQUESTS, its review, CHECK1, the text review):
+  `tools/r28_design/r28common.py` gives a guild NPC its settlement key as
+  its atlas anchor, so a hub anchored at a capital fails `validate.py
+  --atlas` (`E-giver-hub`); the leaders' hubs use `"anchor": "zone"` like
+  the camps' foreman hubs; no dressing (crates) beside the town places, the
+  object marks the spot (on request); the names Veko Bluefeather / Vek
+  (Raincall) and Mordec Silt / Reed-Counter Silt (Mournfen) stay close
+  (pick K16 A); left as written: the Throng texts' "the army's suppliers",
+  Iven's "Sera's report" (a player who meets Iven without the Mournfen
+  band has not heard of it), and the place, direction and kind chain at
+  the snare ground and the name rest.
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.59.0 `map_reset` entry, because the unpushed 0.58.0 entry already
+  covers every change against pushed 0.57.0; the entry is declared for the
+  record (the production world moves 0.57.0 → 0.59.0 across one reset).
 
 ### Decided for later rounds (Round 56 §8)
 
@@ -3237,7 +3305,10 @@ above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-deci
     icons, two status icons and the Miner's Remains block) and waits in the
     orchestration folder for this round's code.
 - **Round 59 and later:** the story arc and the quest rework of levels
-  11–60, zone by zone with the rework flag; the arc follows the user's picks
+  11–60, zone by zone with the rework flag (Round 59 delivered the band
+  11–20 and chapter 1, 0.59.0,
+  [completion](docs/planning/round59-plan.md#completion-2026-10-24); the
+  bands 21–30 to 51–60 follow one per round); the arc follows the user's picks
   on the Round 57 draft ([completion](docs/planning/round57-plan.md#decisions-during-the-round):
   the guilds and their faction's military closely interwoven with little
   conflict inside a faction, a traitor or a wrong decision as the author
