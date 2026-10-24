@@ -12,7 +12,18 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.58.0, Round 58 "The Miner's Guild and the town
+**Current state:** 0.59.0, Round 59 "The story arc's first chapter and
+the quest rework of levels 11–20" (**map reset**, no step;
+[completion](docs/planning/round59-plan.md#completion-2026-10-24)): the six
+band zones of levels 11–20 rebuilt on the Round 57 quest system and flagged
+reworked (83 → 59 quests, 13 per zone, all free play, three shared quests,
+kill objectives 60 % → 21 %, three mob names per zone, the reward pattern),
+chapter 1 of the story arc in the six capitals (the envoys at 19, the
+Miner's Guild leaders' hubs, a town place per capital at 20), the town
+place kind on settlement sockets, `E-free-follow-ups` per faction and the
+quest log's variant zone; four picked quest objects. **Not pushed**; it
+waits for the user's joint GUI test of 0.57.0, 0.58.0 and 0.59.0. Before it
+0.58.0, Round 58 "The Miner's Guild and the town
 fixes" (**map reset**, no step;
 [completion](docs/planning/round58-plan.md#completion-2026-10-24)): one
 Miner's Guild per faction (`grug_guild`; The Charter of Stone, The
@@ -23,7 +34,7 @@ reputation with ranks 0–10 from a trade-in of raw mined goods, the camp
 vendor's rank-locked page, Ore Sense and Treasure Hunt in their own effect
 slot, the Miner's Remains, three cloaks, a guild house on a district plot in
 each capital and 30 guild quests; the Round 56 town fixes. **Not pushed**;
-it waits for the user's joint GUI test of 0.57.0 and 0.58.0. Before it
+its GUI test runs with Round 59's. Before it
 0.57.0, Round 57 "The crafting window, the quest
 foundation and the new start zones" (**compatible**, no step;
 [completion](docs/planning/round57-plan.md#completion-2026-10-23)): the
@@ -36,7 +47,7 @@ no repeatable quests); the six start zones rebuilt on it (92 → 30 quests);
 flat alloys and wood grades, every dye craftable, no vendor selling
 leather, cloth, ores or bars; bay shore water flying under its zone's rule
 and the chin strip open underneath. **Pushed** 2026-10-23 (origin/main
-`69481ed1`); its GUI test runs together with Round 58's. Before it 0.56.1 and 0.56.0, Round 56 "Playtest fixes,
+`69481ed1`); its GUI test runs together with Round 58's and Round 59's. Before it 0.56.1 and 0.56.0, Round 56 "Playtest fixes,
 clear enchants, the hood and the quest survey" (**compatible**, no step;
 [completion](docs/planning/round56-plan.md#completion-2026-10-22)): the
 fixes from the playtest of 2026-10-21 (level-scaled aggro, the hit alert on
@@ -87,10 +98,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the joint GUI test of 0.57.0 and 0.58.0
-([checklist](docs/planning/round58-plan.md#gui-checklist-rounds-57-and-58)),
-then Round 59 and later (the story arc and the quest rework of levels
-11–60).
+are not recorded as passed. Next: the joint GUI test of 0.57.0, 0.58.0 and
+0.59.0 ([checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and-59)),
+then Round 60 (the band 21–30 with chapter 2) and the bands 31–60 one per
+round, the production deploy with one map reset, the armor redesign and
+unique items ([ROADMAP](ROADMAP.md)).
 Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
@@ -388,12 +400,13 @@ The topic rules below name the one path to use; the
 - **Money check:** `tools/r29_e4/income.py --check` (mount, boat and respec
   prices, the crown fee) after any change to loot, repair or quest copper.
   Quests pay copper from their weight unless `rewards.copper` is set. Quest
-  checks: `quest_targets.py` (region stats of three seeds; it stops on the
-  stale water-kind stats since Round 51 until `tools/r28_regions/run.sh`
-  refreshes them), `validate.py --game`, `ledger.py --track <race>`,
-  `quest_kinds.py --check`; `luajit tools/r56_questmap/questmap.lua --out
-  FILE` writes the quest overview page for the user (`--data DIR` reads a
-  draft's `DIR/data/zones`).
+  checks: `quest_targets.py` (region stats of three seeds, refreshed by
+  `tools/r28_regions/run.sh` in Round 59), `validate.py --game`,
+  `ledger.py --track <race>`, `quest_kinds.py --check`, and for the band
+  11–20 and chapter 1 the two Round 59 `build_structure.py --check`
+  ("Quests, main line, rift and decor"); `luajit
+  tools/r56_questmap/questmap.lua --out FILE` writes the quest overview
+  page for the user (`--data DIR` reads a draft's `DIR/data/zones`).
 - **All travel** (home return, respawn, waystones) goes through
   `grug_home/travel.lua`; boats are water mounts in `grug_mounts`. Gems are
   depth-tiered: each in its own tier rock, one tier deeper at half and two
@@ -589,8 +602,24 @@ The topic rules below name the one path to use; the
   needs only a level and has at most one follow-up; rewards may be a
   `choices` list (equipment with author-fixed enchants at the reward
   level); every quest is done once (`repeatable` is gone). The new rules
-  apply to files marked `"reworked": true` (the six start zones), so the
-  unreworked files stay valid until their rework.
+  apply to files marked `"reworked": true` (the six start zones, the band
+  11–20's six zones and the two guild files), so the unreworked files stay
+  valid until their rework; a free quest's one follow-up counts per
+  faction (Round 59).
+- **The quest rework** (Round 59 on, one level band per round): the band
+  11–20 is reworked on the Round 57 system and carries chapter 1 of the
+  story arc in the six capitals ([quests.md](docs/design/quests.md) "The
+  band 11–20", "Chapter 1 in the capitals"). A quest place can be a **town
+  place**, a settlement socket of role `quest_place` written
+  `socket:<settlement key>/<socket id>` ([quests.md](docs/design/quests.md)
+  "Town places"; fixtures `tools/r59_qsys3`, `tools/r59_bandquests`,
+  `tools/r59_storyquests`). The quest JSON files are the source;
+  `tools/r59_bandquests/build_structure.py --check` and
+  `tools/r59_storyquests/build_structure.py --check` compare their
+  structure (everything but the texts), and a rerun without `--check` would
+  write the placeholder texts back. After the shipped quest-object art
+  changes: `python3 tools/r59_storyart/paint_art.py --check` (the four
+  Round 59 objects, byte for byte).
 - **The guild quests** (Round 58, [miners_guild.md](docs/design/miners_guild.md)
   §11): the gather quests live in the guild files
   (`charter_of_stone.quests.json`, `oathdelvers.quests.json`, zones named
@@ -598,7 +627,9 @@ The topic rules below name the one path to use; the
   (`foreman_t<k>`, [quests.md](docs/design/quests.md#the-miners-guild-givers-round-58));
   the camp files carry the foreman hubs. Since the texts landed the JSON
   files are the source: `tools/r58_guildquests/build_structure.py` would
-  write the placeholders back and is not a gate.
+  write the placeholders back and is not a gate; its `--check --ids`
+  (Round 59) compares only the guild and camp quest ids and hubs each file
+  carries.
 - **"Use at a place"** is an objective, never a node (`grug_quests/use.lua`).
   Other mods hear turn-ins through `grug_quests.register_on_turn_in`, never a
   second completion path; `grug_quests.quest_held` is the cheap "has or did"

@@ -1,7 +1,8 @@
 # Round 59 — the story arc's first chapter and the quest rework of levels 11–20 (0.59.0, map reset)
 
-Coordinator: Claude, 2026-10-24. Status: **planned**, waiting for the user's go. The plan review (a fresh Opus,
-`r59/reports/plan-review.md`) is folded in; its blocker and questions are decided (§2a).
+Coordinator: Claude, 2026-10-24. Status: **complete** ([completion](#completion-2026-10-24)); 0.59.0 not pushed, it
+waits for the user's joint GUI test of 0.57.0, 0.58.0 and 0.59.0; the user's go 2026-10-24. The plan review (a fresh
+Opus, `r59/reports/plan-review.md`) is folded in; its blocker and questions are decided (§2a).
 
 Round 59 starts the **quest rework of levels 11–60** on the Round 57 quest system, one level band per round, and
 builds the **first chapter of the story arc** that the user picked in Round 57. This round is the band **11–20**: the
@@ -224,3 +225,301 @@ Round 60 and on: the bands 21–30, 31–40, 41–50, 51–60 with the arc's nex
 24–29, with Brodd Deeppeg's per-NPC title, BACKLOG ~3157; the mine leaders as guild members; the front at 41; T3's two
 free bosses, BACKLOG ~3099); then the production deploy with one map reset; then the
 armor redesign and the unique items.
+
+## Completion (2026-10-24)
+
+Every lane is merged on main, every code lane independently reviewed (Opus) and every logic fix delta-reviewed; this
+lane D (the version, the declaration, this section, AGENTS, the status owners, the joint GUI checklist) follows on
+main `8f84be22`. **0.59.0 is a map reset:** no migration step; characters keep their items, levels, quests and money;
+a quest whose id vanished is dropped (upgrade contract §4); item, achievement and waypoint ids unchanged; no new
+position in player meta. **Push:** not pushed; 0.57.0 was pushed on 2026-10-23 without its GUI test, and 0.58.0 and
+0.59.0 wait for the user's joint GUI test of all three. **Sync:** by the coordinator after the round.
+
+### Lanes
+
+Worktrees and branches `r59-<lane>`. Main's first-parent commits, in order (lane tip in brackets):
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| plan | `567669ee` | this plan with the plan review folded in (B1 and I1–I7) and the user's four decisions (§2a) | fresh Opus plan review (one blocker, seven important findings) |
+| CHAPTER1 | outside the repository | GPT-6 Astra's draft of chapter 1 (`r59/reports/chapter1-draft.md`, German): the band's six local threads, A1/A2 and T1/T2, the places and objects, the leaders' stances, open points K1–K13 with two variants each | CHECK1 (Opus, read-only, `chapter1-check.md`): ready after three fixes, three more open points K14–K16 |
+| QSYS3 | `138e8e33` (`8a0f9e01`) | `E-free-follow-ups` per faction (`validate.lua`, `validate.py`); the quest log's zone of the variant taken (`grug_map/quest_box.lua`); the town place kind: `socket:<settlement key>/<socket id>`, role `quest_place` (`grug_core/settlement_sockets.lua`, `labels.lua`, `use.lua`, both validators, `E-use-place`); `tools/r59_qsys3` (`socket_places.lua`, fixture, engine probe) | MERGE AFTER FIXES (L1: a settlement with only a `quest_place` socket logged an error at every boot), fixed (`start_npcs.lua` build_rows treats a settlement without a resolver socket as silent scenery, an `r31_g` case), delta MERGE |
+| BANDQUESTS | `5b536a68` (`42d3e39e`) | the six band files rebuilt and flagged `reworked` (`tools/r59_bandquests/build_structure.py`, `report.py`, fixture); the four use-object kinds; `CAMP_PLACES` `quest_place` sockets in the dwarf, human, orc and troll bandit camps (`wp40/r14_poi_blueprint.lua`); the recipe places `snare_ground` (Starbough Vale) and `name_rest` (Mournfen); four `quest_target` flags off; the region maps of all 38 recipe zones regenerated (stale since Round 51) | MERGE AFTER FIXES (two quests asked for Gravemoss, an Alchemy-only herb), fixed (data only: `copperfell_firewood`, 12 logs; `mournfen_markers`, 6 Wooden Signs), checked by the coordinator |
+| STORYQUESTS | `bc415821` (`6ebb3ed6`) | chapter 1's four story quests in the capital files (`tools/r59_storyquests/build_structure.py`, fixture, engine probe), the six leaders' hubs (`"anchor": "zone"`), the envoys' common line `envoy`, the six town places in their service plots' `extra_sockets`; rebased on BANDQUESTS; the joint QUESTMAP (`questmap.py`) | MERGE (five minor findings: two text notes to BANDTEXT, a stale fixture label fixed in `ad2eca2f`, the objects' notes, a GUI judgement); the rebase checked by the coordinator (game deltas identical to the reviewed tip except `use_objects.json`) |
+| BANDTEXT, TEXTREVIEW | `8f41fb53` (`1f6dd580`) | GPT-6 Astra wrote the 168 text fields of 63 quests (`f5b5e77e`: 59 titles, 85 texts, 24 completions); `034b27ae` (STORYQUESTS' agent on `r59-bandtext`): both generators' `--check` compare the structure only, the chapter fixture checks the real texts; the user's 20 text picks applied by the coordinator's script | TEXTREVIEW (Opus): 0 must-fix, 20 proposals, all picked; `034b27ae` delta MERGE (mutation-tested) |
+| STORYART-SHIP | `b36f9f70` (`c1b59fb3`), `8f84be22` | the four picked sprites (`grug_quests_obj_{dispatch_record,witness_record,held_supplies,snare_bundle}.png`), their `use_objects.json` rows and sizes, `tools/r59_storyart` (`paint_art.py --check`), `LICENSE-media.md` "Round 59"; then the coordinator's `tools/README.md` duplicate fix | checked by the coordinator (PNGs byte-identical to the picks, `r36_q0`) |
+| D | this section | the version 0.59.0 and the `map_reset` entry, upgrade contract §2, AGENTS, STATUS, CHANGELOG, BACKLOG, ROADMAP, README, the docs check, the joint GUI checklist | independent review |
+
+**STORYART** (GPT-6 Astra, outside the repository): story art drop 01 with two proposals per object, the snare redone
+as drop 01b; the user's picks are below. Nothing unpicked ships.
+
+Main has 272 portable fixtures (3 new: `r59_qsys3`, `r59_bandquests`, `r59_storyquests`). `mods/` against 0.58.0
+(measured, `git diff 90763439 8f84be22 -- mods`): 35 files, +2,121 −1,630 lines: the twelve band and capital quest
+files, `use_objects.json` and the four textures, the six capital district files and the camp blueprint, four spawn
+files, and the code in `grug_quests` (`validate.lua`, `labels.lua`, `use.lua`), `grug_core/settlement_sockets.lua`,
+`grug_mobs/start_npcs.lua` and `grug_map/quest_box.lua`.
+
+### Lanes added during the round
+
+- **STORYART-SHIP:** STORYART works outside the repository, and the four objects shipped with placeholder looks (a
+  texture modifier over a shipped object PNG). After the user's OK of the redone snare, a small Opus lane copied the
+  picked PNGs into `grug_quests`, set the picked sizes and committed the trimmed painters, so the art is reproducible
+  and `r36_q0` checks the four as shipped files.
+- **The generators' `--check` (`034b27ae`)** was a step on `r59-bandtext`, not a lane: once the texts landed, both
+  generators' `--check` reported every file as different; it now compares the structure only, and the chapter fixture
+  checks the real texts instead of the placeholders.
+
+### Decisions during the round
+
+**The user** (HANDOVER):
+
+- **§2a (plan review):** places in the town too (QSYS3's place kind on settlement sockets); the start zones' reward
+  pattern for 11–20; "at most one follow-up" per faction; `camp_hunt_t2` may share its targets with zone quests.
+- **The chapter picks K1–K16: all "A"** (the recommendations, no notes), including the three the check added:
+  K1 no traitor and no wrong decision of one's own before level 21; K2–K7 the six town places (the Highcourt dispatch
+  yard at the butcher's plot `market_store`, Dur Brannoc's `forge_ore_yard`, Lethariel's `market_bowyer`, Gor
+  Drazhak's water depot at `warren_cook_court`, Kezamba's `shore_store`, Nhal Veyr's receiving point at
+  `homes_mourners_hall`); K8 the load record in the bandit camp, shared with Goldmead; K9 Starbough's snares in the
+  Lower Boughs; K10 Mournfen's grave names in the Blightfields; K11 Raincall's held supplies, shared with Redtusk;
+  K12 the captives stay at their sockets; K13 A2/T2 decides the capital's case, the papers' source stays open;
+  K14 the witness and the perpetrator stay local per zone; K15 the draft's frame as the core plus local tasks until
+  the quest XP is roughly today's; K16 the close names (Veko / Vek, Mordec Silt / Silt) stay.
+- **No NPCs that vanish per player:** asked by the user; nothing in the chapter does (K12 A keeps the captives in
+  place). A per-player visibility of NPCs is noted as a possible later feature
+  ([carry-overs](../../BACKLOG.md#round-59-carry-overs)).
+- **The questing share:** kept at BANDQUESTS' 55–61 % (no XP bump on the non-kill quests).
+- **QUESTMAP:** accepted ("Die Quests sehen gut aus"); the user's question whether the gathered items spawn in the
+  quest zones was checked in `grug_gathering/catalog.lua` (yes; Sunleaf is a spice, ungated).
+- **The art picks** (`story-art/pick/picks.md`): the dispatch record drop-01 P1 (a trestle board, size 1.1), the
+  witness record P2 (two bound tablets, 1.2), the held supplies P1 (packs behind a rope cross, 1.3), the snare P1's
+  shape but rope instead of metal, redone as drop-01b (brown hemp rope, loop and peg, 1.2) and accepted.
+- **The texts:** all 20 proposals of the text review.
+
+**The coordinator** (answers to lane questions and the check; each built as stated):
+
+- **The check's three fixes taken without asking:** the witness travel shared per faction (one level per shared
+  quest), the Redtusk and Raincall use places away from the camp's leader, the town sockets in the plots'
+  `extra_sockets` (two of the templates are built by several plots; Nhal Veyr's outside the hall door).
+- **The leaders' hubs anchored at the zone** (`"anchor": "zone"`): a hub anchored at the capital fails
+  `validate.py --atlas` (`r28common.py` gives a guild NPC its settlement key as its anchor), as the camps' foreman
+  hubs already do.
+- **STORYQUESTS' questions:** the rewards as proposed (A1/T1 weight 1; A2/T2 weight 3 with a choice of 2 Healing or
+  Mana Potion II); the envoys' common line named `envoy`; no dressing beside the town places (the user sees the spots
+  on the QUESTMAP and in the GUI test).
+- **QSYS3's optional question:** town places stay no `{name:…}` placeholder targets for now.
+- **BANDQUESTS' fix** checked by the coordinator as a data-only delta (no logic changed).
+
+### Deviations from the plan
+
+- **One lane added** (STORYART-SHIP, above).
+- **The town place kind** needed one change outside `grug_quests` and the registry: `grug_mobs/start_npcs.lua`
+  skips a settlement whose sockets nobody stands on (the review's L1), so a camp or POI without NPC sockets may carry
+  a town place.
+- **The band's use places are town places of the camps**, not spawn-file places (a spawn-file place keeps 64 nodes
+  from camps, CHECK1); Starbough and Mournfen got recipe places. The held supplies' corner is outside the leader's
+  14-node sight but within the members' 24-node spawn disc (the whole camp is; BANDQUESTS' re-check), a GUI judgement.
+- **The leaders' hubs** use `"anchor": "zone"` (above).
+- **`check_upgrade.py` passed in every lane** (the plan expected a failure until D): the unpushed 0.58.0 entry already
+  covers every change against pushed 0.57.0; D declares 0.59.0's reset all the same.
+- **The generators' `--check`** compares the structure, not the texts, since `034b27ae` (Round 58's gave up at that
+  point; Round 59's stays a check).
+- **`tools/r28_regions/run.sh`** was rerun for all 38 recipe zones (the plan's gate, stale since Round 51), so
+  `quest_targets.py` runs again (0 missing).
+
+### Numbers worth keeping
+
+Measured unless marked "report" (taken from the lane's report).
+
+- **Quests:** the six band files hold 86 → 62 quests (measured, `git show` of `567669ee` and `8f84be22`): the band's
+  own 83 → 59 and Round 58's three (`camp_hunt_t2`, `guild_t2_report_accord`, `guild_t2_report_throng`); 13 offered
+  per zone (before 15–17); 3 shared (`band_repairs` in six zones, `band_load_record` and `band_held_supplies` in two);
+  4 story quests in the capitals; **433 shipped** (453 − 83 + 59 + 4; measured over the quest files, 48 files).
+- **Objectives** (all six band zones, `tools/r59_bandquests/report.py --before 567669ee`): kill 51 → 18,
+  kill-for-drop 13 → 0, item 18 → 36, travel 24 → 24, use 0 → 6; the kill share per zone 50–67 % → 21 % (all six
+  together 60 % → 21 %); **mob names per zone 8–10 → 3**.
+- **The ledger 10→20, solo** (`ledger.py --game --track <race> --start-level 10` on main `8f84be22`): reward XP and
+  the questing share, against 11,750 XP needed: human 5,495 (61 %), dwarf 5,054 (57 %), elf 4,880 (54 %), orc 5,172
+  (58 %), troll 5,172 (58 %), undead 4,920 (55 %); before the round (report, survey) 5,056–5,521 XP and 91–100 %.
+  A1/T1 count in this band (+120 XP), A2/T2 in 20→30. The lanes' reports read 1–2 points higher (55–62 %).
+- **The validator dry run** with the six files flagged (report, QSYS3 and BANDQUESTS): 97 errors (80 E-free-chain,
+  14 E-free-follow-ups, 3 E-free-requires) → 95 after QSYS3 (E-free-follow-ups 14 → 12, the guild forks) → **0**
+  after BANDQUESTS; `validate.py --game` on main: 0 errors, 6 warnings (as before the round).
+- **Rewards** (`report.py`): per zone the steward's first quest (reward level 11) 2 Healing or 2 Mana Potion II; the
+  day hunt (15–16) a prefix armor piece; the local's last craft (17) a suffix piece; the perpetrator (19) a weapon
+  per line with a prefix and a suffix; the slots Copperfell chest/feet, Goldmead head/feet, Starbough head/legs,
+  Mournfen head/chest, Redtusk head/feet, Raincall chest/legs.
+- **Town places** (report, engine): the hold's `use_pass` 69 µs (QSYS3's probe); the six town places on seed 42 air
+  over walkable ground with headroom (STORYQUESTS' probe).
+- **Fleet times (report):** `seed_fleet quick` 100 of 100 in BANDQUESTS and STORYQUESTS (11 min 51 s under
+  contention); lane D's **full fleet on main**: see [Round-end gates](#round-end-gates).
+
+### Classification
+
+**Map reset**, no step:
+`{"schema": 3, "version": "0.59.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+The reason ([upgrade contract §2](../technical/upgrade-contract.md#2-the-declaration)): the `quest_place` sockets in a
+service plot of each capital and in four of the band's bandit camps and the two quest places in the Starbough Vale
+and Mournfen spawn files change what world generation and the towns build. A world on 0.57.0 (or 0.56.1, 0.58.0)
+moves on across one reset with the pre-reset pass: characters keep everything but their position and home claim
+(contract §3.2); an active quest whose id vanished leaves the log, a kept id keeps its state.
+
+What needs the reset and what alone would be compatible (the lanes' reports): the camp sockets (BANDQUESTS) and the
+capital sockets (STORYQUESTS) change what new worlds build, and the quests that use them ride on the reset (the
+capitals' plot cells are byte-identical, so an old world would have free cells there too); QSYS3's code, the quest
+data itself, the texts and the art alone are compatible. Saved state, all without a position: `grug_quests:state`
+for the new ids (no format change); nothing new in player meta or mod storage, so no `register_on_relocate` clear.
+
+### Open notes
+
+- **For the user:** the joint GUI test below, with these to judge: the held supplies' hold in the Redtusk and
+  Raincall camps with the members around, the Nhal Veyr town place outside the mourners' hall, the four objects'
+  look and size, the band's errands as a first version, a level-9 arrival at the steward whose first quest opens at
+  10; from Round 58 the names never picked (the three cloaks, the achievement and its line) and from Round 57 the
+  violet story colour (now on chapter 1 too) and the headland edge.
+- **Round 60** reworks the band 21–30 with chapter 2 (§9).
+- The reviews' and reports' notes are in the [Round 59 carry-overs](../../BACKLOG.md#round-59-carry-overs).
+
+### GUI checklist (Rounds 57, 58 and 59)
+
+One test for all three rounds (nothing since 0.57.0 has been tested in the GUI), desktop and the web build (the
+lanes' web shots were taken at 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on the synced game. It replaces
+[Round 58's list](round58-plan.md#gui-checklist-rounds-57-and-58); items 1–34 keep that list's numbers.
+
+**Resetting a local world** (what the hosting platform does, contract §3.5; one reset covers 0.58 and 0.59):
+
+1. Quit the world (stop the server), then make a copy of the world folder.
+2. Optional, to test the claims' containers: from the repository checkout,
+   `python3 tools/migrate.py --world <world folder> --map-reset` (Python 3.13 or newer; it packs the containers in
+   every housing claim and must end with exit 0).
+3. Delete `map.sqlite` in the world folder; keep `map_meta.txt` (the seed), `world.mt`, `players.sqlite`,
+   `auth.sqlite` and `mod_storage.sqlite`.
+4. In Luanti's settings, *Content: Games → Grudgelands → Hosting platform*, raise **Map reset counter**
+   (`grug_reset_world`) above the world's record: 1 for a world never reset before, else one more than last time (the
+   game reads it at the start; only a value above the record resets).
+5. Start the world. `debug.txt` must show `[grug_core] map reset N applied to the world (was M)`
+   (`grug_core/map_reset.lua`); if the line is missing, the value was not above the record: quit, restore the copy
+   and start again from step 2 with a higher value. The map is generated anew from the seed; each existing character
+   is held on the waiting screen and moved to its race's start town at its next join, without the welcome.
+6. Afterwards set the counter back to **0**: it is one setting for every local world, and another world whose record
+   is lower would reset at its next start (without its map being emptied): its claims and NPC records cleared, its
+   characters moved to their start towns.
+
+**Order:** (A) the existing world, reset as above, first join with its old characters; (B) everything else on that
+world and with new characters; (C) a new world (or the "test" world) for the bays. *Re-checked (D, as Round 58):* no
+Round 57, 58 or 59 item needs the old **map**; Round 57's items 3 (its last sentence), 5 (its last sentence) and 15
+and Round 59's band ids test an old character's **first join on the new code**, which the reset keeps (player meta
+stays), so they run in (A) at that first join, the path the production world takes. Do not join the existing world
+on the new game before the reset, or that first join is spent. Items 1, 2 and 4 of Round 57 need no old state.
+
+**(A) The existing world, at the first join after the reset** (a character above level 10 with old start quests done
+or active, ideally one with old band quests of levels 11–20 active or done, a crafting job running when it last
+logged out, enchanted items, a housing claim if you have one):
+
+1. **The reset:** the character arrives at its race's start town without the welcome and keeps its level, inventory,
+   equipment, money, quests, professions, mounts and waypoints; its home claim is gone (Return home falls back to the
+   innkeeper), the Housing Steward hands out a new Claim Stone, and (after step 2) the claim's containers wait in its
+   Belongings tab. The Character page shows "Miner's Guild: Rank 0".
+2. **Round 57 item 3, last sentence:** a job of the old version that was running finishes as before (its output in the
+   inventory or the Overflow).
+3. **Round 57 item 5, last sentence:** the existing character has its Basic recipes after this login.
+4. **Round 57 item 15, changed by Round 59:** the new start quests are offered (one whose old finale was done keeps it
+   done); its old start quests are gone from the log without an error. Its level-11 zone now offers the **reworked**
+   band quests (not the old chain); an old band quest that was active and no longer exists is gone from the log
+   without an error, while a kept id (the departure, the witness travel, the handoff, five day hunts, three
+   perpetrators) keeps its state: done stays done and is not offered again.
+
+**(B) Round 57** (its [checklist](round57-plan.md#gui-checklist-round-57) items, unchanged unless noted):
+
+1. Layout C. 2. The queue. 3. Offline and the overflow (its last sentence in A). 4. Favourites. 5. The Basic unlock
+(its last sentence in A). 6. Recipe details. 7. Alloys and woods. 8. Dyes. 9. Vendors (and Round 58's mason below).
+10. A new character's start (the waystone and mailbox now stand at the town's centre: Round 58 below). 11. Shared
+quests. 12. Choice rewards (Round 58's hunts add a choice of materials, below; Round 59's band rewards, below).
+13. Completion text: **changed by Round 59:** the start town's departure (level 9) now leads to the level-11 zone's
+steward, whose first quest opens at level 10 (item 35). 14. Story marking: **changed by Rounds 58 and 59**: judge
+the violet "!", the "Story" heading and the map icons on a guild follow-up (item 31) or on chapter 1 at an envoy
+(item 43) instead of the capture probe. 15. An existing character above level 10 (in A). 16. Bays (in C). 17. The
+chin underside. 18. Help. 19. The pages for the user.
+
+**(B) Round 58** (items 20–34 of [Round 58's list](round58-plan.md#gui-checklist-rounds-57-and-58), unchanged unless
+noted): 20. Mining camps. 21. Camps under construction. 22. The map. 23. The lift. 24. The rooms. 25. The camp
+vendor at rank 0. 26. Reputation. 27. The cloaks. 28. Ore Sense. 29. Treasure Hunt. 30. Guild houses (**since Round
+59** each leader also gives chapter 1's second quest, item 44). 31. Guild quests: unchanged by Round 59 (the camp hunt
+`camp_hunt_t2` and the guild reports are as Round 58 shipped them, now inside the reworked band files); check them
+again in a band zone: the foreman's Iron, Jade and hunt at once, the report turned in at the leader. 32. Town fixes.
+33. Help. 34. The pages for the user.
+
+**(B) Round 59:**
+
+35. **The band at level 11** (BANDQUESTS): with a level-11 character of each faction (`/xp give <you> <amount>`
+    raises the level), in each band zone (Copperfell Foothills, Goldmead Vale, Starbough Vale; Mournfen, Redtusk
+    Savanna, Raincall Basin): the village's steward and local, the outpost's scout, the bandit camp's captive and the
+    mining camp's foreman offer their quests at once, each from its level, without a departure done first; no quest
+    asks for another. The start departure (level 9) arrives at the steward (Orrik Pineledger, Marta Millward, Ilyra
+    Mossveil; Mordec Silt, Borak Redgrass, Daro Kapok), whose first quest opens at level 10 (**judge**: a level-9
+    arrival finds no offer there yet).
+36. **Shared quests in each zone's voice:** "Something Worth Mending" (4 Iron Bars and 4 Coal Lumps for the local) in
+    all six zones, "Whose Name Is on the Load?" in Copperfell and Goldmead, "Already Ours" in Redtusk and Raincall:
+    taken in one zone, the other zones do not offer it while it is active and never again once done; each zone's
+    text reads in its own voice; "Return to" names the giver you took it from. **The quest log** (QSYS3) shows the
+    zone you took it in: "Level … · Goldmead Vale" for the Goldmead variant, "Level … · Copperfell Foothills" for
+    Copperfell's (and a start quest taken in Sunscar "… · Sunscar Flats", in Dawnmere "… · Dawnmere Fields").
+37. **The reward choices with their enchants:** the steward's first quest 2 Healing Potion II or 2 Mana Potion II;
+    the day hunt (level 15–16) a cloth, leather or metal piece with the class's main stat as its prefix; the local's
+    last craft (17) another slot with a suffix (mana, crit, maximum HP); the perpetrator (19) a weapon per line (a
+    Wand or Staff, the Bow, a Sword or Battle Axe) with a prefix and a suffix, at item level 19. The offer lists each
+    by its enchanted name with its enchant lines; the item received has them. Slots: Copperfell chest and feet,
+    Goldmead head and feet, Starbough head and legs; Mournfen head and chest, Redtusk head and feet, Raincall chest
+    and legs.
+38. **The use places in the four camps:** the load record at the Copperfell and Goldmead bandit camps (by the camp's
+    stores) and the held supplies at the Redtusk and Raincall camps (the corner across from the captive's enclosure):
+    the map crosshair on the spot, the object only for players who still need it, "<act> at <camp>" in the log and
+    the HUD, the 3 s hold counted in the feed, stepping away or taking damage stops it. **Judge (Redtusk and
+    Raincall):** can the hold be finished with the camp's members around?
+39. **The snare ground and the name rest:** Starbough's "A Cruel Use for a Knot" (cut the snare bundle at the
+    Starbough Snare Ground in the Lower Boughs) and Mournfen's "Before the Letters Go" (copy the names from the marker
+    at the Mournfen Name Rest in the Blightfields): the object stands on dry ground, the place's name and direction
+    read right in the text, the log and on the map.
+40. **The gathered and crafted items in their zones:** the errands' logs, Corn, Potatoes, Melons, Sunleaf and Copper
+    Lumps are found in their zones without a profession, and the torches, Wooden Signs, Wooden Ladders, fences and
+    locked chests come from Basic recipes (Copperfell's 12 logs for the watch fire, Mournfen's 6 Wooden Signs).
+41. **The hunts:** three mob names per zone (Copperfell: Bracken Fox, Surefoot Ibex, Goblin Foreman Nog; Goldmead:
+    Rooter, Bristleback, Bandit Requisitioner Hobb; Starbough: Truffle Sow, Thicket Vixen, Poacher Snarekeeper Vetch;
+    Mournfen: Bog Seep, Plague Tusker, Mirefolk Reed-Counter Silt; Redtusk: Cackler, Waterhole Zebra, Bandit
+    Water-Broker Korr; Raincall: Wallow Sow, Serval, Bandit Tithe-Keeper Vek), every count by day; Korr's and Vek's
+    kill quests (the giver stands in the camp) read without a doubled place.
+42. **The departure at 19:** offered at 19 without the perpetrator done; it leads to the capital's envoy and reads
+    well either way.
+43. **Chapter 1, step one** (STORYQUESTS): at 19 each envoy (Mariel Waybook in Highcourt, Dorrin Gateledger in Dur
+    Brannoc, Eriath Boughwarden in Lethariel; Thorga Roadspeaker in Gor Drazhak, Nalo Pathdrum in Kezamba, Ossa
+    Quietregister in Nhal Veyr) offers the violet story quest "A Hearing for the Absent" (The Accord) or "Our Word,
+    Our Witness" (The Throng); "Travel to <leader>" leads to the Miner's Guild house of the same capital and turns in
+    only there. The envoys' old quests are still offered.
+44. **Chapter 1, step two:** at 20 the leader (Alis Cartwright, Hadrin Beamset, Caelir Veinward; Drava Flintshoulder,
+    Ombali Ropekeeper, Iven Lastshift) offers "What a Seal Allows" or "Whose Word Is This?"; after step one in one
+    capital, **another capital's leader** of the faction offers it too, and its text reads right without that
+    capital's step one. The map crosshair marks the town place: Highcourt the dispatch yard beside the butcher's,
+    Dur Brannoc the ore yard's loading apron, Lethariel the timber check beside the bowyer's, Gor Drazhak the water
+    depot on the cook court's outer rim, Kezamba the witness landing beside the shore store, Nhal Veyr the receiving
+    court outside the mourners' hall. The object stands there (the dispatch record in The Accord's capitals, the
+    witness record in The Throng's), only for players who need it; "Secure the dispatch record at Highcourt" (or the
+    witness record) in the log and the HUD; the 3 s hold counts; at the leader the completion text decides the case
+    (an Accord seal, a Throng public strike), with the choice of 2 Healing or 2 Mana Potion II. **Judge (Nhal Veyr):**
+    does the place read as outside the mourners' hall?
+45. **The guild reports** (`guild_t2_report_*`) still turn in at the same leaders, next to their new quest.
+46. **The four objects** (STORYART): look and size on the ground, desktop and web: the dispatch record (a trestle
+    board, 1.1) at the Copperfell and Goldmead camps and the Accord capitals, the witness record (two bound tablets,
+    1.2) at the Mournfen name rest and the Throng capitals, the held supplies (packs behind a rope cross, 1.3) at the
+    Redtusk and Raincall camps, the snare bundle (a hemp rope loop and peg, 1.2) in the Lower Boughs.
+47. **Web:** the quest log's zone line, a choice reward's dialog (the picked tooltip without scrolling) and the
+    objects at the web size.
+48. **The pages for the user** (outside the game, private claude.ai pages): the
+    [chapter pick page](https://claude.ai/artifact/VrSxVPMooAkhRtwQJUDU7D), the
+    [QUESTMAP](https://claude.ai/artifact/QSu4jpSBQxWNRYshy1ey4B) of the band and chapter 1, the
+    [art pick page](https://claude.ai/artifact/Qbb8qiKghobZsXBXExq266) and the
+    [text pick page](https://claude.ai/artifact/Q2gFdXALsF9s3qCycvVrax).
+
+**(C) Round 57 item 16, the bays:** in a new world with the "test" seed (or the reset "test" world).
+
+### Round-end gates
+
+GATES_PLACEHOLDER

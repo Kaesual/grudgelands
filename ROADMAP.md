@@ -53,7 +53,9 @@ remain delivered foundations, with this refinement work still ahead.
   the requested items. Round 57 laid its foundation (one quest for many
   givers, choice rewards with fixed enchants, story marking, completion
   texts, free play outside the story, no repeatable quests) and rebuilt the
-  six start zones on it, 92 quests as 30.
+  six start zones on it, 92 quests as 30; Round 59 rebuilt the band 11–20
+  (83 quests as 59, kill objectives 60 % → 21 %) and opened the story's
+  first chapter in the six capitals.
 
 Decided with the user on 2026-10-22 and 2026-10-23
 ([Round 57 plan §8–§9](docs/planning/round57-plan.md#8-decided-for-round-58),
@@ -66,18 +68,28 @@ Decided with the user on 2026-10-22 and 2026-10-23
   camps under construction, reputation with ranks and three cloaks, the
   camp vendor, Ore Sense and Treasure Hunt, a guild house in every capital,
   30 guild quests, and the Round 56 town fixes. Its GUI test runs together
-  with Round 57's.
-- **Round 59 and later, the story arc:** each faction's story from the
+  with Round 57's and Round 59's.
+- **Round 59, the band 11–20 and chapter 1:** **delivered** in 0.59.0 (a
+  map reset; [completion](docs/planning/round59-plan.md#completion-2026-10-24)):
+  the six band zones reworked on the Round 57 system (13 quests each, all
+  free play, three shared quests, three mob names per zone, the reward
+  pattern), chapter 1 of the story arc (the envoys at 19, the Miner's Guild
+  leaders, a town place in each capital at 20), town places on settlement
+  sockets, the quest log's variant zone. Its GUI test runs together with
+  Round 57's and Round 58's.
+- **Round 60 and later, the story arc:** each faction's story from the
   start zones to the front at level 41, built on the Round 57 foundation
-  zone by zone with the quest rework of levels 11–60. The user decided the
+  band by band with the quest rework of levels 21–60. The user decided the
   arc's direction on 2026-10-23
   ([decisions](docs/planning/round57-plan.md#decisions-during-the-round)):
   the Miner's Guilds and their faction's military closely interwoven, with
   little conflict inside a faction, and the enemy faction's guild rather
-  impersonal. **Next**, from Round 59 ([Round 58 plan §9](docs/planning/round58-plan.md#9-later)). After it the
-  armor redesign with several polygon groups per slot; later unique,
-  non-craftable items (quest rewards, boss loot for the instances, world
-  finds).
+  impersonal. **Next**, Round 60: the band 21–30 with chapter 2
+  ([Round 59 plan §9](docs/planning/round59-plan.md#9-later)); then the
+  bands 31–40, 41–50 and 51–60, one per round; then the production deploy
+  with one map reset; then the armor redesign with several polygon groups
+  per slot and unique, non-craftable items (quest rewards, boss loot for
+  the instances, world finds).
 
 These are goals for the next design and playtest passes, not changes already
 available in the game. Detailed follow-up scope and current design owners:
@@ -641,8 +653,19 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   trade-in of raw mined goods, three cloaks), the camp vendor's rank-locked
   page, Ore Sense and Treasure Hunt, the Miner's Remains, a guild house on
   a district plot in every capital, 30 guild quests; the Round 56 town
-  fixes. Complete on 2026-10-24; not pushed, the joint GUI test of 0.57 and
-  0.58 open.
+  fixes. Complete on 2026-10-24; not pushed, the joint GUI test of 0.57,
+  0.58 and 0.59 open.
+- [x] **Round 59 "The story arc's first chapter and the quest rework of
+  levels 11–20"**
+  ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
+  version 0.59.0, **map reset**, no step: the six band zones of levels
+  11–20 rebuilt on the Round 57 system and flagged reworked (83 → 59
+  quests, kill objectives 60 % → 21 %, 8–10 → 3 mob names per zone, four
+  new use objects), chapter 1 of the story arc in the six capitals (four
+  story quests, the guild leaders' hubs, six town places), the town place
+  kind on settlement sockets, `E-free-follow-ups` per faction and the quest
+  log's variant zone. Complete on 2026-10-24; not pushed, the joint GUI
+  test of 0.57, 0.58 and 0.59 open.
 
 ### Remaining work
 
@@ -688,8 +711,9 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 54](BACKLOG.md#round-54-carry-overs),
   [Round 55](BACKLOG.md#round-55-carry-overs),
   [Round 56](BACKLOG.md#round-56-carry-overs),
-  [Round 57](BACKLOG.md#round-57-carry-overs) and
-  [Round 58](BACKLOG.md#round-58-carry-overs) carry-overs (Round 40: the
+  [Round 57](BACKLOG.md#round-57-carry-overs),
+  [Round 58](BACKLOG.md#round-58-carry-overs) and
+  [Round 59](BACKLOG.md#round-59-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -710,7 +734,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   template-tool notes; Round 57: crafting queue, details, chain, quest,
   start-zone, vendor, bay and tool notes; Round 58: the open GUI judgements
   and the names to pick, room, consumable, lift, house, town-fix and
-  guild-quest notes);
+  guild-quest notes; Round 59: the open GUI judgements, quest-system,
+  band, chapter, tool and doc notes, the questing share);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:
