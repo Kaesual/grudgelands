@@ -11,11 +11,11 @@
 --   B. Every zone a gathering row lists has that row's hosts: at least 10 %
 --      of the zone's biome targets (simple_map.lua) for an Alchemy herb, more
 --      than none for every other row.
---   C. Per race and tier (tools/r60_herbs/reach.lua `tier_zones`: the start
---      zone for T1, the 11-20 zone for T2, the 21-30 zones for T3, the
---      contested 31-40 zone for T4, the band's fronts for T5 and T6), every
---      herb and cooking input of every recipe of the tier grows in those
---      zones. Mob loot is not checked (out of the lane's files; `--table`
+--   C. Per race and tier (tools/r60_herbs/reach.lua `tier_zones`, the
+--      user's rulings of 2026-10-24: the race's start zone for T1 and its
+--      11-20 zone for T2; the faction's half of the continent in the band for
+--      T3 and T4; the band's fronts for T5 and T6), every herb and cooking
+--      input of every recipe of the tier grows in those zones. Mob loot is not checked (out of the lane's files; `--table`
 --      lists the gaps).
 --   D. The manifest digest: the catalogue's EXPECTED_MANIFEST_SHA256 is the
 --      SHA-256 of its canonical bytes, and wp40/r7_manifest.lua pins the

@@ -409,7 +409,7 @@ return function(canonical, raw_sha256, settlement_order)
 		-- bands (was `1751733095a5cdb1...`).
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v3" or
 			gathering.sha256 ~=
-				"abdb9061ec2c4dc928e1e5924525d3a213611aed77d1cc94725595f2a6aa47d9" or
+				"e07dbb94b5bd0649403ae4b50d57bf435a76da83cd71bf013fd86ed93f5d8d00" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end

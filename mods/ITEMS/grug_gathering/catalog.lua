@@ -9,7 +9,7 @@ local NODE_SOURCE_SHA256 =
 local HARVEST_SOURCE_SHA256 =
 	"23cec2bdb27a8aaf85652515326b5f2d688ff8a806a37ca1bf1cf631b82a10fe"
 local EXPECTED_MANIFEST_SHA256 =
-	"abdb9061ec2c4dc928e1e5924525d3a213611aed77d1cc94725595f2a6aa47d9"
+	"e07dbb94b5bd0649403ae4b50d57bf435a76da83cd71bf013fd86ed93f5d8d00"
 
 local PLACEMENT = {
 	schema = "P9G-1",
@@ -55,13 +55,15 @@ local function host(biome, support, zone)
 	return {biome = biome, support = support, zone = zone}
 end
 
--- Every main ground of every biome (ALL_DRY_HOSTS, the swamp's mixed ground
--- included), as fresh rows. Round 60 lane HERBS: an Alchemy herb grows on
--- any main ground of its zones, so its supply follows the zones' land.
-local function ground_hosts()
+-- Every main ground (ALL_DRY_HOSTS, the swamp's mixed ground included) of
+-- the listed biomes, in ALL_DRY_HOSTS order (Round 60 lane HERBS: the
+-- Alchemy herbs' hosts in their new zones).
+local function ground_hosts(biomes)
+	local wanted = {}
+	for _, biome in ipairs(biomes) do wanted[biome] = true end
 	local result = {}
 	for _, value in ipairs(ALL_DRY_HOSTS) do
-		result[#result + 1] = host(value.biome, value.support)
+		if wanted[value.biome] then result[#result + 1] = host(value.biome, value.support) end
 	end
 	return result
 end
@@ -134,20 +136,18 @@ local P9G = {
 		host("grug_savanna", "default:dry_dirt_with_dry_grass"),
 	}, "none", "food", nil, true,
 		"grug_gathering_corn.png"),
-	-- Round 60 lane HERBS: the Alchemy herbs grow in their tiers' level
-	-- bands in every race's zones (round60-plan.md §2 point 9). Crimson Lotus
-	-- (T3-T5): every 21-30 zone, every contested 31-40 zone and both 41-50
-	-- fronts besides its two 51-60 zones.
+	-- Round 60 lane HERBS: every tier's Alchemy herbs grow in its level band
+	-- (round60-plan.md §2 point 9; the user, 2026-10-24: in every race's own
+	-- zones up to level 20, on each faction's half of the continent from 21
+	-- to 40, in the fronts above). Crimson Lotus (T3-T5): one 21-30 and one
+	-- 31-40 zone per faction's half and a 41-50 front, on the woods and the
+	-- swamp, besides its two 51-60 zones.
 	p9g("wp33_crimson_lotus_source_v1", "crimson_lotus", "Crimson Lotus", 1024, {
-		"elandor_ashenward_march", "elandor_frostbarrow_shelf",
-		"elandor_glassroot_wilds", "elandor_lorindor", "elandor_moonfall_wood",
-		"elandor_stormvault_heights", "elandor_whitebridge_shire",
-		"front_broken_causeway", "front_shattered_line", "front_skyglass_canopy",
-		"front_stormscale_summit", "kragmar_bannerbreak_mesa",
-		"kragmar_blackwind_rise", "kragmar_ossuary_reach",
-		"kragmar_speargrass_reach", "kragmar_thunderroot_wilds",
-		"kragmar_totemwater_reach", "kragmar_whispering_reedlands",
-	}, ground_hosts(), "none", "healing_herb", 3, false,
+		"elandor_glassroot_wilds", "elandor_whitebridge_shire",
+		"front_broken_causeway", "front_skyglass_canopy", "front_stormscale_summit",
+		"kragmar_thunderroot_wilds", "kragmar_whispering_reedlands",
+	}, ground_hosts({"grug_deep_forest", "grug_deep_jungle", "grug_jungle_fringe",
+		"grug_swamp"}), "none", "healing_herb", 3, false,
 		"default_marram_grass_1.png^[colorize:#d32459:145"),
 	-- Dragonweed (T2): every 11-20 zone besides its four 21-40 zones.
 	p9g("wp33_dragonweed_source_v1", "dragonweed", "Dragonweed", 768, {
@@ -156,19 +156,21 @@ local P9G = {
 		"elandor_starbough_vale", "kragmar_bannerbreak_mesa", "kragmar_mournfen",
 		"kragmar_ossuary_reach", "kragmar_raincall_basin",
 		"kragmar_redtusk_savanna",
-	}, ground_hosts(), "none", "healing_herb", 2, false,
+	}, ground_hosts({"grug_badlands", "grug_blight", "grug_bone_forest",
+		"grug_crags", "grug_deep_forest", "grug_elf_forest", "grug_jungle_edge",
+		"grug_meadows", "grug_pine_hills"}), "none", "healing_herb", 2, false,
 		"default_dry_grass_2.png^[colorize:#7e2f8c:120"),
-	-- Gravemoss (T1, and T3's Healing Potion): the six start zones and
-	-- every 21-30 zone besides its two 11-20 zones.
+	-- Gravemoss (T1, and T3's Healing Potion): the six start zones and one
+	-- 21-30 zone per faction (beside T3's lotus) besides its two 11-20 zones,
+	-- on the six home biomes.
 	p9g("wp33_gravemoss_source_v1", "gravemoss", "Gravemoss", 512, {
 		"elandor_copperfell_foothills", "elandor_dawnmere_fields",
-		"elandor_frostbarrow_shelf", "elandor_hearthpine_vale", "elandor_lorindor",
-		"elandor_moonfall_wood", "elandor_silverleaf_glades",
+		"elandor_hearthpine_vale", "elandor_silverleaf_glades",
 		"elandor_whitebridge_shire", "kragmar_kapok_cradle", "kragmar_mournfen",
-		"kragmar_ossuary_reach", "kragmar_speargrass_reach",
 		"kragmar_stillgrave_hollow", "kragmar_sunscar_flats",
-		"kragmar_totemwater_reach", "kragmar_whispering_reedlands",
-	}, ground_hosts(), "none", "healing_herb", 1, false,
+		"kragmar_whispering_reedlands",
+	}, ground_hosts({"grug_blight", "grug_elf_forest", "grug_jungle_edge",
+		"grug_meadows", "grug_pine_hills", "grug_savanna"}), "none", "healing_herb", 1, false,
 		"default_fern_1.png^[colorize:#526c45:100"),
 	p9g("wp33_marshbloom_source_v1", "marshbloom", "Marshbloom", 512, {
 		"elandor_lorindor", "elandor_whitebridge_shire",
@@ -240,7 +242,8 @@ local P9G = {
 		"front_stormscale_summit", "front_wyrmglass_crown"},
 		ALL_DRY_HOSTS, "front_shattered_line"), "dry_cardinal", "spice", 3, true,
 		"default_marram_grass_3.png^[colorize:#3c8290:120"),
-	-- Sunleaf (T1 and T2): the six start zones and every 11-20 zone.
+	-- Sunleaf (T1 and T2): the six start zones and every 11-20 zone, on the
+	-- six home biomes.
 	p9g("wp33_sunleaf_source_v1", "sunleaf", "Sunleaf", 384, {
 		"elandor_copperfell_foothills", "elandor_dawnmere_fields",
 		"elandor_goldmead_vale", "elandor_hearthpine_vale",
@@ -248,7 +251,8 @@ local P9G = {
 		"kragmar_kapok_cradle", "kragmar_mournfen", "kragmar_raincall_basin",
 		"kragmar_redtusk_savanna", "kragmar_stillgrave_hollow",
 		"kragmar_sunscar_flats",
-	}, ground_hosts(), "none", "spice", 1, true,
+	}, ground_hosts({"grug_blight", "grug_elf_forest", "grug_jungle_edge",
+		"grug_meadows", "grug_pine_hills", "grug_savanna"}), "none", "spice", 1, true,
 		"default_grass_3.png^[colorize:#e5d34a:105"),
 	p9g("wp33_wild_cocoa_source_v1", "wild_cocoa", "Wild Cocoa", 1024, {
 		"front_skyglass_canopy", "front_stormscale_summit",

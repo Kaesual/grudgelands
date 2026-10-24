@@ -12,10 +12,12 @@
 -- grug_mobs.level_band; a leader also drops its family's leader bonus). The
 -- Alchemy recipes are the real grug_alchemy/recipes.lua under small stubs.
 --
--- The zones a tier is checked against (`M.tier_zones`): T1 the race's start
--- zone (1-10), T2 its 11-20 zone, T3 its 21-30 zones, T4 its contested
--- 31-40 zone (capitals are not counted); T5 and T6 the fronts of the band
--- (41-50, 51-60), which both factions share, for every race alike.
+-- The zones a tier is checked against (`M.tier_zones`, the user's rulings
+-- of 2026-10-24): T1 the race's start zone (1-10), T2 its 11-20 zone; T3
+-- and T4 the faction's half of the continent in the band (The Accord's
+-- `elandor_` zones, The Throng's `kragmar_` zones, the contested 31-40
+-- zones included; capitals are not counted); T5 and T6 the fronts of the
+-- band (41-50, 51-60), which both factions share.
 
 local M = {}
 
@@ -159,12 +161,15 @@ end
 function M.tier_zones(world, race, tier)
 	local low = (tier - 1) * 10 + 1
 	local high = low + 9
+	local half = M.FACTION[race] == "accord" and "elandor_" or "kragmar_"
 	local out = {}
 	for _, zone in ipairs(world.zones) do
 		local overlaps = zone.level_min <= high and zone.level_max >= low
 		if overlaps and not zone.civic_no_hostiles then
 			if tier >= 5 then
 				if zone.id:match("^front_") then out[#out + 1] = zone.id end
+			elseif tier >= 3 then
+				if zone.id:sub(1, #half) == half then out[#out + 1] = zone.id end
 			elseif zone.race_region == race and not zone.id:match("^front_") then
 				out[#out + 1] = zone.id
 			end

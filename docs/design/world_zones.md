@@ -1639,14 +1639,17 @@ code, not by this document.
   herbs, spices and alchemy reagents—the expected gather/drop opportunity per
   faction must be within **±10%** over the reachable zone area of each level
   bracket. Different families may carry the same paired table.
-- The Alchemy herbs follow the level bands (Round 60): T1 gravemoss and
-  sunleaf grow in all six start zones (gravemoss also in Copperfell Foothills,
-  Mournfen and every 21–30 zone, for the T3 Healing Potion; sunleaf in every
-  11–20 zone, for the T2 one); T2 dragonweed in every 11–20 zone besides
-  Frostbarrow Shelf, Ossuary Reach, Ashenward March and Bannerbreak Mesa; T3
-  crimson lotus (the T3–T5 recipes) in every 21–30 zone, every contested
-  31–40 zone and both 41–50 fronts besides The Skyglass Canopy and Stormscale
-  Summit. Capitals carry none. Marshbloom
+- The Alchemy herbs follow the level bands (Round 60; the user,
+  2026-10-24): up to level 20 every race finds its tier's herbs in its own
+  zones, from 21 to 40 each faction on its own half of the continent (its
+  `elandor_` or `kragmar_` zones of the band, the contested ones included),
+  from 41 in the fronts. T1 gravemoss and sunleaf grow in all six start
+  zones; sunleaf in every 11–20 zone (T2's Healing Potion); T2 dragonweed in
+  every 11–20 zone besides Frostbarrow Shelf, Ossuary Reach, Ashenward March
+  and Bannerbreak Mesa; gravemoss (T3's Healing Potion) and T3 crimson lotus
+  in Whitebridge Shire and Whispering Reedlands; T4 crimson lotus in Glassroot
+  Wilds and Thunderroot Wilds; T5 crimson lotus in The Broken Causeway, besides
+  The Skyglass Canopy and Stormscale Summit. Capitals carry none. Marshbloom
   uses Lorindor, Whitebridge Shire, Ossuary Reach and Whispering Reedlands;
   this 2026-08-31 ruling replaces the former Mournfen row with Ossuary Reach
   to preserve paired level-21–30 supply. Stormkelp uses both endpoint island
@@ -1660,9 +1663,9 @@ compatible biome patch outside these ids grants no source.
 
 | Source | Exact stable zone ids |
 |---|---|
-| Gravemoss | `elandor_copperfell_foothills`; `elandor_dawnmere_fields`; `elandor_frostbarrow_shelf`; `elandor_hearthpine_vale`; `elandor_lorindor`; `elandor_moonfall_wood`; `elandor_silverleaf_glades`; `elandor_whitebridge_shire`; `kragmar_kapok_cradle`; `kragmar_mournfen`; `kragmar_ossuary_reach`; `kragmar_speargrass_reach`; `kragmar_stillgrave_hollow`; `kragmar_sunscar_flats`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
+| Gravemoss | `elandor_copperfell_foothills`; `elandor_dawnmere_fields`; `elandor_hearthpine_vale`; `elandor_silverleaf_glades`; `elandor_whitebridge_shire`; `kragmar_kapok_cradle`; `kragmar_mournfen`; `kragmar_stillgrave_hollow`; `kragmar_sunscar_flats`; `kragmar_whispering_reedlands` |
 | Dragonweed | `elandor_ashenward_march`; `elandor_copperfell_foothills`; `elandor_frostbarrow_shelf`; `elandor_goldmead_vale`; `elandor_starbough_vale`; `kragmar_bannerbreak_mesa`; `kragmar_mournfen`; `kragmar_ossuary_reach`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna` |
-| Crimson Lotus | `elandor_ashenward_march`; `elandor_frostbarrow_shelf`; `elandor_glassroot_wilds`; `elandor_lorindor`; `elandor_moonfall_wood`; `elandor_stormvault_heights`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_shattered_line`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_bannerbreak_mesa`; `kragmar_blackwind_rise`; `kragmar_ossuary_reach`; `kragmar_speargrass_reach`; `kragmar_thunderroot_wilds`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
+| Crimson Lotus | `elandor_glassroot_wilds`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_thunderroot_wilds`; `kragmar_whispering_reedlands` |
 | Sunleaf | `elandor_copperfell_foothills`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_hearthpine_vale`; `elandor_silverleaf_glades`; `elandor_starbough_vale`; `kragmar_kapok_cradle`; `kragmar_mournfen`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna`; `kragmar_stillgrave_hollow`; `kragmar_sunscar_flats` |
 | Marshbloom | `elandor_lorindor`; `elandor_whitebridge_shire`; `kragmar_ossuary_reach`; `kragmar_whispering_reedlands` |
 | Stormkelp | `front_gravesalt_escarpment`; `front_shattered_line` (swamp mud only); `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
@@ -1673,10 +1676,15 @@ compatible biome patch outside these ids grants no source.
 | Wild Cocoa | `front_skyglass_canopy`; `front_stormscale_summit` |
 | Rock Salt | `front_gravesalt_escarpment`; `front_stormscale_summit`; `front_wyrmglass_crown` |
 
-The exact host rules are: Gravemoss, Dragonweed, Crimson Lotus and Sunleaf
-(Round 60) use the main ground of any biome of their zones (each biome's top
-node, the swamp's six grounds, as the catalogue's `ALL_DRY_HOSTS` lists them),
-so their supply follows the zones' land; Marshbloom uses Swamp mud; Potato uses Meadows grass;
+The exact host rules are (Round 60; each biome's main ground as the
+catalogue's `ALL_DRY_HOSTS` lists it, the swamp's six grounds): Gravemoss and
+Sunleaf use the six home biomes' ground (Pine Hills coniferous litter, Blight
+dirt, Meadows grass, Elf Forest silver litter, Savanna dry grass, Jungle Edge
+rainforest litter); Dragonweed uses Badlands mesa clay, Blight dirt, Bone
+Forest litter, Crags gravel, Deep Forest litter, Elf Forest silver litter,
+Jungle Edge rainforest litter, Meadows grass or Pine Hills coniferous litter;
+Crimson Lotus uses Deep Forest litter, Deep Jungle/Jungle Fringe canopy
+litter or the Swamp's grounds; Marshbloom uses Swamp mud; Potato uses Meadows grass;
 Corn uses Meadows grass or Savanna dry grass; Melon uses Jungle Edge
 rainforest litter or Deep Jungle/Jungle Fringe canopy litter; Mushroom uses
 Deep Forest litter, Bone Forest litter or Swamp mud; and Wild Cocoa uses Deep

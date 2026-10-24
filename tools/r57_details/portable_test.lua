@@ -330,13 +330,13 @@ check(find(linen, {kind = "drop", key = "goblin", leader = true}) ~= nil, "R ...
 check(find(linen, {kind = "drop", mob = "grug_mobs:bog_ooze"}) ~= nil, "R ...and the Bog Ooze's static drops")
 check(find(linen, {kind = "vendor"}) == nil, "R ...and no vendor sells it (ruling 28)")
 
--- Round 60 HERBS: Gravemoss grows in the start zones and the band 21-30
--- too (16 zones, was Copperfell Foothills and Mournfen only).
+-- Round 60 HERBS: Gravemoss grows in the six start zones and one 21-30
+-- zone per faction too (10 zones, was Copperfell Foothills and Mournfen).
 local moss = find(real.sources("grug_gathering:gravemoss"), {kind = "gather"})
 local moss_zones = moss and ("," .. table.concat(moss.zones, ",") .. ",") or ""
-check(moss and #moss.zones == 16 and moss_zones:find(",elandor_hearthpine_vale,", 1, true) and
+check(moss and #moss.zones == 10 and moss_zones:find(",elandor_hearthpine_vale,", 1, true) and
 	moss_zones:find(",kragmar_mournfen,", 1, true) and moss.alchemy_tier == 1,
-	"R Gravemoss grows in 16 zones (Hearthpine Vale and Mournfen among them), Alchemy T1")
+	"R Gravemoss grows in 10 zones (Hearthpine Vale and Mournfen among them), Alchemy T1")
 eq(real.zone("kragmar_mournfen").display_name, "Mournfen", "R a zone id resolves to its name")
 local carrot_wild = find(real.sources("grug_cooking:carrot"), {kind = "gather"})
 check(carrot_wild and #carrot_wild.zones == 3 and carrot_wild.levels[2] == 6, "R Carrots grow wild in three start zones")
