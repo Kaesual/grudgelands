@@ -128,8 +128,19 @@ New for this round:
    their own zones. **The user's ruling: a HERBS lane re-places the herbs** (§2 point 9). More elixir kinds are not
    needed (six to eight products per tier exist). The product (Precision I or Vigor I) follows ingredient reach after
    HERBS (point 4).
-
-## 3. Shared conventions
+6. **The chapter-2 picks: all thirteen recommendations** (K1–K13 "A", page `r60/chapter2-page`, 2026-10-24): T2a at 24
+   (Rellis → a place in Ossuary → Mereth, requires T2, required by T3); A3's held load in the Frostbarrow mining camp;
+   the Dispatch Folio as Nib's quest drop; T3 at a public register place by Nhal Veyr's guild house (`claim_notice`);
+   Zali in the shared steel help; Thorn and Murk two local quests; Moonfall's sighting post, Totemwater's reading
+   bank, Lorindor's snare ground, Speargrass's banner cache; Hush kept his old working copies; torches and a shared
+   night task in the capitals; one Alchemy occasion per envoy. Draft `r60/reports/chapter2-draft.md`, check
+   `r60/reports/chapter2-check.md`; the check's fixes are taken into the briefs (Hushwater's place in the wilderness,
+   one title per shared quest and a line plan, no Paper in Ossuary, Highcourt's cook asks for a Gnarled Boar Tusk,
+   the Folio a new soulbound item, cross-lane ids). The Alchemy product is **Precision I** (boars by day in every start
+   zone).
+7. **The seed fleet checks the quest places** (the user, 2026-10-24): BANDQUESTS checks whether the fleet covers that
+   every recipe quest place is placed on every fleet seed; if not, it adds that check (the regions are computed
+   offline). Today `quest_targets.py` checks it on 6 seeds only.
 
 - **Upgrade classification: map reset** (one `map_reset` entry for 0.60.0, by D): new places in band spawn files, new
   quest sockets in band POIs and capital plots. Characters keep items, levels, quests and money; quests whose ids vanish
