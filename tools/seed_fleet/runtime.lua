@@ -20,6 +20,11 @@
 --                      the next write reads); R.written_hash(vm) the hash of
 --                      what it holds after a write
 --   R.seconds          {main, build}: CPU seconds of the two constructions
+--   R.planner_source   the R6 planner's pure column query of the built
+--                      session (Round 60: the spawn regions' query adapter
+--                      needs its column_values_at, as the game passes
+--                      grug_mapgen.wp40.planner_source), taken off
+--                      r6.lua's constructor while the build runs
 --
 -- The engine seams are stand-ins, so a chunk's bytes are this harness's and
 -- not the engine's (compare runs of the harness with each other, never with
@@ -145,8 +150,29 @@ return function(repo, seed, mode)
 
 	local runtime_factory = dofile(wp40 .. "/r7_runtime.lua")
 	local R = {fake = fake, seed = seed, sha = raw_sha256, seconds = {}}
+	-- The planner source (Round 60): r7_runtime.lua loads r6.lua when its
+	-- factory runs; its constructors return the identity holding it fifth.
+	local saved_dofile = dofile
+	rawset(_G, "dofile", function(path)
+		local chunk = saved_dofile(path)
+		if type(path) ~= "string" or not path:match("/r6%.lua$") then return chunk end
+		return function(...)
+			local module = chunk(...)
+			for _, name in ipairs({"new_runtime", "new_authority"}) do
+				local constructor = module[name]
+				module[name] = function(...)
+					local out = {constructor(...)}
+					local identity = name == "new_runtime" and out[5] or out[2]
+					R.planner_source = R.planner_source or (type(identity) == "table" and identity.planner_source)
+					return unpack(out, 1, table.maxn(out))
+				end
+			end
+			return module
+		end
+	end)
 	local t0 = os.clock()
 	R.main = runtime_factory(fake, wp40, schematics, projection, catalog)
+	rawset(_G, "dofile", saved_dofile)
 	register_palette(R.main)
 	local t1 = os.clock()
 	R.seconds.main = t1 - t0
