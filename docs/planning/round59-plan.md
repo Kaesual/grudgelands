@@ -298,7 +298,8 @@ files, and the code in `grug_quests` (`validate.lua`, `labels.lua`, `use.lua`), 
 **The coordinator** (answers to lane questions and the check; each built as stated):
 
 - **The check's three fixes taken without asking:** the witness travel shared per faction (one level per shared
-  quest), the Redtusk and Raincall use places away from the camp's leader, the town sockets in the plots'
+  quest), the Redtusk and Raincall use sockets outside the camp members' spawn disc (as built: out of the leader's
+  sight, since the disc covers the whole camp; Deviations), the town sockets in the plots'
   `extra_sockets` (two of the templates are built by several plots; Nhal Veyr's outside the hall door).
 - **The leaders' hubs anchored at the zone** (`"anchor": "zone"`): a hub anchored at the capital fails
   `validate.py --atlas` (`r28common.py` gives a guild NPC its settlement key as its anchor), as the camps' foreman
@@ -522,4 +523,14 @@ again in a band zone: the foreman's Iron, Jade and hunt at once, the report turn
 
 ### Round-end gates
 
-GATES_PLACEHOLDER
+Lane D on its branch from `8f84be22` (measured): `check_upgrade.py` PASS (against origin/main `69481ed1`, 0.57.0,
+with the `map_reset` entry 0.59.0; it also passes without that entry, since unpushed 0.58.0's covers every change
+against 0.57.0), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (6 warnings, as before),
+`quest_kinds.py --check` 0 differ, `quest_targets.py` 0 missing (1,094 targets on seeds 42, 7, 2026), `income.py
+--check` PASS, `r37_dc` PASS (766 checks), `tools/r59_bandquests/build_structure.py --check` and
+`tools/r59_storyquests/build_structure.py --check` 0 of 6 differ, `tools/r58_guildquests/build_structure.py --check
+--ids` 0 of 26 differ, `tools/r59_storyart/paint_art.py --check` OK (4 textures), a link and anchor check of every
+touched file, the full `run_fixtures.sh` (**272 passed, 0 failed**), the **full seed fleet on main** `8f84be22`
+(`seed_fleet/run.sh full` through the queue at 8 parallel: **304 of 304 seeds build, 0 failed, 20 min 8 s**) and one
+headless boot (PASS, no ERROR line). Each code lane ran the full `run_fixtures.sh` once (QSYS3 270/0, BANDQUESTS
+271/0, STORYQUESTS 268 with three pins fixed then 272/0 after its rebase, STORYART-SHIP 272/0).
