@@ -91,7 +91,14 @@ local function loader(directory)
 			end,
 			extra_sockets = function(area)
 				return {plots.work("bench", "sit", area.x0 + 3, area.z0 + 1,
-					2, {"bench"}, 2)}
+					2, {"bench"}, 2),
+					-- Round 59: the receiving court, the chapter's town place
+					-- (quests.md "Town places"; nobody stands on it): outside
+					-- the hall's door on the side away from the bench, off
+					-- the path and the paved forecourt (the vaulted hall
+					-- itself is the cook's).
+					{id = "receiving_court", role = "quest_place",
+						x = area.x1 - 3, z = area.z0 + 1, face = 3}}
 			end},
 		-- 8. The quarter's own watch.
 		{id = "homes_watch", template = "nhal_veyr_vigil_watch",

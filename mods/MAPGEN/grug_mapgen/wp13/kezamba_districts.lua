@@ -209,7 +209,14 @@ local function loader(directory)
 			{id = "shore_store", template = "kezamba_shore_store",
 				order = 4,
 				extra_sockets = function(area)
-					return {spare("store", area.x1 - 2, area.z0 + 2, 0)}
+					return {spare("store", area.x1 - 2, area.z0 + 2, 0),
+						-- Round 59: the witness landing, the chapter's town
+						-- place (quests.md "Town places"; nobody stands on
+						-- it): beside the store's blind wall, off the path. In
+						-- this row and not the template, which three more
+						-- plots build.
+						{id = "witness_landing", role = "quest_place",
+							x = area.x0 + 1, z = 0, face = 1}}
 				end},
 			-- THE SMOKER'S ACTIVITY IS `stall`, and the reason is the one the
 			-- Highcourt fill wrote down about its baker: the closed vocabulary
