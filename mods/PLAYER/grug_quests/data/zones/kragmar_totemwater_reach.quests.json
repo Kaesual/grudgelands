@@ -37,8 +37,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] Fish for the Table",
-      "text": "[PH] Tokai Knotreader admits a seer needs lunch: bring 4 Mire Carp. Real text to follow.",
+      "title": "Fish for the Table",
+      "text": "I have listened to the water all morning, and now my stomach has joined the discussion. Bring me four Mire Carp for the table. A seer should know when to stop interpreting a sound and feed it.",
       "objectives": [
         {
           "type": "item",
@@ -52,14 +52,14 @@
           "givers": [
             "r20_anchor_047_host"
           ],
-          "text": "[PH] Tokai Knotreader admits a seer needs lunch: bring 4 Mire Carp. Real text to follow."
+          "text": "I have listened to the water all morning, and now my stomach has joined the discussion. Bring me four Mire Carp for the table. A seer should know when to stop interpreting a sound and feed it."
         },
         {
           "zone": "elandor_dur_brannoc",
           "givers": [
             "r20_dwarf_capital_cook"
           ],
-          "text": "[PH] Varda Copperpan's fish pie wants 4 Mire Carp, and she has opinions about who should catch them. Real text to follow."
+          "text": "My fish pie has a crust, a dish and several admirers, but it is still short of fish. Bring me four Mire Carp. If you are wondering who ought to catch them, look at the person who is not holding the rolling pin."
         }
       ],
       "rewards": {
@@ -87,9 +87,9 @@
       "min_level": 23,
       "level": 24,
       "requires": [],
-      "title": "[PH] Check the Knots by the River",
-      "text": "[PH] Tokai Knotreader tests his reading against what he sees: secure his prepared reading cord at the {name:reading_bank} in the {name:reedbanks}; no swimming is asked. Real text to follow.",
-      "completion": "[PH] Tokai rereads the cord and likes the answer less. Real text to follow.",
+      "title": "A Reading Worth Checking",
+      "text": "The fishers' reports sit badly with my last reading, and I would rather correct myself than lose another fisher. Secure the prepared reading cord on the bank at the {name:reading_bank} in the {name:reedbanks}, then return to me. I will read it again with their observations in mind; even a seer can pull the wrong knot tight.",
+      "completion": "The reading fits the broken traps and missing fishers now: the old hunger has the shape of Reed-Maw. I preferred my first interpretation, but preference is a poor guide to dangerous water.",
       "objectives": [
         {
           "type": "use",
@@ -143,8 +143,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "[PH] Hear a Second Voice",
-      "text": "[PH] Tokai sends the player to Enashi Reedvoice in the Whispering Reedlands to put the water travellers' reports together. Real text to follow.",
+      "title": "Hear a Second Voice",
+      "text": "Enashi Reedvoice hears from travellers whose boats never call at Totemwater Post. Speak to her at Reedvoice Station in the Whispering Reedlands about what they have seen. I would like to hear a second voice before becoming too fond of my own answer.",
       "objectives": [
         {
           "type": "talk",
@@ -166,8 +166,8 @@
       "min_level": 26,
       "level": 27,
       "requires": [],
-      "title": "[PH] Fences for the Weirs",
-      "text": "[PH] Tokai's fishers want their weirs back in the water: bring 8 Jungle Wood Fences. Real text to follow.",
+      "title": "Fences for the Weirs",
+      "text": "The fishers need to mend their weirs, and I have offered all the wise advice they can stand. Bring me eight Jungle Wood Fences for the repairs. They were quite clear that the next contribution should be made of wood.",
       "objectives": [
         {
           "type": "item",
@@ -219,9 +219,9 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] The Name Beneath the Water",
-      "text": "[PH] Tokai names Crocodile Reed-Maw as the known danger {dir_from_giver:reed_maw_crocodile} and sends the player against it; the reading cord is not assumed. Real text to follow.",
-      "completion": "[PH] The old hungry danger of Tokai's knots was the Reed-Maw. Real text to follow.",
+      "title": "The Name Beneath the Water",
+      "text": "Fishers are missing, traps are broken, and the survivors recognise Crocodile Reed-Maw in the swamp {dir_from_giver:reed_maw_crocodile}. That is enough for me to name the danger without asking anyone to wait for another reading. Kill Reed-Maw and bring me word. An old hunger with jaws needs a firmer answer than a clever knot.",
+      "completion": "Reed-Maw is dead, and the fishers can work without that old hunter waiting for them. The hunger in my reading had a name and a body after all; I will remember the people who helped us recognise it.",
       "objectives": [
         {
           "type": "kill",
@@ -287,8 +287,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] Knots for Bannerbreak",
-      "text": "[PH] Tokai sends the player to Yarra Standardmender at Tornstandard Hold; no earlier deed is claimed. Real text to follow.",
+      "title": "Knots for Bannerbreak",
+      "text": "Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa needs help with banners that must endure more than weather. Go and speak to her. She and I both work with cord, though her knots have rather less patience for interpretation.",
       "objectives": [
         {
           "type": "talk",

@@ -43,8 +43,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] Meat for the Capital's Kitchen",
-      "text": "[PH] Mirael Petalpot: the Star Hall wants a meal worthy of its deliberations, ready before they end; 8 Raw Meat from the glades' game by day. Real text to follow.",
+      "title": "Meat for the Table",
+      "text": "The Star Hall wants a meal worthy of its deliberations, preferably ready before anyone finishes deliberating. Bring me eight Raw Meat; the game in the {name:glades} can supply it by day. I can manage the seasoning once they settle on a time.",
       "objectives": [
         {
           "type": "item",
@@ -62,7 +62,7 @@
           "givers": [
             "r20_elf_capital_cook"
           ],
-          "text": "[PH] Mirael Petalpot: the Star Hall wants a meal worthy of its deliberations, ready before they end; 8 Raw Meat from the glades' game by day. Real text to follow."
+          "text": "The Star Hall wants a meal worthy of its deliberations, preferably ready before anyone finishes deliberating. Bring me eight Raw Meat; the game in the {name:glades} can supply it by day. I can manage the seasoning once they settle on a time."
         },
         {
           "zone": "kragmar_gor_drazhak",
@@ -77,7 +77,7 @@
               "area": "kragmar_gor_drazhak/steppe"
             }
           ],
-          "text": "[PH] Gorla Longladle: the ladle commands, and hungry fighters line up; 8 Raw Meat from the steppe's game by day. Real text to follow."
+          "text": "Hungry fighters line up when I raise the ladle, which saves a great deal of shouting. Bring me eight Raw Meat for the pot; there is game on the {name:steppe} by day. I would like to keep my authority well fed."
         },
         {
           "zone": "kragmar_kezamba",
@@ -92,7 +92,7 @@
               "area": "kragmar_kezamba/canopy"
             }
           ],
-          "text": "[PH] Teshani Smokereed: half of Kezamba follows its nose to the smokehouse; 8 Raw Meat from the canopy's game by day. Real text to follow."
+          "text": "Half of Kezamba has followed its nose to the smokehouse, and the other half will hear about it shortly. Bring me eight Raw Meat; the game in the {name:canopy} can supply it by day. A good smell makes promises too."
         },
         {
           "zone": "kragmar_nhal_veyr",
@@ -107,7 +107,7 @@
               "area": "kragmar_nhal_veyr/blightfields"
             }
           ],
-          "text": "[PH] Velis Mourningbowl: places set for mourners who forgot there is a kitchen; 8 Raw Meat from the blightfields' game by day. Real text to follow."
+          "text": "I have set places for mourners who may have forgotten there is a kitchen. Bring me eight Raw Meat for their meal; there is game in the {name:blightfields} by day. They need not find something to say before they sit down."
         }
       ],
       "rewards": {
@@ -125,9 +125,9 @@
       "min_level": 27,
       "level": 28,
       "requires": [],
-      "title": "[PH] What the Seal Was For",
-      "text": "[PH] Eriath: Poacher Bough-Counter Rusk marks the old trees for the axe with an abused bough-seal at the poacher camp; stop him. Rusk alone stands for the false records. Real text to follow.",
-      "completion": "[PH] Eriath: the seal means tending again; Rusk's handwriting may yet turn up elsewhere. Real text to follow.",
+      "title": "What the Seal Was For",
+      "text": "Poacher Bough-Counter Rusk uses the bough-seal to mark old trees for cutting that was never granted. Kill him at the {name:poacher_camp}, {dir_from_giver:poacher_camp}, and report to me. He knows how permission is recorded, and he is counting on others to read only the seal.",
+      "completion": "Rusk will mark no more trees for his own trade. I will keep his false records with the case; the handwriting may be useful if it appears on another claim.",
       "objectives": [
         {
           "type": "kill",
@@ -167,8 +167,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] A Forester's Path",
-      "text": "[PH] Eriath: the foresters know which roots trip them; it is the teeth between the roots; six of the greatwood's vixens by day. Real text to follow.",
+      "title": "A Forester's Path",
+      "text": "The foresters know which roots trip the unwary; it is the teeth between the roots that worry them. Hunt six Silver-Tip Vixens by day in the {name:greatwood}. The tenders have work enough without being driven off their paths.",
       "objectives": [
         {
           "type": "kill",
@@ -194,8 +194,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] The Missing Half of the Pie",
-      "text": "[PH] Mirael Petalpot: Ilwen Petalmeasure's berry deliveries keep shrinking; ask her at Lorindor Berrycourt what the tolls cost. Real text to follow.",
+      "title": "The Missing Half of the Pie",
+      "text": "Ilwen Petalmeasure's berry deliveries keep shrinking, though the pies I am asked to make remain the same size. Speak to her at Lorindor Berrycourt about what the tolls are costing the harvest. I would like to know who is eating the missing half before it reaches my kitchen.",
       "objectives": [
         {
           "type": "talk",
@@ -217,8 +217,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Bread Does Not Keep Star-Time",
-      "text": "[PH] Mirael: Lethen Moonledger forgets his bread collections; find out at the Moonfall Observatory what keeps him. Real text to follow.",
+      "title": "Bread Does Not Keep Star-Time",
+      "text": "Lethen Moonledger keeps missing his bread collections, and bread is less patient than the sky. Go to Moonfall Observatory and ask what is keeping him. If his mind is occupied by something serious, there may be more useful work there than reminding him to eat.",
       "objectives": [
         {
           "type": "talk",
@@ -240,8 +240,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] Where the Writ Wears Thin",
-      "text": "[PH] Eriath: the Glassroot Wilds lie beyond our walls; report to Faeris Rootbinder at Glassroot Gate, at 30 or later. Real text to follow.",
+      "title": "Where the Writ Wears Thin",
+      "text": "Faeris Rootbinder at Glassroot Gate needs help in Glassroot Wilds, where keeping a promise is harder than issuing it from Lethariel. Go and speak to her about the work. Our protection ought to reach the people tending those places, not stop at the edge of a document.",
       "objectives": [
         {
           "type": "talk",
