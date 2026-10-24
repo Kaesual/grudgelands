@@ -182,8 +182,10 @@ party = {leader = "ana", members = {
 	{name = "bo", class = "mage", level = 28, online = true, hp = 18, hp_max = 20}}}
 pending = {{inviter = "bo", level = 28, expires_in = 50}}
 fs = H.render(ana, PARTY)
-check(fs:find("table[", 1, true) ~= nil and fs:find("textarea[", 1, true) == nil,
-	"I Party in a party: the member table, no textarea")
+check(fs:find("table[", 1, true) ~= nil and
+	fs:find("You are not in a party.", 1, true) == nil and
+	fs:find("There is no early unflag.", 1, true) ~= nil,
+	"I Party in a party: member table and PvP rules replace the empty-party hint")
 harmless(fs, "button:grug_party_refresh", "I Party in a party", {tab = TABS})
 sfinv.get_or_create_context(ana).grug_party_notice = "Refused: no."
 fs = H.render(ana, PARTY)
@@ -293,8 +295,14 @@ do
 		eq(focused(page, {preserved = TABS}), want, "C Character " .. mode .. ": after a tab click")
 		eq(focused(page, {preserved = "grug_character_home"}), want,
 			"C Character " .. mode .. ": after a Return home click")
-		eq(focused(F.without_set_focus(page)), "button:grug_character_home",
-			"C Character " .. mode .. ": without set_focus Return home would be")
+		local bare_name, bare = focused(F.without_set_focus(page))
+		if mode == "effects" then
+			eq(bare_name, "textarea:", "C empty Effects: without set_focus the hint would be focused")
+			check(bare and bare.eats, "C empty Effects: the unprotected hint would eat the inventory key")
+		else
+			eq(bare_name, "button:grug_character_home",
+				"C Character " .. mode .. ": without set_focus Return home would be")
+		end
 	end
 	local context = sfinv.get_or_create_context(hero)
 	context.page = "grug_inventory:inventory"

@@ -266,8 +266,8 @@ check(read("mods/ITEMS/grug_gathering/init.lua"):find('dofile(modpath .. "/pick.
 	"F11 grug_gathering loads the pick")
 local default_nodes = read("mods/BASE/default/nodes.lua")
 for _, block in ipairs({
-	{'minetest.register_node("default:apple", {', '\n})\n'},
-	{'minetest.register_node("default:blueberry_bush_leaves_with_berries", {', '\n})\n'},
+	{'core.register_node("default:apple", {', '\n})\n'},
+	{'core.register_node("default:blueberry_bush_leaves_with_berries", {', '\n})\n'},
 }) do
 	local def = cut(default_nodes, block[1], block[2], block[1])
 	check(not def:find("on_rightclick", 1, true) and def:find("after_dig_node", 1, true) ~= nil,
