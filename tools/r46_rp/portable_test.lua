@@ -120,6 +120,14 @@ rawset(_G, "grug_money", {format = function(copper) return copper .. "c" end})
 -- P: the providers
 -- ---------------------------------------------------------------------------
 rawset(_G, "grug_repair", {})
+core.colorize = function(_, text) return text end
+-- Load presentation helpers without adding a join callback to this fixture.
+do
+	local join = core.register_on_joinplayer
+	core.register_on_joinplayer = function() end
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+	core.register_on_joinplayer = join
+end
 dofile(repo .. "/mods/ITEMS/grug_repair/service.lua")
 local kinds = {}
 do

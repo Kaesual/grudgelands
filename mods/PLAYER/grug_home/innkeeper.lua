@@ -12,11 +12,11 @@ local function permitted(player, entity)
 end
 local function form(player,row)
  local home = grug_home.get(player)
- return "formspec_version[3]size[7,3]label[0.4,0.5;" ..
-  core.formspec_escape(row.label .. " Innkeeper") .. "]" ..
+ return grug_core.ui.frame(9, 3.4, row.label .. " Innkeeper") ..
+  grug_core.ui.panel(0.2, 0.85, 8.6, 1.15) ..
   (home and home.id == row.id and "label[0.4,1.3;This is your home]" or
    "button[0.4,1.1;4,0.7;bind;Set home here]") ..
-  "button_exit[4.8,2.1;1.7,0.6;close;Close]"
+  "button_exit[6.9,2.35;1.7,0.65;close;Close]"
 end
 function grug_home.open_innkeeper(player,entity)
  local row = permitted(player,entity)
