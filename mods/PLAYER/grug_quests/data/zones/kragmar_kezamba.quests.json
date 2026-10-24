@@ -24,7 +24,7 @@
     },
     {
       "id": "kezamba_guild",
-      "anchor": "kezamba",
+      "anchor": "zone",
       "givers": [
         {
           "npc": "r58_guild_leader_kezamba",

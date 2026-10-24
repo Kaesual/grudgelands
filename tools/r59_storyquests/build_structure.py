@@ -264,7 +264,10 @@ def build():
                 if giver["npc"] == envoy:
                     giver["lines"] = [LINE_ENVOY if line == old_line else line for line in giver["lines"]]
                     assert giver["lines"] == [LINE_ENVOY, "front"], (zone, giver["lines"])
-        hubs.append({"id": hub_id, "anchor": capital,
+        # Anchored at the zone, as the camps' foreman hubs are: the atlas
+        # knows a guild NPC by its settlement key, not the anchor id a
+        # settlement anchor resolves to (validate.py --atlas E-giver-hub).
+        hubs.append({"id": hub_id, "anchor": "zone",
                      "givers": [{"npc": leader(capital), "lines": [LINE_GUILD]}]})
         data["hubs"] = hubs
         quests = [q for q in data["quests"] if q["id"] not in OURS]

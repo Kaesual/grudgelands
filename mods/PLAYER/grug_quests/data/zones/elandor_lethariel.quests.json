@@ -24,7 +24,7 @@
     },
     {
       "id": "lethariel_guild",
-      "anchor": "lethariel",
+      "anchor": "zone",
       "givers": [
         {
           "npc": "r58_guild_leader_lethariel",

@@ -24,7 +24,7 @@
     },
     {
       "id": "nhal_veyr_guild",
-      "anchor": "nhal_veyr",
+      "anchor": "zone",
       "givers": [
         {
           "npc": "r58_guild_leader_nhal_veyr",

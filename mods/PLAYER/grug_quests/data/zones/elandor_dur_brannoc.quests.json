@@ -24,7 +24,7 @@
     },
     {
       "id": "dur_brannoc_guild",
-      "anchor": "dur_brannoc",
+      "anchor": "zone",
       "givers": [
         {
           "npc": "r58_guild_leader_dur_brannoc",

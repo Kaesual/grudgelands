@@ -146,7 +146,7 @@ for capital, c in pairs(CAPITAL) do
 		eq(lines_of[envoy(capital)], "envoy,front", "S " .. capital .. "'s envoy has the lines envoy and front")
 		local hub = hub_of[leader(capital)]
 		if check(hub ~= nil, "S " .. capital .. "'s leader is a hub giver") then
-			eq(hub.anchor, capital, "S " .. capital .. "'s leader hub stands in " .. capital)
+			eq(hub.anchor, "zone", "S " .. capital .. "'s leader hub is anchored at its zone (as the foremen's)")
 			eq(#hub.givers, 1, "S " .. capital .. "'s leader hub has one giver")
 			eq(lines_of[leader(capital)], "guild", "S " .. capital .. "'s leader has the line guild")
 		end

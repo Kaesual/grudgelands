@@ -24,7 +24,7 @@
     },
     {
       "id": "highcourt_guild",
-      "anchor": "highcourt",
+      "anchor": "zone",
       "givers": [
         {
           "npc": "r58_guild_leader_highcourt",

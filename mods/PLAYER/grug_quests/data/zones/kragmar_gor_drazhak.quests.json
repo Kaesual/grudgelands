@@ -24,7 +24,7 @@
     },
     {
       "id": "gor_drazhak_guild",
-      "anchor": "gor_drazhak",
+      "anchor": "zone",
       "givers": [
         {
           "npc": "r58_guild_leader_gor_drazhak",
