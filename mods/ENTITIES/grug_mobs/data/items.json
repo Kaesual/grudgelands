@@ -1504,8 +1504,8 @@
     "uses": [
       "quest"
     ],
-    "icon": "A folded oxblood-sealed despatch tied with ochre cord, a scorch mark across one corner. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
-    "notes": "Round 36 main line, chapter 2 (story bible \u00a72): the Accord's quest drop from the captain of pvp_camp_shattered_line_throng_high."
+    "icon": "A tightly rolled warm-paper despatch with ochre cord wraps and a hanging oxblood seal tag, a scorch mark across the upper rim. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+    "notes": "Round 36 main line, chapter 2 (story bible \u00a72): the Accord's quest drop from the captain of pvp_camp_shattered_line_throng_high. Its icon grug_mobs_throng_captains_orders.png is the user's pick (Round 60 STORYART, tools/r60_storyart/paint_art.py)."
   },
   {
     "id": "grug_mobs:accord_captains_orders",
@@ -1516,8 +1516,8 @@
     "uses": [
       "quest"
     ],
-    "icon": "A folded steel-blue despatch with a pale wax seal and a brass clasp, a scorch mark across one corner. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
-    "notes": "Round 36 main line, chapter 2 (story bible \u00a72): the Throng's quest drop from the captain of pvp_camp_shattered_line_accord_high."
+    "icon": "A tightly rolled steel-blue despatch with a brass clamp and a hanging pale wax seal tag, a scorch mark across the upper rim. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+    "notes": "Round 36 main line, chapter 2 (story bible \u00a72): the Throng's quest drop from the captain of pvp_camp_shattered_line_accord_high. Its icon grug_mobs_accord_captains_orders.png is the user's pick (Round 60 STORYART, tools/r60_storyart/paint_art.py)."
   },
   {
     "id": "grug_mobs:dispatch_folio",
@@ -1529,6 +1529,6 @@
       "quest"
     ],
     "icon": "An opened folder with a stack of still pale sheets and a clearly marked cover sheet. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
-    "notes": "Round 60 chapter 2 (K3 A): the Accord's quest drop from Goblin Powder-Counter Nib (frostbarrow_cutting_04), every kill while needed. Until the art lane's pick it shows the quest kind's placeholder image (subtypes.lua)."
+    "notes": "Round 60 chapter 2 (K3 A): the Accord's quest drop from Goblin Powder-Counter Nib (frostbarrow_cutting_04), every kill while needed. Its icon grug_mobs_dispatch_folio.png is the user's pick (Round 60 STORYART, tools/r60_storyart/paint_art.py)."
   }
 ]
