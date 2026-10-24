@@ -558,7 +558,10 @@ for _, faction in ipairs(FACTIONS) do
 	end
 	for capital in pairs(CAPITAL_RACE) do
 		local offered = offers("r58_guild_leader_" .. capital)
-		eq(next(offered), nil, "B the leader of " .. capital .. " gives no quest of its own")
+		-- Round 59: a leader gives chapter 1's second story quest, hidden
+		-- until the first is done; it gives no guild quest.
+		eq(next(offered), nil, "B the leader of " .. capital .. " lists nothing before chapter 1's " ..
+			"first quest (no guild quest of its own)")
 	end
 end
 
