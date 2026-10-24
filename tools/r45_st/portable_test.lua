@@ -349,6 +349,7 @@ core = {
 	is_protected = function(pos) return protected[pos_key(pos)] == true end,
 	show_formspec = function(name, form, spec) shown[#shown + 1] = {name = name, form = form, spec = spec} end,
 	formspec_escape = function(text) return text end,
+	colorize = function(color, text) return "\27(c@" .. color .. ")" .. text .. "\27(c@#ffffff)" end,
 	chat_send_player = function(name, text) chat[#chat + 1] = name .. ": " .. text end,
 	get_gametime = function() return clock - process_start end,
 	get_us_time = function() return math.floor((clock - process_start) * 1000000) end,
@@ -434,6 +435,7 @@ grug_core = {
 	item_name = function(name) return (registered_items[name] or {}).description or name end,
 	faction_ids = {"accord", "throng"},
 }
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 grug_inventory = {BAG_COUNT = 0, content_list = function(i) return "grug_bag" .. i .. "_content" end,
 	carried_lists = function() return {"main"} end,
 	fits = function() return true end,
@@ -444,7 +446,7 @@ local refreshed = 0
 grug_inventory.refresh = function() refreshed = refreshed + 1 end
 -- 0.49.1 VIEW: station forms draw the bag view through grug_inventory
 -- (tested by tools/r491_view); a pass-through stand-in here.
-grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25}
+grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25, box_w = 10.44}
 grug_inventory.station_box = function() return "", 1 end
 grug_inventory.station_formspec = function(_, content) return content end
 grug_inventory.keep_scroll = function() return false end

@@ -438,7 +438,9 @@ sfinv.register_page("grug_inventory:inventory", {title = "Inventory",
 	get = function() return "INVENTORY" end})
 loading = "bags"
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/navigation.lua")
 grug_inventory.equipment_changed = function() end
 grug_inventory.equipment_slots = {}
 
@@ -763,8 +765,7 @@ do
 	local sent = smith.sent
 	click(smith, {grug_craft_box_enchant = "Enchant an item"})
 	eq(st_of(smith).box, "enchant", "T the button opens the enchant box")
-	has(smith.formspec, "style[grug_craft_box_enchant;bgcolor=#8a682f;bgcolor_hovered=#a77f3b;" ..
-		"bgcolor_pressed=#6f5427;border=true]", "T the open box's button in the gold style")
+	has(smith.formspec, grug_core.ui.button_style("grug_craft_box_enchant", "selected"), "T the open box's button in the gold style")
 	lacks(smith.formspec, "style[grug_craft_box_upgrade", "T the other button stays plain")
 	lacks(smith.formspec, "border=false]button[0.2,8.45", "T no borderless entry button")
 	eq(smith.sent, sent + 1, "T one resend")
@@ -1414,8 +1415,8 @@ end
 local function box_part(fs)
 	local part = content(fs)
 	-- The boxes end a gap above the short view (Round 45 PT2 follow-up).
-	local h = grug_jobs._fs_number(grug_jobs.CRAFT_BOX.h)
-	local from = part:find("box[5.4,0.95;7.9," .. h .. ";", 1, true)
+	local box = grug_jobs.CRAFT_BOX
+	local from = part:find(grug_core.ui.panel(box.x, box.y, box.w, box.h), 1, true)
 	-- (up to the job strip's rule, Round 57)
 	local to = part:find("box[5.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1) ..
 		";7.5,0.03;", 1, true)

@@ -397,6 +397,7 @@ sfinv.register_page("grug_inventory:inventory", {title = "Inventory",
 	get = function() return "INVENTORY" end})
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/navigation.lua")
 
 grug_jobs = {}
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/registry.lua")
@@ -927,7 +928,7 @@ do
 	has(fs, "2 of 5 slots", "L ... its slots")
 	has(fs, "Aspen Wood Planks ×8", "L ... the waiting job's line")
 	has(fs, F.back .. ";" .. core.formspec_escape("◀ Back to recipe") .. "]", "L ... Back to recipe")
-	has(fs, "style[" .. F.queue .. ";bgcolor=#8a682f", "L View Queue in the selection colour")
+	has(fs, grug_core.ui.button_style(F.queue, "selected"), "L View Queue in the selection colour")
 	has(fs, "animated_image[5.6,", "L the bar under the queue view")
 	geometry_ok(fs, "L the queue view")
 	click(l, {[F.back] = "x"})
