@@ -245,9 +245,10 @@ local classes = {}
 for _, category in ipairs(categories) do
 	classes[category.class] = (classes[category.class] or 0) + 1
 end
-check(classes.resource == 4 and classes.cover == 1 and classes.tree == 1 and
+-- Round 60 HERBS: Gravemoss and Sunleaf grow in the start zones too (6, was 4).
+check(classes.resource == 6 and classes.cover == 1 and classes.tree == 1 and
 	classes.shrub == 1,
-	"meadow start zone: 4 resource species, one cover, one tree and one shrub class")
+	"meadow start zone: 6 resource species, one cover, one tree and one shrub class")
 local gravel = density.categories(20, GROUND + 1, 20, "default:gravel", 15)
 local gravel_cover
 for _, category in ipairs(gravel) do
@@ -331,7 +332,8 @@ result = run(-50, 36, "cover")
 check(result == "placed", "anchor-blend envelope: cover renews (" .. tostring(result) .. ")")
 local island = classes_at(70, -15)
 out("dry island coast envelope: " .. island)
-check(island == "corn,potato", "dry island coast: only P9G gathering rows grow")
+-- Round 60 HERBS: the start zone's P9G rows now include Gravemoss and Sunleaf.
+check(island == "corn,gravemoss,potato,sunleaf", "dry island coast: only P9G gathering rows grow")
 result = run(70, -15, "resource")
 check(result == "placed", "dry island coast: P9G resource renews (" .. tostring(result) .. ")")
 local bank = classes_at(82, 5)

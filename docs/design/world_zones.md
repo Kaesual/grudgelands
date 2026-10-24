@@ -1639,9 +1639,17 @@ code, not by this document.
   herbs, spices and alchemy reagents—the expected gather/drop opportunity per
   faction must be within **±10%** over the reachable zone area of each level
   bracket. Different families may carry the same paired table.
-- T1 gravemoss is supplied by Copperfell Foothills / Mournfen; T2 dragonweed
-  by the Dwarf/forest side and Undead/Orc wilds; T3 crimson lotus only by the
-  level-51–60 Skyglass Canopy / level-60 Stormscale Summit palettes. Marshbloom
+- The Alchemy herbs follow the level bands (Round 60; the user,
+  2026-10-24): up to level 20 every race finds its tier's herbs in its own
+  zones, from 21 to 40 each faction on its own half of the continent (its
+  `elandor_` or `kragmar_` zones of the band, the contested ones included),
+  from 41 in the fronts. T1 gravemoss and sunleaf grow in all six start
+  zones; sunleaf in every 11–20 zone (T2's Healing Potion); T2 dragonweed in
+  every 11–20 zone besides Frostbarrow Shelf, Ossuary Reach, Ashenward March
+  and Bannerbreak Mesa; gravemoss (T3's Healing Potion) and T3 crimson lotus
+  in Whitebridge Shire and Whispering Reedlands; T4 crimson lotus in Glassroot
+  Wilds and Thunderroot Wilds; T5 crimson lotus in The Broken Causeway, besides
+  The Skyglass Canopy and Stormscale Summit. Capitals carry none. Marshbloom
   uses Lorindor, Whitebridge Shire, Ossuary Reach and Whispering Reedlands;
   this 2026-08-31 ruling replaces the former Mournfen row with Ossuary Reach
   to preserve paired level-21–30 supply. Stormkelp uses both endpoint island
@@ -1655,10 +1663,10 @@ compatible biome patch outside these ids grants no source.
 
 | Source | Exact stable zone ids |
 |---|---|
-| Gravemoss | `elandor_copperfell_foothills`; `kragmar_mournfen` |
-| Dragonweed | `elandor_ashenward_march`; `elandor_frostbarrow_shelf`; `kragmar_bannerbreak_mesa`; `kragmar_ossuary_reach` |
-| Crimson Lotus | `front_skyglass_canopy`; `front_stormscale_summit` |
-| Sunleaf | `elandor_goldmead_vale`; `elandor_starbough_vale`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna` |
+| Gravemoss | `elandor_copperfell_foothills`; `elandor_dawnmere_fields`; `elandor_hearthpine_vale`; `elandor_silverleaf_glades`; `elandor_whitebridge_shire`; `kragmar_kapok_cradle`; `kragmar_mournfen`; `kragmar_stillgrave_hollow`; `kragmar_sunscar_flats`; `kragmar_whispering_reedlands` |
+| Dragonweed | `elandor_ashenward_march`; `elandor_copperfell_foothills`; `elandor_frostbarrow_shelf`; `elandor_goldmead_vale`; `elandor_starbough_vale`; `kragmar_bannerbreak_mesa`; `kragmar_mournfen`; `kragmar_ossuary_reach`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna` |
+| Crimson Lotus | `elandor_glassroot_wilds`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_thunderroot_wilds`; `kragmar_whispering_reedlands` |
+| Sunleaf | `elandor_copperfell_foothills`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_hearthpine_vale`; `elandor_silverleaf_glades`; `elandor_starbough_vale`; `kragmar_kapok_cradle`; `kragmar_mournfen`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna`; `kragmar_stillgrave_hollow`; `kragmar_sunscar_flats` |
 | Marshbloom | `elandor_lorindor`; `elandor_whitebridge_shire`; `kragmar_ossuary_reach`; `kragmar_whispering_reedlands` |
 | Stormkelp | `front_gravesalt_escarpment`; `front_shattered_line` (swamp mud only); `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
 | Potato | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway` |
@@ -1668,13 +1676,15 @@ compatible biome patch outside these ids grants no source.
 | Wild Cocoa | `front_skyglass_canopy`; `front_stormscale_summit` |
 | Rock Salt | `front_gravesalt_escarpment`; `front_stormscale_summit`; `front_wyrmglass_crown` |
 
-The exact host rules are: Gravemoss uses Pine Hills coniferous litter in
-Copperfell or Blight dirt in Mournfen; Dragonweed uses Crags gravel in
-Frostbarrow, Deep Forest litter in Ashenward, Bone Forest litter in Ossuary or
-Badlands mesa clay in Bannerbreak; Crimson Lotus uses Canopy litter in
-Skyglass Jungle Fringe or Stormscale Deep Jungle; Sunleaf uses the owning
-zone's Meadows grass, Elf Forest silver litter, Savanna dry grass or Jungle
-Edge rainforest litter; Marshbloom uses Swamp mud; Potato uses Meadows grass;
+The exact host rules are (Round 60; each biome's main ground as the
+catalogue's `ALL_DRY_HOSTS` lists it, the swamp's six grounds): Gravemoss and
+Sunleaf use the six home biomes' ground (Pine Hills coniferous litter, Blight
+dirt, Meadows grass, Elf Forest silver litter, Savanna dry grass, Jungle Edge
+rainforest litter); Dragonweed uses Badlands mesa clay, Blight dirt, Bone
+Forest litter, Crags gravel, Deep Forest litter, Elf Forest silver litter,
+Jungle Edge rainforest litter, Meadows grass or Pine Hills coniferous litter;
+Crimson Lotus uses Deep Forest litter, Deep Jungle/Jungle Fringe canopy
+litter or the Swamp's grounds; Marshbloom uses Swamp mud; Potato uses Meadows grass;
 Corn uses Meadows grass or Savanna dry grass; Melon uses Jungle Edge
 rainforest litter or Deep Jungle/Jungle Fringe canopy litter; Mushroom uses
 Deep Forest litter, Bone Forest litter or Swamp mud; and Wild Cocoa uses Deep
@@ -2278,11 +2288,11 @@ bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
 | cassava | three Throng starts 1–6 | savanna, blight, jungle-edge viable soils | none; 1/256 |
 | wild_onion | Accord starts and paired homes | deep forest, pine, elf viable soils | none; 1/512 |
 | fire_pepper | Throng starts and paired homes | badlands mesa clay, savanna/blight/jungle-edge viable soils | none; 1/512 |
-| pumpkin | six paired homes 11–20 | meadow soil, swamp mud, blight soil | none; 1/256 |
+| pumpkin | six paired homes 11–20 | meadow, pine, elf, savanna and blight soil, swamp mud (pine, elf and savanna since Round 60) | none; 1/256 |
 | blightberry | Mournfen 11–20 | blight viable soil | none; 1/256 |
 | sunberry | Redtusk 11–20 | savanna viable soil | none; 1/256 |
 | jungle_berry | Raincall 11–20 | jungle-edge viable soil | none; 1/256 |
-| frost_melon | Frostbarrow, Whitebridge 21–30 | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
+| frost_melon | Frostbarrow, Whitebridge, Ossuary, Whispering Reedlands 21–30 (the two Throng zones since Round 60) | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
 | sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/256 |
 | bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/256 |
 | cave_cap | cave floors at y −500…−100 (native `all_floors` decoration since Round 49) | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |
