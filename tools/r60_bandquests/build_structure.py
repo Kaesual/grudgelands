@@ -535,7 +535,7 @@ LOCAL = {
              "text": "Sovel Namekeeper copies damaged labels onto new name boards: bring 10 Gravewood Planks "
                      "from the bone forest.", "duration": 8,
              "notes": "Draft §3.5's Paper replaced (check: papyrus grows only on warm shores): a local wood."},
-            {"id": "ossuary_names_02", "giver": "sovel", "line": "names", "min_level": 21, "level": 22,
+            {"id": "ossuary_names_02", "giver": "sovel", "line": "names", "min_level": 24, "level": 25,
              "objectives": [talk("mereth")], "weight": 1.5, "turnin": "mereth", "kept": True,
              "title": "Paper Remembers",
              "text": "Sovel sends the player to Mereth Rubbinghand at Boneledger Post, who copies and compares.",
@@ -581,7 +581,7 @@ LOCAL = {
     "speargrass": {
         "melee": "greataxe", "slots": ("head", "feet"),
         "quests": [
-            {"id": "speargrass_grass_morga", "giver": "brakka", "line": "grass", "min_level": 22, "level": 23,
+            {"id": "speargrass_grass_morga", "giver": "brakka", "line": "grass", "min_level": 26, "level": 27,
              "objectives": [talk("morga")], "weight": 1, "turnin": "morga",
              "title": "Morga Knows the Missing Colours",
              "text": "Brakka Jarward sends the player to Morga Cutgrass at Cutgrass Watch, who gathers the "
@@ -632,7 +632,7 @@ LOCAL = {
              "title": "Something for the Carriers",
              "text": "Taleko Drycord keeps the carriers at Whisperreed Landing fed: bring 4 Melons.",
              "duration": 9},
-            {"id": "whispering_reeds_enashi", "giver": "taleko", "line": "reeds", "min_level": 22, "level": 23,
+            {"id": "whispering_reeds_enashi", "giver": "taleko", "line": "reeds", "min_level": 25, "level": 26,
              "objectives": [talk("enashi")], "weight": 1, "turnin": "enashi",
              "title": "Who Disputes the Claim",
              "text": "Taleko sends the player to Enashi Reedvoice at Reedvoice Station, who contradicts those "
@@ -691,7 +691,7 @@ LOCAL = {
              "text": "Tokai Knotreader tests his reading against what he sees: secure his prepared reading cord "
                      "at the {name:reading_bank} in the {name:reedbanks}; no swimming is asked.",
              "completion": "Tokai rereads the cord and likes the answer less.", "duration": 9},
-            {"id": "totemwater_enashi", "giver": "tokai", "line": "shore", "min_level": 24, "level": 25,
+            {"id": "totemwater_enashi", "giver": "tokai", "line": "shore", "min_level": 25, "level": 26,
              "objectives": [talk("enashi")], "weight": 1, "turnin": "enashi",
              "title": "Hear a Second Voice",
              "text": "Tokai sends the player to Enashi Reedvoice in the Whispering Reedlands to put the water "
