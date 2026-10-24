@@ -4,6 +4,8 @@ local repo = arg[1] or "."
 local receive, loaded, joins = {}, {}, {}
 local admin, creative, suspended = true, true, false
 local enter, leave, actions, builds = 0, 0, 0, 0
+local quits, denials = 0, 0
+local denied_handles = false
 core = {formspec_escape = function(s) return tostring(s) end,
 	colorize = function(_, s) return s end,
 	register_on_joinplayer = function(f) joins[#joins + 1] = f end,
@@ -29,7 +31,18 @@ for i = 1, 13 do
 		end,
 		on_enter = function() enter = enter + 1 end,
 		on_leave = function() leave = leave + 1 end,
-		on_player_receive_fields = function() actions = actions + 1 end})
+		on_navigation_denied = i == 8 and function(_, player)
+			assert(not admin, "refusal hook must never run for an authorized page")
+			denials = denials + 1
+			if denied_handles then sfinv.set_page(player, ids[1]); return true end
+			return false
+		end or nil,
+		on_player_receive_fields = function(_, _, _, data)
+			if data.quit then
+				for field in pairs(data) do assert(field == "quit", "close must not submit editable values") end
+				quits = quits + 1
+			else actions = actions + 1 end
+		end})
 end
 function sfinv.get_homepage_name() return ids[1] end
 function sfinv.inventory_suspended() return suspended end
@@ -41,6 +54,12 @@ local ctx = sfinv.get_or_create_context(player)
 assert(#ctx.grug_ui_nav == 13)
 assert(player.fs:find('grug_ui_tab_13', 1, true))
 assert(not player.fs:find('tabheader[', 1, true))
+local buttons = 0
+for _, y, _, h in player.fs:gmatch('button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_ui_tab_%d+;') do
+	assert(tonumber(y) + tonumber(h) < grug_inventory.UI.header_h, "navigation must fit above body")
+	buttons = buttons + 1
+end
+assert(buttons == 13)
 local size = player.fs:match('size%[([^%]]+)%]')
 fields({grug_ui_tab_3 = "true"})
 assert(ctx.page == ids[3] and enter == 2 and leave == 2)
@@ -48,11 +67,26 @@ assert(player.fs:match('size%[([^%]]+)%]') == size)
 local before = builds
 fields({grug_inv_scroll_full = "CHG:10"})
 assert(builds == before and actions == 0)
+fields({quit = "true", grug_ui_close = "X", grug_party_health_colors = "2",
+	grug_inv_scroll_full = "VAL:21", draft_text = "unsent"})
+assert(quits == 1 and actions == 0 and builds == before and denials == 0)
+assert(ctx.grug_inv_scroll.full == 21)
+fields({quit = "true"})
+assert(quits == 2 and builds == before)
 fields({grug_ui_tab_8 = "true"})
 assert(ctx.page == ids[8])
 admin = false
 fields({dangerous_admin_action = "true"})
 assert(ctx.page == ids[1] and actions == 0)
+assert(denials == 1)
+-- Owners such as Admin Mail can perform their own refusal cleanup and exit.
+admin, denied_handles = true, true
+sfinv.set_page(player, ids[8])
+admin = false
+before = builds
+fields({dangerous_admin_action = "true", grug_ui_close = "X", quit = "true"})
+assert(ctx.page == ids[1] and denials == 2 and actions == 0 and builds == before + 1)
+denied_handles = false
 -- A stale Creative button cannot be reinterpreted after privilege revocation.
 creative = false
 fields({grug_ui_tab_13 = "true"})
@@ -62,6 +96,7 @@ sfinv.set_page(player, ids[8])
 admin = false
 local fs = sfinv.get_formspec(player, ctx)
 assert(ctx.page == ids[1] and #ctx.grug_ui_nav == 7)
+assert(fs:match('size%[([^%]]+)%]') == size)
 suspended = true
 before = builds
 fields({grug_ui_tab_3 = "true"})

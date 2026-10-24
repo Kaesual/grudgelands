@@ -211,7 +211,7 @@ end
 do
 	local steps, loaded, pages, sends = {}, {}, {}, {}
 	local players = {}
-	local PAGE, TOP = "grug_parties:group", 0
+	local PAGE, TOP = "grug_parties:group", 0.5
 	change_callbacks = {}
 	rawset(_G, "core", {
 		get_current_modname = function() return "grug_pvp" end,
@@ -259,7 +259,7 @@ do
 		generals = 0, kings = 1}
 	local form = section.get(bob, context, TOP)
 	check(not form:find("list[", 1, true), "P the section carries no inventory")
-	check(form:find("button[0.3,3.60;5.95,0.7;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
+	check(form:find("button[0.3,4.10;5.95,0.7;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
 		"P the Flag me for PvP button")
 	check(form:find("Flagged for 12 s", 1, true) ~= nil, "P the headline with seconds")
 	check(form:find("PvP contact", 1, true) ~= nil, "P the reason line")

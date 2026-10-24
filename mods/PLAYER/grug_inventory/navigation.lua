@@ -24,6 +24,8 @@ function grug_inventory.navigation(player, context, selected, width)
 		("button_exit[%.3f,0.12;0.6,0.55;grug_ui_close;X]"):format(width - 0.95)}
 	-- Seven ordinary pages fit one row; privileged pages use a second one.
 	-- A single fixed header height keeps every tab stable even across grants.
+	-- The current catalogue has at most 13 pages. Adding a fifteenth page
+	-- requires revisiting this shared header and the map's header together.
 	local per_row, gap = 7, 0.07
 	for start = 1, #ids, per_row do
 		local last, weight = math.min(start + per_row - 1, #ids), 0
@@ -72,6 +74,20 @@ function sfinv.handle_scroll(player, context, fields)
 			if page:on_navigation_denied(player, context, fields) then return true end
 		end
 		sfinv.set_page(player, sfinv.get_homepage_name(player))
+		return true
+	end
+	if fields.grug_ui_close then
+		-- button_exit submits dropdown/text values, unlike Escape. Preserve
+		-- scroll state, then give the existing owners the same quit-only
+		-- event as Escape so cleanup still runs without an accidental action.
+		grug_inventory.keep_scroll(context, fields)
+		local quit = {quit = "true"}
+		if not handle_scroll(player, context, quit) then
+			local page = sfinv.pages[context.page]
+			if page and page.on_player_receive_fields then
+				page:on_player_receive_fields(player, context, quit)
+			end
+		end
 		return true
 	end
 	if clicked then

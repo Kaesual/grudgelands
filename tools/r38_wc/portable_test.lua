@@ -62,7 +62,6 @@ _G.grug_factions = {
 local MOD = repo .. "/mods/PLAYER/grug_inventory"
 _G.grug_core = {}
 _G.grug_sounds = {CLICK_STYLE = ""}
-core.register_on_joinplayer = function() end
 core.colorize = function(_, text) return text end
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(MOD .. "/help.lua")
