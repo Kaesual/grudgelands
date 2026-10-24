@@ -221,7 +221,7 @@ end
 --
 
 local function header(parts, player, session, vendor, discount)
-	parts[#parts + 1] = "label[0.5,0.6;" .. esc(vendor.nametag) .. "]"
+	parts[#parts + 1] = grug_core.ui.heading(0.5, 0.6, vendor.nametag)
 	parts[#parts + 1] = "label[0.5,1.2;Your money: " ..
 		esc(grug_money.format(grug_money.get(player))) .. "]"
 	if discount then
@@ -230,8 +230,8 @@ local function header(parts, player, session, vendor, discount)
 			"Kinship discount: -" .. pct .. "% on every purchase")) .. "]"
 	end
 	local function style(mode)
-		parts[#parts + 1] = "style[mode_" .. mode .. ";bgcolor=" ..
-			(session.mode == mode and "#4a7fc0" or "#3a3a3a") .. "]"
+		parts[#parts + 1] = grug_core.ui.button_style("mode_" .. mode,
+			session.mode == mode and "selected" or "normal")
 	end
 	style("buy")
 	style("sell")
@@ -292,6 +292,7 @@ local function render_reputation(parts, player, session)
 	local key_of = consumable_keys()
 	for index, row in ipairs(grug_guild.vendor_rows(player)) do
 		local y = 2.65 + (index - 1) * 1.1
+		parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.06, 13.3, 1.02)
 		local function text(value)
 			return esc(row.unlocked and value or core.colorize(GREYED, value))
 		end
@@ -344,8 +345,8 @@ local function render_buy(parts, player, session, vendor, discount)
 	end
 	for i, tab in ipairs(tabs) do
 		local x = 0.5 + (i - 1) * 1.75
-		local color = (session.tab == tab.id) and "#4a7fc0" or "#3a3a3a"
-		parts[#parts + 1] = "style[tab_" .. tab.id .. ";bgcolor=" .. color .. "]"
+		parts[#parts + 1] = grug_core.ui.button_style("tab_" .. tab.id,
+			session.tab == tab.id and "selected" or "normal")
 		parts[#parts + 1] = ("button[%.2f,1.9;1.65,0.7;tab_%s;%s]"):format(
 			x, tab.id, esc(tab.label))
 	end
@@ -357,6 +358,7 @@ local function render_buy(parts, player, session, vendor, discount)
 		local row = math.floor((i - 1) / GRID_COLS)
 		local x = 0.6 + col * 2.2
 		local y = 2.9 + row * 2.5
+		parts[#parts + 1] = grug_core.ui.panel(x - 0.12, y - 0.12, 2.05, 2.3)
 		parts[#parts + 1] = ("item_image_button[%.2f,%.2f;1.6,1.6;%s;buy_%d;]")
 			:format(x, y, entry.item, i)
 		local price_text = grug_money.format(entry.price)
@@ -404,6 +406,7 @@ local function render_sell(parts, player, session)
 		local row = rows[i]
 		if row then
 			local y = 2.5 + offset * 0.8
+			parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 13.3, 0.76)
 			-- Below its lot size a lot row is greyed and has no button: the
 			-- player learns that the item sells in lots.
 			local short = row.lot and row.count < row.lot
@@ -469,6 +472,7 @@ local function render_tradein(parts, player, session)
 		local row = rows[i]
 		if row then
 			local y = 2.5 + offset * 0.8
+			parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 13.3, 0.76)
 			local short = row.lots < 1
 			local function text(value)
 				return esc(short and core.colorize(GREYED, value) or value)
@@ -522,9 +526,7 @@ local function build(player, session, vendor, status)
 	if status and status ~= "" then
 		body[#body + 1] = ("label[0.5,%.2f;%s]"):format(height - 0.5, esc(status))
 	end
-	return "formspec_version[4]" ..
-		("size[%.2f,%.2f]"):format(FORM_W, height) ..
-		"real_coordinates[true]" ..
+	return grug_core.ui.frame(FORM_W, height) ..
 		table.concat(body)
 end
 

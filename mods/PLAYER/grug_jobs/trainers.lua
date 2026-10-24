@@ -108,7 +108,7 @@ local function trainer_formspec(player, profession, confirming)
 	elseif known then
 		text = crafting_hint(profession)
 	end
-	local fs = {("label[%.2f,0.50;%s Trainer]"):format(PAD, esc(definition.name))}
+	local fs = {grug_core.ui.heading(PAD, 0.45, definition.name .. " Trainer")}
 	-- `y` is the centre of the next line (real-coordinate labels are centred
 	-- on their y); a block takes at least `reserved` lines.
 	local y = 1.1
@@ -143,14 +143,17 @@ local function trainer_formspec(player, profession, confirming)
 	local row_y = y - LINE_STEP + 0.56
 	local x = PAD
 	for _, button in ipairs(buttons) do
+		if button[1] == "grug_jobs_confirm" then
+			fs[#fs + 1] = grug_core.ui.button_style(button[1], "danger")
+		end
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(x, row_y, button[3],
 			BUTTON_H, button[1], esc(button[2]))
 		x = x + button[3] + BUTTON_GAP
 	end
 	fs[#fs + 1] = ("button_exit[%.2f,%.2f;%.2f,%.2f;grug_jobs_close;Close]"):format(
 		WIDTH - PAD - CLOSE_W, row_y, CLOSE_W, BUTTON_H)
-	return ("formspec_version[4]size[%.2f,%.2f]"):format(WIDTH, row_y + BUTTON_H + PAD) ..
-		table.concat(fs)
+	return grug_core.ui.frame(WIDTH, row_y + BUTTON_H + PAD) ..
+		grug_core.ui.panel(0.2, 0.8, WIDTH - 0.4, row_y - 1.0) .. table.concat(fs)
 end
 
 function grug_jobs.open_trainer(player, profession, position, entity)

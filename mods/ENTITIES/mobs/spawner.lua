@@ -43,11 +43,15 @@ local function spawner_formspec(pos)
 
 	local esc = core.formspec_escape
 
-	return "size[10,3.5]"
-		.. "label[0.1,0.3;" .. core.formspec_escape(head) .. "]"
-		.. "field[0.5,1.8;9.5,0.8;text;" .. S("Command:")
+	-- GRUG PATCH: runtime theme seam, without a reverse load dependency.
+	local game = rawget(_G, "grug_core")
+	local frame = game and game.ui and game.ui.frame(12, 4.3, S("Mob Spawner")) or
+		"formspec_version[6]size[12,4.3]"
+	return frame
+		.. "label[0.4,1.1;" .. core.formspec_escape(head) .. "]"
+		.. "field[0.4,1.9;11.2,0.7;text;" .. S("Command:")
 		.. ";" .. esc(core.get_meta(pos):get_string("command")) .. "]"
-		.. "button_exit[3.5,2.7;3,1;mob_spawner;" .. esc(FS("Done")) .. "]"
+		.. "button_exit[8.6,3.2;3,0.7;mob_spawner;" .. esc(FS("Done")) .. "]"
 end
 
 core.register_node("mobs:spawner", {

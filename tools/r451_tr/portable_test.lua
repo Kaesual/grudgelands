@@ -113,6 +113,11 @@ function grug_jobs.station_info() return {display_name = "Jeweller's Workbench"}
 grug_sounds = {play = function() end}
 grug_mobs = {register_start_socket_role = function() end}
 
+-- Presentation helpers share the fixture engine; joining is not exercised here.
+rawset(_G, "grug_core", {})
+core.register_on_joinplayer = function() end
+core.colorize = function(_, text) return text end
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/trainers.lua")
 
 -- grug_repair: the service seam service.lua defines, the real providers.

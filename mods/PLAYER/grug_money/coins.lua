@@ -193,24 +193,25 @@ local function esc(text) return core.formspec_escape(tostring(text or "")) end
 function grug_money.show_withdraw(player, fields, message)
 	fields = fields or {}
 	local fs = {
-		"size[6.4,4.3]",
+		grug_core.ui.frame(8, 4.3, "Withdraw coins"),
+		grug_core.ui.panel(0.2, 0.85, 7.6, 0.65),
 		-- Cancel takes the focus when the dialog opens (0.45.1): otherwise the
 		-- engine focuses the Gold field, which eats the inventory key. Not
 		-- forced: a re-show with a refusal keeps the field the player typed in.
 		"set_focus[grug_money_cancel;false]",
-		"label[0.3,0.2;Withdraw into a Bag of Coins]",
-		("label[0.3,0.7;Balance: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
-		("field[0.6,1.9;1.7,0.8;grug_money_gold;Gold;%s]"):format(esc(fields.grug_money_gold)),
-		("field[2.4,1.9;1.7,0.8;grug_money_silver;Silver;%s]"):format(esc(fields.grug_money_silver)),
-		("field[4.2,1.9;1.7,0.8;grug_money_copper;Copper;%s]"):format(esc(fields.grug_money_copper)),
+		"label[0.4,2.65;Withdraw into a Bag of Coins]",
+		("label[0.4,1.18;Balance: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
+		("field[0.4,1.85;2.2,0.65;grug_money_gold;Gold;%s]"):format(esc(fields.grug_money_gold)),
+		("field[2.9,1.85;2.2,0.65;grug_money_silver;Silver;%s]"):format(esc(fields.grug_money_silver)),
+		("field[5.4,1.85;2.2,0.65;grug_money_copper;Copper;%s]"):format(esc(fields.grug_money_copper)),
 		"field_close_on_enter[grug_money_gold;false]",
 		"field_close_on_enter[grug_money_silver;false]",
 		"field_close_on_enter[grug_money_copper;false]",
-		"button[0.3,3.3;2.2,0.7;grug_money_confirm;Withdraw]",
-		"button[2.7,3.3;1.6,0.7;grug_money_cancel;Cancel]",
+		"button[0.4,3.3;2.2,0.7;grug_money_confirm;Withdraw]",
+		"button[6.0,3.3;1.6,0.7;grug_money_cancel;Cancel]",
 	}
 	if message then
-		fs[#fs + 1] = ("label[0.3,2.55;%s]"):format(esc(core.colorize("#ff9a7a", message)))
+		fs[#fs + 1] = ("label[0.4,2.98;%s]"):format(esc(core.colorize("#ff9a7a", message)))
 	end
 	core.show_formspec(player:get_player_name(), WITHDRAW_FORM, table.concat(fs))
 end

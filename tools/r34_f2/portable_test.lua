@@ -145,6 +145,13 @@ end
 ------------------------------------------------------------------------------
 -- A. The Bag of Coins
 ------------------------------------------------------------------------------
+-- Exercise real presentation helpers; this fixture does not test the join prepend.
+do
+	local join = core.register_on_joinplayer
+	core.register_on_joinplayer = function() end
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+	core.register_on_joinplayer = join
+end
 dofile(ROOT .. "/mods/PLAYER/grug_money/init.lua")
 local BAG = grug_money.BAG
 do
@@ -207,6 +214,12 @@ do
 	-- the inventory, Cancel has the focus, not the Gold field (which would
 	-- eat the inventory key); the re-show keeps a field the player typed in.
 	if shown[1] then
+		local ys = {}
+		for y, name in shown[1][3]:gmatch("field%[[%d.]+,([%d.]+);[%d.,]+;(grug_money_%w+);") do
+			ys[name] = y
+		end
+		check(ys.grug_money_gold and ys.grug_money_gold == ys.grug_money_silver and
+			ys.grug_money_gold == ys.grug_money_copper, "A denominations share one row")
 		local focus = dofile(ROOT .. "/tools/r451_kf/focus.lua")
 		local got = focus.initial(shown[1][3], {new_form = true})
 		check(got and got.name == "grug_money_cancel", "A Cancel focused when the dialog opens")
