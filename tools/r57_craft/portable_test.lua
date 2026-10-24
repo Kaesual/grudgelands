@@ -345,7 +345,8 @@ grug_core = {
 grug_classes = {get_class = function() return "warrior" end}
 grug_gear = {initialize_weapon_tooltip = function() return false end}
 grug_xp = {get_level = function() return character_level end}
-grug_sounds = {play = function() end}
+grug_sounds = {play = function() end, CLICK_STYLE = ""}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 grug_items = {crafted_output = function() return false end}
 
 grug_items = {
@@ -482,6 +483,7 @@ local function new_player(name, opts)
 	function player:get_meta() return self.meta end
 	function player:is_player() return true end
 	function player:get_pos() return self.pos end
+	function player:set_formspec_prepend(fs) self.prepend = fs end
 	function player:set_inventory_formspec(fs)
 		self.sent = self.sent + 1
 		self.formspec = fs
@@ -941,6 +943,18 @@ do
 	fs = open(l)
 	has(fs, "list[current_player;grug_craft_out;5.6,", "L the output row while filled")
 	geometry_ok(fs, "L a full queue and the overflow")
+	click(l, {[F.queue] = "View Queue"})
+	fs = l.formspec
+	geometry_ok(fs, "L all waiting jobs with overflow")
+	local note_found = false
+	for _, r in ipairs(rects(content(fs))) do
+		if r.name == "textarea" then
+			note_found = true
+			check(r.y + r.h <= J.CRAFT_STRIP_Y - 1.6 - 0.1 + 0.01,
+				"L queue notes stay above the overflow and animation")
+		end
+	end
+	check(note_found, "L queue explanation/refusal scroll locally in reserved space")
 	put(l, OUT, 1, "")
 	advance(30)
 	run_timers()

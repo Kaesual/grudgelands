@@ -30,13 +30,14 @@
 -- from their block, planks from stairs). Every text is clipped or wrapped to its column (the
 -- window is the same on desktop and web).
 
+local UI = grug_core.ui
+
 local F = grug_jobs.CRAFT_FIELDS
 local BOX = grug_jobs.CRAFT_BOX
 local n = grug_jobs._fs_number
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
 local CHARS = 6.6
-local BOX_COLOR = "#00000040"
 local DIM = "#b4b8bd"
 local WARN = "#f0a35e"
 local LINE = 0.36
@@ -407,8 +408,9 @@ local function chips(fs, player, x, y, width, recipe)
 	for _, entry in ipairs(list) do
 		local token = grug_jobs.ingredient_token(entry)
 		local icon = entry.item or index().members(entry.group)[1] or ""
-		fs[#fs + 1] = ("box[%s,%s;%s,0.45;%s]item_image[%s,%s;0.35,0.35;%s]label[%s,%s;%s]"):format(
-			n(x), n(y), n(w), BOX_COLOR, n(x + 0.05), n(y + 0.05), esc(icon), n(x + 0.45),
+		fs[#fs + 1] = UI.panel(x, y, w, 0.45) ..
+			("item_image[%s,%s;0.35,0.35;%s]label[%s,%s;%s]"):format(
+			n(x + 0.05), n(y + 0.05), esc(icon), n(x + 0.45),
 			n(y + 0.22), esc(clip(token_name(token) .. " ×" .. entry.n, w - 0.5)))
 		local tip = entry.item and item_tooltip(entry.item, player) or
 			table.concat(grug_jobs.source_lines(token), "\n")
@@ -423,7 +425,7 @@ local function ingredient_box(fs, player, view, index_, entry, y, h)
 	local members = entry.group and index().members(entry.group) or nil
 	local icon = entry.item or (members and members[1]) or ""
 	local label = entry.item and name_of(entry.item) or token_name(token):gsub("^a", "A")
-	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]"):format(n(X), n(y), n(W), n(h - 0.1), BOX_COLOR)
+	fs[#fs + 1] = UI.panel(X, y, W, h - 0.1)
 	fs[#fs + 1] = ("item_image[%s,%s;0.45,0.45;%s]"):format(n(X + 0.1), n(y + 0.08), esc(icon))
 	tooltip_area(fs, X + 0.1, y + 0.08, 0.45, 0.45, entry.item and item_tooltip(entry.item, player) or
 		table.concat(grug_jobs.source_lines(token), "\n"))
@@ -538,8 +540,8 @@ local function group_page(fs, player, view, page)
 	local first = (page.page - 1) * per_page
 	for i = first + 1, math.min(#members, first + per_page) do
 		local item = members[i]
-		fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]item_image[%s,%s;0.45,0.45;%s]"):format(n(X), n(y),
-			n(W), n(ROW - 0.08), BOX_COLOR, n(X + 0.1), n(y + 0.12), esc(item))
+		fs[#fs + 1] = UI.panel(X, y, W, ROW - 0.08) ..
+			("item_image[%s,%s;0.45,0.45;%s]"):format(n(X + 0.1), n(y + 0.12), esc(item))
 		tooltip_area(fs, X + 0.1, y + 0.12, 0.45, 0.45, item_tooltip(item, player))
 		local text_w = W - 0.75 - 1.45
 		fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 0.65), n(y + 0.2),
@@ -560,7 +562,7 @@ local function group_page(fs, player, view, page)
 end
 
 local function build(player, view)
-	local fs = {}
+	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
 	local page = current(view.st)
 	if page and page.kind == "group" then
 		group_page(fs, player, view, page)

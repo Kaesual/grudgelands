@@ -619,7 +619,7 @@ do
 	local now = 0
 	core.get_us_time = function() now = now + 1000000 return now end -- past the limit
 	local function marked_b(fs)
-		return fs:find("style[grug_hotbar_b;bgcolor=#c8962f", 1, true) ~= nil
+		return fs:find(grug_inventory.selected_button_style("grug_hotbar_b", true), 1, true) ~= nil
 	end
 	local worker = new_player("hotbar_ws", BAGS.four)
 	local pos = place("default:furnace")
@@ -649,8 +649,37 @@ do
 	submit(owner, "grug_housing:stone", {quit = "true"})
 end
 
+-- The sign keeps a native text field and quit-gated writes. Styling must
+-- neither submit on a non-exit event nor bypass its protection check.
+do
+	local player = new_player("sign_writer", BAGS.none)
+	local pos, def = place("default:sign_wall_wood")
+	near(player, pos)
+	local initial = "A sign; with [brackets]"
+	meta_at(pos):set_string("text", initial)
+	def.on_rightclick(pos, {name = "default:sign_wall_wood"}, player, ItemStack(""))
+	local fs = last_shown("sign_writer").formspec
+	check(fs:find("formspec_version[6]", 1, true) ~= nil, "sign: real-coordinate themed frame")
+	check(fs:find(core.formspec_escape(initial), 1, true) ~= nil, "sign: native field echoes escaped text")
+	check(fs:find("button_exit[6.2,2.4;2.3,0.65;save;Save]", 1, true) ~= nil,
+		"sign: Save exits so the existing write handler receives quit")
+	def.on_receive_fields(pos, NODE_FORM, {text = "not submitted"}, player)
+	eq(meta_at(pos):get_string("text"), initial, "sign: no early write")
+	local protect, violation = core.is_protected, core.record_protection_violation
+	local recorded = 0
+	core.is_protected = function() return true end
+	core.record_protection_violation = function() recorded = recorded + 1 end
+	def.on_receive_fields(pos, NODE_FORM, {text = "blocked", quit = true}, player)
+	eq(meta_at(pos):get_string("text"), initial, "sign: protected write refused")
+	eq(recorded, 1, "sign: refusal is recorded")
+	core.is_protected = function() return false end
+	def.on_receive_fields(pos, NODE_FORM, {text = "Saved text", quit = true}, player)
+	eq(meta_at(pos):get_string("text"), "Saved text", "sign: normal quit saves unchanged")
+	core.is_protected, core.record_protection_violation = protect, violation
+end
+
 if failures > 0 then
 	print(("R491 VIEW PORTABLE FAIL %d of %d checks"):format(failures, checks))
-	os.exit(1)
+	error("R491 VIEW portable fixture failed")
 end
 print(("R491 VIEW PORTABLE PASS checks=%d"):format(checks))
